@@ -2,8 +2,7 @@
 
 
 var match = /* tuple */[
-  1,
-  2
+  1,2
 ];
 
 var a = match[0];

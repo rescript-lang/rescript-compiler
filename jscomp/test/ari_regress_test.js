@@ -29,54 +29,42 @@ function v(param) {
 }
 
 var suites_000 = /* tuple */[
-  "curry",
-  function () {
+  "curry",function () {
     return /* Eq */Block.__(0, [
-              g,
-              7
+              g,7
             ]);
   }
 ];
 
-var suites_001 = /* :: */[
+var suites_001 = /* Nested :: */[
   /* tuple */[
-    "curry2",
-    function () {
+    "curry2",function () {
       Curry._1(v, 1);
       return /* Eq */Block.__(0, [
-                14,
-                Curry._1(v, 1)
+                14,Curry._1(v, 1)
               ]);
     }
-  ],
-  /* :: */[
+  ],[
     /* tuple */[
-      "curry3",
-      function () {
+      "curry3",function () {
         return /* Eq */Block.__(0, [
-                  x,
-                  14
+                  x,14
                 ]);
       }
-    ],
-    /* :: */[
+    ],[
       /* tuple */[
-        'File "ari_regress_test.ml", line 20, characters 4-11',
-        function () {
+        'File "ari_regress_test.ml", line 20, characters 4-11',function () {
           return /* Eq */Block.__(0, [
-                    h[0],
-                    1
+                    h[0],1
                   ]);
         }
-      ],
-      /* [] */0
+      ],/* [] */0
     ]
   ]
 ];
 
-var suites = /* :: */[
-  suites_000,
-  suites_001
+var suites = /* Nested :: */[
+  suites_000,suites_001
 ];
 
 Mt.from_pair_suites("ari_regress_test.ml", suites);

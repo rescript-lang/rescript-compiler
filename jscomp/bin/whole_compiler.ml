@@ -81072,6 +81072,13 @@ type name =
   | Name_top  of Ident.t
   | Name_non_top of Ident.t
 
+let rec process_comments (el:J.expression list) = match el with 
+| [] -> []
+| e::r -> let new_e = 
+            if e.comment = Some "::"            
+            then {J.expression_desc = e.expression_desc; J.comment = None} 
+            else e in
+          new_e::(process_comments r)
 
 (* TODO: refactoring 
    Note that {!pp_function} could print both statement and expression when [No_name] is given 
@@ -81778,7 +81785,8 @@ and
       (Blk_tuple | Blk_array | Blk_variant _ | Blk_record _ | Blk_na | Blk_module _
       |  Blk_constructor (_, 1) (* Sync up with {!Js_dump}*)
       ) 
-      -> expression_desc cxt l f  (Array (el, mutable_flag))
+      ->
+      expression_desc cxt l f  (Array (process_comments el, mutable_flag))
     (* TODO: for numbers like 248, 255 we can reverse engineer to make it 
        [Obj.xx_flag], but we can not do this in runtime libraries
     *)
@@ -81923,7 +81931,7 @@ and array_element_list cxt f el : Ext_pp_scope.t =
   | e :: r ->
     let cxt =  expression 1 cxt f e 
     in
-    P.string f L.comma; P.newline f; array_element_list cxt f r
+    P.string f L.comma; array_element_list cxt f r
 
 and arguments cxt f l : Ext_pp_scope.t =
   match l with
@@ -81973,7 +81981,7 @@ and variable_declaration top cxt f
               cxt 
         end
     end
-and ipp_comment : 'a . P.t -> 'a  -> unit = fun   f comment -> 
+and ipp_comment : 'a . P.t -> 'a  -> unit = fun f comment -> 
   ()
 
 
@@ -81985,9 +81993,10 @@ and ipp_comment : 'a . P.t -> 'a  -> unit = fun   f comment ->
     ]}
 *)
 
-and pp_comment f comment = 
-  if String.length comment > 0 then 
-    P.string f "/* "; P.string f comment ; P.string f " */" 
+and pp_comment f comment =
+  if String.length comment > 0 then
+  if comment = "::" then P.string f "/* Nested :: */" else
+    (P.string f "/* "; P.string f comment ; P.string f " */")
 
 and pp_comment_option f comment  = 
     match comment with 

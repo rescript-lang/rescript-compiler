@@ -3,8 +3,7 @@
 
 function f(x, y) {
   console.log(/* tuple */[
-        x,
-        y
+        x,y
       ]);
   return x + y | 0;
 }

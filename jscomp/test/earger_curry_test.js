@@ -28,8 +28,7 @@ function init(l, f) {
   if (l$1) {
     if (l$1 < 0) {
       throw [
-            Caml_builtin_exceptions.invalid_argument,
-            "Array.init"
+            Caml_builtin_exceptions.invalid_argument,"Array.init"
           ];
     }
     else {

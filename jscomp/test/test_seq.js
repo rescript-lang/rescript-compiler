@@ -35,8 +35,7 @@ function assoc3(x, _l) {
 
 function help_action() {
   throw [
-        Stop,
-        /* Unknown */Block.__(0, ["-help"])
+        Stop,/* Unknown */Block.__(0, ["-help"])
       ];
 }
 
@@ -57,13 +56,10 @@ function add_help(speclist) {
   }
   catch (exn){
     if (exn === Caml_builtin_exceptions.not_found) {
-      add1 = /* :: */[
+      add1 = /* Nested :: */[
         /* tuple */[
-          "-help",
-          /* Unit */Block.__(0, [help_action]),
-          " Display this list of options"
-        ],
-        /* [] */0
+          "-help",/* Unit */Block.__(0, [help_action])," Display this list of options"
+        ],/* [] */0
       ];
     }
     else {
@@ -77,13 +73,10 @@ function add_help(speclist) {
   }
   catch (exn$1){
     if (exn$1 === Caml_builtin_exceptions.not_found) {
-      add2 = /* :: */[
+      add2 = /* Nested :: */[
         /* tuple */[
-          "--help",
-          /* Unit */Block.__(0, [help_action]),
-          " Display this list of options"
-        ],
-        /* [] */0
+          "--help",/* Unit */Block.__(0, [help_action])," Display this list of options"
+        ],/* [] */0
       ];
     }
     else {

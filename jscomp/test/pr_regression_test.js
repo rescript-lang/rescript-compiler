@@ -80,27 +80,18 @@ f$3(function (prim, prim$1) {
 
 var d = v$3[0];
 
-Mt.from_pair_suites("pr_regression_test.ml", /* :: */[
+Mt.from_pair_suites("pr_regression_test.ml", /* Nested :: */[
       /* tuple */[
-        "partial",
-        function () {
+        "partial",function () {
           return /* Eq */Block.__(0, [
                     /* tuple */[
-                      5,
-                      5,
-                      5,
-                      5
-                    ],
-                    /* tuple */[
-                      a,
-                      b,
-                      c,
-                      d
+                      5,5,5,5
+                    ],/* tuple */[
+                      a,b,c,d
                     ]
                   ]);
         }
-      ],
-      /* [] */0
+      ],/* [] */0
     ]);
 
 exports.a = a;

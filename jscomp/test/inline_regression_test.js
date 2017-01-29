@@ -52,18 +52,15 @@ function basename(param) {
 }
 
 var suites_000 = /* tuple */[
-  "basename",
-  function () {
+  "basename",function () {
     return /* Eq */Block.__(0, [
-              basename("b/c/a.b"),
-              "a.b"
+              basename("b/c/a.b"),"a.b"
             ]);
   }
 ];
 
-var suites = /* :: */[
-  suites_000,
-  /* [] */0
+var suites = /* Nested :: */[
+  suites_000,/* [] */0
 ];
 
 Mt.from_pair_suites("inline_regression_test.ml", suites);

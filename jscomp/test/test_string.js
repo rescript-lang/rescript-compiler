@@ -12,11 +12,8 @@ function f(param) {
         return 1;
     default:
       throw [
-            Caml_builtin_exceptions.assert_failure,
-            [
-              "test_string.ml",
-              4,
-              18
+            Caml_builtin_exceptions.assert_failure,[
+              "test_string.ml",4,18
             ]
           ];
   }

@@ -17,17 +17,15 @@ function eq(f, param) {
 
 function assert_(loc, v) {
   return eq(loc, /* tuple */[
-              v,
-              /* true */1
+              v,/* true */1
             ]);
 }
 
 function to_list(s) {
   var l = [/* [] */0];
   List.iter(function (x) {
-        l[0] = /* :: */[
-          x,
-          l[0]
+        l[0] = /* Nested :: */[
+          x,l[0]
         ];
         return /* () */0;
       }, s[/* c */0]);
@@ -35,17 +33,7 @@ function to_list(s) {
 }
 
 var S = /* module */[
-  /* Empty */Stack.Empty,
-  /* create */Stack.create,
-  /* push */Stack.push,
-  /* pop */Stack.pop,
-  /* top */Stack.top,
-  /* clear */Stack.clear,
-  /* copy */Stack.copy,
-  /* is_empty */Stack.is_empty,
-  /* length */Stack.length,
-  /* iter */Stack.iter,
-  /* to_list */to_list
+  /* Empty */Stack.Empty,/* create */Stack.create,/* push */Stack.push,/* pop */Stack.pop,/* top */Stack.top,/* clear */Stack.clear,/* copy */Stack.copy,/* is_empty */Stack.is_empty,/* length */Stack.length,/* iter */Stack.iter,/* to_list */to_list
 ];
 
 function does_raise(f, s) {
@@ -69,45 +57,35 @@ assert_('File "stack_comp_test.ml", line 33, characters 32-39', +(to_list(s) ===
 
 Stack.push(1, s);
 
-assert_('File "stack_comp_test.ml", line 34, characters 32-39', Caml_obj.caml_equal(to_list(s), /* :: */[
-          1,
-          /* [] */0
+assert_('File "stack_comp_test.ml", line 34, characters 32-39', Caml_obj.caml_equal(to_list(s), /* Nested :: */[
+          1,/* [] */0
         ]) && +(List.length(s[/* c */0]) === 1));
 
 Stack.push(2, s);
 
-assert_('File "stack_comp_test.ml", line 35, characters 32-39', Caml_obj.caml_equal(to_list(s), /* :: */[
-          1,
-          /* :: */[
-            2,
-            /* [] */0
+assert_('File "stack_comp_test.ml", line 35, characters 32-39', Caml_obj.caml_equal(to_list(s), /* Nested :: */[
+          1,[
+            2,/* [] */0
           ]
         ]) && +(List.length(s[/* c */0]) === 2));
 
 Stack.push(3, s);
 
-assert_('File "stack_comp_test.ml", line 36, characters 32-39', Caml_obj.caml_equal(to_list(s), /* :: */[
-          1,
-          /* :: */[
-            2,
-            /* :: */[
-              3,
-              /* [] */0
+assert_('File "stack_comp_test.ml", line 36, characters 32-39', Caml_obj.caml_equal(to_list(s), /* Nested :: */[
+          1,[
+            2,[
+              3,/* [] */0
             ]
           ]
         ]) && +(List.length(s[/* c */0]) === 3));
 
 Stack.push(4, s);
 
-assert_('File "stack_comp_test.ml", line 37, characters 32-39', Caml_obj.caml_equal(to_list(s), /* :: */[
-          1,
-          /* :: */[
-            2,
-            /* :: */[
-              3,
-              /* :: */[
-                4,
-                /* [] */0
+assert_('File "stack_comp_test.ml", line 37, characters 32-39', Caml_obj.caml_equal(to_list(s), /* Nested :: */[
+          1,[
+            2,[
+              3,[
+                4,/* [] */0
               ]
             ]
           ]
@@ -115,32 +93,26 @@ assert_('File "stack_comp_test.ml", line 37, characters 32-39', Caml_obj.caml_eq
 
 assert_('File "stack_comp_test.ml", line 38, characters 10-17', +(Stack.pop(s) === 4));
 
-assert_('File "stack_comp_test.ml", line 38, characters 41-48', Caml_obj.caml_equal(to_list(s), /* :: */[
-          1,
-          /* :: */[
-            2,
-            /* :: */[
-              3,
-              /* [] */0
+assert_('File "stack_comp_test.ml", line 38, characters 41-48', Caml_obj.caml_equal(to_list(s), /* Nested :: */[
+          1,[
+            2,[
+              3,/* [] */0
             ]
           ]
         ]) && +(List.length(s[/* c */0]) === 3));
 
 assert_('File "stack_comp_test.ml", line 39, characters 10-17', +(Stack.pop(s) === 3));
 
-assert_('File "stack_comp_test.ml", line 39, characters 41-48', Caml_obj.caml_equal(to_list(s), /* :: */[
-          1,
-          /* :: */[
-            2,
-            /* [] */0
+assert_('File "stack_comp_test.ml", line 39, characters 41-48', Caml_obj.caml_equal(to_list(s), /* Nested :: */[
+          1,[
+            2,/* [] */0
           ]
         ]) && +(List.length(s[/* c */0]) === 2));
 
 assert_('File "stack_comp_test.ml", line 40, characters 10-17', +(Stack.pop(s) === 2));
 
-assert_('File "stack_comp_test.ml", line 40, characters 41-48', Caml_obj.caml_equal(to_list(s), /* :: */[
-          1,
-          /* [] */0
+assert_('File "stack_comp_test.ml", line 40, characters 41-48', Caml_obj.caml_equal(to_list(s), /* Nested :: */[
+          1,/* [] */0
         ]) && +(List.length(s[/* c */0]) === 1));
 
 assert_('File "stack_comp_test.ml", line 41, characters 10-17', +(Stack.pop(s) === 1));
@@ -221,27 +193,17 @@ for(var i$1 = 1; i$1 <= 10; ++i$1){
 
 var s2 = /* record */[/* c */s1[/* c */0]];
 
-assert_('File "stack_comp_test.ml", line 79, characters 10-17', Caml_obj.caml_equal(to_list(s1), /* :: */[
-          1,
-          /* :: */[
-            2,
-            /* :: */[
-              3,
-              /* :: */[
-                4,
-                /* :: */[
-                  5,
-                  /* :: */[
-                    6,
-                    /* :: */[
-                      7,
-                      /* :: */[
-                        8,
-                        /* :: */[
-                          9,
-                          /* :: */[
-                            10,
-                            /* [] */0
+assert_('File "stack_comp_test.ml", line 79, characters 10-17', Caml_obj.caml_equal(to_list(s1), /* Nested :: */[
+          1,[
+            2,[
+              3,[
+                4,[
+                  5,[
+                    6,[
+                      7,[
+                        8,[
+                          9,[
+                            10,/* [] */0
                           ]
                         ]
                       ]
@@ -253,27 +215,17 @@ assert_('File "stack_comp_test.ml", line 79, characters 10-17', Caml_obj.caml_eq
           ]
         ]));
 
-assert_('File "stack_comp_test.ml", line 80, characters 10-17', Caml_obj.caml_equal(to_list(s2), /* :: */[
-          1,
-          /* :: */[
-            2,
-            /* :: */[
-              3,
-              /* :: */[
-                4,
-                /* :: */[
-                  5,
-                  /* :: */[
-                    6,
-                    /* :: */[
-                      7,
-                      /* :: */[
-                        8,
-                        /* :: */[
-                          9,
-                          /* :: */[
-                            10,
-                            /* [] */0
+assert_('File "stack_comp_test.ml", line 80, characters 10-17', Caml_obj.caml_equal(to_list(s2), /* Nested :: */[
+          1,[
+            2,[
+              3,[
+                4,[
+                  5,[
+                    6,[
+                      7,[
+                        8,[
+                          9,[
+                            10,/* [] */0
                           ]
                         ]
                       ]
@@ -354,15 +306,11 @@ for(var i$8 = 1; i$8 <= 4; ++i$8){
 
 assert_('File "stack_comp_test.ml", line 126, characters 10-17', +(List.length(s1$2[/* c */0]) === 4));
 
-assert_('File "stack_comp_test.ml", line 126, characters 45-52', Caml_obj.caml_equal(to_list(s1$2), /* :: */[
-          1,
-          /* :: */[
-            2,
-            /* :: */[
-              3,
-              /* :: */[
-                4,
-                /* [] */0
+assert_('File "stack_comp_test.ml", line 126, characters 45-52', Caml_obj.caml_equal(to_list(s1$2), /* Nested :: */[
+          1,[
+            2,[
+              3,[
+                4,/* [] */0
               ]
             ]
           ]
@@ -372,15 +320,11 @@ var s2$2 = /* record */[/* c */s1$2[/* c */0]];
 
 assert_('File "stack_comp_test.ml", line 128, characters 10-17', +(List.length(s1$2[/* c */0]) === 4));
 
-assert_('File "stack_comp_test.ml", line 128, characters 45-52', Caml_obj.caml_equal(to_list(s1$2), /* :: */[
-          1,
-          /* :: */[
-            2,
-            /* :: */[
-              3,
-              /* :: */[
-                4,
-                /* [] */0
+assert_('File "stack_comp_test.ml", line 128, characters 45-52', Caml_obj.caml_equal(to_list(s1$2), /* Nested :: */[
+          1,[
+            2,[
+              3,[
+                4,/* [] */0
               ]
             ]
           ]
@@ -388,15 +332,11 @@ assert_('File "stack_comp_test.ml", line 128, characters 45-52', Caml_obj.caml_e
 
 assert_('File "stack_comp_test.ml", line 129, characters 10-17', +(List.length(s2$2[/* c */0]) === 4));
 
-assert_('File "stack_comp_test.ml", line 129, characters 45-52', Caml_obj.caml_equal(to_list(s2$2), /* :: */[
-          1,
-          /* :: */[
-            2,
-            /* :: */[
-              3,
-              /* :: */[
-                4,
-                /* [] */0
+assert_('File "stack_comp_test.ml", line 129, characters 45-52', Caml_obj.caml_equal(to_list(s2$2), /* Nested :: */[
+          1,[
+            2,[
+              3,[
+                4,/* [] */0
               ]
             ]
           ]

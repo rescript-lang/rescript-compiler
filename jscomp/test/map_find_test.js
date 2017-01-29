@@ -20,11 +20,7 @@ function create(l, x, d, r) {
   var hl = height(l);
   var hr = height(r);
   return /* Node */[
-          l,
-          x,
-          d,
-          r,
-          hl >= hr ? hl + 1 | 0 : hr + 1 | 0
+          l,x,d,r,hl >= hr ? hl + 1 | 0 : hr + 1 | 0
         ];
 }
 
@@ -45,15 +41,13 @@ function bal(l, x, d, r) {
       }
       else {
         throw [
-              Caml_builtin_exceptions.invalid_argument,
-              "Map.bal"
+              Caml_builtin_exceptions.invalid_argument,"Map.bal"
             ];
       }
     }
     else {
       throw [
-            Caml_builtin_exceptions.invalid_argument,
-            "Map.bal"
+            Caml_builtin_exceptions.invalid_argument,"Map.bal"
           ];
     }
   }
@@ -71,25 +65,19 @@ function bal(l, x, d, r) {
       }
       else {
         throw [
-              Caml_builtin_exceptions.invalid_argument,
-              "Map.bal"
+              Caml_builtin_exceptions.invalid_argument,"Map.bal"
             ];
       }
     }
     else {
       throw [
-            Caml_builtin_exceptions.invalid_argument,
-            "Map.bal"
+            Caml_builtin_exceptions.invalid_argument,"Map.bal"
           ];
     }
   }
   else {
     return /* Node */[
-            l,
-            x,
-            d,
-            r,
-            hl >= hr ? hl + 1 | 0 : hr + 1 | 0
+            l,x,d,r,hl >= hr ? hl + 1 | 0 : hr + 1 | 0
           ];
   }
 }
@@ -111,21 +99,13 @@ function add(x, data, param) {
     }
     else {
       return /* Node */[
-              l,
-              x,
-              data,
-              r,
-              param[4]
+              l,x,data,r,param[4]
             ];
     }
   }
   else {
     return /* Node */[
-            /* Empty */0,
-            x,
-            data,
-            /* Empty */0,
-            1
+            /* Empty */0,x,data,/* Empty */0,1
           ];
   }
 }
@@ -152,27 +132,19 @@ function find(x, _param) {
 
 var m = List.fold_left(function (acc, param) {
       return add(param[0], param[1], acc);
-    }, /* Empty */0, /* :: */[
+    }, /* Empty */0, /* Nested :: */[
       /* tuple */[
-        10,
-        /* "a" */97
-      ],
-      /* :: */[
+        10,/* "a" */97
+      ],[
         /* tuple */[
-          3,
-          /* "b" */98
-        ],
-        /* :: */[
+          3,/* "b" */98
+        ],[
           /* tuple */[
-            7,
-            /* "c" */99
-          ],
-          /* :: */[
+            7,/* "c" */99
+          ],[
             /* tuple */[
-              20,
-              /* "d" */100
-            ],
-            /* [] */0
+              20,/* "d" */100
+            ],/* [] */0
           ]
         ]
       ]
@@ -191,11 +163,7 @@ function create$1(l, x, d, r) {
   var hl = height$1(l);
   var hr = height$1(r);
   return /* Node */[
-          l,
-          x,
-          d,
-          r,
-          hl >= hr ? hl + 1 | 0 : hr + 1 | 0
+          l,x,d,r,hl >= hr ? hl + 1 | 0 : hr + 1 | 0
         ];
 }
 
@@ -216,15 +184,13 @@ function bal$1(l, x, d, r) {
       }
       else {
         throw [
-              Caml_builtin_exceptions.invalid_argument,
-              "Map.bal"
+              Caml_builtin_exceptions.invalid_argument,"Map.bal"
             ];
       }
     }
     else {
       throw [
-            Caml_builtin_exceptions.invalid_argument,
-            "Map.bal"
+            Caml_builtin_exceptions.invalid_argument,"Map.bal"
           ];
     }
   }
@@ -242,25 +208,19 @@ function bal$1(l, x, d, r) {
       }
       else {
         throw [
-              Caml_builtin_exceptions.invalid_argument,
-              "Map.bal"
+              Caml_builtin_exceptions.invalid_argument,"Map.bal"
             ];
       }
     }
     else {
       throw [
-            Caml_builtin_exceptions.invalid_argument,
-            "Map.bal"
+            Caml_builtin_exceptions.invalid_argument,"Map.bal"
           ];
     }
   }
   else {
     return /* Node */[
-            l,
-            x,
-            d,
-            r,
-            hl >= hr ? hl + 1 | 0 : hr + 1 | 0
+            l,x,d,r,hl >= hr ? hl + 1 | 0 : hr + 1 | 0
           ];
   }
 }
@@ -282,21 +242,13 @@ function add$1(x, data, param) {
     }
     else {
       return /* Node */[
-              l,
-              x,
-              data,
-              r,
-              param[4]
+              l,x,data,r,param[4]
             ];
     }
   }
   else {
     return /* Node */[
-            /* Empty */0,
-            x,
-            data,
-            /* Empty */0,
-            1
+            /* Empty */0,x,data,/* Empty */0,1
           ];
   }
 }
@@ -323,53 +275,39 @@ function find$1(x, _param) {
 
 var s = List.fold_left(function (acc, param) {
       return add$1(param[0], param[1], acc);
-    }, /* Empty */0, /* :: */[
+    }, /* Empty */0, /* Nested :: */[
       /* tuple */[
-        "10",
-        /* "a" */97
-      ],
-      /* :: */[
+        "10",/* "a" */97
+      ],[
         /* tuple */[
-          "3",
-          /* "b" */98
-        ],
-        /* :: */[
+          "3",/* "b" */98
+        ],[
           /* tuple */[
-            "7",
-            /* "c" */99
-          ],
-          /* :: */[
+            "7",/* "c" */99
+          ],[
             /* tuple */[
-              "20",
-              /* "d" */100
-            ],
-            /* [] */0
+              "20",/* "d" */100
+            ],/* [] */0
           ]
         ]
       ]
     ]);
 
-Mt.from_pair_suites("map_find_test.ml", /* :: */[
+Mt.from_pair_suites("map_find_test.ml", /* Nested :: */[
       /* tuple */[
-        "int",
-        function () {
+        "int",function () {
           return /* Eq */Block.__(0, [
-                    find(10, m),
-                    /* "a" */97
+                    find(10, m),/* "a" */97
                   ]);
         }
-      ],
-      /* :: */[
+      ],[
         /* tuple */[
-          "string",
-          function () {
+          "string",function () {
             return /* Eq */Block.__(0, [
-                      find$1("10", s),
-                      /* "a" */97
+                      find$1("10", s),/* "a" */97
                     ]);
           }
-        ],
-        /* [] */0
+        ],/* [] */0
       ]
     ]);
 

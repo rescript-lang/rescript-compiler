@@ -15,11 +15,7 @@ function bark() {
   return function (x, y) {
     var o = this ;
     console.log(/* tuple */[
-          o.length,
-          o.x,
-          o.y,
-          x,
-          y
+          o.length,o.x,o.y,x,y
         ]);
     return x + y | 0;
   };

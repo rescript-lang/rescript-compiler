@@ -10,11 +10,8 @@ function f(param) {
         return 1;
     default:
       throw [
-            Caml_builtin_exceptions.assert_failure,
-            [
-              "test_string_case.ml",
-              4,
-              9
+            Caml_builtin_exceptions.assert_failure,[
+              "test_string_case.ml",4,9
             ]
           ];
   }

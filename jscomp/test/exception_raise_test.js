@@ -98,25 +98,18 @@ catch (exn$2){
   fff = exn$2[0] === A ? exn$2[1] : 2;
 }
 
-Mt.from_pair_suites("exception_raise_test.ml", /* :: */[
+Mt.from_pair_suites("exception_raise_test.ml", /* Nested :: */[
       /* tuple */[
-        'File "exception_raise_test.ml", line 97, characters 4-11',
-        function () {
+        'File "exception_raise_test.ml", line 97, characters 4-11',function () {
           return /* Eq */Block.__(0, [
                     /* tuple */[
-                      f,
-                      ff,
-                      fff
-                    ],
-                    /* tuple */[
-                      2,
-                      2,
-                      2
+                      f,ff,fff
+                    ],/* tuple */[
+                      2,2,2
                     ]
                   ]);
         }
-      ],
-      /* [] */0
+      ],/* [] */0
     ]);
 
 exports.Local = Local;

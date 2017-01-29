@@ -7,31 +7,25 @@ var Pervasives = require("../../lib/js/pervasives");
 var v = (Number.EPSILON?Number.EPSILON:2.220446049250313e-16);
 
 var suites_000 = /* tuple */[
-  "epsilon",
-  function () {
+  "epsilon",function () {
     return /* Eq */Block.__(0, [
-              Pervasives.epsilon_float,
-              v
+              Pervasives.epsilon_float,v
             ]);
   }
 ];
 
-var suites_001 = /* :: */[
+var suites_001 = /* Nested :: */[
   /* tuple */[
-    "raw_epsilon",
-    function () {
+    "raw_epsilon",function () {
       return /* Eq */Block.__(0, [
-                2.220446049250313e-16,
-                v
+                2.220446049250313e-16,v
               ]);
     }
-  ],
-  /* [] */0
+  ],/* [] */0
 ];
 
-var suites = /* :: */[
-  suites_000,
-  suites_001
+var suites = /* Nested :: */[
+  suites_000,suites_001
 ];
 
 Mt.from_pair_suites("epsilon_test.ml", suites);

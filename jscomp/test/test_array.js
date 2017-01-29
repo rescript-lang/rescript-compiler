@@ -10,33 +10,21 @@ new Array(30);
 var h = $$Array.sub(v, 0, 2);
 
 var hhh = $$Array.append(/* int array */[
-      1,
-      2,
-      3,
-      4
+      1,2,3,4
     ], /* int array */[
-      1,
-      2,
-      3,
-      5
+      1,2,3,5
     ]);
 
-var u = Caml_array.caml_array_concat(/* :: */[
+var u = Caml_array.caml_array_concat(/* Nested :: */[
       /* int array */[
-        1,
-        2
-      ],
-      /* :: */[
+        1,2
+      ],[
         /* int array */[
-          2,
-          3
-        ],
-        /* :: */[
+          2,3
+        ],[
           /* int array */[
-            3,
-            4
-          ],
-          /* [] */0
+            3,4
+          ],/* [] */0
         ]
       ]
     ]);

@@ -3,22 +3,19 @@
 
 function g(x) {
   return /* float array */[
-          3,
-          x
+          3,x
         ];
 }
 
 function ff(v, u) {
   return /* record */[
-          /* v */v,
-          /* u */u
+          /* v */v,/* u */u
         ];
 }
 
 function fff(vv, uu) {
   return /* float array */[
-          vv,
-          uu
+          vv,uu
         ];
 }
 

@@ -20,8 +20,7 @@ function init(v) {
         throw "caml_ba_dim_1 not implemented by bucklescript yet\n";
       }() - 1 | 0; i <= i_finish; ++i){
     v[i] = /* float array */[
-      Caml_int32.imul(i, i),
-      Caml_int32.imul(Caml_int32.imul(i, i), i)
+      Caml_int32.imul(i, i),Caml_int32.imul(Caml_int32.imul(i, i), i)
     ];
   }
   return /* () */0;

@@ -5,21 +5,17 @@ var Block   = require("../../lib/js/block");
 var Complex = require("../../lib/js/complex");
 
 var suites_000 = /* tuple */[
-  "basic_add",
-  function () {
+  "basic_add",function () {
     return /* Eq */Block.__(0, [
               /* float array */[
-                2,
-                2
-              ],
-              Complex.add(Complex.add(Complex.add(Complex.one, Complex.one), Complex.i), Complex.i)
+                2,2
+              ],Complex.add(Complex.add(Complex.add(Complex.one, Complex.one), Complex.i), Complex.i)
             ]);
   }
 ];
 
-var suites = /* :: */[
-  suites_000,
-  /* [] */0
+var suites = /* Nested :: */[
+  suites_000,/* [] */0
 ];
 
 Mt.from_pair_suites("complex_test.ml", suites);

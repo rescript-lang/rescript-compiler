@@ -6,13 +6,11 @@ var Curry          = require("../../lib/js/curry");
 var CamlinternalOO = require("../../lib/js/camlinternalOO");
 
 var shared = [
-  "hi",
-  "add"
+  "hi","add"
 ];
 
 var shared$1 = [
-  "hi",
-  "hello"
+  "hi","hello"
 ];
 
 var $$class = CamlinternalOO.create_table(shared$1);
@@ -24,12 +22,9 @@ var hi = ids[0];
 var hello = ids[1];
 
 CamlinternalOO.set_methods($$class, /* array */[
-      hi,
-      function (_, x, y) {
+      hi,function (_, x, y) {
         return x + y | 0;
-      },
-      hello,
-      function (self$neg1, z) {
+      },hello,function (self$neg1, z) {
         return Curry._3(self$neg1[0][hi], self$neg1, 10, z);
       }
     ]);
@@ -39,13 +34,11 @@ CamlinternalOO.init_class($$class);
 var vv = CamlinternalOO.create_object_opt(0, $$class);
 
 var $$class$1 = CamlinternalOO.create_table([
-      "x",
-      "y"
+      "x","y"
     ]);
 
 var ids$1 = CamlinternalOO.get_method_labels($$class$1, [
-      "y",
-      "x"
+      "y","x"
     ]);
 
 var y = ids$1[0];
@@ -53,12 +46,9 @@ var y = ids$1[0];
 var x = ids$1[1];
 
 CamlinternalOO.set_methods($$class$1, /* array */[
-      x,
-      function () {
+      x,function () {
         return 3;
-      },
-      y,
-      function () {
+      },y,function () {
         return 32;
       }
     ]);
@@ -68,17 +58,11 @@ CamlinternalOO.init_class($$class$1);
 var v = CamlinternalOO.create_object_opt(0, $$class$1);
 
 var $$class$2 = CamlinternalOO.create_table([
-      "hi",
-      "id1",
-      "id2",
-      "hello"
+      "hi","id1","id2","hello"
     ]);
 
 var ids$2 = CamlinternalOO.get_method_labels($$class$2, [
-      "id2",
-      "id1",
-      "hi",
-      "hello"
+      "id2","id1","hi","hello"
     ]);
 
 var id2 = ids$2[0];
@@ -90,20 +74,13 @@ var hi$1 = ids$2[2];
 var hello$1 = ids$2[3];
 
 CamlinternalOO.set_methods($$class$2, /* array */[
-      hi$1,
-      function (_, v, z) {
+      hi$1,function (_, v, z) {
         return v + z | 0;
-      },
-      id1,
-      function () {
+      },id1,function () {
         return 3;
-      },
-      id2,
-      function () {
+      },id2,function () {
         return 4;
-      },
-      hello$1,
-      function (_, v) {
+      },hello$1,function (_, v) {
         return v;
       }
     ]);
@@ -145,12 +122,9 @@ var hi$2 = ids$3[0];
 var add$1 = ids$3[1];
 
 CamlinternalOO.set_methods($$class$5, /* array */[
-      add$1,
-      function (_, x, y) {
+      add$1,function (_, x, y) {
         return x + y | 0;
-      },
-      hi$2,
-      function (self$neg6, x) {
+      },hi$2,function (self$neg6, x) {
         return Curry._3(self$neg6[0][add$1], self$neg6, x, 32);
       }
     ]);
@@ -160,148 +134,106 @@ CamlinternalOO.init_class($$class$5);
 var vvvv = CamlinternalOO.create_object_opt(0, $$class$5);
 
 var suites_000 = /* tuple */[
-  "single_obj",
-  function () {
+  "single_obj",function () {
     return /* Eq */Block.__(0, [
               /* int array */[
-                3,
-                32
-              ],
-              /* int array */[
-                Curry.js1(120, 1, v),
-                Curry.js1(121, 2, v)
+                3,32
+              ],/* int array */[
+                Curry.js1(120, 1, v),Curry.js1(121, 2, v)
               ]
             ]);
   }
 ];
 
-var suites_001 = /* :: */[
+var suites_001 = /* Nested :: */[
   /* tuple */[
-    "single_obj_cache",
-    function () {
+    "single_obj_cache",function () {
       return /* Eq */Block.__(0, [
                 /* int array */[
-                  3,
-                  32
-                ],
-                /* int array */[
-                  Curry.js1(120, 3, v),
-                  Curry.js1(121, 4, v)
+                  3,32
+                ],/* int array */[
+                  Curry.js1(120, 3, v),Curry.js1(121, 4, v)
                 ]
               ]);
     }
-  ],
-  /* :: */[
+  ],[
     /* tuple */[
-      "self_obj",
-      function () {
+      "self_obj",function () {
         return /* Eq */Block.__(0, [
-                  13,
-                  Curry.js2(616641298, 5, vv, 3)
+                  13,Curry.js2(616641298, 5, vv, 3)
                 ]);
       }
-    ],
-    /* :: */[
+    ],[
       /* tuple */[
-        "uu_id",
-        function () {
+        "uu_id",function () {
           return /* Eq */Block.__(0, [
-                    "uu",
-                    Curry.js1(23515, 6, uu)
+                    "uu",Curry.js1(23515, 6, uu)
                   ]);
         }
-      ],
-      /* :: */[
+      ],[
         /* tuple */[
-          "uu_add",
-          function () {
+          "uu_add",function () {
             return /* Eq */Block.__(0, [
-                      Curry.js3(4846113, 7, uuu, 1, 20),
-                      21
+                      Curry.js3(4846113, 7, uuu, 1, 20),21
                     ]);
           }
-        ],
-        /* :: */[
+        ],[
           /* tuple */[
-            "v_add",
-            function () {
+            "v_add",function () {
               return /* Eq */Block.__(0, [
-                        Curry.js3(4846113, 8, vvvv, 3, 7),
-                        10
+                        Curry.js3(4846113, 8, vvvv, 3, 7),10
                       ]);
             }
-          ],
-          /* :: */[
+          ],[
             /* tuple */[
-              "u_id1",
-              function () {
+              "u_id1",function () {
                 return /* Eq */Block.__(0, [
-                          Curry.js1(5243894, 9, u),
-                          3
+                          Curry.js1(5243894, 9, u),3
                         ]);
               }
-            ],
-            /* :: */[
+            ],[
               /* tuple */[
-                "u_id2",
-                function () {
+                "u_id2",function () {
                   return /* Eq */Block.__(0, [
-                            Curry.js1(5243895, 10, u),
-                            4
+                            Curry.js1(5243895, 10, u),4
                           ]);
                 }
-              ],
-              /* :: */[
+              ],[
                 /* tuple */[
-                  "u hi",
-                  function () {
+                  "u hi",function () {
                     return /* Eq */Block.__(0, [
-                              Curry.js3(23297, 11, u, 1, 2),
-                              3
+                              Curry.js3(23297, 11, u, 1, 2),3
                             ]);
                   }
-                ],
-                /* :: */[
+                ],[
                   /* tuple */[
-                    "u hello",
-                    function () {
+                    "u hello",function () {
                       return /* Eq */Block.__(0, [
-                                Curry.js2(616641298, 12, u, 32),
-                                32
+                                Curry.js2(616641298, 12, u, 32),32
                               ]);
                     }
-                  ],
-                  /* :: */[
+                  ],[
                     /* tuple */[
-                      "v hi",
-                      function () {
+                      "v hi",function () {
                         return /* Eq */Block.__(0, [
-                                  Curry.js2(23297, 13, vvvv, 31),
-                                  63
+                                  Curry.js2(23297, 13, vvvv, 31),63
                                 ]);
                       }
-                    ],
-                    /* :: */[
+                    ],[
                       /* tuple */[
-                        "uuu add",
-                        function () {
+                        "uuu add",function () {
                           return /* Eq */Block.__(0, [
-                                    Curry.js3(4846113, 14, uuu, 3, 4),
-                                    7
+                                    Curry.js3(4846113, 14, uuu, 3, 4),7
                                   ]);
                         }
-                      ],
-                      /* :: */[
+                      ],[
                         /* tuple */[
-                          "v x",
-                          function () {
+                          "v x",function () {
                             return /* Eq */Block.__(0, [
-                                      Curry.js1(120, 15, v),
-                                      3
+                                      Curry.js1(120, 15, v),3
                                     ]);
                           }
-                        ],
-                        /* [] */0
+                        ],/* [] */0
                       ]
                     ]
                   ]
@@ -315,9 +247,8 @@ var suites_001 = /* :: */[
   ]
 ];
 
-var suites = /* :: */[
-  suites_000,
-  suites_001
+var suites = /* Nested :: */[
+  suites_000,suites_001
 ];
 
 Mt.from_pair_suites("obj_test.ml", suites);

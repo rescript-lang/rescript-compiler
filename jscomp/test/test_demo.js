@@ -14,16 +14,14 @@ function fib(n) {
 
 function cons(x, y) {
   return /* Cons */[
-          x,
-          y
+          x,y
         ];
 }
 
 function map(f, param) {
   if (param) {
     return /* Cons */[
-            Curry._1(f, param[0]),
-            map(f, param[1])
+            Curry._1(f, param[0]),map(f, param[1])
           ];
   }
   else {

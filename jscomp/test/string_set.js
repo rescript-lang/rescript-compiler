@@ -17,33 +17,25 @@ function split(x, tree) {
       if (c < 0) {
         var match = split(x, l);
         return /* tuple */[
-                match[0],
-                match[1],
-                Set_gen.internal_join(match[2], v, r)
+                match[0],match[1],Set_gen.internal_join(match[2], v, r)
               ];
       }
       else {
         var match$1 = split(x, r);
         return /* tuple */[
-                Set_gen.internal_join(l, v, match$1[0]),
-                match$1[1],
-                match$1[2]
+                Set_gen.internal_join(l, v, match$1[0]),match$1[1],match$1[2]
               ];
       }
     }
     else {
       return /* tuple */[
-              l,
-              /* true */1,
-              r
+              l,/* true */1,r
             ];
     }
   }
   else {
     return /* tuple */[
-            /* Empty */0,
-            /* false */0,
-            /* Empty */0
+            /* Empty */0,/* false */0,/* Empty */0
           ];
   }
 }
@@ -68,10 +60,7 @@ function add(x, tree) {
   }
   else {
     return /* Node */[
-            /* Empty */0,
-            x,
-            /* Empty */0,
-            1
+            /* Empty */0,x,/* Empty */0,1
           ];
   }
 }
@@ -223,10 +212,7 @@ function subset(_s1, _s2) {
         if (c) {
           if (c < 0) {
             if (subset(/* Node */[
-                    l1,
-                    v1,
-                    /* Empty */0,
-                    0
+                    l1,v1,/* Empty */0,0
                   ], l2)) {
               _s1 = r1;
               continue ;
@@ -237,10 +223,7 @@ function subset(_s1, _s2) {
             }
           }
           else if (subset(/* Node */[
-                  /* Empty */0,
-                  v1,
-                  r1,
-                  0
+                  /* Empty */0,v1,r1,0
                 ], r2)) {
             _s1 = l1;
             continue ;

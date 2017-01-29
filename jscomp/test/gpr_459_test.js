@@ -9,17 +9,14 @@ var test_id = [0];
 
 function eq(loc, x, y) {
   test_id[0] = test_id[0] + 1 | 0;
-  suites[0] = /* :: */[
+  suites[0] = /* Nested :: */[
     /* tuple */[
-      loc + (" id " + test_id[0]),
-      function () {
+      loc + (" id " + test_id[0]),function () {
         return /* Eq */Block.__(0, [
-                  x,
-                  y
+                  x,y
                 ]);
       }
-    ],
-    suites[0]
+    ],suites[0]
   ];
   return /* () */0;
 }
@@ -39,13 +36,9 @@ var hh = uu["'x"];
 eq('File "gpr_459_test.ml", line 25, characters 12-19', hh, 3);
 
 eq('File "gpr_459_test.ml", line 28, characters 5-12', /* tuple */[
-      1,
-      2,
-      3
+      1,2,3
     ], /* tuple */[
-      uu2.then,
-      uu2.catch,
-      uu2["'x"]
+      uu2.then,uu2.catch,uu2["'x"]
     ]);
 
 Mt.from_pair_suites("gpr_459_test.ml", suites[0]);

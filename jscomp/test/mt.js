@@ -71,11 +71,8 @@ function from_pair_suites(name, suites) {
                                   }
                                   else {
                                     throw [
-                                          Caml_builtin_exceptions.assert_failure,
-                                          [
-                                            "mt.ml",
-                                            71,
-                                            20
+                                          Caml_builtin_exceptions.assert_failure,[
+                                            "mt.ml",71,20
                                           ]
                                         ];
                                   }

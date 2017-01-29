@@ -6,8 +6,7 @@ var Curry          = require("../../lib/js/curry");
 var CamlinternalOO = require("../../lib/js/camlinternalOO");
 
 var shared = [
-  "move",
-  "get_x"
+  "move","get_x"
 ];
 
 var shared$1 = ["x"];
@@ -18,12 +17,9 @@ function point_init($$class) {
   var get_x = ids[1];
   var x = ids[2];
   CamlinternalOO.set_methods($$class, /* array */[
-        get_x,
-        function (self$neg1) {
+        get_x,function (self$neg1) {
           return self$neg1[x];
-        },
-        move,
-        function (self$neg1, d) {
+        },move,function (self$neg1, d) {
           self$neg1[x] = self$neg1[x] + d | 0;
           return /* () */0;
         }
@@ -53,12 +49,9 @@ function point2_init($$class) {
   var get_x = ids[1];
   var x = ids[2];
   CamlinternalOO.set_methods($$class, /* array */[
-        get_x,
-        function (self$neg2) {
+        get_x,function (self$neg2) {
           return self$neg2[x];
-        },
-        move,
-        function (self$neg2, d) {
+        },move,function (self$neg2, d) {
           self$neg2[x] = self$neg2[x] + d | 0;
           return /* () */0;
         }
@@ -81,47 +74,35 @@ var tmp$1 = Curry._1(point2[0], 0);
 
 var two = Curry.js1(291546447, 5, tmp$1);
 
-Mt.from_pair_suites("class_test.ml", /* :: */[
+Mt.from_pair_suites("class_test.ml", /* Nested :: */[
       /* tuple */[
-        'File "class_test.ml", line 33, characters 4-11',
-        function () {
+        'File "class_test.ml", line 33, characters 4-11',function () {
           return /* Eq */Block.__(0, [
-                    zero,
-                    0
+                    zero,0
                   ]);
         }
-      ],
-      /* :: */[
+      ],[
         /* tuple */[
-          'File "class_test.ml", line 34, characters 4-11',
-          function () {
+          'File "class_test.ml", line 34, characters 4-11',function () {
             return /* Eq */Block.__(0, [
-                      three,
-                      3
+                      three,3
                     ]);
           }
-        ],
-        /* :: */[
+        ],[
           /* tuple */[
-            'File "class_test.ml", line 35, characters 4-11',
-            function () {
+            'File "class_test.ml", line 35, characters 4-11',function () {
               return /* Eq */Block.__(0, [
-                        one,
-                        1
+                        one,1
                       ]);
             }
-          ],
-          /* :: */[
+          ],[
             /* tuple */[
-              'File "class_test.ml", line 36, characters 4-11',
-              function () {
+              'File "class_test.ml", line 36, characters 4-11',function () {
                 return /* Eq */Block.__(0, [
-                          two,
-                          2
+                          two,2
                         ]);
               }
-            ],
-            /* [] */0
+            ],/* [] */0
           ]
         ]
       ]

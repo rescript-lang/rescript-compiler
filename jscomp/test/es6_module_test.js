@@ -8,33 +8,25 @@ function length() {
   return 3;
 }
 
-Mt.from_pair_suites("es6_module_test.ml", /* :: */[
+Mt.from_pair_suites("es6_module_test.ml", /* Nested :: */[
       /* tuple */[
-        "list_length",
-        function () {
+        "list_length",function () {
           return /* Eq */Block.__(0, [
-                    List.length(/* :: */[
-                          1,
-                          /* :: */[
-                            2,
-                            /* [] */0
+                    List.length(/* Nested :: */[
+                          1,[
+                            2,/* [] */0
                           ]
-                        ]),
-                    2
+                        ]),2
                   ]);
         }
-      ],
-      /* :: */[
+      ],[
         /* tuple */[
-          "length",
-          function () {
+          "length",function () {
             return /* Eq */Block.__(0, [
-                      3,
-                      3
+                      3,3
                     ]);
           }
-        ],
-        /* [] */0
+        ],/* [] */0
       ]
     ]);
 

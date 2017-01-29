@@ -6,17 +6,12 @@ var Block      = require("../../lib/js/block");
 var Ext_string = require("./ext_string");
 
 var suites_000 = /* tuple */[
-  "split",
-  function () {
+  "split",function () {
     return /* Eq */Block.__(0, [
-              Ext_string.split(/* Some */[/* true */1], "hihi", /* "i" */105),
-              /* :: */[
-                "h",
-                /* :: */[
-                  "h",
-                  /* :: */[
-                    "",
-                    /* [] */0
+              Ext_string.split(/* Some */[/* true */1], "hihi", /* "i" */105),/* Nested :: */[
+                "h",[
+                  "h",[
+                    "",/* [] */0
                   ]
                 ]
               ]
@@ -24,55 +19,40 @@ var suites_000 = /* tuple */[
   }
 ];
 
-var suites_001 = /* :: */[
+var suites_001 = /* Nested :: */[
   /* tuple */[
-    "split_non_empty",
-    function () {
+    "split_non_empty",function () {
       return /* Eq */Block.__(0, [
-                Ext_string.split(/* None */0, "hihi", /* "i" */105),
-                /* :: */[
-                  "h",
-                  /* :: */[
-                    "h",
-                    /* [] */0
+                Ext_string.split(/* None */0, "hihi", /* "i" */105),/* Nested :: */[
+                  "h",[
+                    "h",/* [] */0
                   ]
                 ]
               ]);
     }
-  ],
-  /* :: */[
+  ],[
     /* tuple */[
-      "split_empty",
-      function () {
+      "split_empty",function () {
         return /* Eq */Block.__(0, [
-                  Ext_string.split(/* Some */[/* true */1], "", /* "i" */105),
-                  /* [] */0
+                  Ext_string.split(/* Some */[/* true */1], "", /* "i" */105),/* [] */0
                 ]);
       }
-    ],
-    /* :: */[
+    ],[
       /* tuple */[
-        "split_normal",
-        function () {
+        "split_normal",function () {
           return /* Eq */Block.__(0, [
-                    Ext_string.split(/* Some */[/* true */1], "h i i", /* " " */32),
-                    /* :: */[
-                      "h",
-                      /* :: */[
-                        "i",
-                        /* :: */[
-                          "i",
-                          /* [] */0
+                    Ext_string.split(/* Some */[/* true */1], "h i i", /* " " */32),/* Nested :: */[
+                      "h",[
+                        "i",[
+                          "i",/* [] */0
                         ]
                       ]
                     ]
                   ]);
         }
-      ],
-      /* :: */[
+      ],[
         /* tuple */[
-          "split_by",
-          function () {
+          "split_by",function () {
             return /* Eq */Block.__(0, [
                       List.filter(function (s) {
                               return +(s !== "");
@@ -83,32 +63,25 @@ var suites_001 = /* :: */[
                                 else {
                                   return +(x === /* "\t" */9);
                                 }
-                              }, "h hgso hgso \t hi")),
-                      /* :: */[
-                        "h",
-                        /* :: */[
-                          "hgso",
-                          /* :: */[
-                            "hgso",
-                            /* :: */[
-                              "hi",
-                              /* [] */0
+                              }, "h hgso hgso \t hi")),/* Nested :: */[
+                        "h",[
+                          "hgso",[
+                            "hgso",[
+                              "hi",/* [] */0
                             ]
                           ]
                         ]
                       ]
                     ]);
           }
-        ],
-        /* [] */0
+        ],/* [] */0
       ]
     ]
   ]
 ];
 
-var suites = /* :: */[
-  suites_000,
-  suites_001
+var suites = /* Nested :: */[
+  suites_000,suites_001
 ];
 
 Mt.from_pair_suites("a_string_test.ml", suites);

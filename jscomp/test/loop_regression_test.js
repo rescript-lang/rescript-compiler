@@ -21,18 +21,15 @@ function f() {
 }
 
 var suites_000 = /* tuple */[
-  "sum",
-  function () {
+  "sum",function () {
     return /* Eq */Block.__(0, [
-              55,
-              f(/* () */0)
+              55,f(/* () */0)
             ]);
   }
 ];
 
-var suites = /* :: */[
-  suites_000,
-  /* [] */0
+var suites = /* Nested :: */[
+  suites_000,/* [] */0
 ];
 
 Mt.from_pair_suites("loop_regression_test.ml", suites);

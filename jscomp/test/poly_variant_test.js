@@ -10,17 +10,14 @@ var test_id = [0];
 
 function eq(loc, x, y) {
   test_id[0] = test_id[0] + 1 | 0;
-  suites[0] = /* :: */[
+  suites[0] = /* Nested :: */[
     /* tuple */[
-      loc + (" id " + test_id[0]),
-      function () {
+      loc + (" id " + test_id[0]),function () {
         return /* Eq */Block.__(0, [
-                  x,
-                  y
+                  x,y
                 ]);
       }
-    ],
-    suites[0]
+    ],suites[0]
   ];
   return /* () */0;
 }
@@ -48,35 +45,25 @@ function hey_int (option){
 ;
 
 var uu = /* array */[
-  hey_string("on_open"),
-  hey_string("on_closed"),
-  hey_string("in")
+  hey_string("on_open"),hey_string("on_closed"),hey_string("in")
 ];
 
 var vv = /* int array */[
-  hey_int(3),
-  hey_int(0),
-  hey_int(4)
+  hey_int(3),hey_int(0),hey_int(4)
 ];
 
 eq('File "poly_variant_test.ml", line 58, characters 5-12', vv, /* int array */[
-      3,
-      0,
-      4
+      3,0,4
     ]);
 
 eq('File "poly_variant_test.ml", line 59, characters 5-12', /* tuple */[
-      hey_int(5),
-      hey_int(6)
+      hey_int(5),hey_int(6)
     ], /* tuple */[
-      5,
-      6
+      5,6
     ]);
 
 eq('File "poly_variant_test.ml", line 60, characters 5-12', uu, /* array */[
-      "on_open",
-      "on_closed",
-      "in"
+      "on_open","on_closed","in"
     ]);
 
 hey_string("on_closed");

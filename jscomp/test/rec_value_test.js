@@ -10,9 +10,8 @@ var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
 
 var x = [];
 
-Caml_obj.caml_update_dummy(x, /* :: */[
-      1,
-      x
+Caml_obj.caml_update_dummy(x, /* Nested :: */[
+      1,x
     ]);
 
 var a = [];
@@ -21,26 +20,22 @@ var b = [];
 
 var c = [];
 
-Caml_obj.caml_update_dummy(a, /* :: */[
-      2,
-      b
+Caml_obj.caml_update_dummy(a, /* Nested :: */[
+      2,b
     ]);
 
-Caml_obj.caml_update_dummy(b, /* :: */[
-      3,
-      c
+Caml_obj.caml_update_dummy(b, /* Nested :: */[
+      3,c
     ]);
 
-Caml_obj.caml_update_dummy(c, /* :: */[
-      3,
-      a
+Caml_obj.caml_update_dummy(c, /* Nested :: */[
+      3,a
     ]);
 
 var xx = [];
 
-Caml_obj.caml_update_dummy(xx, /* :: */[
-      1,
-      xx
+Caml_obj.caml_update_dummy(xx, /* Nested :: */[
+      1,xx
     ]);
 
 function naive(n) {
@@ -60,11 +55,8 @@ var h = Block.__(250, [fib]);
 
 var v = [function () {
     throw [
-          Caml_builtin_exceptions.assert_failure,
-          [
-            "rec_value_test.ml",
-            23,
-            24
+          Caml_builtin_exceptions.assert_failure,[
+            "rec_value_test.ml",23,24
           ]
         ];
   }];
@@ -94,16 +86,13 @@ function fib(n) {
 
 var ys = [];
 
-Caml_obj.caml_update_dummy(ys, /* :: */[
-      1,
-      ys
+Caml_obj.caml_update_dummy(ys, /* Nested :: */[
+      1,ys
     ]);
 
-var xs_000 = /* :: */[
-  2,
-  /* :: */[
-    List.hd(ys),
-    /* [] */0
+var xs_000 = /* Nested :: */[
+  2,[
+    List.hd(ys),/* [] */0
   ]
 ];
 
@@ -111,14 +100,12 @@ function zs() {
   return List.hd(xs[0]);
 }
 
-var xs_000$1 = /* :: */[
-  2,
-  /* [] */0
+var xs_000$1 = /* Nested :: */[
+  2,/* [] */0
 ];
 
 var xs = /* tuple */[
-  xs_000$1,
-  zs
+  xs_000$1,zs
 ];
 
 function fib2(n) {
@@ -194,43 +181,34 @@ function sum(_acc, _n) {
   };
 }
 
-var fake_v = /* :: */[
-  1,
-  /* :: */[
-    2,
-    /* [] */0
+var fake_v = /* Nested :: */[
+  1,[
+    2,/* [] */0
   ]
 ];
 
-var fake_y = /* :: */[
-  2,
-  /* :: */[
-    3,
-    /* [] */0
+var fake_y = /* Nested :: */[
+  2,[
+    3,/* [] */0
   ]
 ];
 
-var fake_z = /* :: */[
-  1,
-  fake_y
+var fake_z = /* Nested :: */[
+  1,fake_y
 ];
 
-var fake_y2 = /* :: */[
-  2,
-  /* :: */[
-    3,
-    /* [] */0
+var fake_y2 = /* Nested :: */[
+  2,[
+    3,/* [] */0
   ]
 ];
 
-var fake_z2_001 = /* :: */[
-  sum(0, 10),
-  fake_y2
+var fake_z2_001 = /* Nested :: */[
+  sum(0, 10),fake_y2
 ];
 
-var fake_z2 = /* :: */[
-  1,
-  fake_z2_001
+var fake_z2 = /* Nested :: */[
+  1,fake_z2_001
 ];
 
 var rec_variant_b = [];
@@ -238,33 +216,28 @@ var rec_variant_b = [];
 var rec_variant_a = [];
 
 Caml_obj.caml_update_dummy(rec_variant_b, /* B */Block.__(0, [
-        "gho",
-        function () {
+        "gho",function () {
           return rec_variant_a;
         }
       ]));
 
 Caml_obj.caml_update_dummy(rec_variant_a, /* A */Block.__(1, [
-        3,
-        function () {
+        3,function () {
           return rec_variant_b;
         }
       ]));
 
 var suites_000 = /* tuple */[
-  "hd",
-  function () {
+  "hd",function () {
     return /* Eq */Block.__(0, [
-              1,
-              List.hd(List.tl(x))
+              1,List.hd(List.tl(x))
             ]);
   }
 ];
 
-var suites_001 = /* :: */[
+var suites_001 = /* Nested :: */[
   /* tuple */[
-    "mutual",
-    function () {
+    "mutual",function () {
       var $js;
       if (a) {
         var match = a[1];
@@ -273,185 +246,131 @@ var suites_001 = /* :: */[
         }
         else {
           throw [
-                Caml_builtin_exceptions.assert_failure,
-                [
-                  "rec_value_test.ml",
-                  108,
-                  2
+                Caml_builtin_exceptions.assert_failure,[
+                  "rec_value_test.ml",108,2
                 ]
               ];
         }
       }
       else {
         throw [
-              Caml_builtin_exceptions.assert_failure,
-              [
-                "rec_value_test.ml",
-                108,
-                2
+              Caml_builtin_exceptions.assert_failure,[
+                "rec_value_test.ml",108,2
               ]
             ];
       }
       return /* Eq */Block.__(0, [
-                3,
-                $js
+                3,$js
               ]);
     }
-  ],
-  /* :: */[
+  ],[
     /* tuple */[
-      "rec_sum",
-      function () {
+      "rec_sum",function () {
         return /* Eq */Block.__(0, [
-                  55,
-                  sum(0, 10)
+                  55,sum(0, 10)
                 ]);
       }
-    ],
-    /* :: */[
+    ],[
       /* tuple */[
-        'File "rec_value_test.ml", line 111, characters 2-9',
-        function () {
+        'File "rec_value_test.ml", line 111, characters 2-9',function () {
           return /* Eq */Block.__(0, [
-                    /* :: */[
-                      1,
-                      /* :: */[
-                        2,
-                        /* [] */0
+                    /* Nested :: */[
+                      1,[
+                        2,/* [] */0
                       ]
-                    ],
-                    fake_v
+                    ],fake_v
                   ]);
         }
-      ],
-      /* :: */[
+      ],[
         /* tuple */[
-          'File "rec_value_test.ml", line 114, characters 2-9',
-          function () {
+          'File "rec_value_test.ml", line 114, characters 2-9',function () {
             return /* Eq */Block.__(0, [
-                      /* :: */[
-                        2,
-                        /* :: */[
-                          3,
-                          /* [] */0
+                      /* Nested :: */[
+                        2,[
+                          3,/* [] */0
                         ]
-                      ],
-                      fake_y
+                      ],fake_y
                     ]);
           }
-        ],
-        /* :: */[
+        ],[
           /* tuple */[
-            'File "rec_value_test.ml", line 117, characters 2-9',
-            function () {
+            'File "rec_value_test.ml", line 117, characters 2-9',function () {
               return /* Eq */Block.__(0, [
-                        /* :: */[
-                          1,
-                          /* :: */[
-                            2,
-                            /* :: */[
-                              3,
-                              /* [] */0
+                        /* Nested :: */[
+                          1,[
+                            2,[
+                              3,/* [] */0
                             ]
                           ]
-                        ],
-                        fake_z
+                        ],fake_z
                       ]);
             }
-          ],
-          /* :: */[
+          ],[
             /* tuple */[
-              'File "rec_value_test.ml", line 120, characters 2-9',
-              function () {
+              'File "rec_value_test.ml", line 120, characters 2-9',function () {
                 return /* Eq */Block.__(0, [
-                          /* :: */[
-                            1,
-                            /* :: */[
-                              55,
-                              /* :: */[
-                                2,
-                                /* :: */[
-                                  3,
-                                  /* [] */0
+                          /* Nested :: */[
+                            1,[
+                              55,[
+                                2,[
+                                  3,/* [] */0
                                 ]
                               ]
                             ]
-                          ],
-                          fake_z2
+                          ],fake_z2
                         ]);
               }
-            ],
-            /* :: */[
+            ],[
               /* tuple */[
-                'File "rec_value_test.ml", line 123, characters 2-9',
-                function () {
+                'File "rec_value_test.ml", line 123, characters 2-9',function () {
                   return /* Eq */Block.__(0, [
-                            /* :: */[
-                              2,
-                              /* :: */[
-                                3,
-                                /* [] */0
+                            /* Nested :: */[
+                              2,[
+                                3,/* [] */0
                               ]
-                            ],
-                            fake_y2
+                            ],fake_y2
                           ]);
                 }
-              ],
-              /* :: */[
+              ],[
                 /* tuple */[
-                  'File "rec_value_test.ml", line 126, characters 2-9',
-                  function () {
+                  'File "rec_value_test.ml", line 126, characters 2-9',function () {
                     return /* Eq */Block.__(0, [
-                              3,
-                              3
+                              3,3
                             ]);
                   }
-                ],
-                /* :: */[
+                ],[
                   /* tuple */[
-                    'File "rec_value_test.ml", line 129, characters 2-9',
-                    function () {
+                    'File "rec_value_test.ml", line 129, characters 2-9',function () {
                       if (rec_variant_b.tag) {
                         throw [
-                              Caml_builtin_exceptions.assert_failure,
-                              [
-                                "rec_value_test.ml",
-                                132,
-                                11
+                              Caml_builtin_exceptions.assert_failure,[
+                                "rec_value_test.ml",132,11
                               ]
                             ];
                       }
                       else {
                         return /* Eq */Block.__(0, [
-                                  Curry._1(rec_variant_b[1], /* () */0),
-                                  rec_variant_a
+                                  Curry._1(rec_variant_b[1], /* () */0),rec_variant_a
                                 ]);
                       }
                     }
-                  ],
-                  /* :: */[
+                  ],[
                     /* tuple */[
-                      'File "rec_value_test.ml", line 134, characters 2-9',
-                      function () {
+                      'File "rec_value_test.ml", line 134, characters 2-9',function () {
                         if (rec_variant_a.tag) {
                           return /* Eq */Block.__(0, [
-                                    Curry._1(rec_variant_a[1], /* () */0),
-                                    rec_variant_b
+                                    Curry._1(rec_variant_a[1], /* () */0),rec_variant_b
                                   ]);
                         }
                         else {
                           throw [
-                                Caml_builtin_exceptions.assert_failure,
-                                [
-                                  "rec_value_test.ml",
-                                  137,
-                                  11
+                                Caml_builtin_exceptions.assert_failure,[
+                                  "rec_value_test.ml",137,11
                                 ]
                               ];
                         }
                       }
-                    ],
-                    /* [] */0
+                    ],/* [] */0
                   ]
                 ]
               ]
@@ -463,9 +382,8 @@ var suites_001 = /* :: */[
   ]
 ];
 
-var suites = /* :: */[
-  suites_000,
-  suites_001
+var suites = /* Nested :: */[
+  suites_000,suites_001
 ];
 
 function fake_minus(n) {

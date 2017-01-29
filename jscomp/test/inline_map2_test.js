@@ -21,20 +21,12 @@ function Make(Ord) {
     var hl = height(l);
     var hr = height(r);
     return /* Node */[
-            l,
-            x,
-            d,
-            r,
-            hl >= hr ? hl + 1 | 0 : hr + 1 | 0
+            l,x,d,r,hl >= hr ? hl + 1 | 0 : hr + 1 | 0
           ];
   };
   var singleton = function (x, d) {
     return /* Node */[
-            /* Empty */0,
-            x,
-            d,
-            /* Empty */0,
-            1
+            /* Empty */0,x,d,/* Empty */0,1
           ];
   };
   var bal = function (l, x, d, r) {
@@ -54,15 +46,13 @@ function Make(Ord) {
         }
         else {
           throw [
-                Caml_builtin_exceptions.invalid_argument,
-                "Map.bal"
+                Caml_builtin_exceptions.invalid_argument,"Map.bal"
               ];
         }
       }
       else {
         throw [
-              Caml_builtin_exceptions.invalid_argument,
-              "Map.bal"
+              Caml_builtin_exceptions.invalid_argument,"Map.bal"
             ];
       }
     }
@@ -80,25 +70,19 @@ function Make(Ord) {
         }
         else {
           throw [
-                Caml_builtin_exceptions.invalid_argument,
-                "Map.bal"
+                Caml_builtin_exceptions.invalid_argument,"Map.bal"
               ];
         }
       }
       else {
         throw [
-              Caml_builtin_exceptions.invalid_argument,
-              "Map.bal"
+              Caml_builtin_exceptions.invalid_argument,"Map.bal"
             ];
       }
     }
     else {
       return /* Node */[
-              l,
-              x,
-              d,
-              r,
-              hl >= hr ? hl + 1 | 0 : hr + 1 | 0
+              l,x,d,r,hl >= hr ? hl + 1 | 0 : hr + 1 | 0
             ];
     }
   };
@@ -127,21 +111,13 @@ function Make(Ord) {
       }
       else {
         return /* Node */[
-                l,
-                x,
-                data,
-                r,
-                param[4]
+                l,x,data,r,param[4]
               ];
       }
     }
     else {
       return /* Node */[
-              /* Empty */0,
-              x,
-              data,
-              /* Empty */0,
-              1
+              /* Empty */0,x,data,/* Empty */0,1
             ];
     }
   };
@@ -195,8 +171,7 @@ function Make(Ord) {
         }
         else {
           return /* tuple */[
-                  param[1],
-                  param[2]
+                  param[1],param[2]
                 ];
         }
       }
@@ -217,8 +192,7 @@ function Make(Ord) {
         }
         else {
           return /* tuple */[
-                  param[1],
-                  param[2]
+                  param[1],param[2]
                 ];
         }
       }
@@ -239,8 +213,7 @@ function Make(Ord) {
     }
     else {
       throw [
-            Caml_builtin_exceptions.invalid_argument,
-            "Map.remove_min_elt"
+            Caml_builtin_exceptions.invalid_argument,"Map.remove_min_elt"
           ];
     }
   };
@@ -301,11 +274,7 @@ function Make(Ord) {
       var d$prime = Curry._1(f, param[2]);
       var r$prime = map(f, param[3]);
       return /* Node */[
-              l$prime,
-              param[1],
-              d$prime,
-              r$prime,
-              param[4]
+              l$prime,param[1],d$prime,r$prime,param[4]
             ];
     }
     else {
@@ -319,11 +288,7 @@ function Make(Ord) {
       var d$prime = Curry._2(f, v, param[2]);
       var r$prime = mapi(f, param[3]);
       return /* Node */[
-              l$prime,
-              v,
-              d$prime,
-              r$prime,
-              param[4]
+              l$prime,v,d$prime,r$prime,param[4]
             ];
     }
     else {
@@ -461,33 +426,25 @@ function Make(Ord) {
         if (c < 0) {
           var match = split(x, l);
           return /* tuple */[
-                  match[0],
-                  match[1],
-                  join(match[2], v, d, r)
+                  match[0],match[1],join(match[2], v, d, r)
                 ];
         }
         else {
           var match$1 = split(x, r);
           return /* tuple */[
-                  join(l, v, d, match$1[0]),
-                  match$1[1],
-                  match$1[2]
+                  join(l, v, d, match$1[0]),match$1[1],match$1[2]
                 ];
         }
       }
       else {
         return /* tuple */[
-                l,
-                /* Some */[d],
-                r
+                l,/* Some */[d],r
               ];
       }
     }
     else {
       return /* tuple */[
-              /* Empty */0,
-              /* None */0,
-              /* Empty */0
+              /* Empty */0,/* None */0,/* Empty */0
             ];
     }
   };
@@ -517,11 +474,8 @@ function Make(Ord) {
       }
       else {
         throw [
-              Caml_builtin_exceptions.assert_failure,
-              [
-                "inline_map2_test.ml",
-                270,
-                10
+              Caml_builtin_exceptions.assert_failure,[
+                "inline_map2_test.ml",270,10
               ]
             ];
       }
@@ -559,21 +513,18 @@ function Make(Ord) {
       var rt = match$1[0];
       if (pvd) {
         return /* tuple */[
-                join(lt, v, d, rt),
-                concat(lf, rf)
+                join(lt, v, d, rt),concat(lf, rf)
               ];
       }
       else {
         return /* tuple */[
-                concat(lt, rt),
-                join(lf, v, d, rf)
+                concat(lt, rt),join(lf, v, d, rf)
               ];
       }
     }
     else {
       return /* tuple */[
-              /* Empty */0,
-              /* Empty */0
+              /* Empty */0,/* Empty */0
             ];
     }
   };
@@ -583,10 +534,7 @@ function Make(Ord) {
       var m = _m;
       if (m) {
         _e = /* More */[
-          m[1],
-          m[2],
-          m[3],
-          e
+          m[1],m[2],m[3],e
         ];
         _m = m[0];
         continue ;
@@ -681,12 +629,10 @@ function Make(Ord) {
       var accu = _accu;
       if (param) {
         _param = param[0];
-        _accu = /* :: */[
+        _accu = /* Nested :: */[
           /* tuple */[
-            param[1],
-            param[2]
-          ],
-          bindings_aux(accu, param[3])
+            param[1],param[2]
+          ],bindings_aux(accu, param[3])
         ];
         continue ;
         
@@ -700,41 +646,7 @@ function Make(Ord) {
     return bindings_aux(/* [] */0, s);
   };
   return /* module */[
-          /* height */height,
-          /* create */create,
-          /* singleton */singleton,
-          /* bal */bal,
-          /* empty : Empty */0,
-          /* is_empty */is_empty,
-          /* add */add,
-          /* find */find,
-          /* mem */mem,
-          /* min_binding */min_binding,
-          /* max_binding */max_binding,
-          /* remove_min_binding */remove_min_binding,
-          /* remove */remove,
-          /* iter */iter,
-          /* map */map,
-          /* mapi */mapi,
-          /* fold */fold,
-          /* for_all */for_all,
-          /* exists */exists,
-          /* add_min_binding */add_min_binding,
-          /* add_max_binding */add_max_binding,
-          /* join */join,
-          /* concat */concat,
-          /* concat_or_join */concat_or_join,
-          /* split */split,
-          /* merge */merge,
-          /* filter */filter,
-          /* partition */partition,
-          /* cons_enum */cons_enum,
-          /* compare */compare,
-          /* equal */equal,
-          /* cardinal */cardinal,
-          /* bindings_aux */bindings_aux,
-          /* bindings */bindings,
-          /* choose */min_binding
+          /* height */height,/* create */create,/* singleton */singleton,/* bal */bal,/* empty : Empty */0,/* is_empty */is_empty,/* add */add,/* find */find,/* mem */mem,/* min_binding */min_binding,/* max_binding */max_binding,/* remove_min_binding */remove_min_binding,/* remove */remove,/* iter */iter,/* map */map,/* mapi */mapi,/* fold */fold,/* for_all */for_all,/* exists */exists,/* add_min_binding */add_min_binding,/* add_max_binding */add_max_binding,/* join */join,/* concat */concat,/* concat_or_join */concat_or_join,/* split */split,/* merge */merge,/* filter */filter,/* partition */partition,/* cons_enum */cons_enum,/* compare */compare,/* equal */equal,/* cardinal */cardinal,/* bindings_aux */bindings_aux,/* bindings */bindings,/* choose */min_binding
         ];
 }
 
@@ -751,21 +663,13 @@ function create(l, x, d, r) {
   var hl = height(l);
   var hr = height(r);
   return /* Node */[
-          l,
-          x,
-          d,
-          r,
-          hl >= hr ? hl + 1 | 0 : hr + 1 | 0
+          l,x,d,r,hl >= hr ? hl + 1 | 0 : hr + 1 | 0
         ];
 }
 
 function singleton(x, d) {
   return /* Node */[
-          /* Empty */0,
-          x,
-          d,
-          /* Empty */0,
-          1
+          /* Empty */0,x,d,/* Empty */0,1
         ];
 }
 
@@ -786,15 +690,13 @@ function bal(l, x, d, r) {
       }
       else {
         throw [
-              Caml_builtin_exceptions.invalid_argument,
-              "Map.bal"
+              Caml_builtin_exceptions.invalid_argument,"Map.bal"
             ];
       }
     }
     else {
       throw [
-            Caml_builtin_exceptions.invalid_argument,
-            "Map.bal"
+            Caml_builtin_exceptions.invalid_argument,"Map.bal"
           ];
     }
   }
@@ -812,25 +714,19 @@ function bal(l, x, d, r) {
       }
       else {
         throw [
-              Caml_builtin_exceptions.invalid_argument,
-              "Map.bal"
+              Caml_builtin_exceptions.invalid_argument,"Map.bal"
             ];
       }
     }
     else {
       throw [
-            Caml_builtin_exceptions.invalid_argument,
-            "Map.bal"
+            Caml_builtin_exceptions.invalid_argument,"Map.bal"
           ];
     }
   }
   else {
     return /* Node */[
-            l,
-            x,
-            d,
-            r,
-            hl >= hr ? hl + 1 | 0 : hr + 1 | 0
+            l,x,d,r,hl >= hr ? hl + 1 | 0 : hr + 1 | 0
           ];
   }
 }
@@ -861,21 +757,13 @@ function add(x, data, param) {
     }
     else {
       return /* Node */[
-              l,
-              x,
-              data,
-              r,
-              param[4]
+              l,x,data,r,param[4]
             ];
     }
   }
   else {
     return /* Node */[
-            /* Empty */0,
-            x,
-            data,
-            /* Empty */0,
-            1
+            /* Empty */0,x,data,/* Empty */0,1
           ];
   }
 }
@@ -932,8 +820,7 @@ function min_binding(_param) {
       }
       else {
         return /* tuple */[
-                param[1],
-                param[2]
+                param[1],param[2]
               ];
       }
     }
@@ -955,8 +842,7 @@ function max_binding(_param) {
       }
       else {
         return /* tuple */[
-                param[1],
-                param[2]
+                param[1],param[2]
               ];
       }
     }
@@ -983,8 +869,7 @@ function remove_min_binding(param) {
   }
   else {
     throw [
-          Caml_builtin_exceptions.invalid_argument,
-          "Map.remove_min_elt"
+          Caml_builtin_exceptions.invalid_argument,"Map.remove_min_elt"
         ];
   }
 }
@@ -1053,11 +938,7 @@ function map(f, param) {
     var d$prime = Curry._1(f, param[2]);
     var r$prime = map(f, param[3]);
     return /* Node */[
-            l$prime,
-            param[1],
-            d$prime,
-            r$prime,
-            param[4]
+            l$prime,param[1],d$prime,r$prime,param[4]
           ];
   }
   else {
@@ -1072,11 +953,7 @@ function mapi(f, param) {
     var d$prime = Curry._2(f, v, param[2]);
     var r$prime = mapi(f, param[3]);
     return /* Node */[
-            l$prime,
-            v,
-            d$prime,
-            r$prime,
-            param[4]
+            l$prime,v,d$prime,r$prime,param[4]
           ];
   }
   else {
@@ -1228,33 +1105,25 @@ function split(x, param) {
       if (c < 0) {
         var match = split(x, l);
         return /* tuple */[
-                match[0],
-                match[1],
-                join(match[2], v, d, r)
+                match[0],match[1],join(match[2], v, d, r)
               ];
       }
       else {
         var match$1 = split(x, r);
         return /* tuple */[
-                join(l, v, d, match$1[0]),
-                match$1[1],
-                match$1[2]
+                join(l, v, d, match$1[0]),match$1[1],match$1[2]
               ];
       }
     }
     else {
       return /* tuple */[
-              l,
-              /* Some */[d],
-              r
+              l,/* Some */[d],r
             ];
     }
   }
   else {
     return /* tuple */[
-            /* Empty */0,
-            /* None */0,
-            /* Empty */0
+            /* Empty */0,/* None */0,/* Empty */0
           ];
   }
 }
@@ -1285,11 +1154,8 @@ function merge(f, s1, s2) {
     }
     else {
       throw [
-            Caml_builtin_exceptions.assert_failure,
-            [
-              "inline_map2_test.ml",
-              270,
-              10
+            Caml_builtin_exceptions.assert_failure,[
+              "inline_map2_test.ml",270,10
             ]
           ];
     }
@@ -1329,21 +1195,18 @@ function partition(p, param) {
     var rt = match$1[0];
     if (pvd) {
       return /* tuple */[
-              join(lt, v, d, rt),
-              concat(lf, rf)
+              join(lt, v, d, rt),concat(lf, rf)
             ];
     }
     else {
       return /* tuple */[
-              concat(lt, rt),
-              join(lf, v, d, rf)
+              concat(lt, rt),join(lf, v, d, rf)
             ];
     }
   }
   else {
     return /* tuple */[
-            /* Empty */0,
-            /* Empty */0
+            /* Empty */0,/* Empty */0
           ];
   }
 }
@@ -1354,10 +1217,7 @@ function cons_enum(_m, _e) {
     var m = _m;
     if (m) {
       _e = /* More */[
-        m[1],
-        m[2],
-        m[3],
-        e
+        m[1],m[2],m[3],e
       ];
       _m = m[0];
       continue ;
@@ -1458,12 +1318,10 @@ function bindings_aux(_accu, _param) {
     var accu = _accu;
     if (param) {
       _param = param[0];
-      _accu = /* :: */[
+      _accu = /* Nested :: */[
         /* tuple */[
-          param[1],
-          param[2]
-        ],
-        bindings_aux(accu, param[3])
+          param[1],param[2]
+        ],bindings_aux(accu, param[3])
       ];
       continue ;
       
@@ -1479,66 +1337,24 @@ function bindings(s) {
 }
 
 var IntMap = /* module */[
-  /* height */height,
-  /* create */create,
-  /* singleton */singleton,
-  /* bal */bal,
-  /* empty : Empty */0,
-  /* is_empty */is_empty,
-  /* add */add,
-  /* find */find,
-  /* mem */mem,
-  /* min_binding */min_binding,
-  /* max_binding */max_binding,
-  /* remove_min_binding */remove_min_binding,
-  /* remove */remove,
-  /* iter */iter,
-  /* map */map,
-  /* mapi */mapi,
-  /* fold */fold,
-  /* for_all */for_all,
-  /* exists */exists,
-  /* add_min_binding */add_min_binding,
-  /* add_max_binding */add_max_binding,
-  /* join */join,
-  /* concat */concat,
-  /* concat_or_join */concat_or_join,
-  /* split */split,
-  /* merge */merge,
-  /* filter */filter,
-  /* partition */partition,
-  /* cons_enum */cons_enum,
-  /* compare */compare,
-  /* equal */equal,
-  /* cardinal */cardinal,
-  /* bindings_aux */bindings_aux,
-  /* bindings */bindings,
-  /* choose */min_binding
+  /* height */height,/* create */create,/* singleton */singleton,/* bal */bal,/* empty : Empty */0,/* is_empty */is_empty,/* add */add,/* find */find,/* mem */mem,/* min_binding */min_binding,/* max_binding */max_binding,/* remove_min_binding */remove_min_binding,/* remove */remove,/* iter */iter,/* map */map,/* mapi */mapi,/* fold */fold,/* for_all */for_all,/* exists */exists,/* add_min_binding */add_min_binding,/* add_max_binding */add_max_binding,/* join */join,/* concat */concat,/* concat_or_join */concat_or_join,/* split */split,/* merge */merge,/* filter */filter,/* partition */partition,/* cons_enum */cons_enum,/* compare */compare,/* equal */equal,/* cardinal */cardinal,/* bindings_aux */bindings_aux,/* bindings */bindings,/* choose */min_binding
 ];
 
 var m = List.fold_left(function (acc, param) {
       return add(param[0], param[1], acc);
-    }, /* Empty */0, /* :: */[
+    }, /* Empty */0, /* Nested :: */[
       /* tuple */[
-        10,
-        /* "a" */97
-      ],
-      /* :: */[
+        10,/* "a" */97
+      ],[
         /* tuple */[
-          3,
-          /* "b" */98
-        ],
-        /* :: */[
+          3,/* "b" */98
+        ],[
           /* tuple */[
-            7,
-            /* "c" */99
-          ],
-          /* :: */[
+            7,/* "c" */99
+          ],[
             /* tuple */[
-              20,
-              /* "d" */100
-            ],
-            /* [] */0
+              20,/* "d" */100
+            ],/* [] */0
           ]
         ]
       ]
@@ -1557,21 +1373,13 @@ function create$1(l, x, d, r) {
   var hl = height$1(l);
   var hr = height$1(r);
   return /* Node */[
-          l,
-          x,
-          d,
-          r,
-          hl >= hr ? hl + 1 | 0 : hr + 1 | 0
+          l,x,d,r,hl >= hr ? hl + 1 | 0 : hr + 1 | 0
         ];
 }
 
 function singleton$1(x, d) {
   return /* Node */[
-          /* Empty */0,
-          x,
-          d,
-          /* Empty */0,
-          1
+          /* Empty */0,x,d,/* Empty */0,1
         ];
 }
 
@@ -1592,15 +1400,13 @@ function bal$1(l, x, d, r) {
       }
       else {
         throw [
-              Caml_builtin_exceptions.invalid_argument,
-              "Map.bal"
+              Caml_builtin_exceptions.invalid_argument,"Map.bal"
             ];
       }
     }
     else {
       throw [
-            Caml_builtin_exceptions.invalid_argument,
-            "Map.bal"
+            Caml_builtin_exceptions.invalid_argument,"Map.bal"
           ];
     }
   }
@@ -1618,25 +1424,19 @@ function bal$1(l, x, d, r) {
       }
       else {
         throw [
-              Caml_builtin_exceptions.invalid_argument,
-              "Map.bal"
+              Caml_builtin_exceptions.invalid_argument,"Map.bal"
             ];
       }
     }
     else {
       throw [
-            Caml_builtin_exceptions.invalid_argument,
-            "Map.bal"
+            Caml_builtin_exceptions.invalid_argument,"Map.bal"
           ];
     }
   }
   else {
     return /* Node */[
-            l,
-            x,
-            d,
-            r,
-            hl >= hr ? hl + 1 | 0 : hr + 1 | 0
+            l,x,d,r,hl >= hr ? hl + 1 | 0 : hr + 1 | 0
           ];
   }
 }
@@ -1667,21 +1467,13 @@ function add$1(x, data, param) {
     }
     else {
       return /* Node */[
-              l,
-              x,
-              data,
-              r,
-              param[4]
+              l,x,data,r,param[4]
             ];
     }
   }
   else {
     return /* Node */[
-            /* Empty */0,
-            x,
-            data,
-            /* Empty */0,
-            1
+            /* Empty */0,x,data,/* Empty */0,1
           ];
   }
 }
@@ -1738,8 +1530,7 @@ function min_binding$1(_param) {
       }
       else {
         return /* tuple */[
-                param[1],
-                param[2]
+                param[1],param[2]
               ];
       }
     }
@@ -1761,8 +1552,7 @@ function max_binding$1(_param) {
       }
       else {
         return /* tuple */[
-                param[1],
-                param[2]
+                param[1],param[2]
               ];
       }
     }
@@ -1789,8 +1579,7 @@ function remove_min_binding$1(param) {
   }
   else {
     throw [
-          Caml_builtin_exceptions.invalid_argument,
-          "Map.remove_min_elt"
+          Caml_builtin_exceptions.invalid_argument,"Map.remove_min_elt"
         ];
   }
 }
@@ -1859,11 +1648,7 @@ function map$1(f, param) {
     var d$prime = Curry._1(f, param[2]);
     var r$prime = map$1(f, param[3]);
     return /* Node */[
-            l$prime,
-            param[1],
-            d$prime,
-            r$prime,
-            param[4]
+            l$prime,param[1],d$prime,r$prime,param[4]
           ];
   }
   else {
@@ -1878,11 +1663,7 @@ function mapi$1(f, param) {
     var d$prime = Curry._2(f, v, param[2]);
     var r$prime = mapi$1(f, param[3]);
     return /* Node */[
-            l$prime,
-            v,
-            d$prime,
-            r$prime,
-            param[4]
+            l$prime,v,d$prime,r$prime,param[4]
           ];
   }
   else {
@@ -2034,33 +1815,25 @@ function split$1(x, param) {
       if (c < 0) {
         var match = split$1(x, l);
         return /* tuple */[
-                match[0],
-                match[1],
-                join$1(match[2], v, d, r)
+                match[0],match[1],join$1(match[2], v, d, r)
               ];
       }
       else {
         var match$1 = split$1(x, r);
         return /* tuple */[
-                join$1(l, v, d, match$1[0]),
-                match$1[1],
-                match$1[2]
+                join$1(l, v, d, match$1[0]),match$1[1],match$1[2]
               ];
       }
     }
     else {
       return /* tuple */[
-              l,
-              /* Some */[d],
-              r
+              l,/* Some */[d],r
             ];
     }
   }
   else {
     return /* tuple */[
-            /* Empty */0,
-            /* None */0,
-            /* Empty */0
+            /* Empty */0,/* None */0,/* Empty */0
           ];
   }
 }
@@ -2091,11 +1864,8 @@ function merge$1(f, s1, s2) {
     }
     else {
       throw [
-            Caml_builtin_exceptions.assert_failure,
-            [
-              "inline_map2_test.ml",
-              270,
-              10
+            Caml_builtin_exceptions.assert_failure,[
+              "inline_map2_test.ml",270,10
             ]
           ];
     }
@@ -2135,21 +1905,18 @@ function partition$1(p, param) {
     var rt = match$1[0];
     if (pvd) {
       return /* tuple */[
-              join$1(lt, v, d, rt),
-              concat$1(lf, rf)
+              join$1(lt, v, d, rt),concat$1(lf, rf)
             ];
     }
     else {
       return /* tuple */[
-              concat$1(lt, rt),
-              join$1(lf, v, d, rf)
+              concat$1(lt, rt),join$1(lf, v, d, rf)
             ];
     }
   }
   else {
     return /* tuple */[
-            /* Empty */0,
-            /* Empty */0
+            /* Empty */0,/* Empty */0
           ];
   }
 }
@@ -2160,10 +1927,7 @@ function cons_enum$1(_m, _e) {
     var m = _m;
     if (m) {
       _e = /* More */[
-        m[1],
-        m[2],
-        m[3],
-        e
+        m[1],m[2],m[3],e
       ];
       _m = m[0];
       continue ;
@@ -2262,12 +2026,10 @@ function bindings_aux$1(_accu, _param) {
     var accu = _accu;
     if (param) {
       _param = param[0];
-      _accu = /* :: */[
+      _accu = /* Nested :: */[
         /* tuple */[
-          param[1],
-          param[2]
-        ],
-        bindings_aux$1(accu, param[3])
+          param[1],param[2]
+        ],bindings_aux$1(accu, param[3])
       ];
       continue ;
       
@@ -2283,92 +2045,44 @@ function bindings$1(s) {
 }
 
 var SMap = /* module */[
-  /* height */height$1,
-  /* create */create$1,
-  /* singleton */singleton$1,
-  /* bal */bal$1,
-  /* empty : Empty */0,
-  /* is_empty */is_empty$1,
-  /* add */add$1,
-  /* find */find$1,
-  /* mem */mem$1,
-  /* min_binding */min_binding$1,
-  /* max_binding */max_binding$1,
-  /* remove_min_binding */remove_min_binding$1,
-  /* remove */remove$1,
-  /* iter */iter$1,
-  /* map */map$1,
-  /* mapi */mapi$1,
-  /* fold */fold$1,
-  /* for_all */for_all$1,
-  /* exists */exists$1,
-  /* add_min_binding */add_min_binding$1,
-  /* add_max_binding */add_max_binding$1,
-  /* join */join$1,
-  /* concat */concat$1,
-  /* concat_or_join */concat_or_join$1,
-  /* split */split$1,
-  /* merge */merge$1,
-  /* filter */filter$1,
-  /* partition */partition$1,
-  /* cons_enum */cons_enum$1,
-  /* compare */compare$1,
-  /* equal */equal$1,
-  /* cardinal */cardinal$1,
-  /* bindings_aux */bindings_aux$1,
-  /* bindings */bindings$1,
-  /* choose */min_binding$1
+  /* height */height$1,/* create */create$1,/* singleton */singleton$1,/* bal */bal$1,/* empty : Empty */0,/* is_empty */is_empty$1,/* add */add$1,/* find */find$1,/* mem */mem$1,/* min_binding */min_binding$1,/* max_binding */max_binding$1,/* remove_min_binding */remove_min_binding$1,/* remove */remove$1,/* iter */iter$1,/* map */map$1,/* mapi */mapi$1,/* fold */fold$1,/* for_all */for_all$1,/* exists */exists$1,/* add_min_binding */add_min_binding$1,/* add_max_binding */add_max_binding$1,/* join */join$1,/* concat */concat$1,/* concat_or_join */concat_or_join$1,/* split */split$1,/* merge */merge$1,/* filter */filter$1,/* partition */partition$1,/* cons_enum */cons_enum$1,/* compare */compare$1,/* equal */equal$1,/* cardinal */cardinal$1,/* bindings_aux */bindings_aux$1,/* bindings */bindings$1,/* choose */min_binding$1
 ];
 
 var s = List.fold_left(function (acc, param) {
       return add$1(param[0], param[1], acc);
-    }, /* Empty */0, /* :: */[
+    }, /* Empty */0, /* Nested :: */[
       /* tuple */[
-        "10",
-        /* "a" */97
-      ],
-      /* :: */[
+        "10",/* "a" */97
+      ],[
         /* tuple */[
-          "3",
-          /* "b" */98
-        ],
-        /* :: */[
+          "3",/* "b" */98
+        ],[
           /* tuple */[
-            "7",
-            /* "c" */99
-          ],
-          /* :: */[
+            "7",/* "c" */99
+          ],[
             /* tuple */[
-              "20",
-              /* "d" */100
-            ],
-            /* [] */0
+              "20",/* "d" */100
+            ],/* [] */0
           ]
         ]
       ]
     ]);
 
-Mt.from_pair_suites("inline_map2_test.ml", /* :: */[
+Mt.from_pair_suites("inline_map2_test.ml", /* Nested :: */[
       /* tuple */[
-        "assertion1",
-        function () {
+        "assertion1",function () {
           return /* Eq */Block.__(0, [
-                    find(10, m),
-                    /* "a" */97
+                    find(10, m),/* "a" */97
                   ]);
         }
-      ],
-      /* :: */[
+      ],[
         /* tuple */[
-          "assertion2",
-          function () {
+          "assertion2",function () {
             return /* Eq */Block.__(0, [
-                      find$1("10", s),
-                      /* "a" */97
+                      find$1("10", s),/* "a" */97
                     ]);
           }
-        ],
-        /* [] */0
+        ],/* [] */0
       ]
     ]);
 

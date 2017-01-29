@@ -4,9 +4,8 @@
 function map(f, param) {
   if (param) {
     var r = f(param[0]);
-    return /* :: */[
-            r,
-            map(f, param[1])
+    return /* Nested :: */[
+            r,map(f, param[1])
           ];
   }
   else {

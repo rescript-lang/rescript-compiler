@@ -7,8 +7,7 @@ function test(path) {
                   recursive: true
                 }).on("change", function ($$event, string_buffer) {
                 console.log(/* tuple */[
-                      $$event,
-                      string_buffer
+                      $$event,string_buffer
                     ]);
                 return /* () */0;
               }).close();

@@ -8,9 +8,8 @@ var Stack = require("../../lib/js/stack");
 function to_list(v) {
   var acc = /* [] */0;
   while(v[/* c */0] !== /* [] */0) {
-    acc = /* :: */[
-      Stack.pop(v),
-      acc
+    acc = /* Nested :: */[
+      Stack.pop(v),acc
     ];
   };
   return List.rev(acc);
@@ -25,27 +24,21 @@ function v() {
 }
 
 var suites_000 = /* tuple */[
-  "push_test",
-  function () {
+  "push_test",function () {
     return /* Eq */Block.__(0, [
-              /* :: */[
-                1,
-                /* :: */[
-                  4,
-                  /* :: */[
-                    3,
-                    /* [] */0
+              /* Nested :: */[
+                1,[
+                  4,[
+                    3,/* [] */0
                   ]
                 ]
-              ],
-              v(/* () */0)
+              ],v(/* () */0)
             ]);
   }
 ];
 
-var suites = /* :: */[
-  suites_000,
-  /* [] */0
+var suites = /* Nested :: */[
+  suites_000,/* [] */0
 ];
 
 Mt.from_pair_suites("stack_test.ml", suites);

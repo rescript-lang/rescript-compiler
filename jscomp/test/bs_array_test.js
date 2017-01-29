@@ -2,10 +2,7 @@
 
 
 console.log(/* int array */[
-            1,
-            2,
-            3,
-            4
+            1,2,3,4
           ].filter(function (x) {
               return +(x > 2);
             }).map(function (x, i) {

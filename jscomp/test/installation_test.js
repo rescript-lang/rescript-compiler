@@ -15,17 +15,14 @@ var test_id = [0];
 
 function eq(loc, x, y) {
   test_id[0] = test_id[0] + 1 | 0;
-  suites[0] = /* :: */[
+  suites[0] = /* Nested :: */[
     /* tuple */[
-      loc + (" id " + test_id[0]),
-      function () {
+      loc + (" id " + test_id[0]),function () {
         return /* Eq */Block.__(0, [
-                  x,
-                  y
+                  x,y
                 ]);
       }
-    ],
-    suites[0]
+    ],suites[0]
   ];
   return /* () */0;
 }
@@ -43,11 +40,8 @@ Js_undefined.bind((__dirname), function (p) {
       }
       catch (e){
         throw [
-              Caml_builtin_exceptions.assert_failure,
-              [
-                "installation_test.ml",
-                34,
-                8
+              Caml_builtin_exceptions.assert_failure,[
+                "installation_test.ml",34,8
               ]
             ];
       }

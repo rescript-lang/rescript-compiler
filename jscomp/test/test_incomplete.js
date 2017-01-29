@@ -5,11 +5,8 @@ var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
 function f(x) {
   if (x > 3 || x < 1) {
     throw [
-          Caml_builtin_exceptions.match_failure,
-          [
-            "test_incomplete.ml",
-            3,
-            2
+          Caml_builtin_exceptions.match_failure,[
+            "test_incomplete.ml",3,2
           ]
         ];
   }

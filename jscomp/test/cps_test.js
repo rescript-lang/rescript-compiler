@@ -73,37 +73,28 @@ function test_closure2() {
   return v[0];
 }
 
-Mt.from_pair_suites("cps_test.ml", /* :: */[
+Mt.from_pair_suites("cps_test.ml", /* Nested :: */[
       /* tuple */[
-        "cps_test_sum",
-        function () {
+        "cps_test_sum",function () {
           return /* Eq */Block.__(0, [
-                    55,
-                    test(/* () */0)
+                    55,test(/* () */0)
                   ]);
         }
-      ],
-      /* :: */[
+      ],[
         /* tuple */[
-          "cps_test_closure",
-          function () {
+          "cps_test_closure",function () {
             return /* Eq */Block.__(0, [
-                      15,
-                      test_closure(/* () */0)
+                      15,test_closure(/* () */0)
                     ]);
           }
-        ],
-        /* :: */[
+        ],[
           /* tuple */[
-            "cps_test_closure2",
-            function () {
+            "cps_test_closure2",function () {
               return /* Eq */Block.__(0, [
-                        30,
-                        test_closure2(/* () */0)
+                        30,test_closure2(/* () */0)
                       ]);
             }
-          ],
-          /* [] */0
+          ],/* [] */0
         ]
       ]
     ]);

@@ -8,8 +8,7 @@ var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
 function Make(funarg) {
   var $$let = funarg[/* V */0];
   var H = Hashtbl.Make([
-        $$let[2],
-        $$let[1]
+        $$let[2],$$let[1]
       ]);
   var find_default = function (htbl, x) {
     try {
@@ -34,21 +33,15 @@ function Make(funarg) {
     var step2 = function (top, rest_of_stack) {
       if (find_default(already_processed, top)) {
         throw [
-              Caml_builtin_exceptions.assert_failure,
-              [
-                "gpr_405_test.ml",
-                43,
-                6
+              Caml_builtin_exceptions.assert_failure,[
+                "gpr_405_test.ml",43,6
               ]
             ];
       }
       if (find_default(on_the_stack, top)) {
         throw [
-              Caml_builtin_exceptions.assert_failure,
-              [
-                "gpr_405_test.ml",
-                44,
-                6
+              Caml_builtin_exceptions.assert_failure,[
+                "gpr_405_test.ml",44,6
               ]
             ];
       }
@@ -74,27 +67,23 @@ function Make(funarg) {
             
           }
           else {
-            return step2(successor, /* :: */[
+            return step2(successor, /* Nested :: */[
                         /* tuple */[
-                          top$1,
-                          successors
-                        ],
-                        rest_of_stack$1
+                          top$1,successors
+                        ],rest_of_stack$1
                       ]);
           }
         }
         else {
           if (Curry._2(H[/* find */6], l_labels, top$1) === Curry._2(H[/* find */6], n_labels, top$1)) {
-            cut_set[0] = /* :: */[
-              top$1,
-              cut_set[0]
+            cut_set[0] = /* Nested :: */[
+              top$1,cut_set[0]
             ];
             Curry._3(H[/* add */4], l_labels, top$1, 0);
           }
           if (Curry._2(H[/* find */6], l_labels, top$1) > Curry._2(H[/* find */6], n_labels, top$1)) {
             throw [
-                  Caml_builtin_exceptions.invalid_argument,
-                  "Graph.Mincut: graph not reducible"
+                  Caml_builtin_exceptions.invalid_argument,"Graph.Mincut: graph not reducible"
                 ];
           }
           else if (rest_of_stack$1) {

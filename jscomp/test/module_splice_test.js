@@ -12,17 +12,14 @@ function eq(loc, param) {
   var y = param[1];
   var x = param[0];
   test_id[0] = test_id[0] + 1 | 0;
-  suites[0] = /* :: */[
+  suites[0] = /* Nested :: */[
     /* tuple */[
-      loc + (" id " + test_id[0]),
-      function () {
+      loc + (" id " + test_id[0]),function () {
         return /* Eq */Block.__(0, [
-                  x,
-                  y
+                  x,y
                 ]);
       }
-    ],
-    suites[0]
+    ],suites[0]
   ];
   return /* () */0;
 }
@@ -30,8 +27,7 @@ function eq(loc, param) {
 var a = JoinClasses(1, 2, 3);
 
 var pair = /* tuple */[
-  a,
-  6
+  a,6
 ];
 
 console.log(pair);

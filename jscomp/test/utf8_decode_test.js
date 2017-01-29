@@ -20,36 +20,31 @@ function classify(chr) {
               }
               else {
                 return /* Leading */Block.__(2, [
-                          5,
-                          chr & 1
+                          5,chr & 1
                         ]);
               }
             }
             else {
               return /* Leading */Block.__(2, [
-                        4,
-                        chr & 3
+                        4,chr & 3
                       ]);
             }
           }
           else {
             return /* Leading */Block.__(2, [
-                      3,
-                      chr & 7
+                      3,chr & 7
                     ]);
           }
         }
         else {
           return /* Leading */Block.__(2, [
-                    2,
-                    chr & 15
+                    2,chr & 15
                   ]);
         }
       }
       else {
         return /* Leading */Block.__(2, [
-                  1,
-                  chr & 31
+                  1,chr & 31
                 ]);
       }
     }
@@ -70,8 +65,7 @@ function utf8_decode(strm) {
                 var match$1 = classify(match[0]);
                 if (typeof match$1 === "number") {
                   throw [
-                        Stream.$$Error,
-                        "Invalid byte"
+                        Stream.$$Error,"Invalid byte"
                       ];
                 }
                 else {
@@ -80,8 +74,7 @@ function utf8_decode(strm) {
                         return Stream.icons(match$1[0], utf8_decode(strm));
                     case 1 : 
                         throw [
-                              Stream.$$Error,
-                              "Unexpected continuation byte"
+                              Stream.$$Error,"Unexpected continuation byte"
                             ];
                     case 2 : 
                         var follow = function (strm, _n, _c) {
@@ -92,8 +85,7 @@ function utf8_decode(strm) {
                               var match = classify(Stream.next(strm));
                               if (typeof match === "number") {
                                 throw [
-                                      Stream.$$Error,
-                                      "Continuation byte expected"
+                                      Stream.$$Error,"Continuation byte expected"
                                     ];
                               }
                               else if (match.tag === 1) {
@@ -104,8 +96,7 @@ function utf8_decode(strm) {
                               }
                               else {
                                 throw [
-                                      Stream.$$Error,
-                                      "Continuation byte expected"
+                                      Stream.$$Error,"Continuation byte expected"
                                     ];
                               }
                             }
@@ -130,21 +121,18 @@ function decode(bytes, offset) {
   var match = classify(Caml_bytes.get(bytes, offset$1));
   if (typeof match === "number") {
     throw [
-          Caml_builtin_exceptions.invalid_argument,
-          "decode"
+          Caml_builtin_exceptions.invalid_argument,"decode"
         ];
   }
   else {
     switch (match.tag | 0) {
       case 0 : 
           return /* tuple */[
-                  match[0],
-                  offset$1 + 1 | 0
+                  match[0],offset$1 + 1 | 0
                 ];
       case 1 : 
           throw [
-                Caml_builtin_exceptions.invalid_argument,
-                "decode"
+                Caml_builtin_exceptions.invalid_argument,"decode"
               ];
       case 2 : 
           var _n = match[0];
@@ -158,8 +146,7 @@ function decode(bytes, offset) {
               var match$1 = classify(Caml_bytes.get(bytes, offset$2));
               if (typeof match$1 === "number") {
                 throw [
-                      Caml_builtin_exceptions.invalid_argument,
-                      "decode"
+                      Caml_builtin_exceptions.invalid_argument,"decode"
                     ];
               }
               else if (match$1.tag === 1) {
@@ -171,15 +158,13 @@ function decode(bytes, offset) {
               }
               else {
                 throw [
-                      Caml_builtin_exceptions.invalid_argument,
-                      "decode"
+                      Caml_builtin_exceptions.invalid_argument,"decode"
                     ];
               }
             }
             else {
               return /* tuple */[
-                      c,
-                      offset$2
+                      c,offset$2
                     ];
             }
           };
@@ -226,20 +211,16 @@ function eq(loc, param) {
   var x = param[0];
   test_id[0] = test_id[0] + 1 | 0;
   console.log(/* tuple */[
-        x,
-        y
+        x,y
       ]);
-  suites[0] = /* :: */[
+  suites[0] = /* Nested :: */[
     /* tuple */[
-      loc + (" id " + test_id[0]),
-      function () {
+      loc + (" id " + test_id[0]),function () {
         return /* Eq */Block.__(0, [
-                  x,
-                  y
+                  x,y
                 ]);
       }
-    ],
-    suites[0]
+    ],suites[0]
   ];
   return /* () */0;
 }
@@ -247,9 +228,8 @@ function eq(loc, param) {
 var v = [/* [] */0];
 
 function add(u) {
-  v[0] = /* :: */[
-    u,
-    v[0]
+  v[0] = /* Nested :: */[
+    u,v[0]
   ];
   return /* () */0;
 }
@@ -259,54 +239,31 @@ Stream.iter(add, utf8_decode(Stream.of_string("\xe4\xbd\xa0\xe5\xa5\xbdBuckleScr
 var codes = List.rev(v[0]);
 
 eq('File "utf8_decode_test.ml", line 125, characters 5-12', /* tuple */[
-      /* true */1,
-      eq_list(function (x, y) {
+      /* true */1,eq_list(function (x, y) {
             return +(x === y);
-          }, codes, /* :: */[
-            20320,
-            /* :: */[
-              22909,
-              /* :: */[
-                66,
-                /* :: */[
-                  117,
-                  /* :: */[
-                    99,
-                    /* :: */[
-                      107,
-                      /* :: */[
-                        108,
-                        /* :: */[
-                          101,
-                          /* :: */[
-                            83,
-                            /* :: */[
-                              99,
-                              /* :: */[
-                                114,
-                                /* :: */[
-                                  105,
-                                  /* :: */[
-                                    112,
-                                    /* :: */[
-                                      116,
-                                      /* :: */[
-                                        44,
-                                        /* :: */[
-                                          26368,
-                                          /* :: */[
-                                            22909,
-                                            /* :: */[
-                                              30340,
-                                              /* :: */[
-                                                74,
-                                                /* :: */[
-                                                  83,
-                                                  /* :: */[
-                                                    35821,
-                                                    /* :: */[
-                                                      35328,
-                                                      /* [] */0
+          }, codes, /* Nested :: */[
+            20320,[
+              22909,[
+                66,[
+                  117,[
+                    99,[
+                      107,[
+                        108,[
+                          101,[
+                            83,[
+                              99,[
+                                114,[
+                                  105,[
+                                    112,[
+                                      116,[
+                                        44,[
+                                          26368,[
+                                            22909,[
+                                              30340,[
+                                                74,[
+                                                  83,[
+                                                    35821,[
+                                                      35328,/* [] */0
                                                     ]
                                                   ]
                                                 ]

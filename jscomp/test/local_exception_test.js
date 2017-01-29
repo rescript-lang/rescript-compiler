@@ -5,9 +5,7 @@ var Caml_exceptions = require("../../lib/js/caml_exceptions");
 var A = Caml_exceptions.create("Local_exception_test.A");
 
 var v = [
-  A,
-  3,
-  /* true */1
+  A,3,/* true */1
 ];
 
 var B = Caml_exceptions.create("Local_exception_test.B");
@@ -15,15 +13,13 @@ var B = Caml_exceptions.create("Local_exception_test.B");
 var D = Caml_exceptions.create("Local_exception_test.D");
 
 var d = [
-  D,
-  3
+  D,3
 ];
 
 var A$1 = Caml_exceptions.create("Local_exception_test.A");
 
 var x = [
-  A$1,
-  3
+  A$1,3
 ];
 
 var u = B;

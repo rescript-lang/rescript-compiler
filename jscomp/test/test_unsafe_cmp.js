@@ -3,10 +3,7 @@
 
 function f(x, y) {
   return /* tuple */[
-          x < y,
-          x <= y,
-          x > y,
-          x >= y
+          x < y,x <= y,x > y,x >= y
         ];
 }
 

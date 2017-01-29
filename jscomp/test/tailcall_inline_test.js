@@ -29,55 +29,35 @@ function f() {
 }
 
 var suites_000 = /* tuple */[
-  "acc",
-  function () {
+  "acc",function () {
     return /* Eq */Block.__(0, [
-              f(/* () */0),
-              /* array */[
-                0,
-                1,
-                3,
-                6,
-                10,
-                15,
-                21,
-                28,
-                36,
-                45
+              f(/* () */0),/* array */[
+                0,1,3,6,10,15,21,28,36,45
               ]
             ]);
   }
 ];
 
-var suites_001 = /* :: */[
+var suites_001 = /* Nested :: */[
   /* tuple */[
-    "array_to_list",
-    function () {
+    "array_to_list",function () {
       return /* Eq */Block.__(0, [
-                /* :: */[
-                  1,
-                  /* :: */[
-                    2,
-                    /* :: */[
-                      3,
-                      /* [] */0
+                /* Nested :: */[
+                  1,[
+                    2,[
+                      3,/* [] */0
                     ]
                   ]
-                ],
-                $$Array.to_list(/* int array */[
-                      1,
-                      2,
-                      3
+                ],$$Array.to_list(/* int array */[
+                      1,2,3
                     ])
               ]);
     }
-  ],
-  /* [] */0
+  ],/* [] */0
 ];
 
-var suites = /* :: */[
-  suites_000,
-  suites_001
+var suites = /* Nested :: */[
+  suites_000,suites_001
 ];
 
 Mt.from_pair_suites("tailcall_inline_test.ml", suites);

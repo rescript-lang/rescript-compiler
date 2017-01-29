@@ -17,24 +17,15 @@ function eq(f, param) {
 eq('File "scanf_test.ml", line 6, characters 5-12', /* tuple */[
       Curry._1(Scanf.sscanf("32 31", /* Format */[
                 /* Int */Block.__(4, [
-                    /* Int_d */0,
-                    /* No_padding */0,
-                    /* No_precision */0,
-                    /* Char_literal */Block.__(12, [
-                        /* " " */32,
-                        /* Int */Block.__(4, [
-                            /* Int_d */0,
-                            /* No_padding */0,
-                            /* No_precision */0,
-                            /* End_of_format */0
+                    /* Int_d */0,/* No_padding */0,/* No_precision */0,/* Char_literal */Block.__(12, [
+                        /* " " */32,/* Int */Block.__(4, [
+                            /* Int_d */0,/* No_padding */0,/* No_precision */0,/* End_of_format */0
                           ])
                       ])
-                  ]),
-                "%d %d"
+                  ]),"%d %d"
               ]), function (x, y) {
             return x + y | 0;
-          }),
-      63
+          }),63
     ]);
 
 Mt.from_pair_suites("scanf_test.ml", suites[0]);

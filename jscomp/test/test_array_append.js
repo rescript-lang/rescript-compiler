@@ -3,8 +3,7 @@
 var $$Array = require("../../lib/js/array");
 
 var const_v = $$Array.append(/* int array */[
-      1,
-      2
+      1,2
     ], /* int array */[3]);
 
 exports.const_v = const_v;

@@ -29,9 +29,7 @@ var b = 101;
 var a = match_000;
 
 console.log(/* tuple */[
-      a,
-      b,
-      c
+      a,b,c
     ]);
 
 exports.f  = f;

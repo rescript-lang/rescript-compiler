@@ -11,56 +11,43 @@ function is_block(x) {
 }
 
 var suites_000 = /* tuple */[
-  "is_block_test1",
-  function () {
+  "is_block_test1",function () {
     return /* Eq */Block.__(0, [
-              /* false */0,
-              (3).length !== undefined
+              /* false */0,(3).length !== undefined
             ]);
   }
 ];
 
-var suites_001 = /* :: */[
+var suites_001 = /* Nested :: */[
   /* tuple */[
-    "is_block_test2",
-    function () {
+    "is_block_test2",function () {
       return /* Eq */Block.__(0, [
-                /* true */1,
-                /* :: */[
-                  3,
-                  /* [] */0
+                /* true */1,/* Nested :: */[
+                  3,/* [] */0
                 ].length !== undefined
               ]);
     }
-  ],
-  /* :: */[
+  ],[
     /* tuple */[
-      "is_block_test3",
-      function () {
+      "is_block_test3",function () {
         return /* Eq */Block.__(0, [
-                  /* true */1,
-                  "x".length !== undefined
+                  /* true */1,"x".length !== undefined
                 ]);
       }
-    ],
-    /* :: */[
+    ],[
       /* tuple */[
-        "is_block_test4",
-        function () {
+        "is_block_test4",function () {
           return /* Eq */Block.__(0, [
-                    /* false */0,
-                    (3.0).length !== undefined
+                    /* false */0,(3.0).length !== undefined
                   ]);
         }
-      ],
-      /* [] */0
+      ],/* [] */0
     ]
   ]
 ];
 
-var suites = /* :: */[
-  suites_000,
-  suites_001
+var suites = /* Nested :: */[
+  suites_000,suites_001
 ];
 
 Mt.from_pair_suites("obj_magic_test.ml", suites);

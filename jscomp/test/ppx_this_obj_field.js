@@ -11,17 +11,14 @@ function eq(loc, param) {
   var y = param[1];
   var x = param[0];
   test_id[0] = test_id[0] + 1 | 0;
-  suites[0] = /* :: */[
+  suites[0] = /* Nested :: */[
     /* tuple */[
-      loc + (" id " + test_id[0]),
-      function () {
+      loc + (" id " + test_id[0]),function () {
         return /* Eq */Block.__(0, [
-                  x,
-                  y
+                  x,y
                 ]);
       }
-    ],
-    suites[0]
+    ],suites[0]
   ];
   return /* () */0;
 }
@@ -33,8 +30,7 @@ var v5 = {
     var self = this ;
     self.y = 2;
     return /* tuple */[
-            self.y,
-            v
+            self.y,v
           ];
   },
   say: function () {
@@ -88,14 +84,12 @@ var u = {
   }
 };
 
-var test_type_001 = /* :: */[
-  v,
-  /* [] */0
+var test_type_001 = /* Nested :: */[
+  v,/* [] */0
 ];
 
-var test_type = /* :: */[
-  u,
-  test_type_001
+var test_type = /* Nested :: */[
+  u,test_type_001
 ];
 
 var z = {
@@ -123,19 +117,16 @@ var zz = {
   }
 };
 
-var test_type2_001 = /* :: */[
-  zz,
-  /* [] */0
+var test_type2_001 = /* Nested :: */[
+  zz,/* [] */0
 ];
 
-var test_type2 = /* :: */[
-  z,
-  test_type2_001
+var test_type2 = /* Nested :: */[
+  z,test_type2_001
 ];
 
 eq('File "ppx_this_obj_field.ml", line 76, characters 5-12', /* tuple */[
-      6,
-      v5.say()
+      6,v5.say()
     ]);
 
 var a = v.say();
@@ -152,14 +143,9 @@ v.incr();
 
 eq('File "ppx_this_obj_field.ml", line 83, characters 5-12', /* tuple */[
       /* tuple */[
-        3,
-        4,
-        5
-      ],
-      /* tuple */[
-        a,
-        b,
-        c
+        3,4,5
+      ],/* tuple */[
+        a,b,c
       ]
     ]);
 
@@ -171,12 +157,9 @@ var bb = z.getX();
 
 eq('File "ppx_this_obj_field.ml", line 87, characters 5-12', /* tuple */[
       /* tuple */[
-        3,
-        32
-      ],
-      /* tuple */[
-        aa,
-        bb
+        3,32
+      ],/* tuple */[
+        aa,bb
       ]
     ]);
 

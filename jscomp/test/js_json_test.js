@@ -11,17 +11,14 @@ var test_id = [0];
 
 function eq(loc, x, y) {
   test_id[0] = test_id[0] + 1 | 0;
-  suites[0] = /* :: */[
+  suites[0] = /* Nested :: */[
     /* tuple */[
-      loc + (" id " + test_id[0]),
-      function () {
+      loc + (" id " + test_id[0]),function () {
         return /* Eq */Block.__(0, [
-                  x,
-                  y
+                  x,y
                 ]);
       }
-    ],
-    suites[0]
+    ],suites[0]
   ];
   return /* () */0;
 }
@@ -32,11 +29,8 @@ var match = Js_json.reify_type(v);
 
 if (match[0] !== 2) {
   throw [
-        Caml_builtin_exceptions.assert_failure,
-        [
-          "js_json_test.ml",
-          33,
-          9
+        Caml_builtin_exceptions.assert_failure,[
+          "js_json_test.ml",33,9
         ]
       ];
 }
@@ -46,11 +40,8 @@ else {
     var match$2 = Js_json.reify_type(match$1);
     if (match$2[0] !== 3) {
       throw [
-            Caml_builtin_exceptions.assert_failure,
-            [
-              "js_json_test.ml",
-              28,
-              13
+            Caml_builtin_exceptions.assert_failure,[
+              "js_json_test.ml",28,13
             ]
           ];
     }
@@ -59,11 +50,8 @@ else {
             var match = Js_json.reify_type(x);
             if (match[0] !== 1) {
               throw [
-                    Caml_builtin_exceptions.assert_failure,
-                    [
-                      "js_json_test.ml",
-                      26,
-                      19
+                    Caml_builtin_exceptions.assert_failure,[
+                      "js_json_test.ml",26,19
                     ]
                   ];
             }
@@ -76,11 +64,8 @@ else {
   }
   else {
     throw [
-          Caml_builtin_exceptions.assert_failure,
-          [
-            "js_json_test.ml",
-            31,
-            6
+          Caml_builtin_exceptions.assert_failure,[
+            "js_json_test.ml",31,6
           ]
         ];
   }

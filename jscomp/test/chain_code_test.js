@@ -9,17 +9,14 @@ var test_id = [0];
 
 function eq(loc, x, y) {
   test_id[0] = test_id[0] + 1 | 0;
-  suites[0] = /* :: */[
+  suites[0] = /* Nested :: */[
     /* tuple */[
-      loc + (" id " + test_id[0]),
-      function () {
+      loc + (" id " + test_id[0]),function () {
         return /* Eq */Block.__(0, [
-                  x,
-                  y
+                  x,y
                 ]);
       }
-    ],
-    suites[0]
+    ],suites[0]
   ];
   return /* () */0;
 }
@@ -38,12 +35,10 @@ function f3(h, x, y) {
 
 function f4(h, x, y) {
   h.paint = /* tuple */[
-    x,
-    y
+    x,y
   ];
   return h.paint.draw = /* tuple */[
-          x,
-          y
+          x,y
         ];
 }
 

@@ -10,21 +10,17 @@ var test_id = [0];
 
 function eq(loc, x, y) {
   console.log(/* tuple */[
-        x,
-        y
+        x,y
       ]);
   test_id[0] = test_id[0] + 1 | 0;
-  suites[0] = /* :: */[
+  suites[0] = /* Nested :: */[
     /* tuple */[
-      loc + (" id " + test_id[0]),
-      function () {
+      loc + (" id " + test_id[0]),function () {
         return /* Eq */Block.__(0, [
-                  x,
-                  y
+                  x,y
                 ]);
       }
-    ],
-    suites[0]
+    ],suites[0]
   ];
   return /* () */0;
 }
@@ -37,12 +33,7 @@ function f(x) {
 }
 
 eq('File "update_record_test.ml", line 30, characters 5-12', 1, f(/* record */[
-            /* a0 */0,
-            /* a1 */0,
-            /* a2 */0,
-            /* a3 */0,
-            /* a4 */0,
-            /* a5 */0
+            /* a0 */0,/* a1 */0,/* a2 */0,/* a3 */0,/* a4 */0,/* a5 */0
           ])[/* a0 */0]);
 
 Mt.from_pair_suites("update_record_test.ml", suites[0]);

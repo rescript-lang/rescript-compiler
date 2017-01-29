@@ -86,8 +86,7 @@ function failwithf(loc, fmt) {
   return Format.ksprintf(function (s) {
               var s$1 = loc + s;
               throw [
-                    Caml_builtin_exceptions.failure,
-                    s$1
+                    Caml_builtin_exceptions.failure,s$1
                   ];
             }, fmt);
 }
@@ -99,8 +98,7 @@ function invalid_argf(fmt) {
 function bad_argf(fmt) {
   return Format.ksprintf(function (x) {
               throw [
-                    Arg.Bad,
-                    x
+                    Arg.Bad,x
                   ];
             }, fmt);
 }
@@ -117,9 +115,8 @@ function dump(r) {
         if (n !== 0) {
           var n$1 = n - 1 | 0;
           _n = n$1;
-          _acc = /* :: */[
-            r[n$1],
-            acc
+          _acc = /* Nested :: */[
+            r[n$1],acc
           ];
           continue ;
           
@@ -159,9 +156,8 @@ function dump(r) {
       else {
         var h = r[0];
         var t = get_list(r[1]);
-        return /* :: */[
-                h,
-                t
+        return /* Nested :: */[
+                h,t
               ];
       }
     };
@@ -185,29 +181,21 @@ function dump(r) {
           var match$1 = fields$1[1];
           if (match$1) {
             match = /* tuple */[
-              fields$1[0],
-              match$1[0],
-              match$1[1]
+              fields$1[0],match$1[0],match$1[1]
             ];
           }
           else {
             throw [
-                  Caml_builtin_exceptions.assert_failure,
-                  [
-                    "ext_pervasives.ml",
-                    118,
-                    15
+                  Caml_builtin_exceptions.assert_failure,[
+                    "ext_pervasives.ml",118,15
                   ]
                 ];
           }
         }
         else {
           throw [
-                Caml_builtin_exceptions.assert_failure,
-                [
-                  "ext_pervasives.ml",
-                  118,
-                  15
+                Caml_builtin_exceptions.assert_failure,[
+                  "ext_pervasives.ml",118,15
                 ]
               ];
         }
@@ -244,23 +232,14 @@ function dump(r) {
       else {
         var name = Curry._2(Printf.sprintf(/* Format */[
                   /* String_literal */Block.__(11, [
-                      "unknown: tag ",
-                      /* Int */Block.__(4, [
-                          /* Int_d */0,
-                          /* No_padding */0,
-                          /* No_precision */0,
-                          /* String_literal */Block.__(11, [
-                              " size ",
-                              /* Int */Block.__(4, [
-                                  /* Int_d */0,
-                                  /* No_padding */0,
-                                  /* No_precision */0,
-                                  /* End_of_format */0
+                      "unknown: tag ",/* Int */Block.__(4, [
+                          /* Int_d */0,/* No_padding */0,/* No_precision */0,/* String_literal */Block.__(11, [
+                              " size ",/* Int */Block.__(4, [
+                                  /* Int_d */0,/* No_padding */0,/* No_precision */0,/* End_of_format */0
                                 ])
                             ])
                         ])
-                    ]),
-                  "unknown: tag %d size %d"
+                    ]),"unknown: tag %d size %d"
                 ]), t, s);
         return "<" + (name + ">");
       }

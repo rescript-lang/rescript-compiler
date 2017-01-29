@@ -13,17 +13,14 @@ function eq(loc, param) {
   var y = param[1];
   var x = param[0];
   test_id[0] = test_id[0] + 1 | 0;
-  suites[0] = /* :: */[
+  suites[0] = /* Nested :: */[
     /* tuple */[
-      loc + (" id " + test_id[0]),
-      function () {
+      loc + (" id " + test_id[0]),function () {
         return /* Eq */Block.__(0, [
-                  x,
-                  y
+                  x,y
                 ]);
       }
-    ],
-    suites[0]
+    ],suites[0]
   ];
   return /* () */0;
 }
@@ -46,12 +43,10 @@ var match$2 = (module);
 
 if (match$2 !== undefined) {
   console.log(/* tuple */[
-        match$2.id,
-        match$2.paths
+        match$2.id,match$2.paths
       ]);
   eq('File "fs_test.ml", line 45, characters 7-14', /* tuple */[
-        pathobj.name,
-        "test"
+        pathobj.name,"test"
       ]);
 }
 

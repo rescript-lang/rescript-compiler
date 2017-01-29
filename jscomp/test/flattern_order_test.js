@@ -5,29 +5,24 @@ var Caml_obj = require("../../lib/js/caml_obj");
 
 var ys = [];
 
-Caml_obj.caml_update_dummy(ys, /* :: */[
-      1,
-      ys
+Caml_obj.caml_update_dummy(ys, /* Nested :: */[
+      1,ys
     ]);
 
 function _zs() {
   return /* tuple */[
-          List.hd(ys),
-          List.hd(xs[0])
+          List.hd(ys),List.hd(xs[0])
         ];
 }
 
-var xs_000 = /* :: */[
-  2,
-  /* :: */[
-    List.hd(ys),
-    /* [] */0
+var xs_000 = /* Nested :: */[
+  2,[
+    List.hd(ys),/* [] */0
   ]
 ];
 
 var xs = /* tuple */[
-  xs_000,
-  _zs
+  xs_000,_zs
 ];
 
 function even(_n) {
@@ -71,8 +66,7 @@ function obj_001(i) {
 }
 
 var obj = /* record */[
-  obj_000,
-  obj_001
+  obj_000,obj_001
 ];
 
 exports.xs    = xs;

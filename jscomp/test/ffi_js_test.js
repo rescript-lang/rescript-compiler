@@ -22,17 +22,14 @@ function eq(loc, param) {
   var y = param[1];
   var x = param[0];
   test_id[0] = test_id[0] + 1 | 0;
-  suites[0] = /* :: */[
+  suites[0] = /* Nested :: */[
     /* tuple */[
-      loc + (" id " + test_id[0]),
-      function () {
+      loc + (" id " + test_id[0]),function () {
         return /* Eq */Block.__(0, [
-                  x,
-                  y
+                  x,y
                 ]);
       }
-    ],
-    suites[0]
+    ],suites[0]
   ];
   return /* () */0;
 }
@@ -48,35 +45,29 @@ var string_config = {
 };
 
 eq('File "ffi_js_test.ml", line 33, characters 5-12', /* tuple */[
-      6,
-      $$high_order(1)(2, 3)
+      6,$$high_order(1)(2, 3)
     ]);
 
-var same_type_000 = /* :: */[
-  int_config,
-  /* :: */[
+var same_type_000 = /* Nested :: */[
+  int_config,[
     {
       hi: 3,
       low: 32
-    },
-    /* [] */0
+    },/* [] */0
   ]
 ];
 
-var same_type_001 = /* :: */[
-  string_config,
-  /* :: */[
+var same_type_001 = /* Nested :: */[
+  string_config,[
     {
       hi: 3,
       low: "32"
-    },
-    /* [] */0
+    },/* [] */0
   ]
 ];
 
 var same_type = /* tuple */[
-  same_type_000,
-  same_type_001
+  same_type_000,same_type_001
 ];
 
 var v_obj = {
@@ -87,23 +78,19 @@ var v_obj = {
 };
 
 eq('File "ffi_js_test.ml", line 44, characters 5-12', /* tuple */[
-      Object.keys(int_config).length,
-      2
+      Object.keys(int_config).length,2
     ]);
 
 eq('File "ffi_js_test.ml", line 45, characters 5-12', /* tuple */[
-      Object.keys(string_config).length,
-      2
+      Object.keys(string_config).length,2
     ]);
 
 eq('File "ffi_js_test.ml", line 46, characters 5-12', /* tuple */[
-      Object.keys(v_obj).indexOf("hi_x"),
-      -1
+      Object.keys(v_obj).indexOf("hi_x"),-1
     ]);
 
 eq('File "ffi_js_test.ml", line 47, characters 5-12', /* tuple */[
-      Object.keys(v_obj).indexOf("hi"),
-      0
+      Object.keys(v_obj).indexOf("hi"),0
     ]);
 
 var u = [3];
@@ -114,8 +101,7 @@ var side_effect_config = (u[0] = u[0] + 1 | 0, {
   });
 
 eq('File "ffi_js_test.ml", line 54, characters 5-12', /* tuple */[
-      u[0],
-      4
+      u[0],4
     ]);
 
 function vv(z) {

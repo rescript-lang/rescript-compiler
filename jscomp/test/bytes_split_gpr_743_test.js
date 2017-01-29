@@ -13,17 +13,14 @@ function eq(loc, param) {
   var y = param[1];
   var x = param[0];
   test_id[0] = test_id[0] + 1 | 0;
-  suites[0] = /* :: */[
+  suites[0] = /* Nested :: */[
     /* tuple */[
-      loc + (" id " + test_id[0]),
-      function () {
+      loc + (" id " + test_id[0]),function () {
         return /* Eq */Block.__(0, [
-                  x,
-                  y
+                  x,y
                 ]);
       }
-    ],
-    suites[0]
+    ],suites[0]
   ];
   return /* () */0;
 }
@@ -43,8 +40,7 @@ var res = Caml_string.bytes_to_string(b);
 console.log(res);
 
 eq('File "bytes_split_gpr_743_test.ml", line 17, characters 5-12', /* tuple */[
-      "aab",
-      res
+      "aab",res
     ]);
 
 var b$1 = new Array(3);
@@ -62,8 +58,7 @@ var res2 = Caml_string.bytes_to_string(b$1);
 console.log(res2);
 
 eq('File "bytes_split_gpr_743_test.ml", line 32, characters 5-12', /* tuple */[
-      "bcc",
-      res2
+      "bcc",res2
     ]);
 
 Mt.from_pair_suites("bytes_split_gpr_743_test.ml", suites[0]);

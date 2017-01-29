@@ -19,23 +19,17 @@ function f(v) {
 }
 
 var v = /* int array */[
-    1,
-    2,
-    3
+    1,2,3
   ].map(Curry.__2(f));
 
 var vv = /* int array */[
-    1,
-    2,
-    3
+    1,2,3
   ].map(function (prim, prim$1) {
       return prim + prim$1 | 0;
     });
 
 var hh = /* array */[
-    "1",
-    "2",
-    "3"
+    "1","2","3"
   ].map(function (prim) {
       return parseInt(prim);
     });
@@ -44,81 +38,56 @@ function u() {
   return 3;
 }
 
-Mt.from_pair_suites("ffi_arity_test.ml", /* :: */[
+Mt.from_pair_suites("ffi_arity_test.ml", /* Nested :: */[
       /* tuple */[
-        'File "ffi_arity_test.ml", line 23, characters 4-11',
-        function () {
+        'File "ffi_arity_test.ml", line 23, characters 4-11',function () {
           return /* Eq */Block.__(0, [
-                    v,
-                    /* int array */[
-                      0,
-                      1,
-                      4
+                    v,/* int array */[
+                      0,1,4
                     ]
                   ]);
         }
-      ],
-      /* :: */[
+      ],[
         /* tuple */[
-          'File "ffi_arity_test.ml", line 24, characters 4-11',
-          function () {
+          'File "ffi_arity_test.ml", line 24, characters 4-11',function () {
             return /* Eq */Block.__(0, [
-                      vv,
-                      /* int array */[
-                        1,
-                        3,
-                        5
+                      vv,/* int array */[
+                        1,3,5
                       ]
                     ]);
           }
-        ],
-        /* :: */[
+        ],[
           /* tuple */[
-            'File "ffi_arity_test.ml", line 25, characters 4-11',
-            function () {
+            'File "ffi_arity_test.ml", line 25, characters 4-11',function () {
               return /* Eq */Block.__(0, [
-                        hh,
-                        /* int array */[
-                          1,
-                          2,
-                          3
+                        hh,/* int array */[
+                          1,2,3
                         ]
                       ]);
             }
-          ],
-          /* :: */[
+          ],[
             /* tuple */[
-              'File "ffi_arity_test.ml", line 26, characters 4-11',
-              function () {
+              'File "ffi_arity_test.ml", line 26, characters 4-11',function () {
                 return /* Eq */Block.__(0, [
                           /* int array */[
-                                1,
-                                2,
-                                3
+                                1,2,3
                               ].map(function (x) {
                                   return function (y) {
                                     return x + y | 0;
                                   };
                                 }).map(function (y) {
                                 return Caml_int32.imul(Curry._1(y, 0), Curry._1(y, 1));
-                              }),
-                          /* int array */[
-                            2,
-                            6,
-                            12
+                              }),/* int array */[
+                            2,6,12
                           ]
                         ]);
               }
-            ],
-            /* :: */[
+            ],[
               /* tuple */[
-                'File "ffi_arity_test.ml", line 31, characters 4-11',
-                function () {
+                'File "ffi_arity_test.ml", line 31, characters 4-11',function () {
                   return /* Eq */Block.__(0, [
                             /* int array */[
-                                1,
-                                2,
-                                3
+                                1,2,3
                               ].map(function (param, param$1) {
                                   return Curry._2(function (x) {
                                               var y = Caml_int32.imul(x, x);
@@ -126,16 +95,12 @@ Mt.from_pair_suites("ffi_arity_test.ml", /* :: */[
                                                 return y + i | 0;
                                               };
                                             }, param, param$1);
-                                }),
-                            /* int array */[
-                              1,
-                              5,
-                              11
+                                }),/* int array */[
+                              1,5,11
                             ]
                           ]);
                 }
-              ],
-              /* [] */0
+              ],/* [] */0
             ]
           ]
         ]

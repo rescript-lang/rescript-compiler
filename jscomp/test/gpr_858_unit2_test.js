@@ -23,11 +23,8 @@ for(var i = 1; i <= 2; ++i){
     }
     else {
       throw [
-            Caml_builtin_exceptions.assert_failure,
-            [
-              "gpr_858_unit2_test.ml",
-              6,
-              13
+            Caml_builtin_exceptions.assert_failure,[
+              "gpr_858_unit2_test.ml",6,13
             ]
           ];
     }

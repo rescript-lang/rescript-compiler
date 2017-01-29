@@ -21,11 +21,7 @@ function create(l, x, d, r) {
   var hl = height(l);
   var hr = height(r);
   return /* Node */[
-          l,
-          x,
-          d,
-          r,
-          hl >= hr ? hl + 1 | 0 : hr + 1 | 0
+          l,x,d,r,hl >= hr ? hl + 1 | 0 : hr + 1 | 0
         ];
 }
 
@@ -46,15 +42,13 @@ function bal(l, x, d, r) {
       }
       else {
         throw [
-              Caml_builtin_exceptions.invalid_argument,
-              "Map.bal"
+              Caml_builtin_exceptions.invalid_argument,"Map.bal"
             ];
       }
     }
     else {
       throw [
-            Caml_builtin_exceptions.invalid_argument,
-            "Map.bal"
+            Caml_builtin_exceptions.invalid_argument,"Map.bal"
           ];
     }
   }
@@ -72,25 +66,19 @@ function bal(l, x, d, r) {
       }
       else {
         throw [
-              Caml_builtin_exceptions.invalid_argument,
-              "Map.bal"
+              Caml_builtin_exceptions.invalid_argument,"Map.bal"
             ];
       }
     }
     else {
       throw [
-            Caml_builtin_exceptions.invalid_argument,
-            "Map.bal"
+            Caml_builtin_exceptions.invalid_argument,"Map.bal"
           ];
     }
   }
   else {
     return /* Node */[
-            l,
-            x,
-            d,
-            r,
-            hl >= hr ? hl + 1 | 0 : hr + 1 | 0
+            l,x,d,r,hl >= hr ? hl + 1 | 0 : hr + 1 | 0
           ];
   }
 }
@@ -112,21 +100,13 @@ function add(x, data, param) {
     }
     else {
       return /* Node */[
-              l,
-              x,
-              data,
-              r,
-              param[4]
+              l,x,data,r,param[4]
             ];
     }
   }
   else {
     return /* Node */[
-            /* Empty */0,
-            x,
-            data,
-            /* Empty */0,
-            1
+            /* Empty */0,x,data,/* Empty */0,1
           ];
   }
 }
@@ -137,10 +117,7 @@ function cons_enum(_m, _e) {
     var m = _m;
     if (m) {
       _e = /* More */[
-        m[1],
-        m[2],
-        m[3],
-        e
+        m[1],m[2],m[3],e
       ];
       _m = m[0];
       continue ;
@@ -248,11 +225,7 @@ function create$1(l, x, d, r) {
   var hl = height$1(l);
   var hr = height$1(r);
   return /* Node */[
-          l,
-          x,
-          d,
-          r,
-          hl >= hr ? hl + 1 | 0 : hr + 1 | 0
+          l,x,d,r,hl >= hr ? hl + 1 | 0 : hr + 1 | 0
         ];
 }
 
@@ -273,15 +246,13 @@ function bal$1(l, x, d, r) {
       }
       else {
         throw [
-              Caml_builtin_exceptions.invalid_argument,
-              "Map.bal"
+              Caml_builtin_exceptions.invalid_argument,"Map.bal"
             ];
       }
     }
     else {
       throw [
-            Caml_builtin_exceptions.invalid_argument,
-            "Map.bal"
+            Caml_builtin_exceptions.invalid_argument,"Map.bal"
           ];
     }
   }
@@ -299,25 +270,19 @@ function bal$1(l, x, d, r) {
       }
       else {
         throw [
-              Caml_builtin_exceptions.invalid_argument,
-              "Map.bal"
+              Caml_builtin_exceptions.invalid_argument,"Map.bal"
             ];
       }
     }
     else {
       throw [
-            Caml_builtin_exceptions.invalid_argument,
-            "Map.bal"
+            Caml_builtin_exceptions.invalid_argument,"Map.bal"
           ];
     }
   }
   else {
     return /* Node */[
-            l,
-            x,
-            d,
-            r,
-            hl >= hr ? hl + 1 | 0 : hr + 1 | 0
+            l,x,d,r,hl >= hr ? hl + 1 | 0 : hr + 1 | 0
           ];
   }
 }
@@ -339,21 +304,13 @@ function add$1(x, data, param) {
     }
     else {
       return /* Node */[
-              l,
-              x,
-              data,
-              r,
-              param[4]
+              l,x,data,r,param[4]
             ];
     }
   }
   else {
     return /* Node */[
-            /* Empty */0,
-            x,
-            data,
-            /* Empty */0,
-            1
+            /* Empty */0,x,data,/* Empty */0,1
           ];
   }
 }
@@ -385,136 +342,97 @@ function of_list(kvs) {
 }
 
 var int_map_suites_000 = /* tuple */[
-  "add",
-  function () {
-    var v = of_list(/* :: */[
+  "add",function () {
+    var v = of_list(/* Nested :: */[
           /* tuple */[
-            1,
-            /* "1" */49
-          ],
-          /* :: */[
+            1,/* "1" */49
+          ],[
             /* tuple */[
-              2,
-              /* "3" */51
-            ],
-            /* :: */[
+              2,/* "3" */51
+            ],[
               /* tuple */[
-                3,
-                /* "4" */52
-              ],
-              /* [] */0
+                3,/* "4" */52
+              ],/* [] */0
             ]
           ]
         ]);
     return /* Eq */Block.__(0, [
-              cardinal(v),
-              3
+              cardinal(v),3
             ]);
   }
 ];
 
-var int_map_suites_001 = /* :: */[
+var int_map_suites_001 = /* Nested :: */[
   /* tuple */[
-    "equal",
-    function () {
-      var v = of_list(/* :: */[
+    "equal",function () {
+      var v = of_list(/* Nested :: */[
             /* tuple */[
-              1,
-              /* "1" */49
-            ],
-            /* :: */[
+              1,/* "1" */49
+            ],[
               /* tuple */[
-                2,
-                /* "3" */51
-              ],
-              /* :: */[
+                2,/* "3" */51
+              ],[
                 /* tuple */[
-                  3,
-                  /* "4" */52
-                ],
-                /* [] */0
+                  3,/* "4" */52
+                ],/* [] */0
               ]
             ]
           ]);
-      var u = of_list(/* :: */[
+      var u = of_list(/* Nested :: */[
             /* tuple */[
-              2,
-              /* "3" */51
-            ],
-            /* :: */[
+              2,/* "3" */51
+            ],[
               /* tuple */[
-                3,
-                /* "4" */52
-              ],
-              /* :: */[
+                3,/* "4" */52
+              ],[
                 /* tuple */[
-                  1,
-                  /* "1" */49
-                ],
-                /* [] */0
+                  1,/* "1" */49
+                ],/* [] */0
               ]
             ]
           ]);
       return /* Eq */Block.__(0, [
-                compare(Caml_obj.caml_compare, u, v),
-                0
+                compare(Caml_obj.caml_compare, u, v),0
               ]);
     }
-  ],
-  /* :: */[
+  ],[
     /* tuple */[
-      "equal2",
-      function () {
-        var v = of_list(/* :: */[
+      "equal2",function () {
+        var v = of_list(/* Nested :: */[
               /* tuple */[
-                1,
-                /* "1" */49
-              ],
-              /* :: */[
+                1,/* "1" */49
+              ],[
                 /* tuple */[
-                  2,
-                  /* "3" */51
-                ],
-                /* :: */[
+                  2,/* "3" */51
+                ],[
                   /* tuple */[
-                    3,
-                    /* "4" */52
-                  ],
-                  /* [] */0
+                    3,/* "4" */52
+                  ],/* [] */0
                 ]
               ]
             ]);
-        var u = of_list(/* :: */[
+        var u = of_list(/* Nested :: */[
               /* tuple */[
-                2,
-                /* "3" */51
-              ],
-              /* :: */[
+                2,/* "3" */51
+              ],[
                 /* tuple */[
-                  3,
-                  /* "4" */52
-                ],
-                /* :: */[
+                  3,/* "4" */52
+                ],[
                   /* tuple */[
-                    1,
-                    /* "1" */49
-                  ],
-                  /* [] */0
+                    1,/* "1" */49
+                  ],/* [] */0
                 ]
               ]
             ]);
         return /* Eq */Block.__(0, [
-                  /* true */1,
-                  equal(function (x, y) {
+                  /* true */1,equal(function (x, y) {
                         return +(x === y);
                       }, u, v)
                 ]);
       }
-    ],
-    /* :: */[
+    ],[
       /* tuple */[
-        "iteration",
-        function () {
+        "iteration",function () {
           var m = /* Empty */0;
           for(var i = 0; i <= 10000; ++i){
             m = add$1("" + i, "" + i, m);
@@ -527,19 +445,16 @@ var int_map_suites_001 = /* :: */[
             
           }
           return /* Eq */Block.__(0, [
-                    v,
-                    -1
+                    v,-1
                   ]);
         }
-      ],
-      /* [] */0
+      ],/* [] */0
     ]
   ]
 ];
 
-var int_map_suites = /* :: */[
-  int_map_suites_000,
-  int_map_suites_001
+var int_map_suites = /* Nested :: */[
+  int_map_suites_000,int_map_suites_001
 ];
 
 Mt.from_pair_suites("map_test.ml", int_map_suites);

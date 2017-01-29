@@ -37,18 +37,12 @@ function print_failure_test_fail() {
   all_tests_ok[0] = /* false */0;
   return Pervasives.print_string(Curry._1(Printf.sprintf(/* Format */[
                       /* String_literal */Block.__(11, [
-                          "\n********* Failure Test number ",
-                          /* Int */Block.__(4, [
-                              /* Int_i */3,
-                              /* No_padding */0,
-                              /* No_precision */0,
-                              /* String_literal */Block.__(11, [
-                                  " incorrectly failed ***********\n",
-                                  /* End_of_format */0
+                          "\n********* Failure Test number ",/* Int */Block.__(4, [
+                              /* Int_i */3,/* No_padding */0,/* No_precision */0,/* String_literal */Block.__(11, [
+                                  " incorrectly failed ***********\n",/* End_of_format */0
                                 ])
                             ])
-                        ]),
-                      "\n********* Failure Test number %i incorrectly failed ***********\n"
+                        ]),"\n********* Failure Test number %i incorrectly failed ***********\n"
                     ]), test_num[0]));
 }
 
@@ -56,18 +50,12 @@ function print_failure_test_succeed() {
   all_tests_ok[0] = /* false */0;
   return Pervasives.print_string(Curry._1(Printf.sprintf(/* Format */[
                       /* String_literal */Block.__(11, [
-                          "\n********* Failure Test number ",
-                          /* Int */Block.__(4, [
-                              /* Int_i */3,
-                              /* No_padding */0,
-                              /* No_precision */0,
-                              /* String_literal */Block.__(11, [
-                                  " failed to fail ***********\n",
-                                  /* End_of_format */0
+                          "\n********* Failure Test number ",/* Int */Block.__(4, [
+                              /* Int_i */3,/* No_padding */0,/* No_precision */0,/* String_literal */Block.__(11, [
+                                  " failed to fail ***********\n",/* End_of_format */0
                                 ])
                             ])
-                        ]),
-                      "\n********* Failure Test number %i failed to fail ***********\n"
+                        ]),"\n********* Failure Test number %i failed to fail ***********\n"
                     ]), test_num[0]));
 }
 
@@ -81,18 +69,12 @@ function test(b) {
     all_tests_ok[0] = /* false */0;
     return Pervasives.print_string(Curry._1(Printf.sprintf(/* Format */[
                         /* String_literal */Block.__(11, [
-                            "\n********* Test number ",
-                            /* Int */Block.__(4, [
-                                /* Int_i */3,
-                                /* No_padding */0,
-                                /* No_precision */0,
-                                /* String_literal */Block.__(11, [
-                                    " failed ***********\n",
-                                    /* End_of_format */0
+                            "\n********* Test number ",/* Int */Block.__(4, [
+                                /* Int_i */3,/* No_padding */0,/* No_precision */0,/* String_literal */Block.__(11, [
+                                    " failed ***********\n",/* End_of_format */0
                                   ])
                               ])
-                          ]),
-                        "\n********* Test number %i failed ***********\n"
+                          ]),"\n********* Test number %i failed ***********\n"
                       ]), test_num[0]));
   }
 }
@@ -138,8 +120,7 @@ function failure_test(f, x, s) {
   var x$1 = x;
   return test_raises_exc_p(function (x) {
               return Caml_obj.caml_equal(x, [
-                          Caml_builtin_exceptions.failure,
-                          s$1
+                          Caml_builtin_exceptions.failure,s$1
                         ]);
             }, f$1, x$1);
 }

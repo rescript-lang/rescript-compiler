@@ -12,41 +12,33 @@ var test_id = [0];
 
 function eq(loc, x, y) {
   test_id[0] = test_id[0] + 1 | 0;
-  suites[0] = /* :: */[
+  suites[0] = /* Nested :: */[
     /* tuple */[
-      loc + (" id " + test_id[0]),
-      function () {
+      loc + (" id " + test_id[0]),function () {
         return /* Eq */Block.__(0, [
-                  x,
-                  y
+                  x,y
                 ]);
       }
-    ],
-    suites[0]
+    ],suites[0]
   ];
   return /* () */0;
 }
 
 function add(suite) {
-  suites[0] = /* :: */[
-    suite,
-    suites[0]
+  suites[0] = /* Nested :: */[
+    suite,suites[0]
   ];
   return /* () */0;
 }
 
 var Int3 = Caml_module.init_mod([
-      "recursive_module_test.ml",
-      13,
-      6
+      "recursive_module_test.ml",13,6
     ], [[0]]);
 
 Caml_module.update_mod([[0]], Int3, Int3);
 
 var M = Caml_module.init_mod([
-      "recursive_module_test.ml",
-      20,
-      20
+      "recursive_module_test.ml",20,20
     ], [[0]]);
 
 function fact(n) {
@@ -63,15 +55,13 @@ Caml_module.update_mod([[0]], M, /* module */[/* fact */fact]);
 var fact$1 = M[0];
 
 var Fact = /* module */[
-  /* M */M,
-  /* fact */fact$1
+  /* M */M,/* fact */fact$1
 ];
 
 eq('File "recursive_module_test.ml", line 30, characters 5-12', 120, Curry._1(fact$1, 5));
 
 add(/* tuple */[
-      'File "recursive_module_test.ml", line 34, characters 7-14',
-      function () {
+      'File "recursive_module_test.ml", line 34, characters 7-14',function () {
         return /* ThrowAny */Block.__(3, [function () {
                     Curry._1(Int3[/* u */0], 3);
                     return /* () */0;

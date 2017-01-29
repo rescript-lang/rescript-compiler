@@ -112,11 +112,8 @@ function f(x) {
           return 1;
       case 1 : 
           throw [
-                Caml_builtin_exceptions.assert_failure,
-                [
-                  "test_trywith.ml",
-                  51,
-                  9
+                Caml_builtin_exceptions.assert_failure,[
+                  "test_trywith.ml",51,9
                 ]
               ];
       default:

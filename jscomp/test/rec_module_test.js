@@ -9,15 +9,11 @@ var Caml_string             = require("../../lib/js/caml_string");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
 
 var A = Caml_module.init_mod([
-      "rec_module_test.ml",
-      3,
-      6
+      "rec_module_test.ml",3,6
     ], [[0]]);
 
 var B = Caml_module.init_mod([
-      "rec_module_test.ml",
-      11,
-      6
+      "rec_module_test.ml",11,6
     ], [[0]]);
 
 function even(n) {
@@ -51,21 +47,15 @@ function odd(n) {
 Caml_module.update_mod([[0]], B, /* module */[/* odd */odd]);
 
 var AA = Caml_module.init_mod([
-      "rec_module_test.ml",
-      21,
-      6
+      "rec_module_test.ml",21,6
     ], [[
-        0,
-        0
+        0,0
       ]]);
 
 var BB = Caml_module.init_mod([
-      "rec_module_test.ml",
-      31,
-      6
+      "rec_module_test.ml",31,6
     ], [[
-        0,
-        0
+        0,0
       ]]);
 
 function even$1(n) {
@@ -87,11 +77,9 @@ function x() {
 }
 
 Caml_module.update_mod([[
-        0,
-        0
+        0,0
       ]], AA, /* module */[
-      /* even */even$1,
-      /* x */x
+      /* even */even$1,/* x */x
     ]);
 
 function odd$1(n) {
@@ -111,17 +99,13 @@ function y() {
 }
 
 Caml_module.update_mod([[
-        0,
-        0
+        0,0
       ]], BB, /* module */[
-      /* odd */odd$1,
-      /* y */y
+      /* odd */odd$1,/* y */y
     ]);
 
 var AAA = Caml_module.init_mod([
-      "rec_module_test.ml",
-      55,
-      2
+      "rec_module_test.ml",55,2
     ], [[0]]);
 
 function height(param) {
@@ -137,10 +121,7 @@ function create(l, v, r) {
   var hl = l ? l[3] : 0;
   var hr = r ? r[3] : 0;
   return /* Node */[
-          l,
-          v,
-          r,
-          hl >= hr ? hl + 1 | 0 : hr + 1 | 0
+          l,v,r,hl >= hr ? hl + 1 | 0 : hr + 1 | 0
         ];
 }
 
@@ -160,15 +141,13 @@ function bal(l, v, r) {
       }
       else {
         throw [
-              Caml_builtin_exceptions.invalid_argument,
-              "Set.bal"
+              Caml_builtin_exceptions.invalid_argument,"Set.bal"
             ];
       }
     }
     else {
       throw [
-            Caml_builtin_exceptions.invalid_argument,
-            "Set.bal"
+            Caml_builtin_exceptions.invalid_argument,"Set.bal"
           ];
     }
   }
@@ -185,24 +164,19 @@ function bal(l, v, r) {
       }
       else {
         throw [
-              Caml_builtin_exceptions.invalid_argument,
-              "Set.bal"
+              Caml_builtin_exceptions.invalid_argument,"Set.bal"
             ];
       }
     }
     else {
       throw [
-            Caml_builtin_exceptions.invalid_argument,
-            "Set.bal"
+            Caml_builtin_exceptions.invalid_argument,"Set.bal"
           ];
     }
   }
   else {
     return /* Node */[
-            l,
-            v,
-            r,
-            hl >= hr ? hl + 1 | 0 : hr + 1 | 0
+            l,v,r,hl >= hr ? hl + 1 | 0 : hr + 1 | 0
           ];
   }
 }
@@ -227,20 +201,14 @@ function add(x, t) {
   }
   else {
     return /* Node */[
-            /* Empty */0,
-            x,
-            /* Empty */0,
-            1
+            /* Empty */0,x,/* Empty */0,1
           ];
   }
 }
 
 function singleton(x) {
   return /* Node */[
-          /* Empty */0,
-          x,
-          /* Empty */0,
-          1
+          /* Empty */0,x,/* Empty */0,1
         ];
 }
 
@@ -338,8 +306,7 @@ function remove_min_elt(param) {
   }
   else {
     throw [
-          Caml_builtin_exceptions.invalid_argument,
-          "Set.remove_min_elt"
+          Caml_builtin_exceptions.invalid_argument,"Set.remove_min_elt"
         ];
   }
 }
@@ -368,33 +335,25 @@ function split(x, param) {
       if (c < 0) {
         var match = split(x, l);
         return /* tuple */[
-                match[0],
-                match[1],
-                join(match[2], v, r)
+                match[0],match[1],join(match[2], v, r)
               ];
       }
       else {
         var match$1 = split(x, r);
         return /* tuple */[
-                join(l, v, match$1[0]),
-                match$1[1],
-                match$1[2]
+                join(l, v, match$1[0]),match$1[1],match$1[2]
               ];
       }
     }
     else {
       return /* tuple */[
-              l,
-              /* true */1,
-              r
+              l,/* true */1,r
             ];
     }
   }
   else {
     return /* tuple */[
-            /* Empty */0,
-            /* false */0,
-            /* Empty */0
+            /* Empty */0,/* false */0,/* Empty */0
           ];
   }
 }
@@ -550,9 +509,7 @@ function cons_enum(_s, _e) {
     var s = _s;
     if (s) {
       _e = /* More */[
-        s[1],
-        s[2],
-        e
+        s[1],s[2],e
       ];
       _s = s[0];
       continue ;
@@ -615,10 +572,7 @@ function subset(_s1, _s2) {
         if (c) {
           if (c < 0) {
             if (subset(/* Node */[
-                    l1,
-                    v1,
-                    /* Empty */0,
-                    0
+                    l1,v1,/* Empty */0,0
                   ], l2)) {
               _s1 = r1;
               continue ;
@@ -629,10 +583,7 @@ function subset(_s1, _s2) {
             }
           }
           else if (subset(/* Node */[
-                  /* Empty */0,
-                  v1,
-                  r1,
-                  0
+                  /* Empty */0,v1,r1,0
                 ], r2)) {
             _s1 = l1;
             continue ;
@@ -770,21 +721,18 @@ function partition(p, param) {
     var rt = match$1[0];
     if (pv) {
       return /* tuple */[
-              join(lt, v, rt),
-              concat(lf, rf)
+              join(lt, v, rt),concat(lf, rf)
             ];
     }
     else {
       return /* tuple */[
-              concat(lt, rt),
-              join(lf, v, rf)
+              concat(lt, rt),join(lf, v, rf)
             ];
     }
   }
   else {
     return /* tuple */[
-            /* Empty */0,
-            /* Empty */0
+            /* Empty */0,/* Empty */0
           ];
   }
 }
@@ -804,9 +752,8 @@ function elements_aux(_accu, _param) {
     var accu = _accu;
     if (param) {
       _param = param[0];
-      _accu = /* :: */[
-        param[1],
-        elements_aux(accu, param[2])
+      _accu = /* Nested :: */[
+        param[1],elements_aux(accu, param[2])
       ];
       continue ;
       
@@ -867,19 +814,14 @@ function of_list(l) {
                   switch (n) {
                     case 0 : 
                         return /* tuple */[
-                                /* Empty */0,
-                                l
+                                /* Empty */0,l
                               ];
                     case 1 : 
                         if (l) {
                           return /* tuple */[
                                   /* Node */[
-                                    /* Empty */0,
-                                    l[0],
-                                    /* Empty */0,
-                                    1
-                                  ],
-                                  l[1]
+                                    /* Empty */0,l[0],/* Empty */0,1
+                                  ],l[1]
                                 ];
                         }
                         else {
@@ -893,16 +835,9 @@ function of_list(l) {
                             return /* tuple */[
                                     /* Node */[
                                       /* Node */[
-                                        /* Empty */0,
-                                        l[0],
-                                        /* Empty */0,
-                                        1
-                                      ],
-                                      match[0],
-                                      /* Empty */0,
-                                      2
-                                    ],
-                                    match[1]
+                                        /* Empty */0,l[0],/* Empty */0,1
+                                      ],match[0],/* Empty */0,2
+                                    ],match[1]
                                   ];
                           }
                           else {
@@ -922,21 +857,11 @@ function of_list(l) {
                               return /* tuple */[
                                       /* Node */[
                                         /* Node */[
-                                          /* Empty */0,
-                                          l[0],
-                                          /* Empty */0,
-                                          1
-                                        ],
-                                        match$1[0],
-                                        /* Node */[
-                                          /* Empty */0,
-                                          match$2[0],
-                                          /* Empty */0,
-                                          1
-                                        ],
-                                        2
-                                      ],
-                                      match$2[1]
+                                          /* Empty */0,l[0],/* Empty */0,1
+                                        ],match$1[0],/* Node */[
+                                          /* Empty */0,match$2[0],/* Empty */0,1
+                                        ],2
+                                      ],match$2[1]
                                     ];
                             }
                             else {
@@ -961,17 +886,13 @@ function of_list(l) {
                   if (l$1) {
                     var match$4 = sub((n - nl | 0) - 1 | 0, l$1[1]);
                     return /* tuple */[
-                            create(match$3[0], l$1[0], match$4[0]),
-                            match$4[1]
+                            create(match$3[0], l$1[0], match$4[0]),match$4[1]
                           ];
                   }
                   else {
                     throw [
-                          Caml_builtin_exceptions.assert_failure,
-                          [
-                            "set.ml",
-                            372,
-                            18
+                          Caml_builtin_exceptions.assert_failure,[
+                            "set.ml",372,18
                           ]
                         ];
                   }
@@ -1006,32 +927,7 @@ function of_list(l) {
 }
 
 var ASet = [
-  /* Empty */0,
-  is_empty,
-  mem,
-  add,
-  singleton,
-  remove,
-  union,
-  inter,
-  diff,
-  compare,
-  equal,
-  subset,
-  iter,
-  fold,
-  for_all,
-  exists,
-  filter,
-  partition,
-  cardinal,
-  elements,
-  min_elt,
-  max_elt,
-  min_elt,
-  split,
-  find,
-  of_list
+  /* Empty */0,is_empty,mem,add,singleton,remove,union,inter,diff,compare,equal,subset,iter,fold,for_all,exists,filter,partition,cardinal,elements,min_elt,max_elt,min_elt,split,find,of_list
 ];
 
 function compare$1(t1, t2) {
@@ -1054,95 +950,66 @@ function compare$1(t1, t2) {
 Caml_module.update_mod([[0]], AAA, /* module */[/* compare */compare$1]);
 
 var suites_000 = /* tuple */[
-  "test1",
-  function () {
+  "test1",function () {
     return /* Eq */Block.__(0, [
               /* tuple */[
-                /* true */1,
-                /* true */1,
-                /* false */0,
-                /* false */0
-              ],
-              /* tuple */[
-                Curry._1(A[/* even */0], 2),
-                Curry._1(AA[/* even */0], 4),
-                Curry._1(B[/* odd */0], 2),
-                Curry._1(BB[/* odd */0], 4)
+                /* true */1,/* true */1,/* false */0,/* false */0
+              ],/* tuple */[
+                Curry._1(A[/* even */0], 2),Curry._1(AA[/* even */0], 4),Curry._1(B[/* odd */0], 2),Curry._1(BB[/* odd */0], 4)
               ]
             ]);
   }
 ];
 
-var suites_001 = /* :: */[
+var suites_001 = /* Nested :: */[
   /* tuple */[
-    "test2",
-    function () {
+    "test2",function () {
       return /* Eq */Block.__(0, [
-                Curry._1(BB[/* y */1], /* () */0),
-                32
+                Curry._1(BB[/* y */1], /* () */0),32
               ]);
     }
-  ],
-  /* :: */[
+  ],[
     /* tuple */[
-      "test3",
-      function () {
+      "test3",function () {
         return /* Eq */Block.__(0, [
-                  Curry._1(AA[/* x */1], /* () */0),
-                  35
+                  Curry._1(AA[/* x */1], /* () */0),35
                 ]);
       }
-    ],
-    /* :: */[
+    ],[
       /* tuple */[
-        "test4",
-        function () {
+        "test4",function () {
           return /* Eq */Block.__(0, [
-                    /* true */1,
-                    Curry._1(A[/* even */0], 2)
+                    /* true */1,Curry._1(A[/* even */0], 2)
                   ]);
         }
-      ],
-      /* :: */[
+      ],[
         /* tuple */[
-          "test4",
-          function () {
+          "test4",function () {
             return /* Eq */Block.__(0, [
-                      /* true */1,
-                      Curry._1(AA[/* even */0], 4)
+                      /* true */1,Curry._1(AA[/* even */0], 4)
                     ]);
           }
-        ],
-        /* :: */[
+        ],[
           /* tuple */[
-            "test5",
-            function () {
+            "test5",function () {
               return /* Eq */Block.__(0, [
-                        /* false */0,
-                        Curry._1(B[/* odd */0], 2)
+                        /* false */0,Curry._1(B[/* odd */0], 2)
                       ]);
             }
-          ],
-          /* :: */[
+          ],[
             /* tuple */[
-              "test6",
-              function () {
+              "test6",function () {
                 return /* Eq */Block.__(0, [
-                          2,
-                          cardinal(of_list(/* :: */[
-                                    /* Leaf */Block.__(0, ["a"]),
-                                    /* :: */[
-                                      /* Leaf */Block.__(0, ["b"]),
-                                      /* :: */[
-                                        /* Leaf */Block.__(0, ["a"]),
-                                        /* [] */0
+                          2,cardinal(of_list(/* Nested :: */[
+                                    /* Leaf */Block.__(0, ["a"]),[
+                                      /* Leaf */Block.__(0, ["b"]),[
+                                        /* Leaf */Block.__(0, ["a"]),/* [] */0
                                       ]
                                     ]
                                   ]))
                         ]);
               }
-            ],
-            /* [] */0
+            ],/* [] */0
           ]
         ]
       ]
@@ -1150,9 +1017,8 @@ var suites_001 = /* :: */[
   ]
 ];
 
-var suites = /* :: */[
-  suites_000,
-  suites_001
+var suites = /* Nested :: */[
+  suites_000,suites_001
 ];
 
 Mt.from_pair_suites("rec_module_test.ml", suites);

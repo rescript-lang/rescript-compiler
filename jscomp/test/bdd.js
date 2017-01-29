@@ -65,19 +65,15 @@ function resize(newSize) {
         var n = bucket[0];
         if (typeof n === "number") {
           throw [
-                Caml_builtin_exceptions.assert_failure,
-                [
-                  "bdd.ml",
-                  54,
-                  27
+                Caml_builtin_exceptions.assert_failure,[
+                  "bdd.ml",54,27
                 ]
               ];
         }
         else {
           var ind = hashVal(getId(n[0]), getId(n[3]), n[1]) & newSz_1;
-          newArr[ind] = /* :: */[
-            n,
-            newArr[ind]
+          newArr[ind] = /* Nested :: */[
+            n,newArr[ind]
           ];
           _bucket = bucket[1];
           continue ;
@@ -99,18 +95,16 @@ function resize(newSize) {
 
 function insert(idl, idh, v, ind, bucket, newNode) {
   if (n_items[0] <= sz_1[0]) {
-    htab[0][ind] = /* :: */[
-      newNode,
-      bucket
+    htab[0][ind] = /* Nested :: */[
+      newNode,bucket
     ];
     return n_items[0] = n_items[0] + 1 | 0;
   }
   else {
     resize((sz_1[0] + sz_1[0] | 0) + 2 | 0);
     var ind$1 = hashVal(idl, idh, v) & sz_1[0];
-    htab[0][ind$1] = /* :: */[
-      newNode,
-      htab[0][ind$1]
+    htab[0][ind$1] = /* Nested :: */[
+      newNode,htab[0][ind$1]
     ];
     return /* () */0;
   }
@@ -140,11 +134,8 @@ function mkNode(low, v, high) {
         var n = b[0];
         if (typeof n === "number") {
           throw [
-                Caml_builtin_exceptions.assert_failure,
-                [
-                  "bdd.ml",
-                  99,
-                  31
+                Caml_builtin_exceptions.assert_failure,[
+                  "bdd.ml",99,31
                 ]
               ];
         }
@@ -160,10 +151,7 @@ function mkNode(low, v, high) {
       else {
         var n_002 = (nodeC[0] = nodeC[0] + 1 | 0, nodeC[0]);
         var n$1 = /* Node */[
-          low,
-          v,
-          n_002,
-          high
+          low,v,n_002,high
         ];
         insert(getId(low), getId(high), v, ind, bucket, n$1);
         return n$1;
@@ -416,11 +404,8 @@ function main() {
   }
   else {
     throw [
-          Caml_builtin_exceptions.assert_failure,
-          [
-            "bdd.ml",
-            233,
-            2
+          Caml_builtin_exceptions.assert_failure,[
+            "bdd.ml",233,2
           ]
         ];
   }

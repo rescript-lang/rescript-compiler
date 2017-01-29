@@ -18,8 +18,7 @@ function test_endian_string() {
 var v = test_endian_string(1);
 
 var Test = /* module */[
-  /* test_endian_string */test_endian_string,
-  /* v */v
+  /* test_endian_string */test_endian_string,/* v */v
 ];
 
 exports.ExtUnixAll = ExtUnixAll;

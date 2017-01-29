@@ -11,15 +11,13 @@ var CamlinternalFormatBasics = require("../../lib/js/camlinternalFormatBasics");
 
 function failwith(s) {
   throw [
-        Caml_builtin_exceptions.failure,
-        s
+        Caml_builtin_exceptions.failure,s
       ];
 }
 
 function invalid_arg(s) {
   throw [
-        Caml_builtin_exceptions.invalid_argument,
-        s
+        Caml_builtin_exceptions.invalid_argument,s
       ];
 }
 
@@ -70,8 +68,7 @@ function $caret(s1, s2) {
 function char_of_int(n) {
   if (n < 0 || n > 255) {
     throw [
-          Caml_builtin_exceptions.invalid_argument,
-          "char_of_int"
+          Caml_builtin_exceptions.invalid_argument,"char_of_int"
         ];
   }
   else {
@@ -96,8 +93,7 @@ function bool_of_string(param) {
         return /* true */1;
     default:
       throw [
-            Caml_builtin_exceptions.invalid_argument,
-            "bool_of_string"
+            Caml_builtin_exceptions.invalid_argument,"bool_of_string"
           ];
   }
 }
@@ -144,9 +140,8 @@ function string_of_float(f) {
 
 function $at(l1, l2) {
   if (l1) {
-    return /* :: */[
-            l1[0],
-            $at(l1[1], l2)
+    return /* Nested :: */[
+            l1[0],$at(l1[1], l2)
           ];
   }
   else {
@@ -167,15 +162,11 @@ function open_out_gen(_, _$1, _$2) {
 }
 
 function open_out(name) {
-  return open_out_gen(/* :: */[
-              /* Open_wronly */1,
-              /* :: */[
-                /* Open_creat */3,
-                /* :: */[
-                  /* Open_trunc */4,
-                  /* :: */[
-                    /* Open_text */7,
-                    /* [] */0
+  return open_out_gen(/* Nested :: */[
+              /* Open_wronly */1,[
+                /* Open_creat */3,[
+                  /* Open_trunc */4,[
+                    /* Open_text */7,/* [] */0
                   ]
                 ]
               ]
@@ -183,15 +174,11 @@ function open_out(name) {
 }
 
 function open_out_bin(name) {
-  return open_out_gen(/* :: */[
-              /* Open_wronly */1,
-              /* :: */[
-                /* Open_creat */3,
-                /* :: */[
-                  /* Open_trunc */4,
-                  /* :: */[
-                    /* Open_binary */6,
-                    /* [] */0
+  return open_out_gen(/* Nested :: */[
+              /* Open_wronly */1,[
+                /* Open_creat */3,[
+                  /* Open_trunc */4,[
+                    /* Open_binary */6,/* [] */0
                   ]
                 ]
               ]
@@ -230,8 +217,7 @@ function output_string(oc, s) {
 function output(oc, s, ofs, len) {
   if (ofs < 0 || len < 0 || ofs > (s.length - len | 0)) {
     throw [
-          Caml_builtin_exceptions.invalid_argument,
-          "output"
+          Caml_builtin_exceptions.invalid_argument,"output"
         ];
   }
   else {
@@ -242,8 +228,7 @@ function output(oc, s, ofs, len) {
 function output_substring(oc, s, ofs, len) {
   if (ofs < 0 || len < 0 || ofs > (s.length - len | 0)) {
     throw [
-          Caml_builtin_exceptions.invalid_argument,
-          "output_substring"
+          Caml_builtin_exceptions.invalid_argument,"output_substring"
         ];
   }
   else {
@@ -288,21 +273,17 @@ function open_in_gen(_, _$1, _$2) {
 }
 
 function open_in(name) {
-  return open_in_gen(/* :: */[
-              /* Open_rdonly */0,
-              /* :: */[
-                /* Open_text */7,
-                /* [] */0
+  return open_in_gen(/* Nested :: */[
+              /* Open_rdonly */0,[
+                /* Open_text */7,/* [] */0
               ]
             ], 0, name);
 }
 
 function open_in_bin(name) {
-  return open_in_gen(/* :: */[
-              /* Open_rdonly */0,
-              /* :: */[
-                /* Open_binary */6,
-                /* [] */0
+  return open_in_gen(/* Nested :: */[
+              /* Open_rdonly */0,[
+                /* Open_binary */6,/* [] */0
               ]
             ], 0, name);
 }
@@ -310,8 +291,7 @@ function open_in_bin(name) {
 function input(_, s, ofs, len) {
   if (ofs < 0 || len < 0 || ofs > (s.length - len | 0)) {
     throw [
-          Caml_builtin_exceptions.invalid_argument,
-          "input"
+          Caml_builtin_exceptions.invalid_argument,"input"
         ];
   }
   else {
@@ -348,8 +328,7 @@ function unsafe_really_input(_, _$1, _ofs, _len) {
 function really_input(ic, s, ofs, len) {
   if (ofs < 0 || len < 0 || ofs > (s.length - len | 0)) {
     throw [
-          Caml_builtin_exceptions.invalid_argument,
-          "really_input"
+          Caml_builtin_exceptions.invalid_argument,"really_input"
         ];
   }
   else {
@@ -399,9 +378,8 @@ function input_line(chan) {
         Caml_io.caml_ml_input_char(chan);
         if (accu) {
           var len$1 = (len + n | 0) - 1 | 0;
-          return build_result(Caml_string.caml_create_string(len$1), len$1, /* :: */[
-                      res,
-                      accu
+          return build_result(Caml_string.caml_create_string(len$1), len$1, /* Nested :: */[
+                      res,accu
                     ]);
         }
         else {
@@ -414,9 +392,8 @@ function input_line(chan) {
               throw "caml_ml_input not implemented by bucklescript yet\n";
             }());
         _len = len - n | 0;
-        _accu = /* :: */[
-          beg,
-          accu
+        _accu = /* Nested :: */[
+          beg,accu
         ];
         continue ;
         
@@ -525,8 +502,7 @@ function string_of_format(param) {
 
 function $caret$caret(param, param$1) {
   return /* Format */[
-          CamlinternalFormatBasics.concat_fmt(param[0], param$1[0]),
-          $caret(param[1], $caret("%,", param$1[1]))
+          CamlinternalFormatBasics.concat_fmt(param[0], param$1[0]),$caret(param[1], $caret("%,", param$1[1]))
         ];
 }
 

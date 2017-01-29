@@ -14,10 +14,7 @@ function create(l, v, r) {
   var hl = height(l);
   var hr = height(r);
   return /* Node */[
-          l,
-          v,
-          r,
-          hl >= hr ? hl + 1 | 0 : hr + 1 | 0
+          l,v,r,hl >= hr ? hl + 1 | 0 : hr + 1 | 0
         ];
 }
 
@@ -64,10 +61,7 @@ function bal(l, v, r) {
   }
   else {
     return /* Node */[
-            l,
-            v,
-            r,
-            hl >= hr ? hl + 1 | 0 : hr + 1 | 0
+            l,v,r,hl >= hr ? hl + 1 | 0 : hr + 1 | 0
           ];
   }
 }
@@ -104,10 +98,7 @@ function add(x, t) {
   }
   else {
     return /* Node */[
-            /* Empty */0,
-            x,
-            /* Empty */0,
-            1
+            /* Empty */0,x,/* Empty */0,1
           ];
   }
 }

@@ -17,11 +17,7 @@ function create(l, x, d, r) {
   var hl = height(l);
   var hr = height(r);
   return /* Node */[
-          l,
-          x,
-          d,
-          r,
-          hl >= hr ? hl + 1 | 0 : hr + 1 | 0
+          l,x,d,r,hl >= hr ? hl + 1 | 0 : hr + 1 | 0
         ];
 }
 
@@ -42,15 +38,13 @@ function bal(l, x, d, r) {
       }
       else {
         throw [
-              Caml_builtin_exceptions.invalid_argument,
-              "Map.bal"
+              Caml_builtin_exceptions.invalid_argument,"Map.bal"
             ];
       }
     }
     else {
       throw [
-            Caml_builtin_exceptions.invalid_argument,
-            "Map.bal"
+            Caml_builtin_exceptions.invalid_argument,"Map.bal"
           ];
     }
   }
@@ -68,25 +62,19 @@ function bal(l, x, d, r) {
       }
       else {
         throw [
-              Caml_builtin_exceptions.invalid_argument,
-              "Map.bal"
+              Caml_builtin_exceptions.invalid_argument,"Map.bal"
             ];
       }
     }
     else {
       throw [
-            Caml_builtin_exceptions.invalid_argument,
-            "Map.bal"
+            Caml_builtin_exceptions.invalid_argument,"Map.bal"
           ];
     }
   }
   else {
     return /* Node */[
-            l,
-            x,
-            d,
-            r,
-            hl >= hr ? hl + 1 | 0 : hr + 1 | 0
+            l,x,d,r,hl >= hr ? hl + 1 | 0 : hr + 1 | 0
           ];
   }
 }
@@ -108,21 +96,13 @@ function add(x, data, param) {
     }
     else {
       return /* Node */[
-              l,
-              x,
-              data,
-              r,
-              param[4]
+              l,x,data,r,param[4]
             ];
     }
   }
   else {
     return /* Node */[
-            /* Empty */0,
-            x,
-            data,
-            /* Empty */0,
-            1
+            /* Empty */0,x,data,/* Empty */0,1
           ];
   }
 }

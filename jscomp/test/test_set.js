@@ -17,10 +17,7 @@ function Make(Ord) {
     var hl = l ? l[3] : 0;
     var hr = r ? r[3] : 0;
     return /* Node */[
-            l,
-            v,
-            r,
-            hl >= hr ? hl + 1 | 0 : hr + 1 | 0
+            l,v,r,hl >= hr ? hl + 1 | 0 : hr + 1 | 0
           ];
   };
   var bal = function (l, v, r) {
@@ -39,15 +36,13 @@ function Make(Ord) {
         }
         else {
           throw [
-                Caml_builtin_exceptions.invalid_argument,
-                "Set.bal"
+                Caml_builtin_exceptions.invalid_argument,"Set.bal"
               ];
         }
       }
       else {
         throw [
-              Caml_builtin_exceptions.invalid_argument,
-              "Set.bal"
+              Caml_builtin_exceptions.invalid_argument,"Set.bal"
             ];
       }
     }
@@ -64,24 +59,19 @@ function Make(Ord) {
         }
         else {
           throw [
-                Caml_builtin_exceptions.invalid_argument,
-                "Set.bal"
+                Caml_builtin_exceptions.invalid_argument,"Set.bal"
               ];
         }
       }
       else {
         throw [
-              Caml_builtin_exceptions.invalid_argument,
-              "Set.bal"
+              Caml_builtin_exceptions.invalid_argument,"Set.bal"
             ];
       }
     }
     else {
       return /* Node */[
-              l,
-              v,
-              r,
-              hl >= hr ? hl + 1 | 0 : hr + 1 | 0
+              l,v,r,hl >= hr ? hl + 1 | 0 : hr + 1 | 0
             ];
     }
   };
@@ -105,19 +95,13 @@ function Make(Ord) {
     }
     else {
       return /* Node */[
-              /* Empty */0,
-              x,
-              /* Empty */0,
-              1
+              /* Empty */0,x,/* Empty */0,1
             ];
     }
   };
   var singleton = function (x) {
     return /* Node */[
-            /* Empty */0,
-            x,
-            /* Empty */0,
-            1
+            /* Empty */0,x,/* Empty */0,1
           ];
   };
   var add_min_element = function (v, param) {
@@ -209,8 +193,7 @@ function Make(Ord) {
     }
     else {
       throw [
-            Caml_builtin_exceptions.invalid_argument,
-            "Set.remove_min_elt"
+            Caml_builtin_exceptions.invalid_argument,"Set.remove_min_elt"
           ];
     }
   };
@@ -250,33 +233,25 @@ function Make(Ord) {
         if (c < 0) {
           var match = split(x, l);
           return /* tuple */[
-                  match[0],
-                  match[1],
-                  join(match[2], v, r)
+                  match[0],match[1],join(match[2], v, r)
                 ];
         }
         else {
           var match$1 = split(x, r);
           return /* tuple */[
-                  join(l, v, match$1[0]),
-                  match$1[1],
-                  match$1[2]
+                  join(l, v, match$1[0]),match$1[1],match$1[2]
                 ];
         }
       }
       else {
         return /* tuple */[
-                l,
-                /* true */1,
-                r
+                l,/* true */1,r
               ];
       }
     }
     else {
       return /* tuple */[
-              /* Empty */0,
-              /* false */0,
-              /* Empty */0
+              /* Empty */0,/* false */0,/* Empty */0
             ];
     }
   };
@@ -413,9 +388,7 @@ function Make(Ord) {
       var s = _s;
       if (s) {
         _e = /* More */[
-          s[1],
-          s[2],
-          e
+          s[1],s[2],e
         ];
         _s = s[0];
         continue ;
@@ -476,10 +449,7 @@ function Make(Ord) {
           if (c) {
             if (c < 0) {
               if (subset(/* Node */[
-                      l1,
-                      v1,
-                      /* Empty */0,
-                      0
+                      l1,v1,/* Empty */0,0
                     ], l2)) {
                 _s1 = r1;
                 continue ;
@@ -490,10 +460,7 @@ function Make(Ord) {
               }
             }
             else if (subset(/* Node */[
-                    /* Empty */0,
-                    v1,
-                    r1,
-                    0
+                    /* Empty */0,v1,r1,0
                   ], r2)) {
               _s1 = l1;
               continue ;
@@ -625,21 +592,18 @@ function Make(Ord) {
       var rt = match$1[0];
       if (pv) {
         return /* tuple */[
-                join(lt, v, rt),
-                concat(lf, rf)
+                join(lt, v, rt),concat(lf, rf)
               ];
       }
       else {
         return /* tuple */[
-                concat(lt, rt),
-                join(lf, v, rf)
+                concat(lt, rt),join(lf, v, rf)
               ];
       }
     }
     else {
       return /* tuple */[
-              /* Empty */0,
-              /* Empty */0
+              /* Empty */0,/* Empty */0
             ];
     }
   };
@@ -657,9 +621,8 @@ function Make(Ord) {
       var accu = _accu;
       if (param) {
         _param = param[0];
-        _accu = /* :: */[
-          param[1],
-          elements_aux(accu, param[2])
+        _accu = /* Nested :: */[
+          param[1],elements_aux(accu, param[2])
         ];
         continue ;
         
@@ -702,19 +665,14 @@ function Make(Ord) {
         switch (n) {
           case 0 : 
               return /* tuple */[
-                      /* Empty */0,
-                      l
+                      /* Empty */0,l
                     ];
           case 1 : 
               if (l) {
                 return /* tuple */[
                         /* Node */[
-                          /* Empty */0,
-                          l[0],
-                          /* Empty */0,
-                          1
-                        ],
-                        l[1]
+                          /* Empty */0,l[0],/* Empty */0,1
+                        ],l[1]
                       ];
               }
               else {
@@ -728,16 +686,9 @@ function Make(Ord) {
                   return /* tuple */[
                           /* Node */[
                             /* Node */[
-                              /* Empty */0,
-                              l[0],
-                              /* Empty */0,
-                              1
-                            ],
-                            match[0],
-                            /* Empty */0,
-                            2
-                          ],
-                          match[1]
+                              /* Empty */0,l[0],/* Empty */0,1
+                            ],match[0],/* Empty */0,2
+                          ],match[1]
                         ];
                 }
                 else {
@@ -757,21 +708,11 @@ function Make(Ord) {
                     return /* tuple */[
                             /* Node */[
                               /* Node */[
-                                /* Empty */0,
-                                l[0],
-                                /* Empty */0,
-                                1
-                              ],
-                              match$1[0],
-                              /* Node */[
-                                /* Empty */0,
-                                match$2[0],
-                                /* Empty */0,
-                                1
-                              ],
-                              2
-                            ],
-                            match$2[1]
+                                /* Empty */0,l[0],/* Empty */0,1
+                              ],match$1[0],/* Node */[
+                                /* Empty */0,match$2[0],/* Empty */0,1
+                              ],2
+                            ],match$2[1]
                           ];
                   }
                   else {
@@ -796,17 +737,13 @@ function Make(Ord) {
         if (l$1) {
           var match$4 = sub((n - nl | 0) - 1 | 0, l$1[1]);
           return /* tuple */[
-                  create(match$3[0], l$1[0], match$4[0]),
-                  match$4[1]
+                  create(match$3[0], l$1[0], match$4[0]),match$4[1]
                 ];
         }
         else {
           throw [
-                Caml_builtin_exceptions.assert_failure,
-                [
-                  "test_set.ml",
-                  372,
-                  18
+                Caml_builtin_exceptions.assert_failure,[
+                  "test_set.ml",372,18
                 ]
               ];
         }
@@ -857,45 +794,7 @@ function Make(Ord) {
     }
   };
   return /* module */[
-          /* height */height,
-          /* create */create,
-          /* bal */bal,
-          /* add */add,
-          /* singleton */singleton,
-          /* add_min_element */add_min_element,
-          /* add_max_element */add_max_element,
-          /* join */join,
-          /* min_elt */min_elt,
-          /* max_elt */max_elt,
-          /* remove_min_elt */remove_min_elt,
-          /* merge */merge,
-          /* concat */concat,
-          /* split */split,
-          /* empty : Empty */0,
-          /* is_empty */is_empty,
-          /* mem */mem,
-          /* remove */remove,
-          /* union */union,
-          /* inter */inter,
-          /* diff */diff,
-          /* cons_enum */cons_enum,
-          /* compare_aux */compare_aux,
-          /* compare */compare,
-          /* equal */equal,
-          /* subset */subset,
-          /* iter */iter,
-          /* fold */fold,
-          /* for_all */for_all,
-          /* exists */exists,
-          /* filter */filter,
-          /* partition */partition,
-          /* cardinal */cardinal,
-          /* elements_aux */elements_aux,
-          /* elements */elements,
-          /* choose */min_elt,
-          /* find */find,
-          /* of_sorted_list */of_sorted_list,
-          /* of_list */of_list
+          /* height */height,/* create */create,/* bal */bal,/* add */add,/* singleton */singleton,/* add_min_element */add_min_element,/* add_max_element */add_max_element,/* join */join,/* min_elt */min_elt,/* max_elt */max_elt,/* remove_min_elt */remove_min_elt,/* merge */merge,/* concat */concat,/* split */split,/* empty : Empty */0,/* is_empty */is_empty,/* mem */mem,/* remove */remove,/* union */union,/* inter */inter,/* diff */diff,/* cons_enum */cons_enum,/* compare_aux */compare_aux,/* compare */compare,/* equal */equal,/* subset */subset,/* iter */iter,/* fold */fold,/* for_all */for_all,/* exists */exists,/* filter */filter,/* partition */partition,/* cardinal */cardinal,/* elements_aux */elements_aux,/* elements */elements,/* choose */min_elt,/* find */find,/* of_sorted_list */of_sorted_list,/* of_list */of_list
         ];
 }
 

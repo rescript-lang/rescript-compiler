@@ -5,8 +5,7 @@ var Curry = require("../../lib/js/curry");
 
 function from_pair_suites(name, suites) {
   console.log(/* tuple */[
-        name,
-        "testing"
+        name,"testing"
       ]);
   return List.iter(function (param) {
               var name = param[0];
@@ -14,26 +13,17 @@ function from_pair_suites(name, suites) {
               switch (match.tag | 0) {
                 case 0 : 
                     console.log(/* tuple */[
-                          name,
-                          match[0],
-                          "eq?",
-                          match[1]
+                          name,match[0],"eq?",match[1]
                         ]);
                     return /* () */0;
                 case 1 : 
                     console.log(/* tuple */[
-                          name,
-                          match[0],
-                          "neq?",
-                          match[1]
+                          name,match[0],"neq?",match[1]
                         ]);
                     return /* () */0;
                 case 2 : 
                     console.log(/* tuple */[
-                          name,
-                          match[0],
-                          "~",
-                          match[1]
+                          name,match[0],"~",match[1]
                         ]);
                     return /* () */0;
                 case 3 : 

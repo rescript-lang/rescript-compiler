@@ -20,8 +20,7 @@ function d_int(param_0) {
 
 function d_tuple(param_0, param_1) {
   return /* D_tuple */Block.__(1, [
-            param_0,
-            param_1
+            param_0,param_1
           ]);
 }
 
@@ -43,29 +42,22 @@ function d(param) {
 
 var v = /* d : D_int */Block.__(0, [3]);
 
-var h_001 = /* :: */[
-  /* D_int */Block.__(0, [3]),
-  /* :: */[
+var h_001 = /* Nested :: */[
+  /* D_int */Block.__(0, [3]),[
     /* D_tuple */Block.__(1, [
-        3,
-        "hgo"
-      ]),
-    /* :: */[
+        3,"hgo"
+      ]),[
       /* D_tweak */Block.__(3, [/* tuple */[
-            3,
-            "hgo"
-          ]]),
-      /* :: */[
-        /* NewContent */Block.__(2, ["3"]),
-        /* [] */0
+            3,"hgo"
+          ]]),[
+        /* NewContent */Block.__(2, ["3"]),/* [] */0
       ]
     ]
   ]
 ];
 
-var h = /* :: */[
-  /* D_empty */0,
-  h_001
+var h = /* Nested :: */[
+  /* D_empty */0,h_001
 ];
 
 var d_empty = /* D_empty */0;

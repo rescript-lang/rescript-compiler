@@ -11,21 +11,15 @@ var v = "gso";
 function is_equal() {
   if (Caml_bytes.get(Bytes.make(3, /* "a" */97), 0) !== /* "a" */97) {
     throw [
-          Caml_builtin_exceptions.assert_failure,
-          [
-            "equal_exception_test.ml",
-            9,
-            4
+          Caml_builtin_exceptions.assert_failure,[
+            "equal_exception_test.ml",9,4
           ]
         ];
   }
   if (Bytes.make(3, /* "a" */97)[0] !== /* "a" */97) {
     throw [
-          Caml_builtin_exceptions.assert_failure,
-          [
-            "equal_exception_test.ml",
-            10,
-            4
+          Caml_builtin_exceptions.assert_failure,[
+            "equal_exception_test.ml",10,4
           ]
         ];
   }
@@ -33,11 +27,8 @@ function is_equal() {
   u[0] = /* "b" */98;
   if (u[0] !== /* "b" */98) {
     throw [
-          Caml_builtin_exceptions.assert_failure,
-          [
-            "equal_exception_test.ml",
-            13,
-            4
+          Caml_builtin_exceptions.assert_failure,[
+            "equal_exception_test.ml",13,4
           ]
         ];
   }
@@ -61,8 +52,7 @@ function is_exception() {
 function is_normal_exception() {
   var A = Caml_exceptions.create("A");
   var v = [
-    A,
-    3
+    A,3
   ];
   try {
     throw v;
@@ -93,33 +83,25 @@ function is_arbitrary_exception() {
 }
 
 var suites_000 = /* tuple */[
-  "is_equal",
-  is_equal
+  "is_equal",is_equal
 ];
 
-var suites_001 = /* :: */[
+var suites_001 = /* Nested :: */[
   /* tuple */[
-    "is_exception",
-    is_exception
-  ],
-  /* :: */[
+    "is_exception",is_exception
+  ],[
     /* tuple */[
-      "is_normal_exception",
-      is_normal_exception
-    ],
-    /* :: */[
+      "is_normal_exception",is_normal_exception
+    ],[
       /* tuple */[
-        "is_arbitrary_exception",
-        is_arbitrary_exception
-      ],
-      /* [] */0
+        "is_arbitrary_exception",is_arbitrary_exception
+      ],/* [] */0
     ]
   ]
 ];
 
-var suites = /* :: */[
-  suites_000,
-  suites_001
+var suites = /* Nested :: */[
+  suites_000,suites_001
 ];
 
 Mt.from_suites("exception", suites);

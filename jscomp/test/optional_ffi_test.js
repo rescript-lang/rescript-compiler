@@ -12,17 +12,14 @@ function eq(loc, param) {
   var y = param[1];
   var x = param[0];
   test_id[0] = test_id[0] + 1 | 0;
-  suites[0] = /* :: */[
+  suites[0] = /* Nested :: */[
     /* tuple */[
-      loc + (" id " + test_id[0]),
-      function () {
+      loc + (" id " + test_id[0]),function () {
         return /* Eq */Block.__(0, [
-                  x,
-                  y
+                  x,y
                 ]);
       }
-    ],
-    suites[0]
+    ],suites[0]
   ];
   return /* () */0;
 }
@@ -41,12 +38,9 @@ var z = hey(5, 3);
 
 eq('File "optional_ffi_test.ml", line 23, characters 5-12', /* tuple */[
       /* tuple */[
-        u,
-        z
-      ],
-      /* tuple */[
-        6,
-        8
+        u,z
+      ],/* tuple */[
+        6,8
       ]
     ]);
 
@@ -75,35 +69,29 @@ function side_effect2(x) {
 var v = bug_to_fix(side_effect, counter);
 
 var pair_000 = /* tuple */[
-  v,
-  counter[0]
+  v,counter[0]
 ];
 
 var pair_001 = /* tuple */[
-  4,
-  1
+  4,1
 ];
 
 var pair = /* tuple */[
-  pair_000,
-  pair_001
+  pair_000,pair_001
 ];
 
 var v2 = bug_to_fix2(side_effect2, counter2);
 
 var pair2_000 = /* tuple */[
-  v2,
-  counter[0]
+  v2,counter[0]
 ];
 
 var pair2_001 = /* tuple */[
-  4,
-  1
+  4,1
 ];
 
 var pair2 = /* tuple */[
-  pair2_000,
-  pair2_001
+  pair2_000,pair2_001
 ];
 
 eq('File "optional_ffi_test.ml", line 43, characters 5-12', pair);
@@ -121,8 +109,7 @@ function heystr(x, y) {
 var pair_001$1 = heystr("name", "4");
 
 var pair$1 = /* tuple */[
-  "name4",
-  pair_001$1
+  "name4",pair_001$1
 ];
 
 eq('File "optional_ffi_test.ml", line 58, characters 5-12', pair$1);

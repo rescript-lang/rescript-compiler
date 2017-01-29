@@ -2,8 +2,7 @@
 
 
 var v = /* int array */[
-  0,
-  1
+  0,1
 ];
 
 exports.v = v;

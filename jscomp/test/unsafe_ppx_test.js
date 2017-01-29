@@ -56,47 +56,35 @@ var empty = ( Object.keys)(3);
 
 var v = $$test(1, 2);
 
-Mt.from_pair_suites("unsafe_ppx_test.ml", /* :: */[
+Mt.from_pair_suites("unsafe_ppx_test.ml", /* Nested :: */[
       /* tuple */[
-        "unsafe_max",
-        function () {
+        "unsafe_max",function () {
           return /* Eq */Block.__(0, [
-                    2,
-                    max(1, 2)
+                    2,max(1, 2)
                   ]);
         }
-      ],
-      /* :: */[
+      ],[
         /* tuple */[
-          "unsafe_test",
-          function () {
+          "unsafe_test",function () {
             return /* Eq */Block.__(0, [
-                      3,
-                      v
+                      3,v
                     ]);
           }
-        ],
-        /* :: */[
+        ],[
           /* tuple */[
-            "unsafe_max2",
-            function () {
+            "unsafe_max2",function () {
               return /* Eq */Block.__(0, [
-                        2,
-                        (Math.max)(1, 2)
+                        2,(Math.max)(1, 2)
                       ]);
             }
-          ],
-          /* :: */[
+          ],[
             /* tuple */[
-              "ffi_keys",
-              function () {
+              "ffi_keys",function () {
                 return /* Eq */Block.__(0, [
-                          /* array */["a"],
-                          Ffi_js_test.keys(( {a : 3}))
+                          /* array */["a"],Ffi_js_test.keys(( {a : 3}))
                         ]);
               }
-            ],
-            /* [] */0
+            ],/* [] */0
           ]
         ]
       ]

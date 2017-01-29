@@ -6,9 +6,7 @@ var u = {
   y: 32,
   bark: function ($$this, _, _$1) {
     console.log(/* tuple */[
-          $$this.length,
-          $$this.x,
-          $$this.y
+          $$this.length,$$this.x,$$this.y
         ]);
     return /* () */0;
   },
@@ -28,11 +26,7 @@ var js_obj = {
   bark: function (x, y) {
     var o = this ;
     console.log(/* tuple */[
-          o.length,
-          o.x,
-          o.y,
-          x,
-          y
+          o.length,o.x,o.y,x,y
         ]);
     return x + y | 0;
   },

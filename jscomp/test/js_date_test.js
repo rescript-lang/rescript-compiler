@@ -17,39 +17,29 @@ function d2(param) {
 var d3 = d2(2016)(1, /* () */0);
 
 var suites_000 = /* tuple */[
-  "getMonth",
-  function () {
+  "getMonth",function () {
     return /* Eq */Block.__(0, [
-              2,
-              d.getMonth()
+              2,d.getMonth()
             ]);
   }
 ];
 
-var suites_001 = /* :: */[
+var suites_001 = /* Nested :: */[
   /* tuple */[
-    "getYear",
-    function () {
+    "getYear",function () {
       return /* Eq */Block.__(0, [
                 /* tuple */[
-                  2016,
-                  2,
-                  1
-                ],
-                /* tuple */[
-                  d3.getFullYear(),
-                  d3.getMonth(),
-                  d3.getDate()
+                  2016,2,1
+                ],/* tuple */[
+                  d3.getFullYear(),d3.getMonth(),d3.getDate()
                 ]
               ]);
     }
-  ],
-  /* [] */0
+  ],/* [] */0
 ];
 
-var suites = /* :: */[
-  suites_000,
-  suites_001
+var suites = /* Nested :: */[
+  suites_000,suites_001
 ];
 
 Mt.from_pair_suites("js_date_test.ml", suites);

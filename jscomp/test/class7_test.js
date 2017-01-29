@@ -13,13 +13,11 @@ var shared = ["copy"];
 var shared$1 = ["window"];
 
 var shared$2 = [
-  "move",
-  "get_x"
+  "move","get_x"
 ];
 
 var shared$3 = [
-  "get",
-  "set"
+  "get","set"
 ];
 
 var shared$4 = ["x"];
@@ -27,8 +25,7 @@ var shared$4 = ["x"];
 var shared$5 = ["top_widget"];
 
 var shared$6 = [
-  "save",
-  "restore"
+  "save","restore"
 ];
 
 var suites = [/* [] */0];
@@ -37,17 +34,14 @@ var test_id = [0];
 
 function eq(loc, x, y) {
   test_id[0] = test_id[0] + 1 | 0;
-  suites[0] = /* :: */[
+  suites[0] = /* Nested :: */[
     /* tuple */[
-      loc + (" id " + test_id[0]),
-      function () {
+      loc + (" id " + test_id[0]),function () {
         return /* Eq */Block.__(0, [
-                  x,
-                  y
+                  x,y
                 ]);
       }
-    ],
-    suites[0]
+    ],suites[0]
   ];
   return /* () */0;
 }
@@ -58,12 +52,9 @@ function point_init($$class) {
   var get_x = ids[1];
   var x = ids[2];
   CamlinternalOO.set_methods($$class, /* array */[
-        get_x,
-        function (self$neg1) {
+        get_x,function (self$neg1) {
           return self$neg1[x];
-        },
-        move,
-        function (self$neg1, d) {
+        },move,function (self$neg1, d) {
           self$neg1[x] = self$neg1[x] + d | 0;
           return /* () */0;
         }
@@ -84,28 +75,22 @@ var q = Oo.copy(p);
 Curry.js2(-933174511, 1, q, 7);
 
 eq('File "class7_test.ml", line 22, characters 5-12', /* tuple */[
-      55,
-      62
+      55,62
     ], /* tuple */[
-      Curry.js1(291546447, 2, p),
-      Curry.js1(291546447, 3, q)
+      Curry.js1(291546447, 2, p),Curry.js1(291546447, 3, q)
     ]);
 
 function ref_init($$class) {
   var ids = CamlinternalOO.new_methods_variables($$class, [
-        "set",
-        "get"
+        "set","get"
       ], shared$4);
   var set = ids[0];
   var get = ids[1];
   var x = ids[2];
   CamlinternalOO.set_methods($$class, /* array */[
-        get,
-        function (self$neg2) {
+        get,function (self$neg2) {
           return self$neg2[x];
-        },
-        set,
-        function (self$neg2, y) {
+        },set,function (self$neg2, y) {
           self$neg2[x] = y;
           return /* () */0;
         }
@@ -125,14 +110,11 @@ function backup_init($$class) {
   var restore = ids[1];
   var copy = ids[2];
   CamlinternalOO.set_methods($$class, /* array */[
-        save,
-        function (self$neg3) {
+        save,function (self$neg3) {
           var copy$1 = Caml_exceptions.caml_set_oo_id(Caml_obj.caml_obj_dup(self$neg3));
           self$neg3[copy] = /* Some */[(copy$1[copy] = /* None */0, copy$1)];
           return /* () */0;
-        },
-        restore,
-        function (self$neg3) {
+        },restore,function (self$neg3) {
           var match = self$neg3[copy];
           if (match) {
             return match[0];
@@ -155,8 +137,7 @@ function backup_ref_init($$class) {
   var inh = CamlinternalOO.inherits($$class, shared$4, 0, shared$3, ref, 1);
   var obj_init = inh[0];
   var inh$1 = CamlinternalOO.inherits($$class, shared, 0, [
-        "restore",
-        "save"
+        "restore","save"
       ], backup, 1);
   var obj_init$1 = inh$1[0];
   return function (_, self, x) {
@@ -168,10 +149,7 @@ function backup_ref_init($$class) {
 }
 
 var backup_ref = CamlinternalOO.make_class([
-      "save",
-      "restore",
-      "get",
-      "set"
+      "save","restore","get","set"
     ], backup_ref_init);
 
 function get(_p, _n) {
@@ -201,37 +179,24 @@ Curry.js1(-867333315, 10, p$1);
 Curry.js2(5741474, 11, p$1, 2);
 
 eq('File "class7_test.ml", line 47, characters 5-12', /* array */[
-      2,
-      1,
-      1,
-      1,
-      1
+      2,1,1,1,1
     ], /* int array */[
-      get(p$1, 0),
-      get(p$1, 1),
-      get(p$1, 2),
-      get(p$1, 3),
-      get(p$1, 4)
+      get(p$1, 0),get(p$1, 1),get(p$1, 2),get(p$1, 3),get(p$1, 4)
     ]);
 
 function backup2_init($$class) {
   var ids = CamlinternalOO.new_methods_variables($$class, [
-        "save",
-        "restore",
-        "clear"
+        "save","restore","clear"
       ], shared);
   var save = ids[0];
   var restore = ids[1];
   var clear = ids[2];
   var copy = ids[3];
   CamlinternalOO.set_methods($$class, /* array */[
-        save,
-        function (self$neg5) {
+        save,function (self$neg5) {
           self$neg5[copy] = /* Some */[Caml_exceptions.caml_set_oo_id(Caml_obj.caml_obj_dup(self$neg5))];
           return /* () */0;
-        },
-        restore,
-        function (self$neg5) {
+        },restore,function (self$neg5) {
           var match = self$neg5[copy];
           if (match) {
             return match[0];
@@ -239,9 +204,7 @@ function backup2_init($$class) {
           else {
             return self$neg5;
           }
-        },
-        clear,
-        function (self$neg5) {
+        },clear,function (self$neg5) {
           self$neg5[copy] = /* None */0;
           return /* () */0;
         }
@@ -254,18 +217,14 @@ function backup2_init($$class) {
 }
 
 var backup2 = CamlinternalOO.make_class([
-      "clear",
-      "save",
-      "restore"
+      "clear","save","restore"
     ], backup2_init);
 
 function backup_ref2_init($$class) {
   var inh = CamlinternalOO.inherits($$class, shared$4, 0, shared$3, ref, 1);
   var obj_init = inh[0];
   var inh$1 = CamlinternalOO.inherits($$class, shared, 0, [
-        "clear",
-        "restore",
-        "save"
+        "clear","restore","save"
       ], backup2, 1);
   var obj_init$1 = inh$1[0];
   return function (_, self, x) {
@@ -277,11 +236,7 @@ function backup_ref2_init($$class) {
 }
 
 var backup_ref2 = CamlinternalOO.make_class([
-      "clear",
-      "save",
-      "restore",
-      "get",
-      "set"
+      "clear","save","restore","get","set"
     ], backup_ref2_init);
 
 var p$2 = Curry._2(backup_ref2[0], 0, 0);
@@ -295,17 +250,9 @@ Curry.js1(-867333315, 14, p$2);
 Curry.js2(5741474, 15, p$2, 2);
 
 eq('File "class7_test.ml", line 63, characters 5-12', /* array */[
-      2,
-      1,
-      0,
-      0,
-      0
+      2,1,0,0,0
     ], /* int array */[
-      get(p$2, 0),
-      get(p$2, 1),
-      get(p$2, 2),
-      get(p$2, 3),
-      get(p$2, 4)
+      get(p$2, 0),get(p$2, 1),get(p$2, 2),get(p$2, 3),get(p$2, 4)
     ]);
 
 function window_init($$class) {

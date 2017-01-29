@@ -5,8 +5,7 @@ var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
 function to_buffer(buff, ofs, len, _, _$1) {
   if (ofs < 0 || len < 0 || ofs > (buff.length - len | 0)) {
     throw [
-          Caml_builtin_exceptions.invalid_argument,
-          "Marshal.to_buffer: substring out of bounds"
+          Caml_builtin_exceptions.invalid_argument,"Marshal.to_buffer: substring out of bounds"
         ];
   }
   else {

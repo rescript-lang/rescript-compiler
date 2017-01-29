@@ -11,17 +11,14 @@ function eq(loc, param) {
   var y = param[1];
   var x = param[0];
   test_id[0] = test_id[0] + 1 | 0;
-  suites[0] = /* :: */[
+  suites[0] = /* Nested :: */[
     /* tuple */[
-      loc + (" id " + test_id[0]),
-      function () {
+      loc + (" id " + test_id[0]),function () {
         return /* Eq */Block.__(0, [
-                  x,
-                  y
+                  x,y
                 ]);
       }
-    ],
-    suites[0]
+    ],suites[0]
   ];
   return /* () */0;
 }
@@ -84,20 +81,15 @@ var v4 = {
 };
 
 var collection = /* array */[
-  v,
-  v2,
-  v3,
-  v4
+  v,v2,v3,v4
 ];
 
 eq('File "ppx_this_obj_test.ml", line 59, characters 5-12', /* tuple */[
-      11,
-      v.hi(3, 2)
+      11,v.hi(3, 2)
     ]);
 
 eq('File "ppx_this_obj_test.ml", line 60, characters 5-12', /* tuple */[
-      11,
-      v2.hi(3, 2)
+      11,v2.hi(3, 2)
     ]);
 
 Mt.from_pair_suites("ppx_this_obj_test.ml", suites[0]);

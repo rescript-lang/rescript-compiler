@@ -16,54 +16,45 @@ var hash = Hashtbl.hash;
 
 function of_int(x) {
   return /* `Atom */[
-          726615281,
-          "" + x
+          726615281,"" + x
         ];
 }
 
 function of_float(x) {
   return /* `Atom */[
-          726615281,
-          Pervasives.string_of_float(x)
+          726615281,Pervasives.string_of_float(x)
         ];
 }
 
 function of_bool(x) {
   return /* `Atom */[
-          726615281,
-          x ? "true" : "false"
+          726615281,x ? "true" : "false"
         ];
 }
 
 function atom(x) {
   return /* `Atom */[
-          726615281,
-          x
+          726615281,x
         ];
 }
 
 function of_list(l) {
   return /* `List */[
-          848054398,
-          l
+          848054398,l
         ];
 }
 
 function of_rev_list(l) {
   return /* `List */[
-          848054398,
-          List.rev(l)
+          848054398,List.rev(l)
         ];
 }
 
 function of_pair(param) {
   return /* `List */[
-          848054398,
-          /* :: */[
-            param[0],
-            /* :: */[
-              param[1],
-              /* [] */0
+          848054398,[
+            param[0],[
+              param[1],/* [] */0
             ]
           ]
         ];
@@ -71,14 +62,10 @@ function of_pair(param) {
 
 function of_triple(param) {
   return /* `List */[
-          848054398,
-          /* :: */[
-            param[0],
-            /* :: */[
-              param[1],
-              /* :: */[
-                param[2],
-                /* [] */0
+          848054398,[
+            param[0],[
+              param[1],[
+                param[2],/* [] */0
               ]
             ]
           ]
@@ -87,16 +74,11 @@ function of_triple(param) {
 
 function of_quad(param) {
   return /* `List */[
-          848054398,
-          /* :: */[
-            param[0],
-            /* :: */[
-              param[1],
-              /* :: */[
-                param[2],
-                /* :: */[
-                  param[3],
-                  /* [] */0
+          848054398,[
+            param[0],[
+              param[1],[
+                param[2],[
+                  param[3],/* [] */0
                 ]
               ]
             ]
@@ -106,28 +88,21 @@ function of_quad(param) {
 
 function of_variant(name, args) {
   return /* `List */[
-          848054398,
-          /* :: */[
+          848054398,[
             /* `Atom */[
-              726615281,
-              name
-            ],
-            args
+              726615281,name
+            ],args
           ]
         ];
 }
 
 function of_field(name, t) {
   return /* `List */[
-          848054398,
-          /* :: */[
+          848054398,[
             /* `Atom */[
-              726615281,
-              name
-            ],
-            /* :: */[
-              t,
-              /* [] */0
+              726615281,name
+            ],[
+              t,/* [] */0
             ]
           ]
         ];
@@ -135,8 +110,7 @@ function of_field(name, t) {
 
 function of_record(l) {
   return /* `List */[
-          848054398,
-          List.map(function (param) {
+          848054398,List.map(function (param) {
                 return of_field(param[0], param[1]);
               }, l)
         ];
@@ -174,9 +148,8 @@ function map_opt(f, l) {
       var match = Curry._1(f, l$1[0]);
       if (match) {
         _l = l$1[1];
-        _acc = /* :: */[
-          match[0],
-          acc
+        _acc = /* Nested :: */[
+          match[0],acc
         ];
         continue ;
         
@@ -231,9 +204,8 @@ function list_all(f, e) {
         var match = Curry._1(f$1, l[0]);
         _l = tl;
         if (match) {
-          _acc = /* :: */[
-            match[0],
-            acc
+          _acc = /* Nested :: */[
+            match[0],acc
           ];
           continue ;
           
@@ -298,8 +270,7 @@ function to_pair(e) {
       var match$1 = match[1];
       if (match$1 && !match$1[1]) {
         return /* Some */[/* tuple */[
-                  match[0],
-                  match$1[0]
+                  match[0],match$1[0]
                 ]];
       }
       else {
@@ -318,8 +289,7 @@ function to_pair_with(f1, f2, e) {
               return $great$great$eq(Curry._1(f1, param[0]), function (x) {
                           return $great$great$eq(Curry._1(f2, y), function (y) {
                                       return /* Some */[/* tuple */[
-                                                x,
-                                                y
+                                                x,y
                                               ]];
                                     });
                         });
@@ -341,9 +311,7 @@ function to_triple(e) {
         var match$2 = match$1[1];
         if (match$2 && !match$2[1]) {
           return /* Some */[/* tuple */[
-                    match[0],
-                    match$1[0],
-                    match$2[0]
+                    match[0],match$1[0],match$2[0]
                   ]];
         }
         else {
@@ -368,9 +336,7 @@ function to_triple_with(f1, f2, f3, e) {
                           return $great$great$eq(Curry._1(f2, y), function (y) {
                                       return $great$great$eq(Curry._1(f3, z), function (z) {
                                                   return /* Some */[/* tuple */[
-                                                            x,
-                                                            y,
-                                                            z
+                                                            x,y,z
                                                           ]];
                                                 });
                                     });
@@ -580,39 +546,17 @@ function get_exn(e) {
   }
   else {
     throw [
-          Caml_builtin_exceptions.failure,
-          "CCSexp.Traverse.get_exn"
+          Caml_builtin_exceptions.failure,"CCSexp.Traverse.get_exn"
         ];
   }
 }
 
 var of_unit = /* `List */[
-  848054398,
-  /* [] */0
+  848054398,/* [] */0
 ];
 
 var Traverse = [
-  map_opt,
-  list_any,
-  list_all,
-  to_int,
-  to_string,
-  to_bool,
-  to_float,
-  to_list,
-  to_list_with,
-  to_pair,
-  to_pair_with,
-  to_triple,
-  to_triple_with,
-  get_field,
-  field,
-  get_variant,
-  field_list,
-  $great$great$eq,
-  $great$pipe$eq,
-  $$return,
-  get_exn
+  map_opt,list_any,list_all,to_int,to_string,to_bool,to_float,to_list,to_list_with,to_pair,to_pair_with,to_triple,to_triple_with,get_field,field,get_variant,field_list,$great$great$eq,$great$pipe$eq,$$return,get_exn
 ];
 
 exports.equal       = equal;

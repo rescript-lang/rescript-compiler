@@ -50,16 +50,7 @@ for(var i = 0; i <= 9; ++i){
 }
 
 var param$2 = /* array */[
-  /* true */1,
-  /* true */1,
-  /* true */1,
-  /* true */1,
-  /* true */1,
-  /* false */0,
-  /* true */1,
-  /* true */1,
-  /* true */1,
-  /* false */0
+  /* true */1,/* true */1,/* true */1,/* true */1,/* true */1,/* false */0,/* true */1,/* true */1,/* true */1,/* false */0
 ];
 
 Mt_global.collect_eq(id, suites, 'File "random_test.ml", line 26, characters 5-12', v, param$2);
@@ -67,8 +58,7 @@ Mt_global.collect_eq(id, suites, 'File "random_test.ml", line 26, characters 5-1
 var f = Random.int64(Int64.max_int);
 
 var h = Random.int64(/* int64 */[
-      /* hi */0,
-      /* lo */3
+      /* hi */0,/* lo */3
     ]);
 
 var vv = Random.bits(/* () */0);
@@ -79,36 +69,16 @@ var xxx = Random.int32(103);
 
 Curry._5(Printf.printf(/* Format */[
           /* Int64 */Block.__(7, [
-              /* Int_d */0,
-              /* No_padding */0,
-              /* No_precision */0,
-              /* Char_literal */Block.__(12, [
-                  /* " " */32,
-                  /* Int64 */Block.__(7, [
-                      /* Int_d */0,
-                      /* No_padding */0,
-                      /* No_precision */0,
-                      /* Char_literal */Block.__(12, [
-                          /* " " */32,
-                          /* Int */Block.__(4, [
-                              /* Int_d */0,
-                              /* No_padding */0,
-                              /* No_precision */0,
-                              /* Char_literal */Block.__(12, [
-                                  /* " " */32,
-                                  /* Float */Block.__(8, [
-                                      /* Float_f */0,
-                                      /* No_padding */0,
-                                      /* No_precision */0,
-                                      /* Char_literal */Block.__(12, [
-                                          /* " " */32,
-                                          /* Int32 */Block.__(5, [
-                                              /* Int_d */0,
-                                              /* No_padding */0,
-                                              /* No_precision */0,
-                                              /* String_literal */Block.__(11, [
-                                                  " \n",
-                                                  /* End_of_format */0
+              /* Int_d */0,/* No_padding */0,/* No_precision */0,/* Char_literal */Block.__(12, [
+                  /* " " */32,/* Int64 */Block.__(7, [
+                      /* Int_d */0,/* No_padding */0,/* No_precision */0,/* Char_literal */Block.__(12, [
+                          /* " " */32,/* Int */Block.__(4, [
+                              /* Int_d */0,/* No_padding */0,/* No_precision */0,/* Char_literal */Block.__(12, [
+                                  /* " " */32,/* Float */Block.__(8, [
+                                      /* Float_f */0,/* No_padding */0,/* No_precision */0,/* Char_literal */Block.__(12, [
+                                          /* " " */32,/* Int32 */Block.__(5, [
+                                              /* Int_d */0,/* No_padding */0,/* No_precision */0,/* String_literal */Block.__(11, [
+                                                  " \n",/* End_of_format */0
                                                 ])
                                             ])
                                         ])
@@ -118,8 +88,7 @@ Curry._5(Printf.printf(/* Format */[
                         ])
                     ])
                 ])
-            ]),
-          "%Ld %Ld %d %f %ld \n"
+            ]),"%Ld %Ld %d %f %ld \n"
         ]), f, h, vv, xx, xxx);
 
 Mt.from_pair_suites("random_test.ml", suites[0]);

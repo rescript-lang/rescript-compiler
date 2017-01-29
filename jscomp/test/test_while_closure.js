@@ -36,11 +36,8 @@ console.log("" + v[0]);
 
 if (v[0] !== 45) {
   throw [
-        Caml_builtin_exceptions.assert_failure,
-        [
-          "test_while_closure.ml",
-          63,
-          4
+        Caml_builtin_exceptions.assert_failure,[
+          "test_while_closure.ml",63,4
         ]
       ];
 }

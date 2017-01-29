@@ -11,32 +11,27 @@ var test_id = [0];
 
 function eq(loc, x, y) {
   test_id[0] = test_id[0] + 1 | 0;
-  suites[0] = /* :: */[
+  suites[0] = /* Nested :: */[
     /* tuple */[
-      loc + (" id " + test_id[0]),
-      function () {
+      loc + (" id " + test_id[0]),function () {
         return /* Eq */Block.__(0, [
-                  x,
-                  y
+                  x,y
                 ]);
       }
-    ],
-    suites[0]
+    ],suites[0]
   ];
   return /* () */0;
 }
 
 function add(suite) {
-  suites[0] = /* :: */[
-    suite,
-    suites[0]
+  suites[0] = /* Nested :: */[
+    suite,suites[0]
   ];
   return /* () */0;
 }
 
 add(/* tuple */[
-      'File "div_by_zero_test.ml", line 14, characters 7-14',
-      function () {
+      'File "div_by_zero_test.ml", line 14, characters 7-14',function () {
         return /* ThrowAny */Block.__(3, [function () {
                     Caml_int32.div(3, 0);
                     return /* () */0;
@@ -45,8 +40,7 @@ add(/* tuple */[
     ]);
 
 add(/* tuple */[
-      'File "div_by_zero_test.ml", line 15, characters 7-14',
-      function () {
+      'File "div_by_zero_test.ml", line 15, characters 7-14',function () {
         return /* ThrowAny */Block.__(3, [function () {
                     Caml_int32.mod_(3, 0);
                     return /* () */0;
@@ -55,8 +49,7 @@ add(/* tuple */[
     ]);
 
 add(/* tuple */[
-      'File "div_by_zero_test.ml", line 16, characters 7-14',
-      function () {
+      'File "div_by_zero_test.ml", line 16, characters 7-14',function () {
         return /* ThrowAny */Block.__(3, [function () {
                     Caml_int32.div(3, 0);
                     return /* () */0;
@@ -65,8 +58,7 @@ add(/* tuple */[
     ]);
 
 add(/* tuple */[
-      'File "div_by_zero_test.ml", line 17, characters 7-14',
-      function () {
+      'File "div_by_zero_test.ml", line 17, characters 7-14',function () {
         return /* ThrowAny */Block.__(3, [function () {
                     Caml_int32.mod_(3, 0);
                     return /* () */0;
@@ -75,15 +67,12 @@ add(/* tuple */[
     ]);
 
 add(/* tuple */[
-      'File "div_by_zero_test.ml", line 18, characters 7-14',
-      function () {
+      'File "div_by_zero_test.ml", line 18, characters 7-14',function () {
         return /* ThrowAny */Block.__(3, [function () {
                     Caml_int64.div(/* int64 */[
-                          /* hi */0,
-                          /* lo */3
+                          /* hi */0,/* lo */3
                         ], /* int64 */[
-                          /* hi */0,
-                          /* lo */0
+                          /* hi */0,/* lo */0
                         ]);
                     return /* () */0;
                   }]);
@@ -91,15 +80,12 @@ add(/* tuple */[
     ]);
 
 add(/* tuple */[
-      'File "div_by_zero_test.ml", line 19, characters 7-14',
-      function () {
+      'File "div_by_zero_test.ml", line 19, characters 7-14',function () {
         return /* ThrowAny */Block.__(3, [function () {
                     Caml_int64.mod_(/* int64 */[
-                          /* hi */0,
-                          /* lo */3
+                          /* hi */0,/* lo */3
                         ], /* int64 */[
-                          /* hi */0,
-                          /* lo */0
+                          /* hi */0,/* lo */0
                         ]);
                     return /* () */0;
                   }]);

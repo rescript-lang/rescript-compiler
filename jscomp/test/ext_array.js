@@ -78,9 +78,8 @@ function filter(f, a) {
       var v = a[i];
       if (Curry._1(f, v)) {
         _i = i + 1 | 0;
-        _acc = /* :: */[
-          v,
-          acc
+        _acc = /* Nested :: */[
+          v,acc
         ];
         continue ;
         
@@ -109,9 +108,8 @@ function filter_map(f, a) {
       var match = Curry._1(f, v);
       _i = i + 1 | 0;
       if (match) {
-        _acc = /* :: */[
-          match[0],
-          acc
+        _acc = /* Nested :: */[
+          match[0],acc
         ];
         continue ;
         
@@ -127,8 +125,7 @@ function filter_map(f, a) {
 function range(from, to_) {
   if (from > to_) {
     throw [
-          Caml_builtin_exceptions.invalid_argument,
-          "Ext_array.range"
+          Caml_builtin_exceptions.invalid_argument,"Ext_array.range"
         ];
   }
   else {
@@ -142,8 +139,7 @@ function map2i(f, a, b) {
   var len = a.length;
   if (len !== b.length) {
     throw [
-          Caml_builtin_exceptions.invalid_argument,
-          "Ext_array.map2i"
+          Caml_builtin_exceptions.invalid_argument,"Ext_array.map2i"
         ];
   }
   else {
@@ -165,9 +161,8 @@ function to_list_map(f, a) {
     else {
       var v = a[i];
       var match = Curry._1(f, v);
-      _res = match ? /* :: */[
-          match[0],
-          res
+      _res = match ? /* Nested :: */[
+          match[0],res
         ] : res;
       _i = i - 1 | 0;
       continue ;
@@ -230,10 +225,8 @@ function rfind_and_split(arr, cmp, v) {
   }
   else {
     return /* `Split */[
-            345791162,
-            /* tuple */[
-              $$Array.sub(arr, 0, i),
-              $$Array.sub(arr, i + 1 | 0, (arr.length - i | 0) - 1 | 0)
+            345791162,/* tuple */[
+              $$Array.sub(arr, 0, i),$$Array.sub(arr, i + 1 | 0, (arr.length - i | 0) - 1 | 0)
             ]
           ];
   }
@@ -266,10 +259,8 @@ function find_and_split(arr, cmp, v) {
   }
   else {
     return /* `Split */[
-            345791162,
-            /* tuple */[
-              $$Array.sub(arr, 0, i),
-              $$Array.sub(arr, i + 1 | 0, (arr.length - i | 0) - 1 | 0)
+            345791162,/* tuple */[
+              $$Array.sub(arr, 0, i),$$Array.sub(arr, i + 1 | 0, (arr.length - i | 0) - 1 | 0)
             ]
           ];
   }

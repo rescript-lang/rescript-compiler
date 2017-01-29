@@ -79,10 +79,7 @@ function a44(x, y, z, d) {
 function b44() {
   return function (x, y, z, d) {
     return /* tuple */[
-            x,
-            y,
-            z,
-            d
+            x,y,z,d
           ];
   };
 }

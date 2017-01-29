@@ -37,81 +37,45 @@ var match$2 = Caml_float.caml_frexp_float(-12.0);
 
 var results = $$Array.append(/* array */[
       /* tuple */[
-        Math.log10(2),
-        0.301029995663981198
-      ],
-      /* tuple */[
-        Caml_float.caml_ldexp_float(1, 6),
-        64
-      ],
-      /* tuple */[
-        Caml_float.caml_ldexp_float(1, 5),
-        32
-      ],
-      /* tuple */[
-        Caml_float.caml_ldexp_float(1.e-5, 1024),
-        1.79769313486231605e+303
-      ],
-      /* tuple */[
-        Caml_float.caml_ldexp_float(1, -1024),
-        5.56268464626800346e-309
-      ],
-      /* tuple */[
-        Caml_float.caml_hypot_float(3, 4),
-        5
-      ],
-      /* tuple */[
-        Caml_float.caml_hypot_float(4, 3),
-        5
-      ],
-      /* tuple */[
-        Caml_float.caml_hypot_float(5, 12),
-        13
-      ],
-      /* tuple */[
-        Caml_float.caml_hypot_float(12, 5),
-        13
-      ],
-      /* tuple */[
-        Caml_float.caml_copysign_float(22.3, -1),
-        -22.3
-      ],
-      /* tuple */[
-        Caml_float.caml_copysign_float(22.3, 1),
-        22.3
-      ],
-      /* tuple */[
-        Caml_float.caml_expm1_float(1e-15),
-        1.00000000000000067e-15
-      ],
-      /* tuple */[
-        Math.log1p(1e-10),
-        9.9999999995000007e-11
+        Math.log10(2),0.301029995663981198
+      ],/* tuple */[
+        Caml_float.caml_ldexp_float(1, 6),64
+      ],/* tuple */[
+        Caml_float.caml_ldexp_float(1, 5),32
+      ],/* tuple */[
+        Caml_float.caml_ldexp_float(1.e-5, 1024),1.79769313486231605e+303
+      ],/* tuple */[
+        Caml_float.caml_ldexp_float(1, -1024),5.56268464626800346e-309
+      ],/* tuple */[
+        Caml_float.caml_hypot_float(3, 4),5
+      ],/* tuple */[
+        Caml_float.caml_hypot_float(4, 3),5
+      ],/* tuple */[
+        Caml_float.caml_hypot_float(5, 12),13
+      ],/* tuple */[
+        Caml_float.caml_hypot_float(12, 5),13
+      ],/* tuple */[
+        Caml_float.caml_copysign_float(22.3, -1),-22.3
+      ],/* tuple */[
+        Caml_float.caml_copysign_float(22.3, 1),22.3
+      ],/* tuple */[
+        Caml_float.caml_expm1_float(1e-15),1.00000000000000067e-15
+      ],/* tuple */[
+        Math.log1p(1e-10),9.9999999995000007e-11
       ]
     ], /* array */[
       /* tuple */[
-        match$1[0],
-        0
-      ],
-      /* tuple */[
-        match$1[1],
-        0
-      ],
-      /* tuple */[
-        match[0],
-        0.75
-      ],
-      /* tuple */[
-        match[1],
-        4
-      ],
-      /* tuple */[
-        match$2[0],
-        -0.75
-      ],
-      /* tuple */[
-        match$2[1],
-        4
+        match$1[0],0
+      ],/* tuple */[
+        match$1[1],0
+      ],/* tuple */[
+        match[0],0.75
+      ],/* tuple */[
+        match[1],4
+      ],/* tuple */[
+        match$2[0],-0.75
+      ],/* tuple */[
+        match$2[1],4
       ]
     ]);
 
@@ -122,20 +86,13 @@ function from_pairs(ps) {
                   return /* tuple */[
                           Curry._1(Printf.sprintf(/* Format */[
                                     /* String_literal */Block.__(11, [
-                                        "pair ",
-                                        /* Int */Block.__(4, [
-                                            /* Int_d */0,
-                                            /* No_padding */0,
-                                            /* No_precision */0,
-                                            /* End_of_format */0
+                                        "pair ",/* Int */Block.__(4, [
+                                            /* Int_d */0,/* No_padding */0,/* No_precision */0,/* End_of_format */0
                                           ])
-                                      ]),
-                                    "pair %d"
-                                  ]), i),
-                          function () {
+                                      ]),"pair %d"
+                                  ]), i),function () {
                             return /* Approx */Block.__(2, [
-                                      a,
-                                      b
+                                      a,b
                                     ]);
                           }
                         ];
@@ -151,8 +108,7 @@ Mt_global.collect_eq(test_id, suites, 'File "float_test.ml", line 47, characters
 var param$1 = Caml_float.caml_modf_float(-3.125);
 
 Mt_global.collect_eq(test_id, suites, 'File "float_test.ml", line 48, characters 5-12', param$1, /* tuple */[
-      -0.125,
-      -3
+      -0.125,-3
     ]);
 
 var param_000 = true;
@@ -160,8 +116,7 @@ var param_000 = true;
 var param_001 = true;
 
 var param$2 = /* tuple */[
-  param_000,
-  param_001
+  param_000,param_001
 ];
 
 var match$3 = Caml_float.caml_modf_float(Pervasives.nan);
@@ -171,16 +126,13 @@ var param_000$1 = isNaN(match$3[0]);
 var param_001$1 = isNaN(match$3[1]);
 
 var param$3 = /* tuple */[
-  param_000$1,
-  param_001$1
+  param_000$1,param_001$1
 ];
 
 Mt_global.collect_eq(test_id, suites, 'File "float_test.ml", line 49, characters 5-12', param$3, param$2);
 
 var param$4 = /* int array */[
-  -1,
-  1,
-  1
+  -1,1,1
 ];
 
 var param$5 = $$Array.map(function (x) {
@@ -197,16 +149,11 @@ var param$5 = $$Array.map(function (x) {
           return Caml_float.caml_float_compare(param[0], param[1]);
         }, /* array */[
           /* tuple */[
-            1,
-            3
-          ],
-          /* tuple */[
-            2,
-            1
-          ],
-          /* tuple */[
-            3,
-            2
+            1,3
+          ],/* tuple */[
+            2,1
+          ],/* tuple */[
+            3,2
           ]
         ]));
 
@@ -238,47 +185,35 @@ var b = match$4[1];
 
 var a = match$4[0];
 
-Mt.from_pair_suites("float_test.ml", Pervasives.$at(/* :: */[
+Mt.from_pair_suites("float_test.ml", Pervasives.$at(/* Nested :: */[
           /* tuple */[
-            "mod_float",
-            function () {
+            "mod_float",function () {
               return /* Approx */Block.__(2, [
-                        3.2 % 0.5,
-                        0.200000000000000178
+                        3.2 % 0.5,0.200000000000000178
                       ]);
             }
-          ],
-          /* :: */[
+          ],[
             /* tuple */[
-              "modf_float1",
-              function () {
+              "modf_float1",function () {
                 return /* Approx */Block.__(2, [
-                          a,
-                          0.299999999999997158
+                          a,0.299999999999997158
                         ]);
               }
-            ],
-            /* :: */[
+            ],[
               /* tuple */[
-                "modf_float2",
-                function () {
+                "modf_float2",function () {
                   return /* Approx */Block.__(2, [
-                            b,
-                            32
+                            b,32
                           ]);
                 }
-              ],
-              /* :: */[
+              ],[
                 /* tuple */[
-                  "int_of_float",
-                  function () {
+                  "int_of_float",function () {
                     return /* Eq */Block.__(0, [
-                              3,
-                              3
+                              3,3
                             ]);
                   }
-                ],
-                /* [] */0
+                ],/* [] */0
               ]
             ]
           ]

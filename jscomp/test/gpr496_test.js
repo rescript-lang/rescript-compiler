@@ -10,17 +10,14 @@ var test_id = [0];
 
 function eq(loc, x, y) {
   test_id[0] = test_id[0] + 1 | 0;
-  suites[0] = /* :: */[
+  suites[0] = /* Nested :: */[
     /* tuple */[
-      loc + (" id " + test_id[0]),
-      function () {
+      loc + (" id " + test_id[0]),function () {
         return /* Eq */Block.__(0, [
-                  x,
-                  y
+                  x,y
                 ]);
       }
-    ],
-    suites[0]
+    ],suites[0]
   ];
   return /* () */0;
 }
@@ -34,14 +31,7 @@ var expected_006 = Caml_obj.caml_compare(/* false */0, /* false */0);
 var expected_007 = Caml_obj.caml_compare(/* true */1, /* true */1);
 
 var expected = /* tuple */[
-  /* false */0,
-  /* false */0,
-  /* true */1,
-  /* true */1,
-  expected_004,
-  expected_005,
-  expected_006,
-  expected_007
+  /* false */0,/* false */0,/* true */1,/* true */1,expected_004,expected_005,expected_006,expected_007
 ];
 
 var u_000 = Caml_obj.caml_equal(true, false);
@@ -61,14 +51,7 @@ var u_006 = Caml_obj.caml_compare(false, false);
 var u_007 = Caml_obj.caml_compare(true, true);
 
 var u = /* tuple */[
-  u_000,
-  u_001,
-  u_002,
-  u_003,
-  u_004,
-  u_005,
-  u_006,
-  u_007
+  u_000,u_001,u_002,u_003,u_004,u_005,u_006,u_007
 ];
 
 eq('File "gpr496_test.ml", line 32, characters 12-19', expected, u);

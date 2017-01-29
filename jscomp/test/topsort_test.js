@@ -9,47 +9,31 @@ var Caml_string             = require("../../lib/js/caml_string");
 var Caml_exceptions         = require("../../lib/js/caml_exceptions");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
 
-var graph = /* :: */[
+var graph = /* Nested :: */[
   /* tuple */[
-    "a",
-    "b"
-  ],
-  /* :: */[
+    "a","b"
+  ],[
     /* tuple */[
-      "a",
-      "c"
-    ],
-    /* :: */[
+      "a","c"
+    ],[
       /* tuple */[
-        "a",
-        "d"
-      ],
-      /* :: */[
+        "a","d"
+      ],[
         /* tuple */[
-          "b",
-          "e"
-        ],
-        /* :: */[
+          "b","e"
+        ],[
           /* tuple */[
-            "c",
-            "f"
-          ],
-          /* :: */[
+            "c","f"
+          ],[
             /* tuple */[
-              "d",
-              "e"
-            ],
-            /* :: */[
+              "d","e"
+            ],[
               /* tuple */[
-                "e",
-                "f"
-              ],
-              /* :: */[
+                "e","f"
+              ],[
                 /* tuple */[
-                  "e",
-                  "g"
-                ],
-                /* [] */0
+                  "e","g"
+                ],/* [] */0
               ]
             ]
           ]
@@ -62,9 +46,8 @@ var graph = /* :: */[
 function nexts(x, g) {
   return List.fold_left(function (acc, param) {
               if (param[0] === x) {
-                return /* :: */[
-                        param[1],
-                        acc
+                return /* Nested :: */[
+                        param[1],acc
                       ];
               }
               else {
@@ -87,9 +70,8 @@ function dfs1(_nodes, graph, _visited) {
       }
       else {
         console.log(x);
-        _visited = /* :: */[
-          x,
-          visited
+        _visited = /* Nested :: */[
+          x,visited
         ];
         _nodes = Pervasives.$at(nexts(x, graph), xs);
         continue ;
@@ -102,24 +84,16 @@ function dfs1(_nodes, graph, _visited) {
   };
 }
 
-if (!Caml_obj.caml_equal(dfs1(/* :: */[
-            "a",
-            /* [] */0
-          ], graph, /* [] */0), /* :: */[
-        "a",
-        /* :: */[
-          "d",
-          /* :: */[
-            "e",
-            /* :: */[
-              "g",
-              /* :: */[
-                "f",
-                /* :: */[
-                  "c",
-                  /* :: */[
-                    "b",
-                    /* [] */0
+if (!Caml_obj.caml_equal(dfs1(/* Nested :: */[
+            "a",/* [] */0
+          ], graph, /* [] */0), /* Nested :: */[
+        "a",[
+          "d",[
+            "e",[
+              "g",[
+                "f",[
+                  "c",[
+                    "b",/* [] */0
                   ]
                 ]
               ]
@@ -128,48 +102,34 @@ if (!Caml_obj.caml_equal(dfs1(/* :: */[
         ]
       ])) {
   throw [
-        Caml_builtin_exceptions.assert_failure,
-        [
-          "topsort_test.ml",
-          29,
-          2
+        Caml_builtin_exceptions.assert_failure,[
+          "topsort_test.ml",29,2
         ]
       ];
 }
 
 Pervasives.print_newline(/* () */0);
 
-if (!Caml_obj.caml_equal(dfs1(/* :: */[
-            "b",
-            /* [] */0
-          ], /* :: */[
+if (!Caml_obj.caml_equal(dfs1(/* Nested :: */[
+            "b",/* [] */0
+          ], /* Nested :: */[
             /* tuple */[
-              "f",
-              "d"
-            ],
-            graph
-          ], /* [] */0), /* :: */[
-        "b",
-        /* :: */[
-          "e",
-          /* :: */[
-            "g",
-            /* :: */[
-              "f",
-              /* :: */[
-                "d",
-                /* [] */0
+              "f","d"
+            ],graph
+          ], /* [] */0), /* Nested :: */[
+        "b",[
+          "e",[
+            "g",[
+              "f",[
+                "d",/* [] */0
               ]
             ]
           ]
         ]
       ])) {
   throw [
-        Caml_builtin_exceptions.assert_failure,
-        [
-          "topsort_test.ml",
-          32,
-          2
+        Caml_builtin_exceptions.assert_failure,[
+          "topsort_test.ml",32,2
         ]
       ];
 }
@@ -188,9 +148,8 @@ function dfs2(nodes, graph, visited) {
           
         }
         else {
-          _visited = aux(nexts(x, graph), graph, /* :: */[
-                x,
-                visited
+          _visited = aux(nexts(x, graph), graph, /* Nested :: */[
+                x,visited
               ]);
           _nodes = xs;
           continue ;
@@ -205,24 +164,16 @@ function dfs2(nodes, graph, visited) {
   return List.rev(aux(nodes, graph, visited));
 }
 
-if (!Caml_obj.caml_equal(dfs2(/* :: */[
-            "a",
-            /* [] */0
-          ], graph, /* [] */0), /* :: */[
-        "a",
-        /* :: */[
-          "d",
-          /* :: */[
-            "e",
-            /* :: */[
-              "g",
-              /* :: */[
-                "f",
-                /* :: */[
-                  "c",
-                  /* :: */[
-                    "b",
-                    /* [] */0
+if (!Caml_obj.caml_equal(dfs2(/* Nested :: */[
+            "a",/* [] */0
+          ], graph, /* [] */0), /* Nested :: */[
+        "a",[
+          "d",[
+            "e",[
+              "g",[
+                "f",[
+                  "c",[
+                    "b",/* [] */0
                   ]
                 ]
               ]
@@ -231,46 +182,32 @@ if (!Caml_obj.caml_equal(dfs2(/* :: */[
         ]
       ])) {
   throw [
-        Caml_builtin_exceptions.assert_failure,
-        [
-          "topsort_test.ml",
-          47,
-          2
+        Caml_builtin_exceptions.assert_failure,[
+          "topsort_test.ml",47,2
         ]
       ];
 }
 
-if (!Caml_obj.caml_equal(dfs2(/* :: */[
-            "b",
-            /* [] */0
-          ], /* :: */[
+if (!Caml_obj.caml_equal(dfs2(/* Nested :: */[
+            "b",/* [] */0
+          ], /* Nested :: */[
             /* tuple */[
-              "f",
-              "d"
-            ],
-            graph
-          ], /* [] */0), /* :: */[
-        "b",
-        /* :: */[
-          "e",
-          /* :: */[
-            "g",
-            /* :: */[
-              "f",
-              /* :: */[
-                "d",
-                /* [] */0
+              "f","d"
+            ],graph
+          ], /* [] */0), /* Nested :: */[
+        "b",[
+          "e",[
+            "g",[
+              "f",[
+                "d",/* [] */0
               ]
             ]
           ]
         ]
       ])) {
   throw [
-        Caml_builtin_exceptions.assert_failure,
-        [
-          "topsort_test.ml",
-          48,
-          2
+        Caml_builtin_exceptions.assert_failure,[
+          "topsort_test.ml",48,2
         ]
       ];
 }
@@ -282,9 +219,8 @@ function dfs3(nodes, graph) {
       return 0;
     }
     else {
-      visited[0] = /* :: */[
-        node,
-        visited[0]
+      visited[0] = /* Nested :: */[
+        node,visited[0]
       ];
       return List.iter(function (x) {
                   return aux(x, graph);
@@ -297,24 +233,16 @@ function dfs3(nodes, graph) {
   return List.rev(visited[0]);
 }
 
-if (!Caml_obj.caml_equal(dfs3(/* :: */[
-            "a",
-            /* [] */0
-          ], graph), /* :: */[
-        "a",
-        /* :: */[
-          "d",
-          /* :: */[
-            "e",
-            /* :: */[
-              "g",
-              /* :: */[
-                "f",
-                /* :: */[
-                  "c",
-                  /* :: */[
-                    "b",
-                    /* [] */0
+if (!Caml_obj.caml_equal(dfs3(/* Nested :: */[
+            "a",/* [] */0
+          ], graph), /* Nested :: */[
+        "a",[
+          "d",[
+            "e",[
+              "g",[
+                "f",[
+                  "c",[
+                    "b",/* [] */0
                   ]
                 ]
               ]
@@ -323,81 +251,55 @@ if (!Caml_obj.caml_equal(dfs3(/* :: */[
         ]
       ])) {
   throw [
-        Caml_builtin_exceptions.assert_failure,
-        [
-          "topsort_test.ml",
-          65,
-          2
+        Caml_builtin_exceptions.assert_failure,[
+          "topsort_test.ml",65,2
         ]
       ];
 }
 
-if (!Caml_obj.caml_equal(dfs3(/* :: */[
-            "b",
-            /* [] */0
-          ], /* :: */[
+if (!Caml_obj.caml_equal(dfs3(/* Nested :: */[
+            "b",/* [] */0
+          ], /* Nested :: */[
             /* tuple */[
-              "f",
-              "d"
-            ],
-            graph
-          ]), /* :: */[
-        "b",
-        /* :: */[
-          "e",
-          /* :: */[
-            "g",
-            /* :: */[
-              "f",
-              /* :: */[
-                "d",
-                /* [] */0
+              "f","d"
+            ],graph
+          ]), /* Nested :: */[
+        "b",[
+          "e",[
+            "g",[
+              "f",[
+                "d",/* [] */0
               ]
             ]
           ]
         ]
       ])) {
   throw [
-        Caml_builtin_exceptions.assert_failure,
-        [
-          "topsort_test.ml",
-          66,
-          2
+        Caml_builtin_exceptions.assert_failure,[
+          "topsort_test.ml",66,2
         ]
       ];
 }
 
-var grwork = /* :: */[
+var grwork = /* Nested :: */[
   /* tuple */[
-    "wake",
-    "shower"
-  ],
-  /* :: */[
+    "wake","shower"
+  ],[
     /* tuple */[
-      "shower",
-      "dress"
-    ],
-    /* :: */[
+      "shower","dress"
+    ],[
       /* tuple */[
-        "dress",
-        "go"
-      ],
-      /* :: */[
+        "dress","go"
+      ],[
         /* tuple */[
-          "wake",
-          "eat"
-        ],
-        /* :: */[
+          "wake","eat"
+        ],[
           /* tuple */[
-            "eat",
-            "washup"
-          ],
-          /* :: */[
+            "eat","washup"
+          ],[
             /* tuple */[
-              "washup",
-              "go"
-            ],
-            /* [] */0
+              "washup","go"
+            ],/* [] */0
           ]
         ]
       ]
@@ -414,9 +316,8 @@ function unsafe_topsort(graph) {
     else {
       var nodes = nexts(node, graph);
       List.iter(sort_node, nodes);
-      visited[0] = /* :: */[
-        node,
-        visited[0]
+      visited[0] = /* Nested :: */[
+        node,visited[0]
       ];
       return /* () */0;
     }
@@ -427,19 +328,13 @@ function unsafe_topsort(graph) {
   return visited[0];
 }
 
-if (!Caml_obj.caml_equal(unsafe_topsort(grwork), /* :: */[
-        "wake",
-        /* :: */[
-          "shower",
-          /* :: */[
-            "dress",
-            /* :: */[
-              "eat",
-              /* :: */[
-                "washup",
-                /* :: */[
-                  "go",
-                  /* [] */0
+if (!Caml_obj.caml_equal(unsafe_topsort(grwork), /* Nested :: */[
+        "wake",[
+          "shower",[
+            "dress",[
+              "eat",[
+                "washup",[
+                  "go",/* [] */0
                 ]
               ]
             ]
@@ -447,11 +342,8 @@ if (!Caml_obj.caml_equal(unsafe_topsort(grwork), /* :: */[
         ]
       ])) {
   throw [
-        Caml_builtin_exceptions.assert_failure,
-        [
-          "topsort_test.ml",
-          110,
-          2
+        Caml_builtin_exceptions.assert_failure,[
+          "topsort_test.ml",110,2
         ]
       ];
 }
@@ -469,10 +361,7 @@ function create(l, v, r) {
   var hl = l ? l[3] : 0;
   var hr = r ? r[3] : 0;
   return /* Node */[
-          l,
-          v,
-          r,
-          hl >= hr ? hl + 1 | 0 : hr + 1 | 0
+          l,v,r,hl >= hr ? hl + 1 | 0 : hr + 1 | 0
         ];
 }
 
@@ -492,15 +381,13 @@ function bal(l, v, r) {
       }
       else {
         throw [
-              Caml_builtin_exceptions.invalid_argument,
-              "Set.bal"
+              Caml_builtin_exceptions.invalid_argument,"Set.bal"
             ];
       }
     }
     else {
       throw [
-            Caml_builtin_exceptions.invalid_argument,
-            "Set.bal"
+            Caml_builtin_exceptions.invalid_argument,"Set.bal"
           ];
     }
   }
@@ -517,24 +404,19 @@ function bal(l, v, r) {
       }
       else {
         throw [
-              Caml_builtin_exceptions.invalid_argument,
-              "Set.bal"
+              Caml_builtin_exceptions.invalid_argument,"Set.bal"
             ];
       }
     }
     else {
       throw [
-            Caml_builtin_exceptions.invalid_argument,
-            "Set.bal"
+            Caml_builtin_exceptions.invalid_argument,"Set.bal"
           ];
     }
   }
   else {
     return /* Node */[
-            l,
-            v,
-            r,
-            hl >= hr ? hl + 1 | 0 : hr + 1 | 0
+            l,v,r,hl >= hr ? hl + 1 | 0 : hr + 1 | 0
           ];
   }
 }
@@ -559,20 +441,14 @@ function add(x, t) {
   }
   else {
     return /* Node */[
-            /* Empty */0,
-            x,
-            /* Empty */0,
-            1
+            /* Empty */0,x,/* Empty */0,1
           ];
   }
 }
 
 function singleton(x) {
   return /* Node */[
-          /* Empty */0,
-          x,
-          /* Empty */0,
-          1
+          /* Empty */0,x,/* Empty */0,1
         ];
 }
 
@@ -670,8 +546,7 @@ function remove_min_elt(param) {
   }
   else {
     throw [
-          Caml_builtin_exceptions.invalid_argument,
-          "Set.remove_min_elt"
+          Caml_builtin_exceptions.invalid_argument,"Set.remove_min_elt"
         ];
   }
 }
@@ -700,33 +575,25 @@ function split(x, param) {
       if (c < 0) {
         var match = split(x, l);
         return /* tuple */[
-                match[0],
-                match[1],
-                join(match[2], v, r)
+                match[0],match[1],join(match[2], v, r)
               ];
       }
       else {
         var match$1 = split(x, r);
         return /* tuple */[
-                join(l, v, match$1[0]),
-                match$1[1],
-                match$1[2]
+                join(l, v, match$1[0]),match$1[1],match$1[2]
               ];
       }
     }
     else {
       return /* tuple */[
-              l,
-              /* true */1,
-              r
+              l,/* true */1,r
             ];
     }
   }
   else {
     return /* tuple */[
-            /* Empty */0,
-            /* false */0,
-            /* Empty */0
+            /* Empty */0,/* false */0,/* Empty */0
           ];
   }
 }
@@ -882,9 +749,7 @@ function cons_enum(_s, _e) {
     var s = _s;
     if (s) {
       _e = /* More */[
-        s[1],
-        s[2],
-        e
+        s[1],s[2],e
       ];
       _s = s[0];
       continue ;
@@ -947,10 +812,7 @@ function subset(_s1, _s2) {
         if (c) {
           if (c < 0) {
             if (subset(/* Node */[
-                    l1,
-                    v1,
-                    /* Empty */0,
-                    0
+                    l1,v1,/* Empty */0,0
                   ], l2)) {
               _s1 = r1;
               continue ;
@@ -961,10 +823,7 @@ function subset(_s1, _s2) {
             }
           }
           else if (subset(/* Node */[
-                  /* Empty */0,
-                  v1,
-                  r1,
-                  0
+                  /* Empty */0,v1,r1,0
                 ], r2)) {
             _s1 = l1;
             continue ;
@@ -1102,21 +961,18 @@ function partition(p, param) {
     var rt = match$1[0];
     if (pv) {
       return /* tuple */[
-              join(lt, v, rt),
-              concat(lf, rf)
+              join(lt, v, rt),concat(lf, rf)
             ];
     }
     else {
       return /* tuple */[
-              concat(lt, rt),
-              join(lf, v, rf)
+              concat(lt, rt),join(lf, v, rf)
             ];
     }
   }
   else {
     return /* tuple */[
-            /* Empty */0,
-            /* Empty */0
+            /* Empty */0,/* Empty */0
           ];
   }
 }
@@ -1136,9 +992,8 @@ function elements_aux(_accu, _param) {
     var accu = _accu;
     if (param) {
       _param = param[0];
-      _accu = /* :: */[
-        param[1],
-        elements_aux(accu, param[2])
+      _accu = /* Nested :: */[
+        param[1],elements_aux(accu, param[2])
       ];
       continue ;
       
@@ -1199,19 +1054,14 @@ function of_list(l) {
                   switch (n) {
                     case 0 : 
                         return /* tuple */[
-                                /* Empty */0,
-                                l
+                                /* Empty */0,l
                               ];
                     case 1 : 
                         if (l) {
                           return /* tuple */[
                                   /* Node */[
-                                    /* Empty */0,
-                                    l[0],
-                                    /* Empty */0,
-                                    1
-                                  ],
-                                  l[1]
+                                    /* Empty */0,l[0],/* Empty */0,1
+                                  ],l[1]
                                 ];
                         }
                         else {
@@ -1225,16 +1075,9 @@ function of_list(l) {
                             return /* tuple */[
                                     /* Node */[
                                       /* Node */[
-                                        /* Empty */0,
-                                        l[0],
-                                        /* Empty */0,
-                                        1
-                                      ],
-                                      match[0],
-                                      /* Empty */0,
-                                      2
-                                    ],
-                                    match[1]
+                                        /* Empty */0,l[0],/* Empty */0,1
+                                      ],match[0],/* Empty */0,2
+                                    ],match[1]
                                   ];
                           }
                           else {
@@ -1254,21 +1097,11 @@ function of_list(l) {
                               return /* tuple */[
                                       /* Node */[
                                         /* Node */[
-                                          /* Empty */0,
-                                          l[0],
-                                          /* Empty */0,
-                                          1
-                                        ],
-                                        match$1[0],
-                                        /* Node */[
-                                          /* Empty */0,
-                                          match$2[0],
-                                          /* Empty */0,
-                                          1
-                                        ],
-                                        2
-                                      ],
-                                      match$2[1]
+                                          /* Empty */0,l[0],/* Empty */0,1
+                                        ],match$1[0],/* Node */[
+                                          /* Empty */0,match$2[0],/* Empty */0,1
+                                        ],2
+                                      ],match$2[1]
                                     ];
                             }
                             else {
@@ -1293,17 +1126,13 @@ function of_list(l) {
                   if (l$1) {
                     var match$4 = sub((n - nl | 0) - 1 | 0, l$1[1]);
                     return /* tuple */[
-                            create(match$3[0], l$1[0], match$4[0]),
-                            match$4[1]
+                            create(match$3[0], l$1[0], match$4[0]),match$4[1]
                           ];
                   }
                   else {
                     throw [
-                          Caml_builtin_exceptions.assert_failure,
-                          [
-                            "set.ml",
-                            372,
-                            18
+                          Caml_builtin_exceptions.assert_failure,[
+                            "set.ml",372,18
                           ]
                         ];
                   }
@@ -1338,32 +1167,7 @@ function of_list(l) {
 }
 
 var String_set = [
-  /* Empty */0,
-  is_empty,
-  mem,
-  add,
-  singleton,
-  remove,
-  union,
-  inter,
-  diff,
-  compare,
-  equal,
-  subset,
-  iter,
-  fold,
-  for_all,
-  exists,
-  filter,
-  partition,
-  cardinal,
-  elements,
-  min_elt,
-  max_elt,
-  min_elt,
-  split,
-  find,
-  of_list
+  /* Empty */0,is_empty,mem,add,singleton,remove,union,inter,diff,compare,equal,subset,iter,fold,for_all,exists,filter,partition,cardinal,elements,min_elt,max_elt,min_elt,split,find,of_list
 ];
 
 var Cycle = Caml_exceptions.create("Topsort_test.Cycle");
@@ -1371,27 +1175,22 @@ var Cycle = Caml_exceptions.create("Topsort_test.Cycle");
 function pathsort(graph) {
   var visited = [/* [] */0];
   var empty_path = /* tuple */[
-    /* Empty */0,
-    /* [] */0
+    /* Empty */0,/* [] */0
   ];
   var $plus$great = function (node, param) {
     var stack = param[1];
     var set = param[0];
     if (mem(node, set)) {
       throw [
-            Cycle,
-            /* :: */[
-              node,
-              stack
+            Cycle,[
+              node,stack
             ]
           ];
     }
     else {
       return /* tuple */[
-              add(node, set),
-              /* :: */[
-                node,
-                stack
+              add(node, set),[
+                node,stack
               ]
             ];
     }
@@ -1407,9 +1206,8 @@ function pathsort(graph) {
     }
     else {
       sort_nodes($plus$great(node, path), nexts(node, graph));
-      visited[0] = /* :: */[
-        node,
-        visited[0]
+      visited[0] = /* Nested :: */[
+        node,visited[0]
       ];
       return /* () */0;
     }
@@ -1420,19 +1218,13 @@ function pathsort(graph) {
   return visited[0];
 }
 
-if (!Caml_obj.caml_equal(pathsort(grwork), /* :: */[
-        "wake",
-        /* :: */[
-          "shower",
-          /* :: */[
-            "dress",
-            /* :: */[
-              "eat",
-              /* :: */[
-                "washup",
-                /* :: */[
-                  "go",
-                  /* [] */0
+if (!Caml_obj.caml_equal(pathsort(grwork), /* Nested :: */[
+        "wake",[
+          "shower",[
+            "dress",[
+              "eat",[
+                "washup",[
+                  "go",/* [] */0
                 ]
               ]
             ]
@@ -1440,29 +1232,21 @@ if (!Caml_obj.caml_equal(pathsort(grwork), /* :: */[
         ]
       ])) {
   throw [
-        Caml_builtin_exceptions.assert_failure,
-        [
-          "topsort_test.ml",
-          150,
-          4
+        Caml_builtin_exceptions.assert_failure,[
+          "topsort_test.ml",150,4
         ]
       ];
 }
 
 try {
-  pathsort(/* :: */[
+  pathsort(/* Nested :: */[
         /* tuple */[
-          "go",
-          "eat"
-        ],
-        grwork
+          "go","eat"
+        ],grwork
       ]);
   throw [
-        Caml_builtin_exceptions.assert_failure,
-        [
-          "topsort_test.ml",
-          156,
-          8
+        Caml_builtin_exceptions.assert_failure,[
+          "topsort_test.ml",156,8
         ]
       ];
 }
@@ -1523,11 +1307,8 @@ catch (exn){
   }
   if (exit === 1) {
     throw [
-          Caml_builtin_exceptions.assert_failure,
-          [
-            "topsort_test.ml",
-            159,
-            11
+          Caml_builtin_exceptions.assert_failure,[
+            "topsort_test.ml",159,11
           ]
         ];
   }

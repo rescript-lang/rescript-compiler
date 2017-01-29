@@ -11,12 +11,10 @@ var MoreLabels = require("../../lib/js/moreLabels");
 
 function to_list(tbl) {
   return Hashtbl.fold(function (k, v, acc) {
-              return /* :: */[
+              return /* Nested :: */[
                       /* tuple */[
-                        k,
-                        v
-                      ],
-                      acc
+                        k,v
+                      ],acc
                     ];
             }, tbl, /* [] */0);
 }
@@ -45,61 +43,47 @@ function g(count) {
 }
 
 var suites_000 = /* tuple */[
-  "simple",
-  function () {
+  "simple",function () {
     return /* Eq */Block.__(0, [
-              /* :: */[
+              /* Nested :: */[
                 /* tuple */[
-                  1,
-                  /* "1" */49
-                ],
-                /* :: */[
+                  1,/* "1" */49
+                ],[
                   /* tuple */[
-                    2,
-                    /* "2" */50
-                  ],
-                  /* [] */0
+                    2,/* "2" */50
+                  ],/* [] */0
                 ]
-              ],
-              f(/* () */0)
+              ],f(/* () */0)
             ]);
   }
 ];
 
-var suites_001 = /* :: */[
+var suites_001 = /* Nested :: */[
   /* tuple */[
-    "more_iterations",
-    function () {
+    "more_iterations",function () {
       return /* Eq */Block.__(0, [
                 $$Array.init(1001, function (i) {
                       return /* tuple */[
-                              (i << 1),
-                              "" + i
+                              (i << 1),"" + i
                             ];
-                    }),
-                g(1000)
+                    }),g(1000)
               ]);
     }
-  ],
-  /* :: */[
+  ],[
     /* tuple */[
-      "More_labels_regressionfix_374",
-      function () {
+      "More_labels_regressionfix_374",function () {
         var tbl = Curry._2(MoreLabels.Hashtbl[/* create */0], /* None */0, 30);
         Hashtbl.add(tbl, 3, 3);
         return /* Eq */Block.__(0, [
-                  tbl[/* size */0],
-                  1
+                  tbl[/* size */0],1
                 ]);
       }
-    ],
-    /* [] */0
+    ],/* [] */0
   ]
 ];
 
-var suites = /* :: */[
-  suites_000,
-  suites_001
+var suites = /* Nested :: */[
+  suites_000,suites_001
 ];
 
 Mt.from_pair_suites("hashtbl_test.ml", suites);

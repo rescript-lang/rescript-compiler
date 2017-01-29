@@ -11,17 +11,14 @@ function eq(loc, param) {
   var y = param[1];
   var x = param[0];
   test_id[0] = test_id[0] + 1 | 0;
-  suites[0] = /* :: */[
+  suites[0] = /* Nested :: */[
     /* tuple */[
-      loc + (" id " + test_id[0]),
-      function () {
+      loc + (" id " + test_id[0]),function () {
         return /* Eq */Block.__(0, [
-                  x,
-                  y
+                  x,y
                 ]);
       }
-    ],
-    suites[0]
+    ],suites[0]
   ];
   return /* () */0;
 }
@@ -52,15 +49,13 @@ var v = {
 var p_001 = u.say(1, 2);
 
 var p = /* tuple */[
-  3,
-  p_001
+  3,p_001
 ];
 
 eq('File "gpr_627_test.ml", line 26, characters 5-12', p);
 
 eq('File "gpr_627_test.ml", line 27, characters 5-12', /* tuple */[
-      v.hi(1, 2),
-      6
+      v.hi(1, 2),6
     ]);
 
 Mt.from_pair_suites("gpr_627_test.ml", suites[0]);

@@ -15,14 +15,11 @@ function f(param) {
 }
 
 console.log(/* tuple */[
-      f(/* Some */[3]),
-      "None",
-      "Some"
+      f(/* Some */[3]),"None","Some"
     ]);
 
 console.log(/* tuple */[
-      "A",
-      "A"
+      "A","A"
     ]);
 
 /*  Not a pure module */

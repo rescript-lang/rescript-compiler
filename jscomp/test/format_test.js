@@ -12,17 +12,14 @@ var test_id = [0];
 
 function eq(loc, x, y) {
   test_id[0] = test_id[0] + 1 | 0;
-  suites[0] = /* :: */[
+  suites[0] = /* Nested :: */[
     /* tuple */[
-      loc + (" id " + test_id[0]),
-      function () {
+      loc + (" id " + test_id[0]),function () {
         return /* Eq */Block.__(0, [
-                  x,
-                  y
+                  x,y
                 ]);
       }
-    ],
-    suites[0]
+    ],suites[0]
   ];
   return /* () */0;
 }
@@ -30,19 +27,14 @@ function eq(loc, x, y) {
 function u() {
   return Pervasives.$caret$caret(/* Format */[
               /* String_literal */Block.__(11, [
-                  "xx ",
-                  /* String */Block.__(2, [
-                      /* No_padding */0,
-                      /* End_of_format */0
+                  "xx ",/* String */Block.__(2, [
+                      /* No_padding */0,/* End_of_format */0
                     ])
-                ]),
-              "xx %s"
+                ]),"xx %s"
             ], /* Format */[
               /* String_literal */Block.__(11, [
-                  "yy",
-                  /* End_of_format */0
-                ]),
-              "yy"
+                  "yy",/* End_of_format */0
+                ]),"yy"
             ]);
 }
 

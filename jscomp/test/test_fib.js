@@ -38,8 +38,7 @@ var sumdown = v$1;
 
 function cons(x, y) {
   return /* Cons */[
-          x,
-          y
+          x,y
         ];
 }
 
@@ -55,8 +54,7 @@ function length(x) {
 function map(f, x) {
   if (x) {
     return /* Cons */[
-            Curry._1(f, x[0]),
-            map(f, x[1])
+            Curry._1(f, x[0]),map(f, x[1])
           ];
   }
   else {

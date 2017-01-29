@@ -13,8 +13,7 @@ var Parse_error = Caml_exceptions.create("Stream_parser_test.Parse_error");
 
 function parse(token) {
   var look_ahead = /* record */[
-    /* length */0,
-    /* tail : None */0
+    /* length */0,/* tail : None */0
   ];
   var token$1 = function () {
     if (look_ahead[/* length */0]) {
@@ -38,8 +37,7 @@ function parse(token) {
             var match = token$1(/* () */0);
             if (match.tag) {
               throw [
-                    Parse_error,
-                    "Unbalanced parens"
+                    Parse_error,"Unbalanced parens"
                   ];
             }
             else if (match[0] === ")") {
@@ -47,16 +45,14 @@ function parse(token) {
             }
             else {
               throw [
-                    Parse_error,
-                    "Unbalanced parens"
+                    Parse_error,"Unbalanced parens"
                   ];
             }
           }
           else {
             Queue.push(e, look_ahead);
             throw [
-                  Parse_error,
-                  "unexpected token"
+                  Parse_error,"unexpected token"
                 ];
           }
           break;
@@ -65,8 +61,7 @@ function parse(token) {
       default:
         Queue.push(e, look_ahead);
         throw [
-              Parse_error,
-              "unexpected token"
+              Parse_error,"unexpected token"
             ];
     }
   };
@@ -108,29 +103,21 @@ function parse(token) {
   };
   var r = parse_expr_aux(parse_term_aux(parse_atom(/* () */0)));
   return /* tuple */[
-          r,
-          Queue.fold(function (acc, x) {
-                return /* :: */[
-                        x,
-                        acc
+          r,Queue.fold(function (acc, x) {
+                return /* Nested :: */[
+                        x,acc
                       ];
               }, /* [] */0, look_ahead)
         ];
 }
 
-var lexer = Genlex.make_lexer(/* :: */[
-      "(",
-      /* :: */[
-        "*",
-        /* :: */[
-          "/",
-          /* :: */[
-            "+",
-            /* :: */[
-              "-",
-              /* :: */[
-                ")",
-                /* [] */0
+var lexer = Genlex.make_lexer(/* Nested :: */[
+      "(",[
+        "*",[
+          "/",[
+            "+",[
+              "-",[
+                ")",/* [] */0
               ]
             ]
           ]
@@ -147,8 +134,7 @@ function token(chars) {
 
 function l_parse(token) {
   var look_ahead = /* record */[
-    /* length */0,
-    /* tail : None */0
+    /* length */0,/* tail : None */0
   ];
   var token$1 = function () {
     if (look_ahead[/* length */0]) {
@@ -172,8 +158,7 @@ function l_parse(token) {
             var t$1 = token$1(/* () */0);
             if (t$1.tag) {
               throw [
-                    Parse_error,
-                    "Unbalanced )"
+                    Parse_error,"Unbalanced )"
                   ];
             }
             else if (t$1[0] === ")") {
@@ -181,15 +166,13 @@ function l_parse(token) {
             }
             else {
               throw [
-                    Parse_error,
-                    "Unbalanced )"
+                    Parse_error,"Unbalanced )"
                   ];
             }
           }
           else {
             throw [
-                  Parse_error,
-                  "Unexpected token"
+                  Parse_error,"Unexpected token"
                 ];
           }
           break;
@@ -197,8 +180,7 @@ function l_parse(token) {
           return t[0];
       default:
         throw [
-              Parse_error,
-              "Unexpected token"
+              Parse_error,"Unexpected token"
             ];
     }
   };
@@ -250,11 +232,9 @@ function l_parse(token) {
   };
   var r = parse_t_aux(parse_f_aux(parse_f(/* () */0)));
   return /* tuple */[
-          r,
-          Queue.fold(function (acc, x) {
-                return /* :: */[
-                        x,
-                        acc
+          r,Queue.fold(function (acc, x) {
+                return /* Nested :: */[
+                        x,acc
                       ];
               }, /* [] */0, look_ahead)
         ];
@@ -266,17 +246,14 @@ var test_id = [0];
 
 function eq(loc, x, y) {
   test_id[0] = test_id[0] + 1 | 0;
-  suites[0] = /* :: */[
+  suites[0] = /* Nested :: */[
     /* tuple */[
-      loc + (" id " + test_id[0]),
-      function () {
+      loc + (" id " + test_id[0]),function () {
         return /* Eq */Block.__(0, [
-                  x,
-                  y
+                  x,y
                 ]);
       }
-    ],
-    suites[0]
+    ],suites[0]
   ];
   return /* () */0;
 }
@@ -284,29 +261,22 @@ function eq(loc, x, y) {
 var match = parse(token(Stream.of_string("1 + 2 + (3  - 2) * 3 * 3  - 2 a")));
 
 eq('File "stream_parser_test.ml", line 132, characters 5-12', /* tuple */[
-      match[0],
-      match[1]
+      match[0],match[1]
     ], /* tuple */[
-      10,
-      /* :: */[
-        /* Ident */Block.__(1, ["a"]),
-        /* [] */0
+      10,[
+        /* Ident */Block.__(1, ["a"]),/* [] */0
       ]
     ]);
 
 eq('File "stream_parser_test.ml", line 133, characters 5-12', /* tuple */[
-      2,
-      /* :: */[
-        /* Kwd */Block.__(0, ["=="]),
-        /* [] */0
+      2,[
+        /* Kwd */Block.__(0, ["=="]),/* [] */0
       ]
     ], parse(token(Stream.of_string("3 - 2  - 1"))));
 
 eq('File "stream_parser_test.ml", line 134, characters 5-12', /* tuple */[
-      0,
-      /* :: */[
-        /* Kwd */Block.__(0, ["=="]),
-        /* [] */0
+      0,[
+        /* Kwd */Block.__(0, ["=="]),/* [] */0
       ]
     ], l_parse(token(Stream.of_string("3 - 2  - 1"))));
 

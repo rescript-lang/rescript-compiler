@@ -21,18 +21,15 @@ function test2() {
 }
 
 var suites_000 = /* tuple */[
-  "for_order",
-  function () {
+  "for_order",function () {
     return /* Eq */Block.__(0, [
-              10,
-              test2(/* () */0)
+              10,test2(/* () */0)
             ]);
   }
 ];
 
-var suites = /* :: */[
-  suites_000,
-  /* [] */0
+var suites = /* Nested :: */[
+  suites_000,/* [] */0
 ];
 
 Mt.from_pair_suites("for_side_effect_test.ml", suites);

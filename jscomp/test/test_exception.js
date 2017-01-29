@@ -8,8 +8,7 @@ var Local = Caml_exceptions.create("Test_exception.Local");
 
 function f() {
   throw [
-        Local,
-        3
+        Local,3
       ];
 }
 
@@ -19,8 +18,7 @@ function g() {
 
 function h() {
   throw [
-        Test_common.U,
-        3
+        Test_common.U,3
       ];
 }
 
@@ -30,8 +28,7 @@ function x() {
 
 function xx() {
   throw [
-        Caml_builtin_exceptions.invalid_argument,
-        "x"
+        Caml_builtin_exceptions.invalid_argument,"x"
       ];
 }
 

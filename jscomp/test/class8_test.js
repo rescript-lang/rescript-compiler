@@ -8,8 +8,7 @@ var CamlinternalOO  = require("../../lib/js/camlinternalOO");
 var Caml_exceptions = require("../../lib/js/caml_exceptions");
 
 var shared = [
-  "leq",
-  "value"
+  "leq","value"
 ];
 
 var shared$1 = ["repr"];
@@ -20,17 +19,14 @@ var test_id = [0];
 
 function eq(loc, x, y) {
   test_id[0] = test_id[0] + 1 | 0;
-  suites[0] = /* :: */[
+  suites[0] = /* Nested :: */[
     /* tuple */[
-      loc + (" id " + test_id[0]),
-      function () {
+      loc + (" id " + test_id[0]),function () {
         return /* Eq */Block.__(0, [
-                  x,
-                  y
+                  x,y
                 ]);
       }
-    ],
-    suites[0]
+    ],suites[0]
   ];
   return /* () */0;
 }
@@ -43,16 +39,12 @@ function comparable_001($$class) {
 }
 
 var comparable = [
-  0,
-  comparable_001,
-  0,
-  0
+  0,comparable_001,0,0
 ];
 
 function money_init($$class) {
   var ids = CamlinternalOO.new_methods_variables($$class, [
-        "value",
-        "leq"
+        "value","leq"
       ], shared$1);
   var value = ids[0];
   var leq = ids[1];
@@ -60,12 +52,9 @@ function money_init($$class) {
   var inh = CamlinternalOO.inherits($$class, 0, ["leq"], 0, comparable, 1);
   var obj_init = inh[0];
   CamlinternalOO.set_methods($$class, /* array */[
-        value,
-        function (self$neg2) {
+        value,function (self$neg2) {
           return self$neg2[repr];
-        },
-        leq,
-        function (self$neg2, p) {
+        },leq,function (self$neg2, p) {
           return +(self$neg2[repr] <= Curry.js1(834174833, 1, p));
         }
       ]);
@@ -97,9 +86,7 @@ function money2_init($$class) {
 }
 
 var money2 = CamlinternalOO.make_class([
-      "leq",
-      "times",
-      "value"
+      "leq","times","value"
     ], money2_init);
 
 function min(x, y) {

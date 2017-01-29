@@ -5,44 +5,32 @@ var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
 
 function peek_queue() {
   throw [
-        Caml_builtin_exceptions.assert_failure,
-        [
-          "format_regression.ml",
-          10,
-          19
+        Caml_builtin_exceptions.assert_failure,[
+          "format_regression.ml",10,19
         ]
       ];
 }
 
 function int_of_size() {
   throw [
-        Caml_builtin_exceptions.assert_failure,
-        [
-          "format_regression.ml",
-          11,
-          20
+        Caml_builtin_exceptions.assert_failure,[
+          "format_regression.ml",11,20
         ]
       ];
 }
 
 function take_queue() {
   throw [
-        Caml_builtin_exceptions.assert_failure,
-        [
-          "format_regression.ml",
-          12,
-          19
+        Caml_builtin_exceptions.assert_failure,[
+          "format_regression.ml",12,19
         ]
       ];
 }
 
 function format_pp_token(_, _$1) {
   throw [
-        Caml_builtin_exceptions.assert_failure,
-        [
-          "format_regression.ml",
-          13,
-          26
+        Caml_builtin_exceptions.assert_failure,[
+          "format_regression.ml",13,26
         ]
       ];
 }

@@ -6,27 +6,21 @@ var CamlinternalLazy = require("../../lib/js/camlinternalLazy");
 
 function a4(prim) {
   return [
-          'File "test_primitive.ml", line 30, characters 9-19',
-          prim
+          'File "test_primitive.ml", line 30, characters 9-19',prim
         ];
 }
 
 function a5(prim) {
   return [
-          31,
-          prim
+          31,prim
         ];
 }
 
 function a6(prim) {
   return [
           /* tuple */[
-            "test_primitive.ml",
-            32,
-            9,
-            19
-          ],
-          prim
+            "test_primitive.ml",32,9,19
+          ],prim
         ];
 }
 
@@ -35,8 +29,7 @@ var test_float = 3;
 var test_abs = Math.abs(3.0);
 
 var v = /* float array */[
-  1.0,
-  2.0
+  1.0,2.0
 ];
 
 var xxx = "a";
@@ -60,8 +53,7 @@ function f2(h, b, _) {
 v[1] = 3.0;
 
 var unboxed_x = /* float array */[
-  0,
-  0
+  0,0
 ];
 
 function gg(x) {
@@ -106,8 +98,7 @@ var a2 = 28;
 var a3 = "Test_primitive";
 
 var xx = /* tuple */[
-  0,
-  0
+  0,0
 ];
 
 exports.a0            = a0;

@@ -42,31 +42,23 @@ function update(tr, k, w) {
     var v = tr[0];
     if (k === 1) {
       return /* Br */[
-              w,
-              l,
-              r
+              w,l,r
             ];
     }
     else if (k % 2) {
       return /* Br */[
-              v,
-              l,
-              update(r, k / 2 | 0, w)
+              v,l,update(r, k / 2 | 0, w)
             ];
     }
     else {
       return /* Br */[
-              v,
-              update(l, k / 2 | 0, w),
-              r
+              v,update(l, k / 2 | 0, w),r
             ];
     }
   }
   else if (k === 1) {
     return /* Br */[
-            w,
-            /* Lf */0,
-            /* Lf */0
+            w,/* Lf */0,/* Lf */0
           ];
   }
   else {
@@ -84,16 +76,12 @@ function $$delete(tr, n) {
     }
     else if (n % 2) {
       return /* Br */[
-              v,
-              l,
-              $$delete(r, n / 2 | 0)
+              v,l,$$delete(r, n / 2 | 0)
             ];
     }
     else {
       return /* Br */[
-              v,
-              $$delete(l, n / 2 | 0),
-              r
+              v,$$delete(l, n / 2 | 0),r
             ];
     }
   }
@@ -105,16 +93,12 @@ function $$delete(tr, n) {
 function loext(tr, w) {
   if (tr) {
     return /* Br */[
-            w,
-            loext(tr[2], tr[0]),
-            tr[1]
+            w,loext(tr[2], tr[0]),tr[1]
           ];
   }
   else {
     return /* Br */[
-            w,
-            /* Lf */0,
-            /* Lf */0
+            w,/* Lf */0,/* Lf */0
           ];
   }
 }
@@ -124,18 +108,13 @@ function lorem(tr) {
     var l = tr[1];
     if (l) {
       return /* Br */[
-              l[0],
-              tr[2],
-              lorem(l)
+              l[0],tr[2],lorem(l)
             ];
     }
     else if (tr[2]) {
       throw [
-            Caml_builtin_exceptions.assert_failure,
-            [
-              "flexible_array_test.ml",
-              66,
-              9
+            Caml_builtin_exceptions.assert_failure,[
+              "flexible_array_test.ml",66,9
             ]
           ];
     }
@@ -149,8 +128,7 @@ function lorem(tr) {
 }
 
 var empty = /* tuple */[
-  /* Lf */0,
-  0
+  /* Lf */0,0
 ];
 
 function length(param) {
@@ -163,8 +141,7 @@ function get(param, i) {
   }
   else {
     throw [
-          Caml_builtin_exceptions.invalid_argument,
-          "Array.get"
+          Caml_builtin_exceptions.invalid_argument,"Array.get"
         ];
   }
 }
@@ -173,22 +150,19 @@ function set(param, i, v) {
   var k = param[1];
   if (i >= 0 && i < k) {
     return /* tuple */[
-            update(param[0], i + 1 | 0, v),
-            k
+            update(param[0], i + 1 | 0, v),k
           ];
   }
   else {
     throw [
-          Caml_builtin_exceptions.invalid_argument,
-          "Array.set"
+          Caml_builtin_exceptions.invalid_argument,"Array.set"
         ];
   }
 }
 
 function push_front(param, v) {
   return /* tuple */[
-          loext(param[0], v),
-          param[1] + 1 | 0
+          loext(param[0], v),param[1] + 1 | 0
         ];
 }
 
@@ -196,14 +170,12 @@ function pop_front(param) {
   var k = param[1];
   if (k > 0) {
     return /* tuple */[
-            lorem(param[0]),
-            k - 1 | 0
+            lorem(param[0]),k - 1 | 0
           ];
   }
   else {
     throw [
-          Caml_builtin_exceptions.invalid_argument,
-          "Array.pop_front"
+          Caml_builtin_exceptions.invalid_argument,"Array.pop_front"
         ];
   }
 }
@@ -211,8 +183,7 @@ function pop_front(param) {
 function push_back(param, v) {
   var k = param[1];
   return /* tuple */[
-          update(param[0], k + 1 | 0, v),
-          k + 1 | 0
+          update(param[0], k + 1 | 0, v),k + 1 | 0
         ];
 }
 
@@ -220,14 +191,12 @@ function pop_back(param) {
   var k = param[1];
   if (k > 0) {
     return /* tuple */[
-            $$delete(param[0], k),
-            k - 1 | 0
+            $$delete(param[0], k),k - 1 | 0
           ];
   }
   else {
     throw [
-          Caml_builtin_exceptions.invalid_argument,
-          "Array.pop_back"
+          Caml_builtin_exceptions.invalid_argument,"Array.pop_back"
         ];
   }
 }
@@ -240,10 +209,8 @@ function pp(fmt, s) {
   v = v + "]";
   return Curry._1(Format.fprintf(fmt, /* Format */[
                   /* String */Block.__(2, [
-                      /* No_padding */0,
-                      /* End_of_format */0
-                    ]),
-                  "%s"
+                      /* No_padding */0,/* End_of_format */0
+                    ]),"%s"
                 ]), v);
 }
 
@@ -298,18 +265,7 @@ function of_array(arr) {
 var equal = Caml_obj.caml_equal;
 
 var Int_array = /* module */[
-  /* empty */empty,
-  /* get */get,
-  /* set */set,
-  /* push_front */push_front,
-  /* pop_front */pop_front,
-  /* push_back */push_back,
-  /* pop_back */pop_back,
-  /* pp */pp,
-  /* append */append,
-  /* sort */sort,
-  /* of_array */of_array,
-  /* equal */equal
+  /* empty */empty,/* get */get,/* set */set,/* push_front */push_front,/* pop_front */pop_front,/* push_back */push_back,/* pop_back */pop_back,/* pp */pp,/* append */append,/* sort */sort,/* of_array */of_array,/* equal */equal
 ];
 
 function $eq$tilde(x, y) {
@@ -317,28 +273,15 @@ function $eq$tilde(x, y) {
 }
 
 var u = of_array(/* array */[
-      1,
-      2,
-      2,
-      5,
-      3,
-      6
+      1,2,2,5,3,6
     ]);
 
 if (!$eq$tilde(sort(u), /* array */[
-        1,
-        2,
-        2,
-        3,
-        5,
-        6
+        1,2,2,3,5,6
       ])) {
   throw [
-        Caml_builtin_exceptions.assert_failure,
-        [
-          "flexible_array_test.ml",
-          166,
-          4
+        Caml_builtin_exceptions.assert_failure,[
+          "flexible_array_test.ml",166,4
         ]
       ];
 }

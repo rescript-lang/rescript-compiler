@@ -38,42 +38,33 @@ var u = ( 1);
 var v = ( true);
 
 var suites_000 = /* tuple */[
-  "caml_bool_eq_caml_bool",
-  function () {
+  "caml_bool_eq_caml_bool",function () {
     return /* Eq */Block.__(0, [
-              u,
-              f(true)
+              u,f(true)
             ]);
   }
 ];
 
-var suites_001 = /* :: */[
+var suites_001 = /* Nested :: */[
   /* tuple */[
-    "js_bool_eq_js_bool",
-    function () {
+    "js_bool_eq_js_bool",function () {
       return /* Eq */Block.__(0, [
-                v,
-                true
+                v,true
               ]);
     }
-  ],
-  /* :: */[
+  ],[
     /* tuple */[
-      "js_bool_neq_acml_bool",
-      function () {
+      "js_bool_neq_acml_bool",function () {
         return /* Eq */Block.__(0, [
-                  /* false */0,
-                  Caml_obj.caml_equal(f(true), (true))
+                  /* false */0,Caml_obj.caml_equal(f(true), (true))
                 ]);
       }
-    ],
-    /* [] */0
+    ],/* [] */0
   ]
 ];
 
-var suites = /* :: */[
-  suites_000,
-  suites_001
+var suites = /* Nested :: */[
+  suites_000,suites_001
 ];
 
 Mt.from_pair_suites("js_bool_test.ml", suites);

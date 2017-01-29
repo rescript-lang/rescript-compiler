@@ -25,64 +25,47 @@ function to_int(x) {
   }
   else {
     throw [
-          Caml_builtin_exceptions.assert_failure,
-          [
-            "extensible_variant_test.ml",
-            16,
-            9
+          Caml_builtin_exceptions.assert_failure,[
+            "extensible_variant_test.ml",16,9
           ]
         ];
   }
 }
 
 var suites_000 = /* tuple */[
-  "test_int",
-  function () {
+  "test_int",function () {
     return /* Eq */Block.__(0, [
-              3,
-              to_int([
-                    Int,
-                    3,
-                    0
+              3,to_int([
+                    Int,3,0
                   ])
             ]);
   }
 ];
 
-var suites_001 = /* :: */[
+var suites_001 = /* Nested :: */[
   /* tuple */[
-    "test_int2",
-    function () {
+    "test_int2",function () {
       return /* Eq */Block.__(0, [
-                0,
-                to_int([
-                      Int$1,
-                      3,
-                      0
+                0,to_int([
+                      Int$1,3,0
                     ])
               ]);
     }
-  ],
-  /* :: */[
+  ],[
     /* tuple */[
-      "test_string",
-      function () {
+      "test_string",function () {
         return /* Eq */Block.__(0, [
-                  -1,
-                  to_int([
-                        Str,
-                        "x"
+                  -1,to_int([
+                        Str,"x"
                       ])
                 ]);
       }
-    ],
-    /* [] */0
+    ],/* [] */0
   ]
 ];
 
-var suites = /* :: */[
-  suites_000,
-  suites_001
+var suites = /* Nested :: */[
+  suites_000,suites_001
 ];
 
 Mt.from_pair_suites("extensible_variant_test.ml", suites);

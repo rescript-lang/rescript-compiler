@@ -6,23 +6,15 @@ var Block  = require("../../lib/js/block");
 var Genlex = require("../../lib/js/genlex");
 var Stream = require("../../lib/js/stream");
 
-var lexer = Genlex.make_lexer(/* :: */[
-      "+",
-      /* :: */[
-        "-",
-        /* :: */[
-          "*",
-          /* :: */[
-            "/",
-            /* :: */[
-              "let",
-              /* :: */[
-                "=",
-                /* :: */[
-                  "(",
-                  /* :: */[
-                    ")",
-                    /* [] */0
+var lexer = Genlex.make_lexer(/* Nested :: */[
+      "+",[
+        "-",[
+          "*",[
+            "/",[
+              "let",[
+                "=",[
+                  "(",[
+                    ")",/* [] */0
                   ]
                 ]
               ]
@@ -51,9 +43,8 @@ function to_list(s) {
       }
     }
     if (exit === 1) {
-      _acc = /* :: */[
-        v,
-        acc
+      _acc = /* Nested :: */[
+        v,acc
       ];
       continue ;
       
@@ -63,39 +54,29 @@ function to_list(s) {
 }
 
 var suites_000 = /* tuple */[
-  "lexer_stream_genlex",
-  function () {
+  "lexer_stream_genlex",function () {
     return /* Eq */Block.__(0, [
-              /* :: */[
-                /* Int */Block.__(2, [3]),
-                /* :: */[
-                  /* Kwd */Block.__(0, ["("]),
-                  /* :: */[
-                    /* Int */Block.__(2, [3]),
-                    /* :: */[
-                      /* Kwd */Block.__(0, ["+"]),
-                      /* :: */[
-                        /* Int */Block.__(2, [2]),
-                        /* :: */[
-                          /* Int */Block.__(2, [-1]),
-                          /* :: */[
-                            /* Kwd */Block.__(0, [")"]),
-                            /* [] */0
+              /* Nested :: */[
+                /* Int */Block.__(2, [3]),[
+                  /* Kwd */Block.__(0, ["("]),[
+                    /* Int */Block.__(2, [3]),[
+                      /* Kwd */Block.__(0, ["+"]),[
+                        /* Int */Block.__(2, [2]),[
+                          /* Int */Block.__(2, [-1]),[
+                            /* Kwd */Block.__(0, [")"]),/* [] */0
                           ]
                         ]
                       ]
                     ]
                   ]
                 ]
-              ],
-              to_list(lexer(Stream.of_string("3(3 + 2 -1)")))
+              ],to_list(lexer(Stream.of_string("3(3 + 2 -1)")))
             ]);
   }
 ];
 
-var suites = /* :: */[
-  suites_000,
-  /* [] */0
+var suites = /* Nested :: */[
+  suites_000,/* [] */0
 ];
 
 Mt.from_pair_suites("genlex_test.ml", suites);

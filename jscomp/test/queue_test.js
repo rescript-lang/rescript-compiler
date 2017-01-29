@@ -17,8 +17,7 @@ function to_array(q) {
 
 function queue_1(x) {
   var q = /* record */[
-    /* length */0,
-    /* tail : None */0
+    /* length */0,/* tail : None */0
   ];
   $$Array.iter(function (x) {
         return Queue.add(x, q);
@@ -27,24 +26,18 @@ function queue_1(x) {
 }
 
 var suites_000 = /* tuple */[
-  "simple push",
-  function () {
+  "simple push",function () {
     var x = /* int array */[
-      3,
-      4,
-      5,
-      2
+      3,4,5,2
     ];
     return /* Eq */Block.__(0, [
-              x,
-              queue_1(x)
+              x,queue_1(x)
             ]);
   }
 ];
 
-var suites = /* :: */[
-  suites_000,
-  /* [] */0
+var suites = /* Nested :: */[
+  suites_000,/* [] */0
 ];
 
 Mt.from_pair_suites("queue_test.ml", suites);

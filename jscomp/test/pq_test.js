@@ -10,27 +10,18 @@ function insert(queue, prio, elt) {
     var p = queue[0];
     if (prio <= p) {
       return /* Node */[
-              prio,
-              elt,
-              insert(right, p, e),
-              left
+              prio,elt,insert(right, p, e),left
             ];
     }
     else {
       return /* Node */[
-              p,
-              e,
-              insert(right, prio, elt),
-              left
+              p,e,insert(right, prio, elt),left
             ];
     }
   }
   else {
     return /* Node */[
-            prio,
-            elt,
-            /* Empty */0,
-            /* Empty */0
+            prio,elt,/* Empty */0,/* Empty */0
           ];
   }
 }
@@ -47,18 +38,12 @@ function remove_top(param) {
         var lprio = left[0];
         if (lprio <= rprio) {
           return /* Node */[
-                  lprio,
-                  left[1],
-                  remove_top(left),
-                  right
+                  lprio,left[1],remove_top(left),right
                 ];
         }
         else {
           return /* Node */[
-                  rprio,
-                  right[1],
-                  left,
-                  remove_top(right)
+                  rprio,right[1],left,remove_top(right)
                 ];
         }
       }
@@ -78,9 +63,7 @@ function remove_top(param) {
 function extract(queue) {
   if (queue) {
     return /* tuple */[
-            queue[0],
-            queue[1],
-            remove_top(queue)
+            queue[0],queue[1],remove_top(queue)
           ];
   }
   else {
@@ -89,11 +72,7 @@ function extract(queue) {
 }
 
 var PrioQueue = /* module */[
-  /* empty : Empty */0,
-  /* insert */insert,
-  /* Queue_is_empty */Queue_is_empty,
-  /* remove_top */remove_top,
-  /* extract */extract
+  /* empty : Empty */0,/* insert */insert,/* Queue_is_empty */Queue_is_empty,/* remove_top */remove_top,/* extract */extract
 ];
 
 exports.PrioQueue = PrioQueue;

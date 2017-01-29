@@ -6,15 +6,13 @@ var Curry          = require("../../lib/js/curry");
 var CamlinternalOO = require("../../lib/js/camlinternalOO");
 
 var shared = [
-  "move",
-  "get_x"
+  "move","get_x"
 ];
 
 var shared$1 = ["x"];
 
 var shared$2 = [
-  "bump",
-  "get_x"
+  "bump","get_x"
 ];
 
 var suites = [/* [] */0];
@@ -23,43 +21,33 @@ var test_id = [0];
 
 function eq(loc, x, y) {
   test_id[0] = test_id[0] + 1 | 0;
-  suites[0] = /* :: */[
+  suites[0] = /* Nested :: */[
     /* tuple */[
-      loc + (" id " + test_id[0]),
-      function () {
+      loc + (" id " + test_id[0]),function () {
         return /* Eq */Block.__(0, [
-                  x,
-                  y
+                  x,y
                 ]);
       }
-    ],
-    suites[0]
+    ],suites[0]
   ];
   return /* () */0;
 }
 
 function restricted_point_init($$class) {
   var ids = CamlinternalOO.new_methods_variables($$class, [
-        "move",
-        "get_x",
-        "bump"
+        "move","get_x","bump"
       ], shared$1);
   var move = ids[0];
   var get_x = ids[1];
   var bump = ids[2];
   var x = ids[3];
   CamlinternalOO.set_methods($$class, /* array */[
-        get_x,
-        function (self$neg1) {
+        get_x,function (self$neg1) {
           return self$neg1[x];
-        },
-        move,
-        function (self$neg1, d) {
+        },move,function (self$neg1, d) {
           self$neg1[x] = self$neg1[x] + d | 0;
           return /* () */0;
-        },
-        bump,
-        function (self$neg1) {
+        },bump,function (self$neg1) {
           return Curry._2(self$neg1[0][move], self$neg1, 1);
         }
       ]);
@@ -97,9 +85,7 @@ var Point = /* module */[/* restricted_point' */restricted_point];
 function abstract_point_001($$class) {
   var x_init = CamlinternalOO.new_variable($$class, "");
   var ids = CamlinternalOO.get_method_labels($$class, [
-        "move",
-        "get_x",
-        "get_offset"
+        "move","get_x","get_offset"
       ]);
   var get_x = ids[1];
   var get_offset = ids[2];
@@ -114,10 +100,7 @@ function abstract_point_001($$class) {
 }
 
 var abstract_point = [
-  0,
-  abstract_point_001,
-  0,
-  0
+  0,abstract_point_001,0,0
 ];
 
 function point_init($$class) {
@@ -128,12 +111,9 @@ function point_init($$class) {
   var inh = CamlinternalOO.inherits($$class, 0, shared, ["get_offset"], abstract_point, 1);
   var obj_init = inh[0];
   CamlinternalOO.set_methods($$class, /* array */[
-        get_x,
-        function (self$neg6) {
+        get_x,function (self$neg6) {
           return self$neg6[x];
-        },
-        move,
-        function (self$neg6, d) {
+        },move,function (self$neg6, d) {
           self$neg6[x] = self$neg6[x] + d | 0;
           return /* () */0;
         }
@@ -147,9 +127,7 @@ function point_init($$class) {
 }
 
 var point = CamlinternalOO.make_class([
-      "move",
-      "get_offset",
-      "get_x"
+      "move","get_offset","get_x"
     ], point_init);
 
 function colored_point_init($$class) {
@@ -157,9 +135,7 @@ function colored_point_init($$class) {
   var color = ids[0];
   var c = ids[1];
   var inh = CamlinternalOO.inherits($$class, shared$1, 0, [
-        "get_offset",
-        "get_x",
-        "move"
+        "get_offset","get_x","move"
       ], point, 1);
   var obj_init = inh[0];
   CamlinternalOO.set_method($$class, color, function (self$neg7) {
@@ -174,20 +150,15 @@ function colored_point_init($$class) {
 }
 
 var colored_point = CamlinternalOO.make_class([
-      "move",
-      "color",
-      "get_offset",
-      "get_x"
+      "move","color","get_offset","get_x"
     ], colored_point_init);
 
 var p$prime = Curry._3(colored_point[0], 0, 5, "red");
 
 eq('File "class4_test.ml", line 67, characters 5-12', /* tuple */[
-      5,
-      "red"
+      5,"red"
     ], /* tuple */[
-      Curry.js1(291546447, 1, p$prime),
-      Curry.js1(-899911325, 2, p$prime)
+      Curry.js1(291546447, 1, p$prime),Curry.js1(-899911325, 2, p$prime)
     ]);
 
 function get_succ_x(p) {

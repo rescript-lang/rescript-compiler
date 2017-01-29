@@ -25,9 +25,8 @@ function split_by($staropt$star, is_delim, str) {
         return acc;
       }
       else {
-        return /* :: */[
-                $$String.sub(str, 0, last_pos),
-                acc
+        return /* Nested :: */[
+                $$String.sub(str, 0, last_pos),acc
               ];
       }
     }
@@ -37,9 +36,8 @@ function split_by($staropt$star, is_delim, str) {
         var v = $$String.sub(str, pos + 1 | 0, new_len);
         _pos = pos - 1 | 0;
         _last_pos = pos;
-        _acc = /* :: */[
-          v,
-          acc
+        _acc = /* Nested :: */[
+          v,acc
         ];
         continue ;
         
@@ -249,8 +247,7 @@ function for_all_range(s, start, finish, p) {
   var len = s.length;
   if (start < 0 || finish >= len) {
     throw [
-          Caml_builtin_exceptions.invalid_argument,
-          "Ext_string.for_all_range"
+          Caml_builtin_exceptions.invalid_argument,"Ext_string.for_all_range"
         ];
   }
   else {
@@ -350,8 +347,7 @@ function non_overlap_count(sub, s) {
   }
   else {
     throw [
-          Caml_builtin_exceptions.invalid_argument,
-          "Ext_string.non_overlap_count"
+          Caml_builtin_exceptions.invalid_argument,"Ext_string.non_overlap_count"
         ];
   }
 }
@@ -383,8 +379,7 @@ function tail_from(s, x) {
   if (x > len) {
     var s$1 = "Ext_string.tail_from " + (s + (" : " + x));
     throw [
-          Caml_builtin_exceptions.invalid_argument,
-          s$1
+          Caml_builtin_exceptions.invalid_argument,s$1
         ];
   }
   else {
@@ -564,17 +559,12 @@ function is_valid_module_file(s) {
 }
 
 function is_valid_source_name(name) {
-  var match = check_any_suffix_case_then_chop(name, /* :: */[
-        ".ml",
-        /* :: */[
-          ".re",
-          /* :: */[
-            ".mli",
-            /* :: */[
-              ".mll",
-              /* :: */[
-                ".rei",
-                /* [] */0
+  var match = check_any_suffix_case_then_chop(name, /* Nested :: */[
+        ".ml",[
+          ".re",[
+            ".mli",[
+              ".mll",[
+                ".rei",/* [] */0
               ]
             ]
           ]
@@ -609,8 +599,7 @@ function no_char(x, ch, i, len) {
   var str_len = x.length;
   if (i < 0 || i >= str_len || len >= str_len) {
     throw [
-          Caml_builtin_exceptions.invalid_argument,
-          "Ext_string.no_char"
+          Caml_builtin_exceptions.invalid_argument,"Ext_string.no_char"
         ];
   }
   else {

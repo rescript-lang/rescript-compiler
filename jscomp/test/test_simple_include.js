@@ -7,15 +7,13 @@ var v = [32];
 v[0] = 0;
 
 var N = /* module */[
-  /* a */3,
-  /* v */v
+  /* a */3,/* v */v
 ];
 
 var v$1 = [32];
 
 var NN = /* module */[
-  /* a */3,
-  /* v */v$1
+  /* a */3,/* v */v$1
 ];
 
 var init = $$Array.init;

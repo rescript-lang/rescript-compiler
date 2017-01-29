@@ -9,54 +9,39 @@ var Pervasives     = require("../../lib/js/pervasives");
 var CamlinternalOO = require("../../lib/js/camlinternalOO");
 
 var shared = [
-  "bump",
-  "get_x",
-  "move"
+  "bump","get_x","move"
 ];
 
 var shared$1 = [
-  "move",
-  "get_x"
+  "move","get_x"
 ];
 
 var shared$2 = ["move"];
 
 var shared$3 = [
-  "register",
-  "n",
-  "len"
+  "register","n","len"
 ];
 
 var shared$4 = [
-  "move",
-  "get_offset",
-  "get_x"
+  "move","get_offset","get_x"
 ];
 
 var shared$5 = ["x"];
 
 var shared$6 = [
-  "move",
-  "print",
-  "get_x"
+  "move","print","get_x"
 ];
 
 var shared$7 = [
-  "move",
-  "get_x",
-  "get_offset"
+  "move","get_x","get_offset"
 ];
 
 var shared$8 = [
-  "print",
-  "move",
-  "get_x"
+  "print","move","get_x"
 ];
 
 var shared$9 = [
-  "bump",
-  "move",
-  "get_x"
+  "bump","move","get_x"
 ];
 
 var suites = [/* [] */0];
@@ -65,17 +50,14 @@ var test_id = [0];
 
 function eq(loc, x, y) {
   test_id[0] = test_id[0] + 1 | 0;
-  suites[0] = /* :: */[
+  suites[0] = /* Nested :: */[
     /* tuple */[
-      loc + (" id " + test_id[0]),
-      function () {
+      loc + (" id " + test_id[0]),function () {
         return /* Eq */Block.__(0, [
-                  x,
-                  y
+                  x,y
                 ]);
       }
-    ],
-    suites[0]
+    ],suites[0]
   ];
   return /* () */0;
 }
@@ -86,12 +68,9 @@ function point_init($$class) {
   var get_x = ids[1];
   var x = ids[2];
   CamlinternalOO.set_methods($$class, /* array */[
-        get_x,
-        function (self$neg1) {
+        get_x,function (self$neg1) {
           return self$neg1[x];
-        },
-        move,
-        function (self$neg1, d) {
+        },move,function (self$neg1, d) {
           self$neg1[x] = self$neg1[x] + d | 0;
           return /* () */0;
         }
@@ -117,16 +96,11 @@ function adjusted_point_init($$class) {
   var get_offset = ids[2];
   var x = ids[3];
   CamlinternalOO.set_methods($$class, /* array */[
-        get_x,
-        function (self$neg2) {
+        get_x,function (self$neg2) {
           return self$neg2[x];
-        },
-        get_offset,
-        function (self$neg2) {
+        },get_offset,function (self$neg2) {
           return self$neg2[x] - self$neg2[origin] | 0;
-        },
-        move,
-        function (self$neg2, d) {
+        },move,function (self$neg2, d) {
           self$neg2[x] = self$neg2[x] + d | 0;
           return /* () */0;
         }
@@ -171,10 +145,7 @@ var adjusted_point2_002 = point[2];
 var adjusted_point2_003 = point[3];
 
 var adjusted_point2 = [
-  adjusted_point2_000,
-  adjusted_point2_001,
-  adjusted_point2_002,
-  adjusted_point2_003
+  adjusted_point2_000,adjusted_point2_001,adjusted_point2_002,adjusted_point2_003
 ];
 
 var tmp$1 = Curry._2(adjusted_point2_000, 0, 31);
@@ -188,17 +159,12 @@ function printable_point_init($$class) {
   var get_x = ids[2];
   var x = ids[3];
   CamlinternalOO.set_methods($$class, /* array */[
-        get_x,
-        function (self$neg4) {
+        get_x,function (self$neg4) {
           return self$neg4[x];
-        },
-        move,
-        function (self$neg4, d) {
+        },move,function (self$neg4, d) {
           self$neg4[x] = self$neg4[x] + d | 0;
           return /* () */0;
-        },
-        print,
-        function (self$neg4) {
+        },print,function (self$neg4) {
           return Curry._1(self$neg4[0][get_x], self$neg4);
         }
       ]);
@@ -228,20 +194,14 @@ var n = ids[1];
 var len = ids[2];
 
 CamlinternalOO.set_methods($$class, /* array */[
-      n,
-      function () {
+      n,function () {
         return 1;
-      },
-      register,
-      function (self$neg5) {
-        ints[0] = /* :: */[
-          self$neg5,
-          ints[0]
+      },register,function (self$neg5) {
+        ints[0] = /* Nested :: */[
+          self$neg5,ints[0]
         ];
         return /* () */0;
-      },
-      len,
-      function () {
+      },len,function () {
         return List.length(ints[0]);
       }
     ]);
@@ -257,8 +217,7 @@ Curry.js1(-794843549, 6, my_int);
 console.log(Curry.js1(5393365, 7, my_int));
 
 var v = /* int array */[
-  0,
-  3
+  0,3
 ];
 
 function printable_point2_init($$class) {
@@ -268,17 +227,12 @@ function printable_point2_init($$class) {
   var get_x = ids[2];
   var x = ids[3];
   CamlinternalOO.set_methods($$class, /* array */[
-        get_x,
-        function (self$neg6) {
+        get_x,function (self$neg6) {
           return self$neg6[x];
-        },
-        move,
-        function (self$neg6, d) {
+        },move,function (self$neg6, d) {
           self$neg6[x] = self$neg6[x] + d | 0;
           return /* () */0;
-        },
-        print,
-        function (self$neg6) {
+        },print,function (self$neg6) {
           return Pervasives.print_int(Curry._1(self$neg6[0][get_x], self$neg6));
         }
       ]);
@@ -300,8 +254,7 @@ var printable_point2 = CamlinternalOO.make_class(shared$6, printable_point2_init
 Curry._2(printable_point2[0], 0, 31);
 
 eq('File "class3_test.ml", line 81, characters 12-19', v, /* int array */[
-      30,
-      3
+      30,3
     ]);
 
 function abstract_point_001($$class) {
@@ -320,10 +273,7 @@ function abstract_point_001($$class) {
 }
 
 var abstract_point = [
-  0,
-  abstract_point_001,
-  0,
-  0
+  0,abstract_point_001,0,0
 ];
 
 function vpoint_init($$class) {
@@ -334,12 +284,9 @@ function vpoint_init($$class) {
   var inh = CamlinternalOO.inherits($$class, 0, shared$1, ["get_offset"], abstract_point, 1);
   var obj_init = inh[0];
   CamlinternalOO.set_methods($$class, /* array */[
-        get_x,
-        function (self$neg8) {
+        get_x,function (self$neg8) {
           return self$neg8[x];
-        },
-        move,
-        function (self$neg8, d) {
+        },move,function (self$neg8, d) {
           self$neg8[x] = self$neg8[x] + d | 0;
           return /* () */0;
         }
@@ -376,10 +323,7 @@ function abstract_point2_001($$class) {
 }
 
 var abstract_point2 = [
-  0,
-  abstract_point2_001,
-  0,
-  0
+  0,abstract_point2_001,0,0
 ];
 
 function point2_init($$class) {
@@ -401,8 +345,7 @@ function point2_init($$class) {
 }
 
 var point2 = CamlinternalOO.make_class([
-      "move",
-      "get_offset"
+      "move","get_offset"
     ], point2_init);
 
 var h$1 = Curry._2(point2[0], 0, 3);
@@ -415,26 +358,19 @@ eq('File "class3_test.ml", line 128, characters 12-19', vv, 32);
 
 function restricted_point_init($$class) {
   var ids = CamlinternalOO.new_methods_variables($$class, [
-        "move",
-        "get_x",
-        "bump"
+        "move","get_x","bump"
       ], shared$5);
   var move = ids[0];
   var get_x = ids[1];
   var bump = ids[2];
   var x = ids[3];
   CamlinternalOO.set_methods($$class, /* array */[
-        get_x,
-        function (self$neg11) {
+        get_x,function (self$neg11) {
           return self$neg11[x];
-        },
-        move,
-        function (self$neg11, d) {
+        },move,function (self$neg11, d) {
           self$neg11[x] = self$neg11[x] + d | 0;
           return /* () */0;
-        },
-        bump,
-        function (self$neg11) {
+        },bump,function (self$neg11) {
           return Curry._2(self$neg11[0][move], self$neg11, 1);
         }
       ]);
@@ -446,8 +382,7 @@ function restricted_point_init($$class) {
 }
 
 var restricted_point = CamlinternalOO.make_class([
-      "bump",
-      "get_x"
+      "bump","get_x"
     ], restricted_point_init);
 
 var p$2 = Curry._2(restricted_point[0], 0, 0);

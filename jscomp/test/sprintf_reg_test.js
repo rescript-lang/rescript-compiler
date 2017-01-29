@@ -16,59 +16,40 @@ function eq(f, param) {
 
 var s = Curry._1(Printf.sprintf(/* Format */[
           /* Format_arg */Block.__(13, [
-              /* None */0,
-              /* String_ty */Block.__(1, [/* End_of_fmtty */0]),
-              /* Char_literal */Block.__(12, [
-                  /* "." */46,
-                  /* End_of_format */0
+              /* None */0,/* String_ty */Block.__(1, [/* End_of_fmtty */0]),/* Char_literal */Block.__(12, [
+                  /* "." */46,/* End_of_format */0
                 ])
-            ]),
-          "%{%s%}."
+            ]),"%{%s%}."
         ]), /* Format */[
       /* String_literal */Block.__(11, [
-          "32",
-          /* String */Block.__(2, [
-              /* No_padding */0,
-              /* End_of_format */0
+          "32",/* String */Block.__(2, [
+              /* No_padding */0,/* End_of_format */0
             ])
-        ]),
-      "32%s"
+        ]),"32%s"
     ]);
 
 eq('File "sprintf_reg_test.ml", line 8, characters 5-12', /* tuple */[
-      s,
-      "%s."
+      s,"%s."
     ]);
 
 var s$1 = Curry._2(Printf.sprintf(/* Format */[
           /* Int */Block.__(4, [
-              /* Int_i */3,
-              /* No_padding */0,
-              /* No_precision */0,
-              /* Char_literal */Block.__(12, [
-                  /* " " */32,
-                  /* Format_arg */Block.__(13, [
-                      /* None */0,
-                      /* String_ty */Block.__(1, [/* End_of_fmtty */0]),
-                      /* End_of_format */0
+              /* Int_i */3,/* No_padding */0,/* No_precision */0,/* Char_literal */Block.__(12, [
+                  /* " " */32,/* Format_arg */Block.__(13, [
+                      /* None */0,/* String_ty */Block.__(1, [/* End_of_fmtty */0]),/* End_of_format */0
                     ])
                 ])
-            ]),
-          "%i %{%s%}"
+            ]),"%i %{%s%}"
         ]), 1, /* Format */[
       /* String_literal */Block.__(11, [
-          "spells one ",
-          /* String */Block.__(2, [
-              /* No_padding */0,
-              /* End_of_format */0
+          "spells one ",/* String */Block.__(2, [
+              /* No_padding */0,/* End_of_format */0
             ])
-        ]),
-      "spells one %s"
+        ]),"spells one %s"
     ]);
 
 eq('File "sprintf_reg_test.ml", line 14, characters 5-12', /* tuple */[
-      s$1,
-      "1 %s"
+      s$1,"1 %s"
     ]);
 
 Mt.from_pair_suites("sprintf_reg_test.ml", suites[0]);

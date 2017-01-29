@@ -99,10 +99,7 @@ function for_6(x, u) {
         return Curry._1(x, /* () */0);
       }, arr);
   return /* int array */[
-          v[0],
-          v4[0],
-          v5[0],
-          inspect_3
+          v[0],v4[0],v5[0],inspect_3
         ];
 }
 
@@ -157,9 +154,8 @@ function for_8() {
 function for_9() {
   var v = [/* [] */0];
   var match_000 = function (x) {
-    v[0] = /* :: */[
-      x,
-      v[0]
+    v[0] = /* Nested :: */[
+      x,v[0]
     ];
     return /* () */0;
   };
@@ -202,97 +198,67 @@ function for_9() {
         return Curry._1(f, /* () */0);
       }, arr2);
   return /* array */[/* tuple */[
-            vv[0],
-            Curry._1(match_001, /* () */0),
-            vv2[0]
+            vv[0],Curry._1(match_001, /* () */0),vv2[0]
           ]];
 }
 
 var suites_000 = /* tuple */[
-  "for_loop_test_3",
-  function () {
+  "for_loop_test_3",function () {
     return /* Eq */Block.__(0, [
-              90,
-              for_3(Caml_array.caml_make_vect(10, 2))
+              90,for_3(Caml_array.caml_make_vect(10, 2))
             ]);
   }
 ];
 
-var suites_001 = /* :: */[
+var suites_001 = /* Nested :: */[
   /* tuple */[
-    "for_loop_test_4",
-    function () {
+    "for_loop_test_4",function () {
       return /* Eq */Block.__(0, [
-                180,
-                for_4(Caml_array.caml_make_vect(10, 2))
+                180,for_4(Caml_array.caml_make_vect(10, 2))
               ]);
     }
-  ],
-  /* :: */[
+  ],[
     /* tuple */[
-      "for_loop_test_5",
-      function () {
+      "for_loop_test_5",function () {
         return /* Eq */Block.__(0, [
-                  2420,
-                  for_5(Caml_array.caml_make_vect(10, 2), 11)
+                  2420,for_5(Caml_array.caml_make_vect(10, 2), 11)
                 ]);
       }
-    ],
-    /* :: */[
+    ],[
       /* tuple */[
-        "for_loop_test_6",
-        function () {
+        "for_loop_test_6",function () {
           return /* Eq */Block.__(0, [
                     /* int array */[
-                      30,
-                      1,
-                      2,
-                      3
-                    ],
-                    for_6(Caml_array.caml_make_vect(3, 0), 0)
+                      30,1,2,3
+                    ],for_6(Caml_array.caml_make_vect(3, 0), 0)
                   ]);
         }
-      ],
-      /* :: */[
+      ],[
         /* tuple */[
-          "for_loop_test_7",
-          function () {
+          "for_loop_test_7",function () {
             return /* Eq */Block.__(0, [
-                      84,
-                      for_7(/* () */0)
+                      84,for_7(/* () */0)
                     ]);
           }
-        ],
-        /* :: */[
+        ],[
           /* tuple */[
-            "for_loop_test_8",
-            function () {
+            "for_loop_test_8",function () {
               return /* Eq */Block.__(0, [
-                        294,
-                        for_8(/* () */0)
+                        294,for_8(/* () */0)
                       ]);
             }
-          ],
-          /* :: */[
+          ],[
             /* tuple */[
-              "for_loop_test_9",
-              function () {
+              "for_loop_test_9",function () {
                 return /* Eq */Block.__(0, [
                           /* array */[/* tuple */[
-                              10,
-                              /* int array */[
-                                1,
-                                2,
-                                2,
-                                3
-                              ],
-                              5
-                            ]],
-                          for_9(/* () */0)
+                              10,/* int array */[
+                                1,2,2,3
+                              ],5
+                            ]],for_9(/* () */0)
                         ]);
               }
-            ],
-            /* [] */0
+            ],/* [] */0
           ]
         ]
       ]
@@ -300,9 +266,8 @@ var suites_001 = /* :: */[
   ]
 ];
 
-var suites = /* :: */[
-  suites_000,
-  suites_001
+var suites = /* Nested :: */[
+  suites_000,suites_001
 ];
 
 exports.for_3  = for_3;

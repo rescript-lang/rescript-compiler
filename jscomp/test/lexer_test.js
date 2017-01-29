@@ -21,9 +21,8 @@ function get_tokens(lex, str) {
       return List.rev(acc);
     }
     else {
-      _acc = /* :: */[
-        v,
-        acc
+      _acc = /* Nested :: */[
+        v,acc
       ];
       continue ;
       
@@ -50,25 +49,16 @@ function from_tokens(lst) {
 }
 
 var lexer_suites_000 = /* tuple */[
-  "arith_token",
-  function () {
+  "arith_token",function () {
     return /* Eq */Block.__(0, [
-              f("x + 3 + 4 + y"),
-              /* :: */[
-                /* IDENT */Block.__(1, ["x"]),
-                /* :: */[
-                  /* PLUS */0,
-                  /* :: */[
-                    /* NUMERAL */Block.__(0, [3]),
-                    /* :: */[
-                      /* PLUS */0,
-                      /* :: */[
-                        /* NUMERAL */Block.__(0, [4]),
-                        /* :: */[
-                          /* PLUS */0,
-                          /* :: */[
-                            /* IDENT */Block.__(1, ["y"]),
-                            /* [] */0
+              f("x + 3 + 4 + y"),/* Nested :: */[
+                /* IDENT */Block.__(1, ["x"]),[
+                  /* PLUS */0,[
+                    /* NUMERAL */Block.__(0, [3]),[
+                      /* PLUS */0,[
+                        /* NUMERAL */Block.__(0, [4]),[
+                          /* PLUS */0,[
+                            /* IDENT */Block.__(1, ["y"]),/* [] */0
                           ]
                         ]
                       ]
@@ -80,66 +70,43 @@ var lexer_suites_000 = /* tuple */[
   }
 ];
 
-var lexer_suites_001 = /* :: */[
+var lexer_suites_001 = /* Nested :: */[
   /* tuple */[
-    "simple token",
-    function () {
+    "simple token",function () {
       return /* Eq */Block.__(0, [
-                Arith_lexer.lexeme(Lexing.from_string("10")),
-                /* NUMERAL */Block.__(0, [10])
+                Arith_lexer.lexeme(Lexing.from_string("10")),/* NUMERAL */Block.__(0, [10])
               ]);
     }
-  ],
-  /* :: */[
+  ],[
     /* tuple */[
-      "number_lexer",
-      function () {
+      "number_lexer",function () {
         var v = [/* [] */0];
         var add = function (t) {
-          v[0] = /* :: */[
-            t,
-            v[0]
+          v[0] = /* Nested :: */[
+            t,v[0]
           ];
           return /* () */0;
         };
         Number_lexer.token(add, Lexing.from_string("32 + 32 ( ) * / "));
         return /* Eq */Block.__(0, [
-                  List.rev(v[0]),
-                  /* :: */[
-                    "number",
-                    /* :: */[
-                      "32",
-                      /* :: */[
-                        "new line",
-                        /* :: */[
-                          "+",
-                          /* :: */[
-                            "new line",
-                            /* :: */[
-                              "number",
-                              /* :: */[
-                                "32",
-                                /* :: */[
-                                  "new line",
-                                  /* :: */[
-                                    "(",
-                                    /* :: */[
-                                      "new line",
-                                      /* :: */[
-                                        ")",
-                                        /* :: */[
-                                          "new line",
-                                          /* :: */[
-                                            "*",
-                                            /* :: */[
-                                              "new line",
-                                              /* :: */[
-                                                "/",
-                                                /* :: */[
-                                                  "new line",
-                                                  /* :: */[
-                                                    "eof",
-                                                    /* [] */0
+                  List.rev(v[0]),/* Nested :: */[
+                    "number",[
+                      "32",[
+                        "new line",[
+                          "+",[
+                            "new line",[
+                              "number",[
+                                "32",[
+                                  "new line",[
+                                    "(",[
+                                      "new line",[
+                                        ")",[
+                                          "new line",[
+                                            "*",[
+                                              "new line",[
+                                                "/",[
+                                                  "new line",[
+                                                    "eof",/* [] */0
                                                   ]
                                                 ]
                                               ]
@@ -159,36 +126,28 @@ var lexer_suites_001 = /* :: */[
                   ]
                 ]);
       }
-    ],
-    /* :: */[
+    ],[
       /* tuple */[
-        "simple number",
-        function () {
+        "simple number",function () {
           return /* Eq */Block.__(0, [
-                    Arith_syntax.str(Arith_parser.toplevel(Arith_lexer.lexeme, Lexing.from_string("10"))),
-                    "10."
+                    Arith_syntax.str(Arith_parser.toplevel(Arith_lexer.lexeme, Lexing.from_string("10"))),"10."
                   ]);
         }
-      ],
-      /* :: */[
+      ],[
         /* tuple */[
-          "arith",
-          function () {
+          "arith",function () {
             return /* Eq */Block.__(0, [
-                      Arith_syntax.str(Arith_parser.toplevel(Arith_lexer.lexeme, Lexing.from_string("x + 3 + 4 + y"))),
-                      "x+3.+4.+y"
+                      Arith_syntax.str(Arith_parser.toplevel(Arith_lexer.lexeme, Lexing.from_string("x + 3 + 4 + y"))),"x+3.+4.+y"
                     ]);
           }
-        ],
-        /* [] */0
+        ],/* [] */0
       ]
     ]
   ]
 ];
 
-var lexer_suites = /* :: */[
-  lexer_suites_000,
-  lexer_suites_001
+var lexer_suites = /* Nested :: */[
+  lexer_suites_000,lexer_suites_001
 ];
 
 Mt.from_pair_suites("lexer_test.ml", lexer_suites);

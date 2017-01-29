@@ -7,16 +7,11 @@ var Runtime = require("@runtime");
 
 var data = /* array */[
   /* record */[
-    /* ticker */"GOOG",
-    /* price */700.0
-  ],
-  /* record */[
-    /* ticker */"AAPL",
-    /* price */500.0
-  ],
-  /* record */[
-    /* ticker */"MSFT",
-    /* price */300.0
+    /* ticker */"GOOG",/* price */700.0
+  ],/* record */[
+    /* ticker */"AAPL",/* price */500.0
+  ],/* record */[
+    /* ticker */"MSFT",/* price */300.0
   ]
 ];
 
@@ -56,16 +51,10 @@ function ui_layout(compile, lookup, appContext) {
   };
   grid.minHeight = 300;
   grid.titleRows = /* array */[
-    mk_titleRow("Ticker"),
-    mk_titleRow("Bid"),
-    mk_titleRow("Ask"),
-    mk_titleRow("Result")
+    mk_titleRow("Ticker"),mk_titleRow("Bid"),mk_titleRow("Ask"),mk_titleRow("Result")
   ];
   grid.columns = /* array */[
-    u,
-    u,
-    u,
-    u
+    u,u,u,u
   ];
   inputCode.text = " bid - ask";
   inputCode.minHeight = 100;
@@ -95,10 +84,7 @@ function ui_layout(compile, lookup, appContext) {
                           ask: ask
                         });
                     return /* array */[
-                            mk_titleRow(param[/* ticker */0]),
-                            mk_titleRow(bid.toFixed(2)),
-                            mk_titleRow(ask.toFixed(2)),
-                            mk_titleRow(result.toFixed(2))
+                            mk_titleRow(param[/* ticker */0]),mk_titleRow(bid.toFixed(2)),mk_titleRow(ask.toFixed(2)),mk_titleRow(result.toFixed(2))
                           ];
                   });
       }, 100);

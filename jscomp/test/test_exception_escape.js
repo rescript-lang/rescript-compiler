@@ -8,8 +8,7 @@ var f;
 
 try {
   throw [
-        A,
-        3
+        A,3
       ];
 }
 catch (exn){

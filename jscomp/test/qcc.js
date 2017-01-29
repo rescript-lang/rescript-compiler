@@ -33,15 +33,11 @@ function bufferize(f) {
             else {
               return Curry._1(f, /* () */0);
             }
-          },
-          function (x) {
+          },function (x) {
             if (buf[0] !== /* None */0) {
               throw [
-                    Caml_builtin_exceptions.assert_failure,
-                    [
-                      "qcc.ml",
-                      17,
-                      4
+                    Caml_builtin_exceptions.assert_failure,[
+                      "qcc.ml",17,4
                     ]
                   ];
             }
@@ -96,11 +92,8 @@ function match_000(s) {
 function match_001(n) {
   if (n >= syms[0]) {
     throw [
-          Caml_builtin_exceptions.assert_failure,
-          [
-            "qcc.ml",
-            40,
-            4
+          Caml_builtin_exceptions.assert_failure,[
+            "qcc.ml",40,4
           ]
         ];
   }
@@ -255,8 +248,7 @@ function next() {
         var qt = Curry._1(getch, /* () */0);
         if (qt !== /* "'" */39) {
           throw [
-                Caml_builtin_exceptions.failure,
-                "syntax error"
+                Caml_builtin_exceptions.failure,"syntax error"
               ];
         }
         else {
@@ -280,8 +272,7 @@ function next() {
           Curry._1(getch, /* () */0);
           gpos[0] = e + 8 & -8;
           return /* SLit */Block.__(2, [
-                    (b + 232 | 0) + 4194304 | 0,
-                    Bytes.to_string(Bytes.sub(glo, b, e - b | 0))
+                    (b + 232 | 0) + 4194304 | 0,Bytes.to_string(Bytes.sub(glo, b, e - b | 0))
                   ]);
         }
       };
@@ -307,27 +298,17 @@ function next() {
       }
       else {
         var ch$2 = c;
-        var _param = /* :: */[
-          "++",
-          /* :: */[
-            "--",
-            /* :: */[
-              "&&",
-              /* :: */[
-                "||",
-                /* :: */[
-                  "==",
-                  /* :: */[
-                    "<=",
-                    /* :: */[
-                      ">=",
-                      /* :: */[
-                        "!=",
-                        /* :: */[
-                          ">>",
-                          /* :: */[
-                            "<<",
-                            /* [] */0
+        var _param = /* Nested :: */[
+          "++",[
+            "--",[
+              "&&",[
+                "||",[
+                  "==",[
+                    "<=",[
+                      ">=",[
+                        "!=",[
+                          ">>",[
+                            "<<",/* [] */0
                           ]
                         ]
                       ]
@@ -408,11 +389,8 @@ function get32(l) {
 function patch(rel, loc, n) {
   if (n >= 0) {
     throw [
-          Caml_builtin_exceptions.assert_failure,
-          [
-            "qcc.ml",
-            157,
-            2
+          Caml_builtin_exceptions.assert_failure,[
+            "qcc.ml",157,2
           ]
         ];
   }
@@ -423,34 +401,20 @@ function patch(rel, loc, n) {
     if (dbg[0]) {
       Curry._3(Printf.eprintf(/* Format */[
                 /* String_literal */Block.__(11, [
-                    "patching at ",
-                    /* Int */Block.__(4, [
-                        /* Int_d */0,
-                        /* No_padding */0,
-                        /* No_precision */0,
-                        /* String_literal */Block.__(11, [
-                            " to ",
-                            /* Int */Block.__(4, [
-                                /* Int_d */0,
-                                /* No_padding */0,
-                                /* No_precision */0,
-                                /* String_literal */Block.__(11, [
-                                    " (n=",
-                                    /* Int */Block.__(4, [
-                                        /* Int_d */0,
-                                        /* No_padding */0,
-                                        /* No_precision */0,
-                                        /* String_literal */Block.__(11, [
-                                            ")\n",
-                                            /* End_of_format */0
+                    "patching at ",/* Int */Block.__(4, [
+                        /* Int_d */0,/* No_padding */0,/* No_precision */0,/* String_literal */Block.__(11, [
+                            " to ",/* Int */Block.__(4, [
+                                /* Int_d */0,/* No_padding */0,/* No_precision */0,/* String_literal */Block.__(11, [
+                                    " (n=",/* Int */Block.__(4, [
+                                        /* Int_d */0,/* No_padding */0,/* No_precision */0,/* String_literal */Block.__(11, [
+                                            ")\n",/* End_of_format */0
                                           ])
                                       ])
                                   ])
                               ])
                           ])
                       ])
-                  ]),
-                "patching at %d to %d (n=%d)\n"
+                  ]),"patching at %d to %d (n=%d)\n"
               ]), loc, x, n);
     }
     opos[0] = loc;
@@ -505,8 +469,7 @@ function pop(r) {
 }
 
 var lval = [/* tuple */[
-    /* Mov */Block.__(0, [0]),
-    /* Int */0
+    /* Mov */Block.__(0, [0]),/* Int */0
   ]];
 
 function patchlval() {
@@ -526,8 +489,7 @@ function read(param) {
     out(4722614);
     le(8, 0);
     lval[0] = /* tuple */[
-      /* Del */Block.__(1, [4]),
-      /* Chr */1
+      /* Del */Block.__(1, [4]),/* Chr */1
     ];
     return /* () */0;
   }
@@ -535,109 +497,71 @@ function read(param) {
     out(18571);
     le(8, 0);
     lval[0] = /* tuple */[
-      /* Del */Block.__(1, [3]),
-      /* Int */0
+      /* Del */Block.__(1, [3]),/* Int */0
     ];
     return /* () */0;
   }
 }
 
 var globs = Caml_array.caml_make_vect(100, /* record */[
-      /* loc */0,
-      /* va */-1
+      /* loc */0,/* va */-1
     ]);
 
-var lvls = /* :: */[
+var lvls = /* Nested :: */[
   /* tuple */[
-    "*",
-    0
-  ],
-  /* :: */[
+    "*",0
+  ],[
     /* tuple */[
-      "/",
-      0
-    ],
-    /* :: */[
+      "/",0
+    ],[
       /* tuple */[
-        "%",
-        0
-      ],
-      /* :: */[
+        "%",0
+      ],[
         /* tuple */[
-          "+",
-          1
-        ],
-        /* :: */[
+          "+",1
+        ],[
           /* tuple */[
-            "-",
-            1
-          ],
-          /* :: */[
+            "-",1
+          ],[
             /* tuple */[
-              "<<",
-              2
-            ],
-            /* :: */[
+              "<<",2
+            ],[
               /* tuple */[
-                ">>",
-                2
-              ],
-              /* :: */[
+                ">>",2
+              ],[
                 /* tuple */[
-                  "<",
-                  3
-                ],
-                /* :: */[
+                  "<",3
+                ],[
                   /* tuple */[
-                    "<=",
-                    3
-                  ],
-                  /* :: */[
+                    "<=",3
+                  ],[
                     /* tuple */[
-                      ">",
-                      3
-                    ],
-                    /* :: */[
+                      ">",3
+                    ],[
                       /* tuple */[
-                        ">=",
-                        3
-                      ],
-                      /* :: */[
+                        ">=",3
+                      ],[
                         /* tuple */[
-                          "==",
-                          4
-                        ],
-                        /* :: */[
+                          "==",4
+                        ],[
                           /* tuple */[
-                            "!=",
-                            4
-                          ],
-                          /* :: */[
+                            "!=",4
+                          ],[
                             /* tuple */[
-                              "&",
-                              5
-                            ],
-                            /* :: */[
+                              "&",5
+                            ],[
                               /* tuple */[
-                                "^",
-                                6
-                              ],
-                              /* :: */[
+                                "^",6
+                              ],[
                                 /* tuple */[
-                                  "|",
-                                  7
-                                ],
-                                /* :: */[
+                                  "|",7
+                                ],[
                                   /* tuple */[
-                                    "&&",
-                                    8
-                                  ],
-                                  /* :: */[
+                                    "&&",8
+                                  ],[
                                     /* tuple */[
-                                      "||",
-                                      9
-                                    ],
-                                    /* [] */0
+                                      "||",9
+                                    ],/* [] */0
                                   ]
                                 ]
                               ]
@@ -657,141 +581,91 @@ var lvls = /* :: */[
   ]
 ];
 
-var inss = /* :: */[
+var inss = /* Nested :: */[
   /* tuple */[
-    "*",
-    /* Bin */Block.__(0, [/* :: */[
-          1208987585,
-          /* [] */0
+    "*",/* Bin */Block.__(0, [/* Nested :: */[
+          1208987585,/* [] */0
         ]])
-  ],
-  /* :: */[
+  ],[
     /* tuple */[
-      "/",
-      /* Bin */Block.__(0, [/* :: */[
-            18577,
-            /* :: */[
-              18585,
-              /* :: */[
-                4782073,
-                /* [] */0
+      "/",/* Bin */Block.__(0, [/* Nested :: */[
+            18577,[
+              18585,[
+                4782073,/* [] */0
               ]
             ]
           ]])
-    ],
-    /* :: */[
+    ],[
       /* tuple */[
-        "%",
-        /* Bin */Block.__(0, [/* :: */[
-              18577,
-              /* :: */[
-                18585,
-                /* :: */[
-                  4782073,
-                  /* :: */[
-                    18578,
-                    /* [] */0
+        "%",/* Bin */Block.__(0, [/* Nested :: */[
+              18577,[
+                18585,[
+                  4782073,[
+                    18578,/* [] */0
                   ]
                 ]
               ]
             ]])
-      ],
-      /* :: */[
+      ],[
         /* tuple */[
-          "+",
-          /* Bin */Block.__(0, [/* :: */[
-                4719048,
-                /* [] */0
+          "+",/* Bin */Block.__(0, [/* Nested :: */[
+                4719048,/* [] */0
               ]])
-        ],
-        /* :: */[
+        ],[
           /* tuple */[
-            "-",
-            /* Bin */Block.__(0, [/* :: */[
-                  18577,
-                  /* :: */[
-                    4729288,
-                    /* [] */0
+            "-",/* Bin */Block.__(0, [/* Nested :: */[
+                  18577,[
+                    4729288,/* [] */0
                   ]
                 ]])
-          ],
-          /* :: */[
+          ],[
             /* tuple */[
-              "<<",
-              /* Bin */Block.__(0, [/* :: */[
-                    18577,
-                    /* :: */[
-                      4772832,
-                      /* [] */0
+              "<<",/* Bin */Block.__(0, [/* Nested :: */[
+                    18577,[
+                      4772832,/* [] */0
                     ]
                   ]])
-            ],
-            /* :: */[
+            ],[
               /* tuple */[
-                ">>",
-                /* Bin */Block.__(0, [/* :: */[
-                      18577,
-                      /* :: */[
-                        4772856,
-                        /* [] */0
+                ">>",/* Bin */Block.__(0, [/* Nested :: */[
+                      18577,[
+                        4772856,/* [] */0
                       ]
                     ]])
-              ],
-              /* :: */[
+              ],[
                 /* tuple */[
-                  "<",
-                  /* Cmp */Block.__(1, [10])
-                ],
-                /* :: */[
+                  "<",/* Cmp */Block.__(1, [10])
+                ],[
                   /* tuple */[
-                    "<=",
-                    /* Cmp */Block.__(1, [12])
-                  ],
-                  /* :: */[
+                    "<=",/* Cmp */Block.__(1, [12])
+                  ],[
                     /* tuple */[
-                      ">",
-                      /* Cmp */Block.__(1, [13])
-                    ],
-                    /* :: */[
+                      ">",/* Cmp */Block.__(1, [13])
+                    ],[
                       /* tuple */[
-                        ">=",
-                        /* Cmp */Block.__(1, [11])
-                      ],
-                      /* :: */[
+                        ">=",/* Cmp */Block.__(1, [11])
+                      ],[
                         /* tuple */[
-                          "==",
-                          /* Cmp */Block.__(1, [2])
-                        ],
-                        /* :: */[
+                          "==",/* Cmp */Block.__(1, [2])
+                        ],[
                           /* tuple */[
-                            "!=",
-                            /* Cmp */Block.__(1, [3])
-                          ],
-                          /* :: */[
+                            "!=",/* Cmp */Block.__(1, [3])
+                          ],[
                             /* tuple */[
-                              "&",
-                              /* Bin */Block.__(0, [/* :: */[
-                                    4727240,
-                                    /* [] */0
+                              "&",/* Bin */Block.__(0, [/* Nested :: */[
+                                    4727240,/* [] */0
                                   ]])
-                            ],
-                            /* :: */[
+                            ],[
                               /* tuple */[
-                                "^",
-                                /* Bin */Block.__(0, [/* :: */[
-                                      4731336,
-                                      /* [] */0
+                                "^",/* Bin */Block.__(0, [/* Nested :: */[
+                                      4731336,/* [] */0
                                     ]])
-                              ],
-                              /* :: */[
+                              ],[
                                 /* tuple */[
-                                  "|",
-                                  /* Bin */Block.__(0, [/* :: */[
-                                        4721096,
-                                        /* [] */0
+                                  "|",/* Bin */Block.__(0, [/* Nested :: */[
+                                        4721096,/* [] */0
                                       ]])
-                                ],
-                                /* [] */0
+                                ],/* [] */0
                               ]
                             ]
                           ]
@@ -917,23 +791,19 @@ function unary(stk) {
               var match$1;
               if (Caml_obj.caml_equal(t, tokint)) {
                 match$1 = Caml_obj.caml_equal(Curry._1(next$1, /* () */0), /* Op */Block.__(0, ["*"])) ? /* tuple */[
-                    /* Int */0,
-                    1
+                    /* Int */0,1
                   ] : /* tuple */[
-                    /* Int */0,
-                    5
+                    /* Int */0,5
                   ];
               }
               else if (Caml_obj.caml_equal(t, tokchar)) {
                 match$1 = /* tuple */[
-                  /* Chr */1,
-                  2
+                  /* Chr */1,2
                 ];
               }
               else {
                 throw [
-                      Caml_builtin_exceptions.failure,
-                      "[cast] expected"
+                      Caml_builtin_exceptions.failure,"[cast] expected"
                     ];
               }
               for(var k = 1 ,k_finish = match$1[1]; k <= k_finish; ++k){
@@ -942,27 +812,19 @@ function unary(stk) {
               unary(stk);
               return read(match$1[0]);
           default:
-            var unops = /* :: */[
+            var unops = /* Nested :: */[
               /* tuple */[
-                "+",
-                0
-              ],
-              /* :: */[
+                "+",0
+              ],[
                 /* tuple */[
-                  "-",
-                  4782040
-                ],
-                /* :: */[
+                  "-",4782040
+                ],[
                   /* tuple */[
-                    "~",
-                    4782032
-                  ],
-                  /* :: */[
+                    "~",4782032
+                  ],[
                     /* tuple */[
-                      "!",
-                      4752832
-                    ],
-                    /* [] */0
+                      "!",4752832
+                    ],/* [] */0
                   ]
                 ]
               ]
@@ -971,17 +833,13 @@ function unary(stk) {
             if (!List.mem_assoc(o, unops)) {
               var s = Curry._1(Printf.sprintf(/* Format */[
                         /* String_literal */Block.__(11, [
-                            "unknown operator ",
-                            /* String */Block.__(2, [
-                                /* No_padding */0,
-                                /* End_of_format */0
+                            "unknown operator ",/* String */Block.__(2, [
+                                /* No_padding */0,/* End_of_format */0
                               ])
-                          ]),
-                        "unknown operator %s"
+                          ]),"unknown operator %s"
                       ]), o);
               throw [
-                    Caml_builtin_exceptions.failure,
-                    s
+                    Caml_builtin_exceptions.failure,s
                   ];
             }
             out(List.assoc(o, unops));
@@ -1004,19 +862,15 @@ function unary(stk) {
           var l = List.assoc(i, stk);
           if (l <= -256) {
             throw [
-                  Caml_builtin_exceptions.assert_failure,
-                  [
-                    "qcc.ml",
-                    295,
-                    6
+                  Caml_builtin_exceptions.assert_failure,[
+                    "qcc.ml",295,6
                   ]
                 ];
           }
           out(4754245);
           out(l & 255);
           lval[0] = /* tuple */[
-            /* Mov */Block.__(0, [3]),
-            /* Int */0
+            /* Mov */Block.__(0, [3]),/* Int */0
           ];
         }
         else {
@@ -1025,8 +879,7 @@ function unary(stk) {
           var loc = opos[0];
           le(64, g[/* loc */0]);
           globs[i] = /* record */[
-            /* loc */loc,
-            /* va */g[/* va */1]
+            /* loc */loc,/* va */g[/* va */1]
           ];
           read(/* Int */0);
         }
@@ -1060,9 +913,8 @@ function postfix(stk) {
                   Curry._1(next$1, /* () */0);
                 }
                 _rl = List.tl(rl);
-                _l = /* :: */[
-                  List.hd(rl),
-                  l
+                _l = /* Nested :: */[
+                  List.hd(rl),l
                 ];
                 continue ;
                 
@@ -1071,19 +923,13 @@ function postfix(stk) {
           };
           patchlval(/* () */0);
           push(0);
-          emitargs(/* [] */0, /* :: */[
-                7,
-                /* :: */[
-                  6,
-                  /* :: */[
-                    2,
-                    /* :: */[
-                      1,
-                      /* :: */[
-                        8,
-                        /* :: */[
-                          9,
-                          /* [] */0
+          emitargs(/* [] */0, /* Nested :: */[
+                7,[
+                  6,[
+                    2,[
+                      1,[
+                        8,[
+                          9,/* [] */0
                         ]
                       ]
                     ]
@@ -1113,41 +959,28 @@ function postfix(stk) {
       out(4753857);
       read(lval[0][1]);
       return out(List.assoc(/* tuple */[
-                      op,
-                      lval[0][1]
-                    ], /* :: */[
+                      op,lval[0][1]
+                    ], /* Nested :: */[
                       /* tuple */[
                         /* tuple */[
-                          "++",
-                          /* Int */0
-                        ],
-                        4783873
-                      ],
-                      /* :: */[
+                          "++",/* Int */0
+                        ],4783873
+                      ],[
                         /* tuple */[
                           /* tuple */[
-                            "--",
-                            /* Int */0
-                          ],
-                          4783881
-                        ],
-                        /* :: */[
+                            "--",/* Int */0
+                          ],4783881
+                        ],[
                           /* tuple */[
                             /* tuple */[
-                              "++",
-                              /* Chr */1
-                            ],
-                            65025
-                          ],
-                          /* :: */[
+                              "++",/* Chr */1
+                            ],65025
+                          ],[
                             /* tuple */[
                               /* tuple */[
-                                "--",
-                                /* Chr */1
-                              ],
-                              65033
-                            ],
-                            /* [] */0
+                                "--",/* Chr */1
+                              ],65033
+                            ],/* [] */0
                           ]
                         ]
                       ]
@@ -1204,8 +1037,7 @@ function decl(g, _n, _stk) {
           };
           if (nextis(/* Op */Block.__(0, [";"]))) {
             return /* tuple */[
-                    n,
-                    stk
+                    n,stk
                   ];
           }
           else {
@@ -1218,25 +1050,21 @@ function decl(g, _n, _stk) {
                 var glo = globs[s];
                 if (glo[/* va */1] >= 0) {
                   throw [
-                        Caml_builtin_exceptions.failure,
-                        "symbol defined twice"
+                        Caml_builtin_exceptions.failure,"symbol defined twice"
                       ];
                 }
                 var va = (gpos[0] + 232 | 0) + 4194304 | 0;
                 globs[s] = /* record */[
-                  /* loc */glo[/* loc */0],
-                  /* va */va
+                  /* loc */glo[/* loc */0],/* va */va
                 ];
                 gpos[0] = gpos[0] + 8 | 0;
                 stk$prime = stk;
               }
               else {
-                stk$prime = /* :: */[
+                stk$prime = /* Nested :: */[
                   /* tuple */[
-                    s,
-                    top - (n$prime << 3) | 0
-                  ],
-                  stk
+                    s,top - (n$prime << 3) | 0
+                  ],stk
                 ];
               }
               if (nextis(/* Op */Block.__(0, [","]))) {
@@ -1248,15 +1076,13 @@ function decl(g, _n, _stk) {
               }
               else {
                 return /* tuple */[
-                        n$prime,
-                        stk$prime
+                        n$prime,stk$prime
                       ];
               }
             }
             else {
               throw [
-                    Caml_builtin_exceptions.failure,
-                    "[var] expected in [decl]"
+                    Caml_builtin_exceptions.failure,"[var] expected in [decl]"
                   ];
             }
           }
@@ -1268,18 +1094,12 @@ function decl(g, _n, _stk) {
       if (dbg[0]) {
         Curry._1(Printf.eprintf(/* Format */[
                   /* String_literal */Block.__(11, [
-                      "end of decl (",
-                      /* Int */Block.__(4, [
-                          /* Int_d */0,
-                          /* No_padding */0,
-                          /* No_precision */0,
-                          /* String_literal */Block.__(11, [
-                              " vars)\n",
-                              /* End_of_format */0
+                      "end of decl (",/* Int */Block.__(4, [
+                          /* Int_d */0,/* No_padding */0,/* No_precision */0,/* String_literal */Block.__(11, [
+                              " vars)\n",/* End_of_format */0
                             ])
                         ])
-                    ]),
-                  "end of decl (%d vars)\n"
+                    ]),"end of decl (%d vars)\n"
                 ]), n);
       }
       _stk = match[1];
@@ -1292,11 +1112,8 @@ function decl(g, _n, _stk) {
       if (!g && n !== 0) {
         if ((n << 3) >= 256) {
           throw [
-                Caml_builtin_exceptions.assert_failure,
-                [
-                  "qcc.ml",
-                  436,
-                  6
+                Caml_builtin_exceptions.assert_failure,[
+                  "qcc.ml",436,6
                 ]
               ];
         }
@@ -1308,8 +1125,7 @@ function decl(g, _n, _stk) {
         console.error("end of blk decls");
       }
       return /* tuple */[
-              n,
-              stk
+              n,stk
             ];
     }
   };
@@ -1355,8 +1171,7 @@ function stmt(brk, stk) {
       pexpr(stk);
       bl[0] = test(0, 0);
       match = /* tuple */[
-        0,
-        loc$2
+        0,loc$2
       ];
     }
     else {
@@ -1383,14 +1198,12 @@ function stmt(brk, stk) {
       out(233);
       le(32, (top - opos[0] | 0) - 4 | 0);
       match = /* tuple */[
-        bdy,
-        itr
+        bdy,itr
       ];
     }
     patch(/* true */1, match[0], opos[0]);
     stmt(/* tuple */[
-          bl,
-          match_001
+          bl,match_001
         ], stk);
     out(233);
     le(32, (match[1] - opos[0] | 0) - 4 | 0);
@@ -1413,11 +1226,8 @@ function stmt(brk, stk) {
     var n = align[0] - brk[1] | 0;
     if (n < 0) {
       throw [
-            Caml_builtin_exceptions.assert_failure,
-            [
-              "qcc.ml",
-              515,
-              4
+            Caml_builtin_exceptions.assert_failure,[
+              "qcc.ml",515,4
             ]
           ];
     }
@@ -1490,13 +1300,11 @@ function top(_param) {
         var g = globs[f];
         if (g[/* va */1] >= 0) {
           throw [
-                Caml_builtin_exceptions.failure,
-                "symbol defined twice"
+                Caml_builtin_exceptions.failure,"symbol defined twice"
               ];
         }
         globs[f] = /* record */[
-          /* loc */g[/* loc */0],
-          /* va */opos[0]
+          /* loc */g[/* loc */0],/* va */opos[0]
         ];
         var emitargs = function (_regs, _n, _stk) {
           while(true) {
@@ -1511,16 +1319,14 @@ function top(_param) {
                   }
                   else {
                     throw [
-                          Caml_builtin_exceptions.failure,
-                          "[var] or ) expected"
+                          Caml_builtin_exceptions.failure,"[var] or ) expected"
                         ];
                   }
                   break;
               case 1 : 
               case 2 : 
                   throw [
-                        Caml_builtin_exceptions.failure,
-                        "[var] or ) expected"
+                        Caml_builtin_exceptions.failure,"[var] or ) expected"
                       ];
               case 3 : 
                   var r = List.hd(regs);
@@ -1529,12 +1335,10 @@ function top(_param) {
                     Curry._1(next$1, /* () */0);
                   }
                   var stk$prime_000 = /* tuple */[
-                    match[0],
-                    ((-n | 0) << 3)
+                    match[0],((-n | 0) << 3)
                   ];
-                  var stk$prime = /* :: */[
-                    stk$prime_000,
-                    stk
+                  var stk$prime = /* Nested :: */[
+                    stk$prime_000,stk
                   ];
                   _stk = stk$prime;
                   _n = n + 1 | 0;
@@ -1548,19 +1352,13 @@ function top(_param) {
         align[0] = 0;
         out(85);
         out(4753893);
-        var stk = emitargs(/* :: */[
-              7,
-              /* :: */[
-                6,
-                /* :: */[
-                  2,
-                  /* :: */[
-                    1,
-                    /* :: */[
-                      8,
-                      /* :: */[
-                        9,
-                        /* [] */0
+        var stk = emitargs(/* Nested :: */[
+              7,[
+                6,[
+                  2,[
+                    1,[
+                      8,[
+                        9,/* [] */0
                       ]
                     ]
                   ]
@@ -1572,24 +1370,19 @@ function top(_param) {
         };
         retl[0] = 0;
         block(/* tuple */[
-              [0],
-              0
+              [0],0
             ], stk);
         patch(/* true */1, retl[0], opos[0]);
         out(51651);
         if (dbg[0]) {
           Curry._1(Printf.eprintf(/* Format */[
                     /* String_literal */Block.__(11, [
-                        "done with function ",
-                        /* String */Block.__(2, [
-                            /* No_padding */0,
-                            /* Char_literal */Block.__(12, [
-                                /* "\n" */10,
-                                /* End_of_format */0
+                        "done with function ",/* String */Block.__(2, [
+                            /* No_padding */0,/* Char_literal */Block.__(12, [
+                                /* "\n" */10,/* End_of_format */0
                               ])
                           ])
-                      ]),
-                    "done with function %s\n"
+                      ]),"done with function %s\n"
                   ]), Curry._1(symstr, f));
         }
         _param = /* () */0;
@@ -1598,45 +1391,29 @@ function top(_param) {
       }
       else {
         throw [
-              Caml_builtin_exceptions.failure,
-              "[decl] or [fun] expected"
+              Caml_builtin_exceptions.failure,"[decl] or [fun] expected"
             ];
       }
     }
   };
 }
 
-var elfhdr = Bytes.of_string($$String.concat("", /* :: */[
-          "\x7fELF\x02\x01\x01\0",
-          /* :: */[
-            "\0\0\0\0\0\0\0\0",
-            /* :: */[
-              "\x02\0",
-              /* :: */[
-                ">\0",
-                /* :: */[
-                  "\x01\0\0\0",
-                  /* :: */[
-                    "\0\0\0\0\0\0\0\0",
-                    /* :: */[
-                      "@\0\0\0\0\0\0\0",
-                      /* :: */[
-                        "\0\0\0\0\0\0\0\0",
-                        /* :: */[
-                          "\0\0\0\0",
-                          /* :: */[
-                            "@\0",
-                            /* :: */[
-                              "8\0",
-                              /* :: */[
-                                "\x03\0",
-                                /* :: */[
-                                  "@\0",
-                                  /* :: */[
-                                    "\0\0",
-                                    /* :: */[
-                                      "\0\0",
-                                      /* [] */0
+var elfhdr = Bytes.of_string($$String.concat("", /* Nested :: */[
+          "\x7fELF\x02\x01\x01\0",[
+            "\0\0\0\0\0\0\0\0",[
+              "\x02\0",[
+                ">\0",[
+                  "\x01\0\0\0",[
+                    "\0\0\0\0\0\0\0\0",[
+                      "@\0\0\0\0\0\0\0",[
+                        "\0\0\0\0\0\0\0\0",[
+                          "\0\0\0\0",[
+                            "@\0",[
+                              "8\0",[
+                                "\x03\0",[
+                                  "@\0",[
+                                    "\0\0",[
+                                      "\0\0",/* [] */0
                                     ]
                                   ]
                                 ]
@@ -1673,8 +1450,7 @@ function elfgen(outf) {
   out(18616);
   le(64, gmain[/* loc */0]);
   globs[main] = /* record */[
-    /* loc */opos[0] - 8 | 0,
-    /* va */gmain[/* va */1]
+    /* loc */opos[0] - 8 | 0,/* va */gmain[/* va */1]
   ];
   out(65488);
   out(35271);
@@ -1763,45 +1539,26 @@ function elfgen(outf) {
   var dyn = opos[0];
   List.iter(function (param) {
         return le(64, param);
-      }, /* :: */[
-        1,
-        /* :: */[
-          29,
-          /* :: */[
-            4,
-            /* :: */[
-              va(hash),
-              /* :: */[
-                5,
-                /* :: */[
-                  va(strtab),
-                  /* :: */[
-                    6,
-                    /* :: */[
-                      va(symtab),
-                      /* :: */[
-                        7,
-                        /* :: */[
-                          va(rel),
-                          /* :: */[
-                            8,
-                            /* :: */[
-                              hash - rel | 0,
-                              /* :: */[
-                                9,
-                                /* :: */[
-                                  24,
-                                  /* :: */[
-                                    10,
-                                    /* :: */[
-                                      symtab - strtab | 0,
-                                      /* :: */[
-                                        11,
-                                        /* :: */[
-                                          24,
-                                          /* :: */[
-                                            0,
-                                            /* [] */0
+      }, /* Nested :: */[
+        1,[
+          29,[
+            4,[
+              va(hash),[
+                5,[
+                  va(strtab),[
+                    6,[
+                      va(symtab),[
+                        7,[
+                          va(rel),[
+                            8,[
+                              hash - rel | 0,[
+                                9,[
+                                  24,[
+                                    10,[
+                                      symtab - strtab | 0,[
+                                        11,[
+                                          24,[
+                                            0,/* [] */0
                                           ]
                                         ]
                                       ]
@@ -1831,11 +1588,8 @@ function elfgen(outf) {
   elfphdr(2, dyn + off | 0, tend - dyn | 0, 8);
   if (opos[0] !== 232) {
     throw [
-          Caml_builtin_exceptions.assert_failure,
-          [
-            "qcc.ml",
-            698,
-            2
+          Caml_builtin_exceptions.assert_failure,[
+            "qcc.ml",698,2
           ]
         ];
   }
@@ -1849,69 +1603,47 @@ function main() {
       case 0 : 
           return Curry._1(Printf.printf(/* Format */[
                           /* String_literal */Block.__(11, [
-                              "Operator '",
-                              /* String */Block.__(2, [
-                                  /* No_padding */0,
-                                  /* String_literal */Block.__(11, [
-                                      "'\n",
-                                      /* End_of_format */0
+                              "Operator '",/* String */Block.__(2, [
+                                  /* No_padding */0,/* String_literal */Block.__(11, [
+                                      "'\n",/* End_of_format */0
                                     ])
                                 ])
-                            ]),
-                          "Operator '%s'\n"
+                            ]),"Operator '%s'\n"
                         ]), param[0]);
       case 1 : 
           return Curry._1(Printf.printf(/* Format */[
                           /* String_literal */Block.__(11, [
-                              "Int literal ",
-                              /* Int */Block.__(4, [
-                                  /* Int_d */0,
-                                  /* No_padding */0,
-                                  /* No_precision */0,
-                                  /* Char_literal */Block.__(12, [
-                                      /* "\n" */10,
-                                      /* End_of_format */0
+                              "Int literal ",/* Int */Block.__(4, [
+                                  /* Int_d */0,/* No_padding */0,/* No_precision */0,/* Char_literal */Block.__(12, [
+                                      /* "\n" */10,/* End_of_format */0
                                     ])
                                 ])
-                            ]),
-                          "Int literal %d\n"
+                            ]),"Int literal %d\n"
                         ]), param[0]);
       case 2 : 
           return Curry._1(Printf.printf(/* Format */[
                           /* String_literal */Block.__(11, [
-                              "Str literal ",
-                              /* Caml_string */Block.__(3, [
-                                  /* No_padding */0,
-                                  /* Char_literal */Block.__(12, [
-                                      /* "\n" */10,
-                                      /* End_of_format */0
+                              "Str literal ",/* Caml_string */Block.__(3, [
+                                  /* No_padding */0,/* Char_literal */Block.__(12, [
+                                      /* "\n" */10,/* End_of_format */0
                                     ])
                                 ])
-                            ]),
-                          "Str literal %S\n"
+                            ]),"Str literal %S\n"
                         ]), param[1]);
       case 3 : 
           var i = param[0];
           return Curry._2(Printf.printf(/* Format */[
                           /* String_literal */Block.__(11, [
-                              "Symbol '",
-                              /* String */Block.__(2, [
-                                  /* No_padding */0,
-                                  /* String_literal */Block.__(11, [
-                                      "' (",
-                                      /* Int */Block.__(4, [
-                                          /* Int_d */0,
-                                          /* No_padding */0,
-                                          /* No_precision */0,
-                                          /* String_literal */Block.__(11, [
-                                              ")\n",
-                                              /* End_of_format */0
+                              "Symbol '",/* String */Block.__(2, [
+                                  /* No_padding */0,/* String_literal */Block.__(11, [
+                                      "' (",/* Int */Block.__(4, [
+                                          /* Int_d */0,/* No_padding */0,/* No_precision */0,/* String_literal */Block.__(11, [
+                                              ")\n",/* End_of_format */0
                                             ])
                                         ])
                                     ])
                                 ])
-                            ]),
-                          "Symbol '%s' (%d)\n"
+                            ]),"Symbol '%s' (%d)\n"
                         ]), Curry._1(symstr, i), i);
       
     }
@@ -1921,8 +1653,7 @@ function main() {
     case "-blk" : 
         var partial_arg_000 = [0];
         var partial_arg = /* tuple */[
-          partial_arg_000,
-          0
+          partial_arg_000,0
         ];
         var c = function (param) {
           return block(partial_arg, param);
@@ -1944,10 +1675,8 @@ function main() {
           else if (tok[0] === "EOF!") {
             return Printf.printf(/* Format */[
                         /* String_literal */Block.__(11, [
-                            "End of input stream\n",
-                            /* End_of_format */0
-                          ]),
-                        "End of input stream\n"
+                            "End of input stream\n",/* End_of_format */0
+                          ]),"End of input stream\n"
                       ]);
           }
           else {
