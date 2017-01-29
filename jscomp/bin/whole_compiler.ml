@@ -81759,11 +81759,11 @@ and
     in
     if need_paren then P.paren_group f 1 action else action ()
 
-  | Array (el,_) ->
+  | Array (el,_) -> let () = print_endline "dealing with an array" in
     (** TODO: simplify for singleton list *)
     begin match el with 
       | []| [ _ ] -> P.bracket_group f 1 @@ fun _ -> array_element_list  cxt f el 
-      | _ -> P.bracket_vgroup f 1 @@ fun _ -> array_element_list  cxt f el 
+      | _ -> P.bracket_group f 1 @@ fun _ -> array_element_list  cxt f el 
     end
   | Caml_uninitialized_obj (tag, size) 
     ->  (* FIXME *)
@@ -81923,7 +81923,7 @@ and array_element_list cxt f el : Ext_pp_scope.t =
   | e :: r ->
     let cxt =  expression 1 cxt f e 
     in
-    P.string f L.comma; P.newline f; array_element_list cxt f r
+    P.string f L.comma; array_element_list cxt f r
 
 and arguments cxt f l : Ext_pp_scope.t =
   match l with
@@ -81973,7 +81973,7 @@ and variable_declaration top cxt f
               cxt 
         end
     end
-and ipp_comment : 'a . P.t -> 'a  -> unit = fun   f comment -> 
+and ipp_comment : 'a . P.t -> 'a  -> unit = fun f comment -> 
   ()
 
 
@@ -81985,7 +81985,8 @@ and ipp_comment : 'a . P.t -> 'a  -> unit = fun   f comment ->
     ]}
 *)
 
-and pp_comment f comment = 
+and pp_comment f comment =
+  let () = P.string (P.from_channel stdout) comment; print_endline "" in
   if String.length comment > 0 then 
     P.string f "/* "; P.string f comment ; P.string f " */" 
 

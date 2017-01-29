@@ -65,6 +65,7 @@ bdd.cmj : ../stdlib/array.cmj
 bench.cmj : ../stdlib/array.cmj
 bigarray_test.cmj : ../stdlib/int32.cmj ../stdlib/complex.cmj \
     ../stdlib/bigarray.cmj
+bobtest.cmj :
 boolean_test.cmj : test_bool_equal.cmj mt.cmj
 bs_array_test.cmj : ../runtime/js.cmj
 bs_ignore_effect.cmj : mt.cmj
