@@ -740,7 +740,7 @@ reserved for `this` and for arity of 0, there is no need for a redundant `unit` 
 
 [source,ocaml]
 -----------------
-let f : 'obj -> 'b' [@bs.this] =
+let f : 'obj -> 'b [@bs.this] =
   fun [@bs.this] obj -> ....
 let f1 : 'obj -> 'a0 -> 'b [@bs.this] =
   fun [@bs.this] obj a -> ...
