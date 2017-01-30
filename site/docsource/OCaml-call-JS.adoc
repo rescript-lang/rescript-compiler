@@ -224,7 +224,7 @@ BuckleScript support typing homogeneous variadic arguments. For example,
 [source,ocaml]
 --------------
 external join : string array -> string = "" [@@bs.module "path"] [@@bs.splice]
-let v = join [| "a" "b"|]
+let v = join [| "a"; "b"|]
 --------------
 
 [source,js]
