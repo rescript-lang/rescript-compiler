@@ -48,9 +48,7 @@ val lib_dir_index : dir_index
 
 val get_current_number_of_dev_groups : unit -> int 
 
-val parsing_source : 
-  dir_index -> 
-  string -> Ext_json.t String_map.t -> t 
+
 
 (** entry is to the 
     [sources] in the schema
@@ -58,6 +56,6 @@ val parsing_source :
 val parsing_sources : 
   dir_index -> 
   string -> 
-  Ext_json.t array ->
+  Ext_json.t  ->
   t 
   

@@ -175,23 +175,13 @@ let write_ninja_file bsc_dir cwd =
       |? (Bsb_build_schemas.ppx_flags, `Arr (Bsb_default.set_ppx_flags ~cwd))
       |? (Bsb_build_schemas.refmt, `Str (Bsb_default.set_refmt ~cwd))
 
-      |? (Bsb_build_schemas.sources, `Obj (fun x ->
-          let res : Bsb_build_ui.t =
-            Bsb_build_ui.parsing_source
-              Bsb_build_ui.lib_dir_index
-              Filename.current_dir_name x in
-          handle_bsb_build_ui res
+      |? (Bsb_build_schemas.sources, `Id (fun x ->
+          Bsb_build_ui.parsing_sources
+            Bsb_build_ui.lib_dir_index
+            Filename.current_dir_name x
+          |>
+          handle_bsb_build_ui 
         ))
-      |?  (Bsb_build_schemas.sources, `Arr (fun xs ->
-
-          let res : Bsb_build_ui.t  =
-            Bsb_build_ui.parsing_sources
-              Bsb_build_ui.lib_dir_index
-              Filename.current_dir_name xs
-          in
-          handle_bsb_build_ui res
-        ))
-
       |> ignore
     | _ -> ()
   in
@@ -305,7 +295,7 @@ let clean_bs_deps () =
       clean_bs_garbage cwd
     )
 
-
+let clean_self () = clean_bs_garbage cwd 
 
 
 let bsb_main_flags =
@@ -323,6 +313,8 @@ let bsb_main_flags =
     " (internal)Overide package specs (in combination with -regen)";
     "-clean-world", Arg.Unit clean_bs_deps,
     " Clean all bs dependencies";
+    "-clean", Arg.Unit clean_self, 
+    " Clean only current project";
     "-make-world", Arg.Set make_world,
     " Build all dependencies and itself "
   ]
@@ -339,7 +331,7 @@ let regenerate_ninja cwd bsc_dir forced : Bsb_default.package_specs option =
   if String.length reason <> 0 then
     begin
       print_endline reason ;
-      print_endline "Regenrating build spec";
+      print_endline "Regenerating build spec";
       let globbed_dirs = write_ninja_file bsc_dir cwd in
       Literals.bsconfig_json :: globbed_dirs
       |> List.map

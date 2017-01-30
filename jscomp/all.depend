@@ -673,8 +673,8 @@ bsb/bsb_ninja.cmx : ext/string_set.cmx ext/string_map.cmx ext/literals.cmx \
     bsb/bsb_build_ui.cmx bsb/bsb_build_schemas.cmx common/binary_cache.cmx \
     bsb/bsb_ninja.cmi
 bsb/bsb_unix.cmx : bsb/bsb_unix.cmi
-bsb/bsb_build_ui.cmi : ext/string_set.cmi ext/string_map.cmi \
-    ext/ext_json.cmi ext/ext_file_pp.cmi common/binary_cache.cmi
+bsb/bsb_build_ui.cmi : ext/string_set.cmi ext/ext_json.cmi \
+    ext/ext_file_pp.cmi common/binary_cache.cmi
 bsb/bsb_build_util.cmi : ext/ext_json.cmi
 bsb/bsb_config.cmi :
 bsb/bsb_default.cmi : ext/string_set.cmi ext/ext_json.cmi
