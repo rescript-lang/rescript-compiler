@@ -91,6 +91,12 @@ var suffix_mliastd = ".mliast.d";
 
 var suffix_js = ".js";
 
+var suffix_mli = ".mli";
+
+var suffix_cmt = ".cmt";
+
+var suffix_cmti = ".cmti";
+
 var commonjs = "commonjs";
 
 var amdjs = "amdjs";
@@ -144,6 +150,9 @@ exports.suffix_d            = suffix_d;
 exports.suffix_mlastd       = suffix_mlastd;
 exports.suffix_mliastd      = suffix_mliastd;
 exports.suffix_js           = suffix_js;
+exports.suffix_mli          = suffix_mli;
+exports.suffix_cmt          = suffix_cmt;
+exports.suffix_cmti         = suffix_cmti;
 exports.commonjs            = commonjs;
 exports.amdjs               = amdjs;
 exports.goog                = goog;

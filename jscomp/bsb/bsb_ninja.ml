@@ -111,14 +111,24 @@ module Rules = struct
       ~command:"${bsbuild} -init"
       "reload"
   let copy_resources =
+    let name = "copy_resource" in 
+    if Ext_sys.is_windows_or_cygwin then 
+      define ~command:"cmd.exe /C copy /Y ${in} ${out} > null"
+      name 
+    else 
     define
       ~command:"cp ${in} ${out}"
-      "copy_resources"
+      name 
 
 
   let ocaml_bin_install =
-    define ~command:"cp ${in} ${out}"
-      "ocaml_bin_install"
+    let name = "ocaml_bin_install" in 
+    if Ext_sys.is_windows_or_cygwin then 
+      define ~command:"cmd.exe /C copy /Y ${in} ${out} > null"
+      name  
+    else 
+      define ~command:"cp ${in} ${out}"
+        name 
   (* only generate mll no mli generated *)
   (* actually we would prefer generators in source ?
      generator are divided into two categories:
@@ -288,7 +298,10 @@ let (++) (us : info) (vs : info) =
     }
 
 
+let files_to_install = String_hash_set.create 96
 
+let install_file (file : string) =    
+  String_hash_set.add  files_to_install (Ext_filename.chop_extension_if_any file )
 
 let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_build_ui.file_group) : info =
   let handle_module_info  oc  module_name
@@ -301,9 +314,9 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
       | Export_all -> true
       | Export_none -> false
       | Export_set set ->  String_set.mem module_name set in
-    let emit_build (kind : [`Ml | `Mll | `Re | `Mli | `Rei ])  input : info =
-      let filename_sans_extension = Filename.chop_extension input in
-      let input = Bsb_config.proj_rel input in
+    let emit_build (kind : [`Ml | `Mll | `Re | `Mli | `Rei ])  file_input : info =
+      let filename_sans_extension = Filename.chop_extension file_input in
+      let input = Bsb_config.proj_rel file_input in
       let output_file_sans_extension = filename_sans_extension in
       let output_ml = output_file_sans_extension ^ Literals.suffix_ml in
       let output_mlast = output_file_sans_extension  ^ Literals.suffix_mlast in
@@ -364,7 +377,7 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
           ~output:output_ml
           ~input
           ~rule: Rules.build_ml_from_mll ;
-      let install_files files  =     
+      (* let install_files files  =     
         files 
         |> List.iter
           (
@@ -374,7 +387,7 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
                          Bsb_config.ocaml_bin_install_prefix @@ Filename.basename x)
                 ~input:x
                 ~rule:Rules.copy_resources
-          ) in 
+          ) in *)
       begin match kind with
         | `Mll
         | `Ml
@@ -421,8 +434,8 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
               ~input:output_mlast 
               ~implicit_deps:deps
               ~rule:rule_name ;
-            if installable then
-              install_files (input::output_cmj :: cm_outputs)
+            if installable then begin install_file file_input end
+              (* install_files (input::output_cmj :: cm_outputs) *)
             ;
             {all_config_deps = [output_mlastd]; all_installs = [output_cmi];  }
 
@@ -450,8 +463,8 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
             ~input:output_mliast
             (* ~implicit_deps:[output_mliastd] *)
             ~rule:Rules.build_cmi;
-          if installable then
-            install_files [output_cmi; input];
+          if installable then begin install_file file_input end ; 
+            (* install_files [output_cmi; input]; *)
           {
             all_config_deps = [output_mliastd];
             all_installs = [output_cmi] ; 

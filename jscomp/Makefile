@@ -255,6 +255,7 @@ BSB_SRCS= bsb_config bsb_build_schemas bsb_build_util \
 	bsb_build_ui bsb_default\
 	bsb_dep_infos\
 	 bsb_gen\
+	 bsb_file\
 	bsb_unix
 
 BSB_CMXS=$(addprefix bsb/, $(addsuffix .cmx, $(BSB_SRCS)))

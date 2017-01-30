@@ -28,8 +28,6 @@ bin/whole_compiler.ml : core/bs_conditional_initial.ml
 bin/whole_compiler.ml : core/bs_conditional_initial.mli
 bin/whole_compiler.ml : depends/bs_exception.ml
 bin/whole_compiler.ml : depends/bs_exception.mli
-bin/whole_compiler.ml : ext/ext_sys.ml
-bin/whole_compiler.ml : ext/ext_sys.mli
 bin/whole_compiler.ml : ext/literals.ml
 bin/whole_compiler.ml : ext/literals.mli
 bin/whole_compiler.ml : common/bs_pkg.ml

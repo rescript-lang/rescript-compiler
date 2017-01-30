@@ -1,15 +1,8 @@
 'use strict';
 
-var Caml_sys = require("../../lib/js/caml_sys");
+var Sys = require("../../lib/js/sys");
 
-function is_directory_no_exn(f) {
-  try {
-    return Caml_sys.caml_sys_is_directory(f);
-  }
-  catch (exn){
-    return /* false */0;
-  }
-}
+var is_windows_or_cygwin = Sys.win32 || Sys.cygwin;
 
-exports.is_directory_no_exn = is_directory_no_exn;
+exports.is_windows_or_cygwin = is_windows_or_cygwin;
 /* No side effect */

@@ -73,12 +73,11 @@ let add_package s =
   let path = 
     Bs_pkg.resolve_bs_package
       ~cwd:(Lazy.force Ext_filename.cwd) 
-      ~subdir:Js_config.lib_ocaml_dir
       s   in 
   match path with
   | None -> Bs_exception.error (Bs_package_not_found s)
   | Some path ->
-    Clflags.include_dirs := path :: ! Clflags.include_dirs
+    Clflags.include_dirs := (path // Js_config.lib_ocaml_dir) :: ! Clflags.include_dirs
 
 
 let set_noassert () = 

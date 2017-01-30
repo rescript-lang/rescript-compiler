@@ -229,19 +229,19 @@ let targets = String_vec.make 5
 
 let cwd = Sys.getcwd ()
 
-
-let watch () =
+let node_lit = "node"
+let ninja_lit = "ninja"
+let watch (type t) () : t =
   print_endline "\nStart Watching now ";
   let bsb_watcher =
     Bsb_build_util.get_bsc_dir cwd // "bsb_watcher.js" in
-  let bsb_watcher =
-    (*FIXME *)
-    if Sys.win32 then Filename.quote bsb_watcher
-    else bsb_watcher in
-  Unix.execvp "node"
-    [| "node" ;
-       bsb_watcher
-    |]
+  if Ext_sys.is_windows_or_cygwin then
+    exit (Sys.command (Ext_string.concat3 node_lit Ext_string.single_space (Filename.quote bsb_watcher)))
+  else  
+    Unix.execvp node_lit
+      [| node_lit ;
+         bsb_watcher
+      |]
 
 let no_dev = "-no-dev"
 let regen = "-regen"
@@ -256,7 +256,7 @@ let build_bs_deps package_specs   =
   Bsb_default.walk_all_deps true cwd
     (fun top cwd ->
        if not top then
-         Bsb_unix.run_command_execv true
+         Bsb_unix.run_command_execv 
            {cmd = bsb_exe;
             cwd = cwd;
             args  =
@@ -362,25 +362,62 @@ let print_string_args (args : string array) =
   done ;
   print_newline ()
 
-(* Note that [keepdepfile] only makes sense when combined with [deps] for optimizatoin *)
-let ninja_command ninja ninja_args =
+let install_targets () = 
+  let destdir = lib_ocaml in 
+  if not @@ Sys.file_exists destdir then begin Unix.mkdir destdir 0o777  end;
+  begin 
+    print_endline "* Start Installation"; 
+    String_hash_set.iter (fun x -> 
+        Bsb_file.install_if_exists ~destdir (x ^  Literals.suffix_ml) ;
+        Bsb_file.install_if_exists ~destdir (x ^ Literals.suffix_mli) ;
+        Bsb_file.install_if_exists ~destdir (lib_bs//x ^ Literals.suffix_cmi) ;
+        Bsb_file.install_if_exists ~destdir (lib_bs//x ^ Literals.suffix_cmj) ;
+        Bsb_file.install_if_exists ~destdir (lib_bs//x ^ Literals.suffix_cmt) ;
+        Bsb_file.install_if_exists ~destdir (lib_bs//x ^ Literals.suffix_cmti) ;
+      ) Bsb_ninja.files_to_install
+  end
+(* Note that [keepdepfile] only makes sense when combined with [deps] for optimizatoin
+   It has to be the last command of [bsb]
+*)
+let ninja_command (type t) ninja ninja_args : t =
   let ninja_args_len = Array.length ninja_args in
   if ninja_args_len = 0 then
     begin
-      let args = [|"ninja"; "-C"; Bsb_config.lib_bs |]    in
+      let args = [|ninja_lit; "-C"; Bsb_config.lib_bs |]    in
       print_string_args args ;
-      Unix.execvp ninja args
+      match !Bsb_config.install, Ext_sys.is_windows_or_cygwin with 
+      | false, false -> Unix.execvp ninja args
+      | install, _ ->       
+        let exit_code = (Sys.command @@ Ext_string.inter3  ninja_lit "-C" Bsb_config.lib_bs) in 
+        if exit_code <> 0 then begin 
+          exit exit_code
+        end else begin 
+          if install then begin  install_targets ()end        ;
+          exit 0;
+        end
     end
   else
     let fixed_args_length = 3 in
     let args = (Array.init (fixed_args_length + ninja_args_len)
                   (fun i -> match i with
-                     | 0 -> "ninja"
+                     | 0 -> ninja_lit
                      | 1 -> "-C"
                      | 2 -> Bsb_config.lib_bs
                      | _ -> Array.unsafe_get ninja_args (i - fixed_args_length) )) in
     print_string_args args ;
-    Unix.execvp ninja args
+    begin match !Bsb_config.install, Ext_sys.is_windows_or_cygwin with
+      | false, false -> Unix.execvp ninja args
+      | install, _ -> 
+        let exit_code =  (Sys.command @@ Ext_string.concat_array Ext_string.single_space args) in 
+        if exit_code <> 0 then begin 
+          exit exit_code 
+        end  else begin if install then begin 
+            install_targets ()
+          end ;
+          exit 0
+        end
+    end
+
 
 
 
@@ -399,12 +436,7 @@ let usage = "Usage : bsb.exe <bsb-options> <files> -- <ninja_options>\n\
              Bsb options are:"
 
 
-  (*
-  let bsb_exe = bsc_dir // "bsb.exe" in
-  Bsb_default.walk_all_deps true cwd
-    (fun top cwd -> Bsb_unix.run_command_execv (not top)
-        {cmd = bsb_exe; cwd = cwd; args  = [| bsb_exe ; separator; "-t" ; "clean"|]})
-  *)
+
 let make_world_deps deps =
   print_endline "\nMaking the dependency world!";
   let deps =

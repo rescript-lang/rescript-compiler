@@ -1,6 +1,7 @@
 'use strict';
 
 var List                    = require("../../lib/js/list");
+var $$Array                 = require("../../lib/js/array");
 var Bytes                   = require("../../lib/js/bytes");
 var Curry                   = require("../../lib/js/curry");
 var $$String                = require("../../lib/js/string");
@@ -656,6 +657,28 @@ function replace_backward_slash(x) {
   }
 }
 
+var single_space = " ";
+
+function concat3(a, b, c) {
+  return a + (b + c);
+}
+
+function concat4(a, b, c, d) {
+  return a + (b + (c + d));
+}
+
+function inter2(a, b) {
+  return a + (single_space + b);
+}
+
+function inter3(a, b, c) {
+  return a + (single_space + (b + (single_space + c)));
+}
+
+function concat_array(sep, s) {
+  return $$String.concat(sep, $$Array.to_list(s));
+}
+
 var check_suffix_case = ends_with;
 
 var check_suffix_case_then_chop = ends_with_then_chop;
@@ -703,4 +726,10 @@ exports.no_slash                        = no_slash;
 exports.replace_slash_backward          = replace_slash_backward;
 exports.replace_backward_slash          = replace_backward_slash;
 exports.empty                           = empty;
+exports.single_space                    = single_space;
+exports.concat3                         = concat3;
+exports.concat4                         = concat4;
+exports.inter2                          = inter2;
+exports.inter3                          = inter3;
+exports.concat_array                    = concat_array;
 /* No side effect */

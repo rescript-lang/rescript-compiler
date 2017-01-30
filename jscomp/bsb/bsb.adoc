@@ -182,3 +182,8 @@ let () =
  
  - when `bsb.exe` path is changed
  - when `bsb.exe` version is changed 
+
+ ## other internal options
+ 
+-no-dev -- don't build dev directory group
+-install -- install files

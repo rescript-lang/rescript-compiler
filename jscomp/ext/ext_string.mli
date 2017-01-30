@@ -117,3 +117,13 @@ val replace_backward_slash : string -> string
 val empty : string 
 
 external compare : string -> string -> int = "caml_string_length_based_compare" "noalloc";;
+
+val single_space : string
+
+val concat3 : string -> string -> string -> string 
+val concat4 : string -> string -> string -> string -> string 
+
+val inter2 : string -> string -> string
+val inter3 : string -> string -> string -> string 
+
+val concat_array : string -> string array -> string 
