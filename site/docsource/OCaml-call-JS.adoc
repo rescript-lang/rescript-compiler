@@ -224,7 +224,7 @@ BuckleScript support typing homogeneous variadic arguments. For example,
 [source,ocaml]
 --------------
 external join : string array -> string = "" [@@bs.module "path"] [@@bs.splice]
-let v = join [| "a" "b"|]
+let v = join [| "a"; "b"|]
 --------------
 
 [source,js]
@@ -740,7 +740,7 @@ reserved for `this` and for arity of 0, there is no need for a redundant `unit` 
 
 [source,ocaml]
 -----------------
-let f : 'obj -> 'b' [@bs.this] =
+let f : 'obj -> 'b [@bs.this] =
   fun [@bs.this] obj -> ....
 let f1 : 'obj -> 'a0 -> 'b [@bs.this] =
   fun [@bs.this] obj a -> ...
@@ -1018,15 +1018,15 @@ Objects in a collection also works:
 
 [source,ocaml]
 -------------
-let xs = [%bs.obj [| { x = 3 } ; {x = 3 } |] : < x : int  > array  ]
-let ys = [%bs.obj [| { x = 3} : { x = 4 } |] ]
+let xs = [%bs.obj [| { x = 3 } ; { x = 3 } |] : < x : int  > array  ]
+let ys = [%bs.obj [| { x = 3 } ; { x = 4 } |] ]
 -------------
 
 Output:
 [source,js]
 ---------------------------------
-var xs = [ { x : 3 } , { x : 3 }]
-var ys = [ { x : 3 },  {x : 4 } ]
+var xs = [ { x : 3 } , { x : 3 } ]
+var ys = [ { x : 3 } , { x : 4 } ]
 ---------------------------------
 
 #### Create JS objects using external
@@ -1041,7 +1041,7 @@ let v = make_config ~hi:2 ~lo:3
 Output:
 [source,js]
 -----------------------
-var v = { hi:2, lo:3}
+var v = { hi : 2 , lo : 3 }
 -----------------------
 
 Option argument is also supported:
@@ -1081,7 +1081,7 @@ Output:
 [source,js]
 -----------------------------------------------------------------
 
-var u = { x : { y : {z : 3}}, fn : function (u,v) {return u + v}}
+var u = { x : { y : { z : 3 } }, fn : function (u, v) {return u + v}}
 var h = u.x.y.z
 var a = h.fn
 var b = a(1,2)
