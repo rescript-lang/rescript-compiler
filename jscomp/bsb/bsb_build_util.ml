@@ -25,7 +25,7 @@
 let flag_concat flag xs = 
   xs 
   |> Ext_list.flat_map (fun x -> [flag ; x])
-  |> String.concat " "
+  |> String.concat Ext_string.single_space
 let (//) = Ext_filename.combine
 
 (* we use lazy $src_root_dir *)
@@ -36,7 +36,7 @@ let (//) = Ext_filename.combine
 let convert_and_resolve_path = 
   if Sys.unix then Bsb_config.proj_rel  
   else 
-  if Sys.win32 || Sys.cygwin then 
+  if Ext_sys.is_windows_or_cygwin then 
     fun (p:string) -> 
       let p = Ext_string.replace_slash_backward p in
       Bsb_config.proj_rel p 

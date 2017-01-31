@@ -34,8 +34,8 @@ let merge_module_info_map acc sources =
       | None , None ->
         assert false
       | Some a, Some b  ->
-        failwith ("conflict files found: " ^ modname ^ "in ("
-                  ^  Binary_cache.dir_of_module_info a ^ " " ^ Binary_cache.dir_of_module_info b ^  " )")
+        failwith ("conflict files found: " ^ modname ^ "in ("   
+                  ^  Binary_cache.dir_of_module_info a ^ Ext_string.single_space ^ Binary_cache.dir_of_module_info b ^  " )")
       | Some v, None  -> Some v
       | None, Some v ->  Some v
     ) acc  sources
@@ -59,7 +59,7 @@ let output_ninja
 
   =
   let ppx_flags = Bsb_build_util.flag_concat "-ppx" ppx_flags in
-  let bsc_flags =  String.concat " " bsc_flags in
+  let bsc_flags =  String.concat Ext_string.single_space bsc_flags in
   let oc = open_out_bin (builddir // Literals.build_ninja) in
   begin
     let () =

@@ -26,7 +26,7 @@ let resources = "resources"
 let public = "public"
 let js_post_build = "js-post-build"
 let cmd = "cmd"
-let ninja = "ninja"
+let ninja = "ninja" 
 let package_specs = "package-specs"
 
 let generate_merlin = "generate-merlin"
@@ -39,7 +39,6 @@ let export_none = "none"
 
 let bsb_dir_group = "bsb_dir_group"
 let bsc_lib_includes = "bsc_lib_includes"
-
 end
 module Ext_pervasives : sig 
 #1 "ext_pervasives.mli"
@@ -506,6 +505,15 @@ val empty : string
 
 external compare : string -> string -> int = "caml_string_length_based_compare" "noalloc";;
 
+val single_space : string
+
+val concat3 : string -> string -> string -> string 
+val concat4 : string -> string -> string -> string -> string 
+
+val inter2 : string -> string -> string
+val inter3 : string -> string -> string -> string 
+
+val concat_array : string -> string array -> string 
 end = struct
 #1 "ext_string.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -887,6 +895,20 @@ let replace_backward_slash (x : string)=
 let empty = ""
 
 external compare : string -> string -> int = "caml_string_length_based_compare" "noalloc";;
+
+let single_space = " "
+
+let concat3 a b c = a ^ b ^ c 
+let concat4 a b c d = a ^ b ^ c ^ d 
+
+let inter2 a b = a ^ single_space ^ b 
+
+let inter3 a b c = 
+  a ^ single_space ^ b ^ single_space ^ c 
+
+(** TODO: improve perf *)
+let concat_array sep (s : string array) = 
+  String.concat sep (Array.to_list s)
 end
 module Literals : sig 
 #1 "literals.mli"
@@ -979,7 +1001,9 @@ val suffix_d : string
 val suffix_mlastd : string
 val suffix_mliastd : string
 val suffix_js : string
-
+val suffix_mli : string 
+val suffix_cmt : string 
+val suffix_cmti : string 
 
 val commonjs : string 
 val amdjs : string 
@@ -1071,6 +1095,9 @@ let suffix_cmj = ".cmj"
 let suffix_cmi = ".cmi"
 let suffix_mll = ".mll"
 let suffix_ml = ".ml"
+let suffix_mli = ".mli"
+let suffix_cmt = ".cmt" 
+let suffix_cmti = ".cmti" 
 let suffix_mlast = ".mlast"
 let suffix_mliast = ".mliast"
 let suffix_d = ".d"
@@ -4336,6 +4363,71 @@ let rec last xs =
 
 
 end
+module Ext_sys : sig 
+#1 "ext_sys.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+(* Not used yet *)
+(* val is_directory_no_exn : string -> bool *)
+
+
+val is_windows_or_cygwin : bool 
+end = struct
+#1 "ext_sys.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+(** TODO: not exported yet, wait for Windows Fix*)
+let is_directory_no_exn f = 
+  try Sys.is_directory f with _ -> false 
+
+
+let is_windows_or_cygwin = Sys.win32 || Sys.cygwin
+end
 module Bsb_build_util : sig 
 #1 "bsb_build_util.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -4433,7 +4525,7 @@ end = struct
 let flag_concat flag xs = 
   xs 
   |> Ext_list.flat_map (fun x -> [flag ; x])
-  |> String.concat " "
+  |> String.concat Ext_string.single_space
 let (//) = Ext_filename.combine
 
 (* we use lazy $src_root_dir *)
@@ -4444,7 +4536,7 @@ let (//) = Ext_filename.combine
 let convert_and_resolve_path = 
   if Sys.unix then Bsb_config.proj_rel  
   else 
-  if Sys.win32 || Sys.cygwin then 
+  if Ext_sys.is_windows_or_cygwin then 
     fun (p:string) -> 
       let p = Ext_string.replace_slash_backward p in
       Bsb_config.proj_rel p 
@@ -6545,65 +6637,6 @@ and  parsing_sources dir_index cwd (sources : Ext_json.t )  =
     parsing_arr_sources dir_index cwd file_groups.Ext_json.content
   | _ -> parsing_source dir_index cwd sources
 end
-module Ext_sys : sig 
-#1 "ext_sys.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-val is_directory_no_exn : string -> bool
-
-end = struct
-#1 "ext_sys.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-let is_directory_no_exn f = 
-  try Sys.is_directory f with _ -> false 
-
-end
 module Bs_pkg : sig 
 #1 "bs_pkg.mli"
 
@@ -6641,7 +6674,8 @@ module Bs_pkg : sig
     it relies on [npm_config_prefix] env variable for global npm modules
 *)
 
-val resolve_bs_package : ?subdir:string -> cwd:string ->  string -> string option
+val resolve_bs_package : 
+    cwd:string ->  string -> string option
 
 end = struct
 #1 "bs_pkg.ml"
@@ -6650,25 +6684,27 @@ let (//) = Filename.concat
 
 
 
+
+
 let  resolve_bs_package  
-    ?(subdir="")
     ~cwd
     name = 
-  let sub_path = name // subdir  in
+  let marker = Literals.bsconfig_json in 
+  let sub_path = name // marker  in
   let rec aux origin cwd name = 
-    let destdir =  cwd // Literals.node_modules // sub_path in 
-    if Ext_sys.is_directory_no_exn destdir then Some destdir
+    let abs_marker =  cwd // Literals.node_modules // sub_path in 
+    if Sys.file_exists abs_marker then Some (Filename.dirname abs_marker)
     else 
       let cwd' = Filename.dirname cwd in 
       if String.length cwd' < String.length cwd then  
         aux origin   cwd' name
       else 
         try 
-          let destdir = 
+          let abs_marker = 
             Sys.getenv "npm_config_prefix" 
             // "lib" // Literals.node_modules // sub_path in
-          if Ext_sys.is_directory_no_exn destdir
-          then Some destdir
+          if Sys.file_exists abs_marker
+          then Some (Filename.dirname abs_marker)
           else None
             (* Bs_exception.error (Bs_package_not_found name) *)
         with 
@@ -7098,6 +7134,441 @@ let store ~cwd name file_stamps =
   write name { file_stamps ; source_directory = cwd ; bsb_version }
 
 end
+module Bsb_file : sig 
+#1 "bsb_file.mli"
+
+
+
+val install_if_exists : destdir:string -> string -> unit 
+
+
+end = struct
+#1 "bsb_file.ml"
+
+
+open Unix
+
+let set_infos filename infos =
+  Unix.utimes filename infos.st_atime infos.st_mtime;
+  Unix.chmod filename infos.st_perm
+  (** it is not necessary to call [chown] since it is within the same user 
+    and {!Unix.chown} is not implemented under Windows
+   *)
+  (*
+  try
+    Unix.chown filename infos.st_uid infos.st_gid
+  with Unix_error(EPERM,_,_) -> ()
+*)
+
+let buffer_size = 8192;;
+let buffer = Bytes.create buffer_size;;
+
+let file_copy input_name output_name =
+  let fd_in = openfile input_name [O_RDONLY] 0 in
+  let fd_out = openfile output_name [O_WRONLY; O_CREAT; O_TRUNC] 0o666 in
+  let rec copy_loop () = match read fd_in buffer 0 buffer_size with
+    |  0 -> ()
+    | r -> ignore (write fd_out buffer 0 r); copy_loop ()
+  in
+  copy_loop ();
+  close fd_in;
+  close fd_out;;
+
+
+let copy_with_permission input_name output_name =
+    file_copy input_name output_name ;
+    set_infos output_name (Unix.lstat input_name)  
+
+let install_if_exists ~destdir input_name = 
+    if Sys.file_exists input_name then 
+        copy_with_permission input_name (Filename.concat destdir (Filename.basename input_name))   
+
+end
+module Bs_hash_stubs
+= struct
+#1 "bs_hash_stubs.ml"
+external hash_string :  string -> int = "caml_bs_hash_string" "noalloc";;
+
+external hash_string_int :  string -> int  -> int = "caml_bs_hash_string_and_int" "noalloc";;
+
+external hash_string_small_int :  string -> int  -> int = "caml_bs_hash_string_and_small_int" "noalloc";;
+
+external hash_stamp_and_name : int -> string -> int = "caml_bs_hash_stamp_and_name" "noalloc";;
+
+external hash_small_int : int -> int = "caml_bs_hash_small_int" "noalloc";;
+
+external hash_int :  int  -> int = "caml_bs_hash_int" "noalloc";;
+
+external string_length_based_compare : string -> string -> int  = "caml_string_length_based_compare" "noalloc";;
+
+
+external    
+    int_unsafe_blit : 
+    int array -> int -> int array -> int -> int -> unit = "caml_int_array_blit" "noalloc";;
+end
+module Ext_util : sig 
+#1 "ext_util.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+ 
+val power_2_above : int -> int -> int
+
+
+val stats_to_string : Hashtbl.statistics -> string 
+end = struct
+#1 "ext_util.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+(**
+   {[
+     (power_2_above 16 63 = 64)
+       (power_2_above 16 76 = 128)
+   ]}
+*)
+let rec power_2_above x n =
+  if x >= n then x
+  else if x * 2 > Sys.max_array_length then x
+  else power_2_above (x * 2) n
+
+
+let stats_to_string ({num_bindings; num_buckets; max_bucket_length; bucket_histogram} : Hashtbl.statistics) = 
+  Printf.sprintf 
+    "bindings: %d,buckets: %d, longest: %d, hist:[%s]" 
+    num_bindings 
+    num_buckets 
+    max_bucket_length
+    (String.concat "," (Array.to_list (Array.map string_of_int bucket_histogram)))
+end
+module Hash_set_gen
+= struct
+#1 "hash_set_gen.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+(* We do dynamic hashing, and resize the table and rehash the elements
+   when buckets become too long. *)
+
+type 'a t =
+  { mutable size: int;                        (* number of entries *)
+    mutable data: 'a list array;  (* the buckets *)
+    initial_size: int;                        (* initial array size *)
+  }
+
+
+
+
+let create  initial_size =
+  let s = Ext_util.power_2_above 16 initial_size in
+  { initial_size = s; size = 0; data = Array.make s [] }
+
+let clear h =
+  h.size <- 0;
+  let len = Array.length h.data in
+  for i = 0 to len - 1 do
+    Array.unsafe_set h.data i  []
+  done
+
+let reset h =
+  h.size <- 0;
+  h.data <- Array.make h.initial_size [ ]
+
+
+let copy h = { h with data = Array.copy h.data }
+
+let length h = h.size
+
+let iter f h =
+  let rec do_bucket = function
+    | [ ] ->
+      ()
+    | k ::  rest ->
+      f k ; do_bucket rest in
+  let d = h.data in
+  for i = 0 to Array.length d - 1 do
+    do_bucket (Array.unsafe_get d i)
+  done
+
+let fold f h init =
+  let rec do_bucket b accu =
+    match b with
+      [ ] ->
+      accu
+    | k ::  rest ->
+      do_bucket rest (f k  accu) in
+  let d = h.data in
+  let accu = ref init in
+  for i = 0 to Array.length d - 1 do
+    accu := do_bucket (Array.unsafe_get d i) !accu
+  done;
+  !accu
+
+let resize indexfun h =
+  let odata = h.data in
+  let osize = Array.length odata in
+  let nsize = osize * 2 in
+  if nsize < Sys.max_array_length then begin
+    let ndata = Array.make nsize [ ] in
+    h.data <- ndata;          (* so that indexfun sees the new bucket count *)
+    let rec insert_bucket = function
+        [ ] -> ()
+      | key :: rest ->
+        let nidx = indexfun h key in
+        ndata.(nidx) <- key :: ndata.(nidx);
+        insert_bucket rest
+    in
+    for i = 0 to osize - 1 do
+      insert_bucket (Array.unsafe_get odata i)
+    done
+  end
+
+let elements set = 
+  fold  (fun k  acc ->  k :: acc) set []
+
+
+
+
+let stats h =
+  let mbl =
+    Array.fold_left (fun m b -> max m (List.length b)) 0 h.data in
+  let histo = Array.make (mbl + 1) 0 in
+  Array.iter
+    (fun b ->
+       let l = List.length b in
+       histo.(l) <- histo.(l) + 1)
+    h.data;
+  {Hashtbl.num_bindings = h.size;
+   num_buckets = Array.length h.data;
+   max_bucket_length = mbl;
+   bucket_histogram = histo }
+
+let rec small_bucket_mem eq_key key lst =
+  match lst with 
+  | [] -> false 
+  | key1::rest -> 
+    eq_key key   key1 ||
+    match rest with 
+    | [] -> false 
+    | key2 :: rest -> 
+      eq_key key   key2 ||
+      match rest with 
+      | [] -> false 
+      | key3 :: rest -> 
+        eq_key key   key3 ||
+        small_bucket_mem eq_key key rest 
+
+let rec remove_bucket eq_key key (h : _ t) buckets = 
+  match buckets with 
+  | [ ] ->
+    [ ]
+  | k :: next ->
+    if  eq_key k   key
+    then begin h.size <- h.size - 1; next end
+    else k :: remove_bucket eq_key key h next    
+
+module type S =
+sig
+  type key
+  type t
+  val create: int ->  t
+  val clear : t -> unit
+  val reset : t -> unit
+  val copy: t -> t
+  val remove:  t -> key -> unit
+  val add :  t -> key -> unit
+  val check_add : t -> key -> bool
+  val mem :  t -> key -> bool
+  val iter: (key -> unit) ->  t -> unit
+  val fold: (key -> 'b -> 'b) ->  t -> 'b -> 'b
+  val length:  t -> int
+  val stats:  t -> Hashtbl.statistics
+  val elements : t -> key list 
+end
+
+end
+module String_hash_set : sig 
+#1 "string_hash_set.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+include Hash_set_gen.S with type key = string
+
+end = struct
+#1 "string_hash_set.ml"
+# 1 "ext/hash_set.cppo.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+# 31
+type key = string 
+let key_index (h :  _ Hash_set_gen.t ) (key : key) =
+  (Bs_hash_stubs.hash_string  key) land (Array.length h.data - 1)
+let eq_key = Ext_string.equal 
+type  t = key  Hash_set_gen.t 
+
+
+# 62
+let create = Hash_set_gen.create
+let clear = Hash_set_gen.clear
+let reset = Hash_set_gen.reset
+let copy = Hash_set_gen.copy
+let iter = Hash_set_gen.iter
+let fold = Hash_set_gen.fold
+let length = Hash_set_gen.length
+let stats = Hash_set_gen.stats
+let elements = Hash_set_gen.elements
+
+
+
+let remove (h : _ Hash_set_gen.t) key =  
+  let i = key_index h key in
+  let h_data = h.data in
+  let old_h_size = h.size in 
+  let new_bucket = Hash_set_gen.remove_bucket eq_key key h (Array.unsafe_get h_data i) in
+  if old_h_size <> h.size then  
+    Array.unsafe_set h_data i new_bucket
+
+
+
+let add (h : _ Hash_set_gen.t) key =
+  let i = key_index h key  in 
+  let h_data = h.data in 
+  let old_bucket = (Array.unsafe_get h_data i) in
+  if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
+    begin 
+      Array.unsafe_set h_data i (key :: old_bucket);
+      h.size <- h.size + 1 ;
+      if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h
+    end
+
+let check_add (h : _ Hash_set_gen.t) key =
+  let i = key_index h key  in 
+  let h_data = h.data in  
+  let old_bucket = (Array.unsafe_get h_data i) in
+  if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
+    begin 
+      Array.unsafe_set h_data i  (key :: old_bucket);
+      h.size <- h.size + 1 ;
+      if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h;
+      true 
+    end
+  else false 
+
+
+let mem (h :  _ Hash_set_gen.t) key =
+  Hash_set_gen.small_bucket_mem eq_key key (Array.unsafe_get h.data (key_index h key)) 
+
+  
+
+end
 module Bsb_ninja : sig 
 #1 "bsb_ninja.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -7189,6 +7660,8 @@ val handle_file_groups : out_channel ->
   Bsb_build_ui.file_group list ->
   info -> info
 
+(** TODO: need clean up when running across projects process *)
+val files_to_install : String_hash_set.t 
 end = struct
 #1 "bsb_ninja.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -7304,14 +7777,17 @@ module Rules = struct
       ~command:"${bsbuild} -init"
       "reload"
   let copy_resources =
+    let name = "copy_resource" in 
+    if Ext_sys.is_windows_or_cygwin then 
+      define ~command:"cmd.exe /C copy /Y ${in} ${out} > null"
+      name 
+    else 
     define
       ~command:"cp ${in} ${out}"
-      "copy_resources"
+      name 
 
 
-  let ocaml_bin_install =
-    define ~command:"cp ${in} ${out}"
-      "ocaml_bin_install"
+
   (* only generate mll no mli generated *)
   (* actually we would prefer generators in source ?
      generator are divided into two categories:
@@ -7372,18 +7848,18 @@ let output_build
   let rule = Rules.get_name rule  oc in
   output_string oc "build ";
   output_string oc output ;
-  outputs |> List.iter (fun s -> output_string oc " " ; output_string oc s  );
+  outputs |> List.iter (fun s -> output_string oc Ext_string.single_space ; output_string oc s  );
   begin match implicit_outputs with 
     | [] -> ()
     | _ ->
       output_string oc " | ";
-      implicit_outputs |> List.iter (fun s -> output_string oc " " ; output_string oc s)
+      implicit_outputs |> List.iter (fun s -> output_string oc Ext_string.single_space ; output_string oc s)
   end;
   output_string oc " : ";
   output_string oc rule;
-  output_string oc " ";
+  output_string oc Ext_string.single_space;
   output_string oc input;
-  inputs |> List.iter (fun s ->   output_string oc " " ; output_string oc s);
+  inputs |> List.iter (fun s ->   output_string oc Ext_string.single_space ; output_string oc s);
   begin match implicit_deps with
     | [] -> ()
     | _ ->
@@ -7391,7 +7867,7 @@ let output_build
         output_string oc " | ";
         implicit_deps
         |>
-        List.iter (fun s -> output_string oc " "; output_string oc s )
+        List.iter (fun s -> output_string oc Ext_string.single_space; output_string oc s )
       end
   end;
   begin match order_only_deps with
@@ -7401,7 +7877,7 @@ let output_build
         output_string oc " || ";
         order_only_deps
         |>
-        List.iter (fun s -> output_string oc " " ; output_string oc s)
+        List.iter (fun s -> output_string oc Ext_string.single_space ; output_string oc s)
       end
   end;
   output_string oc "\n";
@@ -7417,14 +7893,14 @@ let output_build
           | `Append s ->
             output_string oc "$" ;
             output_string oc k;
-            output_string oc " ";
+            output_string oc Ext_string.single_space;
             output_string oc s ; output_string oc "\n"
         ) xs
   end;
   begin match restat with
     | None -> ()
     | Some () ->
-      output_string oc " " ;
+      output_string oc Ext_string.single_space ;
       output_string oc "restat = 1 \n"
   end
 
@@ -7434,8 +7910,8 @@ let phony ?(order_only_deps=[]) ~inputs ~output oc =
   output_string oc output ;
   output_string oc " : ";
   output_string oc "phony";
-  output_string oc " ";
-  inputs |> List.iter (fun s ->   output_string oc " " ; output_string oc s);
+  output_string oc Ext_string.single_space;
+  inputs |> List.iter (fun s ->   output_string oc Ext_string.single_space ; output_string oc s);
   begin match order_only_deps with
     | [] -> ()
     | _ ->
@@ -7443,7 +7919,7 @@ let phony ?(order_only_deps=[]) ~inputs ~output oc =
         output_string oc " || ";
         order_only_deps
         |>
-        List.iter (fun s -> output_string oc " " ; output_string oc s)
+        List.iter (fun s -> output_string oc Ext_string.single_space ; output_string oc s)
       end
   end;
   output_string oc "\n"
@@ -7480,8 +7956,13 @@ let (++) (us : info) (vs : info) =
       all_installs = us.all_installs @ vs.all_installs
     }
 
+(** This set is stateful, we should make it functional in the future.
+    It only makes sense when building one project combined with [-regen]
+*)
+let files_to_install = String_hash_set.create 96
 
-
+let install_file (file : string) =    
+  String_hash_set.add  files_to_install (Ext_filename.chop_extension_if_any file )
 
 let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_build_ui.file_group) : info =
   let handle_module_info  oc  module_name
@@ -7494,9 +7975,9 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
       | Export_all -> true
       | Export_none -> false
       | Export_set set ->  String_set.mem module_name set in
-    let emit_build (kind : [`Ml | `Mll | `Re | `Mli | `Rei ])  input : info =
-      let filename_sans_extension = Filename.chop_extension input in
-      let input = Bsb_config.proj_rel input in
+    let emit_build (kind : [`Ml | `Mll | `Re | `Mli | `Rei ])  file_input : info =
+      let filename_sans_extension = Filename.chop_extension file_input in
+      let input = Bsb_config.proj_rel file_input in
       let output_file_sans_extension = filename_sans_extension in
       let output_ml = output_file_sans_extension ^ Literals.suffix_ml in
       let output_mlast = output_file_sans_extension  ^ Literals.suffix_mlast in
@@ -7557,17 +8038,6 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
           ~output:output_ml
           ~input
           ~rule: Rules.build_ml_from_mll ;
-      let install_files files  =     
-        files 
-        |> List.iter
-          (
-            fun x ->
-              output_build oc
-                ~output:(Bsb_config.proj_rel @@
-                         Bsb_config.ocaml_bin_install_prefix @@ Filename.basename x)
-                ~input:x
-                ~rule:Rules.copy_resources
-          ) in 
       begin match kind with
         | `Mll
         | `Ml
@@ -7605,7 +8075,7 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
               | None -> shadows 
               | Some cmd -> 
                 ("postbuild", 
-                 `Overwrite ("&& " ^ cmd ^ " " ^ String.concat " " output_js)) :: shadows
+                 `Overwrite ("&& " ^ cmd ^ Ext_string.single_space ^ String.concat Ext_string.single_space output_js)) :: shadows
             in 
             output_build oc
               ~output:output_cmj
@@ -7614,9 +8084,7 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
               ~input:output_mlast 
               ~implicit_deps:deps
               ~rule:rule_name ;
-            if installable then
-              install_files (input::output_cmj :: cm_outputs)
-            ;
+            if installable then begin install_file file_input end;
             {all_config_deps = [output_mlastd]; all_installs = [output_cmi];  }
 
           end
@@ -7643,8 +8111,7 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
             ~input:output_mliast
             (* ~implicit_deps:[output_mliastd] *)
             ~rule:Rules.build_cmi;
-          if installable then
-            install_files [output_cmi; input];
+          if installable then begin install_file file_input end ; 
           {
             all_config_deps = [output_mliastd];
             all_installs = [output_cmi] ; 
@@ -7767,8 +8234,8 @@ let merge_module_info_map acc sources =
       | None , None ->
         assert false
       | Some a, Some b  ->
-        failwith ("conflict files found: " ^ modname ^ "in ("
-                  ^  Binary_cache.dir_of_module_info a ^ " " ^ Binary_cache.dir_of_module_info b ^  " )")
+        failwith ("conflict files found: " ^ modname ^ "in ("   
+                  ^  Binary_cache.dir_of_module_info a ^ Ext_string.single_space ^ Binary_cache.dir_of_module_info b ^  " )")
       | Some v, None  -> Some v
       | None, Some v ->  Some v
     ) acc  sources
@@ -7792,7 +8259,7 @@ let output_ninja
 
   =
   let ppx_flags = Bsb_build_util.flag_concat "-ppx" ppx_flags in
-  let bsc_flags =  String.concat " " bsc_flags in
+  let bsc_flags =  String.concat Ext_string.single_space bsc_flags in
   let oc = open_out_bin (builddir // Literals.build_ninja) in
   begin
     let () =
@@ -7902,13 +8369,13 @@ type command =
 (** run commands  in parallel, 
     TODO: error handling
 *)
-val run_commands : command list -> unit 
+(* val run_commands : command list -> unit  *)
 
-val run_command_execv : bool ->  command -> unit 
+val run_command_execv :   command -> unit 
 
 (* val run_command_execvp : command -> unit *)
 
-val remove_dirs_recursive : string ->  string array -> unit 
+(* val remove_dirs_recursive : string ->  string array -> unit *)
 
 val remove_dir_recursive : string -> unit 
 end = struct
@@ -7946,72 +8413,16 @@ type command =
     args : string array 
   }  
 
-(* http://stackoverflow.com/questions/1510922/waiting-for-all-child-processes-before-parent-resumes-execution-unix*)
-
-let rec wait_all_children acc = 
-  if acc = 0 then ()
-  else 
-    match Unix.wait () with 
-    | pid, process_status -> 
-      wait_all_children (acc - 1)
 
 
-
-let run_commands commands = 
-  let rec aux acc commands = 
-    match commands with
-    | [ ] -> 
-      begin 
-        print_endline "Waiting for all children";
-        wait_all_children acc;
-        print_endline "All jobs finished"
-      end
-    | (cmd : command) :: rest -> 
-      match Unix.fork () with 
-      | 0 -> 
-        Unix.chdir cmd.cwd;
-        Unix.execvp cmd.cmd cmd.args
-      | _pid -> 
-        aux (acc + 1 )rest in 
-  aux 0 commands    
-
-
-let run_command_execvp cmd =
+let run_command_execv_unix  cmd =
   match Unix.fork () with 
   | 0 -> 
     print_endline ( "* Entering " ^ cmd.cwd);
     print_string "* " ; 
     for i = 0 to Array.length cmd.args - 1 do
       print_string cmd.args.(i);
-      print_string " "
-    done;
-    print_newline ();
-    Unix.chdir cmd.cwd;
-    Unix.execvp cmd.cmd cmd.args 
-  | pid -> 
-    match Unix.waitpid [] pid  with 
-    | pid, process_status ->       
-      match process_status with 
-      | Unix.WEXITED eid ->
-        if eid <> 0 then 
-          begin 
-            prerr_endline ("* Failure : " ^ cmd.cmd ^ "\n* Location: " ^ cmd.cwd);
-            exit eid
-          end
-      | Unix.WSIGNALED _ | Unix.WSTOPPED _ -> 
-        begin 
-          prerr_endline (cmd.cmd ^ " interrupted");
-          exit 2 
-        end
-
-let run_command_execv fail_exit cmd =
-  match Unix.fork () with 
-  | 0 -> 
-    print_endline ( "* Entering " ^ cmd.cwd);
-    print_string "* " ; 
-    for i = 0 to Array.length cmd.args - 1 do
-      print_string cmd.args.(i);
-      print_string " "
+      print_string Ext_string.single_space
     done;
     print_newline ();
     Unix.chdir cmd.cwd;
@@ -8024,7 +8435,7 @@ let run_command_execv fail_exit cmd =
         if eid <> 0 then 
           begin 
             prerr_endline ("* Failure : " ^ cmd.cmd ^ "\n* Location: " ^ cmd.cwd);
-            if fail_exit then exit eid    
+            exit eid    
           end;
 
       | Unix.WSIGNALED _ | Unix.WSTOPPED _ -> 
@@ -8033,22 +8444,40 @@ let run_command_execv fail_exit cmd =
           exit 2 
         end        
 
+
+(** TODO: the args are not quoted, here 
+  we are calling a very limited set of `bsb` commands, so that 
+  we are safe
+*)
+let run_command_execv_win (cmd : command) =
+  let old_cwd = Unix.getcwd () in 
+  print_endline ( "* Entering " ^ cmd.cwd ^ " from  "  ^ old_cwd);
+  print_string "* " ; 
+  for i = 0 to Array.length cmd.args - 1 do
+    print_string cmd.args.(i);
+    print_string Ext_string.single_space
+  done;
+  print_newline ();  
+  Unix.chdir cmd.cwd;
+  let eid = Sys.command (String.concat Ext_string.single_space (Array.to_list cmd.args)) in 
+  if eid <> 0 then 
+    begin 
+      prerr_endline ("* Failure : " ^ cmd.cmd ^ "\n* Location: " ^ cmd.cwd);
+      exit eid    
+    end
+  else  begin 
+    print_endline ("* Leaving " ^ cmd.cwd ^ " into " ^ old_cwd );
+    Unix.chdir old_cwd
+  end
+
+
+let run_command_execv = 
+    if Ext_sys.is_windows_or_cygwin then 
+      run_command_execv_win
+    else run_command_execv_unix  
 (** it assume you have permissions, so always catch it to fail 
     gracefully
 *)
-let rec remove_dirs_recursive cwd roots = 
-  Array.iter 
-    (fun root -> 
-       let cur = Filename.concat cwd root in 
-       if Sys.is_directory cur then 
-         begin       
-           remove_dirs_recursive cur (Sys.readdir cur); 
-           Unix.rmdir cur ; 
-         end
-       else 
-         Sys.remove cur
-    )
-    roots        
 
 let rec remove_dir_recursive dir = 
   if Sys.is_directory dir then 
@@ -8060,12 +8489,7 @@ let rec remove_dir_recursive dir =
       Unix.rmdir dir 
     end
   else Sys.remove dir 
-(*  
-let () = 
-  run_commands 
-    (Array.init 5 (fun i -> {cmd = "sleep"; args = [|"sleep"; "4" |]; cwd = "."})
-     |> Array.to_list)   
-*)     
+
 end
 module Bsb_main : sig 
 #1 "bsb_main.mli"
@@ -8193,7 +8617,7 @@ let write_ninja_file bsc_dir cwd =
       | [] -> ()
       | xs ->
         Buffer.add_string buffer
-          (Printf.sprintf "\nFLG %s" (String.concat " " xs) ) in
+          (Printf.sprintf "\nFLG %s" (String.concat Ext_string.single_space xs) ) in
     let () =
       Bsb_default.get_bs_dependencies ()
       |> List.iter (fun package ->
@@ -8304,19 +8728,21 @@ let targets = String_vec.make 5
 
 let cwd = Sys.getcwd ()
 
+let node_lit = "node"
 
-let watch () =
+
+
+let watch_exit () =
   print_endline "\nStart Watching now ";
   let bsb_watcher =
     Bsb_build_util.get_bsc_dir cwd // "bsb_watcher.js" in
-  let bsb_watcher =
-    (*FIXME *)
-    if Sys.win32 then Filename.quote bsb_watcher
-    else bsb_watcher in
-  Unix.execvp "node"
-    [| "node" ;
-       bsb_watcher
-    |]
+  if Ext_sys.is_windows_or_cygwin then
+    exit (Sys.command (Ext_string.concat3 node_lit Ext_string.single_space (Filename.quote bsb_watcher)))
+  else  
+    Unix.execvp node_lit
+      [| node_lit ;
+         bsb_watcher
+      |]
 
 let no_dev = "-no-dev"
 let regen = "-regen"
@@ -8331,7 +8757,7 @@ let build_bs_deps package_specs   =
   Bsb_default.walk_all_deps true cwd
     (fun top cwd ->
        if not top then
-         Bsb_unix.run_command_execv true
+         Bsb_unix.run_command_execv 
            {cmd = bsb_exe;
             cwd = cwd;
             args  =
@@ -8433,29 +8859,70 @@ let () =
 let print_string_args (args : string array) =
   for i  = 0 to Array.length args - 1 do
     print_string (Array.unsafe_get args i) ;
-    print_string " ";
+    print_string Ext_string.single_space;
   done ;
   print_newline ()
 
-(* Note that [keepdepfile] only makes sense when combined with [deps] for optimizatoin *)
-let ninja_command ninja ninja_args =
+let install_targets () = 
+  let destdir = lib_ocaml in 
+  if not @@ Sys.file_exists destdir then begin Unix.mkdir destdir 0o777  end;
+  begin 
+    print_endline "* Start Installation"; 
+    String_hash_set.iter (fun x -> 
+        Bsb_file.install_if_exists ~destdir (x ^  Literals.suffix_ml) ;
+        Bsb_file.install_if_exists ~destdir (x ^ Literals.suffix_mli) ;
+        Bsb_file.install_if_exists ~destdir (lib_bs//x ^ Literals.suffix_cmi) ;
+        Bsb_file.install_if_exists ~destdir (lib_bs//x ^ Literals.suffix_cmj) ;
+        Bsb_file.install_if_exists ~destdir (lib_bs//x ^ Literals.suffix_cmt) ;
+        Bsb_file.install_if_exists ~destdir (lib_bs//x ^ Literals.suffix_cmti) ;
+      ) Bsb_ninja.files_to_install
+  end
+(* Note that [keepdepfile] only makes sense when combined with [deps] for optimizatoin
+   It has to be the last command of [bsb]
+*)
+let exec_command_install_then_exit install command = 
+  print_endline command ; 
+  let exit_code = (Sys.command command ) in 
+  if exit_code <> 0 then begin 
+    exit exit_code
+  end else begin 
+    if install then begin  install_targets ()end;
+    exit 0;
+  end
+let ninja_command_exit (type t) ninja ninja_args : t =
   let ninja_args_len = Array.length ninja_args in
   if ninja_args_len = 0 then
     begin
-      let args = [|"ninja"; "-C"; Bsb_config.lib_bs |]    in
-      print_string_args args ;
-      Unix.execvp ninja args
+      match !Bsb_config.install, Ext_sys.is_windows_or_cygwin with 
+      | false, false -> 
+        let args = [|"ninja"; "-C"; Bsb_config.lib_bs |] in 
+        print_string_args args ;
+        Unix.execvp ninja args 
+      | install, _ ->       
+        exec_command_install_then_exit install @@ Ext_string.inter3  (Filename.quote ninja) "-C" Bsb_config.lib_bs 
     end
   else
     let fixed_args_length = 3 in
-    let args = (Array.init (fixed_args_length + ninja_args_len)
-                  (fun i -> match i with
-                     | 0 -> "ninja"
-                     | 1 -> "-C"
-                     | 2 -> Bsb_config.lib_bs
-                     | _ -> Array.unsafe_get ninja_args (i - fixed_args_length) )) in
-    print_string_args args ;
-    Unix.execvp ninja args
+    begin match !Bsb_config.install, Ext_sys.is_windows_or_cygwin with
+      | false, false ->         
+        let args = (Array.init (fixed_args_length + ninja_args_len)
+                      (fun i -> match i with
+                         | 0 -> "ninja"
+                         | 1 -> "-C"
+                         | 2 -> Bsb_config.lib_bs
+                         | _ -> Array.unsafe_get ninja_args (i - fixed_args_length) )) in
+        print_string_args args ;
+        Unix.execvp ninja args
+      | install, _ -> 
+        let args = (Array.init (fixed_args_length + ninja_args_len)
+                      (fun i -> match i with
+                         | 0 -> (Filename.quote ninja)
+                         | 1 -> "-C"
+                         | 2 -> Bsb_config.lib_bs
+                         | _ -> Array.unsafe_get ninja_args (i - fixed_args_length) )) in
+        exec_command_install_then_exit install @@ Ext_string.concat_array Ext_string.single_space args 
+    end
+
 
 
 
@@ -8474,12 +8941,7 @@ let usage = "Usage : bsb.exe <bsb-options> <files> -- <ninja_options>\n\
              Bsb options are:"
 
 
-  (*
-  let bsb_exe = bsc_dir // "bsb.exe" in
-  Bsb_default.walk_all_deps true cwd
-    (fun top cwd -> Bsb_unix.run_command_execv (not top)
-        {cmd = bsb_exe; cwd = cwd; args  = [| bsb_exe ; separator; "-t" ; "clean"|]})
-  *)
+
 let make_world_deps deps =
   print_endline "\nMaking the dependency world!";
   let deps =
@@ -8501,7 +8963,7 @@ let make_world_deps deps =
 let () =
   let bsc_dir = Bsb_build_util.get_bsc_dir cwd in
   let ninja =
-    if Sys.win32 then
+    if Ext_sys.is_windows_or_cygwin then
       bsc_dir // "ninja.exe"
     else
       "ninja"
@@ -8511,7 +8973,7 @@ let () =
   if Array.length Sys.argv <= 1 then
     begin
       ignore (regenerate_ninja cwd bsc_dir false);
-      ninja_command ninja [||]
+      ninja_command_exit ninja [||]
     end
   else
     begin
@@ -8531,14 +8993,14 @@ let () =
               end;
           end;
           if !watch_mode then begin
-            watch ()
+            watch_exit ()
             (* ninja is not triggered in this case 
                There are several cases we wish ninja will not be triggered.
                [bsb -clean-world]
                [bsb -regen ]
             *)
           end else if !make_world then begin 
-            ninja_command ninja [||]  
+            ninja_command_exit ninja [||]  
           end
         end
       | `Split (bsb_args,ninja_args)
@@ -8549,8 +9011,8 @@ let () =
           (* [-make-world] should never be combined with [-package-specs] *)
           if !make_world then
             make_world_deps deps ;
-          if !watch_mode then watch ()
-          else ninja_command ninja ninja_args
+          if !watch_mode then watch_exit ()
+          else ninja_command_exit ninja ninja_args
         end
     end
 (*with x ->

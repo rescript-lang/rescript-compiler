@@ -86,3 +86,6 @@ val handle_file_groups : out_channel ->
   js_post_build_cmd:string option -> 
   Bsb_build_ui.file_group list ->
   info -> info
+
+(** TODO: need clean up when running across projects process *)
+val files_to_install : String_hash_set.t 

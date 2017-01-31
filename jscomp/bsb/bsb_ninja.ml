@@ -111,14 +111,17 @@ module Rules = struct
       ~command:"${bsbuild} -init"
       "reload"
   let copy_resources =
+    let name = "copy_resource" in 
+    if Ext_sys.is_windows_or_cygwin then 
+      define ~command:"cmd.exe /C copy /Y ${in} ${out} > null"
+      name 
+    else 
     define
       ~command:"cp ${in} ${out}"
-      "copy_resources"
+      name 
 
 
-  let ocaml_bin_install =
-    define ~command:"cp ${in} ${out}"
-      "ocaml_bin_install"
+
   (* only generate mll no mli generated *)
   (* actually we would prefer generators in source ?
      generator are divided into two categories:
@@ -179,18 +182,18 @@ let output_build
   let rule = Rules.get_name rule  oc in
   output_string oc "build ";
   output_string oc output ;
-  outputs |> List.iter (fun s -> output_string oc " " ; output_string oc s  );
+  outputs |> List.iter (fun s -> output_string oc Ext_string.single_space ; output_string oc s  );
   begin match implicit_outputs with 
     | [] -> ()
     | _ ->
       output_string oc " | ";
-      implicit_outputs |> List.iter (fun s -> output_string oc " " ; output_string oc s)
+      implicit_outputs |> List.iter (fun s -> output_string oc Ext_string.single_space ; output_string oc s)
   end;
   output_string oc " : ";
   output_string oc rule;
-  output_string oc " ";
+  output_string oc Ext_string.single_space;
   output_string oc input;
-  inputs |> List.iter (fun s ->   output_string oc " " ; output_string oc s);
+  inputs |> List.iter (fun s ->   output_string oc Ext_string.single_space ; output_string oc s);
   begin match implicit_deps with
     | [] -> ()
     | _ ->
@@ -198,7 +201,7 @@ let output_build
         output_string oc " | ";
         implicit_deps
         |>
-        List.iter (fun s -> output_string oc " "; output_string oc s )
+        List.iter (fun s -> output_string oc Ext_string.single_space; output_string oc s )
       end
   end;
   begin match order_only_deps with
@@ -208,7 +211,7 @@ let output_build
         output_string oc " || ";
         order_only_deps
         |>
-        List.iter (fun s -> output_string oc " " ; output_string oc s)
+        List.iter (fun s -> output_string oc Ext_string.single_space ; output_string oc s)
       end
   end;
   output_string oc "\n";
@@ -224,14 +227,14 @@ let output_build
           | `Append s ->
             output_string oc "$" ;
             output_string oc k;
-            output_string oc " ";
+            output_string oc Ext_string.single_space;
             output_string oc s ; output_string oc "\n"
         ) xs
   end;
   begin match restat with
     | None -> ()
     | Some () ->
-      output_string oc " " ;
+      output_string oc Ext_string.single_space ;
       output_string oc "restat = 1 \n"
   end
 
@@ -241,8 +244,8 @@ let phony ?(order_only_deps=[]) ~inputs ~output oc =
   output_string oc output ;
   output_string oc " : ";
   output_string oc "phony";
-  output_string oc " ";
-  inputs |> List.iter (fun s ->   output_string oc " " ; output_string oc s);
+  output_string oc Ext_string.single_space;
+  inputs |> List.iter (fun s ->   output_string oc Ext_string.single_space ; output_string oc s);
   begin match order_only_deps with
     | [] -> ()
     | _ ->
@@ -250,7 +253,7 @@ let phony ?(order_only_deps=[]) ~inputs ~output oc =
         output_string oc " || ";
         order_only_deps
         |>
-        List.iter (fun s -> output_string oc " " ; output_string oc s)
+        List.iter (fun s -> output_string oc Ext_string.single_space ; output_string oc s)
       end
   end;
   output_string oc "\n"
@@ -287,8 +290,13 @@ let (++) (us : info) (vs : info) =
       all_installs = us.all_installs @ vs.all_installs
     }
 
+(** This set is stateful, we should make it functional in the future.
+    It only makes sense when building one project combined with [-regen]
+*)
+let files_to_install = String_hash_set.create 96
 
-
+let install_file (file : string) =    
+  String_hash_set.add  files_to_install (Ext_filename.chop_extension_if_any file )
 
 let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_build_ui.file_group) : info =
   let handle_module_info  oc  module_name
@@ -301,9 +309,9 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
       | Export_all -> true
       | Export_none -> false
       | Export_set set ->  String_set.mem module_name set in
-    let emit_build (kind : [`Ml | `Mll | `Re | `Mli | `Rei ])  input : info =
-      let filename_sans_extension = Filename.chop_extension input in
-      let input = Bsb_config.proj_rel input in
+    let emit_build (kind : [`Ml | `Mll | `Re | `Mli | `Rei ])  file_input : info =
+      let filename_sans_extension = Filename.chop_extension file_input in
+      let input = Bsb_config.proj_rel file_input in
       let output_file_sans_extension = filename_sans_extension in
       let output_ml = output_file_sans_extension ^ Literals.suffix_ml in
       let output_mlast = output_file_sans_extension  ^ Literals.suffix_mlast in
@@ -364,17 +372,6 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
           ~output:output_ml
           ~input
           ~rule: Rules.build_ml_from_mll ;
-      let install_files files  =     
-        files 
-        |> List.iter
-          (
-            fun x ->
-              output_build oc
-                ~output:(Bsb_config.proj_rel @@
-                         Bsb_config.ocaml_bin_install_prefix @@ Filename.basename x)
-                ~input:x
-                ~rule:Rules.copy_resources
-          ) in 
       begin match kind with
         | `Mll
         | `Ml
@@ -412,7 +409,7 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
               | None -> shadows 
               | Some cmd -> 
                 ("postbuild", 
-                 `Overwrite ("&& " ^ cmd ^ " " ^ String.concat " " output_js)) :: shadows
+                 `Overwrite ("&& " ^ cmd ^ Ext_string.single_space ^ String.concat Ext_string.single_space output_js)) :: shadows
             in 
             output_build oc
               ~output:output_cmj
@@ -421,9 +418,7 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
               ~input:output_mlast 
               ~implicit_deps:deps
               ~rule:rule_name ;
-            if installable then
-              install_files (input::output_cmj :: cm_outputs)
-            ;
+            if installable then begin install_file file_input end;
             {all_config_deps = [output_mlastd]; all_installs = [output_cmi];  }
 
           end
@@ -450,8 +445,7 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
             ~input:output_mliast
             (* ~implicit_deps:[output_mliastd] *)
             ~rule:Rules.build_cmi;
-          if installable then
-            install_files [output_cmi; input];
+          if installable then begin install_file file_input end ; 
           {
             all_config_deps = [output_mliastd];
             all_installs = [output_cmi] ; 

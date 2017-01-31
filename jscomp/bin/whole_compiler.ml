@@ -19964,65 +19964,6 @@ let () =
     )
 
 end
-module Ext_sys : sig 
-#1 "ext_sys.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-val is_directory_no_exn : string -> bool
-
-end = struct
-#1 "ext_sys.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-let is_directory_no_exn f = 
-  try Sys.is_directory f with _ -> false 
-
-end
 module Literals : sig 
 #1 "literals.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -20114,7 +20055,9 @@ val suffix_d : string
 val suffix_mlastd : string
 val suffix_mliastd : string
 val suffix_js : string
-
+val suffix_mli : string 
+val suffix_cmt : string 
+val suffix_cmti : string 
 
 val commonjs : string 
 val amdjs : string 
@@ -20206,6 +20149,9 @@ let suffix_cmj = ".cmj"
 let suffix_cmi = ".cmi"
 let suffix_mll = ".mll"
 let suffix_ml = ".ml"
+let suffix_mli = ".mli"
+let suffix_cmt = ".cmt" 
+let suffix_cmti = ".cmti" 
 let suffix_mlast = ".mlast"
 let suffix_mliast = ".mliast"
 let suffix_d = ".d"
@@ -20256,7 +20202,8 @@ module Bs_pkg : sig
     it relies on [npm_config_prefix] env variable for global npm modules
 *)
 
-val resolve_bs_package : ?subdir:string -> cwd:string ->  string -> string option
+val resolve_bs_package : 
+    cwd:string ->  string -> string option
 
 end = struct
 #1 "bs_pkg.ml"
@@ -20265,25 +20212,27 @@ let (//) = Filename.concat
 
 
 
+
+
 let  resolve_bs_package  
-    ?(subdir="")
     ~cwd
     name = 
-  let sub_path = name // subdir  in
+  let marker = Literals.bsconfig_json in 
+  let sub_path = name // marker  in
   let rec aux origin cwd name = 
-    let destdir =  cwd // Literals.node_modules // sub_path in 
-    if Ext_sys.is_directory_no_exn destdir then Some destdir
+    let abs_marker =  cwd // Literals.node_modules // sub_path in 
+    if Sys.file_exists abs_marker then Some (Filename.dirname abs_marker)
     else 
       let cwd' = Filename.dirname cwd in 
       if String.length cwd' < String.length cwd then  
         aux origin   cwd' name
       else 
         try 
-          let destdir = 
+          let abs_marker = 
             Sys.getenv "npm_config_prefix" 
             // "lib" // Literals.node_modules // sub_path in
-          if Ext_sys.is_directory_no_exn destdir
-          then Some destdir
+          if Sys.file_exists abs_marker
+          then Some (Filename.dirname abs_marker)
           else None
             (* Bs_exception.error (Bs_package_not_found name) *)
         with 
@@ -21104,6 +21053,15 @@ val empty : string
 
 external compare : string -> string -> int = "caml_string_length_based_compare" "noalloc";;
 
+val single_space : string
+
+val concat3 : string -> string -> string -> string 
+val concat4 : string -> string -> string -> string -> string 
+
+val inter2 : string -> string -> string
+val inter3 : string -> string -> string -> string 
+
+val concat_array : string -> string array -> string 
 end = struct
 #1 "ext_string.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -21485,6 +21443,20 @@ let replace_backward_slash (x : string)=
 let empty = ""
 
 external compare : string -> string -> int = "caml_string_length_based_compare" "noalloc";;
+
+let single_space = " "
+
+let concat3 a b c = a ^ b ^ c 
+let concat4 a b c d = a ^ b ^ c ^ d 
+
+let inter2 a b = a ^ single_space ^ b 
+
+let inter3 a b c = 
+  a ^ single_space ^ b ^ single_space ^ c 
+
+(** TODO: improve perf *)
+let concat_array sep (s : string array) = 
+  String.concat sep (Array.to_list s)
 end
 module Ext_filename : sig 
 #1 "ext_filename.mli"
@@ -105896,12 +105868,11 @@ let add_package s =
   let path = 
     Bs_pkg.resolve_bs_package
       ~cwd:(Lazy.force Ext_filename.cwd) 
-      ~subdir:Js_config.lib_ocaml_dir
       s   in 
   match path with
   | None -> Bs_exception.error (Bs_package_not_found s)
   | Some path ->
-    Clflags.include_dirs := path :: ! Clflags.include_dirs
+    Clflags.include_dirs := (path // Js_config.lib_ocaml_dir) :: ! Clflags.include_dirs
 
 
 let set_noassert () = 

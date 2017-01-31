@@ -377,3 +377,17 @@ let replace_backward_slash (x : string)=
 let empty = ""
 
 external compare : string -> string -> int = "caml_string_length_based_compare" "noalloc";;
+
+let single_space = " "
+
+let concat3 a b c = a ^ b ^ c 
+let concat4 a b c d = a ^ b ^ c ^ d 
+
+let inter2 a b = a ^ single_space ^ b 
+
+let inter3 a b c = 
+  a ^ single_space ^ b ^ single_space ^ c 
+
+(** TODO: improve perf *)
+let concat_array sep (s : string array) = 
+  String.concat sep (Array.to_list s)

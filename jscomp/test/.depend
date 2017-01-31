@@ -140,7 +140,7 @@ ext_pervasives.cmj : ../stdlib/string.cmj ../stdlib/printf.cmj \
     ../stdlib/format.cmj ../stdlib/char.cmj ../stdlib/array.cmj \
     ../stdlib/arg.cmj ext_pervasives.cmi
 ext_string.cmj : ../stdlib/string.cmj ../stdlib/list.cmj ext_bytes.cmj \
-    ../stdlib/char.cmj ../stdlib/bytes.cmj
+    ../stdlib/char.cmj ../stdlib/bytes.cmj ../stdlib/array.cmj
 ext_sys.cmj : ../stdlib/sys.cmj ext_sys.cmi
 extensible_variant_test.cmj : mt.cmj
 external_ppx.cmj :

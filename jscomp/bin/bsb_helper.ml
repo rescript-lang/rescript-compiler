@@ -463,6 +463,15 @@ val empty : string
 
 external compare : string -> string -> int = "caml_string_length_based_compare" "noalloc";;
 
+val single_space : string
+
+val concat3 : string -> string -> string -> string 
+val concat4 : string -> string -> string -> string -> string 
+
+val inter2 : string -> string -> string
+val inter3 : string -> string -> string -> string 
+
+val concat_array : string -> string array -> string 
 end = struct
 #1 "ext_string.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -844,6 +853,20 @@ let replace_backward_slash (x : string)=
 let empty = ""
 
 external compare : string -> string -> int = "caml_string_length_based_compare" "noalloc";;
+
+let single_space = " "
+
+let concat3 a b c = a ^ b ^ c 
+let concat4 a b c d = a ^ b ^ c ^ d 
+
+let inter2 a b = a ^ single_space ^ b 
+
+let inter3 a b c = 
+  a ^ single_space ^ b ^ single_space ^ c 
+
+(** TODO: improve perf *)
+let concat_array sep (s : string array) = 
+  String.concat sep (Array.to_list s)
 end
 module Literals : sig 
 #1 "literals.mli"
@@ -936,7 +959,9 @@ val suffix_d : string
 val suffix_mlastd : string
 val suffix_mliastd : string
 val suffix_js : string
-
+val suffix_mli : string 
+val suffix_cmt : string 
+val suffix_cmti : string 
 
 val commonjs : string 
 val amdjs : string 
@@ -1028,6 +1053,9 @@ let suffix_cmj = ".cmj"
 let suffix_cmi = ".cmi"
 let suffix_mll = ".mll"
 let suffix_ml = ".ml"
+let suffix_mli = ".mli"
+let suffix_cmt = ".cmt" 
+let suffix_cmti = ".cmti" 
 let suffix_mlast = ".mlast"
 let suffix_mliast = ".mliast"
 let suffix_d = ".d"
