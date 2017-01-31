@@ -1,0 +1,3 @@
+1. Run `node ./check.js` to generate `win_build.bat` and `bsc.win` correctly
+
+2. test under windows
