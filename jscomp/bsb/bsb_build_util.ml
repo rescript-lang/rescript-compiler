@@ -25,7 +25,7 @@
 let flag_concat flag xs = 
   xs 
   |> Ext_list.flat_map (fun x -> [flag ; x])
-  |> String.concat " "
+  |> String.concat Ext_string.single_space
 let (//) = Ext_filename.combine
 
 (* we use lazy $src_root_dir *)

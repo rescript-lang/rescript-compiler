@@ -118,7 +118,7 @@ let write_ninja_file bsc_dir cwd =
       | [] -> ()
       | xs ->
         Buffer.add_string buffer
-          (Printf.sprintf "\nFLG %s" (String.concat " " xs) ) in
+          (Printf.sprintf "\nFLG %s" (String.concat Ext_string.single_space xs) ) in
     let () =
       Bsb_default.get_bs_dependencies ()
       |> List.iter (fun package ->
@@ -230,8 +230,10 @@ let targets = String_vec.make 5
 let cwd = Sys.getcwd ()
 
 let node_lit = "node"
-let ninja_lit = "ninja"
-let watch (type t) () : t =
+
+
+
+let watch_exit () =
   print_endline "\nStart Watching now ";
   let bsb_watcher =
     Bsb_build_util.get_bsc_dir cwd // "bsb_watcher.js" in
@@ -358,7 +360,7 @@ let () =
 let print_string_args (args : string array) =
   for i  = 0 to Array.length args - 1 do
     print_string (Array.unsafe_get args i) ;
-    print_string " ";
+    print_string Ext_string.single_space;
   done ;
   print_newline ()
 
@@ -379,43 +381,47 @@ let install_targets () =
 (* Note that [keepdepfile] only makes sense when combined with [deps] for optimizatoin
    It has to be the last command of [bsb]
 *)
-let ninja_command (type t) ninja ninja_args : t =
+let exec_command_install_then_exit install command = 
+  print_endline command ; 
+  let exit_code = (Sys.command command ) in 
+  if exit_code <> 0 then begin 
+    exit exit_code
+  end else begin 
+    if install then begin  install_targets ()end;
+    exit 0;
+  end
+let ninja_command_exit (type t) ninja ninja_args : t =
   let ninja_args_len = Array.length ninja_args in
   if ninja_args_len = 0 then
     begin
-      let args = [|ninja_lit; "-C"; Bsb_config.lib_bs |]    in
-      print_string_args args ;
       match !Bsb_config.install, Ext_sys.is_windows_or_cygwin with 
-      | false, false -> Unix.execvp ninja args
+      | false, false -> 
+        let args = [|"ninja"; "-C"; Bsb_config.lib_bs |] in 
+        print_string_args args ;
+        Unix.execvp ninja args 
       | install, _ ->       
-        let exit_code = (Sys.command @@ Ext_string.inter3  ninja_lit "-C" Bsb_config.lib_bs) in 
-        if exit_code <> 0 then begin 
-          exit exit_code
-        end else begin 
-          if install then begin  install_targets ()end        ;
-          exit 0;
-        end
+        exec_command_install_then_exit install @@ Ext_string.inter3  (Filename.quote ninja) "-C" Bsb_config.lib_bs 
     end
   else
     let fixed_args_length = 3 in
-    let args = (Array.init (fixed_args_length + ninja_args_len)
-                  (fun i -> match i with
-                     | 0 -> ninja_lit
-                     | 1 -> "-C"
-                     | 2 -> Bsb_config.lib_bs
-                     | _ -> Array.unsafe_get ninja_args (i - fixed_args_length) )) in
-    print_string_args args ;
     begin match !Bsb_config.install, Ext_sys.is_windows_or_cygwin with
-      | false, false -> Unix.execvp ninja args
+      | false, false ->         
+        let args = (Array.init (fixed_args_length + ninja_args_len)
+                      (fun i -> match i with
+                         | 0 -> "ninja"
+                         | 1 -> "-C"
+                         | 2 -> Bsb_config.lib_bs
+                         | _ -> Array.unsafe_get ninja_args (i - fixed_args_length) )) in
+        print_string_args args ;
+        Unix.execvp ninja args
       | install, _ -> 
-        let exit_code =  (Sys.command @@ Ext_string.concat_array Ext_string.single_space args) in 
-        if exit_code <> 0 then begin 
-          exit exit_code 
-        end  else begin if install then begin 
-            install_targets ()
-          end ;
-          exit 0
-        end
+        let args = (Array.init (fixed_args_length + ninja_args_len)
+                      (fun i -> match i with
+                         | 0 -> (Filename.quote ninja)
+                         | 1 -> "-C"
+                         | 2 -> Bsb_config.lib_bs
+                         | _ -> Array.unsafe_get ninja_args (i - fixed_args_length) )) in
+        exec_command_install_then_exit install @@ Ext_string.concat_array Ext_string.single_space args 
     end
 
 
@@ -458,7 +464,7 @@ let make_world_deps deps =
 let () =
   let bsc_dir = Bsb_build_util.get_bsc_dir cwd in
   let ninja =
-    if Sys.win32 then
+    if Ext_sys.is_windows_or_cygwin then
       bsc_dir // "ninja.exe"
     else
       "ninja"
@@ -468,7 +474,7 @@ let () =
   if Array.length Sys.argv <= 1 then
     begin
       ignore (regenerate_ninja cwd bsc_dir false);
-      ninja_command ninja [||]
+      ninja_command_exit ninja [||]
     end
   else
     begin
@@ -488,14 +494,14 @@ let () =
               end;
           end;
           if !watch_mode then begin
-            watch ()
+            watch_exit ()
             (* ninja is not triggered in this case 
                There are several cases we wish ninja will not be triggered.
                [bsb -clean-world]
                [bsb -regen ]
             *)
           end else if !make_world then begin 
-            ninja_command ninja [||]  
+            ninja_command_exit ninja [||]  
           end
         end
       | `Split (bsb_args,ninja_args)
@@ -506,8 +512,8 @@ let () =
           (* [-make-world] should never be combined with [-package-specs] *)
           if !make_world then
             make_world_deps deps ;
-          if !watch_mode then watch ()
-          else ninja_command ninja ninja_args
+          if !watch_mode then watch_exit ()
+          else ninja_command_exit ninja ninja_args
         end
     end
 (*with x ->

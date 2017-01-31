@@ -40,7 +40,7 @@ let run_command_execv_unix  cmd =
     print_string "* " ; 
     for i = 0 to Array.length cmd.args - 1 do
       print_string cmd.args.(i);
-      print_string " "
+      print_string Ext_string.single_space
     done;
     print_newline ();
     Unix.chdir cmd.cwd;
@@ -73,12 +73,11 @@ let run_command_execv_win (cmd : command) =
   print_string "* " ; 
   for i = 0 to Array.length cmd.args - 1 do
     print_string cmd.args.(i);
-    print_string " "
+    print_string Ext_string.single_space
   done;
-  print_newline ();
-  
+  print_newline ();  
   Unix.chdir cmd.cwd;
-  let eid = Sys.command (String.concat " " (Array.to_list cmd.args)) in 
+  let eid = Sys.command (String.concat Ext_string.single_space (Array.to_list cmd.args)) in 
   if eid <> 0 then 
     begin 
       prerr_endline ("* Failure : " ^ cmd.cmd ^ "\n* Location: " ^ cmd.cwd);

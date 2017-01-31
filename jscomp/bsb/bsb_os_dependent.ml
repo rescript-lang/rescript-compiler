@@ -38,7 +38,7 @@ let run_command_execvp cmd =
     print_string "* " ; 
     for i = 0 to Array.length cmd.args - 1 do
       print_string cmd.args.(i);
-      print_string " "
+      print_string Ext_string.single_space
     done;
     print_newline ();
     Unix.chdir cmd.cwd;

@@ -26,7 +26,7 @@ let resources = "resources"
 let public = "public"
 let js_post_build = "js-post-build"
 let cmd = "cmd"
-let ninja = "ninja"
+let ninja = "ninja" 
 let package_specs = "package-specs"
 
 let generate_merlin = "generate-merlin"
@@ -39,7 +39,6 @@ let export_none = "none"
 
 let bsb_dir_group = "bsb_dir_group"
 let bsc_lib_includes = "bsc_lib_includes"
-
 end
 module Ext_pervasives : sig 
 #1 "ext_pervasives.mli"
@@ -4526,7 +4525,7 @@ end = struct
 let flag_concat flag xs = 
   xs 
   |> Ext_list.flat_map (fun x -> [flag ; x])
-  |> String.concat " "
+  |> String.concat Ext_string.single_space
 let (//) = Ext_filename.combine
 
 (* we use lazy $src_root_dir *)
@@ -7788,14 +7787,7 @@ module Rules = struct
       name 
 
 
-  let ocaml_bin_install =
-    let name = "ocaml_bin_install" in 
-    if Ext_sys.is_windows_or_cygwin then 
-      define ~command:"cmd.exe /C copy /Y ${in} ${out} > null"
-      name  
-    else 
-      define ~command:"cp ${in} ${out}"
-        name 
+
   (* only generate mll no mli generated *)
   (* actually we would prefer generators in source ?
      generator are divided into two categories:
@@ -7856,18 +7848,18 @@ let output_build
   let rule = Rules.get_name rule  oc in
   output_string oc "build ";
   output_string oc output ;
-  outputs |> List.iter (fun s -> output_string oc " " ; output_string oc s  );
+  outputs |> List.iter (fun s -> output_string oc Ext_string.single_space ; output_string oc s  );
   begin match implicit_outputs with 
     | [] -> ()
     | _ ->
       output_string oc " | ";
-      implicit_outputs |> List.iter (fun s -> output_string oc " " ; output_string oc s)
+      implicit_outputs |> List.iter (fun s -> output_string oc Ext_string.single_space ; output_string oc s)
   end;
   output_string oc " : ";
   output_string oc rule;
-  output_string oc " ";
+  output_string oc Ext_string.single_space;
   output_string oc input;
-  inputs |> List.iter (fun s ->   output_string oc " " ; output_string oc s);
+  inputs |> List.iter (fun s ->   output_string oc Ext_string.single_space ; output_string oc s);
   begin match implicit_deps with
     | [] -> ()
     | _ ->
@@ -7875,7 +7867,7 @@ let output_build
         output_string oc " | ";
         implicit_deps
         |>
-        List.iter (fun s -> output_string oc " "; output_string oc s )
+        List.iter (fun s -> output_string oc Ext_string.single_space; output_string oc s )
       end
   end;
   begin match order_only_deps with
@@ -7885,7 +7877,7 @@ let output_build
         output_string oc " || ";
         order_only_deps
         |>
-        List.iter (fun s -> output_string oc " " ; output_string oc s)
+        List.iter (fun s -> output_string oc Ext_string.single_space ; output_string oc s)
       end
   end;
   output_string oc "\n";
@@ -7901,14 +7893,14 @@ let output_build
           | `Append s ->
             output_string oc "$" ;
             output_string oc k;
-            output_string oc " ";
+            output_string oc Ext_string.single_space;
             output_string oc s ; output_string oc "\n"
         ) xs
   end;
   begin match restat with
     | None -> ()
     | Some () ->
-      output_string oc " " ;
+      output_string oc Ext_string.single_space ;
       output_string oc "restat = 1 \n"
   end
 
@@ -7918,8 +7910,8 @@ let phony ?(order_only_deps=[]) ~inputs ~output oc =
   output_string oc output ;
   output_string oc " : ";
   output_string oc "phony";
-  output_string oc " ";
-  inputs |> List.iter (fun s ->   output_string oc " " ; output_string oc s);
+  output_string oc Ext_string.single_space;
+  inputs |> List.iter (fun s ->   output_string oc Ext_string.single_space ; output_string oc s);
   begin match order_only_deps with
     | [] -> ()
     | _ ->
@@ -7927,7 +7919,7 @@ let phony ?(order_only_deps=[]) ~inputs ~output oc =
         output_string oc " || ";
         order_only_deps
         |>
-        List.iter (fun s -> output_string oc " " ; output_string oc s)
+        List.iter (fun s -> output_string oc Ext_string.single_space ; output_string oc s)
       end
   end;
   output_string oc "\n"
@@ -7964,7 +7956,9 @@ let (++) (us : info) (vs : info) =
       all_installs = us.all_installs @ vs.all_installs
     }
 
-
+(** This set is stateful, we should make it functional in the future.
+    It only makes sense when building one project combined with [-regen]
+*)
 let files_to_install = String_hash_set.create 96
 
 let install_file (file : string) =    
@@ -8044,17 +8038,6 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
           ~output:output_ml
           ~input
           ~rule: Rules.build_ml_from_mll ;
-      (* let install_files files  =     
-        files 
-        |> List.iter
-          (
-            fun x ->
-              output_build oc
-                ~output:(Bsb_config.proj_rel @@
-                         Bsb_config.ocaml_bin_install_prefix @@ Filename.basename x)
-                ~input:x
-                ~rule:Rules.copy_resources
-          ) in *)
       begin match kind with
         | `Mll
         | `Ml
@@ -8092,7 +8075,7 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
               | None -> shadows 
               | Some cmd -> 
                 ("postbuild", 
-                 `Overwrite ("&& " ^ cmd ^ " " ^ String.concat " " output_js)) :: shadows
+                 `Overwrite ("&& " ^ cmd ^ Ext_string.single_space ^ String.concat Ext_string.single_space output_js)) :: shadows
             in 
             output_build oc
               ~output:output_cmj
@@ -8101,9 +8084,7 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
               ~input:output_mlast 
               ~implicit_deps:deps
               ~rule:rule_name ;
-            if installable then begin install_file file_input end
-              (* install_files (input::output_cmj :: cm_outputs) *)
-            ;
+            if installable then begin install_file file_input end;
             {all_config_deps = [output_mlastd]; all_installs = [output_cmi];  }
 
           end
@@ -8131,7 +8112,6 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
             (* ~implicit_deps:[output_mliastd] *)
             ~rule:Rules.build_cmi;
           if installable then begin install_file file_input end ; 
-            (* install_files [output_cmi; input]; *)
           {
             all_config_deps = [output_mliastd];
             all_installs = [output_cmi] ; 
@@ -8254,8 +8234,8 @@ let merge_module_info_map acc sources =
       | None , None ->
         assert false
       | Some a, Some b  ->
-        failwith ("conflict files found: " ^ modname ^ "in ("
-                  ^  Binary_cache.dir_of_module_info a ^ " " ^ Binary_cache.dir_of_module_info b ^  " )")
+        failwith ("conflict files found: " ^ modname ^ "in ("   
+                  ^  Binary_cache.dir_of_module_info a ^ Ext_string.single_space ^ Binary_cache.dir_of_module_info b ^  " )")
       | Some v, None  -> Some v
       | None, Some v ->  Some v
     ) acc  sources
@@ -8279,7 +8259,7 @@ let output_ninja
 
   =
   let ppx_flags = Bsb_build_util.flag_concat "-ppx" ppx_flags in
-  let bsc_flags =  String.concat " " bsc_flags in
+  let bsc_flags =  String.concat Ext_string.single_space bsc_flags in
   let oc = open_out_bin (builddir // Literals.build_ninja) in
   begin
     let () =
@@ -8442,7 +8422,7 @@ let run_command_execv_unix  cmd =
     print_string "* " ; 
     for i = 0 to Array.length cmd.args - 1 do
       print_string cmd.args.(i);
-      print_string " "
+      print_string Ext_string.single_space
     done;
     print_newline ();
     Unix.chdir cmd.cwd;
@@ -8475,12 +8455,11 @@ let run_command_execv_win (cmd : command) =
   print_string "* " ; 
   for i = 0 to Array.length cmd.args - 1 do
     print_string cmd.args.(i);
-    print_string " "
+    print_string Ext_string.single_space
   done;
-  print_newline ();
-  
+  print_newline ();  
   Unix.chdir cmd.cwd;
-  let eid = Sys.command (String.concat " " (Array.to_list cmd.args)) in 
+  let eid = Sys.command (String.concat Ext_string.single_space (Array.to_list cmd.args)) in 
   if eid <> 0 then 
     begin 
       prerr_endline ("* Failure : " ^ cmd.cmd ^ "\n* Location: " ^ cmd.cwd);
@@ -8638,7 +8617,7 @@ let write_ninja_file bsc_dir cwd =
       | [] -> ()
       | xs ->
         Buffer.add_string buffer
-          (Printf.sprintf "\nFLG %s" (String.concat " " xs) ) in
+          (Printf.sprintf "\nFLG %s" (String.concat Ext_string.single_space xs) ) in
     let () =
       Bsb_default.get_bs_dependencies ()
       |> List.iter (fun package ->
@@ -8750,8 +8729,10 @@ let targets = String_vec.make 5
 let cwd = Sys.getcwd ()
 
 let node_lit = "node"
-let ninja_lit = "ninja"
-let watch (type t) () : t =
+
+
+
+let watch_exit () =
   print_endline "\nStart Watching now ";
   let bsb_watcher =
     Bsb_build_util.get_bsc_dir cwd // "bsb_watcher.js" in
@@ -8878,7 +8859,7 @@ let () =
 let print_string_args (args : string array) =
   for i  = 0 to Array.length args - 1 do
     print_string (Array.unsafe_get args i) ;
-    print_string " ";
+    print_string Ext_string.single_space;
   done ;
   print_newline ()
 
@@ -8899,43 +8880,47 @@ let install_targets () =
 (* Note that [keepdepfile] only makes sense when combined with [deps] for optimizatoin
    It has to be the last command of [bsb]
 *)
-let ninja_command (type t) ninja ninja_args : t =
+let exec_command_install_then_exit install command = 
+  print_endline command ; 
+  let exit_code = (Sys.command command ) in 
+  if exit_code <> 0 then begin 
+    exit exit_code
+  end else begin 
+    if install then begin  install_targets ()end;
+    exit 0;
+  end
+let ninja_command_exit (type t) ninja ninja_args : t =
   let ninja_args_len = Array.length ninja_args in
   if ninja_args_len = 0 then
     begin
-      let args = [|ninja_lit; "-C"; Bsb_config.lib_bs |]    in
-      print_string_args args ;
       match !Bsb_config.install, Ext_sys.is_windows_or_cygwin with 
-      | false, false -> Unix.execvp ninja args
+      | false, false -> 
+        let args = [|"ninja"; "-C"; Bsb_config.lib_bs |] in 
+        print_string_args args ;
+        Unix.execvp ninja args 
       | install, _ ->       
-        let exit_code = (Sys.command @@ Ext_string.inter3  ninja_lit "-C" Bsb_config.lib_bs) in 
-        if exit_code <> 0 then begin 
-          exit exit_code
-        end else begin 
-          if install then begin  install_targets ()end        ;
-          exit 0;
-        end
+        exec_command_install_then_exit install @@ Ext_string.inter3  (Filename.quote ninja) "-C" Bsb_config.lib_bs 
     end
   else
     let fixed_args_length = 3 in
-    let args = (Array.init (fixed_args_length + ninja_args_len)
-                  (fun i -> match i with
-                     | 0 -> ninja_lit
-                     | 1 -> "-C"
-                     | 2 -> Bsb_config.lib_bs
-                     | _ -> Array.unsafe_get ninja_args (i - fixed_args_length) )) in
-    print_string_args args ;
     begin match !Bsb_config.install, Ext_sys.is_windows_or_cygwin with
-      | false, false -> Unix.execvp ninja args
+      | false, false ->         
+        let args = (Array.init (fixed_args_length + ninja_args_len)
+                      (fun i -> match i with
+                         | 0 -> "ninja"
+                         | 1 -> "-C"
+                         | 2 -> Bsb_config.lib_bs
+                         | _ -> Array.unsafe_get ninja_args (i - fixed_args_length) )) in
+        print_string_args args ;
+        Unix.execvp ninja args
       | install, _ -> 
-        let exit_code =  (Sys.command @@ Ext_string.concat_array Ext_string.single_space args) in 
-        if exit_code <> 0 then begin 
-          exit exit_code 
-        end  else begin if install then begin 
-            install_targets ()
-          end ;
-          exit 0
-        end
+        let args = (Array.init (fixed_args_length + ninja_args_len)
+                      (fun i -> match i with
+                         | 0 -> (Filename.quote ninja)
+                         | 1 -> "-C"
+                         | 2 -> Bsb_config.lib_bs
+                         | _ -> Array.unsafe_get ninja_args (i - fixed_args_length) )) in
+        exec_command_install_then_exit install @@ Ext_string.concat_array Ext_string.single_space args 
     end
 
 
@@ -8978,7 +8963,7 @@ let make_world_deps deps =
 let () =
   let bsc_dir = Bsb_build_util.get_bsc_dir cwd in
   let ninja =
-    if Sys.win32 then
+    if Ext_sys.is_windows_or_cygwin then
       bsc_dir // "ninja.exe"
     else
       "ninja"
@@ -8988,7 +8973,7 @@ let () =
   if Array.length Sys.argv <= 1 then
     begin
       ignore (regenerate_ninja cwd bsc_dir false);
-      ninja_command ninja [||]
+      ninja_command_exit ninja [||]
     end
   else
     begin
@@ -9008,14 +8993,14 @@ let () =
               end;
           end;
           if !watch_mode then begin
-            watch ()
+            watch_exit ()
             (* ninja is not triggered in this case 
                There are several cases we wish ninja will not be triggered.
                [bsb -clean-world]
                [bsb -regen ]
             *)
           end else if !make_world then begin 
-            ninja_command ninja [||]  
+            ninja_command_exit ninja [||]  
           end
         end
       | `Split (bsb_args,ninja_args)
@@ -9026,8 +9011,8 @@ let () =
           (* [-make-world] should never be combined with [-package-specs] *)
           if !make_world then
             make_world_deps deps ;
-          if !watch_mode then watch ()
-          else ninja_command ninja ninja_args
+          if !watch_mode then watch_exit ()
+          else ninja_command_exit ninja ninja_args
         end
     end
 (*with x ->
