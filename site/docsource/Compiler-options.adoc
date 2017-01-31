@@ -1,5 +1,13 @@
 
 ## Extended compiler options
+
+[Note]
+====== 
+This section is only for people who want roll their own build system instead of using the recommended build system: <<BuckleScript build system: `bsb`>>, 
+in general, it is safe to skip this section.
+It also adds some tips for people who debug the compiler.
+====== 
+
 BuckleScript inherits the command line arguments of the
 http://caml.inria.fr/pub/docs/manual-ocaml/comp.html[OCaml compiler]. It
 also adds several flags:

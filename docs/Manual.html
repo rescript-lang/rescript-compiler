@@ -639,6 +639,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_mark_your_directory_as_dev_only">Mark your directory as dev only</a></li>
 </ul>
 </li>
+<li><a href="#_a_real_world_example_of_using_code_bsb_code">A real world example of using <code>bsb</code></a></li>
 <li><a href="#_build_using_make">Build using Make</a></li>
 </ul>
 </li>
@@ -3340,6 +3341,15 @@ more examples, please visit
 <div class="sect1">
 <h2 id="_extended_compiler_options"><a class="anchor" href="#_extended_compiler_options"></a>Extended compiler options</h2>
 <div class="sectionbody">
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>This section is only for people who want roll their own build system instead of using the recommended build system: <a href="#_bucklescript_build_system_code_bsb_code">BuckleScript build system: <code>bsb</code></a>,
+in general, it is safe to skip this section.
+It also adds some tips for people who debug the compiler.</p>
+</div>
+</div>
+</div>
 <div class="paragraph">
 <p>BuckleScript inherits the command line arguments of the
 <a href="http://caml.inria.fr/pub/docs/manual-ocaml/comp.html">OCaml compiler</a>. It
@@ -3870,7 +3880,28 @@ we are using Google&#8217;s <a href="https://github.com/ninja-build/ninja/releas
 </div>
 <div class="paragraph">
 <p><code>bsb</code> can be running in any subdirectory, it is a schema based build tool, the schema is
-<a href="http://bloomberg.github.io/bucklescript/docson/#build-schema.json">available</a></p>
+<a href="http://bloomberg.github.io/bucklescript/docson/#build-schema.json">available</a>, it is strongly recommended to <strong>check out the <a href="http://bloomberg.github.io/bucklescript/docson/#build-schema.json">schema</a></strong>
+after you finish reading the tutorials below.</p>
+</div>
+<div class="paragraph">
+<p>If your editors support JSON schema validation and auto-completion like <a href="https://code.visualstudio.com/docs/languages/json">VSCode</a>,
+below is a configuration to help you get auto-completion and validation for free:</p>
+</div>
+<div class="listingblock">
+<div class="title">settings.json</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span class="tok-p">{</span>
+    <span class="tok-s2">&quot;json.schemas&quot;</span><span class="tok-o">:</span> <span class="tok-p">[</span>
+        <span class="tok-p">{</span>
+            <span class="tok-s2">&quot;fileMatch&quot;</span><span class="tok-o">:</span> <span class="tok-p">[</span>
+                <span class="tok-s2">&quot;bsconfig.json&quot;</span>
+            <span class="tok-p">],</span>
+            <span class="tok-s2">&quot;url&quot;</span> <span class="tok-o">:</span> <span class="tok-s2">&quot;file:///path/to/bucklescript/docs/docson/build-schema.json&quot;</span> <b class="conum">(1)</b>
+        <span class="tok-p">}</span>
+    <span class="tok-p">],</span>
+    <span class="tok-c1">// ....</span>
+<span class="tok-p">}</span></code></pre>
+</div>
 </div>
 <div class="paragraph">
 <p>The build system is installed as <code>bsb.exe</code> in <code>bs-platform/bin/bsb.exe</code>, due to a known issue in npm,
@@ -3885,8 +3916,7 @@ either <code>bsb</code>(slightly higher latency but symlinked into <code>.bin</c
 <div class="content">
 <pre class="pygments highlight"><code data-lang="js"><span class="tok-p">{</span>
   <span class="tok-s2">&quot;name&quot;</span><span class="tok-o">:</span> <span class="tok-s2">&quot;test&quot;</span><span class="tok-p">,</span> <span class="tok-c1">// package name, required </span><b class="conum">(1)</b>
-  <span class="tok-s2">&quot;sources&quot;</span><span class="tok-o">:</span>
-     <span class="tok-p">{</span> <span class="tok-s2">&quot;dir&quot;</span><span class="tok-o">:</span> <span class="tok-s2">&quot;src&quot;</span><span class="tok-p">}</span> <b class="conum">(2)</b>
+  <span class="tok-s2">&quot;sources&quot;</span><span class="tok-o">:</span> <span class="tok-s2">&quot;src&quot;</span> <b class="conum">(2)</b>
 <span class="tok-p">}</span></code></pre>
 </div>
 </div>
@@ -3901,7 +3931,7 @@ either <code>bsb</code>(slightly higher latency but symlinked into <code>.bin</c
 </ol>
 </div>
 <div class="paragraph">
-<p>The entry point is <code>bsb.exe</code>,
+<p>The entry point is <code>bsb</code>,
 it will check if there is already <code>build.ninja</code> in the build directory,
 if not or need regenerated it will generate a file  <code>build.ninja</code>
 and delegate the hard work to <code>ninja</code>.</p>
@@ -3947,8 +3977,19 @@ and delegate the hard work to <code>ninja</code>.</p>
 <div class="listingblock">
 <div class="title">Watch mode</div>
 <div class="content">
-<pre class="pygments highlight"><code data-lang="sh">bsb -w</code></pre>
+<pre class="pygments highlight"><code data-lang="sh">bsb <b class="conum">(1)</b>
+bsb -w <b class="conum">(2)</b></code></pre>
 </div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>Do the plain build</p>
+</li>
+<li>
+<p>Do the plain build and watch</p>
+</li>
+</ol>
 </div>
 <div class="sect3">
 <h4 id="_build_with_other_bucklescript_dependencies"><a class="anchor" href="#_build_with_other_bucklescript_dependencies"></a>Build with other BuckleScript dependencies</h4>
@@ -3998,7 +4039,8 @@ and delegate the hard work to <code>ninja</code>.</p>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="sh">bsb -clean-world <b class="conum">(1)</b>
-bsb -make-world <b class="conum">(2)</b></code></pre>
+bsb -make-world <b class="conum">(2)</b>
+bsb -w <b class="conum">(3)</b></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -4009,7 +4051,18 @@ bsb -make-world <b class="conum">(2)</b></code></pre>
 <li>
 <p>Build dependencies and lib itself</p>
 </li>
+<li>
+<p>Start watching the project, whenever your changes are made, <code>bsb</code> will rebuild incrementally</p>
+</li>
 </ol>
+</div>
+<div class="paragraph">
+<p>You can also stream-line the three commands as below:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="sh">bsb -clean-world -make-world -w</code></pre>
+</div>
 </div>
 </div>
 <div class="sect3">
@@ -4039,6 +4092,145 @@ to build  in that case you can mark it as dev only</p>
 </div>
 </div>
 <div class="sect2">
+<h3 id="_a_real_world_example_of_using_code_bsb_code"><a class="anchor" href="#_a_real_world_example_of_using_code_bsb_code"></a>A real world example of using <code>bsb</code></h3>
+<div class="paragraph">
+<p>Below is a json configuration for the <a href="https://github.com/OvermindDL1/bucklescript-tea">bucklescript-tea</a>: the Elm artchitecture in BuckleScript</p>
+</div>
+<div class="listingblock">
+<div class="title">bsconfig.json</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span class="tok-p">{</span>
+  <span class="tok-s2">&quot;name&quot;</span><span class="tok-o">:</span> <span class="tok-s2">&quot;bucklescript-tea&quot;</span><span class="tok-p">,</span>
+  <span class="tok-s2">&quot;version&quot;</span><span class="tok-o">:</span> <span class="tok-s2">&quot;0.1.3&quot;</span><span class="tok-p">,</span>
+  <span class="tok-s2">&quot;sources&quot;</span><span class="tok-o">:</span> <span class="tok-p">[</span>
+   <span class="tok-s2">&quot;src&quot;</span><span class="tok-p">,</span>   <b class="conum">(1)</b>
+    <span class="tok-p">{</span>
+      <span class="tok-s2">&quot;dir&quot;</span><span class="tok-o">:</span> <span class="tok-s2">&quot;test&quot;</span><span class="tok-p">,</span>
+      <span class="tok-s2">&quot;type&quot;</span><span class="tok-o">:</span> <span class="tok-s2">&quot;dev&quot;</span> <b class="conum">(2)</b>
+    <span class="tok-p">}</span>
+  <span class="tok-p">]</span>
+<span class="tok-p">}</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>Source directory, by default it will export all units of this directory to users</p>
+</li>
+<li>
+<p>Dev directory, which will only be useful for developers of this project</p>
+</li>
+</ol>
+</div>
+<div class="listingblock">
+<div class="title">package.json</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span class="tok-p">{</span>
+  <span class="tok-s2">&quot;name&quot;</span><span class="tok-o">:</span> <span class="tok-s2">&quot;bucklescript-tea&quot;</span><span class="tok-p">,</span>
+  <span class="tok-s2">&quot;version&quot;</span><span class="tok-o">:</span> <span class="tok-s2">&quot;0.1.3&quot;</span><span class="tok-p">,</span>
+  <span class="tok-s2">&quot;description&quot;</span><span class="tok-o">:</span> <span class="tok-s2">&quot;TEA for Bucklescript&quot;</span><span class="tok-p">,</span>
+  <span class="tok-s2">&quot;scripts&quot;</span><span class="tok-o">:</span> <span class="tok-p">{</span>
+    <span class="tok-s2">&quot;build&quot;</span><span class="tok-o">:</span> <span class="tok-s2">&quot;bsb&quot;</span><span class="tok-p">,</span>
+    <span class="tok-s2">&quot;watch&quot;</span><span class="tok-o">:</span> <span class="tok-s2">&quot;bsb -w&quot;</span><span class="tok-p">,</span>
+    <span class="tok-s2">&quot;test&quot;</span><span class="tok-o">:</span> <span class="tok-s2">&quot;echo \&quot;Error: no test specified\&quot; &amp;&amp; exit 1&quot;</span>
+  <span class="tok-p">},</span>
+  <span class="tok-s2">&quot;peerDependencies&quot;</span><span class="tok-o">:</span> <span class="tok-p">{</span>
+    <span class="tok-s2">&quot;bs-platform&quot;</span><span class="tok-o">:</span> <span class="tok-s2">&quot;^1.4.2&quot;</span> <b class="conum">(1)</b>
+  <span class="tok-p">}</span>
+<span class="tok-p">}</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>Here we list <code>bs-platform</code> as a peer dependency so that different repos shares the same compiler</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Now, we have a repo <a href="https://github.com/bobzhang/bucklescript-have-tea">bucklescript-have-tea</a> to depend on <code>bucklescript-tea</code>, its configurations are as below:</p>
+</div>
+<div class="listingblock">
+<div class="title">bsconfig.json</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span class="tok-p">{</span>
+    <span class="tok-s2">&quot;name&quot;</span> <span class="tok-o">:</span> <span class="tok-s2">&quot;bucklescript-have-tea&quot;</span><span class="tok-p">,</span>
+    <span class="tok-s2">&quot;sources&quot;</span> <span class="tok-o">:</span>  <span class="tok-s2">&quot;src&quot;</span><span class="tok-p">,</span>
+    <span class="tok-s2">&quot;bs-dependencies&quot;</span><span class="tok-o">:</span> <span class="tok-p">[</span>
+      <span class="tok-s2">&quot;bucklescript-tea&quot;</span>
+    <span class="tok-p">]</span>
+<span class="tok-p">}</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">package.json</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span class="tok-p">{</span>
+    <span class="tok-s2">&quot;name&quot;</span> <span class="tok-o">:</span> <span class="tok-s2">&quot;bucklescript-have-tea&quot;</span><span class="tok-p">,</span>
+    <span class="tok-s2">&quot;version&quot;</span> <span class="tok-o">:</span> <span class="tok-s2">&quot;0.1.0&quot;</span><span class="tok-p">,</span>
+    <span class="tok-s2">&quot;dependencies&quot;</span> <span class="tok-o">:</span> <span class="tok-p">{</span> <span class="tok-s2">&quot;bucklescript-tea&quot;</span> <span class="tok-o">:</span> <span class="tok-s2">&quot;^0.1.2&quot;</span> <span class="tok-p">},</span> <b class="conum">(1)</b>
+    <span class="tok-s2">&quot;peerDependencies&quot;</span> <span class="tok-o">:</span> <span class="tok-p">{</span> <span class="tok-s2">&quot;bs-platform&quot;</span> <span class="tok-o">:</span> <span class="tok-s2">&quot;^1.4.2&quot;</span> <span class="tok-p">}</span> <b class="conum">(2)</b>
+<span class="tok-p">}</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>List <code>bucklescript-tea</code> as dependency</p>
+</li>
+<li>
+<p>List <code>bs-platform</code> as peer dependency</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Suppose you are in <code>bucklescript-have-tea</code> top directory,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="sh">npm install <b class="conum">(1)</b>
+npm install bs-platform <b class="conum">(2)</b>
+./node_modules/.bin/bsb -clean-world -make-world -w <b class="conum">(3)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>Install the dependencies</p>
+</li>
+<li>
+<p>Install peer dependencies</p>
+</li>
+<li>
+<p>On Windows, it would be <code>.\node_modules\.bin\bsb -clean-world -make-world -w</code></p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>You can also change the <code>package-specs</code> to have another module format, for example, tweak your <code>bsconfig.json</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span class="tok-p">{</span>
+  <span class="tok-p">...</span> <span class="tok-p">,</span>
+  <span class="tok-s2">&quot;package-specs&quot;</span> <span class="tok-o">:</span> <span class="tok-p">[</span><span class="tok-s2">&quot;amdjs&quot;</span><span class="tok-p">,</span> <span class="tok-s2">&quot;commonjs&quot;</span><span class="tok-p">],</span>
+  <span class="tok-p">...</span>
+<span class="tok-p">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Rerun the command</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="sh">bsb -clean-world -make-world</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You will get both <code>commonjs</code> and <code>amdjs</code> support, in the end, we suggest you <a href="http://bloomberg.github.io/bucklescript/docson/#build-schema.json">check out the schema</a> and enjoy the build!</p>
+</div>
+</div>
+<div class="sect2">
 <h3 id="_build_using_make"><a class="anchor" href="#_build_using_make"></a>Build using Make</h3>
 <div class="admonitionblock warning">
 <table>
@@ -4049,7 +4241,7 @@ to build  in that case you can mark it as dev only</p>
 <td class="content">
 <div class="paragraph">
 <p><code>bsb</code> is officialy recommended build system, this section is listed here only for people who
-are curious about how the build works</p>
+are <em>curious</em> about how the build works</p>
 </div>
 </td>
 </tr>
