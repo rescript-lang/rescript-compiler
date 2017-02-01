@@ -2444,7 +2444,7 @@ module Js_config : sig
 
 
 type module_system = 
-  [ `NodeJS | `AmdJS | `Goog ] (* This will be serliazed *)
+  | NodeJS | AmdJS | Goog  (* This will be serliazed *)
 
 
 type package_info = 
@@ -2475,11 +2475,11 @@ val set_npm_package_path : string -> unit
 val get_packages_info : unit -> packages_info
 
 type info_query = 
-  [ `Empty 
-  | `Package_script of string
-  | `Found of package_name * string
-  | `NotFound 
-  ]
+  | Empty 
+  | Package_script of string
+  | Found of package_name * string
+  | NotFound 
+  
 
 val query_package_infos : 
   packages_info ->
@@ -2577,7 +2577,6 @@ val is_same_file : unit -> bool
 
 val tool_name : string
 
-val is_windows : bool 
 
 val better_errors : bool ref
 val sort_imports : bool ref 
@@ -2627,8 +2626,12 @@ type env =
 
 
 type path = string
-type module_system =
-  [ `NodeJS | `AmdJS | `Goog ]
+type module_system = env =
+  | NodeJS 
+  | AmdJS 
+  | Goog
+
+
 type package_info =
  ( module_system * string )
 
@@ -2674,13 +2677,13 @@ let set_npm_package_path s =
       match Ext_string.split ~keep_empty:false s ':' with
       | [ package_name; path]  ->
         (match package_name with
-         | "commonjs" -> `NodeJS
-         | "amdjs" -> `AmdJS
-         | "goog" -> `Goog
+         | "commonjs" -> NodeJS
+         | "amdjs" -> AmdJS
+         | "goog" -> Goog
          | _ ->
            Ext_pervasives.bad_argf "invalid module system %s" package_name), path
       | [path] ->
-        `NodeJS, path
+        NodeJS, path
       | _ ->
         Ext_pervasives.bad_argf "invalid npm package path: %s" s
     in
@@ -2706,18 +2709,20 @@ let (//) = Filename.concat
 let get_packages_info () = !packages_info
 
 type info_query =
-  [ `Empty
-  | `Package_script of string
-  | `Found of package_name * string
-  | `NotFound ]
-let query_package_infos package_infos module_system =
+  | Empty
+  | Package_script of string
+  | Found of package_name * string
+  | NotFound 
+
+
+let query_package_infos (package_infos : packages_info) module_system =
   match package_infos with
-  | Empty -> `Empty
-  | NonBrowser (name, []) -> `Package_script name
+  | Empty -> Empty
+  | NonBrowser (name, []) -> Package_script name
   | NonBrowser (name, paths) ->
     begin match List.find (fun (k, _) -> k = module_system) paths with
-      | (_, x) -> `Found (name, x)
-      | exception _ -> `NotFound
+      | (_, x) -> Found (name, x)
+      | exception _ -> NotFound
     end
 
 let get_current_package_name_and_path   module_system =
@@ -2809,11 +2814,7 @@ let better_errors = ref false
 let sort_imports = ref true
 let dump_js = ref false
 
-let is_windows =
-  match Sys.os_type with
-  | "Win32"
-  | "Cygwin"-> true
-  | _ -> false
+
 
 let syntax_only = ref false
 let binary_ast = ref false

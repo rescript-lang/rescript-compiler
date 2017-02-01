@@ -1677,7 +1677,7 @@ let goog_program ~output_prefix f goog_package (x : J.deps_program)  =
          (fun x -> 
             Lam_module_ident.id x,
             Js_program_loader.string_of_module_id
-              ~output_prefix `Goog x)
+              ~output_prefix Goog x)
          x.modules) 
   in
   program f cxt x.program  
@@ -1693,7 +1693,7 @@ let node_program ~output_prefix f ( x : J.deps_program) =
             Lam_module_ident.id x,
             Js_program_loader.string_of_module_id
               ~output_prefix
-              `NodeJS x)
+              NodeJS x)
          x.modules)
   in
   program f cxt x.program  
@@ -1708,7 +1708,7 @@ let amd_program ~output_prefix f (  x : J.deps_program) =
   P.string f (Printf.sprintf "%S" L.exports);
 
   List.iter (fun x ->
-      let s = Js_program_loader.string_of_module_id ~output_prefix `AmdJS x in
+      let s = Js_program_loader.string_of_module_id ~output_prefix AmdJS x in
       P.string f L.comma ;
       P.space f; 
       pp_string f ~utf:true ~quote:(best_string_quote s) s;
@@ -1760,11 +1760,11 @@ let pp_deps_program
     P.string f L.strict_directive; 
     P.newline f ;    
     ignore (match kind with 
-     | `AmdJS -> 
+     | AmdJS -> 
        amd_program ~output_prefix f program
-     | `NodeJS -> 
+     | NodeJS -> 
        node_program ~output_prefix f program
-     | `Goog  -> 
+     | Goog  -> 
        let goog_package = 
          let v = Js_config.get_module_name () in
          match Js_config.get_package_name () with 

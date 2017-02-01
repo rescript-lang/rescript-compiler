@@ -68,7 +68,7 @@ let implementation impl ppf  str  =
       let buffer = Buffer.create 1000 in 
       let () = Js_dump.(pp_deps_program
                           ~output_prefix:"" (* does not matter here *)
-                          `NodeJS
+                          NodeJS
                           (Lam_compile_group.compile ~filename:"" "" 
                              !finalenv !types_signature lam)
                           (Ext_pp.from_buffer buffer)) in

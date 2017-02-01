@@ -241,6 +241,8 @@ bin/whole_compiler.ml : ext/ext_pp_scope.ml
 bin/whole_compiler.ml : ext/ext_pp_scope.mli
 bin/whole_compiler.ml : core/js_number.ml
 bin/whole_compiler.ml : core/js_number.mli
+bin/whole_compiler.ml : ext/ext_sys.ml
+bin/whole_compiler.ml : ext/ext_sys.mli
 bin/whole_compiler.ml : core/js_program_loader.ml
 bin/whole_compiler.ml : core/js_program_loader.mli
 bin/whole_compiler.ml : core/js_dump.ml

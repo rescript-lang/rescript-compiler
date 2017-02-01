@@ -5,7 +5,7 @@ val version : string
 
 end = struct
 #1 "bs_version.ml"
-let version = "1.4.2"
+let version = "1.4.3"
 
 end
 module Terminfo : sig 
@@ -21959,7 +21959,7 @@ module Js_config : sig
 
 
 type module_system = 
-  [ `NodeJS | `AmdJS | `Goog ] (* This will be serliazed *)
+  | NodeJS | AmdJS | Goog  (* This will be serliazed *)
 
 
 type package_info = 
@@ -21990,11 +21990,11 @@ val set_npm_package_path : string -> unit
 val get_packages_info : unit -> packages_info
 
 type info_query = 
-  [ `Empty 
-  | `Package_script of string
-  | `Found of package_name * string
-  | `NotFound 
-  ]
+  | Empty 
+  | Package_script of string
+  | Found of package_name * string
+  | NotFound 
+  
 
 val query_package_infos : 
   packages_info ->
@@ -22092,7 +22092,6 @@ val is_same_file : unit -> bool
 
 val tool_name : string
 
-val is_windows : bool 
 
 val better_errors : bool ref
 val sort_imports : bool ref 
@@ -22142,8 +22141,12 @@ type env =
 
 
 type path = string
-type module_system =
-  [ `NodeJS | `AmdJS | `Goog ]
+type module_system = env =
+  | NodeJS 
+  | AmdJS 
+  | Goog
+
+
 type package_info =
  ( module_system * string )
 
@@ -22189,13 +22192,13 @@ let set_npm_package_path s =
       match Ext_string.split ~keep_empty:false s ':' with
       | [ package_name; path]  ->
         (match package_name with
-         | "commonjs" -> `NodeJS
-         | "amdjs" -> `AmdJS
-         | "goog" -> `Goog
+         | "commonjs" -> NodeJS
+         | "amdjs" -> AmdJS
+         | "goog" -> Goog
          | _ ->
            Ext_pervasives.bad_argf "invalid module system %s" package_name), path
       | [path] ->
-        `NodeJS, path
+        NodeJS, path
       | _ ->
         Ext_pervasives.bad_argf "invalid npm package path: %s" s
     in
@@ -22221,18 +22224,20 @@ let (//) = Filename.concat
 let get_packages_info () = !packages_info
 
 type info_query =
-  [ `Empty
-  | `Package_script of string
-  | `Found of package_name * string
-  | `NotFound ]
-let query_package_infos package_infos module_system =
+  | Empty
+  | Package_script of string
+  | Found of package_name * string
+  | NotFound 
+
+
+let query_package_infos (package_infos : packages_info) module_system =
   match package_infos with
-  | Empty -> `Empty
-  | NonBrowser (name, []) -> `Package_script name
+  | Empty -> Empty
+  | NonBrowser (name, []) -> Package_script name
   | NonBrowser (name, paths) ->
     begin match List.find (fun (k, _) -> k = module_system) paths with
-      | (_, x) -> `Found (name, x)
-      | exception _ -> `NotFound
+      | (_, x) -> Found (name, x)
+      | exception _ -> NotFound
     end
 
 let get_current_package_name_and_path   module_system =
@@ -22324,11 +22329,7 @@ let better_errors = ref false
 let sort_imports = ref true
 let dump_js = ref false
 
-let is_windows =
-  match Sys.os_type with
-  | "Win32"
-  | "Cygwin"-> true
-  | _ -> false
+
 
 let syntax_only = ref false
 let binary_ast = ref false
@@ -79721,7 +79722,7 @@ let is_pure_module id  =
 
 let get_package_path_from_cmj module_system ( id : Lam_module_ident.t) = 
   query_and_add_if_not_exist id No_env
-    ~not_found:(fun _ -> `NotFound) 
+    ~not_found:(fun _ -> Js_config.NotFound) 
     ~found:(fun x -> Js_config.query_package_infos x.npm_package_path module_system)
 
 
@@ -80491,6 +80492,71 @@ let caml_float_literal_to_js_string v =
 
 
 end
+module Ext_sys : sig 
+#1 "ext_sys.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+(* Not used yet *)
+(* val is_directory_no_exn : string -> bool *)
+
+
+val is_windows_or_cygwin : bool 
+end = struct
+#1 "ext_sys.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+(** TODO: not exported yet, wait for Windows Fix*)
+let is_directory_no_exn f = 
+  try Sys.is_directory f with _ -> false 
+
+
+let is_windows_or_cygwin = Sys.win32 || Sys.cygwin
+end
 module Js_program_loader : sig 
 #1 "js_program_loader.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -80641,34 +80707,34 @@ let string_of_module_id ~output_prefix
           Js_config.get_current_package_name_and_path module_system  
         in
         begin match module_system,  dependency_pkg_info, current_pkg_info with
-          | _, `NotFound , _ -> 
+          | _, NotFound , _ -> 
             Ext_pervasives.failwithf ~loc:__LOC__ 
-              " @[%s not found in search path - while compiling %s @] "
+              " @[dependent module is not found while %s not in search path - compiling %s @] "
               js_file !Location.input_name 
-          | `Goog , `Found (package_name, x), _  -> 
-            package_name  ^ "." ^  String.uncapitalize id.name
-          | `Goog, (`Empty | `Package_script _), _ 
+          | Goog, (Empty | Package_script _), _ 
             -> 
             Ext_pervasives.failwithf ~loc:__LOC__ 
               " @[%s was not compiled with goog support  in search path - while compiling %s @] "
               js_file !Location.input_name 
-          | (`AmdJS | `NodeJS),
-            ( `Empty | `Package_script _) ,
-            `Found _  -> 
+          | (AmdJS | NodeJS),
+            ( Empty | Package_script _) ,
+            Found _  -> 
             Ext_pervasives.failwithf ~loc:__LOC__
               "@[dependency %s was compiled in script mode - while compiling %s in package mode @]"
-              js_file !Location.input_name
-          | _ , _, `NotFound -> assert false 
-          | (`AmdJS | `NodeJS), 
-            `Found(package_name, x),
-            `Found(current_package, path) -> 
+              js_file !Location.input_name              
+          | Goog , Found (package_name, x), _  -> 
+            package_name  ^ "." ^  String.uncapitalize id.name
+          | _ , _, NotFound -> assert false 
+          | (AmdJS | NodeJS), 
+            Found(package_name, x),
+            Found(current_package, path) -> 
             if  current_package = package_name then 
               let package_dir = Lazy.force Ext_filename.package_dir in
               rebase package_dir (`File (package_dir // x // modulename)) 
             else 
               package_name // x // modulename
-          | (`AmdJS | `NodeJS), `Found(package_name, x), 
-            `Package_script(current_package)
+          | (AmdJS | NodeJS), Found(package_name, x), 
+            Package_script(current_package)
             ->    
             if current_package = package_name then 
               let package_dir = Lazy.force Ext_filename.package_dir in
@@ -80676,11 +80742,11 @@ let string_of_module_id ~output_prefix
                   package_dir // x // modulename)) 
             else 
               package_name // x // modulename
-          | (`AmdJS | `NodeJS), `Found(package_name, x), `Empty 
+          | (AmdJS | NodeJS), Found(package_name, x), Empty 
             ->    package_name // x // modulename
-          |  (`AmdJS | `NodeJS), 
-             (`Empty | `Package_script _) , 
-             (`Empty  | `Package_script _)
+          |  (AmdJS | NodeJS), 
+             (Empty | Package_script _) , 
+             (Empty  | Package_script _)
             -> 
             begin match Config_util.find_opt js_file with 
               | Some file -> 
@@ -80691,7 +80757,7 @@ let string_of_module_id ~output_prefix
             end
         end
       | External name -> name in 
-    if Js_config.is_windows then Ext_string.replace_backward_slash result 
+    if Ext_sys.is_windows_or_cygwin then Ext_string.replace_backward_slash result 
     else result 
 
 
@@ -82450,7 +82516,7 @@ let goog_program ~output_prefix f goog_package (x : J.deps_program)  =
          (fun x -> 
             Lam_module_ident.id x,
             Js_program_loader.string_of_module_id
-              ~output_prefix `Goog x)
+              ~output_prefix Goog x)
          x.modules) 
   in
   program f cxt x.program  
@@ -82466,7 +82532,7 @@ let node_program ~output_prefix f ( x : J.deps_program) =
             Lam_module_ident.id x,
             Js_program_loader.string_of_module_id
               ~output_prefix
-              `NodeJS x)
+              NodeJS x)
          x.modules)
   in
   program f cxt x.program  
@@ -82481,7 +82547,7 @@ let amd_program ~output_prefix f (  x : J.deps_program) =
   P.string f (Printf.sprintf "%S" L.exports);
 
   List.iter (fun x ->
-      let s = Js_program_loader.string_of_module_id ~output_prefix `AmdJS x in
+      let s = Js_program_loader.string_of_module_id ~output_prefix AmdJS x in
       P.string f L.comma ;
       P.space f; 
       pp_string f ~utf:true ~quote:(best_string_quote s) s;
@@ -82533,11 +82599,11 @@ let pp_deps_program
     P.string f L.strict_directive; 
     P.newline f ;    
     ignore (match kind with 
-     | `AmdJS -> 
+     | AmdJS -> 
        amd_program ~output_prefix f program
-     | `NodeJS -> 
+     | NodeJS -> 
        node_program ~output_prefix f program
-     | `Goog  -> 
+     | Goog  -> 
        let goog_package = 
          let v = Js_config.get_module_name () in
          match Js_config.get_package_name () with 
@@ -96817,7 +96883,7 @@ let lambda_as_module
     | NonBrowser (_, []) -> 
       (* script mode *)
       let output_chan chan =         
-        Js_dump.dump_deps_program ~output_prefix `NodeJS lambda_output chan in
+        Js_dump.dump_deps_program ~output_prefix NodeJS lambda_output chan in
       (if !Js_config.dump_js then output_chan stdout);
       if not @@ !Clflags.dont_write_files then 
         Ext_pervasives.with_file_as_chan 
