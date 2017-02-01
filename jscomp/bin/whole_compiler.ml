@@ -5,7 +5,7 @@ val version : string
 
 end = struct
 #1 "bs_version.ml"
-let version = "1.4.2"
+let version = "1.4.3"
 
 end
 module Terminfo : sig 
@@ -82529,8 +82529,9 @@ let imports  cxt f (modules : (Ident.t * string) list ) =
       P.nspace f (margin - String.length s + 1) ;      
       P.string f L.from;
       P.space f;
-      P.paren_group f 0 @@ (fun _ ->
-          pp_string f ~utf:true ~quote:(best_string_quote s) file  );
+      (* P.paren_group f 0 @@ (fun _ -> *)
+          pp_string f ~utf:true ~quote:(best_string_quote s) file  
+          (* ) *);
       semi f ;
       P.newline f ;
     ) reversed_list;
@@ -82647,8 +82648,7 @@ let amd_program ~output_prefix f (  x : J.deps_program) =
 
 let es6_program ~output_prefix f (  x : J.deps_program) = 
   let cxt = 
-    requires 
-      L.require
+     imports
       Ext_pp_scope.empty
       f
       (List.map 

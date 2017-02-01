@@ -9103,7 +9103,7 @@ val version : string
 
 end = struct
 #1 "bs_version.ml"
-let version = "1.4.2"
+let version = "1.4.3"
 
 end
 module Ast_ffi_types : sig 
