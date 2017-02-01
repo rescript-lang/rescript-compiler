@@ -1,13 +1,13 @@
 'use strict';
 
-var Curry = require("../../lib/js/curry");
+var Caml_oo_curry = require("../../lib/js/caml_oo_curry");
 
 function f(x) {
   return x.case = 3;
 }
 
 function g(x) {
-  return Curry.js2(-977287917, 1, x, 3);
+  return Caml_oo_curry.js2(-977287917, 1, x, 3);
 }
 
 exports.f = f;

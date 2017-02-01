@@ -5,6 +5,7 @@ var List           = require("../../lib/js/list");
 var Block          = require("../../lib/js/block");
 var Curry          = require("../../lib/js/curry");
 var Pervasives     = require("../../lib/js/pervasives");
+var Caml_oo_curry  = require("../../lib/js/caml_oo_curry");
 var CamlinternalOO = require("../../lib/js/camlinternalOO");
 
 var shared = [
@@ -116,7 +117,7 @@ var printable_colored_point = CamlinternalOO.make_class([
 
 var p = Curry._3(printable_colored_point[0], 0, 17, "red");
 
-eq('File "class5_test.ml", line 32, characters 12-19', Curry.js1(-930392019, 1, p), "(17, red)");
+eq('File "class5_test.ml", line 32, characters 12-19', Caml_oo_curry.js1(-930392019, 1, p), "(17, red)");
 
 function ref_init($$class) {
   var ids = CamlinternalOO.new_methods_variables($$class, [
@@ -151,9 +152,9 @@ var ref = CamlinternalOO.make_class([
 
 var r = Curry._2(ref[0], 0, 1);
 
-Curry.js2(5741474, 2, r, 2);
+Caml_oo_curry.js2(5741474, 2, r, 2);
 
-var v = Curry.js1(5144726, 3, r);
+var v = Caml_oo_curry.js1(5144726, 3, r);
 
 eq('File "class5_test.ml", line 43, characters 12-19', v, 2);
 
@@ -192,7 +193,7 @@ var l = Curry._2(intlist[0], 0, /* :: */[
       ]
     ]);
 
-eq('File "class5_test.ml", line 54, characters 5-12', 6, Curry.js3(-1010803711, 4, l, function (x, y) {
+eq('File "class5_test.ml", line 54, characters 5-12', 6, Caml_oo_curry.js3(-1010803711, 4, l, function (x, y) {
           return x + y | 0;
         }, 0));
 
@@ -235,10 +236,10 @@ eq('File "class5_test.ml", line 67, characters 5-12', /* tuple */[
       6,
       "1 2 3 "
     ], /* tuple */[
-      Curry.js3(-1010803711, 5, l$1, function (x, y) {
+      Caml_oo_curry.js3(-1010803711, 5, l$1, function (x, y) {
             return x + y | 0;
           }, 0),
-      Curry.js3(-1010803711, 6, l$1, function (s, x) {
+      Caml_oo_curry.js3(-1010803711, 6, l$1, function (s, x) {
             return s + (x + " ");
           }, "")
     ]);
@@ -277,7 +278,7 @@ function distance_point_init($$class) {
   var obj_init = inh[0];
   var x = inh[1];
   CamlinternalOO.set_method($$class, distance, function (self$neg7, other) {
-        return Pervasives.abs(Curry.js1(291546447, 7, other) - self$neg7[x] | 0);
+        return Pervasives.abs(Caml_oo_curry.js1(291546447, 7, other) - self$neg7[x] | 0);
       });
   return function (_, self, x) {
     var self$1 = CamlinternalOO.create_object_opt(self, $$class);
@@ -294,9 +295,9 @@ var distance_point = CamlinternalOO.make_class([
 
 var p$1 = Curry._2(distance_point[0], 0, 3);
 
-var match_000 = Curry.js2(-335965387, 8, p$1, Curry._2(point[0], 0, 8));
+var match_000 = Caml_oo_curry.js2(-335965387, 8, p$1, Curry._2(point[0], 0, 8));
 
-var match_001 = Curry.js2(-335965387, 9, p$1, Curry._3(printable_colored_point[0], 0, 1, "blue"));
+var match_001 = Caml_oo_curry.js2(-335965387, 9, p$1, Curry._3(printable_colored_point[0], 0, 1, "blue"));
 
 var b = match_001;
 

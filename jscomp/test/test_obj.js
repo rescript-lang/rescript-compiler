@@ -1,9 +1,9 @@
 'use strict';
 
-var Curry = require("../../lib/js/curry");
+var Caml_oo_curry = require("../../lib/js/caml_oo_curry");
 
 function f(x) {
-  return Curry.js1(623642069, 1, x);
+  return Caml_oo_curry.js1(623642069, 1, x);
 }
 
 exports.f = f;
