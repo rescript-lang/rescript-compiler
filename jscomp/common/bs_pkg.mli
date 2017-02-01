@@ -35,3 +35,7 @@
 
 val resolve_bs_package : 
     cwd:string ->  string -> string option
+
+
+val resolve_npm_package_file :
+    cwd:string -> string -> string option

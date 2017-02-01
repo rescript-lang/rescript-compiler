@@ -6677,6 +6677,9 @@ module Bs_pkg : sig
 val resolve_bs_package : 
     cwd:string ->  string -> string option
 
+
+val resolve_npm_package_file :
+    cwd:string -> string -> string option
 end = struct
 #1 "bs_pkg.ml"
 
@@ -6691,13 +6694,13 @@ let  resolve_bs_package
     name = 
   let marker = Literals.bsconfig_json in 
   let sub_path = name // marker  in
-  let rec aux origin cwd name = 
+  let rec aux  cwd  = 
     let abs_marker =  cwd // Literals.node_modules // sub_path in 
     if Sys.file_exists abs_marker then Some (Filename.dirname abs_marker)
     else 
-      let cwd' = Filename.dirname cwd in 
+      let cwd' = Filename.dirname cwd in (* TODO: may non-terminating when see symlinks *)
       if String.length cwd' < String.length cwd then  
-        aux origin   cwd' name
+        aux    cwd' 
       else 
         try 
           let abs_marker = 
@@ -6711,8 +6714,38 @@ let  resolve_bs_package
           Not_found -> None
           (* Bs_exception.error (Bs_package_not_found name)           *)
   in
-  aux cwd cwd name
+  aux cwd 
 
+
+(** The package does not need to be a bspackage 
+  example:
+  {[
+    resolve_npm_package_file ~cwd "reason/refmt"
+  ]}
+  It also returns the path name
+*)
+let resolve_npm_package_file ~cwd sub_path =
+  let rec aux  cwd  = 
+    let abs_marker =  cwd // Literals.node_modules // sub_path in 
+    if Sys.file_exists abs_marker then Some abs_marker
+    else 
+      let cwd' = Filename.dirname cwd in 
+      if String.length cwd' < String.length cwd then  
+        aux cwd' 
+      else 
+        try 
+          let abs_marker = 
+            Sys.getenv "npm_config_prefix" 
+            // "lib" // Literals.node_modules // sub_path in
+          if Sys.file_exists abs_marker
+          then Some  abs_marker
+          else None
+            (* Bs_exception.error (Bs_package_not_found name) *)
+        with 
+          Not_found -> None
+          (* Bs_exception.error (Bs_package_not_found name)           *)
+  in
+  aux cwd 
 end
 module Bsb_default : sig 
 #1 "bsb_default.mli"
@@ -6832,11 +6865,10 @@ let resolve_bsb_magic_file ~cwd ~desc p =
   else if Filename.is_relative p &&
      p_len > 0 &&
      String.unsafe_get p 0 <> '.' then
-    let name = String.sub p 0 (String.index p '/') in
-    let package = (Bs_pkg.resolve_bs_package ~cwd name) in
-    match package with
-    | None -> failwith (name ^ " not found when resolving " ^ desc)
-    | Some package -> Bsb_build_util.convert_and_resolve_path (Filename.dirname package // p)
+    let p = if Ext_sys.is_windows_or_cygwin then Ext_string.replace_slash_backward p else p in  
+    match Bs_pkg.resolve_npm_package_file ~cwd p with
+    | None -> failwith (p ^ " not found when resolving " ^ desc)
+    | Some v -> v 
   else
     Bsb_build_util.convert_and_resolve_path p
 

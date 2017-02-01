@@ -42,11 +42,10 @@ let resolve_bsb_magic_file ~cwd ~desc p =
   else if Filename.is_relative p &&
      p_len > 0 &&
      String.unsafe_get p 0 <> '.' then
-    let name = String.sub p 0 (String.index p '/') in
-    let package = (Bs_pkg.resolve_bs_package ~cwd name) in
-    match package with
-    | None -> failwith (name ^ " not found when resolving " ^ desc)
-    | Some package -> Bsb_build_util.convert_and_resolve_path (Filename.dirname package // p)
+    let p = if Ext_sys.is_windows_or_cygwin then Ext_string.replace_slash_backward p else p in  
+    match Bs_pkg.resolve_npm_package_file ~cwd p with
+    | None -> failwith (p ^ " not found when resolving " ^ desc)
+    | Some v -> v 
   else
     Bsb_build_util.convert_and_resolve_path p
 
