@@ -122,8 +122,11 @@ let write_ninja_file bsc_dir cwd =
     let () =
       Bsb_default.get_bs_dependencies ()
       |> List.iter (fun package ->
-          let path = (Bsb_default.resolve_bsb_magic_file ~cwd ~desc:"dependecies"
-                        (package ^ "/")// "lib"//"ocaml") in
+          match Bs_pkg.resolve_bs_package ~cwd package with 
+          | None -> 
+            Ext_pervasives.failwithf ~loc:__LOC__"package: %s not found when resolve bs-dependencies" package
+          | Some x -> 
+          let path = ( x // "lib"//"ocaml") in
           Buffer.add_string buffer "\nS ";
           Buffer.add_string buffer path ;
           Buffer.add_string buffer "\nB ";
