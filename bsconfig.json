@@ -17,10 +17,10 @@
         "-bs-no-version-header",
         "-bs-cross-module-opt"
     ],
-    // "ppx-flags" : 
-    // [
-    //     "reason/bin/ppx_lwt"
-    // ],
+     "ppx-flags" : 
+     [
+         "reason/bin/ppx_lwt"
+     ],
     // "js-post-build" : 
     // {
     //     "cmd" : "cat"

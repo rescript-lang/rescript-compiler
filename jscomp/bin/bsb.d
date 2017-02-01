@@ -1,3 +1,7 @@
+bin/bsb.ml : ext/literals.ml
+bin/bsb.ml : ext/literals.mli
+bin/bsb.ml : common/bs_pkg.ml
+bin/bsb.ml : common/bs_pkg.mli
 bin/bsb.ml : bsb/bsb_build_schemas.ml
 bin/bsb.ml : ext/ext_pervasives.ml
 bin/bsb.ml : ext/ext_pervasives.mli
@@ -5,8 +9,6 @@ bin/bsb.ml : ext/ext_bytes.ml
 bin/bsb.ml : ext/ext_bytes.mli
 bin/bsb.ml : ext/ext_string.ml
 bin/bsb.ml : ext/ext_string.mli
-bin/bsb.ml : ext/literals.ml
-bin/bsb.ml : ext/literals.mli
 bin/bsb.ml : ext/ext_filename.ml
 bin/bsb.ml : ext/ext_filename.mli
 bin/bsb.ml : ext/map_gen.ml
@@ -42,8 +44,6 @@ bin/bsb.ml : ext/string_vec.ml
 bin/bsb.ml : ext/string_vec.mli
 bin/bsb.ml : bsb/bsb_build_ui.ml
 bin/bsb.ml : bsb/bsb_build_ui.mli
-bin/bsb.ml : common/bs_pkg.ml
-bin/bsb.ml : common/bs_pkg.mli
 bin/bsb.ml : bsb/bsb_default.ml
 bin/bsb.ml : bsb/bsb_default.mli
 bin/bsb.ml : bsb/bsb_dep_infos.ml
