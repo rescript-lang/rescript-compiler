@@ -25,7 +25,7 @@
 
 type module_system = 
   | NodeJS | AmdJS | Goog  (* This will be serliazed *)
-
+  | Es6
 
 type package_info = 
  (module_system * string )

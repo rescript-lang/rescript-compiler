@@ -15,7 +15,7 @@ RUNTIME := $(addsuffix .cmj, $(SOURCE_LIST))
 BS_COMMON_FLAGS= -no-alias-deps -bs-no-version-header -bs-diagnose -bs-no-check-div-by-zero -bs-cross-module-opt -bs-package-name bs-platform
 
 ifdef BS_RELEASE_BUILD
-BS_FLAGS=  $(BS_COMMON_FLAGS) -bs-package-output commonjs:lib/js -bs-package-output goog:lib/goog -bs-package-output amdjs:lib/amdjs
+BS_FLAGS=  $(BS_COMMON_FLAGS) -bs-package-output commonjs:lib/js -bs-package-output goog:lib/goog -bs-package-output amdjs:lib/amdjs -bs-package-output es6:lib/es6
 else
 BS_FLAGS=  $(BS_COMMON_FLAGS) -bs-package-output commonjs:lib/js
 endif
