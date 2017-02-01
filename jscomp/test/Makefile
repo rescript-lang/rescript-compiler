@@ -88,8 +88,8 @@ OTHERS := literals a test_ari test_export2 test_internalOO test_obj_simple_ffi t
 	include_side_effect\
 	exception_alias\
 	prepend_data_ffi\
-	gbk
-
+	gbk\
+	gpr_1072_reg
 
 SOURCE_LIST :=  $(OTHERS) 
 TESTS := $(addsuffix .cmj, $(SOURCE_LIST) )
