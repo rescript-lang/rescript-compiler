@@ -247,7 +247,7 @@ let is_pure_module id  =
 
 let get_package_path_from_cmj module_system ( id : Lam_module_ident.t) = 
   query_and_add_if_not_exist id No_env
-    ~not_found:(fun _ -> `NotFound) 
+    ~not_found:(fun _ -> Js_config.NotFound) 
     ~found:(fun x -> Js_config.query_package_infos x.npm_package_path module_system)
 
 

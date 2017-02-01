@@ -97,34 +97,34 @@ let string_of_module_id ~output_prefix
           Js_config.get_current_package_name_and_path module_system  
         in
         begin match module_system,  dependency_pkg_info, current_pkg_info with
-          | _, `NotFound , _ -> 
+          | _, NotFound , _ -> 
             Ext_pervasives.failwithf ~loc:__LOC__ 
-              " @[%s not found in search path - while compiling %s @] "
+              " @[dependent module is not found while %s not in search path - compiling %s @] "
               js_file !Location.input_name 
-          | `Goog , `Found (package_name, x), _  -> 
-            package_name  ^ "." ^  String.uncapitalize id.name
-          | `Goog, (`Empty | `Package_script _), _ 
+          | Goog, (Empty | Package_script _), _ 
             -> 
             Ext_pervasives.failwithf ~loc:__LOC__ 
               " @[%s was not compiled with goog support  in search path - while compiling %s @] "
               js_file !Location.input_name 
-          | (`AmdJS | `NodeJS),
-            ( `Empty | `Package_script _) ,
-            `Found _  -> 
+          | (AmdJS | NodeJS),
+            ( Empty | Package_script _) ,
+            Found _  -> 
             Ext_pervasives.failwithf ~loc:__LOC__
               "@[dependency %s was compiled in script mode - while compiling %s in package mode @]"
-              js_file !Location.input_name
-          | _ , _, `NotFound -> assert false 
-          | (`AmdJS | `NodeJS), 
-            `Found(package_name, x),
-            `Found(current_package, path) -> 
+              js_file !Location.input_name              
+          | Goog , Found (package_name, x), _  -> 
+            package_name  ^ "." ^  String.uncapitalize id.name
+          | _ , _, NotFound -> assert false 
+          | (AmdJS | NodeJS), 
+            Found(package_name, x),
+            Found(current_package, path) -> 
             if  current_package = package_name then 
               let package_dir = Lazy.force Ext_filename.package_dir in
               rebase package_dir (`File (package_dir // x // modulename)) 
             else 
               package_name // x // modulename
-          | (`AmdJS | `NodeJS), `Found(package_name, x), 
-            `Package_script(current_package)
+          | (AmdJS | NodeJS), Found(package_name, x), 
+            Package_script(current_package)
             ->    
             if current_package = package_name then 
               let package_dir = Lazy.force Ext_filename.package_dir in
@@ -132,11 +132,11 @@ let string_of_module_id ~output_prefix
                   package_dir // x // modulename)) 
             else 
               package_name // x // modulename
-          | (`AmdJS | `NodeJS), `Found(package_name, x), `Empty 
+          | (AmdJS | NodeJS), Found(package_name, x), Empty 
             ->    package_name // x // modulename
-          |  (`AmdJS | `NodeJS), 
-             (`Empty | `Package_script _) , 
-             (`Empty  | `Package_script _)
+          |  (AmdJS | NodeJS), 
+             (Empty | Package_script _) , 
+             (Empty  | Package_script _)
             -> 
             begin match Config_util.find_opt js_file with 
               | Some file -> 
@@ -147,7 +147,7 @@ let string_of_module_id ~output_prefix
             end
         end
       | External name -> name in 
-    if Js_config.is_windows then Ext_string.replace_backward_slash result 
+    if Ext_sys.is_windows_or_cygwin then Ext_string.replace_backward_slash result 
     else result 
 #end
 

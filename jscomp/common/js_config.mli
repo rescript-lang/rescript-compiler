@@ -24,7 +24,7 @@
 
 
 type module_system = 
-  [ `NodeJS | `AmdJS | `Goog ] (* This will be serliazed *)
+  | NodeJS | AmdJS | Goog  (* This will be serliazed *)
 
 
 type package_info = 
@@ -55,11 +55,11 @@ val set_npm_package_path : string -> unit
 val get_packages_info : unit -> packages_info
 
 type info_query = 
-  [ `Empty 
-  | `Package_script of string
-  | `Found of package_name * string
-  | `NotFound 
-  ]
+  | Empty 
+  | Package_script of string
+  | Found of package_name * string
+  | NotFound 
+  
 
 val query_package_infos : 
   packages_info ->
@@ -157,7 +157,6 @@ val is_same_file : unit -> bool
 
 val tool_name : string
 
-val is_windows : bool 
 
 val better_errors : bool ref
 val sort_imports : bool ref 
