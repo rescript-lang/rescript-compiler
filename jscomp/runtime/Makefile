@@ -16,7 +16,7 @@ SOURCE_LIST= $(OTHERS) caml_builtin_exceptions  block  js js_unsafe
 caml_oo.cmj : caml_array.cmj
 js_unsafe.cmj:js_unsafe.cmi js.cmj js.cmi
 js_unsafe.cmi js.cmj: js.cmi
-caml_format.cmj caml_io.cmj: curry.cmj
+caml_format.cmj caml_io.cmj caml_oo_curry.cmj: curry.cmj
 caml_weak.cmj caml_module.cmj: caml_obj.cmj js_primitive.cmj
 caml_builtin_exceptions.cmj: caml_builtin_exceptions.cmi js_unsafe.cmi
 block.cmj: block.cmi
