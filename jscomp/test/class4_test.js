@@ -3,6 +3,7 @@
 var Mt             = require("./mt");
 var Block          = require("../../lib/js/block");
 var Curry          = require("../../lib/js/curry");
+var Caml_oo_curry  = require("../../lib/js/caml_oo_curry");
 var CamlinternalOO = require("../../lib/js/camlinternalOO");
 
 var shared = [
@@ -186,18 +187,18 @@ eq('File "class4_test.ml", line 67, characters 5-12', /* tuple */[
       5,
       "red"
     ], /* tuple */[
-      Curry.js1(291546447, 1, p$prime),
-      Curry.js1(-899911325, 2, p$prime)
+      Caml_oo_curry.js1(291546447, 1, p$prime),
+      Caml_oo_curry.js1(-899911325, 2, p$prime)
     ]);
 
 function get_succ_x(p) {
-  return Curry.js1(291546447, 3, p) + 1 | 0;
+  return Caml_oo_curry.js1(291546447, 3, p) + 1 | 0;
 }
 
 eq('File "class4_test.ml", line 71, characters 12-19', 6, get_succ_x(p$prime));
 
 function set_x(p) {
-  return Curry.js1(-97543333, 4, p);
+  return Caml_oo_curry.js1(-97543333, 4, p);
 }
 
 function incr(p) {

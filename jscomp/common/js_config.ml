@@ -23,24 +23,12 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-
-
-
-
-
-type env =
-  | NodeJS
-  | AmdJS
-  | Goog (* of string option *)
-
-
-
 type path = string
-type module_system = env =
+type module_system =
   | NodeJS 
   | AmdJS 
   | Goog
-
+  | Es6
 
 type package_info =
  ( module_system * string )
@@ -90,6 +78,7 @@ let set_npm_package_path s =
          | "commonjs" -> NodeJS
          | "amdjs" -> AmdJS
          | "goog" -> Goog
+         | "es6" -> Es6
          | _ ->
            Ext_pervasives.bad_argf "invalid module system %s" package_name), path
       | [path] ->
@@ -184,6 +173,7 @@ let float = "Caml_float"
 let hash = "Caml_hash"
 let oo = "Caml_oo"
 let curry = "Curry"
+let caml_oo_curry = "Caml_oo_curry"
 let int64 = "Caml_int64"
 let md5 = "Caml_md5"
 let weak = "Caml_weak"

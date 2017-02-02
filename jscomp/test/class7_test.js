@@ -5,6 +5,7 @@ var Oo              = require("../../lib/js/oo");
 var Block           = require("../../lib/js/block");
 var Curry           = require("../../lib/js/curry");
 var Caml_obj        = require("../../lib/js/caml_obj");
+var Caml_oo_curry   = require("../../lib/js/caml_oo_curry");
 var CamlinternalOO  = require("../../lib/js/camlinternalOO");
 var Caml_exceptions = require("../../lib/js/caml_exceptions");
 
@@ -81,14 +82,14 @@ var p = Curry._2(point[0], 0, 55);
 
 var q = Oo.copy(p);
 
-Curry.js2(-933174511, 1, q, 7);
+Caml_oo_curry.js2(-933174511, 1, q, 7);
 
 eq('File "class7_test.ml", line 22, characters 5-12', /* tuple */[
       55,
       62
     ], /* tuple */[
-      Curry.js1(291546447, 2, p),
-      Curry.js1(291546447, 3, q)
+      Caml_oo_curry.js1(291546447, 2, p),
+      Caml_oo_curry.js1(291546447, 3, q)
     ]);
 
 function ref_init($$class) {
@@ -180,25 +181,25 @@ function get(_p, _n) {
     var p = _p;
     if (n) {
       _n = n - 1 | 0;
-      _p = Curry.js1(-357537970, 7, p);
+      _p = Caml_oo_curry.js1(-357537970, 7, p);
       continue ;
       
     }
     else {
-      return Curry.js1(5144726, 6, p);
+      return Caml_oo_curry.js1(5144726, 6, p);
     }
   };
 }
 
 var p$1 = Curry._2(backup_ref[0], 0, 0);
 
-Curry.js1(-867333315, 8, p$1);
+Caml_oo_curry.js1(-867333315, 8, p$1);
 
-Curry.js2(5741474, 9, p$1, 1);
+Caml_oo_curry.js2(5741474, 9, p$1, 1);
 
-Curry.js1(-867333315, 10, p$1);
+Caml_oo_curry.js1(-867333315, 10, p$1);
 
-Curry.js2(5741474, 11, p$1, 2);
+Caml_oo_curry.js2(5741474, 11, p$1, 2);
 
 eq('File "class7_test.ml", line 47, characters 5-12', /* array */[
       2,
@@ -286,13 +287,13 @@ var backup_ref2 = CamlinternalOO.make_class([
 
 var p$2 = Curry._2(backup_ref2[0], 0, 0);
 
-Curry.js1(-867333315, 12, p$2);
+Caml_oo_curry.js1(-867333315, 12, p$2);
 
-Curry.js2(5741474, 13, p$2, 1);
+Caml_oo_curry.js2(5741474, 13, p$2, 1);
 
-Curry.js1(-867333315, 14, p$2);
+Caml_oo_curry.js1(-867333315, 14, p$2);
 
-Curry.js2(5741474, 15, p$2, 2);
+Caml_oo_curry.js2(5741474, 15, p$2, 2);
 
 eq('File "class7_test.ml", line 63, characters 5-12', /* array */[
       2,
