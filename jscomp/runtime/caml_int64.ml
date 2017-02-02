@@ -213,11 +213,23 @@ let swap {lo ; hi } =
 
 (* Dispatched by the compiler, idea: should we do maximum sharing 
 *)
-(* let xor {lo = this_lo; hi= this_hi} {lo = other_lo; hi = other_hi} =  *)
-(*   { *)
-(*     lo = Nativeint.logxor this_lo other_lo;  *)
-(*    hi = Nativeint.logxor this_hi other_hi  *)
-(*   } *)
+ let xor {lo = this_lo; hi= this_hi} {lo = other_lo; hi = other_hi} =  
+   mk
+     ~lo:(Nativeint.logxor this_lo other_lo)
+    ~hi:(Nativeint.logxor this_hi other_hi)
+   
+
+let or_  {lo = this_lo; hi= this_hi} {lo = other_lo; hi = other_hi} =  
+  mk
+    ~lo:(Nativeint.logor this_lo other_lo)
+    ~hi:(Nativeint.logor this_hi other_hi) 
+  
+let and_ {lo = this_lo; hi= this_hi} {lo = other_lo; hi = other_hi} =  
+  mk
+    ~lo:(Nativeint.logand this_lo other_lo) 
+    ~hi:(Nativeint.logand this_hi other_hi)   
+  
+
 
 (* TODO: if we encode lo int32 bit as unsigned then 
    this is not necessary, 

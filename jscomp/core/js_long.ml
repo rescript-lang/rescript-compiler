@@ -37,22 +37,22 @@ let int64_call (fn : string) args  =
 (* TODO: make layout easier to change later *)
 let record_info = Lambda.Blk_record [| "hi"; "lo"|]
 let make_const ~lo ~hi = 
-   E.make_block 
-     ~comment:"int64" (E.zero_int_literal) 
-     record_info
-     [E.int hi; E.to_uint32 @@ E.int lo ; ]
-     (* If we use unsigned int for lo field, 
-        then we can not use [E.int] which is 
-        assumed to to be signed int.
-        Or we can use [Int64] to encode 
-        in the ast node?
-     *)
-     Immutable
+  E.make_block 
+    ~comment:"int64" (E.zero_int_literal) 
+    record_info
+    [E.int hi; E.to_uint32 @@ E.int lo ; ]
+    (* If we use unsigned int for lo field, 
+       then we can not use [E.int] which is 
+       assumed to to be signed int.
+       Or we can use [Int64] to encode 
+       in the ast node?
+    *)
+    Immutable
 let make ~lo ~hi = 
-   E.make_block 
-     ~comment:"int64" (E.zero_int_literal) 
-     record_info [   hi; E.to_uint32 lo ]
-     Immutable
+  E.make_block 
+    ~comment:"int64" (E.zero_int_literal) 
+    record_info [   hi; E.to_uint32 lo ]
+    Immutable
 let get_lo x = E.index x 1l
 let get_hi x = E.index x 0l
 
@@ -67,8 +67,8 @@ let of_const (v : Int64.t) =
 
 let to_int32 args = 
   begin match args with
-  | [v] ->  E.to_int32 @@ get_lo v
-  | _ -> assert false
+    | [v] ->  E.to_int32 @@ get_lo v
+    | _ -> assert false
   end
 
 let of_int32 (args : J.expression list) = 
@@ -104,16 +104,25 @@ let mul args =
 let div args =
   int64_call "div" args
 
-let bit_op  op args = 
+
+(** Note if operands are not pure, we need hold shared value, 
+    which is  a statement [var x = ... ; x ], it does not fit 
+    current pipe-line fall back to a function call
+*)
+let bit_op  op runtime_call args = 
   match args  with 
   | [l;r] -> 
-    make ~lo:(op (get_lo l) (get_lo r))
-      ~hi:(op (get_hi l) (get_hi r))
+    (* Int64 is a block in ocaml, a little more conservative in inlining *)
+    if Js_analyzer.is_simple_no_side_effect_expression l  &&
+       Js_analyzer.is_simple_no_side_effect_expression r then 
+      make ~lo:(op (get_lo l) (get_lo r))
+        ~hi:(op (get_hi l) (get_hi r))
+    else int64_call runtime_call args 
   | _ -> assert false
 
-let xor  = bit_op E.int32_bxor 
-let or_ = bit_op E.int32_bor
-let and_ = bit_op E.int32_band
+let xor  = bit_op E.int32_bxor "xor"
+let or_ = bit_op E.int32_bor "or_"
+let and_ = bit_op E.int32_band "and_"
 
 
 let lsl_ args = 
@@ -171,8 +180,8 @@ let to_float (args : J.expression list ) =
   (*           {expression_desc = Number (Int {i = hi; _}) }; *)
   (*          ], _, _, _); _ }]  *)
   (*   ->  *)
-    
+
   | [ _ ] -> 
-      int64_call "to_float" args
+    int64_call "to_float" args
   | _ -> 
     assert false    
