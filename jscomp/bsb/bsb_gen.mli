@@ -26,7 +26,7 @@
 val output_ninja :
   builddir:string ->
   cwd:string ->
-  js_post_build_cmd:string option -> 
+  js_post_build_cmd:string option ->
   package_specs:Bsb_default.package_specs ->
   string ->
   string ->
@@ -38,4 +38,5 @@ val output_ninja :
   string list ->
   string list ->
   string ->
+  string list ->
   unit
