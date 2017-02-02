@@ -27,7 +27,7 @@ module Rules = struct
 
   let rule_id = ref 0
   let rule_names = ref String_set.empty
-  let ask_name name = 
+  let ask_name name =
     let current_id = !rule_id in
     let () = incr rule_id in
     match String_set.find name !rule_names with
@@ -45,7 +45,7 @@ module Rules = struct
       end
   type t = { mutable used : bool; rule_name : string  ; name : out_channel -> string }
   let get_name (x : t) oc = x.name oc
-  let print_rule oc ~description ?restat ?depfile ~command   name  = 
+  let print_rule oc ~description ?restat ?depfile ~command   name  =
     output_string oc "rule "; output_string oc name ; output_string oc "\n";
     output_string oc "  command = "; output_string oc command; output_string oc "\n";
     begin match depfile with
@@ -68,28 +68,28 @@ module Rules = struct
       ?restat
       ?(description = "Building ${out}")
       name
-    = 
+    =
     let rec self = {
       used  = false;
-      rule_name = ask_name name ; 
-      name = fun oc -> 
-        if not self.used then 
-          begin 
-            print_rule oc ~description ?depfile ?restat ~command name; 
+      rule_name = ask_name name ;
+      name = fun oc ->
+        if not self.used then
+          begin
+            print_rule oc ~description ?depfile ?restat ~command name;
             self.used <- true
           end ;
         self.rule_name
     } in self
 
 
-  let build_ast_and_deps = 
+  let build_ast_and_deps =
     define
       ~command:"${bsc}  ${pp_flags} ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast ${in}"
       "build_ast_and_deps"
 
   let build_ast_and_deps_from_reason_impl =
     define
-      ~command:"${bsc} -pp ${refmt} ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -impl ${in}"
+      ~command:"${bsc} -pp \"${refmt} ${refmt_flags}\" ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -impl ${in}"
       "build_ast_and_deps_from_reason_impl"
 
   let build_ast_and_deps_from_reason_intf =
@@ -97,7 +97,7 @@ module Rules = struct
        because it need to be ppxed by bucklescript
     *)
     define
-      ~command:"${bsc} -pp ${refmt} ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -intf ${in}"
+      ~command:"${bsc} -pp \"${refmt} ${refmt_flags}\" ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -intf ${in}"
       "build_ast_and_deps_from_reason_intf"
 
 
@@ -111,14 +111,14 @@ module Rules = struct
       ~command:"${bsbuild} -init"
       "reload"
   let copy_resources =
-    let name = "copy_resource" in 
-    if Ext_sys.is_windows_or_cygwin then 
+    let name = "copy_resource" in
+    if Ext_sys.is_windows_or_cygwin then
       define ~command:"cmd.exe /C copy /Y ${in} ${out} > null"
-      name 
-    else 
+      name
+    else
     define
       ~command:"cp ${in} ${out}"
-      name 
+      name
 
 
 
@@ -137,13 +137,13 @@ module Rules = struct
   (* below are rules not local any more *)
   (**************************************)
 
-  (* [bsc_lib_includes] are fixed for libs 
-     [bsc_extra_includes] are for app test etc 
-     it wil be 
+  (* [bsc_lib_includes] are fixed for libs
+     [bsc_extra_includes] are for app test etc
+     it wil be
      {[
        bsc_extra_includes = ${bsc_group_1_includes}
      ]}
-     where [bsc_group_1_includes] will be pre-calcuated 
+     where [bsc_group_1_includes] will be pre-calcuated
   *)
   let build_cmj_js =
     define
@@ -183,7 +183,7 @@ let output_build
   output_string oc "build ";
   output_string oc output ;
   outputs |> List.iter (fun s -> output_string oc Ext_string.single_space ; output_string oc s  );
-  begin match implicit_outputs with 
+  begin match implicit_outputs with
     | [] -> ()
     | _ ->
       output_string oc " | ";
@@ -271,12 +271,12 @@ let output_kvs kvs oc =
 
 let (//) = Ext_filename.combine
 
-type info = 
+type info =
   { all_config_deps : string list  ;
     all_installs :  string list}
 
-let zero : info = 
-  { all_config_deps = [] ; 
+let zero : info =
+  { all_config_deps = [] ;
     all_installs = []
   }
 
@@ -295,7 +295,7 @@ let (++) (us : info) (vs : info) =
 *)
 let files_to_install = String_hash_set.create 96
 
-let install_file (file : string) =    
+let install_file (file : string) =
   String_hash_set.add  files_to_install (Ext_filename.chop_extension_if_any file )
 
 let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_build_ui.file_group) : info =
@@ -322,15 +322,15 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
       let output_cmj =  output_file_sans_extension ^ Literals.suffix_cmj in
       let output_js =
         String_set.fold (fun s acc ->
-            let prefix  = 
+            let prefix  =
               if s = Literals.commonjs then
                 Bsb_config.common_js_prefix
-              else if s = Literals.amdjs then 
-                Bsb_config.amd_js_prefix 
-              else Bsb_config.goog_prefix    
-            in 
-            (Bsb_config.proj_rel @@ prefix  
-               output_file_sans_extension ^ Literals.suffix_js) :: acc 
+              else if s = Literals.amdjs then
+                Bsb_config.amd_js_prefix
+              else Bsb_config.goog_prefix
+            in
+            (Bsb_config.proj_rel @@ prefix
+               output_file_sans_extension ^ Literals.suffix_js) :: acc
           ) package_specs []
       in
       (* let output_mldeps = output_file_sans_extension ^ Literals.suffix_mldeps in  *)
@@ -338,19 +338,19 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
       let shadows =
         let package_flags =
           ( "bs_package_flags",
-            `Append 
+            `Append
               (String_set.fold (fun s acc ->
                    acc ^ " -bs-package-output " ^ s ^ ":" ^
                    if s = Literals.amdjs then
                      (Bsb_config.amd_js_prefix @@ Filename.dirname output_cmi)
                    else if s = Literals.commonjs then
                      (Bsb_config.common_js_prefix @@ Filename.dirname output_cmi)
-                   else   
+                   else
                      (Bsb_config.goog_prefix @@ Filename.dirname output_cmi)
-                 ) package_specs "")              
+                 ) package_specs "")
           ) ::
-          (if group.dir_index = 0 then [] else 
-             [("bsc_extra_includes", 
+          (if group.dir_index = 0 then [] else
+             [("bsc_extra_includes",
                `Overwrite
                  ("${" ^ Bsb_build_util.string_of_bsb_dev_include group.dir_index ^ "}")
               )]
@@ -362,7 +362,7 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
         | _ ->
           (
             "bs_package_includes",
-            `Append 
+            `Append
               (Bsb_build_util.flag_concat "-bs-package-include" bs_dependencies)
           )
           :: package_flags
@@ -386,16 +386,16 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
           in
           begin
             output_build oc
-              ~output:output_mlast 
+              ~output:output_mlast
               (* ~implicit_outputs:[output_mldeps] *)
               ~input
               ~rule;
-            output_build 
+            output_build
               oc
               ~output:output_mlastd
               ~input:output_mlast
               ~rule:Rules.build_bin_deps
-              ?shadows:(if group.dir_index = 0 then None 
+              ?shadows:(if group.dir_index = 0 then None
                 else Some [Bsb_build_schemas.bsb_dir_group, `Overwrite (string_of_int group.dir_index)])
             ;
             let rule_name , cm_outputs, deps =
@@ -404,18 +404,18 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
               else  Rules.build_cmj_js, []  , [output_cmi]
 
             in
-            let shadows = 
-              match js_post_build_cmd with 
-              | None -> shadows 
-              | Some cmd -> 
-                ("postbuild", 
+            let shadows =
+              match js_post_build_cmd with
+              | None -> shadows
+              | Some cmd ->
+                ("postbuild",
                  `Overwrite ("&& " ^ cmd ^ Ext_string.single_space ^ String.concat Ext_string.single_space output_js)) :: shadows
-            in 
+            in
             output_build oc
               ~output:output_cmj
               ~shadows
               ~outputs:  (output_js @ cm_outputs)
-              ~input:output_mlast 
+              ~input:output_mlast
               ~implicit_deps:deps
               ~rule:rule_name ;
             if installable then begin install_file file_input end;
@@ -436,7 +436,7 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
             ~output:output_mliastd
             ~input:output_mliast
             ~rule:Rules.build_bin_deps
-            ?shadows:(if group.dir_index = 0 then None 
+            ?shadows:(if group.dir_index = 0 then None
                       else Some [Bsb_build_schemas.bsb_dir_group, `Overwrite (string_of_int group.dir_index)])
           ;
           output_build oc
@@ -445,10 +445,10 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
             ~input:output_mliast
             (* ~implicit_deps:[output_mliastd] *)
             ~rule:Rules.build_cmi;
-          if installable then begin install_file file_input end ; 
+          if installable then begin install_file file_input end ;
           {
             all_config_deps = [output_mliastd];
-            all_installs = [output_cmi] ; 
+            all_installs = [output_cmi] ;
 
           }
 

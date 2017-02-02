@@ -34,7 +34,7 @@ let merge_module_info_map acc sources =
       | None , None ->
         assert false
       | Some a, Some b  ->
-        failwith ("conflict files found: " ^ modname ^ "in ("   
+        failwith ("conflict files found: " ^ modname ^ "in ("
                   ^  Binary_cache.dir_of_module_info a ^ Ext_string.single_space ^ Binary_cache.dir_of_module_info b ^  " )")
       | Some v, None  -> Some v
       | None, Some v ->  Some v
@@ -56,10 +56,12 @@ let output_ninja
     ppx_flags
     bs_dependencies
     refmt
+    refmt_flags
 
   =
   let ppx_flags = Bsb_build_util.flag_concat "-ppx" ppx_flags in
   let bsc_flags =  String.concat Ext_string.single_space bsc_flags in
+  let refmt_flags = String.concat Ext_string.single_space refmt_flags in
   let oc = open_out_bin (builddir // Literals.build_ninja) in
   begin
     let () =
@@ -80,7 +82,8 @@ let output_ninja
           "bsc_flags", bsc_flags ;
           "ppx_flags", ppx_flags;
           "bs_package_includes", (Bsb_build_util.flag_concat "-bs-package-include" bs_dependencies);
-          "refmt", "\"" ^ refmt ^ "\"";
+          "refmt", refmt;
+          "refmt_flags", refmt_flags;
           Bsb_build_schemas.bsb_dir_group, "0"  (*TODO: avoid name conflict in the future *)
         |] oc ;
     in

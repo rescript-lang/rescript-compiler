@@ -122,10 +122,10 @@ let write_ninja_file bsc_dir cwd =
     let () =
       Bsb_default.get_bs_dependencies ()
       |> List.iter (fun package ->
-          match Bs_pkg.resolve_bs_package ~cwd package with 
-          | None -> 
+          match Bs_pkg.resolve_bs_package ~cwd package with
+          | None ->
             Ext_pervasives.failwithf ~loc:__LOC__"package: %s not found when resolve bs-dependencies" package
-          | Some x -> 
+          | Some x ->
           let path = ( x // "lib"//"ocaml") in
           Buffer.add_string buffer "\nS ";
           Buffer.add_string buffer path ;
@@ -177,13 +177,14 @@ let write_ninja_file bsc_dir cwd =
       |? (Bsb_build_schemas.bsc_flags, `Arr Bsb_default.set_bsc_flags)
       |? (Bsb_build_schemas.ppx_flags, `Arr (Bsb_default.set_ppx_flags ~cwd))
       |? (Bsb_build_schemas.refmt, `Str (Bsb_default.set_refmt ~cwd))
+      |? (Bsb_build_schemas.refmt_flags, `Arr Bsb_default.set_refmt_flags)
 
       |? (Bsb_build_schemas.sources, `Id (fun x ->
           Bsb_build_ui.parsing_sources
             Bsb_build_ui.lib_dir_index
             Filename.current_dir_name x
           |>
-          handle_bsb_build_ui 
+          handle_bsb_build_ui
         ))
       |> ignore
     | _ -> ()
@@ -217,6 +218,7 @@ let write_ninja_file bsc_dir cwd =
     Bsb_default.(get_ppx_flags ())
     Bsb_default.(get_bs_dependencies ())
     Bsb_default.(get_refmt ())
+    Bsb_default.(get_refmt_flags ())
 
   ;
   !globbed_dirs
@@ -242,7 +244,7 @@ let watch_exit () =
     Bsb_build_util.get_bsc_dir cwd // "bsb_watcher.js" in
   if Ext_sys.is_windows_or_cygwin then
     exit (Sys.command (Ext_string.concat3 node_lit Ext_string.single_space (Filename.quote bsb_watcher)))
-  else  
+  else
     Unix.execvp node_lit
       [| node_lit ;
          bsb_watcher
@@ -261,7 +263,7 @@ let build_bs_deps package_specs   =
   Bsb_default.walk_all_deps true cwd
     (fun top cwd ->
        if not top then
-         Bsb_unix.run_command_execv 
+         Bsb_unix.run_command_execv
            {cmd = bsb_exe;
             cwd = cwd;
             args  =
@@ -300,7 +302,7 @@ let clean_bs_deps () =
       clean_bs_garbage cwd
     )
 
-let clean_self () = clean_bs_garbage cwd 
+let clean_self () = clean_bs_garbage cwd
 
 
 let bsb_main_flags =
@@ -318,7 +320,7 @@ let bsb_main_flags =
     " (internal)Overide package specs (in combination with -regen)";
     "-clean-world", Arg.Unit clean_bs_deps,
     " Clean all bs dependencies";
-    "-clean", Arg.Unit clean_self, 
+    "-clean", Arg.Unit clean_self,
     " Clean only current project";
     "-make-world", Arg.Set make_world,
     " Build all dependencies and itself "
@@ -367,12 +369,12 @@ let print_string_args (args : string array) =
   done ;
   print_newline ()
 
-let install_targets () = 
-  let destdir = lib_ocaml in 
+let install_targets () =
+  let destdir = lib_ocaml in
   if not @@ Sys.file_exists destdir then begin Unix.mkdir destdir 0o777  end;
-  begin 
-    print_endline "* Start Installation"; 
-    String_hash_set.iter (fun x -> 
+  begin
+    print_endline "* Start Installation";
+    String_hash_set.iter (fun x ->
         Bsb_file.install_if_exists ~destdir (x ^  Literals.suffix_ml) ;
         Bsb_file.install_if_exists ~destdir (x ^ Literals.suffix_mli) ;
         Bsb_file.install_if_exists ~destdir (lib_bs//x ^ Literals.suffix_cmi) ;
@@ -384,12 +386,12 @@ let install_targets () =
 (* Note that [keepdepfile] only makes sense when combined with [deps] for optimizatoin
    It has to be the last command of [bsb]
 *)
-let exec_command_install_then_exit install command = 
-  print_endline command ; 
-  let exit_code = (Sys.command command ) in 
-  if exit_code <> 0 then begin 
+let exec_command_install_then_exit install command =
+  print_endline command ;
+  let exit_code = (Sys.command command ) in
+  if exit_code <> 0 then begin
     exit exit_code
-  end else begin 
+  end else begin
     if install then begin  install_targets ()end;
     exit 0;
   end
@@ -397,18 +399,18 @@ let ninja_command_exit (type t) ninja ninja_args : t =
   let ninja_args_len = Array.length ninja_args in
   if ninja_args_len = 0 then
     begin
-      match !Bsb_config.install, Ext_sys.is_windows_or_cygwin with 
-      | false, false -> 
-        let args = [|"ninja"; "-C"; Bsb_config.lib_bs |] in 
+      match !Bsb_config.install, Ext_sys.is_windows_or_cygwin with
+      | false, false ->
+        let args = [|"ninja"; "-C"; Bsb_config.lib_bs |] in
         print_string_args args ;
-        Unix.execvp ninja args 
-      | install, _ ->       
-        exec_command_install_then_exit install @@ Ext_string.inter3  (Filename.quote ninja) "-C" Bsb_config.lib_bs 
+        Unix.execvp ninja args
+      | install, _ ->
+        exec_command_install_then_exit install @@ Ext_string.inter3  (Filename.quote ninja) "-C" Bsb_config.lib_bs
     end
   else
     let fixed_args_length = 3 in
     begin match !Bsb_config.install, Ext_sys.is_windows_or_cygwin with
-      | false, false ->         
+      | false, false ->
         let args = (Array.init (fixed_args_length + ninja_args_len)
                       (fun i -> match i with
                          | 0 -> "ninja"
@@ -417,14 +419,14 @@ let ninja_command_exit (type t) ninja ninja_args : t =
                          | _ -> Array.unsafe_get ninja_args (i - fixed_args_length) )) in
         print_string_args args ;
         Unix.execvp ninja args
-      | install, _ -> 
+      | install, _ ->
         let args = (Array.init (fixed_args_length + ninja_args_len)
                       (fun i -> match i with
                          | 0 -> (Filename.quote ninja)
                          | 1 -> "-C"
                          | 2 -> Bsb_config.lib_bs
                          | _ -> Array.unsafe_get ninja_args (i - fixed_args_length) )) in
-        exec_command_install_then_exit install @@ Ext_string.concat_array Ext_string.single_space args 
+        exec_command_install_then_exit install @@ Ext_string.concat_array Ext_string.single_space args
     end
 
 
@@ -487,9 +489,9 @@ let () =
         begin
           Arg.parse bsb_main_flags annoymous usage;
           (* [-make-world] should never be combined with [-package-specs] *)
-          begin match !make_world, !force_regenerate with 
+          begin match !make_world, !force_regenerate with
             | false, false -> ()
-            | make_world, force_regenerate -> 
+            | make_world, force_regenerate ->
               (* don't regenerate files when we only run [bsb -clean-world] *)
               let deps = regenerate_ninja cwd bsc_dir force_regenerate in
               if make_world then begin
@@ -498,13 +500,13 @@ let () =
           end;
           if !watch_mode then begin
             watch_exit ()
-            (* ninja is not triggered in this case 
+            (* ninja is not triggered in this case
                There are several cases we wish ninja will not be triggered.
                [bsb -clean-world]
                [bsb -regen ]
             *)
-          end else if !make_world then begin 
-            ninja_command_exit ninja [||]  
+          end else if !make_world then begin
+            ninja_command_exit ninja [||]
           end
         end
       | `Split (bsb_args,ninja_args)

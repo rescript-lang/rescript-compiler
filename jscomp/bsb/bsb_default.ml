@@ -27,25 +27,25 @@ let (//) = Ext_filename.combine
 
 
 (* Magic path resolution:
-   foo => foo 
+   foo => foo
    foo/ => /absolute/path/to/projectRoot/node_modules/foo
    foo/bar => /absolute/path/to/projectRoot/node_modules/foo.bar
    /foo/bar => /foo/bar
-   ./foo/bar => /absolute/path/to/projectRoot/./foo/bar 
+   ./foo/bar => /absolute/path/to/projectRoot/./foo/bar
    Input is node path, output is OS dependent path
 *)
 let resolve_bsb_magic_file ~cwd ~desc p =
-  let p_len = String.length p in 
-  let no_slash = Ext_string.no_slash p in  
-  if no_slash then 
-    p 
+  let p_len = String.length p in
+  let no_slash = Ext_string.no_slash p in
+  if no_slash then
+    p
   else if Filename.is_relative p &&
      p_len > 0 &&
      String.unsafe_get p 0 <> '.' then
-    let p = if Ext_sys.is_windows_or_cygwin then Ext_string.replace_slash_backward p else p in  
+    let p = if Ext_sys.is_windows_or_cygwin then Ext_string.replace_slash_backward p else p in
     match Bs_pkg.resolve_npm_package_file ~cwd p with
     | None -> failwith (p ^ " not found when resolving " ^ desc)
-    | Some v -> v 
+    | Some v -> v
   else
     Bsb_build_util.convert_and_resolve_path p
 
@@ -55,32 +55,32 @@ let (|?)  m (key, cb) =
 
 
 
-(** 
-  TODO: check duplicate package name 
+(**
+  TODO: check duplicate package name
    ?use path as identity?
 *)
-let rec walk_all_deps top dir cb =   
-  let bsconfig_json =  (dir // Literals.bsconfig_json) in 
-  match Ext_json.parse_json_from_file bsconfig_json with 
+let rec walk_all_deps top dir cb =
+  let bsconfig_json =  (dir // Literals.bsconfig_json) in
+  match Ext_json.parse_json_from_file bsconfig_json with
   | `Obj map ->
     map
-    |? 
-    (Bsb_build_schemas.bs_dependencies, 
-      `Arr (fun (new_packages : Ext_json.t array) -> 
+    |?
+    (Bsb_build_schemas.bs_dependencies,
+      `Arr (fun (new_packages : Ext_json.t array) ->
          new_packages
-         |> Array.iter (fun (js : Ext_json.t) -> 
-          begin match js with 
-          | `Str {Ext_json.str = new_package} -> 
-            begin match Bs_pkg.resolve_bs_package ~cwd:dir new_package with 
+         |> Array.iter (fun (js : Ext_json.t) ->
+          begin match js with
+          | `Str {Ext_json.str = new_package} ->
+            begin match Bs_pkg.resolve_bs_package ~cwd:dir new_package with
             | None -> failwith (new_package ^ " not found as dependency of " ^ bsconfig_json )
-            | Some package_dir  -> 
-              walk_all_deps  false package_dir cb  ;              
-            end;            
+            | Some package_dir  ->
+              walk_all_deps  false package_dir cb  ;
+            end;
           | _ -> () (* TODO: add a log framework, warning here *)
-          end 
+          end
       )))
     |> ignore ;
-    cb top dir 
+    cb top dir
   | _ -> ()
   | exception _ -> failwith ( "failed to parse" ^ bsconfig_json ^ " properly")
 
@@ -111,7 +111,7 @@ let get_bs_external_includes () = !bs_external_includes
 
 
 let ocamllex =  ref  "ocamllex.opt"
-let set_ocamllex ~cwd s = 
+let set_ocamllex ~cwd s =
   ocamllex := resolve_bsb_magic_file ~cwd ~desc:"ocamllex" s
 let get_ocamllex () = !ocamllex
 
@@ -119,8 +119,13 @@ let get_ocamllex () = !ocamllex
 
 let refmt = ref "refmt"
 let get_refmt () = !refmt
-let set_refmt ~cwd p = 
+let set_refmt ~cwd p =
   refmt := resolve_bsb_magic_file ~cwd ~desc:"refmt" p
+
+let refmt_flags = ref []
+let get_refmt_flags () = !refmt_flags
+let set_refmt_flags s =
+  refmt_flags := get_list_string s
 
 
 let ppx_flags = ref []
@@ -136,7 +141,7 @@ let set_ppx_flags ~cwd s =
   ppx_flags := s
 
 
-let js_post_build_cmd = ref None 
+let js_post_build_cmd = ref None
 let get_js_post_build_cmd () = !js_post_build_cmd
 let set_js_post_build_cmd ~cwd s =
   js_post_build_cmd := Some (resolve_bsb_magic_file ~cwd ~desc:"js-post-build:cmd" s )
@@ -149,49 +154,49 @@ let get_ninja () = !ninja
    Second we need store it so that we can call ninja correctly
 *)
 let set_ninja ~cwd p  =
-  ninja := resolve_bsb_magic_file ~cwd ~desc:"ninja" p 
+  ninja := resolve_bsb_magic_file ~cwd ~desc:"ninja" p
 
 
 type package_specs = String_set.t
 
 let package_specs = ref (String_set.singleton Literals.commonjs)
-let package_specs_overriden = ref false 
+let package_specs_overriden = ref false
 
 let get_package_specs () = !package_specs
 
-let set_package_specs_from_array arr = 
-    if not  !package_specs_overriden then 
-    let new_package_specs = 
-      arr 
+let set_package_specs_from_array arr =
+    if not  !package_specs_overriden then
+    let new_package_specs =
+      arr
       |> get_list_string
       |> List.fold_left (fun acc x ->
-          let v = 
+          let v =
             if x = Literals.amdjs || x = Literals.commonjs || x = Literals.goog   then String_set.add x acc
-            else   
-              failwith ("Unkonwn package spec" ^ x) in 
+            else
+              failwith ("Unkonwn package spec" ^ x) in
           v
-        ) String_set.empty in 
+        ) String_set.empty in
    package_specs := new_package_specs
 
 
 
 
-let internal_override_package_specs str = 
-  package_specs_overriden := true ; 
-  let lst = Ext_string.split ~keep_empty:false str ',' in 
-  package_specs := 
-    List.fold_left (fun acc x -> 
-          let v = 
+let internal_override_package_specs str =
+  package_specs_overriden := true ;
+  let lst = Ext_string.split ~keep_empty:false str ',' in
+  package_specs :=
+    List.fold_left (fun acc x ->
+          let v =
             if x = Literals.amdjs || x = Literals.commonjs || x = Literals.goog   then String_set.add x acc
-            else   
-              failwith ("Unkonwn package spec" ^ x) in 
+            else
+              failwith ("Unkonwn package spec" ^ x) in
           v
-    ) String_set.empty lst 
+    ) String_set.empty lst
 
 
 let generate_merlin = ref true
 
-let get_generate_merlin () = !generate_merlin 
+let get_generate_merlin () = !generate_merlin
 
-let set_generate_merlin b = 
+let set_generate_merlin b =
   generate_merlin := b

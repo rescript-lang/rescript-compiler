@@ -321,6 +321,7 @@ let ppx_flags = "ppx-flags"
 
 let bsc = "bsc"
 let refmt = "refmt"
+let refmt_flags = "refmt-flags"
 let bs_external_includes = "bs-external-includes"
 let bs_lib_dir = "bs-lib-dir"
 let bs_dependencies = "bs-dependencies"
@@ -337,7 +338,7 @@ let resources = "resources"
 let public = "public"
 let js_post_build = "js-post-build"
 let cmd = "cmd"
-let ninja = "ninja" 
+let ninja = "ninja"
 let package_specs = "package-specs"
 
 let generate_merlin = "generate-merlin"
@@ -350,6 +351,7 @@ let export_none = "none"
 
 let bsb_dir_group = "bsb_dir_group"
 let bsc_lib_includes = "bsc_lib_includes"
+
 end
 module Ext_pervasives : sig 
 #1 "ext_pervasives.mli"
@@ -6799,6 +6801,8 @@ val get_package_name : unit -> string option
 val set_refmt : cwd:string -> string -> unit
 val get_refmt : unit -> string
 
+val set_refmt_flags : Ext_json.t array -> unit
+val get_refmt_flags : unit -> string list
 
 val get_bs_dependencies : unit  -> string list
 val set_bs_dependencies : Ext_json.t array  -> unit
@@ -6807,19 +6811,20 @@ val set_bs_dependencies : Ext_json.t array  -> unit
 val get_js_post_build_cmd : unit -> string option
 val set_js_post_build_cmd : cwd:string -> string -> unit
 
-val get_ninja : unit -> string 
+val get_ninja : unit -> string
 val set_ninja : cwd:string -> string -> unit
 
 type package_specs = String_set.t
 val get_package_specs : unit -> package_specs
-val set_package_specs_from_array : Ext_json.t array -> unit  
-val internal_override_package_specs : string -> unit 
+val set_package_specs_from_array : Ext_json.t array -> unit
+val internal_override_package_specs : string -> unit
 
 
-val get_generate_merlin : unit -> bool 
-val set_generate_merlin : bool -> unit 
+val get_generate_merlin : unit -> bool
+val set_generate_merlin : bool -> unit
 
-val walk_all_deps : bool -> string -> (bool -> string -> unit) -> unit 
+val walk_all_deps : bool -> string -> (bool -> string -> unit) -> unit
+
 end = struct
 #1 "bsb_default.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -6851,25 +6856,25 @@ let (//) = Ext_filename.combine
 
 
 (* Magic path resolution:
-   foo => foo 
+   foo => foo
    foo/ => /absolute/path/to/projectRoot/node_modules/foo
    foo/bar => /absolute/path/to/projectRoot/node_modules/foo.bar
    /foo/bar => /foo/bar
-   ./foo/bar => /absolute/path/to/projectRoot/./foo/bar 
+   ./foo/bar => /absolute/path/to/projectRoot/./foo/bar
    Input is node path, output is OS dependent path
 *)
 let resolve_bsb_magic_file ~cwd ~desc p =
-  let p_len = String.length p in 
-  let no_slash = Ext_string.no_slash p in  
-  if no_slash then 
-    p 
+  let p_len = String.length p in
+  let no_slash = Ext_string.no_slash p in
+  if no_slash then
+    p
   else if Filename.is_relative p &&
      p_len > 0 &&
      String.unsafe_get p 0 <> '.' then
-    let p = if Ext_sys.is_windows_or_cygwin then Ext_string.replace_slash_backward p else p in  
+    let p = if Ext_sys.is_windows_or_cygwin then Ext_string.replace_slash_backward p else p in
     match Bs_pkg.resolve_npm_package_file ~cwd p with
     | None -> failwith (p ^ " not found when resolving " ^ desc)
-    | Some v -> v 
+    | Some v -> v
   else
     Bsb_build_util.convert_and_resolve_path p
 
@@ -6879,32 +6884,32 @@ let (|?)  m (key, cb) =
 
 
 
-(** 
-  TODO: check duplicate package name 
+(**
+  TODO: check duplicate package name
    ?use path as identity?
 *)
-let rec walk_all_deps top dir cb =   
-  let bsconfig_json =  (dir // Literals.bsconfig_json) in 
-  match Ext_json.parse_json_from_file bsconfig_json with 
+let rec walk_all_deps top dir cb =
+  let bsconfig_json =  (dir // Literals.bsconfig_json) in
+  match Ext_json.parse_json_from_file bsconfig_json with
   | `Obj map ->
     map
-    |? 
-    (Bsb_build_schemas.bs_dependencies, 
-      `Arr (fun (new_packages : Ext_json.t array) -> 
+    |?
+    (Bsb_build_schemas.bs_dependencies,
+      `Arr (fun (new_packages : Ext_json.t array) ->
          new_packages
-         |> Array.iter (fun (js : Ext_json.t) -> 
-          begin match js with 
-          | `Str {Ext_json.str = new_package} -> 
-            begin match Bs_pkg.resolve_bs_package ~cwd:dir new_package with 
+         |> Array.iter (fun (js : Ext_json.t) ->
+          begin match js with
+          | `Str {Ext_json.str = new_package} ->
+            begin match Bs_pkg.resolve_bs_package ~cwd:dir new_package with
             | None -> failwith (new_package ^ " not found as dependency of " ^ bsconfig_json )
-            | Some package_dir  -> 
-              walk_all_deps  false package_dir cb  ;              
-            end;            
+            | Some package_dir  ->
+              walk_all_deps  false package_dir cb  ;
+            end;
           | _ -> () (* TODO: add a log framework, warning here *)
-          end 
+          end
       )))
     |> ignore ;
-    cb top dir 
+    cb top dir
   | _ -> ()
   | exception _ -> failwith ( "failed to parse" ^ bsconfig_json ^ " properly")
 
@@ -6935,7 +6940,7 @@ let get_bs_external_includes () = !bs_external_includes
 
 
 let ocamllex =  ref  "ocamllex.opt"
-let set_ocamllex ~cwd s = 
+let set_ocamllex ~cwd s =
   ocamllex := resolve_bsb_magic_file ~cwd ~desc:"ocamllex" s
 let get_ocamllex () = !ocamllex
 
@@ -6943,8 +6948,13 @@ let get_ocamllex () = !ocamllex
 
 let refmt = ref "refmt"
 let get_refmt () = !refmt
-let set_refmt ~cwd p = 
+let set_refmt ~cwd p =
   refmt := resolve_bsb_magic_file ~cwd ~desc:"refmt" p
+
+let refmt_flags = ref []
+let get_refmt_flags () = !refmt_flags
+let set_refmt_flags s =
+  refmt_flags := get_list_string s
 
 
 let ppx_flags = ref []
@@ -6960,7 +6970,7 @@ let set_ppx_flags ~cwd s =
   ppx_flags := s
 
 
-let js_post_build_cmd = ref None 
+let js_post_build_cmd = ref None
 let get_js_post_build_cmd () = !js_post_build_cmd
 let set_js_post_build_cmd ~cwd s =
   js_post_build_cmd := Some (resolve_bsb_magic_file ~cwd ~desc:"js-post-build:cmd" s )
@@ -6973,51 +6983,51 @@ let get_ninja () = !ninja
    Second we need store it so that we can call ninja correctly
 *)
 let set_ninja ~cwd p  =
-  ninja := resolve_bsb_magic_file ~cwd ~desc:"ninja" p 
+  ninja := resolve_bsb_magic_file ~cwd ~desc:"ninja" p
 
 
 type package_specs = String_set.t
 
 let package_specs = ref (String_set.singleton Literals.commonjs)
-let package_specs_overriden = ref false 
+let package_specs_overriden = ref false
 
 let get_package_specs () = !package_specs
 
-let set_package_specs_from_array arr = 
-    if not  !package_specs_overriden then 
-    let new_package_specs = 
-      arr 
+let set_package_specs_from_array arr =
+    if not  !package_specs_overriden then
+    let new_package_specs =
+      arr
       |> get_list_string
       |> List.fold_left (fun acc x ->
-          let v = 
+          let v =
             if x = Literals.amdjs || x = Literals.commonjs || x = Literals.goog   then String_set.add x acc
-            else   
-              failwith ("Unkonwn package spec" ^ x) in 
+            else
+              failwith ("Unkonwn package spec" ^ x) in
           v
-        ) String_set.empty in 
+        ) String_set.empty in
    package_specs := new_package_specs
 
 
 
 
-let internal_override_package_specs str = 
-  package_specs_overriden := true ; 
-  let lst = Ext_string.split ~keep_empty:false str ',' in 
-  package_specs := 
-    List.fold_left (fun acc x -> 
-          let v = 
+let internal_override_package_specs str =
+  package_specs_overriden := true ;
+  let lst = Ext_string.split ~keep_empty:false str ',' in
+  package_specs :=
+    List.fold_left (fun acc x ->
+          let v =
             if x = Literals.amdjs || x = Literals.commonjs || x = Literals.goog   then String_set.add x acc
-            else   
-              failwith ("Unkonwn package spec" ^ x) in 
+            else
+              failwith ("Unkonwn package spec" ^ x) in
           v
-    ) String_set.empty lst 
+    ) String_set.empty lst
 
 
 let generate_merlin = ref true
 
-let get_generate_merlin () = !generate_merlin 
+let get_generate_merlin () = !generate_merlin
 
-let set_generate_merlin b = 
+let set_generate_merlin b =
   generate_merlin := b
 
 end
@@ -7726,7 +7736,7 @@ module Rules = struct
 
   let rule_id = ref 0
   let rule_names = ref String_set.empty
-  let ask_name name = 
+  let ask_name name =
     let current_id = !rule_id in
     let () = incr rule_id in
     match String_set.find name !rule_names with
@@ -7744,7 +7754,7 @@ module Rules = struct
       end
   type t = { mutable used : bool; rule_name : string  ; name : out_channel -> string }
   let get_name (x : t) oc = x.name oc
-  let print_rule oc ~description ?restat ?depfile ~command   name  = 
+  let print_rule oc ~description ?restat ?depfile ~command   name  =
     output_string oc "rule "; output_string oc name ; output_string oc "\n";
     output_string oc "  command = "; output_string oc command; output_string oc "\n";
     begin match depfile with
@@ -7767,28 +7777,28 @@ module Rules = struct
       ?restat
       ?(description = "Building ${out}")
       name
-    = 
+    =
     let rec self = {
       used  = false;
-      rule_name = ask_name name ; 
-      name = fun oc -> 
-        if not self.used then 
-          begin 
-            print_rule oc ~description ?depfile ?restat ~command name; 
+      rule_name = ask_name name ;
+      name = fun oc ->
+        if not self.used then
+          begin
+            print_rule oc ~description ?depfile ?restat ~command name;
             self.used <- true
           end ;
         self.rule_name
     } in self
 
 
-  let build_ast_and_deps = 
+  let build_ast_and_deps =
     define
       ~command:"${bsc}  ${pp_flags} ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast ${in}"
       "build_ast_and_deps"
 
   let build_ast_and_deps_from_reason_impl =
     define
-      ~command:"${bsc} -pp ${refmt} ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -impl ${in}"
+      ~command:"${bsc} -pp \"${refmt} ${refmt_flags}\" ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -impl ${in}"
       "build_ast_and_deps_from_reason_impl"
 
   let build_ast_and_deps_from_reason_intf =
@@ -7796,7 +7806,7 @@ module Rules = struct
        because it need to be ppxed by bucklescript
     *)
     define
-      ~command:"${bsc} -pp ${refmt} ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -intf ${in}"
+      ~command:"${bsc} -pp \"${refmt} ${refmt_flags}\" ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -intf ${in}"
       "build_ast_and_deps_from_reason_intf"
 
 
@@ -7810,14 +7820,14 @@ module Rules = struct
       ~command:"${bsbuild} -init"
       "reload"
   let copy_resources =
-    let name = "copy_resource" in 
-    if Ext_sys.is_windows_or_cygwin then 
+    let name = "copy_resource" in
+    if Ext_sys.is_windows_or_cygwin then
       define ~command:"cmd.exe /C copy /Y ${in} ${out} > null"
-      name 
-    else 
+      name
+    else
     define
       ~command:"cp ${in} ${out}"
-      name 
+      name
 
 
 
@@ -7836,13 +7846,13 @@ module Rules = struct
   (* below are rules not local any more *)
   (**************************************)
 
-  (* [bsc_lib_includes] are fixed for libs 
-     [bsc_extra_includes] are for app test etc 
-     it wil be 
+  (* [bsc_lib_includes] are fixed for libs
+     [bsc_extra_includes] are for app test etc
+     it wil be
      {[
        bsc_extra_includes = ${bsc_group_1_includes}
      ]}
-     where [bsc_group_1_includes] will be pre-calcuated 
+     where [bsc_group_1_includes] will be pre-calcuated
   *)
   let build_cmj_js =
     define
@@ -7882,7 +7892,7 @@ let output_build
   output_string oc "build ";
   output_string oc output ;
   outputs |> List.iter (fun s -> output_string oc Ext_string.single_space ; output_string oc s  );
-  begin match implicit_outputs with 
+  begin match implicit_outputs with
     | [] -> ()
     | _ ->
       output_string oc " | ";
@@ -7970,12 +7980,12 @@ let output_kvs kvs oc =
 
 let (//) = Ext_filename.combine
 
-type info = 
+type info =
   { all_config_deps : string list  ;
     all_installs :  string list}
 
-let zero : info = 
-  { all_config_deps = [] ; 
+let zero : info =
+  { all_config_deps = [] ;
     all_installs = []
   }
 
@@ -7994,7 +8004,7 @@ let (++) (us : info) (vs : info) =
 *)
 let files_to_install = String_hash_set.create 96
 
-let install_file (file : string) =    
+let install_file (file : string) =
   String_hash_set.add  files_to_install (Ext_filename.chop_extension_if_any file )
 
 let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_build_ui.file_group) : info =
@@ -8021,15 +8031,15 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
       let output_cmj =  output_file_sans_extension ^ Literals.suffix_cmj in
       let output_js =
         String_set.fold (fun s acc ->
-            let prefix  = 
+            let prefix  =
               if s = Literals.commonjs then
                 Bsb_config.common_js_prefix
-              else if s = Literals.amdjs then 
-                Bsb_config.amd_js_prefix 
-              else Bsb_config.goog_prefix    
-            in 
-            (Bsb_config.proj_rel @@ prefix  
-               output_file_sans_extension ^ Literals.suffix_js) :: acc 
+              else if s = Literals.amdjs then
+                Bsb_config.amd_js_prefix
+              else Bsb_config.goog_prefix
+            in
+            (Bsb_config.proj_rel @@ prefix
+               output_file_sans_extension ^ Literals.suffix_js) :: acc
           ) package_specs []
       in
       (* let output_mldeps = output_file_sans_extension ^ Literals.suffix_mldeps in  *)
@@ -8037,19 +8047,19 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
       let shadows =
         let package_flags =
           ( "bs_package_flags",
-            `Append 
+            `Append
               (String_set.fold (fun s acc ->
                    acc ^ " -bs-package-output " ^ s ^ ":" ^
                    if s = Literals.amdjs then
                      (Bsb_config.amd_js_prefix @@ Filename.dirname output_cmi)
                    else if s = Literals.commonjs then
                      (Bsb_config.common_js_prefix @@ Filename.dirname output_cmi)
-                   else   
+                   else
                      (Bsb_config.goog_prefix @@ Filename.dirname output_cmi)
-                 ) package_specs "")              
+                 ) package_specs "")
           ) ::
-          (if group.dir_index = 0 then [] else 
-             [("bsc_extra_includes", 
+          (if group.dir_index = 0 then [] else
+             [("bsc_extra_includes",
                `Overwrite
                  ("${" ^ Bsb_build_util.string_of_bsb_dev_include group.dir_index ^ "}")
               )]
@@ -8061,7 +8071,7 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
         | _ ->
           (
             "bs_package_includes",
-            `Append 
+            `Append
               (Bsb_build_util.flag_concat "-bs-package-include" bs_dependencies)
           )
           :: package_flags
@@ -8085,16 +8095,16 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
           in
           begin
             output_build oc
-              ~output:output_mlast 
+              ~output:output_mlast
               (* ~implicit_outputs:[output_mldeps] *)
               ~input
               ~rule;
-            output_build 
+            output_build
               oc
               ~output:output_mlastd
               ~input:output_mlast
               ~rule:Rules.build_bin_deps
-              ?shadows:(if group.dir_index = 0 then None 
+              ?shadows:(if group.dir_index = 0 then None
                 else Some [Bsb_build_schemas.bsb_dir_group, `Overwrite (string_of_int group.dir_index)])
             ;
             let rule_name , cm_outputs, deps =
@@ -8103,18 +8113,18 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
               else  Rules.build_cmj_js, []  , [output_cmi]
 
             in
-            let shadows = 
-              match js_post_build_cmd with 
-              | None -> shadows 
-              | Some cmd -> 
-                ("postbuild", 
+            let shadows =
+              match js_post_build_cmd with
+              | None -> shadows
+              | Some cmd ->
+                ("postbuild",
                  `Overwrite ("&& " ^ cmd ^ Ext_string.single_space ^ String.concat Ext_string.single_space output_js)) :: shadows
-            in 
+            in
             output_build oc
               ~output:output_cmj
               ~shadows
               ~outputs:  (output_js @ cm_outputs)
-              ~input:output_mlast 
+              ~input:output_mlast
               ~implicit_deps:deps
               ~rule:rule_name ;
             if installable then begin install_file file_input end;
@@ -8135,7 +8145,7 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
             ~output:output_mliastd
             ~input:output_mliast
             ~rule:Rules.build_bin_deps
-            ?shadows:(if group.dir_index = 0 then None 
+            ?shadows:(if group.dir_index = 0 then None
                       else Some [Bsb_build_schemas.bsb_dir_group, `Overwrite (string_of_int group.dir_index)])
           ;
           output_build oc
@@ -8144,10 +8154,10 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
             ~input:output_mliast
             (* ~implicit_deps:[output_mliastd] *)
             ~rule:Rules.build_cmi;
-          if installable then begin install_file file_input end ; 
+          if installable then begin install_file file_input end ;
           {
             all_config_deps = [output_mliastd];
-            all_installs = [output_cmi] ; 
+            all_installs = [output_cmi] ;
 
           }
 
@@ -8215,7 +8225,7 @@ module Bsb_gen : sig
 val output_ninja :
   builddir:string ->
   cwd:string ->
-  js_post_build_cmd:string option -> 
+  js_post_build_cmd:string option ->
   package_specs:Bsb_default.package_specs ->
   string ->
   string ->
@@ -8227,6 +8237,7 @@ val output_ninja :
   string list ->
   string list ->
   string ->
+  string list ->
   unit
 
 end = struct
@@ -8267,7 +8278,7 @@ let merge_module_info_map acc sources =
       | None , None ->
         assert false
       | Some a, Some b  ->
-        failwith ("conflict files found: " ^ modname ^ "in ("   
+        failwith ("conflict files found: " ^ modname ^ "in ("
                   ^  Binary_cache.dir_of_module_info a ^ Ext_string.single_space ^ Binary_cache.dir_of_module_info b ^  " )")
       | Some v, None  -> Some v
       | None, Some v ->  Some v
@@ -8289,10 +8300,12 @@ let output_ninja
     ppx_flags
     bs_dependencies
     refmt
+    refmt_flags
 
   =
   let ppx_flags = Bsb_build_util.flag_concat "-ppx" ppx_flags in
   let bsc_flags =  String.concat Ext_string.single_space bsc_flags in
+  let refmt_flags = String.concat Ext_string.single_space refmt_flags in
   let oc = open_out_bin (builddir // Literals.build_ninja) in
   begin
     let () =
@@ -8313,7 +8326,8 @@ let output_ninja
           "bsc_flags", bsc_flags ;
           "ppx_flags", ppx_flags;
           "bs_package_includes", (Bsb_build_util.flag_concat "-bs-package-include" bs_dependencies);
-          "refmt", "\"" ^ refmt ^ "\"";
+          "refmt", refmt;
+          "refmt_flags", refmt_flags;
           Bsb_build_schemas.bsb_dir_group, "0"  (*TODO: avoid name conflict in the future *)
         |] oc ;
     in
@@ -8654,10 +8668,10 @@ let write_ninja_file bsc_dir cwd =
     let () =
       Bsb_default.get_bs_dependencies ()
       |> List.iter (fun package ->
-          match Bs_pkg.resolve_bs_package ~cwd package with 
-          | None -> 
+          match Bs_pkg.resolve_bs_package ~cwd package with
+          | None ->
             Ext_pervasives.failwithf ~loc:__LOC__"package: %s not found when resolve bs-dependencies" package
-          | Some x -> 
+          | Some x ->
           let path = ( x // "lib"//"ocaml") in
           Buffer.add_string buffer "\nS ";
           Buffer.add_string buffer path ;
@@ -8709,13 +8723,14 @@ let write_ninja_file bsc_dir cwd =
       |? (Bsb_build_schemas.bsc_flags, `Arr Bsb_default.set_bsc_flags)
       |? (Bsb_build_schemas.ppx_flags, `Arr (Bsb_default.set_ppx_flags ~cwd))
       |? (Bsb_build_schemas.refmt, `Str (Bsb_default.set_refmt ~cwd))
+      |? (Bsb_build_schemas.refmt_flags, `Arr Bsb_default.set_refmt_flags)
 
       |? (Bsb_build_schemas.sources, `Id (fun x ->
           Bsb_build_ui.parsing_sources
             Bsb_build_ui.lib_dir_index
             Filename.current_dir_name x
           |>
-          handle_bsb_build_ui 
+          handle_bsb_build_ui
         ))
       |> ignore
     | _ -> ()
@@ -8749,6 +8764,7 @@ let write_ninja_file bsc_dir cwd =
     Bsb_default.(get_ppx_flags ())
     Bsb_default.(get_bs_dependencies ())
     Bsb_default.(get_refmt ())
+    Bsb_default.(get_refmt_flags ())
 
   ;
   !globbed_dirs
@@ -8774,7 +8790,7 @@ let watch_exit () =
     Bsb_build_util.get_bsc_dir cwd // "bsb_watcher.js" in
   if Ext_sys.is_windows_or_cygwin then
     exit (Sys.command (Ext_string.concat3 node_lit Ext_string.single_space (Filename.quote bsb_watcher)))
-  else  
+  else
     Unix.execvp node_lit
       [| node_lit ;
          bsb_watcher
@@ -8793,7 +8809,7 @@ let build_bs_deps package_specs   =
   Bsb_default.walk_all_deps true cwd
     (fun top cwd ->
        if not top then
-         Bsb_unix.run_command_execv 
+         Bsb_unix.run_command_execv
            {cmd = bsb_exe;
             cwd = cwd;
             args  =
@@ -8832,7 +8848,7 @@ let clean_bs_deps () =
       clean_bs_garbage cwd
     )
 
-let clean_self () = clean_bs_garbage cwd 
+let clean_self () = clean_bs_garbage cwd
 
 
 let bsb_main_flags =
@@ -8850,7 +8866,7 @@ let bsb_main_flags =
     " (internal)Overide package specs (in combination with -regen)";
     "-clean-world", Arg.Unit clean_bs_deps,
     " Clean all bs dependencies";
-    "-clean", Arg.Unit clean_self, 
+    "-clean", Arg.Unit clean_self,
     " Clean only current project";
     "-make-world", Arg.Set make_world,
     " Build all dependencies and itself "
@@ -8899,12 +8915,12 @@ let print_string_args (args : string array) =
   done ;
   print_newline ()
 
-let install_targets () = 
-  let destdir = lib_ocaml in 
+let install_targets () =
+  let destdir = lib_ocaml in
   if not @@ Sys.file_exists destdir then begin Unix.mkdir destdir 0o777  end;
-  begin 
-    print_endline "* Start Installation"; 
-    String_hash_set.iter (fun x -> 
+  begin
+    print_endline "* Start Installation";
+    String_hash_set.iter (fun x ->
         Bsb_file.install_if_exists ~destdir (x ^  Literals.suffix_ml) ;
         Bsb_file.install_if_exists ~destdir (x ^ Literals.suffix_mli) ;
         Bsb_file.install_if_exists ~destdir (lib_bs//x ^ Literals.suffix_cmi) ;
@@ -8916,12 +8932,12 @@ let install_targets () =
 (* Note that [keepdepfile] only makes sense when combined with [deps] for optimizatoin
    It has to be the last command of [bsb]
 *)
-let exec_command_install_then_exit install command = 
-  print_endline command ; 
-  let exit_code = (Sys.command command ) in 
-  if exit_code <> 0 then begin 
+let exec_command_install_then_exit install command =
+  print_endline command ;
+  let exit_code = (Sys.command command ) in
+  if exit_code <> 0 then begin
     exit exit_code
-  end else begin 
+  end else begin
     if install then begin  install_targets ()end;
     exit 0;
   end
@@ -8929,18 +8945,18 @@ let ninja_command_exit (type t) ninja ninja_args : t =
   let ninja_args_len = Array.length ninja_args in
   if ninja_args_len = 0 then
     begin
-      match !Bsb_config.install, Ext_sys.is_windows_or_cygwin with 
-      | false, false -> 
-        let args = [|"ninja"; "-C"; Bsb_config.lib_bs |] in 
+      match !Bsb_config.install, Ext_sys.is_windows_or_cygwin with
+      | false, false ->
+        let args = [|"ninja"; "-C"; Bsb_config.lib_bs |] in
         print_string_args args ;
-        Unix.execvp ninja args 
-      | install, _ ->       
-        exec_command_install_then_exit install @@ Ext_string.inter3  (Filename.quote ninja) "-C" Bsb_config.lib_bs 
+        Unix.execvp ninja args
+      | install, _ ->
+        exec_command_install_then_exit install @@ Ext_string.inter3  (Filename.quote ninja) "-C" Bsb_config.lib_bs
     end
   else
     let fixed_args_length = 3 in
     begin match !Bsb_config.install, Ext_sys.is_windows_or_cygwin with
-      | false, false ->         
+      | false, false ->
         let args = (Array.init (fixed_args_length + ninja_args_len)
                       (fun i -> match i with
                          | 0 -> "ninja"
@@ -8949,14 +8965,14 @@ let ninja_command_exit (type t) ninja ninja_args : t =
                          | _ -> Array.unsafe_get ninja_args (i - fixed_args_length) )) in
         print_string_args args ;
         Unix.execvp ninja args
-      | install, _ -> 
+      | install, _ ->
         let args = (Array.init (fixed_args_length + ninja_args_len)
                       (fun i -> match i with
                          | 0 -> (Filename.quote ninja)
                          | 1 -> "-C"
                          | 2 -> Bsb_config.lib_bs
                          | _ -> Array.unsafe_get ninja_args (i - fixed_args_length) )) in
-        exec_command_install_then_exit install @@ Ext_string.concat_array Ext_string.single_space args 
+        exec_command_install_then_exit install @@ Ext_string.concat_array Ext_string.single_space args
     end
 
 
@@ -9019,9 +9035,9 @@ let () =
         begin
           Arg.parse bsb_main_flags annoymous usage;
           (* [-make-world] should never be combined with [-package-specs] *)
-          begin match !make_world, !force_regenerate with 
+          begin match !make_world, !force_regenerate with
             | false, false -> ()
-            | make_world, force_regenerate -> 
+            | make_world, force_regenerate ->
               (* don't regenerate files when we only run [bsb -clean-world] *)
               let deps = regenerate_ninja cwd bsc_dir force_regenerate in
               if make_world then begin
@@ -9030,13 +9046,13 @@ let () =
           end;
           if !watch_mode then begin
             watch_exit ()
-            (* ninja is not triggered in this case 
+            (* ninja is not triggered in this case
                There are several cases we wish ninja will not be triggered.
                [bsb -clean-world]
                [bsb -regen ]
             *)
-          end else if !make_world then begin 
-            ninja_command_exit ninja [||]  
+          end else if !make_world then begin
+            ninja_command_exit ninja [||]
           end
         end
       | `Split (bsb_args,ninja_args)
