@@ -73,3 +73,11 @@ val rev_toplevel_flatten : J.block -> J.block
 (** return the block in reverse order *)
 
 val is_constant : J.expression -> bool
+
+
+(** Simple expression, 
+    no computation involved so that  it is okay to be duplicated
+*)
+
+val is_simple_no_side_effect_expression 
+    : J.expression -> bool

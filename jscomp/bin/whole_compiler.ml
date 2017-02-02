@@ -5,7 +5,7 @@ val version : string
 
 end = struct
 #1 "bs_version.ml"
-let version = "1.4.3"
+let version = "1.4.2"
 
 end
 module Terminfo : sig 
@@ -66066,6 +66066,13 @@ val rev_toplevel_flatten : J.block -> J.block
 
 val is_constant : J.expression -> bool
 
+
+(** Simple expression, 
+    no computation involved so that  it is okay to be duplicated
+*)
+
+val is_simple_no_side_effect_expression 
+    : J.expression -> bool
 end = struct
 #1 "js_analyzer.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -66319,6 +66326,16 @@ let rec is_constant (x : J.expression)  =
     -> List.for_all is_constant xs && is_constant tag 
   | Bin (op, a, b) -> 
     is_constant a && is_constant b     
+  | _ -> false 
+
+
+let rec is_simple_no_side_effect_expression (e : J.expression) = 
+  match e.expression_desc with  
+  | Var _ 
+  | Bool _ 
+  | Str _ 
+  | Number _ -> true
+  | Dot (e, (_ : string), _) -> is_simple_no_side_effect_expression e 
   | _ -> false 
 
 end
@@ -85774,10 +85791,7 @@ module Js_ast_util : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-(** Simple expression, 
-    no computation involved so that  it is okay to be duplicated
-*)
-val is_simple_expression : J.expression -> bool 
+
 
 
 
@@ -85819,18 +85833,10 @@ module E = Js_exp_make
 
 module S = Js_stmt_make  
 
-let rec is_simple_expression (e : J.expression) = 
-  match e.expression_desc with  
-  | Var _ 
-  | Bool _ 
-  | Str _ 
-  | Number _ -> true
-  | Dot (e, _, _) -> is_simple_expression e 
-  | _ -> false 
 
 let rec named_expression (e : J.expression)
   :  (J.statement  * Ident.t) option = 
-  if is_simple_expression e then 
+  if Js_analyzer.is_simple_no_side_effect_expression e then 
     None 
   else 
     let obj = Ext_ident.create Literals.tmp in
@@ -87163,22 +87169,22 @@ let int64_call (fn : string) args  =
 (* TODO: make layout easier to change later *)
 let record_info = Lambda.Blk_record [| "hi"; "lo"|]
 let make_const ~lo ~hi = 
-   E.make_block 
-     ~comment:"int64" (E.zero_int_literal) 
-     record_info
-     [E.int hi; E.to_uint32 @@ E.int lo ; ]
-     (* If we use unsigned int for lo field, 
-        then we can not use [E.int] which is 
-        assumed to to be signed int.
-        Or we can use [Int64] to encode 
-        in the ast node?
-     *)
-     Immutable
+  E.make_block 
+    ~comment:"int64" (E.zero_int_literal) 
+    record_info
+    [E.int hi; E.to_uint32 @@ E.int lo ; ]
+    (* If we use unsigned int for lo field, 
+       then we can not use [E.int] which is 
+       assumed to to be signed int.
+       Or we can use [Int64] to encode 
+       in the ast node?
+    *)
+    Immutable
 let make ~lo ~hi = 
-   E.make_block 
-     ~comment:"int64" (E.zero_int_literal) 
-     record_info [   hi; E.to_uint32 lo ]
-     Immutable
+  E.make_block 
+    ~comment:"int64" (E.zero_int_literal) 
+    record_info [   hi; E.to_uint32 lo ]
+    Immutable
 let get_lo x = E.index x 1l
 let get_hi x = E.index x 0l
 
@@ -87193,8 +87199,8 @@ let of_const (v : Int64.t) =
 
 let to_int32 args = 
   begin match args with
-  | [v] ->  E.to_int32 @@ get_lo v
-  | _ -> assert false
+    | [v] ->  E.to_int32 @@ get_lo v
+    | _ -> assert false
   end
 
 let of_int32 (args : J.expression list) = 
@@ -87230,16 +87236,25 @@ let mul args =
 let div args =
   int64_call "div" args
 
-let bit_op  op args = 
+
+(** Note if operands are not pure, we need hold shared value, 
+    which is  a statement [var x = ... ; x ], it does not fit 
+    current pipe-line fall back to a function call
+*)
+let bit_op  op runtime_call args = 
   match args  with 
   | [l;r] -> 
-    make ~lo:(op (get_lo l) (get_lo r))
-      ~hi:(op (get_hi l) (get_hi r))
+    (* Int64 is a block in ocaml, a little more conservative in inlining *)
+    if Js_analyzer.is_simple_no_side_effect_expression l  &&
+       Js_analyzer.is_simple_no_side_effect_expression r then 
+      make ~lo:(op (get_lo l) (get_lo r))
+        ~hi:(op (get_hi l) (get_hi r))
+    else int64_call runtime_call args 
   | _ -> assert false
 
-let xor  = bit_op E.int32_bxor 
-let or_ = bit_op E.int32_bor
-let and_ = bit_op E.int32_band
+let xor  = bit_op E.int32_bxor "xor"
+let or_ = bit_op E.int32_bor "or_"
+let and_ = bit_op E.int32_band "and_"
 
 
 let lsl_ args = 
@@ -87297,9 +87312,9 @@ let to_float (args : J.expression list ) =
   (*           {expression_desc = Number (Int {i = hi; _}) }; *)
   (*          ], _, _, _); _ }]  *)
   (*   ->  *)
-    
+
   | [ _ ] -> 
-      int64_call "to_float" args
+    int64_call "to_float" args
   | _ -> 
     assert false    
 
@@ -88962,7 +88977,7 @@ let get_default_undefined (arg : J.expression) : J.expression =
   | Array ([x],_) 
   | Caml_block([x],_,_,_) -> x (* invariant: option encoding *)
   | _ -> 
-    if Js_ast_util.is_simple_expression arg then 
+    if Js_analyzer.is_simple_no_side_effect_expression arg then 
       E.econd arg (E.index arg 0l) E.undefined
     else E.runtime_call Js_config.js_primitive "option_get" [arg]
   

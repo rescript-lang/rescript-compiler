@@ -50,7 +50,7 @@ let get_default_undefined (arg : J.expression) : J.expression =
   | Array ([x],_) 
   | Caml_block([x],_,_,_) -> x (* invariant: option encoding *)
   | _ -> 
-    if Js_ast_util.is_simple_expression arg then 
+    if Js_analyzer.is_simple_no_side_effect_expression arg then 
       E.econd arg (E.index arg 0l) E.undefined
     else E.runtime_call Js_config.js_primitive "option_get" [arg]
   

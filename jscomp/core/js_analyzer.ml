@@ -250,3 +250,13 @@ let rec is_constant (x : J.expression)  =
   | Bin (op, a, b) -> 
     is_constant a && is_constant b     
   | _ -> false 
+
+
+let rec is_simple_no_side_effect_expression (e : J.expression) = 
+  match e.expression_desc with  
+  | Var _ 
+  | Bool _ 
+  | Str _ 
+  | Number _ -> true
+  | Dot (e, (_ : string), _) -> is_simple_no_side_effect_expression e 
+  | _ -> false 

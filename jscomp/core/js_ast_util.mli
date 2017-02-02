@@ -23,10 +23,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-(** Simple expression, 
-    no computation involved so that  it is okay to be duplicated
-*)
-val is_simple_expression : J.expression -> bool 
+
 
 
 

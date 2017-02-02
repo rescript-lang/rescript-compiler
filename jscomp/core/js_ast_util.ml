@@ -31,18 +31,10 @@ module E = Js_exp_make
 
 module S = Js_stmt_make  
 
-let rec is_simple_expression (e : J.expression) = 
-  match e.expression_desc with  
-  | Var _ 
-  | Bool _ 
-  | Str _ 
-  | Number _ -> true
-  | Dot (e, _, _) -> is_simple_expression e 
-  | _ -> false 
 
 let rec named_expression (e : J.expression)
   :  (J.statement  * Ident.t) option = 
-  if is_simple_expression e then 
+  if Js_analyzer.is_simple_no_side_effect_expression e then 
     None 
   else 
     let obj = Ext_ident.create Literals.tmp in
