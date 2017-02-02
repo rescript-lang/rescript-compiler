@@ -3,6 +3,7 @@
 var Mt             = require("./mt");
 var Block          = require("../../lib/js/block");
 var Curry          = require("../../lib/js/curry");
+var Caml_oo_curry  = require("../../lib/js/caml_oo_curry");
 var CamlinternalOO = require("../../lib/js/camlinternalOO");
 
 var shared = [
@@ -168,8 +169,8 @@ var suites_000 = /* tuple */[
                 32
               ],
               /* int array */[
-                Curry.js1(120, 1, v),
-                Curry.js1(121, 2, v)
+                Caml_oo_curry.js1(120, 1, v),
+                Caml_oo_curry.js1(121, 2, v)
               ]
             ]);
   }
@@ -185,8 +186,8 @@ var suites_001 = /* :: */[
                   32
                 ],
                 /* int array */[
-                  Curry.js1(120, 3, v),
-                  Curry.js1(121, 4, v)
+                  Caml_oo_curry.js1(120, 3, v),
+                  Caml_oo_curry.js1(121, 4, v)
                 ]
               ]);
     }
@@ -197,7 +198,7 @@ var suites_001 = /* :: */[
       function () {
         return /* Eq */Block.__(0, [
                   13,
-                  Curry.js2(616641298, 5, vv, 3)
+                  Caml_oo_curry.js2(616641298, 5, vv, 3)
                 ]);
       }
     ],
@@ -207,7 +208,7 @@ var suites_001 = /* :: */[
         function () {
           return /* Eq */Block.__(0, [
                     "uu",
-                    Curry.js1(23515, 6, uu)
+                    Caml_oo_curry.js1(23515, 6, uu)
                   ]);
         }
       ],
@@ -216,7 +217,7 @@ var suites_001 = /* :: */[
           "uu_add",
           function () {
             return /* Eq */Block.__(0, [
-                      Curry.js3(4846113, 7, uuu, 1, 20),
+                      Caml_oo_curry.js3(4846113, 7, uuu, 1, 20),
                       21
                     ]);
           }
@@ -226,7 +227,7 @@ var suites_001 = /* :: */[
             "v_add",
             function () {
               return /* Eq */Block.__(0, [
-                        Curry.js3(4846113, 8, vvvv, 3, 7),
+                        Caml_oo_curry.js3(4846113, 8, vvvv, 3, 7),
                         10
                       ]);
             }
@@ -236,7 +237,7 @@ var suites_001 = /* :: */[
               "u_id1",
               function () {
                 return /* Eq */Block.__(0, [
-                          Curry.js1(5243894, 9, u),
+                          Caml_oo_curry.js1(5243894, 9, u),
                           3
                         ]);
               }
@@ -246,7 +247,7 @@ var suites_001 = /* :: */[
                 "u_id2",
                 function () {
                   return /* Eq */Block.__(0, [
-                            Curry.js1(5243895, 10, u),
+                            Caml_oo_curry.js1(5243895, 10, u),
                             4
                           ]);
                 }
@@ -256,7 +257,7 @@ var suites_001 = /* :: */[
                   "u hi",
                   function () {
                     return /* Eq */Block.__(0, [
-                              Curry.js3(23297, 11, u, 1, 2),
+                              Caml_oo_curry.js3(23297, 11, u, 1, 2),
                               3
                             ]);
                   }
@@ -266,7 +267,7 @@ var suites_001 = /* :: */[
                     "u hello",
                     function () {
                       return /* Eq */Block.__(0, [
-                                Curry.js2(616641298, 12, u, 32),
+                                Caml_oo_curry.js2(616641298, 12, u, 32),
                                 32
                               ]);
                     }
@@ -276,7 +277,7 @@ var suites_001 = /* :: */[
                       "v hi",
                       function () {
                         return /* Eq */Block.__(0, [
-                                  Curry.js2(23297, 13, vvvv, 31),
+                                  Caml_oo_curry.js2(23297, 13, vvvv, 31),
                                   63
                                 ]);
                       }
@@ -286,7 +287,7 @@ var suites_001 = /* :: */[
                         "uuu add",
                         function () {
                           return /* Eq */Block.__(0, [
-                                    Curry.js3(4846113, 14, uuu, 3, 4),
+                                    Caml_oo_curry.js3(4846113, 14, uuu, 3, 4),
                                     7
                                   ]);
                         }
@@ -296,7 +297,7 @@ var suites_001 = /* :: */[
                           "v x",
                           function () {
                             return /* Eq */Block.__(0, [
-                                      Curry.js1(120, 15, v),
+                                      Caml_oo_curry.js1(120, 15, v),
                                       3
                                     ]);
                           }

@@ -22070,6 +22070,7 @@ val string : string
 val bytes : string  
 val float : string 
 val curry : string 
+val caml_oo_curry : string 
 (* val bigarray : string *)
 (* val unix : string *)
 val int64 : string
@@ -22278,6 +22279,7 @@ let float = "Caml_float"
 let hash = "Caml_hash"
 let oo = "Caml_oo"
 let curry = "Curry"
+let caml_oo_curry = "Caml_oo_curry"
 let int64 = "Caml_int64"
 let md5 = "Caml_md5"
 let weak = "Caml_weak"
@@ -67810,11 +67812,11 @@ let public_method_call meth_name obj label cache args =
   let len = List.length args in 
   (* econd (int_equal (tag obj ) obj_int_tag_literal) *)
   if len <= 7 then          
-    runtime_call Js_config.curry 
+    runtime_call Js_config.caml_oo_curry 
       ("js" ^ string_of_int (len + 1) )
       (label:: ( int cache) :: obj::args)
   else 
-    runtime_call Js_config.curry "js"
+    runtime_call Js_config.caml_oo_curry "js"
       [label; 
        int cache;
        obj ;  

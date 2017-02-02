@@ -3,6 +3,7 @@
 var Mt             = require("./mt");
 var Block          = require("../../lib/js/block");
 var Curry          = require("../../lib/js/curry");
+var Caml_oo_curry  = require("../../lib/js/caml_oo_curry");
 var CamlinternalOO = require("../../lib/js/camlinternalOO");
 
 var shared = [
@@ -39,11 +40,11 @@ var point = CamlinternalOO.make_class(shared, point_init);
 
 var p = Curry._1(point[0], 0);
 
-var zero = Curry.js1(291546447, 1, p);
+var zero = Caml_oo_curry.js1(291546447, 1, p);
 
-Curry.js2(-933174511, 2, p, 3);
+Caml_oo_curry.js2(-933174511, 2, p, 3);
 
-var three = Curry.js1(291546447, 3, p);
+var three = Caml_oo_curry.js1(291546447, 3, p);
 
 var x0 = [0];
 
@@ -75,11 +76,11 @@ var point2 = CamlinternalOO.make_class(shared, point2_init);
 
 var tmp = Curry._1(point2[0], 0);
 
-var one = Curry.js1(291546447, 4, tmp);
+var one = Caml_oo_curry.js1(291546447, 4, tmp);
 
 var tmp$1 = Curry._1(point2[0], 0);
 
-var two = Curry.js1(291546447, 5, tmp$1);
+var two = Caml_oo_curry.js1(291546447, 5, tmp$1);
 
 Mt.from_pair_suites("class_test.ml", /* :: */[
       /* tuple */[

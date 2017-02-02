@@ -135,6 +135,7 @@ val string : string
 val bytes : string  
 val float : string 
 val curry : string 
+val caml_oo_curry : string 
 (* val bigarray : string *)
 (* val unix : string *)
 val int64 : string

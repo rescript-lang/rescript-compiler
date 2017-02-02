@@ -2557,6 +2557,7 @@ val string : string
 val bytes : string  
 val float : string 
 val curry : string 
+val caml_oo_curry : string 
 (* val bigarray : string *)
 (* val unix : string *)
 val int64 : string
@@ -2765,6 +2766,7 @@ let float = "Caml_float"
 let hash = "Caml_hash"
 let oo = "Caml_oo"
 let curry = "Curry"
+let caml_oo_curry = "Caml_oo_curry"
 let int64 = "Caml_int64"
 let md5 = "Caml_md5"
 let weak = "Caml_weak"

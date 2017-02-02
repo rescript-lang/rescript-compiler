@@ -91,7 +91,8 @@ OTHERS := literals a test_ari test_export2 test_internalOO test_obj_simple_ffi t
 	gbk\
 	gpr_1072_reg\
 	gpr_1150\
-	gpr_1154_test
+	gpr_1154_test\
+	obj_curry_test
 
 SOURCE_LIST :=  $(OTHERS) 
 TESTS := $(addsuffix .cmj, $(SOURCE_LIST) )

@@ -3,10 +3,11 @@
 var Mt             = require("./mt");
 var Block          = require("../../lib/js/block");
 var Curry          = require("../../lib/js/curry");
+var Caml_oo_curry  = require("../../lib/js/caml_oo_curry");
 var CamlinternalOO = require("../../lib/js/camlinternalOO");
 
 function f(u) {
-  return Curry.js2(5740587, 1, u, 32);
+  return Caml_oo_curry.js2(5740587, 1, u, 32);
 }
 
 function f_js(u) {
