@@ -41,12 +41,6 @@ let rec app f args =
       (sub args arity (-d))
   else 
     Obj.magic (fun x -> app f (Caml_array.append args [|x|] ))
-
-(** For efficiency, [args.(0)] would contain obj as well  *)
-let js label cacheid obj args = 
-  let meth = 
-    (Obj.magic Caml_oo.caml_get_public_method obj label cacheid) in
-  app meth args
   
 |}
 
@@ -118,9 +112,6 @@ let _%d o %s =
   let arity = function_length o in
   if arity = %d then apply%d o %s
   else curry_%d o %s arity     
-    
-let js%d label cacheid %s =
-  _%d (Obj.magic Caml_oo.caml_get_public_method %s label cacheid) %s
 
 let __%d o =
   let arity = function_length o in
@@ -144,11 +135,6 @@ let __%d o =
     args_number
     args_string
     
-    args_number
-    args_string
-    args_number
-    (List.hd args)    
-    args_string    
 
     args_number
     args_number

@@ -41,12 +41,6 @@ let rec app f args =
       (sub args arity (-d))
   else 
     Obj.magic (fun x -> app f (Caml_array.append args [|x|] ))
-
-(** For efficiency, [args.(0)] would contain obj as well  *)
-let js label cacheid obj args = 
-  let meth = 
-    (Obj.magic Caml_oo.caml_get_public_method obj label cacheid) in
-  app meth args
   
 
 external apply1 : ('a0 -> 'a1) -> 'a0 -> 'a1 = "js_apply1"
@@ -74,9 +68,6 @@ let _1 o a0 =
   let arity = function_length o in
   if arity = 1 then apply1 o a0
   else curry_1 o a0 arity     
-    
-let js1 label cacheid a0 =
-  _1 (Obj.magic Caml_oo.caml_get_public_method a0 label cacheid) a0
 
 let __1 o =
   let arity = function_length o in
@@ -100,9 +91,6 @@ let _2 o a0 a1 =
   let arity = function_length o in
   if arity = 2 then apply2 o a0 a1
   else curry_2 o a0 a1 arity     
-    
-let js2 label cacheid a0 a1 =
-  _2 (Obj.magic Caml_oo.caml_get_public_method a0 label cacheid) a0 a1
 
 let __2 o =
   let arity = function_length o in
@@ -126,9 +114,6 @@ let _3 o a0 a1 a2 =
   let arity = function_length o in
   if arity = 3 then apply3 o a0 a1 a2
   else curry_3 o a0 a1 a2 arity     
-    
-let js3 label cacheid a0 a1 a2 =
-  _3 (Obj.magic Caml_oo.caml_get_public_method a0 label cacheid) a0 a1 a2
 
 let __3 o =
   let arity = function_length o in
@@ -152,9 +137,6 @@ let _4 o a0 a1 a2 a3 =
   let arity = function_length o in
   if arity = 4 then apply4 o a0 a1 a2 a3
   else curry_4 o a0 a1 a2 a3 arity     
-    
-let js4 label cacheid a0 a1 a2 a3 =
-  _4 (Obj.magic Caml_oo.caml_get_public_method a0 label cacheid) a0 a1 a2 a3
 
 let __4 o =
   let arity = function_length o in
@@ -178,9 +160,6 @@ let _5 o a0 a1 a2 a3 a4 =
   let arity = function_length o in
   if arity = 5 then apply5 o a0 a1 a2 a3 a4
   else curry_5 o a0 a1 a2 a3 a4 arity     
-    
-let js5 label cacheid a0 a1 a2 a3 a4 =
-  _5 (Obj.magic Caml_oo.caml_get_public_method a0 label cacheid) a0 a1 a2 a3 a4
 
 let __5 o =
   let arity = function_length o in
@@ -204,9 +183,6 @@ let _6 o a0 a1 a2 a3 a4 a5 =
   let arity = function_length o in
   if arity = 6 then apply6 o a0 a1 a2 a3 a4 a5
   else curry_6 o a0 a1 a2 a3 a4 a5 arity     
-    
-let js6 label cacheid a0 a1 a2 a3 a4 a5 =
-  _6 (Obj.magic Caml_oo.caml_get_public_method a0 label cacheid) a0 a1 a2 a3 a4 a5
 
 let __6 o =
   let arity = function_length o in
@@ -230,9 +206,6 @@ let _7 o a0 a1 a2 a3 a4 a5 a6 =
   let arity = function_length o in
   if arity = 7 then apply7 o a0 a1 a2 a3 a4 a5 a6
   else curry_7 o a0 a1 a2 a3 a4 a5 a6 arity     
-    
-let js7 label cacheid a0 a1 a2 a3 a4 a5 a6 =
-  _7 (Obj.magic Caml_oo.caml_get_public_method a0 label cacheid) a0 a1 a2 a3 a4 a5 a6
 
 let __7 o =
   let arity = function_length o in
@@ -256,9 +229,6 @@ let _8 o a0 a1 a2 a3 a4 a5 a6 a7 =
   let arity = function_length o in
   if arity = 8 then apply8 o a0 a1 a2 a3 a4 a5 a6 a7
   else curry_8 o a0 a1 a2 a3 a4 a5 a6 a7 arity     
-    
-let js8 label cacheid a0 a1 a2 a3 a4 a5 a6 a7 =
-  _8 (Obj.magic Caml_oo.caml_get_public_method a0 label cacheid) a0 a1 a2 a3 a4 a5 a6 a7
 
 let __8 o =
   let arity = function_length o in

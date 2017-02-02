@@ -106,7 +106,7 @@ let string_of_module_id ~output_prefix
             Ext_pervasives.failwithf ~loc:__LOC__ 
               " @[%s was not compiled with goog support  in search path - while compiling %s @] "
               js_file !Location.input_name 
-          | (AmdJS | NodeJS),
+          | (AmdJS | NodeJS | Es6),
             ( Empty | Package_script _) ,
             Found _  -> 
             Ext_pervasives.failwithf ~loc:__LOC__
@@ -115,7 +115,7 @@ let string_of_module_id ~output_prefix
           | Goog , Found (package_name, x), _  -> 
             package_name  ^ "." ^  String.uncapitalize id.name
           | _ , _, NotFound -> assert false 
-          | (AmdJS | NodeJS), 
+          | (AmdJS | NodeJS | Es6), 
             Found(package_name, x),
             Found(current_package, path) -> 
             if  current_package = package_name then 
@@ -123,7 +123,8 @@ let string_of_module_id ~output_prefix
               rebase package_dir (`File (package_dir // x // modulename)) 
             else 
               package_name // x // modulename
-          | (AmdJS | NodeJS), Found(package_name, x), 
+          
+          | (AmdJS | NodeJS | Es6), Found(package_name, x), 
             Package_script(current_package)
             ->    
             if current_package = package_name then 
@@ -132,9 +133,9 @@ let string_of_module_id ~output_prefix
                   package_dir // x // modulename)) 
             else 
               package_name // x // modulename
-          | (AmdJS | NodeJS), Found(package_name, x), Empty 
+          | (AmdJS | NodeJS | Es6), Found(package_name, x), Empty 
             ->    package_name // x // modulename
-          |  (AmdJS | NodeJS), 
+          |  (AmdJS | NodeJS | Es6), 
              (Empty | Package_script _) , 
              (Empty  | Package_script _)
             -> 
@@ -145,6 +146,7 @@ let string_of_module_id ~output_prefix
               | None -> 
                 Bs_exception.error (Js_not_found js_file)
             end
+          
         end
       | External name -> name in 
     if Ext_sys.is_windows_or_cygwin then Ext_string.replace_backward_slash result 

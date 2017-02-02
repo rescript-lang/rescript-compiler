@@ -878,11 +878,11 @@ let public_method_call meth_name obj label cache args =
   let len = List.length args in 
   (* econd (int_equal (tag obj ) obj_int_tag_literal) *)
   if len <= 7 then          
-    runtime_call Js_config.curry 
+    runtime_call Js_config.caml_oo_curry 
       ("js" ^ string_of_int (len + 1) )
       (label:: ( int cache) :: obj::args)
   else 
-    runtime_call Js_config.curry "js"
+    runtime_call Js_config.caml_oo_curry "js"
       [label; 
        int cache;
        obj ;  

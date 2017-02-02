@@ -1,6 +1,6 @@
 'use strict';
 
-var Curry                   = require("../../lib/js/curry");
+var Caml_oo_curry           = require("../../lib/js/caml_oo_curry");
 var CamlinternalOO          = require("../../lib/js/camlinternalOO");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
 
@@ -88,7 +88,7 @@ CamlinternalOO.init_class($$class$3);
 var v = CamlinternalOO.create_object_opt(0, $$class$3);
 
 function test() {
-  if (Curry.js1(23515, 1, uu) !== "uu") {
+  if (Caml_oo_curry.js1(23515, 1, uu) !== "uu") {
     throw [
           Caml_builtin_exceptions.assert_failure,
           [
@@ -98,7 +98,7 @@ function test() {
           ]
         ];
   }
-  if (Curry.js3(4846113, 2, uuu, 1, 20) !== 21) {
+  if (Caml_oo_curry.js3(4846113, 2, uuu, 1, 20) !== 21) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           [
@@ -108,7 +108,7 @@ function test() {
           ]
         ];
   }
-  if (Curry.js3(4846113, 3, v, 3, 7) !== 10) {
+  if (Caml_oo_curry.js3(4846113, 3, v, 3, 7) !== 10) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           [
@@ -118,7 +118,7 @@ function test() {
           ]
         ];
   }
-  if (Curry.js1(5243894, 4, u) !== 3) {
+  if (Caml_oo_curry.js1(5243894, 4, u) !== 3) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           [
@@ -128,7 +128,7 @@ function test() {
           ]
         ];
   }
-  if (Curry.js1(5243895, 5, u) !== 4) {
+  if (Caml_oo_curry.js1(5243895, 5, u) !== 4) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           [
@@ -138,7 +138,7 @@ function test() {
           ]
         ];
   }
-  if (Curry.js3(23297, 6, u, 1, 2) !== 3) {
+  if (Caml_oo_curry.js3(23297, 6, u, 1, 2) !== 3) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           [
@@ -148,7 +148,7 @@ function test() {
           ]
         ];
   }
-  if (Curry.js2(616641298, 7, u, 32) === 32) {
+  if (Caml_oo_curry.js2(616641298, 7, u, 32) === 32) {
     return 0;
   }
   else {
