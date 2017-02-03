@@ -1737,7 +1737,7 @@ val single_space : string
 
 val concat3 : string -> string -> string -> string 
 val concat4 : string -> string -> string -> string -> string 
-
+val concat5 : string -> string -> string -> string -> string -> string  
 val inter2 : string -> string -> string
 val inter3 : string -> string -> string -> string 
 val inter4 : string -> string -> string -> string -> string
@@ -1957,7 +1957,7 @@ let contain_substring s sub =
   find s ~sub >= 0 
 
 (** TODO: optimize 
-  avoid nonterminating when string is empty 
+    avoid nonterminating when string is empty 
 *)
 let non_overlap_count ~sub s = 
   let sub_len = String.length sub in 
@@ -1965,7 +1965,7 @@ let non_overlap_count ~sub s =
     let i = find ~start:off ~sub s  in 
     if i < 0 then acc 
     else aux (acc + 1) (i + sub_len) in
- if String.length sub = 0 then invalid_arg "Ext_string.non_overlap_count"
+  if String.length sub = 0 then invalid_arg "Ext_string.non_overlap_count"
   else aux 0 0  
 
 
@@ -2128,19 +2128,95 @@ external compare : string -> string -> int = "caml_string_length_based_compare" 
 
 let single_space = " "
 let single_colon = ":"
-let concat3 a b c = a ^ b ^ c 
-let concat4 a b c d = a ^ b ^ c ^ d 
 
-let inter2 a b = a ^ single_space ^ b 
+let concat_array sep (s : string array) =   
+  let s_len = Array.length s in 
+  match s_len with 
+  | 0 -> empty 
+  | 1 -> Array.unsafe_get s 0
+  | _ ->     
+    let sep_len = String.length sep in 
+    let len = ref 0 in 
+    for i = 0 to  s_len - 1 do 
+      len := !len + String.length (Array.unsafe_get s i)
+    done;
+    let target = 
+      Bytes.create 
+        (!len + (s_len - 1) * sep_len ) in    
+    let hd = (Array.unsafe_get s 0) in     
+    let hd_len = String.length hd in 
+    String.unsafe_blit hd  0  target 0 hd_len;   
+    let current_offset = ref hd_len in     
+    for i = 1 to s_len - 1 do 
+      String.unsafe_blit sep 0 target  !current_offset sep_len;
+      let cur = Array.unsafe_get s i in 
+      let cur_len = String.length cur in     
+      let new_off_set = (!current_offset + sep_len ) in
+      String.unsafe_blit cur 0 target new_off_set cur_len; 
+      current_offset := 
+        new_off_set + cur_len ; 
+    done;
+    Bytes.unsafe_to_string target   
+
+let concat3 a b c = 
+  let a_len = String.length a in 
+  let b_len = String.length b in 
+  let c_len = String.length c in 
+  let len = a_len + b_len + c_len in 
+  let target = Bytes.create len in 
+  String.unsafe_blit a 0 target 0 a_len ; 
+  String.unsafe_blit b 0 target a_len b_len;
+  String.unsafe_blit c 0 target (a_len + b_len) c_len;
+  Bytes.unsafe_to_string target
+
+let concat4 a b c d =
+  let a_len = String.length a in 
+  let b_len = String.length b in 
+  let c_len = String.length c in 
+  let d_len = String.length d in 
+  let len = a_len + b_len + c_len + d_len in 
+  
+  let target = Bytes.create len in 
+  String.unsafe_blit a 0 target 0 a_len ; 
+  String.unsafe_blit b 0 target a_len b_len;
+  String.unsafe_blit c 0 target (a_len + b_len) c_len;
+  String.unsafe_blit d 0 target (a_len + b_len + c_len) d_len;
+  Bytes.unsafe_to_string target
+
+
+let concat5 a b c d e =
+  let a_len = String.length a in 
+  let b_len = String.length b in 
+  let c_len = String.length c in 
+  let d_len = String.length d in 
+  let e_len = String.length e in 
+  let len = a_len + b_len + c_len + d_len + e_len in 
+  
+  let target = Bytes.create len in 
+  String.unsafe_blit a 0 target 0 a_len ; 
+  String.unsafe_blit b 0 target a_len b_len;
+  String.unsafe_blit c 0 target (a_len + b_len) c_len;
+  String.unsafe_blit d 0 target (a_len + b_len + c_len) d_len;
+  String.unsafe_blit e 0 target (a_len + b_len + c_len + d_len) e_len;
+  Bytes.unsafe_to_string target
+
+
+
+let inter2 a b = 
+    concat3 a single_space b 
+
 
 let inter3 a b c = 
-  a ^ single_space ^ b ^ single_space ^ c 
+  concat5 a  single_space  b  single_space  c 
+
+
+
+
 
 let inter4 a b c d =
-  a ^ single_space ^ b ^ single_space ^ c ^ single_space ^ d 
-(** TODO: improve perf *)
-let concat_array sep (s : string array) = 
-  String.concat sep (Array.to_list s)
+  concat_array single_space [| a; b ; c; d|]
+  
+    
 end
 module Ounit_array_tests
 = struct
@@ -11939,7 +12015,7 @@ let suites =
         OUnit.assert_bool __LOC__ (Ext_string.compare a b < 0);
         OUnit.assert_bool __LOC__ (Ext_string.compare  b a  > 0)
       done ;
-      
+
     end;
     __LOC__ >:: begin fun _ -> 
       let slow_compare x y  = 
@@ -11949,20 +12025,96 @@ let suites =
           String.compare x y 
         else 
           Pervasives.compare x_len y_len  in 
-       let same_sign x y =
-         if x = 0 then y = 0 
-         else if x < 0 then y < 0 
-         else y > 0 in 
-       for i = 0 to 3000 do
-         let chars = [|'a';'b';'c';'d'|] in 
-         let x = Ounit_data_random.random_string chars 129 in 
-         let y = Ounit_data_random.random_string chars 129 in 
-         let a = Ext_string.compare  x y  in 
-         let b = slow_compare x y in 
-         if same_sign a b then OUnit.assert_bool __LOC__ true 
-         else failwith ("incosistent " ^ x ^ " " ^ y ^ " " ^ string_of_int a ^ " " ^ string_of_int b)
-       done 
-    end 
+      let same_sign x y =
+        if x = 0 then y = 0 
+        else if x < 0 then y < 0 
+        else y > 0 in 
+      for i = 0 to 3000 do
+        let chars = [|'a';'b';'c';'d'|] in 
+        let x = Ounit_data_random.random_string chars 129 in 
+        let y = Ounit_data_random.random_string chars 129 in 
+        let a = Ext_string.compare  x y  in 
+        let b = slow_compare x y in 
+        if same_sign a b then OUnit.assert_bool __LOC__ true 
+        else failwith ("incosistent " ^ x ^ " " ^ y ^ " " ^ string_of_int a ^ " " ^ string_of_int b)
+      done 
+    end ;
+    __LOC__ >:: begin fun _ -> 
+      OUnit.assert_bool __LOC__ 
+        (Ext_string.equal
+           (Ext_string.concat3 "a0" "a1" "a2") "a0a1a2"
+        );
+      OUnit.assert_bool __LOC__ 
+        (Ext_string.equal
+           (Ext_string.concat3 "a0" "a11" "") "a0a11"
+        );
+ 
+      OUnit.assert_bool __LOC__ 
+        (Ext_string.equal
+           (Ext_string.concat4 "a0" "a1" "a2" "a3") "a0a1a2a3"
+        );
+     OUnit.assert_bool __LOC__ 
+        (Ext_string.equal
+           (Ext_string.concat4 "a0" "a11" "" "a33") "a0a11a33"
+        );   
+    end;
+    __LOC__ >:: begin fun _ -> 
+      OUnit.assert_bool __LOC__ 
+        (Ext_string.equal
+           (Ext_string.inter2 "a0" "a1") "a0 a1"
+        );
+      OUnit.assert_bool __LOC__ 
+        (Ext_string.equal
+           (Ext_string.inter3 "a0" "a1" "a2") "a0 a1 a2"
+        );
+      OUnit.assert_bool __LOC__ 
+        (Ext_string.equal
+           (Ext_string.inter4 "a0" "a1" "a2" "a3") "a0 a1 a2 a3"
+        );
+    end;
+    __LOC__ >:: begin fun _ -> 
+      OUnit.assert_bool __LOC__
+        (Ext_string.equal 
+           (Ext_string.concat_array Ext_string.single_space [||])
+           Ext_string.empty
+        );
+      OUnit.assert_bool __LOC__
+        (Ext_string.equal 
+           (Ext_string.concat_array Ext_string.single_space [|"a0"|])
+           "a0"
+        );
+      OUnit.assert_bool __LOC__
+        (Ext_string.equal 
+           (Ext_string.concat_array Ext_string.single_space [|"a0";"a1"|])
+           "a0 a1"
+        );   
+      OUnit.assert_bool __LOC__
+        (Ext_string.equal 
+           (Ext_string.concat_array Ext_string.single_space [|"a0";"a1"; "a2"|])
+           "a0 a1 a2"
+        );   
+       OUnit.assert_bool __LOC__
+        (Ext_string.equal 
+           (Ext_string.concat_array Ext_string.single_space [|"a0";"a1"; "a2";"a3"|])
+           "a0 a1 a2 a3"
+        );    
+      OUnit.assert_bool __LOC__
+        (Ext_string.equal 
+           (Ext_string.concat_array Ext_string.single_space [|"a0";"a1"; "a2";"a3";""; "a4"|])
+           "a0 a1 a2 a3  a4"
+        );      
+      OUnit.assert_bool __LOC__
+        (Ext_string.equal 
+           (Ext_string.concat_array Ext_string.single_space [|"0";"a1"; "2";"a3";""; "a4"|])
+           "0 a1 2 a3  a4"
+        );        
+      OUnit.assert_bool __LOC__
+        (Ext_string.equal 
+           (Ext_string.concat_array Ext_string.single_space [|"0";"a1"; "2";"3";"d"; ""; "e"|])
+           "0 a1 2 3 d  e"
+        );        
+  
+    end
   ]
 end
 module Ext_topsort : sig 
