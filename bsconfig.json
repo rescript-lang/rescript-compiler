@@ -320,9 +320,9 @@
             "infer_type_test.ml",
             "ignore_test.ml",
             "http_types.ml",
-            "hello_reason_dep.re",
+            /*"hello_reason_dep.re",
             "hello_reason.rei",
-            "hello_reason.re",
+            "hello_reason.re",*/
             "hello.foo.ml",
             "hashtbl_test.ml",
             "hash_test.ml",

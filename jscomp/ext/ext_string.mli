@@ -125,5 +125,7 @@ val concat4 : string -> string -> string -> string -> string
 
 val inter2 : string -> string -> string
 val inter3 : string -> string -> string -> string 
-
+val inter4 : string -> string -> string -> string -> string
 val concat_array : string -> string array -> string 
+
+val single_colon : string 

@@ -4301,8 +4301,10 @@ val concat4 : string -> string -> string -> string -> string
 
 val inter2 : string -> string -> string
 val inter3 : string -> string -> string -> string 
-
+val inter4 : string -> string -> string -> string -> string
 val concat_array : string -> string array -> string 
+
+val single_colon : string 
 end = struct
 #1 "ext_string.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -4686,7 +4688,7 @@ let empty = ""
 external compare : string -> string -> int = "caml_string_length_based_compare" "noalloc";;
 
 let single_space = " "
-
+let single_colon = ":"
 let concat3 a b c = a ^ b ^ c 
 let concat4 a b c d = a ^ b ^ c ^ d 
 
@@ -4695,6 +4697,8 @@ let inter2 a b = a ^ single_space ^ b
 let inter3 a b c = 
   a ^ single_space ^ b ^ single_space ^ c 
 
+let inter4 a b c d =
+  a ^ single_space ^ b ^ single_space ^ c ^ single_space ^ d 
 (** TODO: improve perf *)
 let concat_array sep (s : string array) = 
   String.concat sep (Array.to_list s)
@@ -5869,7 +5873,7 @@ val suffix_cmti : string
 val commonjs : string 
 val amdjs : string 
 val goog : string 
-
+val es6 : string 
 val unused_attribute : string 
 end = struct
 #1 "literals.ml"
@@ -5969,6 +5973,7 @@ let suffix_js = ".js"
 let commonjs = "commonjs" 
 let amdjs = "amdjs"
 let goog = "goog"
+let es6 = "es6"
 
 let unused_attribute = "Unused attribute " 
 end

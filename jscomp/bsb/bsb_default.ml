@@ -163,6 +163,8 @@ let package_specs_overriden = ref false
 
 let get_package_specs () = !package_specs
 
+
+
 let set_package_specs_from_array arr =
     if not  !package_specs_overriden then
     let new_package_specs =
@@ -170,7 +172,7 @@ let set_package_specs_from_array arr =
       |> get_list_string
       |> List.fold_left (fun acc x ->
           let v =
-            if x = Literals.amdjs || x = Literals.commonjs || x = Literals.goog   then String_set.add x acc
+            if Bsb_config.supported_format x    then String_set.add x acc
             else
               failwith ("Unkonwn package spec" ^ x) in
           v
@@ -186,7 +188,7 @@ let internal_override_package_specs str =
   package_specs :=
     List.fold_left (fun acc x ->
           let v =
-            if x = Literals.amdjs || x = Literals.commonjs || x = Literals.goog   then String_set.add x acc
+            if Bsb_config.supported_format x then String_set.add x acc
             else
               failwith ("Unkonwn package spec" ^ x) in
           v

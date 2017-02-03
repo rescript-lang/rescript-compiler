@@ -114,7 +114,8 @@ let string_of_module_id ~output_prefix
               js_file !Location.input_name              
           | Goog , Found (package_name, x), _  -> 
             package_name  ^ "." ^  String.uncapitalize id.name
-          | _ , _, NotFound -> assert false 
+          | (AmdJS | NodeJS| Es6), (Empty | Package_script _ | Found _ ), NotFound -> assert false
+
           | (AmdJS | NodeJS | Es6), 
             Found(package_name, x),
             Found(current_package, path) -> 

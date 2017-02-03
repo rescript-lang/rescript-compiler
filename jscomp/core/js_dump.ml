@@ -73,7 +73,7 @@ module L = struct
   let exports = "exports"
   let dot = "."
   let comma = ","
-  let colon = ":"
+  let colon = Ext_string.single_colon
   let throw = "throw"
   let default = "default"
   let length = "length"
@@ -1814,7 +1814,7 @@ let es6_program ~output_prefix f (  x : J.deps_program) =
             Lam_module_ident.id x,
             Js_program_loader.string_of_module_id
               ~output_prefix
-              NodeJS x)
+              Es6 x)
          x.modules)
   in
   let () = P.force_newline f in 

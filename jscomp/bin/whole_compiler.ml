@@ -20062,7 +20062,7 @@ val suffix_cmti : string
 val commonjs : string 
 val amdjs : string 
 val goog : string 
-
+val es6 : string 
 val unused_attribute : string 
 end = struct
 #1 "literals.ml"
@@ -20162,6 +20162,7 @@ let suffix_js = ".js"
 let commonjs = "commonjs" 
 let amdjs = "amdjs"
 let goog = "goog"
+let es6 = "es6"
 
 let unused_attribute = "Unused attribute " 
 end
@@ -21093,8 +21094,10 @@ val concat4 : string -> string -> string -> string -> string
 
 val inter2 : string -> string -> string
 val inter3 : string -> string -> string -> string 
-
+val inter4 : string -> string -> string -> string -> string
 val concat_array : string -> string array -> string 
+
+val single_colon : string 
 end = struct
 #1 "ext_string.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -21478,7 +21481,7 @@ let empty = ""
 external compare : string -> string -> int = "caml_string_length_based_compare" "noalloc";;
 
 let single_space = " "
-
+let single_colon = ":"
 let concat3 a b c = a ^ b ^ c 
 let concat4 a b c d = a ^ b ^ c ^ d 
 
@@ -21487,6 +21490,8 @@ let inter2 a b = a ^ single_space ^ b
 let inter3 a b c = 
   a ^ single_space ^ b ^ single_space ^ c 
 
+let inter4 a b c d =
+  a ^ single_space ^ b ^ single_space ^ c ^ single_space ^ d 
 (** TODO: improve perf *)
 let concat_array sep (s : string array) = 
   String.concat sep (Array.to_list s)
@@ -80732,7 +80737,8 @@ let string_of_module_id ~output_prefix
               js_file !Location.input_name              
           | Goog , Found (package_name, x), _  -> 
             package_name  ^ "." ^  String.uncapitalize id.name
-          | _ , _, NotFound -> assert false 
+          | (AmdJS | NodeJS| Es6), (Empty | Package_script _ | Found _ ), NotFound -> assert false
+
           | (AmdJS | NodeJS | Es6), 
             Found(package_name, x),
             Found(current_package, path) -> 
@@ -80922,7 +80928,7 @@ module L = struct
   let exports = "exports"
   let dot = "."
   let comma = ","
-  let colon = ":"
+  let colon = Ext_string.single_colon
   let throw = "throw"
   let default = "default"
   let length = "length"
@@ -82663,13 +82669,16 @@ let es6_program ~output_prefix f (  x : J.deps_program) =
             Lam_module_ident.id x,
             Js_program_loader.string_of_module_id
               ~output_prefix
-              NodeJS x)
+              Es6 x)
          x.modules)
   in
   let () = P.force_newline f in 
   let cxt = statement_list true cxt f x.program.block in 
   let () = P.force_newline f in 
   es6_export cxt f x.program.exports
+
+
+  
 (** Make sure github linguist happy
     {[
       require('Linguist')
@@ -106177,7 +106186,7 @@ let buckle_script_flags =
   ::
   ("-bs-package-output", 
    Arg.String Js_config.set_npm_package_path, 
-   " set npm-output-path: [opt_module]:path, for example: 'lib/cjs', 'amdjs:lib/amdjs' and 'goog:lib/gjs'")
+   " set npm-output-path: [opt_module]:path, for example: 'lib/cjs', 'amdjs:lib/amdjs', 'es6:lib/es6' and 'goog:lib/gjs'")
   ::
   ("-bs-package-include", 
    Arg.String add_package, 

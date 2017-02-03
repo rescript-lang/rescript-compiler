@@ -112,12 +112,12 @@ let suites =
       let count = 1000 in 
       let v = Ordered_hash_set_string.of_array (Array.init count (fun i -> string_of_int i) ) in
       for i = 0 to count - 1 do 
-        Ordered_hash_set_string.replace v (string_of_int i) (string_of_int i ^ ":")
+        Ordered_hash_set_string.replace v (string_of_int i) (string_of_int i ^ Ext_string.single_colon)
       done ;
       OUnit.assert_equal (Ordered_hash_set_string.length v) count;
       OUnit.assert_equal 
         (Ordered_hash_set_string.to_sorted_array v )
-        (Array.init count (fun i -> string_of_int i ^ ":"))
+        (Array.init count (fun i -> string_of_int i ^ Ext_string.single_colon))
       
     end
   ]

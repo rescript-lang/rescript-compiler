@@ -36,3 +36,9 @@ val no_dev: bool ref
 
 (** default not install, only when -make-world, its dependencies will be installed  *)
 val install : bool ref 
+
+val supported_format : string -> bool
+
+val package_flag : format:string -> string -> string 
+
+val package_output : format:string -> string -> string 
