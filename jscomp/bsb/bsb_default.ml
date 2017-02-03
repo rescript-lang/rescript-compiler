@@ -116,13 +116,12 @@ let set_ocamllex ~cwd s =
 let get_ocamllex () = !ocamllex
 
 
-
 let refmt = ref "refmt"
 let get_refmt () = !refmt
 let set_refmt ~cwd p =
   refmt := resolve_bsb_magic_file ~cwd ~desc:"refmt" p
 
-let refmt_flags = ref []
+let refmt_flags = ref ["--print"; "binary"]
 let get_refmt_flags () = !refmt_flags
 let set_refmt_flags s =
   refmt_flags := get_list_string s
