@@ -675,6 +675,10 @@ function inter3(a, b, c) {
   return a + (single_space + (b + (single_space + c)));
 }
 
+function inter4(a, b, c, d) {
+  return a + (single_space + (b + (single_space + (c + (single_space + d)))));
+}
+
 function concat_array(sep, s) {
   return $$String.concat(sep, $$Array.to_list(s));
 }
@@ -684,6 +688,8 @@ var check_suffix_case = ends_with;
 var check_suffix_case_then_chop = ends_with_then_chop;
 
 var empty = "";
+
+var single_colon = ":";
 
 exports.split_by                        = split_by;
 exports.trim                            = trim;
@@ -727,9 +733,11 @@ exports.replace_slash_backward          = replace_slash_backward;
 exports.replace_backward_slash          = replace_backward_slash;
 exports.empty                           = empty;
 exports.single_space                    = single_space;
+exports.single_colon                    = single_colon;
 exports.concat3                         = concat3;
 exports.concat4                         = concat4;
 exports.inter2                          = inter2;
 exports.inter3                          = inter3;
+exports.inter4                          = inter4;
 exports.concat_array                    = concat_array;
 /* No side effect */

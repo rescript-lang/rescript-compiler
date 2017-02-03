@@ -94,5 +94,6 @@ let suffix_js = ".js"
 let commonjs = "commonjs" 
 let amdjs = "amdjs"
 let goog = "goog"
+let es6 = "es6"
 
 let unused_attribute = "Unused attribute " 

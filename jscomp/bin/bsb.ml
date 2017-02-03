@@ -96,7 +96,7 @@ val suffix_cmti : string
 val commonjs : string 
 val amdjs : string 
 val goog : string 
-
+val es6 : string 
 val unused_attribute : string 
 end = struct
 #1 "literals.ml"
@@ -196,6 +196,7 @@ let suffix_js = ".js"
 let commonjs = "commonjs" 
 let amdjs = "amdjs"
 let goog = "goog"
+let es6 = "es6"
 
 let unused_attribute = "Unused attribute " 
 end
@@ -825,8 +826,10 @@ val concat4 : string -> string -> string -> string -> string
 
 val inter2 : string -> string -> string
 val inter3 : string -> string -> string -> string 
-
+val inter4 : string -> string -> string -> string -> string
 val concat_array : string -> string array -> string 
+
+val single_colon : string 
 end = struct
 #1 "ext_string.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -1210,7 +1213,7 @@ let empty = ""
 external compare : string -> string -> int = "caml_string_length_based_compare" "noalloc";;
 
 let single_space = " "
-
+let single_colon = ":"
 let concat3 a b c = a ^ b ^ c 
 let concat4 a b c d = a ^ b ^ c ^ d 
 
@@ -1219,6 +1222,8 @@ let inter2 a b = a ^ single_space ^ b
 let inter3 a b c = 
   a ^ single_space ^ b ^ single_space ^ c 
 
+let inter4 a b c d =
+  a ^ single_space ^ b ^ single_space ^ c ^ single_space ^ d 
 (** TODO: improve perf *)
 let concat_array sep (s : string array) = 
   String.concat sep (Array.to_list s)
@@ -2858,6 +2863,12 @@ val no_dev: bool ref
 
 (** default not install, only when -make-world, its dependencies will be installed  *)
 val install : bool ref 
+
+val supported_format : string -> bool
+
+val package_flag : format:string -> string -> string 
+
+val package_output : format:string -> string -> string 
 end = struct
 #1 "bsb_config.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -2890,16 +2901,21 @@ let lib_amd = "lib"//"amdjs"
 let lib_goog = "lib" // "goog"
 let lib_ocaml = Js_config.lib_ocaml_dir
 let lib_bs = "lib" // "bs"
+let lib_es6 = "lib" // "es6"
 let rev_lib_bs = ".."// ".."
+
+
 let rev_lib_bs_prefix p = rev_lib_bs // p 
 let common_js_prefix p  =  lib_js  // p
 let amd_js_prefix p = lib_amd // p 
 let goog_prefix p = lib_goog // p  
+let es6_prefix p = lib_es6 // p 
+
 let ocaml_bin_install_prefix p = lib_ocaml // p
 
 let lazy_src_root_dir = "$src_root_dir" 
 let proj_rel path = lazy_src_root_dir // path
-                                 
+
 (** it may not be a bad idea to hard code the binary path 
     of bsb in configuration time
 *)
@@ -2907,6 +2923,44 @@ let proj_rel path = lazy_src_root_dir // path
 let no_dev = ref false 
 
 let install = ref false 
+
+let supported_format x = 
+  x = Literals.amdjs ||
+  x = Literals.commonjs ||
+  x = Literals.goog ||
+  x = Literals.es6
+
+let bs_package_output = "-bs-package-output"
+
+(** Assume input is valid 
+    {[ -bs-package-output commonjs:lib/js/jscomp/test ]}
+*)
+let package_flag ~format:fmt dir =
+  Ext_string.inter2
+    bs_package_output 
+    (Ext_string.concat3
+       fmt
+       Ext_string.single_colon
+       (if fmt = Literals.amdjs then 
+          amd_js_prefix dir 
+        else if fmt = Literals.commonjs then 
+          common_js_prefix dir 
+        else if fmt = Literals.es6 then 
+          es6_prefix dir 
+        else goog_prefix dir))
+(** js output for each package *)
+let package_output ~format:s output=
+  let prefix  =
+    if s = Literals.commonjs then
+      common_js_prefix
+    else if s = Literals.amdjs then
+      amd_js_prefix
+    else if s = Literals.es6 then 
+      es6_prefix   
+    else goog_prefix
+  in
+  (proj_rel @@ prefix output )
+(* output_file_sans_extension ^ Literals.suffix_js *) 
 end
 module Ext_array : sig 
 #1 "ext_array.mli"
@@ -6983,6 +7037,8 @@ let package_specs_overriden = ref false
 
 let get_package_specs () = !package_specs
 
+
+
 let set_package_specs_from_array arr =
     if not  !package_specs_overriden then
     let new_package_specs =
@@ -6990,7 +7046,7 @@ let set_package_specs_from_array arr =
       |> get_list_string
       |> List.fold_left (fun acc x ->
           let v =
-            if x = Literals.amdjs || x = Literals.commonjs || x = Literals.goog   then String_set.add x acc
+            if Bsb_config.supported_format x    then String_set.add x acc
             else
               failwith ("Unkonwn package spec" ^ x) in
           v
@@ -7006,7 +7062,7 @@ let internal_override_package_specs str =
   package_specs :=
     List.fold_left (fun acc x ->
           let v =
-            if x = Literals.amdjs || x = Literals.commonjs || x = Literals.goog   then String_set.add x acc
+            if Bsb_config.supported_format x then String_set.add x acc
             else
               failwith ("Unkonwn package spec" ^ x) in
           v
@@ -8021,15 +8077,8 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
       let output_cmj =  output_file_sans_extension ^ Literals.suffix_cmj in
       let output_js =
         String_set.fold (fun s acc ->
-            let prefix  =
-              if s = Literals.commonjs then
-                Bsb_config.common_js_prefix
-              else if s = Literals.amdjs then
-                Bsb_config.amd_js_prefix
-              else Bsb_config.goog_prefix
-            in
-            (Bsb_config.proj_rel @@ prefix
-               output_file_sans_extension ^ Literals.suffix_js) :: acc
+          Bsb_config.package_output ~format:s (output_file_sans_extension ^ Literals.suffix_js)
+          :: acc
           ) package_specs []
       in
       (* let output_mldeps = output_file_sans_extension ^ Literals.suffix_mldeps in  *)
@@ -8039,14 +8088,9 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
           ( "bs_package_flags",
             `Append
               (String_set.fold (fun s acc ->
-                   acc ^ " -bs-package-output " ^ s ^ ":" ^
-                   if s = Literals.amdjs then
-                     (Bsb_config.amd_js_prefix @@ Filename.dirname output_cmi)
-                   else if s = Literals.commonjs then
-                     (Bsb_config.common_js_prefix @@ Filename.dirname output_cmi)
-                   else
-                     (Bsb_config.goog_prefix @@ Filename.dirname output_cmi)
-                 ) package_specs "")
+                  Ext_string.inter2 acc (Bsb_config.package_flag ~format:s (Filename.dirname output_cmi))
+
+                 ) package_specs Ext_string.empty)
           ) ::
           (if group.dir_index = 0 then [] else
              [("bsc_extra_includes",
@@ -8816,6 +8860,7 @@ let lib_amdjs = "lib" // "amdjs"
 let lib_goog = "lib" // "goog"
 let lib_js = "lib" // "js"
 let lib_ocaml = "lib" // "ocaml" (* installed binary artifacts *)
+let lib_es6 = "lib" // "es6"
 let clean_bs_garbage cwd =
   print_string "Doing cleaning in ";
   print_endline cwd;
@@ -8828,7 +8873,8 @@ let clean_bs_garbage cwd =
     aux lib_amdjs ;
     aux lib_goog;
     aux lib_js ;
-    aux lib_ocaml
+    aux lib_ocaml;
+    aux lib_es6 ; 
   with
     e ->
     prerr_endline ("Failed to clean due to " ^ Printexc.to_string e)

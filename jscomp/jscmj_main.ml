@@ -103,7 +103,7 @@ let from_cmi (files : string list) (output_file : string) =
               Ext_pp.space f;
               Ext_pp.string f "0";
               Ext_pp.space f ;
-              Ext_pp.string f ":" ; 
+              Ext_pp.string f Ext_string.single_colon ; 
               Ext_pp.space f ;
               Ext_pp.string f "Cmi_format.cmi_infos"
             ));

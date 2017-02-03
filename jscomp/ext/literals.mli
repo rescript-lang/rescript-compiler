@@ -94,5 +94,5 @@ val suffix_cmti : string
 val commonjs : string 
 val amdjs : string 
 val goog : string 
-
+val es6 : string 
 val unused_attribute : string 

@@ -322,15 +322,8 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
       let output_cmj =  output_file_sans_extension ^ Literals.suffix_cmj in
       let output_js =
         String_set.fold (fun s acc ->
-            let prefix  =
-              if s = Literals.commonjs then
-                Bsb_config.common_js_prefix
-              else if s = Literals.amdjs then
-                Bsb_config.amd_js_prefix
-              else Bsb_config.goog_prefix
-            in
-            (Bsb_config.proj_rel @@ prefix
-               output_file_sans_extension ^ Literals.suffix_js) :: acc
+          Bsb_config.package_output ~format:s (output_file_sans_extension ^ Literals.suffix_js)
+          :: acc
           ) package_specs []
       in
       (* let output_mldeps = output_file_sans_extension ^ Literals.suffix_mldeps in  *)
@@ -340,14 +333,9 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
           ( "bs_package_flags",
             `Append
               (String_set.fold (fun s acc ->
-                   acc ^ " -bs-package-output " ^ s ^ ":" ^
-                   if s = Literals.amdjs then
-                     (Bsb_config.amd_js_prefix @@ Filename.dirname output_cmi)
-                   else if s = Literals.commonjs then
-                     (Bsb_config.common_js_prefix @@ Filename.dirname output_cmi)
-                   else
-                     (Bsb_config.goog_prefix @@ Filename.dirname output_cmi)
-                 ) package_specs "")
+                  Ext_string.inter2 acc (Bsb_config.package_flag ~format:s (Filename.dirname output_cmi))
+
+                 ) package_specs Ext_string.empty)
           ) ::
           (if group.dir_index = 0 then [] else
              [("bsc_extra_includes",

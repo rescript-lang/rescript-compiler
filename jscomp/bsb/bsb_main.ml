@@ -280,6 +280,7 @@ let lib_amdjs = "lib" // "amdjs"
 let lib_goog = "lib" // "goog"
 let lib_js = "lib" // "js"
 let lib_ocaml = "lib" // "ocaml" (* installed binary artifacts *)
+let lib_es6 = "lib" // "es6"
 let clean_bs_garbage cwd =
   print_string "Doing cleaning in ";
   print_endline cwd;
@@ -292,7 +293,8 @@ let clean_bs_garbage cwd =
     aux lib_amdjs ;
     aux lib_goog;
     aux lib_js ;
-    aux lib_ocaml
+    aux lib_ocaml;
+    aux lib_es6 ; 
   with
     e ->
     prerr_endline ("Failed to clean due to " ^ Printexc.to_string e)

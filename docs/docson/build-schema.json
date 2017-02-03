@@ -5,7 +5,8 @@
             "enum": [
                 "commonjs",
                 "amdjs",
-                "goog"
+                "goog",
+                "es6"
             ]
         },
         "package-specs": {
@@ -21,7 +22,7 @@
                     "enum": [
                         "all"
                     ],
-                    "description": "All supported format with default output"
+                    "description": "(Not supported yet)All supported format with default output"
                 }
             ]
         },

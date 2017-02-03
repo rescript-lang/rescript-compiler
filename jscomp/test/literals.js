@@ -103,6 +103,8 @@ var amdjs = "amdjs";
 
 var goog = "goog";
 
+var es6 = "es6";
+
 var unused_attribute = "Unused attribute ";
 
 exports.js_array_ctor       = js_array_ctor;
@@ -156,5 +158,6 @@ exports.suffix_cmti         = suffix_cmti;
 exports.commonjs            = commonjs;
 exports.amdjs               = amdjs;
 exports.goog                = goog;
+exports.es6                 = es6;
 exports.unused_attribute    = unused_attribute;
 /* No side effect */
