@@ -8078,15 +8078,7 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
       let output_js =
         String_set.fold (fun s acc ->
           Bsb_config.package_output ~format:s (output_file_sans_extension ^ Literals.suffix_js)
-            (* let prefix  =
-              if s = Literals.commonjs then
-                Bsb_config.common_js_prefix
-              else if s = Literals.amdjs then
-                Bsb_config.amd_js_prefix
-              else Bsb_config.goog_prefix
-            in
-            (Bsb_config.proj_rel @@ prefix
-               output_file_sans_extension ^ Literals.suffix_js) *) :: acc
+          :: acc
           ) package_specs []
       in
       (* let output_mldeps = output_file_sans_extension ^ Literals.suffix_mldeps in  *)
