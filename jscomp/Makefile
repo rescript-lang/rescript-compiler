@@ -380,25 +380,25 @@ force-snapshotml:
 	make snapshotml
 
 bin/bsppx.ml:./bin/bspack.exe
-	BS_DEBUG=false $< -bs-MD  -prelude-str 'module Config = Config_bsppx'  -bs-exclude-I config -I ../ocaml/utils/ -I ../ocaml/parsing/ -I common -I ext -I syntax -I core -bs-main Bsppx_main -o $@
+	unset BS_DEBUG; $< -bs-MD  -prelude-str 'module Config = Config_bsppx'  -bs-exclude-I config -I ../ocaml/utils/ -I ../ocaml/parsing/ -I common -I ext -I syntax -I core -bs-main Bsppx_main -o $@
 
 bin/whole_compiler.ml:./bin/bspack.exe
-	BS_DEBUG=false $< -bs-MD -prelude-str 'module Config = Config_whole_compiler' -bs-exclude-I config -o $@ -bs-main Js_main -I ../ocaml/utils/ -I ../ocaml/parsing/ -I ../ocaml/typing/ -I ../ocaml/bytecomp/ -I ../ocaml/driver/ -I stubs -I ext -I syntax -I depends -I common -I core
+	unset BS_DEBUG; $< -bs-MD -prelude-str 'module Config = Config_whole_compiler' -bs-exclude-I config -o $@ -bs-main Js_main -I ../ocaml/utils/ -I ../ocaml/parsing/ -I ../ocaml/typing/ -I ../ocaml/bytecomp/ -I ../ocaml/driver/ -I stubs -I ext -I syntax -I depends -I common -I core
 
 bin/bsdep.ml:./bin/bspack.exe
-	BS_DEBUG=false BS_OCAMLDEP=true $< -bs-MD  -prelude-str 'module Config = Config_bsdep'  -bs-exclude-I config -I ../ocaml/utils/ -I ../ocaml/parsing/ -I ../ocaml/driver -I ../ocaml/tools -I common -I ext -I syntax -I depends -I core -I stubs -bs-main Ocamldep -o $@
+	unset BS_DEBUG; BS_OCAMLDEP=true $< -bs-MD  -prelude-str 'module Config = Config_bsdep'  -bs-exclude-I config -I ../ocaml/utils/ -I ../ocaml/parsing/ -I ../ocaml/driver -I ../ocaml/tools -I common -I ext -I syntax -I depends -I core -I stubs -bs-main Ocamldep -o $@
 
 bin/bsb_helper.ml:./bin/bspack.exe
-	BS_DEBUG=false $< -bs-MD   -I stubs -I common -I ext -I syntax -I depends -I bsb  -bs-main Bsb_helper_main -o $@
+	unset BS_DEBUG; $< -bs-MD   -I stubs -I common -I ext -I syntax -I depends -I bsb  -bs-main Bsb_helper_main -o $@
 
 bin/bsb.ml:./bin/bspack.exe
-	BS_DEBUG=false $< -bs-MD -I stubs -I common -I ext -I syntax -I depends -I bsb -I ext  -bs-main Bsb_main -o $@
+	unset BS_DEBUG; $< -bs-MD -I stubs -I common -I ext -I syntax -I depends -I bsb -I ext  -bs-main Bsb_main -o $@
 
 bin/bspp.ml:./bin/bspack.exe
-	BS_DEBUG=false BS_MIN_LEX_DEPS=true $< -bs-MD   -bs-exclude-I config -I ../ocaml/utils/ -I ../ocaml/parsing?parser  -I common -I ext -I syntax -I depends -I bspp -I core -bs-main Bspp_main -o $@
+	unset BS_DEBUG; BS_MIN_LEX_DEPS=true $< -bs-MD   -bs-exclude-I config -I ../ocaml/utils/ -I ../ocaml/parsing?parser  -I common -I ext -I syntax -I depends -I bspp -I core -bs-main Bspp_main -o $@
 
 bin/js_compiler.ml:./bin/bspack.exe
-	BS_DEBUG=false BS_COMPILER_IN_BROWSER=true bspack.exe -bs-MD  -prelude-str 'module Config = Config_whole_compiler' -bs-exclude-I config -o $@ -bs-main Jsoo_main -I ../ocaml/utils/ -I ../ocaml/parsing/ -I ../ocaml/typing/ -I ../ocaml/bytecomp/ -I ../ocaml/driver/ -I ext -I syntax -I depends -I common -I core
+	unset BS_DEBUG; BS_COMPILER_IN_BROWSER=true bspack.exe -bs-MD  -prelude-str 'module Config = Config_whole_compiler' -bs-exclude-I config -o $@ -bs-main Jsoo_main -I ../ocaml/utils/ -I ../ocaml/parsing/ -I ../ocaml/typing/ -I ../ocaml/bytecomp/ -I ../ocaml/driver/ -I ext -I syntax -I depends -I common -I core
 
 bin/all_ounit_tests.ml:./bin/bspack.exe
 	$< -bs-MD   -I ounit -I ounit_tests  -I stubs -I bsb -I common -I ext -I syntax -I depends -I bspp -I core -bs-main Ounit_tests_main -o $@

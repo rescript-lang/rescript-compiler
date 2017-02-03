@@ -276,14 +276,15 @@ let log_counter = ref 0
 
 
 let dump env ext  lam = 
-#if BS_COMPILER_IN_BROWSER then
+#if BS_COMPILER_IN_BROWSER || (undefined BS_DEBUG) then
       lam
-#else    
+#else
    if Js_config.is_same_file ()
     then 
       (* ATTENTION: easy to introduce a bug during refactoring when forgeting `begin` `end`*)
       begin 
         incr log_counter;
+        Ext_log.dwarn __LOC__ "\n@[[TIME:]%s: %f@]@." ext (Sys.time () *. 1000.);
         Lam_print.seriaize env 
           (Ext_filename.chop_extension 
              ~loc:__LOC__ 
@@ -292,7 +293,9 @@ let dump env ext  lam =
           ) lam;
       end;
   lam
-#end
+#end      
+  
+
 
 
 

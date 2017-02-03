@@ -303,12 +303,18 @@ let compile  ~filename output_prefix env _sigs
   in
   let maybe_pure = no_side_effects rest
   in
+#if BS_DEBUG then 
+  let () = Ext_log.dwarn __LOC__ "\n@[[TIME:]Pre-compile: %f@]@."  (Sys.time () *. 1000.) in      
+#end  
   let body  = 
     rest
     |> List.map (fun group -> compile_group meta group)
     |> Js_output.concat
     |> Js_output.to_block
   in
+#if BS_DEBUG then 
+  let () = Ext_log.dwarn __LOC__ "\n@[[TIME:]Post-compile: %f@]@."  (Sys.time () *. 1000.) in      
+#end    
   (* The file is not big at all compared with [cmo] *)
   (* Ext_marshal.to_file (Ext_filename.chop_extension filename ^ ".mj")  js; *)
   let js = 
@@ -370,7 +376,7 @@ let lambda_as_module
   begin 
     Js_config.set_current_file filename ;  
 #if BS_DEBUG then    
-    Js_config.set_debug_file "test_include.ml";
+    Js_config.set_debug_file "gpr_1150.ml";
 #end    
     let lambda_output = compile ~filename output_prefix env sigs lam in
     let (//) = Filename.concat in 
