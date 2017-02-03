@@ -1,7 +1,6 @@
 'use strict';
 
 var List                    = require("../../lib/js/list");
-var $$Array                 = require("../../lib/js/array");
 var Bytes                   = require("../../lib/js/bytes");
 var Curry                   = require("../../lib/js/curry");
 var $$String                = require("../../lib/js/string");
@@ -657,37 +656,105 @@ function replace_backward_slash(x) {
   }
 }
 
+var empty = "";
+
 var single_space = " ";
 
+function concat_array(sep, s) {
+  var s_len = s.length;
+  if (s_len !== 0) {
+    if (s_len !== 1) {
+      var sep_len = sep.length;
+      var len = 0;
+      for(var i = 0 ,i_finish = s_len - 1 | 0; i <= i_finish; ++i){
+        len = len + s[i].length | 0;
+      }
+      var target = Caml_string.caml_create_string(len + Caml_int32.imul(s_len - 1 | 0, sep_len) | 0);
+      var hd = s[0];
+      var hd_len = hd.length;
+      Caml_string.caml_blit_string(hd, 0, target, 0, hd_len);
+      var current_offset = hd_len;
+      for(var i$1 = 1 ,i_finish$1 = s_len - 1 | 0; i$1 <= i_finish$1; ++i$1){
+        Caml_string.caml_blit_string(sep, 0, target, current_offset, sep_len);
+        var cur = s[i$1];
+        var cur_len = cur.length;
+        var new_off_set = current_offset + sep_len | 0;
+        Caml_string.caml_blit_string(cur, 0, target, new_off_set, cur_len);
+        current_offset = new_off_set + cur_len | 0;
+      }
+      return Caml_string.bytes_to_string(target);
+    }
+    else {
+      return s[0];
+    }
+  }
+  else {
+    return empty;
+  }
+}
+
 function concat3(a, b, c) {
-  return a + (b + c);
+  var a_len = a.length;
+  var b_len = b.length;
+  var c_len = c.length;
+  var len = (a_len + b_len | 0) + c_len | 0;
+  var target = Caml_string.caml_create_string(len);
+  Caml_string.caml_blit_string(a, 0, target, 0, a_len);
+  Caml_string.caml_blit_string(b, 0, target, a_len, b_len);
+  Caml_string.caml_blit_string(c, 0, target, a_len + b_len | 0, c_len);
+  return Caml_string.bytes_to_string(target);
 }
 
 function concat4(a, b, c, d) {
-  return a + (b + (c + d));
+  var a_len = a.length;
+  var b_len = b.length;
+  var c_len = c.length;
+  var d_len = d.length;
+  var len = ((a_len + b_len | 0) + c_len | 0) + d_len | 0;
+  var target = Caml_string.caml_create_string(len);
+  Caml_string.caml_blit_string(a, 0, target, 0, a_len);
+  Caml_string.caml_blit_string(b, 0, target, a_len, b_len);
+  Caml_string.caml_blit_string(c, 0, target, a_len + b_len | 0, c_len);
+  Caml_string.caml_blit_string(d, 0, target, (a_len + b_len | 0) + c_len | 0, d_len);
+  return Caml_string.bytes_to_string(target);
+}
+
+function concat5(a, b, c, d, e) {
+  var a_len = a.length;
+  var b_len = b.length;
+  var c_len = c.length;
+  var d_len = d.length;
+  var e_len = e.length;
+  var len = (((a_len + b_len | 0) + c_len | 0) + d_len | 0) + e_len | 0;
+  var target = Caml_string.caml_create_string(len);
+  Caml_string.caml_blit_string(a, 0, target, 0, a_len);
+  Caml_string.caml_blit_string(b, 0, target, a_len, b_len);
+  Caml_string.caml_blit_string(c, 0, target, a_len + b_len | 0, c_len);
+  Caml_string.caml_blit_string(d, 0, target, (a_len + b_len | 0) + c_len | 0, d_len);
+  Caml_string.caml_blit_string(e, 0, target, ((a_len + b_len | 0) + c_len | 0) + d_len | 0, e_len);
+  return Caml_string.bytes_to_string(target);
 }
 
 function inter2(a, b) {
-  return a + (single_space + b);
+  return concat3(a, single_space, b);
 }
 
 function inter3(a, b, c) {
-  return a + (single_space + (b + (single_space + c)));
+  return concat5(a, single_space, b, single_space, c);
 }
 
 function inter4(a, b, c, d) {
-  return a + (single_space + (b + (single_space + (c + (single_space + d)))));
-}
-
-function concat_array(sep, s) {
-  return $$String.concat(sep, $$Array.to_list(s));
+  return concat_array(single_space, /* array */[
+              a,
+              b,
+              c,
+              d
+            ]);
 }
 
 var check_suffix_case = ends_with;
 
 var check_suffix_case_then_chop = ends_with_then_chop;
-
-var empty = "";
 
 var single_colon = ":";
 
@@ -734,10 +801,11 @@ exports.replace_backward_slash          = replace_backward_slash;
 exports.empty                           = empty;
 exports.single_space                    = single_space;
 exports.single_colon                    = single_colon;
+exports.concat_array                    = concat_array;
 exports.concat3                         = concat3;
 exports.concat4                         = concat4;
+exports.concat5                         = concat5;
 exports.inter2                          = inter2;
 exports.inter3                          = inter3;
 exports.inter4                          = inter4;
-exports.concat_array                    = concat_array;
 /* No side effect */

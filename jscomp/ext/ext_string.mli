@@ -122,7 +122,7 @@ val single_space : string
 
 val concat3 : string -> string -> string -> string 
 val concat4 : string -> string -> string -> string -> string 
-
+val concat5 : string -> string -> string -> string -> string -> string  
 val inter2 : string -> string -> string
 val inter3 : string -> string -> string -> string 
 val inter4 : string -> string -> string -> string -> string
