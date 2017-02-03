@@ -56,8 +56,6 @@ function length(l) {
 
 /* No side effect */
 
-// List.map (x=>x + 1, [1 , [2,0]]) 
-
 console.log(length([1,2,3]));
 
 }());
