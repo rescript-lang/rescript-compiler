@@ -3,72 +3,75 @@
 
 *)
 
-let print_arr foo = Array.iter print_int foo
+
 
 (*
 let f children = 
   match children with 
-  | [] -> print_arr [||]
+  | [] ->   [||]
   | a0::children -> 
     match children with 
-    | [] -> print_arr [|a0|]
+    | [] ->   [|a0|]
     | a1 :: children -> 
       match children with 
-      | [] -> print_arr [|a0;a1|]
+      | [] ->   [|a0;a1|]
       | a2:: children -> 
         match children with 
-        | [] -> print_arr [|a0;a1;a2|]
+        | [] ->   [|a0;a1;a2|]
         | a3::children -> 
           match children with 
-          | [] -> print_arr [|a0;a1;a2;a3|]
+          | [] ->   [|a0;a1;a2;a3|]
           | a4::children -> 
             match children with 
-            | [] -> print_arr [|a0;a1;a2;a3;a4|]
+            | [] ->   [|a0;a1;a2;a3;a4|]
             | a5::children -> 
               match children with 
-              | [] -> print_arr [|a0;a1;a2;a3;a4;a5|]
+              | [] ->   [|a0;a1;a2;a3;a4;a5|]
               | a6::children -> 
                 match children with 
-                | [] -> print_arr [|a0;a1;a2;a3;a4;a5;a6|]
+                | [] ->   [|a0;a1;a2;a3;a4;a5;a6|]
                 | a7:: children -> 
                   match children with 
-                  | [] -> print_arr [|a0;a1;a2;a3;a4;a5;a6; a7|]
+                  | [] ->   [|a0;a1;a2;a3;a4;a5;a6; a7|]
                   | a8::children -> 
                     match children with 
-                    | [] -> print_arr [|a0;a1;a2;a3;a4;a5;a6;a7;a8|]
+                    | [] ->   [|a0;a1;a2;a3;a4;a5;a6;a7;a8|]
                     | a9::children -> 
                       match children with 
-                      | [] -> print_arr [|a0;a1;a2;a3;a4;a5;a6;a7;a8;a9|]
+                      | [] ->   [|a0;a1;a2;a3;a4;a5;a6;a7;a8;a9|]
                       | a10::children -> 
                         match children with 
-                        | [] -> print_arr [|a0;a1;a2;a3;a4;a5;a6;a7;a8;a9;a10|]
+                        | [] ->   [|a0;a1;a2;a3;a4;a5;a6;a7;a8;a9;a10|]
                         | a11::children -> 
                           match children with 
-                          | [] -> print_arr [|a0;a1;a2;a3;a4;a5;a6;a7;a8;a9;a10;a11|]
+                          | [] ->   [|a0;a1;a2;a3;a4;a5;a6;a7;a8;a9;a10;a11|]
                           | a12::children -> 
                             match children with 
-                            | [] -> print_arr [|a0;a1;a2;a3;a4;a5;a6;a7;a8;a9;a10;a11;a12|]
+                            | [] ->   [|a0;a1;a2;a3;a4;a5;a6;a7;a8;a9;a10;a11;a12|]
                             | a13::children -> 
                               match children with 
-                              | [] -> print_arr [|a0;a1;a2;a3;a4;a5;a6;a7;a8;a9;a10;a11;a12;a13|]
+                              | [] ->   [|a0;a1;a2;a3;a4;a5;a6;a7;a8;a9;a10;a11;a12;a13|]
                               | a14::children -> 
                                 match children with 
-                                | [] -> print_arr [|a0;a1;a2;a3;a4;a5;a6;a7;a8;a9;a10;a11;a12;a13;a14|]
+                                | [] ->   [|a0;a1;a2;a3;a4;a5;a6;a7;a8;a9;a10;a11;a12;a13;a14|]
                                 | a15::children -> 
                                   match children with 
-                                  | [] -> print_arr [|a0;a1;a2;a3;a4;a5;a6;a7;a8;a9;a10;a11;a12;a13;a14;a15|]
+                                  | [] ->   [|a0;a1;a2;a3;a4;a5;a6;a7;a8;a9;a10;a11;a12;a13;a14;a15|]
                                   | a16::children -> 
+                                  assert false
+*)                                  
+(*                                  
                                     match children with 
-                                    | [] -> print_arr [|a0;a1;a2;a3;a4;a5;a6;a7;a8;a9;a10;a11;a12;a13;a14;a15;a16|]
+                                    | [] ->   [|a0;a1;a2;a3;a4;a5;a6;a7;a8;a9;a10;a11;a12;a13;a14;a15;a16|]
                                     | a17::children -> 
                                     match children with 
-                                    | [] -> print_arr [|a0;a1;a2;a3;a4;a5;a6;a7;a8;a9;a10;a11;a12;a13;a14;a15;a16;a17|]
+                                    | [] ->   [|a0;a1;a2;a3;a4;a5;a6;a7;a8;a9;a10;a11;a12;a13;a14;a15;a16;a17|]
                                     | a18::children -> 
                                         match children with 
-                                        | [] -> print_arr [|a0;a1;a2;a3;a4;a5;a6;a7;a8;a9;a10;a11;a12;a13;a14;a15;a16;a17;a18|]
+                                        | [] ->   [|a0;a1;a2;a3;a4;a5;a6;a7;a8;a9;a10;a11;a12;a13;a14;a15;a16;a17;a18|]
                                         | a19::children -> 
                                         match children with 
-                                        | [] -> print_arr [|a0;a1;a2;a3;a4;a5;a6;a7;a8;a9;a10;a11;a12;a13;a14;a15;a16;a17;a18;a19|]
+                                        | [] ->   [|a0;a1;a2;a3;a4;a5;a6;a7;a8;a9;a10;a11;a12;a13;a14;a15;a16;a17;a18;a19|]
                                         | _ -> assert false 
 
 *)
@@ -84,52 +87,52 @@ let f children =
 (*
 let f children = 
   match children with
-  | [] -> print_arr [||]
-  | a::[] -> print_arr [|a|]
-  | a::b::[] -> print_arr [|a;b|]
-  | a::b::c::[] -> print_arr [|a;b;c|]
+  | [] ->   [||]
+  | a::[] ->   [|a|]
+  | a::b::[] ->   [|a;b|]
+  | a::b::c::[] ->   [|a;b;c|]
   | a::b::c::d::[] ->
-      print_arr [|a;b;c;d|]
+        [|a;b;c;d|]
   | a::b::c::d::e::[] ->
-      print_arr [|a;b;c;d;e|]
+        [|a;b;c;d;e|]
   | a::b::c::d::e::f::[] ->
-      print_arr [|a;b;c;d;e;f|]
+        [|a;b;c;d;e;f|]
   | a::b::c::d::e::f::g::[] ->
-      print_arr [|a;b;c;d;e;f;g|]
+        [|a;b;c;d;e;f;g|]
   | a::b::c::d::e::f::g::h::[] ->
-      print_arr [|a;b;c;d;e;f;g;h|]
+        [|a;b;c;d;e;f;g;h|]
   | a::b::c::d::e::f::g::h::i::[] ->
-      print_arr [|a;b;c;d;e;f;g;h;i|]
+        [|a;b;c;d;e;f;g;h;i|]
   | a::b::c::d::e::f::g::h::i::j::[] ->
-      print_arr [|a;b;c;d;e;f;g;h;i;j|]
+        [|a;b;c;d;e;f;g;h;i;j|]
   | a::b::c::d::e::f::g::h::i::j::k::[] ->
-      print_arr [|a;b;c;d;e;f;g;h;i;j;k|]
+        [|a;b;c;d;e;f;g;h;i;j;k|]
   | a::b::c::d::e::f::g::h::i::j::k::l::[] ->
-      print_arr
+       
         [|a;b;c;d;e;f;g;h;i;j;k;l|]
   | a::b::c::d::e::f::g::h::i::j::k::l::m::[] ->
-      print_arr
+       
         [|a;b;c;d;e;f;g;h;i;j;k;l;m|]
   | a::b::c::d::e::f::g::h::i::j::k::l::m::n::[] ->
-      print_arr
+       
         [|a;b;c;d;e;f;g;h;i;j;k;l;m;n|]
   | a::b::c::d::e::f::g::h::i::j::k::l::m::n::o::[] ->
-      print_arr
+       
         [|a;b;c;d;e;f;g;h;i;j;k;l;m;n;o|]
   | a::b::c::d::e::f::g::h::i::j::k::l::m::n::o::p::[] ->
-      print_arr
+       
         [|a;b;c;d;e;f;g;h;i;j;k;l;m;n;o;p|]
   | a::b::c::d::e::f::g::h::i::j::k::l::m::n::o::p::q::[] ->
-      print_arr
+       
         [|a;b;c;d;e;f;g;h;i;j;k;l;m;n;o;p;q|] 
   | a0::a1::a2::a3::a4::a5::a6::a7::a8::a9::a10::a11::a12::a13::a14::a15::a16::a17::[] ->
-      print_arr
+       
         [|a0;a1;a2;a3;a4;a5;a6;a7;a8;a9;a10;a11;a12;a13;a14;a15;a16;a17|] 
   | a0::a1::a2::a3::a4::a5::a6::a7::a8::a9::a10::a11::a12::a13::a14::a15::a16::a17::a18::[] ->
-      print_arr
+       
         [|a0;a1;a2;a3;a4;a5;a6;a7;a8;a9;a10;a11;a12;a13;a14;a15;a16;a17;a18|] 
   | a0::a1::a2::a3::a4::a5::a6::a7::a8::a9::a10::a11::a12::a13::a14::a15::a16::a17::a18::a19::[] ->
-      print_arr
+       
         [|a0;a1;a2;a3;a4;a5;a6;a7;a8;a9;a10;a11;a12;a13;a14;a15;a16;a17;a18;a19|] 
 
   | _ ->

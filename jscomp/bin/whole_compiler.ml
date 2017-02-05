@@ -70356,20 +70356,10 @@ let log_counter = ref 0
 
 
 let dump env ext  lam = 
-    
-   if Js_config.is_same_file ()
-    then 
-      (* ATTENTION: easy to introduce a bug during refactoring when forgeting `begin` `end`*)
-      begin 
-        incr log_counter;
-        Lam_print.seriaize env 
-          (Ext_filename.chop_extension 
-             ~loc:__LOC__ 
-             (Js_config.get_current_file ()) ^ 
-           (Printf.sprintf ".%02d%s.lam" !log_counter ext)
-          ) lam;
-      end;
-  lam
+
+      lam
+      
+  
 
 
 
@@ -83528,20 +83518,8 @@ end = struct
 let log_counter = ref 0 
 
 let dump name (prog : J.program) =
-    
-  begin
-    let () = 
-      if Js_config.is_same_file ()
-      then 
-        begin
-          incr log_counter ; 
-          Ext_pervasives.with_file_as_chan       
-            (Ext_filename.chop_extension ~loc:__LOC__ (Js_config.get_current_file()) ^
-             (Printf.sprintf ".%02d.%s.jsx"  !log_counter name)
-            ) (fun chan -> Js_dump.dump_program prog chan )
-        end in
-    prog    
-  end
+
+    prog
 
  
 
@@ -96982,12 +96960,14 @@ let compile  ~filename output_prefix env _sigs
   in
   let maybe_pure = no_side_effects rest
   in
+  
   let body  = 
     rest
     |> List.map (fun group -> compile_group meta group)
     |> Js_output.concat
     |> Js_output.to_block
   in
+    
   (* The file is not big at all compared with [cmo] *)
   (* Ext_marshal.to_file (Ext_filename.chop_extension filename ^ ".mj")  js; *)
   let js = 

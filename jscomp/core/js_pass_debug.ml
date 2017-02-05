@@ -30,15 +30,16 @@
 let log_counter = ref 0 
 
 let dump name (prog : J.program) =
-#if BS_COMPILER_IN_BROWSER then
+#if BS_COMPILER_IN_BROWSER || (undefined BS_DEBUG) then
     prog
-#else    
+#else 
   begin
     let () = 
       if Js_config.is_same_file ()
       then 
         begin
           incr log_counter ; 
+          Ext_log.dwarn __LOC__ "\n@[[TIME:]%s: %f@]@." name (Sys.time () *. 1000.);          
           Ext_pervasives.with_file_as_chan       
             (Ext_filename.chop_extension ~loc:__LOC__ (Js_config.get_current_file()) ^
              (Printf.sprintf ".%02d.%s.jsx"  !log_counter name)
