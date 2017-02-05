@@ -128,11 +128,11 @@ List your dependency in `bs-dependencies` and install it via `npm install` as be
     "sources": [
        .. .
     ],
-    "generate-merlin" : true // <2>
+    "generate-merlin" : false // <2>
 }
 -----------
 <1> Yet another BuckleScript dependency
-<2> bsb will generate merlin file for you
+<2> if true (default) bsb will generate merlin file for you
 
 .package.json
 [source,js]
