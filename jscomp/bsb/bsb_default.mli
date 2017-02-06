@@ -61,7 +61,7 @@ val set_ninja : cwd:string -> string -> unit
 
 val get_package_specs : unit -> Bsb_config.package_specs
 val set_package_specs_from_array : Ext_json.t array -> unit
-val internal_override_package_specs : string -> unit
+
 
 
 val get_generate_merlin : unit -> bool

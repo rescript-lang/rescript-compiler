@@ -2920,7 +2920,9 @@ val package_output : format:string -> string -> string
 
 type package_specs = String_set.t
 
+val cmd_package_specs : package_specs option ref 
 
+val cmd_override_package_specs : string -> unit
 end = struct
 #1 "bsb_config.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -2976,11 +2978,28 @@ let no_dev = ref false
 
 let install = ref false 
 
+
+let cmd_package_specs = ref None 
+
+type package_specs = String_set.t
+
 let supported_format x = 
   x = Literals.amdjs ||
   x = Literals.commonjs ||
   x = Literals.goog ||
   x = Literals.es6
+
+
+let cmd_override_package_specs str = 
+  let lst = Ext_string.split ~keep_empty:false str ',' in
+  cmd_package_specs :=
+    Some (List.fold_left (fun acc x ->
+          let v =
+            if supported_format x then String_set.add x acc
+            else
+              failwith ("Unkonwn package spec" ^ x) in
+          v
+    ) String_set.empty lst)
 
 let bs_package_output = "-bs-package-output"
 
@@ -3015,7 +3034,8 @@ let package_output ~format:s output=
 (* output_file_sans_extension ^ Literals.suffix_js *) 
 
 
-type package_specs = String_set.t
+
+
 
 
 end
@@ -7445,7 +7465,7 @@ val set_ninja : cwd:string -> string -> unit
 
 val get_package_specs : unit -> Bsb_config.package_specs
 val set_package_specs_from_array : Ext_json.t array -> unit
-val internal_override_package_specs : string -> unit
+
 
 
 val get_generate_merlin : unit -> bool
@@ -7559,14 +7579,14 @@ let set_ninja ~cwd p  =
 
 
 let package_specs = ref (String_set.singleton Literals.commonjs)
-let package_specs_overriden = ref false
+(* let package_specs_overriden = ref false *)
 
 let get_package_specs () = !package_specs
 
 
 
 let set_package_specs_from_array arr =
-    if not  !package_specs_overriden then
+    (* if not  !package_specs_overriden then *)
     let new_package_specs =
       arr
       |> get_list_string
@@ -7581,7 +7601,7 @@ let set_package_specs_from_array arr =
 
 
 
-
+(*
 let internal_override_package_specs str =
   package_specs_overriden := true ;
   let lst = Ext_string.split ~keep_empty:false str ',' in
@@ -7593,7 +7613,7 @@ let internal_override_package_specs str =
               failwith ("Unkonwn package spec" ^ x) in
           v
     ) String_set.empty lst
-
+*)
 
 let generate_merlin = ref true
 
@@ -7632,8 +7652,9 @@ module Bsb_config_parse : sig
 
 
 val interpret_json : 
+    override_package_specs:Bsb_config.package_specs option -> 
     bsc_dir:string -> 
-    cwd:string -> 
+    string -> 
     Bsb_config_types.t
 
 
@@ -7744,7 +7765,12 @@ let revise_merlin new_content =
 
 let bsppx_exe = "bsppx.exe"
 
-let interpret_json ~bsc_dir ~cwd  : Bsb_config_types.t =
+let interpret_json 
+  ~override_package_specs
+  ~bsc_dir 
+  cwd  
+  
+  : Bsb_config_types.t =
   let builddir = Bsb_config.lib_bs in
   let () = Bsb_build_util.mkp builddir in
   let update_queue = ref [] in
@@ -7874,7 +7900,9 @@ let interpret_json ~bsc_dir ~cwd  : Bsb_config_types.t =
       refmt = Bsb_default.(get_refmt ());
       refmt_flags = Bsb_default.(get_refmt_flags ());
       js_post_build_cmd =  Bsb_default.(get_js_post_build_cmd ());
-      package_specs = (Bsb_default.get_package_specs());
+      package_specs = 
+        (match override_package_specs with None ->  Bsb_default.get_package_specs()
+        | Some x -> x );
       globbed_dirs = !globbed_dirs; 
       bs_file_groups = !bs_file_groups; 
       files_to_install = String_hash_set.create 96
@@ -9120,7 +9148,7 @@ let bsb_main_flags =
     regen, Arg.Set force_regenerate,
     " Always regenerate build.ninja no matter bsconfig.json is changed or not (for debugging purpose)"
     ;
-    internal_package_specs, Arg.String Bsb_default.internal_override_package_specs,
+    internal_package_specs, Arg.String Bsb_config.cmd_override_package_specs,
     " (internal)Overide package specs (in combination with -regen)";
     "-clean-world", Arg.Unit clean_bs_deps,
     " Clean all bs dependencies";
@@ -9143,7 +9171,10 @@ let regenerate_ninja cwd bsc_dir forced =
     begin
       print_endline reason ;
       print_endline "Regenerating build spec";
-      let config = Bsb_config_parse.interpret_json ~bsc_dir ~cwd in 
+      let config = 
+        Bsb_config_parse.interpret_json 
+        ~override_package_specs:!Bsb_config.cmd_package_specs
+        ~bsc_dir cwd in 
       begin 
         Bsb_gen.output_ninja ~cwd ~bsc_dir config ; 
         Literals.bsconfig_json :: config.globbed_dirs

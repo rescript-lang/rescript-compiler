@@ -100,7 +100,12 @@ let revise_merlin new_content =
 
 let bsppx_exe = "bsppx.exe"
 
-let interpret_json ~bsc_dir ~cwd  : Bsb_config_types.t =
+let interpret_json 
+  ~override_package_specs
+  ~bsc_dir 
+  cwd  
+  
+  : Bsb_config_types.t =
   let builddir = Bsb_config.lib_bs in
   let () = Bsb_build_util.mkp builddir in
   let update_queue = ref [] in
@@ -230,7 +235,9 @@ let interpret_json ~bsc_dir ~cwd  : Bsb_config_types.t =
       refmt = Bsb_default.(get_refmt ());
       refmt_flags = Bsb_default.(get_refmt_flags ());
       js_post_build_cmd =  Bsb_default.(get_js_post_build_cmd ());
-      package_specs = (Bsb_default.get_package_specs());
+      package_specs = 
+        (match override_package_specs with None ->  Bsb_default.get_package_specs()
+        | Some x -> x );
       globbed_dirs = !globbed_dirs; 
       bs_file_groups = !bs_file_groups; 
       files_to_install = String_hash_set.create 96

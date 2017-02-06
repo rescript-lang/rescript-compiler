@@ -120,7 +120,7 @@ let bsb_main_flags =
     regen, Arg.Set force_regenerate,
     " Always regenerate build.ninja no matter bsconfig.json is changed or not (for debugging purpose)"
     ;
-    internal_package_specs, Arg.String Bsb_default.internal_override_package_specs,
+    internal_package_specs, Arg.String Bsb_config.cmd_override_package_specs,
     " (internal)Overide package specs (in combination with -regen)";
     "-clean-world", Arg.Unit clean_bs_deps,
     " Clean all bs dependencies";
@@ -143,7 +143,10 @@ let regenerate_ninja cwd bsc_dir forced =
     begin
       print_endline reason ;
       print_endline "Regenerating build spec";
-      let config = Bsb_config_parse.interpret_json ~bsc_dir ~cwd in 
+      let config = 
+        Bsb_config_parse.interpret_json 
+        ~override_package_specs:!Bsb_config.cmd_package_specs
+        ~bsc_dir cwd in 
       begin 
         Bsb_gen.output_ninja ~cwd ~bsc_dir config ; 
         Literals.bsconfig_json :: config.globbed_dirs

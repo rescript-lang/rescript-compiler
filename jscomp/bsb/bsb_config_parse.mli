@@ -25,8 +25,9 @@
 
 
 val interpret_json : 
+    override_package_specs:Bsb_config.package_specs option -> 
     bsc_dir:string -> 
-    cwd:string -> 
+    string -> 
     Bsb_config_types.t
 
 
