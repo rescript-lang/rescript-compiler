@@ -416,9 +416,13 @@ let translate_ffi call_loc (ffi : Ast_ffi_types.ffi ) prim_name
       | _ -> assert false 
     end  
   | Js_set name -> 
-    begin match args with 
-      | [obj; v] -> 
+    begin match args, arg_types with 
+      | [obj; v], _ -> 
         E.assign (E.dot obj name) v         
+      | [obj], [_; {arg_type = Arg_int_lit i }] ->
+        E.assign (E.dot obj name) (E.int (Int32.of_int i))  
+      | [obj], [_; {arg_type = Arg_string_lit i }] ->
+        E.assign (E.dot obj name) (E.str i)          
       | _ -> 
         assert false 
     end
