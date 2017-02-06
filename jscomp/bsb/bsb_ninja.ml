@@ -293,12 +293,12 @@ let (++) (us : info) (vs : info) =
 (** This set is stateful, we should make it functional in the future.
     It only makes sense when building one project combined with [-regen]
 *)
-let files_to_install = String_hash_set.create 96
+(* let files_to_install = String_hash_set.create 96 *)
 
-let install_file (file : string) =
+let install_file (file : string) files_to_install =
   String_hash_set.add  files_to_install (Ext_filename.chop_extension_if_any file )
 
-let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_build_ui.file_group) : info =
+let handle_file_group oc ~package_specs ~js_post_build_cmd  files_to_install acc (group: Bsb_build_ui.file_group) : info =
   let handle_module_info  oc  module_name
       ( module_info : Binary_cache.module_info)
       bs_dependencies
@@ -406,7 +406,7 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
               ~input:output_mlast
               ~implicit_deps:deps
               ~rule:rule_name ;
-            if installable then begin install_file file_input end;
+            if installable then begin install_file file_input files_to_install end;
             {all_config_deps = [output_mlastd]; all_installs = [output_cmi];  }
 
           end
@@ -433,7 +433,7 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
             ~input:output_mliast
             (* ~implicit_deps:[output_mliastd] *)
             ~rule:Rules.build_cmi;
-          if installable then begin install_file file_input end ;
+          if installable then begin install_file file_input files_to_install end ;
           {
             all_config_deps = [output_mliastd];
             all_installs = [output_cmi] ;
@@ -470,5 +470,8 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
     ) group.sources  acc
 
 
-let handle_file_groups oc ~package_specs ~js_post_build_cmd (file_groups  :  Bsb_build_ui.file_group list) st =
-  List.fold_left (handle_file_group oc ~package_specs ~js_post_build_cmd ) st  file_groups
+let handle_file_groups
+ oc ~package_specs ~js_post_build_cmd 
+  ~files_to_install
+  (file_groups  :  Bsb_build_ui.file_group list) st =
+  List.fold_left (handle_file_group oc ~package_specs ~js_post_build_cmd files_to_install ) st  file_groups

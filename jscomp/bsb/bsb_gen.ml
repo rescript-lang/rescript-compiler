@@ -58,6 +58,7 @@ let output_ninja
     js_post_build_cmd;
     package_specs;
     bs_file_groups;
+    files_to_install;
     }
   =
   let bsc = bsc_dir // bsc_exe in   (* The path to [bsc.exe] independent of config  *)
@@ -126,7 +127,7 @@ let output_ninja
     in
     let all_info =
       Bsb_ninja.handle_file_groups oc
-        ~js_post_build_cmd  ~package_specs bs_file_groups Bsb_ninja.zero  in
+        ~js_post_build_cmd  ~package_specs ~files_to_install bs_file_groups Bsb_ninja.zero  in
     let () =
       List.iter (fun x -> Bsb_ninja.output_build oc
                     ~output:x

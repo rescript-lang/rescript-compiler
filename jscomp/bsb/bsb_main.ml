@@ -176,33 +176,35 @@ let print_string_args (args : string array) =
   done ;
   print_newline ()
 
-let install_targets () =
-  let destdir = lib_ocaml in
-  if not @@ Sys.file_exists destdir then begin Unix.mkdir destdir 0o777  end;
-  begin
-    print_endline "* Start Installation";
-    String_hash_set.iter (fun x ->
-        Bsb_file.install_if_exists ~destdir (x ^  Literals.suffix_ml) ;
-        Bsb_file.install_if_exists ~destdir (x ^ Literals.suffix_mli) ;
-        Bsb_file.install_if_exists ~destdir (lib_bs//x ^ Literals.suffix_cmi) ;
-        Bsb_file.install_if_exists ~destdir (lib_bs//x ^ Literals.suffix_cmj) ;
-        Bsb_file.install_if_exists ~destdir (lib_bs//x ^ Literals.suffix_cmt) ;
-        Bsb_file.install_if_exists ~destdir (lib_bs//x ^ Literals.suffix_cmti) ;
-      ) Bsb_ninja.files_to_install
-  end
+let install_targets (config : Bsb_config_types.t option) =
+  match config with None -> ()
+                  | Some {files_to_install} -> 
+                    let destdir = lib_ocaml in
+                    if not @@ Sys.file_exists destdir then begin Unix.mkdir destdir 0o777  end;
+                    begin
+                      print_endline "* Start Installation";
+                      String_hash_set.iter (fun x ->
+                          Bsb_file.install_if_exists ~destdir (x ^  Literals.suffix_ml) ;
+                          Bsb_file.install_if_exists ~destdir (x ^ Literals.suffix_mli) ;
+                          Bsb_file.install_if_exists ~destdir (lib_bs//x ^ Literals.suffix_cmi) ;
+                          Bsb_file.install_if_exists ~destdir (lib_bs//x ^ Literals.suffix_cmj) ;
+                          Bsb_file.install_if_exists ~destdir (lib_bs//x ^ Literals.suffix_cmt) ;
+                          Bsb_file.install_if_exists ~destdir (lib_bs//x ^ Literals.suffix_cmti) ;
+                        ) files_to_install
+                    end
 (* Note that [keepdepfile] only makes sense when combined with [deps] for optimizatoin
    It has to be the last command of [bsb]
 *)
-let exec_command_install_then_exit install command =
+let exec_command_install_then_exit config install command =
   print_endline command ;
   let exit_code = (Sys.command command ) in
   if exit_code <> 0 then begin
     exit exit_code
   end else begin
-    if install then begin  install_targets ()end;
+    if install then begin  install_targets config end;
     exit 0;
   end
-let ninja_command_exit (type t) ninja ninja_args : t =
+let ninja_command_exit (type t) ninja ninja_args  config : t =
   let ninja_args_len = Array.length ninja_args in
   if ninja_args_len = 0 then
     begin
@@ -212,7 +214,7 @@ let ninja_command_exit (type t) ninja ninja_args : t =
         print_string_args args ;
         Unix.execvp ninja args
       | install, _ ->
-        exec_command_install_then_exit install @@ Ext_string.inter3  (Filename.quote ninja) "-C" Bsb_config.lib_bs
+        exec_command_install_then_exit config install @@ Ext_string.inter3  (Filename.quote ninja) "-C" Bsb_config.lib_bs
     end
   else
     let fixed_args_length = 3 in
@@ -233,7 +235,7 @@ let ninja_command_exit (type t) ninja ninja_args : t =
                          | 1 -> "-C"
                          | 2 -> Bsb_config.lib_bs
                          | _ -> Array.unsafe_get ninja_args (i - fixed_args_length) )) in
-        exec_command_install_then_exit install @@ Ext_string.concat_array Ext_string.single_space args
+        exec_command_install_then_exit config install @@ Ext_string.concat_array Ext_string.single_space args
     end
 
 
@@ -275,8 +277,8 @@ let () =
   (* see discussion #929 *)
   if Array.length Sys.argv <= 1 then
     begin
-      ignore (regenerate_ninja cwd bsc_dir false);
-      ninja_command_exit ninja [||]
+      let config_opt =  (regenerate_ninja cwd bsc_dir false) in 
+      ninja_command_exit ninja [||] config_opt
     end
   else
     begin
@@ -287,35 +289,44 @@ let () =
           Arg.parse bsb_main_flags annoymous usage;
           (* [-make-world] should never be combined with [-package-specs] *)
           begin match !make_world, !force_regenerate with
-            | false, false -> ()
+            | false, false -> 
+              if !watch_mode then begin
+                watch_exit ()
+                (* ninja is not triggered in this case
+                   There are several cases we wish ninja will not be triggered.
+                   [bsb -clean-world]
+                   [bsb -regen ]
+                *)
+              end 
             | make_world, force_regenerate ->
               (* don't regenerate files when we only run [bsb -clean-world] *)
-              let deps = regenerate_ninja cwd bsc_dir force_regenerate in
+              let config_opt = regenerate_ninja cwd bsc_dir force_regenerate in
               if make_world then begin
-                make_world_deps deps
+                make_world_deps config_opt
               end;
+              if !watch_mode then begin
+                watch_exit ()
+                (* ninja is not triggered in this case
+                   There are several cases we wish ninja will not be triggered.
+                   [bsb -clean-world]
+                   [bsb -regen ]
+                *)
+              end else if make_world then begin
+                ninja_command_exit ninja [||] config_opt
+              end
           end;
-          if !watch_mode then begin
-            watch_exit ()
-            (* ninja is not triggered in this case
-               There are several cases we wish ninja will not be triggered.
-               [bsb -clean-world]
-               [bsb -regen ]
-            *)
-          end else if !make_world then begin
-            ninja_command_exit ninja [||]
-          end
+
         end
       | `Split (bsb_args,ninja_args)
         -> (* -make-world all dependencies fall into this category *)
         begin
           Arg.parse_argv bsb_args bsb_main_flags annoymous usage ;
-          let deps = regenerate_ninja cwd bsc_dir !force_regenerate in
+          let config_opt = regenerate_ninja cwd bsc_dir !force_regenerate in
           (* [-make-world] should never be combined with [-package-specs] *)
           if !make_world then
-            make_world_deps deps ;
+            make_world_deps config_opt ;
           if !watch_mode then watch_exit ()
-          else ninja_command_exit ninja ninja_args
+          else ninja_command_exit ninja ninja_args config_opt
         end
     end
 (*with x ->

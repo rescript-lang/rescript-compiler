@@ -233,6 +233,7 @@ let interpret_json ~bsc_dir ~cwd  : Bsb_config_types.t =
       package_specs = (Bsb_default.get_package_specs());
       globbed_dirs = !globbed_dirs; 
       bs_file_groups = !bs_file_groups; 
+      files_to_install = String_hash_set.create 96
   }
   
 

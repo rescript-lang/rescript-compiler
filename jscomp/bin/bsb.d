@@ -44,6 +44,12 @@ bin/bsb.ml : ext/string_vec.ml
 bin/bsb.ml : ext/string_vec.mli
 bin/bsb.ml : bsb/bsb_build_ui.ml
 bin/bsb.ml : bsb/bsb_build_ui.mli
+bin/bsb.ml : stubs/bs_hash_stubs.ml
+bin/bsb.ml : ext/ext_util.ml
+bin/bsb.ml : ext/ext_util.mli
+bin/bsb.ml : ext/hash_set_gen.ml
+bin/bsb.ml : ext/string_hash_set.ml
+bin/bsb.ml : ext/string_hash_set.mli
 bin/bsb.ml : bsb/bsb_config_types.ml
 bin/bsb.ml : bsb/bsb_default.ml
 bin/bsb.ml : bsb/bsb_default.mli
@@ -53,12 +59,6 @@ bin/bsb.ml : bsb/bsb_dep_infos.ml
 bin/bsb.ml : bsb/bsb_dep_infos.mli
 bin/bsb.ml : bsb/bsb_file.ml
 bin/bsb.ml : bsb/bsb_file.mli
-bin/bsb.ml : stubs/bs_hash_stubs.ml
-bin/bsb.ml : ext/ext_util.ml
-bin/bsb.ml : ext/ext_util.mli
-bin/bsb.ml : ext/hash_set_gen.ml
-bin/bsb.ml : ext/string_hash_set.ml
-bin/bsb.ml : ext/string_hash_set.mli
 bin/bsb.ml : bsb/bsb_ninja.ml
 bin/bsb.ml : bsb/bsb_ninja.mli
 bin/bsb.ml : bsb/bsb_gen.ml

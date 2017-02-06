@@ -36,4 +36,5 @@ type t = {
   package_specs : Bsb_config.package_specs ; 
   globbed_dirs : string list;
   bs_file_groups : Bsb_build_ui.file_group list ;
+  files_to_install : String_hash_set.t ;
 }
