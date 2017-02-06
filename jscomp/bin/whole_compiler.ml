@@ -92989,14 +92989,19 @@ and
                       ])
               end
             | Assign id -> 
-              begin match
+(* 
+#if BS_DEBUG then 
+            let () = Ext_log.dwarn __LOC__ "\n@[[TIME:]Lifthenelse: %f@]@."  (Sys.time () *. 1000.) in      
+#end 
+*)              
+(* match
                   compile_lambda {cxt with st = NeedValue}  t_br, 
                   compile_lambda {cxt with st = NeedValue}  f_br with 
               | {block = []; value =  Some out1}, 
                 {block = []; value =  Some out2} ->  
                 (* Invariant:  should_return is false *)
                 Js_output.make [S.assign id (E.econd e out1 out2)]
-              | _, _ -> 
+              | _, _ -> *)
                 let then_output = 
                   Js_output.to_block @@ 
                   (compile_lambda cxt  t_br) in
@@ -93008,14 +93013,11 @@ and
                       then_output
                       ~else_:else_output
                   ])
-              end 
             | EffectCall ->
               begin match should_return,
                           compile_lambda {cxt with st = NeedValue}  t_br, 
                           compile_lambda {cxt with st = NeedValue}  f_br with  
-              | True _, {block = []; value =  Some out1}, 
-                {block = []; value =  Some out2} ->
-                Js_output.make [S.return  (E.econd e  out1 out2)] ~finished:True
+           
               (* see PR#83 *)
               |  False , {block = []; value =  Some out1}, 
                  {block = []; value =  Some out2} ->
@@ -93066,11 +93068,20 @@ and
                           compile_lambda cxt t_br)
                          ?else_])
 
-
+              | True _, {block = []; value =  Some out1}, 
+                {block = []; value =  Some out2} ->
+(*                
+#if BS_DEBUG then 
+            let () = Ext_log.dwarn __LOC__ "\n@[[TIME:]Lifthenelse: %f@]@."  (Sys.time () *. 1000.) in      
+#end                 
+*)
+                Js_output.make [S.return  (E.econd e  out1 out2)] ~finished:True                         
               |   _, _, _  ->
-                (* #if BS_DEBUG then 
-                   let () = Ext_log.dwarn __LOC__ "\n@[[TIME:]Lifthenelse: %f@]@."  (Sys.time () *. 1000.) in      
-                   #end *)            
+(*              
+#if BS_DEBUG then 
+            let () = Ext_log.dwarn __LOC__ "\n@[[TIME:]Lifthenelse: %f@]@."  (Sys.time () *. 1000.) in      
+#end 
+*)
                 let then_output = 
                   Js_output.to_block @@ 
                   (compile_lambda cxt  t_br) in
