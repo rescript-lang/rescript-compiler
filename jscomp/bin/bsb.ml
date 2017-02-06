@@ -8417,15 +8417,21 @@ let revise_merlin new_content =
     output_string ochan merlin_trailer ;
     output_string ochan "\n";
     close_out ochan
+
+
+
+
+
 (*TODO: it is a little mess that [cwd] and [project dir] are shared*)
-(** *)
-let write_ninja_file bsc_dir cwd =
-  let builddir = Bsb_config.lib_bs in
+
+
+let bsppx_exe = "bsppx.exe"
+let bsc_exe = "bsc.exe"
+let bsb_helper_exe = "bsb_helper.exe"
+
+let interpret_json bsc_dir cwd  =
+   let builddir = Bsb_config.lib_bs in
   let () = Bsb_build_util.mkp builddir in
-  let bsc, bsdep, bsppx =
-    bsc_dir // "bsc.exe",
-    bsc_dir // "bsb_helper.exe",
-    bsc_dir // "bsppx.exe" in
 
   let update_queue = ref [] in
   let globbed_dirs = ref [] in
@@ -8447,7 +8453,11 @@ let write_ninja_file bsc_dir cwd =
                          S %s\n\
                          B %s\n\
                          FLG -ppx %s\n\
-                        " lib_ocaml_dir lib_ocaml_dir bsppx
+                        " 
+                        lib_ocaml_dir 
+                        lib_ocaml_dir 
+                        (bsc_dir // bsppx_exe)
+                        (* bsppx *)
         ) in
     let () =
       match Bsb_default.get_bsc_flags () with
@@ -8538,14 +8548,17 @@ let write_ninja_file bsc_dir cwd =
       Unix.unlink Literals.bsconfig_json;
       Unix.rename config_file_bak Literals.bsconfig_json
   end;
-
+  !globbed_dirs 
+(** *)
+let write_ninja_file bsc_dir cwd =
+  let globbed_dirs = interpret_json bsc_dir cwd  in 
   Bsb_gen.output_ninja
-    ~builddir
+    ~builddir:Bsb_config.lib_bs
     ~cwd
     ~js_post_build_cmd: Bsb_default.(get_js_post_build_cmd ())
     ~package_specs:(Bsb_default.get_package_specs())
-    bsc
-    bsdep
+    (bsc_dir // bsc_exe)
+    (bsc_dir // bsb_helper_exe)
     (Bsb_default.get_package_name ())
     (Bsb_default.get_ocamllex ())
     (Bsb_default.get_bs_external_includes ())
@@ -8557,7 +8570,7 @@ let write_ninja_file bsc_dir cwd =
     Bsb_default.(get_refmt_flags ())
 
   ;
-  !globbed_dirs
+  globbed_dirs
 
 
 end
