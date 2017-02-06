@@ -1,359 +1,3 @@
-module Literals : sig 
-#1 "literals.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-val js_array_ctor : string 
-val js_type_number : string
-val js_type_string : string
-val js_type_object : string
-val js_undefined : string
-val js_prop_length : string
-
-val param : string
-val partial_arg : string
-val prim : string
-
-(**temporary varaible used in {!Js_ast_util} *)
-val tmp : string 
-
-val create : string 
-
-val app : string
-val app_array : string
-
-val runtime : string
-val stdlib : string
-val imul : string
-
-val setter_suffix : string
-val setter_suffix_len : int
-
-
-val js_debugger : string
-val js_pure_expr : string
-val js_pure_stmt : string
-val js_unsafe_downgrade : string
-val js_fn_run : string
-val js_method_run : string
-val js_fn_method : string
-val js_fn_mk : string
-
-(** callback actually, not exposed to user yet *)
-val js_fn_runmethod : string 
-
-val bs_deriving : string
-val bs_deriving_dot : string
-val bs_type : string
-
-(** nodejs *)
-
-val node_modules : string
-val node_modules_length : int
-val package_json : string
-val bsconfig_json : string
-val build_ninja : string
-val suffix_cmj : string
-val suffix_cmi : string
-val suffix_ml : string
-val suffix_mlast : string 
-val suffix_mliast : string
-val suffix_mll : string
-val suffix_d : string
-val suffix_mlastd : string
-val suffix_mliastd : string
-val suffix_js : string
-val suffix_mli : string 
-val suffix_cmt : string 
-val suffix_cmti : string 
-
-val commonjs : string 
-val amdjs : string 
-val goog : string 
-val es6 : string 
-val unused_attribute : string 
-end = struct
-#1 "literals.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-let js_array_ctor = "Array"
-let js_type_number = "number"
-let js_type_string = "string"
-let js_type_object = "object" 
-let js_undefined = "undefined"
-let js_prop_length = "length"
-
-let prim = "prim"
-let param = "param"
-let partial_arg = "partial_arg"
-let tmp = "tmp"
-
-let create = "create" (* {!Caml_exceptions.create}*)
-
-let app = "_"
-let app_array = "app" (* arguments are an array*)
-
-let runtime = "runtime" (* runtime directory *)
-
-let stdlib = "stdlib"
-
-let imul = "imul" (* signed int32 mul *)
-
-let setter_suffix = "#="
-let setter_suffix_len = String.length setter_suffix
-
-let js_debugger = "js_debugger"
-let js_pure_expr = "js_pure_expr"
-let js_pure_stmt = "js_pure_stmt"
-let js_unsafe_downgrade = "js_unsafe_downgrade"
-let js_fn_run = "js_fn_run"
-let js_method_run = "js_method_run"
-
-let js_fn_method = "js_fn_method"
-let js_fn_mk = "js_fn_mk"
-let js_fn_runmethod = "js_fn_runmethod"
-
-let bs_deriving = "bs.deriving"
-let bs_deriving_dot = "bs.deriving."
-let bs_type = "bs.type"
-
-
-(** nodejs *)
-let node_modules = "node_modules"
-let node_modules_length = String.length "node_modules"
-let package_json = "package.json"
-let bsconfig_json = "bsconfig.json"
-let build_ninja = "build.ninja"
-
-let suffix_cmj = ".cmj"
-let suffix_cmi = ".cmi"
-let suffix_mll = ".mll"
-let suffix_ml = ".ml"
-let suffix_mli = ".mli"
-let suffix_cmt = ".cmt" 
-let suffix_cmti = ".cmti" 
-let suffix_mlast = ".mlast"
-let suffix_mliast = ".mliast"
-let suffix_d = ".d"
-let suffix_mlastd = ".mlast.d"
-let suffix_mliastd = ".mliast.d"
-let suffix_js = ".js"
-
-let commonjs = "commonjs" 
-let amdjs = "amdjs"
-let goog = "goog"
-let es6 = "es6"
-
-let unused_attribute = "Unused attribute " 
-end
-module Bs_pkg : sig 
-#1 "bs_pkg.mli"
-
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-(** [resolve cwd module_name], 
-    [cwd] is current working directory, absolute path
-    Trying to find paths to load [module_name]
-    it is sepcialized for option [-bs-package-include] which requires
-    [npm_package_name/lib/ocaml]
-
-    it relies on [npm_config_prefix] env variable for global npm modules
-*)
-
-val resolve_bs_package : 
-    cwd:string ->  string -> string option
-
-
-val resolve_npm_package_file :
-    cwd:string -> string -> string option
-end = struct
-#1 "bs_pkg.ml"
-
-let (//) = Filename.concat
-
-
-
-
-
-let  resolve_bs_package  
-    ~cwd
-    name = 
-  let marker = Literals.bsconfig_json in 
-  let sub_path = name // marker  in
-  let rec aux  cwd  = 
-    let abs_marker =  cwd // Literals.node_modules // sub_path in 
-    if Sys.file_exists abs_marker then Some (Filename.dirname abs_marker)
-    else 
-      let cwd' = Filename.dirname cwd in (* TODO: may non-terminating when see symlinks *)
-      if String.length cwd' < String.length cwd then  
-        aux    cwd' 
-      else 
-        try 
-          let abs_marker = 
-            Sys.getenv "npm_config_prefix" 
-            // "lib" // Literals.node_modules // sub_path in
-          if Sys.file_exists abs_marker
-          then Some (Filename.dirname abs_marker)
-          else None
-            (* Bs_exception.error (Bs_package_not_found name) *)
-        with 
-          Not_found -> None
-          (* Bs_exception.error (Bs_package_not_found name)           *)
-  in
-  aux cwd 
-
-
-(** The package does not need to be a bspackage 
-  example:
-  {[
-    resolve_npm_package_file ~cwd "reason/refmt"
-  ]}
-  It also returns the path name
-*)
-let resolve_npm_package_file ~cwd sub_path =
-  let rec aux  cwd  = 
-    let abs_marker =  cwd // Literals.node_modules // sub_path in 
-    if Sys.file_exists abs_marker then Some abs_marker
-    else 
-      let cwd' = Filename.dirname cwd in 
-      if String.length cwd' < String.length cwd then  
-        aux cwd' 
-      else 
-        try 
-          let abs_marker = 
-            Sys.getenv "npm_config_prefix" 
-            // "lib" // Literals.node_modules // sub_path in
-          if Sys.file_exists abs_marker
-          then Some  abs_marker
-          else None
-            (* Bs_exception.error (Bs_package_not_found name) *)
-        with 
-          Not_found -> None
-          (* Bs_exception.error (Bs_package_not_found name)           *)
-  in
-  aux cwd 
-end
-module Bsb_build_schemas
-= struct
-#1 "bsb_build_schemas.ml"
-let files = "files"
-let version = "version"
-let name = "name"
-(* let ocaml_config = "ocaml-config" *)
-let bsdep = "bsdep"
-let ppx_flags = "ppx-flags"
-
-let bsc = "bsc"
-let refmt = "refmt"
-let refmt_flags = "refmt-flags"
-let bs_external_includes = "bs-external-includes"
-let bs_lib_dir = "bs-lib-dir"
-let bs_dependencies = "bs-dependencies"
-let bs_copy_or_symlink = "bs-copy-or-symlink"
-let sources = "sources"
-let dir = "dir"
-let files = "files"
-let subdirs = "subdirs"
-let ocamllex = "ocamllex"
-let bsc_flags = "bsc-flags"
-let excludes = "excludes"
-let slow_re = "slow-re"
-let resources = "resources"
-let public = "public"
-let js_post_build = "js-post-build"
-let cmd = "cmd"
-let ninja = "ninja"
-let package_specs = "package-specs"
-
-let generate_merlin = "generate-merlin"
-
-let type_ = "type"
-let dev = "dev"
-
-let export_all = "all"
-let export_none = "none"
-
-let bsb_dir_group = "bsb_dir_group"
-let bsc_lib_includes = "bsc_lib_includes"
-
-end
 module Ext_pervasives : sig 
 #1 "ext_pervasives.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -1304,6 +948,208 @@ let inter4 a b c d =
   
     
 end
+module Literals : sig 
+#1 "literals.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+val js_array_ctor : string 
+val js_type_number : string
+val js_type_string : string
+val js_type_object : string
+val js_undefined : string
+val js_prop_length : string
+
+val param : string
+val partial_arg : string
+val prim : string
+
+(**temporary varaible used in {!Js_ast_util} *)
+val tmp : string 
+
+val create : string 
+
+val app : string
+val app_array : string
+
+val runtime : string
+val stdlib : string
+val imul : string
+
+val setter_suffix : string
+val setter_suffix_len : int
+
+
+val js_debugger : string
+val js_pure_expr : string
+val js_pure_stmt : string
+val js_unsafe_downgrade : string
+val js_fn_run : string
+val js_method_run : string
+val js_fn_method : string
+val js_fn_mk : string
+
+(** callback actually, not exposed to user yet *)
+val js_fn_runmethod : string 
+
+val bs_deriving : string
+val bs_deriving_dot : string
+val bs_type : string
+
+(** nodejs *)
+
+val node_modules : string
+val node_modules_length : int
+val package_json : string
+val bsconfig_json : string
+val build_ninja : string
+val suffix_cmj : string
+val suffix_cmi : string
+val suffix_ml : string
+val suffix_mlast : string 
+val suffix_mliast : string
+val suffix_mll : string
+val suffix_d : string
+val suffix_mlastd : string
+val suffix_mliastd : string
+val suffix_js : string
+val suffix_mli : string 
+val suffix_cmt : string 
+val suffix_cmti : string 
+
+val commonjs : string 
+val amdjs : string 
+val goog : string 
+val es6 : string 
+val unused_attribute : string 
+end = struct
+#1 "literals.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+let js_array_ctor = "Array"
+let js_type_number = "number"
+let js_type_string = "string"
+let js_type_object = "object" 
+let js_undefined = "undefined"
+let js_prop_length = "length"
+
+let prim = "prim"
+let param = "param"
+let partial_arg = "partial_arg"
+let tmp = "tmp"
+
+let create = "create" (* {!Caml_exceptions.create}*)
+
+let app = "_"
+let app_array = "app" (* arguments are an array*)
+
+let runtime = "runtime" (* runtime directory *)
+
+let stdlib = "stdlib"
+
+let imul = "imul" (* signed int32 mul *)
+
+let setter_suffix = "#="
+let setter_suffix_len = String.length setter_suffix
+
+let js_debugger = "js_debugger"
+let js_pure_expr = "js_pure_expr"
+let js_pure_stmt = "js_pure_stmt"
+let js_unsafe_downgrade = "js_unsafe_downgrade"
+let js_fn_run = "js_fn_run"
+let js_method_run = "js_method_run"
+
+let js_fn_method = "js_fn_method"
+let js_fn_mk = "js_fn_mk"
+let js_fn_runmethod = "js_fn_runmethod"
+
+let bs_deriving = "bs.deriving"
+let bs_deriving_dot = "bs.deriving."
+let bs_type = "bs.type"
+
+
+(** nodejs *)
+let node_modules = "node_modules"
+let node_modules_length = String.length "node_modules"
+let package_json = "package.json"
+let bsconfig_json = "bsconfig.json"
+let build_ninja = "build.ninja"
+
+let suffix_cmj = ".cmj"
+let suffix_cmi = ".cmi"
+let suffix_mll = ".mll"
+let suffix_ml = ".ml"
+let suffix_mli = ".mli"
+let suffix_cmt = ".cmt" 
+let suffix_cmti = ".cmti" 
+let suffix_mlast = ".mlast"
+let suffix_mliast = ".mliast"
+let suffix_d = ".d"
+let suffix_mlastd = ".mlast.d"
+let suffix_mliastd = ".mliast.d"
+let suffix_js = ".js"
+
+let commonjs = "commonjs" 
+let amdjs = "amdjs"
+let goog = "goog"
+let es6 = "es6"
+
+let unused_attribute = "Unused attribute " 
+end
 module Ext_filename : sig 
 #1 "ext_filename.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -1743,761 +1589,6 @@ let simple_convert_node_path_to_os_path =
   else if Sys.win32 || Sys.cygwin then 
     Ext_string.replace_slash_backward 
   else failwith ("Unknown OS : " ^ Sys.os_type)
-end
-module Map_gen
-= struct
-#1 "map_gen.ml"
-(***********************************************************************)
-(*                                                                     *)
-(*                                OCaml                                *)
-(*                                                                     *)
-(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
-(*                                                                     *)
-(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
-(*  en Automatique.  All rights reserved.  This file is distributed    *)
-(*  under the terms of the GNU Library General Public License, with    *)
-(*  the special exception on linking described in file ../LICENSE.     *)
-(*                                                                     *)
-(***********************************************************************)
-(** adapted from stdlib *)
-
-type ('key,'a) t =
-  | Empty
-  | Node of ('key,'a) t * 'key * 'a * ('key,'a) t * int
-
-type ('key,'a) enumeration =
-  | End
-  | More of 'key * 'a * ('key,'a) t * ('key, 'a) enumeration
-
-let rec cardinal_aux acc  = function
-  | Empty -> acc 
-  | Node (l,_,_,r, _) -> 
-    cardinal_aux  (cardinal_aux (acc + 1)  r ) l 
-
-let cardinal s = cardinal_aux 0 s 
-
-let rec bindings_aux accu = function
-  | Empty -> accu
-  | Node(l, v, d, r, _) -> bindings_aux ((v, d) :: bindings_aux accu r) l
-
-let bindings s =
-  bindings_aux [] s
-
-let rec keys_aux accu = function
-    Empty -> accu
-  | Node(l, v, _, r, _) -> keys_aux (v :: keys_aux accu r) l
-
-let keys s = keys_aux [] s
-
-
-
-let rec cons_enum m e =
-  match m with
-    Empty -> e
-  | Node(l, v, d, r, _) -> cons_enum l (More(v, d, r, e))
-
-
-let height = function
-  | Empty -> 0
-  | Node(_,_,_,_,h) -> h
-
-let create l x d r =
-  let hl = height l and hr = height r in
-  Node(l, x, d, r, (if hl >= hr then hl + 1 else hr + 1))
-
-let singleton x d = Node(Empty, x, d, Empty, 1)
-
-let bal l x d r =
-  let hl = match l with Empty -> 0 | Node(_,_,_,_,h) -> h in
-  let hr = match r with Empty -> 0 | Node(_,_,_,_,h) -> h in
-  if hl > hr + 2 then begin
-    match l with
-      Empty -> invalid_arg "Map.bal"
-    | Node(ll, lv, ld, lr, _) ->
-      if height ll >= height lr then
-        create ll lv ld (create lr x d r)
-      else begin
-        match lr with
-          Empty -> invalid_arg "Map.bal"
-        | Node(lrl, lrv, lrd, lrr, _)->
-          create (create ll lv ld lrl) lrv lrd (create lrr x d r)
-      end
-  end else if hr > hl + 2 then begin
-    match r with
-      Empty -> invalid_arg "Map.bal"
-    | Node(rl, rv, rd, rr, _) ->
-      if height rr >= height rl then
-        create (create l x d rl) rv rd rr
-      else begin
-        match rl with
-          Empty -> invalid_arg "Map.bal"
-        | Node(rll, rlv, rld, rlr, _) ->
-          create (create l x d rll) rlv rld (create rlr rv rd rr)
-      end
-  end else
-    Node(l, x, d, r, (if hl >= hr then hl + 1 else hr + 1))
-
-let empty = Empty
-
-let is_empty = function Empty -> true | _ -> false
-
-let rec min_binding_exn = function
-    Empty -> raise Not_found
-  | Node(Empty, x, d, r, _) -> (x, d)
-  | Node(l, x, d, r, _) -> min_binding_exn l
-
-let choose = min_binding_exn
-
-let rec max_binding_exn = function
-    Empty -> raise Not_found
-  | Node(l, x, d, Empty, _) -> (x, d)
-  | Node(l, x, d, r, _) -> max_binding_exn r
-
-let rec remove_min_binding = function
-    Empty -> invalid_arg "Map.remove_min_elt"
-  | Node(Empty, x, d, r, _) -> r
-  | Node(l, x, d, r, _) -> bal (remove_min_binding l) x d r
-
-let merge t1 t2 =
-  match (t1, t2) with
-    (Empty, t) -> t
-  | (t, Empty) -> t
-  | (_, _) ->
-    let (x, d) = min_binding_exn t2 in
-    bal t1 x d (remove_min_binding t2)
-
-
-let rec iter f = function
-    Empty -> ()
-  | Node(l, v, d, r, _) ->
-    iter f l; f v d; iter f r
-
-let rec map f = function
-    Empty ->
-    Empty
-  | Node(l, v, d, r, h) ->
-    let l' = map f l in
-    let d' = f d in
-    let r' = map f r in
-    Node(l', v, d', r', h)
-
-let rec mapi f = function
-    Empty ->
-    Empty
-  | Node(l, v, d, r, h) ->
-    let l' = mapi f l in
-    let d' = f v d in
-    let r' = mapi f r in
-    Node(l', v, d', r', h)
-
-let rec fold f m accu =
-  match m with
-    Empty -> accu
-  | Node(l, v, d, r, _) ->
-    fold f r (f v d (fold f l accu))
-
-let rec for_all p = function
-    Empty -> true
-  | Node(l, v, d, r, _) -> p v d && for_all p l && for_all p r
-
-let rec exists p = function
-    Empty -> false
-  | Node(l, v, d, r, _) -> p v d || exists p l || exists p r
-
-(* Beware: those two functions assume that the added k is *strictly*
-   smaller (or bigger) than all the present keys in the tree; it
-   does not test for equality with the current min (or max) key.
-
-   Indeed, they are only used during the "join" operation which
-   respects this precondition.
-*)
-
-let rec add_min_binding k v = function
-  | Empty -> singleton k v
-  | Node (l, x, d, r, h) ->
-    bal (add_min_binding k v l) x d r
-
-let rec add_max_binding k v = function
-  | Empty -> singleton k v
-  | Node (l, x, d, r, h) ->
-    bal l x d (add_max_binding k v r)
-
-(* Same as create and bal, but no assumptions are made on the
-   relative heights of l and r. *)
-
-let rec join l v d r =
-  match (l, r) with
-    (Empty, _) -> add_min_binding v d r
-  | (_, Empty) -> add_max_binding v d l
-  | (Node(ll, lv, ld, lr, lh), Node(rl, rv, rd, rr, rh)) ->
-    if lh > rh + 2 then bal ll lv ld (join lr v d r) else
-    if rh > lh + 2 then bal (join l v d rl) rv rd rr else
-      create l v d r
-
-(* Merge two trees l and r into one.
-   All elements of l must precede the elements of r.
-   No assumption on the heights of l and r. *)
-
-let concat t1 t2 =
-  match (t1, t2) with
-    (Empty, t) -> t
-  | (t, Empty) -> t
-  | (_, _) ->
-    let (x, d) = min_binding_exn t2 in
-    join t1 x d (remove_min_binding t2)
-
-let concat_or_join t1 v d t2 =
-  match d with
-  | Some d -> join t1 v d t2
-  | None -> concat t1 t2
-
-let rec filter p = function
-    Empty -> Empty
-  | Node(l, v, d, r, _) ->
-    (* call [p] in the expected left-to-right order *)
-    let l' = filter p l in
-    let pvd = p v d in
-    let r' = filter p r in
-    if pvd then join l' v d r' else concat l' r'
-
-let rec partition p = function
-    Empty -> (Empty, Empty)
-  | Node(l, v, d, r, _) ->
-    (* call [p] in the expected left-to-right order *)
-    let (lt, lf) = partition p l in
-    let pvd = p v d in
-    let (rt, rf) = partition p r in
-    if pvd
-    then (join lt v d rt, concat lf rf)
-    else (concat lt rt, join lf v d rf)
-
-let compare compare_key cmp_val m1 m2 =
-  let rec compare_aux e1  e2 =
-    match (e1, e2) with
-      (End, End) -> 0
-    | (End, _)  -> -1
-    | (_, End) -> 1
-    | (More(v1, d1, r1, e1), More(v2, d2, r2, e2)) ->
-      let c = compare_key v1 v2 in
-      if c <> 0 then c else
-        let c = cmp_val d1 d2 in
-        if c <> 0 then c else
-          compare_aux (cons_enum r1 e1) (cons_enum r2 e2)
-  in compare_aux (cons_enum m1 End) (cons_enum m2 End)
-
-let equal compare_key cmp m1 m2 =
-  let rec equal_aux e1 e2 =
-    match (e1, e2) with
-      (End, End) -> true
-    | (End, _)  -> false
-    | (_, End) -> false
-    | (More(v1, d1, r1, e1), More(v2, d2, r2, e2)) ->
-      compare_key v1 v2 = 0 && cmp d1 d2 &&
-      equal_aux (cons_enum r1 e1) (cons_enum r2 e2)
-  in equal_aux (cons_enum m1 End) (cons_enum m2 End)
-
-
-
-    
-module type S =
-  sig
-    type key
-    type +'a t
-    val empty: 'a t
-    val is_empty: 'a t -> bool
-    val mem: key -> 'a t -> bool
-
-    val add: key -> 'a -> 'a t -> 'a t
-    (** [add x y m] 
-        If [x] was already bound in [m], its previous binding disappears. *)
-    val adjust: key -> (unit -> 'a)  -> ('a ->  'a) -> 'a t -> 'a t 
-    (** [adjust k v f map] if not exist [add k v], otherwise 
-        [add k v (f old)]
-    *)
-    val singleton: key -> 'a -> 'a t
-
-    val remove: key -> 'a t -> 'a t
-    (** [remove x m] returns a map containing the same bindings as
-       [m], except for [x] which is unbound in the returned map. *)
-
-    val merge:
-         (key -> 'a option -> 'b option -> 'c option) -> 'a t -> 'b t -> 'c t
-    (** [merge f m1 m2] computes a map whose keys is a subset of keys of [m1]
-        and of [m2]. The presence of each such binding, and the corresponding
-        value, is determined with the function [f].
-        @since 3.12.0
-     *)
-
-     val disjoint_merge : 'a t -> 'a t -> 'a t
-     (* merge two maps, will raise if they have the same key *)
-    val compare: ('a -> 'a -> int) -> 'a t -> 'a t -> int
-    (** Total ordering between maps.  The first argument is a total ordering
-        used to compare data associated with equal keys in the two maps. *)
-
-    val equal: ('a -> 'a -> bool) -> 'a t -> 'a t -> bool
-
-    val iter: (key -> 'a -> unit) -> 'a t -> unit
-    (** [iter f m] applies [f] to all bindings in map [m].
-        The bindings are passed to [f] in increasing order. *)
-
-    val fold: (key -> 'a -> 'b -> 'b) -> 'a t -> 'b -> 'b
-    (** [fold f m a] computes [(f kN dN ... (f k1 d1 a)...)],
-       where [k1 ... kN] are the keys of all bindings in [m]
-       (in increasing order) *)
-
-    val for_all: (key -> 'a -> bool) -> 'a t -> bool
-    (** [for_all p m] checks if all the bindings of the map.
-        order unspecified
-     *)
-
-    val exists: (key -> 'a -> bool) -> 'a t -> bool
-    (** [exists p m] checks if at least one binding of the map
-        satisfy the predicate [p]. 
-        order unspecified
-     *)
-
-    val filter: (key -> 'a -> bool) -> 'a t -> 'a t
-    (** [filter p m] returns the map with all the bindings in [m]
-        that satisfy predicate [p].
-        order unspecified
-     *)
-
-    val partition: (key -> 'a -> bool) -> 'a t -> 'a t * 'a t
-    (** [partition p m] returns a pair of maps [(m1, m2)], where
-        [m1] contains all the bindings of [s] that satisfy the
-        predicate [p], and [m2] is the map with all the bindings of
-        [s] that do not satisfy [p].
-     *)
-
-    val cardinal: 'a t -> int
-    (** Return the number of bindings of a map. *)
-
-    val bindings: 'a t -> (key * 'a) list
-    (** Return the list of all bindings of the given map.
-       The returned list is sorted in increasing order with respect
-       to the ordering *)
-    val keys : 'a t -> key list 
-    (* Increasing order *)
-
-    val min_binding_exn: 'a t -> (key * 'a)
-    (** raise [Not_found] if the map is empty. *)
-
-    val max_binding_exn: 'a t -> (key * 'a)
-    (** Same as {!Map.S.min_binding} *)
-
-    val choose: 'a t -> (key * 'a)
-    (** Return one binding of the given map, or raise [Not_found] if
-       the map is empty. Which binding is chosen is unspecified,
-       but equal bindings will be chosen for equal maps.
-     *)
-
-    val split: key -> 'a t -> 'a t * 'a option * 'a t
-    (** [split x m] returns a triple [(l, data, r)], where
-          [l] is the map with all the bindings of [m] whose key
-        is strictly less than [x];
-          [r] is the map with all the bindings of [m] whose key
-        is strictly greater than [x];
-          [data] is [None] if [m] contains no binding for [x],
-          or [Some v] if [m] binds [v] to [x].
-        @since 3.12.0
-     *)
-
-    val find_exn: key -> 'a t -> 'a
-    (** [find x m] returns the current binding of [x] in [m],
-       or raises [Not_found] if no such binding exists. *)
-    val find_opt: key -> 'a t -> 'a option
-    val find_default: key  -> 'a t -> 'a  -> 'a 
-    val map: ('a -> 'b) -> 'a t -> 'b t
-    (** [map f m] returns a map with same domain as [m], where the
-       associated value [a] of all bindings of [m] has been
-       replaced by the result of the application of [f] to [a].
-       The bindings are passed to [f] in increasing order
-       with respect to the ordering over the type of the keys. *)
-
-    val mapi: (key -> 'a -> 'b) -> 'a t -> 'b t
-    (** Same as {!Map.S.map}, but the function receives as arguments both the
-       key and the associated value for each binding of the map. *)
-
-    val of_list : (key * 'a) list -> 'a t 
-    val of_array : (key * 'a ) array -> 'a t 
-    val add_list : (key * 'b) list -> 'b t -> 'b t
-
-  end
-
-end
-module String_map : sig 
-#1 "string_map.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-include Map_gen.S with type key = string
-
-end = struct
-#1 "string_map.ml"
-
-# 2 "ext/map.cppo.ml"
-(* we don't create [map_poly], since some operations require raise an exception which carries [key] *)
-
-
-  
-# 10
-  type key = string 
-  let compare_key = Ext_string.compare
-
-# 22
-type 'a t = (key,'a) Map_gen.t
-exception Duplicate_key of key 
-
-let empty = Map_gen.empty 
-let is_empty = Map_gen.is_empty
-let iter = Map_gen.iter
-let fold = Map_gen.fold
-let for_all = Map_gen.for_all 
-let exists = Map_gen.exists 
-let singleton = Map_gen.singleton 
-let cardinal = Map_gen.cardinal
-let bindings = Map_gen.bindings
-let keys = Map_gen.keys
-let choose = Map_gen.choose 
-let partition = Map_gen.partition 
-let filter = Map_gen.filter 
-let map = Map_gen.map 
-let mapi = Map_gen.mapi
-let bal = Map_gen.bal 
-let height = Map_gen.height 
-let max_binding_exn = Map_gen.max_binding_exn
-let min_binding_exn = Map_gen.min_binding_exn
-
-
-let rec add x data (tree : _ Map_gen.t as 'a) : 'a = match tree with 
-  | Empty ->
-    Node(Empty, x, data, Empty, 1)
-  | Node(l, v, d, r, h) ->
-    let c = compare_key x v in
-    if c = 0 then
-      Node(l, x, data, r, h)
-    else if c < 0 then
-      bal (add x data l) v d r
-    else
-      bal l v d (add x data r)
-
-
-let rec adjust x data replace (tree : _ Map_gen.t as 'a) : 'a = 
-  match tree with 
-  | Empty ->
-    Node(Empty, x, data (), Empty, 1)
-  | Node(l, v, d, r, h) ->
-    let c = compare_key x v in
-    if c = 0 then
-      Node(l, x, replace  d , r, h)
-    else if c < 0 then
-      bal (adjust x data replace l) v d r
-    else
-      bal l v d (adjust x data replace r)
-
-
-let rec find_exn x (tree : _ Map_gen.t )  = match tree with 
-  | Empty ->
-    raise Not_found
-  | Node(l, v, d, r, _) ->
-    let c = compare_key x v in
-    if c = 0 then d
-    else find_exn x (if c < 0 then l else r)
-
-let rec find_opt x (tree : _ Map_gen.t )  = match tree with 
-  | Empty -> None 
-  | Node(l, v, d, r, _) ->
-    let c = compare_key x v in
-    if c = 0 then Some d
-    else find_opt x (if c < 0 then l else r)
-
-let rec find_default x (tree : _ Map_gen.t ) default     = match tree with 
-  | Empty -> default  
-  | Node(l, v, d, r, _) ->
-    let c = compare_key x v in
-    if c = 0 then  d
-    else find_default x   (if c < 0 then l else r) default
-
-let rec mem x (tree : _ Map_gen.t )   = match tree with 
-  | Empty ->
-    false
-  | Node(l, v, d, r, _) ->
-    let c = compare_key x v in
-    c = 0 || mem x (if c < 0 then l else r)
-
-let rec remove x (tree : _ Map_gen.t as 'a) : 'a = match tree with 
-  | Empty ->
-    Empty
-  | Node(l, v, d, r, h) ->
-    let c = compare_key x v in
-    if c = 0 then
-      Map_gen.merge l r
-    else if c < 0 then
-      bal (remove x l) v d r
-    else
-      bal l v d (remove x r)
-
-
-let rec split x (tree : _ Map_gen.t as 'a) : 'a * _ option * 'a  = match tree with 
-  | Empty ->
-    (Empty, None, Empty)
-  | Node(l, v, d, r, _) ->
-    let c = compare_key x v in
-    if c = 0 then (l, Some d, r)
-    else if c < 0 then
-      let (ll, pres, rl) = split x l in (ll, pres, Map_gen.join rl v d r)
-    else
-      let (lr, pres, rr) = split x r in (Map_gen.join l v d lr, pres, rr)
-
-let rec merge f (s1 : _ Map_gen.t) (s2  : _ Map_gen.t) : _ Map_gen.t =
-  match (s1, s2) with
-  | (Empty, Empty) -> Empty
-  | (Node (l1, v1, d1, r1, h1), _) when h1 >= height s2 ->
-    let (l2, d2, r2) = split v1 s2 in
-    Map_gen.concat_or_join (merge f l1 l2) v1 (f v1 (Some d1) d2) (merge f r1 r2)
-  | (_, Node (l2, v2, d2, r2, h2)) ->
-    let (l1, d1, r1) = split v2 s1 in
-    Map_gen.concat_or_join (merge f l1 l2) v2 (f v2 d1 (Some d2)) (merge f r1 r2)
-  | _ ->
-    assert false
-
-let rec disjoint_merge  (s1 : _ Map_gen.t) (s2  : _ Map_gen.t) : _ Map_gen.t =
-  match (s1, s2) with
-  | (Empty, Empty) -> Empty
-  | (Node (l1, v1, d1, r1, h1), _) when h1 >= height s2 ->
-    begin match split v1 s2 with 
-    | l2, None, r2 -> 
-      Map_gen.join (disjoint_merge  l1 l2) v1 d1 (disjoint_merge r1 r2)
-    | _, Some _, _ ->
-      raise (Duplicate_key  v1)
-    end        
-  | (_, Node (l2, v2, d2, r2, h2)) ->
-    begin match  split v2 s1 with 
-    | (l1, None, r1) -> 
-      Map_gen.join (disjoint_merge  l1 l2) v2 d2 (disjoint_merge  r1 r2)
-    | (_, Some _, _) -> 
-      raise (Duplicate_key v2)
-    end
-  | _ ->
-    assert false
-
-
-
-let compare cmp m1 m2 = Map_gen.compare compare_key cmp m1 m2
-
-let equal cmp m1 m2 = Map_gen.equal compare_key cmp m1 m2 
-
-let add_list (xs : _ list ) init = 
-  List.fold_left (fun acc (k,v) -> add k v acc) init xs 
-
-let of_list xs = add_list xs empty
-
-let of_array xs = 
-  Array.fold_left (fun acc (k,v) -> add k v acc) empty xs
-
-end
-module Binary_cache : sig 
-#1 "binary_cache.mli"
-
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type ml_kind =
-  | Ml of string 
-  | Re of string 
-  | Ml_empty
-type mli_kind = 
-  | Mli of string 
-  | Rei of string
-  | Mli_empty
-
-type module_info = 
-  {
-    mli : mli_kind ; 
-    ml : ml_kind ; 
-    mll : string option 
-  }
-
-type file_group_rouces = module_info String_map.t 
-
-type t =
-  module_info String_map.t array
-
-val dir_of_module_info : module_info -> string
-
-val write_build_cache : string -> t -> unit
-
-val read_build_cache : string -> t
-
-val bsbuild_cache : string
-
-
-
-
-
-(** if not added, it is guaranteed the reference equality will 
-    be held
-*)
-val map_update : 
-  ?dir:string -> file_group_rouces ->  string -> file_group_rouces
-
-end = struct
-#1 "binary_cache.ml"
-
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-type ml_kind =
-  | Ml of string 
-  | Re of string 
-  | Ml_empty
-type mli_kind = 
-  | Mli of string 
-  | Rei of string
-  | Mli_empty
-
-type module_info = 
-  {
-    mli : mli_kind ; 
-    ml : ml_kind ; 
-    mll : string option ;
-  }
-
-
-type file_group_rouces = module_info String_map.t 
-
-type t = 
-      module_info String_map.t array
-(** indexed by the group *)
-
-let module_info_magic_number = "BSBUILD20161019"
-
-let dir_of_module_info (x : module_info)
-  = 
-  match x with 
-  | { mli; ml; mll} -> 
-    begin match mli with 
-    | Mli s | Rei s -> 
-      Filename.dirname s 
-    | Mli_empty -> 
-      begin match ml with 
-      | Ml s | Re s -> 
-        Filename.dirname s 
-      | Ml_empty -> 
-        begin match mll with 
-        | None -> ""
-        | Some s -> Filename.dirname s 
-        end 
-      end
-    end
-
-let write_build_cache bsbuild (bs_files : t)  = 
-  let oc = open_out_bin bsbuild in 
-  output_string oc module_info_magic_number ;
-  output_value oc bs_files ;
-  close_out oc 
-
-let read_build_cache bsbuild : t = 
-  let ic = open_in_bin bsbuild in 
-  let buffer = really_input_string ic (String.length module_info_magic_number) in
-  assert(buffer = module_info_magic_number); 
-  let data : t = input_value ic in 
-  close_in ic ;
-  data 
-
-
-let bsbuild_cache = ".bsbuild"
-
-
-let empty_module_info = {mli = Mli_empty ; mll = None ; ml = Ml_empty}
-
-let adjust_module_info x suffix name =
-  match suffix with 
-  | ".ml" -> {x with ml = Ml name}
-  | ".re" -> {x with ml = Re name}
-  | ".mli" ->  {x with mli = Mli name}
-  | ".rei" -> { x with mli = Rei name}
-  | ".mll" -> {x with mll = Some name}
-  | _ -> failwith ("don't know what to do with " ^ name)
-
-let map_update ?dir (map : file_group_rouces)  name : file_group_rouces  = 
-  let prefix   = 
-    match dir with
-    | None -> fun x ->  x
-    | Some v -> fun x ->  Ext_filename.combine v x in
-  let module_name = Ext_filename.module_name_of_file_if_any name in 
-  let suffix = Ext_filename.get_extension name in 
-  String_map.adjust 
-    module_name 
-    (fun _ -> (adjust_module_info empty_module_info suffix (prefix name )))
-    (fun v -> (adjust_module_info v suffix (prefix name )))
-    map
-
 end
 module Js_config : sig 
 #1 "js_config.mli"
@@ -3288,6 +2379,580 @@ let exists p a =
 
 let is_empty arr =
   Array.length arr = 0
+end
+module Map_gen
+= struct
+#1 "map_gen.ml"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the GNU Library General Public License, with    *)
+(*  the special exception on linking described in file ../LICENSE.     *)
+(*                                                                     *)
+(***********************************************************************)
+(** adapted from stdlib *)
+
+type ('key,'a) t =
+  | Empty
+  | Node of ('key,'a) t * 'key * 'a * ('key,'a) t * int
+
+type ('key,'a) enumeration =
+  | End
+  | More of 'key * 'a * ('key,'a) t * ('key, 'a) enumeration
+
+let rec cardinal_aux acc  = function
+  | Empty -> acc 
+  | Node (l,_,_,r, _) -> 
+    cardinal_aux  (cardinal_aux (acc + 1)  r ) l 
+
+let cardinal s = cardinal_aux 0 s 
+
+let rec bindings_aux accu = function
+  | Empty -> accu
+  | Node(l, v, d, r, _) -> bindings_aux ((v, d) :: bindings_aux accu r) l
+
+let bindings s =
+  bindings_aux [] s
+
+let rec keys_aux accu = function
+    Empty -> accu
+  | Node(l, v, _, r, _) -> keys_aux (v :: keys_aux accu r) l
+
+let keys s = keys_aux [] s
+
+
+
+let rec cons_enum m e =
+  match m with
+    Empty -> e
+  | Node(l, v, d, r, _) -> cons_enum l (More(v, d, r, e))
+
+
+let height = function
+  | Empty -> 0
+  | Node(_,_,_,_,h) -> h
+
+let create l x d r =
+  let hl = height l and hr = height r in
+  Node(l, x, d, r, (if hl >= hr then hl + 1 else hr + 1))
+
+let singleton x d = Node(Empty, x, d, Empty, 1)
+
+let bal l x d r =
+  let hl = match l with Empty -> 0 | Node(_,_,_,_,h) -> h in
+  let hr = match r with Empty -> 0 | Node(_,_,_,_,h) -> h in
+  if hl > hr + 2 then begin
+    match l with
+      Empty -> invalid_arg "Map.bal"
+    | Node(ll, lv, ld, lr, _) ->
+      if height ll >= height lr then
+        create ll lv ld (create lr x d r)
+      else begin
+        match lr with
+          Empty -> invalid_arg "Map.bal"
+        | Node(lrl, lrv, lrd, lrr, _)->
+          create (create ll lv ld lrl) lrv lrd (create lrr x d r)
+      end
+  end else if hr > hl + 2 then begin
+    match r with
+      Empty -> invalid_arg "Map.bal"
+    | Node(rl, rv, rd, rr, _) ->
+      if height rr >= height rl then
+        create (create l x d rl) rv rd rr
+      else begin
+        match rl with
+          Empty -> invalid_arg "Map.bal"
+        | Node(rll, rlv, rld, rlr, _) ->
+          create (create l x d rll) rlv rld (create rlr rv rd rr)
+      end
+  end else
+    Node(l, x, d, r, (if hl >= hr then hl + 1 else hr + 1))
+
+let empty = Empty
+
+let is_empty = function Empty -> true | _ -> false
+
+let rec min_binding_exn = function
+    Empty -> raise Not_found
+  | Node(Empty, x, d, r, _) -> (x, d)
+  | Node(l, x, d, r, _) -> min_binding_exn l
+
+let choose = min_binding_exn
+
+let rec max_binding_exn = function
+    Empty -> raise Not_found
+  | Node(l, x, d, Empty, _) -> (x, d)
+  | Node(l, x, d, r, _) -> max_binding_exn r
+
+let rec remove_min_binding = function
+    Empty -> invalid_arg "Map.remove_min_elt"
+  | Node(Empty, x, d, r, _) -> r
+  | Node(l, x, d, r, _) -> bal (remove_min_binding l) x d r
+
+let merge t1 t2 =
+  match (t1, t2) with
+    (Empty, t) -> t
+  | (t, Empty) -> t
+  | (_, _) ->
+    let (x, d) = min_binding_exn t2 in
+    bal t1 x d (remove_min_binding t2)
+
+
+let rec iter f = function
+    Empty -> ()
+  | Node(l, v, d, r, _) ->
+    iter f l; f v d; iter f r
+
+let rec map f = function
+    Empty ->
+    Empty
+  | Node(l, v, d, r, h) ->
+    let l' = map f l in
+    let d' = f d in
+    let r' = map f r in
+    Node(l', v, d', r', h)
+
+let rec mapi f = function
+    Empty ->
+    Empty
+  | Node(l, v, d, r, h) ->
+    let l' = mapi f l in
+    let d' = f v d in
+    let r' = mapi f r in
+    Node(l', v, d', r', h)
+
+let rec fold f m accu =
+  match m with
+    Empty -> accu
+  | Node(l, v, d, r, _) ->
+    fold f r (f v d (fold f l accu))
+
+let rec for_all p = function
+    Empty -> true
+  | Node(l, v, d, r, _) -> p v d && for_all p l && for_all p r
+
+let rec exists p = function
+    Empty -> false
+  | Node(l, v, d, r, _) -> p v d || exists p l || exists p r
+
+(* Beware: those two functions assume that the added k is *strictly*
+   smaller (or bigger) than all the present keys in the tree; it
+   does not test for equality with the current min (or max) key.
+
+   Indeed, they are only used during the "join" operation which
+   respects this precondition.
+*)
+
+let rec add_min_binding k v = function
+  | Empty -> singleton k v
+  | Node (l, x, d, r, h) ->
+    bal (add_min_binding k v l) x d r
+
+let rec add_max_binding k v = function
+  | Empty -> singleton k v
+  | Node (l, x, d, r, h) ->
+    bal l x d (add_max_binding k v r)
+
+(* Same as create and bal, but no assumptions are made on the
+   relative heights of l and r. *)
+
+let rec join l v d r =
+  match (l, r) with
+    (Empty, _) -> add_min_binding v d r
+  | (_, Empty) -> add_max_binding v d l
+  | (Node(ll, lv, ld, lr, lh), Node(rl, rv, rd, rr, rh)) ->
+    if lh > rh + 2 then bal ll lv ld (join lr v d r) else
+    if rh > lh + 2 then bal (join l v d rl) rv rd rr else
+      create l v d r
+
+(* Merge two trees l and r into one.
+   All elements of l must precede the elements of r.
+   No assumption on the heights of l and r. *)
+
+let concat t1 t2 =
+  match (t1, t2) with
+    (Empty, t) -> t
+  | (t, Empty) -> t
+  | (_, _) ->
+    let (x, d) = min_binding_exn t2 in
+    join t1 x d (remove_min_binding t2)
+
+let concat_or_join t1 v d t2 =
+  match d with
+  | Some d -> join t1 v d t2
+  | None -> concat t1 t2
+
+let rec filter p = function
+    Empty -> Empty
+  | Node(l, v, d, r, _) ->
+    (* call [p] in the expected left-to-right order *)
+    let l' = filter p l in
+    let pvd = p v d in
+    let r' = filter p r in
+    if pvd then join l' v d r' else concat l' r'
+
+let rec partition p = function
+    Empty -> (Empty, Empty)
+  | Node(l, v, d, r, _) ->
+    (* call [p] in the expected left-to-right order *)
+    let (lt, lf) = partition p l in
+    let pvd = p v d in
+    let (rt, rf) = partition p r in
+    if pvd
+    then (join lt v d rt, concat lf rf)
+    else (concat lt rt, join lf v d rf)
+
+let compare compare_key cmp_val m1 m2 =
+  let rec compare_aux e1  e2 =
+    match (e1, e2) with
+      (End, End) -> 0
+    | (End, _)  -> -1
+    | (_, End) -> 1
+    | (More(v1, d1, r1, e1), More(v2, d2, r2, e2)) ->
+      let c = compare_key v1 v2 in
+      if c <> 0 then c else
+        let c = cmp_val d1 d2 in
+        if c <> 0 then c else
+          compare_aux (cons_enum r1 e1) (cons_enum r2 e2)
+  in compare_aux (cons_enum m1 End) (cons_enum m2 End)
+
+let equal compare_key cmp m1 m2 =
+  let rec equal_aux e1 e2 =
+    match (e1, e2) with
+      (End, End) -> true
+    | (End, _)  -> false
+    | (_, End) -> false
+    | (More(v1, d1, r1, e1), More(v2, d2, r2, e2)) ->
+      compare_key v1 v2 = 0 && cmp d1 d2 &&
+      equal_aux (cons_enum r1 e1) (cons_enum r2 e2)
+  in equal_aux (cons_enum m1 End) (cons_enum m2 End)
+
+
+
+    
+module type S =
+  sig
+    type key
+    type +'a t
+    val empty: 'a t
+    val is_empty: 'a t -> bool
+    val mem: key -> 'a t -> bool
+
+    val add: key -> 'a -> 'a t -> 'a t
+    (** [add x y m] 
+        If [x] was already bound in [m], its previous binding disappears. *)
+    val adjust: key -> (unit -> 'a)  -> ('a ->  'a) -> 'a t -> 'a t 
+    (** [adjust k v f map] if not exist [add k v], otherwise 
+        [add k v (f old)]
+    *)
+    val singleton: key -> 'a -> 'a t
+
+    val remove: key -> 'a t -> 'a t
+    (** [remove x m] returns a map containing the same bindings as
+       [m], except for [x] which is unbound in the returned map. *)
+
+    val merge:
+         (key -> 'a option -> 'b option -> 'c option) -> 'a t -> 'b t -> 'c t
+    (** [merge f m1 m2] computes a map whose keys is a subset of keys of [m1]
+        and of [m2]. The presence of each such binding, and the corresponding
+        value, is determined with the function [f].
+        @since 3.12.0
+     *)
+
+     val disjoint_merge : 'a t -> 'a t -> 'a t
+     (* merge two maps, will raise if they have the same key *)
+    val compare: ('a -> 'a -> int) -> 'a t -> 'a t -> int
+    (** Total ordering between maps.  The first argument is a total ordering
+        used to compare data associated with equal keys in the two maps. *)
+
+    val equal: ('a -> 'a -> bool) -> 'a t -> 'a t -> bool
+
+    val iter: (key -> 'a -> unit) -> 'a t -> unit
+    (** [iter f m] applies [f] to all bindings in map [m].
+        The bindings are passed to [f] in increasing order. *)
+
+    val fold: (key -> 'a -> 'b -> 'b) -> 'a t -> 'b -> 'b
+    (** [fold f m a] computes [(f kN dN ... (f k1 d1 a)...)],
+       where [k1 ... kN] are the keys of all bindings in [m]
+       (in increasing order) *)
+
+    val for_all: (key -> 'a -> bool) -> 'a t -> bool
+    (** [for_all p m] checks if all the bindings of the map.
+        order unspecified
+     *)
+
+    val exists: (key -> 'a -> bool) -> 'a t -> bool
+    (** [exists p m] checks if at least one binding of the map
+        satisfy the predicate [p]. 
+        order unspecified
+     *)
+
+    val filter: (key -> 'a -> bool) -> 'a t -> 'a t
+    (** [filter p m] returns the map with all the bindings in [m]
+        that satisfy predicate [p].
+        order unspecified
+     *)
+
+    val partition: (key -> 'a -> bool) -> 'a t -> 'a t * 'a t
+    (** [partition p m] returns a pair of maps [(m1, m2)], where
+        [m1] contains all the bindings of [s] that satisfy the
+        predicate [p], and [m2] is the map with all the bindings of
+        [s] that do not satisfy [p].
+     *)
+
+    val cardinal: 'a t -> int
+    (** Return the number of bindings of a map. *)
+
+    val bindings: 'a t -> (key * 'a) list
+    (** Return the list of all bindings of the given map.
+       The returned list is sorted in increasing order with respect
+       to the ordering *)
+    val keys : 'a t -> key list 
+    (* Increasing order *)
+
+    val min_binding_exn: 'a t -> (key * 'a)
+    (** raise [Not_found] if the map is empty. *)
+
+    val max_binding_exn: 'a t -> (key * 'a)
+    (** Same as {!Map.S.min_binding} *)
+
+    val choose: 'a t -> (key * 'a)
+    (** Return one binding of the given map, or raise [Not_found] if
+       the map is empty. Which binding is chosen is unspecified,
+       but equal bindings will be chosen for equal maps.
+     *)
+
+    val split: key -> 'a t -> 'a t * 'a option * 'a t
+    (** [split x m] returns a triple [(l, data, r)], where
+          [l] is the map with all the bindings of [m] whose key
+        is strictly less than [x];
+          [r] is the map with all the bindings of [m] whose key
+        is strictly greater than [x];
+          [data] is [None] if [m] contains no binding for [x],
+          or [Some v] if [m] binds [v] to [x].
+        @since 3.12.0
+     *)
+
+    val find_exn: key -> 'a t -> 'a
+    (** [find x m] returns the current binding of [x] in [m],
+       or raises [Not_found] if no such binding exists. *)
+    val find_opt: key -> 'a t -> 'a option
+    val find_default: key  -> 'a t -> 'a  -> 'a 
+    val map: ('a -> 'b) -> 'a t -> 'b t
+    (** [map f m] returns a map with same domain as [m], where the
+       associated value [a] of all bindings of [m] has been
+       replaced by the result of the application of [f] to [a].
+       The bindings are passed to [f] in increasing order
+       with respect to the ordering over the type of the keys. *)
+
+    val mapi: (key -> 'a -> 'b) -> 'a t -> 'b t
+    (** Same as {!Map.S.map}, but the function receives as arguments both the
+       key and the associated value for each binding of the map. *)
+
+    val of_list : (key * 'a) list -> 'a t 
+    val of_array : (key * 'a ) array -> 'a t 
+    val add_list : (key * 'b) list -> 'b t -> 'b t
+
+  end
+
+end
+module String_map : sig 
+#1 "string_map.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+include Map_gen.S with type key = string
+
+end = struct
+#1 "string_map.ml"
+
+# 2 "ext/map.cppo.ml"
+(* we don't create [map_poly], since some operations require raise an exception which carries [key] *)
+
+
+  
+# 10
+  type key = string 
+  let compare_key = Ext_string.compare
+
+# 22
+type 'a t = (key,'a) Map_gen.t
+exception Duplicate_key of key 
+
+let empty = Map_gen.empty 
+let is_empty = Map_gen.is_empty
+let iter = Map_gen.iter
+let fold = Map_gen.fold
+let for_all = Map_gen.for_all 
+let exists = Map_gen.exists 
+let singleton = Map_gen.singleton 
+let cardinal = Map_gen.cardinal
+let bindings = Map_gen.bindings
+let keys = Map_gen.keys
+let choose = Map_gen.choose 
+let partition = Map_gen.partition 
+let filter = Map_gen.filter 
+let map = Map_gen.map 
+let mapi = Map_gen.mapi
+let bal = Map_gen.bal 
+let height = Map_gen.height 
+let max_binding_exn = Map_gen.max_binding_exn
+let min_binding_exn = Map_gen.min_binding_exn
+
+
+let rec add x data (tree : _ Map_gen.t as 'a) : 'a = match tree with 
+  | Empty ->
+    Node(Empty, x, data, Empty, 1)
+  | Node(l, v, d, r, h) ->
+    let c = compare_key x v in
+    if c = 0 then
+      Node(l, x, data, r, h)
+    else if c < 0 then
+      bal (add x data l) v d r
+    else
+      bal l v d (add x data r)
+
+
+let rec adjust x data replace (tree : _ Map_gen.t as 'a) : 'a = 
+  match tree with 
+  | Empty ->
+    Node(Empty, x, data (), Empty, 1)
+  | Node(l, v, d, r, h) ->
+    let c = compare_key x v in
+    if c = 0 then
+      Node(l, x, replace  d , r, h)
+    else if c < 0 then
+      bal (adjust x data replace l) v d r
+    else
+      bal l v d (adjust x data replace r)
+
+
+let rec find_exn x (tree : _ Map_gen.t )  = match tree with 
+  | Empty ->
+    raise Not_found
+  | Node(l, v, d, r, _) ->
+    let c = compare_key x v in
+    if c = 0 then d
+    else find_exn x (if c < 0 then l else r)
+
+let rec find_opt x (tree : _ Map_gen.t )  = match tree with 
+  | Empty -> None 
+  | Node(l, v, d, r, _) ->
+    let c = compare_key x v in
+    if c = 0 then Some d
+    else find_opt x (if c < 0 then l else r)
+
+let rec find_default x (tree : _ Map_gen.t ) default     = match tree with 
+  | Empty -> default  
+  | Node(l, v, d, r, _) ->
+    let c = compare_key x v in
+    if c = 0 then  d
+    else find_default x   (if c < 0 then l else r) default
+
+let rec mem x (tree : _ Map_gen.t )   = match tree with 
+  | Empty ->
+    false
+  | Node(l, v, d, r, _) ->
+    let c = compare_key x v in
+    c = 0 || mem x (if c < 0 then l else r)
+
+let rec remove x (tree : _ Map_gen.t as 'a) : 'a = match tree with 
+  | Empty ->
+    Empty
+  | Node(l, v, d, r, h) ->
+    let c = compare_key x v in
+    if c = 0 then
+      Map_gen.merge l r
+    else if c < 0 then
+      bal (remove x l) v d r
+    else
+      bal l v d (remove x r)
+
+
+let rec split x (tree : _ Map_gen.t as 'a) : 'a * _ option * 'a  = match tree with 
+  | Empty ->
+    (Empty, None, Empty)
+  | Node(l, v, d, r, _) ->
+    let c = compare_key x v in
+    if c = 0 then (l, Some d, r)
+    else if c < 0 then
+      let (ll, pres, rl) = split x l in (ll, pres, Map_gen.join rl v d r)
+    else
+      let (lr, pres, rr) = split x r in (Map_gen.join l v d lr, pres, rr)
+
+let rec merge f (s1 : _ Map_gen.t) (s2  : _ Map_gen.t) : _ Map_gen.t =
+  match (s1, s2) with
+  | (Empty, Empty) -> Empty
+  | (Node (l1, v1, d1, r1, h1), _) when h1 >= height s2 ->
+    let (l2, d2, r2) = split v1 s2 in
+    Map_gen.concat_or_join (merge f l1 l2) v1 (f v1 (Some d1) d2) (merge f r1 r2)
+  | (_, Node (l2, v2, d2, r2, h2)) ->
+    let (l1, d1, r1) = split v2 s1 in
+    Map_gen.concat_or_join (merge f l1 l2) v2 (f v2 d1 (Some d2)) (merge f r1 r2)
+  | _ ->
+    assert false
+
+let rec disjoint_merge  (s1 : _ Map_gen.t) (s2  : _ Map_gen.t) : _ Map_gen.t =
+  match (s1, s2) with
+  | (Empty, Empty) -> Empty
+  | (Node (l1, v1, d1, r1, h1), _) when h1 >= height s2 ->
+    begin match split v1 s2 with 
+    | l2, None, r2 -> 
+      Map_gen.join (disjoint_merge  l1 l2) v1 d1 (disjoint_merge r1 r2)
+    | _, Some _, _ ->
+      raise (Duplicate_key  v1)
+    end        
+  | (_, Node (l2, v2, d2, r2, h2)) ->
+    begin match  split v2 s1 with 
+    | (l1, None, r1) -> 
+      Map_gen.join (disjoint_merge  l1 l2) v2 d2 (disjoint_merge  r1 r2)
+    | (_, Some _, _) -> 
+      raise (Duplicate_key v2)
+    end
+  | _ ->
+    assert false
+
+
+
+let compare cmp m1 m2 = Map_gen.compare compare_key cmp m1 m2
+
+let equal cmp m1 m2 = Map_gen.equal compare_key cmp m1 m2 
+
+let add_list (xs : _ list ) init = 
+  List.fold_left (fun acc (k,v) -> add k v acc) init xs 
+
+let of_list xs = add_list xs empty
+
+let of_array xs = 
+  Array.fold_left (fun acc (k,v) -> add k v acc) empty xs
+
 end
 module Ext_json : sig 
 #1 "ext_json.mli"
@@ -4838,6 +4503,341 @@ let string_of_bsb_dev_include i =
   | 4 -> bsc_group_4_includes
   | _ -> 
     "bsc_group_" ^ string_of_int i ^ "_includes"
+end
+module Bs_pkg : sig 
+#1 "bs_pkg.mli"
+
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+(** [resolve cwd module_name], 
+    [cwd] is current working directory, absolute path
+    Trying to find paths to load [module_name]
+    it is sepcialized for option [-bs-package-include] which requires
+    [npm_package_name/lib/ocaml]
+
+    it relies on [npm_config_prefix] env variable for global npm modules
+*)
+
+val resolve_bs_package : 
+    cwd:string ->  string -> string option
+
+
+val resolve_npm_package_file :
+    cwd:string -> string -> string option
+end = struct
+#1 "bs_pkg.ml"
+
+let (//) = Filename.concat
+
+
+
+
+
+let  resolve_bs_package  
+    ~cwd
+    name = 
+  let marker = Literals.bsconfig_json in 
+  let sub_path = name // marker  in
+  let rec aux  cwd  = 
+    let abs_marker =  cwd // Literals.node_modules // sub_path in 
+    if Sys.file_exists abs_marker then Some (Filename.dirname abs_marker)
+    else 
+      let cwd' = Filename.dirname cwd in (* TODO: may non-terminating when see symlinks *)
+      if String.length cwd' < String.length cwd then  
+        aux    cwd' 
+      else 
+        try 
+          let abs_marker = 
+            Sys.getenv "npm_config_prefix" 
+            // "lib" // Literals.node_modules // sub_path in
+          if Sys.file_exists abs_marker
+          then Some (Filename.dirname abs_marker)
+          else None
+            (* Bs_exception.error (Bs_package_not_found name) *)
+        with 
+          Not_found -> None
+          (* Bs_exception.error (Bs_package_not_found name)           *)
+  in
+  aux cwd 
+
+
+(** The package does not need to be a bspackage 
+  example:
+  {[
+    resolve_npm_package_file ~cwd "reason/refmt"
+  ]}
+  It also returns the path name
+*)
+let resolve_npm_package_file ~cwd sub_path =
+  let rec aux  cwd  = 
+    let abs_marker =  cwd // Literals.node_modules // sub_path in 
+    if Sys.file_exists abs_marker then Some abs_marker
+    else 
+      let cwd' = Filename.dirname cwd in 
+      if String.length cwd' < String.length cwd then  
+        aux cwd' 
+      else 
+        try 
+          let abs_marker = 
+            Sys.getenv "npm_config_prefix" 
+            // "lib" // Literals.node_modules // sub_path in
+          if Sys.file_exists abs_marker
+          then Some  abs_marker
+          else None
+            (* Bs_exception.error (Bs_package_not_found name) *)
+        with 
+          Not_found -> None
+          (* Bs_exception.error (Bs_package_not_found name)           *)
+  in
+  aux cwd 
+end
+module Bsb_build_schemas
+= struct
+#1 "bsb_build_schemas.ml"
+let files = "files"
+let version = "version"
+let name = "name"
+(* let ocaml_config = "ocaml-config" *)
+let bsdep = "bsdep"
+let ppx_flags = "ppx-flags"
+
+let bsc = "bsc"
+let refmt = "refmt"
+let refmt_flags = "refmt-flags"
+let bs_external_includes = "bs-external-includes"
+let bs_lib_dir = "bs-lib-dir"
+let bs_dependencies = "bs-dependencies"
+let bs_copy_or_symlink = "bs-copy-or-symlink"
+let sources = "sources"
+let dir = "dir"
+let files = "files"
+let subdirs = "subdirs"
+let ocamllex = "ocamllex"
+let bsc_flags = "bsc-flags"
+let excludes = "excludes"
+let slow_re = "slow-re"
+let resources = "resources"
+let public = "public"
+let js_post_build = "js-post-build"
+let cmd = "cmd"
+let ninja = "ninja"
+let package_specs = "package-specs"
+
+let generate_merlin = "generate-merlin"
+
+let type_ = "type"
+let dev = "dev"
+
+let export_all = "all"
+let export_none = "none"
+
+let bsb_dir_group = "bsb_dir_group"
+let bsc_lib_includes = "bsc_lib_includes"
+
+end
+module Binary_cache : sig 
+#1 "binary_cache.mli"
+
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type ml_kind =
+  | Ml of string 
+  | Re of string 
+  | Ml_empty
+type mli_kind = 
+  | Mli of string 
+  | Rei of string
+  | Mli_empty
+
+type module_info = 
+  {
+    mli : mli_kind ; 
+    ml : ml_kind ; 
+    mll : string option 
+  }
+
+type file_group_rouces = module_info String_map.t 
+
+type t =
+  module_info String_map.t array
+
+val dir_of_module_info : module_info -> string
+
+val write_build_cache : string -> t -> unit
+
+val read_build_cache : string -> t
+
+val bsbuild_cache : string
+
+
+
+
+
+(** if not added, it is guaranteed the reference equality will 
+    be held
+*)
+val map_update : 
+  ?dir:string -> file_group_rouces ->  string -> file_group_rouces
+
+end = struct
+#1 "binary_cache.ml"
+
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type ml_kind =
+  | Ml of string 
+  | Re of string 
+  | Ml_empty
+type mli_kind = 
+  | Mli of string 
+  | Rei of string
+  | Mli_empty
+
+type module_info = 
+  {
+    mli : mli_kind ; 
+    ml : ml_kind ; 
+    mll : string option ;
+  }
+
+
+type file_group_rouces = module_info String_map.t 
+
+type t = 
+      module_info String_map.t array
+(** indexed by the group *)
+
+let module_info_magic_number = "BSBUILD20161019"
+
+let dir_of_module_info (x : module_info)
+  = 
+  match x with 
+  | { mli; ml; mll} -> 
+    begin match mli with 
+    | Mli s | Rei s -> 
+      Filename.dirname s 
+    | Mli_empty -> 
+      begin match ml with 
+      | Ml s | Re s -> 
+        Filename.dirname s 
+      | Ml_empty -> 
+        begin match mll with 
+        | None -> ""
+        | Some s -> Filename.dirname s 
+        end 
+      end
+    end
+
+let write_build_cache bsbuild (bs_files : t)  = 
+  let oc = open_out_bin bsbuild in 
+  output_string oc module_info_magic_number ;
+  output_value oc bs_files ;
+  close_out oc 
+
+let read_build_cache bsbuild : t = 
+  let ic = open_in_bin bsbuild in 
+  let buffer = really_input_string ic (String.length module_info_magic_number) in
+  assert(buffer = module_info_magic_number); 
+  let data : t = input_value ic in 
+  close_in ic ;
+  data 
+
+
+let bsbuild_cache = ".bsbuild"
+
+
+let empty_module_info = {mli = Mli_empty ; mll = None ; ml = Ml_empty}
+
+let adjust_module_info x suffix name =
+  match suffix with 
+  | ".ml" -> {x with ml = Ml name}
+  | ".re" -> {x with ml = Re name}
+  | ".mli" ->  {x with mli = Mli name}
+  | ".rei" -> { x with mli = Rei name}
+  | ".mll" -> {x with mll = Some name}
+  | _ -> failwith ("don't know what to do with " ^ name)
+
+let map_update ?dir (map : file_group_rouces)  name : file_group_rouces  = 
+  let prefix   = 
+    match dir with
+    | None -> fun x ->  x
+    | Some v -> fun x ->  Ext_filename.combine v x in
+  let module_name = Ext_filename.module_name_of_file_if_any name in 
+  let suffix = Ext_filename.get_extension name in 
+  String_map.adjust 
+    module_name 
+    (fun _ -> (adjust_module_info empty_module_info suffix (prefix name )))
+    (fun v -> (adjust_module_info v suffix (prefix name )))
+    map
+
 end
 module Bsb_dir : sig 
 #1 "bsb_dir.mli"
@@ -7153,202 +7153,6 @@ let set_generate_merlin b =
   generate_merlin := b
 
 end
-module Bsb_dep_infos : sig 
-#1 "bsb_dep_infos.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-type dep_info = {
-  dir_or_file : string ;
-  stamp : float 
-}
-
-
-
-(** 
-   The data structure we decided to whether regenerate [build.ninja] 
-   or not. Note that if we don't record absolute path, 
-
-   ninja will not notice  its build spec changed, it will not trigger 
-   rebuild behavior, is this a desired behavior not?
-
-   It may not, since there is some subtlies here (__FILE__ or __dirname)
-*)
-type t = 
-  { file_stamps : dep_info array ; 
-    source_directory :  string ; 
-    bsb_version : string
-  }
-
-
-
-
-
-
-val store : cwd:string -> string -> dep_info array -> unit
-
-
-(** check if [build.ninja] should be regenerated *)
-val check : cwd:string ->  string -> string
-
-end = struct
-#1 "bsb_dep_infos.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type dep_info = {
-  dir_or_file : string ;
-  stamp : float 
-}
-
-type t = 
-  { file_stamps : dep_info array ; 
-    source_directory :  string ;
-    bsb_version : string
-  }
-
-
-let magic_number = "BS_DEP_INFOS_20161116"
-let bsb_version = "20160121+dev"
-
-let write (fname : string)  (x : t) = 
-  let oc = open_out_bin fname in 
-  output_string oc magic_number ;
-  output_value oc x ; 
-  close_out oc 
-
-let read (fname : string) : t = 
-  let ic = open_in_bin fname in  (* Windows binary mode*)
-  let buffer = really_input_string ic (String.length magic_number) in
-  assert (buffer = magic_number);
-  let res : t = input_value ic  in 
-  close_in ic ; 
-  res
-
-
-
-let no_need_regenerate = ""
-
-
-let rec check_aux xs i finish = 
-  if i = finish then no_need_regenerate
-  else 
-    let k = Array.unsafe_get  xs i  in
-    let current_file = k.dir_or_file in
-    let stat = Unix.stat  current_file in 
-    if stat.st_mtime <= k.stamp then 
-      check_aux xs (i + 1 ) finish 
-    else current_file
-
-(** check time stamp for all files 
-    TODO: those checks system call can be saved later
-    Return a reason 
-*)
-let check ~cwd file =
-  try 
-    let {file_stamps = xs; source_directory; bsb_version = old_version} = read file  in 
-    if old_version <> bsb_version then old_version ^ " -> " ^ bsb_version else
-    if cwd <> source_directory then source_directory ^ " -> " ^ cwd else
-      check_aux xs  0 (Array.length xs)  
-  with _ -> file ^ " does not exist"
-
-let store ~cwd name file_stamps = 
-  write name { file_stamps ; source_directory = cwd ; bsb_version }
-
-end
-module Bsb_file : sig 
-#1 "bsb_file.mli"
-
-
-
-val install_if_exists : destdir:string -> string -> unit 
-
-
-end = struct
-#1 "bsb_file.ml"
-
-
-open Unix
-
-let set_infos filename infos =
-  Unix.utimes filename infos.st_atime infos.st_mtime;
-  Unix.chmod filename infos.st_perm
-  (** it is not necessary to call [chown] since it is within the same user 
-    and {!Unix.chown} is not implemented under Windows
-   *)
-  (*
-  try
-    Unix.chown filename infos.st_uid infos.st_gid
-  with Unix_error(EPERM,_,_) -> ()
-*)
-
-let buffer_size = 8192;;
-let buffer = Bytes.create buffer_size;;
-
-let file_copy input_name output_name =
-  let fd_in = openfile input_name [O_RDONLY] 0 in
-  let fd_out = openfile output_name [O_WRONLY; O_CREAT; O_TRUNC] 0o666 in
-  let rec copy_loop () = match read fd_in buffer 0 buffer_size with
-    |  0 -> ()
-    | r -> ignore (write fd_out buffer 0 r); copy_loop ()
-  in
-  copy_loop ();
-  close fd_in;
-  close fd_out;;
-
-
-let copy_with_permission input_name output_name =
-    file_copy input_name output_name ;
-    set_infos output_name (Unix.lstat input_name)  
-
-let install_if_exists ~destdir input_name = 
-    if Sys.file_exists input_name then 
-        copy_with_permission input_name (Filename.concat destdir (Filename.basename input_name))   
-
-end
 module Bs_hash_stubs
 = struct
 #1 "bs_hash_stubs.ml"
@@ -8489,6 +8293,470 @@ let output_ninja
   end
 
 end
+module Bsb_config_parse : sig 
+#1 "bsb_config_parse.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+val write_ninja_file : string -> string -> string list 
+
+val package_specs_from_json : unit -> Bsb_default.package_specs
+end = struct
+#1 "bsb_config_parse.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+let config_file_bak = "bsconfig.json.bak"
+
+
+
+(* Key is the path *)
+let (|?)  m (key, cb) =
+  m  |> Ext_json.test key cb
+
+let (//) = Ext_filename.combine
+
+let bs_file_groups = ref []
+
+let sourcedirs_meta = ".sourcedirs"
+let merlin = ".merlin"
+let merlin_header = "####{BSB GENERATED: NO EDIT"
+let merlin_trailer = "####BSB GENERATED: NO EDIT}"
+let merlin_trailer_length = String.length merlin_trailer
+
+
+let package_specs_from_json () = 
+  let json = Ext_json.parse_json_from_file Literals.bsconfig_json in
+  begin match json with
+    | `Obj map ->
+      map
+      |? (Bsb_build_schemas.package_specs,
+          `Arr Bsb_default.set_package_specs_from_array)
+      |> ignore ;
+      Bsb_default.get_package_specs ()
+    | _ -> assert false
+  end
+(** [new_content] should start end finish with newline *)
+let revise_merlin new_content =
+  if Sys.file_exists merlin then
+    let merlin_chan = open_in_bin merlin in
+    let size = in_channel_length merlin_chan in
+    let s = really_input_string merlin_chan size in
+    let () =  close_in merlin_chan in
+
+    let header =  Ext_string.find s ~sub:merlin_header  in
+    let tail = Ext_string.find s ~sub:merlin_trailer in
+    if header < 0  && tail < 0 then (* locked region not added yet *)
+      let ochan = open_out_bin merlin in
+      output_string ochan s ;
+      output_string ochan "\n";
+      output_string ochan merlin_header;
+      Buffer.output_buffer ochan new_content;
+      output_string ochan merlin_trailer ;
+      output_string ochan "\n";
+      close_out ochan
+    else if header >=0 && tail >= 0  then
+      (* there is one, hit it everytime,
+         should be fixed point
+      *)
+      let ochan = open_out_bin merlin in
+      output_string ochan (String.sub s 0 header) ;
+      output_string ochan merlin_header;
+      Buffer.output_buffer ochan new_content;
+      output_string ochan merlin_trailer ;
+      output_string ochan (Ext_string.tail_from s (tail +  merlin_trailer_length));
+      close_out ochan
+    else failwith ("the .merlin is corrupted, locked region by bsb is not consistent ")
+  else
+    let ochan = open_out_bin merlin in
+    output_string ochan merlin_header ;
+    Buffer.output_buffer ochan new_content;
+    output_string ochan merlin_trailer ;
+    output_string ochan "\n";
+    close_out ochan
+(*TODO: it is a little mess that [cwd] and [project dir] are shared*)
+(** *)
+let write_ninja_file bsc_dir cwd =
+  let builddir = Bsb_config.lib_bs in
+  let () = Bsb_build_util.mkp builddir in
+  let bsc, bsdep, bsppx =
+    bsc_dir // "bsc.exe",
+    bsc_dir // "bsb_helper.exe",
+    bsc_dir // "bsppx.exe" in
+
+  let update_queue = ref [] in
+  let globbed_dirs = ref [] in
+  (* ATTENTION: order matters here, need resolve global properties before
+     merlin generation
+  *)
+  let handle_bsb_build_ui (res : Bsb_build_ui.t) =
+    let ochan = open_out_bin (builddir // sourcedirs_meta) in
+    let lib_ocaml_dir = (bsc_dir // ".."//"lib"//"ocaml") in
+    let buffer = Buffer.create 100 in
+    let () =
+      Bsb_default.get_ppx_flags ()
+      |> List.iter (fun x ->
+          Buffer.add_string buffer (Printf.sprintf "\nFLG -ppx %s" x )
+        )
+    in
+    let () = Buffer.add_string buffer
+        (Printf.sprintf "\n\
+                         S %s\n\
+                         B %s\n\
+                         FLG -ppx %s\n\
+                        " lib_ocaml_dir lib_ocaml_dir bsppx
+        ) in
+    let () =
+      match Bsb_default.get_bsc_flags () with
+      | [] -> ()
+      | xs ->
+        Buffer.add_string buffer
+          (Printf.sprintf "\nFLG %s" (String.concat Ext_string.single_space xs) ) in
+    let () =
+      Bsb_default.get_bs_dependencies ()
+      |> List.iter (fun package ->
+          match Bs_pkg.resolve_bs_package ~cwd package with
+          | None ->
+            Ext_pervasives.failwithf ~loc:__LOC__"package: %s not found when resolve bs-dependencies" package
+          | Some x ->
+            let path = ( x // "lib"//"ocaml") in
+            Buffer.add_string buffer "\nS ";
+            Buffer.add_string buffer path ;
+            Buffer.add_string buffer "\nB ";
+            Buffer.add_string buffer path ;
+            Buffer.add_string buffer "\n";
+
+        )
+    in
+    res.files |> List.iter
+      (fun (x : Bsb_build_ui.file_group) ->
+         output_string ochan x.dir; (* to [.sourcedirs] *)
+         output_string ochan "\n" ;
+         Buffer.add_string buffer "\nS ";
+         Buffer.add_string buffer x.dir ;
+         Buffer.add_string buffer "\nB ";
+         Buffer.add_string buffer ("lib"//"bs"//x.dir) ;
+         Buffer.add_string buffer "\n"
+      ) ;
+    close_out ochan;
+    bs_file_groups := res.files ;
+    update_queue := res.intervals;
+    globbed_dirs := res.globbed_dirs;
+    if Bsb_default.get_generate_merlin () then
+      revise_merlin buffer ;
+  in
+  let config_json_chan = open_in_bin Literals.bsconfig_json in
+  let global_data = Ext_json.parse_json_from_chan config_json_chan  in
+
+  let () =
+    match global_data with
+    | `Obj map ->
+      map
+      |? (Bsb_build_schemas.generate_merlin, `Bool (fun b ->
+          Bsb_default.set_generate_merlin b
+        ))
+      |?  (Bsb_build_schemas.name, `Str Bsb_default.set_package_name)
+      |? (Bsb_build_schemas.package_specs, `Arr Bsb_default.set_package_specs_from_array )
+      |? (Bsb_build_schemas.js_post_build, `Obj begin fun m ->
+          m |? (Bsb_build_schemas.cmd , `Str (Bsb_default.set_js_post_build_cmd ~cwd)
+               )
+          |> ignore
+        end)
+      |? (Bsb_build_schemas.ocamllex, `Str (Bsb_default.set_ocamllex ~cwd))
+      |? (Bsb_build_schemas.ninja, `Str (Bsb_default.set_ninja ~cwd))
+      |? (Bsb_build_schemas.bs_dependencies, `Arr Bsb_default.set_bs_dependencies)
+      (* More design *)
+      |? (Bsb_build_schemas.bs_external_includes, `Arr Bsb_default.set_bs_external_includes)
+      |? (Bsb_build_schemas.bsc_flags, `Arr Bsb_default.set_bsc_flags)
+      |? (Bsb_build_schemas.ppx_flags, `Arr (Bsb_default.set_ppx_flags ~cwd))
+      |? (Bsb_build_schemas.refmt, `Str (Bsb_default.set_refmt ~cwd))
+      |? (Bsb_build_schemas.refmt_flags, `Arr Bsb_default.set_refmt_flags)
+
+      |? (Bsb_build_schemas.sources, `Id (fun x ->
+          Bsb_build_ui.parsing_sources
+            Bsb_build_ui.lib_dir_index
+            Filename.current_dir_name x
+          |>
+          handle_bsb_build_ui
+        ))
+      |> ignore
+    | _ -> ()
+  in
+  begin match List.sort Ext_file_pp.interval_compare  !update_queue with
+    | [] -> ()
+    | queue ->
+      let file_size = in_channel_length config_json_chan in
+      let oc = open_out_bin config_file_bak in
+      let () =
+        Ext_file_pp.process_wholes
+          queue file_size config_json_chan oc in
+      close_out oc ;
+      close_in config_json_chan ;
+      Unix.unlink Literals.bsconfig_json;
+      Unix.rename config_file_bak Literals.bsconfig_json
+  end;
+
+  Bsb_gen.output_ninja
+    ~builddir
+    ~cwd
+    ~js_post_build_cmd: Bsb_default.(get_js_post_build_cmd ())
+    ~package_specs:(Bsb_default.get_package_specs())
+    bsc
+    bsdep
+    (Bsb_default.get_package_name ())
+    (Bsb_default.get_ocamllex ())
+    (Bsb_default.get_bs_external_includes ())
+    !bs_file_groups
+    Bsb_default.(get_bsc_flags ())
+    Bsb_default.(get_ppx_flags ())
+    Bsb_default.(get_bs_dependencies ())
+    Bsb_default.(get_refmt ())
+    Bsb_default.(get_refmt_flags ())
+
+  ;
+  !globbed_dirs
+
+
+end
+module Bsb_dep_infos : sig 
+#1 "bsb_dep_infos.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type dep_info = {
+  dir_or_file : string ;
+  stamp : float 
+}
+
+
+
+(** 
+   The data structure we decided to whether regenerate [build.ninja] 
+   or not. Note that if we don't record absolute path, 
+
+   ninja will not notice  its build spec changed, it will not trigger 
+   rebuild behavior, is this a desired behavior not?
+
+   It may not, since there is some subtlies here (__FILE__ or __dirname)
+*)
+type t = 
+  { file_stamps : dep_info array ; 
+    source_directory :  string ; 
+    bsb_version : string
+  }
+
+
+
+
+
+
+val store : cwd:string -> string -> dep_info array -> unit
+
+
+(** check if [build.ninja] should be regenerated *)
+val check : cwd:string ->  string -> string
+
+end = struct
+#1 "bsb_dep_infos.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type dep_info = {
+  dir_or_file : string ;
+  stamp : float 
+}
+
+type t = 
+  { file_stamps : dep_info array ; 
+    source_directory :  string ;
+    bsb_version : string
+  }
+
+
+let magic_number = "BS_DEP_INFOS_20161116"
+let bsb_version = "20160121+dev"
+
+let write (fname : string)  (x : t) = 
+  let oc = open_out_bin fname in 
+  output_string oc magic_number ;
+  output_value oc x ; 
+  close_out oc 
+
+let read (fname : string) : t = 
+  let ic = open_in_bin fname in  (* Windows binary mode*)
+  let buffer = really_input_string ic (String.length magic_number) in
+  assert (buffer = magic_number);
+  let res : t = input_value ic  in 
+  close_in ic ; 
+  res
+
+
+
+let no_need_regenerate = ""
+
+
+let rec check_aux xs i finish = 
+  if i = finish then no_need_regenerate
+  else 
+    let k = Array.unsafe_get  xs i  in
+    let current_file = k.dir_or_file in
+    let stat = Unix.stat  current_file in 
+    if stat.st_mtime <= k.stamp then 
+      check_aux xs (i + 1 ) finish 
+    else current_file
+
+(** check time stamp for all files 
+    TODO: those checks system call can be saved later
+    Return a reason 
+*)
+let check ~cwd file =
+  try 
+    let {file_stamps = xs; source_directory; bsb_version = old_version} = read file  in 
+    if old_version <> bsb_version then old_version ^ " -> " ^ bsb_version else
+    if cwd <> source_directory then source_directory ^ " -> " ^ cwd else
+      check_aux xs  0 (Array.length xs)  
+  with _ -> file ^ " does not exist"
+
+let store ~cwd name file_stamps = 
+  write name { file_stamps ; source_directory = cwd ; bsb_version }
+
+end
+module Bsb_file : sig 
+#1 "bsb_file.mli"
+
+
+
+val install_if_exists : destdir:string -> string -> unit 
+
+
+end = struct
+#1 "bsb_file.ml"
+
+
+open Unix
+
+let set_infos filename infos =
+  Unix.utimes filename infos.st_atime infos.st_mtime;
+  Unix.chmod filename infos.st_perm
+  (** it is not necessary to call [chown] since it is within the same user 
+    and {!Unix.chown} is not implemented under Windows
+   *)
+  (*
+  try
+    Unix.chown filename infos.st_uid infos.st_gid
+  with Unix_error(EPERM,_,_) -> ()
+*)
+
+let buffer_size = 8192;;
+let buffer = Bytes.create buffer_size;;
+
+let file_copy input_name output_name =
+  let fd_in = openfile input_name [O_RDONLY] 0 in
+  let fd_out = openfile output_name [O_WRONLY; O_CREAT; O_TRUNC] 0o666 in
+  let rec copy_loop () = match read fd_in buffer 0 buffer_size with
+    |  0 -> ()
+    | r -> ignore (write fd_out buffer 0 r); copy_loop ()
+  in
+  copy_loop ();
+  close fd_in;
+  close fd_out;;
+
+
+let copy_with_permission input_name output_name =
+    file_copy input_name output_name ;
+    set_infos output_name (Unix.lstat input_name)  
+
+let install_if_exists ~destdir input_name = 
+    if Sys.file_exists input_name then 
+        copy_with_permission input_name (Filename.concat destdir (Filename.basename input_name))   
+
+end
 module Bsb_unix : sig 
 #1 "bsb_unix.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -8679,210 +8947,12 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-let config_file_bak = "bsconfig.json.bak"
+
+
 
 let bsdeps = ".bsdeps"
 
-
-
-(* Key is the path *)
-let (|?)  m (key, cb) =
-  m  |> Ext_json.test key cb
-
 let (//) = Ext_filename.combine
-
-let bs_file_groups = ref []
-
-let sourcedirs_meta = ".sourcedirs"
-let merlin = ".merlin"
-let merlin_header = "####{BSB GENERATED: NO EDIT"
-let merlin_trailer = "####BSB GENERATED: NO EDIT}"
-let merlin_trailer_length = String.length merlin_trailer
-
-(** [new_content] should start end finish with newline *)
-let revise_merlin new_content =
-  if Sys.file_exists merlin then
-    let merlin_chan = open_in_bin merlin in
-    let size = in_channel_length merlin_chan in
-    let s = really_input_string merlin_chan size in
-    let () =  close_in merlin_chan in
-
-    let header =  Ext_string.find s ~sub:merlin_header  in
-    let tail = Ext_string.find s ~sub:merlin_trailer in
-    if header < 0  && tail < 0 then (* locked region not added yet *)
-      let ochan = open_out_bin merlin in
-      output_string ochan s ;
-      output_string ochan "\n";
-      output_string ochan merlin_header;
-      Buffer.output_buffer ochan new_content;
-      output_string ochan merlin_trailer ;
-      output_string ochan "\n";
-      close_out ochan
-    else if header >=0 && tail >= 0  then
-      (* there is one, hit it everytime,
-         should be fixed point
-      *)
-      let ochan = open_out_bin merlin in
-      output_string ochan (String.sub s 0 header) ;
-      output_string ochan merlin_header;
-      Buffer.output_buffer ochan new_content;
-      output_string ochan merlin_trailer ;
-      output_string ochan (Ext_string.tail_from s (tail +  merlin_trailer_length));
-      close_out ochan
-    else failwith ("the .merlin is corrupted, locked region by bsb is not consistent ")
-  else
-    let ochan = open_out_bin merlin in
-    output_string ochan merlin_header ;
-    Buffer.output_buffer ochan new_content;
-    output_string ochan merlin_trailer ;
-    output_string ochan "\n";
-    close_out ochan
-(*TODO: it is a little mess that [cwd] and [project dir] are shared*)
-(** *)
-let write_ninja_file bsc_dir cwd =
-  let builddir = Bsb_config.lib_bs in
-  let () = Bsb_build_util.mkp builddir in
-  let bsc, bsdep, bsppx =
-    bsc_dir // "bsc.exe",
-    bsc_dir // "bsb_helper.exe",
-    bsc_dir // "bsppx.exe" in
-
-  let update_queue = ref [] in
-  let globbed_dirs = ref [] in
-  (* ATTENTION: order matters here, need resolve global properties before
-     merlin generation
-  *)
-  let handle_bsb_build_ui (res : Bsb_build_ui.t) =
-    let ochan = open_out_bin (builddir // sourcedirs_meta) in
-    let lib_ocaml_dir = (bsc_dir // ".."//"lib"//"ocaml") in
-    let buffer = Buffer.create 100 in
-    let () =
-      Bsb_default.get_ppx_flags ()
-      |> List.iter (fun x ->
-          Buffer.add_string buffer (Printf.sprintf "\nFLG -ppx %s" x )
-        )
-    in
-    let () = Buffer.add_string buffer
-        (Printf.sprintf "\n\
-                         S %s\n\
-                         B %s\n\
-                         FLG -ppx %s\n\
-                        " lib_ocaml_dir lib_ocaml_dir bsppx
-        ) in
-    let () =
-      match Bsb_default.get_bsc_flags () with
-      | [] -> ()
-      | xs ->
-        Buffer.add_string buffer
-          (Printf.sprintf "\nFLG %s" (String.concat Ext_string.single_space xs) ) in
-    let () =
-      Bsb_default.get_bs_dependencies ()
-      |> List.iter (fun package ->
-          match Bs_pkg.resolve_bs_package ~cwd package with
-          | None ->
-            Ext_pervasives.failwithf ~loc:__LOC__"package: %s not found when resolve bs-dependencies" package
-          | Some x ->
-          let path = ( x // "lib"//"ocaml") in
-          Buffer.add_string buffer "\nS ";
-          Buffer.add_string buffer path ;
-          Buffer.add_string buffer "\nB ";
-          Buffer.add_string buffer path ;
-          Buffer.add_string buffer "\n";
-
-        )
-    in
-    res.files |> List.iter
-      (fun (x : Bsb_build_ui.file_group) ->
-         output_string ochan x.dir; (* to [.sourcedirs] *)
-         output_string ochan "\n" ;
-         Buffer.add_string buffer "\nS ";
-         Buffer.add_string buffer x.dir ;
-         Buffer.add_string buffer "\nB ";
-         Buffer.add_string buffer ("lib"//"bs"//x.dir) ;
-         Buffer.add_string buffer "\n"
-      ) ;
-    close_out ochan;
-    bs_file_groups := res.files ;
-    update_queue := res.intervals;
-    globbed_dirs := res.globbed_dirs;
-    if Bsb_default.get_generate_merlin () then
-      revise_merlin buffer ;
-  in
-  let config_json_chan = open_in_bin Literals.bsconfig_json in
-  let global_data = Ext_json.parse_json_from_chan config_json_chan  in
-
-  let () =
-    match global_data with
-    | `Obj map ->
-      map
-      |? (Bsb_build_schemas.generate_merlin, `Bool (fun b ->
-          Bsb_default.set_generate_merlin b
-        ))
-      |?  (Bsb_build_schemas.name, `Str Bsb_default.set_package_name)
-      |? (Bsb_build_schemas.package_specs, `Arr Bsb_default.set_package_specs_from_array )
-      |? (Bsb_build_schemas.js_post_build, `Obj begin fun m ->
-          m |? (Bsb_build_schemas.cmd , `Str (Bsb_default.set_js_post_build_cmd ~cwd)
-               )
-          |> ignore
-        end)
-      |? (Bsb_build_schemas.ocamllex, `Str (Bsb_default.set_ocamllex ~cwd))
-      |? (Bsb_build_schemas.ninja, `Str (Bsb_default.set_ninja ~cwd))
-      |? (Bsb_build_schemas.bs_dependencies, `Arr Bsb_default.set_bs_dependencies)
-      (* More design *)
-      |? (Bsb_build_schemas.bs_external_includes, `Arr Bsb_default.set_bs_external_includes)
-      |? (Bsb_build_schemas.bsc_flags, `Arr Bsb_default.set_bsc_flags)
-      |? (Bsb_build_schemas.ppx_flags, `Arr (Bsb_default.set_ppx_flags ~cwd))
-      |? (Bsb_build_schemas.refmt, `Str (Bsb_default.set_refmt ~cwd))
-      |? (Bsb_build_schemas.refmt_flags, `Arr Bsb_default.set_refmt_flags)
-
-      |? (Bsb_build_schemas.sources, `Id (fun x ->
-          Bsb_build_ui.parsing_sources
-            Bsb_build_ui.lib_dir_index
-            Filename.current_dir_name x
-          |>
-          handle_bsb_build_ui
-        ))
-      |> ignore
-    | _ -> ()
-  in
-  begin match List.sort Ext_file_pp.interval_compare  !update_queue with
-    | [] -> ()
-    | queue ->
-      let file_size = in_channel_length config_json_chan in
-      let oc = open_out_bin config_file_bak in
-      let () =
-        Ext_file_pp.process_wholes
-          queue file_size config_json_chan oc in
-      close_out oc ;
-      close_in config_json_chan ;
-      Unix.unlink Literals.bsconfig_json;
-      Unix.rename config_file_bak Literals.bsconfig_json
-  end;
-
-  Bsb_gen.output_ninja
-    ~builddir
-    ~cwd
-    ~js_post_build_cmd: Bsb_default.(get_js_post_build_cmd ())
-    ~package_specs:(Bsb_default.get_package_specs())
-    bsc
-    bsdep
-    (Bsb_default.get_package_name ())
-    (Bsb_default.get_ocamllex ())
-    (Bsb_default.get_bs_external_includes ())
-    !bs_file_groups
-    Bsb_default.(get_bsc_flags ())
-    Bsb_default.(get_ppx_flags ())
-    Bsb_default.(get_bs_dependencies ())
-    Bsb_default.(get_refmt ())
-    Bsb_default.(get_refmt_flags ())
-
-  ;
-  !globbed_dirs
-
-
-
-
-
 
 let force_regenerate = ref false
 let exec = ref false
@@ -8997,7 +9067,7 @@ let regenerate_ninja cwd bsc_dir forced : Bsb_default.package_specs option =
     begin
       print_endline reason ;
       print_endline "Regenerating build spec";
-      let globbed_dirs = write_ninja_file bsc_dir cwd in
+      let globbed_dirs = Bsb_config_parse.write_ninja_file bsc_dir cwd in
       Literals.bsconfig_json :: globbed_dirs
       |> List.map
         (fun x ->
@@ -9089,7 +9159,6 @@ let ninja_command_exit (type t) ninja ninja_args : t =
 
 
 
-
 (**
    Cache files generated:
    - .bsdircache in project root dir
@@ -9111,17 +9180,8 @@ let make_world_deps deps =
   let deps =
     match deps with
     | None ->
-      let json = Ext_json.parse_json_from_file Literals.bsconfig_json in
-      begin match json with
-        | `Obj map ->
-          map
-          |? (Bsb_build_schemas.package_specs,
-              `Arr Bsb_default.set_package_specs_from_array)
-          |> ignore ;
-          Bsb_default.get_package_specs ()
-        | _ -> assert false
-      end
-    | Some spec -> spec in
+      Bsb_config_parse.package_specs_from_json ()
+   | Some spec -> spec in
   build_bs_deps (  String_set.fold
                      (fun k acc -> k ^ "," ^ acc ) deps Ext_string.empty )
 let () =

@@ -654,6 +654,11 @@ bsb/bsb_build_util.cmx : ext/ext_sys.cmx ext/ext_string.cmx ext/ext_list.cmx \
     bsb/bsb_config.cmx bsb/bsb_build_util.cmi
 bsb/bsb_config.cmx : ext/literals.cmx common/js_config.cmx \
     ext/ext_string.cmx ext/ext_filename.cmx bsb/bsb_config.cmi
+bsb/bsb_config_parse.cmx : ext/literals.cmx ext/ext_string.cmx \
+    ext/ext_pervasives.cmx ext/ext_json.cmx ext/ext_filename.cmx \
+    ext/ext_file_pp.cmx bsb/bsb_gen.cmx bsb/bsb_default.cmx \
+    bsb/bsb_config.cmx bsb/bsb_build_util.cmx bsb/bsb_build_ui.cmx \
+    bsb/bsb_build_schemas.cmx common/bs_pkg.cmx bsb/bsb_config_parse.cmi
 bsb/bsb_default.cmx : ext/string_set.cmx ext/literals.cmx ext/ext_sys.cmx \
     ext/ext_string.cmx ext/ext_json.cmx ext/ext_filename.cmx \
     bsb/bsb_config.cmx bsb/bsb_build_util.cmx bsb/bsb_build_schemas.cmx \
@@ -669,12 +674,10 @@ bsb/bsb_helper_main.cmx : depends/depends_post_process.cmx \
     bsb/bsb_helper_main.cmi
 bsb/bsb_main.cmx : ext/string_vec.cmx ext/string_set.cmx \
     ext/string_hash_set.cmx ext/literals.cmx ext/ext_sys.cmx \
-    ext/ext_string.cmx ext/ext_pervasives.cmx ext/ext_json.cmx \
-    ext/ext_filename.cmx ext/ext_file_pp.cmx ext/ext_array.cmx \
-    bsb/bsb_unix.cmx bsb/bsb_ninja.cmx bsb/bsb_gen.cmx bsb/bsb_file.cmx \
-    bsb/bsb_dep_infos.cmx bsb/bsb_default.cmx bsb/bsb_config.cmx \
-    bsb/bsb_build_util.cmx bsb/bsb_build_ui.cmx bsb/bsb_build_schemas.cmx \
-    common/bs_pkg.cmx bsb/bsb_main.cmi
+    ext/ext_string.cmx ext/ext_filename.cmx ext/ext_array.cmx \
+    bsb/bsb_unix.cmx bsb/bsb_ninja.cmx bsb/bsb_file.cmx bsb/bsb_dep_infos.cmx \
+    bsb/bsb_default.cmx bsb/bsb_config_parse.cmx bsb/bsb_config.cmx \
+    bsb/bsb_build_util.cmx bsb/bsb_main.cmi
 bsb/bsb_ninja.cmx : ext/string_set.cmx ext/string_map.cmx \
     ext/string_hash_set.cmx ext/literals.cmx ext/ext_sys.cmx \
     ext/ext_string.cmx ext/ext_filename.cmx bsb/bsb_config.cmx \
@@ -686,6 +689,7 @@ bsb/bsb_build_ui.cmi : ext/string_set.cmi ext/ext_json.cmi \
     ext/ext_file_pp.cmi common/binary_cache.cmi
 bsb/bsb_build_util.cmi : ext/ext_json.cmi
 bsb/bsb_config.cmi :
+bsb/bsb_config_parse.cmi : bsb/bsb_default.cmi
 bsb/bsb_default.cmi : ext/string_set.cmi ext/ext_json.cmi
 bsb/bsb_dep_infos.cmi :
 bsb/bsb_dir.cmi :
