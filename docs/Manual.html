@@ -1608,7 +1608,7 @@ give the JavaScript foreign function a different name:</p>
 </div>
 </div>
 <div class="paragraph">
-<p><code>bs.pipe.send</code> is similar to <code>bs.send</code> except that the first argument, i.e, the object,
+<p><code>bs.send.pipe</code> is similar to <code>bs.send</code> except that the first argument, i.e, the object,
 is put in the position of last argument to help user write in a <em>chaining style</em>:</p>
 </div>
 <div class="listingblock">
@@ -4008,7 +4008,7 @@ bsb -w <b class="conum">(2)</b></code></pre>
     <span class="tok-s2">&quot;sources&quot;</span><span class="tok-o">:</span> <span class="tok-p">[</span>
        <span class="tok-p">..</span> <span class="tok-p">.</span>
     <span class="tok-p">],</span>
-    <span class="tok-s2">&quot;generate-merlin&quot;</span> <span class="tok-o">:</span> <span class="tok-kc">true</span> <b class="conum">(2)</b>
+    <span class="tok-s2">&quot;generate-merlin&quot;</span> <span class="tok-o">:</span> <span class="tok-kc">false</span> <b class="conum">(2)</b>
 <span class="tok-p">}</span></code></pre>
 </div>
 </div>
@@ -4018,7 +4018,7 @@ bsb -w <b class="conum">(2)</b></code></pre>
 <p>Yet another BuckleScript dependency</p>
 </li>
 <li>
-<p>bsb will generate merlin file for you</p>
+<p>if true (default) bsb will generate merlin file for you</p>
 </li>
 </ol>
 </div>

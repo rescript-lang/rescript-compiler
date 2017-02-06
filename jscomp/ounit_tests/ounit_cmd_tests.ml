@@ -89,7 +89,17 @@ let suites =
       OUnit.assert_bool __LOC__ (Ext_string.non_overlap_count
                                    dedupe_require.stdout ~sub:"require" = 1
                                 )     
+    end;
+    __LOC__ >:: begin fun _ -> 
+      let should_err = bsc_eval {|
+external ff : 
+    resp -> (_ [@bs.as "x"]) -> int -> unit = 
+    "x" [@@bs.set]      
+      |} in 
+      OUnit.assert_bool __LOC__ 
+      (Ext_string.contain_substring should_err.stderr
+      "Ill defined"
+      )
     end
-
   ]
 
