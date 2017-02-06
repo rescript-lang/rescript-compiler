@@ -13157,16 +13157,22 @@ function module_item(env) {
                     switch (match$11.tag | 0) {
                       case 18 : 
                           var match$12 = match$11[0][/* id */0];
-                          names = match$12 ? /* :: */[
+                          if (match$12) {
+                            names = /* :: */[
                               /* tuple */[
                                 loc$1,
                                 extract_ident_name(match$12[0])
                               ],
                               /* [] */0
-                            ] : (error_at(env$2, /* tuple */[
-                                    loc$1,
-                                    /* ExportNamelessFunction */56
-                                  ]), /* [] */0);
+                            ];
+                          }
+                          else {
+                            error_at(env$2, /* tuple */[
+                                  loc$1,
+                                  /* ExportNamelessFunction */56
+                                ]);
+                            names = /* [] */0;
+                          }
                           break;
                       case 19 : 
                           names = List.fold_left(function (names, param) {
@@ -13181,16 +13187,22 @@ function module_item(env) {
                           break;
                       case 20 : 
                           var match$13 = match$11[0][/* id */0];
-                          names = match$13 ? /* :: */[
+                          if (match$13) {
+                            names = /* :: */[
                               /* tuple */[
                                 loc$1,
                                 extract_ident_name(match$13[0])
                               ],
                               /* [] */0
-                            ] : (error_at(env$2, /* tuple */[
-                                    loc$1,
-                                    /* ExportNamelessClass */55
-                                  ]), /* [] */0);
+                            ];
+                          }
+                          else {
+                            error_at(env$2, /* tuple */[
+                                  loc$1,
+                                  /* ExportNamelessClass */55
+                                ]);
+                            names = /* [] */0;
+                          }
                           break;
                       default:
                         throw [
