@@ -88,3 +88,7 @@ let package_output ~format:s output=
   in
   (proj_rel @@ prefix output )
 (* output_file_sans_extension ^ Literals.suffix_js *) 
+
+
+type package_specs = String_set.t
+

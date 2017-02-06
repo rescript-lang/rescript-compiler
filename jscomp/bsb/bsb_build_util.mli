@@ -64,3 +64,7 @@ val get_bsc_dir : string -> string
 val get_list_string : Ext_json.t array -> string list
 
 val string_of_bsb_dev_include : int -> string 
+
+val resolve_bsb_magic_file : cwd:string -> desc:string -> string -> string
+
+val walk_all_deps : bool -> string -> (bool -> string -> unit) -> unit

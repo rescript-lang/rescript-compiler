@@ -28,6 +28,8 @@ let flag_concat flag xs =
   |> String.concat Ext_string.single_space
 let (//) = Ext_filename.combine
 
+
+    
 (* we use lazy $src_root_dir *)
 
 
@@ -42,6 +44,30 @@ let convert_and_resolve_path =
       Bsb_config.proj_rel p 
   else failwith ("Unknown OS :" ^ Sys.os_type)
 (* we only need convert the path in the begining*)
+
+
+(* Magic path resolution:
+   foo => foo
+   foo/ => /absolute/path/to/projectRoot/node_modules/foo
+   foo/bar => /absolute/path/to/projectRoot/node_modules/foo.bar
+   /foo/bar => /foo/bar
+   ./foo/bar => /absolute/path/to/projectRoot/./foo/bar
+   Input is node path, output is OS dependent path
+*)
+let resolve_bsb_magic_file ~cwd ~desc p =
+  let p_len = String.length p in
+  let no_slash = Ext_string.no_slash p in
+  if no_slash then
+    p
+  else if Filename.is_relative p &&
+     p_len > 0 &&
+     String.unsafe_get p 0 <> '.' then
+    let p = if Ext_sys.is_windows_or_cygwin then Ext_string.replace_slash_backward p else p in
+    match Bs_pkg.resolve_npm_package_file ~cwd p with
+    | None -> failwith (p ^ " not found when resolving " ^ desc)
+    | Some v -> v
+  else
+    convert_and_resolve_path p
 
 
 
@@ -104,3 +130,39 @@ let string_of_bsb_dev_include i =
   | 4 -> bsc_group_4_includes
   | _ -> 
     "bsc_group_" ^ string_of_int i ^ "_includes"
+
+(* Key is the path *)
+let (|?)  m (key, cb) =
+  m  |> Ext_json.test key cb
+
+
+
+(**
+  TODO: check duplicate package name
+   ?use path as identity?
+*)
+let rec walk_all_deps top dir cb =
+  let bsconfig_json =  (dir // Literals.bsconfig_json) in
+  match Ext_json.parse_json_from_file bsconfig_json with
+  | `Obj map ->
+    map
+    |?
+    (Bsb_build_schemas.bs_dependencies,
+      `Arr (fun (new_packages : Ext_json.t array) ->
+         new_packages
+         |> Array.iter (fun (js : Ext_json.t) ->
+          begin match js with
+          | `Str {Ext_json.str = new_package} ->
+            begin match Bs_pkg.resolve_bs_package ~cwd:dir new_package with
+            | None -> failwith (new_package ^ " not found as dependency of " ^ bsconfig_json )
+            | Some package_dir  ->
+              walk_all_deps  false package_dir cb  ;
+            end;
+          | _ -> () (* TODO: add a log framework, warning here *)
+          end
+      )))
+    |> ignore ;
+    cb top dir
+  | _ -> ()
+  | exception _ -> failwith ( "failed to parse" ^ bsconfig_json ^ " properly")
+    

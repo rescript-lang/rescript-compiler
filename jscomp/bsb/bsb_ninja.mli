@@ -82,7 +82,7 @@ val zero : info
 
 
 val handle_file_groups : out_channel ->
-  package_specs:Bsb_default.package_specs ->  
+  package_specs:Bsb_config.package_specs ->  
   js_post_build_cmd:string option -> 
   Bsb_build_ui.file_group list ->
   info -> info

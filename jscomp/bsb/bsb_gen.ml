@@ -40,25 +40,29 @@ let merge_module_info_map acc sources =
       | None, Some v ->  Some v
     ) acc  sources
 
+let bsc_exe = "bsc.exe"
+let bsb_helper_exe = "bsb_helper.exe"
 
 let output_ninja
-    ~builddir
-    ~cwd
-    ~js_post_build_cmd
-    ~package_specs
-    bsc
-    bsdep
-    package_name
-    ocamllex
-    bs_external_includes
-    (bs_file_groups : Bsb_build_ui.file_group list)
-    bsc_flags
-    ppx_flags
-    bs_dependencies
-    refmt
-    refmt_flags
-
+    ~cwd 
+    ~bsc_dir           
+    {
+    Bsb_config_types.package_name;
+    ocamllex;
+    external_includes = bs_external_includes;
+    bsc_flags ; 
+    ppx_flags;
+    bs_dependencies;
+    refmt;
+    refmt_flags;
+    js_post_build_cmd;
+    package_specs;
+    bs_file_groups;
+    }
   =
+  let bsc = bsc_dir // bsc_exe in   (* The path to [bsc.exe] independent of config  *)
+  let bsdep = bsc_dir // bsb_helper_exe in (* The path to [bsb_heler.exe] *)
+  let builddir = Bsb_config.lib_bs in 
   let ppx_flags = Bsb_build_util.flag_concat "-ppx" ppx_flags in
   let bsc_flags =  String.concat Ext_string.single_space bsc_flags in
   let refmt_flags = String.concat Ext_string.single_space refmt_flags in

@@ -23,7 +23,17 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-val output_ninja :
-  cwd:string ->
-  bsc_dir:string ->  
-  Bsb_config_types.t -> unit 
+type t = {
+  package_name : string option ; 
+  ocamllex : string ; 
+  external_includes : string list ; 
+  bsc_flags : string list ;
+  ppx_flags : string list ;
+  bs_dependencies : string list;
+  refmt : string ;
+  refmt_flags : string list;
+  js_post_build_cmd : string option;
+  package_specs : Bsb_config.package_specs ; 
+  globbed_dirs : string list;
+  bs_file_groups : Bsb_build_ui.file_group list ;
+}

@@ -23,6 +23,13 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-val write_ninja_file : string -> string -> string list 
 
-val package_specs_from_json : unit -> Bsb_default.package_specs
+val interpret_json : 
+    bsc_dir:string -> 
+    cwd:string -> 
+    Bsb_config_types.t
+
+
+
+
+val package_specs_from_json : unit -> Bsb_config.package_specs

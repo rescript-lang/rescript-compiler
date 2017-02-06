@@ -42,3 +42,6 @@ val supported_format : string -> bool
 val package_flag : format:string -> string -> string 
 
 val package_output : format:string -> string -> string 
+
+type package_specs = String_set.t
+

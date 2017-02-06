@@ -62,7 +62,7 @@ let internal_install = "-internal-install"
 let build_bs_deps package_specs   =
   let bsc_dir = Bsb_build_util.get_bsc_dir cwd in
   let bsb_exe = bsc_dir // "bsb.exe" in
-  Bsb_default.walk_all_deps true cwd
+  Bsb_build_util.walk_all_deps true cwd
     (fun top cwd ->
        if not top then
          Bsb_unix.run_command_execv
@@ -102,7 +102,7 @@ let clean_bs_garbage cwd =
     prerr_endline ("Failed to clean due to " ^ Printexc.to_string e)
 
 let clean_bs_deps () =
-  Bsb_default.walk_all_deps true cwd  (fun top cwd ->
+  Bsb_build_util.walk_all_deps true cwd  (fun top cwd ->
       clean_bs_garbage cwd
     )
 
@@ -133,7 +133,7 @@ let bsb_main_flags =
 (** Regenerate ninja file and return None if we dont need regenerate
     otherwise return some info
 *)
-let regenerate_ninja cwd bsc_dir forced : Bsb_default.package_specs option =
+let regenerate_ninja cwd bsc_dir forced =
   let output_deps = Bsb_config.lib_bs // bsdeps in
   let reason =
     if forced then "Regenerating ninja (triggered by command line -regen)"
@@ -143,16 +143,19 @@ let regenerate_ninja cwd bsc_dir forced : Bsb_default.package_specs option =
     begin
       print_endline reason ;
       print_endline "Regenerating build spec";
-      let globbed_dirs = Bsb_config_parse.write_ninja_file bsc_dir cwd in
-      Literals.bsconfig_json :: globbed_dirs
-      |> List.map
-        (fun x ->
-           { Bsb_dep_infos.dir_or_file = x ;
-             stamp = (Unix.stat x).st_mtime
-           }
-        )
-      |> (fun x -> Bsb_dep_infos.store ~cwd output_deps (Array.of_list x));
-      Some (Bsb_default.get_package_specs ())
+      let config = Bsb_config_parse.interpret_json ~bsc_dir ~cwd in 
+      begin 
+        Bsb_gen.output_ninja ~cwd ~bsc_dir config ; 
+        Literals.bsconfig_json :: config.globbed_dirs
+        |> List.map
+          (fun x ->
+             { Bsb_dep_infos.dir_or_file = x ;
+               stamp = (Unix.stat x).st_mtime
+             }
+          )
+        |> (fun x -> Bsb_dep_infos.store ~cwd output_deps (Array.of_list x));
+        Some config 
+      end 
       (* This makes sense since we did parse the json file *)
     end
   else None
@@ -251,13 +254,13 @@ let usage = "Usage : bsb.exe <bsb-options> <files> -- <ninja_options>\n\
 
 
 
-let make_world_deps deps =
+let make_world_deps (config : Bsb_config_types.t option) =
   print_endline "\nMaking the dependency world!";
   let deps =
-    match deps with
+    match config with
     | None ->
       Bsb_config_parse.package_specs_from_json ()
-   | Some spec -> spec in
+    | Some {package_specs} -> package_specs in
   build_bs_deps (  String_set.fold
                      (fun k acc -> k ^ "," ^ acc ) deps Ext_string.empty )
 let () =

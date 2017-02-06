@@ -32,8 +32,6 @@ let (|?)  m (key, cb) =
 
 let (//) = Ext_filename.combine
 
-let bs_file_groups = ref []
-
 let sourcedirs_meta = ".sourcedirs"
 let merlin = ".merlin"
 let merlin_header = "####{BSB GENERATED: NO EDIT"
@@ -98,15 +96,17 @@ let revise_merlin new_content =
 (*TODO: it is a little mess that [cwd] and [project dir] are shared*)
 
 
-let bsppx_exe = "bsppx.exe"
-let bsc_exe = "bsc.exe"
-let bsb_helper_exe = "bsb_helper.exe"
 
-let interpret_json bsc_dir cwd  =
-   let builddir = Bsb_config.lib_bs in
+
+let bsppx_exe = "bsppx.exe"
+
+let interpret_json ~bsc_dir ~cwd  : Bsb_config_types.t =
+  let builddir = Bsb_config.lib_bs in
   let () = Bsb_build_util.mkp builddir in
   let update_queue = ref [] in
   let globbed_dirs = ref [] in
+  let bs_file_groups = ref [] in 
+
   (* ATTENTION: order matters here, need resolve global properties before
      merlin generation
   *)
@@ -126,10 +126,10 @@ let interpret_json bsc_dir cwd  =
                          B %s\n\
                          FLG -ppx %s\n\
                         " 
-                        lib_ocaml_dir 
-                        lib_ocaml_dir 
-                        (bsc_dir // bsppx_exe)
-                        (* bsppx *)
+           lib_ocaml_dir 
+           lib_ocaml_dir 
+           (bsc_dir // bsppx_exe)
+           (* bsppx *)
         ) in
     let () =
       match Bsb_default.get_bsc_flags () with
@@ -220,27 +220,22 @@ let interpret_json bsc_dir cwd  =
       Unix.unlink Literals.bsconfig_json;
       Unix.rename config_file_bak Literals.bsconfig_json
   end;
-  !globbed_dirs 
-(** *)
-let write_ninja_file bsc_dir cwd =
-  let globbed_dirs = interpret_json bsc_dir cwd  in 
-  Bsb_gen.output_ninja
-    ~builddir:Bsb_config.lib_bs
-    ~cwd
-    ~js_post_build_cmd: Bsb_default.(get_js_post_build_cmd ())
-    ~package_specs:(Bsb_default.get_package_specs())
-    (bsc_dir // bsc_exe)
-    (bsc_dir // bsb_helper_exe)
-    (Bsb_default.get_package_name ())
-    (Bsb_default.get_ocamllex ())
-    (Bsb_default.get_bs_external_includes ())
-    !bs_file_groups
-    Bsb_default.(get_bsc_flags ())
-    Bsb_default.(get_ppx_flags ())
-    Bsb_default.(get_bs_dependencies ())
-    Bsb_default.(get_refmt ())
-    Bsb_default.(get_refmt_flags ())
+  {
+      Bsb_config_types.package_name = (Bsb_default.get_package_name ());
+      ocamllex = (Bsb_default.get_ocamllex ());
+      external_includes = (Bsb_default.get_bs_external_includes ()) ;
+      bsc_flags = Bsb_default.(get_bsc_flags ());
+      ppx_flags = Bsb_default.(get_ppx_flags ());
+      bs_dependencies = Bsb_default.(get_bs_dependencies ());
+      refmt = Bsb_default.(get_refmt ());
+      refmt_flags = Bsb_default.(get_refmt_flags ());
+      js_post_build_cmd =  Bsb_default.(get_js_post_build_cmd ());
+      package_specs = (Bsb_default.get_package_specs());
+      globbed_dirs = !globbed_dirs; 
+      bs_file_groups = !bs_file_groups; 
+  }
+  
 
-  ;
-  globbed_dirs
+
+
 
