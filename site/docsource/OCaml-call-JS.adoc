@@ -165,7 +165,7 @@ Output:
 dom.getElementById("xx")
 --------
 
-`bs.pipe.send` is similar to `bs.send` except that the first argument, i.e, the object,
+`bs.send.pipe` is similar to `bs.send` except that the first argument, i.e, the object,
 is put in the position of last argument to help user write in a _chaining style_:
 
 [source,ocaml]
