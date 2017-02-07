@@ -11,8 +11,6 @@ bin/bsb.ml : ext/ext_string.ml
 bin/bsb.ml : ext/ext_string.mli
 bin/bsb.ml : ext/ext_filename.ml
 bin/bsb.ml : ext/ext_filename.mli
-bin/bsb.ml : common/js_config.ml
-bin/bsb.ml : common/js_config.mli
 bin/bsb.ml : ext/set_gen.ml
 bin/bsb.ml : ext/string_set.ml
 bin/bsb.ml : ext/string_set.mli

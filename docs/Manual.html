@@ -518,7 +518,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_an_example_with_multiple_modules">An example with multiple modules</a></li>
 </ul>
 </li>
-<li><a href="#_built_in_npm_support">Built in npm support</a>
+<li><a href="#_built_in_npm_support">Built in NPM support</a>
 <ul class="sectlevel2">
 <li><a href="#_build_ocaml_library_as_a_npm_package">Build OCaml library as a npm package</a></li>
 <li><a href="#_to_use_ocaml_library_as_a_npm_package">To use OCaml library as a npm package</a></li>
@@ -1216,16 +1216,35 @@ node lib/js/src/main_entry.js</code></pre>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_built_in_npm_support"><a class="anchor" href="#_built_in_npm_support"></a>Built in npm support</h2>
+<h2 id="_built_in_npm_support"><a class="anchor" href="#_built_in_npm_support"></a>Built in NPM support</h2>
 <div class="sectionbody">
 <div class="sect2">
 <h3 id="_build_ocaml_library_as_a_npm_package"><a class="anchor" href="#_build_ocaml_library_as_a_npm_package"></a>Build OCaml library as a npm package</h3>
+<div class="paragraph">
+<p>BuckleScript build system has built in support for NPM packages,
+please checkout the section about the bsb for NPM support.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>This section covers some basics of how NPM is supported internally, normal users
+are safe to skip this section.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
 <div class="paragraph">
 <p>BuckleScript extends the OCaml compiler options with several flags to
 provide better experience for NPM users.</p>
 </div>
 <div class="paragraph">
-<p>In general, you are expected to deploy two kinds of artifacts, the
+<p>In general, you are expected to see two kinds of build artifacts, the
 generated JS files and meta data which your OCaml dependencies rely
 on.</p>
 </div>
@@ -1261,7 +1280,7 @@ pretty straightforward:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="sh">bsc.exe -bs-package-include ocaml-package-name -c a.ml</code></pre>
+<pre class="pygments highlight"><code data-lang="sh">bsc.exe -I path/to/ocaml/package/installed -c a.ml</code></pre>
 </div>
 </div>
 </div>
@@ -1272,7 +1291,7 @@ pretty straightforward:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="sh">bsc.exe -bs-package-include ocaml-package1 -bs-package-include ocaml-package2  -bs-package-name <span class="tok-nv">$npm_package_name</span> -bs-package-output commonjs:path/to/lib/js/ -c a.ml</code></pre>
+<pre class="pygments highlight"><code data-lang="sh">bsc.exe -I path/to/ocaml/package1/installed -I path/to/ocaml/package2/installed  -bs-package-name <span class="tok-nv">$npm_package_name</span> -bs-package-output commonjs:path/to/lib/js/ -c a.ml</code></pre>
 </div>
 </div>
 </div>

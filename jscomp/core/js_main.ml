@@ -69,16 +69,6 @@ let set_eval_string s =
 
 let (//) = Filename.concat
 
-let add_package s = 
-  let path = 
-    Bs_pkg.resolve_bs_package
-      ~cwd:(Lazy.force Ext_filename.cwd) 
-      s   in 
-  match path with
-  | None -> Bs_exception.error (Bs_package_not_found s)
-  | Some path ->
-    Clflags.include_dirs := (path // Js_config.lib_ocaml_dir) :: ! Clflags.include_dirs
-
 
 let set_noassert () = 
   Js_config.set_no_any_assert ();
@@ -190,10 +180,7 @@ let buckle_script_flags =
    Arg.String Js_config.set_npm_package_path, 
    " set npm-output-path: [opt_module]:path, for example: 'lib/cjs', 'amdjs:lib/amdjs', 'es6:lib/es6' and 'goog:lib/gjs'")
   ::
-  ("-bs-package-include", 
-   Arg.String add_package, 
-   " set package names, for example bs-platform "  )
-  ::
+  
   ("-bs-no-warn-unused-bs-attribute",
    Arg.Set Js_config.no_warn_unused_bs_attribute,
    " disable warnings on unused bs. attribute"

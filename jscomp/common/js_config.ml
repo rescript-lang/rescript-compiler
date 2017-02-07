@@ -219,7 +219,3 @@ let dump_js = ref false
 let syntax_only = ref false
 let binary_ast = ref false
 
-(** The installation directory, it will affect 
-    [-bs-package-include] and [bsb] on how to install it and look it up
-*)
-let lib_ocaml_dir = Filename.concat "lib" "ocaml"

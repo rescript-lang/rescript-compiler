@@ -24815,7 +24815,7 @@ val dump_js : bool ref
 val syntax_only  : bool ref
 val binary_ast : bool ref
 
-val lib_ocaml_dir : string
+
 
 end = struct
 #1 "js_config.ml"
@@ -25040,10 +25040,6 @@ let dump_js = ref false
 let syntax_only = ref false
 let binary_ast = ref false
 
-(** The installation directory, it will affect 
-    [-bs-package-include] and [bsb] on how to install it and look it up
-*)
-let lib_ocaml_dir = Filename.concat "lib" "ocaml"
 
 end
 module Bs_warnings : sig 
