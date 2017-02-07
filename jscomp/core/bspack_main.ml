@@ -372,10 +372,14 @@ let () =
            | None -> ()
            | Some file ->
              let output = (Ext_filename.chop_extension_if_any file ^ ".d") in
+             let sorted_queue = 
+                Queue.fold (fun acc x -> String_set.add x acc) String_set.empty  collection_modules in 
              Ext_io.write_file 
                output
-               (Queue.fold 
-                  (fun acc a -> 
+               (
+                 (* Queue.fold *)
+                 String_set.fold
+                  (fun a acc  -> 
                      acc ^ file ^ " : " ^ 
                      (*FIXME: now we normalized path,
                        we need a beautiful output too for relative path
@@ -389,9 +393,10 @@ let () =
 
                      ^ "\n"
                      (* ^ a ^ " : ; touch " ^ output ^ "\n" *)
-                  ) 
-                  ""
-                  collection_modules)
+                  ) sorted_queue
+                  Ext_string.empty 
+                  (* collection_modules *)
+                  )
        end
      | None, _ -> 
        let ast_table =

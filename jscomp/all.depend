@@ -561,8 +561,8 @@ core/bspp_main.cmi :
 core/js_cmi_datasets.cmi : ext/string_map.cmi
 core/js_main.cmi :
 core/bsppx_main.cmx : syntax/ppx_entry.cmx
-core/bspack_main.cmx : ext/string_hashtbl.cmx ext/ext_string.cmx \
-    ext/ext_pervasives.cmx ext/ext_list.cmx ext/ext_io.cmx \
+core/bspack_main.cmx : ext/string_set.cmx ext/string_hashtbl.cmx \
+    ext/ext_string.cmx ext/ext_pervasives.cmx ext/ext_list.cmx ext/ext_io.cmx \
     ext/ext_filename.cmx depends/ast_extract.cmx core/bspack_main.cmi
 core/jsoo_main.cmx : syntax/ppx_entry.cmx core/lam_compile_group.cmx \
     core/lam_compile_env.cmx core/js_dump.cmx ext/ext_pp.cmx \
