@@ -1744,6 +1744,9 @@ val inter4 : string -> string -> string -> string -> string
 val concat_array : string -> string array -> string 
 
 val single_colon : string 
+
+val parent_dir_lit : string
+val current_dir_lit : string
 end = struct
 #1 "ext_string.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -2217,6 +2220,8 @@ let inter4 a b c d =
   concat_array single_space [| a; b ; c; d|]
   
     
+let parent_dir_lit = ".."    
+let current_dir_lit = "."
 end
 module Ounit_array_tests
 = struct
@@ -9658,7 +9663,7 @@ val path_as_directory : string -> string
     just treat it as a library instead
  *)
 
-val node_relative_path : t -> [`File of string] -> string
+val node_relative_path : bool -> t -> [`File of string] -> string
 
 val chop_extension : ?loc:string -> string -> string
 
@@ -9867,12 +9872,15 @@ let relative_path file_or_dir_1 file_or_dir_2 =
 
     [file1] is currently compilation file 
     [file2] is the dependency
+    
+    TODO: this is a hackish function: FIXME
 *)
-let node_relative_path (file1 : t) 
+let node_relative_path node_modules_shorten (file1 : t) 
     (`File file2 as dep_file : [`File of string]) = 
   let v = Ext_string.find  file2 ~sub:Literals.node_modules in 
   let len = String.length file2 in 
-  if v >= 0 then
+  if node_modules_shorten && v >= 0 then
+    
     let rec skip  i =       
       if i >= len then
         Ext_pervasives.failwithf ~loc:__LOC__ "invalid path: %s"  file2
@@ -9958,13 +9966,40 @@ let combine p1 p2 =
      split_aux "//ghosg//ghsogh/";;
      - : string * string list = ("/", ["ghosg"; "ghsogh"])
    ]}
+   Note that 
+   {[
+     Filename.dirname "/a/" = "/"
+       Filename.dirname "/a/b/" = Filename.dirname "/a/b" = "/a"
+   ]}
+   Special case:
+   {[
+     basename "//" = "/"
+       basename "///"  = "/"
+   ]}
+   {[
+     basename "" =  "."
+       basename "" = "."
+       dirname "" = "."
+       dirname "" =  "."
+   ]}  
 *)
 let split_aux p =
   let rec go p acc =
     let dir = Filename.dirname p in
     if dir = p then dir, acc
-    else go dir (Filename.basename p :: acc)
+    else
+      let new_path = Filename.basename p in 
+      if Ext_string.equal new_path Filename.dir_sep then 
+        go dir acc 
+        (* We could do more path simplification here
+           leave to [rel_normalized_absolute_path]
+        *)
+      else 
+        go dir (new_path :: acc)
+
   in go p []
+
+
 
 (** 
    TODO: optimization
@@ -9973,19 +10008,22 @@ let split_aux p =
 let rel_normalized_absolute_path from to_ =
   let root1, paths1 = split_aux from in 
   let root2, paths2 = split_aux to_ in 
-  if root1 <> root2 then root2 else
+  if root1 <> root2 then root2
+  else
     let rec go xss yss =
       match xss, yss with 
       | x::xs, y::ys -> 
-        if x = y then go xs ys 
+        if Ext_string.equal x  y then go xs ys 
         else 
           let start = 
-            List.fold_left (fun acc _ -> acc // ".." ) ".." xs in 
+            List.fold_left (fun acc _ -> acc // Ext_string.parent_dir_lit )
+              Ext_string.parent_dir_lit  xs in 
           List.fold_left (fun acc v -> acc // v) start yss
-      | [], [] -> ""
+      | [], [] -> Ext_string.empty
       | [], y::ys -> List.fold_left (fun acc x -> acc // x) y ys
       | x::xs, [] ->
-        List.fold_left (fun acc _ -> acc // ".." ) ".." xs in
+        List.fold_left (fun acc _ -> acc // Ext_string.parent_dir_lit )
+          Ext_string.parent_dir_lit xs in
     go paths1 paths2
 
 (*TODO: could be hgighly optimized later 
@@ -10007,6 +10045,7 @@ let rel_normalized_absolute_path from to_ =
     normalize_absolute_path "/a";;
   ]}
 *)
+(** See tests in {!Ounit_path_tests} *)
 let normalize_absolute_path x =
   let drop_if_exist xs =
     match xs with 
@@ -10015,11 +10054,13 @@ let normalize_absolute_path x =
   let rec normalize_list acc paths =
     match paths with 
     | [] -> acc 
-    | "." :: xs -> normalize_list acc xs
-    | ".." :: xs -> 
-      normalize_list (drop_if_exist acc ) xs 
     | x :: xs -> 
-      normalize_list (x::acc) xs 
+      if Ext_string.equal x Ext_string.current_dir_lit then 
+        normalize_list acc xs 
+      else if Ext_string.equal x Ext_string.parent_dir_lit then 
+        normalize_list (drop_if_exist acc ) xs 
+      else   
+        normalize_list (x::acc) xs 
   in
   let root, paths = split_aux x in
   let rev_paths =  normalize_list [] paths in 
@@ -10048,13 +10089,13 @@ module Ounit_path_tests
 = struct
 #1 "ounit_path_tests.ml"
 let ((>::),
-    (>:::)) = OUnit.((>::),(>:::))
+     (>:::)) = OUnit.((>::),(>:::))
 
 
 let normalize = Ext_filename.normalize_absolute_path
 let (=~) x y = 
   OUnit.assert_equal ~cmp:(fun x y ->   Ext_string.equal x y ) x y
-    
+
 let suites = 
   __FILE__ 
   >:::
@@ -10093,7 +10134,68 @@ let suites =
     end;
     __LOC__ >:: begin fun _ -> 
       normalize "/./a/.////////j/k//../////..///././b/./c/d/././../" =~ "/a/b/c"
-    end
+    end;
+
+    __LOC__ >:: begin fun _ -> 
+    let aux a b result = 
+        
+         Ext_filename.rel_normalized_absolute_path
+        a b =~ result ; 
+        
+        Ext_filename.rel_normalized_absolute_path
+        (String.sub a 0 (String.length a - 1)) 
+        b  =~ result ;
+        
+        Ext_filename.rel_normalized_absolute_path
+        a
+        (String.sub b 0 (String.length b - 1))  =~ result
+        ;
+        
+
+        Ext_filename.rel_normalized_absolute_path
+        (String.sub a 0 (String.length a - 1 ))
+        (String.sub b 0 (String.length b - 1))
+        =~ result  
+       in   
+      aux
+        "/a/b/c/"
+        "/a/b/c/d/"  "d";
+      aux
+        "/a/b/c/"
+        "/a/b/c/d/e/f/" "d/e/f" ;
+      aux
+        "/a/b/c/d/"
+        "/a/b/c/"  ".."  ;
+      aux
+        "/a/b/c/d/"
+        "/a/b/"  "../.."  ;  
+      aux
+        "/a/b/c/d/"
+        "/a/"  "../../.."  ;  
+       aux
+        "/a/b/c/d/"
+        "//"  "../../../.."  ;  
+     
+     
+    end;
+    (* This is still correct just not optimal depends 
+      on user's perspective *)
+    __LOC__ >:: begin fun _ -> 
+      Ext_filename.rel_normalized_absolute_path 
+        "/a/b/c/d"
+        "/x/y" =~ "../../../../x/y"  
+
+    end;
+    
+    __LOC__ >:: begin fun _ -> 
+    Ext_filename.rel_normalized_absolute_path
+    "/usr/local/lib/node_modules/"
+    "//" =~ "../../../..";
+    Ext_filename.rel_normalized_absolute_path
+    "/usr/local/lib/node_modules/"
+    "/" =~ "../../../.."
+    end;
+    
   ]
 
 end

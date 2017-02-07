@@ -50,7 +50,7 @@ val path_as_directory : string -> string
     just treat it as a library instead
  *)
 
-val node_relative_path : t -> [`File of string] -> string
+val node_relative_path : bool -> t -> [`File of string] -> string
 
 val chop_extension : ?loc:string -> string -> string
 

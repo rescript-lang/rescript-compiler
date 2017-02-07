@@ -5,7 +5,7 @@ let eq loc x y =
   suites := 
     (loc ^" id " ^ (string_of_int !test_id), (fun _ -> Mt.Eq(x,y))) :: !suites
 
-
+let test = Ext_filename.node_relative_path true 
 let () =
   eq __LOC__ 
     (let (//) = Ext_filename.combine in 
@@ -20,40 +20,40 @@ let () =
 
   ;    
   eq __LOC__
-    (Ext_filename.node_relative_path 
+    (test
        (`File "./a/b.c")
        (`File "./a/u/g.c")) "./u/g";
 
   eq __LOC__ 
-    (Ext_filename.node_relative_path
+    (test
        (`File "./a/b.c")
        (`File "xxxghsoghos/ghsoghso/node_modules/buckle-stdlib/list.js"))
     "buckle-stdlib/list.js" ;
 
   eq __LOC__ 
-    (Ext_filename.node_relative_path
+    (test
            (`File "./a/b.c")
            (`File "xxxghsoghos/ghsoghso/node_modules//buckle-stdlib/list.js"))
          "buckle-stdlib/list.js" ;
 
   eq __LOC__ 
-    (Ext_filename.node_relative_path
+    (test
            (`File "./a/b.c")
            (`File "xxxghsoghos/ghsoghso/node_modules/./buckle-stdlib/list.js"))
     "buckle-stdlib/list.js"    ;
 
   eq __LOC__ 
-    (Ext_filename.node_relative_path
+    (test
            (`File "./a/c.js")
            (`File "./a/b"))
     "./b"         ;
   eq __LOC__ 
-    (Ext_filename.node_relative_path
+    (test
            (`File "./a/c")
            (`File "./a/b.js"))
     "./b"         ;
   eq __LOC__
-    (Ext_filename.node_relative_path
+    (test
            (`Dir "./a/")
            (`File "./a/b.js"))
     "./b";

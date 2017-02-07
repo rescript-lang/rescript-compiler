@@ -129,3 +129,6 @@ val inter4 : string -> string -> string -> string -> string
 val concat_array : string -> string array -> string 
 
 val single_colon : string 
+
+val parent_dir_lit : string
+val current_dir_lit : string
