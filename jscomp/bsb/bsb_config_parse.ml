@@ -145,11 +145,7 @@ let interpret_json
     let () =
       Bsb_default.get_bs_dependencies ()
       |> List.iter (fun package ->
-          match Bs_pkg.resolve_bs_package ~cwd package with
-          | None ->
-            Ext_pervasives.failwithf ~loc:__LOC__"package: %s not found when resolve bs-dependencies" package
-          | Some x ->
-            let path = ( x // "lib"//"ocaml") in
+            let path = package.Bsb_config_types.package_install_path in
             Buffer.add_string buffer "\nS ";
             Buffer.add_string buffer path ;
             Buffer.add_string buffer "\nB ";
@@ -194,7 +190,7 @@ let interpret_json
         end)
       |? (Bsb_build_schemas.ocamllex, `Str (Bsb_default.set_ocamllex ~cwd))
       |? (Bsb_build_schemas.ninja, `Str (Bsb_default.set_ninja ~cwd))
-      |? (Bsb_build_schemas.bs_dependencies, `Arr Bsb_default.set_bs_dependencies)
+      |? (Bsb_build_schemas.bs_dependencies, `Arr (Bsb_default.set_bs_dependencies ~cwd))
       (* More design *)
       |? (Bsb_build_schemas.bs_external_includes, `Arr Bsb_default.set_bs_external_includes)
       |? (Bsb_build_schemas.bsc_flags, `Arr Bsb_default.set_bsc_flags)

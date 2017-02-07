@@ -7384,21 +7384,29 @@ module Bsb_config_types
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-type t = {
-  package_name : string option ; 
-  ocamllex : string ; 
-  external_includes : string list ; 
-  bsc_flags : string list ;
-  ppx_flags : string list ;
-  bs_dependencies : string list;
-  refmt : string ;
-  refmt_flags : string list;
-  js_post_build_cmd : string option;
-  package_specs : Bsb_config.package_specs ; 
-  globbed_dirs : string list;
-  bs_file_groups : Bsb_build_ui.file_group list ;
-  files_to_install : String_hash_set.t ;
-}
+type bs_dependency = 
+  {
+    package_name : string ; 
+    package_install_path : string ; 
+  }
+type bs_dependencies =
+  bs_dependency list 
+type t = 
+  {
+    package_name : string option ; 
+    ocamllex : string ; 
+    external_includes : string list ; 
+    bsc_flags : string list ;
+    ppx_flags : string list ;
+    bs_dependencies : bs_dependencies;
+    refmt : string ;
+    refmt_flags : string list;
+    js_post_build_cmd : string option;
+    package_specs : Bsb_config.package_specs ; 
+    globbed_dirs : string list;
+    bs_file_groups : Bsb_build_ui.file_group list ;
+    files_to_install : String_hash_set.t ;
+  }
 end
 module Bsb_default : sig 
 #1 "bsb_default.mli"
@@ -7453,8 +7461,8 @@ val get_refmt : unit -> string
 val set_refmt_flags : Ext_json.t array -> unit
 val get_refmt_flags : unit -> string list
 
-val get_bs_dependencies : unit  -> string list
-val set_bs_dependencies : Ext_json.t array  -> unit
+val get_bs_dependencies : unit  -> Bsb_config_types.bs_dependencies
+val set_bs_dependencies : cwd:string -> Ext_json.t array  -> unit
 
 
 val get_js_post_build_cmd : unit -> string option
@@ -7519,10 +7527,24 @@ let set_bsc_flags s = bsc_flags := get_list_string s
 
 
 
-let bs_dependencies = ref []
+let bs_dependencies : Bsb_config_types.bs_dependency list ref = ref []
 let get_bs_dependencies () = !bs_dependencies
-let set_bs_dependencies  s =
-  bs_dependencies := get_list_string s
+let set_bs_dependencies ~cwd s =
+  let package_names = get_list_string s in 
+  bs_dependencies := 
+  package_names 
+  |> List.map 
+  (fun package_name  -> 
+    match Bs_pkg.resolve_bs_package ~cwd package_name  with 
+    | None -> 
+      Ext_pervasives.failwithf ~loc:__LOC__"package: %s not found when resolve bs-dependencies" package_name
+    | Some x -> 
+      {
+         Bsb_config_types.package_name ;
+         package_install_path = x // "lib" // "ocaml"
+      }
+  )
+  
 
 
 let bs_external_includes = ref []
@@ -7810,11 +7832,7 @@ let interpret_json
     let () =
       Bsb_default.get_bs_dependencies ()
       |> List.iter (fun package ->
-          match Bs_pkg.resolve_bs_package ~cwd package with
-          | None ->
-            Ext_pervasives.failwithf ~loc:__LOC__"package: %s not found when resolve bs-dependencies" package
-          | Some x ->
-            let path = ( x // "lib"//"ocaml") in
+            let path = package.Bsb_config_types.package_install_path in
             Buffer.add_string buffer "\nS ";
             Buffer.add_string buffer path ;
             Buffer.add_string buffer "\nB ";
@@ -7859,7 +7877,7 @@ let interpret_json
         end)
       |? (Bsb_build_schemas.ocamllex, `Str (Bsb_default.set_ocamllex ~cwd))
       |? (Bsb_build_schemas.ninja, `Str (Bsb_default.set_ninja ~cwd))
-      |? (Bsb_build_schemas.bs_dependencies, `Arr Bsb_default.set_bs_dependencies)
+      |? (Bsb_build_schemas.bs_dependencies, `Arr (Bsb_default.set_bs_dependencies ~cwd))
       (* More design *)
       |? (Bsb_build_schemas.bs_external_includes, `Arr Bsb_default.set_bs_external_includes)
       |? (Bsb_build_schemas.bsc_flags, `Arr Bsb_default.set_bsc_flags)
@@ -8763,7 +8781,7 @@ let merge_module_info_map acc sources =
 
 let bsc_exe = "bsc.exe"
 let bsb_helper_exe = "bsb_helper.exe"
-
+let dash_i = "-I"
 let output_ninja
     ~cwd 
     ~bsc_dir           
@@ -8807,7 +8825,7 @@ let output_ninja
           "ocamllex", ocamllex;
           "bsc_flags", bsc_flags ;
           "ppx_flags", ppx_flags;
-          "bs_package_includes", (Bsb_build_util.flag_concat "-bs-package-include" bs_dependencies);
+          "bs_package_includes", (Bsb_build_util.flag_concat dash_i @@ List.map (fun x -> x.Bsb_config_types.package_install_path) bs_dependencies);
           "refmt", refmt;
           "refmt_flags", refmt_flags;
           Bsb_build_schemas.bsb_dir_group, "0"  (*TODO: avoid name conflict in the future *)
@@ -8822,7 +8840,7 @@ let output_ninja
             ) (String_map.empty,[],[]) bs_file_groups in
         Binary_cache.write_build_cache (builddir // Binary_cache.bsbuild_cache) [|bs_groups|] ;
         Bsb_ninja.output_kv
-          Bsb_build_schemas.bsc_lib_includes (Bsb_build_util.flag_concat "-I" @@ (bs_external_includes @ source_dirs  ))  oc ;
+          Bsb_build_schemas.bsc_lib_includes (Bsb_build_util.flag_concat dash_i @@ (bs_external_includes @ source_dirs  ))  oc ;
         static_resources
       else
         let bs_groups = Array.init  (number_of_dev_groups + 1 ) (fun i -> String_map.empty) in
@@ -8836,7 +8854,7 @@ let output_ninja
         (* Make sure [sources] does not have files in [lib] we have to check later *)
         let lib = bs_groups.(0) in
         Bsb_ninja.output_kv
-          Bsb_build_schemas.bsc_lib_includes (Bsb_build_util.flag_concat "-I" @@ (bs_external_includes @ source_dirs.(0))) oc ;
+          Bsb_build_schemas.bsc_lib_includes (Bsb_build_util.flag_concat dash_i @@ (bs_external_includes @ source_dirs.(0))) oc ;
         for i = 1 to number_of_dev_groups  do
           let c = bs_groups.(i) in
           String_map.iter (fun k _ -> if String_map.mem k lib then failwith ("conflict files found:" ^ k)) c ;

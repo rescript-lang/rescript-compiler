@@ -43,10 +43,24 @@ let set_bsc_flags s = bsc_flags := get_list_string s
 
 
 
-let bs_dependencies = ref []
+let bs_dependencies : Bsb_config_types.bs_dependency list ref = ref []
 let get_bs_dependencies () = !bs_dependencies
-let set_bs_dependencies  s =
-  bs_dependencies := get_list_string s
+let set_bs_dependencies ~cwd s =
+  let package_names = get_list_string s in 
+  bs_dependencies := 
+  package_names 
+  |> List.map 
+  (fun package_name  -> 
+    match Bs_pkg.resolve_bs_package ~cwd package_name  with 
+    | None -> 
+      Ext_pervasives.failwithf ~loc:__LOC__"package: %s not found when resolve bs-dependencies" package_name
+    | Some x -> 
+      {
+         Bsb_config_types.package_name ;
+         package_install_path = x // "lib" // "ocaml"
+      }
+  )
+  
 
 
 let bs_external_includes = ref []

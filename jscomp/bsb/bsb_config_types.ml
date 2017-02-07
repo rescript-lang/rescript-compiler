@@ -23,18 +23,26 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-type t = {
-  package_name : string option ; 
-  ocamllex : string ; 
-  external_includes : string list ; 
-  bsc_flags : string list ;
-  ppx_flags : string list ;
-  bs_dependencies : string list;
-  refmt : string ;
-  refmt_flags : string list;
-  js_post_build_cmd : string option;
-  package_specs : Bsb_config.package_specs ; 
-  globbed_dirs : string list;
-  bs_file_groups : Bsb_build_ui.file_group list ;
-  files_to_install : String_hash_set.t ;
-}
+type bs_dependency = 
+  {
+    package_name : string ; 
+    package_install_path : string ; 
+  }
+type bs_dependencies =
+  bs_dependency list 
+type t = 
+  {
+    package_name : string option ; 
+    ocamllex : string ; 
+    external_includes : string list ; 
+    bsc_flags : string list ;
+    ppx_flags : string list ;
+    bs_dependencies : bs_dependencies;
+    refmt : string ;
+    refmt_flags : string list;
+    js_post_build_cmd : string option;
+    package_specs : Bsb_config.package_specs ; 
+    globbed_dirs : string list;
+    bs_file_groups : Bsb_build_ui.file_group list ;
+    files_to_install : String_hash_set.t ;
+  }

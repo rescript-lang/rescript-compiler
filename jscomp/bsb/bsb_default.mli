@@ -49,8 +49,8 @@ val get_refmt : unit -> string
 val set_refmt_flags : Ext_json.t array -> unit
 val get_refmt_flags : unit -> string list
 
-val get_bs_dependencies : unit  -> string list
-val set_bs_dependencies : Ext_json.t array  -> unit
+val get_bs_dependencies : unit  -> Bsb_config_types.bs_dependencies
+val set_bs_dependencies : cwd:string -> Ext_json.t array  -> unit
 
 
 val get_js_post_build_cmd : unit -> string option

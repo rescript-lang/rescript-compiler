@@ -42,7 +42,7 @@ let merge_module_info_map acc sources =
 
 let bsc_exe = "bsc.exe"
 let bsb_helper_exe = "bsb_helper.exe"
-
+let dash_i = "-I"
 let output_ninja
     ~cwd 
     ~bsc_dir           
@@ -86,7 +86,7 @@ let output_ninja
           "ocamllex", ocamllex;
           "bsc_flags", bsc_flags ;
           "ppx_flags", ppx_flags;
-          "bs_package_includes", (Bsb_build_util.flag_concat "-bs-package-include" bs_dependencies);
+          "bs_package_includes", (Bsb_build_util.flag_concat dash_i @@ List.map (fun x -> x.Bsb_config_types.package_install_path) bs_dependencies);
           "refmt", refmt;
           "refmt_flags", refmt_flags;
           Bsb_build_schemas.bsb_dir_group, "0"  (*TODO: avoid name conflict in the future *)
@@ -101,7 +101,7 @@ let output_ninja
             ) (String_map.empty,[],[]) bs_file_groups in
         Binary_cache.write_build_cache (builddir // Binary_cache.bsbuild_cache) [|bs_groups|] ;
         Bsb_ninja.output_kv
-          Bsb_build_schemas.bsc_lib_includes (Bsb_build_util.flag_concat "-I" @@ (bs_external_includes @ source_dirs  ))  oc ;
+          Bsb_build_schemas.bsc_lib_includes (Bsb_build_util.flag_concat dash_i @@ (bs_external_includes @ source_dirs  ))  oc ;
         static_resources
       else
         let bs_groups = Array.init  (number_of_dev_groups + 1 ) (fun i -> String_map.empty) in
@@ -115,7 +115,7 @@ let output_ninja
         (* Make sure [sources] does not have files in [lib] we have to check later *)
         let lib = bs_groups.(0) in
         Bsb_ninja.output_kv
-          Bsb_build_schemas.bsc_lib_includes (Bsb_build_util.flag_concat "-I" @@ (bs_external_includes @ source_dirs.(0))) oc ;
+          Bsb_build_schemas.bsc_lib_includes (Bsb_build_util.flag_concat dash_i @@ (bs_external_includes @ source_dirs.(0))) oc ;
         for i = 1 to number_of_dev_groups  do
           let c = bs_groups.(i) in
           String_map.iter (fun k _ -> if String_map.mem k lib then failwith ("conflict files found:" ^ k)) c ;
