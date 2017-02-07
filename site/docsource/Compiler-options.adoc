@@ -138,3 +138,8 @@ Another use case is that users can use `-ppx` explicitly as below:
 --------------
 bsc.exe -c -ppx bsppx.exe -bs-no-builtin-ppx-ml c.ml
 --------------
+
+
+### -bs-no-version-header
+
+Don't print version header
