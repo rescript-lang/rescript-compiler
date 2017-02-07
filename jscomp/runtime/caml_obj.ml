@@ -152,6 +152,7 @@ let unsafe_js_compare x y =
     as well as the [List.sort] and [Array.sort] functions.
 *)
 let rec caml_compare (a : Obj.t) (b : Obj.t) : int =
+  (*front and formoest, we do not compare function values*)
   if Js.typeof a = "string" then
     caml_string_compare (Obj.magic a) (Obj.magic b )
   else if Js.typeof a = "number" then
@@ -161,6 +162,8 @@ let rec caml_compare (a : Obj.t) (b : Obj.t) : int =
           || Js.typeof a = "undefined"
   then
     unsafe_js_compare a b
+  else if Js.typeof a = "function" || Js.typeof b = "function"
+  then raise (Invalid_argument "compare: functional value")
   else
   (* if js_is_instance_array a then  *)
   (*   0 *)
@@ -212,7 +215,7 @@ and aux_length_b_short (a : Obj.t) (b : Obj.t) i short_length =
 type eq = Obj.t -> Obj.t -> bool
 
 let rec caml_equal (a : Obj.t) (b : Obj.t) : bool =
-  (* first, check using reference equality *)
+  (*front and formoest, we do not compare function values*)
   if a == b then true
   else if Js.typeof a = "string"
   || Js.typeof a = "number"
@@ -220,6 +223,9 @@ let rec caml_equal (a : Obj.t) (b : Obj.t) : bool =
   || Js.typeof a = "undefined"
   || Js.typeof a = "null"
   then false
+  else if Js.typeof a = "function" || Js.typeof b = "function"
+  then raise (Invalid_argument "equal: functional value")
+  (* first, check using reference equality *)
   else
     let tag_a = Bs_obj.tag a in
     let tag_b = Bs_obj.tag b in
