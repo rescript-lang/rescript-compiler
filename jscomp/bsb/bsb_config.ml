@@ -26,7 +26,7 @@ let (//) = Ext_filename.combine
 let lib_js = "lib"//"js"
 let lib_amd = "lib"//"amdjs"
 let lib_goog = "lib" // "goog"
-let lib_ocaml = Js_config.lib_ocaml_dir
+let lib_ocaml = "lib" // "ocaml"
 let lib_bs = "lib" // "bs"
 let lib_es6 = "lib" // "es6"
 let rev_lib_bs = ".."// ".."
@@ -51,11 +51,28 @@ let no_dev = ref false
 
 let install = ref false 
 
+
+let cmd_package_specs = ref None 
+
+type package_specs = String_set.t
+
 let supported_format x = 
   x = Literals.amdjs ||
   x = Literals.commonjs ||
   x = Literals.goog ||
   x = Literals.es6
+
+
+let cmd_override_package_specs str = 
+  let lst = Ext_string.split ~keep_empty:false str ',' in
+  cmd_package_specs :=
+    Some (List.fold_left (fun acc x ->
+          let v =
+            if supported_format x then String_set.add x acc
+            else
+              failwith ("Unkonwn package spec" ^ x) in
+          v
+    ) String_set.empty lst)
 
 let bs_package_output = "-bs-package-output"
 
@@ -88,3 +105,8 @@ let package_output ~format:s output=
   in
   (proj_rel @@ prefix output )
 (* output_file_sans_extension ^ Literals.suffix_js *) 
+
+
+
+
+

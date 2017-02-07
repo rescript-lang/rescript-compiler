@@ -1,12 +1,21 @@
 
-## Built in npm support
+## Built in NPM support
 
 ### Build OCaml library as a npm package
+
+BuckleScript build system has built in support for NPM packages, 
+please checkout the section about the bsb for NPM support. 
+
+[NOTE]
+======
+This section covers some basics of how NPM is supported internally, normal users 
+are safe to skip this section.
+======
 
 BuckleScript extends the OCaml compiler options with several flags to
 provide better experience for NPM users.
 
-In general, you are expected to deploy two kinds of artifacts, the
+In general, you are expected to see two kinds of build artifacts, the
 generated JS files and meta data which your OCaml dependencies rely
 on.
 
@@ -39,7 +48,7 @@ pretty straightforward:
 
 [source,sh]
 -----------
-bsc.exe -bs-package-include ocaml-package-name -c a.ml
+bsc.exe -I path/to/ocaml/package/installed -c a.ml
 -----------
 
 
@@ -50,7 +59,7 @@ Your command line would be like this:
 
 [source,sh]
 -----------
-bsc.exe -bs-package-include ocaml-package1 -bs-package-include ocaml-package2  -bs-package-name $npm_package_name -bs-package-output commonjs:path/to/lib/js/ -c a.ml
+bsc.exe -I path/to/ocaml/package1/installed -I path/to/ocaml/package2/installed  -bs-package-name $npm_package_name -bs-package-output commonjs:path/to/lib/js/ -c a.ml
 -----------
 
 ### Examples

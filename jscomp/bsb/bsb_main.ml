@@ -23,210 +23,12 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-let config_file_bak = "bsconfig.json.bak"
+
+
 
 let bsdeps = ".bsdeps"
 
-
-
-(* Key is the path *)
-let (|?)  m (key, cb) =
-  m  |> Ext_json.test key cb
-
 let (//) = Ext_filename.combine
-
-let bs_file_groups = ref []
-
-let sourcedirs_meta = ".sourcedirs"
-let merlin = ".merlin"
-let merlin_header = "####{BSB GENERATED: NO EDIT"
-let merlin_trailer = "####BSB GENERATED: NO EDIT}"
-let merlin_trailer_length = String.length merlin_trailer
-
-(** [new_content] should start end finish with newline *)
-let revise_merlin new_content =
-  if Sys.file_exists merlin then
-    let merlin_chan = open_in_bin merlin in
-    let size = in_channel_length merlin_chan in
-    let s = really_input_string merlin_chan size in
-    let () =  close_in merlin_chan in
-
-    let header =  Ext_string.find s ~sub:merlin_header  in
-    let tail = Ext_string.find s ~sub:merlin_trailer in
-    if header < 0  && tail < 0 then (* locked region not added yet *)
-      let ochan = open_out_bin merlin in
-      output_string ochan s ;
-      output_string ochan "\n";
-      output_string ochan merlin_header;
-      Buffer.output_buffer ochan new_content;
-      output_string ochan merlin_trailer ;
-      output_string ochan "\n";
-      close_out ochan
-    else if header >=0 && tail >= 0  then
-      (* there is one, hit it everytime,
-         should be fixed point
-      *)
-      let ochan = open_out_bin merlin in
-      output_string ochan (String.sub s 0 header) ;
-      output_string ochan merlin_header;
-      Buffer.output_buffer ochan new_content;
-      output_string ochan merlin_trailer ;
-      output_string ochan (Ext_string.tail_from s (tail +  merlin_trailer_length));
-      close_out ochan
-    else failwith ("the .merlin is corrupted, locked region by bsb is not consistent ")
-  else
-    let ochan = open_out_bin merlin in
-    output_string ochan merlin_header ;
-    Buffer.output_buffer ochan new_content;
-    output_string ochan merlin_trailer ;
-    output_string ochan "\n";
-    close_out ochan
-(*TODO: it is a little mess that [cwd] and [project dir] are shared*)
-(** *)
-let write_ninja_file bsc_dir cwd =
-  let builddir = Bsb_config.lib_bs in
-  let () = Bsb_build_util.mkp builddir in
-  let bsc, bsdep, bsppx =
-    bsc_dir // "bsc.exe",
-    bsc_dir // "bsb_helper.exe",
-    bsc_dir // "bsppx.exe" in
-
-  let update_queue = ref [] in
-  let globbed_dirs = ref [] in
-  (* ATTENTION: order matters here, need resolve global properties before
-     merlin generation
-  *)
-  let handle_bsb_build_ui (res : Bsb_build_ui.t) =
-    let ochan = open_out_bin (builddir // sourcedirs_meta) in
-    let lib_ocaml_dir = (bsc_dir // ".."//"lib"//"ocaml") in
-    let buffer = Buffer.create 100 in
-    let () =
-      Bsb_default.get_ppx_flags ()
-      |> List.iter (fun x ->
-          Buffer.add_string buffer (Printf.sprintf "\nFLG -ppx %s" x )
-        )
-    in
-    let () = Buffer.add_string buffer
-        (Printf.sprintf "\n\
-                         S %s\n\
-                         B %s\n\
-                         FLG -ppx %s\n\
-                        " lib_ocaml_dir lib_ocaml_dir bsppx
-        ) in
-    let () =
-      match Bsb_default.get_bsc_flags () with
-      | [] -> ()
-      | xs ->
-        Buffer.add_string buffer
-          (Printf.sprintf "\nFLG %s" (String.concat Ext_string.single_space xs) ) in
-    let () =
-      Bsb_default.get_bs_dependencies ()
-      |> List.iter (fun package ->
-          match Bs_pkg.resolve_bs_package ~cwd package with
-          | None ->
-            Ext_pervasives.failwithf ~loc:__LOC__"package: %s not found when resolve bs-dependencies" package
-          | Some x ->
-          let path = ( x // "lib"//"ocaml") in
-          Buffer.add_string buffer "\nS ";
-          Buffer.add_string buffer path ;
-          Buffer.add_string buffer "\nB ";
-          Buffer.add_string buffer path ;
-          Buffer.add_string buffer "\n";
-
-        )
-    in
-    res.files |> List.iter
-      (fun (x : Bsb_build_ui.file_group) ->
-         output_string ochan x.dir; (* to [.sourcedirs] *)
-         output_string ochan "\n" ;
-         Buffer.add_string buffer "\nS ";
-         Buffer.add_string buffer x.dir ;
-         Buffer.add_string buffer "\nB ";
-         Buffer.add_string buffer ("lib"//"bs"//x.dir) ;
-         Buffer.add_string buffer "\n"
-      ) ;
-    close_out ochan;
-    bs_file_groups := res.files ;
-    update_queue := res.intervals;
-    globbed_dirs := res.globbed_dirs;
-    if Bsb_default.get_generate_merlin () then
-      revise_merlin buffer ;
-  in
-  let config_json_chan = open_in_bin Literals.bsconfig_json in
-  let global_data = Ext_json.parse_json_from_chan config_json_chan  in
-
-  let () =
-    match global_data with
-    | `Obj map ->
-      map
-      |? (Bsb_build_schemas.generate_merlin, `Bool (fun b ->
-          Bsb_default.set_generate_merlin b
-        ))
-      |?  (Bsb_build_schemas.name, `Str Bsb_default.set_package_name)
-      |? (Bsb_build_schemas.package_specs, `Arr Bsb_default.set_package_specs_from_array )
-      |? (Bsb_build_schemas.js_post_build, `Obj begin fun m ->
-          m |? (Bsb_build_schemas.cmd , `Str (Bsb_default.set_js_post_build_cmd ~cwd)
-               )
-          |> ignore
-        end)
-      |? (Bsb_build_schemas.ocamllex, `Str (Bsb_default.set_ocamllex ~cwd))
-      |? (Bsb_build_schemas.ninja, `Str (Bsb_default.set_ninja ~cwd))
-      |? (Bsb_build_schemas.bs_dependencies, `Arr Bsb_default.set_bs_dependencies)
-      (* More design *)
-      |? (Bsb_build_schemas.bs_external_includes, `Arr Bsb_default.set_bs_external_includes)
-      |? (Bsb_build_schemas.bsc_flags, `Arr Bsb_default.set_bsc_flags)
-      |? (Bsb_build_schemas.ppx_flags, `Arr (Bsb_default.set_ppx_flags ~cwd))
-      |? (Bsb_build_schemas.refmt, `Str (Bsb_default.set_refmt ~cwd))
-      |? (Bsb_build_schemas.refmt_flags, `Arr Bsb_default.set_refmt_flags)
-
-      |? (Bsb_build_schemas.sources, `Id (fun x ->
-          Bsb_build_ui.parsing_sources
-            Bsb_build_ui.lib_dir_index
-            Filename.current_dir_name x
-          |>
-          handle_bsb_build_ui
-        ))
-      |> ignore
-    | _ -> ()
-  in
-  begin match List.sort Ext_file_pp.interval_compare  !update_queue with
-    | [] -> ()
-    | queue ->
-      let file_size = in_channel_length config_json_chan in
-      let oc = open_out_bin config_file_bak in
-      let () =
-        Ext_file_pp.process_wholes
-          queue file_size config_json_chan oc in
-      close_out oc ;
-      close_in config_json_chan ;
-      Unix.unlink Literals.bsconfig_json;
-      Unix.rename config_file_bak Literals.bsconfig_json
-  end;
-
-  Bsb_gen.output_ninja
-    ~builddir
-    ~cwd
-    ~js_post_build_cmd: Bsb_default.(get_js_post_build_cmd ())
-    ~package_specs:(Bsb_default.get_package_specs())
-    bsc
-    bsdep
-    (Bsb_default.get_package_name ())
-    (Bsb_default.get_ocamllex ())
-    (Bsb_default.get_bs_external_includes ())
-    !bs_file_groups
-    Bsb_default.(get_bsc_flags ())
-    Bsb_default.(get_ppx_flags ())
-    Bsb_default.(get_bs_dependencies ())
-    Bsb_default.(get_refmt ())
-    Bsb_default.(get_refmt_flags ())
-
-  ;
-  !globbed_dirs
-
-
-
-
-
 
 let force_regenerate = ref false
 let exec = ref false
@@ -260,7 +62,7 @@ let internal_install = "-internal-install"
 let build_bs_deps package_specs   =
   let bsc_dir = Bsb_build_util.get_bsc_dir cwd in
   let bsb_exe = bsc_dir // "bsb.exe" in
-  Bsb_default.walk_all_deps true cwd
+  Bsb_build_util.walk_all_deps true cwd
     (fun top cwd ->
        if not top then
          Bsb_unix.run_command_execv
@@ -300,7 +102,7 @@ let clean_bs_garbage cwd =
     prerr_endline ("Failed to clean due to " ^ Printexc.to_string e)
 
 let clean_bs_deps () =
-  Bsb_default.walk_all_deps true cwd  (fun top cwd ->
+  Bsb_build_util.walk_all_deps true cwd  (fun top cwd ->
       clean_bs_garbage cwd
     )
 
@@ -318,7 +120,7 @@ let bsb_main_flags =
     regen, Arg.Set force_regenerate,
     " Always regenerate build.ninja no matter bsconfig.json is changed or not (for debugging purpose)"
     ;
-    internal_package_specs, Arg.String Bsb_default.internal_override_package_specs,
+    internal_package_specs, Arg.String Bsb_config.cmd_override_package_specs,
     " (internal)Overide package specs (in combination with -regen)";
     "-clean-world", Arg.Unit clean_bs_deps,
     " Clean all bs dependencies";
@@ -331,7 +133,7 @@ let bsb_main_flags =
 (** Regenerate ninja file and return None if we dont need regenerate
     otherwise return some info
 *)
-let regenerate_ninja cwd bsc_dir forced : Bsb_default.package_specs option =
+let regenerate_ninja cwd bsc_dir forced =
   let output_deps = Bsb_config.lib_bs // bsdeps in
   let reason =
     if forced then "Regenerating ninja (triggered by command line -regen)"
@@ -341,16 +143,22 @@ let regenerate_ninja cwd bsc_dir forced : Bsb_default.package_specs option =
     begin
       print_endline reason ;
       print_endline "Regenerating build spec";
-      let globbed_dirs = write_ninja_file bsc_dir cwd in
-      Literals.bsconfig_json :: globbed_dirs
-      |> List.map
-        (fun x ->
-           { Bsb_dep_infos.dir_or_file = x ;
-             stamp = (Unix.stat x).st_mtime
-           }
-        )
-      |> (fun x -> Bsb_dep_infos.store ~cwd output_deps (Array.of_list x));
-      Some (Bsb_default.get_package_specs ())
+      let config = 
+        Bsb_config_parse.interpret_json 
+        ~override_package_specs:!Bsb_config.cmd_package_specs
+        ~bsc_dir cwd in 
+      begin 
+        Bsb_gen.output_ninja ~cwd ~bsc_dir config ; 
+        Literals.bsconfig_json :: config.globbed_dirs
+        |> List.map
+          (fun x ->
+             { Bsb_dep_infos.dir_or_file = x ;
+               stamp = (Unix.stat x).st_mtime
+             }
+          )
+        |> (fun x -> Bsb_dep_infos.store ~cwd output_deps (Array.of_list x));
+        Some config 
+      end 
       (* This makes sense since we did parse the json file *)
     end
   else None
@@ -371,33 +179,35 @@ let print_string_args (args : string array) =
   done ;
   print_newline ()
 
-let install_targets () =
-  let destdir = lib_ocaml in
-  if not @@ Sys.file_exists destdir then begin Unix.mkdir destdir 0o777  end;
-  begin
-    print_endline "* Start Installation";
-    String_hash_set.iter (fun x ->
-        Bsb_file.install_if_exists ~destdir (x ^  Literals.suffix_ml) ;
-        Bsb_file.install_if_exists ~destdir (x ^ Literals.suffix_mli) ;
-        Bsb_file.install_if_exists ~destdir (lib_bs//x ^ Literals.suffix_cmi) ;
-        Bsb_file.install_if_exists ~destdir (lib_bs//x ^ Literals.suffix_cmj) ;
-        Bsb_file.install_if_exists ~destdir (lib_bs//x ^ Literals.suffix_cmt) ;
-        Bsb_file.install_if_exists ~destdir (lib_bs//x ^ Literals.suffix_cmti) ;
-      ) Bsb_ninja.files_to_install
-  end
+let install_targets (config : Bsb_config_types.t option) =
+  match config with None -> ()
+                  | Some {files_to_install} -> 
+                    let destdir = lib_ocaml in
+                    if not @@ Sys.file_exists destdir then begin Unix.mkdir destdir 0o777  end;
+                    begin
+                      print_endline "* Start Installation";
+                      String_hash_set.iter (fun x ->
+                          Bsb_file.install_if_exists ~destdir (x ^  Literals.suffix_ml) ;
+                          Bsb_file.install_if_exists ~destdir (x ^ Literals.suffix_mli) ;
+                          Bsb_file.install_if_exists ~destdir (lib_bs//x ^ Literals.suffix_cmi) ;
+                          Bsb_file.install_if_exists ~destdir (lib_bs//x ^ Literals.suffix_cmj) ;
+                          Bsb_file.install_if_exists ~destdir (lib_bs//x ^ Literals.suffix_cmt) ;
+                          Bsb_file.install_if_exists ~destdir (lib_bs//x ^ Literals.suffix_cmti) ;
+                        ) files_to_install
+                    end
 (* Note that [keepdepfile] only makes sense when combined with [deps] for optimizatoin
    It has to be the last command of [bsb]
 *)
-let exec_command_install_then_exit install command =
+let exec_command_install_then_exit config install command =
   print_endline command ;
   let exit_code = (Sys.command command ) in
   if exit_code <> 0 then begin
     exit exit_code
   end else begin
-    if install then begin  install_targets ()end;
+    if install then begin  install_targets config end;
     exit 0;
   end
-let ninja_command_exit (type t) ninja ninja_args : t =
+let ninja_command_exit (type t) ninja ninja_args  config : t =
   let ninja_args_len = Array.length ninja_args in
   if ninja_args_len = 0 then
     begin
@@ -407,7 +217,7 @@ let ninja_command_exit (type t) ninja ninja_args : t =
         print_string_args args ;
         Unix.execvp ninja args
       | install, _ ->
-        exec_command_install_then_exit install @@ Ext_string.inter3  (Filename.quote ninja) "-C" Bsb_config.lib_bs
+        exec_command_install_then_exit config install @@ Ext_string.inter3  (Filename.quote ninja) "-C" Bsb_config.lib_bs
     end
   else
     let fixed_args_length = 3 in
@@ -428,9 +238,8 @@ let ninja_command_exit (type t) ninja ninja_args : t =
                          | 1 -> "-C"
                          | 2 -> Bsb_config.lib_bs
                          | _ -> Array.unsafe_get ninja_args (i - fixed_args_length) )) in
-        exec_command_install_then_exit install @@ Ext_string.concat_array Ext_string.single_space args
+        exec_command_install_then_exit config install @@ Ext_string.concat_array Ext_string.single_space args
     end
-
 
 
 
@@ -450,22 +259,13 @@ let usage = "Usage : bsb.exe <bsb-options> <files> -- <ninja_options>\n\
 
 
 
-let make_world_deps deps =
+let make_world_deps (config : Bsb_config_types.t option) =
   print_endline "\nMaking the dependency world!";
   let deps =
-    match deps with
+    match config with
     | None ->
-      let json = Ext_json.parse_json_from_file Literals.bsconfig_json in
-      begin match json with
-        | `Obj map ->
-          map
-          |? (Bsb_build_schemas.package_specs,
-              `Arr Bsb_default.set_package_specs_from_array)
-          |> ignore ;
-          Bsb_default.get_package_specs ()
-        | _ -> assert false
-      end
-    | Some spec -> spec in
+      Bsb_config_parse.package_specs_from_json ()
+    | Some {package_specs} -> package_specs in
   build_bs_deps (  String_set.fold
                      (fun k acc -> k ^ "," ^ acc ) deps Ext_string.empty )
 let () =
@@ -480,8 +280,8 @@ let () =
   (* see discussion #929 *)
   if Array.length Sys.argv <= 1 then
     begin
-      ignore (regenerate_ninja cwd bsc_dir false);
-      ninja_command_exit ninja [||]
+      let config_opt =  (regenerate_ninja cwd bsc_dir false) in 
+      ninja_command_exit ninja [||] config_opt
     end
   else
     begin
@@ -492,35 +292,44 @@ let () =
           Arg.parse bsb_main_flags annoymous usage;
           (* [-make-world] should never be combined with [-package-specs] *)
           begin match !make_world, !force_regenerate with
-            | false, false -> ()
+            | false, false -> 
+              if !watch_mode then begin
+                watch_exit ()
+                (* ninja is not triggered in this case
+                   There are several cases we wish ninja will not be triggered.
+                   [bsb -clean-world]
+                   [bsb -regen ]
+                *)
+              end 
             | make_world, force_regenerate ->
               (* don't regenerate files when we only run [bsb -clean-world] *)
-              let deps = regenerate_ninja cwd bsc_dir force_regenerate in
+              let config_opt = regenerate_ninja cwd bsc_dir force_regenerate in
               if make_world then begin
-                make_world_deps deps
+                make_world_deps config_opt
               end;
+              if !watch_mode then begin
+                watch_exit ()
+                (* ninja is not triggered in this case
+                   There are several cases we wish ninja will not be triggered.
+                   [bsb -clean-world]
+                   [bsb -regen ]
+                *)
+              end else if make_world then begin
+                ninja_command_exit ninja [||] config_opt
+              end
           end;
-          if !watch_mode then begin
-            watch_exit ()
-            (* ninja is not triggered in this case
-               There are several cases we wish ninja will not be triggered.
-               [bsb -clean-world]
-               [bsb -regen ]
-            *)
-          end else if !make_world then begin
-            ninja_command_exit ninja [||]
-          end
+
         end
       | `Split (bsb_args,ninja_args)
         -> (* -make-world all dependencies fall into this category *)
         begin
           Arg.parse_argv bsb_args bsb_main_flags annoymous usage ;
-          let deps = regenerate_ninja cwd bsc_dir !force_regenerate in
+          let config_opt = regenerate_ninja cwd bsc_dir !force_regenerate in
           (* [-make-world] should never be combined with [-package-specs] *)
           if !make_world then
-            make_world_deps deps ;
+            make_world_deps config_opt ;
           if !watch_mode then watch_exit ()
-          else ninja_command_exit ninja ninja_args
+          else ninja_command_exit ninja ninja_args config_opt
         end
     end
 (*with x ->

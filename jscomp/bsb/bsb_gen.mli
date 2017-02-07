@@ -24,19 +24,6 @@
 
 
 val output_ninja :
-  builddir:string ->
   cwd:string ->
-  js_post_build_cmd:string option ->
-  package_specs:Bsb_default.package_specs ->
-  string ->
-  string ->
-  string option ->
-  string ->
-  string list ->
-  Bsb_build_ui.file_group list ->
-  string list ->
-  string list ->
-  string list ->
-  string ->
-  string list ->
-  unit
+  bsc_dir:string ->  
+  Bsb_config_types.t -> unit 

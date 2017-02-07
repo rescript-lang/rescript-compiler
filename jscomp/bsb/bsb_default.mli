@@ -23,7 +23,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-val resolve_bsb_magic_file : cwd:string -> desc:string -> string -> string
 
 val get_ocamllex : unit -> string
 val set_ocamllex : cwd:string -> string -> unit
@@ -50,8 +49,8 @@ val get_refmt : unit -> string
 val set_refmt_flags : Ext_json.t array -> unit
 val get_refmt_flags : unit -> string list
 
-val get_bs_dependencies : unit  -> string list
-val set_bs_dependencies : Ext_json.t array  -> unit
+val get_bs_dependencies : unit  -> Bsb_config_types.bs_dependencies
+val set_bs_dependencies : cwd:string -> Ext_json.t array  -> unit
 
 
 val get_js_post_build_cmd : unit -> string option
@@ -60,13 +59,11 @@ val set_js_post_build_cmd : cwd:string -> string -> unit
 val get_ninja : unit -> string
 val set_ninja : cwd:string -> string -> unit
 
-type package_specs = String_set.t
-val get_package_specs : unit -> package_specs
+val get_package_specs : unit -> Bsb_config.package_specs
 val set_package_specs_from_array : Ext_json.t array -> unit
-val internal_override_package_specs : string -> unit
+
 
 
 val get_generate_merlin : unit -> bool
 val set_generate_merlin : bool -> unit
 
-val walk_all_deps : bool -> string -> (bool -> string -> unit) -> unit

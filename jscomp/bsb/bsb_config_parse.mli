@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,34 +17,20 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-val common_js_prefix : string -> string
-val amd_js_prefix : string -> string 
-val goog_prefix : string -> string 
-val ocaml_bin_install_prefix : string -> string
-val proj_rel : string -> string
-val lib_bs : string
-(* we need generate path relative to [lib/bs] directory in the opposite direction *)
-val rev_lib_bs_prefix : string -> string
 
-val no_dev: bool ref 
+val interpret_json : 
+    override_package_specs:Bsb_config.package_specs option -> 
+    bsc_dir:string -> 
+    string -> 
+    Bsb_config_types.t
 
-(** default not install, only when -make-world, its dependencies will be installed  *)
-val install : bool ref 
 
-val supported_format : string -> bool
 
-val package_flag : format:string -> string -> string 
 
-val package_output : format:string -> string -> string 
-
-type package_specs = String_set.t
-
-val cmd_package_specs : package_specs option ref 
-
-val cmd_override_package_specs : string -> unit
+val package_specs_from_json : unit -> Bsb_config.package_specs
