@@ -57,7 +57,7 @@ type module_info = {
 }
 
 type _ t = 
-  | No_env :  Js_cmj_format.t t 
+  | No_env :  (string * Js_cmj_format.t) t 
   | Has_env : Env.t  -> module_info t 
 
 val find_and_add_if_not_exist : 
@@ -94,7 +94,7 @@ val is_pure_module : Lam_module_ident.t -> bool
 
 val get_package_path_from_cmj : 
   Lam_module_ident.system -> Lam_module_ident.t -> 
-  Js_config.info_query
+  string * Js_config.info_query
 
 
 (* The second argument is mostly from [runtime] modules 

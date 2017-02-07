@@ -90,7 +90,7 @@ let string_of_module_id ~output_prefix
             `Dir (Js_config.get_output_dir ~pkg_dir:package_dir module_system output_prefix) in
           Ext_filename.node_relative_path  different_package current_unit_dir dep 
         in 
-        let dependency_pkg_info = 
+        let cmj_path, dependency_pkg_info = 
           Lam_compile_env.get_package_path_from_cmj module_system x 
         in
         let current_pkg_info = 
@@ -106,7 +106,7 @@ let string_of_module_id ~output_prefix
             Ext_pervasives.failwithf ~loc:__LOC__ 
               " @[%s was not compiled with goog support  in search path - while compiling %s @] "
               js_file !Location.input_name 
-          | (AmdJS | NodeJS | Es6),
+          | (AmdJS | NodeJS | Es6 | Es6_global),
             ( Empty | Package_script _) ,
             Found _  -> 
             Ext_pervasives.failwithf ~loc:__LOC__
@@ -114,18 +114,26 @@ let string_of_module_id ~output_prefix
               js_file !Location.input_name              
           | Goog , Found (package_name, x), _  -> 
             package_name  ^ "." ^  String.uncapitalize id.name
-          | (AmdJS | NodeJS| Es6), (Empty | Package_script _ | Found _ ), NotFound -> assert false
+          | (AmdJS | NodeJS| Es6 | Es6_global),
+           (Empty | Package_script _ | Found _ ), NotFound -> assert false
 
-          | (AmdJS | NodeJS | Es6), 
+          | (AmdJS | NodeJS | Es6 | Es6_global), 
             Found(package_name, x),
             Found(current_package, path) -> 
             if  current_package = package_name then 
               let package_dir = Lazy.force Ext_filename.package_dir in
               rebase false package_dir (`File (package_dir // x // modulename)) 
-            else 
+            else if module_system <> Es6_global then 
               package_name // x // modulename
-          
-          | (AmdJS | NodeJS | Es6), Found(package_name, x), 
+            else  
+               (** lib/ocaml/xx.cmj --               
+                quick hacks
+                maybe we can caching relative package path calculation *)
+              Ext_filename.rel_normalized_absolute_path              
+              (Js_config.get_output_dir ~pkg_dir:(Lazy.force Ext_filename.package_dir)
+               module_system output_prefix)
+              ((Filename.dirname (Filename.dirname (Filename.dirname cmj_path))) // x // modulename)              
+          | (AmdJS | NodeJS | Es6 | Es6_global), Found(package_name, x), 
             Package_script(current_package)
             ->    
             if current_package = package_name then 
@@ -134,9 +142,9 @@ let string_of_module_id ~output_prefix
                   package_dir // x // modulename)) 
             else 
               package_name // x // modulename
-          | (AmdJS | NodeJS | Es6), Found(package_name, x), Empty 
+          | (AmdJS | NodeJS | Es6 | Es6_global), Found(package_name, x), Empty 
             ->    package_name // x // modulename
-          |  (AmdJS | NodeJS | Es6), 
+          |  (AmdJS | NodeJS | Es6 | Es6_global), 
              (Empty | Package_script _) , 
              (Empty  | Package_script _)
             -> 
@@ -149,7 +157,15 @@ let string_of_module_id ~output_prefix
             end
           
         end
-      | External name -> name in 
+      | External name -> name 
+        (** This may not be enough, 
+          1. For cross packages, we may need settle 
+            down a single js package
+          2. We may need es6 path for dead code elimination
+             But frankly, very few JS packages have no dependency, 
+             so having plugin may sound not that bad   
+        *)
+      in 
     if Ext_sys.is_windows_or_cygwin then Ext_string.replace_backward_slash result 
     else result 
 #end

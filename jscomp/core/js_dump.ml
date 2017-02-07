@@ -1804,7 +1804,7 @@ let amd_program ~output_prefix f (  x : J.deps_program) =
   v
 
 
-let es6_program ~output_prefix f (  x : J.deps_program) = 
+let es6_program  ~output_prefix fmt f (  x : J.deps_program) = 
   let cxt = 
      imports
       Ext_pp_scope.empty
@@ -1814,7 +1814,7 @@ let es6_program ~output_prefix f (  x : J.deps_program) =
             Lam_module_ident.id x,
             Js_program_loader.string_of_module_id
               ~output_prefix
-              Es6 x)
+              fmt x)
          x.modules)
   in
   let () = P.force_newline f in 
@@ -1844,8 +1844,8 @@ let pp_deps_program
     P.string f L.strict_directive; 
     P.newline f ;    
     ignore (match kind with 
-        | Es6 -> 
-          es6_program ~output_prefix f program
+        | Es6 | Es6_global -> 
+          es6_program ~output_prefix kind f program
         | AmdJS -> 
           amd_program ~output_prefix f program
         | NodeJS -> 
