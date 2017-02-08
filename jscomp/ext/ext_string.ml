@@ -469,3 +469,5 @@ let inter4 a b c d =
   concat_array single_space [| a; b ; c; d|]
   
     
+let parent_dir_lit = ".."    
+let current_dir_lit = "."

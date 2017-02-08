@@ -758,6 +758,10 @@ var check_suffix_case_then_chop = ends_with_then_chop;
 
 var single_colon = ":";
 
+var parent_dir_lit = "..";
+
+var current_dir_lit = ".";
+
 exports.split_by                        = split_by;
 exports.trim                            = trim;
 exports.split                           = split;
@@ -808,4 +812,6 @@ exports.concat5                         = concat5;
 exports.inter2                          = inter2;
 exports.inter3                          = inter3;
 exports.inter4                          = inter4;
+exports.parent_dir_lit                  = parent_dir_lit;
+exports.current_dir_lit                 = current_dir_lit;
 /* No side effect */

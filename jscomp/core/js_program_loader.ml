@@ -85,10 +85,10 @@ let string_of_module_id ~output_prefix
         let id = x.id in
         let modulename = String.uncapitalize id.name in
         let js_file = Printf.sprintf "%s.js" modulename in
-        let rebase package_dir dep =
+        let rebase different_package package_dir dep =
           let current_unit_dir =
             `Dir (Js_config.get_output_dir ~pkg_dir:package_dir module_system output_prefix) in
-          Ext_filename.node_relative_path  current_unit_dir dep 
+          Ext_filename.node_relative_path  different_package current_unit_dir dep 
         in 
         let dependency_pkg_info = 
           Lam_compile_env.get_package_path_from_cmj module_system x 
@@ -121,7 +121,7 @@ let string_of_module_id ~output_prefix
             Found(current_package, path) -> 
             if  current_package = package_name then 
               let package_dir = Lazy.force Ext_filename.package_dir in
-              rebase package_dir (`File (package_dir // x // modulename)) 
+              rebase false package_dir (`File (package_dir // x // modulename)) 
             else 
               package_name // x // modulename
           
@@ -130,7 +130,7 @@ let string_of_module_id ~output_prefix
             ->    
             if current_package = package_name then 
               let package_dir = Lazy.force Ext_filename.package_dir in
-              rebase package_dir (`File (
+              rebase false package_dir (`File (
                   package_dir // x // modulename)) 
             else 
               package_name // x // modulename
@@ -143,7 +143,7 @@ let string_of_module_id ~output_prefix
             begin match Config_util.find_opt js_file with 
               | Some file -> 
                 let package_dir = Lazy.force Ext_filename.package_dir in
-                rebase package_dir (`File file) 
+                rebase true package_dir (`File file) 
               | None -> 
                 Bs_exception.error (Js_not_found js_file)
             end

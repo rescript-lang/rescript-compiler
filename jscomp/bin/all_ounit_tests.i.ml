@@ -75,7 +75,7 @@ open OUnitTypes
 
 (** Most simple heuristic, just pick the first test. *)
 let simple state =
-  (* 127 *) List.hd state.tests_planned
+  (* 130 *) List.hd state.tests_planned
 
 end
 module OUnitUtils
@@ -98,22 +98,22 @@ let is_success =
 let is_failure = 
   function
     | RFailure _ -> (* 0 *) true
-    | RSuccess _ | RError _  | RSkip _ | RTodo _ -> (* 254 *) false
+    | RSuccess _ | RError _  | RSkip _ | RTodo _ -> (* 260 *) false
 
 let is_error = 
   function 
     | RError _ -> (* 0 *) true
-    | RSuccess _ | RFailure _ | RSkip _ | RTodo _ -> (* 254 *) false
+    | RSuccess _ | RFailure _ | RSkip _ | RTodo _ -> (* 260 *) false
 
 let is_skip = 
   function
     | RSkip _ -> (* 0 *) true
-    | RSuccess _ | RFailure _ | RError _  | RTodo _ -> (* 254 *) false
+    | RSuccess _ | RFailure _ | RError _  | RTodo _ -> (* 260 *) false
 
 let is_todo = 
   function
     | RTodo _ -> (* 0 *) true
-    | RSuccess _ | RFailure _ | RError _  | RSkip _ -> (* 254 *) false
+    | RSuccess _ | RFailure _ | RError _  | RSkip _ -> (* 260 *) false
 
 let result_flavour = 
   function
@@ -145,7 +145,7 @@ let rec was_successful =
     | [] -> (* 3 *) true
     | RSuccess _::t 
     | RSkip _::t -> 
-        (* 381 *) was_successful t
+        (* 390 *) was_successful t
 
     | RFailure _::_
     | RError _::_ 
@@ -155,22 +155,22 @@ let rec was_successful =
 let string_of_node = 
   function
     | ListItem n -> 
-        (* 508 *) string_of_int n
+        (* 520 *) string_of_int n
     | Label s -> 
-        (* 762 *) s
+        (* 780 *) s
 
 (* Return the number of available tests *)
 let rec test_case_count = 
   function
-    | TestCase _ -> (* 127 *) 1 
-    | TestLabel (_, t) -> (* 148 *) test_case_count t
+    | TestCase _ -> (* 130 *) 1 
+    | TestLabel (_, t) -> (* 151 *) test_case_count t
     | TestList l -> 
         (* 21 *) List.fold_left 
-          (fun c t -> (* 147 *) c + test_case_count t) 
+          (fun c t -> (* 150 *) c + test_case_count t) 
           0 l
 
 let string_of_path path =
-  (* 254 *) String.concat ":" (List.rev_map string_of_node path)
+  (* 260 *) String.concat ":" (List.rev_map string_of_node path)
 
 let buff_format_printf f = 
   (* 0 *) let buff = Buffer.create 13 in
@@ -194,12 +194,12 @@ let mapi f l =
 
 let fold_lefti f accu l =
   (* 21 *) let rec rfold_lefti cnt accup l = 
-    (* 168 *) match l with
+    (* 171 *) match l with
       | [] -> 
           (* 21 *) accup
 
       | h::t -> 
-          (* 147 *) rfold_lefti (cnt + 1) (f accup h cnt) t
+          (* 150 *) rfold_lefti (cnt + 1) (f accup h cnt) t
   in
     rfold_lefti 0 accu l
 
@@ -217,7 +217,7 @@ open OUnitUtils
 type event_type = GlobalEvent of global_event | TestEvent of test_event
 
 let format_event verbose event_type =
-  (* 764 *) match event_type with
+  (* 782 *) match event_type with
     | GlobalEvent e ->
         (* 2 *) begin
           match e with 
@@ -276,31 +276,31 @@ let format_event verbose event_type =
         end
 
     | TestEvent e ->
-        (* 762 *) begin
+        (* 780 *) begin
           let string_of_result = 
             if verbose then
-              (* 381 *) function
-                | RSuccess _      -> (* 127 *) "ok\n"
+              (* 390 *) function
+                | RSuccess _      -> (* 130 *) "ok\n"
                 | RFailure (_, _) -> (* 0 *) "FAIL\n"
                 | RError (_, _)   -> (* 0 *) "ERROR\n"
                 | RSkip (_, _)    -> (* 0 *) "SKIP\n"
                 | RTodo (_, _)    -> (* 0 *) "TODO\n"
             else
-              (* 381 *) function
-                | RSuccess _      -> (* 127 *) "."
+              (* 390 *) function
+                | RSuccess _      -> (* 130 *) "."
                 | RFailure (_, _) -> (* 0 *) "F"
                 | RError (_, _)   -> (* 0 *) "E"
                 | RSkip (_, _)    -> (* 0 *) "S"
                 | RTodo (_, _)    -> (* 0 *) "T"
           in
             if verbose then
-              (* 381 *) match e with 
+              (* 390 *) match e with 
                 | EStart p -> 
-                    (* 127 *) Printf.sprintf "%s start\n" (string_of_path p)
+                    (* 130 *) Printf.sprintf "%s start\n" (string_of_path p)
                 | EEnd p -> 
-                    (* 127 *) Printf.sprintf "%s end\n" (string_of_path p)
+                    (* 130 *) Printf.sprintf "%s end\n" (string_of_path p)
                 | EResult result -> 
-                    (* 127 *) string_of_result result
+                    (* 130 *) string_of_result result
                 | ELog (lvl, str) ->
                     (* 0 *) let prefix = 
                       match lvl with 
@@ -312,21 +312,21 @@ let format_event verbose event_type =
                 | ELogRaw str ->
                     (* 0 *) str
             else 
-              (* 381 *) match e with 
-                | EStart _ | EEnd _ | ELog _ | ELogRaw _ -> (* 254 *) ""
-                | EResult result -> (* 127 *) string_of_result result
+              (* 390 *) match e with 
+                | EStart _ | EEnd _ | ELog _ | ELogRaw _ -> (* 260 *) ""
+                | EResult result -> (* 130 *) string_of_result result
         end
 
 let file_logger fn =
   (* 1 *) let chn = open_out fn in
     (fun ev ->
-       (* 382 *) output_string chn (format_event true ev);
+       (* 391 *) output_string chn (format_event true ev);
        flush chn),
     (fun () -> (* 1 *) close_out chn)
 
 let std_logger verbose =
   (* 1 *) (fun ev -> 
-     (* 382 *) print_string (format_event verbose ev);
+     (* 391 *) print_string (format_event verbose ev);
      flush stdout),
   (fun () -> (* 1 *) ())
 
@@ -343,7 +343,7 @@ let create output_file_opt verbose (log,close) =
           (* 0 *) null_logger
   in
     (fun ev ->
-       (* 382 *) std_log ev; file_log ev; log ev),
+       (* 391 *) std_log ev; file_log ev; log ev),
     (fun () ->
        (* 1 *) std_close (); file_close (); close ())
 
@@ -711,7 +711,7 @@ let assert_string str =
   (* 0 *) if not (str = "") then (* 0 *) assert_failure str
 
 let assert_equal ?(cmp = ( = )) ?printer ?pp_diff ?msg expected actual =
-  (* 2001459 *) let get_error_string () =
+  (* 2001486 *) let get_error_string () =
     (* 0 *) let res =
       buff_format_printf
         (fun fmt ->
@@ -951,7 +951,7 @@ let (@?) = assert_bool
 
 (* Some shorthands which allows easy test construction *)
 let (>:) s t = (* 0 *) TestLabel(s, t)             (* infix *)
-let (>::) s f = (* 127 *) TestLabel(s, TestCase(f))  (* infix *)
+let (>::) s f = (* 130 *) TestLabel(s, TestCase(f))  (* infix *)
 let (>:::) s l = (* 21 *) TestLabel(s, TestList(l)) (* infix *)
 
 (* Utility function to manipulate test *)
@@ -1087,7 +1087,7 @@ let maybe_backtrace = ""
 (* Run all tests, report starts, errors, failures, and return the results *)
 let perform_test report test =
   (* 1 *) let run_test_case f path =
-    (* 127 *) try 
+    (* 130 *) try 
       f ();
       RSuccess path
     with
@@ -1106,22 +1106,22 @@ let perform_test report test =
   let rec flatten_test path acc = 
     function
       | TestCase(f) -> 
-          (* 127 *) (path, f) :: acc
+          (* 130 *) (path, f) :: acc
 
       | TestList (tests) ->
           (* 21 *) fold_lefti 
             (fun acc t cnt -> 
-               (* 147 *) flatten_test 
+               (* 150 *) flatten_test 
                  ((ListItem cnt)::path) 
                  acc t)
             acc tests
       
       | TestLabel (label, t) -> 
-          (* 148 *) flatten_test ((Label label)::path) acc t
+          (* 151 *) flatten_test ((Label label)::path) acc t
   in
   let test_cases = List.rev (flatten_test [] [] test) in
   let runner (path, f) = 
-    (* 127 *) let result = 
+    (* 130 *) let result = 
       report (EStart path);
       run_test_case f path 
     in
@@ -1130,18 +1130,18 @@ let perform_test report test =
       result
   in
   let rec iter state = 
-    (* 128 *) match state.tests_planned with 
+    (* 131 *) match state.tests_planned with 
       | [] ->
           (* 1 *) state.results
       | _ ->
-          (* 127 *) let (path, f) = !global_chooser state in            
+          (* 130 *) let (path, f) = !global_chooser state in            
           let result = runner (path, f) in
             iter 
               {
                 results = result :: state.results;
                 tests_planned = 
                   List.filter 
-                    (fun (path', _) -> (* 8128 *) path <> path') state.tests_planned
+                    (fun (path', _) -> (* 8515 *) path <> path') state.tests_planned
               }
   in
     iter {results = []; tests_planned = test_cases}
@@ -1171,7 +1171,7 @@ let run_test_tt ?verbose test =
     time_fun 
       perform_test 
       (fun ev ->
-         (* 381 *) log (OUnitLogger.TestEvent ev))
+         (* 390 *) log (OUnitLogger.TestEvent ev))
       test 
   in
     
@@ -1744,6 +1744,9 @@ val inter4 : string -> string -> string -> string -> string
 val concat_array : string -> string array -> string 
 
 val single_colon : string 
+
+val parent_dir_lit : string
+val current_dir_lit : string
 end = struct
 #1 "ext_string.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -2030,7 +2033,7 @@ let starts_with_and_number s ~offset beg =
     else 
       (* 2 *) -1 
 
-let equal (x : string) y  = (* 8829545 *) x = y
+let equal (x : string) y  = (* 8829969 *) x = y
 
 let unsafe_concat_with_length len sep l =
   (* 0 *) match l with 
@@ -2217,6 +2220,8 @@ let inter4 a b c d =
   (* 1 *) concat_array single_space [| a; b ; c; d|]
   
     
+let parent_dir_lit = ".."    
+let current_dir_lit = "."
 end
 module Ounit_array_tests
 = struct
@@ -3728,7 +3733,7 @@ let perform command args =
        End_of_file -> (* 11 *) ()) ; 
     (try 
        while true do 
-         (* 114 *) Buffer.add_string err_buf (input_line err_in_chan );
+         (* 113 *) Buffer.add_string err_buf (input_line err_in_chan );
          Buffer.add_char err_buf '\n'
        done;
      with
@@ -9658,7 +9663,7 @@ val path_as_directory : string -> string
     just treat it as a library instead
  *)
 
-val node_relative_path : t -> [`File of string] -> string
+val node_relative_path : bool -> t -> [`File of string] -> string
 
 val chop_extension : ?loc:string -> string -> string
 
@@ -9867,12 +9872,15 @@ let relative_path file_or_dir_1 file_or_dir_2 =
 
     [file1] is currently compilation file 
     [file2] is the dependency
+    
+    TODO: this is a hackish function: FIXME
 *)
-let node_relative_path (file1 : t) 
+let node_relative_path node_modules_shorten (file1 : t) 
     (`File file2 as dep_file : [`File of string]) = 
   (* 0 *) let v = Ext_string.find  file2 ~sub:Literals.node_modules in 
   let len = String.length file2 in 
-  if v >= 0 then
+  if node_modules_shorten && v >= 0 then
+    
     (* 0 *) let rec skip  i =       
       (* 0 *) if i >= len then
         (* 0 *) Ext_pervasives.failwithf ~loc:__LOC__ "invalid path: %s"  file2
@@ -9958,34 +9966,64 @@ let combine p1 p2 =
      split_aux "//ghosg//ghsogh/";;
      - : string * string list = ("/", ["ghosg"; "ghsogh"])
    ]}
+   Note that 
+   {[
+     Filename.dirname "/a/" = "/"
+       Filename.dirname "/a/b/" = Filename.dirname "/a/b" = "/a"
+   ]}
+   Special case:
+   {[
+     basename "//" = "/"
+       basename "///"  = "/"
+   ]}
+   {[
+     basename "" =  "."
+       basename "" = "."
+       dirname "" = "."
+       dirname "" =  "."
+   ]}  
 *)
 let split_aux p =
-  (* 12 *) let rec go p acc =
-    (* 77 *) let dir = Filename.dirname p in
-    if dir = p then (* 12 *) dir, acc
-    else (* 65 *) go dir (Filename.basename p :: acc)
+  (* 66 *) let rec go p acc =
+    (* 300 *) let dir = Filename.dirname p in
+    if dir = p then (* 66 *) dir, acc
+    else
+      (* 234 *) let new_path = Filename.basename p in 
+      if Ext_string.equal new_path Filename.dir_sep then 
+        (* 3 *) go dir acc 
+        (* We could do more path simplification here
+           leave to [rel_normalized_absolute_path]
+        *)
+      else 
+        (* 231 *) go dir (new_path :: acc)
+
   in go p []
+
+
 
 (** 
    TODO: optimization
    if [from] and [to] resolve to the same path, a zero-length string is returned 
 *)
 let rel_normalized_absolute_path from to_ =
-  (* 0 *) let root1, paths1 = split_aux from in 
+  (* 27 *) let root1, paths1 = split_aux from in 
   let root2, paths2 = split_aux to_ in 
-  if root1 <> root2 then (* 0 *) root2 else
-    (* 0 *) let rec go xss yss =
-      (* 0 *) match xss, yss with 
+  if root1 <> root2 then (* 0 *) root2
+  else
+    (* 27 *) let rec go xss yss =
+      (* 75 *) match xss, yss with 
       | x::xs, y::ys -> 
-        (* 0 *) if x = y then (* 0 *) go xs ys 
+        (* 49 *) if Ext_string.equal x  y then (* 48 *) go xs ys 
         else 
-          (* 0 *) let start = 
-            List.fold_left (fun acc _ -> (* 0 *) acc // ".." ) ".." xs in 
-          List.fold_left (fun acc v -> (* 0 *) acc // v) start yss
-      | [], [] -> (* 0 *) ""
-      | [], y::ys -> (* 0 *) List.fold_left (fun acc x -> (* 0 *) acc // x) y ys
+          (* 1 *) let start = 
+            List.fold_left (fun acc _ -> (* 3 *) acc // Ext_string.parent_dir_lit )
+              Ext_string.parent_dir_lit  xs in 
+          List.fold_left (fun acc v -> (* 2 *) acc // v) start yss
+      | [], [] -> (* 0 *) Ext_string.empty
+      | [], y::ys -> (* 8 *) List.fold_left (fun acc x -> (* 8 *) acc // x) y ys
       | x::xs, [] ->
-        (* 0 *) List.fold_left (fun acc _ -> (* 0 *) acc // ".." ) ".." xs in
+        (* 18 *) List.fold_left (fun acc _ -> (* 30 *) acc // Ext_string.parent_dir_lit )
+          Ext_string.parent_dir_lit xs in
     go paths1 paths2
 
 (*TODO: could be hgighly optimized later 
@@ -10007,6 +10045,7 @@ let rel_normalized_absolute_path from to_ =
     normalize_absolute_path "/a";;
   ]}
 *)
+(** See tests in {!Ounit_path_tests} *)
 let normalize_absolute_path x =
   (* 12 *) let drop_if_exist xs =
     (* 11 *) match xs with 
@@ -10015,11 +10054,13 @@ let normalize_absolute_path x =
   let rec normalize_list acc paths =
     (* 77 *) match paths with 
     | [] -> (* 12 *) acc 
-    | "." :: xs -> (* 16 *) normalize_list acc xs
-    | ".." :: xs -> 
-      (* 11 *) normalize_list (drop_if_exist acc ) xs 
     | x :: xs -> 
-      (* 38 *) normalize_list (x::acc) xs 
+      (* 65 *) if Ext_string.equal x Ext_string.current_dir_lit then 
+        (* 16 *) normalize_list acc xs 
+      else (* 49 *) if Ext_string.equal x Ext_string.parent_dir_lit then 
+        (* 11 *) normalize_list (drop_if_exist acc ) xs 
+      else   
+        (* 38 *) normalize_list (x::acc) xs 
   in
   let root, paths = split_aux x in
   let rev_paths =  normalize_list [] paths in 
@@ -10048,13 +10089,13 @@ module Ounit_path_tests
 = struct
 #1 "ounit_path_tests.ml"
 let ((>::),
-    (>:::)) = OUnit.((>::),(>:::))
+     (>:::)) = OUnit.((>::),(>:::))
 
 
 let normalize = Ext_filename.normalize_absolute_path
 let (=~) x y = 
-  (* 2 *) OUnit.assert_equal ~cmp:(fun x y ->   (* 2 *) Ext_string.equal x y ) x y
-    
+  (* 29 *) OUnit.assert_equal ~cmp:(fun x y ->   (* 29 *) Ext_string.equal x y ) x y
+
 let suites = 
   __FILE__ 
   >:::
@@ -10093,7 +10134,68 @@ let suites =
     end;
     __LOC__ >:: begin fun _ -> 
       (* 1 *) normalize "/./a/.////////j/k//../////..///././b/./c/d/././../" =~ "/a/b/c"
-    end
+    end;
+
+    __LOC__ >:: begin fun _ -> 
+    (* 1 *) let aux a b result = 
+        
+         (* 6 *) Ext_filename.rel_normalized_absolute_path
+        a b =~ result ; 
+        
+        Ext_filename.rel_normalized_absolute_path
+        (String.sub a 0 (String.length a - 1)) 
+        b  =~ result ;
+        
+        Ext_filename.rel_normalized_absolute_path
+        a
+        (String.sub b 0 (String.length b - 1))  =~ result
+        ;
+        
+
+        Ext_filename.rel_normalized_absolute_path
+        (String.sub a 0 (String.length a - 1 ))
+        (String.sub b 0 (String.length b - 1))
+        =~ result  
+       in   
+      aux
+        "/a/b/c/"
+        "/a/b/c/d/"  "d";
+      aux
+        "/a/b/c/"
+        "/a/b/c/d/e/f/" "d/e/f" ;
+      aux
+        "/a/b/c/d/"
+        "/a/b/c/"  ".."  ;
+      aux
+        "/a/b/c/d/"
+        "/a/b/"  "../.."  ;  
+      aux
+        "/a/b/c/d/"
+        "/a/"  "../../.."  ;  
+       aux
+        "/a/b/c/d/"
+        "//"  "../../../.."  ;  
+     
+     
+    end;
+    (* This is still correct just not optimal depends 
+      on user's perspective *)
+    __LOC__ >:: begin fun _ -> 
+      (* 1 *) Ext_filename.rel_normalized_absolute_path 
+        "/a/b/c/d"
+        "/x/y" =~ "../../../../x/y"  
+
+    end;
+    
+    __LOC__ >:: begin fun _ -> 
+    (* 1 *) Ext_filename.rel_normalized_absolute_path
+    "/usr/local/lib/node_modules/"
+    "//" =~ "../../../..";
+    Ext_filename.rel_normalized_absolute_path
+    "/usr/local/lib/node_modules/"
+    "/" =~ "../../../.."
+    end;
+    
   ]
 
 end

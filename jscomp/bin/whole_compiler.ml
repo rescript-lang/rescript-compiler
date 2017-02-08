@@ -20484,6 +20484,9 @@ val inter4 : string -> string -> string -> string -> string
 val concat_array : string -> string array -> string 
 
 val single_colon : string 
+
+val parent_dir_lit : string
+val current_dir_lit : string
 end = struct
 #1 "ext_string.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -20957,6 +20960,8 @@ let inter4 a b c d =
   concat_array single_space [| a; b ; c; d|]
   
     
+let parent_dir_lit = ".."    
+let current_dir_lit = "."
 end
 module Ext_pervasives : sig 
 #1 "ext_pervasives.mli"
@@ -21444,7 +21449,7 @@ val path_as_directory : string -> string
     just treat it as a library instead
  *)
 
-val node_relative_path : t -> [`File of string] -> string
+val node_relative_path : bool -> t -> [`File of string] -> string
 
 val chop_extension : ?loc:string -> string -> string
 
@@ -21653,12 +21658,15 @@ let relative_path file_or_dir_1 file_or_dir_2 =
 
     [file1] is currently compilation file 
     [file2] is the dependency
+    
+    TODO: this is a hackish function: FIXME
 *)
-let node_relative_path (file1 : t) 
+let node_relative_path node_modules_shorten (file1 : t) 
     (`File file2 as dep_file : [`File of string]) = 
   let v = Ext_string.find  file2 ~sub:Literals.node_modules in 
   let len = String.length file2 in 
-  if v >= 0 then
+  if node_modules_shorten && v >= 0 then
+    
     let rec skip  i =       
       if i >= len then
         Ext_pervasives.failwithf ~loc:__LOC__ "invalid path: %s"  file2
@@ -21744,13 +21752,40 @@ let combine p1 p2 =
      split_aux "//ghosg//ghsogh/";;
      - : string * string list = ("/", ["ghosg"; "ghsogh"])
    ]}
+   Note that 
+   {[
+     Filename.dirname "/a/" = "/"
+       Filename.dirname "/a/b/" = Filename.dirname "/a/b" = "/a"
+   ]}
+   Special case:
+   {[
+     basename "//" = "/"
+       basename "///"  = "/"
+   ]}
+   {[
+     basename "" =  "."
+       basename "" = "."
+       dirname "" = "."
+       dirname "" =  "."
+   ]}  
 *)
 let split_aux p =
   let rec go p acc =
     let dir = Filename.dirname p in
     if dir = p then dir, acc
-    else go dir (Filename.basename p :: acc)
+    else
+      let new_path = Filename.basename p in 
+      if Ext_string.equal new_path Filename.dir_sep then 
+        go dir acc 
+        (* We could do more path simplification here
+           leave to [rel_normalized_absolute_path]
+        *)
+      else 
+        go dir (new_path :: acc)
+
   in go p []
+
+
 
 (** 
    TODO: optimization
@@ -21759,19 +21794,22 @@ let split_aux p =
 let rel_normalized_absolute_path from to_ =
   let root1, paths1 = split_aux from in 
   let root2, paths2 = split_aux to_ in 
-  if root1 <> root2 then root2 else
+  if root1 <> root2 then root2
+  else
     let rec go xss yss =
       match xss, yss with 
       | x::xs, y::ys -> 
-        if x = y then go xs ys 
+        if Ext_string.equal x  y then go xs ys 
         else 
           let start = 
-            List.fold_left (fun acc _ -> acc // ".." ) ".." xs in 
+            List.fold_left (fun acc _ -> acc // Ext_string.parent_dir_lit )
+              Ext_string.parent_dir_lit  xs in 
           List.fold_left (fun acc v -> acc // v) start yss
-      | [], [] -> ""
+      | [], [] -> Ext_string.empty
       | [], y::ys -> List.fold_left (fun acc x -> acc // x) y ys
       | x::xs, [] ->
-        List.fold_left (fun acc _ -> acc // ".." ) ".." xs in
+        List.fold_left (fun acc _ -> acc // Ext_string.parent_dir_lit )
+          Ext_string.parent_dir_lit xs in
     go paths1 paths2
 
 (*TODO: could be hgighly optimized later 
@@ -21793,6 +21831,7 @@ let rel_normalized_absolute_path from to_ =
     normalize_absolute_path "/a";;
   ]}
 *)
+(** See tests in {!Ounit_path_tests} *)
 let normalize_absolute_path x =
   let drop_if_exist xs =
     match xs with 
@@ -21801,11 +21840,13 @@ let normalize_absolute_path x =
   let rec normalize_list acc paths =
     match paths with 
     | [] -> acc 
-    | "." :: xs -> normalize_list acc xs
-    | ".." :: xs -> 
-      normalize_list (drop_if_exist acc ) xs 
     | x :: xs -> 
-      normalize_list (x::acc) xs 
+      if Ext_string.equal x Ext_string.current_dir_lit then 
+        normalize_list acc xs 
+      else if Ext_string.equal x Ext_string.parent_dir_lit then 
+        normalize_list (drop_if_exist acc ) xs 
+      else   
+        normalize_list (x::acc) xs 
   in
   let root, paths = split_aux x in
   let rev_paths =  normalize_list [] paths in 
@@ -80722,10 +80763,10 @@ let string_of_module_id ~output_prefix
         let id = x.id in
         let modulename = String.uncapitalize id.name in
         let js_file = Printf.sprintf "%s.js" modulename in
-        let rebase package_dir dep =
+        let rebase different_package package_dir dep =
           let current_unit_dir =
             `Dir (Js_config.get_output_dir ~pkg_dir:package_dir module_system output_prefix) in
-          Ext_filename.node_relative_path  current_unit_dir dep 
+          Ext_filename.node_relative_path  different_package current_unit_dir dep 
         in 
         let dependency_pkg_info = 
           Lam_compile_env.get_package_path_from_cmj module_system x 
@@ -80758,7 +80799,7 @@ let string_of_module_id ~output_prefix
             Found(current_package, path) -> 
             if  current_package = package_name then 
               let package_dir = Lazy.force Ext_filename.package_dir in
-              rebase package_dir (`File (package_dir // x // modulename)) 
+              rebase false package_dir (`File (package_dir // x // modulename)) 
             else 
               package_name // x // modulename
           
@@ -80767,7 +80808,7 @@ let string_of_module_id ~output_prefix
             ->    
             if current_package = package_name then 
               let package_dir = Lazy.force Ext_filename.package_dir in
-              rebase package_dir (`File (
+              rebase false package_dir (`File (
                   package_dir // x // modulename)) 
             else 
               package_name // x // modulename
@@ -80780,7 +80821,7 @@ let string_of_module_id ~output_prefix
             begin match Config_util.find_opt js_file with 
               | Some file -> 
                 let package_dir = Lazy.force Ext_filename.package_dir in
-                rebase package_dir (`File file) 
+                rebase true package_dir (`File file) 
               | None -> 
                 Bs_exception.error (Js_not_found js_file)
             end
