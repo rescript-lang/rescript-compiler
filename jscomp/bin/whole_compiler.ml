@@ -21292,6 +21292,7 @@ val commonjs : string
 val amdjs : string 
 val goog : string 
 val es6 : string 
+val es6_global : string
 val unused_attribute : string 
 end = struct
 #1 "literals.ml"
@@ -21392,7 +21393,7 @@ let commonjs = "commonjs"
 let amdjs = "amdjs"
 let goog = "goog"
 let es6 = "es6"
-
+let es6_global = "es6-global"
 let unused_attribute = "Unused attribute " 
 end
 module Ext_filename : sig 
@@ -21899,8 +21900,12 @@ module Js_config : sig
 
 
 type module_system = 
-  | NodeJS | AmdJS | Goog  (* This will be serliazed *)
+  | NodeJS 
+  | AmdJS
+  | Goog  (* This will be serliazed *)
   | Es6
+  | Es6_global
+  | AmdJS_global
 
 type package_info = 
  (module_system * string )
@@ -22070,11 +22075,14 @@ end = struct
 
 
 type path = string
+
 type module_system =
   | NodeJS 
   | AmdJS 
   | Goog
   | Es6
+  | Es6_global (* ignore node_modules, just calcluating relative path *)
+  | AmdJS_global (* see ^ *)
 
 type package_info =
  ( module_system * string )
@@ -22125,6 +22133,7 @@ let set_npm_package_path s =
          | "amdjs" -> AmdJS
          | "goog" -> Goog
          | "es6" -> Es6
+         | "es6-global" -> Es6_global
          | _ ->
            Ext_pervasives.bad_argf "invalid module system %s" package_name), path
       | [path] ->
@@ -22159,13 +22168,24 @@ type info_query =
   | Found of package_name * string
   | NotFound 
 
+let compatible exist query =
+  match query with 
+  | NodeJS
+  | AmdJS
+  | Goog
+  | Es6  -> exist = query
+  | Es6_global  
+    -> exist = Es6_global || exist = Es6
+  | AmdJS_global 
+    -> exist = AmdJS_global || exist = AmdJS
+   (* As a dependency Leaf Node, it is the same either [global] or [not] *)
 
 let query_package_infos (package_infos : packages_info) module_system =
   match package_infos with
   | Empty -> Empty
   | NonBrowser (name, []) -> Package_script name
   | NonBrowser (name, paths) ->
-    begin match List.find (fun (k, _) -> k = module_system) paths with
+    begin match List.find (fun (k, _) -> compatible k  module_system) paths with
       | (_, x) -> Found (name, x)
       | exception _ -> NotFound
     end
@@ -22186,7 +22206,7 @@ let get_output_dir ~pkg_dir module_system filename =
     else
       Filename.dirname filename
   | NonBrowser (_,  modules) ->
-    begin match List.find (fun (k,_) -> k = module_system) modules with
+    begin match List.find (fun (k,_) -> compatible k  module_system) modules with
       | (_, _path) -> pkg_dir // _path
       |  exception _ -> assert false
     end
@@ -65420,7 +65440,7 @@ let pure_dummy =
 let no_pure_dummy = 
   {
     values = String_map.empty;
-    effect = Some "";
+    effect = Some Ext_string.empty;
     npm_package_path = Empty;  
   }
 
@@ -80784,7 +80804,7 @@ let string_of_module_id ~output_prefix
             Ext_pervasives.failwithf ~loc:__LOC__ 
               " @[%s was not compiled with goog support  in search path - while compiling %s @] "
               js_file !Location.input_name 
-          | (AmdJS | NodeJS | Es6),
+          | (AmdJS | NodeJS | Es6 | Es6_global | AmdJS_global),
             ( Empty | Package_script _) ,
             Found _  -> 
             Ext_pervasives.failwithf ~loc:__LOC__
@@ -80792,18 +80812,36 @@ let string_of_module_id ~output_prefix
               js_file !Location.input_name              
           | Goog , Found (package_name, x), _  -> 
             package_name  ^ "." ^  String.uncapitalize id.name
-          | (AmdJS | NodeJS| Es6), (Empty | Package_script _ | Found _ ), NotFound -> assert false
+          | (AmdJS | NodeJS| Es6 | Es6_global|AmdJS_global),
+           (Empty | Package_script _ | Found _ ), NotFound -> assert false
 
-          | (AmdJS | NodeJS | Es6), 
+          | (AmdJS | NodeJS | Es6 | Es6_global|AmdJS_global), 
             Found(package_name, x),
             Found(current_package, path) -> 
             if  current_package = package_name then 
               let package_dir = Lazy.force Ext_filename.package_dir in
               rebase false package_dir (`File (package_dir // x // modulename)) 
             else 
+              begin match module_system with 
+              | AmdJS | NodeJS | Es6 -> 
               package_name // x // modulename
-          
-          | (AmdJS | NodeJS | Es6), Found(package_name, x), 
+              | Goog -> assert false (* see above *)
+              | Es6_global 
+              | AmdJS_global -> 
+               (** lib/ocaml/xx.cmj --               
+                quick hacks
+                maybe we can caching relative package path calculation *)
+                assert false 
+                (*
+                begin 
+                  Ext_filename.rel_normalized_absolute_path              
+                    (Js_config.get_output_dir ~pkg_dir:(Lazy.force Ext_filename.package_dir)
+                       module_system output_prefix)
+                    ((Filename.dirname 
+                        (Filename.dirname (Filename.dirname cmj_path))) // x // modulename)              
+                end *)
+              end
+          | (AmdJS | NodeJS | Es6 | AmdJS_global | Es6_global), Found(package_name, x), 
             Package_script(current_package)
             ->    
             if current_package = package_name then 
@@ -80812,9 +80850,10 @@ let string_of_module_id ~output_prefix
                   package_dir // x // modulename)) 
             else 
               package_name // x // modulename
-          | (AmdJS | NodeJS | Es6), Found(package_name, x), Empty 
+          | (AmdJS | NodeJS | Es6 | AmdJS_global | Es6_global), 
+            Found(package_name, x), Empty 
             ->    package_name // x // modulename
-          |  (AmdJS | NodeJS | Es6), 
+          |  (AmdJS | NodeJS | Es6 | AmdJS_global | Es6_global), 
              (Empty | Package_script _) , 
              (Empty  | Package_script _)
             -> 
@@ -80827,7 +80866,15 @@ let string_of_module_id ~output_prefix
             end
           
         end
-      | External name -> name in 
+      | External name -> name 
+        (** This may not be enough, 
+          1. For cross packages, we may need settle 
+            down a single js package
+          2. We may need es6 path for dead code elimination
+             But frankly, very few JS packages have no dependency, 
+             so having plugin may sound not that bad   
+        *)
+      in 
     if Ext_sys.is_windows_or_cygwin then Ext_string.replace_backward_slash result 
     else result 
 
@@ -82676,7 +82723,7 @@ let node_program ~output_prefix f ( x : J.deps_program) =
   program f cxt x.program  
 
 
-let amd_program ~output_prefix f (  x : J.deps_program) = 
+let amd_program ~output_prefix kind f (  x : J.deps_program) = 
   P.newline f ; 
   let cxt = Ext_pp_scope.empty in
   P.vgroup f 1 @@ fun _ -> 
@@ -82685,7 +82732,7 @@ let amd_program ~output_prefix f (  x : J.deps_program) =
   P.string f (Printf.sprintf "%S" L.exports);
 
   List.iter (fun x ->
-      let s = Js_program_loader.string_of_module_id ~output_prefix AmdJS x in
+      let s = Js_program_loader.string_of_module_id ~output_prefix kind x in
       P.string f L.comma ;
       P.space f; 
       pp_string f ~utf:true ~quote:(best_string_quote s) s;
@@ -82714,7 +82761,7 @@ let amd_program ~output_prefix f (  x : J.deps_program) =
   v
 
 
-let es6_program ~output_prefix f (  x : J.deps_program) = 
+let es6_program  ~output_prefix fmt f (  x : J.deps_program) = 
   let cxt = 
      imports
       Ext_pp_scope.empty
@@ -82724,7 +82771,7 @@ let es6_program ~output_prefix f (  x : J.deps_program) =
             Lam_module_ident.id x,
             Js_program_loader.string_of_module_id
               ~output_prefix
-              Es6 x)
+              fmt x)
          x.modules)
   in
   let () = P.force_newline f in 
@@ -82754,10 +82801,10 @@ let pp_deps_program
     P.string f L.strict_directive; 
     P.newline f ;    
     ignore (match kind with 
-        | Es6 -> 
-          es6_program ~output_prefix f program
-        | AmdJS -> 
-          amd_program ~output_prefix f program
+        | Es6 | Es6_global -> 
+          es6_program ~output_prefix kind f program
+        | AmdJS | AmdJS_global -> 
+          amd_program ~output_prefix kind f program
         | NodeJS -> 
           node_program ~output_prefix f program
         | Goog  -> 

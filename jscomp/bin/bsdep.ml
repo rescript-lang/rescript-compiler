@@ -24160,6 +24160,7 @@ val commonjs : string
 val amdjs : string 
 val goog : string 
 val es6 : string 
+val es6_global : string
 val unused_attribute : string 
 end = struct
 #1 "literals.ml"
@@ -24260,7 +24261,7 @@ let commonjs = "commonjs"
 let amdjs = "amdjs"
 let goog = "goog"
 let es6 = "es6"
-
+let es6_global = "es6-global"
 let unused_attribute = "Unused attribute " 
 end
 module Ext_filename : sig 
@@ -24767,8 +24768,12 @@ module Js_config : sig
 
 
 type module_system = 
-  | NodeJS | AmdJS | Goog  (* This will be serliazed *)
+  | NodeJS 
+  | AmdJS
+  | Goog  (* This will be serliazed *)
   | Es6
+  | Es6_global
+  | AmdJS_global
 
 type package_info = 
  (module_system * string )
@@ -24938,11 +24943,14 @@ end = struct
 
 
 type path = string
+
 type module_system =
   | NodeJS 
   | AmdJS 
   | Goog
   | Es6
+  | Es6_global (* ignore node_modules, just calcluating relative path *)
+  | AmdJS_global (* see ^ *)
 
 type package_info =
  ( module_system * string )
@@ -24993,6 +25001,7 @@ let set_npm_package_path s =
          | "amdjs" -> AmdJS
          | "goog" -> Goog
          | "es6" -> Es6
+         | "es6-global" -> Es6_global
          | _ ->
            Ext_pervasives.bad_argf "invalid module system %s" package_name), path
       | [path] ->
@@ -25027,13 +25036,24 @@ type info_query =
   | Found of package_name * string
   | NotFound 
 
+let compatible exist query =
+  match query with 
+  | NodeJS
+  | AmdJS
+  | Goog
+  | Es6  -> exist = query
+  | Es6_global  
+    -> exist = Es6_global || exist = Es6
+  | AmdJS_global 
+    -> exist = AmdJS_global || exist = AmdJS
+   (* As a dependency Leaf Node, it is the same either [global] or [not] *)
 
 let query_package_infos (package_infos : packages_info) module_system =
   match package_infos with
   | Empty -> Empty
   | NonBrowser (name, []) -> Package_script name
   | NonBrowser (name, paths) ->
-    begin match List.find (fun (k, _) -> k = module_system) paths with
+    begin match List.find (fun (k, _) -> compatible k  module_system) paths with
       | (_, x) -> Found (name, x)
       | exception _ -> NotFound
     end
@@ -25054,7 +25074,7 @@ let get_output_dir ~pkg_dir module_system filename =
     else
       Filename.dirname filename
   | NonBrowser (_,  modules) ->
-    begin match List.find (fun (k,_) -> k = module_system) modules with
+    begin match List.find (fun (k,_) -> compatible k  module_system) modules with
       | (_, _path) -> pkg_dir // _path
       |  exception _ -> assert false
     end
