@@ -77,12 +77,6 @@ let annoymous filename =
 let watch_mode = ref false
 let make_world = ref false
 
-let lib_bs = "lib" // "bs"
-let lib_amdjs = "lib" // "amdjs"
-let lib_goog = "lib" // "goog"
-let lib_js = "lib" // "js"
-let lib_ocaml = "lib" // "ocaml" (* installed binary artifacts *)
-let lib_es6 = "lib" // "es6"
 let clean_bs_garbage cwd =
   print_string "Doing cleaning in ";
   print_endline cwd;
@@ -91,12 +85,8 @@ let clean_bs_garbage cwd =
     if Sys.file_exists x then
       Bsb_unix.remove_dir_recursive x  in
   try
-    aux lib_bs ;
-    aux lib_amdjs ;
-    aux lib_goog;
-    aux lib_js ;
-    aux lib_ocaml;
-    aux lib_es6 ; 
+    List.iter aux Bsb_config.all_lib_artifacts
+
   with
     e ->
     prerr_endline ("Failed to clean due to " ^ Printexc.to_string e)
@@ -145,8 +135,8 @@ let regenerate_ninja cwd bsc_dir forced =
       print_endline "Regenerating build spec";
       let config = 
         Bsb_config_parse.interpret_json 
-        ~override_package_specs:!Bsb_config.cmd_package_specs
-        ~bsc_dir cwd in 
+          ~override_package_specs:!Bsb_config.cmd_package_specs
+          ~bsc_dir cwd in 
       begin 
         Bsb_gen.output_ninja ~cwd ~bsc_dir config ; 
         Literals.bsconfig_json :: config.globbed_dirs
@@ -180,21 +170,22 @@ let print_string_args (args : string array) =
   print_newline ()
 
 let install_targets (config : Bsb_config_types.t option) =
-  match config with None -> ()
-                  | Some {files_to_install} -> 
-                    let destdir = lib_ocaml in
-                    if not @@ Sys.file_exists destdir then begin Unix.mkdir destdir 0o777  end;
-                    begin
-                      print_endline "* Start Installation";
-                      String_hash_set.iter (fun x ->
-                          Bsb_file.install_if_exists ~destdir (x ^  Literals.suffix_ml) ;
-                          Bsb_file.install_if_exists ~destdir (x ^ Literals.suffix_mli) ;
-                          Bsb_file.install_if_exists ~destdir (lib_bs//x ^ Literals.suffix_cmi) ;
-                          Bsb_file.install_if_exists ~destdir (lib_bs//x ^ Literals.suffix_cmj) ;
-                          Bsb_file.install_if_exists ~destdir (lib_bs//x ^ Literals.suffix_cmt) ;
-                          Bsb_file.install_if_exists ~destdir (lib_bs//x ^ Literals.suffix_cmti) ;
-                        ) files_to_install
-                    end
+  match config with 
+  | None -> ()
+  | Some {files_to_install} -> 
+    let destdir = Bsb_config.lib_ocaml in
+    if not @@ Sys.file_exists destdir then begin Unix.mkdir destdir 0o777  end;
+    begin
+      print_endline "* Start Installation";
+      String_hash_set.iter (fun x ->
+          Bsb_file.install_if_exists ~destdir (x ^  Literals.suffix_ml) ;
+          Bsb_file.install_if_exists ~destdir (x ^ Literals.suffix_mli) ;
+          Bsb_file.install_if_exists ~destdir (Bsb_config.lib_bs//x ^ Literals.suffix_cmi) ;
+          Bsb_file.install_if_exists ~destdir (Bsb_config.lib_bs//x ^ Literals.suffix_cmj) ;
+          Bsb_file.install_if_exists ~destdir (Bsb_config.lib_bs//x ^ Literals.suffix_cmt) ;
+          Bsb_file.install_if_exists ~destdir (Bsb_config.lib_bs//x ^ Literals.suffix_cmti) ;
+        ) files_to_install
+    end
 (* Note that [keepdepfile] only makes sense when combined with [deps] for optimizatoin
    It has to be the last command of [bsb]
 *)

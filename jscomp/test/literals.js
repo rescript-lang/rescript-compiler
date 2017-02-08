@@ -105,6 +105,8 @@ var goog = "goog";
 
 var es6 = "es6";
 
+var es6_global = "es6-global";
+
 var unused_attribute = "Unused attribute ";
 
 exports.js_array_ctor       = js_array_ctor;
@@ -159,5 +161,6 @@ exports.commonjs            = commonjs;
 exports.amdjs               = amdjs;
 exports.goog                = goog;
 exports.es6                 = es6;
+exports.es6_global          = es6_global;
 exports.unused_attribute    = unused_attribute;
 /* No side effect */
