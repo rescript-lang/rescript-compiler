@@ -90,7 +90,7 @@ let string_of_module_id ~output_prefix
             `Dir (Js_config.get_output_dir ~pkg_dir:package_dir module_system output_prefix) in
           Ext_filename.node_relative_path  different_package current_unit_dir dep 
         in 
-        let dependency_pkg_info = 
+        let cmj_path, dependency_pkg_info = 
           Lam_compile_env.get_package_path_from_cmj module_system x 
         in
         let current_pkg_info = 
@@ -126,7 +126,7 @@ let string_of_module_id ~output_prefix
             else 
               begin match module_system with 
               | AmdJS | NodeJS | Es6 -> 
-              package_name // x // modulename
+                package_name // x // modulename
               | Goog -> assert false (* see above *)
               | Es6_global 
               | AmdJS_global -> 
