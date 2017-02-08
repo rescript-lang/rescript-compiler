@@ -62,7 +62,7 @@ let pure_dummy =
 let no_pure_dummy = 
   {
     values = String_map.empty;
-    effect = Some "";
+    effect = Some Ext_string.empty;
     npm_package_path = Empty;  
   }
 

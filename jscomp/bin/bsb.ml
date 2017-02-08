@@ -97,6 +97,7 @@ val commonjs : string
 val amdjs : string 
 val goog : string 
 val es6 : string 
+val es6_global : string
 val unused_attribute : string 
 end = struct
 #1 "literals.ml"
@@ -197,7 +198,7 @@ let commonjs = "commonjs"
 let amdjs = "amdjs"
 let goog = "goog"
 let es6 = "es6"
-
+let es6_global = "es6-global"
 let unused_attribute = "Unused attribute " 
 end
 module Bs_pkg : sig 
@@ -2545,6 +2546,8 @@ val goog_prefix : string -> string
 val ocaml_bin_install_prefix : string -> string
 val proj_rel : string -> string
 val lib_bs : string
+val lib_ocaml : string
+val all_lib_artifacts : string list 
 (* we need generate path relative to [lib/bs] directory in the opposite direction *)
 val rev_lib_bs_prefix : string -> string
 
@@ -2591,12 +2594,24 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 let (//) = Ext_filename.combine 
 
-let lib_js = "lib"//"js"
-let lib_amd = "lib"//"amdjs"
-let lib_goog = "lib" // "goog"
-let lib_ocaml = "lib" // "ocaml"
-let lib_bs = "lib" // "bs"
-let lib_es6 = "lib" // "es6"
+let lib_lit = "lib"
+let lib_js = lib_lit //"js"
+let lib_amd = lib_lit //"amdjs"
+let lib_goog = lib_lit // "goog"
+let lib_ocaml = lib_lit // "ocaml"
+let lib_bs = lib_lit // "bs"
+let lib_es6 = lib_lit // "es6"
+let lib_es6_global = lib_lit // "es6_global"
+
+let all_lib_artifacts = 
+  [ lib_js ; 
+    lib_amd ;
+    lib_goog ; 
+    lib_ocaml;
+    lib_bs ; 
+    lib_es6 ; 
+    lib_es6_global
+  ]
 let rev_lib_bs = ".."// ".."
 
 
@@ -2605,7 +2620,7 @@ let common_js_prefix p  =  lib_js  // p
 let amd_js_prefix p = lib_amd // p 
 let goog_prefix p = lib_goog // p  
 let es6_prefix p = lib_es6 // p 
-
+let es6_global_prefix p =  lib_es6_global // p
 let ocaml_bin_install_prefix p = lib_ocaml // p
 
 let lazy_src_root_dir = "$src_root_dir" 
@@ -2628,8 +2643,8 @@ let supported_format x =
   x = Literals.amdjs ||
   x = Literals.commonjs ||
   x = Literals.goog ||
-  x = Literals.es6
-
+  x = Literals.es6 ||
+  x = Literals.es6_global
 
 let cmd_override_package_specs str = 
   let lst = Ext_string.split ~keep_empty:false str ',' in
@@ -2659,6 +2674,8 @@ let package_flag ~format:fmt dir =
           common_js_prefix dir 
         else if fmt = Literals.es6 then 
           es6_prefix dir 
+        else if fmt = Literals.es6_global then 
+          es6_global_prefix dir   
         else goog_prefix dir))
 (** js output for each package *)
 let package_output ~format:s output=
@@ -2669,6 +2686,8 @@ let package_output ~format:s output=
       amd_js_prefix
     else if s = Literals.es6 then 
       es6_prefix   
+    else if s = Literals.es6_global then 
+      es6_global_prefix  
     else goog_prefix
   in
   (proj_rel @@ prefix output )
@@ -8764,12 +8783,6 @@ let annoymous filename =
 let watch_mode = ref false
 let make_world = ref false
 
-let lib_bs = "lib" // "bs"
-let lib_amdjs = "lib" // "amdjs"
-let lib_goog = "lib" // "goog"
-let lib_js = "lib" // "js"
-let lib_ocaml = "lib" // "ocaml" (* installed binary artifacts *)
-let lib_es6 = "lib" // "es6"
 let clean_bs_garbage cwd =
   print_string "Doing cleaning in ";
   print_endline cwd;
@@ -8778,12 +8791,8 @@ let clean_bs_garbage cwd =
     if Sys.file_exists x then
       Bsb_unix.remove_dir_recursive x  in
   try
-    aux lib_bs ;
-    aux lib_amdjs ;
-    aux lib_goog;
-    aux lib_js ;
-    aux lib_ocaml;
-    aux lib_es6 ; 
+    List.iter aux Bsb_config.all_lib_artifacts
+
   with
     e ->
     prerr_endline ("Failed to clean due to " ^ Printexc.to_string e)
@@ -8832,8 +8841,8 @@ let regenerate_ninja cwd bsc_dir forced =
       print_endline "Regenerating build spec";
       let config = 
         Bsb_config_parse.interpret_json 
-        ~override_package_specs:!Bsb_config.cmd_package_specs
-        ~bsc_dir cwd in 
+          ~override_package_specs:!Bsb_config.cmd_package_specs
+          ~bsc_dir cwd in 
       begin 
         Bsb_gen.output_ninja ~cwd ~bsc_dir config ; 
         Literals.bsconfig_json :: config.globbed_dirs
@@ -8867,21 +8876,22 @@ let print_string_args (args : string array) =
   print_newline ()
 
 let install_targets (config : Bsb_config_types.t option) =
-  match config with None -> ()
-                  | Some {files_to_install} -> 
-                    let destdir = lib_ocaml in
-                    if not @@ Sys.file_exists destdir then begin Unix.mkdir destdir 0o777  end;
-                    begin
-                      print_endline "* Start Installation";
-                      String_hash_set.iter (fun x ->
-                          Bsb_file.install_if_exists ~destdir (x ^  Literals.suffix_ml) ;
-                          Bsb_file.install_if_exists ~destdir (x ^ Literals.suffix_mli) ;
-                          Bsb_file.install_if_exists ~destdir (lib_bs//x ^ Literals.suffix_cmi) ;
-                          Bsb_file.install_if_exists ~destdir (lib_bs//x ^ Literals.suffix_cmj) ;
-                          Bsb_file.install_if_exists ~destdir (lib_bs//x ^ Literals.suffix_cmt) ;
-                          Bsb_file.install_if_exists ~destdir (lib_bs//x ^ Literals.suffix_cmti) ;
-                        ) files_to_install
-                    end
+  match config with 
+  | None -> ()
+  | Some {files_to_install} -> 
+    let destdir = Bsb_config.lib_ocaml in
+    if not @@ Sys.file_exists destdir then begin Unix.mkdir destdir 0o777  end;
+    begin
+      print_endline "* Start Installation";
+      String_hash_set.iter (fun x ->
+          Bsb_file.install_if_exists ~destdir (x ^  Literals.suffix_ml) ;
+          Bsb_file.install_if_exists ~destdir (x ^ Literals.suffix_mli) ;
+          Bsb_file.install_if_exists ~destdir (Bsb_config.lib_bs//x ^ Literals.suffix_cmi) ;
+          Bsb_file.install_if_exists ~destdir (Bsb_config.lib_bs//x ^ Literals.suffix_cmj) ;
+          Bsb_file.install_if_exists ~destdir (Bsb_config.lib_bs//x ^ Literals.suffix_cmt) ;
+          Bsb_file.install_if_exists ~destdir (Bsb_config.lib_bs//x ^ Literals.suffix_cmti) ;
+        ) files_to_install
+    end
 (* Note that [keepdepfile] only makes sense when combined with [deps] for optimizatoin
    It has to be the last command of [bsb]
 *)

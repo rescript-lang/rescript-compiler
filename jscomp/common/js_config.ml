@@ -29,6 +29,7 @@ type module_system =
   | AmdJS 
   | Goog
   | Es6
+  | Es6_global
 
 type package_info =
  ( module_system * string )
@@ -79,6 +80,7 @@ let set_npm_package_path s =
          | "amdjs" -> AmdJS
          | "goog" -> Goog
          | "es6" -> Es6
+         | "es6-global" -> Es6_global
          | _ ->
            Ext_pervasives.bad_argf "invalid module system %s" package_name), path
       | [path] ->
@@ -113,13 +115,21 @@ type info_query =
   | Found of package_name * string
   | NotFound 
 
+let compatible exist query =
+  match query with 
+  | NodeJS
+  | AmdJS
+  | Goog
+  | Es6  -> exist = query
+  | Es6_global  
+    -> exist = Es6_global || exist = Es6
 
 let query_package_infos (package_infos : packages_info) module_system =
   match package_infos with
   | Empty -> Empty
   | NonBrowser (name, []) -> Package_script name
   | NonBrowser (name, paths) ->
-    begin match List.find (fun (k, _) -> k = module_system) paths with
+    begin match List.find (fun (k, _) -> compatible k  module_system) paths with
       | (_, x) -> Found (name, x)
       | exception _ -> NotFound
     end
@@ -140,7 +150,7 @@ let get_output_dir ~pkg_dir module_system filename =
     else
       Filename.dirname filename
   | NonBrowser (_,  modules) ->
-    begin match List.find (fun (k,_) -> k = module_system) modules with
+    begin match List.find (fun (k,_) -> compatible k  module_system) modules with
       | (_, _path) -> pkg_dir // _path
       |  exception _ -> assert false
     end
