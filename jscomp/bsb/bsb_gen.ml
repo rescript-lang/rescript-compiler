@@ -84,7 +84,7 @@ let output_ninja
           "bsc", bsc ;
           "bsdep", bsdep;
           "ocamllex", ocamllex;
-          "bsc_flags", bsc_flags ;
+          "bsc_flags", "-nostdlib " ^ bsc_flags ;
           "ppx_flags", ppx_flags;
           "bs_package_includes", (Bsb_build_util.flag_concat dash_i @@ List.map (fun x -> x.Bsb_config_types.package_install_path) bs_dependencies);
           "refmt", refmt;

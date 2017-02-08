@@ -43,6 +43,12 @@ val map2i : (int -> 'a -> 'b -> 'c ) -> 'a array -> 'b array -> 'c array
 
 val to_list_map : ('a -> 'b option) -> 'a array -> 'b list 
 
+val to_list_map_acc : 
+  ('a -> 'b option) -> 
+  'a array -> 
+  'b list -> 
+  'b list 
+
 val of_list_map : ('a -> 'b) -> 'a list -> 'b array 
 
 val rfind_with_index : 'a array -> ('a -> 'b -> bool) -> 'b -> int

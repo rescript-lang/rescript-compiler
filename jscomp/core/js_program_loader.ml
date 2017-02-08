@@ -133,15 +133,15 @@ let string_of_module_id ~output_prefix
                (** lib/ocaml/xx.cmj --               
                 quick hacks
                 maybe we can caching relative package path calculation *)
-                assert false 
-                (*
+                (* assert false  *)
+                
                 begin 
                   Ext_filename.rel_normalized_absolute_path              
                     (Js_config.get_output_dir ~pkg_dir:(Lazy.force Ext_filename.package_dir)
                        module_system output_prefix)
                     ((Filename.dirname 
                         (Filename.dirname (Filename.dirname cmj_path))) // x // modulename)              
-                end *)
+                end
               end
           | (AmdJS | NodeJS | Es6 | AmdJS_global | Es6_global), Found(package_name, x), 
             Package_script(current_package)

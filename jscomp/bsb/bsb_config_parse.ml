@@ -101,10 +101,10 @@ let revise_merlin new_content =
 let bsppx_exe = "bsppx.exe"
 
 let interpret_json 
-  ~override_package_specs
-  ~bsc_dir 
-  cwd  
-  
+    ~override_package_specs
+    ~bsc_dir 
+    cwd  
+
   : Bsb_config_types.t =
   let builddir = Bsb_config.lib_bs in
   let () = Bsb_build_util.mkp builddir in
@@ -145,12 +145,12 @@ let interpret_json
     let () =
       Bsb_default.get_bs_dependencies ()
       |> List.iter (fun package ->
-            let path = package.Bsb_config_types.package_install_path in
-            Buffer.add_string buffer "\nS ";
-            Buffer.add_string buffer path ;
-            Buffer.add_string buffer "\nB ";
-            Buffer.add_string buffer path ;
-            Buffer.add_string buffer "\n";
+          let path = package.Bsb_config_types.package_install_path in
+          Buffer.add_string buffer "\nS ";
+          Buffer.add_string buffer path ;
+          Buffer.add_string buffer "\nB ";
+          Buffer.add_string buffer path ;
+          Buffer.add_string buffer "\n";
 
         )
     in
@@ -181,30 +181,39 @@ let interpret_json
       |? (Bsb_build_schemas.generate_merlin, `Bool (fun b ->
           Bsb_default.set_generate_merlin b
         ))
+      |? (Bsb_build_schemas.use_stdlib, `Bool (fun b -> 
+          Bsb_default.set_use_stdlib ~cwd b 
+        )) (* it will affect [get_package_specs] *)
+      |> (fun map -> 
+          if Bsb_default.get_use_stdlib () then 
+            Bsb_default.set_use_stdlib ~cwd true ;
+          (* quick hack , at least call once *)
+          map 
+        )
       |?  (Bsb_build_schemas.name, `Str Bsb_default.set_package_name)
-      |? (Bsb_build_schemas.package_specs, `Arr Bsb_default.set_package_specs_from_array )
-      |? (Bsb_build_schemas.js_post_build, `Obj begin fun m ->
-          m |? (Bsb_build_schemas.cmd , `Str (Bsb_default.set_js_post_build_cmd ~cwd)
-               )
-          |> ignore
-        end)
-      |? (Bsb_build_schemas.ocamllex, `Str (Bsb_default.set_ocamllex ~cwd))
-      |? (Bsb_build_schemas.ninja, `Str (Bsb_default.set_ninja ~cwd))
-      |? (Bsb_build_schemas.bs_dependencies, `Arr (Bsb_default.set_bs_dependencies ~cwd))
-      (* More design *)
-      |? (Bsb_build_schemas.bs_external_includes, `Arr Bsb_default.set_bs_external_includes)
-      |? (Bsb_build_schemas.bsc_flags, `Arr Bsb_default.set_bsc_flags)
-      |? (Bsb_build_schemas.ppx_flags, `Arr (Bsb_default.set_ppx_flags ~cwd))
-      |? (Bsb_build_schemas.refmt, `Str (Bsb_default.set_refmt ~cwd))
-      |? (Bsb_build_schemas.refmt_flags, `Arr Bsb_default.set_refmt_flags)
+         |? (Bsb_build_schemas.package_specs, `Arr Bsb_default.set_package_specs_from_array )
+         |? (Bsb_build_schemas.js_post_build, `Obj begin fun m ->
+             m |? (Bsb_build_schemas.cmd , `Str (Bsb_default.set_js_post_build_cmd ~cwd)
+                  )
+             |> ignore
+           end)
+         |? (Bsb_build_schemas.ocamllex, `Str (Bsb_default.set_ocamllex ~cwd))
+         |? (Bsb_build_schemas.ninja, `Str (Bsb_default.set_ninja ~cwd))
+         |? (Bsb_build_schemas.bs_dependencies, `Arr (Bsb_default.set_bs_dependencies ~cwd))
+         (* More design *)
+         |? (Bsb_build_schemas.bs_external_includes, `Arr Bsb_default.set_bs_external_includes)
+         |? (Bsb_build_schemas.bsc_flags, `Arr Bsb_default.set_bsc_flags)
+         |? (Bsb_build_schemas.ppx_flags, `Arr (Bsb_default.set_ppx_flags ~cwd))
+         |? (Bsb_build_schemas.refmt, `Str (Bsb_default.set_refmt ~cwd))
+         |? (Bsb_build_schemas.refmt_flags, `Arr Bsb_default.set_refmt_flags)
 
-      |? (Bsb_build_schemas.sources, `Id (fun x ->
-          Bsb_build_ui.parsing_sources
-            Bsb_build_ui.lib_dir_index
-            Filename.current_dir_name x
-          |>
-          handle_bsb_build_ui
-        ))
+         |? (Bsb_build_schemas.sources, `Id (fun x ->
+             Bsb_build_ui.parsing_sources
+               Bsb_build_ui.lib_dir_index
+               Filename.current_dir_name x
+             |>
+             handle_bsb_build_ui
+           ))
       |> ignore
     | _ -> ()
   in
@@ -222,23 +231,23 @@ let interpret_json
       Unix.rename config_file_bak Literals.bsconfig_json
   end;
   {
-      Bsb_config_types.package_name = (Bsb_default.get_package_name ());
-      ocamllex = (Bsb_default.get_ocamllex ());
-      external_includes = (Bsb_default.get_bs_external_includes ()) ;
-      bsc_flags = Bsb_default.(get_bsc_flags ());
-      ppx_flags = Bsb_default.(get_ppx_flags ());
-      bs_dependencies = Bsb_default.(get_bs_dependencies ());
-      refmt = Bsb_default.(get_refmt ());
-      refmt_flags = Bsb_default.(get_refmt_flags ());
-      js_post_build_cmd =  Bsb_default.(get_js_post_build_cmd ());
-      package_specs = 
-        (match override_package_specs with None ->  Bsb_default.get_package_specs()
-        | Some x -> x );
-      globbed_dirs = !globbed_dirs; 
-      bs_file_groups = !bs_file_groups; 
-      files_to_install = String_hash_set.create 96
+    Bsb_config_types.package_name = (Bsb_default.get_package_name ());
+    ocamllex = (Bsb_default.get_ocamllex ());
+    external_includes = (Bsb_default.get_bs_external_includes ()) ;
+    bsc_flags = Bsb_default.get_bsc_flags ();
+    ppx_flags = Bsb_default.get_ppx_flags ();
+    bs_dependencies = Bsb_default.get_bs_dependencies ();
+    refmt = Bsb_default.get_refmt ();
+    refmt_flags = Bsb_default.(get_refmt_flags ());
+    js_post_build_cmd =  Bsb_default.(get_js_post_build_cmd ());
+    package_specs = 
+      (match override_package_specs with None ->  Bsb_default.get_package_specs()
+                                       | Some x -> x );
+    globbed_dirs = !globbed_dirs; 
+    bs_file_groups = !bs_file_groups; 
+    files_to_install = String_hash_set.create 96
   }
-  
+
 
 
 

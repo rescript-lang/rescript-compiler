@@ -1294,6 +1294,12 @@ val map2i : (int -> 'a -> 'b -> 'c ) -> 'a array -> 'b array -> 'c array
 
 val to_list_map : ('a -> 'b option) -> 'a array -> 'b list 
 
+val to_list_map_acc : 
+  ('a -> 'b option) -> 
+  'a array -> 
+  'b list -> 
+  'b list 
+
 val of_list_map : ('a -> 'b) -> 'a list -> 'b array 
 
 val rfind_with_index : 'a array -> ('a -> 'b -> bool) -> 'b -> int
@@ -1414,15 +1420,20 @@ let map2i f a b =
   else
     Array.mapi (fun i a -> f i  a ( Array.unsafe_get b i )) a 
 
-let to_list_map f a =
-  let rec tolist i res =
+
+ let rec tolist_aux a f  i res =
     if i < 0 then res else
       let v = Array.unsafe_get a i in
-      tolist (i - 1)
+      tolist_aux a f  (i - 1)
         (match f v with
          | Some v -> v :: res
-         | None -> res) in
-  tolist (Array.length a - 1) []
+         | None -> res) 
+
+let to_list_map f a = 
+  tolist_aux a f (Array.length a - 1) []
+
+let to_list_map_acc f a acc = 
+  tolist_aux a f (Array.length a - 1) acc
 
 
 (* TODO: What would happen if [f] raise, memory leak? *)
@@ -2262,7 +2273,19 @@ let suites =
         Ext_array.of_list_map succ [] =~ [||];
         Ext_array.of_list_map succ [1]  =~ [|2|];
         Ext_array.of_list_map succ [1;2;3]  =~ [|2;3;4|];
-    end
+    end; 
+    __LOC__ >:: begin fun _ -> 
+        Ext_array.to_list_map_acc
+        (fun x -> if x mod 2 = 0 then Some x else None )
+        [|1;2;3;4;5;6|] [1;2;3]
+        =~ [2;4;6;1;2;3]
+    end;
+    __LOC__ >:: begin fun _ -> 
+        Ext_array.to_list_map_acc
+        (fun x -> if x mod 2 = 0 then Some x else None )
+        [|1;2;3;4;5;6|] []
+        =~ [2;4;6]
+    end;
     ]
 end
 module Ounit_tests_util
