@@ -43,6 +43,8 @@ let merge_module_info_map acc sources =
 let bsc_exe = "bsc.exe"
 let bsb_helper_exe = "bsb_helper.exe"
 let dash_i = "-I"
+
+let dash_ppx = "-ppx"
 let output_ninja
     ~cwd 
     ~bsc_dir           
@@ -59,12 +61,13 @@ let output_ninja
     package_specs;
     bs_file_groups;
     files_to_install;
+    built_in_dependency
     }
   =
   let bsc = bsc_dir // bsc_exe in   (* The path to [bsc.exe] independent of config  *)
   let bsdep = bsc_dir // bsb_helper_exe in (* The path to [bsb_heler.exe] *)
   let builddir = Bsb_config.lib_bs in 
-  let ppx_flags = Bsb_build_util.flag_concat "-ppx" ppx_flags in
+  let ppx_flags = Bsb_build_util.flag_concat dash_ppx ppx_flags in
   let bsc_flags =  String.concat Ext_string.single_space bsc_flags in
   let refmt_flags = String.concat Ext_string.single_space refmt_flags in
   let oc = open_out_bin (builddir // Literals.build_ninja) in
@@ -78,6 +81,14 @@ let output_ninja
           output_string oc ("-bs-package-name "  ^ x  )
       end;
       output_string oc "\n";
+      let bsc_flags = 
+        Ext_string.inter2  Literals.dash_nostdlib @@
+        match built_in_dependency with 
+        | None -> bsc_flags   
+        | Some {package_install_path} -> 
+          Ext_string.inter3 dash_i package_install_path bsc_flags
+  
+      in 
       Bsb_ninja.output_kvs
         [|
           "src_root_dir", cwd (* TODO: need check its integrity -- allow relocate or not? *);

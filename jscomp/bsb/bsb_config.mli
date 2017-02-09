@@ -29,6 +29,8 @@ val goog_prefix : string -> string
 val ocaml_bin_install_prefix : string -> string
 val proj_rel : string -> string
 val lib_bs : string
+val lib_ocaml : string
+val all_lib_artifacts : string list 
 (* we need generate path relative to [lib/bs] directory in the opposite direction *)
 val rev_lib_bs_prefix : string -> string
 

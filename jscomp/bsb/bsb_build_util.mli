@@ -61,7 +61,16 @@ val mkp : string -> unit
 *)
 val get_bsc_bsdep : string -> string * string
 val get_bsc_dir : string -> string                               
-val get_list_string : Ext_json.t array -> string list
+
+
+val get_list_string_acc : 
+    Ext_json.t array -> 
+    string list -> 
+    string list
+
+val get_list_string : 
+    Ext_json.t array -> 
+    string list
 
 val string_of_bsb_dev_include : int -> string 
 

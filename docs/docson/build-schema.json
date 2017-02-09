@@ -36,10 +36,10 @@
                 "$ref": "#/definitions/single-ppx-spec"
             }
         },
-        "bs-dependency" : {
-            "type" : "string",
+        "bs-dependency": {
+            "type": "string",
             "title": "dependency"
-         },
+        },
         "bs-dependencies": {
             "type": "array",
             "items": {
@@ -49,128 +49,131 @@
         },
         "sourceItem": {
             "title": "sourceItem",
-            "oneOf" : [ 
+            "oneOf": [
                 {
-                "type" : "object",
-            "properties": {
-                "dir": {
-                    "type": "string"
-                },
-                "ppx-specs": {
-                    "$ref": "#/definitions/ppx-specs"
-                },
-                "type" : {
-                    "enum" : ["dev", "lib"]
-                },
-                "files": {
-                    "oneOf": [
-                        {
-                            "type": "array",
-                            "items": {
-                                "type": "string"
-                            },
-                            "description": "if files are empty, the build tool will populate it automatically, this is useful for initial adoption"
+                    "type": "object",
+                    "properties": {
+                        "dir": {
+                            "type": "string"
                         },
-                        {
-                            "type": "object",
-                            "properties": {
-                                "slow-re": {
-                                    "type": "string",
-                                    "description": "Regex to glob the patterns, syntax is documented here: http://caml.inria.fr/pub/docs/manual-ocaml/libref/Str.html, if users want to have better performance for incremental build, we would suggest list it explicitly"
-                                },
-                                "excludes": {
+                        "ppx-specs": {
+                            "$ref": "#/definitions/ppx-specs"
+                        },
+                        "type": {
+                            "enum": [
+                                "dev",
+                                "lib"
+                            ]
+                        },
+                        "files": {
+                            "oneOf": [
+                                {
                                     "type": "array",
                                     "items": {
                                         "type": "string"
                                     },
-                                    "description": "A list of strings to be excluded "
+                                    "description": "if files are empty, the build tool will populate it automatically, this is useful for initial adoption"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "slow-re": {
+                                            "type": "string",
+                                            "description": "Regex to glob the patterns, syntax is documented here: http://caml.inria.fr/pub/docs/manual-ocaml/libref/Str.html, if users want to have better performance for incremental build, we would suggest list it explicitly"
+                                        },
+                                        "excludes": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            },
+                                            "description": "A list of strings to be excluded "
+                                        }
+                                    },
+                                    "required": [
+                                        "slow-re"
+                                    ]
                                 }
-                            },
-                            "required": [
-                                "slow-re"
                             ]
-                        }
-                    ]
-                },
-                "bs-dependencies": {
-                    "$ref": "#/definitions/bs-dependencies",
-                    "description": "More dependencies added to this group"
-                },
-                "public": {
-                    "oneOf": [
-                        {
-                            "enum": [
-                                "all"
-                            ],
-                            "description": "All modules in this directory"
                         },
-                        {
+                        "bs-dependencies": {
+                            "$ref": "#/definitions/bs-dependencies",
+                            "description": "More dependencies added to this group"
+                        },
+                        "public": {
+                            "oneOf": [
+                                {
+                                    "enum": [
+                                        "all"
+                                    ],
+                                    "description": "All modules in this directory"
+                                },
+                                {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    },
+                                    "description": "Selected modules, for example, [Module_a, Module_b] "
+                                }
+                            ],
+                            "description": "default: export all modules by default, it is recommended for library developers to hide some interfaces"
+                        },
+                        "resources": {
                             "type": "array",
                             "items": {
                                 "type": "string"
-                            },
-                            "description": "Selected modules, for example, [Module_a, Module_b] "
-                        }
-                    ],
-                    "description": "default: export all modules by default, it is recommended for library developers to hide some interfaces"
-                },
-                "resources": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "subdirs": {
-                   "$ref" : "#/definitions/sources",
-                   "description": "nested specifications inside"
-                },
-                "group": {
-                    "oneOf": [
-                        {
-                            "type": "string",
-                            "description": "A _unique_ name for each directory to refer as an internal dependency later"
+                            }
                         },
-                        {
-                            "properties": {
-                                "name": {
-                                    "type": "string"
+                        "subdirs": {
+                            "$ref": "#/definitions/sources",
+                            "description": "nested specifications inside"
+                        },
+                        "group": {
+                            "oneOf": [
+                                {
+                                    "type": "string",
+                                    "description": "A _unique_ name for each directory to refer as an internal dependency later"
                                 },
-                                "hierachy": {
-                                    "type": "boolean",
-                                    "description": "When true, all subdirs are considered as a whole as dependency"
+                                {
+                                    "properties": {
+                                        "name": {
+                                            "type": "string"
+                                        },
+                                        "hierachy": {
+                                            "type": "boolean",
+                                            "description": "When true, all subdirs are considered as a whole as dependency"
+                                        }
+                                    }
                                 }
+                            ],
+                            "description": "Not implemented yet"
+                        },
+                        "internal-depends": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "description": "internal dependencies, if unspecified, all existing listed source files are considered potential dependencies"
                             }
                         }
-                    ],
-                    "description": "Not implemented yet"
+                    },
+                    "required": [
+                        "dir"
+                    ]
                 },
-                "internal-depends": {
-                    "type": "array",
-                    "items": {
-                        "type": "string",
-                        "description": "internal dependencies, if unspecified, all existing listed source files are considered potential dependencies"
-                    }
+                {
+                    "title": "single non nested directory",
+                    "type": "string",
+                    "description": "directory name (no nested)"
                 }
-            },
-            "required": [
-                "dir"
-            ]
-            },
-            {
-                "title": "single non nested directory",
-                "type" : "string",
-                "description": "directory name (no nested)"
-            }
             ]
         },
-        "sources" : {
-             "oneOf": [
+        "sources": {
+            "oneOf": [
                 {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/sourceItem"
                     },
-                    "description" : "A list of source items"
+                    "description": "A list of source items"
                 },
                 {
                     "$ref": "#/definitions/sourceItem",
@@ -178,6 +181,33 @@
                 }
             ],
             "description": "can be either a single sourceItem or an array of sourceItems, sourceItem can be either a single string(non nested directory) or an detailed object config"
+        },
+        "bsc-flags": {
+            "oneOf": [
+                {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "It will append flags to the default"
+                },
+                {
+                    "properties": {
+                        "kind" : 
+                        { 
+                            "enum": [
+                            "reset",
+                            "prefix",
+                            "append"
+                        ]
+                        },
+                        "flags" : {
+                         "$ref" :    "#/definitions/stringArray"
+                        }
+                    },
+                    "description": "Not implemented yet"
+                }
+            ]
         },
         "stringArray": {
             "type": "array",
@@ -241,13 +271,16 @@
             "description": "external include directories, which will be applied -I to all compilation units, it is *not needed* in most cases"
         },
         "sources": {
-          "$ref" : "#/definitions/sources",
-          "description": "specication of where source code is "
+            "$ref": "#/definitions/sources",
+            "description": "specication of where source code is "
         },
-        
         "generate-merlin": {
             "type": "boolean",
             "description": "default true (generate .merlin)"
+        },
+        "use-stdlib" : {
+            "type" : "boolean",
+            "description": "default true(Set use OCaml stdlib or not)"
         }
     },
     "additionalProperties": false,
