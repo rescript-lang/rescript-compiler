@@ -49,10 +49,12 @@ bin/bsb.ml : ext/hash_set_gen.ml
 bin/bsb.ml : ext/resize_array.ml
 bin/bsb.ml : bsb/bsb_build_ui.mli
 bin/bsb.ml : bsb/bsb_dep_infos.ml
+bin/bsb.ml : common/bs_version.ml
 bin/bsb.ml : ext/ext_filename.mli
 bin/bsb.ml : ext/resize_array.mli
 bin/bsb.ml : bsb/bsb_build_util.ml
 bin/bsb.ml : bsb/bsb_dep_infos.mli
+bin/bsb.ml : common/bs_version.mli
 bin/bsb.ml : ext/ext_pervasives.ml
 bin/bsb.ml : bsb/bsb_build_util.mli
 bin/bsb.ml : common/binary_cache.ml

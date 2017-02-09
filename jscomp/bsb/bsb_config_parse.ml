@@ -89,7 +89,61 @@ let revise_merlin new_content =
     output_string ochan "\n";
     close_out ochan
 
+(* ATTENTION: order matters here, need resolve global properties before
+   merlin generation
+*)
+let merlin_flg_ppx = "\nFLG -ppx " 
+let merlin_s = "\nS "
+let merlin_b = "\nB "
+let bsppx_exe = "bsppx.exe"
+let merlin_file_gen 
+    built_in_ppx
+    ({bs_file_groups = res_files ; 
+      generate_merlin;
+      ppx_flags;
+      bs_dependencies;
+      bsc_flags; 
+      built_in_dependency;
+     } : Bsb_config_types.t)
+  =
+  if generate_merlin then begin     
+    let buffer = Buffer.create 1024 in
+    ppx_flags
+    |> List.iter (fun x ->
+        Buffer.add_string buffer (merlin_flg_ppx ^ x )
+      );
+    Buffer.add_string buffer (merlin_flg_ppx  ^ built_in_ppx);
+    (match built_in_dependency with
+     | None -> ()
+     | Some package -> 
+       let path = package.package_install_path in 
+       Buffer.add_string buffer (merlin_s ^ path );
+       Buffer.add_string buffer (merlin_b ^ path)                      
+    );
 
+    let bsc_string_flag = 
+      "\nFLG " ^ 
+      String.concat Ext_string.single_space 
+        (Literals.dash_nostdlib::bsc_flags)  in 
+    Buffer.add_string buffer bsc_string_flag ;
+    bs_dependencies 
+    |> List.iter (fun package ->
+        let path = package.Bsb_config_types.package_install_path in
+        Buffer.add_string buffer merlin_s ;
+        Buffer.add_string buffer path ;
+        Buffer.add_string buffer merlin_b;
+        Buffer.add_string buffer path ;
+      );
+
+    res_files |> List.iter (fun (x : Bsb_build_ui.file_group) -> 
+        Buffer.add_string buffer merlin_s;
+        Buffer.add_string buffer x.dir ;
+        Buffer.add_string buffer merlin_b;
+        Buffer.add_string buffer (Bsb_config.lib_bs//x.dir) ;
+      ) ;
+    Buffer.add_string buffer "\n";
+    revise_merlin buffer 
+  end
 
 
 
@@ -98,13 +152,24 @@ let revise_merlin new_content =
 
 
 
-let bsppx_exe = "bsppx.exe"
+
+let generate_sourcedirs_meta (res : Bsb_build_ui.t) = 
+  let builddir = Bsb_config.lib_bs in 
+  let ochan = open_out_bin (builddir // sourcedirs_meta) in
+  res.files |> List.iter
+    (fun (x : Bsb_build_ui.file_group) ->
+       output_string ochan x.dir; (* to [.sourcedirs] *)
+       output_string ochan "\n" ;
+    ) ;
+  close_out ochan
+
+
 
 let interpret_json 
-  ~override_package_specs
-  ~bsc_dir 
-  cwd  
-  
+    ~override_package_specs
+    ~bsc_dir 
+    cwd  
+
   : Bsb_config_types.t =
   let builddir = Bsb_config.lib_bs in
   let () = Bsb_build_util.mkp builddir in
@@ -112,71 +177,19 @@ let interpret_json
   let globbed_dirs = ref [] in
   let bs_file_groups = ref [] in 
 
-  (* ATTENTION: order matters here, need resolve global properties before
-     merlin generation
-  *)
-  let handle_bsb_build_ui (res : Bsb_build_ui.t) =
-    let ochan = open_out_bin (builddir // sourcedirs_meta) in
-    let lib_ocaml_dir = (bsc_dir // ".."//"lib"//"ocaml") in
-    let buffer = Buffer.create 100 in
-    let () =
-      Bsb_default.get_ppx_flags ()
-      |> List.iter (fun x ->
-          Buffer.add_string buffer (Printf.sprintf "\nFLG -ppx %s" x )
-        )
-    in
-    let () = Buffer.add_string buffer
-        (Printf.sprintf "\n\
-                         S %s\n\
-                         B %s\n\
-                         FLG -ppx %s\n\
-                        " 
-           lib_ocaml_dir 
-           lib_ocaml_dir 
-           (bsc_dir // bsppx_exe)
-           (* bsppx *)
-        ) in
-    let () =
-      match Bsb_default.get_bsc_flags () with
-      | [] -> ()
-      | xs ->
-        Buffer.add_string buffer
-          (Printf.sprintf "\nFLG %s" (String.concat Ext_string.single_space xs) ) in
-    let () =
-      Bsb_default.get_bs_dependencies ()
-      |> List.iter (fun package ->
-            let path = package.Bsb_config_types.package_install_path in
-            Buffer.add_string buffer "\nS ";
-            Buffer.add_string buffer path ;
-            Buffer.add_string buffer "\nB ";
-            Buffer.add_string buffer path ;
-            Buffer.add_string buffer "\n";
 
-        )
-    in
-    res.files |> List.iter
-      (fun (x : Bsb_build_ui.file_group) ->
-         output_string ochan x.dir; (* to [.sourcedirs] *)
-         output_string ochan "\n" ;
-         Buffer.add_string buffer "\nS ";
-         Buffer.add_string buffer x.dir ;
-         Buffer.add_string buffer "\nB ";
-         Buffer.add_string buffer ("lib"//"bs"//x.dir) ;
-         Buffer.add_string buffer "\n"
-      ) ;
-    close_out ochan;
-    bs_file_groups := res.files ;
-    update_queue := res.intervals;
-    globbed_dirs := res.globbed_dirs;
-    if Bsb_default.get_generate_merlin () then
-      revise_merlin buffer ;
-  in
   let config_json_chan = open_in_bin Literals.bsconfig_json in
   let global_data = Ext_json.parse_json_from_chan config_json_chan  in
 
   let () =
     match global_data with
     | `Obj map ->
+      let use_stdlib = 
+        match String_map.find_opt Bsb_build_schemas.use_stdlib map with 
+        | None -> true 
+        | Some `False -> false 
+        | Some _ -> true  in 
+      Bsb_default.set_use_stdlib ~cwd use_stdlib ;
       map
       |? (Bsb_build_schemas.generate_merlin, `Bool (fun b ->
           Bsb_default.set_generate_merlin b
@@ -199,11 +212,17 @@ let interpret_json
       |? (Bsb_build_schemas.refmt_flags, `Arr Bsb_default.set_refmt_flags)
 
       |? (Bsb_build_schemas.sources, `Id (fun x ->
-          Bsb_build_ui.parsing_sources
-            Bsb_build_ui.lib_dir_index
-            Filename.current_dir_name x
-          |>
-          handle_bsb_build_ui
+          begin 
+            let res = Bsb_build_ui.parsing_sources
+                Bsb_build_ui.lib_dir_index
+                Filename.current_dir_name x in 
+            generate_sourcedirs_meta res ;     
+
+            bs_file_groups := res.files ;
+            update_queue := res.intervals;
+            globbed_dirs := res.globbed_dirs;
+          end
+
         ))
       |> ignore
     | _ -> ()
@@ -221,24 +240,31 @@ let interpret_json
       Unix.unlink Literals.bsconfig_json;
       Unix.rename config_file_bak Literals.bsconfig_json
   end;
-  {
-      Bsb_config_types.package_name = (Bsb_default.get_package_name ());
-      ocamllex = (Bsb_default.get_ocamllex ());
-      external_includes = (Bsb_default.get_bs_external_includes ()) ;
-      bsc_flags = Bsb_default.(get_bsc_flags ());
-      ppx_flags = Bsb_default.(get_ppx_flags ());
-      bs_dependencies = Bsb_default.(get_bs_dependencies ());
-      refmt = Bsb_default.(get_refmt ());
-      refmt_flags = Bsb_default.(get_refmt_flags ());
-      js_post_build_cmd =  Bsb_default.(get_js_post_build_cmd ());
+  let config = 
+    {
+      Bsb_config_types.package_name = Bsb_default.get_package_name ();
+      ocamllex = Bsb_default.get_ocamllex ();
+      external_includes = Bsb_default.get_bs_external_includes ();
+      bsc_flags = Bsb_default.get_bsc_flags ();
+      ppx_flags = Bsb_default.get_ppx_flags ();
+      bs_dependencies = Bsb_default.get_bs_dependencies ();
+      refmt = Bsb_default.get_refmt ();
+      refmt_flags = Bsb_default.get_refmt_flags ();
+      js_post_build_cmd =  Bsb_default.get_js_post_build_cmd ();
       package_specs = 
         (match override_package_specs with None ->  Bsb_default.get_package_specs()
-        | Some x -> x );
+                                         | Some x -> x );
       globbed_dirs = !globbed_dirs; 
       bs_file_groups = !bs_file_groups; 
-      files_to_install = String_hash_set.create 96
-  }
-  
+      files_to_install = String_hash_set.create 96;
+      built_in_dependency = !Bsb_default.built_in_package;
+      generate_merlin = Bsb_default.get_generate_merlin ();
+    } in 
+  merlin_file_gen 
+    (bsc_dir // bsppx_exe) config;
+  config
+
+
 
 
 

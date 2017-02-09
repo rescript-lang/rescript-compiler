@@ -95,5 +95,7 @@ let commonjs = "commonjs"
 let amdjs = "amdjs"
 let goog = "goog"
 let es6 = "es6"
-
+let es6_global = "es6-global"
+let amdjs_global = "amdjs-global"
 let unused_attribute = "Unused attribute " 
+let dash_nostdlib = "-nostdlib"

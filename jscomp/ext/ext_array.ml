@@ -96,15 +96,20 @@ let map2i f a b =
   else
     Array.mapi (fun i a -> f i  a ( Array.unsafe_get b i )) a 
 
-let to_list_map f a =
-  let rec tolist i res =
+
+ let rec tolist_aux a f  i res =
     if i < 0 then res else
       let v = Array.unsafe_get a i in
-      tolist (i - 1)
+      tolist_aux a f  (i - 1)
         (match f v with
          | Some v -> v :: res
-         | None -> res) in
-  tolist (Array.length a - 1) []
+         | None -> res) 
+
+let to_list_map f a = 
+  tolist_aux a f (Array.length a - 1) []
+
+let to_list_map_acc f a acc = 
+  tolist_aux a f (Array.length a - 1) acc
 
 
 (* TODO: What would happen if [f] raise, memory leak? *)

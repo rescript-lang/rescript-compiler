@@ -34,5 +34,17 @@ let suites =
         Ext_array.of_list_map succ [] =~ [||];
         Ext_array.of_list_map succ [1]  =~ [|2|];
         Ext_array.of_list_map succ [1;2;3]  =~ [|2;3;4|];
-    end
+    end; 
+    __LOC__ >:: begin fun _ -> 
+        Ext_array.to_list_map_acc
+        (fun x -> if x mod 2 = 0 then Some x else None )
+        [|1;2;3;4;5;6|] [1;2;3]
+        =~ [2;4;6;1;2;3]
+    end;
+    __LOC__ >:: begin fun _ -> 
+        Ext_array.to_list_map_acc
+        (fun x -> if x mod 2 = 0 then Some x else None )
+        [|1;2;3;4;5;6|] []
+        =~ [2;4;6]
+    end;
     ]

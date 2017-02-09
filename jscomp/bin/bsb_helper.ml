@@ -1052,7 +1052,10 @@ val commonjs : string
 val amdjs : string 
 val goog : string 
 val es6 : string 
+val es6_global : string
+val amdjs_global : string 
 val unused_attribute : string 
+val dash_nostdlib : string
 end = struct
 #1 "literals.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -1152,8 +1155,10 @@ let commonjs = "commonjs"
 let amdjs = "amdjs"
 let goog = "goog"
 let es6 = "es6"
-
+let es6_global = "es6-global"
+let amdjs_global = "amdjs-global"
 let unused_attribute = "Unused attribute " 
+let dash_nostdlib = "-nostdlib"
 end
 module Ext_filename : sig 
 #1 "ext_filename.mli"

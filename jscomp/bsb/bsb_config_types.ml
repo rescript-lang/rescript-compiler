@@ -38,6 +38,12 @@ type t =
     bsc_flags : string list ;
     ppx_flags : string list ;
     bs_dependencies : bs_dependencies;
+    
+    built_in_dependency : bs_dependency option; 
+    (*TODO: maybe we should always resovle bs-platform 
+      so that we can calculate correct relative path in 
+      [.merlin]
+    *)
     refmt : string ;
     refmt_flags : string list;
     js_post_build_cmd : string option;
@@ -45,4 +51,5 @@ type t =
     globbed_dirs : string list;
     bs_file_groups : Bsb_build_ui.file_group list ;
     files_to_install : String_hash_set.t ;
+    generate_merlin : bool ; 
   }

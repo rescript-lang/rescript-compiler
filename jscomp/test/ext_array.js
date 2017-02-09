@@ -153,9 +153,7 @@ function map2i(f, a, b) {
   }
 }
 
-function to_list_map(f, a) {
-  var _i = a.length - 1 | 0;
-  var _res = /* [] */0;
+function tolist_aux(a, f, _i, _res) {
   while(true) {
     var res = _res;
     var i = _i;
@@ -174,6 +172,14 @@ function to_list_map(f, a) {
       
     }
   };
+}
+
+function to_list_map(f, a) {
+  return tolist_aux(a, f, a.length - 1 | 0, /* [] */0);
+}
+
+function to_list_map_acc(f, a, acc) {
+  return tolist_aux(a, f, a.length - 1 | 0, acc);
 }
 
 function of_list_map(f, a) {
@@ -306,7 +312,9 @@ exports.filter           = filter;
 exports.filter_map       = filter_map;
 exports.range            = range;
 exports.map2i            = map2i;
+exports.tolist_aux       = tolist_aux;
 exports.to_list_map      = to_list_map;
+exports.to_list_map_acc  = to_list_map_acc;
 exports.of_list_map      = of_list_map;
 exports.rfind_with_index = rfind_with_index;
 exports.rfind_and_split  = rfind_and_split;
