@@ -34,14 +34,17 @@ module S = Js_stmt_make
 
 type module_id = Lam_module_ident.t
 
+type path = string 
+
 type ml_module_info = { 
   signatures : Types.signature ;
-  cmj_table : Js_cmj_format.t
+  cmj_table : Js_cmj_format.t ;
+  cmj_path : path;
 }
 
 type env_value = 
   | Visit of ml_module_info
-  | Runtime  of bool * Js_cmj_format.t
+  | Runtime  of bool * path * Js_cmj_format.t
   (** A built in module probably from our runtime primitives, 
       so it does not have any [signature]
   *)
@@ -113,14 +116,14 @@ let find_and_add_if_not_exist (id, pos) env ~not_found ~found =
   let oid  = Lam_module_ident.of_ml id in
   begin match Lam_module_ident.Hash.find_opt cached_tbl oid with 
     | None -> 
-      let cmj_table = Config_util.find_cmj (id.name ^ Js_config.cmj_ext) in
+      let cmj_path, cmj_table = Config_util.find_cmj (id.name ^ Js_config.cmj_ext) in
       begin match
           Type_util.find_serializable_signatures_by_path
             ( id) env with 
       | None -> not_found id 
       | Some signature -> 
         add_cached_tbl oid (Visit {signatures = signature; 
-                                   cmj_table ;  } ) ;
+                                   cmj_table ; cmj_path  } ) ;
         let name =  (Type_util.get_name signature pos ) in
         let arity, closed_lambda =        
           begin match String_map.find_opt name cmj_table.values with
@@ -160,11 +163,12 @@ let find_and_add_if_not_exist (id, pos) env ~not_found ~found =
   end
 
 
+
 (* TODO: it does not make sense to cache
    [Runtime] 
    and [externals]*)
 type _ t = 
-  | No_env :  Js_cmj_format.t t 
+  | No_env :  (path * Js_cmj_format.t) t 
   | Has_env : Env.t  -> module_info t 
 
 
@@ -175,18 +179,18 @@ let query_and_add_if_not_exist (type u)
   | None -> 
     begin match oid.kind with
       | Runtime  -> 
-        let cmj_table = 
+        let (cmj_path, cmj_table) as cmj_info = 
           Config_util.find_cmj (Lam_module_ident.name oid ^ Js_config.cmj_ext) in           
-        add_cached_tbl oid (Runtime (true,cmj_table)) ; 
+        add_cached_tbl oid (Runtime (true,cmj_path,cmj_table)) ; 
         begin match env with 
           | Has_env _ -> 
             found {signature = []; pure = true}
           | No_env -> 
-            found cmj_table
+            found cmj_info
         end
       | Ml 
         -> 
-        let cmj_table = 
+        let (cmj_path, cmj_table) as cmj_info = 
           Config_util.find_cmj (Lam_module_ident.name oid ^ Js_config.cmj_ext) in           
         begin match env with 
           | Has_env env -> 
@@ -194,11 +198,11 @@ let query_and_add_if_not_exist (type u)
                 Type_util.find_serializable_signatures_by_path ( oid.id) env with 
             | None -> not_found () (* actually when [not_found] in the call site, we throw... *)
             | Some signature -> 
-              add_cached_tbl oid (Visit {signatures = signature; cmj_table }) ;
+              add_cached_tbl oid (Visit {signatures = signature; cmj_table;cmj_path }) ;
               found  { signature ; pure = cmj_table.effect = None} 
             end
           | No_env -> 
-            found cmj_table
+            found cmj_info
         end
 
       | External _  -> 
@@ -211,44 +215,47 @@ let query_and_add_if_not_exist (type u)
             -> 
             found {signature = []; pure = false}
           | No_env -> 
-            found (Js_cmj_format.no_pure_dummy)
+            found (Ext_string.empty, Js_cmj_format.no_pure_dummy)
+            (* FIXME: {!Js_program_loader} #154, it come from External, should be okay *)
         end
 
     end
-  | Some (Visit {signatures  ; cmj_table =  cmj_table; _}) -> 
+  | Some (Visit {signatures  ; cmj_table =  cmj_table; cmj_path}) -> 
     begin match env with 
       | Has_env _ -> 
         found   { signature =  signatures  ; pure = (cmj_table.effect = None)} 
-      | No_env  -> found cmj_table
+      | No_env  -> found (cmj_path,cmj_table)
     end
 
-  | Some (Runtime (pure, cmj_table)) -> 
+  | Some (Runtime (pure, cmj_path,cmj_table)) -> 
     begin match env with 
       | Has_env _ -> 
         found {signature = []  ; pure }
       | No_env -> 
-        found cmj_table
+        found (cmj_path, cmj_table) 
     end
   | Some External -> 
     begin match env with 
       | Has_env _ -> 
         found {signature = []  ; pure  = false}
-      | No_env -> found Js_cmj_format.no_pure_dummy
+      | No_env -> 
+        found (Ext_string.empty, Js_cmj_format.no_pure_dummy) (* External is okay *)
     end
 
 (* Conservative interface *)
 let is_pure_module id  = 
   query_and_add_if_not_exist id No_env
     ~not_found:(fun _ -> false) 
-    ~found:(fun x -> x.effect = None)
+    ~found:(fun (_,x) -> x.effect = None)
 
 
 
 
 let get_package_path_from_cmj module_system ( id : Lam_module_ident.t) = 
   query_and_add_if_not_exist id No_env
-    ~not_found:(fun _ -> Js_config.NotFound) 
-    ~found:(fun x -> Js_config.query_package_infos x.npm_package_path module_system)
+    ~not_found:(fun _ -> Ext_string.empty, Js_config.NotFound) 
+    ~found:(fun (cmj_path,x) -> 
+      cmj_path, Js_config.query_package_infos x.npm_package_path module_system)
 
 
 
