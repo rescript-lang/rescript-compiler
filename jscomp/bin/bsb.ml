@@ -97,6 +97,8 @@ val commonjs : string
 val amdjs : string 
 val goog : string 
 val es6 : string 
+val es6_global : string
+val amdjs_global : string 
 val unused_attribute : string 
 end = struct
 #1 "literals.ml"
@@ -197,7 +199,8 @@ let commonjs = "commonjs"
 let amdjs = "amdjs"
 let goog = "goog"
 let es6 = "es6"
-
+let es6_global = "es6-global"
+let amdjs_global = "amdjs-global"
 let unused_attribute = "Unused attribute " 
 end
 module Bs_pkg : sig 
@@ -352,6 +355,7 @@ let export_none = "none"
 
 let bsb_dir_group = "bsb_dir_group"
 let bsc_lib_includes = "bsc_lib_includes"
+let use_stdlib = "use-stdlib"
 
 end
 module Ext_pervasives : sig 
@@ -2545,6 +2549,8 @@ val goog_prefix : string -> string
 val ocaml_bin_install_prefix : string -> string
 val proj_rel : string -> string
 val lib_bs : string
+val lib_ocaml : string
+val all_lib_artifacts : string list 
 (* we need generate path relative to [lib/bs] directory in the opposite direction *)
 val rev_lib_bs_prefix : string -> string
 
@@ -2591,12 +2597,25 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 let (//) = Ext_filename.combine 
 
-let lib_js = "lib"//"js"
-let lib_amd = "lib"//"amdjs"
-let lib_goog = "lib" // "goog"
-let lib_ocaml = "lib" // "ocaml"
-let lib_bs = "lib" // "bs"
-let lib_es6 = "lib" // "es6"
+let lib_lit = "lib"
+let lib_js = lib_lit //"js"
+let lib_amd = lib_lit //"amdjs"
+let lib_goog = lib_lit // "goog"
+let lib_ocaml = lib_lit // "ocaml"
+let lib_bs = lib_lit // "bs"
+let lib_es6 = lib_lit // "es6"
+let lib_es6_global = lib_lit // "es6_global"
+let lib_amd_global = lib_lit // "amdjs_global"
+let all_lib_artifacts = 
+  [ lib_js ; 
+    lib_amd ;
+    lib_goog ; 
+    lib_ocaml;
+    lib_bs ; 
+    lib_es6 ; 
+    lib_es6_global;
+    lib_amd_global
+  ]
 let rev_lib_bs = ".."// ".."
 
 
@@ -2605,7 +2624,8 @@ let common_js_prefix p  =  lib_js  // p
 let amd_js_prefix p = lib_amd // p 
 let goog_prefix p = lib_goog // p  
 let es6_prefix p = lib_es6 // p 
-
+let es6_global_prefix p =  lib_es6_global // p
+let amdjs_global_prefix p = lib_amd_global // p 
 let ocaml_bin_install_prefix p = lib_ocaml // p
 
 let lazy_src_root_dir = "$src_root_dir" 
@@ -2628,8 +2648,9 @@ let supported_format x =
   x = Literals.amdjs ||
   x = Literals.commonjs ||
   x = Literals.goog ||
-  x = Literals.es6
-
+  x = Literals.es6 ||
+  x = Literals.es6_global ||
+  x = Literals.amdjs_global
 
 let cmd_override_package_specs str = 
   let lst = Ext_string.split ~keep_empty:false str ',' in
@@ -2638,7 +2659,7 @@ let cmd_override_package_specs str =
           let v =
             if supported_format x then String_set.add x acc
             else
-              failwith ("Unkonwn package spec" ^ x) in
+              failwith ("Unkonwn package spec " ^ x) in
           v
     ) String_set.empty lst)
 
@@ -2659,6 +2680,10 @@ let package_flag ~format:fmt dir =
           common_js_prefix dir 
         else if fmt = Literals.es6 then 
           es6_prefix dir 
+        else if fmt = Literals.es6_global then 
+          es6_global_prefix dir   
+        else if fmt = Literals.amdjs_global then 
+          amdjs_global_prefix dir 
         else goog_prefix dir))
 (** js output for each package *)
 let package_output ~format:s output=
@@ -2669,6 +2694,10 @@ let package_output ~format:s output=
       amd_js_prefix
     else if s = Literals.es6 then 
       es6_prefix   
+    else if s = Literals.es6_global then 
+      es6_global_prefix  
+    else  if s = Literals.amdjs_global then 
+      amdjs_global_prefix
     else goog_prefix
   in
   (proj_rel @@ prefix output )
@@ -2726,6 +2755,12 @@ val range : int -> int -> int array
 val map2i : (int -> 'a -> 'b -> 'c ) -> 'a array -> 'b array -> 'c array
 
 val to_list_map : ('a -> 'b option) -> 'a array -> 'b list 
+
+val to_list_map_acc : 
+  ('a -> 'b option) -> 
+  'a array -> 
+  'b list -> 
+  'b list 
 
 val of_list_map : ('a -> 'b) -> 'a list -> 'b array 
 
@@ -2847,15 +2882,20 @@ let map2i f a b =
   else
     Array.mapi (fun i a -> f i  a ( Array.unsafe_get b i )) a 
 
-let to_list_map f a =
-  let rec tolist i res =
+
+ let rec tolist_aux a f  i res =
     if i < 0 then res else
       let v = Array.unsafe_get a i in
-      tolist (i - 1)
+      tolist_aux a f  (i - 1)
         (match f v with
          | Some v -> v :: res
-         | None -> res) in
-  tolist (Array.length a - 1) []
+         | None -> res) 
+
+let to_list_map f a = 
+  tolist_aux a f (Array.length a - 1) []
+
+let to_list_map_acc f a acc = 
+  tolist_aux a f (Array.length a - 1) acc
 
 
 (* TODO: What would happen if [f] raise, memory leak? *)
@@ -4943,7 +4983,16 @@ val mkp : string -> unit
 *)
 val get_bsc_bsdep : string -> string * string
 val get_bsc_dir : string -> string                               
-val get_list_string : Ext_json.t array -> string list
+
+
+val get_list_string_acc : 
+    Ext_json.t array -> 
+    string list -> 
+    string list
+
+val get_list_string : 
+    Ext_json.t array -> 
+    string list
 
 val string_of_bsb_dev_include : int -> string 
 
@@ -5066,12 +5115,14 @@ let rec mkp dir =
   else ()
 
 
-let get_list_string s = 
-  Ext_array.to_list_map (fun (x : Ext_json.t) ->
+let get_list_string_acc s acc = 
+  Ext_array.to_list_map_acc  (fun (x : Ext_json.t) ->
       match x with 
       | `Str x -> Some x.str
       | _ -> None
-    ) s   
+    ) s  acc 
+
+let get_list_string s = get_list_string_acc s []   
 
 let bsc_group_1_includes = "bsc_group_1_includes"
 let bsc_group_2_includes = "bsc_group_2_includes"
@@ -5121,6 +5172,7 @@ let rec walk_all_deps top dir cb =
   | _ -> ()
   | exception _ -> failwith ( "failed to parse" ^ bsconfig_json ^ " properly")
     
+
 end
 module Binary_cache : sig 
 #1 "binary_cache.mli"
@@ -6536,7 +6588,7 @@ and parsing_source (dir_index : int) cwd (x : Ext_json.t )
                 let excludes = ref [] in 
                 m
                 |? (Bsb_build_schemas.excludes,
-                    `Arr (fun arr ->  excludes := get_list_string arr))
+                    `Arr (fun arr ->  excludes := get_list_string arr ))
                 |? (Bsb_build_schemas.slow_re, 
                     `Str 
                       (fun s -> 
@@ -6557,7 +6609,7 @@ and parsing_source (dir_index : int) cwd (x : Ext_json.t )
                 |> ignore
               )
            )             
-        |? (Bsb_build_schemas.bs_dependencies, `Arr (fun s -> bs_dependencies := get_list_string s ))
+        |? (Bsb_build_schemas.bs_dependencies, `Arr (fun s -> bs_dependencies := get_list_string s))
         |?  (Bsb_build_schemas.resources ,
              `Arr (fun s  ->
                  resources := get_list_string s
@@ -6611,6 +6663,7 @@ and  parsing_sources dir_index cwd (sources : Ext_json.t )  =
 
 
   
+
 end
 module Bs_hash_stubs
 = struct
@@ -7040,6 +7093,7 @@ type t =
     bsc_flags : string list ;
     ppx_flags : string list ;
     bs_dependencies : bs_dependencies;
+    built_in_dependency : bs_dependency option; 
     refmt : string ;
     refmt_flags : string list;
     js_post_build_cmd : string option;
@@ -7102,7 +7156,7 @@ val get_refmt : unit -> string
 val set_refmt_flags : Ext_json.t array -> unit
 val get_refmt_flags : unit -> string list
 
-val get_bs_dependencies : unit  -> Bsb_config_types.bs_dependencies
+val get_bs_dependencies : unit ->  Bsb_config_types.bs_dependencies
 val set_bs_dependencies : cwd:string -> Ext_json.t array  -> unit
 
 
@@ -7120,7 +7174,10 @@ val set_package_specs_from_array : Ext_json.t array -> unit
 val get_generate_merlin : unit -> bool
 val set_generate_merlin : bool -> unit
 
+val get_use_stdlib : unit -> bool 
+val set_use_stdlib : cwd:string -> bool -> unit 
 
+val built_in_package : Bsb_config_types.bs_dependency option ref 
 end = struct
 #1 "bsb_default.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -7160,32 +7217,36 @@ let get_package_name () = !package_name
 
 
 
+(* 6
+      Label omitted in function application.
+      7
+      Method overridden.
+      9
+      Missing fields in a record pattern. (*Not always desired, in some cases need [@@@warning "+9"] *)      
+      27
+      Innocuous unused variable: unused variable that is not bound with let nor as, and doesn’t start with an underscore (_) character.      
+      29
+      Unescaped end-of-line in a string constant (non-portable code).
+      32 .. 39 Unused  blabla
+      44
+      Open statement shadows an already defined identifier.
+      45
+      Open statement shadows an already defined label or constructor.
+      48
+      Implicit elimination of optional arguments.
+      https://caml.inria.fr/mantis/view.php?id=6352
 
-let bsc_flags = ref []
+*)  
+(** *)
+let bsc_flags = ref [
+    "-w"; "-40+6+7+27+32..39+44+45"
+
+  ]
 let get_bsc_flags () = !bsc_flags
-let set_bsc_flags s = bsc_flags := get_list_string s
+let set_bsc_flags s = 
+  bsc_flags := Bsb_build_util.get_list_string_acc s !bsc_flags
 
 
-
-
-let bs_dependencies : Bsb_config_types.bs_dependency list ref = ref []
-let get_bs_dependencies () = !bs_dependencies
-let set_bs_dependencies ~cwd s =
-  let package_names = get_list_string s in 
-  bs_dependencies := 
-  package_names 
-  |> List.map 
-  (fun package_name  -> 
-    match Bs_pkg.resolve_bs_package ~cwd package_name  with 
-    | None -> 
-      Ext_pervasives.failwithf ~loc:__LOC__"package: %s not found when resolve bs-dependencies" package_name
-    | Some x -> 
-      {
-         Bsb_config_types.package_name ;
-         package_install_path = x // "lib" // "ocaml"
-      }
-  )
-  
 
 
 let bs_external_includes = ref []
@@ -7215,8 +7276,8 @@ let ppx_flags = ref []
 let get_ppx_flags () = !ppx_flags
 let set_ppx_flags ~cwd s =
   let s =
-    s (* TODO: unix conversion *)
-    |> get_list_string
+    (* TODO: unix conversion *)
+    get_list_string s
     |> List.map (fun p ->
         if p = "" then failwith "invalid ppx, empty string found"
         else Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:"ppx" p
@@ -7246,44 +7307,69 @@ let package_specs = ref (String_set.singleton Literals.commonjs)
 
 let get_package_specs () = !package_specs
 
-
-
-let set_package_specs_from_array arr =
-    (* if not  !package_specs_overriden then *)
-    let new_package_specs =
-      arr
-      |> get_list_string
-      |> List.fold_left (fun acc x ->
-          let v =
-            if Bsb_config.supported_format x    then String_set.add x acc
-            else
-              failwith ("Unkonwn package spec" ^ x) in
-          v
-        ) String_set.empty in
-   package_specs := new_package_specs
-
-
-
-(*
-let internal_override_package_specs str =
-  package_specs_overriden := true ;
-  let lst = Ext_string.split ~keep_empty:false str ',' in
-  package_specs :=
-    List.fold_left (fun acc x ->
-          let v =
-            if Bsb_config.supported_format x then String_set.add x acc
-            else
-              failwith ("Unkonwn package spec" ^ x) in
-          v
-    ) String_set.empty lst
-*)
-
 let generate_merlin = ref true
 
 let get_generate_merlin () = !generate_merlin
 
 let set_generate_merlin b =
   generate_merlin := b
+
+
+let set_package_specs_from_array arr =
+  (* if not  !package_specs_overriden then *)
+  let new_package_specs =
+    Bsb_build_util.get_list_string arr 
+    |> List.fold_left (fun acc x ->
+        let v =
+          if Bsb_config.supported_format x    then String_set.add x acc
+          else
+            failwith ("Unkonwn package spec" ^ x) in
+        v
+      ) String_set.empty in
+  package_specs := new_package_specs
+
+
+let resolve_package cwd  package_name = 
+
+  match Bs_pkg.resolve_bs_package ~cwd package_name  with 
+  | None -> 
+    Ext_pervasives.failwithf ~loc:__LOC__"package: %s not found when resolve bs-dependencies" package_name
+  | Some x -> 
+    {
+      Bsb_config_types.package_name ;
+      package_install_path = x // "lib" // "ocaml"
+    }
+
+let use_stdlib = ref true
+let get_use_stdlib () = !use_stdlib
+
+let built_in_package = ref None 
+let set_use_stdlib ~cwd b = 
+  use_stdlib := b ;
+  if b then 
+    built_in_package := Some (resolve_package cwd "bs-platform" )
+
+let bs_dependencies : Bsb_config_types.bs_dependency list ref = ref []
+
+let get_bs_dependencies () =
+  !bs_dependencies
+  (* match !built_in_package with 
+  | None -> !bs_dependencies
+  | Some std -> std :: !bs_dependencies *)
+
+  (* let bs_dependencies = !bs_dependencies in  *)
+  (* if get_use_stdlib () then (\* order matters FIXME *\) *)
+  (*   resolve_package cwd  "bs-platform" :: bs_dependencies *)
+  (* else bs_dependencies *)
+
+let set_bs_dependencies ~cwd s =
+  let package_names =
+    Bsb_build_util.get_list_string s  
+  in 
+  bs_dependencies := 
+    package_names 
+    |> List.map (resolve_package cwd )
+
 
 end
 module Bsb_config_parse : sig 
@@ -7429,10 +7515,10 @@ let revise_merlin new_content =
 let bsppx_exe = "bsppx.exe"
 
 let interpret_json 
-  ~override_package_specs
-  ~bsc_dir 
-  cwd  
-  
+    ~override_package_specs
+    ~bsc_dir 
+    cwd  
+
   : Bsb_config_types.t =
   let builddir = Bsb_config.lib_bs in
   let () = Bsb_build_util.mkp builddir in
@@ -7473,12 +7559,12 @@ let interpret_json
     let () =
       Bsb_default.get_bs_dependencies ()
       |> List.iter (fun package ->
-            let path = package.Bsb_config_types.package_install_path in
-            Buffer.add_string buffer "\nS ";
-            Buffer.add_string buffer path ;
-            Buffer.add_string buffer "\nB ";
-            Buffer.add_string buffer path ;
-            Buffer.add_string buffer "\n";
+          let path = package.Bsb_config_types.package_install_path in
+          Buffer.add_string buffer "\nS ";
+          Buffer.add_string buffer path ;
+          Buffer.add_string buffer "\nB ";
+          Buffer.add_string buffer path ;
+          Buffer.add_string buffer "\n";
 
         )
     in
@@ -7509,30 +7595,39 @@ let interpret_json
       |? (Bsb_build_schemas.generate_merlin, `Bool (fun b ->
           Bsb_default.set_generate_merlin b
         ))
+      |? (Bsb_build_schemas.use_stdlib, `Bool (fun b -> 
+          Bsb_default.set_use_stdlib ~cwd b 
+        )) (* it will affect [get_package_specs] *)
+      |> (fun map -> 
+          if Bsb_default.get_use_stdlib () then 
+            Bsb_default.set_use_stdlib ~cwd true ;
+          (* quick hack , at least call once *)
+          map 
+        )
       |?  (Bsb_build_schemas.name, `Str Bsb_default.set_package_name)
-      |? (Bsb_build_schemas.package_specs, `Arr Bsb_default.set_package_specs_from_array )
-      |? (Bsb_build_schemas.js_post_build, `Obj begin fun m ->
-          m |? (Bsb_build_schemas.cmd , `Str (Bsb_default.set_js_post_build_cmd ~cwd)
-               )
-          |> ignore
-        end)
-      |? (Bsb_build_schemas.ocamllex, `Str (Bsb_default.set_ocamllex ~cwd))
-      |? (Bsb_build_schemas.ninja, `Str (Bsb_default.set_ninja ~cwd))
-      |? (Bsb_build_schemas.bs_dependencies, `Arr (Bsb_default.set_bs_dependencies ~cwd))
-      (* More design *)
-      |? (Bsb_build_schemas.bs_external_includes, `Arr Bsb_default.set_bs_external_includes)
-      |? (Bsb_build_schemas.bsc_flags, `Arr Bsb_default.set_bsc_flags)
-      |? (Bsb_build_schemas.ppx_flags, `Arr (Bsb_default.set_ppx_flags ~cwd))
-      |? (Bsb_build_schemas.refmt, `Str (Bsb_default.set_refmt ~cwd))
-      |? (Bsb_build_schemas.refmt_flags, `Arr Bsb_default.set_refmt_flags)
+         |? (Bsb_build_schemas.package_specs, `Arr Bsb_default.set_package_specs_from_array )
+         |? (Bsb_build_schemas.js_post_build, `Obj begin fun m ->
+             m |? (Bsb_build_schemas.cmd , `Str (Bsb_default.set_js_post_build_cmd ~cwd)
+                  )
+             |> ignore
+           end)
+         |? (Bsb_build_schemas.ocamllex, `Str (Bsb_default.set_ocamllex ~cwd))
+         |? (Bsb_build_schemas.ninja, `Str (Bsb_default.set_ninja ~cwd))
+         |? (Bsb_build_schemas.bs_dependencies, `Arr (Bsb_default.set_bs_dependencies ~cwd))
+         (* More design *)
+         |? (Bsb_build_schemas.bs_external_includes, `Arr Bsb_default.set_bs_external_includes)
+         |? (Bsb_build_schemas.bsc_flags, `Arr Bsb_default.set_bsc_flags)
+         |? (Bsb_build_schemas.ppx_flags, `Arr (Bsb_default.set_ppx_flags ~cwd))
+         |? (Bsb_build_schemas.refmt, `Str (Bsb_default.set_refmt ~cwd))
+         |? (Bsb_build_schemas.refmt_flags, `Arr Bsb_default.set_refmt_flags)
 
-      |? (Bsb_build_schemas.sources, `Id (fun x ->
-          Bsb_build_ui.parsing_sources
-            Bsb_build_ui.lib_dir_index
-            Filename.current_dir_name x
-          |>
-          handle_bsb_build_ui
-        ))
+         |? (Bsb_build_schemas.sources, `Id (fun x ->
+             Bsb_build_ui.parsing_sources
+               Bsb_build_ui.lib_dir_index
+               Filename.current_dir_name x
+             |>
+             handle_bsb_build_ui
+           ))
       |> ignore
     | _ -> ()
   in
@@ -7550,23 +7645,24 @@ let interpret_json
       Unix.rename config_file_bak Literals.bsconfig_json
   end;
   {
-      Bsb_config_types.package_name = (Bsb_default.get_package_name ());
-      ocamllex = (Bsb_default.get_ocamllex ());
-      external_includes = (Bsb_default.get_bs_external_includes ()) ;
-      bsc_flags = Bsb_default.(get_bsc_flags ());
-      ppx_flags = Bsb_default.(get_ppx_flags ());
-      bs_dependencies = Bsb_default.(get_bs_dependencies ());
-      refmt = Bsb_default.(get_refmt ());
-      refmt_flags = Bsb_default.(get_refmt_flags ());
-      js_post_build_cmd =  Bsb_default.(get_js_post_build_cmd ());
-      package_specs = 
-        (match override_package_specs with None ->  Bsb_default.get_package_specs()
-        | Some x -> x );
-      globbed_dirs = !globbed_dirs; 
-      bs_file_groups = !bs_file_groups; 
-      files_to_install = String_hash_set.create 96
+    Bsb_config_types.package_name = Bsb_default.get_package_name ();
+    ocamllex = Bsb_default.get_ocamllex ();
+    external_includes = Bsb_default.get_bs_external_includes ();
+    bsc_flags = Bsb_default.get_bsc_flags ();
+    ppx_flags = Bsb_default.get_ppx_flags ();
+    bs_dependencies = Bsb_default.get_bs_dependencies ();
+    refmt = Bsb_default.get_refmt ();
+    refmt_flags = Bsb_default.get_refmt_flags ();
+    js_post_build_cmd =  Bsb_default.get_js_post_build_cmd ();
+    package_specs = 
+      (match override_package_specs with None ->  Bsb_default.get_package_specs()
+                                       | Some x -> x );
+    globbed_dirs = !globbed_dirs; 
+    bs_file_groups = !bs_file_groups; 
+    files_to_install = String_hash_set.create 96;
+    built_in_dependency = !Bsb_default.built_in_package
   }
-  
+
 
 
 
@@ -8439,6 +8535,7 @@ let output_ninja
     package_specs;
     bs_file_groups;
     files_to_install;
+    built_in_dependency
     }
   =
   let bsc = bsc_dir // bsc_exe in   (* The path to [bsc.exe] independent of config  *)
@@ -8458,6 +8555,15 @@ let output_ninja
           output_string oc ("-bs-package-name "  ^ x  )
       end;
       output_string oc "\n";
+      let bsc_flags = 
+        "-nostdlib " ^ 
+        match built_in_dependency with 
+        | None -> bsc_flags   
+        | Some {package_install_path} -> 
+        "-I " ^ package_install_path ^ Ext_string.single_space ^ bsc_flags
+        (* TODO: Note that merlin still point to the absolute path 
+        *)
+      in 
       Bsb_ninja.output_kvs
         [|
           "src_root_dir", cwd (* TODO: need check its integrity -- allow relocate or not? *);
@@ -8764,12 +8870,6 @@ let annoymous filename =
 let watch_mode = ref false
 let make_world = ref false
 
-let lib_bs = "lib" // "bs"
-let lib_amdjs = "lib" // "amdjs"
-let lib_goog = "lib" // "goog"
-let lib_js = "lib" // "js"
-let lib_ocaml = "lib" // "ocaml" (* installed binary artifacts *)
-let lib_es6 = "lib" // "es6"
 let clean_bs_garbage cwd =
   print_string "Doing cleaning in ";
   print_endline cwd;
@@ -8778,12 +8878,8 @@ let clean_bs_garbage cwd =
     if Sys.file_exists x then
       Bsb_unix.remove_dir_recursive x  in
   try
-    aux lib_bs ;
-    aux lib_amdjs ;
-    aux lib_goog;
-    aux lib_js ;
-    aux lib_ocaml;
-    aux lib_es6 ; 
+    List.iter aux Bsb_config.all_lib_artifacts
+
   with
     e ->
     prerr_endline ("Failed to clean due to " ^ Printexc.to_string e)
@@ -8832,8 +8928,8 @@ let regenerate_ninja cwd bsc_dir forced =
       print_endline "Regenerating build spec";
       let config = 
         Bsb_config_parse.interpret_json 
-        ~override_package_specs:!Bsb_config.cmd_package_specs
-        ~bsc_dir cwd in 
+          ~override_package_specs:!Bsb_config.cmd_package_specs
+          ~bsc_dir cwd in 
       begin 
         Bsb_gen.output_ninja ~cwd ~bsc_dir config ; 
         Literals.bsconfig_json :: config.globbed_dirs
@@ -8867,21 +8963,22 @@ let print_string_args (args : string array) =
   print_newline ()
 
 let install_targets (config : Bsb_config_types.t option) =
-  match config with None -> ()
-                  | Some {files_to_install} -> 
-                    let destdir = lib_ocaml in
-                    if not @@ Sys.file_exists destdir then begin Unix.mkdir destdir 0o777  end;
-                    begin
-                      print_endline "* Start Installation";
-                      String_hash_set.iter (fun x ->
-                          Bsb_file.install_if_exists ~destdir (x ^  Literals.suffix_ml) ;
-                          Bsb_file.install_if_exists ~destdir (x ^ Literals.suffix_mli) ;
-                          Bsb_file.install_if_exists ~destdir (lib_bs//x ^ Literals.suffix_cmi) ;
-                          Bsb_file.install_if_exists ~destdir (lib_bs//x ^ Literals.suffix_cmj) ;
-                          Bsb_file.install_if_exists ~destdir (lib_bs//x ^ Literals.suffix_cmt) ;
-                          Bsb_file.install_if_exists ~destdir (lib_bs//x ^ Literals.suffix_cmti) ;
-                        ) files_to_install
-                    end
+  match config with 
+  | None -> ()
+  | Some {files_to_install} -> 
+    let destdir = Bsb_config.lib_ocaml in
+    if not @@ Sys.file_exists destdir then begin Unix.mkdir destdir 0o777  end;
+    begin
+      print_endline "* Start Installation";
+      String_hash_set.iter (fun x ->
+          Bsb_file.install_if_exists ~destdir (x ^  Literals.suffix_ml) ;
+          Bsb_file.install_if_exists ~destdir (x ^ Literals.suffix_mli) ;
+          Bsb_file.install_if_exists ~destdir (Bsb_config.lib_bs//x ^ Literals.suffix_cmi) ;
+          Bsb_file.install_if_exists ~destdir (Bsb_config.lib_bs//x ^ Literals.suffix_cmj) ;
+          Bsb_file.install_if_exists ~destdir (Bsb_config.lib_bs//x ^ Literals.suffix_cmt) ;
+          Bsb_file.install_if_exists ~destdir (Bsb_config.lib_bs//x ^ Literals.suffix_cmti) ;
+        ) files_to_install
+    end
 (* Note that [keepdepfile] only makes sense when combined with [deps] for optimizatoin
    It has to be the last command of [bsb]
 *)

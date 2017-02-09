@@ -1766,7 +1766,7 @@ let node_program ~output_prefix f ( x : J.deps_program) =
   program f cxt x.program  
 
 
-let amd_program ~output_prefix f (  x : J.deps_program) = 
+let amd_program ~output_prefix kind f (  x : J.deps_program) = 
   P.newline f ; 
   let cxt = Ext_pp_scope.empty in
   P.vgroup f 1 @@ fun _ -> 
@@ -1775,7 +1775,7 @@ let amd_program ~output_prefix f (  x : J.deps_program) =
   P.string f (Printf.sprintf "%S" L.exports);
 
   List.iter (fun x ->
-      let s = Js_program_loader.string_of_module_id ~output_prefix AmdJS x in
+      let s = Js_program_loader.string_of_module_id ~output_prefix kind x in
       P.string f L.comma ;
       P.space f; 
       pp_string f ~utf:true ~quote:(best_string_quote s) s;
@@ -1804,7 +1804,7 @@ let amd_program ~output_prefix f (  x : J.deps_program) =
   v
 
 
-let es6_program ~output_prefix f (  x : J.deps_program) = 
+let es6_program  ~output_prefix fmt f (  x : J.deps_program) = 
   let cxt = 
      imports
       Ext_pp_scope.empty
@@ -1814,7 +1814,7 @@ let es6_program ~output_prefix f (  x : J.deps_program) =
             Lam_module_ident.id x,
             Js_program_loader.string_of_module_id
               ~output_prefix
-              Es6 x)
+              fmt x)
          x.modules)
   in
   let () = P.force_newline f in 
@@ -1844,10 +1844,10 @@ let pp_deps_program
     P.string f L.strict_directive; 
     P.newline f ;    
     ignore (match kind with 
-        | Es6 -> 
-          es6_program ~output_prefix f program
-        | AmdJS -> 
-          amd_program ~output_prefix f program
+        | Es6 | Es6_global -> 
+          es6_program ~output_prefix kind f program
+        | AmdJS | AmdJS_global -> 
+          amd_program ~output_prefix kind f program
         | NodeJS -> 
           node_program ~output_prefix f program
         | Goog  -> 

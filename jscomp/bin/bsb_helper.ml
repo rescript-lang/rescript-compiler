@@ -1052,6 +1052,8 @@ val commonjs : string
 val amdjs : string 
 val goog : string 
 val es6 : string 
+val es6_global : string
+val amdjs_global : string 
 val unused_attribute : string 
 end = struct
 #1 "literals.ml"
@@ -1152,7 +1154,8 @@ let commonjs = "commonjs"
 let amdjs = "amdjs"
 let goog = "goog"
 let es6 = "es6"
-
+let es6_global = "es6-global"
+let amdjs_global = "amdjs-global"
 let unused_attribute = "Unused attribute " 
 end
 module Ext_filename : sig 

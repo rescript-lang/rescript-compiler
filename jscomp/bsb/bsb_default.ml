@@ -35,32 +35,36 @@ let get_package_name () = !package_name
 
 
 
+(* 6
+      Label omitted in function application.
+      7
+      Method overridden.
+      9
+      Missing fields in a record pattern. (*Not always desired, in some cases need [@@@warning "+9"] *)      
+      27
+      Innocuous unused variable: unused variable that is not bound with let nor as, and doesn’t start with an underscore (_) character.      
+      29
+      Unescaped end-of-line in a string constant (non-portable code).
+      32 .. 39 Unused  blabla
+      44
+      Open statement shadows an already defined identifier.
+      45
+      Open statement shadows an already defined label or constructor.
+      48
+      Implicit elimination of optional arguments.
+      https://caml.inria.fr/mantis/view.php?id=6352
 
-let bsc_flags = ref []
+*)  
+(** *)
+let bsc_flags = ref [
+    "-w"; "-40+6+7+27+32..39+44+45"
+
+  ]
 let get_bsc_flags () = !bsc_flags
-let set_bsc_flags s = bsc_flags := get_list_string s
+let set_bsc_flags s = 
+  bsc_flags := Bsb_build_util.get_list_string_acc s !bsc_flags
 
 
-
-
-let bs_dependencies : Bsb_config_types.bs_dependency list ref = ref []
-let get_bs_dependencies () = !bs_dependencies
-let set_bs_dependencies ~cwd s =
-  let package_names = get_list_string s in 
-  bs_dependencies := 
-  package_names 
-  |> List.map 
-  (fun package_name  -> 
-    match Bs_pkg.resolve_bs_package ~cwd package_name  with 
-    | None -> 
-      Ext_pervasives.failwithf ~loc:__LOC__"package: %s not found when resolve bs-dependencies" package_name
-    | Some x -> 
-      {
-         Bsb_config_types.package_name ;
-         package_install_path = x // "lib" // "ocaml"
-      }
-  )
-  
 
 
 let bs_external_includes = ref []
@@ -90,8 +94,8 @@ let ppx_flags = ref []
 let get_ppx_flags () = !ppx_flags
 let set_ppx_flags ~cwd s =
   let s =
-    s (* TODO: unix conversion *)
-    |> get_list_string
+    (* TODO: unix conversion *)
+    get_list_string s
     |> List.map (fun p ->
         if p = "" then failwith "invalid ppx, empty string found"
         else Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:"ppx" p
@@ -121,41 +125,66 @@ let package_specs = ref (String_set.singleton Literals.commonjs)
 
 let get_package_specs () = !package_specs
 
-
-
-let set_package_specs_from_array arr =
-    (* if not  !package_specs_overriden then *)
-    let new_package_specs =
-      arr
-      |> get_list_string
-      |> List.fold_left (fun acc x ->
-          let v =
-            if Bsb_config.supported_format x    then String_set.add x acc
-            else
-              failwith ("Unkonwn package spec" ^ x) in
-          v
-        ) String_set.empty in
-   package_specs := new_package_specs
-
-
-
-(*
-let internal_override_package_specs str =
-  package_specs_overriden := true ;
-  let lst = Ext_string.split ~keep_empty:false str ',' in
-  package_specs :=
-    List.fold_left (fun acc x ->
-          let v =
-            if Bsb_config.supported_format x then String_set.add x acc
-            else
-              failwith ("Unkonwn package spec" ^ x) in
-          v
-    ) String_set.empty lst
-*)
-
 let generate_merlin = ref true
 
 let get_generate_merlin () = !generate_merlin
 
 let set_generate_merlin b =
   generate_merlin := b
+
+
+let set_package_specs_from_array arr =
+  (* if not  !package_specs_overriden then *)
+  let new_package_specs =
+    Bsb_build_util.get_list_string arr 
+    |> List.fold_left (fun acc x ->
+        let v =
+          if Bsb_config.supported_format x    then String_set.add x acc
+          else
+            failwith ("Unkonwn package spec" ^ x) in
+        v
+      ) String_set.empty in
+  package_specs := new_package_specs
+
+
+let resolve_package cwd  package_name = 
+
+  match Bs_pkg.resolve_bs_package ~cwd package_name  with 
+  | None -> 
+    Ext_pervasives.failwithf ~loc:__LOC__"package: %s not found when resolve bs-dependencies" package_name
+  | Some x -> 
+    {
+      Bsb_config_types.package_name ;
+      package_install_path = x // "lib" // "ocaml"
+    }
+
+let use_stdlib = ref true
+let get_use_stdlib () = !use_stdlib
+
+let built_in_package = ref None 
+let set_use_stdlib ~cwd b = 
+  use_stdlib := b ;
+  if b then 
+    built_in_package := Some (resolve_package cwd "bs-platform" )
+
+let bs_dependencies : Bsb_config_types.bs_dependency list ref = ref []
+
+let get_bs_dependencies () =
+  !bs_dependencies
+  (* match !built_in_package with 
+  | None -> !bs_dependencies
+  | Some std -> std :: !bs_dependencies *)
+
+  (* let bs_dependencies = !bs_dependencies in  *)
+  (* if get_use_stdlib () then (\* order matters FIXME *\) *)
+  (*   resolve_package cwd  "bs-platform" :: bs_dependencies *)
+  (* else bs_dependencies *)
+
+let set_bs_dependencies ~cwd s =
+  let package_names =
+    Bsb_build_util.get_list_string s  
+  in 
+  bs_dependencies := 
+    package_names 
+    |> List.map (resolve_package cwd )
+

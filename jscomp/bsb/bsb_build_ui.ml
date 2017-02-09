@@ -207,7 +207,7 @@ and parsing_source (dir_index : int) cwd (x : Ext_json.t )
                 let excludes = ref [] in 
                 m
                 |? (Bsb_build_schemas.excludes,
-                    `Arr (fun arr ->  excludes := get_list_string arr))
+                    `Arr (fun arr ->  excludes := get_list_string arr ))
                 |? (Bsb_build_schemas.slow_re, 
                     `Str 
                       (fun s -> 
@@ -228,7 +228,7 @@ and parsing_source (dir_index : int) cwd (x : Ext_json.t )
                 |> ignore
               )
            )             
-        |? (Bsb_build_schemas.bs_dependencies, `Arr (fun s -> bs_dependencies := get_list_string s ))
+        |? (Bsb_build_schemas.bs_dependencies, `Arr (fun s -> bs_dependencies := get_list_string s))
         |?  (Bsb_build_schemas.resources ,
              `Arr (fun s  ->
                  resources := get_list_string s

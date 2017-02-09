@@ -111,12 +111,14 @@ let rec mkp dir =
   else ()
 
 
-let get_list_string s = 
-  Ext_array.to_list_map (fun (x : Ext_json.t) ->
+let get_list_string_acc s acc = 
+  Ext_array.to_list_map_acc  (fun (x : Ext_json.t) ->
       match x with 
       | `Str x -> Some x.str
       | _ -> None
-    ) s   
+    ) s  acc 
+
+let get_list_string s = get_list_string_acc s []   
 
 let bsc_group_1_includes = "bsc_group_1_includes"
 let bsc_group_2_includes = "bsc_group_2_includes"

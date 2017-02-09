@@ -95,4 +95,6 @@ val commonjs : string
 val amdjs : string 
 val goog : string 
 val es6 : string 
+val es6_global : string
+val amdjs_global : string 
 val unused_attribute : string 

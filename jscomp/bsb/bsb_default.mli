@@ -49,7 +49,7 @@ val get_refmt : unit -> string
 val set_refmt_flags : Ext_json.t array -> unit
 val get_refmt_flags : unit -> string list
 
-val get_bs_dependencies : unit  -> Bsb_config_types.bs_dependencies
+val get_bs_dependencies : unit ->  Bsb_config_types.bs_dependencies
 val set_bs_dependencies : cwd:string -> Ext_json.t array  -> unit
 
 
@@ -67,3 +67,7 @@ val set_package_specs_from_array : Ext_json.t array -> unit
 val get_generate_merlin : unit -> bool
 val set_generate_merlin : bool -> unit
 
+val get_use_stdlib : unit -> bool 
+val set_use_stdlib : cwd:string -> bool -> unit 
+
+val built_in_package : Bsb_config_types.bs_dependency option ref 

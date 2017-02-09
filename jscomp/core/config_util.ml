@@ -56,7 +56,7 @@ let find_cmj file =
   match find_opt file with
   | Some f
     -> 
-    Js_cmj_format.from_file f             
+    f, Js_cmj_format.from_file f             
   | None -> 
     (* ONLY read the stored cmj data in browser environment *)
 #if BS_COMPILER_IN_BROWSER then     
