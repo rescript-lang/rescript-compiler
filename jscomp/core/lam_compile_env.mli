@@ -42,7 +42,7 @@ type key =
   *)
   (** we need register which global variable is an dependency *)
 
-
+type path = string 
 type ident_info = {
   id : Ident.t;
   name : string;
@@ -57,7 +57,7 @@ type module_info = {
 }
 
 type _ t = 
-  | No_env :  Js_cmj_format.t t 
+  | No_env :  (path * Js_cmj_format.t) t 
   | Has_env : Env.t  -> module_info t 
 
 val find_and_add_if_not_exist : 
@@ -94,7 +94,8 @@ val is_pure_module : Lam_module_ident.t -> bool
 
 val get_package_path_from_cmj : 
   Lam_module_ident.system -> Lam_module_ident.t -> 
-  Js_config.info_query
+  string * Js_config.info_query
+  (*FIXME when the latter is [NotFound], the former is meaningless*)
 
 
 (* The second argument is mostly from [runtime] modules 

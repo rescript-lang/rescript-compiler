@@ -21906,8 +21906,12 @@ module Js_config : sig
 
 
 type module_system = 
-  | NodeJS | AmdJS | Goog  (* This will be serliazed *)
+  | NodeJS 
+  | AmdJS
+  | Goog  (* This will be serliazed *)
   | Es6
+  | Es6_global
+  | AmdJS_global
 
 type package_info = 
  (module_system * string )
@@ -22077,11 +22081,14 @@ end = struct
 
 
 type path = string
+
 type module_system =
   | NodeJS 
   | AmdJS 
   | Goog
   | Es6
+  | Es6_global (* ignore node_modules, just calcluating relative path *)
+  | AmdJS_global (* see ^ *)
 
 type package_info =
  ( module_system * string )
@@ -22132,6 +22139,8 @@ let set_npm_package_path s =
          | "amdjs" -> AmdJS
          | "goog" -> Goog
          | "es6" -> Es6
+         | "es6-global" -> Es6_global
+         | "amdjs-global" -> AmdJS_global
          | _ ->
            Ext_pervasives.bad_argf "invalid module system %s" package_name), path
       | [path] ->
@@ -22166,13 +22175,25 @@ type info_query =
   | Found of package_name * string
   | NotFound 
 
+(* ocamlopt could not optimize such simple case..*)
+let compatible exist query =
+  match query with 
+  | NodeJS -> exist = NodeJS 
+  | AmdJS -> exist = AmdJS
+  | Goog -> exist = Goog
+  | Es6  -> exist = Es6
+  | Es6_global  
+    -> exist = Es6_global || exist = Es6
+  | AmdJS_global 
+    -> exist = AmdJS_global || exist = AmdJS
+   (* As a dependency Leaf Node, it is the same either [global] or [not] *)
 
 let query_package_infos (package_infos : packages_info) module_system =
   match package_infos with
   | Empty -> Empty
   | NonBrowser (name, []) -> Package_script name
   | NonBrowser (name, paths) ->
-    begin match List.find (fun (k, _) -> k = module_system) paths with
+    begin match List.find (fun (k, _) -> compatible k  module_system) paths with
       | (_, x) -> Found (name, x)
       | exception _ -> NotFound
     end
@@ -22193,7 +22214,7 @@ let get_output_dir ~pkg_dir module_system filename =
     else
       Filename.dirname filename
   | NonBrowser (_,  modules) ->
-    begin match List.find (fun (k,_) -> k = module_system) modules with
+    begin match List.find (fun (k,_) -> compatible k  module_system) modules with
       | (_, _path) -> pkg_dir // _path
       |  exception _ -> assert false
     end
@@ -65514,8 +65535,8 @@ module Config_util : sig
 val find_opt : string -> string option
 (** [find filename] Input is a file name, output is absolute path *)
 
-
-val find_cmj : string -> Js_cmj_format.t
+(** return path and meta data *)
+val find_cmj : string -> string * Js_cmj_format.t
 
 end = struct
 #1 "config_util.ml"
@@ -65577,7 +65598,7 @@ let find_cmj file =
   match find_opt file with
   | Some f
     -> 
-    Js_cmj_format.from_file f             
+    f, Js_cmj_format.from_file f             
   | None -> 
     (* ONLY read the stored cmj data in browser environment *)
 
@@ -79492,7 +79513,7 @@ type key =
   *)
   (** we need register which global variable is an dependency *)
 
-
+type path = string 
 type ident_info = {
   id : Ident.t;
   name : string;
@@ -79507,7 +79528,7 @@ type module_info = {
 }
 
 type _ t = 
-  | No_env :  Js_cmj_format.t t 
+  | No_env :  (path * Js_cmj_format.t) t 
   | Has_env : Env.t  -> module_info t 
 
 val find_and_add_if_not_exist : 
@@ -79544,7 +79565,8 @@ val is_pure_module : Lam_module_ident.t -> bool
 
 val get_package_path_from_cmj : 
   Lam_module_ident.system -> Lam_module_ident.t -> 
-  Js_config.info_query
+  string * Js_config.info_query
+  (*FIXME when the latter is [NotFound], the former is meaningless*)
 
 
 (* The second argument is mostly from [runtime] modules 
@@ -79595,14 +79617,17 @@ module S = Js_stmt_make
 
 type module_id = Lam_module_ident.t
 
+type path = string 
+
 type ml_module_info = { 
   signatures : Types.signature ;
-  cmj_table : Js_cmj_format.t
+  cmj_table : Js_cmj_format.t ;
+  cmj_path : path;
 }
 
 type env_value = 
   | Visit of ml_module_info
-  | Runtime  of bool * Js_cmj_format.t
+  | Runtime  of bool * path * Js_cmj_format.t
   (** A built in module probably from our runtime primitives, 
       so it does not have any [signature]
   *)
@@ -79674,14 +79699,14 @@ let find_and_add_if_not_exist (id, pos) env ~not_found ~found =
   let oid  = Lam_module_ident.of_ml id in
   begin match Lam_module_ident.Hash.find_opt cached_tbl oid with 
     | None -> 
-      let cmj_table = Config_util.find_cmj (id.name ^ Js_config.cmj_ext) in
+      let cmj_path, cmj_table = Config_util.find_cmj (id.name ^ Js_config.cmj_ext) in
       begin match
           Type_util.find_serializable_signatures_by_path
             ( id) env with 
       | None -> not_found id 
       | Some signature -> 
         add_cached_tbl oid (Visit {signatures = signature; 
-                                   cmj_table ;  } ) ;
+                                   cmj_table ; cmj_path  } ) ;
         let name =  (Type_util.get_name signature pos ) in
         let arity, closed_lambda =        
           begin match String_map.find_opt name cmj_table.values with
@@ -79721,11 +79746,12 @@ let find_and_add_if_not_exist (id, pos) env ~not_found ~found =
   end
 
 
+
 (* TODO: it does not make sense to cache
    [Runtime] 
    and [externals]*)
 type _ t = 
-  | No_env :  Js_cmj_format.t t 
+  | No_env :  (path * Js_cmj_format.t) t 
   | Has_env : Env.t  -> module_info t 
 
 
@@ -79736,18 +79762,18 @@ let query_and_add_if_not_exist (type u)
   | None -> 
     begin match oid.kind with
       | Runtime  -> 
-        let cmj_table = 
+        let (cmj_path, cmj_table) as cmj_info = 
           Config_util.find_cmj (Lam_module_ident.name oid ^ Js_config.cmj_ext) in           
-        add_cached_tbl oid (Runtime (true,cmj_table)) ; 
+        add_cached_tbl oid (Runtime (true,cmj_path,cmj_table)) ; 
         begin match env with 
           | Has_env _ -> 
             found {signature = []; pure = true}
           | No_env -> 
-            found cmj_table
+            found cmj_info
         end
       | Ml 
         -> 
-        let cmj_table = 
+        let (cmj_path, cmj_table) as cmj_info = 
           Config_util.find_cmj (Lam_module_ident.name oid ^ Js_config.cmj_ext) in           
         begin match env with 
           | Has_env env -> 
@@ -79755,11 +79781,11 @@ let query_and_add_if_not_exist (type u)
                 Type_util.find_serializable_signatures_by_path ( oid.id) env with 
             | None -> not_found () (* actually when [not_found] in the call site, we throw... *)
             | Some signature -> 
-              add_cached_tbl oid (Visit {signatures = signature; cmj_table }) ;
+              add_cached_tbl oid (Visit {signatures = signature; cmj_table;cmj_path }) ;
               found  { signature ; pure = cmj_table.effect = None} 
             end
           | No_env -> 
-            found cmj_table
+            found cmj_info
         end
 
       | External _  -> 
@@ -79772,44 +79798,47 @@ let query_and_add_if_not_exist (type u)
             -> 
             found {signature = []; pure = false}
           | No_env -> 
-            found (Js_cmj_format.no_pure_dummy)
+            found (Ext_string.empty, Js_cmj_format.no_pure_dummy)
+            (* FIXME: {!Js_program_loader} #154, it come from External, should be okay *)
         end
 
     end
-  | Some (Visit {signatures  ; cmj_table =  cmj_table; _}) -> 
+  | Some (Visit {signatures  ; cmj_table =  cmj_table; cmj_path}) -> 
     begin match env with 
       | Has_env _ -> 
         found   { signature =  signatures  ; pure = (cmj_table.effect = None)} 
-      | No_env  -> found cmj_table
+      | No_env  -> found (cmj_path,cmj_table)
     end
 
-  | Some (Runtime (pure, cmj_table)) -> 
+  | Some (Runtime (pure, cmj_path,cmj_table)) -> 
     begin match env with 
       | Has_env _ -> 
         found {signature = []  ; pure }
       | No_env -> 
-        found cmj_table
+        found (cmj_path, cmj_table) 
     end
   | Some External -> 
     begin match env with 
       | Has_env _ -> 
         found {signature = []  ; pure  = false}
-      | No_env -> found Js_cmj_format.no_pure_dummy
+      | No_env -> 
+        found (Ext_string.empty, Js_cmj_format.no_pure_dummy) (* External is okay *)
     end
 
 (* Conservative interface *)
 let is_pure_module id  = 
   query_and_add_if_not_exist id No_env
     ~not_found:(fun _ -> false) 
-    ~found:(fun x -> x.effect = None)
+    ~found:(fun (_,x) -> x.effect = None)
 
 
 
 
 let get_package_path_from_cmj module_system ( id : Lam_module_ident.t) = 
   query_and_add_if_not_exist id No_env
-    ~not_found:(fun _ -> Js_config.NotFound) 
-    ~found:(fun x -> Js_config.query_package_infos x.npm_package_path module_system)
+    ~not_found:(fun _ -> Ext_string.empty, Js_config.NotFound) 
+    ~found:(fun (cmj_path,x) -> 
+      cmj_path, Js_config.query_package_infos x.npm_package_path module_system)
 
 
 
@@ -80786,7 +80815,7 @@ let string_of_module_id ~output_prefix
             `Dir (Js_config.get_output_dir ~pkg_dir:package_dir module_system output_prefix) in
           Ext_filename.node_relative_path  different_package current_unit_dir dep 
         in 
-        let dependency_pkg_info = 
+        let cmj_path, dependency_pkg_info = 
           Lam_compile_env.get_package_path_from_cmj module_system x 
         in
         let current_pkg_info = 
@@ -80802,7 +80831,7 @@ let string_of_module_id ~output_prefix
             Ext_pervasives.failwithf ~loc:__LOC__ 
               " @[%s was not compiled with goog support  in search path - while compiling %s @] "
               js_file !Location.input_name 
-          | (AmdJS | NodeJS | Es6),
+          | (AmdJS | NodeJS | Es6 | Es6_global | AmdJS_global),
             ( Empty | Package_script _) ,
             Found _  -> 
             Ext_pervasives.failwithf ~loc:__LOC__
@@ -80810,18 +80839,36 @@ let string_of_module_id ~output_prefix
               js_file !Location.input_name              
           | Goog , Found (package_name, x), _  -> 
             package_name  ^ "." ^  String.uncapitalize id.name
-          | (AmdJS | NodeJS| Es6), (Empty | Package_script _ | Found _ ), NotFound -> assert false
+          | (AmdJS | NodeJS| Es6 | Es6_global|AmdJS_global),
+           (Empty | Package_script _ | Found _ ), NotFound -> assert false
 
-          | (AmdJS | NodeJS | Es6), 
+          | (AmdJS | NodeJS | Es6 | Es6_global|AmdJS_global), 
             Found(package_name, x),
             Found(current_package, path) -> 
             if  current_package = package_name then 
               let package_dir = Lazy.force Ext_filename.package_dir in
               rebase false package_dir (`File (package_dir // x // modulename)) 
             else 
-              package_name // x // modulename
-          
-          | (AmdJS | NodeJS | Es6), Found(package_name, x), 
+              begin match module_system with 
+              | AmdJS | NodeJS | Es6 -> 
+                package_name // x // modulename
+              | Goog -> assert false (* see above *)
+              | Es6_global 
+              | AmdJS_global -> 
+               (** lib/ocaml/xx.cmj --               
+                HACKING: FIXME
+                maybe we can caching relative package path calculation or employ package map *)
+                (* assert false  *)
+                
+                begin 
+                  Ext_filename.rel_normalized_absolute_path              
+                    (Js_config.get_output_dir ~pkg_dir:(Lazy.force Ext_filename.package_dir)
+                       module_system output_prefix)
+                    ((Filename.dirname 
+                        (Filename.dirname (Filename.dirname cmj_path))) // x // modulename)              
+                end
+              end
+          | (AmdJS | NodeJS | Es6 | AmdJS_global | Es6_global), Found(package_name, x), 
             Package_script(current_package)
             ->    
             if current_package = package_name then 
@@ -80830,9 +80877,10 @@ let string_of_module_id ~output_prefix
                   package_dir // x // modulename)) 
             else 
               package_name // x // modulename
-          | (AmdJS | NodeJS | Es6), Found(package_name, x), Empty 
+          | (AmdJS | NodeJS | Es6 | AmdJS_global | Es6_global), 
+            Found(package_name, x), Empty 
             ->    package_name // x // modulename
-          |  (AmdJS | NodeJS | Es6), 
+          |  (AmdJS | NodeJS | Es6 | AmdJS_global | Es6_global), 
              (Empty | Package_script _) , 
              (Empty  | Package_script _)
             -> 
@@ -80845,7 +80893,15 @@ let string_of_module_id ~output_prefix
             end
           
         end
-      | External name -> name in 
+      | External name -> name 
+        (** This may not be enough, 
+          1. For cross packages, we may need settle 
+            down a single js package
+          2. We may need es6 path for dead code elimination
+             But frankly, very few JS packages have no dependency, 
+             so having plugin may sound not that bad   
+        *)
+      in 
     if Ext_sys.is_windows_or_cygwin then Ext_string.replace_backward_slash result 
     else result 
 
@@ -82694,7 +82750,7 @@ let node_program ~output_prefix f ( x : J.deps_program) =
   program f cxt x.program  
 
 
-let amd_program ~output_prefix f (  x : J.deps_program) = 
+let amd_program ~output_prefix kind f (  x : J.deps_program) = 
   P.newline f ; 
   let cxt = Ext_pp_scope.empty in
   P.vgroup f 1 @@ fun _ -> 
@@ -82703,7 +82759,7 @@ let amd_program ~output_prefix f (  x : J.deps_program) =
   P.string f (Printf.sprintf "%S" L.exports);
 
   List.iter (fun x ->
-      let s = Js_program_loader.string_of_module_id ~output_prefix AmdJS x in
+      let s = Js_program_loader.string_of_module_id ~output_prefix kind x in
       P.string f L.comma ;
       P.space f; 
       pp_string f ~utf:true ~quote:(best_string_quote s) s;
@@ -82732,7 +82788,7 @@ let amd_program ~output_prefix f (  x : J.deps_program) =
   v
 
 
-let es6_program ~output_prefix f (  x : J.deps_program) = 
+let es6_program  ~output_prefix fmt f (  x : J.deps_program) = 
   let cxt = 
      imports
       Ext_pp_scope.empty
@@ -82742,7 +82798,7 @@ let es6_program ~output_prefix f (  x : J.deps_program) =
             Lam_module_ident.id x,
             Js_program_loader.string_of_module_id
               ~output_prefix
-              Es6 x)
+              fmt x)
          x.modules)
   in
   let () = P.force_newline f in 
@@ -82772,10 +82828,10 @@ let pp_deps_program
     P.string f L.strict_directive; 
     P.newline f ;    
     ignore (match kind with 
-        | Es6 -> 
-          es6_program ~output_prefix f program
-        | AmdJS -> 
-          amd_program ~output_prefix f program
+        | Es6 | Es6_global -> 
+          es6_program ~output_prefix kind f program
+        | AmdJS | AmdJS_global -> 
+          amd_program ~output_prefix kind f program
         | NodeJS -> 
           node_program ~output_prefix f program
         | Goog  -> 
