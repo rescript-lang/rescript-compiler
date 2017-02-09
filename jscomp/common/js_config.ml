@@ -83,6 +83,7 @@ let set_npm_package_path s =
          | "goog" -> Goog
          | "es6" -> Es6
          | "es6-global" -> Es6_global
+         | "amdjs-global" -> AmdJS_global
          | _ ->
            Ext_pervasives.bad_argf "invalid module system %s" package_name), path
       | [path] ->

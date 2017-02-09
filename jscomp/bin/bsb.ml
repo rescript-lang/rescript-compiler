@@ -98,6 +98,7 @@ val amdjs : string
 val goog : string 
 val es6 : string 
 val es6_global : string
+val amdjs_global : string 
 val unused_attribute : string 
 end = struct
 #1 "literals.ml"
@@ -199,6 +200,7 @@ let amdjs = "amdjs"
 let goog = "goog"
 let es6 = "es6"
 let es6_global = "es6-global"
+let amdjs_global = "amdjs-global"
 let unused_attribute = "Unused attribute " 
 end
 module Bs_pkg : sig 
@@ -2603,7 +2605,7 @@ let lib_ocaml = lib_lit // "ocaml"
 let lib_bs = lib_lit // "bs"
 let lib_es6 = lib_lit // "es6"
 let lib_es6_global = lib_lit // "es6_global"
-
+let lib_amd_global = lib_lit // "amdjs_global"
 let all_lib_artifacts = 
   [ lib_js ; 
     lib_amd ;
@@ -2611,7 +2613,8 @@ let all_lib_artifacts =
     lib_ocaml;
     lib_bs ; 
     lib_es6 ; 
-    lib_es6_global
+    lib_es6_global;
+    lib_amd_global
   ]
 let rev_lib_bs = ".."// ".."
 
@@ -2622,6 +2625,7 @@ let amd_js_prefix p = lib_amd // p
 let goog_prefix p = lib_goog // p  
 let es6_prefix p = lib_es6 // p 
 let es6_global_prefix p =  lib_es6_global // p
+let amdjs_global_prefix p = lib_amd_global // p 
 let ocaml_bin_install_prefix p = lib_ocaml // p
 
 let lazy_src_root_dir = "$src_root_dir" 
@@ -2645,7 +2649,8 @@ let supported_format x =
   x = Literals.commonjs ||
   x = Literals.goog ||
   x = Literals.es6 ||
-  x = Literals.es6_global
+  x = Literals.es6_global ||
+  x = Literals.amdjs_global
 
 let cmd_override_package_specs str = 
   let lst = Ext_string.split ~keep_empty:false str ',' in
@@ -2654,7 +2659,7 @@ let cmd_override_package_specs str =
           let v =
             if supported_format x then String_set.add x acc
             else
-              failwith ("Unkonwn package spec" ^ x) in
+              failwith ("Unkonwn package spec " ^ x) in
           v
     ) String_set.empty lst)
 
@@ -2677,6 +2682,8 @@ let package_flag ~format:fmt dir =
           es6_prefix dir 
         else if fmt = Literals.es6_global then 
           es6_global_prefix dir   
+        else if fmt = Literals.amdjs_global then 
+          amdjs_global_prefix dir 
         else goog_prefix dir))
 (** js output for each package *)
 let package_output ~format:s output=
@@ -2689,6 +2696,8 @@ let package_output ~format:s output=
       es6_prefix   
     else if s = Literals.es6_global then 
       es6_global_prefix  
+    else  if s = Literals.amdjs_global then 
+      amdjs_global_prefix
     else goog_prefix
   in
   (proj_rel @@ prefix output )
@@ -7084,6 +7093,7 @@ type t =
     bsc_flags : string list ;
     ppx_flags : string list ;
     bs_dependencies : bs_dependencies;
+    built_in_dependency : bs_dependency option; 
     refmt : string ;
     refmt_flags : string list;
     js_post_build_cmd : string option;
@@ -7167,6 +7177,7 @@ val set_generate_merlin : bool -> unit
 val get_use_stdlib : unit -> bool 
 val set_use_stdlib : cwd:string -> bool -> unit 
 
+val built_in_package : Bsb_config_types.bs_dependency option ref 
 end = struct
 #1 "bsb_default.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -7341,9 +7352,10 @@ let set_use_stdlib ~cwd b =
 let bs_dependencies : Bsb_config_types.bs_dependency list ref = ref []
 
 let get_bs_dependencies () =
-  match !built_in_package with 
+  !bs_dependencies
+  (* match !built_in_package with 
   | None -> !bs_dependencies
-  | Some std -> std :: !bs_dependencies 
+  | Some std -> std :: !bs_dependencies *)
 
   (* let bs_dependencies = !bs_dependencies in  *)
   (* if get_use_stdlib () then (\* order matters FIXME *\) *)
@@ -7633,21 +7645,22 @@ let interpret_json
       Unix.rename config_file_bak Literals.bsconfig_json
   end;
   {
-    Bsb_config_types.package_name = (Bsb_default.get_package_name ());
-    ocamllex = (Bsb_default.get_ocamllex ());
-    external_includes = (Bsb_default.get_bs_external_includes ()) ;
+    Bsb_config_types.package_name = Bsb_default.get_package_name ();
+    ocamllex = Bsb_default.get_ocamllex ();
+    external_includes = Bsb_default.get_bs_external_includes ();
     bsc_flags = Bsb_default.get_bsc_flags ();
     ppx_flags = Bsb_default.get_ppx_flags ();
     bs_dependencies = Bsb_default.get_bs_dependencies ();
     refmt = Bsb_default.get_refmt ();
-    refmt_flags = Bsb_default.(get_refmt_flags ());
-    js_post_build_cmd =  Bsb_default.(get_js_post_build_cmd ());
+    refmt_flags = Bsb_default.get_refmt_flags ();
+    js_post_build_cmd =  Bsb_default.get_js_post_build_cmd ();
     package_specs = 
       (match override_package_specs with None ->  Bsb_default.get_package_specs()
                                        | Some x -> x );
     globbed_dirs = !globbed_dirs; 
     bs_file_groups = !bs_file_groups; 
-    files_to_install = String_hash_set.create 96
+    files_to_install = String_hash_set.create 96;
+    built_in_dependency = !Bsb_default.built_in_package
   }
 
 
@@ -8522,6 +8535,7 @@ let output_ninja
     package_specs;
     bs_file_groups;
     files_to_install;
+    built_in_dependency
     }
   =
   let bsc = bsc_dir // bsc_exe in   (* The path to [bsc.exe] independent of config  *)
@@ -8541,13 +8555,22 @@ let output_ninja
           output_string oc ("-bs-package-name "  ^ x  )
       end;
       output_string oc "\n";
+      let bsc_flags = 
+        "-nostdlib " ^ 
+        match built_in_dependency with 
+        | None -> bsc_flags   
+        | Some {package_install_path} -> 
+        "-I " ^ package_install_path ^ Ext_string.single_space ^ bsc_flags
+        (* TODO: Note that merlin still point to the absolute path 
+        *)
+      in 
       Bsb_ninja.output_kvs
         [|
           "src_root_dir", cwd (* TODO: need check its integrity -- allow relocate or not? *);
           "bsc", bsc ;
           "bsdep", bsdep;
           "ocamllex", ocamllex;
-          "bsc_flags", "-nostdlib " ^ bsc_flags ;
+          "bsc_flags", bsc_flags ;
           "ppx_flags", ppx_flags;
           "bs_package_includes", (Bsb_build_util.flag_concat dash_i @@ List.map (fun x -> x.Bsb_config_types.package_install_path) bs_dependencies);
           "refmt", refmt;

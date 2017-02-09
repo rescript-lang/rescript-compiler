@@ -231,21 +231,22 @@ let interpret_json
       Unix.rename config_file_bak Literals.bsconfig_json
   end;
   {
-    Bsb_config_types.package_name = (Bsb_default.get_package_name ());
-    ocamllex = (Bsb_default.get_ocamllex ());
-    external_includes = (Bsb_default.get_bs_external_includes ()) ;
+    Bsb_config_types.package_name = Bsb_default.get_package_name ();
+    ocamllex = Bsb_default.get_ocamllex ();
+    external_includes = Bsb_default.get_bs_external_includes ();
     bsc_flags = Bsb_default.get_bsc_flags ();
     ppx_flags = Bsb_default.get_ppx_flags ();
     bs_dependencies = Bsb_default.get_bs_dependencies ();
     refmt = Bsb_default.get_refmt ();
-    refmt_flags = Bsb_default.(get_refmt_flags ());
-    js_post_build_cmd =  Bsb_default.(get_js_post_build_cmd ());
+    refmt_flags = Bsb_default.get_refmt_flags ();
+    js_post_build_cmd =  Bsb_default.get_js_post_build_cmd ();
     package_specs = 
       (match override_package_specs with None ->  Bsb_default.get_package_specs()
                                        | Some x -> x );
     globbed_dirs = !globbed_dirs; 
     bs_file_groups = !bs_file_groups; 
-    files_to_install = String_hash_set.create 96
+    files_to_install = String_hash_set.create 96;
+    built_in_dependency = !Bsb_default.built_in_package
   }
 
 

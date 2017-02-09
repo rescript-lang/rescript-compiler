@@ -31,7 +31,7 @@ let lib_ocaml = lib_lit // "ocaml"
 let lib_bs = lib_lit // "bs"
 let lib_es6 = lib_lit // "es6"
 let lib_es6_global = lib_lit // "es6_global"
-
+let lib_amd_global = lib_lit // "amdjs_global"
 let all_lib_artifacts = 
   [ lib_js ; 
     lib_amd ;
@@ -39,7 +39,8 @@ let all_lib_artifacts =
     lib_ocaml;
     lib_bs ; 
     lib_es6 ; 
-    lib_es6_global
+    lib_es6_global;
+    lib_amd_global
   ]
 let rev_lib_bs = ".."// ".."
 
@@ -50,6 +51,7 @@ let amd_js_prefix p = lib_amd // p
 let goog_prefix p = lib_goog // p  
 let es6_prefix p = lib_es6 // p 
 let es6_global_prefix p =  lib_es6_global // p
+let amdjs_global_prefix p = lib_amd_global // p 
 let ocaml_bin_install_prefix p = lib_ocaml // p
 
 let lazy_src_root_dir = "$src_root_dir" 
@@ -73,7 +75,8 @@ let supported_format x =
   x = Literals.commonjs ||
   x = Literals.goog ||
   x = Literals.es6 ||
-  x = Literals.es6_global
+  x = Literals.es6_global ||
+  x = Literals.amdjs_global
 
 let cmd_override_package_specs str = 
   let lst = Ext_string.split ~keep_empty:false str ',' in
@@ -82,7 +85,7 @@ let cmd_override_package_specs str =
           let v =
             if supported_format x then String_set.add x acc
             else
-              failwith ("Unkonwn package spec" ^ x) in
+              failwith ("Unkonwn package spec " ^ x) in
           v
     ) String_set.empty lst)
 
@@ -105,6 +108,8 @@ let package_flag ~format:fmt dir =
           es6_prefix dir 
         else if fmt = Literals.es6_global then 
           es6_global_prefix dir   
+        else if fmt = Literals.amdjs_global then 
+          amdjs_global_prefix dir 
         else goog_prefix dir))
 (** js output for each package *)
 let package_output ~format:s output=
@@ -117,6 +122,8 @@ let package_output ~format:s output=
       es6_prefix   
     else if s = Literals.es6_global then 
       es6_global_prefix  
+    else  if s = Literals.amdjs_global then 
+      amdjs_global_prefix
     else goog_prefix
   in
   (proj_rel @@ prefix output )

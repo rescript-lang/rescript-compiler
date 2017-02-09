@@ -59,6 +59,7 @@ let output_ninja
     package_specs;
     bs_file_groups;
     files_to_install;
+    built_in_dependency
     }
   =
   let bsc = bsc_dir // bsc_exe in   (* The path to [bsc.exe] independent of config  *)
@@ -78,13 +79,22 @@ let output_ninja
           output_string oc ("-bs-package-name "  ^ x  )
       end;
       output_string oc "\n";
+      let bsc_flags = 
+        "-nostdlib " ^ 
+        match built_in_dependency with 
+        | None -> bsc_flags   
+        | Some {package_install_path} -> 
+        "-I " ^ package_install_path ^ Ext_string.single_space ^ bsc_flags
+        (* TODO: Note that merlin still point to the absolute path 
+        *)
+      in 
       Bsb_ninja.output_kvs
         [|
           "src_root_dir", cwd (* TODO: need check its integrity -- allow relocate or not? *);
           "bsc", bsc ;
           "bsdep", bsdep;
           "ocamllex", ocamllex;
-          "bsc_flags", "-nostdlib " ^ bsc_flags ;
+          "bsc_flags", bsc_flags ;
           "ppx_flags", ppx_flags;
           "bs_package_includes", (Bsb_build_util.flag_concat dash_i @@ List.map (fun x -> x.Bsb_config_types.package_install_path) bs_dependencies);
           "refmt", refmt;

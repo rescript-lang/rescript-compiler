@@ -170,9 +170,10 @@ let set_use_stdlib ~cwd b =
 let bs_dependencies : Bsb_config_types.bs_dependency list ref = ref []
 
 let get_bs_dependencies () =
-  match !built_in_package with 
+  !bs_dependencies
+  (* match !built_in_package with 
   | None -> !bs_dependencies
-  | Some std -> std :: !bs_dependencies 
+  | Some std -> std :: !bs_dependencies *)
 
   (* let bs_dependencies = !bs_dependencies in  *)
   (* if get_use_stdlib () then (\* order matters FIXME *\) *)

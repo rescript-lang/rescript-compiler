@@ -69,3 +69,5 @@ val set_generate_merlin : bool -> unit
 
 val get_use_stdlib : unit -> bool 
 val set_use_stdlib : cwd:string -> bool -> unit 
+
+val built_in_package : Bsb_config_types.bs_dependency option ref 

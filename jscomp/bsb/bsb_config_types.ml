@@ -38,6 +38,7 @@ type t =
     bsc_flags : string list ;
     ppx_flags : string list ;
     bs_dependencies : bs_dependencies;
+    built_in_dependency : bs_dependency option; 
     refmt : string ;
     refmt_flags : string list;
     js_post_build_cmd : string option;
