@@ -99,16 +99,24 @@ let print_arrays file_array oc offset  =
 
 let  handle_list_files dir (s : Ext_json.t array) loc_start loc_end : Ext_file_pp.interval list * _ =  
   if  Ext_array.is_empty s  then 
-    begin 
+    begin (** detect files to be populated later  *)
       let files_array = Bsb_dir.readdir dir  in 
       let dyn_file_array = String_vec.make (Array.length files_array) in 
       let files  =
         Array.fold_left (fun acc name -> 
-            if Ext_string.is_valid_source_name name then begin 
-              let new_acc = Binary_cache.map_update ~dir acc name  in 
-              String_vec.push name dyn_file_array ;
-              new_acc 
-            end else acc 
+            match Ext_string.is_valid_source_name name with 
+            | Good ->   begin 
+                let new_acc = Binary_cache.map_update ~dir acc name  in 
+                String_vec.push name dyn_file_array ;
+                new_acc 
+              end 
+            | Invalid_module_name -> 
+              print_endline 
+                (Printf.sprintf "file %s under %s is ignored due to that it is not a valid module name"
+                   name dir 
+                ) ; 
+              acc 
+            | Suffix_mismatch -> acc 
           ) String_map.empty files_array in 
       [{Ext_file_pp.loc_start ;
         loc_end; action = (`print (print_arrays dyn_file_array))}],
@@ -194,10 +202,16 @@ and parsing_source (dir_index : int) cwd (x : Ext_json.t )
                 (** We should avoid temporary files *)
                 sources := 
                   Array.fold_left (fun acc name -> 
-                      if Ext_string.is_valid_source_name name 
-                      then 
+                      match Ext_string.is_valid_source_name name with 
+                      | Good -> 
                         Binary_cache.map_update  ~dir acc name 
-                      else acc
+                      | Invalid_module_name -> 
+                        print_endline 
+                          (Printf.sprintf "file %s under %s is ignored due to that it is not a valid module name"
+                             name dir 
+                          ) ; 
+                          acc 
+                      | Suffix_mismatch ->  acc
                     ) String_map.empty file_array;
                 globbed_dirs :=  [dir]
               )
@@ -281,4 +295,3 @@ and  parsing_sources dir_index cwd (sources : Ext_json.t )  =
 
 
 
-  

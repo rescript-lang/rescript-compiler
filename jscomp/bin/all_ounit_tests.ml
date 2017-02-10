@@ -1727,7 +1727,11 @@ val rindex_neg : string -> char -> int
 
 val rindex_opt : string -> char -> int option
 
-val is_valid_source_name : string -> bool
+type check_result = 
+    | Good | Invalid_module_name | Suffix_mismatch
+
+val is_valid_source_name :
+   string -> check_result
 
 val no_char : string -> char -> int -> int -> bool 
 
@@ -2093,18 +2097,25 @@ let is_valid_module_file (s : string) =
          | _ -> false )
   | _ -> false 
 
+type check_result = 
+  | Good 
+  | Invalid_module_name 
+  | Suffix_mismatch
 (** 
    TODO: move to another module 
    Make {!Ext_filename} not stateful
 *)
-let is_valid_source_name name =
+let is_valid_source_name name : check_result =
   match check_any_suffix_case_then_chop name [
       ".ml"; 
       ".re";
       ".mli"; ".mll"; ".rei"
     ] with 
-  | None -> false 
-  | Some x -> is_valid_module_file  x 
+  | None -> Suffix_mismatch
+  | Some x -> 
+    if is_valid_module_file  x then
+      Good
+    else Invalid_module_name  
 
 (** TODO: can be improved to return a positive integer instead *)
 let rec unsafe_no_char x ch i  len = 
@@ -12030,12 +12041,12 @@ let suites =
 
     __LOC__ >:: begin fun _ -> 
       OUnit.assert_bool __LOC__ @@
-      List.for_all Ext_string.is_valid_source_name
+      List.for_all (fun x -> Ext_string.is_valid_source_name x = Good)
         ["x.ml"; "x.mli"; "x.re"; "x.rei"; "x.mll"; 
          "A_x.ml"; "ab.ml"; "a_.ml"; "a__.ml";
          "ax.ml"];
       OUnit.assert_bool __LOC__ @@ not @@
-      List.exists Ext_string.is_valid_source_name
+      List.exists (fun x -> Ext_string.is_valid_source_name x = Good)
         [".re"; ".rei";"..re"; "..rei"; "..ml"; ".mll~"; 
          "...ml"; "_.mli"; "_x.ml"; "__.ml"; "__.rei"; 
          ".#hello.ml"; ".#hello.rei"; "a-.ml"; "a-b.ml"; "-a-.ml"

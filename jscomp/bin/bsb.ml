@@ -808,7 +808,11 @@ val rindex_neg : string -> char -> int
 
 val rindex_opt : string -> char -> int option
 
-val is_valid_source_name : string -> bool
+type check_result = 
+    | Good | Invalid_module_name | Suffix_mismatch
+
+val is_valid_source_name :
+   string -> check_result
 
 val no_char : string -> char -> int -> int -> bool 
 
@@ -1174,18 +1178,25 @@ let is_valid_module_file (s : string) =
          | _ -> false )
   | _ -> false 
 
+type check_result = 
+  | Good 
+  | Invalid_module_name 
+  | Suffix_mismatch
 (** 
    TODO: move to another module 
    Make {!Ext_filename} not stateful
 *)
-let is_valid_source_name name =
+let is_valid_source_name name : check_result =
   match check_any_suffix_case_then_chop name [
       ".ml"; 
       ".re";
       ".mli"; ".mll"; ".rei"
     ] with 
-  | None -> false 
-  | Some x -> is_valid_module_file  x 
+  | None -> Suffix_mismatch
+  | Some x -> 
+    if is_valid_module_file  x then
+      Good
+    else Invalid_module_name  
 
 (** TODO: can be improved to return a positive integer instead *)
 let rec unsafe_no_char x ch i  len = 
@@ -6482,16 +6493,24 @@ let print_arrays file_array oc offset  =
 
 let  handle_list_files dir (s : Ext_json.t array) loc_start loc_end : Ext_file_pp.interval list * _ =  
   if  Ext_array.is_empty s  then 
-    begin 
+    begin (** detect files to be populated later  *)
       let files_array = Bsb_dir.readdir dir  in 
       let dyn_file_array = String_vec.make (Array.length files_array) in 
       let files  =
         Array.fold_left (fun acc name -> 
-            if Ext_string.is_valid_source_name name then begin 
-              let new_acc = Binary_cache.map_update ~dir acc name  in 
-              String_vec.push name dyn_file_array ;
-              new_acc 
-            end else acc 
+            match Ext_string.is_valid_source_name name with 
+            | Good ->   begin 
+                let new_acc = Binary_cache.map_update ~dir acc name  in 
+                String_vec.push name dyn_file_array ;
+                new_acc 
+              end 
+            | Invalid_module_name -> 
+              print_endline 
+                (Printf.sprintf "file %s under %s is ignored due to that it is not a valid module name"
+                   name dir 
+                ) ; 
+              acc 
+            | Suffix_mismatch -> acc 
           ) String_map.empty files_array in 
       [{Ext_file_pp.loc_start ;
         loc_end; action = (`print (print_arrays dyn_file_array))}],
@@ -6577,10 +6596,16 @@ and parsing_source (dir_index : int) cwd (x : Ext_json.t )
                 (** We should avoid temporary files *)
                 sources := 
                   Array.fold_left (fun acc name -> 
-                      if Ext_string.is_valid_source_name name 
-                      then 
+                      match Ext_string.is_valid_source_name name with 
+                      | Good -> 
                         Binary_cache.map_update  ~dir acc name 
-                      else acc
+                      | Invalid_module_name -> 
+                        print_endline 
+                          (Printf.sprintf "file %s under %s is ignored due to that it is not a valid module name"
+                             name dir 
+                          ) ; 
+                          acc 
+                      | Suffix_mismatch ->  acc
                     ) String_map.empty file_array;
                 globbed_dirs :=  [dir]
               )
@@ -6664,7 +6689,7 @@ and  parsing_sources dir_index cwd (sources : Ext_json.t )  =
 
 
 
-  
+
 end
 module Bs_hash_stubs
 = struct
