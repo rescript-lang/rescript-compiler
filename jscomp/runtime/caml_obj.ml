@@ -65,7 +65,7 @@
 
    {[
      var u = caml_obj_dup (x)
-     var new_record = u.slice ()
+       var new_record = u.slice ()
 
    ]}
 *)
@@ -99,19 +99,19 @@ let caml_obj_truncate (x : Obj.t) (new_size : int) =
 let caml_lazy_make_forward x = lazy x
 
 (** 
-  For the empty dummy object, whether it's 
-  `[]` or `{}` depends on how 
-  runtime encoding works, and will affect 
-  js polymorphic comparison(Js.(=)) (fine with caml polymoprhic comparison (Pervasives.equal))
-  In most cases, rec value comes from record/modules, 
-  whose tag is 0, we optimize that case
- *)
+   For the empty dummy object, whether it's 
+   `[]` or `{}` depends on how 
+   runtime encoding works, and will affect 
+   js polymorphic comparison(Js.(=)) (fine with caml polymoprhic comparison (Pervasives.equal))
+   In most cases, rec value comes from record/modules, 
+   whose tag is 0, we optimize that case
+*)
 let caml_update_dummy x y =
   (* let len = Bs_obj.length y in   
-  for i = 0 to len - 1 do 
-    Array.unsafe_set x i (Obj.field y i)
-  done;
-  Obj.set_tag (Obj.magic x) (Obj.tag y)
+     for i = 0 to len - 1 do 
+     Array.unsafe_set x i (Obj.field y i)
+     done;
+     Obj.set_tag (Obj.magic x) (Obj.tag y)
   *)
   let len = Bs_obj.length y in
   for i = 0 to len - 1 do
@@ -120,10 +120,10 @@ let caml_update_dummy x y =
   let y_tag = Obj.tag y in 
   if y_tag <> 0 then
     Obj.set_tag x y_tag
-  
-  (* Bs_obj.set_length x   (Bs_obj.length y) *)
-  (* [set_length] seems redundant here given that it is initialized as an array 
-  *)
+
+(* Bs_obj.set_length x   (Bs_obj.length y) *)
+(* [set_length] seems redundant here given that it is initialized as an array 
+*)
 let caml_int_compare (x : int) (y: int) : int =
   if  x < y then -1 else if x = y then 0 else  1
 
@@ -153,45 +153,54 @@ let unsafe_js_compare x y =
 *)
 let rec caml_compare (a : Obj.t) (b : Obj.t) : int =
   (*front and formoest, we do not compare function values*)
-  if Js.typeof a = "string" then
+  let a_type = Js.typeof a in 
+  let b_type = Js.typeof b in 
+  if a_type = "string" then
     caml_string_compare (Obj.magic a) (Obj.magic b )
-  else if Js.typeof a = "number" then
-    caml_int_compare (Obj.magic a) (Obj.magic b )
-  else if Js.typeof a = "boolean"
-          || Js.typeof a = "null"
-          || Js.typeof a = "undefined"
-  then
-    unsafe_js_compare a b
-  else if Js.typeof a = "function" || Js.typeof b = "function"
-  then raise (Invalid_argument "compare: functional value")
-  else
-  (* if js_is_instance_array a then  *)
-  (*   0 *)
-  (* else  *)
-    let tag_a = Bs_obj.tag a in
-    let tag_b = Bs_obj.tag b in
-    (* double_array_tag: 254
-       forward_tag:250
-    *)
-    if tag_a = 250 then
-      caml_compare (Obj.field a 0) b
-    else if tag_b = 250 then
-      caml_compare a (Obj.field b 0)
-    else if tag_a = 248 (* object/exception *)  then
-      caml_int_compare (Obj.magic @@ Obj.field a 1) (Obj.magic @@ Obj.field b 1 )
-    else if tag_a = 251 (* abstract_tag *) then
-      raise (Invalid_argument "equal: abstract value")
-    else if tag_a <> tag_b then
-      if tag_a < tag_b then (-1) else  1
-    else
-      let len_a = Bs_obj.length a in
-      let len_b = Bs_obj.length b in
-      if len_a = len_b then
-        aux_same_length a b 0 len_a
-      else if len_a < len_b then
-        aux_length_a_short a b 0 len_a
+  else 
+    let is_a_number = a_type = "number" in 
+    let is_b_number = b_type = "number" in 
+    match is_a_number , is_b_number with 
+    | true, true -> 
+      caml_int_compare (Obj.magic a) (Obj.magic b )
+    | true , false -> -1 (* Integer < Block in OCaml runtime GPR #1195 *)
+    | false, true -> 1 
+    | false, false -> 
+      if a_type = "boolean"
+      || a_type = "null"
+      || a_type = "undefined"
+      then
+        unsafe_js_compare a b
+      else if a_type = "function" || b_type = "function"
+      then raise (Invalid_argument "compare: functional value")
       else
-        aux_length_b_short a b 0 len_b
+        (* if js_is_instance_array a then  *)
+        (*   0 *)
+        (* else  *)
+        let tag_a = Bs_obj.tag a in
+        let tag_b = Bs_obj.tag b in
+        (* double_array_tag: 254
+           forward_tag:250
+        *)
+        if tag_a = 250 then
+          caml_compare (Obj.field a 0) b
+        else if tag_b = 250 then
+          caml_compare a (Obj.field b 0)
+        else if tag_a = 248 (* object/exception *)  then
+          caml_int_compare (Obj.magic @@ Obj.field a 1) (Obj.magic @@ Obj.field b 1 )
+        else if tag_a = 251 (* abstract_tag *) then
+          raise (Invalid_argument "equal: abstract value")
+        else if tag_a <> tag_b then
+          if tag_a < tag_b then (-1) else  1
+        else
+          let len_a = Bs_obj.length a in
+          let len_b = Bs_obj.length b in
+          if len_a = len_b then
+            aux_same_length a b 0 len_a
+          else if len_a < len_b then
+            aux_length_a_short a b 0 len_a
+          else
+            aux_length_b_short a b 0 len_b
 and aux_same_length  (a : Obj.t) (b : Obj.t) i same_length =
   if i = same_length then
     0
@@ -218,10 +227,10 @@ let rec caml_equal (a : Obj.t) (b : Obj.t) : bool =
   (*front and formoest, we do not compare function values*)
   if a == b then true
   else if Js.typeof a = "string"
-  || Js.typeof a = "number"
-  || Js.typeof a = "boolean"
-  || Js.typeof a = "undefined"
-  || Js.typeof a = "null"
+       || Js.typeof a = "number"
+       || Js.typeof a = "boolean"
+       || Js.typeof a = "undefined"
+       || Js.typeof a = "null"
   then false
   else if Js.typeof a = "function" || Js.typeof b = "function"
   then raise (Invalid_argument "equal: functional value")
