@@ -39,19 +39,21 @@ type dep_info = {
 
    It may not, since there is some subtlies here (__FILE__ or __dirname)
 *)
-type t = 
-  { file_stamps : dep_info array ; 
-    source_directory :  string ; 
-    bsb_version : string
-  }
 
 
 
 
+type check_result = 
+  | Good
+  | Bsb_file_not_exist (** We assume that it is a clean repo *)  
+  | Bsb_source_directory_changed
+  | Bsb_bsc_version_mismatch  
+  | Bsb_forced
+  | Other of string
 
-
+val to_str : check_result -> string 
 val store : cwd:string -> string -> dep_info array -> unit
 
 
 (** check if [build.ninja] should be regenerated *)
-val check : cwd:string ->  string -> string
+val check : cwd:string ->  bool -> string -> check_result

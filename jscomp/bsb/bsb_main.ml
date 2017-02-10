@@ -108,7 +108,7 @@ let bsb_main_flags =
     no_dev, Arg.Set Bsb_config.no_dev,
     " (internal)Build dev dependencies in make-world and dev group(in combination with -regen)";
     regen, Arg.Set force_regenerate,
-    " Always regenerate build.ninja no matter bsconfig.json is changed or not (for debugging purpose)"
+    " (internal)Always regenerate build.ninja no matter bsconfig.json is changed or not (for debugging purpose)"
     ;
     internal_package_specs, Arg.String Bsb_config.cmd_override_package_specs,
     " (internal)Overide package specs (in combination with -regen)";
@@ -125,14 +125,21 @@ let bsb_main_flags =
 *)
 let regenerate_ninja cwd bsc_dir forced =
   let output_deps = Bsb_config.lib_bs // bsdeps in
-  let reason =
-    if forced then "Regenerating ninja (triggered by command line -regen)"
-    else
-      Bsb_dep_infos.check ~cwd  output_deps in
-  if String.length reason <> 0 then
-    begin
-      print_endline reason ;
-      print_endline "Regenerating build spec";
+  let reason : Bsb_dep_infos.check_result =
+    Bsb_dep_infos.check ~cwd  forced output_deps in
+  begin match reason  with 
+    | Good -> None  (* Fast path *)
+    | Bsb_forced 
+    | Bsb_bsc_version_mismatch 
+    | Bsb_file_not_exist 
+    | Bsb_source_directory_changed  
+    | Other _ -> 
+      print_string "Regenerating build spec : ";
+      print_endline (Bsb_dep_infos.to_str reason) ; 
+      if reason = Bsb_bsc_version_mismatch then begin 
+        print_endline "Also clean current repo due to we have detected a different compiler";
+        clean_self (); 
+      end ; 
       let config = 
         Bsb_config_parse.interpret_json 
           ~override_package_specs:!Bsb_config.cmd_package_specs
@@ -149,9 +156,7 @@ let regenerate_ninja cwd bsc_dir forced =
         |> (fun x -> Bsb_dep_infos.store ~cwd output_deps (Array.of_list x));
         Some config 
       end 
-      (* This makes sense since we did parse the json file *)
-    end
-  else None
+  end
 
 let ninja_error_message = "ninja (required for bsb build system) is not installed, \n\
                            please visit https://github.com/ninja-build/ninja to have it installed\n"
