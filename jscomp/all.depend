@@ -667,7 +667,8 @@ bsb/bsb_default.cmx : ext/string_set.cmx ext/literals.cmx \
     ext/ext_pervasives.cmx ext/ext_filename.cmx bsb/bsb_config_types.cmx \
     bsb/bsb_config.cmx bsb/bsb_build_util.cmx common/bs_version.cmx \
     common/bs_pkg.cmx bsb/bsb_default.cmi
-bsb/bsb_dep_infos.cmx : bsb/bsb_dep_infos.cmi
+bsb/bsb_dep_infos.cmx : ext/ext_string.cmx common/bs_version.cmx \
+    bsb/bsb_dep_infos.cmi
 bsb/bsb_dir.cmx : bsb/bsb_dir.cmi
 bsb/bsb_file.cmx : bsb/bsb_file.cmi
 bsb/bsb_gen.cmx : ext/string_map.cmx ext/literals.cmx ext/ext_string.cmx \

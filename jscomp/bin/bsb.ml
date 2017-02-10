@@ -7797,22 +7797,25 @@ type dep_info = {
 
    It may not, since there is some subtlies here (__FILE__ or __dirname)
 *)
-type t = 
-  { file_stamps : dep_info array ; 
-    source_directory :  string ; 
-    bsb_version : string
-  }
 
 
 
 
+type check_result = 
+  | Good
+  | Bsb_file_not_exist (** We assume that it is a clean repo *)
+  | Bsb_version_mismatch
+  | Bsb_source_directory_changed
+  | Bsc_version_mismatch
+  | Bsb_forced
+  | Other of string
 
-
+val to_str : check_result -> string 
 val store : cwd:string -> string -> dep_info array -> unit
 
 
 (** check if [build.ninja] should be regenerated *)
-val check : cwd:string ->  string -> string
+val check : cwd:string ->  bool -> string -> check_result
 
 end = struct
 #1 "bsb_dep_infos.ml"
@@ -7848,7 +7851,8 @@ type dep_info = {
 type t = 
   { file_stamps : dep_info array ; 
     source_directory :  string ;
-    bsb_version : string
+    bsb_version : string;
+    bsc_version : string;
   }
 
 
@@ -7871,33 +7875,68 @@ let read (fname : string) : t =
 
 
 
-let no_need_regenerate = ""
 
+
+type check_result = 
+  | Good
+  | Bsb_file_not_exist (** We assume that it is a clean repo *)
+  | Bsb_version_mismatch
+  | Bsb_source_directory_changed
+  | Bsc_version_mismatch
+  | Bsb_forced
+  | Other of string
+
+let to_str (check_resoult : check_result) = 
+  match check_resoult with
+  | Good -> Ext_string.empty
+  | Bsb_file_not_exist -> "File not found"
+  | Bsb_version_mismatch -> "Bsb version mismatch"
+  | Bsb_source_directory_changed -> 
+    "Bsb source directory changed"
+  | Bsc_version_mismatch -> 
+    "Bsc version mismatch"
+  | Bsb_forced -> 
+    "Bsb forced rebuild "  
+  | Other s -> 
+    s
 
 let rec check_aux xs i finish = 
-  if i = finish then no_need_regenerate
+  if i = finish then Good
   else 
     let k = Array.unsafe_get  xs i  in
     let current_file = k.dir_or_file in
     let stat = Unix.stat  current_file in 
     if stat.st_mtime <= k.stamp then 
       check_aux xs (i + 1 ) finish 
-    else current_file
+    else Other current_file
 
+  
 (** check time stamp for all files 
     TODO: those checks system call can be saved later
     Return a reason 
+    Even forced, we still need walk through a little 
+    bit in case we found a different version of compiler
 *)
-let check ~cwd file =
+let check ~cwd forced file =
   try 
-    let {file_stamps = xs; source_directory; bsb_version = old_version} = read file  in 
-    if old_version <> bsb_version then old_version ^ " -> " ^ bsb_version else
-    if cwd <> source_directory then source_directory ^ " -> " ^ cwd else
+    let {
+      file_stamps = xs; source_directory; bsb_version = old_version;
+      bsc_version
+      } = read file  in 
+    if old_version <> bsb_version then Bsb_version_mismatch else
+    if cwd <> source_directory then Bsb_source_directory_changed else
+    if bsc_version <> Bs_version.version then Bsc_version_mismatch else 
+    if forced then Bsb_forced (* No need walk through *)
+    else
       check_aux xs  0 (Array.length xs)  
-  with _ -> file ^ " does not exist"
+  with _ -> Bsb_file_not_exist
 
 let store ~cwd name file_stamps = 
-  write name { file_stamps ; source_directory = cwd ; bsb_version }
+  write name 
+  { file_stamps ; 
+    source_directory = cwd ; 
+    bsb_version ;
+    bsc_version = Bs_version.version }
 
 end
 module Bsb_file : sig 
@@ -8987,7 +9026,7 @@ let bsb_main_flags =
     no_dev, Arg.Set Bsb_config.no_dev,
     " (internal)Build dev dependencies in make-world and dev group(in combination with -regen)";
     regen, Arg.Set force_regenerate,
-    " Always regenerate build.ninja no matter bsconfig.json is changed or not (for debugging purpose)"
+    " (internal)Always regenerate build.ninja no matter bsconfig.json is changed or not (for debugging purpose)"
     ;
     internal_package_specs, Arg.String Bsb_config.cmd_override_package_specs,
     " (internal)Overide package specs (in combination with -regen)";
@@ -9004,14 +9043,22 @@ let bsb_main_flags =
 *)
 let regenerate_ninja cwd bsc_dir forced =
   let output_deps = Bsb_config.lib_bs // bsdeps in
-  let reason =
-    if forced then "Regenerating ninja (triggered by command line -regen)"
-    else
-      Bsb_dep_infos.check ~cwd  output_deps in
-  if String.length reason <> 0 then
-    begin
-      print_endline reason ;
-      print_endline "Regenerating build spec";
+  let reason : Bsb_dep_infos.check_result =
+    Bsb_dep_infos.check ~cwd  forced output_deps in
+  begin match reason  with 
+    | Good -> None  (* Fast path *)
+    | Bsb_forced 
+    | Bsc_version_mismatch 
+    | Bsb_file_not_exist 
+    | Bsb_version_mismatch
+    | Bsb_source_directory_changed  
+    | Other _ -> 
+      print_string "Regenerating build spec : ";
+      print_endline (Bsb_dep_infos.to_str reason) ; 
+      if reason = Bsc_version_mismatch then begin 
+        print_endline "Also clean current repo due to we have detected a different compiler";
+        clean_self (); 
+      end ; 
       let config = 
         Bsb_config_parse.interpret_json 
           ~override_package_specs:!Bsb_config.cmd_package_specs
@@ -9028,9 +9075,7 @@ let regenerate_ninja cwd bsc_dir forced =
         |> (fun x -> Bsb_dep_infos.store ~cwd output_deps (Array.of_list x));
         Some config 
       end 
-      (* This makes sense since we did parse the json file *)
-    end
-  else None
+  end
 
 let ninja_error_message = "ninja (required for bsb build system) is not installed, \n\
                            please visit https://github.com/ninja-build/ninja to have it installed\n"
