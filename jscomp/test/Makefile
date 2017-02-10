@@ -102,7 +102,7 @@ $(addsuffix .cmi, $(OTHERS)): ../runtime/js.cmi
 $(addsuffix .cmj, $(OTHERS)): ../runtime/js.cmj 
 
 COMPFLAGS+=  $(MODULE_FLAGS) -w -40 
-COMPFLAGS+=  -bs-no-version-header -bs-diagnose -bs-cross-module-opt -bs-package-name  bs-platform
+COMPFLAGS+=  -bs-no-version-header -bs-no-error-unused-attribute -bs-diagnose -bs-cross-module-opt -bs-package-name  bs-platform 
 
 
 $(TESTS): $(CAMLC)

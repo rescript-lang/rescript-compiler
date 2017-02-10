@@ -21999,7 +21999,7 @@ val no_builtin_ppx_ml : bool ref
 val no_builtin_ppx_mli : bool ref 
 val no_warn_ffi_type : bool ref 
 val no_warn_unused_bs_attribute : bool ref 
-
+val no_error_unused_bs_attribute : bool ref 
 (** check-div-by-zero option *)
 val check_div_by_zero : bool ref 
 val get_check_div_by_zero : unit -> bool 
@@ -22241,7 +22241,7 @@ let no_warn_ffi_type = ref false
 
 (** TODO: will flip the option when it is ready *)
 let no_warn_unused_bs_attribute = ref false
-
+let no_error_unused_bs_attribute = ref false 
 
 let builtin_exceptions = "Caml_builtin_exceptions"
 let exceptions = "Caml_exceptions"
@@ -22388,7 +22388,7 @@ type error =
   | Bs_package_not_found of string                            
   | Bs_main_not_exist of string 
   | Bs_invalid_path of string
-      
+  (** TODO: we need add location handling *)    
 exception Error of error
 
 let error err = raise (Error err)
@@ -25932,8 +25932,14 @@ let prerr_warning loc x =
     print_string_warning loc (to_string x) 
 
 let warn_unused_attribute loc txt =
-  print_string_warning loc ( Literals.unused_attribute  ^ txt ^ " \n" );
-  Format.pp_print_flush warning_formatter ()
+  if !Js_config.no_error_unused_bs_attribute then 
+    begin 
+      print_string_warning loc ( Literals.unused_attribute  ^ txt ^ " \n" );
+      Format.pp_print_flush warning_formatter ()
+    end
+  else 
+    Location.raise_errorf 
+      ~loc "%s%s \n" Literals.unused_attribute txt 
 
 end
 module Bs_ast_invariant
@@ -106319,6 +106325,14 @@ let buckle_script_flags =
   ("-bs-eval", 
    Arg.String set_eval_string, 
    " (experimental) Set the string to be evaluated, note this flag will be conflicted with -bs-main"
+  )
+  ::("-bs-no-error-unused-attribute",
+    Arg.Set Js_config.no_error_unused_bs_attribute,
+    " No error when seeing unused attribute"
+    (* We introduce such flag mostly 
+      for work around 
+      in case some embarassing compiler bugs
+    *)
   )
   ::
   (
