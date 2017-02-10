@@ -151,6 +151,14 @@ let buckle_script_flags =
    Arg.String set_eval_string, 
    " (experimental) Set the string to be evaluated, note this flag will be conflicted with -bs-main"
   )
+  ::("-bs-no-error-unused-attribute",
+    Arg.Set Js_config.no_error_unused_bs_attribute,
+    " No error when seeing unused attribute"
+    (* We introduce such flag mostly 
+      for work around 
+      in case some embarassing compiler bugs
+    *)
+  )
   ::
   (
     "-bs-sort-imports",

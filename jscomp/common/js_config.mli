@@ -106,7 +106,7 @@ val no_builtin_ppx_ml : bool ref
 val no_builtin_ppx_mli : bool ref 
 val no_warn_ffi_type : bool ref 
 val no_warn_unused_bs_attribute : bool ref 
-
+val no_error_unused_bs_attribute : bool ref 
 (** check-div-by-zero option *)
 val check_div_by_zero : bool ref 
 val get_check_div_by_zero : unit -> bool 

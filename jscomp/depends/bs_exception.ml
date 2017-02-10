@@ -32,7 +32,7 @@ type error =
   | Bs_package_not_found of string                            
   | Bs_main_not_exist of string 
   | Bs_invalid_path of string
-      
+  (** TODO: we need add location handling *)    
 exception Error of error
 
 let error err = raise (Error err)

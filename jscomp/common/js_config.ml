@@ -173,7 +173,7 @@ let no_warn_ffi_type = ref false
 
 (** TODO: will flip the option when it is ready *)
 let no_warn_unused_bs_attribute = ref false
-
+let no_error_unused_bs_attribute = ref false 
 
 let builtin_exceptions = "Caml_builtin_exceptions"
 let exceptions = "Caml_exceptions"
