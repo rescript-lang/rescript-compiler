@@ -36,7 +36,21 @@ let suites = Mt.[
     end;
     __LOC__ , begin fun _ -> 
         Eq(true,  [2;6;1;1;2;1;4;2;1;409] > [2;6;1;1;2;1;4;2;1])
-    end
+    end;
+    
+    __LOC__, begin fun _ -> 
+        Eq(false, None = Some [|1;30|] )
+    end; 
+    __LOC__, begin fun _ -> 
+        Eq(false,  Some [|1;30|] = None  )
+    end; 
+    __LOC__ , begin fun _ -> 
+        Eq(false, [2;6;1;1;2;1;4;2;1] = [2;6;1;1;2;1;4;2;1;409])
+    end;
+    __LOC__ , begin fun _ -> 
+        Eq(false,  [2;6;1;1;2;1;4;2;1;409] = [2;6;1;1;2;1;4;2;1])
+    end;
+    
 ]
 ;;
 

@@ -226,37 +226,43 @@ type eq = Obj.t -> Obj.t -> bool
 let rec caml_equal (a : Obj.t) (b : Obj.t) : bool =
   (*front and formoest, we do not compare function values*)
   if a == b then true
-  else if Js.typeof a = "string"
-       || Js.typeof a = "number"
-       || Js.typeof a = "boolean"
-       || Js.typeof a = "undefined"
-       || Js.typeof a = "null"
-  then false
-  else if Js.typeof a = "function" || Js.typeof b = "function"
-  then raise (Invalid_argument "equal: functional value")
-  (* first, check using reference equality *)
-  else
-    let tag_a = Bs_obj.tag a in
-    let tag_b = Bs_obj.tag b in
-    (* double_array_tag: 254
-       forward_tag:250
-    *)
-    if tag_a = 250 then
-      caml_equal (Obj.field a 0) b
-    else if tag_b = 250 then
-      caml_equal a (Obj.field b 0)
-    else if tag_a = 248 (* object/exception *)  then
-      (Obj.magic @@ Obj.field a 1) ==  (Obj.magic @@ Obj.field b 1 )
-    else if tag_a = 251 (* abstract_tag *) then
-      raise (Invalid_argument "equal: abstract value")
-    else if tag_a <> tag_b then
-      false
-    else
-      let len_a = Bs_obj.length a in
-      let len_b = Bs_obj.length b in
-      if len_a = len_b then
-        aux_equal_length a b 0 len_a
-      else false
+  else 
+    let a_type = Js.typeof a in 
+    if a_type = "string"
+    ||  a_type = "number"
+    ||  a_type = "boolean"
+    ||  a_type = "undefined"
+    ||  a_type = "null"
+    then false
+    else 
+      let b_type = Js.typeof b in 
+      if a_type = "function" || b_type = "function"
+      then raise (Invalid_argument "equal: functional value")
+      (* first, check using reference equality *)
+      else (* a_type = "object" || "symbol" *)
+      if b_type = "number" || b_type = "null" || b_type = "undefined" then false 
+      else 
+        let tag_a = Bs_obj.tag a in
+        let tag_b = Bs_obj.tag b in
+        (* double_array_tag: 254
+           forward_tag:250
+        *)
+        if tag_a = 250 then
+          caml_equal (Obj.field a 0) b
+        else if tag_b = 250 then
+          caml_equal a (Obj.field b 0)
+        else if tag_a = 248 (* object/exception *)  then
+          (Obj.magic @@ Obj.field a 1) ==  (Obj.magic @@ Obj.field b 1 )
+        else if tag_a = 251 (* abstract_tag *) then
+          raise (Invalid_argument "equal: abstract value")
+        else if tag_a <> tag_b then
+          false
+        else
+          let len_a = Bs_obj.length a in
+          let len_b = Bs_obj.length b in
+          if len_a = len_b then
+            aux_equal_length a b 0 len_a
+          else false
 and aux_equal_length  (a : Obj.t) (b : Obj.t) i same_length =
   if i = same_length then
     true
