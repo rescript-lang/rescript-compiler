@@ -35,22 +35,15 @@ type t =
   }
 
 
-let magic_number = "BS_DEP_INFOS_20161116"
-let bsb_version = "20160121+dev"
+let magic_number = "BS_DEP_INFOS_20170209"
+let bsb_version = "20170209+dev"
+(* TODO: for such small data structure, maybe text format is better *)
 
 let write (fname : string)  (x : t) = 
   let oc = open_out_bin fname in 
   output_string oc magic_number ;
   output_value oc x ; 
   close_out oc 
-
-let read (fname : string) : t = 
-  let ic = open_in_bin fname in  (* Windows binary mode*)
-  let buffer = really_input_string ic (String.length magic_number) in
-  assert (buffer = magic_number);
-  let res : t = input_value ic  in 
-  close_in ic ; 
-  res
 
 
 
@@ -59,9 +52,8 @@ let read (fname : string) : t =
 type check_result = 
   | Good
   | Bsb_file_not_exist (** We assume that it is a clean repo *)
-  | Bsb_version_mismatch
   | Bsb_source_directory_changed
-  | Bsc_version_mismatch
+  | Bsb_bsc_version_mismatch
   | Bsb_forced
   | Other of string
 
@@ -69,11 +61,10 @@ let to_str (check_resoult : check_result) =
   match check_resoult with
   | Good -> Ext_string.empty
   | Bsb_file_not_exist -> "File not found"
-  | Bsb_version_mismatch -> "Bsb version mismatch"
   | Bsb_source_directory_changed -> 
     "Bsb source directory changed"
-  | Bsc_version_mismatch -> 
-    "Bsc version mismatch"
+  | Bsb_bsc_version_mismatch -> 
+    "bsc or bsb version mismatch"
   | Bsb_forced -> 
     "Bsb forced rebuild "  
   | Other s -> 
@@ -89,7 +80,19 @@ let rec check_aux xs i finish =
       check_aux xs (i + 1 ) finish 
     else Other current_file
 
-  
+
+let read (fname : string) cont = 
+  match open_in_bin fname with   (* Windows binary mode*)
+  | ic -> 
+    let buffer = really_input_string ic (String.length magic_number) in
+    if (buffer <> magic_number) then Bsb_bsc_version_mismatch
+    else 
+      let res : t = input_value ic  in 
+      close_in ic ; 
+      cont res
+  | exception _ -> Bsb_file_not_exist 
+
+
 (** check time stamp for all files 
     TODO: those checks system call can be saved later
     Return a reason 
@@ -97,22 +100,23 @@ let rec check_aux xs i finish =
     bit in case we found a different version of compiler
 *)
 let check ~cwd forced file =
-  try 
-    let {
-      file_stamps = xs; source_directory; bsb_version = old_version;
-      bsc_version
-      } = read file  in 
-    if old_version <> bsb_version then Bsb_version_mismatch else
+  read file  begin  function  {
+    file_stamps = xs; source_directory; bsb_version = old_version;
+    bsc_version
+  } ->  
+    if old_version <> bsb_version then Bsb_bsc_version_mismatch else
     if cwd <> source_directory then Bsb_source_directory_changed else
-    if bsc_version <> Bs_version.version then Bsc_version_mismatch else 
+    if bsc_version <> Bs_version.version then Bsb_bsc_version_mismatch else 
     if forced then Bsb_forced (* No need walk through *)
     else
-      check_aux xs  0 (Array.length xs)  
-  with _ -> Bsb_file_not_exist
+      try 
+        check_aux xs  0 (Array.length xs)  
+      with _ -> Bsb_file_not_exist
+  end 
 
 let store ~cwd name file_stamps = 
   write name 
-  { file_stamps ; 
-    source_directory = cwd ; 
-    bsb_version ;
-    bsc_version = Bs_version.version }
+    { file_stamps ; 
+      source_directory = cwd ; 
+      bsb_version ;
+      bsc_version = Bs_version.version }

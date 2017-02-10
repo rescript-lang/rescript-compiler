@@ -130,14 +130,13 @@ let regenerate_ninja cwd bsc_dir forced =
   begin match reason  with 
     | Good -> None  (* Fast path *)
     | Bsb_forced 
-    | Bsc_version_mismatch 
+    | Bsb_bsc_version_mismatch 
     | Bsb_file_not_exist 
-    | Bsb_version_mismatch
     | Bsb_source_directory_changed  
     | Other _ -> 
       print_string "Regenerating build spec : ";
       print_endline (Bsb_dep_infos.to_str reason) ; 
-      if reason = Bsc_version_mismatch then begin 
+      if reason = Bsb_bsc_version_mismatch then begin 
         print_endline "Also clean current repo due to we have detected a different compiler";
         clean_self (); 
       end ; 

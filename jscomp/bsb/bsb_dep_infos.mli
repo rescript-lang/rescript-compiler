@@ -45,10 +45,9 @@ type dep_info = {
 
 type check_result = 
   | Good
-  | Bsb_file_not_exist (** We assume that it is a clean repo *)
-  | Bsb_version_mismatch
+  | Bsb_file_not_exist (** We assume that it is a clean repo *)  
   | Bsb_source_directory_changed
-  | Bsc_version_mismatch
+  | Bsb_bsc_version_mismatch  
   | Bsb_forced
   | Other of string
 
