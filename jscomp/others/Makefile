@@ -6,11 +6,11 @@ MAP_FILES= node bs
 
 SOURCE_LIST= node_path node_fs node_process dict node_module js_array js_string \
 	js_re js_null_undefined node_buffer js_types js_json js_obj bs_dyn bs_dyn_lib \
-	node_child_process js_boolean js_math
+	node_child_process js_boolean js_math js_dict
 
 $(addsuffix .cmj, $(SOURCE_LIST)): $(addsuffix .cmj, $(MAP_FILES))
 
-RUNTIME := $(addsuffix .cmj, $(SOURCE_LIST))
+RUNTIME := $(addsuffix .cmj, $(SOURCE_LIST)) $(addsuffix .cmi, $(SOURCE_LIST))
 
 BS_COMMON_FLAGS= -no-alias-deps -bs-no-version-header -bs-diagnose -bs-no-check-div-by-zero -bs-cross-module-opt -bs-package-name bs-platform
 
@@ -23,7 +23,10 @@ endif
 COMPFLAGS += $(BS_FLAGS)  -I ../runtime -I ../stdlib -w -40 -w -49 -bin-annot
 
 
-
+node.cmi : $(COMPILER)
+node.cmj : $(COMPILER)
+bs.cmi : $(COMPILER)
+bs.cmj : $(COMPILER)
 $(RUNTIME): $(COMPILER)
 
 all: $(RUNTIME)
