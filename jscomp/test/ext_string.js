@@ -581,10 +581,15 @@ function is_valid_source_name(name) {
         ]
       ]);
   if (match) {
-    return is_valid_module_file(match[0]);
+    if (is_valid_module_file(match[0])) {
+      return /* Good */0;
+    }
+    else {
+      return /* Invalid_module_name */1;
+    }
   }
   else {
-    return /* false */0;
+    return /* Suffix_mismatch */2;
   }
 }
 
