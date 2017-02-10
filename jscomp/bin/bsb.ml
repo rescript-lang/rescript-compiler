@@ -6489,7 +6489,7 @@ let print_arrays file_array oc offset  =
     p_str "]" 
 
 
-
+let warning_unused_file : _ format = "WARNING: file %s under %s is ignored due to that it is not a valid module name"
 
 let  handle_list_files dir (s : Ext_json.t array) loc_start loc_end : Ext_file_pp.interval list * _ =  
   if  Ext_array.is_empty s  then 
@@ -6506,7 +6506,7 @@ let  handle_list_files dir (s : Ext_json.t array) loc_start loc_end : Ext_file_p
               end 
             | Invalid_module_name -> 
               print_endline 
-                (Printf.sprintf "file %s under %s is ignored due to that it is not a valid module name"
+                (Printf.sprintf warning_unused_file
                    name dir 
                 ) ; 
               acc 
@@ -6601,7 +6601,7 @@ and parsing_source (dir_index : int) cwd (x : Ext_json.t )
                         Binary_cache.map_update  ~dir acc name 
                       | Invalid_module_name -> 
                         print_endline 
-                          (Printf.sprintf "file %s under %s is ignored due to that it is not a valid module name"
+                          (Printf.sprintf warning_unused_file
                              name dir 
                           ) ; 
                           acc 
