@@ -280,7 +280,7 @@
         },
         "use-stdlib" : {
             "type" : "boolean",
-            "description": "default true(Set use OCaml stdlib or not)"
+            "description": "(experimental currently)default true(Set use OCaml stdlib or not)"
         }
     },
     "additionalProperties": false,

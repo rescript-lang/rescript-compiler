@@ -72,7 +72,7 @@ let resolve_package cwd  package_name =
 
   match Bs_pkg.resolve_bs_package ~cwd package_name  with 
   | None -> 
-    Ext_pervasives.failwithf ~loc:__LOC__"package: %s not found when resolve bs-dependencies" package_name
+    Bsb_exception.error (Package_not_found (package_name,None))
   | Some x -> 
     {
       Bsb_config_types.package_name ;

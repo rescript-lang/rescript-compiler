@@ -652,8 +652,8 @@ bsb/bsb_build_ui.cmx : ext/string_vec.cmx ext/string_set.cmx \
     bsb/bsb_build_schemas.cmx common/binary_cache.cmx bsb/bsb_build_ui.cmi
 bsb/bsb_build_util.cmx : ext/literals.cmx ext/ext_sys.cmx ext/ext_string.cmx \
     ext/ext_list.cmx ext/ext_json.cmx ext/ext_filename.cmx ext/ext_array.cmx \
-    bsb/bsb_config.cmx bsb/bsb_build_schemas.cmx common/bs_pkg.cmx \
-    bsb/bsb_build_util.cmi
+    bsb/bsb_exception.cmx bsb/bsb_config.cmx bsb/bsb_build_schemas.cmx \
+    common/bs_pkg.cmx bsb/bsb_build_util.cmi
 bsb/bsb_config.cmx : ext/string_set.cmx ext/literals.cmx ext/ext_string.cmx \
     ext/ext_filename.cmx bsb/bsb_config.cmi
 bsb/bsb_config_parse.cmx : ext/string_map.cmx ext/string_hash_set.cmx \
@@ -664,12 +664,14 @@ bsb/bsb_config_parse.cmx : ext/string_map.cmx ext/string_hash_set.cmx \
 bsb/bsb_config_types.cmx : ext/string_hash_set.cmx bsb/bsb_config.cmx \
     bsb/bsb_build_ui.cmx
 bsb/bsb_default.cmx : ext/string_set.cmx ext/literals.cmx \
-    ext/ext_pervasives.cmx ext/ext_filename.cmx bsb/bsb_config_types.cmx \
+    ext/ext_filename.cmx bsb/bsb_exception.cmx bsb/bsb_config_types.cmx \
     bsb/bsb_config.cmx bsb/bsb_build_util.cmx common/bs_version.cmx \
     common/bs_pkg.cmx bsb/bsb_default.cmi
 bsb/bsb_dep_infos.cmx : ext/ext_string.cmx common/bs_version.cmx \
     bsb/bsb_dep_infos.cmi
 bsb/bsb_dir.cmx : bsb/bsb_dir.cmi
+bsb/bsb_exception.cmx : ext/ext_string.cmx common/bs_version.cmx \
+    bsb/bsb_exception.cmi
 bsb/bsb_file.cmx : bsb/bsb_file.cmi
 bsb/bsb_gen.cmx : ext/string_map.cmx ext/literals.cmx ext/ext_string.cmx \
     ext/ext_filename.cmx bsb/bsb_ninja.cmx bsb/bsb_config_types.cmx \
@@ -699,6 +701,7 @@ bsb/bsb_default.cmi : ext/ext_json.cmi bsb/bsb_config_types.cmx \
     bsb/bsb_config.cmi
 bsb/bsb_dep_infos.cmi :
 bsb/bsb_dir.cmi :
+bsb/bsb_exception.cmi :
 bsb/bsb_file.cmi :
 bsb/bsb_gen.cmi : bsb/bsb_config_types.cmx
 bsb/bsb_helper_main.cmi :
