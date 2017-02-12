@@ -156,7 +156,8 @@ let rec walk_all_deps top dir cb =
           begin match js with
           | `Str {Ext_json.str = new_package} ->
             begin match Bs_pkg.resolve_bs_package ~cwd:dir new_package with
-            | None -> failwith (new_package ^ " not found as dependency of " ^ bsconfig_json )
+            | None -> 
+              Bsb_exception.error (Bsb_exception.Package_not_found (new_package, Some bsconfig_json))
             | Some package_dir  ->
               walk_all_deps  false package_dir cb  ;
             end;
