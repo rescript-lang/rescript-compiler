@@ -93,16 +93,17 @@ OTHERS := literals a test_ari test_export2 test_internalOO test_obj_simple_ffi t
 	gpr_1150\
 	gpr_1154_test\
 	obj_curry_test\
-	gpr_1170
+	gpr_1170\
+	js_re_test
 
-SOURCE_LIST :=  $(OTHERS) 
+SOURCE_LIST :=  $(OTHERS)
 TESTS := $(addsuffix .cmj, $(SOURCE_LIST) )
 ## since we use ppx
-$(addsuffix .cmi, $(OTHERS)): ../runtime/js.cmi 
-$(addsuffix .cmj, $(OTHERS)): ../runtime/js.cmj 
+$(addsuffix .cmi, $(OTHERS)): ../runtime/js.cmi
+$(addsuffix .cmj, $(OTHERS)): ../runtime/js.cmj
 
-COMPFLAGS+=  $(MODULE_FLAGS) -w -40 
-COMPFLAGS+=  -bs-no-version-header -bs-no-error-unused-attribute -bs-diagnose -bs-cross-module-opt -bs-package-name  bs-platform 
+COMPFLAGS+=  $(MODULE_FLAGS) -w -40
+COMPFLAGS+=  -bs-no-version-header -bs-no-error-unused-attribute -bs-diagnose -bs-cross-module-opt -bs-package-name  bs-platform
 
 
 $(TESTS): $(CAMLC)
@@ -138,5 +139,3 @@ simple_lexer_test.ml: simple_lexer_test.mll
 
 depend:
 	$(CAMLDEP) -native $(INCLUDES) *.mli *.ml | sed -e 's/\.cmx/.cmj/g' > .depend
-
-
