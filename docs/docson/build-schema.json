@@ -5,9 +5,12 @@
             "enum": [
                 "commonjs",
                 "amdjs",
+                "amdjs-global",
                 "goog",
-                "es6"
-            ]
+                "es6",
+                "es6-global"
+            ],
+            "description": "amdjs-global and es6-glboal will generate require paths based on relative paths instead of relying on node module resolution"
         },
         "package-specs": {
             "oneOf": [
