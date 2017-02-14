@@ -59030,6 +59030,7 @@ sig
   val copy: t -> t
   val remove:  t -> key -> unit
   val add :  t -> key -> unit
+  val of_array : key array -> t 
   val check_add : t -> key -> bool
   val mem :  t -> key -> bool
   val iter: (key -> unit) ->  t -> unit
@@ -59137,6 +59138,15 @@ let add (h : _ Hash_set_gen.t) key =
       if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h
     end
 
+let of_array arr = 
+  let len = Array.length arr in 
+  let tbl = create len in 
+  for i = 0 to len - 1  do
+    add tbl (Array.unsafe_get arr i);
+  done ;
+  tbl 
+  
+    
 let check_add (h : _ Hash_set_gen.t) key =
   let i = key_index h key  in 
   let h_data = h.data in  
@@ -59799,6 +59809,15 @@ let add (h : _ Hash_set_gen.t) key =
       if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h
     end
 
+let of_array arr = 
+  let len = Array.length arr in 
+  let tbl = create len in 
+  for i = 0 to len - 1  do
+    add tbl (Array.unsafe_get arr i);
+  done ;
+  tbl 
+  
+    
 let check_add (h : _ Hash_set_gen.t) key =
   let i = key_index h key  in 
   let h_data = h.data in  
@@ -60854,6 +60873,15 @@ let add (h : _ Hash_set_gen.t) key =
       if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h
     end
 
+let of_array arr = 
+  let len = Array.length arr in 
+  let tbl = create len in 
+  for i = 0 to len - 1  do
+    add tbl (Array.unsafe_get arr i);
+  done ;
+  tbl 
+  
+    
 let check_add (h : _ Hash_set_gen.t) key =
   let i = key_index h key  in 
   let h_data = h.data in  
@@ -60871,7 +60899,7 @@ let check_add (h : _ Hash_set_gen.t) key =
 let mem (h :  _ Hash_set_gen.t) key =
   Hash_set_gen.small_bucket_mem eq_key key (Array.unsafe_get h.data (key_index h key)) 
 
-# 113
+# 122
 end
   
 
@@ -69767,6 +69795,15 @@ let add (h : _ Hash_set_gen.t) key =
       if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h
     end
 
+let of_array arr = 
+  let len = Array.length arr in 
+  let tbl = create len in 
+  for i = 0 to len - 1  do
+    add tbl (Array.unsafe_get arr i);
+  done ;
+  tbl 
+  
+    
 let check_add (h : _ Hash_set_gen.t) key =
   let i = key_index h key  in 
   let h_data = h.data in  
@@ -91964,6 +92001,129 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
+(**
+  {[
+    _open -> open 
+    _in -> in 
+    _MAX_LENGTH -> MAX_LENGTH
+    _Capital -> Capital 
+    _ -> _     
+    _'x -> 'x 
+
+    _Capital__ -> _Capital 
+    _open__ ->  _open
+    open__ -> open 
+    _MAX__ -> _MAX
+    __ -> __ 
+    __x -> __x 
+    ___ -> _ 
+    _____ -> ___
+
+  ]}
+  First we scan '__' from end to start, 
+  If found, discard it.
+  Otherwise, check if it is [_ + keyword] or followed by capital letter,
+  If so, discard [_].
+
+  Limitations: user can not have [_Capital__, _Capital__other] to 
+  make it all compile to [Capital].
+  Keyword is fine [open__, open__other].
+  So we loose polymorphism over capital letter. 
+  It is okay, otherwise, if [_Captial__] is interpreted as [Capital], then
+  there is no way to express [_Capital]
+*)
+
+(* Copied from [ocaml/parsing/lexer.mll] *)
+let key_words = String_hash_set.of_array [|
+    "and";
+    "as";
+    "assert";
+    "begin";
+    "class";
+    "constraint";
+    "do";
+    "done";
+    "downto";
+    "else";
+    "end";
+    "exception";
+    "external";
+    "false";
+    "for";
+    "fun";
+    "function";
+    "functor";
+    "if";
+    "in";
+    "include";
+    "inherit";
+    "initializer";
+    "lazy";
+    "let";
+    "match";
+    "method";
+    "module";
+    "mutable";
+    "new";
+    "nonrec";
+    "object";
+    "of";
+    "open";
+    "or";
+(*  "parser", PARSER; *)
+    "private";
+    "rec";
+    "sig";
+    "struct";
+    "then";
+    "to";
+    "true";
+    "try";
+    "type";
+    "val";
+    "virtual";
+    "when";
+    "while";
+    "with";
+
+    "mod";
+    "land";
+    "lor";
+    "lxor";
+    "lsl";
+    "lsr";
+    "asr";
+|]
+let double_underscore = "__"
+
+(*https://caml.inria.fr/pub/docs/manual-ocaml/lex.html
+{[
+
+  label-name	::=	 lowercase-ident 
+]}
+*)
+let valid_start_char x =
+  match x with 
+  | '_' | 'a' .. 'z' -> true 
+  | _ -> false 
+let translate ?loc name = 
+  let i = Ext_string.rfind ~sub:double_underscore name in 
+  if i < 0 then 
+    let name_len = String.length name in 
+    if name.[0] = '_' then  begin 
+      let try_key_word = (String.sub name 1 (name_len - 1)) in 
+      if name_len > 1 && 
+        (not (valid_start_char try_key_word.[0])
+        || String_hash_set.mem key_words try_key_word)  then 
+        try_key_word
+      else 
+        name 
+    end
+    else name 
+  else if i = 0 then name 
+  else  String.sub name 0 i 
+
+(*
 let translate ?loc name =
   let i = Ext_string.rfind ~sub:"_" name  in
   if name.[0] = '_' then
@@ -91981,6 +92141,7 @@ let translate ?loc name =
   else if i > 0 then
     String.sub name 0 i
   else name
+*)
 
 end
 module Lam_compile : sig 

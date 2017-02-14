@@ -139,7 +139,8 @@ common/ext_log.cmx : common/js_config.cmx common/ext_log.cmi
 common/bs_loc.cmx : common/bs_loc.cmi
 common/bs_warnings.cmx : ext/literals.cmx common/js_config.cmx \
     common/bs_warnings.cmi
-common/lam_methname.cmx : ext/ext_string.cmx common/lam_methname.cmi
+common/lam_methname.cmx : ext/string_hash_set.cmx ext/ext_string.cmx \
+    common/lam_methname.cmi
 common/binary_cache.cmx : ext/string_map.cmx ext/ext_filename.cmx \
     common/binary_cache.cmi
 common/bs_version.cmi :

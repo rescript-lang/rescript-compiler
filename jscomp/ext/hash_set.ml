@@ -66,6 +66,15 @@ let add (h : _ Hash_set_gen.t) key =
       if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h
     end
 
+let of_array arr = 
+  let len = Array.length arr in 
+  let tbl = create len in 
+  for i = 0 to len - 1  do
+    add tbl (Array.unsafe_get arr i);
+  done ;
+  tbl 
+  
+    
 let check_add (h : _ Hash_set_gen.t) key =
   let i = key_index h key  in 
   let h_data = h.data in  
@@ -83,6 +92,6 @@ let check_add (h : _ Hash_set_gen.t) key =
 let mem (h :  _ Hash_set_gen.t) key =
   Hash_set_gen.small_bucket_mem eq_key key (Array.unsafe_get h.data (key_index h key)) 
 
-# 113
+# 122
 end
   

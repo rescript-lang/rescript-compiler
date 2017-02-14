@@ -2,23 +2,23 @@
 
 class type ['a] case = object 
   method case : int -> 'a 
-  method case_set : int -> 'a -> unit 
+  method case__set : int -> 'a -> unit 
 end[@bs]
 
 
 
 
 (* let f (x : [%bs.obj: < case : int ->  'a ;  *)
-(*             case_set : int ->  int -> unit ; *)
+(*             case__set : int ->  int -> unit ; *)
 (*             .. > [@bs] ] ) *)
 (*  =  *)
-(*   x ## case_set 3 2 ; *)
+(*   x ## case__set 3 2 ; *)
 (*   x ## case 3  *)
 
 
 let ff (x : int case  Js.t)
  = 
-  x##case_set 3 2 ;
+  x##case__set 3 2 ;
   x##case 3 
 
 
@@ -33,13 +33,13 @@ let h (x :
 type x_obj =  
   [%bs.obj: < 
     cse : int ->  int [@bs] ; 
-    cse_st : int -> int -> unit [@bs];
+    cse__st : int -> int -> unit [@bs];
   >   ]
 
 let f_ext 
     (x : x_obj)
  = 
- x #@ cse_st  3 2;
+ x #@ cse__st  3 2;
  x #@ cse  3
 
 

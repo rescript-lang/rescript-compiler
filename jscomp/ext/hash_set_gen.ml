@@ -153,6 +153,7 @@ sig
   val copy: t -> t
   val remove:  t -> key -> unit
   val add :  t -> key -> unit
+  val of_array : key array -> t 
   val check_add : t -> key -> bool
   val mem :  t -> key -> bool
   val iter: (key -> unit) ->  t -> unit

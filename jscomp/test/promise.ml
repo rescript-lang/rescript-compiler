@@ -8,7 +8,7 @@ let f p =
 
 class type promise =
   object
-    method then_ : 'a -> 'b
+    method _then : 'a -> 'b
     method catch : 'a -> 'b
   end [@bs]
 
@@ -17,18 +17,18 @@ external new_promise : unit -> promise Js.t =
 
 let () =
   let p = new_promise() in
-  (p##then_(fun x -> x + 3))##catch_(fun reason -> reason)
+  (p##_then(fun x -> x + 3))##catch(fun reason -> reason)
 
 
 let u = 
-  [%bs.obj{ then_ = 3 ; 
+  [%bs.obj{ _then = 3 ; 
     catch  = 32
   }]
 
 
 let uu = [%bs.obj{
-  _'x_ = 3
+  _'x = 3
 }]
 
 
-let hh = uu##_'x_
+let hh = uu##_'x

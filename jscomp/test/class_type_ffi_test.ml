@@ -3,7 +3,7 @@ class type ['k,'v] arrayLike =
   object 
     method case : 'k -> 'v Js.Null.t 
     method caseSet : 'k * 'v -> unit 
-    method case_unsafe : 'k -> 'v 
+    method case__unsafe : 'k -> 'v 
     method length : int 
   end[@bs]
 
@@ -15,14 +15,14 @@ class type intArray = [int, int] arrayLike
 let sum_float_array (arr : floatArray Js.t) = 
   let v = ref 0. in
   for i = 0 to arr##length - 1 do 
-    v := !v +. arr##case_unsafe i     
+    v := !v +. arr##case__unsafe i     
   done;
   !v 
 
 let sum_int_array (arr : intArray Js.t) = 
   let v = ref 0 in
   for i = 0 to arr##length - 1 do 
-    v := !v + arr## case_unsafe i     
+    v := !v + arr## case__unsafe i     
   done;
   !v 
 
@@ -30,7 +30,7 @@ let sum_int_array (arr : intArray Js.t) =
 let sum_poly zero add (arr : _ arrayLike Js.t) = 
   let v = ref zero in 
   for i = 0 to arr##length - 1 do 
-    v := add  !v  (arr##case_unsafe i ) [@bs] 
+    v := add  !v  (arr##case__unsafe i ) [@bs] 
   done;
   !v 
 
@@ -39,7 +39,7 @@ let sum_poly zero add (arr : _ arrayLike Js.t) =
    ['a Js.prop_set] for better error message
 *)
 let test_set x = 
-  x##length_aux #= 3 
+  x##length__aux #= 3 
 
 let f (x : < bark : string -> unit [@bs.meth] ; fight : unit -> unit [@bs.meth] > Js.t)  =
   x##bark "he";
