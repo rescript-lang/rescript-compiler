@@ -29,17 +29,20 @@
     _in -> in 
     _MAX_LENGTH -> MAX_LENGTH
     _Capital -> Capital 
-    _ -> _     
+    
+    _open__ ->  _open
+    open__ -> open 
+    
     _'x -> 'x 
 
     _Capital__ -> _Capital 
-    _open__ ->  _open
-    open__ -> open 
     _MAX__ -> _MAX
     __ -> __ 
     __x -> __x 
-    ___ -> _ 
-    _____ -> ___
+    ___ -> _     
+    ____ -> __
+    _ -> _  (* error *)   
+    
 
   ]}
   First we scan '__' from end to start, 

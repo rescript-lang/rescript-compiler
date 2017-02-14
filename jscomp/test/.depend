@@ -280,6 +280,7 @@ mt.cmj : ../others/node.cmj ../stdlib/list.cmj ../stdlib/array.cmj mt.cmi
 mt_global.cmj : mt.cmj mt_global.cmi
 mutable_obj_test.cmj : ../runtime/js.cmj
 mutual_non_recursive_type.cmj :
+name_mangle_test.cmj : mt.cmj ../runtime/js.cmj
 nested_include.cmj :
 nested_module_alias.cmj : ../stdlib/list.cmj
 nested_obj_literal.cmj :
