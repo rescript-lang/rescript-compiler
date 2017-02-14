@@ -110,6 +110,10 @@ Suppose you have mocha installed, if not, try `npm install mocha`
 
 `mocha -R list jscomp/test/your_test_file.js`
 
+To build libs, tests and run all tests:
+
+`make libs && make -C test all && npm test`
+
 * See the coverage
 
 `npm run cover`
