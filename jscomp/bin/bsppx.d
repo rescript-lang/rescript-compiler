@@ -61,6 +61,7 @@ bin/bsppx.ml : common/bs_warnings.mli
 bin/bsppx.ml : common/lam_methname.ml
 bin/bsppx.ml : ext/ext_pervasives.mli
 bin/bsppx.ml : ext/string_hash_set.ml
+bin/bsppx.ml : stubs/bs_hash_stubs.ml
 bin/bsppx.ml : syntax/ast_external.ml
 bin/bsppx.ml : syntax/ast_literal.mli
 bin/bsppx.ml : syntax/ast_payload.mli
