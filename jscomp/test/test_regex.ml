@@ -1,6 +1,1 @@
-
-
-
-
-
-let v = [%bs.re "/b/g"]
+let v = [%bs.re "/b/ig"]

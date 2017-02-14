@@ -100574,6 +100574,34 @@ let arity_of_fun
   is_unit_cont ~yes:0 ~no:1 pat + aux e 
 
 end
+module Ext_js_regex : sig 
+#1 "ext_js_regex.mli"
+(*This is a module that checks if js regex is valid or not*)
+
+val js_regex_checker : string -> bool
+end = struct
+#1 "ext_js_regex.ml"
+(*It is unfortunate we cannot use a recursive function to process
+string and for loop is very limited in OCaml *)
+let check_from_end s =
+    let rtn = ref false in 
+    let () = for i = String.length s - 1 downto 0 do
+        let c = String.get s i in 
+        if c = '/' && i <> 0 then
+            rtn := true
+    done in 
+    !rtn
+
+(*This does a very simple check*)
+(*The first character of a regex string should be a '/'*)
+(*The last few characters of a regex string can be a flag, so we go through string
+backwards, find the first '/' we encountered. If it is not the first character then 
+we have the "/.../..." structure a regex string requires.*)
+let js_regex_checker s = 
+  let check_first = String.get s 0 = '/' in
+  let check_last = check_from_end s in 
+  check_first && check_last
+end
 module Ast_util : sig 
 #1 "ast_util.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -100691,7 +100719,7 @@ val handle_debugger :
   loc -> Ast_payload.t -> Parsetree.expression_desc
 
 val handle_raw : 
-  loc -> Ast_payload.t -> Parsetree.expression
+  ?check_js_regex: bool -> loc -> Ast_payload.t -> Parsetree.expression
 
 
 val handle_raw_structure : 
@@ -100994,23 +101022,32 @@ let handle_debugger loc payload =
   else Location.raise_errorf ~loc "bs.raw can only be applied to a string"
 
 
-let handle_raw loc payload = 
+let handle_raw ?(check_js_regex = false) loc payload = 
   begin match Ast_payload.as_string_exp payload with 
     | None ->
       Location.raise_errorf ~loc
         "bs.raw can only be applied to a string "
 
-    | Some exp -> 
-      let pexp_desc = 
+    | Some exp ->
+      let exp_rtn exp_par = 
+      let pexp_desc =
         Parsetree.Pexp_apply (
           Exp.ident {loc; 
                      txt = 
                        Ldot (Ast_literal.Lid.js_unsafe, 
                              Literals.js_pure_expr)},
-          ["",exp]
+          ["",exp_par]
         )
       in
-      { exp with pexp_desc }
+      { exp_par with pexp_desc } in
+      match (exp, check_js_regex) with 
+      | ({
+          pexp_desc = Pexp_constant (Const_string (str, _)) ; 
+          pexp_loc = _; 
+          pexp_attributes = _
+        }, true) -> if Ext_js_regex.js_regex_checker str then exp_rtn exp else Location.raise_errorf 
+            ~loc "regex is not valid"
+      | (_,_) -> exp_rtn exp
   end
 
 
@@ -101747,10 +101784,6 @@ let handle_core_type
     else inner_type
   | _ -> super.typ self ty
 
-
-
-
-
 let rec unsafe_mapper : Ast_mapper.mapper =   
   { Ast_mapper.default_mapper with 
     expr = (fun self ({ pexp_loc = loc } as e) -> 
@@ -101759,13 +101792,13 @@ let rec unsafe_mapper : Ast_mapper.mapper =
         | Pexp_extension (
             {txt = ("bs.raw" | "raw"); loc} , payload)
           -> 
-          Ast_util.handle_raw loc payload
+          (Ast_util.handle_raw loc payload)
         | Pexp_extension (
             {txt = ("bs.re" | "re"); loc} , payload)
           ->
           Exp.constraint_ ~loc
-            (Ast_util.handle_raw loc payload)
-            (Ast_comb.to_js_re_type loc)            
+            (Ast_util.handle_raw ~check_js_regex:true loc payload)
+            (Ast_comb.to_js_re_type loc)
         | Pexp_extension
             ({txt = ("bs.node" | "node"); loc},
              payload)
