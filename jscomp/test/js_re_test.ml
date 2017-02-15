@@ -6,7 +6,7 @@ let suites = Mt.[
       |> Js.Re.exec "http://xxx.domain.com"
       |> Js.Re.matches in
 
-    Eq ("xxx", Array.get res 0 |> Js.String.substringToEnd 7)
+    Eq ("xxx", Array.get res 0 |> Js.String.substringToEnd ~from:7)
 
   );
   "test_str", (fun _ ->
