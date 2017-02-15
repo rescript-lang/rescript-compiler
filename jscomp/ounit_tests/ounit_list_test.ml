@@ -20,5 +20,12 @@ let suites =
             [false;false] [1;2]
       )  [true;false;false]
     end;
+    __LOC__ >:: begin fun _ -> 
+      OUnit.assert_equal (
+        Ext_list.map_acc ["1";"2";"3"] (fun x -> string_of_int x) [0;1;2] 
+
+      )
+      ["0";"1";"2"; "1";"2";"3"]
+    end;
     
   ]

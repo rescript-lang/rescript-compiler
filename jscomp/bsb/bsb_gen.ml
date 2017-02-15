@@ -51,7 +51,7 @@ let output_ninja
     {
     Bsb_config_types.package_name;
     ocamllex;
-    external_includes = bs_external_includes;
+    external_includes;
     bsc_flags ; 
     ppx_flags;
     bs_dependencies;
@@ -103,6 +103,18 @@ let output_ninja
           Bsb_build_schemas.bsb_dir_group, "0"  (*TODO: avoid name conflict in the future *)
         |] oc ;
     in
+    let all_includes acc  = 
+        match external_includes with 
+        | [] -> acc 
+        | _ ->  
+          (* for external includes, if it is absolute path, leave it as is 
+            for relative path './xx', we need '../.././x' since we are in 
+            [lib/bs], [build] is different from merlin though
+          *)
+          Ext_list.map_acc acc 
+          (fun x -> if Filename.is_relative x then Bsb_config.rev_lib_bs_prefix  x else x) 
+          external_includes
+    in 
     let  static_resources =
       let number_of_dev_groups = Bsb_build_ui.get_current_number_of_dev_groups () in
       if number_of_dev_groups = 0 then
@@ -112,7 +124,8 @@ let output_ninja
             ) (String_map.empty,[],[]) bs_file_groups in
         Binary_cache.write_build_cache (builddir // Binary_cache.bsbuild_cache) [|bs_groups|] ;
         Bsb_ninja.output_kv
-          Bsb_build_schemas.bsc_lib_includes (Bsb_build_util.flag_concat dash_i @@ (bs_external_includes @ source_dirs  ))  oc ;
+          Bsb_build_schemas.bsc_lib_includes (Bsb_build_util.flag_concat dash_i @@ 
+          (all_includes source_dirs  ))  oc ;
         static_resources
       else
         let bs_groups = Array.init  (number_of_dev_groups + 1 ) (fun i -> String_map.empty) in
@@ -126,7 +139,8 @@ let output_ninja
         (* Make sure [sources] does not have files in [lib] we have to check later *)
         let lib = bs_groups.(0) in
         Bsb_ninja.output_kv
-          Bsb_build_schemas.bsc_lib_includes (Bsb_build_util.flag_concat dash_i @@ (bs_external_includes @ source_dirs.(0))) oc ;
+          Bsb_build_schemas.bsc_lib_includes (Bsb_build_util.flag_concat dash_i @@
+           (all_includes source_dirs.(0))) oc ;
         for i = 1 to number_of_dev_groups  do
           let c = bs_groups.(i) in
           String_map.iter (fun k _ -> if String_map.mem k lib then failwith ("conflict files found:" ^ k)) c ;

@@ -711,6 +711,18 @@ function rev_map_acc(acc, f, l) {
   };
 }
 
+function map_acc(acc, f, l) {
+  if (l) {
+    return /* :: */[
+            Curry._1(f, l[0]),
+            map_acc(acc, f, l[1])
+          ];
+  }
+  else {
+    return acc;
+  }
+}
+
 function rev_iter(f, xs) {
   if (xs) {
     rev_iter(f, xs[1]);
@@ -988,6 +1000,7 @@ exports.for_all_ret        = for_all_ret;
 exports.for_all_opt        = for_all_opt;
 exports.fold               = fold;
 exports.rev_map_acc        = rev_map_acc;
+exports.map_acc            = map_acc;
 exports.rev_iter           = rev_iter;
 exports.for_all2_no_exn    = for_all2_no_exn;
 exports.find_no_exn        = find_no_exn;

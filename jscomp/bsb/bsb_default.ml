@@ -94,8 +94,13 @@ let set_bs_dependencies ~cwd s =
 
 
 let bs_external_includes = ref []
+
+(** we should not resolve it too early,
+  since it is external configuration
+*)
 let set_bs_external_includes s =
-  bs_external_includes := List.map Bsb_build_util.convert_and_resolve_path (get_list_string s )
+  bs_external_includes := get_list_string s 
+  (* List.map Bsb_build_util.convert_and_resolve_path *) 
 let get_bs_external_includes () = !bs_external_includes
 
 

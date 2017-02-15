@@ -115,10 +115,21 @@ let merlin_file_gen
         Buffer.add_string buffer (merlin_flg_ppx ^ x )
       );
     Buffer.add_string buffer (merlin_flg_ppx  ^ built_in_ppx);
+    (*
     (match external_includes with 
     | [] -> ()
     | _ -> 
-      Buffer.add_string buffer (merlin_flg ^ Bsb_build_util.flag_concat "-I" external_includes));
+    
+      Buffer.add_string buffer (merlin_flg ^ Bsb_build_util.flag_concat "-I" external_includes
+      ));
+    *)
+    external_includes 
+    |> List.iter (fun path -> 
+        Buffer.add_string buffer merlin_s ;
+        Buffer.add_string buffer path ;
+        Buffer.add_string buffer merlin_b;
+        Buffer.add_string buffer path ;
+    );      
     (match built_in_dependency with
      | None -> ()
      | Some package -> 
