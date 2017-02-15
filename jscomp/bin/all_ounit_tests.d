@@ -43,6 +43,7 @@ bin/all_ounit_tests.ml : ext/int_vec_vec.ml
 bin/all_ounit_tests.ml : ext/string_map.mli
 bin/all_ounit_tests.ml : ext/union_find.mli
 bin/all_ounit_tests.ml : ext/ext_filename.ml
+bin/all_ounit_tests.ml : ext/ext_js_regex.ml
 bin/all_ounit_tests.ml : ext/ext_topsort.mli
 bin/all_ounit_tests.ml : ext/hash_set_gen.ml
 bin/all_ounit_tests.ml : ext/int_hash_set.ml
@@ -52,6 +53,7 @@ bin/all_ounit_tests.ml : ext/resize_array.ml
 bin/all_ounit_tests.ml : ounit/oUnitTypes.ml
 bin/all_ounit_tests.ml : ounit/oUnitUtils.ml
 bin/all_ounit_tests.ml : ext/ext_filename.mli
+bin/all_ounit_tests.ml : ext/ext_js_regex.mli
 bin/all_ounit_tests.ml : ext/hash_set_poly.ml
 bin/all_ounit_tests.ml : ext/int_hash_set.mli
 bin/all_ounit_tests.ml : ext/int_vec_util.mli
@@ -96,4 +98,5 @@ bin/all_ounit_tests.ml : ounit_tests/ounit_hash_stubs_test.ml
 bin/all_ounit_tests.ml : ounit_tests/ounit_ident_mask_tests.ml
 bin/all_ounit_tests.ml : ounit_tests/ounit_union_find_tests.ml
 bin/all_ounit_tests.ml : ounit_tests/ounit_ffi_error_debug_test.ml
+bin/all_ounit_tests.ml : ounit_tests/ounit_js_regex_checker_tests.ml
 bin/all_ounit_tests.ml : ounit_tests/ounit_ordered_hash_set_tests.ml

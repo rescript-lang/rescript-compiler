@@ -262,7 +262,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
         | Pexp_extension (
             {txt = ("bs.raw" | "raw"); loc} , payload)
           -> 
-          (Ast_util.handle_raw loc payload)
+          Ast_util.handle_raw loc payload
         | Pexp_extension (
             {txt = ("bs.re" | "re"); loc} , payload)
           ->

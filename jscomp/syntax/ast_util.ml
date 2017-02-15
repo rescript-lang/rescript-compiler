@@ -286,32 +286,24 @@ let handle_debugger loc payload =
   else Location.raise_errorf ~loc "bs.raw can only be applied to a string"
 
 
-let handle_raw ?(check_js_regex = false) loc payload = 
-  begin match Ast_payload.as_string_exp payload with 
-    | None ->
+let handle_raw ?(check_js_regex = false) loc payload =
+  begin match Ast_payload.as_string_exp ~check_js_regex payload with
+    | Error1 ->
       Location.raise_errorf ~loc
-        "bs.raw can only be applied to a string "
-
-    | Some exp ->
-      let exp_rtn exp_par = 
-      let pexp_desc =
+        "bs.raw can only be applied to a string"
+    | Error2 ->
+      Location.raise_errorf ~loc "this is an invalid js regex"
+    | Correct exp ->
+      let pexp_desc = 
         Parsetree.Pexp_apply (
           Exp.ident {loc; 
                      txt = 
                        Ldot (Ast_literal.Lid.js_unsafe, 
                              Literals.js_pure_expr)},
-          ["",exp_par]
+          ["",exp]
         )
       in
-      { exp_par with pexp_desc } in
-      match (exp, check_js_regex) with 
-      | ({
-          pexp_desc = Pexp_constant (Const_string (str, _)) ; 
-          pexp_loc = _; 
-          pexp_attributes = _
-        }, true) -> if Ext_js_regex.js_regex_checker str then exp_rtn exp else Location.raise_errorf 
-            ~loc "regex is not valid"
-      | (_,_) -> exp_rtn exp
+      { exp with pexp_desc }
   end
 
 
@@ -319,7 +311,7 @@ let handle_raw ?(check_js_regex = false) loc payload =
 
 let handle_raw_structure loc payload = 
   begin match Ast_payload.as_string_exp payload with 
-    | Some exp 
+    | Correct exp 
       -> 
       let pexp_desc = 
         Parsetree.Pexp_apply(
@@ -328,9 +320,12 @@ let handle_raw_structure loc payload =
       Ast_helper.Str.eval 
         { exp with pexp_desc }
 
-    | None
+    | Error1
       -> 
       Location.raise_errorf ~loc "bs.raw can only be applied to a string"
+    | Error2 
+      ->
+      Location.raise_errorf ~loc "this is an invalid js regex"
   end
 
 

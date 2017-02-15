@@ -31,12 +31,13 @@ type t = Parsetree.payload
 type lid = string Asttypes.loc
 type label_expr = lid  * Parsetree.expression
 type action = 
-   lid * Parsetree.expression option 
+   lid * Parsetree.expression option
 
 val is_single_string : t -> string option
 val is_single_int : t -> int option 
 
-val as_string_exp : t -> Parsetree.expression option
+type rtn = Error1 | Error2 | Correct of Parsetree.expression
+val as_string_exp : ?check_js_regex: bool -> t -> rtn
 val as_core_type : Location.t -> t -> Parsetree.core_type    
 val as_empty_structure :  t -> bool 
 val as_ident : t -> Longident.t Asttypes.loc option
