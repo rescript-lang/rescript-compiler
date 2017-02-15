@@ -66,11 +66,14 @@ type arg_type = Ast_core_type.arg_type =
   | Int of (int * int ) list (* ([`a | `b ] [@bs.int])*)
   | Arg_int_lit of int 
   | Arg_string_lit of string 
+  | Fn_uncurry_arity of int (* annotated with [@bs.uncurry ] or [@bs.uncurry 2]*)
   (* maybe we can improve it as a combination of {!Asttypes.constant} and tuple *)
   | Array 
   | Extern_unit
   | Nothing
-  | Ignore
+
+  
+  | Ignore (* annotated with [@bs.ignore] *)
 
 type arg_label = 
   | Label of string 

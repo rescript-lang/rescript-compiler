@@ -55,7 +55,7 @@ let get_arg_type ~nolabel optional
         Arg_string_lit i, Ast_literal.type_string ~loc:ptyp.ptyp_loc () 
     end 
   else 
-    match Ast_attributes.process_bs_string_int ptyp.ptyp_attributes, ptyp.ptyp_desc with 
+    match Ast_attributes.process_bs_string_int_uncurry ptyp.ptyp_attributes, ptyp.ptyp_desc with 
     | (`String, ptyp_attributes),  Ptyp_variant ( row_fields, Closed, None)
       -> 
       let case, result, row_fields  = 
@@ -120,6 +120,27 @@ let get_arg_type ~nolabel optional
       }
 
     | (`Int, _), _ -> Location.raise_errorf ~loc:ptyp.ptyp_loc "Not a valid string type"
+    | (`Uncurry opt_arity, ptyp_attributes), ptyp_desc -> 
+      let real_arity =  Ast_core_type.get_arity ptyp in 
+      (begin match opt_arity, real_arity with 
+      | Some arity, 0 -> 
+        Fn_uncurry_arity arity 
+      | None, 0 -> 
+        Location.raise_errorf 
+          ~loc:ptyp.ptyp_loc 
+          "Can not infer the arity by syntax, either [@bs.uncurry n] or \n\
+          write it in arrow syntax
+          "
+      | None, arity  ->         
+        Fn_uncurry_arity arity
+      | Some arity, n -> 
+        if n <> arity then 
+          Location.raise_errorf 
+            ~loc:ptyp.ptyp_loc 
+            "Inconsistent arity %d vs %d" arity n 
+        else Fn_uncurry_arity arity 
+          
+      end, {ptyp with ptyp_attributes})
     | (`Nothing, ptyp_attributes),  ptyp_desc ->
       begin match ptyp_desc with
         | Ptyp_constr ({txt = Lident "bool"}, [])
@@ -267,15 +288,6 @@ let process_external_attributes
     (init_st, []) prim_attributes 
 
 
-let list_of_arrow (ty : Parsetree.core_type) = 
-  let rec aux (ty : Parsetree.core_type) acc = 
-    match ty.ptyp_desc with 
-    | Ptyp_arrow(label,t1,t2) -> 
-      aux t2 ((label,t1,ty.ptyp_attributes,ty.ptyp_loc) ::acc)
-    | Ptyp_poly(_, ty) -> (* should not happen? *)
-      Location.raise_errorf ~loc:ty.ptyp_loc "Unhandled poly type"
-    | return_type -> ty, List.rev acc
-  in aux ty []
 
 
 (** Note that the passed [type_annotation] is already processed by visitor pattern before 
@@ -291,7 +303,7 @@ let handle_attributes
     else  `Nm_external prim_name  (* need check name *)
   in    
   let result_type, arg_types_ty =
-    list_of_arrow type_annotation in
+    Ast_core_type.list_of_arrow type_annotation in
 
   let (st, left_attrs) = 
     process_external_attributes 
@@ -361,6 +373,9 @@ let handle_attributes
                        {arg_label = Label s; arg_type}, 
                        (label,new_ty,attr,loc)::arg_types, 
                        ((name, [], Ast_literal.type_string ~loc ()) :: result_types)  
+                     | Fn_uncurry_arity _ -> 
+                        Location.raise_errorf ~loc
+                         "The combination of [@@bs.obj], [@@bs.uncurry] is not supported yet"
                      | Extern_unit -> assert false 
                      | NonNullString _ 
                        ->  
@@ -393,6 +408,9 @@ let handle_attributes
                      | Arg_int_lit _   
                      | Arg_string_lit _ -> 
                        Location.raise_errorf ~loc "bs.as is not supported with optional yet"
+                     | Fn_uncurry_arity _ -> 
+                        Location.raise_errorf ~loc
+                         "The combination of [@@bs.obj], [@@bs.uncurry] is not supported yet"                      
                      | Extern_unit   -> assert false                      
                      | NonNullString _ 
                        ->  

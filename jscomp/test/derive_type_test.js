@@ -23,4 +23,4 @@ var x = 3;
 
 exports.x           = x;
 exports.vv_to_value = vv_to_value;
-/* vv_to_value Not a pure module */
+/* No side effect */

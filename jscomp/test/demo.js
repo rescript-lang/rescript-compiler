@@ -56,10 +56,26 @@ function ui_layout(compile, lookup, appContext) {
   };
   grid.minHeight = 300;
   grid.titleRows = /* array */[
-    mk_titleRow("Ticker"),
-    mk_titleRow("Bid"),
-    mk_titleRow("Ask"),
-    mk_titleRow("Result")
+    {
+      label: {
+        text: "Ticker"
+      }
+    },
+    {
+      label: {
+        text: "Bid"
+      }
+    },
+    {
+      label: {
+        text: "Ask"
+      }
+    },
+    {
+      label: {
+        text: "Result"
+      }
+    }
   ];
   grid.columns = /* array */[
     u,

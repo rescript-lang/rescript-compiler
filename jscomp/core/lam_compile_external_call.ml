@@ -91,6 +91,7 @@ let ocaml_to_js_eff
     | Empty_string_lit _  -> assert false in 
   match arg_type with
   | Arg_int_lit _ | Arg_string_lit _ -> assert false 
+  | Fn_uncurry_arity _ -> assert false 
   | Extern_unit ->  
     (if arg_label = Empty then [] else [E.unit]), 
     (if Js_analyzer.no_side_effect_expression arg then 
@@ -276,7 +277,9 @@ let assemble_args_splice call_loc ffi  js_splice arg_types args : E.t list * E.t
   end
 
 
-let translate_ffi call_loc (ffi : Ast_ffi_types.ffi ) prim_name
+let translate_ffi 
+  call_loc (ffi : Ast_ffi_types.ffi ) 
+  (* prim_name *)
     (cxt  : Lam_compile_defs.cxt)
     arg_types result_type
     (args : J.expression list) = 
@@ -441,15 +444,3 @@ let translate_ffi call_loc (ffi : Ast_ffi_types.ffi ) prim_name
       | _ -> assert false
     end
 
-
-
-let translate loc cxt 
-    ({prim_name ;  prim_native_name} 
-     : Primitive.description) args  = 
-
-  match Ast_ffi_types.from_string prim_native_name with 
-  | Ffi_normal ->    
-    Lam_dispatch_primitive.translate prim_name args 
-  | Ffi_obj_create labels -> assemble_args_obj labels args 
-  | Ffi_bs (arg_types, result_type, ffi) -> 
-    translate_ffi loc  ffi prim_name cxt arg_types result_type args 

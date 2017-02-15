@@ -50,4 +50,4 @@ eq('File "gpr_459_test.ml", line 28, characters 5-12', /* tuple */[
 
 Mt.from_pair_suites("gpr_459_test.ml", suites[0]);
 
-/* uu Not a pure module */
+/* hh Not a pure module */

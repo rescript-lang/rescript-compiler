@@ -5494,6 +5494,8 @@ let is_single_int (x : t ) =
       _}] -> Some name
   | _  -> None
 
+
+
 let as_string_exp (x : t ) = 
   match x with  (** TODO also need detect empty phrase case *)
   | PStr [ {
@@ -7127,8 +7129,8 @@ type derive_attr = {
   explict_nonrec : bool;
   bs_deriving : [`Has_deriving of Ast_payload.action list | `Nothing ]
 }
-val process_bs_string_int : 
-  t -> [`Nothing | `String | `Int | `Ignore]  * t 
+val process_bs_string_int_uncurry : 
+  t -> [`Nothing | `String | `Int | `Ignore | `Uncurry of int option ]  * t 
 
 val process_bs_string_as :
   t -> string option * t 
@@ -7152,6 +7154,9 @@ val bs_method : attr
 
 
 val warn_unused_attributes : t -> unit
+
+
+
 end = struct
 #1 "ast_attributes.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -7302,10 +7307,10 @@ let process_derive_type attrs =
 
 
 
-let process_bs_string_int attrs = 
+let process_bs_string_int_uncurry attrs = 
   List.fold_left 
     (fun (st,attrs)
-      (({txt ; loc}, payload ) as attr : attr)  ->
+      (({txt ; loc}, (payload : _ ) ) as attr : attr)  ->
       match  txt, st  with
       | "bs.string", (`Nothing | `String)
         -> `String, attrs
@@ -7313,6 +7318,13 @@ let process_bs_string_int attrs =
         ->  `Int, attrs
       | "bs.ignore", (`Nothing | `Ignore)
         -> `Ignore, attrs
+      
+      | "bs.uncurry", `Nothing
+        ->
+          `Uncurry (Ast_payload.is_single_int payload), attrs 
+        (* Don't allow duplicated [bs.uncurry] since
+           it may introduce inconsistency in arity
+        *)  
       | "bs.int", _
       | "bs.string", _
       | "bs.ignore", _
@@ -9093,8 +9105,8 @@ val is_unit : t -> bool
 val is_array : t -> bool 
 type arg_label =
   | Label of string 
-(*| Label_int_lit of string * int 
-  | Label_string_lit of string * string *)
+  (*| Label_int_lit of string * int 
+    | Label_string_lit of string * string *)
   | Optional of string 
   | Empty
 type arg_type = 
@@ -9103,6 +9115,7 @@ type arg_type =
   | Int of (int * int ) list 
   | Arg_int_lit of int 
   | Arg_string_lit of string 
+  | Fn_uncurry_arity of int (* annotated with [@bs.uncurry ] or [@bs.uncurry 2]*)  
   | Array 
   | Extern_unit
   | Nothing
@@ -9132,6 +9145,19 @@ val make_obj :
   t
 
 val is_optional_label : string -> bool 
+
+(** 
+  returns 0 when it can not tell arity from the syntax 
+*)
+val get_arity : t -> int 
+
+
+(** fails when Ptyp_poly *)
+val list_of_arrow : 
+  t -> 
+  t *  (Asttypes.label * t * Parsetree.attributes * Location.t) list
+
+
 end = struct
 #1 "ast_core_type.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -9171,6 +9197,7 @@ type arg_type =
   | Int of (int * int ) list (* ([`a | `b ] [@bs.int])*)
   | Arg_int_lit of int 
   | Arg_string_lit of string 
+  | Fn_uncurry_arity of int (* annotated with [@bs.uncurry ] or [@bs.uncurry 2]*)
     (* maybe we can improve it as a combination of {!Asttypes.constant} and tuple *)
   | Array 
   | Extern_unit
@@ -9267,6 +9294,35 @@ let from_labels ~loc arity labels
 let make_obj ~loc xs =
   Ast_comb.to_js_type loc @@
   Ast_helper.Typ.object_  ~loc xs   Closed
+
+
+
+(** 
+
+{[ 'a . 'a -> 'b ]} 
+OCaml does not support such syntax yet
+{[ 'a -> ('a. 'a -> 'b) ]}
+
+*)
+let get_arity (ty : t) = 
+  let rec aux  (ty : t) acc = 
+    match ty.ptyp_desc with 
+    | Ptyp_arrow(_, _ , new_ty) -> 
+      aux new_ty (succ acc)
+    | Ptyp_poly (_,ty) -> 
+      aux ty acc 
+    | _ -> acc in 
+    aux ty 0
+
+let list_of_arrow (ty : t) = 
+  let rec aux (ty : t) acc = 
+    match ty.ptyp_desc with 
+    | Ptyp_arrow(label,t1,t2) -> 
+      aux t2 ((label,t1,ty.ptyp_attributes,ty.ptyp_loc) ::acc)
+    | Ptyp_poly(_, ty) -> (* should not happen? *)
+      Location.raise_errorf ~loc:ty.ptyp_loc "Unhandled poly type"
+    | return_type -> ty, List.rev acc
+  in aux ty []
 
 end
 module Bs_version : sig 
@@ -9512,11 +9568,14 @@ type arg_type = Ast_core_type.arg_type =
   | Int of (int * int ) list (* ([`a | `b ] [@bs.int])*)
   | Arg_int_lit of int 
   | Arg_string_lit of string 
+  | Fn_uncurry_arity of int (* annotated with [@bs.uncurry ] or [@bs.uncurry 2]*)
   (* maybe we can improve it as a combination of {!Asttypes.constant} and tuple *)
   | Array 
   | Extern_unit
   | Nothing
-  | Ignore
+
+  
+  | Ignore (* annotated with [@bs.ignore] *)
 
 type arg_label = 
   | Label of string 
@@ -10480,7 +10539,7 @@ let get_arg_type ~nolabel optional
         Arg_string_lit i, Ast_literal.type_string ~loc:ptyp.ptyp_loc () 
     end 
   else 
-    match Ast_attributes.process_bs_string_int ptyp.ptyp_attributes, ptyp.ptyp_desc with 
+    match Ast_attributes.process_bs_string_int_uncurry ptyp.ptyp_attributes, ptyp.ptyp_desc with 
     | (`String, ptyp_attributes),  Ptyp_variant ( row_fields, Closed, None)
       -> 
       let case, result, row_fields  = 
@@ -10545,6 +10604,27 @@ let get_arg_type ~nolabel optional
       }
 
     | (`Int, _), _ -> Location.raise_errorf ~loc:ptyp.ptyp_loc "Not a valid string type"
+    | (`Uncurry opt_arity, ptyp_attributes), ptyp_desc -> 
+      let real_arity =  Ast_core_type.get_arity ptyp in 
+      (begin match opt_arity, real_arity with 
+      | Some arity, 0 -> 
+        Fn_uncurry_arity arity 
+      | None, 0 -> 
+        Location.raise_errorf 
+          ~loc:ptyp.ptyp_loc 
+          "Can not infer the arity by syntax, either [@bs.uncurry n] or \n\
+          write it in arrow syntax
+          "
+      | None, arity  ->         
+        Fn_uncurry_arity arity
+      | Some arity, n -> 
+        if n <> arity then 
+          Location.raise_errorf 
+            ~loc:ptyp.ptyp_loc 
+            "Inconsistent arity %d vs %d" arity n 
+        else Fn_uncurry_arity arity 
+          
+      end, {ptyp with ptyp_attributes})
     | (`Nothing, ptyp_attributes),  ptyp_desc ->
       begin match ptyp_desc with
         | Ptyp_constr ({txt = Lident "bool"}, [])
@@ -10692,15 +10772,6 @@ let process_external_attributes
     (init_st, []) prim_attributes 
 
 
-let list_of_arrow (ty : Parsetree.core_type) = 
-  let rec aux (ty : Parsetree.core_type) acc = 
-    match ty.ptyp_desc with 
-    | Ptyp_arrow(label,t1,t2) -> 
-      aux t2 ((label,t1,ty.ptyp_attributes,ty.ptyp_loc) ::acc)
-    | Ptyp_poly(_, ty) -> (* should not happen? *)
-      Location.raise_errorf ~loc:ty.ptyp_loc "Unhandled poly type"
-    | return_type -> ty, List.rev acc
-  in aux ty []
 
 
 (** Note that the passed [type_annotation] is already processed by visitor pattern before 
@@ -10716,7 +10787,7 @@ let handle_attributes
     else  `Nm_external prim_name  (* need check name *)
   in    
   let result_type, arg_types_ty =
-    list_of_arrow type_annotation in
+    Ast_core_type.list_of_arrow type_annotation in
 
   let (st, left_attrs) = 
     process_external_attributes 
@@ -10786,6 +10857,9 @@ let handle_attributes
                        {arg_label = Label s; arg_type}, 
                        (label,new_ty,attr,loc)::arg_types, 
                        ((name, [], Ast_literal.type_string ~loc ()) :: result_types)  
+                     | Fn_uncurry_arity _ -> 
+                        Location.raise_errorf ~loc
+                         "The combination of [@@bs.obj], [@@bs.uncurry] is not supported yet"
                      | Extern_unit -> assert false 
                      | NonNullString _ 
                        ->  
@@ -10818,6 +10892,9 @@ let handle_attributes
                      | Arg_int_lit _   
                      | Arg_string_lit _ -> 
                        Location.raise_errorf ~loc "bs.as is not supported with optional yet"
+                     | Fn_uncurry_arity _ -> 
+                        Location.raise_errorf ~loc
+                         "The combination of [@@bs.obj], [@@bs.uncurry] is not supported yet"                      
                      | Extern_unit   -> assert false                      
                      | NonNullString _ 
                        ->  

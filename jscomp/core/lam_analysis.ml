@@ -70,7 +70,11 @@ let rec no_side_effects (lam : Lam.t) : bool =
            *)
           | _ , _-> false
         end 
-
+      | Pjs_call _ -> false 
+      | Pjs_fn_make _         
+      | Pjs_object_create _ -> 
+        List.for_all no_side_effects args   
+        (** TODO: check *)      
       | Pbytes_to_string 
       | Pbytes_of_string 
       | Pglobal_exception _
@@ -134,7 +138,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Pupdate_mod
       | Pjs_unsafe_downgrade _
       | Pdebugger 
-      | Pjs_fn_run _ | Pjs_fn_make _
+      | Pjs_fn_run _ 
       | Pjs_fn_method _ | Pjs_fn_runmethod _
       (* TODO *)
 

@@ -94,4 +94,4 @@ function u_to_value(value) {
 
 exports.t_to_value = t_to_value;
 exports.u_to_value = u_to_value;
-/* t_to_value Not a pure module */
+/* No side effect */

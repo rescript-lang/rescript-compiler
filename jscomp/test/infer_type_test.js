@@ -28,4 +28,4 @@ exports.v  = v;
 exports.vv = vv;
 exports.u  = u;
 exports.uu = uu;
-/* hh Not a pure module */
+/*  Not a pure module */

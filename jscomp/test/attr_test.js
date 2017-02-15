@@ -17,4 +17,4 @@ exports.u    = u;
 exports.h    = h;
 exports.max2 = max2;
 exports.hh   = hh;
-/* u Not a pure module */
+/* h Not a pure module */

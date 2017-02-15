@@ -310,10 +310,28 @@ type name =
   | Name_non_top of Ident.t
 
 
+(**
+   Turn [function f (x,y) { return a (x,y)} ] into [Curry.__2(a)],
+   The idea is that [Curry.__2] will guess the arity of [a], if it does 
+   hit, then there is no cost when passed
+*)
+
+
 (* TODO: refactoring 
    Note that {!pp_function} could print both statement and expression when [No_name] is given 
 *)
-let rec pp_function method_
+let rec
+
+  try_optimize_curry cxt f len function_ = 
+  begin           
+    P.string f Js_config.curry;
+    P.string f L.dot;
+    P.string f "__";
+    P.string f (Printf.sprintf "%d" len);
+    P.paren_group f 1 (fun _ -> expression 1 cxt f function_  )             
+  end              
+
+and  pp_function method_
     cxt (f : P.t) ?(name=No_name)  return 
     (l : Ident.t list) (b : J.block) (env : Js_fun_env.t ) =  
   match b, (name,  return)  with 
@@ -334,14 +352,7 @@ let rec pp_function method_
           | Var (Id i) -> Ident.same a i 
           | _ -> false) l ls ->
     let optimize  len p cxt f v =
-      if p then
-        begin           
-          P.string f Js_config.curry;
-          P.string f L.dot;
-          P.string f "__";
-          P.string f (Printf.sprintf "%d" len);
-          P.paren_group f 1 (fun _ -> arguments cxt f [function_])            
-        end              
+      if p then try_optimize_curry cxt f len function_      
       else
         vident cxt f v
     in
@@ -1712,8 +1723,8 @@ let imports  cxt f (modules : (Ident.t * string) list ) =
       P.string f L.from;
       P.space f;
       (* P.paren_group f 0 @@ (fun _ -> *)
-          pp_string f ~utf:true ~quote:(best_string_quote s) file  
-          (* ) *);
+      pp_string f ~utf:true ~quote:(best_string_quote s) file  
+      (* ) *);
       semi f ;
       P.newline f ;
     ) reversed_list;
@@ -1806,7 +1817,7 @@ let amd_program ~output_prefix kind f (  x : J.deps_program) =
 
 let es6_program  ~output_prefix fmt f (  x : J.deps_program) = 
   let cxt = 
-     imports
+    imports
       Ext_pp_scope.empty
       f
       (List.map 
@@ -1823,7 +1834,7 @@ let es6_program  ~output_prefix fmt f (  x : J.deps_program) =
   es6_export cxt f x.program.exports
 
 
-  
+
 (** Make sure github linguist happy
     {[
       require('Linguist')

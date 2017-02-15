@@ -34,8 +34,8 @@ val is_unit : t -> bool
 val is_array : t -> bool 
 type arg_label =
   | Label of string 
-(*| Label_int_lit of string * int 
-  | Label_string_lit of string * string *)
+  (*| Label_int_lit of string * int 
+    | Label_string_lit of string * string *)
   | Optional of string 
   | Empty
 type arg_type = 
@@ -44,6 +44,7 @@ type arg_type =
   | Int of (int * int ) list 
   | Arg_int_lit of int 
   | Arg_string_lit of string 
+  | Fn_uncurry_arity of int (* annotated with [@bs.uncurry ] or [@bs.uncurry 2]*)  
   | Array 
   | Extern_unit
   | Nothing
@@ -73,3 +74,15 @@ val make_obj :
   t
 
 val is_optional_label : string -> bool 
+
+(** 
+  returns 0 when it can not tell arity from the syntax 
+*)
+val get_arity : t -> int 
+
+
+(** fails when Ptyp_poly *)
+val list_of_arrow : 
+  t -> 
+  t *  (Asttypes.label * t * Parsetree.attributes * Location.t) list
+

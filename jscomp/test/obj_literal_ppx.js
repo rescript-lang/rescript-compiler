@@ -36,4 +36,4 @@ exports.h  = h;
 exports.u  = u;
 exports.v  = v;
 exports.vv = vv;
-/* a Not a pure module */
+/* u Not a pure module */
