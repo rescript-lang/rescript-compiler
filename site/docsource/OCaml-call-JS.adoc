@@ -1195,15 +1195,34 @@ f
 
 #### Object label translation convention
 
-In JS, it is quite common to have several types for a single method, to model
+There are two cases, we might want to do a name mangling for JS object method name.
+
+First, in OCaml, some names are keywords, we want to add an underscore to make it not a syntax
+error. 
+
+.Key-word method:
+[source,ocaml]
+--------------
+f##_open
+f##_MAX_LENGTH
+--------------
+
+.OUTPUT:
+[source,js]
+-----------
+f.open
+f.MAX_LENGTH
+-----------
+
+Second,  it is common to have several types for a single method, to model
 this ad-hoc polymorphism, we introduced a small convention when translating
-object labels, this is useful as below
+object labels, this is _occasionally_ useful as below
 
 .Ad-hoc polymorphism
 [source,ocaml]
 -------------
-f##draw_cat (x,y)
-f##draw_dog (x,y)
+f##draw__cat (x,y)
+f##draw__dog (x,y)
 -------------
 
 .OUTPUT:
@@ -1216,15 +1235,16 @@ f.draw(x,y)
 [NOTE]
 .Rules
 =======
-. If `_` apperas in the first char,
-   * The first char `_` will be discarded
-   * If there is `\_` in the rest chars,
-      chars after last `_` will be discarded
-. Else if there is `\_` in the rest chars,
-  chars after last `_` will be discarded
+. If `__[rest]` appears in the label, index from the right to left.
+   * If index = 0, nothing mangled 
+   * If index > 0, `__[rest]` is dropped
+. Else if `_` is the first char 
+   * If the following char is not 'a' .. 'z',
+      drop the first '_'
+   * Else if the rest happens to be a keyword,
+      drop the first '_'
+   * Else, nothing mangled       
 =======
-
-
 
 
 

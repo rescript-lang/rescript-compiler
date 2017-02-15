@@ -8,18 +8,18 @@ let eq loc x y =
 
 let f x i file v = 
   x##case i ;
-  x##case_set i v;
+  x##case__set i v;
   x##_open file;
-  x##open_ file ;
-  x##_MAX_LENGTH_
+  x##open__ file ;
+  x##_MAX_LENGTH
 
 let ff x i v = 
-  x##make_config ;
-  x##make_config_;
+  x##make__config ;
+  x##make_config;
+  x##make__config #= v ;
   x##make_config #= v ;
-  x##make_config_ #= v ;
-  x##case_unsafe i ;
-  x##__open_ 3
+  x##case__unsafe i ;
+  x##_open__ 3
   (* x##__open 32; *)
   (* x##case_setUnsafe (i,v) *)
 (* do we need polymorphism over [case#=]
@@ -31,10 +31,10 @@ let ff x i v =
 
 let u = [%bs.obj { _Content'type = "x" }]
 
-let h = [%bs.obj { open_ = 3 ; end_ = 32 } ]
+let h = [%bs.obj { _open = 3 ; _end = 32 } ]
 
 let hg x = 
-  x##open_ + x ##end_
+  x##_open + x ##_end
 
 let () = eq __LOC__ 35 (hg  h)
 

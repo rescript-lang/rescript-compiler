@@ -3006,15 +3006,36 @@ BuckleScript too.</p>
 <div class="sect3">
 <h4 id="_object_label_translation_convention"><a class="anchor" href="#_object_label_translation_convention"></a>Object label translation convention</h4>
 <div class="paragraph">
-<p>In JS, it is quite common to have several types for a single method, to model
+<p>There are two cases, we might want to do a name mangling for JS object method name.</p>
+</div>
+<div class="paragraph">
+<p>First, in OCaml, some names are keywords, we want to add an underscore to make it not a syntax
+error.</p>
+</div>
+<div class="listingblock">
+<div class="title">Key-word method:</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-n">f</span><span class="tok-o">##_</span><span class="tok-n">open</span>
+<span class="tok-n">f</span><span class="tok-o">##_</span><span class="tok-n">MAX_LENGTH</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">OUTPUT:</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span class="tok-nx">f</span><span class="tok-p">.</span><span class="tok-nx">open</span>
+<span class="tok-nx">f</span><span class="tok-p">.</span><span class="tok-nx">MAX_LENGTH</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Second,  it is common to have several types for a single method, to model
 this ad-hoc polymorphism, we introduced a small convention when translating
-object labels, this is useful as below</p>
+object labels, this is <em>occasionally</em> useful as below</p>
 </div>
 <div class="listingblock">
 <div class="title">Ad-hoc polymorphism</div>
 <div class="content">
-<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-n">f</span><span class="tok-o">##</span><span class="tok-n">draw_cat</span> <span class="tok-o">(</span><span class="tok-n">x</span><span class="tok-o">,</span><span class="tok-n">y</span><span class="tok-o">)</span>
-<span class="tok-n">f</span><span class="tok-o">##</span><span class="tok-n">draw_dog</span> <span class="tok-o">(</span><span class="tok-n">x</span><span class="tok-o">,</span><span class="tok-n">y</span><span class="tok-o">)</span></code></pre>
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-n">f</span><span class="tok-o">##</span><span class="tok-n">draw__cat</span> <span class="tok-o">(</span><span class="tok-n">x</span><span class="tok-o">,</span><span class="tok-n">y</span><span class="tok-o">)</span>
+<span class="tok-n">f</span><span class="tok-o">##</span><span class="tok-n">draw__dog</span> <span class="tok-o">(</span><span class="tok-n">x</span><span class="tok-o">,</span><span class="tok-n">y</span><span class="tok-o">)</span></code></pre>
 </div>
 </div>
 <div class="listingblock">
@@ -3035,22 +3056,35 @@ object labels, this is useful as below</p>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p>If <code>_</code> apperas in the first char,</p>
+<p>If <code>__[rest]</code> appears in the label, index from the right to left.</p>
 <div class="ulist">
 <ul>
 <li>
-<p>The first char <code>_</code> will be discarded</p>
+<p>If index = 0, nothing mangled</p>
 </li>
 <li>
-<p>If there is <code>_</code> in the rest chars,
-chars after last <code>_</code> will be discarded</p>
+<p>If index &gt; 0, <code>__[rest]</code> is dropped</p>
 </li>
 </ul>
 </div>
 </li>
 <li>
-<p>Else if there is <code>_</code> in the rest chars,
-chars after last <code>_</code> will be discarded</p>
+<p>Else if <code>_</code> is the first char</p>
+<div class="ulist">
+<ul>
+<li>
+<p>If the following char is not 'a' .. 'z',
+drop the first '_'</p>
+</li>
+<li>
+<p>Else if the rest happens to be a keyword,
+drop the first '_'</p>
+</li>
+<li>
+<p>Else, nothing mangled</p>
+</li>
+</ul>
+</div>
 </li>
 </ol>
 </div>

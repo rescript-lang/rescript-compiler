@@ -18,7 +18,7 @@ class type _resp =
   object 
     method statusCode : int [@@bs.set]
     method setHeader : string -> string -> unit
-    method end_ : string -> unit 
+    method _end : string -> unit 
   end[@bs]
 type resp = _resp Js.t 
 class type _server = 

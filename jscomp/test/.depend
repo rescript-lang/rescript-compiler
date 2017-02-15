@@ -238,6 +238,7 @@ js_date.cmj : ../runtime/js.cmj
 js_date_test.cmj : mt.cmj js_date.cmj
 js_json_test.cmj : mt.cmj ../runtime/js.cmj
 js_obj_test.cmj : mt.cmj
+js_re_test.cmj : mt.cmj ../runtime/js.cmj ../stdlib/array.cmj
 js_string_test.cmj : mt.cmj ../runtime/js.cmj
 js_val.cmj :
 jsoo_400_test.cmj : ../stdlib/string.cmj mt.cmj
@@ -279,6 +280,7 @@ mt.cmj : ../others/node.cmj ../stdlib/list.cmj ../stdlib/array.cmj mt.cmi
 mt_global.cmj : mt.cmj mt_global.cmi
 mutable_obj_test.cmj : ../runtime/js.cmj
 mutual_non_recursive_type.cmj :
+name_mangle_test.cmj : mt.cmj ../runtime/js.cmj
 nested_include.cmj :
 nested_module_alias.cmj : ../stdlib/list.cmj
 nested_obj_literal.cmj :

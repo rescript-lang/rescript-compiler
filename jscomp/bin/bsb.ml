@@ -7107,6 +7107,7 @@ sig
   val copy: t -> t
   val remove:  t -> key -> unit
   val add :  t -> key -> unit
+  val of_array : key array -> t 
   val check_add : t -> key -> bool
   val mem :  t -> key -> bool
   val iter: (key -> unit) ->  t -> unit
@@ -7214,6 +7215,15 @@ let add (h : _ Hash_set_gen.t) key =
       if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h
     end
 
+let of_array arr = 
+  let len = Array.length arr in 
+  let tbl = create len in 
+  for i = 0 to len - 1  do
+    add tbl (Array.unsafe_get arr i);
+  done ;
+  tbl 
+  
+    
 let check_add (h : _ Hash_set_gen.t) key =
   let i = key_index h key  in 
   let h_data = h.data in  
