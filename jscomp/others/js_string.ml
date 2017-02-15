@@ -27,9 +27,9 @@ type t = string
 external make : 'a -> t = "String" [@@bs.new]
 external fromCharCode : int -> t = "String.fromCharCode" [@@bs.val]
 external fromCharCodeMany : int array -> t = "String.fromCharCode" [@@bs.val] [@@bs.splice]
-external fromCodePoint : int -> t = "String.fromCodePoint" [@@bs.val] (* es2015 *)
-external fromCodePointMany : int array -> t = "String.fromCodePoint" [@@bs.val] [@@bs.splice] (* es2015 *)
-(* String.raw: es2015, meant to be used with template strings, not directly *)
+external fromCodePoint : int -> t = "String.fromCodePoint" [@@bs.val] (** ES2015 *)
+external fromCodePointMany : int array -> t = "String.fromCodePoint" [@@bs.val] [@@bs.splice] (** ES2015 *)
+(* String.raw: ES2015, meant to be used with template strings, not directly *)
 
 external length : t -> int = "" [@@bs.get]
 external get : t -> int -> t = "" [@@bs.get_index]
@@ -37,17 +37,16 @@ external get : t -> int -> t = "" [@@bs.get_index]
 external charAt : int ->  t = "" [@@bs.send.pipe: t]
 external charCodeAt : int -> float  = "" [@@bs.send.pipe: t]
 (** type it as [float] due to that it may return NAN  *)
-external codePointAt : int -> int Js.undefined = "" [@@bs.send.pipe: t] (* es2015 *)
+external codePointAt : int -> int Js.undefined = "" [@@bs.send.pipe: t] (** ES2015 *)
 
 external concat : t -> t = "" [@@bs.send.pipe: t]
 external concatMany : t array -> t = "concat" [@@bs.send.pipe: t] [@@bs.splice]
 
-external endsWith : t -> Js.boolean = "" [@@bs.send.pipe: t] (* es2015 *)
-external endsWithFrom : t -> int -> Js.boolean = "endsWith" [@@bs.send.pipe: t] (* es2015 *)
-(* screwy name, but screwy function *)
+external endsWith : t -> Js.boolean = "" [@@bs.send.pipe: t] (** ES2015 *)
+external endsWithFrom : t -> int -> Js.boolean = "endsWith" [@@bs.send.pipe: t] (** ES2015 *)
 
-external includes : t -> Js.boolean = "" [@@bs.send.pipe: t] (* es2015 *)
-external includesFrom : t -> int -> Js.boolean = "includes" [@@bs.send.pipe: t] (* es2015 *)
+external includes : t -> Js.boolean = "" [@@bs.send.pipe: t] (** ES2015 *)
+external includesFrom : t -> int -> Js.boolean = "includes" [@@bs.send.pipe: t] (** ES2015 *)
 
 external indexOf : t -> int = "" [@@bs.send.pipe: t]
 external indexOfFrom : t -> int -> int = "indexOf" [@@bs.send.pipe: t]
@@ -60,10 +59,10 @@ external localeCompare : t -> float = "" [@@bs.send.pipe: t]
 
 external match_ : Js_re.t -> t array Js.null = "match" [@@bs.send.pipe: t]
 
-external normalize : t = "" [@@bs.send.pipe: t] (* es2015 *)
-external normalizeByForm : t -> t = "normalize" [@@bs.send.pipe: t] (* es2015 *)
+external normalize : t = "" [@@bs.send.pipe: t] (** ES2015 *)
+external normalizeByForm : t -> t = "normalize" [@@bs.send.pipe: t] (** ES2015 *)
 
-external repeat : int -> t = "" [@@bs.send.pipe: t] (* es2015 *)
+external repeat : int -> t = "" [@@bs.send.pipe: t] (** ES2015 *)
 
 external replace : t ->  t ->  t = "" [@@bs.send.pipe: t]
 external replaceByRe : Js_re.t ->  t ->  t = "replace" [@@bs.send.pipe: t]
@@ -82,8 +81,8 @@ external splitByReAtMost : Js_re.t -> limit:int ->  t array = "split" [@@bs.send
 external splitRegexpLimited : Js_re.t -> int ->  t array = "" [@@bs.send.pipe: t]
 [@@ocaml.deprecated "Please use splitByReAtMost"]
 
-external startsWith : t -> Js.boolean = "" [@@bs.send.pipe: t] (* es2015 *)
-external startsWithFrom : t -> int -> Js.boolean = "startsWith" [@@bs.send.pipe: t] (* es2015 *)
+external startsWith : t -> Js.boolean = "" [@@bs.send.pipe: t] (** ES2015 *)
+external startsWithFrom : t -> int -> Js.boolean = "startsWith" [@@bs.send.pipe: t] (** ES2015 *)
 
 external substr : from:int -> t = "" [@@bs.send.pipe: t]
 external substrAtMost : from:int -> length:int -> t = "substr" [@@bs.send.pipe: t]
@@ -99,5 +98,5 @@ external toLocaleUpperCase : t = "" [@@bs.send.pipe: t]
 external trim : t = "" [@@bs.send.pipe: t]
 
 (* HTML wrappers *)
-external anchor : t -> t = "" [@@bs.send.pipe: t] (* es2015 *)
-external link : t -> t = "" [@@bs.send.pipe: t] (* es2015 *)
+external anchor : t -> t = "" [@@bs.send.pipe: t] (** ES2015 *)
+external link : t -> t = "" [@@bs.send.pipe: t] (** ES2015 *)

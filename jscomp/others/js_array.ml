@@ -24,45 +24,44 @@
 
 type 'a t = 'a array
 type 'a array_like
-type 'a array_iter = 'a array_like (* don't think this is very useful to implement wihtout language support *)
 
-external make : int -> unit Js.undefined array = "Array" [@@bs.new]
+(* commented out until bs has a plan for iterators
+type 'a array_iter = 'a array_like
+*)
 
-external from : 'a array_like -> 'b array = "Array.from" [@@bs.val] (* es2015 *)
-external unsafeFrom : 'a -> 'b array = "Array.from" [@@bs.val] (* es2015 *)
-external fromMap : 'a array_like -> ('a -> 'b [@bs]) -> 'b array = "Array.from" [@@bs.val] (* es2015 *)
-external unsafeFromMap : 'a -> ('b -> 'c [@bs]) -> 'c array = "Array.from" [@@bs.val] (* es2015 *)
-external isArray : 'a -> Js.boolean = "Array.isArray" [@@bs.val] (* es2015 *)
-(* Array.of: seems pointless unless you can bind *) (* es2015 *)
+external from : 'a array_like -> 'b array = "Array.from" [@@bs.val] (** ES2015 *)
+external fromMap : 'a array_like -> ('a -> 'b [@bs]) -> 'b array = "Array.from" [@@bs.val] (** ES2015 *)
+external isArray : 'a -> Js.boolean = "Array.isArray" [@@bs.val] (** ES2015 *)
+(* Array.of: seems pointless unless you can bind *) (** ES2015 *)
 
 external length : 'a array -> int = "" [@@bs.get]
 
 
 (* Mutator functions
 *)
-external copyWithin : to_:int -> 'this = "" [@@bs.send.pipe: 'a t as 'this] (* es2015 *)
-external copyWithinFrom : to_:int -> from:int -> 'this = "copyWithin" [@@bs.send.pipe: 'a t as 'this] (* es2015 *)
-external copyWithinFromRange : to_:int -> start:int -> end_:int -> 'this = "copyWithin" [@@bs.send.pipe: 'a t as 'this] (* es2015 *)
+external copyWithin : to_:int -> 'this = "" [@@bs.send.pipe: 'a t as 'this] (** ES2015 *)
+external copyWithinFrom : to_:int -> from:int -> 'this = "copyWithin" [@@bs.send.pipe: 'a t as 'this] (** ES2015 *)
+external copyWithinFromRange : to_:int -> start:int -> end_:int -> 'this = "copyWithin" [@@bs.send.pipe: 'a t as 'this] (** ES2015 *)
 
-external fill : 'a -> 'this = "" [@@bs.send.pipe: 'a t as 'this] (* es2015 *)
-external fillFrom : 'a -> from:int -> 'this = "fill" [@@bs.send.pipe: 'a t as 'this] (* es2015 *)
-external fillRange : 'a -> start:int -> end_:int -> 'this = "fill" [@@bs.send.pipe: 'a t as 'this] (* es2015 *)
+external fillInPlace : 'a -> 'this = "fill" [@@bs.send.pipe: 'a t as 'this] (** ES2015 *)
+external fillFromInPlace : 'a -> from:int -> 'this = "fill" [@@bs.send.pipe: 'a t as 'this] (** ES2015 *)
+external fillRangeInPlace : 'a -> start:int -> end_:int -> 'this = "fill" [@@bs.send.pipe: 'a t as 'this] (** ES2015 *)
 
 (** https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/push *)
 external pop : 'a Js.undefined = "" [@@bs.send.pipe: 'a t as 'this]
 external push : 'a -> int = "" [@@bs.send.pipe: 'a t as 'this]
 external pushMany : 'a array -> int = "push" [@@bs.send.pipe: 'a t as 'this] [@@bs.splice]
 
-external reverse : 'this = "" [@@bs.send.pipe: 'a t as 'this]
+external reverseInPlace : 'this = "reverse" [@@bs.send.pipe: 'a t as 'this]
 
 external shift : 'a Js.undefined = "" [@@bs.send.pipe: 'a t as 'this]
 
-external sort : 'this = "" [@@bs.send.pipe: 'a t as 'this]
-external sortWith : ('a -> 'a -> int [@bs]) -> 'this = "sort" [@@bs.send.pipe: 'a t as 'this]
+external sortInPlace : 'this = "sort" [@@bs.send.pipe: 'a t as 'this]
+external sortInPlaceWith : ('a -> 'a -> int [@bs]) -> 'this = "sort" [@@bs.send.pipe: 'a t as 'this]
 
-external splice : pos:int -> remove:int -> add:('a array) -> 'this = "" [@@bs.send.pipe: 'a t as 'this] [@@bs.splice]
-external removeFrom : pos:int -> 'this = "splice" [@@bs.send.pipe: 'a t as 'this]
-external removeCount : pos:int -> count:int -> 'this = "splice" [@@bs.send.pipe: 'a t as 'this]
+external spliceInPlace : pos:int -> remove:int -> add:('a array) -> 'this = "splice" [@@bs.send.pipe: 'a t as 'this] [@@bs.splice]
+external removeFromInPlace : pos:int -> 'this = "splice" [@@bs.send.pipe: 'a t as 'this]
+external removeCountInPlace : pos:int -> count:int -> 'this = "splice" [@@bs.send.pipe: 'a t as 'this]
 (* screwy naming, but screwy function *)
 
 external unshift : 'a -> int = "" [@@bs.send.pipe: 'a t as 'this]
@@ -76,7 +75,7 @@ external concat : 'this -> 'this = "" [@@bs.send.pipe: 'a t as 'this]
 external concatMany : 'this array -> 'this = "concat" [@@bs.send.pipe: 'a t as 'this] [@@bs.splice]
 
 (* TODO: Not available in Node V4  *)
-external includes : 'a -> Js.boolean = "" [@@bs.send.pipe: 'a t as 'this] (* es2016 *)
+external includes : 'a -> Js.boolean = "" [@@bs.send.pipe: 'a t as 'this] (** ES2016 *)
 
 external indexOf : 'a  -> int = "" [@@bs.send.pipe: 'a t as 'this]
 external indexOfFrom : 'a -> from:int -> int = "indexOf" [@@bs.send.pipe: 'a t as 'this]
@@ -103,7 +102,9 @@ external toLocaleString : string = "" [@@bs.send.pipe: 'a t as 'this]
 
 (* Iteration functions
 *)
-external entries : (int * 'a) array_iter = "" [@@bs.send.pipe: 'a t as 'this] (* es2015 *)
+(* commented out until bs has a plan for iterators
+external entries : (int * 'a) array_iter = "" [@@bs.send.pipe: 'a t as 'this] (** ES2015 *)
+*)
 
 external every : ('a  -> Js.boolean [@bs]) -> Js.boolean = "" [@@bs.send.pipe: 'a t as 'this]
 external everyi : ('a -> int -> Js.boolean [@bs]) -> Js.boolean = "every" [@@bs.send.pipe: 'a t as 'this]
@@ -112,16 +113,18 @@ external everyi : ('a -> int -> Js.boolean [@bs]) -> Js.boolean = "every" [@@bs.
 external filter : ('a -> bool [@bs]) -> 'this = "" [@@bs.send.pipe: 'a t as 'this]
 external filteri : ('a -> int  -> Js.boolean[@bs]) -> 'this = "filter" [@@bs.send.pipe: 'a t as 'this]
 
-external find : ('a -> bool [@bs]) -> 'a Js.undefined = "" [@@bs.send.pipe: 'a t as 'this] (* es2015 *)
-external findi : ('a -> int -> bool [@bs]) -> 'a Js.undefined  = "find" [@@bs.send.pipe: 'a t as 'this] (* es2015 *)
+external find : ('a -> bool [@bs]) -> 'a Js.undefined = "" [@@bs.send.pipe: 'a t as 'this] (** ES2015 *)
+external findi : ('a -> int -> bool [@bs]) -> 'a Js.undefined  = "find" [@@bs.send.pipe: 'a t as 'this] (** ES2015 *)
 
-external findIndex : ('a -> bool [@bs]) -> int = "" [@@bs.send.pipe: 'a t as 'this] (* es2015 *)
-external findIndexi : ('a -> int -> bool [@bs]) -> int = "findIndex" [@@bs.send.pipe: 'a t as 'this] (* es2015 *)
+external findIndex : ('a -> bool [@bs]) -> int = "" [@@bs.send.pipe: 'a t as 'this] (** ES2015 *)
+external findIndexi : ('a -> int -> bool [@bs]) -> int = "findIndex" [@@bs.send.pipe: 'a t as 'this] (** ES2015 *)
 
 external forEach : ('a -> unit [@bs]) -> unit = "" [@@bs.send.pipe: 'a t as 'this]
 external forEachi : ('a -> int -> unit [@bs]) -> unit  = "forEach" [@@bs.send.pipe: 'a t as 'this]
 
-external keys : int array_iter = "" [@@bs.send.pipe: 'a t as 'this] (* es2015 *)
+(* commented out until bs has a plan for iterators
+external keys : int array_iter = "" [@@bs.send.pipe: 'a t as 'this] (** ES2015 *)
+*)
 
 external map : ('a  -> 'b [@bs]) -> 'b t = "" [@@bs.send.pipe: 'a t as 'this]
 external mapi : ('a -> int ->  'b [@bs]) -> 'b t = "map" [@@bs.send.pipe: 'a t as 'this]
@@ -135,4 +138,6 @@ external reduceRighti : ('b -> 'a -> int -> 'b [@bs]) -> 'b -> 'b = "reduceRight
 external some : ('a  -> Js.boolean [@bs]) -> Js.boolean = "" [@@bs.send.pipe: 'a t as 'this]
 external somei : ('a  -> int -> Js.boolean [@bs]) -> Js.boolean = "some" [@@bs.send.pipe: 'a t as 'this]
 
-external values : 'a array_iter = "" [@@bs.send.pipe: 'a t as 'this] (* es2015 *)
+(* commented out until bs has a plan for iterators
+external values : 'a array_iter = "" [@@bs.send.pipe: 'a t as 'this] (** ES2015 *)
+*)

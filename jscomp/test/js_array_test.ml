@@ -1,22 +1,11 @@
 
 
 let suites = Mt.[
-    "make", (fun _ ->
-      Eq(27, Js.Array.make 27 |> Js.Array.length)
-    );
-
     (* es2015
     "from", (fun _ ->
       Eq(
         [| 0; 1 |],
         [| "a"; "b" |] |> Js.Array.keys |> Js.Array.from)
-    );
-    "unsafeFrom", (fun arg ->
-      Eq(
-        [| [%bs.obj { arg }] |],
-        Js.Array.unsafeFrom [%bs.raw "arguments"]
-          |> Js.Array.map ((fun arg -> [%bs.obj { arg }]) [@bs])
-      )
     );
     *)
 
@@ -27,14 +16,6 @@ let suites = Mt.[
         Js.Array.fromMap
           ([| "a"; "b" |] |> Js.Array.keys)
           ((fun x -> x - 1) [@bs]))
-    );
-    "unsafeFromMap", (fun arg ->
-      Eq(
-        [| [%bs.obj { arg }] |],
-        Js.Array.unsafeFromMap
-          [%bs.raw "arguments"]
-          ((fun arg -> [%bs.obj { arg }]) [@bs])
-      )
     );
     *)
 
@@ -67,17 +48,17 @@ let suites = Mt.[
     *)
 
     (* es2015
-    "fill", (fun _ ->
+    "fillInPlace", (fun _ ->
       Eq([| 4; 4; 4 |],
-         [| 1; 2; 3 |] |> Js.Array.fill 4)
+         [| 1; 2; 3 |] |> Js.Array.fillInPlace 4)
     );
-    "fillFrom", (fun _ ->
+    "fillFromInPlace", (fun _ ->
       Eq([| 1; 4; 4 |],
-         [| 1; 2; 3 |] |> Js.Array.fillFrom 4 ~from:1)
+         [| 1; 2; 3 |] |> Js.Array.fillFromInPlace 4 ~from:1)
     );
-    "fillRange", (fun _ ->
+    "fillRangeInPlace", (fun _ ->
       Eq([| 1; 4; 3 |],
-         [| 1; 2; 3 |] |> Js.Array.fillRange 4 ~start:1 ~end_:2)
+         [| 1; 2; 3 |] |> Js.Array.fillRangeInPlace 4 ~start:1 ~end_:2)
     );
     *)
 
@@ -91,39 +72,39 @@ let suites = Mt.[
       Eq(5, [| 1; 2; 3 |] |> Js.Array.pushMany [| 4; 5 |])
     );
 
-    "reverse", (fun _ ->
+    "reverseInPlace", (fun _ ->
       Eq([| 3; 2; 1 |],
-         [| 1; 2; 3 |] |> Js.Array.reverse)
+         [| 1; 2; 3 |] |> Js.Array.reverseInPlace)
     );
 
     "shift", (fun _ ->
       Eq(Js.Undefined.return 1, [| 1; 2; 3 |] |> Js.Array.shift)
     );
 
-    "sort", (fun _ ->
+    "sortInPlace", (fun _ ->
       Eq([| 1; 2; 3 |],
-         [| 3; 1; 2 |] |> Js.Array.sort)
+         [| 3; 1; 2 |] |> Js.Array.sortInPlace)
     );
-    "sortWith", (fun _ ->
+    "sortInPlaceWith", (fun _ ->
       Eq([| 3; 2; 1 |],
-         [| 3; 1; 2 |] |> Js.Array.sortWith ((fun a b -> b - a) [@bs]))
+         [| 3; 1; 2 |] |> Js.Array.sortInPlaceWith ((fun a b -> b - a) [@bs]))
     );
 
-    "splice", (fun _ ->
+    "spliceInPlace", (fun _ ->
       let arr = [| 1; 2; 3; 4 |] in
-      let removed = arr |> Js.Array.splice ~pos:2 ~remove:0 ~add:[| 5 |] in
+      let removed = arr |> Js.Array.spliceInPlace ~pos:2 ~remove:0 ~add:[| 5 |] in
 
       Eq(([| 1; 2; 5; 3; 4 |], [||]), (arr, removed))
     );
-    "removeFrom", (fun _ ->
+    "removeFromInPlace", (fun _ ->
       let arr = [| 1; 2; 3; 4 |] in
-      let removed = arr |> Js.Array.removeFrom ~pos:2 in
+      let removed = arr |> Js.Array.removeFromInPlace ~pos:2 in
 
       Eq(([| 1; 2 |], [| 3; 4 |]), (arr, removed))
     );
-    "removeCount", (fun _ ->
+    "removeCountInPlace", (fun _ ->
       let arr = [| 1; 2; 3; 4 |] in
-      let removed = arr |> Js.Array.removeCount ~pos:2 ~count:1 in
+      let removed = arr |> Js.Array.removeCountInPlace ~pos:2 ~count:1 in
 
       Eq(([| 1; 2; 4 |], [| 3 |]), (arr, removed))
     );
