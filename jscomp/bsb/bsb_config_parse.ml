@@ -96,6 +96,7 @@ let merlin_flg_ppx = "\nFLG -ppx "
 let merlin_s = "\nS "
 let merlin_b = "\nB "
 let bsppx_exe = "bsppx.exe"
+let merlin_flg = "\nFLG "
 let merlin_file_gen 
     built_in_ppx
     ({bs_file_groups = res_files ; 
@@ -104,6 +105,7 @@ let merlin_file_gen
       bs_dependencies;
       bsc_flags; 
       built_in_dependency;
+      external_includes; 
      } : Bsb_config_types.t)
   =
   if generate_merlin then begin     
@@ -113,6 +115,21 @@ let merlin_file_gen
         Buffer.add_string buffer (merlin_flg_ppx ^ x )
       );
     Buffer.add_string buffer (merlin_flg_ppx  ^ built_in_ppx);
+    (*
+    (match external_includes with 
+    | [] -> ()
+    | _ -> 
+    
+      Buffer.add_string buffer (merlin_flg ^ Bsb_build_util.flag_concat "-I" external_includes
+      ));
+    *)
+    external_includes 
+    |> List.iter (fun path -> 
+        Buffer.add_string buffer merlin_s ;
+        Buffer.add_string buffer path ;
+        Buffer.add_string buffer merlin_b;
+        Buffer.add_string buffer path ;
+    );      
     (match built_in_dependency with
      | None -> ()
      | Some package -> 
@@ -122,7 +139,7 @@ let merlin_file_gen
     );
 
     let bsc_string_flag = 
-      "\nFLG " ^ 
+      merlin_flg ^ 
       String.concat Ext_string.single_space 
         (Literals.dash_nostdlib::bsc_flags)  in 
     Buffer.add_string buffer bsc_string_flag ;

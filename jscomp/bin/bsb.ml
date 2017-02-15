@@ -4619,6 +4619,8 @@ val rev_map_append : ('a -> 'b) -> 'a list -> 'b list -> 'b list
 
 val rev_map_acc : 'a list -> ('b -> 'a) -> 'b list -> 'a list
 
+val map_acc : 'a list -> ('b -> 'a) -> 'b list -> 'a list
+
 val rev_iter : ('a -> unit) -> 'a list -> unit
 
 val for_all2_no_exn : ('a -> 'b -> bool) -> 'a list -> 'b list -> bool
@@ -4917,6 +4919,13 @@ let rev_map_acc  acc f l =
     | a::l -> rmap_f (f a :: accu) l
   in
   rmap_f acc l
+
+let rec map_acc acc f l =   
+  match l with 
+  | [] -> acc 
+  | h::hs -> f h :: map_acc  acc  f hs 
+
+
 
 let rec rev_iter f xs =
   match xs with    
@@ -7475,8 +7484,13 @@ let set_bs_dependencies ~cwd s =
 
 
 let bs_external_includes = ref []
+
+(** we should not resolve it too early,
+  since it is external configuration
+*)
 let set_bs_external_includes s =
-  bs_external_includes := List.map Bsb_build_util.convert_and_resolve_path (get_list_string s )
+  bs_external_includes := get_list_string s 
+  (* List.map Bsb_build_util.convert_and_resolve_path *) 
 let get_bs_external_includes () = !bs_external_includes
 
 
@@ -7709,6 +7723,7 @@ let merlin_flg_ppx = "\nFLG -ppx "
 let merlin_s = "\nS "
 let merlin_b = "\nB "
 let bsppx_exe = "bsppx.exe"
+let merlin_flg = "\nFLG "
 let merlin_file_gen 
     built_in_ppx
     ({bs_file_groups = res_files ; 
@@ -7717,6 +7732,7 @@ let merlin_file_gen
       bs_dependencies;
       bsc_flags; 
       built_in_dependency;
+      external_includes; 
      } : Bsb_config_types.t)
   =
   if generate_merlin then begin     
@@ -7726,6 +7742,21 @@ let merlin_file_gen
         Buffer.add_string buffer (merlin_flg_ppx ^ x )
       );
     Buffer.add_string buffer (merlin_flg_ppx  ^ built_in_ppx);
+    (*
+    (match external_includes with 
+    | [] -> ()
+    | _ -> 
+    
+      Buffer.add_string buffer (merlin_flg ^ Bsb_build_util.flag_concat "-I" external_includes
+      ));
+    *)
+    external_includes 
+    |> List.iter (fun path -> 
+        Buffer.add_string buffer merlin_s ;
+        Buffer.add_string buffer path ;
+        Buffer.add_string buffer merlin_b;
+        Buffer.add_string buffer path ;
+    );      
     (match built_in_dependency with
      | None -> ()
      | Some package -> 
@@ -7735,7 +7766,7 @@ let merlin_file_gen
     );
 
     let bsc_string_flag = 
-      "\nFLG " ^ 
+      merlin_flg ^ 
       String.concat Ext_string.single_space 
         (Literals.dash_nostdlib::bsc_flags)  in 
     Buffer.add_string buffer bsc_string_flag ;
@@ -8784,7 +8815,7 @@ let output_ninja
     {
     Bsb_config_types.package_name;
     ocamllex;
-    external_includes = bs_external_includes;
+    external_includes;
     bsc_flags ; 
     ppx_flags;
     bs_dependencies;
@@ -8836,6 +8867,18 @@ let output_ninja
           Bsb_build_schemas.bsb_dir_group, "0"  (*TODO: avoid name conflict in the future *)
         |] oc ;
     in
+    let all_includes acc  = 
+        match external_includes with 
+        | [] -> acc 
+        | _ ->  
+          (* for external includes, if it is absolute path, leave it as is 
+            for relative path './xx', we need '../.././x' since we are in 
+            [lib/bs], [build] is different from merlin though
+          *)
+          Ext_list.map_acc acc 
+          (fun x -> if Filename.is_relative x then Bsb_config.rev_lib_bs_prefix  x else x) 
+          external_includes
+    in 
     let  static_resources =
       let number_of_dev_groups = Bsb_build_ui.get_current_number_of_dev_groups () in
       if number_of_dev_groups = 0 then
@@ -8845,7 +8888,8 @@ let output_ninja
             ) (String_map.empty,[],[]) bs_file_groups in
         Binary_cache.write_build_cache (builddir // Binary_cache.bsbuild_cache) [|bs_groups|] ;
         Bsb_ninja.output_kv
-          Bsb_build_schemas.bsc_lib_includes (Bsb_build_util.flag_concat dash_i @@ (bs_external_includes @ source_dirs  ))  oc ;
+          Bsb_build_schemas.bsc_lib_includes (Bsb_build_util.flag_concat dash_i @@ 
+          (all_includes source_dirs  ))  oc ;
         static_resources
       else
         let bs_groups = Array.init  (number_of_dev_groups + 1 ) (fun i -> String_map.empty) in
@@ -8859,7 +8903,8 @@ let output_ninja
         (* Make sure [sources] does not have files in [lib] we have to check later *)
         let lib = bs_groups.(0) in
         Bsb_ninja.output_kv
-          Bsb_build_schemas.bsc_lib_includes (Bsb_build_util.flag_concat dash_i @@ (bs_external_includes @ source_dirs.(0))) oc ;
+          Bsb_build_schemas.bsc_lib_includes (Bsb_build_util.flag_concat dash_i @@
+           (all_includes source_dirs.(0))) oc ;
         for i = 1 to number_of_dev_groups  do
           let c = bs_groups.(i) in
           String_map.iter (fun k _ -> if String_map.mem k lib then failwith ("conflict files found:" ^ k)) c ;

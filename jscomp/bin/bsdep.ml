@@ -25858,6 +25858,8 @@ val rev_map_append : ('a -> 'b) -> 'a list -> 'b list -> 'b list
 
 val rev_map_acc : 'a list -> ('b -> 'a) -> 'b list -> 'a list
 
+val map_acc : 'a list -> ('b -> 'a) -> 'b list -> 'a list
+
 val rev_iter : ('a -> unit) -> 'a list -> unit
 
 val for_all2_no_exn : ('a -> 'b -> bool) -> 'a list -> 'b list -> bool
@@ -26156,6 +26158,13 @@ let rev_map_acc  acc f l =
     | a::l -> rmap_f (f a :: accu) l
   in
   rmap_f acc l
+
+let rec map_acc acc f l =   
+  match l with 
+  | [] -> acc 
+  | h::hs -> f h :: map_acc  acc  f hs 
+
+
 
 let rec rev_iter f xs =
   match xs with    

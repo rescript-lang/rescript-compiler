@@ -258,6 +258,13 @@ let rev_map_acc  acc f l =
   in
   rmap_f acc l
 
+let rec map_acc acc f l =   
+  match l with 
+  | [] -> acc 
+  | h::hs -> f h :: map_acc  acc  f hs 
+
+
+
 let rec rev_iter f xs =
   match xs with    
   | [] -> ()

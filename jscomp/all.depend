@@ -675,9 +675,10 @@ bsb/bsb_exception.cmx : ext/ext_string.cmx common/bs_version.cmx \
     bsb/bsb_exception.cmi
 bsb/bsb_file.cmx : bsb/bsb_file.cmi
 bsb/bsb_gen.cmx : ext/string_map.cmx ext/literals.cmx ext/ext_string.cmx \
-    ext/ext_filename.cmx bsb/bsb_ninja.cmx bsb/bsb_config_types.cmx \
-    bsb/bsb_config.cmx bsb/bsb_build_util.cmx bsb/bsb_build_ui.cmx \
-    bsb/bsb_build_schemas.cmx common/binary_cache.cmx bsb/bsb_gen.cmi
+    ext/ext_list.cmx ext/ext_filename.cmx bsb/bsb_ninja.cmx \
+    bsb/bsb_config_types.cmx bsb/bsb_config.cmx bsb/bsb_build_util.cmx \
+    bsb/bsb_build_ui.cmx bsb/bsb_build_schemas.cmx common/binary_cache.cmx \
+    bsb/bsb_gen.cmi
 bsb/bsb_helper_main.cmx : depends/depends_post_process.cmx \
     bsb/bsb_helper_main.cmi
 bsb/bsb_main.cmx : ext/string_vec.cmx ext/string_set.cmx \

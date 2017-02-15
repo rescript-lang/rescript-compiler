@@ -8652,6 +8652,8 @@ val rev_map_append : ('a -> 'b) -> 'a list -> 'b list -> 'b list
 
 val rev_map_acc : 'a list -> ('b -> 'a) -> 'b list -> 'a list
 
+val map_acc : 'a list -> ('b -> 'a) -> 'b list -> 'a list
+
 val rev_iter : ('a -> unit) -> 'a list -> unit
 
 val for_all2_no_exn : ('a -> 'b -> bool) -> 'a list -> 'b list -> bool
@@ -8951,6 +8953,13 @@ let rev_map_acc  acc f l =
   in
   rmap_f acc l
 
+let rec map_acc acc f l =   
+  match l with 
+  | [] -> acc 
+  | h::hs -> f h :: map_acc  acc  f hs 
+
+
+
 let rec rev_iter f xs =
   match xs with    
   | [] -> ()
@@ -9080,6 +9089,13 @@ let suites =
           Ext_list.flat_map_acc (fun x -> if x mod 2 = 0 then [true] else [])
             [false;false] [1;2]
       )  [true;false;false]
+    end;
+    __LOC__ >:: begin fun _ -> 
+      OUnit.assert_equal (
+        Ext_list.map_acc ["1";"2";"3"] (fun x -> string_of_int x) [0;1;2] 
+
+      )
+      ["0";"1";"2"; "1";"2";"3"]
     end;
     
   ]
