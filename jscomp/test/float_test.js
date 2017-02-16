@@ -133,7 +133,7 @@ function from_pairs(ps) {
                                     "pair %d"
                                   ]), i),
                           function () {
-                            return /* Approx */Block.__(2, [
+                            return /* Approx */Block.__(3, [
                                       a,
                                       b
                                     ]);
@@ -242,7 +242,7 @@ Mt.from_pair_suites("float_test.ml", Pervasives.$at(/* :: */[
           /* tuple */[
             "mod_float",
             function () {
-              return /* Approx */Block.__(2, [
+              return /* Approx */Block.__(3, [
                         3.2 % 0.5,
                         0.200000000000000178
                       ]);
@@ -252,7 +252,7 @@ Mt.from_pair_suites("float_test.ml", Pervasives.$at(/* :: */[
             /* tuple */[
               "modf_float1",
               function () {
-                return /* Approx */Block.__(2, [
+                return /* Approx */Block.__(3, [
                           a,
                           0.299999999999997158
                         ]);
@@ -262,7 +262,7 @@ Mt.from_pair_suites("float_test.ml", Pervasives.$at(/* :: */[
               /* tuple */[
                 "modf_float2",
                 function () {
-                  return /* Approx */Block.__(2, [
+                  return /* Approx */Block.__(3, [
                             b,
                             32
                           ]);

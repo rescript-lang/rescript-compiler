@@ -66,6 +66,10 @@ function from_pair_suites(name, suites) {
                                   Assert.notDeepEqual(match[0], match[1]);
                                   return /* () */0;
                               case 2 : 
+                                  var b = match[0];
+                                  Assert.ok(b ? true : false);
+                                  return /* () */0;
+                              case 3 : 
                                   if (close_enough(match[0], match[1])) {
                                     return 0;
                                   }
@@ -74,13 +78,13 @@ function from_pair_suites(name, suites) {
                                           Caml_builtin_exceptions.assert_failure,
                                           [
                                             "mt.ml",
-                                            71,
+                                            77,
                                             20
                                           ]
                                         ];
                                   }
                                   break;
-                              case 3 : 
+                              case 4 : 
                                   Assert.throws(match[0]);
                                   return /* () */0;
                               
