@@ -1,7 +1,7 @@
 
 
 let suites = Mt.[
-    (* es2015
+    (* es2015, unable to test because nothing currently implements array_like
     "from", (fun _ ->
       Eq(
         [| 0; 1 |],
@@ -9,7 +9,7 @@ let suites = Mt.[
     );
     *)
 
-    (* es2015
+    (* es2015, unable to test because nothing currently implements array_like
     "fromMap", (fun _ ->
       Eq(
         [| (-1); 0 |],
@@ -19,20 +19,19 @@ let suites = Mt.[
     );
     *)
 
-    (* es2015
+    (* es2015 *)
     "isArray_array", (fun _ ->
       Eq(Js.true_, [||] |> Js.Array.isArray)
     );
     "isArray_int", (fun _ ->
       Eq(Js.false_, 34 |> Js.Array.isArray)
     );
-    *)
 
     "length", (fun _ ->
       Eq(3, [| 1; 2; 3 |] |> Js.Array.length)
     );
 
-    (* es2015
+    (* es2015 *)
     "copyWithin", (fun _ ->
       Eq([| 1; 2; 3; 1; 2 |],
          [| 1; 2; 3; 4; 5 |] |> Js.Array.copyWithin ~to_:(-2))
@@ -45,9 +44,8 @@ let suites = Mt.[
       Eq([| 4; 2; 3; 4; 5 |],
          [| 1; 2; 3; 4; 5 |] |> Js.Array.copyWithinFromRange ~to_:0 ~start:3 ~end_:4)
     );
-    *)
 
-    (* es2015
+    (* es2015 *)
     "fillInPlace", (fun _ ->
       Eq([| 4; 4; 4 |],
          [| 1; 2; 3 |] |> Js.Array.fillInPlace 4)
@@ -60,7 +58,6 @@ let suites = Mt.[
       Eq([| 1; 4; 3 |],
          [| 1; 2; 3 |] |> Js.Array.fillRangeInPlace 4 ~start:1 ~end_:2)
     );
-    *)
 
     "pop", (fun _ ->
       Eq(Js.Undefined.return 3, [| 1; 2; 3 |] |> Js.Array.pop)
@@ -129,11 +126,10 @@ let suites = Mt.[
          [| 1; 2; 3 |] |> Js.Array.concatMany [| [| 4; 5; |]; [| 6; 7; |] |])
     );
 
-    (* es2016
+    (* es2016 *)
     "includes", (fun _ ->
       Eq(Js.true_, [| 1; 2; 3 |] |> Js.Array.includes 3)
     );
-    *)
 
     "indexOf", (fun _ ->
       Eq(1, [| 1; 2; 3 |] |> Js.Array.indexOf 2)
@@ -176,7 +172,7 @@ let suites = Mt.[
       Eq("1,2,3", [| 1; 2; 3 |] |> Js.Array.toLocaleString)
     );
 
-    (* es2015
+    (* es2015, iterator
     "entries", (fun _ ->
       Eq([| (0, "a"); (1, "b"); (2, "c") |],
          [| "a"; "b"; "c" |] |> Js.Array.entries |> Js.Array.from)
@@ -199,23 +195,21 @@ let suites = Mt.[
          [| 1; 2; 3; 4 |] |> Js.Array.filteri ((fun _ i -> Js.Boolean.to_js_boolean (i mod 2 = 0)) [@bs]))
     );
 
-    (* es2015
+    (* es2015 *)
     "find", (fun _ ->
       Eq(Js.Undefined.return 2, [| 1; 2; 3; 4 |] |> Js.Array.find ((fun n -> n mod 2 = 0) [@bs]))
     );
     "findi", (fun _ ->
       Eq(Js.Undefined.return 1, [| 1; 2; 3; 4 |] |> Js.Array.findi ((fun _ i -> i mod 2 = 0) [@bs]))
     );
-    *)
 
-    (* es2015
+    (* es2015 *)
     "findIndex", (fun _ ->
       Eq(1, [| 1; 2; 3; 4 |] |> Js.Array.findIndex ((fun n -> n mod 2 = 0) [@bs]))
     );
     "findIndexi", (fun _ ->
       Eq(0, [| 1; 2; 3; 4 |] |> Js.Array.findIndexi ((fun _ i -> i mod 2 = 0) [@bs]))
     );
-    *)
 
     "forEach", (fun _ ->
       let sum = ref 0 in
@@ -230,7 +224,7 @@ let suites = Mt.[
       Eq(3, !sum)
     );
 
-    (* es2015
+    (* es2015, iterator
     "keys", (fun _ ->
       Eq([| 0; 1; 2 |],
          [| "a"; "b"; "c" |] |> Js.Array.keys |> Js.Array.from)
@@ -269,7 +263,7 @@ let suites = Mt.[
       Eq(Js.true_, [| 1; 2; 3; 4 |] |> Js.Array.somei ((fun _ i -> Js.Boolean.to_js_boolean (i <= 0)) [@bs]))
     );
 
-    (* es2015
+    (* es2015, iterator
     "values", (fun _ ->
       Eq([| "a"; "b"; "c" |],
          [| "a"; "b"; "c" |] |> Js.Array.values |> Js.Array.from)
