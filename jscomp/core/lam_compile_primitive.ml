@@ -534,8 +534,15 @@ let translate  loc
       | _ -> assert false
       end
   | Pccall prim -> 
-      Lam_compile_external_call.translate loc cxt prim args 
+    Lam_dispatch_primitive.translate prim.prim_name  args
+      (* Lam_compile_external_call.translate loc cxt prim args *)
      (* Test if the argument is a block or an immediate integer *)
+  | Pjs_object_create labels
+    -> 
+    Lam_compile_external_call.assemble_args_obj labels args 
+  | Pjs_call (_, arg_types, result_type, ffi) -> 
+    Lam_compile_external_call.translate_ffi 
+    loc ffi cxt arg_types result_type args 
   | Pisint -> 
     begin 
       match args with 

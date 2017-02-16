@@ -13,4 +13,4 @@ var f_record = /* record */[/* x : record */[/* y : record */[/* z */3]]];
 
 exports.structural_obj = structural_obj;
 exports.f_record       = f_record;
-/* structural_obj Not a pure module */
+/* No side effect */

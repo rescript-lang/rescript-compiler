@@ -184,4 +184,4 @@ exports.v_mk6_1      = v_mk6_1;
 exports.mk_u         = mk_u;
 exports.v_mk7        = v_mk7;
 exports.side_effect  = side_effect;
-/* u Not a pure module */
+/*  Not a pure module */

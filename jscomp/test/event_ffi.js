@@ -113,4 +113,4 @@ exports.a44       = a44;
 exports.b44       = b44;
 exports.test_as   = test_as;
 exports.xx        = xx;
-/* partial_arg Not a pure module */
+/* No side effect */

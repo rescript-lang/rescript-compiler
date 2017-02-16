@@ -16,4 +16,4 @@ var a = {
 };
 
 exports.a = a;
-/* a Not a pure module */
+/* No side effect */

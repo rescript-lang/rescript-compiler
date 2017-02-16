@@ -46,4 +46,4 @@ exports.u   = u;
 exports.ff  = ff;
 exports.fff = fff;
 exports.f   = f;
-/* v2 Not a pure module */
+/* No side effect */

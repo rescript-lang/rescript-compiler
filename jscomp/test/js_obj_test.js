@@ -46,14 +46,13 @@ var suites_001 = /* :: */[
   /* tuple */[
     "js_obj",
     function () {
-      var u = {
-        say: function (x) {
-          return x + 2 | 0;
-        }
-      };
       return /* Eq */Block.__(0, [
                 34,
-                u.say(32)
+                {
+                    say: function (x) {
+                      return x + 2 | 0;
+                    }
+                  }.say(32)
               ]);
     }
   ],

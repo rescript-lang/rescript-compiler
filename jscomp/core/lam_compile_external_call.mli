@@ -37,15 +37,23 @@
     for compiling normal functions without attributes.
  *)
 
+val assemble_args_obj :
+  Ast_ffi_types.arg_kind list -> 
+  J.expression list -> 
+  J.expression 
 
+
+val translate_ffi :
+  Location.t -> 
+  Ast_ffi_types.ffi -> 
+  (* string -> *) (* Not used.. *)
+  Lam_compile_defs.cxt -> 
+  Ast_ffi_types.arg_kind list -> 
+  bool -> 
+  J.expression list -> 
+  J.expression 
+  
 (** TODO: document supported attributes
     Attributes starting with `js` are reserved
     examples: "bs.splice"
  *)
-
-val translate :
-  Location.t ->
-  Lam_compile_defs.cxt -> 
-  Primitive.description -> 
-  J.expression list -> 
-  J.expression

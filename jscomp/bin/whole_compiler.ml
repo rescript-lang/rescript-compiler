@@ -57281,6 +57281,946 @@ let iinfo b str f  =
 
 
 end
+module Ast_literal : sig 
+#1 "ast_literal.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type 'a  lit = ?loc: Location.t -> unit -> 'a
+module Lid : sig
+  type t = Longident.t 
+  val val_unit : t 
+  val type_unit : t 
+  val type_int : t 
+  val js_fn : t 
+  val js_meth : t 
+  val js_meth_callback : t 
+  val js_obj : t 
+
+  val ignore_id : t 
+  val js_null : t 
+  val js_undefined : t
+  val js_null_undefined : t 
+  val js_re_id : t 
+  val js_unsafe : t 
+end
+
+type expression_lit = Parsetree.expression lit 
+type core_type_lit = Parsetree.core_type lit 
+type pattern_lit = Parsetree.pattern lit 
+
+val val_unit : expression_lit
+
+val type_unit : core_type_lit
+
+val type_string : core_type_lit
+val type_int : core_type_lit 
+val type_any : core_type_lit
+
+val pat_unit : pattern_lit
+
+end = struct
+#1 "ast_literal.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+open Ast_helper
+
+
+module Lid = struct 
+  type t = Longident.t 
+  let val_unit : t = Lident "()"
+  let type_unit : t = Lident "unit"
+  let type_string : t = Lident "string"
+  let type_int : t = Lident "int" (* use *predef* *)
+  (* TODO should be renamed in to {!Js.fn} *)
+  (* TODO should be moved into {!Js.t} Later *)
+  let js_fn = Longident.Ldot (Lident "Js", "fn")
+  let js_meth = Longident.Ldot (Lident "Js", "meth")
+  let js_meth_callback = Longident.Ldot (Lident "Js", "meth_callback")
+  let js_obj = Longident.Ldot (Lident "Js", "t") 
+  let ignore_id = Longident.Ldot (Lident "Pervasives", "ignore")
+  let js_null  = Longident.Ldot (Lident "Js", "null")
+  let js_undefined = Longident.Ldot (Lident "Js", "undefined")
+  let js_null_undefined = Longident.Ldot (Lident "Js", "null_undefined")
+  let js_re_id = Longident.Ldot (Lident "Js_re", "t")
+  let js_unsafe = Longident.Lident "Js_unsafe"
+end
+
+module No_loc = struct 
+  let loc = Location.none
+  let val_unit = 
+    Ast_helper.Exp.construct {txt = Lid.val_unit; loc }  None
+  let type_unit =   
+    Ast_helper.Typ.mk  (Ptyp_constr ({ txt = Lid.type_unit; loc}, []))
+  let type_int = 
+    Ast_helper.Typ.mk (Ptyp_constr ({txt = Lid.type_int; loc}, []))  
+  let type_string =   
+    Ast_helper.Typ.mk  (Ptyp_constr ({ txt = Lid.type_string; loc}, []))
+
+  let type_any = Ast_helper.Typ.any ()
+  let pat_unit = Pat.construct {txt = Lid.val_unit; loc} None
+end 
+
+type 'a  lit = ?loc: Location.t -> unit -> 'a
+type expression_lit = Parsetree.expression lit 
+type core_type_lit = Parsetree.core_type lit 
+type pattern_lit = Parsetree.pattern lit 
+
+let val_unit ?loc () = 
+  match loc with 
+  | None -> No_loc.val_unit
+  | Some loc -> Ast_helper.Exp.construct {txt = Lid.val_unit; loc}  None
+
+
+let type_unit ?loc () = 
+  match loc with
+  | None ->     
+    No_loc.type_unit
+  | Some loc -> 
+    Ast_helper.Typ.mk ~loc  (Ptyp_constr ({ txt = Lid.type_unit; loc}, []))
+
+
+let type_string ?loc () = 
+  match loc with 
+  | None -> No_loc.type_string 
+  | Some loc ->     
+    Ast_helper.Typ.mk ~loc  (Ptyp_constr ({ txt = Lid.type_string; loc}, []))
+
+let type_int ?loc () = 
+  match loc with 
+  | None -> No_loc.type_int
+  | Some loc ->     
+    Ast_helper.Typ.mk ~loc  (Ptyp_constr ({ txt = Lid.type_int; loc}, []))
+
+let type_any ?loc () = 
+  match loc with 
+  | None -> No_loc.type_any
+  | Some loc -> Ast_helper.Typ.any ~loc ()
+
+let pat_unit ?loc () = 
+  match loc with 
+  | None -> No_loc.pat_unit
+  | Some loc -> 
+    Pat.construct ~loc {txt = Lid.val_unit; loc} None
+
+end
+module Ast_comb : sig 
+#1 "ast_comb.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+val exp_apply_no_label : 
+  ?loc:Location.t ->
+  ?attrs:Parsetree.attributes ->
+  Parsetree.expression -> Parsetree.expression list -> Parsetree.expression
+
+val fun_no_label : 
+  ?loc:Location.t ->
+  ?attrs:Parsetree.attributes ->
+  Parsetree.pattern -> Parsetree.expression -> Parsetree.expression
+
+val arrow_no_label : 
+  ?loc:Location.t ->
+  ?attrs:Parsetree.attributes ->
+  Parsetree.core_type -> Parsetree.core_type -> Parsetree.core_type
+
+(* note we first declare its type is [unit], 
+   then [ignore] it, [ignore] is necessary since 
+   the js value  maybe not be of type [unit] and 
+   we can use [unit] value (though very little chance) 
+   sometimes
+*)
+val discard_exp_as_unit : 
+  Location.t -> Parsetree.expression -> Parsetree.expression
+
+
+val tuple_type_pair : 
+  ?loc:Ast_helper.loc ->
+  [< `Make | `Run ] ->
+  int -> Parsetree.core_type * Parsetree.core_type list * Parsetree.core_type
+
+val to_js_type :
+  Location.t -> Parsetree.core_type -> Parsetree.core_type
+
+
+(** TODO: make it work for browser too *)
+val to_undefined_type :
+  Location.t -> Parsetree.core_type -> Parsetree.core_type  
+
+val to_js_re_type : Location.t -> Parsetree.core_type
+
+end = struct
+#1 "ast_comb.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+open Ast_helper 
+
+let exp_apply_no_label ?loc ?attrs a b = 
+  Exp.apply ?loc ?attrs a (List.map (fun x -> "", x) b)
+
+let fun_no_label ?loc ?attrs  pat body = 
+  Exp.fun_ ?loc ?attrs "" None pat body
+
+let arrow_no_label ?loc ?attrs b c = 
+  Typ.arrow ?loc ?attrs "" b c 
+
+let discard_exp_as_unit loc e = 
+  exp_apply_no_label ~loc     
+    (Exp.ident ~loc {txt = Ast_literal.Lid.ignore_id; loc})
+    [Exp.constraint_ ~loc e 
+       (Ast_literal.type_unit ~loc ())]
+
+
+let tuple_type_pair ?loc kind arity = 
+  let prefix  = "a" in
+  if arity = 0 then 
+    let ty = Typ.var ?loc ( prefix ^ "0") in 
+    match kind with 
+    | `Run -> ty,  [], ty 
+    | `Make -> 
+      (Typ.arrow "" ?loc
+         (Ast_literal.type_unit ?loc ())
+         ty ,
+       [], ty)
+  else
+    let number = arity + 1 in
+    let tys = Ext_list.init number (fun i -> 
+        Typ.var ?loc (prefix ^ string_of_int (number - i - 1))
+      )  in
+    match tys with 
+    | result :: rest -> 
+      Ext_list.reduce_from_left (fun r arg -> Typ.arrow "" ?loc arg r) tys, 
+      List.rev rest , result
+    | [] -> assert false
+    
+    
+
+let js_obj_type_id  = 
+  Ast_literal.Lid.js_obj 
+
+let re_id  = 
+  Ast_literal.Lid.js_re_id 
+
+let to_js_type loc  x  = 
+  Typ.constr ~loc {txt = js_obj_type_id; loc} [x]
+
+let to_js_re_type loc  =
+  Typ.constr ~loc { txt = re_id ; loc} []
+    
+let to_undefined_type loc x =
+  Typ.constr ~loc
+    {txt = Ast_literal.Lid.js_undefined ; loc}
+    [x]  
+
+
+end
+module Ast_core_type : sig 
+#1 "ast_core_type.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type t = Parsetree.core_type 
+
+
+val extract_option_type_exn : t -> t 
+val lift_option_type : t -> t 
+val is_any : t -> bool 
+val replace_result : t -> t -> t
+
+val is_unit : t -> bool 
+val is_array : t -> bool 
+type arg_label =
+  | Label of string 
+  (*| Label_int_lit of string * int 
+    | Label_string_lit of string * string *)
+  | Optional of string 
+  | Empty
+type arg_type = 
+  | NullString of (int * string) list 
+  | NonNullString of (int * string) list 
+  | Int of (int * int ) list 
+  | Arg_int_lit of int 
+  | Arg_string_lit of string 
+  | Fn_uncurry_arity of int (* annotated with [@bs.uncurry ] or [@bs.uncurry 2]*)  
+  | Array 
+  | Extern_unit
+  | Nothing
+  | Ignore
+
+(** for 
+       [x:t] -> "x"
+       [?x:t] -> "?x"
+*)
+val label_name : string -> arg_label
+
+
+
+
+
+(** return a function type 
+    [from_labels ~loc tyvars labels]
+    example output:
+    {[x:'a0 -> y:'a1 -> < x :'a0 ;y :'a1  > Js.t]}
+*)
+val from_labels :
+  loc:Location.t -> int ->  string Asttypes.loc list -> t
+
+val make_obj :
+  loc:Location.t ->
+  (string * Parsetree.attributes * t) list ->
+  t
+
+val is_optional_label : string -> bool 
+
+(** 
+  returns 0 when it can not tell arity from the syntax 
+*)
+val get_arity : t -> int 
+
+
+(** fails when Ptyp_poly *)
+val list_of_arrow : 
+  t -> 
+  t *  (Asttypes.label * t * Parsetree.attributes * Location.t) list
+
+
+end = struct
+#1 "ast_core_type.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type t = Parsetree.core_type 
+
+type arg_label =
+  | Label of string 
+  | Optional of string 
+  | Empty (* it will be ignored , side effect will be recorded *)
+
+type arg_type = 
+  | NullString of (int * string) list (* `a does not have any value*)
+  | NonNullString of (int * string) list (* `a of int *)
+  | Int of (int * int ) list (* ([`a | `b ] [@bs.int])*)
+  | Arg_int_lit of int 
+  | Arg_string_lit of string 
+  | Fn_uncurry_arity of int (* annotated with [@bs.uncurry ] or [@bs.uncurry 2]*)
+    (* maybe we can improve it as a combination of {!Asttypes.constant} and tuple *)
+  | Array 
+  | Extern_unit
+  | Nothing
+  | Ignore
+
+
+let extract_option_type_exn (ty : t) = 
+  begin match ty with
+    | {ptyp_desc =
+         Ptyp_constr({txt =
+                        Ldot (Lident "*predef*", "option") },
+                     [ty])}
+      ->                
+      ty
+    | _ -> assert false                 
+  end      
+
+let predef_option : Longident.t = Longident.Ldot (Lident "*predef*", "option")
+let predef_int : Longident.t = Ldot (Lident "*predef*", "int")
+
+
+let lift_option_type (ty:t) : t = 
+  {ptyp_desc =
+     Ptyp_constr(
+       {txt = predef_option;
+        loc = ty.ptyp_loc} 
+        , [ty]);
+        ptyp_loc = ty.ptyp_loc;
+      ptyp_attributes = []
+    }
+
+let is_any (ty : t) = 
+  match ty with {ptyp_desc = Ptyp_any} -> true | _ -> false
+
+open Ast_helper
+
+let replace_result ty result = 
+  let rec aux (ty : Parsetree.core_type) = 
+    match ty with 
+    | { ptyp_desc = 
+          Ptyp_arrow (label,t1,t2)
+      } -> { ty with ptyp_desc = Ptyp_arrow(label,t1, aux t2)}
+    | {ptyp_desc = Ptyp_poly(fs,ty)} 
+      ->  {ty with ptyp_desc = Ptyp_poly(fs, aux ty)}
+    | _ -> result in 
+  aux ty 
+
+let is_unit (ty : t ) = 
+  match ty.ptyp_desc with 
+  | Ptyp_constr({txt =Lident "unit"}, []) -> true
+  | _ -> false 
+
+let is_array (ty : t) = 
+  match ty.ptyp_desc with 
+  | Ptyp_constr({txt =Lident "array"}, [_]) -> true
+  | _ -> false 
+
+
+
+
+let is_optional_label l =
+  String.length l > 0 && l.[0] = '?'
+
+let label_name l : arg_label =
+  if l = "" then Empty else 
+  if is_optional_label l 
+  then Optional (String.sub l 1 (String.length l - 1))
+  else Label l
+
+
+(* Note that OCaml type checker will not allow arbitrary 
+   name as type variables, for example:
+   {[
+     '_x'_
+   ]}
+   will be recognized as a invalid program
+*)
+let from_labels ~loc arity labels 
+  : t =
+  let tyvars = 
+    ((Ext_list.init arity (fun i ->      
+         Typ.var ~loc ("a" ^ string_of_int i)))) in
+  let result_type =
+    Ast_comb.to_js_type loc  
+      (Typ.object_ ~loc
+         (List.map2 (fun x y -> x.Asttypes.txt ,[], y) labels tyvars) Closed)
+  in 
+  List.fold_right2 
+    (fun {Asttypes.loc ; txt = label }
+      tyvar acc -> Typ.arrow ~loc label tyvar acc) labels tyvars  result_type
+
+
+let make_obj ~loc xs =
+  Ast_comb.to_js_type loc @@
+  Ast_helper.Typ.object_  ~loc xs   Closed
+
+
+
+(** 
+
+{[ 'a . 'a -> 'b ]} 
+OCaml does not support such syntax yet
+{[ 'a -> ('a. 'a -> 'b) ]}
+
+*)
+let get_arity (ty : t) = 
+  let rec aux  (ty : t) acc = 
+    match ty.ptyp_desc with 
+    | Ptyp_arrow(_, _ , new_ty) -> 
+      aux new_ty (succ acc)
+    | Ptyp_poly (_,ty) -> 
+      aux ty acc 
+    | _ -> acc in 
+    aux ty 0
+
+let list_of_arrow (ty : t) = 
+  let rec aux (ty : t) acc = 
+    match ty.ptyp_desc with 
+    | Ptyp_arrow(label,t1,t2) -> 
+      aux t2 ((label,t1,ty.ptyp_attributes,ty.ptyp_loc) ::acc)
+    | Ptyp_poly(_, ty) -> (* should not happen? *)
+      Location.raise_errorf ~loc:ty.ptyp_loc "Unhandled poly type"
+    | return_type -> ty, List.rev acc
+  in aux ty []
+
+end
+module Ast_ffi_types : sig 
+#1 "ast_ffi_types.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type external_module_name = 
+  { bundle : string ; 
+    bind_name : string option
+  }
+
+type pipe = bool 
+type js_call = { 
+  name : string;
+  external_module_name : external_module_name option;
+  splice : bool 
+}
+
+type js_send = { 
+  name : string ;
+  splice : bool ; 
+  pipe : pipe   
+} (* we know it is a js send, but what will happen if you pass an ocaml objct *)
+
+type js_global_val = {
+  name : string ; 
+  external_module_name : external_module_name option
+}
+
+type js_new_val = {
+  name : string ; 
+  external_module_name : external_module_name option;
+  splice : bool ;
+}
+
+type js_module_as_fn = 
+  { external_module_name : external_module_name;
+    splice : bool 
+  }
+
+type arg_type = Ast_core_type.arg_type
+type arg_label = 
+  | Label of string 
+  | Label_int_lit of string * int 
+  | Label_string_lit of string * string 
+  | Optional of string 
+  | Empty (* it will be ignored , side effect will be recorded *)
+  | Empty_int_lit of int 
+  | Empty_string_lit of string 
+
+type arg_kind = 
+  {
+    arg_type : arg_type;
+    arg_label : arg_label
+  }
+
+type obj_create = arg_kind list
+
+type ffi = 
+  (* | Obj_create of obj_create*)
+  | Js_global of js_global_val 
+  | Js_module_as_var of  external_module_name
+  | Js_module_as_fn of js_module_as_fn
+  | Js_module_as_class of external_module_name             
+  | Js_call of js_call 
+  | Js_send of js_send
+  | Js_new of js_new_val
+  | Js_set of string
+  | Js_get of string
+  | Js_get_index
+  | Js_set_index
+
+type t  = 
+  | Ffi_bs of arg_kind list  * bool * ffi
+  | Ffi_obj_create of obj_create
+  | Ffi_normal 
+  (* When it's normal, it is handled as normal c functional ffi call *)
+
+
+val name_of_ffi : ffi -> string
+
+val check_ffi : ?loc:Location.t ->  ffi -> unit 
+
+val to_string : t -> string 
+
+(** Note *)
+val from_string : string -> t 
+
+
+end = struct
+#1 "ast_ffi_types.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type external_module_name = 
+  { bundle : string ; 
+    bind_name : string option
+  }
+
+type pipe = bool 
+type js_call = { 
+  name : string;
+  external_module_name : external_module_name option;
+  splice : bool 
+}
+
+type js_send = { 
+  name : string ;
+  splice : bool ; 
+  pipe : pipe   
+} (* we know it is a js send, but what will happen if you pass an ocaml objct *)
+
+type js_global_val = {
+  name : string ; 
+  external_module_name : external_module_name option
+}
+
+type js_new_val = {
+  name : string ; 
+  external_module_name : external_module_name option;
+  splice : bool ;
+}
+
+type js_module_as_fn = 
+  { external_module_name : external_module_name;
+    splice : bool 
+  }
+  
+(** TODO: information between [arg_type] and [arg_label] are duplicated, 
+  design a more compact representation so that it is also easy to seralize by hand
+*)  
+type arg_type = Ast_core_type.arg_type =
+  | NullString of (int * string) list (* `a does not have any value*)
+  | NonNullString of (int * string) list (* `a of int *)
+  | Int of (int * int ) list (* ([`a | `b ] [@bs.int])*)
+  | Arg_int_lit of int 
+  | Arg_string_lit of string 
+  | Fn_uncurry_arity of int (* annotated with [@bs.uncurry ] or [@bs.uncurry 2]*)
+  (* maybe we can improve it as a combination of {!Asttypes.constant} and tuple *)
+  | Array 
+  | Extern_unit
+  | Nothing
+
+  
+  | Ignore (* annotated with [@bs.ignore] *)
+
+type arg_label = 
+  | Label of string 
+  | Label_int_lit of string * int 
+  | Label_string_lit of string * string 
+  | Optional of string 
+  | Empty (* it will be ignored , side effect will be recorded *)
+  | Empty_int_lit of int 
+  | Empty_string_lit of string 
+(**TODO: maybe we can merge [arg_label] and [arg_type] *)
+type arg_kind = 
+  {
+    arg_type : arg_type;
+    arg_label : arg_label
+  }
+type obj_create = arg_kind list
+
+type ffi = 
+  (* | Obj_create of obj_create *)
+  | Js_global of js_global_val 
+  | Js_module_as_var of  external_module_name
+  | Js_module_as_fn of js_module_as_fn
+  | Js_module_as_class of external_module_name             
+  | Js_call of js_call 
+  | Js_send of js_send
+  | Js_new of js_new_val
+  | Js_set of string
+  | Js_get of string
+  | Js_get_index
+  | Js_set_index
+
+let name_of_ffi ffi =
+  match ffi with 
+  | Js_get_index -> "[@@bs.get_index]"
+  | Js_set_index -> "[@@bs.set_index]"
+  | Js_get s -> Printf.sprintf "[@@bs.get %S]" s 
+  | Js_set s -> Printf.sprintf "[@@bs.set %S]" s 
+  | Js_call v  -> Printf.sprintf "[@@bs.val %S]" v.name
+  | Js_send v  -> Printf.sprintf "[@@bs.send %S]" v.name
+  | Js_module_as_fn v  -> Printf.sprintf "[@@bs.val %S]" v.external_module_name.bundle
+  | Js_new v  -> Printf.sprintf "[@@bs.new %S]" v.name                    
+  | Js_module_as_class v
+    -> Printf.sprintf "[@@bs.module] %S " v.bundle
+  | Js_module_as_var v
+    -> 
+    Printf.sprintf "[@@bs.module] %S " v.bundle
+  | Js_global v 
+    -> 
+    Printf.sprintf "[@@bs.val] %S " v.name                    
+(* | Obj_create _ -> 
+   Printf.sprintf "[@@bs.obj]" *)
+type t  = 
+  | Ffi_bs of arg_kind list  * bool * ffi 
+  (**  [Ffi_bs(args,return,ffi) ]
+       [return] means return value is unit or not, 
+        [true] means is [unit]  
+  *)
+  | Ffi_obj_create of obj_create
+  | Ffi_normal 
+  (* When it's normal, it is handled as normal c functional ffi call *)
+
+
+
+let valid_js_char =
+  let a = Array.init 256 (fun i ->
+      let c = Char.chr i in
+      (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c = '_' || c = '$'
+    ) in
+  (fun c -> Array.unsafe_get a (Char.code c))
+
+let valid_first_js_char = 
+  let a = Array.init 256 (fun i ->
+      let c = Char.chr i in
+      (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c = '_' || c = '$'
+    ) in
+  (fun c -> Array.unsafe_get a (Char.code c))
+
+(** Approximation could be improved *)
+let valid_ident (s : string) =
+  let len = String.length s in
+  len > 0 && valid_js_char s.[0] && valid_first_js_char s.[0] &&
+  (let module E = struct exception E end in
+   try
+     for i = 1 to len - 1 do
+       if not (valid_js_char (String.unsafe_get s i)) then
+         raise E.E         
+     done ;
+     true     
+   with E.E -> false )  
+
+let valid_global_name ?loc txt =
+  if not (valid_ident txt) then
+    let v = Ext_string.split_by ~keep_empty:true (fun x -> x = '.') txt in
+    List.iter
+      (fun s ->
+         if not (valid_ident s) then
+           Location.raise_errorf ?loc "Not a valid  name %s"  txt
+      ) v      
+
+let valid_method_name ?loc txt =         
+  if not (valid_ident txt) then
+    Location.raise_errorf ?loc "Not a valid  name %s"  txt
+
+
+
+let check_external_module_name ?loc x = 
+  match x with 
+  | {bundle = ""; _ } | {bind_name = Some ""} -> 
+    Location.raise_errorf ?loc "empty name encountered"
+  | _ -> ()
+let check_external_module_name_opt ?loc x = 
+  match x with 
+  | None -> ()
+  | Some v -> check_external_module_name ?loc v 
+
+
+let check_ffi ?loc ffi = 
+  match ffi with 
+  | Js_global {name} -> valid_global_name ?loc  name
+  | Js_send {name } 
+  | Js_set  name
+  | Js_get name
+    ->  valid_method_name ?loc name
+  (* | Obj_create _ -> () *)
+  | Js_get_index | Js_set_index 
+    -> ()
+
+  | Js_module_as_var external_module_name
+  | Js_module_as_fn {external_module_name; _}
+  | Js_module_as_class external_module_name             
+    -> check_external_module_name external_module_name
+  | Js_new {external_module_name ;  name}
+  | Js_call {external_module_name ;  name ; _}
+    -> 
+    check_external_module_name_opt ?loc external_module_name ;
+    valid_global_name ?loc name     
+
+let bs_prefix = "BS:"
+let bs_prefix_length = String.length bs_prefix 
+
+
+(** TODO: Make sure each version is not prefix of each other
+    Solution:
+    1. fixed length 
+    2. non-prefix approach
+*)
+let bs_external = bs_prefix ^ Bs_version.version 
+
+
+let bs_external_length = String.length bs_external
+
+
+let to_string  t = 
+  bs_external ^ Marshal.to_string t []
+
+
+(* TODO:  better error message when version mismatch *)
+let from_string s : t = 
+  let s_len = String.length s in 
+  if s_len >= bs_prefix_length &&
+     String.unsafe_get s 0 = 'B' &&
+     String.unsafe_get s 1 = 'S' &&
+     String.unsafe_get s 2 = ':' then 
+    if Ext_string.starts_with s bs_external then 
+      Marshal.from_string s bs_external_length 
+    else 
+      Ext_pervasives.failwithf 
+        ~loc:__LOC__
+        "compiler version mismatch, please do a clean build"
+  else Ffi_normal    
+
+end
 module Ext_array : sig 
 #1 "ext_array.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -63559,7 +64499,16 @@ type primitive =
   | Psetfloatfield of int * Lambda.set_field_dbg_info
   | Pduprecord of Types.record_representation * int
   | Plazyforce
-  | Pccall of  Primitive.description
+
+  | Pccall of  Primitive.description    
+  | Pjs_call of
+    (* Location.t *  [loc] is passed down *)
+    string *  (* prim_name *)
+    Ast_ffi_types.arg_kind list * (* arg_types *)
+    bool * (* result_type *)
+    Ast_ffi_types.ffi  (* ffi *)
+  | Pjs_object_create of Ast_ffi_types.obj_create
+
   | Praise 
   | Psequand | Psequor | Pnot
   | Pnegint | Paddint | Psubint | Pmulint | Pdivint | Pmodint
@@ -63858,6 +64807,15 @@ type primitive =
   | Plazyforce
   (* External call *)
   | Pccall of  Primitive.description
+  | Pjs_call of
+      (* Location.t *  [loc] is passed down *)
+      string *  (* prim_name *)
+      Ast_ffi_types.arg_kind list * (* arg_types *)
+      bool * (* result_type *)
+      Ast_ffi_types.ffi  (* ffi *)
+
+  (* Ast_ffi_types.arg_kind list * bool * Ast_ffi_types.ffi  *)
+  | Pjs_object_create of Ast_ffi_types.obj_create
   (* Exceptions *)
   | Praise
   (* Boolean operations *)
@@ -64428,9 +65386,9 @@ let free_variables l =
       | Lapply{fn; args; _} ->
         free fn; List.iter free args
       | Lglobal_module _ -> () 
-        (* according to the existing semantics: 
-          [primitive] is not counted
-        *)        
+      (* according to the existing semantics: 
+         [primitive] is not counted
+      *)        
       | Lprim {args; _} ->
         List.iter free args
       | Lswitch(arg, sw) ->
@@ -64509,7 +65467,7 @@ let check file lam =
         List.iter (fun (id, exp) ->  def id) decl;
         List.iter (fun (id, exp) -> iter exp) decl;
         iter body
-   
+
       | Lswitch(arg, sw) ->
         iter arg;
         List.iter (fun (key, case) -> iter case) sw.sw_consts;
@@ -64908,10 +65866,10 @@ let may_depend = Lam_module_ident.Hash_set.add
 let rec drop_global_marker (lam : t) =
   match lam with 
   | Lsequence (Lglobal_module id, rest) -> 
-     drop_global_marker rest
+    drop_global_marker rest
   | _ -> lam
 
-   
+
 let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : t = 
   match p with 
   | Pint_as_pointer 
@@ -64967,21 +65925,30 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : t =
   | Plazyforce -> prim ~primitive:Plazyforce ~args loc
 
   | Pccall a -> 
-    let prim_name = a.prim_name in
-    if Pervasives.not @@ Ext_string.starts_with prim_name "js_" then 
-      prim ~primitive:(Pccall a ) ~args loc else 
-    if prim_name =  Literals.js_debugger then 
-      prim ~primitive:Pdebugger ~args loc else 
-    if prim_name =  Literals.js_fn_run || prim_name = Literals.js_method_run then
-      prim ~primitive:(Pjs_fn_run (int_of_string a.prim_native_name)) ~args loc else 
-    if prim_name = Literals.js_fn_mk then 
-      prim ~primitive:(Pjs_fn_make (int_of_string a.prim_native_name)) ~args loc else                
-    if prim_name = Literals.js_fn_method then 
-      prim ~primitive:(Pjs_fn_method (int_of_string a.prim_native_name)) ~args loc else
-    if prim_name = Literals.js_fn_runmethod then 
-      prim ~primitive:(Pjs_fn_runmethod (int_of_string a.prim_native_name)) ~args loc 
-    else
-      prim ~primitive:(Pccall a) ~args loc
+    let prim_name = a.prim_name in    
+    begin match Ast_ffi_types.from_string a.prim_native_name with 
+      | Ffi_normal -> 
+        if Pervasives.not @@ Ext_string.starts_with prim_name "js_" then 
+          prim ~primitive:(Pccall a ) ~args loc else 
+        if prim_name =  Literals.js_debugger then 
+          prim ~primitive:Pdebugger ~args loc else 
+        if prim_name =  Literals.js_fn_run || prim_name = Literals.js_method_run then
+          prim ~primitive:(Pjs_fn_run (int_of_string a.prim_native_name)) ~args loc else 
+        if prim_name = Literals.js_fn_mk then 
+          prim ~primitive:(Pjs_fn_make (int_of_string a.prim_native_name)) ~args loc else                
+        if prim_name = Literals.js_fn_method then 
+          prim ~primitive:(Pjs_fn_method (int_of_string a.prim_native_name)) ~args loc else
+        if prim_name = Literals.js_fn_runmethod then 
+          prim ~primitive:(Pjs_fn_runmethod (int_of_string a.prim_native_name)) ~args loc 
+        else
+          prim ~primitive:(Pccall a) ~args loc
+      | Ffi_obj_create labels -> 
+        prim ~primitive:(Pjs_object_create labels) ~args loc 
+      | Ffi_bs(arg_types, result_type, ffi) -> 
+        prim ~primitive:(Pjs_call(prim_name, arg_types,result_type,ffi)) 
+          ~args loc
+    end
+
   | Praise _ ->
     if Js_config.get_no_any_assert () then 
       begin match args with 
@@ -65294,17 +66261,17 @@ let convert exports lam : _ * _  =
       -> 
       let args = (List.map aux args) in
       begin match primitive with 
-      | Pgetglobal id -> 
-        if Ident.is_predef_exn id then 
-          Lprim {primitive = Pglobal_exception id; args ; loc}
-        else 
-        begin 
-          may_depend may_depends (Lam_module_ident.of_ml id);
-          assert (args = []);
-          Lglobal_module id 
-        end  
-      | _ ->       
-        lam_prim ~primitive ~args loc 
+        | Pgetglobal id -> 
+          if Ident.is_predef_exn id then 
+            Lprim {primitive = Pglobal_exception id; args ; loc}
+          else 
+            begin 
+              may_depend may_depends (Lam_module_ident.of_ml id);
+              assert (args = []);
+              Lglobal_module id 
+            end  
+        | _ ->       
+          lam_prim ~primitive ~args loc 
       end
     | Lswitch (e,s) -> 
       Lswitch (aux e, aux_switch s)
@@ -68713,7 +69680,10 @@ let rec no_side_effects (lam : Lam.t) : bool =
            *)
           | _ , _-> false
         end 
-
+      | Pjs_call _ -> false 
+      | Pjs_object_create _ -> 
+        List.for_all no_side_effects args   
+        (** TODO: check *)
       | Pbytes_to_string 
       | Pbytes_of_string 
       | Pglobal_exception _
@@ -69219,6 +70189,10 @@ let primitive ppf (prim : Lam.primitive) = match prim with
   | Pduprecord (rep, size) -> fprintf ppf "duprecord %a %i" record_rep rep size
   | Plazyforce -> fprintf ppf "force"
   | Pccall p -> fprintf ppf "%s" p.prim_name
+  | Pjs_call (prim_name, _, _, _) -> 
+      fprintf ppf  "%s[js]" prim_name
+  | Pjs_object_create obj_create -> 
+    fprintf ppf "[js.obj]"
   | Praise  -> fprintf ppf "raise"
   | Psequand -> fprintf ppf "&&"
   | Psequor -> fprintf ppf "||"
@@ -81362,10 +82336,28 @@ type name =
   | Name_non_top of Ident.t
 
 
+(**
+   Turn [function f (x,y) { return a (x,y)} ] into [Curry.__2(a)],
+   The idea is that [Curry.__2] will guess the arity of [a], if it does 
+   hit, then there is no cost when passed
+*)
+
+
 (* TODO: refactoring 
    Note that {!pp_function} could print both statement and expression when [No_name] is given 
 *)
-let rec pp_function method_
+let rec
+
+  try_optimize_curry cxt f len function_ = 
+  begin           
+    P.string f Js_config.curry;
+    P.string f L.dot;
+    P.string f "__";
+    P.string f (Printf.sprintf "%d" len);
+    P.paren_group f 1 (fun _ -> expression 1 cxt f function_  )             
+  end              
+
+and  pp_function method_
     cxt (f : P.t) ?(name=No_name)  return 
     (l : Ident.t list) (b : J.block) (env : Js_fun_env.t ) =  
   match b, (name,  return)  with 
@@ -81386,14 +82378,7 @@ let rec pp_function method_
           | Var (Id i) -> Ident.same a i 
           | _ -> false) l ls ->
     let optimize  len p cxt f v =
-      if p then
-        begin           
-          P.string f Js_config.curry;
-          P.string f L.dot;
-          P.string f "__";
-          P.string f (Printf.sprintf "%d" len);
-          P.paren_group f 1 (fun _ -> arguments cxt f [function_])            
-        end              
+      if p then try_optimize_curry cxt f len function_      
       else
         vident cxt f v
     in
@@ -82764,8 +83749,8 @@ let imports  cxt f (modules : (Ident.t * string) list ) =
       P.string f L.from;
       P.space f;
       (* P.paren_group f 0 @@ (fun _ -> *)
-          pp_string f ~utf:true ~quote:(best_string_quote s) file  
-          (* ) *);
+      pp_string f ~utf:true ~quote:(best_string_quote s) file  
+      (* ) *);
       semi f ;
       P.newline f ;
     ) reversed_list;
@@ -82858,7 +83843,7 @@ let amd_program ~output_prefix kind f (  x : J.deps_program) =
 
 let es6_program  ~output_prefix fmt f (  x : J.deps_program) = 
   let cxt = 
-     imports
+    imports
       Ext_pp_scope.empty
       f
       (List.map 
@@ -82875,7 +83860,7 @@ let es6_program  ~output_prefix fmt f (  x : J.deps_program) =
   es6_export cxt f x.program.exports
 
 
-  
+
 (** Make sure github linguist happy
     {[
       require('Linguist')
@@ -88262,899 +89247,6 @@ let set_double_field field_info e  i e0 =
 
 
 end
-module Ast_literal : sig 
-#1 "ast_literal.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-type 'a  lit = ?loc: Location.t -> unit -> 'a
-module Lid : sig
-  type t = Longident.t 
-  val val_unit : t 
-  val type_unit : t 
-  val type_int : t 
-  val js_fn : t 
-  val js_meth : t 
-  val js_meth_callback : t 
-  val js_obj : t 
-
-  val ignore_id : t 
-  val js_null : t 
-  val js_undefined : t
-  val js_null_undefined : t 
-  val js_re_id : t 
-  val js_unsafe : t 
-end
-
-type expression_lit = Parsetree.expression lit 
-type core_type_lit = Parsetree.core_type lit 
-type pattern_lit = Parsetree.pattern lit 
-
-val val_unit : expression_lit
-
-val type_unit : core_type_lit
-
-val type_string : core_type_lit
-val type_int : core_type_lit 
-val type_any : core_type_lit
-
-val pat_unit : pattern_lit
-
-end = struct
-#1 "ast_literal.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-open Ast_helper
-
-
-module Lid = struct 
-  type t = Longident.t 
-  let val_unit : t = Lident "()"
-  let type_unit : t = Lident "unit"
-  let type_string : t = Lident "string"
-  let type_int : t = Lident "int" (* use *predef* *)
-  (* TODO should be renamed in to {!Js.fn} *)
-  (* TODO should be moved into {!Js.t} Later *)
-  let js_fn = Longident.Ldot (Lident "Js", "fn")
-  let js_meth = Longident.Ldot (Lident "Js", "meth")
-  let js_meth_callback = Longident.Ldot (Lident "Js", "meth_callback")
-  let js_obj = Longident.Ldot (Lident "Js", "t") 
-  let ignore_id = Longident.Ldot (Lident "Pervasives", "ignore")
-  let js_null  = Longident.Ldot (Lident "Js", "null")
-  let js_undefined = Longident.Ldot (Lident "Js", "undefined")
-  let js_null_undefined = Longident.Ldot (Lident "Js", "null_undefined")
-  let js_re_id = Longident.Ldot (Lident "Js_re", "t")
-  let js_unsafe = Longident.Lident "Js_unsafe"
-end
-
-module No_loc = struct 
-  let loc = Location.none
-  let val_unit = 
-    Ast_helper.Exp.construct {txt = Lid.val_unit; loc }  None
-  let type_unit =   
-    Ast_helper.Typ.mk  (Ptyp_constr ({ txt = Lid.type_unit; loc}, []))
-  let type_int = 
-    Ast_helper.Typ.mk (Ptyp_constr ({txt = Lid.type_int; loc}, []))  
-  let type_string =   
-    Ast_helper.Typ.mk  (Ptyp_constr ({ txt = Lid.type_string; loc}, []))
-
-  let type_any = Ast_helper.Typ.any ()
-  let pat_unit = Pat.construct {txt = Lid.val_unit; loc} None
-end 
-
-type 'a  lit = ?loc: Location.t -> unit -> 'a
-type expression_lit = Parsetree.expression lit 
-type core_type_lit = Parsetree.core_type lit 
-type pattern_lit = Parsetree.pattern lit 
-
-let val_unit ?loc () = 
-  match loc with 
-  | None -> No_loc.val_unit
-  | Some loc -> Ast_helper.Exp.construct {txt = Lid.val_unit; loc}  None
-
-
-let type_unit ?loc () = 
-  match loc with
-  | None ->     
-    No_loc.type_unit
-  | Some loc -> 
-    Ast_helper.Typ.mk ~loc  (Ptyp_constr ({ txt = Lid.type_unit; loc}, []))
-
-
-let type_string ?loc () = 
-  match loc with 
-  | None -> No_loc.type_string 
-  | Some loc ->     
-    Ast_helper.Typ.mk ~loc  (Ptyp_constr ({ txt = Lid.type_string; loc}, []))
-
-let type_int ?loc () = 
-  match loc with 
-  | None -> No_loc.type_int
-  | Some loc ->     
-    Ast_helper.Typ.mk ~loc  (Ptyp_constr ({ txt = Lid.type_int; loc}, []))
-
-let type_any ?loc () = 
-  match loc with 
-  | None -> No_loc.type_any
-  | Some loc -> Ast_helper.Typ.any ~loc ()
-
-let pat_unit ?loc () = 
-  match loc with 
-  | None -> No_loc.pat_unit
-  | Some loc -> 
-    Pat.construct ~loc {txt = Lid.val_unit; loc} None
-
-end
-module Ast_comb : sig 
-#1 "ast_comb.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-val exp_apply_no_label : 
-  ?loc:Location.t ->
-  ?attrs:Parsetree.attributes ->
-  Parsetree.expression -> Parsetree.expression list -> Parsetree.expression
-
-val fun_no_label : 
-  ?loc:Location.t ->
-  ?attrs:Parsetree.attributes ->
-  Parsetree.pattern -> Parsetree.expression -> Parsetree.expression
-
-val arrow_no_label : 
-  ?loc:Location.t ->
-  ?attrs:Parsetree.attributes ->
-  Parsetree.core_type -> Parsetree.core_type -> Parsetree.core_type
-
-(* note we first declare its type is [unit], 
-   then [ignore] it, [ignore] is necessary since 
-   the js value  maybe not be of type [unit] and 
-   we can use [unit] value (though very little chance) 
-   sometimes
-*)
-val discard_exp_as_unit : 
-  Location.t -> Parsetree.expression -> Parsetree.expression
-
-
-val tuple_type_pair : 
-  ?loc:Ast_helper.loc ->
-  [< `Make | `Run ] ->
-  int -> Parsetree.core_type * Parsetree.core_type list * Parsetree.core_type
-
-val to_js_type :
-  Location.t -> Parsetree.core_type -> Parsetree.core_type
-
-
-(** TODO: make it work for browser too *)
-val to_undefined_type :
-  Location.t -> Parsetree.core_type -> Parsetree.core_type  
-
-val to_js_re_type : Location.t -> Parsetree.core_type
-
-end = struct
-#1 "ast_comb.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-open Ast_helper 
-
-let exp_apply_no_label ?loc ?attrs a b = 
-  Exp.apply ?loc ?attrs a (List.map (fun x -> "", x) b)
-
-let fun_no_label ?loc ?attrs  pat body = 
-  Exp.fun_ ?loc ?attrs "" None pat body
-
-let arrow_no_label ?loc ?attrs b c = 
-  Typ.arrow ?loc ?attrs "" b c 
-
-let discard_exp_as_unit loc e = 
-  exp_apply_no_label ~loc     
-    (Exp.ident ~loc {txt = Ast_literal.Lid.ignore_id; loc})
-    [Exp.constraint_ ~loc e 
-       (Ast_literal.type_unit ~loc ())]
-
-
-let tuple_type_pair ?loc kind arity = 
-  let prefix  = "a" in
-  if arity = 0 then 
-    let ty = Typ.var ?loc ( prefix ^ "0") in 
-    match kind with 
-    | `Run -> ty,  [], ty 
-    | `Make -> 
-      (Typ.arrow "" ?loc
-         (Ast_literal.type_unit ?loc ())
-         ty ,
-       [], ty)
-  else
-    let number = arity + 1 in
-    let tys = Ext_list.init number (fun i -> 
-        Typ.var ?loc (prefix ^ string_of_int (number - i - 1))
-      )  in
-    match tys with 
-    | result :: rest -> 
-      Ext_list.reduce_from_left (fun r arg -> Typ.arrow "" ?loc arg r) tys, 
-      List.rev rest , result
-    | [] -> assert false
-    
-    
-
-let js_obj_type_id  = 
-  Ast_literal.Lid.js_obj 
-
-let re_id  = 
-  Ast_literal.Lid.js_re_id 
-
-let to_js_type loc  x  = 
-  Typ.constr ~loc {txt = js_obj_type_id; loc} [x]
-
-let to_js_re_type loc  =
-  Typ.constr ~loc { txt = re_id ; loc} []
-    
-let to_undefined_type loc x =
-  Typ.constr ~loc
-    {txt = Ast_literal.Lid.js_undefined ; loc}
-    [x]  
-
-
-end
-module Ast_core_type : sig 
-#1 "ast_core_type.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type t = Parsetree.core_type 
-
-
-val extract_option_type_exn : t -> t 
-val lift_option_type : t -> t 
-val is_any : t -> bool 
-val replace_result : t -> t -> t
-
-val is_unit : t -> bool 
-val is_array : t -> bool 
-type arg_label =
-  | Label of string 
-(*| Label_int_lit of string * int 
-  | Label_string_lit of string * string *)
-  | Optional of string 
-  | Empty
-type arg_type = 
-  | NullString of (int * string) list 
-  | NonNullString of (int * string) list 
-  | Int of (int * int ) list 
-  | Arg_int_lit of int 
-  | Arg_string_lit of string 
-  | Array 
-  | Extern_unit
-  | Nothing
-  | Ignore
-
-(** for 
-       [x:t] -> "x"
-       [?x:t] -> "?x"
-*)
-val label_name : string -> arg_label
-
-
-
-
-
-(** return a function type 
-    [from_labels ~loc tyvars labels]
-    example output:
-    {[x:'a0 -> y:'a1 -> < x :'a0 ;y :'a1  > Js.t]}
-*)
-val from_labels :
-  loc:Location.t -> int ->  string Asttypes.loc list -> t
-
-val make_obj :
-  loc:Location.t ->
-  (string * Parsetree.attributes * t) list ->
-  t
-
-val is_optional_label : string -> bool 
-end = struct
-#1 "ast_core_type.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type t = Parsetree.core_type 
-
-type arg_label =
-  | Label of string 
-  | Optional of string 
-  | Empty (* it will be ignored , side effect will be recorded *)
-
-type arg_type = 
-  | NullString of (int * string) list (* `a does not have any value*)
-  | NonNullString of (int * string) list (* `a of int *)
-  | Int of (int * int ) list (* ([`a | `b ] [@bs.int])*)
-  | Arg_int_lit of int 
-  | Arg_string_lit of string 
-    (* maybe we can improve it as a combination of {!Asttypes.constant} and tuple *)
-  | Array 
-  | Extern_unit
-  | Nothing
-  | Ignore
-
-
-let extract_option_type_exn (ty : t) = 
-  begin match ty with
-    | {ptyp_desc =
-         Ptyp_constr({txt =
-                        Ldot (Lident "*predef*", "option") },
-                     [ty])}
-      ->                
-      ty
-    | _ -> assert false                 
-  end      
-
-let predef_option : Longident.t = Longident.Ldot (Lident "*predef*", "option")
-let predef_int : Longident.t = Ldot (Lident "*predef*", "int")
-
-
-let lift_option_type (ty:t) : t = 
-  {ptyp_desc =
-     Ptyp_constr(
-       {txt = predef_option;
-        loc = ty.ptyp_loc} 
-        , [ty]);
-        ptyp_loc = ty.ptyp_loc;
-      ptyp_attributes = []
-    }
-
-let is_any (ty : t) = 
-  match ty with {ptyp_desc = Ptyp_any} -> true | _ -> false
-
-open Ast_helper
-
-let replace_result ty result = 
-  let rec aux (ty : Parsetree.core_type) = 
-    match ty with 
-    | { ptyp_desc = 
-          Ptyp_arrow (label,t1,t2)
-      } -> { ty with ptyp_desc = Ptyp_arrow(label,t1, aux t2)}
-    | {ptyp_desc = Ptyp_poly(fs,ty)} 
-      ->  {ty with ptyp_desc = Ptyp_poly(fs, aux ty)}
-    | _ -> result in 
-  aux ty 
-
-let is_unit (ty : t ) = 
-  match ty.ptyp_desc with 
-  | Ptyp_constr({txt =Lident "unit"}, []) -> true
-  | _ -> false 
-
-let is_array (ty : t) = 
-  match ty.ptyp_desc with 
-  | Ptyp_constr({txt =Lident "array"}, [_]) -> true
-  | _ -> false 
-
-
-
-
-let is_optional_label l =
-  String.length l > 0 && l.[0] = '?'
-
-let label_name l : arg_label =
-  if l = "" then Empty else 
-  if is_optional_label l 
-  then Optional (String.sub l 1 (String.length l - 1))
-  else Label l
-
-
-(* Note that OCaml type checker will not allow arbitrary 
-   name as type variables, for example:
-   {[
-     '_x'_
-   ]}
-   will be recognized as a invalid program
-*)
-let from_labels ~loc arity labels 
-  : t =
-  let tyvars = 
-    ((Ext_list.init arity (fun i ->      
-         Typ.var ~loc ("a" ^ string_of_int i)))) in
-  let result_type =
-    Ast_comb.to_js_type loc  
-      (Typ.object_ ~loc
-         (List.map2 (fun x y -> x.Asttypes.txt ,[], y) labels tyvars) Closed)
-  in 
-  List.fold_right2 
-    (fun {Asttypes.loc ; txt = label }
-      tyvar acc -> Typ.arrow ~loc label tyvar acc) labels tyvars  result_type
-
-
-let make_obj ~loc xs =
-  Ast_comb.to_js_type loc @@
-  Ast_helper.Typ.object_  ~loc xs   Closed
-
-end
-module Ast_ffi_types : sig 
-#1 "ast_ffi_types.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-type external_module_name = 
-  { bundle : string ; 
-    bind_name : string option
-  }
-
-type pipe = bool 
-type js_call = { 
-  name : string;
-  external_module_name : external_module_name option;
-  splice : bool 
-}
-
-type js_send = { 
-  name : string ;
-  splice : bool ; 
-  pipe : pipe   
-} (* we know it is a js send, but what will happen if you pass an ocaml objct *)
-
-type js_global_val = {
-  name : string ; 
-  external_module_name : external_module_name option
-}
-
-type js_new_val = {
-  name : string ; 
-  external_module_name : external_module_name option;
-  splice : bool ;
-}
-
-type js_module_as_fn = 
-  { external_module_name : external_module_name;
-    splice : bool 
-  }
-
-type arg_type = Ast_core_type.arg_type
-type arg_label = 
-  | Label of string 
-  | Label_int_lit of string * int 
-  | Label_string_lit of string * string 
-  | Optional of string 
-  | Empty (* it will be ignored , side effect will be recorded *)
-  | Empty_int_lit of int 
-  | Empty_string_lit of string 
-
-type arg_kind = 
-  {
-    arg_type : arg_type;
-    arg_label : arg_label
-  }
-
-type obj_create = arg_kind list
-
-type ffi = 
-  (* | Obj_create of obj_create*)
-  | Js_global of js_global_val 
-  | Js_module_as_var of  external_module_name
-  | Js_module_as_fn of js_module_as_fn
-  | Js_module_as_class of external_module_name             
-  | Js_call of js_call 
-  | Js_send of js_send
-  | Js_new of js_new_val
-  | Js_set of string
-  | Js_get of string
-  | Js_get_index
-  | Js_set_index
-
-type t  = 
-  | Ffi_bs of arg_kind list  * bool * ffi
-  | Ffi_obj_create of obj_create
-  | Ffi_normal 
-  (* When it's normal, it is handled as normal c functional ffi call *)
-
-
-val name_of_ffi : ffi -> string
-
-val check_ffi : ?loc:Location.t ->  ffi -> unit 
-
-val to_string : t -> string 
-
-(** Note *)
-val from_string : string -> t 
-
-
-end = struct
-#1 "ast_ffi_types.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-type external_module_name = 
-  { bundle : string ; 
-    bind_name : string option
-  }
-
-type pipe = bool 
-type js_call = { 
-  name : string;
-  external_module_name : external_module_name option;
-  splice : bool 
-}
-
-type js_send = { 
-  name : string ;
-  splice : bool ; 
-  pipe : pipe   
-} (* we know it is a js send, but what will happen if you pass an ocaml objct *)
-
-type js_global_val = {
-  name : string ; 
-  external_module_name : external_module_name option
-}
-
-type js_new_val = {
-  name : string ; 
-  external_module_name : external_module_name option;
-  splice : bool ;
-}
-
-type js_module_as_fn = 
-  { external_module_name : external_module_name;
-    splice : bool 
-  }
-  
-(** TODO: information between [arg_type] and [arg_label] are duplicated, 
-  design a more compact representation so that it is also easy to seralize by hand
-*)  
-type arg_type = Ast_core_type.arg_type =
-  | NullString of (int * string) list (* `a does not have any value*)
-  | NonNullString of (int * string) list (* `a of int *)
-  | Int of (int * int ) list (* ([`a | `b ] [@bs.int])*)
-  | Arg_int_lit of int 
-  | Arg_string_lit of string 
-  (* maybe we can improve it as a combination of {!Asttypes.constant} and tuple *)
-  | Array 
-  | Extern_unit
-  | Nothing
-  | Ignore
-
-type arg_label = 
-  | Label of string 
-  | Label_int_lit of string * int 
-  | Label_string_lit of string * string 
-  | Optional of string 
-  | Empty (* it will be ignored , side effect will be recorded *)
-  | Empty_int_lit of int 
-  | Empty_string_lit of string 
-(**TODO: maybe we can merge [arg_label] and [arg_type] *)
-type arg_kind = 
-  {
-    arg_type : arg_type;
-    arg_label : arg_label
-  }
-type obj_create = arg_kind list
-
-type ffi = 
-  (* | Obj_create of obj_create *)
-  | Js_global of js_global_val 
-  | Js_module_as_var of  external_module_name
-  | Js_module_as_fn of js_module_as_fn
-  | Js_module_as_class of external_module_name             
-  | Js_call of js_call 
-  | Js_send of js_send
-  | Js_new of js_new_val
-  | Js_set of string
-  | Js_get of string
-  | Js_get_index
-  | Js_set_index
-
-let name_of_ffi ffi =
-  match ffi with 
-  | Js_get_index -> "[@@bs.get_index]"
-  | Js_set_index -> "[@@bs.set_index]"
-  | Js_get s -> Printf.sprintf "[@@bs.get %S]" s 
-  | Js_set s -> Printf.sprintf "[@@bs.set %S]" s 
-  | Js_call v  -> Printf.sprintf "[@@bs.val %S]" v.name
-  | Js_send v  -> Printf.sprintf "[@@bs.send %S]" v.name
-  | Js_module_as_fn v  -> Printf.sprintf "[@@bs.val %S]" v.external_module_name.bundle
-  | Js_new v  -> Printf.sprintf "[@@bs.new %S]" v.name                    
-  | Js_module_as_class v
-    -> Printf.sprintf "[@@bs.module] %S " v.bundle
-  | Js_module_as_var v
-    -> 
-    Printf.sprintf "[@@bs.module] %S " v.bundle
-  | Js_global v 
-    -> 
-    Printf.sprintf "[@@bs.val] %S " v.name                    
-(* | Obj_create _ -> 
-   Printf.sprintf "[@@bs.obj]" *)
-type t  = 
-  | Ffi_bs of arg_kind list  * bool * ffi 
-  (**  [Ffi_bs(args,return,ffi) ]
-       [return] means return value is unit or not, 
-        [true] means is [unit]  
-  *)
-  | Ffi_obj_create of obj_create
-  | Ffi_normal 
-  (* When it's normal, it is handled as normal c functional ffi call *)
-
-
-
-let valid_js_char =
-  let a = Array.init 256 (fun i ->
-      let c = Char.chr i in
-      (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c = '_' || c = '$'
-    ) in
-  (fun c -> Array.unsafe_get a (Char.code c))
-
-let valid_first_js_char = 
-  let a = Array.init 256 (fun i ->
-      let c = Char.chr i in
-      (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c = '_' || c = '$'
-    ) in
-  (fun c -> Array.unsafe_get a (Char.code c))
-
-(** Approximation could be improved *)
-let valid_ident (s : string) =
-  let len = String.length s in
-  len > 0 && valid_js_char s.[0] && valid_first_js_char s.[0] &&
-  (let module E = struct exception E end in
-   try
-     for i = 1 to len - 1 do
-       if not (valid_js_char (String.unsafe_get s i)) then
-         raise E.E         
-     done ;
-     true     
-   with E.E -> false )  
-
-let valid_global_name ?loc txt =
-  if not (valid_ident txt) then
-    let v = Ext_string.split_by ~keep_empty:true (fun x -> x = '.') txt in
-    List.iter
-      (fun s ->
-         if not (valid_ident s) then
-           Location.raise_errorf ?loc "Not a valid  name %s"  txt
-      ) v      
-
-let valid_method_name ?loc txt =         
-  if not (valid_ident txt) then
-    Location.raise_errorf ?loc "Not a valid  name %s"  txt
-
-
-
-let check_external_module_name ?loc x = 
-  match x with 
-  | {bundle = ""; _ } | {bind_name = Some ""} -> 
-    Location.raise_errorf ?loc "empty name encountered"
-  | _ -> ()
-let check_external_module_name_opt ?loc x = 
-  match x with 
-  | None -> ()
-  | Some v -> check_external_module_name ?loc v 
-
-
-let check_ffi ?loc ffi = 
-  match ffi with 
-  | Js_global {name} -> valid_global_name ?loc  name
-  | Js_send {name } 
-  | Js_set  name
-  | Js_get name
-    ->  valid_method_name ?loc name
-  (* | Obj_create _ -> () *)
-  | Js_get_index | Js_set_index 
-    -> ()
-
-  | Js_module_as_var external_module_name
-  | Js_module_as_fn {external_module_name; _}
-  | Js_module_as_class external_module_name             
-    -> check_external_module_name external_module_name
-  | Js_new {external_module_name ;  name}
-  | Js_call {external_module_name ;  name ; _}
-    -> 
-    check_external_module_name_opt ?loc external_module_name ;
-    valid_global_name ?loc name     
-
-let bs_prefix = "BS:"
-let bs_prefix_length = String.length bs_prefix 
-
-
-(** TODO: Make sure each version is not prefix of each other
-    Solution:
-    1. fixed length 
-    2. non-prefix approach
-*)
-let bs_external = bs_prefix ^ Bs_version.version 
-
-
-let bs_external_length = String.length bs_external
-
-
-let to_string  t = 
-  bs_external ^ Marshal.to_string t []
-
-
-(* TODO:  better error message when version mismatch *)
-let from_string s : t = 
-  let s_len = String.length s in 
-  if s_len >= bs_prefix_length &&
-     String.unsafe_get s 0 = 'B' &&
-     String.unsafe_get s 1 = 'S' &&
-     String.unsafe_get s 2 = ':' then 
-    if Ext_string.starts_with s bs_external then 
-      Marshal.from_string s bs_external_length 
-    else 
-      Ext_pervasives.failwithf 
-        ~loc:__LOC__
-        "compiler version mismatch, please do a clean build"
-  else Ffi_normal    
-
-end
 module Js_of_lam_option : sig 
 #1 "js_of_lam_option.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -89403,6 +89495,525 @@ let eval_as_int (arg : J.expression) (dispatches : (int * int) list ) : E.t  =
                body = [S.return (E.int (Int32.of_int  r))],
                       false (* FIXME: if true, still print break*)
               }) dispatches))]
+
+end
+module Lam_compile_external_call : sig 
+#1 "lam_compile_external_call.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(** Compile ocaml external function call to JS IR. *) 
+
+(** 
+    This module define how the FFI (via `external`) works with attributes. 
+    Note it will route to {!Lam_compile_global} 
+    for compiling normal functions without attributes.
+ *)
+
+val assemble_args_obj :
+  Ast_ffi_types.arg_kind list -> 
+  J.expression list -> 
+  J.expression 
+
+
+val translate_ffi :
+  Location.t -> 
+  Ast_ffi_types.ffi -> 
+  (* string -> *) (* Not used.. *)
+  Lam_compile_defs.cxt -> 
+  Ast_ffi_types.arg_kind list -> 
+  bool -> 
+  J.expression list -> 
+  J.expression 
+  
+(** TODO: document supported attributes
+    Attributes starting with `js` are reserved
+    examples: "bs.splice"
+ *)
+(*
+val translate :
+  Location.t ->
+  Lam_compile_defs.cxt -> 
+  Primitive.description -> 
+  J.expression list -> 
+  J.expression
+*)
+end = struct
+#1 "lam_compile_external_call.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+module E = Js_exp_make
+
+
+(** 
+   [bind_name] is a hint to the compiler to generate 
+   better names for external module 
+*)
+let handle_external 
+    ({bundle ; bind_name} : Ast_ffi_types.external_module_name)
+  : Ident.t * string 
+  =
+  match bind_name with 
+  | None -> 
+    Lam_compile_env.add_js_module bundle , bundle
+  | Some bind_name -> 
+    Lam_compile_env.add_js_module 
+      ~hint_name:bind_name
+      bundle,
+    bundle
+
+let handle_external_opt 
+    (module_name : Ast_ffi_types.external_module_name option) 
+  : (Ident.t * string) option = 
+  match module_name with 
+  | Some module_name -> Some (handle_external module_name) 
+  | None -> None 
+
+
+
+(** The first return value is value, the second argument is side effect expressions 
+    Only the [unit] with no label will be ignored
+    When  we are passing a boxed value to external(optional), we need
+    unbox it in the first place.
+
+    Note when optional value is not passed, the unboxed value would be 
+    [undefined], with the combination of `[@bs.int]` it would be still be 
+    [undefined], this by default is still correct..  
+    {[
+      (function () {
+           switch (undefined) {
+             case 97 : 
+               return "a";
+             case 98 : 
+               return "b";
+
+           }
+         }()) === undefined
+    ]} 
+
+     This would not work with [NonNullString]
+*)
+let ocaml_to_js_eff 
+    ({ Ast_ffi_types.arg_label;  arg_type })
+    (arg : J.expression) 
+  : E.t list * E.t list  =
+  let arg =
+    match arg_label with
+    | Optional label -> Js_of_lam_option.get_default_undefined arg 
+    | Label _ | Empty -> arg 
+    | Label_int_lit _ 
+    | Label_string_lit _ 
+    | Empty_int_lit _ 
+    | Empty_string_lit _  -> assert false in 
+  match arg_type with
+  | Arg_int_lit _ | Arg_string_lit _ -> assert false 
+  | Fn_uncurry_arity _ -> assert false 
+  | Extern_unit ->  
+    (if arg_label = Empty then [] else [E.unit]), 
+    (if Js_analyzer.no_side_effect_expression arg then 
+       []
+     else 
+       [arg]) (* leave up later to decide *)
+  | Ignore -> 
+    [], 
+    (if Js_analyzer.no_side_effect_expression arg then 
+       []
+     else 
+       [arg])
+  | NullString dispatches -> 
+    [Js_of_lam_variant.eval arg dispatches],[]
+  | NonNullString dispatches -> 
+    Js_of_lam_variant.eval_as_event arg dispatches,[]
+  | Int dispatches -> 
+    [Js_of_lam_variant.eval_as_int arg dispatches],[]
+  | Nothing  | Array ->  [arg], []
+
+let fuse x xs =
+  if xs = [] then x  
+  else List.fold_left E.seq x xs 
+
+
+   
+let empty_pair = [],[]       
+
+let assemble_args (arg_types : Ast_ffi_types.arg_kind list) args : E.t list * E.t option  = 
+  let rec aux (labels : Ast_ffi_types.arg_kind list) args = 
+    match labels, args with 
+    | [] , [] -> empty_pair
+    | { arg_label =  Empty_int_lit i } :: labels  , args 
+    | { arg_label =  Label_int_lit (_,i)} :: labels  , args -> 
+      let accs, eff = aux labels args in 
+      E.int (Int32.of_int i) ::accs, eff 
+    | { arg_label =  Label_string_lit(_,i)} :: labels , args 
+    | { arg_label =  Empty_string_lit i} :: labels , args
+      -> 
+      let accs, eff = aux labels args in 
+      E.str i :: accs, eff
+
+    | ({arg_label = Empty | Label _ | Optional _ } as arg_kind) ::labels, arg::args 
+      ->  
+      let accs, eff = aux labels args in 
+      let acc, new_eff = ocaml_to_js_eff arg_kind arg in 
+      acc @ accs, new_eff @ eff
+    | { arg_label = Empty | Label _ | Optional _  } :: _ , [] -> assert false 
+    | [],  _ :: _  -> assert false      
+  in 
+  let args, eff = aux arg_types args in
+  args, begin match eff with 
+    | [] -> None
+    | x::xs -> Some (fuse x xs)
+  end
+
+let add_eff eff e =
+  match eff with
+  | None -> e 
+  | Some v -> E.seq v e 
+
+(* Note: can potentially be inconsistent, sometimes 
+   {[
+     { x : 3 , y : undefined}
+   ]}
+   and 
+   {[
+     {x : 3 }
+   ]}
+   But the default to be undefined  seems reasonable 
+*)
+  
+let assemble_args_obj (labels : Ast_ffi_types.arg_kind list) (args : J.expression list) = 
+  let rec aux (labels : Ast_ffi_types.arg_kind list) args = 
+    match labels, args with 
+    | [] , [] -> empty_pair
+    | {arg_label = Label_int_lit (label,i)} :: labels  , args -> 
+      let accs, eff = aux labels args in 
+      (Js_op.Key label, E.int (Int32.of_int i) )::accs, eff 
+    | {arg_label = Label_string_lit(label,i)} :: labels , args 
+      -> 
+      let accs, eff = aux labels args in 
+      (Js_op.Key label, E.str i) :: accs, eff
+    | {arg_label = Empty_int_lit i } :: rest  , args -> assert false 
+    | {arg_label = Empty_string_lit i} :: rest , args -> assert false 
+    | {arg_label = Empty }::labels, arg::args 
+      ->  
+      let (accs, eff) as r  = aux labels args in 
+      if Js_analyzer.no_side_effect_expression arg then r 
+      else (accs, arg::eff)
+    | ({arg_label = Label label  } as arg_kind)::labels, arg::args 
+      -> 
+      let accs, eff = aux labels args in 
+      let acc, new_eff = ocaml_to_js_eff arg_kind arg in 
+      begin match acc with 
+        | [ ] -> assert false
+        | x::xs -> 
+          (Js_op.Key label, fuse x xs ) :: accs , new_eff @ eff 
+      end (* evaluation order is undefined *)
+
+    | ({arg_label = Optional label } as arg_kind)::labels, arg::args 
+      -> 
+      let (accs, eff) as r = aux labels args  in 
+      begin match arg.expression_desc with 
+        | Number _ -> (*Invariant: None encoding*)
+          r
+        | _ ->                 
+          let acc, new_eff = ocaml_to_js_eff arg_kind arg in 
+          begin match acc with 
+            | [] -> assert false 
+            | x::xs -> 
+              (Js_op.Key label, fuse x xs)::accs , 
+              new_eff @ eff 
+          end 
+      end
+
+    | {arg_label = Empty | Label _ | Optional _  } :: _ , [] -> assert false 
+    | [],  _ :: _  -> assert false 
+  in 
+  let map, eff = aux labels args in 
+
+  match eff with
+  | [] -> 
+    E.obj map 
+  | x::xs -> E.seq (fuse x xs) (E.obj map)
+
+
+(* TODO: fix splice, 
+   we need a static guarantee that it is static array construct
+   otherwise, we should provide a good error message here, 
+   no compiler failure here 
+   Invariant : Array encoding
+*)
+
+let ocaml_to_js ~js_splice:(js_splice : bool) call_loc ffi
+    last ({ Ast_ffi_types.arg_label;  arg_type = ty } as arg_ty)
+    (arg : J.expression) 
+  = 
+  if last && js_splice then
+    match ty with 
+    | Array -> 
+      begin match arg with 
+        | {expression_desc = Array (ls,_mutable_flag) } -> 
+          ls, [] 
+        | _ -> 
+          Location.raise_errorf ~loc:call_loc
+            "function call with %s  is a primitive with [@@bs.splice], it expects its arguments to be a syntactic array in the call site" 
+            (Ast_ffi_types.name_of_ffi ffi)
+      end
+    | _ -> assert  false
+  else 
+    ocaml_to_js_eff arg_ty arg 
+
+let assemble_args_splice call_loc ffi  js_splice arg_types args : E.t list * E.t option = 
+  let rec aux (labels : Ast_ffi_types.arg_kind list) args = 
+    match labels, args with 
+    | [] , [] -> empty_pair
+    | { arg_label =  Empty_int_lit i } :: labels  , args 
+    | { arg_label =  Label_int_lit (_,i)} :: labels  , args -> 
+      let accs, eff = aux labels args in 
+      E.int (Int32.of_int i) ::accs, eff 
+    | { arg_label =  Label_string_lit(_,i)} :: labels , args 
+    | { arg_label =  Empty_string_lit i} :: labels , args
+      -> 
+      let accs, eff = aux labels args in 
+      E.str i :: accs, eff
+
+    | ({arg_label = Empty | Label _ | Optional _ } as arg_kind) ::labels, arg::args 
+      ->  
+      let accs, eff = aux labels args in 
+      let acc, new_eff = ocaml_to_js call_loc ffi ~js_splice (args = []) arg_kind arg in 
+      acc @ accs, new_eff @ eff
+    | { arg_label = Empty | Label _ | Optional _  } :: _ , [] -> assert false 
+    | [],  _ :: _  -> assert false      
+
+  in 
+  let args, eff = aux arg_types args  in 
+  args,
+  begin  match eff with
+    | [] -> None 
+    | x::xs ->  
+      Some (fuse x xs) 
+  end
+
+
+let translate_ffi 
+  call_loc (ffi : Ast_ffi_types.ffi ) 
+  (* prim_name *)
+    (cxt  : Lam_compile_defs.cxt)
+    arg_types result_type
+    (args : J.expression list) = 
+  match ffi with 
+
+  | Js_call{ external_module_name = module_name; 
+             name = fn; splice = js_splice ; 
+
+           } -> 
+    let fn =  
+      match handle_external_opt module_name with 
+      | Some (id,_) -> 
+        E.dot (E.var id) fn
+      | None ->  E.js_var fn
+    in
+    let args, eff  = assemble_args_splice   call_loc ffi js_splice arg_types args in 
+    add_eff eff 
+      (if result_type then 
+
+         E.seq (E.call ~info:{arity=Full; call_info = Call_na} fn args) E.unit
+       else 
+         E.call ~info:{arity=Full; call_info = Call_na} fn args)
+
+  | Js_module_as_var module_name -> 
+    let (id, name) =  handle_external  module_name  in
+    E.external_var_dot id ~external_name:name 
+
+  | Js_module_as_fn {external_module_name = module_name; splice} ->
+    let fn =
+      let (id, name) = handle_external  module_name  in
+      E.external_var_dot id ~external_name:name 
+    in           
+    let args, eff = assemble_args_splice   call_loc ffi splice arg_types args in 
+    (* TODO: fix in rest calling convention *)          
+    add_eff eff 
+      ( if result_type then
+          E.seq (E.call ~info:{arity=Full; call_info = Call_na} fn args) E.unit
+        else
+          E.call ~info:{arity=Full; call_info = Call_na} fn args
+      )
+  | Js_module_as_class module_name ->
+    let fn =
+      let (id,name) = handle_external  module_name in
+      E.external_var_dot id ~external_name:name  in           
+    let args,eff = assemble_args arg_types args in 
+    (* TODO: fix in rest calling convention *)   
+    add_eff eff        
+      begin 
+        (match cxt.st with 
+         | Declare (_, id) | Assign id  ->
+           (* Format.fprintf Format.err_formatter "%a@."Ident.print  id; *)
+           Ext_ident.make_js_object id 
+         | EffectCall | NeedValue -> ())
+        ;
+        E.new_ fn args
+      end            
+
+  | Js_new { external_module_name = module_name; 
+             name = fn;
+             splice 
+           } -> 
+    (* This has some side effect, it will 
+       mark its identifier (If it has) as an object,
+       ATTENTION: 
+       order also matters here, since we mark its jsobject property, 
+       it  will affect the code gen later
+       TODO: we should propagate this property 
+       as much as we can(in alias table)
+    *)
+    let args, eff = assemble_args_splice  call_loc  ffi splice arg_types args in
+    let fn =  
+      match handle_external_opt module_name with 
+      | Some (id,name) ->  
+        E.external_var_dot id ~external_name:name ~dot:fn
+
+      | None -> 
+        (** TODO: check, no [@@bs.module], 
+            assume it's global *)
+        E.js_var fn
+
+    in
+    add_eff eff 
+      begin 
+        (match cxt.st with 
+         | Declare (_, id) | Assign id  ->
+           (* Format.fprintf Format.err_formatter "%a@."Ident.print  id; *)
+           Ext_ident.make_js_object id 
+         | EffectCall | NeedValue -> ())
+        ;
+        E.new_ fn args
+      end            
+
+
+
+  | Js_global {name; external_module_name} -> 
+
+    (* TODO #11
+       1. check args -- error checking 
+       2. support [@@bs.scope "window"]
+       we need know whether we should call [add_js_module] or not 
+    *)
+    begin match name, handle_external_opt external_module_name with 
+      | "true", None -> E.js_bool true
+      | "false", None -> E.js_bool false
+      | "null", None -> E.nil 
+      | "undefined", None -> E.undefined
+      | _, Some(id,mod_name)
+        -> E.external_var_dot id ~external_name:mod_name ~dot:name
+      | _, None -> 
+
+        E.var (Ext_ident.create_js name)
+    end
+  | Js_send {splice  = js_splice ; name ; pipe = false} -> 
+    begin match args  with
+      | self :: args -> 
+        let [@warning"-8"] ( self_type::arg_types )
+          = arg_types in
+        let args, eff = assemble_args_splice  call_loc ffi  js_splice arg_types args in
+        add_eff eff @@ 
+        E.call ~info:{arity=Full; call_info = Call_na}  (E.dot self name) args
+      | _ -> 
+        assert false 
+    end
+  | Js_send { name ; pipe = true ; splice = js_splice}
+    -> (* splice should not happen *)
+    (* assert (js_splice = false) ;  *)
+    let self, args = Ext_list.exclude_tail args in
+    let self_type, arg_types = Ext_list.exclude_tail arg_types in
+    let args, eff = assemble_args_splice call_loc ffi  js_splice arg_types args in
+    add_eff eff @@
+    E.call ~info:{arity=Full; call_info = Call_na}  (E.dot self name) args
+
+  | Js_get name -> 
+    begin match args with 
+      | [obj] ->
+        E.dot obj name        
+      | _ -> assert false 
+    end  
+  | Js_set name -> 
+    begin match args, arg_types with 
+      | [obj; v], _ -> 
+        E.assign (E.dot obj name) v         
+      | [obj], [_; {arg_type = Arg_int_lit i }] ->
+        E.assign (E.dot obj name) (E.int (Int32.of_int i))  
+      | [obj], [_; {arg_type = Arg_string_lit i }] ->
+        E.assign (E.dot obj name) (E.str i)          
+      | _ -> 
+        assert false 
+    end
+  | Js_get_index 
+    -> 
+    begin match args with
+      | [obj; v ] -> 
+        Js_arr.ref_array obj v
+      | _ -> assert false 
+    end
+  | Js_set_index 
+    -> 
+    begin match args with 
+      | [obj; v ; value] -> 
+        Js_arr.set_array obj v value
+      | _ -> assert false
+    end
+
 
 end
 module Js_of_lam_tuple : sig 
@@ -90591,519 +91202,6 @@ let translate (prim_name : string)
 ;;
 
 end
-module Lam_compile_external_call : sig 
-#1 "lam_compile_external_call.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(** Compile ocaml external function call to JS IR. *) 
-
-(** 
-    This module define how the FFI (via `external`) works with attributes. 
-    Note it will route to {!Lam_compile_global} 
-    for compiling normal functions without attributes.
- *)
-
-
-(** TODO: document supported attributes
-    Attributes starting with `js` are reserved
-    examples: "bs.splice"
- *)
-
-val translate :
-  Location.t ->
-  Lam_compile_defs.cxt -> 
-  Primitive.description -> 
-  J.expression list -> 
-  J.expression
-
-end = struct
-#1 "lam_compile_external_call.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-module E = Js_exp_make
-
-
-(** 
-   [bind_name] is a hint to the compiler to generate 
-   better names for external module 
-*)
-let handle_external 
-    ({bundle ; bind_name} : Ast_ffi_types.external_module_name)
-  : Ident.t * string 
-  =
-  match bind_name with 
-  | None -> 
-    Lam_compile_env.add_js_module bundle , bundle
-  | Some bind_name -> 
-    Lam_compile_env.add_js_module 
-      ~hint_name:bind_name
-      bundle,
-    bundle
-
-let handle_external_opt 
-    (module_name : Ast_ffi_types.external_module_name option) 
-  : (Ident.t * string) option = 
-  match module_name with 
-  | Some module_name -> Some (handle_external module_name) 
-  | None -> None 
-
-
-
-(** The first return value is value, the second argument is side effect expressions 
-    Only the [unit] with no label will be ignored
-    When  we are passing a boxed value to external(optional), we need
-    unbox it in the first place.
-
-    Note when optional value is not passed, the unboxed value would be 
-    [undefined], with the combination of `[@bs.int]` it would be still be 
-    [undefined], this by default is still correct..  
-    {[
-      (function () {
-           switch (undefined) {
-             case 97 : 
-               return "a";
-             case 98 : 
-               return "b";
-
-           }
-         }()) === undefined
-    ]} 
-
-     This would not work with [NonNullString]
-*)
-let ocaml_to_js_eff 
-    ({ Ast_ffi_types.arg_label;  arg_type })
-    (arg : J.expression) 
-  : E.t list * E.t list  =
-  let arg =
-    match arg_label with
-    | Optional label -> Js_of_lam_option.get_default_undefined arg 
-    | Label _ | Empty -> arg 
-    | Label_int_lit _ 
-    | Label_string_lit _ 
-    | Empty_int_lit _ 
-    | Empty_string_lit _  -> assert false in 
-  match arg_type with
-  | Arg_int_lit _ | Arg_string_lit _ -> assert false 
-  | Extern_unit ->  
-    (if arg_label = Empty then [] else [E.unit]), 
-    (if Js_analyzer.no_side_effect_expression arg then 
-       []
-     else 
-       [arg]) (* leave up later to decide *)
-  | Ignore -> 
-    [], 
-    (if Js_analyzer.no_side_effect_expression arg then 
-       []
-     else 
-       [arg])
-  | NullString dispatches -> 
-    [Js_of_lam_variant.eval arg dispatches],[]
-  | NonNullString dispatches -> 
-    Js_of_lam_variant.eval_as_event arg dispatches,[]
-  | Int dispatches -> 
-    [Js_of_lam_variant.eval_as_int arg dispatches],[]
-  | Nothing  | Array ->  [arg], []
-
-let fuse x xs =
-  if xs = [] then x  
-  else List.fold_left E.seq x xs 
-
-
-   
-let empty_pair = [],[]       
-
-let assemble_args (arg_types : Ast_ffi_types.arg_kind list) args : E.t list * E.t option  = 
-  let rec aux (labels : Ast_ffi_types.arg_kind list) args = 
-    match labels, args with 
-    | [] , [] -> empty_pair
-    | { arg_label =  Empty_int_lit i } :: labels  , args 
-    | { arg_label =  Label_int_lit (_,i)} :: labels  , args -> 
-      let accs, eff = aux labels args in 
-      E.int (Int32.of_int i) ::accs, eff 
-    | { arg_label =  Label_string_lit(_,i)} :: labels , args 
-    | { arg_label =  Empty_string_lit i} :: labels , args
-      -> 
-      let accs, eff = aux labels args in 
-      E.str i :: accs, eff
-
-    | ({arg_label = Empty | Label _ | Optional _ } as arg_kind) ::labels, arg::args 
-      ->  
-      let accs, eff = aux labels args in 
-      let acc, new_eff = ocaml_to_js_eff arg_kind arg in 
-      acc @ accs, new_eff @ eff
-    | { arg_label = Empty | Label _ | Optional _  } :: _ , [] -> assert false 
-    | [],  _ :: _  -> assert false      
-  in 
-  let args, eff = aux arg_types args in
-  args, begin match eff with 
-    | [] -> None
-    | x::xs -> Some (fuse x xs)
-  end
-
-let add_eff eff e =
-  match eff with
-  | None -> e 
-  | Some v -> E.seq v e 
-
-(* Note: can potentially be inconsistent, sometimes 
-   {[
-     { x : 3 , y : undefined}
-   ]}
-   and 
-   {[
-     {x : 3 }
-   ]}
-   But the default to be undefined  seems reasonable 
-*)
-  
-let assemble_args_obj (labels : Ast_ffi_types.arg_kind list) (args : J.expression list) = 
-  let rec aux (labels : Ast_ffi_types.arg_kind list) args = 
-    match labels, args with 
-    | [] , [] -> empty_pair
-    | {arg_label = Label_int_lit (label,i)} :: labels  , args -> 
-      let accs, eff = aux labels args in 
-      (Js_op.Key label, E.int (Int32.of_int i) )::accs, eff 
-    | {arg_label = Label_string_lit(label,i)} :: labels , args 
-      -> 
-      let accs, eff = aux labels args in 
-      (Js_op.Key label, E.str i) :: accs, eff
-    | {arg_label = Empty_int_lit i } :: rest  , args -> assert false 
-    | {arg_label = Empty_string_lit i} :: rest , args -> assert false 
-    | {arg_label = Empty }::labels, arg::args 
-      ->  
-      let (accs, eff) as r  = aux labels args in 
-      if Js_analyzer.no_side_effect_expression arg then r 
-      else (accs, arg::eff)
-    | ({arg_label = Label label  } as arg_kind)::labels, arg::args 
-      -> 
-      let accs, eff = aux labels args in 
-      let acc, new_eff = ocaml_to_js_eff arg_kind arg in 
-      begin match acc with 
-        | [ ] -> assert false
-        | x::xs -> 
-          (Js_op.Key label, fuse x xs ) :: accs , new_eff @ eff 
-      end (* evaluation order is undefined *)
-
-    | ({arg_label = Optional label } as arg_kind)::labels, arg::args 
-      -> 
-      let (accs, eff) as r = aux labels args  in 
-      begin match arg.expression_desc with 
-        | Number _ -> (*Invariant: None encoding*)
-          r
-        | _ ->                 
-          let acc, new_eff = ocaml_to_js_eff arg_kind arg in 
-          begin match acc with 
-            | [] -> assert false 
-            | x::xs -> 
-              (Js_op.Key label, fuse x xs)::accs , 
-              new_eff @ eff 
-          end 
-      end
-
-    | {arg_label = Empty | Label _ | Optional _  } :: _ , [] -> assert false 
-    | [],  _ :: _  -> assert false 
-  in 
-  let map, eff = aux labels args in 
-
-  match eff with
-  | [] -> 
-    E.obj map 
-  | x::xs -> E.seq (fuse x xs) (E.obj map)
-
-
-(* TODO: fix splice, 
-   we need a static guarantee that it is static array construct
-   otherwise, we should provide a good error message here, 
-   no compiler failure here 
-   Invariant : Array encoding
-*)
-
-let ocaml_to_js ~js_splice:(js_splice : bool) call_loc ffi
-    last ({ Ast_ffi_types.arg_label;  arg_type = ty } as arg_ty)
-    (arg : J.expression) 
-  = 
-  if last && js_splice then
-    match ty with 
-    | Array -> 
-      begin match arg with 
-        | {expression_desc = Array (ls,_mutable_flag) } -> 
-          ls, [] 
-        | _ -> 
-          Location.raise_errorf ~loc:call_loc
-            "function call with %s  is a primitive with [@@bs.splice], it expects its arguments to be a syntactic array in the call site" 
-            (Ast_ffi_types.name_of_ffi ffi)
-      end
-    | _ -> assert  false
-  else 
-    ocaml_to_js_eff arg_ty arg 
-
-let assemble_args_splice call_loc ffi  js_splice arg_types args : E.t list * E.t option = 
-  let rec aux (labels : Ast_ffi_types.arg_kind list) args = 
-    match labels, args with 
-    | [] , [] -> empty_pair
-    | { arg_label =  Empty_int_lit i } :: labels  , args 
-    | { arg_label =  Label_int_lit (_,i)} :: labels  , args -> 
-      let accs, eff = aux labels args in 
-      E.int (Int32.of_int i) ::accs, eff 
-    | { arg_label =  Label_string_lit(_,i)} :: labels , args 
-    | { arg_label =  Empty_string_lit i} :: labels , args
-      -> 
-      let accs, eff = aux labels args in 
-      E.str i :: accs, eff
-
-    | ({arg_label = Empty | Label _ | Optional _ } as arg_kind) ::labels, arg::args 
-      ->  
-      let accs, eff = aux labels args in 
-      let acc, new_eff = ocaml_to_js call_loc ffi ~js_splice (args = []) arg_kind arg in 
-      acc @ accs, new_eff @ eff
-    | { arg_label = Empty | Label _ | Optional _  } :: _ , [] -> assert false 
-    | [],  _ :: _  -> assert false      
-
-  in 
-  let args, eff = aux arg_types args  in 
-  args,
-  begin  match eff with
-    | [] -> None 
-    | x::xs ->  
-      Some (fuse x xs) 
-  end
-
-
-let translate_ffi call_loc (ffi : Ast_ffi_types.ffi ) prim_name
-    (cxt  : Lam_compile_defs.cxt)
-    arg_types result_type
-    (args : J.expression list) = 
-  match ffi with 
-
-  | Js_call{ external_module_name = module_name; 
-             name = fn; splice = js_splice ; 
-
-           } -> 
-    let fn =  
-      match handle_external_opt module_name with 
-      | Some (id,_) -> 
-        E.dot (E.var id) fn
-      | None ->  E.js_var fn
-    in
-    let args, eff  = assemble_args_splice   call_loc ffi js_splice arg_types args in 
-    add_eff eff 
-      (if result_type then 
-
-         E.seq (E.call ~info:{arity=Full; call_info = Call_na} fn args) E.unit
-       else 
-         E.call ~info:{arity=Full; call_info = Call_na} fn args)
-
-  | Js_module_as_var module_name -> 
-    let (id, name) =  handle_external  module_name  in
-    E.external_var_dot id ~external_name:name 
-
-  | Js_module_as_fn {external_module_name = module_name; splice} ->
-    let fn =
-      let (id, name) = handle_external  module_name  in
-      E.external_var_dot id ~external_name:name 
-    in           
-    let args, eff = assemble_args_splice   call_loc ffi splice arg_types args in 
-    (* TODO: fix in rest calling convention *)          
-    add_eff eff 
-      ( if result_type then
-          E.seq (E.call ~info:{arity=Full; call_info = Call_na} fn args) E.unit
-        else
-          E.call ~info:{arity=Full; call_info = Call_na} fn args
-      )
-  | Js_module_as_class module_name ->
-    let fn =
-      let (id,name) = handle_external  module_name in
-      E.external_var_dot id ~external_name:name  in           
-    let args,eff = assemble_args arg_types args in 
-    (* TODO: fix in rest calling convention *)   
-    add_eff eff        
-      begin 
-        (match cxt.st with 
-         | Declare (_, id) | Assign id  ->
-           (* Format.fprintf Format.err_formatter "%a@."Ident.print  id; *)
-           Ext_ident.make_js_object id 
-         | EffectCall | NeedValue -> ())
-        ;
-        E.new_ fn args
-      end            
-
-  | Js_new { external_module_name = module_name; 
-             name = fn;
-             splice 
-           } -> 
-    (* This has some side effect, it will 
-       mark its identifier (If it has) as an object,
-       ATTENTION: 
-       order also matters here, since we mark its jsobject property, 
-       it  will affect the code gen later
-       TODO: we should propagate this property 
-       as much as we can(in alias table)
-    *)
-    let args, eff = assemble_args_splice  call_loc  ffi splice arg_types args in
-    let fn =  
-      match handle_external_opt module_name with 
-      | Some (id,name) ->  
-        E.external_var_dot id ~external_name:name ~dot:fn
-
-      | None -> 
-        (** TODO: check, no [@@bs.module], 
-            assume it's global *)
-        E.js_var fn
-
-    in
-    add_eff eff 
-      begin 
-        (match cxt.st with 
-         | Declare (_, id) | Assign id  ->
-           (* Format.fprintf Format.err_formatter "%a@."Ident.print  id; *)
-           Ext_ident.make_js_object id 
-         | EffectCall | NeedValue -> ())
-        ;
-        E.new_ fn args
-      end            
-
-
-
-  | Js_global {name; external_module_name} -> 
-
-    (* TODO #11
-       1. check args -- error checking 
-       2. support [@@bs.scope "window"]
-       we need know whether we should call [add_js_module] or not 
-    *)
-    begin match name, handle_external_opt external_module_name with 
-      | "true", None -> E.js_bool true
-      | "false", None -> E.js_bool false
-      | "null", None -> E.nil 
-      | "undefined", None -> E.undefined
-      | _, Some(id,mod_name)
-        -> E.external_var_dot id ~external_name:mod_name ~dot:name
-      | _, None -> 
-
-        E.var (Ext_ident.create_js name)
-    end
-  | Js_send {splice  = js_splice ; name ; pipe = false} -> 
-    begin match args  with
-      | self :: args -> 
-        let [@warning"-8"] ( self_type::arg_types )
-          = arg_types in
-        let args, eff = assemble_args_splice  call_loc ffi  js_splice arg_types args in
-        add_eff eff @@ 
-        E.call ~info:{arity=Full; call_info = Call_na}  (E.dot self name) args
-      | _ -> 
-        assert false 
-    end
-  | Js_send { name ; pipe = true ; splice = js_splice}
-    -> (* splice should not happen *)
-    (* assert (js_splice = false) ;  *)
-    let self, args = Ext_list.exclude_tail args in
-    let self_type, arg_types = Ext_list.exclude_tail arg_types in
-    let args, eff = assemble_args_splice call_loc ffi  js_splice arg_types args in
-    add_eff eff @@
-    E.call ~info:{arity=Full; call_info = Call_na}  (E.dot self name) args
-
-  | Js_get name -> 
-    begin match args with 
-      | [obj] ->
-        E.dot obj name        
-      | _ -> assert false 
-    end  
-  | Js_set name -> 
-    begin match args, arg_types with 
-      | [obj; v], _ -> 
-        E.assign (E.dot obj name) v         
-      | [obj], [_; {arg_type = Arg_int_lit i }] ->
-        E.assign (E.dot obj name) (E.int (Int32.of_int i))  
-      | [obj], [_; {arg_type = Arg_string_lit i }] ->
-        E.assign (E.dot obj name) (E.str i)          
-      | _ -> 
-        assert false 
-    end
-  | Js_get_index 
-    -> 
-    begin match args with
-      | [obj; v ] -> 
-        Js_arr.ref_array obj v
-      | _ -> assert false 
-    end
-  | Js_set_index 
-    -> 
-    begin match args with 
-      | [obj; v ; value] -> 
-        Js_arr.set_array obj v value
-      | _ -> assert false
-    end
-
-
-
-let translate loc cxt 
-    ({prim_name ;  prim_native_name} 
-     : Primitive.description) args  = 
-
-  match Ast_ffi_types.from_string prim_native_name with 
-  | Ffi_normal ->    
-    Lam_dispatch_primitive.translate prim_name args 
-  | Ffi_obj_create labels -> assemble_args_obj labels args 
-  | Ffi_bs (arg_types, result_type, ffi) -> 
-    translate_ffi loc  ffi prim_name cxt arg_types result_type args 
-
-end
 module Lam_compile_primitive : sig 
 #1 "lam_compile_primitive.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -91685,8 +91783,15 @@ let translate  loc
       | _ -> assert false
       end
   | Pccall prim -> 
-      Lam_compile_external_call.translate loc cxt prim args 
+    Lam_dispatch_primitive.translate prim.prim_name  args
+      (* Lam_compile_external_call.translate loc cxt prim args *)
      (* Test if the argument is a block or an immediate integer *)
+  | Pjs_object_create labels
+    -> 
+    Lam_compile_external_call.assemble_args_obj labels args 
+  | Pjs_call (_, arg_types, result_type, ffi) -> 
+    Lam_compile_external_call.translate_ffi 
+    loc ffi cxt arg_types result_type args 
   | Pisint -> 
     begin 
       match args with 
@@ -98021,6 +98126,8 @@ let is_single_int (x : t ) =
       _}] -> Some name
   | _  -> None
 
+
+
 let as_string_exp (x : t ) = 
   match x with  (** TODO also need detect empty phrase case *)
   | PStr [ {
@@ -98212,8 +98319,8 @@ type derive_attr = {
   explict_nonrec : bool;
   bs_deriving : [`Has_deriving of Ast_payload.action list | `Nothing ]
 }
-val process_bs_string_int : 
-  t -> [`Nothing | `String | `Int | `Ignore]  * t 
+val process_bs_string_int_uncurry : 
+  t -> [`Nothing | `String | `Int | `Ignore | `Uncurry of int option ]  * t 
 
 val process_bs_string_as :
   t -> string option * t 
@@ -98237,6 +98344,9 @@ val bs_method : attr
 
 
 val warn_unused_attributes : t -> unit
+
+
+
 end = struct
 #1 "ast_attributes.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -98387,10 +98497,10 @@ let process_derive_type attrs =
 
 
 
-let process_bs_string_int attrs = 
+let process_bs_string_int_uncurry attrs = 
   List.fold_left 
     (fun (st,attrs)
-      (({txt ; loc}, payload ) as attr : attr)  ->
+      (({txt ; loc}, (payload : _ ) ) as attr : attr)  ->
       match  txt, st  with
       | "bs.string", (`Nothing | `String)
         -> `String, attrs
@@ -98398,6 +98508,13 @@ let process_bs_string_int attrs =
         ->  `Int, attrs
       | "bs.ignore", (`Nothing | `Ignore)
         -> `Ignore, attrs
+      
+      | "bs.uncurry", `Nothing
+        ->
+          `Uncurry (Ast_payload.is_single_int payload), attrs 
+        (* Don't allow duplicated [bs.uncurry] since
+           it may introduce inconsistency in arity
+        *)  
       | "bs.int", _
       | "bs.string", _
       | "bs.ignore", _
@@ -99508,7 +99625,7 @@ let get_arg_type ~nolabel optional
         Arg_string_lit i, Ast_literal.type_string ~loc:ptyp.ptyp_loc () 
     end 
   else 
-    match Ast_attributes.process_bs_string_int ptyp.ptyp_attributes, ptyp.ptyp_desc with 
+    match Ast_attributes.process_bs_string_int_uncurry ptyp.ptyp_attributes, ptyp.ptyp_desc with 
     | (`String, ptyp_attributes),  Ptyp_variant ( row_fields, Closed, None)
       -> 
       let case, result, row_fields  = 
@@ -99573,6 +99690,27 @@ let get_arg_type ~nolabel optional
       }
 
     | (`Int, _), _ -> Location.raise_errorf ~loc:ptyp.ptyp_loc "Not a valid string type"
+    | (`Uncurry opt_arity, ptyp_attributes), ptyp_desc -> 
+      let real_arity =  Ast_core_type.get_arity ptyp in 
+      (begin match opt_arity, real_arity with 
+      | Some arity, 0 -> 
+        Fn_uncurry_arity arity 
+      | None, 0 -> 
+        Location.raise_errorf 
+          ~loc:ptyp.ptyp_loc 
+          "Can not infer the arity by syntax, either [@bs.uncurry n] or \n\
+          write it in arrow syntax
+          "
+      | None, arity  ->         
+        Fn_uncurry_arity arity
+      | Some arity, n -> 
+        if n <> arity then 
+          Location.raise_errorf 
+            ~loc:ptyp.ptyp_loc 
+            "Inconsistent arity %d vs %d" arity n 
+        else Fn_uncurry_arity arity 
+          
+      end, {ptyp with ptyp_attributes})
     | (`Nothing, ptyp_attributes),  ptyp_desc ->
       begin match ptyp_desc with
         | Ptyp_constr ({txt = Lident "bool"}, [])
@@ -99720,15 +99858,6 @@ let process_external_attributes
     (init_st, []) prim_attributes 
 
 
-let list_of_arrow (ty : Parsetree.core_type) = 
-  let rec aux (ty : Parsetree.core_type) acc = 
-    match ty.ptyp_desc with 
-    | Ptyp_arrow(label,t1,t2) -> 
-      aux t2 ((label,t1,ty.ptyp_attributes,ty.ptyp_loc) ::acc)
-    | Ptyp_poly(_, ty) -> (* should not happen? *)
-      Location.raise_errorf ~loc:ty.ptyp_loc "Unhandled poly type"
-    | return_type -> ty, List.rev acc
-  in aux ty []
 
 
 (** Note that the passed [type_annotation] is already processed by visitor pattern before 
@@ -99744,7 +99873,7 @@ let handle_attributes
     else  `Nm_external prim_name  (* need check name *)
   in    
   let result_type, arg_types_ty =
-    list_of_arrow type_annotation in
+    Ast_core_type.list_of_arrow type_annotation in
 
   let (st, left_attrs) = 
     process_external_attributes 
@@ -99814,6 +99943,9 @@ let handle_attributes
                        {arg_label = Label s; arg_type}, 
                        (label,new_ty,attr,loc)::arg_types, 
                        ((name, [], Ast_literal.type_string ~loc ()) :: result_types)  
+                     | Fn_uncurry_arity _ -> 
+                        Location.raise_errorf ~loc
+                         "The combination of [@@bs.obj], [@@bs.uncurry] is not supported yet"
                      | Extern_unit -> assert false 
                      | NonNullString _ 
                        ->  
@@ -99846,6 +99978,9 @@ let handle_attributes
                      | Arg_int_lit _   
                      | Arg_string_lit _ -> 
                        Location.raise_errorf ~loc "bs.as is not supported with optional yet"
+                     | Fn_uncurry_arity _ -> 
+                        Location.raise_errorf ~loc
+                         "The combination of [@@bs.obj], [@@bs.uncurry] is not supported yet"                      
                      | Extern_unit   -> assert false                      
                      | NonNullString _ 
                        ->  

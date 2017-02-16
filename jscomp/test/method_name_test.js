@@ -66,4 +66,4 @@ exports.ff      = ff;
 exports.u       = u;
 exports.h       = h;
 exports.hg      = hg;
-/* u Not a pure module */
+/*  Not a pure module */

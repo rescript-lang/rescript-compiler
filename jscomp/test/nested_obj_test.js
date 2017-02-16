@@ -65,4 +65,4 @@ exports.f_record = f_record;
 exports.f        = f;
 exports.f2       = f2;
 exports.f3       = f3;
-/*  Not a pure module */
+/* No side effect */

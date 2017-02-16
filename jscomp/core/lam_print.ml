@@ -124,6 +124,10 @@ let primitive ppf (prim : Lam.primitive) = match prim with
   | Pduprecord (rep, size) -> fprintf ppf "duprecord %a %i" record_rep rep size
   | Plazyforce -> fprintf ppf "force"
   | Pccall p -> fprintf ppf "%s" p.prim_name
+  | Pjs_call (prim_name, _, _, _) -> 
+      fprintf ppf  "%s[js]" prim_name
+  | Pjs_object_create obj_create -> 
+    fprintf ppf "[js.obj]"
   | Praise  -> fprintf ppf "raise"
   | Psequand -> fprintf ppf "&&"
   | Psequor -> fprintf ppf "||"

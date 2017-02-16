@@ -56,6 +56,15 @@ type primitive =
   | Plazyforce
   (* External call *)
   | Pccall of  Primitive.description
+  | Pjs_call of
+      (* Location.t *  [loc] is passed down *)
+      string *  (* prim_name *)
+      Ast_ffi_types.arg_kind list * (* arg_types *)
+      bool * (* result_type *)
+      Ast_ffi_types.ffi  (* ffi *)
+
+  (* Ast_ffi_types.arg_kind list * bool * Ast_ffi_types.ffi  *)
+  | Pjs_object_create of Ast_ffi_types.obj_create
   (* Exceptions *)
   | Praise
   (* Boolean operations *)
@@ -626,9 +635,9 @@ let free_variables l =
       | Lapply{fn; args; _} ->
         free fn; List.iter free args
       | Lglobal_module _ -> () 
-        (* according to the existing semantics: 
-          [primitive] is not counted
-        *)        
+      (* according to the existing semantics: 
+         [primitive] is not counted
+      *)        
       | Lprim {args; _} ->
         List.iter free args
       | Lswitch(arg, sw) ->
@@ -707,7 +716,7 @@ let check file lam =
         List.iter (fun (id, exp) ->  def id) decl;
         List.iter (fun (id, exp) -> iter exp) decl;
         iter body
-   
+
       | Lswitch(arg, sw) ->
         iter arg;
         List.iter (fun (key, case) -> iter case) sw.sw_consts;
@@ -1106,10 +1115,10 @@ let may_depend = Lam_module_ident.Hash_set.add
 let rec drop_global_marker (lam : t) =
   match lam with 
   | Lsequence (Lglobal_module id, rest) -> 
-     drop_global_marker rest
+    drop_global_marker rest
   | _ -> lam
 
-   
+
 let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : t = 
   match p with 
   | Pint_as_pointer 
@@ -1165,21 +1174,30 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : t =
   | Plazyforce -> prim ~primitive:Plazyforce ~args loc
 
   | Pccall a -> 
-    let prim_name = a.prim_name in
-    if Pervasives.not @@ Ext_string.starts_with prim_name "js_" then 
-      prim ~primitive:(Pccall a ) ~args loc else 
-    if prim_name =  Literals.js_debugger then 
-      prim ~primitive:Pdebugger ~args loc else 
-    if prim_name =  Literals.js_fn_run || prim_name = Literals.js_method_run then
-      prim ~primitive:(Pjs_fn_run (int_of_string a.prim_native_name)) ~args loc else 
-    if prim_name = Literals.js_fn_mk then 
-      prim ~primitive:(Pjs_fn_make (int_of_string a.prim_native_name)) ~args loc else                
-    if prim_name = Literals.js_fn_method then 
-      prim ~primitive:(Pjs_fn_method (int_of_string a.prim_native_name)) ~args loc else
-    if prim_name = Literals.js_fn_runmethod then 
-      prim ~primitive:(Pjs_fn_runmethod (int_of_string a.prim_native_name)) ~args loc 
-    else
-      prim ~primitive:(Pccall a) ~args loc
+    let prim_name = a.prim_name in    
+    begin match Ast_ffi_types.from_string a.prim_native_name with 
+      | Ffi_normal -> 
+        if Pervasives.not @@ Ext_string.starts_with prim_name "js_" then 
+          prim ~primitive:(Pccall a ) ~args loc else 
+        if prim_name =  Literals.js_debugger then 
+          prim ~primitive:Pdebugger ~args loc else 
+        if prim_name =  Literals.js_fn_run || prim_name = Literals.js_method_run then
+          prim ~primitive:(Pjs_fn_run (int_of_string a.prim_native_name)) ~args loc else 
+        if prim_name = Literals.js_fn_mk then 
+          prim ~primitive:(Pjs_fn_make (int_of_string a.prim_native_name)) ~args loc else                
+        if prim_name = Literals.js_fn_method then 
+          prim ~primitive:(Pjs_fn_method (int_of_string a.prim_native_name)) ~args loc else
+        if prim_name = Literals.js_fn_runmethod then 
+          prim ~primitive:(Pjs_fn_runmethod (int_of_string a.prim_native_name)) ~args loc 
+        else
+          prim ~primitive:(Pccall a) ~args loc
+      | Ffi_obj_create labels -> 
+        prim ~primitive:(Pjs_object_create labels) ~args loc 
+      | Ffi_bs(arg_types, result_type, ffi) -> 
+        prim ~primitive:(Pjs_call(prim_name, arg_types,result_type,ffi)) 
+          ~args loc
+    end
+
   | Praise _ ->
     if Js_config.get_no_any_assert () then 
       begin match args with 
@@ -1492,17 +1510,17 @@ let convert exports lam : _ * _  =
       -> 
       let args = (List.map aux args) in
       begin match primitive with 
-      | Pgetglobal id -> 
-        if Ident.is_predef_exn id then 
-          Lprim {primitive = Pglobal_exception id; args ; loc}
-        else 
-        begin 
-          may_depend may_depends (Lam_module_ident.of_ml id);
-          assert (args = []);
-          Lglobal_module id 
-        end  
-      | _ ->       
-        lam_prim ~primitive ~args loc 
+        | Pgetglobal id -> 
+          if Ident.is_predef_exn id then 
+            Lprim {primitive = Pglobal_exception id; args ; loc}
+          else 
+            begin 
+              may_depend may_depends (Lam_module_ident.of_ml id);
+              assert (args = []);
+              Lglobal_module id 
+            end  
+        | _ ->       
+          lam_prim ~primitive ~args loc 
       end
     | Lswitch (e,s) -> 
       Lswitch (aux e, aux_switch s)

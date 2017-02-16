@@ -9,4 +9,4 @@ var v1 = {
 };
 
 exports.v1 = v1;
-/* v1 Not a pure module */
+/* No side effect */

@@ -41,4 +41,4 @@ var js_obj = {
 
 exports.js_obj   = js_obj;
 exports.uux_this = uux_this;
-/* u Not a pure module */
+/*  Not a pure module */

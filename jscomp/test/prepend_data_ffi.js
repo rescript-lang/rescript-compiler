@@ -67,4 +67,4 @@ exports.v2       = v2;
 exports.f        = f;
 exports.register = register;
 exports.config   = config;
-/* v1 Not a pure module */
+/*  Not a pure module */

@@ -72,6 +72,7 @@ bs_ignore_test.cmj : ../runtime/js.cmj
 bs_node_string_buffer_test.cmj : ../others/node.cmj ../runtime/js.cmj
 bs_rest_test.cmj :
 bs_string_test.cmj : ../runtime/js.cmj
+bs_uncurry_test.cmj :
 buffer_test.cmj : ../stdlib/string.cmj mt.cmj ../stdlib/bytes.cmj \
     ../stdlib/buffer.cmj
 bytes_split_gpr_743_test.cmj : mt.cmj ../runtime/js.cmj ../stdlib/bytes.cmj
@@ -233,6 +234,7 @@ int_map.cmj : ../stdlib/map.cmj
 int_overflow_test.cmj : ../stdlib/string.cmj mt.cmj ../stdlib/int32.cmj \
     ../stdlib/char.cmj
 io_test.cmj : ../runtime/js.cmj
+js_array_test.cmj : mt.cmj ../runtime/js.cmj
 js_bool_test.cmj : mt.cmj ../runtime/js.cmj
 js_date.cmj : ../runtime/js.cmj
 js_date_test.cmj : mt.cmj js_date.cmj

@@ -146,10 +146,10 @@ let process_derive_type attrs =
 
 
 
-let process_bs_string_int attrs = 
+let process_bs_string_int_uncurry attrs = 
   List.fold_left 
     (fun (st,attrs)
-      (({txt ; loc}, payload ) as attr : attr)  ->
+      (({txt ; loc}, (payload : _ ) ) as attr : attr)  ->
       match  txt, st  with
       | "bs.string", (`Nothing | `String)
         -> `String, attrs
@@ -157,6 +157,13 @@ let process_bs_string_int attrs =
         ->  `Int, attrs
       | "bs.ignore", (`Nothing | `Ignore)
         -> `Ignore, attrs
+      
+      | "bs.uncurry", `Nothing
+        ->
+          `Uncurry (Ast_payload.is_single_int payload), attrs 
+        (* Don't allow duplicated [bs.uncurry] since
+           it may introduce inconsistency in arity
+        *)  
       | "bs.int", _
       | "bs.string", _
       | "bs.ignore", _
