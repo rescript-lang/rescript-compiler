@@ -10,14 +10,13 @@ let suites = Mt.[
       Eq("az", Js.String.fromCharCodeMany [| 97; 122 |])
     );
 
-    (* es2015
+    (* es2015 *)
     "fromCodePoint", (fun _ ->
       Eq("a", Js.String.fromCodePoint 0x61)
     );
     "fromCodePointMany", (fun _ ->
       Eq("az", Js.String.fromCodePointMany [| 0x61; 0x7a |])
     );
-    *)
 
     "length", (fun _ ->
       Eq(3, "foo" |> Js.String.length)
@@ -35,11 +34,10 @@ let suites = Mt.[
       Eq(97., "foobar" |> Js.String.charCodeAt 4)
     );
 
-    (* es2015
+    (* es2015 *)
     "codePointAt", (fun _ ->
       Eq(Js.Undefined.return 0x61, "foobar" |> Js.String.codePointAt 4)
     );
-    *)
 
     "concat", (fun _ ->
       Eq("foobar", "foo" |> Js.String.concat "bar")
@@ -48,23 +46,21 @@ let suites = Mt.[
       Eq("foobarbaz", "foo" |> Js.String.concatMany [| "bar"; "baz" |])
     );
 
-    (* es2015
+    (* es2015 *)
     "endsWith", (fun _ ->
       Eq(Js.true_, "foobar" |> Js.String.endsWith "bar")
     );
     "endsWithFrom", (fun _ ->
       Eq(Js.false_, "foobar" |> Js.String.endsWithFrom "bar" 1)
     );
-    *)
 
-    (* es2015
+    (* es2015 *)
     "includes", (fun _ ->
       Eq(Js.true_, "foobarbaz" |> Js.String.includes "bar")
     );
     "includesFrom", (fun _ ->
       Eq(Js.false_, "foobarbaz" |> Js.String.includesFrom "bar" 4)
     );
-    *)
 
     "indexOf", (fun _ ->
       Eq(3, "foobarbaz" |> Js.String.indexOf "bar")
@@ -88,20 +84,18 @@ let suites = Mt.[
       Eq(Js.Null.return [| "na"; "na" |], "banana" |> Js.String.match_ [%re "/na+/g"])
     );
 
-    (* es2015
+    (* es2015 *)
     "normalize", (fun _ ->
       Eq("foo", "foo" |> Js.String.normalize)
     );
     "normalizeByForm", (fun _ ->
       Eq("foo", "foo" |> Js.String.normalizeByForm "NFKD")
     );
-    *)
 
-    (* es2015
+    (* es2015 *)
     "repeat", (fun _ ->
       Eq("foofoofoo", "foo" |> Js.String.repeat 3)
     );
-    *)
 
     "replace", (fun _ ->
       Eq("fooBORKbaz", "foobarbaz" |> Js.String.replace "bar" "BORK")
@@ -134,14 +128,13 @@ let suites = Mt.[
       Eq([| "foo"; "bar" |], "foo bar baz" |> Js.String.splitByReAtMost [%re "/\\s/"] ~limit:2)
     );
 
-    (* es2015
+    (* es2015 *)
     "startsWith", (fun _ ->
       Eq(Js.true_, "foobarbaz" |> Js.String.startsWith "foo")
     );
     "startsWithFrom", (fun _ ->
       Eq(Js.false_, "foobarbaz" |> Js.String.startsWithFrom "foo" 1)
     );
-    *)
 
     "substr", (fun _ ->
       Eq("barbaz", "foobarbaz" |> Js.String.substr ~from:3)
@@ -174,13 +167,12 @@ let suites = Mt.[
       Eq("foo", "  foo  " |> Js.String.trim)
     );
 
-    (* es2015
+    (* es2015 *)
     "anchor", (fun _ ->
       Eq("<a name=\"bar\">foo</a>", "foo" |> Js.String.anchor "bar")
     );
     "link", (fun _ ->
       Eq("<a href=\"https://reason.ml\">foo</a>", "foo" |> Js.String.link "https://reason.ml")
     );
-    *)
 ]
 ;; Mt.from_pair_suites __FILE__ suites

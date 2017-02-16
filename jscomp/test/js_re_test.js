@@ -59,57 +59,90 @@ var suites_001 = /* :: */[
         ],
         /* :: */[
           /* tuple */[
-            "t_global",
+            "t_flags",
             function () {
               return /* Eq */Block.__(0, [
-                        true,
-                        (/./ig).global
+                        "gi",
+                        (/./ig).flags
                       ]);
             }
           ],
           /* :: */[
             /* tuple */[
-              "t_ignoreCase",
+              "t_global",
               function () {
                 return /* Eq */Block.__(0, [
                           true,
-                          (/./ig).ignoreCase
+                          (/./ig).global
                         ]);
               }
             ],
             /* :: */[
               /* tuple */[
-                "t_lastIndex",
+                "t_ignoreCase",
                 function () {
-                  var re = (/na/g);
-                  re.exec("banana");
                   return /* Eq */Block.__(0, [
-                            4,
-                            re.lastIndex
+                            true,
+                            (/./ig).ignoreCase
                           ]);
                 }
               ],
               /* :: */[
                 /* tuple */[
-                  "t_multiline",
+                  "t_lastIndex",
                   function () {
+                    var re = (/na/g);
+                    re.exec("banana");
                     return /* Eq */Block.__(0, [
-                              false,
-                              (/./ig).multiline
+                              4,
+                              re.lastIndex
                             ]);
                   }
                 ],
                 /* :: */[
                   /* tuple */[
-                    "t_source",
+                    "t_multiline",
                     function () {
                       return /* Eq */Block.__(0, [
-                                "f.+o",
-                                (/f.+o/ig).source
+                                false,
+                                (/./ig).multiline
                               ]);
                     }
                   ],
-                  /* [] */0
+                  /* :: */[
+                    /* tuple */[
+                      "t_source",
+                      function () {
+                        return /* Eq */Block.__(0, [
+                                  "f.+o",
+                                  (/f.+o/ig).source
+                                ]);
+                      }
+                    ],
+                    /* :: */[
+                      /* tuple */[
+                        "t_sticky",
+                        function () {
+                          return /* Eq */Block.__(0, [
+                                    true,
+                                    (/./yg).sticky
+                                  ]);
+                        }
+                      ],
+                      /* :: */[
+                        /* tuple */[
+                          "t_unicode",
+                          function () {
+                            return /* Eq */Block.__(0, [
+                                      false,
+                                      (/./yg).unicode
+                                    ]);
+                          }
+                        ],
+                        /* [] */0
+                      ]
+                    ]
+                  ]
                 ]
               ]
             ]

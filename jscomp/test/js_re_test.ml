@@ -34,11 +34,12 @@ let suites = Mt.[
   "result_input", (fun _ ->
     Eq("foobar", [%re "/foo/g"] |> Js.Re.exec "foobar" |> Js.Re.input)
   );
-  (* Travis uses Node v4, this is es2015
+
+  (* es2015 *)
   "t_flags", (fun _ ->
     Eq("gi", [%re "/./ig"] |> Js.Re.flags)
   );
-  *)
+
   "t_global", (fun _ ->
     Eq(Js.true_, [%re "/./ig"] |> Js.Re.global)
   );
@@ -56,14 +57,14 @@ let suites = Mt.[
   "t_source", (fun _ ->
     Eq("f.+o", [%re "/f.+o/ig"] |> Js.Re.source)
   );
-  (* Travis uses Node v4, these are es2015
+
+  (* es2015 *)
   "t_sticky", (fun _ ->
     Eq(Js.true_, [%re "/./yg"] |> Js.Re.sticky)
   );
   "t_unicode", (fun _ ->
     Eq(Js.false_, [%re "/./yg"] |> Js.Re.unicode)
   );
-  *)
 ]
 
 ;; Mt.from_pair_suites __FILE__ suites
