@@ -1,8 +1,5 @@
 
 
-
-
-(*
 external map : 'a array -> ('a -> 'b [@bs.uncurry  ]) -> 'b array = 
     "Array.prototype.map.call"
     [@@bs.val]
@@ -24,6 +21,52 @@ let f (cb : int -> int ) =
     map [|1;2;3;4|] cb
 
 
+let xs = 
+    map [|1;1;2|] 
+    (fun x y -> y + x + 1 )
+
+
+external map2 : 
+    'a array -> 'b array -> ('a -> 'b -> 'c [@bs.uncurry])
+    -> 'c array = "map2"    
+    [@@bs.val]
+
+
+external ff : 
+    int -> (int [@bs.ignore]) -> (int -> int -> int [@bs.uncurry]) -> int 
+    = "" [@@bs.val]
+
+
+let f x y z = 
+    map2 x y (fun x -> z x)    
+
+let h x y  z = 
+    map2 x y z     
+
+
+let h1 x y u z = 
+    map2 x y (z u)    
+
+let add3 x y z = x  + y + z
+
+let h2 x  = 
+    ff x 2 (+)
+
+let h3 x = 
+    ff x 2 (add3 1 )    
+
+
+(** used in return value 
+    This should fail, we did not 
+    support uncurry return value yet
+*)
+external v3 :
+    int -> int -> (int -> int -> int [@bs.uncurry])
+    = ""[@@bs.val]
+(* ^ should be an error instead of warning *)    
+
+
+(*
 external ff : 
     int -> 
     (unit -> unit [@bs.uncurry]) -> 

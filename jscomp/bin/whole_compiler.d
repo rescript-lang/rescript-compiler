@@ -395,7 +395,9 @@ bin/whole_compiler.ml : core/lam_dispatch_primitive.mli
 bin/whole_compiler.ml : core/lam_pass_eliminate_ref.mli
 bin/whole_compiler.ml : syntax/ast_derive_projector.mli
 bin/whole_compiler.ml : core/js_pass_tailcall_inline.mli
+bin/whole_compiler.ml : core/lam_compile_external_obj.ml
 bin/whole_compiler.ml : core/lam_compile_external_call.ml
+bin/whole_compiler.ml : core/lam_compile_external_obj.mli
 bin/whole_compiler.ml : core/lam_pass_alpha_conversion.ml
 bin/whole_compiler.ml : syntax/ast_external_attributes.ml
 bin/whole_compiler.ml : core/lam_compile_external_call.mli

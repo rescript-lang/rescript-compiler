@@ -226,6 +226,7 @@ val uninitialized_object :
 val uninitialized_array : unary_op
 
 val seq : binary_op
+val fuse_to_seq : t -> t list -> t 
 
 val obj : ?comment:string -> J.property_map -> t 
 

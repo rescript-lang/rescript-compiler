@@ -97,10 +97,10 @@ OTHERS := literals a test_ari test_export2 test_internalOO test_obj_simple_ffi t
 	js_re_test\
 	name_mangle_test\
 	oo_js_test_date\
-	bs_uncurry_test\
 	functor_ffi\
 	typed_array_test
-
+# bs_uncurry_test
+# needs Lam to get rid of Uncurry arity first 
 
 SOURCE_LIST :=  $(OTHERS)
 TESTS := $(addsuffix .cmj, $(SOURCE_LIST) )

@@ -30,22 +30,14 @@
 
 
 (** Compile ocaml external function call to JS IR. *) 
-val ocaml_to_js_eff : 
-  Ast_ffi_types.arg_kind -> 
-  J.expression -> 
-  J.expression list * J.expression list  
 
-val translate_ffi :
-  Location.t -> 
-  Ast_ffi_types.ffi -> 
-  (* string -> *) (* Not used.. *)
-  Lam_compile_defs.cxt -> 
+(** 
+    This module define how the FFI (via `external`) works with attributes. 
+    Note it will route to {!Lam_compile_global} 
+    for compiling normal functions without attributes.
+ *)
+
+val assemble_args_obj :
   Ast_ffi_types.arg_kind list -> 
-  bool -> 
   J.expression list -> 
   J.expression 
-  
-(** TODO: document supported attributes
-    Attributes starting with `js` are reserved
-    examples: "bs.splice"
- *)
