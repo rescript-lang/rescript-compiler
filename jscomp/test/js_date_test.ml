@@ -1,10 +1,6 @@
 
-let unwrapUnsafely = function
-| Some v -> v
-| None -> assert false
-
 let date () =
-  Js.Date.fromString "1976-03-08T12:34:56.789+01:23" |> unwrapUnsafely
+  Js.Date.fromString "1976-03-08T12:34:56.789+01:23"
 
 let suites = Mt.[
     "valueOf", (fun _ ->
@@ -18,13 +14,19 @@ let suites = Mt.[
          Js.Date.fromFloat 195131516789. |> Js.Date.toISOString));
 
     "fromString_valid", (fun _ ->
-      Eq(Some (date ()), Js.Date.fromString "1976-03-08T12:34:56.789+01:23"));
+      Eq( 195131516789.,
+          Js.Date.fromString "1976-03-08T12:34:56.789+01:23"
+          |> Js.Date.getTime));
+
     "fromString_invalid", (fun _ ->
-      Eq(None, Js.Date.fromString "gibberish"));
+      Ok( Js.Date.fromString "gibberish"
+          |> Js.Date.getTime
+          |> Js_float.isNaN
+          |> Js.to_bool));
 
     "makeWithYM", (fun _ ->
       let d = Js.Date.makeWithYM ~year:1984.
-                                 ~month:4. in
+                                 ~month:4. () in
 
       Eq( (1984., 4.),
           (Js.Date.getFullYear d,
@@ -33,7 +35,7 @@ let suites = Mt.[
     "makeWithYMD", (fun _ ->
       let d = Js.Date.makeWithYMD ~year:1984.
                                   ~month:4.
-                                  ~date:6. in
+                                  ~date:6. () in
 
       Eq( (1984., 4., 6.),
           (Js.Date.getFullYear d,
@@ -44,7 +46,7 @@ let suites = Mt.[
       let d = Js.Date.makeWithYMDH ~year:1984.
                                    ~month:4.
                                    ~date:6.
-                                   ~hours:3. in
+                                   ~hours:3. () in
 
       Eq( (1984., 4., 6., 3.),
           (Js.Date.getFullYear d,
@@ -57,7 +59,7 @@ let suites = Mt.[
                                     ~month:4.
                                     ~date:6.
                                     ~hours:3.
-                                    ~minutes:59. in
+                                    ~minutes:59. () in
 
       Eq( (1984., 4., 6., 3., 59.),
           (Js.Date.getFullYear d,
@@ -72,7 +74,7 @@ let suites = Mt.[
                                      ~date:6.
                                      ~hours:3.
                                      ~minutes:59.
-                                     ~seconds:27. in
+                                     ~seconds:27. () in
 
       Eq( (1984., 4., 6., 3., 59., 27.),
           (Js.Date.getFullYear d,
@@ -85,7 +87,7 @@ let suites = Mt.[
 
     "utcWithYM", (fun _ ->
       let d = Js.Date.utcWithYM ~year:1984.
-                                ~month:4. in
+                                ~month:4. () in
       let d = Js.Date.fromFloat d in
 
       Eq( (1984., 4.),
@@ -95,7 +97,7 @@ let suites = Mt.[
     "utcWithYMD", (fun _ ->
       let d = Js.Date.utcWithYMD ~year:1984.
                                  ~month:4.
-                                 ~date:6. in
+                                 ~date:6. () in
       let d = Js.Date.fromFloat d in
 
       Eq( (1984., 4., 6.),
@@ -107,7 +109,7 @@ let suites = Mt.[
       let d = Js.Date.utcWithYMDH ~year:1984.
                                   ~month:4.
                                   ~date:6.
-                                  ~hours:3. in
+                                  ~hours:3. () in
       let d = Js.Date.fromFloat d in
 
       Eq( (1984., 4., 6., 3.),
@@ -121,7 +123,7 @@ let suites = Mt.[
                                    ~month:4.
                                    ~date:6.
                                    ~hours:3.
-                                   ~minutes:59. in
+                                   ~minutes:59. () in
       let d = Js.Date.fromFloat d in
 
       Eq( (1984., 4., 6., 3., 59.),
@@ -137,7 +139,7 @@ let suites = Mt.[
                                     ~date:6.
                                     ~hours:3.
                                     ~minutes:59.
-                                    ~seconds:27. in
+                                    ~seconds:27. () in
       let d = Js.Date.fromFloat d in
 
       Eq( (1984., 4., 6., 3., 59., 27.),
@@ -211,7 +213,7 @@ let suites = Mt.[
     "setFullYearM", (fun _ ->
       let d = date () in
       let _ = Js.Date.setFullYearM d ~year:1986.
-                                     ~month:7. in
+                                     ~month:7. () in
       Eq( (1986., 7.),
           (Js.Date.getFullYear d,
            Js.Date.getMonth d))
@@ -220,7 +222,7 @@ let suites = Mt.[
       let d = date () in
       let _ = Js.Date.setFullYearMD d ~year:1986.
                                       ~month:7.
-                                      ~date:23. in
+                                      ~date:23. () in
       Eq( (1986., 7., 23.),
           (Js.Date.getFullYear d,
            Js.Date.getMonth d,
@@ -235,7 +237,7 @@ let suites = Mt.[
     "setHoursM", (fun _ ->
       let d = date () in
       let _ = Js.Date.setHoursM d ~hours:22.
-                                  ~minutes:48. in
+                                  ~minutes:48. () in
       Eq( (22., 48.),
           (Js.Date.getHours d,
            Js.Date.getMinutes d))
@@ -244,7 +246,7 @@ let suites = Mt.[
       let d = date () in
       let _ = Js.Date.setHoursMS d ~hours:22.
                                    ~minutes:48.
-                                   ~seconds:54. in
+                                   ~seconds:54. () in
       Eq( (22., 48., 54.),
           (Js.Date.getHours d,
            Js.Date.getMinutes d,
@@ -265,7 +267,7 @@ let suites = Mt.[
     "setMinutesS", (fun _ ->
       let d = date () in
       let _ = Js.Date.setMinutesS d ~minutes:18.
-                                    ~seconds:42. in
+                                    ~seconds:42. () in
       Eq( (18., 42.),
          (Js.Date.getMinutes d,
           Js.Date.getSeconds d))
@@ -274,7 +276,7 @@ let suites = Mt.[
       let d = date () in
       let _ = Js.Date.setMinutesSMs d ~minutes:18.
                                       ~seconds:42.
-                                      ~milliseconds:311. in
+                                      ~milliseconds:311. () in
       Eq( (18., 42., 311.),
           (Js.Date.getMinutes d,
            Js.Date.getSeconds d,
@@ -289,7 +291,7 @@ let suites = Mt.[
     "setMonthD", (fun _ ->
       let d = date () in
       let _ = Js.Date.setMonthD d ~month:10.
-                                  ~date:14. in
+                                  ~date:14. () in
       Eq( (10., 14.),
           (Js.Date.getMonth d,
            Js.Date.getDate d))
@@ -303,7 +305,7 @@ let suites = Mt.[
     "setSecondsMs", (fun _ ->
       let d = date () in
       let _ = Js.Date.setSecondsMs d ~seconds:36.
-                                     ~milliseconds:420. in
+                                     ~milliseconds:420. () in
       Eq( (36., 420.),
           (Js.Date.getSeconds d,
            Js.Date.getMilliseconds d))
@@ -323,7 +325,7 @@ let suites = Mt.[
     "setUTCFullYearM", (fun _ ->
       let d = date () in
       let _ = Js.Date.setUTCFullYearM d ~year:1986.
-                                        ~month:7. in
+                                        ~month:7. () in
       Eq( (1986., 7.),
           (Js.Date.getUTCFullYear d,
            Js.Date.getUTCMonth d))
@@ -332,7 +334,7 @@ let suites = Mt.[
       let d = date () in
       let _ = Js.Date.setUTCFullYearMD d ~year:1986.
                                          ~month:7.
-                                         ~date:23. in
+                                         ~date:23. () in
       Eq( (1986., 7., 23.),
           (Js.Date.getUTCFullYear d,
            Js.Date.getUTCMonth d,
@@ -347,7 +349,7 @@ let suites = Mt.[
     "setUTCHoursM", (fun _ ->
       let d = date () in
       let _ = Js.Date.setUTCHoursM d ~hours:22.
-                                     ~minutes:48. in
+                                     ~minutes:48. () in
       Eq( (22., 48.),
           (Js.Date.getUTCHours d,
            Js.Date.getUTCMinutes d))
@@ -356,7 +358,7 @@ let suites = Mt.[
       let d = date () in
       let _ = Js.Date.setUTCHoursMS d ~hours:22.
                                       ~minutes:48.
-                                      ~seconds:54. in
+                                      ~seconds:54. () in
       Eq( (22., 48., 54.),
           (Js.Date.getUTCHours d,
            Js.Date.getUTCMinutes d,
@@ -377,7 +379,7 @@ let suites = Mt.[
     "setUTCMinutesS", (fun _ ->
       let d = date () in
       let _ = Js.Date.setUTCMinutesS d ~minutes:18.
-                                       ~seconds:42. in
+                                       ~seconds:42. () in
       Eq( (18., 42.),
           (Js.Date.getUTCMinutes d,
            Js.Date.getUTCSeconds d))
@@ -386,7 +388,7 @@ let suites = Mt.[
       let d = date () in
       let _ = Js.Date.setUTCMinutesSMs d ~minutes:18.
                                          ~seconds:42.
-                                        ~milliseconds:311. in
+                                        ~milliseconds:311. () in
       Eq( (18., 42., 311.),
           (Js.Date.getUTCMinutes d,
            Js.Date.getUTCSeconds d,
@@ -401,7 +403,7 @@ let suites = Mt.[
     "setUTCMonthD", (fun _ ->
       let d = date () in
       let _ = Js.Date.setUTCMonthD d ~month:10.
-                                     ~date:14. in
+                                     ~date:14. () in
       Eq( (10., 14.),
           (Js.Date.getUTCMonth d,
            Js.Date.getUTCDate d))
@@ -415,7 +417,7 @@ let suites = Mt.[
     "setUTCSecondsMs", (fun _ ->
       let d = date () in
       let _ = Js.Date.setUTCSecondsMs d ~seconds:36.
-                                        ~milliseconds:420. in
+                                        ~milliseconds:420. () in
       Eq( (36., 420.),
           (Js.Date.getUTCSeconds d,
            Js.Date.getUTCMilliseconds d))

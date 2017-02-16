@@ -1,28 +1,10 @@
 'use strict';
 
-var Mt                      = require("./mt");
-var Block                   = require("../../lib/js/block");
-var Js_date                 = require("../../lib/js/js_date");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
-
-function unwrapUnsafely(param) {
-  if (param) {
-    return param[0];
-  }
-  else {
-    throw [
-          Caml_builtin_exceptions.assert_failure,
-          [
-            "js_date_test.ml",
-            4,
-            10
-          ]
-        ];
-  }
-}
+var Mt    = require("./mt");
+var Block = require("../../lib/js/block");
 
 function date() {
-  return unwrapUnsafely(Js_date.fromString("1976-03-08T12:34:56.789+01:23"));
+  return new Date("1976-03-08T12:34:56.789+01:23");
 }
 
 var suites_000 = /* tuple */[
@@ -30,7 +12,7 @@ var suites_000 = /* tuple */[
   function () {
     return /* Eq */Block.__(0, [
               195131516789,
-              unwrapUnsafely(Js_date.fromString("1976-03-08T12:34:56.789+01:23")).valueOf()
+              new Date("1976-03-08T12:34:56.789+01:23").valueOf()
             ]);
   }
 ];
@@ -57,8 +39,8 @@ var suites_001 = /* :: */[
         "fromString_valid",
         function () {
           return /* Eq */Block.__(0, [
-                    /* Some */[unwrapUnsafely(Js_date.fromString("1976-03-08T12:34:56.789+01:23"))],
-                    Js_date.fromString("1976-03-08T12:34:56.789+01:23")
+                    195131516789,
+                    new Date("1976-03-08T12:34:56.789+01:23").getTime()
                   ]);
         }
       ],
@@ -66,10 +48,7 @@ var suites_001 = /* :: */[
         /* tuple */[
           "fromString_invalid",
           function () {
-            return /* Eq */Block.__(0, [
-                      /* None */0,
-                      Js_date.fromString("gibberish")
-                    ]);
+            return /* Ok */Block.__(2, [+isNaN(new Date("gibberish").getTime())]);
           }
         ],
         /* :: */[
@@ -289,774 +268,653 @@ var suites_001 = /* :: */[
                             ],
                             /* :: */[
                               /* tuple */[
-                                "getDate",
+                                "getFullYear",
                                 function () {
                                   return /* Eq */Block.__(0, [
-                                            8,
-                                            unwrapUnsafely(Js_date.fromString("1976-03-08T12:34:56.789+01:23")).getDate()
+                                            1976,
+                                            new Date("1976-03-08T12:34:56.789+01:23").getFullYear()
                                           ]);
                                 }
                               ],
                               /* :: */[
                                 /* tuple */[
-                                  "getDay",
+                                  "getMilliseconds",
                                   function () {
                                     return /* Eq */Block.__(0, [
-                                              1,
-                                              unwrapUnsafely(Js_date.fromString("1976-03-08T12:34:56.789+01:23")).getDay()
+                                              789,
+                                              new Date("1976-03-08T12:34:56.789+01:23").getMilliseconds()
                                             ]);
                                   }
                                 ],
                                 /* :: */[
                                   /* tuple */[
-                                    "getFullYear",
+                                    "getSeconds",
                                     function () {
                                       return /* Eq */Block.__(0, [
-                                                1976,
-                                                unwrapUnsafely(Js_date.fromString("1976-03-08T12:34:56.789+01:23")).getFullYear()
+                                                56,
+                                                new Date("1976-03-08T12:34:56.789+01:23").getSeconds()
                                               ]);
                                     }
                                   ],
                                   /* :: */[
                                     /* tuple */[
-                                      "getHours",
+                                      "getTime",
                                       function () {
                                         return /* Eq */Block.__(0, [
-                                                  12,
-                                                  unwrapUnsafely(Js_date.fromString("1976-03-08T12:34:56.789+01:23")).getHours()
+                                                  195131516789,
+                                                  new Date("1976-03-08T12:34:56.789+01:23").getTime()
                                                 ]);
                                       }
                                     ],
                                     /* :: */[
                                       /* tuple */[
-                                        "getMilliseconds",
+                                        "getUTCDate",
                                         function () {
                                           return /* Eq */Block.__(0, [
-                                                    789,
-                                                    unwrapUnsafely(Js_date.fromString("1976-03-08T12:34:56.789+01:23")).getMilliseconds()
+                                                    8,
+                                                    new Date("1976-03-08T12:34:56.789+01:23").getUTCDate()
                                                   ]);
                                         }
                                       ],
                                       /* :: */[
                                         /* tuple */[
-                                          "getMinutes",
+                                          "getUTCDay",
                                           function () {
                                             return /* Eq */Block.__(0, [
-                                                      11,
-                                                      unwrapUnsafely(Js_date.fromString("1976-03-08T12:34:56.789+01:23")).getMinutes()
+                                                      1,
+                                                      new Date("1976-03-08T12:34:56.789+01:23").getUTCDay()
                                                     ]);
                                           }
                                         ],
                                         /* :: */[
                                           /* tuple */[
-                                            "getMonth",
+                                            "getUTCFUllYear",
                                             function () {
                                               return /* Eq */Block.__(0, [
-                                                        2,
-                                                        unwrapUnsafely(Js_date.fromString("1976-03-08T12:34:56.789+01:23")).getMonth()
+                                                        1976,
+                                                        new Date("1976-03-08T12:34:56.789+01:23").getUTCFullYear()
                                                       ]);
                                             }
                                           ],
                                           /* :: */[
                                             /* tuple */[
-                                              "getSeconds",
+                                              "getUTCHours",
                                               function () {
                                                 return /* Eq */Block.__(0, [
-                                                          56,
-                                                          unwrapUnsafely(Js_date.fromString("1976-03-08T12:34:56.789+01:23")).getSeconds()
+                                                          11,
+                                                          new Date("1976-03-08T12:34:56.789+01:23").getUTCHours()
                                                         ]);
                                               }
                                             ],
                                             /* :: */[
                                               /* tuple */[
-                                                "getTime",
+                                                "getUTCMilliseconds",
                                                 function () {
                                                   return /* Eq */Block.__(0, [
-                                                            195131516789,
-                                                            unwrapUnsafely(Js_date.fromString("1976-03-08T12:34:56.789+01:23")).getTime()
+                                                            789,
+                                                            new Date("1976-03-08T12:34:56.789+01:23").getUTCMilliseconds()
                                                           ]);
                                                 }
                                               ],
                                               /* :: */[
                                                 /* tuple */[
-                                                  "getTimezoneOffset",
+                                                  "getUTCMinutes",
                                                   function () {
                                                     return /* Eq */Block.__(0, [
-                                                              -60,
-                                                              unwrapUnsafely(Js_date.fromString("1976-03-08T12:34:56.789+01:23")).getTimezoneOffset()
+                                                              11,
+                                                              new Date("1976-03-08T12:34:56.789+01:23").getUTCMinutes()
                                                             ]);
                                                   }
                                                 ],
                                                 /* :: */[
                                                   /* tuple */[
-                                                    "getUTCDate",
+                                                    "getUTCMonth",
                                                     function () {
                                                       return /* Eq */Block.__(0, [
-                                                                8,
-                                                                unwrapUnsafely(Js_date.fromString("1976-03-08T12:34:56.789+01:23")).getUTCDate()
+                                                                2,
+                                                                new Date("1976-03-08T12:34:56.789+01:23").getUTCMonth()
                                                               ]);
                                                     }
                                                   ],
                                                   /* :: */[
                                                     /* tuple */[
-                                                      "getUTCDay",
+                                                      "getUTCSeconds",
                                                       function () {
                                                         return /* Eq */Block.__(0, [
-                                                                  1,
-                                                                  unwrapUnsafely(Js_date.fromString("1976-03-08T12:34:56.789+01:23")).getUTCDay()
+                                                                  56,
+                                                                  new Date("1976-03-08T12:34:56.789+01:23").getUTCSeconds()
                                                                 ]);
                                                       }
                                                     ],
                                                     /* :: */[
                                                       /* tuple */[
-                                                        "getUTCFUllYear",
+                                                        "getYear",
                                                         function () {
                                                           return /* Eq */Block.__(0, [
-                                                                    1976,
-                                                                    unwrapUnsafely(Js_date.fromString("1976-03-08T12:34:56.789+01:23")).getUTCFullYear()
+                                                                    76,
+                                                                    new Date("1976-03-08T12:34:56.789+01:23").getYear()
                                                                   ]);
                                                         }
                                                       ],
                                                       /* :: */[
                                                         /* tuple */[
-                                                          "getUTCHours",
+                                                          "setDate",
                                                           function () {
+                                                            var d = new Date("1976-03-08T12:34:56.789+01:23");
+                                                            d.setDate(12);
                                                             return /* Eq */Block.__(0, [
-                                                                      11,
-                                                                      unwrapUnsafely(Js_date.fromString("1976-03-08T12:34:56.789+01:23")).getUTCHours()
+                                                                      12,
+                                                                      d.getDate()
                                                                     ]);
                                                           }
                                                         ],
                                                         /* :: */[
                                                           /* tuple */[
-                                                            "getUTCMilliseconds",
+                                                            "setFullYear",
                                                             function () {
+                                                              var d = new Date("1976-03-08T12:34:56.789+01:23");
+                                                              d.setFullYear(1986);
                                                               return /* Eq */Block.__(0, [
-                                                                        789,
-                                                                        unwrapUnsafely(Js_date.fromString("1976-03-08T12:34:56.789+01:23")).getUTCMilliseconds()
+                                                                        1986,
+                                                                        d.getFullYear()
                                                                       ]);
                                                             }
                                                           ],
                                                           /* :: */[
                                                             /* tuple */[
-                                                              "getUTCMinutes",
+                                                              "setFullYearM",
                                                               function () {
+                                                                var d = new Date("1976-03-08T12:34:56.789+01:23");
+                                                                d.setFullYear(1986, 7);
                                                                 return /* Eq */Block.__(0, [
-                                                                          11,
-                                                                          unwrapUnsafely(Js_date.fromString("1976-03-08T12:34:56.789+01:23")).getUTCMinutes()
+                                                                          /* tuple */[
+                                                                            1986,
+                                                                            7
+                                                                          ],
+                                                                          /* tuple */[
+                                                                            d.getFullYear(),
+                                                                            d.getMonth()
+                                                                          ]
                                                                         ]);
                                                               }
                                                             ],
                                                             /* :: */[
                                                               /* tuple */[
-                                                                "getUTCMonth",
+                                                                "setFullYearMD",
                                                                 function () {
+                                                                  var d = new Date("1976-03-08T12:34:56.789+01:23");
+                                                                  d.setFullYear(1986, 7, 23);
                                                                   return /* Eq */Block.__(0, [
-                                                                            2,
-                                                                            unwrapUnsafely(Js_date.fromString("1976-03-08T12:34:56.789+01:23")).getUTCMonth()
+                                                                            /* tuple */[
+                                                                              1986,
+                                                                              7,
+                                                                              23
+                                                                            ],
+                                                                            /* tuple */[
+                                                                              d.getFullYear(),
+                                                                              d.getMonth(),
+                                                                              d.getDate()
+                                                                            ]
                                                                           ]);
                                                                 }
                                                               ],
                                                               /* :: */[
                                                                 /* tuple */[
-                                                                  "getUTCSeconds",
+                                                                  "setHours",
                                                                   function () {
+                                                                    var d = new Date("1976-03-08T12:34:56.789+01:23");
+                                                                    d.setHours(22);
                                                                     return /* Eq */Block.__(0, [
-                                                                              56,
-                                                                              unwrapUnsafely(Js_date.fromString("1976-03-08T12:34:56.789+01:23")).getUTCSeconds()
+                                                                              22,
+                                                                              d.getHours()
                                                                             ]);
                                                                   }
                                                                 ],
                                                                 /* :: */[
                                                                   /* tuple */[
-                                                                    "getYear",
+                                                                    "setHoursM",
                                                                     function () {
+                                                                      var d = new Date("1976-03-08T12:34:56.789+01:23");
+                                                                      d.setHours(22, 48);
                                                                       return /* Eq */Block.__(0, [
-                                                                                76,
-                                                                                unwrapUnsafely(Js_date.fromString("1976-03-08T12:34:56.789+01:23")).getYear()
+                                                                                /* tuple */[
+                                                                                  22,
+                                                                                  48
+                                                                                ],
+                                                                                /* tuple */[
+                                                                                  d.getHours(),
+                                                                                  d.getMinutes()
+                                                                                ]
                                                                               ]);
                                                                     }
                                                                   ],
                                                                   /* :: */[
                                                                     /* tuple */[
-                                                                      "setDate",
+                                                                      "setHoursMS",
                                                                       function () {
-                                                                        var d = unwrapUnsafely(Js_date.fromString("1976-03-08T12:34:56.789+01:23"));
-                                                                        d.setDate(12);
+                                                                        var d = new Date("1976-03-08T12:34:56.789+01:23");
+                                                                        d.setHours(22, 48, 54);
                                                                         return /* Eq */Block.__(0, [
-                                                                                  12,
-                                                                                  d.getDate()
+                                                                                  /* tuple */[
+                                                                                    22,
+                                                                                    48,
+                                                                                    54
+                                                                                  ],
+                                                                                  /* tuple */[
+                                                                                    d.getHours(),
+                                                                                    d.getMinutes(),
+                                                                                    d.getSeconds()
+                                                                                  ]
                                                                                 ]);
                                                                       }
                                                                     ],
                                                                     /* :: */[
                                                                       /* tuple */[
-                                                                        "setFullYear",
+                                                                        "setMilliseconds",
                                                                         function () {
-                                                                          var d = unwrapUnsafely(Js_date.fromString("1976-03-08T12:34:56.789+01:23"));
-                                                                          d.setFullYear(1986);
+                                                                          var d = new Date("1976-03-08T12:34:56.789+01:23");
+                                                                          d.setMilliseconds(543);
                                                                           return /* Eq */Block.__(0, [
-                                                                                    1986,
-                                                                                    d.getFullYear()
+                                                                                    543,
+                                                                                    d.getMilliseconds()
                                                                                   ]);
                                                                         }
                                                                       ],
                                                                       /* :: */[
                                                                         /* tuple */[
-                                                                          "setFullYearM",
+                                                                          "setMinutes",
                                                                           function () {
-                                                                            var d = unwrapUnsafely(Js_date.fromString("1976-03-08T12:34:56.789+01:23"));
-                                                                            d.setFullYear(1986, 7);
+                                                                            var d = new Date("1976-03-08T12:34:56.789+01:23");
+                                                                            d.setMinutes(18);
                                                                             return /* Eq */Block.__(0, [
-                                                                                      /* tuple */[
-                                                                                        1986,
-                                                                                        7
-                                                                                      ],
-                                                                                      /* tuple */[
-                                                                                        d.getFullYear(),
-                                                                                        d.getMonth()
-                                                                                      ]
+                                                                                      18,
+                                                                                      d.getMinutes()
                                                                                     ]);
                                                                           }
                                                                         ],
                                                                         /* :: */[
                                                                           /* tuple */[
-                                                                            "setFullYearMD",
+                                                                            "setMinutesS",
                                                                             function () {
-                                                                              var d = unwrapUnsafely(Js_date.fromString("1976-03-08T12:34:56.789+01:23"));
-                                                                              d.setFullYear(1986, 7, 23);
+                                                                              var d = new Date("1976-03-08T12:34:56.789+01:23");
+                                                                              d.setMinutes(18, 42);
                                                                               return /* Eq */Block.__(0, [
                                                                                         /* tuple */[
-                                                                                          1986,
-                                                                                          7,
-                                                                                          23
+                                                                                          18,
+                                                                                          42
                                                                                         ],
                                                                                         /* tuple */[
-                                                                                          d.getFullYear(),
-                                                                                          d.getMonth(),
-                                                                                          d.getDate()
+                                                                                          d.getMinutes(),
+                                                                                          d.getSeconds()
                                                                                         ]
                                                                                       ]);
                                                                             }
                                                                           ],
                                                                           /* :: */[
                                                                             /* tuple */[
-                                                                              "setHours",
+                                                                              "setMinutesSMs",
                                                                               function () {
-                                                                                var d = unwrapUnsafely(Js_date.fromString("1976-03-08T12:34:56.789+01:23"));
-                                                                                d.setHours(22);
+                                                                                var d = new Date("1976-03-08T12:34:56.789+01:23");
+                                                                                d.setMinutes(18, 42, 311);
                                                                                 return /* Eq */Block.__(0, [
-                                                                                          22,
-                                                                                          d.getHours()
+                                                                                          /* tuple */[
+                                                                                            18,
+                                                                                            42,
+                                                                                            311
+                                                                                          ],
+                                                                                          /* tuple */[
+                                                                                            d.getMinutes(),
+                                                                                            d.getSeconds(),
+                                                                                            d.getMilliseconds()
+                                                                                          ]
                                                                                         ]);
                                                                               }
                                                                             ],
                                                                             /* :: */[
                                                                               /* tuple */[
-                                                                                "setHoursM",
+                                                                                "setMonth",
                                                                                 function () {
-                                                                                  var d = unwrapUnsafely(Js_date.fromString("1976-03-08T12:34:56.789+01:23"));
-                                                                                  d.setHours(22, 48);
+                                                                                  var d = new Date("1976-03-08T12:34:56.789+01:23");
+                                                                                  d.setMonth(10);
                                                                                   return /* Eq */Block.__(0, [
-                                                                                            /* tuple */[
-                                                                                              22,
-                                                                                              48
-                                                                                            ],
-                                                                                            /* tuple */[
-                                                                                              d.getHours(),
-                                                                                              d.getMinutes()
-                                                                                            ]
+                                                                                            10,
+                                                                                            d.getMonth()
                                                                                           ]);
                                                                                 }
                                                                               ],
                                                                               /* :: */[
                                                                                 /* tuple */[
-                                                                                  "setHoursMS",
+                                                                                  "setMonthD",
                                                                                   function () {
-                                                                                    var d = unwrapUnsafely(Js_date.fromString("1976-03-08T12:34:56.789+01:23"));
-                                                                                    d.setHours(22, 48, 54);
+                                                                                    var d = new Date("1976-03-08T12:34:56.789+01:23");
+                                                                                    d.setMonth(10, 14);
                                                                                     return /* Eq */Block.__(0, [
                                                                                               /* tuple */[
-                                                                                                22,
-                                                                                                48,
-                                                                                                54
+                                                                                                10,
+                                                                                                14
                                                                                               ],
                                                                                               /* tuple */[
-                                                                                                d.getHours(),
-                                                                                                d.getMinutes(),
-                                                                                                d.getSeconds()
+                                                                                                d.getMonth(),
+                                                                                                d.getDate()
                                                                                               ]
                                                                                             ]);
                                                                                   }
                                                                                 ],
                                                                                 /* :: */[
                                                                                   /* tuple */[
-                                                                                    "setMilliseconds",
+                                                                                    "setSeconds",
                                                                                     function () {
-                                                                                      var d = unwrapUnsafely(Js_date.fromString("1976-03-08T12:34:56.789+01:23"));
-                                                                                      d.setMilliseconds(543);
+                                                                                      var d = new Date("1976-03-08T12:34:56.789+01:23");
+                                                                                      d.setSeconds(36);
                                                                                       return /* Eq */Block.__(0, [
-                                                                                                543,
-                                                                                                d.getMilliseconds()
+                                                                                                36,
+                                                                                                d.getSeconds()
                                                                                               ]);
                                                                                     }
                                                                                   ],
                                                                                   /* :: */[
                                                                                     /* tuple */[
-                                                                                      "setMinutes",
+                                                                                      "setSecondsMs",
                                                                                       function () {
-                                                                                        var d = unwrapUnsafely(Js_date.fromString("1976-03-08T12:34:56.789+01:23"));
-                                                                                        d.setMinutes(18);
+                                                                                        var d = new Date("1976-03-08T12:34:56.789+01:23");
+                                                                                        d.setSeconds(36, 420);
                                                                                         return /* Eq */Block.__(0, [
-                                                                                                  18,
-                                                                                                  d.getMinutes()
+                                                                                                  /* tuple */[
+                                                                                                    36,
+                                                                                                    420
+                                                                                                  ],
+                                                                                                  /* tuple */[
+                                                                                                    d.getSeconds(),
+                                                                                                    d.getMilliseconds()
+                                                                                                  ]
                                                                                                 ]);
                                                                                       }
                                                                                     ],
                                                                                     /* :: */[
                                                                                       /* tuple */[
-                                                                                        "setMinutesS",
+                                                                                        "setUTCDate",
                                                                                         function () {
-                                                                                          var d = unwrapUnsafely(Js_date.fromString("1976-03-08T12:34:56.789+01:23"));
-                                                                                          d.setMinutes(18, 42);
+                                                                                          var d = new Date("1976-03-08T12:34:56.789+01:23");
+                                                                                          d.setUTCDate(12);
                                                                                           return /* Eq */Block.__(0, [
-                                                                                                    /* tuple */[
-                                                                                                      18,
-                                                                                                      42
-                                                                                                    ],
-                                                                                                    /* tuple */[
-                                                                                                      d.getMinutes(),
-                                                                                                      d.getSeconds()
-                                                                                                    ]
+                                                                                                    12,
+                                                                                                    d.getUTCDate()
                                                                                                   ]);
                                                                                         }
                                                                                       ],
                                                                                       /* :: */[
                                                                                         /* tuple */[
-                                                                                          "setMinutesSMs",
+                                                                                          "setUTCFullYear",
                                                                                           function () {
-                                                                                            var d = unwrapUnsafely(Js_date.fromString("1976-03-08T12:34:56.789+01:23"));
-                                                                                            d.setMinutes(18, 42, 311);
+                                                                                            var d = new Date("1976-03-08T12:34:56.789+01:23");
+                                                                                            d.setUTCFullYear(1986);
                                                                                             return /* Eq */Block.__(0, [
-                                                                                                      /* tuple */[
-                                                                                                        18,
-                                                                                                        42,
-                                                                                                        311
-                                                                                                      ],
-                                                                                                      /* tuple */[
-                                                                                                        d.getMinutes(),
-                                                                                                        d.getSeconds(),
-                                                                                                        d.getMilliseconds()
-                                                                                                      ]
+                                                                                                      1986,
+                                                                                                      d.getUTCFullYear()
                                                                                                     ]);
                                                                                           }
                                                                                         ],
                                                                                         /* :: */[
                                                                                           /* tuple */[
-                                                                                            "setMonth",
+                                                                                            "setUTCFullYearM",
                                                                                             function () {
-                                                                                              var d = unwrapUnsafely(Js_date.fromString("1976-03-08T12:34:56.789+01:23"));
-                                                                                              d.setMonth(10);
+                                                                                              var d = new Date("1976-03-08T12:34:56.789+01:23");
+                                                                                              d.setUTCFullYear(1986, 7);
                                                                                               return /* Eq */Block.__(0, [
-                                                                                                        10,
-                                                                                                        d.getMonth()
+                                                                                                        /* tuple */[
+                                                                                                          1986,
+                                                                                                          7
+                                                                                                        ],
+                                                                                                        /* tuple */[
+                                                                                                          d.getUTCFullYear(),
+                                                                                                          d.getUTCMonth()
+                                                                                                        ]
                                                                                                       ]);
                                                                                             }
                                                                                           ],
                                                                                           /* :: */[
                                                                                             /* tuple */[
-                                                                                              "setMonthD",
+                                                                                              "setUTCFullYearMD",
                                                                                               function () {
-                                                                                                var d = unwrapUnsafely(Js_date.fromString("1976-03-08T12:34:56.789+01:23"));
-                                                                                                d.setMonth(10, 14);
+                                                                                                var d = new Date("1976-03-08T12:34:56.789+01:23");
+                                                                                                d.setUTCFullYear(1986, 7, 23);
                                                                                                 return /* Eq */Block.__(0, [
                                                                                                           /* tuple */[
-                                                                                                            10,
-                                                                                                            14
+                                                                                                            1986,
+                                                                                                            7,
+                                                                                                            23
                                                                                                           ],
                                                                                                           /* tuple */[
-                                                                                                            d.getMonth(),
-                                                                                                            d.getDate()
+                                                                                                            d.getUTCFullYear(),
+                                                                                                            d.getUTCMonth(),
+                                                                                                            d.getUTCDate()
                                                                                                           ]
                                                                                                         ]);
                                                                                               }
                                                                                             ],
                                                                                             /* :: */[
                                                                                               /* tuple */[
-                                                                                                "setSeconds",
+                                                                                                "setUTCHours",
                                                                                                 function () {
-                                                                                                  var d = unwrapUnsafely(Js_date.fromString("1976-03-08T12:34:56.789+01:23"));
-                                                                                                  d.setSeconds(36);
+                                                                                                  var d = new Date("1976-03-08T12:34:56.789+01:23");
+                                                                                                  d.setUTCHours(22);
                                                                                                   return /* Eq */Block.__(0, [
-                                                                                                            36,
-                                                                                                            d.getSeconds()
+                                                                                                            22,
+                                                                                                            d.getUTCHours()
                                                                                                           ]);
                                                                                                 }
                                                                                               ],
                                                                                               /* :: */[
                                                                                                 /* tuple */[
-                                                                                                  "setSecondsMs",
+                                                                                                  "setUTCHoursM",
                                                                                                   function () {
-                                                                                                    var d = unwrapUnsafely(Js_date.fromString("1976-03-08T12:34:56.789+01:23"));
-                                                                                                    d.setSeconds(36, 420);
+                                                                                                    var d = new Date("1976-03-08T12:34:56.789+01:23");
+                                                                                                    d.setUTCHours(22, 48);
                                                                                                     return /* Eq */Block.__(0, [
                                                                                                               /* tuple */[
-                                                                                                                36,
-                                                                                                                420
+                                                                                                                22,
+                                                                                                                48
                                                                                                               ],
                                                                                                               /* tuple */[
-                                                                                                                d.getSeconds(),
-                                                                                                                d.getMilliseconds()
+                                                                                                                d.getUTCHours(),
+                                                                                                                d.getUTCMinutes()
                                                                                                               ]
                                                                                                             ]);
                                                                                                   }
                                                                                                 ],
                                                                                                 /* :: */[
                                                                                                   /* tuple */[
-                                                                                                    "setUTCDate",
+                                                                                                    "setUTCHoursMS",
                                                                                                     function () {
-                                                                                                      var d = unwrapUnsafely(Js_date.fromString("1976-03-08T12:34:56.789+01:23"));
-                                                                                                      d.setUTCDate(12);
+                                                                                                      var d = new Date("1976-03-08T12:34:56.789+01:23");
+                                                                                                      d.setUTCHours(22, 48, 54);
                                                                                                       return /* Eq */Block.__(0, [
-                                                                                                                12,
-                                                                                                                d.getUTCDate()
+                                                                                                                /* tuple */[
+                                                                                                                  22,
+                                                                                                                  48,
+                                                                                                                  54
+                                                                                                                ],
+                                                                                                                /* tuple */[
+                                                                                                                  d.getUTCHours(),
+                                                                                                                  d.getUTCMinutes(),
+                                                                                                                  d.getUTCSeconds()
+                                                                                                                ]
                                                                                                               ]);
                                                                                                     }
                                                                                                   ],
                                                                                                   /* :: */[
                                                                                                     /* tuple */[
-                                                                                                      "setUTCFullYear",
+                                                                                                      "setUTCMilliseconds",
                                                                                                       function () {
-                                                                                                        var d = unwrapUnsafely(Js_date.fromString("1976-03-08T12:34:56.789+01:23"));
-                                                                                                        d.setUTCFullYear(1986);
+                                                                                                        var d = new Date("1976-03-08T12:34:56.789+01:23");
+                                                                                                        d.setUTCMilliseconds(543);
                                                                                                         return /* Eq */Block.__(0, [
-                                                                                                                  1986,
-                                                                                                                  d.getUTCFullYear()
+                                                                                                                  543,
+                                                                                                                  d.getUTCMilliseconds()
                                                                                                                 ]);
                                                                                                       }
                                                                                                     ],
                                                                                                     /* :: */[
                                                                                                       /* tuple */[
-                                                                                                        "setUTCFullYearM",
+                                                                                                        "setUTCMinutes",
                                                                                                         function () {
-                                                                                                          var d = unwrapUnsafely(Js_date.fromString("1976-03-08T12:34:56.789+01:23"));
-                                                                                                          d.setUTCFullYear(1986, 7);
+                                                                                                          var d = new Date("1976-03-08T12:34:56.789+01:23");
+                                                                                                          d.setUTCMinutes(18);
                                                                                                           return /* Eq */Block.__(0, [
-                                                                                                                    /* tuple */[
-                                                                                                                      1986,
-                                                                                                                      7
-                                                                                                                    ],
-                                                                                                                    /* tuple */[
-                                                                                                                      d.getUTCFullYear(),
-                                                                                                                      d.getUTCMonth()
-                                                                                                                    ]
+                                                                                                                    18,
+                                                                                                                    d.getUTCMinutes()
                                                                                                                   ]);
                                                                                                         }
                                                                                                       ],
                                                                                                       /* :: */[
                                                                                                         /* tuple */[
-                                                                                                          "setUTCFullYearMD",
+                                                                                                          "setUTCMinutesS",
                                                                                                           function () {
-                                                                                                            var d = unwrapUnsafely(Js_date.fromString("1976-03-08T12:34:56.789+01:23"));
-                                                                                                            d.setUTCFullYear(1986, 7, 23);
+                                                                                                            var d = new Date("1976-03-08T12:34:56.789+01:23");
+                                                                                                            d.setUTCMinutes(18, 42);
                                                                                                             return /* Eq */Block.__(0, [
                                                                                                                       /* tuple */[
-                                                                                                                        1986,
-                                                                                                                        7,
-                                                                                                                        23
+                                                                                                                        18,
+                                                                                                                        42
                                                                                                                       ],
                                                                                                                       /* tuple */[
-                                                                                                                        d.getUTCFullYear(),
-                                                                                                                        d.getUTCMonth(),
-                                                                                                                        d.getUTCDate()
+                                                                                                                        d.getUTCMinutes(),
+                                                                                                                        d.getUTCSeconds()
                                                                                                                       ]
                                                                                                                     ]);
                                                                                                           }
                                                                                                         ],
                                                                                                         /* :: */[
                                                                                                           /* tuple */[
-                                                                                                            "setUTCHours",
+                                                                                                            "setUTCMinutesSMs",
                                                                                                             function () {
-                                                                                                              var d = unwrapUnsafely(Js_date.fromString("1976-03-08T12:34:56.789+01:23"));
-                                                                                                              d.setUTCHours(22);
+                                                                                                              var d = new Date("1976-03-08T12:34:56.789+01:23");
+                                                                                                              d.setUTCMinutes(18, 42, 311);
                                                                                                               return /* Eq */Block.__(0, [
-                                                                                                                        22,
-                                                                                                                        d.getUTCHours()
+                                                                                                                        /* tuple */[
+                                                                                                                          18,
+                                                                                                                          42,
+                                                                                                                          311
+                                                                                                                        ],
+                                                                                                                        /* tuple */[
+                                                                                                                          d.getUTCMinutes(),
+                                                                                                                          d.getUTCSeconds(),
+                                                                                                                          d.getUTCMilliseconds()
+                                                                                                                        ]
                                                                                                                       ]);
                                                                                                             }
                                                                                                           ],
                                                                                                           /* :: */[
                                                                                                             /* tuple */[
-                                                                                                              "setUTCHoursM",
+                                                                                                              "setUTCMonth",
                                                                                                               function () {
-                                                                                                                var d = unwrapUnsafely(Js_date.fromString("1976-03-08T12:34:56.789+01:23"));
-                                                                                                                d.setUTCHours(22, 48);
+                                                                                                                var d = new Date("1976-03-08T12:34:56.789+01:23");
+                                                                                                                d.setUTCMonth(10);
                                                                                                                 return /* Eq */Block.__(0, [
-                                                                                                                          /* tuple */[
-                                                                                                                            22,
-                                                                                                                            48
-                                                                                                                          ],
-                                                                                                                          /* tuple */[
-                                                                                                                            d.getUTCHours(),
-                                                                                                                            d.getUTCMinutes()
-                                                                                                                          ]
+                                                                                                                          10,
+                                                                                                                          d.getUTCMonth()
                                                                                                                         ]);
                                                                                                               }
                                                                                                             ],
                                                                                                             /* :: */[
                                                                                                               /* tuple */[
-                                                                                                                "setUTCHoursMS",
+                                                                                                                "setUTCMonthD",
                                                                                                                 function () {
-                                                                                                                  var d = unwrapUnsafely(Js_date.fromString("1976-03-08T12:34:56.789+01:23"));
-                                                                                                                  d.setUTCHours(22, 48, 54);
+                                                                                                                  var d = new Date("1976-03-08T12:34:56.789+01:23");
+                                                                                                                  d.setUTCMonth(10, 14);
                                                                                                                   return /* Eq */Block.__(0, [
                                                                                                                             /* tuple */[
-                                                                                                                              22,
-                                                                                                                              48,
-                                                                                                                              54
+                                                                                                                              10,
+                                                                                                                              14
                                                                                                                             ],
                                                                                                                             /* tuple */[
-                                                                                                                              d.getUTCHours(),
-                                                                                                                              d.getUTCMinutes(),
-                                                                                                                              d.getUTCSeconds()
+                                                                                                                              d.getUTCMonth(),
+                                                                                                                              d.getUTCDate()
                                                                                                                             ]
                                                                                                                           ]);
                                                                                                                 }
                                                                                                               ],
                                                                                                               /* :: */[
                                                                                                                 /* tuple */[
-                                                                                                                  "setUTCMilliseconds",
+                                                                                                                  "setUTCSeconds",
                                                                                                                   function () {
-                                                                                                                    var d = unwrapUnsafely(Js_date.fromString("1976-03-08T12:34:56.789+01:23"));
-                                                                                                                    d.setUTCMilliseconds(543);
+                                                                                                                    var d = new Date("1976-03-08T12:34:56.789+01:23");
+                                                                                                                    d.setUTCSeconds(36);
                                                                                                                     return /* Eq */Block.__(0, [
-                                                                                                                              543,
-                                                                                                                              d.getUTCMilliseconds()
+                                                                                                                              36,
+                                                                                                                              d.getUTCSeconds()
                                                                                                                             ]);
                                                                                                                   }
                                                                                                                 ],
                                                                                                                 /* :: */[
                                                                                                                   /* tuple */[
-                                                                                                                    "setUTCMinutes",
+                                                                                                                    "setUTCSecondsMs",
                                                                                                                     function () {
-                                                                                                                      var d = unwrapUnsafely(Js_date.fromString("1976-03-08T12:34:56.789+01:23"));
-                                                                                                                      d.setUTCMinutes(18);
+                                                                                                                      var d = new Date("1976-03-08T12:34:56.789+01:23");
+                                                                                                                      d.setUTCSeconds(36, 420);
                                                                                                                       return /* Eq */Block.__(0, [
-                                                                                                                                18,
-                                                                                                                                d.getUTCMinutes()
+                                                                                                                                /* tuple */[
+                                                                                                                                  36,
+                                                                                                                                  420
+                                                                                                                                ],
+                                                                                                                                /* tuple */[
+                                                                                                                                  d.getUTCSeconds(),
+                                                                                                                                  d.getUTCMilliseconds()
+                                                                                                                                ]
                                                                                                                               ]);
                                                                                                                     }
                                                                                                                   ],
                                                                                                                   /* :: */[
                                                                                                                     /* tuple */[
-                                                                                                                      "setUTCMinutesS",
+                                                                                                                      "toDateString",
                                                                                                                       function () {
-                                                                                                                        var d = unwrapUnsafely(Js_date.fromString("1976-03-08T12:34:56.789+01:23"));
-                                                                                                                        d.setUTCMinutes(18, 42);
                                                                                                                         return /* Eq */Block.__(0, [
-                                                                                                                                  /* tuple */[
-                                                                                                                                    18,
-                                                                                                                                    42
-                                                                                                                                  ],
-                                                                                                                                  /* tuple */[
-                                                                                                                                    d.getUTCMinutes(),
-                                                                                                                                    d.getUTCSeconds()
-                                                                                                                                  ]
+                                                                                                                                  "Mon Mar 08 1976",
+                                                                                                                                  new Date("1976-03-08T12:34:56.789+01:23").toDateString()
                                                                                                                                 ]);
                                                                                                                       }
                                                                                                                     ],
                                                                                                                     /* :: */[
                                                                                                                       /* tuple */[
-                                                                                                                        "setUTCMinutesSMs",
+                                                                                                                        "toGMTString",
                                                                                                                         function () {
-                                                                                                                          var d = unwrapUnsafely(Js_date.fromString("1976-03-08T12:34:56.789+01:23"));
-                                                                                                                          d.setUTCMinutes(18, 42, 311);
                                                                                                                           return /* Eq */Block.__(0, [
-                                                                                                                                    /* tuple */[
-                                                                                                                                      18,
-                                                                                                                                      42,
-                                                                                                                                      311
-                                                                                                                                    ],
-                                                                                                                                    /* tuple */[
-                                                                                                                                      d.getUTCMinutes(),
-                                                                                                                                      d.getUTCSeconds(),
-                                                                                                                                      d.getUTCMilliseconds()
-                                                                                                                                    ]
+                                                                                                                                    "Mon, 08 Mar 1976 11:11:56 GMT",
+                                                                                                                                    new Date("1976-03-08T12:34:56.789+01:23").toGMTString()
                                                                                                                                   ]);
                                                                                                                         }
                                                                                                                       ],
                                                                                                                       /* :: */[
                                                                                                                         /* tuple */[
-                                                                                                                          "setUTCMonth",
+                                                                                                                          "toISOString",
                                                                                                                           function () {
-                                                                                                                            var d = unwrapUnsafely(Js_date.fromString("1976-03-08T12:34:56.789+01:23"));
-                                                                                                                            d.setUTCMonth(10);
                                                                                                                             return /* Eq */Block.__(0, [
-                                                                                                                                      10,
-                                                                                                                                      d.getUTCMonth()
+                                                                                                                                      "1976-03-08T11:11:56.789Z",
+                                                                                                                                      new Date("1976-03-08T12:34:56.789+01:23").toISOString()
                                                                                                                                     ]);
                                                                                                                           }
                                                                                                                         ],
                                                                                                                         /* :: */[
                                                                                                                           /* tuple */[
-                                                                                                                            "setUTCMonthD",
+                                                                                                                            "toJSON",
                                                                                                                             function () {
-                                                                                                                              var d = unwrapUnsafely(Js_date.fromString("1976-03-08T12:34:56.789+01:23"));
-                                                                                                                              d.setUTCMonth(10, 14);
                                                                                                                               return /* Eq */Block.__(0, [
-                                                                                                                                        /* tuple */[
-                                                                                                                                          10,
-                                                                                                                                          14
-                                                                                                                                        ],
-                                                                                                                                        /* tuple */[
-                                                                                                                                          d.getUTCMonth(),
-                                                                                                                                          d.getUTCDate()
-                                                                                                                                        ]
+                                                                                                                                        "1976-03-08T11:11:56.789Z",
+                                                                                                                                        new Date("1976-03-08T12:34:56.789+01:23").toJSON()
                                                                                                                                       ]);
                                                                                                                             }
                                                                                                                           ],
                                                                                                                           /* :: */[
                                                                                                                             /* tuple */[
-                                                                                                                              "setUTCSeconds",
+                                                                                                                              "toUTCString",
                                                                                                                               function () {
-                                                                                                                                var d = unwrapUnsafely(Js_date.fromString("1976-03-08T12:34:56.789+01:23"));
-                                                                                                                                d.setUTCSeconds(36);
                                                                                                                                 return /* Eq */Block.__(0, [
-                                                                                                                                          36,
-                                                                                                                                          d.getUTCSeconds()
+                                                                                                                                          "Mon, 08 Mar 1976 11:11:56 GMT",
+                                                                                                                                          new Date("1976-03-08T12:34:56.789+01:23").toUTCString()
                                                                                                                                         ]);
                                                                                                                               }
                                                                                                                             ],
-                                                                                                                            /* :: */[
-                                                                                                                              /* tuple */[
-                                                                                                                                "setUTCSecondsMs",
-                                                                                                                                function () {
-                                                                                                                                  var d = unwrapUnsafely(Js_date.fromString("1976-03-08T12:34:56.789+01:23"));
-                                                                                                                                  d.setUTCSeconds(36, 420);
-                                                                                                                                  return /* Eq */Block.__(0, [
-                                                                                                                                            /* tuple */[
-                                                                                                                                              36,
-                                                                                                                                              420
-                                                                                                                                            ],
-                                                                                                                                            /* tuple */[
-                                                                                                                                              d.getUTCSeconds(),
-                                                                                                                                              d.getUTCMilliseconds()
-                                                                                                                                            ]
-                                                                                                                                          ]);
-                                                                                                                                }
-                                                                                                                              ],
-                                                                                                                              /* :: */[
-                                                                                                                                /* tuple */[
-                                                                                                                                  "toDateString",
-                                                                                                                                  function () {
-                                                                                                                                    return /* Eq */Block.__(0, [
-                                                                                                                                              "Mon Mar 08 1976",
-                                                                                                                                              unwrapUnsafely(Js_date.fromString("1976-03-08T12:34:56.789+01:23")).toDateString()
-                                                                                                                                            ]);
-                                                                                                                                  }
-                                                                                                                                ],
-                                                                                                                                /* :: */[
-                                                                                                                                  /* tuple */[
-                                                                                                                                    "toGMTString",
-                                                                                                                                    function () {
-                                                                                                                                      return /* Eq */Block.__(0, [
-                                                                                                                                                "Mon, 08 Mar 1976 11:11:56 GMT",
-                                                                                                                                                unwrapUnsafely(Js_date.fromString("1976-03-08T12:34:56.789+01:23")).toGMTString()
-                                                                                                                                              ]);
-                                                                                                                                    }
-                                                                                                                                  ],
-                                                                                                                                  /* :: */[
-                                                                                                                                    /* tuple */[
-                                                                                                                                      "toISOString",
-                                                                                                                                      function () {
-                                                                                                                                        return /* Eq */Block.__(0, [
-                                                                                                                                                  "1976-03-08T11:11:56.789Z",
-                                                                                                                                                  unwrapUnsafely(Js_date.fromString("1976-03-08T12:34:56.789+01:23")).toISOString()
-                                                                                                                                                ]);
-                                                                                                                                      }
-                                                                                                                                    ],
-                                                                                                                                    /* :: */[
-                                                                                                                                      /* tuple */[
-                                                                                                                                        "toJSON",
-                                                                                                                                        function () {
-                                                                                                                                          return /* Eq */Block.__(0, [
-                                                                                                                                                    "1976-03-08T11:11:56.789Z",
-                                                                                                                                                    unwrapUnsafely(Js_date.fromString("1976-03-08T12:34:56.789+01:23")).toJSON()
-                                                                                                                                                  ]);
-                                                                                                                                        }
-                                                                                                                                      ],
-                                                                                                                                      /* :: */[
-                                                                                                                                        /* tuple */[
-                                                                                                                                          "toLocaleDateString",
-                                                                                                                                          function () {
-                                                                                                                                            return /* Eq */Block.__(0, [
-                                                                                                                                                      "3/8/1976",
-                                                                                                                                                      unwrapUnsafely(Js_date.fromString("1976-03-08T12:34:56.789+01:23")).toLocaleDateString()
-                                                                                                                                                    ]);
-                                                                                                                                          }
-                                                                                                                                        ],
-                                                                                                                                        /* :: */[
-                                                                                                                                          /* tuple */[
-                                                                                                                                            "toLocaleString",
-                                                                                                                                            function () {
-                                                                                                                                              return /* Eq */Block.__(0, [
-                                                                                                                                                        "3/8/1976, 12:11:56 PM",
-                                                                                                                                                        unwrapUnsafely(Js_date.fromString("1976-03-08T12:34:56.789+01:23")).toLocaleString()
-                                                                                                                                                      ]);
-                                                                                                                                            }
-                                                                                                                                          ],
-                                                                                                                                          /* :: */[
-                                                                                                                                            /* tuple */[
-                                                                                                                                              "toLocaleTimeString",
-                                                                                                                                              function () {
-                                                                                                                                                return /* Eq */Block.__(0, [
-                                                                                                                                                          "12:11:56 PM",
-                                                                                                                                                          unwrapUnsafely(Js_date.fromString("1976-03-08T12:34:56.789+01:23")).toLocaleTimeString()
-                                                                                                                                                        ]);
-                                                                                                                                              }
-                                                                                                                                            ],
-                                                                                                                                            /* :: */[
-                                                                                                                                              /* tuple */[
-                                                                                                                                                "toString",
-                                                                                                                                                function () {
-                                                                                                                                                  return /* Eq */Block.__(0, [
-                                                                                                                                                            "Mon Mar 08 1976 12:11:56 GMT+0100 (CET)",
-                                                                                                                                                            unwrapUnsafely(Js_date.fromString("1976-03-08T12:34:56.789+01:23")).toString()
-                                                                                                                                                          ]);
-                                                                                                                                                }
-                                                                                                                                              ],
-                                                                                                                                              /* :: */[
-                                                                                                                                                /* tuple */[
-                                                                                                                                                  "toTimeString",
-                                                                                                                                                  function () {
-                                                                                                                                                    return /* Eq */Block.__(0, [
-                                                                                                                                                              "12:11:56 GMT+0100 (CET)",
-                                                                                                                                                              unwrapUnsafely(Js_date.fromString("1976-03-08T12:34:56.789+01:23")).toTimeString()
-                                                                                                                                                            ]);
-                                                                                                                                                  }
-                                                                                                                                                ],
-                                                                                                                                                /* :: */[
-                                                                                                                                                  /* tuple */[
-                                                                                                                                                    "toUTCString",
-                                                                                                                                                    function () {
-                                                                                                                                                      return /* Eq */Block.__(0, [
-                                                                                                                                                                "Mon, 08 Mar 1976 11:11:56 GMT",
-                                                                                                                                                                unwrapUnsafely(Js_date.fromString("1976-03-08T12:34:56.789+01:23")).toUTCString()
-                                                                                                                                                              ]);
-                                                                                                                                                    }
-                                                                                                                                                  ],
-                                                                                                                                                  /* [] */0
-                                                                                                                                                ]
-                                                                                                                                              ]
-                                                                                                                                            ]
-                                                                                                                                          ]
-                                                                                                                                        ]
-                                                                                                                                      ]
-                                                                                                                                    ]
-                                                                                                                                  ]
-                                                                                                                                ]
-                                                                                                                              ]
-                                                                                                                            ]
+                                                                                                                            /* [] */0
                                                                                                                           ]
                                                                                                                         ]
                                                                                                                       ]
@@ -1127,7 +985,6 @@ var suites = /* :: */[
 
 Mt.from_pair_suites("js_date_test.ml", suites);
 
-exports.unwrapUnsafely = unwrapUnsafely;
-exports.date           = date;
-exports.suites         = suites;
+exports.date   = date;
+exports.suites = suites;
 /*  Not a pure module */
