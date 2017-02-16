@@ -24,7 +24,7 @@ Mt.from_pair_suites("jsoo_400_test.ml", /* :: */[
       /* tuple */[
         'File "jsoo_400_test.ml", line 8, characters 3-10',
         function () {
-          return /* ThrowAny */Block.__(3, [function () {
+          return /* ThrowAny */Block.__(4, [function () {
                       u(/* () */0);
                       return /* () */0;
                     }]);

@@ -1,7 +1,8 @@
 'use strict';
 
-var List  = require("../../lib/js/list");
-var Curry = require("../../lib/js/curry");
+var List                    = require("../../lib/js/list");
+var Curry                   = require("../../lib/js/curry");
+var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
 
 function from_pair_suites(name, suites) {
   console.log(/* tuple */[
@@ -29,6 +30,15 @@ function from_pair_suites(name, suites) {
                         ]);
                     return /* () */0;
                 case 2 : 
+                    throw [
+                          Caml_builtin_exceptions.match_failure,
+                          [
+                            "mock_mt.ml",
+                            13,
+                            14
+                          ]
+                        ];
+                case 3 : 
                     console.log(/* tuple */[
                           name,
                           match[0],
@@ -36,7 +46,7 @@ function from_pair_suites(name, suites) {
                           match[1]
                         ]);
                     return /* () */0;
-                case 3 : 
+                case 4 : 
                     return /* () */0;
                 
               }
