@@ -892,15 +892,30 @@ and
                      ~params:[]
                      ~body)
               | _ -> 
-
-                compile_lambda cxt  
+                let wrapper, new_fn = 
+                  match fn with 
+                  | Lvar _ 
+                  | Lprim {primitive = Pfield _ ; args = [Lglobal_module _]; _} -> 
+                    None, fn 
+                  | _ ->  
+                    let partial_arg = Ext_ident.create Literals.partial_arg in 
+                    Some partial_arg, Lam.var partial_arg
+                in 
+                let cont =   
                   (Lam.function_ ~arity:0 
                      ~kind:Curried ~params:[] 
                      ~body:(
-                       Lam.apply fn
+                       Lam.apply new_fn
                          [Lam.unit]
                          Location.none App_na
-                     ))
+                     )) in 
+                begin match wrapper with 
+                  | None ->      
+                    compile_lambda cxt  cont
+                  | Some partial_arg
+                    -> 
+                    compile_lambda cxt (Lam.let_ Strict partial_arg fn cont )  
+                end
             end
           else 
             begin match fn with
@@ -919,7 +934,7 @@ and
                     )
                 else (* len < arity *)
                   compile_lambda cxt 
-                    (Lam_util.eta_conversion arity 
+                    (Lam_eta_conversion.transform_under_supply arity 
                        Location.none App_na
                        fn  [] )
               (* let extra_args = Ext_list.init (arity - len) (fun _ ->   (Ident.create Literals.param)) in *)
@@ -939,7 +954,7 @@ and
               *)
               | _ -> 
                 compile_lambda cxt 
-                  (Lam_util.eta_conversion arity
+                  (Lam_eta_conversion.transform_under_supply arity
                      Location.none App_na  fn  [] )
             end
         | _ -> assert false 
@@ -1037,35 +1052,35 @@ and
                       ])
               end
             | Assign id -> 
-(* 
+              (* 
 #if BS_DEBUG then 
             let () = Ext_log.dwarn __LOC__ "\n@[[TIME:]Lifthenelse: %f@]@."  (Sys.time () *. 1000.) in      
 #end 
 *)              
-(* match
-                  compile_lambda {cxt with st = NeedValue}  t_br, 
-                  compile_lambda {cxt with st = NeedValue}  f_br with 
-              | {block = []; value =  Some out1}, 
-                {block = []; value =  Some out2} ->  
-                (* Invariant:  should_return is false *)
-                Js_output.make [S.assign id (E.econd e out1 out2)]
-              | _, _ -> *)
-                let then_output = 
-                  Js_output.to_block @@ 
-                  (compile_lambda cxt  t_br) in
-                let else_output = 
-                  Js_output.to_block @@ 
-                  (compile_lambda cxt f_br) in
-                Js_output.make (b @ [
-                    S.if_ e 
-                      then_output
-                      ~else_:else_output
-                  ])
+              (* match
+                                compile_lambda {cxt with st = NeedValue}  t_br, 
+                                compile_lambda {cxt with st = NeedValue}  f_br with 
+                            | {block = []; value =  Some out1}, 
+                              {block = []; value =  Some out2} ->  
+                              (* Invariant:  should_return is false *)
+                              Js_output.make [S.assign id (E.econd e out1 out2)]
+                            | _, _ -> *)
+              let then_output = 
+                Js_output.to_block @@ 
+                (compile_lambda cxt  t_br) in
+              let else_output = 
+                Js_output.to_block @@ 
+                (compile_lambda cxt f_br) in
+              Js_output.make (b @ [
+                  S.if_ e 
+                    then_output
+                    ~else_:else_output
+                ])
             | EffectCall ->
               begin match should_return,
                           compile_lambda {cxt with st = NeedValue}  t_br, 
                           compile_lambda {cxt with st = NeedValue}  f_br with  
-           
+
               (* see PR#83 *)
               |  False , {block = []; value =  Some out1}, 
                  {block = []; value =  Some out2} ->
@@ -1118,14 +1133,14 @@ and
 
               | True _, {block = []; value =  Some out1}, 
                 {block = []; value =  Some out2} ->
-(*                
+                (*                
 #if BS_DEBUG then 
             let () = Ext_log.dwarn __LOC__ "\n@[[TIME:]Lifthenelse: %f@]@."  (Sys.time () *. 1000.) in      
 #end                 
 *)
                 Js_output.make [S.return  (E.econd e  out1 out2)] ~finished:True                         
               |   _, _, _  ->
-(*              
+                (*              
 #if BS_DEBUG then 
             let () = Ext_log.dwarn __LOC__ "\n@[[TIME:]Lifthenelse: %f@]@."  (Sys.time () *. 1000.) in      
 #end 
@@ -1143,7 +1158,7 @@ and
                   ])
               end
           end
-         | {value = None } -> assert false 
+        | {value = None } -> assert false 
       end
     | Lstringswitch(l, cases, default) -> 
 

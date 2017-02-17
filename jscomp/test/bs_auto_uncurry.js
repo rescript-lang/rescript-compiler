@@ -1,0 +1,99 @@
+'use strict';
+
+var Curry = require("../../lib/js/curry");
+
+var bs = Array.prototype.map.call(/* int array */[
+      1,
+      2,
+      3,
+      5
+    ], function (x) {
+      return x + 1 | 0;
+    });
+
+function f(cb) {
+  return Array.prototype.map.call(/* int array */[
+              1,
+              2,
+              3,
+              4
+            ], Curry.__1(cb));
+}
+
+var xs = Array.prototype.map.call(/* int array */[
+      1,
+      1,
+      2
+    ], function (x) {
+      return function (y) {
+        return (y + x | 0) + 1 | 0;
+      };
+    });
+
+function fishy(x, y, z) {
+  return map2(x, y, Curry.__2(z));
+}
+
+function h(x, y, z) {
+  return map2(x, y, Curry.__2(z));
+}
+
+function h1(x, y, u, z) {
+  var partial_arg = Curry._1(z, u);
+  return map2(x, y, Curry.__2(partial_arg));
+}
+
+function add3(x, y, z) {
+  return (x + y | 0) + z | 0;
+}
+
+function h2(x) {
+  return ff(x, function (prim, prim$1) {
+              return prim + prim$1 | 0;
+            });
+}
+
+function h3(x) {
+  return ff(x, function (param, param$1) {
+              return add3(1, param, param$1);
+            });
+}
+
+function h4(x) {
+  return ff1(x, 3, function (param, param$1) {
+              return add3(1, param, param$1);
+            });
+}
+
+function h5(x) {
+  return ff2(x, "3", function (param, param$1) {
+              return add3(2, param, param$1);
+            });
+}
+
+function add(x, y) {
+  console.log(/* tuple */[
+        x,
+        y
+      ]);
+  return x + y | 0;
+}
+
+function h6(x) {
+  return ff2(x, "3", add);
+}
+
+exports.bs    = bs;
+exports.f     = f;
+exports.xs    = xs;
+exports.fishy = fishy;
+exports.h     = h;
+exports.h1    = h1;
+exports.add3  = add3;
+exports.h2    = h2;
+exports.h3    = h3;
+exports.h4    = h4;
+exports.h5    = h5;
+exports.add   = add;
+exports.h6    = h6;
+/* bs Not a pure module */

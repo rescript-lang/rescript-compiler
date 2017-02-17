@@ -22,7 +22,9 @@ var v = /* int array */[
     1,
     2,
     3
-  ].map(Curry.__2(f));
+  ].map(function (param, param$1) {
+      return Curry._1(f(param), param$1);
+    });
 
 var vv = /* int array */[
     1,
@@ -119,13 +121,11 @@ Mt.from_pair_suites("ffi_arity_test.ml", /* :: */[
                                 1,
                                 2,
                                 3
-                              ].map(function (param, param$1) {
-                                  return Curry._2(function (x) {
-                                              var y = Caml_int32.imul(x, x);
-                                              return function (i) {
-                                                return y + i | 0;
-                                              };
-                                            }, param, param$1);
+                              ].map(function (x, param) {
+                                  var y = Caml_int32.imul(x, x);
+                                  return function (i) {
+                                            return y + i | 0;
+                                          }(param);
                                 }),
                             /* int array */[
                               1,
