@@ -174,6 +174,7 @@ for_side_effect_test.cmj : mt.cmj
 format_regression.cmj :
 format_test.cmj : mt.cmj ../stdlib/format.cmj
 fs_test.cmj : ../others/node.cmj mt.cmj ../runtime/js.cmj
+functor_ffi.cmj : ../runtime/js.cmj
 gbk.cmj : ../runtime/js.cmj
 genlex_test.cmj : ../stdlib/stream.cmj mt.cmj ../stdlib/list.cmj \
     ../stdlib/genlex.cmj
@@ -236,8 +237,7 @@ int_overflow_test.cmj : ../stdlib/string.cmj mt.cmj ../stdlib/int32.cmj \
 io_test.cmj : ../runtime/js.cmj
 js_array_test.cmj : mt.cmj ../runtime/js.cmj
 js_bool_test.cmj : mt.cmj ../runtime/js.cmj
-js_date.cmj : ../runtime/js.cmj
-js_date_test.cmj : mt.cmj js_date.cmj
+js_date_test.cmj : mt.cmj ../runtime/js_float.cmj ../runtime/js.cmj
 js_json_test.cmj : mt.cmj ../runtime/js.cmj
 js_obj_test.cmj : mt.cmj
 js_re_test.cmj : mt.cmj ../runtime/js.cmj ../stdlib/array.cmj
@@ -278,7 +278,8 @@ module_missing_conversion.cmj : ../stdlib/string.cmj \
 module_parameter_test.cmj : ../stdlib/string.cmj mt.cmj
 module_splice_test.cmj : mt.cmj ../runtime/js.cmj
 more_uncurry.cmj :
-mt.cmj : ../others/node.cmj ../stdlib/list.cmj ../stdlib/array.cmj mt.cmi
+mt.cmj : ../others/node.cmj ../stdlib/list.cmj ../runtime/js.cmj \
+    ../stdlib/array.cmj mt.cmi
 mt_global.cmj : mt.cmj mt_global.cmi
 mutable_obj_test.cmj : ../runtime/js.cmj
 mutual_non_recursive_type.cmj :
@@ -304,6 +305,7 @@ ocaml_proto_test.cmj : ../stdlib/string.cmj ../stdlib/printf.cmj \
     ../stdlib/char.cmj ocaml_proto_test.cmi
 of_string_test.cmj : mt.cmj
 offset.cmj : ../stdlib/string.cmj ../stdlib/set.cmj
+oo_js_test_date.cmj : mt.cmj ../runtime/js.cmj
 optional_ffi_test.cmj : mt.cmj
 pipe_send_readline.cmj : ../runtime/js.cmj
 poly_type.cmj : ../runtime/js.cmj
