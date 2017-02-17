@@ -78,3 +78,47 @@ let () =
   end
 
 (* ocamlbuild *)
+let suites :  Mt.pair_suites ref  = ref []
+let test_id = ref 0
+let eq loc x y = 
+  incr test_id ; 
+  suites := 
+    (loc ^" id " ^ (string_of_int !test_id), (fun _ -> Mt.Eq(x,y))) :: !suites
+
+let v = ref 0 
+
+let all_v = ref []
+
+let add5 a0 a1 a2 a3 a4 = 
+  (* [@bs.noinline] ; *) (* Makes sense for debugging*)
+  Js.log(a0,a1,a2,a3,a4);
+  all_v := !v :: !all_v ; 
+  a0 + a1 + a2 + a3 + a4 
+
+
+let f x = 
+  (* let u = *) add5 x (incr v ; 1)   (incr v ; 2) (* in *)
+  (* all_v := !v :: !all_v ; 
+  u  *)
+
+let g x = 
+  let u = add5 x (incr v ; 1)   (incr v ; 2)  in 
+  all_v := !v :: !all_v ;
+  u  
+let a = f 0 3 4 
+
+let b = f 0 3 5
+
+
+let c = g 0 3 4 
+let d = g 0 3 5 
+
+let () = 
+  begin 
+    eq __LOC__ a 10 ; 
+    eq __LOC__ b 11 ; 
+    eq __LOC__ c 10 ; 
+    eq __LOC__ d 11 ; 
+    eq __LOC__ !all_v [  8 ; 8 ; 6 ; 6 ; 4 ; 2]
+  end 
+let () = Mt.from_pair_suites __FILE__ !suites  

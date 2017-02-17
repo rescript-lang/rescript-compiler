@@ -56,6 +56,7 @@ arith_syntax.cmj :
 array_subtle_test.cmj : mt.cmj ../runtime/js.cmj ../stdlib/array.cmj
 array_test.cmj : ../stdlib/pervasives.cmj mt.cmj ../stdlib/list.cmj \
     ../stdlib/array.cmj array_test.cmi
+async_ideas.cmj :
 attr_test.cmj :
 b.cmj :
 bal_set_mini.cmj :
@@ -118,7 +119,7 @@ derive_type_test.cmj :
 digest_test.cmj : ../stdlib/string.cmj ../stdlib/printf.cmj mt.cmj \
     ext_array.cmj ../stdlib/digest.cmj ../stdlib/array.cmj
 div_by_zero_test.cmj : mt.cmj ../stdlib/int64.cmj ../stdlib/int32.cmj
-earger_curry_test.cmj : ../stdlib/array.cmj
+earger_curry_test.cmj : mt.cmj ../runtime/js.cmj ../stdlib/array.cmj
 empty_obj.cmj :
 epsilon_test.cmj : mt.cmj
 equal_exception_test.cmj : ../stdlib/string.cmj mt.cmj ../stdlib/bytes.cmj
