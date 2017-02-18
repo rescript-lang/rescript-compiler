@@ -35,4 +35,8 @@ let suites =
         let b = js_regex_checker "//" in 
         OUnit.assert_equal b true
         end;
+        "test_regex_with_utf8" >:: begin fun _ ->
+        let b = js_regex_checker "/😃/" in
+        OUnit.assert_equal b true
+        end;
     ]
