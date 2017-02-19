@@ -66,7 +66,7 @@ module Rules = struct
       ~command
       ?depfile
       ?restat
-      ?(description = "Building ${out}")
+      ?(description = "\027[34mBuilding\027[39m \027[2m${out}\027[22m") (* blue, dim *)
       name
     =
     let rec self = {
@@ -471,7 +471,7 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  files_to_install acc
 
 
 let handle_file_groups
- oc ~package_specs ~js_post_build_cmd 
+ oc ~package_specs ~js_post_build_cmd
   ~files_to_install
   (file_groups  :  Bsb_build_ui.file_group list) st =
   List.fold_left (handle_file_group oc ~package_specs ~js_post_build_cmd files_to_install ) st  file_groups
