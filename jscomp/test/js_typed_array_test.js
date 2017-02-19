@@ -1820,7 +1820,7 @@ var suites = /* :: */[
   suites_001
 ];
 
-Mt.from_pair_suites("typed_array_test.ml", suites);
+Mt.from_pair_suites("js_typed_array_test.ml", suites);
 
 exports.mkI8    = mkI8;
 exports.via     = via;
