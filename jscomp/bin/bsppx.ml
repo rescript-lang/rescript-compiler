@@ -1,4 +1,952 @@
 module Config = Config_bsppx
+module Clflags : sig 
+#1 "clflags.mli"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 2005 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the Q Public License version 1.0.               *)
+(*                                                                     *)
+(***********************************************************************)
+
+val objfiles : string list ref
+val ccobjs : string list ref
+val dllibs : string list ref
+val compile_only : bool ref
+val output_name : string option ref
+val include_dirs : string list ref
+val no_std_include : bool ref
+val print_types : bool ref
+val make_archive : bool ref
+val debug : bool ref
+val fast : bool ref
+val link_everything : bool ref
+val custom_runtime : bool ref
+val no_check_prims : bool ref
+val bytecode_compatible_32 : bool ref
+val output_c_object : bool ref
+val output_complete_object : bool ref
+val all_ccopts : string list ref
+val classic : bool ref
+val nopervasives : bool ref
+val open_modules : string list ref
+val preprocessor : string option ref
+val all_ppx : string list ref
+val annotations : bool ref
+val binary_annotations : bool ref
+val use_threads : bool ref
+val use_vmthreads : bool ref
+val noassert : bool ref
+val verbose : bool ref
+val noprompt : bool ref
+val nopromptcont : bool ref
+val init_file : string option ref
+val noinit : bool ref
+val use_prims : string ref
+val use_runtime : string ref
+val principal : bool ref
+val real_paths : bool ref
+val recursive_types : bool ref
+val strict_sequence : bool ref
+val strict_formats : bool ref
+val applicative_functors : bool ref
+val make_runtime : bool ref
+val gprofile : bool ref
+val c_compiler : string option ref
+val no_auto_link : bool ref
+val dllpaths : string list ref
+val make_package : bool ref
+val for_package : string option ref
+val error_size : int ref
+val float_const_prop : bool ref
+val transparent_modules : bool ref
+val dump_source : bool ref
+val dump_parsetree : bool ref
+val dump_typedtree : bool ref
+val dump_rawlambda : bool ref
+val dump_lambda : bool ref
+val dump_clambda : bool ref
+val dump_instr : bool ref
+val keep_asm_file : bool ref
+val optimize_for_speed : bool ref
+val dump_cmm : bool ref
+val dump_selection : bool ref
+val dump_cse : bool ref
+val dump_live : bool ref
+val dump_spill : bool ref
+val dump_split : bool ref
+val dump_interf : bool ref
+val dump_prefer : bool ref
+val dump_regalloc : bool ref
+val dump_reload : bool ref
+val dump_scheduling : bool ref
+val dump_linear : bool ref
+val keep_startup_file : bool ref
+val dump_combine : bool ref
+val native_code : bool ref
+val inline_threshold : int ref
+val dont_write_files : bool ref
+val std_include_flag : string -> string
+val std_include_dir : unit -> string list
+val shared : bool ref
+val dlcode : bool ref
+val runtime_variant : string ref
+val force_slash : bool ref
+val keep_docs : bool ref
+val keep_locs : bool ref
+val unsafe_string : bool ref
+val opaque : bool ref
+
+
+ 
+type mli_status = Mli_na | Mli_exists | Mli_non_exists
+val no_implicit_current_dir : bool ref
+val assume_no_mli : mli_status ref 
+
+
+type color_setting = Auto | Always | Never
+val parse_color_setting : string -> color_setting option
+val color : color_setting ref
+
+
+end = struct
+#1 "clflags.ml"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the Q Public License version 1.0.               *)
+(*                                                                     *)
+(***********************************************************************)
+
+(* Command-line parameters *)
+
+let objfiles = ref ([] : string list)   (* .cmo and .cma files *)
+and ccobjs = ref ([] : string list)     (* .o, .a, .so and -cclib -lxxx *)
+and dllibs = ref ([] : string list)     (* .so and -dllib -lxxx *)
+
+let compile_only = ref false            (* -c *)
+and output_name = ref (None : string option) (* -o *)
+and include_dirs = ref ([] : string list)(* -I *)
+and no_std_include = ref false          (* -nostdlib *)
+and print_types = ref false             (* -i *)
+and make_archive = ref false            (* -a *)
+and debug = ref false                   (* -g *)
+and fast = ref false                    (* -unsafe *)
+and link_everything = ref false         (* -linkall *)
+and custom_runtime = ref false          (* -custom *)
+and no_check_prims = ref false          (* -no-check-prims *)
+and bytecode_compatible_32 = ref false  (* -compat-32 *)
+and output_c_object = ref false         (* -output-obj *)
+and output_complete_object = ref false  (* -output-complete-obj *)
+and all_ccopts = ref ([] : string list)     (* -ccopt *)
+and classic = ref false                 (* -nolabels *)
+and nopervasives = ref false            (* -nopervasives *)
+and preprocessor = ref(None : string option) (* -pp *)
+and all_ppx = ref ([] : string list)        (* -ppx *)
+let annotations = ref false             (* -annot *)
+let binary_annotations = ref false      (* -annot *)
+and use_threads = ref false             (* -thread *)
+and use_vmthreads = ref false           (* -vmthread *)
+and noassert = ref false                (* -noassert *)
+and verbose = ref false                 (* -verbose *)
+and noprompt = ref false                (* -noprompt *)
+and nopromptcont = ref false            (* -nopromptcont *)
+and init_file = ref (None : string option)   (* -init *)
+and noinit = ref false                  (* -noinit *)
+and open_modules = ref []               (* -open *)
+and use_prims = ref ""                  (* -use-prims ... *)
+and use_runtime = ref ""                (* -use-runtime ... *)
+and principal = ref false               (* -principal *)
+and real_paths = ref true               (* -short-paths *)
+and recursive_types = ref false         (* -rectypes *)
+and strict_sequence = ref false         (* -strict-sequence *)
+and strict_formats = ref false          (* -strict-formats *)
+and applicative_functors = ref true     (* -no-app-funct *)
+and make_runtime = ref false            (* -make-runtime *)
+and gprofile = ref false                (* -p *)
+and c_compiler = ref (None: string option) (* -cc *)
+and no_auto_link = ref false            (* -noautolink *)
+and dllpaths = ref ([] : string list)   (* -dllpath *)
+and make_package = ref false            (* -pack *)
+and for_package = ref (None: string option) (* -for-pack *)
+and error_size = ref 500                (* -error-size *)
+and float_const_prop = ref true         (* -no-float-const-prop *)
+and transparent_modules = ref false     (* -trans-mod *)
+let dump_source = ref false             (* -dsource *)
+let dump_parsetree = ref false          (* -dparsetree *)
+and dump_typedtree = ref false          (* -dtypedtree *)
+and dump_rawlambda = ref false          (* -drawlambda *)
+and dump_lambda = ref false             (* -dlambda *)
+and dump_clambda = ref false            (* -dclambda *)
+and dump_instr = ref false              (* -dinstr *)
+
+let keep_asm_file = ref false           (* -S *)
+let optimize_for_speed = ref true       (* -compact *)
+and opaque = ref false                  (* -opaque *)
+
+and dump_cmm = ref false                (* -dcmm *)
+let dump_selection = ref false          (* -dsel *)
+let dump_cse = ref false                (* -dcse *)
+let dump_live = ref false               (* -dlive *)
+let dump_spill = ref false              (* -dspill *)
+let dump_split = ref false              (* -dsplit *)
+let dump_interf = ref false             (* -dinterf *)
+let dump_prefer = ref false             (* -dprefer *)
+let dump_regalloc = ref false           (* -dalloc *)
+let dump_reload = ref false             (* -dreload *)
+let dump_scheduling = ref false         (* -dscheduling *)
+let dump_linear = ref false             (* -dlinear *)
+let keep_startup_file = ref false       (* -dstartup *)
+let dump_combine = ref false            (* -dcombine *)
+let native_code = ref false             (* set to true under ocamlopt *)
+let inline_threshold = ref 10
+let force_slash = ref false             (* for ocamldep *)
+
+let dont_write_files = ref false        (* set to true under ocamldoc *)
+
+let std_include_flag prefix =
+  if !no_std_include then ""
+  else (prefix ^ (Filename.quote Config.standard_library))
+;;
+
+let std_include_dir () =
+  if !no_std_include then [] else [Config.standard_library]
+;;
+
+let shared = ref false (* -shared *)
+let dlcode = ref true (* not -nodynlink *)
+
+let runtime_variant = ref "";;      (* -runtime-variant *)
+
+let keep_docs = ref false              (* -keep-docs *)
+let keep_locs = ref false              (* -keep-locs *)
+let unsafe_string = ref true;;         (* -safe-string / -unsafe-string *)
+
+
+ 
+type mli_status = Mli_na | Mli_exists | Mli_non_exists
+let no_implicit_current_dir = ref false
+let assume_no_mli = ref Mli_na
+
+
+type color_setting = Auto | Always | Never
+let parse_color_setting = function
+  | "auto" -> Some Auto
+  | "always" -> Some Always
+  | "never" -> Some Never
+  | _ -> None
+let color = ref Auto ;; (* -color *)
+
+
+end
+module Misc : sig 
+#1 "misc.mli"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the Q Public License version 1.0.               *)
+(*                                                                     *)
+(***********************************************************************)
+
+(* Miscellaneous useful types and functions *)
+
+val fatal_error: string -> 'a
+exception Fatal_error
+
+val try_finally : (unit -> 'a) -> (unit -> unit) -> 'a;;
+
+val map_end: ('a -> 'b) -> 'a list -> 'b list -> 'b list
+        (* [map_end f l t] is [map f l @ t], just more efficient. *)
+val map_left_right: ('a -> 'b) -> 'a list -> 'b list
+        (* Like [List.map], with guaranteed left-to-right evaluation order *)
+val for_all2: ('a -> 'b -> bool) -> 'a list -> 'b list -> bool
+        (* Same as [List.for_all] but for a binary predicate.
+           In addition, this [for_all2] never fails: given two lists
+           with different lengths, it returns false. *)
+val replicate_list: 'a -> int -> 'a list
+        (* [replicate_list elem n] is the list with [n] elements
+           all identical to [elem]. *)
+val list_remove: 'a -> 'a list -> 'a list
+        (* [list_remove x l] returns a copy of [l] with the first
+           element equal to [x] removed. *)
+val split_last: 'a list -> 'a list * 'a
+        (* Return the last element and the other elements of the given list. *)
+val samelist: ('a -> 'a -> bool) -> 'a list -> 'a list -> bool
+        (* Like [List.for_all2] but returns [false] if the two
+           lists have different length. *)
+
+val may: ('a -> unit) -> 'a option -> unit
+val may_map: ('a -> 'b) -> 'a option -> 'b option
+
+val find_in_path: string list -> string -> string
+        (* Search a file in a list of directories. *)
+val find_in_path_rel: string list -> string -> string
+        (* Search a relative file in a list of directories. *)
+val find_in_path_uncap: string list -> string -> string
+        (* Same, but search also for uncapitalized name, i.e.
+           if name is Foo.ml, allow /path/Foo.ml and /path/foo.ml
+           to match. *)
+val remove_file: string -> unit
+        (* Delete the given file if it exists. Never raise an error. *)
+val expand_directory: string -> string -> string
+        (* [expand_directory alt file] eventually expands a [+] at the
+           beginning of file into [alt] (an alternate root directory) *)
+
+val create_hashtable: int -> ('a * 'b) list -> ('a, 'b) Hashtbl.t
+        (* Create a hashtable of the given size and fills it with the
+           given bindings. *)
+
+val copy_file: in_channel -> out_channel -> unit
+        (* [copy_file ic oc] reads the contents of file [ic] and copies
+           them to [oc]. It stops when encountering EOF on [ic]. *)
+val copy_file_chunk: in_channel -> out_channel -> int -> unit
+        (* [copy_file_chunk ic oc n] reads [n] bytes from [ic] and copies
+           them to [oc]. It raises [End_of_file] when encountering
+           EOF on [ic]. *)
+val string_of_file: in_channel -> string
+        (* [string_of_file ic] reads the contents of file [ic] and copies
+           them to a string. It stops when encountering EOF on [ic]. *)
+val log2: int -> int
+        (* [log2 n] returns [s] such that [n = 1 lsl s]
+           if [n] is a power of 2*)
+val align: int -> int -> int
+        (* [align n a] rounds [n] upwards to a multiple of [a]
+           (a power of 2). *)
+val no_overflow_add: int -> int -> bool
+        (* [no_overflow_add n1 n2] returns [true] if the computation of
+           [n1 + n2] does not overflow. *)
+val no_overflow_sub: int -> int -> bool
+        (* [no_overflow_add n1 n2] returns [true] if the computation of
+           [n1 - n2] does not overflow. *)
+val no_overflow_lsl: int -> bool
+        (* [no_overflow_add n] returns [true] if the computation of
+           [n lsl 1] does not overflow. *)
+
+val chop_extension_if_any: string -> string
+        (* Like Filename.chop_extension but returns the initial file
+           name if it has no extension *)
+
+val chop_extensions: string -> string
+        (* Return the given file name without its extensions. The extensions
+           is the longest suffix starting with a period and not including
+           a directory separator, [.xyz.uvw] for instance.
+
+           Return the given name if it does not contain an extension. *)
+
+val search_substring: string -> string -> int -> int
+        (* [search_substring pat str start] returns the position of the first
+           occurrence of string [pat] in string [str].  Search starts
+           at offset [start] in [str].  Raise [Not_found] if [pat]
+           does not occur. *)
+
+val replace_substring: before:string -> after:string -> string -> string
+        (* [search_substring ~before ~after str] replaces all occurences
+           of [before] with [after] in [str] and returns the resulting string. *)
+
+val rev_split_words: string -> string list
+        (* [rev_split_words s] splits [s] in blank-separated words, and return
+           the list of words in reverse order. *)
+
+val get_ref: 'a list ref -> 'a list
+        (* [get_ref lr] returns the content of the list reference [lr] and reset
+           its content to the empty list. *)
+
+
+val fst3: 'a * 'b * 'c -> 'a
+val snd3: 'a * 'b * 'c -> 'b
+val thd3: 'a * 'b * 'c -> 'c
+
+val fst4: 'a * 'b * 'c * 'd -> 'a
+val snd4: 'a * 'b * 'c * 'd -> 'b
+val thd4: 'a * 'b * 'c * 'd -> 'c
+val for4: 'a * 'b * 'c * 'd -> 'd
+
+module LongString :
+  sig
+    type t = bytes array
+    val create : int -> t
+    val length : t -> int
+    val get : t -> int -> char
+    val set : t -> int -> char -> unit
+    val blit : t -> int -> t -> int -> int -> unit
+    val output : out_channel -> t -> int -> int -> unit
+    val unsafe_blit_to_bytes : t -> int -> bytes -> int -> int -> unit
+    val input_bytes : in_channel -> int -> t
+  end
+
+val edit_distance : string -> string -> int -> int option
+(** [edit_distance a b cutoff] computes the edit distance between
+    strings [a] and [b]. To help efficiency, it uses a cutoff: if the
+    distance [d] is smaller than [cutoff], it returns [Some d], else
+    [None].
+
+    The distance algorithm currently used is Damerau-Levenshtein: it
+    computes the number of insertion, deletion, substitution of
+    letters, or swapping of adjacent letters to go from one word to the
+    other. The particular algorithm may change in the future.
+*)
+
+val split : string -> char -> string list
+(** [String.split string char] splits the string [string] at every char
+    [char], and returns the list of sub-strings between the chars.
+    [String.concat (String.make 1 c) (String.split s c)] is the identity.
+    @since 4.01
+ *)
+
+val cut_at : string -> char -> string * string
+(** [String.cut_at s c] returns a pair containing the sub-string before
+   the first occurrence of [c] in [s], and the sub-string after the
+   first occurrence of [c] in [s].
+   [let (before, after) = String.cut_at s c in
+    before ^ String.make 1 c ^ after] is the identity if [s] contains [c].
+
+   Raise [Not_found] if the character does not appear in the string
+   @since 4.01
+*)
+
+
+
+
+
+(* Color handling *)
+module Color : sig
+  type color =
+    | Black
+    | Red
+    | Green
+    | Yellow
+    | Blue
+    | Magenta
+    | Cyan
+    | White
+  ;;
+
+  type style =
+    | FG of color (* foreground *)
+    | BG of color (* background *)
+    | Bold
+    | Reset
+
+  val ansi_of_style_l : style list -> string
+  (* ANSI escape sequence for the given style *)
+
+  type styles = {
+    error: style list;
+    warning: style list;
+    loc: style list;
+  }
+
+  val default_styles: styles
+  val get_styles: unit -> styles
+  val set_styles: styles -> unit
+
+  val setup : Clflags.color_setting -> unit
+  (* [setup opt] will enable or disable color handling on standard formatters
+     according to the value of color setting [opt].
+     Only the first call to this function has an effect. *)
+
+  val set_color_tag_handling : Format.formatter -> unit
+  (* adds functions to support color tags to the given formatter. *)
+end
+
+
+end = struct
+#1 "misc.ml"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the Q Public License version 1.0.               *)
+(*                                                                     *)
+(***********************************************************************)
+
+(* Errors *)
+
+exception Fatal_error
+
+let fatal_error msg =
+  prerr_string ">> Fatal error: "; prerr_endline msg; raise Fatal_error
+
+(* Exceptions *)
+
+let try_finally work cleanup =
+  let result = (try work () with e -> cleanup (); raise e) in
+  cleanup ();
+  result
+;;
+
+(* List functions *)
+
+let rec map_end f l1 l2 =
+  match l1 with
+    [] -> l2
+  | hd::tl -> f hd :: map_end f tl l2
+
+let rec map_left_right f = function
+    [] -> []
+  | hd::tl -> let res = f hd in res :: map_left_right f tl
+
+let rec for_all2 pred l1 l2 =
+  match (l1, l2) with
+    ([], []) -> true
+  | (hd1::tl1, hd2::tl2) -> pred hd1 hd2 && for_all2 pred tl1 tl2
+  | (_, _) -> false
+
+let rec replicate_list elem n =
+  if n <= 0 then [] else elem :: replicate_list elem (n-1)
+
+let rec list_remove x = function
+    [] -> []
+  | hd :: tl ->
+      if hd = x then tl else hd :: list_remove x tl
+
+let rec split_last = function
+    [] -> assert false
+  | [x] -> ([], x)
+  | hd :: tl ->
+      let (lst, last) = split_last tl in
+      (hd :: lst, last)
+
+let rec samelist pred l1 l2 =
+  match (l1, l2) with
+  | ([], []) -> true
+  | (hd1 :: tl1, hd2 :: tl2) -> pred hd1 hd2 && samelist pred tl1 tl2
+  | (_, _) -> false
+
+(* Options *)
+
+let may f = function
+    Some x -> f x
+  | None -> ()
+
+let may_map f = function
+    Some x -> Some (f x)
+  | None -> None
+
+(* File functions *)
+
+let find_in_path path name =
+  if not (Filename.is_implicit name) then
+    if Sys.file_exists name then name else raise Not_found
+  else begin
+    let rec try_dir = function
+      [] -> raise Not_found
+    | dir::rem ->
+        let fullname = Filename.concat dir name in
+        if Sys.file_exists fullname then fullname else try_dir rem
+    in try_dir path
+  end
+
+let find_in_path_rel path name =
+  let rec simplify s =
+    let open Filename in
+    let base = basename s in
+    let dir = dirname s in
+    if dir = s then dir
+    else if base = current_dir_name then simplify dir
+    else concat (simplify dir) base
+  in
+  let rec try_dir = function
+    [] -> raise Not_found
+  | dir::rem ->
+      let fullname = simplify (Filename.concat dir name) in
+      if Sys.file_exists fullname then fullname else try_dir rem
+  in try_dir path
+
+let find_in_path_uncap path name =
+  let uname = String.uncapitalize name in
+  let rec try_dir = function
+    [] -> raise Not_found
+  | dir::rem ->
+      let fullname = Filename.concat dir name
+      and ufullname = Filename.concat dir uname in
+      if Sys.file_exists ufullname then ufullname
+      else if Sys.file_exists fullname then fullname
+      else try_dir rem
+  in try_dir path
+
+let remove_file filename =
+  try
+    Sys.remove filename
+  with Sys_error msg ->
+    ()
+
+(* Expand a -I option: if it starts with +, make it relative to the standard
+   library directory *)
+
+let expand_directory alt s =
+  if String.length s > 0 && s.[0] = '+'
+  then Filename.concat alt
+                       (String.sub s 1 (String.length s - 1))
+  else s
+
+(* Hashtable functions *)
+
+let create_hashtable size init =
+  let tbl = Hashtbl.create size in
+  List.iter (fun (key, data) -> Hashtbl.add tbl key data) init;
+  tbl
+
+(* File copy *)
+
+let copy_file ic oc =
+  let buff = Bytes.create 0x1000 in
+  let rec copy () =
+    let n = input ic buff 0 0x1000 in
+    if n = 0 then () else (output oc buff 0 n; copy())
+  in copy()
+
+let copy_file_chunk ic oc len =
+  let buff = Bytes.create 0x1000 in
+  let rec copy n =
+    if n <= 0 then () else begin
+      let r = input ic buff 0 (min n 0x1000) in
+      if r = 0 then raise End_of_file else (output oc buff 0 r; copy(n-r))
+    end
+  in copy len
+
+let string_of_file ic =
+  let b = Buffer.create 0x10000 in
+  let buff = Bytes.create 0x1000 in
+  let rec copy () =
+    let n = input ic buff 0 0x1000 in
+    if n = 0 then Buffer.contents b else
+      (Buffer.add_subbytes b buff 0 n; copy())
+  in copy()
+
+(* Integer operations *)
+
+let rec log2 n =
+  if n <= 1 then 0 else 1 + log2(n asr 1)
+
+let align n a =
+  if n >= 0 then (n + a - 1) land (-a) else n land (-a)
+
+let no_overflow_add a b = (a lxor b) lor (a lxor (lnot (a+b))) < 0
+
+let no_overflow_sub a b = (a lxor (lnot b)) lor (b lxor (a-b)) < 0
+
+let no_overflow_lsl a = min_int asr 1 <= a && a <= max_int asr 1
+
+(* String operations *)
+
+let chop_extension_if_any fname =
+  try Filename.chop_extension fname with Invalid_argument _ -> fname
+
+let chop_extensions file =
+  let dirname = Filename.dirname file and basename = Filename.basename file in
+  try
+    let pos = String.index basename '.' in
+    let basename = String.sub basename 0 pos in
+    if Filename.is_implicit file && dirname = Filename.current_dir_name then
+      basename
+    else
+      Filename.concat dirname basename
+  with Not_found -> file
+
+let search_substring pat str start =
+  let rec search i j =
+    if j >= String.length pat then i
+    else if i + j >= String.length str then raise Not_found
+    else if str.[i + j] = pat.[j] then search i (j+1)
+    else search (i+1) 0
+  in search start 0
+
+let replace_substring ~before ~after str =
+  let rec search acc curr =
+    match search_substring before str curr with
+      | next ->
+         let prefix = String.sub str curr (next - curr) in
+         search (prefix :: acc) (next + String.length before)
+      | exception Not_found ->
+        let suffix = String.sub str curr (String.length str - curr) in
+        List.rev (suffix :: acc)
+  in String.concat after (search [] 0)
+
+let rev_split_words s =
+  let rec split1 res i =
+    if i >= String.length s then res else begin
+      match s.[i] with
+        ' ' | '\t' | '\r' | '\n' -> split1 res (i+1)
+      | _ -> split2 res i (i+1)
+    end
+  and split2 res i j =
+    if j >= String.length s then String.sub s i (j-i) :: res else begin
+      match s.[j] with
+        ' ' | '\t' | '\r' | '\n' -> split1 (String.sub s i (j-i) :: res) (j+1)
+      | _ -> split2 res i (j+1)
+    end
+  in split1 [] 0
+
+let get_ref r =
+  let v = !r in
+  r := []; v
+
+let fst3 (x, _, _) = x
+let snd3 (_,x,_) = x
+let thd3 (_,_,x) = x
+
+let fst4 (x, _, _, _) = x
+let snd4 (_,x,_, _) = x
+let thd4 (_,_,x,_) = x
+let for4 (_,_,_,x) = x
+
+
+module LongString = struct
+  type t = bytes array
+
+  let create str_size =
+    let tbl_size = str_size / Sys.max_string_length + 1 in
+    let tbl = Array.make tbl_size Bytes.empty in
+    for i = 0 to tbl_size - 2 do
+      tbl.(i) <- Bytes.create Sys.max_string_length;
+    done;
+    tbl.(tbl_size - 1) <- Bytes.create (str_size mod Sys.max_string_length);
+    tbl
+
+  let length tbl =
+    let tbl_size = Array.length tbl in
+    Sys.max_string_length * (tbl_size - 1) + Bytes.length tbl.(tbl_size - 1)
+
+  let get tbl ind =
+    Bytes.get tbl.(ind / Sys.max_string_length) (ind mod Sys.max_string_length)
+
+  let set tbl ind c =
+    Bytes.set tbl.(ind / Sys.max_string_length) (ind mod Sys.max_string_length)
+              c
+
+  let blit src srcoff dst dstoff len =
+    for i = 0 to len - 1 do
+      set dst (dstoff + i) (get src (srcoff + i))
+    done
+
+  let output oc tbl pos len =
+    for i = pos to pos + len - 1 do
+      output_char oc (get tbl i)
+    done
+
+  let unsafe_blit_to_bytes src srcoff dst dstoff len =
+    for i = 0 to len - 1 do
+      Bytes.unsafe_set dst (dstoff + i) (get src (srcoff + i))
+    done
+
+  let input_bytes ic len =
+    let tbl = create len in
+    Array.iter (fun str -> really_input ic str 0 (Bytes.length str)) tbl;
+    tbl
+end
+
+
+let edit_distance a b cutoff =
+  let la, lb = String.length a, String.length b in
+  let cutoff =
+    (* using max_int for cutoff would cause overflows in (i + cutoff + 1);
+       we bring it back to the (max la lb) worstcase *)
+    min (max la lb) cutoff in
+  if abs (la - lb) > cutoff then None
+  else begin
+    (* initialize with 'cutoff + 1' so that not-yet-written-to cases have
+       the worst possible cost; this is useful when computing the cost of
+       a case just at the boundary of the cutoff diagonal. *)
+    let m = Array.make_matrix (la + 1) (lb + 1) (cutoff + 1) in
+    m.(0).(0) <- 0;
+    for i = 1 to la do
+      m.(i).(0) <- i;
+    done;
+    for j = 1 to lb do
+      m.(0).(j) <- j;
+    done;
+    for i = 1 to la do
+      for j = max 1 (i - cutoff - 1) to min lb (i + cutoff + 1) do
+        let cost = if a.[i-1] = b.[j-1] then 0 else 1 in
+        let best =
+          (* insert, delete or substitute *)
+          min (1 + min m.(i-1).(j) m.(i).(j-1)) (m.(i-1).(j-1) + cost)
+        in
+        let best =
+          (* swap two adjacent letters; we use "cost" again in case of
+             a swap between two identical letters; this is slightly
+             redundant as this is a double-substitution case, but it
+             was done this way in most online implementations and
+             imitation has its virtues *)
+          if not (i > 1 && j > 1 && a.[i-1] = b.[j-2] && a.[i-2] = b.[j-1])
+          then best
+          else min best (m.(i-2).(j-2) + cost)
+        in
+        m.(i).(j) <- best
+      done;
+    done;
+    let result = m.(la).(lb) in
+    if result > cutoff
+    then None
+    else Some result
+  end
+
+
+(* split a string [s] at every char [c], and return the list of sub-strings *)
+let split s c =
+  let len = String.length s in
+  let rec iter pos to_rev =
+    if pos = len then List.rev ("" :: to_rev) else
+      match try
+              Some ( String.index_from s pos c )
+        with Not_found -> None
+      with
+          Some pos2 ->
+            if pos2 = pos then iter (pos+1) ("" :: to_rev) else
+              iter (pos2+1) ((String.sub s pos (pos2-pos)) :: to_rev)
+        | None -> List.rev ( String.sub s pos (len-pos) :: to_rev )
+  in
+  iter 0 []
+
+let cut_at s c =
+  let pos = String.index s c in
+  String.sub s 0 pos, String.sub s (pos+1) (String.length s - pos - 1)
+
+
+
+
+
+(* Color handling *)
+module Color = struct
+  (* use ANSI color codes, see https://en.wikipedia.org/wiki/ANSI_escape_code *)
+  type color =
+    | Black
+    | Red
+    | Green
+    | Yellow
+    | Blue
+    | Magenta
+    | Cyan
+    | White
+  ;;
+
+  type style =
+    | FG of color (* foreground *)
+    | BG of color (* background *)
+    | Bold
+    | Reset
+
+  let ansi_of_color = function
+    | Black -> "0"
+    | Red -> "1"
+    | Green -> "2"
+    | Yellow -> "3"
+    | Blue -> "4"
+    | Magenta -> "5"
+    | Cyan -> "6"
+    | White -> "7"
+
+  let code_of_style = function
+    | FG c -> "3" ^ ansi_of_color c
+    | BG c -> "4" ^ ansi_of_color c
+    | Bold -> "1"
+    | Reset -> "0"
+
+  let ansi_of_style_l l =
+    let s = match l with
+      | [] -> code_of_style Reset
+      | [s] -> code_of_style s
+      | _ -> String.concat ";" (List.map code_of_style l)
+    in
+    "\x1b[" ^ s ^ "m"
+
+  type styles = {
+    error: style list;
+    warning: style list;
+    loc: style list;
+  }
+
+  let default_styles = {
+    warning = [Bold; FG Magenta];
+    error = [Bold; FG Red];
+    loc = [Bold];
+  }
+
+  let cur_styles = ref default_styles
+  let get_styles () = !cur_styles
+  let set_styles s = cur_styles := s
+
+  (* map a tag to a style, if the tag is known.
+     @raise Not_found otherwise *)
+  let style_of_tag s = match s with
+    | "error" -> (!cur_styles).error
+    | "warning" -> (!cur_styles).warning
+    | "loc" -> (!cur_styles).loc
+    | _ -> raise Not_found
+
+  let color_enabled = ref true
+
+  (* either prints the tag of [s] or delegate to [or_else] *)
+  let mark_open_tag ~or_else s =
+    try
+      let style = style_of_tag s in
+      if !color_enabled then ansi_of_style_l style else ""
+    with Not_found -> or_else s
+
+  let mark_close_tag ~or_else s =
+    try
+      let _ = style_of_tag s in
+      if !color_enabled then ansi_of_style_l [Reset] else ""
+    with Not_found -> or_else s
+
+  (* add color handling to formatter [ppf] *)
+  let set_color_tag_handling ppf =
+    let open Format in
+    let functions = pp_get_formatter_tag_functions ppf () in
+    let functions' = {functions with
+      mark_open_tag=(mark_open_tag ~or_else:functions.mark_open_tag);
+      mark_close_tag=(mark_close_tag ~or_else:functions.mark_close_tag);
+    } in
+    pp_set_mark_tags ppf true; (* enable tags *)
+    pp_set_formatter_tag_functions ppf functions'
+
+  (* external isatty : out_channel -> bool = "caml_sys_isatty" *)
+
+  (* reasonable heuristic on whether colors should be enabled *)
+   let should_enable_color () = false  
+(*    let term = try Sys.getenv "TERM" with Not_found -> "" in
+    term <> "dumb"
+    && term <> "" *)
+(*    && isatty stderr *)
+
+  let setup =
+    let first = ref true in (* initialize only once *)
+    let formatter_l = [Format.std_formatter; Format.err_formatter; Format.str_formatter] in
+    fun o ->
+      if !first then (
+        first := false;
+        Format.set_mark_tags true;
+        List.iter set_color_tag_handling formatter_l;
+        color_enabled := (match o with
+          | Clflags.Always -> true
+          | Clflags.Auto -> should_enable_color ()
+          | Clflags.Never -> false
+        )
+      );
+      ()
+end
+
+
+end
 module Terminfo : sig 
 #1 "terminfo.mli"
 (***********************************************************************)
@@ -697,7 +1645,7 @@ val input_lexbuf: Lexing.lexbuf option ref
 val get_pos_info: Lexing.position -> string * int * int (* file, line, char *)
 val print_loc: formatter -> t -> unit
 val print_error: formatter -> t -> unit
-val print_error_cur_file: formatter -> unit
+val print_error_cur_file: formatter -> unit -> unit
 val print_warning: t -> formatter -> Warnings.t -> unit
 val formatter_for_warnings : formatter ref
 val prerr_warning: t -> Warnings.t -> unit
@@ -732,7 +1680,6 @@ val show_filename: string -> string
 
 val absname: bool ref
 
-
 (* Support for located errors *)
 
 type error =
@@ -745,13 +1692,21 @@ type error =
 
 exception Error of error
 
+val print_error_prefix: formatter -> unit -> unit
+  (* print the prefix "Error:" possibly with style *)
+
 val error: ?loc:t -> ?sub:error list -> ?if_highlight:string -> string -> error
 
 val errorf: ?loc:t -> ?sub:error list -> ?if_highlight:string
-            -> ('a, unit, string, error) format4 -> 'a
+            -> ('a, Format.formatter, unit, error) format4 -> 'a
+
+val errorf_prefixed : ?loc:t -> ?sub:error list -> ?if_highlight:string
+                    -> ('a, Format.formatter, unit, error) format4 -> 'a
+  (* same as {!errorf}, but prints the error prefix "Error:" before yielding
+   * to the format string *)
 
 val raise_errorf: ?loc:t -> ?sub:error list -> ?if_highlight:string
-            -> ('a, unit, string, 'b) format4 -> 'a
+            -> ('a, Format.formatter, unit, 'b) format4 -> 'a
 
 val error_of_printer: t -> (formatter -> 'a -> unit) -> 'a -> error
 
@@ -1032,7 +1987,11 @@ let get_pos_info pos =
   (pos.pos_fname, pos.pos_lnum, pos.pos_cnum - pos.pos_bol)
 ;;
 
+let setup_colors () =
+  Misc.Color.setup !Clflags.color
+
 let print_loc ppf loc =
+  setup_colors ();
   let (file, line, startchar) = get_pos_info loc.loc_start in
   let startchar = try ignore @@ Sys.getenv "BS_VSCODE" ; startchar + 1 with _ -> startchar in 
   let endchar = loc.loc_end.pos_cnum - loc.loc_start.pos_cnum + startchar in
@@ -1041,29 +2000,41 @@ let print_loc ppf loc =
       fprintf ppf "Characters %i-%i"
               loc.loc_start.pos_cnum loc.loc_end.pos_cnum
   end else begin
-    fprintf ppf "%s%a%s%i" msg_file print_filename file msg_line line;
+    fprintf ppf "%s@{<loc>%a%s%i" msg_file print_filename file msg_line line;
     if startchar >= 0 then
-      fprintf ppf "%s%i%s%i" msg_chars startchar msg_to endchar
+      fprintf ppf "%s%i%s%i" msg_chars startchar msg_to endchar;
+    fprintf ppf "@}"
   end
 ;;
 
 let print ppf loc =
+  setup_colors ();
   if loc.loc_start.pos_fname = "//toplevel//"
   && highlight_locations ppf [loc] then ()
-  else fprintf ppf "%a%s@." print_loc loc msg_colon
+  else fprintf ppf "@{<loc>%a@}%s@." print_loc loc msg_colon
+;;
+
+let error_prefix = "Error"
+let warning_prefix = "Warning"
+
+let print_error_prefix ppf () =
+  setup_colors ();
+  fprintf ppf "@{<error>%s@}:" error_prefix;
+  ()
 ;;
 
 let print_error ppf loc =
   print ppf loc;
-  fprintf ppf "Error: ";
+  print_error_prefix ppf ()
 ;;
 
-let print_error_cur_file ppf = print_error ppf (in_file !input_name);;
+let print_error_cur_file ppf () = print_error ppf (in_file !input_name);;
 
 let default_warning_printer loc ppf w =
   if Warnings.is_active w then begin
+    setup_colors ();
     print ppf loc;
-    fprintf ppf "Warning %a@." Warnings.print w
+    fprintf ppf "@{<warning>%s@} %a@." warning_prefix Warnings.print w
   end
 ;;
 
@@ -1097,8 +2068,31 @@ type error =
     if_highlight: string; (* alternative message if locations are highlighted *)
   }
 
-let errorf ?(loc = none) ?(sub = []) ?(if_highlight = "") =
-  Printf.ksprintf (fun msg -> {loc; msg; sub; if_highlight})
+let pp_ksprintf ?before k fmt =
+  let buf = Buffer.create 64 in
+  let ppf = Format.formatter_of_buffer buf in
+  Misc.Color.set_color_tag_handling ppf;
+  begin match before with
+    | None -> ()
+    | Some f -> f ppf
+  end;
+  kfprintf
+    (fun _ ->
+      pp_print_flush ppf ();
+      let msg = Buffer.contents buf in
+      k msg)
+    ppf fmt
+
+let errorf ?(loc = none) ?(sub = []) ?(if_highlight = "") fmt =
+  pp_ksprintf
+    (fun msg -> {loc; msg; sub; if_highlight})
+    fmt
+
+let errorf_prefixed ?(loc=none) ?(sub=[]) ?(if_highlight="") fmt =
+  pp_ksprintf
+    ~before:(fun ppf -> fprintf ppf "%a " print_error_prefix ())
+    (fun msg -> {loc; msg; sub; if_highlight})
+    fmt
 
 let error ?(loc = none) ?(sub = []) ?(if_highlight = "") msg =
   {loc; msg; sub; if_highlight}
@@ -1144,13 +2138,7 @@ let report_error ppf err =
 ;;
 
 let error_of_printer loc print x =
-  let buf = Buffer.create 64 in
-  let ppf = Format.formatter_of_buffer buf in
-  pp_print_string ppf "Error: ";
-  print ppf x;
-  pp_print_flush ppf ();
-  let msg = Buffer.contents buf in
-  errorf ~loc "%s" msg
+  errorf_prefixed ~loc "%a@?" print x
 
 let error_of_printer_file print x =
   error_of_printer (in_file !input_name) print x
@@ -1159,11 +2147,12 @@ let () =
   register_error_of_exn
     (function
       | Sys_error msg ->
-          Some (errorf ~loc:(in_file !input_name) "Error: I/O error: %s" msg)
+          Some (errorf_prefixed ~loc:(in_file !input_name)
+                "I/O error: %s" msg)
       | Warnings.Errors n ->
           Some
-            (errorf ~loc:(in_file !input_name)
-               "Error: Some fatal warnings were triggered (%d occurrences)" n)
+            (errorf_prefixed ~loc:(in_file !input_name)
+             "Some fatal warnings were triggered (%d occurrences)" n)
       | _ ->
           None
     )
@@ -1190,7 +2179,7 @@ let () =
     )
 
 let raise_errorf ?(loc = none) ?(sub = []) ?(if_highlight = "") =
-  Printf.ksprintf (fun msg -> raise (Error ({loc; msg; sub; if_highlight})))
+  pp_ksprintf (fun msg -> raise (Error ({loc; msg; sub; if_highlight})))
 
 end
 (** Interface as module  *)
@@ -1246,534 +2235,6 @@ type variance =
   | Covariant
   | Contravariant
   | Invariant
-
-end
-module Misc : sig 
-#1 "misc.mli"
-(***********************************************************************)
-(*                                                                     *)
-(*                                OCaml                                *)
-(*                                                                     *)
-(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
-(*                                                                     *)
-(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
-(*  en Automatique.  All rights reserved.  This file is distributed    *)
-(*  under the terms of the Q Public License version 1.0.               *)
-(*                                                                     *)
-(***********************************************************************)
-
-(* Miscellaneous useful types and functions *)
-
-val fatal_error: string -> 'a
-exception Fatal_error
-
-val try_finally : (unit -> 'a) -> (unit -> unit) -> 'a;;
-
-val map_end: ('a -> 'b) -> 'a list -> 'b list -> 'b list
-        (* [map_end f l t] is [map f l @ t], just more efficient. *)
-val map_left_right: ('a -> 'b) -> 'a list -> 'b list
-        (* Like [List.map], with guaranteed left-to-right evaluation order *)
-val for_all2: ('a -> 'b -> bool) -> 'a list -> 'b list -> bool
-        (* Same as [List.for_all] but for a binary predicate.
-           In addition, this [for_all2] never fails: given two lists
-           with different lengths, it returns false. *)
-val replicate_list: 'a -> int -> 'a list
-        (* [replicate_list elem n] is the list with [n] elements
-           all identical to [elem]. *)
-val list_remove: 'a -> 'a list -> 'a list
-        (* [list_remove x l] returns a copy of [l] with the first
-           element equal to [x] removed. *)
-val split_last: 'a list -> 'a list * 'a
-        (* Return the last element and the other elements of the given list. *)
-val samelist: ('a -> 'a -> bool) -> 'a list -> 'a list -> bool
-        (* Like [List.for_all2] but returns [false] if the two
-           lists have different length. *)
-
-val may: ('a -> unit) -> 'a option -> unit
-val may_map: ('a -> 'b) -> 'a option -> 'b option
-
-val find_in_path: string list -> string -> string
-        (* Search a file in a list of directories. *)
-val find_in_path_rel: string list -> string -> string
-        (* Search a relative file in a list of directories. *)
-val find_in_path_uncap: string list -> string -> string
-        (* Same, but search also for uncapitalized name, i.e.
-           if name is Foo.ml, allow /path/Foo.ml and /path/foo.ml
-           to match. *)
-val remove_file: string -> unit
-        (* Delete the given file if it exists. Never raise an error. *)
-val expand_directory: string -> string -> string
-        (* [expand_directory alt file] eventually expands a [+] at the
-           beginning of file into [alt] (an alternate root directory) *)
-
-val create_hashtable: int -> ('a * 'b) list -> ('a, 'b) Hashtbl.t
-        (* Create a hashtable of the given size and fills it with the
-           given bindings. *)
-
-val copy_file: in_channel -> out_channel -> unit
-        (* [copy_file ic oc] reads the contents of file [ic] and copies
-           them to [oc]. It stops when encountering EOF on [ic]. *)
-val copy_file_chunk: in_channel -> out_channel -> int -> unit
-        (* [copy_file_chunk ic oc n] reads [n] bytes from [ic] and copies
-           them to [oc]. It raises [End_of_file] when encountering
-           EOF on [ic]. *)
-val string_of_file: in_channel -> string
-        (* [string_of_file ic] reads the contents of file [ic] and copies
-           them to a string. It stops when encountering EOF on [ic]. *)
-val log2: int -> int
-        (* [log2 n] returns [s] such that [n = 1 lsl s]
-           if [n] is a power of 2*)
-val align: int -> int -> int
-        (* [align n a] rounds [n] upwards to a multiple of [a]
-           (a power of 2). *)
-val no_overflow_add: int -> int -> bool
-        (* [no_overflow_add n1 n2] returns [true] if the computation of
-           [n1 + n2] does not overflow. *)
-val no_overflow_sub: int -> int -> bool
-        (* [no_overflow_add n1 n2] returns [true] if the computation of
-           [n1 - n2] does not overflow. *)
-val no_overflow_lsl: int -> bool
-        (* [no_overflow_add n] returns [true] if the computation of
-           [n lsl 1] does not overflow. *)
-
-val chop_extension_if_any: string -> string
-        (* Like Filename.chop_extension but returns the initial file
-           name if it has no extension *)
-
-val chop_extensions: string -> string
-        (* Return the given file name without its extensions. The extensions
-           is the longest suffix starting with a period and not including
-           a directory separator, [.xyz.uvw] for instance.
-
-           Return the given name if it does not contain an extension. *)
-
-val search_substring: string -> string -> int -> int
-        (* [search_substring pat str start] returns the position of the first
-           occurrence of string [pat] in string [str].  Search starts
-           at offset [start] in [str].  Raise [Not_found] if [pat]
-           does not occur. *)
-
-val replace_substring: before:string -> after:string -> string -> string
-        (* [search_substring ~before ~after str] replaces all occurences
-           of [before] with [after] in [str] and returns the resulting string. *)
-
-val rev_split_words: string -> string list
-        (* [rev_split_words s] splits [s] in blank-separated words, and return
-           the list of words in reverse order. *)
-
-val get_ref: 'a list ref -> 'a list
-        (* [get_ref lr] returns the content of the list reference [lr] and reset
-           its content to the empty list. *)
-
-
-val fst3: 'a * 'b * 'c -> 'a
-val snd3: 'a * 'b * 'c -> 'b
-val thd3: 'a * 'b * 'c -> 'c
-
-val fst4: 'a * 'b * 'c * 'd -> 'a
-val snd4: 'a * 'b * 'c * 'd -> 'b
-val thd4: 'a * 'b * 'c * 'd -> 'c
-val for4: 'a * 'b * 'c * 'd -> 'd
-
-module LongString :
-  sig
-    type t = bytes array
-    val create : int -> t
-    val length : t -> int
-    val get : t -> int -> char
-    val set : t -> int -> char -> unit
-    val blit : t -> int -> t -> int -> int -> unit
-    val output : out_channel -> t -> int -> int -> unit
-    val unsafe_blit_to_bytes : t -> int -> bytes -> int -> int -> unit
-    val input_bytes : in_channel -> int -> t
-  end
-
-val edit_distance : string -> string -> int -> int option
-(** [edit_distance a b cutoff] computes the edit distance between
-    strings [a] and [b]. To help efficiency, it uses a cutoff: if the
-    distance [d] is smaller than [cutoff], it returns [Some d], else
-    [None].
-
-    The distance algorithm currently used is Damerau-Levenshtein: it
-    computes the number of insertion, deletion, substitution of
-    letters, or swapping of adjacent letters to go from one word to the
-    other. The particular algorithm may change in the future.
-*)
-
-val split : string -> char -> string list
-(** [String.split string char] splits the string [string] at every char
-    [char], and returns the list of sub-strings between the chars.
-    [String.concat (String.make 1 c) (String.split s c)] is the identity.
-    @since 4.01
- *)
-
-val cut_at : string -> char -> string * string
-(** [String.cut_at s c] returns a pair containing the sub-string before
-   the first occurrence of [c] in [s], and the sub-string after the
-   first occurrence of [c] in [s].
-   [let (before, after) = String.cut_at s c in
-    before ^ String.make 1 c ^ after] is the identity if [s] contains [c].
-
-   Raise [Not_found] if the character does not appear in the string
-   @since 4.01
-*)
-
-end = struct
-#1 "misc.ml"
-(***********************************************************************)
-(*                                                                     *)
-(*                                OCaml                                *)
-(*                                                                     *)
-(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
-(*                                                                     *)
-(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
-(*  en Automatique.  All rights reserved.  This file is distributed    *)
-(*  under the terms of the Q Public License version 1.0.               *)
-(*                                                                     *)
-(***********************************************************************)
-
-(* Errors *)
-
-exception Fatal_error
-
-let fatal_error msg =
-  prerr_string ">> Fatal error: "; prerr_endline msg; raise Fatal_error
-
-(* Exceptions *)
-
-let try_finally work cleanup =
-  let result = (try work () with e -> cleanup (); raise e) in
-  cleanup ();
-  result
-;;
-
-(* List functions *)
-
-let rec map_end f l1 l2 =
-  match l1 with
-    [] -> l2
-  | hd::tl -> f hd :: map_end f tl l2
-
-let rec map_left_right f = function
-    [] -> []
-  | hd::tl -> let res = f hd in res :: map_left_right f tl
-
-let rec for_all2 pred l1 l2 =
-  match (l1, l2) with
-    ([], []) -> true
-  | (hd1::tl1, hd2::tl2) -> pred hd1 hd2 && for_all2 pred tl1 tl2
-  | (_, _) -> false
-
-let rec replicate_list elem n =
-  if n <= 0 then [] else elem :: replicate_list elem (n-1)
-
-let rec list_remove x = function
-    [] -> []
-  | hd :: tl ->
-      if hd = x then tl else hd :: list_remove x tl
-
-let rec split_last = function
-    [] -> assert false
-  | [x] -> ([], x)
-  | hd :: tl ->
-      let (lst, last) = split_last tl in
-      (hd :: lst, last)
-
-let rec samelist pred l1 l2 =
-  match (l1, l2) with
-  | ([], []) -> true
-  | (hd1 :: tl1, hd2 :: tl2) -> pred hd1 hd2 && samelist pred tl1 tl2
-  | (_, _) -> false
-
-(* Options *)
-
-let may f = function
-    Some x -> f x
-  | None -> ()
-
-let may_map f = function
-    Some x -> Some (f x)
-  | None -> None
-
-(* File functions *)
-
-let find_in_path path name =
-  if not (Filename.is_implicit name) then
-    if Sys.file_exists name then name else raise Not_found
-  else begin
-    let rec try_dir = function
-      [] -> raise Not_found
-    | dir::rem ->
-        let fullname = Filename.concat dir name in
-        if Sys.file_exists fullname then fullname else try_dir rem
-    in try_dir path
-  end
-
-let find_in_path_rel path name =
-  let rec simplify s =
-    let open Filename in
-    let base = basename s in
-    let dir = dirname s in
-    if dir = s then dir
-    else if base = current_dir_name then simplify dir
-    else concat (simplify dir) base
-  in
-  let rec try_dir = function
-    [] -> raise Not_found
-  | dir::rem ->
-      let fullname = simplify (Filename.concat dir name) in
-      if Sys.file_exists fullname then fullname else try_dir rem
-  in try_dir path
-
-let find_in_path_uncap path name =
-  let uname = String.uncapitalize name in
-  let rec try_dir = function
-    [] -> raise Not_found
-  | dir::rem ->
-      let fullname = Filename.concat dir name
-      and ufullname = Filename.concat dir uname in
-      if Sys.file_exists ufullname then ufullname
-      else if Sys.file_exists fullname then fullname
-      else try_dir rem
-  in try_dir path
-
-let remove_file filename =
-  try
-    Sys.remove filename
-  with Sys_error msg ->
-    ()
-
-(* Expand a -I option: if it starts with +, make it relative to the standard
-   library directory *)
-
-let expand_directory alt s =
-  if String.length s > 0 && s.[0] = '+'
-  then Filename.concat alt
-                       (String.sub s 1 (String.length s - 1))
-  else s
-
-(* Hashtable functions *)
-
-let create_hashtable size init =
-  let tbl = Hashtbl.create size in
-  List.iter (fun (key, data) -> Hashtbl.add tbl key data) init;
-  tbl
-
-(* File copy *)
-
-let copy_file ic oc =
-  let buff = Bytes.create 0x1000 in
-  let rec copy () =
-    let n = input ic buff 0 0x1000 in
-    if n = 0 then () else (output oc buff 0 n; copy())
-  in copy()
-
-let copy_file_chunk ic oc len =
-  let buff = Bytes.create 0x1000 in
-  let rec copy n =
-    if n <= 0 then () else begin
-      let r = input ic buff 0 (min n 0x1000) in
-      if r = 0 then raise End_of_file else (output oc buff 0 r; copy(n-r))
-    end
-  in copy len
-
-let string_of_file ic =
-  let b = Buffer.create 0x10000 in
-  let buff = Bytes.create 0x1000 in
-  let rec copy () =
-    let n = input ic buff 0 0x1000 in
-    if n = 0 then Buffer.contents b else
-      (Buffer.add_subbytes b buff 0 n; copy())
-  in copy()
-
-(* Integer operations *)
-
-let rec log2 n =
-  if n <= 1 then 0 else 1 + log2(n asr 1)
-
-let align n a =
-  if n >= 0 then (n + a - 1) land (-a) else n land (-a)
-
-let no_overflow_add a b = (a lxor b) lor (a lxor (lnot (a+b))) < 0
-
-let no_overflow_sub a b = (a lxor (lnot b)) lor (b lxor (a-b)) < 0
-
-let no_overflow_lsl a = min_int asr 1 <= a && a <= max_int asr 1
-
-(* String operations *)
-
-let chop_extension_if_any fname =
-  try Filename.chop_extension fname with Invalid_argument _ -> fname
-
-let chop_extensions file =
-  let dirname = Filename.dirname file and basename = Filename.basename file in
-  try
-    let pos = String.index basename '.' in
-    let basename = String.sub basename 0 pos in
-    if Filename.is_implicit file && dirname = Filename.current_dir_name then
-      basename
-    else
-      Filename.concat dirname basename
-  with Not_found -> file
-
-let search_substring pat str start =
-  let rec search i j =
-    if j >= String.length pat then i
-    else if i + j >= String.length str then raise Not_found
-    else if str.[i + j] = pat.[j] then search i (j+1)
-    else search (i+1) 0
-  in search start 0
-
-let replace_substring ~before ~after str =
-  let rec search acc curr =
-    match search_substring before str curr with
-      | next ->
-         let prefix = String.sub str curr (next - curr) in
-         search (prefix :: acc) (next + String.length before)
-      | exception Not_found ->
-        let suffix = String.sub str curr (String.length str - curr) in
-        List.rev (suffix :: acc)
-  in String.concat after (search [] 0)
-
-let rev_split_words s =
-  let rec split1 res i =
-    if i >= String.length s then res else begin
-      match s.[i] with
-        ' ' | '\t' | '\r' | '\n' -> split1 res (i+1)
-      | _ -> split2 res i (i+1)
-    end
-  and split2 res i j =
-    if j >= String.length s then String.sub s i (j-i) :: res else begin
-      match s.[j] with
-        ' ' | '\t' | '\r' | '\n' -> split1 (String.sub s i (j-i) :: res) (j+1)
-      | _ -> split2 res i (j+1)
-    end
-  in split1 [] 0
-
-let get_ref r =
-  let v = !r in
-  r := []; v
-
-let fst3 (x, _, _) = x
-let snd3 (_,x,_) = x
-let thd3 (_,_,x) = x
-
-let fst4 (x, _, _, _) = x
-let snd4 (_,x,_, _) = x
-let thd4 (_,_,x,_) = x
-let for4 (_,_,_,x) = x
-
-
-module LongString = struct
-  type t = bytes array
-
-  let create str_size =
-    let tbl_size = str_size / Sys.max_string_length + 1 in
-    let tbl = Array.make tbl_size Bytes.empty in
-    for i = 0 to tbl_size - 2 do
-      tbl.(i) <- Bytes.create Sys.max_string_length;
-    done;
-    tbl.(tbl_size - 1) <- Bytes.create (str_size mod Sys.max_string_length);
-    tbl
-
-  let length tbl =
-    let tbl_size = Array.length tbl in
-    Sys.max_string_length * (tbl_size - 1) + Bytes.length tbl.(tbl_size - 1)
-
-  let get tbl ind =
-    Bytes.get tbl.(ind / Sys.max_string_length) (ind mod Sys.max_string_length)
-
-  let set tbl ind c =
-    Bytes.set tbl.(ind / Sys.max_string_length) (ind mod Sys.max_string_length)
-              c
-
-  let blit src srcoff dst dstoff len =
-    for i = 0 to len - 1 do
-      set dst (dstoff + i) (get src (srcoff + i))
-    done
-
-  let output oc tbl pos len =
-    for i = pos to pos + len - 1 do
-      output_char oc (get tbl i)
-    done
-
-  let unsafe_blit_to_bytes src srcoff dst dstoff len =
-    for i = 0 to len - 1 do
-      Bytes.unsafe_set dst (dstoff + i) (get src (srcoff + i))
-    done
-
-  let input_bytes ic len =
-    let tbl = create len in
-    Array.iter (fun str -> really_input ic str 0 (Bytes.length str)) tbl;
-    tbl
-end
-
-
-let edit_distance a b cutoff =
-  let la, lb = String.length a, String.length b in
-  let cutoff =
-    (* using max_int for cutoff would cause overflows in (i + cutoff + 1);
-       we bring it back to the (max la lb) worstcase *)
-    min (max la lb) cutoff in
-  if abs (la - lb) > cutoff then None
-  else begin
-    (* initialize with 'cutoff + 1' so that not-yet-written-to cases have
-       the worst possible cost; this is useful when computing the cost of
-       a case just at the boundary of the cutoff diagonal. *)
-    let m = Array.make_matrix (la + 1) (lb + 1) (cutoff + 1) in
-    m.(0).(0) <- 0;
-    for i = 1 to la do
-      m.(i).(0) <- i;
-    done;
-    for j = 1 to lb do
-      m.(0).(j) <- j;
-    done;
-    for i = 1 to la do
-      for j = max 1 (i - cutoff - 1) to min lb (i + cutoff + 1) do
-        let cost = if a.[i-1] = b.[j-1] then 0 else 1 in
-        let best =
-          (* insert, delete or substitute *)
-          min (1 + min m.(i-1).(j) m.(i).(j-1)) (m.(i-1).(j-1) + cost)
-        in
-        let best =
-          (* swap two adjacent letters; we use "cost" again in case of
-             a swap between two identical letters; this is slightly
-             redundant as this is a double-substitution case, but it
-             was done this way in most online implementations and
-             imitation has its virtues *)
-          if not (i > 1 && j > 1 && a.[i-1] = b.[j-2] && a.[i-2] = b.[j-1])
-          then best
-          else min best (m.(i-2).(j-2) + cost)
-        in
-        m.(i).(j) <- best
-      done;
-    done;
-    let result = m.(la).(lb) in
-    if result > cutoff
-    then None
-    else Some result
-  end
-
-
-(* split a string [s] at every char [c], and return the list of sub-strings *)
-let split s c =
-  let len = String.length s in
-  let rec iter pos to_rev =
-    if pos = len then List.rev ("" :: to_rev) else
-      match try
-              Some ( String.index_from s pos c )
-        with Not_found -> None
-      with
-          Some pos2 ->
-            if pos2 = pos then iter (pos+1) ("" :: to_rev) else
-              iter (pos2+1) ((String.sub s pos (pos2-pos)) :: to_rev)
-        | None -> List.rev ( String.sub s pos (len-pos) :: to_rev )
-  in
-  iter 0 []
-
-let cut_at s c =
-  let pos = String.index s c in
-  String.sub s 0 pos, String.sub s (pos+1) (String.length s - pos - 1)
 
 end
 module Longident : sig 
@@ -11268,239 +11729,6 @@ let pval_prim_of_labels labels =
     Ast_ffi_types.to_string 
       (Ffi_obj_create arg_kinds)   in 
   [""; encoding]
-
-
-end
-module Clflags : sig 
-#1 "clflags.mli"
-(***********************************************************************)
-(*                                                                     *)
-(*                                OCaml                                *)
-(*                                                                     *)
-(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
-(*                                                                     *)
-(*  Copyright 2005 Institut National de Recherche en Informatique et   *)
-(*  en Automatique.  All rights reserved.  This file is distributed    *)
-(*  under the terms of the Q Public License version 1.0.               *)
-(*                                                                     *)
-(***********************************************************************)
-
-val objfiles : string list ref
-val ccobjs : string list ref
-val dllibs : string list ref
-val compile_only : bool ref
-val output_name : string option ref
-val include_dirs : string list ref
-val no_std_include : bool ref
-val print_types : bool ref
-val make_archive : bool ref
-val debug : bool ref
-val fast : bool ref
-val link_everything : bool ref
-val custom_runtime : bool ref
-val no_check_prims : bool ref
-val bytecode_compatible_32 : bool ref
-val output_c_object : bool ref
-val output_complete_object : bool ref
-val all_ccopts : string list ref
-val classic : bool ref
-val nopervasives : bool ref
-val open_modules : string list ref
-val preprocessor : string option ref
-val all_ppx : string list ref
-val annotations : bool ref
-val binary_annotations : bool ref
-val use_threads : bool ref
-val use_vmthreads : bool ref
-val noassert : bool ref
-val verbose : bool ref
-val noprompt : bool ref
-val nopromptcont : bool ref
-val init_file : string option ref
-val noinit : bool ref
-val use_prims : string ref
-val use_runtime : string ref
-val principal : bool ref
-val real_paths : bool ref
-val recursive_types : bool ref
-val strict_sequence : bool ref
-val strict_formats : bool ref
-val applicative_functors : bool ref
-val make_runtime : bool ref
-val gprofile : bool ref
-val c_compiler : string option ref
-val no_auto_link : bool ref
-val dllpaths : string list ref
-val make_package : bool ref
-val for_package : string option ref
-val error_size : int ref
-val float_const_prop : bool ref
-val transparent_modules : bool ref
-val dump_source : bool ref
-val dump_parsetree : bool ref
-val dump_typedtree : bool ref
-val dump_rawlambda : bool ref
-val dump_lambda : bool ref
-val dump_clambda : bool ref
-val dump_instr : bool ref
-val keep_asm_file : bool ref
-val optimize_for_speed : bool ref
-val dump_cmm : bool ref
-val dump_selection : bool ref
-val dump_cse : bool ref
-val dump_live : bool ref
-val dump_spill : bool ref
-val dump_split : bool ref
-val dump_interf : bool ref
-val dump_prefer : bool ref
-val dump_regalloc : bool ref
-val dump_reload : bool ref
-val dump_scheduling : bool ref
-val dump_linear : bool ref
-val keep_startup_file : bool ref
-val dump_combine : bool ref
-val native_code : bool ref
-val inline_threshold : int ref
-val dont_write_files : bool ref
-val std_include_flag : string -> string
-val std_include_dir : unit -> string list
-val shared : bool ref
-val dlcode : bool ref
-val runtime_variant : string ref
-val force_slash : bool ref
-val keep_docs : bool ref
-val keep_locs : bool ref
-val unsafe_string : bool ref
-val opaque : bool ref
-
- 
-type mli_status = Mli_na | Mli_exists | Mli_non_exists
-val no_implicit_current_dir : bool ref
-val assume_no_mli : mli_status ref 
-
-
-end = struct
-#1 "clflags.ml"
-(***********************************************************************)
-(*                                                                     *)
-(*                                OCaml                                *)
-(*                                                                     *)
-(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
-(*                                                                     *)
-(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
-(*  en Automatique.  All rights reserved.  This file is distributed    *)
-(*  under the terms of the Q Public License version 1.0.               *)
-(*                                                                     *)
-(***********************************************************************)
-
-(* Command-line parameters *)
-
-let objfiles = ref ([] : string list)   (* .cmo and .cma files *)
-and ccobjs = ref ([] : string list)     (* .o, .a, .so and -cclib -lxxx *)
-and dllibs = ref ([] : string list)     (* .so and -dllib -lxxx *)
-
-let compile_only = ref false            (* -c *)
-and output_name = ref (None : string option) (* -o *)
-and include_dirs = ref ([] : string list)(* -I *)
-and no_std_include = ref false          (* -nostdlib *)
-and print_types = ref false             (* -i *)
-and make_archive = ref false            (* -a *)
-and debug = ref false                   (* -g *)
-and fast = ref false                    (* -unsafe *)
-and link_everything = ref false         (* -linkall *)
-and custom_runtime = ref false          (* -custom *)
-and no_check_prims = ref false          (* -no-check-prims *)
-and bytecode_compatible_32 = ref false  (* -compat-32 *)
-and output_c_object = ref false         (* -output-obj *)
-and output_complete_object = ref false  (* -output-complete-obj *)
-and all_ccopts = ref ([] : string list)     (* -ccopt *)
-and classic = ref false                 (* -nolabels *)
-and nopervasives = ref false            (* -nopervasives *)
-and preprocessor = ref(None : string option) (* -pp *)
-and all_ppx = ref ([] : string list)        (* -ppx *)
-let annotations = ref false             (* -annot *)
-let binary_annotations = ref false      (* -annot *)
-and use_threads = ref false             (* -thread *)
-and use_vmthreads = ref false           (* -vmthread *)
-and noassert = ref false                (* -noassert *)
-and verbose = ref false                 (* -verbose *)
-and noprompt = ref false                (* -noprompt *)
-and nopromptcont = ref false            (* -nopromptcont *)
-and init_file = ref (None : string option)   (* -init *)
-and noinit = ref false                  (* -noinit *)
-and open_modules = ref []               (* -open *)
-and use_prims = ref ""                  (* -use-prims ... *)
-and use_runtime = ref ""                (* -use-runtime ... *)
-and principal = ref false               (* -principal *)
-and real_paths = ref true               (* -short-paths *)
-and recursive_types = ref false         (* -rectypes *)
-and strict_sequence = ref false         (* -strict-sequence *)
-and strict_formats = ref false          (* -strict-formats *)
-and applicative_functors = ref true     (* -no-app-funct *)
-and make_runtime = ref false            (* -make-runtime *)
-and gprofile = ref false                (* -p *)
-and c_compiler = ref (None: string option) (* -cc *)
-and no_auto_link = ref false            (* -noautolink *)
-and dllpaths = ref ([] : string list)   (* -dllpath *)
-and make_package = ref false            (* -pack *)
-and for_package = ref (None: string option) (* -for-pack *)
-and error_size = ref 500                (* -error-size *)
-and float_const_prop = ref true         (* -no-float-const-prop *)
-and transparent_modules = ref false     (* -trans-mod *)
-let dump_source = ref false             (* -dsource *)
-let dump_parsetree = ref false          (* -dparsetree *)
-and dump_typedtree = ref false          (* -dtypedtree *)
-and dump_rawlambda = ref false          (* -drawlambda *)
-and dump_lambda = ref false             (* -dlambda *)
-and dump_clambda = ref false            (* -dclambda *)
-and dump_instr = ref false              (* -dinstr *)
-
-let keep_asm_file = ref false           (* -S *)
-let optimize_for_speed = ref true       (* -compact *)
-and opaque = ref false                  (* -opaque *)
-
-and dump_cmm = ref false                (* -dcmm *)
-let dump_selection = ref false          (* -dsel *)
-let dump_cse = ref false                (* -dcse *)
-let dump_live = ref false               (* -dlive *)
-let dump_spill = ref false              (* -dspill *)
-let dump_split = ref false              (* -dsplit *)
-let dump_interf = ref false             (* -dinterf *)
-let dump_prefer = ref false             (* -dprefer *)
-let dump_regalloc = ref false           (* -dalloc *)
-let dump_reload = ref false             (* -dreload *)
-let dump_scheduling = ref false         (* -dscheduling *)
-let dump_linear = ref false             (* -dlinear *)
-let keep_startup_file = ref false       (* -dstartup *)
-let dump_combine = ref false            (* -dcombine *)
-let native_code = ref false             (* set to true under ocamlopt *)
-let inline_threshold = ref 10
-let force_slash = ref false             (* for ocamldep *)
-
-let dont_write_files = ref false        (* set to true under ocamldoc *)
-
-let std_include_flag prefix =
-  if !no_std_include then ""
-  else (prefix ^ (Filename.quote Config.standard_library))
-;;
-
-let std_include_dir () =
-  if !no_std_include then [] else [Config.standard_library]
-;;
-
-let shared = ref false (* -shared *)
-let dlcode = ref true (* not -nodynlink *)
-
-let runtime_variant = ref "";;      (* -runtime-variant *)
-
-let keep_docs = ref false              (* -keep-docs *)
-let keep_locs = ref false              (* -keep-locs *)
-let unsafe_string = ref true;;         (* -safe-string / -unsafe-string *)
-
- 
-type mli_status = Mli_na | Mli_exists | Mli_non_exists
-let no_implicit_current_dir = ref false
-let assume_no_mli = ref Mli_na
 
 
 end

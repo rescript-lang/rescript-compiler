@@ -57,6 +57,7 @@ let get_package_name () = !package_name
 *)  
 (** *)
 let bsc_flags = ref [
+    "-color"; "always" ;
     "-w"; "-40+6+7+27+32..39+44+45"
 
   ]
