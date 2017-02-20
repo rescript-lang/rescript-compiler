@@ -67998,6 +67998,7 @@ val uninitialized_object :
 val uninitialized_array : unary_op
 
 val seq : binary_op
+val fuse_to_seq : t -> t list -> t 
 
 val obj : ?comment:string -> J.property_map -> t 
 
@@ -68144,7 +68145,7 @@ let ml_var_dot ?comment ( id  : Ident.t) e : J.expression =
   {expression_desc = Var (Qualified(id, Ml, Some e)); comment }
 
 (** 
-  module as a value 
+   module as a value 
    {[
      var http = require("http")
    ]}
@@ -68300,6 +68301,9 @@ let rec seq ?comment (e0 : t) (e1 : t) : t =
   | _ -> 
     {expression_desc = Seq(e0,e1); comment}
 
+let fuse_to_seq x xs = 
+  if xs = [] then x  
+  else List.fold_left seq x xs 
 
 let zero_int_literal : t =   
   {expression_desc = Number (Int {i = 0l; c = None}) ; comment = None}
@@ -68525,14 +68529,14 @@ let var_dot ?comment (x : Ident.t)  (e1 : string) : t =
 
 let bind_call ?comment obj  (e1 : string) args  : t = 
   call ~info:Js_call_info.dummy {expression_desc = 
-     Bind ({expression_desc = Dot (obj,  e1, true); comment} , obj);
-   comment = None } args 
+                                   Bind ({expression_desc = Dot (obj,  e1, true); comment} , obj);
+                                 comment = None } args 
 
 let bind_var_call ?comment (x : Ident.t)  (e1 : string) args  : t = 
   let obj =  var x in 
   call ~info:Js_call_info.dummy {expression_desc = 
-     Bind ({expression_desc = Dot (obj,  e1, true); comment} , obj);
-   comment = None } args 
+                                   Bind ({expression_desc = Dot (obj,  e1, true); comment} , obj);
+                                 comment = None } args 
 
 
 (* Dot .....................**)        
@@ -68569,7 +68573,7 @@ let bool v = if  v then caml_true else caml_false
 
 (** Here we have to use JS [===], and therefore, we are introducing 
     Js boolean, so be sure to convert it back to OCaml boolean
- *)
+*)
 let rec triple_equal ?comment (e0 : t) (e1 : t ) : t = 
   match e0.expression_desc, e1.expression_desc with
   | Var (Id ({name = "undefined"|"null"; } as id)), 
@@ -68639,23 +68643,23 @@ let rec and_ ?comment (e1 : t) (e2 : t) : t =
   |  Int_of_boolean e1 , Int_of_boolean e2 ->
     to_ocaml_boolean @@ and_ ?comment e1 e2
 
-(*
-   {[ a && (b && c) === (a && b ) && c ]}
-   is not used: benefit is not clear 
-  | Int_of_boolean e10, Bin(And, {expression_desc = Int_of_boolean e20 }, e3) 
-    -> 
-    and_ ?comment 
-      { e1 with expression_desc 
-                = 
-                  J.Int_of_boolean { expression_desc = Bin (And, e10,e20); comment = None}
-      }
-      e3
-*)
+  (*
+     {[ a && (b && c) === (a && b ) && c ]}
+     is not used: benefit is not clear 
+     | Int_of_boolean e10, Bin(And, {expression_desc = Int_of_boolean e20 }, e3) 
+      -> 
+      and_ ?comment 
+        { e1 with expression_desc 
+                  = 
+                    J.Int_of_boolean { expression_desc = Bin (And, e10,e20); comment = None}
+        }
+        e3
+  *)
   (* Note that 
      {[ "" && 3 ]}
      return  "" instead of false, so [e1] is indeed useful
   *)
-  
+
   (* optimization if [e1 = e2], then and_ e1 e2 -> e2
      be careful for side effect        
   *)
@@ -68751,7 +68755,7 @@ let rec ocaml_boolean_under_condition (b : t) =
     if u' == u then b 
     else {b with expression_desc = Js_not u'} 
   | _ -> b 
-  
+
 let rec econd ?comment (b : t) (t : t) (f : t) : t = 
   match b.expression_desc , t.expression_desc, f.expression_desc with
 
@@ -68953,35 +68957,35 @@ let public_method_call meth_name obj label cache args =
        arr NA (obj::args)
       ]
 
-    (* TODO: handle arbitrary length of args .. 
-       we can reduce part of the overhead by using
-       `__js` -- a easy ppx {{ x ##.hh }} 
-       the downside is that no way to swap ocaml/js implementation 
-       for object part, also need encode arity..
-       how about x#|getElementById|2|
-    *)
-    (* ( *)
-    (*   let fn = bind (dot obj meth_name) obj in *)
-    (*   if len = 0 then  *)
-    (*     dot obj meth_name *)
-    (*     (\* Note that when no args supplied,  *)
-    (*        it is not necessarily a function, [bind] *)
-    (*        is dangerous *)
-    (*        so if user write such code *)
-    (*        {[ *)
-    (*          let  u = x # say in *)
-    (*          u 3               *)
-    (*        ]}     *)
-    (*        It's reasonable to drop [this] support        *)
-    (*     *\) *)
-    (*   else if len <=8 then  *)
-    (*     let len_str = string_of_int len in *)
-    (*     runtime_call Js_config.curry (Literals.app ^len_str)  *)
-    (*       (fn ::  args) *)
-    (*   else  *)
-    (*     runtime_call Js_config.curry Literals.app_array            *)
-    (*       [fn  ; arr NA args ]             *)
-    (* ) *)
+(* TODO: handle arbitrary length of args .. 
+   we can reduce part of the overhead by using
+   `__js` -- a easy ppx {{ x ##.hh }} 
+   the downside is that no way to swap ocaml/js implementation 
+   for object part, also need encode arity..
+   how about x#|getElementById|2|
+*)
+(* ( *)
+(*   let fn = bind (dot obj meth_name) obj in *)
+(*   if len = 0 then  *)
+(*     dot obj meth_name *)
+(*     (\* Note that when no args supplied,  *)
+(*        it is not necessarily a function, [bind] *)
+(*        is dangerous *)
+(*        so if user write such code *)
+(*        {[ *)
+(*          let  u = x # say in *)
+(*          u 3               *)
+(*        ]}     *)
+(*        It's reasonable to drop [this] support        *)
+(*     *\) *)
+(*   else if len <=8 then  *)
+(*     let len_str = string_of_int len in *)
+(*     runtime_call Js_config.curry (Literals.app ^len_str)  *)
+(*       (fn ::  args) *)
+(*   else  *)
+(*     runtime_call Js_config.curry Literals.app_array            *)
+(*       [fn  ; arr NA args ]             *)
+(* ) *)
 
 let set_tag ?comment e tag : t = 
   seq {expression_desc = Caml_block_set_tag (e,tag); comment } unit 
@@ -69084,9 +69088,9 @@ let rec int32_lsr ?comment
     Number (Int {i = 0l} | Uint 0l | Nint 0n) 
     -> int32_lsr ?comment e1 e2
   | _, _ ->
-     { comment ; 
-       expression_desc = Bin (Lsr, e1,e2) (* uint32 *)
-     }
+    { comment ; 
+      expression_desc = Bin (Lsr, e1,e2) (* uint32 *)
+    }
 
 let to_uint32 ?comment (e : J.expression)  : J.expression =
   int32_lsr ?comment e zero_int_literal
@@ -69106,7 +69110,7 @@ let rec is_out ?comment (e : t) (range : t) : t  =
       (
         Bin (Plus , {expression_desc = Number (Int {i ; _}) }, {expression_desc = Var _; _})
       | Bin (Plus, {expression_desc = Var _; _}, {expression_desc = Number (Int {i ; _}) }))
-     
+
       ->
       not (or_ (triple_equal e (int (Int32.neg i ))) (triple_equal e (int (Int32.sub Int32.one  i))))        
     | Number (Int {i = 1l}), 
@@ -69127,12 +69131,12 @@ let rec is_out ?comment (e : t) (range : t) : t  =
       or_ (int_comp Cgt e (int ( k)))  (int_comp Clt e  zero_int_literal)
 
     | _, Bin (Bor ,
-             ({expression_desc =
-                (Bin((Plus | Minus ) ,
-                    {expression_desc = Number (Int {i ; _}) }, {expression_desc = Var _; _})
-                |Bin((Plus | Minus ) ,
-                    {expression_desc = Var _; _}, {expression_desc = Number (Int {i ; _}) } ))
-                } as e), {expression_desc = Number (Int {i=0l} | Uint 0l | Nint 0n); _})
+              ({expression_desc =
+                  (Bin((Plus | Minus ) ,
+                       {expression_desc = Number (Int {i ; _}) }, {expression_desc = Var _; _})
+                  |Bin((Plus | Minus ) ,
+                       {expression_desc = Var _; _}, {expression_desc = Number (Int {i ; _}) } ))
+               } as e), {expression_desc = Number (Int {i=0l} | Uint 0l | Nint 0n); _})
       ->  
       (* TODO: check correctness *)
       is_out ?comment e range 
@@ -69151,7 +69155,7 @@ let rec float_add ?comment (e1 : t) (e2 : t) =
   | Bin(Plus, a1 , ({expression_desc = Number (Int {i = k; _})}  )), 
     Number (Int { i =j; _}) -> 
     {comment ; expression_desc = Bin(Plus, a1,  (int (Int32.add k  j)))}
-    (* bin ?comment Plus a1 (int (k + j)) *)
+  (* bin ?comment Plus a1 (int (k + j)) *)
 
   (* TODO remove commented code  ?? *)
   (* | Bin(Plus, a0 , ({expression_desc = Number (Int a1)}  )), *)
@@ -69170,14 +69174,14 @@ let rec float_add ?comment (e1 : t) (e2 : t) =
   (*   ->  *)
   (*     bin ?comment Plus  e2 e1 *)
   | _ -> {comment ; expression_desc = Bin(Plus, e1,e2)}
-    (* bin ?comment Plus e1 e2 *)
+(* bin ?comment Plus e1 e2 *)
 (* associative is error prone due to overflow *)
 and float_minus ?comment  (e1 : t) (e2 : t) : t = 
   match e1.expression_desc, e2.expression_desc with 
   | Number (Int {i;_}), Number (Int {i = j;_}) -> 
     int ?comment (Int32.sub i  j)
   | _ ->  {comment ; expression_desc = Bin(Minus, e1,e2)}
-    (* bin ?comment Minus e1 e2 *)
+(* bin ?comment Minus e1 e2 *)
 
 
 
@@ -69216,10 +69220,10 @@ let int32_div ~checked ?comment
   | e1_desc , Number (Int {i = i1} ) when i1 <> 0l
     -> 
     begin match e1_desc with 
-    | Number(Int {i = i0})
-      -> 
-      int (Int32.div i0 i1)
-    | _ -> to_int32 (float_div ?comment e1 e2)
+      | Number(Int {i = i0})
+        -> 
+        int (Int32.div i0 i1)
+      | _ -> to_int32 (float_div ?comment e1 e2)
     end
   | _, _ -> 
     if checked  then 
@@ -69362,6 +69366,8 @@ let not_implemented ?comment (s : string) =
               comment}]) ,
              Js_fun_env.empty 0)
     } []
+
+
 
 end
 module Ident_map : sig 
@@ -89532,18 +89538,10 @@ module Lam_compile_external_call : sig
 
 
 (** Compile ocaml external function call to JS IR. *) 
-
-(** 
-    This module define how the FFI (via `external`) works with attributes. 
-    Note it will route to {!Lam_compile_global} 
-    for compiling normal functions without attributes.
- *)
-
-val assemble_args_obj :
-  Ast_ffi_types.arg_kind list -> 
-  J.expression list -> 
-  J.expression 
-
+val ocaml_to_js_eff : 
+  Ast_ffi_types.arg_kind -> 
+  J.expression -> 
+  J.expression list * J.expression list  
 
 val translate_ffi :
   Location.t -> 
@@ -89676,111 +89674,15 @@ let ocaml_to_js_eff
     [Js_of_lam_variant.eval_as_int arg dispatches],[]
   | Nothing  | Array ->  [arg], []
 
-let fuse x xs =
-  if xs = [] then x  
-  else List.fold_left E.seq x xs 
 
 
-   
 let empty_pair = [],[]       
-
-let assemble_args (arg_types : Ast_ffi_types.arg_kind list) args : E.t list * E.t option  = 
-  let rec aux (labels : Ast_ffi_types.arg_kind list) args = 
-    match labels, args with 
-    | [] , [] -> empty_pair
-    | { arg_label =  Empty_int_lit i } :: labels  , args 
-    | { arg_label =  Label_int_lit (_,i)} :: labels  , args -> 
-      let accs, eff = aux labels args in 
-      E.int (Int32.of_int i) ::accs, eff 
-    | { arg_label =  Label_string_lit(_,i)} :: labels , args 
-    | { arg_label =  Empty_string_lit i} :: labels , args
-      -> 
-      let accs, eff = aux labels args in 
-      E.str i :: accs, eff
-
-    | ({arg_label = Empty | Label _ | Optional _ } as arg_kind) ::labels, arg::args 
-      ->  
-      let accs, eff = aux labels args in 
-      let acc, new_eff = ocaml_to_js_eff arg_kind arg in 
-      acc @ accs, new_eff @ eff
-    | { arg_label = Empty | Label _ | Optional _  } :: _ , [] -> assert false 
-    | [],  _ :: _  -> assert false      
-  in 
-  let args, eff = aux arg_types args in
-  args, begin match eff with 
-    | [] -> None
-    | x::xs -> Some (fuse x xs)
-  end
 
 let add_eff eff e =
   match eff with
   | None -> e 
   | Some v -> E.seq v e 
 
-(* Note: can potentially be inconsistent, sometimes 
-   {[
-     { x : 3 , y : undefined}
-   ]}
-   and 
-   {[
-     {x : 3 }
-   ]}
-   But the default to be undefined  seems reasonable 
-*)
-  
-let assemble_args_obj (labels : Ast_ffi_types.arg_kind list) (args : J.expression list) = 
-  let rec aux (labels : Ast_ffi_types.arg_kind list) args = 
-    match labels, args with 
-    | [] , [] -> empty_pair
-    | {arg_label = Label_int_lit (label,i)} :: labels  , args -> 
-      let accs, eff = aux labels args in 
-      (Js_op.Key label, E.int (Int32.of_int i) )::accs, eff 
-    | {arg_label = Label_string_lit(label,i)} :: labels , args 
-      -> 
-      let accs, eff = aux labels args in 
-      (Js_op.Key label, E.str i) :: accs, eff
-    | {arg_label = Empty_int_lit i } :: rest  , args -> assert false 
-    | {arg_label = Empty_string_lit i} :: rest , args -> assert false 
-    | {arg_label = Empty }::labels, arg::args 
-      ->  
-      let (accs, eff) as r  = aux labels args in 
-      if Js_analyzer.no_side_effect_expression arg then r 
-      else (accs, arg::eff)
-    | ({arg_label = Label label  } as arg_kind)::labels, arg::args 
-      -> 
-      let accs, eff = aux labels args in 
-      let acc, new_eff = ocaml_to_js_eff arg_kind arg in 
-      begin match acc with 
-        | [ ] -> assert false
-        | x::xs -> 
-          (Js_op.Key label, fuse x xs ) :: accs , new_eff @ eff 
-      end (* evaluation order is undefined *)
-
-    | ({arg_label = Optional label } as arg_kind)::labels, arg::args 
-      -> 
-      let (accs, eff) as r = aux labels args  in 
-      begin match arg.expression_desc with 
-        | Number _ -> (*Invariant: None encoding*)
-          r
-        | _ ->                 
-          let acc, new_eff = ocaml_to_js_eff arg_kind arg in 
-          begin match acc with 
-            | [] -> assert false 
-            | x::xs -> 
-              (Js_op.Key label, fuse x xs)::accs , 
-              new_eff @ eff 
-          end 
-      end
-
-    | {arg_label = Empty | Label _ | Optional _  } :: _ , [] -> assert false 
-    | [],  _ :: _  -> assert false 
-  in 
-  let map, eff = aux labels args in 
-
-  match eff with
-  | [] -> 
-    E.obj map 
-  | x::xs -> E.seq (fuse x xs) (E.obj map)
 
 
 (* TODO: fix splice, 
@@ -89789,26 +89691,6 @@ let assemble_args_obj (labels : Ast_ffi_types.arg_kind list) (args : J.expressio
    no compiler failure here 
    Invariant : Array encoding
 *)
-
-let ocaml_to_js ~js_splice:(js_splice : bool) call_loc ffi
-    last ({ Ast_ffi_types.arg_label;  arg_type = ty } as arg_ty)
-    (arg : J.expression) 
-  = 
-  if last && js_splice then
-    match ty with 
-    | Array -> 
-      begin match arg with 
-        | {expression_desc = Array (ls,_mutable_flag) } -> 
-          ls, [] 
-        | _ -> 
-          Location.raise_errorf ~loc:call_loc
-            "function call with %s  is a primitive with [@@bs.splice], it expects its arguments to be a syntactic array in the call site" 
-            (Ast_ffi_types.name_of_ffi ffi)
-      end
-    | _ -> assert  false
-  else 
-    ocaml_to_js_eff arg_ty arg 
-
 let assemble_args_splice call_loc ffi  js_splice arg_types args : E.t list * E.t option = 
   let rec aux (labels : Ast_ffi_types.arg_kind list) args = 
     match labels, args with 
@@ -89822,12 +89704,26 @@ let assemble_args_splice call_loc ffi  js_splice arg_types args : E.t list * E.t
       -> 
       let accs, eff = aux labels args in 
       E.str i :: accs, eff
-
-    | ({arg_label = Empty | Label _ | Optional _ } as arg_kind) ::labels, arg::args 
+    | ({arg_label = Empty | Label _ | Optional _ } as arg_kind) ::labels, arg :: args
       ->  
-      let accs, eff = aux labels args in 
-      let acc, new_eff = ocaml_to_js call_loc ffi ~js_splice (args = []) arg_kind arg in 
-      acc @ accs, new_eff @ eff
+      if js_splice && args = [] then 
+        let accs, eff = aux labels [] in 
+        begin match arg_kind.arg_type with 
+          | Array -> 
+            begin match (arg : E.t) with 
+              | {expression_desc = Array (ls,_mutable_flag) } -> 
+                ls @ accs, eff 
+              | _ -> 
+                Location.raise_errorf ~loc:call_loc
+                  "function call with %s  is a primitive with [@@bs.splice], it expects its arguments to be a syntactic array in the call site" 
+                  (Ast_ffi_types.name_of_ffi ffi)
+            end
+          | _ -> assert false 
+        end
+      else 
+        let accs, eff = aux labels args in 
+        let acc, new_eff = ocaml_to_js_eff arg_kind arg in 
+        acc @ accs, new_eff @ eff
     | { arg_label = Empty | Label _ | Optional _  } :: _ , [] -> assert false 
     | [],  _ :: _  -> assert false      
 
@@ -89837,13 +89733,13 @@ let assemble_args_splice call_loc ffi  js_splice arg_types args : E.t list * E.t
   begin  match eff with
     | [] -> None 
     | x::xs ->  
-      Some (fuse x xs) 
+      Some (E.fuse_to_seq x xs) 
   end
 
 
 let translate_ffi 
-  call_loc (ffi : Ast_ffi_types.ffi ) 
-  (* prim_name *)
+    call_loc (ffi : Ast_ffi_types.ffi ) 
+    (* prim_name *)
     (cxt  : Lam_compile_defs.cxt)
     arg_types result_type
     (args : J.expression list) = 
@@ -89888,7 +89784,7 @@ let translate_ffi
     let fn =
       let (id,name) = handle_external  module_name in
       E.external_var_dot id ~external_name:name  in           
-    let args,eff = assemble_args arg_types args in 
+    let args,eff = assemble_args_splice call_loc  ffi false  arg_types args in 
     (* TODO: fix in rest calling convention *)   
     add_eff eff        
       begin 
@@ -90007,6 +89903,150 @@ let translate_ffi
         Js_arr.set_array obj v value
       | _ -> assert false
     end
+
+
+end
+module Lam_compile_external_obj : sig 
+#1 "lam_compile_external_obj.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(** Compile ocaml external function call to JS IR. *) 
+
+(** 
+    This module define how the FFI (via `external`) works with attributes. 
+    Note it will route to {!Lam_compile_global} 
+    for compiling normal functions without attributes.
+ *)
+
+val assemble_args_obj :
+  Ast_ffi_types.arg_kind list -> 
+  J.expression list -> 
+  J.expression 
+end = struct
+#1 "lam_compile_external_obj.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+module E = Js_exp_make
+
+
+(* Note: can potentially be inconsistent, sometimes 
+   {[
+     { x : 3 , y : undefined}
+   ]}
+   and 
+   {[
+     {x : 3 }
+   ]}
+   But the default to be undefined  seems reasonable 
+*)
+  
+let assemble_args_obj (labels : Ast_ffi_types.arg_kind list) (args : J.expression list) = 
+  let rec aux (labels : Ast_ffi_types.arg_kind list) args = 
+    match labels, args with 
+    | [] , [] as empty_pair -> empty_pair
+    | {arg_label = Label_int_lit (label,i)} :: labels  , args -> 
+      let accs, eff = aux labels args in 
+      (Js_op.Key label, E.int (Int32.of_int i) )::accs, eff 
+    | {arg_label = Label_string_lit(label,i)} :: labels , args 
+      -> 
+      let accs, eff = aux labels args in 
+      (Js_op.Key label, E.str i) :: accs, eff
+    | {arg_label = Empty_int_lit i } :: rest  , args -> assert false 
+    | {arg_label = Empty_string_lit i} :: rest , args -> assert false 
+    | {arg_label = Empty }::labels, arg::args 
+      ->  
+      let (accs, eff) as r  = aux labels args in 
+      if Js_analyzer.no_side_effect_expression arg then r 
+      else (accs, arg::eff)
+    | ({arg_label = Label label  } as arg_kind)::labels, arg::args 
+      -> 
+      let accs, eff = aux labels args in 
+      let acc, new_eff = Lam_compile_external_call.ocaml_to_js_eff arg_kind arg in 
+      begin match acc with 
+        | [ ] -> assert false
+        | x::xs -> 
+          (Js_op.Key label, E.fuse_to_seq x xs ) :: accs , new_eff @ eff 
+      end (* evaluation order is undefined *)
+
+    | ({arg_label = Optional label } as arg_kind)::labels, arg::args 
+      -> 
+      let (accs, eff) as r = aux labels args  in 
+      begin match arg.expression_desc with 
+        | Number _ -> (*Invariant: None encoding*)
+          r
+        | _ ->                 
+          let acc, new_eff = Lam_compile_external_call.ocaml_to_js_eff arg_kind arg in 
+          begin match acc with 
+            | [] -> assert false 
+            | x::xs -> 
+              (Js_op.Key label, E.fuse_to_seq x xs)::accs , 
+              new_eff @ eff 
+          end 
+      end
+
+    | {arg_label = Empty | Label _ | Optional _  } :: _ , [] -> assert false 
+    | [],  _ :: _  -> assert false 
+  in 
+  let map, eff = aux labels args in 
+
+  match eff with
+  | [] -> 
+    E.obj map 
+  | x::xs -> E.seq (E.fuse_to_seq x xs) (E.obj map)
 
 
 end
@@ -91782,7 +91822,7 @@ let translate  loc
      (* Test if the argument is a block or an immediate integer *)
   | Pjs_object_create labels
     -> 
-    Lam_compile_external_call.assemble_args_obj labels args 
+    Lam_compile_external_obj.assemble_args_obj labels args 
   | Pjs_call (_, arg_types, result_type, ffi) -> 
     Lam_compile_external_call.translate_ffi 
     loc ffi cxt arg_types result_type args 
@@ -93222,7 +93262,7 @@ and
                        ~body:(Lam.function_ ~arity:(len - arity)
                                 ~kind ~params:rest ~body)
                     )
-                else 
+                else (* len < arity *)
                   compile_lambda cxt 
                     (Lam_util.eta_conversion arity 
                        Location.none App_na

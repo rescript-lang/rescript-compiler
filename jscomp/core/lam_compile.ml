@@ -917,7 +917,7 @@ and
                        ~body:(Lam.function_ ~arity:(len - arity)
                                 ~kind ~params:rest ~body)
                     )
-                else 
+                else (* len < arity *)
                   compile_lambda cxt 
                     (Lam_util.eta_conversion arity 
                        Location.none App_na
