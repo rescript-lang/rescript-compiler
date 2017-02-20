@@ -106542,7 +106542,14 @@ let set_eval_string s =
     raise (Arg.Bad ("-bs-main conflicts with -bs-eval")) else 
   eval_string :=  s 
 
-
+let check_version version =
+  if not @@ Ext_string.equal version Bs_version.version then 
+    raise (Arg.Bad 
+    ( "Compiler version " ^ 
+      Bs_version.version ^ 
+      " does not mattch with passed version " ^ 
+      version
+    ))
 
 
 let (//) = Filename.concat
@@ -106606,6 +106613,10 @@ let buckle_script_flags =
   ::
   ("-bs-D", Arg.String define_variable,
      " Define conditional variable e.g, -D DEBUG=true"
+  )
+  ::
+  ("-bs-check-version", Arg.String check_version,
+    " Check the passed version matches the compiler version"
   )
   ::
   ("-bs-list-conditionals",
