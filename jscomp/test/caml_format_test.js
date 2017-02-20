@@ -222,7 +222,7 @@ var suites = Pervasives.$at(from_of_string(of_string), Pervasives.$at(/* :: */[
                   /* tuple */[
                     "throw",
                     function () {
-                      return /* ThrowAny */Block.__(4, [function () {
+                      return /* ThrowAny */Block.__(5, [function () {
                                   Caml_format.caml_float_of_string("");
                                   return /* () */0;
                                 }]);

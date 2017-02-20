@@ -3,6 +3,7 @@ type  eq =
   | Neq : 'a * 'a ->  eq
   | Ok : bool -> eq
   | Approx : float * float ->  eq
+  | ApproxThreshold : float * float * float ->  eq
   | ThrowAny : (unit -> unit) -> eq
 type  pair_suites = (string * (unit ->  eq)) list
 

@@ -1,12 +1,11 @@
 'use strict';
 
-var List                    = require("../../lib/js/list");
-var Path                    = require("path");
-var $$Array                 = require("../../lib/js/array");
-var Curry                   = require("../../lib/js/curry");
-var Assert                  = require("assert");
-var Process                 = require("process");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
+var List    = require("../../lib/js/list");
+var Path    = require("path");
+var $$Array = require("../../lib/js/array");
+var Curry   = require("../../lib/js/curry");
+var Assert  = require("assert");
+var Process = require("process");
 
 function is_mocha() {
   var match = $$Array.to_list(Process.argv);
@@ -46,8 +45,9 @@ function from_suites(name, suite) {
   }
 }
 
-function close_enough(x, y) {
-  return +(Math.abs(x - y) < 0.0000001);
+function close_enough($staropt$star, a, b) {
+  var threshold = $staropt$star ? $staropt$star[0] : 0.0000001;
+  return +(Math.abs(a - b) < threshold);
 }
 
 function from_pair_suites(name, suites) {
@@ -70,21 +70,26 @@ function from_pair_suites(name, suites) {
                                   Assert.ok(b ? true : false);
                                   return /* () */0;
                               case 3 : 
-                                  if (close_enough(match[0], match[1])) {
+                                  var b$1 = match[1];
+                                  var a = match[0];
+                                  if (close_enough(/* None */0, a, b$1)) {
                                     return 0;
                                   }
                                   else {
-                                    throw [
-                                          Caml_builtin_exceptions.assert_failure,
-                                          [
-                                            "mt.ml",
-                                            77,
-                                            20
-                                          ]
-                                        ];
+                                    Assert.deepEqual(a, b$1);
+                                    return /* () */0;
                                   }
-                                  break;
                               case 4 : 
+                                  var b$2 = match[2];
+                                  var a$1 = match[1];
+                                  if (close_enough(/* Some */[match[0]], a$1, b$2)) {
+                                    return 0;
+                                  }
+                                  else {
+                                    Assert.deepEqual(a$1, b$2);
+                                    return /* () */0;
+                                  }
+                              case 5 : 
                                   Assert.throws(match[0]);
                                   return /* () */0;
                               

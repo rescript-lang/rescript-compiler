@@ -34,7 +34,7 @@ function from_pair_suites(name, suites) {
                           Caml_builtin_exceptions.match_failure,
                           [
                             "mock_mt.ml",
-                            13,
+                            14,
                             14
                           ]
                         ];
@@ -47,6 +47,17 @@ function from_pair_suites(name, suites) {
                         ]);
                     return /* () */0;
                 case 4 : 
+                    console.log(/* tuple */[
+                          name,
+                          match[1],
+                          "~",
+                          match[2],
+                          " (",
+                          match[0],
+                          ")"
+                        ]);
+                    return /* () */0;
+                case 5 : 
                     return /* () */0;
                 
               }
