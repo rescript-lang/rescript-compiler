@@ -52,13 +52,14 @@ type eq =
   | Neq : 'a * 'a ->  eq
   | Ok : bool -> eq
   | Approx : float * float ->  eq
+  | ApproxThreshold : float * float * float ->  eq
   | ThrowAny : (unit -> unit) ->  eq
   (* TODO: | Exception : exn -> (unit -> unit) -> _ eq  *)
 
 type  pair_suites = (string * (unit ->  eq)) list
 
-let close_enough x y =
-  abs_float (x -. y) < (* epsilon_float *) 0.0000001
+let close_enough ?(threshold=0.0000001 (* epsilon_float *)) a b =
+  abs_float (a -. b) < threshold
 
 let from_pair_suites name (suites :  pair_suites) =
   match Array.to_list Node.Process.process##argv with
@@ -72,9 +73,10 @@ let from_pair_suites name (suites :  pair_suites) =
                   | Eq(a,b) -> assert_equal a b
                   | Neq(a,b) -> assert_notequal a b
                   | Ok(a) -> assert_ok a
-                  | Approx(a,b)
-                    ->
-                    assert (close_enough a b)
+                  | Approx(a, b) ->
+                    if not (close_enough a b) then assert_equal a b (* assert_equal gives better ouput *)
+                  | ApproxThreshold(t, a, b) ->
+                    if not (close_enough ~threshold:t a b) then assert_equal a b (* assert_equal gives better ouput *)
                   | ThrowAny fn -> throws fn
                 )
             )
