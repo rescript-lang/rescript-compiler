@@ -201,7 +201,7 @@ var suites_001 = /* :: */[
                                   ],
                                   /* :: */[
                                     /* tuple */[
-                                      "unsafe_ceil",
+                                      "unsafe_ceil_int",
                                       function () {
                                         return /* Eq */Block.__(0, [
                                                   4,
@@ -211,386 +211,408 @@ var suites_001 = /* :: */[
                                     ],
                                     /* :: */[
                                       /* tuple */[
-                                        "ceil",
+                                        "ceil_int",
                                         function () {
                                           return /* Eq */Block.__(0, [
                                                     4,
-                                                    Js_math.ceil(3.2)
+                                                    Js_math.ceil_int(3.2)
                                                   ]);
                                         }
                                       ],
                                       /* :: */[
                                         /* tuple */[
-                                          "cos",
+                                          "ceil_float",
                                           function () {
-                                            return /* ApproxThreshold */Block.__(4, [
-                                                      0.001,
-                                                      0.921,
-                                                      Math.cos(0.4)
+                                            return /* Eq */Block.__(0, [
+                                                      4,
+                                                      Math.ceil(3.2)
                                                     ]);
                                           }
                                         ],
                                         /* :: */[
                                           /* tuple */[
-                                            "cosh",
+                                            "cos",
                                             function () {
                                               return /* ApproxThreshold */Block.__(4, [
                                                         0.001,
-                                                        1.081,
-                                                        Math.cosh(0.4)
+                                                        0.921,
+                                                        Math.cos(0.4)
                                                       ]);
                                             }
                                           ],
                                           /* :: */[
                                             /* tuple */[
-                                              "exp",
+                                              "cosh",
                                               function () {
                                                 return /* ApproxThreshold */Block.__(4, [
                                                           0.001,
-                                                          1.491,
-                                                          Math.exp(0.4)
+                                                          1.081,
+                                                          Math.cosh(0.4)
                                                         ]);
                                               }
                                             ],
                                             /* :: */[
                                               /* tuple */[
-                                                "expm1",
+                                                "exp",
                                                 function () {
                                                   return /* ApproxThreshold */Block.__(4, [
                                                             0.001,
-                                                            0.491,
-                                                            Math.expm1(0.4)
+                                                            1.491,
+                                                            Math.exp(0.4)
                                                           ]);
                                                 }
                                               ],
                                               /* :: */[
                                                 /* tuple */[
-                                                  "unsafe_floor",
+                                                  "expm1",
                                                   function () {
-                                                    return /* Eq */Block.__(0, [
-                                                              3,
-                                                              Math.floor(3.2)
+                                                    return /* ApproxThreshold */Block.__(4, [
+                                                              0.001,
+                                                              0.491,
+                                                              Math.expm1(0.4)
                                                             ]);
                                                   }
                                                 ],
                                                 /* :: */[
                                                   /* tuple */[
-                                                    "floor",
+                                                    "unsafe_floor_int",
                                                     function () {
                                                       return /* Eq */Block.__(0, [
                                                                 3,
-                                                                Js_math.floor(3.2)
+                                                                Math.floor(3.2)
                                                               ]);
                                                     }
                                                   ],
                                                   /* :: */[
                                                     /* tuple */[
-                                                      "fround",
+                                                      "floor_int",
                                                       function () {
-                                                        return /* Approx */Block.__(3, [
-                                                                  3.2,
-                                                                  Math.fround(3.2)
+                                                        return /* Eq */Block.__(0, [
+                                                                  3,
+                                                                  Js_math.floor_int(3.2)
                                                                 ]);
                                                       }
                                                     ],
                                                     /* :: */[
                                                       /* tuple */[
-                                                        "hypot",
+                                                        "floor_float",
                                                         function () {
-                                                          return /* ApproxThreshold */Block.__(4, [
-                                                                    0.001,
-                                                                    0.721,
-                                                                    Math.hypot(0.4, 0.6)
+                                                          return /* Eq */Block.__(0, [
+                                                                    3,
+                                                                    Math.floor(3.2)
                                                                   ]);
                                                         }
                                                       ],
                                                       /* :: */[
                                                         /* tuple */[
-                                                          "hypotMany",
+                                                          "fround",
                                                           function () {
-                                                            return /* ApproxThreshold */Block.__(4, [
-                                                                      0.001,
-                                                                      1.077,
-                                                                      Math.hypot(0.4, 0.6, 0.8)
+                                                            return /* Approx */Block.__(3, [
+                                                                      3.2,
+                                                                      Math.fround(3.2)
                                                                     ]);
                                                           }
                                                         ],
                                                         /* :: */[
                                                           /* tuple */[
-                                                            "imul",
+                                                            "hypot",
                                                             function () {
-                                                              return /* Eq */Block.__(0, [
-                                                                        8,
-                                                                        Math.imul(4, 2)
+                                                              return /* ApproxThreshold */Block.__(4, [
+                                                                        0.001,
+                                                                        0.721,
+                                                                        Math.hypot(0.4, 0.6)
                                                                       ]);
                                                             }
                                                           ],
                                                           /* :: */[
                                                             /* tuple */[
-                                                              "log",
+                                                              "hypotMany",
                                                               function () {
                                                                 return /* ApproxThreshold */Block.__(4, [
                                                                           0.001,
-                                                                          -0.916,
-                                                                          Math.log(0.4)
+                                                                          1.077,
+                                                                          Math.hypot(0.4, 0.6, 0.8)
                                                                         ]);
                                                               }
                                                             ],
                                                             /* :: */[
                                                               /* tuple */[
-                                                                "log1p",
+                                                                "imul",
                                                                 function () {
-                                                                  return /* ApproxThreshold */Block.__(4, [
-                                                                            0.001,
-                                                                            0.336,
-                                                                            Math.log1p(0.4)
+                                                                  return /* Eq */Block.__(0, [
+                                                                            8,
+                                                                            Math.imul(4, 2)
                                                                           ]);
                                                                 }
                                                               ],
                                                               /* :: */[
                                                                 /* tuple */[
-                                                                  "log10",
+                                                                  "log",
                                                                   function () {
                                                                     return /* ApproxThreshold */Block.__(4, [
                                                                               0.001,
-                                                                              -0.397,
-                                                                              Math.log10(0.4)
+                                                                              -0.916,
+                                                                              Math.log(0.4)
                                                                             ]);
                                                                   }
                                                                 ],
                                                                 /* :: */[
                                                                   /* tuple */[
-                                                                    "log2",
+                                                                    "log1p",
                                                                     function () {
                                                                       return /* ApproxThreshold */Block.__(4, [
                                                                                 0.001,
-                                                                                -1.321,
-                                                                                Math.log2(0.4)
+                                                                                0.336,
+                                                                                Math.log1p(0.4)
                                                                               ]);
                                                                     }
                                                                   ],
                                                                   /* :: */[
                                                                     /* tuple */[
-                                                                      "max_int",
+                                                                      "log10",
                                                                       function () {
-                                                                        return /* Eq */Block.__(0, [
-                                                                                  4,
-                                                                                  Math.max(2, 4)
+                                                                        return /* ApproxThreshold */Block.__(4, [
+                                                                                  0.001,
+                                                                                  -0.397,
+                                                                                  Math.log10(0.4)
                                                                                 ]);
                                                                       }
                                                                     ],
                                                                     /* :: */[
                                                                       /* tuple */[
-                                                                        "maxMany_int",
+                                                                        "log2",
                                                                         function () {
-                                                                          return /* Eq */Block.__(0, [
-                                                                                    4,
-                                                                                    Math.max(2, 4, 3)
+                                                                          return /* ApproxThreshold */Block.__(4, [
+                                                                                    0.001,
+                                                                                    -1.321,
+                                                                                    Math.log2(0.4)
                                                                                   ]);
                                                                         }
                                                                       ],
                                                                       /* :: */[
                                                                         /* tuple */[
-                                                                          "max_float",
+                                                                          "max_int",
                                                                           function () {
                                                                             return /* Eq */Block.__(0, [
-                                                                                      4.2,
-                                                                                      Math.max(2.7, 4.2)
+                                                                                      4,
+                                                                                      Math.max(2, 4)
                                                                                     ]);
                                                                           }
                                                                         ],
                                                                         /* :: */[
                                                                           /* tuple */[
-                                                                            "maxMany_float",
+                                                                            "maxMany_int",
                                                                             function () {
                                                                               return /* Eq */Block.__(0, [
-                                                                                        4.2,
-                                                                                        Math.max(2.7, 4.2, 3.9)
+                                                                                        4,
+                                                                                        Math.max(2, 4, 3)
                                                                                       ]);
                                                                             }
                                                                           ],
                                                                           /* :: */[
                                                                             /* tuple */[
-                                                                              "min_int",
+                                                                              "max_float",
                                                                               function () {
                                                                                 return /* Eq */Block.__(0, [
-                                                                                          2,
-                                                                                          Math.min(2, 4)
+                                                                                          4.2,
+                                                                                          Math.max(2.7, 4.2)
                                                                                         ]);
                                                                               }
                                                                             ],
                                                                             /* :: */[
                                                                               /* tuple */[
-                                                                                "minMany_int",
+                                                                                "maxMany_float",
                                                                                 function () {
                                                                                   return /* Eq */Block.__(0, [
-                                                                                            2,
-                                                                                            Math.min(2, 4, 3)
+                                                                                            4.2,
+                                                                                            Math.max(2.7, 4.2, 3.9)
                                                                                           ]);
                                                                                 }
                                                                               ],
                                                                               /* :: */[
                                                                                 /* tuple */[
-                                                                                  "min_float",
+                                                                                  "min_int",
                                                                                   function () {
                                                                                     return /* Eq */Block.__(0, [
-                                                                                              2.7,
-                                                                                              Math.min(2.7, 4.2)
+                                                                                              2,
+                                                                                              Math.min(2, 4)
                                                                                             ]);
                                                                                   }
                                                                                 ],
                                                                                 /* :: */[
                                                                                   /* tuple */[
-                                                                                    "minMany_float",
+                                                                                    "minMany_int",
                                                                                     function () {
                                                                                       return /* Eq */Block.__(0, [
-                                                                                                2.7,
-                                                                                                Math.min(2.7, 4.2, 3.9)
+                                                                                                2,
+                                                                                                Math.min(2, 4, 3)
                                                                                               ]);
                                                                                     }
                                                                                   ],
                                                                                   /* :: */[
                                                                                     /* tuple */[
-                                                                                      "random",
+                                                                                      "min_float",
                                                                                       function () {
-                                                                                        var a = Math.random();
-                                                                                        return /* Ok */Block.__(2, [+(a >= 0 && a < 1)]);
+                                                                                        return /* Eq */Block.__(0, [
+                                                                                                  2.7,
+                                                                                                  Math.min(2.7, 4.2)
+                                                                                                ]);
                                                                                       }
                                                                                     ],
                                                                                     /* :: */[
                                                                                       /* tuple */[
-                                                                                        "random_int",
+                                                                                        "minMany_float",
                                                                                         function () {
-                                                                                          var a = Js_math.random_int(1, 3);
-                                                                                          return /* Ok */Block.__(2, [+(a >= 1 && a < 3)]);
+                                                                                          return /* Eq */Block.__(0, [
+                                                                                                    2.7,
+                                                                                                    Math.min(2.7, 4.2, 3.9)
+                                                                                                  ]);
                                                                                         }
                                                                                       ],
                                                                                       /* :: */[
                                                                                         /* tuple */[
-                                                                                          "unsafe_round",
+                                                                                          "random",
                                                                                           function () {
-                                                                                            return /* Eq */Block.__(0, [
-                                                                                                      3,
-                                                                                                      Math.round(3.2)
-                                                                                                    ]);
+                                                                                            var a = Math.random();
+                                                                                            return /* Ok */Block.__(2, [+(a >= 0 && a < 1)]);
                                                                                           }
                                                                                         ],
                                                                                         /* :: */[
                                                                                           /* tuple */[
-                                                                                            "round",
+                                                                                            "random_int",
                                                                                             function () {
-                                                                                              return /* Eq */Block.__(0, [
-                                                                                                        3,
-                                                                                                        Math.round(3.2)
-                                                                                                      ]);
+                                                                                              var a = Js_math.random_int(1, 3);
+                                                                                              return /* Ok */Block.__(2, [+(a >= 1 && a < 3)]);
                                                                                             }
                                                                                           ],
                                                                                           /* :: */[
                                                                                             /* tuple */[
-                                                                                              "sign_int",
+                                                                                              "unsafe_round",
                                                                                               function () {
                                                                                                 return /* Eq */Block.__(0, [
-                                                                                                          -1,
-                                                                                                          Math.sign(-4)
+                                                                                                          3,
+                                                                                                          Math.round(3.2)
                                                                                                         ]);
                                                                                               }
                                                                                             ],
                                                                                             /* :: */[
                                                                                               /* tuple */[
-                                                                                                "sign_float",
+                                                                                                "round",
                                                                                                 function () {
                                                                                                   return /* Eq */Block.__(0, [
-                                                                                                            -1,
-                                                                                                            Math.sign(-4.2)
+                                                                                                            3,
+                                                                                                            Math.round(3.2)
                                                                                                           ]);
                                                                                                 }
                                                                                               ],
                                                                                               /* :: */[
                                                                                                 /* tuple */[
-                                                                                                  "sign_float -0",
+                                                                                                  "sign_int",
                                                                                                   function () {
                                                                                                     return /* Eq */Block.__(0, [
-                                                                                                              -0,
-                                                                                                              Math.sign(-0)
+                                                                                                              -1,
+                                                                                                              Math.sign(-4)
                                                                                                             ]);
                                                                                                   }
                                                                                                 ],
                                                                                                 /* :: */[
                                                                                                   /* tuple */[
-                                                                                                    "sin",
+                                                                                                    "sign_float",
                                                                                                     function () {
-                                                                                                      return /* ApproxThreshold */Block.__(4, [
-                                                                                                                0.001,
-                                                                                                                0.389,
-                                                                                                                Math.sin(0.4)
+                                                                                                      return /* Eq */Block.__(0, [
+                                                                                                                -1,
+                                                                                                                Math.sign(-4.2)
                                                                                                               ]);
                                                                                                     }
                                                                                                   ],
                                                                                                   /* :: */[
                                                                                                     /* tuple */[
-                                                                                                      "sinh",
+                                                                                                      "sign_float -0",
                                                                                                       function () {
-                                                                                                        return /* ApproxThreshold */Block.__(4, [
-                                                                                                                  0.001,
-                                                                                                                  0.410,
-                                                                                                                  Math.sinh(0.4)
+                                                                                                        return /* Eq */Block.__(0, [
+                                                                                                                  -0,
+                                                                                                                  Math.sign(-0)
                                                                                                                 ]);
                                                                                                       }
                                                                                                     ],
                                                                                                     /* :: */[
                                                                                                       /* tuple */[
-                                                                                                        "sqrt",
+                                                                                                        "sin",
                                                                                                         function () {
                                                                                                           return /* ApproxThreshold */Block.__(4, [
                                                                                                                     0.001,
-                                                                                                                    0.632,
-                                                                                                                    Math.sqrt(0.4)
+                                                                                                                    0.389,
+                                                                                                                    Math.sin(0.4)
                                                                                                                   ]);
                                                                                                         }
                                                                                                       ],
                                                                                                       /* :: */[
                                                                                                         /* tuple */[
-                                                                                                          "tan",
+                                                                                                          "sinh",
                                                                                                           function () {
                                                                                                             return /* ApproxThreshold */Block.__(4, [
                                                                                                                       0.001,
-                                                                                                                      0.422,
-                                                                                                                      Math.tan(0.4)
+                                                                                                                      0.410,
+                                                                                                                      Math.sinh(0.4)
                                                                                                                     ]);
                                                                                                           }
                                                                                                         ],
                                                                                                         /* :: */[
                                                                                                           /* tuple */[
-                                                                                                            "tanh",
+                                                                                                            "sqrt",
                                                                                                             function () {
                                                                                                               return /* ApproxThreshold */Block.__(4, [
                                                                                                                         0.001,
-                                                                                                                        0.379,
-                                                                                                                        Math.tanh(0.4)
+                                                                                                                        0.632,
+                                                                                                                        Math.sqrt(0.4)
                                                                                                                       ]);
                                                                                                             }
                                                                                                           ],
                                                                                                           /* :: */[
                                                                                                             /* tuple */[
-                                                                                                              "unsafe_trunc",
+                                                                                                              "tan",
                                                                                                               function () {
-                                                                                                                return /* Eq */Block.__(0, [
-                                                                                                                          4,
-                                                                                                                          Math.trunc(4.2156)
+                                                                                                                return /* ApproxThreshold */Block.__(4, [
+                                                                                                                          0.001,
+                                                                                                                          0.422,
+                                                                                                                          Math.tan(0.4)
                                                                                                                         ]);
                                                                                                               }
                                                                                                             ],
                                                                                                             /* :: */[
                                                                                                               /* tuple */[
-                                                                                                                "trunc",
+                                                                                                                "tanh",
                                                                                                                 function () {
-                                                                                                                  return /* Eq */Block.__(0, [
-                                                                                                                            4,
-                                                                                                                            Math.trunc(4.2156)
+                                                                                                                  return /* ApproxThreshold */Block.__(4, [
+                                                                                                                            0.001,
+                                                                                                                            0.379,
+                                                                                                                            Math.tanh(0.4)
                                                                                                                           ]);
                                                                                                                 }
                                                                                                               ],
-                                                                                                              /* [] */0
+                                                                                                              /* :: */[
+                                                                                                                /* tuple */[
+                                                                                                                  "unsafe_trunc",
+                                                                                                                  function () {
+                                                                                                                    return /* Eq */Block.__(0, [
+                                                                                                                              4,
+                                                                                                                              Math.trunc(4.2156)
+                                                                                                                            ]);
+                                                                                                                  }
+                                                                                                                ],
+                                                                                                                /* :: */[
+                                                                                                                  /* tuple */[
+                                                                                                                    "trunc",
+                                                                                                                    function () {
+                                                                                                                      return /* Eq */Block.__(0, [
+                                                                                                                                4,
+                                                                                                                                Math.trunc(4.2156)
+                                                                                                                              ]);
+                                                                                                                    }
+                                                                                                                  ],
+                                                                                                                  /* [] */0
+                                                                                                                ]
+                                                                                                              ]
                                                                                                             ]
                                                                                                           ]
                                                                                                         ]
