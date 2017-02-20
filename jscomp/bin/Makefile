@@ -14,7 +14,7 @@ OCAMLOPT_FLAGS= -g -w -a ../stubs/ext_basic_hash_stubs.c
 bsppx.exe: config_bsppx.mli config_bsppx.ml bsppx.mli bsppx.ml
 	$(NATIVE) $(OCAMLOPT_FLAGS) $^ -o $@
 	
-bspp.exe:  bspp.mli bspp.ml
+bspp.exe:  config_bsppx.mli config_bsppx.ml bspp.mli bspp.ml
 	$(NATIVE) $(OCAMLOPT_FLAGS) $^ -o $@
 
 bsdep.exe: config_bsdep.mli config_bsdep.ml bsdep.mli bsdep.ml
