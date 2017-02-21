@@ -237,4 +237,5 @@ let dump_js = ref false
 
 let syntax_only = ref false
 let binary_ast = ref false
+let simple_binary_ast = ref false
 

@@ -288,24 +288,25 @@ BSB_SRCS= bsb_config \
 	bsb_exception\
 	bsb_pkg \
 	bsb_build_schemas \
+	bsb_unix \
 	bsb_build_util \
 	bsb_helper_linker\
 	bsb_helper_extract\
 	bsb_rule\
+	bsb_config_types\
 	bsb_ninja \
+	bsb_ninja_native \
 	bsb_build_ui \
 	bsb_default\
 	bsb_dep_infos\
 	bsb_merlin_gen\
 	bsb_gen\
 	bsb_file\
-	bsb_config_types\
-	bsb_config_parse\
-	bsb_unix\
 	bsb_regex\
 	oCamlRes\
 	bsb_templates\
-	bsb_init
+	bsb_init\
+	bsb_config_parse
 
 BSB_CMXS=$(addprefix bsb/, $(addsuffix .cmx, $(BSB_SRCS)))
 MAIN_SRCS= jsgen_main jscmj_main bsb/bsb_main bsb/bsb_helper_main

@@ -36,14 +36,27 @@ val define :
   string -> t 
 
 val build_ast_and_deps : t
+val build_ast_and_deps_simple : t
 val build_ast_and_deps_from_reason_impl : t 
+val build_ast_and_deps_from_reason_impl_simple : t 
 val build_ast_and_deps_from_reason_intf : t 
+val build_ast_and_deps_from_reason_intf_simple : t 
 val build_bin_deps : t 
+val build_bin_deps_bytecode : t 
+val build_bin_deps_native : t 
 val reload : t 
 val copy_resources : t
 val build_ml_from_mll : t 
 val build_cmj_js : t
 val build_cmj_cmi_js : t 
 val build_cmi : t
+val build_cmo_cmi_bytecode : t
+val build_cmi_bytecode : t
+val build_cmx_cmi_native : t
+val build_cmi_native : t
+val linking_bytecode : t
+val linking_native : t
+val build_cma_library : t
+val build_cmxa_library : t
 
 val reset : unit -> unit

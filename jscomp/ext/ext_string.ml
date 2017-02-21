@@ -146,6 +146,19 @@ let escaped s =
     Bytes.unsafe_to_string (Ext_bytes.escaped (Bytes.unsafe_of_string s))
   else
     s
+    
+let ninja_escaped s =
+  let rec needs_escape i =
+    if i >= String.length s then false else
+      match String.unsafe_get s i with
+      | '$' -> true
+      | ' ' .. '~' -> needs_escape (i+1)
+      | _ -> true
+  in
+  if needs_escape 0 then
+    Bytes.unsafe_to_string (Ext_bytes.ninja_escaped (Bytes.unsafe_of_string s))
+  else
+    s
 
 (* it is unsafe to expose such API as unsafe since 
    user can provide bad input range 

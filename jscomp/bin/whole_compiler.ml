@@ -20588,6 +20588,8 @@ module Ext_bytes : sig
 
 val escaped : bytes -> bytes
 
+val ninja_escaped : bytes -> bytes
+
 end = struct
 #1 "ext_bytes.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -20648,6 +20650,38 @@ let escaped s =
           Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n 'r'
       | '\b' ->
           Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n 'b'
+      | (' ' .. '~') as c -> Bytes.unsafe_set s' !n c
+      | c ->
+          let a = char_code c in
+          Bytes.unsafe_set s' !n '\\';
+          incr n;
+          Bytes.unsafe_set s' !n (char_chr (48 + a / 100));
+          incr n;
+          Bytes.unsafe_set s' !n (char_chr (48 + (a / 10) mod 10));
+          incr n;
+          Bytes.unsafe_set s' !n (char_chr (48 + a mod 10));
+      end;
+      incr n
+    done;
+    s'
+  end
+
+let ninja_escaped s =
+  let n = Pervasives.ref 0 in
+  for i = 0 to Bytes.length s - 1 do
+    n := !n +
+      (match Bytes.unsafe_get s i with
+       | '$' -> 2
+       | ' ' .. '~' -> 1
+       | _ -> 4)
+  done;
+  if !n = Bytes.length s then Bytes.copy s else begin
+    let s' = Bytes.create !n in
+    n := 0;
+    for i = 0 to Bytes.length s - 1 do
+      begin match Bytes.unsafe_get s i with
+      | '$' ->
+          Bytes.unsafe_set s' !n '$'; incr n; Bytes.unsafe_set s' !n '$'
       | (' ' .. '~') as c -> Bytes.unsafe_set s' !n c
       | c ->
           let a = char_code c in
@@ -20734,6 +20768,8 @@ val ends_with_then_chop : string -> string -> string option
 
 
 val escaped : string -> string
+
+val ninja_escaped : string -> string
 
 (** the range is [start, finish) 
 *)
@@ -20966,6 +21002,19 @@ let escaped s =
   in
   if needs_escape 0 then
     Bytes.unsafe_to_string (Ext_bytes.escaped (Bytes.unsafe_of_string s))
+  else
+    s
+    
+let ninja_escaped s =
+  let rec needs_escape i =
+    if i >= String.length s then false else
+      match String.unsafe_get s i with
+      | '$' -> true
+      | ' ' .. '~' -> needs_escape (i+1)
+      | _ -> true
+  in
+  if needs_escape 0 then
+    Bytes.unsafe_to_string (Ext_bytes.ninja_escaped (Bytes.unsafe_of_string s))
   else
     s
 
@@ -22482,6 +22531,7 @@ val sort_imports : bool ref
 val dump_js : bool ref
 val syntax_only  : bool ref
 val binary_ast : bool ref
+val simple_binary_ast : bool ref
 
 
 
@@ -22726,6 +22776,7 @@ let dump_js = ref false
 
 let syntax_only = ref false
 let binary_ast = ref false
+let simple_binary_ast = ref false
 
 
 end
@@ -25570,8 +25621,6 @@ module Binary_ast : sig
 
 val read_ast : 'a Ast_extract.kind -> string -> 'a 
 
-
-
 (**
    Check out {!Depends_post_process} for set decoding
    The [.ml] file can be recognized as an ast directly, the format
@@ -25588,7 +25637,7 @@ val read_ast : 'a Ast_extract.kind -> string -> 'a
    redirect the standard input to fan
  *)
 val write_ast : fname:string -> output:string -> 'a Ast_extract.kind -> 'a -> unit
-
+val write_ast_simple : fname:string -> output:string -> 'a Ast_extract.kind -> 'a -> unit
 
 end = struct
 #1 "binary_ast.ml"
@@ -25618,7 +25667,6 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 module String_set = Ast_extract.String_set
-
 
 
 
@@ -25671,6 +25719,16 @@ let write_ast (type t) ~(fname : string) ~output (kind : t Ast_extract.kind) ( p
   output_value oc pt;
   close_out oc 
 
+let write_ast_simple (type t) ~(fname : string) ~output (kind : t Ast_extract.kind) ( pt : t) : unit =
+  let magic =
+    match kind with
+    | Ast_extract.Ml -> Config.ast_impl_magic_number
+    | Ast_extract.Mli -> Config.ast_intf_magic_number in
+  let oc = open_out_bin output in
+  output_string oc magic;
+  output_value oc fname;
+  output_value oc pt;
+  close_out oc;
 
 end
 module Ast_literal : sig 
@@ -41514,8 +41572,7 @@ and print_simple_out_type ppf =
       fprintf ppf "@[%a%s#%a@]" print_typargs tyl (if ng then "_" else "")
         print_ident id
          
-  | Otyp_constr ( (Oide_dot ((Oide_dot (Oide_ident "Js", "Internal")),
-                             ("fn" | "meth" as name )) as id) ,
+  | Otyp_constr ((Oide_dot (Oide_ident "Js", ("fn" | "meth" as name )) as id) ,
                  ([Otyp_variant(_,Ovar_fields [ variant, _, tys], _,_); result] as tyl))
     ->
       (* Otyp_arrow*)
@@ -41551,7 +41608,7 @@ and print_simple_out_type ppf =
           | _ -> assert false 
           end
       end
-  | Otyp_constr ((Oide_dot (Oide_dot (Oide_ident "Js", "Internal"), "meth_callback" ) as id) ,
+  | Otyp_constr ((Oide_dot (Oide_ident "Js", "meth_callback" ) as id) ,
                  ([Otyp_variant(_,Ovar_fields [ variant, _, tys], _,_); result] as tyl))
     ->
       let make tys result =
@@ -110601,15 +110658,18 @@ let print_if ppf flag printer arg =
 
 let after_parsing_sig ppf sourcefile outputprefix ast  =
   if !Js_config.binary_ast then
-    begin 
       Binary_ast.write_ast
         Mli
         ~fname:sourcefile
         ~output:(outputprefix ^ Literals.suffix_mliast)
         (* to support relocate to another directory *)
-        ast 
-
-    end;
+        ast;
+  if !Js_config.simple_binary_ast then
+      Binary_ast.write_ast_simple
+        Mli
+        ~fname:sourcefile
+        ~output:(outputprefix ^ Literals.suffix_mliast_simple)
+        ast ;
   if !Js_config.syntax_only then () else 
     begin 
       if not @@ !Js_config.no_warn_unused_bs_attribute then 
@@ -110651,9 +110711,13 @@ let interface_mliast ppf sourcefile outputprefix  =
   |> after_parsing_sig ppf sourcefile outputprefix 
   
 let after_parsing_impl ppf sourcefile outputprefix ast =
-  if !Js_config.binary_ast then
+  if !Js_config.binary_ast then 
       Binary_ast.write_ast ~fname:sourcefile 
         Ml ~output:(outputprefix ^ Literals.suffix_mlast)
+        ast ;
+  if !Js_config.simple_binary_ast then
+    Binary_ast.write_ast_simple ~fname:sourcefile 
+        Ml ~output:(outputprefix ^ Literals.suffix_mlast_simple) 
         ast ;
   if !Js_config.syntax_only then () else 
     begin
@@ -111442,6 +111506,11 @@ let buckle_script_flags =
   (
     "-bs-binary-ast", Arg.Set Js_config.binary_ast,
     " Generate binary .mli_ast and ml_ast"
+  )
+  ::
+  (
+    "-bs-simple-binary-ast", Arg.Set Js_config.simple_binary_ast,
+    " Generate binary .mliast_simple and mlast_simple"
   )
   ::
   ("-bs-syntax-only", 

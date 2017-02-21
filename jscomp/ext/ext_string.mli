@@ -66,6 +66,8 @@ val ends_with_then_chop : string -> string -> string option
 
 val escaped : string -> string
 
+val ninja_escaped : string -> string
+
 (** the range is [start, finish) 
 *)
 val for_all_range : 

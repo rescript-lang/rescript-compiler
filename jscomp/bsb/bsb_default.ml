@@ -44,12 +44,12 @@
         https://caml.inria.fr/mantis/view.php?id=6352
 
 *)  
+let warnings = "-40+6+7+27+32..39+44+45"
+
 let bsc_flags = 
   [
     "-no-alias-deps";
     "-color"; "always" ;
-    "-w"; "-40+6+7+27+32..39+44+45"
-
   ]
 
 let ocamllex = "ocamllex.opt"  
@@ -59,3 +59,5 @@ let refmt_flags = ["--print"; "binary"]
 let package_specs = String_set.singleton Literals.commonjs
 
 let main_entries = [Bsb_config_types.JsTarget "Index"]
+
+let allowed_build_kinds = [Bsb_config_types.Js; Bsb_config_types.Bytecode; Bsb_config_types.Native]

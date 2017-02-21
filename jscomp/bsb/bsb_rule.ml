@@ -83,28 +83,55 @@ let define
 
 let build_ast_and_deps =
   define
-    ~command:"${bsc}  ${pp_flags} ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast ${in}"
+    ~command:"${bsc}  ${pp_flags} ${ppx_flags} ${warnings} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast ${in}"
     "build_ast_and_deps"
+    
+let build_ast_and_deps_simple =
+  define
+    ~command:"${bsc}  ${pp_flags} ${ppx_flags} ${warnings} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -bs-simple-binary-ast ${in}"
+    "build_ast_and_deps_simple"
 
 let build_ast_and_deps_from_reason_impl =
   define
-    ~command:"${bsc} -pp \"${refmt} ${refmt_flags}\" ${reason_react_jsx}  ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -impl ${in}"
+    ~command:"${bsc} -pp \"${refmt} ${refmt_flags}\" ${reason_react_jsx}  ${ppx_flags} ${warnings} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -impl ${in}"
     "build_ast_and_deps_from_reason_impl"
+    
+let build_ast_and_deps_from_reason_impl_simple =
+  define
+    ~command:"${bsc} -pp \"${refmt} ${refmt_flags}\" ${reason_react_jsx}  ${ppx_flags} ${warnings} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -bs-simple-binary-ast -impl ${in}"
+    "build_ast_and_deps_from_reason_impl_simple"
 
 let build_ast_and_deps_from_reason_intf =
   (* we have to do this way,
      because it need to be ppxed by bucklescript
   *)
   define
-    ~command:"${bsc} -pp \"${refmt} ${refmt_flags}\" ${reason_react_jsx} ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -intf ${in}"
+    ~command:"${bsc} -pp \"${refmt} ${refmt_flags}\" ${reason_react_jsx} ${ppx_flags} ${warnings} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -intf ${in}"
     "build_ast_and_deps_from_reason_intf"
+
+let build_ast_and_deps_from_reason_intf_simple =
+  (* we have to do this way,
+     because it need to be ppxed by bucklescript
+  *)
+  define
+    ~command:"${bsc} -pp \"${refmt} ${refmt_flags}\" ${reason_react_jsx} ${ppx_flags} ${warnings} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -bs-simple-binary-ast -intf ${in}"
+    "build_ast_and_deps_from_reason_intf_simple"
 
 
 let build_bin_deps =
   define
-    ~command:"${bsdep} -g ${bsb_dir_group} -MD ${in}"
+    ~command:"${bsb_helper} -g ${bsb_dir_group} -MD ${in}"
     "build_deps"
+let build_bin_deps_bytecode =
+  define
+    ~command:"${bsb_helper} -g ${bsb_dir_group} -MD-bytecode ${in}"
+    "build_deps_bytecode"
 
+let build_bin_deps_native =
+  define
+    ~command:"${bsb_helper} -g ${bsb_dir_group} -MD-native ${in}"
+    "build_deps_native"
+    
 let reload =
   define
     ~command:"${bsbuild} -init"
@@ -147,7 +174,7 @@ let build_ml_from_mll =
 let build_cmj_js =
   define
     ~command:"${bsc} ${bs_package_flags} -bs-assume-has-mli -bs-no-builtin-ppx-ml -bs-no-implicit-include  \
-              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${bsc_flags} -o ${in} -c  ${in} ${postbuild}"
+              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${warnings} ${bsc_flags} -o ${in} -c  ${in} ${postbuild}"
 
     ~depfile:"${in}.d"
     "build_cmj_only"
@@ -155,28 +182,91 @@ let build_cmj_js =
 let build_cmj_cmi_js =
   define
     ~command:"${bsc} ${bs_package_flags} -bs-assume-no-mli -bs-no-builtin-ppx-ml -bs-no-implicit-include \
-              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${bsc_flags} -o ${in} -c  ${in} ${postbuild}"
+              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${warnings} ${bsc_flags} -o ${in} -c  ${in} ${postbuild}"
     ~depfile:"${in}.d"
     "build_cmj_cmi" (* the compiler should never consult [.cmi] when [.mli] does not exist *)
 let build_cmi =
   define
     ~command:"${bsc} ${bs_package_flags} -bs-no-builtin-ppx-mli -bs-no-implicit-include \
-              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${bsc_flags} -o ${out} -c  ${in}"
+              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${warnings} ${bsc_flags} -o ${out} -c  ${in}"
     ~depfile:"${in}.d"
     "build_cmi" (* the compiler should always consult [.cmi], current the vanilla ocaml compiler only consult [.cmi] when [.mli] found*)
 
+let build_cmo_cmi_bytecode =
+  define
+    ~command:"${ocamlc} ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} \
+              -o ${out} ${warnings} -c -intf-suffix .mliast_simple -impl ${in}_simple ${postbuild}"
+    ~depfile:"${in}.d"
+    "build_cmo_cmi_bytecode"
+    
+let build_cmi_bytecode =
+  define
+    ~command:"${ocamlc} ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} \
+              -o ${out} ${warnings} -c -intf ${in}_simple ${postbuild}"
+    ~depfile:"${in}.d"
+    "build_cmi_bytecode"
+
+let build_cmx_cmi_native =
+  define
+    ~command:"${ocamlopt} ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} \
+              -o ${out} ${warnings} -c -intf-suffix .mliast_simple -impl ${in}_simple ${postbuild}"
+    ~depfile:"${in}.d"
+    "build_cmx_cmi_native"
+
+let build_cmi_native =
+  define
+    ~command:"${ocamlopt} ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} \
+              -o ${out} ${warnings} -c -intf ${in}_simple ${postbuild}"
+    ~depfile:"${in}.d"
+    "build_cmi_native"
+
+
+let linking_bytecode =
+  define
+    ~command:"${bsb_helper} -bs-main ${main_module} ${static_libraries} ${external_deps_for_linking} ${in} -link-bytecode ${out}"
+    "linking_bytecode"
+
+let linking_native =
+  define
+    ~command:"${bsb_helper} -bs-main ${main_module} ${static_libraries} ${external_deps_for_linking} ${in} -link-native ${out}"
+    "linking_native"
+
+
+let build_cma_library =
+  define
+    ~command:"${bsb_helper} ${static_libraries} ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} \
+              ${in} -pack-bytecode-library"
+    "build_cma_library"
+
+let build_cmxa_library =
+  define
+    ~command:"${bsb_helper} ${static_libraries} ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} \
+              ${in} -pack-native-library"
+    "build_cmxa_library"
+    
 let reset () = 
   rule_id := 0;
   rule_names := String_set.empty;
   build_ast_and_deps.used <- false ;
+  build_ast_and_deps_simple.used <- false ;
   build_ast_and_deps_from_reason_impl.used <- false ;  
+  build_ast_and_deps_from_reason_impl_simple.used <- false ;  
   build_ast_and_deps_from_reason_intf.used <- false ;
+  build_ast_and_deps_from_reason_intf_simple.used <- false ;
   build_bin_deps.used <- false;
+  build_bin_deps_bytecode.used <- false;
+  build_bin_deps_native.used <- false;
   reload.used <- false; 
   copy_resources.used <- false ;
   build_ml_from_mll.used <- false ; 
   build_cmj_js.used <- false;
   build_cmj_cmi_js.used <- false ;
-  build_cmi.used <- false 
-
-
+  build_cmi.used <- false;
+  build_cmo_cmi_bytecode.used <- false;
+  build_cmi_bytecode.used <- false;
+  build_cmx_cmi_native.used <- false;
+  build_cmi_native.used <- false;
+  linking_bytecode.used <- false;
+  linking_native.used <- false;
+  build_cma_library.used <- false;
+  build_cmxa_library.used <- false;

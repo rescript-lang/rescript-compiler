@@ -23082,6 +23082,8 @@ module Ext_bytes : sig
 
 val escaped : bytes -> bytes
 
+val ninja_escaped : bytes -> bytes
+
 end = struct
 #1 "ext_bytes.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -23142,6 +23144,38 @@ let escaped s =
           Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n 'r'
       | '\b' ->
           Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n 'b'
+      | (' ' .. '~') as c -> Bytes.unsafe_set s' !n c
+      | c ->
+          let a = char_code c in
+          Bytes.unsafe_set s' !n '\\';
+          incr n;
+          Bytes.unsafe_set s' !n (char_chr (48 + a / 100));
+          incr n;
+          Bytes.unsafe_set s' !n (char_chr (48 + (a / 10) mod 10));
+          incr n;
+          Bytes.unsafe_set s' !n (char_chr (48 + a mod 10));
+      end;
+      incr n
+    done;
+    s'
+  end
+
+let ninja_escaped s =
+  let n = Pervasives.ref 0 in
+  for i = 0 to Bytes.length s - 1 do
+    n := !n +
+      (match Bytes.unsafe_get s i with
+       | '$' -> 2
+       | ' ' .. '~' -> 1
+       | _ -> 4)
+  done;
+  if !n = Bytes.length s then Bytes.copy s else begin
+    let s' = Bytes.create !n in
+    n := 0;
+    for i = 0 to Bytes.length s - 1 do
+      begin match Bytes.unsafe_get s i with
+      | '$' ->
+          Bytes.unsafe_set s' !n '$'; incr n; Bytes.unsafe_set s' !n '$'
       | (' ' .. '~') as c -> Bytes.unsafe_set s' !n c
       | c ->
           let a = char_code c in
@@ -23228,6 +23262,8 @@ val ends_with_then_chop : string -> string -> string option
 
 
 val escaped : string -> string
+
+val ninja_escaped : string -> string
 
 (** the range is [start, finish) 
 *)
@@ -23460,6 +23496,19 @@ let escaped s =
   in
   if needs_escape 0 then
     Bytes.unsafe_to_string (Ext_bytes.escaped (Bytes.unsafe_of_string s))
+  else
+    s
+    
+let ninja_escaped s =
+  let rec needs_escape i =
+    if i >= String.length s then false else
+      match String.unsafe_get s i with
+      | '$' -> true
+      | ' ' .. '~' -> needs_escape (i+1)
+      | _ -> true
+  in
+  if needs_escape 0 then
+    Bytes.unsafe_to_string (Ext_bytes.ninja_escaped (Bytes.unsafe_of_string s))
   else
     s
 
@@ -26011,6 +26060,7 @@ val sort_imports : bool ref
 val dump_js : bool ref
 val syntax_only  : bool ref
 val binary_ast : bool ref
+val simple_binary_ast : bool ref
 
 
 
@@ -26255,6 +26305,7 @@ let dump_js = ref false
 
 let syntax_only = ref false
 let binary_ast = ref false
+let simple_binary_ast = ref false
 
 
 end
