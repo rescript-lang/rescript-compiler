@@ -28,8 +28,11 @@ type bs_dependency =
     package_name : string ; 
     package_install_path : string ; 
   }
-type bs_dependencies =
-  bs_dependency list 
+type bs_dependencies = bs_dependency list 
+
+(* `string` is a path to the entrypoint *)
+type entries_t = JsTarget of string | NativeTarget of string | BytecodeTarget of string
+
 type t = 
   {
     package_name : string ; 
@@ -53,4 +56,5 @@ type t =
     files_to_install : String_hash_set.t ;
     generate_merlin : bool ; 
     reason_react_jsx : bool ; (* whether apply PPX transform or not*)
+    entries : entries_t list ;
   }

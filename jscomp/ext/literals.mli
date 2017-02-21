@@ -110,4 +110,6 @@ val escaped_j_delimiter : string
 
 val unescaped_js_delimiter : string 
 
-
+val native : string
+val bytecode : string
+val js : string

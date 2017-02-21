@@ -112,7 +112,9 @@ val escaped_j_delimiter : string
 
 val unescaped_js_delimiter : string 
 
-
+val native : string
+val bytecode : string
+val js : string
 
 end = struct
 #1 "literals.ml"
@@ -227,7 +229,9 @@ let unescaped_j_delimiter = "j"
 let unescaped_js_delimiter = "js"
 let escaped_j_delimiter =  "*j" (* not user level syntax allowed *)
 
-
+let native = "native"
+let bytecode = "bytecode"
+let js = "js"
 
 end
 module Bs_pkg : sig 
@@ -385,6 +389,11 @@ let bsc_lib_includes = "bsc_lib_includes"
 let use_stdlib = "use-stdlib"
 let reason = "reason"
 let react_jsx = "react-jsx"
+
+let entries = "entries"
+let kind = "kind"
+let main = "main"
+
 end
 module Ext_pervasives : sig 
 #1 "ext_pervasives.mli"
@@ -7558,8 +7567,11 @@ type bs_dependency =
     package_name : string ; 
     package_install_path : string ; 
   }
-type bs_dependencies =
-  bs_dependency list 
+type bs_dependencies = bs_dependency list 
+
+(* `string` is a path to the entrypoint *)
+type entries_t = JsTarget of string | NativeTarget of string | BytecodeTarget of string
+
 type t = 
   {
     package_name : string ; 
@@ -7583,7 +7595,9 @@ type t =
     files_to_install : String_hash_set.t ;
     generate_merlin : bool ; 
     reason_react_jsx : bool ; (* whether apply PPX transform or not*)
+    entries : entries_t list ;
   }
+
 end
 module Bsb_default : sig 
 #1 "bsb_default.mli"
@@ -7620,6 +7634,7 @@ val ocamllex : string
 val refmt_flags : string list 
 
 val package_specs : String_set.t
+
 end = struct
 #1 "bsb_default.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -7785,6 +7800,34 @@ let get_package_specs_from_array arr =
 let (|?)  m (key, cb) =
   m  |> Ext_json.test key cb
 
+let parse_entries (field : Ext_json_types.t array) =
+  Ext_array.to_list_map (function
+    | Ext_json_types.Obj {map} ->
+      (* kind defaults to bytecode *)
+      let kind = ref "js" in
+      let main = ref None in
+      let _ = map
+        |? (Bsb_build_schemas.kind, `Str (fun x -> kind := x))
+        |? (Bsb_build_schemas.main, `Str (fun x -> main := Some x))
+      in
+      let path = begin match !main with
+      (* This is technically optional when compiling to js *)
+      | None when !kind = Literals.js ->
+        "Index"
+      | None -> 
+        failwith "Missing field 'main'. That field is required its value needs to be the main module for the target"
+      | Some path -> path
+      end in
+      if !kind = Literals.native then
+        Some (Bsb_config_types.NativeTarget path)
+      else if !kind = Literals.bytecode then
+        Some (Bsb_config_types.BytecodeTarget path)
+      else if !kind = Literals.js then
+        Some (Bsb_config_types.JsTarget path)
+      else
+        failwith "Missing field 'kind'. That field is required and its value be 'js', 'native' or 'bytecode'"
+    | _ -> failwith "Unrecognized object inside array 'entries' field.") 
+  field
 
 let sourcedirs_meta = ".sourcedirs"
 let merlin = ".merlin"
@@ -7984,6 +8027,7 @@ let interpret_json
      1. if [build.ninja] does use [ninja] we need set a variable
      2. we need store it so that we can call ninja correctly
   *)
+  let entries = ref [Bsb_config_types.JsTarget "Index"] in
 
   match global_data with
   | Obj { map} ->
@@ -8031,6 +8075,7 @@ let interpret_json
     |? (Bsb_build_schemas.refmt, `Str (fun s -> 
         refmt := Some (Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.refmt s) ))
     |? (Bsb_build_schemas.refmt_flags, `Arr (fun s -> refmt_flags := get_list_string s))
+    |? (Bsb_build_schemas.entries, `Arr (fun s -> entries := parse_entries s))
     |> ignore ;
     begin match String_map.find_opt Bsb_build_schemas.sources map with 
       | Some x -> 
@@ -8077,18 +8122,11 @@ let interpret_json
           built_in_dependency = !built_in_package;
           generate_merlin = !generate_merlin ;
           reason_react_jsx = !reason_react_jsx ;  
+          entries = !entries
         }
       | None -> failwith "no sources specified, please checkout the schema for more details"
     end
   | _ -> failwith "bsconfig.json expect a json object {}"
-
-
-
-
-
-
-
-
 
 end
 module Bsb_dep_infos : sig 
