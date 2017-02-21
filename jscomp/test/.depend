@@ -189,6 +189,7 @@ gpr_1072_reg.cmj :
 gpr_1150.cmj :
 gpr_1154_test.cmj : mt.cmj ../stdlib/int64.cmj
 gpr_1170.cmj :
+gpr_1240_missing_unbox.cmj :
 gpr_405_test.cmj : ../stdlib/hashtbl.cmj gpr_405_test.cmi
 gpr_441.cmj :
 gpr_459_test.cmj : mt.cmj
@@ -241,7 +242,7 @@ js_bool_test.cmj : mt.cmj ../runtime/js.cmj
 js_date_test.cmj : mt.cmj ../runtime/js_float.cmj ../runtime/js.cmj
 js_json_test.cmj : mt.cmj ../runtime/js.cmj
 js_math_test.cmj : mt.cmj ../runtime/js.cmj
-js_obj_test.cmj : mt.cmj
+js_obj_test.cmj : mt.cmj ../others/js_obj.cmj ../stdlib/array.cmj
 js_re_test.cmj : mt.cmj ../runtime/js.cmj ../stdlib/array.cmj
 js_string_test.cmj : mt.cmj ../runtime/js.cmj
 js_val.cmj :

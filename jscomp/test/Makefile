@@ -98,7 +98,8 @@ OTHERS := literals a test_ari test_export2 test_internalOO test_obj_simple_ffi t
 	name_mangle_test\
 	oo_js_test_date\
 	functor_ffi\
-	typed_array_test
+	typed_array_test\
+	gpr_1240_missing_unbox
 # bs_uncurry_test
 # needs Lam to get rid of Uncurry arity first 
 
