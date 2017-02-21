@@ -70,7 +70,18 @@ var suites_001 = /* :: */[
                 ]);
       }
     ],
-    /* [] */0
+    /* :: */[
+      /* tuple */[
+        "empty",
+        function () {
+          return /* Eq */Block.__(0, [
+                    0,
+                    Object.keys({ }).length
+                  ]);
+        }
+      ],
+      /* [] */0
+    ]
   ]
 ];
 
