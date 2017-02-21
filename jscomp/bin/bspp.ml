@@ -1,4 +1,4 @@
-module Config = Config_bsppx
+module Config = Config_bspp
 module Clflags : sig 
 #1 "clflags.mli"
 (***********************************************************************)

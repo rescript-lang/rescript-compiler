@@ -407,7 +407,7 @@ bin/bsb.ml:./bin/bspack.exe
 	unset BS_DEBUG; $< -bs-MD -I stubs -I common -I ext -I syntax -I depends -I bsb -I ext  -bs-main Bsb_main -o $@
 
 bin/bspp.ml:./bin/bspack.exe
-	unset BS_DEBUG; BS_MIN_LEX_DEPS=true $< -bs-MD -prelude-str 'module Config = Config_bsppx'  -bs-exclude-I config -I ../ocaml/utils/ -I ../ocaml/parsing?parser  -I common -I ext -I syntax -I depends -I bspp -I core -bs-main Bspp_main -o $@
+	unset BS_DEBUG; BS_MIN_LEX_DEPS=true $< -bs-MD -prelude-str 'module Config = Config_bspp'  -bs-exclude-I config -I ../ocaml/utils/ -I ../ocaml/parsing?parser  -I common -I ext -I syntax -I depends -I bspp -I core -bs-main Bspp_main -o $@
 
 bin/js_compiler.ml:./bin/bspack.exe
 	unset BS_DEBUG; BS_COMPILER_IN_BROWSER=true bspack.exe -bs-MD  -prelude-str 'module Config = Config_whole_compiler' -bs-exclude-I config -o $@ -bs-main Jsoo_main -I ../ocaml/utils/ -I ../ocaml/parsing/ -I ../ocaml/typing/ -I ../ocaml/bytecomp/ -I ../ocaml/driver/ -I ext -I syntax -I depends -I common -I core
