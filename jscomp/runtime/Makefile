@@ -5,7 +5,7 @@ COMPILER=../bin/bsc.exe
 OTHERS= caml_array caml_string caml_bytes\
 	caml_obj caml_int64 \
 	caml_exceptions	caml_utils caml_sys caml_io\
-	js_math caml_float caml_lexer caml_parser caml_primitive\
+	caml_float caml_lexer caml_parser caml_primitive\
 	caml_format caml_md5 caml_queue caml_hash caml_weak\
 	caml_backtrace caml_int32 caml_gc typed_array \
 	js_primitive caml_basic caml_oo curry caml_oo_curry caml_module \
