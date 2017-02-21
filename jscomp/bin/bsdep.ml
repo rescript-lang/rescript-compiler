@@ -22320,9 +22320,6 @@ end = struct
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-let rec print_list = function 
-[] -> print_endline ""
-| e::l -> print_int e ; print_string " " ; print_list l
 
 type byte =
 | Single of int
