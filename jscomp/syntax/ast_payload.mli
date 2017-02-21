@@ -36,7 +36,7 @@ type action =
 val is_single_string : t -> string option
 val is_single_int : t -> int option 
 
-type rtn = Error1 | Error2 | Correct of Parsetree.expression
+type rtn = Not_String_Lteral | JS_Regex_Check_Failed | Correct of Parsetree.expression
 val as_string_exp : ?check_js_regex: bool -> t -> rtn
 val as_core_type : Location.t -> t -> Parsetree.core_type    
 val as_empty_structure :  t -> bool 

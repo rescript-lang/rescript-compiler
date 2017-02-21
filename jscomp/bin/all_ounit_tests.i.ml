@@ -7131,7 +7131,7 @@ val js_regex_checker : string -> bool
 end = struct
 #1 "ext_js_regex.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -7149,22 +7149,25 @@ end = struct
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+let rec print_list = function 
+[] -> (* 0 *) print_endline ""
+| e::l -> (* 0 *) print_int e ; print_string " " ; print_list l
 
- type byte = 
-  | Single of int
-  | Cont of int
-  | Leading of int * int
-  | Invalid
- 
+type byte =
+| Single of int
+| Cont of int
+| Leading of int * int
+| Invalid
+
 (** [classify chr] returns the {!byte} corresponding to [chr] *)
 let classify chr =
     (* 33 *) let c = int_of_char chr in
     (* Classify byte according to leftmost 0 bit *)
-    if c land 0b1000_0000 = 0 then (* 29 *) Single c else 
+    if c land 0b1000_0000 = 0 then (* 29 *) Single c else
       (* c 0b0____*)
     (* 4 *) if c land 0b0100_0000 = 0 then (* 3 *) Cont (c land 0b0011_1111) else
       (* c 0b10___*)
@@ -7179,61 +7182,31 @@ let classify chr =
     (* 0 *) if c land 0b0000_0010 = 0 then (* 0 *) Leading (5, c land 0b0000_0001)
        (* c 0b1111_110__ *)
     else (* 0 *) Invalid
- 
- 
-(** [utf8_decode strm] returns a code point stream that will lazily decode
-    the byte stream [strm] *)
-let rec utf8_decode strm =
-    (* 37 *) Stream.slazy (fun () ->
-        (* 37 *) match Stream.peek strm with
-        | Some chr ->
-            (* 30 *) Stream.junk strm;
-            (match classify chr with
-            | Single c -> (* 29 *) Stream.icons c (utf8_decode strm)
-            | Cont _ -> (* 0 *) raise (Stream.Error "Unexpected continuation byte")
+
+let decode_utf8_string s =
+    (* 7 *) let lst = ref [] in
+    let add elem = (* 30 *) lst := elem :: !lst in
+    let rec  _decode_utf8_string s i =
+        (* 37 *) if i = (String.length s) then (* 7 *) ()
+        else (* 30 *) (match classify s.[i] with
+            | Single c -> (* 29 *) add c; _decode_utf8_string s (i+1)
+            | Cont _ -> (* 0 *) raise (Invalid_argument "Unexpected continuation byte")
             | Leading (n, c) ->
-              (** [follow strm n c] returns the code point based on [c] plus [n] continuation
-                  bytes taken from [strm] *)
-              (* 1 *) let rec follow strm n c =
-                (* 4 *) if n = 0 then (* 1 *) c
-                else
-                  (* 3 *) (match classify (Stream.next strm) with
-                   | Cont cc -> (* 3 *) follow strm (n-1) ((c lsl 6) lor (cc land 0x3f))
-                   | _ -> (* 0 *) raise (Stream.Error "Continuation byte expected"))
-              in
-              Stream.icons (follow strm n c)  (utf8_decode strm)
-            | Invalid -> (* 0 *) raise (Stream.Error "Invalid byte"))
-        | None -> (* 7 *) Stream.sempty)
-
-let  decode bytes offset  =
-  (* 0 *) let rec  init offset = 
-    (* 0 *) match classify (Bytes.get bytes offset) with 
-    | Single c ->  (* 0 *) c, offset + 1 
-    | Invalid 
-    | Cont _ -> (* 0 *) invalid_arg "decode" 
-    | Leading(n,c) -> (* 0 *) leading n c (offset  + 1)
-  and leading n c offset  = 
-    (* 0 *) if n = 0 then (* 0 *) c, offset 
-    else
-      (* 0 *) begin match classify (Bytes.get bytes offset) with 
-        | Cont cc -> (* 0 *) leading (n - 1) ((c lsl 6) lor (cc land 0x3f)) (offset + 1 )
-        | _ -> (* 0 *) invalid_arg "decode"
-      end 
-  in init offset
-
-let utf8_list_of_string_reversed s = (* 7 *) let  v = ref [] in 
-    let add u = (* 30 *) v := u :: !v in 
-    begin 
-        utf8_decode (Stream.of_string s)
-        |> Stream.iter add;
-    end;
-    let codes = !v in codes
+                (* 1 *) let rec follow s n c i = 
+                    (* 4 *) if n = 0 then (* 1 *) (c, i)
+                    else (* 3 *) (match classify s.[i+1] with
+                    | Cont cc -> (* 3 *) follow s (n-1) ((c lsl 6) lor (cc land 0x3f)) (i+1)
+                    | _ -> (* 0 *) raise (Invalid_argument "Continuation byte expected"))
+                in
+                let (c', i') = follow s n c i in add c'; _decode_utf8_string s (i' + 1)
+            | Invalid -> (* 0 *) raise (Invalid_argument "Invalid byte"))
+    in _decode_utf8_string s 0; !lst
 
 let check_from_end s =
     (* 7 *) if String.length s = 0 then (* 0 *) false
-    else 
-    (* 7 *) let ul = utf8_list_of_string_reversed s in
-    let rec aux l  = 
+    else
+    (* 7 *) let al = decode_utf8_string s in
+    let rec aux l  =
         (* 10 *) match l with
         | [] -> (* 0 *) false
         | (e::r) ->
@@ -7242,12 +7215,12 @@ let check_from_end s =
              if c = '/' then (* 5 *) true
                else (* 5 *) (if c = 'i' || c = 'g' || c = 'm' || c = 'y' then (* 3 *) aux r
                else (* 2 *) false))
-    in aux ul
+    in aux al
 
 let js_regex_checker s =
   (* 8 *) if String.length s = 0 then (* 1 *) false else
   (* 7 *) let check_first = String.get s 0 = '/' in
-  let check_last = check_from_end s in 
+  let check_last = check_from_end s in
   check_first && check_last
 end
 module Ounit_js_regex_checker_tests
