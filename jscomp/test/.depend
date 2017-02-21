@@ -240,6 +240,7 @@ js_array_test.cmj : mt.cmj ../runtime/js.cmj
 js_bool_test.cmj : mt.cmj ../runtime/js.cmj
 js_date_test.cmj : mt.cmj ../runtime/js_float.cmj ../runtime/js.cmj
 js_json_test.cmj : mt.cmj ../runtime/js.cmj
+js_math_test.cmj : mt.cmj ../runtime/js.cmj
 js_obj_test.cmj : mt.cmj
 js_re_test.cmj : mt.cmj ../runtime/js.cmj ../stdlib/array.cmj
 js_string_test.cmj : mt.cmj ../runtime/js.cmj
@@ -266,7 +267,6 @@ loop_suites_test.cmj : mt.cmj for_loop_test.cmj
 map_find_test.cmj : mt.cmj ../stdlib/map.cmj ../stdlib/list.cmj
 map_test.cmj : ../stdlib/string.cmj ../stdlib/pervasives.cmj mt.cmj \
     ../stdlib/map.cmj ../stdlib/list.cmj map_test.cmi
-math_test.cmj : mt.cmj ../runtime/js.cmj
 method_chain.cmj :
 method_name_test.cmj : mt.cmj
 minimal_test.cmj :
@@ -506,6 +506,8 @@ tscanf_test.cmj : testing.cmj ../stdlib/string.cmj ../stdlib/scanf.cmj \
     ../stdlib/list.cmj ../stdlib/int64.cmj ../stdlib/int32.cmj \
     ../stdlib/buffer.cmj
 tuple_alloc.cmj :
+typed_array_test.cmj : ../runtime/typed_array.cmj mt.cmj ../runtime/js.cmj \
+    ../stdlib/int32.cmj ../stdlib/array.cmj
 typeof_test.cmj : mt.cmj ../runtime/js.cmj
 uncurry_glob_test.cmj : ../runtime/caml_utils.cmj
 undef_regression_test.cmj : ../runtime/js.cmj ../runtime/bs_obj.cmj
