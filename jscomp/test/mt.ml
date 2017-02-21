@@ -5,18 +5,22 @@ external describe : string -> (unit -> unit[@bs]) -> unit = "describe"
     [@@bs.val]
 
 external it : string -> (unit -> unit) -> unit = "it"
-    [@@bs.val ]
+    [@@bs.val]
 
 external eq : 'a -> 'a -> unit = "deepEqual"
-    [@@bs.val ]
+    [@@bs.val]
     [@@bs.module "assert"]
 
 external neq : 'a -> 'a -> unit = "notDeepEqual"
-    [@@bs.val ]
+    [@@bs.val]
     [@@bs.module "assert"]
 
 external ok : Js.boolean -> unit = "ok"
-    [@@bs.val ]
+    [@@bs.val]
+    [@@bs.module "assert"]
+
+external fail : 'a -> 'a -> string Js.undefined -> string -> unit = "fail"
+    [@@bs.val]
     [@@bs.module "assert"]
 
 
@@ -29,6 +33,7 @@ external throws : (unit -> unit) -> unit = "throws" [@@bs.val] [@@bs.module "ass
 let assert_equal = eq
 let assert_notequal = neq
 let assert_ok = fun a -> ok (Js.Boolean.to_js_boolean a)
+let assert_fail = fun msg -> fail () () (Js.Undefined.return msg) ""
 
 let is_mocha () =
   match Array.to_list Node.Process.process##argv with
@@ -48,12 +53,14 @@ let from_suites name (suite :  (string * ('a -> unit)) list) =
   | _ -> ()
 
 type eq =
-  | Eq :  'a *'a  ->  eq
-  | Neq : 'a * 'a ->  eq
+  | Eq :  'a *'a  -> eq
+  | Neq : 'a * 'a -> eq
   | Ok : bool -> eq
-  | Approx : float * float ->  eq
-  | ApproxThreshold : float * float * float ->  eq
-  | ThrowAny : (unit -> unit) ->  eq
+  | Approx : float * float -> eq
+  | ApproxThreshold : float * float * float -> eq
+  | ThrowAny : (unit -> unit) -> eq
+  | Fail : unit -> eq
+  | FailWith : string -> eq
   (* TODO: | Exception : exn -> (unit -> unit) -> _ eq  *)
 
 type  pair_suites = (string * (unit ->  eq)) list
@@ -78,6 +85,8 @@ let from_pair_suites name (suites :  pair_suites) =
                   | ApproxThreshold(t, a, b) ->
                     if not (close_enough ~threshold:t a b) then assert_equal a b (* assert_equal gives better ouput *)
                   | ThrowAny fn -> throws fn
+                  | Fail _ -> assert_fail "failed"
+                  | FailWith msg -> assert_fail msg
                 )
             )
         )

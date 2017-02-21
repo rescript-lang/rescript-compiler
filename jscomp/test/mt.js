@@ -7,6 +7,11 @@ var Curry   = require("../../lib/js/curry");
 var Assert  = require("assert");
 var Process = require("process");
 
+function assert_fail(msg) {
+  Assert.fail(/* () */0, /* () */0, msg, "");
+  return /* () */0;
+}
+
 function is_mocha() {
   var match = $$Array.to_list(Process.argv);
   if (match) {
@@ -92,6 +97,10 @@ function from_pair_suites(name, suites) {
                               case 5 : 
                                   Assert.throws(match[0]);
                                   return /* () */0;
+                              case 6 : 
+                                  return assert_fail("failed");
+                              case 7 : 
+                                  return assert_fail(match[0]);
                               
                             }
                           });
