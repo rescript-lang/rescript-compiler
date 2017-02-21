@@ -142,15 +142,28 @@ OCaml does not support such syntax yet
 {[ 'a -> ('a. 'a -> 'b) ]}
 
 *)
-let get_arity (ty : t) = 
-  let rec aux  (ty : t) acc = 
+let rec aux  (ty : t) acc = 
     match ty.ptyp_desc with 
     | Ptyp_arrow(_, _ , new_ty) -> 
       aux new_ty (succ acc)
     | Ptyp_poly (_,ty) -> 
       aux ty acc 
-    | _ -> acc in 
-    aux ty 0
+    | _ -> acc (* in 
+    aux ty 0 *)
+
+(* let get_arity (ty : t) =  *)
+  
+
+let get_uncurry_arity (ty : t ) = 
+  match ty.ptyp_desc  with 
+  | Ptyp_arrow("", {ptyp_desc = (Ptyp_constr ({txt = Lident "unit"}, []))}, 
+    ({ptyp_desc = Ptyp_arrow _ } as rest  )) -> `Arity (aux rest 1 )
+  | Ptyp_arrow("", {ptyp_desc = (Ptyp_constr ({txt = Lident "unit"}, []))}, _) -> `Arity 0
+  | Ptyp_arrow(_,_,rest ) -> 
+    `Arity(aux rest 1)
+  | _ -> `Not_function 
+
+
 
 let list_of_arrow (ty : t) = 
   let rec aux (ty : t) acc = 

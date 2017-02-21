@@ -42,6 +42,7 @@ let rec app f args =
   else 
     Obj.magic (fun x -> app f (Caml_array.append args [|x|] ))
   
+
 |}
 
 let list_init n  fn = Array.to_list (Array.init n fn)
@@ -144,8 +145,21 @@ let __%d o =
     
 let () =
   print_endline
-  @@ Printf.sprintf
-    "%s\n%s\n%s"
+  @@ Printf.sprintf{|
+%s
+%s
+
+let _0 o = 
+  let arity = function_length o in 
+  if arity = 0 then o () [@bs]
+  else (app (Obj.magic o) [||])
+
+let __0 o = 
+  if function_length o = 0 then o
+  else fun [@bs] () -> _0 o 
+  
+%s
+|}
     prelude
     (String.concat "\n"
        (list_init number (fun i -> generate_apply (i + 1)))       

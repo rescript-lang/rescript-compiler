@@ -121,19 +121,19 @@ let get_arg_type ~nolabel optional
 
     | (`Int, _), _ -> Location.raise_errorf ~loc:ptyp.ptyp_loc "Not a valid string type"
     | (`Uncurry opt_arity, ptyp_attributes), ptyp_desc -> 
-      let real_arity =  Ast_core_type.get_arity ptyp in 
+      let real_arity =  Ast_core_type.get_uncurry_arity ptyp in 
       (begin match opt_arity, real_arity with 
-      | Some arity, 0 -> 
+      | Some arity, `Not_function -> 
         Fn_uncurry_arity arity 
-      | None, 0 -> 
+      | None, `Not_function  -> 
         Location.raise_errorf 
           ~loc:ptyp.ptyp_loc 
           "Can not infer the arity by syntax, either [@bs.uncurry n] or \n\
           write it in arrow syntax
           "
-      | None, arity  ->         
+      | None, `Arity arity  ->         
         Fn_uncurry_arity arity
-      | Some arity, n -> 
+      | Some arity, `Arity n -> 
         if n <> arity then 
           Location.raise_errorf 
             ~loc:ptyp.ptyp_loc 

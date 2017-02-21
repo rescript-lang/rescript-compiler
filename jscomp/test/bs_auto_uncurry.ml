@@ -45,6 +45,22 @@ external ff2 :
     int -> (_ [@bs.as "3" ]) -> (int -> int -> int [@bs.uncurry]) -> int 
     = "" [@@bs.val]
 
+external
+ hi: (unit -> unit [@bs.uncurry 0]) -> int = "" [@@bs.val]
+
+(** 
+fun (_){
+    f 0
+}
+
+*)
+
+
+let f_0 () =  hi (fun () -> () )
+let f_01 () = hi (fun (() as x) -> if x = () then Js.log "x" )
+let f_02 xs = hi (fun (() as x) -> xs := x ;  Js.log "x" )
+let f_03 xs u = hi u
+ (* arity adjust to [0] [ function (){return u (0)}] *)
 
 let fishy x y z = 
     map2 x y (fun x -> z x)    
@@ -170,3 +186,10 @@ let () =
 
 Mt.from_pair_suites __FILE__ !suites
 *)
+
+let unit_magic () =
+    Js.log "noinline" ; 
+     Js.log "noinline" ; 
+     3 
+
+let f_unit_magic  = unit_magic ()

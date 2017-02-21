@@ -78,7 +78,7 @@ val is_optional_label : string -> bool
 (** 
   returns 0 when it can not tell arity from the syntax 
 *)
-val get_arity : t -> int 
+val get_uncurry_arity : t -> [`Arity of int | `Not_function ]
 
 
 (** fails when Ptyp_poly *)

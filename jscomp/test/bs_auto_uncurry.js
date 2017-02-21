@@ -30,6 +30,33 @@ var xs = Array.prototype.map.call(/* int array */[
       };
     });
 
+function f_0() {
+  return hi(function () {
+              return /* () */0;
+            });
+}
+
+function f_01() {
+  return hi(function () {
+              console.log("x");
+              return /* () */0;
+            });
+}
+
+function f_02(xs) {
+  return hi(function () {
+              xs[0] = /* () */0;
+              console.log("x");
+              return /* () */0;
+            });
+}
+
+function f_03(_, u) {
+  return hi(function () {
+              return Curry._1(u, /* () */0);
+            });
+}
+
 function fishy(x, y, z) {
   return map2(x, y, Curry.__2(z));
 }
@@ -83,17 +110,31 @@ function h6(x) {
   return ff2(x, "3", add);
 }
 
-exports.bs    = bs;
-exports.f     = f;
-exports.xs    = xs;
-exports.fishy = fishy;
-exports.h     = h;
-exports.h1    = h1;
-exports.add3  = add3;
-exports.h2    = h2;
-exports.h3    = h3;
-exports.h4    = h4;
-exports.h5    = h5;
-exports.add   = add;
-exports.h6    = h6;
+function unit_magic() {
+  console.log("noinline");
+  console.log("noinline");
+  return 3;
+}
+
+var f_unit_magic = unit_magic(/* () */0);
+
+exports.bs           = bs;
+exports.f            = f;
+exports.xs           = xs;
+exports.f_0          = f_0;
+exports.f_01         = f_01;
+exports.f_02         = f_02;
+exports.f_03         = f_03;
+exports.fishy        = fishy;
+exports.h            = h;
+exports.h1           = h1;
+exports.add3         = add3;
+exports.h2           = h2;
+exports.h3           = h3;
+exports.h4           = h4;
+exports.h5           = h5;
+exports.add          = add;
+exports.h6           = h6;
+exports.unit_magic   = unit_magic;
+exports.f_unit_magic = f_unit_magic;
 /* bs Not a pure module */

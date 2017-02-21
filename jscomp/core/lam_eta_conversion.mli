@@ -37,6 +37,6 @@ val transform_under_supply :
 val unsafe_adjust_to_arity :
   Location.t -> 
   to_:int -> 
-  from:int -> 
+  ?from:int -> 
   Lam.t -> 
   Lam.t 

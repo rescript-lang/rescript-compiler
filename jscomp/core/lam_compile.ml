@@ -861,104 +861,11 @@ and
       end
 
 
-    | Lprim {primitive = Pjs_fn_make arity;  args = args_lambda} -> 
+    | Lprim {primitive = Pjs_fn_make arity;  args = [fn]; loc } -> 
+          compile_lambda cxt (Lam_eta_conversion.unsafe_adjust_to_arity loc ~to_:arity ?from:None fn)
 
-      begin match args_lambda with 
-        | [fn] -> 
-          if arity = 0 then 
-            (* 
-                Invariant: mk0 : (unit -> 'a0) -> 'a0 t 
-                TODO: this case should be optimized, 
-                we need check where we handle [arity=0] 
-                as a special case -- 
-                if we do an optimization before compiling
-                into lambda
-
-               {[Fn.mk0]} is not intended for use by normal users
-
-               so we assume [Fn.mk0] is only used in such cases
-               {[
-                 Fn.mk0 (fun _ -> .. )
-               ]}
-               when it is passed as a function directly
-            *)
-            begin match fn with 
-              | Lfunction {params =  [_]; body}
-                ->
-                compile_lambda cxt 
-                  (Lam.function_ 
-                     ~arity:0 
-                     ~kind:Curried
-                     ~params:[]
-                     ~body)
-              | _ -> 
-                let wrapper, new_fn = 
-                  match fn with 
-                  | Lvar _ 
-                  | Lprim {primitive = Pfield _ ; args = [Lglobal_module _]; _} -> 
-                    None, fn 
-                  | _ ->  
-                    let partial_arg = Ext_ident.create Literals.partial_arg in 
-                    Some partial_arg, Lam.var partial_arg
-                in 
-                let cont =   
-                  (Lam.function_ ~arity:0 
-                     ~kind:Curried ~params:[] 
-                     ~body:(
-                       Lam.apply new_fn
-                         [Lam.unit]
-                         Location.none App_na
-                     )) in 
-                begin match wrapper with 
-                  | None ->      
-                    compile_lambda cxt  cont
-                  | Some partial_arg
-                    -> 
-                    compile_lambda cxt (Lam.let_ Strict partial_arg fn cont )  
-                end
-            end
-          else 
-            begin match fn with
-              | Lam.Lfunction{arity = len; kind; params = args; body}
-                ->
-                if len = arity then
-                  compile_lambda cxt fn 
-                else if len > arity then 
-                  let params, rest  = Ext_list.take arity args  in 
-                  compile_lambda cxt 
-                    (Lam.function_ 
-                       ~arity
-                       ~kind ~params
-                       ~body:(Lam.function_ ~arity:(len - arity)
-                                ~kind ~params:rest ~body)
-                    )
-                else (* len < arity *)
-                  compile_lambda cxt 
-                    (Lam_eta_conversion.transform_under_supply arity 
-                       Location.none App_na
-                       fn  [] )
-              (* let extra_args = Ext_list.init (arity - len) (fun _ ->   (Ident.create Literals.param)) in *)
-              (* let extra_lambdas = List.map (fun x -> Lambda.Lvar x) extra_args in *)
-              (* Lambda.Lfunction (kind, extra_args @ args , body ) *)
-              (*TODO: can be optimized ?
-                {[\ x y -> (\u -> body x) x y]}
-                {[\u x -> body x]}        
-                rewrite rules 
-                {[
-                  \x -> body 
-                        --
-                        \y (\x -> body ) y 
-                ]}
-                {[\ x y -> (\a b c -> g a b c) x y]}
-                {[ \a b -> \c -> g a b c ]}
-              *)
-              | _ -> 
-                compile_lambda cxt 
-                  (Lam_eta_conversion.transform_under_supply arity
-                     Location.none App_na  fn  [] )
-            end
-        | _ -> assert false 
-      end
+    | Lprim {primitive = Pjs_fn_make arity;  args } -> 
+      assert false 
     | Lglobal_module i -> 
       (* introduced by 
          1. {[ include Array --> let include  = Array  ]}
