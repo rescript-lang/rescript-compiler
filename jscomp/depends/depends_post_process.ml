@@ -49,23 +49,32 @@ let read_deps fn =
 
   return_arr 
 
+type compilation_kind_t = Js | Bytecode | Native
 
 (* TODO: Don't touch the .d file if nothing changed *)
-let handle_bin_depfile oprefix  (fn : string) index : unit = 
+let handle_bin_depfile 
+  oprefix
+  ~compilation_kind
+  (fn : string)
+  index : unit = 
+  let suffix_inteface, suffix_cmjxo = match compilation_kind with
+  | Js       -> Literals.suffix_cmj, Literals.suffix_cmj
+  | Bytecode -> Literals.suffix_cmi, Literals.suffix_cmo
+  | Native   -> Literals.suffix_cmi, Literals.suffix_cmx in
   let op_concat s = match oprefix with None -> s | Some v -> v // s in 
   let data : Binary_cache.t  =
     Binary_cache.read_build_cache (op_concat  Binary_cache.bsbuild_cache) in 
   let set = read_deps fn in 
   match Ext_string.ends_with_then_chop fn Literals.suffix_mlast with 
   | Some  input_file -> 
-    let dependent_file = (input_file ^ Literals.suffix_cmj) ^ dep_lit in
+    let dependent_file = (input_file ^ suffix_cmjxo) ^ dep_lit in
     let (files, len) = 
       Array.fold_left
         (fun ((acc, len) as v) k  -> 
            match String_map.find_opt k data.(0) with
            | Some ({ml = Ml s | Re s  } | {mll = Some s }) 
              -> 
-             let new_file = op_concat @@ Filename.chop_extension s ^ Literals.suffix_cmj  
+             let new_file = op_concat @@ Filename.chop_extension s ^ suffix_inteface  
              in (new_file :: acc , len + String.length new_file + length_space)
            | Some {mli = Mli s | Rei s } -> 
              let new_file =  op_concat @@   Filename.chop_extension s ^ Literals.suffix_cmi in
@@ -77,7 +86,7 @@ let handle_bin_depfile oprefix  (fn : string) index : unit =
                begin match String_map.find_opt k data.(index) with 
                  | Some ({ml = Ml s | Re s  } | {mll = Some s }) 
                    -> 
-                   let new_file = op_concat @@ Filename.chop_extension s ^ Literals.suffix_cmj  
+                   let new_file = op_concat @@ Filename.chop_extension s ^ suffix_inteface  
                    in (new_file :: acc , len + String.length new_file + length_space)
                  | Some {mli = Mli s | Rei s } -> 
                    let new_file =  op_concat @@   Filename.chop_extension s ^ Literals.suffix_cmi in
