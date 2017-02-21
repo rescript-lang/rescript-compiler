@@ -717,6 +717,7 @@ bsb/bsb_main.cmi :
 bsb/bsb_ninja.cmi : ext/string_hash_set.cmi bsb/bsb_config.cmi \
     bsb/bsb_build_ui.cmi
 bsb/bsb_unix.cmi :
+gpr_1240_missing_unbox.cmx :
 jscmj_main.cmx : common/js_config.cmx core/js_cmj_format.cmx \
     ext/ext_string.cmx ext/ext_pp.cmx ext/ext_pervasives.cmx \
     ext/ext_array.cmx jscmj_main.cmi
