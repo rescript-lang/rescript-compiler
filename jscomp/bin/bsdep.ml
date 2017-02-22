@@ -22377,7 +22377,7 @@ let check_from_end s =
             if e < 0 || e > 255 then false
              else (let c = Char.chr e in
              if c = '/' then true
-               else (if c = 'i' || c = 'g' || c = 'm' || c = 'y' then aux r
+               else (if c = 'i' || c = 'g' || c = 'm' || c = 'y' || c ='u' then aux r
                else false))
     in aux al
 
