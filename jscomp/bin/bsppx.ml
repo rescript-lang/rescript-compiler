@@ -9606,7 +9606,7 @@ val is_optional_label : string -> bool
 (** 
   returns 0 when it can not tell arity from the syntax 
 *)
-val get_arity : t -> int 
+val get_uncurry_arity : t -> [`Arity of int | `Not_function ]
 
 
 (** fails when Ptyp_poly *)
@@ -9761,15 +9761,28 @@ OCaml does not support such syntax yet
 {[ 'a -> ('a. 'a -> 'b) ]}
 
 *)
-let get_arity (ty : t) = 
-  let rec aux  (ty : t) acc = 
+let rec aux  (ty : t) acc = 
     match ty.ptyp_desc with 
     | Ptyp_arrow(_, _ , new_ty) -> 
       aux new_ty (succ acc)
     | Ptyp_poly (_,ty) -> 
       aux ty acc 
-    | _ -> acc in 
-    aux ty 0
+    | _ -> acc (* in 
+    aux ty 0 *)
+
+(* let get_arity (ty : t) =  *)
+  
+
+let get_uncurry_arity (ty : t ) = 
+  match ty.ptyp_desc  with 
+  | Ptyp_arrow("", {ptyp_desc = (Ptyp_constr ({txt = Lident "unit"}, []))}, 
+    ({ptyp_desc = Ptyp_arrow _ } as rest  )) -> `Arity (aux rest 1 )
+  | Ptyp_arrow("", {ptyp_desc = (Ptyp_constr ({txt = Lident "unit"}, []))}, _) -> `Arity 0
+  | Ptyp_arrow(_,_,rest ) -> 
+    `Arity(aux rest 1)
+  | _ -> `Not_function 
+
+
 
 let list_of_arrow (ty : t) = 
   let rec aux (ty : t) acc = 
@@ -11062,19 +11075,19 @@ let get_arg_type ~nolabel optional
 
     | (`Int, _), _ -> Location.raise_errorf ~loc:ptyp.ptyp_loc "Not a valid string type"
     | (`Uncurry opt_arity, ptyp_attributes), ptyp_desc -> 
-      let real_arity =  Ast_core_type.get_arity ptyp in 
+      let real_arity =  Ast_core_type.get_uncurry_arity ptyp in 
       (begin match opt_arity, real_arity with 
-      | Some arity, 0 -> 
+      | Some arity, `Not_function -> 
         Fn_uncurry_arity arity 
-      | None, 0 -> 
+      | None, `Not_function  -> 
         Location.raise_errorf 
           ~loc:ptyp.ptyp_loc 
           "Can not infer the arity by syntax, either [@bs.uncurry n] or \n\
           write it in arrow syntax
           "
-      | None, arity  ->         
+      | None, `Arity arity  ->         
         Fn_uncurry_arity arity
-      | Some arity, n -> 
+      | Some arity, `Arity n -> 
         if n <> arity then 
           Location.raise_errorf 
             ~loc:ptyp.ptyp_loc 

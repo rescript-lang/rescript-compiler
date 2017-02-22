@@ -1194,8 +1194,41 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : t =
       | Ffi_obj_create labels -> 
         prim ~primitive:(Pjs_object_create labels) ~args loc 
       | Ffi_bs(arg_types, result_type, ffi) -> 
-        prim ~primitive:(Pjs_call(prim_name, arg_types,result_type,ffi)) 
-          ~args loc
+        let no_uncurry = 
+          List.for_all (fun (x : Ast_ffi_types.arg_kind) -> 
+          match x with  
+          | { arg_type = Fn_uncurry_arity _} -> false
+          | _ -> true ) arg_types in 
+        if no_uncurry then   
+          prim ~primitive:(Pjs_call(prim_name, arg_types,result_type,ffi)) 
+            ~args loc
+        else 
+           (* TODO: sort out the order here
+            consolidate {!Lam_compile_external_call.assemble_args_splice}
+            *)
+          let rec aux (arg_types : Ast_ffi_types.arg_kind list) 
+            (args : t list ) = 
+            match arg_types,args with 
+            | { arg_type = Fn_uncurry_arity n ; arg_label } :: xs,
+               y::ys -> 
+               let (o_arg_types, o_args) = aux xs ys in 
+              { Ast_ffi_types.arg_type = Nothing ; arg_label } :: o_arg_types , 
+              prim ~primitive:(Pjs_fn_make n) ~args:[y] loc :: o_args 
+            |  x  ::xs, y::ys -> 
+              begin match x with 
+              | {arg_type = Arg_int_lit  _ | Arg_string_lit _ }  -> 
+                let o_arg_types, o_args = aux xs args in 
+                x :: o_arg_types , o_args 
+              | _ -> 
+                let o_arg_types, o_args = aux xs ys in 
+                x :: o_arg_types , y:: o_args 
+              end
+            | [] , [] 
+            | _::_, [] 
+            | [], _::_ as ok -> ok  in 
+         let n_arg_types, n_args = aux arg_types args in 
+         prim ~primitive:(Pjs_call (prim_name, n_arg_types, result_type, ffi))
+          ~args:n_args loc 
     end
 
   | Praise _ ->

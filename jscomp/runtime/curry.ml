@@ -1,4 +1,5 @@
 
+
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -43,6 +44,7 @@ let rec app f args =
     Obj.magic (fun x -> app f (Caml_array.append args [|x|] ))
   
 
+
 external apply1 : ('a0 -> 'a1) -> 'a0 -> 'a1 = "js_apply1"
 external apply2 : ('a0 -> 'a1 -> 'a2) -> 'a0 -> 'a1 -> 'a2 = "js_apply2"
 external apply3 : ('a0 -> 'a1 -> 'a2 -> 'a3) -> 'a0 -> 'a1 -> 'a2 -> 'a3 = "js_apply3"
@@ -51,6 +53,16 @@ external apply5 : ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5) -> 'a0 -> 'a1 -> 'a2 
 external apply6 : ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6) -> 'a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 = "js_apply6"
 external apply7 : ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 -> 'a7) -> 'a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 -> 'a7 = "js_apply7"
 external apply8 : ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 -> 'a7 -> 'a8) -> 'a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 -> 'a7 -> 'a8 = "js_apply8"
+
+let _0 o = 
+  let arity = function_length o in 
+  if arity = 0 then o () [@bs]
+  else (app (Obj.magic o) [||])
+
+let __0 o = 
+  if function_length o = 0 then o
+  else fun [@bs] () -> _0 o 
+  
 
 let curry_1 o a0 arity =
   match arity with
@@ -234,4 +246,5 @@ let __8 o =
   let arity = function_length o in
   if arity = 8 then o
   else fun a0 a1 a2 a3 a4 a5 a6 a7 -> _8 o a0 a1 a2 a3 a4 a5 a6 a7
+
 
