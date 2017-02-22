@@ -23,10 +23,19 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 type + 'a t = 'a Js.null_undefined
+
 external to_opt : 'a t -> 'a option = "js_from_nullable_def"
+
+(** constructs a value of the Js.null_undefined type containing the given value *)
 external return : 'a -> 'a t = "%identity"
+
+(** returns `true` if given `null` or `undefined`, false otherwise *)
 external test : 'a t -> bool =  "js_is_nil_undef"
+
+external null : 'a t = "null" [@@bs.val]
+external undefined : 'a t = "undefined" [@@bs.val]
 external empty : 'a t = "undefined" [@@bs.val]
+[@@ocaml.deprecated "Please use `null` or `undefined` instead"]
 
 (** we did not add [bind] yet, since the return value is
     ambiguous and [to_opt] depends on {!Js_primitive}

@@ -1,10 +1,12 @@
 type  eq = Mt.eq =
-  | Eq :  'a *'a  ->  eq
+  | Eq : 'a *'a  ->  eq
   | Neq : 'a * 'a ->  eq
   | Ok : bool -> eq
   | Approx : float * float ->  eq
   | ApproxThreshold : float * float * float ->  eq
   | ThrowAny : (unit -> unit) ->  eq
+  | Fail : unit -> eq
+  | FailWith : string -> eq
 type  pair_suites = (string * (unit ->  eq)) list
 
 
@@ -17,4 +19,6 @@ let from_pair_suites (name : string) (suites :  pair_suites) =
               | Approx(a,b) -> Js.log (name, a, "~",  b)
               | ApproxThreshold(t, a, b) -> Js.log (name, a, "~", b, " (", t, ")")
               | ThrowAny fn -> ()
+              | Fail _ -> Js.log "failed"
+              | FailWith msg -> Js.log ("failed: " ^ msg)
               ) suites

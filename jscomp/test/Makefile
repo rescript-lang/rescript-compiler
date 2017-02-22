@@ -99,9 +99,10 @@ OTHERS := literals a test_ari test_export2 test_internalOO test_obj_simple_ffi t
 	oo_js_test_date\
 	functor_ffi\
 	typed_array_test\
-	gpr_1240_missing_unbox
+	gpr_1240_missing_unbox\
+	js_null_undefined_test js_null_test js_undefined_test
 # bs_uncurry_test
-# needs Lam to get rid of Uncurry arity first 
+# needs Lam to get rid of Uncurry arity first
 
 SOURCE_LIST :=  $(OTHERS)
 TESTS := $(addsuffix .cmj, $(SOURCE_LIST) )

@@ -26,7 +26,10 @@ type + 'a t = 'a Js.null_undefined
 external to_opt : 'a t -> 'a option = "js_from_nullable_def"
 external return : 'a -> 'a t = "%identity"
 external test : 'a t -> bool =  "js_is_nil_undef"
+external null : 'a t = "null" [@@bs.val]
+external undefined : 'a t = "undefined" [@@bs.val]
 external empty : 'a t = "undefined" [@@bs.val]
+[@@ocaml.deprecated "Please use `null` or `undefined` instead"]
 
 let bind x f =
   match to_opt x with

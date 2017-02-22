@@ -5,6 +5,8 @@ type  eq =
   | Approx : float * float ->  eq
   | ApproxThreshold : float * float * float ->  eq
   | ThrowAny : (unit -> unit) -> eq
+  | Fail : unit -> eq
+  | FailWith : string -> eq
 type  pair_suites = (string * (unit ->  eq)) list
 
 val from_suites : string -> (string * (unit -> unit)) list -> unit
