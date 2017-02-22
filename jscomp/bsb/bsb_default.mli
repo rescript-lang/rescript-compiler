@@ -44,7 +44,7 @@ val set_package_name : string -> unit
 val get_package_name : unit -> string option
 
 val set_refmt : cwd:string -> string -> unit
-val get_refmt : unit -> string
+val get_refmt : unit -> string option
 
 val set_refmt_flags : Ext_json.t array -> unit
 val get_refmt_flags : unit -> string list

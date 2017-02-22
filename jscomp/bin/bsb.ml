@@ -7302,7 +7302,7 @@ type t =
       so that we can calculate correct relative path in 
       [.merlin]
     *)
-    refmt : string ;
+    refmt : string option;
     refmt_flags : string list;
     js_post_build_cmd : string option;
     package_specs : Bsb_config.package_specs ; 
@@ -7360,7 +7360,7 @@ val set_package_name : string -> unit
 val get_package_name : unit -> string option
 
 val set_refmt : cwd:string -> string -> unit
-val get_refmt : unit -> string
+val get_refmt : unit -> string option
 
 val set_refmt_flags : Ext_json.t array -> unit
 val get_refmt_flags : unit -> string list
@@ -7501,10 +7501,11 @@ let set_ocamllex ~cwd s =
 let get_ocamllex () = !ocamllex
 
 
-let refmt = ref "refmt"
+let refmt = ref None (* if not set, we pick the one shipped with Buckle*)
 let get_refmt () = !refmt
 let set_refmt ~cwd p =
-  refmt := Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:"refmt" p
+  refmt := Some (Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:"refmt" p)
+
 
 let refmt_flags = ref ["--print"; "binary"]
 let get_refmt_flags () = !refmt_flags
@@ -8341,7 +8342,7 @@ module Rules = struct
 
   let build_ast_and_deps_from_reason_impl =
     define
-      ~command:"${bsc} -pp \"${refmt} ${refmt_flags}\" ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -impl ${in}"
+      ~command:"${bsc} -pp \"${refmt} ${refmt_flags}\" ${reason_react_jsx}  ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -impl ${in}"
       "build_ast_and_deps_from_reason_impl"
 
   let build_ast_and_deps_from_reason_intf =
@@ -8349,7 +8350,7 @@ module Rules = struct
        because it need to be ppxed by bucklescript
     *)
     define
-      ~command:"${bsc} -pp \"${refmt} ${refmt_flags}\" ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -intf ${in}"
+      ~command:"${bsc} -pp \"${refmt} ${refmt_flags}\" ${reason_react_jsx} ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -intf ${in}"
       "build_ast_and_deps_from_reason_intf"
 
 
@@ -8808,7 +8809,7 @@ let merge_module_info_map acc sources =
 let bsc_exe = "bsc.exe"
 let bsb_helper_exe = "bsb_helper.exe"
 let dash_i = "-I"
-
+let refmt_exe = "refmt.exe"
 let dash_ppx = "-ppx"
 let output_ninja
     ~cwd 
@@ -8863,7 +8864,9 @@ let output_ninja
           "bsc_flags", bsc_flags ;
           "ppx_flags", ppx_flags;
           "bs_package_includes", (Bsb_build_util.flag_concat dash_i @@ List.map (fun x -> x.Bsb_config_types.package_install_path) bs_dependencies);
-          "refmt", refmt;
+          "refmt", (match refmt with None -> bsc_dir // refmt_exe | Some x -> x) ;
+          "reason_react_jsx",
+            ( "-ppx " ^ Filename.quote (bsc_dir // "reactjs_jsx_ppx.exe") ) ; (* make it configurable in the future *)
           "refmt_flags", refmt_flags;
           Bsb_build_schemas.bsb_dir_group, "0"  (*TODO: avoid name conflict in the future *)
         |] oc ;

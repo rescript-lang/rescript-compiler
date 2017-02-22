@@ -89,7 +89,7 @@ module Rules = struct
 
   let build_ast_and_deps_from_reason_impl =
     define
-      ~command:"${bsc} -pp \"${refmt} ${refmt_flags}\" ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -impl ${in}"
+      ~command:"${bsc} -pp \"${refmt} ${refmt_flags}\" ${reason_react_jsx}  ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -impl ${in}"
       "build_ast_and_deps_from_reason_impl"
 
   let build_ast_and_deps_from_reason_intf =
@@ -97,7 +97,7 @@ module Rules = struct
        because it need to be ppxed by bucklescript
     *)
     define
-      ~command:"${bsc} -pp \"${refmt} ${refmt_flags}\" ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -intf ${in}"
+      ~command:"${bsc} -pp \"${refmt} ${refmt_flags}\" ${reason_react_jsx} ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -intf ${in}"
       "build_ast_and_deps_from_reason_intf"
 
 
