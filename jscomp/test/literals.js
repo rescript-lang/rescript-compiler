@@ -113,6 +113,8 @@ var unused_attribute = "Unused attribute ";
 
 var dash_nostdlib = "-nostdlib";
 
+var reactjs_jsx_ppx_exe = "reactjs_jsx_ppx.exe";
+
 exports.js_array_ctor       = js_array_ctor;
 exports.js_type_number      = js_type_number;
 exports.js_type_string      = js_type_string;
@@ -169,4 +171,5 @@ exports.es6_global          = es6_global;
 exports.amdjs_global        = amdjs_global;
 exports.unused_attribute    = unused_attribute;
 exports.dash_nostdlib       = dash_nostdlib;
+exports.reactjs_jsx_ppx_exe = reactjs_jsx_ppx_exe;
 /* No side effect */

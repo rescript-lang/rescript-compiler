@@ -111,10 +111,11 @@ let set_ocamllex ~cwd s =
 let get_ocamllex () = !ocamllex
 
 
-let refmt = ref "refmt"
+let refmt = ref None (* if not set, we pick the one shipped with Buckle*)
 let get_refmt () = !refmt
 let set_refmt ~cwd p =
-  refmt := Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:"refmt" p
+  refmt := Some (Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:"refmt" p)
+
 
 let refmt_flags = ref ["--print"; "binary"]
 let get_refmt_flags () = !refmt_flags

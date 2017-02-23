@@ -96,9 +96,10 @@ let merlin_flg_ppx = "\nFLG -ppx "
 let merlin_s = "\nS "
 let merlin_b = "\nB "
 let bsppx_exe = "bsppx.exe"
+
 let merlin_flg = "\nFLG "
 let merlin_file_gen 
-    built_in_ppx
+    (built_in_ppx, reactjs_jsx_ppx)
     ({bs_file_groups = res_files ; 
       generate_merlin;
       ppx_flags;
@@ -106,6 +107,7 @@ let merlin_file_gen
       bsc_flags; 
       built_in_dependency;
       external_includes; 
+      reason_react_jsx ; 
      } : Bsb_config_types.t)
   =
   if generate_merlin then begin     
@@ -114,12 +116,16 @@ let merlin_file_gen
     |> List.iter (fun x ->
         Buffer.add_string buffer (merlin_flg_ppx ^ x )
       );
+    if reason_react_jsx then   
+      begin 
+        Buffer.add_string buffer (merlin_flg_ppx ^ reactjs_jsx_ppx)
+      end;
     Buffer.add_string buffer (merlin_flg_ppx  ^ built_in_ppx);
     (*
     (match external_includes with 
     | [] -> ()
     | _ -> 
-    
+
       Buffer.add_string buffer (merlin_flg ^ Bsb_build_util.flag_concat "-I" external_includes
       ));
     *)
@@ -129,7 +135,7 @@ let merlin_file_gen
         Buffer.add_string buffer path ;
         Buffer.add_string buffer merlin_b;
         Buffer.add_string buffer path ;
-    );      
+      );      
     (match built_in_dependency with
      | None -> ()
      | Some package -> 
@@ -193,7 +199,7 @@ let interpret_json
   let update_queue = ref [] in
   let globbed_dirs = ref [] in
   let bs_file_groups = ref [] in 
-
+  let reason_react_jsx = ref false in 
 
   let config_json_chan = open_in_bin Literals.bsconfig_json in
   let global_data = Ext_json.parse_json_from_chan config_json_chan  in
@@ -207,7 +213,13 @@ let interpret_json
         | Some `False -> false 
         | Some _ -> true  in 
       Bsb_default.set_use_stdlib ~cwd use_stdlib ;
+
       map
+      |? (Bsb_build_schemas.reason, `Obj begin fun m -> 
+          m |? (Bsb_build_schemas.react_jsx, 
+                `Bool (fun b -> reason_react_jsx := b))
+            |> ignore 
+        end)
       |? (Bsb_build_schemas.generate_merlin, `Bool (fun b ->
           Bsb_default.set_generate_merlin b
         ))
@@ -276,9 +288,12 @@ let interpret_json
       files_to_install = String_hash_set.create 96;
       built_in_dependency = !Bsb_default.built_in_package;
       generate_merlin = Bsb_default.get_generate_merlin ();
+      reason_react_jsx = !reason_react_jsx ;  
     } in 
   merlin_file_gen 
-    (bsc_dir // bsppx_exe) config;
+    (bsc_dir // bsppx_exe,
+     bsc_dir // Literals.reactjs_jsx_ppx_exe
+    ) config;
   config
 
 
