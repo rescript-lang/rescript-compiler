@@ -1,5 +1,7 @@
 jscomp/js_cmj_datasets.ml binary
 jscomp/bin/reason.ml binary
+jscomp/bin/reactjs_ppx.ml binary
+jscomp/bin/refmt_main.ml binary
 docs/js-demo/exports.js binary
 docs/reason-demo/exports.js binary
 docs/Manual.html binary
