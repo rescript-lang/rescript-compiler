@@ -8810,6 +8810,9 @@ let bsb_helper_exe = "bsb_helper.exe"
 let dash_i = "-I"
 
 let dash_ppx = "-ppx"
+
+let ninja_required_version = "ninja_required_version = 1.5.1 \n"
+
 let output_ninja
     ~cwd 
     ~bsc_dir           
@@ -8838,7 +8841,7 @@ let output_ninja
   let oc = open_out_bin (builddir // Literals.build_ninja) in
   begin
     let () =
-      output_string oc "ninja_required_version = 1.7.1 \n" ;
+      output_string oc ninja_required_version ;
       output_string oc "bs_package_flags = ";
       begin match package_name with
         | None -> ()
