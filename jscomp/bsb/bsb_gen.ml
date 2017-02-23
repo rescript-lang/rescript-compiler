@@ -43,7 +43,7 @@ let merge_module_info_map acc sources =
 let bsc_exe = "bsc.exe"
 let bsb_helper_exe = "bsb_helper.exe"
 let dash_i = "-I"
-
+let refmt_exe = "refmt.exe"
 let dash_ppx = "-ppx"
 
 let ninja_required_version = "ninja_required_version = 1.5.1 \n"
@@ -64,7 +64,8 @@ let output_ninja
     package_specs;
     bs_file_groups;
     files_to_install;
-    built_in_dependency
+    built_in_dependency;
+    reason_react_jsx
     }
   =
   let bsc = bsc_dir // bsc_exe in   (* The path to [bsc.exe] independent of config  *)
@@ -101,7 +102,10 @@ let output_ninja
           "bsc_flags", bsc_flags ;
           "ppx_flags", ppx_flags;
           "bs_package_includes", (Bsb_build_util.flag_concat dash_i @@ List.map (fun x -> x.Bsb_config_types.package_install_path) bs_dependencies);
-          "refmt", refmt;
+          "refmt", (match refmt with None -> bsc_dir // refmt_exe | Some x -> x) ;
+          "reason_react_jsx",
+            ( if reason_react_jsx then "-ppx " ^ Filename.quote (bsc_dir // Literals.reactjs_jsx_ppx_exe)
+              else Ext_string.empty  ) ; (* make it configurable in the future *)
           "refmt_flags", refmt_flags;
           Bsb_build_schemas.bsb_dir_group, "0"  (*TODO: avoid name conflict in the future *)
         |] oc ;

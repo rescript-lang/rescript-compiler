@@ -101,6 +101,8 @@ val es6_global : string
 val amdjs_global : string 
 val unused_attribute : string 
 val dash_nostdlib : string
+
+val reactjs_jsx_ppx_exe : string 
 end = struct
 #1 "literals.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -204,6 +206,8 @@ let es6_global = "es6-global"
 let amdjs_global = "amdjs-global"
 let unused_attribute = "Unused attribute " 
 let dash_nostdlib = "-nostdlib"
+
+let reactjs_jsx_ppx_exe  = "reactjs_jsx_ppx.exe"
 end
 module Bs_pkg : sig 
 #1 "bs_pkg.mli"
@@ -358,7 +362,8 @@ let export_none = "none"
 let bsb_dir_group = "bsb_dir_group"
 let bsc_lib_includes = "bsc_lib_includes"
 let use_stdlib = "use-stdlib"
-
+let reason = "reason"
+let react_jsx = "react-jsx"
 end
 module Ext_pervasives : sig 
 #1 "ext_pervasives.mli"
@@ -7302,7 +7307,7 @@ type t =
       so that we can calculate correct relative path in 
       [.merlin]
     *)
-    refmt : string ;
+    refmt : string option;
     refmt_flags : string list;
     js_post_build_cmd : string option;
     package_specs : Bsb_config.package_specs ; 
@@ -7310,6 +7315,7 @@ type t =
     bs_file_groups : Bsb_build_ui.file_group list ;
     files_to_install : String_hash_set.t ;
     generate_merlin : bool ; 
+    reason_react_jsx : bool ; (* whether apply PPX transform or not*)
   }
 end
 module Bsb_default : sig 
@@ -7360,7 +7366,7 @@ val set_package_name : string -> unit
 val get_package_name : unit -> string option
 
 val set_refmt : cwd:string -> string -> unit
-val get_refmt : unit -> string
+val get_refmt : unit -> string option
 
 val set_refmt_flags : Ext_json.t array -> unit
 val get_refmt_flags : unit -> string list
@@ -7501,10 +7507,11 @@ let set_ocamllex ~cwd s =
 let get_ocamllex () = !ocamllex
 
 
-let refmt = ref "refmt"
+let refmt = ref None (* if not set, we pick the one shipped with Buckle*)
 let get_refmt () = !refmt
 let set_refmt ~cwd p =
-  refmt := Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:"refmt" p
+  refmt := Some (Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:"refmt" p)
+
 
 let refmt_flags = ref ["--print"; "binary"]
 let get_refmt_flags () = !refmt_flags
@@ -7724,9 +7731,10 @@ let merlin_flg_ppx = "\nFLG -ppx "
 let merlin_s = "\nS "
 let merlin_b = "\nB "
 let bsppx_exe = "bsppx.exe"
+
 let merlin_flg = "\nFLG "
 let merlin_file_gen 
-    built_in_ppx
+    (built_in_ppx, reactjs_jsx_ppx)
     ({bs_file_groups = res_files ; 
       generate_merlin;
       ppx_flags;
@@ -7734,6 +7742,7 @@ let merlin_file_gen
       bsc_flags; 
       built_in_dependency;
       external_includes; 
+      reason_react_jsx ; 
      } : Bsb_config_types.t)
   =
   if generate_merlin then begin     
@@ -7742,12 +7751,16 @@ let merlin_file_gen
     |> List.iter (fun x ->
         Buffer.add_string buffer (merlin_flg_ppx ^ x )
       );
+    if reason_react_jsx then   
+      begin 
+        Buffer.add_string buffer (merlin_flg_ppx ^ reactjs_jsx_ppx)
+      end;
     Buffer.add_string buffer (merlin_flg_ppx  ^ built_in_ppx);
     (*
     (match external_includes with 
     | [] -> ()
     | _ -> 
-    
+
       Buffer.add_string buffer (merlin_flg ^ Bsb_build_util.flag_concat "-I" external_includes
       ));
     *)
@@ -7757,7 +7770,7 @@ let merlin_file_gen
         Buffer.add_string buffer path ;
         Buffer.add_string buffer merlin_b;
         Buffer.add_string buffer path ;
-    );      
+      );      
     (match built_in_dependency with
      | None -> ()
      | Some package -> 
@@ -7821,7 +7834,7 @@ let interpret_json
   let update_queue = ref [] in
   let globbed_dirs = ref [] in
   let bs_file_groups = ref [] in 
-
+  let reason_react_jsx = ref false in 
 
   let config_json_chan = open_in_bin Literals.bsconfig_json in
   let global_data = Ext_json.parse_json_from_chan config_json_chan  in
@@ -7835,7 +7848,13 @@ let interpret_json
         | Some `False -> false 
         | Some _ -> true  in 
       Bsb_default.set_use_stdlib ~cwd use_stdlib ;
+
       map
+      |? (Bsb_build_schemas.reason, `Obj begin fun m -> 
+          m |? (Bsb_build_schemas.react_jsx, 
+                `Bool (fun b -> reason_react_jsx := b))
+            |> ignore 
+        end)
       |? (Bsb_build_schemas.generate_merlin, `Bool (fun b ->
           Bsb_default.set_generate_merlin b
         ))
@@ -7904,9 +7923,12 @@ let interpret_json
       files_to_install = String_hash_set.create 96;
       built_in_dependency = !Bsb_default.built_in_package;
       generate_merlin = Bsb_default.get_generate_merlin ();
+      reason_react_jsx = !reason_react_jsx ;  
     } in 
   merlin_file_gen 
-    (bsc_dir // bsppx_exe) config;
+    (bsc_dir // bsppx_exe,
+     bsc_dir // Literals.reactjs_jsx_ppx_exe
+    ) config;
   config
 
 
@@ -8341,7 +8363,7 @@ module Rules = struct
 
   let build_ast_and_deps_from_reason_impl =
     define
-      ~command:"${bsc} -pp \"${refmt} ${refmt_flags}\" ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -impl ${in}"
+      ~command:"${bsc} -pp \"${refmt} ${refmt_flags}\" ${reason_react_jsx}  ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -impl ${in}"
       "build_ast_and_deps_from_reason_impl"
 
   let build_ast_and_deps_from_reason_intf =
@@ -8349,7 +8371,7 @@ module Rules = struct
        because it need to be ppxed by bucklescript
     *)
     define
-      ~command:"${bsc} -pp \"${refmt} ${refmt_flags}\" ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -intf ${in}"
+      ~command:"${bsc} -pp \"${refmt} ${refmt_flags}\" ${reason_react_jsx} ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -intf ${in}"
       "build_ast_and_deps_from_reason_intf"
 
 
@@ -8808,7 +8830,7 @@ let merge_module_info_map acc sources =
 let bsc_exe = "bsc.exe"
 let bsb_helper_exe = "bsb_helper.exe"
 let dash_i = "-I"
-
+let refmt_exe = "refmt.exe"
 let dash_ppx = "-ppx"
 
 let ninja_required_version = "ninja_required_version = 1.5.1 \n"
@@ -8829,7 +8851,8 @@ let output_ninja
     package_specs;
     bs_file_groups;
     files_to_install;
-    built_in_dependency
+    built_in_dependency;
+    reason_react_jsx
     }
   =
   let bsc = bsc_dir // bsc_exe in   (* The path to [bsc.exe] independent of config  *)
@@ -8866,7 +8889,10 @@ let output_ninja
           "bsc_flags", bsc_flags ;
           "ppx_flags", ppx_flags;
           "bs_package_includes", (Bsb_build_util.flag_concat dash_i @@ List.map (fun x -> x.Bsb_config_types.package_install_path) bs_dependencies);
-          "refmt", refmt;
+          "refmt", (match refmt with None -> bsc_dir // refmt_exe | Some x -> x) ;
+          "reason_react_jsx",
+            ( if reason_react_jsx then "-ppx " ^ Filename.quote (bsc_dir // Literals.reactjs_jsx_ppx_exe)
+              else Ext_string.empty  ) ; (* make it configurable in the future *)
           "refmt_flags", refmt_flags;
           Bsb_build_schemas.bsb_dir_group, "0"  (*TODO: avoid name conflict in the future *)
         |] oc ;

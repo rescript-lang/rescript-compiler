@@ -1,6 +1,3 @@
 [submodule "ocaml"]
 	path = ocaml
 	url = https://github.com/bloomberg/ocaml
-[submodule "reason"]
-	path = reason
-	url = https://github.com/facebook/reason

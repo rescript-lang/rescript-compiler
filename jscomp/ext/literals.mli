@@ -99,3 +99,5 @@ val es6_global : string
 val amdjs_global : string 
 val unused_attribute : string 
 val dash_nostdlib : string
+
+val reactjs_jsx_ppx_exe : string 

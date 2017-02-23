@@ -44,7 +44,7 @@ type t =
       so that we can calculate correct relative path in 
       [.merlin]
     *)
-    refmt : string ;
+    refmt : string option;
     refmt_flags : string list;
     js_post_build_cmd : string option;
     package_specs : Bsb_config.package_specs ; 
@@ -52,4 +52,5 @@ type t =
     bs_file_groups : Bsb_build_ui.file_group list ;
     files_to_install : String_hash_set.t ;
     generate_merlin : bool ; 
+    reason_react_jsx : bool ; (* whether apply PPX transform or not*)
   }

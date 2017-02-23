@@ -99,3 +99,5 @@ let es6_global = "es6-global"
 let amdjs_global = "amdjs-global"
 let unused_attribute = "Unused attribute " 
 let dash_nostdlib = "-nostdlib"
+
+let reactjs_jsx_ppx_exe  = "reactjs_jsx_ppx.exe"

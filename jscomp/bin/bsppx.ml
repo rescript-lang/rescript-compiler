@@ -6431,6 +6431,8 @@ val es6_global : string
 val amdjs_global : string 
 val unused_attribute : string 
 val dash_nostdlib : string
+
+val reactjs_jsx_ppx_exe : string 
 end = struct
 #1 "literals.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -6534,6 +6536,8 @@ let es6_global = "es6-global"
 let amdjs_global = "amdjs-global"
 let unused_attribute = "Unused attribute " 
 let dash_nostdlib = "-nostdlib"
+
+let reactjs_jsx_ppx_exe  = "reactjs_jsx_ppx.exe"
 end
 module Ext_filename : sig 
 #1 "ext_filename.mli"
