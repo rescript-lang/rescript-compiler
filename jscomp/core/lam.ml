@@ -1136,6 +1136,41 @@ let not_ loc x  : t =
 
 let may_depend = Lam_module_ident.Hash_set.add 
 
+
+let rec no_auto_uncurried_arg_types 
+    (xs : Ast_ffi_types.arg_kind list)  = 
+  match xs with 
+  | [] -> true 
+  | {arg_type = Fn_uncurry_arity _ } :: _ ->
+    false 
+  | _ :: xs -> no_auto_uncurried_arg_types xs 
+
+(* TODO: sort out the order here
+   consolidate {!Lam_compile_external_call.assemble_args_splice}
+*)
+let rec transform_uncurried_arg_type loc (arg_types : Ast_ffi_types.arg_kind list) 
+    (args : t list ) = 
+  match arg_types,args with 
+  | { arg_type = Fn_uncurry_arity n ; arg_label } :: xs,
+    y::ys -> 
+    let (o_arg_types, o_args) = 
+      transform_uncurried_arg_type loc xs ys in 
+    { Ast_ffi_types.arg_type = Nothing ; arg_label } :: o_arg_types , 
+    prim ~primitive:(Pjs_fn_make n) ~args:[y] loc :: o_args 
+  |  x  ::xs, y::ys -> 
+    begin match x with 
+      | {arg_type = Arg_int_lit  _ | Arg_string_lit _ }  -> 
+        let o_arg_types, o_args = transform_uncurried_arg_type loc xs args in 
+        x :: o_arg_types , o_args 
+      | _ -> 
+        let o_arg_types, o_args = transform_uncurried_arg_type loc xs ys in 
+        x :: o_arg_types , y:: o_args 
+    end
+  | [] , [] 
+  | _::_, [] 
+  | [], _::_ as ok -> ok    
+
+  
 (** drop Lseq (List! ) etc *)
 let rec drop_global_marker (lam : t) =
   match lam with 
@@ -1204,9 +1239,15 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : t =
           prim ~primitive:(Pccall a) ~args loc
       | Ffi_obj_create labels -> 
         prim ~primitive:(Pjs_object_create labels) ~args loc 
-      | Ffi_bs(arg_types, result_type, ffi) -> 
-        prim ~primitive:(Pjs_call(prim_name, arg_types,result_type,ffi)) 
-          ~args loc
+      | Ffi_bs(arg_types, result_type, ffi) ->         
+        if no_auto_uncurried_arg_types arg_types then   
+          prim ~primitive:(Pjs_call(prim_name, arg_types,result_type,ffi)) 
+            ~args loc
+        else 
+          let n_arg_types, n_args = 
+            transform_uncurried_arg_type loc  arg_types args in 
+          prim ~primitive:(Pjs_call (prim_name, n_arg_types, result_type, ffi))
+            ~args:n_args loc 
     end
 
   | Praise _ ->
