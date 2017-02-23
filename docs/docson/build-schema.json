@@ -284,6 +284,14 @@
         "use-stdlib" : {
             "type" : "boolean",
             "description": "(experimental currently)default true(Set use OCaml stdlib or not)"
+        },
+        "reason" : {
+            "properties": {
+                "react-jsx" : {
+                    "type" : "boolean",
+                    "description": "(not implemented yet, on by default) default to be true, then it will apply jsx transformation"
+                }
+            }
         }
     },
     "additionalProperties": false,
