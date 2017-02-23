@@ -7197,28 +7197,30 @@ let decode_utf8_string s =
                 in
                 let (c', i') = follow s n c i in add c'; _decode_utf8_string s (i' + 1)
             | Invalid -> raise (Invalid_argument "Invalid byte"))
-    in _decode_utf8_string s 0; !lst
+    in _decode_utf8_string s 0; List.rev !lst
 
-let check_from_end s =
-    if String.length s = 0 then false
-    else
-    let al = decode_utf8_string s in
-    let rec aux l  =
+let check_from_end al =
+    let rec aux l seen =
         match l with
         | [] -> false
         | (e::r) ->
             if e < 0 || e > 255 then false
              else (let c = Char.chr e in
              if c = '/' then true
-               else (if c = 'i' || c = 'g' || c = 'm' || c = 'y' || c ='u' then aux r
-               else false))
-    in aux al
+             else (if List.exists (fun x -> x = c) seen then false (* flag should not be repeated *)
+             else (if c = 'i' || c = 'g' || c = 'm' || c = 'y' || c ='u' then aux r (c::seen) 
+             else false)))
+    in aux al []
 
 let js_regex_checker s =
+  try
+  begin
   if String.length s = 0 then false else
-  let check_first = String.get s 0 = '/' in
-  let check_last = check_from_end s in
+  let al = decode_utf8_string s in
+  let check_first = (List.hd al) = int_of_char '/' in
+  let check_last = check_from_end (List.rev al) in
   check_first && check_last
+  end with Invalid_argument err -> false
 end
 module Ounit_js_regex_checker_tests
 = struct
@@ -7244,11 +7246,11 @@ let suites =
         let b = js_regex_checker "/abc" in 
         OUnit.assert_equal b false
         end;
-        "test_regex_with_flat" >:: begin fun _ ->
+        "test_regex_with_flag" >:: begin fun _ ->
         let b = js_regex_checker "/ss/ig" in
         OUnit.assert_equal b true
         end;
-        "test_regex_with_invalid_flat" >:: begin fun _ ->
+        "test_regex_with_invalid_flag" >:: begin fun _ ->
         let b = js_regex_checker "/ss/j" in
         OUnit.assert_equal b false
         end;
@@ -7263,6 +7265,10 @@ let suites =
         "test_regex_with_utf8" >:: begin fun _ ->
         let b = js_regex_checker "/😃/" in
         OUnit.assert_equal b true
+        end;
+        "test_regex_repeated_flags" >:: begin fun _ ->
+        let b = js_regex_checker "/abc/gg" in
+        OUnit.assert_equal b false
         end;
     ]
 end

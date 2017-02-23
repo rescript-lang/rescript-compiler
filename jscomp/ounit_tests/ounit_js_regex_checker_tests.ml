@@ -19,11 +19,11 @@ let suites =
         let b = js_regex_checker "/abc" in 
         OUnit.assert_equal b false
         end;
-        "test_regex_with_flat" >:: begin fun _ ->
+        "test_regex_with_flag" >:: begin fun _ ->
         let b = js_regex_checker "/ss/ig" in
         OUnit.assert_equal b true
         end;
-        "test_regex_with_invalid_flat" >:: begin fun _ ->
+        "test_regex_with_invalid_flag" >:: begin fun _ ->
         let b = js_regex_checker "/ss/j" in
         OUnit.assert_equal b false
         end;
@@ -38,5 +38,9 @@ let suites =
         "test_regex_with_utf8" >:: begin fun _ ->
         let b = js_regex_checker "/😃/" in
         OUnit.assert_equal b true
+        end;
+        "test_regex_repeated_flags" >:: begin fun _ ->
+        let b = js_regex_checker "/abc/gg" in
+        OUnit.assert_equal b false
         end;
     ]
