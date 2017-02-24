@@ -1,9 +1,9 @@
 
 
 
-(* let f a b x y = 
+let f a b x y = 
     a x  |> (+) (b y) 
-*)
+
 
 external add : int -> int -> int = "add" [@@bs.val]    
 
@@ -11,7 +11,7 @@ let f_add2 a b x y =
     a x |> add (b y)
 
 
-(*
+
 let f a b x y = 
     a x + b y 
 
@@ -33,4 +33,3 @@ let f4 x y = x |> add y
 
 
 
-*)
