@@ -34,7 +34,7 @@ external max_float : float -> float -> float = "Math.max" [@@bs.val]
 external min_float : float -> float -> float = "Math.min" [@@bs.val]
 external pow_float : base:float -> exp:float -> float = "Math.pow" [@@bs.val]
 
-open Typed_array
+open Js_typed_array
 
 let caml_int32_float_of_bits (x : int32) =
   let int32 = Int32_array.make [| x |] in

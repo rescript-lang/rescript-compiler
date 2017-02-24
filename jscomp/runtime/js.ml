@@ -103,3 +103,4 @@ module Obj  = Js_obj
 module Boolean = Js_boolean
 module Math = Js_math
 module Date = Js_date
+module TypedArray = Js_typed_array
