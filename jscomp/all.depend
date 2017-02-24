@@ -19,6 +19,7 @@ ext/ext_file_pp.cmx : ext/ext_file_pp.cmi
 ext/ext_format.cmx : ext/ext_format.cmi
 ext/hashtbl_gen.cmx : ext/ext_util.cmx
 ext/ext_string.cmx : ext/ext_bytes.cmx ext/ext_string.cmi
+ext/ext_js_regex.cmx : ext/ext_js_regex.cmi
 ext/string_hashtbl.cmx : ext/hashtbl_gen.cmx ext/ext_string.cmx \
     stubs/bs_hash_stubs.cmx ext/string_hashtbl.cmi
 ext/ext_list.cmx : ext/ext_list.cmi
@@ -93,6 +94,7 @@ ext/map_make.cmi : ext/map_gen.cmx
 ext/ext_file_pp.cmi :
 ext/ext_format.cmi :
 ext/ext_string.cmi :
+ext/ext_js_regex.cmi :
 ext/string_hashtbl.cmi : ext/hashtbl_gen.cmx
 ext/ext_list.cmi :
 ext/ext_map.cmi :
@@ -158,7 +160,8 @@ syntax/ast_external.cmx : syntax/ast_external.cmi
 syntax/ast_lift.cmx : syntax/ast_lift.cmi
 syntax/ast_literal.cmx : syntax/ast_literal.cmi
 syntax/ast_pat.cmx : syntax/ast_pat.cmi
-syntax/ast_payload.cmx : ext/string_map.cmx syntax/ast_payload.cmi
+syntax/ast_payload.cmx : ext/string_map.cmx ext/ext_js_regex.cmx \
+    syntax/ast_payload.cmi
 syntax/ast_signature.cmx : syntax/ast_signature.cmi
 syntax/ast_structure.cmx : syntax/ast_signature.cmx syntax/ast_structure.cmi
 syntax/bs_ast_iterator.cmx : syntax/bs_ast_iterator.cmi
@@ -643,7 +646,9 @@ ounit_tests/ounit_tests_main.cmx : ext/resize_array.cmx \
     ounit_tests/ounit_path_tests.cmx \
     ounit_tests/ounit_ordered_hash_set_tests.cmx \
     ounit_tests/ounit_map_tests.cmx ounit_tests/ounit_list_test.cmx \
-    ounit_tests/ounit_json_tests.cmx ounit_tests/ounit_int_vec_tests.cmx \
+    ounit_tests/ounit_json_tests.cmx \
+    ounit_tests/ounit_js_regex_checker_tests.cmx \
+    ounit_tests/ounit_int_vec_tests.cmx \
     ounit_tests/ounit_ident_mask_tests.cmx \
     ounit_tests/ounit_hashtbl_tests.cmx ounit_tests/ounit_hash_stubs_test.cmx \
     ounit_tests/ounit_hash_set_tests.cmx \

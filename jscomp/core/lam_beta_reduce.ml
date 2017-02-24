@@ -241,7 +241,7 @@ let propogate_beta_reduce
              (Lam_util.kind_of_lambda_block Normal args ); (** *)
            arg
          | _ -> arg in
-       Lam_util.refine_let param arg l) 
+       Lam_util.refine_let ~kind:Strict param arg l) 
      rest_bindings new_body
 
 let propogate_beta_reduce_with_map  
@@ -300,7 +300,7 @@ let propogate_beta_reduce_with_map
              (Lam_util.kind_of_lambda_block Normal args ); (** *)
            arg
          | _ -> arg in
-       Lam_util.refine_let param arg l) 
+       Lam_util.refine_let ~kind:Strict param arg l) 
      rest_bindings new_body
 
 
@@ -311,5 +311,5 @@ let beta_reduce params body args =
   | None -> 
     List.fold_left2 
       (fun l param arg ->
-         Lam_util.refine_let param arg l)
+         Lam_util.refine_let ~kind:Strict param arg l)
       body params args

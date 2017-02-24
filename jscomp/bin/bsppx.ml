@@ -13615,7 +13615,7 @@ let handle_raw ?(check_js_regex = false) loc payload =
     | Not_String_Lteral ->
       Location.raise_errorf ~loc
         "bs.raw can only be applied to a string"
-    | Not_String_Lteral ->
+    | Ast_payload.JS_Regex_Check_Failed ->
       Location.raise_errorf ~loc "this is an invalid js regex"
     | Correct exp ->
       let pexp_desc = 

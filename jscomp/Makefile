@@ -166,6 +166,7 @@ EXT_SRCS = ext_util\
 	ext_file_pp ext_format \
 	hashtbl_gen \
 	ext_string \
+	ext_js_regex\
 	string_hashtbl\
 	ext_list \
 	ext_map \
