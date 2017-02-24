@@ -66511,24 +66511,26 @@ let convert exports lam : _ * _  =
       let lam = Lletrec (bindings, body) in 
       scc bindings lam body  
     (* inlining will affect how mututal recursive behave *)
-    | Lprim(Prevapply, args,  outer_loc) -> 
-      let args = List.map aux args in 
-      begin match args with 
-        | [x; Lapply{fn;args;loc=inner_loc}] ->
+    | Lprim(Prevapply, [x ; f ],  outer_loc) -> 
+      let x  = aux x in 
+      let f =  aux f in 
+      begin match  f with 
+        | Lapply{fn;args;loc=inner_loc} ->
           apply fn (args @[x]) outer_loc App_na 
-        | [x; f] -> 
-          apply f [x] outer_loc App_na
-        | _ -> assert false 
+        | _ -> 
+          apply f [x] outer_loc App_na        
       end 
-    | Lprim(Pdirapply, args, outer_loc) -> 
-      let args = List.map aux args in 
-      begin match args with 
-      | [Lapply{fn ; args }; x ] 
+    | Lprim (Prevapply, _, _ ) -> assert false 
+    | Lprim(Pdirapply, [f;x], outer_loc) -> 
+      let f = aux f in 
+      let x = aux x in 
+      begin match f with 
+      | Lapply{fn ; args }
         -> 
         apply fn (args @ [x]) outer_loc App_na
-      | [f;x] -> apply f [x] outer_loc App_na
-      | _ -> assert false 
+      | _  -> apply f [x] outer_loc App_na
     end
+    | Lprim(Pdirapply, _, _) -> assert false 
     | Lprim (primitive,args, loc) 
       -> 
       let args = (List.map aux args) in
