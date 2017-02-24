@@ -48,17 +48,18 @@ let is_single_int (x : t ) =
       _}] -> Some name
   | _  -> None
 
-let as_string_exp (x : t ) = 
+type rtn = Not_String_Lteral | JS_Regex_Check_Failed | Correct of Parsetree.expression
+let as_string_exp ?(check_js_regex = false) (x : t ) = 
   match x with  (** TODO also need detect empty phrase case *)
   | PStr [ {
       pstr_desc =  
         Pstr_eval (
           {pexp_desc = 
              Pexp_constant 
-               (Const_string (_,_));
+               (Const_string (str,_));
            _} as e ,_);
-      _}] -> Some e
-  | _  -> None
+      _}] -> if check_js_regex then (if Ext_js_regex.js_regex_checker str then Correct e else JS_Regex_Check_Failed) else Correct e
+  | _  -> Not_String_Lteral
 
 let as_core_type loc x =
   match  x with

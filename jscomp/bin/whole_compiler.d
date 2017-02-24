@@ -174,6 +174,7 @@ bin/whole_compiler.ml : core/lam_closure.ml
 bin/whole_compiler.ml : core/lam_compile.ml
 bin/whole_compiler.ml : core/ocaml_parse.ml
 bin/whole_compiler.ml : ext/ext_filename.ml
+bin/whole_compiler.ml : ext/ext_js_regex.ml
 bin/whole_compiler.ml : ext/ext_pp_scope.ml
 bin/whole_compiler.ml : ext/hash_set_gen.ml
 bin/whole_compiler.ml : ext/hashtbl_make.ml
@@ -214,6 +215,7 @@ bin/whole_compiler.ml : core/lam_coercion.ml
 bin/whole_compiler.ml : core/lam_compile.mli
 bin/whole_compiler.ml : core/ocaml_parse.mli
 bin/whole_compiler.ml : ext/ext_filename.mli
+bin/whole_compiler.ml : ext/ext_js_regex.mli
 bin/whole_compiler.ml : ext/ext_pp_scope.mli
 bin/whole_compiler.ml : ext/hashtbl_make.mli
 bin/whole_compiler.ml : ext/ident_hashtbl.ml

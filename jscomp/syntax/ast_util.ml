@@ -286,13 +286,14 @@ let handle_debugger loc payload =
   else Location.raise_errorf ~loc "bs.raw can only be applied to a string"
 
 
-let handle_raw loc payload = 
-  begin match Ast_payload.as_string_exp payload with 
-    | None ->
+let handle_raw ?(check_js_regex = false) loc payload =
+  begin match Ast_payload.as_string_exp ~check_js_regex payload with
+    | Not_String_Lteral ->
       Location.raise_errorf ~loc
-        "bs.raw can only be applied to a string "
-
-    | Some exp -> 
+        "bs.raw can only be applied to a string"
+    | Not_String_Lteral ->
+      Location.raise_errorf ~loc "this is an invalid js regex"
+    | Correct exp ->
       let pexp_desc = 
         Parsetree.Pexp_apply (
           Exp.ident {loc; 
@@ -310,7 +311,7 @@ let handle_raw loc payload =
 
 let handle_raw_structure loc payload = 
   begin match Ast_payload.as_string_exp payload with 
-    | Some exp 
+    | Correct exp 
       -> 
       let pexp_desc = 
         Parsetree.Pexp_apply(
@@ -319,9 +320,12 @@ let handle_raw_structure loc payload =
       Ast_helper.Str.eval 
         { exp with pexp_desc }
 
-    | None
+    | Not_String_Lteral
       -> 
       Location.raise_errorf ~loc "bs.raw can only be applied to a string"
+    | JS_Regex_Check_Failed 
+      ->
+      Location.raise_errorf ~loc "this is an invalid js regex"
   end
 
 

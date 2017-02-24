@@ -22,50 +22,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+(* This is a module that checks if js regex is valid or not *)
 
-
-(** A utility module used when destructuring parsetree attributes, used for 
-    compiling FFI attributes and built-in ppx  *)
-
-type t = Parsetree.payload
-type lid = string Asttypes.loc
-type label_expr = lid  * Parsetree.expression
-type action = 
-   lid * Parsetree.expression option
-
-val is_single_string : t -> string option
-val is_single_int : t -> int option 
-
-type rtn = Not_String_Lteral | JS_Regex_Check_Failed | Correct of Parsetree.expression
-val as_string_exp : ?check_js_regex: bool -> t -> rtn
-val as_core_type : Location.t -> t -> Parsetree.core_type    
-val as_empty_structure :  t -> bool 
-val as_ident : t -> Longident.t Asttypes.loc option
-val raw_string_payload : Location.t -> string -> t 
-val assert_strings :
-  Location.t -> t -> string list  
-
-(** as a record or empty 
-    it will accept 
-    {[ [@@@bs.config ]]}
-    or 
-    {[ [@@@bs.config { property  .. } ]]}    
-    Note that we only 
-    {[
-      { flat_property}
-    ]}
-    below  is not allowed 
-    {[
-      {M.flat_property}
-    ]}
-*)
-val as_config_record_and_process : 
-  Location.t ->
-  t -> action list 
-
-val assert_bool_lit : Parsetree.expression -> bool
-
-val empty : t 
-
-val table_dispatch : 
-  (Parsetree.expression option  -> 'a) String_map.t -> action -> 'a
+val js_regex_checker : string -> bool

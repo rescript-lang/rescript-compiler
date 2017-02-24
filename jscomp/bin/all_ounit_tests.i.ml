@@ -75,7 +75,7 @@ open OUnitTypes
 
 (** Most simple heuristic, just pick the first test. *)
 let simple state =
-  (* 133 *) List.hd state.tests_planned
+  (* 142 *) List.hd state.tests_planned
 
 end
 module OUnitUtils
@@ -98,22 +98,22 @@ let is_success =
 let is_failure = 
   function
     | RFailure _ -> (* 0 *) true
-    | RSuccess _ | RError _  | RSkip _ | RTodo _ -> (* 266 *) false
+    | RSuccess _ | RError _  | RSkip _ | RTodo _ -> (* 284 *) false
 
 let is_error = 
   function 
     | RError _ -> (* 0 *) true
-    | RSuccess _ | RFailure _ | RSkip _ | RTodo _ -> (* 266 *) false
+    | RSuccess _ | RFailure _ | RSkip _ | RTodo _ -> (* 284 *) false
 
 let is_skip = 
   function
     | RSkip _ -> (* 0 *) true
-    | RSuccess _ | RFailure _ | RError _  | RTodo _ -> (* 266 *) false
+    | RSuccess _ | RFailure _ | RError _  | RTodo _ -> (* 284 *) false
 
 let is_todo = 
   function
     | RTodo _ -> (* 0 *) true
-    | RSuccess _ | RFailure _ | RError _  | RSkip _ -> (* 266 *) false
+    | RSuccess _ | RFailure _ | RError _  | RSkip _ -> (* 284 *) false
 
 let result_flavour = 
   function
@@ -145,7 +145,7 @@ let rec was_successful =
     | [] -> (* 3 *) true
     | RSuccess _::t 
     | RSkip _::t -> 
-        (* 399 *) was_successful t
+        (* 426 *) was_successful t
 
     | RFailure _::_
     | RError _::_ 
@@ -155,22 +155,22 @@ let rec was_successful =
 let string_of_node = 
   function
     | ListItem n -> 
-        (* 532 *) string_of_int n
+        (* 568 *) string_of_int n
     | Label s -> 
-        (* 798 *) s
+        (* 852 *) s
 
 (* Return the number of available tests *)
 let rec test_case_count = 
   function
-    | TestCase _ -> (* 133 *) 1 
-    | TestLabel (_, t) -> (* 154 *) test_case_count t
+    | TestCase _ -> (* 142 *) 1 
+    | TestLabel (_, t) -> (* 164 *) test_case_count t
     | TestList l -> 
-        (* 21 *) List.fold_left 
-          (fun c t -> (* 153 *) c + test_case_count t) 
+        (* 22 *) List.fold_left 
+          (fun c t -> (* 163 *) c + test_case_count t) 
           0 l
 
 let string_of_path path =
-  (* 266 *) String.concat ":" (List.rev_map string_of_node path)
+  (* 284 *) String.concat ":" (List.rev_map string_of_node path)
 
 let buff_format_printf f = 
   (* 0 *) let buff = Buffer.create 13 in
@@ -193,13 +193,13 @@ let mapi f l =
     rmapi 0 l
 
 let fold_lefti f accu l =
-  (* 21 *) let rec rfold_lefti cnt accup l = 
-    (* 174 *) match l with
+  (* 22 *) let rec rfold_lefti cnt accup l = 
+    (* 185 *) match l with
       | [] -> 
-          (* 21 *) accup
+          (* 22 *) accup
 
       | h::t -> 
-          (* 153 *) rfold_lefti (cnt + 1) (f accup h cnt) t
+          (* 163 *) rfold_lefti (cnt + 1) (f accup h cnt) t
   in
     rfold_lefti 0 accu l
 
@@ -217,7 +217,7 @@ open OUnitUtils
 type event_type = GlobalEvent of global_event | TestEvent of test_event
 
 let format_event verbose event_type =
-  (* 800 *) match event_type with
+  (* 854 *) match event_type with
     | GlobalEvent e ->
         (* 2 *) begin
           match e with 
@@ -276,31 +276,31 @@ let format_event verbose event_type =
         end
 
     | TestEvent e ->
-        (* 798 *) begin
+        (* 852 *) begin
           let string_of_result = 
             if verbose then
-              (* 399 *) function
-                | RSuccess _      -> (* 133 *) "ok\n"
+              (* 426 *) function
+                | RSuccess _      -> (* 142 *) "ok\n"
                 | RFailure (_, _) -> (* 0 *) "FAIL\n"
                 | RError (_, _)   -> (* 0 *) "ERROR\n"
                 | RSkip (_, _)    -> (* 0 *) "SKIP\n"
                 | RTodo (_, _)    -> (* 0 *) "TODO\n"
             else
-              (* 399 *) function
-                | RSuccess _      -> (* 133 *) "."
+              (* 426 *) function
+                | RSuccess _      -> (* 142 *) "."
                 | RFailure (_, _) -> (* 0 *) "F"
                 | RError (_, _)   -> (* 0 *) "E"
                 | RSkip (_, _)    -> (* 0 *) "S"
                 | RTodo (_, _)    -> (* 0 *) "T"
           in
             if verbose then
-              (* 399 *) match e with 
+              (* 426 *) match e with 
                 | EStart p -> 
-                    (* 133 *) Printf.sprintf "%s start\n" (string_of_path p)
+                    (* 142 *) Printf.sprintf "%s start\n" (string_of_path p)
                 | EEnd p -> 
-                    (* 133 *) Printf.sprintf "%s end\n" (string_of_path p)
+                    (* 142 *) Printf.sprintf "%s end\n" (string_of_path p)
                 | EResult result -> 
-                    (* 133 *) string_of_result result
+                    (* 142 *) string_of_result result
                 | ELog (lvl, str) ->
                     (* 0 *) let prefix = 
                       match lvl with 
@@ -312,21 +312,21 @@ let format_event verbose event_type =
                 | ELogRaw str ->
                     (* 0 *) str
             else 
-              (* 399 *) match e with 
-                | EStart _ | EEnd _ | ELog _ | ELogRaw _ -> (* 266 *) ""
-                | EResult result -> (* 133 *) string_of_result result
+              (* 426 *) match e with 
+                | EStart _ | EEnd _ | ELog _ | ELogRaw _ -> (* 284 *) ""
+                | EResult result -> (* 142 *) string_of_result result
         end
 
 let file_logger fn =
   (* 1 *) let chn = open_out fn in
     (fun ev ->
-       (* 400 *) output_string chn (format_event true ev);
+       (* 427 *) output_string chn (format_event true ev);
        flush chn),
     (fun () -> (* 1 *) close_out chn)
 
 let std_logger verbose =
   (* 1 *) (fun ev -> 
-     (* 400 *) print_string (format_event verbose ev);
+     (* 427 *) print_string (format_event verbose ev);
      flush stdout),
   (fun () -> (* 1 *) ())
 
@@ -343,7 +343,7 @@ let create output_file_opt verbose (log,close) =
           (* 0 *) null_logger
   in
     (fun ev ->
-       (* 400 *) std_log ev; file_log ev; log ev),
+       (* 427 *) std_log ev; file_log ev; log ev),
     (fun () ->
        (* 1 *) std_close (); file_close (); close ())
 
@@ -711,7 +711,7 @@ let assert_string str =
   (* 0 *) if not (str = "") then (* 0 *) assert_failure str
 
 let assert_equal ?(cmp = ( = )) ?printer ?pp_diff ?msg expected actual =
-  (* 2001489 *) let get_error_string () =
+  (* 2001498 *) let get_error_string () =
     (* 0 *) let res =
       buff_format_printf
         (fun fmt ->
@@ -951,8 +951,8 @@ let (@?) = assert_bool
 
 (* Some shorthands which allows easy test construction *)
 let (>:) s t = (* 0 *) TestLabel(s, t)             (* infix *)
-let (>::) s f = (* 133 *) TestLabel(s, TestCase(f))  (* infix *)
-let (>:::) s l = (* 21 *) TestLabel(s, TestList(l)) (* infix *)
+let (>::) s f = (* 142 *) TestLabel(s, TestCase(f))  (* infix *)
+let (>:::) s l = (* 22 *) TestLabel(s, TestList(l)) (* infix *)
 
 (* Utility function to manipulate test *)
 let rec test_decorate g =
@@ -1087,7 +1087,7 @@ let maybe_backtrace = ""
 (* Run all tests, report starts, errors, failures, and return the results *)
 let perform_test report test =
   (* 1 *) let run_test_case f path =
-    (* 133 *) try 
+    (* 142 *) try 
       f ();
       RSuccess path
     with
@@ -1106,22 +1106,22 @@ let perform_test report test =
   let rec flatten_test path acc = 
     function
       | TestCase(f) -> 
-          (* 133 *) (path, f) :: acc
+          (* 142 *) (path, f) :: acc
 
       | TestList (tests) ->
-          (* 21 *) fold_lefti 
+          (* 22 *) fold_lefti 
             (fun acc t cnt -> 
-               (* 153 *) flatten_test 
+               (* 163 *) flatten_test 
                  ((ListItem cnt)::path) 
                  acc t)
             acc tests
       
       | TestLabel (label, t) -> 
-          (* 154 *) flatten_test ((Label label)::path) acc t
+          (* 164 *) flatten_test ((Label label)::path) acc t
   in
   let test_cases = List.rev (flatten_test [] [] test) in
   let runner (path, f) = 
-    (* 133 *) let result = 
+    (* 142 *) let result = 
       report (EStart path);
       run_test_case f path 
     in
@@ -1130,18 +1130,18 @@ let perform_test report test =
       result
   in
   let rec iter state = 
-    (* 134 *) match state.tests_planned with 
+    (* 143 *) match state.tests_planned with 
       | [] ->
           (* 1 *) state.results
       | _ ->
-          (* 133 *) let (path, f) = !global_chooser state in            
+          (* 142 *) let (path, f) = !global_chooser state in            
           let result = runner (path, f) in
             iter 
               {
                 results = result :: state.results;
                 tests_planned = 
                   List.filter 
-                    (fun (path', _) -> (* 8911 *) path <> path') state.tests_planned
+                    (fun (path', _) -> (* 10153 *) path <> path') state.tests_planned
               }
   in
     iter {results = []; tests_planned = test_cases}
@@ -1171,7 +1171,7 @@ let run_test_tt ?verbose test =
     time_fun 
       perform_test 
       (fun ev ->
-         (* 399 *) log (OUnitLogger.TestEvent ev))
+         (* 426 *) log (OUnitLogger.TestEvent ev))
       test 
   in
     
@@ -4215,6 +4215,7 @@ sig
   val copy: t -> t
   val remove:  t -> key -> unit
   val add :  t -> key -> unit
+  val of_array : key array -> t 
   val check_add : t -> key -> bool
   val mem :  t -> key -> bool
   val iter: (key -> unit) ->  t -> unit
@@ -4335,6 +4336,15 @@ let add (h : _ Hash_set_gen.t) key =
       if h.size > Array.length h_data lsl 1 then (* 5 *) Hash_set_gen.resize key_index h
     end
 
+let of_array arr = 
+  (* 0 *) let len = Array.length arr in 
+  let tbl = create len in 
+  for i = 0 to len - 1  do
+    (* 0 *) add tbl (Array.unsafe_get arr i);
+  done ;
+  tbl 
+  
+    
 let check_add (h : _ Hash_set_gen.t) key =
   (* 0 *) let i = key_index h key  in 
   let h_data = h.data in  
@@ -4352,7 +4362,7 @@ let check_add (h : _ Hash_set_gen.t) key =
 let mem (h :  _ Hash_set_gen.t) key =
   (* 3102 *) Hash_set_gen.small_bucket_mem eq_key key (Array.unsafe_get h.data (key_index h key)) 
 
-# 113
+# 122
 end
   
 
@@ -4476,6 +4486,15 @@ let add (h : _ Hash_set_gen.t) key =
       if h.size > Array.length h_data lsl 1 then (* 9 *) Hash_set_gen.resize key_index h
     end
 
+let of_array arr = 
+  (* 0 *) let len = Array.length arr in 
+  let tbl = create len in 
+  for i = 0 to len - 1  do
+    (* 0 *) add tbl (Array.unsafe_get arr i);
+  done ;
+  tbl 
+  
+    
 let check_add (h : _ Hash_set_gen.t) key =
   (* 0 *) let i = key_index h key  in 
   let h_data = h.data in  
@@ -4970,6 +4989,15 @@ let add (h : _ Hash_set_gen.t) key =
       if h.size > Array.length h_data lsl 1 then (* 0 *) Hash_set_gen.resize key_index h
     end
 
+let of_array arr = 
+  (* 0 *) let len = Array.length arr in 
+  let tbl = create len in 
+  for i = 0 to len - 1  do
+    (* 0 *) add tbl (Array.unsafe_get arr i);
+  done ;
+  tbl 
+  
+    
 let check_add (h : _ Hash_set_gen.t) key =
   (* 8 *) let i = key_index h key  in 
   let h_data = h.data in  
@@ -5224,6 +5252,15 @@ let add (h : _ Hash_set_gen.t) key =
       if h.size > Array.length h_data lsl 1 then (* 0 *) Hash_set_gen.resize key_index h
     end
 
+let of_array arr = 
+  (* 0 *) let len = Array.length arr in 
+  let tbl = create len in 
+  for i = 0 to len - 1  do
+    (* 0 *) add tbl (Array.unsafe_get arr i);
+  done ;
+  tbl 
+  
+    
 let check_add (h : _ Hash_set_gen.t) key =
   (* 0 *) let i = key_index h key  in 
   let h_data = h.data in  
@@ -7060,6 +7097,179 @@ let suites =
             OUnit.assert_bool __LOC__
             (Int_vec_util.mem 0 u)
         end
+    ]
+end
+module Ext_js_regex : sig 
+#1 "ext_js_regex.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+(* This is a module that checks if js regex is valid or not *)
+
+val js_regex_checker : string -> bool
+end = struct
+#1 "ext_js_regex.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type byte =
+| Single of int
+| Cont of int
+| Leading of int * int
+| Invalid
+
+(** [classify chr] returns the {!byte} corresponding to [chr] *)
+let classify chr =
+    (* 40 *) let c = int_of_char chr in
+    (* Classify byte according to leftmost 0 bit *)
+    if c land 0b1000_0000 = 0 then (* 36 *) Single c else
+      (* c 0b0____*)
+    (* 4 *) if c land 0b0100_0000 = 0 then (* 3 *) Cont (c land 0b0011_1111) else
+      (* c 0b10___*)
+    (* 1 *) if c land 0b0010_0000 = 0 then (* 0 *) Leading (1, c land 0b0001_1111) else
+      (* c 0b110__*)
+    (* 1 *) if c land 0b0001_0000 = 0 then (* 0 *) Leading (2, c land 0b0000_1111) else
+      (* c 0b1110_ *)
+    (* 1 *) if c land 0b0000_1000 = 0 then (* 1 *) Leading (3, c land 0b0000_0111) else
+      (* c 0b1111_0___*)
+    (* 0 *) if c land 0b0000_0100 = 0 then (* 0 *) Leading (4, c land 0b0000_0011) else
+      (* c 0b1111_10__*)
+    (* 0 *) if c land 0b0000_0010 = 0 then (* 0 *) Leading (5, c land 0b0000_0001)
+       (* c 0b1111_110__ *)
+    else (* 0 *) Invalid
+
+let decode_utf8_string s =
+    (* 8 *) let lst = ref [] in
+    let add elem = (* 37 *) lst := elem :: !lst in
+    let rec  _decode_utf8_string s i =
+        (* 45 *) if i = (String.length s) then (* 8 *) ()
+        else (* 37 *) (match classify s.[i] with
+            | Single c -> (* 36 *) add c; _decode_utf8_string s (i+1)
+            | Cont _ -> (* 0 *) raise (Invalid_argument "Unexpected continuation byte")
+            | Leading (n, c) ->
+                (* 1 *) let rec follow s n c i = 
+                    (* 4 *) if n = 0 then (* 1 *) (c, i)
+                    else (* 3 *) (match classify s.[i+1] with
+                    | Cont cc -> (* 3 *) follow s (n-1) ((c lsl 6) lor (cc land 0x3f)) (i+1)
+                    | _ -> (* 0 *) raise (Invalid_argument "Continuation byte expected"))
+                in
+                let (c', i') = follow s n c i in add c'; _decode_utf8_string s (i' + 1)
+            | Invalid -> (* 0 *) raise (Invalid_argument "Invalid byte"))
+    in _decode_utf8_string s 0; List.rev !lst
+
+let check_from_end al =
+    (* 8 *) let rec aux l seen =
+        (* 12 *) match l with
+        | [] -> (* 0 *) false
+        | (e::r) ->
+            (* 12 *) if e < 0 || e > 255 then (* 0 *) false
+             else (* 12 *) (let c = Char.chr e in
+             if c = '/' then (* 5 *) true
+             else (* 7 *) (if List.exists (fun x -> (* 2 *) x = c) seen then (* 1 *) false (* flag should not be repeated *)
+             else (* 6 *) (if c = 'i' || c = 'g' || c = 'm' || c = 'y' || c ='u' then (* 4 *) aux r (c::seen) 
+             else (* 2 *) false)))
+    in aux al []
+
+let js_regex_checker s =
+  (* 9 *) try
+  begin
+  if String.length s = 0 then (* 1 *) false else
+  (* 8 *) let al = decode_utf8_string s in
+  let check_first = (List.hd al) = int_of_char '/' in
+  let check_last = check_from_end (List.rev al) in
+  check_first && check_last
+  end with Invalid_argument err -> (* 0 *) false
+end
+module Ounit_js_regex_checker_tests
+= struct
+#1 "ounit_js_regex_checker_tests.ml"
+let ((>::),
+    (>:::)) = OUnit.((>::),(>:::))
+
+open Ext_js_regex
+
+let suites =
+    __FILE__
+    >:::
+    [
+        "test_empty_string" >:: begin fun _ ->
+        (* 1 *) let b = js_regex_checker "" in
+        OUnit.assert_equal b false
+        end;
+        "test_normal_regex" >:: begin fun _ ->
+        (* 1 *) let b = js_regex_checker "/abc/" in
+        OUnit.assert_equal b true
+        end;
+        "test_wrong_regex_last" >:: begin fun _ ->
+        (* 1 *) let b = js_regex_checker "/abc" in 
+        OUnit.assert_equal b false
+        end;
+        "test_regex_with_flag" >:: begin fun _ ->
+        (* 1 *) let b = js_regex_checker "/ss/ig" in
+        OUnit.assert_equal b true
+        end;
+        "test_regex_with_invalid_flag" >:: begin fun _ ->
+        (* 1 *) let b = js_regex_checker "/ss/j" in
+        OUnit.assert_equal b false
+        end;
+        "test_regex_invalid_regex" >:: begin fun _ ->
+        (* 1 *) let b = js_regex_checker "abc/i" in 
+        OUnit.assert_equal b false
+        end;
+        "test_regex_empty_pattern" >:: begin fun _  ->
+        (* 1 *) let b = js_regex_checker "//" in 
+        OUnit.assert_equal b true
+        end;
+        "test_regex_with_utf8" >:: begin fun _ ->
+        (* 1 *) let b = js_regex_checker "/😃/" in
+        OUnit.assert_equal b true
+        end;
+        "test_regex_repeated_flags" >:: begin fun _ ->
+        (* 1 *) let b = js_regex_checker "/abc/gg" in
+        OUnit.assert_equal b false
+        end;
     ]
 end
 module Map_gen
@@ -13775,6 +13985,7 @@ let suites =
     Ounit_ident_mask_tests.suites;
     Ounit_cmd_tests.suites;
     Ounit_ffi_error_debug_test.suites;
+    Ounit_js_regex_checker_tests.suites;
   ]
 let _ = 
   OUnit.run_test_tt_main suites

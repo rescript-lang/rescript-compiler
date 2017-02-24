@@ -254,10 +254,6 @@ let handle_core_type
     else inner_type
   | _ -> super.typ self ty
 
-
-
-
-
 let rec unsafe_mapper : Ast_mapper.mapper =   
   { Ast_mapper.default_mapper with 
     expr = (fun self ({ pexp_loc = loc } as e) -> 
@@ -271,8 +267,8 @@ let rec unsafe_mapper : Ast_mapper.mapper =
             {txt = ("bs.re" | "re"); loc} , payload)
           ->
           Exp.constraint_ ~loc
-            (Ast_util.handle_raw loc payload)
-            (Ast_comb.to_js_re_type loc)            
+            (Ast_util.handle_raw ~check_js_regex:true loc payload)
+            (Ast_comb.to_js_re_type loc)
         | Pexp_extension
             ({txt = ("bs.node" | "node"); loc},
              payload)
