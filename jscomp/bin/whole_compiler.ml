@@ -71355,7 +71355,7 @@ val alias_ident_or_global : Lam_stats.meta ->
 
 
 val refine_let : 
-    ?kind:Lambda.let_kind ->
+    kind:Lambda.let_kind  ->
       Ident.t -> Lam.t -> Lam.t -> Lam.t
 
 
@@ -71505,10 +71505,10 @@ let subst_lambda (s : Lam.t Ident_map.t) lam =
     Even so, it's still correct
 *)
 let refine_let
-    ?kind param
+    ~kind param
     (arg : Lam.t) (l : Lam.t)  : Lam.t =
 
-  match (kind : Lambda.let_kind option), arg, l  with 
+  match (kind : Lambda.let_kind ), arg, l  with 
   | _, _, Lvar w when Ident.same w param (* let k = xx in k *)
     -> arg (* TODO: optimize here -- it's safe to do substitution here *)
   | _, _, Lprim {primitive ; args =  [Lvar w]; loc ; _} when Ident.same w param 
@@ -71530,7 +71530,7 @@ let refine_let
         here we remove the definition of [param]
     *)
     Lam.apply fn [arg] loc status
-  | (Some (Strict | StrictOpt ) | None ),
+  | (Strict | StrictOpt ),
     ( Lvar _    | Lconst  _ | 
       Lprim {primitive = Pfield _ ;  
              args = [ Lglobal_module _ ]; _}) , _ ->
@@ -71543,7 +71543,7 @@ let refine_let
         since function evaluation is always delayed
     *)
     Lam.let_ Alias param arg l
-  | (Some (Strict | StrictOpt ) | None ), (Lfunction _ ), _ ->
+  | ( (Strict | StrictOpt ) ), (Lfunction _ ), _ ->
     (*It can be promoted to [Alias], however, 
         we don't want to do this, since we don't want the 
         function to be inlined to a block, for example
@@ -71560,14 +71560,14 @@ let refine_let
       | Some Strict, Lprim(Pmakeblock (_,_,Immutable),_) ->  
         Llet(StrictOpt, param, arg, l) 
   *)      
-  | Some Strict, _ ,_  when Lam_analysis.no_side_effects arg ->
+  | Strict, _ ,_  when Lam_analysis.no_side_effects arg ->
     Lam.let_ StrictOpt param arg l
-  | Some Variable, _, _ -> 
+  | Variable, _, _ -> 
     Lam.let_ Variable  param arg l
-  | Some kind, _, _ -> 
+  | kind, _, _ -> 
     Lam.let_ kind  param arg l
-  | None , _, _ -> 
-    Lam.let_ Strict param arg  l
+  (* | None , _, _ -> 
+    Lam.let_ Strict param arg  l *)
 
 let alias_ident_or_global (meta : Lam_stats.meta) (k:Ident.t) (v:Ident.t) 
     (v_kind : Lam_stats.kind) (let_kind : Lambda.let_kind) =
@@ -88494,7 +88494,7 @@ let propogate_beta_reduce
              (Lam_util.kind_of_lambda_block Normal args ); (** *)
            arg
          | _ -> arg in
-       Lam_util.refine_let param arg l) 
+       Lam_util.refine_let ~kind:Strict param arg l) 
      rest_bindings new_body
 
 let propogate_beta_reduce_with_map  
@@ -88553,7 +88553,7 @@ let propogate_beta_reduce_with_map
              (Lam_util.kind_of_lambda_block Normal args ); (** *)
            arg
          | _ -> arg in
-       Lam_util.refine_let param arg l) 
+       Lam_util.refine_let ~kind:Strict param arg l) 
      rest_bindings new_body
 
 
@@ -88564,7 +88564,7 @@ let beta_reduce params body args =
   | None -> 
     List.fold_left2 
       (fun l param arg ->
-         Lam_util.refine_let param arg l)
+         Lam_util.refine_let ~kind:Strict param arg l)
       body params args
 
 end
@@ -101408,7 +101408,7 @@ let handle_raw ?(check_js_regex = false) loc payload =
     | Not_String_Lteral ->
       Location.raise_errorf ~loc
         "bs.raw can only be applied to a string"
-    | Not_String_Lteral ->
+    | Ast_payload.JS_Regex_Check_Failed ->
       Location.raise_errorf ~loc "this is an invalid js regex"
     | Correct exp ->
       let pexp_desc = 

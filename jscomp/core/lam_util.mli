@@ -47,7 +47,7 @@ val alias_ident_or_global : Lam_stats.meta ->
 
 
 val refine_let : 
-    ?kind:Lambda.let_kind ->
+    kind:Lambda.let_kind  ->
       Ident.t -> Lam.t -> Lam.t -> Lam.t
 
 
