@@ -185,6 +185,31 @@
             ],
             "description": "can be either a single sourceItem or an array of sourceItems, sourceItem can be either a single string(non nested directory) or an detailed object config"
         },
+        "targetItems": {
+          "type": "object",
+          "properties": {
+            "outputName": {
+              "type": "string",
+              "description": "The name of the target"
+            },
+            "compilationKind": {
+              "enum": [
+                "js",
+                "native",
+                "bytecode"
+              ],
+              "description": "The compiler to use for the target"
+            },
+            "entryPoint": {
+              "type": "string",
+              "description": "Path to file used as entrypoint for this target"
+            }
+          }
+        },
+        "targets": {
+          "$ref": "#/definitions/targetItems",
+          "description": "(Not implemented yet)"
+        },
         "bsc-flags": {
             "oneOf": [
                 {
@@ -196,8 +221,8 @@
                 },
                 {
                     "properties": {
-                        "kind" : 
-                        { 
+                        "kind" :
+                        {
                             "enum": [
                             "reset",
                             "prefix",
@@ -276,6 +301,10 @@
         "sources": {
             "$ref": "#/definitions/sources",
             "description": "specication of where source code is "
+        },
+        "targets": {
+            "$ref": "#/definitions/targets",
+            "description": "specification for compiling to differet targets (native, bytecode, js)"
         },
         "generate-merlin": {
             "type": "boolean",
