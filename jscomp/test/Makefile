@@ -100,7 +100,8 @@ OTHERS := literals a test_ari test_export2 test_internalOO test_obj_simple_ffi t
 	functor_ffi\
 	typed_array_test\
 	gpr_1240_missing_unbox\
-	js_null_undefined_test js_null_test js_undefined_test
+	js_null_undefined_test js_null_test js_undefined_test\
+	gpr_1268
 # bs_uncurry_test
 # needs Lam to get rid of Uncurry arity first
 
@@ -110,7 +111,7 @@ TESTS := $(addsuffix .cmj, $(SOURCE_LIST) )
 $(addsuffix .cmi, $(OTHERS)): ../runtime/js.cmi
 $(addsuffix .cmj, $(OTHERS)): ../runtime/js.cmj
 
-COMPFLAGS+=  $(MODULE_FLAGS) -w -40
+COMPFLAGS+=  $(MODULE_FLAGS) -w -40 -warn-error -a+8
 COMPFLAGS+=  -bs-no-version-header -bs-no-error-unused-attribute -bs-diagnose -bs-cross-module-opt -bs-package-name  bs-platform
 
 

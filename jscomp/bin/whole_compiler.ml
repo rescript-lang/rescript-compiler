@@ -65790,13 +65790,38 @@ type triop = t -> t -> t -> t
 
 type unop = t -> t 
 
+let rec is_eta_conversion 
+    params (inner_args : t list) outer_args
+  = 
+  match params, inner_args,outer_args with 
+  | x::xs, 
+    Lvar y::ys,
+    _ :: rest  when Ident.same x y ->     
+    is_eta_conversion xs ys rest     
+  | [], [],[] -> true 
+  | _, _, _ -> false 
+
+
 
 let var id : t = Lvar id
 let global_module id = Lglobal_module id 
 let const ct : t = Lconst ct 
+
 let apply fn args loc status : t = 
-  Lapply { fn; args;  loc  ;
-           status }
+  match fn with 
+  | Lfunction {kind ; params; 
+               body =Lprim ({primitive; args = inner_args}as primitive_call) } when 
+      is_eta_conversion params inner_args args 
+    -> 
+    Lprim { primitive_call with args ; loc = loc }
+  | Lfunction {kind; params ; 
+               body = Lapply {fn = new_fn ; args = inner_args; status }
+              } when is_eta_conversion params inner_args args ->
+    Lapply {fn = new_fn ; args ; loc = loc; status } 
+  (* same as previous App status*)
+  | _ -> 
+    Lapply { fn; args;  loc  ;
+             status }
 let function_ ~arity ~kind ~params ~body : t = 
   Lfunction { arity; kind; params ; body}
 
@@ -66118,29 +66143,15 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : t =
   | Pint_as_pointer 
   | Pidentity ->  
     begin match args with [x] -> x | _ -> assert false end
-  | Pbytes_to_string 
+  | Prevapply -> assert false     
+  | Pdirapply -> assert false 
+  | Ploc loc -> assert false (* already compiled away here*)    
+
+  | Pbytes_to_string (* handled very early *) 
     -> prim ~primitive:Pbytes_to_string ~args loc
   | Pbytes_of_string -> prim ~primitive:Pbytes_of_string ~args loc
   | Pignore -> (* Pignore means return unit, it is not an nop *)
-    begin match args with [x] -> seq x unit | _ -> assert false end
-  | Prevapply 
-    -> 
-    begin match args with 
-      | [x ; Lapply{fn; args}]
-        -> apply fn (args @[x]) loc App_na
-      | [x; f] ->  apply f [x] loc App_na
-      | _ -> assert false 
-    end
-
-  | Pdirapply ->
-    begin match args with 
-      | [Lapply{fn ; args }; x ] 
-        -> 
-        apply fn (args @ [x]) loc App_na
-      | [f;x] -> apply f [x] loc App_na
-      | _ -> assert false 
-    end
-  | Ploc loc -> assert false (* already compiled away here*)
+    begin match args with [x] -> seq x unit | _ -> assert false end  
   | Pgetglobal id ->
     assert false 
   | Psetglobal id -> 
@@ -66500,6 +66511,26 @@ let convert exports lam : _ * _  =
       let lam = Lletrec (bindings, body) in 
       scc bindings lam body  
     (* inlining will affect how mututal recursive behave *)
+    | Lprim(Prevapply, [x ; f ],  outer_loc) -> 
+      let x  = aux x in 
+      let f =  aux f in 
+      begin match  f with 
+        | Lapply{fn;args;loc=inner_loc} ->
+          apply fn (args @[x]) outer_loc App_na 
+        | _ -> 
+          apply f [x] outer_loc App_na        
+      end 
+    | Lprim (Prevapply, _, _ ) -> assert false 
+    | Lprim(Pdirapply, [f;x], outer_loc) -> 
+      let f = aux f in 
+      let x = aux x in 
+      begin match f with 
+      | Lapply{fn ; args }
+        -> 
+        apply fn (args @ [x]) outer_loc App_na
+      | _  -> apply f [x] outer_loc App_na
+    end
+    | Lprim(Pdirapply, _, _) -> assert false 
     | Lprim (primitive,args, loc) 
       -> 
       let args = (List.map aux args) in
