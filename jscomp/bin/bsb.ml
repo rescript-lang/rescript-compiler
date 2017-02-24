@@ -7295,7 +7295,7 @@ type bs_dependencies =
   bs_dependency list 
 type t = 
   {
-    package_name : string option ; 
+    package_name : string ; 
     ocamllex : string ; 
     external_includes : string list ; 
     bsc_flags : string list ;
@@ -7303,7 +7303,7 @@ type t =
     bs_dependencies : bs_dependencies;
     
     built_in_dependency : bs_dependency option; 
-    (*TODO: maybe we should always resovle bs-platform 
+    (*TODO: maybe we should always resolve bs-platform 
       so that we can calculate correct relative path in 
       [.merlin]
     *)
@@ -7858,7 +7858,7 @@ let interpret_json
       |? (Bsb_build_schemas.generate_merlin, `Bool (fun b ->
           Bsb_default.set_generate_merlin b
         ))
-      |?  (Bsb_build_schemas.name, `Str Bsb_default.set_package_name)
+      |? (Bsb_build_schemas.name, `Str Bsb_default.set_package_name)
       |? (Bsb_build_schemas.package_specs, `Arr Bsb_default.set_package_specs_from_array )
       |? (Bsb_build_schemas.js_post_build, `Obj begin fun m ->
           m |? (Bsb_build_schemas.cmd , `Str (Bsb_default.set_js_post_build_cmd ~cwd)
@@ -7906,7 +7906,13 @@ let interpret_json
   end;
   let config = 
     {
-      Bsb_config_types.package_name = Bsb_default.get_package_name ();
+      Bsb_config_types.package_name =
+        (match Bsb_default.get_package_name () with
+        | Some name -> name
+        | None ->
+          prerr_endline "Error: Package name is required. Please specify a `name` in `bsconfig.json`";
+          exit 2);
+
       ocamllex = Bsb_default.get_ocamllex ();
       external_includes = Bsb_default.get_bs_external_includes ();
       bsc_flags = Bsb_default.get_bsc_flags ();
@@ -8866,11 +8872,7 @@ let output_ninja
     let () =
       output_string oc ninja_required_version ;
       output_string oc "bs_package_flags = ";
-      begin match package_name with
-        | None -> ()
-        | Some x ->
-          output_string oc ("-bs-package-name "  ^ x  )
-      end;
+      output_string oc ("-bs-package-name "  ^ package_name);
       output_string oc "\n";
       let bsc_flags = 
         Ext_string.inter2  Literals.dash_nostdlib @@

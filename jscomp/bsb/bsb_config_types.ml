@@ -32,7 +32,7 @@ type bs_dependencies =
   bs_dependency list 
 type t = 
   {
-    package_name : string option ; 
+    package_name : string ; 
     ocamllex : string ; 
     external_includes : string list ; 
     bsc_flags : string list ;
@@ -40,7 +40,7 @@ type t =
     bs_dependencies : bs_dependencies;
     
     built_in_dependency : bs_dependency option; 
-    (*TODO: maybe we should always resovle bs-platform 
+    (*TODO: maybe we should always resolve bs-platform 
       so that we can calculate correct relative path in 
       [.merlin]
     *)
