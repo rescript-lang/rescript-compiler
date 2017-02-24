@@ -19,7 +19,7 @@ let () =
       let ty2, x = Js.Json.reify_type v in
       begin match ty2 with 
       | Js.Json.Array ->  (* compiler infer x : Js.Json.t array *)
-        x |> Js.Array.forEach (fun [@bs] x -> 
+        x |> Js.Array.forEach (fun  x -> 
             let (ty3, x) = Js.Json.reify_type x in 
             match ty3 with 
             | Js.Json.Number -> Js.log (x +. 0.)

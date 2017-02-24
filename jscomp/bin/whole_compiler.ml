@@ -65814,6 +65814,29 @@ let rec is_eta_conversion
   | [], [],[] -> true 
   | _, _, _ -> false 
 
+exception Not_simple_form 
+
+(** Simplfiy such behavior
+    {[ 
+      (apply
+         (function prim/1024 prim/1023 prim/1022
+                     ([js] (js_fn_make_2 prim/1024) prim/1023 prim/1022)) .. )
+    ]}
+*)
+let rec is_eta_conversion_exn
+ params inner_args outer_args = 
+  match params, inner_args, outer_args with 
+  | x::xs, Lvar y::ys, r::rest 
+    when Ident.same x y ->
+    r :: is_eta_conversion_exn xs ys rest 
+  | x::xs, 
+    (Lprim ({primitive = Pjs_fn_make _; 
+             args = [Lvar y] } as p ) ::ys),
+    r :: rest when Ident.same x y -> 
+    Lprim ({p with args = [ r]}) :: 
+    is_eta_conversion_exn xs ys rest 
+  | [], [], [] -> []
+  | _, _, _ -> raise_notrace Not_simple_form
 
 
 let var id : t = Lvar id
@@ -65823,14 +65846,22 @@ let const ct : t = Lconst ct
 let apply fn args loc status : t = 
   match fn with 
   | Lfunction {kind ; params; 
-               body =Lprim ({primitive; args = inner_args}as primitive_call) } when 
-      is_eta_conversion params inner_args args 
-    -> 
-    Lprim { primitive_call with args ; loc = loc }
-  | Lfunction {kind; params ; 
-               body = Lapply {fn = new_fn ; args = inner_args; status }
-              } when is_eta_conversion params inner_args args ->
-    Lapply {fn = new_fn ; args ; loc = loc; status } 
+               body =Lprim ({primitive; args = inner_args}as primitive_call) } 
+
+    ->
+    begin match is_eta_conversion_exn params inner_args args with
+      | args 
+        -> 
+        Lprim { primitive_call with args ; loc = loc }
+      | exception _ -> 
+        Lapply { fn; args;  loc  ;
+                 status }
+    end 
+  (*  | Lfunction {kind; params ; 
+                 body = Lapply {fn = new_fn ; args = inner_args; status }
+                } when is_eta_conversion params inner_args args ->
+      Lapply {fn = new_fn ; args ; loc = loc; status } 
+  *)
   (* same as previous App status*)
   | _ -> 
     Lapply { fn; args;  loc  ;
@@ -66177,7 +66208,7 @@ let rec transform_uncurried_arg_type loc (arg_types : Ast_ffi_types.arg_kind lis
   | _::_, [] 
   | [], _::_ as ok -> ok    
 
-  
+
 (** drop Lseq (List! ) etc *)
 let rec drop_global_marker (lam : t) =
   match lam with 
@@ -66579,11 +66610,11 @@ let convert exports lam : _ * _  =
       let f = aux f in 
       let x = aux x in 
       begin match f with 
-      | Lapply{fn ; args }
-        -> 
-        apply fn (args @ [x]) outer_loc App_na
-      | _  -> apply f [x] outer_loc App_na
-    end
+        | Lapply{fn ; args }
+          -> 
+          apply fn (args @ [x]) outer_loc App_na
+        | _  -> apply f [x] outer_loc App_na
+      end
     | Lprim(Pdirapply, _, _) -> assert false 
     | Lprim (primitive,args, loc) 
       -> 

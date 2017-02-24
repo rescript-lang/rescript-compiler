@@ -84,7 +84,7 @@ let suites = Mt.[
     );
     "sortInPlaceWith", (fun _ ->
       Eq([| 3; 2; 1 |],
-         [| 3; 1; 2 |] |> Js.Array.sortInPlaceWith ((fun a b -> b - a) [@bs]))
+         [| 3; 1; 2 |] |> Js.Array.sortInPlaceWith ((fun a b -> b - a) ))
     );
 
     "spliceInPlace", (fun _ ->
@@ -180,46 +180,46 @@ let suites = Mt.[
     *)
 
     "every", (fun _ ->
-      Eq(Js.true_, [| 1; 2; 3 |] |> Js.Array.every ((fun n -> Js.Boolean.to_js_boolean (n > 0)) [@bs]))
+      Eq(Js.true_, [| 1; 2; 3 |] |> Js.Array.every ((fun n ->  (n > 0)) ))
     );
     "everyi", (fun _ ->
-      Eq(Js.false_, [| 1; 2; 3 |] |> Js.Array.everyi ((fun _ i -> Js.Boolean.to_js_boolean (i > 0)) [@bs]))
+      Eq(Js.false_, [| 1; 2; 3 |] |> Js.Array.everyi ((fun _ i ->  (i > 0)) ))
     );
 
     "filter", (fun _ ->
       Eq([| 2; 4 |],
-         [| 1; 2; 3; 4 |] |> Js.Array.filter ((fun n -> n mod 2 = 0) [@bs]))
+         [| 1; 2; 3; 4 |] |> Js.Array.filter ((fun n -> n mod 2 = 0) ))
     );
     "filteri", (fun _ ->
       Eq([| 1; 3 |],
-         [| 1; 2; 3; 4 |] |> Js.Array.filteri ((fun _ i -> Js.Boolean.to_js_boolean (i mod 2 = 0)) [@bs]))
+         [| 1; 2; 3; 4 |] |> Js.Array.filteri ((fun _ i ->  (i mod 2 = 0)) ))
     );
 
     (* es2015 *)
     "find", (fun _ ->
-      Eq(Js.Undefined.return 2, [| 1; 2; 3; 4 |] |> Js.Array.find ((fun n -> n mod 2 = 0) [@bs]))
+      Eq(Js.Undefined.return 2, [| 1; 2; 3; 4 |] |> Js.Array.find ((fun n -> n mod 2 = 0) ))
     );
     "findi", (fun _ ->
-      Eq(Js.Undefined.return 1, [| 1; 2; 3; 4 |] |> Js.Array.findi ((fun _ i -> i mod 2 = 0) [@bs]))
+      Eq(Js.Undefined.return 1, [| 1; 2; 3; 4 |] |> Js.Array.findi ((fun _ i -> i mod 2 = 0) ))
     );
 
     (* es2015 *)
     "findIndex", (fun _ ->
-      Eq(1, [| 1; 2; 3; 4 |] |> Js.Array.findIndex ((fun n -> n mod 2 = 0) [@bs]))
+      Eq(1, [| 1; 2; 3; 4 |] |> Js.Array.findIndex ((fun n -> n mod 2 = 0) ))
     );
     "findIndexi", (fun _ ->
-      Eq(0, [| 1; 2; 3; 4 |] |> Js.Array.findIndexi ((fun _ i -> i mod 2 = 0) [@bs]))
+      Eq(0, [| 1; 2; 3; 4 |] |> Js.Array.findIndexi ((fun _ i -> i mod 2 = 0) ))
     );
 
     "forEach", (fun _ ->
       let sum = ref 0 in
-      let _ = [| 1; 2; 3; |] |> Js.Array.forEach ((fun n -> sum := !sum + n) [@bs]) in
+      let _ = [| 1; 2; 3; |] |> Js.Array.forEach ((fun n -> sum := !sum + n) ) in
 
       Eq(6, !sum)
     );
     "forEachi", (fun _ ->
       let sum = ref 0 in
-      let _ = [| 1; 2; 3; |] |> Js.Array.forEachi ((fun _ i -> sum := !sum + i) [@bs]) in
+      let _ = [| 1; 2; 3; |] |> Js.Array.forEachi ((fun _ i -> sum := !sum + i) ) in
 
       Eq(3, !sum)
     );
@@ -233,34 +233,34 @@ let suites = Mt.[
 
     "map", (fun _ ->
       Eq([| 2; 4; 6; 8 |],
-         [| 1; 2; 3; 4 |] |> Js.Array.map ((fun n -> n * 2) [@bs]))
+         [| 1; 2; 3; 4 |] |> Js.Array.map ((fun n -> n * 2) ))
     );
     "map", (fun _ ->
       Eq([| 0; 2; 4; 6 |],
-         [| 1; 2; 3; 4 |] |> Js.Array.mapi ((fun _ i -> i * 2) [@bs]))
+         [| 1; 2; 3; 4 |] |> Js.Array.mapi ((fun _ i -> i * 2) ))
     );
 
     "reduce", (fun _ ->
       Eq(-10,
-         [| 1; 2; 3; 4 |] |> Js.Array.reduce ((fun acc n -> acc - n) [@bs]) 0)
+         [| 1; 2; 3; 4 |] |> Js.Array.reduce ((fun acc n -> acc - n) ) 0)
     );
     "reducei", (fun _ ->
       Eq(-6,
-         [| 1; 2; 3; 4 |] |> Js.Array.reducei ((fun acc _ i -> acc - i) [@bs]) 0)
+         [| 1; 2; 3; 4 |] |> Js.Array.reducei ((fun acc _ i -> acc - i) ) 0)
     );
 
     "reduceRight", (fun _ ->
-      Eq(-10, [| 1; 2; 3; 4 |] |> Js.Array.reduceRight ((fun acc n -> acc - n) [@bs]) 0)
+      Eq(-10, [| 1; 2; 3; 4 |] |> Js.Array.reduceRight ((fun acc n -> acc - n) ) 0)
     );
     "reduceRighti", (fun _ ->
-      Eq(-6, [| 1; 2; 3; 4 |] |> Js.Array.reduceRighti ((fun acc _ i -> acc - i) [@bs]) 0)
+      Eq(-6, [| 1; 2; 3; 4 |] |> Js.Array.reduceRighti ((fun acc _ i -> acc - i) ) 0)
     );
 
     "some", (fun _ ->
-      Eq(Js.false_, [| 1; 2; 3; 4 |] |> Js.Array.some ((fun n -> Js.Boolean.to_js_boolean (n <= 0)) [@bs]))
+      Eq(Js.false_, [| 1; 2; 3; 4 |] |> Js.Array.some ((fun n ->  (n <= 0)) ))
     );
     "somei", (fun _ ->
-      Eq(Js.true_, [| 1; 2; 3; 4 |] |> Js.Array.somei ((fun _ i -> Js.Boolean.to_js_boolean (i <= 0)) [@bs]))
+      Eq(Js.true_, [| 1; 2; 3; 4 |] |> Js.Array.somei ((fun _ i ->  (i <= 0)) ))
     );
 
     (* es2015, iterator
