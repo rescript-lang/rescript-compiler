@@ -185,30 +185,39 @@
             ],
             "description": "can be either a single sourceItem or an array of sourceItems, sourceItem can be either a single string(non nested directory) or an detailed object config"
         },
-        "targetItems": {
-          "type": "object",
-          "properties": {
-            "outputName": {
-              "type": "string",
-              "description": "The name of the target"
-            },
-            "compilationKind": {
-              "enum": [
-                "js",
-                "native",
-                "bytecode"
-              ],
-              "description": "The compiler to use for the target"
-            },
-            "entryPoint": {
-              "type": "string",
-              "description": "Path to file used as entrypoint for this target"
-            }
-          }
+        "targetItem": {
+          "oneOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "js"
+                ],
+                "description": "JS target compiled using BuckleScript"
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "kind": {
+                    "enum": [
+                      "native",
+                      "bytecode"
+                    ],
+                    "description": "The compiler to use for the target"
+                  },
+                  "entryPoint": {
+                    "type": "string",
+                    "description": "Path to file used as entrypoint for this target"
+                  }
+                }
+              }
+          ]
         },
         "targets": {
-          "$ref": "#/definitions/targetItems",
-          "description": "(Not implemented yet)"
+          "type": "array",
+          "items": {
+              "$ref": "#/definitions/targetItem"
+          },
+          "description": "A list of target items"
         },
         "bsc-flags": {
             "oneOf": [
