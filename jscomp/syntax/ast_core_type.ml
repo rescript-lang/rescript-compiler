@@ -152,7 +152,7 @@ let rec get_uncurry_arity_aux  (ty : t) acc =
 
 (**
   {[ unit -> 'b ]} return arity 1 
-  {[ 'a1 -> 'a2 -> ... 'aN -> 'b ]} return arity N 
+  {[ 'a1 -> 'a2 -> ... 'aN -> 'b ]} return arity N   
 *)
 let get_uncurry_arity (ty : t ) = 
   match ty.ptyp_desc  with 

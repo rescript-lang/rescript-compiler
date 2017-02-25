@@ -3922,7 +3922,37 @@ external ff :
       (Ext_string.contain_substring should_err.stderr
       "Ill defined"
       )
-    end
+    end;
+
+    __LOC__ >:: begin fun _ -> 
+(** used in return value 
+    This should fail, we did not 
+    support uncurry return value yet
+*)
+    let should_err = bsc_eval {|
+    external v3 :
+    int -> int -> (int -> int -> int [@bs.uncurry])
+    = ""[@@bs.val]
+
+    |} in 
+    (* Ounit_cmd_util.debug_output should_err;*)
+    OUnit.assert_bool __LOC__
+    (Ext_string.contain_substring 
+    should_err.stderr "bs.uncurry")
+    end ;
+
+    __LOC__ >:: begin fun _ -> 
+    let should_err = bsc_eval {|
+    external v4 :  
+    (int -> int -> int [@bs.uncurry]) = ""
+    [@@bs.val]
+
+    |} in 
+    (* Ounit_cmd_util.debug_output should_err ; *)
+    OUnit.assert_bool __LOC__
+    (Ext_string.contain_substring 
+    should_err.stderr "bs.uncurry")
+    end 
   ]
 
 

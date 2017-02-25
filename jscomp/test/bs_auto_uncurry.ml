@@ -93,13 +93,15 @@ let add x y =
 
 let h6 x = 
     ff2 x add     
-(** used in return value 
-    This should fail, we did not 
-    support uncurry return value yet
-*)
-external v3 :
-    int -> int -> (int -> int -> int [@bs.uncurry])
-    = ""[@@bs.val]
+
+
+
+
+type elem
+external optional_cb : 
+    (string -> ?props:elem -> int array -> elem [@bs.uncurry] (* This should emit a warning ? *)
+    ) -> string -> int = "" [@@bs.val]
+
 
 
 (*
