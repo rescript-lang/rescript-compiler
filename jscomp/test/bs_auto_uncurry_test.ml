@@ -10,6 +10,24 @@ external map :
      ('a -> 'b [@bs.uncurry]) -> 'b array =
      "" [@@bs.send.pipe: 'a array]
 
+
+[%%raw{|
+function hi (cb){
+    cb ();
+    return 0;
+}
+|}]
+
+external hi : (unit -> unit [@bs.uncurry]) -> unit = "" [@@bs.val]
+
+let () = 
+    let xs = ref [] in 
+    hi (fun (() as x) -> xs := x ::!xs ) ; 
+    hi (fun (() as x) -> xs := x ::!xs ) ; 
+    eq __LOC__ !xs [();()]
+
+
+
 let () =
     begin 
     eq __LOC__ 
