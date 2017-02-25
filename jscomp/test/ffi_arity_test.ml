@@ -19,6 +19,28 @@ let hh = map [|"1";"2";"3"|] (Js_unsafe.js_fn_mk1 parseInt)
 
 let u = Js_unsafe.js_fn_mk0 (fun _ -> 3)
 
+let vvv = ref 0
+let fff () = 
+    (* No inline *)
+    Js.log "x";
+    Js.log "x";
+    incr vvv 
+
+let g = fun [@bs] () -> fff ()
+(* will be compiled into 
+  var g = function () { fff (0)}
+  not {[ var g = fff ]}
+*)
+let abc x y z = 
+    Js.log "xx";
+    Js.log "yy";
+    x + y + z  
+
+let abc_u = fun [@bs] x y z -> abc x y z 
+(* cool, it will be compiled into 
+{[ var absc_u = abc ]}
+*)
+let () = g () [@bs]
 ;; Mt.from_pair_suites __FILE__ Mt.[
     __LOC__, (fun _ -> Eq(v, [|0; 1;  4 |] ));
     __LOC__, (fun _ -> Eq(vv, [|1;3;5|]));

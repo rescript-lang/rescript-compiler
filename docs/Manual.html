@@ -552,6 +552,8 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_binding_to_nodejs_special_variables_bs_node">Binding to NodeJS special variables: bs.node</a></li>
 <li><a href="#_binding_to_callbacks_high_order_function">Binding to callbacks (high-order function)</a>
 <ul class="sectlevel3">
+<li><a href="#__bs_for_explicit_uncurried_callback">[@bs] for explicit uncurried callback</a></li>
+<li><a href="#__bs_uncurry_for_implicit_uncurried_callback_since_1_5_0">[@bs.uncurry] for implicit uncurried callback (@since 1.5.0)</a></li>
 <li><a href="#_uncurried_calling_convention_as_an_optimization">Uncurried calling convention as an optimization</a>
 <ul class="sectlevel4">
 <li><a href="#_callback_optimization">Callback optimization</a></li>
@@ -2059,7 +2061,7 @@ JS has a map function as below:</p>
 </div>
 </div>
 <div class="paragraph">
-<p>A naive external type declaration would be as below:</p>
+<p>A <strong>naive</strong> external type declaration would be as below:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -2126,6 +2128,8 @@ however, we expect <em>its arity to be 2</em>.</p>
 <p>No matter which strategy we use, existing typing rules <strong>cannot
 guarantee a function of type <code>'a &#8594; 'b &#8594; 'c</code> will have arity 2.</strong></p>
 </div>
+<div class="sect3">
+<h4 id="__bs_for_explicit_uncurried_callback"><a class="anchor" href="#__bs_for_explicit_uncurried_callback"></a>[@bs] for explicit uncurried callback</h4>
 <div class="paragraph">
 <p>To solve this problem introduced by OCaml&#8217;s curried calling convention,
 we support a special attribute <code>[@bs]</code> at the type level.</p>
@@ -2193,6 +2197,70 @@ with arity 1</p>
 <p><code>u2</code> has arity of 2, reutrn a function  with arity 1</p>
 </li>
 </ol>
+</div>
+</div>
+<div class="sect3">
+<h4 id="__bs_uncurry_for_implicit_uncurried_callback_since_1_5_0"><a class="anchor" href="#__bs_uncurry_for_implicit_uncurried_callback_since_1_5_0"></a>[@bs.uncurry] for implicit uncurried callback (@since 1.5.0)</h4>
+<div class="paragraph">
+<p>Note the <code>[@bs]</code> annotation already solved the problem completely, but it has a drawback
+that it requires users to write <code>[@bs]</code> both in definition site and call site.</p>
+</div>
+<div class="paragraph">
+<p>For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">external</span> <span class="tok-n">map</span> <span class="tok-o">:</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-kt">array</span> <span class="tok-o">-&gt;</span> <span class="tok-o">(</span><span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">b</span><span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">])</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">b</span> <span class="tok-kt">array</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;&quot;</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">send</span><span class="tok-o">]</span> <b class="conum">(1)</b>
+<span class="tok-n">map</span> <span class="tok-o">[|</span><span class="tok-mi">1</span><span class="tok-o">;</span><span class="tok-mi">2</span><span class="tok-o">;</span><span class="tok-mi">3</span><span class="tok-o">|]</span> <span class="tok-o">(</span><span class="tok-k">fun</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">]</span> <span class="tok-n">x</span> <span class="tok-o">-&gt;</span> <span class="tok-n">x</span> <span class="tok-o">+</span> <span class="tok-mi">1</span><span class="tok-o">)</span> <b class="conum">(2)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p><code>[@bs]</code> annotation in definition site</p>
+</li>
+<li>
+<p><code>[@bs]</code> annotation in call site</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>This is less convenient for end users, so we introduce another implicit annotation <code>[@bs.uncurry]</code> so that the compiler will automatically wrap the curried callback (from OCaml side) to JS uncurried callback. In this way, the <code>[@bs.uncurry]</code> annotation is defined
+only once.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">external</span> <span class="tok-n">map</span> <span class="tok-o">:</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-kt">array</span> <span class="tok-o">-&gt;</span> <span class="tok-o">(</span><span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">b</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">uncurry</span><span class="tok-o">])</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">b</span> <span class="tok-kt">array</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;&quot;</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">send</span><span class="tok-o">]</span> <b class="conum">(1)</b>
+<span class="tok-n">map</span> <span class="tok-o">[|</span><span class="tok-mi">1</span><span class="tok-o">;</span><span class="tok-mi">2</span><span class="tok-o">;</span><span class="tok-mi">3</span><span class="tok-o">|]</span> <span class="tok-o">(</span><span class="tok-k">fun</span> <span class="tok-n">x</span> <span class="tok-o">-&gt;</span> <span class="tok-n">x</span><span class="tok-o">+</span> <span class="tok-mi">1</span><span class="tok-o">)</span> <b class="conum">(2)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p><code>[@bs.uncurry]</code> annotation in definition site</p>
+</li>
+<li>
+<p>Idiomatic OCaml code</p>
+</li>
+</ol>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>In general, <code>bs.uncurry</code> is recommended, and compiler will do lots of optimizations to resolve the <code>curry</code> to <code>uncurry</code> calling convention in the compile time. However, there are some cases the compiler optimizer could not do it, in that case, it will be converted runtime.</p>
+</div>
+<div class="paragraph">
+<p>This means <code>[@bs]</code> are completely static behavior (no any runtime cost), while <code>[@bs.uncurry]</code> is more convenient for end users but in some very rare cases it might be slower than <code>[@bs]</code></p>
+</div>
+</td>
+</tr>
+</table>
+</div>
 </div>
 <div class="sect3">
 <h4 id="_uncurried_calling_convention_as_an_optimization"><a class="anchor" href="#_uncurried_calling_convention_as_an_optimization"></a>Uncurried calling convention as an optimization</h4>

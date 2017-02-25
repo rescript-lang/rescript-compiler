@@ -27,5 +27,11 @@ let suites =
       )
       ["0";"1";"2"; "1";"2";"3"]
     end;
+
+    __LOC__ >:: begin fun _ -> 
+      let (a,b) = Ext_list.take 3 [1;2;3;4;5;6] in 
+      OUnit.assert_equal (a,b)
+      ([1;2;3],[4;5;6])
+    end
     
   ]

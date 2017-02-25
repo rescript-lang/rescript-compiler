@@ -807,6 +807,29 @@ let rec is_eta_conversion
   | [], [],[] -> true 
   | _, _, _ -> false 
 
+exception Not_simple_form 
+
+(** Simplfiy such behavior
+    {[ 
+      (apply
+         (function prim/1024 prim/1023 prim/1022
+                     ([js] (js_fn_make_2 prim/1024) prim/1023 prim/1022)) .. )
+    ]}
+*)
+let rec is_eta_conversion_exn
+ params inner_args outer_args = 
+  match params, inner_args, outer_args with 
+  | x::xs, Lvar y::ys, r::rest 
+    when Ident.same x y ->
+    r :: is_eta_conversion_exn xs ys rest 
+  | x::xs, 
+    (Lprim ({primitive = Pjs_fn_make _; 
+             args = [Lvar y] } as p ) ::ys),
+    r :: rest when Ident.same x y -> 
+    Lprim ({p with args = [ r]}) :: 
+    is_eta_conversion_exn xs ys rest 
+  | [], [], [] -> []
+  | _, _, _ -> raise_notrace Not_simple_form
 
 
 let var id : t = Lvar id
@@ -816,14 +839,22 @@ let const ct : t = Lconst ct
 let apply fn args loc status : t = 
   match fn with 
   | Lfunction {kind ; params; 
-               body =Lprim ({primitive; args = inner_args}as primitive_call) } when 
-      is_eta_conversion params inner_args args 
-    -> 
-    Lprim { primitive_call with args ; loc = loc }
-  | Lfunction {kind; params ; 
-               body = Lapply {fn = new_fn ; args = inner_args; status }
-              } when is_eta_conversion params inner_args args ->
-    Lapply {fn = new_fn ; args ; loc = loc; status } 
+               body =Lprim ({primitive; args = inner_args}as primitive_call) } 
+
+    ->
+    begin match is_eta_conversion_exn params inner_args args with
+      | args 
+        -> 
+        Lprim { primitive_call with args ; loc = loc }
+      | exception _ -> 
+        Lapply { fn; args;  loc  ;
+                 status }
+    end 
+  (*  | Lfunction {kind; params ; 
+                 body = Lapply {fn = new_fn ; args = inner_args; status }
+                } when is_eta_conversion params inner_args args ->
+      Lapply {fn = new_fn ; args ; loc = loc; status } 
+  *)
   (* same as previous App status*)
   | _ -> 
     Lapply { fn; args;  loc  ;
@@ -1136,6 +1167,41 @@ let not_ loc x  : t =
 
 let may_depend = Lam_module_ident.Hash_set.add 
 
+
+let rec no_auto_uncurried_arg_types 
+    (xs : Ast_ffi_types.arg_kind list)  = 
+  match xs with 
+  | [] -> true 
+  | {arg_type = Fn_uncurry_arity _ } :: _ ->
+    false 
+  | _ :: xs -> no_auto_uncurried_arg_types xs 
+
+(* TODO: sort out the order here
+   consolidate {!Lam_compile_external_call.assemble_args_splice}
+*)
+let rec transform_uncurried_arg_type loc (arg_types : Ast_ffi_types.arg_kind list) 
+    (args : t list ) = 
+  match arg_types,args with 
+  | { arg_type = Fn_uncurry_arity n ; arg_label } :: xs,
+    y::ys -> 
+    let (o_arg_types, o_args) = 
+      transform_uncurried_arg_type loc xs ys in 
+    { Ast_ffi_types.arg_type = Nothing ; arg_label } :: o_arg_types , 
+    prim ~primitive:(Pjs_fn_make n) ~args:[y] loc :: o_args 
+  |  x  ::xs, y::ys -> 
+    begin match x with 
+      | {arg_type = Arg_int_lit  _ | Arg_string_lit _ }  -> 
+        let o_arg_types, o_args = transform_uncurried_arg_type loc xs args in 
+        x :: o_arg_types , o_args 
+      | _ -> 
+        let o_arg_types, o_args = transform_uncurried_arg_type loc xs ys in 
+        x :: o_arg_types , y:: o_args 
+    end
+  | [] , [] 
+  | _::_, [] 
+  | [], _::_ as ok -> ok    
+
+
 (** drop Lseq (List! ) etc *)
 let rec drop_global_marker (lam : t) =
   match lam with 
@@ -1204,9 +1270,15 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : t =
           prim ~primitive:(Pccall a) ~args loc
       | Ffi_obj_create labels -> 
         prim ~primitive:(Pjs_object_create labels) ~args loc 
-      | Ffi_bs(arg_types, result_type, ffi) -> 
-        prim ~primitive:(Pjs_call(prim_name, arg_types,result_type,ffi)) 
-          ~args loc
+      | Ffi_bs(arg_types, result_type, ffi) ->         
+        if no_auto_uncurried_arg_types arg_types then   
+          prim ~primitive:(Pjs_call(prim_name, arg_types,result_type,ffi)) 
+            ~args loc
+        else 
+          let n_arg_types, n_args = 
+            transform_uncurried_arg_type loc  arg_types args in 
+          prim ~primitive:(Pjs_call (prim_name, n_arg_types, result_type, ffi))
+            ~args:n_args loc 
     end
 
   | Praise _ ->
@@ -1531,11 +1603,11 @@ let convert exports lam : _ * _  =
       let f = aux f in 
       let x = aux x in 
       begin match f with 
-      | Lapply{fn ; args }
-        -> 
-        apply fn (args @ [x]) outer_loc App_na
-      | _  -> apply f [x] outer_loc App_na
-    end
+        | Lapply{fn ; args }
+          -> 
+          apply fn (args @ [x]) outer_loc App_na
+        | _  -> apply f [x] outer_loc App_na
+      end
     | Lprim(Pdirapply, _, _) -> assert false 
     | Lprim (primitive,args, loc) 
       -> 

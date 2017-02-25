@@ -6,7 +6,7 @@ external map : 'a array -> ('a -> 'b [@bs.uncurry  ]) -> 'b array =
     
 
 type id = int -> int     
-external map2 : int array ->  (id [@bs.uncurry 1]) -> int array =
+external map2 : int array ->  (int -> int  [@bs.uncurry ]) -> int array =
     "Array.prototype.map.cal"
     [@@bs.val]
 
@@ -15,7 +15,7 @@ external map2 : int array ->  (id [@bs.uncurry 1]) -> int array =
 *)    
 
 (* if we know the return value of type we could do more optimizations here *)
-let bs = map  [|1;2;3; 5 |] (fun x -> x + 1 ) 
+let xbs = map  [|1;2;3; 5 |] (fun x -> x + 1 ) 
 
 let f (cb : int -> int ) = 
     map [|1;2;3;4|] cb
@@ -36,8 +36,33 @@ external ff :
     int -> (int [@bs.ignore]) -> (int -> int -> int [@bs.uncurry]) -> int 
     = "" [@@bs.val]
 
+external ff1 : 
+    int -> (_ [@bs.as 3 ]) -> (int -> int -> int [@bs.uncurry]) -> int 
+    = "" [@@bs.val]
 
-let f x y z = 
+
+external ff2 : 
+    int -> (_ [@bs.as "3" ]) -> (int -> int -> int [@bs.uncurry]) -> int 
+    = "" [@@bs.val]
+
+external
+ hi: (unit -> unit [@bs.uncurry 0]) -> int = "" [@@bs.val]
+
+(** 
+fun (_){
+    f 0
+}
+
+*)
+
+
+let f_0 () =  hi (fun () -> () )
+let f_01 () = hi (fun (() as x) -> if x = () then Js.log "x" )
+let f_02 xs = hi (fun (() as x) -> xs := x ;  Js.log "x" )
+let f_03 xs u = hi u
+ (* arity adjust to [0] [ function (){return u (0)}] *)
+
+let fishy x y z = 
     map2 x y (fun x -> z x)    
 
 let h x y  z = 
@@ -55,14 +80,41 @@ let h2 x  =
 let h3 x = 
     ff x 2 (add3 1 )    
 
+let h4 x = 
+    ff1 x (add3  1)
 
-(** used in return value 
-    This should fail, we did not 
-    support uncurry return value yet
+let h5 x = 
+    ff2 x (add3 2)
+let add x y = 
+    Js.log (x,y) ; 
+    x + y
+
+
+
+let h6 x = 
+    ff2 x add     
+
+
+
+
+type elem
+external optional_cb : 
+    (string -> ?props:elem -> int array -> elem [@bs.uncurry] (* This should emit a warning ? *)
+    ) -> string -> int = "" [@@bs.val]
+
+
+
+(*
+let fishy_unit = fun () -> Js.log 1 
+
+let fishy_unit_2 = fun [@bs] (() as x) -> Js.log x
+
+let v = fishy_unit_2 () [@bs]
+
 *)
-external v3 :
-    int -> int -> (int -> int -> int [@bs.uncurry])
-    = ""[@@bs.val]
+(* Up is not a valid syntax, since you can not apply correctly *)
+
+
 (* ^ should be an error instead of warning *)    
 
 
@@ -114,3 +166,32 @@ let f : expected =
 so the inferred type would be 
 *)
 
+(*
+let v = ref 0  
+
+
+
+(**
+There is a semantics mismatch when converting curried function into uncurried function 
+for example 
+`let u = f a b c in u d ` may have a side effect here when creating [u].
+We should document it clearly
+*)
+let a4 = Js_unsafe.js_fn_mk4 (fun x y z -> incr v ;  fun d -> 1 + d)
+
+
+let () = 
+    ignore @@ a4 0 1 2 3 [@bs]
+    ignore @@ a4 0 1 2 3 [@bs]
+
+;;
+
+Mt.from_pair_suites __FILE__ !suites
+*)
+
+let unit_magic () =
+    Js.log "noinline" ; 
+     Js.log "noinline" ; 
+     3 
+
+let f_unit_magic  = unit_magic ()

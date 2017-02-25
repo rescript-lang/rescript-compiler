@@ -121,26 +121,26 @@ let get_arg_type ~nolabel optional
 
     | (`Int, _), _ -> Location.raise_errorf ~loc:ptyp.ptyp_loc "Not a valid string type"
     | (`Uncurry opt_arity, ptyp_attributes), ptyp_desc -> 
-      let real_arity =  Ast_core_type.get_arity ptyp in 
+      let real_arity =  Ast_core_type.get_uncurry_arity ptyp in 
       (begin match opt_arity, real_arity with 
-      | Some arity, 0 -> 
-        Fn_uncurry_arity arity 
-      | None, 0 -> 
-        Location.raise_errorf 
-          ~loc:ptyp.ptyp_loc 
-          "Can not infer the arity by syntax, either [@bs.uncurry n] or \n\
-          write it in arrow syntax
+         | Some arity, `Not_function -> 
+           Fn_uncurry_arity arity 
+         | None, `Not_function  -> 
+           Location.raise_errorf 
+             ~loc:ptyp.ptyp_loc 
+             "Can not infer the arity by syntax, either [@bs.uncurry n] or \n\
+              write it in arrow syntax
           "
-      | None, arity  ->         
-        Fn_uncurry_arity arity
-      | Some arity, n -> 
-        if n <> arity then 
-          Location.raise_errorf 
-            ~loc:ptyp.ptyp_loc 
-            "Inconsistent arity %d vs %d" arity n 
-        else Fn_uncurry_arity arity 
-          
-      end, {ptyp with ptyp_attributes})
+         | None, `Arity arity  ->         
+           Fn_uncurry_arity arity
+         | Some arity, `Arity n -> 
+           if n <> arity then 
+             Location.raise_errorf 
+               ~loc:ptyp.ptyp_loc 
+               "Inconsistent arity %d vs %d" arity n 
+           else Fn_uncurry_arity arity 
+
+       end, {ptyp with ptyp_attributes})
     | (`Nothing, ptyp_attributes),  ptyp_desc ->
       begin match ptyp_desc with
         | Ptyp_constr ({txt = Lident "bool"}, [])
@@ -288,8 +288,14 @@ let process_external_attributes
     (init_st, []) prim_attributes 
 
 
-
-
+let rec has_bs_uncurry (attrs : Ast_attributes.t) = 
+  match attrs with 
+  | ({txt = "bs.uncurry"}, _) :: attrs -> 
+    true 
+  | _ :: attrs -> has_bs_uncurry attrs 
+  | [] -> false 
+  
+  
 (** Note that the passed [type_annotation] is already processed by visitor pattern before 
 *)
 let handle_attributes 
@@ -298,13 +304,28 @@ let handle_attributes
     (type_annotation : Parsetree.core_type)
     (prim_attributes : Ast_attributes.t) (prim_name : string)
   : Ast_core_type.t * string * Ast_ffi_types.t * Ast_attributes.t =
+  (** sanity check here 
+      {[ int -> int -> (int -> int -> int [@bs.uncurry])]}
+      It does not make sense 
+  *)
+  if has_bs_uncurry type_annotation.Parsetree.ptyp_attributes then 
+    begin 
+      Location.raise_errorf 
+        ~loc "[@@bs.uncurry] can not be applied to the whole defintion"
+    end; 
+
   let prim_name_or_pval_prim =
     if String.length prim_name = 0 then  `Nm_val pval_prim
     else  `Nm_external prim_name  (* need check name *)
   in    
   let result_type, arg_types_ty =
     Ast_core_type.list_of_arrow type_annotation in
-
+  if has_bs_uncurry result_type.ptyp_attributes then 
+  begin 
+      Location.raise_errorf 
+      ~loc:result_type.ptyp_loc
+       "[@@bs.uncurry] can not be applied to tailed position"
+  end ;
   let (st, left_attrs) = 
     process_external_attributes 
       (arg_types_ty = [])
@@ -374,7 +395,7 @@ let handle_attributes
                        (label,new_ty,attr,loc)::arg_types, 
                        ((name, [], Ast_literal.type_string ~loc ()) :: result_types)  
                      | Fn_uncurry_arity _ -> 
-                        Location.raise_errorf ~loc
+                       Location.raise_errorf ~loc
                          "The combination of [@@bs.obj], [@@bs.uncurry] is not supported yet"
                      | Extern_unit -> assert false 
                      | NonNullString _ 
@@ -409,7 +430,7 @@ let handle_attributes
                      | Arg_string_lit _ -> 
                        Location.raise_errorf ~loc "bs.as is not supported with optional yet"
                      | Fn_uncurry_arity _ -> 
-                        Location.raise_errorf ~loc
+                       Location.raise_errorf ~loc
                          "The combination of [@@bs.obj], [@@bs.uncurry] is not supported yet"                      
                      | Extern_unit   -> assert false                      
                      | NonNullString _ 

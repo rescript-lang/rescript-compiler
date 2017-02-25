@@ -24,9 +24,7 @@ function eq(loc, x, y) {
   return /* () */0;
 }
 
-var u = function (a, b) {
-    return a + b | 0;
-  }(1, 2);
+var u = 3;
 
 function nullary() {
   return 3;

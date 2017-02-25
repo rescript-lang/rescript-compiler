@@ -23,58 +23,20 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
+(** 
+  [transform n loc status fn args]
+  n is the number of missing arguments required for [fn].
+  Return a function of airty [n]
+*) 
+
+val transform_under_supply : 
+  int ->
+  Location.t -> Lam.apply_status -> Lam.t -> Lam.t list -> Lam.t
 
 
-
-
-
-
-val string_of_lambda : Lam.t -> string 
-
-val string_of_primitive : Lam.primitive -> string
-
-val kind_of_lambda_block : Lam_stats.boxed_nullable -> Lam.t list -> Lam_stats.kind
-
-val field_flatten_get : 
-  (unit -> Lam.t) -> Ident.t -> int -> Lam_stats.ident_tbl -> Lam.t
-
-
-
-
-
-val alias_ident_or_global : Lam_stats.meta ->
-  Ident.t -> Ident.t -> Lam_stats.kind -> Lambda.let_kind -> unit 
-
-
-val refine_let : 
-    kind:Lambda.let_kind  ->
-      Ident.t -> Lam.t -> Lam.t -> Lam.t
-
-
-val generate_label : ?name:string -> unit -> J.label
-
-(* val sort_dag_args : J.expression Ident_map.t -> Ident.t list option *)
-(** if [a] depends on [b] a is ahead of [b] as [a::b]
-
-    TODO: make it a stable sort 
- *)
-
-
-(** [dump] when {!Js_config.is_same_file}*)
-val dump : Env.t   -> string -> Lam.t -> Lam.t
-
-
-val print_ident_set : Format.formatter -> Ident_set.t -> unit
-
-
-
-val not_function : Lam.t -> bool 
-val is_function : Lam.t -> bool 
-
-
-
-
-val subst_lambda : Lam.t Ident_map.t -> Lam.t -> Lam.t
-
-
-
+val unsafe_adjust_to_arity :
+  Location.t -> 
+  to_:int -> 
+  ?from:int -> 
+  Lam.t -> 
+  Lam.t 

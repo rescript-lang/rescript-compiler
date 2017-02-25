@@ -483,7 +483,7 @@ function map (a, b, f){
 }
 ---------------------------------------
 
-A naive external type declaration would be as below:
+A *naive* external type declaration would be as below:
 
 [source,ocaml]
 --------------------------------------------------------------------------------------
@@ -544,6 +544,8 @@ function f(x,y){
 No matter which strategy we use, existing typing rules *cannot
 guarantee a function of type `'a -> 'b -> 'c` will have arity 2.*
 
+#### [@bs] for explicit uncurried callback
+
 To solve this problem introduced by OCaml's curried calling convention,
 we support a special attribute `[@bs]` at the type level.
 
@@ -596,6 +598,38 @@ type 'a u2 = int -> string -> (int -> 'a [@bs]) [@bs] // <3>
 <2>  `u1` has arity of 3
 <3>  `u2` has arity of 2, reutrn a function  with arity 1
 
+#### [@bs.uncurry] for implicit uncurried callback (@since 1.5.0)
+
+Note the `[@bs]` annotation already solved the problem completely, but it has a drawback 
+that it requires users to write `[@bs]` both in definition site and call site.
+
+For example:
+
+[source,ocaml]
+--------------
+external map : 'a array -> ('a -> 'b[@bs]) -> 'b array = "" [@@bs.send] // <1>
+map [|1;2;3|] (fun [@bs] x -> x + 1) // <2>
+--------------
+<1> `[@bs]` annotation in definition site
+<2> `[@bs]` annotation in call site 
+
+This is less convenient for end users, so we introduce another implicit annotation `[@bs.uncurry]` so that the compiler will automatically wrap the curried callback (from OCaml side) to JS uncurried callback. In this way, the `[@bs.uncurry]` annotation is defined 
+only once.
+
+[source,ocaml]
+--------------
+external map : 'a array -> ('a -> 'b [@bs.uncurry]) -> 'b array = "" [@@bs.send] // <1>
+map [|1;2;3|] (fun x -> x+ 1) // <2>
+--------------
+<1> `[@bs.uncurry]` annotation in definition site 
+<2> Idiomatic OCaml code
+
+[NOTE]
+======
+In general, `bs.uncurry` is recommended, and compiler will do lots of optimizations to resolve the `curry` to `uncurry` calling convention in the compile time. However, there are some cases the compiler optimizer could not do it, in that case, it will be converted runtime. 
+
+This means `[@bs]` are completely static behavior (no any runtime cost), while `[@bs.uncurry]` is more convenient for end users but in some very rare cases it might be slower than `[@bs]`
+======
 
 
 #### Uncurried calling convention as an optimization

@@ -328,42 +328,8 @@ let not_function (lam : Lam.t) =
    ]}   
 *)
 
-(*
-  let f x y =  x + y 
-  Invariant: there is no currying 
-  here since f's arity is 2, no side effect 
-  f 3 --> function(y) -> f 3 y 
-*)
-let eta_conversion n loc status fn args = 
-  let extra_args = Ext_list.init n
-      (fun _ ->   (Ident.create Literals.param)) in
-  let extra_lambdas = List.map (fun x -> Lam.var x) extra_args in
-  begin match List.fold_right (fun (lam : Lam.t) (acc, bind) ->
-      match lam with
-      | Lvar _
-      | Lconst (Const_base _ | Const_pointer _ | Const_immstring _ ) 
-      | Lprim {primitive = Pfield _;
-               args =  [ Lglobal_module _ ]; _ }
-      | Lfunction _ 
-        ->
-        (lam :: acc, bind)
-      | _ ->
-        let v = Ident.create Literals.partial_arg in
-        (Lam.var v :: acc),  ((v, lam) :: bind)
-    ) (fn::args) ([],[])   with 
-  | fn::args , bindings ->
 
-    let rest : Lam.t = 
-      Lam.function_ ~arity:n ~kind:Curried ~params:extra_args
-        ~body:(Lam.apply fn (args @ extra_lambdas) 
-                 loc 
-                 status
-              ) in
-    List.fold_left (fun lam (id,x) ->
-        Lam.let_ Strict id x lam
-      ) rest bindings
-  | _, _ -> assert false
-  end
+
 
 
 
