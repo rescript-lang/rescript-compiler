@@ -212,12 +212,12 @@
               }
           ]
         },
-        "targets": {
+        "buildable-targets": {
           "type": "array",
           "items": {
               "$ref": "#/definitions/targetItem"
           },
-          "description": "A list of target items"
+          "description": "A list of buildable targets"
         },
         "bsc-flags": {
             "oneOf": [
@@ -311,9 +311,9 @@
             "$ref": "#/definitions/sources",
             "description": "specication of where source code is "
         },
-        "targets": {
-            "$ref": "#/definitions/targets",
-            "description": "specification for compiling to differet targets (native, bytecode, js)"
+        "buildable-targets": {
+            "$ref": "#/definitions/buildable-targets",
+            "description": "Used by bsb to build to native/bytecode (instead of the default JS)"
         },
         "generate-merlin": {
             "type": "boolean",
