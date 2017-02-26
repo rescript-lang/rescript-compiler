@@ -64047,13 +64047,14 @@ and expression_desc =
   (* The first parameter by default is false, 
      it will be true when it's a method
   *)
-  | Str of bool * string 
+  | Str of bool * string * string option 
     (* A string is UTF-8 encoded, the string may contain
        escape sequences.
        The first argument is used to mark it is non-pure, please
        don't optimize it, since it does have side effec, 
        examples like "use asm;" and our compiler may generate "error;..." 
        which is better to leave it alone
+       The last argument is passed from as `j` from `{j||j}`
      *)
   | Raw_js_code of string * code_info
   (* literally raw JS code 
@@ -67214,6 +67215,7 @@ class virtual fold =
        don't optimize it, since it does have side effec, 
        examples like "use asm;" and our compiler may generate "error;..." 
        which is better to leave it alone
+       The last argument is passed from as `j` from `{j||j}`
      *)
                  (* literally raw JS code 
   *)
@@ -67412,7 +67414,10 @@ class virtual fold =
           let o = o#bool _x in
           let o = o#list (fun o -> o#ident) _x_i1 in
           let o = o#block _x_i2 in let o = o#unknown _x_i3 in o
-      | Str (_x, _x_i1) -> let o = o#bool _x in let o = o#string _x_i1 in o
+      | Str (_x, _x_i1, _x_i2) ->
+          let o = o#bool _x in
+          let o = o#string _x_i1 in
+          let o = o#option (fun o -> o#string) _x_i2 in o
       | Raw_js_code (_x, _x_i1) ->
           let o = o#string _x in let o = o#code_info _x_i1 in o
       | Array (_x, _x_i1) ->
@@ -67649,7 +67654,7 @@ let rec no_side_effect_expression_desc (x : J.expression_desc)  =
   | Bool _ -> true 
   | Var _ -> true 
   | Access (a,b) -> no_side_effect a && no_side_effect b 
-  | Str (b,_) -> b
+  | Str (b,_,_) -> b
   | Fun _ -> true
   | Number _ -> true (* Can be refined later *)
   | Array (xs,_mutable_flag)  
@@ -67805,7 +67810,7 @@ let rev_toplevel_flatten block =
 let rec is_constant (x : J.expression)  = 
   match x.expression_desc with 
   | Access (a,b) -> is_constant a && is_constant b 
-  | Str (b,_) -> b
+  | Str (b,_,_) -> b
   | Number _ -> true (* Can be refined later *)
   | Array (xs,_mutable_flag)  -> List.for_all is_constant  xs 
   | Caml_block(xs, Immutable, tag, _) 
@@ -68226,7 +68231,12 @@ val runtime_call : ?comment:string -> string -> string -> t list -> t
 val public_method_call : string -> t -> t -> Int32.t -> t list -> t
 val runtime_ref : string -> string -> t
 
-val str : ?pure:bool -> ?comment:string -> string -> t 
+val str : 
+  ?pure:bool -> 
+  ?delimiter:string ->
+  ?comment:string -> 
+  string -> 
+  t 
 
 val ocaml_fun : ?comment:string ->
   ?immutable_mask:bool array -> J.ident list -> J.block -> t
@@ -68241,6 +68251,7 @@ val nint : ?comment:string -> nativeint -> t
 val small_int : int -> t
 val float : ?comment:string -> string -> t
 
+val empty_string_literal : t 
 (* TODO: we can do hash consing for small integers *)
 val zero_int_literal : t
 val one_int_literal : t
@@ -68522,7 +68533,7 @@ let external_var_dot ?comment  ~external_name:name ?dot (id : Ident.t) : t =
 let ml_var ?comment (id : Ident.t) : t  = 
   {expression_desc = Var (Qualified (id, Ml, None)); comment}
 
-let str ?(pure=true) ?comment s : t =  {expression_desc = Str (pure,s); comment}
+let str ?(pure=true) ?delimiter?comment s : t =  {expression_desc = Str (pure,s,delimiter); comment}
 
 let raw_js_code ?comment info s : t =
   {expression_desc = Raw_js_code (s,info) ; comment }
@@ -68670,6 +68681,9 @@ let fuse_to_seq x xs =
   if xs = [] then x  
   else List.fold_left seq x xs 
 
+let empty_string_literal : t = 
+  {expression_desc = Str (true,"",None); comment = None}  
+
 let zero_int_literal : t =   
   {expression_desc = Number (Int {i = 0l; c = None}) ; comment = None}
 let one_int_literal : t = 
@@ -68725,8 +68739,8 @@ let access ?comment (e0 : t)  (e1 : t) : t =
 
 let string_access ?comment (e0 : t)  (e1 : t) : t = 
   match e0.expression_desc, e1.expression_desc with
-  | Str (_,s) , Number (Int {i; _}) 
-    -> 
+  | Str (_,s,None) , Number (Int {i; _}) 
+    ->  (* Don't optimize {j||j} *)
     let i = Int32.to_int i  in
     if i >= 0 && i < String.length s then 
       (* TODO: check exception when i is out of range..
@@ -68810,14 +68824,15 @@ let array_length ?comment (e : t) : t =
 
 let string_length ?comment (e : t) : t =
   match e.expression_desc with 
-  | Str(_,v) -> int ?comment (Int32.of_int (String.length v))
+  | Str(_,v, _) -> int ?comment (Int32.of_int (String.length v)) (* No optimization for {j||j}*)
   | _ -> { expression_desc = Length (e, String) ; comment }
 
 let bytes_length ?comment (e : t) : t = 
   match e.expression_desc with 
   (* TODO: use array instead? *)
   | Array (l, _) -> int ?comment (Int32.of_int (List.length l))
-  | Str(_,v) -> int ?comment (Int32.of_int @@ String.length v)
+  | Str(_,v, None) -> int ?comment (Int32.of_int @@ String.length v)
+  (* No optimization for unicode *)
   | _ -> { expression_desc = Length (e, Bytes) ; comment }
 
 let function_length ?comment (e : t) : t = 
@@ -68845,7 +68860,7 @@ let char_of_int ?comment (v : t) : t =
 
 let char_to_int ?comment (v : t) : t = 
   match v.expression_desc with 
-  | Str (_, x) ->
+  | Str (_, x, None) -> (* No optimization for .. *)
     assert (String.length x = 1) ;
     int ~comment:(Printf.sprintf "%S"  x )  
       (Int32.of_int @@ Char.code x.[0])
@@ -68870,14 +68885,14 @@ let to_json_string ?comment e : t =
 
 let rec string_append ?comment (e : t) (el : t) : t = 
   match e.expression_desc , el.expression_desc  with 
-  | Str(_,a), String_append ({expression_desc = Str(_,b)}, c) ->
+  | Str(_,a, None), String_append ({expression_desc = Str(_,b,None)}, c) ->
     string_append ?comment (str (a ^ b)) c 
-  | String_append (c,{expression_desc = Str(_,b)}), Str(_,a) ->
+  | String_append (c,{expression_desc = Str(_,b,None)}), Str(_,a,None) ->
     string_append ?comment c (str (b ^ a))
-  | String_append (a,{expression_desc = Str(_,b)}),
-    String_append ({expression_desc = Str(_,c)} ,d) ->
+  | String_append (a,{expression_desc = Str(_,b,None)}),
+    String_append ({expression_desc = Str(_,c,None)} ,d) ->
     string_append ?comment (string_append a (str (b ^ c))) d 
-  | Str (_,a), Str (_,b) -> str ?comment (a ^ b)
+  | Str (_,a,None), Str (_,b,None) -> str ?comment (a ^ b)
   | _, Anything_to_string b -> string_append ?comment e b 
   | Anything_to_string b, _ -> string_append ?comment b el
   | _, _ -> {comment ; expression_desc = String_append(e,el)}
@@ -68953,7 +68968,7 @@ let rec triple_equal ?comment (e0 : t) (e1 : t ) : t =
     | Fun _ | Array _ | Caml_block _ ),  Var (Id ({name = "undefined"|"null"; } as id))
     when Ext_ident.is_js id && no_side_effect e0 -> 
     caml_false
-  | Str (_,x), Str (_,y) ->  (* CF*)
+  | Str (_,x,None), Str (_,y,None) ->  (* CF*)
     bool (Ext_string.equal x y)
   | Char_to_int a , Char_to_int b -> 
     triple_equal ?comment a b 
@@ -69269,7 +69284,7 @@ let rec float_equal ?comment (e0 : t) (e1 : t) : t =
 let int_equal = float_equal 
 let rec string_equal ?comment (e0 : t) (e1 : t) : t = 
   match e0.expression_desc, e1.expression_desc with     
-  | Str (_, a0), Str(_, b0) 
+  | Str (_, a0,None), Str(_, b0,None) 
     -> bool  (Ext_string.equal a0 b0)
   | _ , _ 
     ->
@@ -72073,7 +72088,7 @@ let int_switch ?comment   ?declaration ?default (e : J.expression)  clauses : t 
 
 let string_switch ?comment ?declaration  ?default (e : J.expression)  clauses : t= 
   match e.expression_desc with 
-  | Str (_,s) -> 
+  | Str (_,s,None) -> 
     let continuation = 
       begin match List.find 
                     (fun  (x : string J.case_clause) -> x.case = s) clauses
@@ -83123,12 +83138,21 @@ and
         P.paren_group f 1 (fun _ -> arguments cxt f el)
       )
 
-  | Str (_, s) ->
+  | Str (_, s,delimiter) ->
     (*TODO --
        when utf8-> it will not escape '\\' which is definitely not we want
     *)
-    let quote = best_string_quote s in 
-    pp_string f (* ~utf:(kind = `Utf8) *) ~quote s; cxt 
+    begin match delimiter with 
+    | Some ("j"|"js") -> 
+      (* assert (1>2); *)
+      P.string f "\"";
+      P.string f s ;
+      P.string f "\"";
+      cxt 
+    | _ -> 
+      let quote = best_string_quote s in 
+      pp_string f (* ~utf:(kind = `Utf8) *) ~quote s; cxt 
+    end
   | Raw_js_code (s,info) -> 
     begin match info with 
       | Exp -> 
@@ -83315,7 +83339,7 @@ and
     (* Note that we should not apply any smart construtor here, 
        it's purely  a convenice for pretty-printing
     *)    
-    expression_desc cxt l f (Bin (Plus, {expression_desc = Str (true,""); comment = None}, e))    
+    expression_desc cxt l f (Bin (Plus, E.empty_string_literal , e))    
 
   | Bin (Minus, {expression_desc = Number (Int {i=0l;_} | Float {f = "0."})}, e) 
     (* TODO:
@@ -85203,6 +85227,7 @@ class virtual map =
        don't optimize it, since it does have side effec, 
        examples like "use asm;" and our compiler may generate "error;..." 
        which is better to leave it alone
+       The last argument is passed from as `j` from `{j||j}`
      *)
                  (* literally raw JS code 
   *)
@@ -85429,8 +85454,11 @@ class virtual map =
           let _x_i1 = o#list (fun o -> o#ident) _x_i1 in
           let _x_i2 = o#block _x_i2 in
           let _x_i3 = o#unknown _x_i3 in Fun (_x, _x_i1, _x_i2, _x_i3)
-      | Str (_x, _x_i1) ->
-          let _x = o#bool _x in let _x_i1 = o#string _x_i1 in Str (_x, _x_i1)
+      | Str (_x, _x_i1, _x_i2) ->
+          let _x = o#bool _x in
+          let _x_i1 = o#string _x_i1 in
+          let _x_i2 = o#option (fun o -> o#string) _x_i2
+          in Str (_x, _x_i1, _x_i2)
       | Raw_js_code (_x, _x_i1) ->
           let _x = o#string _x in
           let _x_i1 = o#code_info _x_i1 in Raw_js_code (_x, _x_i1)
@@ -89330,8 +89358,8 @@ let rec translate (x : Lambda.structured_constant ) : J.expression =
         (* https://github.com/google/closure-library/blob/master/closure%2Fgoog%2Fmath%2Flong.js *)
       | Const_nativeint i -> E.nint i 
       | Const_float f -> E.float f (* TODO: preserve float *)
-      | Const_string (i,_) (*TODO: here inline js*) -> 
-        E.str i
+      | Const_string (i,delimiter) (*TODO: here inline js*) -> 
+        E.str ?delimiter i 
     end
 
   | Const_pointer (c,pointer_info) -> 
@@ -91052,7 +91080,7 @@ let translate (prim_name : string)
     call Js_config.format 
   | "caml_format_int" -> 
     begin match args with 
-    | [ {expression_desc = Str (_, "%d"); _}; v] 
+    | [ {expression_desc = Str (_, "%d",None); _}; v] 
       ->
       E.int_to_string v 
     | _ -> 
@@ -91469,8 +91497,8 @@ let translate (prim_name : string)
     | "js_pure_expr" (* TODO: conver it even earlier *)
       -> 
       begin match args with 
-      | [ { expression_desc = Str (_,s )}] -> 
-        E.raw_js_code Exp  s
+      | [ { expression_desc = Str (_,s, _)}] -> 
+        E.raw_js_code Exp  s (* TODO: FIXME *)
       | _ -> 
         Ext_log.err __LOC__ 
           "JS.unsafe_js_expr is applied to an non literal string in %s"
@@ -91481,7 +91509,7 @@ let translate (prim_name : string)
     | "js_pure_stmt" (* TODO: convert even ealier *)
       -> 
       begin match args with 
-      | [ { expression_desc = Str (_,s )}] -> E.raw_js_code Stmt s
+      | [ { expression_desc = Str (_,s, _)}] -> E.raw_js_code Stmt s (* TODO: FIXME *)
       | _ -> 
         Ext_log.err __LOC__ 
           "JS.unsafe_js_expr is applied to an non literal string in %s"

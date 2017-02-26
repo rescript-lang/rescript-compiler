@@ -82,6 +82,7 @@ caml_compare_test.cmj : mt.cmj
 caml_format_test.cmj : ../stdlib/printf.cmj mt.cmj ../stdlib/int64.cmj \
     ../stdlib/format.cmj ../stdlib/buffer.cmj ../stdlib/array.cmj
 chain_code_test.cmj : mt.cmj ../runtime/js_unsafe.cmj
+chn_test.cmj : ../runtime/js.cmj
 class3_test.cmj : mt.cmj ../stdlib/list.cmj ../runtime/js.cmj \
     ../stdlib/array.cmj
 class4_test.cmj : mt.cmj

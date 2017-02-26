@@ -549,7 +549,7 @@ let translate (prim_name : string)
     call Js_config.format 
   | "caml_format_int" -> 
     begin match args with 
-    | [ {expression_desc = Str (_, "%d"); _}; v] 
+    | [ {expression_desc = Str (_, "%d",None); _}; v] 
       ->
       E.int_to_string v 
     | _ -> 
@@ -966,8 +966,8 @@ let translate (prim_name : string)
     | "js_pure_expr" (* TODO: conver it even earlier *)
       -> 
       begin match args with 
-      | [ { expression_desc = Str (_,s )}] -> 
-        E.raw_js_code Exp  s
+      | [ { expression_desc = Str (_,s, _)}] -> 
+        E.raw_js_code Exp  s (* TODO: FIXME *)
       | _ -> 
         Ext_log.err __LOC__ 
           "JS.unsafe_js_expr is applied to an non literal string in %s"
@@ -978,7 +978,7 @@ let translate (prim_name : string)
     | "js_pure_stmt" (* TODO: convert even ealier *)
       -> 
       begin match args with 
-      | [ { expression_desc = Str (_,s )}] -> E.raw_js_code Stmt s
+      | [ { expression_desc = Str (_,s, _)}] -> E.raw_js_code Stmt s (* TODO: FIXME *)
       | _ -> 
         Ext_log.err __LOC__ 
           "JS.unsafe_js_expr is applied to an non literal string in %s"

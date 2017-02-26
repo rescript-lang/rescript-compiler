@@ -103,7 +103,8 @@ OTHERS := literals a test_ari test_export2 test_internalOO test_obj_simple_ffi t
 	js_null_undefined_test js_null_test js_undefined_test\
 	gpr_1268\
 	bs_auto_uncurry\
-	bs_auto_uncurry_test
+	bs_auto_uncurry_test\
+	chn_test
 
 # bs_uncurry_test
 # needs Lam to get rid of Uncurry arity first
