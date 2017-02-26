@@ -89,7 +89,12 @@ val runtime_call : ?comment:string -> string -> string -> t list -> t
 val public_method_call : string -> t -> t -> Int32.t -> t list -> t
 val runtime_ref : string -> string -> t
 
-val str : ?pure:bool -> ?comment:string -> string -> t 
+val str : 
+  ?pure:bool -> 
+  ?delimiter:string ->
+  ?comment:string -> 
+  string -> 
+  t 
 
 val ocaml_fun : ?comment:string ->
   ?immutable_mask:bool array -> J.ident list -> J.block -> t
@@ -104,6 +109,7 @@ val nint : ?comment:string -> nativeint -> t
 val small_int : int -> t
 val float : ?comment:string -> string -> t
 
+val empty_string_literal : t 
 (* TODO: we can do hash consing for small integers *)
 val zero_int_literal : t
 val one_int_literal : t

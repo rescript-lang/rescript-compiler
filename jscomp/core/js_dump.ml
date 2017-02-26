@@ -763,12 +763,21 @@ and
         P.paren_group f 1 (fun _ -> arguments cxt f el)
       )
 
-  | Str (_, s) ->
+  | Str (_, s,delimiter) ->
     (*TODO --
        when utf8-> it will not escape '\\' which is definitely not we want
     *)
-    let quote = best_string_quote s in 
-    pp_string f (* ~utf:(kind = `Utf8) *) ~quote s; cxt 
+    begin match delimiter with 
+    | Some ("j"|"js") -> 
+      (* assert (1>2); *)
+      P.string f "\"";
+      P.string f s ;
+      P.string f "\"";
+      cxt 
+    | _ -> 
+      let quote = best_string_quote s in 
+      pp_string f (* ~utf:(kind = `Utf8) *) ~quote s; cxt 
+    end
   | Raw_js_code (s,info) -> 
     begin match info with 
       | Exp -> 
@@ -955,7 +964,7 @@ and
     (* Note that we should not apply any smart construtor here, 
        it's purely  a convenice for pretty-printing
     *)    
-    expression_desc cxt l f (Bin (Plus, {expression_desc = Str (true,""); comment = None}, e))    
+    expression_desc cxt l f (Bin (Plus, E.empty_string_literal , e))    
 
   | Bin (Minus, {expression_desc = Number (Int {i=0l;_} | Float {f = "0."})}, e) 
     (* TODO:

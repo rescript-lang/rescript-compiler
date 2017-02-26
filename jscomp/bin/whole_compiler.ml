@@ -64041,13 +64041,14 @@ and expression_desc =
   (* The first parameter by default is false, 
      it will be true when it's a method
   *)
-  | Str of bool * string 
+  | Str of bool * string * string option 
     (* A string is UTF-8 encoded, the string may contain
        escape sequences.
        The first argument is used to mark it is non-pure, please
        don't optimize it, since it does have side effec, 
        examples like "use asm;" and our compiler may generate "error;..." 
        which is better to leave it alone
+       The last argument is passed from as `j` from `{j||j}`
      *)
   | Raw_js_code of string * code_info
   (* literally raw JS code 
@@ -67208,6 +67209,7 @@ class virtual fold =
        don't optimize it, since it does have side effec, 
        examples like "use asm;" and our compiler may generate "error;..." 
        which is better to leave it alone
+       The last argument is passed from as `j` from `{j||j}`
      *)
                  (* literally raw JS code 
   *)
@@ -67406,7 +67408,10 @@ class virtual fold =
           let o = o#bool _x in
           let o = o#list (fun o -> o#ident) _x_i1 in
           let o = o#block _x_i2 in let o = o#unknown _x_i3 in o
-      | Str (_x, _x_i1) -> let o = o#bool _x in let o = o#string _x_i1 in o
+      | Str (_x, _x_i1, _x_i2) ->
+          let o = o#bool _x in
+          let o = o#string _x_i1 in
+          let o = o#option (fun o -> o#string) _x_i2 in o
       | Raw_js_code (_x, _x_i1) ->
           let o = o#string _x in let o = o#code_info _x_i1 in o
       | Array (_x, _x_i1) ->
@@ -67643,7 +67648,7 @@ let rec no_side_effect_expression_desc (x : J.expression_desc)  =
   | Bool _ -> true 
   | Var _ -> true 
   | Access (a,b) -> no_side_effect a && no_side_effect b 
-  | Str (b,_) -> b
+  | Str (b,_,_) -> b
   | Fun _ -> true
   | Number _ -> true (* Can be refined later *)
   | Array (xs,_mutable_flag)  
@@ -67799,7 +67804,7 @@ let rev_toplevel_flatten block =
 let rec is_constant (x : J.expression)  = 
   match x.expression_desc with 
   | Access (a,b) -> is_constant a && is_constant b 
-  | Str (b,_) -> b
+  | Str (b,_,_) -> b
   | Number _ -> true (* Can be refined later *)
   | Array (xs,_mutable_flag)  -> List.for_all is_constant  xs 
   | Caml_block(xs, Immutable, tag, _) 
@@ -68220,7 +68225,12 @@ val runtime_call : ?comment:string -> string -> string -> t list -> t
 val public_method_call : string -> t -> t -> Int32.t -> t list -> t
 val runtime_ref : string -> string -> t
 
-val str : ?pure:bool -> ?comment:string -> string -> t 
+val str : 
+  ?pure:bool -> 
+  ?delimiter:string ->
+  ?comment:string -> 
+  string -> 
+  t 
 
 val ocaml_fun : ?comment:string ->
   ?immutable_mask:bool array -> J.ident list -> J.block -> t
@@ -68235,6 +68245,7 @@ val nint : ?comment:string -> nativeint -> t
 val small_int : int -> t
 val float : ?comment:string -> string -> t
 
+val empty_string_literal : t 
 (* TODO: we can do hash consing for small integers *)
 val zero_int_literal : t
 val one_int_literal : t
@@ -68516,7 +68527,7 @@ let external_var_dot ?comment  ~external_name:name ?dot (id : Ident.t) : t =
 let ml_var ?comment (id : Ident.t) : t  = 
   {expression_desc = Var (Qualified (id, Ml, None)); comment}
 
-let str ?(pure=true) ?comment s : t =  {expression_desc = Str (pure,s); comment}
+let str ?(pure=true) ?delimiter?comment s : t =  {expression_desc = Str (pure,s,delimiter); comment}
 
 let raw_js_code ?comment info s : t =
   {expression_desc = Raw_js_code (s,info) ; comment }
@@ -68664,6 +68675,9 @@ let fuse_to_seq x xs =
   if xs = [] then x  
   else List.fold_left seq x xs 
 
+let empty_string_literal : t = 
+  {expression_desc = Str (true,"",None); comment = None}  
+
 let zero_int_literal : t =   
   {expression_desc = Number (Int {i = 0l; c = None}) ; comment = None}
 let one_int_literal : t = 
@@ -68719,8 +68733,8 @@ let access ?comment (e0 : t)  (e1 : t) : t =
 
 let string_access ?comment (e0 : t)  (e1 : t) : t = 
   match e0.expression_desc, e1.expression_desc with
-  | Str (_,s) , Number (Int {i; _}) 
-    -> 
+  | Str (_,s,None) , Number (Int {i; _}) 
+    ->  (* Don't optimize {j||j} *)
     let i = Int32.to_int i  in
     if i >= 0 && i < String.length s then 
       (* TODO: check exception when i is out of range..
@@ -68804,14 +68818,15 @@ let array_length ?comment (e : t) : t =
 
 let string_length ?comment (e : t) : t =
   match e.expression_desc with 
-  | Str(_,v) -> int ?comment (Int32.of_int (String.length v))
+  | Str(_,v, _) -> int ?comment (Int32.of_int (String.length v)) (* No optimization for {j||j}*)
   | _ -> { expression_desc = Length (e, String) ; comment }
 
 let bytes_length ?comment (e : t) : t = 
   match e.expression_desc with 
   (* TODO: use array instead? *)
   | Array (l, _) -> int ?comment (Int32.of_int (List.length l))
-  | Str(_,v) -> int ?comment (Int32.of_int @@ String.length v)
+  | Str(_,v, None) -> int ?comment (Int32.of_int @@ String.length v)
+  (* No optimization for unicode *)
   | _ -> { expression_desc = Length (e, Bytes) ; comment }
 
 let function_length ?comment (e : t) : t = 
@@ -68839,7 +68854,7 @@ let char_of_int ?comment (v : t) : t =
 
 let char_to_int ?comment (v : t) : t = 
   match v.expression_desc with 
-  | Str (_, x) ->
+  | Str (_, x, None) -> (* No optimization for .. *)
     assert (String.length x = 1) ;
     int ~comment:(Printf.sprintf "%S"  x )  
       (Int32.of_int @@ Char.code x.[0])
@@ -68864,14 +68879,14 @@ let to_json_string ?comment e : t =
 
 let rec string_append ?comment (e : t) (el : t) : t = 
   match e.expression_desc , el.expression_desc  with 
-  | Str(_,a), String_append ({expression_desc = Str(_,b)}, c) ->
+  | Str(_,a, None), String_append ({expression_desc = Str(_,b,None)}, c) ->
     string_append ?comment (str (a ^ b)) c 
-  | String_append (c,{expression_desc = Str(_,b)}), Str(_,a) ->
+  | String_append (c,{expression_desc = Str(_,b,None)}), Str(_,a,None) ->
     string_append ?comment c (str (b ^ a))
-  | String_append (a,{expression_desc = Str(_,b)}),
-    String_append ({expression_desc = Str(_,c)} ,d) ->
+  | String_append (a,{expression_desc = Str(_,b,None)}),
+    String_append ({expression_desc = Str(_,c,None)} ,d) ->
     string_append ?comment (string_append a (str (b ^ c))) d 
-  | Str (_,a), Str (_,b) -> str ?comment (a ^ b)
+  | Str (_,a,None), Str (_,b,None) -> str ?comment (a ^ b)
   | _, Anything_to_string b -> string_append ?comment e b 
   | Anything_to_string b, _ -> string_append ?comment b el
   | _, _ -> {comment ; expression_desc = String_append(e,el)}
@@ -68947,7 +68962,7 @@ let rec triple_equal ?comment (e0 : t) (e1 : t ) : t =
     | Fun _ | Array _ | Caml_block _ ),  Var (Id ({name = "undefined"|"null"; } as id))
     when Ext_ident.is_js id && no_side_effect e0 -> 
     caml_false
-  | Str (_,x), Str (_,y) ->  (* CF*)
+  | Str (_,x,None), Str (_,y,None) ->  (* CF*)
     bool (Ext_string.equal x y)
   | Char_to_int a , Char_to_int b -> 
     triple_equal ?comment a b 
@@ -69263,7 +69278,7 @@ let rec float_equal ?comment (e0 : t) (e1 : t) : t =
 let int_equal = float_equal 
 let rec string_equal ?comment (e0 : t) (e1 : t) : t = 
   match e0.expression_desc, e1.expression_desc with     
-  | Str (_, a0), Str(_, b0) 
+  | Str (_, a0,None), Str(_, b0,None) 
     -> bool  (Ext_string.equal a0 b0)
   | _ , _ 
     ->
@@ -72067,7 +72082,7 @@ let int_switch ?comment   ?declaration ?default (e : J.expression)  clauses : t 
 
 let string_switch ?comment ?declaration  ?default (e : J.expression)  clauses : t= 
   match e.expression_desc with 
-  | Str (_,s) -> 
+  | Str (_,s,None) -> 
     let continuation = 
       begin match List.find 
                     (fun  (x : string J.case_clause) -> x.case = s) clauses
@@ -83117,12 +83132,21 @@ and
         P.paren_group f 1 (fun _ -> arguments cxt f el)
       )
 
-  | Str (_, s) ->
+  | Str (_, s,delimiter) ->
     (*TODO --
        when utf8-> it will not escape '\\' which is definitely not we want
     *)
-    let quote = best_string_quote s in 
-    pp_string f (* ~utf:(kind = `Utf8) *) ~quote s; cxt 
+    begin match delimiter with 
+    | Some ("j"|"js") -> 
+      (* assert (1>2); *)
+      P.string f "\"";
+      P.string f s ;
+      P.string f "\"";
+      cxt 
+    | _ -> 
+      let quote = best_string_quote s in 
+      pp_string f (* ~utf:(kind = `Utf8) *) ~quote s; cxt 
+    end
   | Raw_js_code (s,info) -> 
     begin match info with 
       | Exp -> 
@@ -83309,7 +83333,7 @@ and
     (* Note that we should not apply any smart construtor here, 
        it's purely  a convenice for pretty-printing
     *)    
-    expression_desc cxt l f (Bin (Plus, {expression_desc = Str (true,""); comment = None}, e))    
+    expression_desc cxt l f (Bin (Plus, E.empty_string_literal , e))    
 
   | Bin (Minus, {expression_desc = Number (Int {i=0l;_} | Float {f = "0."})}, e) 
     (* TODO:
@@ -85197,6 +85221,7 @@ class virtual map =
        don't optimize it, since it does have side effec, 
        examples like "use asm;" and our compiler may generate "error;..." 
        which is better to leave it alone
+       The last argument is passed from as `j` from `{j||j}`
      *)
                  (* literally raw JS code 
   *)
@@ -85423,8 +85448,11 @@ class virtual map =
           let _x_i1 = o#list (fun o -> o#ident) _x_i1 in
           let _x_i2 = o#block _x_i2 in
           let _x_i3 = o#unknown _x_i3 in Fun (_x, _x_i1, _x_i2, _x_i3)
-      | Str (_x, _x_i1) ->
-          let _x = o#bool _x in let _x_i1 = o#string _x_i1 in Str (_x, _x_i1)
+      | Str (_x, _x_i1, _x_i2) ->
+          let _x = o#bool _x in
+          let _x_i1 = o#string _x_i1 in
+          let _x_i2 = o#option (fun o -> o#string) _x_i2
+          in Str (_x, _x_i1, _x_i2)
       | Raw_js_code (_x, _x_i1) ->
           let _x = o#string _x in
           let _x_i1 = o#code_info _x_i1 in Raw_js_code (_x, _x_i1)
@@ -89324,8 +89352,8 @@ let rec translate (x : Lambda.structured_constant ) : J.expression =
         (* https://github.com/google/closure-library/blob/master/closure%2Fgoog%2Fmath%2Flong.js *)
       | Const_nativeint i -> E.nint i 
       | Const_float f -> E.float f (* TODO: preserve float *)
-      | Const_string (i,_) (*TODO: here inline js*) -> 
-        E.str i
+      | Const_string (i,delimiter) (*TODO: here inline js*) -> 
+        E.str ?delimiter i 
     end
 
   | Const_pointer (c,pointer_info) -> 
@@ -91046,7 +91074,7 @@ let translate (prim_name : string)
     call Js_config.format 
   | "caml_format_int" -> 
     begin match args with 
-    | [ {expression_desc = Str (_, "%d"); _}; v] 
+    | [ {expression_desc = Str (_, "%d",None); _}; v] 
       ->
       E.int_to_string v 
     | _ -> 
@@ -91463,8 +91491,8 @@ let translate (prim_name : string)
     | "js_pure_expr" (* TODO: conver it even earlier *)
       -> 
       begin match args with 
-      | [ { expression_desc = Str (_,s )}] -> 
-        E.raw_js_code Exp  s
+      | [ { expression_desc = Str (_,s, _)}] -> 
+        E.raw_js_code Exp  s (* TODO: FIXME *)
       | _ -> 
         Ext_log.err __LOC__ 
           "JS.unsafe_js_expr is applied to an non literal string in %s"
@@ -91475,7 +91503,7 @@ let translate (prim_name : string)
     | "js_pure_stmt" (* TODO: convert even ealier *)
       -> 
       begin match args with 
-      | [ { expression_desc = Str (_,s )}] -> E.raw_js_code Stmt s
+      | [ { expression_desc = Str (_,s, _)}] -> E.raw_js_code Stmt s (* TODO: FIXME *)
       | _ -> 
         Ext_log.err __LOC__ 
           "JS.unsafe_js_expr is applied to an non literal string in %s"
@@ -98718,7 +98746,11 @@ module Ext_utf8 : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
- val decode_utf8_string : string -> int list
+
+exception Invalid_utf8 of string 
+ 
+ 
+val decode_utf8_string : string -> int list
 end = struct
 #1 "ext_utf8.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -98745,50 +98777,51 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
- type byte =
-| Single of int
-| Cont of int
-| Leading of int * int
-| Invalid
+type byte =
+  | Single of int
+  | Cont of int
+  | Leading of int * int
+  | Invalid
 
 (** [classify chr] returns the {!byte} corresponding to [chr] *)
 let classify chr =
-    let c = int_of_char chr in
-    (* Classify byte according to leftmost 0 bit *)
-    if c land 0b1000_0000 = 0 then Single c else
-      (* c 0b0____*)
-    if c land 0b0100_0000 = 0 then Cont (c land 0b0011_1111) else
-      (* c 0b10___*)
-    if c land 0b0010_0000 = 0 then Leading (1, c land 0b0001_1111) else
-      (* c 0b110__*)
-    if c land 0b0001_0000 = 0 then Leading (2, c land 0b0000_1111) else
-      (* c 0b1110_ *)
-    if c land 0b0000_1000 = 0 then Leading (3, c land 0b0000_0111) else
-      (* c 0b1111_0___*)
-    if c land 0b0000_0100 = 0 then Leading (4, c land 0b0000_0011) else
-      (* c 0b1111_10__*)
-    if c land 0b0000_0010 = 0 then Leading (5, c land 0b0000_0001)
-       (* c 0b1111_110__ *)
-    else Invalid
+  let c = int_of_char chr in
+  (* Classify byte according to leftmost 0 bit *)
+  if c land 0b1000_0000 = 0 then Single c else
+    (* c 0b0____*)
+  if c land 0b0100_0000 = 0 then Cont (c land 0b0011_1111) else
+    (* c 0b10___*)
+  if c land 0b0010_0000 = 0 then Leading (1, c land 0b0001_1111) else
+    (* c 0b110__*)
+  if c land 0b0001_0000 = 0 then Leading (2, c land 0b0000_1111) else
+    (* c 0b1110_ *)
+  if c land 0b0000_1000 = 0 then Leading (3, c land 0b0000_0111) else
+    (* c 0b1111_0___*)
+  if c land 0b0000_0100 = 0 then Leading (4, c land 0b0000_0011) else
+    (* c 0b1111_10__*)
+  if c land 0b0000_0010 = 0 then Leading (5, c land 0b0000_0001)
+  (* c 0b1111_110__ *)
+  else Invalid
 
+exception Invalid_utf8 of string 
 let decode_utf8_string s =
-    let lst = ref [] in
-    let add elem = lst := elem :: !lst in
-    let rec  _decode_utf8_string s i =
-        if i = (String.length s) then ()
-        else (match classify s.[i] with
-            | Single c -> add c; _decode_utf8_string s (i+1)
-            | Cont _ -> raise (Invalid_argument "Unexpected continuation byte")
-            | Leading (n, c) ->
-                let rec follow s n c i = 
-                    if n = 0 then (c, i)
-                    else (match classify s.[i+1] with
-                    | Cont cc -> follow s (n-1) ((c lsl 6) lor (cc land 0x3f)) (i+1)
-                    | _ -> raise (Invalid_argument "Continuation byte expected"))
-                in
-                let (c', i') = follow s n c i in add c'; _decode_utf8_string s (i' + 1)
-            | Invalid -> raise (Invalid_argument "Invalid byte"))
-    in _decode_utf8_string s 0; List.rev !lst
+  let lst = ref [] in
+  let add elem = lst := elem :: !lst in
+  let rec  _decode_utf8_string s i =
+    if i = (String.length s) then ()
+    else (match classify s.[i] with
+        | Single c -> add c; _decode_utf8_string s (i+1)
+        | Cont _ -> raise (Invalid_utf8 "Unexpected continuation byte")
+        | Leading (n, c) ->
+          let rec follow s n c i = 
+            if n = 0 then (c, i)
+            else (match classify s.[i+1] with
+                | Cont cc -> follow s (n-1) ((c lsl 6) lor (cc land 0x3f)) (i+1)
+                | _ -> raise (Invalid_utf8 "Continuation byte expected"))
+          in
+          let (c', i') = follow s n c i in add c'; _decode_utf8_string s (i' + 1)
+        | Invalid -> raise (Invalid_utf8 "Invalid byte"))
+  in _decode_utf8_string s 0; List.rev !lst
 end
 module Ext_js_regex : sig 
 #1 "ext_js_regex.mli"
@@ -98847,27 +98880,26 @@ end = struct
 
 
 let check_from_end al =
-    let rec aux l seen =
-        match l with
-        | [] -> false
-        | (e::r) ->
-            if e < 0 || e > 255 then false
-             else (let c = Char.chr e in
-             if c = '/' then true
-             else (if List.exists (fun x -> x = c) seen then false (* flag should not be repeated *)
-             else (if c = 'i' || c = 'g' || c = 'm' || c = 'y' || c ='u' then aux r (c::seen) 
-             else false)))
-    in aux al []
+  let rec aux l seen =
+    match l with
+    | [] -> false
+    | (e::r) ->
+      if e < 0 || e > 255 then false
+      else (let c = Char.chr e in
+            if c = '/' then true
+            else (if List.exists (fun x -> x = c) seen then false (* flag should not be repeated *)
+                  else (if c = 'i' || c = 'g' || c = 'm' || c = 'y' || c ='u' then aux r (c::seen) 
+                        else false)))
+  in aux al []
 
 let js_regex_checker s =
-  try
-  begin
-  if String.length s = 0 then false else
-  let al = Ext_utf8.decode_utf8_string s in
-  let check_first = (List.hd al) = int_of_char '/' in
-  let check_last = check_from_end (List.rev al) in
-  check_first && check_last
-  end with Invalid_argument err -> false
+  match Ext_utf8.decode_utf8_string s with 
+  | [] -> false 
+  | 47 (* [Char.code '/' = 47 ]*)::tail -> 
+    check_from_end (List.rev tail)       
+  | _ :: _ -> false 
+  | exception Ext_utf8.Invalid_utf8 _ -> false 
+
 end
 module Ast_payload : sig 
 #1 "ast_payload.mli"

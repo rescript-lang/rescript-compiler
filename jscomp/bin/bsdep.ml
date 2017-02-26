@@ -22532,7 +22532,11 @@ module Ext_utf8 : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
- val decode_utf8_string : string -> int list
+
+exception Invalid_utf8 of string 
+ 
+ 
+val decode_utf8_string : string -> int list
 end = struct
 #1 "ext_utf8.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -22559,50 +22563,51 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
- type byte =
-| Single of int
-| Cont of int
-| Leading of int * int
-| Invalid
+type byte =
+  | Single of int
+  | Cont of int
+  | Leading of int * int
+  | Invalid
 
 (** [classify chr] returns the {!byte} corresponding to [chr] *)
 let classify chr =
-    let c = int_of_char chr in
-    (* Classify byte according to leftmost 0 bit *)
-    if c land 0b1000_0000 = 0 then Single c else
-      (* c 0b0____*)
-    if c land 0b0100_0000 = 0 then Cont (c land 0b0011_1111) else
-      (* c 0b10___*)
-    if c land 0b0010_0000 = 0 then Leading (1, c land 0b0001_1111) else
-      (* c 0b110__*)
-    if c land 0b0001_0000 = 0 then Leading (2, c land 0b0000_1111) else
-      (* c 0b1110_ *)
-    if c land 0b0000_1000 = 0 then Leading (3, c land 0b0000_0111) else
-      (* c 0b1111_0___*)
-    if c land 0b0000_0100 = 0 then Leading (4, c land 0b0000_0011) else
-      (* c 0b1111_10__*)
-    if c land 0b0000_0010 = 0 then Leading (5, c land 0b0000_0001)
-       (* c 0b1111_110__ *)
-    else Invalid
+  let c = int_of_char chr in
+  (* Classify byte according to leftmost 0 bit *)
+  if c land 0b1000_0000 = 0 then Single c else
+    (* c 0b0____*)
+  if c land 0b0100_0000 = 0 then Cont (c land 0b0011_1111) else
+    (* c 0b10___*)
+  if c land 0b0010_0000 = 0 then Leading (1, c land 0b0001_1111) else
+    (* c 0b110__*)
+  if c land 0b0001_0000 = 0 then Leading (2, c land 0b0000_1111) else
+    (* c 0b1110_ *)
+  if c land 0b0000_1000 = 0 then Leading (3, c land 0b0000_0111) else
+    (* c 0b1111_0___*)
+  if c land 0b0000_0100 = 0 then Leading (4, c land 0b0000_0011) else
+    (* c 0b1111_10__*)
+  if c land 0b0000_0010 = 0 then Leading (5, c land 0b0000_0001)
+  (* c 0b1111_110__ *)
+  else Invalid
 
+exception Invalid_utf8 of string 
 let decode_utf8_string s =
-    let lst = ref [] in
-    let add elem = lst := elem :: !lst in
-    let rec  _decode_utf8_string s i =
-        if i = (String.length s) then ()
-        else (match classify s.[i] with
-            | Single c -> add c; _decode_utf8_string s (i+1)
-            | Cont _ -> raise (Invalid_argument "Unexpected continuation byte")
-            | Leading (n, c) ->
-                let rec follow s n c i = 
-                    if n = 0 then (c, i)
-                    else (match classify s.[i+1] with
-                    | Cont cc -> follow s (n-1) ((c lsl 6) lor (cc land 0x3f)) (i+1)
-                    | _ -> raise (Invalid_argument "Continuation byte expected"))
-                in
-                let (c', i') = follow s n c i in add c'; _decode_utf8_string s (i' + 1)
-            | Invalid -> raise (Invalid_argument "Invalid byte"))
-    in _decode_utf8_string s 0; List.rev !lst
+  let lst = ref [] in
+  let add elem = lst := elem :: !lst in
+  let rec  _decode_utf8_string s i =
+    if i = (String.length s) then ()
+    else (match classify s.[i] with
+        | Single c -> add c; _decode_utf8_string s (i+1)
+        | Cont _ -> raise (Invalid_utf8 "Unexpected continuation byte")
+        | Leading (n, c) ->
+          let rec follow s n c i = 
+            if n = 0 then (c, i)
+            else (match classify s.[i+1] with
+                | Cont cc -> follow s (n-1) ((c lsl 6) lor (cc land 0x3f)) (i+1)
+                | _ -> raise (Invalid_utf8 "Continuation byte expected"))
+          in
+          let (c', i') = follow s n c i in add c'; _decode_utf8_string s (i' + 1)
+        | Invalid -> raise (Invalid_utf8 "Invalid byte"))
+  in _decode_utf8_string s 0; List.rev !lst
 end
 module Ext_js_regex : sig 
 #1 "ext_js_regex.mli"
@@ -22661,27 +22666,26 @@ end = struct
 
 
 let check_from_end al =
-    let rec aux l seen =
-        match l with
-        | [] -> false
-        | (e::r) ->
-            if e < 0 || e > 255 then false
-             else (let c = Char.chr e in
-             if c = '/' then true
-             else (if List.exists (fun x -> x = c) seen then false (* flag should not be repeated *)
-             else (if c = 'i' || c = 'g' || c = 'm' || c = 'y' || c ='u' then aux r (c::seen) 
-             else false)))
-    in aux al []
+  let rec aux l seen =
+    match l with
+    | [] -> false
+    | (e::r) ->
+      if e < 0 || e > 255 then false
+      else (let c = Char.chr e in
+            if c = '/' then true
+            else (if List.exists (fun x -> x = c) seen then false (* flag should not be repeated *)
+                  else (if c = 'i' || c = 'g' || c = 'm' || c = 'y' || c ='u' then aux r (c::seen) 
+                        else false)))
+  in aux al []
 
 let js_regex_checker s =
-  try
-  begin
-  if String.length s = 0 then false else
-  let al = Ext_utf8.decode_utf8_string s in
-  let check_first = (List.hd al) = int_of_char '/' in
-  let check_last = check_from_end (List.rev al) in
-  check_first && check_last
-  end with Invalid_argument err -> false
+  match Ext_utf8.decode_utf8_string s with 
+  | [] -> false 
+  | 47 (* [Char.code '/' = 47 ]*)::tail -> 
+    check_from_end (List.rev tail)       
+  | _ :: _ -> false 
+  | exception Ext_utf8.Invalid_utf8 _ -> false 
+
 end
 module Ext_bytes : sig 
 #1 "ext_bytes.mli"
