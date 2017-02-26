@@ -141,6 +141,7 @@ OUNIT_TESTS_SRCS =  ounit_tests_util \
 	ounit_vec_test \
 	ounit_data_random\
 	ounit_string_tests\
+	ounit_utf8_tests\
 	ounit_topsort_tests\
 	ounit_sexp_tests\
 	ounit_int_vec_tests\
@@ -166,6 +167,7 @@ EXT_SRCS = ext_util\
 	ext_file_pp ext_format \
 	hashtbl_gen \
 	ext_string \
+	ext_utf8\
 	ext_js_regex\
 	string_hashtbl\
 	ext_list \

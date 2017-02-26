@@ -12,6 +12,7 @@ bin/all_ounit_tests.ml : ext/ext_json.ml
 bin/all_ounit_tests.ml : ext/ext_list.ml
 bin/all_ounit_tests.ml : ext/ext_scc.mli
 bin/all_ounit_tests.ml : ext/ext_sexp.ml
+bin/all_ounit_tests.ml : ext/ext_utf8.ml
 bin/all_ounit_tests.ml : ext/ext_util.ml
 bin/all_ounit_tests.ml : ext/hash_set.ml
 bin/all_ounit_tests.ml : ext/int_map.mli
@@ -26,6 +27,7 @@ bin/all_ounit_tests.ml : ext/ext_ident.ml
 bin/all_ounit_tests.ml : ext/ext_json.mli
 bin/all_ounit_tests.ml : ext/ext_list.mli
 bin/all_ounit_tests.ml : ext/ext_sexp.mli
+bin/all_ounit_tests.ml : ext/ext_utf8.mli
 bin/all_ounit_tests.ml : ext/ext_util.mli
 bin/all_ounit_tests.ml : ext/hash_set.mli
 bin/all_ounit_tests.ml : ext/literals.mli
@@ -79,6 +81,7 @@ bin/all_ounit_tests.ml : ounit_tests/ounit_cmd_util.mli
 bin/all_ounit_tests.ml : ounit_tests/ounit_list_test.ml
 bin/all_ounit_tests.ml : ounit_tests/ounit_map_tests.ml
 bin/all_ounit_tests.ml : ounit_tests/ounit_scc_tests.ml
+bin/all_ounit_tests.ml : ounit_tests/ounit_utf8_test.ml
 bin/all_ounit_tests.ml : ext/ordered_hash_set_string.mli
 bin/all_ounit_tests.ml : ounit_tests/ounit_json_tests.ml
 bin/all_ounit_tests.ml : ounit_tests/ounit_path_tests.ml
