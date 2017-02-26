@@ -22,7 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type + 'a t = 'a Js.undefined
+type + 'a t
 external to_opt : 'a t -> 'a option = "js_from_def"
 external return : 'a -> 'a t = "%identity"
 external test : 'a t -> bool =  "js_is_undef"

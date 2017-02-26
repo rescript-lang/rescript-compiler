@@ -21,7 +21,8 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+type + 'a t
 
-external empty : unit -> < .. > Js.t = "" [@@bs.obj]
+external empty : unit -> < .. > t = "" [@@bs.obj]
 
-external keys : _ Js.t -> string array = "Object.keys" [@@bs.val]
+external keys : _ t -> string array = "Object.keys" [@@bs.val]

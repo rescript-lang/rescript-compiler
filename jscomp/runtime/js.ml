@@ -41,18 +41,18 @@ type (-'arg, + 'result) fn (** Js uncurried function *)
 
 (** Types for JS objects *)
 (* tag::public_js_types[]*)
-type +'a t
+type + 'a t = 'a Js_obj.t
 (** Js object type *)
-type + 'a null
+type + 'a null = 'a Js_null.t
 (** nullable, value of this type can be either [null] or ['a]
     this type is the same as {!Js.Null.t}  *)
-type + 'a undefined
+type + 'a undefined = 'a Js_undefined.t
 (** value of this type can be either [undefined] or ['a]
     this type is the same as {!Js.Undefined.t}  *)
-type + 'a null_undefined
+type + 'a null_undefined = 'a Js_null_undefined.t
 (** value of this type can be [undefined], [null] or ['a]
     this type is the same as {!Js.Null_undefined.t}*)
-type boolean
+type boolean = Js_boolean.t
 (* end::public_js_types[]*)
 
 (* tag::nested_built_in_modules[] *)
