@@ -28,6 +28,6 @@ external test : 'a t -> bool = "js_is_nil"
 external empty : 'a t = "null" [@@bs.val]
 
 
-val bind : 'a t -> ('a -> 'b [@bs]) -> 'b t
-val iter : 'a t -> ('a -> unit [@bs]) -> unit
+val bind : 'a t -> ('a -> 'b [@bs.uncurry]) -> 'b t
+val iter : 'a t -> ('a -> unit [@bs.uncurry]) -> unit
 val from_opt : 'a option -> 'a t

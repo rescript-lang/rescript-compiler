@@ -33,12 +33,12 @@ external empty : 'a t = "null" [@@bs.val]
 let bind x f =
   match to_opt x with
   | None -> empty
-  | Some x -> return (f x [@bs])
+  | Some x -> return (f x)
 
 let iter x f =
   match to_opt x with
   | None ->  ()
-  | Some x -> f x [@bs]
+  | Some x -> f x
 
 let from_opt x =
   match x with
