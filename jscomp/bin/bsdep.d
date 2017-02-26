@@ -6,6 +6,7 @@ bin/bsdep.ml : ext/map_gen.ml
 bin/bsdep.ml : ../ocaml/utils/ccomp.mli
 bin/bsdep.ml : ext/ext_list.ml
 bin/bsdep.ml : ext/ext_ref.mli
+bin/bsdep.ml : ext/ext_utf8.ml
 bin/bsdep.ml : ext/ext_util.ml
 bin/bsdep.ml : ext/literals.ml
 bin/bsdep.ml : ../ocaml/driver/pparse.ml
@@ -15,6 +16,7 @@ bin/bsdep.ml : ../ocaml/utils/clflags.ml
 bin/bsdep.ml : common/bs_loc.ml
 bin/bsdep.ml : ext/ext_bytes.ml
 bin/bsdep.ml : ext/ext_list.mli
+bin/bsdep.ml : ext/ext_utf8.mli
 bin/bsdep.ml : ext/ext_util.mli
 bin/bsdep.ml : ext/literals.mli
 bin/bsdep.ml : ../ocaml/driver/compenv.ml

@@ -19,7 +19,8 @@ ext/ext_file_pp.cmx : ext/ext_file_pp.cmi
 ext/ext_format.cmx : ext/ext_format.cmi
 ext/hashtbl_gen.cmx : ext/ext_util.cmx
 ext/ext_string.cmx : ext/ext_bytes.cmx ext/ext_string.cmi
-ext/ext_js_regex.cmx : ext/ext_js_regex.cmi
+ext/ext_utf8.cmx : ext/ext_utf8.cmi
+ext/ext_js_regex.cmx : ext/ext_utf8.cmx ext/ext_js_regex.cmi
 ext/string_hashtbl.cmx : ext/hashtbl_gen.cmx ext/ext_string.cmx \
     stubs/bs_hash_stubs.cmx ext/string_hashtbl.cmi
 ext/ext_list.cmx : ext/ext_list.cmi
@@ -94,6 +95,7 @@ ext/map_make.cmi : ext/map_gen.cmx
 ext/ext_file_pp.cmi :
 ext/ext_format.cmi :
 ext/ext_string.cmi :
+ext/ext_utf8.cmi :
 ext/ext_js_regex.cmi :
 ext/string_hashtbl.cmi : ext/hashtbl_gen.cmx
 ext/ext_list.cmi :

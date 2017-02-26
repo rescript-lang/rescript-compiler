@@ -42,6 +42,7 @@ bin/whole_compiler.ml : ext/ext_list.ml
 bin/whole_compiler.ml : ext/ext_ref.mli
 bin/whole_compiler.ml : ext/ext_scc.mli
 bin/whole_compiler.ml : ext/ext_sys.mli
+bin/whole_compiler.ml : ext/ext_utf8.ml
 bin/whole_compiler.ml : ext/ext_util.ml
 bin/whole_compiler.ml : ext/hash_set.ml
 bin/whole_compiler.ml : ext/int_map.mli
@@ -72,6 +73,7 @@ bin/whole_compiler.ml : ext/ext_array.ml
 bin/whole_compiler.ml : ext/ext_bytes.ml
 bin/whole_compiler.ml : ext/ext_ident.ml
 bin/whole_compiler.ml : ext/ext_list.mli
+bin/whole_compiler.ml : ext/ext_utf8.mli
 bin/whole_compiler.ml : ext/ext_util.mli
 bin/whole_compiler.ml : ext/hash_set.mli
 bin/whole_compiler.ml : ext/ident_map.ml

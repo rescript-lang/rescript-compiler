@@ -23,25 +23,4 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-let check_from_end al =
-    let rec aux l seen =
-        match l with
-        | [] -> false
-        | (e::r) ->
-            if e < 0 || e > 255 then false
-             else (let c = Char.chr e in
-             if c = '/' then true
-             else (if List.exists (fun x -> x = c) seen then false (* flag should not be repeated *)
-             else (if c = 'i' || c = 'g' || c = 'm' || c = 'y' || c ='u' then aux r (c::seen) 
-             else false)))
-    in aux al []
-
-let js_regex_checker s =
-  try
-  begin
-  if String.length s = 0 then false else
-  let al = Ext_utf8.decode_utf8_string s in
-  let check_first = (List.hd al) = int_of_char '/' in
-  let check_last = check_from_end (List.rev al) in
-  check_first && check_last
-  end with Invalid_argument err -> false
+ val decode_utf8_string : string -> int list
