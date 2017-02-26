@@ -75,7 +75,7 @@ open OUnitTypes
 
 (** Most simple heuristic, just pick the first test. *)
 let simple state =
-  (* 146 *) List.hd state.tests_planned
+  (* 147 *) List.hd state.tests_planned
 
 end
 module OUnitUtils
@@ -98,22 +98,22 @@ let is_success =
 let is_failure = 
   function
     | RFailure _ -> (* 0 *) true
-    | RSuccess _ | RError _  | RSkip _ | RTodo _ -> (* 292 *) false
+    | RSuccess _ | RError _  | RSkip _ | RTodo _ -> (* 294 *) false
 
 let is_error = 
   function 
     | RError _ -> (* 0 *) true
-    | RSuccess _ | RFailure _ | RSkip _ | RTodo _ -> (* 292 *) false
+    | RSuccess _ | RFailure _ | RSkip _ | RTodo _ -> (* 294 *) false
 
 let is_skip = 
   function
     | RSkip _ -> (* 0 *) true
-    | RSuccess _ | RFailure _ | RError _  | RTodo _ -> (* 292 *) false
+    | RSuccess _ | RFailure _ | RError _  | RTodo _ -> (* 294 *) false
 
 let is_todo = 
   function
     | RTodo _ -> (* 0 *) true
-    | RSuccess _ | RFailure _ | RError _  | RSkip _ -> (* 292 *) false
+    | RSuccess _ | RFailure _ | RError _  | RSkip _ -> (* 294 *) false
 
 let result_flavour = 
   function
@@ -145,7 +145,7 @@ let rec was_successful =
     | [] -> (* 3 *) true
     | RSuccess _::t 
     | RSkip _::t -> 
-        (* 438 *) was_successful t
+        (* 441 *) was_successful t
 
     | RFailure _::_
     | RError _::_ 
@@ -155,22 +155,22 @@ let rec was_successful =
 let string_of_node = 
   function
     | ListItem n -> 
-        (* 584 *) string_of_int n
+        (* 588 *) string_of_int n
     | Label s -> 
-        (* 876 *) s
+        (* 882 *) s
 
 (* Return the number of available tests *)
 let rec test_case_count = 
   function
-    | TestCase _ -> (* 146 *) 1 
-    | TestLabel (_, t) -> (* 169 *) test_case_count t
+    | TestCase _ -> (* 147 *) 1 
+    | TestLabel (_, t) -> (* 170 *) test_case_count t
     | TestList l -> 
         (* 23 *) List.fold_left 
-          (fun c t -> (* 168 *) c + test_case_count t) 
+          (fun c t -> (* 169 *) c + test_case_count t) 
           0 l
 
 let string_of_path path =
-  (* 292 *) String.concat ":" (List.rev_map string_of_node path)
+  (* 294 *) String.concat ":" (List.rev_map string_of_node path)
 
 let buff_format_printf f = 
   (* 0 *) let buff = Buffer.create 13 in
@@ -194,12 +194,12 @@ let mapi f l =
 
 let fold_lefti f accu l =
   (* 23 *) let rec rfold_lefti cnt accup l = 
-    (* 191 *) match l with
+    (* 192 *) match l with
       | [] -> 
           (* 23 *) accup
 
       | h::t -> 
-          (* 168 *) rfold_lefti (cnt + 1) (f accup h cnt) t
+          (* 169 *) rfold_lefti (cnt + 1) (f accup h cnt) t
   in
     rfold_lefti 0 accu l
 
@@ -217,7 +217,7 @@ open OUnitUtils
 type event_type = GlobalEvent of global_event | TestEvent of test_event
 
 let format_event verbose event_type =
-  (* 878 *) match event_type with
+  (* 884 *) match event_type with
     | GlobalEvent e ->
         (* 2 *) begin
           match e with 
@@ -276,31 +276,31 @@ let format_event verbose event_type =
         end
 
     | TestEvent e ->
-        (* 876 *) begin
+        (* 882 *) begin
           let string_of_result = 
             if verbose then
-              (* 438 *) function
-                | RSuccess _      -> (* 146 *) "ok\n"
+              (* 441 *) function
+                | RSuccess _      -> (* 147 *) "ok\n"
                 | RFailure (_, _) -> (* 0 *) "FAIL\n"
                 | RError (_, _)   -> (* 0 *) "ERROR\n"
                 | RSkip (_, _)    -> (* 0 *) "SKIP\n"
                 | RTodo (_, _)    -> (* 0 *) "TODO\n"
             else
-              (* 438 *) function
-                | RSuccess _      -> (* 146 *) "."
+              (* 441 *) function
+                | RSuccess _      -> (* 147 *) "."
                 | RFailure (_, _) -> (* 0 *) "F"
                 | RError (_, _)   -> (* 0 *) "E"
                 | RSkip (_, _)    -> (* 0 *) "S"
                 | RTodo (_, _)    -> (* 0 *) "T"
           in
             if verbose then
-              (* 438 *) match e with 
+              (* 441 *) match e with 
                 | EStart p -> 
-                    (* 146 *) Printf.sprintf "%s start\n" (string_of_path p)
+                    (* 147 *) Printf.sprintf "%s start\n" (string_of_path p)
                 | EEnd p -> 
-                    (* 146 *) Printf.sprintf "%s end\n" (string_of_path p)
+                    (* 147 *) Printf.sprintf "%s end\n" (string_of_path p)
                 | EResult result -> 
-                    (* 146 *) string_of_result result
+                    (* 147 *) string_of_result result
                 | ELog (lvl, str) ->
                     (* 0 *) let prefix = 
                       match lvl with 
@@ -312,21 +312,21 @@ let format_event verbose event_type =
                 | ELogRaw str ->
                     (* 0 *) str
             else 
-              (* 438 *) match e with 
-                | EStart _ | EEnd _ | ELog _ | ELogRaw _ -> (* 292 *) ""
-                | EResult result -> (* 146 *) string_of_result result
+              (* 441 *) match e with 
+                | EStart _ | EEnd _ | ELog _ | ELogRaw _ -> (* 294 *) ""
+                | EResult result -> (* 147 *) string_of_result result
         end
 
 let file_logger fn =
   (* 1 *) let chn = open_out fn in
     (fun ev ->
-       (* 439 *) output_string chn (format_event true ev);
+       (* 442 *) output_string chn (format_event true ev);
        flush chn),
     (fun () -> (* 1 *) close_out chn)
 
 let std_logger verbose =
   (* 1 *) (fun ev -> 
-     (* 439 *) print_string (format_event verbose ev);
+     (* 442 *) print_string (format_event verbose ev);
      flush stdout),
   (fun () -> (* 1 *) ())
 
@@ -343,7 +343,7 @@ let create output_file_opt verbose (log,close) =
           (* 0 *) null_logger
   in
     (fun ev ->
-       (* 439 *) std_log ev; file_log ev; log ev),
+       (* 442 *) std_log ev; file_log ev; log ev),
     (fun () ->
        (* 1 *) std_close (); file_close (); close ())
 
@@ -711,7 +711,7 @@ let assert_string str =
   (* 0 *) if not (str = "") then (* 0 *) assert_failure str
 
 let assert_equal ?(cmp = ( = )) ?printer ?pp_diff ?msg expected actual =
-  (* 2001500 *) let get_error_string () =
+  (* 2001501 *) let get_error_string () =
     (* 0 *) let res =
       buff_format_printf
         (fun fmt ->
@@ -951,7 +951,7 @@ let (@?) = assert_bool
 
 (* Some shorthands which allows easy test construction *)
 let (>:) s t = (* 0 *) TestLabel(s, t)             (* infix *)
-let (>::) s f = (* 146 *) TestLabel(s, TestCase(f))  (* infix *)
+let (>::) s f = (* 147 *) TestLabel(s, TestCase(f))  (* infix *)
 let (>:::) s l = (* 23 *) TestLabel(s, TestList(l)) (* infix *)
 
 (* Utility function to manipulate test *)
@@ -1087,7 +1087,7 @@ let maybe_backtrace = ""
 (* Run all tests, report starts, errors, failures, and return the results *)
 let perform_test report test =
   (* 1 *) let run_test_case f path =
-    (* 146 *) try 
+    (* 147 *) try 
       f ();
       RSuccess path
     with
@@ -1106,22 +1106,22 @@ let perform_test report test =
   let rec flatten_test path acc = 
     function
       | TestCase(f) -> 
-          (* 146 *) (path, f) :: acc
+          (* 147 *) (path, f) :: acc
 
       | TestList (tests) ->
           (* 23 *) fold_lefti 
             (fun acc t cnt -> 
-               (* 168 *) flatten_test 
+               (* 169 *) flatten_test 
                  ((ListItem cnt)::path) 
                  acc t)
             acc tests
       
       | TestLabel (label, t) -> 
-          (* 169 *) flatten_test ((Label label)::path) acc t
+          (* 170 *) flatten_test ((Label label)::path) acc t
   in
   let test_cases = List.rev (flatten_test [] [] test) in
   let runner (path, f) = 
-    (* 146 *) let result = 
+    (* 147 *) let result = 
       report (EStart path);
       run_test_case f path 
     in
@@ -1130,18 +1130,18 @@ let perform_test report test =
       result
   in
   let rec iter state = 
-    (* 147 *) match state.tests_planned with 
+    (* 148 *) match state.tests_planned with 
       | [] ->
           (* 1 *) state.results
       | _ ->
-          (* 146 *) let (path, f) = !global_chooser state in            
+          (* 147 *) let (path, f) = !global_chooser state in            
           let result = runner (path, f) in
             iter 
               {
                 results = result :: state.results;
                 tests_planned = 
                   List.filter 
-                    (fun (path', _) -> (* 10731 *) path <> path') state.tests_planned
+                    (fun (path', _) -> (* 10878 *) path <> path') state.tests_planned
               }
   in
     iter {results = []; tests_planned = test_cases}
@@ -1171,7 +1171,7 @@ let run_test_tt ?verbose test =
     time_fun 
       perform_test 
       (fun ev ->
-         (* 438 *) log (OUnitLogger.TestEvent ev))
+         (* 441 *) log (OUnitLogger.TestEvent ev))
       test 
   in
     
@@ -7160,7 +7160,11 @@ module Ext_utf8 : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
- val decode_utf8_string : string -> int list
+
+exception Invalid_utf8 of string 
+ 
+ 
+val decode_utf8_string : string -> int list
 end = struct
 #1 "ext_utf8.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -7187,50 +7191,51 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
- type byte =
-| Single of int
-| Cont of int
-| Leading of int * int
-| Invalid
+type byte =
+  | Single of int
+  | Cont of int
+  | Leading of int * int
+  | Invalid
 
 (** [classify chr] returns the {!byte} corresponding to [chr] *)
 let classify chr =
-    (* 71 *) let c = int_of_char chr in
-    (* Classify byte according to leftmost 0 bit *)
-    if c land 0b1000_0000 = 0 then (* 46 *) Single c else
-      (* c 0b0____*)
-    (* 25 *) if c land 0b0100_0000 = 0 then (* 17 *) Cont (c land 0b0011_1111) else
-      (* c 0b10___*)
-    (* 8 *) if c land 0b0010_0000 = 0 then (* 0 *) Leading (1, c land 0b0001_1111) else
-      (* c 0b110__*)
-    (* 8 *) if c land 0b0001_0000 = 0 then (* 7 *) Leading (2, c land 0b0000_1111) else
-      (* c 0b1110_ *)
-    (* 1 *) if c land 0b0000_1000 = 0 then (* 1 *) Leading (3, c land 0b0000_0111) else
-      (* c 0b1111_0___*)
-    (* 0 *) if c land 0b0000_0100 = 0 then (* 0 *) Leading (4, c land 0b0000_0011) else
-      (* c 0b1111_10__*)
-    (* 0 *) if c land 0b0000_0010 = 0 then (* 0 *) Leading (5, c land 0b0000_0001)
-       (* c 0b1111_110__ *)
-    else (* 0 *) Invalid
+  (* 71 *) let c = int_of_char chr in
+  (* Classify byte according to leftmost 0 bit *)
+  if c land 0b1000_0000 = 0 then (* 46 *) Single c else
+    (* c 0b0____*)
+  (* 25 *) if c land 0b0100_0000 = 0 then (* 17 *) Cont (c land 0b0011_1111) else
+    (* c 0b10___*)
+  (* 8 *) if c land 0b0010_0000 = 0 then (* 0 *) Leading (1, c land 0b0001_1111) else
+    (* c 0b110__*)
+  (* 8 *) if c land 0b0001_0000 = 0 then (* 7 *) Leading (2, c land 0b0000_1111) else
+    (* c 0b1110_ *)
+  (* 1 *) if c land 0b0000_1000 = 0 then (* 1 *) Leading (3, c land 0b0000_0111) else
+    (* c 0b1111_0___*)
+  (* 0 *) if c land 0b0000_0100 = 0 then (* 0 *) Leading (4, c land 0b0000_0011) else
+    (* c 0b1111_10__*)
+  (* 0 *) if c land 0b0000_0010 = 0 then (* 0 *) Leading (5, c land 0b0000_0001)
+  (* c 0b1111_110__ *)
+  else (* 0 *) Invalid
 
+exception Invalid_utf8 of string 
 let decode_utf8_string s =
-    (* 9 *) let lst = ref [] in
-    let add elem = (* 54 *) lst := elem :: !lst in
-    let rec  _decode_utf8_string s i =
-        (* 63 *) if i = (String.length s) then (* 9 *) ()
-        else (* 54 *) (match classify s.[i] with
-            | Single c -> (* 46 *) add c; _decode_utf8_string s (i+1)
-            | Cont _ -> (* 0 *) raise (Invalid_argument "Unexpected continuation byte")
-            | Leading (n, c) ->
-                (* 8 *) let rec follow s n c i = 
-                    (* 25 *) if n = 0 then (* 8 *) (c, i)
-                    else (* 17 *) (match classify s.[i+1] with
-                    | Cont cc -> (* 17 *) follow s (n-1) ((c lsl 6) lor (cc land 0x3f)) (i+1)
-                    | _ -> (* 0 *) raise (Invalid_argument "Continuation byte expected"))
-                in
-                let (c', i') = follow s n c i in add c'; _decode_utf8_string s (i' + 1)
-            | Invalid -> (* 0 *) raise (Invalid_argument "Invalid byte"))
-    in _decode_utf8_string s 0; List.rev !lst
+  (* 11 *) let lst = ref [] in
+  let add elem = (* 54 *) lst := elem :: !lst in
+  let rec  _decode_utf8_string s i =
+    (* 65 *) if i = (String.length s) then (* 11 *) ()
+    else (* 54 *) (match classify s.[i] with
+        | Single c -> (* 46 *) add c; _decode_utf8_string s (i+1)
+        | Cont _ -> (* 0 *) raise (Invalid_utf8 "Unexpected continuation byte")
+        | Leading (n, c) ->
+          (* 8 *) let rec follow s n c i = 
+            (* 25 *) if n = 0 then (* 8 *) (c, i)
+            else (* 17 *) (match classify s.[i+1] with
+                | Cont cc -> (* 17 *) follow s (n-1) ((c lsl 6) lor (cc land 0x3f)) (i+1)
+                | _ -> (* 0 *) raise (Invalid_utf8 "Continuation byte expected"))
+          in
+          let (c', i') = follow s n c i in add c'; _decode_utf8_string s (i' + 1)
+        | Invalid -> (* 0 *) raise (Invalid_utf8 "Invalid byte"))
+  in _decode_utf8_string s 0; List.rev !lst
 end
 module Ext_js_regex : sig 
 #1 "ext_js_regex.mli"
@@ -7289,27 +7294,26 @@ end = struct
 
 
 let check_from_end al =
-    (* 8 *) let rec aux l seen =
-        (* 12 *) match l with
-        | [] -> (* 0 *) false
-        | (e::r) ->
-            (* 12 *) if e < 0 || e > 255 then (* 0 *) false
-             else (* 12 *) (let c = Char.chr e in
-             if c = '/' then (* 5 *) true
-             else (* 7 *) (if List.exists (fun x -> (* 2 *) x = c) seen then (* 1 *) false (* flag should not be repeated *)
-             else (* 6 *) (if c = 'i' || c = 'g' || c = 'm' || c = 'y' || c ='u' then (* 4 *) aux r (c::seen) 
-             else (* 2 *) false)))
-    in aux al []
+  (* 7 *) let rec aux l seen =
+    (* 10 *) match l with
+    | [] -> (* 0 *) false
+    | (e::r) ->
+      (* 10 *) if e < 0 || e > 255 then (* 0 *) false
+      else (* 10 *) (let c = Char.chr e in
+            if c = '/' then (* 4 *) true
+            else (* 6 *) (if List.exists (fun x -> (* 2 *) x = c) seen then (* 1 *) false (* flag should not be repeated *)
+                  else (* 5 *) (if c = 'i' || c = 'g' || c = 'm' || c = 'y' || c ='u' then (* 3 *) aux r (c::seen) 
+                        else (* 2 *) false)))
+  in aux al []
 
 let js_regex_checker s =
-  (* 9 *) try
-  begin
-  if String.length s = 0 then (* 1 *) false else
-  (* 8 *) let al = Ext_utf8.decode_utf8_string s in
-  let check_first = (List.hd al) = int_of_char '/' in
-  let check_last = check_from_end (List.rev al) in
-  check_first && check_last
-  end with Invalid_argument err -> (* 0 *) false
+  (* 9 *) match Ext_utf8.decode_utf8_string s with 
+  | [] -> (* 1 *) false 
+  | 47 (* [Char.code '/' = 47 ]*)::tail -> 
+    (* 7 *) check_from_end (List.rev tail)       
+  | _ :: _ -> (* 1 *) false 
+  | exception Ext_utf8.Invalid_utf8 _ -> (* 0 *) false 
+
 end
 module Ounit_js_regex_checker_tests
 = struct
@@ -13898,6 +13902,10 @@ let suites =
             (* 1 *) Ext_utf8.decode_utf8_string
             "hello 你好，中华民族 hei" =~
             [104; 101; 108; 108; 111; 32; 20320; 22909; 65292; 20013; 21326; 27665; 26063; 32; 104; 101; 105]
+        end ;
+        __LOC__ >:: begin fun _ -> 
+            (* 1 *) Ext_utf8.decode_utf8_string
+            "" =~ []
         end
     ]
 end

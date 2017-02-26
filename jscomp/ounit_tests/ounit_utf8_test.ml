@@ -15,5 +15,9 @@ let suites =
             Ext_utf8.decode_utf8_string
             "hello 你好，中华民族 hei" =~
             [104; 101; 108; 108; 111; 32; 20320; 22909; 65292; 20013; 21326; 27665; 26063; 32; 104; 101; 105]
+        end ;
+        __LOC__ >:: begin fun _ -> 
+            Ext_utf8.decode_utf8_string
+            "" =~ []
         end
     ]

@@ -23,4 +23,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
- val decode_utf8_string : string -> int list
+
+exception Invalid_utf8 of string 
+ 
+ 
+val decode_utf8_string : string -> int list
