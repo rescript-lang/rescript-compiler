@@ -83,6 +83,9 @@ val suffix_ml : string
 val suffix_mlast : string 
 val suffix_mliast : string
 val suffix_mll : string
+val suffix_re : string
+val suffix_rei : string 
+
 val suffix_d : string
 val suffix_mlastd : string
 val suffix_mliastd : string

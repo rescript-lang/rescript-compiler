@@ -83,6 +83,10 @@ var suffix_mliast = ".mliast";
 
 var suffix_mll = ".mll";
 
+var suffix_re = ".re";
+
+var suffix_rei = ".rei";
+
 var suffix_d = ".d";
 
 var suffix_mlastd = ".mlast.d";
@@ -156,6 +160,8 @@ exports.suffix_ml           = suffix_ml;
 exports.suffix_mlast        = suffix_mlast;
 exports.suffix_mliast       = suffix_mliast;
 exports.suffix_mll          = suffix_mll;
+exports.suffix_re           = suffix_re;
+exports.suffix_rei          = suffix_rei;
 exports.suffix_d            = suffix_d;
 exports.suffix_mlastd       = suffix_mlastd;
 exports.suffix_mliastd      = suffix_mliastd;

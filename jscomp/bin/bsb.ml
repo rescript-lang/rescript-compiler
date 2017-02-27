@@ -85,6 +85,9 @@ val suffix_ml : string
 val suffix_mlast : string 
 val suffix_mliast : string
 val suffix_mll : string
+val suffix_re : string
+val suffix_rei : string 
+
 val suffix_d : string
 val suffix_mlastd : string
 val suffix_mliastd : string
@@ -189,6 +192,9 @@ let suffix_cmi = ".cmi"
 let suffix_mll = ".mll"
 let suffix_ml = ".ml"
 let suffix_mli = ".mli"
+let suffix_re = ".re"
+let suffix_rei = ".rei"
+
 let suffix_cmt = ".cmt" 
 let suffix_cmti = ".cmti" 
 let suffix_mlast = ".mlast"
@@ -9312,7 +9318,9 @@ let install_targets (config : Bsb_config_types.t option) =
       print_endline "* Start Installation";
       String_hash_set.iter (fun x ->
           Bsb_file.install_if_exists ~destdir (x ^  Literals.suffix_ml) ;
+          Bsb_file.install_if_exists ~destdir (x ^  Literals.suffix_re) ;
           Bsb_file.install_if_exists ~destdir (x ^ Literals.suffix_mli) ;
+          Bsb_file.install_if_exists ~destdir (x ^  Literals.suffix_re) ;
           Bsb_file.install_if_exists ~destdir (Bsb_config.lib_bs//x ^ Literals.suffix_cmi) ;
           Bsb_file.install_if_exists ~destdir (Bsb_config.lib_bs//x ^ Literals.suffix_cmj) ;
           Bsb_file.install_if_exists ~destdir (Bsb_config.lib_bs//x ^ Literals.suffix_cmt) ;

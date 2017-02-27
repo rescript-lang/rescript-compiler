@@ -184,7 +184,9 @@ let install_targets (config : Bsb_config_types.t option) =
       print_endline "* Start Installation";
       String_hash_set.iter (fun x ->
           Bsb_file.install_if_exists ~destdir (x ^  Literals.suffix_ml) ;
+          Bsb_file.install_if_exists ~destdir (x ^  Literals.suffix_re) ;
           Bsb_file.install_if_exists ~destdir (x ^ Literals.suffix_mli) ;
+          Bsb_file.install_if_exists ~destdir (x ^  Literals.suffix_rei) ;
           Bsb_file.install_if_exists ~destdir (Bsb_config.lib_bs//x ^ Literals.suffix_cmi) ;
           Bsb_file.install_if_exists ~destdir (Bsb_config.lib_bs//x ^ Literals.suffix_cmj) ;
           Bsb_file.install_if_exists ~destdir (Bsb_config.lib_bs//x ^ Literals.suffix_cmt) ;
