@@ -92,7 +92,7 @@ let external_var_dot ?comment  ~external_name:name ?dot (id : Ident.t) : t =
 let ml_var ?comment (id : Ident.t) : t  = 
   {expression_desc = Var (Qualified (id, Ml, None)); comment}
 
-let str ?(pure=true) ?comment s : t =  {expression_desc = Str (pure,s); comment}
+let str ?(pure=true) ?delimiter?comment s : t =  {expression_desc = Str (pure,s,delimiter); comment}
 
 let raw_js_code ?comment info s : t =
   {expression_desc = Raw_js_code (s,info) ; comment }
@@ -240,6 +240,9 @@ let fuse_to_seq x xs =
   if xs = [] then x  
   else List.fold_left seq x xs 
 
+let empty_string_literal : t = 
+  {expression_desc = Str (true,"",None); comment = None}  
+
 let zero_int_literal : t =   
   {expression_desc = Number (Int {i = 0l; c = None}) ; comment = None}
 let one_int_literal : t = 
@@ -295,8 +298,8 @@ let access ?comment (e0 : t)  (e1 : t) : t =
 
 let string_access ?comment (e0 : t)  (e1 : t) : t = 
   match e0.expression_desc, e1.expression_desc with
-  | Str (_,s) , Number (Int {i; _}) 
-    -> 
+  | Str (_,s,None) , Number (Int {i; _}) 
+    ->  (* Don't optimize {j||j} *)
     let i = Int32.to_int i  in
     if i >= 0 && i < String.length s then 
       (* TODO: check exception when i is out of range..
@@ -380,14 +383,15 @@ let array_length ?comment (e : t) : t =
 
 let string_length ?comment (e : t) : t =
   match e.expression_desc with 
-  | Str(_,v) -> int ?comment (Int32.of_int (String.length v))
+  | Str(_,v, _) -> int ?comment (Int32.of_int (String.length v)) (* No optimization for {j||j}*)
   | _ -> { expression_desc = Length (e, String) ; comment }
 
 let bytes_length ?comment (e : t) : t = 
   match e.expression_desc with 
   (* TODO: use array instead? *)
   | Array (l, _) -> int ?comment (Int32.of_int (List.length l))
-  | Str(_,v) -> int ?comment (Int32.of_int @@ String.length v)
+  | Str(_,v, None) -> int ?comment (Int32.of_int @@ String.length v)
+  (* No optimization for unicode *)
   | _ -> { expression_desc = Length (e, Bytes) ; comment }
 
 let function_length ?comment (e : t) : t = 
@@ -415,7 +419,7 @@ let char_of_int ?comment (v : t) : t =
 
 let char_to_int ?comment (v : t) : t = 
   match v.expression_desc with 
-  | Str (_, x) ->
+  | Str (_, x, None) -> (* No optimization for .. *)
     assert (String.length x = 1) ;
     int ~comment:(Printf.sprintf "%S"  x )  
       (Int32.of_int @@ Char.code x.[0])
@@ -440,14 +444,14 @@ let to_json_string ?comment e : t =
 
 let rec string_append ?comment (e : t) (el : t) : t = 
   match e.expression_desc , el.expression_desc  with 
-  | Str(_,a), String_append ({expression_desc = Str(_,b)}, c) ->
+  | Str(_,a, None), String_append ({expression_desc = Str(_,b,None)}, c) ->
     string_append ?comment (str (a ^ b)) c 
-  | String_append (c,{expression_desc = Str(_,b)}), Str(_,a) ->
+  | String_append (c,{expression_desc = Str(_,b,None)}), Str(_,a,None) ->
     string_append ?comment c (str (b ^ a))
-  | String_append (a,{expression_desc = Str(_,b)}),
-    String_append ({expression_desc = Str(_,c)} ,d) ->
+  | String_append (a,{expression_desc = Str(_,b,None)}),
+    String_append ({expression_desc = Str(_,c,None)} ,d) ->
     string_append ?comment (string_append a (str (b ^ c))) d 
-  | Str (_,a), Str (_,b) -> str ?comment (a ^ b)
+  | Str (_,a,None), Str (_,b,None) -> str ?comment (a ^ b)
   | _, Anything_to_string b -> string_append ?comment e b 
   | Anything_to_string b, _ -> string_append ?comment b el
   | _, _ -> {comment ; expression_desc = String_append(e,el)}
@@ -523,7 +527,7 @@ let rec triple_equal ?comment (e0 : t) (e1 : t ) : t =
     | Fun _ | Array _ | Caml_block _ ),  Var (Id ({name = "undefined"|"null"; } as id))
     when Ext_ident.is_js id && no_side_effect e0 -> 
     caml_false
-  | Str (_,x), Str (_,y) ->  (* CF*)
+  | Str (_,x,None), Str (_,y,None) ->  (* CF*)
     bool (Ext_string.equal x y)
   | Char_to_int a , Char_to_int b -> 
     triple_equal ?comment a b 
@@ -839,7 +843,7 @@ let rec float_equal ?comment (e0 : t) (e1 : t) : t =
 let int_equal = float_equal 
 let rec string_equal ?comment (e0 : t) (e1 : t) : t = 
   match e0.expression_desc, e1.expression_desc with     
-  | Str (_, a0), Str(_, b0) 
+  | Str (_, a0,None), Str(_, b0,None) 
     -> bool  (Ext_string.equal a0 b0)
   | _ , _ 
     ->

@@ -86,7 +86,7 @@ let rec no_side_effect_expression_desc (x : J.expression_desc)  =
   | Bool _ -> true 
   | Var _ -> true 
   | Access (a,b) -> no_side_effect a && no_side_effect b 
-  | Str (b,_) -> b
+  | Str (b,_,_) -> b
   | Fun _ -> true
   | Number _ -> true (* Can be refined later *)
   | Array (xs,_mutable_flag)  
@@ -242,7 +242,7 @@ let rev_toplevel_flatten block =
 let rec is_constant (x : J.expression)  = 
   match x.expression_desc with 
   | Access (a,b) -> is_constant a && is_constant b 
-  | Str (b,_) -> b
+  | Str (b,_,_) -> b
   | Number _ -> true (* Can be refined later *)
   | Array (xs,_mutable_flag)  -> List.for_all is_constant  xs 
   | Caml_block(xs, Immutable, tag, _) 
