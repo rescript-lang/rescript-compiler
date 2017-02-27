@@ -1051,6 +1051,9 @@ val suffix_ml : string
 val suffix_mlast : string 
 val suffix_mliast : string
 val suffix_mll : string
+val suffix_re : string
+val suffix_rei : string 
+
 val suffix_d : string
 val suffix_mlastd : string
 val suffix_mliastd : string
@@ -1155,6 +1158,9 @@ let suffix_cmi = ".cmi"
 let suffix_mll = ".mll"
 let suffix_ml = ".ml"
 let suffix_mli = ".mli"
+let suffix_re = ".re"
+let suffix_rei = ".rei"
+
 let suffix_cmt = ".cmt" 
 let suffix_cmti = ".cmti" 
 let suffix_mlast = ".mlast"
