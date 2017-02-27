@@ -7459,6 +7459,7 @@ let get_package_name () = !package_name
 *)  
 (** *)
 let bsc_flags = ref [
+    "-no-alias-deps";
     "-color"; "always" ;
     "-w"; "-40+6+7+27+32..39+44+45"
 
@@ -9320,7 +9321,7 @@ let install_targets (config : Bsb_config_types.t option) =
           Bsb_file.install_if_exists ~destdir (x ^  Literals.suffix_ml) ;
           Bsb_file.install_if_exists ~destdir (x ^  Literals.suffix_re) ;
           Bsb_file.install_if_exists ~destdir (x ^ Literals.suffix_mli) ;
-          Bsb_file.install_if_exists ~destdir (x ^  Literals.suffix_re) ;
+          Bsb_file.install_if_exists ~destdir (x ^  Literals.suffix_rei) ;
           Bsb_file.install_if_exists ~destdir (Bsb_config.lib_bs//x ^ Literals.suffix_cmi) ;
           Bsb_file.install_if_exists ~destdir (Bsb_config.lib_bs//x ^ Literals.suffix_cmj) ;
           Bsb_file.install_if_exists ~destdir (Bsb_config.lib_bs//x ^ Literals.suffix_cmt) ;
