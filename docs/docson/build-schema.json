@@ -192,7 +192,7 @@
                     "items": {
                         "type": "string"
                     },
-                    "description": "It will append flags to the default, the current default is   -w -40+6+7+27+32..39+44+45"
+                    "description": "It will append flags to the default, the current default is   -no-alias-deps -w -40+6+7+27+32..39+44+45"
                 },
                 {
                     "properties": {
