@@ -7224,24 +7224,44 @@ let classify chr =
   else Invalid
 
 exception Invalid_utf8 of string 
+
+(* when the first char is [Leading] *)
+let rec follow s n (c : int) offset = 
+  if n = 0 then (c, offset)
+  else 
+    begin match classify s.[offset+1] with
+      | Cont cc -> follow s (n-1) ((c lsl 6) lor (cc land 0x3f)) (offset+1)
+      | _ -> raise (Invalid_utf8 "Continuation byte expected")
+    end
+
+
+
 let decode_utf8_string s =
   let lst = ref [] in
   let add elem = lst := elem :: !lst in
-  let rec  _decode_utf8_string s i =
-    if i = (String.length s) then ()
-    else (match classify s.[i] with
-        | Single c -> add c; _decode_utf8_string s (i+1)
+  let rec  decode_utf8_cont s i s_len =
+    if i = s_len  then ()
+    else 
+      begin 
+        match classify s.[i] with
+        | Single c -> 
+          add c; decode_utf8_cont s (i+1) s_len
         | Cont _ -> raise (Invalid_utf8 "Unexpected continuation byte")
         | Leading (n, c) ->
-          let rec follow s n c i = 
-            if n = 0 then (c, i)
-            else (match classify s.[i+1] with
-                | Cont cc -> follow s (n-1) ((c lsl 6) lor (cc land 0x3f)) (i+1)
-                | _ -> raise (Invalid_utf8 "Continuation byte expected"))
-          in
-          let (c', i') = follow s n c i in add c'; _decode_utf8_string s (i' + 1)
-        | Invalid -> raise (Invalid_utf8 "Invalid byte"))
-  in _decode_utf8_string s 0; List.rev !lst
+          let (c', i') = follow s n c i in add c';
+          decode_utf8_cont s (i' + 1) s_len
+        | Invalid -> raise (Invalid_utf8 "Invalid byte")
+      end
+  in decode_utf8_cont s 0 (String.length s); 
+  List.rev !lst
+
+
+(** To decode {j||j} we need verify in the ast so that we have better error 
+    location, then we do the decode later
+*)  
+
+let verify s loc = 
+  assert false
 end
 module Ext_js_regex : sig 
 #1 "ext_js_regex.mli"
