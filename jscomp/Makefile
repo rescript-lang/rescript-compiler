@@ -142,6 +142,7 @@ OUNIT_TESTS_SRCS =  ounit_tests_util \
 	ounit_data_random\
 	ounit_string_tests\
 	ounit_utf8_test\
+	ounit_js_regex_checker_tests\
 	ounit_topsort_tests\
 	ounit_sexp_tests\
 	ounit_int_vec_tests\

@@ -5,9 +5,9 @@ ifndef EXE
 	EXE := # empty
 endif
 NATIVE=ocamlopt.opt$(EXE)
-BSC_FLAGS= -w -a -I ../runtime -I ../stdlib -bs-files
+BSC_FLAGS= -w -40 -I ../runtime -I ../stdlib -bs-files
 BSC=./bsc.exe
-OCAMLOPT_FLAGS= -g -w -a ../stubs/ext_basic_hash_stubs.c
+OCAMLOPT_FLAGS= -g -w -40 ../stubs/ext_basic_hash_stubs.c
 # -inline 1000 makes size too large
 # TODO: make sure it can be bootstrapped, at least is a very good
 # test case of our optimizations
