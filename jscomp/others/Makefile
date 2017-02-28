@@ -20,7 +20,7 @@ else
 BS_FLAGS=  $(BS_COMMON_FLAGS) -bs-package-output commonjs:lib/js
 endif
 
-COMPFLAGS += $(BS_FLAGS)  -I ../runtime -I ../stdlib -w -40 -w -49 -bin-annot
+COMPFLAGS += $(BS_FLAGS)  -I ../runtime -I ../stdlib -w +3-40-49 -warn-error A -bin-annot
 
 
 node.cmi : $(COMPILER)

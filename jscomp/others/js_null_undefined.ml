@@ -33,7 +33,7 @@ external empty : 'a t = "undefined" [@@bs.val]
 
 let bind x f =
   match to_opt x with
-  | None -> empty
+  | None ->  undefined
   | Some x -> return (f  x [@bs])
 
 let iter x f =
@@ -43,5 +43,5 @@ let iter x f =
 
 let from_opt x =
   match x with
-  | None -> empty
+  | None -> undefined
   | Some x -> return x
