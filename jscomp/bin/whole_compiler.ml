@@ -106770,6 +106770,7 @@ let after_parsing_impl ppf sourcefile outputprefix ast =
                   end;            
                 raise e             
             );
+          Warnings.check_fatal ()
         end;
         Stypes.dump (Some (outputprefix ^ ".annot"));
       with x ->

@@ -117,7 +117,8 @@ TESTS := $(addsuffix .cmj, $(SOURCE_LIST) )
 $(addsuffix .cmi, $(OTHERS)): ../runtime/js.cmi
 $(addsuffix .cmj, $(OTHERS)): ../runtime/js.cmj
 
-COMPFLAGS+=  $(MODULE_FLAGS) -w -40 -warn-error -a+8
+# It is okay to test deprecated API
+COMPFLAGS+=  $(MODULE_FLAGS) -w -40 -warn-error A+8-3-30-26
 COMPFLAGS+=  -bs-no-version-header -bs-no-error-unused-attribute -bs-diagnose -bs-cross-module-opt -bs-package-name  bs-platform
 
 

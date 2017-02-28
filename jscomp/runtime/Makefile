@@ -38,7 +38,7 @@ else
 BS_FLAGS=  $(BS_COMMON_FLAGS) -bs-package-output commonjs:lib/js
 endif
 
-COMPFLAGS += $(BS_FLAGS) -I ../stdlib -nostdlib -nopervasives -open Pervasives -unsafe -w -40-49 -bin-annot
+COMPFLAGS += $(BS_FLAGS) -I ../stdlib -nostdlib -nopervasives -open Pervasives -unsafe -warn-error A -w -40-49 -bin-annot 
 
 
 $(RUNTIME): $(COMPILER)

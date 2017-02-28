@@ -21,4 +21,5 @@ let from_pair_suites (name : string) (suites :  pair_suites) =
               | ThrowAny fn -> ()
               | Fail _ -> Js.log "failed"
               | FailWith msg -> Js.log ("failed: " ^ msg)
+              | Ok a -> Js.log (name, a, "ok?")
               ) suites
