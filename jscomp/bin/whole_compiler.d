@@ -37,6 +37,7 @@ bin/whole_compiler.ml : core/js_fold.ml
 bin/whole_compiler.ml : core/js_long.ml
 bin/whole_compiler.ml : core/js_main.ml
 bin/whole_compiler.ml : core/lam_dce.ml
+bin/whole_compiler.ml : ext/ext_char.ml
 bin/whole_compiler.ml : ext/ext_int.mli
 bin/whole_compiler.ml : ext/ext_list.ml
 bin/whole_compiler.ml : ext/ext_ref.mli
@@ -71,6 +72,7 @@ bin/whole_compiler.ml : core/lam_dce.mli
 bin/whole_compiler.ml : core/lam_util.ml
 bin/whole_compiler.ml : ext/ext_array.ml
 bin/whole_compiler.ml : ext/ext_bytes.ml
+bin/whole_compiler.ml : ext/ext_char.mli
 bin/whole_compiler.ml : ext/ext_ident.ml
 bin/whole_compiler.ml : ext/ext_list.mli
 bin/whole_compiler.ml : ext/ext_utf8.mli

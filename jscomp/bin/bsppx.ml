@@ -4546,8 +4546,22 @@ module Ext_utf8 : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type byte =
+  | Single of int
+  | Cont of int
+  | Leading of int * int
+  | Invalid
 
 
+val classify : char -> byte 
+
+val follow : 
+    string -> 
+    int -> 
+    int -> 
+    int ->
+    int * int 
+     
 exception Invalid_utf8 of string 
  
  
@@ -4606,7 +4620,10 @@ let classify chr =
 
 exception Invalid_utf8 of string 
 
-(* when the first char is [Leading] *)
+(* when the first char is [Leading],
+  TODO: need more error checking 
+  when out of bond
+ *)
 let rec follow s n (c : int) offset = 
   if n = 0 then (c, offset)
   else 
@@ -14036,6 +14053,113 @@ let record_as_js_object
 
 
 end
+module Ext_char : sig 
+#1 "ext_char.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+(** Extension to Standard char module, avoid locale sensitivity *)
+
+val escaped : char -> string
+
+
+val valid_hex : char -> bool
+end = struct
+#1 "ext_char.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+external string_unsafe_set : string -> int -> char -> unit
+                           = "%string_unsafe_set"
+
+external string_create: int -> string = "caml_create_string"
+
+external unsafe_chr: int -> char = "%identity"
+
+(** {!Char.escaped} is locale sensitive in 4.02.3, fixed in the trunk,
+    backport it here
+ *)
+let escaped = function
+  | '\'' -> "\\'"
+  | '\\' -> "\\\\"
+  | '\n' -> "\\n"
+  | '\t' -> "\\t"
+  | '\r' -> "\\r"
+  | '\b' -> "\\b"
+  | ' ' .. '~' as c ->
+      let s = string_create 1 in
+      string_unsafe_set s 0 c;
+      s
+  | c ->
+      let n = Char.code c in
+      let s = string_create 4 in
+      string_unsafe_set s 0 '\\';
+      string_unsafe_set s 1 (unsafe_chr (48 + n / 100));
+      string_unsafe_set s 2 (unsafe_chr (48 + (n / 10) mod 10));
+      string_unsafe_set s 3 (unsafe_chr (48 + n mod 10));
+      s
+
+
+let valid_hex x = 
+    match x with 
+    | '0' .. '9'
+    | 'a' .. 'f'
+    | 'A' .. 'F' -> true
+    | _ -> false 
+end
 module Ext_ref : sig 
 #1 "ext_ref.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -14548,6 +14672,109 @@ let rec unsafe_mapper : Ast_mapper.mapper =
               end
 
           end             
+        |Pexp_constant (Const_string (s, (Some "j"  as delim))) -> 
+          let rec check_and_transform buf s i s_len =
+            if i = s_len then ()
+            else 
+              let current_char = s.[i] in 
+              match Ext_utf8.classify current_char with 
+              | Single c -> 
+                if c = 92 (* Char.code '\\' = 92 *)then 
+                 begin 
+                   (* we share the same escape sequence with js *)
+                    Buffer.add_char buf current_char; 
+                    escape_code buf s (i+1) s_len 
+                  end 
+                else
+                 if c = 34 (* Char.code '\"' = 34 *) || c = 39 (* Char.code '\'' = 39 *) then 
+                  begin 
+                    Buffer.add_char buf '\\';
+                    Buffer.add_char buf current_char ; 
+                    check_and_transform buf s (i + 1) s_len 
+                  end
+                
+                else begin 
+                   Buffer.add_char buf current_char;
+                   check_and_transform buf s (i + 1) s_len 
+                  end
+              | Invalid 
+              | Cont _ -> Location.raise_errorf ~loc "Not utf8 source string"
+              | Leading (n,c) -> 
+                (* TODO: need check if it cross the end*)
+                let (_,i') = Ext_utf8.follow s n c i in 
+                for j = i to i' do 
+                   Buffer.add_char buf s.[j]; 
+                done;   
+                check_and_transform buf s (i' + 1) s_len 
+         
+         and escape_code buf s offset s_len = 
+          if offset >= s_len then 
+            Location.raise_errorf ~loc "\\ is the end of string" 
+          else 
+            let cur_char = s.[offset] in 
+            match cur_char with 
+            | '\\'
+            | 'b' 
+            | 't' 
+            | 'n' 
+            | 'v'
+            | 'f'
+            | 'r' 
+            | '0' -> 
+              begin 
+                Buffer.add_char buf cur_char ;
+                check_and_transform buf s (offset + 1) s_len 
+              end 
+            | 'u' -> 
+              begin 
+                Buffer.add_char buf cur_char;
+                unicode buf s (offset + 1) s_len 
+              end 
+            | 'x' -> begin 
+              Buffer.add_char buf cur_char ; 
+              two_hex buf s (offset + 1) s_len 
+            end 
+            | _ -> Location.raise_errorf ~loc "invalid escape code"
+         and two_hex buf s offset s_len = 
+          if offset + 1 >= s_len then 
+            Location.raise_errorf ~loc "\\x need at least two chars";
+          let a, b = s.[offset], s.[offset + 1] in 
+          if Ext_char.valid_hex a && Ext_char.valid_hex b then 
+          begin 
+            Buffer.add_char buf a ; 
+            Buffer.add_char buf b ; 
+            check_and_transform buf s (offset + 2) s_len 
+          end
+          else Location.raise_errorf ~loc "%c%c is not a valid hex code" a b
+
+         and unicode buf s offset s_len = 
+          if offset + 3 >= s_len then 
+            Location.raise_errorf ~loc "\\u need at least four chars";
+          let a0,a1,a2,a3 = s.[offset], s.[offset+1], s.[offset+2], s.[offset+3] in
+          if 
+            Ext_char.valid_hex a0 &&
+            Ext_char.valid_hex a1 &&
+            Ext_char.valid_hex a2 &&
+            Ext_char.valid_hex a3 then 
+            begin 
+            Buffer.add_char buf a0;
+            Buffer.add_char buf a1;
+            Buffer.add_char buf a2;
+            Buffer.add_char buf a3;  
+            check_and_transform buf s  (offset + 4) s_len 
+          end 
+          else 
+            Location.raise_errorf ~loc "%c%c%c%c is not a valid unicode point"
+            a0 a1 a2 a3 
+          (* http://www.2ality.com/2015/01/es6-strings.html
+            console.log('\uD83D\uDE80'); (* ES6*)
+            console.log('\u{1F680}');
+          *)   
+         in 
+         let s_len  = String.length s in 
+         let buf = Buffer.create (s_len * 2) in 
+         check_and_transform buf s 0 s_len ;  
+         { e with pexp_desc = Pexp_constant (Const_string (Buffer.contents buf, delim))}
 
         (** [bs.debugger], its output should not be rewritten any more*)
         | Pexp_extension ({txt = ("bs.debugger"|"debugger"); loc} , payload)
@@ -14805,6 +15032,14 @@ let rec unsafe_mapper : Ast_mapper.mapper =
              }}
 
       | _ -> Ast_mapper.default_mapper.signature_item self sigi
+    end;
+    pat = begin fun self (pat : Parsetree.pattern) -> 
+      match pat with 
+      | { ppat_desc = Ppat_constant(Const_string (_, Some "j")); ppat_loc = loc} -> 
+        Location.raise_errorf ~loc 
+          "Unicode string is not allowed in pattern match"
+      | _  -> Ast_mapper.default_mapper.pat self pat
+      
     end;
     structure_item = begin fun self (str : Parsetree.structure_item) -> 
       begin match str.pstr_desc with 

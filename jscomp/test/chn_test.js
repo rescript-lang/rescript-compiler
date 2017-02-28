@@ -104,43 +104,153 @@ eq('File "chn_test.ml", line 18, characters 7-14', convert("汉字是世界上�
       ]
     ]);
 
-eq('File "chn_test.ml", line 39, characters 5-12', convert("\x3f\x3f"), /* :: */[
+eq('File "chn_test.ml", line 39, characters 5-12', convert("\x3f\x3fa"), /* :: */[
       63,
       /* :: */[
         63,
-        /* [] */0
+        /* :: */[
+          97,
+          /* [] */0
+        ]
       ]
     ]);
 
-eq('File "chn_test.ml", line 41, characters 5-12', convert("??"), /* :: */[
+eq('File "chn_test.ml", line 41, characters 5-12', convert("??a"), /* :: */[
       63,
       /* :: */[
         63,
-        /* [] */0
+        /* :: */[
+          97,
+          /* [] */0
+        ]
       ]
     ]);
 
-eq('File "chn_test.ml", line 43, characters 5-12', convert("\u003f\x3f"), /* :: */[
+eq('File "chn_test.ml", line 43, characters 5-12', convert("\u003f\x3fa"), /* :: */[
       63,
       /* :: */[
         63,
+        /* :: */[
+          97,
+          /* [] */0
+        ]
+      ]
+    ]);
+
+eq('File "chn_test.ml", line 45, characters 5-12', convert("🚀🚀a"), /* :: */[
+      128640,
+      /* :: */[
+        128640,
+        /* :: */[
+          97,
+          /* [] */0
+        ]
+      ]
+    ]);
+
+eq('File "chn_test.ml", line 47, characters 5-12', convert("\uD83D\uDE80a"), /* :: */[
+      128640,
+      /* :: */[
+        97,
         /* [] */0
       ]
     ]);
 
-eq('File "chn_test.ml", line 45, characters 5-12', convert("\u{01003f}\x3f"), /* :: */[
-      65599,
+eq('File "chn_test.ml", line 49, characters 5-12', convert("\uD83D\uDE80\x3f"), /* :: */[
+      128640,
       /* :: */[
         63,
         /* [] */0
       ]
     ]);
 
-eq('File "chn_test.ml", line 49, characters 5-12', convert("\u{01003f}\u{01003f}"), /* :: */[
-      65599,
+eq('File "chn_test.ml", line 54, characters 5-12', convert("\uD83D\uDE80\uD83D\uDE80a"), /* :: */[
+      128640,
       /* :: */[
-        65599,
+        128640,
+        /* :: */[
+          97,
+          /* [] */0
+        ]
+      ]
+    ]);
+
+eq('File "chn_test.ml", line 57, characters 5-12', 14, 3);
+
+eq('File "chn_test.ml", line 58, characters 5-12', convert("\uD83D\uDE80"), /* :: */[
+      128640,
+      /* [] */0
+    ]);
+
+eq('File "chn_test.ml", line 59, characters 5-12', convert("\uD83D\uDE80"), /* :: */[
+      128640,
+      /* :: */[
+        128640,
         /* [] */0
+      ]
+    ]);
+
+eq('File "chn_test.ml", line 60, characters 5-12', convert(" \b\t\n\v\f\ra"), /* :: */[
+      32,
+      /* :: */[
+        8,
+        /* :: */[
+          9,
+          /* :: */[
+            10,
+            /* :: */[
+              11,
+              /* :: */[
+                12,
+                /* :: */[
+                  13,
+                  /* :: */[
+                    97,
+                    /* [] */0
+                  ]
+                ]
+              ]
+            ]
+          ]
+        ]
+      ]
+    ]);
+
+eq('File "chn_test.ml", line 67, characters 6-13', convert(" \b\t\n\v\f\r\"\'\\\0a"), /* :: */[
+      32,
+      /* :: */[
+        8,
+        /* :: */[
+          9,
+          /* :: */[
+            10,
+            /* :: */[
+              11,
+              /* :: */[
+                12,
+                /* :: */[
+                  13,
+                  /* :: */[
+                    34,
+                    /* :: */[
+                      39,
+                      /* :: */[
+                        92,
+                        /* :: */[
+                          0,
+                          /* :: */[
+                            97,
+                            /* [] */0
+                          ]
+                        ]
+                      ]
+                    ]
+                  ]
+                ]
+              ]
+            ]
+          ]
+        ]
       ]
     ]);
 

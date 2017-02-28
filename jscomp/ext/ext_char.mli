@@ -30,3 +30,6 @@
 (** Extension to Standard char module, avoid locale sensitivity *)
 
 val escaped : char -> string
+
+
+val valid_hex : char -> bool

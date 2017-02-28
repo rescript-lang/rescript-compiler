@@ -316,6 +316,109 @@ let rec unsafe_mapper : Ast_mapper.mapper =
               end
 
           end             
+        |Pexp_constant (Const_string (s, (Some "j"  as delim))) -> 
+          let rec check_and_transform buf s i s_len =
+            if i = s_len then ()
+            else 
+              let current_char = s.[i] in 
+              match Ext_utf8.classify current_char with 
+              | Single c -> 
+                if c = 92 (* Char.code '\\' = 92 *)then 
+                 begin 
+                   (* we share the same escape sequence with js *)
+                    Buffer.add_char buf current_char; 
+                    escape_code buf s (i+1) s_len 
+                  end 
+                else
+                 if c = 34 (* Char.code '\"' = 34 *) || c = 39 (* Char.code '\'' = 39 *) then 
+                  begin 
+                    Buffer.add_char buf '\\';
+                    Buffer.add_char buf current_char ; 
+                    check_and_transform buf s (i + 1) s_len 
+                  end
+                
+                else begin 
+                   Buffer.add_char buf current_char;
+                   check_and_transform buf s (i + 1) s_len 
+                  end
+              | Invalid 
+              | Cont _ -> Location.raise_errorf ~loc "Not utf8 source string"
+              | Leading (n,c) -> 
+                (* TODO: need check if it cross the end*)
+                let (_,i') = Ext_utf8.follow s n c i in 
+                for j = i to i' do 
+                   Buffer.add_char buf s.[j]; 
+                done;   
+                check_and_transform buf s (i' + 1) s_len 
+         
+         and escape_code buf s offset s_len = 
+          if offset >= s_len then 
+            Location.raise_errorf ~loc "\\ is the end of string" 
+          else 
+            let cur_char = s.[offset] in 
+            match cur_char with 
+            | '\\'
+            | 'b' 
+            | 't' 
+            | 'n' 
+            | 'v'
+            | 'f'
+            | 'r' 
+            | '0' -> 
+              begin 
+                Buffer.add_char buf cur_char ;
+                check_and_transform buf s (offset + 1) s_len 
+              end 
+            | 'u' -> 
+              begin 
+                Buffer.add_char buf cur_char;
+                unicode buf s (offset + 1) s_len 
+              end 
+            | 'x' -> begin 
+              Buffer.add_char buf cur_char ; 
+              two_hex buf s (offset + 1) s_len 
+            end 
+            | _ -> Location.raise_errorf ~loc "invalid escape code"
+         and two_hex buf s offset s_len = 
+          if offset + 1 >= s_len then 
+            Location.raise_errorf ~loc "\\x need at least two chars";
+          let a, b = s.[offset], s.[offset + 1] in 
+          if Ext_char.valid_hex a && Ext_char.valid_hex b then 
+          begin 
+            Buffer.add_char buf a ; 
+            Buffer.add_char buf b ; 
+            check_and_transform buf s (offset + 2) s_len 
+          end
+          else Location.raise_errorf ~loc "%c%c is not a valid hex code" a b
+
+         and unicode buf s offset s_len = 
+          if offset + 3 >= s_len then 
+            Location.raise_errorf ~loc "\\u need at least four chars";
+          let a0,a1,a2,a3 = s.[offset], s.[offset+1], s.[offset+2], s.[offset+3] in
+          if 
+            Ext_char.valid_hex a0 &&
+            Ext_char.valid_hex a1 &&
+            Ext_char.valid_hex a2 &&
+            Ext_char.valid_hex a3 then 
+            begin 
+            Buffer.add_char buf a0;
+            Buffer.add_char buf a1;
+            Buffer.add_char buf a2;
+            Buffer.add_char buf a3;  
+            check_and_transform buf s  (offset + 4) s_len 
+          end 
+          else 
+            Location.raise_errorf ~loc "%c%c%c%c is not a valid unicode point"
+            a0 a1 a2 a3 
+          (* http://www.2ality.com/2015/01/es6-strings.html
+            console.log('\uD83D\uDE80'); (* ES6*)
+            console.log('\u{1F680}');
+          *)   
+         in 
+         let s_len  = String.length s in 
+         let buf = Buffer.create (s_len * 2) in 
+         check_and_transform buf s 0 s_len ;  
+         { e with pexp_desc = Pexp_constant (Const_string (Buffer.contents buf, delim))}
 
         (** [bs.debugger], its output should not be rewritten any more*)
         | Pexp_extension ({txt = ("bs.debugger"|"debugger"); loc} , payload)
@@ -573,6 +676,14 @@ let rec unsafe_mapper : Ast_mapper.mapper =
              }}
 
       | _ -> Ast_mapper.default_mapper.signature_item self sigi
+    end;
+    pat = begin fun self (pat : Parsetree.pattern) -> 
+      match pat with 
+      | { ppat_desc = Ppat_constant(Const_string (_, Some "j")); ppat_loc = loc} -> 
+        Location.raise_errorf ~loc 
+          "Unicode string is not allowed in pattern match"
+      | _  -> Ast_mapper.default_mapper.pat self pat
+      
     end;
     structure_item = begin fun self (str : Parsetree.structure_item) -> 
       begin match str.pstr_desc with 

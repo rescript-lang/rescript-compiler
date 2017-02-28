@@ -36,32 +36,35 @@ let () =
   116;
   101;
   114 ];
-  eq __LOC__ (convert {j|\x3f\x3f|j})
-  [63;63];
-  eq __LOC__ (convert {j|??|j})
-  [63;63];
-  eq __LOC__ (convert {j|\u003f\x3f|j})
-  [63;63];
-  eq __LOC__ (convert {j|\u{01003f}\x3f|j})
-  [65599;63];
+  eq __LOC__ (convert {j|\x3f\x3fa|j})
+  [63;63;97];
+  eq __LOC__ (convert {j|??a|j})
+  [63;63;97];
+  eq __LOC__ (convert {j|\u003f\x3fa|j})
+  [63;63;97];
+  eq __LOC__ (convert {j|🚀🚀a|j})
+  [128640;128640;97]; 
+  eq __LOC__ (convert {j|\uD83D\uDE80a|j})
+  [128640; 97];
+  eq __LOC__ (convert {j|\uD83D\uDE80\x3f|j})
+  [128640; 63];
+  
   (* It is amazing Array.from(string) 
     is unicode safe *)
-  eq __LOC__ (convert {j|\u{01003f}\u{01003f}|j})
-  [65599;65599];
-  (* "\u{11003f}\x3f 
-    undefined unicode code piont
-  *)
-  eq __LOC__ (String.length {j|\u{01003f}|j} 2);
-
-  eq __LOC__ (convert {j| \b\t\n\v\f\r|j})
-  [ 32; 8; 9; 10; 11; 12; 13; ];
-
+  eq __LOC__ (convert {j|\uD83D\uDE80\uD83D\uDE80a|j})
+  [128640; 128640; 97];    
+  
+  eq __LOC__ (String.length {j|\uD83D\uDE80\0|j}) 3;
+  eq __LOC__ (convert {j|\uD83D\uDE80|j}) [128640];
+  eq __LOC__ (convert {j|\uD83D\uDE80|j}) [128640;128640];
+  eq __LOC__ (convert {j| \b\t\n\v\f\ra|j})
+    [ 32; 8; 9; 10; 11; 12; 13; 97];
   (* we don't need escape string double quote {|"|}and single quote{|'|} 
     however when we print it, we need escape them 
     there is no need for line continuation,
     
   *)
-  (* eq __LOC__ (convert {j| \b\t\n\v\f\r"'\\|j})
-  [ 32; 8; 9; 10; 11; 12; 13; 34; 39; 92 ] *)
+   eq __LOC__ (convert {j| \b\t\n\v\f\r"'\\\0a|j})
+  [ 32; 8; 9; 10; 11; 12; 13; 34; 39; 92;0 ;97] 
     end
 let () = Mt.from_pair_suites __FILE__ !suites 
