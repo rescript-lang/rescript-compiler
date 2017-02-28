@@ -86,7 +86,7 @@ module TypedArray (Type: Type) = struct
 
   (* Accessor functions
   *)
-  external includes : elt -> Js.boolean = "" [@@bs.send.pipe: elt typed_array] (** ES2016 *)
+  external includes : elt -> Js_boolean.t = "" [@@bs.send.pipe: elt typed_array] (** ES2016 *)
 
   external indexOf : elt  -> int = "" [@@bs.send.pipe: elt typed_array]
   external indexOfFrom : elt -> from:int -> int = "indexOf" [@@bs.send.pipe: elt typed_array]
@@ -111,15 +111,15 @@ module TypedArray (Type: Type) = struct
   external entries : (int * elt) array_iter = "" [@@bs.send.pipe: elt typed_array]
   *)
 
-  external every : (elt  -> Js.boolean [@bs]) -> Js.boolean = "" [@@bs.send.pipe: elt typed_array]
-  external everyi : (elt -> int -> Js.boolean [@bs]) -> Js.boolean = "every" [@@bs.send.pipe: elt typed_array]
+  external every : (elt  -> Js_boolean.t [@bs]) -> Js_boolean.t = "" [@@bs.send.pipe: elt typed_array]
+  external everyi : (elt -> int -> Js_boolean.t [@bs]) -> Js_boolean.t = "every" [@@bs.send.pipe: elt typed_array]
 
   (** should we use [bool] or [boolan] seems they are intechangeable here *)
   external filter : (elt -> bool [@bs]) -> elt typed_array = "" [@@bs.send.pipe: elt typed_array]
-  external filteri : (elt -> int  -> Js.boolean[@bs]) -> elt typed_array = "filter" [@@bs.send.pipe: elt typed_array]
+  external filteri : (elt -> int  -> Js_boolean.t[@bs]) -> elt typed_array = "filter" [@@bs.send.pipe: elt typed_array]
 
-  external find : (elt -> bool [@bs]) -> elt Js.undefined = "" [@@bs.send.pipe: elt typed_array]
-  external findi : (elt -> int -> bool [@bs]) -> elt Js.undefined  = "find" [@@bs.send.pipe: elt typed_array]
+  external find : (elt -> bool [@bs]) -> elt Js_undefined.t = "" [@@bs.send.pipe: elt typed_array]
+  external findi : (elt -> int -> bool [@bs]) -> elt Js_undefined.t  = "find" [@@bs.send.pipe: elt typed_array]
 
   external findIndex : (elt -> bool [@bs]) -> int = "" [@@bs.send.pipe: elt typed_array]
   external findIndexi : (elt -> int -> bool [@bs]) -> int = "findIndex" [@@bs.send.pipe: elt typed_array]
@@ -140,8 +140,8 @@ module TypedArray (Type: Type) = struct
   external reduceRight :  ('b -> elt  -> 'b [@bs]) -> 'b -> 'b = "" [@@bs.send.pipe: elt typed_array]
   external reduceRighti : ('b -> elt -> int -> 'b [@bs]) -> 'b -> 'b = "reduceRight" [@@bs.send.pipe: elt typed_array]
 
-  external some : (elt  -> Js.boolean [@bs]) -> Js.boolean = "" [@@bs.send.pipe: elt typed_array]
-  external somei : (elt  -> int -> Js.boolean [@bs]) -> Js.boolean = "some" [@@bs.send.pipe: elt typed_array]
+  external some : (elt  -> Js_boolean.t [@bs]) -> Js_boolean.t = "" [@@bs.send.pipe: elt typed_array]
+  external somei : (elt  -> int -> Js_boolean.t [@bs]) -> Js_boolean.t = "some" [@@bs.send.pipe: elt typed_array]
 
   (* commented out until bs has a plan for iterators
   external values : elt array_iter = "" [@@bs.send.pipe: elt typed_array]

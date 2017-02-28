@@ -23,7 +23,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 (*tag::interface_all[]*)
-type + 'a t = 'a Js.null
+type + 'a t
 external to_opt : 'a t -> 'a option = "js_from_nullable"
 external return : 'a -> 'a t  = "%identity"
 external test : 'a t -> bool = "js_is_nil"
@@ -33,12 +33,12 @@ external empty : 'a t = "null" [@@bs.val]
 let bind x f =
   match to_opt x with
   | None -> empty
-  | Some x -> return (f x [@bs])
+  | Some x -> return (f x)
 
 let iter x f =
   match to_opt x with
   | None ->  ()
-  | Some x -> f x [@bs]
+  | Some x -> f x
 
 let from_opt x =
   match x with

@@ -41,18 +41,18 @@ type (-'arg, + 'result) fn (** Js uncurried function *)
 
 (** Types for JS objects *)
 (* tag::public_js_types[]*)
-type +'a t
+type + 'a t = 'a Js_obj.t
 (** Js object type *)
-type + 'a null
+type + 'a null = 'a Js_null.t
 (** nullable, value of this type can be either [null] or ['a]
     this type is the same as {!Js.Null.t}  *)
-type + 'a undefined
+type + 'a undefined = 'a Js_undefined.t
 (** value of this type can be either [undefined] or ['a]
     this type is the same as {!Js.Undefined.t}  *)
-type + 'a null_undefined
+type + 'a null_undefined = 'a Js_null_undefined.t
 (** value of this type can be [undefined], [null] or ['a]
     this type is the same as {!Js.Null_undefined.t}*)
-type boolean
+type boolean = Js_boolean.t
 (* end::public_js_types[]*)
 
 (* tag::nested_built_in_modules[] *)
@@ -91,15 +91,24 @@ external unsafe_ge : 'a -> 'a -> boolean = "js_unsafe_ge"
 (**  [unsafe_ge a b] will be compiled as [a >= b] *)
 (* end::utility_functions[]*)
 
-(** {8 nested modules} *experimental* API, please refer to
-  {!Js_dict} {!Js_array} {!Js_string} {!Js_re} for more details *)
-module Dict = Js_dict
+(** *experimental* API *)
 module Array = Js_array
-module String = Js_string
-module Re = Js_re
-module Types = Js_types
-module Json = Js_json
-module Obj  = Js_obj
+module ArrayBuffer = Js_typed_array.ArrayBuffer
 module Boolean = Js_boolean
-module Math = Js_math
 module Date = Js_date
+module Dict = Js_dict
+module Float32Array = Js_typed_array.Float32Array
+module Float64Array = Js_typed_array.Float64Array
+module Int8Array = Js_typed_array.Int8Array
+module Int16Array = Js_typed_array.Int16Array
+module Int32Array = Js_typed_array.Int32Array
+module Json = Js_json
+module Math = Js_math
+module Obj  = Js_obj
+module Re = Js_re
+module String = Js_string
+module Types = Js_types
+module Uint8Array = Js_typed_array.Uint8Array
+module Uint8ClampedArray = Js_typed_array.Uint8ClampedArray
+module Uint16Array = Js_typed_array.Uint16Array
+module Uint32Array = Js_typed_array.Uint32Array

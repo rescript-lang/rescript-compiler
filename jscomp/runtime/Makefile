@@ -3,13 +3,14 @@ include ../Makefile.shared
 COMPILER=../bin/bsc.exe
 
 OTHERS= caml_array caml_string caml_bytes\
-	caml_obj caml_int64 \
+	caml_obj js_typed_array caml_int64 \
 	caml_exceptions	caml_utils caml_sys caml_io\
 	caml_float caml_lexer caml_parser caml_primitive\
 	caml_format caml_md5 caml_queue caml_hash caml_weak\
-	caml_backtrace caml_int32 caml_gc typed_array \
+	caml_backtrace caml_int32 caml_gc \
 	js_primitive caml_basic caml_oo curry caml_oo_curry caml_module \
-	bs_string  js_float bs_obj js_nativeint js_int js_null js_undefined
+	bs_string  js_float bs_obj js_nativeint js_int js_null js_undefined \
+	js_boolean js_obj js_null_undefined
 
 SOURCE_LIST= $(OTHERS) caml_builtin_exceptions  block  js js_unsafe
 
@@ -21,6 +22,8 @@ caml_weak.cmj caml_module.cmj: caml_obj.cmj js_primitive.cmj
 caml_builtin_exceptions.cmj: caml_builtin_exceptions.cmi js_unsafe.cmi
 block.cmj: block.cmi
 caml_int64.cmj : caml_obj.cmj
+js.cmj: js_obj.cmj js_boolean.cmj js_null.cmj js_undefined.cmj js_null_undefined.cmj
+js.cmi: js_typed_array.cmi
 # or we can do a post-processing to add missing cmj dependency manually
 
 $(addsuffix .cmj, $(OTHERS)): caml_builtin_exceptions.cmj  block.cmj js.cmj js_unsafe.cmj
