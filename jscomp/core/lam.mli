@@ -46,6 +46,19 @@ type function_arities =
    *)
   | NA 
 
+type constant = 
+  | Const_int of int
+  | Const_char of char
+  | Const_string of string * string option
+  | Const_float of string
+  | Const_int32 of int32
+  | Const_int64 of int64
+  | Const_nativeint of nativeint
+  | Const_pointer of int * Lambda.pointer_info
+  | Const_block of int * Lambda.tag_info * constant list
+  | Const_float_array of string list
+  | Const_immstring of string
+
 type primitive = 
   | Pbytes_to_string
   | Pbytes_of_string
@@ -189,7 +202,7 @@ and function_info = private
 and  t =  private
   | Lvar of ident
   | Lglobal_module of ident
-  | Lconst of Lambda.structured_constant
+  | Lconst of constant
   | Lapply of apply_info
   | Lfunction of function_info
   | Llet of Lambda.let_kind * ident * t * t
@@ -239,7 +252,7 @@ val scc : bindings -> t -> t  -> t
 
 val var : ident -> t
 val global_module : ident -> t 
-val const : Lambda.structured_constant -> t
+val const : constant -> t
 
 val apply : t -> t list -> Location.t -> apply_status -> t
 val function_ : 

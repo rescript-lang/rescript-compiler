@@ -31,4 +31,4 @@
 
 (** Compile lambda constant to JS *)
 
-val translate : Lambda.structured_constant -> J.expression
+val translate : Lam.constant -> J.expression

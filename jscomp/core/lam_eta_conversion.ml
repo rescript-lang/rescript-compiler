@@ -42,7 +42,11 @@ let transform_under_supply n loc status fn args =
   begin match List.fold_right (fun (lam : Lam.t) (acc, bind) ->
       match lam with
       | Lvar _
-      | Lconst (Const_base _ | Const_pointer _ | Const_immstring _ ) 
+      | Lconst (Const_int _  
+        | Const_char _ | Const_string _ 
+        | Const_float _ | Const_int32 _ 
+        | Const_int64 _ | Const_nativeint _ 
+        | Const_pointer _ | Const_immstring _ ) 
       | Lprim {primitive = Pfield _;
                args =  [ Lglobal_module _ ]; _ }
       | Lfunction _ 

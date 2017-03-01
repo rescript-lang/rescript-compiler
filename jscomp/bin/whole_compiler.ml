@@ -64778,6 +64778,19 @@ type function_arities =
    *)
   | NA 
 
+type constant = 
+  | Const_int of int
+  | Const_char of char
+  | Const_string of string * string option
+  | Const_float of string
+  | Const_int32 of int32
+  | Const_int64 of int64
+  | Const_nativeint of nativeint
+  | Const_pointer of int * Lambda.pointer_info
+  | Const_block of int * Lambda.tag_info * constant list
+  | Const_float_array of string list
+  | Const_immstring of string
+
 type primitive = 
   | Pbytes_to_string
   | Pbytes_of_string
@@ -64921,7 +64934,7 @@ and function_info = private
 and  t =  private
   | Lvar of ident
   | Lglobal_module of ident
-  | Lconst of Lambda.structured_constant
+  | Lconst of constant
   | Lapply of apply_info
   | Lfunction of function_info
   | Llet of Lambda.let_kind * ident * t * t
@@ -64971,7 +64984,7 @@ val scc : bindings -> t -> t  -> t
 
 val var : ident -> t
 val global_module : ident -> t 
-val const : Lambda.structured_constant -> t
+val const : constant -> t
 
 val apply : t -> t list -> Location.t -> apply_status -> t
 val function_ : 
@@ -65085,6 +65098,20 @@ type function_arities =
   | Determin of bool * (int * Ident.t list option) list  * bool
   | NA 
 
+
+type constant = 
+  | Const_int of int
+  | Const_char of char
+  | Const_string of string * string option
+  | Const_float of string
+  | Const_int32 of int32
+  | Const_int64 of int64
+  | Const_nativeint of nativeint
+  | Const_pointer of int * Lambda.pointer_info
+  | Const_block of int * Lambda.tag_info * constant list
+  | Const_float_array of string list
+  | Const_immstring of string
+  
 type primitive = 
   | Pbytes_to_string
   | Pbytes_of_string
@@ -65235,7 +65262,7 @@ module Types = struct
   and t = 
     | Lvar of ident
     | Lglobal_module of ident
-    | Lconst of Lambda.structured_constant
+    | Lconst of constant
     | Lapply of apply_info
     | Lfunction of function_info
     | Llet of Lambda.let_kind * ident * t * t
@@ -65297,7 +65324,7 @@ module X = struct
     =
       | Lvar of ident
       | Lglobal_module of ident 
-      | Lconst of Lambda.structured_constant
+      | Lconst of constant
       | Lapply of apply_info
       | Lfunction of function_info
       | Llet of Lambda.let_kind * ident * t * t
@@ -65321,7 +65348,7 @@ include Types
 let inner_map (f : t -> X.t ) (l : t) : X.t = 
   match l  with 
   | Lvar (_ : ident)
-  | Lconst (_ : Lambda.structured_constant) -> 
+  | Lconst (_ : constant) -> 
     ( (* Obj.magic *) l : X.t)
   | Lapply ({fn; args; loc; status} )  ->
     let fn = f fn in
@@ -65398,7 +65425,7 @@ let inner_map (f : t -> X.t ) (l : t) : X.t =
 let inner_iter (f : t -> unit ) (l : t) : unit = 
   match l  with 
   | Lvar (_ : ident)
-  | Lconst (_ : Lambda.structured_constant) -> ()
+  | Lconst (_ : constant) -> ()
   | Lapply ({fn; args; loc; status} )  ->
     f fn;
     List.iter f args 
@@ -65918,18 +65945,18 @@ let if_ (a : t) (b : t) c =
   match a with
   | Lconst v ->
     begin match v with
-      | Const_pointer (x, _)  | Const_base(Const_int x)
+      | Const_pointer (x, _)  | (Const_int x)
         ->
         if x <> 0 then b else c
-      | Const_base (Const_char x) ->
+      | (Const_char x) ->
         if Char.code x <> 0 then b else c
-      | Const_base (Const_int32 x) ->
+      | (Const_int32 x) ->
         if x <> 0l then b else c
-      | Const_base (Const_int64 x) ->
+      |  (Const_int64 x) ->
         if x <> 0L then b else c
-      | Const_base (Const_nativeint x) ->
+      | (Const_nativeint x) ->
         if x <> 0n then b else c
-      | Const_base (Const_string _ | Const_float _ ) -> b
+      | (Const_string _ | Const_float _ ) -> b
       | Const_block _
       | Const_float_array _
       | Const_immstring _ -> b
@@ -65938,7 +65965,7 @@ let if_ (a : t) (b : t) c =
 
 let switch lam (lam_switch : switch) : t =
   match lam with
-  | Lconst ((Const_pointer (i,_) | Const_base (Const_int i)))
+  | Lconst ((Const_pointer (i,_) |  (Const_int i)))
     ->
     begin try List.assoc i lam_switch.sw_consts
       with  Not_found ->
@@ -65958,7 +65985,7 @@ let switch lam (lam_switch : switch) : t =
 
 let stringswitch (lam : t) cases default : t = 
   match lam with
-  | Lconst (Const_base (Const_string (a,None))) ->
+  | Lconst ((Const_string (a,None))) ->
     begin
       try List.assoc a cases with Not_found ->
         begin
@@ -66025,11 +66052,11 @@ let comparison (cmp : Lambda.comparison) a b : bool =
 
 module Lift = struct 
   let int i : t =
-    Lconst (Const_base (Const_int i))
+    Lconst ((Const_int i))
 
 
   let int32 i : t =
-    Lconst (Const_base (Const_int32 i))
+    Lconst ((Const_int32 i))
 
   let bool b = if b then true_ else false_
 
@@ -66037,20 +66064,20 @@ module Lift = struct
      yet , due to cross platform problem
   *) 
   let float b  : t = 
-    Lconst (Const_base (Const_float b))
+    Lconst ((Const_float b))
 
   let nativeint b : t = 
-    Lconst (Const_base (Const_nativeint b))
+    Lconst ((Const_nativeint b))
 
   let int32 b : t = 
-    Lconst (Const_base (Const_int32 b))
+    Lconst ((Const_int32 b))
 
   let int64 b : t =
-    Lconst (Const_base (Const_int64 b))
+    Lconst ((Const_int64 b))
   let string b : t =
-    Lconst (Const_base (Const_string (b, None)))
+    Lconst ((Const_string (b, None)))
   let char b : t =
-    Lconst (Const_base (Const_char b))    
+    Lconst ((Const_char b))    
 end
 
 let prim ~primitive:(prim : Prim.t) ~args:(ll : t list) loc  : t = 
@@ -66058,25 +66085,25 @@ let prim ~primitive:(prim : Prim.t) ~args:(ll : t list) loc  : t =
   match ll with 
   | [Lconst a] -> 
     begin match prim, a  with 
-      | Pnegint, (Const_base (Const_int a))
+      | Pnegint, ((Const_int a))
         -> Lift.int (- a)
-      (* | Pfloatofint, (Const_base (Const_int a)) *)
+      (* | Pfloatofint, ( (Const_int a)) *)
       (*   -> Lift.float (float_of_int a) *)
-      | Pintoffloat, (Const_base (Const_float a))
+      | Pintoffloat, ( (Const_float a))
         -> 
         Lift.int (int_of_float (float_of_string a))
       (* | Pnegfloat -> Lift.float (-. a) *)
       (* | Pabsfloat -> Lift.float (abs_float a) *)
-      | Pstringlength, (Const_base (Const_string (a,None)) ) 
+      | Pstringlength, ( (Const_string (a,None)) ) 
         -> 
         Lift.int (String.length a)
-      (* | Pnegbint Pnativeint, (Const_base (Const_nativeint i)) *)
+      (* | Pnegbint Pnativeint, ( (Const_nativeint i)) *)
       (*   ->   *)
       (*   Lift.nativeint (Nativeint.neg i) *)
-      | Pnegbint Pint32, (Const_base (Const_int32 a))
+      | Pnegbint Pint32, ( (Const_int32 a))
         -> 
         Lift.int32 (Int32.neg a)
-      | Pnegbint Pint64, (Const_base (Const_int64 a))
+      | Pnegbint Pint64, ( (Const_int64 a))
         -> 
         Lift.int64 (Int64.neg a)
       | Pnot , Const_pointer (a,_) 
@@ -66087,17 +66114,17 @@ let prim ~primitive:(prim : Prim.t) ~args:(ll : t list) loc  : t =
 
   | [Lconst a ; Lconst b] -> 
     begin match prim, a, b  with 
-      | Pbintcomp(_, cmp), Const_base (Const_int32 a), Const_base (Const_int32 b)
+      | Pbintcomp(_, cmp),  (Const_int32 a),  (Const_int32 b)
         -> Lift.bool (comparison cmp a b)
-      | Pbintcomp(_, cmp), Const_base (Const_int64 a), Const_base (Const_int64 b)
+      | Pbintcomp(_, cmp),  (Const_int64 a),  (Const_int64 b)
         -> Lift.bool (comparison cmp a b)
-      | Pbintcomp(_, cmp), Const_base (Const_nativeint a), Const_base (Const_nativeint b)
+      | Pbintcomp(_, cmp),  (Const_nativeint a),  (Const_nativeint b)
         -> Lift.bool (comparison cmp a b)
-      | Pfloatcomp  cmp, Const_base (Const_nativeint a), Const_base (Const_nativeint b)
+      | Pfloatcomp  cmp,  (Const_nativeint a),  (Const_nativeint b)
         -> Lift.bool (comparison cmp a b)
       | Pintcomp cmp ,
-        (Const_base (Const_int a) | Const_pointer (a,_)),
-        (Const_base (Const_int b) | Const_pointer (b,_))
+        ( (Const_int a) | Const_pointer (a,_)),
+        ( (Const_int b) | Const_pointer (b,_))
         -> Lift.bool (comparison cmp a b)
       | (Paddint
         | Psubint
@@ -66109,7 +66136,7 @@ let prim ~primitive:(prim : Prim.t) ~args:(ll : t list) loc  : t =
         | Pxorint
         | Plslint
         | Plsrint
-        | Pasrint),Const_base (Const_int a),  Const_base (Const_int b)
+        | Pasrint), (Const_int a),   (Const_int b)
         ->
         (* WE SHOULD keep it as [int], to preserve types *)
         let aa,bb = Int32.of_int a, Int32.of_int  b in 
@@ -66140,7 +66167,7 @@ let prim ~primitive:(prim : Prim.t) ~args:(ll : t list) loc  : t =
         | Pandbint Pint32
         | Porbint Pint32
         | Pxorbint Pint32
-        ), Const_base (Const_int32 aa),  Const_base (Const_int32 bb)
+        ),  (Const_int32 aa),   (Const_int32 bb)
         -> 
         begin match prim with 
           | Paddbint _  -> Lift.int32 (Int32.add aa bb)
@@ -66153,11 +66180,11 @@ let prim ~primitive:(prim : Prim.t) ~args:(ll : t list) loc  : t =
           | Pxorbint _ -> Lift.int32 (Int32.logxor aa bb)
           | _ -> default ()
         end
-      | Plslbint Pint32, Const_base (Const_int32 aa), Const_base (Const_int b)
+      | Plslbint Pint32,  (Const_int32 aa),  (Const_int b)
         -> Lift.int32 (Int32.shift_left  aa b )
-      | Plsrbint Pint32, Const_base (Const_int32 aa), Const_base (Const_int b)
+      | Plsrbint Pint32,  (Const_int32 aa),  (Const_int b)
         -> Lift.int32 (Int32.shift_right_logical  aa b )
-      | Pasrbint Pint32, Const_base (Const_int32 aa), Const_base (Const_int b)
+      | Pasrbint Pint32,  (Const_int32 aa),  (Const_int b)
         -> Lift.int32 (Int32.shift_right  aa b )
 
       | (Paddbint Pint64
@@ -66168,7 +66195,7 @@ let prim ~primitive:(prim : Prim.t) ~args:(ll : t list) loc  : t =
         | Pandbint Pint64
         | Porbint Pint64
         | Pxorbint Pint64
-        ), Const_base (Const_int64 aa),  Const_base (Const_int64 bb)
+        ),  (Const_int64 aa),   (Const_int64 bb)
         -> 
         begin match prim with 
           | Paddbint _  -> Lift.int64 (Int64.add aa bb)
@@ -66181,11 +66208,11 @@ let prim ~primitive:(prim : Prim.t) ~args:(ll : t list) loc  : t =
           | Pxorbint _ -> Lift.int64 (Int64.logxor aa bb)
           | _ -> default ()
         end
-      | Plslbint Pint64, Const_base (Const_int64 aa), Const_base (Const_int b)
+      | Plslbint Pint64,  (Const_int64 aa),  (Const_int b)
         -> Lift.int64 (Int64.shift_left  aa b )
-      | Plsrbint Pint64, Const_base (Const_int64 aa), Const_base (Const_int b)
+      | Plsrbint Pint64,  (Const_int64 aa),  (Const_int b)
         -> Lift.int64 (Int64.shift_right_logical  aa b )
-      | Pasrbint Pint64, Const_base (Const_int64 aa), Const_base (Const_int b)
+      | Pasrbint Pint64,  (Const_int64 aa),  (Const_int b)
         -> Lift.int64 (Int64.shift_right  aa b )
       | Psequand, Const_pointer (a, _), Const_pointer( b, _)
         -> 
@@ -66193,12 +66220,12 @@ let prim ~primitive:(prim : Prim.t) ~args:(ll : t list) loc  : t =
       | Psequor, Const_pointer (a, _), Const_pointer( b, _)
         -> 
         Lift.bool (a = 1 || b = 1)
-      | Pstringadd, Const_base(Const_string (a, None)),
-        Const_base (Const_string (b,None))
+      | Pstringadd, (Const_string (a, None)),
+         (Const_string (b,None))
         ->
         Lift.string (a ^ b)
-      | (Pstringrefs | Pstringrefu), Const_base(Const_string(a,None)),
-        (Const_base(Const_int b)| Const_pointer (b,_))
+      | (Pstringrefs | Pstringrefu), (Const_string(a,None)),
+        ((Const_int b)| Const_pointer (b,_))
         ->
         begin try Lift.char (String.get a b)
           with  _ -> default ()
@@ -66528,7 +66555,21 @@ let convert exports lam : _ * _  =
   let alias = Ident_hashtbl.create 64 in 
   let may_depends = Lam_module_ident.Hash_set.create 0 in 
   let rec
-    aux (lam : Lambda.lambda) : t = 
+    aux_constant ( const : Lambda.structured_constant) : constant = 
+     match const with 
+     | Const_base (Const_int i) -> (Const_int i)
+     | Const_base (Const_char i) -> (Const_char i)
+     | Const_base (Const_string(i,opt)) -> (Const_string(i,opt))
+     | Const_base (Const_float i) -> (Const_float i)
+     | Const_base (Const_int32 i) -> (Const_int32 i)
+     | Const_base (Const_int64 i) -> (Const_int64 i)
+     | Const_base (Const_nativeint i) -> (Const_nativeint i)
+     | Const_pointer(i,p) -> Const_pointer (i,p)
+     | Const_float_array (s) -> Const_float_array(s)
+     | Const_immstring s -> Const_immstring s 
+     | Const_block (i,t,xs) -> 
+      Const_block (i,t, List.map aux_constant xs)
+    and aux (lam : Lambda.lambda) : t = 
     match lam with 
     | Lvar x -> 
       let var = Ident_hashtbl.find_default alias x x in
@@ -66537,7 +66578,7 @@ let convert exports lam : _ * _  =
       else       
         Lvar var       
     | Lconst x -> 
-      Lconst x 
+      Lconst (aux_constant x )
     | Lapply (fn,args,loc) 
       ->  
       begin match fn with 
@@ -66659,7 +66700,7 @@ let convert exports lam : _ * _  =
     | Lprim(Pccall {prim_name = "js_pure_expr"}, 
       args,loc) ->  
       begin match args with 
-      | [Lconst(Const_base (Const_string(s,_)))] -> 
+      | [Lconst( Const_base (Const_string(s,_)))] -> 
         prim ~primitive:(Praw_js_code_exp s)
         ~args:[] loc 
       | _ -> assert false 
@@ -66667,7 +66708,7 @@ let convert exports lam : _ * _  =
     | Lprim(Pccall {prim_name = "js_pure_stmt"}, 
       args,loc) ->  
       begin match args with 
-      | [Lconst(Const_base (Const_string(s,_)))] -> 
+      | [Lconst( Const_base (Const_string(s,_)))] -> 
         prim ~primitive:(Praw_js_code_stmt s)
         ~args:[] loc         
       | _ -> assert false 
@@ -70109,9 +70150,9 @@ let rec no_side_effects (lam : Lam.t) : bool =
             | "js_from_def"
             | "js_from_nullable_def"
             ), _  -> true 
-          | "caml_ml_open_descriptor_in", [Lconst (Const_base (Const_int 0))] -> true 
+          | "caml_ml_open_descriptor_in", [Lconst (  (Const_int 0))] -> true 
           | "caml_ml_open_descriptor_out", 
-            [Lconst (Const_base (Const_int (1|2))) ]
+            [Lconst (  (Const_int (1|2))) ]
             -> true
           (* we can not mark it pure
              only when we guarantee this exception is caught...
@@ -70233,7 +70274,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
   | Lstaticraise _ -> false
   | Lstaticcatch _ -> false 
 
-  (* | "caml_sys_getenv" , [Lconst(Const_base(Const_string _))] *)
+  (* | "caml_sys_getenv" , [Lconst( (Const_string _))] *)
   (*         -> true *)
   (** not enough, we need know that 
       if it [Not_found], there are no other exceptions 
@@ -70326,7 +70367,9 @@ let rec size (lam : Lam.t) =
   with Too_big_to_inline ->  1000 
 and size_constant x = 
   match x with 
-  | Const_base _
+  | Const_int _ | Const_char _ | Const_string _  
+  | Const_float _  | Const_int32 _ | Const_int64 _ 
+  | Const_nativeint _ 
   | Const_immstring _
   | Const_pointer _ 
     -> 1 
@@ -70522,16 +70565,16 @@ open Types
 
 
 
-let rec struct_const ppf (cst : Lambda.structured_constant) =
+let rec struct_const ppf (cst : Lam.constant) =
   match cst with 
-  | Const_base(Const_int n) -> fprintf ppf "%i" n
-  | Const_base(Const_char c) -> fprintf ppf "%C" c
-  | Const_base(Const_string (s, _)) -> fprintf ppf "%S" s
+  |  (Const_int n) -> fprintf ppf "%i" n
+  |  (Const_char c) -> fprintf ppf "%C" c
+  |  (Const_string (s, _)) -> fprintf ppf "%S" s
   | Const_immstring s -> fprintf ppf "#%S" s
-  | Const_base(Const_float f) -> fprintf ppf "%s" f
-  | Const_base(Const_int32 n) -> fprintf ppf "%lil" n
-  | Const_base(Const_int64 n) -> fprintf ppf "%LiL" n
-  | Const_base(Const_nativeint n) -> fprintf ppf "%nin" n
+  |  (Const_float f) -> fprintf ppf "%s" f
+  |  (Const_int32 n) -> fprintf ppf "%lil" n
+  |  (Const_int64 n) -> fprintf ppf "%LiL" n
+  |  (Const_nativeint n) -> fprintf ppf "%nin" n
   | Const_pointer (n,_) -> fprintf ppf "%ia" n
   | Const_block(tag,_, []) ->
       fprintf ppf "[%i]" tag
@@ -71327,7 +71370,7 @@ type boxed_nullable
 type kind = 
   | ImmutableBlock of element array * boxed_nullable
   | MutableBlock of element array
-  | Constant of Lambda.structured_constant
+  | Constant of Lam.constant
   | Module of Ident.t
         (** TODO: static module vs first class module *)
   | Function of function_id 
@@ -71444,7 +71487,7 @@ type boxed_nullable
 type kind = 
   | ImmutableBlock of element array * boxed_nullable
   | MutableBlock of element array 
-  | Constant of Lambda.structured_constant
+  | Constant of Lam.constant
   | Module of Ident.t
         (** Global module, local module is treated as an array
          *)
@@ -89347,7 +89390,7 @@ module Lam_compile_const : sig
 
 (** Compile lambda constant to JS *)
 
-val translate : Lambda.structured_constant -> J.expression
+val translate : Lam.constant -> J.expression
 
 end = struct
 #1 "lam_compile_const.ml"
@@ -89384,38 +89427,36 @@ end = struct
 
 module E = Js_exp_make
 
-let rec translate (x : Lambda.structured_constant ) : J.expression = 
+let rec translate (x : Lam.constant ) : J.expression = 
   match x with 
-  | Const_base c -> 
-    begin match c with 
-      | Const_int i -> E.int (Int32.of_int i)
-      | Const_char i ->
-        Js_of_lam_string.const_char i
-      | Const_int32 i -> E.int i 
-          (* E.float (Int32.to_string i) *)
-      | Const_int64 i -> 
+  | Const_int i -> E.int (Int32.of_int i)
+  | Const_char i ->
+    Js_of_lam_string.const_char i
+  | Const_int32 i -> E.int i 
+  (* E.float (Int32.to_string i) *)
+  | Const_int64 i -> 
           (*
             TODO:
-            {[
-            Int64.to_string 0x7FFFFFFFFFFFFFFFL;;
-            - : string = "9223372036854775807"
-            ]}
-            {[
-            Int64.(to_float max_int);;
-            - : float = 9.22337203685477581e+18
-            ]}
-            Note we should compile it to Int64 as JS's 
-            speical representation -- 
-            it is not representatble in JS number
-           *)
-          (* E.float (Int64.to_string i) *)
-        Js_long.of_const i
-        (* https://github.com/google/closure-library/blob/master/closure%2Fgoog%2Fmath%2Flong.js *)
-      | Const_nativeint i -> E.nint i 
-      | Const_float f -> E.float f (* TODO: preserve float *)
-      | Const_string (i,delimiter) (*TODO: here inline js*) -> 
-        E.str ?delimiter i 
-    end
+       {[
+         Int64.to_string 0x7FFFFFFFFFFFFFFFL;;
+         - : string = "9223372036854775807"
+       ]}
+       {[
+         Int64.(to_float max_int);;
+         - : float = 9.22337203685477581e+18
+       ]}
+       Note we should compile it to Int64 as JS's 
+       speical representation -- 
+       it is not representatble in JS number
+    *)
+    (* E.float (Int64.to_string i) *)
+    Js_long.of_const i
+  (* https://github.com/google/closure-library/blob/master/closure%2Fgoog%2Fmath%2Flong.js *)
+  | Const_nativeint i -> E.nint i 
+  | Const_float f -> E.float f (* TODO: preserve float *)
+  | Const_string (i,delimiter) (*TODO: here inline js*) -> 
+    E.str ?delimiter i 
+
 
   | Const_pointer (c,pointer_info) -> 
     E.int ?comment:(Lam_compile_util.comment_of_pointer_info pointer_info)
@@ -89439,8 +89480,8 @@ let rec translate (x : Lambda.structured_constant ) : J.expression =
     (* TODO-- *)
     Js_of_lam_array.make_array Mutable Pfloatarray 
       (List.map (fun x ->  E.float  x ) ars)
-    (* E.arr Mutable ~comment:"float array" *)
-    (*   (List.map (fun x ->  E.float  x ) ars) *)
+  (* E.arr Mutable ~comment:"float array" *)
+  (*   (List.map (fun x ->  E.float  x ) ars) *)
 
   | Const_immstring s ->  (*TODO *)
     E.str s  (* TODO: check *)
@@ -92440,7 +92481,11 @@ let transform_under_supply n loc status fn args =
   begin match List.fold_right (fun (lam : Lam.t) (acc, bind) ->
       match lam with
       | Lvar _
-      | Lconst (Const_base _ | Const_pointer _ | Const_immstring _ ) 
+      | Lconst (Const_int _  
+        | Const_char _ | Const_string _ 
+        | Const_float _ | Const_int32 _ 
+        | Const_int64 _ | Const_nativeint _ 
+        | Const_pointer _ | Const_immstring _ ) 
       | Lprim {primitive = Pfield _;
                args =  [ Lglobal_module _ ]; _ }
       | Lfunction _ 
@@ -95784,16 +95829,16 @@ let deep_flatten
        and as early as possible *) 
 
     | Lprim {primitive = Pccall{prim_name = "caml_int64_float_of_bits"; _};
-            args = [ Lconst (Const_base (Const_int64 i))]; _} 
+            args = [ Lconst (  (Const_int64 i))]; _} 
       ->  
       Lam.const 
-        (Const_base (Const_float (Js_number.to_string (Int64.float_of_bits i) )))
+        (  (Const_float (Js_number.to_string (Int64.float_of_bits i) )))
     | Lprim {primitive = Pccall{prim_name = "caml_int64_to_float"; _}; 
-             args = [ Lconst (Const_base (Const_int64 i))]; _} 
+             args = [ Lconst (  (Const_int64 i))]; _} 
       -> 
       (* TODO: note when int is too big, [caml_int64_to_float] is unsafe *)
       Lam.const 
-        (Const_base (Const_float (Js_number.to_string (Int64.to_float i) )))
+        (  (Const_float (Js_number.to_string (Int64.to_float i) )))
     | Lglobal_module _ -> lam 
     | Lprim {primitive ; args; loc }
       -> 
@@ -96846,7 +96891,7 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
         | {times = 1; captured = false }, _ 
         | {times = 1; captured = true }, (Lconst _ | Lvar _)
         |  _, (Lconst 
-                 (Const_base (
+                 ((
                      Const_int _ | Const_char _ | Const_float _ | Const_int32 _ 
                      | Const_nativeint _ )
                  | Const_pointer _ ) (* could be poly-variant [`A] -> [65a]*)
@@ -96862,7 +96907,7 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
           *)
           ->
           Ident_hashtbl.add subst v (simplif l1); simplif l2
-        | _, Lconst (Const_base (Const_string (s,None)) ) -> 
+        | _, Lconst ((Const_string (s,None)) ) -> 
           (** only "" added for later inlining *)
           Ident_hashtbl.add string_table v s;
           Lam.let_ Alias v l1 (simplif l2)
@@ -96883,7 +96928,7 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
       else 
         let l1 = simplif l1 in         
         begin match l1 with 
-        | Lconst(Const_base(Const_string(s,None))) -> 
+        | Lconst(Const_string(s,None)) -> 
           Ident_hashtbl.add string_table v s; 
           (* we need move [simplif l2] later, since adding Hashtbl does have side effect *)
           Lam.let_ Alias v l1 (simplif l2)
@@ -96904,7 +96949,7 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
         let l1 = (simplif l1) in 
         
          begin match kind, l1 with 
-         | Strict, Lconst(Const_base(Const_string(s,None)))
+         | Strict, Lconst((Const_string(s,None)))
            -> 
             Ident_hashtbl.add string_table v s;
             Lam.let_ Alias v l1 (simplif l2)
@@ -96947,7 +96992,7 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
         let r' = simplif r in
         let opt_l = 
           match l' with 
-          | Lconst(Const_base(Const_string(ls,None))) -> Some ls 
+          | Lconst((Const_string(ls,None))) -> Some ls 
           | Lvar i -> Ident_hashtbl.find_opt string_table i 
           | _ -> None in 
         match opt_l with   
@@ -96955,13 +97000,13 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
         | Some l_s -> 
           let opt_r = 
             match r' with 
-            | Lconst (Const_base (Const_string(rs,None))) -> Some rs 
+            | Lconst ( (Const_string(rs,None))) -> Some rs 
             | Lvar i -> Ident_hashtbl.find_opt string_table i 
             | _ -> None in 
             begin match opt_r with 
             | None -> Lam.prim ~primitive:Pstringadd ~args:[l';r'] loc 
             | Some r_s -> 
-              Lam.const ((Const_base(Const_string(l_s^r_s, None))))
+              Lam.const (((Const_string(l_s^r_s, None))))
             end
       end
 
@@ -96972,7 +97017,7 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
       let r' = simplif r in 
       let opt_l =
          match l' with 
-         | Lconst (Const_base(Const_string(ls,None))) -> 
+         | Lconst ((Const_string(ls,None))) -> 
             Some ls 
          | Lvar i -> Ident_hashtbl.find_opt string_table i 
          | _ -> None in 
@@ -96980,9 +97025,9 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
       | None -> Lam.prim ~primitive ~args:[l';r'] loc 
       | Some l_s -> 
         match r with 
-        |Lconst(Const_base(Const_int i)) -> 
+        |Lconst((Const_int i)) -> 
           if i < String.length l_s && i >=0  then
-            Lam.const (Const_base (Const_char l_s.[i]))
+            Lam.const ((Const_char l_s.[i]))
           else 
             Lam.prim ~primitive ~args:[l';r'] loc 
         | _ -> 

@@ -31,38 +31,36 @@
 
 module E = Js_exp_make
 
-let rec translate (x : Lambda.structured_constant ) : J.expression = 
+let rec translate (x : Lam.constant ) : J.expression = 
   match x with 
-  | Const_base c -> 
-    begin match c with 
-      | Const_int i -> E.int (Int32.of_int i)
-      | Const_char i ->
-        Js_of_lam_string.const_char i
-      | Const_int32 i -> E.int i 
-          (* E.float (Int32.to_string i) *)
-      | Const_int64 i -> 
+  | Const_int i -> E.int (Int32.of_int i)
+  | Const_char i ->
+    Js_of_lam_string.const_char i
+  | Const_int32 i -> E.int i 
+  (* E.float (Int32.to_string i) *)
+  | Const_int64 i -> 
           (*
             TODO:
-            {[
-            Int64.to_string 0x7FFFFFFFFFFFFFFFL;;
-            - : string = "9223372036854775807"
-            ]}
-            {[
-            Int64.(to_float max_int);;
-            - : float = 9.22337203685477581e+18
-            ]}
-            Note we should compile it to Int64 as JS's 
-            speical representation -- 
-            it is not representatble in JS number
-           *)
-          (* E.float (Int64.to_string i) *)
-        Js_long.of_const i
-        (* https://github.com/google/closure-library/blob/master/closure%2Fgoog%2Fmath%2Flong.js *)
-      | Const_nativeint i -> E.nint i 
-      | Const_float f -> E.float f (* TODO: preserve float *)
-      | Const_string (i,delimiter) (*TODO: here inline js*) -> 
-        E.str ?delimiter i 
-    end
+       {[
+         Int64.to_string 0x7FFFFFFFFFFFFFFFL;;
+         - : string = "9223372036854775807"
+       ]}
+       {[
+         Int64.(to_float max_int);;
+         - : float = 9.22337203685477581e+18
+       ]}
+       Note we should compile it to Int64 as JS's 
+       speical representation -- 
+       it is not representatble in JS number
+    *)
+    (* E.float (Int64.to_string i) *)
+    Js_long.of_const i
+  (* https://github.com/google/closure-library/blob/master/closure%2Fgoog%2Fmath%2Flong.js *)
+  | Const_nativeint i -> E.nint i 
+  | Const_float f -> E.float f (* TODO: preserve float *)
+  | Const_string (i,delimiter) (*TODO: here inline js*) -> 
+    E.str ?delimiter i 
+
 
   | Const_pointer (c,pointer_info) -> 
     E.int ?comment:(Lam_compile_util.comment_of_pointer_info pointer_info)
@@ -86,8 +84,8 @@ let rec translate (x : Lambda.structured_constant ) : J.expression =
     (* TODO-- *)
     Js_of_lam_array.make_array Mutable Pfloatarray 
       (List.map (fun x ->  E.float  x ) ars)
-    (* E.arr Mutable ~comment:"float array" *)
-    (*   (List.map (fun x ->  E.float  x ) ars) *)
+  (* E.arr Mutable ~comment:"float array" *)
+  (*   (List.map (fun x ->  E.float  x ) ars) *)
 
   | Const_immstring s ->  (*TODO *)
     E.str s  (* TODO: check *)
