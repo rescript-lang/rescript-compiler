@@ -3,8 +3,7 @@ node_fs.cmj : node.cmj js_string.cmj
 node_process.cmj :
 node_module.cmj : node.cmj js_dict.cmj
 js_array.cmj :
-js_string.cmj : js_re.cmj
-js_re.cmj : js_re.cmi
+js_string.cmj : js_re.cmi js_array.cmj
 js_null_undefined.cmj : js_null_undefined.cmi
 node_buffer.cmj : node.cmj
 js_types.cmj : js_types.cmi
@@ -16,6 +15,8 @@ bs_dyn_lib.cmj : bs_dyn.cmj bs_dyn_lib.cmi
 node_child_process.cmj :
 js_boolean.cmj : js_boolean.cmi
 js_math.cmj :
+js_dict.cmj :
+js_date.cmj :
 js_re.cmi :
 js_null_undefined.cmi :
 js_types.cmi :
