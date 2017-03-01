@@ -50,7 +50,7 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
         | {times = 1; captured = false }, _ 
         | {times = 1; captured = true }, (Lconst _ | Lvar _)
         |  _, (Lconst 
-                 (Const_base (
+                 ((
                      Const_int _ | Const_char _ | Const_float _ | Const_int32 _ 
                      | Const_nativeint _ )
                  | Const_pointer _ ) (* could be poly-variant [`A] -> [65a]*)
@@ -66,7 +66,7 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
           *)
           ->
           Ident_hashtbl.add subst v (simplif l1); simplif l2
-        | _, Lconst (Const_base (Const_string (s,None)) ) -> 
+        | _, Lconst ((Const_string (s,None)) ) -> 
           (** only "" added for later inlining *)
           Ident_hashtbl.add string_table v s;
           Lam.let_ Alias v l1 (simplif l2)
@@ -87,7 +87,7 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
       else 
         let l1 = simplif l1 in         
         begin match l1 with 
-        | Lconst(Const_base(Const_string(s,None))) -> 
+        | Lconst(Const_string(s,None)) -> 
           Ident_hashtbl.add string_table v s; 
           (* we need move [simplif l2] later, since adding Hashtbl does have side effect *)
           Lam.let_ Alias v l1 (simplif l2)
@@ -108,7 +108,7 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
         let l1 = (simplif l1) in 
         
          begin match kind, l1 with 
-         | Strict, Lconst(Const_base(Const_string(s,None)))
+         | Strict, Lconst((Const_string(s,None)))
            -> 
             Ident_hashtbl.add string_table v s;
             Lam.let_ Alias v l1 (simplif l2)
@@ -151,7 +151,7 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
         let r' = simplif r in
         let opt_l = 
           match l' with 
-          | Lconst(Const_base(Const_string(ls,None))) -> Some ls 
+          | Lconst((Const_string(ls,None))) -> Some ls 
           | Lvar i -> Ident_hashtbl.find_opt string_table i 
           | _ -> None in 
         match opt_l with   
@@ -159,13 +159,13 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
         | Some l_s -> 
           let opt_r = 
             match r' with 
-            | Lconst (Const_base (Const_string(rs,None))) -> Some rs 
+            | Lconst ( (Const_string(rs,None))) -> Some rs 
             | Lvar i -> Ident_hashtbl.find_opt string_table i 
             | _ -> None in 
             begin match opt_r with 
             | None -> Lam.prim ~primitive:Pstringadd ~args:[l';r'] loc 
             | Some r_s -> 
-              Lam.const ((Const_base(Const_string(l_s^r_s, None))))
+              Lam.const (((Const_string(l_s^r_s, None))))
             end
       end
 
@@ -176,7 +176,7 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
       let r' = simplif r in 
       let opt_l =
          match l' with 
-         | Lconst (Const_base(Const_string(ls,None))) -> 
+         | Lconst ((Const_string(ls,None))) -> 
             Some ls 
          | Lvar i -> Ident_hashtbl.find_opt string_table i 
          | _ -> None in 
@@ -184,9 +184,9 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
       | None -> Lam.prim ~primitive ~args:[l';r'] loc 
       | Some l_s -> 
         match r with 
-        |Lconst(Const_base(Const_int i)) -> 
+        |Lconst((Const_int i)) -> 
           if i < String.length l_s && i >=0  then
-            Lam.const (Const_base (Const_char l_s.[i]))
+            Lam.const ((Const_char l_s.[i]))
           else 
             Lam.prim ~primitive ~args:[l';r'] loc 
         | _ -> 

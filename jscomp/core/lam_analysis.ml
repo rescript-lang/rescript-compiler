@@ -61,9 +61,9 @@ let rec no_side_effects (lam : Lam.t) : bool =
             | "js_from_def"
             | "js_from_nullable_def"
             ), _  -> true 
-          | "caml_ml_open_descriptor_in", [Lconst (Const_base (Const_int 0))] -> true 
+          | "caml_ml_open_descriptor_in", [Lconst (  (Const_int 0))] -> true 
           | "caml_ml_open_descriptor_out", 
-            [Lconst (Const_base (Const_int (1|2))) ]
+            [Lconst (  (Const_int (1|2))) ]
             -> true
           (* we can not mark it pure
              only when we guarantee this exception is caught...
@@ -185,7 +185,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
   | Lstaticraise _ -> false
   | Lstaticcatch _ -> false 
 
-  (* | "caml_sys_getenv" , [Lconst(Const_base(Const_string _))] *)
+  (* | "caml_sys_getenv" , [Lconst( (Const_string _))] *)
   (*         -> true *)
   (** not enough, we need know that 
       if it [Not_found], there are no other exceptions 
@@ -278,7 +278,9 @@ let rec size (lam : Lam.t) =
   with Too_big_to_inline ->  1000 
 and size_constant x = 
   match x with 
-  | Const_base _
+  | Const_int _ | Const_char _ | Const_string _  
+  | Const_float _  | Const_int32 _ | Const_int64 _ 
+  | Const_nativeint _ 
   | Const_immstring _
   | Const_pointer _ 
     -> 1 

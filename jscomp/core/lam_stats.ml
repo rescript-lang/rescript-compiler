@@ -77,7 +77,7 @@ type boxed_nullable
 type kind = 
   | ImmutableBlock of element array * boxed_nullable
   | MutableBlock of element array 
-  | Constant of Lambda.structured_constant
+  | Constant of Lam.constant
   | Module of Ident.t
         (** Global module, local module is treated as an array
          *)
