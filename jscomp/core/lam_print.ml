@@ -110,6 +110,8 @@ let primitive ppf (prim : Lam.primitive) = match prim with
   | Pjs_fn_method i -> fprintf ppf "js_fn_method_%i" i 
   | Pjs_fn_runmethod i -> fprintf ppf "js_fn_runmethod_%i" i 
   | Pdebugger -> fprintf ppf "debugger"
+  | Lam.Praw_js_code_exp _ -> fprintf ppf "[raw.exp]"
+  | Lam.Praw_js_code_stmt _ -> fprintf ppf "[raw.stmt]"
   | Pglobal_exception id ->
     fprintf ppf "global exception %a" Ident.print id                       
   (* | Psetglobal id -> fprintf ppf "setglobal %a" Ident.print id *)

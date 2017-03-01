@@ -152,6 +152,8 @@ type primitive =
   | Pjs_unsafe_downgrade of string * Location.t
   | Pinit_mod
   | Pupdate_mod
+  | Praw_js_code_exp of string 
+  | Praw_js_code_stmt of string 
   | Pjs_fn_make of int 
   | Pjs_fn_run of int 
   | Pjs_fn_method of int 
@@ -1520,7 +1522,7 @@ let convert exports lam : _ * _  =
               end
             | _ -> assert false
           end
-
+        
         | Lprim ( Pfield (id, _),
                   [Lprim (Pgetglobal ({name  = "Pervasives"} ), _,_)],loc              
                 )
@@ -1608,6 +1610,23 @@ let convert exports lam : _ * _  =
           apply fn (args @ [x]) outer_loc App_na
         | _  -> apply f [x] outer_loc App_na
       end
+    (* we might allow some arity here *)  
+    | Lprim(Pccall {prim_name = "js_pure_expr"}, 
+      args,loc) ->  
+      begin match args with 
+      | [Lconst(Const_base (Const_string(s,_)))] -> 
+        prim ~primitive:(Praw_js_code_exp s)
+        ~args:[] loc 
+      | _ -> assert false 
+      end  
+    | Lprim(Pccall {prim_name = "js_pure_stmt"}, 
+      args,loc) ->  
+      begin match args with 
+      | [Lconst(Const_base (Const_string(s,_)))] -> 
+        prim ~primitive:(Praw_js_code_stmt s)
+        ~args:[] loc         
+      | _ -> assert false 
+      end 
     | Lprim(Pdirapply, _, _) -> assert false 
     | Lprim (primitive,args, loc) 
       -> 
