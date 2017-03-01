@@ -46,6 +46,10 @@ let translate  loc
     (prim : Lam.primitive)
     (args : J.expression list) : J.expression = 
   match prim with
+  | Lam.Praw_js_code_exp s -> 
+    E.raw_js_code Exp s  
+  | Lam.Praw_js_code_stmt s -> 
+    E.raw_js_code Stmt s 
   | Pjs_unsafe_downgrade _
   | Pdebugger 
   | Pjs_fn_run _ 

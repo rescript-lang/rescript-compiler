@@ -117,10 +117,7 @@ let rec get_arity
 
     end
   | Llet(_,_,_, l ) -> get_arity meta l 
-  (* | Lprim (Pccall {prim_name = "js_pure_expr"; prim_attributes},  *)
-  (*          [Lconst (Const_base (Const_string (_str,None)))]) *)
-  (*   -> *)
-  (*   (\* Ext_log.dwarn __LOC__ "called %s %d" str (List.length prim_attributes ); *\) *)
+
   (*   begin match Parsetree_util.has_arity prim_attributes with *)
   (*     | Some arity ->  *)
   (*       (\* Ext_log.dwarn __LOC__ "arity %d" arity; *\) *)

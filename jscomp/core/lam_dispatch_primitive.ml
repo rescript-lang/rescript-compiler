@@ -963,29 +963,7 @@ let translate (prim_name : string)
         | [e] -> E.obj_length e 
         | _ -> assert false 
       end
-    | "js_pure_expr" (* TODO: conver it even earlier *)
-      -> 
-      begin match args with 
-      | [ { expression_desc = Str (_,s, _)}] -> 
-        E.raw_js_code Exp  s (* TODO: FIXME *)
-      | _ -> 
-        Ext_log.err __LOC__ 
-          "JS.unsafe_js_expr is applied to an non literal string in %s"
-          (Js_config.get_current_file ())
-        ;
-        assert false
-      end
-    | "js_pure_stmt" (* TODO: convert even ealier *)
-      -> 
-      begin match args with 
-      | [ { expression_desc = Str (_,s, _)}] -> E.raw_js_code Stmt s (* TODO: FIXME *)
-      | _ -> 
-        Ext_log.err __LOC__ 
-          "JS.unsafe_js_expr is applied to an non literal string in %s"
-          (Js_config.get_current_file ())
-        ;
-        assert false
-      end
+
     | "js_is_nil" -> 
       begin match args with
       | [ e ] -> E.is_nil e 

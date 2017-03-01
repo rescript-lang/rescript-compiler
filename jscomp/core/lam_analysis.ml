@@ -141,7 +141,8 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Pjs_fn_run _ 
       | Pjs_fn_method _ | Pjs_fn_runmethod _
       (* TODO *)
-
+      | Praw_js_code_exp _ 
+      | Praw_js_code_stmt _
       | Pbytessetu 
       | Pbytessets
       (* Bitvect operations *)

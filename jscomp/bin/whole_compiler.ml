@@ -64881,6 +64881,10 @@ type primitive =
   | Pjs_unsafe_downgrade of string * Location.t
   | Pinit_mod
   | Pupdate_mod
+
+  | Praw_js_code_exp of string 
+  | Praw_js_code_stmt of string 
+  
   | Pjs_fn_make of int 
   | Pjs_fn_run of int 
   | Pjs_fn_method of int 
@@ -65193,6 +65197,8 @@ type primitive =
   | Pjs_unsafe_downgrade of string * Location.t
   | Pinit_mod
   | Pupdate_mod
+  | Praw_js_code_exp of string 
+  | Praw_js_code_stmt of string 
   | Pjs_fn_make of int 
   | Pjs_fn_run of int 
   | Pjs_fn_method of int 
@@ -66561,7 +66567,7 @@ let convert exports lam : _ * _  =
               end
             | _ -> assert false
           end
-
+        
         | Lprim ( Pfield (id, _),
                   [Lprim (Pgetglobal ({name  = "Pervasives"} ), _,_)],loc              
                 )
@@ -66649,6 +66655,23 @@ let convert exports lam : _ * _  =
           apply fn (args @ [x]) outer_loc App_na
         | _  -> apply f [x] outer_loc App_na
       end
+    (* we might allow some arity here *)  
+    | Lprim(Pccall {prim_name = "js_pure_expr"}, 
+      args,loc) ->  
+      begin match args with 
+      | [Lconst(Const_base (Const_string(s,_)))] -> 
+        prim ~primitive:(Praw_js_code_exp s)
+        ~args:[] loc 
+      | _ -> assert false 
+      end  
+    | Lprim(Pccall {prim_name = "js_pure_stmt"}, 
+      args,loc) ->  
+      begin match args with 
+      | [Lconst(Const_base (Const_string(s,_)))] -> 
+        prim ~primitive:(Praw_js_code_stmt s)
+        ~args:[] loc         
+      | _ -> assert false 
+      end 
     | Lprim(Pdirapply, _, _) -> assert false 
     | Lprim (primitive,args, loc) 
       -> 
@@ -70166,7 +70189,8 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Pjs_fn_run _ 
       | Pjs_fn_method _ | Pjs_fn_runmethod _
       (* TODO *)
-
+      | Praw_js_code_exp _ 
+      | Praw_js_code_stmt _
       | Pbytessetu 
       | Pbytessets
       (* Bitvect operations *)
@@ -70591,6 +70615,8 @@ let primitive ppf (prim : Lam.primitive) = match prim with
   | Pjs_fn_method i -> fprintf ppf "js_fn_method_%i" i 
   | Pjs_fn_runmethod i -> fprintf ppf "js_fn_runmethod_%i" i 
   | Pdebugger -> fprintf ppf "debugger"
+  | Lam.Praw_js_code_exp _ -> fprintf ppf "[raw.exp]"
+  | Lam.Praw_js_code_stmt _ -> fprintf ppf "[raw.stmt]"
   | Pglobal_exception id ->
     fprintf ppf "global exception %a" Ident.print id                       
   (* | Psetglobal id -> fprintf ppf "setglobal %a" Ident.print id *)
@@ -91523,29 +91549,7 @@ let translate (prim_name : string)
         | [e] -> E.obj_length e 
         | _ -> assert false 
       end
-    | "js_pure_expr" (* TODO: conver it even earlier *)
-      -> 
-      begin match args with 
-      | [ { expression_desc = Str (_,s, _)}] -> 
-        E.raw_js_code Exp  s (* TODO: FIXME *)
-      | _ -> 
-        Ext_log.err __LOC__ 
-          "JS.unsafe_js_expr is applied to an non literal string in %s"
-          (Js_config.get_current_file ())
-        ;
-        assert false
-      end
-    | "js_pure_stmt" (* TODO: convert even ealier *)
-      -> 
-      begin match args with 
-      | [ { expression_desc = Str (_,s, _)}] -> E.raw_js_code Stmt s (* TODO: FIXME *)
-      | _ -> 
-        Ext_log.err __LOC__ 
-          "JS.unsafe_js_expr is applied to an non literal string in %s"
-          (Js_config.get_current_file ())
-        ;
-        assert false
-      end
+
     | "js_is_nil" -> 
       begin match args with
       | [ e ] -> E.is_nil e 
@@ -91714,6 +91718,10 @@ let translate  loc
     (prim : Lam.primitive)
     (args : J.expression list) : J.expression = 
   match prim with
+  | Lam.Praw_js_code_exp s -> 
+    E.raw_js_code Exp s  
+  | Lam.Praw_js_code_stmt s -> 
+    E.raw_js_code Stmt s 
   | Pjs_unsafe_downgrade _
   | Pdebugger 
   | Pjs_fn_run _ 
@@ -94923,10 +94931,7 @@ let rec get_arity
 
     end
   | Llet(_,_,_, l ) -> get_arity meta l 
-  (* | Lprim (Pccall {prim_name = "js_pure_expr"; prim_attributes},  *)
-  (*          [Lconst (Const_base (Const_string (_str,None)))]) *)
-  (*   -> *)
-  (*   (\* Ext_log.dwarn __LOC__ "called %s %d" str (List.length prim_attributes ); *\) *)
+
   (*   begin match Parsetree_util.has_arity prim_attributes with *)
   (*     | Some arity ->  *)
   (*       (\* Ext_log.dwarn __LOC__ "arity %d" arity; *\) *)
