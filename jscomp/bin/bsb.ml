@@ -224,10 +224,11 @@ let dash_nostdlib = "-nostdlib"
 let reactjs_jsx_ppx_exe  = "reactjs_jsx_ppx.exe"
 
 let unescaped_j_delimiter = "j"
+let unescaped_js_delimiter = "js"
 let escaped_j_delimiter =  "*j" (* not user level syntax allowed *)
 
-let unescaped_js_delimiter = "js"
-let escaped_js_delimiter = "*js"
+
+
 end
 module Bs_pkg : sig 
 #1 "bs_pkg.mli"
