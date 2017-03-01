@@ -13288,17 +13288,35 @@ let rec check_and_transform loc buf s byte_offset s_len =
           escape_code loc buf s (byte_offset+1) s_len 
         end 
       else
-      if c = 34 (* Char.code '\"' = 34 *) || c = 39 (* Char.code '\'' = 39 *) then 
         begin 
-          Buffer.add_char buf '\\';
-          Buffer.add_char buf current_char ; 
+          (if c = 34 (* Char.code '\"' = 34 *) || c = 39 (* Char.code '\'' = 39 *) then 
+             begin 
+               Buffer.add_char buf '\\';
+               Buffer.add_char buf current_char ; 
+
+             end
+           else if  c = 10 then begin 
+             (* Char.code '\n' = 10 *)
+             (* we can not just print new line*)
+             Buffer.add_string buf "\\n";
+
+             (* seems we don't need 
+                escape "\b" "\f" 
+                we need escape "\n" "\r" since 
+                ocaml multiple-line allows [\n]
+                visual input while es5 string 
+                does not 
+             *)
+           end 
+           else if c = 13 then begin 
+               Buffer.add_string buf "\\r"
+            end
+           else begin 
+             Buffer.add_char buf current_char;
+
+           end);
           check_and_transform loc buf s (byte_offset + 1) s_len 
         end
-
-      else begin 
-        Buffer.add_char buf current_char;
-        check_and_transform loc buf s (byte_offset + 1) s_len 
-      end
     | Invalid 
     | Cont _ -> Location.raise_errorf ~loc "Not utf8 source string"
     | Leading (n,_) -> 

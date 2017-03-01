@@ -26,6 +26,10 @@ function eq(loc, x, y) {
   return /* () */0;
 }
 
+console.log("你好，\n世界");
+
+console.log("\x3f\u003f\b\t\n\v\f\r\0\"\'");
+
 function convert(s) {
   return $$Array.to_list(Array.from(s, function (x) {
                   var match = x.codePointAt(0);
@@ -37,7 +41,7 @@ function convert(s) {
                           Caml_builtin_exceptions.assert_failure,
                           [
                             "chn_test.ml",
-                            13,
+                            20,
                             18
                           ]
                         ];
@@ -45,7 +49,9 @@ function convert(s) {
                 }));
 }
 
-eq('File "chn_test.ml", line 18, characters 7-14', convert("*j"), /* :: */[
+eq('File "chn_test.ml", line 25, characters 7-14', "你好，\n世界", "你好，\n世界");
+
+eq('File "chn_test.ml", line 27, characters 7-14', convert("汉字是世界上最美丽的character"), /* :: */[
       27721,
       /* :: */[
         23383,
@@ -104,7 +110,7 @@ eq('File "chn_test.ml", line 18, characters 7-14', convert("*j"), /* :: */[
       ]
     ]);
 
-eq('File "chn_test.ml", line 39, characters 5-12', convert("*j"), /* :: */[
+eq('File "chn_test.ml", line 48, characters 5-12', convert("\x3f\x3fa"), /* :: */[
       63,
       /* :: */[
         63,
@@ -115,7 +121,7 @@ eq('File "chn_test.ml", line 39, characters 5-12', convert("*j"), /* :: */[
       ]
     ]);
 
-eq('File "chn_test.ml", line 41, characters 5-12', convert("*j"), /* :: */[
+eq('File "chn_test.ml", line 50, characters 5-12', convert("??a"), /* :: */[
       63,
       /* :: */[
         63,
@@ -126,7 +132,7 @@ eq('File "chn_test.ml", line 41, characters 5-12', convert("*j"), /* :: */[
       ]
     ]);
 
-eq('File "chn_test.ml", line 43, characters 5-12', convert("*j"), /* :: */[
+eq('File "chn_test.ml", line 52, characters 5-12', convert("\u003f\x3fa"), /* :: */[
       63,
       /* :: */[
         63,
@@ -137,7 +143,7 @@ eq('File "chn_test.ml", line 43, characters 5-12', convert("*j"), /* :: */[
       ]
     ]);
 
-eq('File "chn_test.ml", line 45, characters 5-12', convert("*j"), /* :: */[
+eq('File "chn_test.ml", line 54, characters 5-12', convert("🚀🚀a"), /* :: */[
       128640,
       /* :: */[
         128640,
@@ -148,7 +154,7 @@ eq('File "chn_test.ml", line 45, characters 5-12', convert("*j"), /* :: */[
       ]
     ]);
 
-eq('File "chn_test.ml", line 47, characters 5-12', convert("*j"), /* :: */[
+eq('File "chn_test.ml", line 56, characters 5-12', convert("\uD83D\uDE80a"), /* :: */[
       128640,
       /* :: */[
         97,
@@ -156,7 +162,7 @@ eq('File "chn_test.ml", line 47, characters 5-12', convert("*j"), /* :: */[
       ]
     ]);
 
-eq('File "chn_test.ml", line 49, characters 5-12', convert("*j"), /* :: */[
+eq('File "chn_test.ml", line 58, characters 5-12', convert("\uD83D\uDE80\x3f"), /* :: */[
       128640,
       /* :: */[
         63,
@@ -164,7 +170,7 @@ eq('File "chn_test.ml", line 49, characters 5-12', convert("*j"), /* :: */[
       ]
     ]);
 
-eq('File "chn_test.ml", line 54, characters 5-12', convert("*j"), /* :: */[
+eq('File "chn_test.ml", line 63, characters 5-12', convert("\uD83D\uDE80\uD83D\uDE80a"), /* :: */[
       128640,
       /* :: */[
         128640,
@@ -175,14 +181,16 @@ eq('File "chn_test.ml", line 54, characters 5-12', convert("*j"), /* :: */[
       ]
     ]);
 
-eq('File "chn_test.ml", line 57, characters 5-12', 14, 3);
+eq("No inline string length", 14, 2);
 
-eq('File "chn_test.ml", line 58, characters 5-12', convert("*j"), /* :: */[
+eq("No inline string access", /* "\\" */92, 61);
+
+eq('File "chn_test.ml", line 76, characters 5-12', convert("\uD83D\uDE80"), /* :: */[
       128640,
       /* [] */0
     ]);
 
-eq('File "chn_test.ml", line 59, characters 5-12', convert("*j"), /* :: */[
+eq('File "chn_test.ml", line 78, characters 5-12', convert("\uD83D\uDE80\uD83D\uDE80"), /* :: */[
       128640,
       /* :: */[
         128640,
@@ -190,7 +198,7 @@ eq('File "chn_test.ml", line 59, characters 5-12', convert("*j"), /* :: */[
       ]
     ]);
 
-eq('File "chn_test.ml", line 60, characters 5-12', convert("*j"), /* :: */[
+eq('File "chn_test.ml", line 79, characters 5-12', convert(" \b\t\n\v\f\ra"), /* :: */[
       32,
       /* :: */[
         8,
@@ -216,7 +224,7 @@ eq('File "chn_test.ml", line 60, characters 5-12', convert("*j"), /* :: */[
       ]
     ]);
 
-eq('File "chn_test.ml", line 67, characters 6-13', convert("*j"), /* :: */[
+eq('File "chn_test.ml", line 86, characters 6-13', convert(" \b\t\n\v\f\r\"\'\\\0a"), /* :: */[
       32,
       /* :: */[
         8,

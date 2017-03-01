@@ -1,9 +1,62 @@
-## OCaml calling JS
+## BuckleScritp annotations for Unicode and JS FFI support
 
 To make OCaml work smoothly with Javascript, we introduced several
 extensions to the OCaml language. These BuckleScript extensions
 facilitate the integration of native JavaScript code and
 improve the generated code.
+
+### Unicode support
+
+[WARNING]
+========
+In this section, we assume the source is encoded using UTF8
+========
+
+In OCaml, string is an immutable byte sequence(like GoLang), so if user type some Unicode
+
+[source,ocaml]
+--------------
+Js.log "你好"
+--------------
+
+It will be translated into 
+
+[source,js]
+-----------
+console.log("\xe4\xbd\xa0\xe5\xa5\xbd");
+-----------
+
+Luckily, OCaml allows customized multiple-line string support, BuckleScript *reserves* the delimiter `js` and `j`(`j` is unused yet). 
+
+[source,ocaml]
+--------------
+Js.log {js|你好，
+世界|js}
+--------------
+
+.Output
+[source,js]
+--------------
+console.log("你好，\n世界");
+--------------
+
+Inside `js` delimiter, the escape convention is like JavaScript
+
+[source,ocaml]
+--------------
+Js.log {js|\x3f\u003f\b\t\n\v\f\r\0"'|js}
+--------------
+
+.Output
+[source,js]
+--------------
+console.log("\x3f\u003f\b\t\n\v\f\r\0\"\'");
+--------------
+
+
+### FFI
+
+
 
 Like TypeScript, when building type-safe bindings from JS to OCaml,
 users have to write type declarations.

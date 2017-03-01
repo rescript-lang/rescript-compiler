@@ -5,6 +5,13 @@ let eq loc x y =
   suites := 
     (loc ^" id " ^ (string_of_int !test_id), (fun _ -> Mt.Eq(x,y))) :: !suites
 
+;;
+Js.log {js|你好，
+世界|js}
+;;
+
+Js.log {js|\x3f\u003f\b\t\n\v\f\r\0"'|js}
+;;
 let convert (s : string) : int list  = 
     Js_array.fromMap 
         (Js_string.castToArrayLike s) 
@@ -15,6 +22,8 @@ let convert (s : string) : int list  =
 
 let () = 
     begin 
+    eq __LOC__ {js|你好，
+世界|js} {js|你好，\n世界|js}; 
     eq __LOC__
      (convert {js|汉字是世界上最美丽的character|js} )
  [27721;
@@ -54,9 +63,19 @@ let () =
   eq __LOC__ (convert {js|\uD83D\uDE80\uD83D\uDE80a|js})
   [128640; 128640; 97];    
   
-  eq __LOC__ (String.length {js|\uD83D\uDE80\0|js}) 3;
-  eq __LOC__ (convert {js|\uD83D\uDE80|js}) [128640];
-  eq __LOC__ (convert {js|\uD83D\uDE80|js}) [128640;128640];
+  eq "No inline string length" (String.length {js|\uD83D\uDE80\0|js}) 2;
+  (** should not optimize  *)
+  (* eq __LOC__ 
+    (Js.String.codePointAt 0 {js|\uD83D\uDE80\0|js} ) 128640; *)
+   eq "No inline string access"
+    (Char.code {js|\uD83D\uDE80\0|js}.[0] ) 
+    61; 
+  (* "\uD83D\uDE80".charCodeAt(0) & 255
+  61   *)
+  (** Note that [char] maximum is 255  *)  
+  eq __LOC__ (convert {js|\uD83D\uDE80|js}) 
+  [128640];
+  eq __LOC__ (convert {js|\uD83D\uDE80\uD83D\uDE80|js}) [128640;128640];
   eq __LOC__ (convert {js| \b\t\n\v\f\ra|js})
     [ 32; 8; 9; 10; 11; 12; 13; 97];
   (* we don't need escape string double quote {|"|}and single quote{|'|} 

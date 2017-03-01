@@ -768,7 +768,7 @@ and
        when utf8-> it will not escape '\\' which is definitely not we want
     *)
     begin match delimiter with 
-    | Some s when Ext_string.equal s Literals.escaped_j_delimiter -> 
+    | Some d when Ext_string.equal d Literals.escaped_j_delimiter -> 
       (* assert (1>2); *)
       P.string f "\"";
       P.string f s ;
