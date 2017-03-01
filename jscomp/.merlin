@@ -12,7 +12,8 @@ S stdlib
 B stdlib
 S test
 B test
-
+B others
+S others
 S bsb
 B bsb
 S ounit

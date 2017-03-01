@@ -122,7 +122,7 @@ let int_switch ?comment   ?declaration ?default (e : J.expression)  clauses : t 
 
 let string_switch ?comment ?declaration  ?default (e : J.expression)  clauses : t= 
   match e.expression_desc with 
-  | Str (_,s) -> 
+  | Str (_,s,None) -> 
     let continuation = 
       begin match List.find 
                     (fun  (x : string J.case_clause) -> x.case = s) clauses
