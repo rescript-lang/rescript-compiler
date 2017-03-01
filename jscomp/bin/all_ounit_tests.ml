@@ -3582,6 +3582,14 @@ val unused_attribute : string
 val dash_nostdlib : string
 
 val reactjs_jsx_ppx_exe : string 
+
+val unescaped_j_delimiter : string 
+val escaped_j_delimiter : string 
+
+val unescaped_js_delimiter : string 
+
+
+
 end = struct
 #1 "literals.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -3690,6 +3698,13 @@ let unused_attribute = "Unused attribute "
 let dash_nostdlib = "-nostdlib"
 
 let reactjs_jsx_ppx_exe  = "reactjs_jsx_ppx.exe"
+
+let unescaped_j_delimiter = "j"
+let unescaped_js_delimiter = "js"
+let escaped_j_delimiter =  "*j" (* not user level syntax allowed *)
+
+
+
 end
 module Ounit_cmd_util : sig 
 #1 "ounit_cmd_util.mli"
@@ -3958,7 +3973,16 @@ external ff :
     OUnit.assert_bool __LOC__
     (Ext_string.contain_substring 
     should_err.stderr "bs.uncurry")
-    end 
+  end ;
+
+    __LOC__ >:: begin fun _ -> 
+      let should_err = bsc_eval {|
+      {js| \uFFF|js}
+      |} in 
+      OUnit.assert_bool __LOC__ (not @@ Ext_string.is_empty should_err.stderr)
+    end
+  
+
   ]
 
 
@@ -7180,7 +7204,14 @@ val follow :
     int -> 
     int ->
     int * int 
-     
+
+
+(** 
+  return [-1] if failed 
+*)
+val next :  string -> remaining:int -> int -> int 
+
+
 exception Invalid_utf8 of string 
  
  
@@ -7250,6 +7281,17 @@ let rec follow s n (c : int) offset =
       | Cont cc -> follow s (n-1) ((c lsl 6) lor (cc land 0x3f)) (offset+1)
       | _ -> raise (Invalid_utf8 "Continuation byte expected")
     end
+
+
+let rec next s ~remaining  offset = 
+  if remaining = 0 then offset 
+  else 
+    begin match classify s.[offset+1] with
+      | Cont cc -> next s ~remaining:(remaining-1) (offset+1)
+      | _ ->  -1 
+      | exception _ ->  -1 (* it can happen when out of bound *)
+    end
+
 
 
 

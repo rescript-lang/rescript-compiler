@@ -519,6 +519,7 @@ typed_array_test.cmj : ../runtime/typed_array.cmj mt.cmj ../runtime/js.cmj \
 typeof_test.cmj : mt.cmj ../runtime/js.cmj
 uncurry_glob_test.cmj : ../runtime/caml_utils.cmj
 undef_regression_test.cmj : ../runtime/js.cmj ../runtime/bs_obj.cmj
+unicode_type_error.cmj :
 unitest_string.cmj :
 unsafe_obj_external.cmj : ../runtime/js.cmj
 unsafe_ppx_test.cmj : mt.cmj ffi_js_test.cmj

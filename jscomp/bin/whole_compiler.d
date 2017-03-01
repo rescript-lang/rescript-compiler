@@ -361,6 +361,7 @@ bin/whole_compiler.ml : core/lam_stats_export.mli
 bin/whole_compiler.ml : syntax/ast_attributes.mli
 bin/whole_compiler.ml : syntax/ast_derive_dyn.mli
 bin/whole_compiler.ml : syntax/ast_derive_util.ml
+bin/whole_compiler.ml : syntax/ast_utf8_string.ml
 bin/whole_compiler.ml : syntax/bs_ast_iterator.ml
 bin/whole_compiler.ml : core/js_implementation.mli
 bin/whole_compiler.ml : core/js_of_lam_variant.mli

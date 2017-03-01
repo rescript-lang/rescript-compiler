@@ -37,7 +37,14 @@ val follow :
     int -> 
     int ->
     int * int 
-     
+
+
+(** 
+  return [-1] if failed 
+*)
+val next :  string -> remaining:int -> int -> int 
+
+
 exception Invalid_utf8 of string 
  
  

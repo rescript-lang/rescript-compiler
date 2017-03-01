@@ -63,6 +63,17 @@ let rec follow s n (c : int) offset =
     end
 
 
+let rec next s ~remaining  offset = 
+  if remaining = 0 then offset 
+  else 
+    begin match classify s.[offset+1] with
+      | Cont cc -> next s ~remaining:(remaining-1) (offset+1)
+      | _ ->  -1 
+      | exception _ ->  -1 (* it can happen when out of bound *)
+    end
+
+
+
 
 let decode_utf8_string s =
   let lst = ref [] in

@@ -130,6 +130,15 @@ external ff :
     OUnit.assert_bool __LOC__
     (Ext_string.contain_substring 
     should_err.stderr "bs.uncurry")
-    end 
+  end ;
+
+    __LOC__ >:: begin fun _ -> 
+      let should_err = bsc_eval {|
+      {js| \uFFF|js}
+      |} in 
+      OUnit.assert_bool __LOC__ (not @@ Ext_string.is_empty should_err.stderr)
+    end
+  
+
   ]
 

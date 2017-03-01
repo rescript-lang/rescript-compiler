@@ -45,7 +45,7 @@ function convert(s) {
                 }));
 }
 
-eq('File "chn_test.ml", line 18, characters 7-14', convert("汉字是世界上最美丽的character"), /* :: */[
+eq('File "chn_test.ml", line 18, characters 7-14', convert("*j"), /* :: */[
       27721,
       /* :: */[
         23383,
@@ -104,7 +104,7 @@ eq('File "chn_test.ml", line 18, characters 7-14', convert("汉字是世界上�
       ]
     ]);
 
-eq('File "chn_test.ml", line 39, characters 5-12', convert("\x3f\x3fa"), /* :: */[
+eq('File "chn_test.ml", line 39, characters 5-12', convert("*j"), /* :: */[
       63,
       /* :: */[
         63,
@@ -115,7 +115,7 @@ eq('File "chn_test.ml", line 39, characters 5-12', convert("\x3f\x3fa"), /* :: *
       ]
     ]);
 
-eq('File "chn_test.ml", line 41, characters 5-12', convert("??a"), /* :: */[
+eq('File "chn_test.ml", line 41, characters 5-12', convert("*j"), /* :: */[
       63,
       /* :: */[
         63,
@@ -126,7 +126,7 @@ eq('File "chn_test.ml", line 41, characters 5-12', convert("??a"), /* :: */[
       ]
     ]);
 
-eq('File "chn_test.ml", line 43, characters 5-12', convert("\u003f\x3fa"), /* :: */[
+eq('File "chn_test.ml", line 43, characters 5-12', convert("*j"), /* :: */[
       63,
       /* :: */[
         63,
@@ -137,7 +137,7 @@ eq('File "chn_test.ml", line 43, characters 5-12', convert("\u003f\x3fa"), /* ::
       ]
     ]);
 
-eq('File "chn_test.ml", line 45, characters 5-12', convert("🚀🚀a"), /* :: */[
+eq('File "chn_test.ml", line 45, characters 5-12', convert("*j"), /* :: */[
       128640,
       /* :: */[
         128640,
@@ -148,7 +148,7 @@ eq('File "chn_test.ml", line 45, characters 5-12', convert("🚀🚀a"), /* :: *
       ]
     ]);
 
-eq('File "chn_test.ml", line 47, characters 5-12', convert("\uD83D\uDE80a"), /* :: */[
+eq('File "chn_test.ml", line 47, characters 5-12', convert("*j"), /* :: */[
       128640,
       /* :: */[
         97,
@@ -156,7 +156,7 @@ eq('File "chn_test.ml", line 47, characters 5-12', convert("\uD83D\uDE80a"), /* 
       ]
     ]);
 
-eq('File "chn_test.ml", line 49, characters 5-12', convert("\uD83D\uDE80\x3f"), /* :: */[
+eq('File "chn_test.ml", line 49, characters 5-12', convert("*j"), /* :: */[
       128640,
       /* :: */[
         63,
@@ -164,7 +164,7 @@ eq('File "chn_test.ml", line 49, characters 5-12', convert("\uD83D\uDE80\x3f"), 
       ]
     ]);
 
-eq('File "chn_test.ml", line 54, characters 5-12', convert("\uD83D\uDE80\uD83D\uDE80a"), /* :: */[
+eq('File "chn_test.ml", line 54, characters 5-12', convert("*j"), /* :: */[
       128640,
       /* :: */[
         128640,
@@ -177,12 +177,12 @@ eq('File "chn_test.ml", line 54, characters 5-12', convert("\uD83D\uDE80\uD83D\u
 
 eq('File "chn_test.ml", line 57, characters 5-12', 14, 3);
 
-eq('File "chn_test.ml", line 58, characters 5-12', convert("\uD83D\uDE80"), /* :: */[
+eq('File "chn_test.ml", line 58, characters 5-12', convert("*j"), /* :: */[
       128640,
       /* [] */0
     ]);
 
-eq('File "chn_test.ml", line 59, characters 5-12', convert("\uD83D\uDE80"), /* :: */[
+eq('File "chn_test.ml", line 59, characters 5-12', convert("*j"), /* :: */[
       128640,
       /* :: */[
         128640,
@@ -190,7 +190,7 @@ eq('File "chn_test.ml", line 59, characters 5-12', convert("\uD83D\uDE80"), /* :
       ]
     ]);
 
-eq('File "chn_test.ml", line 60, characters 5-12', convert(" \b\t\n\v\f\ra"), /* :: */[
+eq('File "chn_test.ml", line 60, characters 5-12', convert("*j"), /* :: */[
       32,
       /* :: */[
         8,
@@ -216,7 +216,7 @@ eq('File "chn_test.ml", line 60, characters 5-12', convert(" \b\t\n\v\f\ra"), /*
       ]
     ]);
 
-eq('File "chn_test.ml", line 67, characters 6-13', convert(" \b\t\n\v\f\r\"\'\\\0a"), /* :: */[
+eq('File "chn_test.ml", line 67, characters 6-13', convert("*j"), /* :: */[
       32,
       /* :: */[
         8,
