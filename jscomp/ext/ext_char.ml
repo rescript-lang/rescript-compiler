@@ -57,3 +57,11 @@ let escaped = function
       string_unsafe_set s 2 (unsafe_chr (48 + (n / 10) mod 10));
       string_unsafe_set s 3 (unsafe_chr (48 + n mod 10));
       s
+
+
+let valid_hex x = 
+    match x with 
+    | '0' .. '9'
+    | 'a' .. 'f'
+    | 'A' .. 'F' -> true
+    | _ -> false 

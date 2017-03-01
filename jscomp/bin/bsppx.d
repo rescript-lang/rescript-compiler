@@ -2,6 +2,7 @@ bin/bsppx.ml : ../ocaml/utils/misc.ml
 bin/bsppx.ml : ../ocaml/utils/misc.mli
 bin/bsppx.ml : ext/ext_ref.ml
 bin/bsppx.ml : ext/map_gen.ml
+bin/bsppx.ml : ext/ext_char.ml
 bin/bsppx.ml : ext/ext_list.ml
 bin/bsppx.ml : ext/ext_ref.mli
 bin/bsppx.ml : ext/ext_utf8.ml
@@ -10,6 +11,7 @@ bin/bsppx.ml : ext/literals.ml
 bin/bsppx.ml : ../ocaml/utils/clflags.ml
 bin/bsppx.ml : common/bs_loc.ml
 bin/bsppx.ml : ext/ext_bytes.ml
+bin/bsppx.ml : ext/ext_char.mli
 bin/bsppx.ml : ext/ext_list.mli
 bin/bsppx.ml : ext/ext_utf8.mli
 bin/bsppx.ml : ext/ext_util.mli
@@ -85,6 +87,7 @@ bin/bsppx.ml : syntax/ast_structure.mli
 bin/bsppx.ml : syntax/ast_attributes.mli
 bin/bsppx.ml : syntax/ast_derive_dyn.mli
 bin/bsppx.ml : syntax/ast_derive_util.ml
+bin/bsppx.ml : syntax/ast_utf8_string.ml
 bin/bsppx.ml : syntax/ast_derive_projector.ml
 bin/bsppx.ml : syntax/ast_derive_projector.mli
 bin/bsppx.ml : syntax/ast_external_attributes.ml

@@ -36,7 +36,14 @@ external get : t -> int -> t = "" [@@bs.get_index]
 
 external charAt : int ->  t = "" [@@bs.send.pipe: t]
 external charCodeAt : int -> float  = "" [@@bs.send.pipe: t]
-(** type it as [float] due to that it may return NAN  *)
+
+(** type it as [float] due to that it may return NAN  
+    different from [charCodeAt]
+    {[
+        "\u{01003f}".charCodeAt(0) - 55296
+        "\u{01003f}".codePointAt(0) - 65599
+    ]}
+*)
 external codePointAt : int -> int Js.undefined = "" [@@bs.send.pipe: t] (** ES2015 *)
 
 external concat : t -> t = "" [@@bs.send.pipe: t]
@@ -100,3 +107,9 @@ external trim : t = "" [@@bs.send.pipe: t]
 (* HTML wrappers *)
 external anchor : t -> t = "" [@@bs.send.pipe: t] (** ES2015 *)
 external link : t -> t = "" [@@bs.send.pipe: t] (** ES2015 *)
+
+external castToArrayLike : t -> t Js_array.array_like = "%identity" 
+(* FIXME: we should not encourage people to use [%identity], beter
+    to provide something using [@@bs.val] so that we can track such 
+    casting
+*)

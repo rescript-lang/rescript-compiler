@@ -488,7 +488,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <h1><a href="https://github.com/bloomberg/bucklescript">BuckleScript</a> User Manual</h1>
 <div class="details">
 <span id="author" class="author">Hongbo Zhang</span><br>
-<span id="revnumber">version 1.4.2</span>
+<span id="revnumber">version 1.5.1+dev</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -527,8 +527,10 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </ul>
 </li>
 <li><a href="#_js_calling_ocaml">JS Calling OCaml</a></li>
-<li><a href="#_ocaml_calling_js">OCaml calling JS</a>
+<li><a href="#_bucklescritp_annotations_for_unicode_and_js_ffi_support">BuckleScritp annotations for Unicode and JS FFI support</a>
 <ul class="sectlevel2">
+<li><a href="#_unicode_support">Unicode support</a></li>
+<li><a href="#_ffi">FFI</a></li>
 <li><a href="#_binding_to_simple_js_functions_values">Binding to simple JS functions values</a>
 <ul class="sectlevel3">
 <li><a href="#_binding_to_global_value_bs_val">Binding to global value: bs.val</a></li>
@@ -1379,7 +1381,7 @@ automate such process</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_ocaml_calling_js"><a class="anchor" href="#_ocaml_calling_js"></a>OCaml calling JS</h2>
+<h2 id="_bucklescritp_annotations_for_unicode_and_js_ffi_support"><a class="anchor" href="#_bucklescritp_annotations_for_unicode_and_js_ffi_support"></a>BuckleScritp annotations for Unicode and JS FFI support</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>To make OCaml work smoothly with Javascript, we introduced several
@@ -1387,6 +1389,70 @@ extensions to the OCaml language. These BuckleScript extensions
 facilitate the integration of native JavaScript code and
 improve the generated code.</p>
 </div>
+<div class="sect2">
+<h3 id="_unicode_support"><a class="anchor" href="#_unicode_support"></a>Unicode support</h3>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Warning</div>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>In this section, we assume the source is encoded using UTF8</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>In OCaml, string is an immutable byte sequence(like GoLang), so if user type some Unicode</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">log</span> <span class="tok-s2">&quot;你好&quot;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>It will be translated into</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span><span class="tok-p">(</span><span class="tok-s2">&quot;\xe4\xbd\xa0\xe5\xa5\xbd&quot;</span><span class="tok-p">);</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Luckily, OCaml allows customized multiple-line string support, BuckleScript <strong>reserves</strong> the delimiter <code>js</code> and <code>j</code>(<code>j</code> is unused yet).</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">log</span> <span class="tok-o">{</span><span class="tok-n">js</span><span class="tok-o">|</span><span class="tok-err">你好，</span>
+<span class="tok-err">世界</span><span class="tok-o">|</span><span class="tok-n">js</span><span class="tok-o">}</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Output</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span><span class="tok-p">(</span><span class="tok-s2">&quot;你好，\n世界&quot;</span><span class="tok-p">);</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Inside <code>js</code> delimiter, the escape convention is like JavaScript</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">log</span> <span class="tok-o">{</span><span class="tok-n">js</span><span class="tok-o">|</span><span class="tok-err">\</span><span class="tok-n">x3f</span><span class="tok-err">\</span><span class="tok-n">u003f</span><span class="tok-err">\</span><span class="tok-n">b</span><span class="tok-err">\</span><span class="tok-n">t</span><span class="tok-err">\</span><span class="tok-n">n</span><span class="tok-err">\</span><span class="tok-n">v</span><span class="tok-err">\</span><span class="tok-n">f</span><span class="tok-err">\</span><span class="tok-n">r</span><span class="tok-err">\</span><span class="tok-mi">0</span><span class="tok-s2">&quot;&#39;|js}</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Output</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span><span class="tok-p">(</span><span class="tok-s2">&quot;\x3f\u003f\b\t\n\v\f\r\0\&quot;\&#39;&quot;</span><span class="tok-p">);</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_ffi"><a class="anchor" href="#_ffi"></a>FFI</h3>
 <div class="paragraph">
 <p>Like TypeScript, when building type-safe bindings from JS to OCaml,
 users have to write type declarations.
@@ -1416,6 +1482,7 @@ since the type declarations is an integral part of OCaml.</p>
 code</p>
 </li>
 </ul>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_binding_to_simple_js_functions_values"><a class="anchor" href="#_binding_to_simple_js_functions_values"></a>Binding to simple JS functions values</h3>
@@ -5530,7 +5597,7 @@ polymorphism <a href="https://github.com/bloomberg/bucklescript/issues/686">#686
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 1.4.2<br>
+Version 1.5.1+dev<br>
 </div>
 </div>
 </body>

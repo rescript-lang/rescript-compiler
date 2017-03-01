@@ -1072,6 +1072,14 @@ val unused_attribute : string
 val dash_nostdlib : string
 
 val reactjs_jsx_ppx_exe : string 
+
+val unescaped_j_delimiter : string 
+val escaped_j_delimiter : string 
+
+val unescaped_js_delimiter : string 
+
+
+
 end = struct
 #1 "literals.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -1180,6 +1188,12 @@ let unused_attribute = "Unused attribute "
 let dash_nostdlib = "-nostdlib"
 
 let reactjs_jsx_ppx_exe  = "reactjs_jsx_ppx.exe"
+
+let unescaped_j_delimiter = "j"
+let escaped_j_delimiter =  "*j" (* not user level syntax allowed *)
+
+let unescaped_js_delimiter = "js"
+let escaped_js_delimiter = "*js"
 end
 module Ext_filename : sig 
 #1 "ext_filename.mli"
