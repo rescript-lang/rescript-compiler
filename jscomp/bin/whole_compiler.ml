@@ -21553,6 +21553,14 @@ val unused_attribute : string
 val dash_nostdlib : string
 
 val reactjs_jsx_ppx_exe : string 
+
+val unescaped_j_delimiter : string 
+val escaped_j_delimiter : string 
+
+val unescaped_js_delimiter : string 
+
+
+
 end = struct
 #1 "literals.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -21661,6 +21669,13 @@ let unused_attribute = "Unused attribute "
 let dash_nostdlib = "-nostdlib"
 
 let reactjs_jsx_ppx_exe  = "reactjs_jsx_ppx.exe"
+
+let unescaped_j_delimiter = "j"
+let unescaped_js_delimiter = "js"
+let escaped_j_delimiter =  "*j" (* not user level syntax allowed *)
+
+
+
 end
 module Ext_filename : sig 
 #1 "ext_filename.mli"
@@ -26129,6 +26144,8 @@ val prerr_warning : Location.t -> t -> unit
 *)
 val warn_unused_attribute : Location.t -> string -> unit
 
+val error_unescaped_delimiter : 
+  Location.t -> string  -> unit 
 end = struct
 #1 "bs_warnings.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -26199,6 +26216,8 @@ let warn_unused_attribute loc txt =
     Location.raise_errorf 
       ~loc "%s%s \n" Literals.unused_attribute txt 
 
+let error_unescaped_delimiter loc txt = 
+  Location.raise_errorf ~loc "Uninterpreted delimiters %s \n" txt 
 end
 module Bs_ast_invariant
 = struct
@@ -26246,7 +26265,15 @@ let emit_external_warnings : Bs_ast_iterator .iterator=
         | {txt ; loc}, _ ->
           if is_bs_attribute txt  then
             Bs_warnings.warn_unused_attribute loc txt 
-      )
+      );
+    expr = (fun _ a -> 
+      match a.Parsetree.pexp_desc with 
+      | Pexp_constant (Const_string (_, Some s)) 
+        when Ext_string.equal s Literals.unescaped_j_delimiter 
+        || Ext_string.equal s Literals.unescaped_js_delimiter -> 
+        Bs_warnings.error_unescaped_delimiter a.pexp_loc s 
+      | _ -> ()
+    ) 
   }
 
 end
@@ -64047,13 +64074,14 @@ and expression_desc =
   (* The first parameter by default is false, 
      it will be true when it's a method
   *)
-  | Str of bool * string 
+  | Str of bool * string * string option 
     (* A string is UTF-8 encoded, the string may contain
        escape sequences.
        The first argument is used to mark it is non-pure, please
        don't optimize it, since it does have side effec, 
        examples like "use asm;" and our compiler may generate "error;..." 
        which is better to leave it alone
+       The last argument is passed from as `j` from `{j||j}`
      *)
   | Raw_js_code of string * code_info
   (* literally raw JS code 
@@ -65924,7 +65952,7 @@ let switch lam (lam_switch : switch) : t =
 
 let stringswitch (lam : t) cases default : t = 
   match lam with
-  | Lconst (Const_base (Const_string (a,_))) ->
+  | Lconst (Const_base (Const_string (a,None))) ->
     begin
       try List.assoc a cases with Not_found ->
         begin
@@ -66033,7 +66061,7 @@ let prim ~primitive:(prim : Prim.t) ~args:(ll : t list) loc  : t =
         Lift.int (int_of_float (float_of_string a))
       (* | Pnegfloat -> Lift.float (-. a) *)
       (* | Pabsfloat -> Lift.float (abs_float a) *)
-      | Pstringlength, (Const_base (Const_string (a,_)) ) 
+      | Pstringlength, (Const_base (Const_string (a,None)) ) 
         -> 
         Lift.int (String.length a)
       (* | Pnegbint Pnativeint, (Const_base (Const_nativeint i)) *)
@@ -67214,6 +67242,7 @@ class virtual fold =
        don't optimize it, since it does have side effec, 
        examples like "use asm;" and our compiler may generate "error;..." 
        which is better to leave it alone
+       The last argument is passed from as `j` from `{j||j}`
      *)
                  (* literally raw JS code 
   *)
@@ -67412,7 +67441,10 @@ class virtual fold =
           let o = o#bool _x in
           let o = o#list (fun o -> o#ident) _x_i1 in
           let o = o#block _x_i2 in let o = o#unknown _x_i3 in o
-      | Str (_x, _x_i1) -> let o = o#bool _x in let o = o#string _x_i1 in o
+      | Str (_x, _x_i1, _x_i2) ->
+          let o = o#bool _x in
+          let o = o#string _x_i1 in
+          let o = o#option (fun o -> o#string) _x_i2 in o
       | Raw_js_code (_x, _x_i1) ->
           let o = o#string _x in let o = o#code_info _x_i1 in o
       | Array (_x, _x_i1) ->
@@ -67649,7 +67681,7 @@ let rec no_side_effect_expression_desc (x : J.expression_desc)  =
   | Bool _ -> true 
   | Var _ -> true 
   | Access (a,b) -> no_side_effect a && no_side_effect b 
-  | Str (b,_) -> b
+  | Str (b,_,_) -> b
   | Fun _ -> true
   | Number _ -> true (* Can be refined later *)
   | Array (xs,_mutable_flag)  
@@ -67805,7 +67837,7 @@ let rev_toplevel_flatten block =
 let rec is_constant (x : J.expression)  = 
   match x.expression_desc with 
   | Access (a,b) -> is_constant a && is_constant b 
-  | Str (b,_) -> b
+  | Str (b,_,_) -> b
   | Number _ -> true (* Can be refined later *)
   | Array (xs,_mutable_flag)  -> List.for_all is_constant  xs 
   | Caml_block(xs, Immutable, tag, _) 
@@ -68226,7 +68258,12 @@ val runtime_call : ?comment:string -> string -> string -> t list -> t
 val public_method_call : string -> t -> t -> Int32.t -> t list -> t
 val runtime_ref : string -> string -> t
 
-val str : ?pure:bool -> ?comment:string -> string -> t 
+val str : 
+  ?pure:bool -> 
+  ?delimiter:string ->
+  ?comment:string -> 
+  string -> 
+  t 
 
 val ocaml_fun : ?comment:string ->
   ?immutable_mask:bool array -> J.ident list -> J.block -> t
@@ -68241,6 +68278,7 @@ val nint : ?comment:string -> nativeint -> t
 val small_int : int -> t
 val float : ?comment:string -> string -> t
 
+val empty_string_literal : t 
 (* TODO: we can do hash consing for small integers *)
 val zero_int_literal : t
 val one_int_literal : t
@@ -68522,7 +68560,8 @@ let external_var_dot ?comment  ~external_name:name ?dot (id : Ident.t) : t =
 let ml_var ?comment (id : Ident.t) : t  = 
   {expression_desc = Var (Qualified (id, Ml, None)); comment}
 
-let str ?(pure=true) ?comment s : t =  {expression_desc = Str (pure,s); comment}
+let str ?(pure=true) ?delimiter ?comment s : t =  
+  {expression_desc = Str (pure,s,delimiter); comment}
 
 let raw_js_code ?comment info s : t =
   {expression_desc = Raw_js_code (s,info) ; comment }
@@ -68670,6 +68709,9 @@ let fuse_to_seq x xs =
   if xs = [] then x  
   else List.fold_left seq x xs 
 
+let empty_string_literal : t = 
+  {expression_desc = Str (true,"",None); comment = None}  
+
 let zero_int_literal : t =   
   {expression_desc = Number (Int {i = 0l; c = None}) ; comment = None}
 let one_int_literal : t = 
@@ -68725,8 +68767,8 @@ let access ?comment (e0 : t)  (e1 : t) : t =
 
 let string_access ?comment (e0 : t)  (e1 : t) : t = 
   match e0.expression_desc, e1.expression_desc with
-  | Str (_,s) , Number (Int {i; _}) 
-    -> 
+  | Str (_,s,None) , Number (Int {i; _}) 
+    ->  (* Don't optimize {j||j} *)
     let i = Int32.to_int i  in
     if i >= 0 && i < String.length s then 
       (* TODO: check exception when i is out of range..
@@ -68810,14 +68852,16 @@ let array_length ?comment (e : t) : t =
 
 let string_length ?comment (e : t) : t =
   match e.expression_desc with 
-  | Str(_,v) -> int ?comment (Int32.of_int (String.length v))
+  | Str(_,v, None) -> int ?comment (Int32.of_int (String.length v)) 
+    (* No optimization for {j||j}*)
   | _ -> { expression_desc = Length (e, String) ; comment }
 
 let bytes_length ?comment (e : t) : t = 
   match e.expression_desc with 
   (* TODO: use array instead? *)
   | Array (l, _) -> int ?comment (Int32.of_int (List.length l))
-  | Str(_,v) -> int ?comment (Int32.of_int @@ String.length v)
+  | Str(_,v, None) -> int ?comment (Int32.of_int @@ String.length v)
+  (* No optimization for unicode *)
   | _ -> { expression_desc = Length (e, Bytes) ; comment }
 
 let function_length ?comment (e : t) : t = 
@@ -68845,7 +68889,7 @@ let char_of_int ?comment (v : t) : t =
 
 let char_to_int ?comment (v : t) : t = 
   match v.expression_desc with 
-  | Str (_, x) ->
+  | Str (_, x, None) -> (* No optimization for .. *)
     assert (String.length x = 1) ;
     int ~comment:(Printf.sprintf "%S"  x )  
       (Int32.of_int @@ Char.code x.[0])
@@ -68870,14 +68914,14 @@ let to_json_string ?comment e : t =
 
 let rec string_append ?comment (e : t) (el : t) : t = 
   match e.expression_desc , el.expression_desc  with 
-  | Str(_,a), String_append ({expression_desc = Str(_,b)}, c) ->
+  | Str(_,a, None), String_append ({expression_desc = Str(_,b,None)}, c) ->
     string_append ?comment (str (a ^ b)) c 
-  | String_append (c,{expression_desc = Str(_,b)}), Str(_,a) ->
+  | String_append (c,{expression_desc = Str(_,b,None)}), Str(_,a,None) ->
     string_append ?comment c (str (b ^ a))
-  | String_append (a,{expression_desc = Str(_,b)}),
-    String_append ({expression_desc = Str(_,c)} ,d) ->
+  | String_append (a,{expression_desc = Str(_,b,None)}),
+    String_append ({expression_desc = Str(_,c,None)} ,d) ->
     string_append ?comment (string_append a (str (b ^ c))) d 
-  | Str (_,a), Str (_,b) -> str ?comment (a ^ b)
+  | Str (_,a,None), Str (_,b,None) -> str ?comment (a ^ b)
   | _, Anything_to_string b -> string_append ?comment e b 
   | Anything_to_string b, _ -> string_append ?comment b el
   | _, _ -> {comment ; expression_desc = String_append(e,el)}
@@ -68953,7 +68997,7 @@ let rec triple_equal ?comment (e0 : t) (e1 : t ) : t =
     | Fun _ | Array _ | Caml_block _ ),  Var (Id ({name = "undefined"|"null"; } as id))
     when Ext_ident.is_js id && no_side_effect e0 -> 
     caml_false
-  | Str (_,x), Str (_,y) ->  (* CF*)
+  | Str (_,x,None), Str (_,y,None) ->  (* CF*)
     bool (Ext_string.equal x y)
   | Char_to_int a , Char_to_int b -> 
     triple_equal ?comment a b 
@@ -69269,7 +69313,7 @@ let rec float_equal ?comment (e0 : t) (e1 : t) : t =
 let int_equal = float_equal 
 let rec string_equal ?comment (e0 : t) (e1 : t) : t = 
   match e0.expression_desc, e1.expression_desc with     
-  | Str (_, a0), Str(_, b0) 
+  | Str (_, a0,None), Str(_, b0,None) 
     -> bool  (Ext_string.equal a0 b0)
   | _ , _ 
     ->
@@ -72073,7 +72117,7 @@ let int_switch ?comment   ?declaration ?default (e : J.expression)  clauses : t 
 
 let string_switch ?comment ?declaration  ?default (e : J.expression)  clauses : t= 
   match e.expression_desc with 
-  | Str (_,s) -> 
+  | Str (_,s,None) -> 
     let continuation = 
       begin match List.find 
                     (fun  (x : string J.case_clause) -> x.case = s) clauses
@@ -83123,12 +83167,21 @@ and
         P.paren_group f 1 (fun _ -> arguments cxt f el)
       )
 
-  | Str (_, s) ->
+  | Str (_, s,delimiter) ->
     (*TODO --
        when utf8-> it will not escape '\\' which is definitely not we want
     *)
-    let quote = best_string_quote s in 
-    pp_string f (* ~utf:(kind = `Utf8) *) ~quote s; cxt 
+    begin match delimiter with 
+    | Some d when Ext_string.equal d Literals.escaped_j_delimiter -> 
+      (* assert (1>2); *)
+      P.string f "\"";
+      P.string f s ;
+      P.string f "\"";
+      cxt 
+    | _ -> 
+      let quote = best_string_quote s in 
+      pp_string f (* ~utf:(kind = `Utf8) *) ~quote s; cxt 
+    end
   | Raw_js_code (s,info) -> 
     begin match info with 
       | Exp -> 
@@ -83315,7 +83368,7 @@ and
     (* Note that we should not apply any smart construtor here, 
        it's purely  a convenice for pretty-printing
     *)    
-    expression_desc cxt l f (Bin (Plus, {expression_desc = Str (true,""); comment = None}, e))    
+    expression_desc cxt l f (Bin (Plus, E.empty_string_literal , e))    
 
   | Bin (Minus, {expression_desc = Number (Int {i=0l;_} | Float {f = "0."})}, e) 
     (* TODO:
@@ -85203,6 +85256,7 @@ class virtual map =
        don't optimize it, since it does have side effec, 
        examples like "use asm;" and our compiler may generate "error;..." 
        which is better to leave it alone
+       The last argument is passed from as `j` from `{j||j}`
      *)
                  (* literally raw JS code 
   *)
@@ -85429,8 +85483,11 @@ class virtual map =
           let _x_i1 = o#list (fun o -> o#ident) _x_i1 in
           let _x_i2 = o#block _x_i2 in
           let _x_i3 = o#unknown _x_i3 in Fun (_x, _x_i1, _x_i2, _x_i3)
-      | Str (_x, _x_i1) ->
-          let _x = o#bool _x in let _x_i1 = o#string _x_i1 in Str (_x, _x_i1)
+      | Str (_x, _x_i1, _x_i2) ->
+          let _x = o#bool _x in
+          let _x_i1 = o#string _x_i1 in
+          let _x_i2 = o#option (fun o -> o#string) _x_i2
+          in Str (_x, _x_i1, _x_i2)
       | Raw_js_code (_x, _x_i1) ->
           let _x = o#string _x in
           let _x_i1 = o#code_info _x_i1 in Raw_js_code (_x, _x_i1)
@@ -89330,8 +89387,8 @@ let rec translate (x : Lambda.structured_constant ) : J.expression =
         (* https://github.com/google/closure-library/blob/master/closure%2Fgoog%2Fmath%2Flong.js *)
       | Const_nativeint i -> E.nint i 
       | Const_float f -> E.float f (* TODO: preserve float *)
-      | Const_string (i,_) (*TODO: here inline js*) -> 
-        E.str i
+      | Const_string (i,delimiter) (*TODO: here inline js*) -> 
+        E.str ?delimiter i 
     end
 
   | Const_pointer (c,pointer_info) -> 
@@ -91052,7 +91109,7 @@ let translate (prim_name : string)
     call Js_config.format 
   | "caml_format_int" -> 
     begin match args with 
-    | [ {expression_desc = Str (_, "%d"); _}; v] 
+    | [ {expression_desc = Str (_, "%d",None); _}; v] 
       ->
       E.int_to_string v 
     | _ -> 
@@ -91469,8 +91526,8 @@ let translate (prim_name : string)
     | "js_pure_expr" (* TODO: conver it even earlier *)
       -> 
       begin match args with 
-      | [ { expression_desc = Str (_,s )}] -> 
-        E.raw_js_code Exp  s
+      | [ { expression_desc = Str (_,s, _)}] -> 
+        E.raw_js_code Exp  s (* TODO: FIXME *)
       | _ -> 
         Ext_log.err __LOC__ 
           "JS.unsafe_js_expr is applied to an non literal string in %s"
@@ -91481,7 +91538,7 @@ let translate (prim_name : string)
     | "js_pure_stmt" (* TODO: convert even ealier *)
       -> 
       begin match args with 
-      | [ { expression_desc = Str (_,s )}] -> E.raw_js_code Stmt s
+      | [ { expression_desc = Str (_,s, _)}] -> E.raw_js_code Stmt s (* TODO: FIXME *)
       | _ -> 
         Ext_log.err __LOC__ 
           "JS.unsafe_js_expr is applied to an non literal string in %s"
@@ -94867,7 +94924,7 @@ let rec get_arity
     end
   | Llet(_,_,_, l ) -> get_arity meta l 
   (* | Lprim (Pccall {prim_name = "js_pure_expr"; prim_attributes},  *)
-  (*          [Lconst (Const_base (Const_string (_str,_)))]) *)
+  (*          [Lconst (Const_base (Const_string (_str,None)))]) *)
   (*   -> *)
   (*   (\* Ext_log.dwarn __LOC__ "called %s %d" str (List.length prim_attributes ); *\) *)
   (*   begin match Parsetree_util.has_arity prim_attributes with *)
@@ -96800,7 +96857,8 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
           *)
           ->
           Ident_hashtbl.add subst v (simplif l1); simplif l2
-        | _, Lconst (Const_base (Const_string (s,_)) ) -> 
+        | _, Lconst (Const_base (Const_string (s,None)) ) -> 
+          (** only "" added for later inlining *)
           Ident_hashtbl.add string_table v s;
           Lam.let_ Alias v l1 (simplif l2)
           (* we need move [simplif l2] later, since adding Hashtbl does have side effect *)
@@ -96820,7 +96878,7 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
       else 
         let l1 = simplif l1 in         
         begin match l1 with 
-        | Lconst(Const_base(Const_string(s,_))) -> 
+        | Lconst(Const_base(Const_string(s,None))) -> 
           Ident_hashtbl.add string_table v s; 
           (* we need move [simplif l2] later, since adding Hashtbl does have side effect *)
           Lam.let_ Alias v l1 (simplif l2)
@@ -96841,7 +96899,7 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
         let l1 = (simplif l1) in 
         
          begin match kind, l1 with 
-         | Strict, Lconst(Const_base(Const_string(s,_)))
+         | Strict, Lconst(Const_base(Const_string(s,None)))
            -> 
             Ident_hashtbl.add string_table v s;
             Lam.let_ Alias v l1 (simplif l2)
@@ -96884,7 +96942,7 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
         let r' = simplif r in
         let opt_l = 
           match l' with 
-          | Lconst(Const_base(Const_string(ls,_))) -> Some ls 
+          | Lconst(Const_base(Const_string(ls,None))) -> Some ls 
           | Lvar i -> Ident_hashtbl.find_opt string_table i 
           | _ -> None in 
         match opt_l with   
@@ -96892,7 +96950,7 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
         | Some l_s -> 
           let opt_r = 
             match r' with 
-            | Lconst (Const_base (Const_string(rs,_))) -> Some rs 
+            | Lconst (Const_base (Const_string(rs,None))) -> Some rs 
             | Lvar i -> Ident_hashtbl.find_opt string_table i 
             | _ -> None in 
             begin match opt_r with 
@@ -96909,7 +96967,7 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
       let r' = simplif r in 
       let opt_l =
          match l' with 
-         | Lconst (Const_base(Const_string(ls,_))) -> 
+         | Lconst (Const_base(Const_string(ls,None))) -> 
             Some ls 
          | Lvar i -> Ident_hashtbl.find_opt string_table i 
          | _ -> None in 
@@ -98723,6 +98781,27 @@ module Ext_utf8 : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type byte =
+  | Single of int
+  | Cont of int
+  | Leading of int * int
+  | Invalid
+
+
+val classify : char -> byte 
+
+val follow : 
+    string -> 
+    int -> 
+    int -> 
+    int ->
+    int * int 
+
+
+(** 
+  return [-1] if failed 
+*)
+val next :  string -> remaining:int -> int -> int 
 
 
 exception Invalid_utf8 of string 
@@ -98782,24 +98861,58 @@ let classify chr =
   else Invalid
 
 exception Invalid_utf8 of string 
+
+(* when the first char is [Leading],
+  TODO: need more error checking 
+  when out of bond
+ *)
+let rec follow s n (c : int) offset = 
+  if n = 0 then (c, offset)
+  else 
+    begin match classify s.[offset+1] with
+      | Cont cc -> follow s (n-1) ((c lsl 6) lor (cc land 0x3f)) (offset+1)
+      | _ -> raise (Invalid_utf8 "Continuation byte expected")
+    end
+
+
+let rec next s ~remaining  offset = 
+  if remaining = 0 then offset 
+  else 
+    begin match classify s.[offset+1] with
+      | Cont cc -> next s ~remaining:(remaining-1) (offset+1)
+      | _ ->  -1 
+      | exception _ ->  -1 (* it can happen when out of bound *)
+    end
+
+
+
+
 let decode_utf8_string s =
   let lst = ref [] in
   let add elem = lst := elem :: !lst in
-  let rec  _decode_utf8_string s i =
-    if i = (String.length s) then ()
-    else (match classify s.[i] with
-        | Single c -> add c; _decode_utf8_string s (i+1)
+  let rec  decode_utf8_cont s i s_len =
+    if i = s_len  then ()
+    else 
+      begin 
+        match classify s.[i] with
+        | Single c -> 
+          add c; decode_utf8_cont s (i+1) s_len
         | Cont _ -> raise (Invalid_utf8 "Unexpected continuation byte")
         | Leading (n, c) ->
-          let rec follow s n c i = 
-            if n = 0 then (c, i)
-            else (match classify s.[i+1] with
-                | Cont cc -> follow s (n-1) ((c lsl 6) lor (cc land 0x3f)) (i+1)
-                | _ -> raise (Invalid_utf8 "Continuation byte expected"))
-          in
-          let (c', i') = follow s n c i in add c'; _decode_utf8_string s (i' + 1)
-        | Invalid -> raise (Invalid_utf8 "Invalid byte"))
-  in _decode_utf8_string s 0; List.rev !lst
+          let (c', i') = follow s n c i in add c';
+          decode_utf8_cont s (i' + 1) s_len
+        | Invalid -> raise (Invalid_utf8 "Invalid byte")
+      end
+  in decode_utf8_cont s 0 (String.length s); 
+  List.rev !lst
+
+
+(** To decode {j||j} we need verify in the ast so that we have better error 
+    location, then we do the decode later
+*)  
+
+let verify s loc = 
+  assert false
 end
 module Ext_js_regex : sig 
 #1 "ext_js_regex.mli"
@@ -101258,6 +101371,262 @@ let pval_prim_of_labels labels =
 
 
 end
+module Ext_char : sig 
+#1 "ext_char.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+(** Extension to Standard char module, avoid locale sensitivity *)
+
+val escaped : char -> string
+
+
+val valid_hex : char -> bool
+end = struct
+#1 "ext_char.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+external string_unsafe_set : string -> int -> char -> unit
+                           = "%string_unsafe_set"
+
+external string_create: int -> string = "caml_create_string"
+
+external unsafe_chr: int -> char = "%identity"
+
+(** {!Char.escaped} is locale sensitive in 4.02.3, fixed in the trunk,
+    backport it here
+ *)
+let escaped = function
+  | '\'' -> "\\'"
+  | '\\' -> "\\\\"
+  | '\n' -> "\\n"
+  | '\t' -> "\\t"
+  | '\r' -> "\\r"
+  | '\b' -> "\\b"
+  | ' ' .. '~' as c ->
+      let s = string_create 1 in
+      string_unsafe_set s 0 c;
+      s
+  | c ->
+      let n = Char.code c in
+      let s = string_create 4 in
+      string_unsafe_set s 0 '\\';
+      string_unsafe_set s 1 (unsafe_chr (48 + n / 100));
+      string_unsafe_set s 2 (unsafe_chr (48 + (n / 10) mod 10));
+      string_unsafe_set s 3 (unsafe_chr (48 + n mod 10));
+      s
+
+
+let valid_hex x = 
+    match x with 
+    | '0' .. '9'
+    | 'a' .. 'f'
+    | 'A' .. 'F' -> true
+    | _ -> false 
+end
+module Ast_utf8_string
+= struct
+#1 "ast_utf8_string.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+let rec check_and_transform loc buf s byte_offset s_len =
+  if byte_offset = s_len then ()
+  else 
+    let current_char = s.[byte_offset] in 
+    match Ext_utf8.classify current_char with 
+    | Single c -> 
+      if c = 92 (* Char.code '\\' = 92 *)then 
+        begin 
+          (* we share the same escape sequence with js *)
+          Buffer.add_char buf current_char; 
+          escape_code loc buf s (byte_offset+1) s_len 
+        end 
+      else
+        begin 
+          (if c = 34 (* Char.code '\"' = 34 *) || c = 39 (* Char.code '\'' = 39 *) then 
+             begin 
+               Buffer.add_char buf '\\';
+               Buffer.add_char buf current_char ; 
+
+             end
+           else if  c = 10 then begin 
+             (* Char.code '\n' = 10 *)
+             (* we can not just print new line*)
+             Buffer.add_string buf "\\n";
+
+             (* seems we don't need 
+                escape "\b" "\f" 
+                we need escape "\n" "\r" since 
+                ocaml multiple-line allows [\n]
+                visual input while es5 string 
+                does not 
+             *)
+           end 
+           else if c = 13 then begin 
+               Buffer.add_string buf "\\r"
+            end
+           else begin 
+             Buffer.add_char buf current_char;
+
+           end);
+          check_and_transform loc buf s (byte_offset + 1) s_len 
+        end
+    | Invalid 
+    | Cont _ -> Location.raise_errorf ~loc "Not utf8 source string"
+    | Leading (n,_) -> 
+      let i' = Ext_utf8.next s ~remaining:n  byte_offset in
+      if i' < 0 then 
+        Location.raise_errorf ~loc "Not valid utf8 souce string"
+      else 
+        begin 
+          for k = byte_offset to i' do 
+            Buffer.add_char buf s.[k]; 
+          done;   
+          check_and_transform loc buf s (i' + 1) s_len 
+        end
+and escape_code loc buf s offset s_len = 
+  if offset >= s_len then 
+    Location.raise_errorf ~loc "\\ is the end of string" 
+  else 
+    let cur_char = s.[offset] in 
+    match cur_char with 
+    | '\\'
+    | 'b' 
+    | 't' 
+    | 'n' 
+    | 'v'
+    | 'f'
+    | 'r' 
+    | '0' 
+    | '$'
+      -> 
+      begin 
+        Buffer.add_char buf cur_char ;
+        check_and_transform loc buf s (offset + 1) s_len 
+      end 
+    | 'u' -> 
+      begin 
+        Buffer.add_char buf cur_char;
+        unicode loc buf s (offset + 1) s_len 
+      end 
+    | 'x' -> begin 
+        Buffer.add_char buf cur_char ; 
+        two_hex loc buf s (offset + 1) s_len 
+      end 
+    | _ -> Location.raise_errorf ~loc "invalid escape code"
+and two_hex loc buf s offset s_len = 
+  if offset + 1 >= s_len then 
+    Location.raise_errorf ~loc "\\x need at least two chars";
+  let a, b = s.[offset], s.[offset + 1] in 
+  if Ext_char.valid_hex a && Ext_char.valid_hex b then 
+    begin 
+      Buffer.add_char buf a ; 
+      Buffer.add_char buf b ; 
+      check_and_transform loc buf s (offset + 2) s_len 
+    end
+  else Location.raise_errorf ~loc "%c%c is not a valid hex code" a b
+
+and unicode loc buf s offset s_len = 
+  if offset + 3 >= s_len then 
+    Location.raise_errorf ~loc "\\u need at least four chars";
+  let a0,a1,a2,a3 = s.[offset], s.[offset+1], s.[offset+2], s.[offset+3] in
+  if 
+    Ext_char.valid_hex a0 &&
+    Ext_char.valid_hex a1 &&
+    Ext_char.valid_hex a2 &&
+    Ext_char.valid_hex a3 then 
+    begin 
+      Buffer.add_char buf a0;
+      Buffer.add_char buf a1;
+      Buffer.add_char buf a2;
+      Buffer.add_char buf a3;  
+      check_and_transform loc buf s  (offset + 4) s_len 
+    end 
+  else 
+    Location.raise_errorf ~loc "%c%c%c%c is not a valid unicode point"
+      a0 a1 a2 a3 
+(* http://www.2ality.com/2015/01/es6-strings.html
+   console.log('\uD83D\uDE80'); (* ES6*)
+   console.log('\u{1F680}');
+*)   
+end
 module Ast_external : sig 
 #1 "ast_external.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -102720,6 +103089,12 @@ let rec unsafe_mapper : Ast_mapper.mapper =
               end
 
           end             
+        |Pexp_constant (Const_string (s, (Some delim))) 
+          when Ext_string.equal delim Literals.unescaped_js_delimiter ->         
+         let s_len  = String.length s in 
+         let buf = Buffer.create (s_len * 2) in 
+         Ast_utf8_string.check_and_transform loc buf s 0 s_len ;  
+         { e with pexp_desc = Pexp_constant (Const_string (Buffer.contents buf, Some Literals.escaped_j_delimiter))}
 
         (** [bs.debugger], its output should not be rewritten any more*)
         | Pexp_extension ({txt = ("bs.debugger"|"debugger"); loc} , payload)
@@ -102977,6 +103352,14 @@ let rec unsafe_mapper : Ast_mapper.mapper =
              }}
 
       | _ -> Ast_mapper.default_mapper.signature_item self sigi
+    end;
+    pat = begin fun self (pat : Parsetree.pattern) -> 
+      match pat with 
+      | { ppat_desc = Ppat_constant(Const_string (_, Some "j")); ppat_loc = loc} -> 
+        Location.raise_errorf ~loc 
+          "Unicode string is not allowed in pattern match"
+      | _  -> Ast_mapper.default_mapper.pat self pat
+      
     end;
     structure_item = begin fun self (str : Parsetree.structure_item) -> 
       begin match str.pstr_desc with 

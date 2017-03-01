@@ -316,6 +316,12 @@ let rec unsafe_mapper : Ast_mapper.mapper =
               end
 
           end             
+        |Pexp_constant (Const_string (s, (Some delim))) 
+          when Ext_string.equal delim Literals.unescaped_js_delimiter ->         
+         let s_len  = String.length s in 
+         let buf = Buffer.create (s_len * 2) in 
+         Ast_utf8_string.check_and_transform loc buf s 0 s_len ;  
+         { e with pexp_desc = Pexp_constant (Const_string (Buffer.contents buf, Some Literals.escaped_j_delimiter))}
 
         (** [bs.debugger], its output should not be rewritten any more*)
         | Pexp_extension ({txt = ("bs.debugger"|"debugger"); loc} , payload)
@@ -573,6 +579,14 @@ let rec unsafe_mapper : Ast_mapper.mapper =
              }}
 
       | _ -> Ast_mapper.default_mapper.signature_item self sigi
+    end;
+    pat = begin fun self (pat : Parsetree.pattern) -> 
+      match pat with 
+      | { ppat_desc = Ppat_constant(Const_string (_, Some "j")); ppat_loc = loc} -> 
+        Location.raise_errorf ~loc 
+          "Unicode string is not allowed in pattern match"
+      | _  -> Ast_mapper.default_mapper.pat self pat
+      
     end;
     structure_item = begin fun self (str : Parsetree.structure_item) -> 
       begin match str.pstr_desc with 

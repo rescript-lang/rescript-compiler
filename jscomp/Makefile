@@ -212,8 +212,17 @@ EXT_CMXS=$(addprefix ext/, $(addsuffix .cmx, $(EXT_SRCS)))
 EXT_CMOS=$(addprefix ext/, $(addsuffix .cmo, $(EXT_SRCS)))
 COMMON_SRCS= bs_version js_config bs_pkg ext_log bs_loc  bs_warnings  lam_methname  binary_cache
 COMMON_CMXS= $(addprefix common/, $(addsuffix .cmx, $(COMMON_SRCS)))
-SYNTAX_SRCS=ast_derive_constructor ast_derive_util ast_exp ast_external ast_lift \
-	ast_literal ast_pat ast_payload ast_signature ast_structure bs_ast_iterator bs_ast_invariant \
+SYNTAX_SRCS= ast_utf8_string\
+	ast_derive_constructor \
+	ast_derive_util \
+	ast_exp \
+	ast_external \
+	ast_lift \
+	ast_literal \
+	ast_pat \
+	ast_payload \
+	ast_signature \
+	ast_structure bs_ast_iterator bs_ast_invariant \
 	ast_derive ast_comb ast_attributes ast_core_type ast_derive_dyn\
 	 ast_derive_projector \
 	 ast_ffi_types\

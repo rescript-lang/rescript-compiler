@@ -155,6 +155,7 @@ common/bs_loc.cmi :
 common/bs_warnings.cmi :
 common/lam_methname.cmi :
 common/binary_cache.cmi : ext/string_map.cmi
+syntax/ast_utf8_string.cmx : ext/ext_utf8.cmx ext/ext_char.cmx
 syntax/ast_derive_constructor.cmx :
 syntax/ast_derive_util.cmx :
 syntax/ast_exp.cmx : syntax/ast_exp.cmi
@@ -167,8 +168,8 @@ syntax/ast_payload.cmx : ext/string_map.cmx ext/ext_js_regex.cmx \
 syntax/ast_signature.cmx : syntax/ast_signature.cmi
 syntax/ast_structure.cmx : syntax/ast_signature.cmx syntax/ast_structure.cmi
 syntax/bs_ast_iterator.cmx : syntax/bs_ast_iterator.cmi
-syntax/bs_ast_invariant.cmx : common/bs_warnings.cmx \
-    syntax/bs_ast_iterator.cmx
+syntax/bs_ast_invariant.cmx : ext/literals.cmx ext/ext_string.cmx \
+    common/bs_warnings.cmx syntax/bs_ast_iterator.cmx
 syntax/ast_derive.cmx : ext/string_map.cmx ext/literals.cmx \
     ext/ext_string.cmx ext/ext_list.cmx syntax/ast_structure.cmx \
     syntax/ast_signature.cmx syntax/ast_payload.cmx syntax/ast_derive.cmi
@@ -198,11 +199,11 @@ syntax/ast_util.cmx : ext/literals.cmx ext/ext_list.cmx \
     syntax/ast_util.cmi
 syntax/ppx_entry.cmx : ext/string_map.cmx ext/literals.cmx \
     ext/ext_string.cmx ext/ext_ref.cmx ext/ext_list.cmx syntax/ast_util.cmx \
-    syntax/ast_structure.cmx syntax/ast_signature.cmx syntax/ast_payload.cmx \
-    syntax/ast_literal.cmx syntax/ast_external_attributes.cmx \
-    syntax/ast_derive_projector.cmx syntax/ast_derive_dyn.cmx \
-    syntax/ast_derive.cmx syntax/ast_comb.cmx syntax/ast_attributes.cmx \
-    syntax/ppx_entry.cmi
+    syntax/ast_utf8_string.cmx syntax/ast_structure.cmx \
+    syntax/ast_signature.cmx syntax/ast_payload.cmx syntax/ast_literal.cmx \
+    syntax/ast_external_attributes.cmx syntax/ast_derive_projector.cmx \
+    syntax/ast_derive_dyn.cmx syntax/ast_derive.cmx syntax/ast_comb.cmx \
+    syntax/ast_attributes.cmx syntax/ppx_entry.cmi
 syntax/ast_exp.cmi :
 syntax/ast_external.cmi :
 syntax/ast_lift.cmi :

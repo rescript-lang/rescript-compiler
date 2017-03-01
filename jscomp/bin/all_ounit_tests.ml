@@ -3582,6 +3582,14 @@ val unused_attribute : string
 val dash_nostdlib : string
 
 val reactjs_jsx_ppx_exe : string 
+
+val unescaped_j_delimiter : string 
+val escaped_j_delimiter : string 
+
+val unescaped_js_delimiter : string 
+
+
+
 end = struct
 #1 "literals.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -3690,6 +3698,13 @@ let unused_attribute = "Unused attribute "
 let dash_nostdlib = "-nostdlib"
 
 let reactjs_jsx_ppx_exe  = "reactjs_jsx_ppx.exe"
+
+let unescaped_j_delimiter = "j"
+let unescaped_js_delimiter = "js"
+let escaped_j_delimiter =  "*j" (* not user level syntax allowed *)
+
+
+
 end
 module Ounit_cmd_util : sig 
 #1 "ounit_cmd_util.mli"
@@ -3958,7 +3973,16 @@ external ff :
     OUnit.assert_bool __LOC__
     (Ext_string.contain_substring 
     should_err.stderr "bs.uncurry")
-    end 
+  end ;
+
+    __LOC__ >:: begin fun _ -> 
+      let should_err = bsc_eval {|
+      {js| \uFFF|js}
+      |} in 
+      OUnit.assert_bool __LOC__ (not @@ Ext_string.is_empty should_err.stderr)
+    end
+  
+
   ]
 
 
@@ -7165,6 +7189,27 @@ module Ext_utf8 : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type byte =
+  | Single of int
+  | Cont of int
+  | Leading of int * int
+  | Invalid
+
+
+val classify : char -> byte 
+
+val follow : 
+    string -> 
+    int -> 
+    int -> 
+    int ->
+    int * int 
+
+
+(** 
+  return [-1] if failed 
+*)
+val next :  string -> remaining:int -> int -> int 
 
 
 exception Invalid_utf8 of string 
@@ -7224,24 +7269,58 @@ let classify chr =
   else Invalid
 
 exception Invalid_utf8 of string 
+
+(* when the first char is [Leading],
+  TODO: need more error checking 
+  when out of bond
+ *)
+let rec follow s n (c : int) offset = 
+  if n = 0 then (c, offset)
+  else 
+    begin match classify s.[offset+1] with
+      | Cont cc -> follow s (n-1) ((c lsl 6) lor (cc land 0x3f)) (offset+1)
+      | _ -> raise (Invalid_utf8 "Continuation byte expected")
+    end
+
+
+let rec next s ~remaining  offset = 
+  if remaining = 0 then offset 
+  else 
+    begin match classify s.[offset+1] with
+      | Cont cc -> next s ~remaining:(remaining-1) (offset+1)
+      | _ ->  -1 
+      | exception _ ->  -1 (* it can happen when out of bound *)
+    end
+
+
+
+
 let decode_utf8_string s =
   let lst = ref [] in
   let add elem = lst := elem :: !lst in
-  let rec  _decode_utf8_string s i =
-    if i = (String.length s) then ()
-    else (match classify s.[i] with
-        | Single c -> add c; _decode_utf8_string s (i+1)
+  let rec  decode_utf8_cont s i s_len =
+    if i = s_len  then ()
+    else 
+      begin 
+        match classify s.[i] with
+        | Single c -> 
+          add c; decode_utf8_cont s (i+1) s_len
         | Cont _ -> raise (Invalid_utf8 "Unexpected continuation byte")
         | Leading (n, c) ->
-          let rec follow s n c i = 
-            if n = 0 then (c, i)
-            else (match classify s.[i+1] with
-                | Cont cc -> follow s (n-1) ((c lsl 6) lor (cc land 0x3f)) (i+1)
-                | _ -> raise (Invalid_utf8 "Continuation byte expected"))
-          in
-          let (c', i') = follow s n c i in add c'; _decode_utf8_string s (i' + 1)
-        | Invalid -> raise (Invalid_utf8 "Invalid byte"))
-  in _decode_utf8_string s 0; List.rev !lst
+          let (c', i') = follow s n c i in add c';
+          decode_utf8_cont s (i' + 1) s_len
+        | Invalid -> raise (Invalid_utf8 "Invalid byte")
+      end
+  in decode_utf8_cont s 0 (String.length s); 
+  List.rev !lst
+
+
+(** To decode {j||j} we need verify in the ast so that we have better error 
+    location, then we do the decode later
+*)  
+
+let verify s loc = 
+  assert false
 end
 module Ext_js_regex : sig 
 #1 "ext_js_regex.mli"

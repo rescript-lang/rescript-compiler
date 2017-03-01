@@ -911,7 +911,7 @@ let switch lam (lam_switch : switch) : t =
 
 let stringswitch (lam : t) cases default : t = 
   match lam with
-  | Lconst (Const_base (Const_string (a,_))) ->
+  | Lconst (Const_base (Const_string (a,None))) ->
     begin
       try List.assoc a cases with Not_found ->
         begin
@@ -1020,7 +1020,7 @@ let prim ~primitive:(prim : Prim.t) ~args:(ll : t list) loc  : t =
         Lift.int (int_of_float (float_of_string a))
       (* | Pnegfloat -> Lift.float (-. a) *)
       (* | Pabsfloat -> Lift.float (abs_float a) *)
-      | Pstringlength, (Const_base (Const_string (a,_)) ) 
+      | Pstringlength, (Const_base (Const_string (a,None)) ) 
         -> 
         Lift.int (String.length a)
       (* | Pnegbint Pnativeint, (Const_base (Const_nativeint i)) *)

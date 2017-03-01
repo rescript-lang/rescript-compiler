@@ -65,3 +65,6 @@ let warn_unused_attribute loc txt =
   else 
     Location.raise_errorf 
       ~loc "%s%s \n" Literals.unused_attribute txt 
+
+let error_unescaped_delimiter loc txt = 
+  Location.raise_errorf ~loc "Uninterpreted delimiters %s \n" txt 

@@ -36,3 +36,6 @@ val prerr_warning : Location.t -> t -> unit
    The reason is that we will do a global check first, then start warning later
 *)
 val warn_unused_attribute : Location.t -> string -> unit
+
+val error_unescaped_delimiter : 
+  Location.t -> string  -> unit 
