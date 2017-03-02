@@ -44,7 +44,8 @@ type function_arities =
 type constant = 
   | Const_int of int
   | Const_char of char
-  | Const_string of string * string option
+  | Const_string of string  * string option 
+  | Const_unicode of string 
   | Const_float of string
   | Const_int32 of int32
   | Const_int64 of int64
@@ -53,7 +54,7 @@ type constant =
   | Const_block of int * Lambda.tag_info * constant list
   | Const_float_array of string list
   | Const_immstring of string
-  
+
 type primitive = 
   | Pbytes_to_string
   | Pbytes_of_string
@@ -833,7 +834,7 @@ exception Not_simple_form
     ]}
 *)
 let rec is_eta_conversion_exn
- params inner_args outer_args = 
+    params inner_args outer_args = 
   match params, inner_args, outer_args with 
   | x::xs, Lvar y::ys, r::rest 
     when Ident.same x y ->
@@ -898,7 +899,9 @@ let if_ (a : t) (b : t) c =
         if x <> 0L then b else c
       | (Const_nativeint x) ->
         if x <> 0n then b else c
-      | (Const_string _ | Const_float _ ) -> b
+      | Const_string _ 
+      | Const_float _
+      | Const_unicode _
       | Const_block _
       | Const_float_array _
       | Const_immstring _ -> b
@@ -927,7 +930,7 @@ let switch lam (lam_switch : switch) : t =
 
 let stringswitch (lam : t) cases default : t = 
   match lam with
-  | Lconst ((Const_string (a,None))) ->
+  | Lconst (Const_string (a,None)) ->
     begin
       try List.assoc a cases with Not_found ->
         begin
@@ -1163,7 +1166,7 @@ let prim ~primitive:(prim : Prim.t) ~args:(ll : t list) loc  : t =
         -> 
         Lift.bool (a = 1 || b = 1)
       | Pstringadd, (Const_string (a, None)),
-         (Const_string (b,None))
+        (Const_string (b,None))
         ->
         Lift.string (a ^ b)
       | (Pstringrefs | Pstringrefu), (Const_string(a,None)),
@@ -1498,20 +1501,27 @@ let convert exports lam : _ * _  =
   let may_depends = Lam_module_ident.Hash_set.create 0 in 
   let rec
     aux_constant ( const : Lambda.structured_constant) : constant = 
-     match const with 
-     | Const_base (Const_int i) -> (Const_int i)
-     | Const_base (Const_char i) -> (Const_char i)
-     | Const_base (Const_string(i,opt)) -> (Const_string(i,opt))
-     | Const_base (Const_float i) -> (Const_float i)
-     | Const_base (Const_int32 i) -> (Const_int32 i)
-     | Const_base (Const_int64 i) -> (Const_int64 i)
-     | Const_base (Const_nativeint i) -> (Const_nativeint i)
-     | Const_pointer(i,p) -> Const_pointer (i,p)
-     | Const_float_array (s) -> Const_float_array(s)
-     | Const_immstring s -> Const_immstring s 
-     | Const_block (i,t,xs) -> 
+    match const with 
+    | Const_base (Const_int i) -> (Const_int i)
+    | Const_base (Const_char i) -> (Const_char i)
+    | Const_base (Const_string(i,opt)) ->
+      begin match opt with 
+        | Some opt when 
+            Ext_string.equal opt Literals.escaped_j_delimiter ->
+          Const_unicode i
+        | _ ->   
+          (Const_string(i,opt))
+      end 
+    | Const_base (Const_float i) -> (Const_float i)
+    | Const_base (Const_int32 i) -> (Const_int32 i)
+    | Const_base (Const_int64 i) -> (Const_int64 i)
+    | Const_base (Const_nativeint i) -> (Const_nativeint i)
+    | Const_pointer(i,p) -> Const_pointer (i,p)
+    | Const_float_array (s) -> Const_float_array(s)
+    | Const_immstring s -> Const_immstring s 
+    | Const_block (i,t,xs) -> 
       Const_block (i,t, List.map aux_constant xs)
-    and aux (lam : Lambda.lambda) : t = 
+  and aux (lam : Lambda.lambda) : t = 
     match lam with 
     | Lvar x -> 
       let var = Ident_hashtbl.find_default alias x x in
@@ -1550,7 +1560,7 @@ let convert exports lam : _ * _  =
               end
             | _ -> assert false
           end
-        
+
         | Lprim ( Pfield (id, _),
                   [Lprim (Pgetglobal ({name  = "Pervasives"} ), _,_)],loc              
                 )
@@ -1640,20 +1650,20 @@ let convert exports lam : _ * _  =
       end
     (* we might allow some arity here *)  
     | Lprim(Pccall {prim_name = "js_pure_expr"}, 
-      args,loc) ->  
+            args,loc) ->  
       begin match args with 
-      | [Lconst( Const_base (Const_string(s,_)))] -> 
-        prim ~primitive:(Praw_js_code_exp s)
-        ~args:[] loc 
-      | _ -> assert false 
+        | [Lconst( Const_base (Const_string(s,_)))] -> 
+          prim ~primitive:(Praw_js_code_exp s)
+            ~args:[] loc 
+        | _ -> assert false 
       end  
     | Lprim(Pccall {prim_name = "js_pure_stmt"}, 
-      args,loc) ->  
+            args,loc) ->  
       begin match args with 
-      | [Lconst( Const_base (Const_string(s,_)))] -> 
-        prim ~primitive:(Praw_js_code_stmt s)
-        ~args:[] loc         
-      | _ -> assert false 
+        | [Lconst( Const_base (Const_string(s,_)))] -> 
+          prim ~primitive:(Praw_js_code_stmt s)
+            ~args:[] loc         
+        | _ -> assert false 
       end 
     | Lprim(Pdirapply, _, _) -> assert false 
     | Lprim (primitive,args, loc) 
