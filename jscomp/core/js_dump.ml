@@ -762,22 +762,19 @@ and
         P.string f name;
         P.paren_group f 1 (fun _ -> arguments cxt f el)
       )
-
-  | Str (_, s,delimiter) ->
+  | Unicode s -> 
+    P.string f "\"";
+    P.string f s ; 
+    P.string f "\"";
+    cxt 
+  | Str (_, s) ->
     (*TODO --
        when utf8-> it will not escape '\\' which is definitely not we want
     *)
-    begin match delimiter with 
-    | Some d when Ext_string.equal d Literals.escaped_j_delimiter -> 
-      (* assert (1>2); *)
-      P.string f "\"";
-      P.string f s ;
-      P.string f "\"";
-      cxt 
-    | _ -> 
       let quote = best_string_quote s in 
-      pp_string f (* ~utf:(kind = `Utf8) *) ~quote s; cxt 
-    end
+      pp_string f (* ~utf:(kind = `Utf8) *) ~quote s;
+     cxt 
+
   | Raw_js_code (s,info) -> 
     begin match info with 
       | Exp -> 
@@ -1315,6 +1312,7 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
       | Math _
       | Var _ 
       | Str _ 
+      | Unicode _
       | Array _ 
       | Caml_block  _ 
       | FlatCall _ 

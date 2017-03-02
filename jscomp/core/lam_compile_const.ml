@@ -61,7 +61,8 @@ let rec translate (x : Lam.constant ) : J.expression =
   | Const_string i (*TODO: here inline js*) -> 
     E.str  i 
   | Const_unicode i -> 
-    E.str i ~delimiter:Literals.escaped_j_delimiter    
+    E.unicode i 
+    (* E.str i ~delimiter:Literals.escaped_j_delimiter *)   
 
   | Const_pointer (c,pointer_info) -> 
     E.int ?comment:(Lam_compile_util.comment_of_pointer_info pointer_info)

@@ -549,7 +549,7 @@ let translate (prim_name : string)
     call Js_config.format 
   | "caml_format_int" -> 
     begin match args with 
-    | [ {expression_desc = Str (_, "%d",None); _}; v] 
+    | [ {expression_desc = Str (_, "%d"); _}; v] 
       ->
       E.int_to_string v 
     | _ -> 

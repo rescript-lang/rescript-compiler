@@ -64100,7 +64100,7 @@ and expression_desc =
   (* The first parameter by default is false, 
      it will be true when it's a method
   *)
-  | Str of bool * string * string option 
+  | Str of bool * string 
     (* A string is UTF-8 encoded, the string may contain
        escape sequences.
        The first argument is used to mark it is non-pure, please
@@ -64109,6 +64109,8 @@ and expression_desc =
        which is better to leave it alone
        The last argument is passed from as `j` from `{j||j}`
      *)
+  | Unicode of string 
+    (* It is escaped string, print delimited by '"'*)   
   | Raw_js_code of string * code_info
   (* literally raw JS code 
   *)
@@ -67328,6 +67330,7 @@ class virtual fold =
        which is better to leave it alone
        The last argument is passed from as `j` from `{j||j}`
      *)
+                 (* It is escaped string, print delimited by '"'*)
                  (* literally raw JS code 
   *)
                  (* The third argument is [tag] , forth is [tag_info] *)
@@ -67525,10 +67528,8 @@ class virtual fold =
           let o = o#bool _x in
           let o = o#list (fun o -> o#ident) _x_i1 in
           let o = o#block _x_i2 in let o = o#unknown _x_i3 in o
-      | Str (_x, _x_i1, _x_i2) ->
-          let o = o#bool _x in
-          let o = o#string _x_i1 in
-          let o = o#option (fun o -> o#string) _x_i2 in o
+      | Str (_x, _x_i1) -> let o = o#bool _x in let o = o#string _x_i1 in o
+      | Unicode _x -> let o = o#string _x in o
       | Raw_js_code (_x, _x_i1) ->
           let o = o#string _x in let o = o#code_info _x_i1 in o
       | Array (_x, _x_i1) ->
@@ -67762,12 +67763,13 @@ let free_variables_of_expression used_idents defined_idents st =
 
 let rec no_side_effect_expression_desc (x : J.expression_desc)  = 
   match x with 
-  | Bool _ -> true 
-  | Var _ -> true 
-  | Access (a,b) -> no_side_effect a && no_side_effect b 
-  | Str (b,_,_) -> b
+  | Bool _ 
+  | Var _ 
+  | Unicode _ -> true 
   | Fun _ -> true
   | Number _ -> true (* Can be refined later *)
+  | Access (a,b) -> no_side_effect a && no_side_effect b 
+  | Str (b,_) -> b    
   | Array (xs,_mutable_flag)  
   | Caml_block (xs, _mutable_flag, _, _)
     ->
@@ -67921,7 +67923,7 @@ let rev_toplevel_flatten block =
 let rec is_constant (x : J.expression)  = 
   match x.expression_desc with 
   | Access (a,b) -> is_constant a && is_constant b 
-  | Str (b,_,_) -> b
+  | Str (b,_) -> b
   | Number _ -> true (* Can be refined later *)
   | Array (xs,_mutable_flag)  -> List.for_all is_constant  xs 
   | Caml_block(xs, Immutable, tag, _) 
@@ -68344,11 +68346,15 @@ val runtime_ref : string -> string -> t
 
 val str : 
   ?pure:bool -> 
-  ?delimiter:string ->
   ?comment:string -> 
   string -> 
   t 
 
+val unicode : 
+  ?comment:string -> 
+  string -> 
+  t
+  
 val ocaml_fun : ?comment:string ->
   ?immutable_mask:bool array -> J.ident list -> J.block -> t
 
@@ -68644,8 +68650,11 @@ let external_var_dot ?comment  ~external_name:name ?dot (id : Ident.t) : t =
 let ml_var ?comment (id : Ident.t) : t  = 
   {expression_desc = Var (Qualified (id, Ml, None)); comment}
 
-let str ?(pure=true) ?delimiter ?comment s : t =  
-  {expression_desc = Str (pure,s,delimiter); comment}
+let str ?(pure=true)  ?comment s : t =  
+  {expression_desc = Str (pure,s); comment}
+
+let unicode ?comment s : t = 
+  {expression_desc = Unicode (s); comment}
 
 let raw_js_code ?comment info s : t =
   {expression_desc = Raw_js_code (s,info) ; comment }
@@ -68794,7 +68803,7 @@ let fuse_to_seq x xs =
   else List.fold_left seq x xs 
 
 let empty_string_literal : t = 
-  {expression_desc = Str (true,"",None); comment = None}  
+  {expression_desc = Str (true,""); comment = None}  
 
 let zero_int_literal : t =   
   {expression_desc = Number (Int {i = 0l; c = None}) ; comment = None}
@@ -68851,7 +68860,7 @@ let access ?comment (e0 : t)  (e1 : t) : t =
 
 let string_access ?comment (e0 : t)  (e1 : t) : t = 
   match e0.expression_desc, e1.expression_desc with
-  | Str (_,s,None) , Number (Int {i; _}) 
+  | Str (_,s) , Number (Int {i; _}) 
     ->  (* Don't optimize {j||j} *)
     let i = Int32.to_int i  in
     if i >= 0 && i < String.length s then 
@@ -68936,7 +68945,7 @@ let array_length ?comment (e : t) : t =
 
 let string_length ?comment (e : t) : t =
   match e.expression_desc with 
-  | Str(_,v, None) -> int ?comment (Int32.of_int (String.length v)) 
+  | Str(_,v) -> int ?comment (Int32.of_int (String.length v)) 
     (* No optimization for {j||j}*)
   | _ -> { expression_desc = Length (e, String) ; comment }
 
@@ -68944,7 +68953,7 @@ let bytes_length ?comment (e : t) : t =
   match e.expression_desc with 
   (* TODO: use array instead? *)
   | Array (l, _) -> int ?comment (Int32.of_int (List.length l))
-  | Str(_,v, None) -> int ?comment (Int32.of_int @@ String.length v)
+  | Str(_,v) -> int ?comment (Int32.of_int @@ String.length v)
   (* No optimization for unicode *)
   | _ -> { expression_desc = Length (e, Bytes) ; comment }
 
@@ -68973,7 +68982,7 @@ let char_of_int ?comment (v : t) : t =
 
 let char_to_int ?comment (v : t) : t = 
   match v.expression_desc with 
-  | Str (_, x, None) -> (* No optimization for .. *)
+  | Str (_, x) -> (* No optimization for .. *)
     assert (String.length x = 1) ;
     int ~comment:(Printf.sprintf "%S"  x )  
       (Int32.of_int @@ Char.code x.[0])
@@ -68998,14 +69007,14 @@ let to_json_string ?comment e : t =
 
 let rec string_append ?comment (e : t) (el : t) : t = 
   match e.expression_desc , el.expression_desc  with 
-  | Str(_,a, None), String_append ({expression_desc = Str(_,b,None)}, c) ->
+  | Str(_,a), String_append ({expression_desc = Str(_,b)}, c) ->
     string_append ?comment (str (a ^ b)) c 
-  | String_append (c,{expression_desc = Str(_,b,None)}), Str(_,a,None) ->
+  | String_append (c,{expression_desc = Str(_,b)}), Str(_,a) ->
     string_append ?comment c (str (b ^ a))
-  | String_append (a,{expression_desc = Str(_,b,None)}),
-    String_append ({expression_desc = Str(_,c,None)} ,d) ->
+  | String_append (a,{expression_desc = Str(_,b)}),
+    String_append ({expression_desc = Str(_,c)} ,d) ->
     string_append ?comment (string_append a (str (b ^ c))) d 
-  | Str (_,a,None), Str (_,b,None) -> str ?comment (a ^ b)
+  | Str (_,a), Str (_,b) -> str ?comment (a ^ b)
   | _, Anything_to_string b -> string_append ?comment e b 
   | Anything_to_string b, _ -> string_append ?comment b el
   | _, _ -> {comment ; expression_desc = String_append(e,el)}
@@ -69081,7 +69090,7 @@ let rec triple_equal ?comment (e0 : t) (e1 : t ) : t =
     | Fun _ | Array _ | Caml_block _ ),  Var (Id ({name = "undefined"|"null"; } as id))
     when Ext_ident.is_js id && no_side_effect e0 -> 
     caml_false
-  | Str (_,x,None), Str (_,y,None) ->  (* CF*)
+  | Str (_,x), Str (_,y) ->  (* CF*)
     bool (Ext_string.equal x y)
   | Char_to_int a , Char_to_int b -> 
     triple_equal ?comment a b 
@@ -69397,8 +69406,9 @@ let rec float_equal ?comment (e0 : t) (e1 : t) : t =
 let int_equal = float_equal 
 let rec string_equal ?comment (e0 : t) (e1 : t) : t = 
   match e0.expression_desc, e1.expression_desc with     
-  | Str (_, a0,None), Str(_, b0,None) 
+  | Str (_, a0), Str(_, b0) 
     -> bool  (Ext_string.equal a0 b0)
+  | Unicode a0, Unicode b0 -> bool (Ext_string.equal a0 b0)
   | _ , _ 
     ->
     to_ocaml_boolean {expression_desc = Bin(EqEqEq, e0,e1); comment}     
@@ -72209,7 +72219,7 @@ let int_switch ?comment   ?declaration ?default (e : J.expression)  clauses : t 
 
 let string_switch ?comment ?declaration  ?default (e : J.expression)  clauses : t= 
   match e.expression_desc with 
-  | Str (_,s,None) -> 
+  | Str (_,s) -> 
     let continuation = 
       begin match List.find 
                     (fun  (x : string J.case_clause) -> x.case = s) clauses
@@ -83258,22 +83268,19 @@ and
         P.string f name;
         P.paren_group f 1 (fun _ -> arguments cxt f el)
       )
-
-  | Str (_, s,delimiter) ->
+  | Unicode s -> 
+    P.string f "\"";
+    P.string f s ; 
+    P.string f "\"";
+    cxt 
+  | Str (_, s) ->
     (*TODO --
        when utf8-> it will not escape '\\' which is definitely not we want
     *)
-    begin match delimiter with 
-    | Some d when Ext_string.equal d Literals.escaped_j_delimiter -> 
-      (* assert (1>2); *)
-      P.string f "\"";
-      P.string f s ;
-      P.string f "\"";
-      cxt 
-    | _ -> 
       let quote = best_string_quote s in 
-      pp_string f (* ~utf:(kind = `Utf8) *) ~quote s; cxt 
-    end
+      pp_string f (* ~utf:(kind = `Utf8) *) ~quote s;
+     cxt 
+
   | Raw_js_code (s,info) -> 
     begin match info with 
       | Exp -> 
@@ -83811,6 +83818,7 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
       | Math _
       | Var _ 
       | Str _ 
+      | Unicode _
       | Array _ 
       | Caml_block  _ 
       | FlatCall _ 
@@ -85350,6 +85358,7 @@ class virtual map =
        which is better to leave it alone
        The last argument is passed from as `j` from `{j||j}`
      *)
+                 (* It is escaped string, print delimited by '"'*)
                  (* literally raw JS code 
   *)
                  (* The third argument is [tag] , forth is [tag_info] *)
@@ -85575,11 +85584,9 @@ class virtual map =
           let _x_i1 = o#list (fun o -> o#ident) _x_i1 in
           let _x_i2 = o#block _x_i2 in
           let _x_i3 = o#unknown _x_i3 in Fun (_x, _x_i1, _x_i2, _x_i3)
-      | Str (_x, _x_i1, _x_i2) ->
-          let _x = o#bool _x in
-          let _x_i1 = o#string _x_i1 in
-          let _x_i2 = o#option (fun o -> o#string) _x_i2
-          in Str (_x, _x_i1, _x_i2)
+      | Str (_x, _x_i1) ->
+          let _x = o#bool _x in let _x_i1 = o#string _x_i1 in Str (_x, _x_i1)
+      | Unicode _x -> let _x = o#string _x in Unicode _x
       | Raw_js_code (_x, _x_i1) ->
           let _x = o#string _x in
           let _x_i1 = o#code_info _x_i1 in Raw_js_code (_x, _x_i1)
@@ -89480,7 +89487,8 @@ let rec translate (x : Lam.constant ) : J.expression =
   | Const_string i (*TODO: here inline js*) -> 
     E.str  i 
   | Const_unicode i -> 
-    E.str i ~delimiter:Literals.escaped_j_delimiter    
+    E.unicode i 
+    (* E.str i ~delimiter:Literals.escaped_j_delimiter *)   
 
   | Const_pointer (c,pointer_info) -> 
     E.int ?comment:(Lam_compile_util.comment_of_pointer_info pointer_info)
@@ -91189,7 +91197,7 @@ let translate (prim_name : string)
     call Js_config.format 
   | "caml_format_int" -> 
     begin match args with 
-    | [ {expression_desc = Str (_, "%d",None); _}; v] 
+    | [ {expression_desc = Str (_, "%d"); _}; v] 
       ->
       E.int_to_string v 
     | _ -> 

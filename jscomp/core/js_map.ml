@@ -230,6 +230,7 @@ class virtual map =
        which is better to leave it alone
        The last argument is passed from as `j` from `{j||j}`
      *)
+                 (* It is escaped string, print delimited by '"'*)
                  (* literally raw JS code 
   *)
                  (* The third argument is [tag] , forth is [tag_info] *)
@@ -455,11 +456,9 @@ class virtual map =
           let _x_i1 = o#list (fun o -> o#ident) _x_i1 in
           let _x_i2 = o#block _x_i2 in
           let _x_i3 = o#unknown _x_i3 in Fun (_x, _x_i1, _x_i2, _x_i3)
-      | Str (_x, _x_i1, _x_i2) ->
-          let _x = o#bool _x in
-          let _x_i1 = o#string _x_i1 in
-          let _x_i2 = o#option (fun o -> o#string) _x_i2
-          in Str (_x, _x_i1, _x_i2)
+      | Str (_x, _x_i1) ->
+          let _x = o#bool _x in let _x_i1 = o#string _x_i1 in Str (_x, _x_i1)
+      | Unicode _x -> let _x = o#string _x in Unicode _x
       | Raw_js_code (_x, _x_i1) ->
           let _x = o#string _x in
           let _x_i1 = o#code_info _x_i1 in Raw_js_code (_x, _x_i1)

@@ -83,12 +83,13 @@ let free_variables_of_expression used_idents defined_idents st =
 
 let rec no_side_effect_expression_desc (x : J.expression_desc)  = 
   match x with 
-  | Bool _ -> true 
-  | Var _ -> true 
-  | Access (a,b) -> no_side_effect a && no_side_effect b 
-  | Str (b,_,_) -> b
+  | Bool _ 
+  | Var _ 
+  | Unicode _ -> true 
   | Fun _ -> true
   | Number _ -> true (* Can be refined later *)
+  | Access (a,b) -> no_side_effect a && no_side_effect b 
+  | Str (b,_) -> b    
   | Array (xs,_mutable_flag)  
   | Caml_block (xs, _mutable_flag, _, _)
     ->
@@ -242,7 +243,7 @@ let rev_toplevel_flatten block =
 let rec is_constant (x : J.expression)  = 
   match x.expression_desc with 
   | Access (a,b) -> is_constant a && is_constant b 
-  | Str (b,_,_) -> b
+  | Str (b,_) -> b
   | Number _ -> true (* Can be refined later *)
   | Array (xs,_mutable_flag)  -> List.for_all is_constant  xs 
   | Caml_block(xs, Immutable, tag, _) 
