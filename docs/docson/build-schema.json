@@ -267,7 +267,7 @@
         },
         "refmt": {
             "type": "string",
-            "description": "Path to refmt for Reason syntax, for example: reason/refmt_impl.native"
+            "description": "Alternative path to refmt for Reason syntax, for example: reason/refmt_impl.native. Will use the default refmt BS provides otherwise."
         },
         "bs-external-includes": {
             "$ref": "#/definitions/stringArray",
@@ -289,7 +289,7 @@
             "properties": {
                 "react-jsx" : {
                     "type" : "boolean",
-                    "description": "when it set true, then it will apply jsx transformation"
+                    "description": "when set to true, apply Reason's react-specific jsx transformation."
                 }
             }
         }
