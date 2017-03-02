@@ -170,12 +170,12 @@ let valid_global_name ?loc txt =
     List.iter
       (fun s ->
          if not (valid_ident s) then
-           Location.raise_errorf ?loc "Not a valid  name %s"  txt
+           Location.raise_errorf ?loc "Not a valid name %s"  txt
       ) v      
 
 let valid_method_name ?loc txt =         
   if not (valid_ident txt) then
-    Location.raise_errorf ?loc "Not a valid  name %s"  txt
+    Location.raise_errorf ?loc "Not a valid name %s"  txt
 
 
 
