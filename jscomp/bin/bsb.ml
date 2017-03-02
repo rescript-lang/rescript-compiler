@@ -4683,7 +4683,14 @@ val sort_via_array :
 val last : 'a list -> 'a
 
 
+(** When [key] is not found unbox the default, 
+  if it is found return that, otherwise [assert false ]
+ *)
+val assoc_by_string : 
+  'a  option -> string -> (string * 'a) list -> 'a 
 
+val assoc_by_int : 
+  'a  option -> int -> (int * 'a) list -> 'a   
 end = struct
 #1 "ext_list.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -5057,6 +5064,25 @@ let rec last xs =
   | [] -> invalid_arg "Ext_list.last"
 
 
+let rec assoc_by_string def (k : string) lst = 
+  match lst with 
+  | [] -> 
+    begin match def with 
+    | None -> assert false 
+    | Some x -> x end
+  | (k1,v1)::rest -> 
+    if Ext_string.equal k1 k then v1 else 
+    assoc_by_string def k rest 
+
+let rec assoc_by_int def (k : int) lst = 
+  match lst with 
+  | [] -> 
+    begin match def with
+    | None -> assert false 
+    | Some x -> x end
+  | (k1,v1)::rest -> 
+    if k1 = k then v1 else 
+    assoc_by_int def k rest     
 end
 module Ext_sys : sig 
 #1 "ext_sys.mli"

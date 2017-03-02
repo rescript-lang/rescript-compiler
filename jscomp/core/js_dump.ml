@@ -193,8 +193,8 @@ let array_conv =
 
 
 (* https://mathiasbynens.be/notes/javascript-escapes *)
-let pp_string f ?(quote='"') ?(utf=false) s =
-  let pp_raw_string f ?(utf=false) s = 
+let pp_string f ?(quote='"') (* ?(utf=false)*) s =
+  let pp_raw_string f (* ?(utf=false)*) s = 
     let l = String.length s in
     for i = 0 to l - 1 do
       let c = String.unsafe_get s i in
@@ -214,7 +214,7 @@ let pp_string f ?(quote='"') ?(utf=false) s =
       | '\000' when i = l - 1 || (let next = String.unsafe_get s (i + 1) in (next < '0' || next > '9'))
         -> P.string f "\\0"
 
-      | '\\' when not utf -> P.string f "\\\\"
+      | '\\' (* when not utf*) -> P.string f "\\\\"
 
 
       | '\000' .. '\031'  | '\127'->
@@ -222,7 +222,7 @@ let pp_string f ?(quote='"') ?(utf=false) s =
         P.string f "\\x";
         P.string f (Array.unsafe_get array_conv (c lsr 4));
         P.string f (Array.unsafe_get array_conv (c land 0xf))
-      | '\128' .. '\255' when not utf ->
+      | '\128' .. '\255' (* when not utf*) ->
         let c = Char.code c in
         P.string f "\\x";
         P.string f (Array.unsafe_get array_conv (c lsr 4));
@@ -239,7 +239,7 @@ let pp_string f ?(quote='"') ?(utf=false) s =
   in
   let quote_s = String.make 1 quote in
   P.string f quote_s;
-  pp_raw_string f ~utf s ;
+  pp_raw_string f (*~utf*) s ;
   P.string f quote_s
 ;;
 
@@ -247,11 +247,11 @@ let property_string f s =
   if Ext_ident.property_no_need_convert s  then 
     P.string f s
   else 
-    pp_string f ~utf:true ~quote:(best_string_quote s) s
+    pp_string f ~quote:(best_string_quote s) s
 
 (* TODO: check utf's correct semantics *)
 let pp_quote_string f s = 
-  pp_string f ~utf:false ~quote:(best_string_quote s ) s 
+  pp_string f  ~quote:(best_string_quote s ) s 
 
 let rec comma_idents  cxt f (ls : Ident.t list)  =
   match ls with
@@ -762,22 +762,19 @@ and
         P.string f name;
         P.paren_group f 1 (fun _ -> arguments cxt f el)
       )
-
-  | Str (_, s,delimiter) ->
+  | Unicode s -> 
+    P.string f "\"";
+    P.string f s ; 
+    P.string f "\"";
+    cxt 
+  | Str (_, s) ->
     (*TODO --
        when utf8-> it will not escape '\\' which is definitely not we want
     *)
-    begin match delimiter with 
-    | Some d when Ext_string.equal d Literals.escaped_j_delimiter -> 
-      (* assert (1>2); *)
-      P.string f "\"";
-      P.string f s ;
-      P.string f "\"";
-      cxt 
-    | _ -> 
       let quote = best_string_quote s in 
-      pp_string f (* ~utf:(kind = `Utf8) *) ~quote s; cxt 
-    end
+      pp_string f  ~quote s;
+     cxt 
+
   | Raw_js_code (s,info) -> 
     begin match info with 
       | Exp -> 
@@ -1084,7 +1081,7 @@ and
       else
         begin 
           P.bracket_group f 1 @@ fun _ ->
-          pp_string f (* ~utf:(kind = `Utf8) *) ~quote:( best_string_quote s) s
+          pp_string f ~quote:( best_string_quote s) s
         end;
       (* See [Js_program_loader.obj_of_exports] 
          maybe in the ast level we should have 
@@ -1315,6 +1312,7 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
       | Math _
       | Var _ 
       | Str _ 
+      | Unicode _
       | Array _ 
       | Caml_block  _ 
       | FlatCall _ 
@@ -1703,7 +1701,7 @@ let requires require_lit cxt f (modules : (Ident.t * string) list ) =
       P.space f;
       P.string f require_lit;
       P.paren_group f 0 @@ (fun _ ->
-          pp_string f ~utf:true ~quote:(best_string_quote s) file  );
+          pp_string f ~quote:(best_string_quote s) file  );
       semi f ;
       P.newline f ;
     ) reversed_list;
@@ -1731,9 +1729,9 @@ let imports  cxt f (modules : (Ident.t * string) list ) =
       P.nspace f (margin - String.length s + 1) ;      
       P.string f L.from;
       P.space f;
-      (* P.paren_group f 0 @@ (fun _ -> *)
-      pp_string f ~utf:true ~quote:(best_string_quote s) file  
-      (* ) *);
+      
+      pp_string f ~quote:(best_string_quote s) file  
+      ;
       semi f ;
       P.newline f ;
     ) reversed_list;
@@ -1798,7 +1796,7 @@ let amd_program ~output_prefix kind f (  x : J.deps_program) =
       let s = Js_program_loader.string_of_module_id ~output_prefix kind x in
       P.string f L.comma ;
       P.space f; 
-      pp_string f ~utf:true ~quote:(best_string_quote s) s;
+      pp_string f  ~quote:(best_string_quote s) s;
     ) x.modules ;
   P.string f "]";
   P.string f L.comma;

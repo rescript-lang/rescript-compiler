@@ -212,7 +212,7 @@ and expression_desc =
   (* The first parameter by default is false, 
      it will be true when it's a method
   *)
-  | Str of bool * string * string option 
+  | Str of bool * string 
     (* A string is UTF-8 encoded, the string may contain
        escape sequences.
        The first argument is used to mark it is non-pure, please
@@ -221,6 +221,8 @@ and expression_desc =
        which is better to leave it alone
        The last argument is passed from as `j` from `{j||j}`
      *)
+  | Unicode of string 
+    (* It is escaped string, print delimited by '"'*)   
   | Raw_js_code of string * code_info
   (* literally raw JS code 
   *)

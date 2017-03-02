@@ -217,6 +217,7 @@ class virtual fold =
        which is better to leave it alone
        The last argument is passed from as `j` from `{j||j}`
      *)
+                 (* It is escaped string, print delimited by '"'*)
                  (* literally raw JS code 
   *)
                  (* The third argument is [tag] , forth is [tag_info] *)
@@ -414,10 +415,8 @@ class virtual fold =
           let o = o#bool _x in
           let o = o#list (fun o -> o#ident) _x_i1 in
           let o = o#block _x_i2 in let o = o#unknown _x_i3 in o
-      | Str (_x, _x_i1, _x_i2) ->
-          let o = o#bool _x in
-          let o = o#string _x_i1 in
-          let o = o#option (fun o -> o#string) _x_i2 in o
+      | Str (_x, _x_i1) -> let o = o#bool _x in let o = o#string _x_i1 in o
+      | Unicode _x -> let o = o#string _x in o
       | Raw_js_code (_x, _x_i1) ->
           let o = o#string _x in let o = o#code_info _x_i1 in o
       | Array (_x, _x_i1) ->

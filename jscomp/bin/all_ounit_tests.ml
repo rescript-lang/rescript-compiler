@@ -9041,7 +9041,14 @@ val sort_via_array :
 val last : 'a list -> 'a
 
 
+(** When [key] is not found unbox the default, 
+  if it is found return that, otherwise [assert false ]
+ *)
+val assoc_by_string : 
+  'a  option -> string -> (string * 'a) list -> 'a 
 
+val assoc_by_int : 
+  'a  option -> int -> (int * 'a) list -> 'a   
 end = struct
 #1 "ext_list.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -9415,6 +9422,25 @@ let rec last xs =
   | [] -> invalid_arg "Ext_list.last"
 
 
+let rec assoc_by_string def (k : string) lst = 
+  match lst with 
+  | [] -> 
+    begin match def with 
+    | None -> assert false 
+    | Some x -> x end
+  | (k1,v1)::rest -> 
+    if Ext_string.equal k1 k then v1 else 
+    assoc_by_string def k rest 
+
+let rec assoc_by_int def (k : int) lst = 
+  match lst with 
+  | [] -> 
+    begin match def with
+    | None -> assert false 
+    | Some x -> x end
+  | (k1,v1)::rest -> 
+    if k1 = k then v1 else 
+    assoc_by_int def k rest     
 end
 module Ounit_list_test
 = struct
@@ -9437,8 +9463,8 @@ let suites =
     end;
     __LOC__ >:: begin fun _ ->
       OUnit.assert_equal (
-          Ext_list.flat_map_acc (fun x -> if x mod 2 = 0 then [true] else [])
-            [false;false] [1;2]
+        Ext_list.flat_map_acc (fun x -> if x mod 2 = 0 then [true] else [])
+          [false;false] [1;2]
       )  [true;false;false]
     end;
     __LOC__ >:: begin fun _ -> 
@@ -9446,15 +9472,23 @@ let suites =
         Ext_list.map_acc ["1";"2";"3"] (fun x -> string_of_int x) [0;1;2] 
 
       )
-      ["0";"1";"2"; "1";"2";"3"]
+        ["0";"1";"2"; "1";"2";"3"]
     end;
 
     __LOC__ >:: begin fun _ -> 
       let (a,b) = Ext_list.take 3 [1;2;3;4;5;6] in 
       OUnit.assert_equal (a,b)
-      ([1;2;3],[4;5;6])
-    end
-    
+        ([1;2;3],[4;5;6])
+    end;
+
+    __LOC__ >:: begin fun _ -> 
+      OUnit.assert_equal (Ext_list.assoc_by_int None 1 [2,"x"; 3,"y"; 1, "z"]) "z"
+    end;
+    __LOC__ >:: begin fun _ -> 
+      OUnit.assert_raise_any
+        (fun _ -> Ext_list.assoc_by_int None 11 [2,"x"; 3,"y"; 1, "z"])
+    end 
+
   ]
 end
 module Int_map : sig 

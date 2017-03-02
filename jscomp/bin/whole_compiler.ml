@@ -23411,7 +23411,14 @@ val sort_via_array :
 val last : 'a list -> 'a
 
 
+(** When [key] is not found unbox the default, 
+  if it is found return that, otherwise [assert false ]
+ *)
+val assoc_by_string : 
+  'a  option -> string -> (string * 'a) list -> 'a 
 
+val assoc_by_int : 
+  'a  option -> int -> (int * 'a) list -> 'a   
 end = struct
 #1 "ext_list.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -23785,6 +23792,25 @@ let rec last xs =
   | [] -> invalid_arg "Ext_list.last"
 
 
+let rec assoc_by_string def (k : string) lst = 
+  match lst with 
+  | [] -> 
+    begin match def with 
+    | None -> assert false 
+    | Some x -> x end
+  | (k1,v1)::rest -> 
+    if Ext_string.equal k1 k then v1 else 
+    assoc_by_string def k rest 
+
+let rec assoc_by_int def (k : int) lst = 
+  match lst with 
+  | [] -> 
+    begin match def with
+    | None -> assert false 
+    | Some x -> x end
+  | (k1,v1)::rest -> 
+    if k1 = k then v1 else 
+    assoc_by_int def k rest     
 end
 module Bs_hash_stubs
 = struct
@@ -58434,12 +58460,12 @@ let valid_global_name ?loc txt =
     List.iter
       (fun s ->
          if not (valid_ident s) then
-           Location.raise_errorf ?loc "Not a valid  name %s"  txt
+           Location.raise_errorf ?loc "Not a valid name %s"  txt
       ) v      
 
 let valid_method_name ?loc txt =         
   if not (valid_ident txt) then
-    Location.raise_errorf ?loc "Not a valid  name %s"  txt
+    Location.raise_errorf ?loc "Not a valid name %s"  txt
 
 
 
@@ -64074,7 +64100,7 @@ and expression_desc =
   (* The first parameter by default is false, 
      it will be true when it's a method
   *)
-  | Str of bool * string * string option 
+  | Str of bool * string 
     (* A string is UTF-8 encoded, the string may contain
        escape sequences.
        The first argument is used to mark it is non-pure, please
@@ -64083,6 +64109,8 @@ and expression_desc =
        which is better to leave it alone
        The last argument is passed from as `j` from `{j||j}`
      *)
+  | Unicode of string 
+    (* It is escaped string, print delimited by '"'*)   
   | Raw_js_code of string * code_info
   (* literally raw JS code 
   *)
@@ -64781,7 +64809,8 @@ type function_arities =
 type constant = 
   | Const_int of int
   | Const_char of char
-  | Const_string of string * string option
+  | Const_string of string 
+  | Const_unicode of string 
   | Const_float of string
   | Const_int32 of int32
   | Const_int64 of int64
@@ -65102,7 +65131,8 @@ type function_arities =
 type constant = 
   | Const_int of int
   | Const_char of char
-  | Const_string of string * string option
+  | Const_string of string  (* use record later *)
+  | Const_unicode of string 
   | Const_float of string
   | Const_int32 of int32
   | Const_int64 of int64
@@ -65111,7 +65141,7 @@ type constant =
   | Const_block of int * Lambda.tag_info * constant list
   | Const_float_array of string list
   | Const_immstring of string
-  
+
 type primitive = 
   | Pbytes_to_string
   | Pbytes_of_string
@@ -65891,7 +65921,7 @@ exception Not_simple_form
     ]}
 *)
 let rec is_eta_conversion_exn
- params inner_args outer_args = 
+    params inner_args outer_args = 
   match params, inner_args, outer_args with 
   | x::xs, Lvar y::ys, r::rest 
     when Ident.same x y ->
@@ -65956,7 +65986,9 @@ let if_ (a : t) (b : t) c =
         if x <> 0L then b else c
       | (Const_nativeint x) ->
         if x <> 0n then b else c
-      | (Const_string _ | Const_float _ ) -> b
+      | Const_string _ 
+      | Const_float _
+      | Const_unicode _
       | Const_block _
       | Const_float_array _
       | Const_immstring _ -> b
@@ -65967,33 +65999,16 @@ let switch lam (lam_switch : switch) : t =
   match lam with
   | Lconst ((Const_pointer (i,_) |  (Const_int i)))
     ->
-    begin try List.assoc i lam_switch.sw_consts
-      with  Not_found ->
-      match lam_switch.sw_failaction with
-      | Some x -> x
-      | None -> assert false
-    end
+    Ext_list.assoc_by_int lam_switch.sw_failaction i lam_switch.sw_consts
   | Lconst (Const_block (i,_,_)) ->
-    begin try List.assoc i lam_switch.sw_blocks
-      with  Not_found ->
-      match lam_switch.sw_failaction with
-      | Some x -> x
-      | None -> assert false
-    end
+    Ext_list.assoc_by_int lam_switch.sw_failaction i lam_switch.sw_blocks
   | _ -> 
     Lswitch(lam,lam_switch)
 
 let stringswitch (lam : t) cases default : t = 
   match lam with
-  | Lconst ((Const_string (a,None))) ->
-    begin
-      try List.assoc a cases with Not_found ->
-        begin
-          match default with
-          | Some x -> x
-          | None -> assert false
-        end
-    end
+  | Lconst (Const_string a) ->    
+    Ext_list.assoc_by_string default a cases     
   | _ -> Lstringswitch(lam, cases, default)
 
 
@@ -66075,7 +66090,7 @@ module Lift = struct
   let int64 b : t =
     Lconst ((Const_int64 b))
   let string b : t =
-    Lconst ((Const_string (b, None)))
+    Lconst ((Const_string (b)))
   let char b : t =
     Lconst ((Const_char b))    
 end
@@ -66094,7 +66109,7 @@ let prim ~primitive:(prim : Prim.t) ~args:(ll : t list) loc  : t =
         Lift.int (int_of_float (float_of_string a))
       (* | Pnegfloat -> Lift.float (-. a) *)
       (* | Pabsfloat -> Lift.float (abs_float a) *)
-      | Pstringlength, ( (Const_string (a,None)) ) 
+      | Pstringlength, ( (Const_string (a)) ) 
         -> 
         Lift.int (String.length a)
       (* | Pnegbint Pnativeint, ( (Const_nativeint i)) *)
@@ -66220,11 +66235,11 @@ let prim ~primitive:(prim : Prim.t) ~args:(ll : t list) loc  : t =
       | Psequor, Const_pointer (a, _), Const_pointer( b, _)
         -> 
         Lift.bool (a = 1 || b = 1)
-      | Pstringadd, (Const_string (a, None)),
-         (Const_string (b,None))
+      | Pstringadd, (Const_string (a)),
+        (Const_string (b))
         ->
         Lift.string (a ^ b)
-      | (Pstringrefs | Pstringrefu), (Const_string(a,None)),
+      | (Pstringrefs | Pstringrefu), (Const_string(a)),
         ((Const_int b)| Const_pointer (b,_))
         ->
         begin try Lift.char (String.get a b)
@@ -66556,20 +66571,27 @@ let convert exports lam : _ * _  =
   let may_depends = Lam_module_ident.Hash_set.create 0 in 
   let rec
     aux_constant ( const : Lambda.structured_constant) : constant = 
-     match const with 
-     | Const_base (Const_int i) -> (Const_int i)
-     | Const_base (Const_char i) -> (Const_char i)
-     | Const_base (Const_string(i,opt)) -> (Const_string(i,opt))
-     | Const_base (Const_float i) -> (Const_float i)
-     | Const_base (Const_int32 i) -> (Const_int32 i)
-     | Const_base (Const_int64 i) -> (Const_int64 i)
-     | Const_base (Const_nativeint i) -> (Const_nativeint i)
-     | Const_pointer(i,p) -> Const_pointer (i,p)
-     | Const_float_array (s) -> Const_float_array(s)
-     | Const_immstring s -> Const_immstring s 
-     | Const_block (i,t,xs) -> 
+    match const with 
+    | Const_base (Const_int i) -> (Const_int i)
+    | Const_base (Const_char i) -> (Const_char i)
+    | Const_base (Const_string(i,opt)) ->
+      begin match opt with 
+        | Some opt when 
+            Ext_string.equal opt Literals.escaped_j_delimiter ->
+          Const_unicode i
+        | _ ->   
+          Const_string i
+      end 
+    | Const_base (Const_float i) -> (Const_float i)
+    | Const_base (Const_int32 i) -> (Const_int32 i)
+    | Const_base (Const_int64 i) -> (Const_int64 i)
+    | Const_base (Const_nativeint i) -> (Const_nativeint i)
+    | Const_pointer(i,p) -> Const_pointer (i,p)
+    | Const_float_array (s) -> Const_float_array(s)
+    | Const_immstring s -> Const_immstring s 
+    | Const_block (i,t,xs) -> 
       Const_block (i,t, List.map aux_constant xs)
-    and aux (lam : Lambda.lambda) : t = 
+  and aux (lam : Lambda.lambda) : t = 
     match lam with 
     | Lvar x -> 
       let var = Ident_hashtbl.find_default alias x x in
@@ -66608,7 +66630,7 @@ let convert exports lam : _ * _  =
               end
             | _ -> assert false
           end
-        
+
         | Lprim ( Pfield (id, _),
                   [Lprim (Pgetglobal ({name  = "Pervasives"} ), _,_)],loc              
                 )
@@ -66698,20 +66720,20 @@ let convert exports lam : _ * _  =
       end
     (* we might allow some arity here *)  
     | Lprim(Pccall {prim_name = "js_pure_expr"}, 
-      args,loc) ->  
+            args,loc) ->  
       begin match args with 
-      | [Lconst( Const_base (Const_string(s,_)))] -> 
-        prim ~primitive:(Praw_js_code_exp s)
-        ~args:[] loc 
-      | _ -> assert false 
+        | [Lconst( Const_base (Const_string(s,_)))] -> 
+          prim ~primitive:(Praw_js_code_exp s)
+            ~args:[] loc 
+        | _ -> assert false 
       end  
     | Lprim(Pccall {prim_name = "js_pure_stmt"}, 
-      args,loc) ->  
+            args,loc) ->  
       begin match args with 
-      | [Lconst( Const_base (Const_string(s,_)))] -> 
-        prim ~primitive:(Praw_js_code_stmt s)
-        ~args:[] loc         
-      | _ -> assert false 
+        | [Lconst( Const_base (Const_string(s,_)))] -> 
+          prim ~primitive:(Praw_js_code_stmt s)
+            ~args:[] loc         
+        | _ -> assert false 
       end 
     | Lprim(Pdirapply, _, _) -> assert false 
     | Lprim (primitive,args, loc) 
@@ -67308,6 +67330,7 @@ class virtual fold =
        which is better to leave it alone
        The last argument is passed from as `j` from `{j||j}`
      *)
+                 (* It is escaped string, print delimited by '"'*)
                  (* literally raw JS code 
   *)
                  (* The third argument is [tag] , forth is [tag_info] *)
@@ -67505,10 +67528,8 @@ class virtual fold =
           let o = o#bool _x in
           let o = o#list (fun o -> o#ident) _x_i1 in
           let o = o#block _x_i2 in let o = o#unknown _x_i3 in o
-      | Str (_x, _x_i1, _x_i2) ->
-          let o = o#bool _x in
-          let o = o#string _x_i1 in
-          let o = o#option (fun o -> o#string) _x_i2 in o
+      | Str (_x, _x_i1) -> let o = o#bool _x in let o = o#string _x_i1 in o
+      | Unicode _x -> let o = o#string _x in o
       | Raw_js_code (_x, _x_i1) ->
           let o = o#string _x in let o = o#code_info _x_i1 in o
       | Array (_x, _x_i1) ->
@@ -67742,12 +67763,13 @@ let free_variables_of_expression used_idents defined_idents st =
 
 let rec no_side_effect_expression_desc (x : J.expression_desc)  = 
   match x with 
-  | Bool _ -> true 
-  | Var _ -> true 
-  | Access (a,b) -> no_side_effect a && no_side_effect b 
-  | Str (b,_,_) -> b
+  | Bool _ 
+  | Var _ 
+  | Unicode _ -> true 
   | Fun _ -> true
   | Number _ -> true (* Can be refined later *)
+  | Access (a,b) -> no_side_effect a && no_side_effect b 
+  | Str (b,_) -> b    
   | Array (xs,_mutable_flag)  
   | Caml_block (xs, _mutable_flag, _, _)
     ->
@@ -67901,7 +67923,7 @@ let rev_toplevel_flatten block =
 let rec is_constant (x : J.expression)  = 
   match x.expression_desc with 
   | Access (a,b) -> is_constant a && is_constant b 
-  | Str (b,_,_) -> b
+  | Str (b,_) -> b
   | Number _ -> true (* Can be refined later *)
   | Array (xs,_mutable_flag)  -> List.for_all is_constant  xs 
   | Caml_block(xs, Immutable, tag, _) 
@@ -68324,11 +68346,15 @@ val runtime_ref : string -> string -> t
 
 val str : 
   ?pure:bool -> 
-  ?delimiter:string ->
   ?comment:string -> 
   string -> 
   t 
 
+val unicode : 
+  ?comment:string -> 
+  string -> 
+  t
+  
 val ocaml_fun : ?comment:string ->
   ?immutable_mask:bool array -> J.ident list -> J.block -> t
 
@@ -68624,8 +68650,11 @@ let external_var_dot ?comment  ~external_name:name ?dot (id : Ident.t) : t =
 let ml_var ?comment (id : Ident.t) : t  = 
   {expression_desc = Var (Qualified (id, Ml, None)); comment}
 
-let str ?(pure=true) ?delimiter ?comment s : t =  
-  {expression_desc = Str (pure,s,delimiter); comment}
+let str ?(pure=true)  ?comment s : t =  
+  {expression_desc = Str (pure,s); comment}
+
+let unicode ?comment s : t = 
+  {expression_desc = Unicode (s); comment}
 
 let raw_js_code ?comment info s : t =
   {expression_desc = Raw_js_code (s,info) ; comment }
@@ -68774,7 +68803,7 @@ let fuse_to_seq x xs =
   else List.fold_left seq x xs 
 
 let empty_string_literal : t = 
-  {expression_desc = Str (true,"",None); comment = None}  
+  {expression_desc = Str (true,""); comment = None}  
 
 let zero_int_literal : t =   
   {expression_desc = Number (Int {i = 0l; c = None}) ; comment = None}
@@ -68831,7 +68860,7 @@ let access ?comment (e0 : t)  (e1 : t) : t =
 
 let string_access ?comment (e0 : t)  (e1 : t) : t = 
   match e0.expression_desc, e1.expression_desc with
-  | Str (_,s,None) , Number (Int {i; _}) 
+  | Str (_,s) , Number (Int {i; _}) 
     ->  (* Don't optimize {j||j} *)
     let i = Int32.to_int i  in
     if i >= 0 && i < String.length s then 
@@ -68916,7 +68945,7 @@ let array_length ?comment (e : t) : t =
 
 let string_length ?comment (e : t) : t =
   match e.expression_desc with 
-  | Str(_,v, None) -> int ?comment (Int32.of_int (String.length v)) 
+  | Str(_,v) -> int ?comment (Int32.of_int (String.length v)) 
     (* No optimization for {j||j}*)
   | _ -> { expression_desc = Length (e, String) ; comment }
 
@@ -68924,7 +68953,7 @@ let bytes_length ?comment (e : t) : t =
   match e.expression_desc with 
   (* TODO: use array instead? *)
   | Array (l, _) -> int ?comment (Int32.of_int (List.length l))
-  | Str(_,v, None) -> int ?comment (Int32.of_int @@ String.length v)
+  | Str(_,v) -> int ?comment (Int32.of_int @@ String.length v)
   (* No optimization for unicode *)
   | _ -> { expression_desc = Length (e, Bytes) ; comment }
 
@@ -68953,7 +68982,7 @@ let char_of_int ?comment (v : t) : t =
 
 let char_to_int ?comment (v : t) : t = 
   match v.expression_desc with 
-  | Str (_, x, None) -> (* No optimization for .. *)
+  | Str (_, x) -> (* No optimization for .. *)
     assert (String.length x = 1) ;
     int ~comment:(Printf.sprintf "%S"  x )  
       (Int32.of_int @@ Char.code x.[0])
@@ -68978,14 +69007,14 @@ let to_json_string ?comment e : t =
 
 let rec string_append ?comment (e : t) (el : t) : t = 
   match e.expression_desc , el.expression_desc  with 
-  | Str(_,a, None), String_append ({expression_desc = Str(_,b,None)}, c) ->
+  | Str(_,a), String_append ({expression_desc = Str(_,b)}, c) ->
     string_append ?comment (str (a ^ b)) c 
-  | String_append (c,{expression_desc = Str(_,b,None)}), Str(_,a,None) ->
+  | String_append (c,{expression_desc = Str(_,b)}), Str(_,a) ->
     string_append ?comment c (str (b ^ a))
-  | String_append (a,{expression_desc = Str(_,b,None)}),
-    String_append ({expression_desc = Str(_,c,None)} ,d) ->
+  | String_append (a,{expression_desc = Str(_,b)}),
+    String_append ({expression_desc = Str(_,c)} ,d) ->
     string_append ?comment (string_append a (str (b ^ c))) d 
-  | Str (_,a,None), Str (_,b,None) -> str ?comment (a ^ b)
+  | Str (_,a), Str (_,b) -> str ?comment (a ^ b)
   | _, Anything_to_string b -> string_append ?comment e b 
   | Anything_to_string b, _ -> string_append ?comment b el
   | _, _ -> {comment ; expression_desc = String_append(e,el)}
@@ -69061,7 +69090,7 @@ let rec triple_equal ?comment (e0 : t) (e1 : t ) : t =
     | Fun _ | Array _ | Caml_block _ ),  Var (Id ({name = "undefined"|"null"; } as id))
     when Ext_ident.is_js id && no_side_effect e0 -> 
     caml_false
-  | Str (_,x,None), Str (_,y,None) ->  (* CF*)
+  | Str (_,x), Str (_,y) ->  (* CF*)
     bool (Ext_string.equal x y)
   | Char_to_int a , Char_to_int b -> 
     triple_equal ?comment a b 
@@ -69377,8 +69406,9 @@ let rec float_equal ?comment (e0 : t) (e1 : t) : t =
 let int_equal = float_equal 
 let rec string_equal ?comment (e0 : t) (e1 : t) : t = 
   match e0.expression_desc, e1.expression_desc with     
-  | Str (_, a0,None), Str(_, b0,None) 
+  | Str (_, a0), Str(_, b0) 
     -> bool  (Ext_string.equal a0 b0)
+  | Unicode a0, Unicode b0 -> bool (Ext_string.equal a0 b0)
   | _ , _ 
     ->
     to_ocaml_boolean {expression_desc = Bin(EqEqEq, e0,e1); comment}     
@@ -70367,7 +70397,9 @@ let rec size (lam : Lam.t) =
   with Too_big_to_inline ->  1000 
 and size_constant x = 
   match x with 
-  | Const_int _ | Const_char _ | Const_string _  
+  | Const_int _ | Const_char _ 
+  | Const_string _  
+  | Const_unicode _
   | Const_float _  | Const_int32 _ | Const_int64 _ 
   | Const_nativeint _ 
   | Const_immstring _
@@ -70569,7 +70601,8 @@ let rec struct_const ppf (cst : Lam.constant) =
   match cst with 
   |  (Const_int n) -> fprintf ppf "%i" n
   |  (Const_char c) -> fprintf ppf "%C" c
-  |  (Const_string (s, _)) -> fprintf ppf "%S" s
+  |  (Const_string s) -> fprintf ppf "%S" s
+  |  (Const_unicode s) -> fprintf ppf "%S" s
   | Const_immstring s -> fprintf ppf "#%S" s
   |  (Const_float f) -> fprintf ppf "%s" f
   |  (Const_int32 n) -> fprintf ppf "%lil" n
@@ -72186,7 +72219,7 @@ let int_switch ?comment   ?declaration ?default (e : J.expression)  clauses : t 
 
 let string_switch ?comment ?declaration  ?default (e : J.expression)  clauses : t= 
   match e.expression_desc with 
-  | Str (_,s,None) -> 
+  | Str (_,s) -> 
     let continuation = 
       begin match List.find 
                     (fun  (x : string J.case_clause) -> x.case = s) clauses
@@ -82666,8 +82699,8 @@ let array_conv =
 
 
 (* https://mathiasbynens.be/notes/javascript-escapes *)
-let pp_string f ?(quote='"') ?(utf=false) s =
-  let pp_raw_string f ?(utf=false) s = 
+let pp_string f ?(quote='"') (* ?(utf=false)*) s =
+  let pp_raw_string f (* ?(utf=false)*) s = 
     let l = String.length s in
     for i = 0 to l - 1 do
       let c = String.unsafe_get s i in
@@ -82687,7 +82720,7 @@ let pp_string f ?(quote='"') ?(utf=false) s =
       | '\000' when i = l - 1 || (let next = String.unsafe_get s (i + 1) in (next < '0' || next > '9'))
         -> P.string f "\\0"
 
-      | '\\' when not utf -> P.string f "\\\\"
+      | '\\' (* when not utf*) -> P.string f "\\\\"
 
 
       | '\000' .. '\031'  | '\127'->
@@ -82695,7 +82728,7 @@ let pp_string f ?(quote='"') ?(utf=false) s =
         P.string f "\\x";
         P.string f (Array.unsafe_get array_conv (c lsr 4));
         P.string f (Array.unsafe_get array_conv (c land 0xf))
-      | '\128' .. '\255' when not utf ->
+      | '\128' .. '\255' (* when not utf*) ->
         let c = Char.code c in
         P.string f "\\x";
         P.string f (Array.unsafe_get array_conv (c lsr 4));
@@ -82712,7 +82745,7 @@ let pp_string f ?(quote='"') ?(utf=false) s =
   in
   let quote_s = String.make 1 quote in
   P.string f quote_s;
-  pp_raw_string f ~utf s ;
+  pp_raw_string f (*~utf*) s ;
   P.string f quote_s
 ;;
 
@@ -82720,11 +82753,11 @@ let property_string f s =
   if Ext_ident.property_no_need_convert s  then 
     P.string f s
   else 
-    pp_string f ~utf:true ~quote:(best_string_quote s) s
+    pp_string f ~quote:(best_string_quote s) s
 
 (* TODO: check utf's correct semantics *)
 let pp_quote_string f s = 
-  pp_string f ~utf:false ~quote:(best_string_quote s ) s 
+  pp_string f  ~quote:(best_string_quote s ) s 
 
 let rec comma_idents  cxt f (ls : Ident.t list)  =
   match ls with
@@ -83235,22 +83268,19 @@ and
         P.string f name;
         P.paren_group f 1 (fun _ -> arguments cxt f el)
       )
-
-  | Str (_, s,delimiter) ->
+  | Unicode s -> 
+    P.string f "\"";
+    P.string f s ; 
+    P.string f "\"";
+    cxt 
+  | Str (_, s) ->
     (*TODO --
        when utf8-> it will not escape '\\' which is definitely not we want
     *)
-    begin match delimiter with 
-    | Some d when Ext_string.equal d Literals.escaped_j_delimiter -> 
-      (* assert (1>2); *)
-      P.string f "\"";
-      P.string f s ;
-      P.string f "\"";
-      cxt 
-    | _ -> 
       let quote = best_string_quote s in 
-      pp_string f (* ~utf:(kind = `Utf8) *) ~quote s; cxt 
-    end
+      pp_string f  ~quote s;
+     cxt 
+
   | Raw_js_code (s,info) -> 
     begin match info with 
       | Exp -> 
@@ -83557,7 +83587,7 @@ and
       else
         begin 
           P.bracket_group f 1 @@ fun _ ->
-          pp_string f (* ~utf:(kind = `Utf8) *) ~quote:( best_string_quote s) s
+          pp_string f ~quote:( best_string_quote s) s
         end;
       (* See [Js_program_loader.obj_of_exports] 
          maybe in the ast level we should have 
@@ -83788,6 +83818,7 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
       | Math _
       | Var _ 
       | Str _ 
+      | Unicode _
       | Array _ 
       | Caml_block  _ 
       | FlatCall _ 
@@ -84176,7 +84207,7 @@ let requires require_lit cxt f (modules : (Ident.t * string) list ) =
       P.space f;
       P.string f require_lit;
       P.paren_group f 0 @@ (fun _ ->
-          pp_string f ~utf:true ~quote:(best_string_quote s) file  );
+          pp_string f ~quote:(best_string_quote s) file  );
       semi f ;
       P.newline f ;
     ) reversed_list;
@@ -84204,9 +84235,9 @@ let imports  cxt f (modules : (Ident.t * string) list ) =
       P.nspace f (margin - String.length s + 1) ;      
       P.string f L.from;
       P.space f;
-      (* P.paren_group f 0 @@ (fun _ -> *)
-      pp_string f ~utf:true ~quote:(best_string_quote s) file  
-      (* ) *);
+      
+      pp_string f ~quote:(best_string_quote s) file  
+      ;
       semi f ;
       P.newline f ;
     ) reversed_list;
@@ -84271,7 +84302,7 @@ let amd_program ~output_prefix kind f (  x : J.deps_program) =
       let s = Js_program_loader.string_of_module_id ~output_prefix kind x in
       P.string f L.comma ;
       P.space f; 
-      pp_string f ~utf:true ~quote:(best_string_quote s) s;
+      pp_string f  ~quote:(best_string_quote s) s;
     ) x.modules ;
   P.string f "]";
   P.string f L.comma;
@@ -85327,6 +85358,7 @@ class virtual map =
        which is better to leave it alone
        The last argument is passed from as `j` from `{j||j}`
      *)
+                 (* It is escaped string, print delimited by '"'*)
                  (* literally raw JS code 
   *)
                  (* The third argument is [tag] , forth is [tag_info] *)
@@ -85552,11 +85584,9 @@ class virtual map =
           let _x_i1 = o#list (fun o -> o#ident) _x_i1 in
           let _x_i2 = o#block _x_i2 in
           let _x_i3 = o#unknown _x_i3 in Fun (_x, _x_i1, _x_i2, _x_i3)
-      | Str (_x, _x_i1, _x_i2) ->
-          let _x = o#bool _x in
-          let _x_i1 = o#string _x_i1 in
-          let _x_i2 = o#option (fun o -> o#string) _x_i2
-          in Str (_x, _x_i1, _x_i2)
+      | Str (_x, _x_i1) ->
+          let _x = o#bool _x in let _x_i1 = o#string _x_i1 in Str (_x, _x_i1)
+      | Unicode _x -> let _x = o#string _x in Unicode _x
       | Raw_js_code (_x, _x_i1) ->
           let _x = o#string _x in
           let _x_i1 = o#code_info _x_i1 in Raw_js_code (_x, _x_i1)
@@ -89454,9 +89484,11 @@ let rec translate (x : Lam.constant ) : J.expression =
   (* https://github.com/google/closure-library/blob/master/closure%2Fgoog%2Fmath%2Flong.js *)
   | Const_nativeint i -> E.nint i 
   | Const_float f -> E.float f (* TODO: preserve float *)
-  | Const_string (i,delimiter) (*TODO: here inline js*) -> 
-    E.str ?delimiter i 
-
+  | Const_string i (*TODO: here inline js*) -> 
+    E.str  i 
+  | Const_unicode i -> 
+    E.unicode i 
+    (* E.str i ~delimiter:Literals.escaped_j_delimiter *)   
 
   | Const_pointer (c,pointer_info) -> 
     E.int ?comment:(Lam_compile_util.comment_of_pointer_info pointer_info)
@@ -89888,11 +89920,7 @@ let eval (arg : J.expression) (dispatches : (int * string) list ) : E.t =
   if arg == E.undefined then E.undefined else
   match arg.expression_desc with
   | Number (Int {i} | Uint i) -> 
-    begin match List.assoc (Int32.to_int i) dispatches with 
-    | exception Not_found -> assert false 
-    | v ->  E.str v 
-    end
-
+    E.str (Ext_list.assoc_by_int None (Int32.to_int i) dispatches) 
   | _ ->  
     E.of_block
       [(S.int_switch arg
@@ -89908,11 +89936,7 @@ let eval_as_event (arg : J.expression) (dispatches : (int * string) list ) : E.t
   | Array ([{expression_desc = Number (Int {i} | Uint i)}; cb], _)
   | Caml_block([{expression_desc = Number (Int {i} | Uint i)}; cb], _, _, _)
     -> 
-    begin match (List.assoc (Int32.to_int i) dispatches) with 
-    | v ->     [E.str v ; cb]
-    | exception Not_found -> assert false 
-    end
-
+    let v = Ext_list.assoc_by_int None (Int32.to_int i) dispatches in [E.str v ; cb ]   
   | _ ->  
     let event = Ext_ident.create "action" in
     [
@@ -89941,10 +89965,7 @@ let eval_as_int (arg : J.expression) (dispatches : (int * int) list ) : E.t  =
   if arg == E.undefined then E.undefined else 
   match arg.expression_desc with
   | Number (Int {i} | Uint i) ->
-    begin match  (List.assoc (Int32.to_int i) dispatches) with
-    | e -> E.int (Int32.of_int e)
-    | exception Not_found -> assert false 
-    end
+    E.int (Int32.of_int (Ext_list.assoc_by_int None (Int32.to_int i) dispatches))    
   | _ ->  
     E.of_block
       [(S.int_switch arg
@@ -91176,7 +91197,7 @@ let translate (prim_name : string)
     call Js_config.format 
   | "caml_format_int" -> 
     begin match args with 
-    | [ {expression_desc = Str (_, "%d",None); _}; v] 
+    | [ {expression_desc = Str (_, "%d"); _}; v] 
       ->
       E.int_to_string v 
     | _ -> 
@@ -96907,7 +96928,7 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
           *)
           ->
           Ident_hashtbl.add subst v (simplif l1); simplif l2
-        | _, Lconst ((Const_string (s,None)) ) -> 
+        | _, Lconst (Const_string s ) -> 
           (** only "" added for later inlining *)
           Ident_hashtbl.add string_table v s;
           Lam.let_ Alias v l1 (simplif l2)
@@ -96928,7 +96949,7 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
       else 
         let l1 = simplif l1 in         
         begin match l1 with 
-        | Lconst(Const_string(s,None)) -> 
+        | Lconst(Const_string s) -> 
           Ident_hashtbl.add string_table v s; 
           (* we need move [simplif l2] later, since adding Hashtbl does have side effect *)
           Lam.let_ Alias v l1 (simplif l2)
@@ -96949,7 +96970,7 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
         let l1 = (simplif l1) in 
         
          begin match kind, l1 with 
-         | Strict, Lconst((Const_string(s,None)))
+         | Strict, Lconst((Const_string s))
            -> 
             Ident_hashtbl.add string_table v s;
             Lam.let_ Alias v l1 (simplif l2)
@@ -96992,7 +97013,7 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
         let r' = simplif r in
         let opt_l = 
           match l' with 
-          | Lconst((Const_string(ls,None))) -> Some ls 
+          | Lconst((Const_string ls)) -> Some ls 
           | Lvar i -> Ident_hashtbl.find_opt string_table i 
           | _ -> None in 
         match opt_l with   
@@ -97000,13 +97021,13 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
         | Some l_s -> 
           let opt_r = 
             match r' with 
-            | Lconst ( (Const_string(rs,None))) -> Some rs 
+            | Lconst ( (Const_string rs)) -> Some rs 
             | Lvar i -> Ident_hashtbl.find_opt string_table i 
             | _ -> None in 
             begin match opt_r with 
             | None -> Lam.prim ~primitive:Pstringadd ~args:[l';r'] loc 
             | Some r_s -> 
-              Lam.const (((Const_string(l_s^r_s, None))))
+              Lam.const (Const_string(l_s^r_s))
             end
       end
 
@@ -97017,7 +97038,7 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
       let r' = simplif r in 
       let opt_l =
          match l' with 
-         | Lconst ((Const_string(ls,None))) -> 
+         | Lconst (Const_string ls) -> 
             Some ls 
          | Lvar i -> Ident_hashtbl.find_opt string_table i 
          | _ -> None in 
@@ -103140,11 +103161,15 @@ let rec unsafe_mapper : Ast_mapper.mapper =
 
           end             
         |Pexp_constant (Const_string (s, (Some delim))) 
-          when Ext_string.equal delim Literals.unescaped_js_delimiter ->         
-         let s_len  = String.length s in 
-         let buf = Buffer.create (s_len * 2) in 
-         Ast_utf8_string.check_and_transform loc buf s 0 s_len ;  
-         { e with pexp_desc = Pexp_constant (Const_string (Buffer.contents buf, Some Literals.escaped_j_delimiter))}
+          ->         
+          if Ext_string.equal delim Literals.unescaped_js_delimiter then 
+            let s_len  = String.length s in 
+            let buf = Buffer.create (s_len * 2) in 
+            Ast_utf8_string.check_and_transform loc buf s 0 s_len ;  
+            { e with pexp_desc = Pexp_constant (Const_string (Buffer.contents buf, Some Literals.escaped_j_delimiter))}
+          else if Ext_string.equal delim Literals.unescaped_j_delimiter then 
+            Location.raise_errorf ~loc "{j||j} is reserved for future use" 
+          else e 
 
         (** [bs.debugger], its output should not be rewritten any more*)
         | Pexp_extension ({txt = ("bs.debugger"|"debugger"); loc} , payload)
@@ -103409,7 +103434,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
         Location.raise_errorf ~loc 
           "Unicode string is not allowed in pattern match"
       | _  -> Ast_mapper.default_mapper.pat self pat
-      
+
     end;
     structure_item = begin fun self (str : Parsetree.structure_item) -> 
       begin match str.pstr_desc with 

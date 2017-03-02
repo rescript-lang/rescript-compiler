@@ -124,3 +124,11 @@ val sort_via_array :
 val last : 'a list -> 'a
 
 
+(** When [key] is not found unbox the default, 
+  if it is found return that, otherwise [assert false ]
+ *)
+val assoc_by_string : 
+  'a  option -> string -> (string * 'a) list -> 'a 
+
+val assoc_by_int : 
+  'a  option -> int -> (int * 'a) list -> 'a   

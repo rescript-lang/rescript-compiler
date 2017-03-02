@@ -17,6 +17,7 @@ echo "Building finished" >> build.compile
 echo "Building libs" >> build.compile
 make libs 2>> build.compile
 echo "Building finished" >> build.compile
+# TODO: run make depend to snapshot .depend
 # TODO: this quick test is buggy, 
 # since a.ml maybe depend on another module 
 # we can not just comment it, it will also produce jslambda

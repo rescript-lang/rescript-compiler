@@ -30,11 +30,7 @@ let eval (arg : J.expression) (dispatches : (int * string) list ) : E.t =
   if arg == E.undefined then E.undefined else
   match arg.expression_desc with
   | Number (Int {i} | Uint i) -> 
-    begin match List.assoc (Int32.to_int i) dispatches with 
-    | exception Not_found -> assert false 
-    | v ->  E.str v 
-    end
-
+    E.str (Ext_list.assoc_by_int None (Int32.to_int i) dispatches) 
   | _ ->  
     E.of_block
       [(S.int_switch arg
@@ -50,11 +46,7 @@ let eval_as_event (arg : J.expression) (dispatches : (int * string) list ) : E.t
   | Array ([{expression_desc = Number (Int {i} | Uint i)}; cb], _)
   | Caml_block([{expression_desc = Number (Int {i} | Uint i)}; cb], _, _, _)
     -> 
-    begin match (List.assoc (Int32.to_int i) dispatches) with 
-    | v ->     [E.str v ; cb]
-    | exception Not_found -> assert false 
-    end
-
+    let v = Ext_list.assoc_by_int None (Int32.to_int i) dispatches in [E.str v ; cb ]   
   | _ ->  
     let event = Ext_ident.create "action" in
     [
@@ -83,10 +75,7 @@ let eval_as_int (arg : J.expression) (dispatches : (int * int) list ) : E.t  =
   if arg == E.undefined then E.undefined else 
   match arg.expression_desc with
   | Number (Int {i} | Uint i) ->
-    begin match  (List.assoc (Int32.to_int i) dispatches) with
-    | e -> E.int (Int32.of_int e)
-    | exception Not_found -> assert false 
-    end
+    E.int (Int32.of_int (Ext_list.assoc_by_int None (Int32.to_int i) dispatches))    
   | _ ->  
     E.of_block
       [(S.int_switch arg

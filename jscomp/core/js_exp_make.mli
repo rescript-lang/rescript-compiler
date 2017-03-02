@@ -91,11 +91,15 @@ val runtime_ref : string -> string -> t
 
 val str : 
   ?pure:bool -> 
-  ?delimiter:string ->
   ?comment:string -> 
   string -> 
   t 
 
+val unicode : 
+  ?comment:string -> 
+  string -> 
+  t
+  
 val ocaml_fun : ?comment:string ->
   ?immutable_mask:bool array -> J.ident list -> J.block -> t
 
