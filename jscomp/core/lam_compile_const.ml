@@ -58,8 +58,8 @@ let rec translate (x : Lam.constant ) : J.expression =
   (* https://github.com/google/closure-library/blob/master/closure%2Fgoog%2Fmath%2Flong.js *)
   | Const_nativeint i -> E.nint i 
   | Const_float f -> E.float f (* TODO: preserve float *)
-  | Const_string (i,delimiter) (*TODO: here inline js*) -> 
-    E.str ?delimiter i 
+  | Const_string i (*TODO: here inline js*) -> 
+    E.str  i 
   | Const_unicode i -> 
     E.str i ~delimiter:Literals.escaped_j_delimiter    
 

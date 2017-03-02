@@ -8426,7 +8426,14 @@ val sort_via_array :
 val last : 'a list -> 'a
 
 
+(** When [key] is not found unbox the default, 
+  if it is found return that, otherwise [assert false ]
+ *)
+val assoc_by_string : 
+  'a  option -> string -> (string * 'a) list -> 'a 
 
+val assoc_by_int : 
+  'a  option -> int -> (int * 'a) list -> 'a   
 end = struct
 #1 "ext_list.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -8800,6 +8807,25 @@ let rec last xs =
   | [] -> invalid_arg "Ext_list.last"
 
 
+let rec assoc_by_string def (k : string) lst = 
+  match lst with 
+  | [] -> 
+    begin match def with 
+    | None -> assert false 
+    | Some x -> x end
+  | (k1,v1)::rest -> 
+    if Ext_string.equal k1 k then v1 else 
+    assoc_by_string def k rest 
+
+let rec assoc_by_int def (k : int) lst = 
+  match lst with 
+  | [] -> 
+    begin match def with
+    | None -> assert false 
+    | Some x -> x end
+  | (k1,v1)::rest -> 
+    if k1 = k then v1 else 
+    assoc_by_int def k rest     
 end
 module Ast_comb : sig 
 #1 "ast_comb.mli"
@@ -14859,11 +14885,15 @@ let rec unsafe_mapper : Ast_mapper.mapper =
 
           end             
         |Pexp_constant (Const_string (s, (Some delim))) 
-          when Ext_string.equal delim Literals.unescaped_js_delimiter ->         
-         let s_len  = String.length s in 
-         let buf = Buffer.create (s_len * 2) in 
-         Ast_utf8_string.check_and_transform loc buf s 0 s_len ;  
-         { e with pexp_desc = Pexp_constant (Const_string (Buffer.contents buf, Some Literals.escaped_j_delimiter))}
+          ->         
+          if Ext_string.equal delim Literals.unescaped_js_delimiter then 
+            let s_len  = String.length s in 
+            let buf = Buffer.create (s_len * 2) in 
+            Ast_utf8_string.check_and_transform loc buf s 0 s_len ;  
+            { e with pexp_desc = Pexp_constant (Const_string (Buffer.contents buf, Some Literals.escaped_j_delimiter))}
+          else if Ext_string.equal delim Literals.unescaped_j_delimiter then 
+            Location.raise_errorf ~loc "{j||j} is reserved for future use" 
+          else e 
 
         (** [bs.debugger], its output should not be rewritten any more*)
         | Pexp_extension ({txt = ("bs.debugger"|"debugger"); loc} , payload)
@@ -15128,7 +15158,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
         Location.raise_errorf ~loc 
           "Unicode string is not allowed in pattern match"
       | _  -> Ast_mapper.default_mapper.pat self pat
-      
+
     end;
     structure_item = begin fun self (str : Parsetree.structure_item) -> 
       begin match str.pstr_desc with 

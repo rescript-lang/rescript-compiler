@@ -44,7 +44,7 @@ type function_arities =
 type constant = 
   | Const_int of int
   | Const_char of char
-  | Const_string of string  * string option 
+  | Const_string of string  (* use record later *)
   | Const_unicode of string 
   | Const_float of string
   | Const_int32 of int32
@@ -912,33 +912,16 @@ let switch lam (lam_switch : switch) : t =
   match lam with
   | Lconst ((Const_pointer (i,_) |  (Const_int i)))
     ->
-    begin try List.assoc i lam_switch.sw_consts
-      with  Not_found ->
-      match lam_switch.sw_failaction with
-      | Some x -> x
-      | None -> assert false
-    end
+    Ext_list.assoc_by_int lam_switch.sw_failaction i lam_switch.sw_consts
   | Lconst (Const_block (i,_,_)) ->
-    begin try List.assoc i lam_switch.sw_blocks
-      with  Not_found ->
-      match lam_switch.sw_failaction with
-      | Some x -> x
-      | None -> assert false
-    end
+    Ext_list.assoc_by_int lam_switch.sw_failaction i lam_switch.sw_blocks
   | _ -> 
     Lswitch(lam,lam_switch)
 
 let stringswitch (lam : t) cases default : t = 
   match lam with
-  | Lconst (Const_string (a,None)) ->
-    begin
-      try List.assoc a cases with Not_found ->
-        begin
-          match default with
-          | Some x -> x
-          | None -> assert false
-        end
-    end
+  | Lconst (Const_string a) ->    
+    Ext_list.assoc_by_string default a cases     
   | _ -> Lstringswitch(lam, cases, default)
 
 
@@ -1020,7 +1003,7 @@ module Lift = struct
   let int64 b : t =
     Lconst ((Const_int64 b))
   let string b : t =
-    Lconst ((Const_string (b, None)))
+    Lconst ((Const_string (b)))
   let char b : t =
     Lconst ((Const_char b))    
 end
@@ -1039,7 +1022,7 @@ let prim ~primitive:(prim : Prim.t) ~args:(ll : t list) loc  : t =
         Lift.int (int_of_float (float_of_string a))
       (* | Pnegfloat -> Lift.float (-. a) *)
       (* | Pabsfloat -> Lift.float (abs_float a) *)
-      | Pstringlength, ( (Const_string (a,None)) ) 
+      | Pstringlength, ( (Const_string (a)) ) 
         -> 
         Lift.int (String.length a)
       (* | Pnegbint Pnativeint, ( (Const_nativeint i)) *)
@@ -1165,11 +1148,11 @@ let prim ~primitive:(prim : Prim.t) ~args:(ll : t list) loc  : t =
       | Psequor, Const_pointer (a, _), Const_pointer( b, _)
         -> 
         Lift.bool (a = 1 || b = 1)
-      | Pstringadd, (Const_string (a, None)),
-        (Const_string (b,None))
+      | Pstringadd, (Const_string (a)),
+        (Const_string (b))
         ->
         Lift.string (a ^ b)
-      | (Pstringrefs | Pstringrefu), (Const_string(a,None)),
+      | (Pstringrefs | Pstringrefu), (Const_string(a)),
         ((Const_int b)| Const_pointer (b,_))
         ->
         begin try Lift.char (String.get a b)
@@ -1510,7 +1493,7 @@ let convert exports lam : _ * _  =
             Ext_string.equal opt Literals.escaped_j_delimiter ->
           Const_unicode i
         | _ ->   
-          (Const_string(i,opt))
+          Const_string i
       end 
     | Const_base (Const_float i) -> (Const_float i)
     | Const_base (Const_int32 i) -> (Const_int32 i)

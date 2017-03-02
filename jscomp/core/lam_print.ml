@@ -21,7 +21,7 @@ let rec struct_const ppf (cst : Lam.constant) =
   match cst with 
   |  (Const_int n) -> fprintf ppf "%i" n
   |  (Const_char c) -> fprintf ppf "%C" c
-  |  (Const_string (s, _)) -> fprintf ppf "%S" s
+  |  (Const_string s) -> fprintf ppf "%S" s
   |  (Const_unicode s) -> fprintf ppf "%S" s
   | Const_immstring s -> fprintf ppf "#%S" s
   |  (Const_float f) -> fprintf ppf "%s" f

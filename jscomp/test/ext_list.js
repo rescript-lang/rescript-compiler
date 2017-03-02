@@ -972,6 +972,66 @@ function last(_xs) {
   };
 }
 
+function assoc_by_string(def, k, _lst) {
+  while(true) {
+    var lst = _lst;
+    if (lst) {
+      var match = lst[0];
+      if (match[0] === k) {
+        return match[1];
+      }
+      else {
+        _lst = lst[1];
+        continue ;
+        
+      }
+    }
+    else if (def) {
+      return def[0];
+    }
+    else {
+      throw [
+            Caml_builtin_exceptions.assert_failure,
+            [
+              "ext_list.ml",
+              376,
+              14
+            ]
+          ];
+    }
+  };
+}
+
+function assoc_by_int(def, k, _lst) {
+  while(true) {
+    var lst = _lst;
+    if (lst) {
+      var match = lst[0];
+      if (match[0] === k) {
+        return match[1];
+      }
+      else {
+        _lst = lst[1];
+        continue ;
+        
+      }
+    }
+    else if (def) {
+      return def[0];
+    }
+    else {
+      throw [
+            Caml_builtin_exceptions.assert_failure,
+            [
+              "ext_list.ml",
+              386,
+              14
+            ]
+          ];
+    }
+  };
+}
+
 exports.filter_map         = filter_map;
 exports.excludes           = excludes;
 exports.exclude_with_fact  = exclude_with_fact;
@@ -1016,4 +1076,6 @@ exports.ref_pop            = ref_pop;
 exports.rev_except_last    = rev_except_last;
 exports.sort_via_array     = sort_via_array;
 exports.last               = last;
+exports.assoc_by_string    = assoc_by_string;
+exports.assoc_by_int       = assoc_by_int;
 /* No side effect */

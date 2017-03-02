@@ -139,7 +139,7 @@ ext_bytes.cmj : ../stdlib/pervasives.cmj ../stdlib/bytes.cmj
 ext_filename.cmj : ../stdlib/sys.cmj ../stdlib/string.cmj literals.cmj \
     ../stdlib/list.cmj ../stdlib/lazy.cmj ../stdlib/filename.cmj \
     ext_string.cmj ext_pervasives.cmj
-ext_list.cmj : ../stdlib/list.cmj ../stdlib/array.cmj
+ext_list.cmj : ../stdlib/list.cmj ext_string.cmj ../stdlib/array.cmj
 ext_log.cmj : ../stdlib/format.cmj
 ext_pervasives.cmj : ../stdlib/string.cmj ../stdlib/printf.cmj \
     ../stdlib/obj.cmj ../stdlib/list.cmj ../stdlib/int32.cmj \
