@@ -104,7 +104,9 @@ OTHERS := literals a test_ari test_export2 test_internalOO test_obj_simple_ffi t
 	gpr_1268\
 	bs_auto_uncurry\
 	bs_auto_uncurry_test\
-	chn_test
+	chn_test\
+	return_check\
+	bs_splice_partial
 
 # bs_uncurry_test
 # needs Lam to get rid of Uncurry arity first

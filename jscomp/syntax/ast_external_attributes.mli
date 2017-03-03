@@ -24,7 +24,13 @@
 
 
 
-
+type return_wrapper = Ast_ffi_types.return_wrapper = 
+  | Return_default
+  | Retrun_undefined_to_opt  
+  | Return_null_to_opt
+  | Return_null_undefined_to_opt
+  | Return_to_ocaml_bool
+  | Return_unit (* add [()] as return value *)
 
 
 

@@ -75,7 +75,7 @@ type primitive =
       (* Location.t *  [loc] is passed down *)
       string *  (* prim_name *)
       Ast_ffi_types.arg_kind list * (* arg_types *)
-      bool * (* result_type *)
+      Ast_external_attributes.return_wrapper * (* result_type *)
       Ast_ffi_types.ffi  (* ffi *)
 
   (* Ast_ffi_types.arg_kind list * bool * Ast_ffi_types.ffi  *)
@@ -832,6 +832,10 @@ exception Not_simple_form
          (function prim/1024 prim/1023 prim/1022
                      ([js] (js_fn_make_2 prim/1024) prim/1023 prim/1022)) .. )
     ]}
+    Note that [external] functions are forced to do eta-conversion
+    when combined with [|>] operator, we need to make sure beta-reduction 
+    is applied though since `[@bs.splice]` needs such guarantee.
+    Since `[@bs.splice] is the tail position
 *)
 let rec is_eta_conversion_exn
     params inner_args outer_args = 
@@ -1274,13 +1278,32 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : t =
         prim ~primitive:(Pjs_object_create labels) ~args loc 
       | Ffi_bs(arg_types, result_type, ffi) ->         
         if no_auto_uncurried_arg_types arg_types then   
-          prim ~primitive:(Pjs_call(prim_name, arg_types,result_type,ffi)) 
-            ~args loc
+          let result = prim ~primitive:(Pjs_call(prim_name, arg_types,result_type,ffi)) 
+                ~args loc in result 
+          (* begin match result_type with 
+            | Return_unit  
+              (* -> 
+              seq result unit *)
+            | Return_default -> 
+              result 
+            | _ -> assert false 
+          end *)
+
+
         else 
+
           let n_arg_types, n_args = 
             transform_uncurried_arg_type loc  arg_types args in 
-          prim ~primitive:(Pjs_call (prim_name, n_arg_types, result_type, ffi))
-            ~args:n_args loc 
+          let result = 
+            prim ~primitive:(Pjs_call (prim_name, n_arg_types, result_type, ffi))
+                ~args:n_args loc in result 
+          (* begin match result_type with 
+            | Return_unit -> 
+              seq result unit 
+            | Return_default -> 
+              result  
+            | _ -> assert false 
+          end *) 
     end
 
   | Praise _ ->
@@ -1555,7 +1578,52 @@ let convert exports lam : _ * _  =
               prim ~primitive:Pstringadd ~args:[l;r] loc 
             | _ ->  apply (aux fn) args loc  App_na
           end
+        (*  
+        | Lfunction(kind,params,Lprim(prim,inner_args,inner_loc))
+          when List.for_all2 (fun x y -> 
+          match y with 
+          | Lambda.Lvar y when Ident.same x y -> true
+          | _ -> false 
+           ) params inner_args
+          -> 
+          let rec aux outer_args params = 
+            match outer_args, params with 
+            | x::xs , _::ys -> 
+              x :: aux xs ys 
+            | [], [] -> []
+            | x::xs, [] -> 
+            | [], y::ys 
+          if Ext_list.same_length inner_args args then 
+            aux (Lprim(prim,args,inner_loc))
+          else 
+          (* 
+            {[
+              (fun x y -> f x y) (computation;e) --> 
+              (fun y -> f (computation;e) y) 
+              ]}
+              is wrong
+              
+              or 
+              {[
+                (fun x y -> f x y ) ([|1;2;3|]) --> 
+                (fun y -> f [|1;2;3|] y) 
+              ]}
+              is also wrong.
+
+              It seems, we need handle [@bs.splice] earlier
+
+              or 
+              {[
+                (fun x y -> f x y) ([|1;2;3|]) --> 
+                let x0, x1, x2 =1,2,3 in 
+                (fun y -> f [|x0;x1;x2|] y)                
+              ]}
+              But this still need us to know [@bs.splice] in advance
+           *)  
+        *)
         | _ -> 
+
+          (** we need do this eargly in case [aux fn] add some wrapper *)
           apply (aux fn) (List.map aux args) 
             loc App_na
       end

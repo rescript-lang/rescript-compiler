@@ -74,6 +74,7 @@ bs_ignore_effect.cmj : mt.cmj
 bs_ignore_test.cmj : ../runtime/js.cmj
 bs_node_string_buffer_test.cmj : ../others/node.cmj ../runtime/js.cmj
 bs_rest_test.cmj :
+bs_splice_partial.cmj : ../runtime/js.cmj
 bs_string_test.cmj : mt.cmj ../runtime/js.cmj
 buffer_test.cmj : ../stdlib/string.cmj mt.cmj ../stdlib/bytes.cmj \
     ../stdlib/buffer.cmj
@@ -347,6 +348,7 @@ record_with_test.cmj : mt.cmj
 recursive_module.cmj :
 recursive_module_test.cmj : mt.cmj
 regression_print.cmj :
+return_check.cmj :
 runtime_encoding_test.cmj :
 scanf_io.cmj : testing.cmj ../stdlib/string.cmj ../stdlib/scanf.cmj \
     ../stdlib/printf.cmj ../stdlib/list.cmj ../stdlib/digest.cmj \

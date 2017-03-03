@@ -1,6 +1,0 @@
-
-
-
-
-Lalias-bound variables are never assigned, so it can only 
-appear in `Lvar`, then it is easy to eliminate it 

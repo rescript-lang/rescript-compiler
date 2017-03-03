@@ -188,6 +188,14 @@ type name_source =
   | `Nm_na
 
   ]
+
+type return_wrapper = Ast_ffi_types.return_wrapper = 
+  | Return_default
+  | Retrun_undefined_to_opt  
+  | Return_null_to_opt
+  | Return_null_undefined_to_opt
+  | Return_to_ocaml_bool
+  | Return_unit 
 type st = 
   { val_name : name_source;
     external_module_name : Ast_ffi_types.external_module_name option;
@@ -202,6 +210,7 @@ type st =
     set_name : name_source ;
     get_name : name_source ;
     mk_obj : bool ;
+    return_wrapper : return_wrapper ;
 
   }
 
@@ -220,8 +229,9 @@ let init_st =
     set_name = `Nm_na ;
     get_name = `Nm_na ;
     mk_obj = false ; 
-
+    return_wrapper = Return_default; 
   }
+
 
 
 
@@ -230,7 +240,7 @@ let process_external_attributes
     no_arguments 
     (prim_name_or_pval_prim: [< bundle_source ] as 'a)
     pval_prim
-    prim_attributes =
+    (prim_attributes : Ast_attributes.t) : _ * Ast_attributes.t =
   let name_from_payload_or_prim payload : name_source =
     match Ast_payload.is_single_string payload with
     | Some  val_name ->  `Nm_payload val_name
@@ -281,6 +291,22 @@ let process_external_attributes
             | "bs.set_index" -> {st with set_index = true}
             | "bs.get_index"-> {st with get_index = true}
             | "bs.obj" -> {st with mk_obj = true}
+            | "bs.return" -> 
+              let actions = 
+                Ast_payload.as_config_record_and_process loc payload 
+              in
+              begin match actions with 
+                | [ ({txt= "undefined_to_opt"},None) ] -> 
+                  { st with return_wrapper = Retrun_undefined_to_opt}
+                | [ ({txt= "null_to_opt"},None) ] -> 
+                  { st with return_wrapper = Return_null_to_opt}                  
+                | [ ({txt= "null_undefined_to_opt"},None) ] -> 
+                  { st with return_wrapper = Return_null_undefined_to_opt}    
+                | [ ({txt = "to_bool"}, None)] ->          
+                  { st with return_wrapper = Return_to_ocaml_bool}
+                | _ -> 
+                  Location.raise_errorf ~loc "Not supported return directive"
+              end
             | _ -> (Bs_warnings.warn_unused_attribute loc txt; st)
           end, attrs
         else (st , attr :: attrs)
@@ -294,8 +320,8 @@ let rec has_bs_uncurry (attrs : Ast_attributes.t) =
     true 
   | _ :: attrs -> has_bs_uncurry attrs 
   | [] -> false 
-  
-  
+
+
 (** Note that the passed [type_annotation] is already processed by visitor pattern before 
 *)
 let handle_attributes 
@@ -321,11 +347,11 @@ let handle_attributes
   let result_type, arg_types_ty =
     Ast_core_type.list_of_arrow type_annotation in
   if has_bs_uncurry result_type.ptyp_attributes then 
-  begin 
+    begin 
       Location.raise_errorf 
-      ~loc:result_type.ptyp_loc
-       "[@@bs.uncurry] can not be applied to tailed position"
-  end ;
+        ~loc:result_type.ptyp_loc
+        "[@@bs.uncurry] can not be applied to tailed position"
+    end ;
   let (st, left_attrs) = 
     process_external_attributes 
       (arg_types_ty = [])
@@ -346,6 +372,9 @@ let handle_attributes
         set_name = `Nm_na ;
         get_name = `Nm_na ;
         get_index = false ;
+        return_wrapper = Return_default 
+        (* wrapper does not work with [bs.obj]
+           TODO: better error message *)
       } -> 
         if String.length prim_name <> 0 then 
           Location.raise_errorf ~loc "[@@bs.obj] expect external names to be empty string";
@@ -774,15 +803,21 @@ let handle_attributes
     begin 
       Ast_ffi_types.check_ffi ~loc ffi;
       let result_type_spec, new_result_type  = 
-        get_arg_type ~nolabel:true false result_type in (* result type can not be labeled *)
-
+        get_arg_type ~nolabel:true false result_type in
+      (* result type can not be labeled *)
+      let return_wrapper = 
+        if result_type_spec = Extern_unit then 
+          Return_unit 
+        else Return_default
+      in 
       (
         List.fold_right (fun (label,ty,attrs,loc) acc -> 
             Ast_helper.Typ.arrow ~loc  ~attrs label ty acc 
           ) new_arg_types_ty new_result_type
       ) ,
+
       prim_name,
-      (Ffi_bs (arg_type_specs,(result_type_spec = Extern_unit) ,  ffi)), left_attrs
+      (Ffi_bs (arg_type_specs,return_wrapper ,  ffi)), left_attrs
     end
 
 let handle_attributes_as_string 

@@ -1,7 +1,0 @@
-
-
-Global exports identifiers are extracted from {!Translmod.get_export_identifiers} 
-instead of inferred from lambda expression or cmi file.
-
-1. We need be careful about externals.
-2. Reading from fresh generated cmi is expensive.

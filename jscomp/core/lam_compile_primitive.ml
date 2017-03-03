@@ -546,7 +546,8 @@ let translate  loc
     Lam_compile_external_obj.assemble_args_obj labels args 
   | Pjs_call (_, arg_types, result_type, ffi) -> 
     Lam_compile_external_call.translate_ffi 
-    loc ffi cxt arg_types result_type args 
+    loc ffi cxt arg_types (result_type = Ast_ffi_types.Return_unit) args 
+    (** FIXME, this can be removed later *)
   | Pisint -> 
     begin 
       match args with 
