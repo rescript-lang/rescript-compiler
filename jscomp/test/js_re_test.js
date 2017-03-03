@@ -6,140 +6,171 @@ var Block = require("../../lib/js/block");
 var suites_000 = /* tuple */[
   "exec_literal",
   function () {
-    var res = (/[^.]+/).exec("http://xxx.domain.com");
-    return /* Eq */Block.__(0, [
-              "xxx",
-              res[0].substring(7)
-            ]);
+    var match = (/[^.]+/).exec("http://xxx.domain.com");
+    if (match !== null) {
+      return /* Eq */Block.__(0, [
+                "xxx",
+                match[0].substring(7)
+              ]);
+    }
+    else {
+      return /* FailWith */Block.__(7, ["regex should match"]);
+    }
   }
 ];
 
 var suites_001 = /* :: */[
   /* tuple */[
-    "test_str",
+    "exec_no_match",
     function () {
-      var res = new RegExp("foo").test("#foo#");
-      return /* Eq */Block.__(0, [
-                true,
-                res
-              ]);
+      var match = (/https:\/\/(.*)/).exec("http://xxx.domain.com");
+      if (match !== null) {
+        return /* FailWith */Block.__(7, ["regex should not match"]);
+      }
+      else {
+        return /* Ok */Block.__(2, [/* true */1]);
+      }
     }
   ],
   /* :: */[
     /* tuple */[
-      "fromStringWithFlags",
+      "test_str",
       function () {
-        var res = new RegExp("foo", "g");
+        var res = new RegExp("foo").test("#foo#");
         return /* Eq */Block.__(0, [
                   true,
-                  res.global
+                  res
                 ]);
       }
     ],
     /* :: */[
       /* tuple */[
-        "result_index",
+        "fromStringWithFlags",
         function () {
-          var res = new RegExp("zbar").exec("foobarbazbar");
+          var res = new RegExp("foo", "g");
           return /* Eq */Block.__(0, [
-                    8,
-                    res.index
+                    true,
+                    res.global
                   ]);
         }
       ],
       /* :: */[
         /* tuple */[
-          "result_input",
+          "result_index",
           function () {
-            return /* Eq */Block.__(0, [
-                      "foobar",
-                      (/foo/g).exec("foobar").input
-                    ]);
+            var match = new RegExp("zbar").exec("foobarbazbar");
+            if (match !== null) {
+              return /* Eq */Block.__(0, [
+                        8,
+                        match.index
+                      ]);
+            }
+            else {
+              return /* Fail */Block.__(6, [/* () */0]);
+            }
           }
         ],
         /* :: */[
           /* tuple */[
-            "t_flags",
+            "result_input",
             function () {
-              return /* Eq */Block.__(0, [
-                        "gi",
-                        (/./ig).flags
-                      ]);
+              var input = "foobar";
+              var match = (/foo/g).exec(input);
+              if (match !== null) {
+                return /* Eq */Block.__(0, [
+                          input,
+                          match.input
+                        ]);
+              }
+              else {
+                return /* Fail */Block.__(6, [/* () */0]);
+              }
             }
           ],
           /* :: */[
             /* tuple */[
-              "t_global",
+              "t_flags",
               function () {
                 return /* Eq */Block.__(0, [
-                          true,
-                          (/./ig).global
+                          "gi",
+                          (/./ig).flags
                         ]);
               }
             ],
             /* :: */[
               /* tuple */[
-                "t_ignoreCase",
+                "t_global",
                 function () {
                   return /* Eq */Block.__(0, [
                             true,
-                            (/./ig).ignoreCase
+                            (/./ig).global
                           ]);
                 }
               ],
               /* :: */[
                 /* tuple */[
-                  "t_lastIndex",
+                  "t_ignoreCase",
                   function () {
-                    var re = (/na/g);
-                    re.exec("banana");
                     return /* Eq */Block.__(0, [
-                              4,
-                              re.lastIndex
+                              true,
+                              (/./ig).ignoreCase
                             ]);
                   }
                 ],
                 /* :: */[
                   /* tuple */[
-                    "t_multiline",
+                    "t_lastIndex",
                     function () {
+                      var re = (/na/g);
+                      re.exec("banana");
                       return /* Eq */Block.__(0, [
-                                false,
-                                (/./ig).multiline
+                                4,
+                                re.lastIndex
                               ]);
                     }
                   ],
                   /* :: */[
                     /* tuple */[
-                      "t_source",
+                      "t_multiline",
                       function () {
                         return /* Eq */Block.__(0, [
-                                  "f.+o",
-                                  (/f.+o/ig).source
+                                  false,
+                                  (/./ig).multiline
                                 ]);
                       }
                     ],
                     /* :: */[
                       /* tuple */[
-                        "t_sticky",
+                        "t_source",
                         function () {
                           return /* Eq */Block.__(0, [
-                                    true,
-                                    (/./yg).sticky
+                                    "f.+o",
+                                    (/f.+o/ig).source
                                   ]);
                         }
                       ],
                       /* :: */[
                         /* tuple */[
-                          "t_unicode",
+                          "t_sticky",
                           function () {
                             return /* Eq */Block.__(0, [
-                                      false,
-                                      (/./yg).unicode
+                                      true,
+                                      (/./yg).sticky
                                     ]);
                           }
                         ],
-                        /* [] */0
+                        /* :: */[
+                          /* tuple */[
+                            "t_unicode",
+                            function () {
+                              return /* Eq */Block.__(0, [
+                                        false,
+                                        (/./yg).unicode
+                                      ]);
+                            }
+                          ],
+                          /* [] */0
+                        ]
                       ]
                     ]
                   ]

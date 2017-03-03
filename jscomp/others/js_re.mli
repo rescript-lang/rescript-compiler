@@ -40,5 +40,5 @@ external source : t -> string = "" [@@bs.get]
 external sticky : t -> Js.boolean = "" [@@bs.get]
 external unicode : t -> Js.boolean = "" [@@bs.get]
 
-external exec : string -> result = "" [@@bs.send.pipe: t]
+external exec : string -> result Js_null.t = "" [@@bs.send.pipe: t]
 external test : string -> Js.boolean = "" [@@bs.send.pipe: t]
