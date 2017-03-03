@@ -33,13 +33,13 @@ module E = Js_exp_make
 
 (* If it is the return value, since it is a side-effect call,
    we return unit, otherwise just return it
- *)
+*)
 let decorate_side_effect ({st; should_return;_} : Lam_compile_defs.cxt) e : E.t = 
   match st, should_return with 
   | _, True _ 
   | (Assign _ | Declare _ | NeedValue), _  -> E.seq e E.unit
   | EffectCall, False -> e 
-  (* NeedValue should return a meaningful expression*)
+(* NeedValue should return a meaningful expression*)
 
 let translate  loc
     ({ meta = { env; _}; _} as cxt : Lam_compile_defs.cxt) 
@@ -50,6 +50,45 @@ let translate  loc
     E.raw_js_code Exp s  
   | Lam.Praw_js_code_stmt s -> 
     E.raw_js_code Stmt s 
+  | Lam.Pnull_to_opt -> 
+    begin match args with 
+      | [e] -> 
+        begin match e.expression_desc with 
+          | Var _ -> 
+            E.econd (E.is_nil e) Js_of_lam_option.none (Js_of_lam_option.some e)
+          | _ ->
+            E.runtime_call Js_config.js_primitive
+            "js_from_nullable" args 
+            (* GPR #974
+               let id = Ext_ident.create "v" in
+               let tmp = E.var id in
+               E.(seq (assign tmp e ) 
+                  (econd (is_nil tmp) Js_of_lam_option.none (Js_of_lam_option.some tmp)) )
+            *)
+        end
+        | _ -> assert false 
+    end
+  | Lam.Pundefined_to_opt ->
+     begin match args with 
+      | [e] -> 
+        begin match e.expression_desc with 
+        | Var _ -> 
+          E.econd (E.is_undef e) Js_of_lam_option.none (Js_of_lam_option.some e)
+        | _ -> 
+          E.runtime_call Js_config.js_primitive  
+          "js_from_def" args 
+        (* # GPR 974
+          let id = Ext_ident.create "v" in
+          let tmp = E.var id in
+          E.(seq (assign tmp e ) 
+               (econd (is_undef tmp) Js_of_lam_option.none (Js_of_lam_option.some tmp)) )
+        *)
+      end
+      | _ -> assert false 
+      end    
+  | Lam.Pnull_undefined_to_opt -> 
+    E.runtime_call Js_config.js_primitive
+    "js_from_nullable_def" args 
   | Pjs_unsafe_downgrade _
   | Pdebugger 
   | Pjs_fn_run _ 
@@ -82,39 +121,39 @@ let translate  loc
       | _ -> assert false
     end
 
-(** Negate boxed int *)
+  (** Negate boxed int *)
   | Pnegbint Pint32
     ->
     begin match args with
-    | [ e ] -> E.int32_minus (E.zero_int_literal)  e 
-    | _ -> assert false
+      | [ e ] -> E.int32_minus (E.zero_int_literal)  e 
+      | _ -> assert false
     end
   | Pnegint
     -> 
     begin match args with (* #977 *)
-    | [ e ] -> E.int32_minus (E.zero_int_literal)  e 
-    | _ -> assert false
+      | [ e ] -> E.int32_minus (E.zero_int_literal)  e 
+      | _ -> assert false
     end
-    
+
   | Pnegbint Pnativeint
     -> 
     begin match args with
-    | [ e ] -> E.unchecked_int32_minus (E.zero_int_literal)  e 
-    | _ -> assert false
+      | [ e ] -> E.unchecked_int32_minus (E.zero_int_literal)  e 
+      | _ -> assert false
     end
   | Pnegbint Pint64
     -> 
     Js_long.neg args 
 
-  
+
   | Pnegfloat 
     -> 
     begin match args with 
-    | [ e ] -> E.float_minus (E.zero_float_lit) e 
-    | _ -> assert false
+      | [ e ] -> E.float_minus (E.zero_float_lit) e 
+      | _ -> assert false
     end
-(** Negate boxed int end*)
-(* Int addition and subtraction *)
+  (** Negate boxed int end*)
+  (* Int addition and subtraction *)
   | Paddint 
   | Paddbint  Pint32
     ->
@@ -137,31 +176,31 @@ let translate  loc
 
 
   | Paddfloat
-     -> 
-     begin match args with
-       | [e1;e2] ->
-         E.float_add  e1  e2
-       | _ -> assert false
-     end
+    -> 
+    begin match args with
+      | [e1;e2] ->
+        E.float_add  e1  e2
+      | _ -> assert false
+    end
   | Psubint 
     -> 
     begin match args with 
-    | [e1; e2] ->     
-      E.int32_minus e1 e2 
-    | _ -> assert false
+      | [e1; e2] ->     
+        E.int32_minus e1 e2 
+      | _ -> assert false
     end
   | Psubbint Pint32
     -> 
     begin match args with
       | [e1;e2] ->
-          E.int32_minus   e1  e2
+        E.int32_minus   e1  e2
       | _ -> assert false 
     end
   | Psubbint Pnativeint
     -> 
     begin match args with
       | [e1;e2] ->
-          E.unchecked_int32_minus   e1  e2
+        E.unchecked_int32_minus   e1  e2
       | _ -> assert false 
     end
   | Psubbint Pint64
@@ -195,11 +234,11 @@ let translate  loc
     Js_long.mul args 
   | Pmulfloat 
     -> 
-      begin match args with
+    begin match args with
       | [e1; e2]  ->
-          E.float_mul  e1  e2
+        E.float_mul  e1  e2
       | _ -> assert false 
-      end
+    end
   | Pdivfloat -> 
     begin match args with  
       | [e1;e2] -> E.float_div  e1  e2
@@ -323,9 +362,9 @@ let translate  loc
       | [e1;e2] -> E.int_comp cmp e1 e2
       | _ -> assert false 
     end
-        (* List --> stamp = 0 
-           Assert_false --> stamp = 26 
-         *)
+  (* List --> stamp = 0 
+     Assert_false --> stamp = 26 
+  *)
   | Pbintcomp (Pint64 ,cmp)
     -> Js_long.comp cmp args
 
@@ -365,9 +404,9 @@ let translate  loc
     begin match args with 
       | [e] ->
         E.math "abs" [e]
-        (* GCC treat built-ins like Math in a dirfferent way*)
+      (* GCC treat built-ins like Math in a dirfferent way*)
       | _ -> assert false
-      end
+    end
   | Pnot ->
     begin match args with
       | [e] ->  E.not  e 
@@ -444,18 +483,18 @@ let translate  loc
   *)
   | Pbytessetu
   | Pbytessets -> 
-      begin match args with
+    begin match args with
       | [e;e0;e1] -> decorate_side_effect cxt 
-            (Js_of_lam_string.set_byte e e0 e1)
+                       (Js_of_lam_string.set_byte e e0 e1)
 
       | _ -> assert false
-      end
+    end
   | Pbytesrefu ->
-      begin match args with
+    begin match args with
       | [e;e1] -> Js_of_lam_string.ref_byte e e1
       | _ -> assert false
-      end
-    
+    end
+
   | Pbytesrefs ->
     begin match args with
       | [e ; e1] ->
@@ -464,90 +503,90 @@ let translate  loc
         else E.runtime_call Js_config.bytes "get" args            
       | _ -> assert false         
     end
-   (* For bytes and string, they both return [int] in ocaml 
-       we need tell Pbyteref from Pstringref
-       1. Pbyteref -> a[i]
-       2. Pstringref -> a.charCodeAt (a[i] is wrong)
-    *)
+  (* For bytes and string, they both return [int] in ocaml 
+      we need tell Pbyteref from Pstringref
+      1. Pbyteref -> a[i]
+      2. Pstringref -> a.charCodeAt (a[i] is wrong)
+  *)
   | Pstringrefu  ->
-      begin match args with
+    begin match args with
       | [e;e1] -> Js_of_lam_string.ref_string e e1 
       | _ -> assert false
-      end
+    end
 
   | Pstringrefs ->
-      begin match args with
-        | [e;e1] ->
-          if !Clflags.fast then
-            Js_of_lam_string.ref_string e e1             
-          else       
-            E.runtime_call Js_config.string "get" args          
+    begin match args with
+      | [e;e1] ->
+        if !Clflags.fast then
+          Js_of_lam_string.ref_string e e1             
+        else       
+          E.runtime_call Js_config.string "get" args          
       | _ -> assert false
-      end
-    (** only when Lapply -> expand = true*)
+    end
+  (** only when Lapply -> expand = true*)
   | Praise  -> assert false (* handled before here *)
 
-(* Runtime encoding relevant *)
+  (* Runtime encoding relevant *)
   | Parraylength Pgenarray
   | Parraylength Paddrarray
   | Parraylength Pintarray
   | Parraylength Pfloatarray  -> 
-      begin match args with 
+    begin match args with 
       | [e] -> E.array_length e 
       | _ -> assert false
-      end
+    end
   | Psetfield (i, _, field_info) -> 
-      begin match args with 
+    begin match args with 
       | [e0;e1] ->  (** RUNTIME *)
-          decorate_side_effect cxt 
-            (Js_of_lam_block.set_field field_info e0 (Int32.of_int i) e1)
-            (*TODO: get rid of [E.unit ()]*)
+        decorate_side_effect cxt 
+          (Js_of_lam_block.set_field field_info e0 (Int32.of_int i) e1)
+      (*TODO: get rid of [E.unit ()]*)
       | _ -> assert false
-      end
+    end
   | Psetfloatfield (i,field_info)
     -> (** RUNTIME --  RETURN VALUE SHOULD BE UNIT *)
-      begin 
-        match args with 
-        | [e;e0] -> 
-          decorate_side_effect cxt 
-            (Js_of_lam_float_record.set_double_field field_info e (Int32.of_int i) e0 ) 
-        | _ -> assert false
-      end
+    begin 
+      match args with 
+      | [e;e0] -> 
+        decorate_side_effect cxt 
+          (Js_of_lam_float_record.set_double_field field_info e (Int32.of_int i) e0 ) 
+      | _ -> assert false
+    end
 
 
   | Pfloatfield (i, field_info) -> (** RUNTIME *)
-      begin 
-        match args with 
-        | [e] ->
-          Js_of_lam_float_record.get_double_feild field_info e
-            (Int32.of_int i) 
-        | _ -> assert false 
-      end
+    begin 
+      match args with 
+      | [e] ->
+        Js_of_lam_float_record.get_double_feild field_info e
+          (Int32.of_int i) 
+      | _ -> assert false 
+    end
   | Parrayrefu _kind
   | Parrayrefs _kind ->  
-      begin match args with
+    begin match args with
       | [e;e1] -> Js_of_lam_array.ref_array e e1 (* Todo: Constant Folding *)
       | _ -> assert false
-      end
+    end
   | Pmakearray kind -> 
-      Js_of_lam_array.make_array Mutable kind args 
+    Js_of_lam_array.make_array Mutable kind args 
   | Parraysetu _kind
   | Parraysets _kind -> 
-      begin match args with (* wrong*)
+    begin match args with (* wrong*)
       | [e;e0;e1] -> decorate_side_effect cxt @@ Js_of_lam_array.set_array  e e0 e1
       | _ -> assert false
-      end
+    end
   | Pccall prim -> 
     Lam_dispatch_primitive.translate prim.prim_name  args
-      (* Lam_compile_external_call.translate loc cxt prim args *)
-     (* Test if the argument is a block or an immediate integer *)
+  (* Lam_compile_external_call.translate loc cxt prim args *)
+  (* Test if the argument is a block or an immediate integer *)
   | Pjs_object_create labels
     -> 
     Lam_compile_external_obj.assemble_args_obj labels args 
   | Pjs_call (_, arg_types, result_type, ffi) -> 
     Lam_compile_external_call.translate_ffi 
-    loc ffi cxt arg_types (result_type = Ast_ffi_types.Return_unit) args 
-    (** FIXME, this can be removed later *)
+      loc ffi cxt arg_types (result_type = Ast_ffi_types.Return_unit) args 
+  (** FIXME, this can be removed later *)
   | Pisint -> 
     begin 
       match args with 
@@ -572,14 +611,14 @@ let translate  loc
     end
   (* | Psetglobal _  ->  *)
   (*   assert false (\* already handled *\) *)
-    (* assert false *)
+  (* assert false *)
   | Pduprecord ((Record_regular 
                 | Record_float ),0)
   | Pduprecord ((Record_regular 
                 | Record_float ),_) -> 
     begin match args with 
-    | [e] -> Js_of_lam_record.copy e
-    | _ -> assert false       
+      | [e] -> Js_of_lam_record.copy e
+      | _ -> assert false       
     end
   | Pbigarrayref (unsafe, dimension, kind, layout)
     -> 
@@ -598,13 +637,13 @@ let translate  loc
             | Pbigarray_complex32 | Pbigarray_complex64), Pbigarray_c_layout, _
         -> 
         begin match args with
-        | [x;indx] -> Js_of_lam_array.ref_array x indx
-        | _ -> assert false
+          | [x;indx] -> Js_of_lam_array.ref_array x indx
+          | _ -> assert false
         end
-    | _, _, _ ,_ -> 
-      E.not_implemented ("caml_ba_get_" ^ string_of_int dimension )
-      (* E.runtime_call Js_config.bigarray  *)
-      (*   ("caml_ba_get_" ^ string_of_int dimension ) args  *)
+      | _, _, _ ,_ -> 
+        E.not_implemented ("caml_ba_get_" ^ string_of_int dimension )
+        (* E.runtime_call Js_config.bigarray  *)
+        (*   ("caml_ba_get_" ^ string_of_int dimension ) args  *)
     end
   | Pbigarrayset (unsafe, dimension, kind, layout)
     -> 
@@ -617,24 +656,24 @@ let translate  loc
             | Pbigarray_complex32 | Pbigarray_complex64), Pbigarray_c_layout, _
         -> 
         begin match args with 
-        | [x; index; value] -> 
-          Js_of_lam_array.set_array x index value          
-        | _ -> assert false
+          | [x; index; value] -> 
+            Js_of_lam_array.set_array x index value          
+          | _ -> assert false
         end
-      
+
       | _ , _, _,_ 
         -> 
         E.not_implemented
           ("caml_ba_set_" ^ string_of_int dimension )
-        (* E.runtime_call Js_config.bigarray  *)
-        (*   ("caml_ba_set_" ^ string_of_int dimension ) args  *)
+          (* E.runtime_call Js_config.bigarray  *)
+          (*   ("caml_ba_set_" ^ string_of_int dimension ) args  *)
     end
 
   | Pbigarraydim i
     -> 
     E.not_implemented ("caml_ba_dim_" ^ string_of_int i)
-    (* E.runtime_call Js_config.bigarray *)
-    (*   ("caml_ba_dim_" ^ string_of_int i) args        *)
+  (* E.runtime_call Js_config.bigarray *)
+  (*   ("caml_ba_dim_" ^ string_of_int i) args        *)
   | Pbswap16 
     -> 
     E.runtime_call Js_config.int32 "caml_bswap16" args
@@ -658,7 +697,7 @@ let translate  loc
   (*               Matching.inline_lazy_force (Lvar parm) Location.none) *)
   (* It is inlined, this should not appear here *)    
   | Pbittest 
-  
+
   | Pstring_set_16 _
   | Pstring_set_32 _
   | Pstring_set_64 _
@@ -669,11 +708,11 @@ let translate  loc
   | Pbigstring_set_32 _
   | Pbigstring_set_64 _
     -> 
-      let comment = "Missing primitive" in       
-      let s = Lam_util.string_of_primitive prim in
-      let warn = Printf.sprintf  "%s: %s\n" comment s in
-      Ext_log.warn __LOC__ "%s"  warn;
-      (*we dont use [throw] here, since [throw] is an statement  *)        
-      E.dump  Error [ E.str warn]
+    let comment = "Missing primitive" in       
+    let s = Lam_util.string_of_primitive prim in
+    let warn = Printf.sprintf  "%s: %s\n" comment s in
+    Ext_log.warn __LOC__ "%s"  warn;
+    (*we dont use [throw] here, since [throw] is an statement  *)        
+    E.dump  Error [ E.str warn]
 
 

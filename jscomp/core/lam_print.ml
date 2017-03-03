@@ -114,7 +114,12 @@ let primitive ppf (prim : Lam.primitive) = match prim with
   | Lam.Praw_js_code_exp _ -> fprintf ppf "[raw.exp]"
   | Lam.Praw_js_code_stmt _ -> fprintf ppf "[raw.stmt]"
   | Pglobal_exception id ->
-    fprintf ppf "global exception %a" Ident.print id                       
+    fprintf ppf "global exception %a" Ident.print id       
+    
+  | Pnull_to_opt -> fprintf ppf "[null->opt]"              
+  | Pundefined_to_opt -> fprintf ppf "[undefined->opt]"     
+  | Pnull_undefined_to_opt -> 
+    fprintf ppf "[null/undefined->opt]"         
   (* | Psetglobal id -> fprintf ppf "setglobal %a" Ident.print id *)
   | Pmakeblock(tag, _, Immutable) -> fprintf ppf "makeblock %i" tag
   | Pmakeblock(tag, _, Mutable) -> fprintf ppf "makemutable %i" tag

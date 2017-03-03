@@ -173,7 +173,9 @@ type primitive =
   | Pjs_fn_run of int 
   | Pjs_fn_method of int 
   | Pjs_fn_runmethod of int
-
+  | Pundefined_to_opt
+  | Pnull_to_opt
+  | Pnull_undefined_to_opt 
 type apply_status =
   | App_na
   | App_ml_full
@@ -1716,6 +1718,27 @@ let convert exports lam : _ * _  =
             ~args:[] loc         
         | _ -> assert false 
       end 
+    | Lprim(Pccall {prim_name =  "js_from_def"}, args, loc) 
+      -> 
+       begin match args with 
+       | [ arg ] -> 
+        prim ~primitive:Pundefined_to_opt ~args:[aux arg] loc 
+       | _ -> assert false 
+      end
+    | Lprim(Pccall {prim_name =  "js_from_nullable_def"}, args, loc) 
+      -> 
+       begin match args with 
+       | [ arg ] -> 
+        prim ~primitive:Pnull_undefined_to_opt ~args:[aux arg] loc 
+       | _ -> assert false 
+      end
+      | Lprim(Pccall {prim_name =  "js_from_nullable"}, args, loc) 
+      -> 
+       begin match args with 
+       | [ arg ] -> 
+        prim ~primitive:Pnull_to_opt ~args:[aux arg] loc 
+       | _ -> assert false 
+      end  
     | Lprim(Pdirapply, _, _) -> assert false 
     | Lprim (primitive,args, loc) 
       -> 

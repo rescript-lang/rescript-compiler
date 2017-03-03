@@ -1,5 +1,6 @@
 'use strict';
 
+var Curry = require("../../lib/js/curry");
 
 function test_hi(x) {
   var match = x.hi(1, 2, 3);
@@ -12,5 +13,12 @@ function test_hi(x) {
   }
 }
 
+function test_cb(x) {
+  Curry._1(x.cb("hI", 1, 2, 3), 3);
+  Curry._1(x.cb("hI", 1, 2, 3), 3);
+  return x.cb2("hI", 1, 2, 3)(3);
+}
+
 exports.test_hi = test_hi;
+exports.test_cb = test_cb;
 /* No side effect */

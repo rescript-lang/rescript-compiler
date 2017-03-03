@@ -975,46 +975,7 @@ let translate (prim_name : string)
       | _ -> assert false
       end
     | "js_is_nil_undef" 
-    | "js_from_nullable_def"
       -> call Js_config.js_primitive
-    | "js_from_def" 
-      -> 
-      begin match args with 
-      | [e] -> 
-        begin match e.expression_desc with 
-        | Var _ -> 
-          E.econd (E.is_undef e) Js_of_lam_option.none (Js_of_lam_option.some e)
-        | _ -> 
-          call Js_config.js_primitive  
-        (* # GPR 974
-          let id = Ext_ident.create "v" in
-          let tmp = E.var id in
-          E.(seq (assign tmp e ) 
-               (econd (is_undef tmp) Js_of_lam_option.none (Js_of_lam_option.some tmp)) )
-        *)
-        end
-
-      | _ -> assert false 
-      end
-    | "js_from_nullable" 
-      -> 
-      begin match args with 
-      | [e] -> 
-        begin match e.expression_desc with 
-        | Var _ -> 
-          E.econd (E.is_nil e) Js_of_lam_option.none (Js_of_lam_option.some e)
-        | _ ->
-          call Js_config.js_primitive
-         (* GPR #974
-          let id = Ext_ident.create "v" in
-          let tmp = E.var id in
-          E.(seq (assign tmp e ) 
-               (econd (is_nil tmp) Js_of_lam_option.none (Js_of_lam_option.some tmp)) )
-          *)
-        end
-
-      | _ -> assert false 
-      end
     | "js_obj_set_length"
       ->
       begin match args with 
