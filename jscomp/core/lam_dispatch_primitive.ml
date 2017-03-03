@@ -836,12 +836,7 @@ let translate (prim_name : string)
       E.array_append a b 
     | _ -> assert false 
     end
-  | "js_string_append"
-    -> 
-    begin match args with 
-    | [a ; b] -> E.string_append a b 
-    | _ -> assert false
-    end
+
   | "js_apply" 
     -> 
     begin match args with 
@@ -964,18 +959,6 @@ let translate (prim_name : string)
         | _ -> assert false 
       end
 
-    | "js_is_nil" -> 
-      begin match args with
-      | [ e ] -> E.is_nil e 
-      | _ -> assert false 
-      end
-    | "js_is_undef" -> 
-      begin match args with 
-      | [e] -> E.is_undef e 
-      | _ -> assert false
-      end
-    | "js_is_nil_undef" 
-      -> call Js_config.js_primitive
     | "js_obj_set_length"
       ->
       begin match args with 

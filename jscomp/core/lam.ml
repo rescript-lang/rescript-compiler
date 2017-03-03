@@ -176,6 +176,10 @@ type primitive =
   | Pundefined_to_opt
   | Pnull_to_opt
   | Pnull_undefined_to_opt 
+  | Pis_null
+  | Pis_undefined
+  | Pis_null_undefined
+
 type apply_status =
   | App_na
   | App_ml_full
@@ -787,28 +791,6 @@ let check file lam =
     lam 
   end      
 
-module Prim = struct 
-  type t = primitive
-  let mk name arity = 
-    Pccall {prim_name = name ; 
-            prim_native_name = "" ;
-            prim_alloc = false;
-            prim_native_float = false;
-            prim_arity = arity;
-
-           }
-  let js_is_nil : t = 
-    mk "js_is_nil" 1 
-  let js_is_undef : t = 
-    mk "js_is_undef" 1 
-  let js_is_nil_undef : t  = 
-    mk "js_is_nil_undef" 1 
-end
-
-
-
-
-
 type binop = t -> t -> t 
 
 type triop = t -> t -> t -> t 
@@ -1014,7 +996,7 @@ module Lift = struct
     Lconst ((Const_char b))    
 end
 
-let prim ~primitive:(prim : Prim.t) ~args:(ll : t list) loc  : t = 
+let prim ~primitive:(prim : primitive) ~args:(ll : t list) loc  : t = 
   let default () : t = Lprim { primitive = prim ;args =  ll ; loc} in 
   match ll with 
   | [Lconst a] -> 
@@ -1739,6 +1721,27 @@ let convert exports lam : _ * _  =
         prim ~primitive:Pnull_to_opt ~args:[aux arg] loc 
        | _ -> assert false 
       end  
+    | Lprim (Pccall {prim_name = "js_is_nil"}, args, loc) -> 
+      begin match args with 
+      | [arg] -> prim ~primitive:Pis_null ~args:[aux arg] loc 
+      | _ -> assert false 
+    end  
+   | Lprim (Pccall {prim_name = "js_is_undef"}, args, loc) -> 
+      begin match args with 
+      | [arg] -> prim ~primitive:Pis_undefined ~args:[aux arg] loc 
+      | _ -> assert false 
+    end   
+    | Lprim (Pccall {prim_name = "js_is_nil_undef"}, args, loc) -> 
+      begin match args with 
+      | [arg] -> prim ~primitive:Pis_null_undefined ~args:[aux arg] loc 
+      | _ -> assert false 
+      end   
+    | Lprim(Pccall {prim_name = "js_string_append"}, args, loc) -> 
+      begin match args with 
+      | [a; b] -> 
+        prim ~primitive:Pstringadd ~args:[aux a; aux b] loc 
+      | _ -> assert false 
+      end 
     | Lprim(Pdirapply, _, _) -> assert false 
     | Lprim (primitive,args, loc) 
       -> 

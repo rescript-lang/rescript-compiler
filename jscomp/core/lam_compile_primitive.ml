@@ -89,6 +89,19 @@ let translate  loc
   | Lam.Pnull_undefined_to_opt -> 
     E.runtime_call Js_config.js_primitive
     "js_from_nullable_def" args 
+  | Pis_null -> 
+    begin match args with 
+    | [e] -> E.is_nil e 
+    | _ -> assert false 
+    end   
+  | Pis_undefined -> 
+    begin match args with 
+    | [e] -> E.is_undef e 
+    | _ -> assert false 
+    end
+  | Pis_null_undefined -> 
+      E.runtime_call Js_config.js_primitive
+        "js_is_nil_undef" args 
   | Pjs_unsafe_downgrade _
   | Pdebugger 
   | Pjs_fn_run _ 

@@ -120,6 +120,9 @@ let primitive ppf (prim : Lam.primitive) = match prim with
   | Pundefined_to_opt -> fprintf ppf "[undefined->opt]"     
   | Pnull_undefined_to_opt -> 
     fprintf ppf "[null/undefined->opt]"         
+  | Pis_null -> fprintf ppf "[?null]"
+  | Pis_undefined -> fprintf ppf "[?undefined]"
+  | Pis_null_undefined -> fprintf ppf "[?null?undefined]"
   (* | Psetglobal id -> fprintf ppf "setglobal %a" Ident.print id *)
   | Pmakeblock(tag, _, Immutable) -> fprintf ppf "makeblock %i" tag
   | Pmakeblock(tag, _, Mutable) -> fprintf ppf "makemutable %i" tag

@@ -67,6 +67,9 @@ let rec no_side_effects (lam : Lam.t) : bool =
            *)
           | _ , _-> false
         end 
+      | Pis_null
+      | Pis_undefined
+      | Pis_null_undefined
       | Pnull_to_opt       
       | Pundefined_to_opt         
       | Pnull_undefined_to_opt -> 

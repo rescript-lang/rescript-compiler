@@ -174,8 +174,12 @@ type primitive =
   | Pundefined_to_opt
   | Pnull_to_opt
   | Pnull_undefined_to_opt 
-
   
+  | Pis_null
+  | Pis_undefined
+  | Pis_null_undefined
+  
+
 type switch  =
   { sw_numconsts: int;
     sw_consts: (int * t) list;
@@ -231,12 +235,7 @@ and  t =  private
   *)
 
 
-module Prim : sig 
-  type t = primitive
-  val js_is_nil : t
-  val js_is_undef : t 
-  val js_is_nil_undef : t 
-end
+
 
 
 type binop = t -> t -> t 

@@ -66976,8 +66976,12 @@ type primitive =
   | Pundefined_to_opt
   | Pnull_to_opt
   | Pnull_undefined_to_opt 
-
   
+  | Pis_null
+  | Pis_undefined
+  | Pis_null_undefined
+  
+
 type switch  =
   { sw_numconsts: int;
     sw_consts: (int * t) list;
@@ -67033,12 +67037,7 @@ and  t =  private
   *)
 
 
-module Prim : sig 
-  type t = primitive
-  val js_is_nil : t
-  val js_is_undef : t 
-  val js_is_nil_undef : t 
-end
+
 
 
 type binop = t -> t -> t 
@@ -67309,6 +67308,10 @@ type primitive =
   | Pundefined_to_opt
   | Pnull_to_opt
   | Pnull_undefined_to_opt 
+  | Pis_null
+  | Pis_undefined
+  | Pis_null_undefined
+
 type apply_status =
   | App_na
   | App_ml_full
@@ -67920,28 +67923,6 @@ let check file lam =
     lam 
   end      
 
-module Prim = struct 
-  type t = primitive
-  let mk name arity = 
-    Pccall {prim_name = name ; 
-            prim_native_name = "" ;
-            prim_alloc = false;
-            prim_native_float = false;
-            prim_arity = arity;
-
-           }
-  let js_is_nil : t = 
-    mk "js_is_nil" 1 
-  let js_is_undef : t = 
-    mk "js_is_undef" 1 
-  let js_is_nil_undef : t  = 
-    mk "js_is_nil_undef" 1 
-end
-
-
-
-
-
 type binop = t -> t -> t 
 
 type triop = t -> t -> t -> t 
@@ -68147,7 +68128,7 @@ module Lift = struct
     Lconst ((Const_char b))    
 end
 
-let prim ~primitive:(prim : Prim.t) ~args:(ll : t list) loc  : t = 
+let prim ~primitive:(prim : primitive) ~args:(ll : t list) loc  : t = 
   let default () : t = Lprim { primitive = prim ;args =  ll ; loc} in 
   match ll with 
   | [Lconst a] -> 
@@ -68872,6 +68853,27 @@ let convert exports lam : _ * _  =
         prim ~primitive:Pnull_to_opt ~args:[aux arg] loc 
        | _ -> assert false 
       end  
+    | Lprim (Pccall {prim_name = "js_is_nil"}, args, loc) -> 
+      begin match args with 
+      | [arg] -> prim ~primitive:Pis_null ~args:[aux arg] loc 
+      | _ -> assert false 
+    end  
+   | Lprim (Pccall {prim_name = "js_is_undef"}, args, loc) -> 
+      begin match args with 
+      | [arg] -> prim ~primitive:Pis_undefined ~args:[aux arg] loc 
+      | _ -> assert false 
+    end   
+    | Lprim (Pccall {prim_name = "js_is_nil_undef"}, args, loc) -> 
+      begin match args with 
+      | [arg] -> prim ~primitive:Pis_null_undefined ~args:[aux arg] loc 
+      | _ -> assert false 
+      end   
+    | Lprim(Pccall {prim_name = "js_string_append"}, args, loc) -> 
+      begin match args with 
+      | [a; b] -> 
+        prim ~primitive:Pstringadd ~args:[aux a; aux b] loc 
+      | _ -> assert false 
+      end 
     | Lprim(Pdirapply, _, _) -> assert false 
     | Lprim (primitive,args, loc) 
       -> 
@@ -72323,6 +72325,9 @@ let rec no_side_effects (lam : Lam.t) : bool =
            *)
           | _ , _-> false
         end 
+      | Pis_null
+      | Pis_undefined
+      | Pis_null_undefined
       | Pnull_to_opt       
       | Pundefined_to_opt         
       | Pnull_undefined_to_opt -> 
@@ -72708,7 +72713,7 @@ module Lam_print : sig
 
 val lambda : Format.formatter -> Lam.t -> unit
 
-val primitive: Format.formatter -> Lam.Prim.t -> unit
+val primitive: Format.formatter -> Lam.primitive -> unit
 
 val seriaize : 'a -> string -> Lam.t -> unit
 
@@ -72838,6 +72843,9 @@ let primitive ppf (prim : Lam.primitive) = match prim with
   | Pundefined_to_opt -> fprintf ppf "[undefined->opt]"     
   | Pnull_undefined_to_opt -> 
     fprintf ppf "[null/undefined->opt]"         
+  | Pis_null -> fprintf ppf "[?null]"
+  | Pis_undefined -> fprintf ppf "[?undefined]"
+  | Pis_null_undefined -> fprintf ppf "[?null?undefined]"
   (* | Psetglobal id -> fprintf ppf "setglobal %a" Ident.print id *)
   | Pmakeblock(tag, _, Immutable) -> fprintf ppf "makeblock %i" tag
   | Pmakeblock(tag, _, Mutable) -> fprintf ppf "makemutable %i" tag
@@ -93627,12 +93635,7 @@ let translate (prim_name : string)
       E.array_append a b 
     | _ -> assert false 
     end
-  | "js_string_append"
-    -> 
-    begin match args with 
-    | [a ; b] -> E.string_append a b 
-    | _ -> assert false
-    end
+
   | "js_apply" 
     -> 
     begin match args with 
@@ -93755,18 +93758,6 @@ let translate (prim_name : string)
         | _ -> assert false 
       end
 
-    | "js_is_nil" -> 
-      begin match args with
-      | [ e ] -> E.is_nil e 
-      | _ -> assert false 
-      end
-    | "js_is_undef" -> 
-      begin match args with 
-      | [e] -> E.is_undef e 
-      | _ -> assert false
-      end
-    | "js_is_nil_undef" 
-      -> call Js_config.js_primitive
     | "js_obj_set_length"
       ->
       begin match args with 
@@ -93927,6 +93918,19 @@ let translate  loc
   | Lam.Pnull_undefined_to_opt -> 
     E.runtime_call Js_config.js_primitive
     "js_from_nullable_def" args 
+  | Pis_null -> 
+    begin match args with 
+    | [e] -> E.is_nil e 
+    | _ -> assert false 
+    end   
+  | Pis_undefined -> 
+    begin match args with 
+    | [e] -> E.is_undef e 
+    | _ -> assert false 
+    end
+  | Pis_null_undefined -> 
+      E.runtime_call Js_config.js_primitive
+        "js_is_nil_undef" args 
   | Pjs_unsafe_downgrade _
   | Pdebugger 
   | Pjs_fn_run _ 
@@ -99291,14 +99295,16 @@ let simplify_alias
         let l1 = 
           match x with 
           | Null 
-            -> Lam.not_ (Location.none) ( Lam.prim ~primitive:Lam.Prim.js_is_nil ~args:[l] Location.none) 
+            -> Lam.not_ (Location.none) ( Lam.prim ~primitive:Pis_null
+
+            ~args:[l] Location.none) 
           | Undefined 
             -> 
-            Lam.not_  Location.none (Lam.prim ~primitive:Lam.Prim.js_is_undef ~args:[l] Location.none)
+            Lam.not_  Location.none (Lam.prim ~primitive:Pis_undefined ~args:[l] Location.none)
           | Null_undefined
             -> 
             Lam.not_ Location.none
-              ( Lam.prim ~primitive:Lam.Prim.js_is_nil_undef  ~args:[l] Location.none) 
+              ( Lam.prim ~primitive:Pis_null_undefined  ~args:[l] Location.none) 
           | Normal ->  l1 
         in 
         Lam.if_ l1 (simpl l2) (simpl l3)
