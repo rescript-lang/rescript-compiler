@@ -57,9 +57,6 @@ let rec no_side_effects (lam : Lam.t) : bool =
             | "caml_make_vect"
             | "caml_obj_dup"
             | "caml_obj_block"
-            | "js_from_nullable"
-            | "js_from_def"
-            | "js_from_nullable_def"
             ), _  -> true 
           | "caml_ml_open_descriptor_in", [Lconst (  (Const_int 0))] -> true 
           | "caml_ml_open_descriptor_out", 
@@ -70,6 +67,15 @@ let rec no_side_effects (lam : Lam.t) : bool =
            *)
           | _ , _-> false
         end 
+      | Pjs_boolean_to_bool
+      | Pjs_typeof
+      | Pis_null
+      | Pis_undefined
+      | Pis_null_undefined
+      | Pnull_to_opt       
+      | Pundefined_to_opt         
+      | Pnull_undefined_to_opt -> 
+        List.for_all no_side_effects args 
       | Pjs_call _ -> false 
       | Pjs_fn_make _         
       | Pjs_object_create _ -> 

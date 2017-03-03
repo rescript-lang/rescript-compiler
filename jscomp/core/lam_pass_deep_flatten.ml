@@ -111,20 +111,16 @@ let deep_flatten
       (lam : Lam.t) :  Lam.t *  Lam_group.t list = 
     match lam with 
     | Llet (str, id, 
-            (Lprim {primitive = Pccall 
-                      {prim_name = 
-                         ("js_from_nullable" 
-                         | "js_from_def"
-                         |"js_from_nullable_def"); _ }
+            (Lprim {primitive = (
+                          Pnull_to_opt
+                         | Pundefined_to_opt
+                         | Pnull_undefined_to_opt)
                    ; args  =  [Lvar _]} as arg), body)
       -> 
       flatten (Single(str, id, (aux arg) ) :: acc) body
     | Llet (str, id, 
-            Lprim {primitive = Pccall 
-                     ({prim_name = 
-                         ("js_from_nullable"
-                         | "js_from_def"
-                         | "js_from_nullable_def"); _ } as p );
+            Lprim {primitive = ( 
+                          Pnull_to_opt | Pundefined_to_opt | Pnull_undefined_to_opt as primitive );
                    args = [arg]}, body)
       -> 
       let id' = Ident.rename id in 
@@ -132,7 +128,7 @@ let deep_flatten
         (Lam.let_ str id' arg 
                (Lam.let_ Alias id 
                   (Lam.prim 
-                     ~primitive:(Pccall p)
+                     ~primitive
                      ~args: [Lam.var id'] Location.none (* FIXME*))
                   body)
               )

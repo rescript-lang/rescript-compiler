@@ -88,13 +88,13 @@ type kind =
   | NA 
   (* | Boxed_nullable of Ident.t  *)
     (** 
-       {[ let v/2 =  js_from_nullable u]} 
+       {[ let v/2 =  Pnull_to_opt u]} 
 
-       {[ let v/2 = js_from_nullable exp]}
+       {[ let v/2 = Pnull_to_opt exp]}
        can be translated into 
        {[
          let v/1 = exp in 
-         let v/2 =a js_from_nullable exp 
+         let v/2 =a Pnull_to_opt exp 
        ]}
        so that [Pfield v/2 0] will be replaced by [v/1], 
        [Lif(v/1)] will be translated into [Lif (v/2 === undefined )]

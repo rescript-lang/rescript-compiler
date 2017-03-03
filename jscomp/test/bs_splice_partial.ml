@@ -33,3 +33,20 @@ let test_hi x =
     match x |> hi [|1;2;3|] with 
     | None -> 1 
     | Some y -> Js.log y ; 2
+
+
+type id = int -> int 
+
+external cb : string -> int array -> id = ""    
+    [@@bs.splice] [@@bs.send.pipe: int]
+
+
+type id2 = int -> int [@bs]
+external cb2 : string -> int array -> id2 = ""    
+    [@@bs.splice] [@@bs.send.pipe: int]
+
+
+let test_cb x = 
+    ignore ((x |> cb "hI" [|1;2;3|] ) 3);
+    ignore @@ (cb "hI" [|1;2;3|] x ) 3 ;
+    (cb2 "hI" [|1;2;3|] x ) 3 [@bs]

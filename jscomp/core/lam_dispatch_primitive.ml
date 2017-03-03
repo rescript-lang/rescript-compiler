@@ -836,12 +836,7 @@ let translate (prim_name : string)
       E.array_append a b 
     | _ -> assert false 
     end
-  | "js_string_append"
-    -> 
-    begin match args with 
-    | [a ; b] -> E.string_append a b 
-    | _ -> assert false
-    end
+
   | "js_apply" 
     -> 
     begin match args with 
@@ -880,24 +875,13 @@ let translate (prim_name : string)
     begin match args with 
     | [l ; r] -> E.bin Ge l r 
     | _ -> assert false end
-  | "js_boolean_to_bool"
-    -> 
-    begin match args with 
-    | [e] -> E.to_ocaml_boolean e 
-    | _ -> assert false
-    end
+  
   | "js_is_instance_array" 
     ->
     begin match args with 
     | [e] -> E.is_instance_array e 
     | _ -> assert false end
-  | "js_typeof"
-    -> 
-    begin match args with 
-    | [e] -> E.typeof e         
-    | _ -> assert false
-    end
-
+  
   | "js_dump"
     -> 
     (* This primitive can accept any number of arguments 
@@ -964,57 +948,6 @@ let translate (prim_name : string)
         | _ -> assert false 
       end
 
-    | "js_is_nil" -> 
-      begin match args with
-      | [ e ] -> E.is_nil e 
-      | _ -> assert false 
-      end
-    | "js_is_undef" -> 
-      begin match args with 
-      | [e] -> E.is_undef e 
-      | _ -> assert false
-      end
-    | "js_is_nil_undef" 
-    | "js_from_nullable_def"
-      -> call Js_config.js_primitive
-    | "js_from_def" 
-      -> 
-      begin match args with 
-      | [e] -> 
-        begin match e.expression_desc with 
-        | Var _ -> 
-          E.econd (E.is_undef e) Js_of_lam_option.none (Js_of_lam_option.some e)
-        | _ -> 
-          call Js_config.js_primitive  
-        (* # GPR 974
-          let id = Ext_ident.create "v" in
-          let tmp = E.var id in
-          E.(seq (assign tmp e ) 
-               (econd (is_undef tmp) Js_of_lam_option.none (Js_of_lam_option.some tmp)) )
-        *)
-        end
-
-      | _ -> assert false 
-      end
-    | "js_from_nullable" 
-      -> 
-      begin match args with 
-      | [e] -> 
-        begin match e.expression_desc with 
-        | Var _ -> 
-          E.econd (E.is_nil e) Js_of_lam_option.none (Js_of_lam_option.some e)
-        | _ ->
-          call Js_config.js_primitive
-         (* GPR #974
-          let id = Ext_ident.create "v" in
-          let tmp = E.var id in
-          E.(seq (assign tmp e ) 
-               (econd (is_nil tmp) Js_of_lam_option.none (Js_of_lam_option.some tmp)) )
-          *)
-        end
-
-      | _ -> assert false 
-      end
     | "js_obj_set_length"
       ->
       begin match args with 

@@ -70,19 +70,18 @@ let collect_helper  (meta : Lam_stats.meta) (lam : Lam.t)  =
       -> 
       Ident_hashtbl.replace meta.ident_tbl ident 
         (Lam_util.kind_of_lambda_block Normal ls);
-      List.iter collect ls 
-
-    | Lprim {primitive = Pccall {prim_name = "js_from_nullable"; _}; 
+      List.iter collect ls     
+    | Lprim {primitive = Pnull_to_opt; 
              args = ([ Lvar _] as ls) ; _}
       ->
       Ident_hashtbl.replace meta.ident_tbl ident 
-        (Lam_util.kind_of_lambda_block Null ls )
-    | Lprim {primitive = Pccall {prim_name = "js_from_def"; _}; 
+        (Lam_util.kind_of_lambda_block Null ls )    
+    | Lprim {primitive = Pundefined_to_opt; 
              args = ([ Lvar _] as ls); _}
       ->
       Ident_hashtbl.replace meta.ident_tbl ident 
         (Lam_util.kind_of_lambda_block Undefined ls )
-    | Lprim {primitive = Pccall {prim_name = "js_from_nullable_def"; _};
+    | Lprim {primitive = Pnull_undefined_to_opt;
              args = ([ Lvar _] as ls);}
       ->
       Ident_hashtbl.replace meta.ident_tbl ident 

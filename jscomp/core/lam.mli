@@ -171,6 +171,17 @@ type primitive =
   | Pjs_fn_run of int 
   | Pjs_fn_method of int 
   | Pjs_fn_runmethod of int 
+  | Pundefined_to_opt
+  | Pnull_to_opt
+  | Pnull_undefined_to_opt 
+  
+  | Pis_null
+  | Pis_undefined
+  | Pis_null_undefined
+
+  | Pjs_boolean_to_bool
+  | Pjs_typeof
+  
 
 type switch  =
   { sw_numconsts: int;
@@ -227,12 +238,7 @@ and  t =  private
   *)
 
 
-module Prim : sig 
-  type t = primitive
-  val js_is_nil : t
-  val js_is_undef : t 
-  val js_is_nil_undef : t 
-end
+
 
 
 type binop = t -> t -> t 

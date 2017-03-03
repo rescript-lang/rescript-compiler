@@ -24,7 +24,7 @@
 
 val lambda : Format.formatter -> Lam.t -> unit
 
-val primitive: Format.formatter -> Lam.Prim.t -> unit
+val primitive: Format.formatter -> Lam.primitive -> unit
 
 val seriaize : 'a -> string -> Lam.t -> unit
 
