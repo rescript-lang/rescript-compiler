@@ -125,8 +125,17 @@ let name_of_ffi ffi =
     Printf.sprintf "[@@bs.val] %S " v.name                    
 (* | Obj_create _ -> 
    Printf.sprintf "[@@bs.obj]" *)
+
+type return_wrapper = 
+  | Return_default
+  | Retrun_undefined_to_opt  
+  | Return_null_to_opt
+  | Return_null_undefined_to_opt
+  | Return_to_ocaml_bool
+  | Return_unit    
 type t  = 
-  | Ffi_bs of arg_kind list  * bool * ffi 
+  | Ffi_bs of arg_kind list  *
+     return_wrapper * ffi 
   (**  [Ffi_bs(args,return,ffi) ]
        [return] means return value is unit or not, 
         [true] means is [unit]  

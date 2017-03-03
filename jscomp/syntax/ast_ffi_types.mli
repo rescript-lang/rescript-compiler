@@ -89,8 +89,17 @@ type ffi =
   | Js_get_index
   | Js_set_index
 
+type return_wrapper = 
+  | Return_default
+  | Retrun_undefined_to_opt  
+  | Return_null_to_opt
+  | Return_null_undefined_to_opt
+  | Return_to_ocaml_bool
+  | Return_unit    
+
 type t  = 
-  | Ffi_bs of arg_kind list  * bool * ffi
+  | Ffi_bs of arg_kind list  *
+     return_wrapper * ffi
   | Ffi_obj_create of obj_create
   | Ffi_normal 
   (* When it's normal, it is handled as normal c functional ffi call *)
