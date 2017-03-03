@@ -102,6 +102,16 @@ let translate  loc
   | Pis_null_undefined -> 
       E.runtime_call Js_config.js_primitive
         "js_is_nil_undef" args 
+  | Pjs_boolean_to_bool -> 
+    begin match args with 
+    | [e] -> E.to_ocaml_boolean e 
+    | _ -> assert false 
+    end
+  | Pjs_typeof -> 
+    begin match args with 
+    | [e] -> E.typeof e 
+    | _ -> assert false 
+    end
   | Pjs_unsafe_downgrade _
   | Pdebugger 
   | Pjs_fn_run _ 

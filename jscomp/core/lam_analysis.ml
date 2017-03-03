@@ -67,6 +67,8 @@ let rec no_side_effects (lam : Lam.t) : bool =
            *)
           | _ , _-> false
         end 
+      | Pjs_boolean_to_bool
+      | Pjs_typeof
       | Pis_null
       | Pis_undefined
       | Pis_null_undefined

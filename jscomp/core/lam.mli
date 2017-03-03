@@ -178,6 +178,9 @@ type primitive =
   | Pis_null
   | Pis_undefined
   | Pis_null_undefined
+
+  | Pjs_boolean_to_bool
+  | Pjs_typeof
   
 
 type switch  =

@@ -875,24 +875,13 @@ let translate (prim_name : string)
     begin match args with 
     | [l ; r] -> E.bin Ge l r 
     | _ -> assert false end
-  | "js_boolean_to_bool"
-    -> 
-    begin match args with 
-    | [e] -> E.to_ocaml_boolean e 
-    | _ -> assert false
-    end
+  
   | "js_is_instance_array" 
     ->
     begin match args with 
     | [e] -> E.is_instance_array e 
     | _ -> assert false end
-  | "js_typeof"
-    -> 
-    begin match args with 
-    | [e] -> E.typeof e         
-    | _ -> assert false
-    end
-
+  
   | "js_dump"
     -> 
     (* This primitive can accept any number of arguments 

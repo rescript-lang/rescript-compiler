@@ -179,6 +179,8 @@ type primitive =
   | Pis_null
   | Pis_undefined
   | Pis_null_undefined
+  | Pjs_boolean_to_bool
+  | Pjs_typeof
 
 type apply_status =
   | App_na
@@ -1741,6 +1743,16 @@ let convert exports lam : _ * _  =
       | [a; b] -> 
         prim ~primitive:Pstringadd ~args:[aux a; aux b] loc 
       | _ -> assert false 
+      end 
+    | Lprim(Pccall {prim_name = "js_boolean_to_bool"}, args, loc) -> 
+      begin match args with 
+      | [ e ] -> prim ~primitive:Pjs_boolean_to_bool ~args:[aux e] loc 
+      | _ -> assert false 
+      end
+    | Lprim(Pccall {prim_name = "js_typeof"}, args,loc) -> 
+      begin match args with 
+      | [e] -> prim ~primitive:Pjs_typeof ~args:[aux e] loc 
+      | _ -> assert false
       end 
     | Lprim(Pdirapply, _, _) -> assert false 
     | Lprim (primitive,args, loc) 

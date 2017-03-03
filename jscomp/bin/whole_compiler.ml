@@ -66980,6 +66980,9 @@ type primitive =
   | Pis_null
   | Pis_undefined
   | Pis_null_undefined
+
+  | Pjs_boolean_to_bool
+  | Pjs_typeof
   
 
 type switch  =
@@ -67311,6 +67314,8 @@ type primitive =
   | Pis_null
   | Pis_undefined
   | Pis_null_undefined
+  | Pjs_boolean_to_bool
+  | Pjs_typeof
 
 type apply_status =
   | App_na
@@ -68873,6 +68878,16 @@ let convert exports lam : _ * _  =
       | [a; b] -> 
         prim ~primitive:Pstringadd ~args:[aux a; aux b] loc 
       | _ -> assert false 
+      end 
+    | Lprim(Pccall {prim_name = "js_boolean_to_bool"}, args, loc) -> 
+      begin match args with 
+      | [ e ] -> prim ~primitive:Pjs_boolean_to_bool ~args:[aux e] loc 
+      | _ -> assert false 
+      end
+    | Lprim(Pccall {prim_name = "js_typeof"}, args,loc) -> 
+      begin match args with 
+      | [e] -> prim ~primitive:Pjs_typeof ~args:[aux e] loc 
+      | _ -> assert false
       end 
     | Lprim(Pdirapply, _, _) -> assert false 
     | Lprim (primitive,args, loc) 
@@ -72325,6 +72340,8 @@ let rec no_side_effects (lam : Lam.t) : bool =
            *)
           | _ , _-> false
         end 
+      | Pjs_boolean_to_bool
+      | Pjs_typeof
       | Pis_null
       | Pis_undefined
       | Pis_null_undefined
@@ -72838,7 +72855,8 @@ let primitive ppf (prim : Lam.primitive) = match prim with
   | Lam.Praw_js_code_stmt _ -> fprintf ppf "[raw.stmt]"
   | Pglobal_exception id ->
     fprintf ppf "global exception %a" Ident.print id       
-    
+  | Pjs_boolean_to_bool -> fprintf ppf "[boolean->bool]"
+  | Pjs_typeof -> fprintf ppf "[typeof]"
   | Pnull_to_opt -> fprintf ppf "[null->opt]"              
   | Pundefined_to_opt -> fprintf ppf "[undefined->opt]"     
   | Pnull_undefined_to_opt -> 
@@ -93674,24 +93692,13 @@ let translate (prim_name : string)
     begin match args with 
     | [l ; r] -> E.bin Ge l r 
     | _ -> assert false end
-  | "js_boolean_to_bool"
-    -> 
-    begin match args with 
-    | [e] -> E.to_ocaml_boolean e 
-    | _ -> assert false
-    end
+  
   | "js_is_instance_array" 
     ->
     begin match args with 
     | [e] -> E.is_instance_array e 
     | _ -> assert false end
-  | "js_typeof"
-    -> 
-    begin match args with 
-    | [e] -> E.typeof e         
-    | _ -> assert false
-    end
-
+  
   | "js_dump"
     -> 
     (* This primitive can accept any number of arguments 
@@ -93931,6 +93938,16 @@ let translate  loc
   | Pis_null_undefined -> 
       E.runtime_call Js_config.js_primitive
         "js_is_nil_undef" args 
+  | Pjs_boolean_to_bool -> 
+    begin match args with 
+    | [e] -> E.to_ocaml_boolean e 
+    | _ -> assert false 
+    end
+  | Pjs_typeof -> 
+    begin match args with 
+    | [e] -> E.typeof e 
+    | _ -> assert false 
+    end
   | Pjs_unsafe_downgrade _
   | Pdebugger 
   | Pjs_fn_run _ 
