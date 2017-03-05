@@ -21,10 +21,10 @@ let suites = Mt.[
 
     (* es2015 *)
     "isArray_array", (fun _ ->
-      Eq(Js.true_, [||] |> Js.Array.isArray)
+      Eq(true, [||] |> Js.Array.isArray)
     );
     "isArray_int", (fun _ ->
-      Eq(Js.false_, 34 |> Js.Array.isArray)
+      Eq(false, 34 |> Js.Array.isArray)
     );
 
     "length", (fun _ ->
@@ -128,7 +128,7 @@ let suites = Mt.[
 
     (* es2016 *)
     "includes", (fun _ ->
-      Eq(Js.true_, [| 1; 2; 3 |] |> Js.Array.includes 3)
+      Eq(true, [| 1; 2; 3 |] |> Js.Array.includes 3)
     );
 
     "indexOf", (fun _ ->
@@ -180,10 +180,10 @@ let suites = Mt.[
     *)
 
     "every", (fun _ ->
-      Eq(Js.true_, [| 1; 2; 3 |] |> Js.Array.every ((fun n ->  (n > 0)) ))
+      Eq(true, [| 1; 2; 3 |] |> Js.Array.every ((fun n ->  (n > 0)) ))
     );
     "everyi", (fun _ ->
-      Eq(Js.false_, [| 1; 2; 3 |] |> Js.Array.everyi ((fun _ i ->  (i > 0)) ))
+      Eq(false, [| 1; 2; 3 |] |> Js.Array.everyi ((fun _ i ->  (i > 0)) ))
     );
 
     "filter", (fun _ ->
@@ -257,10 +257,10 @@ let suites = Mt.[
     );
 
     "some", (fun _ ->
-      Eq(Js.false_, [| 1; 2; 3; 4 |] |> Js.Array.some ((fun n ->  (n <= 0)) ))
+      Eq(false, [| 1; 2; 3; 4 |] |> Js.Array.some ((fun n ->  (n <= 0)) ))
     );
     "somei", (fun _ ->
-      Eq(Js.true_, [| 1; 2; 3; 4 |] |> Js.Array.somei ((fun _ i ->  (i <= 0)) ))
+      Eq(true, [| 1; 2; 3; 4 |] |> Js.Array.somei ((fun _ i ->  (i <= 0)) ))
     );
 
     (* es2015, iterator

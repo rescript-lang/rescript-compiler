@@ -3,7 +3,8 @@
 
 function f(resp) {
   resp.statusCode = 200;
-  return resp.hi = "hi";
+  resp.hi = "hi";
+  return /* () */0;
 }
 
 exports.f = f;

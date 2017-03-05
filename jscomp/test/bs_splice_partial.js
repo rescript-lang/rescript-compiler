@@ -4,8 +4,8 @@ var Curry = require("../../lib/js/curry");
 
 function test_hi(x) {
   var match = x.hi(1, 2, 3);
-  if (match) {
-    console.log(match[0]);
+  if (match !== null) {
+    console.log(match);
     return 2;
   }
   else {

@@ -44,7 +44,7 @@ let reify_type (type a) (x : 'a) : (a kind * a ) =
   if (Obj.magic x) == Js.null then
     (* providing a universal function *)
     Obj.magic Null else 
-  if Js.to_bool @@ Js_array.isArray x  then 
+  if Js_array.isArray x  then 
     Obj.magic Array 
   else 
     Obj.magic Object ), Obj.magic x
@@ -57,8 +57,8 @@ let test (type a) (x : 'a) (v : a kind) : bool =
      Js.typeof x = "boolean" 
   | String -> Js.typeof x = "string"
   | Null -> (Obj.magic x) == Js.null 
-  | Array -> Js.to_bool (Js_array.isArray x )
-  | Object -> (Obj.magic x) != Js.null && Js.typeof x = "object" && not (Js.to_bool (Js_array.isArray x ))
+  | Array -> Js_array.isArray x 
+  | Object -> (Obj.magic x) != Js.null && Js.typeof x = "object" && not (Js_array.isArray x )
 
 
 external parse : string -> t = "JSON.parse" [@@bs.val]

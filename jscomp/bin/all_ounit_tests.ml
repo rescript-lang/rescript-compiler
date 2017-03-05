@@ -3980,8 +3980,27 @@ external ff :
       {js| \uFFF|js}
       |} in 
       OUnit.assert_bool __LOC__ (not @@ Ext_string.is_empty should_err.stderr)
+    end;
+
+    __LOC__ >:: begin fun _ -> 
+      let should_err = bsc_eval {|
+      external mk : int -> ([`a|`b] [@bs.string]) = "" [@@bs.val]
+      |} in 
+      OUnit.assert_bool __LOC__ (not @@ Ext_string.is_empty should_err.stderr)
+    end;
+    
+    __LOC__ >:: begin fun _ -> 
+      let should_err = bsc_eval {|
+      external mk : int -> ([`a|`b] ) = "" [@@bs.val]
+      |} in 
+      OUnit.assert_bool __LOC__ ( Ext_string.is_empty should_err.stderr)
+      (* give a warning or ? 
+         ( [`a | `b ] [@bs.string] ) 
+         (* auto-convert to ocaml poly-variant *)
+      *)
     end
-  
+
+
 
   ]
 

@@ -27880,6 +27880,10 @@ val make_obj :
   (string * Parsetree.attributes * t) list ->
   t
 
+val is_user_option : t -> bool 
+
+val is_user_bool : t -> bool
+
 val is_optional_label : string -> bool 
 
 (** 
@@ -27992,7 +27996,15 @@ let is_array (ty : t) =
   | Ptyp_constr({txt =Lident "array"}, [_]) -> true
   | _ -> false 
 
+let is_user_option (ty : t) = 
+  match ty.ptyp_desc with 
+  | Ptyp_constr({txt = Lident "option"},[_]) -> true 
+  | _ -> false 
 
+let is_user_bool (ty : t) = 
+  match ty.ptyp_desc with 
+  | Ptyp_constr({txt = Lident "bool"},[]) -> true 
+  | _ -> false 
 
 
 let is_optional_label l =
@@ -28168,12 +28180,13 @@ type ffi =
   | Js_set_index
 
 type return_wrapper = 
-  | Return_default
-  | Retrun_undefined_to_opt  
+  | Return_unset 
+  | Return_identity
+  | Return_undefined_to_opt  
   | Return_null_to_opt
   | Return_null_undefined_to_opt
   | Return_to_ocaml_bool
-  | Return_unit    
+  | Return_replaced_with_unit    
 
 type t  = 
   | Ffi_bs of arg_kind list  *
@@ -28324,12 +28337,13 @@ let name_of_ffi ffi =
    Printf.sprintf "[@@bs.obj]" *)
 
 type return_wrapper = 
-  | Return_default
-  | Retrun_undefined_to_opt  
+  | Return_unset 
+  | Return_identity
+  | Return_undefined_to_opt  
   | Return_null_to_opt
   | Return_null_undefined_to_opt
   | Return_to_ocaml_bool
-  | Return_unit    
+  | Return_replaced_with_unit    
 type t  = 
   | Ffi_bs of arg_kind list  *
      return_wrapper * ffi 
@@ -29161,14 +29175,6 @@ module Ast_external_attributes : sig
 
 
 
-type return_wrapper = Ast_ffi_types.return_wrapper = 
-  | Return_default
-  | Retrun_undefined_to_opt  
-  | Return_null_to_opt
-  | Return_null_undefined_to_opt
-  | Return_to_ocaml_bool
-  | Return_unit (* add [()] as return value *)
-
 
 
 (**
@@ -29235,7 +29241,7 @@ let get_arg_type ~nolabel optional
     (ptyp : Ast_core_type.t) : 
   Ast_core_type.arg_type * Ast_core_type.t  = 
   let ptyp = if optional then Ast_core_type.extract_option_type_exn ptyp else ptyp in 
-  if Ast_core_type.is_any ptyp then 
+  if Ast_core_type.is_any ptyp then (* (_[@bs.as ])*)
     if optional then 
       Location.raise_errorf ~loc:ptyp.ptyp_loc "_ is not allowed in combination with external optional type"
     else begin match Ast_attributes.process_bs_string_or_int_as ptyp.Parsetree.ptyp_attributes with 
@@ -29248,7 +29254,7 @@ let get_arg_type ~nolabel optional
         Ast_attributes.warn_unused_attributes others;
         Arg_string_lit i, Ast_literal.type_string ~loc:ptyp.ptyp_loc () 
     end 
-  else 
+  else (* ([`a|`b] [@bs.string]) *)
     match Ast_attributes.process_bs_string_int_uncurry ptyp.ptyp_attributes, ptyp.ptyp_desc with 
     | (`String, ptyp_attributes),  Ptyp_variant ( row_fields, Closed, None)
       -> 
@@ -29383,13 +29389,9 @@ type name_source =
 
   ]
 
-type return_wrapper = Ast_ffi_types.return_wrapper = 
-  | Return_default
-  | Retrun_undefined_to_opt  
-  | Return_null_to_opt
-  | Return_null_undefined_to_opt
-  | Return_to_ocaml_bool
-  | Return_unit 
+
+
+
 type st = 
   { val_name : name_source;
     external_module_name : Ast_ffi_types.external_module_name option;
@@ -29404,7 +29406,7 @@ type st =
     set_name : name_source ;
     get_name : name_source ;
     mk_obj : bool ;
-    return_wrapper : return_wrapper ;
+    return_wrapper : Ast_ffi_types.return_wrapper ;
 
   }
 
@@ -29423,7 +29425,7 @@ let init_st =
     set_name = `Nm_na ;
     get_name = `Nm_na ;
     mk_obj = false ; 
-    return_wrapper = Return_default; 
+    return_wrapper = Return_unset; 
   }
 
 
@@ -29491,13 +29493,13 @@ let process_external_attributes
               in
               begin match actions with 
                 | [ ({txt= "undefined_to_opt"},None) ] -> 
-                  { st with return_wrapper = Retrun_undefined_to_opt}
+                  { st with return_wrapper = Return_undefined_to_opt}
                 | [ ({txt= "null_to_opt"},None) ] -> 
                   { st with return_wrapper = Return_null_to_opt}                  
                 | [ ({txt= "null_undefined_to_opt"},None) ] -> 
                   { st with return_wrapper = Return_null_undefined_to_opt}    
-                | [ ({txt = "to_bool"}, None)] ->          
-                  { st with return_wrapper = Return_to_ocaml_bool}
+                | [ ({txt = "identity" }, None)] ->          
+                  { st with return_wrapper = Return_identity}
                 | _ -> 
                   Location.raise_errorf ~loc "Not supported return directive"
               end
@@ -29514,6 +29516,36 @@ let rec has_bs_uncurry (attrs : Ast_attributes.t) =
     true 
   | _ :: attrs -> has_bs_uncurry attrs 
   | [] -> false 
+
+
+let check_return_wrapper 
+    loc (wrapper : Ast_ffi_types.return_wrapper) 
+    result_type = 
+  match wrapper with 
+  | Return_identity -> wrapper
+  | Return_unset  ->         
+    if Ast_core_type.is_unit result_type then 
+      Return_replaced_with_unit 
+    else if Ast_core_type.is_user_bool result_type then 
+      Return_to_ocaml_bool
+    else 
+      wrapper
+  | Return_undefined_to_opt
+  | Return_null_to_opt 
+  | Return_null_undefined_to_opt  
+    -> 
+    if Ast_core_type.is_user_option result_type then 
+      wrapper
+    else 
+      Location.raise_errorf ~loc 
+        "bs.return directive *_to_opt expect return type to be \n\
+         syntax wise `_ option` for safety"
+
+  | Return_replaced_with_unit 
+  | Return_to_ocaml_bool  -> 
+    assert false (* Not going to happen from user input*)
+
+
 
 
 (** Note that the passed [type_annotation] is already processed by visitor pattern before 
@@ -29566,7 +29598,7 @@ let handle_attributes
         set_name = `Nm_na ;
         get_name = `Nm_na ;
         get_index = false ;
-        return_wrapper = Return_default 
+        return_wrapper = Return_unset 
         (* wrapper does not work with [bs.obj]
            TODO: better error message *)
       } -> 
@@ -29996,13 +30028,13 @@ let handle_attributes
       | _ ->  Location.raise_errorf ~loc "Illegal attribute found"  in 
     begin 
       Ast_ffi_types.check_ffi ~loc ffi;
-      let result_type_spec, new_result_type  = 
-        get_arg_type ~nolabel:true false result_type in
       (* result type can not be labeled *)
-      let return_wrapper = 
-        if result_type_spec = Extern_unit then 
-          Return_unit 
-        else Return_default
+      (* currently we don't process attributes of 
+        return type, in the future we may  *)
+      let  new_result_type  =  result_type in
+        (* get_arg_type ~nolabel:true false result_type in *)
+      let return_wrapper : Ast_ffi_types.return_wrapper = 
+        check_return_wrapper loc st.return_wrapper new_result_type
       in 
       (
         List.fold_right (fun (label,ty,attrs,loc) acc -> 

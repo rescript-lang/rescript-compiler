@@ -207,6 +207,7 @@ gpr_904_test.cmj : mt.cmj
 gpr_974_test.cmj : ../runtime/js.cmj
 gpr_977_test.cmj : ../stdlib/nativeint.cmj mt.cmj ../runtime/js.cmj \
     ../stdlib/int32.cmj
+gpr_return_type_unused_attribute.cmj :
 gray_code_test.cmj : ../stdlib/bytes.cmj
 guide_for_ext.cmj :
 hamming_test.cmj : ../stdlib/printf.cmj mt.cmj ../stdlib/lazy.cmj \
@@ -349,7 +350,7 @@ record_with_test.cmj : mt.cmj
 recursive_module.cmj :
 recursive_module_test.cmj : mt.cmj
 regression_print.cmj :
-return_check.cmj :
+return_check.cmj : ../runtime/js.cmj
 runtime_encoding_test.cmj :
 scanf_io.cmj : testing.cmj ../stdlib/string.cmj ../stdlib/scanf.cmj \
     ../stdlib/printf.cmj ../stdlib/list.cmj ../stdlib/digest.cmj \

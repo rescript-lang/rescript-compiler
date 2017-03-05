@@ -41,7 +41,7 @@ val translate_ffi :
   (* string -> *) (* Not used.. *)
   Lam_compile_defs.cxt -> 
   Ast_ffi_types.arg_kind list -> 
-  bool -> 
+  (*bool -> *)
   J.expression list -> 
   J.expression 
   

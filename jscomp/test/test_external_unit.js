@@ -1,10 +1,12 @@
 'use strict';
 
 
-var u = (console.log(3), /* () */0);
+console.log(3);
 
 var v = console.log(3);
 
+var u = /* () */0;
+
 exports.u = u;
 exports.v = v;
-/* u Not a pure module */
+/*  Not a pure module */

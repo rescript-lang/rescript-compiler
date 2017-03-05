@@ -606,9 +606,9 @@ let translate  loc
   | Pjs_object_create labels
     -> 
     Lam_compile_external_obj.assemble_args_obj labels args 
-  | Pjs_call (_, arg_types, result_type, ffi) -> 
+  | Pjs_call (_, arg_types, ffi) -> 
     Lam_compile_external_call.translate_ffi 
-      loc ffi cxt arg_types (result_type = Ast_ffi_types.Return_unit) args 
+      loc ffi cxt arg_types args 
   (** FIXME, this can be removed later *)
   | Pisint -> 
     begin 

@@ -73,6 +73,10 @@ val make_obj :
   (string * Parsetree.attributes * t) list ->
   t
 
+val is_user_option : t -> bool 
+
+val is_user_bool : t -> bool
+
 val is_optional_label : string -> bool 
 
 (** 
