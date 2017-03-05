@@ -48,18 +48,18 @@ let suites = Mt.[
 
     (* es2015 *)
     "endsWith", (fun _ ->
-      Eq(Js.true_, "foobar" |> Js.String.endsWith "bar")
+      Eq(true, "foobar" |> Js.String.endsWith "bar")
     );
     "endsWithFrom", (fun _ ->
-      Eq(Js.false_, "foobar" |> Js.String.endsWithFrom "bar" 1)
+      Eq(false, "foobar" |> Js.String.endsWithFrom "bar" 1)
     );
 
     (* es2015 *)
     "includes", (fun _ ->
-      Eq(Js.true_, "foobarbaz" |> Js.String.includes "bar")
+      Eq(true, "foobarbaz" |> Js.String.includes "bar")
     );
     "includesFrom", (fun _ ->
-      Eq(Js.false_, "foobarbaz" |> Js.String.includesFrom "bar" 4)
+      Eq(false, "foobarbaz" |> Js.String.includesFrom "bar" 4)
     );
 
     "indexOf", (fun _ ->
@@ -130,10 +130,10 @@ let suites = Mt.[
 
     (* es2015 *)
     "startsWith", (fun _ ->
-      Eq(Js.true_, "foobarbaz" |> Js.String.startsWith "foo")
+      Eq(true, "foobarbaz" |> Js.String.startsWith "foo")
     );
     "startsWithFrom", (fun _ ->
-      Eq(Js.false_, "foobarbaz" |> Js.String.startsWithFrom "foo" 1)
+      Eq(false, "foobarbaz" |> Js.String.startsWithFrom "foo" 1)
     );
 
     "substr", (fun _ ->
@@ -174,5 +174,6 @@ let suites = Mt.[
     "link", (fun _ ->
       Eq("<a href=\"https://reason.ml\">foo</a>", "foo" |> Js.String.link "https://reason.ml")
     );
+    __LOC__ , (fun _ -> Ok (Js.String.includes "a" "ab"))
 ]
 ;; Mt.from_pair_suites __FILE__ suites

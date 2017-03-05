@@ -18,13 +18,13 @@ let suites = Mt.[
       |> Js.Re.fromString
       |> Js.Re.test "#foo#" in
 
-    Eq(Js.true_, res)
+    Eq(true, res)
   );
 
   "fromStringWithFlags", (fun _ ->
     let res = Js.Re.fromStringWithFlags "foo" "g" in
 
-    Eq(Js.true_, res |> Js.Re.global)
+    Eq(true, res |> Js.Re.global)
   );
   "result_index", (fun _ ->
     match "zbar" |> Js.Re.fromString |> Js.Re.exec "foobarbazbar" |> Js_null.to_opt with
@@ -49,10 +49,10 @@ let suites = Mt.[
   );
 
   "t_global", (fun _ ->
-    Eq(Js.true_, [%re "/./ig"] |> Js.Re.global)
+    Eq(true, [%re "/./ig"] |> Js.Re.global)
   );
   "t_ignoreCase", (fun _ ->
-    Eq(Js.true_, [%re "/./ig"] |> Js.Re.ignoreCase)
+    Eq(true, [%re "/./ig"] |> Js.Re.ignoreCase)
   );
   "t_lastIndex", (fun _ ->
     let re = [%re "/na/g"] in
@@ -61,7 +61,7 @@ let suites = Mt.[
     Eq(4,  re |> Js.Re.lastIndex)
   );
   "t_multiline", (fun _ ->
-    Eq(Js.false_, [%re "/./ig"] |> Js.Re.multiline)
+    Eq(false, [%re "/./ig"] |> Js.Re.multiline)
   );
   "t_source", (fun _ ->
     Eq("f.+o", [%re "/f.+o/ig"] |> Js.Re.source)
@@ -69,10 +69,10 @@ let suites = Mt.[
 
   (* es2015 *)
   "t_sticky", (fun _ ->
-    Eq(Js.true_, [%re "/./yg"] |> Js.Re.sticky)
+    Eq(true, [%re "/./yg"] |> Js.Re.sticky)
   );
   "t_unicode", (fun _ ->
-    Eq(Js.false_, [%re "/./yg"] |> Js.Re.unicode)
+    Eq(false, [%re "/./yg"] |> Js.Re.unicode)
   );
 ]
 

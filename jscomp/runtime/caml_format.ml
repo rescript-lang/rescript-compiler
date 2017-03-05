@@ -494,12 +494,12 @@ let caml_format_float fmt x =
   let prec = if f.prec < 0 then 6 else f.prec in 
   let x = if x < 0. then (f.sign <- (-1); -. x) else x in 
   let s = ref "" in 
-  if Js.to_bool @@ Js_float.isNaN x then 
+  if Js_float.isNaN x then 
     begin 
       s := "nan";
       f.filter <- " "
     end
-  else if not @@ Js.to_bool @@ Js_float.isFinite x then
+  else if not @@ Js_float.isFinite x then
     begin 
       s := "inf";
       f.filter <- " " 

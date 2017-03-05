@@ -25,7 +25,7 @@
 
 type t = Node.buffer 
 
-external isBuffer : 'a -> Js.boolean = "Buffer.isBuffer" 
+external isBuffer : 'a -> bool = "Buffer.isBuffer" 
 [@@bs.val]
 
 external fromString : string -> t = "Buffer.from"

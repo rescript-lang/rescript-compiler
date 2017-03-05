@@ -29,10 +29,10 @@ external nan : float = "NaN"
 external toFixed : float -> int -> string = "" 
 [@@bs.send]
 
-external isFinite : float -> Js.boolean = ""
+external isFinite : float -> bool = ""
 [@@bs.val ]
 
-external isNaN : float -> Js.boolean = ""
+external isNaN : float -> bool = ""
 [@@bs.val] 
 
 external exp : float -> float = "Math.exp"
