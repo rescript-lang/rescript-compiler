@@ -2,18 +2,18 @@ caml_array.cmj : caml_array.cmi
 caml_string.cmj : bs_string.cmj caml_string.cmi
 caml_bytes.cmj : caml_bytes.cmi
 caml_obj.cmj : js.cmj caml_array.cmj bs_obj.cmj caml_obj.cmi
-caml_int64.cmj : typed_array.cmj js_float.cmj js.cmj caml_utils.cmj \
-    caml_int32.cmj bs_string.cmj caml_int64.cmi
+caml_int64.cmj : typed_array.cmj js_float.cmj caml_utils.cmj caml_int32.cmj \
+    bs_string.cmj caml_int64.cmi
 caml_exceptions.cmj : caml_builtin_exceptions.cmj caml_exceptions.cmi
 caml_utils.cmj : caml_utils.cmi
 caml_sys.cmj : js_float.cmj caml_sys.cmi
 caml_io.cmj : js_undefined.cmj js.cmj bs_string.cmj
-caml_float.cmj : typed_array.cmj js_float.cmj js.cmj caml_float.cmi
+caml_float.cmj : typed_array.cmj js_float.cmj caml_float.cmi
 caml_lexer.cmj : caml_lexer.cmi
 caml_parser.cmj : caml_parser.cmi
 caml_primitive.cmj : caml_primitive.cmi
 caml_format.cmj : js_nativeint.cmj js_int64.cmj js_int.cmj js_float.cmj \
-    js.cmj caml_utils.cmj bs_string.cmj caml_format.cmi
+    caml_utils.cmj bs_string.cmj caml_format.cmi
 caml_md5.cmj : bs_string.cmj caml_md5.cmi
 caml_queue.cmj : caml_queue.cmi
 caml_hash.cmj : js_undefined.cmj js.cmj caml_queue.cmj bs_string.cmj \
@@ -22,14 +22,15 @@ caml_weak.cmj : js_undefined.cmj caml_array.cmj caml_weak.cmi
 caml_backtrace.cmj : caml_backtrace.cmi
 caml_int32.cmj : caml_int32.cmi
 caml_gc.cmj : caml_gc.cmi
-typed_array.cmj :
+typed_array.cmj : js.cmj
 js_primitive.cmj : js_undefined.cmj js.cmj js_primitive.cmi
 caml_basic.cmj : js_undefined.cmj js.cmj caml_basic.cmi
 caml_oo.cmj : caml_array.cmj bs_obj.cmj caml_oo.cmi
-curry.cmj : caml_oo.cmj caml_array.cmj
+curry.cmj : caml_array.cmj
+caml_oo_curry.cmj : curry.cmj caml_oo.cmj
 caml_module.cmj :
 bs_string.cmj :
-js_float.cmj : js.cmj
+js_float.cmj :
 bs_obj.cmj : js.cmj
 js_nativeint.cmj :
 js_int.cmj :
