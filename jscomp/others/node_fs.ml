@@ -124,5 +124,10 @@ external readFileSync :
   string = "readFileSync" 
 [@@bs.val] [@@bs.module "fs"]
 
+external readFileAsUtf8Sync : 
+  string -> (_[@bs.as "utf8"]) -> 
+  string = "readFileSync"
+[@@bs.val] [@@bs.module "fs"]  
+
 external existsSync : string -> bool = ""
 [@@bs.val] [@@bs.module "fs"]  

@@ -5,7 +5,7 @@ let () =
   | None ->   ()
   | Some u ->               
     Js.log @@ u#@resolve "./test_require.js";
-    if u##main == [%bs.node module_] && u##main != Js.Undefined.empty then
+    if u##main == [%bs.node _module] && u##main != Js.Undefined.empty then
       Js.log "is main"
     else
       Js.log "not main"

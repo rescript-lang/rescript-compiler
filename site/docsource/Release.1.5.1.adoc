@@ -1,0 +1,6 @@
+
+
+
+# Minor breaking changes
+
+changes NodeJS special variables from `module_` to `_module` to make it more consistent

@@ -87,8 +87,19 @@ let translate  loc
       | _ -> assert false 
       end    
   | Lam.Pnull_undefined_to_opt -> 
-    E.runtime_call Js_config.js_primitive
-    "js_from_nullable_def" args 
+    (*begin match args with 
+    | [e] -> 
+      begin match e.expression_desc with 
+      | Var _ -> 
+        E.econd (E.or_ (E.is_undef e) (E.is_nil e)) 
+          Js_of_lam_option.none 
+          (Js_of_lam_option.some e)
+      | _ ->*)
+       E.runtime_call Js_config.js_primitive        
+      "js_from_nullable_def" args 
+      (*end*)
+    (* | _ -> assert false  *)
+    (* end *)
   | Pis_null -> 
     begin match args with 
     | [e] -> E.is_nil e 

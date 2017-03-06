@@ -31793,15 +31793,14 @@ let rec unsafe_mapper : Ast_mapper.mapper =
              payload)
           ->
           let strip s =
-            let len = String.length s in            
-            if s.[len - 1] = '_' then
-              String.sub s 0 (len - 1)
-            else s in                  
+            match s with 
+            | "_module" -> "module" 
+            | x -> x  in 
           begin match Ast_payload.as_ident payload with
             | Some {txt = Lident
-                        ("__filename"
+                        ( "__filename"
                         | "__dirname"
-                        | "module_"
+                        | "_module"
                         | "require" as name); loc}
               ->
               let exp =
@@ -31810,7 +31809,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                      (strip name) ) in
               let typ =
                 Ast_comb.to_undefined_type loc @@                 
-                if name = "module_" then
+                if name = "_module" then
                   Typ.constr ~loc
                     { txt = Ldot (Lident "Node", "node_module") ;
                       loc} []   

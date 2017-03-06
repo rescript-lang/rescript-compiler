@@ -44,4 +44,11 @@ echo "Snapshot && update deps" >> ./build.compile
 
 make -C test depend 2>>../build.compile
 make -j7 depend snapshotml 2>> ./build.compile
+
+echo "Updating dependencies in runtime"
+cd runtime; make depend; cd ..
+
+echo "Updating dependencies in others"
+cd others; make depend; cd ..
+
 echo "Done" >> ./build.compile

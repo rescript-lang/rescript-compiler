@@ -1034,16 +1034,16 @@ let prim ~primitive:(prim : primitive) ~args:(ll : t list) loc  : t =
         Lift.int (int_of_float (float_of_string a))
       (* | Pnegfloat -> Lift.float (-. a) *)
       (* | Pabsfloat -> Lift.float (abs_float a) *)
-      | Pstringlength, ( (Const_string (a)) ) 
+      | Pstringlength, Const_string a
         -> 
         Lift.int (String.length a)
       (* | Pnegbint Pnativeint, ( (Const_nativeint i)) *)
       (*   ->   *)
       (*   Lift.nativeint (Nativeint.neg i) *)
-      | Pnegbint Pint32, ( (Const_int32 a))
+      | Pnegbint Pint32, Const_int32 a
         -> 
         Lift.int32 (Int32.neg a)
-      | Pnegbint Pint64, ( (Const_int64 a))
+      | Pnegbint Pint64, Const_int64 a
         -> 
         Lift.int64 (Int64.neg a)
       | Pnot , Const_pointer (a,_) 
@@ -1244,6 +1244,7 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : t =
   | Pint_as_pointer 
   | Pidentity ->  
     begin match args with [x] -> x | _ -> assert false end
+  | Pccall _ -> assert false      
   | Prevapply -> assert false     
   | Pdirapply -> assert false 
   | Ploc loc -> assert false (* already compiled away here*)    
@@ -1279,38 +1280,6 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : t =
     -> prim ~primitive:(Pduprecord(repr,i)) ~args loc
   | Plazyforce -> prim ~primitive:Plazyforce ~args loc
 
-  | Pccall a -> 
-    let prim_name = a.prim_name in    
-    begin match Ast_ffi_types.from_string a.prim_native_name with 
-      | Ffi_normal -> 
-        if Pervasives.not @@ Ext_string.starts_with prim_name "js_" then 
-          prim ~primitive:(Pccall a ) ~args loc else 
-        if prim_name =  Literals.js_debugger then 
-          prim ~primitive:Pdebugger ~args loc else 
-        if prim_name =  Literals.js_fn_run || prim_name = Literals.js_method_run then
-          prim ~primitive:(Pjs_fn_run (int_of_string a.prim_native_name)) ~args loc else 
-        if prim_name = Literals.js_fn_mk then 
-          prim ~primitive:(Pjs_fn_make (int_of_string a.prim_native_name)) ~args loc else                
-        if prim_name = Literals.js_fn_method then 
-          prim ~primitive:(Pjs_fn_method (int_of_string a.prim_native_name)) ~args loc else
-        if prim_name = Literals.js_fn_runmethod then 
-          prim ~primitive:(Pjs_fn_runmethod (int_of_string a.prim_native_name)) ~args loc 
-        else
-          prim ~primitive:(Pccall a) ~args loc
-      | Ffi_obj_create labels -> 
-        prim ~primitive:(Pjs_object_create labels) ~args loc 
-      | Ffi_bs(arg_types, result_type, ffi) ->         
-
-        if no_auto_uncurried_arg_types arg_types then   
-          result_wrap loc result_type @@ prim ~primitive:(Pjs_call(prim_name, arg_types, ffi)) 
-            ~args loc 
-        else 
-          let n_arg_types, n_args = 
-            transform_uncurried_arg_type loc  arg_types args in 
-          result_wrap loc result_type @@
-          prim ~primitive:(Pjs_call (prim_name, n_arg_types, ffi))
-            ~args:n_args loc 
-    end
 
   | Praise _ ->
     if Js_config.get_no_any_assert () then 
@@ -1691,23 +1660,23 @@ let convert exports lam : _ * _  =
     | Lprim(Prevapply, [x ; f ],  outer_loc) 
     | Lprim(Pdirapply, [f ; x],  outer_loc) -> 
       begin match f with 
-               (* [x|>f] 
-          TODO: [airty = 0] when arity =0, it can not be escaped user can only
-          write  [f x ] instead of [x |> f ]
-         *)
+        (* [x|>f] 
+           TODO: [airty = 0] when arity =0, it can not be escaped user can only
+           write  [f x ] instead of [x |> f ]
+        *)
         | Lfunction(kind, [param],Lprim(external_fn,[Lvar inner_arg],inner_loc))
-           when Ident.same param inner_arg 
-            -> 
-           aux  (Lprim(external_fn,  [x], outer_loc))
+          when Ident.same param inner_arg 
+          -> 
+          aux  (Lprim(external_fn,  [x], outer_loc))
 
         |  Lapply(Lfunction(kind, params,Lprim(external_fn,inner_args,inner_loc)), args, outer_loc ) (* x |> f a *) 
-       
-           when Ext_list.for_all2_no_exn (fun x y -> match y with Lambda.Lvar y when Ident.same x y  -> true | _ -> false ) params inner_args
-           &&            
-          Ext_list.length_larger_than_n 1 inner_args args
-        -> 
-      
-         aux (Lprim(external_fn, args @ [x], outer_loc))
+
+          when Ext_list.for_all2_no_exn (fun x y -> match y with Lambda.Lvar y when Ident.same x y  -> true | _ -> false ) params inner_args
+               &&            
+               Ext_list.length_larger_than_n 1 inner_args args
+          -> 
+
+          aux (Lprim(external_fn, args @ [x], outer_loc))
         | _ -> 
           let x  = aux x in 
           let f =  aux f in 
@@ -1758,7 +1727,7 @@ let convert exports lam : _ * _  =
           prim ~primitive:Pnull_to_opt ~args:[aux arg] loc 
         | _ -> assert false 
       end  
-    | Lprim (Pccall {prim_name = "js_is_nil"}, args, loc) -> 
+    | Lprim (Pccall {prim_name = "js_is_nil" }, args, loc) -> 
       begin match args with 
         | [arg] -> prim ~primitive:Pis_null ~args:[aux arg] loc 
         | _ -> assert false 
@@ -1789,23 +1758,55 @@ let convert exports lam : _ * _  =
         | [e] -> prim ~primitive:Pjs_typeof ~args:[aux e] loc 
         | _ -> assert false
       end 
+    | Lprim(Pccall a, args, loc)  -> 
+      let args = List.map aux args in 
+      let prim_name = a.prim_name in    
+      begin match Ast_ffi_types.from_string a.prim_native_name with 
+        | Ffi_normal -> 
+          if Pervasives.not @@ Ext_string.starts_with prim_name "js_" then 
+            prim ~primitive:(Pccall a ) ~args loc else 
+          if prim_name =  Literals.js_debugger then 
+            prim ~primitive:Pdebugger ~args loc else 
+          if prim_name =  Literals.js_fn_run || prim_name = Literals.js_method_run then
+            prim ~primitive:(Pjs_fn_run (int_of_string a.prim_native_name)) ~args loc else 
+          if prim_name = Literals.js_fn_mk then 
+            prim ~primitive:(Pjs_fn_make (int_of_string a.prim_native_name)) ~args loc else                
+          if prim_name = Literals.js_fn_method then 
+            prim ~primitive:(Pjs_fn_method (int_of_string a.prim_native_name)) ~args loc else
+          if prim_name = Literals.js_fn_runmethod then 
+            prim ~primitive:(Pjs_fn_runmethod (int_of_string a.prim_native_name)) ~args loc 
+          else
+            prim ~primitive:(Pccall a) ~args loc
+        | Ffi_obj_create labels -> 
+          prim ~primitive:(Pjs_object_create labels) ~args loc 
+        | Ffi_bs(arg_types, result_type, ffi) ->         
 
+          if no_auto_uncurried_arg_types arg_types then   
+            result_wrap loc result_type @@ prim ~primitive:(Pjs_call(prim_name, arg_types, ffi)) 
+              ~args loc 
+          else 
+            let n_arg_types, n_args = 
+              transform_uncurried_arg_type loc  arg_types args in 
+            result_wrap loc result_type @@
+            prim ~primitive:(Pjs_call (prim_name, n_arg_types, ffi))
+              ~args:n_args loc 
+      end
+
+    (* TODO: pick a invalid external name to avod conflict *)  
+    | Lprim (Pgetglobal id, args, loc) ->   
+      let args = List.map aux args in 
+      if Ident.is_predef_exn id then 
+        Lprim {primitive = Pglobal_exception id; args ; loc}
+      else 
+        begin 
+          may_depend may_depends (Lam_module_ident.of_ml id);
+          assert (args = []);
+          Lglobal_module id 
+        end  
     | Lprim (primitive,args, loc) 
       -> 
-      let args = (List.map aux args) in
-      begin match primitive with 
-        | Pgetglobal id -> 
-          if Ident.is_predef_exn id then 
-            Lprim {primitive = Pglobal_exception id; args ; loc}
-          else 
-            begin 
-              may_depend may_depends (Lam_module_ident.of_ml id);
-              assert (args = []);
-              Lglobal_module id 
-            end  
-        | _ ->       
-          lam_prim ~primitive ~args loc 
-      end
+      let args = List.map aux args in
+      lam_prim ~primitive ~args loc 
     | Lswitch (e,s) -> 
       Lswitch (aux e, aux_switch s)
     | Lstringswitch (e, cases, default,_) -> 
@@ -1848,8 +1849,8 @@ let convert exports lam : _ * _  =
           Lsend(kind, aux a,  b, List.map aux ls, loc )
       end
     | Levent (e, event) ->
-       (* disabled by upstream*)
-       assert false
+      (* disabled by upstream*)
+      assert false
     | Lifused (id, e) -> 
       Lifused(id, aux e) (* TODO: remove it ASAP *)
   and aux_switch (s : Lambda.lambda_switch) : switch = 
