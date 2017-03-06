@@ -8917,8 +8917,9 @@ let merge_module_info_map acc sources =
       | None , None ->
         assert false
       | Some a, Some b  ->
-        failwith ("conflict files found: " ^ modname ^ "in ("
-                  ^  Binary_cache.dir_of_module_info a ^ Ext_string.single_space ^ Binary_cache.dir_of_module_info b ^  " )")
+        failwith ("Conflict files found: " ^ modname ^ " in "
+                  ^ Binary_cache.dir_of_module_info a ^ " and " ^ Binary_cache.dir_of_module_info b
+                  ^ ". File names need to be unique in a project.")
       | Some v, None  -> Some v
       | None, Some v ->  Some v
     ) acc  sources
