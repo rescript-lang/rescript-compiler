@@ -23339,6 +23339,15 @@ val exclude_tail : 'a list -> 'a * 'a list
 
 val length_compare : 'a list -> int -> [`Gt | `Eq | `Lt ]
 
+(**
+
+  {[length xs = length ys + n ]}
+  input n should be positive 
+  TODO: input checking
+*)
+
+val length_larger_than_n : 
+  int -> 'a list -> 'a list -> bool
 
 val filter_map2 : ('a -> 'b -> 'c option) -> 'a list -> 'b list -> 'c list
 
@@ -23631,6 +23640,17 @@ let rec length_compare l n =
       if n = 0 then `Eq 
       else `Lt 
   end
+(**
+
+  {[length xs = length ys + n ]}
+*)
+let rec length_larger_than_n n xs ys =
+  match xs, ys with 
+  | _, [] -> length_compare xs n = `Eq   
+  | _::xs, _::ys -> 
+    length_larger_than_n n xs ys
+  | [], _ -> false 
+  
 
 
 let exclude_tail (x : 'a list) = 
@@ -65988,7 +66008,7 @@ let const ct : t = Lconst ct
 *)
 let apply fn args loc status : t = 
   match fn with 
-  | Lfunction {kind ; params ;  
+ (*| Lfunction {kind ; params ;  
                body = Lprim {primitive = 
                                (Pundefined_to_opt | Pnull_to_opt | Pnull_undefined_to_opt | Pis_null | Pis_null_undefined | Pjs_boolean_to_bool | Pjs_typeof ) as wrap;
                              args = [Lprim ({primitive; args = inner_args} as primitive_call)]
@@ -66000,7 +66020,7 @@ let apply fn args loc status : t =
         Lprim {primitive = wrap ; args = [Lprim { primitive_call with args ; loc = loc }] ; loc }
       | exception _ -> 
         Lapply { fn; args; loc; status }
-    end  
+    end  *)
   | Lfunction {kind ; params; 
                body = Lsequence (Lprim ({primitive; args = inner_args}as primitive_call), (Lconst _ as const )) }
     ->  
@@ -66839,15 +66859,25 @@ let convert exports lam : _ * _  =
     (* inlining will affect how mututal recursive behave *)
     | Lprim(Prevapply, [x ; f ],  outer_loc) 
     | Lprim(Pdirapply, [f ; x],  outer_loc) -> 
-      begin (*match f with 
-        |  Lapply(Lfunction(kind, params,Lprim(external_fn,inner_args,inner_loc)), args, outer_loc ) 
+      begin match f with 
+               (* [x|>f] 
+          TODO: [airty = 0] when arity =0, it can not be escaped user can only
+          write  [f x ] instead of [x |> f ]
+         *)
+        | Lfunction(kind, [param],Lprim(external_fn,[Lvar inner_arg],inner_loc))
+           when Ident.same param inner_arg 
+            -> 
+           aux  (Lprim(external_fn,  [x], outer_loc))
+
+        |  Lapply(Lfunction(kind, params,Lprim(external_fn,inner_args,inner_loc)), args, outer_loc ) (* x |> f a *) 
        
            when Ext_list.for_all2_no_exn (fun x y -> match y with Lambda.Lvar y when Ident.same x y  -> true | _ -> false ) params inner_args
-           && Ext_list.same_length inner_args (args @ [x])
+           &&            
+          Ext_list.length_larger_than_n 1 inner_args args
         -> 
-       
+      
          aux (Lprim(external_fn, args @ [x], outer_loc))
-        | _ -> *)           
+        | _ -> 
           let x  = aux x in 
           let f =  aux f in 
           begin match  f with 

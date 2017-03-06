@@ -42,10 +42,9 @@ var suites_001 = /* :: */[
   /* tuple */[
     "curry2",
     function () {
-      Curry._1(v, 1);
       return /* Eq */Block.__(0, [
                 14,
-                Curry._1(v, 1)
+                (Curry._1(v, 1), Curry._1(v, 1))
               ]);
     }
   ],

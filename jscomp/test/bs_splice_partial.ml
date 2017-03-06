@@ -50,3 +50,11 @@ let test_cb x =
     ignore ((x |> cb "hI" [|1;2;3|] ) 3);
     ignore @@ (cb "hI" [|1;2;3|] x ) 3 ;
     (cb2 "hI" [|1;2;3|] x ) 3 [@bs]
+
+
+type u = int -> int [@bs]
+external v : u = "" [@@bs.val]
+
+let f  x = 
+    ignore @@ (v x [@bs]) 
+    

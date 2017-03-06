@@ -75,7 +75,7 @@ open OUnitTypes
 
 (** Most simple heuristic, just pick the first test. *)
 let simple state =
-  (* 153 *) List.hd state.tests_planned
+  (* 154 *) List.hd state.tests_planned
 
 end
 module OUnitUtils
@@ -98,22 +98,22 @@ let is_success =
 let is_failure = 
   function
     | RFailure _ -> (* 0 *) true
-    | RSuccess _ | RError _  | RSkip _ | RTodo _ -> (* 306 *) false
+    | RSuccess _ | RError _  | RSkip _ | RTodo _ -> (* 308 *) false
 
 let is_error = 
   function 
     | RError _ -> (* 0 *) true
-    | RSuccess _ | RFailure _ | RSkip _ | RTodo _ -> (* 306 *) false
+    | RSuccess _ | RFailure _ | RSkip _ | RTodo _ -> (* 308 *) false
 
 let is_skip = 
   function
     | RSkip _ -> (* 0 *) true
-    | RSuccess _ | RFailure _ | RError _  | RTodo _ -> (* 306 *) false
+    | RSuccess _ | RFailure _ | RError _  | RTodo _ -> (* 308 *) false
 
 let is_todo = 
   function
     | RTodo _ -> (* 0 *) true
-    | RSuccess _ | RFailure _ | RError _  | RSkip _ -> (* 306 *) false
+    | RSuccess _ | RFailure _ | RError _  | RSkip _ -> (* 308 *) false
 
 let result_flavour = 
   function
@@ -145,7 +145,7 @@ let rec was_successful =
     | [] -> (* 3 *) true
     | RSuccess _::t 
     | RSkip _::t -> 
-        (* 459 *) was_successful t
+        (* 462 *) was_successful t
 
     | RFailure _::_
     | RError _::_ 
@@ -155,22 +155,22 @@ let rec was_successful =
 let string_of_node = 
   function
     | ListItem n -> 
-        (* 612 *) string_of_int n
+        (* 616 *) string_of_int n
     | Label s -> 
-        (* 918 *) s
+        (* 924 *) s
 
 (* Return the number of available tests *)
 let rec test_case_count = 
   function
-    | TestCase _ -> (* 153 *) 1 
-    | TestLabel (_, t) -> (* 176 *) test_case_count t
+    | TestCase _ -> (* 154 *) 1 
+    | TestLabel (_, t) -> (* 177 *) test_case_count t
     | TestList l -> 
         (* 23 *) List.fold_left 
-          (fun c t -> (* 175 *) c + test_case_count t) 
+          (fun c t -> (* 176 *) c + test_case_count t) 
           0 l
 
 let string_of_path path =
-  (* 306 *) String.concat ":" (List.rev_map string_of_node path)
+  (* 308 *) String.concat ":" (List.rev_map string_of_node path)
 
 let buff_format_printf f = 
   (* 0 *) let buff = Buffer.create 13 in
@@ -194,12 +194,12 @@ let mapi f l =
 
 let fold_lefti f accu l =
   (* 23 *) let rec rfold_lefti cnt accup l = 
-    (* 198 *) match l with
+    (* 199 *) match l with
       | [] -> 
           (* 23 *) accup
 
       | h::t -> 
-          (* 175 *) rfold_lefti (cnt + 1) (f accup h cnt) t
+          (* 176 *) rfold_lefti (cnt + 1) (f accup h cnt) t
   in
     rfold_lefti 0 accu l
 
@@ -217,7 +217,7 @@ open OUnitUtils
 type event_type = GlobalEvent of global_event | TestEvent of test_event
 
 let format_event verbose event_type =
-  (* 920 *) match event_type with
+  (* 926 *) match event_type with
     | GlobalEvent e ->
         (* 2 *) begin
           match e with 
@@ -276,31 +276,31 @@ let format_event verbose event_type =
         end
 
     | TestEvent e ->
-        (* 918 *) begin
+        (* 924 *) begin
           let string_of_result = 
             if verbose then
-              (* 459 *) function
-                | RSuccess _      -> (* 153 *) "ok\n"
+              (* 462 *) function
+                | RSuccess _      -> (* 154 *) "ok\n"
                 | RFailure (_, _) -> (* 0 *) "FAIL\n"
                 | RError (_, _)   -> (* 0 *) "ERROR\n"
                 | RSkip (_, _)    -> (* 0 *) "SKIP\n"
                 | RTodo (_, _)    -> (* 0 *) "TODO\n"
             else
-              (* 459 *) function
-                | RSuccess _      -> (* 153 *) "."
+              (* 462 *) function
+                | RSuccess _      -> (* 154 *) "."
                 | RFailure (_, _) -> (* 0 *) "F"
                 | RError (_, _)   -> (* 0 *) "E"
                 | RSkip (_, _)    -> (* 0 *) "S"
                 | RTodo (_, _)    -> (* 0 *) "T"
           in
             if verbose then
-              (* 459 *) match e with 
+              (* 462 *) match e with 
                 | EStart p -> 
-                    (* 153 *) Printf.sprintf "%s start\n" (string_of_path p)
+                    (* 154 *) Printf.sprintf "%s start\n" (string_of_path p)
                 | EEnd p -> 
-                    (* 153 *) Printf.sprintf "%s end\n" (string_of_path p)
+                    (* 154 *) Printf.sprintf "%s end\n" (string_of_path p)
                 | EResult result -> 
-                    (* 153 *) string_of_result result
+                    (* 154 *) string_of_result result
                 | ELog (lvl, str) ->
                     (* 0 *) let prefix = 
                       match lvl with 
@@ -312,21 +312,21 @@ let format_event verbose event_type =
                 | ELogRaw str ->
                     (* 0 *) str
             else 
-              (* 459 *) match e with 
-                | EStart _ | EEnd _ | ELog _ | ELogRaw _ -> (* 306 *) ""
-                | EResult result -> (* 153 *) string_of_result result
+              (* 462 *) match e with 
+                | EStart _ | EEnd _ | ELog _ | ELogRaw _ -> (* 308 *) ""
+                | EResult result -> (* 154 *) string_of_result result
         end
 
 let file_logger fn =
   (* 1 *) let chn = open_out fn in
     (fun ev ->
-       (* 460 *) output_string chn (format_event true ev);
+       (* 463 *) output_string chn (format_event true ev);
        flush chn),
     (fun () -> (* 1 *) close_out chn)
 
 let std_logger verbose =
   (* 1 *) (fun ev -> 
-     (* 460 *) print_string (format_event verbose ev);
+     (* 463 *) print_string (format_event verbose ev);
      flush stdout),
   (fun () -> (* 1 *) ())
 
@@ -343,7 +343,7 @@ let create output_file_opt verbose (log,close) =
           (* 0 *) null_logger
   in
     (fun ev ->
-       (* 460 *) std_log ev; file_log ev; log ev),
+       (* 463 *) std_log ev; file_log ev; log ev),
     (fun () ->
        (* 1 *) std_close (); file_close (); close ())
 
@@ -705,7 +705,7 @@ let assert_failure msg =
   (* 0 *) failwith ("OUnit: " ^ msg)
 
 let assert_bool msg b =
-  (* 2009418 *) if not b then (* 0 *) assert_failure msg
+  (* 2009421 *) if not b then (* 0 *) assert_failure msg
 
 let assert_string str =
   (* 0 *) if not (str = "") then (* 0 *) assert_failure str
@@ -951,7 +951,7 @@ let (@?) = assert_bool
 
 (* Some shorthands which allows easy test construction *)
 let (>:) s t = (* 0 *) TestLabel(s, t)             (* infix *)
-let (>::) s f = (* 153 *) TestLabel(s, TestCase(f))  (* infix *)
+let (>::) s f = (* 154 *) TestLabel(s, TestCase(f))  (* infix *)
 let (>:::) s l = (* 23 *) TestLabel(s, TestList(l)) (* infix *)
 
 (* Utility function to manipulate test *)
@@ -1087,7 +1087,7 @@ let maybe_backtrace = ""
 (* Run all tests, report starts, errors, failures, and return the results *)
 let perform_test report test =
   (* 1 *) let run_test_case f path =
-    (* 153 *) try 
+    (* 154 *) try 
       f ();
       RSuccess path
     with
@@ -1106,22 +1106,22 @@ let perform_test report test =
   let rec flatten_test path acc = 
     function
       | TestCase(f) -> 
-          (* 153 *) (path, f) :: acc
+          (* 154 *) (path, f) :: acc
 
       | TestList (tests) ->
           (* 23 *) fold_lefti 
             (fun acc t cnt -> 
-               (* 175 *) flatten_test 
+               (* 176 *) flatten_test 
                  ((ListItem cnt)::path) 
                  acc t)
             acc tests
       
       | TestLabel (label, t) -> 
-          (* 176 *) flatten_test ((Label label)::path) acc t
+          (* 177 *) flatten_test ((Label label)::path) acc t
   in
   let test_cases = List.rev (flatten_test [] [] test) in
   let runner (path, f) = 
-    (* 153 *) let result = 
+    (* 154 *) let result = 
       report (EStart path);
       run_test_case f path 
     in
@@ -1130,18 +1130,18 @@ let perform_test report test =
       result
   in
   let rec iter state = 
-    (* 154 *) match state.tests_planned with 
+    (* 155 *) match state.tests_planned with 
       | [] ->
           (* 1 *) state.results
       | _ ->
-          (* 153 *) let (path, f) = !global_chooser state in            
+          (* 154 *) let (path, f) = !global_chooser state in            
           let result = runner (path, f) in
             iter 
               {
                 results = result :: state.results;
                 tests_planned = 
                   List.filter 
-                    (fun (path', _) -> (* 11781 *) path <> path') state.tests_planned
+                    (fun (path', _) -> (* 11935 *) path <> path') state.tests_planned
               }
   in
     iter {results = []; tests_planned = test_cases}
@@ -1171,7 +1171,7 @@ let run_test_tt ?verbose test =
     time_fun 
       perform_test 
       (fun ev ->
-         (* 459 *) log (OUnitLogger.TestEvent ev))
+         (* 462 *) log (OUnitLogger.TestEvent ev))
       test 
   in
     
@@ -8986,6 +8986,15 @@ val exclude_tail : 'a list -> 'a * 'a list
 
 val length_compare : 'a list -> int -> [`Gt | `Eq | `Lt ]
 
+(**
+
+  {[length xs = length ys + n ]}
+  input n should be positive 
+  TODO: input checking
+*)
+
+val length_larger_than_n : 
+  int -> 'a list -> 'a list -> bool
 
 val filter_map2 : ('a -> 'b -> 'c option) -> 'a list -> 'b list -> 'c list
 
@@ -9270,14 +9279,25 @@ let try_take n l =
 
 
 let rec length_compare l n = 
-  (* 13 *) if n < 0 then (* 2 *) `Gt 
+  (* 19 *) if n < 0 then (* 2 *) `Gt 
   else 
-  (* 11 *) begin match l with 
-    | _ ::xs -> (* 8 *) length_compare xs (n - 1)
+  (* 17 *) begin match l with 
+    | _ ::xs -> (* 11 *) length_compare xs (n - 1)
     | [] ->  
-      (* 3 *) if n = 0 then (* 2 *) `Eq 
+      (* 6 *) if n = 0 then (* 5 *) `Eq 
       else (* 1 *) `Lt 
   end
+(**
+
+  {[length xs = length ys + n ]}
+*)
+let rec length_larger_than_n n xs ys =
+  (* 6 *) match xs, ys with 
+  | _, [] -> (* 3 *) length_compare xs n = `Eq   
+  | _::xs, _::ys -> 
+    (* 3 *) length_larger_than_n n xs ys
+  | [], _ -> (* 0 *) false 
+  
 
 
 let exclude_tail (x : 'a list) = 
@@ -9542,6 +9562,15 @@ let suites =
        (Ext_list.length_compare [] (-1)) `Gt ;   
       OUnit.assert_equal
        (Ext_list.length_compare [] (0)) `Eq ;          
+    end;
+    __LOC__ >:: begin fun _ -> 
+      (* 1 *) OUnit.assert_bool __LOC__ 
+      (Ext_list.length_larger_than_n 1 [1;2] [1]);
+      OUnit.assert_bool __LOC__ 
+      (Ext_list.length_larger_than_n 0 [1;2] [1;2]);
+            OUnit.assert_bool __LOC__ 
+      (Ext_list.length_larger_than_n 2 [1;2] [])
+
     end
 
   ]

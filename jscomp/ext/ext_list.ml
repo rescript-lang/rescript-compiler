@@ -203,6 +203,17 @@ let rec length_compare l n =
       if n = 0 then `Eq 
       else `Lt 
   end
+(**
+
+  {[length xs = length ys + n ]}
+*)
+let rec length_larger_than_n n xs ys =
+  match xs, ys with 
+  | _, [] -> length_compare xs n = `Eq   
+  | _::xs, _::ys -> 
+    length_larger_than_n n xs ys
+  | [], _ -> false 
+  
 
 
 let exclude_tail (x : 'a list) = 

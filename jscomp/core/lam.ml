@@ -1690,15 +1690,25 @@ let convert exports lam : _ * _  =
     (* inlining will affect how mututal recursive behave *)
     | Lprim(Prevapply, [x ; f ],  outer_loc) 
     | Lprim(Pdirapply, [f ; x],  outer_loc) -> 
-      begin (*match f with 
-        |  Lapply(Lfunction(kind, params,Lprim(external_fn,inner_args,inner_loc)), args, outer_loc ) 
+      begin match f with 
+               (* [x|>f] 
+          TODO: [airty = 0] when arity =0, it can not be escaped user can only
+          write  [f x ] instead of [x |> f ]
+         *)
+        | Lfunction(kind, [param],Lprim(external_fn,[Lvar inner_arg],inner_loc))
+           when Ident.same param inner_arg 
+            -> 
+           aux  (Lprim(external_fn,  [x], outer_loc))
+
+        |  Lapply(Lfunction(kind, params,Lprim(external_fn,inner_args,inner_loc)), args, outer_loc ) (* x |> f a *) 
        
            when Ext_list.for_all2_no_exn (fun x y -> match y with Lambda.Lvar y when Ident.same x y  -> true | _ -> false ) params inner_args
-           && Ext_list.same_length inner_args (args @ [x])
+           &&            
+          Ext_list.length_larger_than_n 1 inner_args args
         -> 
-       
+      
          aux (Lprim(external_fn, args @ [x], outer_loc))
-        | _ -> *)           
+        | _ -> 
           let x  = aux x in 
           let f =  aux f in 
           begin match  f with 

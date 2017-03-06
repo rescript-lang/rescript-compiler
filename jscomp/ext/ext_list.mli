@@ -50,6 +50,15 @@ val exclude_tail : 'a list -> 'a * 'a list
 
 val length_compare : 'a list -> int -> [`Gt | `Eq | `Lt ]
 
+(**
+
+  {[length xs = length ys + n ]}
+  input n should be positive 
+  TODO: input checking
+*)
+
+val length_larger_than_n : 
+  int -> 'a list -> 'a list -> bool
 
 val filter_map2 : ('a -> 'b -> 'c option) -> 'a list -> 'b list -> 'c list
 

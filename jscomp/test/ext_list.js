@@ -558,6 +558,27 @@ function length_compare(_l, _n) {
   };
 }
 
+function length_larger_than_n(n, _xs, _ys) {
+  while(true) {
+    var ys = _ys;
+    var xs = _xs;
+    if (ys) {
+      if (xs) {
+        _ys = ys[1];
+        _xs = xs[1];
+        continue ;
+        
+      }
+      else {
+        return /* false */0;
+      }
+    }
+    else {
+      return +(length_compare(xs, n) === /* Eq */15500);
+    }
+  };
+}
+
 function exclude_tail(x) {
   var _acc = /* [] */0;
   var _x = x;
@@ -1016,7 +1037,7 @@ function assoc_by_string(def, k, _lst) {
             Caml_builtin_exceptions.assert_failure,
             [
               "ext_list.ml",
-              388,
+              399,
               14
             ]
           ];
@@ -1046,7 +1067,7 @@ function assoc_by_int(def, k, _lst) {
             Caml_builtin_exceptions.assert_failure,
             [
               "ext_list.ml",
-              398,
+              409,
               14
             ]
           ];
@@ -1054,51 +1075,52 @@ function assoc_by_int(def, k, _lst) {
   };
 }
 
-exports.filter_map         = filter_map;
-exports.excludes           = excludes;
-exports.exclude_with_fact  = exclude_with_fact;
-exports.exclude_with_fact2 = exclude_with_fact2;
-exports.same_length        = same_length;
-exports.filter_mapi        = filter_mapi;
-exports.filter_map2        = filter_map2;
-exports.filter_map2i       = filter_map2i;
-exports.rev_map_append     = rev_map_append;
-exports.flat_map2          = flat_map2;
-exports.flat_map_aux       = flat_map_aux;
-exports.flat_map           = flat_map;
-exports.flat_map_acc       = flat_map_acc;
-exports.map2_last          = map2_last;
-exports.map_last           = map_last;
-exports.fold_right2_last   = fold_right2_last;
-exports.init               = init;
-exports.take               = take;
-exports.try_take           = try_take;
-exports.length_compare     = length_compare;
-exports.exclude_tail       = exclude_tail;
-exports.group              = group;
-exports.aux                = aux;
-exports.stable_group       = stable_group;
-exports.drop               = drop;
-exports.for_all_ret        = for_all_ret;
-exports.for_all_opt        = for_all_opt;
-exports.fold               = fold;
-exports.rev_map_acc        = rev_map_acc;
-exports.map_acc            = map_acc;
-exports.rev_iter           = rev_iter;
-exports.for_all2_no_exn    = for_all2_no_exn;
-exports.find_no_exn        = find_no_exn;
-exports.find_opt           = find_opt;
-exports.split_map          = split_map;
-exports.reduce_from_right  = reduce_from_right;
-exports.reduce_from_left   = reduce_from_left;
-exports.create_ref_empty   = create_ref_empty;
-exports.ref_top            = ref_top;
-exports.ref_empty          = ref_empty;
-exports.ref_push           = ref_push;
-exports.ref_pop            = ref_pop;
-exports.rev_except_last    = rev_except_last;
-exports.sort_via_array     = sort_via_array;
-exports.last               = last;
-exports.assoc_by_string    = assoc_by_string;
-exports.assoc_by_int       = assoc_by_int;
+exports.filter_map           = filter_map;
+exports.excludes             = excludes;
+exports.exclude_with_fact    = exclude_with_fact;
+exports.exclude_with_fact2   = exclude_with_fact2;
+exports.same_length          = same_length;
+exports.filter_mapi          = filter_mapi;
+exports.filter_map2          = filter_map2;
+exports.filter_map2i         = filter_map2i;
+exports.rev_map_append       = rev_map_append;
+exports.flat_map2            = flat_map2;
+exports.flat_map_aux         = flat_map_aux;
+exports.flat_map             = flat_map;
+exports.flat_map_acc         = flat_map_acc;
+exports.map2_last            = map2_last;
+exports.map_last             = map_last;
+exports.fold_right2_last     = fold_right2_last;
+exports.init                 = init;
+exports.take                 = take;
+exports.try_take             = try_take;
+exports.length_compare       = length_compare;
+exports.length_larger_than_n = length_larger_than_n;
+exports.exclude_tail         = exclude_tail;
+exports.group                = group;
+exports.aux                  = aux;
+exports.stable_group         = stable_group;
+exports.drop                 = drop;
+exports.for_all_ret          = for_all_ret;
+exports.for_all_opt          = for_all_opt;
+exports.fold                 = fold;
+exports.rev_map_acc          = rev_map_acc;
+exports.map_acc              = map_acc;
+exports.rev_iter             = rev_iter;
+exports.for_all2_no_exn      = for_all2_no_exn;
+exports.find_no_exn          = find_no_exn;
+exports.find_opt             = find_opt;
+exports.split_map            = split_map;
+exports.reduce_from_right    = reduce_from_right;
+exports.reduce_from_left     = reduce_from_left;
+exports.create_ref_empty     = create_ref_empty;
+exports.ref_top              = ref_top;
+exports.ref_empty            = ref_empty;
+exports.ref_push             = ref_push;
+exports.ref_pop              = ref_pop;
+exports.rev_except_last      = rev_except_last;
+exports.sort_via_array       = sort_via_array;
+exports.last                 = last;
+exports.assoc_by_string      = assoc_by_string;
+exports.assoc_by_int         = assoc_by_int;
 /* No side effect */
