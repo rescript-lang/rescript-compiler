@@ -75,7 +75,6 @@ type primitive =
       (* Location.t *  [loc] is passed down *)
       string *  (* prim_name *)
       Ast_ffi_types.arg_kind list * (* arg_types *)
-      Ast_external_attributes.return_wrapper * (* result_type *)
       Ast_ffi_types.ffi  (* ffi *)
 
   (* Ast_ffi_types.arg_kind list * bool * Ast_ffi_types.ffi  *)
@@ -173,6 +172,7 @@ type primitive =
   | Pjs_fn_run of int 
   | Pjs_fn_method of int 
   | Pjs_fn_runmethod of int
+
   | Pundefined_to_opt
   | Pnull_to_opt
   | Pnull_undefined_to_opt 
@@ -799,16 +799,7 @@ type triop = t -> t -> t -> t
 
 type unop = t -> t 
 
-let rec is_eta_conversion 
-    params (inner_args : t list) outer_args
-  = 
-  match params, inner_args,outer_args with 
-  | x::xs, 
-    Lvar y::ys,
-    _ :: rest  when Ident.same x y ->     
-    is_eta_conversion xs ys rest     
-  | [], [],[] -> true 
-  | _, _, _ -> false 
+
 
 exception Not_simple_form 
 
@@ -824,7 +815,7 @@ exception Not_simple_form
     Since `[@bs.splice] is the tail position
 *)
 let rec is_eta_conversion_exn
-    params inner_args outer_args = 
+    params inner_args outer_args : t list = 
   match params, inner_args, outer_args with 
   | x::xs, Lvar y::ys, r::rest 
     when Ident.same x y ->
@@ -843,8 +834,34 @@ let var id : t = Lvar id
 let global_module id = Lglobal_module id 
 let const ct : t = Lconst ct 
 
+
+(** FIXME: more robust inlining check later, we should inline it before we add stub code
+*)
 let apply fn args loc status : t = 
   match fn with 
+  | Lfunction {kind ; params ;  
+               body = Lprim {primitive = 
+                               (Pundefined_to_opt | Pnull_to_opt | Pnull_undefined_to_opt | Pis_null | Pis_null_undefined | Pjs_boolean_to_bool | Pjs_typeof ) as wrap;
+                             args = [Lprim ({primitive; args = inner_args} as primitive_call)]
+                            } 
+              } ->
+    begin match is_eta_conversion_exn params inner_args args with
+      | args 
+        -> 
+        Lprim {primitive = wrap ; args = [Lprim { primitive_call with args ; loc = loc }] ; loc }
+      | exception _ -> 
+        Lapply { fn; args; loc; status }
+    end  
+  | Lfunction {kind ; params; 
+               body = Lsequence (Lprim ({primitive; args = inner_args}as primitive_call), (Lconst _ as const )) }
+    ->  
+    begin match is_eta_conversion_exn params inner_args args with
+      | args 
+        -> 
+        Lsequence(Lprim { primitive_call with args ; loc = loc }, const)
+      | exception _ -> 
+        Lapply { fn; args;  loc;    status }
+    end 
   | Lfunction {kind ; params; 
                body =Lprim ({primitive; args = inner_args}as primitive_call) } 
 
@@ -854,9 +871,9 @@ let apply fn args loc status : t =
         -> 
         Lprim { primitive_call with args ; loc = loc }
       | exception _ -> 
-        Lapply { fn; args;  loc  ;
-                 status }
+        Lapply { fn; args;  loc;    status }
     end 
+
   (*  | Lfunction {kind; params ; 
                  body = Lapply {fn = new_fn ; args = inner_args; status }
                 } when is_eta_conversion params inner_args args ->
@@ -866,6 +883,8 @@ let apply fn args loc status : t =
   | _ -> 
     Lapply { fn; args;  loc  ;
              status }
+
+
 let function_ ~arity ~kind ~params ~body : t = 
   Lfunction { arity; kind; params ; body}
 
@@ -935,6 +954,9 @@ let sequand l r = if_ l r false_
 
 let seq a b : t = 
   Lsequence (a, b)
+
+let append_unit a  = 
+  Lsequence (a,unit)
 
 let while_ a b : t  = 
   Lwhile(a,b)
@@ -1168,6 +1190,21 @@ let rec no_auto_uncurried_arg_types
     false 
   | _ :: xs -> no_auto_uncurried_arg_types xs 
 
+
+let result_wrap loc (result_type : Ast_ffi_types.return_wrapper) result  = 
+  begin match result_type with 
+    | Return_replaced_with_unit  
+      -> append_unit result              
+    | Ast_ffi_types.Return_null_to_opt -> prim ~primitive:(Pnull_to_opt) ~args:[result] loc 
+    | Ast_ffi_types.Return_null_undefined_to_opt -> prim ~primitive:(Pnull_undefined_to_opt) ~args:[result] loc 
+    | Ast_ffi_types.Return_undefined_to_opt -> prim ~primitive:(Pundefined_to_opt) ~args:[result] loc 
+    | Ast_ffi_types.Return_to_ocaml_bool ->
+      prim ~primitive:(Pjs_boolean_to_bool) ~args:[result] loc 
+    | Return_unset
+    | Return_identity -> 
+      result 
+
+  end 
 (* TODO: sort out the order here
    consolidate {!Lam_compile_external_call.assemble_args_splice}
 *)
@@ -1263,33 +1300,16 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : t =
       | Ffi_obj_create labels -> 
         prim ~primitive:(Pjs_object_create labels) ~args loc 
       | Ffi_bs(arg_types, result_type, ffi) ->         
+
         if no_auto_uncurried_arg_types arg_types then   
-          let result = prim ~primitive:(Pjs_call(prim_name, arg_types,result_type,ffi)) 
-                ~args loc in result 
-          (* begin match result_type with 
-            | Return_unit  
-              (* -> 
-              seq result unit *)
-            | Return_default -> 
-              result 
-            | _ -> assert false 
-          end *)
-
-
+          result_wrap loc result_type @@ prim ~primitive:(Pjs_call(prim_name, arg_types, ffi)) 
+            ~args loc 
         else 
-
           let n_arg_types, n_args = 
             transform_uncurried_arg_type loc  arg_types args in 
-          let result = 
-            prim ~primitive:(Pjs_call (prim_name, n_arg_types, result_type, ffi))
-                ~args:n_args loc in result 
-          (* begin match result_type with 
-            | Return_unit -> 
-              seq result unit 
-            | Return_default -> 
-              result  
-            | _ -> assert false 
-          end *) 
+          result_wrap loc result_type @@
+          prim ~primitive:(Pjs_call (prim_name, n_arg_types, ffi))
+            ~args:n_args loc 
     end
 
   | Praise _ ->
@@ -1298,7 +1318,8 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : t =
         | [Lprim {primitive = Pmakeblock (0, _, _) ; 
                   args = [ 
                     Lprim {primitive = Pglobal_exception ({name = "Assert_failure"} as id); args =  []}; 
-                    _
+                    _ (* can be destructed [match Predef.path_assert_failure with Pident x -> x | _ -> assert false] [Predef.builtin_idents] 
+                         [Predef.builtin_values] *)
                   ]
                  } ] when Ident.global id
           -> assert_false_unit
@@ -1582,30 +1603,52 @@ let convert exports lam : _ * _  =
           if Ext_list.same_length inner_args args then 
             aux (Lprim(prim,args,inner_loc))
           else 
-          (* 
-            {[
-              (fun x y -> f x y) (computation;e) --> 
-              (fun y -> f (computation;e) y) 
-              ]}
+
+           {[
+             (fun x y -> f x y) (computation;e) --> 
+             (fun y -> f (computation;e) y) 
+           ]}
               is wrong
-              
+
               or 
-              {[
-                (fun x y -> f x y ) ([|1;2;3|]) --> 
-                (fun y -> f [|1;2;3|] y) 
-              ]}
+           {[
+             (fun x y -> f x y ) ([|1;2;3|]) --> 
+             (fun y -> f [|1;2;3|] y) 
+           ]}
               is also wrong.
 
               It seems, we need handle [@bs.splice] earlier
 
               or 
-              {[
-                (fun x y -> f x y) ([|1;2;3|]) --> 
-                let x0, x1, x2 =1,2,3 in 
-                (fun y -> f [|x0;x1;x2|] y)                
-              ]}
+           {[
+             (fun x y -> f x y) ([|1;2;3|]) --> 
+             let x0, x1, x2 =1,2,3 in 
+             (fun y -> f [|x0;x1;x2|] y)                
+           ]}
               But this still need us to know [@bs.splice] in advance
-           *)  
+
+
+           we should not remove it immediately, since we have to be careful 
+                  where it is used, it can be [exported], [Lvar] or [Lassign] etc 
+                  The other common mistake is that 
+           {[
+             let x = y (* elimiated x/y*)
+             let u = x  (* eliminated u/x *)
+           ]}
+
+            however, [x] is already eliminated 
+           To improve the algorithm
+           {[
+             let x = y (* x/y *)
+             let u = x (* u/y *)
+           ]}
+                  This looks more correct, but lets be conservative here
+
+                  global module inclusion {[ include List ]}
+                  will cause code like {[ let include =a Lglobal_module (list)]}
+
+                  when [u] is global, it can not be bound again, 
+                  it should always be the leaf 
         *)
         | _ -> 
 
@@ -1619,28 +1662,7 @@ let convert exports lam : _ * _  =
             ~body:(aux body)
     | Llet (kind,id,e,body) 
       ->
-      (* we should not remove it immediately, since we have to be careful 
-         where it is used, it can be [exported], [Lvar] or [Lassign] etc 
-         The other common mistake is that 
-         {[
-           let x = y (* elimiated x/y*)
-           let u = x  (* eliminated u/x *)
-         ]}
 
-         however, [x] is already eliminated 
-         To improve the algorithm
-         {[
-           let x = y (* x/y *)
-           let u = x (* u/y *)
-         ]}
-         This looks more correct, but lets be conservative here
-
-         global module inclusion {[ include List ]}
-         will cause code like {[ let include =a Lglobal_module (list)]}
-
-         when [u] is global, it can not be bound again, 
-         it should always be the leaf 
-      *)
       begin match kind, e with 
         | Alias , (Lvar u ) ->
           let new_u = (Ident_hashtbl.find_default alias u u) in
@@ -1666,25 +1688,38 @@ let convert exports lam : _ * _  =
       let lam = Lletrec (bindings, body) in 
       scc bindings lam body  
     (* inlining will affect how mututal recursive behave *)
-    | Lprim(Prevapply, [x ; f ],  outer_loc) -> 
-      let x  = aux x in 
-      let f =  aux f in 
-      begin match  f with 
-        | Lapply{fn;args;loc=inner_loc} ->
-          apply fn (args @[x]) outer_loc App_na 
-        | _ -> 
-          apply f [x] outer_loc App_na        
-      end 
-    | Lprim (Prevapply, _, _ ) -> assert false 
-    | Lprim(Pdirapply, [f;x], outer_loc) -> 
-      let f = aux f in 
-      let x = aux x in 
+    | Lprim(Prevapply, [x ; f ],  outer_loc) 
+    | Lprim(Pdirapply, [f ; x],  outer_loc) -> 
       begin match f with 
-        | Lapply{fn ; args }
-          -> 
-          apply fn (args @ [x]) outer_loc App_na
-        | _  -> apply f [x] outer_loc App_na
+               (* [x|>f] 
+          TODO: [airty = 0] when arity =0, it can not be escaped user can only
+          write  [f x ] instead of [x |> f ]
+         *)
+        | Lfunction(kind, [param],Lprim(external_fn,[Lvar inner_arg],inner_loc))
+           when Ident.same param inner_arg 
+            -> 
+           aux  (Lprim(external_fn,  [x], outer_loc))
+
+        |  Lapply(Lfunction(kind, params,Lprim(external_fn,inner_args,inner_loc)), args, outer_loc ) (* x |> f a *) 
+       
+           when Ext_list.for_all2_no_exn (fun x y -> match y with Lambda.Lvar y when Ident.same x y  -> true | _ -> false ) params inner_args
+           &&            
+          Ext_list.length_larger_than_n 1 inner_args args
+        -> 
+      
+         aux (Lprim(external_fn, args @ [x], outer_loc))
+        | _ -> 
+          let x  = aux x in 
+          let f =  aux f in 
+          begin match  f with 
+            | Lapply{fn;args} ->
+              apply fn (args @[x]) outer_loc App_na 
+            | _ -> 
+              apply f [x] outer_loc App_na        
+          end 
       end
+    | Lprim (Prevapply, _, _ ) -> assert false       
+    | Lprim(Pdirapply, _, _) -> assert false 
     (* we might allow some arity here *)  
     | Lprim(Pccall {prim_name = "js_pure_expr"}, 
             args,loc) ->  
@@ -1704,57 +1739,57 @@ let convert exports lam : _ * _  =
       end 
     | Lprim(Pccall {prim_name =  "js_from_def"}, args, loc) 
       -> 
-       begin match args with 
-       | [ arg ] -> 
-        prim ~primitive:Pundefined_to_opt ~args:[aux arg] loc 
-       | _ -> assert false 
+      begin match args with 
+        | [ arg ] -> 
+          prim ~primitive:Pundefined_to_opt ~args:[aux arg] loc 
+        | _ -> assert false 
       end
     | Lprim(Pccall {prim_name =  "js_from_nullable_def"}, args, loc) 
       -> 
-       begin match args with 
-       | [ arg ] -> 
-        prim ~primitive:Pnull_undefined_to_opt ~args:[aux arg] loc 
-       | _ -> assert false 
+      begin match args with 
+        | [ arg ] -> 
+          prim ~primitive:Pnull_undefined_to_opt ~args:[aux arg] loc 
+        | _ -> assert false 
       end
-      | Lprim(Pccall {prim_name =  "js_from_nullable"}, args, loc) 
+    | Lprim(Pccall {prim_name =  "js_from_nullable"}, args, loc) 
       -> 
-       begin match args with 
-       | [ arg ] -> 
-        prim ~primitive:Pnull_to_opt ~args:[aux arg] loc 
-       | _ -> assert false 
+      begin match args with 
+        | [ arg ] -> 
+          prim ~primitive:Pnull_to_opt ~args:[aux arg] loc 
+        | _ -> assert false 
       end  
     | Lprim (Pccall {prim_name = "js_is_nil"}, args, loc) -> 
       begin match args with 
-      | [arg] -> prim ~primitive:Pis_null ~args:[aux arg] loc 
-      | _ -> assert false 
-    end  
-   | Lprim (Pccall {prim_name = "js_is_undef"}, args, loc) -> 
+        | [arg] -> prim ~primitive:Pis_null ~args:[aux arg] loc 
+        | _ -> assert false 
+      end  
+    | Lprim (Pccall {prim_name = "js_is_undef"}, args, loc) -> 
       begin match args with 
-      | [arg] -> prim ~primitive:Pis_undefined ~args:[aux arg] loc 
-      | _ -> assert false 
-    end   
+        | [arg] -> prim ~primitive:Pis_undefined ~args:[aux arg] loc 
+        | _ -> assert false 
+      end   
     | Lprim (Pccall {prim_name = "js_is_nil_undef"}, args, loc) -> 
       begin match args with 
-      | [arg] -> prim ~primitive:Pis_null_undefined ~args:[aux arg] loc 
-      | _ -> assert false 
+        | [arg] -> prim ~primitive:Pis_null_undefined ~args:[aux arg] loc 
+        | _ -> assert false 
       end   
     | Lprim(Pccall {prim_name = "js_string_append"}, args, loc) -> 
       begin match args with 
-      | [a; b] -> 
-        prim ~primitive:Pstringadd ~args:[aux a; aux b] loc 
-      | _ -> assert false 
+        | [a; b] -> 
+          prim ~primitive:Pstringadd ~args:[aux a; aux b] loc 
+        | _ -> assert false 
       end 
     | Lprim(Pccall {prim_name = "js_boolean_to_bool"}, args, loc) -> 
       begin match args with 
-      | [ e ] -> prim ~primitive:Pjs_boolean_to_bool ~args:[aux e] loc 
-      | _ -> assert false 
+        | [ e ] -> prim ~primitive:Pjs_boolean_to_bool ~args:[aux e] loc 
+        | _ -> assert false 
       end
     | Lprim(Pccall {prim_name = "js_typeof"}, args,loc) -> 
       begin match args with 
-      | [e] -> prim ~primitive:Pjs_typeof ~args:[aux e] loc 
-      | _ -> assert false
+        | [e] -> prim ~primitive:Pjs_typeof ~args:[aux e] loc 
+        | _ -> assert false
       end 
-    | Lprim(Pdirapply, _, _) -> assert false 
+
     | Lprim (primitive,args, loc) 
       -> 
       let args = (List.map aux args) in
@@ -1812,7 +1847,9 @@ let convert exports lam : _ * _  =
           (* Format.fprintf Format.err_formatter "weird: %d@." (Obj.tag (Obj.repr b));  *)
           Lsend(kind, aux a,  b, List.map aux ls, loc )
       end
-    | Levent (e, event) -> aux e 
+    | Levent (e, event) ->
+       (* disabled by upstream*)
+       assert false
     | Lifused (id, e) -> 
       Lifused(id, aux e) (* TODO: remove it ASAP *)
   and aux_switch (s : Lambda.lambda_switch) : switch = 

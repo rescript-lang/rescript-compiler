@@ -172,9 +172,12 @@ function even2(_n) {
 
 function lazy_v() {
   var tag = lazy_v.tag | 0;
-  tag === 250 ? lazy_v[0] : (
-      tag === 246 ? CamlinternalLazy.force_lazy_block(lazy_v) : lazy_v
-    );
+  if (tag !== 250) {
+    if (tag === 246) {
+      CamlinternalLazy.force_lazy_block(lazy_v);
+    }
+    
+  }
   return /* () */0;
 }
 

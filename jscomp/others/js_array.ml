@@ -31,7 +31,7 @@ type 'a array_iter = 'a array_like
 
 external from : 'a array_like -> 'b array = "Array.from" [@@bs.val] (** ES2015 *)
 external fromMap : 'a array_like -> ('a -> 'b [@bs.uncurry]) -> 'b array = "Array.from" [@@bs.val] (** ES2015 *)
-external isArray : 'a -> Js.boolean = "Array.isArray" [@@bs.val] (** ES2015 *)
+external isArray : 'a -> bool = "Array.isArray" [@@bs.val] (** ES2015 *)
 (* Array.of: seems pointless unless you can bind *) (** ES2015 *)
 
 external length : 'a array -> int = "" [@@bs.get]
@@ -75,7 +75,7 @@ external concat : 'this -> 'this = "" [@@bs.send.pipe: 'a t as 'this]
 external concatMany : 'this array -> 'this = "concat" [@@bs.send.pipe: 'a t as 'this] [@@bs.splice]
 
 (* TODO: Not available in Node V4  *)
-external includes : 'a -> Js.boolean = "" [@@bs.send.pipe: 'a t as 'this] (** ES2016 *)
+external includes : 'a -> bool = "" [@@bs.send.pipe: 'a t as 'this] (** ES2016 *)
 
 external indexOf : 'a  -> int = "" [@@bs.send.pipe: 'a t as 'this]
 external indexOfFrom : 'a -> from:int -> int = "indexOf" [@@bs.send.pipe: 'a t as 'this]
@@ -106,8 +106,8 @@ external toLocaleString : string = "" [@@bs.send.pipe: 'a t as 'this]
 external entries : (int * 'a) array_iter = "" [@@bs.send.pipe: 'a t as 'this] (** ES2015 *)
 *)
 
-external every : ('a  -> bool[@bs.uncurry]) -> Js.boolean = "" [@@bs.send.pipe: 'a t as 'this]
-external everyi : ('a -> int -> bool [@bs.uncurry]) -> Js.boolean = "every" [@@bs.send.pipe: 'a t as 'this]
+external every : ('a  -> bool[@bs.uncurry]) -> bool = "" [@@bs.send.pipe: 'a t as 'this]
+external everyi : ('a -> int -> bool [@bs.uncurry]) -> bool = "every" [@@bs.send.pipe: 'a t as 'this]
 
 (** should we use [bool] or [boolan] seems they are intechangeable here *)
 external filter : ('a -> bool [@bs.uncurry]) -> 'this = "" [@@bs.send.pipe: 'a t as 'this]
@@ -135,8 +135,8 @@ external reducei : ('b -> 'a -> int -> 'b [@bs.uncurry]) -> 'b -> 'b = "reduce" 
 external reduceRight :  ('b -> 'a  -> 'b [@bs.uncurry]) -> 'b -> 'b = "" [@@bs.send.pipe: 'a t as 'this]
 external reduceRighti : ('b -> 'a -> int -> 'b [@bs.uncurry]) -> 'b -> 'b = "reduceRight" [@@bs.send.pipe: 'a t as 'this]
 
-external some : ('a  -> bool [@bs.uncurry]) -> Js.boolean = "" [@@bs.send.pipe: 'a t as 'this]
-external somei : ('a  -> int -> bool [@bs.uncurry]) -> Js.boolean = "some" [@@bs.send.pipe: 'a t as 'this]
+external some : ('a  -> bool [@bs.uncurry]) -> bool = "" [@@bs.send.pipe: 'a t as 'this]
+external somei : ('a  -> int -> bool [@bs.uncurry]) -> bool = "some" [@@bs.send.pipe: 'a t as 'this]
 
 (* commented out until bs has a plan for iterators
 external values : 'a array_iter = "" [@@bs.send.pipe: 'a t as 'this] (** ES2015 *)

@@ -47,19 +47,19 @@ let caml_int32_bits_of_float (x : float) =
 
 
 let caml_classify_float x : fpclass  =
-  if Js.to_bool @@ Js_float.isFinite x then
+  if Js_float.isFinite x then
     if abs_float x >= 2.2250738585072014e-308  then
       FP_normal
     else if x <> 0. then FP_subnormal
     else FP_zero
   else
-  if Js.to_bool @@ Js_float.isNaN x then
+  if Js_float.isNaN x then
     FP_nan
   else FP_infinite
 
 
 let caml_modf_float (x : float) : float * float =
-  if Js.to_bool @@ Js_float.isFinite x then
+  if Js_float.isFinite x then
     let neg = 1. /. x < 0. in
     let x = abs_float x  in
     let i = floor x in
@@ -67,7 +67,7 @@ let caml_modf_float (x : float) : float * float =
     if neg then
       -. f, -. i
     else f, i
-  else if Js.to_bool @@ Js_float.isNaN x then Js_float.nan ,  Js_float.nan
+  else if Js_float.isNaN x then Js_float.nan ,  Js_float.nan
   else (1. /. x , x)
 
 let caml_ldexp_float (x: float) (exp: int) : float =
@@ -88,7 +88,7 @@ let caml_ldexp_float (x: float) (exp: int) : float =
 
 
 let caml_frexp_float (x: float): float * int =
-  if x = 0. || not (Js.to_bool (Js_float.isFinite x)) then
+  if x = 0. || not  (Js_float.isFinite x) then
     (x, 0)
   else begin
     let neg = x < 0. in

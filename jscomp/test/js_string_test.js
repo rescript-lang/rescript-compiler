@@ -128,8 +128,8 @@ var suites_001 = /* :: */[
                           "endsWith",
                           function () {
                             return /* Eq */Block.__(0, [
-                                      true,
-                                      "foobar".endsWith("bar")
+                                      /* true */1,
+                                      +"foobar".endsWith("bar")
                                     ]);
                           }
                         ],
@@ -138,8 +138,8 @@ var suites_001 = /* :: */[
                             "endsWithFrom",
                             function () {
                               return /* Eq */Block.__(0, [
-                                        false,
-                                        "foobar".endsWith("bar", 1)
+                                        /* false */0,
+                                        +"foobar".endsWith("bar", 1)
                                       ]);
                             }
                           ],
@@ -148,8 +148,8 @@ var suites_001 = /* :: */[
                               "includes",
                               function () {
                                 return /* Eq */Block.__(0, [
-                                          true,
-                                          "foobarbaz".includes("bar")
+                                          /* true */1,
+                                          +"foobarbaz".includes("bar")
                                         ]);
                               }
                             ],
@@ -158,8 +158,8 @@ var suites_001 = /* :: */[
                                 "includesFrom",
                                 function () {
                                   return /* Eq */Block.__(0, [
-                                            false,
-                                            "foobarbaz".includes("bar", 4)
+                                            /* false */0,
+                                            +"foobarbaz".includes("bar", 4)
                                           ]);
                                 }
                               ],
@@ -365,8 +365,8 @@ var suites_001 = /* :: */[
                                                                       "startsWith",
                                                                       function () {
                                                                         return /* Eq */Block.__(0, [
-                                                                                  true,
-                                                                                  "foobarbaz".startsWith("foo")
+                                                                                  /* true */1,
+                                                                                  +"foobarbaz".startsWith("foo")
                                                                                 ]);
                                                                       }
                                                                     ],
@@ -375,8 +375,8 @@ var suites_001 = /* :: */[
                                                                         "startsWithFrom",
                                                                         function () {
                                                                           return /* Eq */Block.__(0, [
-                                                                                    false,
-                                                                                    "foobarbaz".startsWith("foo", 1)
+                                                                                    /* false */0,
+                                                                                    +"foobarbaz".startsWith("foo", 1)
                                                                                   ]);
                                                                         }
                                                                       ],
@@ -490,7 +490,15 @@ var suites_001 = /* :: */[
                                                                                                         ]);
                                                                                               }
                                                                                             ],
-                                                                                            /* [] */0
+                                                                                            /* :: */[
+                                                                                              /* tuple */[
+                                                                                                'File "js_string_test.ml", line 177, characters 4-11',
+                                                                                                function () {
+                                                                                                  return /* Ok */Block.__(2, [+"ab".includes("a")]);
+                                                                                                }
+                                                                                              ],
+                                                                                              /* [] */0
+                                                                                            ]
                                                                                           ]
                                                                                         ]
                                                                                       ]

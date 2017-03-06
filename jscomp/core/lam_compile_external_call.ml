@@ -180,7 +180,7 @@ let translate_ffi
     call_loc (ffi : Ast_ffi_types.ffi ) 
     (* prim_name *)
     (cxt  : Lam_compile_defs.cxt)
-    arg_types result_type
+    arg_types 
     (args : J.expression list) = 
   match ffi with 
 
@@ -195,12 +195,8 @@ let translate_ffi
       | None ->  E.js_var fn
     in
     let args, eff  = assemble_args_splice   call_loc ffi js_splice arg_types args in 
-    add_eff eff 
-      (if result_type then 
-
-         E.seq (E.call ~info:{arity=Full; call_info = Call_na} fn args) E.unit
-       else 
-         E.call ~info:{arity=Full; call_info = Call_na} fn args)
+    add_eff eff @@              
+    E.call ~info:{arity=Full; call_info = Call_na} fn args
 
   | Js_module_as_var module_name -> 
     let (id, name) =  handle_external  module_name  in
@@ -213,12 +209,9 @@ let translate_ffi
     in           
     let args, eff = assemble_args_splice   call_loc ffi splice arg_types args in 
     (* TODO: fix in rest calling convention *)          
-    add_eff eff 
-      ( if result_type then
-          E.seq (E.call ~info:{arity=Full; call_info = Call_na} fn args) E.unit
-        else
-          E.call ~info:{arity=Full; call_info = Call_na} fn args
-      )
+    add_eff eff @@
+    E.call ~info:{arity=Full; call_info = Call_na} fn args
+
   | Js_module_as_class module_name ->
     let fn =
       let (id,name) = handle_external  module_name in

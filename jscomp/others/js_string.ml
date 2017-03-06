@@ -49,11 +49,11 @@ external codePointAt : int -> int Js.undefined = "" [@@bs.send.pipe: t] (** ES20
 external concat : t -> t = "" [@@bs.send.pipe: t]
 external concatMany : t array -> t = "concat" [@@bs.send.pipe: t] [@@bs.splice]
 
-external endsWith : t -> Js.boolean = "" [@@bs.send.pipe: t] (** ES2015 *)
-external endsWithFrom : t -> int -> Js.boolean = "endsWith" [@@bs.send.pipe: t] (** ES2015 *)
+external endsWith : t -> bool = "" [@@bs.send.pipe: t] (** ES2015 *)
+external endsWithFrom : t -> int -> bool = "endsWith" [@@bs.send.pipe: t] (** ES2015 *)
 
-external includes : t -> Js.boolean = "" [@@bs.send.pipe: t] (** ES2015 *)
-external includesFrom : t -> int -> Js.boolean = "includes" [@@bs.send.pipe: t] (** ES2015 *)
+external includes : t -> bool = "" [@@bs.send.pipe: t] (** ES2015 *)
+external includesFrom : t -> int -> bool = "includes" [@@bs.send.pipe: t] (** ES2015 *)
 
 external indexOf : t -> int = "" [@@bs.send.pipe: t]
 external indexOfFrom : t -> int -> int = "indexOf" [@@bs.send.pipe: t]
@@ -88,8 +88,8 @@ external splitByReAtMost : Js_re.t -> limit:int ->  t array = "split" [@@bs.send
 external splitRegexpLimited : Js_re.t -> int ->  t array = "" [@@bs.send.pipe: t]
 [@@ocaml.deprecated "Please use splitByReAtMost"]
 
-external startsWith : t -> Js.boolean = "" [@@bs.send.pipe: t] (** ES2015 *)
-external startsWithFrom : t -> int -> Js.boolean = "startsWith" [@@bs.send.pipe: t] (** ES2015 *)
+external startsWith : t -> bool = "" [@@bs.send.pipe: t] (** ES2015 *)
+external startsWithFrom : t -> int -> bool = "startsWith" [@@bs.send.pipe: t] (** ES2015 *)
 
 external substr : from:int -> t = "" [@@bs.send.pipe: t]
 external substrAtMost : from:int -> length:int -> t = "substr" [@@bs.send.pipe: t]

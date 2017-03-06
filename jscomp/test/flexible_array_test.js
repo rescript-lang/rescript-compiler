@@ -39,7 +39,6 @@ function update(tr, k, w) {
   if (tr) {
     var r = tr[2];
     var l = tr[1];
-    var v = tr[0];
     if (k === 1) {
       return /* Br */[
               w,
@@ -47,19 +46,22 @@ function update(tr, k, w) {
               r
             ];
     }
-    else if (k % 2) {
-      return /* Br */[
-              v,
-              l,
-              update(r, k / 2 | 0, w)
-            ];
-    }
     else {
-      return /* Br */[
-              v,
-              update(l, k / 2 | 0, w),
-              r
-            ];
+      var v = tr[0];
+      if (k % 2) {
+        return /* Br */[
+                v,
+                l,
+                update(r, k / 2 | 0, w)
+              ];
+      }
+      else {
+        return /* Br */[
+                v,
+                update(l, k / 2 | 0, w),
+                r
+              ];
+      }
     }
   }
   else if (k === 1) {
@@ -76,25 +78,27 @@ function update(tr, k, w) {
 
 function $$delete(tr, n) {
   if (tr) {
-    var r = tr[2];
-    var l = tr[1];
-    var v = tr[0];
     if (n === 1) {
       return /* Lf */0;
     }
-    else if (n % 2) {
-      return /* Br */[
-              v,
-              l,
-              $$delete(r, n / 2 | 0)
-            ];
-    }
     else {
-      return /* Br */[
-              v,
-              $$delete(l, n / 2 | 0),
-              r
-            ];
+      var r = tr[2];
+      var l = tr[1];
+      var v = tr[0];
+      if (n % 2) {
+        return /* Br */[
+                v,
+                l,
+                $$delete(r, n / 2 | 0)
+              ];
+      }
+      else {
+        return /* Br */[
+                v,
+                $$delete(l, n / 2 | 0),
+                r
+              ];
+      }
     }
   }
   else {

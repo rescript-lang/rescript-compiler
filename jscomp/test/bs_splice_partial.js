@@ -4,8 +4,8 @@ var Curry = require("../../lib/js/curry");
 
 function test_hi(x) {
   var match = x.hi(1, 2, 3);
-  if (match) {
-    console.log(match[0]);
+  if (match !== null) {
+    console.log(match);
     return 2;
   }
   else {
@@ -19,6 +19,12 @@ function test_cb(x) {
   return x.cb2("hI", 1, 2, 3)(3);
 }
 
+function f(x) {
+  v(x);
+  return /* () */0;
+}
+
 exports.test_hi = test_hi;
 exports.test_cb = test_cb;
+exports.f       = f;
 /* No side effect */

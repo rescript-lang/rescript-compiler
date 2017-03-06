@@ -107,4 +107,4 @@ exports.a = a;
 exports.b = b;
 exports.c = c;
 exports.d = d;
-/* prim Not a pure module */
+/*  Not a pure module */

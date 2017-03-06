@@ -2250,22 +2250,27 @@ function gen_decode_record(and_, param, sc) {
   var r_name = param[/* r_name */0];
   var all_lists = List.fold_left(function (acc, param) {
         var rf_field_type = param[/* rf_field_type */1];
-        var rf_label = param[/* rf_label */0];
+        var exit = 0;
         switch (rf_field_type.tag | 0) {
           case 2 : 
           case 3 : 
-              if (rf_field_type[0][0] !== 0) {
-                return acc;
-              }
-              else {
-                return /* :: */[
-                        rf_label,
-                        acc
-                      ];
-              }
+              exit = 1;
+              break;
           default:
             return acc;
         }
+        if (exit === 1) {
+          if (rf_field_type[0][0] !== 0) {
+            return acc;
+          }
+          else {
+            return /* :: */[
+                    param[/* rf_label */0],
+                    acc
+                  ];
+          }
+        }
+        
       }, /* [] */0, r_fields);
   var string_of_nonpacked_pk = function (pk) {
     return string_of_payload_kind(/* Some */[/* () */0], pk, /* false */0);
@@ -5564,8 +5569,8 @@ function gen_encode_record(and_, param, sc) {
 }
 
 function gen_encode_variant(and_, variant, sc) {
-  var v_constructors = variant[/* v_constructors */1];
   var v_name = variant[/* v_name */0];
+  var v_constructors = variant[/* v_constructors */1];
   line$1(sc, Curry._3(Printf.sprintf(/* Format */[
                 /* String */Block.__(2, [
                     /* No_padding */0,
@@ -6986,9 +6991,9 @@ function compile(proto_definition) {
                       var scope$1 = scope;
                       var message = match[0];
                       var module_ = module_of_file_name(file_name$1);
+                      var message_names = scope$1[/* message_names */1];
                       var message_body = message[/* message_body */2];
                       var message_name = message[/* message_name */1];
-                      var message_names = scope$1[/* message_names */1];
                       var exit = 0;
                       if (message_body) {
                         var match$1 = message_body[0];

@@ -43,7 +43,7 @@ type pathObject =
   ]  
 external format : pathObject -> string = "" [@@bs.module "path"]
 
-external isAbsolute : string -> Js.boolean = "" [@@bs.module "path"]
+external isAbsolute : string -> bool = "" [@@bs.module "path"]
 
 (* TODO: improve after we support [@bs.rest] calling convention  *)
 external join2 : string -> string -> string = "join" [@@bs.module "path"]

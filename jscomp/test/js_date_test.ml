@@ -22,7 +22,7 @@ let suites = Mt.[
       Ok( Js.Date.fromString "gibberish"
           |> Js.Date.getTime
           |> Js_float.isNaN
-          |> Js.to_bool));
+          ));
 
     "makeWithYM", (fun _ ->
       let d = Js.Date.makeWithYM ~year:1984.

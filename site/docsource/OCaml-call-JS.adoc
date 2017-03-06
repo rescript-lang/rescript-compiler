@@ -5,7 +5,7 @@ extensions to the OCaml language. These BuckleScript extensions
 facilitate the integration of native JavaScript code and
 improve the generated code.
 
-### Unicode support
+### Unicode support (@since 1.5.1)
 
 [WARNING]
 ========
@@ -1332,6 +1332,79 @@ f.draw(x,y)
       drop the first '_'
    * Else, nothing mangled       
 =======
+
+
+### Return value checking (@since 1.5.1)
+
+In general, the FFI code is error prone, and potentially will leak in
+`undefined` or `null` values. 
+
+So we introduced auto coercion for return values for two benefits:
+
+1. More safety for FFI code without performance cost(explained later)
+
+2. More idiomatic OCaml code for users to consume the FFI.
+
+Below is a contrived core example:
+
+[source,ocaml]
+-------------
+type element
+type dom
+external getElementById : string -> element option = "" 
+[@@bs.send.pipe:dom] [@@bs.return {null_to_opt}] // <1>
+
+let test dom = 
+    let elem = dom |> getElementById "haha"  in
+    match elem with 
+    | None -> 1 
+    | Some ui -> Js.log ui ; 2   
+-------------
+<1> `null_to_opt` attriute will automatically convert null to `option`
+
+.Output
+[source,js]
+-------------
+function test(dom) {
+  var elem = dom.getElementById("haha");
+  if (elem !== null) { // <1>
+    console.log(elem);
+    return 2;
+  }
+  else {
+    return 1;
+  }
+}
+-------------
+<1> nullable checking without boxing due to compiler optimizations
+
+Currently, 4 directives are supported: `null_to_opt`, `undefined_to_opt`, 
+, `null_undefined_to_opt` and `identity`.
+
+[NOTE]
+======
+`null_to_opt`, `undefined_to_opt` and `null_undefined_to_opt` will *semantically*
+convert nullable value to `option` which is a boxed value, but the compiler will 
+do smart optimizations to *remove such boxing overhead* when the returned value is destructed 
+in the same routine.
+
+The three directives above require users to write literally `_ option`, it is
+in theory not necessary, but it is required to reduce user errors.
+
+When return type is `unit`: the compiler will append its return value 
+with an OCaml `unit` literal to make sure it does return `unit`, its main purpose
+is to make user consume FFI in idiomatic OCaml code, the cost is *very very small* and 
+the compiler will do smart optimizations to remove it when the returned value is not used (mostly likely)
+ 
+When return type is `bool`, the compiler will coerce its return value from 
+JS boolean to OCaml boolean. The cost is also *very small* and compiler will remove
+such coercison when it is not needed. Note even if your external FFI does return OCaml `bool` or `unit`, 
+such implicit coercion will *cause no harm*.
+
+`identity` will make sure that compiler will do nothing about returned value, it 
+is rarely used but introduced here for debugging purpose.
+======
+
 
 
 

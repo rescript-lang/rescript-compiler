@@ -42,7 +42,8 @@ let () =
   Clflags.assume_no_mli := Clflags.Mli_non_exists;
   Bs_conditional_initial.setup_env ();
   Clflags.dont_write_files := true;
-  Clflags.unsafe_string := false
+  Clflags.unsafe_string := false;
+  Clflags.record_event_when_debug := false
 
 let implementation impl ppf  str  =
   let modulename = "Test" in

@@ -42,7 +42,8 @@ function f(x) {
       ]);
   x.xx(106, 3, "xxx", 1, 2, 3);
   x.xx(107, 3, "xxx", 0, "b", 1, 2, 3, 4, 5);
-  return x.xx(108, 3, "xxx", 0, "yyy", "b", 1, 2, 3, 4, 5);
+  x.xx(108, 3, "xxx", 0, "yyy", "b", 1, 2, 3, 4, 5);
+  return /* () */0;
 }
 
 process.on("exit", function (exit_code) {
@@ -51,10 +52,11 @@ process.on("exit", function (exit_code) {
     });
 
 function register(p) {
-  return p.on("exit", function (i) {
-              console.log(i);
-              return /* () */0;
-            });
+  p.on("exit", function (i) {
+        console.log(i);
+        return /* () */0;
+      });
+  return /* () */0;
 }
 
 var config = {

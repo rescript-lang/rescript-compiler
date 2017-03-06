@@ -47,11 +47,11 @@ let () =
 
     eq __LOC__
     ([| 1;2;3|] |> Js.Array.some (fun x -> x <1))
-    Js.false_ ;
+    false ;
     
     eq __LOC__ 
     ([|1;2;3|] |> Js.Array.every (fun x -> x > 0))
-    Js.true_
+    true
 
     end
 
