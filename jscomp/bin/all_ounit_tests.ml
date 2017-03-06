@@ -8984,6 +8984,9 @@ val try_take : int -> 'a list -> 'a list * int * 'a list
 
 val exclude_tail : 'a list -> 'a * 'a list
 
+val length_compare : 'a list -> int -> [`Gt | `Eq | `Lt ]
+
+
 val filter_map2 : ('a -> 'b -> 'c option) -> 'a list -> 'b list -> 'c list
 
 val filter_map2i : (int -> 'a -> 'b -> 'c option) -> 'a list -> 'b list -> 'c list
@@ -9265,6 +9268,18 @@ let try_take n l =
     l,  arr_length, []
   else Array.to_list (Array.sub arr 0 n ), n, (Array.to_list (Array.sub arr n (arr_length - n)))
 
+
+let rec length_compare l n = 
+  if n < 0 then `Gt 
+  else 
+  begin match l with 
+    | _ ::xs -> length_compare xs (n - 1)
+    | [] ->  
+      if n = 0 then `Eq 
+      else `Lt 
+  end
+
+
 let exclude_tail (x : 'a list) = 
   let rec aux acc x = 
     match x with 
@@ -9460,6 +9475,13 @@ let rec assoc_by_int def (k : int) lst =
   | (k1,v1)::rest -> 
     if k1 = k then v1 else 
     assoc_by_int def k rest     
+
+(** `modulo [1;2;3;4] [1;2;3]` => [1;2;3], Some [4] `
+  modulo [1;2;3] [1;2;3;4] => [1;2;3] None 
+  modulo [1;2;3] [1;2;3] => [1;2;3] Some []
+ *)
+
+
 end
 module Ounit_list_test
 = struct
@@ -9497,7 +9519,9 @@ let suites =
     __LOC__ >:: begin fun _ -> 
       let (a,b) = Ext_list.take 3 [1;2;3;4;5;6] in 
       OUnit.assert_equal (a,b)
-        ([1;2;3],[4;5;6])
+        ([1;2;3],[4;5;6]);
+      OUnit.assert_equal (Ext_list.take 1 [1])
+      ([1],[])  
     end;
 
     __LOC__ >:: begin fun _ -> 
@@ -9506,7 +9530,19 @@ let suites =
     __LOC__ >:: begin fun _ -> 
       OUnit.assert_raise_any
         (fun _ -> Ext_list.assoc_by_int None 11 [2,"x"; 3,"y"; 1, "z"])
-    end 
+    end ;
+    __LOC__ >:: begin fun _ -> 
+      OUnit.assert_equal
+       (Ext_list.length_compare [0;0;0] 3) `Eq ;
+      OUnit.assert_equal
+       (Ext_list.length_compare [0;0;0] 1) `Gt ;   
+     OUnit.assert_equal
+       (Ext_list.length_compare [0;0;0] 4) `Lt ;   
+     OUnit.assert_equal
+       (Ext_list.length_compare [] (-1)) `Gt ;   
+      OUnit.assert_equal
+       (Ext_list.length_compare [] (0)) `Eq ;          
+    end
 
   ]
 end

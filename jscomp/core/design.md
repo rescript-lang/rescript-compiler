@@ -53,3 +53,14 @@ Internally in lambda layer it would be
 We can simply do inlining, it may have side efffect in `b0`, `b1`, our optimizer also need handle such case.
 
 Maybe in the future, we should lift the restriction about `bs.splice` (delegate to `slow` mode when we can not resolve it statically, my personal expereince is that people will complain about why it fails to compile more than why it is slow in some corner cases)
+
+Note this also interacts with `[@bs.uncurry]`
+
+for example
+
+```ocaml
+external filter : ('a -> bool [@bs.uncurry]) -> 'a array = "" [@@bs.send.pipe: 'a array]
+
+let f xs =
+    xs |> filter (fun x -> x > 2)
+```

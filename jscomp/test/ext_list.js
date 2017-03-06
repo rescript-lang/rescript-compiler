@@ -536,6 +536,28 @@ function try_take(n, l) {
   }
 }
 
+function length_compare(_l, _n) {
+  while(true) {
+    var n = _n;
+    var l = _l;
+    if (n < 0) {
+      return /* Gt */15949;
+    }
+    else if (l) {
+      _n = n - 1 | 0;
+      _l = l[1];
+      continue ;
+      
+    }
+    else if (n) {
+      return /* Lt */17064;
+    }
+    else {
+      return /* Eq */15500;
+    }
+  };
+}
+
 function exclude_tail(x) {
   var _acc = /* [] */0;
   var _x = x;
@@ -994,7 +1016,7 @@ function assoc_by_string(def, k, _lst) {
             Caml_builtin_exceptions.assert_failure,
             [
               "ext_list.ml",
-              376,
+              388,
               14
             ]
           ];
@@ -1024,7 +1046,7 @@ function assoc_by_int(def, k, _lst) {
             Caml_builtin_exceptions.assert_failure,
             [
               "ext_list.ml",
-              386,
+              398,
               14
             ]
           ];
@@ -1051,6 +1073,7 @@ exports.fold_right2_last   = fold_right2_last;
 exports.init               = init;
 exports.take               = take;
 exports.try_take           = try_take;
+exports.length_compare     = length_compare;
 exports.exclude_tail       = exclude_tail;
 exports.group              = group;
 exports.aux                = aux;
