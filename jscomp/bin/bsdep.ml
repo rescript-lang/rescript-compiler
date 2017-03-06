@@ -31976,7 +31976,6 @@ module Ast_utf8_string
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
 let rec check_and_transform loc buf s byte_offset s_len =
   if byte_offset = s_len then ()
   else 
@@ -32096,7 +32095,99 @@ and unicode loc buf s offset s_len =
 (* http://www.2ality.com/2015/01/es6-strings.html
    console.log('\uD83D\uDE80'); (* ES6*)
    console.log('\u{1F680}');
-*)   
+*)
+
+type interpo = Text of string | Delim of string
+
+let consume_text s start_index = 
+  let rec _consume_text s index last_char new_word =
+    if index = String.length s then new_word, String.length s
+    else begin 
+     match s.[index] with
+     | '$' -> if last_char = '\\' then _consume_text s (index+1) '$' (Ext_string.append new_word '$') 
+              else (new_word, index)
+     | c -> _consume_text s (index + 1) c (Ext_string.append new_word c)
+     end 
+  in _consume_text s start_index ' ' "" 
+ 
+let consume_delim s start_index =
+  let with_par = ref false in
+  let rec _consume_delim s index ident =
+    if index = String.length s then (if !with_par = true then (None, index) else (Some ident, index))
+    else
+      match s.[index] with
+      | '(' -> (if !with_par = false then (with_par := true; _consume_delim s (index+1) ident) else (None, index))
+      | ')' -> (if !with_par = false then (None, index + 1) else (with_par := false; (Some ident, index+1)))
+      | '$' -> (_consume_delim s (index+1) ident)
+      | c -> if (Char.code c >= Char.code 'a' && Char.code c <= Char.code 'z') || 
+                (Char.code c >= Char.code 'A' && Char.code c <= Char.code 'Z') ||
+                (Char.code c >= Char.code '0' && Char.code c <= Char.code '9') ||
+                Char.code c = Char.code '_'
+             then _consume_delim s (index+1) (Ext_string.append ident c)
+             else if !with_par = false then (Some ident, index) else (None, index + 1) 
+  in match s with 
+  | "" -> (Some "", start_index)
+  | _ -> if start_index = String.length s then (Some "", start_index)
+         else (if s.[start_index] <> '$' then (None, start_index)
+           else _consume_delim s start_index "")
+
+
+let split_es6_string s = 
+  let rec _split s index nl = 
+    if index >= String.length s then List.rev nl 
+    else begin
+      match consume_text s index, consume_delim s index with
+      | ("" , str_index)  , (None   , _) -> raise (Failure "Not a valid es6 template string")
+      | (str,  str_index) , (None   , _) -> _split s (str_index) (Text str::nl)
+      | ("" , _), (Some "" , par_index) -> _split s (par_index) nl
+      | ("" , _), (Some par, par_index) -> _split s (par_index) (Delim par::nl)
+      | _, _ -> raise (Failure "Not a valid es6 template string")
+    end in _split s 0 []
+
+let compute_new_loc (loc:Location.t) s = let length = String.length s in 
+  let new_loc = 
+    {loc with loc_start = {loc.loc_start with pos_cnum = loc.loc_end.pos_cnum}; 
+              loc_end = {loc.loc_start with pos_cnum = loc.loc_end.pos_cnum + length}} 
+  in new_loc
+
+let rec _transform_individual_expression exp_list loc nl = match exp_list with
+| [] -> List.rev nl
+| exp::rexp -> match exp with 
+  | Text s -> (let new_loc = compute_new_loc loc s in
+              let s_len  = String.length s in 
+              let buf = Buffer.create (s_len * 2) in 
+              check_and_transform loc buf s 0 s_len;  
+              let new_exp:Parsetree.expression = { 
+                pexp_loc = new_loc;
+                pexp_desc = Pexp_constant (Const_string (Buffer.contents buf, Some Literals.escaped_j_delimiter));
+                pexp_attributes = [];
+              } in _transform_individual_expression rexp new_loc (new_exp::nl))
+  | Delim p -> (let new_loc = compute_new_loc loc p in
+                let ident = Parsetree.Pexp_ident { txt = (Longident.Lident p); loc = loc } in
+                let js_to_string = Parsetree.Pexp_ident { txt = 
+                  Longident.Ldot (Longident.Ldot ((Longident.Lident "Js"), "String"), "make"); loc = loc } in
+                let apply_exp:Parsetree.expression_desc = Parsetree.Pexp_apply ({pexp_desc = js_to_string; pexp_loc = new_loc; pexp_attributes = []}, 
+                  [("", {pexp_desc = ident; pexp_loc = new_loc; pexp_attributes = []} )]) in
+                let new_exp:Parsetree.expression = { 
+                 pexp_loc = new_loc;
+                 pexp_desc = apply_exp;
+                 pexp_attributes = [];
+              } in _transform_individual_expression rexp new_loc (new_exp::nl))
+
+let transform_es6_style_template_string s loc =
+  try let sub_strs = split_es6_string s
+    in _transform_individual_expression sub_strs loc []
+  with Failure msg -> Location.raise_errorf ~loc "%s" msg
+
+let rec fold_expression_list_with_string_concat prev (exp_list:Parsetree.expression list) = match exp_list with
+| [] -> prev
+| (e::re) -> 
+  let string_concat_exp:Parsetree.expression = {e with pexp_desc = Parsetree.Pexp_ident 
+    {txt = Longident.Ldot (Longident.Lident ("Pervasives"), "^"); loc = e.pexp_loc}} in
+  let new_string_exp = {e with pexp_desc = Parsetree.Pexp_apply (string_concat_exp, [("", prev); ("", e)])} in
+  fold_expression_list_with_string_concat new_string_exp re 
+
+
 end
 module Ast_exp : sig 
 #1 "ast_exp.mli"
@@ -33663,13 +33754,16 @@ let rec unsafe_mapper : Ast_mapper.mapper =
           end             
         |Pexp_constant (Const_string (s, (Some delim))) 
           ->         
-          if Ext_string.equal delim Literals.unescaped_js_delimiter then 
+          if Ext_string.equal delim Literals.unescaped_js_delimiter then
             let s_len  = String.length s in 
             let buf = Buffer.create (s_len * 2) in 
             Ast_utf8_string.check_and_transform loc buf s 0 s_len ;  
             { e with pexp_desc = Pexp_constant (Const_string (Buffer.contents buf, Some Literals.escaped_j_delimiter))}
-          else if Ext_string.equal delim Literals.unescaped_j_delimiter then 
-            Location.raise_errorf ~loc "{j||j} is reserved for future use" 
+          else if Ext_string.equal delim Literals.unescaped_j_delimiter then
+            let starting_loc = {loc with loc_end = loc.loc_start} in
+            let empty_string_concat_exp = {e with pexp_desc = Pexp_constant (Const_string ("", None)); pexp_loc = starting_loc} in
+            let exps_list = Ast_utf8_string.transform_es6_style_template_string s starting_loc in
+            Ast_utf8_string.fold_expression_list_with_string_concat empty_string_concat_exp exps_list
           else e 
 
         (** [bs.debugger], its output should not be rewritten any more*)
@@ -34062,7 +34156,6 @@ let rewrite_implementation : (Parsetree.structure -> Parsetree.structure) ref =
         | _ -> 
           unsafe_mapper.structure  unsafe_mapper x  in 
       reset (); result )
-
 
 end
 module Ocamldep
