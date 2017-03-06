@@ -113,17 +113,9 @@ function find_ticker_by_name(all_tickers, ticker) {
 
 function print_all_composite(all_tickers) {
   return List.iter(function (param) {
-              var value = param[/* value */0];
-              var ticker_name = param[/* ticker_name */2];
               if (param[/* type_ */3]) {
-                if (value) {
-                  console.log(ticker_name);
-                  return /* () */0;
-                }
-                else {
-                  console.log(ticker_name);
-                  return /* () */0;
-                }
+                console.log(param[/* ticker_name */2]);
+                return /* () */0;
               }
               else {
                 return /* () */0;

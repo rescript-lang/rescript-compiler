@@ -66,3 +66,7 @@ let f xs =
 ```
 
 Here whether the callback gets inlined to the call of `filter` will have an effect on how `Pjs_fn_make` gets cancelled.
+
+Note when we pattern match over the original lamba,`Levent` needs to be removed as early as possible. Due to the existence of `Levent`, we can not pattern match over nested original raw lambda.
+
+We turned off event generation temporarily

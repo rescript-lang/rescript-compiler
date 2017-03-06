@@ -169,6 +169,7 @@ val opaque : bool ref
 type mli_status = Mli_na | Mli_exists | Mli_non_exists
 val no_implicit_current_dir : bool ref
 val assume_no_mli : mli_status ref 
+val record_event_when_debug : bool ref 
 
 
 type color_setting = Auto | Always | Never
@@ -299,6 +300,7 @@ let unsafe_string = ref true;;         (* -safe-string / -unsafe-string *)
 type mli_status = Mli_na | Mli_exists | Mli_non_exists
 let no_implicit_current_dir = ref false
 let assume_no_mli = ref Mli_na
+let record_event_when_debug = ref true (* turned off in BuckleScript*)
 
 
 type color_setting = Auto | Always | Never
@@ -66835,23 +66837,25 @@ let convert exports lam : _ * _  =
       let lam = Lletrec (bindings, body) in 
       scc bindings lam body  
     (* inlining will affect how mututal recursive behave *)
-    | Lprim(Prevapply, [x ; f ],  outer_loc) -> 
-      let x  = aux x in 
-      let f =  aux f in 
-      begin match  f with 
-        | Lapply{fn;args;loc=inner_loc} ->
-          apply fn (args @[x]) outer_loc App_na 
-        | _ -> 
-          apply f [x] outer_loc App_na        
-      end 
-    | Lprim(Pdirapply, [f;x], outer_loc) -> 
-      let f = aux f in 
-      let x = aux x in 
-      begin match f with 
-        | Lapply{fn ; args }
-          -> 
-          apply fn (args @ [x]) outer_loc App_na
-        | _  -> apply f [x] outer_loc App_na
+    | Lprim(Prevapply, [x ; f ],  outer_loc) 
+    | Lprim(Pdirapply, [f ; x],  outer_loc) -> 
+      begin (*match f with 
+        |  Lapply(Lfunction(kind, params,Lprim(external_fn,inner_args,inner_loc)), args, outer_loc ) 
+       
+           when Ext_list.for_all2_no_exn (fun x y -> match y with Lambda.Lvar y when Ident.same x y  -> true | _ -> false ) params inner_args
+           && Ext_list.same_length inner_args (args @ [x])
+        -> 
+       
+         aux (Lprim(external_fn, args @ [x], outer_loc))
+        | _ -> *)           
+          let x  = aux x in 
+          let f =  aux f in 
+          begin match  f with 
+            | Lapply{fn;args} ->
+              apply fn (args @[x]) outer_loc App_na 
+            | _ -> 
+              apply f [x] outer_loc App_na        
+          end 
       end
     | Lprim (Prevapply, _, _ ) -> assert false       
     | Lprim(Pdirapply, _, _) -> assert false 
@@ -66982,7 +66986,9 @@ let convert exports lam : _ * _  =
           (* Format.fprintf Format.err_formatter "weird: %d@." (Obj.tag (Obj.repr b));  *)
           Lsend(kind, aux a,  b, List.map aux ls, loc )
       end
-    | Levent (e, event) -> aux e 
+    | Levent (e, event) ->
+       (* disabled by upstream*)
+       assert false
     | Lifused (id, e) -> 
       Lifused(id, aux e) (* TODO: remove it ASAP *)
   and aux_switch (s : Lambda.lambda_switch) : switch = 
@@ -73157,20 +73163,19 @@ let lambda use_env env ppf v  =
       let kind =
         if k = Self then "self" else if k = Cached then "cache" else "" in
       fprintf ppf "@[<2>(send%s@ %a@ %a%a)@]" kind lam obj lam met args largs
-  | Levent(expr, _ev) ->
-      lam ppf expr
-      (* let kind = *)
-      (*  match ev.lev_kind with *)
-      (*  | Lev_before -> "before" *)
-      (*  | Lev_after _  -> "after" *)
-      (*  | Lev_function -> "funct-body" in *)
-      (* fprintf ppf "@[<2>(%s %s(%i)%s:%i-%i@ %a)@]" kind *)
-      (*         ev.lev_loc.Location.loc_start.Lexing.pos_fname *)
-      (*         ev.lev_loc.Location.loc_start.Lexing.pos_lnum *)
-      (*         (if ev.lev_loc.Location.loc_ghost then "<ghost>" else "") *)
-      (*         ev.lev_loc.Location.loc_start.Lexing.pos_cnum *)
-      (*         ev.lev_loc.Location.loc_end.Lexing.pos_cnum *)
-      (*         lam expr *)
+  | Levent(expr, ev) ->
+       let kind = 
+        match ev.lev_kind with 
+        | Lev_before -> "before" 
+        | Lev_after _  -> "after" 
+        | Lev_function -> "funct-body" in 
+       fprintf ppf "@[<2>(%s %s(%i)%s:%i-%i@ %a)@]" kind 
+               ev.lev_loc.Location.loc_start.Lexing.pos_fname 
+               ev.lev_loc.Location.loc_start.Lexing.pos_lnum 
+               (if ev.lev_loc.Location.loc_ghost then "<ghost>" else "") 
+               ev.lev_loc.Location.loc_start.Lexing.pos_cnum 
+               ev.lev_loc.Location.loc_end.Lexing.pos_cnum 
+               lam expr 
   | Lifused(id, expr) ->
       fprintf ppf "@[<2>(ifused@ %a@ %a)@]" Ident.print id lam expr
 
@@ -78451,7 +78456,7 @@ let rec push_defaults loc bindings cases partial =
 let event_before exp lam = match lam with
 | Lstaticraise (_,_) -> lam
 | _ ->
-  if !Clflags.debug
+  if !Clflags.record_event_when_debug && !Clflags.debug
   then Levent(lam, {lev_loc = exp.exp_loc;
                     lev_kind = Lev_before;
                     lev_repr = None;
@@ -78459,7 +78464,7 @@ let event_before exp lam = match lam with
   else lam
 
 let event_after exp lam =
-  if !Clflags.debug
+  if !Clflags.record_event_when_debug && !Clflags.debug
   then Levent(lam, {lev_loc = exp.exp_loc;
                     lev_kind = Lev_after exp.exp_type;
                     lev_repr = None;
@@ -78467,7 +78472,7 @@ let event_after exp lam =
   else lam
 
 let event_function exp lam =
-  if !Clflags.debug then
+  if !Clflags.record_event_when_debug && !Clflags.debug then
     let repr = Some (ref 0) in
     let (info, body) = lam repr in
     (info,
@@ -108367,8 +108372,11 @@ let buckle_script_flags =
 
 
 let _ = 
+  (* Default configuraiton: sync up with 
+    {!Jsoo_main}  *)
   Clflags.unsafe_string := false;
   Clflags.debug := true;
+  Clflags.record_event_when_debug := false;
   Clflags.binary_annotations := true; 
   Bs_conditional_initial.setup_env ();
   try

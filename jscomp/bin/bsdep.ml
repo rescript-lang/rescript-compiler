@@ -169,6 +169,7 @@ val opaque : bool ref
 type mli_status = Mli_na | Mli_exists | Mli_non_exists
 val no_implicit_current_dir : bool ref
 val assume_no_mli : mli_status ref 
+val record_event_when_debug : bool ref 
 
 
 type color_setting = Auto | Always | Never
@@ -299,6 +300,7 @@ let unsafe_string = ref true;;         (* -safe-string / -unsafe-string *)
 type mli_status = Mli_na | Mli_exists | Mli_non_exists
 let no_implicit_current_dir = ref false
 let assume_no_mli = ref Mli_na
+let record_event_when_debug = ref true (* turned off in BuckleScript*)
 
 
 type color_setting = Auto | Always | Never

@@ -1011,9 +1011,6 @@ function parse_chan_gen(bufsize, ic) {
     if (typeof e === "number") {
       return /* None */0;
     }
-    else if (e[0] >= 106380200) {
-      return /* Some */[e];
-    }
     else {
       return /* Some */[e];
     }

@@ -253,8 +253,11 @@ let buckle_script_flags =
 
 
 let _ = 
+  (* Default configuraiton: sync up with 
+    {!Jsoo_main}  *)
   Clflags.unsafe_string := false;
   Clflags.debug := true;
+  Clflags.record_event_when_debug := false;
   Clflags.binary_annotations := true; 
   Bs_conditional_initial.setup_env ();
   try

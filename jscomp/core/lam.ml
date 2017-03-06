@@ -1688,23 +1688,25 @@ let convert exports lam : _ * _  =
       let lam = Lletrec (bindings, body) in 
       scc bindings lam body  
     (* inlining will affect how mututal recursive behave *)
-    | Lprim(Prevapply, [x ; f ],  outer_loc) -> 
-      let x  = aux x in 
-      let f =  aux f in 
-      begin match  f with 
-        | Lapply{fn;args;loc=inner_loc} ->
-          apply fn (args @[x]) outer_loc App_na 
-        | _ -> 
-          apply f [x] outer_loc App_na        
-      end 
-    | Lprim(Pdirapply, [f;x], outer_loc) -> 
-      let f = aux f in 
-      let x = aux x in 
-      begin match f with 
-        | Lapply{fn ; args }
-          -> 
-          apply fn (args @ [x]) outer_loc App_na
-        | _  -> apply f [x] outer_loc App_na
+    | Lprim(Prevapply, [x ; f ],  outer_loc) 
+    | Lprim(Pdirapply, [f ; x],  outer_loc) -> 
+      begin (*match f with 
+        |  Lapply(Lfunction(kind, params,Lprim(external_fn,inner_args,inner_loc)), args, outer_loc ) 
+       
+           when Ext_list.for_all2_no_exn (fun x y -> match y with Lambda.Lvar y when Ident.same x y  -> true | _ -> false ) params inner_args
+           && Ext_list.same_length inner_args (args @ [x])
+        -> 
+       
+         aux (Lprim(external_fn, args @ [x], outer_loc))
+        | _ -> *)           
+          let x  = aux x in 
+          let f =  aux f in 
+          begin match  f with 
+            | Lapply{fn;args} ->
+              apply fn (args @[x]) outer_loc App_na 
+            | _ -> 
+              apply f [x] outer_loc App_na        
+          end 
       end
     | Lprim (Prevapply, _, _ ) -> assert false       
     | Lprim(Pdirapply, _, _) -> assert false 
@@ -1835,7 +1837,9 @@ let convert exports lam : _ * _  =
           (* Format.fprintf Format.err_formatter "weird: %d@." (Obj.tag (Obj.repr b));  *)
           Lsend(kind, aux a,  b, List.map aux ls, loc )
       end
-    | Levent (e, event) -> aux e 
+    | Levent (e, event) ->
+       (* disabled by upstream*)
+       assert false
     | Lifused (id, e) -> 
       Lifused(id, aux e) (* TODO: remove it ASAP *)
   and aux_switch (s : Lambda.lambda_switch) : switch = 
