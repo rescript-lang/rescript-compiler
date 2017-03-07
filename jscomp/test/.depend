@@ -399,6 +399,7 @@ swap_test.cmj : ../stdlib/printf.cmj mt.cmj ../stdlib/list.cmj \
     ../stdlib/int64.cmj ../stdlib/int32.cmj ../stdlib/format.cmj \
     ../stdlib/array.cmj
 tailcall_inline_test.cmj : mt.cmj ../stdlib/array.cmj
+test.cmj :
 test_alias.cmj : test_global_print.cmj
 test_ari.cmj : ../stdlib/list.cmj
 test_array.cmj : ../stdlib/array.cmj
@@ -523,7 +524,7 @@ typed_array_test.cmj : ../runtime/typed_array.cmj mt.cmj ../runtime/js.cmj \
     ../stdlib/int32.cmj ../stdlib/array.cmj
 typeof_test.cmj : mt.cmj ../runtime/js.cmj
 uncurry_glob_test.cmj : ../runtime/caml_utils.cmj
-undef_regression2_test.cmj : ../runtime/js.cmj
+undef_regression2_test.cmj : mt.cmj ../runtime/js.cmj
 undef_regression_test.cmj : ../runtime/js.cmj ../runtime/bs_obj.cmj
 unicode_type_error.cmj :
 unitest_string.cmj :

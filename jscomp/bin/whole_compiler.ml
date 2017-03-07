@@ -68755,7 +68755,7 @@ val set_tag : ?comment:string -> J.expression -> J.expression -> t
 
 val set_length : ?comment:string -> J.expression -> J.expression -> t
 val obj_length : ?comment:string -> J.expression -> t
-val to_ocaml_boolean : unary_op
+val bool_of_boolean : unary_op
 
 val and_ : binary_op
 val or_ : binary_op
@@ -69280,7 +69280,7 @@ let assign ?comment e0 e1 : t = {expression_desc = Bin(Eq, e0,e1); comment}
      this should be optmized away for [if] ,[cond] to produce 
     more readable code
 *)         
-let to_ocaml_boolean ?comment (e : t) : t = 
+let bool_of_boolean ?comment (e : t) : t = 
   match e.expression_desc with 
   | Int_of_boolean _
   | Number _ -> e 
@@ -69329,7 +69329,7 @@ let rec triple_equal ?comment (e0 : t) (e1 : t ) : t =
   | Char_of_int a , Char_of_int b -> 
     triple_equal ?comment a b 
   | _ -> 
-    to_ocaml_boolean  {expression_desc = Bin(EqEqEq, e0,e1); comment}
+    bool_of_boolean  {expression_desc = Bin(EqEqEq, e0,e1); comment}
 
 
 (** Arith operators *)
@@ -69369,7 +69369,7 @@ let bin ?comment (op : J.binop) e0 e1 : t =
 let rec and_ ?comment (e1 : t) (e2 : t) : t = 
   match e1.expression_desc, e2.expression_desc with 
   |  Int_of_boolean e1 , Int_of_boolean e2 ->
-    to_ocaml_boolean @@ and_ ?comment e1 e2
+    bool_of_boolean @@ and_ ?comment e1 e2
 
   (*
      {[ a && (b && c) === (a && b ) && c ]}
@@ -69408,7 +69408,7 @@ let rec or_ ?comment (e1 : t) (e2 : t) =
   match e1.expression_desc, e2.expression_desc with 
   | Int_of_boolean e1 , Int_of_boolean e2
     ->
-    to_ocaml_boolean @@ or_ ?comment e1 e2
+    bool_of_boolean @@ or_ ?comment e1 e2
   | Var i, Var j when Js_op_util.same_vident  i j 
     -> 
     e1
@@ -69446,17 +69446,17 @@ and js_not ({expression_desc; comment} as e : t) origin : t =
   match expression_desc with 
   | Bin(EqEqEq , e0,e1) 
     -> 
-    to_ocaml_boolean {expression_desc = Bin(NotEqEq, e0,e1); comment}
+    bool_of_boolean {expression_desc = Bin(NotEqEq, e0,e1); comment}
   | Bin(NotEqEq , e0,e1) -> 
-    to_ocaml_boolean {expression_desc = Bin(EqEqEq, e0,e1); comment}
+    bool_of_boolean {expression_desc = Bin(EqEqEq, e0,e1); comment}
   | Bin(Lt, a, b) -> 
-    to_ocaml_boolean {e with expression_desc = Bin (Ge,a,b)}
+    bool_of_boolean {e with expression_desc = Bin (Ge,a,b)}
   | Bin(Ge,a,b) -> 
-    to_ocaml_boolean {e with expression_desc = Bin (Lt,a,b)}
+    bool_of_boolean {e with expression_desc = Bin (Lt,a,b)}
   | Bin(Le,a,b) -> 
-    to_ocaml_boolean {e with expression_desc = Bin (Gt,a,b)}
+    bool_of_boolean {e with expression_desc = Bin (Gt,a,b)}
   | Bin(Gt,a,b) -> 
-    to_ocaml_boolean {e with expression_desc = Bin (Le,a,b)}
+    bool_of_boolean {e with expression_desc = Bin (Le,a,b)}
   | _ -> {expression_desc = Caml_not origin; comment = None}
 
 let rec ocaml_boolean_under_condition (b : t) =
@@ -69626,7 +69626,7 @@ let rec float_equal ?comment (e0 : t) (e1 : t) : t =
     float_equal ?comment a b
 
   | _ ->  
-    to_ocaml_boolean {expression_desc = Bin(EqEqEq, e0,e1); comment}
+    bool_of_boolean {expression_desc = Bin(EqEqEq, e0,e1); comment}
 
 
 let int_equal = float_equal 
@@ -69637,7 +69637,7 @@ let rec string_equal ?comment (e0 : t) (e1 : t) : t =
   | Unicode a0, Unicode b0 -> bool (Ext_string.equal a0 b0)
   | _ , _ 
     ->
-    to_ocaml_boolean {expression_desc = Bin(EqEqEq, e0,e1); comment}     
+    bool_of_boolean {expression_desc = Bin(EqEqEq, e0,e1); comment}     
 
 
 let is_type_number ?comment (e : t) : t = 
@@ -69775,7 +69775,7 @@ let uint32 ?comment n : J.expression =
 
 
 let string_comp cmp ?comment  e0 e1 = 
-  to_ocaml_boolean @@ bin ?comment cmp e0 e1
+  bool_of_boolean @@ bin ?comment cmp e0 e1
 
 
 let rec int_comp (cmp : Lambda.comparison) ?comment  (e0 : t) (e1 : t) = 
@@ -69790,10 +69790,10 @@ let rec int_comp (cmp : Lambda.comparison) ?comment  (e0 : t) (e1 : t) =
     -> int_comp cmp l r (* = 0 > 0 < 0 *)
   | Ceq, _, _ -> int_equal e0 e1 
   | _ ->          
-    to_ocaml_boolean @@ bin ?comment (Lam_compile_util.jsop_of_comp cmp) e0 e1
+    bool_of_boolean @@ bin ?comment (Lam_compile_util.jsop_of_comp cmp) e0 e1
 
 let float_comp cmp ?comment  e0 e1 = 
-  to_ocaml_boolean @@ bin ?comment (Lam_compile_util.jsop_of_comp cmp) e0 e1
+  bool_of_boolean @@ bin ?comment (Lam_compile_util.jsop_of_comp cmp) e0 e1
 
 
 
@@ -92015,7 +92015,7 @@ let translate  loc
         "js_is_nil_undef" args 
   | Pjs_boolean_to_bool -> 
     begin match args with 
-    | [e] -> E.to_ocaml_boolean e 
+    | [e] -> E.bool_of_boolean e 
     | _ -> assert false 
     end
   | Pjs_typeof -> 
@@ -102048,6 +102048,63 @@ and unicode loc buf s offset s_len =
    console.log('\u{1F680}');
 *)   
 end
+module Ast_exp : sig 
+#1 "ast_exp.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type t = Parsetree.expression 
+
+end = struct
+#1 "ast_exp.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type t = Parsetree.expression 
+
+end
 module Ast_external : sig 
 #1 "ast_external.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -102390,7 +102447,9 @@ val handle_debugger :
 val handle_raw : 
   ?check_js_regex: bool -> loc -> Ast_payload.t -> Parsetree.expression
 
-
+val handle_external :
+  loc -> string -> Parsetree.expression 
+  
 val handle_raw_structure : 
   loc -> Ast_payload.t -> Parsetree.structure_item
 
@@ -102711,7 +102770,38 @@ let handle_raw ?(check_js_regex = false) loc payload =
       { exp with pexp_desc }
   end
 
+let handle_external loc x = 
+  let raw_exp : Ast_exp.t = 
+    Ast_helper.Exp.apply 
+    (Exp.ident ~loc 
+         {loc; txt = Ldot (Ast_literal.Lid.js_unsafe, 
+                           Literals.js_pure_expr)})
+      ~loc 
+      [Ext_string.empty, 
+        Exp.constant ~loc (Const_string (x,Some Ext_string.empty))] in 
+  let empty = 
+    Exp.ident ~loc 
+    {txt = Ldot (Ldot(Lident"Js", "Undefined"), "empty");loc}    
+  in 
+  let undefined_typeof = 
+    Exp.ident {loc ; txt = Ldot (Ldot(Lident "Js","Undefined"),"to_opt")} in 
+  let typeof = 
+    Exp.ident {loc ; txt = Ldot(Lident "Js","typeof")} in 
 
+  Exp.apply ~loc undefined_typeof [
+    Ext_string.empty,
+    Exp.ifthenelse ~loc
+    (Exp.apply ~loc 
+      (Exp.ident ~loc {loc ; txt = Ldot (Lident "Pervasives", "=")} )
+      [ 
+        Ext_string.empty,
+        (Exp.apply ~loc typeof [Ext_string.empty,raw_exp]);
+        Ext_string.empty, 
+        Exp.constant ~loc (Const_string ("undefined",None))  
+        ])      
+      (empty)
+      (Some raw_exp)
+      ]
 
 
 let handle_raw_structure loc payload = 
@@ -103463,6 +103553,19 @@ let rec unsafe_mapper : Ast_mapper.mapper =
           Exp.constraint_ ~loc
             (Ast_util.handle_raw ~check_js_regex:true loc payload)
             (Ast_comb.to_js_re_type loc)
+        | Pexp_extension ({txt = "bs.external" | "external" ; loc }, payload) -> 
+          begin match Ast_payload.as_ident payload with 
+          | Some {txt = Lident x}
+            -> Ast_util.handle_external loc x
+            (* do we need support [%external gg.xx ] 
+               
+               {[ Js.Undefined.to_opt (if Js.typeof x == "undefined" then x else Js.Undefined.empty ) ]}
+            *)
+
+          | None | Some _ -> 
+            Location.raise_errorf ~loc 
+            "external expects a single identifier"
+          end 
         | Pexp_extension
             ({txt = ("bs.node" | "node"); loc},
              payload)
@@ -103479,11 +103582,10 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                         | "require" as name); loc}
               ->
               let exp =
-                Ast_util.handle_raw loc
-                  (Ast_payload.raw_string_payload loc
-                     (strip name) ) in
+                Ast_util.handle_external loc (strip name)  in
               let typ =
-                Ast_comb.to_undefined_type loc @@                 
+                Ast_core_type.lift_option_type  
+                 @@                 
                 if name = "_module" then
                   Typ.constr ~loc
                     { txt = Ldot (Lident "Node", "node_module") ;

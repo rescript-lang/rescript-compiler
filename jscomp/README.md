@@ -5,10 +5,9 @@
 In release mode, assume you have NodeJS and
 OCaml compiler  with the right version installed:
 
-[source,sh]
------------
+```sh
 node scripts/install.js
------------
+```
 
 The build process will generate configure file with correct `LIBDIR` path,
 build all binaries and libraries and
@@ -86,15 +85,13 @@ however, it should also compile readable output code.
 
 If you don't change the type definition of JS IR, i.e, [j.ml](./j.ml),
 then the only dependency is the build tool:
-[ocamlbuild](http://caml.inria.fr/pub/docs/manual-ocaml-400/manual032.html)
+`make`
 
 ```sh
-ocamlbuild  -no-hygiene -cflags -g,-w,-40-30,-warn-error,+a-40-30,-keep-locs,-I,+compiler-libs  compiler.cmxa
+make bsc.exe
 ```
 
-```sh
-make  bin/bsc.exe
-```
+
 
 If you do want to change the JS IR, you also need
 [camlp4](https://github.com/ocaml/camlp4), note that the version does

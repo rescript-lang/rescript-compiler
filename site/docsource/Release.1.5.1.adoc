@@ -3,4 +3,8 @@
 
 # Minor breaking changes
 
-changes NodeJS special variables from `module_` to `_module` to make it more consistent
+1. changes NodeJS special variables from `module_` to `_module` to make it more consistent
+
+2. [%node ] return [_ option] type instead of `undefined`
+
+

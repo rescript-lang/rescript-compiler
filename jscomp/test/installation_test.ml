@@ -8,14 +8,14 @@ let eq loc x y =
 
 
 
-let _ : _ Js.undefined = 
-  Js.Undefined.bind [%node __dirname] (fun [@bs] p ->
+let () = 
+  match [%node __dirname] with | Some p -> 
       let root = App_root_finder.find_package_json p in
       let bsc_exe = 
         Node.Path.join 
           [| root ; "jscomp";  "bin"; "bsc.exe" |] in 
 
-      match Node.Child_process.execSync 
+      begin match Node.Child_process.execSync 
               (bsc_exe ^ " -where ") 
               (Node.Child_process.option  ~encoding:"utf8" ()) with 
       | output -> 
@@ -32,7 +32,8 @@ let _ : _ Js.undefined =
         eq __LOC__  v true
       | exception e -> 
         assert false
-    )
+      end
+      | None  ->  assert false 
 
 let () = 
   Mt.from_pair_suites __FILE__ !suites

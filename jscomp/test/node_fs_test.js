@@ -1,11 +1,11 @@
 'use strict';
 
-var Fs           = require("fs");
-var Js_undefined = require("../../lib/js/js_undefined");
+var Fs = require("fs");
 
-Js_undefined.bind((__filename), function (f) {
-      console.log(Fs.readFileSync(f, "utf8"));
-      return /* () */0;
-    });
+var match = typeof (__filename) === "undefined" ? undefined : (__filename);
 
-/*  Not a pure module */
+if (match !== undefined) {
+  console.log(Fs.readFileSync(match, "utf8"));
+}
+
+/* match Not a pure module */

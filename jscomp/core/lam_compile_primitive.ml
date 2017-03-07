@@ -115,7 +115,7 @@ let translate  loc
         "js_is_nil_undef" args 
   | Pjs_boolean_to_bool -> 
     begin match args with 
-    | [e] -> E.to_ocaml_boolean e 
+    | [e] -> E.bool_of_boolean e 
     | _ -> assert false 
     end
   | Pjs_typeof -> 

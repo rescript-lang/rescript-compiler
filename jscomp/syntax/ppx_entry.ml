@@ -269,6 +269,19 @@ let rec unsafe_mapper : Ast_mapper.mapper =
           Exp.constraint_ ~loc
             (Ast_util.handle_raw ~check_js_regex:true loc payload)
             (Ast_comb.to_js_re_type loc)
+        | Pexp_extension ({txt = "bs.external" | "external" ; loc }, payload) -> 
+          begin match Ast_payload.as_ident payload with 
+          | Some {txt = Lident x}
+            -> Ast_util.handle_external loc x
+            (* do we need support [%external gg.xx ] 
+               
+               {[ Js.Undefined.to_opt (if Js.typeof x == "undefined" then x else Js.Undefined.empty ) ]}
+            *)
+
+          | None | Some _ -> 
+            Location.raise_errorf ~loc 
+            "external expects a single identifier"
+          end 
         | Pexp_extension
             ({txt = ("bs.node" | "node"); loc},
              payload)
@@ -285,11 +298,10 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                         | "require" as name); loc}
               ->
               let exp =
-                Ast_util.handle_raw loc
-                  (Ast_payload.raw_string_payload loc
-                     (strip name) ) in
+                Ast_util.handle_external loc (strip name)  in
               let typ =
-                Ast_comb.to_undefined_type loc @@                 
+                Ast_core_type.lift_option_type  
+                 @@                 
                 if name = "_module" then
                   Typ.constr ~loc
                     { txt = Ldot (Lident "Node", "node_module") ;

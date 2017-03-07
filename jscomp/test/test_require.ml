@@ -1,11 +1,16 @@
 
 
 let () =
-  match Js.Undefined.to_opt  [%bs.node require] with
+  match [%node require] with
   | None ->   ()
   | Some u ->               
     Js.log @@ u#@resolve "./test_require.js";
-    if u##main == [%bs.node _module] && u##main != Js.Undefined.empty then
+    match [%node _module], Js.Undefined.to_opt u##main with
+    | Some x, Some y when x == y ->
       Js.log "is main"
-    else
+    | Some _, Some _
+    | None, Some _ 
+    | None, None  
+    | Some _, None -> 
       Js.log "not main"
+
