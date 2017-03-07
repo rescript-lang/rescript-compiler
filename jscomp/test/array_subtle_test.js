@@ -1,7 +1,8 @@
 'use strict';
 
-var Mt    = require("./mt");
-var Block = require("../../lib/js/block");
+var Mt           = require("./mt");
+var Block        = require("../../lib/js/block");
+var Js_primitive = require("../../lib/js/js_primitive");
 
 var suites = [/* [] */0];
 
@@ -66,7 +67,7 @@ eq('File "array_subtle_test.ml", line 23, characters 5-12', /* tuple */[
     ]);
 
 while(v.length > 0) {
-  v.pop();
+  Js_primitive.js_from_def(v.pop());
 };
 
 eq('File "array_subtle_test.ml", line 29, characters 5-12', /* tuple */[

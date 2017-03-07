@@ -95,6 +95,7 @@ OTHERS := literals a test_ari test_export2 test_internalOO test_obj_simple_ffi t
 	obj_curry_test\
 	gpr_1170\
 	js_re_test\
+	js_dict_test\
 	name_mangle_test\
 	oo_js_test_date\
 	functor_ffi\
@@ -107,7 +108,7 @@ OTHERS := literals a test_ari test_export2 test_internalOO test_obj_simple_ffi t
 	chn_test\
 	return_check\
 	bs_splice_partial\
-	gpr_return_type_unused_attribute	
+	gpr_return_type_unused_attribute
 # bs_uncurry_test
 # needs Lam to get rid of Uncurry arity first
 

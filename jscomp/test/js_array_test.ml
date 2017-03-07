@@ -60,7 +60,10 @@ let suites = Mt.[
     );
 
     "pop", (fun _ ->
-      Eq(Js.Undefined.return 3, [| 1; 2; 3 |] |> Js.Array.pop)
+      Eq(Some 3, [| 1; 2; 3 |] |> Js.Array.pop)
+    );
+    "pop - empty array", (fun _ ->
+      Eq(None, [||] |> Js.Array.pop)
     );
     "push", (fun _ ->
       Eq(4, [| 1; 2; 3 |] |> Js.Array.push 4)
@@ -75,7 +78,10 @@ let suites = Mt.[
     );
 
     "shift", (fun _ ->
-      Eq(Js.Undefined.return 1, [| 1; 2; 3 |] |> Js.Array.shift)
+      Eq(Some 1, [| 1; 2; 3 |] |> Js.Array.shift)
+    );
+    "shift - empty array", (fun _ ->
+      Eq(None, [||] |> Js.Array.shift)
     );
 
     "sortInPlace", (fun _ ->
@@ -197,10 +203,16 @@ let suites = Mt.[
 
     (* es2015 *)
     "find", (fun _ ->
-      Eq(Js.Undefined.return 2, [| 1; 2; 3; 4 |] |> Js.Array.find ((fun n -> n mod 2 = 0) ))
+      Eq(Some 2, [| 1; 2; 3; 4 |] |> Js.Array.find ((fun n -> n mod 2 = 0) ))
+    );
+    "find - no match", (fun _ ->
+      Eq(None, [| 1; 2; 3; 4 |] |> Js.Array.find ((fun n -> n mod 2 = 5) ))
     );
     "findi", (fun _ ->
-      Eq(Js.Undefined.return 1, [| 1; 2; 3; 4 |] |> Js.Array.findi ((fun _ i -> i mod 2 = 0) ))
+      Eq(Some 1, [| 1; 2; 3; 4 |] |> Js.Array.findi ((fun _ i -> i mod 2 = 0) ))
+    );
+    "findi - no match", (fun _ ->
+      Eq(None, [| 1; 2; 3; 4 |] |> Js.Array.findi ((fun _ i -> i mod 2 = 5) ))
     );
 
     (* es2015 *)

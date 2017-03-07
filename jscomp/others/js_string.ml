@@ -44,7 +44,7 @@ external charCodeAt : int -> float  = "" [@@bs.send.pipe: t]
         "\u{01003f}".codePointAt(0) - 65599
     ]}
 *)
-external codePointAt : int -> int Js.undefined = "" [@@bs.send.pipe: t] (** ES2015 *)
+external codePointAt : int -> int option = "" [@@bs.send.pipe: t] [@@bs.return {undefined_to_opt}] (** ES2015 *)
 
 external concat : t -> t = "" [@@bs.send.pipe: t]
 external concatMany : t array -> t = "concat" [@@bs.send.pipe: t] [@@bs.splice]
@@ -64,7 +64,7 @@ external lastIndexOfFrom : t -> int -> int = "lastIndexOf" [@@bs.send.pipe: t]
 external localeCompare : t -> float = "" [@@bs.send.pipe: t]
 (* extended by ECMA-402 *)
 
-external match_ : Js_re.t -> t array Js.null = "match" [@@bs.send.pipe: t]
+external match_ : Js_re.t -> t array option = "match" [@@bs.send.pipe: t] [@@bs.return {null_to_opt}]
 
 external normalize : t = "" [@@bs.send.pipe: t] (** ES2015 *)
 external normalizeByForm : t -> t = "normalize" [@@bs.send.pipe: t] (** ES2015 *)
@@ -109,7 +109,7 @@ external anchor : t -> t = "" [@@bs.send.pipe: t] (** ES2015 *)
 external link : t -> t = "" [@@bs.send.pipe: t] (** ES2015 *)
 
 external castToArrayLike : t -> t Js_array.array_like = "%identity" 
-(* FIXME: we should not encourage people to use [%identity], beter
+(* FIXME: we should not encourage people to use [%identity], better
     to provide something using [@@bs.val] so that we can track such 
     casting
 *)
