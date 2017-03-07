@@ -10,6 +10,8 @@ let test dom =
     | None -> 1 
     | Some ui -> Js.log ui ; 2   
 
+(* external getElementById2 : dom -> string -> element option = ""
+[@@bs.return null_to_opt] *)
 
 
 
@@ -49,7 +51,7 @@ let f_escaped_2 xs i =
 
 
 external get_null : int array -> int -> int option = "" 
-[@@bs.get_index] [@@bs.return { null_to_opt }]
+[@@bs.get_index] [@@bs.return  null_to_opt ]
 
 
 let f_null xs i = 
@@ -58,7 +60,7 @@ let f_null xs i =
     | Some k -> k 
 
 external get_null_undefined : int array -> int -> int option = "" 
-[@@bs.get_index] [@@bs.return { null_undefined_to_opt }]
+[@@bs.get_index] [@@bs.return null_undefined_to_opt ]
 
 
 let f_null_undefined xs i = 

@@ -24,7 +24,7 @@ function f_undefined(xs, i) {
           Caml_builtin_exceptions.assert_failure,
           [
             "return_check.ml",
-            29,
+            31,
             14
           ]
         ];
@@ -69,7 +69,7 @@ function f_null(xs, i) {
           Caml_builtin_exceptions.assert_failure,
           [
             "return_check.ml",
-            57,
+            59,
             14
           ]
         ];
@@ -83,7 +83,7 @@ function f_null_undefined(xs, i) {
           Caml_builtin_exceptions.assert_failure,
           [
             "return_check.ml",
-            66,
+            68,
             14
           ]
         ];
