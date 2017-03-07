@@ -18,6 +18,17 @@ let a =
   | None -> 1 
   | Some _ -> 2 
 
+
+let test () = 
+  match [%external __DEV__] with 
+  | Some _ -> Js.log "dev mode"
+  | None -> Js.log "producton mode"
+
+let test2 () = 
+  match [%external __filename] with 
+  | Some f -> Js.log f 
+  | None -> Js.log "non node environment"
+
 let f x = 
   Js.Undefined.test x   
 

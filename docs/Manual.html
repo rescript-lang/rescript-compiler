@@ -584,9 +584,10 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </ul>
 </li>
 <li><a href="#_return_value_checking_since_1_5_1">Return value checking (@since 1.5.1)</a></li>
-<li><a href="#_embedding_raw_javascript_code">Embedding raw Javascript code</a>
+<li><a href="#_embedding_untyped_javascript_code">Embedding untyped Javascript code</a>
 <ul class="sectlevel3">
-<li><a href="#_embedding_raw_js_code_as_an_expression">Embedding raw JS code as an expression</a></li>
+<li><a href="#_detect_global_varialbe_existence_code_bs_external_code_since_1_5_1">Detect global varialbe existence <code>bs.external</code> (@since 1.5.1)</a></li>
+<li><a href="#_embedding_arbitrary_js_code_as_an_expression">Embedding arbitrary JS code as an expression</a></li>
 <li><a href="#_embedding_raw_js_code_as_statements">Embedding raw JS code as statements</a></li>
 </ul>
 </li>
@@ -2094,7 +2095,7 @@ data.</p>
 <div class="sect2">
 <h3 id="_binding_to_nodejs_special_variables_bs_node"><a class="anchor" href="#_binding_to_nodejs_special_variables_bs_node"></a>Binding to NodeJS special variables: bs.node</h3>
 <div class="paragraph">
-<p>NodeJS has several file local variables: <code><em>dirname</code>, <code></em>filename</code>, <code>module_</code>, and <code>require</code>,
+<p>NodeJS has several file local variables: <code><em>dirname</code>, <code></em>filename</code>, <code>_module</code>, and <code>require</code>,
 their semantics are more like macros instead of functions.</p>
 </div>
 <div class="paragraph">
@@ -2102,10 +2103,10 @@ their semantics are more like macros instead of functions.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">let</span> <span class="tok-n">dirname</span> <span class="tok-o">:</span> <span class="tok-kt">string</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">undefined</span> <span class="tok-o">=</span> <span class="tok-o">[%</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">node</span> <span class="tok-o">__</span><span class="tok-n">dirname</span><span class="tok-o">]</span>
-<span class="tok-k">let</span> <span class="tok-n">filename</span> <span class="tok-o">:</span> <span class="tok-kt">string</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">undefined</span> <span class="tok-o">=</span> <span class="tok-o">[%</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">node</span> <span class="tok-o">__</span><span class="tok-n">filename</span><span class="tok-o">]</span>
-<span class="tok-k">let</span> <span class="tok-n">module_</span> <span class="tok-o">:</span> <span class="tok-nn">Node</span><span class="tok-p">.</span><span class="tok-n">node_module</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">undefined</span> <span class="tok-o">=</span> <span class="tok-o">[%</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">node</span> <span class="tok-n">module_</span><span class="tok-o">]</span>
-<span class="tok-k">let</span> <span class="tok-n">require</span> <span class="tok-o">:</span> <span class="tok-nn">Node</span><span class="tok-p">.</span><span class="tok-n">node_require</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">undefined</span> <span class="tok-o">=</span> <span class="tok-o">[%</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">node</span> <span class="tok-n">require</span><span class="tok-o">]</span></code></pre>
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">let</span> <span class="tok-n">dirname</span> <span class="tok-o">:</span> <span class="tok-kt">string</span> <span class="tok-n">option</span> <span class="tok-o">=</span> <span class="tok-o">[%</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">node</span> <span class="tok-o">__</span><span class="tok-n">dirname</span><span class="tok-o">]</span>
+<span class="tok-k">let</span> <span class="tok-n">filename</span> <span class="tok-o">:</span> <span class="tok-kt">string</span> <span class="tok-n">option</span> <span class="tok-o">=</span> <span class="tok-o">[%</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">node</span> <span class="tok-o">__</span><span class="tok-n">filename</span><span class="tok-o">]</span>
+<span class="tok-k">let</span> <span class="tok-o">_</span><span class="tok-n">module</span> <span class="tok-o">:</span> <span class="tok-nn">Node</span><span class="tok-p">.</span><span class="tok-n">node_module</span> <span class="tok-n">option</span> <span class="tok-o">=</span> <span class="tok-o">[%</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">node</span> <span class="tok-o">_</span><span class="tok-n">module</span><span class="tok-o">]</span>
+<span class="tok-k">let</span> <span class="tok-n">require</span> <span class="tok-o">:</span> <span class="tok-nn">Node</span><span class="tok-p">.</span><span class="tok-n">node_require</span> <span class="tok-n">option</span> <span class="tok-o">=</span> <span class="tok-o">[%</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">node</span> <span class="tok-n">require</span><span class="tok-o">]</span></code></pre>
 </div>
 </div>
 </div>
@@ -3338,7 +3339,7 @@ is rarely used but introduced here for debugging purpose.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_embedding_raw_javascript_code"><a class="anchor" href="#_embedding_raw_javascript_code"></a>Embedding raw Javascript code</h3>
+<h3 id="_embedding_untyped_javascript_code"><a class="anchor" href="#_embedding_untyped_javascript_code"></a>Embedding untyped Javascript code</h3>
 <div class="admonitionblock warning">
 <table>
 <tr>
@@ -3357,7 +3358,62 @@ get the job done.</p>
 </table>
 </div>
 <div class="sect3">
-<h4 id="_embedding_raw_js_code_as_an_expression"><a class="anchor" href="#_embedding_raw_js_code_as_an_expression"></a>Embedding raw JS code as an expression</h4>
+<h4 id="_detect_global_varialbe_existence_code_bs_external_code_since_1_5_1"><a class="anchor" href="#_detect_global_varialbe_existence_code_bs_external_code_since_1_5_1"></a>Detect global varialbe existence <code>bs.external</code> (@since 1.5.1)</h4>
+<div class="paragraph">
+<p>Before we dive into embedding arbitrary JS code, a quite common use case of embedding untyped JS code is detect a global variable(feature detection), Bucklescript provides a relatively type safe approach for such use case: <code>bs.external</code> (or <code>extenral</code>),
+ <code>[%bs.external a_single_identifier]</code> is a value of <code>_ option</code> type, see examples below</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">let</span> <span class="tok-n">test</span> <span class="tok-bp">()</span> <span class="tok-o">=</span>
+  <span class="tok-k">match</span> <span class="tok-o">[%</span><span class="tok-k">external</span> <span class="tok-o">__</span><span class="tok-n">DEV__</span><span class="tok-o">]</span> <span class="tok-k">with</span>
+  <span class="tok-o">|</span> <span class="tok-nc">Some</span> <span class="tok-o">_</span> <span class="tok-o">-&gt;</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">log</span> <span class="tok-s2">&quot;dev mode&quot;</span>
+  <span class="tok-o">|</span> <span class="tok-nc">None</span> <span class="tok-o">-&gt;</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">log</span> <span class="tok-s2">&quot;producton mode&quot;</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Output</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span class="tok-kd">function</span> <span class="tok-nx">test</span><span class="tok-p">()</span> <span class="tok-p">{</span>
+  <span class="tok-kd">var</span> <span class="tok-nx">match</span> <span class="tok-o">=</span> <span class="tok-k">typeof</span> <span class="tok-p">(</span><span class="tok-nx">__DEV__</span><span class="tok-p">)</span> <span class="tok-o">===</span> <span class="tok-s2">&quot;undefined&quot;</span> <span class="tok-o">?</span> <span class="tok-kc">undefined</span> <span class="tok-o">:</span> <span class="tok-p">(</span><span class="tok-nx">__DEV__</span><span class="tok-p">);</span>
+  <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-nx">match</span> <span class="tok-o">!==</span> <span class="tok-kc">undefined</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+    <span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span><span class="tok-p">(</span><span class="tok-s2">&quot;dev mode&quot;</span><span class="tok-p">);</span>
+    <span class="tok-k">return</span> <span class="tok-cm">/* () */</span><span class="tok-mi">0</span><span class="tok-p">;</span>
+  <span class="tok-p">}</span>
+  <span class="tok-k">else</span> <span class="tok-p">{</span>
+    <span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span><span class="tok-p">(</span><span class="tok-s2">&quot;producton mode&quot;</span><span class="tok-p">);</span>
+    <span class="tok-k">return</span> <span class="tok-cm">/* () */</span><span class="tok-mi">0</span><span class="tok-p">;</span>
+  <span class="tok-p">}</span>
+<span class="tok-p">}</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">let</span> <span class="tok-n">test2</span> <span class="tok-bp">()</span> <span class="tok-o">=</span>
+  <span class="tok-k">match</span> <span class="tok-o">[%</span><span class="tok-k">external</span> <span class="tok-o">__</span><span class="tok-n">filename</span><span class="tok-o">]</span> <span class="tok-k">with</span>
+  <span class="tok-o">|</span> <span class="tok-nc">Some</span> <span class="tok-n">f</span> <span class="tok-o">-&gt;</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">log</span> <span class="tok-n">f</span>
+  <span class="tok-o">|</span> <span class="tok-nc">None</span> <span class="tok-o">-&gt;</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">log</span> <span class="tok-s2">&quot;non node environment&quot;</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Output</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span class="tok-kd">function</span> <span class="tok-nx">test2</span><span class="tok-p">()</span> <span class="tok-p">{</span>
+  <span class="tok-kd">var</span> <span class="tok-nx">match</span> <span class="tok-o">=</span> <span class="tok-k">typeof</span> <span class="tok-p">(</span><span class="tok-nx">__filename</span><span class="tok-p">)</span> <span class="tok-o">===</span> <span class="tok-s2">&quot;undefined&quot;</span> <span class="tok-o">?</span> <span class="tok-kc">undefined</span> <span class="tok-o">:</span> <span class="tok-p">(</span><span class="tok-nx">__filename</span><span class="tok-p">);</span>
+  <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-nx">match</span> <span class="tok-o">!==</span> <span class="tok-kc">undefined</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+    <span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span><span class="tok-p">(</span><span class="tok-nx">match</span><span class="tok-p">);</span>
+    <span class="tok-k">return</span> <span class="tok-cm">/* () */</span><span class="tok-mi">0</span><span class="tok-p">;</span>
+  <span class="tok-p">}</span>
+  <span class="tok-k">else</span> <span class="tok-p">{</span>
+    <span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span><span class="tok-p">(</span><span class="tok-s2">&quot;non node environment&quot;</span><span class="tok-p">);</span>
+    <span class="tok-k">return</span> <span class="tok-cm">/* () */</span><span class="tok-mi">0</span><span class="tok-p">;</span>
+  <span class="tok-p">}</span>
+<span class="tok-p">}</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_embedding_arbitrary_js_code_as_an_expression"><a class="anchor" href="#_embedding_arbitrary_js_code_as_an_expression"></a>Embedding arbitrary JS code as an expression</h4>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">let</span> <span class="tok-n">keys</span> <span class="tok-o">:</span> <span class="tok-n">t</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">string</span> <span class="tok-kt">array</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">]</span> <span class="tok-o">=</span> <span class="tok-o">[%</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">raw</span> <span class="tok-s2">&quot;Object.keys&quot;</span> <span class="tok-o">]</span>

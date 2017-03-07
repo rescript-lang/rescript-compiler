@@ -42,13 +42,37 @@ var match = typeof (___undefined_value) === "undefined" ? undefined : (___undefi
 
 var a = match !== undefined ? 2 : 1;
 
+function test() {
+  var match = typeof (__DEV__) === "undefined" ? undefined : (__DEV__);
+  if (match !== undefined) {
+    console.log("dev mode");
+    return /* () */0;
+  }
+  else {
+    console.log("producton mode");
+    return /* () */0;
+  }
+}
+
+function test2() {
+  var match = typeof (__filename) === "undefined" ? undefined : (__filename);
+  if (match !== undefined) {
+    console.log(match);
+    return /* () */0;
+  }
+  else {
+    console.log("non node environment");
+    return /* () */0;
+  }
+}
+
 function f(x) {
   return +(x === undefined);
 }
 
-ok('File "undef_regression2_test.ml", line 27, characters 5-12', +(a > 0));
+ok('File "undef_regression2_test.ml", line 38, characters 5-12', +(a > 0));
 
-eq('File "undef_regression2_test.ml", line 28, characters 5-12', a, 1);
+eq('File "undef_regression2_test.ml", line 39, characters 5-12', a, 1);
 
 Mt.from_pair_suites("undef_regression2_test.ml", suites[0]);
 
@@ -57,5 +81,7 @@ exports.test_id = test_id;
 exports.eq      = eq;
 exports.ok      = ok;
 exports.a       = a;
+exports.test    = test;
+exports.test2   = test2;
 exports.f       = f;
 /* match Not a pure module */

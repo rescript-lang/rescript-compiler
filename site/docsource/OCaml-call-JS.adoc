@@ -503,17 +503,17 @@ var config = {
 
 ### Binding to NodeJS special variables: bs.node
 
-NodeJS has several file local variables: `__dirname`, `__filename`, `module_`, and `require`,
+NodeJS has several file local variables: `__dirname`, `__filename`, `_module`, and `require`,
 their semantics are more like macros instead of functions.
 
 BuckleScript provides built-in macro support for these variables:
 
 [source,ocaml]
 -------------
-let dirname : string Js.undefined = [%bs.node __dirname]
-let filename : string Js.undefined = [%bs.node __filename]
-let module_ : Node.node_module Js.undefined = [%bs.node module_]
-let require : Node.node_require Js.undefined = [%bs.node require]
+let dirname : string option = [%bs.node __dirname]
+let filename : string option = [%bs.node __filename]
+let _module : Node.node_module option = [%bs.node _module]
+let require : Node.node_require option = [%bs.node require]
 -------------
 
 
@@ -1408,7 +1408,7 @@ is rarely used but introduced here for debugging purpose.
 
 
 
-### Embedding raw Javascript code
+### Embedding untyped Javascript code
 
 
 [WARNING]
@@ -1419,7 +1419,62 @@ of embedding raw Javascript code, however, sometimes it's necessary to
 get the job done.
 =========
 
-#### Embedding raw JS code as an expression
+
+####  Detect global varialbe existence `bs.external` (@since 1.5.1)
+
+Before we dive into embedding arbitrary JS code, a quite common use case of embedding untyped JS code is detect a global variable(feature detection), Bucklescript provides a relatively type safe approach for such use case: `bs.external` (or `extenral`),
+ `[%bs.external a_single_identifier]` is a value of `_ option` type, see examples below 
+
+[source,ocaml]
+--------------
+let test () = 
+  match [%external __DEV__] with 
+  | Some _ -> Js.log "dev mode"
+  | None -> Js.log "producton mode"
+--------------
+
+.Output
+[source,js]
+-----------
+function test() {
+  var match = typeof (__DEV__) === "undefined" ? undefined : (__DEV__);
+  if (match !== undefined) {
+    console.log("dev mode");
+    return /* () */0;
+  }
+  else {
+    console.log("producton mode");
+    return /* () */0;
+  }
+}
+-----------
+
+[source,ocaml]
+--------------
+let test2 () = 
+  match [%external __filename] with 
+  | Some f -> Js.log f 
+  | None -> Js.log "non node environment"
+--------------
+
+.Output
+[source,js]
+--------------
+function test2() {
+  var match = typeof (__filename) === "undefined" ? undefined : (__filename);
+  if (match !== undefined) {
+    console.log(match);
+    return /* () */0;
+  }
+  else {
+    console.log("non node environment");
+    return /* () */0;
+  }
+}
+--------------
+
+
+#### Embedding arbitrary JS code as an expression
 
 [source,ocaml]
 --------------
