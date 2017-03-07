@@ -306,7 +306,38 @@ let handle_raw ?(check_js_regex = false) loc payload =
       { exp with pexp_desc }
   end
 
+let handle_external loc x = 
+  let raw_exp : Ast_exp.t = 
+    Ast_helper.Exp.apply 
+    (Exp.ident ~loc 
+         {loc; txt = Ldot (Ast_literal.Lid.js_unsafe, 
+                           Literals.js_pure_expr)})
+      ~loc 
+      [Ext_string.empty, 
+        Exp.constant ~loc (Const_string (x,Some Ext_string.empty))] in 
+  let empty = 
+    Exp.ident ~loc 
+    {txt = Ldot (Ldot(Lident"Js", "Undefined"), "empty");loc}    
+  in 
+  let undefined_typeof = 
+    Exp.ident {loc ; txt = Ldot (Ldot(Lident "Js","Undefined"),"to_opt")} in 
+  let typeof = 
+    Exp.ident {loc ; txt = Ldot(Lident "Js","typeof")} in 
 
+  Exp.apply ~loc undefined_typeof [
+    Ext_string.empty,
+    Exp.ifthenelse ~loc
+    (Exp.apply ~loc 
+      (Exp.ident ~loc {loc ; txt = Ldot (Lident "Pervasives", "=")} )
+      [ 
+        Ext_string.empty,
+        (Exp.apply ~loc typeof [Ext_string.empty,raw_exp]);
+        Ext_string.empty, 
+        Exp.constant ~loc (Const_string ("undefined",None))  
+        ])      
+      (empty)
+      (Some raw_exp)
+      ]
 
 
 let handle_raw_structure loc payload = 

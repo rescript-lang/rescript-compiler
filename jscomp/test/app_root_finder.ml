@@ -12,7 +12,7 @@ let rec find_package_json dir =
     else find_package_json new_dir
 
 let () =
-  match Js.Undefined.to_opt [%node __dirname] with
+  match  [%node __dirname] with
   | Some x -> 
     Js.log (find_package_json x)
   | None -> ()

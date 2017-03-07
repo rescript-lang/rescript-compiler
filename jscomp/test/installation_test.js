@@ -4,7 +4,6 @@ var Mt                      = require("./mt");
 var Fs                      = require("fs");
 var Path                    = require("path");
 var Block                   = require("../../lib/js/block");
-var Js_undefined            = require("../../lib/js/js_undefined");
 var Child_process           = require("child_process");
 var App_root_finder         = require("./app_root_finder");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
@@ -30,42 +29,54 @@ function eq(loc, x, y) {
   return /* () */0;
 }
 
-Js_undefined.bind((__dirname), function (p) {
-      var root = App_root_finder.find_package_json(p);
-      var bsc_exe = Path.join(root, "jscomp", "bin", "bsc.exe");
-      var exit = 0;
-      var output;
-      try {
-        output = Child_process.execSync(bsc_exe + " -where ", {
-              encoding: "utf8"
-            });
-        exit = 1;
-      }
-      catch (e){
-        throw [
-              Caml_builtin_exceptions.assert_failure,
-              [
-                "installation_test.ml",
-                34,
-                8
-              ]
-            ];
-      }
-      if (exit === 1) {
-        var dir = output.trim();
-        var files = Fs.readdirSync(dir);
-        var exists = files.indexOf("pervasives.cmi");
-        var non_exists = files.indexOf("pervasive.cmi");
-        var v = +(exists >= 0 && non_exists < 0);
-        console.log(v);
-        return eq('File "installation_test.ml", line 32, characters 11-18', v, /* true */1);
-      }
-      
-    });
+var match = typeof (__dirname) === "undefined" ? undefined : (__dirname);
+
+if (match !== undefined) {
+  var root = App_root_finder.find_package_json(match);
+  var bsc_exe = Path.join(root, "jscomp", "bin", "bsc.exe");
+  var exit = 0;
+  var output;
+  try {
+    output = Child_process.execSync(bsc_exe + " -where ", {
+          encoding: "utf8"
+        });
+    exit = 1;
+  }
+  catch (e){
+    throw [
+          Caml_builtin_exceptions.assert_failure,
+          [
+            "installation_test.ml",
+            34,
+            8
+          ]
+        ];
+  }
+  if (exit === 1) {
+    var dir = output.trim();
+    var files = Fs.readdirSync(dir);
+    var exists = files.indexOf("pervasives.cmi");
+    var non_exists = files.indexOf("pervasive.cmi");
+    var v = +(exists >= 0 && non_exists < 0);
+    console.log(v);
+    eq('File "installation_test.ml", line 32, characters 11-18', v, /* true */1);
+  }
+  
+}
+else {
+  throw [
+        Caml_builtin_exceptions.assert_failure,
+        [
+          "installation_test.ml",
+          36,
+          18
+        ]
+      ];
+}
 
 Mt.from_pair_suites("installation_test.ml", suites[0]);
 
 exports.suites  = suites;
 exports.test_id = test_id;
 exports.eq      = eq;
-/*  Not a pure module */
+/* match Not a pure module */

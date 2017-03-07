@@ -35,6 +35,7 @@ bin/bsdep.ml : common/bs_loc.mli
 bin/bsdep.ml : ext/ext_bytes.mli
 bin/bsdep.ml : ext/ext_string.ml
 bin/bsdep.ml : ext/string_map.ml
+bin/bsdep.ml : syntax/ast_exp.ml
 bin/bsdep.ml : syntax/ast_pat.ml
 bin/bsdep.ml : ../ocaml/driver/compenv.mli
 bin/bsdep.ml : ../ocaml/parsing/depend.mli
@@ -44,6 +45,7 @@ bin/bsdep.ml : ../ocaml/utils/warnings.mli
 bin/bsdep.ml : ext/ext_string.mli
 bin/bsdep.ml : ext/string_map.mli
 bin/bsdep.ml : syntax/ast_comb.ml
+bin/bsdep.ml : syntax/ast_exp.mli
 bin/bsdep.ml : syntax/ast_pat.mli
 bin/bsdep.ml : syntax/ast_util.ml
 bin/bsdep.ml : ../ocaml/parsing/location.ml

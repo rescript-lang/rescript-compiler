@@ -4,8 +4,7 @@
 
 
 
-[source,c]
-----------
+```c
 CAMLprim value caml_ml_string_length(value s)
 {
   mlsize_t temp;
@@ -13,7 +12,7 @@ CAMLprim value caml_ml_string_length(value s)
   Assert (Byte (s, temp - Byte (s, temp)) == 0);
   return Val_long(temp - Byte (s, temp));
 }
-----------
+```
 
 Like all heap blocks, strings contain a header defining the size of
 the string in machine words.  The actual block contents are:
