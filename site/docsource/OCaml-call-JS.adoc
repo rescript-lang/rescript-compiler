@@ -1398,7 +1398,7 @@ the compiler will do smart optimizations to remove it when the returned value is
  
 When return type is `bool`, the compiler will coerce its return value from 
 JS boolean to OCaml boolean. The cost is also *very small* and compiler will remove
-such coercison when it is not needed. Note even if your external FFI does return OCaml `bool` or `unit`, 
+such coercion when it is not needed. Note even if your external FFI does return OCaml `bool` or `unit`, 
 such implicit coercion will *cause no harm*.
 
 `identity` will make sure that compiler will do nothing about returned value, it 
