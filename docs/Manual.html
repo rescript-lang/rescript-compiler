@@ -3325,7 +3325,7 @@ the compiler will do smart optimizations to remove it when the returned value is
 <div class="paragraph">
 <p>When return type is <code>bool</code>, the compiler will coerce its return value from
 JS boolean to OCaml boolean. The cost is also <strong>very small</strong> and compiler will remove
-such coercison when it is not needed. Note even if your external FFI does return OCaml <code>bool</code> or <code>unit</code>,
+such coercion when it is not needed. Note even if your external FFI does return OCaml <code>bool</code> or <code>unit</code>,
 such implicit coercion will <strong>cause no harm</strong>.</p>
 </div>
 <div class="paragraph">
