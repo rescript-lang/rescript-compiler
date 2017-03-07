@@ -83,9 +83,9 @@ caml_compare_test.cmj : mt.cmj
 caml_format_test.cmj : ../stdlib/printf.cmj mt.cmj ../stdlib/int64.cmj \
     ../stdlib/format.cmj ../stdlib/buffer.cmj ../stdlib/array.cmj
 chain_code_test.cmj : mt.cmj ../runtime/js_unsafe.cmj
-chn_test.cmj : ../stdlib/string.cmj mt.cmj ../runtime/js_undefined.cmj \
-    ../others/js_string.cmj ../others/js_array.cmj ../runtime/js.cmj \
-    ../stdlib/char.cmj ../stdlib/array.cmj
+chn_test.cmj : ../stdlib/string.cmj mt.cmj ../others/js_string.cmj \
+    ../others/js_array.cmj ../runtime/js.cmj ../stdlib/char.cmj \
+    ../stdlib/array.cmj
 class3_test.cmj : mt.cmj ../stdlib/list.cmj ../runtime/js.cmj \
     ../stdlib/array.cmj
 class4_test.cmj : mt.cmj
@@ -246,6 +246,7 @@ io_test.cmj : ../runtime/js.cmj
 js_array_test.cmj : mt.cmj ../runtime/js.cmj
 js_bool_test.cmj : mt.cmj ../runtime/js.cmj
 js_date_test.cmj : mt.cmj ../runtime/js_float.cmj ../runtime/js.cmj
+js_dict_test.cmj : ../stdlib/obj.cmj mt.cmj ../others/js_dict.cmj
 js_json_test.cmj : mt.cmj ../runtime/js.cmj
 js_math_test.cmj : mt.cmj ../runtime/js.cmj
 js_null_test.cmj : mt.cmj ../runtime/js_null.cmj
