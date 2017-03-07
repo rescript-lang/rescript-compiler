@@ -29267,7 +29267,7 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-
+[@@@ocaml.warning "+9"]
 
 
 
@@ -29387,13 +29387,13 @@ let get_arg_type ~nolabel optional
        end, {ptyp with ptyp_attributes})
     | (`Nothing, ptyp_attributes),  ptyp_desc ->
       begin match ptyp_desc with
-        | Ptyp_constr ({txt = Lident "bool"}, [])
+        | Ptyp_constr ({txt = Lident "bool"; _}, [])
           -> 
           Bs_warnings.prerr_warning ptyp.ptyp_loc Unsafe_ffi_bool_type;
           Nothing
-        | Ptyp_constr ({txt = Lident "unit"}, [])
+        | Ptyp_constr ({txt = Lident "unit"; _}, [])
           -> if nolabel then Extern_unit else  Nothing
-        | Ptyp_constr ({txt = Lident "array"}, [_])
+        | Ptyp_constr ({txt = Lident "array"; _}, [_])
           -> Array
         | Ptyp_variant _ ->
           Bs_warnings.prerr_warning ptyp.ptyp_loc Unsafe_poly_variant_type;
@@ -29417,9 +29417,9 @@ let get_arg_type ~nolabel optional
    two external files to the same module name
 *)
 type bundle_source =
-  [`Nm_payload of string
-  |`Nm_external of string
-  | `Nm_val of string      
+  [`Nm_payload of string (* from payload [@@bs.val "xx" ]*)
+  |`Nm_external of string (* from "" in external *)
+  | `Nm_val of string   (* from function name *)   
   ]  
 
 let string_of_bundle_source (x : bundle_source) =
@@ -29531,22 +29531,31 @@ let process_external_attributes
             | "bs.set_index" -> {st with set_index = true}
             | "bs.get_index"-> {st with get_index = true}
             | "bs.obj" -> {st with mk_obj = true}
-            | "bs.return" -> 
-              let actions = 
-                Ast_payload.as_config_record_and_process loc payload 
-              in
-              begin match actions with 
-                | [ ({txt= "undefined_to_opt"},None) ] -> 
-                  { st with return_wrapper = Return_undefined_to_opt}
-                | [ ({txt= "null_to_opt"},None) ] -> 
-                  { st with return_wrapper = Return_null_to_opt}                  
-                | [ ({txt= "null_undefined_to_opt"},None) ] -> 
-                  { st with return_wrapper = Return_null_undefined_to_opt}    
-                | [ ({txt = "identity" }, None)] ->          
-                  { st with return_wrapper = Return_identity}
-                | _ -> 
-                  Location.raise_errorf ~loc "Not supported return directive"
-              end
+            | "bs.return" ->
+              let aux loc txt : Ast_ffi_types.return_wrapper = 
+                begin match txt with 
+                  | "undefined_to_opt" -> Return_undefined_to_opt
+                  | "null_to_opt" -> Return_null_to_opt
+                  | "null_undefined_to_opt" -> Return_null_undefined_to_opt
+                  | "identity" -> Return_identity 
+                  | _ -> Location.raise_errorf ~loc "Not supported return directive"
+                  end in
+              begin match Ast_payload.as_ident payload with
+                | Some {loc ; txt = Lident txt} -> 
+                  {st with return_wrapper = aux loc txt  }
+                | Some {loc ; txt = _ } -> 
+                  Location.raise_errorf ~loc "Not supported return directive"                
+                | None ->  
+                  let actions = 
+                    Ast_payload.as_config_record_and_process loc payload 
+                  in
+                  begin match actions with 
+                    | [ ({txt; _ },None) ] -> 
+                      { st with return_wrapper = aux loc txt}
+                    | _ -> 
+                      Location.raise_errorf ~loc "Not supported return directive"
+                  end
+              end 
             | _ -> (Bs_warnings.warn_unused_attribute loc txt; st)
           end, attrs
         else (st , attr :: attrs)
@@ -29556,7 +29565,7 @@ let process_external_attributes
 
 let rec has_bs_uncurry (attrs : Ast_attributes.t) = 
   match attrs with 
-  | ({txt = "bs.uncurry"}, _) :: attrs -> 
+  | ({txt = "bs.uncurry"; _ }, _) :: attrs -> 
     true 
   | _ :: attrs -> has_bs_uncurry attrs 
   | [] -> false 
@@ -29642,7 +29651,9 @@ let handle_attributes
         set_name = `Nm_na ;
         get_name = `Nm_na ;
         get_index = false ;
-        return_wrapper = Return_unset 
+        return_wrapper = Return_unset ;        
+        set_index = false ; 
+        mk_obj = _; 
         (* wrapper does not work with [bs.obj]
            TODO: better error message *)
       } -> 
@@ -29816,7 +29827,7 @@ let handle_attributes
             i + 1)
         ) arg_types_ty 
         (match st with
-         | {val_send_pipe = Some obj} ->      
+         | {val_send_pipe = Some obj; _ } ->      
            let arg_type, new_ty = get_arg_type ~nolabel:true false obj in 
            begin match arg_type with 
              | Arg_int_lit _ | Arg_string_lit _ -> 
@@ -29829,7 +29840,7 @@ let handle_attributes
                ,0
            end
 
-         | {val_send_pipe = None } -> [],[], 0) in 
+         | {val_send_pipe = None ; _ } -> [],[], 0) in 
 
     let ffi : Ast_ffi_types.ffi  = match st with           
       | {set_index = true;
@@ -29845,6 +29856,9 @@ let handle_attributes
          call_name = `Nm_na;
          set_name = `Nm_na ;
          get_name = `Nm_na ;
+
+         return_wrapper = _; 
+         mk_obj = _ ; 
         } 
         ->
         if String.length prim_name <> 0 then 
@@ -29871,6 +29885,9 @@ let handle_attributes
          call_name = `Nm_na;
          set_name = `Nm_na ;
          get_name = `Nm_na ;
+         set_index = false; 
+         mk_obj;
+         return_wrapper ; 
         } ->
         if String.length prim_name <> 0 then 
           Location.raise_errorf ~loc "[@@bs.get_index] expect external names to be empty string";
@@ -29895,8 +29912,11 @@ let handle_attributes
          splice ;
          call_name = `Nm_na;
          set_name = `Nm_na ;
-         get_name = `Nm_na ;
-         mk_obj = false ;} ->
+         get_name = `Nm_na ;         
+         set_index = false; 
+         return_wrapper = _; 
+         mk_obj = _ ;
+         } ->
         begin match arg_types_ty, new_name, val_name  with         
           | [], `Nm_na,  _ -> Js_module_as_var external_module_name
           | _, `Nm_na, _ -> Js_module_as_fn {splice; external_module_name }
@@ -29910,7 +29930,7 @@ let handle_attributes
               "conflict attributes found: (bs.new should not carry payload here)"
 
         end
-      | {module_as_val = Some _}
+      | {module_as_val = Some _; _}
         -> Location.raise_errorf ~loc "conflict attributes found" 
       | {call_name = (`Nm_val name | `Nm_external name | `Nm_payload name) ;
          splice; 
@@ -29925,10 +29945,12 @@ let handle_attributes
          get_index = false;
          new_name = `Nm_na;
          set_name = `Nm_na ;
-         get_name = `Nm_na 
+         get_name = `Nm_na ;
+         mk_obj = _ ; 
+         return_wrapper = _ ; 
         } -> 
         Js_call {splice; name; external_module_name}
-      | {call_name = #bundle_source } 
+      | {call_name = #bundle_source ; _ } 
         -> Location.raise_errorf ~loc "conflict attributes found"
 
       | {val_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
@@ -29942,12 +29964,14 @@ let handle_attributes
          get_index = false;
          new_name = `Nm_na;
          set_name = `Nm_na ;
-         get_name = `Nm_na 
-
+         get_name = `Nm_na;
+         mk_obj = _; 
+         return_wrapper = _; 
+         splice = false ;
         } 
         -> 
         Js_global { name; external_module_name}
-      | {val_name = #bundle_source }
+      | {val_name = #bundle_source ; _ }
         -> Location.raise_errorf ~loc "conflict attributes found"
       | {splice ;
          external_module_name = (Some _ as external_module_name);
@@ -29962,7 +29986,8 @@ let handle_attributes
          new_name = `Nm_na;
          set_name = `Nm_na ;
          get_name = `Nm_na ;
-
+         mk_obj = _ ; 
+         return_wrapper= _ ; 
         }
         ->
         let name = string_of_bundle_source prim_name_or_pval_prim in
@@ -29981,13 +30006,15 @@ let handle_attributes
          set_name = `Nm_na ;
          get_name = `Nm_na ;
          external_module_name = None ;
+         mk_obj = _ ;
+         return_wrapper = _ ; 
         } -> 
         if arg_type_specs_length > 0 then 
           Js_send {splice ; name; pipe = false}
         else 
           Location.raise_errorf ~loc "Ill defined attribute [@@bs.send] (at least one argument)"
-      | {val_send = #bundle_source} 
-        -> Location.raise_errorf ~loc "conflict attributes found"
+      | {val_send = #bundle_source; _ } 
+        -> Location.raise_errorf ~loc "conflict attributes found with [@@bs.send]"
 
       | {val_send_pipe = Some typ; 
          (* splice = (false as splice); *)
@@ -30001,14 +30028,17 @@ let handle_attributes
          set_name = `Nm_na ;
          get_name = `Nm_na ;
          external_module_name = None ;
+         mk_obj = _;
+         return_wrapper = _; 
+         splice ; 
         } -> 
         (** can be one argument *)
         Js_send {splice  ;
                  name = string_of_bundle_source prim_name_or_pval_prim;
                  pipe = true}
 
-      | {val_send_pipe = Some _ } 
-        -> Location.raise_errorf ~loc "conflict attributes found"
+      | {val_send_pipe = Some _ ; _} 
+        -> Location.raise_errorf ~loc "conflict attributes found with [@@bs.send.pipe]"
 
       | {new_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
          external_module_name;
@@ -30022,10 +30052,12 @@ let handle_attributes
          val_send_pipe = None;             
          set_name = `Nm_na ;
          get_name = `Nm_na ;
-         splice 
+         splice ;
+         mk_obj = _ ; 
+         return_wrapper = _ ; 
         } 
         -> Js_new {name; external_module_name; splice}
-      | {new_name = #bundle_source }
+      | {new_name = #bundle_source ; _ }
         -> Location.raise_errorf ~loc "conflict attributes found"
 
       | {set_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
@@ -30039,15 +30071,18 @@ let handle_attributes
          val_send_pipe = None;             
          new_name = `Nm_na ;
          get_name = `Nm_na ;
-         external_module_name = None
+         external_module_name = None;
+         splice = false; 
+         mk_obj = _ ;
+         return_wrapper = _; 
         } 
         -> 
         if arg_type_specs_length = 2 then 
           Js_set name 
         else  Location.raise_errorf ~loc "Ill defined attribute [@@bs.set] (two args required)"
-
-      | {set_name = #bundle_source}
-        -> Location.raise_errorf ~loc "conflict attributes found"
+      
+      | {set_name = #bundle_source; _}
+        -> Location.raise_errorf ~loc "conflict attributes found with [@@bs.set]"
 
       | {get_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
 
@@ -30060,23 +30095,42 @@ let handle_attributes
          val_send_pipe = None;             
          new_name = `Nm_na ;
          set_name = `Nm_na ;
-         external_module_name = None
+         external_module_name = None;
+         splice = false ; 
+         mk_obj = _;
+         return_wrapper = _;
         }
         ->
         if arg_type_specs_length = 1 then  
           Js_get name
         else 
           Location.raise_errorf ~loc "Ill defined attribute [@@bs.get] (only one argument)"
-      | {get_name = #bundle_source}
-        -> Location.raise_errorf ~loc "conflict attributes found"
-      | _ ->  Location.raise_errorf ~loc "Illegal attribute found"  in 
+      | {get_name = #bundle_source; _}
+        -> Location.raise_errorf ~loc "conflict attributes found with [@@bs.get]"
+
+      | {get_name = `Nm_na;
+         val_name = `Nm_na  ;
+         call_name = `Nm_na ;
+         module_as_val = None;
+         set_index = false;
+         get_index = false;
+         val_send = `Nm_na ;
+         val_send_pipe = None;             
+         new_name = `Nm_na ;
+         set_name = `Nm_na ;
+         external_module_name = None;
+         splice = _ ; 
+         mk_obj = _;
+         return_wrapper = _;
+        }       
+       ->  Location.raise_errorf ~loc "Could not infer which FFI category it belongs to, maybe you forgot [@@bs.val]? "  in 
     begin 
       Ast_ffi_types.check_ffi ~loc ffi;
       (* result type can not be labeled *)
       (* currently we don't process attributes of 
-        return type, in the future we may  *)
+         return type, in the future we may  *)
       let  new_result_type  =  result_type in
-        (* get_arg_type ~nolabel:true false result_type in *)
+      (* get_arg_type ~nolabel:true false result_type in *)
       let return_wrapper : Ast_ffi_types.return_wrapper = 
         check_return_wrapper loc st.return_wrapper new_result_type
       in 
