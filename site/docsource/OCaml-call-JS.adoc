@@ -1,4 +1,4 @@
-## BuckleScritp annotations for Unicode and JS FFI support
+## BuckleScript annotations for Unicode and JS FFI support
 
 To make OCaml work smoothly with Javascript, we introduced several
 extensions to the OCaml language. These BuckleScript extensions
@@ -12,7 +12,7 @@ improve the generated code.
 In this section, we assume the source is encoded using UTF8
 ========
 
-In OCaml, string is an immutable byte sequence(like GoLang), so if user type some Unicode
+In OCaml, string is an immutable byte sequence (like GoLang), so if user type some Unicode
 
 [source,ocaml]
 --------------
@@ -1231,7 +1231,7 @@ var v2 = {
 };
 -----------
 
-Compiler  infer the type of `v2` as below:
+Compiler infers the type of `v2` as below:
 [source,ocaml]
 --------------
 val v2 : object
@@ -1301,7 +1301,7 @@ f.open
 f.MAX_LENGTH
 -----------
 
-Second,  it is common to have several types for a single method, to model
+Second, it is common to have several types for a single method, to model
 this ad-hoc polymorphism, we introduced a small convention when translating
 object labels, this is _occasionally_ useful as below
 
@@ -1341,7 +1341,7 @@ In general, the FFI code is error prone, and potentially will leak in
 
 So we introduced auto coercion for return values for two benefits:
 
-1. More safety for FFI code without performance cost(explained later)
+1. More safety for FFI code without performance cost (explained later)
 
 2. More idiomatic OCaml code for users to consume the FFI.
 
@@ -1360,7 +1360,7 @@ let test dom =
     | None -> 1 
     | Some ui -> Js.log ui ; 2   
 -------------
-<1> `null_to_opt` attriute will automatically convert null to `option`
+<1> `null_to_opt` attribute will automatically convert null to `option`
 
 .Output
 [source,js]
@@ -1516,7 +1516,7 @@ var f = /b/g
 ------------
 
 
-NOTE:  `Js.Re.t` is an abstract type, we are working on providing
+NOTE: `Js.Re.t` is an abstract type, we are working on providing
 bindings for it.
 
 
