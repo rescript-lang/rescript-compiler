@@ -36,7 +36,10 @@ let suites = Mt.[
 
     (* es2015 *)
     "codePointAt", (fun _ ->
-      Eq(Js.Undefined.return 0x61, "foobar" |> Js.String.codePointAt 4)
+      Eq(Some 0x61, "foobar" |> Js.String.codePointAt 4)
+    );
+    "codePointAt - out of bounds", (fun _ ->
+      Eq(None, "foobar" |> Js.String.codePointAt 98)
     );
 
     "concat", (fun _ ->
@@ -81,7 +84,10 @@ let suites = Mt.[
     );
 
     "match", (fun _ ->
-      Eq(Js.Null.return [| "na"; "na" |], "banana" |> Js.String.match_ [%re "/na+/g"])
+      Eq(Some [| "na"; "na" |], "banana" |> Js.String.match_ [%re "/na+/g"])
+    );
+    "match - no match", (fun _ ->
+      Eq(None, "banana" |> Js.String.match_ [%re "/nanana+/g"])
     );
 
     (* es2015 *)

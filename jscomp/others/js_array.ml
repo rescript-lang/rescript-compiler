@@ -48,13 +48,13 @@ external fillFromInPlace : 'a -> from:int -> 'this = "fill" [@@bs.send.pipe: 'a 
 external fillRangeInPlace : 'a -> start:int -> end_:int -> 'this = "fill" [@@bs.send.pipe: 'a t as 'this] (** ES2015 *)
 
 (** https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/push *)
-external pop : 'a Js.undefined = "" [@@bs.send.pipe: 'a t as 'this]
+external pop : 'a option = "" [@@bs.send.pipe: 'a t as 'this] [@@bs.return {undefined_to_opt}]
 external push : 'a -> int = "" [@@bs.send.pipe: 'a t as 'this]
 external pushMany : 'a array -> int = "push" [@@bs.send.pipe: 'a t as 'this] [@@bs.splice]
 
 external reverseInPlace : 'this = "reverse" [@@bs.send.pipe: 'a t as 'this]
 
-external shift : 'a Js.undefined = "" [@@bs.send.pipe: 'a t as 'this]
+external shift : 'a option = "" [@@bs.send.pipe: 'a t as 'this] [@@bs.return {undefined_to_opt}]
 
 external sortInPlace : 'this = "sort" [@@bs.send.pipe: 'a t as 'this]
 external sortInPlaceWith : ('a -> 'a -> int [@bs.uncurry]) -> 'this = "sort" [@@bs.send.pipe: 'a t as 'this]
@@ -113,8 +113,8 @@ external everyi : ('a -> int -> bool [@bs.uncurry]) -> bool = "every" [@@bs.send
 external filter : ('a -> bool [@bs.uncurry]) -> 'this = "" [@@bs.send.pipe: 'a t as 'this]
 external filteri : ('a -> int  -> bool[@bs.uncurry]) -> 'this = "filter" [@@bs.send.pipe: 'a t as 'this]
 
-external find : ('a -> bool [@bs.uncurry]) -> 'a Js.undefined = "" [@@bs.send.pipe: 'a t as 'this] (** ES2015 *)
-external findi : ('a -> int -> bool [@bs.uncurry]) -> 'a Js.undefined  = "find" [@@bs.send.pipe: 'a t as 'this] (** ES2015 *)
+external find : ('a -> bool [@bs.uncurry]) -> 'a option = "" [@@bs.send.pipe: 'a t as 'this] [@@bs.return {undefined_to_opt}] (** ES2015 *)
+external findi : ('a -> int -> bool [@bs.uncurry]) -> 'a option  = "find" [@@bs.send.pipe: 'a t as 'this] [@@bs.return {undefined_to_opt}] (** ES2015 *)
 
 external findIndex : ('a -> bool [@bs.uncurry]) -> int = "" [@@bs.send.pipe: 'a t as 'this] (** ES2015 *)
 external findIndexi : ('a -> int -> bool [@bs.uncurry]) -> int = "findIndex" [@@bs.send.pipe: 'a t as 'this] (** ES2015 *)

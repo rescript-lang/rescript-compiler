@@ -1,7 +1,8 @@
 'use strict';
 
-var Mt    = require("./mt");
-var Block = require("../../lib/js/block");
+var Mt           = require("./mt");
+var Block        = require("../../lib/js/block");
+var Js_primitive = require("../../lib/js/js_primitive");
 
 var suites_000 = /* tuple */[
   "make",
@@ -98,244 +99,237 @@ var suites_001 = /* :: */[
                     "codePointAt",
                     function () {
                       return /* Eq */Block.__(0, [
-                                97,
-                                "foobar".codePointAt(4)
+                                /* Some */[97],
+                                Js_primitive.js_from_def("foobar".codePointAt(4))
                               ]);
                     }
                   ],
                   /* :: */[
                     /* tuple */[
-                      "concat",
+                      "codePointAt - out of bounds",
                       function () {
                         return /* Eq */Block.__(0, [
-                                  "foobar",
-                                  "foo".concat("bar")
+                                  /* None */0,
+                                  Js_primitive.js_from_def("foobar".codePointAt(98))
                                 ]);
                       }
                     ],
                     /* :: */[
                       /* tuple */[
-                        "concatMany",
+                        "concat",
                         function () {
                           return /* Eq */Block.__(0, [
-                                    "foobarbaz",
-                                    "foo".concat("bar", "baz")
+                                    "foobar",
+                                    "foo".concat("bar")
                                   ]);
                         }
                       ],
                       /* :: */[
                         /* tuple */[
-                          "endsWith",
+                          "concatMany",
                           function () {
                             return /* Eq */Block.__(0, [
-                                      /* true */1,
-                                      +"foobar".endsWith("bar")
+                                      "foobarbaz",
+                                      "foo".concat("bar", "baz")
                                     ]);
                           }
                         ],
                         /* :: */[
                           /* tuple */[
-                            "endsWithFrom",
+                            "endsWith",
                             function () {
                               return /* Eq */Block.__(0, [
-                                        /* false */0,
-                                        +"foobar".endsWith("bar", 1)
+                                        /* true */1,
+                                        +"foobar".endsWith("bar")
                                       ]);
                             }
                           ],
                           /* :: */[
                             /* tuple */[
-                              "includes",
+                              "endsWithFrom",
                               function () {
                                 return /* Eq */Block.__(0, [
-                                          /* true */1,
-                                          +"foobarbaz".includes("bar")
+                                          /* false */0,
+                                          +"foobar".endsWith("bar", 1)
                                         ]);
                               }
                             ],
                             /* :: */[
                               /* tuple */[
-                                "includesFrom",
+                                "includes",
                                 function () {
                                   return /* Eq */Block.__(0, [
-                                            /* false */0,
-                                            +"foobarbaz".includes("bar", 4)
+                                            /* true */1,
+                                            +"foobarbaz".includes("bar")
                                           ]);
                                 }
                               ],
                               /* :: */[
                                 /* tuple */[
-                                  "indexOf",
+                                  "includesFrom",
                                   function () {
                                     return /* Eq */Block.__(0, [
-                                              3,
-                                              "foobarbaz".indexOf("bar")
+                                              /* false */0,
+                                              +"foobarbaz".includes("bar", 4)
                                             ]);
                                   }
                                 ],
                                 /* :: */[
                                   /* tuple */[
-                                    "indexOfFrom",
+                                    "indexOf",
                                     function () {
                                       return /* Eq */Block.__(0, [
-                                                -1,
-                                                "foobarbaz".indexOf("bar", 4)
+                                                3,
+                                                "foobarbaz".indexOf("bar")
                                               ]);
                                     }
                                   ],
                                   /* :: */[
                                     /* tuple */[
-                                      "lastIndexOf",
+                                      "indexOfFrom",
                                       function () {
                                         return /* Eq */Block.__(0, [
-                                                  3,
-                                                  "foobarbaz".lastIndexOf("bar")
+                                                  -1,
+                                                  "foobarbaz".indexOf("bar", 4)
                                                 ]);
                                       }
                                     ],
                                     /* :: */[
                                       /* tuple */[
-                                        "lastIndexOfFrom",
+                                        "lastIndexOf",
                                         function () {
                                           return /* Eq */Block.__(0, [
                                                     3,
-                                                    "foobarbaz".lastIndexOf("bar", 4)
+                                                    "foobarbaz".lastIndexOf("bar")
                                                   ]);
                                         }
                                       ],
                                       /* :: */[
                                         /* tuple */[
-                                          "localeCompare",
+                                          "lastIndexOfFrom",
                                           function () {
                                             return /* Eq */Block.__(0, [
-                                                      0,
-                                                      "foo".localeCompare("foo")
+                                                      3,
+                                                      "foobarbaz".lastIndexOf("bar", 4)
                                                     ]);
                                           }
                                         ],
                                         /* :: */[
                                           /* tuple */[
-                                            "match",
+                                            "localeCompare",
                                             function () {
                                               return /* Eq */Block.__(0, [
-                                                        /* array */[
-                                                          "na",
-                                                          "na"
-                                                        ],
-                                                        "banana".match((/na+/g))
+                                                        0,
+                                                        "foo".localeCompare("foo")
                                                       ]);
                                             }
                                           ],
                                           /* :: */[
                                             /* tuple */[
-                                              "normalize",
+                                              "match",
                                               function () {
                                                 return /* Eq */Block.__(0, [
-                                                          "foo",
-                                                          "foo".normalize()
+                                                          /* Some */[/* array */[
+                                                              "na",
+                                                              "na"
+                                                            ]],
+                                                          Js_primitive.js_from_nullable("banana".match((/na+/g)))
                                                         ]);
                                               }
                                             ],
                                             /* :: */[
                                               /* tuple */[
-                                                "normalizeByForm",
+                                                "match - no match",
                                                 function () {
                                                   return /* Eq */Block.__(0, [
-                                                            "foo",
-                                                            "foo".normalize("NFKD")
+                                                            /* None */0,
+                                                            Js_primitive.js_from_nullable("banana".match((/nanana+/g)))
                                                           ]);
                                                 }
                                               ],
                                               /* :: */[
                                                 /* tuple */[
-                                                  "repeat",
+                                                  "normalize",
                                                   function () {
                                                     return /* Eq */Block.__(0, [
-                                                              "foofoofoo",
-                                                              "foo".repeat(3)
+                                                              "foo",
+                                                              "foo".normalize()
                                                             ]);
                                                   }
                                                 ],
                                                 /* :: */[
                                                   /* tuple */[
-                                                    "replace",
+                                                    "normalizeByForm",
                                                     function () {
                                                       return /* Eq */Block.__(0, [
-                                                                "fooBORKbaz",
-                                                                "foobarbaz".replace("bar", "BORK")
+                                                                "foo",
+                                                                "foo".normalize("NFKD")
                                                               ]);
                                                     }
                                                   ],
                                                   /* :: */[
                                                     /* tuple */[
-                                                      "replaceByRe",
+                                                      "repeat",
                                                       function () {
                                                         return /* Eq */Block.__(0, [
-                                                                  "fooBORKBORK",
-                                                                  "foobarbaz".replace((/ba./g), "BORK")
+                                                                  "foofoofoo",
+                                                                  "foo".repeat(3)
                                                                 ]);
                                                       }
                                                     ],
                                                     /* :: */[
                                                       /* tuple */[
-                                                        "search",
+                                                        "replace",
                                                         function () {
                                                           return /* Eq */Block.__(0, [
-                                                                    3,
-                                                                    "foobarbaz".search((/ba./g))
+                                                                    "fooBORKbaz",
+                                                                    "foobarbaz".replace("bar", "BORK")
                                                                   ]);
                                                         }
                                                       ],
                                                       /* :: */[
                                                         /* tuple */[
-                                                          "slice",
+                                                          "replaceByRe",
                                                           function () {
                                                             return /* Eq */Block.__(0, [
-                                                                      "bar",
-                                                                      "foobarbaz".slice(3, 6)
+                                                                      "fooBORKBORK",
+                                                                      "foobarbaz".replace((/ba./g), "BORK")
                                                                     ]);
                                                           }
                                                         ],
                                                         /* :: */[
                                                           /* tuple */[
-                                                            "sliceToEnd",
+                                                            "search",
                                                             function () {
                                                               return /* Eq */Block.__(0, [
-                                                                        "barbaz",
-                                                                        "foobarbaz".slice(3)
+                                                                        3,
+                                                                        "foobarbaz".search((/ba./g))
                                                                       ]);
                                                             }
                                                           ],
                                                           /* :: */[
                                                             /* tuple */[
-                                                              "split",
+                                                              "slice",
                                                               function () {
                                                                 return /* Eq */Block.__(0, [
-                                                                          /* array */[
-                                                                            "foo",
-                                                                            "bar",
-                                                                            "baz"
-                                                                          ],
-                                                                          "foo bar baz".split(" ")
+                                                                          "bar",
+                                                                          "foobarbaz".slice(3, 6)
                                                                         ]);
                                                               }
                                                             ],
                                                             /* :: */[
                                                               /* tuple */[
-                                                                "splitAtMost",
+                                                                "sliceToEnd",
                                                                 function () {
                                                                   return /* Eq */Block.__(0, [
-                                                                            /* array */[
-                                                                              "foo",
-                                                                              "bar"
-                                                                            ],
-                                                                            "foo bar baz".split(" ", 2)
+                                                                            "barbaz",
+                                                                            "foobarbaz".slice(3)
                                                                           ]);
                                                                 }
                                                               ],
                                                               /* :: */[
                                                                 /* tuple */[
-                                                                  "splitByRe",
+                                                                  "split",
                                                                   function () {
                                                                     return /* Eq */Block.__(0, [
                                                                               /* array */[
@@ -343,161 +337,190 @@ var suites_001 = /* :: */[
                                                                                 "bar",
                                                                                 "baz"
                                                                               ],
-                                                                              "foo bar baz".split((/\s/))
+                                                                              "foo bar baz".split(" ")
                                                                             ]);
                                                                   }
                                                                 ],
                                                                 /* :: */[
                                                                   /* tuple */[
-                                                                    "splitByReAtMost",
+                                                                    "splitAtMost",
                                                                     function () {
                                                                       return /* Eq */Block.__(0, [
                                                                                 /* array */[
                                                                                   "foo",
                                                                                   "bar"
                                                                                 ],
-                                                                                "foo bar baz".split((/\s/), 2)
+                                                                                "foo bar baz".split(" ", 2)
                                                                               ]);
                                                                     }
                                                                   ],
                                                                   /* :: */[
                                                                     /* tuple */[
-                                                                      "startsWith",
+                                                                      "splitByRe",
                                                                       function () {
                                                                         return /* Eq */Block.__(0, [
-                                                                                  /* true */1,
-                                                                                  +"foobarbaz".startsWith("foo")
+                                                                                  /* array */[
+                                                                                    "foo",
+                                                                                    "bar",
+                                                                                    "baz"
+                                                                                  ],
+                                                                                  "foo bar baz".split((/\s/))
                                                                                 ]);
                                                                       }
                                                                     ],
                                                                     /* :: */[
                                                                       /* tuple */[
-                                                                        "startsWithFrom",
+                                                                        "splitByReAtMost",
                                                                         function () {
                                                                           return /* Eq */Block.__(0, [
-                                                                                    /* false */0,
-                                                                                    +"foobarbaz".startsWith("foo", 1)
+                                                                                    /* array */[
+                                                                                      "foo",
+                                                                                      "bar"
+                                                                                    ],
+                                                                                    "foo bar baz".split((/\s/), 2)
                                                                                   ]);
                                                                         }
                                                                       ],
                                                                       /* :: */[
                                                                         /* tuple */[
-                                                                          "substr",
+                                                                          "startsWith",
                                                                           function () {
                                                                             return /* Eq */Block.__(0, [
-                                                                                      "barbaz",
-                                                                                      "foobarbaz".substr(3)
+                                                                                      /* true */1,
+                                                                                      +"foobarbaz".startsWith("foo")
                                                                                     ]);
                                                                           }
                                                                         ],
                                                                         /* :: */[
                                                                           /* tuple */[
-                                                                            "substrAtMost",
+                                                                            "startsWithFrom",
                                                                             function () {
                                                                               return /* Eq */Block.__(0, [
-                                                                                        "bar",
-                                                                                        "foobarbaz".substr(3, 3)
+                                                                                        /* false */0,
+                                                                                        +"foobarbaz".startsWith("foo", 1)
                                                                                       ]);
                                                                             }
                                                                           ],
                                                                           /* :: */[
                                                                             /* tuple */[
-                                                                              "substring",
+                                                                              "substr",
                                                                               function () {
                                                                                 return /* Eq */Block.__(0, [
-                                                                                          "bar",
-                                                                                          "foobarbaz".substring(3, 6)
+                                                                                          "barbaz",
+                                                                                          "foobarbaz".substr(3)
                                                                                         ]);
                                                                               }
                                                                             ],
                                                                             /* :: */[
                                                                               /* tuple */[
-                                                                                "substringToEnd",
+                                                                                "substrAtMost",
                                                                                 function () {
                                                                                   return /* Eq */Block.__(0, [
-                                                                                            "barbaz",
-                                                                                            "foobarbaz".substring(3)
+                                                                                            "bar",
+                                                                                            "foobarbaz".substr(3, 3)
                                                                                           ]);
                                                                                 }
                                                                               ],
                                                                               /* :: */[
                                                                                 /* tuple */[
-                                                                                  "toLowerCase",
+                                                                                  "substring",
                                                                                   function () {
                                                                                     return /* Eq */Block.__(0, [
-                                                                                              "bork",
-                                                                                              "BORK".toLowerCase()
+                                                                                              "bar",
+                                                                                              "foobarbaz".substring(3, 6)
                                                                                             ]);
                                                                                   }
                                                                                 ],
                                                                                 /* :: */[
                                                                                   /* tuple */[
-                                                                                    "toLocaleLowerCase",
+                                                                                    "substringToEnd",
                                                                                     function () {
                                                                                       return /* Eq */Block.__(0, [
-                                                                                                "bork",
-                                                                                                "BORK".toLocaleLowerCase()
+                                                                                                "barbaz",
+                                                                                                "foobarbaz".substring(3)
                                                                                               ]);
                                                                                     }
                                                                                   ],
                                                                                   /* :: */[
                                                                                     /* tuple */[
-                                                                                      "toUpperCase",
+                                                                                      "toLowerCase",
                                                                                       function () {
                                                                                         return /* Eq */Block.__(0, [
-                                                                                                  "FUBAR",
-                                                                                                  "fubar".toUpperCase()
+                                                                                                  "bork",
+                                                                                                  "BORK".toLowerCase()
                                                                                                 ]);
                                                                                       }
                                                                                     ],
                                                                                     /* :: */[
                                                                                       /* tuple */[
-                                                                                        "toLocaleUpperCase",
+                                                                                        "toLocaleLowerCase",
                                                                                         function () {
                                                                                           return /* Eq */Block.__(0, [
-                                                                                                    "FUBAR",
-                                                                                                    "fubar".toLocaleUpperCase()
+                                                                                                    "bork",
+                                                                                                    "BORK".toLocaleLowerCase()
                                                                                                   ]);
                                                                                         }
                                                                                       ],
                                                                                       /* :: */[
                                                                                         /* tuple */[
-                                                                                          "trim",
+                                                                                          "toUpperCase",
                                                                                           function () {
                                                                                             return /* Eq */Block.__(0, [
-                                                                                                      "foo",
-                                                                                                      "  foo  ".trim()
+                                                                                                      "FUBAR",
+                                                                                                      "fubar".toUpperCase()
                                                                                                     ]);
                                                                                           }
                                                                                         ],
                                                                                         /* :: */[
                                                                                           /* tuple */[
-                                                                                            "anchor",
+                                                                                            "toLocaleUpperCase",
                                                                                             function () {
                                                                                               return /* Eq */Block.__(0, [
-                                                                                                        '<a name="bar">foo</a>',
-                                                                                                        "foo".anchor("bar")
+                                                                                                        "FUBAR",
+                                                                                                        "fubar".toLocaleUpperCase()
                                                                                                       ]);
                                                                                             }
                                                                                           ],
                                                                                           /* :: */[
                                                                                             /* tuple */[
-                                                                                              "link",
+                                                                                              "trim",
                                                                                               function () {
                                                                                                 return /* Eq */Block.__(0, [
-                                                                                                          '<a href="https://reason.ml">foo</a>',
-                                                                                                          "foo".link("https://reason.ml")
+                                                                                                          "foo",
+                                                                                                          "  foo  ".trim()
                                                                                                         ]);
                                                                                               }
                                                                                             ],
                                                                                             /* :: */[
                                                                                               /* tuple */[
-                                                                                                'File "js_string_test.ml", line 177, characters 4-11',
+                                                                                                "anchor",
                                                                                                 function () {
-                                                                                                  return /* Ok */Block.__(2, [+"ab".includes("a")]);
+                                                                                                  return /* Eq */Block.__(0, [
+                                                                                                            '<a name="bar">foo</a>',
+                                                                                                            "foo".anchor("bar")
+                                                                                                          ]);
                                                                                                 }
                                                                                               ],
-                                                                                              /* [] */0
+                                                                                              /* :: */[
+                                                                                                /* tuple */[
+                                                                                                  "link",
+                                                                                                  function () {
+                                                                                                    return /* Eq */Block.__(0, [
+                                                                                                              '<a href="https://reason.ml">foo</a>',
+                                                                                                              "foo".link("https://reason.ml")
+                                                                                                            ]);
+                                                                                                  }
+                                                                                                ],
+                                                                                                /* :: */[
+                                                                                                  /* tuple */[
+                                                                                                    'File "js_string_test.ml", line 183, characters 4-11',
+                                                                                                    function () {
+                                                                                                      return /* Ok */Block.__(2, [+"ab".includes("a")]);
+                                                                                                    }
+                                                                                                  ],
+                                                                                                  /* [] */0
+                                                                                                ]
+                                                                                              ]
                                                                                             ]
                                                                                           ]
                                                                                         ]

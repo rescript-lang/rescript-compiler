@@ -14,7 +14,7 @@ let () =
   let ty, x = Js.Json.reify_type v in
   match (ty : _ Js.Json.kind) with
   | Js.Json.Object ->  (* compiler infer x : Js.Json.t Js.Dict.t *) 
-    begin match Js.Undefined.to_opt (Js.Dict.get x "x") with 
+    begin match Js.Dict.get x "x" with 
     | Some v -> 
       let ty2, x = Js.Json.reify_type v in
       begin match ty2 with 

@@ -1,7 +1,8 @@
 'use strict';
 
-var Mt    = require("./mt");
-var Block = require("../../lib/js/block");
+var Mt           = require("./mt");
+var Block        = require("../../lib/js/block");
+var Js_primitive = require("../../lib/js/js_primitive");
 
 var suites_000 = /* tuple */[
   "isArray_array",
@@ -162,174 +163,136 @@ var suites_001 = /* :: */[
                     "pop",
                     function () {
                       return /* Eq */Block.__(0, [
-                                3,
-                                /* int array */[
-                                    1,
-                                    2,
-                                    3
-                                  ].pop()
+                                /* Some */[3],
+                                Js_primitive.js_from_def(/* int array */[
+                                        1,
+                                        2,
+                                        3
+                                      ].pop())
                               ]);
                     }
                   ],
                   /* :: */[
                     /* tuple */[
-                      "push",
+                      "pop - empty array",
                       function () {
                         return /* Eq */Block.__(0, [
-                                  4,
-                                  /* int array */[
-                                      1,
-                                      2,
-                                      3
-                                    ].push(4)
+                                  /* None */0,
+                                  Js_primitive.js_from_def(/* array */[].pop())
                                 ]);
                       }
                     ],
                     /* :: */[
                       /* tuple */[
-                        "pushMany",
+                        "push",
                         function () {
                           return /* Eq */Block.__(0, [
-                                    5,
+                                    4,
                                     /* int array */[
                                         1,
                                         2,
                                         3
-                                      ].push(4, 5)
+                                      ].push(4)
                                   ]);
                         }
                       ],
                       /* :: */[
                         /* tuple */[
-                          "reverseInPlace",
+                          "pushMany",
                           function () {
                             return /* Eq */Block.__(0, [
-                                      /* int array */[
-                                        3,
-                                        2,
-                                        1
-                                      ],
+                                      5,
                                       /* int array */[
                                           1,
                                           2,
                                           3
-                                        ].reverse()
+                                        ].push(4, 5)
                                     ]);
                           }
                         ],
                         /* :: */[
                           /* tuple */[
-                            "shift",
+                            "reverseInPlace",
                             function () {
                               return /* Eq */Block.__(0, [
-                                        1,
+                                        /* int array */[
+                                          3,
+                                          2,
+                                          1
+                                        ],
                                         /* int array */[
                                             1,
                                             2,
                                             3
-                                          ].shift()
+                                          ].reverse()
                                       ]);
                             }
                           ],
                           /* :: */[
                             /* tuple */[
-                              "sortInPlace",
+                              "shift",
                               function () {
                                 return /* Eq */Block.__(0, [
-                                          /* int array */[
-                                            1,
-                                            2,
-                                            3
-                                          ],
-                                          /* int array */[
-                                              3,
-                                              1,
-                                              2
-                                            ].sort()
+                                          /* Some */[1],
+                                          Js_primitive.js_from_def(/* int array */[
+                                                  1,
+                                                  2,
+                                                  3
+                                                ].shift())
                                         ]);
                               }
                             ],
                             /* :: */[
                               /* tuple */[
-                                "sortInPlaceWith",
+                                "shift - empty array",
                                 function () {
                                   return /* Eq */Block.__(0, [
-                                            /* int array */[
-                                              3,
-                                              2,
-                                              1
-                                            ],
-                                            /* int array */[
-                                                3,
-                                                1,
-                                                2
-                                              ].sort(function (a, b) {
-                                                  return b - a | 0;
-                                                })
+                                            /* None */0,
+                                            Js_primitive.js_from_def(/* array */[].shift())
                                           ]);
                                 }
                               ],
                               /* :: */[
                                 /* tuple */[
-                                  "spliceInPlace",
+                                  "sortInPlace",
                                   function () {
-                                    var arr = /* int array */[
-                                      1,
-                                      2,
-                                      3,
-                                      4
-                                    ];
-                                    var removed = arr.splice(2, 0, 5);
                                     return /* Eq */Block.__(0, [
-                                              /* tuple */[
-                                                /* array */[
-                                                  1,
-                                                  2,
-                                                  5,
-                                                  3,
-                                                  4
-                                                ],
-                                                /* int array */[]
+                                              /* int array */[
+                                                1,
+                                                2,
+                                                3
                                               ],
-                                              /* tuple */[
-                                                arr,
-                                                removed
-                                              ]
+                                              /* int array */[
+                                                  3,
+                                                  1,
+                                                  2
+                                                ].sort()
                                             ]);
                                   }
                                 ],
                                 /* :: */[
                                   /* tuple */[
-                                    "removeFromInPlace",
+                                    "sortInPlaceWith",
                                     function () {
-                                      var arr = /* int array */[
-                                        1,
-                                        2,
-                                        3,
-                                        4
-                                      ];
-                                      var removed = arr.splice(2);
                                       return /* Eq */Block.__(0, [
-                                                /* tuple */[
-                                                  /* int array */[
+                                                /* int array */[
+                                                  3,
+                                                  2,
+                                                  1
+                                                ],
+                                                /* int array */[
+                                                    3,
                                                     1,
                                                     2
-                                                  ],
-                                                  /* int array */[
-                                                    3,
-                                                    4
-                                                  ]
-                                                ],
-                                                /* tuple */[
-                                                  arr,
-                                                  removed
-                                                ]
+                                                  ].sort(function (a, b) {
+                                                      return b - a | 0;
+                                                    })
                                               ]);
                                     }
                                   ],
                                   /* :: */[
                                     /* tuple */[
-                                      "removeCountInPlace",
+                                      "spliceInPlace",
                                       function () {
                                         var arr = /* int array */[
                                           1,
@@ -337,15 +300,17 @@ var suites_001 = /* :: */[
                                           3,
                                           4
                                         ];
-                                        var removed = arr.splice(2, 1);
+                                        var removed = arr.splice(2, 0, 5);
                                         return /* Eq */Block.__(0, [
                                                   /* tuple */[
-                                                    /* int array */[
+                                                    /* array */[
                                                       1,
                                                       2,
+                                                      5,
+                                                      3,
                                                       4
                                                     ],
-                                                    /* int array */[3]
+                                                    /* int array */[]
                                                   ],
                                                   /* tuple */[
                                                     arr,
@@ -356,252 +321,266 @@ var suites_001 = /* :: */[
                                     ],
                                     /* :: */[
                                       /* tuple */[
-                                        "unshift",
+                                        "removeFromInPlace",
                                         function () {
+                                          var arr = /* int array */[
+                                            1,
+                                            2,
+                                            3,
+                                            4
+                                          ];
+                                          var removed = arr.splice(2);
                                           return /* Eq */Block.__(0, [
-                                                    4,
-                                                    /* int array */[
+                                                    /* tuple */[
+                                                      /* int array */[
                                                         1,
-                                                        2,
-                                                        3
-                                                      ].unshift(4)
+                                                        2
+                                                      ],
+                                                      /* int array */[
+                                                        3,
+                                                        4
+                                                      ]
+                                                    ],
+                                                    /* tuple */[
+                                                      arr,
+                                                      removed
+                                                    ]
                                                   ]);
                                         }
                                       ],
                                       /* :: */[
                                         /* tuple */[
-                                          "unshiftMany",
+                                          "removeCountInPlace",
                                           function () {
+                                            var arr = /* int array */[
+                                              1,
+                                              2,
+                                              3,
+                                              4
+                                            ];
+                                            var removed = arr.splice(2, 1);
                                             return /* Eq */Block.__(0, [
-                                                      5,
-                                                      /* int array */[
+                                                      /* tuple */[
+                                                        /* int array */[
                                                           1,
                                                           2,
-                                                          3
-                                                        ].unshift(4, 5)
+                                                          4
+                                                        ],
+                                                        /* int array */[3]
+                                                      ],
+                                                      /* tuple */[
+                                                        arr,
+                                                        removed
+                                                      ]
                                                     ]);
                                           }
                                         ],
                                         /* :: */[
                                           /* tuple */[
-                                            "append",
+                                            "unshift",
                                             function () {
                                               return /* Eq */Block.__(0, [
-                                                        /* int array */[
-                                                          1,
-                                                          2,
-                                                          3,
-                                                          4
-                                                        ],
+                                                        4,
                                                         /* int array */[
                                                             1,
                                                             2,
                                                             3
-                                                          ].concat(4)
+                                                          ].unshift(4)
                                                       ]);
                                             }
                                           ],
                                           /* :: */[
                                             /* tuple */[
-                                              "concat",
+                                              "unshiftMany",
                                               function () {
                                                 return /* Eq */Block.__(0, [
-                                                          /* array */[
-                                                            1,
-                                                            2,
-                                                            3,
-                                                            4,
-                                                            5
-                                                          ],
+                                                          5,
                                                           /* int array */[
                                                               1,
                                                               2,
                                                               3
-                                                            ].concat(/* int array */[
-                                                                4,
-                                                                5
-                                                              ])
+                                                            ].unshift(4, 5)
                                                         ]);
                                               }
                                             ],
                                             /* :: */[
                                               /* tuple */[
-                                                "concatMany",
+                                                "append",
                                                 function () {
                                                   return /* Eq */Block.__(0, [
-                                                            /* array */[
+                                                            /* int array */[
                                                               1,
                                                               2,
                                                               3,
-                                                              4,
-                                                              5,
-                                                              6,
-                                                              7
+                                                              4
                                                             ],
                                                             /* int array */[
                                                                 1,
                                                                 2,
                                                                 3
-                                                              ].concat(/* int array */[
-                                                                  4,
-                                                                  5
-                                                                ], /* int array */[
-                                                                  6,
-                                                                  7
-                                                                ])
+                                                              ].concat(4)
                                                           ]);
                                                 }
                                               ],
                                               /* :: */[
                                                 /* tuple */[
-                                                  "includes",
+                                                  "concat",
                                                   function () {
                                                     return /* Eq */Block.__(0, [
-                                                              /* true */1,
-                                                              +/* int array */[
+                                                              /* array */[
+                                                                1,
+                                                                2,
+                                                                3,
+                                                                4,
+                                                                5
+                                                              ],
+                                                              /* int array */[
                                                                   1,
                                                                   2,
                                                                   3
-                                                                ].includes(3)
+                                                                ].concat(/* int array */[
+                                                                    4,
+                                                                    5
+                                                                  ])
                                                             ]);
                                                   }
                                                 ],
                                                 /* :: */[
                                                   /* tuple */[
-                                                    "indexOf",
+                                                    "concatMany",
                                                     function () {
                                                       return /* Eq */Block.__(0, [
-                                                                1,
+                                                                /* array */[
+                                                                  1,
+                                                                  2,
+                                                                  3,
+                                                                  4,
+                                                                  5,
+                                                                  6,
+                                                                  7
+                                                                ],
                                                                 /* int array */[
                                                                     1,
                                                                     2,
                                                                     3
-                                                                  ].indexOf(2)
+                                                                  ].concat(/* int array */[
+                                                                      4,
+                                                                      5
+                                                                    ], /* int array */[
+                                                                      6,
+                                                                      7
+                                                                    ])
                                                               ]);
                                                     }
                                                   ],
                                                   /* :: */[
                                                     /* tuple */[
-                                                      "indexOfFrom",
+                                                      "includes",
                                                       function () {
                                                         return /* Eq */Block.__(0, [
-                                                                  3,
-                                                                  /* int array */[
+                                                                  /* true */1,
+                                                                  +/* int array */[
                                                                       1,
                                                                       2,
-                                                                      3,
-                                                                      2
-                                                                    ].indexOf(2, 2)
+                                                                      3
+                                                                    ].includes(3)
                                                                 ]);
                                                       }
                                                     ],
                                                     /* :: */[
                                                       /* tuple */[
-                                                        "join",
+                                                        "indexOf",
                                                         function () {
                                                           return /* Eq */Block.__(0, [
-                                                                    "1,2,3",
+                                                                    1,
                                                                     /* int array */[
                                                                         1,
                                                                         2,
                                                                         3
-                                                                      ].join()
+                                                                      ].indexOf(2)
                                                                   ]);
                                                         }
                                                       ],
                                                       /* :: */[
                                                         /* tuple */[
-                                                          "joinWith",
+                                                          "indexOfFrom",
                                                           function () {
                                                             return /* Eq */Block.__(0, [
-                                                                      "1;2;3",
+                                                                      3,
                                                                       /* int array */[
                                                                           1,
                                                                           2,
-                                                                          3
-                                                                        ].join(";")
+                                                                          3,
+                                                                          2
+                                                                        ].indexOf(2, 2)
                                                                     ]);
                                                           }
                                                         ],
                                                         /* :: */[
                                                           /* tuple */[
-                                                            "lastIndexOf",
+                                                            "join",
                                                             function () {
                                                               return /* Eq */Block.__(0, [
-                                                                        1,
+                                                                        "1,2,3",
                                                                         /* int array */[
                                                                             1,
                                                                             2,
                                                                             3
-                                                                          ].lastIndexOf(2)
+                                                                          ].join()
                                                                       ]);
                                                             }
                                                           ],
                                                           /* :: */[
                                                             /* tuple */[
-                                                              "lastIndexOfFrom",
+                                                              "joinWith",
                                                               function () {
                                                                 return /* Eq */Block.__(0, [
-                                                                          1,
+                                                                          "1;2;3",
                                                                           /* int array */[
                                                                               1,
                                                                               2,
-                                                                              3,
-                                                                              2
-                                                                            ].lastIndexOf(2, 2)
+                                                                              3
+                                                                            ].join(";")
                                                                         ]);
                                                               }
                                                             ],
                                                             /* :: */[
                                                               /* tuple */[
-                                                                "slice",
+                                                                "lastIndexOf",
                                                                 function () {
                                                                   return /* Eq */Block.__(0, [
+                                                                            1,
                                                                             /* int array */[
-                                                                              2,
-                                                                              3
-                                                                            ],
-                                                                            /* array */[
                                                                                 1,
                                                                                 2,
-                                                                                3,
-                                                                                4,
-                                                                                5
-                                                                              ].slice(1, 3)
+                                                                                3
+                                                                              ].lastIndexOf(2)
                                                                           ]);
                                                                 }
                                                               ],
                                                               /* :: */[
                                                                 /* tuple */[
-                                                                  "copy",
+                                                                  "lastIndexOfFrom",
                                                                   function () {
                                                                     return /* Eq */Block.__(0, [
-                                                                              /* array */[
-                                                                                1,
-                                                                                2,
-                                                                                3,
-                                                                                4,
-                                                                                5
-                                                                              ],
-                                                                              /* array */[
+                                                                              1,
+                                                                              /* int array */[
                                                                                   1,
                                                                                   2,
                                                                                   3,
-                                                                                  4,
-                                                                                  5
-                                                                                ].slice()
+                                                                                  2
+                                                                                ].lastIndexOf(2, 2)
                                                                             ]);
                                                                   }
                                                                 ],
                                                                 /* :: */[
                                                                   /* tuple */[
-                                                                    "sliceFrom",
+                                                                    "slice",
                                                                     function () {
                                                                       return /* Eq */Block.__(0, [
                                                                                 /* int array */[
-                                                                                  3,
-                                                                                  4,
-                                                                                  5
+                                                                                  2,
+                                                                                  3
                                                                                 ],
                                                                                 /* array */[
                                                                                     1,
@@ -609,122 +588,127 @@ var suites_001 = /* :: */[
                                                                                     3,
                                                                                     4,
                                                                                     5
-                                                                                  ].slice(2)
+                                                                                  ].slice(1, 3)
                                                                               ]);
                                                                     }
                                                                   ],
                                                                   /* :: */[
                                                                     /* tuple */[
-                                                                      "toString",
+                                                                      "copy",
                                                                       function () {
                                                                         return /* Eq */Block.__(0, [
-                                                                                  "1,2,3",
-                                                                                  /* int array */[
+                                                                                  /* array */[
+                                                                                    1,
+                                                                                    2,
+                                                                                    3,
+                                                                                    4,
+                                                                                    5
+                                                                                  ],
+                                                                                  /* array */[
                                                                                       1,
                                                                                       2,
-                                                                                      3
-                                                                                    ].toString()
+                                                                                      3,
+                                                                                      4,
+                                                                                      5
+                                                                                    ].slice()
                                                                                 ]);
                                                                       }
                                                                     ],
                                                                     /* :: */[
                                                                       /* tuple */[
-                                                                        "toLocaleString",
+                                                                        "sliceFrom",
                                                                         function () {
                                                                           return /* Eq */Block.__(0, [
-                                                                                    "1,2,3",
                                                                                     /* int array */[
+                                                                                      3,
+                                                                                      4,
+                                                                                      5
+                                                                                    ],
+                                                                                    /* array */[
                                                                                         1,
                                                                                         2,
-                                                                                        3
-                                                                                      ].toLocaleString()
+                                                                                        3,
+                                                                                        4,
+                                                                                        5
+                                                                                      ].slice(2)
                                                                                   ]);
                                                                         }
                                                                       ],
                                                                       /* :: */[
                                                                         /* tuple */[
-                                                                          "every",
+                                                                          "toString",
                                                                           function () {
                                                                             return /* Eq */Block.__(0, [
-                                                                                      /* true */1,
-                                                                                      +/* int array */[
+                                                                                      "1,2,3",
+                                                                                      /* int array */[
                                                                                           1,
                                                                                           2,
                                                                                           3
-                                                                                        ].every(function (n) {
-                                                                                            return +(n > 0);
-                                                                                          })
+                                                                                        ].toString()
                                                                                     ]);
                                                                           }
                                                                         ],
                                                                         /* :: */[
                                                                           /* tuple */[
-                                                                            "everyi",
+                                                                            "toLocaleString",
                                                                             function () {
                                                                               return /* Eq */Block.__(0, [
-                                                                                        /* false */0,
-                                                                                        +/* int array */[
+                                                                                        "1,2,3",
+                                                                                        /* int array */[
                                                                                             1,
                                                                                             2,
                                                                                             3
-                                                                                          ].every(function (_, i) {
-                                                                                              return +(i > 0);
-                                                                                            })
+                                                                                          ].toLocaleString()
                                                                                       ]);
                                                                             }
                                                                           ],
                                                                           /* :: */[
                                                                             /* tuple */[
-                                                                              "filter",
+                                                                              "every",
                                                                               function () {
                                                                                 return /* Eq */Block.__(0, [
-                                                                                          /* int array */[
-                                                                                            2,
-                                                                                            4
-                                                                                          ],
-                                                                                          /* int array */[
+                                                                                          /* true */1,
+                                                                                          +/* int array */[
                                                                                               1,
                                                                                               2,
-                                                                                              3,
-                                                                                              4
-                                                                                            ].filter(function (n) {
-                                                                                                return +(n % 2 === 0);
+                                                                                              3
+                                                                                            ].every(function (n) {
+                                                                                                return +(n > 0);
                                                                                               })
                                                                                         ]);
                                                                               }
                                                                             ],
                                                                             /* :: */[
                                                                               /* tuple */[
-                                                                                "filteri",
+                                                                                "everyi",
                                                                                 function () {
                                                                                   return /* Eq */Block.__(0, [
-                                                                                            /* int array */[
-                                                                                              1,
-                                                                                              3
-                                                                                            ],
-                                                                                            /* int array */[
+                                                                                            /* false */0,
+                                                                                            +/* int array */[
                                                                                                 1,
                                                                                                 2,
-                                                                                                3,
-                                                                                                4
-                                                                                              ].filter(function (_, i) {
-                                                                                                  return +(i % 2 === 0);
+                                                                                                3
+                                                                                              ].every(function (_, i) {
+                                                                                                  return +(i > 0);
                                                                                                 })
                                                                                           ]);
                                                                                 }
                                                                               ],
                                                                               /* :: */[
                                                                                 /* tuple */[
-                                                                                  "find",
+                                                                                  "filter",
                                                                                   function () {
                                                                                     return /* Eq */Block.__(0, [
-                                                                                              2,
+                                                                                              /* int array */[
+                                                                                                2,
+                                                                                                4
+                                                                                              ],
                                                                                               /* int array */[
                                                                                                   1,
                                                                                                   2,
                                                                                                   3,
                                                                                                   4
-                                                                                                ].find(function (n) {
+                                                                                                ].filter(function (n) {
                                                                                                     return +(n % 2 === 0);
                                                                                                   })
                                                                                             ]);
@@ -732,16 +716,19 @@ var suites_001 = /* :: */[
                                                                                 ],
                                                                                 /* :: */[
                                                                                   /* tuple */[
-                                                                                    "findi",
+                                                                                    "filteri",
                                                                                     function () {
                                                                                       return /* Eq */Block.__(0, [
-                                                                                                1,
+                                                                                                /* int array */[
+                                                                                                  1,
+                                                                                                  3
+                                                                                                ],
                                                                                                 /* int array */[
                                                                                                     1,
                                                                                                     2,
                                                                                                     3,
                                                                                                     4
-                                                                                                  ].find(function (_, i) {
+                                                                                                  ].filter(function (_, i) {
                                                                                                       return +(i % 2 === 0);
                                                                                                     })
                                                                                               ]);
@@ -749,223 +736,295 @@ var suites_001 = /* :: */[
                                                                                   ],
                                                                                   /* :: */[
                                                                                     /* tuple */[
-                                                                                      "findIndex",
+                                                                                      "find",
                                                                                       function () {
                                                                                         return /* Eq */Block.__(0, [
-                                                                                                  1,
-                                                                                                  /* int array */[
-                                                                                                      1,
-                                                                                                      2,
-                                                                                                      3,
-                                                                                                      4
-                                                                                                    ].findIndex(function (n) {
-                                                                                                        return +(n % 2 === 0);
-                                                                                                      })
+                                                                                                  /* Some */[2],
+                                                                                                  Js_primitive.js_from_def(/* int array */[
+                                                                                                          1,
+                                                                                                          2,
+                                                                                                          3,
+                                                                                                          4
+                                                                                                        ].find(function (n) {
+                                                                                                            return +(n % 2 === 0);
+                                                                                                          }))
                                                                                                 ]);
                                                                                       }
                                                                                     ],
                                                                                     /* :: */[
                                                                                       /* tuple */[
-                                                                                        "findIndexi",
+                                                                                        "find - no match",
                                                                                         function () {
                                                                                           return /* Eq */Block.__(0, [
-                                                                                                    0,
-                                                                                                    /* int array */[
-                                                                                                        1,
-                                                                                                        2,
-                                                                                                        3,
-                                                                                                        4
-                                                                                                      ].findIndex(function (_, i) {
-                                                                                                          return +(i % 2 === 0);
-                                                                                                        })
+                                                                                                    /* None */0,
+                                                                                                    Js_primitive.js_from_def(/* int array */[
+                                                                                                            1,
+                                                                                                            2,
+                                                                                                            3,
+                                                                                                            4
+                                                                                                          ].find(function (n) {
+                                                                                                              return +(n % 2 === 5);
+                                                                                                            }))
                                                                                                   ]);
                                                                                         }
                                                                                       ],
                                                                                       /* :: */[
                                                                                         /* tuple */[
-                                                                                          "forEach",
+                                                                                          "findi",
                                                                                           function () {
-                                                                                            var sum = [0];
-                                                                                            /* int array */[
-                                                                                                1,
-                                                                                                2,
-                                                                                                3
-                                                                                              ].forEach(function (n) {
-                                                                                                  sum[0] = sum[0] + n | 0;
-                                                                                                  return /* () */0;
-                                                                                                });
                                                                                             return /* Eq */Block.__(0, [
-                                                                                                      6,
-                                                                                                      sum[0]
+                                                                                                      /* Some */[1],
+                                                                                                      Js_primitive.js_from_def(/* int array */[
+                                                                                                              1,
+                                                                                                              2,
+                                                                                                              3,
+                                                                                                              4
+                                                                                                            ].find(function (_, i) {
+                                                                                                                return +(i % 2 === 0);
+                                                                                                              }))
                                                                                                     ]);
                                                                                           }
                                                                                         ],
                                                                                         /* :: */[
                                                                                           /* tuple */[
-                                                                                            "forEachi",
+                                                                                            "findi - no match",
                                                                                             function () {
-                                                                                              var sum = [0];
-                                                                                              /* int array */[
-                                                                                                  1,
-                                                                                                  2,
-                                                                                                  3
-                                                                                                ].forEach(function (_, i) {
-                                                                                                    sum[0] = sum[0] + i | 0;
-                                                                                                    return /* () */0;
-                                                                                                  });
                                                                                               return /* Eq */Block.__(0, [
-                                                                                                        3,
-                                                                                                        sum[0]
+                                                                                                        /* None */0,
+                                                                                                        Js_primitive.js_from_def(/* int array */[
+                                                                                                                1,
+                                                                                                                2,
+                                                                                                                3,
+                                                                                                                4
+                                                                                                              ].find(function (_, i) {
+                                                                                                                  return +(i % 2 === 5);
+                                                                                                                }))
                                                                                                       ]);
                                                                                             }
                                                                                           ],
                                                                                           /* :: */[
                                                                                             /* tuple */[
-                                                                                              "map",
+                                                                                              "findIndex",
                                                                                               function () {
                                                                                                 return /* Eq */Block.__(0, [
-                                                                                                          /* int array */[
-                                                                                                            2,
-                                                                                                            4,
-                                                                                                            6,
-                                                                                                            8
-                                                                                                          ],
+                                                                                                          1,
                                                                                                           /* int array */[
                                                                                                               1,
                                                                                                               2,
                                                                                                               3,
                                                                                                               4
-                                                                                                            ].map(function (n) {
-                                                                                                                return (n << 1);
+                                                                                                            ].findIndex(function (n) {
+                                                                                                                return +(n % 2 === 0);
                                                                                                               })
                                                                                                         ]);
                                                                                               }
                                                                                             ],
                                                                                             /* :: */[
                                                                                               /* tuple */[
-                                                                                                "map",
+                                                                                                "findIndexi",
                                                                                                 function () {
                                                                                                   return /* Eq */Block.__(0, [
-                                                                                                            /* int array */[
-                                                                                                              0,
-                                                                                                              2,
-                                                                                                              4,
-                                                                                                              6
-                                                                                                            ],
+                                                                                                            0,
                                                                                                             /* int array */[
                                                                                                                 1,
                                                                                                                 2,
                                                                                                                 3,
                                                                                                                 4
-                                                                                                              ].map(function (_, i) {
-                                                                                                                  return (i << 1);
+                                                                                                              ].findIndex(function (_, i) {
+                                                                                                                  return +(i % 2 === 0);
                                                                                                                 })
                                                                                                           ]);
                                                                                                 }
                                                                                               ],
                                                                                               /* :: */[
                                                                                                 /* tuple */[
-                                                                                                  "reduce",
+                                                                                                  "forEach",
                                                                                                   function () {
+                                                                                                    var sum = [0];
+                                                                                                    /* int array */[
+                                                                                                        1,
+                                                                                                        2,
+                                                                                                        3
+                                                                                                      ].forEach(function (n) {
+                                                                                                          sum[0] = sum[0] + n | 0;
+                                                                                                          return /* () */0;
+                                                                                                        });
                                                                                                     return /* Eq */Block.__(0, [
-                                                                                                              -10,
-                                                                                                              /* int array */[
-                                                                                                                  1,
-                                                                                                                  2,
-                                                                                                                  3,
-                                                                                                                  4
-                                                                                                                ].reduce(function (acc, n) {
-                                                                                                                    return acc - n | 0;
-                                                                                                                  }, 0)
+                                                                                                              6,
+                                                                                                              sum[0]
                                                                                                             ]);
                                                                                                   }
                                                                                                 ],
                                                                                                 /* :: */[
                                                                                                   /* tuple */[
-                                                                                                    "reducei",
+                                                                                                    "forEachi",
                                                                                                     function () {
+                                                                                                      var sum = [0];
+                                                                                                      /* int array */[
+                                                                                                          1,
+                                                                                                          2,
+                                                                                                          3
+                                                                                                        ].forEach(function (_, i) {
+                                                                                                            sum[0] = sum[0] + i | 0;
+                                                                                                            return /* () */0;
+                                                                                                          });
                                                                                                       return /* Eq */Block.__(0, [
-                                                                                                                -6,
-                                                                                                                /* int array */[
-                                                                                                                    1,
-                                                                                                                    2,
-                                                                                                                    3,
-                                                                                                                    4
-                                                                                                                  ].reduce(function (acc, _, i) {
-                                                                                                                      return acc - i | 0;
-                                                                                                                    }, 0)
+                                                                                                                3,
+                                                                                                                sum[0]
                                                                                                               ]);
                                                                                                     }
                                                                                                   ],
                                                                                                   /* :: */[
                                                                                                     /* tuple */[
-                                                                                                      "reduceRight",
+                                                                                                      "map",
                                                                                                       function () {
                                                                                                         return /* Eq */Block.__(0, [
-                                                                                                                  -10,
+                                                                                                                  /* int array */[
+                                                                                                                    2,
+                                                                                                                    4,
+                                                                                                                    6,
+                                                                                                                    8
+                                                                                                                  ],
                                                                                                                   /* int array */[
                                                                                                                       1,
                                                                                                                       2,
                                                                                                                       3,
                                                                                                                       4
-                                                                                                                    ].reduceRight(function (acc, n) {
-                                                                                                                        return acc - n | 0;
-                                                                                                                      }, 0)
+                                                                                                                    ].map(function (n) {
+                                                                                                                        return (n << 1);
+                                                                                                                      })
                                                                                                                 ]);
                                                                                                       }
                                                                                                     ],
                                                                                                     /* :: */[
                                                                                                       /* tuple */[
-                                                                                                        "reduceRighti",
+                                                                                                        "map",
                                                                                                         function () {
                                                                                                           return /* Eq */Block.__(0, [
-                                                                                                                    -6,
+                                                                                                                    /* int array */[
+                                                                                                                      0,
+                                                                                                                      2,
+                                                                                                                      4,
+                                                                                                                      6
+                                                                                                                    ],
                                                                                                                     /* int array */[
                                                                                                                         1,
                                                                                                                         2,
                                                                                                                         3,
                                                                                                                         4
-                                                                                                                      ].reduceRight(function (acc, _, i) {
-                                                                                                                          return acc - i | 0;
-                                                                                                                        }, 0)
+                                                                                                                      ].map(function (_, i) {
+                                                                                                                          return (i << 1);
+                                                                                                                        })
                                                                                                                   ]);
                                                                                                         }
                                                                                                       ],
                                                                                                       /* :: */[
                                                                                                         /* tuple */[
-                                                                                                          "some",
+                                                                                                          "reduce",
                                                                                                           function () {
                                                                                                             return /* Eq */Block.__(0, [
-                                                                                                                      /* false */0,
-                                                                                                                      +/* int array */[
+                                                                                                                      -10,
+                                                                                                                      /* int array */[
                                                                                                                           1,
                                                                                                                           2,
                                                                                                                           3,
                                                                                                                           4
-                                                                                                                        ].some(function (n) {
-                                                                                                                            return +(n <= 0);
-                                                                                                                          })
+                                                                                                                        ].reduce(function (acc, n) {
+                                                                                                                            return acc - n | 0;
+                                                                                                                          }, 0)
                                                                                                                     ]);
                                                                                                           }
                                                                                                         ],
                                                                                                         /* :: */[
                                                                                                           /* tuple */[
-                                                                                                            "somei",
+                                                                                                            "reducei",
                                                                                                             function () {
                                                                                                               return /* Eq */Block.__(0, [
-                                                                                                                        /* true */1,
-                                                                                                                        +/* int array */[
+                                                                                                                        -6,
+                                                                                                                        /* int array */[
                                                                                                                             1,
                                                                                                                             2,
                                                                                                                             3,
                                                                                                                             4
-                                                                                                                          ].some(function (_, i) {
-                                                                                                                              return +(i <= 0);
-                                                                                                                            })
+                                                                                                                          ].reduce(function (acc, _, i) {
+                                                                                                                              return acc - i | 0;
+                                                                                                                            }, 0)
                                                                                                                       ]);
                                                                                                             }
                                                                                                           ],
-                                                                                                          /* [] */0
+                                                                                                          /* :: */[
+                                                                                                            /* tuple */[
+                                                                                                              "reduceRight",
+                                                                                                              function () {
+                                                                                                                return /* Eq */Block.__(0, [
+                                                                                                                          -10,
+                                                                                                                          /* int array */[
+                                                                                                                              1,
+                                                                                                                              2,
+                                                                                                                              3,
+                                                                                                                              4
+                                                                                                                            ].reduceRight(function (acc, n) {
+                                                                                                                                return acc - n | 0;
+                                                                                                                              }, 0)
+                                                                                                                        ]);
+                                                                                                              }
+                                                                                                            ],
+                                                                                                            /* :: */[
+                                                                                                              /* tuple */[
+                                                                                                                "reduceRighti",
+                                                                                                                function () {
+                                                                                                                  return /* Eq */Block.__(0, [
+                                                                                                                            -6,
+                                                                                                                            /* int array */[
+                                                                                                                                1,
+                                                                                                                                2,
+                                                                                                                                3,
+                                                                                                                                4
+                                                                                                                              ].reduceRight(function (acc, _, i) {
+                                                                                                                                  return acc - i | 0;
+                                                                                                                                }, 0)
+                                                                                                                          ]);
+                                                                                                                }
+                                                                                                              ],
+                                                                                                              /* :: */[
+                                                                                                                /* tuple */[
+                                                                                                                  "some",
+                                                                                                                  function () {
+                                                                                                                    return /* Eq */Block.__(0, [
+                                                                                                                              /* false */0,
+                                                                                                                              +/* int array */[
+                                                                                                                                  1,
+                                                                                                                                  2,
+                                                                                                                                  3,
+                                                                                                                                  4
+                                                                                                                                ].some(function (n) {
+                                                                                                                                    return +(n <= 0);
+                                                                                                                                  })
+                                                                                                                            ]);
+                                                                                                                  }
+                                                                                                                ],
+                                                                                                                /* :: */[
+                                                                                                                  /* tuple */[
+                                                                                                                    "somei",
+                                                                                                                    function () {
+                                                                                                                      return /* Eq */Block.__(0, [
+                                                                                                                                /* true */1,
+                                                                                                                                +/* int array */[
+                                                                                                                                    1,
+                                                                                                                                    2,
+                                                                                                                                    3,
+                                                                                                                                    4
+                                                                                                                                  ].some(function (_, i) {
+                                                                                                                                      return +(i <= 0);
+                                                                                                                                    })
+                                                                                                                              ]);
+                                                                                                                    }
+                                                                                                                  ],
+                                                                                                                  /* [] */0
+                                                                                                                ]
+                                                                                                              ]
+                                                                                                            ]
+                                                                                                          ]
                                                                                                         ]
                                                                                                       ]
                                                                                                     ]

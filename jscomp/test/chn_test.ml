@@ -16,7 +16,7 @@ let convert (s : string) : int list  =
     Js_array.fromMap 
         (Js_string.castToArrayLike s) 
         (fun x -> 
-        match Js_undefined.to_opt @@ Js_string.codePointAt 0 x with 
+        match Js_string.codePointAt 0 x with 
         | None -> assert false 
         | Some x -> x ) |> Array.to_list  
 
