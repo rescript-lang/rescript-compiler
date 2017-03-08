@@ -109,9 +109,9 @@ OTHERS := literals a test_ari test_export2 test_internalOO test_obj_simple_ffi t
 	return_check\
 	bs_splice_partial\
 	gpr_return_type_unused_attribute\
-	gpr_return_type_unused_attribute\
 	test\
-	undef_regression2_test
+	undef_regression2_test\
+	js_global_test
 
 # bs_uncurry_test
 # needs Lam to get rid of Uncurry arity first
