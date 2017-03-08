@@ -120,10 +120,16 @@ For example:
 [source,ocaml]
 .Js module
 -----
-val Js.to_bool: Js.boolean -> bool
+type boolean
+val to_bool: boolean -> bool
 -----
 
-| `'a Js.Null.t` a| either `'a` or `null`. `Js.Null.empty` represents `null` too.
+.Js.Boolean module
+-----
+val to_js_boolean: bool -> Js.boolean
+-----
+
+| `'a Js.Null.t` a| Either `'a` or `null`. `Js.Null.empty` represents `null` too.
 
 [source,ocaml]
 .Js.Null module
@@ -134,11 +140,19 @@ val return : 'a -> 'a t
 val test : 'a t -> bool
 --------------
 
-| `'a Js.Undefined.t` a| either `'a` or `undefined`.
+| `'a Js.Undefined.t` a| Either `'a` or `undefined`.
+Same operations as `'a Js.Null.t`. `Js.Undefined.empty` represents `undefined` too.
+
+|`'a Js.Null_undefined.t` a| Either `'a`, `null` or `undefined`.
 Same operations as `'a Js.Null.t`.
 
-|`'a Js.Null_undefined.t` a| either `'a`, `null` or `undef`.
-Same operations as `'a Js.Null.t`.
+`Js.Null_undefined.undefined` represents `undefined`,
+`Js.Null_undefined.null` represents `null`.
+
+This module's null tests check for both `null` and `undefined`; if you know the
+value's only ever going to be `null` and not undefined, use `Js.Null` instead.
+Likewise for `Js.Undefined`.
+
 |==============
 
 NOTE: `Js.to_opt` is optimized when the `option` is not escaped
