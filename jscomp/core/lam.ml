@@ -1690,7 +1690,7 @@ let convert exports lam : _ * _  =
     | Lprim (Prevapply, _, _ ) -> assert false       
     | Lprim(Pdirapply, _, _) -> assert false 
     (* we might allow some arity here *)  
-    | Lprim(Pccall {prim_name = "js_pure_expr"}, 
+    | Lprim(Pccall {prim_name = "#raw_expr"}, 
             args,loc) ->  
       begin match args with 
         | [Lconst( Const_base (Const_string(s,_)))] -> 
@@ -1698,7 +1698,7 @@ let convert exports lam : _ * _  =
             ~args:[] loc 
         | _ -> assert false 
       end  
-    | Lprim(Pccall {prim_name = "js_pure_stmt"}, 
+    | Lprim(Pccall {prim_name = "#raw_stmt"}, 
             args,loc) ->  
       begin match args with 
         | [Lconst( Const_base (Const_string(s,_)))] -> 
@@ -1706,76 +1706,82 @@ let convert exports lam : _ * _  =
             ~args:[] loc         
         | _ -> assert false 
       end 
-    | Lprim(Pccall {prim_name =  "js_from_def"}, args, loc) 
+    | Lprim(Pccall {prim_name =  "#undefined_to_opt"}, args, loc) 
       -> 
       begin match args with 
         | [ arg ] -> 
-          prim ~primitive:Pundefined_to_opt ~args:[aux arg] loc 
+          let arg = aux arg in 
+          (* if [arg] is undefined return [None] otherwise return [Some ]
+          *)
+          (* match arg with 
+          | Lifthenelse 
+            (Lprim (Pjs_typeof, [e])) *)
+          prim ~primitive:Pundefined_to_opt ~args:[arg] loc 
         | _ -> assert false 
       end
-    | Lprim(Pccall {prim_name =  "js_from_nullable_def"}, args, loc) 
+    | Lprim(Pccall {prim_name =  "#null_undefined_to_opt"}, args, loc) 
       -> 
       begin match args with 
         | [ arg ] -> 
           prim ~primitive:Pnull_undefined_to_opt ~args:[aux arg] loc 
         | _ -> assert false 
       end
-    | Lprim(Pccall {prim_name =  "js_from_nullable"}, args, loc) 
+    | Lprim(Pccall {prim_name =  "#null_to_opt"}, args, loc) 
       -> 
       begin match args with 
         | [ arg ] -> 
           prim ~primitive:Pnull_to_opt ~args:[aux arg] loc 
         | _ -> assert false 
       end  
-    | Lprim (Pccall {prim_name = "js_is_nil" }, args, loc) -> 
+    | Lprim (Pccall {prim_name = "#is_nil" }, args, loc) -> 
       begin match args with 
         | [arg] -> prim ~primitive:Pis_null ~args:[aux arg] loc 
         | _ -> assert false 
       end  
-    | Lprim (Pccall {prim_name = "js_is_undef"}, args, loc) -> 
+    | Lprim (Pccall {prim_name = "#is_undef"}, args, loc) -> 
       begin match args with 
         | [arg] -> prim ~primitive:Pis_undefined ~args:[aux arg] loc 
         | _ -> assert false 
       end   
-    | Lprim (Pccall {prim_name = "js_is_nil_undef"}, args, loc) -> 
+    | Lprim (Pccall {prim_name = "#is_nil_undef"}, args, loc) -> 
       begin match args with 
         | [arg] -> prim ~primitive:Pis_null_undefined ~args:[aux arg] loc 
         | _ -> assert false 
       end   
-    | Lprim(Pccall {prim_name = "js_string_append"}, args, loc) -> 
+    | Lprim(Pccall {prim_name = "#string_append"}, args, loc) -> 
       begin match args with 
         | [a; b] -> 
           prim ~primitive:Pstringadd ~args:[aux a; aux b] loc 
         | _ -> assert false 
       end 
-    | Lprim(Pccall {prim_name = "js_boolean_to_bool"}, args, loc) -> 
+    | Lprim(Pccall {prim_name = "#boolean_to_bool"}, args, loc) -> 
       begin match args with 
         | [ e ] -> prim ~primitive:Pjs_boolean_to_bool ~args:[aux e] loc 
         | _ -> assert false 
       end
-    | Lprim(Pccall {prim_name = "js_typeof"}, args,loc) -> 
+    | Lprim(Pccall {prim_name = "#typeof"}, args,loc) -> 
       begin match args with 
         | [e] -> prim ~primitive:Pjs_typeof ~args:[aux e] loc 
         | _ -> assert false
       end 
+    | Lprim (Pccall {prim_name = "#debugger"},args,loc) -> 
+      (* ATT: Currently, the arity is one due to PPX *)
+      prim ~primitive:Pdebugger ~args:[] loc 
+    | Lprim(Pccall {prim_name = "#fn_run" | "#method_run"; prim_native_name},args,loc) -> 
+      let args = List.map aux args in 
+      prim ~primitive:(Pjs_fn_run(int_of_string prim_native_name)) ~args loc        
+    | Lprim(Pccall{prim_name = "#fn_mk"; prim_native_name},args,loc) ->
+      let args = List.map aux args in 
+      prim ~primitive:(Pjs_fn_make (int_of_string prim_native_name)) ~args loc 
+    | Lprim(Pccall{prim_name = "#fn_method"; prim_native_name},args,loc) ->
+      let args = List.map aux args in 
+      prim ~primitive:(Pjs_fn_method (int_of_string prim_native_name)) ~args loc
+    
     | Lprim(Pccall a, args, loc)  -> 
       let args = List.map aux args in 
       let prim_name = a.prim_name in    
       begin match Ast_ffi_types.from_string a.prim_native_name with 
-        | Ffi_normal -> 
-          if Pervasives.not @@ Ext_string.starts_with prim_name "js_" then 
-            prim ~primitive:(Pccall a ) ~args loc else 
-          if prim_name =  Literals.js_debugger then 
-            prim ~primitive:Pdebugger ~args loc else 
-          if prim_name =  Literals.js_fn_run || prim_name = Literals.js_method_run then
-            prim ~primitive:(Pjs_fn_run (int_of_string a.prim_native_name)) ~args loc else 
-          if prim_name = Literals.js_fn_mk then 
-            prim ~primitive:(Pjs_fn_make (int_of_string a.prim_native_name)) ~args loc else                
-          if prim_name = Literals.js_fn_method then 
-            prim ~primitive:(Pjs_fn_method (int_of_string a.prim_native_name)) ~args loc else
-          if prim_name = Literals.js_fn_runmethod then 
-            prim ~primitive:(Pjs_fn_runmethod (int_of_string a.prim_native_name)) ~args loc 
-          else
+        | Ffi_normal ->           
             prim ~primitive:(Pccall a) ~args loc
         | Ffi_obj_create labels -> 
           prim ~primitive:(Pjs_object_create labels) ~args loc 
@@ -1835,8 +1841,7 @@ let convert exports lam : _ * _  =
     | Lsend (kind, a,b,ls, loc) -> 
       (* Format.fprintf Format.err_formatter "%a@." Printlambda.lambda b ; *)
       begin match aux b with 
-        | Lprim {primitive =  Pccall {prim_name };  args; loc}
-          when prim_name = Literals.js_unsafe_downgrade
+        | Lprim {primitive =  Pccall {prim_name = "#unsafe_downgrade"};  args; loc} 
           -> 
           begin match kind, ls with 
             | Public (Some name), [] -> 

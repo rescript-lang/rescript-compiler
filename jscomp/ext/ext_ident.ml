@@ -243,6 +243,7 @@ let convert keyword (name : string) =
           | '.' -> Buffer.add_string buffer "$dot"
           | '%' -> Buffer.add_string buffer "$percent"
           | '~' -> Buffer.add_string buffer "$tilde"
+          | '#' -> Buffer.add_string buffer "$hash"
           | 'a'..'z' | 'A'..'Z'| '_'|'$' |'0'..'9'-> Buffer.add_char buffer  c
           | _ -> Buffer.add_string buffer "$unknown"
         done; Buffer.contents buffer)

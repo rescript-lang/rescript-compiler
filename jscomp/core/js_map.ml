@@ -137,7 +137,7 @@ class virtual map =
          Qualified (_, Runtime, Some "caml_int_compare")         
        ]}       
      *)
-                 (* used in [js_create_array] primitive, note having
+                 (* used in [#create_array] primitive, note having
        uninitilized array is not as bad as in ocaml, 
        since GC does not rely on it
      *)

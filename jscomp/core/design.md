@@ -195,3 +195,31 @@ if (typeof x === "undefined"){
     ...
 }
 ```
+
+
+# primitive handling
+
+1. Some primitives introduced are for performance reasons, for example:
+
+`#String.fromCharCode` which is essentialy the same as 
+
+```ocaml
+external of_char : char -> string = "String.fromCharCode"
+[@@bs.val]
+```
+
+We introduced `#` so that we can do some optimizations.
+
+2. Some of them are not expressible in OCaml FFI, for example
+'#is_instance_array',
+'#gt'
+
+3. Some of them require a runtime polyfill support
+
+
+# runtime
+
+## anything to string
+http://www.2ality.com/2012/03/converting-to-string.html
+Note that `""+ Symbol()` does not work any more, we should favor `String` instead
+

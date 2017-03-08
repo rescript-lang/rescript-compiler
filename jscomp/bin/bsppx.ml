@@ -6627,17 +6627,17 @@ val setter_suffix : string
 val setter_suffix_len : int
 
 
-val js_debugger : string
-val js_pure_expr : string
-val js_pure_stmt : string
-val js_unsafe_downgrade : string
-val js_fn_run : string
-val js_method_run : string
-val js_fn_method : string
-val js_fn_mk : string
+val debugger : string
+val raw_expr : string
+val raw_stmt : string
+val unsafe_downgrade : string
+val fn_run : string
+val method_run : string
+val fn_method : string
+val fn_mk : string
 
 (** callback actually, not exposed to user yet *)
-val js_fn_runmethod : string 
+(* val js_fn_runmethod : string *)
 
 val bs_deriving : string
 val bs_deriving_dot : string
@@ -6743,16 +6743,16 @@ let imul = "imul" (* signed int32 mul *)
 let setter_suffix = "#="
 let setter_suffix_len = String.length setter_suffix
 
-let js_debugger = "js_debugger"
-let js_pure_expr = "js_pure_expr"
-let js_pure_stmt = "js_pure_stmt"
-let js_unsafe_downgrade = "js_unsafe_downgrade"
-let js_fn_run = "js_fn_run"
-let js_method_run = "js_method_run"
+let debugger = "debugger"
+let raw_expr = "raw_expr"
+let raw_stmt = "raw_stmt"
+let unsafe_downgrade = "unsafe_downgrade"
+let fn_run = "fn_run"
+let method_run = "method_run"
 
-let js_fn_method = "js_fn_method"
-let js_fn_mk = "js_fn_mk"
-let js_fn_runmethod = "js_fn_runmethod"
+let fn_method = "fn_method"
+let fn_mk = "fn_mk"
+(*let js_fn_runmethod = "js_fn_runmethod"*)
 
 let bs_deriving = "bs.deriving"
 let bs_deriving_dot = "bs.deriving."
@@ -14121,7 +14121,7 @@ let js_property loc obj name =
     ((Exp.apply ~loc
         (Exp.ident ~loc
            {loc;
-            txt = Ldot (Ast_literal.Lid.js_unsafe, Literals.js_unsafe_downgrade)})
+            txt = Ldot (Ast_literal.Lid.js_unsafe, Literals.unsafe_downgrade)})
         ["",obj]), name)
 
 (* TODO: 
@@ -14155,10 +14155,10 @@ let generic_apply  kind loc
       match kind with 
       | `Fn | `PropertyFn ->  
         Longident.Ldot (Ast_literal.Lid.js_unsafe, 
-                        Literals.js_fn_run ^ string_of_int arity)
+                        Literals.fn_run ^ string_of_int arity)
       | `Method -> 
         Longident.Ldot(Ast_literal.Lid.js_unsafe,
-                       Literals.js_method_run ^ string_of_int arity
+                       Literals.method_run ^ string_of_int arity
                       ) in 
     Parsetree.Pexp_apply (Exp.ident {txt ; loc}, ("",fn) :: List.map (fun x -> "",x) args)
   else 
@@ -14167,10 +14167,10 @@ let generic_apply  kind loc
     let pval_prim, pval_type = 
       match kind with 
       | `Fn | `PropertyFn -> 
-        [Literals.js_fn_run; string_arity], 
+        ["#fn_run"; string_arity], 
         arrow ~loc ""  (lift_curry_type loc args_type result_type ) fn_type
       | `Method -> 
-        [Literals.js_method_run ; string_arity], 
+        ["#method_run" ; string_arity], 
         arrow ~loc "" (lift_method_type loc args_type result_type) fn_type
     in
     Ast_external.create_local_external loc ~pval_prim ~pval_type 
@@ -14277,16 +14277,16 @@ let generic_to_uncurry_exp kind loc (self : Ast_mapper.mapper)  pat body
     let txt = 
       match kind with 
       | `Fn -> 
-        Longident.Ldot ( Ast_literal.Lid.js_unsafe, Literals.js_fn_mk ^ string_of_int arity)
+        Longident.Ldot ( Ast_literal.Lid.js_unsafe, Literals.fn_mk ^ string_of_int arity)
       | `Method_callback -> 
-        Longident.Ldot (Ast_literal.Lid.js_unsafe,  Literals.js_fn_method ^ string_of_int arity) in
+        Longident.Ldot (Ast_literal.Lid.js_unsafe,  Literals.fn_method ^ string_of_int arity) in
     Parsetree.Pexp_apply (Exp.ident {txt;loc} , ["",body])
 
   else 
     let pval_prim =
       [ (match kind with 
-            | `Fn -> Literals.js_fn_mk
-            | `Method_callback -> Literals.js_fn_method); 
+            | `Fn -> "#fn_mk"
+            | `Method_callback -> "#fn_method"); 
         string_of_int arity]  in
     let fn_type , args_type, result_type  = Ast_comb.tuple_type_pair ~loc `Make arity  in 
     let pval_type = arrow ~loc "" fn_type (
@@ -14308,7 +14308,7 @@ let to_method_callback  =
 let handle_debugger loc payload = 
   if Ast_payload.as_empty_structure payload then
     Parsetree.Pexp_apply
-      (Exp.ident {txt = Ldot(Ast_literal.Lid.js_unsafe, Literals.js_debugger ); loc}, 
+      (Exp.ident {txt = Ldot(Ast_literal.Lid.js_unsafe, Literals.debugger ); loc}, 
        ["", Ast_literal.val_unit ~loc ()])
   else Location.raise_errorf ~loc "bs.raw can only be applied to a string"
 
@@ -14326,7 +14326,7 @@ let handle_raw ?(check_js_regex = false) loc payload =
           Exp.ident {loc; 
                      txt = 
                        Ldot (Ast_literal.Lid.js_unsafe, 
-                             Literals.js_pure_expr)},
+                             Literals.raw_expr)},
           ["",exp]
         )
       in
@@ -14338,7 +14338,7 @@ let handle_external loc x =
     Ast_helper.Exp.apply 
     (Exp.ident ~loc 
          {loc; txt = Ldot (Ast_literal.Lid.js_unsafe, 
-                           Literals.js_pure_expr)})
+                           Literals.raw_expr)})
       ~loc 
       [Ext_string.empty, 
         Exp.constant ~loc (Const_string (x,Some Ext_string.empty))] in 
@@ -14373,7 +14373,7 @@ let handle_raw_structure loc payload =
       -> 
       let pexp_desc = 
         Parsetree.Pexp_apply(
-          Exp.ident {txt = Ldot (Ast_literal.Lid.js_unsafe,  Literals.js_pure_stmt); loc},
+          Exp.ident {txt = Ldot (Ast_literal.Lid.js_unsafe,  Literals.raw_stmt); loc},
           ["",exp]) in 
       Ast_helper.Str.eval 
         { exp with pexp_desc }

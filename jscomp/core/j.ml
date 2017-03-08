@@ -103,7 +103,7 @@ and expression_desc =
   | Char_of_int of expression
   | Char_to_int of expression 
   | Array_of_size of expression 
-    (* used in [js_create_array] primitive, note having
+    (* used in [#create_array] primitive, note having
        uninitilized array is not as bad as in ocaml, 
        since GC does not rely on it
      *)

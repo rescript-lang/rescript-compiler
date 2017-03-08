@@ -1,6 +1,6 @@
 
 
-external to_json_string : 'a -> string = "js_json_stringify"
+external to_json_string : 'a -> string = "#json_stringify"
 let () =
   begin
 

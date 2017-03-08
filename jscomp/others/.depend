@@ -17,6 +17,7 @@ js_boolean.cmj : js_boolean.cmi
 js_math.cmj :
 js_dict.cmj :
 js_date.cmj :
+js_global.cmj :
 js_re.cmi :
 js_null_undefined.cmi :
 js_types.cmi :

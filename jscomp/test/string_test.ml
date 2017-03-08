@@ -53,7 +53,7 @@ let xsplit ~delim s =
   | _ -> loop [] len
 
 
-external string_of_char : char -> string = "js_string_of_char" 
+external string_of_char : char -> string = "#string_of_char" 
 
 let string_of_chars  x = String.concat "" @@ List.map string_of_char  x
 

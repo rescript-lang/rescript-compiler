@@ -4,7 +4,8 @@
 function f() {
   var v = (console.error("x"), /* () */0);
   console.log(v);
-  console.log((console.log("hi"), /* () */0));
+  var u = (console.log("hi"), /* () */0);
+  console.log(u);
   return /* () */0;
 }
 

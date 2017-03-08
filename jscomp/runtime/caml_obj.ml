@@ -174,7 +174,7 @@ let rec caml_compare (a : Obj.t) (b : Obj.t) : int =
       else if a_type = "function" || b_type = "function"
       then raise (Invalid_argument "compare: functional value")
       else
-        (* if js_is_instance_array a then  *)
+        (* if #is_instance_array a then  *)
         (*   0 *)
         (* else  *)
         let tag_a = Bs_obj.tag a in

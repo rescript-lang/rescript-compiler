@@ -25,13 +25,13 @@
 
 type any = Obj.t
 external set_tag : any -> int -> unit = "caml_obj_set_tag"
-external set_length : any -> int -> unit = "js_obj_set_length"
-external length : any -> int = "js_obj_length"
+external set_length : any -> int -> unit = "#obj_set_length"
+external length : any -> int = "#obj_length"
 external tag : any -> int = "caml_obj_tag"
 external set_tag : any -> int -> unit = "caml_obj_set_tag"
-(* external uninitialized_object : int -> int -> any = "js_uninitialized_object" *)
+(* external uninitialized_object : int -> int -> any = "#uninitialized_object" *)
 external is_instance_array : any -> bool = 
-  "js_is_instance_array" (* use Array.isArray instead*)
+  "#is_instance_array" (* use Array.isArray instead*)
 external size_of_any : any -> 'a Js.undefined =
   "length" [@@bs.get]
 external tag_of_any : any -> 'a Js.undefined =

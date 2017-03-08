@@ -24,13 +24,13 @@
 
 type + 'a t = 'a Js.null_undefined
 
-external to_opt : 'a t -> 'a option = "js_from_nullable_def"
+external to_opt : 'a t -> 'a option = "#null_undefined_to_opt"
 
 (** constructs a value of the Js.null_undefined type containing the given value *)
 external return : 'a -> 'a t = "%identity"
 
 (** returns `true` if given `null` or `undefined`, false otherwise *)
-external test : 'a t -> bool =  "js_is_nil_undef"
+external test : 'a t -> bool =  "#is_nil_undef"
 
 external null : 'a t = "null" [@@bs.val]
 external undefined : 'a t = "undefined" [@@bs.val]

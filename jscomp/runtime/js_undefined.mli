@@ -23,9 +23,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 type + 'a t = 'a Js.undefined
-external to_opt : 'a t -> 'a option = "js_from_def"
+external to_opt : 'a t -> 'a option = "#undefined_to_opt"
 external return : 'a -> 'a t = "%identity"
-external test : 'a t -> bool =  "js_is_undef"
+external test : 'a t -> bool =  "#is_undef"
 external empty : 'a t = "undefined"
 [@@bs.val]
 

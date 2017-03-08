@@ -5193,14 +5193,21 @@ We might encode it as buffer  in NodeJS.
 <div class="listingblock">
 <div class="title">Js module</div>
 <div class="content">
-<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">val</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">to_bool</span><span class="tok-o">:</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">boolean</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">bool</span></code></pre>
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">type</span> <span class="tok-n">boolean</span>
+<span class="tok-k">val</span> <span class="tok-n">to_bool</span><span class="tok-o">:</span> <span class="tok-n">boolean</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">bool</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Js.Boolean module</div>
+<div class="content">
+<pre>val to_js_boolean: bool -&gt; Js.boolean</pre>
 </div>
 </div></div></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>'a Js.Null.t</code></p></td>
 <td class="tableblock halign-left valign-top"><div><div class="paragraph">
-<p>either <code>'a</code> or <code>null</code>. <code>Js.Null.empty</code> represents <code>null</code> too.</p>
+<p>Either <code>'a</code> or <code>null</code>. <code>Js.Null.empty</code> represents <code>null</code> too.</p>
 </div>
 <div class="listingblock">
 <div class="title">Js.Null module</div>
@@ -5215,15 +5222,24 @@ We might encode it as buffer  in NodeJS.
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>'a Js.Undefined.t</code></p></td>
 <td class="tableblock halign-left valign-top"><div><div class="paragraph">
-<p>either <code>'a</code> or <code>undefined</code>.
-Same operations as <code>'a Js.Null.t</code>.</p>
+<p>Either <code>'a</code> or <code>undefined</code>.
+Same operations as <code>'a Js.Null.t</code>. <code>Js.Undefined.empty</code> represents <code>undefined</code> too.</p>
 </div></div></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>'a Js.Null_undefined.t</code></p></td>
 <td class="tableblock halign-left valign-top"><div><div class="paragraph">
-<p>either <code>'a</code>, <code>null</code> or <code>undef</code>.
+<p>Either <code>'a</code>, <code>null</code> or <code>undefined</code>.
 Same operations as <code>'a Js.Null.t</code>.</p>
+</div>
+<div class="paragraph">
+<p><code>Js.Null_undefined.undefined</code> represents <code>undefined</code>,
+<code>Js.Null_undefined.null</code> represents <code>null</code>.</p>
+</div>
+<div class="paragraph">
+<p>This module&#8217;s null tests check for both <code>null</code> and <code>undefined</code>; if you know the
+value&#8217;s only ever going to be <code>null</code> and not undefined, use <code>Js.Null</code> instead.
+Likewise for <code>Js.Undefined</code>.</p>
 </div></div></td>
 </tr>
 </tbody>
