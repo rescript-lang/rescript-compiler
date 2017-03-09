@@ -383,6 +383,11 @@ let translate  loc
   | Pxorbint Lambda.Pint64 
     ->
     Js_long.xor args    
+  | Pjscomp cmp ->
+    begin match args with
+    | [l;r] -> E.js_comp cmp l r 
+    | _ -> assert false 
+    end
   | Pbintcomp (Pnativeint ,cmp)
   | Pfloatcomp cmp
   | Pintcomp cmp

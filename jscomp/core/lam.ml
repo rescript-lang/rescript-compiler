@@ -95,6 +95,7 @@ type primitive =
   | Pnegfloat | Pabsfloat
   | Paddfloat | Psubfloat | Pmulfloat | Pdivfloat
   | Pfloatcomp of comparison
+  | Pjscomp of comparison
   (* String operations *)
   | Pstringlength 
   | Pstringrefu 
@@ -1759,6 +1760,19 @@ let convert exports lam : _ * _  =
         | [ e ] -> prim ~primitive:Pjs_boolean_to_bool ~args:[aux e] loc 
         | _ -> assert false 
       end
+    | Lprim(Pccall {prim_name = "#unsafe_lt"}, args, loc) -> 
+      prim ~primitive:(Pjscomp Clt) ~args:(List.map aux args) loc 
+    | Lprim(Pccall {prim_name = "#unsafe_gt"}, args, loc) -> 
+      prim ~primitive:(Pjscomp Cgt) ~args:(List.map aux args) loc 
+    | Lprim(Pccall {prim_name = "#unsafe_le"}, args, loc) -> 
+      prim ~primitive:(Pjscomp Cle) ~args:(List.map aux args) loc 
+    | Lprim(Pccall {prim_name = "#unsafe_ge"}, args, loc) -> 
+      prim ~primitive:(Pjscomp Cge) ~args:(List.map aux args) loc 
+    | Lprim(Pccall {prim_name = "#unsafe_eq"}, args, loc) -> 
+      prim ~primitive:(Pjscomp Ceq) ~args:(List.map aux args) loc 
+    | Lprim(Pccall {prim_name = "#unsafe_neq"}, args, loc) -> 
+      prim ~primitive:(Pjscomp Cneq) ~args:(List.map aux args) loc 
+
     | Lprim(Pccall {prim_name = "#typeof"}, args,loc) -> 
       begin match args with 
         | [e] -> prim ~primitive:Pjs_typeof ~args:[aux e] loc 

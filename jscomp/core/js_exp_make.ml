@@ -1011,6 +1011,8 @@ let rec int_comp (cmp : Lambda.comparison) ?comment  (e0 : t) (e1 : t) =
 let float_comp cmp ?comment  e0 e1 = 
   bool_of_boolean @@ bin ?comment (Lam_compile_util.jsop_of_comp cmp) e0 e1
 
+let js_comp cmp ?comment  e0 e1 = 
+  bool_of_boolean @@ bin ?comment (Lam_compile_util.jsop_of_comp cmp) e0 e1
 
 
 let rec int32_lsr ?comment

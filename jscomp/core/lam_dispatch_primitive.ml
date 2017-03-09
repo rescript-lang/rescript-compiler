@@ -876,24 +876,6 @@ let translate (prim_name : string)
         -> E.str (String.make 1 (Char.chr (Int32.to_int i)))
       | _ -> call Js_config.string
       end
-  | "#unsafe_lt" 
-    -> 
-    begin match args with 
-      | [l; r] -> E.bin Lt l r 
-      | _ -> assert false 
-    end
-  | "#unsafe_le" 
-    -> begin match args with 
-    | [l; r] -> E.bin Le l r 
-    | _ -> assert false end 
-  | "#unsafe_gt" 
-    -> begin match args with 
-    | [l;r] -> E.bin Gt l r 
-    | _ ->  assert false end 
-  | "#unsafe_ge" -> 
-    begin match args with 
-    | [l ; r] -> E.bin Ge l r 
-    | _ -> assert false end
   
   | "#is_instance_array" 
     ->
@@ -901,22 +883,7 @@ let translate (prim_name : string)
     | [e] -> E.is_instance_array e 
     | _ -> assert false
    end
-  | "#console.log"
-    -> 
-    (* This primitive can accept any number of arguments 
-       {[
-         console.log(1,2,3)
-           1 2 3
-       ]}         
-    *)      
-    E.seq (E.dump Log args) E.unit  
-  (* patched to compiler to support for convenience *)      
-  | "#anything_to_string" 
-    ->
-    begin match args with 
-    | [e] -> E.anything_to_string e 
-    | _ -> assert false
-    end
+  
   | "#anything_to_number" 
     -> 
     begin match args with 

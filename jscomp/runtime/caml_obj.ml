@@ -132,7 +132,7 @@ let caml_string_compare (x : string) (y: string) : int =
 
 let unsafe_js_compare x y =
   if x == y then 0 else
-  if Js.to_bool @@ Js.unsafe_lt x y then -1
+  if Js.unsafe_lt x y then -1
   else 1
 (** TODO: investigate total
     [compare x y] returns [0] if [x] is equal to [y],

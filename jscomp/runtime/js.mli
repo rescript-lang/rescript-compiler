@@ -81,13 +81,13 @@ external log : 'a -> unit = "console.log" [@@bs.val]
 (** A convenience function to log *)
 
 (** {4 operators }*)
-external unsafe_lt : 'a -> 'a -> boolean = "#unsafe_lt"
+external unsafe_lt : 'a -> 'a -> bool = "#unsafe_lt"
 (**  [unsafe_lt a b] will be compiled as [a < b] *)
-external unsafe_le : 'a -> 'a -> boolean = "#unsafe_le"
+external unsafe_le : 'a -> 'a -> bool = "#unsafe_le"
 (**  [unsafe_le a b] will be compiled as [a <= b] *)
-external unsafe_gt : 'a -> 'a -> boolean = "#unsafe_gt"
+external unsafe_gt : 'a -> 'a -> bool = "#unsafe_gt"
 (**  [unsafe_gt a b] will be compiled as [a > b] *)
-external unsafe_ge : 'a -> 'a -> boolean = "#unsafe_ge"
+external unsafe_ge : 'a -> 'a -> bool = "#unsafe_ge"
 (**  [unsafe_ge a b] will be compiled as [a >= b] *)
 (* end::utility_functions[]*)
 

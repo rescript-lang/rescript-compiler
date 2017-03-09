@@ -64930,6 +64930,7 @@ type primitive =
   | Pnegfloat | Pabsfloat
   | Paddfloat | Psubfloat | Pmulfloat | Pdivfloat
   | Pfloatcomp of Lambda.comparison
+  | Pjscomp of Lambda.comparison
   | Pstringlength 
   | Pstringrefu 
   | Pstringrefs
@@ -65265,6 +65266,7 @@ type primitive =
   | Pnegfloat | Pabsfloat
   | Paddfloat | Psubfloat | Pmulfloat | Pdivfloat
   | Pfloatcomp of comparison
+  | Pjscomp of comparison
   (* String operations *)
   | Pstringlength 
   | Pstringrefu 
@@ -66929,6 +66931,19 @@ let convert exports lam : _ * _  =
         | [ e ] -> prim ~primitive:Pjs_boolean_to_bool ~args:[aux e] loc 
         | _ -> assert false 
       end
+    | Lprim(Pccall {prim_name = "#unsafe_lt"}, args, loc) -> 
+      prim ~primitive:(Pjscomp Clt) ~args:(List.map aux args) loc 
+    | Lprim(Pccall {prim_name = "#unsafe_gt"}, args, loc) -> 
+      prim ~primitive:(Pjscomp Cgt) ~args:(List.map aux args) loc 
+    | Lprim(Pccall {prim_name = "#unsafe_le"}, args, loc) -> 
+      prim ~primitive:(Pjscomp Cle) ~args:(List.map aux args) loc 
+    | Lprim(Pccall {prim_name = "#unsafe_ge"}, args, loc) -> 
+      prim ~primitive:(Pjscomp Cge) ~args:(List.map aux args) loc 
+    | Lprim(Pccall {prim_name = "#unsafe_eq"}, args, loc) -> 
+      prim ~primitive:(Pjscomp Ceq) ~args:(List.map aux args) loc 
+    | Lprim(Pccall {prim_name = "#unsafe_neq"}, args, loc) -> 
+      prim ~primitive:(Pjscomp Cneq) ~args:(List.map aux args) loc 
+
     | Lprim(Pccall {prim_name = "#typeof"}, args,loc) -> 
       begin match args with 
         | [e] -> prim ~primitive:Pjs_typeof ~args:[aux e] loc 
@@ -68550,7 +68565,7 @@ type unary_op =  ?comment:string -> t -> t
 val ocaml_boolean_under_condition : t -> t 
 
 
-val bin : ?comment:string -> J.binop -> t -> t -> t
+(* val bin : ?comment:string -> J.binop -> t -> t -> t *)
 val mk :
   ?comment:string -> J.expression_desc -> t
 
@@ -68691,7 +68706,7 @@ val float_mod : binary_op
 val int_comp : Lambda.comparison -> binary_op
 val string_comp : Js_op.binop -> binary_op
 val float_comp :  Lambda.comparison -> binary_op
-
+val js_comp :  Lambda.comparison -> binary_op
 
 
 val not : t -> t
@@ -69801,6 +69816,8 @@ let rec int_comp (cmp : Lambda.comparison) ?comment  (e0 : t) (e1 : t) =
 let float_comp cmp ?comment  e0 e1 = 
   bool_of_boolean @@ bin ?comment (Lam_compile_util.jsop_of_comp cmp) e0 e1
 
+let js_comp cmp ?comment  e0 e1 = 
+  bool_of_boolean @@ bin ?comment (Lam_compile_util.jsop_of_comp cmp) e0 e1
 
 
 let rec int32_lsr ?comment
@@ -70449,6 +70466,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Pnegfloat | Pabsfloat
       | Paddfloat | Psubfloat | Pmulfloat | Pdivfloat
       | Pfloatcomp _ 
+      | Pjscomp _
       (* String operations *)
       | Pstringlength 
       | Pstringrefu 
@@ -70996,6 +71014,13 @@ let primitive ppf (prim : Lam.primitive) = match prim with
   | Pfloatcomp(Cle) -> fprintf ppf "<=."
   | Pfloatcomp(Cgt) -> fprintf ppf ">."
   | Pfloatcomp(Cge) -> fprintf ppf ">=."
+  | Pjscomp(Ceq) -> fprintf ppf "#=="
+  | Pjscomp(Cneq) -> fprintf ppf "#!="
+  | Pjscomp(Clt) -> fprintf ppf "#<"
+  | Pjscomp(Cle) -> fprintf ppf "#<="
+  | Pjscomp(Cgt) -> fprintf ppf "#>"
+  | Pjscomp(Cge) -> fprintf ppf "#>="
+
   | Pstringlength -> fprintf ppf "string.length"
   | Pstringrefu -> fprintf ppf "string.unsafe_get"
   | Pstringrefs -> fprintf ppf "string.get"
@@ -90082,7 +90107,7 @@ let get_default_undefined (arg : J.expression) : J.expression =
     {[
       | Var _  ->
         can only bd detected at runtime thing
-          (E.bin EqEqEq (E.typeof arg)
+          (E.triple_equal (E.typeof arg)
              (E.str "number"))
     ]}
 *)
@@ -91762,24 +91787,6 @@ let translate (prim_name : string)
         -> E.str (String.make 1 (Char.chr (Int32.to_int i)))
       | _ -> call Js_config.string
       end
-  | "#unsafe_lt" 
-    -> 
-    begin match args with 
-      | [l; r] -> E.bin Lt l r 
-      | _ -> assert false 
-    end
-  | "#unsafe_le" 
-    -> begin match args with 
-    | [l; r] -> E.bin Le l r 
-    | _ -> assert false end 
-  | "#unsafe_gt" 
-    -> begin match args with 
-    | [l;r] -> E.bin Gt l r 
-    | _ ->  assert false end 
-  | "#unsafe_ge" -> 
-    begin match args with 
-    | [l ; r] -> E.bin Ge l r 
-    | _ -> assert false end
   
   | "#is_instance_array" 
     ->
@@ -91787,22 +91794,7 @@ let translate (prim_name : string)
     | [e] -> E.is_instance_array e 
     | _ -> assert false
    end
-  | "#console.log"
-    -> 
-    (* This primitive can accept any number of arguments 
-       {[
-         console.log(1,2,3)
-           1 2 3
-       ]}         
-    *)      
-    E.seq (E.dump Log args) E.unit  
-  (* patched to compiler to support for convenience *)      
-  | "#anything_to_string" 
-    ->
-    begin match args with 
-    | [e] -> E.anything_to_string e 
-    | _ -> assert false
-    end
+  
   | "#anything_to_number" 
     -> 
     begin match args with 
@@ -92288,6 +92280,11 @@ let translate  loc
   | Pxorbint Lambda.Pint64 
     ->
     Js_long.xor args    
+  | Pjscomp cmp ->
+    begin match args with
+    | [l;r] -> E.js_comp cmp l r 
+    | _ -> assert false 
+    end
   | Pbintcomp (Pnativeint ,cmp)
   | Pfloatcomp cmp
   | Pintcomp cmp

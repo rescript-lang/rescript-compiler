@@ -1,8 +1,15 @@
 'use strict';
 
 
-function test(x) {
-  return "" + x;
+function test(x, y) {
+  return /* tuple */[
+          +(x < y),
+          +(x <= y),
+          +(x > y),
+          +(x >= y),
+          +(x === y),
+          +(x !== y)
+        ];
 }
 
 exports.test = test;

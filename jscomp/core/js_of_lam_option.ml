@@ -58,7 +58,7 @@ let get_default_undefined (arg : J.expression) : J.expression =
     {[
       | Var _  ->
         can only bd detected at runtime thing
-          (E.bin EqEqEq (E.typeof arg)
+          (E.triple_equal (E.typeof arg)
              (E.str "number"))
     ]}
 *)

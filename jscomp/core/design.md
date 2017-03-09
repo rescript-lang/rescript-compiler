@@ -45,6 +45,11 @@ Same for `or`
 
 but `not` is not the same as `!`, `!` will do the conversion to enforce its result is JS boolean  
 
+**ATT** if you want to support JS boolean better, think twice, it is
+really hard to give two booleans first class support, and such bugs
+are very hard to find (since in most cases they behave the same), so
+what we can do is produce OCaml bool exclusively, only pass JS boolean
+to JS ffi which requires it exclusively (very rare)
 **NOTE** since OCaml boolean is everywhere, while JS boolean only happens in the FFI, we should by default produce OCaml boolean in the IR, and mark JS boolean explicitly instead.
 
 ## It does not affect `if_then_else` compilation

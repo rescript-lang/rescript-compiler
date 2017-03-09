@@ -179,6 +179,13 @@ let primitive ppf (prim : Lam.primitive) = match prim with
   | Pfloatcomp(Cle) -> fprintf ppf "<=."
   | Pfloatcomp(Cgt) -> fprintf ppf ">."
   | Pfloatcomp(Cge) -> fprintf ppf ">=."
+  | Pjscomp(Ceq) -> fprintf ppf "#=="
+  | Pjscomp(Cneq) -> fprintf ppf "#!="
+  | Pjscomp(Clt) -> fprintf ppf "#<"
+  | Pjscomp(Cle) -> fprintf ppf "#<="
+  | Pjscomp(Cgt) -> fprintf ppf "#>"
+  | Pjscomp(Cge) -> fprintf ppf "#>="
+
   | Pstringlength -> fprintf ppf "string.length"
   | Pstringrefu -> fprintf ppf "string.unsafe_get"
   | Pstringrefs -> fprintf ppf "string.get"
