@@ -24,7 +24,7 @@
 
 type t = string
 
-external make : 'a -> t = "String" [@@bs.new]
+external make : 'a -> t = "String" [@@bs.val]
 external fromCharCode : int -> t = "String.fromCharCode" [@@bs.val]
 external fromCharCodeMany : int array -> t = "String.fromCharCode" [@@bs.val] [@@bs.splice]
 external fromCodePoint : int -> t = "String.fromCodePoint" [@@bs.val] (** ES2015 *)
