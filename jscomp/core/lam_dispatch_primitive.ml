@@ -829,33 +829,15 @@ let translate (prim_name : string)
         | [f ] -> E.function_length f 
         | _ -> assert false
       end
-  | "#create_array" 
-    -> 
-    begin match args with 
-    | [e] -> E.uninitialized_array e 
-    | _ -> assert false
-    end
-  | "#array_append" 
-    -> 
-    begin match args with 
-    | [a;b] -> 
-      E.array_append a b 
-    | _ -> assert false 
-    end
-
+  
   | "#string_of_small_int_array"
-    ->
+    -> 
+    (* {[String.fromCharCode.apply(null,x)]} Note if we have better suport [@bs.splice],
+     we can get rid of it*)
     begin match args with 
     | [e] -> E.string_of_small_int_array e 
     | _ -> assert false
     end
-  | "#string_of_char" 
-    ->
-      begin match args with 
-      | [{expression_desc = Number (Int {i; _})} ] 
-        -> E.str (String.make 1 (Char.chr (Int32.to_int i)))
-      | _ -> call Js_config.string
-      end
   
   | "#is_instance_array" 
     ->
