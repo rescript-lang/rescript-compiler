@@ -139,6 +139,8 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Poffsetint _
       | Pstringadd 
         -> true
+      | Pjs_apply
+      | Pjs_runtime_apply
       | Pjs_call _ 
       | Pinit_mod
       | Pupdate_mod
@@ -363,7 +365,7 @@ let rec
     begin match l2 with  Lconst c2 -> c1 = c2 (* FIXME *) | _ -> false end 
   | Lapply {fn = l1; args = args1; _} -> 
     begin match l2 with Lapply {fn = l2; args = args2; _} ->
-    eq_lambda l1 l2  && List.for_all2 eq_lambda args1 args2
+    eq_lambda l1 l2  && Ext_list.for_all2_no_exn eq_lambda args1 args2
     |_ -> false end 
   | Lifthenelse (a,b,c) -> 
     begin match l2 with  Lifthenelse (a0,b0,c0) ->
@@ -381,12 +383,12 @@ let rec
     | _ -> false end 
   | Lstaticraise(id,ls) -> 
     begin match l2 with  Lstaticraise(id1,ls1) -> 
-    (id : int) = id1 && List.for_all2 eq_lambda ls ls1 
+    (id : int) = id1 && Ext_list.for_all2_no_exn eq_lambda ls ls1 
     | _ -> false end 
   | Lprim {primitive = p; args = ls; } -> 
     begin match l2 with 
     Lprim {primitive = p1; args = ls1} ->
-    eq_primitive p p1 && List.for_all2 eq_lambda ls ls1
+    eq_primitive p p1 && Ext_list.for_all2_no_exn eq_lambda ls ls1
     | _ -> false end 
   | Lfunction _  
   | Llet (_,_,_,_)

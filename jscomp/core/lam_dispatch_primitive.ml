@@ -843,13 +843,13 @@ let translate (prim_name : string)
     | _ -> assert false 
     end
 
-  | "#apply" 
-    -> 
-    begin match args with 
-    | [f ;  args] -> 
-      E.flat_call f args
-    | _ -> assert false 
-  end
+  (* | "#apply"  *)
+  (*   ->  *)
+  (*   begin match args with  *)
+  (*   | [f ;  args] ->  *)
+  (*     E.flat_call f args *)
+  (*   | _ -> assert false  *)
+  (* end *)
    | "#apply1"
     | "#apply2"
     | "#apply3"

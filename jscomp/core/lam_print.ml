@@ -105,6 +105,8 @@ let primitive ppf (prim : Lam.primitive) = match prim with
   | Pupdate_mod -> fprintf ppf "update_mod!"
   | Pbytes_to_string -> fprintf ppf "bytes_to_string"
   | Pbytes_of_string -> fprintf ppf "bytes_of_string"
+  | Pjs_apply -> fprintf ppf "#apply"
+  | Pjs_runtime_apply -> fprintf ppf "#runtime_apply"
   | Pjs_unsafe_downgrade (s,_loc) -> fprintf ppf "##%s" s 
   | Pjs_fn_run i -> fprintf ppf "#fn_run_%i" i 
   | Pjs_fn_make i -> fprintf ppf "js_fn_make_%i" i

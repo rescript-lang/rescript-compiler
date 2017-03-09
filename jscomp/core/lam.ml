@@ -96,6 +96,8 @@ type primitive =
   | Paddfloat | Psubfloat | Pmulfloat | Pdivfloat
   | Pfloatcomp of comparison
   | Pjscomp of comparison
+  | Pjs_apply (*[f;arg0;arg1; arg2; ... argN]*)
+  | Pjs_runtime_apply (* [f; [...]] *)
   (* String operations *)
   | Pstringlength 
   | Pstringrefu 
@@ -1557,7 +1559,7 @@ let convert exports lam : _ * _  =
           end
         (*  
         | Lfunction(kind,params,Lprim(prim,inner_args,inner_loc))
-          when List.for_all2 (fun x y -> 
+          when List.for_all2_no_exn (fun x y -> 
           match y with 
           | Lambda.Lvar y when Ident.same x y -> true
           | _ -> false 
@@ -1691,6 +1693,18 @@ let convert exports lam : _ * _  =
     | Lprim (Prevapply, _, _ ) -> assert false       
     | Lprim(Pdirapply, _, _) -> assert false 
     (* we might allow some arity here *)  
+    | Lprim(Pccall {prim_name = "#apply"},args,loc) ->
+      prim ~primitive:Pjs_runtime_apply ~args:(List.map aux args) loc 
+    (* EqLambda*)
+    | Lprim(Pccall {prim_name =  "#apply1"
+                               | "#apply2"
+                               | "#apply3"
+                               | "#apply4"
+                               | "#apply5"
+                               | "#apply6"
+                               | "#apply7"
+                               | "#apply8"}, args, loc) ->
+      prim ~primitive:Pjs_apply ~args:(List.map aux args) loc
     | Lprim(Pccall {prim_name = "#raw_expr"}, 
             args,loc) ->  
       begin match args with 

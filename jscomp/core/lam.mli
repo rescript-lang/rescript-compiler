@@ -94,6 +94,8 @@ type primitive =
   | Paddfloat | Psubfloat | Pmulfloat | Pdivfloat
   | Pfloatcomp of Lambda.comparison
   | Pjscomp of Lambda.comparison
+  | Pjs_apply (*[f;arg0;arg1; arg2; ... argN]*)
+  | Pjs_runtime_apply (* [f; [...]] *)
   | Pstringlength 
   | Pstringrefu 
   | Pstringrefs

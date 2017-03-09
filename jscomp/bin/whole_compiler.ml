@@ -64931,6 +64931,8 @@ type primitive =
   | Paddfloat | Psubfloat | Pmulfloat | Pdivfloat
   | Pfloatcomp of Lambda.comparison
   | Pjscomp of Lambda.comparison
+  | Pjs_apply (*[f;arg0;arg1; arg2; ... argN]*)
+  | Pjs_runtime_apply (* [f; [...]] *)
   | Pstringlength 
   | Pstringrefu 
   | Pstringrefs
@@ -65267,6 +65269,8 @@ type primitive =
   | Paddfloat | Psubfloat | Pmulfloat | Pdivfloat
   | Pfloatcomp of comparison
   | Pjscomp of comparison
+  | Pjs_apply (*[f;arg0;arg1; arg2; ... argN]*)
+  | Pjs_runtime_apply (* [f; [...]] *)
   (* String operations *)
   | Pstringlength 
   | Pstringrefu 
@@ -66728,7 +66732,7 @@ let convert exports lam : _ * _  =
           end
         (*  
         | Lfunction(kind,params,Lprim(prim,inner_args,inner_loc))
-          when List.for_all2 (fun x y -> 
+          when List.for_all2_no_exn (fun x y -> 
           match y with 
           | Lambda.Lvar y when Ident.same x y -> true
           | _ -> false 
@@ -66862,6 +66866,18 @@ let convert exports lam : _ * _  =
     | Lprim (Prevapply, _, _ ) -> assert false       
     | Lprim(Pdirapply, _, _) -> assert false 
     (* we might allow some arity here *)  
+    | Lprim(Pccall {prim_name = "#apply"},args,loc) ->
+      prim ~primitive:Pjs_runtime_apply ~args:(List.map aux args) loc 
+    (* EqLambda*)
+    | Lprim(Pccall {prim_name =  "#apply1"
+                               | "#apply2"
+                               | "#apply3"
+                               | "#apply4"
+                               | "#apply5"
+                               | "#apply6"
+                               | "#apply7"
+                               | "#apply8"}, args, loc) ->
+      prim ~primitive:Pjs_apply ~args:(List.map aux args) loc
     | Lprim(Pccall {prim_name = "#raw_expr"}, 
             args,loc) ->  
       begin match args with 
@@ -70507,6 +70523,8 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Poffsetint _
       | Pstringadd 
         -> true
+      | Pjs_apply
+      | Pjs_runtime_apply
       | Pjs_call _ 
       | Pinit_mod
       | Pupdate_mod
@@ -70731,7 +70749,7 @@ let rec
     begin match l2 with  Lconst c2 -> c1 = c2 (* FIXME *) | _ -> false end 
   | Lapply {fn = l1; args = args1; _} -> 
     begin match l2 with Lapply {fn = l2; args = args2; _} ->
-    eq_lambda l1 l2  && List.for_all2 eq_lambda args1 args2
+    eq_lambda l1 l2  && Ext_list.for_all2_no_exn eq_lambda args1 args2
     |_ -> false end 
   | Lifthenelse (a,b,c) -> 
     begin match l2 with  Lifthenelse (a0,b0,c0) ->
@@ -70749,12 +70767,12 @@ let rec
     | _ -> false end 
   | Lstaticraise(id,ls) -> 
     begin match l2 with  Lstaticraise(id1,ls1) -> 
-    (id : int) = id1 && List.for_all2 eq_lambda ls ls1 
+    (id : int) = id1 && Ext_list.for_all2_no_exn eq_lambda ls ls1 
     | _ -> false end 
   | Lprim {primitive = p; args = ls; } -> 
     begin match l2 with 
     Lprim {primitive = p1; args = ls1} ->
-    eq_primitive p p1 && List.for_all2 eq_lambda ls ls1
+    eq_primitive p p1 && Ext_list.for_all2_no_exn eq_lambda ls ls1
     | _ -> false end 
   | Lfunction _  
   | Llet (_,_,_,_)
@@ -70940,6 +70958,8 @@ let primitive ppf (prim : Lam.primitive) = match prim with
   | Pupdate_mod -> fprintf ppf "update_mod!"
   | Pbytes_to_string -> fprintf ppf "bytes_to_string"
   | Pbytes_of_string -> fprintf ppf "bytes_of_string"
+  | Pjs_apply -> fprintf ppf "#apply"
+  | Pjs_runtime_apply -> fprintf ppf "#runtime_apply"
   | Pjs_unsafe_downgrade (s,_loc) -> fprintf ppf "##%s" s 
   | Pjs_fn_run i -> fprintf ppf "#fn_run_%i" i 
   | Pjs_fn_make i -> fprintf ppf "js_fn_make_%i" i
@@ -91754,13 +91774,13 @@ let translate (prim_name : string)
     | _ -> assert false 
     end
 
-  | "#apply" 
-    -> 
-    begin match args with 
-    | [f ;  args] -> 
-      E.flat_call f args
-    | _ -> assert false 
-  end
+  (* | "#apply"  *)
+  (*   ->  *)
+  (*   begin match args with  *)
+  (*   | [f ;  args] ->  *)
+  (*     E.flat_call f args *)
+  (*   | _ -> assert false  *)
+  (* end *)
    | "#apply1"
     | "#apply2"
     | "#apply3"
@@ -91947,6 +91967,19 @@ let translate  loc
     E.raw_js_code Exp s  
   | Lam.Praw_js_code_stmt s -> 
     E.raw_js_code Stmt s 
+  | Lam.Pjs_runtime_apply -> 
+    begin match args with 
+      | [f ;  args] -> 
+        E.flat_call f args
+      | _ -> assert false 
+    end
+  | Pjs_apply -> 
+      begin match args with 
+        | fn :: rest -> 
+          E.call ~info:{arity=Full; call_info =  Call_na} fn rest 
+        | _ -> assert false
+      end
+
   | Lam.Pnull_to_opt -> 
     begin match args with 
       | [e] -> 

@@ -50,6 +50,19 @@ let translate  loc
     E.raw_js_code Exp s  
   | Lam.Praw_js_code_stmt s -> 
     E.raw_js_code Stmt s 
+  | Lam.Pjs_runtime_apply -> 
+    begin match args with 
+      | [f ;  args] -> 
+        E.flat_call f args
+      | _ -> assert false 
+    end
+  | Pjs_apply -> 
+      begin match args with 
+        | fn :: rest -> 
+          E.call ~info:{arity=Full; call_info =  Call_na} fn rest 
+        | _ -> assert false
+      end
+
   | Lam.Pnull_to_opt -> 
     begin match args with 
       | [e] -> 
