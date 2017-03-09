@@ -9,7 +9,7 @@ var suites_000 = /* tuple */[
   function () {
     return /* Eq */Block.__(0, [
               "null",
-              new String(null).concat("")
+              String(null).concat("")
             ]);
   }
 ];

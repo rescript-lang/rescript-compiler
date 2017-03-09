@@ -70418,6 +70418,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
            *)
           | _ , _-> false
         end 
+
       | Pjs_boolean_to_bool
       | Pjs_typeof
       | Pis_null
@@ -70425,12 +70426,9 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Pis_null_undefined
       | Pnull_to_opt       
       | Pundefined_to_opt         
-      | Pnull_undefined_to_opt -> 
-        List.for_all no_side_effects args 
-      | Pjs_call _ -> false 
+      | Pnull_undefined_to_opt 
       | Pjs_fn_make _         
-      | Pjs_object_create _ -> 
-        List.for_all no_side_effects args   
+      | Pjs_object_create _
         (** TODO: check *)      
       | Pbytes_to_string 
       | Pbytes_of_string 
@@ -70491,6 +70489,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Poffsetint _
       | Pstringadd 
         -> true
+      | Pjs_call _ 
       | Pinit_mod
       | Pupdate_mod
       | Pjs_unsafe_downgrade _
