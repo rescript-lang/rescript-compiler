@@ -91980,7 +91980,7 @@ let translate (prim_name : string)
     | [e] -> E.to_number e 
     | _ -> assert false
     end
-
+(*
   | "#json_stringify"      
     -> 
     begin match args with 
@@ -91988,7 +91988,7 @@ let translate (prim_name : string)
       E.to_json_string e
     | _ -> 
       assert false      
-    end
+    end *)
    (*
     | "#uninitialized_object"
       ->

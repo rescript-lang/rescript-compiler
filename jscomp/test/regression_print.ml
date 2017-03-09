@@ -1,5 +1,5 @@
 include (struct
-external to_str : 'a -> string = "#json_stringify"
+external to_str : 'a -> string = "JSON.stringify" [@@bs.val]
 let debug x = print_endline (to_str x )
 
 let  () =
