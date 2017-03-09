@@ -823,22 +823,20 @@ let translate (prim_name : string)
     ->  E.not_implemented prim_name
 
 
-  
+  (*
   | "#string_of_small_int_array"
     -> 
-    (* {[String.fromCharCode.apply(null,x)]} Note if we have better suport [@bs.splice],
-     we can get rid of it*)
     begin match args with 
     | [e] -> E.string_of_small_int_array e 
     | _ -> assert false
     end
-  
-  | "#is_instance_array" 
+  *)
+  (* | "#is_instance_array" 
     ->
     begin match args with 
     | [e] -> E.is_instance_array e 
     | _ -> assert false
-   end
+   end *)
   
   | "#anything_to_number" 
     -> 
@@ -855,26 +853,26 @@ let translate (prim_name : string)
     | _ -> 
       assert false      
     end
-   
+   (*
     | "#uninitialized_object"
       ->
       begin match args with 
         | [ tag; size] -> E.uninitialized_object tag size 
-        | _ -> assert false  end
-    | "#obj_length" 
+        | _ -> assert false  end *)
+    (* | "#obj_length" 
       -> 
       begin match args with 
         | [e] -> E.obj_length e 
         | _ -> assert false 
-      end
-
+      end *)
+    (*   
     | "#obj_set_length"
       ->
       begin match args with 
         | [a; b] -> E.set_length a b 
         | _ -> assert false 
       end
-
+      *)
     | _ -> 
       if prim_name_length > 0 && prim_name.[0] = '#' then 
         (** TODO: provide better error location *)

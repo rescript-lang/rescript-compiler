@@ -185,6 +185,13 @@ type primitive =
   | Pjs_boolean_to_bool
   | Pjs_typeof
   | Pjs_function_length 
+  
+  | Pjs_string_of_small_array
+  | Pjs_is_instance_array
+  | Pcaml_obj_length
+  | Pcaml_obj_set_length
+  | Pcaml_uninitialized_obj
+
 type apply_status =
   | App_na
   | App_ml_full
@@ -1769,6 +1776,20 @@ let convert exports lam : _ * _  =
           prim ~primitive:Pstringadd ~args:[aux a; aux b] loc 
         | _ -> assert false 
       end 
+    | Lprim(Pccall {prim_name = "#is_instance_array"}, args, loc) -> 
+        prim ~primitive:Pjs_is_instance_array ~args:(List.map aux args) loc 
+    | Lprim(Pccall {prim_name = "#string_of_small_int_array"}, args, loc) ->
+        prim ~primitive:Pjs_string_of_small_array~args:(List.map aux args) loc   
+          (* {[String.fromCharCode.apply(null,x)]} 
+            Note if we have better suport [@bs.splice],
+            we can get rid of it*)
+    | Lprim(Pccall {prim_name = "#uninitialized_object"}, args, loc) ->          
+      prim ~primitive:Pcaml_uninitialized_obj ~args:(List.map aux args) loc   
+    | Lprim(Pccall {prim_name = "#obj_set_length"}, args, loc) ->          
+      prim ~primitive:Pcaml_obj_set_length ~args:(List.map aux args) loc   
+    | Lprim(Pccall {prim_name = "#obj_length"}, args, loc) ->          
+      prim ~primitive:Pcaml_obj_length ~args:(List.map aux args) loc   
+
     | Lprim(Pccall {prim_name = "#boolean_to_bool"}, args, loc) -> 
       begin match args with 
         | [ e ] -> prim ~primitive:Pjs_boolean_to_bool ~args:[aux e] loc 

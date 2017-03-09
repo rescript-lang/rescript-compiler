@@ -139,7 +139,12 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Poffsetint _
       | Pstringadd 
       | Pjs_function_length
+      | Pcaml_obj_length
+      | Pjs_is_instance_array
         -> true
+      | Pjs_string_of_small_array
+      | Pcaml_uninitialized_obj
+      | Pcaml_obj_set_length        
       | Pjs_apply
       | Pjs_runtime_apply
       | Pjs_call _ 
@@ -515,6 +520,11 @@ and eq_primitive ( lhs : Lam.primitive) (rhs : Lam.primitive) =
   | Pupdate_mod -> rhs = Pupdate_mod
   | Pbswap16 -> rhs = Pbswap16
   | Pjs_function_length -> rhs = Pjs_function_length
+  | Pjs_string_of_small_array -> rhs = Pjs_string_of_small_array
+  | Pjs_is_instance_array -> rhs = Pjs_is_instance_array
+  | Pcaml_obj_length -> rhs = Pcaml_obj_length
+  | Pcaml_obj_set_length -> rhs = Pcaml_obj_set_length
+  | Pcaml_uninitialized_obj -> rhs = Pcaml_uninitialized_obj
   | Pccall {prim_name = n0 ;  prim_native_name = nn0} ->  (match rhs with Pccall {prim_name = n1; prim_native_name = nn1} ->    n0 = n1 && nn0 = nn1 | _ -> false )    
   | Pfield (n0, _dbg_info0) ->  (match rhs with Pfield (n1, _dbg_info1) ->  n0 = n1  | _ -> false )    
   | Psetfield(i0, b0, _dbg_info0) -> (match rhs with Psetfield(i1, b1, _dbg_info1) ->  i0 = i1 && b0 = b1 | _ -> false)

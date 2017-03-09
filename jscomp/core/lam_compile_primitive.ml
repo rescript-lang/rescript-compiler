@@ -104,6 +104,31 @@ let translate  loc
     | [e] -> E.function_length e 
     | _ -> assert false 
     end
+  | Lam.Pcaml_obj_length -> 
+    begin match args with 
+    | [e] -> E.obj_length e 
+    | _ -> assert false 
+    end
+  | Lam.Pcaml_obj_set_length -> 
+    begin match args with 
+    | [a;b] -> E.set_length a b 
+    | _ -> assert false 
+  end
+  | Lam.Pjs_string_of_small_array -> 
+    begin match args with 
+    | [e] -> E.string_of_small_int_array e 
+    | _ -> assert false 
+  end 
+  | Lam.Pjs_is_instance_array -> 
+    begin match args with 
+    | [e] -> E.is_instance_array e 
+    | _ -> assert false 
+  end 
+  | Lam.Pcaml_uninitialized_obj -> 
+    begin match args with 
+    | [tag;size] -> E.uninitialized_object tag size 
+    | _ -> assert false 
+    end
   | Lam.Pnull_undefined_to_opt -> 
     (*begin match args with 
     | [e] -> 
