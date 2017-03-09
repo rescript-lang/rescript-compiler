@@ -843,26 +843,6 @@ let translate (prim_name : string)
     | _ -> assert false 
     end
 
-  (* | "#apply"  *)
-  (*   ->  *)
-  (*   begin match args with  *)
-  (*   | [f ;  args] ->  *)
-  (*     E.flat_call f args *)
-  (*   | _ -> assert false  *)
-  (* end *)
-   | "#apply1"
-    | "#apply2"
-    | "#apply3"
-    | "#apply4"
-    | "#apply5"
-    | "#apply6"
-    | "#apply7"
-    | "#apply8" -> 
-      begin match args with 
-        | fn :: rest -> 
-          E.call ~info:{arity=Full; call_info =  Call_na} fn rest 
-        | _ -> assert false
-      end
   | "#string_of_small_int_array"
     ->
     begin match args with 

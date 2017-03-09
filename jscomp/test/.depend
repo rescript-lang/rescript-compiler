@@ -99,6 +99,7 @@ class_repr.cmj : ../stdlib/oo.cmj
 class_setter_getter.cmj : ../runtime/js.cmj class_setter_getter.cmi
 class_test.cmj : mt.cmj
 class_type_ffi_test.cmj : ../runtime/js.cmj
+compare_test.cmj :
 complex_if_test.cmj : mt.cmj ../stdlib/bytes.cmj
 complex_test.cmj : mt.cmj ../stdlib/complex.cmj
 complex_while_loop.cmj :
