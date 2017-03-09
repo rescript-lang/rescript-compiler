@@ -184,7 +184,7 @@ type primitive =
 
   | Pjs_boolean_to_bool
   | Pjs_typeof
-  
+  | Pjs_function_length 
 
 type switch  =
   { sw_numconsts: int;

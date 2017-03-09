@@ -65021,7 +65021,7 @@ type primitive =
 
   | Pjs_boolean_to_bool
   | Pjs_typeof
-  
+  | Pjs_function_length 
 
 type switch  =
   { sw_numconsts: int;
@@ -65357,7 +65357,7 @@ type primitive =
   | Pis_null_undefined
   | Pjs_boolean_to_bool
   | Pjs_typeof
-
+  | Pjs_function_length 
 type apply_status =
   | App_na
   | App_ml_full
@@ -66947,6 +66947,8 @@ let convert exports lam : _ * _  =
         | [ e ] -> prim ~primitive:Pjs_boolean_to_bool ~args:[aux e] loc 
         | _ -> assert false 
       end
+    | Lprim(Pccall {prim_name = "#function_length"}, args, loc) -> 
+      prim ~primitive:(Pjs_function_length) ~args:(List.map aux args) loc 
     | Lprim(Pccall {prim_name = "#unsafe_lt"}, args, loc) -> 
       prim ~primitive:(Pjscomp Clt) ~args:(List.map aux args) loc 
     | Lprim(Pccall {prim_name = "#unsafe_gt"}, args, loc) -> 
@@ -70522,6 +70524,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
 
       | Poffsetint _
       | Pstringadd 
+      | Pjs_function_length
         -> true
       | Pjs_apply
       | Pjs_runtime_apply
@@ -70897,7 +70900,7 @@ and eq_primitive ( lhs : Lam.primitive) (rhs : Lam.primitive) =
   | Pinit_mod -> rhs = Pinit_mod
   | Pupdate_mod -> rhs = Pupdate_mod
   | Pbswap16 -> rhs = Pbswap16
-  
+  | Pjs_function_length -> rhs = Pjs_function_length
   | Pccall {prim_name = n0 ;  prim_native_name = nn0} ->  (match rhs with Pccall {prim_name = n1; prim_native_name = nn1} ->    n0 = n1 && nn0 = nn1 | _ -> false )    
   | Pfield (n0, _dbg_info0) ->  (match rhs with Pfield (n1, _dbg_info1) ->  n0 = n1  | _ -> false )    
   | Psetfield(i0, b0, _dbg_info0) -> (match rhs with Psetfield(i1, b1, _dbg_info1) ->  i0 = i1 && b0 = b1 | _ -> false)
@@ -71119,6 +71122,7 @@ let primitive ppf (prim : Lam.primitive) = match prim with
   | Pjs_apply -> fprintf ppf "#apply"
   | Pjs_runtime_apply -> fprintf ppf "#runtime_apply"
   | Pjs_unsafe_downgrade (s,_loc) -> fprintf ppf "##%s" s 
+  | Pjs_function_length -> fprintf ppf "#function_length"
   | Pjs_fn_run i -> fprintf ppf "#fn_run_%i" i 
   | Pjs_fn_make i -> fprintf ppf "js_fn_make_%i" i
   | Pjs_fn_method i -> fprintf ppf "js_fn_method_%i" i 
@@ -91911,13 +91915,7 @@ let translate (prim_name : string)
   | "caml_ml_set_binary_mode"
     ->  E.not_implemented prim_name
 
-  | "#function_length"
 
-    -> begin
-        match args with 
-        | [f ] -> E.function_length f 
-        | _ -> assert false
-      end
   
   | "#string_of_small_int_array"
     -> 
@@ -92135,7 +92133,12 @@ let translate  loc
         *)
       end
       | _ -> assert false 
-      end    
+    end    
+  | Pjs_function_length -> 
+    begin match args with 
+    | [e] -> E.function_length e 
+    | _ -> assert false 
+    end
   | Lam.Pnull_undefined_to_opt -> 
     (*begin match args with 
     | [e] -> 

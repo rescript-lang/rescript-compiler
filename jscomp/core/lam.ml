@@ -184,7 +184,7 @@ type primitive =
   | Pis_null_undefined
   | Pjs_boolean_to_bool
   | Pjs_typeof
-
+  | Pjs_function_length 
 type apply_status =
   | App_na
   | App_ml_full
@@ -1774,6 +1774,8 @@ let convert exports lam : _ * _  =
         | [ e ] -> prim ~primitive:Pjs_boolean_to_bool ~args:[aux e] loc 
         | _ -> assert false 
       end
+    | Lprim(Pccall {prim_name = "#function_length"}, args, loc) -> 
+      prim ~primitive:(Pjs_function_length) ~args:(List.map aux args) loc 
     | Lprim(Pccall {prim_name = "#unsafe_lt"}, args, loc) -> 
       prim ~primitive:(Pjscomp Clt) ~args:(List.map aux args) loc 
     | Lprim(Pccall {prim_name = "#unsafe_gt"}, args, loc) -> 

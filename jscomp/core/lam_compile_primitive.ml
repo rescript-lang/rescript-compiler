@@ -98,7 +98,12 @@ let translate  loc
         *)
       end
       | _ -> assert false 
-      end    
+    end    
+  | Pjs_function_length -> 
+    begin match args with 
+    | [e] -> E.function_length e 
+    | _ -> assert false 
+    end
   | Lam.Pnull_undefined_to_opt -> 
     (*begin match args with 
     | [e] -> 

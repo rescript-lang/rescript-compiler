@@ -822,13 +822,7 @@ let translate (prim_name : string)
   | "caml_ml_set_binary_mode"
     ->  E.not_implemented prim_name
 
-  | "#function_length"
 
-    -> begin
-        match args with 
-        | [f ] -> E.function_length f 
-        | _ -> assert false
-      end
   
   | "#string_of_small_int_array"
     -> 
