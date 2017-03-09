@@ -73,21 +73,21 @@ external undefined : 'a undefined = ""
 (* end::predefined_js_values[]*)
 
 (* tag::utility_functions[]*)
-external to_bool : boolean -> bool = "js_boolean_to_bool"
+external to_bool : boolean -> bool = "#boolean_to_bool"
 (** convert Js boolean to OCaml bool *)
-external typeof : 'a -> string = "js_typeof"
+external typeof : 'a -> string = "#typeof"
 (** [typeof x] will be compiled as [typeof x] in JS *)
-external log : 'a -> unit = "js_dump"
+external log : 'a -> unit = "console.log" [@@bs.val]
 (** A convenience function to log *)
 
 (** {4 operators }*)
-external unsafe_lt : 'a -> 'a -> boolean = "js_unsafe_lt"
+external unsafe_lt : 'a -> 'a -> bool = "#unsafe_lt"
 (**  [unsafe_lt a b] will be compiled as [a < b] *)
-external unsafe_le : 'a -> 'a -> boolean = "js_unsafe_le"
+external unsafe_le : 'a -> 'a -> bool = "#unsafe_le"
 (**  [unsafe_le a b] will be compiled as [a <= b] *)
-external unsafe_gt : 'a -> 'a -> boolean = "js_unsafe_gt"
+external unsafe_gt : 'a -> 'a -> bool = "#unsafe_gt"
 (**  [unsafe_gt a b] will be compiled as [a > b] *)
-external unsafe_ge : 'a -> 'a -> boolean = "js_unsafe_ge"
+external unsafe_ge : 'a -> 'a -> bool = "#unsafe_ge"
 (**  [unsafe_ge a b] will be compiled as [a >= b] *)
 (* end::utility_functions[]*)
 

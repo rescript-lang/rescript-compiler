@@ -24,9 +24,9 @@
 
 (*tag::interface_all[]*)
 type + 'a t = 'a Js.null
-external to_opt : 'a t -> 'a option = "js_from_nullable"
+external to_opt : 'a t -> 'a option = "#null_to_opt"
 external return : 'a -> 'a t  = "%identity"
-external test : 'a t -> bool = "js_is_nil"
+external test : 'a t -> bool = "#is_nil"
 external empty : 'a t = "null" [@@bs.val]
 (*end::interface_all[]*)
 

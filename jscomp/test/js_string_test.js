@@ -9,7 +9,7 @@ var suites_000 = /* tuple */[
   function () {
     return /* Eq */Block.__(0, [
               "null",
-              new String(null).concat("")
+              String(null).concat("")
             ]);
   }
 ];
@@ -100,7 +100,7 @@ var suites_001 = /* :: */[
                     function () {
                       return /* Eq */Block.__(0, [
                                 /* Some */[97],
-                                Js_primitive.js_from_def("foobar".codePointAt(4))
+                                Js_primitive.undefined_to_opt("foobar".codePointAt(4))
                               ]);
                     }
                   ],
@@ -110,7 +110,7 @@ var suites_001 = /* :: */[
                       function () {
                         return /* Eq */Block.__(0, [
                                   /* None */0,
-                                  Js_primitive.js_from_def("foobar".codePointAt(98))
+                                  Js_primitive.undefined_to_opt("foobar".codePointAt(98))
                                 ]);
                       }
                     ],
@@ -233,7 +233,7 @@ var suites_001 = /* :: */[
                                                               "na",
                                                               "na"
                                                             ]],
-                                                          Js_primitive.js_from_nullable("banana".match((/na+/g)))
+                                                          Js_primitive.null_to_opt("banana".match((/na+/g)))
                                                         ]);
                                               }
                                             ],
@@ -243,7 +243,7 @@ var suites_001 = /* :: */[
                                                 function () {
                                                   return /* Eq */Block.__(0, [
                                                             /* None */0,
-                                                            Js_primitive.js_from_nullable("banana".match((/nanana+/g)))
+                                                            Js_primitive.null_to_opt("banana".match((/nanana+/g)))
                                                           ]);
                                                 }
                                               ],

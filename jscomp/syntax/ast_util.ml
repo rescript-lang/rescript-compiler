@@ -94,7 +94,7 @@ let js_property loc obj name =
     ((Exp.apply ~loc
         (Exp.ident ~loc
            {loc;
-            txt = Ldot (Ast_literal.Lid.js_unsafe, Literals.js_unsafe_downgrade)})
+            txt = Ldot (Ast_literal.Lid.js_unsafe, Literals.unsafe_downgrade)})
         ["",obj]), name)
 
 (* TODO: 
@@ -128,10 +128,10 @@ let generic_apply  kind loc
       match kind with 
       | `Fn | `PropertyFn ->  
         Longident.Ldot (Ast_literal.Lid.js_unsafe, 
-                        Literals.js_fn_run ^ string_of_int arity)
+                        Literals.fn_run ^ string_of_int arity)
       | `Method -> 
         Longident.Ldot(Ast_literal.Lid.js_unsafe,
-                       Literals.js_method_run ^ string_of_int arity
+                       Literals.method_run ^ string_of_int arity
                       ) in 
     Parsetree.Pexp_apply (Exp.ident {txt ; loc}, ("",fn) :: List.map (fun x -> "",x) args)
   else 
@@ -140,10 +140,10 @@ let generic_apply  kind loc
     let pval_prim, pval_type = 
       match kind with 
       | `Fn | `PropertyFn -> 
-        [Literals.js_fn_run; string_arity], 
+        ["#fn_run"; string_arity], 
         arrow ~loc ""  (lift_curry_type loc args_type result_type ) fn_type
       | `Method -> 
-        [Literals.js_method_run ; string_arity], 
+        ["#method_run" ; string_arity], 
         arrow ~loc "" (lift_method_type loc args_type result_type) fn_type
     in
     Ast_external.create_local_external loc ~pval_prim ~pval_type 
@@ -250,16 +250,16 @@ let generic_to_uncurry_exp kind loc (self : Ast_mapper.mapper)  pat body
     let txt = 
       match kind with 
       | `Fn -> 
-        Longident.Ldot ( Ast_literal.Lid.js_unsafe, Literals.js_fn_mk ^ string_of_int arity)
+        Longident.Ldot ( Ast_literal.Lid.js_unsafe, Literals.fn_mk ^ string_of_int arity)
       | `Method_callback -> 
-        Longident.Ldot (Ast_literal.Lid.js_unsafe,  Literals.js_fn_method ^ string_of_int arity) in
+        Longident.Ldot (Ast_literal.Lid.js_unsafe,  Literals.fn_method ^ string_of_int arity) in
     Parsetree.Pexp_apply (Exp.ident {txt;loc} , ["",body])
 
   else 
     let pval_prim =
       [ (match kind with 
-            | `Fn -> Literals.js_fn_mk
-            | `Method_callback -> Literals.js_fn_method); 
+            | `Fn -> "#fn_mk"
+            | `Method_callback -> "#fn_method"); 
         string_of_int arity]  in
     let fn_type , args_type, result_type  = Ast_comb.tuple_type_pair ~loc `Make arity  in 
     let pval_type = arrow ~loc "" fn_type (
@@ -281,7 +281,7 @@ let to_method_callback  =
 let handle_debugger loc payload = 
   if Ast_payload.as_empty_structure payload then
     Parsetree.Pexp_apply
-      (Exp.ident {txt = Ldot(Ast_literal.Lid.js_unsafe, Literals.js_debugger ); loc}, 
+      (Exp.ident {txt = Ldot(Ast_literal.Lid.js_unsafe, Literals.debugger ); loc}, 
        ["", Ast_literal.val_unit ~loc ()])
   else Location.raise_errorf ~loc "bs.raw can only be applied to a string"
 
@@ -299,7 +299,7 @@ let handle_raw ?(check_js_regex = false) loc payload =
           Exp.ident {loc; 
                      txt = 
                        Ldot (Ast_literal.Lid.js_unsafe, 
-                             Literals.js_pure_expr)},
+                             Literals.raw_expr)},
           ["",exp]
         )
       in
@@ -311,7 +311,7 @@ let handle_external loc x =
     Ast_helper.Exp.apply 
     (Exp.ident ~loc 
          {loc; txt = Ldot (Ast_literal.Lid.js_unsafe, 
-                           Literals.js_pure_expr)})
+                           Literals.raw_expr)})
       ~loc 
       [Ext_string.empty, 
         Exp.constant ~loc (Const_string (x,Some Ext_string.empty))] in 
@@ -346,7 +346,7 @@ let handle_raw_structure loc payload =
       -> 
       let pexp_desc = 
         Parsetree.Pexp_apply(
-          Exp.ident {txt = Ldot (Ast_literal.Lid.js_unsafe,  Literals.js_pure_stmt); loc},
+          Exp.ident {txt = Ldot (Ast_literal.Lid.js_unsafe,  Literals.raw_stmt); loc},
           ["",exp]) in 
       Ast_helper.Str.eval 
         { exp with pexp_desc }

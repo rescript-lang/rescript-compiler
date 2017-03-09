@@ -29,6 +29,12 @@ let test2 () =
   | Some f -> Js.log f 
   | None -> Js.log "non node environment"
 
+
+let test3 () = 
+  if [%external __DEV__] = None then
+    Js.log "production mode"
+
+
 let f x = 
   Js.Undefined.test x   
 

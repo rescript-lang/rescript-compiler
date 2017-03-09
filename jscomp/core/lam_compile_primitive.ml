@@ -58,7 +58,7 @@ let translate  loc
             E.econd (E.is_nil e) Js_of_lam_option.none (Js_of_lam_option.some e)
           | _ ->
             E.runtime_call Js_config.js_primitive
-            "js_from_nullable" args 
+            "null_to_opt" args 
             (* GPR #974
                let id = Ext_ident.create "v" in
                let tmp = E.var id in
@@ -76,7 +76,7 @@ let translate  loc
           E.econd (E.is_undef e) Js_of_lam_option.none (Js_of_lam_option.some e)
         | _ -> 
           E.runtime_call Js_config.js_primitive  
-          "js_from_def" args 
+          "undefined_to_opt" args 
         (* # GPR 974
           let id = Ext_ident.create "v" in
           let tmp = E.var id in
@@ -96,7 +96,7 @@ let translate  loc
           (Js_of_lam_option.some e)
       | _ ->*)
        E.runtime_call Js_config.js_primitive        
-      "js_from_nullable_def" args 
+      "null_undefined_to_opt" args 
       (*end*)
     (* | _ -> assert false  *)
     (* end *)
@@ -112,7 +112,7 @@ let translate  loc
     end
   | Pis_null_undefined -> 
       E.runtime_call Js_config.js_primitive
-        "js_is_nil_undef" args 
+        "is_nil_undef" args 
   | Pjs_boolean_to_bool -> 
     begin match args with 
     | [e] -> E.bool_of_boolean e 
@@ -383,6 +383,11 @@ let translate  loc
   | Pxorbint Lambda.Pint64 
     ->
     Js_long.xor args    
+  | Pjscomp cmp ->
+    begin match args with
+    | [l;r] -> E.js_comp cmp l r 
+    | _ -> assert false 
+    end
   | Pbintcomp (Pnativeint ,cmp)
   | Pfloatcomp cmp
   | Pintcomp cmp

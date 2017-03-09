@@ -25,8 +25,8 @@
 
 
 
-external new_uninitialized : int -> 'a array = "js_create_array"
-external append : 'a array -> 'a array -> 'a array = "js_array_append"
+external new_uninitialized : int -> 'a array = "#create_array"
+external append : 'a array -> 'a array -> 'a array = "#array_append"
 external make : int -> 'a -> 'a array = "caml_make_vect"
 
 val caml_array_sub : 'a array -> int -> int -> 'a array

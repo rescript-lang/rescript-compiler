@@ -21,7 +21,7 @@ var suites_000 = /* tuple */[
   function () {
     return /* Eq */Block.__(0, [
               "3",
-              "" + 3
+              String(3)
             ]);
   }
 ];

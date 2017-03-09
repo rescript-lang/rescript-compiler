@@ -22,4 +22,5 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-external to_string : nativeint -> string = "js_anything_to_string"
+external to_string : nativeint -> string = "String"
+[@@bs.val]

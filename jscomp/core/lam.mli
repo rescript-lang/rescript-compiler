@@ -93,6 +93,7 @@ type primitive =
   | Pnegfloat | Pabsfloat
   | Paddfloat | Psubfloat | Pmulfloat | Pdivfloat
   | Pfloatcomp of Lambda.comparison
+  | Pjscomp of Lambda.comparison
   | Pstringlength 
   | Pstringrefu 
   | Pstringrefs

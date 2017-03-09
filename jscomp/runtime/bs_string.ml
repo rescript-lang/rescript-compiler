@@ -22,7 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-external string_of_char : char -> string = "js_string_of_char"
+external string_of_char : char -> string = "#string_of_char"
 (** TODO: check with {!String.of_char} 
     it's quite common that we have
     {[ Bs_string.of_char x.[0] ]}
@@ -42,12 +42,13 @@ external slice_rest : string -> int -> string = "slice"
     [@@bs.send]
 external index_of : string -> string -> int = "indexOf"
     [@@bs.send]
-external append : string -> string -> string = "js_string_append"
-external of_small_int_array : int array -> string = "js_string_of_small_int_array"
-external of_small_int32_array : int32 array -> string = "js_string_of_small_int_array"
+external append : string -> string -> string = "#string_append"
+external of_small_int_array : int array -> string = "#string_of_small_int_array"
+external of_small_int32_array : int32 array -> string = "#string_of_small_int_array"
 external lastIndexOf : string -> string -> int = "lastIndexOf"
-    [@@bs.send]    
-external of_any : 'a -> string = "js_anything_to_string"
+[@@bs.send]    
+external of_any : 'a -> string = "String"
+[@@bs.val]
 
 
 (***********************)

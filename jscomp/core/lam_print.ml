@@ -106,7 +106,7 @@ let primitive ppf (prim : Lam.primitive) = match prim with
   | Pbytes_to_string -> fprintf ppf "bytes_to_string"
   | Pbytes_of_string -> fprintf ppf "bytes_of_string"
   | Pjs_unsafe_downgrade (s,_loc) -> fprintf ppf "##%s" s 
-  | Pjs_fn_run i -> fprintf ppf "js_fn_run_%i" i 
+  | Pjs_fn_run i -> fprintf ppf "#fn_run_%i" i 
   | Pjs_fn_make i -> fprintf ppf "js_fn_make_%i" i
   | Pjs_fn_method i -> fprintf ppf "js_fn_method_%i" i 
   | Pjs_fn_runmethod i -> fprintf ppf "js_fn_runmethod_%i" i 
@@ -179,6 +179,13 @@ let primitive ppf (prim : Lam.primitive) = match prim with
   | Pfloatcomp(Cle) -> fprintf ppf "<=."
   | Pfloatcomp(Cgt) -> fprintf ppf ">."
   | Pfloatcomp(Cge) -> fprintf ppf ">=."
+  | Pjscomp(Ceq) -> fprintf ppf "#=="
+  | Pjscomp(Cneq) -> fprintf ppf "#!="
+  | Pjscomp(Clt) -> fprintf ppf "#<"
+  | Pjscomp(Cle) -> fprintf ppf "#<="
+  | Pjscomp(Cgt) -> fprintf ppf "#>"
+  | Pjscomp(Cge) -> fprintf ppf "#>="
+
   | Pstringlength -> fprintf ppf "string.length"
   | Pstringrefu -> fprintf ppf "string.unsafe_get"
   | Pstringrefs -> fprintf ppf "string.get"

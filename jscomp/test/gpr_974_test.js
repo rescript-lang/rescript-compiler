@@ -4,7 +4,7 @@ var Caml_obj                = require("../../lib/js/caml_obj");
 var Js_primitive            = require("../../lib/js/js_primitive");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
 
-if (!Caml_obj.caml_equal(Js_primitive.js_from_nullable_def(""), /* Some */[""])) {
+if (!Caml_obj.caml_equal(Js_primitive.null_undefined_to_opt(""), /* Some */[""])) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -15,7 +15,7 @@ if (!Caml_obj.caml_equal(Js_primitive.js_from_nullable_def(""), /* Some */[""]))
       ];
 }
 
-if (!Caml_obj.caml_equal(Js_primitive.js_from_def(""), /* Some */[""])) {
+if (!Caml_obj.caml_equal(Js_primitive.undefined_to_opt(""), /* Some */[""])) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -26,7 +26,7 @@ if (!Caml_obj.caml_equal(Js_primitive.js_from_def(""), /* Some */[""])) {
       ];
 }
 
-if (!Caml_obj.caml_equal(Js_primitive.js_from_nullable(""), /* Some */[""])) {
+if (!Caml_obj.caml_equal(Js_primitive.null_to_opt(""), /* Some */[""])) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [

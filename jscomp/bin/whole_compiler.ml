@@ -21505,17 +21505,17 @@ val setter_suffix : string
 val setter_suffix_len : int
 
 
-val js_debugger : string
-val js_pure_expr : string
-val js_pure_stmt : string
-val js_unsafe_downgrade : string
-val js_fn_run : string
-val js_method_run : string
-val js_fn_method : string
-val js_fn_mk : string
+val debugger : string
+val raw_expr : string
+val raw_stmt : string
+val unsafe_downgrade : string
+val fn_run : string
+val method_run : string
+val fn_method : string
+val fn_mk : string
 
 (** callback actually, not exposed to user yet *)
-val js_fn_runmethod : string 
+(* val js_fn_runmethod : string *)
 
 val bs_deriving : string
 val bs_deriving_dot : string
@@ -21621,16 +21621,16 @@ let imul = "imul" (* signed int32 mul *)
 let setter_suffix = "#="
 let setter_suffix_len = String.length setter_suffix
 
-let js_debugger = "js_debugger"
-let js_pure_expr = "js_pure_expr"
-let js_pure_stmt = "js_pure_stmt"
-let js_unsafe_downgrade = "js_unsafe_downgrade"
-let js_fn_run = "js_fn_run"
-let js_method_run = "js_method_run"
+let debugger = "debugger"
+let raw_expr = "raw_expr"
+let raw_stmt = "raw_stmt"
+let unsafe_downgrade = "unsafe_downgrade"
+let fn_run = "fn_run"
+let method_run = "method_run"
 
-let js_fn_method = "js_fn_method"
-let js_fn_mk = "js_fn_mk"
-let js_fn_runmethod = "js_fn_runmethod"
+let fn_method = "fn_method"
+let fn_mk = "fn_mk"
+(*let js_fn_runmethod = "js_fn_runmethod"*)
 
 let bs_deriving = "bs.deriving"
 let bs_deriving_dot = "bs.deriving."
@@ -60824,6 +60824,7 @@ let convert keyword (name : string) =
           | '.' -> Buffer.add_string buffer "$dot"
           | '%' -> Buffer.add_string buffer "$percent"
           | '~' -> Buffer.add_string buffer "$tilde"
+          | '#' -> Buffer.add_string buffer "$hash"
           | 'a'..'z' | 'A'..'Z'| '_'|'$' |'0'..'9'-> Buffer.add_char buffer  c
           | _ -> Buffer.add_string buffer "$unknown"
         done; Buffer.contents buffer)
@@ -64067,7 +64068,7 @@ and expression_desc =
   | Char_of_int of expression
   | Char_to_int of expression 
   | Array_of_size of expression 
-    (* used in [js_create_array] primitive, note having
+    (* used in [#create_array] primitive, note having
        uninitilized array is not as bad as in ocaml, 
        since GC does not rely on it
      *)
@@ -64929,6 +64930,7 @@ type primitive =
   | Pnegfloat | Pabsfloat
   | Paddfloat | Psubfloat | Pmulfloat | Pdivfloat
   | Pfloatcomp of Lambda.comparison
+  | Pjscomp of Lambda.comparison
   | Pstringlength 
   | Pstringrefu 
   | Pstringrefs
@@ -65264,6 +65266,7 @@ type primitive =
   | Pnegfloat | Pabsfloat
   | Paddfloat | Psubfloat | Pmulfloat | Pdivfloat
   | Pfloatcomp of comparison
+  | Pjscomp of comparison
   (* String operations *)
   | Pstringlength 
   | Pstringrefu 
@@ -66859,7 +66862,7 @@ let convert exports lam : _ * _  =
     | Lprim (Prevapply, _, _ ) -> assert false       
     | Lprim(Pdirapply, _, _) -> assert false 
     (* we might allow some arity here *)  
-    | Lprim(Pccall {prim_name = "js_pure_expr"}, 
+    | Lprim(Pccall {prim_name = "#raw_expr"}, 
             args,loc) ->  
       begin match args with 
         | [Lconst( Const_base (Const_string(s,_)))] -> 
@@ -66867,7 +66870,7 @@ let convert exports lam : _ * _  =
             ~args:[] loc 
         | _ -> assert false 
       end  
-    | Lprim(Pccall {prim_name = "js_pure_stmt"}, 
+    | Lprim(Pccall {prim_name = "#raw_stmt"}, 
             args,loc) ->  
       begin match args with 
         | [Lconst( Const_base (Const_string(s,_)))] -> 
@@ -66875,76 +66878,95 @@ let convert exports lam : _ * _  =
             ~args:[] loc         
         | _ -> assert false 
       end 
-    | Lprim(Pccall {prim_name =  "js_from_def"}, args, loc) 
+    | Lprim(Pccall {prim_name =  "#undefined_to_opt"}, args, loc) 
       -> 
       begin match args with 
         | [ arg ] -> 
-          prim ~primitive:Pundefined_to_opt ~args:[aux arg] loc 
+          let arg = aux arg in 
+          (* if [arg] is undefined return [None] otherwise return [Some ]
+          *)
+          (* match arg with 
+          | Lifthenelse 
+            (Lprim (Pjs_typeof, [e])) *)
+          prim ~primitive:Pundefined_to_opt ~args:[arg] loc 
         | _ -> assert false 
       end
-    | Lprim(Pccall {prim_name =  "js_from_nullable_def"}, args, loc) 
+    | Lprim(Pccall {prim_name =  "#null_undefined_to_opt"}, args, loc) 
       -> 
       begin match args with 
         | [ arg ] -> 
           prim ~primitive:Pnull_undefined_to_opt ~args:[aux arg] loc 
         | _ -> assert false 
       end
-    | Lprim(Pccall {prim_name =  "js_from_nullable"}, args, loc) 
+    | Lprim(Pccall {prim_name =  "#null_to_opt"}, args, loc) 
       -> 
       begin match args with 
         | [ arg ] -> 
           prim ~primitive:Pnull_to_opt ~args:[aux arg] loc 
         | _ -> assert false 
       end  
-    | Lprim (Pccall {prim_name = "js_is_nil" }, args, loc) -> 
+    | Lprim (Pccall {prim_name = "#is_nil" }, args, loc) -> 
       begin match args with 
         | [arg] -> prim ~primitive:Pis_null ~args:[aux arg] loc 
         | _ -> assert false 
       end  
-    | Lprim (Pccall {prim_name = "js_is_undef"}, args, loc) -> 
+    | Lprim (Pccall {prim_name = "#is_undef"}, args, loc) -> 
       begin match args with 
         | [arg] -> prim ~primitive:Pis_undefined ~args:[aux arg] loc 
         | _ -> assert false 
       end   
-    | Lprim (Pccall {prim_name = "js_is_nil_undef"}, args, loc) -> 
+    | Lprim (Pccall {prim_name = "#is_nil_undef"}, args, loc) -> 
       begin match args with 
         | [arg] -> prim ~primitive:Pis_null_undefined ~args:[aux arg] loc 
         | _ -> assert false 
       end   
-    | Lprim(Pccall {prim_name = "js_string_append"}, args, loc) -> 
+    | Lprim(Pccall {prim_name = "#string_append"}, args, loc) -> 
       begin match args with 
         | [a; b] -> 
           prim ~primitive:Pstringadd ~args:[aux a; aux b] loc 
         | _ -> assert false 
       end 
-    | Lprim(Pccall {prim_name = "js_boolean_to_bool"}, args, loc) -> 
+    | Lprim(Pccall {prim_name = "#boolean_to_bool"}, args, loc) -> 
       begin match args with 
         | [ e ] -> prim ~primitive:Pjs_boolean_to_bool ~args:[aux e] loc 
         | _ -> assert false 
       end
-    | Lprim(Pccall {prim_name = "js_typeof"}, args,loc) -> 
+    | Lprim(Pccall {prim_name = "#unsafe_lt"}, args, loc) -> 
+      prim ~primitive:(Pjscomp Clt) ~args:(List.map aux args) loc 
+    | Lprim(Pccall {prim_name = "#unsafe_gt"}, args, loc) -> 
+      prim ~primitive:(Pjscomp Cgt) ~args:(List.map aux args) loc 
+    | Lprim(Pccall {prim_name = "#unsafe_le"}, args, loc) -> 
+      prim ~primitive:(Pjscomp Cle) ~args:(List.map aux args) loc 
+    | Lprim(Pccall {prim_name = "#unsafe_ge"}, args, loc) -> 
+      prim ~primitive:(Pjscomp Cge) ~args:(List.map aux args) loc 
+    | Lprim(Pccall {prim_name = "#unsafe_eq"}, args, loc) -> 
+      prim ~primitive:(Pjscomp Ceq) ~args:(List.map aux args) loc 
+    | Lprim(Pccall {prim_name = "#unsafe_neq"}, args, loc) -> 
+      prim ~primitive:(Pjscomp Cneq) ~args:(List.map aux args) loc 
+
+    | Lprim(Pccall {prim_name = "#typeof"}, args,loc) -> 
       begin match args with 
         | [e] -> prim ~primitive:Pjs_typeof ~args:[aux e] loc 
         | _ -> assert false
       end 
+    | Lprim (Pccall {prim_name = "#debugger"},args,loc) -> 
+      (* ATT: Currently, the arity is one due to PPX *)
+      prim ~primitive:Pdebugger ~args:[] loc 
+    | Lprim(Pccall {prim_name = "#fn_run" | "#method_run"; prim_native_name},args,loc) -> 
+      let args = List.map aux args in 
+      prim ~primitive:(Pjs_fn_run(int_of_string prim_native_name)) ~args loc        
+    | Lprim(Pccall{prim_name = "#fn_mk"; prim_native_name},args,loc) ->
+      let args = List.map aux args in 
+      prim ~primitive:(Pjs_fn_make (int_of_string prim_native_name)) ~args loc 
+    | Lprim(Pccall{prim_name = "#fn_method"; prim_native_name},args,loc) ->
+      let args = List.map aux args in 
+      prim ~primitive:(Pjs_fn_method (int_of_string prim_native_name)) ~args loc
+    
     | Lprim(Pccall a, args, loc)  -> 
       let args = List.map aux args in 
       let prim_name = a.prim_name in    
       begin match Ast_ffi_types.from_string a.prim_native_name with 
-        | Ffi_normal -> 
-          if Pervasives.not @@ Ext_string.starts_with prim_name "js_" then 
-            prim ~primitive:(Pccall a ) ~args loc else 
-          if prim_name =  Literals.js_debugger then 
-            prim ~primitive:Pdebugger ~args loc else 
-          if prim_name =  Literals.js_fn_run || prim_name = Literals.js_method_run then
-            prim ~primitive:(Pjs_fn_run (int_of_string a.prim_native_name)) ~args loc else 
-          if prim_name = Literals.js_fn_mk then 
-            prim ~primitive:(Pjs_fn_make (int_of_string a.prim_native_name)) ~args loc else                
-          if prim_name = Literals.js_fn_method then 
-            prim ~primitive:(Pjs_fn_method (int_of_string a.prim_native_name)) ~args loc else
-          if prim_name = Literals.js_fn_runmethod then 
-            prim ~primitive:(Pjs_fn_runmethod (int_of_string a.prim_native_name)) ~args loc 
-          else
+        | Ffi_normal ->           
             prim ~primitive:(Pccall a) ~args loc
         | Ffi_obj_create labels -> 
           prim ~primitive:(Pjs_object_create labels) ~args loc 
@@ -67004,8 +67026,7 @@ let convert exports lam : _ * _  =
     | Lsend (kind, a,b,ls, loc) -> 
       (* Format.fprintf Format.err_formatter "%a@." Printlambda.lambda b ; *)
       begin match aux b with 
-        | Lprim {primitive =  Pccall {prim_name };  args; loc}
-          when prim_name = Literals.js_unsafe_downgrade
+        | Lprim {primitive =  Pccall {prim_name = "#unsafe_downgrade"};  args; loc} 
           -> 
           begin match kind, ls with 
             | Public (Some name), [] -> 
@@ -67463,7 +67484,7 @@ class virtual fold =
          Qualified (_, Runtime, Some "caml_int_compare")         
        ]}       
      *)
-                 (* used in [js_create_array] primitive, note having
+                 (* used in [#create_array] primitive, note having
        uninitilized array is not as bad as in ocaml, 
        since GC does not rely on it
      *)
@@ -68544,7 +68565,7 @@ type unary_op =  ?comment:string -> t -> t
 val ocaml_boolean_under_condition : t -> t 
 
 
-val bin : ?comment:string -> J.binop -> t -> t -> t
+(* val bin : ?comment:string -> J.binop -> t -> t -> t *)
 val mk :
   ?comment:string -> J.expression_desc -> t
 
@@ -68685,7 +68706,7 @@ val float_mod : binary_op
 val int_comp : Lambda.comparison -> binary_op
 val string_comp : Js_op.binop -> binary_op
 val float_comp :  Lambda.comparison -> binary_op
-
+val js_comp :  Lambda.comparison -> binary_op
 
 
 val not : t -> t
@@ -69795,6 +69816,8 @@ let rec int_comp (cmp : Lambda.comparison) ?comment  (e0 : t) (e1 : t) =
 let float_comp cmp ?comment  e0 e1 = 
   bool_of_boolean @@ bin ?comment (Lam_compile_util.jsop_of_comp cmp) e0 e1
 
+let js_comp cmp ?comment  e0 e1 = 
+  bool_of_boolean @@ bin ?comment (Lam_compile_util.jsop_of_comp cmp) e0 e1
 
 
 let rec int32_lsr ?comment
@@ -70412,6 +70435,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
            *)
           | _ , _-> false
         end 
+
       | Pjs_boolean_to_bool
       | Pjs_typeof
       | Pis_null
@@ -70419,12 +70443,9 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Pis_null_undefined
       | Pnull_to_opt       
       | Pundefined_to_opt         
-      | Pnull_undefined_to_opt -> 
-        List.for_all no_side_effects args 
-      | Pjs_call _ -> false 
+      | Pnull_undefined_to_opt 
       | Pjs_fn_make _         
-      | Pjs_object_create _ -> 
-        List.for_all no_side_effects args   
+      | Pjs_object_create _
         (** TODO: check *)      
       | Pbytes_to_string 
       | Pbytes_of_string 
@@ -70445,6 +70466,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Pnegfloat | Pabsfloat
       | Paddfloat | Psubfloat | Pmulfloat | Pdivfloat
       | Pfloatcomp _ 
+      | Pjscomp _
       (* String operations *)
       | Pstringlength 
       | Pstringrefu 
@@ -70485,6 +70507,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Poffsetint _
       | Pstringadd 
         -> true
+      | Pjs_call _ 
       | Pinit_mod
       | Pupdate_mod
       | Pjs_unsafe_downgrade _
@@ -70918,7 +70941,7 @@ let primitive ppf (prim : Lam.primitive) = match prim with
   | Pbytes_to_string -> fprintf ppf "bytes_to_string"
   | Pbytes_of_string -> fprintf ppf "bytes_of_string"
   | Pjs_unsafe_downgrade (s,_loc) -> fprintf ppf "##%s" s 
-  | Pjs_fn_run i -> fprintf ppf "js_fn_run_%i" i 
+  | Pjs_fn_run i -> fprintf ppf "#fn_run_%i" i 
   | Pjs_fn_make i -> fprintf ppf "js_fn_make_%i" i
   | Pjs_fn_method i -> fprintf ppf "js_fn_method_%i" i 
   | Pjs_fn_runmethod i -> fprintf ppf "js_fn_runmethod_%i" i 
@@ -70991,6 +71014,13 @@ let primitive ppf (prim : Lam.primitive) = match prim with
   | Pfloatcomp(Cle) -> fprintf ppf "<=."
   | Pfloatcomp(Cgt) -> fprintf ppf ">."
   | Pfloatcomp(Cge) -> fprintf ppf ">=."
+  | Pjscomp(Ceq) -> fprintf ppf "#=="
+  | Pjscomp(Cneq) -> fprintf ppf "#!="
+  | Pjscomp(Clt) -> fprintf ppf "#<"
+  | Pjscomp(Cle) -> fprintf ppf "#<="
+  | Pjscomp(Cgt) -> fprintf ppf "#>"
+  | Pjscomp(Cge) -> fprintf ppf "#>="
+
   | Pstringlength -> fprintf ppf "string.length"
   | Pstringrefu -> fprintf ppf "string.unsafe_get"
   | Pstringrefs -> fprintf ppf "string.get"
@@ -85505,7 +85535,7 @@ class virtual map =
          Qualified (_, Runtime, Some "caml_int_compare")         
        ]}       
      *)
-                 (* used in [js_create_array] primitive, note having
+                 (* used in [#create_array] primitive, note having
        uninitilized array is not as bad as in ocaml, 
        since GC does not rely on it
      *)
@@ -90077,7 +90107,7 @@ let get_default_undefined (arg : J.expression) : J.expression =
     {[
       | Var _  ->
         can only bd detected at runtime thing
-          (E.bin EqEqEq (E.typeof arg)
+          (E.triple_equal (E.typeof arg)
              (E.str "number"))
     ]}
 *)
@@ -90927,7 +90957,13 @@ TODO: return type to be expression is ugly,
 *)
 let translate (prim_name : string) 
     (args : J.expression list) : J.expression  =
-  let call m = E.runtime_call m prim_name args in 
+  let prim_name_length = String.length prim_name  in
+  let call m = 
+    if prim_name_length > 0 && prim_name.[0] = '#' then 
+      E.runtime_call m 
+        (String.sub prim_name 1 (prim_name_length - 1)) args
+    else 
+      E.runtime_call m prim_name args in 
   begin match prim_name with 
   | "caml_gc_stat" 
   | "caml_gc_quick_stat"  
@@ -91697,20 +91733,20 @@ let translate (prim_name : string)
   | "caml_ml_set_binary_mode"
     ->  E.not_implemented prim_name
 
-  | "js_function_length"
+  | "#function_length"
 
     -> begin
         match args with 
         | [f ] -> E.function_length f 
         | _ -> assert false
       end
-  | "js_create_array" 
+  | "#create_array" 
     -> 
     begin match args with 
     | [e] -> E.uninitialized_array e 
     | _ -> assert false
     end
-  | "js_array_append" 
+  | "#array_append" 
     -> 
     begin match args with 
     | [a;b] -> 
@@ -91718,77 +91754,55 @@ let translate (prim_name : string)
     | _ -> assert false 
     end
 
-  | "js_apply" 
+  | "#apply" 
     -> 
     begin match args with 
     | [f ;  args] -> 
       E.flat_call f args
     | _ -> assert false 
-    end
-  | "js_string_of_small_int_array"
+  end
+   | "#apply1"
+    | "#apply2"
+    | "#apply3"
+    | "#apply4"
+    | "#apply5"
+    | "#apply6"
+    | "#apply7"
+    | "#apply8" -> 
+      begin match args with 
+        | fn :: rest -> 
+          E.call ~info:{arity=Full; call_info =  Call_na} fn rest 
+        | _ -> assert false
+      end
+  | "#string_of_small_int_array"
     ->
     begin match args with 
     | [e] -> E.string_of_small_int_array e 
     | _ -> assert false
     end
-  | "js_string_of_char" 
+  | "#string_of_char" 
     ->
       begin match args with 
       | [{expression_desc = Number (Int {i; _})} ] 
         -> E.str (String.make 1 (Char.chr (Int32.to_int i)))
       | _ -> call Js_config.string
       end
-  | "js_unsafe_lt" 
-    -> 
-    begin match args with 
-      | [l; r] -> E.bin Lt l r 
-      | _ -> assert false 
-    end
-  | "js_unsafe_le" 
-    -> begin match args with 
-    | [l; r] -> E.bin Le l r 
-    | _ -> assert false end 
-  | "js_unsafe_gt" 
-    -> begin match args with 
-    | [l;r] -> E.bin Gt l r 
-    | _ ->  assert false end 
-  | "js_unsafe_ge" -> 
-    begin match args with 
-    | [l ; r] -> E.bin Ge l r 
-    | _ -> assert false end
   
-  | "js_is_instance_array" 
+  | "#is_instance_array" 
     ->
     begin match args with 
     | [e] -> E.is_instance_array e 
-    | _ -> assert false end
-  
-  | "js_dump"
-    -> 
-    (* This primitive can accept any number of arguments 
-       {[
-         console.log(1,2,3)
-           1 2 3
-       ]}         
-    *)      
-    E.seq (E.dump Log args) E.unit
-
-  | "caml_anything_to_string"
-  (* patched to compiler to support for convenience *)      
-  | "js_anything_to_string" 
-    ->
-    begin match args with 
-    | [e] -> E.anything_to_string e 
     | _ -> assert false
-    end
-  | "js_anything_to_number" 
+   end
+  
+  | "#anything_to_number" 
     -> 
     begin match args with 
     | [e] -> E.to_number e 
     | _ -> assert false
     end
 
-  | "js_json_stringify"      
+  | "#json_stringify"      
     -> 
     begin match args with 
     | [e] ->        
@@ -91796,40 +91810,20 @@ let translate (prim_name : string)
     | _ -> 
       assert false      
     end
-    (* | "js_dump1" *)
-    (* | "js_dump2" *)
-    (* | "js_dump3" *)
-    (* | "js_dump4" *)
-    (* | "js_dump5" *)
-    (* | "js_dump6" *)
-    (* | "js_dump7" (\* TODO: refin api later *\) *)
-    (* | "js_dump8" -> E.dump Log args  *)
-    | "js_apply1"
-    | "js_apply2"
-    | "js_apply3"
-    | "js_apply4"
-    | "js_apply5"
-    | "js_apply6"
-    | "js_apply7"
-    | "js_apply8" -> 
-      begin match args with 
-        | fn :: rest -> 
-          E.call ~info:{arity=Full; call_info =  Call_na} fn rest 
-        | _ -> assert false
-      end
-    | "js_uninitialized_object"
+   
+    | "#uninitialized_object"
       ->
       begin match args with 
         | [ tag; size] -> E.uninitialized_object tag size 
         | _ -> assert false  end
-    | "js_obj_length" 
+    | "#obj_length" 
       -> 
       begin match args with 
         | [e] -> E.obj_length e 
         | _ -> assert false 
       end
 
-    | "js_obj_set_length"
+    | "#obj_set_length"
       ->
       begin match args with 
         | [a; b] -> E.set_length a b 
@@ -91837,7 +91831,10 @@ let translate (prim_name : string)
       end
 
     | _ -> 
-
+      if prim_name_length > 0 && prim_name.[0] = '#' then 
+        (** TODO: provide better error location *)
+        Location.raise_errorf "unrecognized js primitive %s" prim_name
+      else 
       let comment = "Missing primitive" in       
       Ext_log.warn __LOC__  "%s: %s when compiling %s\n" comment prim_name 
         (Js_config.get_current_file ()) ;
@@ -91958,7 +91955,7 @@ let translate  loc
             E.econd (E.is_nil e) Js_of_lam_option.none (Js_of_lam_option.some e)
           | _ ->
             E.runtime_call Js_config.js_primitive
-            "js_from_nullable" args 
+            "null_to_opt" args 
             (* GPR #974
                let id = Ext_ident.create "v" in
                let tmp = E.var id in
@@ -91976,7 +91973,7 @@ let translate  loc
           E.econd (E.is_undef e) Js_of_lam_option.none (Js_of_lam_option.some e)
         | _ -> 
           E.runtime_call Js_config.js_primitive  
-          "js_from_def" args 
+          "undefined_to_opt" args 
         (* # GPR 974
           let id = Ext_ident.create "v" in
           let tmp = E.var id in
@@ -91996,7 +91993,7 @@ let translate  loc
           (Js_of_lam_option.some e)
       | _ ->*)
        E.runtime_call Js_config.js_primitive        
-      "js_from_nullable_def" args 
+      "null_undefined_to_opt" args 
       (*end*)
     (* | _ -> assert false  *)
     (* end *)
@@ -92012,7 +92009,7 @@ let translate  loc
     end
   | Pis_null_undefined -> 
       E.runtime_call Js_config.js_primitive
-        "js_is_nil_undef" args 
+        "is_nil_undef" args 
   | Pjs_boolean_to_bool -> 
     begin match args with 
     | [e] -> E.bool_of_boolean e 
@@ -92283,6 +92280,11 @@ let translate  loc
   | Pxorbint Lambda.Pint64 
     ->
     Js_long.xor args    
+  | Pjscomp cmp ->
+    begin match args with
+    | [l;r] -> E.js_comp cmp l r 
+    | _ -> assert false 
+    end
   | Pbintcomp (Pnativeint ,cmp)
   | Pfloatcomp cmp
   | Pintcomp cmp
@@ -102558,7 +102560,7 @@ let js_property loc obj name =
     ((Exp.apply ~loc
         (Exp.ident ~loc
            {loc;
-            txt = Ldot (Ast_literal.Lid.js_unsafe, Literals.js_unsafe_downgrade)})
+            txt = Ldot (Ast_literal.Lid.js_unsafe, Literals.unsafe_downgrade)})
         ["",obj]), name)
 
 (* TODO: 
@@ -102592,10 +102594,10 @@ let generic_apply  kind loc
       match kind with 
       | `Fn | `PropertyFn ->  
         Longident.Ldot (Ast_literal.Lid.js_unsafe, 
-                        Literals.js_fn_run ^ string_of_int arity)
+                        Literals.fn_run ^ string_of_int arity)
       | `Method -> 
         Longident.Ldot(Ast_literal.Lid.js_unsafe,
-                       Literals.js_method_run ^ string_of_int arity
+                       Literals.method_run ^ string_of_int arity
                       ) in 
     Parsetree.Pexp_apply (Exp.ident {txt ; loc}, ("",fn) :: List.map (fun x -> "",x) args)
   else 
@@ -102604,10 +102606,10 @@ let generic_apply  kind loc
     let pval_prim, pval_type = 
       match kind with 
       | `Fn | `PropertyFn -> 
-        [Literals.js_fn_run; string_arity], 
+        ["#fn_run"; string_arity], 
         arrow ~loc ""  (lift_curry_type loc args_type result_type ) fn_type
       | `Method -> 
-        [Literals.js_method_run ; string_arity], 
+        ["#method_run" ; string_arity], 
         arrow ~loc "" (lift_method_type loc args_type result_type) fn_type
     in
     Ast_external.create_local_external loc ~pval_prim ~pval_type 
@@ -102714,16 +102716,16 @@ let generic_to_uncurry_exp kind loc (self : Ast_mapper.mapper)  pat body
     let txt = 
       match kind with 
       | `Fn -> 
-        Longident.Ldot ( Ast_literal.Lid.js_unsafe, Literals.js_fn_mk ^ string_of_int arity)
+        Longident.Ldot ( Ast_literal.Lid.js_unsafe, Literals.fn_mk ^ string_of_int arity)
       | `Method_callback -> 
-        Longident.Ldot (Ast_literal.Lid.js_unsafe,  Literals.js_fn_method ^ string_of_int arity) in
+        Longident.Ldot (Ast_literal.Lid.js_unsafe,  Literals.fn_method ^ string_of_int arity) in
     Parsetree.Pexp_apply (Exp.ident {txt;loc} , ["",body])
 
   else 
     let pval_prim =
       [ (match kind with 
-            | `Fn -> Literals.js_fn_mk
-            | `Method_callback -> Literals.js_fn_method); 
+            | `Fn -> "#fn_mk"
+            | `Method_callback -> "#fn_method"); 
         string_of_int arity]  in
     let fn_type , args_type, result_type  = Ast_comb.tuple_type_pair ~loc `Make arity  in 
     let pval_type = arrow ~loc "" fn_type (
@@ -102745,7 +102747,7 @@ let to_method_callback  =
 let handle_debugger loc payload = 
   if Ast_payload.as_empty_structure payload then
     Parsetree.Pexp_apply
-      (Exp.ident {txt = Ldot(Ast_literal.Lid.js_unsafe, Literals.js_debugger ); loc}, 
+      (Exp.ident {txt = Ldot(Ast_literal.Lid.js_unsafe, Literals.debugger ); loc}, 
        ["", Ast_literal.val_unit ~loc ()])
   else Location.raise_errorf ~loc "bs.raw can only be applied to a string"
 
@@ -102763,7 +102765,7 @@ let handle_raw ?(check_js_regex = false) loc payload =
           Exp.ident {loc; 
                      txt = 
                        Ldot (Ast_literal.Lid.js_unsafe, 
-                             Literals.js_pure_expr)},
+                             Literals.raw_expr)},
           ["",exp]
         )
       in
@@ -102775,7 +102777,7 @@ let handle_external loc x =
     Ast_helper.Exp.apply 
     (Exp.ident ~loc 
          {loc; txt = Ldot (Ast_literal.Lid.js_unsafe, 
-                           Literals.js_pure_expr)})
+                           Literals.raw_expr)})
       ~loc 
       [Ext_string.empty, 
         Exp.constant ~loc (Const_string (x,Some Ext_string.empty))] in 
@@ -102810,7 +102812,7 @@ let handle_raw_structure loc payload =
       -> 
       let pexp_desc = 
         Parsetree.Pexp_apply(
-          Exp.ident {txt = Ldot (Ast_literal.Lid.js_unsafe,  Literals.js_pure_stmt); loc},
+          Exp.ident {txt = Ldot (Ast_literal.Lid.js_unsafe,  Literals.raw_stmt); loc},
           ["",exp]) in 
       Ast_helper.Str.eval 
         { exp with pexp_desc }

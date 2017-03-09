@@ -25,7 +25,7 @@
 
 
 
-external new_uninitialized : int -> bytes = "js_create_array" 
+external new_uninitialized : int -> bytes = "#create_array" 
 external to_int_array : bytes -> int array = "%identity"
 external of_int_array : int array -> bytes = "%identity"
 
@@ -41,7 +41,7 @@ external unsafe_get : bytes -> int -> char = "%bytes_unsafe_get"
 external length : bytes -> int = "%bytes_length"
 
 
-let js_string_of_char = Bs_string.of_char
+let string_of_char = Bs_string.of_char
 let add = Bs_string.append 
 
 let caml_string_get s i= 

@@ -63,7 +63,7 @@ type unary_op =  ?comment:string -> t -> t
 val ocaml_boolean_under_condition : t -> t 
 
 
-val bin : ?comment:string -> J.binop -> t -> t -> t
+(* val bin : ?comment:string -> J.binop -> t -> t -> t *)
 val mk :
   ?comment:string -> J.expression_desc -> t
 
@@ -204,7 +204,7 @@ val float_mod : binary_op
 val int_comp : Lambda.comparison -> binary_op
 val string_comp : Js_op.binop -> binary_op
 val float_comp :  Lambda.comparison -> binary_op
-
+val js_comp :  Lambda.comparison -> binary_op
 
 
 val not : t -> t

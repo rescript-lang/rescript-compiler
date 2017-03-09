@@ -55,7 +55,7 @@ function f_escaped_1(xs, i) {
 }
 
 function f_escaped_2(xs, i) {
-  console.log(Js_primitive.js_from_def(xs[i]));
+  console.log(Js_primitive.undefined_to_opt(xs[i]));
   return /* () */0;
 }
 
@@ -78,7 +78,7 @@ function f_null(xs, i) {
 
 function f_null_undefined(xs, i) {
   var match = xs[i];
-  if (Js_primitive.js_is_nil_undef(match)) {
+  if (Js_primitive.is_nil_undef(match)) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           [

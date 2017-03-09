@@ -211,7 +211,7 @@ var Test_def = /* module */[
 ];
 
 function f1$2(x) {
-  if (Js_primitive.js_is_nil_undef(x)) {
+  if (Js_primitive.is_nil_undef(x)) {
     return 3;
   }
   else {
@@ -220,7 +220,7 @@ function f1$2(x) {
 }
 
 function f2$2(x) {
-  if (Js_primitive.js_is_nil_undef(x)) {
+  if (Js_primitive.is_nil_undef(x)) {
     return 3;
   }
   else {
@@ -230,7 +230,7 @@ function f2$2(x) {
 
 function f5$2(h, _) {
   var u = Curry._1(h, 32);
-  if (Js_primitive.js_is_nil_undef(u)) {
+  if (Js_primitive.is_nil_undef(u)) {
     return 3;
   }
   else {
@@ -241,7 +241,7 @@ function f5$2(h, _) {
 function f4$2(h, x) {
   var u = Curry._1(h, 32);
   var v = 32 + x | 0;
-  if (Js_primitive.js_is_nil_undef(u)) {
+  if (Js_primitive.is_nil_undef(u)) {
     return 1 + v | 0;
   }
   else {
@@ -258,10 +258,10 @@ function f7$2(x) {
 }
 
 function f8$2(x) {
-  if (Js_primitive.js_is_nil_undef(x)) {
+  if (Js_primitive.is_nil_undef(x)) {
     return 2;
   }
-  else if (Js_primitive.js_is_nil_undef(x)) {
+  else if (Js_primitive.is_nil_undef(x)) {
     return 1;
   }
   else {
@@ -271,11 +271,11 @@ function f8$2(x) {
 
 var u$2 = f8$2(/* None */0);
 
-var f9$2 = Js_primitive.js_from_nullable_def;
+var f9$2 = Js_primitive.null_undefined_to_opt;
 
-var f10$2 = Js_primitive.js_is_nil_undef;
+var f10$2 = Js_primitive.is_nil_undef;
 
-var f11$2 = Js_primitive.js_is_nil_undef(3);
+var f11$2 = Js_primitive.is_nil_undef(3);
 
 var Test_null_def = /* module */[
   /* f1 */f1$2,

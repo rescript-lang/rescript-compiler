@@ -1,7 +1,8 @@
 'use strict';
 
-var Mt    = require("./mt");
-var Block = require("../../lib/js/block");
+var Mt           = require("./mt");
+var Block        = require("../../lib/js/block");
+var Js_primitive = require("../../lib/js/js_primitive");
 
 var suites = [/* [] */0];
 
@@ -66,13 +67,23 @@ function test2() {
   }
 }
 
+function test3() {
+  if (Js_primitive.undefined_to_opt(typeof (__DEV__) === "undefined" ? undefined : (__DEV__))) {
+    return 0;
+  }
+  else {
+    console.log("production mode");
+    return /* () */0;
+  }
+}
+
 function f(x) {
   return +(x === undefined);
 }
 
-ok('File "undef_regression2_test.ml", line 38, characters 5-12', +(a > 0));
+ok('File "undef_regression2_test.ml", line 44, characters 5-12', +(a > 0));
 
-eq('File "undef_regression2_test.ml", line 39, characters 5-12', a, 1);
+eq('File "undef_regression2_test.ml", line 45, characters 5-12', a, 1);
 
 Mt.from_pair_suites("undef_regression2_test.ml", suites[0]);
 
@@ -83,5 +94,6 @@ exports.ok      = ok;
 exports.a       = a;
 exports.test    = test;
 exports.test2   = test2;
+exports.test3   = test3;
 exports.f       = f;
 /* match Not a pure module */

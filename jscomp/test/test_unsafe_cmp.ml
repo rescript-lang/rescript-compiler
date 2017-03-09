@@ -5,4 +5,4 @@ let f x y =
 
 
 let ff x y = 
-  if Js.to_bool @@ Js.unsafe_lt x y then 1 else 2 
+  if Js.unsafe_lt x y then 1 else 2 

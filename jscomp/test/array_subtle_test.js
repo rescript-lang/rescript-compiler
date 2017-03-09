@@ -67,7 +67,7 @@ eq('File "array_subtle_test.ml", line 23, characters 5-12', /* tuple */[
     ]);
 
 while(v.length > 0) {
-  Js_primitive.js_from_def(v.pop());
+  Js_primitive.undefined_to_opt(v.pop());
 };
 
 eq('File "array_subtle_test.ml", line 29, characters 5-12', /* tuple */[

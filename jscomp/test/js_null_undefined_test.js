@@ -11,7 +11,7 @@ var suites_000 = /* tuple */[
   function () {
     return /* Eq */Block.__(0, [
               /* None */0,
-              Js_primitive.js_from_nullable_def(null)
+              Js_primitive.null_undefined_to_opt(null)
             ]);
   }
 ];
@@ -22,7 +22,7 @@ var suites_001 = /* :: */[
     function () {
       return /* Eq */Block.__(0, [
                 /* None */0,
-                Js_primitive.js_from_nullable_def(undefined)
+                Js_primitive.null_undefined_to_opt(undefined)
               ]);
     }
   ],
@@ -32,7 +32,7 @@ var suites_001 = /* :: */[
       function () {
         return /* Eq */Block.__(0, [
                   /* None */0,
-                  Js_primitive.js_from_nullable_def(undefined)
+                  Js_primitive.null_undefined_to_opt(undefined)
                 ]);
       }
     ],
@@ -42,7 +42,7 @@ var suites_001 = /* :: */[
         function () {
           return /* Eq */Block.__(0, [
                     /* Some */[/* () */0],
-                    Js_primitive.js_from_nullable_def(/* () */0)
+                    Js_primitive.null_undefined_to_opt(/* () */0)
                   ]);
         }
       ],
@@ -52,7 +52,7 @@ var suites_001 = /* :: */[
           function () {
             return /* Eq */Block.__(0, [
                       /* Some */["something"],
-                      Js_primitive.js_from_nullable_def("something")
+                      Js_primitive.null_undefined_to_opt("something")
                     ]);
           }
         ],
@@ -62,7 +62,7 @@ var suites_001 = /* :: */[
             function () {
               return /* Eq */Block.__(0, [
                         /* true */1,
-                        Js_primitive.js_is_nil_undef(null)
+                        Js_primitive.is_nil_undef(null)
                       ]);
             }
           ],
@@ -72,7 +72,7 @@ var suites_001 = /* :: */[
               function () {
                 return /* Eq */Block.__(0, [
                           /* true */1,
-                          Js_primitive.js_is_nil_undef(undefined)
+                          Js_primitive.is_nil_undef(undefined)
                         ]);
               }
             ],
@@ -82,7 +82,7 @@ var suites_001 = /* :: */[
                 function () {
                   return /* Eq */Block.__(0, [
                             /* true */1,
-                            Js_primitive.js_is_nil_undef(undefined)
+                            Js_primitive.is_nil_undef(undefined)
                           ]);
                 }
               ],
@@ -92,7 +92,7 @@ var suites_001 = /* :: */[
                   function () {
                     return /* Eq */Block.__(0, [
                               /* false */0,
-                              Js_primitive.js_is_nil_undef(/* () */0)
+                              Js_primitive.is_nil_undef(/* () */0)
                             ]);
                   }
                 ],
@@ -102,7 +102,7 @@ var suites_001 = /* :: */[
                     function () {
                       return /* Eq */Block.__(0, [
                                 /* true */1,
-                                Js_primitive.js_is_nil_undef(Js_null_undefined.bind(null, function (v) {
+                                Js_primitive.is_nil_undef(Js_null_undefined.bind(null, function (v) {
                                           return v;
                                         }))
                               ]);
@@ -114,7 +114,7 @@ var suites_001 = /* :: */[
                       function () {
                         return /* Eq */Block.__(0, [
                                   /* true */1,
-                                  Js_primitive.js_is_nil_undef(Js_null_undefined.bind(undefined, function (v) {
+                                  Js_primitive.is_nil_undef(Js_null_undefined.bind(undefined, function (v) {
                                             return v;
                                           }))
                                 ]);
@@ -126,7 +126,7 @@ var suites_001 = /* :: */[
                         function () {
                           return /* Eq */Block.__(0, [
                                     /* true */1,
-                                    Js_primitive.js_is_nil_undef(Js_null_undefined.bind(undefined, function (v) {
+                                    Js_primitive.is_nil_undef(Js_null_undefined.bind(undefined, function (v) {
                                               return v;
                                             }))
                                   ]);
@@ -138,7 +138,7 @@ var suites_001 = /* :: */[
                           function () {
                             return /* Eq */Block.__(0, [
                                       /* Some */[4],
-                                      Js_primitive.js_from_nullable_def(Js_null_undefined.bind(2, function (n) {
+                                      Js_primitive.null_undefined_to_opt(Js_null_undefined.bind(2, function (n) {
                                                 return (n << 1);
                                               }))
                                     ]);

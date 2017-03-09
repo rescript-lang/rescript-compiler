@@ -164,7 +164,7 @@ var suites_001 = /* :: */[
                     function () {
                       return /* Eq */Block.__(0, [
                                 /* Some */[3],
-                                Js_primitive.js_from_def(/* int array */[
+                                Js_primitive.undefined_to_opt(/* int array */[
                                         1,
                                         2,
                                         3
@@ -178,7 +178,7 @@ var suites_001 = /* :: */[
                       function () {
                         return /* Eq */Block.__(0, [
                                   /* None */0,
-                                  Js_primitive.js_from_def(/* array */[].pop())
+                                  Js_primitive.undefined_to_opt(/* array */[].pop())
                                 ]);
                       }
                     ],
@@ -234,7 +234,7 @@ var suites_001 = /* :: */[
                               function () {
                                 return /* Eq */Block.__(0, [
                                           /* Some */[1],
-                                          Js_primitive.js_from_def(/* int array */[
+                                          Js_primitive.undefined_to_opt(/* int array */[
                                                   1,
                                                   2,
                                                   3
@@ -248,7 +248,7 @@ var suites_001 = /* :: */[
                                 function () {
                                   return /* Eq */Block.__(0, [
                                             /* None */0,
-                                            Js_primitive.js_from_def(/* array */[].shift())
+                                            Js_primitive.undefined_to_opt(/* array */[].shift())
                                           ]);
                                 }
                               ],
@@ -740,7 +740,7 @@ var suites_001 = /* :: */[
                                                                                       function () {
                                                                                         return /* Eq */Block.__(0, [
                                                                                                   /* Some */[2],
-                                                                                                  Js_primitive.js_from_def(/* int array */[
+                                                                                                  Js_primitive.undefined_to_opt(/* int array */[
                                                                                                           1,
                                                                                                           2,
                                                                                                           3,
@@ -757,7 +757,7 @@ var suites_001 = /* :: */[
                                                                                         function () {
                                                                                           return /* Eq */Block.__(0, [
                                                                                                     /* None */0,
-                                                                                                    Js_primitive.js_from_def(/* int array */[
+                                                                                                    Js_primitive.undefined_to_opt(/* int array */[
                                                                                                             1,
                                                                                                             2,
                                                                                                             3,
@@ -774,7 +774,7 @@ var suites_001 = /* :: */[
                                                                                           function () {
                                                                                             return /* Eq */Block.__(0, [
                                                                                                       /* Some */[1],
-                                                                                                      Js_primitive.js_from_def(/* int array */[
+                                                                                                      Js_primitive.undefined_to_opt(/* int array */[
                                                                                                               1,
                                                                                                               2,
                                                                                                               3,
@@ -791,7 +791,7 @@ var suites_001 = /* :: */[
                                                                                             function () {
                                                                                               return /* Eq */Block.__(0, [
                                                                                                         /* None */0,
-                                                                                                        Js_primitive.js_from_def(/* int array */[
+                                                                                                        Js_primitive.undefined_to_opt(/* int array */[
                                                                                                                 1,
                                                                                                                 2,
                                                                                                                 3,

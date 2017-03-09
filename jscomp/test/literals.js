@@ -37,23 +37,21 @@ var stdlib = "stdlib";
 
 var imul = "imul";
 
-var js_debugger = "js_debugger";
+var $$debugger = "debugger";
 
-var js_pure_expr = "js_pure_expr";
+var raw_expr = "raw_expr";
 
-var js_pure_stmt = "js_pure_stmt";
+var raw_stmt = "raw_stmt";
 
-var js_unsafe_downgrade = "js_unsafe_downgrade";
+var unsafe_downgrade = "unsafe_downgrade";
 
-var js_fn_run = "js_fn_run";
+var fn_run = "fn_run";
 
-var js_method_run = "js_method_run";
+var method_run = "method_run";
 
-var js_fn_method = "js_fn_method";
+var fn_method = "fn_method";
 
-var js_fn_mk = "js_fn_mk";
-
-var js_fn_runmethod = "js_fn_runmethod";
+var fn_mk = "fn_mk";
 
 var bs_deriving = "bs.deriving";
 
@@ -143,15 +141,14 @@ exports.stdlib                 = stdlib;
 exports.imul                   = imul;
 exports.setter_suffix          = setter_suffix;
 exports.setter_suffix_len      = setter_suffix_len;
-exports.js_debugger            = js_debugger;
-exports.js_pure_expr           = js_pure_expr;
-exports.js_pure_stmt           = js_pure_stmt;
-exports.js_unsafe_downgrade    = js_unsafe_downgrade;
-exports.js_fn_run              = js_fn_run;
-exports.js_method_run          = js_method_run;
-exports.js_fn_method           = js_fn_method;
-exports.js_fn_mk               = js_fn_mk;
-exports.js_fn_runmethod        = js_fn_runmethod;
+exports.$$debugger             = $$debugger;
+exports.raw_expr               = raw_expr;
+exports.raw_stmt               = raw_stmt;
+exports.unsafe_downgrade       = unsafe_downgrade;
+exports.fn_run                 = fn_run;
+exports.method_run             = method_run;
+exports.fn_method              = fn_method;
+exports.fn_mk                  = fn_mk;
 exports.bs_deriving            = bs_deriving;
 exports.bs_deriving_dot        = bs_deriving_dot;
 exports.bs_type                = bs_type;
