@@ -12,8 +12,8 @@ caml_float.cmj : typed_array.cmj js_float.cmj caml_float.cmi
 caml_lexer.cmj : caml_lexer.cmi
 caml_parser.cmj : caml_parser.cmi
 caml_primitive.cmj : caml_primitive.cmi
-caml_format.cmj : js_nativeint.cmj js_int64.cmj js_int.cmj js_float.cmj \
-    caml_utils.cmj bs_string.cmj caml_format.cmi
+caml_format.cmj : js_nativeint.cmj js_int64.cmj js_float.cmj caml_utils.cmj \
+    bs_string.cmj caml_format.cmi
 caml_md5.cmj : bs_string.cmj caml_md5.cmi
 caml_queue.cmj : caml_queue.cmi
 caml_hash.cmj : js_undefined.cmj js.cmj caml_queue.cmj bs_string.cmj \
