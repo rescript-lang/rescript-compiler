@@ -1,4 +1,1185 @@
-module Config = Config_bspack
+module Config_bspack : sig 
+#1 "config_bspack.mli"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the Q Public License version 1.0.               *)
+(*                                                                     *)
+(***********************************************************************)
+
+(* System configuration *)
+
+val version: string
+        (* The current version number of the system *)
+
+val standard_library: string
+        (* The directory containing the standard libraries *)
+val standard_runtime: string
+        (* The full path to the standard bytecode interpreter ocamlrun *)
+val ccomp_type: string
+        (* The "kind" of the C compiler, assembler and linker used: one of
+               "cc" (for Unix-style C compilers)
+               "msvc" (for Microsoft Visual C++ and MASM) *)
+val bytecomp_c_compiler: string
+        (* The C compiler to use for compiling C files
+           with the bytecode compiler *)
+val bytecomp_c_libraries: string
+        (* The C libraries to link with custom runtimes *)
+val native_c_compiler: string
+        (* The C compiler to use for compiling C files
+           with the native-code compiler *)
+val native_c_libraries: string
+        (* The C libraries to link with native-code programs *)
+val native_pack_linker: string
+        (* The linker to use for packaging (ocamlopt -pack) and for partial
+           links (ocamlopt -output-obj). *)
+val mkdll: string
+        (* The linker command line to build dynamic libraries. *)
+val mkexe: string
+        (* The linker command line to build executables. *)
+val mkmaindll: string
+        (* The linker command line to build main programs as dlls. *)
+val ranlib: string
+        (* Command to randomize a library, or "" if not needed *)
+val ar: string
+        (* Name of the ar command, or "" if not needed  (MSVC) *)
+val cc_profile : string
+        (* The command line option to the C compiler to enable profiling. *)
+
+val load_path: string list ref
+        (* Directories in the search path for .cmi and .cmo files *)
+
+val interface_suffix: string ref
+        (* Suffix for interface file names *)
+
+val exec_magic_number: string
+        (* Magic number for bytecode executable files *)
+val cmi_magic_number: string
+        (* Magic number for compiled interface files *)
+val cmo_magic_number: string
+        (* Magic number for object bytecode files *)
+val cma_magic_number: string
+        (* Magic number for archive files *)
+val cmx_magic_number: string
+        (* Magic number for compilation unit descriptions *)
+val cmxa_magic_number: string
+        (* Magic number for libraries of compilation unit descriptions *)
+val ast_intf_magic_number: string
+        (* Magic number for file holding an interface syntax tree *)
+val ast_impl_magic_number: string
+        (* Magic number for file holding an implementation syntax tree *)
+val cmxs_magic_number: string
+        (* Magic number for dynamically-loadable plugins *)
+val cmt_magic_number: string
+        (* Magic number for compiled interface files *)
+
+val max_tag: int
+        (* Biggest tag that can be stored in the header of a regular block. *)
+val lazy_tag : int
+        (* Normally the same as Obj.lazy_tag.  Separate definition because
+           of technical reasons for bootstrapping. *)
+val max_young_wosize: int
+        (* Maximal size of arrays that are directly allocated in the
+           minor heap *)
+val stack_threshold: int
+        (* Size in words of safe area at bottom of VM stack,
+           see byterun/config.h *)
+
+val architecture: string
+        (* Name of processor type for the native-code compiler *)
+val model: string
+        (* Name of processor submodel for the native-code compiler *)
+val system: string
+        (* Name of operating system for the native-code compiler *)
+
+val asm: string
+        (* The assembler (and flags) to use for assembling
+           ocamlopt-generated code. *)
+
+val asm_cfi_supported: bool
+        (* Whether assembler understands CFI directives *)
+val with_frame_pointers : bool
+        (* Whether assembler should maintain frame pointers *)
+
+val ext_obj: string
+        (* Extension for object files, e.g. [.o] under Unix. *)
+val ext_asm: string
+        (* Extension for assembler files, e.g. [.s] under Unix. *)
+val ext_lib: string
+        (* Extension for library files, e.g. [.a] under Unix. *)
+val ext_dll: string
+        (* Extension for dynamically-loaded libraries, e.g. [.so] under Unix.*)
+
+val default_executable_name: string
+        (* Name of executable produced by linking if none is given with -o,
+           e.g. [a.out] under Unix. *)
+
+val systhread_supported : bool
+        (* Whether the system thread library is implemented *)
+
+val host : string
+        (* Whether the compiler is a cross-compiler *)
+
+val target : string
+        (* Whether the compiler is a cross-compiler *)
+
+val print_config : out_channel -> unit;;
+
+
+end = struct
+#1 "config_bspack.ml"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the Q Public License version 1.0.               *)
+(*                                                                     *)
+(***********************************************************************)
+
+(***********************************************************************)
+(**                                                                   **)
+(**               WARNING WARNING WARNING                             **)
+(**                                                                   **)
+(** When you change this file, you must make the parallel change      **)
+(** in config.mlbuild                                                 **)
+(**                                                                   **)
+(***********************************************************************)
+
+
+(* The main OCaml version string has moved to ../VERSION *)
+let version = "4.02.3+BS"
+
+let standard_library_default = "/usr/local/lib/ocaml/lib/ocaml" (* does not matter *)
+
+let standard_library =
+    standard_library_default
+
+let standard_runtime = "/usr/local/bin/ocaml/bin/ocamlrun"
+let ccomp_type = "cc"
+let bytecomp_c_compiler = "gcc -O  -Wall -D_FILE_OFFSET_BITS=64 -D_REENTRANT -O "
+let bytecomp_c_libraries = "-lcurses -lpthread"
+let native_c_compiler = "gcc -O  -D_FILE_OFFSET_BITS=64 -D_REENTRANT"
+let native_c_libraries = ""
+let native_pack_linker = "ld -r -arch x86_64  -o "
+let ranlib = "ranlib"
+let ar = "ar"
+let cc_profile = "-pg"
+let mkdll = "gcc -bundle -flat_namespace -undefined suppress -Wl,-no_compact_unwind"
+let mkexe = "gcc -Wl,-no_compact_unwind"
+let mkmaindll = "gcc -bundle -flat_namespace -undefined suppress -Wl,-no_compact_unwind"
+
+let exec_magic_number = "Caml1999X011"
+and cmi_magic_number = "Caml1999I017"
+and cmo_magic_number = "Caml1999O010"
+and cma_magic_number = "Caml1999A011"
+and cmx_magic_number = "Caml1999Y014"
+and cmxa_magic_number = "Caml1999Z013"
+and ast_impl_magic_number = "Caml1999M016"
+and ast_intf_magic_number = "Caml1999N015"
+and cmxs_magic_number = "Caml2007D002"
+and cmt_magic_number = "Caml2012T004"
+
+let load_path = ref ([] : string list)
+
+let interface_suffix = ref ".mli"
+
+let max_tag = 245
+(* This is normally the same as in obj.ml, but we have to define it
+   separately because it can differ when we're in the middle of a
+   bootstrapping phase. *)
+let lazy_tag = 246
+
+let max_young_wosize = 256
+let stack_threshold = 256 (* see byterun/config.h *)
+
+let architecture = "amd64"
+let model = "default"
+let system = "macosx"
+
+let asm = "clang -arch x86_64 -c"
+let asm_cfi_supported = true
+let with_frame_pointers = false
+
+let ext_obj = ".o"
+let ext_asm = ".s"
+let ext_lib = ".a"
+let ext_dll = ".so"
+
+let host = "x86_64-apple-darwin15.6.0"
+let target = "x86_64-apple-darwin15.6.0"
+
+let default_executable_name =
+  match Sys.os_type with
+    "Unix" -> "a.out"
+  | "Win32" | "Cygwin" -> "camlprog.exe"
+  | _ -> "camlprog"
+
+let systhread_supported = true;;
+
+let print_config oc = ()
+;;
+
+end
+module Config = Config_bspack 
+module Clflags : sig 
+#1 "clflags.mli"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 2005 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the Q Public License version 1.0.               *)
+(*                                                                     *)
+(***********************************************************************)
+
+val objfiles : string list ref
+val ccobjs : string list ref
+val dllibs : string list ref
+val compile_only : bool ref
+val output_name : string option ref
+val include_dirs : string list ref
+val no_std_include : bool ref
+val print_types : bool ref
+val make_archive : bool ref
+val debug : bool ref
+val fast : bool ref
+val link_everything : bool ref
+val custom_runtime : bool ref
+val no_check_prims : bool ref
+val bytecode_compatible_32 : bool ref
+val output_c_object : bool ref
+val output_complete_object : bool ref
+val all_ccopts : string list ref
+val classic : bool ref
+val nopervasives : bool ref
+val open_modules : string list ref
+val preprocessor : string option ref
+val all_ppx : string list ref
+val annotations : bool ref
+val binary_annotations : bool ref
+val use_threads : bool ref
+val use_vmthreads : bool ref
+val noassert : bool ref
+val verbose : bool ref
+val noprompt : bool ref
+val nopromptcont : bool ref
+val init_file : string option ref
+val noinit : bool ref
+val use_prims : string ref
+val use_runtime : string ref
+val principal : bool ref
+val real_paths : bool ref
+val recursive_types : bool ref
+val strict_sequence : bool ref
+val strict_formats : bool ref
+val applicative_functors : bool ref
+val make_runtime : bool ref
+val gprofile : bool ref
+val c_compiler : string option ref
+val no_auto_link : bool ref
+val dllpaths : string list ref
+val make_package : bool ref
+val for_package : string option ref
+val error_size : int ref
+val float_const_prop : bool ref
+val transparent_modules : bool ref
+val dump_source : bool ref
+val dump_parsetree : bool ref
+val dump_typedtree : bool ref
+val dump_rawlambda : bool ref
+val dump_lambda : bool ref
+val dump_clambda : bool ref
+val dump_instr : bool ref
+val keep_asm_file : bool ref
+val optimize_for_speed : bool ref
+val dump_cmm : bool ref
+val dump_selection : bool ref
+val dump_cse : bool ref
+val dump_live : bool ref
+val dump_spill : bool ref
+val dump_split : bool ref
+val dump_interf : bool ref
+val dump_prefer : bool ref
+val dump_regalloc : bool ref
+val dump_reload : bool ref
+val dump_scheduling : bool ref
+val dump_linear : bool ref
+val keep_startup_file : bool ref
+val dump_combine : bool ref
+val native_code : bool ref
+val inline_threshold : int ref
+val dont_write_files : bool ref
+val std_include_flag : string -> string
+val std_include_dir : unit -> string list
+val shared : bool ref
+val dlcode : bool ref
+val runtime_variant : string ref
+val force_slash : bool ref
+val keep_docs : bool ref
+val keep_locs : bool ref
+val unsafe_string : bool ref
+val opaque : bool ref
+
+
+ 
+type mli_status = Mli_na | Mli_exists | Mli_non_exists
+val no_implicit_current_dir : bool ref
+val assume_no_mli : mli_status ref 
+val record_event_when_debug : bool ref 
+
+
+type color_setting = Auto | Always | Never
+val parse_color_setting : string -> color_setting option
+val color : color_setting ref
+
+
+end = struct
+#1 "clflags.ml"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the Q Public License version 1.0.               *)
+(*                                                                     *)
+(***********************************************************************)
+
+(* Command-line parameters *)
+
+let objfiles = ref ([] : string list)   (* .cmo and .cma files *)
+and ccobjs = ref ([] : string list)     (* .o, .a, .so and -cclib -lxxx *)
+and dllibs = ref ([] : string list)     (* .so and -dllib -lxxx *)
+
+let compile_only = ref false            (* -c *)
+and output_name = ref (None : string option) (* -o *)
+and include_dirs = ref ([] : string list)(* -I *)
+and no_std_include = ref false          (* -nostdlib *)
+and print_types = ref false             (* -i *)
+and make_archive = ref false            (* -a *)
+and debug = ref false                   (* -g *)
+and fast = ref false                    (* -unsafe *)
+and link_everything = ref false         (* -linkall *)
+and custom_runtime = ref false          (* -custom *)
+and no_check_prims = ref false          (* -no-check-prims *)
+and bytecode_compatible_32 = ref false  (* -compat-32 *)
+and output_c_object = ref false         (* -output-obj *)
+and output_complete_object = ref false  (* -output-complete-obj *)
+and all_ccopts = ref ([] : string list)     (* -ccopt *)
+and classic = ref false                 (* -nolabels *)
+and nopervasives = ref false            (* -nopervasives *)
+and preprocessor = ref(None : string option) (* -pp *)
+and all_ppx = ref ([] : string list)        (* -ppx *)
+let annotations = ref false             (* -annot *)
+let binary_annotations = ref false      (* -annot *)
+and use_threads = ref false             (* -thread *)
+and use_vmthreads = ref false           (* -vmthread *)
+and noassert = ref false                (* -noassert *)
+and verbose = ref false                 (* -verbose *)
+and noprompt = ref false                (* -noprompt *)
+and nopromptcont = ref false            (* -nopromptcont *)
+and init_file = ref (None : string option)   (* -init *)
+and noinit = ref false                  (* -noinit *)
+and open_modules = ref []               (* -open *)
+and use_prims = ref ""                  (* -use-prims ... *)
+and use_runtime = ref ""                (* -use-runtime ... *)
+and principal = ref false               (* -principal *)
+and real_paths = ref true               (* -short-paths *)
+and recursive_types = ref false         (* -rectypes *)
+and strict_sequence = ref false         (* -strict-sequence *)
+and strict_formats = ref false          (* -strict-formats *)
+and applicative_functors = ref true     (* -no-app-funct *)
+and make_runtime = ref false            (* -make-runtime *)
+and gprofile = ref false                (* -p *)
+and c_compiler = ref (None: string option) (* -cc *)
+and no_auto_link = ref false            (* -noautolink *)
+and dllpaths = ref ([] : string list)   (* -dllpath *)
+and make_package = ref false            (* -pack *)
+and for_package = ref (None: string option) (* -for-pack *)
+and error_size = ref 500                (* -error-size *)
+and float_const_prop = ref true         (* -no-float-const-prop *)
+and transparent_modules = ref false     (* -trans-mod *)
+let dump_source = ref false             (* -dsource *)
+let dump_parsetree = ref false          (* -dparsetree *)
+and dump_typedtree = ref false          (* -dtypedtree *)
+and dump_rawlambda = ref false          (* -drawlambda *)
+and dump_lambda = ref false             (* -dlambda *)
+and dump_clambda = ref false            (* -dclambda *)
+and dump_instr = ref false              (* -dinstr *)
+
+let keep_asm_file = ref false           (* -S *)
+let optimize_for_speed = ref true       (* -compact *)
+and opaque = ref false                  (* -opaque *)
+
+and dump_cmm = ref false                (* -dcmm *)
+let dump_selection = ref false          (* -dsel *)
+let dump_cse = ref false                (* -dcse *)
+let dump_live = ref false               (* -dlive *)
+let dump_spill = ref false              (* -dspill *)
+let dump_split = ref false              (* -dsplit *)
+let dump_interf = ref false             (* -dinterf *)
+let dump_prefer = ref false             (* -dprefer *)
+let dump_regalloc = ref false           (* -dalloc *)
+let dump_reload = ref false             (* -dreload *)
+let dump_scheduling = ref false         (* -dscheduling *)
+let dump_linear = ref false             (* -dlinear *)
+let keep_startup_file = ref false       (* -dstartup *)
+let dump_combine = ref false            (* -dcombine *)
+let native_code = ref false             (* set to true under ocamlopt *)
+let inline_threshold = ref 10
+let force_slash = ref false             (* for ocamldep *)
+
+let dont_write_files = ref false        (* set to true under ocamldoc *)
+
+let std_include_flag prefix =
+  if !no_std_include then ""
+  else (prefix ^ (Filename.quote Config.standard_library))
+;;
+
+let std_include_dir () =
+  if !no_std_include then [] else [Config.standard_library]
+;;
+
+let shared = ref false (* -shared *)
+let dlcode = ref true (* not -nodynlink *)
+
+let runtime_variant = ref "";;      (* -runtime-variant *)
+
+let keep_docs = ref false              (* -keep-docs *)
+let keep_locs = ref false              (* -keep-locs *)
+let unsafe_string = ref true;;         (* -safe-string / -unsafe-string *)
+
+
+ 
+type mli_status = Mli_na | Mli_exists | Mli_non_exists
+let no_implicit_current_dir = ref false
+let assume_no_mli = ref Mli_na
+let record_event_when_debug = ref true (* turned off in BuckleScript*)
+
+
+type color_setting = Auto | Always | Never
+let parse_color_setting = function
+  | "auto" -> Some Auto
+  | "always" -> Some Always
+  | "never" -> Some Never
+  | _ -> None
+let color = ref Auto ;; (* -color *)
+
+
+end
+module Misc : sig 
+#1 "misc.mli"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the Q Public License version 1.0.               *)
+(*                                                                     *)
+(***********************************************************************)
+
+(* Miscellaneous useful types and functions *)
+
+val fatal_error: string -> 'a
+exception Fatal_error
+
+val try_finally : (unit -> 'a) -> (unit -> unit) -> 'a;;
+
+val map_end: ('a -> 'b) -> 'a list -> 'b list -> 'b list
+        (* [map_end f l t] is [map f l @ t], just more efficient. *)
+val map_left_right: ('a -> 'b) -> 'a list -> 'b list
+        (* Like [List.map], with guaranteed left-to-right evaluation order *)
+val for_all2: ('a -> 'b -> bool) -> 'a list -> 'b list -> bool
+        (* Same as [List.for_all] but for a binary predicate.
+           In addition, this [for_all2] never fails: given two lists
+           with different lengths, it returns false. *)
+val replicate_list: 'a -> int -> 'a list
+        (* [replicate_list elem n] is the list with [n] elements
+           all identical to [elem]. *)
+val list_remove: 'a -> 'a list -> 'a list
+        (* [list_remove x l] returns a copy of [l] with the first
+           element equal to [x] removed. *)
+val split_last: 'a list -> 'a list * 'a
+        (* Return the last element and the other elements of the given list. *)
+val samelist: ('a -> 'a -> bool) -> 'a list -> 'a list -> bool
+        (* Like [List.for_all2] but returns [false] if the two
+           lists have different length. *)
+
+val may: ('a -> unit) -> 'a option -> unit
+val may_map: ('a -> 'b) -> 'a option -> 'b option
+
+val find_in_path: string list -> string -> string
+        (* Search a file in a list of directories. *)
+val find_in_path_rel: string list -> string -> string
+        (* Search a relative file in a list of directories. *)
+val find_in_path_uncap: string list -> string -> string
+        (* Same, but search also for uncapitalized name, i.e.
+           if name is Foo.ml, allow /path/Foo.ml and /path/foo.ml
+           to match. *)
+val remove_file: string -> unit
+        (* Delete the given file if it exists. Never raise an error. *)
+val expand_directory: string -> string -> string
+        (* [expand_directory alt file] eventually expands a [+] at the
+           beginning of file into [alt] (an alternate root directory) *)
+
+val create_hashtable: int -> ('a * 'b) list -> ('a, 'b) Hashtbl.t
+        (* Create a hashtable of the given size and fills it with the
+           given bindings. *)
+
+val copy_file: in_channel -> out_channel -> unit
+        (* [copy_file ic oc] reads the contents of file [ic] and copies
+           them to [oc]. It stops when encountering EOF on [ic]. *)
+val copy_file_chunk: in_channel -> out_channel -> int -> unit
+        (* [copy_file_chunk ic oc n] reads [n] bytes from [ic] and copies
+           them to [oc]. It raises [End_of_file] when encountering
+           EOF on [ic]. *)
+val string_of_file: in_channel -> string
+        (* [string_of_file ic] reads the contents of file [ic] and copies
+           them to a string. It stops when encountering EOF on [ic]. *)
+val log2: int -> int
+        (* [log2 n] returns [s] such that [n = 1 lsl s]
+           if [n] is a power of 2*)
+val align: int -> int -> int
+        (* [align n a] rounds [n] upwards to a multiple of [a]
+           (a power of 2). *)
+val no_overflow_add: int -> int -> bool
+        (* [no_overflow_add n1 n2] returns [true] if the computation of
+           [n1 + n2] does not overflow. *)
+val no_overflow_sub: int -> int -> bool
+        (* [no_overflow_add n1 n2] returns [true] if the computation of
+           [n1 - n2] does not overflow. *)
+val no_overflow_lsl: int -> bool
+        (* [no_overflow_add n] returns [true] if the computation of
+           [n lsl 1] does not overflow. *)
+
+val chop_extension_if_any: string -> string
+        (* Like Filename.chop_extension but returns the initial file
+           name if it has no extension *)
+
+val chop_extensions: string -> string
+        (* Return the given file name without its extensions. The extensions
+           is the longest suffix starting with a period and not including
+           a directory separator, [.xyz.uvw] for instance.
+
+           Return the given name if it does not contain an extension. *)
+
+val search_substring: string -> string -> int -> int
+        (* [search_substring pat str start] returns the position of the first
+           occurrence of string [pat] in string [str].  Search starts
+           at offset [start] in [str].  Raise [Not_found] if [pat]
+           does not occur. *)
+
+val replace_substring: before:string -> after:string -> string -> string
+        (* [search_substring ~before ~after str] replaces all occurences
+           of [before] with [after] in [str] and returns the resulting string. *)
+
+val rev_split_words: string -> string list
+        (* [rev_split_words s] splits [s] in blank-separated words, and return
+           the list of words in reverse order. *)
+
+val get_ref: 'a list ref -> 'a list
+        (* [get_ref lr] returns the content of the list reference [lr] and reset
+           its content to the empty list. *)
+
+
+val fst3: 'a * 'b * 'c -> 'a
+val snd3: 'a * 'b * 'c -> 'b
+val thd3: 'a * 'b * 'c -> 'c
+
+val fst4: 'a * 'b * 'c * 'd -> 'a
+val snd4: 'a * 'b * 'c * 'd -> 'b
+val thd4: 'a * 'b * 'c * 'd -> 'c
+val for4: 'a * 'b * 'c * 'd -> 'd
+
+module LongString :
+  sig
+    type t = bytes array
+    val create : int -> t
+    val length : t -> int
+    val get : t -> int -> char
+    val set : t -> int -> char -> unit
+    val blit : t -> int -> t -> int -> int -> unit
+    val output : out_channel -> t -> int -> int -> unit
+    val unsafe_blit_to_bytes : t -> int -> bytes -> int -> int -> unit
+    val input_bytes : in_channel -> int -> t
+  end
+
+val edit_distance : string -> string -> int -> int option
+(** [edit_distance a b cutoff] computes the edit distance between
+    strings [a] and [b]. To help efficiency, it uses a cutoff: if the
+    distance [d] is smaller than [cutoff], it returns [Some d], else
+    [None].
+
+    The distance algorithm currently used is Damerau-Levenshtein: it
+    computes the number of insertion, deletion, substitution of
+    letters, or swapping of adjacent letters to go from one word to the
+    other. The particular algorithm may change in the future.
+*)
+
+val split : string -> char -> string list
+(** [String.split string char] splits the string [string] at every char
+    [char], and returns the list of sub-strings between the chars.
+    [String.concat (String.make 1 c) (String.split s c)] is the identity.
+    @since 4.01
+ *)
+
+val cut_at : string -> char -> string * string
+(** [String.cut_at s c] returns a pair containing the sub-string before
+   the first occurrence of [c] in [s], and the sub-string after the
+   first occurrence of [c] in [s].
+   [let (before, after) = String.cut_at s c in
+    before ^ String.make 1 c ^ after] is the identity if [s] contains [c].
+
+   Raise [Not_found] if the character does not appear in the string
+   @since 4.01
+*)
+
+
+
+
+
+(* Color handling *)
+module Color : sig
+  type color =
+    | Black
+    | Red
+    | Green
+    | Yellow
+    | Blue
+    | Magenta
+    | Cyan
+    | White
+  ;;
+
+  type style =
+    | FG of color (* foreground *)
+    | BG of color (* background *)
+    | Bold
+    | Reset
+
+  val ansi_of_style_l : style list -> string
+  (* ANSI escape sequence for the given style *)
+
+  type styles = {
+    error: style list;
+    warning: style list;
+    loc: style list;
+  }
+
+  val default_styles: styles
+  val get_styles: unit -> styles
+  val set_styles: styles -> unit
+
+  val setup : Clflags.color_setting -> unit
+  (* [setup opt] will enable or disable color handling on standard formatters
+     according to the value of color setting [opt].
+     Only the first call to this function has an effect. *)
+
+  val set_color_tag_handling : Format.formatter -> unit
+  (* adds functions to support color tags to the given formatter. *)
+end
+
+
+end = struct
+#1 "misc.ml"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the Q Public License version 1.0.               *)
+(*                                                                     *)
+(***********************************************************************)
+
+(* Errors *)
+
+exception Fatal_error
+
+let fatal_error msg =
+  prerr_string ">> Fatal error: "; prerr_endline msg; raise Fatal_error
+
+(* Exceptions *)
+
+let try_finally work cleanup =
+  let result = (try work () with e -> cleanup (); raise e) in
+  cleanup ();
+  result
+;;
+
+(* List functions *)
+
+let rec map_end f l1 l2 =
+  match l1 with
+    [] -> l2
+  | hd::tl -> f hd :: map_end f tl l2
+
+let rec map_left_right f = function
+    [] -> []
+  | hd::tl -> let res = f hd in res :: map_left_right f tl
+
+let rec for_all2 pred l1 l2 =
+  match (l1, l2) with
+    ([], []) -> true
+  | (hd1::tl1, hd2::tl2) -> pred hd1 hd2 && for_all2 pred tl1 tl2
+  | (_, _) -> false
+
+let rec replicate_list elem n =
+  if n <= 0 then [] else elem :: replicate_list elem (n-1)
+
+let rec list_remove x = function
+    [] -> []
+  | hd :: tl ->
+      if hd = x then tl else hd :: list_remove x tl
+
+let rec split_last = function
+    [] -> assert false
+  | [x] -> ([], x)
+  | hd :: tl ->
+      let (lst, last) = split_last tl in
+      (hd :: lst, last)
+
+let rec samelist pred l1 l2 =
+  match (l1, l2) with
+  | ([], []) -> true
+  | (hd1 :: tl1, hd2 :: tl2) -> pred hd1 hd2 && samelist pred tl1 tl2
+  | (_, _) -> false
+
+(* Options *)
+
+let may f = function
+    Some x -> f x
+  | None -> ()
+
+let may_map f = function
+    Some x -> Some (f x)
+  | None -> None
+
+(* File functions *)
+
+let find_in_path path name =
+  if not (Filename.is_implicit name) then
+    if Sys.file_exists name then name else raise Not_found
+  else begin
+    let rec try_dir = function
+      [] -> raise Not_found
+    | dir::rem ->
+        let fullname = Filename.concat dir name in
+        if Sys.file_exists fullname then fullname else try_dir rem
+    in try_dir path
+  end
+
+let find_in_path_rel path name =
+  let rec simplify s =
+    let open Filename in
+    let base = basename s in
+    let dir = dirname s in
+    if dir = s then dir
+    else if base = current_dir_name then simplify dir
+    else concat (simplify dir) base
+  in
+  let rec try_dir = function
+    [] -> raise Not_found
+  | dir::rem ->
+      let fullname = simplify (Filename.concat dir name) in
+      if Sys.file_exists fullname then fullname else try_dir rem
+  in try_dir path
+
+let find_in_path_uncap path name =
+  let uname = String.uncapitalize name in
+  let rec try_dir = function
+    [] -> raise Not_found
+  | dir::rem ->
+      let fullname = Filename.concat dir name
+      and ufullname = Filename.concat dir uname in
+      if Sys.file_exists ufullname then ufullname
+      else if Sys.file_exists fullname then fullname
+      else try_dir rem
+  in try_dir path
+
+let remove_file filename =
+  try
+    Sys.remove filename
+  with Sys_error msg ->
+    ()
+
+(* Expand a -I option: if it starts with +, make it relative to the standard
+   library directory *)
+
+let expand_directory alt s =
+  if String.length s > 0 && s.[0] = '+'
+  then Filename.concat alt
+                       (String.sub s 1 (String.length s - 1))
+  else s
+
+(* Hashtable functions *)
+
+let create_hashtable size init =
+  let tbl = Hashtbl.create size in
+  List.iter (fun (key, data) -> Hashtbl.add tbl key data) init;
+  tbl
+
+(* File copy *)
+
+let copy_file ic oc =
+  let buff = Bytes.create 0x1000 in
+  let rec copy () =
+    let n = input ic buff 0 0x1000 in
+    if n = 0 then () else (output oc buff 0 n; copy())
+  in copy()
+
+let copy_file_chunk ic oc len =
+  let buff = Bytes.create 0x1000 in
+  let rec copy n =
+    if n <= 0 then () else begin
+      let r = input ic buff 0 (min n 0x1000) in
+      if r = 0 then raise End_of_file else (output oc buff 0 r; copy(n-r))
+    end
+  in copy len
+
+let string_of_file ic =
+  let b = Buffer.create 0x10000 in
+  let buff = Bytes.create 0x1000 in
+  let rec copy () =
+    let n = input ic buff 0 0x1000 in
+    if n = 0 then Buffer.contents b else
+      (Buffer.add_subbytes b buff 0 n; copy())
+  in copy()
+
+(* Integer operations *)
+
+let rec log2 n =
+  if n <= 1 then 0 else 1 + log2(n asr 1)
+
+let align n a =
+  if n >= 0 then (n + a - 1) land (-a) else n land (-a)
+
+let no_overflow_add a b = (a lxor b) lor (a lxor (lnot (a+b))) < 0
+
+let no_overflow_sub a b = (a lxor (lnot b)) lor (b lxor (a-b)) < 0
+
+let no_overflow_lsl a = min_int asr 1 <= a && a <= max_int asr 1
+
+(* String operations *)
+
+let chop_extension_if_any fname =
+  try Filename.chop_extension fname with Invalid_argument _ -> fname
+
+let chop_extensions file =
+  let dirname = Filename.dirname file and basename = Filename.basename file in
+  try
+    let pos = String.index basename '.' in
+    let basename = String.sub basename 0 pos in
+    if Filename.is_implicit file && dirname = Filename.current_dir_name then
+      basename
+    else
+      Filename.concat dirname basename
+  with Not_found -> file
+
+let search_substring pat str start =
+  let rec search i j =
+    if j >= String.length pat then i
+    else if i + j >= String.length str then raise Not_found
+    else if str.[i + j] = pat.[j] then search i (j+1)
+    else search (i+1) 0
+  in search start 0
+
+let replace_substring ~before ~after str =
+  let rec search acc curr =
+    match search_substring before str curr with
+      | next ->
+         let prefix = String.sub str curr (next - curr) in
+         search (prefix :: acc) (next + String.length before)
+      | exception Not_found ->
+        let suffix = String.sub str curr (String.length str - curr) in
+        List.rev (suffix :: acc)
+  in String.concat after (search [] 0)
+
+let rev_split_words s =
+  let rec split1 res i =
+    if i >= String.length s then res else begin
+      match s.[i] with
+        ' ' | '\t' | '\r' | '\n' -> split1 res (i+1)
+      | _ -> split2 res i (i+1)
+    end
+  and split2 res i j =
+    if j >= String.length s then String.sub s i (j-i) :: res else begin
+      match s.[j] with
+        ' ' | '\t' | '\r' | '\n' -> split1 (String.sub s i (j-i) :: res) (j+1)
+      | _ -> split2 res i (j+1)
+    end
+  in split1 [] 0
+
+let get_ref r =
+  let v = !r in
+  r := []; v
+
+let fst3 (x, _, _) = x
+let snd3 (_,x,_) = x
+let thd3 (_,_,x) = x
+
+let fst4 (x, _, _, _) = x
+let snd4 (_,x,_, _) = x
+let thd4 (_,_,x,_) = x
+let for4 (_,_,_,x) = x
+
+
+module LongString = struct
+  type t = bytes array
+
+  let create str_size =
+    let tbl_size = str_size / Sys.max_string_length + 1 in
+    let tbl = Array.make tbl_size Bytes.empty in
+    for i = 0 to tbl_size - 2 do
+      tbl.(i) <- Bytes.create Sys.max_string_length;
+    done;
+    tbl.(tbl_size - 1) <- Bytes.create (str_size mod Sys.max_string_length);
+    tbl
+
+  let length tbl =
+    let tbl_size = Array.length tbl in
+    Sys.max_string_length * (tbl_size - 1) + Bytes.length tbl.(tbl_size - 1)
+
+  let get tbl ind =
+    Bytes.get tbl.(ind / Sys.max_string_length) (ind mod Sys.max_string_length)
+
+  let set tbl ind c =
+    Bytes.set tbl.(ind / Sys.max_string_length) (ind mod Sys.max_string_length)
+              c
+
+  let blit src srcoff dst dstoff len =
+    for i = 0 to len - 1 do
+      set dst (dstoff + i) (get src (srcoff + i))
+    done
+
+  let output oc tbl pos len =
+    for i = pos to pos + len - 1 do
+      output_char oc (get tbl i)
+    done
+
+  let unsafe_blit_to_bytes src srcoff dst dstoff len =
+    for i = 0 to len - 1 do
+      Bytes.unsafe_set dst (dstoff + i) (get src (srcoff + i))
+    done
+
+  let input_bytes ic len =
+    let tbl = create len in
+    Array.iter (fun str -> really_input ic str 0 (Bytes.length str)) tbl;
+    tbl
+end
+
+
+let edit_distance a b cutoff =
+  let la, lb = String.length a, String.length b in
+  let cutoff =
+    (* using max_int for cutoff would cause overflows in (i + cutoff + 1);
+       we bring it back to the (max la lb) worstcase *)
+    min (max la lb) cutoff in
+  if abs (la - lb) > cutoff then None
+  else begin
+    (* initialize with 'cutoff + 1' so that not-yet-written-to cases have
+       the worst possible cost; this is useful when computing the cost of
+       a case just at the boundary of the cutoff diagonal. *)
+    let m = Array.make_matrix (la + 1) (lb + 1) (cutoff + 1) in
+    m.(0).(0) <- 0;
+    for i = 1 to la do
+      m.(i).(0) <- i;
+    done;
+    for j = 1 to lb do
+      m.(0).(j) <- j;
+    done;
+    for i = 1 to la do
+      for j = max 1 (i - cutoff - 1) to min lb (i + cutoff + 1) do
+        let cost = if a.[i-1] = b.[j-1] then 0 else 1 in
+        let best =
+          (* insert, delete or substitute *)
+          min (1 + min m.(i-1).(j) m.(i).(j-1)) (m.(i-1).(j-1) + cost)
+        in
+        let best =
+          (* swap two adjacent letters; we use "cost" again in case of
+             a swap between two identical letters; this is slightly
+             redundant as this is a double-substitution case, but it
+             was done this way in most online implementations and
+             imitation has its virtues *)
+          if not (i > 1 && j > 1 && a.[i-1] = b.[j-2] && a.[i-2] = b.[j-1])
+          then best
+          else min best (m.(i-2).(j-2) + cost)
+        in
+        m.(i).(j) <- best
+      done;
+    done;
+    let result = m.(la).(lb) in
+    if result > cutoff
+    then None
+    else Some result
+  end
+
+
+(* split a string [s] at every char [c], and return the list of sub-strings *)
+let split s c =
+  let len = String.length s in
+  let rec iter pos to_rev =
+    if pos = len then List.rev ("" :: to_rev) else
+      match try
+              Some ( String.index_from s pos c )
+        with Not_found -> None
+      with
+          Some pos2 ->
+            if pos2 = pos then iter (pos+1) ("" :: to_rev) else
+              iter (pos2+1) ((String.sub s pos (pos2-pos)) :: to_rev)
+        | None -> List.rev ( String.sub s pos (len-pos) :: to_rev )
+  in
+  iter 0 []
+
+let cut_at s c =
+  let pos = String.index s c in
+  String.sub s 0 pos, String.sub s (pos+1) (String.length s - pos - 1)
+
+
+
+
+
+(* Color handling *)
+module Color = struct
+  (* use ANSI color codes, see https://en.wikipedia.org/wiki/ANSI_escape_code *)
+  type color =
+    | Black
+    | Red
+    | Green
+    | Yellow
+    | Blue
+    | Magenta
+    | Cyan
+    | White
+  ;;
+
+  type style =
+    | FG of color (* foreground *)
+    | BG of color (* background *)
+    | Bold
+    | Reset
+
+  let ansi_of_color = function
+    | Black -> "0"
+    | Red -> "1"
+    | Green -> "2"
+    | Yellow -> "3"
+    | Blue -> "4"
+    | Magenta -> "5"
+    | Cyan -> "6"
+    | White -> "7"
+
+  let code_of_style = function
+    | FG c -> "3" ^ ansi_of_color c
+    | BG c -> "4" ^ ansi_of_color c
+    | Bold -> "1"
+    | Reset -> "0"
+
+  let ansi_of_style_l l =
+    let s = match l with
+      | [] -> code_of_style Reset
+      | [s] -> code_of_style s
+      | _ -> String.concat ";" (List.map code_of_style l)
+    in
+    "\x1b[" ^ s ^ "m"
+
+  type styles = {
+    error: style list;
+    warning: style list;
+    loc: style list;
+  }
+
+  let default_styles = {
+    warning = [Bold; FG Magenta];
+    error = [Bold; FG Red];
+    loc = [Bold];
+  }
+
+  let cur_styles = ref default_styles
+  let get_styles () = !cur_styles
+  let set_styles s = cur_styles := s
+
+  (* map a tag to a style, if the tag is known.
+     @raise Not_found otherwise *)
+  let style_of_tag s = match s with
+    | "error" -> (!cur_styles).error
+    | "warning" -> (!cur_styles).warning
+    | "loc" -> (!cur_styles).loc
+    | _ -> raise Not_found
+
+  let color_enabled = ref true
+
+  (* either prints the tag of [s] or delegate to [or_else] *)
+  let mark_open_tag ~or_else s =
+    try
+      let style = style_of_tag s in
+      if !color_enabled then ansi_of_style_l style else ""
+    with Not_found -> or_else s
+
+  let mark_close_tag ~or_else s =
+    try
+      let _ = style_of_tag s in
+      if !color_enabled then ansi_of_style_l [Reset] else ""
+    with Not_found -> or_else s
+
+  (* add color handling to formatter [ppf] *)
+  let set_color_tag_handling ppf =
+    let open Format in
+    let functions = pp_get_formatter_tag_functions ppf () in
+    let functions' = {functions with
+      mark_open_tag=(mark_open_tag ~or_else:functions.mark_open_tag);
+      mark_close_tag=(mark_close_tag ~or_else:functions.mark_close_tag);
+    } in
+    pp_set_mark_tags ppf true; (* enable tags *)
+    pp_set_formatter_tag_functions ppf functions'
+
+  (* external isatty : out_channel -> bool = "caml_sys_isatty" *)
+
+  (* reasonable heuristic on whether colors should be enabled *)
+   let should_enable_color () = false  
+(*    let term = try Sys.getenv "TERM" with Not_found -> "" in
+    term <> "dumb"
+    && term <> "" *)
+(*    && isatty stderr *)
+
+  let setup =
+    let first = ref true in (* initialize only once *)
+    let formatter_l = [Format.std_formatter; Format.err_formatter; Format.str_formatter] in
+    fun o ->
+      if !first then (
+        first := false;
+        Format.set_mark_tags true;
+        List.iter set_color_tag_handling formatter_l;
+        color_enabled := (match o with
+          | Clflags.Always -> true
+          | Clflags.Auto -> should_enable_color ()
+          | Clflags.Never -> false
+        )
+      );
+      ()
+end
+
+
+end
 module Terminfo : sig 
 #1 "terminfo.mli"
 (***********************************************************************)
@@ -697,7 +1878,7 @@ val input_lexbuf: Lexing.lexbuf option ref
 val get_pos_info: Lexing.position -> string * int * int (* file, line, char *)
 val print_loc: formatter -> t -> unit
 val print_error: formatter -> t -> unit
-val print_error_cur_file: formatter -> unit
+val print_error_cur_file: formatter -> unit -> unit
 val print_warning: t -> formatter -> Warnings.t -> unit
 val formatter_for_warnings : formatter ref
 val prerr_warning: t -> Warnings.t -> unit
@@ -732,7 +1913,6 @@ val show_filename: string -> string
 
 val absname: bool ref
 
-
 (* Support for located errors *)
 
 type error =
@@ -745,13 +1925,21 @@ type error =
 
 exception Error of error
 
+val print_error_prefix: formatter -> unit -> unit
+  (* print the prefix "Error:" possibly with style *)
+
 val error: ?loc:t -> ?sub:error list -> ?if_highlight:string -> string -> error
 
 val errorf: ?loc:t -> ?sub:error list -> ?if_highlight:string
-            -> ('a, unit, string, error) format4 -> 'a
+            -> ('a, Format.formatter, unit, error) format4 -> 'a
+
+val errorf_prefixed : ?loc:t -> ?sub:error list -> ?if_highlight:string
+                    -> ('a, Format.formatter, unit, error) format4 -> 'a
+  (* same as {!errorf}, but prints the error prefix "Error:" before yielding
+   * to the format string *)
 
 val raise_errorf: ?loc:t -> ?sub:error list -> ?if_highlight:string
-            -> ('a, unit, string, 'b) format4 -> 'a
+            -> ('a, Format.formatter, unit, 'b) format4 -> 'a
 
 val error_of_printer: t -> (formatter -> 'a -> unit) -> 'a -> error
 
@@ -1032,7 +2220,11 @@ let get_pos_info pos =
   (pos.pos_fname, pos.pos_lnum, pos.pos_cnum - pos.pos_bol)
 ;;
 
+let setup_colors () =
+  Misc.Color.setup !Clflags.color
+
 let print_loc ppf loc =
+  setup_colors ();
   let (file, line, startchar) = get_pos_info loc.loc_start in
   let startchar = try ignore @@ Sys.getenv "BS_VSCODE" ; startchar + 1 with _ -> startchar in 
   let endchar = loc.loc_end.pos_cnum - loc.loc_start.pos_cnum + startchar in
@@ -1041,29 +2233,41 @@ let print_loc ppf loc =
       fprintf ppf "Characters %i-%i"
               loc.loc_start.pos_cnum loc.loc_end.pos_cnum
   end else begin
-    fprintf ppf "%s%a%s%i" msg_file print_filename file msg_line line;
+    fprintf ppf "%s@{<loc>%a%s%i" msg_file print_filename file msg_line line;
     if startchar >= 0 then
-      fprintf ppf "%s%i%s%i" msg_chars startchar msg_to endchar
+      fprintf ppf "%s%i%s%i" msg_chars startchar msg_to endchar;
+    fprintf ppf "@}"
   end
 ;;
 
 let print ppf loc =
+  setup_colors ();
   if loc.loc_start.pos_fname = "//toplevel//"
   && highlight_locations ppf [loc] then ()
-  else fprintf ppf "%a%s@." print_loc loc msg_colon
+  else fprintf ppf "@{<loc>%a@}%s@." print_loc loc msg_colon
+;;
+
+let error_prefix = "Error"
+let warning_prefix = "Warning"
+
+let print_error_prefix ppf () =
+  setup_colors ();
+  fprintf ppf "@{<error>%s@}:" error_prefix;
+  ()
 ;;
 
 let print_error ppf loc =
   print ppf loc;
-  fprintf ppf "Error: ";
+  print_error_prefix ppf ()
 ;;
 
-let print_error_cur_file ppf = print_error ppf (in_file !input_name);;
+let print_error_cur_file ppf () = print_error ppf (in_file !input_name);;
 
 let default_warning_printer loc ppf w =
   if Warnings.is_active w then begin
+    setup_colors ();
     print ppf loc;
-    fprintf ppf "Warning %a@." Warnings.print w
+    fprintf ppf "@{<warning>%s@} %a@." warning_prefix Warnings.print w
   end
 ;;
 
@@ -1097,8 +2301,31 @@ type error =
     if_highlight: string; (* alternative message if locations are highlighted *)
   }
 
-let errorf ?(loc = none) ?(sub = []) ?(if_highlight = "") =
-  Printf.ksprintf (fun msg -> {loc; msg; sub; if_highlight})
+let pp_ksprintf ?before k fmt =
+  let buf = Buffer.create 64 in
+  let ppf = Format.formatter_of_buffer buf in
+  Misc.Color.set_color_tag_handling ppf;
+  begin match before with
+    | None -> ()
+    | Some f -> f ppf
+  end;
+  kfprintf
+    (fun _ ->
+      pp_print_flush ppf ();
+      let msg = Buffer.contents buf in
+      k msg)
+    ppf fmt
+
+let errorf ?(loc = none) ?(sub = []) ?(if_highlight = "") fmt =
+  pp_ksprintf
+    (fun msg -> {loc; msg; sub; if_highlight})
+    fmt
+
+let errorf_prefixed ?(loc=none) ?(sub=[]) ?(if_highlight="") fmt =
+  pp_ksprintf
+    ~before:(fun ppf -> fprintf ppf "%a " print_error_prefix ())
+    (fun msg -> {loc; msg; sub; if_highlight})
+    fmt
 
 let error ?(loc = none) ?(sub = []) ?(if_highlight = "") msg =
   {loc; msg; sub; if_highlight}
@@ -1144,13 +2371,7 @@ let report_error ppf err =
 ;;
 
 let error_of_printer loc print x =
-  let buf = Buffer.create 64 in
-  let ppf = Format.formatter_of_buffer buf in
-  pp_print_string ppf "Error: ";
-  print ppf x;
-  pp_print_flush ppf ();
-  let msg = Buffer.contents buf in
-  errorf ~loc "%s" msg
+  errorf_prefixed ~loc "%a@?" print x
 
 let error_of_printer_file print x =
   error_of_printer (in_file !input_name) print x
@@ -1159,11 +2380,12 @@ let () =
   register_error_of_exn
     (function
       | Sys_error msg ->
-          Some (errorf ~loc:(in_file !input_name) "Error: I/O error: %s" msg)
+          Some (errorf_prefixed ~loc:(in_file !input_name)
+                "I/O error: %s" msg)
       | Warnings.Errors n ->
           Some
-            (errorf ~loc:(in_file !input_name)
-               "Error: Some fatal warnings were triggered (%d occurrences)" n)
+            (errorf_prefixed ~loc:(in_file !input_name)
+             "Some fatal warnings were triggered (%d occurrences)" n)
       | _ ->
           None
     )
@@ -1190,7 +2412,7 @@ let () =
     )
 
 let raise_errorf ?(loc = none) ?(sub = []) ?(if_highlight = "") =
-  Printf.ksprintf (fun msg -> raise (Error ({loc; msg; sub; if_highlight})))
+  pp_ksprintf (fun msg -> raise (Error ({loc; msg; sub; if_highlight})))
 
 end
 module Bs_exception : sig 
@@ -1275,7 +2497,7 @@ type error =
   | Bs_package_not_found of string                            
   | Bs_main_not_exist of string 
   | Bs_invalid_path of string
-      
+  (** TODO: we need add location handling *)    
 exception Error of error
 
 let error err = raise (Error err)
@@ -1315,239 +2537,6 @@ let () =
         -> Some (Location.error_of_printer_file report_error err)
       | _ -> None
     )
-
-end
-module Clflags : sig 
-#1 "clflags.mli"
-(***********************************************************************)
-(*                                                                     *)
-(*                                OCaml                                *)
-(*                                                                     *)
-(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
-(*                                                                     *)
-(*  Copyright 2005 Institut National de Recherche en Informatique et   *)
-(*  en Automatique.  All rights reserved.  This file is distributed    *)
-(*  under the terms of the Q Public License version 1.0.               *)
-(*                                                                     *)
-(***********************************************************************)
-
-val objfiles : string list ref
-val ccobjs : string list ref
-val dllibs : string list ref
-val compile_only : bool ref
-val output_name : string option ref
-val include_dirs : string list ref
-val no_std_include : bool ref
-val print_types : bool ref
-val make_archive : bool ref
-val debug : bool ref
-val fast : bool ref
-val link_everything : bool ref
-val custom_runtime : bool ref
-val no_check_prims : bool ref
-val bytecode_compatible_32 : bool ref
-val output_c_object : bool ref
-val output_complete_object : bool ref
-val all_ccopts : string list ref
-val classic : bool ref
-val nopervasives : bool ref
-val open_modules : string list ref
-val preprocessor : string option ref
-val all_ppx : string list ref
-val annotations : bool ref
-val binary_annotations : bool ref
-val use_threads : bool ref
-val use_vmthreads : bool ref
-val noassert : bool ref
-val verbose : bool ref
-val noprompt : bool ref
-val nopromptcont : bool ref
-val init_file : string option ref
-val noinit : bool ref
-val use_prims : string ref
-val use_runtime : string ref
-val principal : bool ref
-val real_paths : bool ref
-val recursive_types : bool ref
-val strict_sequence : bool ref
-val strict_formats : bool ref
-val applicative_functors : bool ref
-val make_runtime : bool ref
-val gprofile : bool ref
-val c_compiler : string option ref
-val no_auto_link : bool ref
-val dllpaths : string list ref
-val make_package : bool ref
-val for_package : string option ref
-val error_size : int ref
-val float_const_prop : bool ref
-val transparent_modules : bool ref
-val dump_source : bool ref
-val dump_parsetree : bool ref
-val dump_typedtree : bool ref
-val dump_rawlambda : bool ref
-val dump_lambda : bool ref
-val dump_clambda : bool ref
-val dump_instr : bool ref
-val keep_asm_file : bool ref
-val optimize_for_speed : bool ref
-val dump_cmm : bool ref
-val dump_selection : bool ref
-val dump_cse : bool ref
-val dump_live : bool ref
-val dump_spill : bool ref
-val dump_split : bool ref
-val dump_interf : bool ref
-val dump_prefer : bool ref
-val dump_regalloc : bool ref
-val dump_reload : bool ref
-val dump_scheduling : bool ref
-val dump_linear : bool ref
-val keep_startup_file : bool ref
-val dump_combine : bool ref
-val native_code : bool ref
-val inline_threshold : int ref
-val dont_write_files : bool ref
-val std_include_flag : string -> string
-val std_include_dir : unit -> string list
-val shared : bool ref
-val dlcode : bool ref
-val runtime_variant : string ref
-val force_slash : bool ref
-val keep_docs : bool ref
-val keep_locs : bool ref
-val unsafe_string : bool ref
-val opaque : bool ref
-
- 
-type mli_status = Mli_na | Mli_exists | Mli_non_exists
-val no_implicit_current_dir : bool ref
-val assume_no_mli : mli_status ref 
-
-
-end = struct
-#1 "clflags.ml"
-(***********************************************************************)
-(*                                                                     *)
-(*                                OCaml                                *)
-(*                                                                     *)
-(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
-(*                                                                     *)
-(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
-(*  en Automatique.  All rights reserved.  This file is distributed    *)
-(*  under the terms of the Q Public License version 1.0.               *)
-(*                                                                     *)
-(***********************************************************************)
-
-(* Command-line parameters *)
-
-let objfiles = ref ([] : string list)   (* .cmo and .cma files *)
-and ccobjs = ref ([] : string list)     (* .o, .a, .so and -cclib -lxxx *)
-and dllibs = ref ([] : string list)     (* .so and -dllib -lxxx *)
-
-let compile_only = ref false            (* -c *)
-and output_name = ref (None : string option) (* -o *)
-and include_dirs = ref ([] : string list)(* -I *)
-and no_std_include = ref false          (* -nostdlib *)
-and print_types = ref false             (* -i *)
-and make_archive = ref false            (* -a *)
-and debug = ref false                   (* -g *)
-and fast = ref false                    (* -unsafe *)
-and link_everything = ref false         (* -linkall *)
-and custom_runtime = ref false          (* -custom *)
-and no_check_prims = ref false          (* -no-check-prims *)
-and bytecode_compatible_32 = ref false  (* -compat-32 *)
-and output_c_object = ref false         (* -output-obj *)
-and output_complete_object = ref false  (* -output-complete-obj *)
-and all_ccopts = ref ([] : string list)     (* -ccopt *)
-and classic = ref false                 (* -nolabels *)
-and nopervasives = ref false            (* -nopervasives *)
-and preprocessor = ref(None : string option) (* -pp *)
-and all_ppx = ref ([] : string list)        (* -ppx *)
-let annotations = ref false             (* -annot *)
-let binary_annotations = ref false      (* -annot *)
-and use_threads = ref false             (* -thread *)
-and use_vmthreads = ref false           (* -vmthread *)
-and noassert = ref false                (* -noassert *)
-and verbose = ref false                 (* -verbose *)
-and noprompt = ref false                (* -noprompt *)
-and nopromptcont = ref false            (* -nopromptcont *)
-and init_file = ref (None : string option)   (* -init *)
-and noinit = ref false                  (* -noinit *)
-and open_modules = ref []               (* -open *)
-and use_prims = ref ""                  (* -use-prims ... *)
-and use_runtime = ref ""                (* -use-runtime ... *)
-and principal = ref false               (* -principal *)
-and real_paths = ref true               (* -short-paths *)
-and recursive_types = ref false         (* -rectypes *)
-and strict_sequence = ref false         (* -strict-sequence *)
-and strict_formats = ref false          (* -strict-formats *)
-and applicative_functors = ref true     (* -no-app-funct *)
-and make_runtime = ref false            (* -make-runtime *)
-and gprofile = ref false                (* -p *)
-and c_compiler = ref (None: string option) (* -cc *)
-and no_auto_link = ref false            (* -noautolink *)
-and dllpaths = ref ([] : string list)   (* -dllpath *)
-and make_package = ref false            (* -pack *)
-and for_package = ref (None: string option) (* -for-pack *)
-and error_size = ref 500                (* -error-size *)
-and float_const_prop = ref true         (* -no-float-const-prop *)
-and transparent_modules = ref false     (* -trans-mod *)
-let dump_source = ref false             (* -dsource *)
-let dump_parsetree = ref false          (* -dparsetree *)
-and dump_typedtree = ref false          (* -dtypedtree *)
-and dump_rawlambda = ref false          (* -drawlambda *)
-and dump_lambda = ref false             (* -dlambda *)
-and dump_clambda = ref false            (* -dclambda *)
-and dump_instr = ref false              (* -dinstr *)
-
-let keep_asm_file = ref false           (* -S *)
-let optimize_for_speed = ref true       (* -compact *)
-and opaque = ref false                  (* -opaque *)
-
-and dump_cmm = ref false                (* -dcmm *)
-let dump_selection = ref false          (* -dsel *)
-let dump_cse = ref false                (* -dcse *)
-let dump_live = ref false               (* -dlive *)
-let dump_spill = ref false              (* -dspill *)
-let dump_split = ref false              (* -dsplit *)
-let dump_interf = ref false             (* -dinterf *)
-let dump_prefer = ref false             (* -dprefer *)
-let dump_regalloc = ref false           (* -dalloc *)
-let dump_reload = ref false             (* -dreload *)
-let dump_scheduling = ref false         (* -dscheduling *)
-let dump_linear = ref false             (* -dlinear *)
-let keep_startup_file = ref false       (* -dstartup *)
-let dump_combine = ref false            (* -dcombine *)
-let native_code = ref false             (* set to true under ocamlopt *)
-let inline_threshold = ref 10
-let force_slash = ref false             (* for ocamldep *)
-
-let dont_write_files = ref false        (* set to true under ocamldoc *)
-
-let std_include_flag prefix =
-  if !no_std_include then ""
-  else (prefix ^ (Filename.quote Config.standard_library))
-;;
-
-let std_include_dir () =
-  if !no_std_include then [] else [Config.standard_library]
-;;
-
-let shared = ref false (* -shared *)
-let dlcode = ref true (* not -nodynlink *)
-
-let runtime_variant = ref "";;      (* -runtime-variant *)
-
-let keep_docs = ref false              (* -keep-docs *)
-let keep_locs = ref false              (* -keep-locs *)
-let unsafe_string = ref true;;         (* -safe-string / -unsafe-string *)
-
- 
-type mli_status = Mli_na | Mli_exists | Mli_non_exists
-let no_implicit_current_dir = ref false
-let assume_no_mli = ref Mli_na
-
 
 end
 (** Interface as module  *)
@@ -1603,534 +2592,6 @@ type variance =
   | Covariant
   | Contravariant
   | Invariant
-
-end
-module Misc : sig 
-#1 "misc.mli"
-(***********************************************************************)
-(*                                                                     *)
-(*                                OCaml                                *)
-(*                                                                     *)
-(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
-(*                                                                     *)
-(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
-(*  en Automatique.  All rights reserved.  This file is distributed    *)
-(*  under the terms of the Q Public License version 1.0.               *)
-(*                                                                     *)
-(***********************************************************************)
-
-(* Miscellaneous useful types and functions *)
-
-val fatal_error: string -> 'a
-exception Fatal_error
-
-val try_finally : (unit -> 'a) -> (unit -> unit) -> 'a;;
-
-val map_end: ('a -> 'b) -> 'a list -> 'b list -> 'b list
-        (* [map_end f l t] is [map f l @ t], just more efficient. *)
-val map_left_right: ('a -> 'b) -> 'a list -> 'b list
-        (* Like [List.map], with guaranteed left-to-right evaluation order *)
-val for_all2: ('a -> 'b -> bool) -> 'a list -> 'b list -> bool
-        (* Same as [List.for_all] but for a binary predicate.
-           In addition, this [for_all2] never fails: given two lists
-           with different lengths, it returns false. *)
-val replicate_list: 'a -> int -> 'a list
-        (* [replicate_list elem n] is the list with [n] elements
-           all identical to [elem]. *)
-val list_remove: 'a -> 'a list -> 'a list
-        (* [list_remove x l] returns a copy of [l] with the first
-           element equal to [x] removed. *)
-val split_last: 'a list -> 'a list * 'a
-        (* Return the last element and the other elements of the given list. *)
-val samelist: ('a -> 'a -> bool) -> 'a list -> 'a list -> bool
-        (* Like [List.for_all2] but returns [false] if the two
-           lists have different length. *)
-
-val may: ('a -> unit) -> 'a option -> unit
-val may_map: ('a -> 'b) -> 'a option -> 'b option
-
-val find_in_path: string list -> string -> string
-        (* Search a file in a list of directories. *)
-val find_in_path_rel: string list -> string -> string
-        (* Search a relative file in a list of directories. *)
-val find_in_path_uncap: string list -> string -> string
-        (* Same, but search also for uncapitalized name, i.e.
-           if name is Foo.ml, allow /path/Foo.ml and /path/foo.ml
-           to match. *)
-val remove_file: string -> unit
-        (* Delete the given file if it exists. Never raise an error. *)
-val expand_directory: string -> string -> string
-        (* [expand_directory alt file] eventually expands a [+] at the
-           beginning of file into [alt] (an alternate root directory) *)
-
-val create_hashtable: int -> ('a * 'b) list -> ('a, 'b) Hashtbl.t
-        (* Create a hashtable of the given size and fills it with the
-           given bindings. *)
-
-val copy_file: in_channel -> out_channel -> unit
-        (* [copy_file ic oc] reads the contents of file [ic] and copies
-           them to [oc]. It stops when encountering EOF on [ic]. *)
-val copy_file_chunk: in_channel -> out_channel -> int -> unit
-        (* [copy_file_chunk ic oc n] reads [n] bytes from [ic] and copies
-           them to [oc]. It raises [End_of_file] when encountering
-           EOF on [ic]. *)
-val string_of_file: in_channel -> string
-        (* [string_of_file ic] reads the contents of file [ic] and copies
-           them to a string. It stops when encountering EOF on [ic]. *)
-val log2: int -> int
-        (* [log2 n] returns [s] such that [n = 1 lsl s]
-           if [n] is a power of 2*)
-val align: int -> int -> int
-        (* [align n a] rounds [n] upwards to a multiple of [a]
-           (a power of 2). *)
-val no_overflow_add: int -> int -> bool
-        (* [no_overflow_add n1 n2] returns [true] if the computation of
-           [n1 + n2] does not overflow. *)
-val no_overflow_sub: int -> int -> bool
-        (* [no_overflow_add n1 n2] returns [true] if the computation of
-           [n1 - n2] does not overflow. *)
-val no_overflow_lsl: int -> bool
-        (* [no_overflow_add n] returns [true] if the computation of
-           [n lsl 1] does not overflow. *)
-
-val chop_extension_if_any: string -> string
-        (* Like Filename.chop_extension but returns the initial file
-           name if it has no extension *)
-
-val chop_extensions: string -> string
-        (* Return the given file name without its extensions. The extensions
-           is the longest suffix starting with a period and not including
-           a directory separator, [.xyz.uvw] for instance.
-
-           Return the given name if it does not contain an extension. *)
-
-val search_substring: string -> string -> int -> int
-        (* [search_substring pat str start] returns the position of the first
-           occurrence of string [pat] in string [str].  Search starts
-           at offset [start] in [str].  Raise [Not_found] if [pat]
-           does not occur. *)
-
-val replace_substring: before:string -> after:string -> string -> string
-        (* [search_substring ~before ~after str] replaces all occurences
-           of [before] with [after] in [str] and returns the resulting string. *)
-
-val rev_split_words: string -> string list
-        (* [rev_split_words s] splits [s] in blank-separated words, and return
-           the list of words in reverse order. *)
-
-val get_ref: 'a list ref -> 'a list
-        (* [get_ref lr] returns the content of the list reference [lr] and reset
-           its content to the empty list. *)
-
-
-val fst3: 'a * 'b * 'c -> 'a
-val snd3: 'a * 'b * 'c -> 'b
-val thd3: 'a * 'b * 'c -> 'c
-
-val fst4: 'a * 'b * 'c * 'd -> 'a
-val snd4: 'a * 'b * 'c * 'd -> 'b
-val thd4: 'a * 'b * 'c * 'd -> 'c
-val for4: 'a * 'b * 'c * 'd -> 'd
-
-module LongString :
-  sig
-    type t = bytes array
-    val create : int -> t
-    val length : t -> int
-    val get : t -> int -> char
-    val set : t -> int -> char -> unit
-    val blit : t -> int -> t -> int -> int -> unit
-    val output : out_channel -> t -> int -> int -> unit
-    val unsafe_blit_to_bytes : t -> int -> bytes -> int -> int -> unit
-    val input_bytes : in_channel -> int -> t
-  end
-
-val edit_distance : string -> string -> int -> int option
-(** [edit_distance a b cutoff] computes the edit distance between
-    strings [a] and [b]. To help efficiency, it uses a cutoff: if the
-    distance [d] is smaller than [cutoff], it returns [Some d], else
-    [None].
-
-    The distance algorithm currently used is Damerau-Levenshtein: it
-    computes the number of insertion, deletion, substitution of
-    letters, or swapping of adjacent letters to go from one word to the
-    other. The particular algorithm may change in the future.
-*)
-
-val split : string -> char -> string list
-(** [String.split string char] splits the string [string] at every char
-    [char], and returns the list of sub-strings between the chars.
-    [String.concat (String.make 1 c) (String.split s c)] is the identity.
-    @since 4.01
- *)
-
-val cut_at : string -> char -> string * string
-(** [String.cut_at s c] returns a pair containing the sub-string before
-   the first occurrence of [c] in [s], and the sub-string after the
-   first occurrence of [c] in [s].
-   [let (before, after) = String.cut_at s c in
-    before ^ String.make 1 c ^ after] is the identity if [s] contains [c].
-
-   Raise [Not_found] if the character does not appear in the string
-   @since 4.01
-*)
-
-end = struct
-#1 "misc.ml"
-(***********************************************************************)
-(*                                                                     *)
-(*                                OCaml                                *)
-(*                                                                     *)
-(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
-(*                                                                     *)
-(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
-(*  en Automatique.  All rights reserved.  This file is distributed    *)
-(*  under the terms of the Q Public License version 1.0.               *)
-(*                                                                     *)
-(***********************************************************************)
-
-(* Errors *)
-
-exception Fatal_error
-
-let fatal_error msg =
-  prerr_string ">> Fatal error: "; prerr_endline msg; raise Fatal_error
-
-(* Exceptions *)
-
-let try_finally work cleanup =
-  let result = (try work () with e -> cleanup (); raise e) in
-  cleanup ();
-  result
-;;
-
-(* List functions *)
-
-let rec map_end f l1 l2 =
-  match l1 with
-    [] -> l2
-  | hd::tl -> f hd :: map_end f tl l2
-
-let rec map_left_right f = function
-    [] -> []
-  | hd::tl -> let res = f hd in res :: map_left_right f tl
-
-let rec for_all2 pred l1 l2 =
-  match (l1, l2) with
-    ([], []) -> true
-  | (hd1::tl1, hd2::tl2) -> pred hd1 hd2 && for_all2 pred tl1 tl2
-  | (_, _) -> false
-
-let rec replicate_list elem n =
-  if n <= 0 then [] else elem :: replicate_list elem (n-1)
-
-let rec list_remove x = function
-    [] -> []
-  | hd :: tl ->
-      if hd = x then tl else hd :: list_remove x tl
-
-let rec split_last = function
-    [] -> assert false
-  | [x] -> ([], x)
-  | hd :: tl ->
-      let (lst, last) = split_last tl in
-      (hd :: lst, last)
-
-let rec samelist pred l1 l2 =
-  match (l1, l2) with
-  | ([], []) -> true
-  | (hd1 :: tl1, hd2 :: tl2) -> pred hd1 hd2 && samelist pred tl1 tl2
-  | (_, _) -> false
-
-(* Options *)
-
-let may f = function
-    Some x -> f x
-  | None -> ()
-
-let may_map f = function
-    Some x -> Some (f x)
-  | None -> None
-
-(* File functions *)
-
-let find_in_path path name =
-  if not (Filename.is_implicit name) then
-    if Sys.file_exists name then name else raise Not_found
-  else begin
-    let rec try_dir = function
-      [] -> raise Not_found
-    | dir::rem ->
-        let fullname = Filename.concat dir name in
-        if Sys.file_exists fullname then fullname else try_dir rem
-    in try_dir path
-  end
-
-let find_in_path_rel path name =
-  let rec simplify s =
-    let open Filename in
-    let base = basename s in
-    let dir = dirname s in
-    if dir = s then dir
-    else if base = current_dir_name then simplify dir
-    else concat (simplify dir) base
-  in
-  let rec try_dir = function
-    [] -> raise Not_found
-  | dir::rem ->
-      let fullname = simplify (Filename.concat dir name) in
-      if Sys.file_exists fullname then fullname else try_dir rem
-  in try_dir path
-
-let find_in_path_uncap path name =
-  let uname = String.uncapitalize name in
-  let rec try_dir = function
-    [] -> raise Not_found
-  | dir::rem ->
-      let fullname = Filename.concat dir name
-      and ufullname = Filename.concat dir uname in
-      if Sys.file_exists ufullname then ufullname
-      else if Sys.file_exists fullname then fullname
-      else try_dir rem
-  in try_dir path
-
-let remove_file filename =
-  try
-    Sys.remove filename
-  with Sys_error msg ->
-    ()
-
-(* Expand a -I option: if it starts with +, make it relative to the standard
-   library directory *)
-
-let expand_directory alt s =
-  if String.length s > 0 && s.[0] = '+'
-  then Filename.concat alt
-                       (String.sub s 1 (String.length s - 1))
-  else s
-
-(* Hashtable functions *)
-
-let create_hashtable size init =
-  let tbl = Hashtbl.create size in
-  List.iter (fun (key, data) -> Hashtbl.add tbl key data) init;
-  tbl
-
-(* File copy *)
-
-let copy_file ic oc =
-  let buff = Bytes.create 0x1000 in
-  let rec copy () =
-    let n = input ic buff 0 0x1000 in
-    if n = 0 then () else (output oc buff 0 n; copy())
-  in copy()
-
-let copy_file_chunk ic oc len =
-  let buff = Bytes.create 0x1000 in
-  let rec copy n =
-    if n <= 0 then () else begin
-      let r = input ic buff 0 (min n 0x1000) in
-      if r = 0 then raise End_of_file else (output oc buff 0 r; copy(n-r))
-    end
-  in copy len
-
-let string_of_file ic =
-  let b = Buffer.create 0x10000 in
-  let buff = Bytes.create 0x1000 in
-  let rec copy () =
-    let n = input ic buff 0 0x1000 in
-    if n = 0 then Buffer.contents b else
-      (Buffer.add_subbytes b buff 0 n; copy())
-  in copy()
-
-(* Integer operations *)
-
-let rec log2 n =
-  if n <= 1 then 0 else 1 + log2(n asr 1)
-
-let align n a =
-  if n >= 0 then (n + a - 1) land (-a) else n land (-a)
-
-let no_overflow_add a b = (a lxor b) lor (a lxor (lnot (a+b))) < 0
-
-let no_overflow_sub a b = (a lxor (lnot b)) lor (b lxor (a-b)) < 0
-
-let no_overflow_lsl a = min_int asr 1 <= a && a <= max_int asr 1
-
-(* String operations *)
-
-let chop_extension_if_any fname =
-  try Filename.chop_extension fname with Invalid_argument _ -> fname
-
-let chop_extensions file =
-  let dirname = Filename.dirname file and basename = Filename.basename file in
-  try
-    let pos = String.index basename '.' in
-    let basename = String.sub basename 0 pos in
-    if Filename.is_implicit file && dirname = Filename.current_dir_name then
-      basename
-    else
-      Filename.concat dirname basename
-  with Not_found -> file
-
-let search_substring pat str start =
-  let rec search i j =
-    if j >= String.length pat then i
-    else if i + j >= String.length str then raise Not_found
-    else if str.[i + j] = pat.[j] then search i (j+1)
-    else search (i+1) 0
-  in search start 0
-
-let replace_substring ~before ~after str =
-  let rec search acc curr =
-    match search_substring before str curr with
-      | next ->
-         let prefix = String.sub str curr (next - curr) in
-         search (prefix :: acc) (next + String.length before)
-      | exception Not_found ->
-        let suffix = String.sub str curr (String.length str - curr) in
-        List.rev (suffix :: acc)
-  in String.concat after (search [] 0)
-
-let rev_split_words s =
-  let rec split1 res i =
-    if i >= String.length s then res else begin
-      match s.[i] with
-        ' ' | '\t' | '\r' | '\n' -> split1 res (i+1)
-      | _ -> split2 res i (i+1)
-    end
-  and split2 res i j =
-    if j >= String.length s then String.sub s i (j-i) :: res else begin
-      match s.[j] with
-        ' ' | '\t' | '\r' | '\n' -> split1 (String.sub s i (j-i) :: res) (j+1)
-      | _ -> split2 res i (j+1)
-    end
-  in split1 [] 0
-
-let get_ref r =
-  let v = !r in
-  r := []; v
-
-let fst3 (x, _, _) = x
-let snd3 (_,x,_) = x
-let thd3 (_,_,x) = x
-
-let fst4 (x, _, _, _) = x
-let snd4 (_,x,_, _) = x
-let thd4 (_,_,x,_) = x
-let for4 (_,_,_,x) = x
-
-
-module LongString = struct
-  type t = bytes array
-
-  let create str_size =
-    let tbl_size = str_size / Sys.max_string_length + 1 in
-    let tbl = Array.make tbl_size Bytes.empty in
-    for i = 0 to tbl_size - 2 do
-      tbl.(i) <- Bytes.create Sys.max_string_length;
-    done;
-    tbl.(tbl_size - 1) <- Bytes.create (str_size mod Sys.max_string_length);
-    tbl
-
-  let length tbl =
-    let tbl_size = Array.length tbl in
-    Sys.max_string_length * (tbl_size - 1) + Bytes.length tbl.(tbl_size - 1)
-
-  let get tbl ind =
-    Bytes.get tbl.(ind / Sys.max_string_length) (ind mod Sys.max_string_length)
-
-  let set tbl ind c =
-    Bytes.set tbl.(ind / Sys.max_string_length) (ind mod Sys.max_string_length)
-              c
-
-  let blit src srcoff dst dstoff len =
-    for i = 0 to len - 1 do
-      set dst (dstoff + i) (get src (srcoff + i))
-    done
-
-  let output oc tbl pos len =
-    for i = pos to pos + len - 1 do
-      output_char oc (get tbl i)
-    done
-
-  let unsafe_blit_to_bytes src srcoff dst dstoff len =
-    for i = 0 to len - 1 do
-      Bytes.unsafe_set dst (dstoff + i) (get src (srcoff + i))
-    done
-
-  let input_bytes ic len =
-    let tbl = create len in
-    Array.iter (fun str -> really_input ic str 0 (Bytes.length str)) tbl;
-    tbl
-end
-
-
-let edit_distance a b cutoff =
-  let la, lb = String.length a, String.length b in
-  let cutoff =
-    (* using max_int for cutoff would cause overflows in (i + cutoff + 1);
-       we bring it back to the (max la lb) worstcase *)
-    min (max la lb) cutoff in
-  if abs (la - lb) > cutoff then None
-  else begin
-    (* initialize with 'cutoff + 1' so that not-yet-written-to cases have
-       the worst possible cost; this is useful when computing the cost of
-       a case just at the boundary of the cutoff diagonal. *)
-    let m = Array.make_matrix (la + 1) (lb + 1) (cutoff + 1) in
-    m.(0).(0) <- 0;
-    for i = 1 to la do
-      m.(i).(0) <- i;
-    done;
-    for j = 1 to lb do
-      m.(0).(j) <- j;
-    done;
-    for i = 1 to la do
-      for j = max 1 (i - cutoff - 1) to min lb (i + cutoff + 1) do
-        let cost = if a.[i-1] = b.[j-1] then 0 else 1 in
-        let best =
-          (* insert, delete or substitute *)
-          min (1 + min m.(i-1).(j) m.(i).(j-1)) (m.(i-1).(j-1) + cost)
-        in
-        let best =
-          (* swap two adjacent letters; we use "cost" again in case of
-             a swap between two identical letters; this is slightly
-             redundant as this is a double-substitution case, but it
-             was done this way in most online implementations and
-             imitation has its virtues *)
-          if not (i > 1 && j > 1 && a.[i-1] = b.[j-2] && a.[i-2] = b.[j-1])
-          then best
-          else min best (m.(i-2).(j-2) + cost)
-        in
-        m.(i).(j) <- best
-      done;
-    done;
-    let result = m.(la).(lb) in
-    if result > cutoff
-    then None
-    else Some result
-  end
-
-
-(* split a string [s] at every char [c], and return the list of sub-strings *)
-let split s c =
-  let len = String.length s in
-  let rec iter pos to_rev =
-    if pos = len then List.rev ("" :: to_rev) else
-      match try
-              Some ( String.index_from s pos c )
-        with Not_found -> None
-      with
-          Some pos2 ->
-            if pos2 = pos then iter (pos+1) ("" :: to_rev) else
-              iter (pos2+1) ((String.sub s pos (pos2-pos)) :: to_rev)
-        | None -> List.rev ( String.sub s pos (len-pos) :: to_rev )
-  in
-  iter 0 []
-
-let cut_at s c =
-  let pos = String.index s c in
-  String.sub s 0 pos, String.sub s (pos+1) (String.length s - pos - 1)
 
 end
 module Longident : sig 
@@ -3892,7 +4353,11 @@ val rindex_neg : string -> char -> int
 
 val rindex_opt : string -> char -> int option
 
-val is_valid_source_name : string -> bool
+type check_result = 
+    | Good | Invalid_module_name | Suffix_mismatch
+
+val is_valid_source_name :
+   string -> check_result
 
 val no_char : string -> char -> int -> int -> bool 
 
@@ -3920,6 +4385,9 @@ val inter4 : string -> string -> string -> string -> string
 val concat_array : string -> string array -> string 
 
 val single_colon : string 
+
+val parent_dir_lit : string
+val current_dir_lit : string
 end = struct
 #1 "ext_string.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -4255,18 +4723,25 @@ let is_valid_module_file (s : string) =
          | _ -> false )
   | _ -> false 
 
+type check_result = 
+  | Good 
+  | Invalid_module_name 
+  | Suffix_mismatch
 (** 
    TODO: move to another module 
    Make {!Ext_filename} not stateful
 *)
-let is_valid_source_name name =
+let is_valid_source_name name : check_result =
   match check_any_suffix_case_then_chop name [
       ".ml"; 
       ".re";
       ".mli"; ".mll"; ".rei"
     ] with 
-  | None -> false 
-  | Some x -> is_valid_module_file  x 
+  | None -> Suffix_mismatch
+  | Some x -> 
+    if is_valid_module_file  x then
+      Good
+    else Invalid_module_name  
 
 (** TODO: can be improved to return a positive integer instead *)
 let rec unsafe_no_char x ch i  len = 
@@ -4393,6 +4868,8 @@ let inter4 a b c d =
   concat_array single_space [| a; b ; c; d|]
   
     
+let parent_dir_lit = ".."    
+let current_dir_lit = "."
 end
 module Literals : sig 
 #1 "literals.mli"
@@ -4452,17 +4929,17 @@ val setter_suffix : string
 val setter_suffix_len : int
 
 
-val js_debugger : string
-val js_pure_expr : string
-val js_pure_stmt : string
-val js_unsafe_downgrade : string
-val js_fn_run : string
-val js_method_run : string
-val js_fn_method : string
-val js_fn_mk : string
+val debugger : string
+val raw_expr : string
+val raw_stmt : string
+val unsafe_downgrade : string
+val fn_run : string
+val method_run : string
+val fn_method : string
+val fn_mk : string
 
 (** callback actually, not exposed to user yet *)
-val js_fn_runmethod : string 
+(* val js_fn_runmethod : string *)
 
 val bs_deriving : string
 val bs_deriving_dot : string
@@ -4481,6 +4958,9 @@ val suffix_ml : string
 val suffix_mlast : string 
 val suffix_mliast : string
 val suffix_mll : string
+val suffix_re : string
+val suffix_rei : string 
+
 val suffix_d : string
 val suffix_mlastd : string
 val suffix_mliastd : string
@@ -4493,7 +4973,20 @@ val commonjs : string
 val amdjs : string 
 val goog : string 
 val es6 : string 
+val es6_global : string
+val amdjs_global : string 
 val unused_attribute : string 
+val dash_nostdlib : string
+
+val reactjs_jsx_ppx_exe : string 
+
+val unescaped_j_delimiter : string 
+val escaped_j_delimiter : string 
+
+val unescaped_js_delimiter : string 
+
+
+
 end = struct
 #1 "literals.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -4552,16 +5045,16 @@ let imul = "imul" (* signed int32 mul *)
 let setter_suffix = "#="
 let setter_suffix_len = String.length setter_suffix
 
-let js_debugger = "js_debugger"
-let js_pure_expr = "js_pure_expr"
-let js_pure_stmt = "js_pure_stmt"
-let js_unsafe_downgrade = "js_unsafe_downgrade"
-let js_fn_run = "js_fn_run"
-let js_method_run = "js_method_run"
+let debugger = "debugger"
+let raw_expr = "raw_expr"
+let raw_stmt = "raw_stmt"
+let unsafe_downgrade = "unsafe_downgrade"
+let fn_run = "fn_run"
+let method_run = "method_run"
 
-let js_fn_method = "js_fn_method"
-let js_fn_mk = "js_fn_mk"
-let js_fn_runmethod = "js_fn_runmethod"
+let fn_method = "fn_method"
+let fn_mk = "fn_mk"
+(*let js_fn_runmethod = "js_fn_runmethod"*)
 
 let bs_deriving = "bs.deriving"
 let bs_deriving_dot = "bs.deriving."
@@ -4580,6 +5073,9 @@ let suffix_cmi = ".cmi"
 let suffix_mll = ".mll"
 let suffix_ml = ".ml"
 let suffix_mli = ".mli"
+let suffix_re = ".re"
+let suffix_rei = ".rei"
+
 let suffix_cmt = ".cmt" 
 let suffix_cmti = ".cmti" 
 let suffix_mlast = ".mlast"
@@ -4593,8 +5089,19 @@ let commonjs = "commonjs"
 let amdjs = "amdjs"
 let goog = "goog"
 let es6 = "es6"
-
+let es6_global = "es6-global"
+let amdjs_global = "amdjs-global"
 let unused_attribute = "Unused attribute " 
+let dash_nostdlib = "-nostdlib"
+
+let reactjs_jsx_ppx_exe  = "reactjs_jsx_ppx.exe"
+
+let unescaped_j_delimiter = "j"
+let unescaped_js_delimiter = "js"
+let escaped_j_delimiter =  "*j" (* not user level syntax allowed *)
+
+
+
 end
 module Ext_filename : sig 
 #1 "ext_filename.mli"
@@ -4650,7 +5157,7 @@ val path_as_directory : string -> string
     just treat it as a library instead
  *)
 
-val node_relative_path : t -> [`File of string] -> string
+val node_relative_path : bool -> t -> [`File of string] -> string
 
 val chop_extension : ?loc:string -> string -> string
 
@@ -4859,12 +5366,15 @@ let relative_path file_or_dir_1 file_or_dir_2 =
 
     [file1] is currently compilation file 
     [file2] is the dependency
+    
+    TODO: this is a hackish function: FIXME
 *)
-let node_relative_path (file1 : t) 
+let node_relative_path node_modules_shorten (file1 : t) 
     (`File file2 as dep_file : [`File of string]) = 
   let v = Ext_string.find  file2 ~sub:Literals.node_modules in 
   let len = String.length file2 in 
-  if v >= 0 then
+  if node_modules_shorten && v >= 0 then
+    
     let rec skip  i =       
       if i >= len then
         Ext_pervasives.failwithf ~loc:__LOC__ "invalid path: %s"  file2
@@ -4950,13 +5460,40 @@ let combine p1 p2 =
      split_aux "//ghosg//ghsogh/";;
      - : string * string list = ("/", ["ghosg"; "ghsogh"])
    ]}
+   Note that 
+   {[
+     Filename.dirname "/a/" = "/"
+       Filename.dirname "/a/b/" = Filename.dirname "/a/b" = "/a"
+   ]}
+   Special case:
+   {[
+     basename "//" = "/"
+       basename "///"  = "/"
+   ]}
+   {[
+     basename "" =  "."
+       basename "" = "."
+       dirname "" = "."
+       dirname "" =  "."
+   ]}  
 *)
 let split_aux p =
   let rec go p acc =
     let dir = Filename.dirname p in
     if dir = p then dir, acc
-    else go dir (Filename.basename p :: acc)
+    else
+      let new_path = Filename.basename p in 
+      if Ext_string.equal new_path Filename.dir_sep then 
+        go dir acc 
+        (* We could do more path simplification here
+           leave to [rel_normalized_absolute_path]
+        *)
+      else 
+        go dir (new_path :: acc)
+
   in go p []
+
+
 
 (** 
    TODO: optimization
@@ -4965,19 +5502,22 @@ let split_aux p =
 let rel_normalized_absolute_path from to_ =
   let root1, paths1 = split_aux from in 
   let root2, paths2 = split_aux to_ in 
-  if root1 <> root2 then root2 else
+  if root1 <> root2 then root2
+  else
     let rec go xss yss =
       match xss, yss with 
       | x::xs, y::ys -> 
-        if x = y then go xs ys 
+        if Ext_string.equal x  y then go xs ys 
         else 
           let start = 
-            List.fold_left (fun acc _ -> acc // ".." ) ".." xs in 
+            List.fold_left (fun acc _ -> acc // Ext_string.parent_dir_lit )
+              Ext_string.parent_dir_lit  xs in 
           List.fold_left (fun acc v -> acc // v) start yss
-      | [], [] -> ""
+      | [], [] -> Ext_string.empty
       | [], y::ys -> List.fold_left (fun acc x -> acc // x) y ys
       | x::xs, [] ->
-        List.fold_left (fun acc _ -> acc // ".." ) ".." xs in
+        List.fold_left (fun acc _ -> acc // Ext_string.parent_dir_lit )
+          Ext_string.parent_dir_lit xs in
     go paths1 paths2
 
 (*TODO: could be hgighly optimized later 
@@ -4999,6 +5539,7 @@ let rel_normalized_absolute_path from to_ =
     normalize_absolute_path "/a";;
   ]}
 *)
+(** See tests in {!Ounit_path_tests} *)
 let normalize_absolute_path x =
   let drop_if_exist xs =
     match xs with 
@@ -5007,11 +5548,13 @@ let normalize_absolute_path x =
   let rec normalize_list acc paths =
     match paths with 
     | [] -> acc 
-    | "." :: xs -> normalize_list acc xs
-    | ".." :: xs -> 
-      normalize_list (drop_if_exist acc ) xs 
     | x :: xs -> 
-      normalize_list (x::acc) xs 
+      if Ext_string.equal x Ext_string.current_dir_lit then 
+        normalize_list acc xs 
+      else if Ext_string.equal x Ext_string.parent_dir_lit then 
+        normalize_list (drop_if_exist acc ) xs 
+      else   
+        normalize_list (x::acc) xs 
   in
   let root, paths = split_aux x in
   let rev_paths =  normalize_list [] paths in 
@@ -5271,6 +5814,18 @@ val try_take : int -> 'a list -> 'a list * int * 'a list
 
 val exclude_tail : 'a list -> 'a * 'a list
 
+val length_compare : 'a list -> int -> [`Gt | `Eq | `Lt ]
+
+(**
+
+  {[length xs = length ys + n ]}
+  input n should be positive 
+  TODO: input checking
+*)
+
+val length_larger_than_n : 
+  int -> 'a list -> 'a list -> bool
+
 val filter_map2 : ('a -> 'b -> 'c option) -> 'a list -> 'b list -> 'c list
 
 val filter_map2i : (int -> 'a -> 'b -> 'c option) -> 'a list -> 'b list -> 'c list
@@ -5309,6 +5864,8 @@ val rev_map_append : ('a -> 'b) -> 'a list -> 'b list -> 'b list
 
 val rev_map_acc : 'a list -> ('b -> 'a) -> 'b list -> 'a list
 
+val map_acc : 'a list -> ('b -> 'a) -> 'b list -> 'a list
+
 val rev_iter : ('a -> unit) -> 'a list -> unit
 
 val for_all2_no_exn : ('a -> 'b -> bool) -> 'a list -> 'b list -> bool
@@ -5345,7 +5902,14 @@ val sort_via_array :
 val last : 'a list -> 'a
 
 
+(** When [key] is not found unbox the default, 
+  if it is found return that, otherwise [assert false ]
+ *)
+val assoc_by_string : 
+  'a  option -> string -> (string * 'a) list -> 'a 
 
+val assoc_by_int : 
+  'a  option -> int -> (int * 'a) list -> 'a   
 end = struct
 #1 "ext_list.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -5543,6 +6107,29 @@ let try_take n l =
     l,  arr_length, []
   else Array.to_list (Array.sub arr 0 n ), n, (Array.to_list (Array.sub arr n (arr_length - n)))
 
+
+let rec length_compare l n = 
+  if n < 0 then `Gt 
+  else 
+  begin match l with 
+    | _ ::xs -> length_compare xs (n - 1)
+    | [] ->  
+      if n = 0 then `Eq 
+      else `Lt 
+  end
+(**
+
+  {[length xs = length ys + n ]}
+*)
+let rec length_larger_than_n n xs ys =
+  match xs, ys with 
+  | _, [] -> length_compare xs n = `Eq   
+  | _::xs, _::ys -> 
+    length_larger_than_n n xs ys
+  | [], _ -> false 
+  
+
+
 let exclude_tail (x : 'a list) = 
   let rec aux acc x = 
     match x with 
@@ -5607,6 +6194,13 @@ let rev_map_acc  acc f l =
     | a::l -> rmap_f (f a :: accu) l
   in
   rmap_f acc l
+
+let rec map_acc acc f l =   
+  match l with 
+  | [] -> acc 
+  | h::hs -> f h :: map_acc  acc  f hs 
+
+
 
 let rec rev_iter f xs =
   match xs with    
@@ -5712,6 +6306,32 @@ let rec last xs =
   | [] -> invalid_arg "Ext_list.last"
 
 
+let rec assoc_by_string def (k : string) lst = 
+  match lst with 
+  | [] -> 
+    begin match def with 
+    | None -> assert false 
+    | Some x -> x end
+  | (k1,v1)::rest -> 
+    if Ext_string.equal k1 k then v1 else 
+    assoc_by_string def k rest 
+
+let rec assoc_by_int def (k : int) lst = 
+  match lst with 
+  | [] -> 
+    begin match def with
+    | None -> assert false 
+    | Some x -> x end
+  | (k1,v1)::rest -> 
+    if k1 = k then v1 else 
+    assoc_by_int def k rest     
+
+(** `modulo [1;2;3;4] [1;2;3]` => [1;2;3], Some [4] `
+  modulo [1;2;3] [1;2;3;4] => [1;2;3] None 
+  modulo [1;2;3] [1;2;3] => [1;2;3] Some []
+ *)
+
+
 end
 module Js_config : sig 
 #1 "js_config.mli"
@@ -5741,8 +6361,12 @@ module Js_config : sig
 
 
 type module_system = 
-  | NodeJS | AmdJS | Goog  (* This will be serliazed *)
+  | NodeJS 
+  | AmdJS
+  | Goog  (* This will be serliazed *)
   | Es6
+  | Es6_global
+  | AmdJS_global
 
 type package_info = 
  (module_system * string )
@@ -5819,7 +6443,7 @@ val no_builtin_ppx_ml : bool ref
 val no_builtin_ppx_mli : bool ref 
 val no_warn_ffi_type : bool ref 
 val no_warn_unused_bs_attribute : bool ref 
-
+val no_error_unused_bs_attribute : bool ref 
 (** check-div-by-zero option *)
 val check_div_by_zero : bool ref 
 val get_check_div_by_zero : unit -> bool 
@@ -5912,11 +6536,14 @@ end = struct
 
 
 type path = string
+
 type module_system =
   | NodeJS 
   | AmdJS 
   | Goog
   | Es6
+  | Es6_global (* ignore node_modules, just calcluating relative path *)
+  | AmdJS_global (* see ^ *)
 
 type package_info =
  ( module_system * string )
@@ -5967,6 +6594,8 @@ let set_npm_package_path s =
          | "amdjs" -> AmdJS
          | "goog" -> Goog
          | "es6" -> Es6
+         | "es6-global" -> Es6_global
+         | "amdjs-global" -> AmdJS_global
          | _ ->
            Ext_pervasives.bad_argf "invalid module system %s" package_name), path
       | [path] ->
@@ -6001,13 +6630,25 @@ type info_query =
   | Found of package_name * string
   | NotFound 
 
+(* ocamlopt could not optimize such simple case..*)
+let compatible exist query =
+  match query with 
+  | NodeJS -> exist = NodeJS 
+  | AmdJS -> exist = AmdJS
+  | Goog -> exist = Goog
+  | Es6  -> exist = Es6
+  | Es6_global  
+    -> exist = Es6_global || exist = Es6
+  | AmdJS_global 
+    -> exist = AmdJS_global || exist = AmdJS
+   (* As a dependency Leaf Node, it is the same either [global] or [not] *)
 
 let query_package_infos (package_infos : packages_info) module_system =
   match package_infos with
   | Empty -> Empty
   | NonBrowser (name, []) -> Package_script name
   | NonBrowser (name, paths) ->
-    begin match List.find (fun (k, _) -> k = module_system) paths with
+    begin match List.find (fun (k, _) -> compatible k  module_system) paths with
       | (_, x) -> Found (name, x)
       | exception _ -> NotFound
     end
@@ -6028,7 +6669,7 @@ let get_output_dir ~pkg_dir module_system filename =
     else
       Filename.dirname filename
   | NonBrowser (_,  modules) ->
-    begin match List.find (fun (k,_) -> k = module_system) modules with
+    begin match List.find (fun (k,_) -> compatible k  module_system) modules with
       | (_, _path) -> pkg_dir // _path
       |  exception _ -> assert false
     end
@@ -6044,7 +6685,7 @@ let no_warn_ffi_type = ref false
 
 (** TODO: will flip the option when it is ready *)
 let no_warn_unused_bs_attribute = ref false
-
+let no_error_unused_bs_attribute = ref false 
 
 let builtin_exceptions = "Caml_builtin_exceptions"
 let exceptions = "Caml_exceptions"
@@ -7250,6 +7891,7 @@ type dir_spec =
 val collect_from_main :
   ?extra_dirs:dir_spec list -> 
   ?excludes : string list -> 
+  ?alias_map: string String_hashtbl.t ->
   Format.formatter ->
   (Format.formatter -> string -> 'a) ->
   (Format.formatter -> string -> 'b) ->
@@ -7315,7 +7957,7 @@ module String_set = Depend.StringSet
 type _ kind =
   | Ml : Parsetree.structure kind
   | Mli : Parsetree.signature kind
-        
+
 let read_parse_and_extract (type t) (k : t kind) (ast : t) : String_set.t =
   Depend.free_structure_names := String_set.empty;
   let bound_vars = String_set.empty in
@@ -7461,7 +8103,7 @@ let collect_ast_map ppf files parse_implementation parse_interface  =
           | exception Not_found ->
             String_map.add module_name
               {ast_info = (Mli (source_file, parse_interface
-                                              ppf source_file, opref));
+                                  ppf source_file, opref));
                module_name } acc
           | {ast_info =
                (Mli (source_file2, _, _) |
@@ -7492,6 +8134,7 @@ type dir_spec =
 let collect_from_main 
     ?(extra_dirs=[])
     ?(excludes=[])
+    ?alias_map
     (ppf : Format.formatter)
     parse_implementation
     parse_interface
@@ -7503,8 +8146,8 @@ let collect_from_main
         let  dirname, excludes = 
           match dir_spec with 
           | { dir =  dirname; excludes = dir_excludes} ->
-          (*   dirname, excludes *)
-          (* | `Dir_with_excludes (dirname, dir_excludes) -> *)
+            (*   dirname, excludes *)
+            (* | `Dir_with_excludes (dirname, dir_excludes) -> *)
             dirname,
             Ext_list.flat_map 
               (fun x -> [x ^ ".ml" ; x ^ ".mli" ])
@@ -7512,8 +8155,8 @@ let collect_from_main
         in 
         Array.fold_left (fun acc source_file -> 
             if (Ext_string.ends_with source_file ".ml" ||
-               Ext_string.ends_with source_file ".mli" )
-               && (* not_excluded source_file *) (not (List.mem source_file excludes))
+                Ext_string.ends_with source_file ".mli" )
+            && (* not_excluded source_file *) (not (List.mem source_file excludes))
             then 
               (Filename.concat dirname source_file) :: acc else acc
           ) acc (Sys.readdir dirname))
@@ -7521,18 +8164,24 @@ let collect_from_main
   let ast_table = collect_ast_map ppf files parse_implementation parse_interface in 
   let visited = String_hashtbl.create 31 in
   let result = Queue.create () in  
-  let next module_name =
-    match String_map.find_exn module_name ast_table with
-    | exception _ -> String_set.empty
-    | {ast_info = Ml (_,  impl, _)} ->
-      read_parse_and_extract Ml (project_impl impl)
-    | {ast_info = Mli (_,  intf,_)} ->
-      read_parse_and_extract Mli (project_intf intf)
-    | {ast_info = Ml_mli(_, impl, _, _,  intf, _)}
-      -> 
-      String_set.union
-        (read_parse_and_extract Ml (project_impl impl))
-        (read_parse_and_extract Mli (project_intf intf))
+  let next module_name : String_set.t =
+    let module_set = 
+      match String_map.find_exn module_name ast_table with
+      | exception _ -> String_set.empty
+      | {ast_info = Ml (_,  impl, _)} ->
+        read_parse_and_extract Ml (project_impl impl)
+      | {ast_info = Mli (_,  intf,_)} ->
+        read_parse_and_extract Mli (project_intf intf)
+      | {ast_info = Ml_mli(_, impl, _, _,  intf, _)}
+        -> 
+        String_set.union
+          (read_parse_and_extract Ml (project_impl impl))
+          (read_parse_and_extract Mli (project_intf intf))
+    in 
+    match alias_map with 
+    | None -> module_set 
+    | Some map -> 
+      String_set.fold (fun x acc -> String_set.add (String_hashtbl.find_default map x x) acc  ) module_set String_set.empty
   in
   let rec visit visiting path current =
     if String_set.mem current visiting  then
@@ -7561,20 +8210,20 @@ let build_queue ppf queue
   queue
   |> Queue.iter
     (fun modname -> 
-      match String_map.find_exn modname ast_table  with
-      | {ast_info = Ml(source_file,ast, opref)}
-        -> 
-        after_parsing_impl ppf source_file 
-          opref ast 
-      | {ast_info = Mli (source_file,ast,opref) ; }  
-        ->
-        after_parsing_sig ppf source_file 
-          opref ast 
-      | {ast_info = Ml_mli(source_file1,impl,opref1,source_file2,intf,opref2)}
-        -> 
-        after_parsing_sig ppf source_file1 opref1 intf ;
-        after_parsing_impl ppf source_file2 opref2 impl
-      | exception Not_found -> assert false 
+       match String_map.find_exn modname ast_table  with
+       | {ast_info = Ml(source_file,ast, opref)}
+         -> 
+         after_parsing_impl ppf source_file 
+           opref ast 
+       | {ast_info = Mli (source_file,ast,opref) ; }  
+         ->
+         after_parsing_sig ppf source_file 
+           opref ast 
+       | {ast_info = Ml_mli(source_file1,impl,opref1,source_file2,intf,opref2)}
+         -> 
+         after_parsing_sig ppf source_file1 opref1 intf ;
+         after_parsing_impl ppf source_file2 opref2 impl
+       | exception Not_found -> assert false 
     )
 
 
@@ -9146,34 +9795,34 @@ exception Escape_error
 
 let prepare_error = function
   | Unclosed(opening_loc, opening, closing_loc, closing) ->
-      Location.errorf ~loc:closing_loc
+      Location.errorf_prefixed ~loc:closing_loc
         ~sub:[
-          Location.error ~loc:opening_loc
-            (Printf.sprintf "Error: This '%s' might be unmatched" opening)
+          Location.errorf_prefixed ~loc:opening_loc
+            "This '%s' might be unmatched" opening
         ]
         ~if_highlight:
           (Printf.sprintf "Syntax error: '%s' expected, \
                            the highlighted '%s' might be unmatched"
              closing opening)
-        "Error: Syntax error: '%s' expected" closing
+        "Syntax error: '%s' expected" closing
 
   | Expecting (loc, nonterm) ->
-      Location.errorf ~loc "Error: Syntax error: %s expected." nonterm
+      Location.errorf_prefixed ~loc "Syntax error: %s expected." nonterm
   | Not_expecting (loc, nonterm) ->
-      Location.errorf ~loc "Error: Syntax error: %s not expected." nonterm
+      Location.errorf_prefixed ~loc "Syntax error: %s not expected." nonterm
   | Applicative_path loc ->
-      Location.errorf ~loc
-        "Error: Syntax error: applicative paths of the form F(X).t \
+      Location.errorf_prefixed ~loc
+        "Syntax error: applicative paths of the form F(X).t \
          are not supported when the option -no-app-func is set."
   | Variable_in_scope (loc, var) ->
-      Location.errorf ~loc
-        "Error: In this scoped type, variable '%s \
+      Location.errorf_prefixed ~loc
+        "In this scoped type, variable '%s \
          is reserved for the local type %s."
-        var var
+         var var
   | Other loc ->
-      Location.error ~loc "Error: Syntax error"
+      Location.errorf_prefixed ~loc "Syntax error"
   | Ill_formed_ast (loc, s) ->
-      Location.errorf ~loc "Error: broken invariant in parsetree: %s" s
+      Location.errorf_prefixed ~loc "broken invariant in parsetree: %s" s
 
 let () =
   Location.register_error_of_exn
@@ -25442,7 +26091,7 @@ let (@>) (b, v) acc =
   if b then
     v :: acc
   else
-      acc
+    acc
 
 let preprocess_string fn str oc =
 
@@ -25592,7 +26241,7 @@ let header_option = ref false
 let main_module = ref None
 
 let set_main_module modulename = 
-    main_module := Some modulename
+  main_module := Some modulename
 
 
 
@@ -25607,14 +26256,14 @@ let prelude_str = ref None
 let set_prelude_str f = prelude_str := Some f 
 
 (**
-{[
-# process_include "ghsogh?a,b,c";;
-- : [> `Dir of string | `Dir_with_excludes of string * string list ] =
-`Dir_with_excludes ("ghsogh", ["a"; "b"; "c"])
-# process_include "ghsogh?a";;
-- : [> `Dir of string | `Dir_with_excludes of string * string list ] =
-`Dir_with_excludes ("ghsogh", ["a"])
-]}
+   {[
+     # process_include "ghsogh?a,b,c";;
+     - : [> `Dir of string | `Dir_with_excludes of string * string list ] =
+     `Dir_with_excludes ("ghsogh", ["a"; "b"; "c"])
+                        # process_include "ghsogh?a";;
+     - : [> `Dir of string | `Dir_with_excludes of string * string list ] =
+     `Dir_with_excludes ("ghsogh", ["a"])
+   ]}
 *)
 (* type dir_spec =  *)
 (*   [ `Dir of string | `Dir_with_excludes of string * string list ] *)
@@ -25654,13 +26303,49 @@ let exclude_modules = ref []
 let add_exclude module_ = 
   exclude_modules := module_ :: !exclude_modules
 let no_implicit_include = ref false 
-  
+
+let alias_map = String_hashtbl.create 0
+let alias_map_rev = String_hashtbl.create 0
+
+(**
+   {[
+     A -> B 
+       A1 -> B
+   ]}
+   print 
+   {[
+
+     module A = B
+     module A1 = B  
+   ]}   
+   We don't suppport 
+   {[
+     A -> B 
+       A -> C
+   ]}
+*)    
+let alias_module s = 
+  match Ext_string.split s '=' with 
+  | [a;b] -> 
+    (* Error checking later*)
+    if String_hashtbl.mem alias_map a then 
+      raise (Arg.Bad ("duplicated module alias " ^ a))
+    else
+      begin 
+        String_hashtbl.add alias_map_rev b a;
+        String_hashtbl.add alias_map a b 
+      end
+  | _ -> raise (Arg.Bad "invalid module alias format like A=B")
+
+
 let specs : (string * Arg.spec * string) list =
   [ 
     "-bs-no-implicit-include", (Arg.Set no_implicit_include),
     " Not including cwd as search path";
     "-prelude-str", (Arg.String set_prelude_str),
     " Set a prelude string, (before -prelude) option" ;
+    "-module-alias", (Arg.String alias_module ),
+    " -module-alis A=B, whenever need A,replace it with B" ;
     "-prelude", (Arg.String set_prelude),
     " Set a prelude file, literally copy into the beginning";    
     "-bs-mllib", (Arg.String set_string),
@@ -25704,8 +26389,8 @@ let () =
                (local_time.tm_mon + 1) local_time.tm_mday
                local_time.tm_hour local_time.tm_min));
        (match !prelude_str with 
-       | None -> ()
-       | Some s -> output_string out_chan s; output_string out_chan "\n" );
+        | None -> ()
+        | Some s -> output_string out_chan s; output_string out_chan "\n" );
        match !prelude with
        | None -> ()
        | Some f -> 
@@ -25726,7 +26411,7 @@ let () =
      | Some _, _ :: _
        -> 
        Ext_pervasives.failwithf ~loc:__LOC__ 
-         "-bs-main conflicts with other flags (%s)"
+         "-bs-main conflicts with other flags [ %s ]"
          (String.concat ", " files)
      | Some main_module ,  []
        ->
@@ -25741,7 +26426,7 @@ let () =
          else !includes 
        in  
        let ast_table, tasks =
-         Ast_extract.collect_from_main ~excludes ~extra_dirs
+         Ast_extract.collect_from_main ~excludes ~extra_dirs ~alias_map
            Format.err_formatter
            (fun _ppf sourcefile -> lazy (implementation sourcefile))
            (fun _ppf sourcefile -> lazy (interface sourcefile))
@@ -25760,23 +26445,39 @@ let () =
          (fun base ml_name (lazy(_, ml_content)) -> 
             if collect_modules then 
               Queue.add ml_name collection_modules; 
-            decorate_module_only  out_chan base ml_name ml_content
+            decorate_module_only  out_chan base ml_name ml_content;
+            let aliased = (String.capitalize base) in 
+            String_hashtbl.find_all alias_map_rev aliased
+            |> List.iter 
+              (fun s -> output_string out_chan (Printf.sprintf "module %s = %s \n"  s aliased))
+
          )
          (fun base mli_name (lazy (_, mli_content))  -> 
             if collect_modules then 
               Queue.add mli_name collection_modules; 
-            decorate_interface_only out_chan base mli_name mli_content )
+            decorate_interface_only out_chan base mli_name mli_content;
+            let aliased = (String.capitalize base) in 
+            String_hashtbl.find_all alias_map_rev aliased
+            |> List.iter 
+              (fun s -> output_string out_chan (Printf.sprintf "module %s = %s \n"  s aliased))
+
+         )
          (fun base mli_name ml_name (lazy (_, mli_content)) (lazy (_, ml_content))
            -> 
              (*TODO: assume mli_name, ml_name are in the same dir,
                Needs to be addressed 
              *)
-            if collect_modules then 
-              begin 
-                Queue.add ml_name collection_modules;
-                Queue.add mli_name collection_modules
-              end; 
-             decorate_module out_chan base mli_name ml_name mli_content ml_content
+             if collect_modules then 
+               begin 
+                 Queue.add ml_name collection_modules;
+                 Queue.add mli_name collection_modules
+               end; 
+             decorate_module out_chan base mli_name ml_name mli_content ml_content;
+             let aliased = (String.capitalize base) in 
+             String_hashtbl.find_all alias_map_rev aliased
+             |> List.iter 
+               (fun s -> output_string out_chan (Printf.sprintf "module %s = %s \n"  s aliased))
+
          );
        close_out_chan out_chan;
        begin 
@@ -25786,30 +26487,30 @@ let () =
            | Some file ->
              let output = (Ext_filename.chop_extension_if_any file ^ ".d") in
              let sorted_queue = 
-                Queue.fold (fun acc x -> String_set.add x acc) String_set.empty  collection_modules in 
+               Queue.fold (fun acc x -> String_set.add x acc) String_set.empty  collection_modules in 
              Ext_io.write_file 
                output
                (
                  (* Queue.fold *)
                  String_set.fold
-                  (fun a acc  -> 
-                     acc ^ file ^ " : " ^ 
-                     (*FIXME: now we normalized path,
-                       we need a beautiful output too for relative path
-                       The relative path should be also be normalized..
-                     *)
-                     Filename.concat 
-                       (Ext_filename.rel_normalized_absolute_path
-                        cwd 
-                        (Filename.dirname a)
-                       ) (Filename.basename a)
+                   (fun a acc  -> 
+                      acc ^ file ^ " : " ^ 
+                      (*FIXME: now we normalized path,
+                        we need a beautiful output too for relative path
+                        The relative path should be also be normalized..
+                      *)
+                      Filename.concat 
+                        (Ext_filename.rel_normalized_absolute_path
+                           cwd 
+                           (Filename.dirname a)
+                        ) (Filename.basename a)
 
-                     ^ "\n"
-                     (* ^ a ^ " : ; touch " ^ output ^ "\n" *)
-                  ) sorted_queue
-                  Ext_string.empty 
-                  (* collection_modules *)
-                  )
+                      ^ "\n"
+                      (* ^ a ^ " : ; touch " ^ output ^ "\n" *)
+                   ) sorted_queue
+                   Ext_string.empty 
+                   (* collection_modules *)
+               )
        end
      | None, _ -> 
        let ast_table =

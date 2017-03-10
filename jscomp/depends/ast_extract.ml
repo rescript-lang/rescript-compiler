@@ -29,7 +29,7 @@ module String_set = Depend.StringSet
 type _ kind =
   | Ml : Parsetree.structure kind
   | Mli : Parsetree.signature kind
-        
+
 let read_parse_and_extract (type t) (k : t kind) (ast : t) : String_set.t =
   Depend.free_structure_names := String_set.empty;
   let bound_vars = String_set.empty in
@@ -175,7 +175,7 @@ let collect_ast_map ppf files parse_implementation parse_interface  =
           | exception Not_found ->
             String_map.add module_name
               {ast_info = (Mli (source_file, parse_interface
-                                              ppf source_file, opref));
+                                  ppf source_file, opref));
                module_name } acc
           | {ast_info =
                (Mli (source_file2, _, _) |
@@ -206,6 +206,7 @@ type dir_spec =
 let collect_from_main 
     ?(extra_dirs=[])
     ?(excludes=[])
+    ?alias_map
     (ppf : Format.formatter)
     parse_implementation
     parse_interface
@@ -217,8 +218,8 @@ let collect_from_main
         let  dirname, excludes = 
           match dir_spec with 
           | { dir =  dirname; excludes = dir_excludes} ->
-          (*   dirname, excludes *)
-          (* | `Dir_with_excludes (dirname, dir_excludes) -> *)
+            (*   dirname, excludes *)
+            (* | `Dir_with_excludes (dirname, dir_excludes) -> *)
             dirname,
             Ext_list.flat_map 
               (fun x -> [x ^ ".ml" ; x ^ ".mli" ])
@@ -226,8 +227,8 @@ let collect_from_main
         in 
         Array.fold_left (fun acc source_file -> 
             if (Ext_string.ends_with source_file ".ml" ||
-               Ext_string.ends_with source_file ".mli" )
-               && (* not_excluded source_file *) (not (List.mem source_file excludes))
+                Ext_string.ends_with source_file ".mli" )
+            && (* not_excluded source_file *) (not (List.mem source_file excludes))
             then 
               (Filename.concat dirname source_file) :: acc else acc
           ) acc (Sys.readdir dirname))
@@ -235,18 +236,24 @@ let collect_from_main
   let ast_table = collect_ast_map ppf files parse_implementation parse_interface in 
   let visited = String_hashtbl.create 31 in
   let result = Queue.create () in  
-  let next module_name =
-    match String_map.find_exn module_name ast_table with
-    | exception _ -> String_set.empty
-    | {ast_info = Ml (_,  impl, _)} ->
-      read_parse_and_extract Ml (project_impl impl)
-    | {ast_info = Mli (_,  intf,_)} ->
-      read_parse_and_extract Mli (project_intf intf)
-    | {ast_info = Ml_mli(_, impl, _, _,  intf, _)}
-      -> 
-      String_set.union
-        (read_parse_and_extract Ml (project_impl impl))
-        (read_parse_and_extract Mli (project_intf intf))
+  let next module_name : String_set.t =
+    let module_set = 
+      match String_map.find_exn module_name ast_table with
+      | exception _ -> String_set.empty
+      | {ast_info = Ml (_,  impl, _)} ->
+        read_parse_and_extract Ml (project_impl impl)
+      | {ast_info = Mli (_,  intf,_)} ->
+        read_parse_and_extract Mli (project_intf intf)
+      | {ast_info = Ml_mli(_, impl, _, _,  intf, _)}
+        -> 
+        String_set.union
+          (read_parse_and_extract Ml (project_impl impl))
+          (read_parse_and_extract Mli (project_intf intf))
+    in 
+    match alias_map with 
+    | None -> module_set 
+    | Some map -> 
+      String_set.fold (fun x acc -> String_set.add (String_hashtbl.find_default map x x) acc  ) module_set String_set.empty
   in
   let rec visit visiting path current =
     if String_set.mem current visiting  then
@@ -275,20 +282,20 @@ let build_queue ppf queue
   queue
   |> Queue.iter
     (fun modname -> 
-      match String_map.find_exn modname ast_table  with
-      | {ast_info = Ml(source_file,ast, opref)}
-        -> 
-        after_parsing_impl ppf source_file 
-          opref ast 
-      | {ast_info = Mli (source_file,ast,opref) ; }  
-        ->
-        after_parsing_sig ppf source_file 
-          opref ast 
-      | {ast_info = Ml_mli(source_file1,impl,opref1,source_file2,intf,opref2)}
-        -> 
-        after_parsing_sig ppf source_file1 opref1 intf ;
-        after_parsing_impl ppf source_file2 opref2 impl
-      | exception Not_found -> assert false 
+       match String_map.find_exn modname ast_table  with
+       | {ast_info = Ml(source_file,ast, opref)}
+         -> 
+         after_parsing_impl ppf source_file 
+           opref ast 
+       | {ast_info = Mli (source_file,ast,opref) ; }  
+         ->
+         after_parsing_sig ppf source_file 
+           opref ast 
+       | {ast_info = Ml_mli(source_file1,impl,opref1,source_file2,intf,opref2)}
+         -> 
+         after_parsing_sig ppf source_file1 opref1 intf ;
+         after_parsing_impl ppf source_file2 opref2 impl
+       | exception Not_found -> assert false 
     )
 
 

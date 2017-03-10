@@ -1,4 +1,235 @@
-module Config = Config_bspp
+module ConfigDummy : sig 
+#1 "configDummy.mli"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the Q Public License version 1.0.               *)
+(*                                                                     *)
+(***********************************************************************)
+
+(* System configuration *)
+
+val version: string
+        (* The current version number of the system *)
+
+val standard_library: string
+        (* The directory containing the standard libraries *)
+val standard_runtime: string
+        (* The full path to the standard bytecode interpreter ocamlrun *)
+val ccomp_type: string
+        (* The "kind" of the C compiler, assembler and linker used: one of
+               "cc" (for Unix-style C compilers)
+               "msvc" (for Microsoft Visual C++ and MASM) *)
+val bytecomp_c_compiler: string
+        (* The C compiler to use for compiling C files
+           with the bytecode compiler *)
+val bytecomp_c_libraries: string
+        (* The C libraries to link with custom runtimes *)
+val native_c_compiler: string
+        (* The C compiler to use for compiling C files
+           with the native-code compiler *)
+val native_c_libraries: string
+        (* The C libraries to link with native-code programs *)
+val native_pack_linker: string
+        (* The linker to use for packaging (ocamlopt -pack) and for partial
+           links (ocamlopt -output-obj). *)
+val mkdll: string
+        (* The linker command line to build dynamic libraries. *)
+val mkexe: string
+        (* The linker command line to build executables. *)
+val mkmaindll: string
+        (* The linker command line to build main programs as dlls. *)
+val ranlib: string
+        (* Command to randomize a library, or "" if not needed *)
+val ar: string
+        (* Name of the ar command, or "" if not needed  (MSVC) *)
+val cc_profile : string
+        (* The command line option to the C compiler to enable profiling. *)
+
+val load_path: string list ref
+        (* Directories in the search path for .cmi and .cmo files *)
+
+val interface_suffix: string ref
+        (* Suffix for interface file names *)
+
+val exec_magic_number: string
+        (* Magic number for bytecode executable files *)
+val cmi_magic_number: string
+        (* Magic number for compiled interface files *)
+val cmo_magic_number: string
+        (* Magic number for object bytecode files *)
+val cma_magic_number: string
+        (* Magic number for archive files *)
+val cmx_magic_number: string
+        (* Magic number for compilation unit descriptions *)
+val cmxa_magic_number: string
+        (* Magic number for libraries of compilation unit descriptions *)
+val ast_intf_magic_number: string
+        (* Magic number for file holding an interface syntax tree *)
+val ast_impl_magic_number: string
+        (* Magic number for file holding an implementation syntax tree *)
+val cmxs_magic_number: string
+        (* Magic number for dynamically-loadable plugins *)
+val cmt_magic_number: string
+        (* Magic number for compiled interface files *)
+
+val max_tag: int
+        (* Biggest tag that can be stored in the header of a regular block. *)
+val lazy_tag : int
+        (* Normally the same as Obj.lazy_tag.  Separate definition because
+           of technical reasons for bootstrapping. *)
+val max_young_wosize: int
+        (* Maximal size of arrays that are directly allocated in the
+           minor heap *)
+val stack_threshold: int
+        (* Size in words of safe area at bottom of VM stack,
+           see byterun/config.h *)
+
+val architecture: string
+        (* Name of processor type for the native-code compiler *)
+val model: string
+        (* Name of processor submodel for the native-code compiler *)
+val system: string
+        (* Name of operating system for the native-code compiler *)
+
+val asm: string
+        (* The assembler (and flags) to use for assembling
+           ocamlopt-generated code. *)
+
+val asm_cfi_supported: bool
+        (* Whether assembler understands CFI directives *)
+val with_frame_pointers : bool
+        (* Whether assembler should maintain frame pointers *)
+
+val ext_obj: string
+        (* Extension for object files, e.g. [.o] under Unix. *)
+val ext_asm: string
+        (* Extension for assembler files, e.g. [.s] under Unix. *)
+val ext_lib: string
+        (* Extension for library files, e.g. [.a] under Unix. *)
+val ext_dll: string
+        (* Extension for dynamically-loaded libraries, e.g. [.so] under Unix.*)
+
+val default_executable_name: string
+        (* Name of executable produced by linking if none is given with -o,
+           e.g. [a.out] under Unix. *)
+
+val systhread_supported : bool
+        (* Whether the system thread library is implemented *)
+
+val host : string
+        (* Whether the compiler is a cross-compiler *)
+
+val target : string
+        (* Whether the compiler is a cross-compiler *)
+
+val print_config : out_channel -> unit;;
+
+
+end = struct
+#1 "configDummy.ml"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the Q Public License version 1.0.               *)
+(*                                                                     *)
+(***********************************************************************)
+
+(***********************************************************************)
+(**                                                                   **)
+(**               WARNING WARNING WARNING                             **)
+(**                                                                   **)
+(** When you change this file, you must make the parallel change      **)
+(** in config.mlbuild                                                 **)
+(**                                                                   **)
+(***********************************************************************)
+
+
+(* The main OCaml version string has moved to ../VERSION *)
+let version = "4.02.3+BS"
+
+let standard_library_default = "/usr/local/lib/ocaml/lib/ocaml" (* does not matter *)
+
+let standard_library =
+    standard_library_default
+
+let standard_runtime = "/usr/local/bin/ocaml/bin/ocamlrun"
+let ccomp_type = "cc"
+let bytecomp_c_compiler = "gcc -O  -Wall -D_FILE_OFFSET_BITS=64 -D_REENTRANT -O "
+let bytecomp_c_libraries = "-lcurses -lpthread"
+let native_c_compiler = "gcc -O  -D_FILE_OFFSET_BITS=64 -D_REENTRANT"
+let native_c_libraries = ""
+let native_pack_linker = "ld -r -arch x86_64  -o "
+let ranlib = "ranlib"
+let ar = "ar"
+let cc_profile = "-pg"
+let mkdll = "gcc -bundle -flat_namespace -undefined suppress -Wl,-no_compact_unwind"
+let mkexe = "gcc -Wl,-no_compact_unwind"
+let mkmaindll = "gcc -bundle -flat_namespace -undefined suppress -Wl,-no_compact_unwind"
+
+let exec_magic_number = "Caml1999X011"
+and cmi_magic_number = "Caml1999I017"
+and cmo_magic_number = "Caml1999O010"
+and cma_magic_number = "Caml1999A011"
+and cmx_magic_number = "Caml1999Y014"
+and cmxa_magic_number = "Caml1999Z013"
+and ast_impl_magic_number = "Caml1999M016"
+and ast_intf_magic_number = "Caml1999N015"
+and cmxs_magic_number = "Caml2007D002"
+and cmt_magic_number = "Caml2012T004"
+
+let load_path = ref ([] : string list)
+
+let interface_suffix = ref ".mli"
+
+let max_tag = 245
+(* This is normally the same as in obj.ml, but we have to define it
+   separately because it can differ when we're in the middle of a
+   bootstrapping phase. *)
+let lazy_tag = 246
+
+let max_young_wosize = 256
+let stack_threshold = 256 (* see byterun/config.h *)
+
+let architecture = "amd64"
+let model = "default"
+let system = "macosx"
+
+let asm = "clang -arch x86_64 -c"
+let asm_cfi_supported = true
+let with_frame_pointers = false
+
+let ext_obj = ".o"
+let ext_asm = ".s"
+let ext_lib = ".a"
+let ext_dll = ".so"
+
+let host = "x86_64-apple-darwin15.6.0"
+let target = "x86_64-apple-darwin15.6.0"
+
+let default_executable_name =
+  match Sys.os_type with
+    "Unix" -> "a.out"
+  | "Win32" | "Cygwin" -> "camlprog.exe"
+  | _ -> "camlprog"
+
+let systhread_supported = true;;
+
+let print_config oc = ()
+;;
+
+end
+module Config = ConfigDummy 
 module Clflags : sig 
 #1 "clflags.mli"
 (***********************************************************************)

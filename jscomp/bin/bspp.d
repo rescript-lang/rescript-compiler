@@ -10,6 +10,8 @@ bin/bspp.ml : ../ocaml/utils/warnings.ml
 bin/bspp.ml : core/bspp_main.ml
 bin/bspp.ml : ../ocaml/utils/terminfo.mli
 bin/bspp.ml : ../ocaml/utils/warnings.mli
+bin/bspp.ml : bin/configDummy.ml
 bin/bspp.ml : core/bspp_main.mli
 bin/bspp.ml : ../ocaml/parsing/location.ml
+bin/bspp.ml : bin/configDummy.mli
 bin/bspp.ml : ../ocaml/parsing/location.mli

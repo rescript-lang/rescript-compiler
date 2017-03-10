@@ -75,6 +75,7 @@ type dir_spec =
 val collect_from_main :
   ?extra_dirs:dir_spec list -> 
   ?excludes : string list -> 
+  ?alias_map: string String_hashtbl.t ->
   Format.formatter ->
   (Format.formatter -> string -> 'a) ->
   (Format.formatter -> string -> 'b) ->

@@ -11,13 +11,13 @@ OCAMLOPT_FLAGS= -g -w -40-30 ../stubs/ext_basic_hash_stubs.c
 # -inline 1000 makes size too large
 # TODO: make sure it can be bootstrapped, at least is a very good
 # test case of our optimizations
-bsppx.exe: config_bsppx.mli config_bsppx.ml bsppx.mli bsppx.ml
+bsppx.exe: bsppx.mli bsppx.ml
 	$(NATIVE) $(OCAMLOPT_FLAGS) $^ -o $@
 
-bspp.exe:  config_bspp.mli config_bspp.ml bspp.mli bspp.ml
+bspp.exe:   bspp.mli bspp.ml
 	$(NATIVE) $(OCAMLOPT_FLAGS) $^ -o $@
 
-bsdep.exe: config_bsdep.mli config_bsdep.ml bsdep.mli bsdep.ml
+bsdep.exe: bsdep.mli bsdep.ml
 	$(NATIVE) $(OCAMLOPT_FLAGS) $^ -o $@
 
 bsb.exe:  bsb.mli bsb.ml
@@ -37,10 +37,10 @@ config_whole_compiler.ml:config_whole_compiler.mlp ../config.js
 bsc.exe: config_whole_compiler.mli config_whole_compiler.ml  whole_compiler.mli whole_compiler.ml
 	$(NATIVE) $(OCAMLOPT_FLAGS) $^  -o $@
 
-bspack.exe: config_bspack.mli config_bspack.ml bspack.mli bspack.ml
+bspack.exe: bspack.mli bspack.ml
 	$(NATIVE) $(OCAMLOPT_FLAGS) unix.cmxa  $^ -o $@
 
-bspack.js:	config_bspack.mli config_bspack.ml bspack.mli bspack.ml
+bspack.js:	bspack.mli bspack.ml
 	$(BSC) $(BSC_FLAGS) $^
 
 all: bsppx.exe bspp.exe bsdep.exe bsc.exe bspack.exe bsb.exe bsb_helper.exe refmt.exe reactjs_jsx_ppx.exe
