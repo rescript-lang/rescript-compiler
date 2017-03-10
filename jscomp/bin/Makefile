@@ -37,10 +37,10 @@ config_whole_compiler.ml:config_whole_compiler.mlp ../config.js
 bsc.exe: config_whole_compiler.mli config_whole_compiler.ml  whole_compiler.mli whole_compiler.ml
 	$(NATIVE) $(OCAMLOPT_FLAGS) $^  -o $@
 
-bspack.exe: config_bspack.mli config_bspack.ml bspack.mli bspack.ml
+bspack.exe: bspack.mli bspack.ml
 	$(NATIVE) $(OCAMLOPT_FLAGS) unix.cmxa  $^ -o $@
 
-bspack.js:	config_bspack.mli config_bspack.ml bspack.mli bspack.ml
+bspack.js:	bspack.mli bspack.ml
 	$(BSC) $(BSC_FLAGS) $^
 
 all: bsppx.exe bspp.exe bsdep.exe bsc.exe bspack.exe bsb.exe bsb_helper.exe refmt.exe reactjs_jsx_ppx.exe

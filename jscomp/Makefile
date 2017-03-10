@@ -357,7 +357,7 @@ SNAPSHOT_SRCS=$(addprefix bin/, $(addsuffix .ml, bsppx whole_compiler bsdep bsb 
 SNAPSHOT_DEPS=$(SNAPSHOT_SRCS:.ml=.d)
 
 # this target  is used to make snapshotml
-./bin/bspack.exe: bin/config_bspack.mli bin/config_bspack.ml bin/bspack.mli bin/bspack.ml
+./bin/bspack.exe: bin/bspack.mli bin/bspack.ml
 	$(MAKE) -C bin bspack.exe
 
 
@@ -462,7 +462,7 @@ bin/js_compiler.byte:bin/js_compiler.mli bin/js_compiler.ml
 bootbspack:
 	@echo "Bootstrap bspack.exe"
 	./bin/bspack.exe -bs-MD -module-alias Config=ConfigDummy -I bin -I ../ocaml/parsing/ -I ../ocaml/utils/ -I stubs -I ext -I common -I depends -I core -bs-main Bspack_main -o bin/bspack.ml
-	$(NATIVE) ./stubs/ext_basic_hash_stubs.c -w -40  unix.cmxa  -I bin bin/config_bspack.mli bin/config_bspack.ml bin/bspack.mli bin/bspack.ml -o bin/bspack.exe
+	$(NATIVE) ./stubs/ext_basic_hash_stubs.c -w -40  unix.cmxa  -I bin  bin/bspack.mli bin/bspack.ml -o bin/bspack.exe
 	@echo "Using the bootstrapped bspack.exe to genreate new bspack.ml: `date`"
 	./bin/bspack.exe -bs-MD  -module-alias Config=ConfigDummy -I bin -I ../ocaml/parsing/ -I ../ocaml/utils/ -I stubs -I ext -I common -I depends -I core -bs-main Bspack_main -o bin/bspack.ml
 	@echo "Bootstrap seems finished, please check diffs in bspack.exe"
