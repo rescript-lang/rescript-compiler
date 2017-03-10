@@ -269,6 +269,13 @@
             "type": "string",
             "description": "Alternative path to refmt for Reason syntax, for example: reason/refmt_impl.native. Will use the default refmt BS provides otherwise."
         },
+        "refmt-flags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Arguments to pass to `refmt` above. Defaults to [\"--print\", \"binary\"]."
+        },
         "bs-external-includes": {
             "$ref": "#/definitions/stringArray",
             "description": "external include directories, which will be applied -I to all compilation units, it is *not needed* in most cases"
