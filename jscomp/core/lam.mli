@@ -94,6 +94,8 @@ type primitive =
   | Paddfloat | Psubfloat | Pmulfloat | Pdivfloat
   | Pfloatcomp of Lambda.comparison
   | Pjscomp of Lambda.comparison
+  | Pjs_apply (*[f;arg0;arg1; arg2; ... argN]*)
+  | Pjs_runtime_apply (* [f; [...]] *)
   | Pstringlength 
   | Pstringrefu 
   | Pstringrefs
@@ -182,6 +184,12 @@ type primitive =
 
   | Pjs_boolean_to_bool
   | Pjs_typeof
+  | Pjs_function_length 
+
+  | Pjs_string_of_small_array
+  | Pjs_is_instance_array
+  | Pcaml_obj_length
+  | Pcaml_obj_set_length
   
 
 type switch  =

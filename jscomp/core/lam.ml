@@ -96,6 +96,8 @@ type primitive =
   | Paddfloat | Psubfloat | Pmulfloat | Pdivfloat
   | Pfloatcomp of comparison
   | Pjscomp of comparison
+  | Pjs_apply (*[f;arg0;arg1; arg2; ... argN]*)
+  | Pjs_runtime_apply (* [f; [...]] *)
   (* String operations *)
   | Pstringlength 
   | Pstringrefu 
@@ -182,6 +184,13 @@ type primitive =
   | Pis_null_undefined
   | Pjs_boolean_to_bool
   | Pjs_typeof
+  | Pjs_function_length 
+  
+  | Pjs_string_of_small_array
+  | Pjs_is_instance_array
+  | Pcaml_obj_length
+  | Pcaml_obj_set_length
+  
 
 type apply_status =
   | App_na
@@ -1557,7 +1566,7 @@ let convert exports lam : _ * _  =
           end
         (*  
         | Lfunction(kind,params,Lprim(prim,inner_args,inner_loc))
-          when List.for_all2 (fun x y -> 
+          when List.for_all2_no_exn (fun x y -> 
           match y with 
           | Lambda.Lvar y when Ident.same x y -> true
           | _ -> false 
@@ -1691,6 +1700,18 @@ let convert exports lam : _ * _  =
     | Lprim (Prevapply, _, _ ) -> assert false       
     | Lprim(Pdirapply, _, _) -> assert false 
     (* we might allow some arity here *)  
+    | Lprim(Pccall {prim_name = "#apply"},args,loc) ->
+      prim ~primitive:Pjs_runtime_apply ~args:(List.map aux args) loc 
+    (* EqLambda*)
+    | Lprim(Pccall {prim_name =  "#apply1"
+                               | "#apply2"
+                               | "#apply3"
+                               | "#apply4"
+                               | "#apply5"
+                               | "#apply6"
+                               | "#apply7"
+                               | "#apply8"}, args, loc) ->
+      prim ~primitive:Pjs_apply ~args:(List.map aux args) loc
     | Lprim(Pccall {prim_name = "#raw_expr"}, 
             args,loc) ->  
       begin match args with 
@@ -1755,11 +1776,25 @@ let convert exports lam : _ * _  =
           prim ~primitive:Pstringadd ~args:[aux a; aux b] loc 
         | _ -> assert false 
       end 
+    | Lprim(Pccall {prim_name = "#is_instance_array"}, args, loc) -> 
+        prim ~primitive:Pjs_is_instance_array ~args:(List.map aux args) loc 
+    | Lprim(Pccall {prim_name = "#string_of_small_int_array"}, args, loc) ->
+        prim ~primitive:Pjs_string_of_small_array~args:(List.map aux args) loc   
+          (* {[String.fromCharCode.apply(null,x)]} 
+            Note if we have better suport [@bs.splice],
+            we can get rid of it*)
+    | Lprim(Pccall {prim_name = "#obj_set_length"}, args, loc) ->          
+      prim ~primitive:Pcaml_obj_set_length ~args:(List.map aux args) loc   
+    | Lprim(Pccall {prim_name = "#obj_length"}, args, loc) ->          
+      prim ~primitive:Pcaml_obj_length ~args:(List.map aux args) loc   
+
     | Lprim(Pccall {prim_name = "#boolean_to_bool"}, args, loc) -> 
       begin match args with 
         | [ e ] -> prim ~primitive:Pjs_boolean_to_bool ~args:[aux e] loc 
         | _ -> assert false 
       end
+    | Lprim(Pccall {prim_name = "#function_length"}, args, loc) -> 
+      prim ~primitive:(Pjs_function_length) ~args:(List.map aux args) loc 
     | Lprim(Pccall {prim_name = "#unsafe_lt"}, args, loc) -> 
       prim ~primitive:(Pjscomp Clt) ~args:(List.map aux args) loc 
     | Lprim(Pccall {prim_name = "#unsafe_gt"}, args, loc) -> 

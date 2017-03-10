@@ -27092,6 +27092,8 @@ val is_user_option : t -> bool
 
 val is_user_bool : t -> bool
 
+val is_user_int : t -> bool
+
 val is_optional_label : string -> bool 
 
 (** 
@@ -27214,6 +27216,10 @@ let is_user_bool (ty : t) =
   | Ptyp_constr({txt = Lident "bool"},[]) -> true 
   | _ -> false 
 
+let is_user_int (ty : t) = 
+  match ty.ptyp_desc with 
+  | Ptyp_constr({txt = Lident "int"},[]) -> true 
+  | _ -> false 
 
 let is_optional_label l =
   String.length l > 0 && l.[0] = '?'

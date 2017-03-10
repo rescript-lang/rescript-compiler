@@ -46,13 +46,8 @@ TODO: return type to be expression is ugly,
 *)
 let translate (prim_name : string) 
     (args : J.expression list) : J.expression  =
-  let prim_name_length = String.length prim_name  in
   let call m = 
-    if prim_name_length > 0 && prim_name.[0] = '#' then 
-      E.runtime_call m 
-        (String.sub prim_name 1 (prim_name_length - 1)) args
-    else 
-      E.runtime_call m prim_name args in 
+    E.runtime_call m prim_name args in 
   begin match prim_name with 
   | "caml_gc_stat" 
   | "caml_gc_quick_stat"  
@@ -821,115 +816,15 @@ let translate (prim_name : string)
   | "caml_ml_seek_out_64"
   | "caml_ml_set_binary_mode"
     ->  E.not_implemented prim_name
-
-  | "#function_length"
-
-    -> begin
-        match args with 
-        | [f ] -> E.function_length f 
-        | _ -> assert false
-      end
-  | "#create_array" 
-    -> 
-    begin match args with 
-    | [e] -> E.uninitialized_array e 
-    | _ -> assert false
-    end
-  | "#array_append" 
-    -> 
-    begin match args with 
-    | [a;b] -> 
-      E.array_append a b 
-    | _ -> assert false 
-    end
-
-  | "#apply" 
-    -> 
-    begin match args with 
-    | [f ;  args] -> 
-      E.flat_call f args
-    | _ -> assert false 
-  end
-   | "#apply1"
-    | "#apply2"
-    | "#apply3"
-    | "#apply4"
-    | "#apply5"
-    | "#apply6"
-    | "#apply7"
-    | "#apply8" -> 
-      begin match args with 
-        | fn :: rest -> 
-          E.call ~info:{arity=Full; call_info =  Call_na} fn rest 
-        | _ -> assert false
-      end
-  | "#string_of_small_int_array"
-    ->
-    begin match args with 
-    | [e] -> E.string_of_small_int_array e 
-    | _ -> assert false
-    end
-  | "#string_of_char" 
-    ->
-      begin match args with 
-      | [{expression_desc = Number (Int {i; _})} ] 
-        -> E.str (String.make 1 (Char.chr (Int32.to_int i)))
-      | _ -> call Js_config.string
-      end
-  
-  | "#is_instance_array" 
-    ->
-    begin match args with 
-    | [e] -> E.is_instance_array e 
-    | _ -> assert false
-   end
-  
-  | "#anything_to_number" 
-    -> 
-    begin match args with 
-    | [e] -> E.to_number e 
-    | _ -> assert false
-    end
-
-  | "#json_stringify"      
-    -> 
-    begin match args with 
-    | [e] ->        
-      E.to_json_string e
-    | _ -> 
-      assert false      
-    end
-   
-    | "#uninitialized_object"
-      ->
-      begin match args with 
-        | [ tag; size] -> E.uninitialized_object tag size 
-        | _ -> assert false  end
-    | "#obj_length" 
-      -> 
-      begin match args with 
-        | [e] -> E.obj_length e 
-        | _ -> assert false 
-      end
-
-    | "#obj_set_length"
-      ->
-      begin match args with 
-        | [a; b] -> E.set_length a b 
-        | _ -> assert false 
-      end
-
-    | _ -> 
-      if prim_name_length > 0 && prim_name.[0] = '#' then 
-        (** TODO: provide better error location *)
-        Location.raise_errorf "unrecognized js primitive %s" prim_name
-      else 
+  | _ -> 
       let comment = "Missing primitive" in       
       Ext_log.warn __LOC__  "%s: %s when compiling %s\n" comment prim_name 
         (Js_config.get_current_file ()) ;
       E.not_implemented prim_name
       (*we dont use [throw] here, since [throw] is an statement 
         so we wrap in IIFE
+        TODO: we might provoide a hook for user to provide polyfill.
+        For example `Bs_global.xxx`
       *)        
 
   end 

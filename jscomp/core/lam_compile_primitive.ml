@@ -50,6 +50,19 @@ let translate  loc
     E.raw_js_code Exp s  
   | Lam.Praw_js_code_stmt s -> 
     E.raw_js_code Stmt s 
+  | Lam.Pjs_runtime_apply -> 
+    begin match args with 
+      | [f ;  args] -> 
+        E.flat_call f args
+      | _ -> assert false 
+    end
+  | Pjs_apply -> 
+      begin match args with 
+        | fn :: rest -> 
+          E.call ~info:{arity=Full; call_info =  Call_na} fn rest 
+        | _ -> assert false
+      end
+
   | Lam.Pnull_to_opt -> 
     begin match args with 
       | [e] -> 
@@ -85,7 +98,33 @@ let translate  loc
         *)
       end
       | _ -> assert false 
-      end    
+    end    
+  | Pjs_function_length -> 
+    begin match args with 
+    | [f] -> E.function_length f
+    | _ -> assert false 
+    end
+  | Lam.Pcaml_obj_length -> 
+    begin match args with 
+    | [e] -> E.obj_length e 
+    | _ -> assert false 
+    end
+  | Lam.Pcaml_obj_set_length -> 
+    begin match args with 
+    | [a;b] -> E.set_length a b 
+    | _ -> assert false 
+  end
+  | Lam.Pjs_string_of_small_array -> 
+    begin match args with 
+    | [e] -> E.string_of_small_int_array e 
+    | _ -> assert false 
+  end 
+  | Lam.Pjs_is_instance_array -> 
+    begin match args with 
+    | [e] -> E.is_instance_array e 
+    | _ -> assert false 
+  end 
+
   | Lam.Pnull_undefined_to_opt -> 
     (*begin match args with 
     | [e] -> 
