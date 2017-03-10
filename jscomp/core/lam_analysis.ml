@@ -69,6 +69,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
         end 
 
       | Pjs_boolean_to_bool
+      | Pjs_to_int
       | Pjs_typeof
       | Pis_null
       | Pis_undefined
@@ -510,6 +511,7 @@ and eq_primitive ( lhs : Lam.primitive) (rhs : Lam.primitive) =
   | Pis_undefined -> rhs = Pis_undefined
   | Pis_null_undefined -> rhs = Pis_null_undefined
   | Pjs_boolean_to_bool -> rhs = Pjs_boolean_to_bool
+  | Pjs_to_int -> rhs = Pjs_to_int
   | Pjs_typeof -> rhs = Pjs_typeof
   | Pisint -> rhs = Pisint
   | Pisout -> rhs = Pisout

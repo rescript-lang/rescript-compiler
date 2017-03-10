@@ -58030,6 +58030,8 @@ val is_user_option : t -> bool
 
 val is_user_bool : t -> bool
 
+val is_user_int : t -> bool
+
 val is_optional_label : string -> bool 
 
 (** 
@@ -58152,6 +58154,10 @@ let is_user_bool (ty : t) =
   | Ptyp_constr({txt = Lident "bool"},[]) -> true 
   | _ -> false 
 
+let is_user_int (ty : t) = 
+  match ty.ptyp_desc with 
+  | Ptyp_constr({txt = Lident "int"},[]) -> true 
+  | _ -> false 
 
 let is_optional_label l =
   String.length l > 0 && l.[0] = '?'
@@ -58332,6 +58338,7 @@ type return_wrapper =
   | Return_null_to_opt
   | Return_null_undefined_to_opt
   | Return_to_ocaml_bool
+  | Return_to_ocaml_int
   | Return_replaced_with_unit    
 
 type t  = 
@@ -58489,6 +58496,7 @@ type return_wrapper =
   | Return_null_to_opt
   | Return_null_undefined_to_opt
   | Return_to_ocaml_bool
+  | Return_to_ocaml_int
   | Return_replaced_with_unit    
 type t  = 
   | Ffi_bs of arg_kind list  *
@@ -65020,6 +65028,7 @@ type primitive =
   | Pis_null_undefined
 
   | Pjs_boolean_to_bool
+  | Pjs_to_int
   | Pjs_typeof
   | Pjs_function_length 
 
@@ -65362,6 +65371,7 @@ type primitive =
   | Pis_undefined
   | Pis_null_undefined
   | Pjs_boolean_to_bool
+  | Pjs_to_int
   | Pjs_typeof
   | Pjs_function_length 
   
@@ -66030,7 +66040,7 @@ let apply fn args loc status : t =
   match fn with 
   | Lfunction {kind ; params ;  
                body = Lprim {primitive = 
-                               (Pundefined_to_opt | Pnull_to_opt | Pnull_undefined_to_opt | Pis_null | Pis_null_undefined | Pjs_boolean_to_bool | Pjs_typeof ) as wrap;
+                               (Pundefined_to_opt | Pnull_to_opt | Pnull_undefined_to_opt | Pis_null | Pis_null_undefined | Pjs_boolean_to_bool | Pjs_to_int | Pjs_typeof ) as wrap;
                              args = [Lprim ({primitive; args = inner_args} as primitive_call)]
                             } 
               } ->
@@ -66389,6 +66399,8 @@ let result_wrap loc (result_type : Ast_ffi_types.return_wrapper) result  =
     | Ast_ffi_types.Return_undefined_to_opt -> prim ~primitive:(Pundefined_to_opt) ~args:[result] loc 
     | Ast_ffi_types.Return_to_ocaml_bool ->
       prim ~primitive:(Pjs_boolean_to_bool) ~args:[result] loc 
+    | Ast_ffi_types.Return_to_ocaml_int -> 
+      prim ~primitive:(Pjs_to_int) ~args:[result] loc 
     | Return_unset
     | Return_identity -> 
       result 
@@ -70480,6 +70492,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
         end 
 
       | Pjs_boolean_to_bool
+      | Pjs_to_int
       | Pjs_typeof
       | Pis_null
       | Pis_undefined
@@ -70921,6 +70934,7 @@ and eq_primitive ( lhs : Lam.primitive) (rhs : Lam.primitive) =
   | Pis_undefined -> rhs = Pis_undefined
   | Pis_null_undefined -> rhs = Pis_null_undefined
   | Pjs_boolean_to_bool -> rhs = Pjs_boolean_to_bool
+  | Pjs_to_int -> rhs = Pjs_to_int
   | Pjs_typeof -> rhs = Pjs_typeof
   | Pisint -> rhs = Pisint
   | Pisout -> rhs = Pisout
@@ -71152,6 +71166,7 @@ let primitive ppf (prim : Lam.primitive) = match prim with
   | Pjs_is_instance_array -> fprintf ppf "#is_instance_array"
   | Pcaml_obj_length -> fprintf ppf "#obj_length"
   | Pcaml_obj_set_length -> fprintf ppf "#obj_set_length"
+  | Pjs_to_int -> fprintf ppf "#[int]"
   | Pinit_mod -> fprintf ppf "init_mod!"
   | Pupdate_mod -> fprintf ppf "update_mod!"
   | Pbytes_to_string -> fprintf ppf "bytes_to_string"
@@ -92127,7 +92142,11 @@ let translate  loc
           E.call ~info:{arity=Full; call_info =  Call_na} fn rest 
         | _ -> assert false
       end
-
+  | Lam.Pjs_to_int -> 
+    begin match args with 
+    | [e] -> E.to_int32 e 
+    | _ -> assert false 
+    end
   | Lam.Pnull_to_opt -> 
     begin match args with 
       | [e] -> 
@@ -101411,6 +101430,8 @@ let check_return_wrapper
       Return_replaced_with_unit 
     else if Ast_core_type.is_user_bool result_type then 
       Return_to_ocaml_bool
+    (*else if Ast_core_type.is_user_int result_type then  
+      Return_to_ocaml_int*)
     else 
       wrapper
   | Return_undefined_to_opt
@@ -101425,6 +101446,7 @@ let check_return_wrapper
          syntax wise `_ option` for safety"
 
   | Return_replaced_with_unit 
+  | Return_to_ocaml_int
   | Return_to_ocaml_bool  -> 
     assert false (* Not going to happen from user input*)
 

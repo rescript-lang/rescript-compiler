@@ -62,7 +62,11 @@ let translate  loc
           E.call ~info:{arity=Full; call_info =  Call_na} fn rest 
         | _ -> assert false
       end
-
+  | Lam.Pjs_to_int -> 
+    begin match args with 
+    | [e] -> E.to_int32 e 
+    | _ -> assert false 
+    end
   | Lam.Pnull_to_opt -> 
     begin match args with 
       | [e] -> 

@@ -183,6 +183,7 @@ type primitive =
   | Pis_undefined
   | Pis_null_undefined
   | Pjs_boolean_to_bool
+  | Pjs_to_int
   | Pjs_typeof
   | Pjs_function_length 
   
@@ -851,7 +852,7 @@ let apply fn args loc status : t =
   match fn with 
   | Lfunction {kind ; params ;  
                body = Lprim {primitive = 
-                               (Pundefined_to_opt | Pnull_to_opt | Pnull_undefined_to_opt | Pis_null | Pis_null_undefined | Pjs_boolean_to_bool | Pjs_typeof ) as wrap;
+                               (Pundefined_to_opt | Pnull_to_opt | Pnull_undefined_to_opt | Pis_null | Pis_null_undefined | Pjs_boolean_to_bool | Pjs_to_int | Pjs_typeof ) as wrap;
                              args = [Lprim ({primitive; args = inner_args} as primitive_call)]
                             } 
               } ->
@@ -1210,6 +1211,8 @@ let result_wrap loc (result_type : Ast_ffi_types.return_wrapper) result  =
     | Ast_ffi_types.Return_undefined_to_opt -> prim ~primitive:(Pundefined_to_opt) ~args:[result] loc 
     | Ast_ffi_types.Return_to_ocaml_bool ->
       prim ~primitive:(Pjs_boolean_to_bool) ~args:[result] loc 
+    | Ast_ffi_types.Return_to_ocaml_int -> 
+      prim ~primitive:(Pjs_to_int) ~args:[result] loc 
     | Return_unset
     | Return_identity -> 
       result 

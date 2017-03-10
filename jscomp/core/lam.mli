@@ -183,6 +183,7 @@ type primitive =
   | Pis_null_undefined
 
   | Pjs_boolean_to_bool
+  | Pjs_to_int
   | Pjs_typeof
   | Pjs_function_length 
 
