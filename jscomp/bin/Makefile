@@ -11,13 +11,13 @@ OCAMLOPT_FLAGS= -g -w -40-30 ../stubs/ext_basic_hash_stubs.c
 # -inline 1000 makes size too large
 # TODO: make sure it can be bootstrapped, at least is a very good
 # test case of our optimizations
-bsppx.exe: config_bsppx.mli config_bsppx.ml bsppx.mli bsppx.ml
+bsppx.exe: bsppx.mli bsppx.ml
 	$(NATIVE) $(OCAMLOPT_FLAGS) $^ -o $@
 
-bspp.exe:  config_bspp.mli config_bspp.ml bspp.mli bspp.ml
+bspp.exe:   bspp.mli bspp.ml
 	$(NATIVE) $(OCAMLOPT_FLAGS) $^ -o $@
 
-bsdep.exe: config_bsdep.mli config_bsdep.ml bsdep.mli bsdep.ml
+bsdep.exe: bsdep.mli bsdep.ml
 	$(NATIVE) $(OCAMLOPT_FLAGS) $^ -o $@
 
 bsb.exe:  bsb.mli bsb.ml

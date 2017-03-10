@@ -29,7 +29,7 @@ let (@>) (b, v) acc =
   if b then
     v :: acc
   else
-      acc
+    acc
 
 let preprocess_string fn str oc =
 
@@ -179,7 +179,7 @@ let header_option = ref false
 let main_module = ref None
 
 let set_main_module modulename = 
-    main_module := Some modulename
+  main_module := Some modulename
 
 
 
@@ -194,14 +194,14 @@ let prelude_str = ref None
 let set_prelude_str f = prelude_str := Some f 
 
 (**
-{[
-# process_include "ghsogh?a,b,c";;
-- : [> `Dir of string | `Dir_with_excludes of string * string list ] =
-`Dir_with_excludes ("ghsogh", ["a"; "b"; "c"])
-# process_include "ghsogh?a";;
-- : [> `Dir of string | `Dir_with_excludes of string * string list ] =
-`Dir_with_excludes ("ghsogh", ["a"])
-]}
+   {[
+     # process_include "ghsogh?a,b,c";;
+     - : [> `Dir of string | `Dir_with_excludes of string * string list ] =
+     `Dir_with_excludes ("ghsogh", ["a"; "b"; "c"])
+                        # process_include "ghsogh?a";;
+     - : [> `Dir of string | `Dir_with_excludes of string * string list ] =
+     `Dir_with_excludes ("ghsogh", ["a"])
+   ]}
 *)
 (* type dir_spec =  *)
 (*   [ `Dir of string | `Dir_with_excludes of string * string list ] *)
@@ -241,13 +241,49 @@ let exclude_modules = ref []
 let add_exclude module_ = 
   exclude_modules := module_ :: !exclude_modules
 let no_implicit_include = ref false 
-  
+
+let alias_map = String_hashtbl.create 0
+let alias_map_rev = String_hashtbl.create 0
+
+(**
+   {[
+     A -> B 
+       A1 -> B
+   ]}
+   print 
+   {[
+
+     module A = B
+     module A1 = B  
+   ]}   
+   We don't suppport 
+   {[
+     A -> B 
+       A -> C
+   ]}
+*)    
+let alias_module s = 
+  match Ext_string.split s '=' with 
+  | [a;b] -> 
+    (* Error checking later*)
+    if String_hashtbl.mem alias_map a then 
+      raise (Arg.Bad ("duplicated module alias " ^ a))
+    else
+      begin 
+        String_hashtbl.add alias_map_rev b a;
+        String_hashtbl.add alias_map a b 
+      end
+  | _ -> raise (Arg.Bad "invalid module alias format like A=B")
+
+
 let specs : (string * Arg.spec * string) list =
   [ 
     "-bs-no-implicit-include", (Arg.Set no_implicit_include),
     " Not including cwd as search path";
     "-prelude-str", (Arg.String set_prelude_str),
     " Set a prelude string, (before -prelude) option" ;
+    "-module-alias", (Arg.String alias_module ),
+    " -module-alis A=B, whenever need A,replace it with B" ;
     "-prelude", (Arg.String set_prelude),
     " Set a prelude file, literally copy into the beginning";    
     "-bs-mllib", (Arg.String set_string),
@@ -291,8 +327,8 @@ let () =
                (local_time.tm_mon + 1) local_time.tm_mday
                local_time.tm_hour local_time.tm_min));
        (match !prelude_str with 
-       | None -> ()
-       | Some s -> output_string out_chan s; output_string out_chan "\n" );
+        | None -> ()
+        | Some s -> output_string out_chan s; output_string out_chan "\n" );
        match !prelude with
        | None -> ()
        | Some f -> 
@@ -313,7 +349,7 @@ let () =
      | Some _, _ :: _
        -> 
        Ext_pervasives.failwithf ~loc:__LOC__ 
-         "-bs-main conflicts with other flags (%s)"
+         "-bs-main conflicts with other flags [ %s ]"
          (String.concat ", " files)
      | Some main_module ,  []
        ->
@@ -328,7 +364,7 @@ let () =
          else !includes 
        in  
        let ast_table, tasks =
-         Ast_extract.collect_from_main ~excludes ~extra_dirs
+         Ast_extract.collect_from_main ~excludes ~extra_dirs ~alias_map
            Format.err_formatter
            (fun _ppf sourcefile -> lazy (implementation sourcefile))
            (fun _ppf sourcefile -> lazy (interface sourcefile))
@@ -347,23 +383,39 @@ let () =
          (fun base ml_name (lazy(_, ml_content)) -> 
             if collect_modules then 
               Queue.add ml_name collection_modules; 
-            decorate_module_only  out_chan base ml_name ml_content
+            decorate_module_only  out_chan base ml_name ml_content;
+            let aliased = (String.capitalize base) in 
+            String_hashtbl.find_all alias_map_rev aliased
+            |> List.iter 
+              (fun s -> output_string out_chan (Printf.sprintf "module %s = %s \n"  s aliased))
+
          )
          (fun base mli_name (lazy (_, mli_content))  -> 
             if collect_modules then 
               Queue.add mli_name collection_modules; 
-            decorate_interface_only out_chan base mli_name mli_content )
+            decorate_interface_only out_chan base mli_name mli_content;
+            let aliased = (String.capitalize base) in 
+            String_hashtbl.find_all alias_map_rev aliased
+            |> List.iter 
+              (fun s -> output_string out_chan (Printf.sprintf "module %s = %s \n"  s aliased))
+
+         )
          (fun base mli_name ml_name (lazy (_, mli_content)) (lazy (_, ml_content))
            -> 
              (*TODO: assume mli_name, ml_name are in the same dir,
                Needs to be addressed 
              *)
-            if collect_modules then 
-              begin 
-                Queue.add ml_name collection_modules;
-                Queue.add mli_name collection_modules
-              end; 
-             decorate_module out_chan base mli_name ml_name mli_content ml_content
+             if collect_modules then 
+               begin 
+                 Queue.add ml_name collection_modules;
+                 Queue.add mli_name collection_modules
+               end; 
+             decorate_module out_chan base mli_name ml_name mli_content ml_content;
+             let aliased = (String.capitalize base) in 
+             String_hashtbl.find_all alias_map_rev aliased
+             |> List.iter 
+               (fun s -> output_string out_chan (Printf.sprintf "module %s = %s \n"  s aliased))
+
          );
        close_out_chan out_chan;
        begin 
@@ -373,30 +425,30 @@ let () =
            | Some file ->
              let output = (Ext_filename.chop_extension_if_any file ^ ".d") in
              let sorted_queue = 
-                Queue.fold (fun acc x -> String_set.add x acc) String_set.empty  collection_modules in 
+               Queue.fold (fun acc x -> String_set.add x acc) String_set.empty  collection_modules in 
              Ext_io.write_file 
                output
                (
                  (* Queue.fold *)
                  String_set.fold
-                  (fun a acc  -> 
-                     acc ^ file ^ " : " ^ 
-                     (*FIXME: now we normalized path,
-                       we need a beautiful output too for relative path
-                       The relative path should be also be normalized..
-                     *)
-                     Filename.concat 
-                       (Ext_filename.rel_normalized_absolute_path
-                        cwd 
-                        (Filename.dirname a)
-                       ) (Filename.basename a)
+                   (fun a acc  -> 
+                      acc ^ file ^ " : " ^ 
+                      (*FIXME: now we normalized path,
+                        we need a beautiful output too for relative path
+                        The relative path should be also be normalized..
+                      *)
+                      Filename.concat 
+                        (Ext_filename.rel_normalized_absolute_path
+                           cwd 
+                           (Filename.dirname a)
+                        ) (Filename.basename a)
 
-                     ^ "\n"
-                     (* ^ a ^ " : ; touch " ^ output ^ "\n" *)
-                  ) sorted_queue
-                  Ext_string.empty 
-                  (* collection_modules *)
-                  )
+                      ^ "\n"
+                      (* ^ a ^ " : ; touch " ^ output ^ "\n" *)
+                   ) sorted_queue
+                   Ext_string.empty 
+                   (* collection_modules *)
+               )
        end
      | None, _ -> 
        let ast_table =

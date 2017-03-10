@@ -27,6 +27,7 @@ bin/bsppx.ml : syntax/ast_exp.ml
 bin/bsppx.ml : syntax/ast_pat.ml
 bin/bsppx.ml : ../ocaml/utils/terminfo.mli
 bin/bsppx.ml : ../ocaml/utils/warnings.mli
+bin/bsppx.ml : bin/configDummy.ml
 bin/bsppx.ml : core/bsppx_main.ml
 bin/bsppx.ml : ext/ext_string.mli
 bin/bsppx.ml : ext/string_map.mli
@@ -35,6 +36,7 @@ bin/bsppx.ml : syntax/ast_exp.mli
 bin/bsppx.ml : syntax/ast_pat.mli
 bin/bsppx.ml : syntax/ast_util.ml
 bin/bsppx.ml : ../ocaml/parsing/location.ml
+bin/bsppx.ml : bin/configDummy.mli
 bin/bsppx.ml : common/js_config.ml
 bin/bsppx.ml : ext/ext_filename.ml
 bin/bsppx.ml : ext/ext_js_regex.ml

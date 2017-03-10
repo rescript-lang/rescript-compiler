@@ -43,6 +43,7 @@ bin/bspack.ml : ../ocaml/parsing/asttypes.mli
 bin/bspack.ml : ../ocaml/parsing/location.mli
 bin/bspack.ml : ../ocaml/parsing/longident.ml
 bin/bspack.ml : ../ocaml/parsing/syntaxerr.ml
+bin/bspack.ml : bin/config_bspack.ml
 bin/bspack.ml : common/js_config.mli
 bin/bspack.ml : core/bspack_main.mli
 bin/bspack.ml : ext/ext_filename.mli
@@ -51,6 +52,7 @@ bin/bspack.ml : ../ocaml/parsing/docstrings.ml
 bin/bspack.ml : ../ocaml/parsing/longident.mli
 bin/bspack.ml : ../ocaml/parsing/parsetree.mli
 bin/bspack.ml : ../ocaml/parsing/syntaxerr.mli
+bin/bspack.ml : bin/config_bspack.mli
 bin/bspack.ml : ext/ext_pervasives.ml
 bin/bspack.ml : ext/string_hashtbl.ml
 bin/bspack.ml : ../ocaml/parsing/ast_helper.mli
