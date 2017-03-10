@@ -133,6 +133,7 @@ type return_wrapper =
   | Return_null_to_opt
   | Return_null_undefined_to_opt
   | Return_to_ocaml_bool
+  | Return_to_ocaml_int
   | Return_replaced_with_unit    
 type t  = 
   | Ffi_bs of arg_kind list  *

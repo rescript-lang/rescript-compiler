@@ -22,7 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-external string_of_char : char -> string = "#string_of_char"
+
 (** TODO: check with {!String.of_char} 
     it's quite common that we have
     {[ Bs_string.of_char x.[0] ]}
@@ -31,8 +31,9 @@ external string_of_char : char -> string = "#string_of_char"
     ]}
 *)
 
+(*ATT: this relies on we encode `char' as int *)
 external of_char : char -> string = "String.fromCharCode" 
-    [@@bs.val] 
+[@@bs.val] 
 external toUpperCase : string -> string = "toUpperCase" [@@bs.send] 
 external of_int : int -> base:int -> string = "toString" [@@bs.send]
 external of_nativeint : nativeint -> base:int -> string = "toString" [@@bs.send]

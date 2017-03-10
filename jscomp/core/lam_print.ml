@@ -101,11 +101,19 @@ let string_of_loc_kind (loc : Lambda.loc_kind) =
   | Loc_LOC -> "loc_LOC"
 
 let primitive ppf (prim : Lam.primitive) = match prim with 
+  | Pjs_string_of_small_array -> fprintf ppf "#string_of_small_array"
+  | Pjs_is_instance_array -> fprintf ppf "#is_instance_array"
+  | Pcaml_obj_length -> fprintf ppf "#obj_length"
+  | Pcaml_obj_set_length -> fprintf ppf "#obj_set_length"
+  | Pjs_to_int -> fprintf ppf "#[int]"
   | Pinit_mod -> fprintf ppf "init_mod!"
   | Pupdate_mod -> fprintf ppf "update_mod!"
   | Pbytes_to_string -> fprintf ppf "bytes_to_string"
   | Pbytes_of_string -> fprintf ppf "bytes_of_string"
+  | Pjs_apply -> fprintf ppf "#apply"
+  | Pjs_runtime_apply -> fprintf ppf "#runtime_apply"
   | Pjs_unsafe_downgrade (s,_loc) -> fprintf ppf "##%s" s 
+  | Pjs_function_length -> fprintf ppf "#function_length"
   | Pjs_fn_run i -> fprintf ppf "#fn_run_%i" i 
   | Pjs_fn_make i -> fprintf ppf "js_fn_make_%i" i
   | Pjs_fn_method i -> fprintf ppf "js_fn_method_%i" i 

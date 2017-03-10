@@ -27092,6 +27092,8 @@ val is_user_option : t -> bool
 
 val is_user_bool : t -> bool
 
+val is_user_int : t -> bool
+
 val is_optional_label : string -> bool 
 
 (** 
@@ -27214,6 +27216,10 @@ let is_user_bool (ty : t) =
   | Ptyp_constr({txt = Lident "bool"},[]) -> true 
   | _ -> false 
 
+let is_user_int (ty : t) = 
+  match ty.ptyp_desc with 
+  | Ptyp_constr({txt = Lident "int"},[]) -> true 
+  | _ -> false 
 
 let is_optional_label l =
   String.length l > 0 && l.[0] = '?'
@@ -28230,6 +28236,7 @@ type return_wrapper =
   | Return_null_to_opt
   | Return_null_undefined_to_opt
   | Return_to_ocaml_bool
+  | Return_to_ocaml_int
   | Return_replaced_with_unit    
 
 type t  = 
@@ -28387,6 +28394,7 @@ type return_wrapper =
   | Return_null_to_opt
   | Return_null_undefined_to_opt
   | Return_to_ocaml_bool
+  | Return_to_ocaml_int
   | Return_replaced_with_unit    
 type t  = 
   | Ffi_bs of arg_kind list  *
@@ -29581,6 +29589,8 @@ let check_return_wrapper
       Return_replaced_with_unit 
     else if Ast_core_type.is_user_bool result_type then 
       Return_to_ocaml_bool
+    (*else if Ast_core_type.is_user_int result_type then  
+      Return_to_ocaml_int*)
     else 
       wrapper
   | Return_undefined_to_opt
@@ -29595,6 +29605,7 @@ let check_return_wrapper
          syntax wise `_ option` for safety"
 
   | Return_replaced_with_unit 
+  | Return_to_ocaml_int
   | Return_to_ocaml_bool  -> 
     assert false (* Not going to happen from user input*)
 

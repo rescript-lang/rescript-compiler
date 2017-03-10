@@ -27,4 +27,18 @@ let test x y=
   ge x y,
   eq x y,
   neq x y
+
+(*
+external append : 'a array -> 'a array -> 'a array = "#array_append"
+
+
+let f x y = append x y
+*)
+
+external of_small_int_array : int array -> string = "#string_of_small_int_array"
+(* external string_of_char : char -> string = "#string_of_char" *)
+(* string_of_char y  *)
+
+let f x y = 
+  of_small_int_array x, 0
   

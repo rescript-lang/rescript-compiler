@@ -104,6 +104,10 @@ let is_user_bool (ty : t) =
   | Ptyp_constr({txt = Lident "bool"},[]) -> true 
   | _ -> false 
 
+let is_user_int (ty : t) = 
+  match ty.ptyp_desc with 
+  | Ptyp_constr({txt = Lident "int"},[]) -> true 
+  | _ -> false 
 
 let is_optional_label l =
   String.length l > 0 && l.[0] = '?'

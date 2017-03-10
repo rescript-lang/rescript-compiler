@@ -58030,6 +58030,8 @@ val is_user_option : t -> bool
 
 val is_user_bool : t -> bool
 
+val is_user_int : t -> bool
+
 val is_optional_label : string -> bool 
 
 (** 
@@ -58152,6 +58154,10 @@ let is_user_bool (ty : t) =
   | Ptyp_constr({txt = Lident "bool"},[]) -> true 
   | _ -> false 
 
+let is_user_int (ty : t) = 
+  match ty.ptyp_desc with 
+  | Ptyp_constr({txt = Lident "int"},[]) -> true 
+  | _ -> false 
 
 let is_optional_label l =
   String.length l > 0 && l.[0] = '?'
@@ -58332,6 +58338,7 @@ type return_wrapper =
   | Return_null_to_opt
   | Return_null_undefined_to_opt
   | Return_to_ocaml_bool
+  | Return_to_ocaml_int
   | Return_replaced_with_unit    
 
 type t  = 
@@ -58489,6 +58496,7 @@ type return_wrapper =
   | Return_null_to_opt
   | Return_null_undefined_to_opt
   | Return_to_ocaml_bool
+  | Return_to_ocaml_int
   | Return_replaced_with_unit    
 type t  = 
   | Ffi_bs of arg_kind list  *
@@ -64931,6 +64939,8 @@ type primitive =
   | Paddfloat | Psubfloat | Pmulfloat | Pdivfloat
   | Pfloatcomp of Lambda.comparison
   | Pjscomp of Lambda.comparison
+  | Pjs_apply (*[f;arg0;arg1; arg2; ... argN]*)
+  | Pjs_runtime_apply (* [f; [...]] *)
   | Pstringlength 
   | Pstringrefu 
   | Pstringrefs
@@ -65018,7 +65028,14 @@ type primitive =
   | Pis_null_undefined
 
   | Pjs_boolean_to_bool
+  | Pjs_to_int
   | Pjs_typeof
+  | Pjs_function_length 
+
+  | Pjs_string_of_small_array
+  | Pjs_is_instance_array
+  | Pcaml_obj_length
+  | Pcaml_obj_set_length
   
 
 type switch  =
@@ -65267,6 +65284,8 @@ type primitive =
   | Paddfloat | Psubfloat | Pmulfloat | Pdivfloat
   | Pfloatcomp of comparison
   | Pjscomp of comparison
+  | Pjs_apply (*[f;arg0;arg1; arg2; ... argN]*)
+  | Pjs_runtime_apply (* [f; [...]] *)
   (* String operations *)
   | Pstringlength 
   | Pstringrefu 
@@ -65352,7 +65371,15 @@ type primitive =
   | Pis_undefined
   | Pis_null_undefined
   | Pjs_boolean_to_bool
+  | Pjs_to_int
   | Pjs_typeof
+  | Pjs_function_length 
+  
+  | Pjs_string_of_small_array
+  | Pjs_is_instance_array
+  | Pcaml_obj_length
+  | Pcaml_obj_set_length
+  
 
 type apply_status =
   | App_na
@@ -66013,7 +66040,7 @@ let apply fn args loc status : t =
   match fn with 
   | Lfunction {kind ; params ;  
                body = Lprim {primitive = 
-                               (Pundefined_to_opt | Pnull_to_opt | Pnull_undefined_to_opt | Pis_null | Pis_null_undefined | Pjs_boolean_to_bool | Pjs_typeof ) as wrap;
+                               (Pundefined_to_opt | Pnull_to_opt | Pnull_undefined_to_opt | Pis_null | Pis_null_undefined | Pjs_boolean_to_bool | Pjs_to_int | Pjs_typeof ) as wrap;
                              args = [Lprim ({primitive; args = inner_args} as primitive_call)]
                             } 
               } ->
@@ -66372,6 +66399,8 @@ let result_wrap loc (result_type : Ast_ffi_types.return_wrapper) result  =
     | Ast_ffi_types.Return_undefined_to_opt -> prim ~primitive:(Pundefined_to_opt) ~args:[result] loc 
     | Ast_ffi_types.Return_to_ocaml_bool ->
       prim ~primitive:(Pjs_boolean_to_bool) ~args:[result] loc 
+    | Ast_ffi_types.Return_to_ocaml_int -> 
+      prim ~primitive:(Pjs_to_int) ~args:[result] loc 
     | Return_unset
     | Return_identity -> 
       result 
@@ -66728,7 +66757,7 @@ let convert exports lam : _ * _  =
           end
         (*  
         | Lfunction(kind,params,Lprim(prim,inner_args,inner_loc))
-          when List.for_all2 (fun x y -> 
+          when List.for_all2_no_exn (fun x y -> 
           match y with 
           | Lambda.Lvar y when Ident.same x y -> true
           | _ -> false 
@@ -66862,6 +66891,18 @@ let convert exports lam : _ * _  =
     | Lprim (Prevapply, _, _ ) -> assert false       
     | Lprim(Pdirapply, _, _) -> assert false 
     (* we might allow some arity here *)  
+    | Lprim(Pccall {prim_name = "#apply"},args,loc) ->
+      prim ~primitive:Pjs_runtime_apply ~args:(List.map aux args) loc 
+    (* EqLambda*)
+    | Lprim(Pccall {prim_name =  "#apply1"
+                               | "#apply2"
+                               | "#apply3"
+                               | "#apply4"
+                               | "#apply5"
+                               | "#apply6"
+                               | "#apply7"
+                               | "#apply8"}, args, loc) ->
+      prim ~primitive:Pjs_apply ~args:(List.map aux args) loc
     | Lprim(Pccall {prim_name = "#raw_expr"}, 
             args,loc) ->  
       begin match args with 
@@ -66926,11 +66967,25 @@ let convert exports lam : _ * _  =
           prim ~primitive:Pstringadd ~args:[aux a; aux b] loc 
         | _ -> assert false 
       end 
+    | Lprim(Pccall {prim_name = "#is_instance_array"}, args, loc) -> 
+        prim ~primitive:Pjs_is_instance_array ~args:(List.map aux args) loc 
+    | Lprim(Pccall {prim_name = "#string_of_small_int_array"}, args, loc) ->
+        prim ~primitive:Pjs_string_of_small_array~args:(List.map aux args) loc   
+          (* {[String.fromCharCode.apply(null,x)]} 
+            Note if we have better suport [@bs.splice],
+            we can get rid of it*)
+    | Lprim(Pccall {prim_name = "#obj_set_length"}, args, loc) ->          
+      prim ~primitive:Pcaml_obj_set_length ~args:(List.map aux args) loc   
+    | Lprim(Pccall {prim_name = "#obj_length"}, args, loc) ->          
+      prim ~primitive:Pcaml_obj_length ~args:(List.map aux args) loc   
+
     | Lprim(Pccall {prim_name = "#boolean_to_bool"}, args, loc) -> 
       begin match args with 
         | [ e ] -> prim ~primitive:Pjs_boolean_to_bool ~args:[aux e] loc 
         | _ -> assert false 
       end
+    | Lprim(Pccall {prim_name = "#function_length"}, args, loc) -> 
+      prim ~primitive:(Pjs_function_length) ~args:(List.map aux args) loc 
     | Lprim(Pccall {prim_name = "#unsafe_lt"}, args, loc) -> 
       prim ~primitive:(Pjscomp Clt) ~args:(List.map aux args) loc 
     | Lprim(Pccall {prim_name = "#unsafe_gt"}, args, loc) -> 
@@ -70437,6 +70492,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
         end 
 
       | Pjs_boolean_to_bool
+      | Pjs_to_int
       | Pjs_typeof
       | Pis_null
       | Pis_undefined
@@ -70506,7 +70562,14 @@ let rec no_side_effects (lam : Lam.t) : bool =
 
       | Poffsetint _
       | Pstringadd 
+      | Pjs_function_length
+      | Pcaml_obj_length
+      | Pjs_is_instance_array
         -> true
+      | Pjs_string_of_small_array
+      | Pcaml_obj_set_length        
+      | Pjs_apply
+      | Pjs_runtime_apply
       | Pjs_call _ 
       | Pinit_mod
       | Pupdate_mod
@@ -70716,6 +70779,62 @@ let ok_to_inline ~body params args =
    (s < 10 && no_side_effects body )) 
 
 
+let eq_comparison ( p : Lam.comparison) (p1:Lam.comparison) = 
+  match p with 
+  | Cge -> p1 =  Cge
+  | Cgt -> p1 =  Cgt
+  | Cle -> p1 =  Cle
+  | Clt -> p1 =  Clt 
+  | Ceq -> p1 =  Ceq 
+  | Cneq -> p1 =  Cneq 
+
+let eq_array_kind (p : Lam.array_kind) (p1 : Lam.array_kind) = 
+  match p with 
+  | Pgenarray -> p1 = Pgenarray
+  | Paddrarray -> p1 = Paddrarray 
+  | Pintarray -> p1 = Pintarray
+  | Pfloatarray -> p1 = Pfloatarray 
+
+let eq_boxed_integer (p : Lam.boxed_integer) (p1 : Lam.boxed_integer ) = 
+  match p with 
+  | Pnativeint -> p1 = Pnativeint 
+  | Pint32 -> p1 = Pint32
+  | Pint64 -> p1 = Pint64
+
+let eq_bigarray_kind (p : Lam.bigarray_kind) (p1 : Lam.bigarray_kind) = 
+  match p with   
+  | Pbigarray_unknown -> p1 = Pbigarray_unknown
+  | Pbigarray_float32 -> p1 = Pbigarray_float32
+  | Pbigarray_float64 -> p1 =  Pbigarray_float64
+  | Pbigarray_sint8 -> p1 = Pbigarray_sint8
+  | Pbigarray_uint8 -> p1 = Pbigarray_uint8
+  | Pbigarray_sint16 -> p1 = Pbigarray_sint16 
+  | Pbigarray_uint16 -> p1 = Pbigarray_uint16
+  | Pbigarray_int32  -> p1 = Pbigarray_int32
+  | Pbigarray_int64 -> p1 = Pbigarray_int64
+  | Pbigarray_caml_int -> p1 = Pbigarray_caml_int
+  | Pbigarray_native_int -> p1 = Pbigarray_native_int
+  | Pbigarray_complex32  -> p1 = Pbigarray_complex32
+  | Pbigarray_complex64 -> p1 = Pbigarray_complex64
+
+let eq_bigarray_layout (p : Lam.bigarray_layout) (p1 : Lam.bigarray_layout) = 
+  match p with 
+  | Pbigarray_unknown_layout -> p1 = Pbigarray_unknown_layout
+  | Pbigarray_c_layout -> p1 = Pbigarray_c_layout
+  | Pbigarray_fortran_layout -> p1 = Pbigarray_fortran_layout
+
+let eq_compile_time_constant ( p : Lam.compile_time_constant) (p1 : Lam.compile_time_constant) = 
+  match p with 
+  | Big_endian -> p1 = Big_endian
+  | Word_size -> p1 = Word_size 
+  | Ostype_unix -> p1 = Ostype_unix
+  | Ostype_win32 -> p1 = Ostype_win32
+  | Ostype_cygwin -> p1 = Ostype_cygwin 
+
+let eq_record_representation ( p : Types.record_representation) ( p1 : Types.record_representation) = 
+  match p with 
+  | Record_float -> p1 = Record_float
+  | Record_regular -> p1 = Record_regular
 (* compared two lambdas in case analysis, note that we only compare some small lambdas
     Actually this patten is quite common in GADT, people have to write duplicated code 
     due to the type system restriction
@@ -70731,7 +70850,7 @@ let rec
     begin match l2 with  Lconst c2 -> c1 = c2 (* FIXME *) | _ -> false end 
   | Lapply {fn = l1; args = args1; _} -> 
     begin match l2 with Lapply {fn = l2; args = args2; _} ->
-    eq_lambda l1 l2  && List.for_all2 eq_lambda args1 args2
+    eq_lambda l1 l2  && Ext_list.for_all2_no_exn eq_lambda args1 args2
     |_ -> false end 
   | Lifthenelse (a,b,c) -> 
     begin match l2 with  Lifthenelse (a0,b0,c0) ->
@@ -70749,12 +70868,12 @@ let rec
     | _ -> false end 
   | Lstaticraise(id,ls) -> 
     begin match l2 with  Lstaticraise(id1,ls1) -> 
-    (id : int) = id1 && List.for_all2 eq_lambda ls ls1 
+    (id : int) = id1 && Ext_list.for_all2_no_exn eq_lambda ls ls1 
     | _ -> false end 
   | Lprim {primitive = p; args = ls; } -> 
     begin match l2 with 
     Lprim {primitive = p1; args = ls1} ->
-    eq_primitive p p1 && List.for_all2 eq_lambda ls ls1
+    eq_primitive p p1 && Ext_list.for_all2_no_exn eq_lambda ls ls1
     | _ -> false end 
   | Lfunction _  
   | Llet (_,_,_,_)
@@ -70766,25 +70885,132 @@ let rec
   | Lfor (_,_,_,_,_) 
   | Lsend _
   | Lifused _ -> false    
-and eq_primitive (p : Lam.primitive) (p1 : Lam.primitive) = 
-  match p, p1 with 
-  | Pccall {prim_name = n0 ; 
-            prim_native_name = nn0;
-           },  
-    Pccall {prim_name = n1; 
-            prim_native_name = nn1;
 
-           } -> 
-    n0 = n1 && nn0 = nn1 (* No attributes, should be class api, comparison by name is good *)
-  | Pfield (n0, _dbg_info0),  Pfield (n1, _dbg_info1) 
-    -> n0 = n1
-  | Psetfield(i0, b0, _dbg_info0), Psetfield(i1, b1, _dbg_info1)
-    -> i0 = i1 && b0 = b1 
-  | _ , _ -> 
-    (* FIXME: relies on structure equality
-    *) 
-    try p = p1 with _ -> false
+  
+and eq_primitive ( lhs : Lam.primitive) (rhs : Lam.primitive) = 
+  match lhs with 
+  | Pbytes_to_string ->  rhs = Pbytes_to_string 
+  | Pbytes_of_string ->  rhs = Pbytes_of_string
+  | Praise -> rhs = Praise
+  | Psequand -> rhs = Psequand
+  | Psequor -> rhs = Psequor 
+  | Pnot -> rhs = Pnot 
+  | Pnegint -> rhs = Pnegint
+  | Paddint -> rhs = Paddint 
+  | Psubint -> rhs = Psubint
+  | Pmulint -> rhs = Pmulint
+  | Pdivint -> rhs = Pdivint
+  | Pmodint -> rhs = Pmodint 
+  | Pandint -> rhs = Pandint
+  | Porint  -> rhs = Porint
+  | Pxorint -> rhs = Pxorint
+  | Plslint -> rhs = Plslint
+  | Plsrint -> rhs = Plsrint
+  | Pasrint -> rhs = Pasrint      
+  | Plazyforce -> rhs = Plazyforce
+  | Pintoffloat -> rhs = Pintoffloat
+  | Pfloatofint -> rhs = Pfloatofint
+  | Pnegfloat -> rhs =  Pnegfloat
+  | Pabsfloat -> rhs = Pabsfloat
+  | Paddfloat -> rhs = Paddfloat
+  | Psubfloat -> rhs = Psubfloat
+  | Pmulfloat -> rhs = Pmulfloat
+  | Pdivfloat -> rhs = Pdivfloat
+  | Pjs_apply -> rhs = Pjs_apply
+  | Pjs_runtime_apply -> rhs = Pjs_runtime_apply
+  | Pstringlength ->  rhs = Pstringlength
+  | Pstringrefu ->  rhs = Pstringrefu
+  | Pstringrefs ->  rhs = Pstringrefs
+  | Pstringadd  ->  rhs = Pstringadd   
+  | Pbyteslength -> rhs = Pbyteslength
+  | Pbytesrefu ->   rhs = Pbytesrefu
+  | Pbytessetu ->   rhs = Pbytessetu
+  | Pbytesrefs ->   rhs = Pbytesrefs
+  | Pbytessets ->   rhs = Pbytessets  
+  | Pundefined_to_opt -> rhs = Pundefined_to_opt
+  | Pnull_to_opt -> rhs = Pnull_to_opt
+  | Pnull_undefined_to_opt -> rhs = Pnull_undefined_to_opt  
+  | Pis_null -> rhs = Pis_null
+  | Pis_undefined -> rhs = Pis_undefined
+  | Pis_null_undefined -> rhs = Pis_null_undefined
+  | Pjs_boolean_to_bool -> rhs = Pjs_boolean_to_bool
+  | Pjs_to_int -> rhs = Pjs_to_int
+  | Pjs_typeof -> rhs = Pjs_typeof
+  | Pisint -> rhs = Pisint
+  | Pisout -> rhs = Pisout
+  | Pbittest -> rhs = Pbittest
+  | Pdebugger -> rhs = Pdebugger    
+  | Pinit_mod -> rhs = Pinit_mod
+  | Pupdate_mod -> rhs = Pupdate_mod
+  | Pbswap16 -> rhs = Pbswap16
+  | Pjs_function_length -> rhs = Pjs_function_length
+  | Pjs_string_of_small_array -> rhs = Pjs_string_of_small_array
+  | Pjs_is_instance_array -> rhs = Pjs_is_instance_array
+  | Pcaml_obj_length -> rhs = Pcaml_obj_length
+  | Pcaml_obj_set_length -> rhs = Pcaml_obj_set_length
+  | Pccall {prim_name = n0 ;  prim_native_name = nn0} ->  (match rhs with Pccall {prim_name = n1; prim_native_name = nn1} ->    n0 = n1 && nn0 = nn1 | _ -> false )    
+  | Pfield (n0, _dbg_info0) ->  (match rhs with Pfield (n1, _dbg_info1) ->  n0 = n1  | _ -> false )    
+  | Psetfield(i0, b0, _dbg_info0) -> (match rhs with Psetfield(i1, b1, _dbg_info1) ->  i0 = i1 && b0 = b1 | _ -> false)
+  | Pglobal_exception ident -> (match rhs with Pglobal_exception ident2 ->  Ident.same ident ident2 | _ -> false )
+  | Pmakeblock (i, _tag_info, mutable_flag) -> (match rhs with Pmakeblock(i1,_,mutable_flag1) ->  i = i1 && mutable_flag = mutable_flag1  | _ -> false)
+  | Pfloatfield (i0,_dbg_info) -> (match rhs with Pfloatfield (i1,_) -> i0 = i1   | _ -> false)
+  | Psetfloatfield (i0,_dbg_info) ->  (match rhs with Psetfloatfield(i1,_) -> i0 = i1  | _ -> false)
+  | Pduprecord (record_repesentation0,i1) -> (match rhs with Pduprecord(record_repesentation1,i2) ->  eq_record_representation record_repesentation0 record_repesentation1 && i1 = i2    | _ -> false)
+  | Pjs_call (prim_name, arg_types, ffi) ->  ( match rhs with Pjs_call(prim_name1, arg_types1,ffi1) -> prim_name = prim_name1 && arg_types = arg_types1 && ffi = ffi1 | _ -> false)
+  | Pjs_object_create obj_create -> (match rhs with Pjs_object_create obj_create1 -> obj_create = obj_create1 | _ -> false )
+  | Pintcomp comparison -> (match rhs with Pintcomp comparison1 -> eq_comparison comparison  comparison1  | _ -> false )    
+  | Pfloatcomp comparison -> (match rhs with Pfloatcomp comparison1 -> eq_comparison comparison  comparison1 | _ -> false)
+  | Pjscomp comparison ->  (match rhs with  Pjscomp comparison1 -> eq_comparison comparison  comparison1  | _ -> false )    
+  | Poffsetint i0 ->   (match rhs with  Poffsetint i1 -> i0 = i1 | _ -> false )   
+  | Poffsetref i0 ->  (match rhs with Poffsetref i1 -> i0 = i1   | _ -> false)
+  | Pmakearray array_kind -> (match rhs with Pmakearray array_kind1 -> eq_array_kind array_kind array_kind1 | _ -> false  )
+  | Parraylength  array_kind -> (match rhs with Parraylength array_kind1 -> eq_array_kind array_kind array_kind1 | _ -> false  )
+  | Parrayrefu  array_kind -> (match rhs with Parrayrefu array_kind1 -> eq_array_kind array_kind array_kind1 | _ -> false  )
+  | Parraysetu  array_kind -> (match rhs with Parraysetu array_kind1 -> eq_array_kind array_kind array_kind1 | _ -> false  ) 
+  | Parrayrefs array_kind -> (match rhs with Parrayrefs array_kind1 -> eq_array_kind array_kind array_kind1 | _ -> false  )
+  | Parraysets  array_kind -> (match rhs with Parraysets array_kind1 -> eq_array_kind array_kind array_kind1 | _ -> false  )  
+  | Pbintofint  boxed_integer -> (match rhs with Pbintofint boxed_integer1 -> eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
+  | Pintofbint  boxed_integer -> (match rhs with Pintofbint boxed_integer1 -> eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
+  | Pnegbint  boxed_integer -> (match rhs with Pnegbint boxed_integer1 -> eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
+  | Paddbint  boxed_integer -> (match rhs with Paddbint boxed_integer1 -> eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
+  | Psubbint  boxed_integer -> (match rhs with Psubbint boxed_integer1 -> eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
+  | Pmulbint  boxed_integer -> (match rhs with Pmulbint boxed_integer1 -> eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
+  | Pdivbint  boxed_integer -> (match rhs with Pdivbint boxed_integer1 -> eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
+  | Pmodbint  boxed_integer -> (match rhs with Pmodbint boxed_integer1 -> eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
+  | Pandbint  boxed_integer -> (match rhs with Pandbint boxed_integer1 -> eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
+  | Porbint boxed_integer ->   (match rhs with Porbint  boxed_integer1 -> eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
+  | Pxorbint  boxed_integer -> (match rhs with Pxorbint boxed_integer1 -> eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
+  | Plslbint  boxed_integer -> (match rhs with Plslbint boxed_integer1 -> eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
+  | Plsrbint  boxed_integer -> (match rhs with Plsrbint boxed_integer1 -> eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
+  | Pasrbint  boxed_integer -> (match rhs with Pasrbint boxed_integer1 -> eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
+  | Pbbswap boxed_integer ->   (match rhs with Pbbswap boxed_integer1  -> eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
+  | Pcvtbint  (boxed_integer, boxed_integer1) -> (match rhs with Pcvtbint (boxed_integer10, boxed_integer11) -> eq_boxed_integer boxed_integer boxed_integer10 && eq_boxed_integer boxed_integer1 boxed_integer11 | _ -> false )
+  | Pbintcomp  (boxed_integer , comparison) -> (match rhs with Pbintcomp(boxed_integer1, comparison1) -> eq_boxed_integer boxed_integer boxed_integer1 && eq_comparison comparison comparison1 | _ -> false)  
+  | Pbigarraydim i -> (match rhs with Pbigarraydim i1 -> i = i1 | _ -> false )
+  | Pstring_load_16 b ->  (match  rhs with Pstring_load_16 b1 -> b = b1  | _ -> false )
+  | Pstring_load_32 b -> (match rhs with Pstring_load_32 b1 -> b = b1 | _ -> false )    
+  | Pstring_load_64 b -> (match rhs with Pstring_load_64 b1 -> b = b1 | _ -> false )    
+  | Pstring_set_16 b -> (match rhs with Pstring_set_16 b1 -> b = b1 | _ -> false )    
+  | Pstring_set_32 b -> (match rhs with Pstring_set_32 b1 -> b = b1 | _ -> false )    
+  | Pstring_set_64 b -> (match rhs with Pstring_set_64 b1 -> b = b1 | _ -> false )      
+  | Pbigstring_load_16 b -> (match rhs with Pbigstring_load_16 b1 -> b = b1 | _ -> false )      
+  | Pbigstring_load_32 b -> (match rhs with Pbigstring_load_32 b1 -> b = b1 | _ -> false )      
+  | Pbigstring_load_64 b -> (match rhs with Pbigstring_load_64 b1 -> b = b1 | _ -> false )      
+  | Pbigstring_set_16 b -> (match rhs with Pbigstring_set_16 b1 -> b = b1 | _ -> false )      
+  | Pbigstring_set_32 b -> (match rhs with Pbigstring_set_32 b1 -> b = b1 | _ -> false )      
+  | Pbigstring_set_64 b -> (match rhs with Pbigstring_set_64 b1 -> b = b1 | _ -> false )      
+  | Pctconst compile_time_constant -> (match rhs with Pctconst compile_time_constant1 -> eq_compile_time_constant compile_time_constant compile_time_constant1 | _ -> false)
+  | Pjs_unsafe_downgrade ( s,_loc) -> (match rhs with Pjs_unsafe_downgrade (s1,_) -> s = s1 | _ -> false)  
+  | Pjs_fn_make i -> (match rhs with Pjs_fn_make i1 -> i = i1 | _ -> false)
+  | Pjs_fn_run i -> (match rhs with Pjs_fn_run i1 -> i = i1 | _ -> false)
+  | Pjs_fn_method i -> (match rhs with Pjs_fn_method i1 -> i = i1 | _ ->  false )
+  | Pjs_fn_runmethod i -> (match rhs with Pjs_fn_runmethod i1 -> i = i1 | _ -> false ) 
 
+  | Pbigarrayref  _ 
+  | Pbigarrayset _ 
+  | Praw_js_code_exp _ 
+  | Praw_js_code_stmt _ -> false 
+  
 
 
 (* TODO:  We can relax this a bit later,
@@ -70936,11 +71162,19 @@ let string_of_loc_kind (loc : Lambda.loc_kind) =
   | Loc_LOC -> "loc_LOC"
 
 let primitive ppf (prim : Lam.primitive) = match prim with 
+  | Pjs_string_of_small_array -> fprintf ppf "#string_of_small_array"
+  | Pjs_is_instance_array -> fprintf ppf "#is_instance_array"
+  | Pcaml_obj_length -> fprintf ppf "#obj_length"
+  | Pcaml_obj_set_length -> fprintf ppf "#obj_set_length"
+  | Pjs_to_int -> fprintf ppf "#[int]"
   | Pinit_mod -> fprintf ppf "init_mod!"
   | Pupdate_mod -> fprintf ppf "update_mod!"
   | Pbytes_to_string -> fprintf ppf "bytes_to_string"
   | Pbytes_of_string -> fprintf ppf "bytes_of_string"
+  | Pjs_apply -> fprintf ppf "#apply"
+  | Pjs_runtime_apply -> fprintf ppf "#runtime_apply"
   | Pjs_unsafe_downgrade (s,_loc) -> fprintf ppf "##%s" s 
+  | Pjs_function_length -> fprintf ppf "#function_length"
   | Pjs_fn_run i -> fprintf ppf "#fn_run_%i" i 
   | Pjs_fn_make i -> fprintf ppf "js_fn_make_%i" i
   | Pjs_fn_method i -> fprintf ppf "js_fn_method_%i" i 
@@ -90959,11 +91193,11 @@ let translate (prim_name : string)
     (args : J.expression list) : J.expression  =
   let prim_name_length = String.length prim_name  in
   let call m = 
-    if prim_name_length > 0 && prim_name.[0] = '#' then 
+(*    if prim_name_length > 0 && prim_name.[0] = '#' then 
       E.runtime_call m 
         (String.sub prim_name 1 (prim_name_length - 1)) args
     else 
-      E.runtime_call m prim_name args in 
+*)      E.runtime_call m prim_name args in 
   begin match prim_name with 
   | "caml_gc_stat" 
   | "caml_gc_quick_stat"  
@@ -91733,75 +91967,29 @@ let translate (prim_name : string)
   | "caml_ml_set_binary_mode"
     ->  E.not_implemented prim_name
 
-  | "#function_length"
 
-    -> begin
-        match args with 
-        | [f ] -> E.function_length f 
-        | _ -> assert false
-      end
-  | "#create_array" 
-    -> 
-    begin match args with 
-    | [e] -> E.uninitialized_array e 
-    | _ -> assert false
-    end
-  | "#array_append" 
-    -> 
-    begin match args with 
-    | [a;b] -> 
-      E.array_append a b 
-    | _ -> assert false 
-    end
-
-  | "#apply" 
-    -> 
-    begin match args with 
-    | [f ;  args] -> 
-      E.flat_call f args
-    | _ -> assert false 
-  end
-   | "#apply1"
-    | "#apply2"
-    | "#apply3"
-    | "#apply4"
-    | "#apply5"
-    | "#apply6"
-    | "#apply7"
-    | "#apply8" -> 
-      begin match args with 
-        | fn :: rest -> 
-          E.call ~info:{arity=Full; call_info =  Call_na} fn rest 
-        | _ -> assert false
-      end
+  (*
   | "#string_of_small_int_array"
-    ->
+    -> 
     begin match args with 
     | [e] -> E.string_of_small_int_array e 
     | _ -> assert false
     end
-  | "#string_of_char" 
-    ->
-      begin match args with 
-      | [{expression_desc = Number (Int {i; _})} ] 
-        -> E.str (String.make 1 (Char.chr (Int32.to_int i)))
-      | _ -> call Js_config.string
-      end
-  
-  | "#is_instance_array" 
+  *)
+  (* | "#is_instance_array" 
     ->
     begin match args with 
     | [e] -> E.is_instance_array e 
     | _ -> assert false
-   end
-  
+   end *)
+  (*
   | "#anything_to_number" 
     -> 
     begin match args with 
     | [e] -> E.to_number e 
     | _ -> assert false
-    end
-
+    end*)
+(*
   | "#json_stringify"      
     -> 
     begin match args with 
@@ -91809,27 +91997,22 @@ let translate (prim_name : string)
       E.to_json_string e
     | _ -> 
       assert false      
-    end
-   
-    | "#uninitialized_object"
-      ->
-      begin match args with 
-        | [ tag; size] -> E.uninitialized_object tag size 
-        | _ -> assert false  end
-    | "#obj_length" 
+    end *)
+
+    (* | "#obj_length" 
       -> 
       begin match args with 
         | [e] -> E.obj_length e 
         | _ -> assert false 
-      end
-
+      end *)
+    (*   
     | "#obj_set_length"
       ->
       begin match args with 
         | [a; b] -> E.set_length a b 
         | _ -> assert false 
       end
-
+      *)
     | _ -> 
       if prim_name_length > 0 && prim_name.[0] = '#' then 
         (** TODO: provide better error location *)
@@ -91947,6 +92130,23 @@ let translate  loc
     E.raw_js_code Exp s  
   | Lam.Praw_js_code_stmt s -> 
     E.raw_js_code Stmt s 
+  | Lam.Pjs_runtime_apply -> 
+    begin match args with 
+      | [f ;  args] -> 
+        E.flat_call f args
+      | _ -> assert false 
+    end
+  | Pjs_apply -> 
+      begin match args with 
+        | fn :: rest -> 
+          E.call ~info:{arity=Full; call_info =  Call_na} fn rest 
+        | _ -> assert false
+      end
+  | Lam.Pjs_to_int -> 
+    begin match args with 
+    | [e] -> E.to_int32 e 
+    | _ -> assert false 
+    end
   | Lam.Pnull_to_opt -> 
     begin match args with 
       | [e] -> 
@@ -91982,7 +92182,33 @@ let translate  loc
         *)
       end
       | _ -> assert false 
-      end    
+    end    
+  | Pjs_function_length -> 
+    begin match args with 
+    | [e] -> E.function_length e 
+    | _ -> assert false 
+    end
+  | Lam.Pcaml_obj_length -> 
+    begin match args with 
+    | [e] -> E.obj_length e 
+    | _ -> assert false 
+    end
+  | Lam.Pcaml_obj_set_length -> 
+    begin match args with 
+    | [a;b] -> E.set_length a b 
+    | _ -> assert false 
+  end
+  | Lam.Pjs_string_of_small_array -> 
+    begin match args with 
+    | [e] -> E.string_of_small_int_array e 
+    | _ -> assert false 
+  end 
+  | Lam.Pjs_is_instance_array -> 
+    begin match args with 
+    | [e] -> E.is_instance_array e 
+    | _ -> assert false 
+  end 
+
   | Lam.Pnull_undefined_to_opt -> 
     (*begin match args with 
     | [e] -> 
@@ -101204,6 +101430,8 @@ let check_return_wrapper
       Return_replaced_with_unit 
     else if Ast_core_type.is_user_bool result_type then 
       Return_to_ocaml_bool
+    (*else if Ast_core_type.is_user_int result_type then  
+      Return_to_ocaml_int*)
     else 
       wrapper
   | Return_undefined_to_opt
@@ -101218,6 +101446,7 @@ let check_return_wrapper
          syntax wise `_ option` for safety"
 
   | Return_replaced_with_unit 
+  | Return_to_ocaml_int
   | Return_to_ocaml_bool  -> 
     assert false (* Not going to happen from user input*)
 

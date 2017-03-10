@@ -77,6 +77,8 @@ val is_user_option : t -> bool
 
 val is_user_bool : t -> bool
 
+val is_user_int : t -> bool
+
 val is_optional_label : string -> bool 
 
 (** 

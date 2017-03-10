@@ -337,6 +337,8 @@ let check_return_wrapper
       Return_replaced_with_unit 
     else if Ast_core_type.is_user_bool result_type then 
       Return_to_ocaml_bool
+    (*else if Ast_core_type.is_user_int result_type then  
+      Return_to_ocaml_int*)
     else 
       wrapper
   | Return_undefined_to_opt
@@ -351,6 +353,7 @@ let check_return_wrapper
          syntax wise `_ option` for safety"
 
   | Return_replaced_with_unit 
+  | Return_to_ocaml_int
   | Return_to_ocaml_bool  -> 
     assert false (* Not going to happen from user input*)
 
