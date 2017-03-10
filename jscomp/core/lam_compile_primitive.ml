@@ -124,11 +124,7 @@ let translate  loc
     | [e] -> E.is_instance_array e 
     | _ -> assert false 
   end 
-  | Lam.Pcaml_uninitialized_obj -> 
-    begin match args with 
-    | [tag;size] -> E.uninitialized_object tag size 
-    | _ -> assert false 
-    end
+
   | Lam.Pnull_undefined_to_opt -> 
     (*begin match args with 
     | [e] -> 

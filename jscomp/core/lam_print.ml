@@ -105,8 +105,6 @@ let primitive ppf (prim : Lam.primitive) = match prim with
   | Pjs_is_instance_array -> fprintf ppf "#is_instance_array"
   | Pcaml_obj_length -> fprintf ppf "#obj_length"
   | Pcaml_obj_set_length -> fprintf ppf "#obj_set_length"
-  | Pcaml_uninitialized_obj -> fprintf ppf "#uninitialized_obj"
-
   | Pinit_mod -> fprintf ppf "init_mod!"
   | Pupdate_mod -> fprintf ppf "update_mod!"
   | Pbytes_to_string -> fprintf ppf "bytes_to_string"

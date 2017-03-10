@@ -222,9 +222,13 @@ var param$8 = Caml_float.caml_expm1_float(0);
 
 Mt_global.collect_eq(test_id, suites, 'File "float_test.ml", line 59, characters 5-12', param$8, 0);
 
-var param$9 = Caml_float.caml_expm1_float(2);
+var param$9 = Number("3.0");
 
-Mt_global.collect_approx(test_id, suites, 'File "float_test.ml", line 60, characters 9-16', param$9, 6.38905609893065);
+Mt_global.collect_eq(test_id, suites, 'File "float_test.ml", line 60, characters 5-12', param$9, 3.0);
+
+var param$10 = Caml_float.caml_expm1_float(2);
+
+Mt_global.collect_approx(test_id, suites, 'File "float_test.ml", line 61, characters 9-16', param$10, 6.38905609893065);
 
 var match$4 = Caml_float.caml_modf_float(32.3);
 

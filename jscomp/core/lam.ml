@@ -190,7 +190,7 @@ type primitive =
   | Pjs_is_instance_array
   | Pcaml_obj_length
   | Pcaml_obj_set_length
-  | Pcaml_uninitialized_obj
+  
 
 type apply_status =
   | App_na
@@ -1783,8 +1783,6 @@ let convert exports lam : _ * _  =
           (* {[String.fromCharCode.apply(null,x)]} 
             Note if we have better suport [@bs.splice],
             we can get rid of it*)
-    | Lprim(Pccall {prim_name = "#uninitialized_object"}, args, loc) ->          
-      prim ~primitive:Pcaml_uninitialized_obj ~args:(List.map aux args) loc   
     | Lprim(Pccall {prim_name = "#obj_set_length"}, args, loc) ->          
       prim ~primitive:Pcaml_obj_set_length ~args:(List.map aux args) loc   
     | Lprim(Pccall {prim_name = "#obj_length"}, args, loc) ->          

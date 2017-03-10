@@ -52,5 +52,7 @@ external max : float -> float -> float = "Math.max"
 
 external random : unit -> float = "Math.random"
 [@@bs.val ]
-external of_any : 'a -> float = "#anything_to_number"
+
+external of_any : 'a -> float = "Number"
+[@@bs.val]
 

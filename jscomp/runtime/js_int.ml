@@ -26,4 +26,6 @@
  (** If we use number, we need coerce to int32 by adding `|0`,
     otherwise `+0` can be wrong
   *)
-external from_any : 'a -> int = "#anything_to_number" (* + conversion*)
+external from_any : 'a -> int = "Number"
+[@@bs.val]
+ (* + conversion*)

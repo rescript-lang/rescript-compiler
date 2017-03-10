@@ -190,7 +190,7 @@ type primitive =
   | Pjs_is_instance_array
   | Pcaml_obj_length
   | Pcaml_obj_set_length
-  | Pcaml_uninitialized_obj
+  
 
 type switch  =
   { sw_numconsts: int;

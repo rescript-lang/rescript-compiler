@@ -24,7 +24,7 @@ function eq(loc, x, y) {
   return /* () */0;
 }
 
-eq('File "int_over_flow_test.ml", line 10, characters 7-14', +"3", 3);
+eq('File "int_over_flow_test.ml", line 10, characters 7-14', Number("3"), 3);
 
 Mt.from_pair_suites("int_over_flow_test.ml", suites[0]);
 

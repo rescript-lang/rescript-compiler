@@ -48,11 +48,11 @@ let translate (prim_name : string)
     (args : J.expression list) : J.expression  =
   let prim_name_length = String.length prim_name  in
   let call m = 
-    if prim_name_length > 0 && prim_name.[0] = '#' then 
+(*    if prim_name_length > 0 && prim_name.[0] = '#' then 
       E.runtime_call m 
         (String.sub prim_name 1 (prim_name_length - 1)) args
     else 
-      E.runtime_call m prim_name args in 
+*)      E.runtime_call m prim_name args in 
   begin match prim_name with 
   | "caml_gc_stat" 
   | "caml_gc_quick_stat"  
@@ -837,13 +837,13 @@ let translate (prim_name : string)
     | [e] -> E.is_instance_array e 
     | _ -> assert false
    end *)
-  
+  (*
   | "#anything_to_number" 
     -> 
     begin match args with 
     | [e] -> E.to_number e 
     | _ -> assert false
-    end
+    end*)
 (*
   | "#json_stringify"      
     -> 
@@ -853,12 +853,7 @@ let translate (prim_name : string)
     | _ -> 
       assert false      
     end *)
-   (*
-    | "#uninitialized_object"
-      ->
-      begin match args with 
-        | [ tag; size] -> E.uninitialized_object tag size 
-        | _ -> assert false  end *)
+
     (* | "#obj_length" 
       -> 
       begin match args with 

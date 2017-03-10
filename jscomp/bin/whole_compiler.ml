@@ -65027,7 +65027,7 @@ type primitive =
   | Pjs_is_instance_array
   | Pcaml_obj_length
   | Pcaml_obj_set_length
-  | Pcaml_uninitialized_obj
+  
 
 type switch  =
   { sw_numconsts: int;
@@ -65369,7 +65369,7 @@ type primitive =
   | Pjs_is_instance_array
   | Pcaml_obj_length
   | Pcaml_obj_set_length
-  | Pcaml_uninitialized_obj
+  
 
 type apply_status =
   | App_na
@@ -66962,8 +66962,6 @@ let convert exports lam : _ * _  =
           (* {[String.fromCharCode.apply(null,x)]} 
             Note if we have better suport [@bs.splice],
             we can get rid of it*)
-    | Lprim(Pccall {prim_name = "#uninitialized_object"}, args, loc) ->          
-      prim ~primitive:Pcaml_uninitialized_obj ~args:(List.map aux args) loc   
     | Lprim(Pccall {prim_name = "#obj_set_length"}, args, loc) ->          
       prim ~primitive:Pcaml_obj_set_length ~args:(List.map aux args) loc   
     | Lprim(Pccall {prim_name = "#obj_length"}, args, loc) ->          
@@ -70556,7 +70554,6 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Pjs_is_instance_array
         -> true
       | Pjs_string_of_small_array
-      | Pcaml_uninitialized_obj
       | Pcaml_obj_set_length        
       | Pjs_apply
       | Pjs_runtime_apply
@@ -70937,7 +70934,6 @@ and eq_primitive ( lhs : Lam.primitive) (rhs : Lam.primitive) =
   | Pjs_is_instance_array -> rhs = Pjs_is_instance_array
   | Pcaml_obj_length -> rhs = Pcaml_obj_length
   | Pcaml_obj_set_length -> rhs = Pcaml_obj_set_length
-  | Pcaml_uninitialized_obj -> rhs = Pcaml_uninitialized_obj
   | Pccall {prim_name = n0 ;  prim_native_name = nn0} ->  (match rhs with Pccall {prim_name = n1; prim_native_name = nn1} ->    n0 = n1 && nn0 = nn1 | _ -> false )    
   | Pfield (n0, _dbg_info0) ->  (match rhs with Pfield (n1, _dbg_info1) ->  n0 = n1  | _ -> false )    
   | Psetfield(i0, b0, _dbg_info0) -> (match rhs with Psetfield(i1, b1, _dbg_info1) ->  i0 = i1 && b0 = b1 | _ -> false)
@@ -71156,8 +71152,6 @@ let primitive ppf (prim : Lam.primitive) = match prim with
   | Pjs_is_instance_array -> fprintf ppf "#is_instance_array"
   | Pcaml_obj_length -> fprintf ppf "#obj_length"
   | Pcaml_obj_set_length -> fprintf ppf "#obj_set_length"
-  | Pcaml_uninitialized_obj -> fprintf ppf "#uninitialized_obj"
-
   | Pinit_mod -> fprintf ppf "init_mod!"
   | Pupdate_mod -> fprintf ppf "update_mod!"
   | Pbytes_to_string -> fprintf ppf "bytes_to_string"
@@ -91184,11 +91178,11 @@ let translate (prim_name : string)
     (args : J.expression list) : J.expression  =
   let prim_name_length = String.length prim_name  in
   let call m = 
-    if prim_name_length > 0 && prim_name.[0] = '#' then 
+(*    if prim_name_length > 0 && prim_name.[0] = '#' then 
       E.runtime_call m 
         (String.sub prim_name 1 (prim_name_length - 1)) args
     else 
-      E.runtime_call m prim_name args in 
+*)      E.runtime_call m prim_name args in 
   begin match prim_name with 
   | "caml_gc_stat" 
   | "caml_gc_quick_stat"  
@@ -91973,13 +91967,13 @@ let translate (prim_name : string)
     | [e] -> E.is_instance_array e 
     | _ -> assert false
    end *)
-  
+  (*
   | "#anything_to_number" 
     -> 
     begin match args with 
     | [e] -> E.to_number e 
     | _ -> assert false
-    end
+    end*)
 (*
   | "#json_stringify"      
     -> 
@@ -91989,12 +91983,7 @@ let translate (prim_name : string)
     | _ -> 
       assert false      
     end *)
-   (*
-    | "#uninitialized_object"
-      ->
-      begin match args with 
-        | [ tag; size] -> E.uninitialized_object tag size 
-        | _ -> assert false  end *)
+
     (* | "#obj_length" 
       -> 
       begin match args with 
@@ -92200,11 +92189,7 @@ let translate  loc
     | [e] -> E.is_instance_array e 
     | _ -> assert false 
   end 
-  | Lam.Pcaml_uninitialized_obj -> 
-    begin match args with 
-    | [tag;size] -> E.uninitialized_object tag size 
-    | _ -> assert false 
-    end
+
   | Lam.Pnull_undefined_to_opt -> 
     (*begin match args with 
     | [e] -> 
