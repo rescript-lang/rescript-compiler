@@ -348,6 +348,62 @@ let ok_to_inline ~body params args =
    (s < 10 && no_side_effects body )) 
 
 
+let eq_comparison ( p : Lam.comparison) (p1:Lam.comparison) = 
+  match p with 
+  | Cge -> p1 =  Cge
+  | Cgt -> p1 =  Cgt
+  | Cle -> p1 =  Cle
+  | Clt -> p1 =  Clt 
+  | Ceq -> p1 =  Ceq 
+  | Cneq -> p1 =  Cneq 
+
+let eq_array_kind (p : Lam.array_kind) (p1 : Lam.array_kind) = 
+  match p with 
+  | Pgenarray -> p1 = Pgenarray
+  | Paddrarray -> p1 = Paddrarray 
+  | Pintarray -> p1 = Pintarray
+  | Pfloatarray -> p1 = Pfloatarray 
+
+let eq_boxed_integer (p : Lam.boxed_integer) (p1 : Lam.boxed_integer ) = 
+  match p with 
+  | Pnativeint -> p1 = Pnativeint 
+  | Pint32 -> p1 = Pint32
+  | Pint64 -> p1 = Pint64
+
+let eq_bigarray_kind (p : Lam.bigarray_kind) (p1 : Lam.bigarray_kind) = 
+  match p with   
+  | Pbigarray_unknown -> p1 = Pbigarray_unknown
+  | Pbigarray_float32 -> p1 = Pbigarray_float32
+  | Pbigarray_float64 -> p1 =  Pbigarray_float64
+  | Pbigarray_sint8 -> p1 = Pbigarray_sint8
+  | Pbigarray_uint8 -> p1 = Pbigarray_uint8
+  | Pbigarray_sint16 -> p1 = Pbigarray_sint16 
+  | Pbigarray_uint16 -> p1 = Pbigarray_uint16
+  | Pbigarray_int32  -> p1 = Pbigarray_int32
+  | Pbigarray_int64 -> p1 = Pbigarray_int64
+  | Pbigarray_caml_int -> p1 = Pbigarray_caml_int
+  | Pbigarray_native_int -> p1 = Pbigarray_native_int
+  | Pbigarray_complex32  -> p1 = Pbigarray_complex32
+  | Pbigarray_complex64 -> p1 = Pbigarray_complex64
+
+let eq_bigarray_layout (p : Lam.bigarray_layout) (p1 : Lam.bigarray_layout) = 
+  match p with 
+  | Pbigarray_unknown_layout -> p1 = Pbigarray_unknown_layout
+  | Pbigarray_c_layout -> p1 = Pbigarray_c_layout
+  | Pbigarray_fortran_layout -> p1 = Pbigarray_fortran_layout
+
+let eq_compile_time_constant ( p : Lam.compile_time_constant) (p1 : Lam.compile_time_constant) = 
+  match p with 
+  | Big_endian -> p1 = Big_endian
+  | Word_size -> p1 = Word_size 
+  | Ostype_unix -> p1 = Ostype_unix
+  | Ostype_win32 -> p1 = Ostype_win32
+  | Ostype_cygwin -> p1 = Ostype_cygwin 
+
+let eq_record_representation ( p : Types.record_representation) ( p1 : Types.record_representation) = 
+  match p with 
+  | Record_float -> p1 = Record_float
+  | Record_regular -> p1 = Record_regular
 (* compared two lambdas in case analysis, note that we only compare some small lambdas
     Actually this patten is quite common in GADT, people have to write duplicated code 
     due to the type system restriction
@@ -363,7 +419,7 @@ let rec
     begin match l2 with  Lconst c2 -> c1 = c2 (* FIXME *) | _ -> false end 
   | Lapply {fn = l1; args = args1; _} -> 
     begin match l2 with Lapply {fn = l2; args = args2; _} ->
-    eq_lambda l1 l2  && List.for_all2 eq_lambda args1 args2
+    eq_lambda l1 l2  && Ext_list.for_all2_no_exn eq_lambda args1 args2
     |_ -> false end 
   | Lifthenelse (a,b,c) -> 
     begin match l2 with  Lifthenelse (a0,b0,c0) ->
@@ -381,12 +437,12 @@ let rec
     | _ -> false end 
   | Lstaticraise(id,ls) -> 
     begin match l2 with  Lstaticraise(id1,ls1) -> 
-    (id : int) = id1 && List.for_all2 eq_lambda ls ls1 
+    (id : int) = id1 && Ext_list.for_all2_no_exn eq_lambda ls ls1 
     | _ -> false end 
   | Lprim {primitive = p; args = ls; } -> 
     begin match l2 with 
     Lprim {primitive = p1; args = ls1} ->
-    eq_primitive p p1 && List.for_all2 eq_lambda ls ls1
+    eq_primitive p p1 && Ext_list.for_all2_no_exn eq_lambda ls ls1
     | _ -> false end 
   | Lfunction _  
   | Llet (_,_,_,_)
