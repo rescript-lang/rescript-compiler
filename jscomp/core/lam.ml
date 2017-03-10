@@ -185,12 +185,12 @@ type primitive =
   | Pjs_boolean_to_bool
   | Pjs_typeof
   | Pjs_function_length 
-  
+
   | Pjs_string_of_small_array
   | Pjs_is_instance_array
   | Pcaml_obj_length
   | Pcaml_obj_set_length
-  
+
 
 type apply_status =
   | App_na
@@ -1491,8 +1491,74 @@ type required_modules = Lam_module_ident.Hash_set.t
 let convert exports lam : _ * _  = 
   let alias = Ident_hashtbl.create 64 in 
   let may_depends = Lam_module_ident.Hash_set.create 0 in 
+
   let rec
-    aux_constant ( const : Lambda.structured_constant) : constant = 
+    aux_js_primitive (p: Primitive.description) (args : Lambda.lambda list) loc =
+    let s = p.prim_name in
+    if s = "#raw_expr" then 
+      begin match args with 
+        | [Lconst( Const_base (Const_string(s,_)))] -> 
+          prim ~primitive:(Praw_js_code_exp s)
+            ~args:[] loc 
+        | _ -> assert false 
+      end  
+    else if s = "#raw_stmt" then 
+      begin match args with 
+        | [Lconst( Const_base (Const_string(s,_)))] -> 
+          prim ~primitive:(Praw_js_code_stmt s)
+            ~args:[] loc         
+        | _ -> assert false 
+      end 
+    else if s =  "#debugger"  then 
+      (* ATT: Currently, the arity is one due to PPX *)
+      prim ~primitive:Pdebugger ~args:[] loc 
+    else 
+      let args = List.map aux args in 
+      let primitive = match s with 
+        | "#apply" -> Pjs_runtime_apply
+        | "#apply1"
+        | "#apply2"
+        | "#apply3"
+        | "#apply4"
+        | "#apply5"
+        | "#apply6"
+        | "#apply7"
+        | "#apply8" -> Pjs_apply
+        | "#undefined_to_opt" -> Pundefined_to_opt
+        | "#null_undefined_to_opt" -> Pnull_undefined_to_opt
+        | "#null_to_opt" -> Pnull_to_opt
+        | "#is_nil"  -> Pis_null
+        | "#is_undef" -> Pis_undefined
+        | "#is_nil_undef" -> Pis_null_undefined
+        | "#string_append" -> Pstringadd
+
+        | "#is_instance_array" -> Pjs_is_instance_array
+        | "#string_of_small_int_array" -> Pjs_string_of_small_array
+        (* {[String.fromCharCode.apply(null,x)]} 
+           Note if we have better suport [@bs.splice],
+           we can get rid of it*)
+        | "#obj_set_length" -> Pcaml_obj_set_length
+        | "#obj_length" -> Pcaml_obj_length
+        | "#boolean_to_bool" -> Pjs_boolean_to_bool
+
+        | "#function_length" -> Pjs_function_length
+
+        | "#unsafe_lt" -> Pjscomp Clt 
+        | "#unsafe_gt" -> Pjscomp Cgt 
+        | "#unsafe_le" -> Pjscomp Cle 
+        | "#unsafe_ge" -> Pjscomp Cge
+        | "#unsafe_eq" -> Pjscomp Ceq
+        | "#unsafe_neq" -> Pjscomp Cneq
+
+        | "#typeof" -> Pjs_typeof
+        | "#fn_run" | "#method_run" -> Pjs_fn_run(int_of_string p.prim_native_name)
+        | "#fn_mk" -> Pjs_fn_make (int_of_string p.prim_native_name)
+        | "#fn_method" -> Pjs_fn_method (int_of_string p.prim_native_name)
+        | "#unsafe_downgrade" -> Pjs_unsafe_downgrade (Ext_string.empty,loc)
+        | _ -> Location.raise_errorf ~loc "internal error, using unrecorgnized primitive %s" s 
+      in
+      prim ~primitive ~args loc 
+  and aux_constant ( const : Lambda.structured_constant) : constant = 
     match const with 
     | Const_base (Const_int i) -> (Const_int i)
     | Const_base (Const_char i) -> (Const_char i)
@@ -1698,156 +1764,30 @@ let convert exports lam : _ * _  =
           end 
       end
     | Lprim (Prevapply, _, _ ) -> assert false       
-    | Lprim(Pdirapply, _, _) -> assert false 
-    (* we might allow some arity here *)  
-    | Lprim(Pccall {prim_name = "#apply"},args,loc) ->
-      prim ~primitive:Pjs_runtime_apply ~args:(List.map aux args) loc 
-    (* EqLambda*)
-    | Lprim(Pccall {prim_name =  "#apply1"
-                               | "#apply2"
-                               | "#apply3"
-                               | "#apply4"
-                               | "#apply5"
-                               | "#apply6"
-                               | "#apply7"
-                               | "#apply8"}, args, loc) ->
-      prim ~primitive:Pjs_apply ~args:(List.map aux args) loc
-    | Lprim(Pccall {prim_name = "#raw_expr"}, 
-            args,loc) ->  
-      begin match args with 
-        | [Lconst( Const_base (Const_string(s,_)))] -> 
-          prim ~primitive:(Praw_js_code_exp s)
-            ~args:[] loc 
-        | _ -> assert false 
-      end  
-    | Lprim(Pccall {prim_name = "#raw_stmt"}, 
-            args,loc) ->  
-      begin match args with 
-        | [Lconst( Const_base (Const_string(s,_)))] -> 
-          prim ~primitive:(Praw_js_code_stmt s)
-            ~args:[] loc         
-        | _ -> assert false 
-      end 
-    | Lprim(Pccall {prim_name =  "#undefined_to_opt"}, args, loc) 
-      -> 
-      begin match args with 
-        | [ arg ] -> 
-          let arg = aux arg in 
-          (* if [arg] is undefined return [None] otherwise return [Some ]
-          *)
-          (* match arg with 
-          | Lifthenelse 
-            (Lprim (Pjs_typeof, [e])) *)
-          prim ~primitive:Pundefined_to_opt ~args:[arg] loc 
-        | _ -> assert false 
-      end
-    | Lprim(Pccall {prim_name =  "#null_undefined_to_opt"}, args, loc) 
-      -> 
-      begin match args with 
-        | [ arg ] -> 
-          prim ~primitive:Pnull_undefined_to_opt ~args:[aux arg] loc 
-        | _ -> assert false 
-      end
-    | Lprim(Pccall {prim_name =  "#null_to_opt"}, args, loc) 
-      -> 
-      begin match args with 
-        | [ arg ] -> 
-          prim ~primitive:Pnull_to_opt ~args:[aux arg] loc 
-        | _ -> assert false 
-      end  
-    | Lprim (Pccall {prim_name = "#is_nil" }, args, loc) -> 
-      begin match args with 
-        | [arg] -> prim ~primitive:Pis_null ~args:[aux arg] loc 
-        | _ -> assert false 
-      end  
-    | Lprim (Pccall {prim_name = "#is_undef"}, args, loc) -> 
-      begin match args with 
-        | [arg] -> prim ~primitive:Pis_undefined ~args:[aux arg] loc 
-        | _ -> assert false 
-      end   
-    | Lprim (Pccall {prim_name = "#is_nil_undef"}, args, loc) -> 
-      begin match args with 
-        | [arg] -> prim ~primitive:Pis_null_undefined ~args:[aux arg] loc 
-        | _ -> assert false 
-      end   
-    | Lprim(Pccall {prim_name = "#string_append"}, args, loc) -> 
-      begin match args with 
-        | [a; b] -> 
-          prim ~primitive:Pstringadd ~args:[aux a; aux b] loc 
-        | _ -> assert false 
-      end 
-    | Lprim(Pccall {prim_name = "#is_instance_array"}, args, loc) -> 
-        prim ~primitive:Pjs_is_instance_array ~args:(List.map aux args) loc 
-    | Lprim(Pccall {prim_name = "#string_of_small_int_array"}, args, loc) ->
-        prim ~primitive:Pjs_string_of_small_array~args:(List.map aux args) loc   
-          (* {[String.fromCharCode.apply(null,x)]} 
-            Note if we have better suport [@bs.splice],
-            we can get rid of it*)
-    | Lprim(Pccall {prim_name = "#obj_set_length"}, args, loc) ->          
-      prim ~primitive:Pcaml_obj_set_length ~args:(List.map aux args) loc   
-    | Lprim(Pccall {prim_name = "#obj_length"}, args, loc) ->          
-      prim ~primitive:Pcaml_obj_length ~args:(List.map aux args) loc   
-
-    | Lprim(Pccall {prim_name = "#boolean_to_bool"}, args, loc) -> 
-      begin match args with 
-        | [ e ] -> prim ~primitive:Pjs_boolean_to_bool ~args:[aux e] loc 
-        | _ -> assert false 
-      end
-    | Lprim(Pccall {prim_name = "#function_length"}, args, loc) -> 
-      prim ~primitive:(Pjs_function_length) ~args:(List.map aux args) loc 
-    | Lprim(Pccall {prim_name = "#unsafe_lt"}, args, loc) -> 
-      prim ~primitive:(Pjscomp Clt) ~args:(List.map aux args) loc 
-    | Lprim(Pccall {prim_name = "#unsafe_gt"}, args, loc) -> 
-      prim ~primitive:(Pjscomp Cgt) ~args:(List.map aux args) loc 
-    | Lprim(Pccall {prim_name = "#unsafe_le"}, args, loc) -> 
-      prim ~primitive:(Pjscomp Cle) ~args:(List.map aux args) loc 
-    | Lprim(Pccall {prim_name = "#unsafe_ge"}, args, loc) -> 
-      prim ~primitive:(Pjscomp Cge) ~args:(List.map aux args) loc 
-    | Lprim(Pccall {prim_name = "#unsafe_eq"}, args, loc) -> 
-      prim ~primitive:(Pjscomp Ceq) ~args:(List.map aux args) loc 
-    | Lprim(Pccall {prim_name = "#unsafe_neq"}, args, loc) -> 
-      prim ~primitive:(Pjscomp Cneq) ~args:(List.map aux args) loc 
-
-    | Lprim(Pccall {prim_name = "#typeof"}, args,loc) -> 
-      begin match args with 
-        | [e] -> prim ~primitive:Pjs_typeof ~args:[aux e] loc 
-        | _ -> assert false
-      end 
-    | Lprim (Pccall {prim_name = "#debugger"},args,loc) -> 
-      (* ATT: Currently, the arity is one due to PPX *)
-      prim ~primitive:Pdebugger ~args:[] loc 
-    | Lprim(Pccall {prim_name = "#fn_run" | "#method_run"; prim_native_name},args,loc) -> 
-      let args = List.map aux args in 
-      prim ~primitive:(Pjs_fn_run(int_of_string prim_native_name)) ~args loc        
-    | Lprim(Pccall{prim_name = "#fn_mk"; prim_native_name},args,loc) ->
-      let args = List.map aux args in 
-      prim ~primitive:(Pjs_fn_make (int_of_string prim_native_name)) ~args loc 
-    | Lprim(Pccall{prim_name = "#fn_method"; prim_native_name},args,loc) ->
-      let args = List.map aux args in 
-      prim ~primitive:(Pjs_fn_method (int_of_string prim_native_name)) ~args loc
-    
+    | Lprim(Pdirapply, _, _) -> assert false   
     | Lprim(Pccall a, args, loc)  -> 
-      let args = List.map aux args in 
       let prim_name = a.prim_name in    
-      begin match Ast_ffi_types.from_string a.prim_native_name with 
-        | Ffi_normal ->           
+      let prim_name_len  = String.length prim_name in 
+      if prim_name_len > 0 && String.unsafe_get prim_name 0 = '#' then 
+        aux_js_primitive a args loc 
+      else 
+        let args = List.map aux args in 
+        begin match Ast_ffi_types.from_string a.prim_native_name with 
+          | Ffi_normal ->           
             prim ~primitive:(Pccall a) ~args loc
-        | Ffi_obj_create labels -> 
-          prim ~primitive:(Pjs_object_create labels) ~args loc 
-        | Ffi_bs(arg_types, result_type, ffi) ->         
-
-          if no_auto_uncurried_arg_types arg_types then   
-            result_wrap loc result_type @@ prim ~primitive:(Pjs_call(prim_name, arg_types, ffi)) 
-              ~args loc 
-          else 
-            let n_arg_types, n_args = 
-              transform_uncurried_arg_type loc  arg_types args in 
-            result_wrap loc result_type @@
-            prim ~primitive:(Pjs_call (prim_name, n_arg_types, ffi))
-              ~args:n_args loc 
-      end
-
-    (* TODO: pick a invalid external name to avod conflict *)  
+          | Ffi_obj_create labels -> 
+            prim ~primitive:(Pjs_object_create labels) ~args loc 
+          | Ffi_bs(arg_types, result_type, ffi) ->         
+            if no_auto_uncurried_arg_types arg_types then   
+              result_wrap loc result_type @@ prim ~primitive:(Pjs_call(prim_name, arg_types, ffi)) 
+                ~args loc 
+            else 
+              let n_arg_types, n_args = 
+                transform_uncurried_arg_type loc  arg_types args in 
+              result_wrap loc result_type @@
+              prim ~primitive:(Pjs_call (prim_name, n_arg_types, ffi))
+                ~args:n_args loc 
+        end
     | Lprim (Pgetglobal id, args, loc) ->   
       let args = List.map aux args in 
       if Ident.is_predef_exn id then 
@@ -1890,7 +1830,7 @@ let convert exports lam : _ * _  =
     | Lsend (kind, a,b,ls, loc) -> 
       (* Format.fprintf Format.err_formatter "%a@." Printlambda.lambda b ; *)
       begin match aux b with 
-        | Lprim {primitive =  Pccall {prim_name = "#unsafe_downgrade"};  args; loc} 
+        | Lprim {primitive =  Pjs_unsafe_downgrade(_,loc);  args} 
           -> 
           begin match kind, ls with 
             | Public (Some name), [] -> 
