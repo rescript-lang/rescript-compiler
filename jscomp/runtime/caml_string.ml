@@ -25,7 +25,7 @@
 
 
 
-external new_uninitialized : int -> bytes = "#create_array" 
+external new_uninitialized : int -> bytes = "Array"  [@@bs.new]
 external to_int_array : bytes -> int array = "%identity"
 external of_int_array : int array -> bytes = "%identity"
 

@@ -406,14 +406,14 @@ let caml_int64_format fmt x =
             ref (Int64.add quotient_l c )  in
           let modulus = ref d in
           s :=
-            Bs_string.string_of_char 
+            Bs_string.of_char 
               cvtbl.[ Int64.to_int !modulus] ^ !s ;
 
           while  !quotient <> 0L do
             let a, b = Js_int64.div_mod (!quotient) wbase in
             quotient := a;
             modulus := b;
-            s := Bs_string.string_of_char cvtbl.[Int64.to_int !modulus] ^ !s ;
+            s := Bs_string.of_char cvtbl.[Int64.to_int !modulus] ^ !s ;
           done;
         end
       else
@@ -421,14 +421,14 @@ let caml_int64_format fmt x =
         let quotient = ref a  in
         let modulus = ref b in
         s :=
-          Bs_string.string_of_char 
+          Bs_string.of_char 
             cvtbl.[ Int64.to_int !modulus] ^ !s ;
 
         while  !quotient <> 0L do
           let a, b = Js_int64.div_mod (!quotient) wbase in
           quotient := a;
           modulus := b;
-          s := Bs_string.string_of_char cvtbl.[Int64.to_int !modulus] ^ !s ;
+          s := Bs_string.of_char cvtbl.[Int64.to_int !modulus] ^ !s ;
         done
 
     | Dec ->
@@ -454,14 +454,14 @@ let caml_int64_format fmt x =
                  e)  in
         let modulus = ref f in
         s :=
-          Bs_string.string_of_char 
+          Bs_string.of_char 
             cvtbl.[Int64.to_int !modulus] ^ !s ;
 
         while !quotient <> 0L do
           let a, b = Js_int64.div_mod (!quotient) wbase in
           quotient := a;
           modulus := b;
-          s := Bs_string.string_of_char cvtbl.[Int64.to_int !modulus] ^ !s ;
+          s := Bs_string.of_char cvtbl.[Int64.to_int !modulus] ^ !s ;
         done;
 
       else
@@ -469,14 +469,14 @@ let caml_int64_format fmt x =
         let quotient = ref a  in
         let modulus = ref b in
         s :=
-          Bs_string.string_of_char 
+          Bs_string.of_char 
             cvtbl.[ Int64.to_int !modulus] ^ !s ;
 
         while  !quotient <> 0L do
           let a, b = Js_int64.div_mod (!quotient) wbase in
           quotient := a;
           modulus := b;
-          s := Bs_string.string_of_char cvtbl.[Int64.to_int !modulus] ^ !s ;
+          s := Bs_string.of_char cvtbl.[Int64.to_int !modulus] ^ !s ;
         done;
   end;
   if f.prec >= 0 then
@@ -531,7 +531,7 @@ let caml_format_float fmt x =
         let prec = if prec <> 0 then prec else 1 in
         s := Js_float.to_exponential x (prec - 1);
         let j = Bs_string.index_of !s "e" in 
-        let  exp = Js_int.from_any @@ Bs_string.slice_rest !s (j + 1)  in 
+        let  exp = int_of_float @@ Js_float.of_any @@ Bs_string.slice_rest !s (j + 1)  in 
         if exp < -4 || x >= 1e21 ||Bs_string.length (Js_float.toFixed x 0) > prec then 
           let i = ref (j - 1)  in
           while !s.[!i] = '0' do 

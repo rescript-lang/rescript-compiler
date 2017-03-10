@@ -152,7 +152,40 @@ Mt.from_pair_suites("int_overflow_test.ml", /* :: */[
                                       ]);
                             }
                           ],
-                          /* [] */0
+                          /* :: */[
+                            /* tuple */[
+                              "int32_mul",
+                              function () {
+                                return /* Eq */Block.__(0, [
+                                          -33554431,
+                                          -33554431
+                                        ]);
+                              }
+                            ],
+                            /* :: */[
+                              /* tuple */[
+                                'File "int_overflow_test.ml", line 44, characters 3-10',
+                                function () {
+                                  return /* Eq */Block.__(0, [
+                                            Number("3") | 0,
+                                            3
+                                          ]);
+                                }
+                              ],
+                              /* :: */[
+                                /* tuple */[
+                                  'File "int_overflow_test.ml", line 46, characters 3-10',
+                                  function () {
+                                    return /* Eq */Block.__(0, [
+                                              Number("3.2") | 0,
+                                              3
+                                            ]);
+                                  }
+                                ],
+                                /* [] */0
+                              ]
+                            ]
+                          ]
                         ]
                       ]
                     ]

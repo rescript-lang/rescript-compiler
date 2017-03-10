@@ -29,7 +29,7 @@ external set_length : any -> int -> unit = "#obj_set_length"
 external length : any -> int = "#obj_length"
 external tag : any -> int = "caml_obj_tag"
 external set_tag : any -> int -> unit = "caml_obj_set_tag"
-(* external uninitialized_object : int -> int -> any = "#uninitialized_object" *)
+
 external is_instance_array : any -> bool = 
   "#is_instance_array" (* use Array.isArray instead*)
 external size_of_any : any -> 'a Js.undefined =

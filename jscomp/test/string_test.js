@@ -149,7 +149,9 @@ function xsplit(delim, s) {
 }
 
 function string_of_chars(x) {
-  return $$String.concat("", List.map(Caml_string.string_of_char, x));
+  return $$String.concat("", List.map(function (prim) {
+                  return String.fromCharCode(prim);
+                }, x));
 }
 
 Mt.from_pair_suites("string_test.ml", /* :: */[
@@ -328,7 +330,7 @@ Mt.from_pair_suites("string_test.ml", /* :: */[
                                       "of_char",
                                       function () {
                                         return /* Eq */Block.__(0, [
-                                                  "0",
+                                                  String.fromCharCode(/* "0" */48),
                                                   Caml_string.bytes_to_string(Bytes.make(1, /* "0" */48))
                                                 ]);
                                       }

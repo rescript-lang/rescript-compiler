@@ -1,6 +1,11 @@
 
 
-external to_json_string : 'a -> string = "#json_stringify"
+
+
+external to_json_string : 'a -> string = "JSON.stringify"
+[@@bs.val]
+
+
 let () =
   begin
 
