@@ -260,7 +260,8 @@ let le x y = Pervasives.not (gt x y)
 
 
 let to_float ({lo; hi } : t) : float =
-  Nativeint.to_float ( hi *~   0x1_0000_0000n +~  lo)
+  let x = Nativeint.to_float 0x1_0000n in (* trick to allow compilation on 32-bit systems *)
+    Nativeint.to_float hi *. x *. x +. Nativeint.to_float lo
 
 
 
