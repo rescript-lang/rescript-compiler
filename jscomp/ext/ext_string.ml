@@ -27,6 +27,7 @@
 
 
 
+let append s c = s ^ String.make 1 c
 
 (*
    {[ split " test_unsafe_obj_ffi_ppx.cmi" ~keep_empty:false ' ']}

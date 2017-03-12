@@ -485,6 +485,8 @@ val single_colon : string
 val parent_dir_lit : string
 val current_dir_lit : string
 
+val append : string -> char -> string
+
 end = struct
 #1 "ext_string.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -516,6 +518,7 @@ end = struct
 
 
 
+let append s c = s ^ String.make 1 c
 
 (*
    {[ split " test_unsafe_obj_ffi_ppx.cmi" ~keep_empty:false ' ']}

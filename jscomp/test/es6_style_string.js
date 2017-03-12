@@ -8,15 +8,13 @@ var x_1 = "world";
 
 var x_2 = " Bucklescript by 彭博 ";
 
-var es6 = "" + "hello " + JSON.stringify(x_1) + ",欢迎来到 " + JSON.stringify(x_2);
+var es6 = "" + "hello " + new String(x_1) + ",欢迎来到 " + new String(x_2);
 
-var es62 = "" + JSON.stringify(str) + ", 君の名は";
+var es62 = "" + new String(str) + ", 君の名は";
 
-var a = "a";
+var a = "" + " blabla \$(xx) ";
 
-var b = "b";
-
-var d = "ab";
+var b = "" + " blabla \$xxx ";
 
 var c = JSON.stringify(str);
 
@@ -29,6 +27,5 @@ exports.es6  = es6;
 exports.es62 = es62;
 exports.a    = a;
 exports.b    = b;
-exports.d    = d;
 exports.c    = c;
 /* es6 Not a pure module */

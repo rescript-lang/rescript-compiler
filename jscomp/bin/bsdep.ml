@@ -1996,6 +1996,11 @@ val error: ?loc:t -> ?sub:error list -> ?if_highlight:string -> string -> error
 val errorf: ?loc:t -> ?sub:error list -> ?if_highlight:string
             -> ('a, Format.formatter, unit, error) format4 -> 'a
 
+val errorf_prefixed : ?loc:t -> ?sub:error list -> ?if_highlight:string
+                    -> ('a, Format.formatter, unit, error) format4 -> 'a
+  (* same as {!errorf}, but prints the error prefix "Error:" before yielding
+   * to the format string *)
+
 val raise_errorf: ?loc:t -> ?sub:error list -> ?if_highlight:string
             -> ('a, Format.formatter, unit, 'b) format4 -> 'a
 
@@ -2374,14 +2379,14 @@ let pp_ksprintf ?before k fmt =
       k msg)
     ppf fmt
 
-(* Shift the formatter's offset by the length of the error prefix, which
-   is always added by the compiler after the message has been formatted *)
-let print_phanton_error_prefix ppf =
-  Format.pp_print_as ppf (String.length error_prefix + 2 (* ": " *)) ""
-
 let errorf ?(loc = none) ?(sub = []) ?(if_highlight = "") fmt =
   pp_ksprintf
-    ~before:print_phanton_error_prefix
+    (fun msg -> {loc; msg; sub; if_highlight})
+    fmt
+
+let errorf_prefixed ?(loc=none) ?(sub=[]) ?(if_highlight="") fmt =
+  pp_ksprintf
+    ~before:(fun ppf -> fprintf ppf "%a " print_error_prefix ())
     (fun msg -> {loc; msg; sub; if_highlight})
     fmt
 
@@ -2416,8 +2421,10 @@ let rec default_error_reporter ppf ({loc; msg; sub; if_highlight} as err) =
   if highlighted then
     Format.pp_print_string ppf if_highlight
   else begin
-    fprintf ppf "%a%a %s" print loc print_error_prefix () msg;
-    List.iter (Format.fprintf ppf "@\n@[<2>%a@]" default_error_reporter) sub
+    print ppf loc;
+    Format.pp_print_string ppf msg;
+    List.iter (fun err -> Format.fprintf ppf "@\n@[<2>%a@]" default_error_reporter err)
+              sub
   end
 
 let error_reporter = ref default_error_reporter
@@ -2427,7 +2434,7 @@ let report_error ppf err =
 ;;
 
 let error_of_printer loc print x =
-  errorf ~loc "%a@?" print x
+  errorf_prefixed ~loc "%a@?" print x
 
 let error_of_printer_file print x =
   error_of_printer (in_file !input_name) print x
@@ -2436,11 +2443,11 @@ let () =
   register_error_of_exn
     (function
       | Sys_error msg ->
-          Some (errorf ~loc:(in_file !input_name)
+          Some (errorf_prefixed ~loc:(in_file !input_name)
                 "I/O error: %s" msg)
       | Warnings.Errors n ->
           Some
-            (errorf ~loc:(in_file !input_name)
+            (errorf_prefixed ~loc:(in_file !input_name)
              "Some fatal warnings were triggered (%d occurrences)" n)
       | _ ->
           None
@@ -2468,9 +2475,7 @@ let () =
     )
 
 let raise_errorf ?(loc = none) ?(sub = []) ?(if_highlight = "") =
-  pp_ksprintf
-    ~before:print_phanton_error_prefix
-    (fun msg -> raise (Error ({loc; msg; sub; if_highlight})))
+  pp_ksprintf (fun msg -> raise (Error ({loc; msg; sub; if_highlight})))
 
 end
 (** Interface as module  *)
@@ -4877,9 +4882,9 @@ exception Escape_error
 
 let prepare_error = function
   | Unclosed(opening_loc, opening, closing_loc, closing) ->
-      Location.errorf ~loc:closing_loc
+      Location.errorf_prefixed ~loc:closing_loc
         ~sub:[
-          Location.errorf ~loc:opening_loc
+          Location.errorf_prefixed ~loc:opening_loc
             "This '%s' might be unmatched" opening
         ]
         ~if_highlight:
@@ -4889,22 +4894,22 @@ let prepare_error = function
         "Syntax error: '%s' expected" closing
 
   | Expecting (loc, nonterm) ->
-      Location.errorf ~loc "Syntax error: %s expected." nonterm
+      Location.errorf_prefixed ~loc "Syntax error: %s expected." nonterm
   | Not_expecting (loc, nonterm) ->
-      Location.errorf ~loc "Syntax error: %s not expected." nonterm
+      Location.errorf_prefixed ~loc "Syntax error: %s not expected." nonterm
   | Applicative_path loc ->
-      Location.errorf ~loc
+      Location.errorf_prefixed ~loc
         "Syntax error: applicative paths of the form F(X).t \
          are not supported when the option -no-app-func is set."
   | Variable_in_scope (loc, var) ->
-      Location.errorf ~loc
+      Location.errorf_prefixed ~loc
         "In this scoped type, variable '%s \
          is reserved for the local type %s."
          var var
   | Other loc ->
-      Location.errorf ~loc "Syntax error"
+      Location.errorf_prefixed ~loc "Syntax error"
   | Ill_formed_ast (loc, s) ->
-      Location.errorf ~loc "broken invariant in parsetree: %s" s
+      Location.errorf_prefixed ~loc "broken invariant in parsetree: %s" s
 
 let () =
   Location.register_error_of_exn
@@ -23227,6 +23232,8 @@ val single_colon : string
 val parent_dir_lit : string
 val current_dir_lit : string
 
+val append : string -> char -> string
+
 end = struct
 #1 "ext_string.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -23258,6 +23265,7 @@ end = struct
 
 
 
+let append s c = s ^ String.make 1 c
 
 (*
    {[ split " test_unsafe_obj_ffi_ppx.cmi" ~keep_empty:false ' ']}
@@ -32186,6 +32194,7 @@ let rec fold_expression_list_with_string_concat prev (exp_list:Parsetree.express
     {txt = Longident.Ldot (Longident.Lident ("Pervasives"), "^"); loc = e.pexp_loc}} in
   let new_string_exp = {e with pexp_desc = Parsetree.Pexp_apply (string_concat_exp, [("", prev); ("", e)])} in
   fold_expression_list_with_string_concat new_string_exp re 
+
 
 
 end
