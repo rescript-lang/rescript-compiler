@@ -1,6 +1,6 @@
 # https://github.com/bloomberg/bucklescript[BuckleScript] User Manual
 Hongbo Zhang
-v1.5.2+dev
+v1.5.3+dev
 :toc: left
 :toclevels: 4
 :source-highlighter: pygments

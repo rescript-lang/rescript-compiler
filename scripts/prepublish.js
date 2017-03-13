@@ -35,22 +35,25 @@ child_process.execSync(`git archive HEAD -o ${ocaml_tar}`, { cwd: ocaml_dir })
 //     }
 // }
 
+// var ninja_url_base = `${ninja_build_base}/releases/download/v${ninja_version}`
 
 var ninja_build_base = 'https://github.com/ninja-build/ninja'
-var ninja_version = 'v1.7.2'
-var ninja_url_base = `${ninja_build_base}/releases/download/${ninja_version}`
+var ninja_version = '1.7.2'
 
 var exec = child_process.exec
+
+// exec(`wget --content-disposition ${ninja_build_base}/archive/v${ninja_version}.tar.gz -O ninja-${ninja_version}.tar.gz`, {cwd: root_dir}, ()=>{
+//     // download.source = true
+//     console.log(`downloading source finished`)
+//     // check_all()
+// })
 
 // var download_to_bin = function(url,cb){
 //     exec(`wget --content-disposition ${url}`, {cwd: root_dir},cb)
 // }
 
-exec(`wget --content-disposition ${ninja_build_base}/archive/${ninja_version}.tar.gz -O ninja-${ninja_version}.tar.gz`, {cwd: root_dir}, ()=>{
-    // download.source = true
-    console.log(`downloading source finished`)
-    // check_all()
-})
+// It really sucks, check
+// `node.js` ninja_vendor_tar exist or not
 // download_to_bin(`${ninja_url_base}/ninja-mac.zip`, () => {
 //     download.mac = true
 //     console.log(`downloading mac finished`)
