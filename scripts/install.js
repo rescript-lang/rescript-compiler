@@ -32,24 +32,30 @@ var vendor_ninja_version = '1.7.2'
 
 var ninja_bin_output = path.join(root_dir,'bin','ninja.exe')
 var ninja_vendor_dir = path.join(jscomp_bin,'vendor')
-console.log('Prepare ninja binary ')
-if(is_windows){
-    fs.rename(path.join(ninja_vendor_dir,'ninja.win'),ninja_bin_output)
-}
-else if(os_type==='Darwin'){
 
-    fs.renameSync(path.join(ninja_vendor_dir,'ninja.darwin'),ninja_bin_output)
-}  
-else if(process.env.BS_TRAVIS_CI){
-    fs.renameSync(path.join(ninja_vendor_dir,'ninja.linux64'),ninja_bin_output)
-}
-else {
-    console.log('No prebuilt Ninja, building Ninja now')
+function build_ninja(){
     var ninja_vendor_dir = "ninja-" + vendor_ninja_version
     var ninja_vendor_tar = ninja_vendor_dir + ".tar.gz"
     var build_ninja_command = "tar -xf " + ninja_vendor_tar + " && cd " + ninja_vendor_dir + " && ./configure.py --bootstrap "
     child_process.execSync(build_ninja_command,{cwd:root_dir})
     fs.renameSync(path.join(root_dir, ninja_vendor_dir,'ninja'), ninja_bin_output)
+}
+
+console.log('Prepare ninja binary ')
+if(is_windows){
+    fs.rename(path.join(ninja_vendor_dir,'ninja.win'),ninja_bin_output)
+}
+else if(os_type==='Darwin'){
+    // build_ninja()
+    fs.renameSync(path.join(ninja_vendor_dir,'ninja.darwin'),ninja_bin_output)
+}  
+else if(process.env.BS_TRAVIS_CI){
+
+    fs.renameSync(path.join(ninja_vendor_dir,'ninja.linux64'),ninja_bin_output)
+}
+else {
+    console.log('No prebuilt Ninja, building Ninja now')
+    build_ninja()
 }
 console.log('ninja binary is ready: ', ninja_bin_output)
 
