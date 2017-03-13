@@ -1352,7 +1352,7 @@ Below is a contrived core example:
 type element
 type dom
 external getElementById : string -> element option = "" 
-[@@bs.send.pipe:dom] [@@bs.return {null_to_opt}] // <1>
+[@@bs.send.pipe:dom] [@@bs.return null_to_opt] // <1>
 
 let test dom = 
     let elem = dom |> getElementById "haha"  in
