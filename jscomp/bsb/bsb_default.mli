@@ -56,8 +56,8 @@ val set_bs_dependencies : cwd:string -> Ext_json.t array  -> unit
 val get_js_post_build_cmd : unit -> string option
 val set_js_post_build_cmd : cwd:string -> string -> unit
 
-val get_ninja : unit -> string
-val set_ninja : cwd:string -> string -> unit
+(*val get_ninja : unit -> string
+val set_ninja : cwd:string -> string -> unit*)
 
 val get_package_specs : unit -> Bsb_config.package_specs
 val set_package_specs_from_array : Ext_json.t array -> unit
