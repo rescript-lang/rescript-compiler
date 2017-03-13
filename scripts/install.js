@@ -5,10 +5,11 @@
 
 // For other OSes, we detect
 // if there is other compiler installed and the version matches,
-// we get the config.ml from existing OCaml compiler and build `whole_compiler`
+// we get the config.ml from existing OCaml compiler and build whole_compiler
 
 // Otherwise, we build the compiler shipped with Buckle and use the
 // old compiler.ml
+// This will be run in npm postinstall, don't use too fancy features here
 
 var child_process = require('child_process')
 var process = require('process')
@@ -16,8 +17,10 @@ var fs = require('fs')
 var path = require('path')
 var os = require('os')
 
-var is_windows = !(os.type().indexOf('Windows') < 0)
-var jscomp = path.join(__dirname, '..', 'jscomp')
+var os_type = os.type()
+var is_windows = !(os_type.indexOf('Windows') < 0)
+var root_dir = path.join(__dirname,'..')
+var jscomp = path.join(root_dir, 'jscomp')
 var jscomp_bin = path.join(jscomp, 'bin')
 
 var working_dir = process.cwd()
@@ -25,7 +28,30 @@ console.log("Working dir", working_dir)
 var working_config = { cwd: jscomp, stdio: [0, 1, 2] }
 var clean = require('./clean.js')
 var build_util = require('./build_util')
+var vendor_ninja_version = '1.7.2'
 
+var ninja_bin_output = path.join(root_dir,'bin','ninja.exe')
+var ninja_vendor_dir = path.join(jscomp_bin,'vendor')
+console.log('Prepare ninja binary ')
+if(is_windows){
+    fs.rename(path.join(ninja_vendor_dir,'ninja.win'),ninja_bin_output)
+}
+else if(os_type==='Darwin'){
+
+    fs.renameSync(path.join(ninja_vendor_dir,'ninja.darwin'),ninja_bin_output)
+}  
+else if(process.env.BS_TRAVIS_CI){
+    fs.renameSync(path.join(ninja_vendor_dir,'ninja.linux64'),ninja_bin_output)
+}
+else {
+    console.log('No prebuilt Ninja, building Ninja now')
+    var ninja_vendor_dir = "ninja-" + vendor_ninja_version
+    var ninja_vendor_tar = ninja_vendor_dir + ".tar.gz"
+    var build_ninja_command = "tar -xf " + ninja_vendor_tar + " && cd " + ninja_vendor_dir + " && ./configure.py --bootstrap "
+    child_process.execSync(build_ninja_command,{cwd:root_dir})
+    fs.renameSync(path.join(root_dir, ninja_vendor_dir,'ninja'), ninja_bin_output)
+}
+console.log('ninja binary is ready: ', ninja_bin_output)
 
 function non_windows_npm_release() {
     try {
@@ -66,12 +92,14 @@ if (is_windows) {
 
     })
     if (indeed_windows_release > 1) {
-        // only ninja.win in this case
+        // Make it more fault tolerant
+        // =1 can still be okay (only ninja.win in this case)
         child_process.execFileSync(path.join(__dirname, 'win_build.bat'), working_config)
         clean.clean()
         console.log("Installing")
         build_util.install()
     } else {
+        // Cygwin
         console.log("It is on windows, but seems to be that you are building against master branch, so we are going to depend on cygwin on master")
         non_windows_npm_release()
     }

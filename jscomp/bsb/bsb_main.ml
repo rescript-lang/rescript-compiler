@@ -158,14 +158,6 @@ let regenerate_ninja cwd bsc_dir forced =
       end 
   end
 
-let ninja_error_message = "ninja (required for bsb build system) is not installed, \n\
-                           please visit https://github.com/ninja-build/ninja to have it installed\n"
-let () =
-  Printexc.register_printer (function
-      | Unix.Unix_error(Unix.ENOENT, "execvp", "ninja") ->
-        Some ninja_error_message
-      | _ -> None
-    )
 
 let print_string_args (args : string array) =
   for i  = 0 to Array.length args - 1 do
@@ -205,17 +197,17 @@ let exec_command_install_then_exit config install command =
     if install then begin  install_targets config end;
     exit 0;
   end
-let ninja_command_exit (type t) ninja ninja_args  config : t =
+let ninja_command_exit (type t) vendor_ninja ninja_args  config : t =
   let ninja_args_len = Array.length ninja_args in
   if ninja_args_len = 0 then
     begin
       match !Bsb_config.install, Ext_sys.is_windows_or_cygwin with
       | false, false ->
-        let args = [|"ninja"; "-C"; Bsb_config.lib_bs |] in
+        let args = [|"ninja.exe"; "-C"; Bsb_config.lib_bs |] in
         print_string_args args ;
-        Unix.execvp ninja args
+        Unix.execvp vendor_ninja args
       | install, _ ->
-        exec_command_install_then_exit config install @@ Ext_string.inter3  (Filename.quote ninja) "-C" Bsb_config.lib_bs
+        exec_command_install_then_exit config install @@ Ext_string.inter3  (Filename.quote vendor_ninja) "-C" Bsb_config.lib_bs
     end
   else
     let fixed_args_length = 3 in
@@ -223,16 +215,16 @@ let ninja_command_exit (type t) ninja ninja_args  config : t =
       | false, false ->
         let args = (Array.init (fixed_args_length + ninja_args_len)
                       (fun i -> match i with
-                         | 0 -> "ninja"
+                         | 0 -> "ninja.exe"
                          | 1 -> "-C"
                          | 2 -> Bsb_config.lib_bs
                          | _ -> Array.unsafe_get ninja_args (i - fixed_args_length) )) in
         print_string_args args ;
-        Unix.execvp ninja args
+        Unix.execvp vendor_ninja args
       | install, _ ->
         let args = (Array.init (fixed_args_length + ninja_args_len)
                       (fun i -> match i with
-                         | 0 -> (Filename.quote ninja)
+                         | 0 -> (Filename.quote vendor_ninja)
                          | 1 -> "-C"
                          | 2 -> Bsb_config.lib_bs
                          | _ -> Array.unsafe_get ninja_args (i - fixed_args_length) )) in
@@ -268,18 +260,13 @@ let make_world_deps (config : Bsb_config_types.t option) =
                      (fun k acc -> k ^ "," ^ acc ) deps Ext_string.empty )
 let () =
   let bsc_dir = Bsb_build_util.get_bsc_dir cwd in
-  let ninja =
-    if Ext_sys.is_windows_or_cygwin then
-      bsc_dir // "ninja.exe"
-    else
-      "ninja"
-  in
+  let vendor_ninja = bsc_dir // "ninja.exe" in
   (* try *)
   (* see discussion #929 *)
   if Array.length Sys.argv <= 1 then
     begin
       let config_opt =  (regenerate_ninja cwd bsc_dir false) in 
-      ninja_command_exit ninja [||] config_opt
+      ninja_command_exit vendor_ninja [||] config_opt
     end
   else
     begin
@@ -313,7 +300,7 @@ let () =
                    [bsb -regen ]
                 *)
               end else if make_world then begin
-                ninja_command_exit ninja [||] config_opt
+                ninja_command_exit vendor_ninja [||] config_opt
               end
           end;
 
@@ -327,7 +314,7 @@ let () =
           if !make_world then
             make_world_deps config_opt ;
           if !watch_mode then watch_exit ()
-          else ninja_command_exit ninja ninja_args config_opt
+          else ninja_command_exit vendor_ninja ninja_args config_opt
         end
     end
 (*with x ->

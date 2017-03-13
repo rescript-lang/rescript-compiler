@@ -1,47 +1,59 @@
 'use strict';
 
-var Path         = require("path");
-var Js_undefined = require("../lib/js/js_undefined");
-var Fs           = require("fs");
+var Fs                      = require("fs");
+var Path                    = require("path");
+var Caml_builtin_exceptions = require("../lib/js/caml_builtin_exceptions");
 
 function clean() {
-  return Js_undefined.iter((__dirname), function (dir) {
-              var bin_dir = Path.join(dir, "..", "bin");
-              var files = Fs.readdirSync(bin_dir);
+  var match = typeof (__dirname) === "undefined" ? undefined : (__dirname);
+  if (match !== undefined) {
+    var bin_dir = Path.join(match, "..", "bin");
+    var files = Fs.readdirSync(bin_dir);
+    console.log(/* tuple */[
+          "cleaning now",
+          files
+        ]);
+    files.forEach(function (f) {
+          if (!f.startsWith("bs") && f !== ".gitignore" && f !== "ninja.exe") {
+            var p = Path.join(bin_dir, f);
+            try {
               console.log(/* tuple */[
-                    "cleaning now",
-                    files
+                    "removing",
+                    p,
+                    "now"
                   ]);
-              return files.forEach(function (f) {
-                          if (!f.startsWith("bs") && f !== ".gitignore") {
-                            var p = Path.join(bin_dir, f);
-                            try {
-                              console.log(/* tuple */[
-                                    "removing",
-                                    p,
-                                    "now"
-                                  ]);
-                              Fs.unlinkSync(p);
-                              return /* () */0;
-                            }
-                            catch (exn){
-                              console.log(/* tuple */[
-                                    "removing",
-                                    p,
-                                    "failure"
-                                  ]);
-                              return /* () */0;
-                            }
-                          }
-                          else {
-                            return 0;
-                          }
-                        });
-            });
+              Fs.unlinkSync(p);
+              return /* () */0;
+            }
+            catch (exn){
+              console.log(/* tuple */[
+                    "removing",
+                    p,
+                    "failure"
+                  ]);
+              return /* () */0;
+            }
+          }
+          else {
+            return 0;
+          }
+        });
+    return /* () */0;
+  }
+  else {
+    throw [
+          Caml_builtin_exceptions.assert_failure,
+          [
+            "clean.ml",
+            22,
+            12
+          ]
+        ];
+  }
 }
 
 var Fs$1 = 0;
 
 exports.Fs    = Fs$1;
 exports.clean = clean;
-/* path Not a pure module */
+/* fs Not a pure module */

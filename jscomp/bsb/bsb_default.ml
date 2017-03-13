@@ -142,15 +142,15 @@ let get_js_post_build_cmd () = !js_post_build_cmd
 let set_js_post_build_cmd ~cwd s =
   js_post_build_cmd := Some (Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:"js-post-build:cmd" s )
 
-let ninja = ref "ninja"
-let get_ninja () = !ninja
+(*let ninja = ref "ninja"
+let get_ninja () = !ninja*)
 
 (* Setting ninja is a bit complex
    First if [build.ninja] does use [ninja] we need set a variable
    Second we need store it so that we can call ninja correctly
 *)
-let set_ninja ~cwd p  =
-  ninja := Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:"ninja" p
+(*let set_ninja ~cwd p  =
+  ninja := Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:"ninja" p*)
 
 
 
