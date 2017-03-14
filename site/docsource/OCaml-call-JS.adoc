@@ -1571,8 +1571,7 @@ var f = /b/g
 ------------
 
 
-NOTE: `Js.Re.t` is an abstract type, we are working on providing
-bindings for it.
+NOTE: `Js.Re.t` can be accessed and manipulated using the functions available in the `Js.Re` module
 
 
 
