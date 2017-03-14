@@ -538,5 +538,11 @@ clean:
 	rm -rf bin/config_whole_compiler.ml
 	git clean -dfx stubs ext common syntax depends core bsb
 
+DOCS_SOURCES+=$(shell ls runtime/*.ml*)
+DOCS_SOURCES+=$(shell ls others/*.ml*)
+
+docs:
+	ocamldoc.opt -html -ppx bin/bsppx.exe -I others -I runtime -d ../docs/api $(DOCS_SOURCES)
+
 toplevel: bs_hash.cma ext.cma
 .PHONY: release   releasebuild libs snapshotml force-snapshotml toplevel
