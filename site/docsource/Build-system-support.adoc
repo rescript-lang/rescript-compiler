@@ -18,12 +18,12 @@ inlining, arity inference and other information.
 BuckleScript proivdes a native build tool on top of Google's  https://github.com/ninja-build/ninja/releases[ninja-build], 
 it is designed for fast feedback loop (typically 100ms feedback loop) and works cross platform. 
 
-[INFO]
-======
-Currently for non-Windows users, they needs install ninja first (version >= 1.7.1),
-please don't be confused with the npm ninja, 
-we are using Google's https://github.com/ninja-build/ninja/releases[ninja-build].
-======
+// [INFO]
+// ======
+// Currently for non-Windows users, they needs install ninja first (version >= 1.7.1),
+// please don't be confused with the npm ninja, 
+// we are using Google's https://github.com/ninja-build/ninja/releases[ninja-build].
+// ======
 
 `bsb` can be running in any subdirectory, it is a schema based build tool, the schema is 
 http://bloomberg.github.io/bucklescript/docson/#build-schema.json[available], it is strongly recommended to **check out the http://bloomberg.github.io/bucklescript/docson/#build-schema.json[schema]**
