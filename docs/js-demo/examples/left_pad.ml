@@ -1,4 +1,7 @@
 
 
-let left_pad_size = 32
-let () = Printf.printf "%*s\n" left_pad_size "Left pad in OCaml\n" 
+let left_pad = Printf.sprintf ("%*s")
+
+let () = 
+  let left_pad_size = 32 in
+	left_pad left_pad_size "Hello, World!" |> Js.log
