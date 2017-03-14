@@ -165,9 +165,9 @@ external pow_int : base:int -> exp:int -> int = "Math.pow" [@@bs.val]
 (** base to the power of the exponent *)
 external pow_float : base:float -> exp:float -> float = "Math.pow" [@@bs.val]
 
-(** random number in [0,1) *)
+(** random number in \[0,1) *)
 external random : unit -> float = "Math.random" [@@bs.val]
-(** random number in [min,max) *)
+(** random number in \[min,max) *)
 let random_int min max =
   floor ((random ()) *. (float (max - min))) + min
 
