@@ -31,9 +31,10 @@ var build_util = require('./build_util')
 var vendor_ninja_version = '1.7.2'
 
 var ninja_bin_output = path.join(root_dir,'bin','ninja.exe')
-var ninja_vendor_dir = path.join(jscomp_bin,'vendor')
+var ninja_vendor_dir = path.join(root_dir,'ninja-build')
 
 function build_ninja(){    
+    console.log('No prebuilt Ninja, building Ninja now')
     var build_ninja_command = "tar -xf  ninja-1.7.2.tar.gz  && cd  ninja-1.7.2  && ./configure.py --bootstrap "
     child_process.execSync(build_ninja_command,{cwd:ninja_vendor_dir})
     fs.renameSync(path.join(ninja_vendor_dir, 'ninja-1.7.2','ninja'), ninja_bin_output)
@@ -48,7 +49,6 @@ else if(os_type==='Darwin'){
     fs.renameSync(path.join(ninja_vendor_dir,'ninja.darwin'),ninja_bin_output)
 }  
 else {
-    console.log('No prebuilt Ninja, building Ninja now')
     build_ninja()
 }
 console.log('ninja binary is ready: ', ninja_bin_output)

@@ -187,6 +187,9 @@ See [COPYING](./COPYING) and [COPYING.LESSER](./COPYING.LESSER)
 The [`ocaml`](ocaml) directory contains the official [OCaml](https://ocaml.org) compiler (version 4.02.3).
 Refer to its copyright and license notices for information about its licensing.
 
+The [`ninja-build`](ninja-build) directory contains the official [ninja-build](https://github.com/ninja-build/ninja) (version 1.7.2).
+Refer to its copyright and license notices for information about its licensing.
+
 BuckleScript builds on parts of [js_of_ocaml](https://github.com/ocsigen/js_of_ocaml):
 
 * [`jscomp/js_dump.ml`](jscomp/js_dump.ml) (pretty printer)
