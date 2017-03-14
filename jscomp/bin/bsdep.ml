@@ -32140,23 +32140,30 @@ let consume_delim s start_index =
            else _consume_delim s start_index "")
 
 
-let split_es6_string s = 
-  let rec _split s index nl = 
-    if index >= String.length s then List.rev nl 
-    else begin
-      match consume_text s index, consume_delim s index with
-      | ("" , str_index)  , (None   , _) -> raise (Failure "Not a valid es6 template string")
-      | (str,  str_index) , (None   , _) -> _split s (str_index) (Text str::nl)
-      | ("" , _), (Some "" , par_index) -> _split s (par_index) nl
-      | ("" , _), (Some par, par_index) -> _split s (par_index) (Delim par::nl)
-      | _, _ -> raise (Failure "Not a valid es6 template string")
-    end in _split s 0 []
-
 let compute_new_loc (loc:Location.t) s = let length = String.length s in 
   let new_loc = 
     {loc with loc_start = {loc.loc_start with pos_cnum = loc.loc_end.pos_cnum}; 
               loc_end = {loc.loc_start with pos_cnum = loc.loc_end.pos_cnum + length}} 
   in new_loc
+
+let error_reporting_loc (loc:Location.t) start_index end_index =
+  let new_loc =
+    {loc with loc_start = {loc.loc_start with pos_cnum = loc.loc_start.pos_cnum + start_index};
+              loc_end   = {loc.loc_end   with pos_cnum = loc.loc_start.pos_cnum + end_index }} in new_loc
+
+let split_es6_string s loc = 
+  let rec _split s index nl = 
+    if index >= String.length s then List.rev nl 
+    else begin
+      match consume_text s index, consume_delim s index with
+      | ("" , str_index)  , (None   , err_index) -> let new_loc = error_reporting_loc loc index err_index in Location.raise_errorf ~loc:new_loc "Not a valid es6 template string"
+      | (str,  str_index) , (None   , _) -> _split s (str_index) (Text str::nl)
+      | ("" , _), (Some "" , par_index) -> let new_loc = error_reporting_loc loc index par_index in Location.raise_errorf ~loc:new_loc "Not a valid es6 template string"
+      | ("" , _), (Some par, par_index) -> _split s (par_index) (Delim par::nl)
+      | _, _ -> let new_loc = error_reporting_loc loc index index in Location.raise_errorf ~loc:new_loc "Not a valid es6 template string"
+    end in _split s 0 []
+
+
 
 let rec _transform_individual_expression exp_list loc nl = match exp_list with
 | [] -> List.rev nl
@@ -32183,9 +32190,8 @@ let rec _transform_individual_expression exp_list loc nl = match exp_list with
               } in _transform_individual_expression rexp new_loc (new_exp::nl))
 
 let transform_es6_style_template_string s loc =
-  try let sub_strs = split_es6_string s
+  let sub_strs = split_es6_string s loc
     in _transform_individual_expression sub_strs loc []
-  with Failure msg -> Location.raise_errorf ~loc "%s" msg
 
 let rec fold_expression_list_with_string_concat prev (exp_list:Parsetree.expression list) = match exp_list with
 | [] -> prev

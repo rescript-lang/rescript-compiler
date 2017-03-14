@@ -12,4 +12,9 @@ let es62 = {j|$str, 君の名は|j}
 let a = {j| blabla \$(xx) |j} (* should not be interpolated*)
 let b = {j| blabla \$xxx |j} (* should not be interpolated *)
 
+let empty2 = {j| \$ |j}
+
+(*this will trigger an error since we dont allow empty parameter in string template*)
+(*let empty3 = {j| $ |j}*)
+
 let () = Js.log str;;

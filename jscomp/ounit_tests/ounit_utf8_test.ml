@@ -6,6 +6,25 @@
 let ((>::),
     (>:::)) = OUnit.((>::),(>:::))
 
+
+let loc = 
+{
+    Location.loc_start = {
+        pos_fname = "dummy";
+        pos_lnum = 0;
+        pos_bol = 0;
+        pos_cnum = 0;
+    };
+    loc_end = {
+        pos_fname = "dummy";
+        pos_lnum = 0;
+        pos_bol = 0;
+        pos_cnum = 0;
+ 
+    };
+    loc_ghost = false;
+};;
+
 let rec print_es6_string_list = function
 | [] -> ()
 | (Ast_utf8_string.Text s::nl) -> print_string "Text "; print_endline (s^";"); print_es6_string_list nl
@@ -61,23 +80,44 @@ let suites =
             Ast_utf8_string.consume_delim "$(hello world)" 0 =~ (None, 8)
         end;
         __LOC__ >:: begin fun _ ->
-            let l = Ast_utf8_string.split_es6_string "Hello World" in
+            let l = Ast_utf8_string.split_es6_string "Hello World" loc in
             l =~ [Text "Hello World"]
         end;
         __LOC__ >:: begin fun _ ->
-            let l = Ast_utf8_string.split_es6_string "Hello $name" in
+            let l = Ast_utf8_string.split_es6_string "Hello $name" loc in
             l =~ [Text "Hello "; Delim "name"]
         end;
         __LOC__ >:: begin fun _ ->
-            let l = Ast_utf8_string.split_es6_string "$x is my name" in
+            let l = Ast_utf8_string.split_es6_string "$x is my name" loc in
             l =~ [Delim "x"; Text " is my name"]
         end;
         __LOC__ >:: begin fun _ ->
-            let l = Ast_utf8_string.split_es6_string "$(country) is beautiful" in
+            let l = Ast_utf8_string.split_es6_string "$(country) is beautiful" loc in
             l =~ [Delim "country"; Text " is beautiful"]
         end;
         __LOC__ >:: begin fun _ ->
-            let l = Ast_utf8_string.split_es6_string "hello $x_1, welcome to $(x_2)" in
+            let l = Ast_utf8_string.split_es6_string "hello $x_1, welcome to $(x_2)" loc in
             l =~ [Text "hello "; Delim "x_1"; Text ", welcome to "; Delim "x_2"]
         end;
+        __LOC__ >:: begin fun _ ->
+            let open Location in
+            let error = {loc = {loc with loc_end = {loc.loc_end with pos_cnum = 1}}; msg = "Not a valid es6 template string"; sub = []; if_highlight = ""} in
+            let res = try Ast_utf8_string.split_es6_string "$" loc with
+            | Location.Error e -> 
+                e.loc =~ error.loc; 
+                e.msg =~ error.msg; 
+                e.sub =~ error.sub; 
+                e.if_highlight =~ error.if_highlight; [] in ()
+        end;
+        __LOC__ >:: begin fun _ ->
+            let open Location in
+            let error = {loc = {loc with loc_start={loc.loc_start with pos_cnum = 6}; loc_end = {loc.loc_end with pos_cnum = 8}}; msg = "Not a valid es6 template string"; sub = []; if_highlight = ""} in
+            let res = try Ast_utf8_string.split_es6_string "hello $)" loc with
+            | Location.Error e -> 
+                e.loc =~ error.loc; 
+                e.msg =~ error.msg; 
+                e.sub =~ error.sub; 
+                e.if_highlight =~ error.if_highlight; [] in ()
+        end;
+ 
     ]
