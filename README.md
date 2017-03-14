@@ -22,7 +22,7 @@ The BuckleScript installation includes the following:
 
 * OCaml toolchain
 * OCaml standard library compiled to JavaScript
-* `bsc` BuckleScript compiler
+* `bsb` BuckleScript compiler
 
 Installing BuckleScript from the npm package places binaries in `./node_modules/.bin`. Installing
 from the git repository places them in `./bin`.
