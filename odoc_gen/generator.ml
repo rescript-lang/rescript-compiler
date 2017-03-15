@@ -219,9 +219,9 @@ struct
 
       method init_style =
         style <- "
-          <link rel=\"stylesheet\" href=\"../../odoc_gen/tomorrow-night.css\">\n
-          <link rel=\"stylesheet\" href=\"../../odoc_gen/style.css\" type=\"text/css\">\n
-          <script src=\"../../odoc_gen//highlight.pack.js\"></script>\n
+          <link rel=\"stylesheet\" href=\"../api_static/tomorrow-night.css\">\n
+          <link rel=\"stylesheet\" href=\"../api_static/style.css\" type=\"text/css\">\n
+          <script src=\"../api_static//highlight.pack.js\"></script>\n
           <script>hljs.initHighlightingOnLoad();</script>"; (* nasty hack but who cares! *)
 
       method html_of_info ?(cls="") ?(indent=true) b info_opt =
