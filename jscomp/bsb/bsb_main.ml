@@ -119,7 +119,7 @@ let bsb_main_flags =
     "-make-world", Arg.Set make_world,
     " Build all dependencies and itself "
   ]
-
+let bsppx_exe = "bsppx.exe"
 (** Regenerate ninja file and return None if we dont need regenerate
     otherwise return some info
 *)
@@ -145,6 +145,9 @@ let regenerate_ninja cwd bsc_dir forced =
           ~override_package_specs:!Bsb_config.cmd_package_specs
           ~bsc_dir cwd in 
       begin 
+        Bsb_config_parse.merlin_file_gen 
+          (bsc_dir // bsppx_exe, 
+           bsc_dir // Literals.reactjs_jsx_ppx_exe) config;
         Bsb_gen.output_ninja ~cwd ~bsc_dir config ; 
         Literals.bsconfig_json :: config.globbed_dirs
         |> List.map
@@ -255,8 +258,8 @@ let make_world_deps (config : Bsb_config_types.t option) =
     match config with
     | None ->
       (* When this running bsb does not read bsconfig.json,
-        we will read such json file to know which [package-specs]
-        it wants
+         we will read such json file to know which [package-specs]
+         it wants
       *)
       Bsb_config_parse.package_specs_from_bsconfig ()
     | Some {package_specs} -> package_specs in
