@@ -7435,52 +7435,13 @@ module Bsb_default : sig
 
 
 
-val get_ocamllex : unit -> string
-val set_ocamllex : cwd:string -> string -> unit
+val bsc_flags : string list 
 
+val ocamllex : string
 
-val set_bs_external_includes : Ext_json.t array -> unit
-val get_bs_external_includes : unit -> string list
+val refmt_flags : string list 
 
-
-
-
-val set_bsc_flags : Ext_json.t array -> unit
-val get_bsc_flags : unit -> string list
-
-val set_ppx_flags : cwd:string -> Ext_json.t array -> unit
-val get_ppx_flags : unit -> string list
-
-val set_package_name : string -> unit
-val get_package_name : unit -> string option
-
-val set_refmt : cwd:string -> string -> unit
-val get_refmt : unit -> string option
-
-val set_refmt_flags : Ext_json.t array -> unit
-val get_refmt_flags : unit -> string list
-
-val get_bs_dependencies : unit ->  Bsb_config_types.bs_dependencies
-val set_bs_dependencies : cwd:string -> Ext_json.t array  -> unit
-
-
-val get_js_post_build_cmd : unit -> string option
-val set_js_post_build_cmd : cwd:string -> string -> unit
-
-(*val get_ninja : unit -> string
-val set_ninja : cwd:string -> string -> unit*)
-
-val get_package_specs : unit -> Bsb_config.package_specs
-val set_package_specs_from_array : Ext_json.t array -> unit
-
-
-
-val get_generate_merlin : unit -> bool
-val set_generate_merlin : bool -> unit
-
-
-val set_use_stdlib : cwd:string -> bool -> unit 
-val built_in_package : Bsb_config_types.bs_dependency option ref 
+val package_specs : String_set.t
 end = struct
 #1 "bsb_default.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -7507,180 +7468,41 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-let get_list_string = Bsb_build_util.get_list_string
-let (//) = Ext_filename.combine
 
-
-
-
-
-let package_name = ref None
-let set_package_name s = package_name := Some s
-let get_package_name () = !package_name
-
-
-
-(* 6
-      Label omitted in function application.
-      7
-      Method overridden.
-      9
-      Missing fields in a record pattern. (*Not always desired, in some cases need [@@@warning "+9"] *)      
-      27
-      Innocuous unused variable: unused variable that is not bound with let nor as, and doesn’t start with an underscore (_) character.      
-      29
-      Unescaped end-of-line in a string constant (non-portable code).
-      32 .. 39 Unused  blabla
-      44
-      Open statement shadows an already defined identifier.
-      45
-      Open statement shadows an already defined label or constructor.
-      48
-      Implicit elimination of optional arguments.
-      https://caml.inria.fr/mantis/view.php?id=6352
+(**
+   6
+   Label omitted in function application.
+   7
+   Method overridden.
+   9
+   Missing fields in a record pattern. (*Not always desired, in some cases need [@@@warning "+9"] *)      
+        27
+        Innocuous unused variable: unused variable that is not bound with let nor as, and doesn’t start with an underscore (_) character.      
+        29
+        Unescaped end-of-line in a string constant (non-portable code).
+        32 .. 39 Unused  blabla
+        44
+        Open statement shadows an already defined identifier.
+        45
+        Open statement shadows an already defined label or constructor.
+        48
+        Implicit elimination of optional arguments.
+        https://caml.inria.fr/mantis/view.php?id=6352
 
 *)  
-(** *)
-let bsc_flags = ref [
+let bsc_flags = 
+  [
     "-no-alias-deps";
     "-color"; "always" ;
     "-w"; "-40+6+7+27+32..39+44+45"
 
   ]
-let get_bsc_flags () = !bsc_flags
-let set_bsc_flags s = 
-  bsc_flags := Bsb_build_util.get_list_string_acc s !bsc_flags
 
+let ocamllex = "ocamllex.opt"  
 
-let bs_dependencies : Bsb_config_types.bs_dependency list ref = ref []
-let get_bs_dependencies () = !bs_dependencies
+let refmt_flags = ["--print"; "binary"]
 
-let resolve_package cwd  package_name = 
-
-  match Bs_pkg.resolve_bs_package ~cwd package_name  with 
-  | None -> 
-    Bsb_exception.error (Package_not_found (package_name,None))
-  | Some x -> 
-    {
-      Bsb_config_types.package_name ;
-      package_install_path = x // Bsb_config.lib_ocaml
-    }
-
-(** When we plan to add more deps here,
-  Make sure check it is consistent that for nested deps, we have a 
-  quck check by just re-parsing deps 
-  Make sure it works with [-make-world] [-clean-world]
- *)
-let set_bs_dependencies ~cwd s =
-  let package_names =
-    Bsb_build_util.get_list_string s  
-  in 
-  bs_dependencies := 
-    package_names 
-    |> List.map (resolve_package cwd )
-
-
-let bs_external_includes = ref []
-
-(** we should not resolve it too early,
-  since it is external configuration
-*)
-let set_bs_external_includes s =
-  bs_external_includes := get_list_string s 
-  (* List.map Bsb_build_util.convert_and_resolve_path *) 
-let get_bs_external_includes () = !bs_external_includes
-
-
-let ocamllex =  ref  "ocamllex.opt"
-let set_ocamllex ~cwd s =
-  ocamllex := Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:"ocamllex" s
-let get_ocamllex () = !ocamllex
-
-
-let refmt = ref None (* if not set, we pick the one shipped with Buckle*)
-let get_refmt () = !refmt
-let set_refmt ~cwd p =
-  refmt := Some (Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:"refmt" p)
-
-
-let refmt_flags = ref ["--print"; "binary"]
-let get_refmt_flags () = !refmt_flags
-let set_refmt_flags s =
-  refmt_flags := get_list_string s
-
-
-let ppx_flags = ref []
-let get_ppx_flags () = !ppx_flags
-let set_ppx_flags ~cwd s =
-  let s =
-    s (* TODO: unix conversion *)
-    |> get_list_string
-    |> List.map (fun p ->
-        if p = "" then failwith "invalid ppx, empty string found"
-        else Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:"ppx" p
-      ) in
-  ppx_flags := s
-
-
-let js_post_build_cmd = ref None
-let get_js_post_build_cmd () = !js_post_build_cmd
-let set_js_post_build_cmd ~cwd s =
-  js_post_build_cmd := Some (Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:"js-post-build:cmd" s )
-
-(*let ninja = ref "ninja"
-let get_ninja () = !ninja*)
-
-(* Setting ninja is a bit complex
-   First if [build.ninja] does use [ninja] we need set a variable
-   Second we need store it so that we can call ninja correctly
-*)
-(*let set_ninja ~cwd p  =
-  ninja := Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:"ninja" p*)
-
-
-
-let package_specs = ref (String_set.singleton Literals.commonjs)
-(* let package_specs_overriden = ref false *)
-
-let get_package_specs () = !package_specs
-
-
-
-let set_package_specs_from_array arr =
-  (* if not  !package_specs_overriden then *)
-  let new_package_specs =
-      arr
-      |> get_list_string
-    |> List.fold_left (fun acc x ->
-        let v =
-          if Bsb_config.supported_format x    then String_set.add x acc
-          else
-            failwith ("Unkonwn package spec" ^ x) in
-        v
-      ) String_set.empty in
-  package_specs := new_package_specs
-
-
-
-
-let use_stdlib = ref true
-let get_use_stdlib () = !use_stdlib
-
-let built_in_package = ref None 
-let set_use_stdlib ~cwd b = 
-  use_stdlib := b ;
-  if b then 
-    built_in_package := Some (resolve_package cwd Bs_version.package_name )
-
-
-
-
-let generate_merlin = ref true
-
-let get_generate_merlin () = !generate_merlin
-
-let set_generate_merlin b =
-  generate_merlin := b
+let package_specs = String_set.singleton Literals.commonjs
 
 end
 module Bsb_config_parse : sig 
@@ -7709,6 +7531,12 @@ module Bsb_config_parse : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+val package_specs_from_bsconfig : 
+    unit -> Bsb_config.package_specs
+
+
+val merlin_file_gen : 
+    (string * string) -> Bsb_config_types.t -> unit    
 
 
 val interpret_json : 
@@ -7720,7 +7548,8 @@ val interpret_json :
 
 
 
-val package_specs_from_json : unit -> Bsb_config.package_specs
+
+
 end = struct
 #1 "bsb_config_parse.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -7748,14 +7577,36 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 let config_file_bak = "bsconfig.json.bak"
+let get_list_string = Bsb_build_util.get_list_string
+let (//) = Ext_filename.combine
 
+let resolve_package cwd  package_name = 
+  match Bs_pkg.resolve_bs_package ~cwd package_name  with 
+  | None -> 
+    Bsb_exception.error (Package_not_found (package_name,None))
+  | Some x -> 
+    {
+      Bsb_config_types.package_name ;
+      package_install_path = x // Bsb_config.lib_ocaml
+    }
+
+
+let get_package_specs_from_array arr =  
+  arr
+  |> get_list_string
+  |> List.fold_left (fun acc x ->
+      let v =
+        if Bsb_config.supported_format x    then String_set.add x acc
+        else
+          failwith ("Unkonwn package spec" ^ x) in
+      v
+    ) String_set.empty 
 
 
 (* Key is the path *)
 let (|?)  m (key, cb) =
   m  |> Ext_json.test key cb
 
-let (//) = Ext_filename.combine
 
 let sourcedirs_meta = ".sourcedirs"
 let merlin = ".merlin"
@@ -7764,17 +7615,22 @@ let merlin_trailer = "####BSB GENERATED: NO EDIT}"
 let merlin_trailer_length = String.length merlin_trailer
 
 
-let package_specs_from_json () = 
+let package_specs_from_bsconfig () = 
   let json = Ext_json.parse_json_from_file Literals.bsconfig_json in
   begin match json with
     | `Obj map ->
-      map
-      |? (Bsb_build_schemas.package_specs,
-          `Arr Bsb_default.set_package_specs_from_array)
-      |> ignore ;
-      Bsb_default.get_package_specs ()
+      begin 
+        match String_map.find_opt Bsb_build_schemas.package_specs map with 
+        | Some (`Arr s ) -> 
+          get_package_specs_from_array s.Ext_json.content
+        | Some _
+        | None -> Bsb_default.package_specs
+      end
     | _ -> assert false
   end
+
+
+
 (** [new_content] should start end finish with newline *)
 let revise_merlin new_content =
   if Sys.file_exists merlin then
@@ -7820,7 +7676,7 @@ let revise_merlin new_content =
 let merlin_flg_ppx = "\nFLG -ppx " 
 let merlin_s = "\nS "
 let merlin_b = "\nB "
-let bsppx_exe = "bsppx.exe"
+
 
 let merlin_flg = "\nFLG "
 let merlin_file_gen 
@@ -7912,7 +7768,6 @@ let generate_sourcedirs_meta (res : Bsb_build_ui.t) =
   close_out ochan
 
 
-
 let interpret_json 
     ~override_package_specs
     ~bsc_dir 
@@ -7921,111 +7776,135 @@ let interpret_json
   : Bsb_config_types.t =
   let builddir = Bsb_config.lib_bs in
   let () = Bsb_build_util.mkp builddir in
-  let update_queue = ref [] in
-  let globbed_dirs = ref [] in
-  let bs_file_groups = ref [] in 
+  
   let reason_react_jsx = ref false in 
 
   let config_json_chan = open_in_bin Literals.bsconfig_json in
   let global_data = Ext_json.parse_json_from_chan config_json_chan  in
+  let ocamllex = ref Bsb_default.ocamllex in 
+  let refmt = ref None in
+  let refmt_flags = ref Bsb_default.refmt_flags in
+  let package_name = ref None in 
+  let bs_external_includes = ref [] in 
+  (** we should not resolve it too early,
+      since it is external configuration, no {!Bsb_build_util.convert_and_resolve_path}
+  *)
+  let bsc_flags = ref Bsb_default.bsc_flags in  
+  let ppx_flags = ref []in 
 
-  let () =
-    match global_data with
-    | `Obj map ->
-      let use_stdlib = 
-        match String_map.find_opt Bsb_build_schemas.use_stdlib map with 
-        | None -> true 
-        | Some `False -> false 
-        | Some _ -> true  in 
-      Bsb_default.set_use_stdlib ~cwd use_stdlib ;
+  let js_post_build_cmd = ref None in 
+  let built_in_package = ref None in
+  let generate_merlin = ref true in 
+  let package_specs = ref (String_set.singleton Literals.commonjs) in 
+  (* When we plan to add more deps here,
+     Make sure check it is consistent that for nested deps, we have a 
+     quck check by just re-parsing deps 
+     Make sure it works with [-make-world] [-clean-world]
+  *)
+  let bs_dependencies = ref [] in 
+  (* Setting ninja is a bit complex
+     1. if [build.ninja] does use [ninja] we need set a variable
+     2. we need store it so that we can call ninja correctly
+  *)
 
-      map
-      |? (Bsb_build_schemas.reason, `Obj begin fun m -> 
-          m |? (Bsb_build_schemas.react_jsx, 
-                `Bool (fun b -> reason_react_jsx := b))
-            |> ignore 
-        end)
-      |? (Bsb_build_schemas.generate_merlin, `Bool (fun b ->
-          Bsb_default.set_generate_merlin b
-        ))
-      |? (Bsb_build_schemas.name, `Str Bsb_default.set_package_name)
-      |? (Bsb_build_schemas.package_specs, `Arr Bsb_default.set_package_specs_from_array )
-      |? (Bsb_build_schemas.js_post_build, `Obj begin fun m ->
-          m |? (Bsb_build_schemas.cmd , `Str (Bsb_default.set_js_post_build_cmd ~cwd)
-               )
-          |> ignore
-        end)
-      |? (Bsb_build_schemas.ocamllex, `Str (Bsb_default.set_ocamllex ~cwd))
-      (*|? (Bsb_build_schemas.ninja, `Str (Bsb_default.set_ninja ~cwd))*)
-      |? (Bsb_build_schemas.bs_dependencies, `Arr (Bsb_default.set_bs_dependencies ~cwd))
-      (* More design *)
-      |? (Bsb_build_schemas.bs_external_includes, `Arr Bsb_default.set_bs_external_includes)
-      |? (Bsb_build_schemas.bsc_flags, `Arr Bsb_default.set_bsc_flags)
-      |? (Bsb_build_schemas.ppx_flags, `Arr (Bsb_default.set_ppx_flags ~cwd))
-      |? (Bsb_build_schemas.refmt, `Str (Bsb_default.set_refmt ~cwd))
-      |? (Bsb_build_schemas.refmt_flags, `Arr Bsb_default.set_refmt_flags)
+  match global_data with
+  | `Obj map ->
 
-      |? (Bsb_build_schemas.sources, `Id (fun x ->
-          begin 
-            let res = Bsb_build_ui.parsing_sources
-                Bsb_build_ui.lib_dir_index
-                Filename.current_dir_name x in 
-            generate_sourcedirs_meta res ;     
+    (match String_map.find_opt Bsb_build_schemas.use_stdlib map with      
+     | Some `False -> 
+       ()
+     | None 
+     | Some _ ->
+       built_in_package := Some (resolve_package cwd Bs_version.package_name);
+    ) ;
+    map
+    |? (Bsb_build_schemas.reason, `Obj begin fun m -> 
+        m |? (Bsb_build_schemas.react_jsx, 
+              `Bool (fun b -> reason_react_jsx := b))
+        |> ignore 
+      end)
+    |? (Bsb_build_schemas.generate_merlin, `Bool (fun b ->
+        generate_merlin := b
+      ))
+    |? (Bsb_build_schemas.name, `Str (fun s -> package_name := Some s))
+    |? (Bsb_build_schemas.package_specs, 
+        `Arr (fun s -> package_specs := get_package_specs_from_array  s ))
+    |? (Bsb_build_schemas.js_post_build, `Obj begin fun m ->
+        m |? (Bsb_build_schemas.cmd , `Str (fun s -> 
+            js_post_build_cmd := Some (Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.js_post_build s)
 
-            bs_file_groups := res.files ;
-            update_queue := res.intervals;
-            globbed_dirs := res.globbed_dirs;
-          end
+          )
+          )
+        |> ignore
+      end)
+    |? (Bsb_build_schemas.ocamllex, `Str (fun s -> 
+        ocamllex := Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.ocamllex s ))
 
-        ))
-      |> ignore
-    | _ -> ()
-  in
-  begin match List.sort Ext_file_pp.interval_compare  !update_queue with
-    | [] -> ()
-    | queue ->
-      let file_size = in_channel_length config_json_chan in
-      let oc = open_out_bin config_file_bak in
-      let () =
-        Ext_file_pp.process_wholes
-          queue file_size config_json_chan oc in
-      close_out oc ;
-      close_in config_json_chan ;
-      Unix.unlink Literals.bsconfig_json;
-      Unix.rename config_file_bak Literals.bsconfig_json
-  end;
-  let config = 
-    {
-      Bsb_config_types.package_name =
-        (match Bsb_default.get_package_name () with
-        | Some name -> name
-        | None ->
-          prerr_endline "Error: Package name is required. Please specify a `name` in `bsconfig.json`";
-          exit 2);
+    |? (Bsb_build_schemas.bs_dependencies, `Arr (fun s -> bs_dependencies := Bsb_build_util.get_list_string s |> List.map (resolve_package cwd)))
+    (* More design *)
+    |? (Bsb_build_schemas.bs_external_includes, `Arr (fun s -> bs_external_includes := get_list_string s))
+    |? (Bsb_build_schemas.bsc_flags, `Arr (fun s -> bsc_flags := Bsb_build_util.get_list_string_acc s !bsc_flags))
+    |? (Bsb_build_schemas.ppx_flags, `Arr (fun s -> 
+        ppx_flags := s |> get_list_string |> List.map (fun p ->
+            if p = "" then failwith "invalid ppx, empty string found"
+            else Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.ppx_flags p
+          )
+      ))
+    |? (Bsb_build_schemas.refmt, `Str (fun s -> 
+        refmt := Some (Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.refmt s) ))
+    |? (Bsb_build_schemas.refmt_flags, `Arr (fun s -> refmt_flags := get_list_string s))
+    |> ignore ;
+    begin match String_map.find_opt Bsb_build_schemas.sources map with 
+      | Some x -> 
+        let res = Bsb_build_ui.parsing_sources
+            Bsb_build_ui.lib_dir_index
+            Filename.current_dir_name x in 
+        generate_sourcedirs_meta res ;     
+        begin match List.sort Ext_file_pp.interval_compare  res.intervals with
+          | [] -> ()
+          | queue ->
+            let file_size = in_channel_length config_json_chan in
+            let oc = open_out_bin config_file_bak in
+            let () =
+              Ext_file_pp.process_wholes
+                queue file_size config_json_chan oc in
+            close_out oc ;
+            close_in config_json_chan ;
+            Unix.unlink Literals.bsconfig_json;
+            Unix.rename config_file_bak Literals.bsconfig_json
+        end;
 
-      ocamllex = Bsb_default.get_ocamllex ();
-      external_includes = Bsb_default.get_bs_external_includes ();
-      bsc_flags = Bsb_default.get_bsc_flags ();
-      ppx_flags = Bsb_default.get_ppx_flags ();
-      bs_dependencies = Bsb_default.get_bs_dependencies ();
-      refmt = Bsb_default.get_refmt ();
-      refmt_flags = Bsb_default.get_refmt_flags ();
-      js_post_build_cmd =  Bsb_default.get_js_post_build_cmd ();
-      package_specs = 
-        (match override_package_specs with None ->  Bsb_default.get_package_specs()
-                                         | Some x -> x );
-      globbed_dirs = !globbed_dirs; 
-      bs_file_groups = !bs_file_groups; 
-      files_to_install = String_hash_set.create 96;
-      built_in_dependency = !Bsb_default.built_in_package;
-      generate_merlin = Bsb_default.get_generate_merlin ();
-      reason_react_jsx = !reason_react_jsx ;  
-    } in 
-  merlin_file_gen 
-    (bsc_dir // bsppx_exe,
-     bsc_dir // Literals.reactjs_jsx_ppx_exe
-    ) config;
-  config
+        {
+          Bsb_config_types.package_name =
+            (match !package_name with
+             | Some name -> name
+             | None ->
+               failwith "Error: Package name is required. Please specify a `name` in `bsconfig.json`"
+            );
+
+          ocamllex = !ocamllex ; 
+          external_includes = !bs_external_includes;
+          bsc_flags = !bsc_flags ;
+          ppx_flags = !ppx_flags ;
+          bs_dependencies = !bs_dependencies;
+          refmt = !refmt ;
+          refmt_flags = !refmt_flags ;
+          js_post_build_cmd =  !js_post_build_cmd ;
+          package_specs = 
+            (match override_package_specs with None ->  !package_specs
+                                             | Some x -> x );
+          globbed_dirs = res.globbed_dirs; 
+          bs_file_groups = res.files; 
+          files_to_install = String_hash_set.create 96;
+          built_in_dependency = !built_in_package;
+          generate_merlin = !generate_merlin ;
+          reason_react_jsx = !reason_react_jsx ;  
+        }
+      | None -> failwith "no sources specified, please checkout the schema for more details"
+    end
+  | _ -> failwith "bsconfig.json expect a json object {}"
+
+
 
 
 
@@ -9338,7 +9217,7 @@ let bsb_main_flags =
     "-make-world", Arg.Set make_world,
     " Build all dependencies and itself "
   ]
-
+let bsppx_exe = "bsppx.exe"
 (** Regenerate ninja file and return None if we dont need regenerate
     otherwise return some info
 *)
@@ -9364,6 +9243,9 @@ let regenerate_ninja cwd bsc_dir forced =
           ~override_package_specs:!Bsb_config.cmd_package_specs
           ~bsc_dir cwd in 
       begin 
+        Bsb_config_parse.merlin_file_gen 
+          (bsc_dir // bsppx_exe, 
+           bsc_dir // Literals.reactjs_jsx_ppx_exe) config;
         Bsb_gen.output_ninja ~cwd ~bsc_dir config ; 
         Literals.bsconfig_json :: config.globbed_dirs
         |> List.map
@@ -9473,10 +9355,16 @@ let make_world_deps (config : Bsb_config_types.t option) =
   let deps =
     match config with
     | None ->
-      Bsb_config_parse.package_specs_from_json ()
+      (* When this running bsb does not read bsconfig.json,
+         we will read such json file to know which [package-specs]
+         it wants
+      *)
+      Bsb_config_parse.package_specs_from_bsconfig ()
     | Some {package_specs} -> package_specs in
-  build_bs_deps (  String_set.fold
-                     (fun k acc -> k ^ "," ^ acc ) deps Ext_string.empty )
+  build_bs_deps 
+    (String_set.fold
+       (fun k acc -> k ^ "," ^ acc ) deps Ext_string.empty )
+
 let () =
   let bsc_dir = Bsb_build_util.get_bsc_dir cwd in
   let vendor_ninja = bsc_dir // "ninja.exe" in
