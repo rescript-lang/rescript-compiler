@@ -25,8 +25,8 @@
 let config_file_bak = "bsconfig.json.bak"
 let get_list_string = Bsb_build_util.get_list_string
 let (//) = Ext_filename.combine
-let resolve_package cwd  package_name = 
 
+let resolve_package cwd  package_name = 
   match Bs_pkg.resolve_bs_package ~cwd package_name  with 
   | None -> 
     Bsb_exception.error (Package_not_found (package_name,None))
@@ -53,7 +53,6 @@ let get_package_specs_from_array arr =
 let (|?)  m (key, cb) =
   m  |> Ext_json.test key cb
 
-let (//) = Ext_filename.combine
 
 let sourcedirs_meta = ".sourcedirs"
 let merlin = ".merlin"
@@ -240,7 +239,7 @@ let interpret_json
   *)
   let bsc_flags = ref Bsb_default.bsc_flags in  
   let ppx_flags = ref []in 
-  let use_stdlib = ref true in 
+  
   let js_post_build_cmd = ref None in 
   let built_in_package = ref None in
   let generate_merlin = ref true in 
@@ -259,13 +258,11 @@ let interpret_json
     match global_data with
     | `Obj map ->
       let () = 
-        (match String_map.find_opt Bsb_build_schemas.use_stdlib map with       
+        (match String_map.find_opt Bsb_build_schemas.use_stdlib map with      
          | Some `False -> 
-           use_stdlib := false;
-
+          ()
          | None 
          | Some _ ->
-           use_stdlib := true;
            built_in_package := Some (resolve_package cwd Bs_version.package_name);
         ) in 
       map
