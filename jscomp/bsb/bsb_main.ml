@@ -254,10 +254,16 @@ let make_world_deps (config : Bsb_config_types.t option) =
   let deps =
     match config with
     | None ->
-      Bsb_config_parse.package_specs_from_json ()
+      (* When this running bsb does not read bsconfig.json,
+        we will read such json file to know which [package-specs]
+        it wants
+      *)
+      Bsb_config_parse.package_specs_from_bsconfig ()
     | Some {package_specs} -> package_specs in
-  build_bs_deps (  String_set.fold
-                     (fun k acc -> k ^ "," ^ acc ) deps Ext_string.empty )
+  build_bs_deps 
+    (String_set.fold
+       (fun k acc -> k ^ "," ^ acc ) deps Ext_string.empty )
+
 let () =
   let bsc_dir = Bsb_build_util.get_bsc_dir cwd in
   let vendor_ninja = bsc_dir // "ninja.exe" in

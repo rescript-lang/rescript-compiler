@@ -33,4 +33,5 @@ val interpret_json :
 
 
 
-val package_specs_from_json : unit -> Bsb_config.package_specs
+val package_specs_from_bsconfig : 
+    unit -> Bsb_config.package_specs
