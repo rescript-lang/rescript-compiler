@@ -54,7 +54,7 @@ Javascript Code
 
 
 The current design of BuckleScript follows several high level
-principles. While those principles might change in the future, there are
+principles. While those principles might change in the future, they are
 enforced today and can explain certain technical limitations
 BuckleScript has.
 

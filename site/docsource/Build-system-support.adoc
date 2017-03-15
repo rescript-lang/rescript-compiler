@@ -15,21 +15,21 @@ inlining, arity inference and other information.
 
 === BuckleScript build system: `bsb`
 
-BuckleScript proivdes a native build tool on top of Google's  https://github.com/ninja-build/ninja/releases[ninja-build], 
-it is designed for fast feedback loop (typically 100ms feedback loop) and works cross platform. 
+BuckleScript proivdes a native build tool on top of Google's  https://github.com/ninja-build/ninja/releases[ninja-build]. 
+It is designed for a fast feedback loop (typically 100ms feedback loop) and works cross platform. 
 
 // [INFO]
 // ======
-// Currently for non-Windows users, they needs install ninja first (version >= 1.7.1),
-// please don't be confused with the npm ninja, 
+// Currently for non-Windows users, they need to install ninja first (version >= 1.7.1).
+// Please don't be confused with the npm ninja, 
 // we are using Google's https://github.com/ninja-build/ninja/releases[ninja-build].
 // ======
 
-`bsb` can be running in any subdirectory, it is a schema based build tool, the schema is 
-http://bloomberg.github.io/bucklescript/docson/#build-schema.json[available], it is strongly recommended to **check out the http://bloomberg.github.io/bucklescript/docson/#build-schema.json[schema]**
+`bsb` can be running in any subdirectory. It is a schema based build tool and the schema is 
+http://bloomberg.github.io/bucklescript/docson/#build-schema.json[available]. It is strongly recommended to **check out the http://bloomberg.github.io/bucklescript/docson/#build-schema.json[schema]**
 after you finish reading the tutorials below.
 
-If your editors support JSON schema validation and auto-completion like https://code.visualstudio.com/docs/languages/json[VSCode], 
+If your editor supports JSON schema validation and auto-completion like https://code.visualstudio.com/docs/languages/json[VSCode], 
 below is a configuration to help you get auto-completion and validation for free:
 
 .settings.json
@@ -48,9 +48,9 @@ below is a configuration to help you get auto-completion and validation for free
 }    
 ------------
 
-The build system is installed as `bsb.exe` in `bs-platform/bin/bsb.exe`, due to a known issue in npm, 
-we create a JS wrapper (which is accessible in `.bin` too), so the user can call 
-either `bsb`(slightly higher latency but symlinked into `.bin`) or `bsb.exe` 
+The build system is installed as `bsb.exe` in `bs-platform/bin/bsb.exe`. Due to a known issue in npm, 
+we create a JS wrapper (which is accessible in `.bin` too) so the user can call 
+either `bsb` (slightly higher latency but symlinked into `.bin`) or `bsb.exe` 
 
 
 Here is a *minimal* configuration:
@@ -67,9 +67,9 @@ Here is a *minimal* configuration:
 <2> Here we did not list files, so all `.ml`, `.mli`, `.re`, `.rei` will be considered as source files
 
 
-The entry point is `bsb`,
-it will check if there is already `build.ninja` in the build directory, 
-if not or need regenerated it will generate a file  `build.ninja` 
+The entry point is `bsb`.
+It will check if there is already `build.ninja` in the build directory, 
+and if not or it needs to be regenerated it will generate the file  `build.ninja` 
 and delegate the hard work to `ninja`.
 
 
@@ -98,7 +98,7 @@ The directory layout (after building) would be
 <1> Will generate amdjs modules if flags are turned on
 <2> Will generate goog modules if flags are turned on 
 
-We wrap `bsb.exe` as `bsb` so that it will work across different platform.
+We wrap `bsb.exe` as `bsb` so that it will work across different platforms.
 
 .Watch mode
 [source,sh]
@@ -132,7 +132,7 @@ List your dependency in `bs-dependencies` and install it via `npm install` as be
 }
 -----------
 <1> Yet another BuckleScript dependency
-<2> if true (default) bsb will generate merlin file for you
+<2> If true (default) bsb will generate merlin file for you
 
 .package.json
 [source,js]
@@ -154,9 +154,9 @@ bsb -w // <3>
 ----------
 <1> Clean the binary artifact of current build and your dependency
 <2> Build dependencies and lib itself
-<3> Start watching the project, whenever your changes are made, `bsb` will rebuild incrementally
+<3> Start watching the project and whenever your changes are made, `bsb` will rebuild incrementally
 
-You can also stream-line the three commands as below:
+You can also streamline the three commands as below:
 
 [source,sh]
 -----------
@@ -166,8 +166,8 @@ bsb -clean-world -make-world -w
 ==== Mark your directory as dev only
 
 
-Note sometimes, you have directories which are just tests that you don't need your dependent 
-to build  in that case you can mark it as dev only
+Note sometimes, you have directories which are just tests that you don't need your dependency 
+to build. In that case you can mark it as dev only:
 
 .bsconfig.json
 [source,js]
@@ -201,8 +201,8 @@ Below is a json configuration for the https://github.com/OvermindDL1/bucklescrip
   ]
 }
 -----------
-<1> Source directory, by default it will export all units of this directory to users
-<2> Dev directory, which will only be useful for developers of this project 
+<1> Source directory, by default it will export all units of this directory to users.
+<2> Dev directory, which will only be useful for developers of this project.
 
 .package.json
 [source,js]
@@ -221,7 +221,7 @@ Below is a json configuration for the https://github.com/OvermindDL1/bucklescrip
   }
 }
 -----------
-<1> Here we list `bs-platform` as a peer dependency so that different repos shares the same compiler
+<1> Here we list `bs-platform` as a peer dependency so that different repos shares the same compiler.
 
 Now, we have a repo https://github.com/bobzhang/bucklescript-have-tea[bucklescript-have-tea] to depend on `bucklescript-tea`, its configurations are as below:
 
@@ -281,15 +281,15 @@ Rerun the command
 bsb -clean-world -make-world 
 ----------
 
-You will get both `commonjs` and `amdjs` support, in the end, we suggest you http://bloomberg.github.io/bucklescript/docson/#build-schema.json[check out the schema] and enjoy the build!
+You will get both `commonjs` and `amdjs` support. In the end, we suggest you http://bloomberg.github.io/bucklescript/docson/#build-schema.json[check out the schema] and enjoy the build!
 
 
 
 === Build using Make
 [WARNING]
 ========
-`bsb` is officialy recommended build system, this section is listed here only for people who 
-are _curious_ about how the build works
+`bsb` is the officially recommended build system. This section is included here only for people who 
+are _curious_ about how the build works.
 ========
 
 BuckleScript distribution has `bsdep.exe` which has the same interface as `ocamldep`
@@ -318,11 +318,11 @@ depend:
 <1> bsc.exe is the BuckleScript compiler
 <2> ocamldep executable is part of the OCaml compiler installation
 
-In theory, people need run `make depend && make all`, `make depend` will calculate dependency
+In theory, people need run `make depend && make all`. `make depend` will calculate dependencies
 while `make all` will do the job.
 
-However, in practice, people used to use a file watch service,
-take https://facebook.github.io/watchman/[watchman] for example, you need json configure
+However in practice, people used to a file watch service,
+such as https://facebook.github.io/watchman/[watchman] for example, will need the JSON configuration:
 
 .build.json
 [source,json]

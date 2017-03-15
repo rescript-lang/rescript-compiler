@@ -3,8 +3,8 @@
 [qanda]
 
 
-How does IO work in browser?::
-  In general, it is very hard to simulate IO in browser, we recommend users to write bindings to NodeJS directly for server side, or use `Js.log` in client side, see disucssions in {issues}/748[#748]
+How does IO work in the browser?::
+  In general, it is very hard to simulate IO in the browser, we recommend users write bindings to NodeJS directly for server side, or use `Js.log` in client side, see disucssions in {issues}/748[#748]
 
 The compiler does not build?::
   In production mode, the compiler is a single file in
@@ -26,13 +26,13 @@ S node_modules/bs-platform/lib/ocaml
 FLG -ppx node_modules/bs-platform/bin/bsppx.exe
 --------
 +
-Note there is a https://github.com/the-lambda-church/merlin/issues/568[upstream fix] in Merlin, make sure your merlin is updated
+Note there is a https://github.com/the-lambda-church/merlin/issues/568[upstream fix] in Merlin, make sure your merlin is updated.
 
 What polyfills does BuckleScript need?::
 
 - _Math.imul_:
   This polyfill is needed for `int32` multiplication.
-  BuckleScript provides this by default(when feature detection returns false), no action is
+  BuckleScript provides this by default (when feature detection returns false), no action is
   required from the user.
 - _TypedArray_:
   The TypedArray polyfill is not provided by BuckleScript and it's the

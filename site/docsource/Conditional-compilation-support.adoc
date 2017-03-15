@@ -2,23 +2,23 @@
 == Conditional compilation support - static if
 
 
-It is quite common that people want to write code works with different versions of compilers and libraries.
+It is quite common that people want to write code that works with different versions of compilers and libraries.
 
-People used to use preprocessors like http://tigcc.ticalc.org/doc/cpp.html[C preprocessor] for C family languages.
-In OCaml community there are several preprocessors: https://github.com/mjambon/cppo[cppo],
+People used to use preprocessors like http://tigcc.ticalc.org/doc/cpp.html[C preprocessor] for the C family languages.
+In the OCaml community there are several preprocessors: https://github.com/mjambon/cppo[cppo],
 https://github.com/OCamlPro/typerex-build/tree/master/tools/ocp-pp[ocp-pp], camlp4 IFDEF macros, https://github.com/diml/optcomp[optcomp] and
 https://github.com/janestreet/ppx_optcomp[ppx optcomp].
 
 Instead of using a preprocessor, BuckleScript adds language level static if compilation to the language.
-It is less powerful than other preprocessors since it only support static if, no `#define`, `#undefine`, `#include`,
+It is less powerful than other preprocessors since it only supports static if (no `#define`, `#undefine`, `#include`)
 but there are several advantages.
 
 - It's very small (only around 500 LOC) and highly efficient.
-  There is no added pass, everything is done in a *single pass*.
+  There is no added pass, allowing everything to be done in a *single pass*.
   It is easy to rebuild the pre-processor in a stand alone file, with no dependencies on compiler
-  libs to back-port it to old OCaml compilers
+  libs to back-port it to old OCaml compilers.
 
-- It's purely functional and type safe, easy to work with IDEs like merlin
+- It's purely functional and type safe, easy to work with IDEs like Merlin.
 
 === Concrete syntax
 
@@ -54,15 +54,15 @@ atom
 - type of INT is `int`
 - type of STRING is `string`
 - type of FLOAT is `float`
-- value of UIDENT comes from either built-in values (with documented types) or environment variable,
+- value of UIDENT comes from either built-in values (with documented types) or an environment variable,
   if it is literally `true`, `false` then it is `bool`, else if it is parsable by `int_of_string`
   then it is  of type int, else if it is parsable by `float_of_string` then it is float, otherwise
   it would  be string
 - In `lhs operator rhs`, `lhs` and `rhs` are always the same type and return boolean.
-  `=~` is a semantics version operator which requires both sides to be string
+  `=~` is a semantic version operator which requires both sides to be string.
 
 Evaluation rules are obvious.
-`=~` respect semantics version, for example, the underlying engine
+`=~` respect semantic version, for example, the underlying engine
 
 [source,ocaml]
 --------------
@@ -119,8 +119,8 @@ BIG_ENDIAN false
 
 
 === Changes to command line options
-For BuckleScript users, nothing needs to be done (it is baked in the language level),
-for non BuckleScript users, we provide an external pre-processor, so it will work with other OCaml
+For BuckleScript users, nothing needs to be done (it is baked in the language level).
+For non BuckleScript users, we provide an external pre-processor, so it will work with other OCaml
 compilers too.
 Note that the {BuckleScript}/blob/master/jscomp/bin/bspp.ml[bspp.ml] is a stand alone file,
 so that it even works without compilation.
@@ -136,7 +136,7 @@ ocamlc -pp 'ocaml -w -a bspp.ml' -c lwt_unix.mli
 
 [WARNING]
 ======
-This is a very small extension to the OCaml language, it is backward compatible with OCaml language with such exception.
+This is a very small extension to the OCaml language, it is backward compatible with OCaml language with such exceptions.
 
 [source,ocaml]
 --------------
@@ -144,5 +144,5 @@ let f x =
   x
 #elif // <1>
 --------------
-<1> `#elif` at the beginning of a line is interpreted as static if, there is no issue with `#if` or `#end`, since they are already keywords
+<1> `#elif` at the beginning of a line is interpreted as static if, there is no issue with `#if` or `#end`, since they are already keywords.
 ======
