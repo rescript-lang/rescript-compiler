@@ -151,6 +151,7 @@ pre {
   margin: 0;
   font-family: monospace;
   color: #4d4d4c;
+  white-space: pre-wrap;
 }
 
 pre a {
