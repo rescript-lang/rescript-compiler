@@ -27,7 +27,6 @@ type t =
     arch : string ;
     abort : unit -> unit [@bs.meth];
     chdir : string -> unit [@bs.meth];
-    (** @raise *)
     cwd : unit -> string [@bs.meth];
     disconnect : unit -> unit [@bs.meth];    
   >   Js.t

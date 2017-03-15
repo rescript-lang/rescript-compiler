@@ -100,7 +100,7 @@ let caml_lazy_make_forward x = lazy x
 
 (** 
    For the empty dummy object, whether it's 
-   `[]` or `{}` depends on how 
+   [[]] or [{}] depends on how 
    runtime encoding works, and will affect 
    js polymorphic comparison(Js.(=)) (fine with caml polymoprhic comparison (Pervasives.equal))
    In most cases, rec value comes from record/modules, 

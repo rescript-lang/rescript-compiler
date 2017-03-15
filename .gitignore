@@ -59,6 +59,7 @@ lib/ocaml
 bin/*
 ocaml_src
 *.exe
+odoc_gen/*.cmxs
 
 # for npm publish
 !bin/bsc.exe
