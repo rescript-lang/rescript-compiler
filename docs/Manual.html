@@ -496,7 +496,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_why_bucklescript">Why BuckleScript</a>
 <ul class="sectlevel2">
 <li><a href="#_benefits_of_javascript_platform">Benefits of JavaScript platform</a></li>
-<li><a href="#_problems_of_javascript_how_bucklescript_solves_it">Problems of JavaScript &amp;&amp; how BuckleScript solves it</a></li>
+<li><a href="#_problems_of_javascript_how_bucklescript_solves_them">Problems of JavaScript &amp;&amp; how BuckleScript solves them</a></li>
 </ul>
 </li>
 <li><a href="#_installation">Installation</a>
@@ -520,7 +520,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </li>
 <li><a href="#_built_in_npm_support">Built in NPM support</a>
 <ul class="sectlevel2">
-<li><a href="#_build_ocaml_library_as_a_npm_package">Build OCaml library as a npm package</a></li>
+<li><a href="#_build_an_ocaml_library_as_a_npm_package">Build an OCaml library as a npm package</a></li>
 <li><a href="#_to_use_ocaml_library_as_a_npm_package">To use OCaml library as a npm package</a></li>
 <li><a href="#_together">Together</a></li>
 <li><a href="#_examples">Examples</a></li>
@@ -586,7 +586,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_return_value_checking_since_1_5_1">Return value checking (@since 1.5.1)</a></li>
 <li><a href="#_embedding_untyped_javascript_code">Embedding untyped Javascript code</a>
 <ul class="sectlevel3">
-<li><a href="#_detect_global_varialbe_existence_code_bs_external_code_since_1_5_1">Detect global varialbe existence <code>bs.external</code> (@since 1.5.1)</a></li>
+<li><a href="#_detect_global_variable_existence_code_bs_external_code_since_1_5_1">Detect global variable existence <code>bs.external</code> (@since 1.5.1)</a></li>
 <li><a href="#_embedding_arbitrary_js_code_as_an_expression">Embedding arbitrary JS code as an expression</a></li>
 <li><a href="#_embedding_raw_js_code_as_statements">Embedding raw JS code as statements</a></li>
 </ul>
@@ -614,7 +614,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#__bs_no_version_header">-bs-no-version-header</a></li>
 </ul>
 </li>
-<li><a href="#_semantics_difference_from_other_backends">Semantics difference from other backends</a>
+<li><a href="#_semantic_differences_from_other_backends">Semantic differences from other backends</a>
 <ul class="sectlevel2">
 <li><a href="#_custom_data_type">Custom data type</a></li>
 <li><a href="#_physical_in_equality">Physical (in)equality</a></li>
@@ -699,7 +699,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="paragraph">
 <p>BuckleScript is a backend for the <a href="https://ocaml.org/">OCaml</a> compiler which emits
 JavaScript. It works with both vanilla OCaml and <a href="https://github.com/facebook/Reason">Reason</a>, the
-whole compiler is compiled into JS (and ASM) so that you can play it
+whole compiler is compiled into JS (and ASM) so that you can play with it
 in the <a href="http://bloomberg.github.io/bucklescript/js-demo/">browser</a>.</p>
 </div>
 <div class="admonitionblock note">
@@ -711,7 +711,7 @@ in the <a href="http://bloomberg.github.io/bucklescript/js-demo/">browser</a>.</
 <td class="content">
 <div class="title">PDF version is  <a href="http://bloomberg.github.io/bucklescript/Manual.pdf">available</a>.</div>
 <div class="paragraph">
-<p>Document under <a href="https://github.com/bloomberg/bucklescript/Manual.html"><em>bloomberg.github.io</em></a> matches with <a href="https://github.com/bloomberg/bucklescript">master branch</a>.</p>
+<p>Documents under <a href="https://github.com/bloomberg/bucklescript/Manual.html"><em>bloomberg.github.io</em></a> match the <a href="https://github.com/bloomberg/bucklescript">master branch</a>.</p>
 </div>
 <div class="paragraph">
 <p>They are also  distributed (<code>docs/Manual.html</code>, <code>docs/Manual.pdf</code>) together with your <a href="#_installation">Installation</a> (with the exact version).
@@ -742,7 +742,7 @@ increasingly capable of supporting large applications.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_problems_of_javascript_how_bucklescript_solves_it"><a class="anchor" href="#_problems_of_javascript_how_bucklescript_solves_it"></a>Problems of JavaScript &amp;&amp; how BuckleScript solves it</h3>
+<h3 id="_problems_of_javascript_how_bucklescript_solves_them"><a class="anchor" href="#_problems_of_javascript_how_bucklescript_solves_them"></a>Problems of JavaScript &amp;&amp; how BuckleScript solves them</h3>
 <div class="paragraph">
 <p>BuckleScript is mainly designed to solve the problems of <em>large scale</em> JavaScript programming:</p>
 </div>
@@ -752,7 +752,7 @@ increasingly capable of supporting large applications.</p>
 <dd>
 <p>OCaml offers an industrial-strength
 state-of-the-art type system and provides very strong type inference (i.e. No
-verbose type annotation required compared with typescript), which proves
+verbose type annotation required compared with TypeScript), which proves
 <a href="http://programmers.stackexchange.com/questions/215482/what-are-the-safety-benefits-of-a-type-system">invaluable</a>
 in managing large projects. OCaml&#8217;s type system is not just for tooling,
 it is a <em>sound</em> type system which means it is guaranteed that there will
@@ -796,7 +796,7 @@ compilation, allowing the runtime code to be extremely fast.</p>
 <dt class="hdlist1">JS platform and Native platform</dt>
 <dd>
 <p>Run your programs on all platforms, but run your system <em>faster</em>
-under specific platforms. Javascript is everywhere but it does not
+under specific platforms. JavaScript is everywhere but it does not
 mean we have to run all apps in JS, under several platforms, for
 example, server side or iOS/Android native apps, when programs are
 written in OCaml, it can also be compiled to native code for <em>better
@@ -836,10 +836,10 @@ offline <a href="https://github.com/jashkenas/coffeescript/wiki/list-of-language
 <dt class="hdlist1">Large JS output even for a simple program</dt>
 <dd>
 <p>In BuckleScript, a <code>Hello world</code> program generates <em>20 bytes</em> JS code
-instead of <em>50K bytes</em>. This is due to that BuckleScript has an excellent
-integration with JS libs that unlike most JS compilers,
+instead of <em>50K bytes</em>. This is due to BuckleScript having an excellent
+integration with JS libs in that unlike most JS compilers,
 all BuckleScript&#8217;s runtime is written in OCaml itself so that these
-runtime libraries are only needed when user actually call it.</p>
+runtime libraries are only needed when user actually calls it.</p>
 </dd>
 <dt class="hdlist1">Loss of code-structure</dt>
 <dd>
@@ -922,7 +922,7 @@ npm install bs-platform</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Note that using this approach, user can also install other OCaml tools easily.</p>
+<p>Note that using this approach, the user can also install other OCaml tools easily.</p>
 </div>
 </div>
 <div class="sect2">
@@ -1022,7 +1022,7 @@ The built compiler is not <em>relocatable</em> out of box, please don&#8217;t mo
 <div class="ulist">
 <ul>
 <li>
-<p>Create a directory called <code>hello</code> and create <code>bsconfig.json</code>, <code>package.json</code>
+<p>Create a directory called <code>hello</code> and create <code>bsconfig.json</code> and <code>package.json</code>
 as below:</p>
 <div class="listingblock">
 <div class="title">bsconfig.json</div>
@@ -1053,7 +1053,7 @@ as below:</p>
 <p>Version should be updated accordingly</p>
 </li>
 <li>
-<p>Watch mode when development</p>
+<p>Watch mode when developing</p>
 </li>
 </ol>
 </div>
@@ -1096,12 +1096,12 @@ as below:</p>
 <div class="colist arabic">
 <ol>
 <li>
-<p>The compiler analyze this module is impure due to the side effect</p>
+<p>The compiler detects this module is impure due to the side effect.</p>
 </li>
 </ol>
 </div>
 <div class="paragraph">
-<p>User can  also run <code>watch</code> mode see changes instantly while editing.</p>
+<p>User can  also run <code>watch</code> mode to see changes instantly while editing.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1131,7 +1131,7 @@ will call <code>fib</code>.</p>
 <div class="ulist">
 <ul>
 <li>
-<p>Create a directory <code>fib</code> and created files, <code>bsconfig.json</code>, <code>package.json</code></p>
+<p>Create a directory <code>fib</code> and create files <code>bsconfig.json</code> and <code>package.json</code></p>
 <div class="listingblock">
 <div class="title">bsconfig.json</div>
 <div class="content">
@@ -1223,7 +1223,7 @@ node lib/js/src/main_entry.js</code></pre>
 <h2 id="_built_in_npm_support"><a class="anchor" href="#_built_in_npm_support"></a>Built in NPM support</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_build_ocaml_library_as_a_npm_package"><a class="anchor" href="#_build_ocaml_library_as_a_npm_package"></a>Build OCaml library as a npm package</h3>
+<h3 id="_build_an_ocaml_library_as_a_npm_package"><a class="anchor" href="#_build_an_ocaml_library_as_a_npm_package"></a>Build an OCaml library as a npm package</h3>
 <div class="paragraph">
 <p>BuckleScript build system has built in support for NPM packages,
 please checkout the section about the bsb for NPM support.</p>
@@ -1245,15 +1245,15 @@ are safe to skip this section.</p>
 </div>
 <div class="paragraph">
 <p>BuckleScript extends the OCaml compiler options with several flags to
-provide better experience for NPM users.</p>
+provide a better experience for NPM users.</p>
 </div>
 <div class="paragraph">
 <p>In general, you are expected to see two kinds of build artifacts, the
-generated JS files and meta data which your OCaml dependencies rely
+generated JS files and metadata which your OCaml dependencies rely
 on.</p>
 </div>
 <div class="paragraph">
-<p>Since CommonJS has no namespaces, to allow JS files live in different
+<p>Since CommonJS has no namespaces, to allow JS files to live in different
 directories, we have a flag</p>
 </div>
 <div class="listingblock">
@@ -1265,10 +1265,10 @@ directories, we have a flag</p>
 <p>By passing this flag, <code>bsc.exe</code> will store your <code>package_name</code> and
 relative path to <code>package.json</code> in <code>.cmj</code> files. It will also generate
 JS files in the directory you specified. You can, and are encouraged
-to, store Javascript files in a hierarchical directory.</p>
+to, store JavaScript files in a hierarchical directory.</p>
 </div>
 <div class="paragraph">
-<p>For the binary artifacts, (Note that this is not necessary if you only
+<p>For the binary artifacts (Note that this is not necessary if you only
 want your libraries to be consumed by JS developers, and it has
 benefit since end users don&#8217;t need these binary data any more), the
 convention is to store all <code>*.cm</code> data in a <em>single</em> directory
@@ -1312,7 +1312,7 @@ pretty straightforward:</p>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Since BuckleScript guarantees that all OCaml functions are exported as
-is, no extra work is required to expose OCaml function to JavaScript.</p>
+is, no extra work is required to expose OCaml functions to JavaScript.</p>
 </div>
 <div class="admonitionblock caution">
 <table>
@@ -1330,7 +1330,7 @@ want to export those external functions, please write <code>val</code> instead</
 <li>
 <p><code>operators</code> are escaped, since Javascript does not support user
 defined operators. For example, instead of calling <code>Pervasives.(^)</code>,
-you have to call <code>Pervasives.$caret</code> from your Javascript functions</p>
+you have to call <code>Pervasives.$caret</code> from your JavaScript functions</p>
 </li>
 </ul>
 </div>
@@ -1353,7 +1353,7 @@ we recommend users to export it as functions.</p>
 </div>
 </div>
 <div class="paragraph">
-<p>Currently, we recommend user to expose the constructor as a function
+<p>Currently, we recommend the user expose the constructor as a function
 so that it can be constructed from the JS side.</p>
 </div>
 <div class="listingblock">
@@ -1371,7 +1371,7 @@ so that it can be constructed from the JS side.</p>
 <td class="content">
 <div class="paragraph">
 <p>In the future, we will derive these functions to
-automate such process</p>
+automate this process.</p>
 </div>
 </td>
 </tr>
@@ -1383,7 +1383,7 @@ automate such process</p>
 <h2 id="_bucklescript_annotations_for_unicode_and_js_ffi_support"><a class="anchor" href="#_bucklescript_annotations_for_unicode_and_js_ffi_support"></a>BuckleScript annotations for Unicode and JS FFI support</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>To make OCaml work smoothly with Javascript, we introduced several
+<p>To make OCaml work smoothly with JavaScript, we introduced several
 extensions to the OCaml language. These BuckleScript extensions
 facilitate the integration of native JavaScript code and
 improve the generated code.</p>
@@ -1398,14 +1398,14 @@ improve the generated code.</p>
 </td>
 <td class="content">
 <div class="paragraph">
-<p>In this section, we assume the source is encoded using UTF8</p>
+<p>In this section, we assume the source is encoded using UTF8.</p>
 </div>
 </td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>In OCaml, string is an immutable byte sequence (like GoLang), so if user type some Unicode</p>
+<p>In OCaml, string is an immutable byte sequence (like GoLang), so if the user types some Unicode</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1421,7 +1421,7 @@ improve the generated code.</p>
 </div>
 </div>
 <div class="paragraph">
-<p>Luckily, OCaml allows customized multiple-line string support, BuckleScript <strong>reserves</strong> the delimiter <code>js</code> and <code>j</code>(<code>j</code> is unused yet).</p>
+<p>Luckily, OCaml allows customized multiple-line string support, BuckleScript <strong>reserves</strong> the delimiter <code>js</code> and <code>j</code> (<code>j</code> is unused so far).</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1436,7 +1436,7 @@ improve the generated code.</p>
 </div>
 </div>
 <div class="paragraph">
-<p>Inside <code>js</code> delimiter, the escape convention is like JavaScript</p>
+<p>Inside the <code>js</code> delimiter, the escape convention is like JavaScript</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1457,7 +1457,7 @@ improve the generated code.</p>
 users have to write type declarations.
 In OCaml, unlike TypeScript, users do not need to create a separate
 <code>.d.ts</code> file,
-since the type declarations is an integral part of OCaml.</p>
+since the type declarations are an integral part of OCaml.</p>
 </div>
 <div class="paragraph">
 <p>The FFI is divided into several components:</p>
@@ -1477,7 +1477,7 @@ since the type declarations is an integral part of OCaml.</p>
 <p>Binding to classes</p>
 </li>
 <li>
-<p>Extensions to the language for debugger, regex and embedding arbitrary JS
+<p>Extensions to the language for debugger, regex, and embedding arbitrary JS
 code</p>
 </li>
 </ul>
@@ -1524,8 +1524,8 @@ it can be a function or plain value.</p>
 <div class="ulist">
 <ul>
 <li>
-<p>If <code>external-declaration</code> is the same as <code>value-name</code>, user can leave <code>external-declaration</code> empty,
-for example:</p>
+<p>If <code>external-declaration</code> is the same as <code>value-name</code>, the user can leave <code>external-declaration</code> empty.
+For example:</p>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">external</span> <span class="tok-n">document</span> <span class="tok-o">:</span> <span class="tok-n">dom</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;&quot;</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-k">val</span><span class="tok-o">]</span></code></pre>
@@ -1650,7 +1650,7 @@ give the JavaScript foreign function a different name:</p>
 <div class="ulist">
 <ul>
 <li>
-<p>if <code>external-declaration</code> is the same as value-name, it can be left empty, for example,</p>
+<p>if <code>external-declaration</code> is the same as value-name, it can be left empty, for example:</p>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">external</span> <span class="tok-n">http</span> <span class="tok-o">:</span> <span class="tok-n">http</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;&quot;</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-k">module</span><span class="tok-o">]</span></code></pre>
@@ -1667,7 +1667,7 @@ give the JavaScript foreign function a different name:</p>
 <div class="sect3">
 <h4 id="_binding_to_method_bs_send_bs_send_pipe"><a class="anchor" href="#_binding_to_method_bs_send_bs_send_pipe"></a>Binding to method: bs.send, bs.send.pipe</h4>
 <div class="paragraph">
-<p><code>bs.send</code> helps the user send a message to a JS object</p>
+<p><code>bs.send</code> helps the user send a message to a JS object.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1728,7 +1728,7 @@ is put in the position of last argument to help user write in a <em>chaining sty
 <div class="ulist">
 <ul>
 <li>
-<p>if <code>external-declaration</code> is the same as value-name, it can be left empty, for example,</p>
+<p>if <code>external-declaration</code> is the same as value-name, it can be left empty, for example:</p>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">external</span> <span class="tok-n">getElementById</span> <span class="tok-o">:</span> <span class="tok-n">dom</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">string</span> <span class="tok-o">-&gt;</span> <span class="tok-n">id</span> <span class="tok-o">=</span>
@@ -1774,8 +1774,8 @@ is put in the position of last argument to help user write in a <em>chaining sty
 <div class="sect2">
 <h3 id="_splice_calling_convention_bs_splice"><a class="anchor" href="#_splice_calling_convention_bs_splice"></a>Splice calling convention: bs.splice</h3>
 <div class="paragraph">
-<p>In JS, it is quite common to have a function take variadic arguments,
-BuckleScript support typing homogeneous variadic arguments. For example,</p>
+<p>In JS, it is quite common to have a function take variadic arguments.
+BuckleScript supports typing homogeneous variadic arguments. For example,</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1799,7 +1799,7 @@ BuckleScript support typing homogeneous variadic arguments. For example,</p>
 <td class="content">
 <div class="paragraph">
 <p>For the external call, if the <code>array</code> arguments is not a compile time array,
-the compiler will emit an error message</p>
+the compiler will emit an error message.</p>
 </div>
 </td>
 </tr>
@@ -1811,8 +1811,8 @@ the compiler will emit an error message</p>
 <div class="sect3">
 <h4 id="_using_polymorphic_variant_to_model_enums_and_string_types"><a class="anchor" href="#_using_polymorphic_variant_to_model_enums_and_string_types"></a>Using polymorphic variant to model enums and string types</h4>
 <div class="paragraph">
-<p>There are several patterns heavily used in existing JavaScript codebase, for example,
-string type is used a lot. BuckleScript FFI allows to model string type in a safe
+<p>There are several patterns heavily used in existing JavaScript codebases, for example,
+the string type is used a lot. BuckleScript FFI allows the user to model string type in a safe
 way by using annotated polymorphic variant.</p>
 </div>
 <div class="listingblock">
@@ -1876,7 +1876,7 @@ way by using annotated polymorphic variant.</p>
 <div class="sect3">
 <h4 id="_using_polymorphic_variant_to_model_event_listener"><a class="anchor" href="#_using_polymorphic_variant_to_model_event_listener"></a>Using polymorphic variant to model event listener</h4>
 <div class="paragraph">
-<p>BuckleScript model this in a type-safe way by using annotated polymorphic variants</p>
+<p>BuckleScript models this in a type-safe way by using annotated polymorphic variants.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1897,7 +1897,7 @@ way by using annotated polymorphic variant.</p>
 <div class="colist arabic">
 <ol>
 <li>
-<p>This is a very powerful typing: each event can have its <em>different types</em></p>
+<p>This is a very powerful typing: each event can have its own <em>different types</em>.</p>
 </li>
 </ol>
 </div>
@@ -2092,8 +2092,8 @@ data.</p>
 <div class="sect2">
 <h3 id="_binding_to_nodejs_special_variables_bs_node"><a class="anchor" href="#_binding_to_nodejs_special_variables_bs_node"></a>Binding to NodeJS special variables: bs.node</h3>
 <div class="paragraph">
-<p>NodeJS has several file local variables: <code><em>dirname</code>, <code></em>filename</code>, <code>_module</code>, and <code>require</code>,
-their semantics are more like macros instead of functions.</p>
+<p>NodeJS has several file local variables: <code><em>dirname</code>, <code></em>filename</code>, <code>_module</code>, and <code>require</code>.
+Their semantics are more like macros instead of functions.</p>
 </div>
 <div class="paragraph">
 <p>BuckleScript provides built-in macro support for these variables:</p>
@@ -2149,7 +2149,7 @@ reading the type <code>'a &#8594; 'b &#8594; 'c</code>, it can be in several cas
 </div>
 </div>
 <div class="paragraph">
-<p>In OCaml, they all have the same type; however,
+<p>In OCaml they all have the same type; however,
 <code>f</code> and <code>g</code> may be compiled into functions with
 different arities.</p>
 </div>
@@ -2260,7 +2260,7 @@ with arity 1</p>
 <p><code>u1</code> has arity of 3</p>
 </li>
 <li>
-<p><code>u2</code> has arity of 2, reutrn a function  with arity 1</p>
+<p><code>u2</code> has arity of 2, return a function with arity 1</p>
 </li>
 </ol>
 </div>
@@ -2318,7 +2318,7 @@ only once.</p>
 </td>
 <td class="content">
 <div class="paragraph">
-<p>In general, <code>bs.uncurry</code> is recommended, and compiler will do lots of optimizations to resolve the <code>curry</code> to <code>uncurry</code> calling convention in the compile time. However, there are some cases the compiler optimizer could not do it, in that case, it will be converted runtime.</p>
+<p>In general, <code>bs.uncurry</code> is recommended, and compiler will do lots of optimizations to resolve the <code>curry</code> to <code>uncurry</code> calling convention at compile time. However, there are some cases the compiler optimizer could not do it, in that case, it will be converted runtime.</p>
 </div>
 <div class="paragraph">
 <p>This means <code>[@bs]</code> are completely static behavior (no any runtime cost), while <code>[@bs.uncurry]</code> is more convenient for end users but in some very rare cases it might be slower than <code>[@bs]</code></p>
@@ -2543,12 +2543,12 @@ object method dispatch.</p>
 <div class="title">Typing JavaScript objects:</div>
 <p>OCaml supports object oriented style natively and provides structural type system.
 OCaml&#8217;s object system has different runtime semantics from JS object, but they
-share the same type system, all JS objects of type <code>'a</code> is typed as <code>'a Js.t</code></p>
+share the same type system, all JS objects of type <code>'a</code> are typed as <code>'a Js.t</code></p>
 </div>
 <div class="paragraph">
-<p>OCaml provide two kinds of syntaxes to mode structural typing: <code>&lt; p1 : t1 &gt;</code> style and
-<code>class type</code> style, they are mostly the same except that the latter is more feature rich
-(support inheritance) but more verbose.</p>
+<p>OCaml provides two kinds of syntaxes to model structural typing: <code>&lt; p1 : t1 &gt;</code> style and
+<code>class type</code> style. They are mostly the same except that the latter is more feature rich
+(supporting inheritance) but more verbose.</p>
 </div>
 <div class="sect3">
 <h4 id="_simple_object_type"><a class="anchor" href="#_simple_object_type"></a>Simple object type</h4>
@@ -2599,7 +2599,7 @@ here we use OCaml objects to model module <code>demo</code></p>
 </ul>
 </div>
 <div class="paragraph">
-<p>The difference is that for <code>method</code>, the type system will force users to full-fil
+<p>The difference is that for <code>method</code>, the type system will force users to fulfill
 its arguments all at the same time, since its semantics depends on <code>this</code> in JavaScript.</p>
 </div>
 <div class="paragraph">
@@ -2637,7 +2637,7 @@ its arguments all at the same time, since its semantics depends on <code>this</c
 <div class="colist arabic">
 <ol>
 <li>
-<p><code>..</code> is a row variable, which means the object can contain more methods</p>
+<p><code>..</code> is a row variable, which means the object can contain more methods.</p>
 </li>
 </ol>
 </div>
@@ -2661,7 +2661,7 @@ its arguments all at the same time, since its semantics depends on <code>this</c
 <ol>
 <li>
 <p><code>class type</code> annotated with <code>[@bs]</code> is treated as a JS class type,
-it needs to be lifted to <code>Js.t</code> too</p>
+it needs to be lifted to <code>Js.t</code> too.</p>
 </li>
 </ol>
 </div>
@@ -2695,10 +2695,10 @@ are treated as properties.</p>
 <div class="colist arabic">
 <ol>
 <li>
-<p>property get should not come with any argument as we discussed above, which will be checked by the compiler</p>
+<p>property get should not come with any argument as we discussed above, which will be checked by the compiler.</p>
 </li>
 <li>
-<p>Here <code>method</code> is of arity 3</p>
+<p>Here <code>method</code> is of arity 3.</p>
 </li>
 </ol>
 </div>
@@ -2854,7 +2854,7 @@ Getter/Setter also applies to class type label
 <h4 id="_create_js_objects_using_bs_obj"><a class="anchor" href="#_create_js_objects_using_bs_obj"></a>Create JS objects using bs.obj</h4>
 <div class="paragraph">
 <p>Not only can we create bindings to JS objects, but also we can
-create JS objects in a type safe way in OCaml side:</p>
+create JS objects in a type safe way on the OCaml side:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -2877,7 +2877,7 @@ create JS objects in a type safe way in OCaml side:</p>
 </div>
 </div>
 <div class="paragraph">
-<p>The compiler would infer <code>u</code> as type</p>
+<p>The compiler would infer <code>u</code> as type:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -2886,7 +2886,7 @@ create JS objects in a type safe way in OCaml side:</p>
 </div>
 <div class="paragraph">
 <p>To make it more symmetric,  extension <code>bs.obj</code> can also be applied
-into the type level, so you can write</p>
+into the type level, so you can write:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -2954,7 +2954,7 @@ into the type level, so you can write</p>
 <li>
 <p>In OCaml, the order of label does not matter, and the evaluation order
 of arguments is undefined. Since the order does not matter, to make sure the compiler realize all the arguments
-are full-filled (including optional arguments), it is common to have a <code>unit</code> type before the result</p>
+are fulfilled (including optional arguments), it is common to have a <code>unit</code> type before the result.</p>
 </li>
 </ol>
 </div>
@@ -2984,8 +2984,8 @@ are full-filled (including optional arguments), it is common to have a <code>uni
 <div class="colist arabic">
 <ol>
 <li>
-<p><code>fn</code> property is not method, it does not rely on <code>this</code>,
-we will show how to create JS method in OCaml later.</p>
+<p><code>fn</code> property is not method, it does not rely on <code>this</code>.
+We will show how to create JS method in OCaml later.</p>
 </li>
 </ol>
 </div>
@@ -3096,7 +3096,7 @@ BuckleScript too.</p>
 </div>
 </div>
 <div class="paragraph">
-<p>Below is another example to consume JS object :</p>
+<p>Below is another example to consume a JS object :</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -3140,10 +3140,10 @@ BuckleScript too.</p>
 <div class="sect3">
 <h4 id="_object_label_translation_convention"><a class="anchor" href="#_object_label_translation_convention"></a>Object label translation convention</h4>
 <div class="paragraph">
-<p>There are two cases, we might want to do a name mangling for JS object method name.</p>
+<p>There are two cases, where we might want to do name mangling for a JS object method name.</p>
 </div>
 <div class="paragraph">
-<p>First, in OCaml, some names are keywords, we want to add an underscore to make it not a syntax
+<p>First, in OCaml, some names are keywords, so we want to add an underscore to avoid a syntax
 error.</p>
 </div>
 <div class="listingblock">
@@ -3161,9 +3161,9 @@ error.</p>
 </div>
 </div>
 <div class="paragraph">
-<p>Second, it is common to have several types for a single method, to model
+<p>Second, it is common to have several types for a single method. To model
 this ad-hoc polymorphism, we introduced a small convention when translating
-object labels, this is <em>occasionally</em> useful as below</p>
+object labels, which is <em>occasionally</em> useful as below</p>
 </div>
 <div class="listingblock">
 <div class="title">Ad-hoc polymorphism</div>
@@ -3235,12 +3235,12 @@ drop the first '_'</p>
 <code>undefined</code> or <code>null</code> values.</p>
 </div>
 <div class="paragraph">
-<p>So we introduced auto coercion for return values for two benefits:</p>
+<p>So we introduced auto coercion for return values to gain two benefits:</p>
 </div>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p>More safety for FFI code without performance cost (explained later)</p>
+<p>More safety for FFI code without performance cost (explained later).</p>
 </li>
 <li>
 <p>More idiomatic OCaml code for users to consume the FFI.</p>
@@ -3294,8 +3294,8 @@ drop the first '_'</p>
 </ol>
 </div>
 <div class="paragraph">
-<p>Currently, 4 directives are supported: <code>null_to_opt</code>, <code>undefined_to_opt</code>,
-, <code>null_undefined_to_opt</code> and <code>identity</code>.</p>
+<p>Currently 4 directives are supported: <code>null_to_opt</code>, <code>undefined_to_opt</code>,
+<code>null_undefined_to_opt</code> and <code>identity</code>.</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -3306,29 +3306,29 @@ drop the first '_'</p>
 <td class="content">
 <div class="paragraph">
 <p><code>null_to_opt</code>, <code>undefined_to_opt</code> and <code>null_undefined_to_opt</code> will <strong>semantically</strong>
-convert nullable value to <code>option</code> which is a boxed value, but the compiler will
+convert a nullable value to <code>option</code> which is a boxed value, but the compiler will
 do smart optimizations to <strong>remove such boxing overhead</strong> when the returned value is destructed
 in the same routine.</p>
 </div>
 <div class="paragraph">
-<p>The three directives above require users to write literally <code>_ option</code>, it is
+<p>The three directives above require users to write literally <code>_ option</code>. It is
 in theory not necessary, but it is required to reduce user errors.</p>
 </div>
 <div class="paragraph">
-<p>When return type is <code>unit</code>: the compiler will append its return value
-with an OCaml <code>unit</code> literal to make sure it does return <code>unit</code>, its main purpose
-is to make user consume FFI in idiomatic OCaml code, the cost is <strong>very very small</strong> and
-the compiler will do smart optimizations to remove it when the returned value is not used (mostly likely)</p>
+<p>When the return type is <code>unit</code>: the compiler will append its return value
+with an OCaml <code>unit</code> literal to make sure it does return <code>unit</code>. Its main purpose
+is to make the user consume FFI in idiomatic OCaml code, the cost is <strong>very very small</strong> and
+the compiler will do smart optimizations to remove it when the returned value is not used (mostly likely).</p>
 </div>
 <div class="paragraph">
-<p>When return type is <code>bool</code>, the compiler will coerce its return value from
+<p>When the return type is <code>bool</code>, the compiler will coerce its return value from
 JS boolean to OCaml boolean. The cost is also <strong>very small</strong> and compiler will remove
 such coercion when it is not needed. Note even if your external FFI does return OCaml <code>bool</code> or <code>unit</code>,
 such implicit coercion will <strong>cause no harm</strong>.</p>
 </div>
 <div class="paragraph">
-<p><code>identity</code> will make sure that compiler will do nothing about returned value, it
-is rarely used but introduced here for debugging purpose.</p>
+<p><code>identity</code> will make sure that compiler will do nothing about the returned value. It
+is rarely used, but introduced here for debugging purpose.</p>
 </div>
 </td>
 </tr>
@@ -3347,7 +3347,7 @@ is rarely used but introduced here for debugging purpose.</p>
 <div class="paragraph">
 <p>This is not encouraged. The user should minimize and
 localize use cases
-of embedding raw Javascript code, however, sometimes it&#8217;s necessary to
+of embedding raw JavaScript code, however, sometimes it&#8217;s necessary to
 get the job done.</p>
 </div>
 </td>
@@ -3355,9 +3355,9 @@ get the job done.</p>
 </table>
 </div>
 <div class="sect3">
-<h4 id="_detect_global_varialbe_existence_code_bs_external_code_since_1_5_1"><a class="anchor" href="#_detect_global_varialbe_existence_code_bs_external_code_since_1_5_1"></a>Detect global varialbe existence <code>bs.external</code> (@since 1.5.1)</h4>
+<h4 id="_detect_global_variable_existence_code_bs_external_code_since_1_5_1"><a class="anchor" href="#_detect_global_variable_existence_code_bs_external_code_since_1_5_1"></a>Detect global variable existence <code>bs.external</code> (@since 1.5.1)</h4>
 <div class="paragraph">
-<p>Before we dive into embedding arbitrary JS code, a quite common use case of embedding untyped JS code is detect a global variable(feature detection), Bucklescript provides a relatively type safe approach for such use case: <code>bs.external</code> (or <code>extenral</code>),
+<p>Before we dive into embedding arbitrary JS code, a quite common use case of embedding untyped JS code is detect a global variable (feature detection), Bucklescript provides a relatively type safe approach for such use case: <code>bs.external</code> (or <code>extenral</code>),
  <code>[%bs.external a_single_identifier]</code> is a value of <code>_ option</code> type, see examples below</p>
 </div>
 <div class="listingblock">
@@ -3513,7 +3513,7 @@ that the order is correct.</p>
 <div class="sect2">
 <h3 id="_regex_support"><a class="anchor" href="#_regex_support"></a>Regex support</h3>
 <div class="paragraph">
-<p>We introduced <code>bs.re</code> for Javascript regex expression:</p>
+<p>We introduced <code>bs.re</code> for Javascript regex expressions:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -3522,7 +3522,7 @@ that the order is correct.</p>
 </div>
 <div class="paragraph">
 <p>The compiler will infer <code>f</code> has type <code>Js.Re.t</code> and generate code as
-below</p>
+below:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -3536,8 +3536,7 @@ below</p>
 <div class="title">Note</div>
 </td>
 <td class="content">
-<code>Js.Re.t</code> is an abstract type, we are working on providing
-bindings for it.
+<code>Js.Re.t</code> can be accessed and manipulated using the functions available in the <code>Js.Re</code> module.
 </td>
 </tr>
 </table>
@@ -3546,7 +3545,7 @@ bindings for it.
 <div class="sect2">
 <h3 id="_examples_2"><a class="anchor" href="#_examples_2"></a>Examples</h3>
 <div class="paragraph">
-<p>Below is a simple example for <a href="https://mochajs.org/">mocha</a> library. For
+<p>Below is a simple example for the <a href="https://mochajs.org/">mocha</a> library. For
 more examples, please visit
 <a href="https://github.com/bloomberg/bucklescript-addons" class="bare">https://github.com/bloomberg/bucklescript-addons</a></p>
 </div>
@@ -3565,7 +3564,7 @@ more examples, please visit
 <div class="paragraph">
 <p>Since, <code>mochajs</code> is a test framework, we also need some assertion
  tests. We can also describe the bindings to <code>assert.deepEqual</code> from
- nodejs <code>assert</code> library:</p>
+ the nodejs <code>assert</code> library:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -3713,7 +3712,7 @@ also adds several flags:</p>
 </div>
 </div>
 <div class="paragraph">
-<p><code>bsc.exe</code> will build module <code>Main</code> and all its dependencies, when it
+<p><code>bsc.exe</code> will build module <code>Main</code> and all its dependencies and when it
 finishes, it will run <code>node main.js</code>.</p>
 </div>
 <div class="listingblock">
@@ -3736,19 +3735,19 @@ finishes, it will run <code>node main.js</code>.</p>
 </div>
 </div>
 <div class="paragraph">
-<p>The compiler will sort the order of input files before starting
+<p>the compiler will sort the order of input files before starting
 compilation.</p>
 </div>
 <div class="paragraph">
-<p>BuckleScript supports two compilation mode, script mode and package
-mode, in package mode, you have to provide <code>package.json</code> on top and set the options
-<code>-bs-package-name</code>, <code>-bs-package-output</code>. In script mode, such flags are not needed</p>
+<p>BuckleScript supports two compilation modes: script mode and package
+mode. In package mode, you have to provide <code>package.json</code> on top and set the options
+<code>-bs-package-name</code>, <code>-bs-package-output</code>. In script mode, such flags are not needed.</p>
 </div>
 </div>
 <div class="sect2">
 <h3 id="__bs_package_name"><a class="anchor" href="#__bs_package_name"></a>-bs-package-name</h3>
 <div class="paragraph">
-<p>The project name of your project, user is suggested to make it
+<p>The project name of your project. The user is suggested to make it
 consistent with the <code>name</code> field in <code>package.json</code></p>
 </div>
 </div>
@@ -3757,7 +3756,7 @@ consistent with the <code>name</code> field in <code>package.json</code></p>
 <div class="paragraph">
 <p>The format is <code>module_system:oupt/path/relative/to/package.json</code>
 Currently supported module systesms are: <code>commonjs</code>, <code>amdjs</code> and
-<code>goog:&lt;namespace&gt;</code></p>
+<code>goog:&lt;namespace&gt;</code>.</p>
 </div>
 <div class="paragraph">
 <p>For example, when you want to use the <code>goog</code> module system, you can do
@@ -3775,7 +3774,7 @@ things like this:</p>
 <div class="title">Note</div>
 </td>
 <td class="content">
-User can supply multiple <code>-bs-package-output</code> at the same time.
+The user can supply multiple <code>-bs-package-output</code> at the same time.
 </td>
 </tr>
 </table>
@@ -3789,7 +3788,7 @@ User can supply multiple <code>-bs-package-output</code> at the same time.
 </div>
 </div>
 <div class="paragraph">
-<p>It will generate <code>x.js</code> in <code>lib/js</code> as commonjs module, <code>lib/goog</code> as google module and <code>lib/amdjs</code> as amdjs module at the same time.</p>
+<p>It will generate <code>x.js</code> in <code>lib/js</code> as a commonjs module, <code>lib/goog</code> as a google module and <code>lib/amdjs</code> as an amdjs module at the same time.</p>
 </div>
 <div class="paragraph">
 <p>You would then need a bundler for the different module systems:
@@ -3801,8 +3800,8 @@ User can supply multiple <code>-bs-package-output</code> at the same time.
 <h3 id="__bs_gen_tds"><a class="anchor" href="#__bs_gen_tds"></a>-bs-gen-tds</h3>
 <div class="paragraph">
 <p>Trigger the generation of TypeScript <code>.d.ts</code> files.
-<code>bsc.exe</code> has the ability to also emits <code>.d.ts</code> for better interaction with
-typescript. This is still experimental.</p>
+<code>bsc.exe</code> has the ability to also emit <code>.d.ts</code> for better interaction with
+TypeScript. This is still experimental.</p>
 </div>
 <div class="paragraph">
 <p>For more options, please see the documentation of <code>bsc.exe -help</code>.</p>
@@ -3811,7 +3810,7 @@ typescript. This is still experimental.</p>
 <div class="sect2">
 <h3 id="__bs_no_warn_ffi_type"><a class="anchor" href="#__bs_no_warn_ffi_type"></a>-bs-no-warn-ffi-type</h3>
 <div class="paragraph">
-<p>Turn off warnings on FFI type declarations</p>
+<p>Turn off warnings on FFI type declarations.</p>
 </div>
 </div>
 <div class="sect2">
@@ -3866,7 +3865,7 @@ learning or troubleshooting.</p>
 <div class="sect2">
 <h3 id="__bs_no_builtin_ppx_ml_bs_no_builtin_ppx_mli"><a class="anchor" href="#__bs_no_builtin_ppx_ml_bs_no_builtin_ppx_mli"></a>-bs-no-builtin-ppx-ml, -bs-no-builtin-ppx-mli</h3>
 <div class="paragraph">
-<p>If users don&#8217;t use any bs specific annotaions, user can explicitly turn it off.
+<p>If the user doesn&#8217;t use any bs specific annotations, the user can explicitly turn it off.
 Another use case is that users can use <code>-ppx</code> explicitly as below:</p>
 </div>
 <div class="listingblock">
@@ -3878,13 +3877,13 @@ Another use case is that users can use <code>-ppx</code> explicitly as below:</p
 <div class="sect2">
 <h3 id="__bs_no_version_header"><a class="anchor" href="#__bs_no_version_header"></a>-bs-no-version-header</h3>
 <div class="paragraph">
-<p>Don&#8217;t print version header</p>
+<p>Don&#8217;t print version header.</p>
 </div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_semantics_difference_from_other_backends"><a class="anchor" href="#_semantics_difference_from_other_backends"></a>Semantics difference from other backends</h2>
+<h2 id="_semantic_differences_from_other_backends"><a class="anchor" href="#_semantic_differences_from_other_backends"></a>Semantic differences from other backends</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>This is particularly important when porting an existing OCaml
@@ -3901,7 +3900,7 @@ available in our backend (since we have no C FFI).</p>
 <div class="sect2">
 <h3 id="_physical_in_equality"><a class="anchor" href="#_physical_in_equality"></a>Physical (in)equality</h3>
 <div class="paragraph">
-<p>In general, Users should only use physical equality as an optimization
+<p>In general, users should only use physical equality as an optimization
 technique, but not rely on its correctness, since it is tightly coupled
 with the runtime.</p>
 </div>
@@ -3910,7 +3909,7 @@ with the runtime.</p>
 <h3 id="_string_char_range"><a class="anchor" href="#_string_char_range"></a>String char range</h3>
 <div class="paragraph">
 <p>Currently, BuckleScript assumes that the char range is <code>0-255</code>. The user
-should be careful when they pass a JavaScript string to OCaml side. Note
+should be careful when they pass a JavaScript string to the OCaml side. Note
 that we are working on a solution for this problem.</p>
 </div>
 </div>
@@ -3969,7 +3968,7 @@ and there are differences.</p>
 <h3 id="_hashtbl_hash_algorithm"><a class="anchor" href="#_hashtbl_hash_algorithm"></a>Hashtbl hash algorithm</h3>
 <div class="paragraph">
 <p>BuckleScript uses the same algorithm as native OCaml but the output is
-different due to runtime representation of int/int64/int32 and float.</p>
+different due to the runtime representation of int/int64/int32 and float.</p>
 </div>
 </div>
 <div class="sect2">
@@ -3981,8 +3980,8 @@ different due to runtime representation of int/int64/int32 and float.</p>
 <div class="sect2">
 <h3 id="_sys_argv_sys_max_array_length_sys_max_string_length"><a class="anchor" href="#_sys_argv_sys_max_array_length_sys_max_string_length"></a>Sys.argv, Sys.max_array_length, Sys.max_string_length</h3>
 <div class="paragraph">
-<p>Command line arguments are always empty,
-might be fixed in the near future.
+<p>Command line arguments are always empty.
+This might be fixed in the near future.
 <code>Sys.max_array_length</code> and <code>Sys.max_string_length</code> will be the same as
 <code>max_int</code>, but it might be respected.</p>
 </div>
@@ -4000,29 +3999,29 @@ not supported but both <code>Pervasives.stdout</code> and <code>Pervasives.stder
 <h2 id="_conditional_compilation_support_static_if"><a class="anchor" href="#_conditional_compilation_support_static_if"></a>Conditional compilation support - static if</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>It is quite common that people want to write code works with different versions of compilers and libraries.</p>
+<p>It is quite common that people want to write code that works with different versions of compilers and libraries.</p>
 </div>
 <div class="paragraph">
-<p>People used to use preprocessors like <a href="http://tigcc.ticalc.org/doc/cpp.html">C preprocessor</a> for C family languages.
-In OCaml community there are several preprocessors: <a href="https://github.com/mjambon/cppo">cppo</a>,
+<p>People used to use preprocessors like <a href="http://tigcc.ticalc.org/doc/cpp.html">C preprocessor</a> for the C family languages.
+In the OCaml community there are several preprocessors: <a href="https://github.com/mjambon/cppo">cppo</a>,
 <a href="https://github.com/OCamlPro/typerex-build/tree/master/tools/ocp-pp">ocp-pp</a>, camlp4 IFDEF macros, <a href="https://github.com/diml/optcomp">optcomp</a> and
 <a href="https://github.com/janestreet/ppx_optcomp">ppx optcomp</a>.</p>
 </div>
 <div class="paragraph">
 <p>Instead of using a preprocessor, BuckleScript adds language level static if compilation to the language.
-It is less powerful than other preprocessors since it only support static if, no <code>#define</code>, <code>#undefine</code>, <code>#include</code>,
+It is less powerful than other preprocessors since it only supports static if (no <code>#define</code>, <code>#undefine</code>, <code>#include</code>)
 but there are several advantages.</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
 <p>It&#8217;s very small (only around 500 LOC) and highly efficient.
-There is no added pass, everything is done in a <strong>single pass</strong>.
+There is no added pass, allowing everything to be done in a <strong>single pass</strong>.
 It is easy to rebuild the pre-processor in a stand alone file, with no dependencies on compiler
-libs to back-port it to old OCaml compilers</p>
+libs to back-port it to old OCaml compilers.</p>
 </li>
 <li>
-<p>It&#8217;s purely functional and type safe, easy to work with IDEs like merlin</p>
+<p>It&#8217;s purely functional and type safe, easy to work with IDEs like Merlin.</p>
 </li>
 </ul>
 </div>
@@ -4076,20 +4075,20 @@ atom
 <p>type of FLOAT is <code>float</code></p>
 </li>
 <li>
-<p>value of UIDENT comes from either built-in values (with documented types) or environment variable,
+<p>value of UIDENT comes from either built-in values (with documented types) or an environment variable,
 if it is literally <code>true</code>, <code>false</code> then it is <code>bool</code>, else if it is parsable by <code>int_of_string</code>
 then it is  of type int, else if it is parsable by <code>float_of_string</code> then it is float, otherwise
 it would  be string</p>
 </li>
 <li>
 <p>In <code>lhs operator rhs</code>, <code>lhs</code> and <code>rhs</code> are always the same type and return boolean.
-<code>=~</code> is a semantics version operator which requires both sides to be string</p>
+<code>=~</code> is a semantic version operator which requires both sides to be string.</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
 <p>Evaluation rules are obvious.
-<code>=~</code> respect semantics version, for example, the underlying engine</p>
+<code>=~</code> respect semantic version, for example, the underlying engine</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -4150,8 +4149,8 @@ BIG_ENDIAN <span class="tok-nb">false</span></code></pre>
 <div class="sect2">
 <h3 id="_changes_to_command_line_options"><a class="anchor" href="#_changes_to_command_line_options"></a>Changes to command line options</h3>
 <div class="paragraph">
-<p>For BuckleScript users, nothing needs to be done (it is baked in the language level),
-for non BuckleScript users, we provide an external pre-processor, so it will work with other OCaml
+<p>For BuckleScript users, nothing needs to be done (it is baked in the language level).
+For non BuckleScript users, we provide an external pre-processor, so it will work with other OCaml
 compilers too.
 Note that the <a href="https://github.com/bloomberg/bucklescript/blob/master/jscomp/bin/bspp.ml">bspp.ml</a> is a stand alone file,
 so that it even works without compilation.</p>
@@ -4172,7 +4171,7 @@ ocamlc -pp <span class="tok-s1">&#39;ocaml -w -a bspp.ml&#39;</span> -c lwt_unix
 </td>
 <td class="content">
 <div class="paragraph">
-<p>This is a very small extension to the OCaml language, it is backward compatible with OCaml language with such exception.</p>
+<p>This is a very small extension to the OCaml language, it is backward compatible with OCaml language with such exceptions.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -4184,7 +4183,7 @@ ocamlc -pp <span class="tok-s1">&#39;ocaml -w -a bspp.ml&#39;</span> -c lwt_unix
 <div class="colist arabic">
 <ol>
 <li>
-<p><code>#elif</code> at the beginning of a line is interpreted as static if, there is no issue with <code>#if</code> or <code>#end</code>, since they are already keywords</p>
+<p><code>#elif</code> at the beginning of a line is interpreted as static if, there is no issue with <code>#if</code> or <code>#end</code>, since they are already keywords.</p>
 </li>
 </ol>
 </div>
@@ -4222,16 +4221,16 @@ inlining, arity inference and other information.</p>
 <div class="sect2">
 <h3 id="_bucklescript_build_system_code_bsb_code"><a class="anchor" href="#_bucklescript_build_system_code_bsb_code"></a>BuckleScript build system: <code>bsb</code></h3>
 <div class="paragraph">
-<p>BuckleScript proivdes a native build tool on top of Google&#8217;s  <a href="https://github.com/ninja-build/ninja/releases">ninja-build</a>,
-it is designed for fast feedback loop (typically 100ms feedback loop) and works cross platform.</p>
+<p>BuckleScript proivdes a native build tool on top of Google&#8217;s  <a href="https://github.com/ninja-build/ninja/releases">ninja-build</a>.
+It is designed for a fast feedback loop (typically 100ms feedback loop) and works cross platform.</p>
 </div>
 <div class="paragraph">
-<p><code>bsb</code> can be running in any subdirectory, it is a schema based build tool, the schema is
-<a href="http://bloomberg.github.io/bucklescript/docson/#build-schema.json">available</a>, it is strongly recommended to <strong>check out the <a href="http://bloomberg.github.io/bucklescript/docson/#build-schema.json">schema</a></strong>
+<p><code>bsb</code> can be running in any subdirectory. It is a schema based build tool and the schema is
+<a href="http://bloomberg.github.io/bucklescript/docson/#build-schema.json">available</a>. It is strongly recommended to <strong>check out the <a href="http://bloomberg.github.io/bucklescript/docson/#build-schema.json">schema</a></strong>
 after you finish reading the tutorials below.</p>
 </div>
 <div class="paragraph">
-<p>If your editors support JSON schema validation and auto-completion like <a href="https://code.visualstudio.com/docs/languages/json">VSCode</a>,
+<p>If your editor supports JSON schema validation and auto-completion like <a href="https://code.visualstudio.com/docs/languages/json">VSCode</a>,
 below is a configuration to help you get auto-completion and validation for free:</p>
 </div>
 <div class="listingblock">
@@ -4251,9 +4250,9 @@ below is a configuration to help you get auto-completion and validation for free
 </div>
 </div>
 <div class="paragraph">
-<p>The build system is installed as <code>bsb.exe</code> in <code>bs-platform/bin/bsb.exe</code>, due to a known issue in npm,
-we create a JS wrapper (which is accessible in <code>.bin</code> too), so the user can call
-either <code>bsb</code>(slightly higher latency but symlinked into <code>.bin</code>) or <code>bsb.exe</code></p>
+<p>The build system is installed as <code>bsb.exe</code> in <code>bs-platform/bin/bsb.exe</code>. Due to a known issue in npm,
+we create a JS wrapper (which is accessible in <code>.bin</code> too) so the user can call
+either <code>bsb</code> (slightly higher latency but symlinked into <code>.bin</code>) or <code>bsb.exe</code></p>
 </div>
 <div class="paragraph">
 <p>Here is a <strong>minimal</strong> configuration:</p>
@@ -4278,9 +4277,9 @@ either <code>bsb</code>(slightly higher latency but symlinked into <code>.bin</c
 </ol>
 </div>
 <div class="paragraph">
-<p>The entry point is <code>bsb</code>,
-it will check if there is already <code>build.ninja</code> in the build directory,
-if not or need regenerated it will generate a file  <code>build.ninja</code>
+<p>The entry point is <code>bsb</code>.
+It will check if there is already <code>build.ninja</code> in the build directory,
+and if not or it needs to be regenerated it will generate the file  <code>build.ninja</code>
 and delegate the hard work to <code>ninja</code>.</p>
 </div>
 <div class="paragraph">
@@ -4319,7 +4318,7 @@ and delegate the hard work to <code>ninja</code>.</p>
 </ol>
 </div>
 <div class="paragraph">
-<p>We wrap <code>bsb.exe</code> as <code>bsb</code> so that it will work across different platform.</p>
+<p>We wrap <code>bsb.exe</code> as <code>bsb</code> so that it will work across different platforms.</p>
 </div>
 <div class="listingblock">
 <div class="title">Watch mode</div>
@@ -4365,7 +4364,7 @@ bsb -w <b class="conum">(2)</b></code></pre>
 <p>Yet another BuckleScript dependency</p>
 </li>
 <li>
-<p>if true (default) bsb will generate merlin file for you</p>
+<p>If true (default) bsb will generate merlin file for you</p>
 </li>
 </ol>
 </div>
@@ -4399,12 +4398,12 @@ bsb -w <b class="conum">(3)</b></code></pre>
 <p>Build dependencies and lib itself</p>
 </li>
 <li>
-<p>Start watching the project, whenever your changes are made, <code>bsb</code> will rebuild incrementally</p>
+<p>Start watching the project and whenever your changes are made, <code>bsb</code> will rebuild incrementally</p>
 </li>
 </ol>
 </div>
 <div class="paragraph">
-<p>You can also stream-line the three commands as below:</p>
+<p>You can also streamline the three commands as below:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -4415,8 +4414,8 @@ bsb -w <b class="conum">(3)</b></code></pre>
 <div class="sect3">
 <h4 id="_mark_your_directory_as_dev_only"><a class="anchor" href="#_mark_your_directory_as_dev_only"></a>Mark your directory as dev only</h4>
 <div class="paragraph">
-<p>Note sometimes, you have directories which are just tests that you don&#8217;t need your dependent
-to build  in that case you can mark it as dev only</p>
+<p>Note sometimes, you have directories which are just tests that you don&#8217;t need your dependency
+to build. In that case you can mark it as dev only:</p>
 </div>
 <div class="listingblock">
 <div class="title">bsconfig.json</div>
@@ -4462,10 +4461,10 @@ to build  in that case you can mark it as dev only</p>
 <div class="colist arabic">
 <ol>
 <li>
-<p>Source directory, by default it will export all units of this directory to users</p>
+<p>Source directory, by default it will export all units of this directory to users.</p>
 </li>
 <li>
-<p>Dev directory, which will only be useful for developers of this project</p>
+<p>Dev directory, which will only be useful for developers of this project.</p>
 </li>
 </ol>
 </div>
@@ -4490,7 +4489,7 @@ to build  in that case you can mark it as dev only</p>
 <div class="colist arabic">
 <ol>
 <li>
-<p>Here we list <code>bs-platform</code> as a peer dependency so that different repos shares the same compiler</p>
+<p>Here we list <code>bs-platform</code> as a peer dependency so that different repos shares the same compiler.</p>
 </li>
 </ol>
 </div>
@@ -4574,7 +4573,7 @@ npm install bs-platform <b class="conum">(2)</b>
 </div>
 </div>
 <div class="paragraph">
-<p>You will get both <code>commonjs</code> and <code>amdjs</code> support, in the end, we suggest you <a href="http://bloomberg.github.io/bucklescript/docson/#build-schema.json">check out the schema</a> and enjoy the build!</p>
+<p>You will get both <code>commonjs</code> and <code>amdjs</code> support. In the end, we suggest you <a href="http://bloomberg.github.io/bucklescript/docson/#build-schema.json">check out the schema</a> and enjoy the build!</p>
 </div>
 </div>
 <div class="sect2">
@@ -4587,8 +4586,8 @@ npm install bs-platform <b class="conum">(2)</b>
 </td>
 <td class="content">
 <div class="paragraph">
-<p><code>bsb</code> is officialy recommended build system, this section is listed here only for people who
-are <em>curious</em> about how the build works</p>
+<p><code>bsb</code> is the officially recommended build system. This section is included here only for people who
+are <em>curious</em> about how the build works.</p>
 </div>
 </td>
 </tr>
@@ -4631,12 +4630,12 @@ are <em>curious</em> about how the build works</p>
 </ol>
 </div>
 <div class="paragraph">
-<p>In theory, people need run <code>make depend &amp;&amp; make all</code>, <code>make depend</code> will calculate dependency
+<p>In theory, people need run <code>make depend &amp;&amp; make all</code>. <code>make depend</code> will calculate dependencies
 while <code>make all</code> will do the job.</p>
 </div>
 <div class="paragraph">
-<p>However, in practice, people used to use a file watch service,
-take <a href="https://facebook.github.io/watchman/">watchman</a> for example, you need json configure</p>
+<p>However in practice, people used to a file watch service,
+such as <a href="https://facebook.github.io/watchman/">watchman</a> for example, will need the JSON configuration:</p>
 </div>
 <div class="listingblock">
 <div class="title">build.json</div>
@@ -4687,8 +4686,8 @@ make depend <b class="conum">(2)</b></code></pre>
 <div class="qlist qanda">
 <ol>
 <li>
-<p><em>How does IO work in browser?</em></p>
-<p>In general, it is very hard to simulate IO in browser, we recommend users to write bindings to NodeJS directly for server side, or use <code>Js.log</code> in client side, see disucssions in <a href="https://github.com/bloomberg/bucklescript/issues/748">#748</a></p>
+<p><em>How does IO work in the browser?</em></p>
+<p>In general, it is very hard to simulate IO in the browser, we recommend users write bindings to NodeJS directly for server side, or use <code>Js.log</code> in client side, see disucssions in <a href="https://github.com/bloomberg/bucklescript/issues/748">#748</a></p>
 </li>
 <li>
 <p><em>The compiler does not build?</em></p>
@@ -4713,7 +4712,7 @@ FLG -ppx node_modules/bs-platform/bin/bsppx.exe</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Note there is a <a href="https://github.com/the-lambda-church/merlin/issues/568">upstream fix</a> in Merlin, make sure your merlin is updated</p>
+<p>Note there is a <a href="https://github.com/the-lambda-church/merlin/issues/568">upstream fix</a> in Merlin, make sure your merlin is updated.</p>
 </div>
 </li>
 <li>
@@ -4723,7 +4722,7 @@ FLG -ppx node_modules/bs-platform/bin/bsppx.exe</code></pre>
 <li>
 <p><em>Math.imul</em>:
 This polyfill is needed for <code>int32</code> multiplication.
-BuckleScript provides this by default(when feature detection returns false), no action is
+BuckleScript provides this by default (when feature detection returns false), no action is
 required from the user.</p>
 </li>
 <li>
@@ -4859,7 +4858,7 @@ Javascript Code</pre>
 <h3 id="_design_principles"><a class="anchor" href="#_design_principles"></a>Design Principles</h3>
 <div class="paragraph">
 <p>The current design of BuckleScript follows several high level
-principles. While those principles might change in the future, there are
+principles. While those principles might change in the future, they are
 enforced today and can explain certain technical limitations
 BuckleScript has.</p>
 </div>
@@ -5322,9 +5321,9 @@ We are working to provide a ppx extension as below:</p>
 <h2 id="_contributions"><a class="anchor" href="#_contributions"></a>Contributions</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>First, thanks for your interest in contribution,
-there are plenty of ways in contributions, like blogging, sharing your experience,
-open sourcing your libraries using BuckleScript, they are all deeply appreciated.</p>
+<p>First, thanks for your interest in contributing!
+There are plenty of ways to make contributions, like blogging, sharing your experience,
+open sourcing your libraries using BuckleScript. They are all deeply appreciated.</p>
 </div>
 <div class="paragraph">
 <p>This section will focus on how to contribute to this repo.</p>
@@ -5373,11 +5372,11 @@ change <code>j.ml</code> (most likely you won&#8217;t), so you probably don&#821
 </div>
 <div class="paragraph">
 <p>So whenever you change files relevant to the build tool <code>bsb.exe</code>, try it and do some
-test, if it works, send a pull request!</p>
+test. If it works, send a pull request!</p>
 </div>
 <div class="paragraph">
 <p>Note that for most binaries in BuckleScript, we also have a <strong>release mode</strong>, which will pack
-all relevant files into a single file, this is important, since it will cut all our dev-dependencies,
+all relevant files into a single file. This is important, since it will cut all our dev-dependencies,
 so the user does not need install those tools.</p>
 </div>
 <div class="paragraph">
@@ -5389,7 +5388,7 @@ so the user does not need install those tools.</p>
 </div>
 </div>
 <div class="paragraph">
-<p>But please <strong>don&#8217;t commit</strong> those changes in PR, it will cause painful merge conflicts</p>
+<p>But please <strong>don&#8217;t commit</strong> those changes in PR, it will cause painful merge conflicts.</p>
 </div>
 </div>
 <div class="sect2">
@@ -5414,7 +5413,7 @@ so the user does not need install those tools.</p>
 </div>
 <div class="paragraph">
 <p>This will actually snapshot your changes into a single ml file and used in npm distribution.
-But please <strong>don&#8217;t commit</strong> those changes in PR, it will cause painful merge conflicts</p>
+But please <strong>don&#8217;t commit</strong> those changes in PR, it will cause painful merge conflicts.</p>
 </div>
 </div>
 <div class="sect2">
