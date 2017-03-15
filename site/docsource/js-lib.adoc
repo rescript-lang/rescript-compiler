@@ -1,6 +1,8 @@
 
 == Js module
 
+link:https://bloomberg.github.io/bucklescript/api/Js.html[API reference]
+
 Js module is shipped with BuckleScript, both the namespace `Js` and `Node` are preserved.
 
 ////
@@ -75,47 +77,47 @@ for coercing to and from `bool`: `Js.to_bool` and `Js.Boolean.to_js_boolean`.
 
 _These APIs might change, but is considered mostly complete_
 
-* link:https://github.com/bloomberg/bucklescript/blob/master/jscomp/runtime/js_null.mli[Js.Null]
-* link:https://github.com/bloomberg/bucklescript/blob/master/jscomp/runtime/js_undefined.mli[Js.Undefined]
-* link:https://github.com/bloomberg/bucklescript/blob/master/jscomp/others/js_null_undefined.mli[Js.Null_undefined]
+* link:https://bloomberg.github.io/bucklescript/api/Js.Null.html[Js.Null]
+* link:https://bloomberg.github.io/bucklescript/api/Js.Undefined.html[Js.Undefined]
+* link:https://bloomberg.github.io/bucklescript/api/Js.Null_undefined.html[Js.Null_undefined]
 
-* link:https://github.com/bloomberg/bucklescript/blob/master/jscomp/others/js_array.ml[Js.Array]
-* link:https://github.com/bloomberg/bucklescript/blob/master/jscomp/others/js_date.ml[Js.Date]
-* link:https://github.com/bloomberg/bucklescript/blob/master/jscomp/others/js_re.mli[Js.Re]
-* link:https://github.com/bloomberg/bucklescript/blob/master/jscomp/others/js_string.ml[Js.String]
-* link:https://github.com/bloomberg/bucklescript/blob/master/jscomp/runtime/typed_array.ml[Js.Typed_array]
+* link:https://bloomberg.github.io/bucklescript/api/Js.Array.html[Js.Array]
+* link:https://bloomberg.github.io/bucklescript/api/Js.Date.html[Js.Date]
+* link:https://bloomberg.github.io/bucklescript/api/Js.Math.html[Js.Math]
+* link:https://bloomberg.github.io/bucklescript/api/Js.Re.html[Js.Re]
+* link:https://bloomberg.github.io/bucklescript/api/Js.String.html[Js.String]
+* link:https://bloomberg.github.io/bucklescript/api/Js.Typed_array.html[Js.Typed_array]
 
 === Experimental/incomplete submodules
 
 _Expect these APIs to change drastically, **use only if you accept breakage.**_
 
-* link:https://github.com/bloomberg/bucklescript/blob/master/jscomp/others/js_boolean.mli[Js.Boolean]
-* link:https://github.com/bloomberg/bucklescript/blob/master/jscomp/others/js_dict.ml[Js.Dict]
-* link:https://github.com/bloomberg/bucklescript/blob/master/jscomp/others/js_math.ml[Js.Math]
-* link:https://github.com/bloomberg/bucklescript/blob/master/jscomp/others/js_obj.ml[Js.Obj]
+* link:https://bloomberg.github.io/bucklescript/api/Js.Boolean.html[Js.Boolean]
+* link:https://bloomberg.github.io/bucklescript/api/Js.Dict.html[Js.Dict]
+* link:https://bloomberg.github.io/bucklescript/api/Js.Obj.html[Js.Obj]
 
 === Very experimental/internal submodules
 
 *_Do not use these APIs unless absolutely necessary, they're mostly internal_*
 
-* link:https://github.com/bloomberg/bucklescript/blob/master/jscomp/runtime/js_float.ml[Js_float]
-* link:https://github.com/bloomberg/bucklescript/blob/master/jscomp/runtime/js_int.ml[Js_int]
-* link:https://github.com/bloomberg/bucklescript/blob/master/jscomp/runtime/js_int64.ml[Js_int64]
-* link:https://github.com/bloomberg/bucklescript/blob/master/jscomp/others/js_json.mli[Js.Json]
-* link:https://github.com/bloomberg/bucklescript/blob/master/jscomp/runtime/js_nativeint.ml[Js_nativeint]
-* link:https://github.com/bloomberg/bucklescript/blob/master/jscomp/runtime/js_primitive.mli[Js_primitive]
-* link:https://github.com/bloomberg/bucklescript/blob/master/jscomp/others/js_types.mli[Js.Types]
-* link:https://github.com/bloomberg/bucklescript/blob/master/jscomp/runtime/js_unsafe.mli[Js_unsafe]
+* link:https://bloomberg.github.io/bucklescript/api/Js_float.html[Js_float]
+* link:https://bloomberg.github.io/bucklescript/api/Js_int.html[Js_int]
+* link:https://bloomberg.github.io/bucklescript/api/Js_int64.html[Js_int64]
+* link:https://bloomberg.github.io/bucklescript/api/Js_json.html[Js.Json]
+* link:https://bloomberg.github.io/bucklescript/api/Js_nativeint.html[Js_nativeint]
+* link:https://bloomberg.github.io/bucklescript/api/Js_primitive.html[Js_primitive]
+* link:https://bloomberg.github.io/bucklescript/api/Js_types.html[Js.Types]
+* link:https://bloomberg.github.io/bucklescript/api/Js_unsafe.html[Js_unsafe]
 
 == Node module
 
-link:https://github.com/bloomberg/bucklescript/blob/master/jscomp/others/node.ml[Node]
+link:https://bloomberg.github.io/bucklescript/api/Node.html[Node]
 
 === Submodules
 
-* link:https://github.com/bloomberg/bucklescript/blob/master/jscomp/others/node_buffer.ml[Node.Buffer]
-* link:https://github.com/bloomberg/bucklescript/blob/master/jscomp/others/node_child_process.ml[Node.Child_process]
-* link:https://github.com/bloomberg/bucklescript/blob/master/jscomp/others/node_fs.ml[Node.Fs]
-* link:https://github.com/bloomberg/bucklescript/blob/master/jscomp/others/node_module.ml[Node.Module]
-* link:https://github.com/bloomberg/bucklescript/blob/master/jscomp/others/node_path.ml[Node.Path]
-* link:https://github.com/bloomberg/bucklescript/blob/master/jscomp/others/node_process.ml[Node.Process]
+* link:https://bloomberg.github.io/bucklescript/api/Node_buffer.html[Node.Buffer]
+* link:https://bloomberg.github.io/bucklescript/api/Node_child_process.html[Node.Child_process]
+* link:https://bloomberg.github.io/bucklescript/api/Node_fs.html[Node.Fs]
+* link:https://bloomberg.github.io/bucklescript/api/Node_module.html[Node.Module]
+* link:https://bloomberg.github.io/bucklescript/api/Node_path.html[Node.Path]
+* link:https://bloomberg.github.io/bucklescript/api/Node_process.html[Node.Process]
