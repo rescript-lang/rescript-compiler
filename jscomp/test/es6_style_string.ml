@@ -11,6 +11,7 @@ let es62 = {j|$str, 君の名は|j}
 
 let a = {j| blabla \$(xx) |j} (* should not be interpolated*)
 let b = {j| blabla \$xxx |j} (* should not be interpolated *)
+let c = {j| \$ |j}
 
 let empty2 = {j| \$ |j}
 

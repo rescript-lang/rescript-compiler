@@ -16,6 +16,8 @@ var a = "" + " blabla \$(xx) ";
 
 var b = "" + " blabla \$xxx ";
 
+var c = "" + " \$ ";
+
 var empty2 = "" + " \$ ";
 
 console.log(str);
@@ -27,5 +29,6 @@ exports.es6    = es6;
 exports.es62   = es62;
 exports.a      = a;
 exports.b      = b;
+exports.c      = c;
 exports.empty2 = empty2;
 /* es6 Not a pure module */
