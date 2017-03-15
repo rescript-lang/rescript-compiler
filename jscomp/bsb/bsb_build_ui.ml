@@ -159,7 +159,7 @@ and parsing_source (dir_index : int) cwd (x : Ext_json.t )
   | `Str _ as dir -> 
     parsing_simple_dir dir_index cwd dir   
   | `Obj x -> 
-    let dir = ref cwd in
+    (*let dir = ref cwd in*)
     let sources = ref String_map.empty in
     let resources = ref [] in 
     let bs_dependencies = ref [] in
@@ -167,17 +167,20 @@ and parsing_source (dir_index : int) cwd (x : Ext_json.t )
     (* let public = ref Bsb_config.default_public in *)
     let public = ref Export_all in (* TODO: move to {!Bsb_default} later*)
 
-    let current_dir_index = ref dir_index in 
-    (** Get the real [dir_index] *)
-    let () = 
-      x |?  (Bsb_build_schemas.type_, 
-             `Str (fun s -> 
-                 if Ext_string.equal s   Bsb_build_schemas.dev then
-                   current_dir_index := get_dev_index ()
-               )) |> ignore  in 
-    let current_dir_index = !current_dir_index in 
-    if !Bsb_config.no_dev && current_dir_index <> lib_dir_index then empty
+    let current_dir_index = 
+      match String_map.find_opt Bsb_build_schemas.type_ x with 
+      | Some (`Str {str="dev"}) -> get_dev_index ()
+      | Some _ -> failwith "type only support dev"    
+      | None -> dir_index in 
+    if !Bsb_config.no_dev && current_dir_index <> lib_dir_index then empty 
     else 
+      let dir = 
+        match String_map.find_opt Bsb_build_schemas.dir x with 
+        | Some (`Str{str=s}) -> 
+          cwd // Ext_filename.simple_convert_node_path_to_os_path s 
+        | Some _ -> failwith "dir expected to be a string"
+        | None -> cwd   (* TODO: It is an error here? *)
+      in
       let update_queue = ref [] in 
       let globbed_dirs = ref [] in 
 
@@ -185,19 +188,17 @@ and parsing_source (dir_index : int) cwd (x : Ext_json.t )
       let children_update_queue = ref [] in 
       let children_globbed_dirs = ref [] in 
       let () = 
-        x     
-        |?  (Bsb_build_schemas.dir, `Str (fun s -> dir := cwd // Ext_filename.simple_convert_node_path_to_os_path s))
-        |?  (Bsb_build_schemas.files ,
-             `Arr_loc (fun s loc_start loc_end ->
-                 let dir = !dir in 
-                 let tasks, files =  handle_list_files  dir s loc_start loc_end in
-                 update_queue := tasks ;
-                 sources := files
 
-               ))
+        x 
+        |?  (Bsb_build_schemas.files ,
+               `Arr_loc (fun s loc_start loc_end ->
+                   let tasks, files =  handle_list_files  dir s loc_start loc_end in
+                   update_queue := tasks ;
+                   sources := files
+
+                 ))
         |? (Bsb_build_schemas.files,
             `Not_found (fun _ ->
-                let dir = !dir in 
                 let file_array = Bsb_dir.readdir dir in 
                 (** We should avoid temporary files *)
                 sources := 
@@ -210,7 +211,7 @@ and parsing_source (dir_index : int) cwd (x : Ext_json.t )
                           (Printf.sprintf warning_unused_file
                              name dir 
                           ) ; 
-                          acc 
+                        acc 
                       | Suffix_mismatch ->  acc
                     ) String_map.empty file_array;
                 globbed_dirs :=  [dir]
@@ -226,7 +227,7 @@ and parsing_source (dir_index : int) cwd (x : Ext_json.t )
                     `Str 
                       (fun s -> 
                          let re = Str.regexp s in 
-                         let dir = !dir in 
+                         (*let dir = !dir in *)
                          let excludes = !excludes in 
                          let file_array = Bsb_dir.readdir dir in 
                          sources := 
@@ -242,6 +243,8 @@ and parsing_source (dir_index : int) cwd (x : Ext_json.t )
                 |> ignore
               )
            )             
+
+
         |? (Bsb_build_schemas.bs_dependencies, `Arr (fun s -> bs_dependencies := get_list_string s ))
         |?  (Bsb_build_schemas.resources ,
              `Arr (fun s  ->
@@ -256,7 +259,7 @@ and parsing_source (dir_index : int) cwd (x : Ext_json.t )
             public := Export_set (String_set.of_list (get_list_string s ) )
           ) )
         |? (Bsb_build_schemas.subdirs, `Id (fun s -> 
-            let res  = parsing_sources current_dir_index !dir s in 
+            let res  = parsing_sources current_dir_index dir s in 
 
             children :=  res.files ; 
             children_update_queue := res.intervals;
@@ -266,7 +269,7 @@ and parsing_source (dir_index : int) cwd (x : Ext_json.t )
       in 
       {
         files = 
-          {dir = !dir; 
+          {dir = dir; 
            sources = !sources; 
            resources = !resources;
            bs_dependencies = !bs_dependencies;
