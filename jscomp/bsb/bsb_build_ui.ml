@@ -97,40 +97,33 @@ let print_arrays file_array oc offset  =
 
 let warning_unused_file : _ format = "WARNING: file %s under %s is ignored due to that it is not a valid module name"
 
-let  handle_list_files dir (s : Ext_json.t array) loc_start loc_end : Ext_file_pp.interval list * _ =  
-  if  Ext_array.is_empty s  then 
-    begin (** detect files to be populated later  *)
-      let files_array = Bsb_dir.readdir dir  in 
-      let dyn_file_array = String_vec.make (Array.length files_array) in 
-      let files  =
-        Array.fold_left (fun acc name -> 
-            match Ext_string.is_valid_source_name name with 
-            | Good ->   begin 
-                let new_acc = Binary_cache.map_update ~dir acc name  in 
-                String_vec.push name dyn_file_array ;
-                new_acc 
-              end 
-            | Invalid_module_name -> 
-              print_endline 
-                (Printf.sprintf warning_unused_file
-                   name dir 
-                ) ; 
-              acc 
-            | Suffix_mismatch -> acc 
-          ) String_map.empty files_array in 
-      [{Ext_file_pp.loc_start ;
-        loc_end; action = (`print (print_arrays dyn_file_array))}],
-      files
-    end
+let  handle_list_files dir  loc_start loc_end : Ext_file_pp.interval list * _ =  
+  (** detect files to be populated later  *)
+  let files_array = Bsb_dir.readdir dir  in 
+  let dyn_file_array = String_vec.make (Array.length files_array) in 
+  let files  =
+    Array.fold_left (fun acc name -> 
+        match Ext_string.is_valid_source_name name with 
+        | Good ->   begin 
+            let new_acc = Binary_cache.map_update ~dir acc name  in 
+            String_vec.push name dyn_file_array ;
+            new_acc 
+          end 
+        | Invalid_module_name -> 
+          print_endline 
+            (Printf.sprintf warning_unused_file
+               name dir 
+            ) ; 
+          acc 
+        | Suffix_mismatch -> acc 
+      ) String_map.empty files_array in 
+  [{Ext_file_pp.loc_start ;
+    loc_end; action = (`print (print_arrays dyn_file_array))}],
+  files
 
-  else 
-    [],
-    Array.fold_left (fun acc (s : Ext_json.t) ->
-        match s with 
-        | `Str {str = s} -> 
-          Binary_cache.map_update ~dir acc s
-        | _ -> acc
-      ) String_map.empty s
+
+
+
 
 
 let empty = { files = []; intervals  = []; globbed_dirs = [];  }
@@ -159,12 +152,10 @@ and parsing_source (dir_index : int) cwd (x : Ext_json.t )
   | `Str _ as dir -> 
     parsing_simple_dir dir_index cwd dir   
   | `Obj x -> 
-    (*let dir = ref cwd in*)
-    let sources = ref String_map.empty in
+
+    let cur_sources = ref String_map.empty in
     let resources = ref [] in 
     let bs_dependencies = ref [] in
-    (* let public = ref Export_none in  *)
-    (* let public = ref Bsb_config.default_public in *)
     let public = ref Export_all in (* TODO: move to {!Bsb_default} later*)
 
     let current_dir_index = 
@@ -181,104 +172,99 @@ and parsing_source (dir_index : int) cwd (x : Ext_json.t )
         | Some _ -> failwith "dir expected to be a string"
         | None -> cwd   (* TODO: It is an error here? *)
       in
-      let update_queue = ref [] in 
-      let globbed_dirs = ref [] in 
+      let cur_update_queue = ref [] in 
+      let cur_globbed_dirs = ref [] in 
+      begin match String_map.find_opt Bsb_build_schemas.files x with 
+        | Some (`Arr {loc_start;loc_end; content = [||] }) -> (* [ ] *) 
+          let tasks, files =  handle_list_files  dir  loc_start loc_end in
+          cur_update_queue := tasks ;
+          cur_sources := files
+        | Some (`Arr {loc_start;loc_end; content = s }) -> (* [ a,b ] *)      
+          cur_sources := 
+            Array.fold_left (fun acc (s : Ext_json.t) ->
+                match s with 
+                | `Str {str = s} -> 
+                  Binary_cache.map_update ~dir acc s
+                | _ -> acc
+              ) String_map.empty s    
+        | Some (`Obj m) -> (* { excludes : [], slow_re : "" }*)
+          let excludes = ref [] in 
+          m
+          |? (Bsb_build_schemas.excludes,
+              `Arr (fun arr ->  excludes := get_list_string arr))
+          |? (Bsb_build_schemas.slow_re, 
+              `Str 
+                (fun s -> 
+                   let re = Str.regexp s in 
+                   let excludes = !excludes in 
+                   let file_array = Bsb_dir.readdir dir in 
+                   cur_sources := 
+                     Array.fold_left (fun acc name -> 
+                         if Str.string_match re name 0 && 
+                            not (List.mem name excludes)
+                         then 
+                           Binary_cache.map_update  ~dir acc name 
+                         else acc
+                       ) String_map.empty file_array;
+                   cur_globbed_dirs :=  [dir]
+                ))
+          |> ignore
+         | None ->  (* No setting on [!files]*)
+          let file_array = Bsb_dir.readdir dir in 
+          (** We should avoid temporary files *)
+          cur_sources := 
+            Array.fold_left (fun acc name -> 
+                match Ext_string.is_valid_source_name name with 
+                | Good -> 
+                  Binary_cache.map_update  ~dir acc name 
+                | Invalid_module_name -> 
+                  print_endline 
+                    (Printf.sprintf warning_unused_file
+                       name dir 
+                    ) ; 
+                  acc 
+                | Suffix_mismatch ->  acc
+              ) String_map.empty file_array;
+          cur_globbed_dirs :=  [dir]  
+        | Some _ -> failwith "files field expect array or object "
+       
+      end;
+      x   
+      |? (Bsb_build_schemas.bs_dependencies, `Arr (fun s -> bs_dependencies := get_list_string s ))
+      |?  (Bsb_build_schemas.resources ,
+           `Arr (fun s  ->
+               resources := get_list_string s
+             ))
+      |? (Bsb_build_schemas.public, `Str (fun s -> 
+          if s = Bsb_build_schemas.export_all then public := Export_all else 
+          if s = Bsb_build_schemas.export_none then public := Export_none else 
+            failwith ("invalid str for" ^ s )
+        ))
+      |? (Bsb_build_schemas.public, `Arr (fun s -> 
+          public := Export_set (String_set.of_list (get_list_string s ) )
+        ) )
+      |> ignore ;
+      let cur_file = 
+        {dir = dir; 
+         sources = !cur_sources; 
+         resources = !resources;
+         bs_dependencies = !bs_dependencies;
+         public = !public;
+         dir_index = current_dir_index;
+        } in 
+      let children, children_update_queue, children_globbed_dirs = 
+        match String_map.find_opt Bsb_build_schemas.subdirs x with 
+        | Some s -> 
+          let res  = parsing_sources current_dir_index dir s in 
+          res.files ,
+          res.intervals,
+          res.globbed_dirs
+        | None -> [], [], []  in 
 
-      let children = ref [] in 
-      let children_update_queue = ref [] in 
-      let children_globbed_dirs = ref [] in 
-      let () = 
-
-        x 
-        |?  (Bsb_build_schemas.files ,
-               `Arr_loc (fun s loc_start loc_end ->
-                   let tasks, files =  handle_list_files  dir s loc_start loc_end in
-                   update_queue := tasks ;
-                   sources := files
-
-                 ))
-        |? (Bsb_build_schemas.files,
-            `Not_found (fun _ ->
-                let file_array = Bsb_dir.readdir dir in 
-                (** We should avoid temporary files *)
-                sources := 
-                  Array.fold_left (fun acc name -> 
-                      match Ext_string.is_valid_source_name name with 
-                      | Good -> 
-                        Binary_cache.map_update  ~dir acc name 
-                      | Invalid_module_name -> 
-                        print_endline 
-                          (Printf.sprintf warning_unused_file
-                             name dir 
-                          ) ; 
-                        acc 
-                      | Suffix_mismatch ->  acc
-                    ) String_map.empty file_array;
-                globbed_dirs :=  [dir]
-              )
-           )     
-        |? (Bsb_build_schemas.files, 
-            `Obj (fun m -> 
-                let excludes = ref [] in 
-                m
-                |? (Bsb_build_schemas.excludes,
-                    `Arr (fun arr ->  excludes := get_list_string arr))
-                |? (Bsb_build_schemas.slow_re, 
-                    `Str 
-                      (fun s -> 
-                         let re = Str.regexp s in 
-                         (*let dir = !dir in *)
-                         let excludes = !excludes in 
-                         let file_array = Bsb_dir.readdir dir in 
-                         sources := 
-                           Array.fold_left (fun acc name -> 
-                               if Str.string_match re name 0 && 
-                                  not (List.mem name excludes)
-                               then 
-                                 Binary_cache.map_update  ~dir acc name 
-                               else acc
-                             ) String_map.empty file_array;
-                         globbed_dirs :=  [dir]
-                      ))
-                |> ignore
-              )
-           )             
-
-
-        |? (Bsb_build_schemas.bs_dependencies, `Arr (fun s -> bs_dependencies := get_list_string s ))
-        |?  (Bsb_build_schemas.resources ,
-             `Arr (fun s  ->
-                 resources := get_list_string s
-               ))
-        |? (Bsb_build_schemas.public, `Str (fun s -> 
-            if s = Bsb_build_schemas.export_all then public := Export_all else 
-            if s = Bsb_build_schemas.export_none then public := Export_none else 
-              failwith ("invalid str for" ^ s )
-          ))
-        |? (Bsb_build_schemas.public, `Arr (fun s -> 
-            public := Export_set (String_set.of_list (get_list_string s ) )
-          ) )
-        |? (Bsb_build_schemas.subdirs, `Id (fun s -> 
-            let res  = parsing_sources current_dir_index dir s in 
-
-            children :=  res.files ; 
-            children_update_queue := res.intervals;
-            children_globbed_dirs := res.globbed_dirs
-          ))
-        |> ignore 
-      in 
       {
-        files = 
-          {dir = dir; 
-           sources = !sources; 
-           resources = !resources;
-           bs_dependencies = !bs_dependencies;
-           public = !public;
-           dir_index = current_dir_index;
-          } 
-          :: !children;
-        intervals = !update_queue @ !children_update_queue ;
-        globbed_dirs = !globbed_dirs @ !children_globbed_dirs;
+        files =  cur_file :: children;
+        intervals = !cur_update_queue @ children_update_queue ;
+        globbed_dirs = !cur_globbed_dirs @ children_globbed_dirs;
       } 
   | _ -> empty 
 (* and parsing_simple_dir dir_index cwd  dir  : t = 
