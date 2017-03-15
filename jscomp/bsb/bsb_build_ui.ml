@@ -188,28 +188,30 @@ and parsing_source (dir_index : int) cwd (x : Ext_json.t )
                 | _ -> acc
               ) String_map.empty s    
         | Some (`Obj m) -> (* { excludes : [], slow_re : "" }*)
-          let excludes = ref [] in 
-          m
-          |? (Bsb_build_schemas.excludes,
-              `Arr (fun arr ->  excludes := get_list_string arr))
-          |? (Bsb_build_schemas.slow_re, 
-              `Str 
-                (fun s -> 
-                   let re = Str.regexp s in 
-                   let excludes = !excludes in 
-                   let file_array = Bsb_dir.readdir dir in 
-                   cur_sources := 
-                     Array.fold_left (fun acc name -> 
-                         if Str.string_match re name 0 && 
-                            not (List.mem name excludes)
-                         then 
-                           Binary_cache.map_update  ~dir acc name 
-                         else acc
-                       ) String_map.empty file_array;
-                   cur_globbed_dirs :=  [dir]
-                ))
-          |> ignore
-         | None ->  (* No setting on [!files]*)
+          let excludes = 
+            match String_map.find_opt Bsb_build_schemas.excludes m with 
+            | None -> []   
+            | Some (`Arr {content = arr}) -> get_list_string arr 
+            | Some _ -> failwith "excludes expect array "in 
+          let slow_re = String_map.find_opt Bsb_build_schemas.slow_re m in 
+          let predicate = 
+            match slow_re, excludes with 
+            | Some (`Str {str = s}), [] -> 
+              let re = Str.regexp s  in 
+              fun name -> Str.string_match re name 0 
+            | Some (`Str {str = s}) , _::_ -> 
+              let re = Str.regexp s in   
+              fun name -> Str.string_match re name 0 && not (List.mem name excludes)
+            | Some _, _ -> failwith "slow-re expect a string literal"
+            | None , _ -> failwith "missing field: slow-re"  in 
+          let file_array = Bsb_dir.readdir dir in 
+          cur_sources := Array.fold_left (fun acc name -> 
+              if predicate name then 
+                Binary_cache.map_update  ~dir acc name 
+              else acc
+            ) String_map.empty file_array;
+          cur_globbed_dirs := [dir]              
+        | None ->  (* No setting on [!files]*)
           let file_array = Bsb_dir.readdir dir in 
           (** We should avoid temporary files *)
           cur_sources := 
@@ -227,7 +229,7 @@ and parsing_source (dir_index : int) cwd (x : Ext_json.t )
               ) String_map.empty file_array;
           cur_globbed_dirs :=  [dir]  
         | Some _ -> failwith "files field expect array or object "
-       
+
       end;
       x   
       |? (Bsb_build_schemas.bs_dependencies, `Arr (fun s -> bs_dependencies := get_list_string s ))
