@@ -117,10 +117,10 @@ let re = [%re "/ab*/g"] in
 let str = "abbcdefabh" in
 
 let break = ref false in
-while not break do
+while not !break do
   match re |> Js.Re.exec str with
-  | None -> ()
-  | Some result =>
+  | None -> break := false
+  | Some result ->
     let match_ = (Js.Re.matches result).(0) in
     let next = string_of_int (Js.Re.lastIndex re) in
     Js.log ("Found " ^ match_ ^ ". Next match starts at " ^ next)
@@ -174,7 +174,7 @@ let startsWith substring target =
   Js.Re.fromString ("^" ^ substring)
     |> Js.Re.test target
 
-let _ = Js.log (str |> startsWith "hello") (* prints "true" *)
+let () = Js.log (str |> startsWith "hello") (* prints "true" *)
 ]}
 
 @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/test> MDN
