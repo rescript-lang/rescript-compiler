@@ -22,13 +22,13 @@ v1.5.3+dev
 
 BuckleScript is a backend for the {OCaml}[OCaml] compiler which emits
 JavaScript. It works with both vanilla OCaml and {Reason}[Reason], the
-whole compiler is compiled into JS (and ASM) so that you can play it
+whole compiler is compiled into JS (and ASM) so that you can play with it
 in the {BuckleScript-playground}[browser].
 
 [NOTE]
 .PDF version is  http://bloomberg.github.io/bucklescript/Manual.pdf[available].
 ====
-Document under https://github.com/bloomberg/bucklescript/Manual.html[_bloomberg.github.io_] matches with https://github.com/bloomberg/bucklescript[master branch].
+Documents under https://github.com/bloomberg/bucklescript/Manual.html[_bloomberg.github.io_] match the https://github.com/bloomberg/bucklescript[master branch].
 
 They are also  distributed (`docs/Manual.html`, `docs/Manual.pdf`) together with your <<Installation>> (with the exact version).
 If you find errors or omissions in this document, please don't

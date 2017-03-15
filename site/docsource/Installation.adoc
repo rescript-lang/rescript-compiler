@@ -54,7 +54,7 @@ eval `opam config env`
 npm install bs-platform
 ---------------------------
 
-Note that using this approach, user can also install other OCaml tools easily.
+Note that using this approach, the user can also install other OCaml tools easily.
 
 ### Install from source
 

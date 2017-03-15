@@ -19,7 +19,7 @@ also adds several flags:
 bsc.exe -bs-main Main
 --------------------
 
-`bsc.exe` will build module `Main` and all its dependencies, when it
+`bsc.exe` will build module `Main` and all its dependencies and when it
 finishes, it will run `node main.js`.
 
 [source,sh]
@@ -38,21 +38,21 @@ So that you can do
 bsc.exe -c -bs-files *.ml *.mli
 ---------------------------
 
-The compiler will sort the order of input files before starting
+the compiler will sort the order of input files before starting
 compilation.
 
-BuckleScript supports two compilation mode, script mode and package
-mode, in package mode, you have to provide `package.json` on top and set the options
-`-bs-package-name`, `-bs-package-output`. In script mode, such flags are not needed
+BuckleScript supports two compilation modes: script mode and package
+mode. In package mode, you have to provide `package.json` on top and set the options
+`-bs-package-name`, `-bs-package-output`. In script mode, such flags are not needed.
 
 ### -bs-package-name
-The project name of your project, user is suggested to make it
+The project name of your project. The user is suggested to make it
 consistent with the `name` field in `package.json`
 
 ### -bs-packge-output
 The format is `module_system:oupt/path/relative/to/package.json`
 Currently supported module systesms are: `commonjs`, `amdjs` and
-`goog:<namespace>`
+`goog:<namespace>`.
 
 For example, when you want to use the `goog` module system, you can do
 things like this:
@@ -63,7 +63,7 @@ bsc.exe -bs-package-name your_package -bs-package-output goog:lib/goog -c xx.ml
 -----------------------------------------------------------
 
 
-NOTE: User can supply multiple `-bs-package-output` at the same time.
+NOTE: The user can supply multiple `-bs-package-output` at the same time.
 
 For example:
 
@@ -72,7 +72,7 @@ For example:
 bsc.exe -bs-package-name name -bs-package-output commonjs:lib/js -bs-package-output goog:lib/goog -bs-package-output amdjs:lib/amdjs -c x.ml
 ------------
 
-It will generate `x.js` in `lib/js` as commonjs module, `lib/goog` as google module and `lib/amdjs` as amdjs module at the same time.
+It will generate `x.js` in `lib/js` as a commonjs module, `lib/goog` as a google module and `lib/amdjs` as an amdjs module at the same time.
 
 You would then need a bundler for the different module systems:
 `webpack` supports `commonjs` and `amdjs` while
@@ -81,14 +81,14 @@ You would then need a bundler for the different module systems:
 ### -bs-gen-tds
 
 Trigger the generation of TypeScript `.d.ts` files.
-`bsc.exe` has the ability to also emits `.d.ts` for better interaction with
-typescript. This is still experimental.
+`bsc.exe` has the ability to also emit `.d.ts` for better interaction with
+TypeScript. This is still experimental.
 
 For more options, please see the documentation of `bsc.exe -help`.
 
 ### -bs-no-warn-ffi-type
 
-Turn off warnings on FFI type declarations
+Turn off warnings on FFI type declarations.
 
 ### -bs-eval
 
@@ -131,7 +131,7 @@ learning or troubleshooting.
 
 ### -bs-no-builtin-ppx-ml, -bs-no-builtin-ppx-mli
 
-If users don't use any bs specific annotaions, user can explicitly turn it off.
+If the user doesn't use any bs specific annotations, the user can explicitly turn it off.
 Another use case is that users can use `-ppx` explicitly as below:
 
 [source,ocaml]
@@ -142,4 +142,4 @@ bsc.exe -c -ppx bsppx.exe -bs-no-builtin-ppx-ml c.ml
 
 ### -bs-no-version-header
 
-Don't print version header
+Don't print version header.

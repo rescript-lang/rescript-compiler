@@ -2,7 +2,7 @@
 ## JS Calling OCaml
 
 Since BuckleScript guarantees that all OCaml functions are exported as
-is, no extra work is required to expose OCaml function to JavaScript.
+is, no extra work is required to expose OCaml functions to JavaScript.
 
 [CAUTION]
 ========
@@ -11,7 +11,7 @@ is, no extra work is required to expose OCaml function to JavaScript.
  want to export those external functions, please write `val` instead
 * `operators` are escaped, since Javascript does not support user
   defined operators. For example, instead of calling `Pervasives.(^)`,
-  you have to call `Pervasives.$caret` from your Javascript functions
+  you have to call `Pervasives.$caret` from your JavaScript functions
 // TODO: document the conversion rules.
 ========
 
@@ -26,7 +26,7 @@ For example, data constructors are not available in JS
     | Cons of int * t
     | Nil
 -------------
-Currently, we recommend user to expose the constructor as a function
+Currently, we recommend the user expose the constructor as a function
 so that it can be constructed from the JS side.
 
 [source,ocaml]
@@ -38,5 +38,5 @@ let nil = Nil
 [NOTE]
 =====
 In the future, we will derive these functions to
-automate such process
+automate this process.
 =====

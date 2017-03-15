@@ -1,5 +1,5 @@
 
-## Semantics difference from other backends
+## Semantic differences from other backends
 
 This is particularly important when porting an existing OCaml
 application to JavaScript.
@@ -14,7 +14,7 @@ available in our backend (since we have no C FFI).
 
 ### Physical (in)equality
 
-In general, Users should only use physical equality as an optimization
+In general, users should only use physical equality as an optimization
 technique, but not rely on its correctness, since it is tightly coupled
 with the runtime.
 
@@ -23,7 +23,7 @@ with the runtime.
 
 
 Currently, BuckleScript assumes that the char range is `0-255`. The user
-should be careful when they pass a JavaScript string to OCaml side. Note
+should be careful when they pass a JavaScript string to the OCaml side. Note
 that we are working on a solution for this problem.
 
 
@@ -65,14 +65,14 @@ and there are differences.
 ### Hashtbl hash algorithm
 
 BuckleScript uses the same algorithm as native OCaml but the output is
-different due to runtime representation of int/int64/int32 and float.
+different due to the runtime representation of int/int64/int32 and float.
 
 ### Marshall
 Marshall module is not supported yet.
 
 ### Sys.argv, Sys.max_array_length, Sys.max_string_length
-Command line arguments are always empty,
-might be fixed in the near future.
+Command line arguments are always empty.
+This might be fixed in the near future.
 `Sys.max_array_length` and `Sys.max_string_length` will be the same as
 `max_int`, but it might be respected.
 

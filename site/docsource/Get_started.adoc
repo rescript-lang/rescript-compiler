@@ -2,7 +2,7 @@
 
 ### First example
 
-* Create a directory called `hello` and create `bsconfig.json`, `package.json`
+* Create a directory called `hello` and create `bsconfig.json` and `package.json`
   as below:
 
 +
@@ -30,7 +30,7 @@
 }
 ----
 <1> Version should be updated accordingly
-<2> Watch mode when development
+<2> Watch mode when developing
 * Create `src/main_entry.ml` as below:
 +
 [source,ocaml]
@@ -60,9 +60,9 @@ console.log("hello world");
 
 /*  Not a pure module */ <1>
 ----
-<1> The compiler analyze this module is impure due to the side effect
+<1> The compiler detects this module is impure due to the side effect.
 
-User can  also run `watch` mode see changes instantly while editing.
+User can  also run `watch` mode to see changes instantly while editing.
 
 [source,sh]
 ----
@@ -78,7 +78,7 @@ Now we want to create two modules, one file called `fib.ml` which
 exports `fib` function, the other module called `main_entry.ml` which
 will call `fib`.
 
-* Create a directory `fib` and created files, `bsconfig.json`, `package.json`
+* Create a directory `fib` and create files `bsconfig.json` and `package.json`
 +
 [source,js]
 .bsconfig.json

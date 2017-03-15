@@ -1,8 +1,8 @@
 ## Contributions
 
-First, thanks for your interest in contribution,
-there are plenty of ways in contributions, like blogging, sharing your experience,
-open sourcing your libraries using BuckleScript, they are all deeply appreciated.
+First, thanks for your interest in contributing!
+There are plenty of ways to make contributions, like blogging, sharing your experience,
+open sourcing your libraries using BuckleScript. They are all deeply appreciated.
 
 This section will focus on how to contribute to this repo.
 
@@ -32,11 +32,11 @@ make bin/bsb.exe
 -----------
 
 So whenever you change files relevant to the build tool `bsb.exe`, try it and do some
-test, if it works, send a pull request!
+test. If it works, send a pull request!
 
 
 Note that for most binaries in BuckleScript, we also have a **release mode**, which will pack
-all relevant files into a single file, this is important, since it will cut all our dev-dependencies,
+all relevant files into a single file. This is important, since it will cut all our dev-dependencies,
 so the user does not need install those tools.
 
 
@@ -46,7 +46,7 @@ You can verify it by typing
 make snapshotml # see the diffs in jscomp/bin
 ----------
 
-But please **don't commit** those changes in PR, it will cause painful merge conflicts
+But please **don't commit** those changes in PR, it will cause painful merge conflicts.
 
 
 ### Contributing to `bsc.exe`
@@ -69,7 +69,7 @@ make snapshotml
 ----------
 
 This will actually snapshot your changes into a single ml file and used in npm distribution.
-But please **don't commit** those changes in PR, it will cause painful merge conflicts
+But please **don't commit** those changes in PR, it will cause painful merge conflicts.
 
 ### Contributing to the runtime
 
