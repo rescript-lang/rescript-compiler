@@ -1,14 +1,14 @@
 
 let suites = Mt.[
   "exec_literal", (fun _ ->
-    match [%re "/[^.]+/"] |> Js.Re.exec "http://xxx.domain.com" |> Js_null.to_opt with
+    match [%re "/[^.]+/"] |> Js.Re.exec "http://xxx.domain.com" with
     | Some res -> 
       Eq ("xxx", (res |> Js.Re.matches).(0) |> Js.String.substringToEnd ~from:7)
     | None ->
       FailWith "regex should match"
   );
   "exec_no_match", (fun _ ->
-    match [%re "/https:\\/\\/(.*)/"] |> Js.Re.exec "http://xxx.domain.com" |> Js_null.to_opt with
+    match [%re "/https:\\/\\/(.*)/"] |> Js.Re.exec "http://xxx.domain.com" with
     | Some _ ->  FailWith "regex should not match"
     | None -> Ok true
   );
@@ -27,7 +27,7 @@ let suites = Mt.[
     Eq(true, res |> Js.Re.global)
   );
   "result_index", (fun _ ->
-    match "zbar" |> Js.Re.fromString |> Js.Re.exec "foobarbazbar" |> Js_null.to_opt with
+    match "zbar" |> Js.Re.fromString |> Js.Re.exec "foobarbazbar" with
     | Some res -> 
       Eq(8, res |> Js.Re.index)
     | None ->
@@ -36,7 +36,7 @@ let suites = Mt.[
   "result_input", (fun _ ->
     let input = "foobar" in
 
-    match [%re "/foo/g"] |> Js.Re.exec input |> Js_null.to_opt with
+    match [%re "/foo/g"] |> Js.Re.exec input with
     | Some res -> 
       Eq(input,  res |> Js.Re.input)
     | None ->
