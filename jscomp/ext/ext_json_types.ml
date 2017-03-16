@@ -34,12 +34,11 @@ type json_array =
 
 
 and t = 
-  [  
-    `True
-  | `False
-  | `Null
-  | `Flo of string 
-  | `Str of json_str
-  | `Arr  of json_array
-  | `Obj of t String_map.t 
-   ]
+  | True
+  | False
+  | Null
+  | Flo of string 
+  | Str of json_str
+  | Arr  of json_array
+  | Obj of t String_map.t 
+   

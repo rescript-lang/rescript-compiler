@@ -586,11 +586,11 @@ let rec parse_json lexbuf =
   let push e = look_ahead := Some e in 
   let rec json (lexbuf : Lexing.lexbuf) : Ext_json_types.t = 
     match token () with 
-    | True -> `True
-    | False -> `False
-    | Null -> `Null
-    | Number s ->  `Flo s 
-    | String s -> `Str { str = s; loc =    lexbuf.lex_start_p}
+    | True -> True
+    | False -> False
+    | Null -> Null
+    | Number s ->  Flo s 
+    | String s -> Str { str = s; loc =    lexbuf.lex_start_p}
     | Lbracket -> parse_array false lexbuf.lex_start_p lexbuf.lex_curr_p [] lexbuf
     | Lbrace -> parse_map false String_map.empty lexbuf
     |  _ -> error lexbuf Unexpected_token
@@ -601,7 +601,7 @@ let rec parse_json lexbuf =
       (* if trailing_comma then  *)
       (*   error lexbuf Trailing_comma_in_array *)
       (* else  *)
-        `Arr {loc_start ; content = Ext_array.reverse_of_list acc ; 
+        Arr {loc_start ; content = Ext_array.reverse_of_list acc ; 
               loc_end = lexbuf.lex_curr_p }
     | x -> 
       push x ;
@@ -610,7 +610,7 @@ let rec parse_json lexbuf =
       | Comma -> 
           parse_array true loc_start loc_finish (new_one :: acc) lexbuf 
       | Rbracket 
-        -> `Arr {content = (Ext_array.reverse_of_list (new_one::acc));
+        -> Arr {content = (Ext_array.reverse_of_list (new_one::acc));
                      loc_start ; 
                      loc_end = lexbuf.lex_curr_p }
       | _ -> 
@@ -622,13 +622,13 @@ let rec parse_json lexbuf =
       (* if trailing_comma then  *)
       (*   error lexbuf Trailing_comma_in_obj *)
       (* else  *)
-        `Obj acc 
+        Obj acc 
     | String key -> 
       begin match token () with 
       | Colon ->
         let value = json lexbuf in
         begin match token () with 
-        | Rbrace -> `Obj (String_map.add key value acc )
+        | Rbrace -> Obj (String_map.add key value acc )
         | Comma -> 
           parse_map true  (String_map.add key value acc) lexbuf 
         | _ -> error lexbuf Expect_comma_or_rbrace

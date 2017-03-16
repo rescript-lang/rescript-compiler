@@ -30,16 +30,16 @@ let test   ?(fail=(fun () -> ())) key
         begin match cb with `Not_found f ->  f ()
         | _ -> fail ()
         end      
-       | `True, `Bool cb -> cb true
-       | `False, `Bool cb  -> cb false 
-       | `Flo s , `Flo cb  -> cb s 
-       | `Obj b , `Obj cb -> cb b 
-       | `Arr {content}, `Arr cb -> cb content 
-       | `Arr {content; loc_start ; loc_end}, `Arr_loc cb -> 
+       | True, `Bool cb -> cb true
+       | False, `Bool cb  -> cb false 
+       | Flo s , `Flo cb  -> cb s 
+       | Obj b , `Obj cb -> cb b 
+       | Arr {content}, `Arr cb -> cb content 
+       | Arr {content; loc_start ; loc_end}, `Arr_loc cb -> 
          cb content  loc_start loc_end 
-       | `Null, `Null cb  -> cb ()
-       | `Str {str = s }, `Str cb  -> cb s 
-       | `Str {str = s ; loc }, `Str_loc cb -> cb s loc 
+       | Null, `Null cb  -> cb ()
+       | Str {str = s }, `Str cb  -> cb s 
+       | Str {str = s ; loc }, `Str_loc cb -> cb s loc 
        |  any  , `Id  cb -> cb any
        | _, _ -> fail () 
      end;
@@ -50,7 +50,7 @@ let query path (json : Ext_json_types.t ) =
     | [] ->  Found json
     | p :: rest -> 
       begin match json with 
-        | `Obj m -> 
+        | Obj m -> 
           begin match String_map.find_exn p m with 
             | m' -> aux (p::acc) rest m'
             | exception Not_found ->  No_path

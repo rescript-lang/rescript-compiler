@@ -14,14 +14,14 @@ let suites =
     "empty_json" >:: begin fun _ -> 
       let v =parse_json_from_string "{}" in
       match v with 
-      | `Obj v -> OUnit.assert_equal (String_map.is_empty v ) true
+      | Obj v -> OUnit.assert_equal (String_map.is_empty v ) true
       | _ -> OUnit.assert_failure "should be empty"
     end
     ;
     "empty_arr" >:: begin fun _ -> 
       let v =parse_json_from_string "[]" in
       match v with 
-      | `Arr {content = [||]} -> ()
+      | Arr {content = [||]} -> ()
       | _ -> OUnit.assert_failure "should be empty"
     end
     ;
@@ -46,9 +46,9 @@ let suites =
     "trail comma obj" >:: begin fun _ -> 
       let v =  parse_json_from_string {| { "x" : 3 , }|} in 
       let v1 =  parse_json_from_string {| { "x" : 3 , }|} in 
-      let test v = 
+      let test (v : Ext_json_types.t)  = 
         match v with 
-        |`Obj v -> 
+        | Obj v -> 
           v
           |? ("x" , `Flo (fun x -> OUnit.assert_equal x "3"))
           |> ignore 
@@ -62,7 +62,7 @@ let suites =
       let v1 = parse_json_from_string {| [ 1, 3 ]|} in
       let test (v : Ext_json_types.t) = 
         match v with 
-        | `Arr { content = [|`Flo "1" ; `Flo "3" |] } -> ()
+        | Arr { content = [| Flo "1" ; Flo "3" |] } -> ()
         | _ -> OUnit.assert_failure "trailing comma array" in 
       test v ;
       test v1

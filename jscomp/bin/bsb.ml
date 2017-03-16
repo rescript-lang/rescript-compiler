@@ -3869,15 +3869,14 @@ type json_array =
 
 
 and t = 
-  [  
-    `True
-  | `False
-  | `Null
-  | `Flo of string 
-  | `Str of json_str
-  | `Arr  of json_array
-  | `Obj of t String_map.t 
-   ]
+  | True
+  | False
+  | Null
+  | Flo of string 
+  | Str of json_str
+  | Arr  of json_array
+  | Obj of t String_map.t 
+   
 
 end
 module Ext_json : sig 
@@ -3971,16 +3970,16 @@ let test   ?(fail=(fun () -> ())) key
         begin match cb with `Not_found f ->  f ()
         | _ -> fail ()
         end      
-       | `True, `Bool cb -> cb true
-       | `False, `Bool cb  -> cb false 
-       | `Flo s , `Flo cb  -> cb s 
-       | `Obj b , `Obj cb -> cb b 
-       | `Arr {content}, `Arr cb -> cb content 
-       | `Arr {content; loc_start ; loc_end}, `Arr_loc cb -> 
+       | True, `Bool cb -> cb true
+       | False, `Bool cb  -> cb false 
+       | Flo s , `Flo cb  -> cb s 
+       | Obj b , `Obj cb -> cb b 
+       | Arr {content}, `Arr cb -> cb content 
+       | Arr {content; loc_start ; loc_end}, `Arr_loc cb -> 
          cb content  loc_start loc_end 
-       | `Null, `Null cb  -> cb ()
-       | `Str {str = s }, `Str cb  -> cb s 
-       | `Str {str = s ; loc }, `Str_loc cb -> cb s loc 
+       | Null, `Null cb  -> cb ()
+       | Str {str = s }, `Str cb  -> cb s 
+       | Str {str = s ; loc }, `Str_loc cb -> cb s loc 
        |  any  , `Id  cb -> cb any
        | _, _ -> fail () 
      end;
@@ -3991,7 +3990,7 @@ let query path (json : Ext_json_types.t ) =
     | [] ->  Found json
     | p :: rest -> 
       begin match json with 
-        | `Obj m -> 
+        | Obj m -> 
           begin match String_map.find_exn p m with 
             | m' -> aux (p::acc) rest m'
             | exception Not_found ->  No_path
@@ -4626,11 +4625,11 @@ let rec parse_json lexbuf =
   let push e = look_ahead := Some e in 
   let rec json (lexbuf : Lexing.lexbuf) : Ext_json_types.t = 
     match token () with 
-    | True -> `True
-    | False -> `False
-    | Null -> `Null
-    | Number s ->  `Flo s 
-    | String s -> `Str { str = s; loc =    lexbuf.lex_start_p}
+    | True -> True
+    | False -> False
+    | Null -> Null
+    | Number s ->  Flo s 
+    | String s -> Str { str = s; loc =    lexbuf.lex_start_p}
     | Lbracket -> parse_array false lexbuf.lex_start_p lexbuf.lex_curr_p [] lexbuf
     | Lbrace -> parse_map false String_map.empty lexbuf
     |  _ -> error lexbuf Unexpected_token
@@ -4641,7 +4640,7 @@ let rec parse_json lexbuf =
       (* if trailing_comma then  *)
       (*   error lexbuf Trailing_comma_in_array *)
       (* else  *)
-        `Arr {loc_start ; content = Ext_array.reverse_of_list acc ; 
+        Arr {loc_start ; content = Ext_array.reverse_of_list acc ; 
               loc_end = lexbuf.lex_curr_p }
     | x -> 
       push x ;
@@ -4650,7 +4649,7 @@ let rec parse_json lexbuf =
       | Comma -> 
           parse_array true loc_start loc_finish (new_one :: acc) lexbuf 
       | Rbracket 
-        -> `Arr {content = (Ext_array.reverse_of_list (new_one::acc));
+        -> Arr {content = (Ext_array.reverse_of_list (new_one::acc));
                      loc_start ; 
                      loc_end = lexbuf.lex_curr_p }
       | _ -> 
@@ -4662,13 +4661,13 @@ let rec parse_json lexbuf =
       (* if trailing_comma then  *)
       (*   error lexbuf Trailing_comma_in_obj *)
       (* else  *)
-        `Obj acc 
+        Obj acc 
     | String key -> 
       begin match token () with 
       | Colon ->
         let value = json lexbuf in
         begin match token () with 
-        | Rbrace -> `Obj (String_map.add key value acc )
+        | Rbrace -> Obj (String_map.add key value acc )
         | Comma -> 
           parse_map true  (String_map.add key value acc) lexbuf 
         | _ -> error lexbuf Expect_comma_or_rbrace
@@ -5539,7 +5538,7 @@ let rec mkp dir =
 let get_list_string_acc s acc = 
   Ext_array.to_list_map_acc  (fun (x : Ext_json_types.t) ->
       match x with 
-      | `Str x -> Some x.str
+      | Str x -> Some x.str
       | _ -> None
     ) s  acc 
 
@@ -5571,7 +5570,7 @@ let (|?)  m (key, cb) =
 let rec walk_all_deps top dir cb =
   let bsconfig_json =  (dir // Literals.bsconfig_json) in
   match Ext_json_parse.parse_json_from_file bsconfig_json with
-  | `Obj map ->
+  | Obj map ->
     map
     |?
     (Bsb_build_schemas.bs_dependencies,
@@ -5579,7 +5578,7 @@ let rec walk_all_deps top dir cb =
          new_packages
          |> Array.iter (fun (js : Ext_json_types.t) ->
           begin match js with
-          | `Str {str = new_package} ->
+          | Str {str = new_package} ->
             begin match Bs_pkg.resolve_bs_package ~cwd:dir new_package with
             | None -> 
               Bsb_exception.error (Bsb_exception.Package_not_found (new_package, Some bsconfig_json))
@@ -6948,13 +6947,14 @@ let (++) (u : t)  (v : t)  =
 let rec 
   parsing_simple_dir dir_index  cwd dir =
   parsing_source dir_index cwd 
-    (`Obj (String_map.singleton Bsb_build_schemas.dir dir))
+    (Ext_json_types.Obj (String_map.singleton Bsb_build_schemas.dir dir))
+
 and parsing_source (dir_index : int) cwd (x : Ext_json_types.t )
   : t  =
   match x with 
-  | `Str _ as dir -> 
+  | Str  _ as dir -> 
     parsing_simple_dir dir_index cwd dir   
-  | `Obj x -> 
+  | Obj x -> 
 
     let cur_sources = ref String_map.empty in
     let resources = ref [] in 
@@ -6963,14 +6963,14 @@ and parsing_source (dir_index : int) cwd (x : Ext_json_types.t )
 
     let current_dir_index = 
       match String_map.find_opt Bsb_build_schemas.type_ x with 
-      | Some (`Str {str="dev"}) -> get_dev_index ()
+      | Some (Str {str="dev"}) -> get_dev_index ()
       | Some _ -> failwith "type only support dev"    
       | None -> dir_index in 
     if !Bsb_config.no_dev && current_dir_index <> lib_dir_index then empty 
     else 
       let dir = 
         match String_map.find_opt Bsb_build_schemas.dir x with 
-        | Some (`Str{str=s}) -> 
+        | Some (Str{str=s}) -> 
           cwd // Ext_filename.simple_convert_node_path_to_os_path s 
         | Some _ -> failwith "dir expected to be a string"
         | None -> cwd   (* TODO: It is an error here? *)
@@ -6978,31 +6978,31 @@ and parsing_source (dir_index : int) cwd (x : Ext_json_types.t )
       let cur_update_queue = ref [] in 
       let cur_globbed_dirs = ref [] in 
       begin match String_map.find_opt Bsb_build_schemas.files x with 
-        | Some (`Arr {loc_start;loc_end; content = [||] }) -> (* [ ] *) 
+        | Some (Arr {loc_start;loc_end; content = [||] }) -> (* [ ] *) 
           let tasks, files =  handle_list_files  dir  loc_start loc_end in
           cur_update_queue := tasks ;
           cur_sources := files
-        | Some (`Arr {loc_start;loc_end; content = s }) -> (* [ a,b ] *)      
+        | Some (Arr {loc_start;loc_end; content = s }) -> (* [ a,b ] *)      
           cur_sources := 
             Array.fold_left (fun acc (s : Ext_json_types.t) ->
                 match s with 
-                | `Str {str = s} -> 
+                | Str {str = s} -> 
                   Binary_cache.map_update ~dir acc s
                 | _ -> acc
               ) String_map.empty s    
-        | Some (`Obj m) -> (* { excludes : [], slow_re : "" }*)
+        | Some (Obj m) -> (* { excludes : [], slow_re : "" }*)
           let excludes = 
             match String_map.find_opt Bsb_build_schemas.excludes m with 
             | None -> []   
-            | Some (`Arr {content = arr}) -> get_list_string arr 
+            | Some (Arr {content = arr}) -> get_list_string arr 
             | Some _ -> failwith "excludes expect array "in 
           let slow_re = String_map.find_opt Bsb_build_schemas.slow_re m in 
           let predicate = 
             match slow_re, excludes with 
-            | Some (`Str {str = s}), [] -> 
+            | Some (Str {str = s}), [] -> 
               let re = Str.regexp s  in 
               fun name -> Str.string_match re name 0 
-            | Some (`Str {str = s}) , _::_ -> 
+            | Some (Str {str = s}) , _::_ -> 
               let re = Str.regexp s in   
               fun name -> Str.string_match re name 0 && not (List.mem name excludes)
             | Some _, _ -> failwith "slow-re expect a string literal"
@@ -7083,7 +7083,7 @@ and  parsing_arr_sources dir_index cwd (file_groups : Ext_json_types.t array)  =
 
 and  parsing_sources dir_index cwd (sources : Ext_json_types.t )  = 
   match sources with   
-  | `Arr file_groups -> 
+  | Arr file_groups -> 
     parsing_arr_sources dir_index cwd file_groups.content
   | _ -> parsing_source dir_index cwd sources
 
@@ -7757,10 +7757,10 @@ let merlin_trailer_length = String.length merlin_trailer
 let package_specs_from_bsconfig () = 
   let json = Ext_json_parse.parse_json_from_file Literals.bsconfig_json in
   begin match json with
-    | `Obj map ->
+    | Obj map ->
       begin 
         match String_map.find_opt Bsb_build_schemas.package_specs map with 
-        | Some (`Arr s ) -> 
+        | Some (Arr s ) -> 
           get_package_specs_from_array s.content
         | Some _
         | None -> Bsb_default.package_specs
@@ -7947,10 +7947,10 @@ let interpret_json
   *)
 
   match global_data with
-  | `Obj map ->
+  | Obj map ->
 
     (match String_map.find_opt Bsb_build_schemas.use_stdlib map with      
-     | Some `False -> 
+     | Some False -> 
        ()
      | None 
      | Some _ ->
