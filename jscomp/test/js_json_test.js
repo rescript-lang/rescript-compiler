@@ -301,7 +301,7 @@ var a$2 = /* int array */[
   /* true */1
 ];
 
-var json$9 = JSON.parse(JSON.stringify(Js_json.boolean_array(a$2)));
+var json$9 = JSON.parse(JSON.stringify(Js_json.booleanArray(a$2)));
 
 var b$1 = a$2[0];
 

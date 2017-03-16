@@ -48,7 +48,7 @@ let () =
   eq __LOC__ (Js.Json.test v Object) true
 
 let () = 
-  let json = Js.Json.null |> Js.Json.to_string |> Js.Json.parse in 
+  let json = Js.Json.null |> Js.Json.stringify |> Js.Json.parse in 
   let ty, x = Js.Json.reify_type json in
   match ty with
   | Js.Json.Null -> true_ __LOC__
@@ -57,7 +57,7 @@ let () =
 let () = 
   let json = 
     Js.Json.string "test string" 
-    |> Js.Json.to_string |> Js.Json.parse 
+    |> Js.Json.stringify |> Js.Json.parse 
   in 
   let ty, x = Js.Json.reify_type json in
   match ty with
@@ -67,7 +67,7 @@ let () =
 let () = 
   let json = 
     Js.Json.number 1.23456789
-    |> Js.Json.to_string |> Js.Json.parse 
+    |> Js.Json.stringify |> Js.Json.parse 
   in 
   let ty, x = Js.Json.reify_type json in
   match ty with
@@ -76,8 +76,8 @@ let () =
 
 let () = 
   let json = 
-    Js.Json.number_of_int 0xAFAFAFAF
-    |> Js.Json.to_string |> Js.Json.parse 
+    Js.Json.numberOfInt 0xAFAFAFAF
+    |> Js.Json.stringify |> Js.Json.parse 
   in 
   let ty, x = Js.Json.reify_type json in
   match ty with
@@ -87,7 +87,7 @@ let () =
 let () = 
   let test v = 
     let json = 
-        Js.Json.boolean v |> Js.Json.to_string |> Js.Json.parse 
+        Js.Json.boolean v |> Js.Json.stringify |> Js.Json.parse 
     in 
     let ty, x = Js.Json.reify_type json in
     match ty with
@@ -106,7 +106,7 @@ let () =
   Js_dict.set dict "b" (Js_json.number 123.0); 
 
   let json = 
-    dict |> Js.Json.object_ |> Js.Json.to_string |> Js.Json.parse 
+    dict |> Js.Json.object_ |> Js.Json.stringify |> Js.Json.parse 
   in
 
   (* Make sure parsed as Object *)
@@ -158,7 +158,7 @@ let () =
     [| "string 0"; "string 1"; "string 2" |]
     |> Array.map Js.Json.string
     |> Js.Json.array_
-    |> Js.Json.to_string
+    |> Js.Json.stringify
     |> Js.Json.parse 
   in 
   eq_at_i __LOC__ json 0 Js.Json.String "string 0";
@@ -169,8 +169,8 @@ let () =
 let () = 
   let json = 
     [| "string 0"; "string 1"; "string 2" |]
-    |> Js.Json.string_array
-    |> Js.Json.to_string
+    |> Js.Json.stringArray
+    |> Js.Json.stringify
     |> Js.Json.parse 
   in 
   eq_at_i __LOC__ json 0 Js.Json.String "string 0";
@@ -182,8 +182,8 @@ let () =
   let a = [| 1.0000001; 10000000000.1; 123.0 |] in
   let json = 
     a  
-    |> Js.Json.number_array
-    |> Js.Json.to_string
+    |> Js.Json.numberArray
+    |> Js.Json.stringify
     |> Js.Json.parse 
   in 
   (* Loop is unrolled to keep relevant location information *)
@@ -196,8 +196,8 @@ let () =
   let a = [| 0; 0xAFAFAFAF; 0xF000AABB|] in
   let json = 
     a  
-    |> Js.Json.int_array
-    |> Js.Json.to_string
+    |> Js.Json.intArray
+    |> Js.Json.stringify
     |> Js.Json.parse 
   in 
   (* Loop is unrolled to keep relevant location information *)
@@ -210,8 +210,8 @@ let () =
   let a = [| true; false; true |] in
   let json = 
     a  
-    |> Js.Json.boolean_array
-    |> Js.Json.to_string
+    |> Js.Json.booleanArray
+    |> Js.Json.stringify
     |> Js.Json.parse 
   in 
   (* Loop is unrolled to keep relevant location information *)
@@ -221,3 +221,11 @@ let () =
   ()
 
 let () = Mt.from_pair_suites __FILE__ !suites
+
+(*let () = 
+  let dict = Js_dict.empty () in 
+  Js_dict.set dict "name" (Js_json.string "John Doe"); 
+  Js_dict.set dict "age" (Js_json.numberOfInt 30); 
+  Js_dict.set dict "likes" 
+    (Js_json.stringArray [|"bucklescript";"ocaml";"js"|]);
+  Js.log @@ Js_json.stringify (Js_json.object_ dict) *)

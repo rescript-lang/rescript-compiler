@@ -48,6 +48,22 @@ val test : 'a  -> 'b kind -> bool
 
 (** {2 Construtors} *)
 
+(** Those functions allows the construction of an arbitrary complex 
+    JSON values. 
+
+@example {|
+(* This example shows how to create a simple JSON string made of a single 
+   JSON object with a few key/values *)
+
+let dict = Js_dict.empty () in 
+Js_dict.set dict "name" (Js_json.string "John Doe"); 
+Js_dict.set dict "age" (Js_json.numberOfInt 30); 
+Js_dict.set dict "likes" 
+  (Js_json.stringArray [|"bucklescript";"ocaml";"js"|]);
+Js.log @@ Js_json.stringify (Js_json.object_ dict) 
+|}
+ *)
+
 val null : t 
 (** Null JSON value *)
 
@@ -57,7 +73,7 @@ val string : string -> t
 val number : float -> t 
 (** Make a JSON number *)
 
-val number_of_int : int -> t 
+val numberOfInt: int -> t 
 (** Make a JSON number from int*)
 
 val boolean : bool -> t 
@@ -73,16 +89,16 @@ val array_ : t array -> t
     happened to be already JSON object in the BuckleScript runtime. Therefore
     they are more efficient (constant time rather than linear conversion). *) 
 
-val string_array : string array -> t
+val stringArray : string array -> t
 (** Make a JSON string array *) 
 
-val number_array : float array -> t
+val numberArray : float array -> t
 (** Make a JSON number array *)
 
-val int_array : int array -> t
+val intArray : int array -> t
 (** Make a JSON number array *)
 
-val boolean_array : bool array -> t
+val booleanArray : bool array -> t
 (** Make a JSON bool array *)
 
 (** {2 String conversion} *)
@@ -90,5 +106,5 @@ val boolean_array : bool array -> t
 external parse : string -> t = "JSON.parse" [@@bs.val]
 (** [parse s] returns JSON value *)
 
-external to_string : 'a -> string = "JSON.stringify" [@@bs.val]
-(** [to_string json] returns JSON string *)
+external stringify : 'a -> string = "JSON.stringify" [@@bs.val]
+(** [stringify json] returns JSON string *)

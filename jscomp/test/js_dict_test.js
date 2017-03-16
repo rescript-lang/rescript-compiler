@@ -1,8 +1,10 @@
 'use strict';
 
-var Mt           = require("./mt");
-var Block        = require("../../lib/js/block");
-var Js_primitive = require("../../lib/js/js_primitive");
+var Mt                      = require("./mt");
+var Block                   = require("../../lib/js/block");
+var Js_dict                 = require("../../lib/js/js_dict");
+var Js_primitive            = require("../../lib/js/js_primitive");
+var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
 
 function obj() {
   return {
@@ -52,46 +54,87 @@ var suites_001 = /* :: */[
     ],
     /* :: */[
       /* tuple */[
-        "set",
+        "exnGet - raise correct exn",
         function () {
-          var o = {
-            foo: 43,
-            bar: "baz"
-          };
-          o["foo"] = 36;
-          return /* Eq */Block.__(0, [
-                    /* Some */[36],
-                    Js_primitive.undefined_to_opt(o["foo"])
-                  ]);
+          try {
+            Js_dict.exnGet({
+                  foo: 43,
+                  bar: "baz"
+                }, "baz");
+            return /* Ok */Block.__(2, [/* false */0]);
+          }
+          catch (exn){
+            if (exn[0] === Caml_builtin_exceptions.invalid_argument) {
+              return /* Ok */Block.__(2, [/* true */1]);
+            }
+            else {
+              return /* Ok */Block.__(2, [/* false */0]);
+            }
+          }
         }
       ],
       /* :: */[
         /* tuple */[
-          "keys",
+          "exnGet - valid access",
           function () {
-            return /* Eq */Block.__(0, [
-                      /* array */[
-                        "foo",
-                        "bar"
-                      ],
-                      Object.keys({
-                            foo: 43,
-                            bar: "baz"
-                          })
-                    ]);
+            try {
+              return /* Eq */Block.__(0, [
+                        43,
+                        Js_dict.exnGet({
+                              foo: 43,
+                              bar: "baz"
+                            }, "foo")
+                      ]);
+            }
+            catch (exn){
+              return /* Ok */Block.__(2, [/* false */0]);
+            }
           }
         ],
         /* :: */[
           /* tuple */[
-            "empty",
+            "set",
             function () {
+              var o = {
+                foo: 43,
+                bar: "baz"
+              };
+              o["foo"] = 36;
               return /* Eq */Block.__(0, [
-                        /* array */[],
-                        Object.keys({ })
+                        /* Some */[36],
+                        Js_primitive.undefined_to_opt(o["foo"])
                       ]);
             }
           ],
-          /* [] */0
+          /* :: */[
+            /* tuple */[
+              "keys",
+              function () {
+                return /* Eq */Block.__(0, [
+                          /* array */[
+                            "foo",
+                            "bar"
+                          ],
+                          Object.keys({
+                                foo: 43,
+                                bar: "baz"
+                              })
+                        ]);
+              }
+            ],
+            /* :: */[
+              /* tuple */[
+                "empty",
+                function () {
+                  return /* Eq */Block.__(0, [
+                            /* array */[],
+                            Object.keys({ })
+                          ]);
+                }
+              ],
+              /* [] */0
+            ]
+          ]
         ]
       ]
     ]

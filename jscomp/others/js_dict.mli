@@ -24,16 +24,41 @@
 
 
 type 'a t
+(** Dictionary type (ie an '{ }' JS object). However it is restricted 
+    to hold a single type; therefore values must have the same type. 
+    
+    This Dictionary type is mostly use with the [Js_json.t] type. *)
+
 type key = string
+(** Key type *)
 
-external get : 'a t -> key -> 'a option = "" [@@bs.get_index] [@@bs.return {undefined_to_opt}]
+external get : 
+  'a t -> 
+  key -> 
+  'a option = "" [@@bs.get_index] [@@bs.return {undefined_to_opt}]
+(** [get dict key] returns [None] if the [key] is not found in the 
+    dictionary, [Some value] otherwise *)
+
 external unsafeGet : 'a t -> key -> 'a = "" [@@bs.get_index] 
-let exnGet dict key = 
-  match get dict key with
-  | None -> invalid_arg ("Js_dict.exnGet: missing key " ^ key)
-  | Some v -> v
+(** [unsafeGet dict key] return the value if the [key] exists, 
+    otherwise an {b undefined} value is returned. Must be used only 
+    when the existence of a key is certain. (i.e. when having called [keys]
+    function previously. 
+
+@example {|
+Array.iter (fun key -> Js.log (Js_dict.unsafeGet dic key)) (Js_dict.keys dict) 
+|} 
+*)
+
+val exnGet : 'a t -> key -> 'a
+(** [exnGet dict key] returns the value if the [key] exists, otherwise
+    @raise [Invalid_argument] exception *)
+
 external set : 'a t -> key -> 'a -> unit = "" [@@bs.set_index]  
+(** [set dict key value] sets the [key]/[value] in [dict] *)
+
 external keys : 'a t -> string array = "Object.keys" [@@bs.val]
+(** [keys dict] returns all the keys in the dictionary [dict]*)
+
 external empty : unit -> 'a t = "" [@@bs.obj]
-
-
+(** [empty ()] returns en empty dictionary *)
