@@ -140,4 +140,4 @@ val single_colon : string
 val parent_dir_lit : string
 val current_dir_lit : string
 
-val append : string -> char -> string
+val append_char : string -> char -> string

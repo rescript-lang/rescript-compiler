@@ -1766,7 +1766,7 @@ val single_colon : string
 val parent_dir_lit : string
 val current_dir_lit : string
 
-val append : string -> char -> string
+val append_char : string -> char -> string
 
 end = struct
 #1 "ext_string.ml"
@@ -1799,7 +1799,7 @@ end = struct
 
 
 
-let append s c = s ^ String.make 1 c
+let append_char s c = s ^ String.make 1 c
 
 (*
    {[ split " test_unsafe_obj_ffi_ppx.cmi" ~keep_empty:false ' ']}
@@ -14593,14 +14593,20 @@ and unicode loc buf s offset s_len =
 
 type interpo = Text of string | Delim of string
 
+type ('a, 'b) either = Left of 'a | Right of 'b
+
 let consume_text s start_index =
   let rec _consume_text s index last_char new_word =
     if index = String.length s then new_word, String.length s
     else begin
       match s.[index] with
-      | '$' -> if last_char = '\\' then _consume_text s (index+1) '$' (Ext_string.append new_word '$')
-        else (new_word, index)
-      | c -> _consume_text s (index + 1) c (Ext_string.append new_word c)
+      | '\\' -> (if index + 1 = String.length s then "", index else
+                   match s.[index+1] with
+                   | '\\' -> _consume_text s (index+2) ' ' (Ext_string.append_char new_word '\\')
+                   | '$' -> _consume_text s (index+2) ' ' (Ext_string.append_char new_word '$')
+                   | c -> _consume_text s (index+1) '\\' (Ext_string.append_char new_word '\\'))
+      | '$' -> (new_word, index)
+      | c -> _consume_text s (index + 1) c (Ext_string.append_char new_word c)
     end
   in _consume_text s start_index ' ' ""
 
@@ -14613,12 +14619,8 @@ let consume_delim s start_index =
       | '(' -> (if !with_par = false then (with_par := true; _consume_delim s (index+1) ident) else (None, index))
       | ')' -> (if !with_par = false then (None, index + 1) else (with_par := false; (Some ident, index+1)))
       | '$' -> (_consume_delim s (index+1) ident)
-      | c -> if (Char.code c >= Char.code 'a' && Char.code c <= Char.code 'z') ||
-                (Char.code c >= Char.code 'A' && Char.code c <= Char.code 'Z') ||
-                (Char.code c >= Char.code '0' && Char.code c <= Char.code '9') ||
-                Char.code c = Char.code '_'
-        then _consume_delim s (index+1) (Ext_string.append ident c)
-        else if !with_par = false then (Some ident, index) else (None, index + 1)
+      | 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9'| '_' ->_consume_delim s (index+1) (Ext_string.append_char ident s.[index])
+      | _ -> if !with_par = false then (Some ident, index) else (None, index + 1)
   in match s with
   | "" -> (Some "", start_index)
   | _ -> if start_index = String.length s then (Some "", start_index)
@@ -14637,48 +14639,51 @@ let error_reporting_loc (loc:Location.t) start_index end_index =
     {loc with loc_start = {loc.loc_start with pos_cnum = loc.loc_start.pos_cnum + start_index};
               loc_end   = {loc.loc_end   with pos_cnum = loc.loc_start.pos_cnum + end_index }} in new_loc
 
-let split_es6_string s loc =
+let split_es6_string s =
   let rec _split s index nl =
-    if index >= String.length s then List.rev nl
+    if index >= String.length s then Right (List.rev nl)
     else begin
       match consume_text s index, consume_delim s index with
-      | ("" , str_index)  , (None   , err_index) -> let new_loc = error_reporting_loc loc index err_index in Location.raise_errorf ~loc:new_loc "Not a valid es6 template string"
+      | ("" , str_index)  , (None   , err_index) -> Left (index, err_index)
       | (str,  str_index) , (None   , _) -> _split s (str_index) (Text str::nl)
-      | ("" , _), (Some "" , par_index) -> let new_loc = error_reporting_loc loc index par_index in Location.raise_errorf ~loc:new_loc "Not a valid es6 template string"
+      | ("" , _), (Some "" , par_index) -> Left (index, par_index)
       | ("" , _), (Some par, par_index) -> _split s (par_index) (Delim par::nl)
-      | _, _ -> let new_loc = error_reporting_loc loc index index in Location.raise_errorf ~loc:new_loc "Not a valid es6 template string"
+      | _, _ -> Left (0, String.length s)
     end in _split s 0 []
 
+let make_string_constant_exp s loc = let new_loc = compute_new_loc loc s in
+  let s_len  = String.length s in
+  let buf = Buffer.create (s_len * 2) in
+  check_and_transform loc buf s 0 s_len;
+  let new_exp:Parsetree.expression = {
+    pexp_loc = new_loc;
+    pexp_desc = Pexp_constant (Const_string (Buffer.contents buf, Some Literals.escaped_j_delimiter));
+    pexp_attributes = [];
+  } in new_exp, new_loc
 
+let make_variable_exp p loc = let new_loc = compute_new_loc loc p in
+  let ident = Parsetree.Pexp_ident { txt = (Longident.Lident p); loc = loc } in
+  let js_to_string = Parsetree.Pexp_ident { txt =
+                                              Longident.Ldot (Longident.Ldot ((Longident.Lident "Js"), "String"), "make"); loc = loc } in
+  let apply_exp:Parsetree.expression_desc = Parsetree.Pexp_apply ({pexp_desc = js_to_string; pexp_loc = new_loc; pexp_attributes = []},
+                                                                  [("", {pexp_desc = ident; pexp_loc = new_loc; pexp_attributes = []} )]) in
+  let new_exp:Parsetree.expression = {
+    pexp_loc = new_loc;
+    pexp_desc = apply_exp;
+    pexp_attributes = [];
+  } in new_exp, new_loc
 
 let rec _transform_individual_expression exp_list loc nl = match exp_list with
   | [] -> List.rev nl
   | exp::rexp -> match exp with
-    | Text s -> let new_loc = compute_new_loc loc s in
-      let s_len  = String.length s in
-      let buf = Buffer.create (s_len * 2) in
-      check_and_transform loc buf s 0 s_len;
-      let new_exp:Parsetree.expression = {
-        pexp_loc = new_loc;
-        pexp_desc = Pexp_constant (Const_string (Buffer.contents buf, Some Literals.escaped_j_delimiter));
-        pexp_attributes = [];
-      } in _transform_individual_expression rexp new_loc (new_exp::nl)
-
-    | Delim p -> let new_loc = compute_new_loc loc p in
-      let ident = Parsetree.Pexp_ident { txt = (Longident.Lident p); loc = loc } in
-      let js_to_string = Parsetree.Pexp_ident { txt =
-                                                  Longident.Ldot (Longident.Ldot ((Longident.Lident "Js"), "String"), "make"); loc = loc } in
-      let apply_exp:Parsetree.expression_desc = Parsetree.Pexp_apply ({pexp_desc = js_to_string; pexp_loc = new_loc; pexp_attributes = []},
-                                                                      [("", {pexp_desc = ident; pexp_loc = new_loc; pexp_attributes = []} )]) in
-      let new_exp:Parsetree.expression = {
-        pexp_loc = new_loc;
-        pexp_desc = apply_exp;
-        pexp_attributes = [];
-      } in _transform_individual_expression rexp new_loc (new_exp::nl)
+    | Text s -> let new_exp, new_loc = make_string_constant_exp s loc  in _transform_individual_expression rexp new_loc (new_exp::nl)
+    | Delim p -> let new_exp, new_loc = make_variable_exp p loc  in _transform_individual_expression rexp new_loc (new_exp::nl)
 
 let transform_es6_style_template_string s loc =
-  let sub_strs = split_es6_string s loc
-  in _transform_individual_expression sub_strs loc []
+  let sub_strs = split_es6_string s
+  in match sub_strs with 
+  | Left (starti, endi) -> let new_loc = error_reporting_loc loc starti endi in Location.raise_errorf ~loc:new_loc "Not a valid es6 style string"
+  | Right subs -> _transform_individual_expression subs loc []
 
 let rec fold_expression_list_with_string_concat prev (exp_list:Parsetree.expression list) = match exp_list with
   | [] -> prev
@@ -14687,8 +14692,6 @@ let rec fold_expression_list_with_string_concat prev (exp_list:Parsetree.express
                                                              {txt = Longident.Ldot (Longident.Lident ("Pervasives"), "^"); loc = e.pexp_loc}} in
     let new_string_exp = {e with pexp_desc = Parsetree.Pexp_apply (string_concat_exp, [("", prev); ("", e)])} in
     fold_expression_list_with_string_concat new_string_exp re
-
-
 
 end
 module Ounit_utf8_test
@@ -14700,123 +14703,123 @@ module Ounit_utf8_test
 *)
 
 let ((>::),
-    (>:::)) = OUnit.((>::),(>:::))
+     (>:::)) = OUnit.((>::),(>:::))
 
 
 let loc = 
-{
+  {
     Location.loc_start = {
-        pos_fname = "dummy";
-        pos_lnum = 0;
-        pos_bol = 0;
-        pos_cnum = 0;
+      pos_fname = "dummy";
+      pos_lnum = 0;
+      pos_bol = 0;
+      pos_cnum = 0;
     };
     loc_end = {
-        pos_fname = "dummy";
-        pos_lnum = 0;
-        pos_bol = 0;
-        pos_cnum = 0;
- 
+      pos_fname = "dummy";
+      pos_lnum = 0;
+      pos_bol = 0;
+      pos_cnum = 0;
+
     };
     loc_ghost = false;
-};;
+  };;
 
 let rec print_es6_string_list = function
-| [] -> ()
-| (Ast_utf8_string.Text s::nl) -> print_string "Text "; print_endline (s^";"); print_es6_string_list nl
-| (Delim s::nl) -> print_string "Delim "; print_endline (s^";"); print_es6_string_list nl
+  | [] -> ()
+  | (Ast_utf8_string.Text s::nl) -> print_string "Text "; print_endline (s^";"); print_es6_string_list nl
+  | (Delim s::nl) -> print_string "Delim "; print_endline (s^";"); print_es6_string_list nl
+
+
+let print_es6_string_list_either e = match e with
+  | Ast_utf8_string.Left _ -> ()
+  | Right nl -> print_es6_string_list nl
 
 let (=~) = OUnit.assert_equal
 let suites = 
-    __FILE__
-    >:::
-    [
-        __LOC__ >:: begin fun _ -> 
-            Ext_utf8.decode_utf8_string
-            "hello 你好，中华民族 hei" =~
-            [104; 101; 108; 108; 111; 32; 20320; 22909; 65292; 20013; 21326; 27665; 26063; 32; 104; 101; 105]
-        end ;
-        __LOC__ >:: begin fun _ -> 
-            Ext_utf8.decode_utf8_string
-            "" =~ []
-        end;
-        __LOC__ >:: begin fun _ ->
-            Ext_string.append "Hell" 'o' =~ "Hello"
-        end;
-        __LOC__ >:: begin fun _ ->
-            Ast_utf8_string.consume_text "Hello $world" 0 =~ ("Hello ", 6)
-        end;
-        __LOC__ >:: begin fun _ -> 
-            let s, new_index = Ast_utf8_string.consume_text "Hello \\$world" 0 in
-            let _ = s =~ "Hello \\$world" in
-            let _ = new_index =~ String.length "Hello \\$world" in ()
-        end;
-        __LOC__ >:: begin fun _ ->
-            Ast_utf8_string.consume_text "" 0 =~ ("", 0)
-        end;
-        __LOC__ >:: begin fun _ -> 
-            Ast_utf8_string.consume_delim "" 0 =~ (Some "", 0)
-        end;
-        __LOC__ >:: begin fun _ ->
-            Ast_utf8_string.consume_delim "$x" 0 =~ (Some "x", 2)
-        end;
-        __LOC__ >:: begin fun _ ->
-            Ast_utf8_string.consume_delim "$(x)" 0 =~ (Some "x", 4)
-        end;
-        __LOC__ >:: begin fun _ -> 
-            Ast_utf8_string.consume_delim "hello world" 0 =~ (None, 0)
-        end;
-        __LOC__ >:: begin fun _ -> 
-            Ast_utf8_string.consume_delim "$(hello" 0 =~ (None, 7)
-        end;
-        __LOC__ >:: begin fun _ ->
-            Ast_utf8_string.consume_delim "$x)" 0 =~ (None, 3)
-        end;
-        __LOC__ >:: begin fun _ ->
-            Ast_utf8_string.consume_delim "$(hello world)" 0 =~ (None, 8)
-        end;
-        __LOC__ >:: begin fun _ ->
-            let l = Ast_utf8_string.split_es6_string "Hello World" loc in
-            l =~ [Text "Hello World"]
-        end;
-        __LOC__ >:: begin fun _ ->
-            let l = Ast_utf8_string.split_es6_string "Hello $name" loc in
-            l =~ [Text "Hello "; Delim "name"]
-        end;
-        __LOC__ >:: begin fun _ ->
-            let l = Ast_utf8_string.split_es6_string "$x is my name" loc in
-            l =~ [Delim "x"; Text " is my name"]
-        end;
-        __LOC__ >:: begin fun _ ->
-            let l = Ast_utf8_string.split_es6_string "$(country) is beautiful" loc in
-            l =~ [Delim "country"; Text " is beautiful"]
-        end;
-        __LOC__ >:: begin fun _ ->
-            let l = Ast_utf8_string.split_es6_string "hello $x_1, welcome to $(x_2)" loc in
-            l =~ [Text "hello "; Delim "x_1"; Text ", welcome to "; Delim "x_2"]
-        end;
-        __LOC__ >:: begin fun _ ->
-            let open Location in
-            let error = {loc = {loc with loc_end = {loc.loc_end with pos_cnum = 1}}; msg = "Not a valid es6 template string"; sub = []; if_highlight = ""} in
-            let res = try Ast_utf8_string.split_es6_string "$" loc with
-            | Location.Error e -> 
-                e.loc =~ error.loc; 
-                e.msg =~ error.msg; 
-                e.sub =~ error.sub; 
-                e.if_highlight =~ error.if_highlight; [] in ()
-        end;
-        __LOC__ >:: begin fun _ ->
-            let open Location in
-            let error = {loc = {loc with loc_start={loc.loc_start with pos_cnum = 6}; loc_end = {loc.loc_end with pos_cnum = 8}}; msg = "Not a valid es6 template string"; sub = []; if_highlight = ""} in
-            let res = try Ast_utf8_string.split_es6_string "hello $)" loc with
-            | Location.Error e -> 
-                e.loc =~ error.loc; 
-                e.msg =~ error.msg; 
-                e.sub =~ error.sub; 
-                e.if_highlight =~ error.if_highlight; [] in ()
-        end;
- 
-    ]
+  __FILE__
+  >:::
+  [
+    __LOC__ >:: begin fun _ -> 
+      Ext_utf8.decode_utf8_string
+        "hello 你好，中华民族 hei" =~
+      [104; 101; 108; 108; 111; 32; 20320; 22909; 65292; 20013; 21326; 27665; 26063; 32; 104; 101; 105]
+    end ;
+    __LOC__ >:: begin fun _ -> 
+      Ext_utf8.decode_utf8_string
+        "" =~ []
+    end;
+    __LOC__ >:: begin fun _ ->
+      Ext_string.append_char "Hell" 'o' =~ "Hello"
+    end;
+    __LOC__ >:: begin fun _ ->
+      let s, i = Ast_utf8_string.consume_text "Hello $world" 0 in 
+        (s, i) =~ ("Hello ", 6)
+    end;
+    __LOC__ >:: begin fun _ -> 
+      let s, new_index = Ast_utf8_string.consume_text "Hello \\$world" 0 in
+      let _ = s =~ "Hello $world" in
+      let _ = new_index =~ String.length "Hello \\$world" in ()
+    end;
+    __LOC__ >:: begin fun _ ->
+      Ast_utf8_string.consume_text "" 0 =~ ("", 0)
+    end;
+    __LOC__ >:: begin fun _ -> 
+      Ast_utf8_string.consume_delim "" 0 =~ (Some "", 0)
+    end;
+    __LOC__ >:: begin fun _ ->
+      Ast_utf8_string.consume_delim "$x" 0 =~ (Some "x", 2)
+    end;
+    __LOC__ >:: begin fun _ ->
+      Ast_utf8_string.consume_delim "$(x)" 0 =~ (Some "x", 4)
+    end;
+    __LOC__ >:: begin fun _ -> 
+      Ast_utf8_string.consume_delim "hello world" 0 =~ (None, 0)
+    end;
+    __LOC__ >:: begin fun _ -> 
+      Ast_utf8_string.consume_delim "$(hello" 0 =~ (None, 7)
+    end;
+    __LOC__ >:: begin fun _ ->
+      Ast_utf8_string.consume_delim "$x)" 0 =~ (None, 3)
+    end;
+    __LOC__ >:: begin fun _ ->
+      Ast_utf8_string.consume_delim "$(hello world)" 0 =~ (None, 8)
+    end;
+    __LOC__ >:: begin fun _ ->
+      let l = Ast_utf8_string.split_es6_string "Hello World" in
+      l =~ Right [Text "Hello World"]
+    end;
+    __LOC__ >:: begin fun _ ->
+      let l = Ast_utf8_string.split_es6_string "Hello $name"  in
+      l =~ Right [Text "Hello "; Delim "name"]
+    end;
+    __LOC__ >:: begin fun _ ->
+      let l = Ast_utf8_string.split_es6_string "$x is my name"  in
+      l =~ Right [Delim "x"; Text " is my name"]
+    end;
+    __LOC__ >:: begin fun _ ->
+      let l = Ast_utf8_string.split_es6_string "$(country) is beautiful"  in
+      l =~ Right [Delim "country"; Text " is beautiful"]
+    end;
+    __LOC__ >:: begin fun _ ->
+      let l = Ast_utf8_string.split_es6_string "hello $x_1, welcome to $(x_2)"  in
+      l =~ Right [Text "hello "; Delim "x_1"; Text ", welcome to "; Delim "x_2"]
+    end;
+    __LOC__ >:: begin fun _ ->
+      (* Testing {j|\\$x|j}*)
+      let l = Ast_utf8_string.split_es6_string "\\\\$x" in
+      l =~ Right [Text "\\"; Delim "x"]
+    end;
+    __LOC__ >:: begin fun _ ->
+      (*{j| \$ |j}*)
+      let l = Ast_utf8_string.split_es6_string "\\$" in
+      l =~ Right [Text "$"]
+    end;
+    __LOC__ >:: begin fun _ ->
+      (*{j| \\\$x |j}*)
+      let l = Ast_utf8_string.split_es6_string "\\\\\\$" in
+      l =~ Right [Text "\$"]
+    end; 
+  ]
 end
 module Ounit_vec_test
 = struct

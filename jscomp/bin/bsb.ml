@@ -536,7 +536,7 @@ val single_colon : string
 val parent_dir_lit : string
 val current_dir_lit : string
 
-val append : string -> char -> string
+val append_char : string -> char -> string
 
 end = struct
 #1 "ext_string.ml"
@@ -569,7 +569,7 @@ end = struct
 
 
 
-let append s c = s ^ String.make 1 c
+let append_char s c = s ^ String.make 1 c
 
 (*
    {[ split " test_unsafe_obj_ffi_ppx.cmi" ~keep_empty:false ' ']}

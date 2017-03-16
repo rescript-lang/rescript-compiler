@@ -20,15 +20,18 @@ var c = "" + " \$ ";
 
 var empty2 = "" + " \$ ";
 
+var escape0 = "" + "\\$x";
+
 console.log(str);
 
-exports.str    = str;
-exports.x_1    = x_1;
-exports.x_2    = x_2;
-exports.es6    = es6;
-exports.es62   = es62;
-exports.a      = a;
-exports.b      = b;
-exports.c      = c;
-exports.empty2 = empty2;
+exports.str     = str;
+exports.x_1     = x_1;
+exports.x_2     = x_2;
+exports.es6     = es6;
+exports.es62    = es62;
+exports.a       = a;
+exports.b       = b;
+exports.c       = c;
+exports.empty2  = empty2;
+exports.escape0 = escape0;
 /* es6 Not a pure module */
