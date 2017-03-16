@@ -22,7 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** Provides functions for inspecting and manipulating floats
+(** Provides functions for inspecting and manipulating [float]s
 *)
 
 (** The special value "Not a Number"
@@ -169,7 +169,7 @@ external toPrecision : float -> string = "" [@@bs.send] (* equivalent to `toStri
 
 {b digits} specifies how many digits should appear in total. The
 value must between 0 and some arbitrary number that's hopefully at least larger
-than 20 (for Node it's 21. Why? WHo knows).
+than 20 (for Node it's 21. Why? Who knows).
 
 {b Returns} a [string] representing the given value in fixed-point or scientific notation
 

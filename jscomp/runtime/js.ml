@@ -104,3 +104,5 @@ module Boolean = Js_boolean
 module Math = Js_math
 module Date = Js_date
 module Global = Js_global
+module Float = Js_float
+module Int = Js_int

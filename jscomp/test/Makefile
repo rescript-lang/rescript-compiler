@@ -113,6 +113,7 @@ OTHERS := literals a test_ari test_export2 test_internalOO test_obj_simple_ffi t
 	undef_regression2_test\
 	js_global_test\
 	js_float_test\
+	js_int_test\
 	bang_primitive\
 	compare_test
 

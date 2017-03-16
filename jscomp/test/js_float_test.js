@@ -76,140 +76,140 @@ var suites_001 = /* :: */[
             ],
             /* :: */[
               /* tuple */[
-                "toFixed",
+                "toExponential",
                 function () {
                   return /* Eq */Block.__(0, [
-                            "123",
-                            (123.456).toFixed()
+                            "1.23456e+2",
+                            (123.456).toExponential()
                           ]);
                 }
               ],
               /* :: */[
                 /* tuple */[
-                  "toFixed - large number",
+                  "toExponential - large number",
                   function () {
                     return /* Eq */Block.__(0, [
                               "1.2e+21",
-                              (1.2e21).toFixed()
+                              (1.2e21).toExponential()
                             ]);
                   }
                 ],
                 /* :: */[
                   /* tuple */[
-                    "toFixedWithPrecision - digits:2",
+                    "toExponentialWithPrecision - digits:2",
                     function () {
                       return /* Eq */Block.__(0, [
-                                "123.46",
-                                (123.456).toFixed(2)
+                                "1.23e+2",
+                                (123.456).toExponential(2)
                               ]);
                     }
                   ],
                   /* :: */[
                     /* tuple */[
-                      "toFixedWithPrecision - digits:4",
+                      "toExponentialWithPrecision - digits:4",
                       function () {
                         return /* Eq */Block.__(0, [
-                                  "123.4560",
-                                  (123.456).toFixed(4)
+                                  "1.2346e+2",
+                                  (123.456).toExponential(4)
                                 ]);
                       }
                     ],
                     /* :: */[
                       /* tuple */[
-                        "toFixedWithPrecision - digits:20",
+                        "toExponentialWithPrecision - digits:20",
                         function () {
                           return /* Eq */Block.__(0, [
-                                    "0.00000000000000000000",
-                                    (0).toFixed(20)
+                                    "0.00000000000000000000e+0",
+                                    (0).toExponential(20)
                                   ]);
                         }
                       ],
                       /* :: */[
                         /* tuple */[
-                          "toFixedWithPrecision - digits:21",
+                          "toExponentialWithPrecision - digits:21",
                           function () {
                             return /* ThrowAny */Block.__(7, [function () {
-                                        (0).toFixed(21);
+                                        (0).toExponential(21);
                                         return /* () */0;
                                       }]);
                           }
                         ],
                         /* :: */[
                           /* tuple */[
-                            "toFixedWithPrecision - digits:-1",
+                            "toExponentialWithPrecision - digits:-1",
                             function () {
                               return /* ThrowAny */Block.__(7, [function () {
-                                          (0).toFixed(-1);
+                                          (0).toExponential(-1);
                                           return /* () */0;
                                         }]);
                             }
                           ],
                           /* :: */[
                             /* tuple */[
-                              "toExponential",
+                              "toFixed",
                               function () {
                                 return /* Eq */Block.__(0, [
-                                          "1.23456e+2",
-                                          (123.456).toExponential()
+                                          "123",
+                                          (123.456).toFixed()
                                         ]);
                               }
                             ],
                             /* :: */[
                               /* tuple */[
-                                "toExponential - large number",
+                                "toFixed - large number",
                                 function () {
                                   return /* Eq */Block.__(0, [
                                             "1.2e+21",
-                                            (1.2e21).toExponential()
+                                            (1.2e21).toFixed()
                                           ]);
                                 }
                               ],
                               /* :: */[
                                 /* tuple */[
-                                  "toExponentialWithPrecision - digits:2",
+                                  "toFixedWithPrecision - digits:2",
                                   function () {
                                     return /* Eq */Block.__(0, [
-                                              "1.23e+2",
-                                              (123.456).toExponential(2)
+                                              "123.46",
+                                              (123.456).toFixed(2)
                                             ]);
                                   }
                                 ],
                                 /* :: */[
                                   /* tuple */[
-                                    "toExponentialWithPrecision - digits:4",
+                                    "toFixedWithPrecision - digits:4",
                                     function () {
                                       return /* Eq */Block.__(0, [
-                                                "1.2346e+2",
-                                                (123.456).toExponential(4)
+                                                "123.4560",
+                                                (123.456).toFixed(4)
                                               ]);
                                     }
                                   ],
                                   /* :: */[
                                     /* tuple */[
-                                      "toExponentialWithPrecision - digits:20",
+                                      "toFixedWithPrecision - digits:20",
                                       function () {
                                         return /* Eq */Block.__(0, [
-                                                  "0.00000000000000000000e+0",
-                                                  (0).toExponential(20)
+                                                  "0.00000000000000000000",
+                                                  (0).toFixed(20)
                                                 ]);
                                       }
                                     ],
                                     /* :: */[
                                       /* tuple */[
-                                        "toExponentialWithPrecision - digits:21",
+                                        "toFixedWithPrecision - digits:21",
                                         function () {
                                           return /* ThrowAny */Block.__(7, [function () {
-                                                      (0).toExponential(21);
+                                                      (0).toFixed(21);
                                                       return /* () */0;
                                                     }]);
                                         }
                                       ],
                                       /* :: */[
                                         /* tuple */[
-                                          "toExponentialWithPrecision - digits:-1",
+                                          "toFixedWithPrecision - digits:-1",
                                           function () {
                                             return /* ThrowAny */Block.__(7, [function () {
-                                                        (0).toExponential(-1);
+                                                        (0).toFixed(-1);
                                                         return /* () */0;
                                                       }]);
                                           }
