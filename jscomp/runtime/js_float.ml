@@ -29,14 +29,14 @@
 
 @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NaN> MDN
 *)
-external nan : float = "NaN" [@@bs.val] 
+external _NaN : float = "NaN" [@@bs.val] 
 
-(** Tests if the given value is [nan]
+(** Tests if the given value is [_NaN]
 
-Note that both [nan = nan] and [nan == nan] will return [false]. [isNaN] is
-therefore necessary to test for [nan].
+Note that both [_NaN = _NaN] and [_NaN == _NaN] will return [false]. [isNaN] is
+therefore necessary to test for [_NaN].
 
-{b Returns} [true] if the given value is [nan], [false] otherwise
+{b Returns} [true] if the given value is [_NaN], [false] otherwise
 
 @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isNaN> MDN
 *)
@@ -54,7 +54,7 @@ let _ = Js.Float.isFinite infinity
 let _ = Js.Float.isFinite neg_infinity
 
 (* returns [false] *)
-let _ = Js.Float.isFinite nan
+let _ = Js.Float.isFinite _NaN
 
 (* returns [true] *)
 let _ = Js.Float.isFinite 1234
@@ -238,7 +238,7 @@ external toStringWithRadix : float -> radix:int -> string = "toString" [@@bs.sen
 
 (** Parses the given [string] into a [float] using JavaScript semantics
 
-{b Returns} the number as a [float] if successfully parsed, [nan] otherwise.
+{b Returns} the number as a [float] if successfully parsed, [_NaN] otherwise.
 
 @example {[
 (* returns 123 *)
@@ -259,14 +259,21 @@ let _ = Js.Float.fromString "0b11"
 (* returns 9 *)
 let _ = Js.Float.fromString "0o11"
 
-(* returns [nan] *)
+(* returns [_NaN] *)
 let _ = Js.Float.fromString "foo"
 
-(* returns [nan] *)
+(* returns [_NaN] *)
 let _ = Js.Float.fromString "100a"
 ]}
 *)
 external fromString : string -> float = "Number" [@@bs.val]
+
+
+(**
+@deprecated Use {_NaN} instead
+*)
+external nan : float = "NaN" [@@bs.val] 
+[@@ocaml.deprecated "Use `_NaN` instead"]
 
 (**
 @deprecated Use {! toExponential} instead
