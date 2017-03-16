@@ -23,9 +23,12 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
+(** {2 Types} *)
+
+(** Json type *)
 type t
 
-
+(** Underlying type of a JSON value *) 
 type _ kind = 
   | String : Js_string.t kind
   | Number : float kind 
@@ -34,8 +37,33 @@ type _ kind =
   | Boolean : Js.boolean kind
   | Null : Js_types.null_val kind
 
-val reify_type : 'a -> 'b kind * 'b
+(** {2 Accessor} *)
+
+val reify_type : t -> 'b kind * 'b
+(** [reify_type v] returns both type and underlying value *) 
 
 val test : 'a  -> 'b kind -> bool
+(** [test v kind] returns true if [v] is of [kind] *)
 
 external parse : string -> t = "JSON.parse" [@@bs.val]
+(** [parse s] returns JSON value *)
+
+(** {2 Construtors} *)
+
+val null : t 
+(** Null JSON value *)
+
+val string : string -> t 
+(** Make a JSON string *)
+
+val number : float -> t 
+(** Make a JSON number *)
+
+val boolean : bool -> t 
+(** Make a JSON boolean *)
+
+val object_ : t Js_dict.t -> t
+(** Make a JSON objet *)
+
+external to_string : 'a -> string = "JSON.stringify" [@@bs.val]
+(** [to_string json] returns JSON string *)
