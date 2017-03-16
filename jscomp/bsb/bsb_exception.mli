@@ -30,6 +30,6 @@ type error =
 
 val error : error -> 'a
 
-
+val failf : ?loc:Ext_position.t ->  ('a, unit, string, 'b) format4 -> 'a
 
 val failwith_config : Ext_json_types.t -> ('a, unit, string, 'b) format4 -> 'a

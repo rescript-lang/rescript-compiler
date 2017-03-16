@@ -735,7 +735,7 @@ bsb/bsb_config_parse.cmi : bsb/bsb_config_types.cmx bsb/bsb_config.cmi
 bsb/bsb_default.cmi : ext/string_set.cmi
 bsb/bsb_dep_infos.cmi :
 bsb/bsb_dir.cmi :
-bsb/bsb_exception.cmi : ext/ext_json_types.cmx
+bsb/bsb_exception.cmi : ext/ext_position.cmi ext/ext_json_types.cmx
 bsb/bsb_file.cmi :
 bsb/bsb_gen.cmi : bsb/bsb_config_types.cmx
 bsb/bsb_helper_main.cmi :
