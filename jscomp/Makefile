@@ -202,6 +202,7 @@ EXT_SRCS = ext_util\
 	ext_pp_scope\
 	ext_io\
 	ext_sexp\
+	ext_json_types\
 	ext_json\
 	ident_hash_set\
 	hash_set_poly\

@@ -146,7 +146,7 @@ let rec
   parsing_simple_dir dir_index  cwd dir =
   parsing_source dir_index cwd 
     (`Obj (String_map.singleton Bsb_build_schemas.dir dir))
-and parsing_source (dir_index : int) cwd (x : Ext_json.t )
+and parsing_source (dir_index : int) cwd (x : Ext_json_types.t )
   : t  =
   match x with 
   | `Str _ as dir -> 
@@ -181,7 +181,7 @@ and parsing_source (dir_index : int) cwd (x : Ext_json.t )
           cur_sources := files
         | Some (`Arr {loc_start;loc_end; content = s }) -> (* [ a,b ] *)      
           cur_sources := 
-            Array.fold_left (fun acc (s : Ext_json.t) ->
+            Array.fold_left (fun acc (s : Ext_json_types.t) ->
                 match s with 
                 | `Str {str = s} -> 
                   Binary_cache.map_update ~dir acc s
@@ -273,15 +273,15 @@ and parsing_source (dir_index : int) cwd (x : Ext_json.t )
    parsing_source dir_index cwd (String_map.singleton Bsb_build_schemas.dir dir)
 *)
 
-and  parsing_arr_sources dir_index cwd (file_groups : Ext_json.t array)  = 
+and  parsing_arr_sources dir_index cwd (file_groups : Ext_json_types.t array)  = 
   Array.fold_left (fun  origin x ->
       parsing_source dir_index cwd x ++ origin 
     ) empty  file_groups 
 
-and  parsing_sources dir_index cwd (sources : Ext_json.t )  = 
+and  parsing_sources dir_index cwd (sources : Ext_json_types.t )  = 
   match sources with   
   | `Arr file_groups -> 
-    parsing_arr_sources dir_index cwd file_groups.Ext_json.content
+    parsing_arr_sources dir_index cwd file_groups.content
   | _ -> parsing_source dir_index cwd sources
 
 

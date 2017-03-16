@@ -68,7 +68,7 @@ let package_specs_from_bsconfig () =
       begin 
         match String_map.find_opt Bsb_build_schemas.package_specs map with 
         | Some (`Arr s ) -> 
-          get_package_specs_from_array s.Ext_json.content
+          get_package_specs_from_array s.content
         | Some _
         | None -> Bsb_default.package_specs
       end

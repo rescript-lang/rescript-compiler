@@ -568,27 +568,11 @@ let
 # 232 "ext/ext_json.mll"
  
 
-type js_array =
-  { content : t array ; 
-    loc_start : Lexing.position ; 
-    loc_end : Lexing.position ; 
-  }
-and js_str = 
-  { str : string ; loc : Lexing.position}
-and t = 
-  [  
-    `True
-  | `False
-  | `Null
-  | `Flo of string 
-  | `Str of js_str
-  | `Arr  of js_array
-  | `Obj of t String_map.t 
-   ]
+
 
 type status = 
   | No_path
-  | Found  of t 
+  | Found  of Ext_json_types.t 
   | Wrong_type of path 
 
 
@@ -605,7 +589,7 @@ let rec parse_json lexbuf =
       x 
   in
   let push e = look_ahead := Some e in 
-  let rec json (lexbuf : Lexing.lexbuf) : t = 
+  let rec json (lexbuf : Lexing.lexbuf) : Ext_json_types.t = 
     match token () with 
     | True -> `True
     | False -> `False
@@ -615,7 +599,8 @@ let rec parse_json lexbuf =
     | Lbracket -> parse_array false lexbuf.lex_start_p lexbuf.lex_curr_p [] lexbuf
     | Lbrace -> parse_map false String_map.empty lexbuf
     |  _ -> error lexbuf Unexpected_token
-  and parse_array  trailing_comma loc_start loc_finish acc lexbuf : t =
+  and parse_array  trailing_comma loc_start loc_finish acc lexbuf 
+    : Ext_json_types.t =
     match token () with 
     | Rbracket ->
       (* if trailing_comma then  *)
@@ -636,7 +621,7 @@ let rec parse_json lexbuf =
       | _ -> 
         error lexbuf Expect_comma_or_rbracket
       end
-  and parse_map trailing_comma acc lexbuf : t = 
+  and parse_map trailing_comma acc lexbuf : Ext_json_types.t = 
     match token () with 
     | Rbrace -> 
       (* if trailing_comma then  *)
@@ -684,16 +669,16 @@ type callback =
   | `Str_loc of (string -> Lexing.position -> unit)
   | `Flo of (string -> unit )
   | `Bool of (bool -> unit )
-  | `Obj of (t String_map.t -> unit)
-  | `Arr of (t array -> unit )
-  | `Arr_loc of (t array -> Lexing.position -> Lexing.position -> unit)
+  | `Obj of (Ext_json_types.t String_map.t -> unit)
+  | `Arr of (Ext_json_types.t array -> unit )
+  | `Arr_loc of (Ext_json_types.t array -> Lexing.position -> Lexing.position -> unit)
   | `Null of (unit -> unit)
   | `Not_found of (unit -> unit)
-  | `Id of (t -> unit )
+  | `Id of (Ext_json_types.t -> unit )
   ]
 
 let test   ?(fail=(fun () -> ())) key 
-    (cb : callback) m 
+    (cb : callback) (m  : Ext_json_types.t String_map.t)
      =
      begin match String_map.find_exn key m, cb with 
        | exception Not_found  ->
@@ -714,7 +699,7 @@ let test   ?(fail=(fun () -> ())) key
        | _, _ -> fail () 
      end;
      m
-let query path (json : t ) =
+let query path (json : Ext_json_types.t ) =
   let rec aux acc paths json =
     match path with 
     | [] ->  Found json
@@ -729,4 +714,4 @@ let query path (json : t ) =
       end
   in aux [] path json
 
-# 733 "ext/ext_json.ml"
+# 718 "ext/ext_json.ml"

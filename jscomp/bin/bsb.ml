@@ -3830,6 +3830,56 @@ let of_array xs =
   Array.fold_left (fun acc (k,v) -> add k v acc) empty xs
 
 end
+module Ext_json_types
+= struct
+#1 "ext_json_types.ml"
+(* Copyright (C) 2015-2017 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type json_str = 
+  { str : string ; loc : Lexing.position}
+
+type json_array =
+  { content : t array ; 
+    loc_start : Lexing.position ; 
+    loc_end : Lexing.position ; 
+  }
+
+
+and t = 
+  [  
+    `True
+  | `False
+  | `Null
+  | `Flo of string 
+  | `Str of json_str
+  | `Arr  of json_array
+  | `Obj of t String_map.t 
+   ]
+
+end
 module Ext_json : sig 
 #1 "ext_json.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -3856,33 +3906,16 @@ module Ext_json : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type js_array =  
-  { content : t array ; 
-    loc_start : Lexing.position ; 
-    loc_end : Lexing.position ; 
-  }
-and js_str = 
-  { str : string ; loc : Lexing.position}
-and t = 
-  [
-    `True
-  | `False
-  | `Null
-  | `Flo of string 
-  | `Str of js_str
-  | `Arr of js_array
-  | `Obj of t String_map.t 
-  ]
 
-val parse_json : Lexing.lexbuf -> t 
-val parse_json_from_string : string -> t 
-val parse_json_from_chan : in_channel -> t 
-val parse_json_from_file  : string -> t
+val parse_json : Lexing.lexbuf -> Ext_json_types.t 
+val parse_json_from_string : string -> Ext_json_types.t 
+val parse_json_from_chan : in_channel -> Ext_json_types.t 
+val parse_json_from_file  : string -> Ext_json_types.t
 
 type path = string list 
 type status = 
   | No_path
-  | Found of t 
+  | Found of Ext_json_types.t 
   | Wrong_type of path 
 
 
@@ -3892,19 +3925,22 @@ type callback =
   | `Str_loc of (string -> Lexing.position -> unit)
   | `Flo of (string -> unit )
   | `Bool of (bool -> unit )
-  | `Obj of (t String_map.t -> unit)
-  | `Arr of (t array -> unit )
-  | `Arr_loc of (t array -> Lexing.position -> Lexing.position -> unit)
+  | `Obj of (Ext_json_types.t String_map.t -> unit)
+  | `Arr of (Ext_json_types.t array -> unit )
+  | `Arr_loc of 
+    (Ext_json_types.t array -> Lexing.position -> Lexing.position -> unit)
   | `Null of (unit -> unit)
   | `Not_found of (unit -> unit)
-  | `Id of (t -> unit )
+  | `Id of (Ext_json_types.t -> unit )
   ]
 
 val test:
   ?fail:(unit -> unit) ->
-  string -> callback -> t String_map.t -> t String_map.t
+  string -> callback 
+  -> Ext_json_types.t String_map.t
+   -> Ext_json_types.t String_map.t
 
-val query : path -> t ->  status
+val query : path -> Ext_json_types.t ->  status
 
 end = struct
 #1 "ext_json.ml"
@@ -4478,27 +4514,11 @@ let
 # 232 "ext/ext_json.mll"
  
 
-type js_array =
-  { content : t array ; 
-    loc_start : Lexing.position ; 
-    loc_end : Lexing.position ; 
-  }
-and js_str = 
-  { str : string ; loc : Lexing.position}
-and t = 
-  [  
-    `True
-  | `False
-  | `Null
-  | `Flo of string 
-  | `Str of js_str
-  | `Arr  of js_array
-  | `Obj of t String_map.t 
-   ]
+
 
 type status = 
   | No_path
-  | Found  of t 
+  | Found  of Ext_json_types.t 
   | Wrong_type of path 
 
 
@@ -4515,7 +4535,7 @@ let rec parse_json lexbuf =
       x 
   in
   let push e = look_ahead := Some e in 
-  let rec json (lexbuf : Lexing.lexbuf) : t = 
+  let rec json (lexbuf : Lexing.lexbuf) : Ext_json_types.t = 
     match token () with 
     | True -> `True
     | False -> `False
@@ -4525,7 +4545,8 @@ let rec parse_json lexbuf =
     | Lbracket -> parse_array false lexbuf.lex_start_p lexbuf.lex_curr_p [] lexbuf
     | Lbrace -> parse_map false String_map.empty lexbuf
     |  _ -> error lexbuf Unexpected_token
-  and parse_array  trailing_comma loc_start loc_finish acc lexbuf : t =
+  and parse_array  trailing_comma loc_start loc_finish acc lexbuf 
+    : Ext_json_types.t =
     match token () with 
     | Rbracket ->
       (* if trailing_comma then  *)
@@ -4546,7 +4567,7 @@ let rec parse_json lexbuf =
       | _ -> 
         error lexbuf Expect_comma_or_rbracket
       end
-  and parse_map trailing_comma acc lexbuf : t = 
+  and parse_map trailing_comma acc lexbuf : Ext_json_types.t = 
     match token () with 
     | Rbrace -> 
       (* if trailing_comma then  *)
@@ -4594,16 +4615,16 @@ type callback =
   | `Str_loc of (string -> Lexing.position -> unit)
   | `Flo of (string -> unit )
   | `Bool of (bool -> unit )
-  | `Obj of (t String_map.t -> unit)
-  | `Arr of (t array -> unit )
-  | `Arr_loc of (t array -> Lexing.position -> Lexing.position -> unit)
+  | `Obj of (Ext_json_types.t String_map.t -> unit)
+  | `Arr of (Ext_json_types.t array -> unit )
+  | `Arr_loc of (Ext_json_types.t array -> Lexing.position -> Lexing.position -> unit)
   | `Null of (unit -> unit)
   | `Not_found of (unit -> unit)
-  | `Id of (t -> unit )
+  | `Id of (Ext_json_types.t -> unit )
   ]
 
 let test   ?(fail=(fun () -> ())) key 
-    (cb : callback) m 
+    (cb : callback) (m  : Ext_json_types.t String_map.t)
      =
      begin match String_map.find_exn key m, cb with 
        | exception Not_found  ->
@@ -4624,7 +4645,7 @@ let test   ?(fail=(fun () -> ())) key
        | _, _ -> fail () 
      end;
      m
-let query path (json : t ) =
+let query path (json : Ext_json_types.t ) =
   let rec aux acc paths json =
     match path with 
     | [] ->  Found json
@@ -4639,7 +4660,7 @@ let query path (json : t ) =
       end
   in aux [] path json
 
-# 733 "ext/ext_json.ml"
+# 718 "ext/ext_json.ml"
 
 end
 module Ext_list : sig 
@@ -5346,12 +5367,12 @@ val get_bsc_dir : string -> string
 
 
 val get_list_string_acc : 
-    Ext_json.t array -> 
+    Ext_json_types.t array -> 
     string list -> 
     string list
 
 val get_list_string : 
-    Ext_json.t array -> 
+    Ext_json_types.t array -> 
     string list
 
 val string_of_bsb_dev_include : int -> string 
@@ -5476,7 +5497,7 @@ let rec mkp dir =
 
 
 let get_list_string_acc s acc = 
-  Ext_array.to_list_map_acc  (fun (x : Ext_json.t) ->
+  Ext_array.to_list_map_acc  (fun (x : Ext_json_types.t) ->
       match x with 
       | `Str x -> Some x.str
       | _ -> None
@@ -5514,11 +5535,11 @@ let rec walk_all_deps top dir cb =
     map
     |?
     (Bsb_build_schemas.bs_dependencies,
-      `Arr (fun (new_packages : Ext_json.t array) ->
+      `Arr (fun (new_packages : Ext_json_types.t array) ->
          new_packages
-         |> Array.iter (fun (js : Ext_json.t) ->
+         |> Array.iter (fun (js : Ext_json_types.t) ->
           begin match js with
-          | `Str {Ext_json.str = new_package} ->
+          | `Str {str = new_package} ->
             begin match Bs_pkg.resolve_bs_package ~cwd:dir new_package with
             | None -> 
               Bsb_exception.error (Bsb_exception.Package_not_found (new_package, Some bsconfig_json))
@@ -6734,7 +6755,7 @@ val get_current_number_of_dev_groups : unit -> int
 val parsing_sources : 
   dir_index -> 
   string -> 
-  Ext_json.t  ->
+  Ext_json_types.t  ->
   t 
   
 
@@ -6888,7 +6909,7 @@ let rec
   parsing_simple_dir dir_index  cwd dir =
   parsing_source dir_index cwd 
     (`Obj (String_map.singleton Bsb_build_schemas.dir dir))
-and parsing_source (dir_index : int) cwd (x : Ext_json.t )
+and parsing_source (dir_index : int) cwd (x : Ext_json_types.t )
   : t  =
   match x with 
   | `Str _ as dir -> 
@@ -6923,7 +6944,7 @@ and parsing_source (dir_index : int) cwd (x : Ext_json.t )
           cur_sources := files
         | Some (`Arr {loc_start;loc_end; content = s }) -> (* [ a,b ] *)      
           cur_sources := 
-            Array.fold_left (fun acc (s : Ext_json.t) ->
+            Array.fold_left (fun acc (s : Ext_json_types.t) ->
                 match s with 
                 | `Str {str = s} -> 
                   Binary_cache.map_update ~dir acc s
@@ -7015,15 +7036,15 @@ and parsing_source (dir_index : int) cwd (x : Ext_json.t )
    parsing_source dir_index cwd (String_map.singleton Bsb_build_schemas.dir dir)
 *)
 
-and  parsing_arr_sources dir_index cwd (file_groups : Ext_json.t array)  = 
+and  parsing_arr_sources dir_index cwd (file_groups : Ext_json_types.t array)  = 
   Array.fold_left (fun  origin x ->
       parsing_source dir_index cwd x ++ origin 
     ) empty  file_groups 
 
-and  parsing_sources dir_index cwd (sources : Ext_json.t )  = 
+and  parsing_sources dir_index cwd (sources : Ext_json_types.t )  = 
   match sources with   
   | `Arr file_groups -> 
-    parsing_arr_sources dir_index cwd file_groups.Ext_json.content
+    parsing_arr_sources dir_index cwd file_groups.content
   | _ -> parsing_source dir_index cwd sources
 
 
@@ -7700,7 +7721,7 @@ let package_specs_from_bsconfig () =
       begin 
         match String_map.find_opt Bsb_build_schemas.package_specs map with 
         | Some (`Arr s ) -> 
-          get_package_specs_from_array s.Ext_json.content
+          get_package_specs_from_array s.content
         | Some _
         | None -> Bsb_default.package_specs
       end

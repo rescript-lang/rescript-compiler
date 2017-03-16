@@ -1,4 +1,4 @@
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+(* Copyright (C) 2015-2017 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -22,40 +22,24 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type public = 
-  | Export_all 
-  | Export_set of String_set.t 
-  | Export_none
-    
-type dir_index = int 
 
-type  file_group = 
-  { dir : string ;
-    sources : Binary_cache.file_group_rouces ; 
-    resources : string list ;
-    bs_dependencies : string list;
-    public : public;
-    dir_index : dir_index; 
-  } 
+type json_str = 
+  { str : string ; loc : Lexing.position}
 
-type t = 
-  { files :  file_group list ; 
-    intervals :  Ext_file_pp.interval list ;
-    globbed_dirs : string list ; 
+type json_array =
+  { content : t array ; 
+    loc_start : Lexing.position ; 
+    loc_end : Lexing.position ; 
   }
 
-val lib_dir_index : dir_index 
 
-val get_current_number_of_dev_groups : unit -> int 
-
-
-
-(** entry is to the 
-    [sources] in the schema
-*)
-val parsing_sources : 
-  dir_index -> 
-  string -> 
-  Ext_json_types.t  ->
-  t 
-  
+and t = 
+  [  
+    `True
+  | `False
+  | `Null
+  | `Flo of string 
+  | `Str of json_str
+  | `Arr  of json_array
+  | `Obj of t String_map.t 
+   ]
