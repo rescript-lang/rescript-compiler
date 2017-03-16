@@ -548,7 +548,7 @@ odoc_gen:
 	ocamlopt.opt -I +ocamldoc -shared -o ../odoc_gen/generator.cmxs ../odoc_gen/generator.ml
 
 docs: odoc_gen
-	ocamldoc.opt -g ../odoc_gen/generator.cmxs -charset utf-8 -css-style ../../odoc_gen/style.css -sort -ppx bin/bsppx.exe -I others -I runtime -d ../docs/api $(DOCS_SOURCES)
+	ocamldoc.opt -nostdlib -I stdlib -g ../odoc_gen/generator.cmxs -charset utf-8 -css-style ../../odoc_gen/style.css -sort -ppx bin/bsppx.exe -I others -I runtime -d ../docs/api $(DOCS_SOURCES)
 
 toplevel: bs_hash.cma ext.cma
 .PHONY: release   releasebuild libs snapshotml force-snapshotml toplevel

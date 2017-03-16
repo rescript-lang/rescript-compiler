@@ -6,7 +6,7 @@ caml_int64.cmj : typed_array.cmj js_float.cmj caml_utils.cmj caml_int32.cmj \
     bs_string.cmj caml_int64.cmi
 caml_exceptions.cmj : caml_builtin_exceptions.cmj caml_exceptions.cmi
 caml_utils.cmj : caml_utils.cmi
-caml_sys.cmj : js_float.cmj caml_sys.cmi
+caml_sys.cmj : caml_sys.cmi
 caml_io.cmj : js_undefined.cmj js.cmj bs_string.cmj
 caml_float.cmj : typed_array.cmj js_float.cmj caml_float.cmi
 caml_lexer.cmj : caml_lexer.cmi

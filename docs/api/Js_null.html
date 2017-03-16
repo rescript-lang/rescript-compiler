@@ -41,6 +41,7 @@
 <link title="Caml_module" rel="Chapter" href="Caml_module.html">
 <link title="Caml_obj" rel="Chapter" href="Caml_obj.html">
 <link title="Caml_oo" rel="Chapter" href="Caml_oo.html">
+<link title="Caml_oo_curry" rel="Chapter" href="Caml_oo_curry.html">
 <link title="Caml_parser" rel="Chapter" href="Caml_parser.html">
 <link title="Caml_primitive" rel="Chapter" href="Caml_primitive.html">
 <link title="Caml_queue" rel="Chapter" href="Caml_queue.html">
@@ -86,15 +87,104 @@
 </div>
 <h1>Module <a href="type_Js_null.html">Js_null</a></h1>
 
-<pre><span class="keyword">module</span> Js_null: <code class="code">sig</code> <a href="Js_null.html">..</a> <code class="code">end</code></pre><hr width="100%">
+<pre><span class="keyword">module</span> Js_null: <code class="code">sig</code> <a href="Js_null.html">..</a> <code class="code">end</code></pre><div class="info module top">
+<div class="not-examples">
+Provides functionality for dealing with the <code class="code">'a Js.null</code> type<br>
+</div>
+<div class="examples">
+</div>
+</div>
+<hr width="100%">
 
 <pre><span id="TYPEt"><span class="keyword">type</span> <code class="type">'a</code> t</span> = <code class="type">'a <a href="Js.html#TYPEnull">Js.null</a></code> </pre>
+<div class="info ">
+<div class="not-examples">
+Local alias for <code class="code">'a Js.null</code><br>
+</div>
+<div class="examples">
+</div>
+</div>
 
 
-<pre><span id="VALto_opt"><span class="keyword">val</span> to_opt</span> : <code class="type">'a <a href="Js_null.html#TYPEt">t</a> -> 'a option</code></pre>
-<pre><span id="VALreturn"><span class="keyword">val</span> return</span> : <code class="type">'a -> 'a <a href="Js_null.html#TYPEt">t</a></code></pre>
-<pre><span id="VALtest"><span class="keyword">val</span> test</span> : <code class="type">'a <a href="Js_null.html#TYPEt">t</a> -> bool</code></pre>
-<pre><span id="VALempty"><span class="keyword">val</span> empty</span> : <code class="type">'a <a href="Js_null.html#TYPEt">t</a></code></pre>
-<pre><span id="VALbind"><span class="keyword">val</span> bind</span> : <code class="type">'a <a href="Js_null.html#TYPEt">t</a> -> ([ `Arity_1 of 'a ], 'b) <a href="Js.html#TYPEfn">Js.fn</a> -> 'b <a href="Js_null.html#TYPEt">t</a></code></pre>
-<pre><span id="VALiter"><span class="keyword">val</span> iter</span> : <code class="type">'a <a href="Js_null.html#TYPEt">t</a> -> ([ `Arity_1 of 'a ], unit) <a href="Js.html#TYPEfn">Js.fn</a> -> unit</code></pre>
-<pre><span id="VALfrom_opt"><span class="keyword">val</span> from_opt</span> : <code class="type">'a option -> 'a <a href="Js_null.html#TYPEt">t</a></code></pre></body></html>
+<pre><span id="VALreturn"><span class="keyword">val</span> return</span> : <code class="type">'a -> 'a <a href="Js_null.html#TYPEt">t</a></code></pre><div class="info ">
+<div class="not-examples">
+Constructs a value of <code class="code">'a Js.null</code> containing a value of <code class="code">'a</code><br>
+</div>
+<div class="examples">
+</div>
+</div>
+
+<pre><span id="VALtest"><span class="keyword">val</span> test</span> : <code class="type">'a <a href="Js_null.html#TYPEt">t</a> -> bool</code></pre><div class="info ">
+<div class="not-examples">
+Returns <code class="code">true</code> if the given value is <code class="code">empty</code> (<code class="code">null</code>), <code class="code">false</code> otherwise<br>
+</div>
+<div class="examples">
+</div>
+</div>
+
+<pre><span id="VALempty"><span class="keyword">val</span> empty</span> : <code class="type">'a <a href="Js_null.html#TYPEt">t</a></code></pre><div class="info ">
+<div class="not-examples">
+The empty value, <code class="code">null</code><br>
+</div>
+<div class="examples">
+</div>
+</div>
+
+<pre><span id="VALbind"><span class="keyword">val</span> bind</span> : <code class="type">'a <a href="Js_null.html#TYPEt">t</a> -> ([ `Arity_1 of 'a ], 'b) <a href="Js.html#TYPEfn">Js.fn</a> -> 'b <a href="Js_null.html#TYPEt">t</a></code></pre><div class="info ">
+<div class="not-examples">
+Maps the contained value using the given function
+<p>
+
+If <code class="code">'a Js.null</code> contains a value, that value is unwrapped, mapped to a <code class="code">'b</code> using
+the given function <code class="code">a' -&gt; 'b</code>, then wrapped back up and returned as <code class="code">'b Js.null</code><br>
+</div>
+<div class="examples">
+<pre class="example"><pre class="codepre"><code class="code">let maybeGreetWorld (maybeGreeting: string Js.null) =
+  Js.Null.bind maybeGreeting (fun greeting -&gt; greeting ^ " world!")
+</code></pre></pre></div>
+</div>
+
+<pre><span id="VALiter"><span class="keyword">val</span> iter</span> : <code class="type">'a <a href="Js_null.html#TYPEt">t</a> -> ([ `Arity_1 of 'a ], unit) <a href="Js.html#TYPEfn">Js.fn</a> -> unit</code></pre><div class="info ">
+<div class="not-examples">
+Iterates over the contained value with the given function
+<p>
+
+If <code class="code">'a Js.null</code> contains a value, that value is unwrapped and applied to
+the given function.<br>
+</div>
+<div class="examples">
+<pre class="example"><pre class="codepre"><code class="code">let maybeSay (maybeMessage: string Js.null) =
+  Js.Null.iter maybeMessage (fun message -&gt; Js.log message)
+</code></pre></pre></div>
+</div>
+
+<pre><span id="VALfrom_opt"><span class="keyword">val</span> from_opt</span> : <code class="type">'a option -> 'a <a href="Js_null.html#TYPEt">t</a></code></pre><div class="info ">
+<div class="not-examples">
+Maps <code class="code">'a option</code> to <code class="code">'a Js.null</code>
+<p>
+
+<table>
+<tr> <td>Some a <td>-> <td>return a
+<tr> <td>None <td>-> <td>empty
+</table>
+<br>
+</div>
+<div class="examples">
+</div>
+</div>
+
+<pre><span id="VALto_opt"><span class="keyword">val</span> to_opt</span> : <code class="type">'a <a href="Js_null.html#TYPEt">t</a> -> 'a option</code></pre><div class="info ">
+<div class="not-examples">
+Maps <code class="code">'a Js.null</code> to <code class="code">'a option</code>
+<p>
+
+<table>
+<tr> <td>return a <td>-> <td>Some a
+<tr> <td>empty <td>-> <td>None
+</table>
+<br>
+</div>
+<div class="examples">
+</div>
+</div>
+</body></html>
