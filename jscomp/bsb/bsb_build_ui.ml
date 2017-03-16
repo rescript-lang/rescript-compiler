@@ -144,132 +144,135 @@ let (++) (u : t)  (v : t)  =
 (** [dir_index] can be inherited  *)
 let rec 
   parsing_simple_dir dir_index  cwd dir =
-  parsing_source dir_index cwd 
-    (Ext_json_types.Obj (String_map.singleton Bsb_build_schemas.dir dir))
+  parsing_source_dir_map dir_index cwd 
+    (String_map.singleton Bsb_build_schemas.dir dir)
 
 and parsing_source (dir_index : int) cwd (x : Ext_json_types.t )
   : t  =
   match x with 
   | Str  _ as dir -> 
     parsing_simple_dir dir_index cwd dir   
-  | Obj x -> 
-
-    let cur_sources = ref String_map.empty in
-    let resources = ref [] in 
-    let bs_dependencies = ref [] in
-    let public = ref Export_all in (* TODO: move to {!Bsb_default} later*)
-
-    let current_dir_index = 
-      match String_map.find_opt Bsb_build_schemas.type_ x with 
-      | Some (Str {str="dev"}) -> get_dev_index ()
-      | Some _ -> failwith "type only support dev"    
-      | None -> dir_index in 
-    if !Bsb_config.no_dev && current_dir_index <> lib_dir_index then empty 
-    else 
-      let dir = 
-        match String_map.find_opt Bsb_build_schemas.dir x with 
-        | Some (Str{str=s}) -> 
-          cwd // Ext_filename.simple_convert_node_path_to_os_path s 
-        | Some _ -> failwith "dir expected to be a string"
-        | None -> cwd   (* TODO: It is an error here? *)
-      in
-      let cur_update_queue = ref [] in 
-      let cur_globbed_dirs = ref [] in 
-      begin match String_map.find_opt Bsb_build_schemas.files x with 
-        | Some (Arr {loc_start;loc_end; content = [||] }) -> (* [ ] *) 
-          let tasks, files =  handle_list_files  dir  loc_start loc_end in
-          cur_update_queue := tasks ;
-          cur_sources := files
-        | Some (Arr {loc_start;loc_end; content = s }) -> (* [ a,b ] *)      
-          cur_sources := 
-            Array.fold_left (fun acc (s : Ext_json_types.t) ->
-                match s with 
-                | Str {str = s} -> 
-                  Binary_cache.map_update ~dir acc s
-                | _ -> acc
-              ) String_map.empty s    
-        | Some (Obj m) -> (* { excludes : [], slow_re : "" }*)
-          let excludes = 
-            match String_map.find_opt Bsb_build_schemas.excludes m with 
-            | None -> []   
-            | Some (Arr {content = arr}) -> get_list_string arr 
-            | Some _ -> failwith "excludes expect array "in 
-          let slow_re = String_map.find_opt Bsb_build_schemas.slow_re m in 
-          let predicate = 
-            match slow_re, excludes with 
-            | Some (Str {str = s}), [] -> 
-              let re = Str.regexp s  in 
-              fun name -> Str.string_match re name 0 
-            | Some (Str {str = s}) , _::_ -> 
-              let re = Str.regexp s in   
-              fun name -> Str.string_match re name 0 && not (List.mem name excludes)
-            | Some _, _ -> failwith "slow-re expect a string literal"
-            | None , _ -> failwith "missing field: slow-re"  in 
-          let file_array = Bsb_dir.readdir dir in 
-          cur_sources := Array.fold_left (fun acc name -> 
-              if predicate name then 
-                Binary_cache.map_update  ~dir acc name 
-              else acc
-            ) String_map.empty file_array;
-          cur_globbed_dirs := [dir]              
-        | None ->  (* No setting on [!files]*)
-          let file_array = Bsb_dir.readdir dir in 
-          (** We should avoid temporary files *)
-          cur_sources := 
-            Array.fold_left (fun acc name -> 
-                match Ext_string.is_valid_source_name name with 
-                | Good -> 
-                  Binary_cache.map_update  ~dir acc name 
-                | Invalid_module_name -> 
-                  print_endline 
-                    (Printf.sprintf warning_unused_file
-                       name dir 
-                    ) ; 
-                  acc 
-                | Suffix_mismatch ->  acc
-              ) String_map.empty file_array;
-          cur_globbed_dirs :=  [dir]  
-        | Some _ -> failwith "files field expect array or object "
-
-      end;
-      x   
-      |? (Bsb_build_schemas.bs_dependencies, `Arr (fun s -> bs_dependencies := get_list_string s ))
-      |?  (Bsb_build_schemas.resources ,
-           `Arr (fun s  ->
-               resources := get_list_string s
-             ))
-      |? (Bsb_build_schemas.public, `Str (fun s -> 
-          if s = Bsb_build_schemas.export_all then public := Export_all else 
-          if s = Bsb_build_schemas.export_none then public := Export_none else 
-            failwith ("invalid str for" ^ s )
-        ))
-      |? (Bsb_build_schemas.public, `Arr (fun s -> 
-          public := Export_set (String_set.of_list (get_list_string s ) )
-        ) )
-      |> ignore ;
-      let cur_file = 
-        {dir = dir; 
-         sources = !cur_sources; 
-         resources = !resources;
-         bs_dependencies = !bs_dependencies;
-         public = !public;
-         dir_index = current_dir_index;
-        } in 
-      let children, children_update_queue, children_globbed_dirs = 
-        match String_map.find_opt Bsb_build_schemas.subdirs x with 
-        | Some s -> 
-          let res  = parsing_sources current_dir_index dir s in 
-          res.files ,
-          res.intervals,
-          res.globbed_dirs
-        | None -> [], [], []  in 
-
-      {
-        files =  cur_file :: children;
-        intervals = !cur_update_queue @ children_update_queue ;
-        globbed_dirs = !cur_globbed_dirs @ children_globbed_dirs;
-      } 
+  | Obj {map = x} -> 
+    parsing_source_dir_map dir_index cwd x 
   | _ -> empty 
+and parsing_source_dir_map dir_index cwd (x : Ext_json_types.t String_map.t) = 
+  let cur_sources = ref String_map.empty in
+  let resources = ref [] in 
+  let bs_dependencies = ref [] in
+  let public = ref Export_all in (* TODO: move to {!Bsb_default} later*)
+
+  let current_dir_index = 
+    match String_map.find_opt Bsb_build_schemas.type_ x with 
+    | Some (Str {str="dev"}) -> get_dev_index ()
+    | Some _ -> failwith "type only support dev"    
+    | None -> dir_index in 
+  if !Bsb_config.no_dev && current_dir_index <> lib_dir_index then empty 
+  else 
+    let dir = 
+      match String_map.find_opt Bsb_build_schemas.dir x with 
+      | Some (Str{str=s}) -> 
+        cwd // Ext_filename.simple_convert_node_path_to_os_path s 
+
+      | Some x -> Bsb_exception.failwith_config x "dir expected to be a string"
+      | None -> cwd   (* TODO: It is an error here? *)
+    in
+    let cur_update_queue = ref [] in 
+    let cur_globbed_dirs = ref [] in 
+    begin match String_map.find_opt Bsb_build_schemas.files x with 
+      | Some (Arr {loc_start;loc_end; content = [||] }) -> (* [ ] *) 
+        let tasks, files =  handle_list_files  dir  loc_start loc_end in
+        cur_update_queue := tasks ;
+        cur_sources := files
+      | Some (Arr {loc_start;loc_end; content = s }) -> (* [ a,b ] *)      
+        cur_sources := 
+          Array.fold_left (fun acc (s : Ext_json_types.t) ->
+              match s with 
+              | Str {str = s} -> 
+                Binary_cache.map_update ~dir acc s
+              | _ -> acc
+            ) String_map.empty s    
+      | Some (Obj {map = m}) -> (* { excludes : [], slow_re : "" }*)
+        let excludes = 
+          match String_map.find_opt Bsb_build_schemas.excludes m with 
+          | None -> []   
+          | Some (Arr {content = arr}) -> get_list_string arr 
+          | Some _ -> failwith "excludes expect array "in 
+        let slow_re = String_map.find_opt Bsb_build_schemas.slow_re m in 
+        let predicate = 
+          match slow_re, excludes with 
+          | Some (Str {str = s}), [] -> 
+            let re = Str.regexp s  in 
+            fun name -> Str.string_match re name 0 
+          | Some (Str {str = s}) , _::_ -> 
+            let re = Str.regexp s in   
+            fun name -> Str.string_match re name 0 && not (List.mem name excludes)
+          | Some _, _ -> failwith "slow-re expect a string literal"
+          | None , _ -> failwith "missing field: slow-re"  in 
+        let file_array = Bsb_dir.readdir dir in 
+        cur_sources := Array.fold_left (fun acc name -> 
+            if predicate name then 
+              Binary_cache.map_update  ~dir acc name 
+            else acc
+          ) String_map.empty file_array;
+        cur_globbed_dirs := [dir]              
+      | None ->  (* No setting on [!files]*)
+        let file_array = Bsb_dir.readdir dir in 
+        (** We should avoid temporary files *)
+        cur_sources := 
+          Array.fold_left (fun acc name -> 
+              match Ext_string.is_valid_source_name name with 
+              | Good -> 
+                Binary_cache.map_update  ~dir acc name 
+              | Invalid_module_name -> 
+                print_endline 
+                  (Printf.sprintf warning_unused_file
+                     name dir 
+                  ) ; 
+                acc 
+              | Suffix_mismatch ->  acc
+            ) String_map.empty file_array;
+        cur_globbed_dirs :=  [dir]  
+      | Some _ -> failwith "files field expect array or object "
+
+    end;
+    x   
+    |? (Bsb_build_schemas.bs_dependencies, `Arr (fun s -> bs_dependencies := get_list_string s ))
+    |?  (Bsb_build_schemas.resources ,
+         `Arr (fun s  ->
+             resources := get_list_string s
+           ))
+    |? (Bsb_build_schemas.public, `Str (fun s -> 
+        if s = Bsb_build_schemas.export_all then public := Export_all else 
+        if s = Bsb_build_schemas.export_none then public := Export_none else 
+          failwith ("invalid str for" ^ s )
+      ))
+    |? (Bsb_build_schemas.public, `Arr (fun s -> 
+        public := Export_set (String_set.of_list (get_list_string s ) )
+      ) )
+    |> ignore ;
+    let cur_file = 
+      {dir = dir; 
+       sources = !cur_sources; 
+       resources = !resources;
+       bs_dependencies = !bs_dependencies;
+       public = !public;
+       dir_index = current_dir_index;
+      } in 
+    let children, children_update_queue, children_globbed_dirs = 
+      match String_map.find_opt Bsb_build_schemas.subdirs x with 
+      | Some s -> 
+        let res  = parsing_sources current_dir_index dir s in 
+        res.files ,
+        res.intervals,
+        res.globbed_dirs
+      | None -> [], [], []  in 
+
+    {
+      files =  cur_file :: children;
+      intervals = !cur_update_queue @ children_update_queue ;
+      globbed_dirs = !cur_globbed_dirs @ children_globbed_dirs;
+    } 
+
 (* and parsing_simple_dir dir_index cwd  dir  : t = 
    parsing_source dir_index cwd (String_map.singleton Bsb_build_schemas.dir dir)
 *)

@@ -64,7 +64,7 @@ let merlin_trailer_length = String.length merlin_trailer
 let package_specs_from_bsconfig () = 
   let json = Ext_json_parse.parse_json_from_file Literals.bsconfig_json in
   begin match json with
-    | Obj map ->
+    | Obj {map} ->
       begin 
         match String_map.find_opt Bsb_build_schemas.package_specs map with 
         | Some (Arr s ) -> 
@@ -254,10 +254,10 @@ let interpret_json
   *)
 
   match global_data with
-  | Obj map ->
+  | Obj { map} ->
 
     (match String_map.find_opt Bsb_build_schemas.use_stdlib map with      
-     | Some False -> 
+     | Some (False _) -> 
        ()
      | None 
      | Some _ ->

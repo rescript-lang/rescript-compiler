@@ -136,7 +136,8 @@ ext/ext_pp_scope.cmi : ext/ident_set.cmi
 ext/ext_io.cmi :
 ext/ext_sexp.cmi :
 ext/ext_json_parse.cmi : ext/ext_json_types.cmx
-ext/ext_json.cmi : ext/string_map.cmi ext/ext_json_types.cmx
+ext/ext_json.cmi : ext/string_map.cmi ext/ext_position.cmi \
+    ext/ext_json_types.cmx
 ext/ident_hash_set.cmi : ext/hash_set_gen.cmx
 ext/hash_set_poly.cmi :
 ext/ident_hashtbl.cmi : ext/hashtbl_gen.cmx
@@ -678,9 +679,10 @@ ounit_tests/ounit_tests_main.cmx : ext/resize_array.cmx \
 bsb/bsb_build_schemas.cmx :
 bsb/bsb_build_ui.cmx : ext/string_vec.cmx ext/string_set.cmx \
     ext/string_map.cmx ext/ext_string.cmx ext/ext_json_types.cmx \
-    ext/ext_json.cmx ext/ext_filename.cmx ext/ext_file_pp.cmx bsb/bsb_dir.cmx \
-    bsb/bsb_config.cmx bsb/bsb_build_util.cmx bsb/bsb_build_schemas.cmx \
-    common/binary_cache.cmx bsb/bsb_build_ui.cmi
+    ext/ext_json.cmx ext/ext_filename.cmx ext/ext_file_pp.cmx \
+    bsb/bsb_exception.cmx bsb/bsb_dir.cmx bsb/bsb_config.cmx \
+    bsb/bsb_build_util.cmx bsb/bsb_build_schemas.cmx common/binary_cache.cmx \
+    bsb/bsb_build_ui.cmi
 bsb/bsb_build_util.cmx : ext/literals.cmx ext/ext_sys.cmx ext/ext_string.cmx \
     ext/ext_list.cmx ext/ext_json_types.cmx ext/ext_json_parse.cmx \
     ext/ext_json.cmx ext/ext_filename.cmx ext/ext_array.cmx \
@@ -703,7 +705,7 @@ bsb/bsb_dep_infos.cmx : ext/ext_string.cmx common/bs_version.cmx \
     bsb/bsb_dep_infos.cmi
 bsb/bsb_dir.cmx : bsb/bsb_dir.cmi
 bsb/bsb_exception.cmx : ext/ext_string.cmx ext/ext_position.cmx \
-    common/bs_version.cmx bsb/bsb_exception.cmi
+    ext/ext_json.cmx common/bs_version.cmx bsb/bsb_exception.cmi
 bsb/bsb_file.cmx : bsb/bsb_file.cmi
 bsb/bsb_gen.cmx : ext/string_map.cmx ext/literals.cmx ext/ext_string.cmx \
     ext/ext_list.cmx ext/ext_filename.cmx bsb/bsb_ninja.cmx \
@@ -733,7 +735,7 @@ bsb/bsb_config_parse.cmi : bsb/bsb_config_types.cmx bsb/bsb_config.cmi
 bsb/bsb_default.cmi : ext/string_set.cmi
 bsb/bsb_dep_infos.cmi :
 bsb/bsb_dir.cmi :
-bsb/bsb_exception.cmi : ext/ext_position.cmi
+bsb/bsb_exception.cmi : ext/ext_json_types.cmx
 bsb/bsb_file.cmi :
 bsb/bsb_gen.cmi : bsb/bsb_config_types.cmx
 bsb/bsb_helper_main.cmi :

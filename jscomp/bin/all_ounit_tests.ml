@@ -8071,149 +8071,29 @@ module Ext_json_types
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
+type loc = Lexing.position
 type json_str = 
-  { str : string ; loc : Lexing.position}
+  { str : string ; loc : loc}
 
+type json_flo  =
+  { str : string ; loc : loc}
 type json_array =
   { content : t array ; 
-    loc_start : Lexing.position ; 
-    loc_end : Lexing.position ; 
+    loc_start : loc ; 
+    loc_end : loc ; 
   }
 
-
+and json_map = 
+  { map : t String_map.t ; loc :  loc }
 and t = 
-  | True
-  | False
-  | Null
-  | Flo of string 
+  | True of loc 
+  | False of loc 
+  | Null of loc 
+  | Flo of json_flo
   | Str of json_str
   | Arr  of json_array
-  | Obj of t String_map.t 
+  | Obj of json_map
    
-
-end
-module Ext_json : sig 
-#1 "ext_json.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-type path = string list 
-type status = 
-  | No_path
-  | Found of Ext_json_types.t 
-  | Wrong_type of path 
-
-
-type callback = 
-  [
-    `Str of (string -> unit) 
-  | `Str_loc of (string -> Lexing.position -> unit)
-  | `Flo of (string -> unit )
-  | `Bool of (bool -> unit )
-  | `Obj of (Ext_json_types.t String_map.t -> unit)
-  | `Arr of (Ext_json_types.t array -> unit )
-  | `Arr_loc of 
-    (Ext_json_types.t array -> Lexing.position -> Lexing.position -> unit)
-  | `Null of (unit -> unit)
-  | `Not_found of (unit -> unit)
-  | `Id of (Ext_json_types.t -> unit )
-  ]
-
-val test:
-  ?fail:(unit -> unit) ->
-  string -> callback 
-  -> Ext_json_types.t String_map.t
-   -> Ext_json_types.t String_map.t
-
-val query : path -> Ext_json_types.t ->  status
-
-end = struct
-#1 "ext_json.ml"
-
-
-type callback = 
-  [
-    `Str of (string -> unit) 
-  | `Str_loc of (string -> Lexing.position -> unit)
-  | `Flo of (string -> unit )
-  | `Bool of (bool -> unit )
-  | `Obj of (Ext_json_types.t String_map.t -> unit)
-  | `Arr of (Ext_json_types.t array -> unit )
-  | `Arr_loc of (Ext_json_types.t array -> Lexing.position -> Lexing.position -> unit)
-  | `Null of (unit -> unit)
-  | `Not_found of (unit -> unit)
-  | `Id of (Ext_json_types.t -> unit )
-  ]
-
-  
-type path = string list 
-
-type status = 
-  | No_path
-  | Found  of Ext_json_types.t 
-  | Wrong_type of path 
-
-let test   ?(fail=(fun () -> ())) key 
-    (cb : callback) (m  : Ext_json_types.t String_map.t)
-     =
-     begin match String_map.find_exn key m, cb with 
-       | exception Not_found  ->
-        begin match cb with `Not_found f ->  f ()
-        | _ -> fail ()
-        end      
-       | True, `Bool cb -> cb true
-       | False, `Bool cb  -> cb false 
-       | Flo s , `Flo cb  -> cb s 
-       | Obj b , `Obj cb -> cb b 
-       | Arr {content}, `Arr cb -> cb content 
-       | Arr {content; loc_start ; loc_end}, `Arr_loc cb -> 
-         cb content  loc_start loc_end 
-       | Null, `Null cb  -> cb ()
-       | Str {str = s }, `Str cb  -> cb s 
-       | Str {str = s ; loc }, `Str_loc cb -> cb s loc 
-       |  any  , `Id  cb -> cb any
-       | _, _ -> fail () 
-     end;
-     m
-let query path (json : Ext_json_types.t ) =
-  let rec aux acc paths json =
-    match path with 
-    | [] ->  Found json
-    | p :: rest -> 
-      begin match json with 
-        | Obj m -> 
-          begin match String_map.find_exn p m with 
-            | m' -> aux (p::acc) rest m'
-            | exception Not_found ->  No_path
-          end
-        | _ -> Wrong_type acc 
-      end
-  in aux [] path json
-
-
 
 end
 module Ext_position : sig 
@@ -8294,6 +8174,139 @@ let print fmt (pos : t) =
 
 
 
+
+end
+module Ext_json : sig 
+#1 "ext_json.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type path = string list 
+type status = 
+  | No_path
+  | Found of Ext_json_types.t 
+  | Wrong_type of path 
+
+
+type callback = 
+  [
+    `Str of (string -> unit) 
+  | `Str_loc of (string -> Lexing.position -> unit)
+  | `Flo of (string -> unit )
+  | `Bool of (bool -> unit )
+  | `Obj of (Ext_json_types.t String_map.t -> unit)
+  | `Arr of (Ext_json_types.t array -> unit )
+  | `Arr_loc of 
+    (Ext_json_types.t array -> Lexing.position -> Lexing.position -> unit)
+  | `Null of (unit -> unit)
+  | `Not_found of (unit -> unit)
+  | `Id of (Ext_json_types.t -> unit )
+  ]
+
+val test:
+  ?fail:(unit -> unit) ->
+  string -> callback 
+  -> Ext_json_types.t String_map.t
+   -> Ext_json_types.t String_map.t
+
+val query : path -> Ext_json_types.t ->  status
+
+val loc_of : Ext_json_types.t -> Ext_position.t
+
+end = struct
+#1 "ext_json.ml"
+
+
+type callback = 
+  [
+    `Str of (string -> unit) 
+  | `Str_loc of (string -> Lexing.position -> unit)
+  | `Flo of (string -> unit )
+  | `Bool of (bool -> unit )
+  | `Obj of (Ext_json_types.t String_map.t -> unit)
+  | `Arr of (Ext_json_types.t array -> unit )
+  | `Arr_loc of (Ext_json_types.t array -> Lexing.position -> Lexing.position -> unit)
+  | `Null of (unit -> unit)
+  | `Not_found of (unit -> unit)
+  | `Id of (Ext_json_types.t -> unit )
+  ]
+
+  
+type path = string list 
+
+type status = 
+  | No_path
+  | Found  of Ext_json_types.t 
+  | Wrong_type of path 
+
+let test   ?(fail=(fun () -> ())) key 
+    (cb : callback) (m  : Ext_json_types.t String_map.t)
+     =
+     begin match String_map.find_exn key m, cb with 
+       | exception Not_found  ->
+        begin match cb with `Not_found f ->  f ()
+        | _ -> fail ()
+        end      
+       | True _, `Bool cb -> cb true
+       | False _, `Bool cb  -> cb false 
+       | Flo {str = s} , `Flo cb  -> cb s 
+       | Obj {map = b} , `Obj cb -> cb b 
+       | Arr {content}, `Arr cb -> cb content 
+       | Arr {content; loc_start ; loc_end}, `Arr_loc cb -> 
+         cb content  loc_start loc_end 
+       | Null _, `Null cb  -> cb ()
+       | Str {str = s }, `Str cb  -> cb s 
+       | Str {str = s ; loc }, `Str_loc cb -> cb s loc 
+       |  any  , `Id  cb -> cb any
+       | _, _ -> fail () 
+     end;
+     m
+let query path (json : Ext_json_types.t ) =
+  let rec aux acc paths json =
+    match path with 
+    | [] ->  Found json
+    | p :: rest -> 
+      begin match json with 
+        | Obj {map = m} -> 
+          begin match String_map.find_exn p m with 
+            | m'  -> aux (p::acc) rest m'
+            | exception Not_found ->  No_path
+          end
+        | _ -> Wrong_type acc 
+      end
+  in aux [] path json
+
+
+let loc_of (x : Ext_json_types.t) =
+  match x with
+  | True p | False p | Null p -> p 
+  | Str p -> p.loc 
+  | Arr p -> p.loc_start
+  | Obj p -> p.loc
+  | Flo p -> p.loc
+ 
 
 end
 module Ext_json_parse : sig 
@@ -8919,21 +8932,36 @@ let rec parse_json lexbuf =
   let push e = look_ahead := Some e in 
   let rec json (lexbuf : Lexing.lexbuf) : Ext_json_types.t = 
     match token () with 
-    | True -> True
-    | False -> False
-    | Null -> Null
-    | Number s ->  Flo s 
+    | True -> True lexbuf.lex_start_p
+    | False -> False lexbuf.lex_start_p
+    | Null -> Null lexbuf.lex_start_p
+    | Number s ->  Flo {str = s; loc = lexbuf.lex_start_p}  
     | String s -> Str { str = s; loc =    lexbuf.lex_start_p}
-    | Lbracket -> parse_array false lexbuf.lex_start_p lexbuf.lex_curr_p [] lexbuf
-    | Lbrace -> parse_map false String_map.empty lexbuf
+    | Lbracket -> parse_array  lexbuf.lex_start_p lexbuf.lex_curr_p [] lexbuf
+    | Lbrace -> parse_map lexbuf.lex_start_p String_map.empty lexbuf
     |  _ -> error lexbuf Unexpected_token
-  and parse_array  trailing_comma loc_start loc_finish acc lexbuf 
+(** Note if we remove [trailing_comma] support 
+    we should report errors (actually more work), for example 
+    {[
+    match token () with 
+    | Rbracket ->
+      if trailing_comma then
+        error lexbuf Trailing_comma_in_array
+      else
+    ]} 
+    {[
+    match token () with 
+    | Rbrace -> 
+      if trailing_comma then
+        error lexbuf Trailing_comma_in_obj
+      else
+
+    ]}   
+ *)
+  and parse_array   loc_start loc_finish acc lexbuf 
     : Ext_json_types.t =
     match token () with 
     | Rbracket ->
-      (* if trailing_comma then  *)
-      (*   error lexbuf Trailing_comma_in_array *)
-      (* else  *)
         Arr {loc_start ; content = Ext_array.reverse_of_list acc ; 
               loc_end = lexbuf.lex_curr_p }
     | x -> 
@@ -8941,7 +8969,7 @@ let rec parse_json lexbuf =
       let new_one = json lexbuf in 
       begin match token ()  with 
       | Comma -> 
-          parse_array true loc_start loc_finish (new_one :: acc) lexbuf 
+          parse_array  loc_start loc_finish (new_one :: acc) lexbuf 
       | Rbracket 
         -> Arr {content = (Ext_array.reverse_of_list (new_one::acc));
                      loc_start ; 
@@ -8949,21 +8977,18 @@ let rec parse_json lexbuf =
       | _ -> 
         error lexbuf Expect_comma_or_rbracket
       end
-  and parse_map trailing_comma acc lexbuf : Ext_json_types.t = 
+  and parse_map loc_start  acc lexbuf : Ext_json_types.t = 
     match token () with 
     | Rbrace -> 
-      (* if trailing_comma then  *)
-      (*   error lexbuf Trailing_comma_in_obj *)
-      (* else  *)
-        Obj acc 
+        Obj { map = acc ; loc = loc_start}
     | String key -> 
       begin match token () with 
       | Colon ->
         let value = json lexbuf in
         begin match token () with 
-        | Rbrace -> Obj (String_map.add key value acc )
+        | Rbrace -> Obj {map = String_map.add key value acc ; loc = loc_start}
         | Comma -> 
-          parse_map true  (String_map.add key value acc) lexbuf 
+          parse_map loc_start  (String_map.add key value acc) lexbuf 
         | _ -> error lexbuf Expect_comma_or_rbrace
         end
       | _ -> error lexbuf Expect_colon
@@ -8993,7 +9018,7 @@ let parse_json_from_file s =
 
 
 
-# 664 "ext/ext_json_parse.ml"
+# 676 "ext/ext_json_parse.ml"
 
 end
 module Ounit_json_tests
@@ -9015,7 +9040,7 @@ let suites =
     "empty_json" >:: begin fun _ -> 
       let v =parse_json_from_string "{}" in
       match v with 
-      | Obj v -> OUnit.assert_equal (String_map.is_empty v ) true
+      | Obj {map = v} -> OUnit.assert_equal (String_map.is_empty v ) true
       | _ -> OUnit.assert_failure "should be empty"
     end
     ;
@@ -9049,7 +9074,7 @@ let suites =
       let v1 =  parse_json_from_string {| { "x" : 3 , }|} in 
       let test (v : Ext_json_types.t)  = 
         match v with 
-        | Obj v -> 
+        | Obj {map = v} -> 
           v
           |? ("x" , `Flo (fun x -> OUnit.assert_equal x "3"))
           |> ignore 
@@ -9063,7 +9088,7 @@ let suites =
       let v1 = parse_json_from_string {| [ 1, 3 ]|} in
       let test (v : Ext_json_types.t) = 
         match v with 
-        | Arr { content = [| Flo "1" ; Flo "3" |] } -> ()
+        | Arr { content = [| Flo {str = "1"} ; Flo { str = "3"} |] } -> ()
         | _ -> OUnit.assert_failure "trailing comma array" in 
       test v ;
       test v1

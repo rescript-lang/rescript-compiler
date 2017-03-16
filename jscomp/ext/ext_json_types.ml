@@ -22,23 +22,26 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
+type loc = Lexing.position
 type json_str = 
-  { str : string ; loc : Lexing.position}
+  { str : string ; loc : loc}
 
+type json_flo  =
+  { str : string ; loc : loc}
 type json_array =
   { content : t array ; 
-    loc_start : Lexing.position ; 
-    loc_end : Lexing.position ; 
+    loc_start : loc ; 
+    loc_end : loc ; 
   }
 
-
+and json_map = 
+  { map : t String_map.t ; loc :  loc }
 and t = 
-  | True
-  | False
-  | Null
-  | Flo of string 
+  | True of loc 
+  | False of loc 
+  | Null of loc 
+  | Flo of json_flo
   | Str of json_str
   | Arr  of json_array
-  | Obj of t String_map.t 
+  | Obj of json_map
    

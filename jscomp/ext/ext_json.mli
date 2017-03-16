@@ -52,3 +52,5 @@ val test:
    -> Ext_json_types.t String_map.t
 
 val query : path -> Ext_json_types.t ->  status
+
+val loc_of : Ext_json_types.t -> Ext_position.t

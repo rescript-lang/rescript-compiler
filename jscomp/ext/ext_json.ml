@@ -30,14 +30,14 @@ let test   ?(fail=(fun () -> ())) key
         begin match cb with `Not_found f ->  f ()
         | _ -> fail ()
         end      
-       | True, `Bool cb -> cb true
-       | False, `Bool cb  -> cb false 
-       | Flo s , `Flo cb  -> cb s 
-       | Obj b , `Obj cb -> cb b 
+       | True _, `Bool cb -> cb true
+       | False _, `Bool cb  -> cb false 
+       | Flo {str = s} , `Flo cb  -> cb s 
+       | Obj {map = b} , `Obj cb -> cb b 
        | Arr {content}, `Arr cb -> cb content 
        | Arr {content; loc_start ; loc_end}, `Arr_loc cb -> 
          cb content  loc_start loc_end 
-       | Null, `Null cb  -> cb ()
+       | Null _, `Null cb  -> cb ()
        | Str {str = s }, `Str cb  -> cb s 
        | Str {str = s ; loc }, `Str_loc cb -> cb s loc 
        |  any  , `Id  cb -> cb any
@@ -50,9 +50,9 @@ let query path (json : Ext_json_types.t ) =
     | [] ->  Found json
     | p :: rest -> 
       begin match json with 
-        | Obj m -> 
+        | Obj {map = m} -> 
           begin match String_map.find_exn p m with 
-            | m' -> aux (p::acc) rest m'
+            | m'  -> aux (p::acc) rest m'
             | exception Not_found ->  No_path
           end
         | _ -> Wrong_type acc 
@@ -60,3 +60,11 @@ let query path (json : Ext_json_types.t ) =
   in aux [] path json
 
 
+let loc_of (x : Ext_json_types.t) =
+  match x with
+  | True p | False p | Null p -> p 
+  | Str p -> p.loc 
+  | Arr p -> p.loc_start
+  | Obj p -> p.loc
+  | Flo p -> p.loc
+ 

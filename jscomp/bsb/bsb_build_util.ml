@@ -146,7 +146,7 @@ let (|?)  m (key, cb) =
 let rec walk_all_deps top dir cb =
   let bsconfig_json =  (dir // Literals.bsconfig_json) in
   match Ext_json_parse.parse_json_from_file bsconfig_json with
-  | Obj map ->
+  | Obj {map} ->
     map
     |?
     (Bsb_build_schemas.bs_dependencies,
