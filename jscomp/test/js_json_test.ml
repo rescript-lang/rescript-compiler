@@ -221,11 +221,3 @@ let () =
   ()
 
 let () = Mt.from_pair_suites __FILE__ !suites
-
-(*let () = 
-  let dict = Js_dict.empty () in 
-  Js_dict.set dict "name" (Js_json.string "John Doe"); 
-  Js_dict.set dict "age" (Js_json.numberOfInt 30); 
-  Js_dict.set dict "likes" 
-    (Js_json.stringArray [|"bucklescript";"ocaml";"js"|]);
-  Js.log @@ Js_json.stringify (Js_json.object_ dict) *)

@@ -104,7 +104,27 @@ val booleanArray : bool array -> t
 (** {2 String conversion} *)
 
 external parse : string -> t = "JSON.parse" [@@bs.val]
-(** [parse s] returns JSON value *)
+(** [parse s] returns JSON value 
+
+@example {|
+let json = Js_json.parse {| { "x" : [1, 2, 3 ] } |} in 
+let ty, ob = Js_json.reify_type json in 
+match ty with
+| Js_json.Object ->
+  (* In this branch, compiler infer ob : Js_json.t Js_dict.t *)
+  begin match Js_dict.get ob "x" with
+  | None -> assert(false) 
+  | Some xValue -> 
+    let ty, xValue = Js_json.reify_type xValue in 
+    begin match ty with
+    | Js_json.Array -> 
+      (* In this branch compiler infer xValue : Js_json.t array *)
+      assert(3 = Array.length xValue) 
+    | _ -> assert(false) 
+    end 
+  end 
+| _ -> assert(false)
+|}*)
 
 external stringify : 'a -> string = "JSON.stringify" [@@bs.val]
 (** [stringify json] returns JSON string *)
