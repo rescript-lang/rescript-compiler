@@ -22,13 +22,61 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+(** Local alias for ['a Js.undefined] *)
 type + 'a t = 'a Js.undefined
-external to_opt : 'a t -> 'a option = "#undefined_to_opt"
-external return : 'a -> 'a t = "%identity"
-external test : 'a t -> bool =  "#is_undef"
-external empty : 'a t = "undefined"
-[@@bs.val]
 
+(** Constructs a value of ['a Js.undefined] containing a value of ['a] *)
+external return : 'a -> 'a t = "%identity"
+
+(** Returns [true] if the given value is [empty] ([undefined]), [false] otherwise *)
+external test : 'a t -> bool =  "#is_undef"
+
+(** The empty value, [undefined] *)
+external empty : 'a t = "undefined" [@@bs.val]
+
+
+(** Maps the contained value using the given function
+
+If ['a Js.undefined] contains a value, that value is unwrapped, mapped to a ['b] using
+the given function [a' -> 'b], then wrapped back up and returned as ['b Js.undefined]
+
+@example {[
+let maybeGreetWorld (maybeGreeting: string Js.undefined) =
+  Js.Undefined.bind maybeGreeting (fun greeting -> greeting ^ " world!")
+]}
+*)
 val bind : 'a t -> ('a -> 'b [@bs]) -> 'b t
+
+(** Iterates over the contained value with the given function
+
+If ['a Js.undefined] contains a value, that value is unwrapped and applied to
+the given function.
+
+@example {[
+let maybeSay (maybeMessage: string Js.undefined) =
+  Js.Undefined.iter maybeMessage (fun message -> Js.log message)
+]}
+*)
 val iter : 'a t -> ('a -> unit [@bs]) -> unit
+
+(** Maps ['a option] to ['a Js.undefined]
+
+{%html:
+<table>
+<tr> <td>Some a <td>-> <td>return a
+<tr> <td>None <td>-> <td>empty
+</table>
+%}
+*)
 val from_opt : 'a option -> 'a t
+
+(** Maps ['a Js.undefined] to ['a option]
+
+{%html:
+<table>
+<tr> <td>return a <td>-> <td>Some a
+<tr> <td>empty <td>-> <td>None
+</table>
+%}
+*)
+external to_opt : 'a t -> 'a option = "#undefined_to_opt"

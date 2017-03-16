@@ -42,7 +42,7 @@ function collect_approx(test_id, suites, loc, x, y) {
     /* tuple */[
       loc + (" id " + test_id[0]),
       function () {
-        return /* Approx */Block.__(3, [
+        return /* Approx */Block.__(5, [
                   x,
                   y
                 ]);
