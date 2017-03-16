@@ -7470,6 +7470,86 @@ let suites =
         end;
     ]
 end
+module Ext_position : sig 
+#1 "ext_position.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type t = Lexing.position = {
+    pos_fname : string ;
+    pos_lnum : int ;
+    pos_bol : int ;
+    pos_cnum : int
+}
+
+
+val print : Format.formatter -> t -> unit 
+end = struct
+#1 "ext_position.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type t = Lexing.position = {
+    pos_fname : string ;
+    pos_lnum : int ;
+    pos_bol : int ;
+    pos_cnum : int
+}
+
+
+let print fmt (pos : t) = 
+  Format.fprintf fmt "(%d,%d)" pos.pos_lnum (pos.pos_cnum - pos.pos_bol)
+
+
+
+
+
+
+end
 module Map_gen
 = struct
 #1 "map_gen.ml"
@@ -8167,8 +8247,6 @@ let report_error ppf = function
   | Unterminated_comment 
     -> fprintf ppf "Unterminated_comment"
          
-let print_position fmt (pos : Lexing.position) = 
-  Format.fprintf fmt "(%d,%d)" pos.pos_lnum (pos.pos_cnum - pos.pos_bol)
 
 
 let () = 
@@ -8177,7 +8255,7 @@ let () =
      match x with 
      | Error (e , a, b) -> 
        Some (Format.asprintf "@[%a:@ %a@ -@ %a)@]" report_error e 
-               print_position a print_position b)
+               Ext_position.print a Ext_position.print b)
      | _ -> None
     )
   
@@ -8239,7 +8317,7 @@ let hex_code c1 c2 =
 
 let lf = '\010'
 
-# 119 "ext/ext_json.ml"
+# 117 "ext/ext_json.ml"
 let __ocaml_lex_tables = {
   Lexing.lex_base = 
    "\000\000\239\255\240\255\241\255\000\000\025\000\011\000\244\255\
@@ -8427,80 +8505,80 @@ let rec lex_json buf lexbuf =
 and __ocaml_lex_lex_json_rec buf lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 137 "ext/ext_json.mll"
+# 135 "ext/ext_json.mll"
           ( lex_json buf lexbuf)
-# 309 "ext/ext_json.ml"
+# 307 "ext/ext_json.ml"
 
   | 1 ->
-# 138 "ext/ext_json.mll"
+# 136 "ext/ext_json.mll"
                    ( 
     update_loc lexbuf 0;
     lex_json buf  lexbuf
   )
-# 317 "ext/ext_json.ml"
+# 315 "ext/ext_json.ml"
 
   | 2 ->
-# 142 "ext/ext_json.mll"
+# 140 "ext/ext_json.mll"
                 ( comment buf lexbuf)
-# 322 "ext/ext_json.ml"
+# 320 "ext/ext_json.ml"
 
   | 3 ->
-# 143 "ext/ext_json.mll"
+# 141 "ext/ext_json.mll"
          ( True)
-# 327 "ext/ext_json.ml"
+# 325 "ext/ext_json.ml"
 
   | 4 ->
-# 144 "ext/ext_json.mll"
+# 142 "ext/ext_json.mll"
           (False)
-# 332 "ext/ext_json.ml"
+# 330 "ext/ext_json.ml"
 
   | 5 ->
-# 145 "ext/ext_json.mll"
+# 143 "ext/ext_json.mll"
          (Null)
-# 337 "ext/ext_json.ml"
+# 335 "ext/ext_json.ml"
 
   | 6 ->
-# 146 "ext/ext_json.mll"
+# 144 "ext/ext_json.mll"
        (Lbracket)
-# 342 "ext/ext_json.ml"
+# 340 "ext/ext_json.ml"
 
   | 7 ->
-# 147 "ext/ext_json.mll"
+# 145 "ext/ext_json.mll"
        (Rbracket)
-# 347 "ext/ext_json.ml"
+# 345 "ext/ext_json.ml"
 
   | 8 ->
-# 148 "ext/ext_json.mll"
+# 146 "ext/ext_json.mll"
        (Lbrace)
-# 352 "ext/ext_json.ml"
+# 350 "ext/ext_json.ml"
 
   | 9 ->
-# 149 "ext/ext_json.mll"
+# 147 "ext/ext_json.mll"
        (Rbrace)
-# 357 "ext/ext_json.ml"
+# 355 "ext/ext_json.ml"
 
   | 10 ->
-# 150 "ext/ext_json.mll"
+# 148 "ext/ext_json.mll"
        (Comma)
-# 362 "ext/ext_json.ml"
+# 360 "ext/ext_json.ml"
 
   | 11 ->
-# 151 "ext/ext_json.mll"
+# 149 "ext/ext_json.mll"
         (Colon)
-# 367 "ext/ext_json.ml"
+# 365 "ext/ext_json.ml"
 
   | 12 ->
-# 152 "ext/ext_json.mll"
+# 150 "ext/ext_json.mll"
                       (lex_json buf lexbuf)
-# 372 "ext/ext_json.ml"
+# 370 "ext/ext_json.ml"
 
   | 13 ->
-# 154 "ext/ext_json.mll"
+# 152 "ext/ext_json.mll"
          ( Number (Lexing.lexeme lexbuf))
-# 377 "ext/ext_json.ml"
+# 375 "ext/ext_json.ml"
 
   | 14 ->
-# 156 "ext/ext_json.mll"
+# 154 "ext/ext_json.mll"
       (
   let pos = Lexing.lexeme_start_p lexbuf in
   scan_string buf pos lexbuf;
@@ -8508,22 +8586,22 @@ and __ocaml_lex_lex_json_rec buf lexbuf __ocaml_lex_state =
   Buffer.clear buf ;
   String content 
 )
-# 388 "ext/ext_json.ml"
+# 386 "ext/ext_json.ml"
 
   | 15 ->
-# 163 "ext/ext_json.mll"
+# 161 "ext/ext_json.mll"
        (Eof )
-# 393 "ext/ext_json.ml"
+# 391 "ext/ext_json.ml"
 
   | 16 ->
 let
-# 164 "ext/ext_json.mll"
+# 162 "ext/ext_json.mll"
        c
-# 399 "ext/ext_json.ml"
+# 397 "ext/ext_json.ml"
 = Lexing.sub_lexeme_char lexbuf lexbuf.Lexing.lex_start_pos in
-# 164 "ext/ext_json.mll"
+# 162 "ext/ext_json.mll"
           ( error lexbuf (Illegal_character c ))
-# 403 "ext/ext_json.ml"
+# 401 "ext/ext_json.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
       __ocaml_lex_lex_json_rec buf lexbuf __ocaml_lex_state
@@ -8533,19 +8611,19 @@ and comment buf lexbuf =
 and __ocaml_lex_comment_rec buf lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 166 "ext/ext_json.mll"
+# 164 "ext/ext_json.mll"
               (lex_json buf lexbuf)
-# 415 "ext/ext_json.ml"
+# 413 "ext/ext_json.ml"
 
   | 1 ->
-# 167 "ext/ext_json.mll"
+# 165 "ext/ext_json.mll"
      (comment buf lexbuf)
-# 420 "ext/ext_json.ml"
+# 418 "ext/ext_json.ml"
 
   | 2 ->
-# 168 "ext/ext_json.mll"
+# 166 "ext/ext_json.mll"
        (error lexbuf Unterminated_comment)
-# 425 "ext/ext_json.ml"
+# 423 "ext/ext_json.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
       __ocaml_lex_comment_rec buf lexbuf __ocaml_lex_state
@@ -8555,64 +8633,64 @@ and scan_string buf start lexbuf =
 and __ocaml_lex_scan_string_rec buf start lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 172 "ext/ext_json.mll"
+# 170 "ext/ext_json.mll"
       ( () )
-# 437 "ext/ext_json.ml"
+# 435 "ext/ext_json.ml"
 
   | 1 ->
-# 174 "ext/ext_json.mll"
+# 172 "ext/ext_json.mll"
   (
         let len = lexeme_len lexbuf - 2 in
         update_loc lexbuf len;
 
         scan_string buf start lexbuf
       )
-# 447 "ext/ext_json.ml"
+# 445 "ext/ext_json.ml"
 
   | 2 ->
-# 181 "ext/ext_json.mll"
+# 179 "ext/ext_json.mll"
       (
         let len = lexeme_len lexbuf - 3 in
         update_loc lexbuf len;
         scan_string buf start lexbuf
       )
-# 456 "ext/ext_json.ml"
+# 454 "ext/ext_json.ml"
 
   | 3 ->
 let
-# 186 "ext/ext_json.mll"
+# 184 "ext/ext_json.mll"
                                                c
-# 462 "ext/ext_json.ml"
+# 460 "ext/ext_json.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 1) in
-# 187 "ext/ext_json.mll"
+# 185 "ext/ext_json.mll"
       (
         Buffer.add_char buf (char_for_backslash c);
         scan_string buf start lexbuf
       )
-# 469 "ext/ext_json.ml"
+# 467 "ext/ext_json.ml"
 
   | 4 ->
 let
-# 191 "ext/ext_json.mll"
+# 189 "ext/ext_json.mll"
                  c1
-# 475 "ext/ext_json.ml"
+# 473 "ext/ext_json.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 1)
 and
-# 191 "ext/ext_json.mll"
+# 189 "ext/ext_json.mll"
                                c2
-# 480 "ext/ext_json.ml"
+# 478 "ext/ext_json.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 2)
 and
-# 191 "ext/ext_json.mll"
+# 189 "ext/ext_json.mll"
                                              c3
-# 485 "ext/ext_json.ml"
+# 483 "ext/ext_json.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 3)
 and
-# 191 "ext/ext_json.mll"
+# 189 "ext/ext_json.mll"
                                                     s
-# 490 "ext/ext_json.ml"
+# 488 "ext/ext_json.ml"
 = Lexing.sub_lexeme lexbuf lexbuf.Lexing.lex_start_pos (lexbuf.Lexing.lex_start_pos + 4) in
-# 192 "ext/ext_json.mll"
+# 190 "ext/ext_json.mll"
       (
         let v = dec_code c1 c2 c3 in
         if v > 255 then
@@ -8621,55 +8699,55 @@ and
 
         scan_string buf start lexbuf
       )
-# 501 "ext/ext_json.ml"
+# 499 "ext/ext_json.ml"
 
   | 5 ->
 let
-# 200 "ext/ext_json.mll"
+# 198 "ext/ext_json.mll"
                         c1
-# 507 "ext/ext_json.ml"
+# 505 "ext/ext_json.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 2)
 and
-# 200 "ext/ext_json.mll"
+# 198 "ext/ext_json.mll"
                                          c2
-# 512 "ext/ext_json.ml"
+# 510 "ext/ext_json.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 3) in
-# 201 "ext/ext_json.mll"
+# 199 "ext/ext_json.mll"
       (
         let v = hex_code c1 c2 in
         Buffer.add_char buf (Char.chr v);
 
         scan_string buf start lexbuf
       )
-# 521 "ext/ext_json.ml"
+# 519 "ext/ext_json.ml"
 
   | 6 ->
 let
-# 207 "ext/ext_json.mll"
+# 205 "ext/ext_json.mll"
              c
-# 527 "ext/ext_json.ml"
+# 525 "ext/ext_json.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 1) in
-# 208 "ext/ext_json.mll"
+# 206 "ext/ext_json.mll"
       (
         Buffer.add_char buf '\\';
         Buffer.add_char buf c;
 
         scan_string buf start lexbuf
       )
-# 536 "ext/ext_json.ml"
+# 534 "ext/ext_json.ml"
 
   | 7 ->
-# 215 "ext/ext_json.mll"
+# 213 "ext/ext_json.mll"
       (
         update_loc lexbuf 0;
         Buffer.add_char buf lf;
 
         scan_string buf start lexbuf
       )
-# 546 "ext/ext_json.ml"
+# 544 "ext/ext_json.ml"
 
   | 8 ->
-# 222 "ext/ext_json.mll"
+# 220 "ext/ext_json.mll"
       (
         let ofs = lexbuf.lex_start_pos in
         let len = lexbuf.lex_curr_pos - ofs in
@@ -8677,21 +8755,21 @@ let
 
         scan_string buf start lexbuf
       )
-# 557 "ext/ext_json.ml"
+# 555 "ext/ext_json.ml"
 
   | 9 ->
-# 230 "ext/ext_json.mll"
+# 228 "ext/ext_json.mll"
       (
         error lexbuf Unterminated_string
       )
-# 564 "ext/ext_json.ml"
+# 562 "ext/ext_json.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
       __ocaml_lex_scan_string_rec buf start lexbuf __ocaml_lex_state
 
 ;;
 
-# 234 "ext/ext_json.mll"
+# 232 "ext/ext_json.mll"
  
 
 type js_array =
@@ -8855,7 +8933,7 @@ let query path (json : t ) =
       end
   in aux [] path json
 
-# 735 "ext/ext_json.ml"
+# 733 "ext/ext_json.ml"
 
 end
 module Ounit_json_tests

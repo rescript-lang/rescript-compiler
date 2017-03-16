@@ -54,4 +54,10 @@ let () =
 
 
 
-
+let failf ?loc fmt =
+    let prefix = 
+        match loc with 
+        | None -> "Error <bsconfig.json>"
+        | Some x  -> 
+            Format.asprintf "Error <bsconfig.json: %a>" Ext_position.print x  in 
+    Format.ksprintf (fun s -> failwith (prefix ^ s)) fmt 

@@ -42,8 +42,6 @@ let report_error ppf = function
   | Unterminated_comment 
     -> fprintf ppf "Unterminated_comment"
          
-let print_position fmt (pos : Lexing.position) = 
-  Format.fprintf fmt "(%d,%d)" pos.pos_lnum (pos.pos_cnum - pos.pos_bol)
 
 
 let () = 
@@ -52,7 +50,7 @@ let () =
      match x with 
      | Error (e , a, b) -> 
        Some (Format.asprintf "@[%a:@ %a@ -@ %a)@]" report_error e 
-               print_position a print_position b)
+               Ext_position.print a Ext_position.print b)
      | _ -> None
     )
   

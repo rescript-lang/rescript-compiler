@@ -155,6 +155,7 @@ OUNIT_TESTS_CMXS = $(addprefix ounit_tests/, $(addsuffix .cmx, $(OUNIT_TESTS_SRC
 
 EXT_SRCS = ext_util\
 	ext_int\
+	ext_position\
 	ext_array ext_bytes ext_char\
 	vec_gen \
 	resize_array \
