@@ -2,7 +2,7 @@
 let ((>::),
     (>:::)) = OUnit.((>::),(>:::))
 
-open Ext_json
+open Ext_json_parse
 let (|?)  m (key, cb) =
     m  |> Ext_json.test key cb 
 

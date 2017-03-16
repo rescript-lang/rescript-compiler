@@ -203,6 +203,7 @@ EXT_SRCS = ext_util\
 	ext_io\
 	ext_sexp\
 	ext_json_types\
+	ext_json_parse\
 	ext_json\
 	ident_hash_set\
 	hash_set_poly\

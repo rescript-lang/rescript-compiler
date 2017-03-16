@@ -62,7 +62,7 @@ let merlin_trailer_length = String.length merlin_trailer
 
 
 let package_specs_from_bsconfig () = 
-  let json = Ext_json.parse_json_from_file Literals.bsconfig_json in
+  let json = Ext_json_parse.parse_json_from_file Literals.bsconfig_json in
   begin match json with
     | `Obj map ->
       begin 
@@ -226,7 +226,7 @@ let interpret_json
   let reason_react_jsx = ref false in 
 
   let config_json_chan = open_in_bin Literals.bsconfig_json in
-  let global_data = Ext_json.parse_json_from_chan config_json_chan  in
+  let global_data = Ext_json_parse.parse_json_from_chan config_json_chan  in
   let ocamllex = ref Bsb_default.ocamllex in 
   let refmt = ref None in
   let refmt_flags = ref Bsb_default.refmt_flags in

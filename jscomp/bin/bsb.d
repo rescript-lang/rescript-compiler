@@ -59,10 +59,12 @@ bin/bsb.ml : bsb/bsb_build_util.ml
 bin/bsb.ml : bsb/bsb_dep_infos.mli
 bin/bsb.ml : bsb/bsb_exception.mli
 bin/bsb.ml : common/bs_version.mli
+bin/bsb.ml : ext/ext_json_parse.ml
 bin/bsb.ml : ext/ext_json_types.ml
 bin/bsb.ml : ext/ext_pervasives.ml
 bin/bsb.ml : bsb/bsb_build_util.mli
 bin/bsb.ml : common/binary_cache.ml
+bin/bsb.ml : ext/ext_json_parse.mli
 bin/bsb.ml : ext/ext_pervasives.mli
 bin/bsb.ml : ext/string_hash_set.ml
 bin/bsb.ml : stubs/bs_hash_stubs.ml
