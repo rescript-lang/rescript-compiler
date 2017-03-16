@@ -71,41 +71,47 @@ Js.log @@ Js_json.stringify (Js_json.object_ dict)
 val null : t 
 (** Null JSON value *)
 
-val string : string -> t 
+external string : string -> t = "%identity"
 (** Make a JSON string *)
 
-val number : float -> t 
+external number : float -> t = "%identity"
 (** Make a JSON number *)
 
-val numberOfInt: int -> t 
+external numberOfInt : int -> t = "%identity"
 (** Make a JSON number from int*)
 
-val boolean : bool -> t 
+external boolean : Js.boolean -> t = "%identity" 
 (** Make a JSON boolean *)
 
-val object_ : t Js_dict.t -> t
+val boolAsBoolean : bool -> t 
+(** Make a JSON boolean value from an OCaml bool *)
+
+external boolAsInt : bool -> t = "%identity" 
+(** Make a JSON int value from an OCaml bool *)
+
+external object_ : t Js_dict.t -> t = "%identity"
 (** Make a JSON objet *)
 
-val array_ : t array -> t 
+external array_ : t array -> t = "%identity"
 (** Make a JSON array *)
 
 (** The functions below are specialized for specific array type which 
     happened to be already JSON object in the BuckleScript runtime. Therefore
     they are more efficient (constant time rather than linear conversion). *) 
 
-val stringArray : string array -> t
+external stringArray : string array -> t = "%identity"
 (** Make a JSON string array *) 
 
-val numberArray : float array -> t
+external numberArray : float array -> t = "%identity"
 (** Make a JSON number array *)
 
-val intArray : int array -> t
+external intArray : int array -> t = "%identity"
 (** Make a JSON number array *)
 
-val booleanArray : bool array -> t
+external booleanArray : Js.boolean array -> t = "%identity"
 (** Make a JSON bool array *)
 
-val objectArray : t Js_dict.t array -> t
+external objectArray : t Js_dict.t array -> t = "%identity"
 (** Make a JSON object array *)
 
 (** {2 String conversion} *)
@@ -133,5 +139,5 @@ match ty with
 | _ -> assert(false)
 |}*)
 
-external stringify : 'a -> string = "JSON.stringify" [@@bs.val]
+external stringify: t -> string = "JSON.stringify" [@@bs.val]
 (** [stringify json] returns JSON string *)

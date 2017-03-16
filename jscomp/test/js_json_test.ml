@@ -91,11 +91,11 @@ let () =
     in 
     let ty, x = Js.Json.reifyType json in
     match ty with
-    | Js.Json.Boolean -> eq __LOC__ (Js.to_bool x) v
+    | Js.Json.Boolean -> eq __LOC__ x v
     | _ -> false_ __LOC__
   in
-  test true; 
-  test false;
+  test Js.true_; 
+  test Js.false_;
   ()
  
 let option_get = function | None -> assert false | Some x -> x
@@ -210,6 +210,7 @@ let () =
   let a = [| true; false; true |] in
   let json = 
     a  
+    |> Array.map Js_boolean.to_js_boolean
     |> Js.Json.booleanArray
     |> Js.Json.stringify
     |> Js.Json.parse 

@@ -64,28 +64,32 @@ let test (type a) (x : 'a) (v : a kind) : bool =
 external parse : string -> t = "JSON.parse" [@@bs.val]
 (* TODO: more docs when parse error happens or stringify non-stringfy value *)
 
-let null : t = Obj.magic Js.null 
+let null : t = (Obj.magic (Js.null: 'a Js.null) : t)
 
-let string s : t = Obj.magic s
+external string : string -> t = "%identity"
 
-let number f : t = Obj.magic f
+external number : float -> t = "%identity"
 
-let numberOfInt i : t = Obj.magic i
+external numberOfInt : int -> t = "%identity"
 
-let boolean b : t = Obj.magic (Js_boolean.to_js_boolean b)
+external boolean : Js.boolean -> t = "%identity" 
 
-let object_ o : t = Obj.magic o
+let boolAsBoolean b = (Js_boolean.to_js_boolean b) |> boolean 
 
-let array_ a : t = Obj.magic a
+external boolAsInt : bool -> t = "%identity" 
 
-let stringArray a : t = Obj.magic a 
+external object_ : t Js_dict.t -> t = "%identity"
 
-let numberArray a : t = Obj.magic a 
+external array_ : t array -> t = "%identity"
 
-let intArray a : t = Obj.magic a 
+external stringArray : string array -> t = "%identity"
 
-let booleanArray a : t = Obj.magic (Array.map boolean a)
+external numberArray : float array -> t = "%identity"
 
-let objectArray a : t = Obj.magic a
+external intArray : int array -> t = "%identity"
 
-external stringify: 'a -> string = "JSON.stringify" [@@bs.val]
+external booleanArray : Js.boolean array -> t = "%identity"
+
+external objectArray : t Js_dict.t array -> t = "%identity"
+
+external stringify: t -> string = "JSON.stringify" [@@bs.val]
