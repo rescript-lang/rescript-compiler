@@ -11,4 +11,4 @@ let print_position fmt (pos : Lexing.position) =
   Format.fprintf fmt "(%d,%d)" pos.pos_lnum (pos.pos_cnum - pos.pos_bol)
 #install_printer print_position;;
 
-Ext_json.parse_json_from_file "../bsconfig.json";;
+Ext_json_parse.parse_json_from_file "../bsconfig.json";;

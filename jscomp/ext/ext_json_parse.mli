@@ -22,40 +22,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type public = 
-  | Export_all 
-  | Export_set of String_set.t 
-  | Export_none
-    
-type dir_index = int 
 
-type  file_group = 
-  { dir : string ;
-    sources : Binary_cache.file_group_rouces ; 
-    resources : string list ;
-    bs_dependencies : string list;
-    public : public;
-    dir_index : dir_index; 
-  } 
+val parse_json : Lexing.lexbuf -> Ext_json_types.t 
+val parse_json_from_string : string -> Ext_json_types.t 
+val parse_json_from_chan : in_channel -> Ext_json_types.t 
+val parse_json_from_file  : string -> Ext_json_types.t
 
-type t = 
-  { files :  file_group list ; 
-    intervals :  Ext_file_pp.interval list ;
-    globbed_dirs : string list ; 
-  }
-
-val lib_dir_index : dir_index 
-
-val get_current_number_of_dev_groups : unit -> int 
-
-
-
-(** entry is to the 
-    [sources] in the schema
-*)
-val parsing_sources : 
-  dir_index -> 
-  string -> 
-  Ext_json_types.t  ->
-  t 
-  

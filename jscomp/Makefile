@@ -155,6 +155,7 @@ OUNIT_TESTS_CMXS = $(addprefix ounit_tests/, $(addsuffix .cmx, $(OUNIT_TESTS_SRC
 
 EXT_SRCS = ext_util\
 	ext_int\
+	ext_position\
 	ext_array ext_bytes ext_char\
 	vec_gen \
 	resize_array \
@@ -201,6 +202,8 @@ EXT_SRCS = ext_util\
 	ext_pp_scope\
 	ext_io\
 	ext_sexp\
+	ext_json_types\
+	ext_json_parse\
 	ext_json\
 	ident_hash_set\
 	hash_set_poly\
