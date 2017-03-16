@@ -60,11 +60,13 @@ let caml_initial_time = current_date ()  *. 0.001
 
 let caml_sys_time () = (current_date () *. 0.001) -. caml_initial_time
 
+external random : unit -> float = "Math.random" [@@bs.val]
+
 let caml_sys_random_seed () : nativeint array = 
    [|
      Nativeint.of_float 
      ((Nativeint.to_float (Nativeint.logxor (Nativeint.of_float (current_date ()))
-                             0xffffffffn)) *. Js_float.random ()) |]
+                             0xffffffffn)) *. random ()) |]
 
 let caml_sys_system_command () = 127
 

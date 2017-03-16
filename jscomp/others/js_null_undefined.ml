@@ -33,7 +33,7 @@ external empty : 'a t = "undefined" [@@bs.val]
 
 let bind x f =
   match to_opt x with
-  | None -> Obj.magic x
+  | None -> (Obj.magic (x: 'a t): 'b t)
   | Some x -> return (f x [@bs])
 
 let iter x f =

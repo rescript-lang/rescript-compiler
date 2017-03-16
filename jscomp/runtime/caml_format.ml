@@ -509,7 +509,7 @@ let caml_format_float fmt x =
       match f.conv with 
       | "e"
         -> 
-        s := Js_float.to_exponential x ~prec;
+        s := Js_float.toExponentialWithPrecision x ~digits:prec;
         (* exponent should be at least two digits
            {[
              (3.3).toExponential()
@@ -526,13 +526,13 @@ let caml_format_float fmt x =
         -> 
         (*  this will not work large numbers *)
         (* ("%3.10f", 3e+56, "300000000000000005792779041490073052596128503513888063488.0000000000") *)
-        s := Js_float.toFixed x prec 
+        s := Js_float.toFixedWithPrecision x ~digits:prec 
       | "g" -> 
         let prec = if prec <> 0 then prec else 1 in
-        s := Js_float.to_exponential x (prec - 1);
+        s := Js_float.toExponentialWithPrecision x ~digits:(prec - 1);
         let j = Bs_string.index_of !s "e" in 
-        let  exp = int_of_float @@ Js_float.of_any @@ Bs_string.slice_rest !s (j + 1)  in 
-        if exp < -4 || x >= 1e21 ||Bs_string.length (Js_float.toFixed x 0) > prec then 
+        let  exp = int_of_float @@ float_of_string @@ Bs_string.slice_rest !s (j + 1)  in 
+        if exp < -4 || x >= 1e21 ||Bs_string.length (Js_float.toFixed x) > prec then 
           let i = ref (j - 1)  in
           while !s.[!i] = '0' do 
             decr i 
@@ -549,10 +549,10 @@ let caml_format_float fmt x =
           if exp < 0 then 
             begin 
               p := !p - (exp + 1);
-              s := Js_float.toFixed x !p 
+              s := Js_float.toFixedWithPrecision x ~digits:!p 
             end
           else 
-            while (s := Js_float.toFixed x !p;Bs_string.length !s > prec + 1) do 
+            while (s := Js_float.toFixedWithPrecision x ~digits:!p;Bs_string.length !s > prec + 1) do 
               decr p
             done ;
           if !p <> 0 then 
