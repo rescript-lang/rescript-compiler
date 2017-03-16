@@ -40,8 +40,12 @@ type _ kind =
 
 (** {2 Accessor} *)
 
-val reify_type : t -> 'b kind * 'b
+val reify_type : 'a -> 'b kind * 'b 
+  [@@ocaml.deprecated "Please use `reifyType`"]
 (** [reify_type v] returns both type and underlying value *) 
+
+val reifyType : t -> 'b kind * 'b 
+(** [reifyType v] returns both type and underlying value *) 
 
 val test : 'a  -> 'b kind -> bool
 (** [test v kind] returns true if [v] is of [kind] *)
@@ -108,14 +112,14 @@ external parse : string -> t = "JSON.parse" [@@bs.val]
 
 @example {|
 let json = Js_json.parse {| { "x" : [1, 2, 3 ] } |} in 
-let ty, ob = Js_json.reify_type json in 
+let ty, ob = Js_json.reifyType json in 
 match ty with
 | Js_json.Object ->
   (* In this branch, compiler infer ob : Js_json.t Js_dict.t *)
   begin match Js_dict.get ob "x" with
   | None -> assert(false) 
   | Some xValue -> 
-    let ty, xValue = Js_json.reify_type xValue in 
+    let ty, xValue = Js_json.reifyType xValue in 
     begin match ty with
     | Js_json.Array -> 
       (* In this branch compiler infer xValue : Js_json.t array *)

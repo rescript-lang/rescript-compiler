@@ -49,20 +49,20 @@ function true_(loc) {
 var v = JSON.parse(' { "x" : [1, 2, 3 ] } ');
 
 add_test('File "js_json_test.ml", line 23, characters 11-18', function () {
-      var match = Js_json.reify_type(v);
+      var match = Js_json.reifyType(v);
       if (match[0] !== 2) {
         return /* Ok */Block.__(2, [/* false */0]);
       }
       else {
         var match$1 = match[1]["x"];
         if (match$1 !== undefined) {
-          var match$2 = Js_json.reify_type(match$1);
+          var match$2 = Js_json.reifyType(match$1);
           if (match$2[0] !== 3) {
             return /* Ok */Block.__(2, [/* false */0]);
           }
           else {
             match$2[1].forEach(function (x) {
-                  var match = Js_json.reify_type(x);
+                  var match = Js_json.reifyType(x);
                   if (match[0] !== 1) {
                     throw [
                           Caml_builtin_exceptions.assert_failure,
@@ -90,7 +90,7 @@ eq('File "js_json_test.ml", line 48, characters 5-12', Js_json.test(v, /* Object
 
 var json = JSON.parse(JSON.stringify(Js_json.$$null));
 
-var match = Js_json.reify_type(json);
+var match = Js_json.reifyType(json);
 
 if (match[0] >= 5) {
   add_test('File "js_json_test.ml", line 54, characters 26-33', function () {
@@ -105,7 +105,7 @@ else {
 
 var json$1 = JSON.parse(JSON.stringify("test string"));
 
-var match$1 = Js_json.reify_type(json$1);
+var match$1 = Js_json.reifyType(json$1);
 
 if (match$1[0] !== 0) {
   add_test('File "js_json_test.ml", line 65, characters 16-23', function () {
@@ -118,7 +118,7 @@ else {
 
 var json$2 = JSON.parse(JSON.stringify(1.23456789));
 
-var match$2 = Js_json.reify_type(json$2);
+var match$2 = Js_json.reifyType(json$2);
 
 if (match$2[0] !== 1) {
   add_test('File "js_json_test.ml", line 75, characters 18-25', function () {
@@ -131,7 +131,7 @@ else {
 
 var json$3 = JSON.parse(JSON.stringify(-1347440721));
 
-var match$3 = Js_json.reify_type(json$3);
+var match$3 = Js_json.reifyType(json$3);
 
 if (match$3[0] !== 1) {
   add_test('File "js_json_test.ml", line 85, characters 18-25', function () {
@@ -144,7 +144,7 @@ else {
 
 function test(v) {
   var json = JSON.parse(JSON.stringify(v ? true : false));
-  var match = Js_json.reify_type(json);
+  var match = Js_json.reifyType(json);
   if (match[0] !== 4) {
     return add_test('File "js_json_test.ml", line 95, characters 18-25', function () {
                 return /* Ok */Block.__(2, [/* false */0]);
@@ -183,7 +183,7 @@ dict["b"] = 123.0;
 
 var json$4 = JSON.parse(JSON.stringify(dict));
 
-var match$4 = Js_json.reify_type(json$4);
+var match$4 = Js_json.reifyType(json$4);
 
 var x = match$4[1];
 
@@ -193,7 +193,7 @@ if (match$4[0] !== 2) {
       });
 }
 else {
-  var match$5 = Js_json.reify_type(option_get(Js_primitive.undefined_to_opt(x["a"])));
+  var match$5 = Js_json.reifyType(option_get(Js_primitive.undefined_to_opt(x["a"])));
   if (match$5[0] !== 0) {
     add_test('File "js_json_test.ml", line 131, characters 18-25', function () {
           return /* Ok */Block.__(2, [/* false */0]);
@@ -205,7 +205,7 @@ else {
         });
   }
   else {
-    var match$6 = Js_json.reify_type(option_get(Js_primitive.undefined_to_opt(x["b"])));
+    var match$6 = Js_json.reifyType(option_get(Js_primitive.undefined_to_opt(x["b"])));
     var b = match$6[1];
     if (match$6[0] !== 1) {
       add_test('File "js_json_test.ml", line 129, characters 22-29', function () {
@@ -224,14 +224,14 @@ else {
 }
 
 function eq_at_i(loc, json, i, kind, expected) {
-  var match = Js_json.reify_type(json);
+  var match = Js_json.reifyType(json);
   if (match[0] !== 3) {
     return add_test(loc, function () {
                 return /* Ok */Block.__(2, [/* false */0]);
               });
   }
   else {
-    var match$1 = Js_json.reify_type(match[1][i]);
+    var match$1 = Js_json.reifyType(match[1][i]);
     if (Caml_obj.caml_equal(match$1[0], kind)) {
       return eq(loc, match$1[1], expected);
     }

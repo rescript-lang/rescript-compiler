@@ -32,7 +32,7 @@ type _ kind =
   | Boolean : Js.boolean kind
   | Null : Js_types.null_val kind
 
-let reify_type (type a) (x : t) : (a kind * a ) = 
+let reify_type (type a) (x : 'a) : (a kind * a ) = 
   (if Js.typeof x = "string" then 
     Obj.magic String else
   if Js.typeof x = "number" then 
@@ -47,6 +47,8 @@ let reify_type (type a) (x : t) : (a kind * a ) =
     Obj.magic Array 
   else 
     Obj.magic Object ), Obj.magic x
+
+let reifyType = reify_type 
 
 let test (type a) (x : 'a) (v : a kind) : bool =
   match v with
