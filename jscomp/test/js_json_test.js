@@ -3,6 +3,7 @@
 var Mt                      = require("./mt");
 var Block                   = require("../../lib/js/block");
 var Js_json                 = require("../../lib/js/js_json");
+var Js_primitive            = require("../../lib/js/js_primitive");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
 
 var suites = [/* [] */0];
@@ -87,6 +88,24 @@ else {
 }
 
 eq('File "js_json_test.ml", line 37, characters 5-12', Js_json.test(v, /* Object */2), /* true */1);
+
+eq('File "js_json_test.ml", line 40, characters 12-19', Js_primitive.undefined_to_opt(JSON.stringify(/* int array */[
+              1,
+              2,
+              3
+            ])), /* Some */["[1,2,3]"]);
+
+eq('File "js_json_test.ml", line 44, characters 2-9', Js_primitive.undefined_to_opt(JSON.stringify({
+              foo: 1,
+              bar: "hello",
+              baz: {
+                baaz: 10
+              }
+            })), /* Some */['{"foo":1,"bar":"hello","baz":{"baaz":10}}']);
+
+eq('File "js_json_test.ml", line 48, characters 12-19', Js_primitive.undefined_to_opt(JSON.stringify(null)), /* Some */["null"]);
+
+eq('File "js_json_test.ml", line 50, characters 12-19', Js_primitive.undefined_to_opt(JSON.stringify(undefined)), /* None */0);
 
 Mt.from_pair_suites("js_json_test.ml", suites[0]);
 

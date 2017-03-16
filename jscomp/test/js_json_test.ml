@@ -32,8 +32,22 @@ let () =
     end
   | _ -> assert false
 
-
-let () = 
+(* parse & reify tests *)
+let () =
   eq __LOC__  (Js.Json.test v Object) true
+
+(* stringifyAny tests *)
+let () = eq __LOC__ (Js.Json.stringifyAny [|1; 2; 3|]) (Some "[1,2,3]")
+
+let () =
+  eq
+  __LOC__
+  (Js.Json.stringifyAny [%bs.obj {foo = 1; bar = "hello"; baz = [%bs.obj {baaz = 10}]}])
+  (Some {|{"foo":1,"bar":"hello","baz":{"baaz":10}}|})
+
+let () = eq __LOC__ (Js.Json.stringifyAny Js.Null.empty) (Some "null")
+
+let () = eq __LOC__ (Js.Json.stringifyAny Js.Undefined.empty) None
+
 
 let () = Mt.from_pair_suites __FILE__ !suites

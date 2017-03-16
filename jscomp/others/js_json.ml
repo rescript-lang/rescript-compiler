@@ -62,4 +62,5 @@ let test (type a) (x : 'a) (v : a kind) : bool =
 
 
 external parse : string -> t = "JSON.parse" [@@bs.val]
+external stringifyAny : 'a -> string option = "JSON.stringify" [@@bs.val] [@@bs.return undefined_to_opt]
 (* TODO: more docs when parse error happens or stringify non-stringfy value *)
