@@ -74,8 +74,6 @@ external numberOfInt : int -> t = "%identity"
 
 external boolean : Js.boolean -> t = "%identity" 
 
-let boolAsBoolean b = (Js_boolean.to_js_boolean b) |> boolean 
-
 external boolAsInt : bool -> t = "%identity" 
 
 external object_ : t Js_dict.t -> t = "%identity"

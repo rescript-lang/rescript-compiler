@@ -55,18 +55,7 @@ val test : 'a  -> 'b kind -> bool
 (** Those functions allows the construction of an arbitrary complex 
     JSON values. 
 
-@example {|
-(* This example shows how to create a simple JSON string made of a single 
-   JSON object with a few key/values *)
-
-let dict = Js_dict.empty () in 
-Js_dict.set dict "name" (Js_json.string "John Doe"); 
-Js_dict.set dict "age" (Js_json.numberOfInt 30); 
-Js_dict.set dict "likes" 
-  (Js_json.stringArray [|"bucklescript";"ocaml";"js"|]);
-Js.log @@ Js_json.stringify (Js_json.object_ dict) 
-|}
- *)
+*)
 
 val null : t 
 (** Null JSON value *)
@@ -82,9 +71,6 @@ external numberOfInt : int -> t = "%identity"
 
 external boolean : Js.boolean -> t = "%identity" 
 (** Make a JSON boolean *)
-
-val boolAsBoolean : bool -> t 
-(** Make a JSON boolean value from an OCaml bool *)
 
 external boolAsInt : bool -> t = "%identity" 
 (** Make a JSON int value from an OCaml bool *)
@@ -119,7 +105,7 @@ external objectArray : t Js_dict.t array -> t = "%identity"
 external parse : string -> t = "JSON.parse" [@@bs.val]
 (** [parse s] returns JSON value 
 
-@example {|
+@example {[
 let json = Js_json.parse {| { "x" : [1, 2, 3 ] } |} in 
 let ty, ob = Js_json.reifyType json in 
 match ty with
@@ -137,7 +123,21 @@ match ty with
     end 
   end 
 | _ -> assert(false)
-|}*)
+]}*)
 
 external stringify: t -> string = "JSON.stringify" [@@bs.val]
-(** [stringify json] returns JSON string *)
+(** [stringify json] returns JSON string 
+
+@example {[
+(* This example shows how to create a simple JSON string made of a single 
+   JSON object with a few key/values *)
+
+let dict = Js_dict.empty () in 
+Js_dict.set dict "name" (Js_json.string "John Doe"); 
+Js_dict.set dict "age" (Js_json.numberOfInt 30); 
+Js_dict.set dict "likes" 
+  (Js_json.stringArray [|"bucklescript";"ocaml";"js"|]);
+Js.log \@\@ Js_json.stringify (Js_json.object_ dict) 
+]}
+
+*)

@@ -24,7 +24,7 @@
 
 
 type 'a t
-(** Dictionary type (ie an '{ }' JS object). However it is restricted 
+(** Dictionary type (ie an '\{ \}' JS object). However it is restricted 
     to hold a single type; therefore values must have the same type. 
     
     This Dictionary type is mostly use with the [Js_json.t] type. *)
@@ -45,14 +45,14 @@ external unsafeGet : 'a t -> key -> 'a = "" [@@bs.get_index]
     when the existence of a key is certain. (i.e. when having called [keys]
     function previously. 
 
-@example {|
+@example {[
 Array.iter (fun key -> Js.log (Js_dict.unsafeGet dic key)) (Js_dict.keys dict) 
-|} 
+]} 
 *)
 
 val exnGet : 'a t -> key -> 'a
 (** [exnGet dict key] returns the value if the [key] exists, otherwise
-    @raise [Invalid_argument] exception *)
+    @raise Invalid_argument exception *)
 
 external set : 'a t -> key -> 'a -> unit = "" [@@bs.set_index]  
 (** [set dict key value] sets the [key]/[value] in [dict] *)
