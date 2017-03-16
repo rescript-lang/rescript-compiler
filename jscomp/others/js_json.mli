@@ -105,6 +105,9 @@ val intArray : int array -> t
 val booleanArray : bool array -> t
 (** Make a JSON bool array *)
 
+val objectArray : t Js_dict.t array -> t
+(** Make a JSON object array *)
+
 (** {2 String conversion} *)
 
 external parse : string -> t = "JSON.parse" [@@bs.val]

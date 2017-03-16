@@ -220,4 +220,36 @@ let () =
   eq_at_i __LOC__ json 2 Js.Json.Boolean (Js_boolean.to_js_boolean a.(2));
   ()
 
+let () =
+  let make_d s i = 
+    let d = Js_dict.empty() in 
+    Js_dict.set d "a" (Js_json.string s); 
+    Js_dict.set d "b" (Js_json.numberOfInt i); 
+    d
+  in 
+
+  let a = [| make_d "aaa" 123; make_d "bbb" 456 |] in 
+  let json = 
+    a 
+    |> Js.Json.objectArray
+    |> Js.Json.stringify
+    |> Js.Json.parse 
+  in
+
+  let ty, x = Js.Json.reifyType json in 
+  match ty with
+  | Js.Json.Array -> 
+    let ty, a1 = Js.Json.reifyType x.(1) in 
+    begin match ty with
+    | Js.Json.Object-> 
+      let ty, aValue =  Js.Json.reifyType @@ Js_dict.exnGet a1 "a" in 
+      begin match ty with
+      | Js.Json.String -> eq __LOC__ aValue "bbb"
+      | _ -> false_ __LOC__
+      end
+    | _ -> false_ __LOC__
+    end
+  | _ -> false_ __LOC__
+
+
 let () = Mt.from_pair_suites __FILE__ !suites

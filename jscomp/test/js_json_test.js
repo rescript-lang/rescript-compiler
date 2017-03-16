@@ -3,6 +3,7 @@
 var Mt                      = require("./mt");
 var $$Array                 = require("../../lib/js/array");
 var Block                   = require("../../lib/js/block");
+var Js_dict                 = require("../../lib/js/js_dict");
 var Js_json                 = require("../../lib/js/js_json");
 var Caml_obj                = require("../../lib/js/caml_obj");
 var Js_primitive            = require("../../lib/js/js_primitive");
@@ -314,6 +315,47 @@ eq_at_i('File "js_json_test.ml", line 219, characters 10-17', json$9, 1, /* Bool
 var b$3 = a$2[2];
 
 eq_at_i('File "js_json_test.ml", line 220, characters 10-17', json$9, 2, /* Boolean */4, b$3 ? true : false);
+
+function make_d(s, i) {
+  var d = { };
+  d["a"] = s;
+  d["b"] = i;
+  return d;
+}
+
+var a$3 = /* array */[
+  make_d("aaa", 123),
+  make_d("bbb", 456)
+];
+
+var json$10 = JSON.parse(JSON.stringify(a$3));
+
+var match$7 = Js_json.reifyType(json$10);
+
+if (match$7[0] !== 3) {
+  add_test('File "js_json_test.ml", line 252, characters 16-23', function () {
+        return /* Ok */Block.__(2, [/* false */0]);
+      });
+}
+else {
+  var match$8 = Js_json.reifyType(match$7[1][1]);
+  if (match$8[0] !== 2) {
+    add_test('File "js_json_test.ml", line 250, characters 18-25', function () {
+          return /* Ok */Block.__(2, [/* false */0]);
+        });
+  }
+  else {
+    var match$9 = Js_json.reifyType(Js_dict.exnGet(match$8[1], "a"));
+    if (match$9[0] !== 0) {
+      add_test('File "js_json_test.ml", line 248, characters 20-27', function () {
+            return /* Ok */Block.__(2, [/* false */0]);
+          });
+    }
+    else {
+      eq('File "js_json_test.ml", line 247, characters 29-36', match$9[1], "bbb");
+    }
+  }
+}
 
 Mt.from_pair_suites("js_json_test.ml", suites[0]);
 

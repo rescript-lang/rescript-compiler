@@ -86,4 +86,6 @@ let intArray a : t = Obj.magic a
 
 let booleanArray a : t = Obj.magic (Array.map boolean a)
 
+let objectArray a : t = Obj.magic a
+
 external stringify: 'a -> string = "JSON.stringify" [@@bs.val]
