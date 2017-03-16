@@ -1,6 +1,8 @@
 type  eq = Mt.eq =
   | Eq : 'a *'a  ->  eq
   | Neq : 'a * 'a ->  eq
+  | StrictEq : 'a *'a  ->  eq
+  | StrictNeq : 'a * 'a ->  eq
   | Ok : bool -> eq
   | Approx : float * float ->  eq
   | ApproxThreshold : float * float * float ->  eq
@@ -16,6 +18,8 @@ let from_pair_suites (name : string) (suites :  pair_suites) =
               match code () with
               | Eq(a,b) -> Js.log (name , a, "eq?", b )
               | Neq(a,b) -> Js.log (name, a, "neq?",   b )
+              | StrictEq(a,b) -> Js.log (name , a, "strict_eq?", b )
+              | StrictNeq(a,b) -> Js.log (name, a, "strict_neq?",   b )
               | Approx(a,b) -> Js.log (name, a, "~",  b)
               | ApproxThreshold(t, a, b) -> Js.log (name, a, "~", b, " (", t, ")")
               | ThrowAny fn -> ()

@@ -7,7 +7,7 @@ var Js_math = require("../../lib/js/js_math");
 var suites_000 = /* tuple */[
   "_E",
   function () {
-    return /* ApproxThreshold */Block.__(4, [
+    return /* ApproxThreshold */Block.__(6, [
               0.001,
               2.718,
               Math.E
@@ -19,7 +19,7 @@ var suites_001 = /* :: */[
   /* tuple */[
     "_LN2",
     function () {
-      return /* ApproxThreshold */Block.__(4, [
+      return /* ApproxThreshold */Block.__(6, [
                 0.001,
                 0.693,
                 Math.LN2
@@ -30,7 +30,7 @@ var suites_001 = /* :: */[
     /* tuple */[
       "_LN10",
       function () {
-        return /* ApproxThreshold */Block.__(4, [
+        return /* ApproxThreshold */Block.__(6, [
                   0.001,
                   2.303,
                   Math.LN10
@@ -41,7 +41,7 @@ var suites_001 = /* :: */[
       /* tuple */[
         "_LOG2E",
         function () {
-          return /* ApproxThreshold */Block.__(4, [
+          return /* ApproxThreshold */Block.__(6, [
                     0.001,
                     1.443,
                     Math.LOG2E
@@ -52,7 +52,7 @@ var suites_001 = /* :: */[
         /* tuple */[
           "_LOG10E",
           function () {
-            return /* ApproxThreshold */Block.__(4, [
+            return /* ApproxThreshold */Block.__(6, [
                       0.001,
                       0.434,
                       Math.LOG10E
@@ -63,7 +63,7 @@ var suites_001 = /* :: */[
           /* tuple */[
             "_PI",
             function () {
-              return /* ApproxThreshold */Block.__(4, [
+              return /* ApproxThreshold */Block.__(6, [
                         0.00001,
                         3.14159,
                         Math.PI
@@ -74,7 +74,7 @@ var suites_001 = /* :: */[
             /* tuple */[
               "_SQRT1_2",
               function () {
-                return /* ApproxThreshold */Block.__(4, [
+                return /* ApproxThreshold */Block.__(6, [
                           0.001,
                           0.707,
                           Math.SQRT1_2
@@ -85,7 +85,7 @@ var suites_001 = /* :: */[
               /* tuple */[
                 "_SQRT2",
                 function () {
-                  return /* ApproxThreshold */Block.__(4, [
+                  return /* ApproxThreshold */Block.__(6, [
                             0.001,
                             1.414,
                             Math.SQRT2
@@ -116,7 +116,7 @@ var suites_001 = /* :: */[
                     /* tuple */[
                       "acos",
                       function () {
-                        return /* ApproxThreshold */Block.__(4, [
+                        return /* ApproxThreshold */Block.__(6, [
                                   0.001,
                                   1.159,
                                   Math.acos(0.4)
@@ -127,7 +127,7 @@ var suites_001 = /* :: */[
                       /* tuple */[
                         "acosh",
                         function () {
-                          return /* ApproxThreshold */Block.__(4, [
+                          return /* ApproxThreshold */Block.__(6, [
                                     0.001,
                                     0.622,
                                     Math.acosh(1.2)
@@ -138,7 +138,7 @@ var suites_001 = /* :: */[
                         /* tuple */[
                           "asin",
                           function () {
-                            return /* ApproxThreshold */Block.__(4, [
+                            return /* ApproxThreshold */Block.__(6, [
                                       0.001,
                                       0.411,
                                       Math.asin(0.4)
@@ -149,7 +149,7 @@ var suites_001 = /* :: */[
                           /* tuple */[
                             "asinh",
                             function () {
-                              return /* ApproxThreshold */Block.__(4, [
+                              return /* ApproxThreshold */Block.__(6, [
                                         0.001,
                                         0.390,
                                         Math.asinh(0.4)
@@ -160,7 +160,7 @@ var suites_001 = /* :: */[
                             /* tuple */[
                               "atan",
                               function () {
-                                return /* ApproxThreshold */Block.__(4, [
+                                return /* ApproxThreshold */Block.__(6, [
                                           0.001,
                                           0.380,
                                           Math.atan(0.4)
@@ -171,7 +171,7 @@ var suites_001 = /* :: */[
                               /* tuple */[
                                 "atanh",
                                 function () {
-                                  return /* ApproxThreshold */Block.__(4, [
+                                  return /* ApproxThreshold */Block.__(6, [
                                             0.001,
                                             0.423,
                                             Math.atanh(0.4)
@@ -182,7 +182,7 @@ var suites_001 = /* :: */[
                                 /* tuple */[
                                   "atan2",
                                   function () {
-                                    return /* ApproxThreshold */Block.__(4, [
+                                    return /* ApproxThreshold */Block.__(6, [
                                               0.001,
                                               0.588,
                                               Math.atan2(0.4, 0.6)
@@ -233,7 +233,7 @@ var suites_001 = /* :: */[
                                           /* tuple */[
                                             "cos",
                                             function () {
-                                              return /* ApproxThreshold */Block.__(4, [
+                                              return /* ApproxThreshold */Block.__(6, [
                                                         0.001,
                                                         0.921,
                                                         Math.cos(0.4)
@@ -244,7 +244,7 @@ var suites_001 = /* :: */[
                                             /* tuple */[
                                               "cosh",
                                               function () {
-                                                return /* ApproxThreshold */Block.__(4, [
+                                                return /* ApproxThreshold */Block.__(6, [
                                                           0.001,
                                                           1.081,
                                                           Math.cosh(0.4)
@@ -255,7 +255,7 @@ var suites_001 = /* :: */[
                                               /* tuple */[
                                                 "exp",
                                                 function () {
-                                                  return /* ApproxThreshold */Block.__(4, [
+                                                  return /* ApproxThreshold */Block.__(6, [
                                                             0.001,
                                                             1.491,
                                                             Math.exp(0.4)
@@ -266,7 +266,7 @@ var suites_001 = /* :: */[
                                                 /* tuple */[
                                                   "expm1",
                                                   function () {
-                                                    return /* ApproxThreshold */Block.__(4, [
+                                                    return /* ApproxThreshold */Block.__(6, [
                                                               0.001,
                                                               0.491,
                                                               Math.expm1(0.4)
@@ -307,7 +307,7 @@ var suites_001 = /* :: */[
                                                         /* tuple */[
                                                           "fround",
                                                           function () {
-                                                            return /* Approx */Block.__(3, [
+                                                            return /* Approx */Block.__(5, [
                                                                       3.2,
                                                                       Math.fround(3.2)
                                                                     ]);
@@ -317,7 +317,7 @@ var suites_001 = /* :: */[
                                                           /* tuple */[
                                                             "hypot",
                                                             function () {
-                                                              return /* ApproxThreshold */Block.__(4, [
+                                                              return /* ApproxThreshold */Block.__(6, [
                                                                         0.001,
                                                                         0.721,
                                                                         Math.hypot(0.4, 0.6)
@@ -328,7 +328,7 @@ var suites_001 = /* :: */[
                                                             /* tuple */[
                                                               "hypotMany",
                                                               function () {
-                                                                return /* ApproxThreshold */Block.__(4, [
+                                                                return /* ApproxThreshold */Block.__(6, [
                                                                           0.001,
                                                                           1.077,
                                                                           Math.hypot(0.4, 0.6, 0.8)
@@ -349,7 +349,7 @@ var suites_001 = /* :: */[
                                                                 /* tuple */[
                                                                   "log",
                                                                   function () {
-                                                                    return /* ApproxThreshold */Block.__(4, [
+                                                                    return /* ApproxThreshold */Block.__(6, [
                                                                               0.001,
                                                                               -0.916,
                                                                               Math.log(0.4)
@@ -360,7 +360,7 @@ var suites_001 = /* :: */[
                                                                   /* tuple */[
                                                                     "log1p",
                                                                     function () {
-                                                                      return /* ApproxThreshold */Block.__(4, [
+                                                                      return /* ApproxThreshold */Block.__(6, [
                                                                                 0.001,
                                                                                 0.336,
                                                                                 Math.log1p(0.4)
@@ -371,7 +371,7 @@ var suites_001 = /* :: */[
                                                                     /* tuple */[
                                                                       "log10",
                                                                       function () {
-                                                                        return /* ApproxThreshold */Block.__(4, [
+                                                                        return /* ApproxThreshold */Block.__(6, [
                                                                                   0.001,
                                                                                   -0.397,
                                                                                   Math.log10(0.4)
@@ -382,7 +382,7 @@ var suites_001 = /* :: */[
                                                                       /* tuple */[
                                                                         "log2",
                                                                         function () {
-                                                                          return /* ApproxThreshold */Block.__(4, [
+                                                                          return /* ApproxThreshold */Block.__(6, [
                                                                                     0.001,
                                                                                     -1.321,
                                                                                     Math.log2(0.4)
@@ -474,7 +474,7 @@ var suites_001 = /* :: */[
                                                                                           "random",
                                                                                           function () {
                                                                                             var a = Math.random();
-                                                                                            return /* Ok */Block.__(2, [+(a >= 0 && a < 1)]);
+                                                                                            return /* Ok */Block.__(4, [+(a >= 0 && a < 1)]);
                                                                                           }
                                                                                         ],
                                                                                         /* :: */[
@@ -482,7 +482,7 @@ var suites_001 = /* :: */[
                                                                                             "random_int",
                                                                                             function () {
                                                                                               var a = Js_math.random_int(1, 3);
-                                                                                              return /* Ok */Block.__(2, [+(a >= 1 && a < 3)]);
+                                                                                              return /* Ok */Block.__(4, [+(a >= 1 && a < 3)]);
                                                                                             }
                                                                                           ],
                                                                                           /* :: */[
@@ -539,7 +539,7 @@ var suites_001 = /* :: */[
                                                                                                       /* tuple */[
                                                                                                         "sin",
                                                                                                         function () {
-                                                                                                          return /* ApproxThreshold */Block.__(4, [
+                                                                                                          return /* ApproxThreshold */Block.__(6, [
                                                                                                                     0.001,
                                                                                                                     0.389,
                                                                                                                     Math.sin(0.4)
@@ -550,7 +550,7 @@ var suites_001 = /* :: */[
                                                                                                         /* tuple */[
                                                                                                           "sinh",
                                                                                                           function () {
-                                                                                                            return /* ApproxThreshold */Block.__(4, [
+                                                                                                            return /* ApproxThreshold */Block.__(6, [
                                                                                                                       0.001,
                                                                                                                       0.410,
                                                                                                                       Math.sinh(0.4)
@@ -561,7 +561,7 @@ var suites_001 = /* :: */[
                                                                                                           /* tuple */[
                                                                                                             "sqrt",
                                                                                                             function () {
-                                                                                                              return /* ApproxThreshold */Block.__(4, [
+                                                                                                              return /* ApproxThreshold */Block.__(6, [
                                                                                                                         0.001,
                                                                                                                         0.632,
                                                                                                                         Math.sqrt(0.4)
@@ -572,7 +572,7 @@ var suites_001 = /* :: */[
                                                                                                             /* tuple */[
                                                                                                               "tan",
                                                                                                               function () {
-                                                                                                                return /* ApproxThreshold */Block.__(4, [
+                                                                                                                return /* ApproxThreshold */Block.__(6, [
                                                                                                                           0.001,
                                                                                                                           0.422,
                                                                                                                           Math.tan(0.4)
@@ -583,7 +583,7 @@ var suites_001 = /* :: */[
                                                                                                               /* tuple */[
                                                                                                                 "tanh",
                                                                                                                 function () {
-                                                                                                                  return /* ApproxThreshold */Block.__(4, [
+                                                                                                                  return /* ApproxThreshold */Block.__(6, [
                                                                                                                             0.001,
                                                                                                                             0.379,
                                                                                                                             Math.tanh(0.4)

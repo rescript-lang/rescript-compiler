@@ -456,7 +456,7 @@ test(args1);
 var suites_000 = /* tuple */[
   "should raise",
   function () {
-    return /* ThrowAny */Block.__(5, [function () {
+    return /* ThrowAny */Block.__(7, [function () {
                 return test(args2);
               }]);
   }

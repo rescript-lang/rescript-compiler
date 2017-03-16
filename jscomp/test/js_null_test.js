@@ -59,11 +59,11 @@ var suites_001 = /* :: */[
           /* tuple */[
             "bind - empty",
             function () {
-              return /* Eq */Block.__(0, [
-                        /* true */1,
-                        +(Js_null.bind(null, function (v) {
-                                return v;
-                              }) === null)
+              return /* StrictEq */Block.__(2, [
+                        null,
+                        Js_null.bind(null, function (v) {
+                              return v;
+                            })
                       ]);
             }
           ],
@@ -71,11 +71,11 @@ var suites_001 = /* :: */[
             /* tuple */[
               "bind - 'a",
               function () {
-                return /* Eq */Block.__(0, [
-                          /* Some */[4],
-                          Js_primitive.null_to_opt(Js_null.bind(2, function (n) {
-                                    return (n << 1);
-                                  }))
+                return /* StrictEq */Block.__(2, [
+                          4,
+                          Js_null.bind(2, function (n) {
+                                return (n << 1);
+                              })
                         ]);
               }
             ],

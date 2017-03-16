@@ -14,7 +14,7 @@ var suites_000 = /* tuple */[
               ]);
     }
     else {
-      return /* FailWith */Block.__(7, ["regex should match"]);
+      return /* FailWith */Block.__(9, ["regex should match"]);
     }
   }
 ];
@@ -25,10 +25,10 @@ var suites_001 = /* :: */[
     function () {
       var match = (/https:\/\/(.*)/).exec("http://xxx.domain.com");
       if (match !== null) {
-        return /* FailWith */Block.__(7, ["regex should not match"]);
+        return /* FailWith */Block.__(9, ["regex should not match"]);
       }
       else {
-        return /* Ok */Block.__(2, [/* true */1]);
+        return /* Ok */Block.__(4, [/* true */1]);
       }
     }
   ],
@@ -66,7 +66,7 @@ var suites_001 = /* :: */[
                       ]);
             }
             else {
-              return /* Fail */Block.__(6, [/* () */0]);
+              return /* Fail */Block.__(8, [/* () */0]);
             }
           }
         ],
@@ -83,7 +83,7 @@ var suites_001 = /* :: */[
                         ]);
               }
               else {
-                return /* Fail */Block.__(6, [/* () */0]);
+                return /* Fail */Block.__(8, [/* () */0]);
               }
             }
           ],

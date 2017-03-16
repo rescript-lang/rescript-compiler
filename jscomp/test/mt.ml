@@ -15,6 +15,14 @@ external neq : 'a -> 'a -> unit = "notDeepEqual"
     [@@bs.val]
     [@@bs.module "assert"]
 
+external strict_eq : 'a -> 'a -> unit = "strictEqual"
+    [@@bs.val]
+    [@@bs.module "assert"]
+
+external strict_neq : 'a -> 'a -> unit = "notStrictEqual"
+    [@@bs.val]
+    [@@bs.module "assert"]
+
 external ok : Js.boolean -> unit = "ok"
     [@@bs.val]
     [@@bs.module "assert"]
@@ -24,14 +32,21 @@ external fail : 'a -> 'a -> string Js.undefined -> string -> unit = "fail"
     [@@bs.module "assert"]
 
 
-external dump : 'a array -> unit = "console.log" [@@bs.val ] [@@bs.splice]
-external throws : (unit -> unit) -> unit = "throws" [@@bs.val] [@@bs.module "assert"]
+external dump : 'a array -> unit = "console.log"
+  [@@bs.val]
+  [@@bs.splice]
+
+external throws : (unit -> unit) -> unit = "throws"
+  [@@bs.val]
+  [@@bs.module "assert"]
 (** There is a problem --
-    it does not return [unit ]
+    it does not return [unit]
  *)
 
 let assert_equal = eq
 let assert_notequal = neq
+let assert_strict_equal = strict_eq
+let assert_strict_notequal = strict_neq
 let assert_ok = fun a -> ok (Js.Boolean.to_js_boolean a)
 let assert_fail = fun msg -> fail () () (Js.Undefined.return msg) ""
 
@@ -55,6 +70,8 @@ let from_suites name (suite :  (string * ('a -> unit)) list) =
 type eq =
   | Eq :  'a *'a  -> eq
   | Neq : 'a * 'a -> eq
+  | StrictEq :  'a *'a  -> eq
+  | StrictNeq : 'a * 'a -> eq
   | Ok : bool -> eq
   | Approx : float * float -> eq
   | ApproxThreshold : float * float * float -> eq
@@ -79,6 +96,8 @@ let from_pair_suites name (suites :  pair_suites) =
                   match code () with
                   | Eq(a,b) -> assert_equal a b
                   | Neq(a,b) -> assert_notequal a b
+                  | StrictEq(a,b) -> assert_strict_equal a b
+                  | StrictNeq(a,b) -> assert_strict_notequal a b
                   | Ok(a) -> assert_ok a
                   | Approx(a, b) ->
                     if not (close_enough a b) then assert_equal a b (* assert_equal gives better ouput *)

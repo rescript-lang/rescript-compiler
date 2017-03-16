@@ -6,8 +6,8 @@ let suites = Mt.[
   "return", (fun _ -> Eq(Some "something", return "something" |> to_opt));
   "test - empty", (fun _ -> Eq(true, empty |> test));
   "test - 'a", (fun _ -> Eq(false, return () |> test));
-  "bind - empty", (fun _ -> Eq(true, bind empty ((fun v -> v) [@bs]) |> test));
-  "bind - 'a", (fun _ -> Eq(Some 4, bind (return 2) ((fun n -> n * 2) [@bs]) |> to_opt));
+  "bind - empty", (fun _ -> Eq(empty, bind empty ((fun v -> v) [@bs])));
+  "bind - 'a", (fun _ -> Eq(return 4, bind (return 2) ((fun n -> n * 2) [@bs])));
   "iter - empty", (fun _ ->
     let hit = ref false in
     let _ = iter empty ((fun _ -> hit := true) [@bs]) in
