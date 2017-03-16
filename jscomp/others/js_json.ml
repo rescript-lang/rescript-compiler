@@ -24,7 +24,6 @@
 
 type t
 
-
 type _ kind = 
   | String : Js_string.t kind
   | Number : float kind 
@@ -33,7 +32,7 @@ type _ kind =
   | Boolean : Js.boolean kind
   | Null : Js_types.null_val kind
 
-let reify_type (type a) (x : 'a) : (a kind * a ) = 
+let reify_type (type a) (x : t) : (a kind * a ) = 
   (if Js.typeof x = "string" then 
     Obj.magic String else
   if Js.typeof x = "number" then 
@@ -60,6 +59,29 @@ let test (type a) (x : 'a) (v : a kind) : bool =
   | Array -> Js_array.isArray x 
   | Object -> (Obj.magic x) != Js.null && Js.typeof x = "object" && not (Js_array.isArray x )
 
-
 external parse : string -> t = "JSON.parse" [@@bs.val]
 (* TODO: more docs when parse error happens or stringify non-stringfy value *)
+
+let null : t = Obj.magic Js.null 
+
+let string s : t = Obj.magic s
+
+let number f : t = Obj.magic f
+
+let number_of_int i : t = Obj.magic i
+
+let boolean b : t = Obj.magic (Js_boolean.to_js_boolean b)
+
+let object_ o : t = Obj.magic o
+
+let array_ a : t = Obj.magic a
+
+let string_array a : t = Obj.magic a 
+
+let number_array a : t = Obj.magic a 
+
+let int_array a : t = Obj.magic a 
+
+let boolean_array a : t = Obj.magic (Array.map boolean a)
+
+external to_string : 'a -> string = "JSON.stringify" [@@bs.val]
