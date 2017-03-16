@@ -5,7 +5,7 @@ var Block      = require("../../lib/js/block");
 var Pervasives = require("../../lib/js/pervasives");
 
 var suites_000 = /* tuple */[
-  "nan <> nan",
+  "_NaN <> _NaN",
   function () {
     return /* Eq */Block.__(0, [
               /* false */0,
@@ -16,7 +16,7 @@ var suites_000 = /* tuple */[
 
 var suites_001 = /* :: */[
   /* tuple */[
-    "isNaN - nan",
+    "isNaN - _NaN",
     function () {
       return /* Eq */Block.__(0, [
                 /* true */1,
@@ -56,7 +56,7 @@ var suites_001 = /* :: */[
         ],
         /* :: */[
           /* tuple */[
-            "isFinite - nan",
+            "isFinite - _NaN",
             function () {
               return /* Eq */Block.__(0, [
                         /* false */0,

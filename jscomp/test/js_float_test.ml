@@ -1,11 +1,11 @@
 open Js_float
 
 let suites = Mt.[
-  ("nan <> nan", (fun _ ->
-    Eq(false, nan = nan)));
+  ("_NaN <> _NaN", (fun _ ->
+    Eq(false, _NaN = _NaN)));
 
-  ("isNaN - nan", (fun _ ->
-    Eq(true, isNaN nan)));
+  ("isNaN - _NaN", (fun _ ->
+    Eq(true, isNaN _NaN)));
   ("isNaN - 0.", (fun _ ->
     Eq(false, isNaN 0.)));
 
@@ -13,8 +13,8 @@ let suites = Mt.[
     Eq(false, isFinite infinity)));
   ("isFinite - neg_infinity", (fun _ ->
     Eq(false, isFinite neg_infinity)));
-  ("isFinite - nan", (fun _ ->
-    Eq(false, isFinite nan)));
+  ("isFinite - _NaN", (fun _ ->
+    Eq(false, isFinite _NaN)));
   ("isFinite - 0.", (fun _ ->
     Eq(true, isFinite 0.)));
 
