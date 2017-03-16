@@ -68,8 +68,20 @@ let string s : t = Obj.magic s
 
 let number f : t = Obj.magic f
 
+let number_of_int i : t = Obj.magic i
+
 let boolean b : t = Obj.magic (Js_boolean.to_js_boolean b)
 
 let object_ o : t = Obj.magic o
+
+let array_ a : t = Obj.magic a
+
+let string_array a : t = Obj.magic a 
+
+let number_array a : t = Obj.magic a 
+
+let int_array a : t = Obj.magic a 
+
+let boolean_array a : t = Obj.magic (Array.map boolean a)
 
 external to_string : 'a -> string = "JSON.stringify" [@@bs.val]

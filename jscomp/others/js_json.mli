@@ -22,6 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+(** Efficient JSON encoding using Javascript API *) 
 
 (** {2 Types} *)
 
@@ -45,9 +46,6 @@ val reify_type : t -> 'b kind * 'b
 val test : 'a  -> 'b kind -> bool
 (** [test v kind] returns true if [v] is of [kind] *)
 
-external parse : string -> t = "JSON.parse" [@@bs.val]
-(** [parse s] returns JSON value *)
-
 (** {2 Construtors} *)
 
 val null : t 
@@ -59,11 +57,38 @@ val string : string -> t
 val number : float -> t 
 (** Make a JSON number *)
 
+val number_of_int : int -> t 
+(** Make a JSON number from int*)
+
 val boolean : bool -> t 
 (** Make a JSON boolean *)
 
 val object_ : t Js_dict.t -> t
 (** Make a JSON objet *)
+
+val array_ : t array -> t 
+(** Make a JSON array *)
+
+(** The functions below are specialized for specific array type which 
+    happened to be already JSON object in the BuckleScript runtime. Therefore
+    they are more efficient (constant time rather than linear conversion). *) 
+
+val string_array : string array -> t
+(** Make a JSON string array *) 
+
+val number_array : float array -> t
+(** Make a JSON number array *)
+
+val int_array : int array -> t
+(** Make a JSON number array *)
+
+val boolean_array : bool array -> t
+(** Make a JSON bool array *)
+
+(** {2 String conversion} *)
+
+external parse : string -> t = "JSON.parse" [@@bs.val]
+(** [parse s] returns JSON value *)
 
 external to_string : 'a -> string = "JSON.stringify" [@@bs.val]
 (** [to_string json] returns JSON string *)

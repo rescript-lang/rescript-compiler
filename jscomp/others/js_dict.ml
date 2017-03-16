@@ -27,6 +27,7 @@ type 'a t
 type key = string
 
 external get : 'a t -> key -> 'a option = "" [@@bs.get_index] [@@bs.return {undefined_to_opt}]
+external unsafe_get : 'a t -> key -> 'a = "" [@@bs.get_index] 
 external set : 'a t -> key -> 'a -> unit = "" [@@bs.set_index]  
 external keys : 'a t -> string array = "Object.keys" [@@bs.val]
 external empty : unit -> 'a t = "" [@@bs.obj]

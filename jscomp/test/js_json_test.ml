@@ -75,6 +75,16 @@ let () =
   | _ -> add_test __LOC__ (fun _ -> Mt.Ok false) 
 
 let () = 
+  let json = 
+    Js.Json.number_of_int 0xAFAFAFAF
+    |> Js.Json.to_string |> Js.Json.parse 
+  in 
+  let ty, x = Js.Json.reify_type json in
+  match ty with
+  | Js.Json.Number -> eq __LOC__ (int_of_float x) 0xAFAFAFAF
+  | _ -> add_test __LOC__ (fun _ -> Mt.Ok false) 
+
+let () = 
   let test v = 
     let json = 
         Js.Json.boolean v |> Js.Json.to_string |> Js.Json.parse 
@@ -121,5 +131,93 @@ let () =
     | _ -> false_ __LOC__
     end
   | _ -> false_ __LOC__
+
+(* Check that the given json value is an array and that its element 
+ * a position [i] is equal to both the [kind] and [expected] value *)
+let eq_at_i 
+      (type a) 
+      (loc:string)
+      (json:Js_json.t) 
+      (i:int) 
+      (kind:a Js.Json.kind) 
+      (expected:a) : unit = 
+
+  let ty, x = Js.Json.reify_type json in 
+  match ty with
+  | Js.Json.Array -> 
+    let ty, a1 = Js.Json.reify_type x.(i) in 
+    begin match ty with
+    | kind' when kind' = kind ->
+      eq loc a1 expected
+    | _ -> false_ loc 
+    end
+  | _ -> false_ loc
+
+let () = 
+  let json = 
+    [| "string 0"; "string 1"; "string 2" |]
+    |> Array.map Js.Json.string
+    |> Js.Json.array_
+    |> Js.Json.to_string
+    |> Js.Json.parse 
+  in 
+  eq_at_i __LOC__ json 0 Js.Json.String "string 0";
+  eq_at_i __LOC__ json 1 Js.Json.String "string 1";
+  eq_at_i __LOC__ json 2 Js.Json.String "string 2";
+  ()
+
+let () = 
+  let json = 
+    [| "string 0"; "string 1"; "string 2" |]
+    |> Js.Json.string_array
+    |> Js.Json.to_string
+    |> Js.Json.parse 
+  in 
+  eq_at_i __LOC__ json 0 Js.Json.String "string 0";
+  eq_at_i __LOC__ json 1 Js.Json.String "string 1";
+  eq_at_i __LOC__ json 2 Js.Json.String "string 2";
+  ()
+
+let () = 
+  let a = [| 1.0000001; 10000000000.1; 123.0 |] in
+  let json = 
+    a  
+    |> Js.Json.number_array
+    |> Js.Json.to_string
+    |> Js.Json.parse 
+  in 
+  (* Loop is unrolled to keep relevant location information *)
+  eq_at_i __LOC__ json 0 Js.Json.Number a.(0);
+  eq_at_i __LOC__ json 1 Js.Json.Number a.(1);
+  eq_at_i __LOC__ json 2 Js.Json.Number a.(2);
+  ()
+
+let () = 
+  let a = [| 0; 0xAFAFAFAF; 0xF000AABB|] in
+  let json = 
+    a  
+    |> Js.Json.int_array
+    |> Js.Json.to_string
+    |> Js.Json.parse 
+  in 
+  (* Loop is unrolled to keep relevant location information *)
+  eq_at_i __LOC__ json 0 Js.Json.Number (float_of_int a.(0));
+  eq_at_i __LOC__ json 1 Js.Json.Number (float_of_int a.(1));
+  eq_at_i __LOC__ json 2 Js.Json.Number (float_of_int a.(2));
+  ()
+
+let () = 
+  let a = [| true; false; true |] in
+  let json = 
+    a  
+    |> Js.Json.boolean_array
+    |> Js.Json.to_string
+    |> Js.Json.parse 
+  in 
+  (* Loop is unrolled to keep relevant location information *)
+  eq_at_i __LOC__ json 0 Js.Json.Boolean (Js_boolean.to_js_boolean a.(0));
+  eq_at_i __LOC__ json 1 Js.Json.Boolean (Js_boolean.to_js_boolean a.(1));
+  eq_at_i __LOC__ json 2 Js.Json.Boolean (Js_boolean.to_js_boolean a.(2));
+  ()
 
 let () = Mt.from_pair_suites __FILE__ !suites
