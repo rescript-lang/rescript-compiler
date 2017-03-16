@@ -364,7 +364,84 @@ var suites_001 = /* :: */[
                                                                                     }]);
                                                                         }
                                                                       ],
-                                                                      /* [] */0
+                                                                      /* :: */[
+                                                                        /* tuple */[
+                                                                          "fromString - 123",
+                                                                          function () {
+                                                                            return /* Eq */Block.__(0, [
+                                                                                      123,
+                                                                                      Number("123")
+                                                                                    ]);
+                                                                          }
+                                                                        ],
+                                                                        /* :: */[
+                                                                          /* tuple */[
+                                                                            "fromString - 12.3",
+                                                                            function () {
+                                                                              return /* Eq */Block.__(0, [
+                                                                                        12.3,
+                                                                                        Number("12.3")
+                                                                                      ]);
+                                                                            }
+                                                                          ],
+                                                                          /* :: */[
+                                                                            /* tuple */[
+                                                                              "fromString - empty string",
+                                                                              function () {
+                                                                                return /* Eq */Block.__(0, [
+                                                                                          0,
+                                                                                          Number("")
+                                                                                        ]);
+                                                                              }
+                                                                            ],
+                                                                            /* :: */[
+                                                                              /* tuple */[
+                                                                                "fromString - 0x11",
+                                                                                function () {
+                                                                                  return /* Eq */Block.__(0, [
+                                                                                            17,
+                                                                                            Number("0x11")
+                                                                                          ]);
+                                                                                }
+                                                                              ],
+                                                                              /* :: */[
+                                                                                /* tuple */[
+                                                                                  "fromString - 0b11",
+                                                                                  function () {
+                                                                                    return /* Eq */Block.__(0, [
+                                                                                              3,
+                                                                                              Number("0b11")
+                                                                                            ]);
+                                                                                  }
+                                                                                ],
+                                                                                /* :: */[
+                                                                                  /* tuple */[
+                                                                                    "fromString - 0o11",
+                                                                                    function () {
+                                                                                      return /* Eq */Block.__(0, [
+                                                                                                9,
+                                                                                                Number("0o11")
+                                                                                              ]);
+                                                                                    }
+                                                                                  ],
+                                                                                  /* :: */[
+                                                                                    /* tuple */[
+                                                                                      "fromString - invalid string",
+                                                                                      function () {
+                                                                                        return /* Eq */Block.__(0, [
+                                                                                                  /* true */1,
+                                                                                                  +isNaN(Number("foo"))
+                                                                                                ]);
+                                                                                      }
+                                                                                    ],
+                                                                                    /* [] */0
+                                                                                  ]
+                                                                                ]
+                                                                              ]
+                                                                            ]
+                                                                          ]
+                                                                        ]
+                                                                      ]
                                                                     ]
                                                                   ]
                                                                 ]

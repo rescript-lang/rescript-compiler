@@ -80,6 +80,21 @@ let suites = Mt.[
     ThrowAny(fun () -> ignore @@ toStringWithRadix 0. ~radix:1)));
   ("toStringWithRadix - radix:-1", (fun _ ->
     ThrowAny(fun () -> ignore @@ toStringWithRadix 0. ~radix:(-1))));
+
+  ("fromString - 123", (fun _ ->
+    Eq(123., fromString "123")));
+  ("fromString - 12.3", (fun _ ->
+    Eq(12.3, fromString "12.3")));
+  ("fromString - empty string", (fun _ ->
+    Eq(0., fromString "")));
+  ("fromString - 0x11", (fun _ ->
+    Eq(17., fromString "0x11")));
+  ("fromString - 0b11", (fun _ ->
+    Eq(3., fromString "0b11")));
+  ("fromString - 0o11", (fun _ ->
+    Eq(9., fromString "0o11")));
+  ("fromString - invalid string", (fun _ ->
+    Eq(true, fromString "foo" |> isNaN)));
 ]
 
 ;; Mt.from_pair_suites __FILE__ suites

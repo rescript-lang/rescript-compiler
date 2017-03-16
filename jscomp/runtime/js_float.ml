@@ -236,6 +236,38 @@ let _ = Js.log \@\@ Js.Float.toStringWithRadix 123.456 ~radix:36
 *)
 external toStringWithRadix : float -> radix:int -> string = "toString" [@@bs.send]
 
+(** Parses the given [string] into a [float] using JavaScript semantics
+
+{b Returns} the number as a [float] if successfully parsed, [nan] otherwise.
+
+@example {[
+(* returns 123 *)
+let _ = Js.Float.fromString "123"
+
+(* returns 12.3 *)
+let _ = Js.Float.fromString "12.3"
+
+(* returns 0 *)
+let _ = Js.Float.fromString ""
+
+(* returns 17 *)
+let _ = Js.Float.fromString "0x11"
+
+(* returns 3 *)
+let _ = Js.Float.fromString "0b11"
+
+(* returns 9 *)
+let _ = Js.Float.fromString "0o11"
+
+(* returns [nan] *)
+let _ = Js.Float.fromString "foo"
+
+(* returns [nan] *)
+let _ = Js.Float.fromString "100a"
+]}
+*)
+external fromString : string -> float = "Number" [@@bs.val]
+
 (**
 @deprecated Use {! toExponential} instead
 *)
