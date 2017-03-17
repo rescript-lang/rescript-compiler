@@ -247,7 +247,7 @@ let usage = "Usage : bsb.exe <bsb-options> -- <ninja_options>\n\
              Bsb options are:"
 
 let handle_anonymous_arg arg =
-  Arg.usage bsb_main_flags usage
+  raise (Arg.Bad ("Unknown arg \"" ^ arg ^ "\""))
 
 let make_world_deps (config : Bsb_config_types.t option) =
   print_endline "\nMaking the dependency world!";
