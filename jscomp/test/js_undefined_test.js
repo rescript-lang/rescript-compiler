@@ -60,10 +60,10 @@ var suites_001 = /* :: */[
             "bind - empty",
             function () {
               return /* Eq */Block.__(0, [
-                        /* true */1,
-                        +(Js_undefined.bind(undefined, function (v) {
-                                return v;
-                              }) === undefined)
+                        undefined,
+                        Js_undefined.bind(undefined, function (v) {
+                              return v;
+                            })
                       ]);
             }
           ],
@@ -72,10 +72,10 @@ var suites_001 = /* :: */[
               "bind - 'a",
               function () {
                 return /* Eq */Block.__(0, [
-                          /* Some */[4],
-                          Js_primitive.undefined_to_opt(Js_undefined.bind(2, function (n) {
-                                    return (n << 1);
-                                  }))
+                          4,
+                          Js_undefined.bind(2, function (n) {
+                                return (n << 1);
+                              })
                         ]);
               }
             ],

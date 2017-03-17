@@ -71,10 +71,16 @@ function from_pair_suites(name, suites) {
                                   Assert.notDeepEqual(match[0], match[1]);
                                   return /* () */0;
                               case 2 : 
+                                  Assert.strictEqual(match[0], match[1]);
+                                  return /* () */0;
+                              case 3 : 
+                                  Assert.notStrictEqual(match[0], match[1]);
+                                  return /* () */0;
+                              case 4 : 
                                   var b = match[0];
                                   Assert.ok(b ? true : false);
                                   return /* () */0;
-                              case 3 : 
+                              case 5 : 
                                   var b$1 = match[1];
                                   var a = match[0];
                                   if (close_enough(/* None */0, a, b$1)) {
@@ -84,7 +90,7 @@ function from_pair_suites(name, suites) {
                                     Assert.deepEqual(a, b$1);
                                     return /* () */0;
                                   }
-                              case 4 : 
+                              case 6 : 
                                   var b$2 = match[2];
                                   var a$1 = match[1];
                                   if (close_enough(/* Some */[match[0]], a$1, b$2)) {
@@ -94,12 +100,12 @@ function from_pair_suites(name, suites) {
                                     Assert.deepEqual(a$1, b$2);
                                     return /* () */0;
                                   }
-                              case 5 : 
+                              case 7 : 
                                   Assert.throws(match[0]);
                                   return /* () */0;
-                              case 6 : 
+                              case 8 : 
                                   return assert_fail("failed");
-                              case 7 : 
+                              case 9 : 
                                   return assert_fail(match[0]);
                               
                             }

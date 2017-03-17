@@ -1,6 +1,8 @@
 type  eq =
   | Eq :  'a *'a  ->  eq
   | Neq : 'a * 'a ->  eq
+  | StrictEq :  'a *'a  ->  eq
+  | StrictNeq : 'a * 'a ->  eq
   | Ok : bool -> eq
   | Approx : float * float ->  eq
   | ApproxThreshold : float * float * float ->  eq

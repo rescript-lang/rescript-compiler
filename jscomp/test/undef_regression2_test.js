@@ -31,7 +31,7 @@ function ok(loc, x) {
     /* tuple */[
       loc + (" id " + test_id[0]),
       function () {
-        return /* Ok */Block.__(2, [x]);
+        return /* Ok */Block.__(4, [x]);
       }
     ],
     suites[0]

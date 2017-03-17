@@ -66,7 +66,7 @@ let caml_modf_float (x : float) : float * float =
     if neg then
       -. f, -. i
     else f, i
-  else if Js_float.isNaN x then Js_float.nan ,  Js_float.nan
+  else if Js_float.isNaN x then Js_float._NaN, Js_float._NaN
   else (1. /. x , x)
 
 let caml_ldexp_float (x: float) (exp: int) : float =

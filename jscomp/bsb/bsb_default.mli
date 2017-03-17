@@ -24,49 +24,10 @@
 
 
 
-val get_ocamllex : unit -> string
-val set_ocamllex : cwd:string -> string -> unit
+val bsc_flags : string list 
 
+val ocamllex : string
 
-val set_bs_external_includes : Ext_json.t array -> unit
-val get_bs_external_includes : unit -> string list
+val refmt_flags : string list 
 
-
-
-
-val set_bsc_flags : Ext_json.t array -> unit
-val get_bsc_flags : unit -> string list
-
-val set_ppx_flags : cwd:string -> Ext_json.t array -> unit
-val get_ppx_flags : unit -> string list
-
-val set_package_name : string -> unit
-val get_package_name : unit -> string option
-
-val set_refmt : cwd:string -> string -> unit
-val get_refmt : unit -> string option
-
-val set_refmt_flags : Ext_json.t array -> unit
-val get_refmt_flags : unit -> string list
-
-val get_bs_dependencies : unit ->  Bsb_config_types.bs_dependencies
-val set_bs_dependencies : cwd:string -> Ext_json.t array  -> unit
-
-
-val get_js_post_build_cmd : unit -> string option
-val set_js_post_build_cmd : cwd:string -> string -> unit
-
-(*val get_ninja : unit -> string
-val set_ninja : cwd:string -> string -> unit*)
-
-val get_package_specs : unit -> Bsb_config.package_specs
-val set_package_specs_from_array : Ext_json.t array -> unit
-
-
-
-val get_generate_merlin : unit -> bool
-val set_generate_merlin : bool -> unit
-
-
-val set_use_stdlib : cwd:string -> bool -> unit 
-val built_in_package : Bsb_config_types.bs_dependency option ref 
+val package_specs : String_set.t

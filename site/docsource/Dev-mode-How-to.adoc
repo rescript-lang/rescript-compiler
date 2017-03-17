@@ -121,3 +121,28 @@ To build libs, tests and run all tests:
 ### Contributing to the documentation
 
 You'll need http://asciidoctor.org/[Asciidoctor] installed. Modify the section you want in `site/docsource/`, then run `site/docsource/build.sh`.
+
+### Contributing to the API reference
+
+The API reference is generated from doc comments in the source code. Here's a good example: https://github.com/bloomberg/bucklescript/blob/master/jscomp/others/js_re.mli#L146-L161
+
+Some tips and guidelines:
+
+* The first sentence or line should be a very short summary. This is used in indexes and by tools like merlin.
+* Ideally, every function should have *at least one* `@example`
+* Cross-reference another definition with `{! identifier}`. But use them sparingly, they're a bit verbose (currently, at least).
+* Wrap non-cross-referenced identifiers and other code in `[ ... ]`
+* Escape `{`, `}`, `[`, `]` and `@` using `\`
+* It's possible to use `{%html ...}` to generate custom html, but use this very, very sparingly.
+* A number of "documentation tags" are provided that would be nice to use, but unfortunately they're often not supported for `external`s. Which is of course most of the API.
+* `@param` usually doesn't work. Use `{b <param>} ...` instead
+* `@returns` usually doesn't work. Use `{b returns} ...` instead.
+* Always use `@deprecated` when applicable.
+* Always use `@raise` when applicable.
+* Always provide a `@see` tag pointing to MDN for more information when available.
+
+See http://caml.inria.fr/pub/docs/manual-ocaml/ocamldoc.html#sec333[Ocamldoc documentation] for a lot more details.
+
+To generate the html, run `make docs` in `jscomp/`.
+
+Html generation uses a custom generator located in `odoc_gen/` and custom styles located in `docs/api_static`.

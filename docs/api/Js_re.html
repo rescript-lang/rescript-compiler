@@ -41,6 +41,7 @@
 <link title="Caml_module" rel="Chapter" href="Caml_module.html">
 <link title="Caml_obj" rel="Chapter" href="Caml_obj.html">
 <link title="Caml_oo" rel="Chapter" href="Caml_oo.html">
+<link title="Caml_oo_curry" rel="Chapter" href="Caml_oo_curry.html">
 <link title="Caml_parser" rel="Chapter" href="Caml_parser.html">
 <link title="Caml_primitive" rel="Chapter" href="Caml_primitive.html">
 <link title="Caml_queue" rel="Chapter" href="Caml_queue.html">
@@ -235,10 +236,10 @@ let re = [%re "/ab*/g"] in
 let str = "abbcdefabh" in
 
 let break = ref false in
-while not break do
+while not !break do
   match re |&gt; Js.Re.exec str with
-  | None -&gt; ()
-  | Some result =&gt;
+  | None -&gt; break := false
+  | Some result -&gt;
     let match_ = (Js.Re.matches result).(0) in
     let next = string_of_int (Js.Re.lastIndex re) in
     Js.log ("Found " ^ match_ ^ ". Next match starts at " ^ next)
@@ -314,7 +315,7 @@ let startsWith substring target =
   Js.Re.fromString ("^" ^ substring)
     |&gt; Js.Re.test target
 
-let _ = Js.log (str |&gt; startsWith "hello") (* prints "true" *)
+let () = Js.log (str |&gt; startsWith "hello") (* prints "true" *)
 </code></pre></pre></div>
 </div>
 </body></html>

@@ -27,6 +27,7 @@
     // },
     "sources": {
         "dir": "jscomp/test/",
+        // "dir" : 1,
         // "resources" : 
         // [
         //     "flow_parser_sample.js",

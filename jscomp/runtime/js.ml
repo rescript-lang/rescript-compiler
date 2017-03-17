@@ -104,3 +104,6 @@ module Re = Js_re
 module String = Js_string
 module Typed_array = Js_typed_array
 module Types = Js_types
+module Float = Js_float
+module Int = Js_int
+
