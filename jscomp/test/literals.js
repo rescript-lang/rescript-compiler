@@ -123,6 +123,12 @@ var escaped_j_delimiter = "*j";
 
 var unescaped_js_delimiter = "js";
 
+var $$native = "native";
+
+var bytecode = "bytecode";
+
+var js = "js";
+
 exports.js_array_ctor          = js_array_ctor;
 exports.js_type_number         = js_type_number;
 exports.js_type_string         = js_type_string;
@@ -184,4 +190,7 @@ exports.reactjs_jsx_ppx_exe    = reactjs_jsx_ppx_exe;
 exports.unescaped_j_delimiter  = unescaped_j_delimiter;
 exports.escaped_j_delimiter    = escaped_j_delimiter;
 exports.unescaped_js_delimiter = unescaped_js_delimiter;
+exports.$$native               = $$native;
+exports.bytecode               = bytecode;
+exports.js                     = js;
 /* No side effect */
