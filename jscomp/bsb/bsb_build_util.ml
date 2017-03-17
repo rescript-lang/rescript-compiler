@@ -138,38 +138,68 @@ let (|?)  m (key, cb) =
   m  |> Ext_json.test key cb
 
 
-
 (**
   TODO: check duplicate package name
    ?use path as identity?
+
+   Basic requirements
+     1. cycle detection
+     2. avoid duplication
+     3. determinstic, since -make-world will also comes with -clean-world
+
 *)
-let rec walk_all_deps top dir cb =
+let rec walk_all_deps_aux visited top dir cb =
   let bsconfig_json =  (dir // Literals.bsconfig_json) in
+
   match Ext_json_parse.parse_json_from_file bsconfig_json with
   | Obj {map; loc} ->
+    let cur_package_name = 
+      begin match String_map.find_opt Bsb_build_schemas.name map  with 
+      | Some (Str {str }) -> str
+      | Some _ 
+      | None -> Bsb_exception.failf  "package name missing in %s/bsconfig.json" dir 
+
+      end
+    in 
     map
     |?
     (Bsb_build_schemas.bs_dependencies,
       `Arr (fun (new_packages : Ext_json_types.t array) ->
          new_packages
          |> Array.iter (fun (js : Ext_json_types.t) ->
-          begin match js with
-          | Str {str = new_package} ->
-            begin match Bsb_pkg.resolve_bs_package ~cwd:dir new_package with
-            | None -> 
-              Bsb_exception.error (Bsb_exception.Package_not_found 
-                                     (new_package, Some bsconfig_json))
-            | Some package_dir  ->
-              walk_all_deps  false package_dir cb  ;
-            end;
-          | _ -> 
-            Bsb_exception.(failf ~loc 
-                             "%s expect an array"
-                             Bsb_build_schemas.bs_dependencies)
-          end
-      )))
+             begin match js with
+               | Str {str = new_package} ->
+                 begin match String_hashtbl.find_opt visited new_package with 
+                   | None -> 
+                     begin match Bsb_pkg.resolve_bs_package ~cwd:dir new_package with
+                       | None -> 
+                         Bsb_exception.error (Bsb_exception.Package_not_found 
+                                                (new_package, Some bsconfig_json))
+                       | Some package_dir  ->
+                         Format.fprintf 
+                           Format.std_formatter "@{<info>Walking@} deps %s in %s from %s@."
+                           new_package
+                           package_dir
+                           cur_package_name;
+                         String_hashtbl.add visited new_package package_dir;
+                         walk_all_deps_aux visited  false package_dir cb  ;
+                     end
+                   | Some _ -> 
+                     Format.fprintf Format.std_formatter
+                       "@{<info>Already visited@} %s@." new_package;
+
+                 end
+               | _ -> 
+                 Bsb_exception.(failf ~loc 
+                                  "%s expect an array"
+                                  Bsb_build_schemas.bs_dependencies)
+             end
+           )))
     |> ignore ;
     cb top dir
   | _ -> ()
   | exception _ -> failwith ( "failed to parse" ^ bsconfig_json ^ " properly")
     
+let walk_all_deps dir cb = 
+  let visited = String_hashtbl.create 0 in 
+  walk_all_deps_aux visited true dir cb 

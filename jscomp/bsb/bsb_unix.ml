@@ -36,13 +36,13 @@ type command =
 let run_command_execv_unix  cmd =
   match Unix.fork () with 
   | 0 -> 
-    print_endline ( "* Entering " ^ cmd.cwd);
-    print_string "* " ; 
+    Format.fprintf Format.std_formatter "@{<info>Entering@} %s @." cmd.cwd ;  
+    Format.print_string "* " ; 
     for i = 0 to Array.length cmd.args - 1 do
-      print_string cmd.args.(i);
-      print_string Ext_string.single_space
+      Format.print_string cmd.args.(i);
+      Format.print_string Ext_string.single_space
     done;
-    print_newline ();
+    Format.print_newline ();
     Unix.chdir cmd.cwd;
     Unix.execv cmd.cmd cmd.args 
   | pid -> 
@@ -52,13 +52,12 @@ let run_command_execv_unix  cmd =
       | Unix.WEXITED eid ->
         if eid <> 0 then 
           begin 
-            prerr_endline ("* Failure : " ^ cmd.cmd ^ "\n* Location: " ^ cmd.cwd);
+            Format.fprintf Format.err_formatter "@{<error>Failue:@} %s \n Location: %s@." cmd.cmd cmd.cwd;
             exit eid    
           end;
-
       | Unix.WSIGNALED _ | Unix.WSTOPPED _ -> 
         begin 
-          prerr_endline (cmd.cmd ^ " interrupted");
+          Format.fprintf Format.err_formatter "@{<error>Interrupted:@} %s@." cmd.cmd;
           exit 2 
         end        
 
