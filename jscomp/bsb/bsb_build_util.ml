@@ -63,7 +63,7 @@ let resolve_bsb_magic_file ~cwd ~desc p =
      p_len > 0 &&
      String.unsafe_get p 0 <> '.' then
     let p = if Ext_sys.is_windows_or_cygwin then Ext_string.replace_slash_backward p else p in
-    match Bs_pkg.resolve_npm_package_file ~cwd p with
+    match Bsb_pkg.resolve_npm_package_file ~cwd p with
     | None -> failwith (p ^ " not found when resolving " ^ desc)
     | Some v -> v
   else
@@ -146,7 +146,7 @@ let (|?)  m (key, cb) =
 let rec walk_all_deps top dir cb =
   let bsconfig_json =  (dir // Literals.bsconfig_json) in
   match Ext_json_parse.parse_json_from_file bsconfig_json with
-  | Obj {map} ->
+  | Obj {map; loc} ->
     map
     |?
     (Bsb_build_schemas.bs_dependencies,
@@ -155,13 +155,17 @@ let rec walk_all_deps top dir cb =
          |> Array.iter (fun (js : Ext_json_types.t) ->
           begin match js with
           | Str {str = new_package} ->
-            begin match Bs_pkg.resolve_bs_package ~cwd:dir new_package with
+            begin match Bsb_pkg.resolve_bs_package ~cwd:dir new_package with
             | None -> 
-              Bsb_exception.error (Bsb_exception.Package_not_found (new_package, Some bsconfig_json))
+              Bsb_exception.error (Bsb_exception.Package_not_found 
+                                     (new_package, Some bsconfig_json))
             | Some package_dir  ->
               walk_all_deps  false package_dir cb  ;
             end;
-          | _ -> () (* TODO: add a log framework, warning here *)
+          | _ -> 
+            Bsb_exception.(failf ~loc 
+                             "%s expect an array"
+                             Bsb_build_schemas.bs_dependencies)
           end
       )))
     |> ignore ;
