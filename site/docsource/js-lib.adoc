@@ -62,8 +62,8 @@ to maintain:
 -------------
 external try_some_thing : string Js.null -> int Js.null = ...
 
-let try_some_thing_maybe : string option -> int option = funciton value
-  Js.Null.to_opt (try_some_thing (Js.Null.from_opt value))
+let try_some_thing_maybe ( v : string option) : int option = 
+  Js.Null.to_opt (try_some_thing (Js.Null.from_opt v))
 -------------
 
 === Boolean
