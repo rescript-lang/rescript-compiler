@@ -94,10 +94,15 @@ external objectArray : t Js_dict.t array -> t = "%identity"
 (** {2 String conversion} *)
 
 external parse : string -> t = "JSON.parse" [@@bs.val]
-(** [parse s] returns JSON value 
+(** [parse s] returns JSON value and @raises SyntaxError in the 
+    case [s] is not a valid JSON string. 
+    Note [SyntaxError] is a JavaScript exception. 
 
 @example {[
-let json = Js_json.parse {| { "x" : [1, 2, 3 ] } |} in 
+let json = 
+  try Js_json.parse {| { "x" : [1, 2, 3 ] } |} 
+  with | e -> Js.log e; failwith "Error parsing JSON string"
+in 
 let ty, ob = Js_json.reifyType json in 
 match ty with
 | Js_json.Object ->
