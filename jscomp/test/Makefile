@@ -99,7 +99,7 @@ OTHERS := literals a test_ari test_export2 test_internalOO test_obj_simple_ffi t
 	name_mangle_test\
 	oo_js_test_date\
 	functor_ffi\
-	typed_array_test\
+	js_typed_array_test\
 	gpr_1240_missing_unbox\
 	js_null_undefined_test js_null_test js_undefined_test\
 	gpr_1268\
@@ -112,6 +112,8 @@ OTHERS := literals a test_ari test_export2 test_internalOO test_obj_simple_ffi t
 	test\
 	undef_regression2_test\
 	js_global_test\
+	js_float_test\
+	js_int_test\
 	bang_primitive\
 	compare_test
 

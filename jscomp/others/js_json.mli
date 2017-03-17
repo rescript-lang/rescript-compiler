@@ -132,3 +132,5 @@ Js.log \@\@ Js_json.stringify (Js_json.object_ dict)
 ]}
 
 *)
+
+external stringifyAny : 'a -> string option = "JSON.stringify" [@@bs.val] [@@bs.return undefined_to_opt]

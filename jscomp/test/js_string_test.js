@@ -515,7 +515,7 @@ var suites_001 = /* :: */[
                                                                                                   /* tuple */[
                                                                                                     'File "js_string_test.ml", line 183, characters 4-11',
                                                                                                     function () {
-                                                                                                      return /* Ok */Block.__(2, [+"ab".includes("a")]);
+                                                                                                      return /* Ok */Block.__(4, [+"ab".includes("a")]);
                                                                                                     }
                                                                                                   ],
                                                                                                   /* [] */0

@@ -61,14 +61,14 @@ var suites_001 = /* :: */[
                   foo: 43,
                   bar: "baz"
                 }, "baz");
-            return /* Ok */Block.__(2, [/* false */0]);
+            return /* Ok */Block.__(4, [/* false */0]);
           }
           catch (exn){
             if (exn[0] === Caml_builtin_exceptions.invalid_argument) {
-              return /* Ok */Block.__(2, [/* true */1]);
+              return /* Ok */Block.__(4, [/* true */1]);
             }
             else {
-              return /* Ok */Block.__(2, [/* false */0]);
+              return /* Ok */Block.__(4, [/* false */0]);
             }
           }
         }
@@ -87,7 +87,7 @@ var suites_001 = /* :: */[
                       ]);
             }
             catch (exn){
-              return /* Ok */Block.__(2, [/* false */0]);
+              return /* Ok */Block.__(4, [/* false */0]);
             }
           }
         ],

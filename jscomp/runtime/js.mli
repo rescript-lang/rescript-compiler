@@ -55,14 +55,6 @@ type + 'a null_undefined
 type boolean
 (* end::public_js_types[]*)
 
-(* tag::nested_built_in_modules[] *)
-(** {3 nested modules}*)
-module Null = Js_null
-module Undefined = Js_undefined
-module Null_undefined = Js_null_undefined
-(* end::nested_built_in_modules[] *)
-
-
 (* tag::predefined_js_values[]*)
 external true_ : boolean = "true" [@@bs.val]
 external false_ : boolean = "false" [@@bs.val]
@@ -91,16 +83,26 @@ external unsafe_ge : 'a -> 'a -> bool = "#unsafe_ge"
 (**  [unsafe_ge a b] will be compiled as [a >= b] *)
 (* end::utility_functions[]*)
 
+(* tag::nested_built_in_modules[] *)
+(** {3 nested modules}*)
+module Null = Js_null
+module Undefined = Js_undefined
+module Null_undefined = Js_null_undefined
+(* end::nested_built_in_modules[] *)
+
 (** {8 nested modules} *experimental* API, please refer to
   {!Js_dict} {!Js_array} {!Js_string} {!Js_re} for more details *)
-module Dict = Js_dict
 module Array = Js_array
-module String = Js_string
-module Re = Js_re
-module Types = Js_types
-module Json = Js_json
-module Obj  = Js_obj
 module Boolean = Js_boolean
-module Math = Js_math
 module Date = Js_date
+module Dict = Js_dict
 module Global = Js_global
+module Json = Js_json
+module Math = Js_math
+module Obj  = Js_obj
+module Re = Js_re
+module String = Js_string
+module Typed_array = Js_typed_array
+module Types = Js_types
+module Float = Js_float
+module Int = Js_int

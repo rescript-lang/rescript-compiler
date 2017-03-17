@@ -32,10 +32,26 @@ function from_pair_suites(name, suites) {
                     console.log(/* tuple */[
                           name,
                           match[0],
-                          "ok?"
+                          "strict_eq?",
+                          match[1]
                         ]);
                     return /* () */0;
                 case 3 : 
+                    console.log(/* tuple */[
+                          name,
+                          match[0],
+                          "strict_neq?",
+                          match[1]
+                        ]);
+                    return /* () */0;
+                case 4 : 
+                    console.log(/* tuple */[
+                          name,
+                          match[0],
+                          "ok?"
+                        ]);
+                    return /* () */0;
+                case 5 : 
                     console.log(/* tuple */[
                           name,
                           match[0],
@@ -43,7 +59,7 @@ function from_pair_suites(name, suites) {
                           match[1]
                         ]);
                     return /* () */0;
-                case 4 : 
+                case 6 : 
                     console.log(/* tuple */[
                           name,
                           match[1],
@@ -54,12 +70,12 @@ function from_pair_suites(name, suites) {
                           ")"
                         ]);
                     return /* () */0;
-                case 5 : 
+                case 7 : 
                     return /* () */0;
-                case 6 : 
+                case 8 : 
                     console.log("failed");
                     return /* () */0;
-                case 7 : 
+                case 9 : 
                     console.log("failed: " + match[0]);
                     return /* () */0;
                 

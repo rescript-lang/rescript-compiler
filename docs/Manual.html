@@ -600,7 +600,20 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </li>
 </ul>
 </li>
-<li><a href="#_js_module">Js module</a></li>
+<li><a href="#_js_module">Js module</a>
+<ul class="sectlevel2">
+<li><a href="#_null_and_undefined">Null and Undefined</a></li>
+<li><a href="#_boolean">Boolean</a></li>
+<li><a href="#_stable_ish_submodules">Stable-ish submodules</a></li>
+<li><a href="#_experimental_incomplete_submodules">Experimental/incomplete submodules</a></li>
+<li><a href="#_very_experimental_internal_submodules">Very experimental/internal submodules</a></li>
+</ul>
+</li>
+<li><a href="#_node_module">Node module</a>
+<ul class="sectlevel2">
+<li><a href="#_submodules">Submodules</a></li>
+</ul>
+</li>
 <li><a href="#_extended_compiler_options">Extended compiler options</a>
 <ul class="sectlevel2">
 <li><a href="#__bs_main_single_directory_build">-bs-main (single directory build)</a></li>
@@ -671,6 +684,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_contributing_to_code_bsc_exe_code">Contributing to <code>bsc.exe</code></a></li>
 <li><a href="#_contributing_to_the_runtime">Contributing to the runtime</a></li>
 <li><a href="#_contributing_to_the_documentation">Contributing to the documentation</a></li>
+<li><a href="#_contributing_to_the_api_reference">Contributing to the API reference</a></li>
 </ul>
 </li>
 <li><a href="#_comparisons">Comparisons</a>
@@ -3612,77 +3626,184 @@ more examples, please visit
 <h2 id="_js_module"><a class="anchor" href="#_js_module"></a>Js module</h2>
 <div class="sectionbody">
 <div class="paragraph">
+<p><a href="https://bloomberg.github.io/bucklescript/api/Js.html">API reference</a></p>
+</div>
+<div class="paragraph">
 <p>Js module is shipped with BuckleScript, both the namespace <code>Js</code> and <code>Node</code> are preserved.</p>
 </div>
-<div class="listingblock">
-<div class="title">Js Public types</div>
-<div class="content">
-<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">type</span> <span class="tok-o">+</span><span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-n">t</span>
-<span class="tok-c">(** Js object type *)</span>
-<span class="tok-k">type</span> <span class="tok-o">+</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-n">null</span>
-<span class="tok-c">(** nullable, value of this type can be either [null] or [&#39;a]</span>
-<span class="tok-c">    this type is the same as {!Js.Null.t}  *)</span>
-<span class="tok-k">type</span> <span class="tok-o">+</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-n">undefined</span>
-<span class="tok-c">(** value of this type can be either [undefined] or [&#39;a]</span>
-<span class="tok-c">    this type is the same as {!Js.Undefined.t}  *)</span>
-<span class="tok-k">type</span> <span class="tok-o">+</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-n">null_undefined</span>
-<span class="tok-c">(** value of this type can be [undefined], [null] or [&#39;a]</span>
-<span class="tok-c">    this type is the same as {!Js.Null_undefined.t}*)</span>
-<span class="tok-k">type</span> <span class="tok-n">boolean</span></code></pre>
+<div class="sect2">
+<h3 id="_null_and_undefined"><a class="anchor" href="#_null_and_undefined"></a>Null and Undefined</h3>
+<div class="paragraph">
+<p>BuckleScript does not deal with <code>null</code> and <code>undefined</code> on the language level.
+Instead they are defined on the library level, represented by <code>Js.Null.empty</code>
+and <code>Js.Undefined.empty</code> (and <code>Js.Null_undefined.empty</code>) types. But due to this
+being Ocaml and all, we can&#8217;t just pass these values off as if it was any type
+we&#8217;d like it to be, so in order to actually use them we need to lift the type we
+want to use them with. For this purpose BuckleScript defines the type <code>'a Js.null</code>,
+<code>'a Js.undefined' and &#8217;a Js.null_undefined</code> (for values that can be both
+<code>null</code>, <code>undefined</code> and <code>'a</code>). As well as the corresponding modules <code>Js.Null</code>,
+<code>Js.Undefined</code> and <code>Js.Null_undefined</code> for working with these tpyes.</p>
 </div>
+<div class="paragraph">
+<p>Here&#8217;s an example showing <code>Js.Null</code> used directly:</p>
 </div>
 <div class="listingblock">
-<div class="title">Js Nested modules</div>
 <div class="content">
-<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-c">(** {3 nested modules}*)</span>
-<span class="tok-k">module</span> <span class="tok-nc">Null</span> <span class="tok-o">=</span> <span class="tok-nc">Js_null</span>
-<span class="tok-k">module</span> <span class="tok-nc">Undefined</span> <span class="tok-o">=</span> <span class="tok-nc">Js_undefined</span>
-<span class="tok-k">module</span> <span class="tok-nc">Null_undefined</span> <span class="tok-o">=</span> <span class="tok-nc">Js_null_undefined</span></code></pre>
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">external</span> <span class="tok-n">get_prop_name_maybe</span> <span class="tok-o">:</span> <span class="tok-kt">unit</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">string</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">null</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;&quot;</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-k">val</span><span class="tok-o">]</span>
+<span class="tok-k">external</span> <span class="tok-n">set_or_unset_prop</span> <span class="tok-o">:</span> <span class="tok-kt">string</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">int</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">null</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">unit</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;&quot;</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-k">val</span><span class="tok-o">]</span>
+
+<span class="tok-c">(* unset property if fond *)</span>
+<span class="tok-k">let</span> <span class="tok-n">s</span> <span class="tok-o">=</span> <span class="tok-n">get_prop_name_maybe</span> <span class="tok-bp">()</span>
+<span class="tok-k">let</span> <span class="tok-o">_</span> <span class="tok-o">=</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-nn">Null</span><span class="tok-p">.</span><span class="tok-n">iter</span> <span class="tok-n">s</span> <span class="tok-o">(</span><span class="tok-k">function</span> <span class="tok-n">name</span> <span class="tok-o">-&gt;</span> <span class="tok-n">set_or_unset_prop</span> <span class="tok-n">name</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-nn">Null</span><span class="tok-p">.</span><span class="tok-n">empty</span><span class="tok-o">)</span>
+
+<span class="tok-c">(* set some other property *)</span>
+<span class="tok-k">let</span> <span class="tok-o">_</span> <span class="tok-o">=</span> <span class="tok-n">set_or_unset_prop</span> <span class="tok-s2">&quot;some_other_property&quot;</span> <span class="tok-o">(</span><span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-nn">Null</span><span class="tok-p">.</span><span class="tok-n">return</span> <span class="tok-s2">&quot;&quot;</span><span class="tok-o">)</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Note that <code>Null</code>, <code>Undefined</code> and <code>Null_undefined</code> have similar interfaces, for example:</p>
+<p>You might also want to map these types to <code>option</code> for a friendlier and more
+idiomatic API, if the distinction between <code>null</code> and <code>undefined</code> isn&#8217;t important
+to maintain:</p>
 </div>
 <div class="listingblock">
-<div class="title">Js.Null module</div>
 <div class="content">
-<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">type</span> <span class="tok-o">+</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-n">t</span> <span class="tok-o">=</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">null</span>
-<span class="tok-k">external</span> <span class="tok-n">to_opt</span> <span class="tok-o">:</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-n">t</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-n">option</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;#null_to_opt&quot;</span>
-<span class="tok-k">external</span> <span class="tok-n">return</span> <span class="tok-o">:</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-n">t</span>  <span class="tok-o">=</span> <span class="tok-s2">&quot;%identity&quot;</span>
-<span class="tok-k">external</span> <span class="tok-n">test</span> <span class="tok-o">:</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-n">t</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">bool</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;#is_nil&quot;</span>
-<span class="tok-k">external</span> <span class="tok-n">empty</span> <span class="tok-o">:</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-n">t</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;null&quot;</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-k">val</span><span class="tok-o">]</span></code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="title">Js Utility functions</div>
-<div class="content">
-<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">external</span> <span class="tok-n">to_bool</span> <span class="tok-o">:</span> <span class="tok-n">boolean</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">bool</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;#boolean_to_bool&quot;</span>
-<span class="tok-c">(** convert Js boolean to OCaml bool *)</span>
-<span class="tok-k">external</span> <span class="tok-n">typeof</span> <span class="tok-o">:</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">string</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;#typeof&quot;</span>
-<span class="tok-c">(** [typeof x] will be compiled as [typeof x] in JS *)</span>
-<span class="tok-k">external</span> <span class="tok-n">log</span> <span class="tok-o">:</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">unit</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;console.log&quot;</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-k">val</span><span class="tok-o">]</span>
-<span class="tok-c">(** A convenience function to log *)</span>
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">external</span> <span class="tok-n">try_some_thing</span> <span class="tok-o">:</span> <span class="tok-kt">string</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">null</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">int</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">null</span> <span class="tok-o">=</span> <span class="tok-o">...</span>
 
-<span class="tok-c">(** {4 operators }*)</span>
-<span class="tok-k">external</span> <span class="tok-n">unsafe_lt</span> <span class="tok-o">:</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">bool</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;#unsafe_lt&quot;</span>
-<span class="tok-c">(**  [unsafe_lt a b] will be compiled using JS compare operator [a &lt; b] *)</span>
-<span class="tok-k">external</span> <span class="tok-n">unsafe_le</span> <span class="tok-o">:</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">bool</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;#unsafe_le&quot;</span>
-<span class="tok-c">(**  [unsafe_le a b] will be compiled using JS compare operator [a &lt;= b] *)</span>
-<span class="tok-k">external</span> <span class="tok-n">unsafe_gt</span> <span class="tok-o">:</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">bool</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;#unsafe_gt&quot;</span>
-<span class="tok-c">(**  [unsafe_gt a b] will be compiled using JS compare operator [a &gt; b] *)</span>
-<span class="tok-k">external</span> <span class="tok-n">unsafe_ge</span> <span class="tok-o">:</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">bool</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;#unsafe_ge&quot;</span>
-<span class="tok-c">(**  [unsafe_ge a b] will be compiled using JS compare operator [a &gt;= b] *)</span></code></pre>
+<span class="tok-k">let</span> <span class="tok-n">try_some_thing_maybe</span> <span class="tok-o">(</span> <span class="tok-n">v</span> <span class="tok-o">:</span> <span class="tok-kt">string</span> <span class="tok-n">option</span><span class="tok-o">)</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-n">option</span> <span class="tok-o">=</span>
+  <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-nn">Null</span><span class="tok-p">.</span><span class="tok-n">to_opt</span> <span class="tok-o">(</span><span class="tok-n">try_some_thing</span> <span class="tok-o">(</span><span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-nn">Null</span><span class="tok-p">.</span><span class="tok-n">from_opt</span> <span class="tok-n">v</span><span class="tok-o">))</span></code></pre>
 </div>
 </div>
-<div class="listingblock">
-<div class="title">Js Predefined JS values</div>
-<div class="content">
-<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">external</span> <span class="tok-bp">true</span><span class="tok-o">_</span> <span class="tok-o">:</span> <span class="tok-n">boolean</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;true&quot;</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-k">val</span><span class="tok-o">]</span>
-<span class="tok-k">external</span> <span class="tok-bp">false</span><span class="tok-o">_</span> <span class="tok-o">:</span> <span class="tok-n">boolean</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;false&quot;</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-k">val</span><span class="tok-o">]</span>
-<span class="tok-k">external</span> <span class="tok-n">null</span> <span class="tok-o">:</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-n">null</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;&quot;</span>
-<span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-k">val</span><span class="tok-o">]</span> <span class="tok-c">(* The same as {!Js.Null.empty} will be compiled as [null]*)</span>
-<span class="tok-k">external</span> <span class="tok-n">undefined</span> <span class="tok-o">:</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-n">undefined</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;&quot;</span>
-<span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-k">val</span><span class="tok-o">]</span> <span class="tok-c">(* The same as  {!Js.Undefined.empty} will be compiled as [undefined]*)</span></code></pre>
+</div>
+<div class="sect2">
+<h3 id="_boolean"><a class="anchor" href="#_boolean"></a>Boolean</h3>
+<div class="paragraph">
+<p>"Native" <code>bool</code> is for Bob-ish reasons not represented as <code>true</code> and <code>false</code>
+literals in JavaScript. For interop you therefore need to use the <code>Js.boolean</code>
+and its <code>Js.true_</code> and <code>Js.false_</code> values. There are also convenience functions
+for coercing to and from <code>bool</code>: <code>Js.to_bool</code> and <code>Js.Boolean.to_js_boolean</code>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_stable_ish_submodules"><a class="anchor" href="#_stable_ish_submodules"></a>Stable-ish submodules</h3>
+<div class="paragraph">
+<p><em>These APIs might change, but is considered mostly complete</em></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://bloomberg.github.io/bucklescript/api/Js.Null.html">Js.Null</a></p>
+</li>
+<li>
+<p><a href="https://bloomberg.github.io/bucklescript/api/Js.Undefined.html">Js.Undefined</a></p>
+</li>
+<li>
+<p><a href="https://bloomberg.github.io/bucklescript/api/Js.Null_undefined.html">Js.Null_undefined</a></p>
+</li>
+<li>
+<p><a href="https://bloomberg.github.io/bucklescript/api/Js.Array.html">Js.Array</a></p>
+</li>
+<li>
+<p><a href="https://bloomberg.github.io/bucklescript/api/Js.Date.html">Js.Date</a></p>
+</li>
+<li>
+<p><a href="https://bloomberg.github.io/bucklescript/api/Js.Math.html">Js.Math</a></p>
+</li>
+<li>
+<p><a href="https://bloomberg.github.io/bucklescript/api/Js.Re.html">Js.Re</a></p>
+</li>
+<li>
+<p><a href="https://bloomberg.github.io/bucklescript/api/Js.String.html">Js.String</a></p>
+</li>
+<li>
+<p><a href="https://bloomberg.github.io/bucklescript/api/Js.Typed_array.html">Js.Typed_array</a></p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_experimental_incomplete_submodules"><a class="anchor" href="#_experimental_incomplete_submodules"></a>Experimental/incomplete submodules</h3>
+<div class="paragraph">
+<p><em>Expect these APIs to change drastically, <strong>use only if you accept breakage.</strong></em></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://bloomberg.github.io/bucklescript/api/Js.Boolean.html">Js.Boolean</a></p>
+</li>
+<li>
+<p><a href="https://bloomberg.github.io/bucklescript/api/Js.Dict.html">Js.Dict</a></p>
+</li>
+<li>
+<p><a href="https://bloomberg.github.io/bucklescript/api/Js.Obj.html">Js.Obj</a></p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_very_experimental_internal_submodules"><a class="anchor" href="#_very_experimental_internal_submodules"></a>Very experimental/internal submodules</h3>
+<div class="paragraph">
+<p><strong><em>Do not use these APIs unless absolutely necessary, they&#8217;re mostly internal</em></strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://bloomberg.github.io/bucklescript/api/Js_float.html">Js_float</a></p>
+</li>
+<li>
+<p><a href="https://bloomberg.github.io/bucklescript/api/Js_int.html">Js_int</a></p>
+</li>
+<li>
+<p><a href="https://bloomberg.github.io/bucklescript/api/Js_int64.html">Js_int64</a></p>
+</li>
+<li>
+<p><a href="https://bloomberg.github.io/bucklescript/api/Js_json.html">Js.Json</a></p>
+</li>
+<li>
+<p><a href="https://bloomberg.github.io/bucklescript/api/Js_nativeint.html">Js_nativeint</a></p>
+</li>
+<li>
+<p><a href="https://bloomberg.github.io/bucklescript/api/Js_primitive.html">Js_primitive</a></p>
+</li>
+<li>
+<p><a href="https://bloomberg.github.io/bucklescript/api/Js_types.html">Js.Types</a></p>
+</li>
+<li>
+<p><a href="https://bloomberg.github.io/bucklescript/api/Js_unsafe.html">Js_unsafe</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_node_module"><a class="anchor" href="#_node_module"></a>Node module</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><a href="https://bloomberg.github.io/bucklescript/api/Node.html">Node</a></p>
+</div>
+<div class="sect2">
+<h3 id="_submodules"><a class="anchor" href="#_submodules"></a>Submodules</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://bloomberg.github.io/bucklescript/api/Node_buffer.html">Node.Buffer</a></p>
+</li>
+<li>
+<p><a href="https://bloomberg.github.io/bucklescript/api/Node_child_process.html">Node.Child_process</a></p>
+</li>
+<li>
+<p><a href="https://bloomberg.github.io/bucklescript/api/Node_fs.html">Node.Fs</a></p>
+</li>
+<li>
+<p><a href="https://bloomberg.github.io/bucklescript/api/Node_module.html">Node.Module</a></p>
+</li>
+<li>
+<p><a href="https://bloomberg.github.io/bucklescript/api/Node_path.html">Node.Path</a></p>
+</li>
+<li>
+<p><a href="https://bloomberg.github.io/bucklescript/api/Node_process.html">Node.Process</a></p>
+</li>
+</ul>
 </div>
 </div>
 </div>
@@ -5496,6 +5617,64 @@ the compiler you modified.</p>
 <h3 id="_contributing_to_the_documentation"><a class="anchor" href="#_contributing_to_the_documentation"></a>Contributing to the documentation</h3>
 <div class="paragraph">
 <p>You&#8217;ll need <a href="http://asciidoctor.org/">Asciidoctor</a> installed. Modify the section you want in <code>site/docsource/</code>, then run <code>site/docsource/build.sh</code>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_contributing_to_the_api_reference"><a class="anchor" href="#_contributing_to_the_api_reference"></a>Contributing to the API reference</h3>
+<div class="paragraph">
+<p>The API reference is generated from doc comments in the source code. Here&#8217;s a good example: <a href="https://github.com/bloomberg/bucklescript/blob/master/jscomp/others/js_re.mli#L146-L161" class="bare">https://github.com/bloomberg/bucklescript/blob/master/jscomp/others/js_re.mli#L146-L161</a></p>
+</div>
+<div class="paragraph">
+<p>Some tips and guidelines:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The first sentence or line should be a very short summary. This is used in indexes and by tools like merlin.</p>
+</li>
+<li>
+<p>Ideally, every function should have <strong>at least one</strong> <code>@example</code></p>
+</li>
+<li>
+<p>Cross-reference another definition with <code>{! identifier}</code>. But use them sparingly, they&#8217;re a bit verbose (currently, at least).</p>
+</li>
+<li>
+<p>Wrap non-cross-referenced identifiers and other code in <code>[ &#8230;&#8203; ]</code></p>
+</li>
+<li>
+<p>Escape <code>{</code>, <code>}</code>, <code>[</code>, <code>]</code> and <code>@</code> using <code>\</code></p>
+</li>
+<li>
+<p>It&#8217;s possible to use <code>{%html &#8230;&#8203;}</code> to generate custom html, but use this very, very sparingly.</p>
+</li>
+<li>
+<p>A number of "documentation tags" are provided that would be nice to use, but unfortunately they&#8217;re often not supported for `external`s. Which is of course most of the API.</p>
+</li>
+<li>
+<p><code>@param</code> usually doesn&#8217;t work. Use <code>{b &lt;param&gt;} &#8230;&#8203;</code> instead</p>
+</li>
+<li>
+<p><code>@returns</code> usually doesn&#8217;t work. Use <code>{b returns} &#8230;&#8203;</code> instead.</p>
+</li>
+<li>
+<p>Always use <code>@deprecated</code> when applicable.</p>
+</li>
+<li>
+<p>Always use <code>@raise</code> when applicable.</p>
+</li>
+<li>
+<p>Always provide a <code>@see</code> tag pointing to MDN for more information when available.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>See <a href="http://caml.inria.fr/pub/docs/manual-ocaml/ocamldoc.html#sec333">Ocamldoc documentation</a> for a lot more details.</p>
+</div>
+<div class="paragraph">
+<p>To generate the html, run <code>make docs</code> in <code>jscomp/</code>.</p>
+</div>
+<div class="paragraph">
+<p>Html generation uses a custom generator located in <code>odoc_gen/</code> and custom styles located in <code>docs/api_static</code>.</p>
 </div>
 </div>
 </div>

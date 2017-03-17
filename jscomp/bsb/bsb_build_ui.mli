@@ -56,6 +56,6 @@ val get_current_number_of_dev_groups : unit -> int
 val parsing_sources : 
   dir_index -> 
   string -> 
-  Ext_json.t  ->
+  Ext_json_types.t  ->
   t 
   

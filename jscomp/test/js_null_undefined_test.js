@@ -41,8 +41,8 @@ var suites_001 = /* :: */[
         "to_opt - 'a",
         function () {
           return /* Eq */Block.__(0, [
-                    /* Some */[/* () */0],
-                    Js_primitive.null_undefined_to_opt(/* () */0)
+                    /* Some */["foo"],
+                    Js_primitive.null_undefined_to_opt("foo")
                   ]);
         }
       ],
@@ -100,11 +100,11 @@ var suites_001 = /* :: */[
                   /* tuple */[
                     "bind - null",
                     function () {
-                      return /* Eq */Block.__(0, [
-                                /* true */1,
-                                Js_primitive.is_nil_undef(Js_null_undefined.bind(null, function (v) {
-                                          return v;
-                                        }))
+                      return /* StrictEq */Block.__(2, [
+                                null,
+                                Js_null_undefined.bind(null, function (v) {
+                                      return v;
+                                    })
                               ]);
                     }
                   ],
@@ -112,11 +112,11 @@ var suites_001 = /* :: */[
                     /* tuple */[
                       "bind - undefined",
                       function () {
-                        return /* Eq */Block.__(0, [
-                                  /* true */1,
-                                  Js_primitive.is_nil_undef(Js_null_undefined.bind(undefined, function (v) {
-                                            return v;
-                                          }))
+                        return /* StrictEq */Block.__(2, [
+                                  undefined,
+                                  Js_null_undefined.bind(undefined, function (v) {
+                                        return v;
+                                      })
                                 ]);
                       }
                     ],
@@ -124,11 +124,11 @@ var suites_001 = /* :: */[
                       /* tuple */[
                         "bind - empty",
                         function () {
-                          return /* Eq */Block.__(0, [
-                                    /* true */1,
-                                    Js_primitive.is_nil_undef(Js_null_undefined.bind(undefined, function (v) {
-                                              return v;
-                                            }))
+                          return /* StrictEq */Block.__(2, [
+                                    undefined,
+                                    Js_null_undefined.bind(undefined, function (v) {
+                                          return v;
+                                        })
                                   ]);
                         }
                       ],
@@ -137,10 +137,10 @@ var suites_001 = /* :: */[
                           "bind - 'a",
                           function () {
                             return /* Eq */Block.__(0, [
-                                      /* Some */[4],
-                                      Js_primitive.null_undefined_to_opt(Js_null_undefined.bind(2, function (n) {
-                                                return (n << 1);
-                                              }))
+                                      4,
+                                      Js_null_undefined.bind(2, function (n) {
+                                            return (n << 1);
+                                          })
                                     ]);
                           }
                         ],
@@ -228,21 +228,21 @@ var suites_001 = /* :: */[
                                       /* tuple */[
                                         "null <> undefined",
                                         function () {
-                                          return /* Ok */Block.__(2, [Caml_obj.caml_notequal(null, undefined)]);
+                                          return /* Ok */Block.__(4, [Caml_obj.caml_notequal(null, undefined)]);
                                         }
                                       ],
                                       /* :: */[
                                         /* tuple */[
                                           "null <> empty",
                                           function () {
-                                            return /* Ok */Block.__(2, [Caml_obj.caml_notequal(null, undefined)]);
+                                            return /* Ok */Block.__(4, [Caml_obj.caml_notequal(null, undefined)]);
                                           }
                                         ],
                                         /* :: */[
                                           /* tuple */[
                                             "undefined = empty",
                                             function () {
-                                              return /* Ok */Block.__(2, [Caml_obj.caml_equal(undefined, undefined)]);
+                                              return /* Ok */Block.__(4, [Caml_obj.caml_equal(undefined, undefined)]);
                                             }
                                           ],
                                           /* [] */0

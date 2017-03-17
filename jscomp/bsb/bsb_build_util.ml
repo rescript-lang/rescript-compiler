@@ -112,9 +112,9 @@ let rec mkp dir =
 
 
 let get_list_string_acc s acc = 
-  Ext_array.to_list_map_acc  (fun (x : Ext_json.t) ->
+  Ext_array.to_list_map_acc  (fun (x : Ext_json_types.t) ->
       match x with 
-      | `Str x -> Some x.str
+      | Str x -> Some x.str
       | _ -> None
     ) s  acc 
 
@@ -145,16 +145,16 @@ let (|?)  m (key, cb) =
 *)
 let rec walk_all_deps top dir cb =
   let bsconfig_json =  (dir // Literals.bsconfig_json) in
-  match Ext_json.parse_json_from_file bsconfig_json with
-  | `Obj map ->
+  match Ext_json_parse.parse_json_from_file bsconfig_json with
+  | Obj {map} ->
     map
     |?
     (Bsb_build_schemas.bs_dependencies,
-      `Arr (fun (new_packages : Ext_json.t array) ->
+      `Arr (fun (new_packages : Ext_json_types.t array) ->
          new_packages
-         |> Array.iter (fun (js : Ext_json.t) ->
+         |> Array.iter (fun (js : Ext_json_types.t) ->
           begin match js with
-          | `Str {Ext_json.str = new_package} ->
+          | Str {str = new_package} ->
             begin match Bs_pkg.resolve_bs_package ~cwd:dir new_package with
             | None -> 
               Bsb_exception.error (Bsb_exception.Package_not_found (new_package, Some bsconfig_json))

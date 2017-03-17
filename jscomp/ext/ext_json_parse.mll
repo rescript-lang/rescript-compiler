@@ -42,8 +42,6 @@ let report_error ppf = function
   | Unterminated_comment 
     -> fprintf ppf "Unterminated_comment"
          
-let print_position fmt (pos : Lexing.position) = 
-  Format.fprintf fmt "(%d,%d)" pos.pos_lnum (pos.pos_cnum - pos.pos_bol)
 
 
 let () = 
@@ -52,11 +50,10 @@ let () =
      match x with 
      | Error (e , a, b) -> 
        Some (Format.asprintf "@[%a:@ %a@ -@ %a)@]" report_error e 
-               print_position a print_position b)
+               Ext_position.print a Ext_position.print b)
      | _ -> None
     )
-  
-type path = string list 
+
 
 
 
@@ -233,28 +230,8 @@ and scan_string buf start = parse
 
 {
 
-type js_array =
-  { content : t array ; 
-    loc_start : Lexing.position ; 
-    loc_end : Lexing.position ; 
-  }
-and js_str = 
-  { str : string ; loc : Lexing.position}
-and t = 
-  [  
-    `True
-  | `False
-  | `Null
-  | `Flo of string 
-  | `Str of js_str
-  | `Arr  of js_array
-  | `Obj of t String_map.t 
-   ]
 
-type status = 
-  | No_path
-  | Found  of t 
-  | Wrong_type of path 
+
 
 
 
@@ -270,52 +247,65 @@ let rec parse_json lexbuf =
       x 
   in
   let push e = look_ahead := Some e in 
-  let rec json (lexbuf : Lexing.lexbuf) : t = 
+  let rec json (lexbuf : Lexing.lexbuf) : Ext_json_types.t = 
     match token () with 
-    | True -> `True
-    | False -> `False
-    | Null -> `Null
-    | Number s ->  `Flo s 
-    | String s -> `Str { str = s; loc =    lexbuf.lex_start_p}
-    | Lbracket -> parse_array false lexbuf.lex_start_p lexbuf.lex_curr_p [] lexbuf
-    | Lbrace -> parse_map false String_map.empty lexbuf
+    | True -> True lexbuf.lex_start_p
+    | False -> False lexbuf.lex_start_p
+    | Null -> Null lexbuf.lex_start_p
+    | Number s ->  Flo {str = s; loc = lexbuf.lex_start_p}  
+    | String s -> Str { str = s; loc =    lexbuf.lex_start_p}
+    | Lbracket -> parse_array  lexbuf.lex_start_p lexbuf.lex_curr_p [] lexbuf
+    | Lbrace -> parse_map lexbuf.lex_start_p String_map.empty lexbuf
     |  _ -> error lexbuf Unexpected_token
-  and parse_array  trailing_comma loc_start loc_finish acc lexbuf : t =
+(** Note if we remove [trailing_comma] support 
+    we should report errors (actually more work), for example 
+    {[
     match token () with 
     | Rbracket ->
-      (* if trailing_comma then  *)
-      (*   error lexbuf Trailing_comma_in_array *)
-      (* else  *)
-        `Arr {loc_start ; content = Ext_array.reverse_of_list acc ; 
+      if trailing_comma then
+        error lexbuf Trailing_comma_in_array
+      else
+    ]} 
+    {[
+    match token () with 
+    | Rbrace -> 
+      if trailing_comma then
+        error lexbuf Trailing_comma_in_obj
+      else
+
+    ]}   
+ *)
+  and parse_array   loc_start loc_finish acc lexbuf 
+    : Ext_json_types.t =
+    match token () with 
+    | Rbracket ->
+        Arr {loc_start ; content = Ext_array.reverse_of_list acc ; 
               loc_end = lexbuf.lex_curr_p }
     | x -> 
       push x ;
       let new_one = json lexbuf in 
       begin match token ()  with 
       | Comma -> 
-          parse_array true loc_start loc_finish (new_one :: acc) lexbuf 
+          parse_array  loc_start loc_finish (new_one :: acc) lexbuf 
       | Rbracket 
-        -> `Arr {content = (Ext_array.reverse_of_list (new_one::acc));
+        -> Arr {content = (Ext_array.reverse_of_list (new_one::acc));
                      loc_start ; 
                      loc_end = lexbuf.lex_curr_p }
       | _ -> 
         error lexbuf Expect_comma_or_rbracket
       end
-  and parse_map trailing_comma acc lexbuf : t = 
+  and parse_map loc_start  acc lexbuf : Ext_json_types.t = 
     match token () with 
     | Rbrace -> 
-      (* if trailing_comma then  *)
-      (*   error lexbuf Trailing_comma_in_obj *)
-      (* else  *)
-        `Obj acc 
+        Obj { map = acc ; loc = loc_start}
     | String key -> 
       begin match token () with 
       | Colon ->
         let value = json lexbuf in
         begin match token () with 
-        | Rbrace -> `Obj (String_map.add key value acc )
+        | Rbrace -> Obj {map = String_map.add key value acc ; loc = loc_start}
         | Comma -> 
-          parse_map true  (String_map.add key value acc) lexbuf 
+          parse_map loc_start  (String_map.add key value acc) lexbuf 
         | _ -> error lexbuf Expect_comma_or_rbrace
         end
       | _ -> error lexbuf Expect_colon
@@ -343,54 +333,5 @@ let parse_json_from_file s =
 
 
 
-type callback = 
-  [
-    `Str of (string -> unit) 
-  | `Str_loc of (string -> Lexing.position -> unit)
-  | `Flo of (string -> unit )
-  | `Bool of (bool -> unit )
-  | `Obj of (t String_map.t -> unit)
-  | `Arr of (t array -> unit )
-  | `Arr_loc of (t array -> Lexing.position -> Lexing.position -> unit)
-  | `Null of (unit -> unit)
-  | `Not_found of (unit -> unit)
-  | `Id of (t -> unit )
-  ]
 
-let test   ?(fail=(fun () -> ())) key 
-    (cb : callback) m 
-     =
-     begin match String_map.find_exn key m, cb with 
-       | exception Not_found  ->
-        begin match cb with `Not_found f ->  f ()
-        | _ -> fail ()
-        end      
-       | `True, `Bool cb -> cb true
-       | `False, `Bool cb  -> cb false 
-       | `Flo s , `Flo cb  -> cb s 
-       | `Obj b , `Obj cb -> cb b 
-       | `Arr {content}, `Arr cb -> cb content 
-       | `Arr {content; loc_start ; loc_end}, `Arr_loc cb -> 
-         cb content  loc_start loc_end 
-       | `Null, `Null cb  -> cb ()
-       | `Str {str = s }, `Str cb  -> cb s 
-       | `Str {str = s ; loc }, `Str_loc cb -> cb s loc 
-       |  any  , `Id  cb -> cb any
-       | _, _ -> fail () 
-     end;
-     m
-let query path (json : t ) =
-  let rec aux acc paths json =
-    match path with 
-    | [] ->  Found json
-    | p :: rest -> 
-      begin match json with 
-        | `Obj m -> 
-          begin match String_map.find_exn p m with 
-            | m' -> aux (p::acc) rest m'
-            | exception Not_found ->  No_path
-          end
-        | _ -> Wrong_type acc 
-      end
-  in aux [] path json
 }

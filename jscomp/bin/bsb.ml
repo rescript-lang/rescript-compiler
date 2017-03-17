@@ -2811,362 +2811,6 @@ let header =
 let package_name = "bs-platform"   
     
 end
-module Bsb_exception : sig 
-#1 "bsb_exception.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-type error = 
-    | Package_not_found of string * string option (* json file *)
-
-
-val error : error -> 'a
-end = struct
-#1 "bsb_exception.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-type error = 
-    | Package_not_found of string * string option (* json file *)
-
-
-exception Error of error 
-
-let error err = raise (Error err)
-
-let to_string (x : error) = 
-    match x with     
-    | Package_not_found (name,json_opt) -> 
-        let in_json = match json_opt with None -> Ext_string.empty | Some x -> " in " ^ x in 
-        if Ext_string.equal name Bs_version.package_name then 
-            Printf.sprintf "Package bs-platform is not found %s , it is the basic package required, if you have it installed globally\n\
-            Please run 'npm link bs-platform' to make it available " in_json
-        else 
-        Printf.sprintf 
-            "BuckleScript package %s not found or built %s, if it is not built\n\
-            Please run 'bsb -make-world', otherwise please install it " name in_json
-
-let () = 
-    Printexc.register_printer (fun x ->
-        match x with 
-        | Error x -> 
-            Some (to_string x )
-        | _ -> None
-     )
-
-
-
-
-
-end
-module Ext_array : sig 
-#1 "ext_array.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-(** Some utilities for {!Array} operations *)
-val reverse_range : 'a array -> int -> int -> unit
-val reverse_in_place : 'a array -> unit
-val reverse : 'a array -> 'a array 
-val reverse_of_list : 'a list -> 'a array
-
-val filter : ('a -> bool) -> 'a array -> 'a array
-
-val filter_map : ('a -> 'b option) -> 'a array -> 'b array
-
-val range : int -> int -> int array
-
-val map2i : (int -> 'a -> 'b -> 'c ) -> 'a array -> 'b array -> 'c array
-
-val to_list_map : ('a -> 'b option) -> 'a array -> 'b list 
-
-val to_list_map_acc : 
-  ('a -> 'b option) -> 
-  'a array -> 
-  'b list -> 
-  'b list 
-
-val of_list_map : ('a -> 'b) -> 'a list -> 'b array 
-
-val rfind_with_index : 'a array -> ('a -> 'b -> bool) -> 'b -> int
-
-
-type 'a split = [ `No_split | `Split of 'a array * 'a array ]
-
-val rfind_and_split : 
-  'a array ->
-  ('a -> 'b -> bool) ->
-  'b -> 'a split
-
-val find_and_split : 
-  'a array ->
-  ('a -> 'b -> bool) ->
-  'b -> 'a split
-
-val exists : ('a -> bool) -> 'a array -> bool 
-
-val is_empty : 'a array -> bool 
-end = struct
-#1 "ext_array.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-let reverse_range a i len =
-  if len = 0 then ()
-  else
-    for k = 0 to (len-1)/2 do
-      let t = Array.unsafe_get a (i+k) in
-      Array.unsafe_set a (i+k) ( Array.unsafe_get a (i+len-1-k));
-      Array.unsafe_set a (i+len-1-k) t;
-    done
-
-
-let reverse_in_place a =
-  reverse_range a 0 (Array.length a)
-
-let reverse a =
-  let b_len = Array.length a in
-  if b_len = 0 then [||] else  
-  let b = Array.copy a in  
-  for i = 0 to  b_len - 1 do
-      Array.unsafe_set b i (Array.unsafe_get a (b_len - 1 -i )) 
-  done;
-  b  
-
-let reverse_of_list =  function
-  | [] -> [||]
-  | hd::tl as l ->
-    let len = List.length l in
-    let a = Array.make len hd in
-    let rec fill i = function
-      | [] -> a
-      | hd::tl -> Array.unsafe_set a (len - i - 2) hd; fill (i+1) tl in
-    fill 0 tl
-
-let filter f a =
-  let arr_len = Array.length a in
-  let rec aux acc i =
-    if i = arr_len 
-    then reverse_of_list acc 
-    else
-      let v = Array.unsafe_get a i in
-      if f  v then 
-        aux (v::acc) (i+1)
-      else aux acc (i + 1) 
-  in aux [] 0
-
-
-let filter_map (f : _ -> _ option) a =
-  let arr_len = Array.length a in
-  let rec aux acc i =
-    if i = arr_len 
-    then reverse_of_list acc 
-    else
-      let v = Array.unsafe_get a i in
-      match f  v with 
-      | Some v -> 
-        aux (v::acc) (i+1)
-      | None -> 
-        aux acc (i + 1) 
-  in aux [] 0
-
-let range from to_ =
-  if from > to_ then invalid_arg "Ext_array.range"  
-  else Array.init (to_ - from + 1) (fun i -> i + from)
-
-let map2i f a b = 
-  let len = Array.length a in 
-  if len <> Array.length b then 
-    invalid_arg "Ext_array.map2i"  
-  else
-    Array.mapi (fun i a -> f i  a ( Array.unsafe_get b i )) a 
-
-
- let rec tolist_aux a f  i res =
-    if i < 0 then res else
-      let v = Array.unsafe_get a i in
-      tolist_aux a f  (i - 1)
-        (match f v with
-         | Some v -> v :: res
-         | None -> res) 
-
-let to_list_map f a = 
-  tolist_aux a f (Array.length a - 1) []
-
-let to_list_map_acc f a acc = 
-  tolist_aux a f (Array.length a - 1) acc
-
-
-(* TODO: What would happen if [f] raise, memory leak? *)
-let of_list_map f a = 
-  match a with 
-  | [] -> [||]
-  | h::tl -> 
-    let hd = f h in 
-    let len = List.length tl + 1 in 
-    let arr = Array.make len hd  in
-    let rec fill i = function
-    | [] -> arr 
-    | hd :: tl -> 
-      Array.unsafe_set arr i (f hd); 
-      fill (i + 1) tl in 
-    fill 1 tl
-  
-(**
-{[
-# rfind_with_index [|1;2;3|] (=) 2;;
-- : int = 1
-# rfind_with_index [|1;2;3|] (=) 1;;
-- : int = 0
-# rfind_with_index [|1;2;3|] (=) 3;;
-- : int = 2
-# rfind_with_index [|1;2;3|] (=) 4;;
-- : int = -1
-]}
-*)
-let rfind_with_index arr cmp v = 
-  let len = Array.length arr in 
-  let rec aux i = 
-    if i < 0 then i
-    else if  cmp (Array.unsafe_get arr i) v then i
-    else aux (i - 1) in 
-  aux (len - 1)
-
-type 'a split = [ `No_split | `Split of 'a array * 'a array ]
-let rfind_and_split arr cmp v : _ split = 
-  let i = rfind_with_index arr cmp v in 
-  if  i < 0 then 
-    `No_split 
-  else 
-    `Split (Array.sub arr 0 i , Array.sub arr  (i + 1 ) (Array.length arr - i - 1 ))
-
-
-let find_with_index arr cmp v = 
-  let len  = Array.length arr in 
-  let rec aux i len = 
-    if i >= len then -1 
-    else if cmp (Array.unsafe_get arr i ) v then i 
-    else aux (i + 1) len in 
-  aux 0 len
-
-let find_and_split arr cmp v : _ split = 
-  let i = find_with_index arr cmp v in 
-  if i < 0 then 
-    `No_split
-  else
-    `Split (Array.sub arr 0 i, Array.sub arr (i + 1 ) (Array.length arr - i - 1))        
-
-(** TODO: available since 4.03, use {!Array.exists} *)
-
-let exists p a =
-  let n = Array.length a in
-  let rec loop i =
-    if i = n then false
-    else if p (Array.unsafe_get a i) then true
-    else loop (succ i) in
-  loop 0
-
-
-let is_empty arr =
-  Array.length arr = 0
-end
 module Map_gen
 = struct
 #1 "map_gen.ml"
@@ -3741,6 +3385,138 @@ let of_array xs =
   Array.fold_left (fun acc (k,v) -> add k v acc) empty xs
 
 end
+module Ext_json_types
+= struct
+#1 "ext_json_types.ml"
+(* Copyright (C) 2015-2017 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type loc = Lexing.position
+type json_str = 
+  { str : string ; loc : loc}
+
+type json_flo  =
+  { str : string ; loc : loc}
+type json_array =
+  { content : t array ; 
+    loc_start : loc ; 
+    loc_end : loc ; 
+  }
+
+and json_map = 
+  { map : t String_map.t ; loc :  loc }
+and t = 
+  | True of loc 
+  | False of loc 
+  | Null of loc 
+  | Flo of json_flo
+  | Str of json_str
+  | Arr  of json_array
+  | Obj of json_map
+   
+
+end
+module Ext_position : sig 
+#1 "ext_position.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type t = Lexing.position = {
+    pos_fname : string ;
+    pos_lnum : int ;
+    pos_bol : int ;
+    pos_cnum : int
+}
+
+
+val print : Format.formatter -> t -> unit 
+end = struct
+#1 "ext_position.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type t = Lexing.position = {
+    pos_fname : string ;
+    pos_lnum : int ;
+    pos_bol : int ;
+    pos_cnum : int
+}
+
+
+let print fmt (pos : t) = 
+  Format.fprintf fmt "(%d,%d)" pos.pos_lnum (pos.pos_cnum - pos.pos_bol)
+
+
+
+
+
+
+end
 module Ext_json : sig 
 #1 "ext_json.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -3767,33 +3543,11 @@ module Ext_json : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type js_array =  
-  { content : t array ; 
-    loc_start : Lexing.position ; 
-    loc_end : Lexing.position ; 
-  }
-and js_str = 
-  { str : string ; loc : Lexing.position}
-and t = 
-  [
-    `True
-  | `False
-  | `Null
-  | `Flo of string 
-  | `Str of js_str
-  | `Arr of js_array
-  | `Obj of t String_map.t 
-  ]
-
-val parse_json : Lexing.lexbuf -> t 
-val parse_json_from_string : string -> t 
-val parse_json_from_chan : in_channel -> t 
-val parse_json_from_file  : string -> t
 
 type path = string list 
 type status = 
   | No_path
-  | Found of t 
+  | Found of Ext_json_types.t 
   | Wrong_type of path 
 
 
@@ -3803,23 +3557,506 @@ type callback =
   | `Str_loc of (string -> Lexing.position -> unit)
   | `Flo of (string -> unit )
   | `Bool of (bool -> unit )
-  | `Obj of (t String_map.t -> unit)
-  | `Arr of (t array -> unit )
-  | `Arr_loc of (t array -> Lexing.position -> Lexing.position -> unit)
+  | `Obj of (Ext_json_types.t String_map.t -> unit)
+  | `Arr of (Ext_json_types.t array -> unit )
+  | `Arr_loc of 
+    (Ext_json_types.t array -> Lexing.position -> Lexing.position -> unit)
   | `Null of (unit -> unit)
   | `Not_found of (unit -> unit)
-  | `Id of (t -> unit )
+  | `Id of (Ext_json_types.t -> unit )
   ]
 
 val test:
   ?fail:(unit -> unit) ->
-  string -> callback -> t String_map.t -> t String_map.t
+  string -> callback 
+  -> Ext_json_types.t String_map.t
+   -> Ext_json_types.t String_map.t
 
-val query : path -> t ->  status
+val query : path -> Ext_json_types.t ->  status
+
+val loc_of : Ext_json_types.t -> Ext_position.t
 
 end = struct
 #1 "ext_json.ml"
-# 1 "ext/ext_json.mll"
+
+
+type callback = 
+  [
+    `Str of (string -> unit) 
+  | `Str_loc of (string -> Lexing.position -> unit)
+  | `Flo of (string -> unit )
+  | `Bool of (bool -> unit )
+  | `Obj of (Ext_json_types.t String_map.t -> unit)
+  | `Arr of (Ext_json_types.t array -> unit )
+  | `Arr_loc of (Ext_json_types.t array -> Lexing.position -> Lexing.position -> unit)
+  | `Null of (unit -> unit)
+  | `Not_found of (unit -> unit)
+  | `Id of (Ext_json_types.t -> unit )
+  ]
+
+  
+type path = string list 
+
+type status = 
+  | No_path
+  | Found  of Ext_json_types.t 
+  | Wrong_type of path 
+
+let test   ?(fail=(fun () -> ())) key 
+    (cb : callback) (m  : Ext_json_types.t String_map.t)
+     =
+     begin match String_map.find_exn key m, cb with 
+       | exception Not_found  ->
+        begin match cb with `Not_found f ->  f ()
+        | _ -> fail ()
+        end      
+       | True _, `Bool cb -> cb true
+       | False _, `Bool cb  -> cb false 
+       | Flo {str = s} , `Flo cb  -> cb s 
+       | Obj {map = b} , `Obj cb -> cb b 
+       | Arr {content}, `Arr cb -> cb content 
+       | Arr {content; loc_start ; loc_end}, `Arr_loc cb -> 
+         cb content  loc_start loc_end 
+       | Null _, `Null cb  -> cb ()
+       | Str {str = s }, `Str cb  -> cb s 
+       | Str {str = s ; loc }, `Str_loc cb -> cb s loc 
+       |  any  , `Id  cb -> cb any
+       | _, _ -> fail () 
+     end;
+     m
+let query path (json : Ext_json_types.t ) =
+  let rec aux acc paths json =
+    match path with 
+    | [] ->  Found json
+    | p :: rest -> 
+      begin match json with 
+        | Obj {map = m} -> 
+          begin match String_map.find_exn p m with 
+            | m'  -> aux (p::acc) rest m'
+            | exception Not_found ->  No_path
+          end
+        | _ -> Wrong_type acc 
+      end
+  in aux [] path json
+
+
+let loc_of (x : Ext_json_types.t) =
+  match x with
+  | True p | False p | Null p -> p 
+  | Str p -> p.loc 
+  | Arr p -> p.loc_start
+  | Obj p -> p.loc
+  | Flo p -> p.loc
+ 
+
+end
+module Bsb_exception : sig 
+#1 "bsb_exception.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+type error = 
+    | Package_not_found of string * string option (* json file *)
+
+
+val error : error -> 'a
+
+val failf : ?loc:Ext_position.t ->  ('a, unit, string, 'b) format4 -> 'a
+
+val failwith_config : Ext_json_types.t -> ('a, unit, string, 'b) format4 -> 'a
+
+end = struct
+#1 "bsb_exception.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+type error = 
+    | Package_not_found of string * string option (* json file *)
+
+
+exception Error of error 
+
+let error err = raise (Error err)
+
+let to_string (x : error) = 
+    match x with     
+    | Package_not_found (name,json_opt) -> 
+        let in_json = match json_opt with None -> Ext_string.empty | Some x -> " in " ^ x in 
+        if Ext_string.equal name Bs_version.package_name then 
+            Printf.sprintf "Package bs-platform is not found %s , it is the basic package required, if you have it installed globally\n\
+            Please run 'npm link bs-platform' to make it available " in_json
+        else 
+        Printf.sprintf 
+            "BuckleScript package %s not found or built %s, if it is not built\n\
+            Please run 'bsb -make-world', otherwise please install it " name in_json
+
+let () = 
+    Printexc.register_printer (fun x ->
+        match x with 
+        | Error x -> 
+            Some (to_string x )
+        | _ -> None
+     )
+
+
+
+let failf ?loc fmt =
+    let prefix = 
+        match loc with 
+        | None -> "Error <bsconfig.json> "
+        | Some x  -> 
+            Format.asprintf "Error <bsconfig.json: %a> " Ext_position.print x  in 
+    Format.ksprintf (fun s -> failwith (prefix ^ s)) fmt 
+
+let failwith_config config fmt =
+  let loc = Ext_json.loc_of config in
+  failf ~loc fmt 
+
+end
+module Ext_array : sig 
+#1 "ext_array.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+(** Some utilities for {!Array} operations *)
+val reverse_range : 'a array -> int -> int -> unit
+val reverse_in_place : 'a array -> unit
+val reverse : 'a array -> 'a array 
+val reverse_of_list : 'a list -> 'a array
+
+val filter : ('a -> bool) -> 'a array -> 'a array
+
+val filter_map : ('a -> 'b option) -> 'a array -> 'b array
+
+val range : int -> int -> int array
+
+val map2i : (int -> 'a -> 'b -> 'c ) -> 'a array -> 'b array -> 'c array
+
+val to_list_map : ('a -> 'b option) -> 'a array -> 'b list 
+
+val to_list_map_acc : 
+  ('a -> 'b option) -> 
+  'a array -> 
+  'b list -> 
+  'b list 
+
+val of_list_map : ('a -> 'b) -> 'a list -> 'b array 
+
+val rfind_with_index : 'a array -> ('a -> 'b -> bool) -> 'b -> int
+
+
+type 'a split = [ `No_split | `Split of 'a array * 'a array ]
+
+val rfind_and_split : 
+  'a array ->
+  ('a -> 'b -> bool) ->
+  'b -> 'a split
+
+val find_and_split : 
+  'a array ->
+  ('a -> 'b -> bool) ->
+  'b -> 'a split
+
+val exists : ('a -> bool) -> 'a array -> bool 
+
+val is_empty : 'a array -> bool 
+end = struct
+#1 "ext_array.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+let reverse_range a i len =
+  if len = 0 then ()
+  else
+    for k = 0 to (len-1)/2 do
+      let t = Array.unsafe_get a (i+k) in
+      Array.unsafe_set a (i+k) ( Array.unsafe_get a (i+len-1-k));
+      Array.unsafe_set a (i+len-1-k) t;
+    done
+
+
+let reverse_in_place a =
+  reverse_range a 0 (Array.length a)
+
+let reverse a =
+  let b_len = Array.length a in
+  if b_len = 0 then [||] else  
+  let b = Array.copy a in  
+  for i = 0 to  b_len - 1 do
+      Array.unsafe_set b i (Array.unsafe_get a (b_len - 1 -i )) 
+  done;
+  b  
+
+let reverse_of_list =  function
+  | [] -> [||]
+  | hd::tl as l ->
+    let len = List.length l in
+    let a = Array.make len hd in
+    let rec fill i = function
+      | [] -> a
+      | hd::tl -> Array.unsafe_set a (len - i - 2) hd; fill (i+1) tl in
+    fill 0 tl
+
+let filter f a =
+  let arr_len = Array.length a in
+  let rec aux acc i =
+    if i = arr_len 
+    then reverse_of_list acc 
+    else
+      let v = Array.unsafe_get a i in
+      if f  v then 
+        aux (v::acc) (i+1)
+      else aux acc (i + 1) 
+  in aux [] 0
+
+
+let filter_map (f : _ -> _ option) a =
+  let arr_len = Array.length a in
+  let rec aux acc i =
+    if i = arr_len 
+    then reverse_of_list acc 
+    else
+      let v = Array.unsafe_get a i in
+      match f  v with 
+      | Some v -> 
+        aux (v::acc) (i+1)
+      | None -> 
+        aux acc (i + 1) 
+  in aux [] 0
+
+let range from to_ =
+  if from > to_ then invalid_arg "Ext_array.range"  
+  else Array.init (to_ - from + 1) (fun i -> i + from)
+
+let map2i f a b = 
+  let len = Array.length a in 
+  if len <> Array.length b then 
+    invalid_arg "Ext_array.map2i"  
+  else
+    Array.mapi (fun i a -> f i  a ( Array.unsafe_get b i )) a 
+
+
+ let rec tolist_aux a f  i res =
+    if i < 0 then res else
+      let v = Array.unsafe_get a i in
+      tolist_aux a f  (i - 1)
+        (match f v with
+         | Some v -> v :: res
+         | None -> res) 
+
+let to_list_map f a = 
+  tolist_aux a f (Array.length a - 1) []
+
+let to_list_map_acc f a acc = 
+  tolist_aux a f (Array.length a - 1) acc
+
+
+(* TODO: What would happen if [f] raise, memory leak? *)
+let of_list_map f a = 
+  match a with 
+  | [] -> [||]
+  | h::tl -> 
+    let hd = f h in 
+    let len = List.length tl + 1 in 
+    let arr = Array.make len hd  in
+    let rec fill i = function
+    | [] -> arr 
+    | hd :: tl -> 
+      Array.unsafe_set arr i (f hd); 
+      fill (i + 1) tl in 
+    fill 1 tl
+  
+(**
+{[
+# rfind_with_index [|1;2;3|] (=) 2;;
+- : int = 1
+# rfind_with_index [|1;2;3|] (=) 1;;
+- : int = 0
+# rfind_with_index [|1;2;3|] (=) 3;;
+- : int = 2
+# rfind_with_index [|1;2;3|] (=) 4;;
+- : int = -1
+]}
+*)
+let rfind_with_index arr cmp v = 
+  let len = Array.length arr in 
+  let rec aux i = 
+    if i < 0 then i
+    else if  cmp (Array.unsafe_get arr i) v then i
+    else aux (i - 1) in 
+  aux (len - 1)
+
+type 'a split = [ `No_split | `Split of 'a array * 'a array ]
+let rfind_and_split arr cmp v : _ split = 
+  let i = rfind_with_index arr cmp v in 
+  if  i < 0 then 
+    `No_split 
+  else 
+    `Split (Array.sub arr 0 i , Array.sub arr  (i + 1 ) (Array.length arr - i - 1 ))
+
+
+let find_with_index arr cmp v = 
+  let len  = Array.length arr in 
+  let rec aux i len = 
+    if i >= len then -1 
+    else if cmp (Array.unsafe_get arr i ) v then i 
+    else aux (i + 1) len in 
+  aux 0 len
+
+let find_and_split arr cmp v : _ split = 
+  let i = find_with_index arr cmp v in 
+  if i < 0 then 
+    `No_split
+  else
+    `Split (Array.sub arr 0 i, Array.sub arr (i + 1 ) (Array.length arr - i - 1))        
+
+(** TODO: available since 4.03, use {!Array.exists} *)
+
+let exists p a =
+  let n = Array.length a in
+  let rec loop i =
+    if i = n then false
+    else if p (Array.unsafe_get a i) then true
+    else loop (succ i) in
+  loop 0
+
+
+let is_empty arr =
+  Array.length arr = 0
+end
+module Ext_json_parse : sig 
+#1 "ext_json_parse.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+val parse_json : Lexing.lexbuf -> Ext_json_types.t 
+val parse_json_from_string : string -> Ext_json_types.t 
+val parse_json_from_chan : in_channel -> Ext_json_types.t 
+val parse_json_from_file  : string -> Ext_json_types.t
+
+
+end = struct
+#1 "ext_json_parse.ml"
+# 1 "ext/ext_json_parse.mll"
  
 type error =
   | Illegal_character of char
@@ -3864,8 +4101,6 @@ let report_error ppf = function
   | Unterminated_comment 
     -> fprintf ppf "Unterminated_comment"
          
-let print_position fmt (pos : Lexing.position) = 
-  Format.fprintf fmt "(%d,%d)" pos.pos_lnum (pos.pos_cnum - pos.pos_bol)
 
 
 let () = 
@@ -3874,11 +4109,10 @@ let () =
      match x with 
      | Error (e , a, b) -> 
        Some (Format.asprintf "@[%a:@ %a@ -@ %a)@]" report_error e 
-               print_position a print_position b)
+               Ext_position.print a Ext_position.print b)
      | _ -> None
     )
-  
-type path = string list 
+
 
 
 
@@ -3936,7 +4170,7 @@ let hex_code c1 c2 =
 
 let lf = '\010'
 
-# 119 "ext/ext_json.ml"
+# 116 "ext/ext_json_parse.ml"
 let __ocaml_lex_tables = {
   Lexing.lex_base = 
    "\000\000\239\255\240\255\241\255\000\000\025\000\011\000\244\255\
@@ -4124,80 +4358,80 @@ let rec lex_json buf lexbuf =
 and __ocaml_lex_lex_json_rec buf lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 137 "ext/ext_json.mll"
+# 134 "ext/ext_json_parse.mll"
           ( lex_json buf lexbuf)
-# 309 "ext/ext_json.ml"
+# 306 "ext/ext_json_parse.ml"
 
   | 1 ->
-# 138 "ext/ext_json.mll"
+# 135 "ext/ext_json_parse.mll"
                    ( 
     update_loc lexbuf 0;
     lex_json buf  lexbuf
   )
-# 317 "ext/ext_json.ml"
+# 314 "ext/ext_json_parse.ml"
 
   | 2 ->
-# 142 "ext/ext_json.mll"
+# 139 "ext/ext_json_parse.mll"
                 ( comment buf lexbuf)
-# 322 "ext/ext_json.ml"
+# 319 "ext/ext_json_parse.ml"
 
   | 3 ->
-# 143 "ext/ext_json.mll"
+# 140 "ext/ext_json_parse.mll"
          ( True)
-# 327 "ext/ext_json.ml"
+# 324 "ext/ext_json_parse.ml"
 
   | 4 ->
-# 144 "ext/ext_json.mll"
+# 141 "ext/ext_json_parse.mll"
           (False)
-# 332 "ext/ext_json.ml"
+# 329 "ext/ext_json_parse.ml"
 
   | 5 ->
-# 145 "ext/ext_json.mll"
+# 142 "ext/ext_json_parse.mll"
          (Null)
-# 337 "ext/ext_json.ml"
+# 334 "ext/ext_json_parse.ml"
 
   | 6 ->
-# 146 "ext/ext_json.mll"
+# 143 "ext/ext_json_parse.mll"
        (Lbracket)
-# 342 "ext/ext_json.ml"
+# 339 "ext/ext_json_parse.ml"
 
   | 7 ->
-# 147 "ext/ext_json.mll"
+# 144 "ext/ext_json_parse.mll"
        (Rbracket)
-# 347 "ext/ext_json.ml"
+# 344 "ext/ext_json_parse.ml"
 
   | 8 ->
-# 148 "ext/ext_json.mll"
+# 145 "ext/ext_json_parse.mll"
        (Lbrace)
-# 352 "ext/ext_json.ml"
+# 349 "ext/ext_json_parse.ml"
 
   | 9 ->
-# 149 "ext/ext_json.mll"
+# 146 "ext/ext_json_parse.mll"
        (Rbrace)
-# 357 "ext/ext_json.ml"
+# 354 "ext/ext_json_parse.ml"
 
   | 10 ->
-# 150 "ext/ext_json.mll"
+# 147 "ext/ext_json_parse.mll"
        (Comma)
-# 362 "ext/ext_json.ml"
+# 359 "ext/ext_json_parse.ml"
 
   | 11 ->
-# 151 "ext/ext_json.mll"
+# 148 "ext/ext_json_parse.mll"
         (Colon)
-# 367 "ext/ext_json.ml"
+# 364 "ext/ext_json_parse.ml"
 
   | 12 ->
-# 152 "ext/ext_json.mll"
+# 149 "ext/ext_json_parse.mll"
                       (lex_json buf lexbuf)
-# 372 "ext/ext_json.ml"
+# 369 "ext/ext_json_parse.ml"
 
   | 13 ->
-# 154 "ext/ext_json.mll"
+# 151 "ext/ext_json_parse.mll"
          ( Number (Lexing.lexeme lexbuf))
-# 377 "ext/ext_json.ml"
+# 374 "ext/ext_json_parse.ml"
 
   | 14 ->
-# 156 "ext/ext_json.mll"
+# 153 "ext/ext_json_parse.mll"
       (
   let pos = Lexing.lexeme_start_p lexbuf in
   scan_string buf pos lexbuf;
@@ -4205,22 +4439,22 @@ and __ocaml_lex_lex_json_rec buf lexbuf __ocaml_lex_state =
   Buffer.clear buf ;
   String content 
 )
-# 388 "ext/ext_json.ml"
+# 385 "ext/ext_json_parse.ml"
 
   | 15 ->
-# 163 "ext/ext_json.mll"
+# 160 "ext/ext_json_parse.mll"
        (Eof )
-# 393 "ext/ext_json.ml"
+# 390 "ext/ext_json_parse.ml"
 
   | 16 ->
 let
-# 164 "ext/ext_json.mll"
+# 161 "ext/ext_json_parse.mll"
        c
-# 399 "ext/ext_json.ml"
+# 396 "ext/ext_json_parse.ml"
 = Lexing.sub_lexeme_char lexbuf lexbuf.Lexing.lex_start_pos in
-# 164 "ext/ext_json.mll"
+# 161 "ext/ext_json_parse.mll"
           ( error lexbuf (Illegal_character c ))
-# 403 "ext/ext_json.ml"
+# 400 "ext/ext_json_parse.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
       __ocaml_lex_lex_json_rec buf lexbuf __ocaml_lex_state
@@ -4230,19 +4464,19 @@ and comment buf lexbuf =
 and __ocaml_lex_comment_rec buf lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 166 "ext/ext_json.mll"
+# 163 "ext/ext_json_parse.mll"
               (lex_json buf lexbuf)
-# 415 "ext/ext_json.ml"
+# 412 "ext/ext_json_parse.ml"
 
   | 1 ->
-# 167 "ext/ext_json.mll"
+# 164 "ext/ext_json_parse.mll"
      (comment buf lexbuf)
-# 420 "ext/ext_json.ml"
+# 417 "ext/ext_json_parse.ml"
 
   | 2 ->
-# 168 "ext/ext_json.mll"
+# 165 "ext/ext_json_parse.mll"
        (error lexbuf Unterminated_comment)
-# 425 "ext/ext_json.ml"
+# 422 "ext/ext_json_parse.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
       __ocaml_lex_comment_rec buf lexbuf __ocaml_lex_state
@@ -4252,64 +4486,64 @@ and scan_string buf start lexbuf =
 and __ocaml_lex_scan_string_rec buf start lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 172 "ext/ext_json.mll"
+# 169 "ext/ext_json_parse.mll"
       ( () )
-# 437 "ext/ext_json.ml"
+# 434 "ext/ext_json_parse.ml"
 
   | 1 ->
-# 174 "ext/ext_json.mll"
+# 171 "ext/ext_json_parse.mll"
   (
         let len = lexeme_len lexbuf - 2 in
         update_loc lexbuf len;
 
         scan_string buf start lexbuf
       )
-# 447 "ext/ext_json.ml"
+# 444 "ext/ext_json_parse.ml"
 
   | 2 ->
-# 181 "ext/ext_json.mll"
+# 178 "ext/ext_json_parse.mll"
       (
         let len = lexeme_len lexbuf - 3 in
         update_loc lexbuf len;
         scan_string buf start lexbuf
       )
-# 456 "ext/ext_json.ml"
+# 453 "ext/ext_json_parse.ml"
 
   | 3 ->
 let
-# 186 "ext/ext_json.mll"
+# 183 "ext/ext_json_parse.mll"
                                                c
-# 462 "ext/ext_json.ml"
+# 459 "ext/ext_json_parse.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 1) in
-# 187 "ext/ext_json.mll"
+# 184 "ext/ext_json_parse.mll"
       (
         Buffer.add_char buf (char_for_backslash c);
         scan_string buf start lexbuf
       )
-# 469 "ext/ext_json.ml"
+# 466 "ext/ext_json_parse.ml"
 
   | 4 ->
 let
-# 191 "ext/ext_json.mll"
+# 188 "ext/ext_json_parse.mll"
                  c1
-# 475 "ext/ext_json.ml"
+# 472 "ext/ext_json_parse.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 1)
 and
-# 191 "ext/ext_json.mll"
+# 188 "ext/ext_json_parse.mll"
                                c2
-# 480 "ext/ext_json.ml"
+# 477 "ext/ext_json_parse.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 2)
 and
-# 191 "ext/ext_json.mll"
+# 188 "ext/ext_json_parse.mll"
                                              c3
-# 485 "ext/ext_json.ml"
+# 482 "ext/ext_json_parse.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 3)
 and
-# 191 "ext/ext_json.mll"
+# 188 "ext/ext_json_parse.mll"
                                                     s
-# 490 "ext/ext_json.ml"
+# 487 "ext/ext_json_parse.ml"
 = Lexing.sub_lexeme lexbuf lexbuf.Lexing.lex_start_pos (lexbuf.Lexing.lex_start_pos + 4) in
-# 192 "ext/ext_json.mll"
+# 189 "ext/ext_json_parse.mll"
       (
         let v = dec_code c1 c2 c3 in
         if v > 255 then
@@ -4318,55 +4552,55 @@ and
 
         scan_string buf start lexbuf
       )
-# 501 "ext/ext_json.ml"
+# 498 "ext/ext_json_parse.ml"
 
   | 5 ->
 let
-# 200 "ext/ext_json.mll"
+# 197 "ext/ext_json_parse.mll"
                         c1
-# 507 "ext/ext_json.ml"
+# 504 "ext/ext_json_parse.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 2)
 and
-# 200 "ext/ext_json.mll"
+# 197 "ext/ext_json_parse.mll"
                                          c2
-# 512 "ext/ext_json.ml"
+# 509 "ext/ext_json_parse.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 3) in
-# 201 "ext/ext_json.mll"
+# 198 "ext/ext_json_parse.mll"
       (
         let v = hex_code c1 c2 in
         Buffer.add_char buf (Char.chr v);
 
         scan_string buf start lexbuf
       )
-# 521 "ext/ext_json.ml"
+# 518 "ext/ext_json_parse.ml"
 
   | 6 ->
 let
-# 207 "ext/ext_json.mll"
+# 204 "ext/ext_json_parse.mll"
              c
-# 527 "ext/ext_json.ml"
+# 524 "ext/ext_json_parse.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 1) in
-# 208 "ext/ext_json.mll"
+# 205 "ext/ext_json_parse.mll"
       (
         Buffer.add_char buf '\\';
         Buffer.add_char buf c;
 
         scan_string buf start lexbuf
       )
-# 536 "ext/ext_json.ml"
+# 533 "ext/ext_json_parse.ml"
 
   | 7 ->
-# 215 "ext/ext_json.mll"
+# 212 "ext/ext_json_parse.mll"
       (
         update_loc lexbuf 0;
         Buffer.add_char buf lf;
 
         scan_string buf start lexbuf
       )
-# 546 "ext/ext_json.ml"
+# 543 "ext/ext_json_parse.ml"
 
   | 8 ->
-# 222 "ext/ext_json.mll"
+# 219 "ext/ext_json_parse.mll"
       (
         let ofs = lexbuf.lex_start_pos in
         let len = lexbuf.lex_curr_pos - ofs in
@@ -4374,45 +4608,25 @@ let
 
         scan_string buf start lexbuf
       )
-# 557 "ext/ext_json.ml"
+# 554 "ext/ext_json_parse.ml"
 
   | 9 ->
-# 230 "ext/ext_json.mll"
+# 227 "ext/ext_json_parse.mll"
       (
         error lexbuf Unterminated_string
       )
-# 564 "ext/ext_json.ml"
+# 561 "ext/ext_json_parse.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
       __ocaml_lex_scan_string_rec buf start lexbuf __ocaml_lex_state
 
 ;;
 
-# 234 "ext/ext_json.mll"
+# 231 "ext/ext_json_parse.mll"
  
 
-type js_array =
-  { content : t array ; 
-    loc_start : Lexing.position ; 
-    loc_end : Lexing.position ; 
-  }
-and js_str = 
-  { str : string ; loc : Lexing.position}
-and t = 
-  [  
-    `True
-  | `False
-  | `Null
-  | `Flo of string 
-  | `Str of js_str
-  | `Arr  of js_array
-  | `Obj of t String_map.t 
-   ]
 
-type status = 
-  | No_path
-  | Found  of t 
-  | Wrong_type of path 
+
 
 
 
@@ -4428,52 +4642,65 @@ let rec parse_json lexbuf =
       x 
   in
   let push e = look_ahead := Some e in 
-  let rec json (lexbuf : Lexing.lexbuf) : t = 
+  let rec json (lexbuf : Lexing.lexbuf) : Ext_json_types.t = 
     match token () with 
-    | True -> `True
-    | False -> `False
-    | Null -> `Null
-    | Number s ->  `Flo s 
-    | String s -> `Str { str = s; loc =    lexbuf.lex_start_p}
-    | Lbracket -> parse_array false lexbuf.lex_start_p lexbuf.lex_curr_p [] lexbuf
-    | Lbrace -> parse_map false String_map.empty lexbuf
+    | True -> True lexbuf.lex_start_p
+    | False -> False lexbuf.lex_start_p
+    | Null -> Null lexbuf.lex_start_p
+    | Number s ->  Flo {str = s; loc = lexbuf.lex_start_p}  
+    | String s -> Str { str = s; loc =    lexbuf.lex_start_p}
+    | Lbracket -> parse_array  lexbuf.lex_start_p lexbuf.lex_curr_p [] lexbuf
+    | Lbrace -> parse_map lexbuf.lex_start_p String_map.empty lexbuf
     |  _ -> error lexbuf Unexpected_token
-  and parse_array  trailing_comma loc_start loc_finish acc lexbuf : t =
+(** Note if we remove [trailing_comma] support 
+    we should report errors (actually more work), for example 
+    {[
     match token () with 
     | Rbracket ->
-      (* if trailing_comma then  *)
-      (*   error lexbuf Trailing_comma_in_array *)
-      (* else  *)
-        `Arr {loc_start ; content = Ext_array.reverse_of_list acc ; 
+      if trailing_comma then
+        error lexbuf Trailing_comma_in_array
+      else
+    ]} 
+    {[
+    match token () with 
+    | Rbrace -> 
+      if trailing_comma then
+        error lexbuf Trailing_comma_in_obj
+      else
+
+    ]}   
+ *)
+  and parse_array   loc_start loc_finish acc lexbuf 
+    : Ext_json_types.t =
+    match token () with 
+    | Rbracket ->
+        Arr {loc_start ; content = Ext_array.reverse_of_list acc ; 
               loc_end = lexbuf.lex_curr_p }
     | x -> 
       push x ;
       let new_one = json lexbuf in 
       begin match token ()  with 
       | Comma -> 
-          parse_array true loc_start loc_finish (new_one :: acc) lexbuf 
+          parse_array  loc_start loc_finish (new_one :: acc) lexbuf 
       | Rbracket 
-        -> `Arr {content = (Ext_array.reverse_of_list (new_one::acc));
+        -> Arr {content = (Ext_array.reverse_of_list (new_one::acc));
                      loc_start ; 
                      loc_end = lexbuf.lex_curr_p }
       | _ -> 
         error lexbuf Expect_comma_or_rbracket
       end
-  and parse_map trailing_comma acc lexbuf : t = 
+  and parse_map loc_start  acc lexbuf : Ext_json_types.t = 
     match token () with 
     | Rbrace -> 
-      (* if trailing_comma then  *)
-      (*   error lexbuf Trailing_comma_in_obj *)
-      (* else  *)
-        `Obj acc 
+        Obj { map = acc ; loc = loc_start}
     | String key -> 
       begin match token () with 
       | Colon ->
         let value = json lexbuf in
         begin match token () with 
-        | Rbrace -> `Obj (String_map.add key value acc )
+        | Rbrace -> Obj {map = String_map.add key value acc ; loc = loc_start}
         | Comma -> 
-          parse_map true  (String_map.add key value acc) lexbuf 
+          parse_map loc_start  (String_map.add key value acc) lexbuf 
         | _ -> error lexbuf Expect_comma_or_rbrace
         end
       | _ -> error lexbuf Expect_colon
@@ -4501,58 +4728,9 @@ let parse_json_from_file s =
 
 
 
-type callback = 
-  [
-    `Str of (string -> unit) 
-  | `Str_loc of (string -> Lexing.position -> unit)
-  | `Flo of (string -> unit )
-  | `Bool of (bool -> unit )
-  | `Obj of (t String_map.t -> unit)
-  | `Arr of (t array -> unit )
-  | `Arr_loc of (t array -> Lexing.position -> Lexing.position -> unit)
-  | `Null of (unit -> unit)
-  | `Not_found of (unit -> unit)
-  | `Id of (t -> unit )
-  ]
 
-let test   ?(fail=(fun () -> ())) key 
-    (cb : callback) m 
-     =
-     begin match String_map.find_exn key m, cb with 
-       | exception Not_found  ->
-        begin match cb with `Not_found f ->  f ()
-        | _ -> fail ()
-        end      
-       | `True, `Bool cb -> cb true
-       | `False, `Bool cb  -> cb false 
-       | `Flo s , `Flo cb  -> cb s 
-       | `Obj b , `Obj cb -> cb b 
-       | `Arr {content}, `Arr cb -> cb content 
-       | `Arr {content; loc_start ; loc_end}, `Arr_loc cb -> 
-         cb content  loc_start loc_end 
-       | `Null, `Null cb  -> cb ()
-       | `Str {str = s }, `Str cb  -> cb s 
-       | `Str {str = s ; loc }, `Str_loc cb -> cb s loc 
-       |  any  , `Id  cb -> cb any
-       | _, _ -> fail () 
-     end;
-     m
-let query path (json : t ) =
-  let rec aux acc paths json =
-    match path with 
-    | [] ->  Found json
-    | p :: rest -> 
-      begin match json with 
-        | `Obj m -> 
-          begin match String_map.find_exn p m with 
-            | m' -> aux (p::acc) rest m'
-            | exception Not_found ->  No_path
-          end
-        | _ -> Wrong_type acc 
-      end
-  in aux [] path json
 
-# 735 "ext/ext_json.ml"
+# 676 "ext/ext_json_parse.ml"
 
 end
 module Ext_list : sig 
@@ -5259,12 +5437,12 @@ val get_bsc_dir : string -> string
 
 
 val get_list_string_acc : 
-    Ext_json.t array -> 
+    Ext_json_types.t array -> 
     string list -> 
     string list
 
 val get_list_string : 
-    Ext_json.t array -> 
+    Ext_json_types.t array -> 
     string list
 
 val string_of_bsb_dev_include : int -> string 
@@ -5389,9 +5567,9 @@ let rec mkp dir =
 
 
 let get_list_string_acc s acc = 
-  Ext_array.to_list_map_acc  (fun (x : Ext_json.t) ->
+  Ext_array.to_list_map_acc  (fun (x : Ext_json_types.t) ->
       match x with 
-      | `Str x -> Some x.str
+      | Str x -> Some x.str
       | _ -> None
     ) s  acc 
 
@@ -5422,16 +5600,16 @@ let (|?)  m (key, cb) =
 *)
 let rec walk_all_deps top dir cb =
   let bsconfig_json =  (dir // Literals.bsconfig_json) in
-  match Ext_json.parse_json_from_file bsconfig_json with
-  | `Obj map ->
+  match Ext_json_parse.parse_json_from_file bsconfig_json with
+  | Obj {map} ->
     map
     |?
     (Bsb_build_schemas.bs_dependencies,
-      `Arr (fun (new_packages : Ext_json.t array) ->
+      `Arr (fun (new_packages : Ext_json_types.t array) ->
          new_packages
-         |> Array.iter (fun (js : Ext_json.t) ->
+         |> Array.iter (fun (js : Ext_json_types.t) ->
           begin match js with
-          | `Str {Ext_json.str = new_package} ->
+          | Str {str = new_package} ->
             begin match Bs_pkg.resolve_bs_package ~cwd:dir new_package with
             | None -> 
               Bsb_exception.error (Bsb_exception.Package_not_found (new_package, Some bsconfig_json))
@@ -6647,7 +6825,7 @@ val get_current_number_of_dev_groups : unit -> int
 val parsing_sources : 
   dir_index -> 
   string -> 
-  Ext_json.t  ->
+  Ext_json_types.t  ->
   t 
   
 
@@ -6752,40 +6930,33 @@ let print_arrays file_array oc offset  =
 
 let warning_unused_file : _ format = "WARNING: file %s under %s is ignored due to that it is not a valid module name"
 
-let  handle_list_files dir (s : Ext_json.t array) loc_start loc_end : Ext_file_pp.interval list * _ =  
-  if  Ext_array.is_empty s  then 
-    begin (** detect files to be populated later  *)
-      let files_array = Bsb_dir.readdir dir  in 
-      let dyn_file_array = String_vec.make (Array.length files_array) in 
-      let files  =
-        Array.fold_left (fun acc name -> 
-            match Ext_string.is_valid_source_name name with 
-            | Good ->   begin 
-                let new_acc = Binary_cache.map_update ~dir acc name  in 
-                String_vec.push name dyn_file_array ;
-                new_acc 
-              end 
-            | Invalid_module_name -> 
-              print_endline 
-                (Printf.sprintf warning_unused_file
-                   name dir 
-                ) ; 
-              acc 
-            | Suffix_mismatch -> acc 
-          ) String_map.empty files_array in 
-      [{Ext_file_pp.loc_start ;
-        loc_end; action = (`print (print_arrays dyn_file_array))}],
-      files
-    end
+let  handle_list_files dir  loc_start loc_end : Ext_file_pp.interval list * _ =  
+  (** detect files to be populated later  *)
+  let files_array = Bsb_dir.readdir dir  in 
+  let dyn_file_array = String_vec.make (Array.length files_array) in 
+  let files  =
+    Array.fold_left (fun acc name -> 
+        match Ext_string.is_valid_source_name name with 
+        | Good ->   begin 
+            let new_acc = Binary_cache.map_update ~dir acc name  in 
+            String_vec.push name dyn_file_array ;
+            new_acc 
+          end 
+        | Invalid_module_name -> 
+          print_endline 
+            (Printf.sprintf warning_unused_file
+               name dir 
+            ) ; 
+          acc 
+        | Suffix_mismatch -> acc 
+      ) String_map.empty files_array in 
+  [{Ext_file_pp.loc_start ;
+    loc_end; action = (`print (print_arrays dyn_file_array))}],
+  files
 
-  else 
-    [],
-    Array.fold_left (fun acc (s : Ext_json.t) ->
-        match s with 
-        | `Str {str = s} -> 
-          Binary_cache.map_update ~dir acc s
-        | _ -> acc
-      ) String_map.empty s
+
+
+
 
 
 let empty = { files = []; intervals  = []; globbed_dirs = [];  }
@@ -6806,146 +6977,153 @@ let (++) (u : t)  (v : t)  =
 (** [dir_index] can be inherited  *)
 let rec 
   parsing_simple_dir dir_index  cwd dir =
-  parsing_source dir_index cwd 
-    (`Obj (String_map.singleton Bsb_build_schemas.dir dir))
-and parsing_source (dir_index : int) cwd (x : Ext_json.t )
+  if !Bsb_config.no_dev && dir_index <> lib_dir_index then empty 
+  else parsing_source_dir_map dir_index 
+      (cwd // Ext_filename.simple_convert_node_path_to_os_path dir) 
+      String_map.empty
+
+and parsing_source (dir_index : int) cwd (x : Ext_json_types.t )
   : t  =
   match x with 
-  | `Str _ as dir -> 
+  | Str  { str = dir }  -> 
     parsing_simple_dir dir_index cwd dir   
-  | `Obj x -> 
-    let dir = ref cwd in
-    let sources = ref String_map.empty in
-    let resources = ref [] in 
-    let bs_dependencies = ref [] in
-    (* let public = ref Export_none in  *)
-    (* let public = ref Bsb_config.default_public in *)
-    let public = ref Export_all in (* TODO: move to {!Bsb_default} later*)
-
-    let current_dir_index = ref dir_index in 
-    (** Get the real [dir_index] *)
-    let () = 
-      x |?  (Bsb_build_schemas.type_, 
-             `Str (fun s -> 
-                 if Ext_string.equal s   Bsb_build_schemas.dev then
-                   current_dir_index := get_dev_index ()
-               )) |> ignore  in 
-    let current_dir_index = !current_dir_index in 
-    if !Bsb_config.no_dev && current_dir_index <> lib_dir_index then empty
+  | Obj {map} ->
+    let current_dir_index = 
+      match String_map.find_opt Bsb_build_schemas.type_ map with 
+      | Some (Str {str="dev"}) -> get_dev_index ()
+      | Some _ -> Bsb_exception.failwith_config x {|type field expect "dev" literal |}
+      | None -> dir_index in 
+    if !Bsb_config.no_dev && current_dir_index <> lib_dir_index then empty 
     else 
-      let update_queue = ref [] in 
-      let globbed_dirs = ref [] in 
+      let dir = 
+        match String_map.find_opt Bsb_build_schemas.dir map with 
+        | Some (Str{str=s}) -> 
+          cwd // Ext_filename.simple_convert_node_path_to_os_path s 
 
-      let children = ref [] in 
-      let children_update_queue = ref [] in 
-      let children_globbed_dirs = ref [] in 
-      let () = 
-        x     
-        |?  (Bsb_build_schemas.dir, `Str (fun s -> dir := cwd // Ext_filename.simple_convert_node_path_to_os_path s))
-        |?  (Bsb_build_schemas.files ,
-             `Arr_loc (fun s loc_start loc_end ->
-                 let dir = !dir in 
-                 let tasks, files =  handle_list_files  dir s loc_start loc_end in
-                 update_queue := tasks ;
-                 sources := files
+        | Some x -> Bsb_exception.failwith_config x "dir expected to be a string"
+        | None -> 
+        Bsb_exception.failwith_config x
+          {|required field %s  missing, please checkout the schema http://bloomberg.github.io/bucklescript/docson/#build-schema.json |} "dir"
+      in
 
-               ))
-        |? (Bsb_build_schemas.files,
-            `Not_found (fun _ ->
-                let dir = !dir in 
-                let file_array = Bsb_dir.readdir dir in 
-                (** We should avoid temporary files *)
-                sources := 
-                  Array.fold_left (fun acc name -> 
-                      match Ext_string.is_valid_source_name name with 
-                      | Good -> 
-                        Binary_cache.map_update  ~dir acc name 
-                      | Invalid_module_name -> 
-                        print_endline 
-                          (Printf.sprintf warning_unused_file
-                             name dir 
-                          ) ; 
-                          acc 
-                      | Suffix_mismatch ->  acc
-                    ) String_map.empty file_array;
-                globbed_dirs :=  [dir]
-              )
-           )     
-        |? (Bsb_build_schemas.files, 
-            `Obj (fun m -> 
-                let excludes = ref [] in 
-                m
-                |? (Bsb_build_schemas.excludes,
-                    `Arr (fun arr ->  excludes := get_list_string arr))
-                |? (Bsb_build_schemas.slow_re, 
-                    `Str 
-                      (fun s -> 
-                         let re = Str.regexp s in 
-                         let dir = !dir in 
-                         let excludes = !excludes in 
-                         let file_array = Bsb_dir.readdir dir in 
-                         sources := 
-                           Array.fold_left (fun acc name -> 
-                               if Str.string_match re name 0 && 
-                                  not (List.mem name excludes)
-                               then 
-                                 Binary_cache.map_update  ~dir acc name 
-                               else acc
-                             ) String_map.empty file_array;
-                         globbed_dirs :=  [dir]
-                      ))
-                |> ignore
-              )
-           )             
-        |? (Bsb_build_schemas.bs_dependencies, `Arr (fun s -> bs_dependencies := get_list_string s ))
-        |?  (Bsb_build_schemas.resources ,
-             `Arr (fun s  ->
-                 resources := get_list_string s
-               ))
-        |? (Bsb_build_schemas.public, `Str (fun s -> 
-            if s = Bsb_build_schemas.export_all then public := Export_all else 
-            if s = Bsb_build_schemas.export_none then public := Export_none else 
-              failwith ("invalid str for" ^ s )
-          ))
-        |? (Bsb_build_schemas.public, `Arr (fun s -> 
-            public := Export_set (String_set.of_list (get_list_string s ) )
-          ) )
-        |? (Bsb_build_schemas.subdirs, `Id (fun s -> 
-            let res  = parsing_sources current_dir_index !dir s in 
-
-            children :=  res.files ; 
-            children_update_queue := res.intervals;
-            children_globbed_dirs := res.globbed_dirs
-          ))
-        |> ignore 
-      in 
-      {
-        files = 
-          {dir = !dir; 
-           sources = !sources; 
-           resources = !resources;
-           bs_dependencies = !bs_dependencies;
-           public = !public;
-           dir_index = current_dir_index;
-          } 
-          :: !children;
-        intervals = !update_queue @ !children_update_queue ;
-        globbed_dirs = !globbed_dirs @ !children_globbed_dirs;
-      } 
+      parsing_source_dir_map current_dir_index dir map
   | _ -> empty 
+
+and parsing_source_dir_map current_dir_index dir (x : Ext_json_types.t String_map.t) = 
+  let cur_sources = ref String_map.empty in
+  let resources = ref [] in 
+  let bs_dependencies = ref [] in
+  let public = ref Export_all in (* TODO: move to {!Bsb_default} later*)
+  let cur_update_queue = ref [] in 
+  let cur_globbed_dirs = ref [] in 
+  begin match String_map.find_opt Bsb_build_schemas.files x with 
+    | Some (Arr {loc_start;loc_end; content = [||] }) -> (* [ ] *) 
+      let tasks, files =  handle_list_files  dir  loc_start loc_end in
+      cur_update_queue := tasks ;
+      cur_sources := files
+    | Some (Arr {loc_start;loc_end; content = s }) -> (* [ a,b ] *)      
+      cur_sources := 
+        Array.fold_left (fun acc (s : Ext_json_types.t) ->
+            match s with 
+            | Str {str = s} -> 
+              Binary_cache.map_update ~dir acc s
+            | _ -> acc
+          ) String_map.empty s    
+    | Some (Obj {map = m; loc} ) -> (* { excludes : [], slow_re : "" }*)
+      let excludes = 
+        match String_map.find_opt Bsb_build_schemas.excludes m with 
+        | None -> []   
+        | Some (Arr {content = arr}) -> get_list_string arr 
+        | Some x -> Bsb_exception.failwith_config x  "excludes expect array "in 
+      let slow_re = String_map.find_opt Bsb_build_schemas.slow_re m in 
+      let predicate = 
+        match slow_re, excludes with 
+        | Some (Str {str = s}), [] -> 
+          let re = Str.regexp s  in 
+          fun name -> Str.string_match re name 0 
+        | Some (Str {str = s}) , _::_ -> 
+          let re = Str.regexp s in   
+          fun name -> Str.string_match re name 0 && not (List.mem name excludes)
+        | Some x, _ -> Bsb_exception.failf ~loc "slow-re expect a string literal"
+        | None , _ -> Bsb_exception.failf ~loc  "missing field: slow-re"  in 
+      let file_array = Bsb_dir.readdir dir in 
+      cur_sources := Array.fold_left (fun acc name -> 
+          if predicate name then 
+            Binary_cache.map_update  ~dir acc name 
+          else acc
+        ) String_map.empty file_array;
+      cur_globbed_dirs := [dir]              
+    | None ->  (* No setting on [!files]*)
+      let file_array = Bsb_dir.readdir dir in 
+      (** We should avoid temporary files *)
+      cur_sources := 
+        Array.fold_left (fun acc name -> 
+            match Ext_string.is_valid_source_name name with 
+            | Good -> 
+              Binary_cache.map_update  ~dir acc name 
+            | Invalid_module_name -> 
+              print_endline 
+                (Printf.sprintf warning_unused_file
+                   name dir 
+                ) ; 
+              acc 
+            | Suffix_mismatch ->  acc
+          ) String_map.empty file_array;
+      cur_globbed_dirs :=  [dir]  
+    | Some x -> Bsb_exception.failwith_config x "files field expect array or object "
+
+  end;
+  x   
+  |? (Bsb_build_schemas.bs_dependencies, `Arr (fun s -> bs_dependencies := get_list_string s ))
+  |?  (Bsb_build_schemas.resources ,
+       `Arr (fun s  ->
+           resources := get_list_string s
+         ))
+  |? (Bsb_build_schemas.public, `Str_loc (fun s loc -> 
+        if s = Bsb_build_schemas.export_all then public := Export_all else 
+        if s = Bsb_build_schemas.export_none then public := Export_none else 
+          Bsb_exception.failf ~loc "invalid str for %s "  s 
+      ))
+    |? (Bsb_build_schemas.public, `Arr (fun s -> 
+        public := Export_set (String_set.of_list (get_list_string s ) )
+      ) )
+    |> ignore ;
+    let cur_file = 
+      {dir = dir; 
+       sources = !cur_sources; 
+       resources = !resources;
+       bs_dependencies = !bs_dependencies;
+       public = !public;
+       dir_index = current_dir_index;
+      } in 
+    let children, children_update_queue, children_globbed_dirs = 
+      match String_map.find_opt Bsb_build_schemas.subdirs x with 
+      | Some s -> 
+        let res  = parsing_sources current_dir_index dir s in 
+        res.files ,
+        res.intervals,
+        res.globbed_dirs
+      | None -> [], [], []  in 
+
+    {
+      files =  cur_file :: children;
+      intervals = !cur_update_queue @ children_update_queue ;
+      globbed_dirs = !cur_globbed_dirs @ children_globbed_dirs;
+    } 
+
 (* and parsing_simple_dir dir_index cwd  dir  : t = 
    parsing_source dir_index cwd (String_map.singleton Bsb_build_schemas.dir dir)
 *)
 
-and  parsing_arr_sources dir_index cwd (file_groups : Ext_json.t array)  = 
+and  parsing_arr_sources dir_index cwd (file_groups : Ext_json_types.t array)  = 
   Array.fold_left (fun  origin x ->
       parsing_source dir_index cwd x ++ origin 
     ) empty  file_groups 
 
-and  parsing_sources dir_index cwd (sources : Ext_json.t )  = 
+and  parsing_sources dir_index cwd (sources : Ext_json_types.t )  = 
   match sources with   
-  | `Arr file_groups -> 
-    parsing_arr_sources dir_index cwd file_groups.Ext_json.content
+  | Arr file_groups -> 
+    parsing_arr_sources dir_index cwd file_groups.content
   | _ -> parsing_source dir_index cwd sources
 
 
@@ -7616,13 +7794,13 @@ let merlin_trailer_length = String.length merlin_trailer
 
 
 let package_specs_from_bsconfig () = 
-  let json = Ext_json.parse_json_from_file Literals.bsconfig_json in
+  let json = Ext_json_parse.parse_json_from_file Literals.bsconfig_json in
   begin match json with
-    | `Obj map ->
+    | Obj {map} ->
       begin 
         match String_map.find_opt Bsb_build_schemas.package_specs map with 
-        | Some (`Arr s ) -> 
-          get_package_specs_from_array s.Ext_json.content
+        | Some (Arr s ) -> 
+          get_package_specs_from_array s.content
         | Some _
         | None -> Bsb_default.package_specs
       end
@@ -7780,7 +7958,7 @@ let interpret_json
   let reason_react_jsx = ref false in 
 
   let config_json_chan = open_in_bin Literals.bsconfig_json in
-  let global_data = Ext_json.parse_json_from_chan config_json_chan  in
+  let global_data = Ext_json_parse.parse_json_from_chan config_json_chan  in
   let ocamllex = ref Bsb_default.ocamllex in 
   let refmt = ref None in
   let refmt_flags = ref Bsb_default.refmt_flags in
@@ -7808,10 +7986,10 @@ let interpret_json
   *)
 
   match global_data with
-  | `Obj map ->
+  | Obj { map} ->
 
     (match String_map.find_opt Bsb_build_schemas.use_stdlib map with      
-     | Some `False -> 
+     | Some (False _) -> 
        ()
      | None 
      | Some _ ->

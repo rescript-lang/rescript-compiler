@@ -72,7 +72,7 @@ eq('File "recursive_module_test.ml", line 30, characters 5-12', 120, Curry._1(fa
 add(/* tuple */[
       'File "recursive_module_test.ml", line 34, characters 7-14',
       function () {
-        return /* ThrowAny */Block.__(5, [function () {
+        return /* ThrowAny */Block.__(7, [function () {
                     Curry._1(Int3[/* u */0], 3);
                     return /* () */0;
                   }]);

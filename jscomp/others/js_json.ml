@@ -62,6 +62,7 @@ let test (type a) (x : 'a) (v : a kind) : bool =
   | Object -> (Obj.magic x) != Js.null && Js.typeof x = "object" && not (Js_array.isArray x )
 
 external parse : string -> t = "JSON.parse" [@@bs.val]
+external stringifyAny : 'a -> string option = "JSON.stringify" [@@bs.val] [@@bs.return undefined_to_opt]
 (* TODO: more docs when parse error happens or stringify non-stringfy value *)
 
 let null : t = (Obj.magic (Js.null: 'a Js.null) : t)
