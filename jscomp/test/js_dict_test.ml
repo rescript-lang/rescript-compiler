@@ -9,20 +9,6 @@ let suites = Mt.[
     Eq(None, get (obj ()) "baz"));
   "unsafe_get", (fun _ ->
     Eq(43, unsafeGet (obj ()) "foo"));
-  "exnGet - raise correct exn", (fun _ ->
-    try 
-      let _ = exnGet (obj ()) "baz" in 
-      Ok false 
-    with
-    | (Invalid_argument _) -> Ok true 
-    | _ -> Ok false
-  ); 
-  "exnGet - valid access", (fun _ ->
-    try 
-      Eq (43, exnGet (obj ()) "foo")
-    with
-    | _ -> Ok false
-  ); 
   "set", (fun _ ->
     let o = obj () in 
     set o "foo" 36;

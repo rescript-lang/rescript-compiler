@@ -50,10 +50,6 @@ Array.iter (fun key -> Js.log (Js_dict.unsafeGet dic key)) (Js_dict.keys dict)
 ]} 
 *)
 
-val exnGet : 'a t -> key -> 'a
-(** [exnGet dict key] returns the value if the [key] exists, otherwise
-    @raise Invalid_argument exception *)
-
 external set : 'a t -> key -> 'a -> unit = "" [@@bs.set_index]  
 (** [set dict key value] sets the [key]/[value] in [dict] *)
 

@@ -57,7 +57,7 @@ val test : 'a  -> 'b kind -> bool
 
 *)
 
-val null : t 
+external null : t = "" [@@bs.val]
 (** Null JSON value *)
 
 external string : string -> t = "%identity"

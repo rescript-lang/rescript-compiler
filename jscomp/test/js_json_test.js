@@ -3,7 +3,6 @@
 var Mt                      = require("./mt");
 var $$Array                 = require("../../lib/js/array");
 var Block                   = require("../../lib/js/block");
-var Js_dict                 = require("../../lib/js/js_dict");
 var Js_json                 = require("../../lib/js/js_json");
 var Caml_obj                = require("../../lib/js/caml_obj");
 var Js_boolean              = require("../../lib/js/js_boolean");
@@ -90,7 +89,7 @@ add_test('File "js_json_test.ml", line 23, characters 11-18', function () {
 
 eq('File "js_json_test.ml", line 48, characters 5-12', Js_json.test(v, /* Object */2), /* true */1);
 
-var json = JSON.parse(JSON.stringify(Js_json.$$null));
+var json = JSON.parse(JSON.stringify(null));
 
 var match = Js_json.reifyType(json);
 
@@ -100,7 +99,8 @@ if (match[0] >= 5) {
       });
 }
 else {
-  add_test('File "js_json_test.ml", line 55, characters 16-23', function () {
+  console.log(match[1]);
+  add_test('File "js_json_test.ml", line 55, characters 26-33', function () {
         return /* Ok */Block.__(4, [/* false */0]);
       });
 }
@@ -350,7 +350,7 @@ else {
         });
   }
   else {
-    var match$9 = Js_json.reifyType(Js_dict.exnGet(match$8[1], "a"));
+    var match$9 = Js_json.reifyType(option_get(Js_primitive.undefined_to_opt(match$8[1]["a"])));
     if (match$9[0] !== 0) {
       add_test('File "js_json_test.ml", line 250, characters 20-27', function () {
             return /* Ok */Block.__(4, [/* false */0]);

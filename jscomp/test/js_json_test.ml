@@ -52,7 +52,7 @@ let () =
   let ty, x = Js.Json.reifyType json in
   match ty with
   | Js.Json.Null -> true_ __LOC__
-  | _ -> false_ __LOC__
+  | _ -> Js.log x; false_ __LOC__
 
 let () = 
   let json = 
@@ -244,7 +244,7 @@ let () =
     let ty, a1 = Js.Json.reifyType x.(1) in 
     begin match ty with
     | Js.Json.Object-> 
-      let ty, aValue =  Js.Json.reifyType @@ Js_dict.exnGet a1 "a" in 
+      let ty, aValue =  Js.Json.reifyType @@ option_get @@ Js_dict.get a1 "a" in 
       begin match ty with
       | Js.Json.String -> eq __LOC__ aValue "bbb"
       | _ -> false_ __LOC__
