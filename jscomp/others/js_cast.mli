@@ -42,9 +42,3 @@ external intOfBool : bool -> int = "%identity"
 
 external floatOfInt : int -> float = "%identity"  
 (** [floatOfInt i] returns the float value of [i] *)
-
-external floatOfIntArray : int array -> float array = "%identity"
-(** [floatOfIntArray a] returns the float array of [a] *) 
-
-external intOfBoolArray : bool array -> int array = "%identity"
-(** [intOfBoolArray a] returns the int array of [a] *)

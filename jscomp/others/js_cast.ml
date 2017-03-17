@@ -25,7 +25,3 @@
 external intOfBool : bool -> int = "%identity"  
 
 external floatOfInt : int -> float = "%identity"  
-
-external floatOfIntArray : int array -> float array = "%identity"
-
-external intOfBoolArray : bool array -> int array = "%identity"

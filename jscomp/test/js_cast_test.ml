@@ -20,12 +20,4 @@ let () = eq __LOC__ (Js_cast.floatOfInt 1) 1.0
 
 let () = eq __LOC__ (Js_cast.floatOfInt 123456789) 123456789.0
 
-let () = eq __LOC__ 
- (Js_cast.intOfBoolArray [| true; false; true |]) 
- [|1; 0; 1|]
-
-let () = eq __LOC__ 
- (Js_cast.floatOfIntArray [| -123; 0; 1; 123; 123456789|]) 
- [|-. 123.0; 0.0; 1.0; 123.0; 123456789.0|]
-
 let () = Mt.from_pair_suites __FILE__ !suites
