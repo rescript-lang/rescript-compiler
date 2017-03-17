@@ -62,24 +62,46 @@ let internal_install = "-internal-install"
 let build_bs_deps package_specs   =
   let bsc_dir = Bsb_build_util.get_bsc_dir cwd in
   let bsb_exe = bsc_dir // "bsb.exe" in
-  Bsb_build_util.walk_all_deps true cwd
+  Bsb_build_util.walk_all_deps  cwd
     (fun top cwd ->
        if not top then
          Bsb_unix.run_command_execv
            {cmd = bsb_exe;
             cwd = cwd;
             args  =
-              [| bsb_exe ; internal_install ; no_dev; internal_package_specs; package_specs; regen; separator |]})
+              [| bsb_exe ;
+                 internal_install ; 
+                 no_dev; 
+                 internal_package_specs; 
+                 package_specs;
+                 regen;
+                 separator |]})
 
 let annoymous filename =
   String_vec.push  filename targets
 
 let watch_mode = ref false
 let make_world = ref false
+let color_enabled = ref (Unix.isatty Unix.stdin)
+let set_color ppf =
+  Format.pp_set_formatter_tag_functions ppf 
+    ({ (Format.pp_get_formatter_tag_functions ppf () ) with
+       mark_open_tag = (fun s ->  if !color_enabled then  Ext_color.ansi_of_tag s else Ext_string.empty) ;
+       mark_close_tag = (fun _ ->  if !color_enabled then Ext_color.reset_lit else Ext_string.empty);
+     })
+
+let () = 
+  begin 
+    Format.set_mark_tags true ;
+    set_color Format.std_formatter ; 
+    set_color Format.err_formatter;
+    set_color Format.str_formatter
+  end
+
+
 
 let clean_bs_garbage cwd =
-  print_string "Doing cleaning in ";
-  print_endline cwd;
+  Format.fprintf Format.std_formatter "@{<info>Cleaning @} in %s@." cwd ; 
   let aux x =
     let x = (cwd // x)  in
     if Sys.file_exists x then
@@ -89,18 +111,24 @@ let clean_bs_garbage cwd =
 
   with
     e ->
-    prerr_endline ("Failed to clean due to " ^ Printexc.to_string e)
+    Format.fprintf Format.err_formatter "@{<warning>Failed@} to clean due to %s" (Printexc.to_string e)
+
 
 let clean_bs_deps () =
-  Bsb_build_util.walk_all_deps true cwd  (fun top cwd ->
+  Bsb_build_util.walk_all_deps  cwd  (fun top cwd ->
       clean_bs_garbage cwd
     )
 
 let clean_self () = clean_bs_garbage cwd
 
 
-let bsb_main_flags =
+let bsb_main_flags : (string * Arg.spec * string) list=
   [
+    "-color", Arg.Set color_enabled,
+    " forced color output"
+    ;
+    "-no-color", Arg.Clear color_enabled,
+    " forced no color output";
     "-w", Arg.Set watch_mode,
     " Watch mode" ;
     internal_install, Arg.Set Bsb_config.install,
@@ -176,7 +204,7 @@ let install_targets (config : Bsb_config_types.t option) =
     let destdir = Bsb_config.lib_ocaml in
     if not @@ Sys.file_exists destdir then begin Unix.mkdir destdir 0o777  end;
     begin
-      print_endline "* Start Installation";
+      Format.fprintf Format.std_formatter "@{<info>Installing ..@} @.";
       String_hash_set.iter (fun x ->
           Bsb_file.install_if_exists ~destdir (x ^  Literals.suffix_ml) ;
           Bsb_file.install_if_exists ~destdir (x ^  Literals.suffix_re) ;
