@@ -42,7 +42,7 @@ type _ kind =
 
 val reify_type : 'a -> 'b kind * 'b 
   [@@ocaml.deprecated "Please use `reifyType`"]
-(** [reify_type v] returns both type and underlying value *) 
+(** [reify_type v] returns both type and underlying value. @deprecated *) 
 
 val reifyType : t -> 'b kind * 'b 
 (** [reifyType v] returns both type and underlying value *) 
