@@ -115,7 +115,8 @@ OTHERS := literals a test_ari test_export2 test_internalOO test_obj_simple_ffi t
 	js_float_test\
 	js_int_test\
 	bang_primitive\
-	compare_test
+	compare_test\
+	js_cast_test
 
 
 # bs_uncurry_test
