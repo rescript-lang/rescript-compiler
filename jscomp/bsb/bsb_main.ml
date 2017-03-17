@@ -92,7 +92,9 @@ let set_color ppf =
 
 let () = 
   begin 
-    Format.set_mark_tags true ;
+    Format.pp_set_mark_tags Format.std_formatter true ;
+    Format.pp_set_mark_tags Format.err_formatter true;
+    Format.pp_set_mark_tags Format.str_formatter true;
     set_color Format.std_formatter ; 
     set_color Format.err_formatter;
     set_color Format.str_formatter

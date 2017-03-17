@@ -6103,19 +6103,27 @@ let (|?)  m (key, cb) =
      3. determinstic, since -make-world will also comes with -clean-world
 
 *)
-let rec walk_all_deps_aux visited top dir cb =
+let rec walk_all_deps_aux visited paths top dir cb =
   let bsconfig_json =  (dir // Literals.bsconfig_json) in
 
   match Ext_json_parse.parse_json_from_file bsconfig_json with
   | Obj {map; loc} ->
     let cur_package_name = 
-      begin match String_map.find_opt Bsb_build_schemas.name map  with 
+      match String_map.find_opt Bsb_build_schemas.name map  with 
       | Some (Str {str }) -> str
       | Some _ 
       | None -> Bsb_exception.failf  "package name missing in %s/bsconfig.json" dir 
-
-      end
     in 
+
+    if List.mem cur_package_name paths then 
+      begin 
+      Format.fprintf Format.err_formatter "@{<error>Cylic dependency@} %a @." 
+        (Format.pp_print_list  ~pp_sep:(fun ppf () -> Format.fprintf ppf " -> ") Format.pp_print_string)
+        (cur_package_name :: paths);
+      exit 2 ;
+      end
+    ;
+    let paths =  cur_package_name :: paths in 
     map
     |?
     (Bsb_build_schemas.bs_dependencies,
@@ -6136,13 +6144,15 @@ let rec walk_all_deps_aux visited top dir cb =
                            new_package
                            package_dir
                            cur_package_name;
-                         String_hashtbl.add visited new_package package_dir;
-                         walk_all_deps_aux visited  false package_dir cb  ;
+
+                         walk_all_deps_aux visited paths  false package_dir cb  ;
                      end
                    | Some _ -> 
                      Format.fprintf Format.std_formatter
                        "@{<info>Already visited@} %s@." new_package;
-
+                     (*FIXME: Note that here it is fine to  avoid revisiting such package, however, 
+                       it is ninja file should point package to the correct path
+                     *)
                  end
                | _ -> 
                  Bsb_exception.(failf ~loc 
@@ -6151,13 +6161,14 @@ let rec walk_all_deps_aux visited top dir cb =
              end
            )))
     |> ignore ;
-    cb top dir
+    cb top dir;
+    String_hashtbl.add visited cur_package_name dir;
   | _ -> ()
   | exception _ -> failwith ( "failed to parse" ^ bsconfig_json ^ " properly")
     
 let walk_all_deps dir cb = 
   let visited = String_hashtbl.create 0 in 
-  walk_all_deps_aux visited true dir cb 
+  walk_all_deps_aux visited [] true dir cb 
 
 end
 module Binary_cache : sig 
@@ -9961,7 +9972,9 @@ let set_color ppf =
 
 let () = 
   begin 
-    Format.set_mark_tags true ;
+    Format.pp_set_mark_tags Format.std_formatter true ;
+    Format.pp_set_mark_tags Format.err_formatter true;
+    Format.pp_set_mark_tags Format.str_formatter true;
     set_color Format.std_formatter ; 
     set_color Format.err_formatter;
     set_color Format.str_formatter
