@@ -185,6 +185,30 @@
             ],
             "description": "can be either a single sourceItem or an array of sourceItems, sourceItem can be either a single string(non nested directory) or an detailed object config"
         },
+        "targetItems": {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "enum": [
+                "native",
+                "bytecode",
+                "js"
+              ],
+              "description": "The compiler to use for the target"
+            },
+            "main": {
+              "type": "string",
+              "description": "Name of the main module used as entry point for this target. 'entry-point' isn't used when this project is built as a dependency."
+            }
+          }
+        },
+        "entries": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/targetItems"
+          },
+          "description": "A list of buildable targets"
+        },
         "bsc-flags": {
             "oneOf": [
                 {
@@ -291,6 +315,10 @@
         "use-stdlib" : {
             "type" : "boolean",
             "description": "(experimental currently)default true(Set use OCaml stdlib or not)"
+        },
+        "entries": {
+            "$ref": "#/definitions/entries",
+            "description": "Used by bsb to build using different targets with different compilers (native, bytecode or js)"
         },
         "reason" : {
             "properties": {
