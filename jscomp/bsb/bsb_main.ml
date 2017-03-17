@@ -240,7 +240,7 @@ let ninja_command_exit (type t) vendor_ninja ninja_args  config : t =
    What will happen, some flags are really not good
    ninja -C _build
 *)
-let usage = "Usage : bsb.exe <bsb-options> <files> -- <ninja_options>\n\
+let usage = "Usage : bsb.exe <bsb-options> -- <ninja_options>\n\
              For ninja options, try ninja -h \n\
              ninja will be loaded either by just running `bsb.exe' or `bsb.exe .. -- ..`\n\
              It is always recommended to run ninja via bsb.exe \n\
