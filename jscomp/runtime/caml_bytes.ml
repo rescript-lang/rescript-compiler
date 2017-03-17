@@ -22,6 +22,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+(** *)
+
 let get s i =
   if i < 0 || i >= Bytes.length s then
     raise (Invalid_argument "index out of bounds")

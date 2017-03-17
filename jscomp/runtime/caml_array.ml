@@ -23,6 +23,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
+(** *)
 
 external new_uninitialized : int -> 'a array = "Array" [@@bs.new]
 external append : 'a array -> 'a array -> 'a array = "concat" [@@bs.send]

@@ -25,7 +25,7 @@
 
 
 
-
+(** *)
 
 type exception_block =  string * nativeint
 val out_of_memory : exception_block              

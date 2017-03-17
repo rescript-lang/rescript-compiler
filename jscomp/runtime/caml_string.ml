@@ -24,6 +24,7 @@
 
 
 
+(** *)
 
 external new_uninitialized : int -> bytes = "Array"  [@@bs.new]
 external to_int_array : bytes -> int array = "%identity"

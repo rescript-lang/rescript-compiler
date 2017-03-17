@@ -22,8 +22,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** This module will  be exported
+(** The ntry point to JavaScript API
 
+    This module will  be exported
 
     - It does not have any code, all its code will be inlined so that
        there will be never
@@ -32,6 +33,7 @@
     - Its interface should be minimal
 
 *)
+
 
 (** internal types for FFI, these types are not used by normal users *)
 type (-'obj, +'a) meth_callback

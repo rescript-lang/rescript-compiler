@@ -25,7 +25,7 @@
 
 
 
-
+(** *)
 
 val caml_gc_stat : unit -> Gc.stat
 val caml_gc_quick_stat : unit -> Gc.stat

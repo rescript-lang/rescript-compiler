@@ -26,7 +26,7 @@
 
 
 
-
+(** *)
 
 val caml_set_oo_id :
   Caml_builtin_exceptions.exception_block -> Caml_builtin_exceptions.exception_block

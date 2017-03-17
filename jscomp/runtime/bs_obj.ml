@@ -22,6 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+(** *)
 
 type any = Obj.t
 external set_tag : any -> int -> unit = "caml_obj_set_tag"

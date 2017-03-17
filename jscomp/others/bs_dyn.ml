@@ -55,7 +55,7 @@ type value =
   | Record of record_shape * value im_array
   | Variant of variant_shape * int * value im_array
 
-(** 
+(*
    {[
      | Abstract of Obj.t 
      | Arrow 
@@ -63,7 +63,7 @@ type value =
 *)
 type 'a to_value = 'a -> value [@bs]
 
-(** It would be nice to [unbox] primitive types
+(* It would be nice to [unbox] primitive types
     especially in JS backend
  *)
 let int32_to_value  = fun [@bs] x ->  Int32 x
