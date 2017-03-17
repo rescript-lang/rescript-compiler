@@ -6,6 +6,10 @@ let mkI8 a = Int8Array.make a
 let via make f arr = arrayFrom (f (make arr))
 let viaInt8 f arr = via Int8Array.make
 
+
+(* make sure we expose a type that's easy to refer to *)
+let x: Int8Array.t = mkI8 [| 1; 2; 3 |]
+
 let suites = Mt.[
 
 (*  ArrayBuffer
