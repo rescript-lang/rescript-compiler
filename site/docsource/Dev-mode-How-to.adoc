@@ -28,7 +28,7 @@ change `j.ml` (most likely you won't), so you probably don't need it
 The build target is
 [source,sh]
 -----------
-make bin/bsb.exe
+make -C bin bsb.exe
 -----------
 
 So whenever you change files relevant to the build tool `bsb.exe`, try it and do some
@@ -53,7 +53,7 @@ But please **don't commit** those changes in PR, it will cause painful merge con
 
 [source,sh]
 -----------
-make bin/bsc.exe # build the compiler in dev mode
+make -C bin bsc.exe # build the compiler in dev mode
 -----------
 
 [source,sh]

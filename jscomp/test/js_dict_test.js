@@ -39,46 +39,60 @@ var suites_001 = /* :: */[
   ],
   /* :: */[
     /* tuple */[
-      "set",
+      "unsafe_get",
       function () {
-        var o = {
-          foo: 43,
-          bar: "baz"
-        };
-        o["foo"] = 36;
         return /* Eq */Block.__(0, [
-                  /* Some */[36],
-                  Js_primitive.undefined_to_opt(o["foo"])
+                  43,
+                  {
+                      foo: 43,
+                      bar: "baz"
+                    }["foo"]
                 ]);
       }
     ],
     /* :: */[
       /* tuple */[
-        "keys",
+        "set",
         function () {
+          var o = {
+            foo: 43,
+            bar: "baz"
+          };
+          o["foo"] = 36;
           return /* Eq */Block.__(0, [
-                    /* array */[
-                      "foo",
-                      "bar"
-                    ],
-                    Object.keys({
-                          foo: 43,
-                          bar: "baz"
-                        })
+                    /* Some */[36],
+                    Js_primitive.undefined_to_opt(o["foo"])
                   ]);
         }
       ],
       /* :: */[
         /* tuple */[
-          "empty",
+          "keys",
           function () {
             return /* Eq */Block.__(0, [
-                      /* array */[],
-                      Object.keys({ })
+                      /* array */[
+                        "foo",
+                        "bar"
+                      ],
+                      Object.keys({
+                            foo: 43,
+                            bar: "baz"
+                          })
                     ]);
           }
         ],
-        /* [] */0
+        /* :: */[
+          /* tuple */[
+            "empty",
+            function () {
+              return /* Eq */Block.__(0, [
+                        /* array */[],
+                        Object.keys({ })
+                      ]);
+            }
+          ],
+          /* [] */0
+        ]
       ]
     ]
   ]

@@ -22,10 +22,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+(** Efficient JSON encoding using Javascript API *) 
 
+(** {2 Types} *)
+
+(** Json type *)
 type t
 
-
+(** Underlying type of a JSON value *) 
 type _ kind = 
   | String : Js_string.t kind
   | Number : float kind 
@@ -34,9 +38,104 @@ type _ kind =
   | Boolean : Js.boolean kind
   | Null : Js_types.null_val kind
 
-val reify_type : 'a -> 'b kind * 'b
+(** {2 Accessor} *)
+
+val reify_type : 'a -> 'b kind * 'b 
+  [@@ocaml.deprecated "Please use `reifyType`"]
+(** [reify_type v] returns both type and underlying value. @deprecated *) 
+
+val reifyType : t -> 'b kind * 'b 
+(** [reifyType v] returns both type and underlying value *) 
 
 val test : 'a  -> 'b kind -> bool
+(** [test v kind] returns true if [v] is of [kind] *)
+
+(** {2 Construtors} *)
+
+(** Those functions allows the construction of an arbitrary complex 
+    JSON values. 
+
+*)
+
+external null : t = "" [@@bs.val]
+(** Null JSON value *)
+
+external string : string -> t = "%identity"
+(** Make a JSON string *)
+
+external number : float -> t = "%identity"
+(** Make a JSON number *)
+
+external boolean : Js.boolean -> t = "%identity" 
+(** Make a JSON boolean *)
+
+external object_ : t Js_dict.t -> t = "%identity"
+(** Make a JSON objet *)
+
+external array_ : t array -> t = "%identity"
+(** Make a JSON array *)
+
+(** The functions below are specialized for specific array type which 
+    happened to be already JSON object in the BuckleScript runtime. Therefore
+    they are more efficient (constant time rather than linear conversion). *) 
+
+external stringArray : string array -> t = "%identity"
+(** Make a JSON string array *) 
+
+external numberArray : float array -> t = "%identity"
+(** Make a JSON number array *)
+
+external booleanArray : Js.boolean array -> t = "%identity"
+(** Make a JSON bool array *)
+
+external objectArray : t Js_dict.t array -> t = "%identity"
+(** Make a JSON object array *)
+
+(** {2 String conversion} *)
 
 external parse : string -> t = "JSON.parse" [@@bs.val]
+(** [parse s] returns JSON value and @raises SyntaxError in the 
+    case [s] is not a valid JSON string. 
+    Note [SyntaxError] is a JavaScript exception. 
+
+@example {[
+let json = 
+  try Js_json.parse {| { "x" : [1, 2, 3 ] } |} 
+  with | e -> Js.log e; failwith "Error parsing JSON string"
+in 
+let ty, ob = Js_json.reifyType json in 
+match ty with
+| Js_json.Object ->
+  (* In this branch, compiler infer ob : Js_json.t Js_dict.t *)
+  begin match Js_dict.get ob "x" with
+  | None -> assert(false) 
+  | Some xValue -> 
+    let ty, xValue = Js_json.reifyType xValue in 
+    begin match ty with
+    | Js_json.Array -> 
+      (* In this branch compiler infer xValue : Js_json.t array *)
+      assert(3 = Array.length xValue) 
+    | _ -> assert(false) 
+    end 
+  end 
+| _ -> assert(false)
+]}*)
+
+external stringify: t -> string = "JSON.stringify" [@@bs.val]
+(** [stringify json] returns JSON string 
+
+@example {[
+(* This example shows how to create a simple JSON string made of a single 
+   JSON object with a few key/values *)
+
+let dict = Js_dict.empty () in 
+Js_dict.set dict "name" (Js_json.string "John Doe"); 
+Js_dict.set dict "age" (Js_json.numberOfInt 30); 
+Js_dict.set dict "likes" 
+  (Js_json.stringArray [|"bucklescript";"ocaml";"js"|]);
+Js.log \@\@ Js_json.stringify (Js_json.object_ dict) 
+]}
+
+*)
+
 external stringifyAny : 'a -> string option = "JSON.stringify" [@@bs.val] [@@bs.return undefined_to_opt]

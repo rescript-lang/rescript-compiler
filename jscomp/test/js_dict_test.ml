@@ -7,6 +7,8 @@ let suites = Mt.[
     Eq(Some 43, get (obj ()) "foo"));
   "get - property not in object", (fun _ ->
     Eq(None, get (obj ()) "baz"));
+  "unsafe_get", (fun _ ->
+    Eq(43, unsafeGet (obj ()) "foo"));
   "set", (fun _ ->
     let o = obj () in 
     set o "foo" 36;
