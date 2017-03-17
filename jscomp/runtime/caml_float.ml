@@ -34,7 +34,7 @@ external max_float : float -> float -> float = "Math.max" [@@bs.val]
 external min_float : float -> float -> float = "Math.min" [@@bs.val]
 external pow_float : base:float -> exp:float -> float = "Math.pow" [@@bs.val]
 
-open Typed_array
+open Js_typed_array
 
 let caml_int32_float_of_bits (x : int32) =
   let int32 = Int32_array.make [| x |] in
@@ -44,7 +44,6 @@ let caml_int32_float_of_bits (x : int32) =
 let caml_int32_bits_of_float (x : float) =
   let float32 = Float32_array.make [|x|] in
   Int32_array.unsafe_get (Int32_array.fromBuffer (Float32_array.buffer float32)) 0
-
 
 let caml_classify_float x : fpclass  =
   if Js_float.isFinite x then

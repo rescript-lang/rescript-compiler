@@ -408,7 +408,7 @@ let to_hex x =
 let discard_sign x = {x with hi = Nativeint.logand 0x7fff_ffffn x.hi }
 
 
-open Typed_array
+open Js_typed_array
 let float_of_bits x  =
   let to_int32 (x : nativeint) = x |> Nativeint.to_int32
   in
