@@ -23,6 +23,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
+(** *)
+
 val none : 'a option
 val some : 'a -> 'a option
 val is_none : 'a option -> Js.boolean

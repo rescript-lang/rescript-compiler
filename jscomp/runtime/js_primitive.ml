@@ -26,6 +26,7 @@
 
 
 
+(** *)
 
 let is_nil_undef (x : _ Js.null_undefined) = 
   (Obj.magic x) == Js.null ||  (Obj.magic x) == Js.undefined

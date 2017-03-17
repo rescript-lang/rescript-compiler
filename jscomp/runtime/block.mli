@@ -26,6 +26,6 @@
 
 
 
-
+(** *)
 
 val __ : int -> Obj.t -> Obj.t

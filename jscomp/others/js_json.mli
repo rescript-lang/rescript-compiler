@@ -22,11 +22,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** Efficient JSON encoding using Javascript API *) 
+(** Efficient JSON encoding using JavaScript API
+
+@see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON> MDN
+*) 
 
 (** {2 Types} *)
 
-(** Json type *)
+(** The JSON data structure *)
 type t
 
 (** Underlying type of a JSON value *) 
@@ -40,10 +43,6 @@ type _ kind =
 
 (** {2 Accessor} *)
 
-val reify_type : 'a -> 'b kind * 'b 
-  [@@ocaml.deprecated "Please use `reifyType`"]
-(** [reify_type v] returns both type and underlying value. @deprecated *) 
-
 val reifyType : t -> 'b kind * 'b 
 (** [reifyType v] returns both type and underlying value *) 
 
@@ -54,88 +53,132 @@ val test : 'a  -> 'b kind -> bool
 
 (** Those functions allows the construction of an arbitrary complex 
     JSON values. 
-
 *)
 
 external null : t = "" [@@bs.val]
-(** Null JSON value *)
+(** [null] is the singleton null JSON value *)
 
 external string : string -> t = "%identity"
-(** Make a JSON string *)
+(** [string s] makes a JSON string of the [string] [s] *)
 
 external number : float -> t = "%identity"
-(** Make a JSON number *)
+(** [number n] makes a JSON number of the [float] [n] *)
 
 external boolean : Js.boolean -> t = "%identity" 
-(** Make a JSON boolean *)
+(** [boolean b] makes a JSON boolean of the [Js.boolean] [b] *)
 
 external object_ : t Js_dict.t -> t = "%identity"
-(** Make a JSON objet *)
+(** [object_ dict] makes a JSON objet of the [Js.Dict.t] [dict] *)
 
 external array_ : t array -> t = "%identity"
-(** Make a JSON array *)
+(** [array_ a] makes a JSON array of the [Js.Json.t array] [a] *)
 
 (** The functions below are specialized for specific array type which 
     happened to be already JSON object in the BuckleScript runtime. Therefore
     they are more efficient (constant time rather than linear conversion). *) 
 
 external stringArray : string array -> t = "%identity"
-(** Make a JSON string array *) 
+(** [stringArray a] makes a JSON array of the [string array] [a] *) 
 
 external numberArray : float array -> t = "%identity"
-(** Make a JSON number array *)
+(** [numberArray a] makes a JSON array of the [float array] [a] *)
 
 external booleanArray : Js.boolean array -> t = "%identity"
-(** Make a JSON bool array *)
+(** [booleanArray] makes a JSON array of the [Js.boolean array] [a] *)
 
 external objectArray : t Js_dict.t array -> t = "%identity"
-(** Make a JSON object array *)
+(** [objectArray a] makes a JSON array of the [JsDict.t array] [a] *)
 
 (** {2 String conversion} *)
 
 external parse : string -> t = "JSON.parse" [@@bs.val]
-(** [parse s] returns JSON value and @raises SyntaxError in the 
-    case [s] is not a valid JSON string. 
-    Note [SyntaxError] is a JavaScript exception. 
+(** [parse s] parses the string [s] into a JSON data structure
+
+{b Returns} a JSON data structure
+
+@raise SyntaxError if given string is not a valid JSON. Note [SyntaxError] is a JavaScript exception. 
 
 @example {[
+(* parse a simple JSON string *)
+
 let json = 
-  try Js_json.parse {| { "x" : [1, 2, 3 ] } |} 
-  with | e -> Js.log e; failwith "Error parsing JSON string"
-in 
-let ty, ob = Js_json.reifyType json in 
-match ty with
-| Js_json.Object ->
-  (* In this branch, compiler infer ob : Js_json.t Js_dict.t *)
-  begin match Js_dict.get ob "x" with
-  | None -> assert(false) 
-  | Some xValue -> 
-    let ty, xValue = Js_json.reifyType xValue in 
-    begin match ty with
-    | Js_json.Array -> 
-      (* In this branch compiler infer xValue : Js_json.t array *)
-      assert(3 = Array.length xValue) 
-    | _ -> assert(false) 
-    end 
-  end 
-| _ -> assert(false)
-]}*)
-
-external stringify: t -> string = "JSON.stringify" [@@bs.val]
-(** [stringify json] returns JSON string 
-
-@example {[
-(* This example shows how to create a simple JSON string made of a single 
-   JSON object with a few key/values *)
-
-let dict = Js_dict.empty () in 
-Js_dict.set dict "name" (Js_json.string "John Doe"); 
-Js_dict.set dict "age" (Js_json.numberOfInt 30); 
-Js_dict.set dict "likes" 
-  (Js_json.stringArray [|"bucklescript";"ocaml";"js"|]);
-Js.log \@\@ Js_json.stringify (Js_json.object_ dict) 
+  try
+    Js_json.parse {| "foo" |} 
+  with
+  | _ -> failwith "Error parsing JSON string"
+in
+match Js.Json.reifyType json in
+| (Js.Json.String, value) -> Js.log value
+| _ -> failWith "Expected a string"
 ]}
 
+@example {[
+(* parse a complex JSON string *)
+
+let getIds s =
+  let json = 
+    try
+      Js.Json.parse s
+    with
+    | _ -> failwith "Error parsing JSON string"
+  in 
+  match Js.Json.reifyType json with
+  | (Js.Json.Object, value) ->
+    (* In this branch, compiler infer value : Js.Json.t Js.Dict.t *)
+    begin match Js.Dict.get value "ids" with
+    | Some ids -> 
+      begin match Js.Json.reifyType ids with
+      | (Js.Json.Array, ids) -> 
+        (* In this branch compiler infer ids : Js.Json.t array *)
+        ids
+      | _ -> failWith "Expected an array"
+      end 
+    | None -> failWith "Expected an `ids` property"
+    end 
+  | _ -> failWith "Expected an object"
+
+(* prints `1, 2, 3` *)
+let _ =
+  Js.log \@\@ getIds {| { "ids" : [1, 2, 3 ] } |} 
+]}
+
+@see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse> MDN
+*)
+
+external stringify: t -> string = "JSON.stringify" [@@bs.val]
+(** [stringify json] formats the JSON data structure as a string
+
+{b Returns} the string representation of a given JSON data structure
+
+@example {[
+(* Creates and stringifies a simple JS object *)
+
+let dict = Js.Dict.empty () in 
+Js.Dict.set dict "name" (Js.Json.string "John Doe"); 
+Js.Dict.set dict "age" (Js.Json.numberOfInt 30); 
+Js.Dict.set dict "likes" 
+  (Js.Json.stringArray [|"bucklescript";"ocaml";"js"|]);
+
+Js.log \@\@ Js.Json.stringify (Js.Json.object_ dict) 
+]}
+
+@see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify> MDN
 *)
 
 external stringifyAny : 'a -> string option = "JSON.stringify" [@@bs.val] [@@bs.return undefined_to_opt]
+(** [stringifyAny value] formats any [value] into a JSON string
+
+@example {[
+(* prints `["foo", "bar"]` *)
+Js.log \@\@ Js.Json.stringify [| "foo"; "bar" |]
+]}
+
+@see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify> MDN
+*)
+
+
+(**
+@deprecated Please use {! reifyType} instead
+*) 
+val reify_type : 'a -> 'b kind * 'b 
+[@@ocaml.deprecated "Please use `reifyType`"]

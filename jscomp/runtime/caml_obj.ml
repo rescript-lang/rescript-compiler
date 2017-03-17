@@ -29,6 +29,7 @@
 
 
 
+(** *)
 
 (** Mainly used in camlinternalOO
     {[

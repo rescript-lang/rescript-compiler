@@ -23,7 +23,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-
+(** *)
 
 val is_nil_undef : 'a Js.null_undefined -> bool
 

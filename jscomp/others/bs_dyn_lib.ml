@@ -22,7 +22,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Generates a string representation of a Bs_dyn. value *)
+(** experimental API *)
+
+(** Generates a string representation of a Bs_dyn. value *)
 let to_string (v: Bs_dyn.value) : string =
     let rec construct_string (b: Buffer.t) (v: Bs_dyn.value) (tab_level: int) =
       (* inserts spaces before string and adds to buffer *)

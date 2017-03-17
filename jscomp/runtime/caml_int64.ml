@@ -27,6 +27,7 @@
 
 
 
+(** *)
 
 (* This module would  only work with js backend, since it requires
    [nativeint] behaves as js  numbers

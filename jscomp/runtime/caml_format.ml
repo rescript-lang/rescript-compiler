@@ -28,6 +28,7 @@
 
 
 
+(** *)
 
 let repeat = Caml_utils.repeat
 let caml_failwith s = raise (Failure  s)

@@ -22,6 +22,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+(** Efficient JSON encoding using JavaScript API *)
+
 type t
 
 type _ kind = 
@@ -53,9 +55,7 @@ let reifyType = reify_type
 let test (type a) (x : 'a) (v : a kind) : bool =
   match v with
   | Number -> Js.typeof x = "number"
-  | Boolean 
-    -> 
-     Js.typeof x = "boolean" 
+  | Boolean -> Js.typeof x = "boolean" 
   | String -> Js.typeof x = "string"
   | Null -> (Obj.magic x) == Js.null 
   | Array -> Js_array.isArray x 
@@ -66,23 +66,13 @@ external stringifyAny : 'a -> string option = "JSON.stringify" [@@bs.val] [@@bs.
 (* TODO: more docs when parse error happens or stringify non-stringfy value *)
 
 external null : t = "" [@@bs.val]
-
 external string : string -> t = "%identity"
-
 external number : float -> t = "%identity"
-
 external boolean : Js.boolean -> t = "%identity" 
-
 external object_ : t Js_dict.t -> t = "%identity"
-
 external array_ : t array -> t = "%identity"
-
 external stringArray : string array -> t = "%identity"
-
 external numberArray : float array -> t = "%identity"
-
 external booleanArray : Js.boolean array -> t = "%identity"
-
 external objectArray : t Js_dict.t array -> t = "%identity"
-
 external stringify: t -> string = "JSON.stringify" [@@bs.val]

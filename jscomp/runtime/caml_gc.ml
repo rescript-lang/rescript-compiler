@@ -26,6 +26,7 @@
 
 
 
+(** *)
 
 let dummy_stat : Gc.stat = 
   { minor_words = 0.; 

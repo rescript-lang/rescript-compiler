@@ -25,6 +25,6 @@
 
 
 
-
+(** *)
 
 val caml_hash : int -> 'a -> nativeint -> Obj.t -> nativeint
