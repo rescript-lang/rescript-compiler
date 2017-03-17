@@ -66,14 +66,8 @@ external string : string -> t = "%identity"
 external number : float -> t = "%identity"
 (** Make a JSON number *)
 
-external numberOfInt : int -> t = "%identity"
-(** Make a JSON number from int*)
-
 external boolean : Js.boolean -> t = "%identity" 
 (** Make a JSON boolean *)
-
-external boolAsInt : bool -> t = "%identity" 
-(** Make a JSON int value from an OCaml bool *)
 
 external object_ : t Js_dict.t -> t = "%identity"
 (** Make a JSON objet *)
@@ -89,9 +83,6 @@ external stringArray : string array -> t = "%identity"
 (** Make a JSON string array *) 
 
 external numberArray : float array -> t = "%identity"
-(** Make a JSON number array *)
-
-external intArray : int array -> t = "%identity"
 (** Make a JSON number array *)
 
 external booleanArray : Js.boolean array -> t = "%identity"

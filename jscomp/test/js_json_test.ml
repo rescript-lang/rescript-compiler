@@ -76,7 +76,7 @@ let () =
 
 let () = 
   let json = 
-    Js.Json.numberOfInt 0xAFAFAFAF
+    Js.Json.number (float_of_int 0xAFAFAFAF)
     |> Js.Json.stringify |> Js.Json.parse 
   in 
   let ty, x = Js.Json.reifyType json in
@@ -196,7 +196,8 @@ let () =
   let a = [| 0; 0xAFAFAFAF; 0xF000AABB|] in
   let json = 
     a  
-    |> Js.Json.intArray
+    |> Array.map float_of_int
+    |> Js.Json.numberArray
     |> Js.Json.stringify
     |> Js.Json.parse 
   in 
@@ -225,7 +226,7 @@ let () =
   let make_d s i = 
     let d = Js_dict.empty() in 
     Js_dict.set d "a" (Js_json.string s); 
-    Js_dict.set d "b" (Js_json.numberOfInt i); 
+    Js_dict.set d "b" (Js_json.number (float_of_int i));
     d
   in 
 
@@ -252,5 +253,13 @@ let () =
     end
   | _ -> false_ __LOC__
 
+let () = 
+  let invalid_json_str = "{{ A}" in
+  try
+    let _ = Js_json.parse invalid_json_str in
+    false_ __LOC__
+  with
+  | exn -> 
+    true_ __LOC__
 
 let () = Mt.from_pair_suites __FILE__ !suites

@@ -291,13 +291,15 @@ var a$1 = /* int array */[
   -268391749
 ];
 
-var json$8 = JSON.parse(JSON.stringify(a$1));
+var json$8 = JSON.parse(JSON.stringify($$Array.map(function (prim) {
+              return prim;
+            }, a$1)));
 
-eq_at_i('File "js_json_test.ml", line 204, characters 10-17', json$8, 0, /* Number */1, a$1[0]);
+eq_at_i('File "js_json_test.ml", line 205, characters 10-17', json$8, 0, /* Number */1, a$1[0]);
 
-eq_at_i('File "js_json_test.ml", line 205, characters 10-17', json$8, 1, /* Number */1, a$1[1]);
+eq_at_i('File "js_json_test.ml", line 206, characters 10-17', json$8, 1, /* Number */1, a$1[1]);
 
-eq_at_i('File "js_json_test.ml", line 206, characters 10-17', json$8, 2, /* Number */1, a$1[2]);
+eq_at_i('File "js_json_test.ml", line 207, characters 10-17', json$8, 2, /* Number */1, a$1[2]);
 
 var a$2 = /* int array */[
   /* true */1,
@@ -309,15 +311,15 @@ var json$9 = JSON.parse(JSON.stringify($$Array.map(Js_boolean.to_js_boolean, a$2
 
 var b$1 = a$2[0];
 
-eq_at_i('File "js_json_test.ml", line 219, characters 10-17', json$9, 0, /* Boolean */4, b$1 ? true : false);
+eq_at_i('File "js_json_test.ml", line 220, characters 10-17', json$9, 0, /* Boolean */4, b$1 ? true : false);
 
 var b$2 = a$2[1];
 
-eq_at_i('File "js_json_test.ml", line 220, characters 10-17', json$9, 1, /* Boolean */4, b$2 ? true : false);
+eq_at_i('File "js_json_test.ml", line 221, characters 10-17', json$9, 1, /* Boolean */4, b$2 ? true : false);
 
 var b$3 = a$2[2];
 
-eq_at_i('File "js_json_test.ml", line 221, characters 10-17', json$9, 2, /* Boolean */4, b$3 ? true : false);
+eq_at_i('File "js_json_test.ml", line 222, characters 10-17', json$9, 2, /* Boolean */4, b$3 ? true : false);
 
 function make_d(s, i) {
   var d = { };
@@ -336,28 +338,40 @@ var json$10 = JSON.parse(JSON.stringify(a$3));
 var match$7 = Js_json.reifyType(json$10);
 
 if (match$7[0] !== 3) {
-  add_test('File "js_json_test.ml", line 253, characters 16-23', function () {
+  add_test('File "js_json_test.ml", line 254, characters 16-23', function () {
         return /* Ok */Block.__(2, [/* false */0]);
       });
 }
 else {
   var match$8 = Js_json.reifyType(match$7[1][1]);
   if (match$8[0] !== 2) {
-    add_test('File "js_json_test.ml", line 251, characters 18-25', function () {
+    add_test('File "js_json_test.ml", line 252, characters 18-25', function () {
           return /* Ok */Block.__(2, [/* false */0]);
         });
   }
   else {
     var match$9 = Js_json.reifyType(Js_dict.exnGet(match$8[1], "a"));
     if (match$9[0] !== 0) {
-      add_test('File "js_json_test.ml", line 249, characters 20-27', function () {
+      add_test('File "js_json_test.ml", line 250, characters 20-27', function () {
             return /* Ok */Block.__(2, [/* false */0]);
           });
     }
     else {
-      eq('File "js_json_test.ml", line 248, characters 29-36', match$9[1], "bbb");
+      eq('File "js_json_test.ml", line 249, characters 29-36', match$9[1], "bbb");
     }
   }
+}
+
+try {
+  JSON.parse("{{ A}");
+  add_test('File "js_json_test.ml", line 260, characters 11-18', function () {
+        return /* Ok */Block.__(2, [/* false */0]);
+      });
+}
+catch (exn){
+  add_test('File "js_json_test.ml", line 263, characters 10-17', function () {
+        return /* Ok */Block.__(2, [/* true */1]);
+      });
 }
 
 Mt.from_pair_suites("js_json_test.ml", suites[0]);

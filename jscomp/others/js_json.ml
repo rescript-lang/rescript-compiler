@@ -70,11 +70,7 @@ external string : string -> t = "%identity"
 
 external number : float -> t = "%identity"
 
-external numberOfInt : int -> t = "%identity"
-
 external boolean : Js.boolean -> t = "%identity" 
-
-external boolAsInt : bool -> t = "%identity" 
 
 external object_ : t Js_dict.t -> t = "%identity"
 
@@ -83,8 +79,6 @@ external array_ : t array -> t = "%identity"
 external stringArray : string array -> t = "%identity"
 
 external numberArray : float array -> t = "%identity"
-
-external intArray : int array -> t = "%identity"
 
 external booleanArray : Js.boolean array -> t = "%identity"
 
