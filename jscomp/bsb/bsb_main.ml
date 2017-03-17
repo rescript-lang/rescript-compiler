@@ -250,7 +250,8 @@ let usage = "Usage : bsb.exe <bsb-options> <files> -- <ninja_options>\n\
              It is always recommended to run ninja via bsb.exe \n\
              Bsb options are:"
 
-
+let handle_anonymous_arg arg =
+  Arg.usage bsb_main_flags usage
 
 let make_world_deps (config : Bsb_config_types.t option) =
   print_endline "\nMaking the dependency world!";
@@ -283,7 +284,7 @@ let () =
       | `No_split
         ->
         begin
-          Arg.parse bsb_main_flags annoymous usage;
+          Arg.parse bsb_main_flags handle_anonymous_arg usage;
           (* [-make-world] should never be combined with [-package-specs] *)
           begin match !make_world, !force_regenerate with
             | false, false -> 
@@ -317,7 +318,7 @@ let () =
       | `Split (bsb_args,ninja_args)
         -> (* -make-world all dependencies fall into this category *)
         begin
-          Arg.parse_argv bsb_args bsb_main_flags annoymous usage ;
+          Arg.parse_argv bsb_args bsb_main_flags handle_anonymous_arg usage ;
           let config_opt = regenerate_ninja cwd bsc_dir !force_regenerate in
           (* [-make-world] should never be combined with [-package-specs] *)
           if !make_world then
