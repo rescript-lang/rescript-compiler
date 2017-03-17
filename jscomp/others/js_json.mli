@@ -39,3 +39,4 @@ val reify_type : 'a -> 'b kind * 'b
 val test : 'a  -> 'b kind -> bool
 
 external parse : string -> t = "JSON.parse" [@@bs.val]
+external stringifyAny : 'a -> string option = "JSON.stringify" [@@bs.val] [@@bs.return undefined_to_opt]
