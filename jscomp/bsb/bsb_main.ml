@@ -32,7 +32,6 @@ let (//) = Ext_filename.combine
 
 let force_regenerate = ref false
 let exec = ref false
-let targets = String_vec.make 5
 
 let cwd = Sys.getcwd ()
 
@@ -70,9 +69,6 @@ let build_bs_deps package_specs   =
             cwd = cwd;
             args  =
               [| bsb_exe ; internal_install ; no_dev; internal_package_specs; package_specs; regen; separator |]})
-
-let annoymous filename =
-  String_vec.push  filename targets
 
 let watch_mode = ref false
 let make_world = ref false
