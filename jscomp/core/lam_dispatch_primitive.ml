@@ -501,6 +501,7 @@ let translate (prim_name : string)
   | "caml_ml_output_char"
   | "caml_ml_output" 
   | "caml_ml_input_char"
+  | "caml_array_safe_get"
     -> 
     call Js_config.io
   | "caml_update_dummy"
