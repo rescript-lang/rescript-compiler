@@ -64,6 +64,7 @@ struct
           <link rel=\"stylesheet\" href=\"../api_static/tomorrow-night.css\">\n
           <link rel=\"stylesheet\" href=\"../api_static/style.css\" type=\"text/css\">\n
           <script src=\"../api_static//highlight.pack.js\"></script>\n
+          <script src=\"../api_static//script.js\"></script>\n
           <script>hljs.initHighlightingOnLoad();</script>"; (* nasty hack but who cares! *)
 
       method html_of_author_list = wrap_tag_list super#html_of_author_list

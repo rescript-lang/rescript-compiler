@@ -195,14 +195,27 @@ body > .type-declaration {
   padding-bottom: 1em;
   border-bottom: 1px solid #eee;
   margin-bottom: 1em;
-  padding-left: 16px;
+  padding-left: 20px;
   width: 40%;
   min-width: 600px;
+}
+
+body > pre .anchor,
+body > .type-declaration > pre .anchor {
+  visibility: hidden;
+  margin-right: .5ex;
+  margin-left: -1.5ex;
+}
+
+body > pre:hover .anchor,
+body > .type-declaration > pre:hover .anchor {
+  visibility: visible;
 }
 
 .info {
   display: flex;
   margin-bottom: 4em;
+  padding: 0 2.5em;
 }
 
 .info table {
@@ -221,9 +234,12 @@ code.hljs {
 }
 
 .not-examples {
-  padding: 0 2em;
   width: 40%;
   min-width: 600px;
+}
+
+.not-examples .codepre {
+  margin: 1em 0;
 }
 
 .examples {
@@ -240,7 +256,7 @@ code.hljs {
   overflow-x: auto;
   background: #1d1f21;
   color: #c5c8c6;
-  padding: 0.5em;
+  padding: 1em 2em;
 }
 
 * {
@@ -316,7 +332,7 @@ body > table .info {
   }
 
   .examples > pre {
-    margin: 1em 2em;
+    margin: 1em 0;
   }
 
   .examples .hljs {
