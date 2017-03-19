@@ -5,6 +5,7 @@ var $$Array                 = require("../../lib/js/array");
 var Block                   = require("../../lib/js/block");
 var Js_json                 = require("../../lib/js/js_json");
 var Caml_obj                = require("../../lib/js/caml_obj");
+var Caml_array              = require("../../lib/js/caml_array");
 var Js_boolean              = require("../../lib/js/js_boolean");
 var Js_primitive            = require("../../lib/js/js_primitive");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
@@ -233,7 +234,7 @@ function eq_at_i(loc, json, i, kind, expected) {
               });
   }
   else {
-    var match$1 = Js_json.reifyType(match[1][i]);
+    var match$1 = Js_json.reifyType(Caml_array.caml_array_get(match[1], i));
     if (Caml_obj.caml_equal(match$1[0], kind)) {
       return eq(loc, match$1[1], expected);
     }
@@ -279,11 +280,11 @@ var a = /* float array */[
 
 var json$7 = JSON.parse(JSON.stringify(a));
 
-eq_at_i('File "js_json_test.ml", line 190, characters 10-17', json$7, 0, /* Number */1, a[0]);
+eq_at_i('File "js_json_test.ml", line 190, characters 10-17', json$7, 0, /* Number */1, Caml_array.caml_array_get(a, 0));
 
-eq_at_i('File "js_json_test.ml", line 191, characters 10-17', json$7, 1, /* Number */1, a[1]);
+eq_at_i('File "js_json_test.ml", line 191, characters 10-17', json$7, 1, /* Number */1, Caml_array.caml_array_get(a, 1));
 
-eq_at_i('File "js_json_test.ml", line 192, characters 10-17', json$7, 2, /* Number */1, a[2]);
+eq_at_i('File "js_json_test.ml", line 192, characters 10-17', json$7, 2, /* Number */1, Caml_array.caml_array_get(a, 2));
 
 var a$1 = /* int array */[
   0,
@@ -295,11 +296,11 @@ var json$8 = JSON.parse(JSON.stringify($$Array.map(function (prim) {
               return prim;
             }, a$1)));
 
-eq_at_i('File "js_json_test.ml", line 205, characters 10-17', json$8, 0, /* Number */1, a$1[0]);
+eq_at_i('File "js_json_test.ml", line 205, characters 10-17', json$8, 0, /* Number */1, Caml_array.caml_array_get(a$1, 0));
 
-eq_at_i('File "js_json_test.ml", line 206, characters 10-17', json$8, 1, /* Number */1, a$1[1]);
+eq_at_i('File "js_json_test.ml", line 206, characters 10-17', json$8, 1, /* Number */1, Caml_array.caml_array_get(a$1, 1));
 
-eq_at_i('File "js_json_test.ml", line 207, characters 10-17', json$8, 2, /* Number */1, a$1[2]);
+eq_at_i('File "js_json_test.ml", line 207, characters 10-17', json$8, 2, /* Number */1, Caml_array.caml_array_get(a$1, 2));
 
 var a$2 = /* int array */[
   /* true */1,
@@ -309,15 +310,15 @@ var a$2 = /* int array */[
 
 var json$9 = JSON.parse(JSON.stringify($$Array.map(Js_boolean.to_js_boolean, a$2)));
 
-var b$1 = a$2[0];
+var b$1 = Caml_array.caml_array_get(a$2, 0);
 
 eq_at_i('File "js_json_test.ml", line 220, characters 10-17', json$9, 0, /* Boolean */4, b$1 ? true : false);
 
-var b$2 = a$2[1];
+var b$2 = Caml_array.caml_array_get(a$2, 1);
 
 eq_at_i('File "js_json_test.ml", line 221, characters 10-17', json$9, 1, /* Boolean */4, b$2 ? true : false);
 
-var b$3 = a$2[2];
+var b$3 = Caml_array.caml_array_get(a$2, 2);
 
 eq_at_i('File "js_json_test.ml", line 222, characters 10-17', json$9, 2, /* Boolean */4, b$3 ? true : false);
 
@@ -343,7 +344,7 @@ if (match$7[0] !== 3) {
       });
 }
 else {
-  var match$8 = Js_json.reifyType(match$7[1][1]);
+  var match$8 = Js_json.reifyType(Caml_array.caml_array_get(match$7[1], 1));
   if (match$8[0] !== 2) {
     add_test('File "js_json_test.ml", line 252, characters 18-25', function () {
           return /* Ok */Block.__(4, [/* false */0]);

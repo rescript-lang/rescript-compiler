@@ -1,11 +1,12 @@
 'use strict';
 
+var Caml_array              = require("../../lib/js/caml_array");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
 
 function caml_array_sub(x, offset, len) {
   var result = new Array(len);
   for(var j = 0 ,j_finish = len - 1 | 0; j <= j_finish; ++j){
-    result[j] = x[offset + j | 0];
+    Caml_array.caml_array_set(result, j, Caml_array.caml_array_get(x, offset + j | 0));
   }
   return result;
 }
@@ -18,8 +19,7 @@ function caml_array_set(xs, index, newval) {
         ];
   }
   else {
-    xs[index] = newval;
-    return /* () */0;
+    return Caml_array.caml_array_set(xs, index, newval);
   }
 }
 
@@ -31,14 +31,14 @@ function caml_array_get(xs, index) {
         ];
   }
   else {
-    return xs[index];
+    return Caml_array.caml_array_get(xs, index);
   }
 }
 
 function caml_make_vect(len, init) {
   var b = new Array(len);
   for(var i = 0 ,i_finish = len - 1 | 0; i <= i_finish; ++i){
-    b[i] = init;
+    Caml_array.caml_array_set(b, i, init);
   }
   return b;
 }

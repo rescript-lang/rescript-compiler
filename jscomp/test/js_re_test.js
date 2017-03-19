@@ -1,7 +1,8 @@
 'use strict';
 
-var Mt    = require("./mt");
-var Block = require("../../lib/js/block");
+var Mt         = require("./mt");
+var Block      = require("../../lib/js/block");
+var Caml_array = require("../../lib/js/caml_array");
 
 var suites_000 = /* tuple */[
   "exec_literal",
@@ -10,7 +11,7 @@ var suites_000 = /* tuple */[
     if (match !== null) {
       return /* Eq */Block.__(0, [
                 "xxx",
-                match[0].substring(7)
+                Caml_array.caml_array_get(match, 0).substring(7)
               ]);
     }
     else {

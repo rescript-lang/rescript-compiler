@@ -2321,10 +2321,10 @@ function new_table(pub_labels) {
   table_count[0] = table_count[0] + 1 | 0;
   var len = pub_labels.length;
   var methods = Caml_array.caml_make_vect((len << 1) + 2 | 0, dummy_met);
-  methods[0] = len;
-  methods[1] = (Caml_int32.imul(fit_size(len), Sys.word_size) / 8 | 0) - 1 | 0;
+  Caml_array.caml_array_set(methods, 0, len);
+  Caml_array.caml_array_set(methods, 1, (Caml_int32.imul(fit_size(len), Sys.word_size) / 8 | 0) - 1 | 0);
   for(var i = 0 ,i_finish = len - 1 | 0; i <= i_finish; ++i){
-    methods[(i << 1) + 3 | 0] = pub_labels[i];
+    Caml_array.caml_array_set(methods, (i << 1) + 3 | 0, Caml_array.caml_array_get(pub_labels, i));
   }
   return /* record */[
           /* size */2,
@@ -2353,8 +2353,7 @@ function resize(array, new_size) {
 
 function put(array, label, element) {
   resize(array, label + 1 | 0);
-  array[/* methods */1][label] = element;
-  return /* () */0;
+  return Caml_array.caml_array_set(array[/* methods */1], label, element);
 }
 
 var method_count = [0];
@@ -2413,7 +2412,7 @@ function get_method(table, label) {
   }
   catch (exn){
     if (exn === Caml_builtin_exceptions.not_found) {
-      return table[/* methods */1][label];
+      return Caml_array.caml_array_get(table[/* methods */1], label);
     }
     else {
       throw exn;
@@ -2561,10 +2560,10 @@ function new_methods_variables(table, meths, vals) {
   var nvals = vals.length;
   var res = Caml_array.caml_make_vect(nmeths + nvals | 0, 0);
   for(var i = 0 ,i_finish = nmeths - 1 | 0; i <= i_finish; ++i){
-    res[i] = get_method_label(table, meths$1[i]);
+    Caml_array.caml_array_set(res, i, get_method_label(table, Caml_array.caml_array_get(meths$1, i)));
   }
   for(var i$1 = 0 ,i_finish$1 = nvals - 1 | 0; i$1 <= i_finish$1; ++i$1){
-    res[i$1 + nmeths | 0] = new_variable(table, vals[i$1]);
+    Caml_array.caml_array_set(res, i$1 + nmeths | 0, new_variable(table, Caml_array.caml_array_get(vals, i$1)));
   }
   return res;
 }
@@ -2624,7 +2623,7 @@ function create_table(public_methods) {
 function init_class(table) {
   inst_var_count[0] = (inst_var_count[0] + table[/* size */0] | 0) - 1 | 0;
   table[/* initializers */7] = List.rev(table[/* initializers */7]);
-  return resize(table, 3 + Caml_int32.div((table[/* methods */1][1] << 4), Sys.word_size) | 0);
+  return resize(table, 3 + Caml_int32.div((Caml_array.caml_array_get(table[/* methods */1], 1) << 4), Sys.word_size) | 0);
 }
 
 function inherits(cla, vals, virt_meths, concr_meths, param, top) {
@@ -2765,7 +2764,7 @@ function build_path(n, keys, tables) {
   var r = res;
   for(var i = 0; i <= n; ++i){
     r = /* Cons */[
-      keys[i],
+      Caml_array.caml_array_get(keys, i),
       r,
       /* Empty */0
     ];
@@ -2779,7 +2778,7 @@ function lookup_keys(i, keys, tables) {
     return tables;
   }
   else {
-    var key = keys[i];
+    var key = Caml_array.caml_array_get(keys, i);
     var _tables = tables;
     while(true) {
       var tables$1 = _tables;
@@ -2963,15 +2962,15 @@ function send_meth(m, n, _) {
 
 function new_cache(table) {
   var n = new_method(table);
-  var n$1 = n % 2 === 0 || n > (2 + Caml_int32.div((table[/* methods */1][1] << 4), Sys.word_size) | 0) ? n : new_method(table);
-  table[/* methods */1][n$1] = 0;
+  var n$1 = n % 2 === 0 || n > (2 + Caml_int32.div((Caml_array.caml_array_get(table[/* methods */1], 1) << 4), Sys.word_size) | 0) ? n : new_method(table);
+  Caml_array.caml_array_set(table[/* methods */1], n$1, 0);
   return n$1;
 }
 
 function method_impl(table, i, arr) {
   var next = function () {
     i[0] = i[0] + 1 | 0;
-    return arr[i[0]];
+    return Caml_array.caml_array_get(arr, i[0]);
   };
   var clo = next(/* () */0);
   if (typeof clo === "number") {
@@ -3104,7 +3103,7 @@ function set_methods(table, methods) {
   var len = methods.length;
   var i = [0];
   while(i[0] < len) {
-    var label = methods[i[0]];
+    var label = Caml_array.caml_array_get(methods, i[0]);
     var clo = method_impl(table, i, methods);
     set_method(table, label, clo);
     i[0] = i[0] + 1 | 0;

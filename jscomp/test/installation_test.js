@@ -47,7 +47,7 @@ if (match !== undefined) {
           Caml_builtin_exceptions.assert_failure,
           [
             "installation_test.ml",
-            34,
+            33,
             8
           ]
         ];
@@ -59,7 +59,6 @@ if (match !== undefined) {
     var non_exists = files.indexOf("pervasive.cmi");
     var v = +(exists >= 0 && non_exists < 0);
     console.log(v);
-    eq('File "installation_test.ml", line 32, characters 11-18', v, /* true */1);
   }
   
 }
@@ -68,7 +67,7 @@ else {
         Caml_builtin_exceptions.assert_failure,
         [
           "installation_test.ml",
-          36,
+          35,
           18
         ]
       ];

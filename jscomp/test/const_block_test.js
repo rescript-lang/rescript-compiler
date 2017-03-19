@@ -1,7 +1,8 @@
 'use strict';
 
-var Mt    = require("./mt");
-var Block = require("../../lib/js/block");
+var Mt         = require("./mt");
+var Block      = require("../../lib/js/block");
+var Caml_array = require("../../lib/js/caml_array");
 
 var a = /* float array */[
   0,
@@ -25,9 +26,8 @@ var c = /* array */[
 ];
 
 function f() {
-  a[0] = 3.0;
-  b[0] = 3;
-  return /* () */0;
+  Caml_array.caml_array_set(a, 0, 3.0);
+  return Caml_array.caml_array_set(b, 0, 3);
 }
 
 function h() {
@@ -38,8 +38,8 @@ function g() {
   f(/* () */0);
   return /* Eq */Block.__(0, [
             /* tuple */[
-              a[0],
-              b[0]
+              Caml_array.caml_array_get(a, 0),
+              Caml_array.caml_array_get(b, 0)
             ],
             /* tuple */[
               3.0,
@@ -57,8 +57,8 @@ var suites_001 = /* :: */[
   /* tuple */[
     "avoid_mutable_inline_test",
     function () {
-      c[0] = 3;
-      c[1] = 4;
+      Caml_array.caml_array_set(c, 0, 3);
+      Caml_array.caml_array_set(c, 1, 4);
       return /* Eq */Block.__(0, [
                 /* array */[
                   3,

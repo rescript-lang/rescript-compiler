@@ -69099,7 +69099,7 @@ let small_int i : t =
   | i -> int (Int32.of_int i) 
 
 
-let access ?comment (e0 : t)  (e1 : t) : t = 
+let access ?comment (e0 : t)  (e1 : t) : t =
   match e0.expression_desc, e1.expression_desc with
   | Array (l,_mutable_flag) , Number (Int {i; _}) when no_side_effect e0-> 
     List.nth l  (Int32.to_int i)  (* Float i -- should not appear here *)
@@ -88083,7 +88083,6 @@ val set_array : J.expression -> J.expression -> J.expression -> J.expression
  *)
 
 val ref_array :  J.expression -> J.expression -> J.expression
-
 end = struct
 #1 "js_of_lam_array.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -88155,7 +88154,6 @@ let set_array  e e0 e1 =
 
 let ref_array  e e0 = 
   E.access  e  e0
-
 end
 module Js_of_lam_record : sig 
 #1 "js_of_lam_record.mli"
@@ -91235,7 +91233,8 @@ let translate (prim_name : string)
     | _ ->  assert false 
     end
 
-  | "caml_array_get"
+  | "caml_array_get" -> 
+    call Js_config.array
   | "caml_array_get_addr"
   | "caml_array_get_float"
   | "caml_array_unsafe_get"
@@ -91244,7 +91243,8 @@ let translate (prim_name : string)
     | [e0;e1] -> Js_of_lam_array.ref_array e0 e1
     | _ -> assert false
     end
-  | "caml_array_set"
+  | "caml_array_set" ->
+    call Js_config.array
   | "caml_array_set_addr"
   | "caml_array_set_float"
   | "caml_array_unsafe_set"
@@ -92609,20 +92609,23 @@ let translate  loc
           (Int32.of_int i) 
       | _ -> assert false 
     end
-  | Parrayrefu _kind
-  | Parrayrefs _kind ->  
+  | Parrayrefu _kind ->  
     begin match args with
       | [e;e1] -> Js_of_lam_array.ref_array e e1 (* Todo: Constant Folding *)
       | _ -> assert false
     end
+  | Parrayrefs _kind ->
+    Lam_dispatch_primitive.translate "caml_array_get" args
   | Pmakearray kind -> 
     Js_of_lam_array.make_array Mutable kind args 
-  | Parraysetu _kind
-  | Parraysets _kind -> 
+  | Parraysetu _kind -> 
     begin match args with (* wrong*)
       | [e;e0;e1] -> decorate_side_effect cxt @@ Js_of_lam_array.set_array  e e0 e1
       | _ -> assert false
     end
+
+  | Parraysets _kind -> 
+    Lam_dispatch_primitive.translate "caml_array_set" args
   | Pccall prim -> 
     Lam_dispatch_primitive.translate prim.prim_name  args
   (* Lam_compile_external_call.translate loc cxt prim args *)

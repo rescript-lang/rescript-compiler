@@ -14,12 +14,12 @@ function for_3(x) {
       }, x);
   for(var i = 0 ,i_finish = x.length - 1 | 0; i <= i_finish; ++i){
     var j = (i << 1);
-    arr[i] = (function(j){
-    return function () {
-      v[0] = v[0] + j | 0;
-      return /* () */0;
-    }
-    }(j));
+    Caml_array.caml_array_set(arr, i, (function(j){
+        return function () {
+          v[0] = v[0] + j | 0;
+          return /* () */0;
+        }
+        }(j)));
   }
   $$Array.iter(function (x) {
         return Curry._1(x, /* () */0);
@@ -35,12 +35,12 @@ function for_4(x) {
   for(var i = 0 ,i_finish = x.length - 1 | 0; i <= i_finish; ++i){
     var j = (i << 1);
     var k = (j << 1);
-    arr[i] = (function(k){
-    return function () {
-      v[0] = v[0] + k | 0;
-      return /* () */0;
-    }
-    }(k));
+    Caml_array.caml_array_set(arr, i, (function(k){
+        return function () {
+          v[0] = v[0] + k | 0;
+          return /* () */0;
+        }
+        }(k)));
   }
   $$Array.iter(function (x) {
         return Curry._1(x, /* () */0);
@@ -55,12 +55,12 @@ function for_5(x, u) {
       }, x);
   for(var i = 0 ,i_finish = x.length - 1 | 0; i <= i_finish; ++i){
     var k = Caml_int32.imul((u << 1), u);
-    arr[i] = (function(k){
-    return function () {
-      v[0] = v[0] + k | 0;
-      return /* () */0;
-    }
-    }(k));
+    Caml_array.caml_array_set(arr, i, (function(k){
+        return function () {
+          v[0] = v[0] + k | 0;
+          return /* () */0;
+        }
+        }(k)));
   }
   $$Array.iter(function (x) {
         return Curry._1(x, /* () */0);
@@ -85,12 +85,12 @@ function for_6(x, u) {
       var k = Caml_int32.imul((u << 1), u);
       var h = (v5[0] << 1);
       v2[0] = v2[0] + 1 | 0;
-      arr[i] = (function(k,h){
-      return function () {
-        v[0] = (((((v[0] + k | 0) + v2[0] | 0) + v4[0] | 0) + v5[0] | 0) + h | 0) + u | 0;
-        return /* () */0;
-      }
-      }(k,h));
+      Caml_array.caml_array_set(arr, i, (function(k,h){
+          return function () {
+            v[0] = (((((v[0] + k | 0) + v2[0] | 0) + v4[0] | 0) + v5[0] | 0) + h | 0) + u | 0;
+            return /* () */0;
+          }
+          }(k,h)));
     }
     }(v2));
     inspect_3 = v2[0];
@@ -114,12 +114,12 @@ function for_7() {
   for(var i = 0; i <= 6; ++i){
     (function(i){
     for(var j = 0; j <= 2; ++j){
-      arr[Caml_int32.imul(i, 3) + j | 0] = (function(j){
-      return function () {
-        v[0] = (v[0] + i | 0) + j | 0;
-        return /* () */0;
-      }
-      }(j));
+      Caml_array.caml_array_set(arr, Caml_int32.imul(i, 3) + j | 0, (function(j){
+          return function () {
+            v[0] = (v[0] + i | 0) + j | 0;
+            return /* () */0;
+          }
+          }(j)));
     }
     }(i));
   }
@@ -139,12 +139,12 @@ function for_8() {
     (function(i,k){
     for(var j = 0; j <= 2; ++j){
       var h = i + j | 0;
-      arr[Caml_int32.imul(i, 3) + j | 0] = (function(j,h){
-      return function () {
-        v[0] = (((v[0] + i | 0) + j | 0) + h | 0) + k | 0;
-        return /* () */0;
-      }
-      }(j,h));
+      Caml_array.caml_array_set(arr, Caml_int32.imul(i, 3) + j | 0, (function(j,h){
+          return function () {
+            v[0] = (((v[0] + i | 0) + j | 0) + h | 0) + k | 0;
+            return /* () */0;
+          }
+          }(j,h)));
     }
     }(i,k));
   }
@@ -182,18 +182,18 @@ function for_9() {
     for(var j = 0; j <= 1; ++j){
       v$1[0] = v$1[0] + 1 | 0;
       Curry._1(collect, v$1[0]);
-      arr[(i << 1) + j | 0] = function () {
-        vv[0] = vv[0] + v$1[0] | 0;
-        return /* () */0;
-      };
+      Caml_array.caml_array_set(arr, (i << 1) + j | 0, function () {
+            vv[0] = vv[0] + v$1[0] | 0;
+            return /* () */0;
+          });
     }
     }(v$1));
-    arr2[i] = (function(v$1){
-    return function () {
-      vv2[0] = vv2[0] + v$1[0] | 0;
-      return /* () */0;
-    }
-    }(v$1));
+    Caml_array.caml_array_set(arr2, i, (function(v$1){
+        return function () {
+          vv2[0] = vv2[0] + v$1[0] | 0;
+          return /* () */0;
+        }
+        }(v$1)));
   }
   $$Array.iter(function (f) {
         return Curry._1(f, /* () */0);

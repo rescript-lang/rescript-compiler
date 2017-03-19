@@ -1855,8 +1855,8 @@ function token(env, lexbuf) {
             var env$3 = save_comment(match[0], start, match[1], buf, /* true */1);
             return token(env$3, lexbuf$1);
         case 4 : 
-            var sp = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_start_pos */4] + 2 | 0, lexbuf$1[/* lex_mem */9][0]);
-            var escape_type = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_mem */9][0], lexbuf$1[/* lex_curr_pos */5]);
+            var sp = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_start_pos */4] + 2 | 0, Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 0));
+            var escape_type = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 0), lexbuf$1[/* lex_curr_pos */5]);
             var pattern = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_start_pos */4], lexbuf$1[/* lex_curr_pos */5]);
             if (env$1[/* lex_enable_comment_syntax */3]) {
               var env$4;
@@ -1955,7 +1955,7 @@ function token(env, lexbuf) {
                         ]])
                   ];
         case 10 : 
-            var w = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_mem */9][0], lexbuf$1[/* lex_curr_pos */5]);
+            var w = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 0), lexbuf$1[/* lex_curr_pos */5]);
             return illegal_number(env$1, lexbuf$1, w, /* T_NUMBER */Block.__(0, [/* BINARY */0]));
         case 11 : 
             return /* tuple */[
@@ -1963,7 +1963,7 @@ function token(env, lexbuf) {
                     /* T_NUMBER */Block.__(0, [/* BINARY */0])
                   ];
         case 12 : 
-            var w$1 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_mem */9][0], lexbuf$1[/* lex_curr_pos */5]);
+            var w$1 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 0), lexbuf$1[/* lex_curr_pos */5]);
             return illegal_number(env$1, lexbuf$1, w$1, /* T_NUMBER */Block.__(0, [/* OCTAL */2]));
         case 13 : 
             return /* tuple */[
@@ -1971,7 +1971,7 @@ function token(env, lexbuf) {
                     /* T_NUMBER */Block.__(0, [/* OCTAL */2])
                   ];
         case 14 : 
-            var w$2 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_mem */9][0], lexbuf$1[/* lex_curr_pos */5]);
+            var w$2 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 0), lexbuf$1[/* lex_curr_pos */5]);
             return illegal_number(env$1, lexbuf$1, w$2, /* T_NUMBER */Block.__(0, [/* LEGACY_OCTAL */1]));
         case 15 : 
             return /* tuple */[
@@ -2299,7 +2299,7 @@ function token(env, lexbuf) {
       }
     }
     if (exit === 1) {
-      var w$3 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_mem */9][0], lexbuf$1[/* lex_curr_pos */5]);
+      var w$3 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 0), lexbuf$1[/* lex_curr_pos */5]);
       return illegal_number(env$1, lexbuf$1, w$3, /* T_NUMBER */Block.__(0, [/* NORMAL */3]));
     }
     
@@ -3793,20 +3793,20 @@ function string_quote(env, q, buf, raw, octal, lexbuf) {
 
 function type_token(env, lexbuf) {
   lexbuf[/* lex_mem */9] = Caml_array.caml_make_vect(26, -1);
-  lexbuf[/* lex_mem */9][17] = lexbuf[/* lex_curr_pos */5];
-  lexbuf[/* lex_mem */9][16] = lexbuf[/* lex_curr_pos */5];
-  lexbuf[/* lex_mem */9][15] = lexbuf[/* lex_curr_pos */5];
-  lexbuf[/* lex_mem */9][14] = lexbuf[/* lex_curr_pos */5];
-  lexbuf[/* lex_mem */9][13] = lexbuf[/* lex_curr_pos */5];
-  lexbuf[/* lex_mem */9][12] = lexbuf[/* lex_curr_pos */5];
-  lexbuf[/* lex_mem */9][11] = lexbuf[/* lex_curr_pos */5];
-  lexbuf[/* lex_mem */9][10] = lexbuf[/* lex_curr_pos */5];
-  lexbuf[/* lex_mem */9][9] = lexbuf[/* lex_curr_pos */5];
-  lexbuf[/* lex_mem */9][8] = lexbuf[/* lex_curr_pos */5];
-  lexbuf[/* lex_mem */9][7] = lexbuf[/* lex_curr_pos */5];
-  lexbuf[/* lex_mem */9][6] = lexbuf[/* lex_curr_pos */5];
-  lexbuf[/* lex_mem */9][5] = lexbuf[/* lex_curr_pos */5];
-  lexbuf[/* lex_mem */9][4] = lexbuf[/* lex_curr_pos */5];
+  Caml_array.caml_array_set(lexbuf[/* lex_mem */9], 17, lexbuf[/* lex_curr_pos */5]);
+  Caml_array.caml_array_set(lexbuf[/* lex_mem */9], 16, lexbuf[/* lex_curr_pos */5]);
+  Caml_array.caml_array_set(lexbuf[/* lex_mem */9], 15, lexbuf[/* lex_curr_pos */5]);
+  Caml_array.caml_array_set(lexbuf[/* lex_mem */9], 14, lexbuf[/* lex_curr_pos */5]);
+  Caml_array.caml_array_set(lexbuf[/* lex_mem */9], 13, lexbuf[/* lex_curr_pos */5]);
+  Caml_array.caml_array_set(lexbuf[/* lex_mem */9], 12, lexbuf[/* lex_curr_pos */5]);
+  Caml_array.caml_array_set(lexbuf[/* lex_mem */9], 11, lexbuf[/* lex_curr_pos */5]);
+  Caml_array.caml_array_set(lexbuf[/* lex_mem */9], 10, lexbuf[/* lex_curr_pos */5]);
+  Caml_array.caml_array_set(lexbuf[/* lex_mem */9], 9, lexbuf[/* lex_curr_pos */5]);
+  Caml_array.caml_array_set(lexbuf[/* lex_mem */9], 8, lexbuf[/* lex_curr_pos */5]);
+  Caml_array.caml_array_set(lexbuf[/* lex_mem */9], 7, lexbuf[/* lex_curr_pos */5]);
+  Caml_array.caml_array_set(lexbuf[/* lex_mem */9], 6, lexbuf[/* lex_curr_pos */5]);
+  Caml_array.caml_array_set(lexbuf[/* lex_mem */9], 5, lexbuf[/* lex_curr_pos */5]);
+  Caml_array.caml_array_set(lexbuf[/* lex_mem */9], 4, lexbuf[/* lex_curr_pos */5]);
   var env$1 = env;
   var lexbuf$1 = lexbuf;
   var ___ocaml_lex_state = 133;
@@ -3834,8 +3834,8 @@ function type_token(env, lexbuf) {
             var env$2 = save_comment(match[0], start, match[1], buf, /* true */1);
             return type_token(env$2, lexbuf$1);
         case 3 : 
-            var sp = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_start_pos */4] + 2 | 0, lexbuf$1[/* lex_mem */9][0]);
-            var escape_type = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_mem */9][0], lexbuf$1[/* lex_curr_pos */5]);
+            var sp = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_start_pos */4] + 2 | 0, Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 0));
+            var escape_type = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 0), lexbuf$1[/* lex_curr_pos */5]);
             var pattern = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_start_pos */4], lexbuf$1[/* lex_curr_pos */5]);
             if (env$1[/* lex_enable_comment_syntax */3]) {
               var env$3;
@@ -3903,45 +3903,45 @@ function type_token(env, lexbuf) {
                         ]])
                   ];
         case 7 : 
-            var neg = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_start_pos */4], lexbuf$1[/* lex_mem */9][0]);
-            var num = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_mem */9][0], lexbuf$1[/* lex_mem */9][1]);
-            var w = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_mem */9][1], lexbuf$1[/* lex_curr_pos */5]);
+            var neg = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_start_pos */4], Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 0));
+            var num = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 0), Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 1));
+            var w = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 1), lexbuf$1[/* lex_curr_pos */5]);
             return illegal_number(env$1, lexbuf$1, w, mk_num_singleton(/* BINARY */0, num, neg));
         case 8 : 
-            var neg$1 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_start_pos */4], lexbuf$1[/* lex_mem */9][0]);
-            var num$1 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_mem */9][0], lexbuf$1[/* lex_curr_pos */5]);
+            var neg$1 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_start_pos */4], Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 0));
+            var num$1 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 0), lexbuf$1[/* lex_curr_pos */5]);
             return /* tuple */[
                     env$1,
                     mk_num_singleton(/* BINARY */0, num$1, neg$1)
                   ];
         case 9 : 
-            var neg$2 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_start_pos */4], lexbuf$1[/* lex_mem */9][0]);
-            var num$2 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_mem */9][0], lexbuf$1[/* lex_mem */9][1]);
-            var w$1 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_mem */9][1], lexbuf$1[/* lex_curr_pos */5]);
+            var neg$2 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_start_pos */4], Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 0));
+            var num$2 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 0), Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 1));
+            var w$1 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 1), lexbuf$1[/* lex_curr_pos */5]);
             return illegal_number(env$1, lexbuf$1, w$1, mk_num_singleton(/* OCTAL */2, num$2, neg$2));
         case 10 : 
-            var neg$3 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_start_pos */4], lexbuf$1[/* lex_mem */9][0]);
-            var num$3 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_mem */9][0], lexbuf$1[/* lex_curr_pos */5]);
+            var neg$3 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_start_pos */4], Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 0));
+            var num$3 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 0), lexbuf$1[/* lex_curr_pos */5]);
             return /* tuple */[
                     env$1,
                     mk_num_singleton(/* OCTAL */2, num$3, neg$3)
                   ];
         case 11 : 
-            var neg$4 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_start_pos */4], lexbuf$1[/* lex_mem */9][0]);
-            var num$4 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_mem */9][0], lexbuf$1[/* lex_mem */9][1]);
-            var w$2 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_mem */9][1], lexbuf$1[/* lex_curr_pos */5]);
+            var neg$4 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_start_pos */4], Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 0));
+            var num$4 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 0), Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 1));
+            var w$2 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 1), lexbuf$1[/* lex_curr_pos */5]);
             return illegal_number(env$1, lexbuf$1, w$2, mk_num_singleton(/* LEGACY_OCTAL */1, num$4, neg$4));
         case 12 : 
-            var neg$5 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_start_pos */4], lexbuf$1[/* lex_mem */9][0]);
-            var num$5 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_mem */9][0], lexbuf$1[/* lex_curr_pos */5]);
+            var neg$5 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_start_pos */4], Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 0));
+            var num$5 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 0), lexbuf$1[/* lex_curr_pos */5]);
             return /* tuple */[
                     env$1,
                     mk_num_singleton(/* LEGACY_OCTAL */1, num$5, neg$5)
                   ];
         case 13 : 
-            var neg$6 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_start_pos */4], lexbuf$1[/* lex_mem */9][0]);
-            var num$6 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_mem */9][0], lexbuf$1[/* lex_mem */9][1]);
-            var w$3 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_mem */9][1], lexbuf$1[/* lex_curr_pos */5]);
+            var neg$6 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_start_pos */4], Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 0));
+            var num$6 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 0), Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 1));
+            var w$3 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 1), lexbuf$1[/* lex_curr_pos */5]);
             var match$4;
             try {
               match$4 = /* tuple */[
@@ -3967,8 +3967,8 @@ function type_token(env, lexbuf) {
             }
             return illegal_number(match$4[0], lexbuf$1, w$3, match$4[1]);
         case 14 : 
-            var neg$7 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_start_pos */4], lexbuf$1[/* lex_mem */9][0]);
-            var num$7 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_mem */9][0], lexbuf$1[/* lex_curr_pos */5]);
+            var neg$7 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_start_pos */4], Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 0));
+            var num$7 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 0), lexbuf$1[/* lex_curr_pos */5]);
             try {
               return /* tuple */[
                       env$1,
@@ -3993,25 +3993,25 @@ function type_token(env, lexbuf) {
             }
             break;
         case 15 : 
-            var neg$8 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_start_pos */4], lexbuf$1[/* lex_mem */9][0]);
-            var num$8 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_mem */9][0], lexbuf$1[/* lex_mem */9][1]);
-            var w$4 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_mem */9][1], lexbuf$1[/* lex_curr_pos */5]);
+            var neg$8 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_start_pos */4], Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 0));
+            var num$8 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 0), Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 1));
+            var w$4 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 1), lexbuf$1[/* lex_curr_pos */5]);
             return illegal_number(env$1, lexbuf$1, w$4, mk_num_singleton(/* NORMAL */3, num$8, neg$8));
         case 16 : 
-            var neg$9 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_start_pos */4], lexbuf$1[/* lex_mem */9][0]);
-            var num$9 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_mem */9][0], lexbuf$1[/* lex_curr_pos */5]);
+            var neg$9 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_start_pos */4], Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 0));
+            var num$9 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 0), lexbuf$1[/* lex_curr_pos */5]);
             return /* tuple */[
                     env$1,
                     mk_num_singleton(/* NORMAL */3, num$9, neg$9)
                   ];
         case 17 : 
-            var neg$10 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_start_pos */4], lexbuf$1[/* lex_mem */9][0]);
-            var num$10 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_mem */9][0], lexbuf$1[/* lex_mem */9][1]);
-            var w$5 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_mem */9][1], lexbuf$1[/* lex_curr_pos */5]);
+            var neg$10 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_start_pos */4], Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 0));
+            var num$10 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 0), Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 1));
+            var w$5 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 1), lexbuf$1[/* lex_curr_pos */5]);
             return illegal_number(env$1, lexbuf$1, w$5, mk_num_singleton(/* NORMAL */3, num$10, neg$10));
         case 18 : 
-            var neg$11 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_mem */9][1], lexbuf$1[/* lex_mem */9][0]);
-            var num$11 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_mem */9][3], lexbuf$1[/* lex_mem */9][2]);
+            var neg$11 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 1), Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 0));
+            var num$11 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 3), Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 2));
             return /* tuple */[
                     env$1,
                     mk_num_singleton(/* NORMAL */3, num$11, neg$11)
@@ -4623,7 +4623,7 @@ function grow(t, n) {
     var new_size = next_power_of_two(n);
     var filler = function (i) {
       if (i < t[/* la_results */0].length) {
-        return t[/* la_results */0][i];
+        return Caml_array.caml_array_get(t[/* la_results */0], i);
       }
       else {
         return /* None */0;
@@ -4670,10 +4670,10 @@ function lex(t) {
   newrecord[/* lex_buffer */1] = lexbuf[/* lex_buffer */1];
   var cloned_env = with_lexbuf(newrecord, lex_env$1);
   t[/* la_lex_env */3] = lex_env$1;
-  t[/* la_results */0][t[/* la_num_lexed */1]] = /* Some */[/* tuple */[
-      cloned_env,
-      match$1[1]
-    ]];
+  Caml_array.caml_array_set(t[/* la_results */0], t[/* la_num_lexed */1], /* Some */[/* tuple */[
+          cloned_env,
+          match$1[1]
+        ]]);
   t[/* la_num_lexed */1] = t[/* la_num_lexed */1] + 1 | 0;
   return /* () */0;
 }
@@ -4804,7 +4804,7 @@ function lookahead($staropt$star, env) {
   var t = env[/* lookahead */18][0];
   var i$1 = i;
   lex_until(t, i$1);
-  var match = t[/* la_results */0][i$1];
+  var match = Caml_array.caml_array_get(t[/* la_results */0], i$1);
   if (match) {
     return match[0][1];
   }
@@ -4964,7 +4964,7 @@ function lex_env($staropt$star, env) {
   var t = env[/* lookahead */18][0];
   var i$1 = i;
   lex_until(t, i$1);
-  var match = t[/* la_results */0][i$1];
+  var match = Caml_array.caml_array_get(t[/* la_results */0], i$1);
   if (match) {
     return match[0][0];
   }
@@ -5188,7 +5188,7 @@ function token$3(env) {
   if (t[/* la_num_lexed */1] > 1) {
     $$Array.blit(t[/* la_results */0], 1, t[/* la_results */0], 0, t[/* la_num_lexed */1] - 1 | 0);
   }
-  t[/* la_results */0][t[/* la_num_lexed */1] - 1 | 0] = /* None */0;
+  Caml_array.caml_array_set(t[/* la_results */0], t[/* la_num_lexed */1] - 1 | 0, /* None */0);
   t[/* la_num_lexed */1] = t[/* la_num_lexed */1] - 1 | 0;
   return /* () */0;
 }
