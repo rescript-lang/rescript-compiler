@@ -27,7 +27,7 @@ let get_list_string = Bsb_build_util.get_list_string
 let (//) = Ext_filename.combine
 
 let resolve_package cwd  package_name = 
-  match Bs_pkg.resolve_bs_package ~cwd package_name  with 
+  match Bsb_pkg.resolve_bs_package ~cwd package_name  with 
   | None -> 
     Bsb_exception.error (Package_not_found (package_name,None))
   | Some x -> 

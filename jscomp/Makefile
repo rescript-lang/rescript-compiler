@@ -169,6 +169,7 @@ EXT_SRCS = ext_util\
 	ext_file_pp ext_format \
 	hashtbl_gen \
 	ext_string \
+	ext_color \
 	ext_utf8\
 	ext_js_regex\
 	string_hashtbl\
@@ -213,7 +214,7 @@ EXT_SRCS = ext_util\
 
 EXT_CMXS=$(addprefix ext/, $(addsuffix .cmx, $(EXT_SRCS)))
 EXT_CMOS=$(addprefix ext/, $(addsuffix .cmo, $(EXT_SRCS)))
-COMMON_SRCS= bs_version js_config bs_pkg ext_log bs_loc  bs_warnings  lam_methname  binary_cache
+COMMON_SRCS= bs_version js_config  ext_log bs_loc  bs_warnings  lam_methname  binary_cache
 COMMON_CMXS= $(addprefix common/, $(addsuffix .cmx, $(COMMON_SRCS)))
 SYNTAX_SRCS= ast_utf8_string\
 	ast_derive_constructor \
@@ -274,6 +275,7 @@ OTHER_CORE_SRCS= bsppx_main bspack_main jsoo_main  bspp_main js_cmi_datasets \
 OTHER_CORE_CMXS= $(addprefix core/, $(addsuffix .cmx, $(OTHER_CORE_SRCS)))
 BSB_SRCS= bsb_config \
 	bsb_exception\
+	bsb_pkg \
 	bsb_build_schemas \
 	bsb_build_util \
 	bsb_dir \

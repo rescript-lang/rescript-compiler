@@ -76,4 +76,4 @@ val string_of_bsb_dev_include : int -> string
 
 val resolve_bsb_magic_file : cwd:string -> desc:string -> string -> string
 
-val walk_all_deps : bool -> string -> (bool -> string -> unit) -> unit
+val walk_all_deps : string -> (bool -> string -> unit) -> unit

@@ -1,5 +1,6 @@
 bin/bsb.ml : bsb/bsb_dir.ml
 bin/bsb.ml : bsb/bsb_gen.ml
+bin/bsb.ml : bsb/bsb_pkg.ml
 bin/bsb.ml : ext/ext_sys.ml
 bin/bsb.ml : ext/map_gen.ml
 bin/bsb.ml : ext/set_gen.ml
@@ -8,6 +9,7 @@ bin/bsb.ml : bsb/bsb_dir.mli
 bin/bsb.ml : bsb/bsb_file.ml
 bin/bsb.ml : bsb/bsb_gen.mli
 bin/bsb.ml : bsb/bsb_main.ml
+bin/bsb.ml : bsb/bsb_pkg.mli
 bin/bsb.ml : bsb/bsb_unix.ml
 bin/bsb.ml : ext/ext_json.ml
 bin/bsb.ml : ext/ext_list.ml
@@ -18,18 +20,18 @@ bin/bsb.ml : bsb/bsb_file.mli
 bin/bsb.ml : bsb/bsb_main.mli
 bin/bsb.ml : bsb/bsb_ninja.ml
 bin/bsb.ml : bsb/bsb_unix.mli
-bin/bsb.ml : common/bs_pkg.ml
 bin/bsb.ml : ext/ext_array.ml
 bin/bsb.ml : ext/ext_bytes.ml
+bin/bsb.ml : ext/ext_color.ml
 bin/bsb.ml : ext/ext_json.mli
 bin/bsb.ml : ext/ext_list.mli
 bin/bsb.ml : ext/ext_util.mli
 bin/bsb.ml : ext/literals.mli
 bin/bsb.ml : bsb/bsb_config.ml
 bin/bsb.ml : bsb/bsb_ninja.mli
-bin/bsb.ml : common/bs_pkg.mli
 bin/bsb.ml : ext/ext_array.mli
 bin/bsb.ml : ext/ext_bytes.mli
+bin/bsb.ml : ext/ext_color.mli
 bin/bsb.ml : ext/ext_string.ml
 bin/bsb.ml : ext/string_map.ml
 bin/bsb.ml : ext/string_set.ml
@@ -38,6 +40,7 @@ bin/bsb.ml : bsb/bsb_config.mli
 bin/bsb.ml : bsb/bsb_default.ml
 bin/bsb.ml : ext/ext_file_pp.ml
 bin/bsb.ml : ext/ext_string.mli
+bin/bsb.ml : ext/hashtbl_gen.ml
 bin/bsb.ml : ext/string_map.mli
 bin/bsb.ml : ext/string_set.mli
 bin/bsb.ml : ext/string_vec.mli
@@ -62,11 +65,13 @@ bin/bsb.ml : common/bs_version.mli
 bin/bsb.ml : ext/ext_json_parse.ml
 bin/bsb.ml : ext/ext_json_types.ml
 bin/bsb.ml : ext/ext_pervasives.ml
+bin/bsb.ml : ext/string_hashtbl.ml
 bin/bsb.ml : bsb/bsb_build_util.mli
 bin/bsb.ml : common/binary_cache.ml
 bin/bsb.ml : ext/ext_json_parse.mli
 bin/bsb.ml : ext/ext_pervasives.mli
 bin/bsb.ml : ext/string_hash_set.ml
+bin/bsb.ml : ext/string_hashtbl.mli
 bin/bsb.ml : stubs/bs_hash_stubs.ml
 bin/bsb.ml : bsb/bsb_config_parse.ml
 bin/bsb.ml : bsb/bsb_config_types.ml
