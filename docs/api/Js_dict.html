@@ -53,6 +53,7 @@
 <link title="Js" rel="Chapter" href="Js.html">
 <link title="Js_array" rel="Chapter" href="Js_array.html">
 <link title="Js_boolean" rel="Chapter" href="Js_boolean.html">
+<link title="Js_cast" rel="Chapter" href="Js_cast.html">
 <link title="Js_date" rel="Chapter" href="Js_date.html">
 <link title="Js_dict" rel="Chapter" href="Js_dict.html">
 <link title="Js_float" rel="Chapter" href="Js_float.html">
@@ -68,6 +69,7 @@
 <link title="Js_primitive" rel="Chapter" href="Js_primitive.html">
 <link title="Js_re" rel="Chapter" href="Js_re.html">
 <link title="Js_string" rel="Chapter" href="Js_string.html">
+<link title="Js_typed_array" rel="Chapter" href="Js_typed_array.html">
 <link title="Js_types" rel="Chapter" href="Js_types.html">
 <link title="Js_undefined" rel="Chapter" href="Js_undefined.html">
 <link title="Js_unsafe" rel="Chapter" href="Js_unsafe.html">
@@ -77,8 +79,7 @@
 <link title="Node_fs" rel="Chapter" href="Node_fs.html">
 <link title="Node_module" rel="Chapter" href="Node_module.html">
 <link title="Node_path" rel="Chapter" href="Node_path.html">
-<link title="Node_process" rel="Chapter" href="Node_process.html">
-<link title="Typed_array" rel="Chapter" href="Typed_array.html"><title>Js_dict</title>
+<link title="Node_process" rel="Chapter" href="Node_process.html"><title>Js_dict</title>
 </head>
 <body>
 <div class="navbar"><a class="pre" href="Js_date.html" title="Js_date">Previous</a>
@@ -87,15 +88,87 @@
 </div>
 <h1>Module <a href="type_Js_dict.html">Js_dict</a></h1>
 
-<pre><span class="keyword">module</span> Js_dict: <code class="code">sig</code> <a href="Js_dict.html">..</a> <code class="code">end</code></pre><hr width="100%">
+<pre><span class="keyword">module</span> Js_dict: <code class="code">sig</code> <a href="Js_dict.html">..</a> <code class="code">end</code></pre><div class="info module top">
+<div class="not-examples">
+Dictionary type (ie an '{ }' JS object). However it is restricted 
+    to hold a single type; therefore values must have the same type. 
+<p>
 
+    This Dictionary type is mostly use with the <code class="code">Js_json.t</code> type.<br>
+</div>
+<div class="examples">
+</div>
+</div>
+<hr width="100%">
+<div class="type-declaration">
 <pre><span id="TYPEt"><span class="keyword">type</span> <code class="type">'a</code> t</span> </pre>
+</div>
+<div class="info ">
+<div class="not-examples">
+Dictionary type (ie an '{ }' JS object). However it is restricted 
+    to hold a single type; therefore values must have the same type. 
+<p>
 
+    This Dictionary type is mostly use with the <code class="code">Js_json.t</code> type.<br>
+</div>
+<div class="examples">
+</div>
+</div>
 
+<div class="type-declaration">
 <pre><span id="TYPEkey"><span class="keyword">type</span> <code class="type"></code>key</span> = <code class="type">string</code> </pre>
+</div>
+<div class="info ">
+<div class="not-examples">
+Key type<br>
+</div>
+<div class="examples">
+</div>
+</div>
 
 
-<pre><span id="VALget"><span class="keyword">val</span> get</span> : <code class="type">'a <a href="Js_dict.html#TYPEt">t</a> -> <a href="Js_dict.html#TYPEkey">key</a> -> 'a option</code></pre>
-<pre><span id="VALset"><span class="keyword">val</span> set</span> : <code class="type">'a <a href="Js_dict.html#TYPEt">t</a> -> <a href="Js_dict.html#TYPEkey">key</a> -> 'a -> unit</code></pre>
-<pre><span id="VALkeys"><span class="keyword">val</span> keys</span> : <code class="type">'a <a href="Js_dict.html#TYPEt">t</a> -> string array</code></pre>
-<pre><span id="VALempty"><span class="keyword">val</span> empty</span> : <code class="type">unit -> 'a <a href="Js_dict.html#TYPEt">t</a></code></pre></body></html>
+<pre><span id="VALget"><span class="keyword">val</span> get</span> : <code class="type">'a <a href="Js_dict.html#TYPEt">t</a> -> <a href="Js_dict.html#TYPEkey">key</a> -> 'a option</code></pre><div class="info ">
+<div class="not-examples">
+<code class="code">get dict key</code> returns <code class="code">None</code> if the <code class="code">key</code> is not found in the 
+    dictionary, <code class="code">Some value</code> otherwise<br>
+</div>
+<div class="examples">
+</div>
+</div>
+
+<pre><span id="VALunsafeGet"><span class="keyword">val</span> unsafeGet</span> : <code class="type">'a <a href="Js_dict.html#TYPEt">t</a> -> <a href="Js_dict.html#TYPEkey">key</a> -> 'a</code></pre><div class="info ">
+<div class="not-examples">
+<code class="code">unsafeGet dict key</code> return the value if the <code class="code">key</code> exists, 
+    otherwise an <b>undefined</b> value is returned. Must be used only 
+    when the existence of a key is certain. (i.e. when having called <code class="code">keys</code>
+    function previously.<br>
+</div>
+<div class="examples">
+<pre class="example"><pre class="codepre"><code class="code">Array.iter (fun key -&gt; Js.log (Js_dict.unsafeGet dic key)) (Js_dict.keys dict) 
+</code></pre></pre></div>
+</div>
+
+<pre><span id="VALset"><span class="keyword">val</span> set</span> : <code class="type">'a <a href="Js_dict.html#TYPEt">t</a> -> <a href="Js_dict.html#TYPEkey">key</a> -> 'a -> unit</code></pre><div class="info ">
+<div class="not-examples">
+<code class="code">set dict key value</code> sets the <code class="code">key</code>/<code class="code">value</code> in <code class="code">dict</code><br>
+</div>
+<div class="examples">
+</div>
+</div>
+
+<pre><span id="VALkeys"><span class="keyword">val</span> keys</span> : <code class="type">'a <a href="Js_dict.html#TYPEt">t</a> -> string array</code></pre><div class="info ">
+<div class="not-examples">
+<code class="code">keys dict</code> returns all the keys in the dictionary <code class="code">dict</code><br>
+</div>
+<div class="examples">
+</div>
+</div>
+
+<pre><span id="VALempty"><span class="keyword">val</span> empty</span> : <code class="type">unit -> 'a <a href="Js_dict.html#TYPEt">t</a></code></pre><div class="info ">
+<div class="not-examples">
+<code class="code">empty ()</code> returns en empty dictionary<br>
+</div>
+<div class="examples">
+</div>
+</div>
+</body></html>

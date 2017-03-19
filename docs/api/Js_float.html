@@ -53,6 +53,7 @@
 <link title="Js" rel="Chapter" href="Js.html">
 <link title="Js_array" rel="Chapter" href="Js_array.html">
 <link title="Js_boolean" rel="Chapter" href="Js_boolean.html">
+<link title="Js_cast" rel="Chapter" href="Js_cast.html">
 <link title="Js_date" rel="Chapter" href="Js_date.html">
 <link title="Js_dict" rel="Chapter" href="Js_dict.html">
 <link title="Js_float" rel="Chapter" href="Js_float.html">
@@ -68,6 +69,7 @@
 <link title="Js_primitive" rel="Chapter" href="Js_primitive.html">
 <link title="Js_re" rel="Chapter" href="Js_re.html">
 <link title="Js_string" rel="Chapter" href="Js_string.html">
+<link title="Js_typed_array" rel="Chapter" href="Js_typed_array.html">
 <link title="Js_types" rel="Chapter" href="Js_types.html">
 <link title="Js_undefined" rel="Chapter" href="Js_undefined.html">
 <link title="Js_unsafe" rel="Chapter" href="Js_unsafe.html">
@@ -77,8 +79,7 @@
 <link title="Node_fs" rel="Chapter" href="Node_fs.html">
 <link title="Node_module" rel="Chapter" href="Node_module.html">
 <link title="Node_path" rel="Chapter" href="Node_path.html">
-<link title="Node_process" rel="Chapter" href="Node_process.html">
-<link title="Typed_array" rel="Chapter" href="Typed_array.html"><title>Js_float</title>
+<link title="Node_process" rel="Chapter" href="Node_process.html"><title>Js_float</title>
 </head>
 <body>
 <div class="navbar"><a class="pre" href="Js_dict.html" title="Js_dict">Previous</a>
@@ -96,27 +97,27 @@ Provides functions for inspecting and manipulating <code class="code">float</cod
 </div>
 <hr width="100%">
 
-<pre><span id="VALnan"><span class="keyword">val</span> nan</span> : <code class="type">float</code></pre><div class="info ">
+<pre><span id="VAL_NaN"><span class="keyword">val</span> _NaN</span> : <code class="type">float</code></pre><div class="info ">
 <div class="not-examples">
 The special value "Not a Number"<br>
-<b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NaN">MDN</a><br>
-</div>
+<div class="tag"><b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NaN">MDN</a><br>
+</div></div>
 <div class="examples">
 </div>
 </div>
 
 <pre><span id="VALisNaN"><span class="keyword">val</span> isNaN</span> : <code class="type">float -> bool</code></pre><div class="info ">
 <div class="not-examples">
-Tests if the given value is <code class="code">nan</code>
+Tests if the given value is <code class="code">_NaN</code>
 <p>
 
-Note that both <code class="code">nan = nan</code> and <code class="code">nan == nan</code> will return <code class="code">false</code>. <code class="code">isNaN</code> is
-therefore necessary to test for <code class="code">nan</code>.
+Note that both <code class="code">_NaN = _NaN</code> and <code class="code">_NaN == _NaN</code> will return <code class="code">false</code>. <code class="code">isNaN</code> is
+therefore necessary to test for <code class="code">_NaN</code>.
 <p>
 
-<b>Returns</b> <code class="code">true</code> if the given value is <code class="code">nan</code>, <code class="code">false</code> otherwise<br>
-<b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isNaN">MDN</a><br>
-</div>
+<b>Returns</b> <code class="code">true</code> if the given value is <code class="code">_NaN</code>, <code class="code">false</code> otherwise<br>
+<div class="tag"><b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isNaN">MDN</a><br>
+</div></div>
 <div class="examples">
 </div>
 </div>
@@ -127,8 +128,8 @@ Tests if the given value is finite
 <p>
 
 <b>Returns</b> <code class="code">true</code> if the given value is a finite number, <code class="code">false</code> otherwise<br>
-<b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isFinite">MDN</a><br>
-</div>
+<div class="tag"><b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isFinite">MDN</a><br>
+</div></div>
 <div class="examples">
 <pre class="example"><pre class="codepre"><code class="code">(* returns [false] *)
 let _ = Js.Float.isFinite infinity
@@ -137,7 +138,7 @@ let _ = Js.Float.isFinite infinity
 let _ = Js.Float.isFinite neg_infinity
 
 (* returns [false] *)
-let _ = Js.Float.isFinite nan
+let _ = Js.Float.isFinite _NaN
 
 (* returns [true] *)
 let _ = Js.Float.isFinite 1234
@@ -150,9 +151,9 @@ Formats a <code class="code">float</code> using exponential (scientific) notatio
 <p>
 
 <b>Returns</b> a <code class="code">string</code> representing the given value in exponential notation<br>
-<b>Raises</b> <code>RangeError</code> if digits is not in the range [0, 20] (inclusive)<br>
-<b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toExponential">MDN</a><br>
-</div>
+<div class="tag"><b>Raises</b> <code>RangeError</code> if digits is not in the range [0, 20] (inclusive)<br>
+</div><div class="tag"><b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toExponential">MDN</a><br>
+</div></div>
 <div class="examples">
 <pre class="example"><pre class="codepre"><code class="code">(* prints "7.71234e+1" *)
 let _ = Js.log @@ Js.Float.toExponential 77.1234
@@ -175,9 +176,9 @@ value must be in the range [0, 20] (inclusive).
 <p>
 
 The output will be rounded or padded with zeroes if necessary.<br>
-<b>Raises</b> <code>RangeError</code> if digits is not in the range [0, 20] (inclusive)<br>
-<b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toExponential">MDN</a><br>
-</div>
+<div class="tag"><b>Raises</b> <code>RangeError</code> if digits is not in the range [0, 20] (inclusive)<br>
+</div><div class="tag"><b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toExponential">MDN</a><br>
+</div></div>
 <div class="examples">
 <pre class="example"><pre class="codepre"><code class="code">(* prints "7.71e+1" *)
 let _ = Js.log @@ Js.Float.toExponentialWithPrecision 77.1234 ~digits:2
@@ -190,9 +191,9 @@ Formats a <code class="code">float</code> using fixed point notation
 <p>
 
 <b>Returns</b> a <code class="code">string</code> representing the given value in fixed-point notation (usually)<br>
-<b>Raises</b> <code>RangeError</code> if digits is not in the range [0, 20] (inclusive)<br>
-<b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toFixed">MDN</a><br>
-</div>
+<div class="tag"><b>Raises</b> <code>RangeError</code> if digits is not in the range [0, 20] (inclusive)<br>
+</div><div class="tag"><b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toFixed">MDN</a><br>
+</div></div>
 <div class="examples">
 <pre class="example"><pre class="codepre"><code class="code">(* prints "12346" (note the rounding) *)
 let _ = Js.log @@ Js.Float.toFixed 12345.6789
@@ -215,9 +216,9 @@ value must be in the range [0, 20] (inclusive). Defaults to <code class="code">0
 <p>
 
 The output will be rounded or padded with zeroes if necessary.<br>
-<b>Raises</b> <code>RangeError</code> if digits is not in the range [0, 20] (inclusive)<br>
-<b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toFixed">MDN</a><br>
-</div>
+<div class="tag"><b>Raises</b> <code>RangeError</code> if digits is not in the range [0, 20] (inclusive)<br>
+</div><div class="tag"><b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toFixed">MDN</a><br>
+</div></div>
 <div class="examples">
 <pre class="example"><pre class="codepre"><code class="code">(* prints "12345.7" (note the rounding) *)
 let _ = Js.log @@ Js.Float.toFixedWithPrecision 12345.6789 ~digits:1
@@ -238,9 +239,9 @@ Formats a <code class="code">float</code> using some fairly arbitrary rules
 <code class="code">toPrecision</code> differs from <code class="code">toFixed</code> in that the former will format the number
 with full precision, while the latter will not output any digits after the
 decimal point.<br>
-<b>Raises</b> <code>RangeError</code> if digits is not in the range accepted by this function (what do you mean "vague"?)<br>
-<b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toPrecision">MDN</a><br>
-</div>
+<div class="tag"><b>Raises</b> <code>RangeError</code> if digits is not in the range accepted by this function (what do you mean "vague"?)<br>
+</div><div class="tag"><b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toPrecision">MDN</a><br>
+</div></div>
 <div class="examples">
 <pre class="example"><pre class="codepre"><code class="code">(* prints "12345.6789" *)
 let _ = Js.log @@ Js.Float.toPrecision 12345.6789
@@ -271,9 +272,9 @@ will count all digits against the precision, while the latter will count only
 the digits after the decimal point. <code class="code">toPrecisionWithPrecision</code> will also use
 scientific notation if the specified precision is less than the number for digits
 before the decimal point.<br>
-<b>Raises</b> <code>RangeError</code> if digits is not in the range accepted by this function (what do you mean "vague"?)<br>
-<b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toPrecision">MDN</a><br>
-</div>
+<div class="tag"><b>Raises</b> <code>RangeError</code> if digits is not in the range accepted by this function (what do you mean "vague"?)<br>
+</div><div class="tag"><b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toPrecision">MDN</a><br>
+</div></div>
 <div class="examples">
 <pre class="example"><pre class="codepre"><code class="code">(* prints "1e+4" *)
 let _ = Js.log @@ Js.Float.toPrecisionWithPrecision 12345.6789 ~digits:1
@@ -289,8 +290,8 @@ Formats a <code class="code">float</code> as a string
 <p>
 
 <b>Returns</b> a <code class="code">string</code> representing the given value in fixed-point (usually)<br>
-<b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toString">MDN</a><br>
-</div>
+<div class="tag"><b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toString">MDN</a><br>
+</div></div>
 <div class="examples">
 <pre class="example"><pre class="codepre"><code class="code">(* prints "12345.6789" *)
 let _ = Js.log @@ Js.Float.toString 12345.6789
@@ -307,9 +308,9 @@ value must be in the range [2, 36] (inclusive).
 <p>
 
 <b>Returns</b> a <code class="code">string</code> representing the given value in fixed-point (usually)<br>
-<b>Raises</b> <code>RangeError</code> if radix is not in the range [2, 36] (inclusive)<br>
-<b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toString">MDN</a><br>
-</div>
+<div class="tag"><b>Raises</b> <code>RangeError</code> if radix is not in the range [2, 36] (inclusive)<br>
+</div><div class="tag"><b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toString">MDN</a><br>
+</div></div>
 <div class="examples">
 <pre class="example"><pre class="codepre"><code class="code">(* prints "110" *)
 let _ = Js.log @@ Js.Float.toStringWithRadix 6. ~radix:2
@@ -330,7 +331,7 @@ let _ = Js.log @@ Js.Float.toStringWithRadix 123.456 ~radix:36
 Parses the given <code class="code">string</code> into a <code class="code">float</code> using JavaScript semantics
 <p>
 
-<b>Returns</b> the number as a <code class="code">float</code> if successfully parsed, <code class="code">nan</code> otherwise.<br>
+<b>Returns</b> the number as a <code class="code">float</code> if successfully parsed, <code class="code">_NaN</code> otherwise.<br>
 </div>
 <div class="examples">
 <pre class="example"><pre class="codepre"><code class="code">(* returns 123 *)
@@ -351,17 +352,25 @@ let _ = Js.Float.fromString "0b11"
 (* returns 9 *)
 let _ = Js.Float.fromString "0o11"
 
-(* returns [nan] *)
+(* returns [_NaN] *)
 let _ = Js.Float.fromString "foo"
 
-(* returns [nan] *)
+(* returns [_NaN] *)
 let _ = Js.Float.fromString "100a"
 </code></pre></pre></div>
 </div>
 
+<pre><span id="VALnan"><span class="keyword">val</span> nan</span> : <code class="type">float</code></pre><div class="info ">
+<div class="not-examples">
+<div class="warning"><span class="label">Deprecated.</span>Use <sub class="subscript">NaN</sub> instead</div>
+</div>
+<div class="examples">
+</div>
+</div>
+
 <pre><span id="VALto_exponential"><span class="keyword">val</span> to_exponential</span> : <code class="type">float -> prec:int -> string</code></pre><div class="info ">
 <div class="not-examples">
-<span class="warning">Deprecated.</span>Use <a href="Js_float.html#VALtoExponential"><code class="code">Js_float.toExponential</code></a> instead<br>
+<div class="warning"><span class="label">Deprecated.</span>Use <a href="Js_float.html#VALtoExponential"><code class="code">Js_float.toExponential</code></a> instead</div>
 </div>
 <div class="examples">
 </div>
@@ -369,7 +378,7 @@ let _ = Js.Float.fromString "100a"
 
 <pre><span id="VALexp"><span class="keyword">val</span> exp</span> : <code class="type">float -> float</code></pre><div class="info ">
 <div class="not-examples">
-<span class="warning">Deprecated.</span>Use <code class="code">Js.Math.exp</code> instead<br>
+<div class="warning"><span class="label">Deprecated.</span>Use <code class="code">Js.Math.exp</code> instead</div>
 </div>
 <div class="examples">
 </div>
@@ -377,7 +386,7 @@ let _ = Js.Float.fromString "100a"
 
 <pre><span id="VALlog"><span class="keyword">val</span> log</span> : <code class="type">float -> float</code></pre><div class="info ">
 <div class="not-examples">
-<span class="warning">Deprecated.</span>Use <code class="code">Js.Math.log</code> instead<br>
+<div class="warning"><span class="label">Deprecated.</span>Use <code class="code">Js.Math.log</code> instead</div>
 </div>
 <div class="examples">
 </div>
@@ -385,7 +394,7 @@ let _ = Js.Float.fromString "100a"
 
 <pre><span id="VALlog2"><span class="keyword">val</span> log2</span> : <code class="type">float</code></pre><div class="info ">
 <div class="not-examples">
-<span class="warning">Deprecated.</span>Use <code class="code">Js.Math._LN2</code> instead<br>
+<div class="warning"><span class="label">Deprecated.</span>Use <code class="code">Js.Math._LN2</code> instead</div>
 </div>
 <div class="examples">
 </div>
@@ -393,7 +402,7 @@ let _ = Js.Float.fromString "100a"
 
 <pre><span id="VALmax"><span class="keyword">val</span> max</span> : <code class="type">float -> float -> float</code></pre><div class="info ">
 <div class="not-examples">
-<span class="warning">Deprecated.</span>Use <code class="code">Js.Math.max_float</code> instead<br>
+<div class="warning"><span class="label">Deprecated.</span>Use <code class="code">Js.Math.max_float</code> instead</div>
 </div>
 <div class="examples">
 </div>
@@ -401,7 +410,7 @@ let _ = Js.Float.fromString "100a"
 
 <pre><span id="VALrandom"><span class="keyword">val</span> random</span> : <code class="type">unit -> float</code></pre><div class="info ">
 <div class="not-examples">
-<span class="warning">Deprecated.</span>Use <code class="code">Js.Math.random</code> instead<br>
+<div class="warning"><span class="label">Deprecated.</span>Use <code class="code">Js.Math.random</code> instead</div>
 </div>
 <div class="examples">
 </div>
@@ -409,7 +418,7 @@ let _ = Js.Float.fromString "100a"
 
 <pre><span id="VALof_any"><span class="keyword">val</span> of_any</span> : <code class="type">'a -> float</code></pre><div class="info ">
 <div class="not-examples">
-<span class="warning">Deprecated.</span>Use one of the appropriate conversion funtions instead<br>
+<div class="warning"><span class="label">Deprecated.</span>Use one of the appropriate conversion funtions instead</div>
 </div>
 <div class="examples">
 </div>
