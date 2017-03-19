@@ -23,6 +23,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
+(** *)
 
 (* borrowed from others/js_math.ml *)
 external _LOG2E : float = "Math.LOG2E" [@@bs.val]

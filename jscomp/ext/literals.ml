@@ -109,4 +109,6 @@ let unescaped_j_delimiter = "j"
 let unescaped_js_delimiter = "js"
 let escaped_j_delimiter =  "*j" (* not user level syntax allowed *)
 
-
+let native = "native"
+let bytecode = "bytecode"
+let js = "js"

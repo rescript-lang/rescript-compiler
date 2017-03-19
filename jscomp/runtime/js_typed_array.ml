@@ -22,6 +22,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+(** JavaScript Typed Array API
+
+@see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray> MDN
+*)
+
 type array_buffer
 type 'a array_like (* should be shared with js_array *)
 
@@ -31,6 +36,11 @@ end
 
 
 module ArrayBuffer = struct
+  (** The underlying buffer that the typed arrays provide views of
+
+    @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer> MDN
+  *)
+
   type t = array_buffer
 
   external make : int -> t = "ArrayBuffer" [@@bs.new]
@@ -50,6 +60,8 @@ end
 
 
 module TypedArray (Type: Type) = struct
+  (** Implements functionality common to all the typed arrays *)
+
   type elt = Type.t
   type 'a typed_array
   type t = elt typed_array
@@ -151,6 +163,8 @@ end
 
 
 module Int8Array = struct
+  (** *)
+
   (* defines elt, typed_array and a bunch of common functions *)
   include TypedArray(struct type t = int end)
 
@@ -171,6 +185,8 @@ end
 
 
 module Uint8Array = struct
+  (** *)
+
   (* defines elt, typed_array and a bunch of common functions *)
   include TypedArray(struct type t = int end)
 
@@ -190,6 +206,8 @@ end
 
 
 module Uint8ClampedArray = struct
+  (** *)
+
   (* defines elt, typed_array and a bunch of common functions *)
   include TypedArray(struct type t = int end)
 
@@ -209,6 +227,8 @@ end
 
 
 module Int16Array = struct
+  (** *)
+
   (* defines elt, typed_array and a bunch of common functions *)
   include TypedArray(struct type t = int end)
 
@@ -228,6 +248,8 @@ end
 
 
 module Uint16Array = struct
+  (** *)
+
   (* defines elt, typed_array and a bunch of common functions *)
   include TypedArray(struct type t = int end)
 
@@ -247,6 +269,8 @@ end
 
 
 module Int32Array = struct
+  (** *)
+
   (* defines elt, typed_array and a bunch of common functions *)
   include TypedArray(struct type t = int32 end)
 
@@ -273,6 +297,8 @@ module Int32_array = Int32Array
 
 
 module Uint32Array = struct
+  (** *)
+
   (* defines elt, typed_array and a bunch of common functions *)
   include TypedArray(struct type t = int end)
 
@@ -295,6 +321,8 @@ end
  it still return number, [float] in this case
 *)
 module Float32Array = struct
+  (** *)
+
   (* defines elt, typed_array and a bunch of common functions *)
   include TypedArray(struct type t = float end)
 
@@ -321,6 +349,8 @@ module Float32_array = Float32Array
 
 
 module Float64Array = struct
+  (** *)
+
   (* defines elt, typed_array and a bunch of common functions *)
   include TypedArray(struct type t = float end)
 

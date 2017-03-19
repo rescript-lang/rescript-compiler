@@ -24899,7 +24899,9 @@ val escaped_j_delimiter : string
 
 val unescaped_js_delimiter : string 
 
-
+val native : string
+val bytecode : string
+val js : string
 
 end = struct
 #1 "literals.ml"
@@ -25014,7 +25016,9 @@ let unescaped_j_delimiter = "j"
 let unescaped_js_delimiter = "js"
 let escaped_j_delimiter =  "*j" (* not user level syntax allowed *)
 
-
+let native = "native"
+let bytecode = "bytecode"
+let js = "js"
 
 end
 module Ext_filename : sig 

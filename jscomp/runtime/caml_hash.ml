@@ -26,6 +26,7 @@
 
 
 
+(** *)
 
 let (<< ) = Nativeint.shift_left
 let (>>>) = Nativeint.shift_right_logical

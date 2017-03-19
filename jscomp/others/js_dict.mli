@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
+ * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,44 +17,44 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-type bs_dependency = 
-  {
-    package_name : string ; 
-    package_install_path : string ; 
-  }
-type bs_dependencies = bs_dependency list 
-
-(* `string` is a path to the entrypoint *)
-type entries_t = JsTarget of string | NativeTarget of string | BytecodeTarget of string
-
-type t = 
-  {
-    package_name : string ; 
-    ocamllex : string ; 
-    external_includes : string list ; 
-    bsc_flags : string list ;
-    ppx_flags : string list ;
-    bs_dependencies : bs_dependencies;
+type 'a t
+(** Dictionary type (ie an '\{ \}' JS object). However it is restricted 
+    to hold a single type; therefore values must have the same type. 
     
-    built_in_dependency : bs_dependency option; 
-    (*TODO: maybe we should always resolve bs-platform 
-      so that we can calculate correct relative path in 
-      [.merlin]
-    *)
-    refmt : string option;
-    refmt_flags : string list;
-    js_post_build_cmd : string option;
-    package_specs : Bsb_config.package_specs ; 
-    globbed_dirs : string list;
-    bs_file_groups : Bsb_build_ui.file_group list ;
-    files_to_install : String_hash_set.t ;
-    generate_merlin : bool ; 
-    reason_react_jsx : bool ; (* whether apply PPX transform or not*)
-    entries : entries_t list ;
-  }
+    This Dictionary type is mostly use with the [Js_json.t] type. *)
+
+type key = string
+(** Key type *)
+
+external get : 
+  'a t -> 
+  key -> 
+  'a option = "" [@@bs.get_index] [@@bs.return {undefined_to_opt}]
+(** [get dict key] returns [None] if the [key] is not found in the 
+    dictionary, [Some value] otherwise *)
+
+external unsafeGet : 'a t -> key -> 'a = "" [@@bs.get_index] 
+(** [unsafeGet dict key] return the value if the [key] exists, 
+    otherwise an {b undefined} value is returned. Must be used only 
+    when the existence of a key is certain. (i.e. when having called [keys]
+    function previously. 
+
+@example {[
+Array.iter (fun key -> Js.log (Js_dict.unsafeGet dic key)) (Js_dict.keys dict) 
+]} 
+*)
+
+external set : 'a t -> key -> 'a -> unit = "" [@@bs.set_index]  
+(** [set dict key value] sets the [key]/[value] in [dict] *)
+
+external keys : 'a t -> string array = "Object.keys" [@@bs.val]
+(** [keys dict] returns all the keys in the dictionary [dict]*)
+
+external empty : unit -> 'a t = "" [@@bs.obj]
+(** [empty ()] returns en empty dictionary *)

@@ -26,6 +26,7 @@
 
 
 
+(** *)
 
 type 'a t = 'a Js_undefined.t array
 

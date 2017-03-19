@@ -22,6 +22,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+(** Contains functionality for dealing with values that can be both [null] and [undefined] *)
+
 type + 'a t = 'a Js.null_undefined
 external to_opt : 'a t -> 'a option = "#null_undefined_to_opt"
 external return : 'a -> 'a t = "%identity"

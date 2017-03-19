@@ -25,6 +25,7 @@
 
 
 
+(** *)
 
 let caml_raise_not_found () = raise Not_found
 

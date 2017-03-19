@@ -26,6 +26,7 @@
 
 
 
+(** *)
 
 (* Note that when we introduce it in {!Js_dump} 
    we need introduce dependency properly *)

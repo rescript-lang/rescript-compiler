@@ -22,8 +22,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** This module will  be exported
+(** The Entry point to the JavaScript API
 
+    This module will  be exported
 
     - It does not have any code, all its code will be inlined so that
        there will be never
@@ -73,6 +74,7 @@ external log : 'a -> unit = "console.log" [@@bs.val]
 (** A convenience function to log *)
 
 (** {4 operators }*)
+
 external unsafe_lt : 'a -> 'a -> bool = "#unsafe_lt"
 (**  [unsafe_lt a b] will be compiled as [a < b] *)
 external unsafe_le : 'a -> 'a -> bool = "#unsafe_le"
@@ -85,13 +87,15 @@ external unsafe_ge : 'a -> 'a -> bool = "#unsafe_ge"
 
 (* tag::nested_built_in_modules[] *)
 (** {3 nested modules}*)
+
 module Null = Js_null
 module Undefined = Js_undefined
 module Null_undefined = Js_null_undefined
 (* end::nested_built_in_modules[] *)
 
 (** {8 nested modules} *experimental* API, please refer to
-  {!Js_dict} {!Js_array} {!Js_string} {!Js_re} for more details *)
+  {! Js_dict}, {! Js_array}, {! Js_string} and {! Js_re} for more details *)
+
 module Array = Js_array
 module Boolean = Js_boolean
 module Date = Js_date

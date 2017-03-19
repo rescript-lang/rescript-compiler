@@ -6,6 +6,8 @@ open Exception
 open Class
 open Module
 
+module Naming = Odoc_html.Naming
+
 let opt = Odoc_info.apply_opt
 
 let new_buf () = Buffer.create 1024
@@ -16,201 +18,41 @@ let bufferize f =
   let b = new_buf () in
   (fun t -> f b t; Buffer.contents b)
 
+let print_concat b sep f =
+  let rec iter = function
+      [] -> ()
+    | [c] -> f c
+    | c :: q ->
+        f c;
+        bs b sep;
+        iter q
+  in
+  iter
+
 let charset = ref "utf-8"
 
 let html_of_example g t =
   let text = bufferize g#html_of_text t in
   "<pre class=\"example\">" ^ text ^ "</pre>"
-(*
-module Naming =
-  struct
-    (** The prefix for types marks. *)
-    let mark_type = "TYPE"
 
-    (** The prefix for types elements (record fields or constructors). *)
-    let mark_type_elt = "TYPEELT"
+let wrap_tag f b v =
+  bs b "<div class=\"tag\">";
+  f b v;
+  bs b "</div>"
 
-    (** The prefix for functions marks. *)
-    let mark_function = "FUN"
+let wrap_tag_list f b = function
+| [] -> ()
+| l -> wrap_tag f b l
 
-    (** The prefix for extensions marks. *)
-    let mark_extension = "EXTENSION"
+let wrap_tag_opt f b = function
+| None -> ()
+| v -> wrap_tag f b v
 
-    (** The prefix for exceptions marks. *)
-    let mark_exception = "EXCEPTION"
-
-    (** The prefix for values marks. *)
-    let mark_value = "VAL"
-
-    (** The prefix for attributes marks. *)
-    let mark_attribute = "ATT"
-
-    (** The prefix for methods marks. *)
-    let mark_method = "METHOD"
-
-    (** The prefix for code files.. *)
-    let code_prefix = "code_"
-
-    (** The prefix for type files.. *)
-    let type_prefix = "type_"
-
-    (** Return the two html files names for the given module or class name.*)
-    let html_files name =
-      let qual =
-        try
-          let i = String.rindex name '.' in
-          match name.[i + 1] with
-          | 'A'..'Z' -> ""
-          | _ -> "-c"
-        with Not_found -> ""
-      in
-      let prefix = name^qual in
-      let html_file = prefix^".html" in
-      let html_frame_file = prefix^"-frame.html" in
-      (html_file, html_frame_file)
-
-    (** Return the target for the given prefix and simple name. *)
-    let target pref simple_name = pref^simple_name
-
-    (** Return the complete link target (file#target) for the given prefix string and complete name.*)
-    let complete_target pref complete_name =
-      let simple_name = Name.simple complete_name in
-      let module_name =
-        let s = Name.father complete_name in
-        if s = "" then simple_name else s
-      in
-      let (html_file, _) = html_files module_name in
-      html_file^"#"^(target pref simple_name)
-
-    (** Return the link target for the given type. *)
-    let type_target t = target mark_type (Name.simple t.ty_name)
-
-    (** Return the link target for the given variant constructor. *)
-    let const_target t f =
-      let name = Printf.sprintf "%s.%s" (Name.simple t.ty_name) f.vc_name in
-      target mark_type_elt name
-
-    (** Return the link target for the given record field. *)
-    let recfield_target t f = target mark_type_elt
-      (Printf.sprintf "%s.%s" (Name.simple t.ty_name) f.rf_name)
-
-    (** Return the link target for the given inline record field. *)
-    let inline_recfield_target t c f = target mark_type_elt
-      (Printf.sprintf "%s.%s.%s" t c f.rf_name)
-
-    (** Return the link target for the given object field. *)
-    let objfield_target t f = target mark_type_elt
-      (Printf.sprintf "%s.%s" (Name.simple t.ty_name) f.of_name)
-
-    (** Return the complete link target for the given type. *)
-    let complete_type_target t = complete_target mark_type t.ty_name
-
-    let complete_recfield_target name =
-      let typ = Name.father name in
-      let field = Name.simple name in
-      Printf.sprintf "%s.%s" (complete_target mark_type_elt typ) field
-
-    let complete_const_target = complete_recfield_target
-
-    (** Return the link target for the given extension. *)
-    let extension_target x = target mark_extension (Name.simple x.xt_name)
-
-    (** Return the complete link target for the given extension. *)
-    let complete_extension_target x = complete_target mark_extension x.xt_name
-
-    (** Return the link target for the given exception. *)
-    let exception_target e = target mark_exception (Name.simple e.ex_name)
-
-    (** Return the complete link target for the given exception. *)
-    let complete_exception_target e = complete_target mark_exception e.ex_name
-
-    (** Return the link target for the given value. *)
-    let value_target v = target mark_value (Name.simple v.val_name)
-
-    (** Return the given value name where symbols accepted in infix values
-       are replaced by strings, to avoid clashes with the filesystem.*)
-    let subst_infix_symbols name =
-      let len = String.length name in
-      let buf = Buffer.create len in
-      let ch c = Buffer.add_char buf c in
-      let st s = Buffer.add_string buf s in
-      for i = 0 to len - 1 do
-        match name.[i] with
-        | '|' -> st "_pipe_"
-        | '<' -> st "_lt_"
-        | '>' -> st "_gt_"
-        | '@' -> st "_at_"
-        | '^' -> st "_exp_"
-        | '&' -> st "_amp_"
-        | '+' -> st "_plus_"
-        | '-' -> st "_minus_"
-        | '*' -> st "_star_"
-        | '/' -> st "_slash_"
-        | '$' -> st "_dollar_"
-        | '%' -> st "_percent_"
-        | '=' -> st "_equal_"
-        | ':' -> st "_column_"
-        | '~' -> st "_tilde_"
-        | '!' -> st "_bang_"
-        | '?' -> st "_questionmark_"
-        | c -> ch c
-      done;
-      Buffer.contents buf
-
-    (** Return the complete link target for the given value. *)
-    let complete_value_target v = complete_target mark_value v.val_name
-
-    (** Return the complete filename for the code of the given value. *)
-    let file_code_value_complete_target v =
-      code_prefix^mark_value^(subst_infix_symbols v.val_name)^".html"
-
-    (** Return the link target for the given attribute. *)
-    let attribute_target a = target mark_attribute (Name.simple a.att_value.val_name)
-
-    (** Return the complete link target for the given attribute. *)
-    let complete_attribute_target a = complete_target mark_attribute a.att_value.val_name
-
-    (** Return the complete filename for the code of the given attribute. *)
-    let file_code_attribute_complete_target a =
-      code_prefix^mark_attribute^a.att_value.val_name^".html"
-
-    (** Return the link target for the given method. *)
-    let method_target m = target mark_method (Name.simple m.met_value.val_name)
-
-    (** Return the complete link target for the given method. *)
-    let complete_method_target m = complete_target mark_method m.met_value.val_name
-
-    (** Return the complete filename for the code of the given method. *)
-    let file_code_method_complete_target m =
-      code_prefix^mark_method^m.met_value.val_name^".html"
-
-    (** Return the link target for the given label section. *)
-    let label_target l = target "" l
-
-    (** Return the complete link target for the given section label. *)
-    let complete_label_target l = complete_target "" l
-
-    (** Return the complete filename for the code of the type of the
-       given module or module type name. *)
-    let file_type_module_complete_target name =
-      type_prefix^name^".html"
-
-    (** Return the complete filename for the code of the
-       given module name. *)
-    let file_code_module_complete_target name =
-      code_prefix^name^".html"
-
-    (** Return the complete filename for the code of the type of the
-       given class or class type name. *)
-    let file_type_class_complete_target name =
-      type_prefix^name^".html"
-  end
-*)
 module Generator (G : Odoc_html.Html_generator) =
 struct
   class html =
     object(self)
-      inherit G.html
+      inherit G.html as super
 
       val mutable doctype = "<!doctype html>\n"
 
@@ -224,6 +66,14 @@ struct
           <script src=\"../api_static//highlight.pack.js\"></script>\n
           <script>hljs.initHighlightingOnLoad();</script>"; (* nasty hack but who cares! *)
 
+      method html_of_author_list = wrap_tag_list super#html_of_author_list
+      method html_of_version_opt = wrap_tag_opt super#html_of_version_opt
+      method html_of_before = wrap_tag_list super#html_of_before
+      method html_of_since_opt = wrap_tag_opt super#html_of_since_opt
+      method html_of_raised_exceptions = wrap_tag_list super#html_of_raised_exceptions
+      method html_of_return_opt = wrap_tag_opt super#html_of_return_opt
+      method html_of_sees = wrap_tag_list super#html_of_sees
+
       method html_of_info ?(cls="") ?(indent=true) b info_opt =
         match info_opt with
           None ->
@@ -235,11 +85,12 @@ struct
             begin match info.M.i_deprecated with
               None -> ()
             | Some d ->
-                bs b "<span class=\"warning\">";
+                bs b "<div class=\"warning\">";
+                bs b "<span class=\"label\">";
                 bs b Odoc_messages.deprecated ;
                 bs b "</span>" ;
                 self#html_of_text b d;
-                bs b "<br>\n"
+                bs b "</div>\n"
             end;
             begin match info.M.i_desc with
               None -> ()
@@ -287,6 +138,182 @@ struct
           Sys_error s ->
             incr Odoc_info.errors ;
             prerr_endline s
+
+      (** Print html code for a type. *)
+      method html_of_type b t =
+        bs b "<div class=\"type-declaration\">";
+        Odoc_info.reset_type_names ();
+        let father = Name.father t.ty_name in
+        let print_field_prefix () =
+          bs b "<tr>\n<td align=\"left\" valign=\"top\" >\n";
+          bs b "<code>&nbsp;&nbsp;</code>";
+          bs b "</td>\n<td align=\"left\" valign=\"top\" >\n";
+          bs b "<code>";
+        in
+        let print_field_comment = function
+          | None -> ()
+          | Some t ->
+              bs b "<td class=\"typefieldcomment\" align=\"left\" valign=\"top\" >";
+              bs b "<code>";
+              bs b "(*";
+              bs b "</code></td>";
+              bs b "<td class=\"typefieldcomment\" align=\"left\" valign=\"top\" >";
+              self#html_of_info b (Some t);
+              bs b "</td><td class=\"typefieldcomment\" align=\"left\" valign=\"bottom\" >";
+              bs b "<code>*)</code></td>"
+        in
+        bs b
+          (match t.ty_manifest, t.ty_kind with
+            None, Type_abstract
+          | None, Type_open -> "\n<pre>"
+          | None, Type_variant _
+          | None, Type_record _ -> "\n<pre><code>"
+          | Some _, Type_abstract
+          | Some _, Type_open -> "\n<pre>"
+          | Some _, Type_variant _
+          | Some _, Type_record _ -> "\n<pre>"
+          );
+        bp b "<span id=\"%s\">" (Naming.type_target t);
+        bs b ((self#keyword "type")^" ");
+        self#html_of_type_expr_param_list b father t;
+        (match t.ty_parameters with [] -> () | _ -> bs b " ");
+        bs b (Name.simple t.ty_name);
+        bs b "</span> ";
+        let priv = t.ty_private = Asttypes.Private in
+        (
+        match t.ty_manifest with
+          None -> ()
+        | Some (Object_type fields) ->
+            bs b "= ";
+            if priv then bs b "private ";
+            bs b "&lt;</pre>";
+            bs b "<table class=\"typetable\">\n" ;
+            let print_one f =
+              print_field_prefix () ;
+              bp b "<span id=\"%s\">%s</span>"
+                (Naming.objfield_target t f)
+                f.of_name;
+              bs b "</td><td>: ";
+              self#html_of_type_expr b father f.of_type;
+              bs b ";</code></td>\n";
+              print_field_comment f.of_text ;
+              bs b "\n</tr>"
+            in
+            print_concat b "\n" print_one fields;
+            bs b "</table>\n>\n";
+            bs b " "
+        | Some (Other typ) ->
+            bs b "= ";
+            if priv then bs b "private ";
+            self#html_of_type_expr b father typ;
+            bs b " "
+        );
+        (match t.ty_kind with
+          Type_abstract -> bs b "</pre>"
+        | Type_variant l ->
+            bs b "= ";
+            if priv then bs b "private ";
+            bs b
+              (
+              match t.ty_manifest with
+                None -> "</code></pre>"
+              | Some _ -> "</pre>"
+              );
+            bs b "<table class=\"typetable\">\n";
+            let print_one constr =
+              bs b "<tr>\n<td align=\"left\" valign=\"top\" >\n";
+              bs b "<code>";
+              bs b (self#keyword "|");
+              bs b "</code></td>\n<td align=\"left\" valign=\"top\" >\n";
+              bs b "<code>";
+              bp b "<span id=\"%s\">%s</span>"
+                (Naming.const_target t constr)
+                (self#constructor constr.vc_name);
+              (
+              match constr.vc_args, constr.vc_ret with
+                [], None -> ()
+              | l,None ->
+                  bs b ("</td><td>" ^ (self#keyword "of") ^ "</td><td>");
+                  self#html_of_type_expr_list ~par: false b father " * " l;
+              | [],Some r ->
+                  bs b ("</td><td>" ^ (self#keyword ":") ^ "</td><td>");
+                  self#html_of_type_expr b father r;
+              | l,Some r ->
+                  bs b ("</td><td>" ^ (self#keyword ":") ^ "</td><td>");
+                  self#html_of_type_expr_list ~par: false b father " * " l;
+                  bs b ("</td><td>" ^ (self#keyword "->") ^ "</td><td>");
+                  self#html_of_type_expr b father r;
+              );
+              bs b "</code></td>\n";
+              (
+              match constr.vc_text with
+                None -> ()
+              | Some t ->
+                  bs b "<td class=\"typefieldcomment\" align=\"left\" valign=\"top\" >";
+                  bs b "<code>";
+                  bs b "(*";
+                  bs b "</code></td>";
+                  bs b "<td class=\"typefieldcomment\" align=\"left\" valign=\"top\" >";
+                  self#html_of_info b (Some t);
+                  bs b "</td>";
+                  bs b "<td class=\"typefieldcomment\" align=\"left\" valign=\"bottom\" >";
+                  bs b "<code>";
+                  bs b "*)";
+                  bs b "</code></td>";
+              );
+              bs b "\n</tr>"
+            in
+            print_concat b "\n" print_one l;
+            bs b "</table>\n"
+
+        | Type_record l ->
+            bs b "= ";
+            if priv then bs b "private " ;
+            bs b "{";
+            bs b
+              (
+              match t.ty_manifest with
+                None -> "</code></pre>"
+              | Some _ -> "</pre>"
+              );
+            bs b "<table class=\"typetable\">\n" ;
+            let print_one r =
+              bs b "<tr>\n<td align=\"left\" valign=\"top\" >\n";
+              bs b "<code>&nbsp;&nbsp;</code>";
+              bs b "</td>\n<td align=\"left\" valign=\"top\" >\n";
+              bs b "<code>";
+              if r.rf_mutable then bs b (self#keyword "mutable&nbsp;") ;
+              bp b "<span id=\"%s\">%s</span>&nbsp;: "
+                (Naming.recfield_target t r)
+                r.rf_name;
+              self#html_of_type_expr b father r.rf_type;
+              bs b ";</code></td>\n";
+              (
+              match r.rf_text with
+                None -> ()
+              | Some t ->
+                  bs b "<td class=\"typefieldcomment\" align=\"left\" valign=\"top\" >";
+                  bs b "<code>";
+                  bs b "(*";
+                  bs b "</code></td>";
+                  bs b "<td class=\"typefieldcomment\" align=\"left\" valign=\"top\" >";
+                  self#html_of_info b (Some t);
+                  bs b "</td><td class=\"typefieldcomment\" align=\"left\" valign=\"bottom\" >";
+                  bs b "<code>*)</code></td>";
+              );
+              bs b "\n</tr>"
+            in
+            print_concat b "\n" print_one l;
+            bs b "</table>\n}\n"
+        | Type_open ->
+            bs b "= ..";
+            bs b "</pre>"
+        );
+        bs b "\n";
+        bs b "</div>\n";
+        self#html_of_info b t.ty_info;
+        bs b "\n"
+ 
 (*
       method generate_for_module pre post modu =
         try

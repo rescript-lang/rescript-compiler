@@ -25,6 +25,6 @@
 
 
 
-
+(** *)
 
 val repeat : int -> string -> string [@bs]

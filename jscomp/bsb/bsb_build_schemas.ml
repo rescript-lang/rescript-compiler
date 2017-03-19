@@ -40,3 +40,7 @@ let bsc_lib_includes = "bsc_lib_includes"
 let use_stdlib = "use-stdlib"
 let reason = "reason"
 let react_jsx = "react-jsx"
+
+let entries = "entries"
+let kind = "kind"
+let main = "main"

@@ -26,6 +26,7 @@
 
 
 
+(** *)
 
 type exception_block = string * nativeint 
 

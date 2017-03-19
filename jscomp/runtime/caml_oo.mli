@@ -28,6 +28,6 @@
 
 
 
-
+(** *)
 
 val caml_get_public_method : CamlinternalOO.obj -> int -> int -> CamlinternalOO.closure

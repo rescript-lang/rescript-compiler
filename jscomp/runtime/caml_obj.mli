@@ -25,7 +25,7 @@
 
 
 
-
+(** *)
 
 val caml_obj_dup : Obj.t -> Obj.t
 

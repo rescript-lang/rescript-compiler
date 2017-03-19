@@ -33,6 +33,13 @@ type key = string
 (** [get dict key] returns the value associated with [key] in [dict] *)
 external get : 'a t -> key -> 'a option = "" [@@bs.get_index] [@@bs.return {undefined_to_opt}]
 
+(** [unsafeGet dict key] returns the value associated with [key] in [dict]
+
+This function will return an invalid value ([undefined]) if [key] does not exist in [dict]. It
+will not throw an error.
+*)
+external unsafeGet : 'a t -> key -> 'a = "" [@@bs.get_index] 
+
 (** [set dict key value] sets the value of [key] in [dict] to [value] *)
 external set : 'a t -> key -> 'a -> unit = "" [@@bs.set_index]  
 

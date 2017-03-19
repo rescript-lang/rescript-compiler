@@ -22,6 +22,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+(** Provides functionality for dealing with the ['a Js.null] type *)
+
 (*tag::interface_all[]*)
 type + 'a t = 'a Js.null
 external to_opt : 'a t -> 'a option = "#null_to_opt"

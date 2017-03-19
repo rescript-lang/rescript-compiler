@@ -57,7 +57,7 @@ https://github.com/bloomberg/bucklescript-addons.
 #### An HTTP Server
 
 This example creates a simple http server. The complete code is available
-[here](https://github.com/bloomberg/bucklescript-addons/tree/master/examples/node-http-server).
+[here](https://github.com/BuckleTypes/bs-examples/tree/master/node-http-server).
 
 The attribute `[@bs]` used in the example below is one of the OCaml attributes mentioned earlier.
 When BuckleScript generates code, it may use either a curried (OCaml) or uncurried (JavaScript)
