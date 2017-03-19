@@ -16,7 +16,7 @@
 external length : 'a array -> int = "%array_length"
 (** Return the length (number of elements) of the given array. *)
 
-external get : 'a array -> int -> 'a = "caml_array_safe_get"
+external get : 'a array -> int -> 'a = "%array_safe_get"
 (** [ArrayLabels.get a n] returns the element number [n] of array [a].
    The first element has number 0.
    The last element has number [ArrayLabels.length a - 1].

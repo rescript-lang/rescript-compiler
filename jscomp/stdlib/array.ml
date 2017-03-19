@@ -14,7 +14,7 @@
 (* Array operations *)
 
 external length : 'a array -> int = "%array_length"
-external get: 'a array -> int -> 'a = "caml_array_safe_get"
+external get: 'a array -> int -> 'a = "%array_safe_get"
 external set: 'a array -> int -> 'a -> unit = "%array_safe_set"
 external unsafe_get: 'a array -> int -> 'a = "%array_unsafe_get"
 external unsafe_set: 'a array -> int -> 'a -> unit = "%array_unsafe_set"

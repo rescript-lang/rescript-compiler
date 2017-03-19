@@ -147,7 +147,8 @@ let translate (prim_name : string)
     | _ ->  assert false 
     end
 
-  | "caml_array_get"
+  | "caml_array_get" -> 
+    call Js_config.array
   | "caml_array_get_addr"
   | "caml_array_get_float"
   | "caml_array_unsafe_get"
@@ -156,7 +157,8 @@ let translate (prim_name : string)
     | [e0;e1] -> Js_of_lam_array.ref_array e0 e1
     | _ -> assert false
     end
-  | "caml_array_set"
+  | "caml_array_set" ->
+    call Js_config.array
   | "caml_array_set_addr"
   | "caml_array_set_float"
   | "caml_array_unsafe_set"
@@ -492,7 +494,6 @@ let translate (prim_name : string)
      Not good for inline *)
 
   | "caml_array_blit"
-  | "caml_array_safe_get"
   | "caml_make_vect" -> 
     call Js_config.array
   | "caml_ml_flush"
