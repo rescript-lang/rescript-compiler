@@ -12,12 +12,12 @@ function f() {
         return /* () */0;
       });
   for(var i = 0; i <= 9; ++i){
-    arr[i] = (function(i){
-    return function () {
-      v[0] = v[0] + i | 0;
-      return /* () */0;
-    }
-    }(i));
+    Caml_array.caml_array_set(arr, i, (function(i){
+        return function () {
+          v[0] = v[0] + i | 0;
+          return /* () */0;
+        }
+        }(i)));
   }
   return arr;
 }

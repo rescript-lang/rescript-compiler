@@ -1,6 +1,7 @@
 'use strict';
 
 var Curry            = require("../../lib/js/curry");
+var Caml_array       = require("../../lib/js/caml_array");
 var Pervasives       = require("../../lib/js/pervasives");
 var CamlinternalLazy = require("../../lib/js/camlinternalLazy");
 
@@ -57,7 +58,7 @@ function f2(h, b, _) {
   return Curry._1(h, b ? 32 : 7);
 }
 
-v[1] = 3.0;
+Caml_array.caml_array_set(v, 1, 3.0);
 
 var unboxed_x = /* float array */[
   0,

@@ -40,11 +40,11 @@ function test_closure() {
         return x;
       });
   for(var i = 0; i <= 5; ++i){
-    arr[i] = (function(i){
-    return function () {
-      return i;
-    }
-    }(i));
+    Caml_array.caml_array_set(arr, i, (function(i){
+        return function () {
+          return i;
+        }
+        }(i)));
   }
   $$Array.iter(function (i) {
         v[0] = v[0] + Curry._1(i, 0) | 0;
@@ -60,11 +60,11 @@ function test_closure2() {
       });
   for(var i = 0; i <= 5; ++i){
     var j = i + i | 0;
-    arr[i] = (function(j){
-    return function () {
-      return j;
-    }
-    }(j));
+    Caml_array.caml_array_set(arr, i, (function(j){
+        return function () {
+          return j;
+        }
+        }(j)));
   }
   $$Array.iter(function (i) {
         v[0] = v[0] + Curry._1(i, 0) | 0;

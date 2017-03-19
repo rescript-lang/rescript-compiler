@@ -15,12 +15,12 @@ function f() {
   var n = 0;
   while(n < 10) {
     var j = n;
-    arr[j] = (function(j){
-    return function () {
-      v[0] = v[0] + j | 0;
-      return /* () */0;
-    }
-    }(j));
+    Caml_array.caml_array_set(arr, j, (function(j){
+        return function () {
+          v[0] = v[0] + j | 0;
+          return /* () */0;
+        }
+        }(j)));
     n = n + 1 | 0;
   };
   return /* () */0;
