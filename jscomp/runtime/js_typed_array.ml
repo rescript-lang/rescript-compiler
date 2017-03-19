@@ -396,42 +396,54 @@ module DataView = struct
   external getUint8 : t -> int -> int = "" [@@bs.send]
 
   external getInt16: t -> int -> int = "" [@@bs.send]
-  external getInt16LittleEndian : t -> int -> (_ [@bs.as 1]) -> int = "" [@@bs.send]
+  external getInt16LittleEndian : t -> int -> (_ [@bs.as 1]) -> int =
+    "getInt16" [@@bs.send]
 
   external getUint16: t -> int -> int = "" [@@bs.send]
-  external getUint16LittleEndian : t -> int -> (_ [@bs.as 1]) -> int = "" [@@bs.send]
+  external getUint16LittleEndian : t -> int -> (_ [@bs.as 1]) -> int =
+    "getUint16" [@@bs.send]
 
   external getInt32: t -> int -> int = "" [@@bs.send]
-  external getInt32LittleEndian : t -> int -> (_ [@bs.as 1]) -> int = "" [@@bs.send]
+  external getInt32LittleEndian : t -> int -> (_ [@bs.as 1]) -> int =
+    "getInt32" [@@bs.send]
 
   external getUint32: t -> int -> int = "" [@@bs.send]
-  external getUint32LittleEndian : t -> int -> (_ [@bs.as 1]) -> int = "" [@@bs.send]
+  external getUint32LittleEndian : t -> int -> (_ [@bs.as 1]) -> int =
+    "getUint32" [@@bs.send]
 
   external getFloat32: t -> int -> float = "" [@@bs.send]
-  external getFloat32LittleEndian : t -> int -> (_ [@bs.as 1]) -> float = "" [@@bs.send]
+  external getFloat32LittleEndian : t -> int -> (_ [@bs.as 1]) -> float =
+    "getFloat32" [@@bs.send]
 
   external getFloat64: t -> int -> float = "" [@@bs.send]
-  external getFloat64LittleEndian : t -> int -> (_ [@bs.as 1]) -> float = "" [@@bs.send]
+  external getFloat64LittleEndian : t -> int -> (_ [@bs.as 1]) -> float =
+    "getFloat64" [@@bs.send]
 
   external setInt8 : t -> int -> int -> unit = "" [@@bs.send]
   external setUint8 : t -> int -> int -> unit = "" [@@bs.send]
 
   external setInt16: t -> int -> int -> unit = "" [@@bs.send]
-  external setInt16LittleEndian : t -> int -> int -> (_ [@bs.as 1]) -> unit = "" [@@bs.send]
+  external setInt16LittleEndian : t -> int -> int -> (_ [@bs.as 1]) -> unit =
+    "setInt16" [@@bs.send]
 
   external setUint16: t -> int -> int -> unit = "" [@@bs.send]
-  external setUint16LittleEndian : t -> int -> int -> (_ [@bs.as 1]) -> unit = "" [@@bs.send]
+  external setUint16LittleEndian : t -> int -> int -> (_ [@bs.as 1]) -> unit =
+    "setUint16" [@@bs.send]
 
   external setInt32: t -> int -> int -> unit = "" [@@bs.send]
-  external setInt32LittleEndian : t -> int -> int -> (_ [@bs.as 1]) -> unit = "" [@@bs.send]
+  external setInt32LittleEndian : t -> int -> int -> (_ [@bs.as 1]) -> unit =
+    "setInt32" [@@bs.send]
 
   external setUint32: t -> int -> int -> unit = "" [@@bs.send]
-  external setUint32LittleEndian : t -> int -> int -> (_ [@bs.as 1]) -> unit = "" [@@bs.send]
+  external setUint32LittleEndian : t -> int -> int -> (_ [@bs.as 1]) -> unit =
+    "setUint32" [@@bs.send]
 
   external setFloat32: t -> int -> float -> unit = "" [@@bs.send]
-  external setFloat32LittleEndian : t -> int -> float -> (_ [@bs.as 1]) -> unit = "" [@@bs.send]
+  external setFloat32LittleEndian : t -> int -> float -> (_ [@bs.as 1]) -> unit =
+    "setFloat32" [@@bs.send]
 
   external setFloat64: t -> int -> float -> unit = "" [@@bs.send]
-  external setFloat64LittleEndian : t -> int -> float -> (_ [@bs.as 1]) -> unit = "" [@@bs.send]
+  external setFloat64LittleEndian : t -> int -> float -> (_ [@bs.as 1]) -> unit =
+    "setFloat64" [@@bs.send]
 
 end

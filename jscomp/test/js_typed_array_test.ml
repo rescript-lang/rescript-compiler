@@ -565,6 +565,135 @@ let suites = Mt.[
 
       Eq(14., Float64Array.unsafe_get a 3)
     );
+
+(*  DataView
+ *)
+
+    "DataView - make, byteLength", (fun _ ->
+      Eq(32, ArrayBuffer.make 32 |> DataView.make |> DataView.byteLength));
+    "DataView - fromBuffer", (fun _ ->
+      Eq(32, ArrayBuffer.make 32 |> DataView.fromBuffer |> DataView.byteLength));
+    "DataView - fromBufferOffset", (fun _ ->
+      let buffer = ArrayBuffer.make 32 in
+      Eq(24, DataView.fromBufferOffset buffer 8 |> DataView.byteLength));
+    "DataView - fromBufferRange", (fun _ ->
+      let buffer = ArrayBuffer.make 32 in
+      Eq(4, DataView.fromBufferRange buffer ~offset:8 ~length:4 |> DataView.byteLength));
+    "DataView - buffer", (fun _ ->
+      let buffer = ArrayBuffer.make 32 in
+      Eq(buffer, DataView.fromBuffer buffer |> DataView.buffer));
+    "DataView - byteOffset", (fun _ ->
+      let buffer = ArrayBuffer.make 32 in
+      Eq(8, DataView.fromBufferOffset buffer 8 |> DataView.byteOffset));
+
+    "DataView - setInt8, getInt8", (fun _ ->
+      let buffer = ArrayBuffer.make 8 in
+      let view = DataView.make buffer in
+      DataView.setInt8 view 0 1;
+      Eq(1, DataView.getInt8 view 0));
+    "DataView - setUint8, getUint8", (fun _ ->
+      let buffer = ArrayBuffer.make 8 in
+      let view = DataView.make buffer in
+      DataView.setUint8 view 0 128;
+      Eq(128, DataView.getUint8 view 0));
+
+    "DataView - setInt16, getInt16", (fun _ ->
+      let buffer = ArrayBuffer.make 8 in
+      let view = DataView.make buffer in
+      DataView.setInt16 view 0 257;
+      Eq(257, DataView.getInt16 view 0));
+    "DataView - getInt16LittleEndian", (fun _ ->
+      let buffer = ArrayBuffer.make 8 in
+      let view = DataView.make buffer in
+      DataView.setInt16LittleEndian view 0 25000;
+      Eq(25000, DataView.getInt16LittleEndian view 0));
+    "DataView - setInt16LittleEndian", (fun _ ->
+      let buffer = ArrayBuffer.make 8 in
+      let view = DataView.make buffer in
+      DataView.setInt16LittleEndian view 0 25000;
+      Eq(-22431, DataView.getInt16 view 0));
+
+    "DataView - setUint16, getUint16", (fun _ ->
+      let buffer = ArrayBuffer.make 8 in
+      let view = DataView.make buffer in
+      DataView.setUint16 view 0 32768;
+      Eq(32768, DataView.getUint16 view 0));
+    "DataView - getUint16LittleEndian", (fun _ ->
+      let buffer = ArrayBuffer.make 8 in
+      let view = DataView.make buffer in
+      DataView.setUint16LittleEndian view 0 32768;
+      Eq(32768, DataView.getUint16LittleEndian view 0));
+    "DataView - setUint16LittleEndian", (fun _ ->
+      let buffer = ArrayBuffer.make 8 in
+      let view = DataView.make buffer in
+      DataView.setUint16LittleEndian view 0 32768;
+      Eq(128, DataView.getUint16 view 0));
+
+    "DataView - setInt32, getInt32", (fun _ ->
+      let buffer = ArrayBuffer.make 8 in
+      let view = DataView.make buffer in
+      DataView.setInt32 view 0 65537;
+      Eq(65537, DataView.getInt32 view 0));
+    "DataView - getInt32LittleEndian", (fun _ ->
+      let buffer = ArrayBuffer.make 8 in
+      let view = DataView.make buffer in
+      DataView.setInt32LittleEndian view 0 65537;
+      Eq(65537, DataView.getInt32LittleEndian view 0));
+    "DataView - setInt32LittleEndian", (fun _ ->
+      let buffer = ArrayBuffer.make 8 in
+      let view = DataView.make buffer in
+      DataView.setInt32LittleEndian view 0 65537;
+      Eq(16777472, DataView.getInt32 view 0));
+
+    (* Testing against 2_147_483_649 would be better,
+       but JS platform restrict us with int32 *)
+    "DataView - setUint32, getUint32", (fun _ ->
+      let buffer = ArrayBuffer.make 8 in
+      let view = DataView.make buffer in
+      DataView.setUint32 view 0 65537;
+      Eq(65537, DataView.getUint32 view 0));
+    "DataView - getUint32LittleEndian", (fun _ ->
+      let buffer = ArrayBuffer.make 8 in
+      let view = DataView.make buffer in
+      DataView.setUint32LittleEndian view 0 65537;
+      Eq(65537, DataView.getUint32LittleEndian view 0));
+    "DataView - setUint32LittleEndian", (fun _ ->
+      let buffer = ArrayBuffer.make 8 in
+      let view = DataView.make buffer in
+      DataView.setUint32LittleEndian view 0 65537;
+      Eq(16777472, DataView.getUint32 view 0));
+
+    "DataView - setFloat32, getFloat32", (fun _ ->
+      let buffer = ArrayBuffer.make 8 in
+      let view = DataView.make buffer in
+      DataView.setFloat32 view 0 65537.0;
+      Eq(65537.0, DataView.getFloat32 view 0));
+    "DataView - getFloat32LittleEndian", (fun _ ->
+      let buffer = ArrayBuffer.make 8 in
+      let view = DataView.make buffer in
+      DataView.setFloat32LittleEndian view 0 65537.0;
+      Eq(65537.0, DataView.getFloat32LittleEndian view 0));
+    "DataView - setFloat32LittleEndian", (fun _ ->
+      let buffer = ArrayBuffer.make 8 in
+      let view = DataView.make buffer in
+      DataView.setFloat32LittleEndian view 0 1.0;
+      Eq(4.600602988224807e-41, DataView.getFloat32 view 0));
+
+    "DataView - setFloat64, getFloat64", (fun _ ->
+      let buffer = ArrayBuffer.make 8 in
+      let view = DataView.make buffer in
+      DataView.setFloat64 view 0 1e200;
+      Eq(1e200, DataView.getFloat64 view 0));
+    "DataView - getFloat64LittleEndian", (fun _ ->
+      let buffer = ArrayBuffer.make 8 in
+      let view = DataView.make buffer in
+      DataView.setFloat64LittleEndian view 0 1e200;
+      Eq(1e200, DataView.getFloat64LittleEndian view 0));
+    "DataView - setFloat64LittleEndian", (fun _ ->
+      let buffer = ArrayBuffer.make 8 in
+      let view = DataView.make buffer in
+      DataView.setFloat64LittleEndian view 0 1.0;
+      Eq(3.03865e-319, DataView.getFloat64 view 0));
 ]
 
 ;; Mt.from_pair_suites __FILE__ suites
