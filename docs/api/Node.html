@@ -53,6 +53,7 @@
 <link title="Js" rel="Chapter" href="Js.html">
 <link title="Js_array" rel="Chapter" href="Js_array.html">
 <link title="Js_boolean" rel="Chapter" href="Js_boolean.html">
+<link title="Js_cast" rel="Chapter" href="Js_cast.html">
 <link title="Js_date" rel="Chapter" href="Js_date.html">
 <link title="Js_dict" rel="Chapter" href="Js_dict.html">
 <link title="Js_float" rel="Chapter" href="Js_float.html">
@@ -68,6 +69,7 @@
 <link title="Js_primitive" rel="Chapter" href="Js_primitive.html">
 <link title="Js_re" rel="Chapter" href="Js_re.html">
 <link title="Js_string" rel="Chapter" href="Js_string.html">
+<link title="Js_typed_array" rel="Chapter" href="Js_typed_array.html">
 <link title="Js_types" rel="Chapter" href="Js_types.html">
 <link title="Js_undefined" rel="Chapter" href="Js_undefined.html">
 <link title="Js_unsafe" rel="Chapter" href="Js_unsafe.html">
@@ -77,8 +79,7 @@
 <link title="Node_fs" rel="Chapter" href="Node_fs.html">
 <link title="Node_module" rel="Chapter" href="Node_module.html">
 <link title="Node_path" rel="Chapter" href="Node_path.html">
-<link title="Node_process" rel="Chapter" href="Node_process.html">
-<link title="Typed_array" rel="Chapter" href="Typed_array.html"><title>Node</title>
+<link title="Node_process" rel="Chapter" href="Node_process.html"><title>Node</title>
 </head>
 <body>
 <div class="navbar"><a class="pre" href="Js_unsafe.html" title="Js_unsafe">Previous</a>
@@ -101,11 +102,13 @@ place holder for node bindings<br>
 <pre><span class="keyword">module</span> <a href="Node.Process.html">Process</a>: <code class="type"><a href="Node_process.html">Node_process</a></code></pre>
 <pre><span class="keyword">module</span> <a href="Node.Module.html">Module</a>: <code class="type"><a href="Node_module.html">Node_module</a></code></pre>
 <pre><span class="keyword">module</span> <a href="Node.Buffer.html">Buffer</a>: <code class="type"><a href="Node_buffer.html">Node_buffer</a></code></pre>
-<pre><span class="keyword">module</span> <a href="Node.Child_process.html">Child_process</a>: <code class="type"><a href="Node_child_process.html">Node_child_process</a></code></pre>
+<pre><span class="keyword">module</span> <a href="Node.Child_process.html">Child_process</a>: <code class="type"><a href="Node_child_process.html">Node_child_process</a></code></pre><div class="type-declaration">
 <pre><span id="TYPEnode_exports"><span class="keyword">type</span> <code class="type"></code>node_exports</span> </pre>
+</div>
 
-
+<div class="type-declaration">
 <pre><span id="TYPEnode_module"><span class="keyword">type</span> <code class="type"></code>node_module</span> = <code class="type">< children : <a href="Node.html#TYPEnode_module">node_module</a> array; exports : <a href="Node.html#TYPEnode_exports">node_exports</a>;<br>         filename : string; id : string; loaded : <a href="Js.html#TYPEboolean">Js.boolean</a>;<br>         parrent : <a href="Node.html#TYPEnode_module">node_module</a> <a href="Js.html#TYPEnull_undefined">Js.null_undefined</a>; paths : string array ><br>       <a href="Js.html#TYPEt">Js.t</a></code> </pre>
+</div>
 <div class="info ">
 <div class="not-examples">
 WARN: 
@@ -116,8 +119,9 @@ WARN:
 </div>
 </div>
 
-
+<div class="type-declaration">
 <pre><span id="TYPEnode_require"><span class="keyword">type</span> <code class="type"></code>node_require</span> = <code class="type">< main : <a href="Node.html#TYPEnode_module">node_module</a> <a href="Js.html#TYPEundefined">Js.undefined</a>;<br>         resolve : ([ `Arity_1 of string ], string) <a href="Js.html#TYPEfn">Js.fn</a> ><br>       <a href="Js.html#TYPEt">Js.t</a></code> </pre>
+</div>
 <div class="info ">
 <div class="not-examples">
 WARN:
@@ -128,29 +132,32 @@ WARN:
 </div>
 </div>
 
-
+<div class="type-declaration">
 <pre><span id="TYPEstring_buffer"><span class="keyword">type</span> <code class="type"></code>string_buffer</span> </pre>
+</div>
 
-
+<div class="type-declaration">
 <pre><span id="TYPEbuffer"><span class="keyword">type</span> <code class="type"></code>buffer</span> </pre>
+</div>
 
-
+<div class="type-declaration">
 <pre><code><span id="TYPEstring_buffer_kind"><span class="keyword">type</span> <code class="type">'_</code> string_buffer_kind</span> = </code></pre><table class="typetable">
 <tr>
 <td align="left" valign="top" >
 <code><span class="keyword">|</span></code></td>
 <td align="left" valign="top" >
-<code><span id="TYPEELTstring_buffer_kind.String"><span class="constructor">String</span></span> <span class="keyword">:</span> <code class="type">string <a href="Node.html#TYPEstring_buffer_kind">string_buffer_kind</a></code></code></td>
+<code><span id="TYPEELTstring_buffer_kind.String"><span class="constructor">String</span></span></td><td><span class="keyword">:</span></td><td><code class="type">string <a href="Node.html#TYPEstring_buffer_kind">string_buffer_kind</a></code></code></td>
 
 </tr>
 <tr>
 <td align="left" valign="top" >
 <code><span class="keyword">|</span></code></td>
 <td align="left" valign="top" >
-<code><span id="TYPEELTstring_buffer_kind.Buffer"><span class="constructor">Buffer</span></span> <span class="keyword">:</span> <code class="type"><a href="Node.html#TYPEbuffer">buffer</a> <a href="Node.html#TYPEstring_buffer_kind">string_buffer_kind</a></code></code></td>
+<code><span id="TYPEELTstring_buffer_kind.Buffer"><span class="constructor">Buffer</span></span></td><td><span class="keyword">:</span></td><td><code class="type"><a href="Node.html#TYPEbuffer">buffer</a> <a href="Node.html#TYPEstring_buffer_kind">string_buffer_kind</a></code></code></td>
 
 </tr></table>
 
+</div>
 
 
 <pre><span id="VALtest"><span class="keyword">val</span> test</span> : <code class="type"><a href="Node.html#TYPEstring_buffer">string_buffer</a> -> 'a <a href="Node.html#TYPEstring_buffer_kind">string_buffer_kind</a> * 'a</code></pre><div class="info ">

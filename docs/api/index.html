@@ -50,6 +50,7 @@
 <link title="Js" rel="Chapter" href="Js.html">
 <link title="Js_array" rel="Chapter" href="Js_array.html">
 <link title="Js_boolean" rel="Chapter" href="Js_boolean.html">
+<link title="Js_cast" rel="Chapter" href="Js_cast.html">
 <link title="Js_date" rel="Chapter" href="Js_date.html">
 <link title="Js_dict" rel="Chapter" href="Js_dict.html">
 <link title="Js_float" rel="Chapter" href="Js_float.html">
@@ -65,6 +66,7 @@
 <link title="Js_primitive" rel="Chapter" href="Js_primitive.html">
 <link title="Js_re" rel="Chapter" href="Js_re.html">
 <link title="Js_string" rel="Chapter" href="Js_string.html">
+<link title="Js_typed_array" rel="Chapter" href="Js_typed_array.html">
 <link title="Js_types" rel="Chapter" href="Js_types.html">
 <link title="Js_undefined" rel="Chapter" href="Js_undefined.html">
 <link title="Js_unsafe" rel="Chapter" href="Js_unsafe.html">
@@ -74,8 +76,7 @@
 <link title="Node_fs" rel="Chapter" href="Node_fs.html">
 <link title="Node_module" rel="Chapter" href="Node_module.html">
 <link title="Node_path" rel="Chapter" href="Node_path.html">
-<link title="Node_process" rel="Chapter" href="Node_process.html">
-<link title="Typed_array" rel="Chapter" href="Typed_array.html"><title></title>
+<link title="Node_process" rel="Chapter" href="Node_process.html"><title></title>
 </head>
 <body>
 <h1></h1>
@@ -87,7 +88,9 @@
 </ul>
 <br/><br>
 <table class="indextable">
-<tr><td class="module"><a href="Block.html">Block</a></td><td></td></tr>
+<tr><td class="module"><a href="Block.html">Block</a></td><td><div class="info">
+</div>
+</td></tr>
 <tr><td class="module"><a href="Bs.html">Bs</a></td><td><div class="info">
 place holder for node bindings
 </div>
@@ -101,99 +104,119 @@ An experimentation of runtime types in OCaml,
 experimental API
 </div>
 </td></tr>
-<tr><td class="module"><a href="Bs_obj.html">Bs_obj</a></td><td></td></tr>
+<tr><td class="module"><a href="Bs_obj.html">Bs_obj</a></td><td><div class="info">
+</div>
+</td></tr>
 <tr><td class="module"><a href="Bs_string.html">Bs_string</a></td><td><div class="info">
-TODO: check with <code class="code">String.of_char</code> 
-    it's quite common that we have
-    <pre class="codepre"><code class="code"> Bs_string.of_char x.[0] </code></pre>
-    It would be nice to generate code as below    
-    <pre class="codepre"><code class="code"> x[0]
-    </code></pre>
 </div>
 </td></tr>
-<tr><td class="module"><a href="Caml_array.html">Caml_array</a></td><td></td></tr>
-<tr><td class="module"><a href="Caml_backtrace.html">Caml_backtrace</a></td><td></td></tr>
-<tr><td class="module"><a href="Caml_basic.html">Caml_basic</a></td><td></td></tr>
-<tr><td class="module"><a href="Caml_builtin_exceptions.html">Caml_builtin_exceptions</a></td><td></td></tr>
-<tr><td class="module"><a href="Caml_bytes.html">Caml_bytes</a></td><td></td></tr>
+<tr><td class="module"><a href="Caml_array.html">Caml_array</a></td><td><div class="info">
+</div>
+</td></tr>
+<tr><td class="module"><a href="Caml_backtrace.html">Caml_backtrace</a></td><td><div class="info">
+</div>
+</td></tr>
+<tr><td class="module"><a href="Caml_basic.html">Caml_basic</a></td><td><div class="info">
+</div>
+</td></tr>
+<tr><td class="module"><a href="Caml_builtin_exceptions.html">Caml_builtin_exceptions</a></td><td><div class="info">
+</div>
+</td></tr>
+<tr><td class="module"><a href="Caml_bytes.html">Caml_bytes</a></td><td><div class="info">
+</div>
+</td></tr>
 <tr><td class="module"><a href="Caml_exceptions.html">Caml_exceptions</a></td><td><div class="info">
-Could be exported for better inlining
-   It's common that we have 
-   <pre class="codepre"><code class="code"> a = caml_set_oo_id([248,"string",0]) </code></pre>
-   This can be inlined as 
-   <pre class="codepre"><code class="code"> a = caml_set_oo_id([248,"tag", caml_oo_last_id++]) </code></pre>
 </div>
 </td></tr>
-<tr><td class="module"><a href="Caml_float.html">Caml_float</a></td><td></td></tr>
+<tr><td class="module"><a href="Caml_float.html">Caml_float</a></td><td><div class="info">
+</div>
+</td></tr>
 <tr><td class="module"><a href="Caml_format.html">Caml_format</a></td><td><div class="info">
 </div>
 </td></tr>
-<tr><td class="module"><a href="Caml_gc.html">Caml_gc</a></td><td></td></tr>
-<tr><td class="module"><a href="Caml_hash.html">Caml_hash</a></td><td></td></tr>
-<tr><td class="module"><a href="Caml_int32.html">Caml_int32</a></td><td></td></tr>
+<tr><td class="module"><a href="Caml_gc.html">Caml_gc</a></td><td><div class="info">
+</div>
+</td></tr>
+<tr><td class="module"><a href="Caml_hash.html">Caml_hash</a></td><td><div class="info">
+</div>
+</td></tr>
+<tr><td class="module"><a href="Caml_int32.html">Caml_int32</a></td><td><div class="info">
+</div>
+</td></tr>
 <tr><td class="module"><a href="Caml_int64.html">Caml_int64</a></td><td><div class="info">
-sign: Positive
 </div>
 </td></tr>
 <tr><td class="module"><a href="Caml_io.html">Caml_io</a></td><td><div class="info">
-note we need provide both <code class="code">bytes</code> and <code class="code">string</code> version
 </div>
 </td></tr>
-<tr><td class="module"><a href="Caml_lexer.html">Caml_lexer</a></td><td></td></tr>
-<tr><td class="module"><a href="Caml_md5.html">Caml_md5</a></td><td></td></tr>
+<tr><td class="module"><a href="Caml_lexer.html">Caml_lexer</a></td><td><div class="info">
+</div>
+</td></tr>
+<tr><td class="module"><a href="Caml_md5.html">Caml_md5</a></td><td><div class="info">
+</div>
+</td></tr>
 <tr><td class="module"><a href="Caml_module.html">Caml_module</a></td><td><div class="info">
-Note that we have to provide a drop in replacement, since compiler internally will
-    spit out ("CamlinternalMod".
 </div>
 </td></tr>
 <tr><td class="module"><a href="Caml_obj.html">Caml_obj</a></td><td><div class="info">
-Mainly used in camlinternalOO
-    <pre class="codepre"><code class="code">      let dummy_met : item = obj (Obj.new_block 0 0)
-      let obj = Obj.new_block Obj.object_tag table.size
-    </code></pre>
 </div>
 </td></tr>
 <tr><td class="module"><a href="Caml_oo.html">Caml_oo</a></td><td><div class="info">
-TODO: make it resizable instead 
-    option1: set new index directly
-    option2: create a new array
 </div>
 </td></tr>
 <tr><td class="module"><a href="Caml_oo_curry.html">Caml_oo_curry</a></td><td><div class="info">
-Generated by scripts/caml_oo_curry_gen.ml
 </div>
 </td></tr>
-<tr><td class="module"><a href="Caml_parser.html">Caml_parser</a></td><td></td></tr>
-<tr><td class="module"><a href="Caml_primitive.html">Caml_primitive</a></td><td></td></tr>
+<tr><td class="module"><a href="Caml_parser.html">Caml_parser</a></td><td><div class="info">
+</div>
+</td></tr>
+<tr><td class="module"><a href="Caml_primitive.html">Caml_primitive</a></td><td><div class="info">
+</div>
+</td></tr>
 <tr><td class="module"><a href="Caml_queue.html">Caml_queue</a></td><td><div class="info">
 Adapted by Hongbo Zhang for Js backend and minimal code size
 </div>
 </td></tr>
 <tr><td class="module"><a href="Caml_string.html">Caml_string</a></td><td><div class="info">
-TODO: <code class="code">min</code> is not type specialized in OCaml
 </div>
 </td></tr>
-<tr><td class="module"><a href="Caml_sys.html">Caml_sys</a></td><td></td></tr>
-<tr><td class="module"><a href="Caml_utils.html">Caml_utils</a></td><td></td></tr>
-<tr><td class="module"><a href="Caml_weak.html">Caml_weak</a></td><td></td></tr>
+<tr><td class="module"><a href="Caml_sys.html">Caml_sys</a></td><td><div class="info">
+</div>
+</td></tr>
+<tr><td class="module"><a href="Caml_utils.html">Caml_utils</a></td><td><div class="info">
+</div>
+</td></tr>
+<tr><td class="module"><a href="Caml_weak.html">Caml_weak</a></td><td><div class="info">
+</div>
+</td></tr>
 <tr><td class="module"><a href="Curry.html">Curry</a></td><td><div class="info">
-Generated by scripts/curry_gen.ml
 </div>
 </td></tr>
 <tr><td class="module"><a href="Js.html">Js</a></td><td><div class="info">
-This module will  be exported
+The Entry point to the JavaScript API
 </div>
 </td></tr>
 <tr><td class="module"><a href="Js_array.html">Js_array</a></td><td><div class="info">
-ES2015
+JavaScript Array API
 </div>
 </td></tr>
-<tr><td class="module"><a href="Js_boolean.html">Js_boolean</a></td><td></td></tr>
+<tr><td class="module"><a href="Js_boolean.html">Js_boolean</a></td><td><div class="info">
+Contains functions for dealing with JavaScript booleans
+</div>
+</td></tr>
+<tr><td class="module"><a href="Js_cast.html">Js_cast</a></td><td><div class="info">
+Safe cast between OCaml values which share the same 
+    runtime representation
+</div>
+</td></tr>
 <tr><td class="module"><a href="Js_date.html">Js_date</a></td><td><div class="info">
-returns the primitive value of this date, equivalent to getTime
+JavaScript Date API
 </div>
 </td></tr>
-<tr><td class="module"><a href="Js_dict.html">Js_dict</a></td><td></td></tr>
+<tr><td class="module"><a href="Js_dict.html">Js_dict</a></td><td><div class="info">
+Dictionary type (ie an '{ }' JS object).
+</div>
+</td></tr>
 <tr><td class="module"><a href="Js_float.html">Js_float</a></td><td><div class="info">
 Provides functions for inspecting and manipulating <code class="code">float</code>s
 </div>
@@ -206,55 +229,80 @@ Contains functions available in the global scope (<code class="code">window</cod
 Provides functions for inspecting and manipulating <code class="code">int</code>s
 </div>
 </td></tr>
-<tr><td class="module"><a href="Js_int64.html">Js_int64</a></td><td></td></tr>
-<tr><td class="module"><a href="Js_json.html">Js_json</a></td><td></td></tr>
-<tr><td class="module"><a href="Js_math.html">Js_math</a></td><td><div class="info">
-Euler's number
+<tr><td class="module"><a href="Js_int64.html">Js_int64</a></td><td><div class="info">
 </div>
 </td></tr>
-<tr><td class="module"><a href="Js_nativeint.html">Js_nativeint</a></td><td></td></tr>
+<tr><td class="module"><a href="Js_json.html">Js_json</a></td><td><div class="info">
+Efficient JSON encoding using JavaScript API
+</div>
+</td></tr>
+<tr><td class="module"><a href="Js_math.html">Js_math</a></td><td><div class="info">
+JavaScript Math API
+</div>
+</td></tr>
+<tr><td class="module"><a href="Js_nativeint.html">Js_nativeint</a></td><td><div class="info">
+</div>
+</td></tr>
 <tr><td class="module"><a href="Js_null.html">Js_null</a></td><td><div class="info">
 Provides functionality for dealing with the <code class="code">'a Js.null</code> type
 </div>
 </td></tr>
 <tr><td class="module"><a href="Js_null_undefined.html">Js_null_undefined</a></td><td><div class="info">
-Local alias for <code class="code">'a Js.null_undefined</code>
+Contains functionality for dealing with values that can be both <code class="code">null</code> and <code class="code">undefined</code>
 </div>
 </td></tr>
 <tr><td class="module"><a href="Js_obj.html">Js_obj</a></td><td></td></tr>
-<tr><td class="module"><a href="Js_primitive.html">Js_primitive</a></td><td></td></tr>
+<tr><td class="module"><a href="Js_primitive.html">Js_primitive</a></td><td><div class="info">
+</div>
+</td></tr>
 <tr><td class="module"><a href="Js_re.html">Js_re</a></td><td><div class="info">
 Provides bindings for JavaScript Regular Expressions
 </div>
 </td></tr>
 <tr><td class="module"><a href="Js_string.html">Js_string</a></td><td><div class="info">
-ES2015
+JavaScript String API
+</div>
+</td></tr>
+<tr><td class="module"><a href="Js_typed_array.html">Js_typed_array</a></td><td><div class="info">
+JavaScript Typed Array API
 </div>
 </td></tr>
 <tr><td class="module"><a href="Js_types.html">Js_types</a></td><td><div class="info">
-Js symbol type only available in ES6
 </div>
 </td></tr>
 <tr><td class="module"><a href="Js_undefined.html">Js_undefined</a></td><td><div class="info">
-Local alias for <code class="code">'a Js.undefined</code>
+Provides functionality for dealing with the <code class="code">'a Js.undefined</code> type
 </div>
 </td></tr>
-<tr><td class="module"><a href="Js_unsafe.html">Js_unsafe</a></td><td></td></tr>
+<tr><td class="module"><a href="Js_unsafe.html">Js_unsafe</a></td><td><div class="info">
+</div>
+</td></tr>
 <tr><td class="module"><a href="Node.html">Node</a></td><td><div class="info">
 place holder for node bindings
 </div>
 </td></tr>
-<tr><td class="module"><a href="Node_buffer.html">Node_buffer</a></td><td></td></tr>
-<tr><td class="module"><a href="Node_child_process.html">Node_child_process</a></td><td></td></tr>
-<tr><td class="module"><a href="Node_fs.html">Node_fs</a></td><td><div class="info">
-refernce documentation: https://nodejs.org/api/fs.html
+<tr><td class="module"><a href="Node_buffer.html">Node_buffer</a></td><td><div class="info">
+Node Buffer API
 </div>
 </td></tr>
-<tr><td class="module"><a href="Node_module.html">Node_module</a></td><td></td></tr>
-<tr><td class="module"><a href="Node_path.html">Node_path</a></td><td></td></tr>
-<tr><td class="module"><a href="Node_process.html">Node_process</a></td><td></td></tr>
-<tr><td class="module"><a href="Typed_array.html">Typed_array</a></td><td><div class="info">
-takes length.
+<tr><td class="module"><a href="Node_child_process.html">Node_child_process</a></td><td><div class="info">
+Node Child Process API
+</div>
+</td></tr>
+<tr><td class="module"><a href="Node_fs.html">Node_fs</a></td><td><div class="info">
+Node FS API
+</div>
+</td></tr>
+<tr><td class="module"><a href="Node_module.html">Node_module</a></td><td><div class="info">
+Node Module API
+</div>
+</td></tr>
+<tr><td class="module"><a href="Node_path.html">Node_path</a></td><td><div class="info">
+Node Path API
+</div>
+</td></tr>
+<tr><td class="module"><a href="Node_process.html">Node_process</a></td><td><div class="info">
+Node Process API
 </div>
 </td></tr>
 </table>

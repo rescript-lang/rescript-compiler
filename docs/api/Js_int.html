@@ -53,6 +53,7 @@
 <link title="Js" rel="Chapter" href="Js.html">
 <link title="Js_array" rel="Chapter" href="Js_array.html">
 <link title="Js_boolean" rel="Chapter" href="Js_boolean.html">
+<link title="Js_cast" rel="Chapter" href="Js_cast.html">
 <link title="Js_date" rel="Chapter" href="Js_date.html">
 <link title="Js_dict" rel="Chapter" href="Js_dict.html">
 <link title="Js_float" rel="Chapter" href="Js_float.html">
@@ -68,6 +69,7 @@
 <link title="Js_primitive" rel="Chapter" href="Js_primitive.html">
 <link title="Js_re" rel="Chapter" href="Js_re.html">
 <link title="Js_string" rel="Chapter" href="Js_string.html">
+<link title="Js_typed_array" rel="Chapter" href="Js_typed_array.html">
 <link title="Js_types" rel="Chapter" href="Js_types.html">
 <link title="Js_undefined" rel="Chapter" href="Js_undefined.html">
 <link title="Js_unsafe" rel="Chapter" href="Js_unsafe.html">
@@ -77,8 +79,7 @@
 <link title="Node_fs" rel="Chapter" href="Node_fs.html">
 <link title="Node_module" rel="Chapter" href="Node_module.html">
 <link title="Node_path" rel="Chapter" href="Node_path.html">
-<link title="Node_process" rel="Chapter" href="Node_process.html">
-<link title="Typed_array" rel="Chapter" href="Typed_array.html"><title>Js_int</title>
+<link title="Node_process" rel="Chapter" href="Node_process.html"><title>Js_int</title>
 </head>
 <body>
 <div class="navbar"><a class="pre" href="Js_global.html" title="Js_global">Previous</a>
@@ -102,9 +103,9 @@ Formats an <code class="code">int</code> using exponential (scientific) notation
 <p>
 
 <b>Returns</b> a <code class="code">string</code> representing the given value in exponential notation<br>
-<b>Raises</b> <code>RangeError</code> if digits is not in the range [0, 20] (inclusive)<br>
-<b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toExponential">MDN</a><br>
-</div>
+<div class="tag"><b>Raises</b> <code>RangeError</code> if digits is not in the range [0, 20] (inclusive)<br>
+</div><div class="tag"><b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toExponential">MDN</a><br>
+</div></div>
 <div class="examples">
 <pre class="example"><pre class="codepre"><code class="code">(* prints "7.7e+1" *)
 let _ = Js.log @@ Js.Int.toExponential 77
@@ -124,9 +125,9 @@ value must be in the range [0, 20] (inclusive).
 <p>
 
 The output will be rounded or padded with zeroes if necessary.<br>
-<b>Raises</b> <code>RangeError</code> if digits is not in the range [0, 20] (inclusive)<br>
-<b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toExponential">MDN</a><br>
-</div>
+<div class="tag"><b>Raises</b> <code>RangeError</code> if digits is not in the range [0, 20] (inclusive)<br>
+</div><div class="tag"><b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toExponential">MDN</a><br>
+</div></div>
 <div class="examples">
 <pre class="example"><pre class="codepre"><code class="code">(* prints "7.70e+1" *)
 let _ = Js.log @@ Js.Int.toExponentialWithPrecision 77 ~digits:2
@@ -147,9 +148,9 @@ Formats a <code class="code">int</code> using some fairly arbitrary rules
 <code class="code">toPrecision</code> differs from <code class="code">toFixed</code> in that the former will format the number
 with full precision, while the latter will not output any digits after the
 decimal point.<br>
-<b>Raises</b> <code>RangeError</code> if digits is not in the range accepted by this function (what do you mean "vague"?)<br>
-<b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toPrecision">MDN</a><br>
-</div>
+<div class="tag"><b>Raises</b> <code>RangeError</code> if digits is not in the range accepted by this function (what do you mean "vague"?)<br>
+</div><div class="tag"><b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toPrecision">MDN</a><br>
+</div></div>
 <div class="examples">
 <pre class="example"><pre class="codepre"><code class="code">(* prints "123456789" *)
 let _ = Js.log @@ Js.Int.toPrecision 123456789
@@ -177,9 +178,9 @@ will count all digits against the precision, while the latter will count only
 the digits after the decimal point. <code class="code">toPrecisionWithPrecision</code> will also use
 scientific notation if the specified precision is less than the number for digits
 before the decimal point.<br>
-<b>Raises</b> <code>RangeError</code> if digits is not in the range accepted by this function (what do you mean "vague"?)<br>
-<b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toPrecision">MDN</a><br>
-</div>
+<div class="tag"><b>Raises</b> <code>RangeError</code> if digits is not in the range accepted by this function (what do you mean "vague"?)<br>
+</div><div class="tag"><b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toPrecision">MDN</a><br>
+</div></div>
 <div class="examples">
 <pre class="example"><pre class="codepre"><code class="code">(* prints "1.2e+8" *)
 let _ = Js.log @@ Js.Int.toPrecisionWithPrecision 123456789 ~digits:2
@@ -195,8 +196,8 @@ Formats a <code class="code">int</code> as a string
 <p>
 
 <b>Returns</b> a <code class="code">string</code> representing the given value in fixed-point (usually)<br>
-<b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toString">MDN</a><br>
-</div>
+<div class="tag"><b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toString">MDN</a><br>
+</div></div>
 <div class="examples">
 <pre class="example"><pre class="codepre"><code class="code">(* prints "123456789" *)
 let _ = Js.log @@ Js.Int.toString 123456789
@@ -213,9 +214,9 @@ value must be in the range [2, 36] (inclusive).
 <p>
 
 <b>Returns</b> a <code class="code">string</code> representing the given value in fixed-point (usually)<br>
-<b>Raises</b> <code>RangeError</code> if radix is not in the range [2, 36] (inclusive)<br>
-<b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toString">MDN</a><br>
-</div>
+<div class="tag"><b>Raises</b> <code>RangeError</code> if radix is not in the range [2, 36] (inclusive)<br>
+</div><div class="tag"><b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toString">MDN</a><br>
+</div></div>
 <div class="examples">
 <pre class="example"><pre class="codepre"><code class="code">(* prints "110" *)
 let _ = Js.log @@ Js.Int.toStringWithRadix 6 ~radix:2
