@@ -395,55 +395,43 @@ module DataView = struct
   external getInt8 : t -> int -> int = "" [@@bs.send]
   external getUint8 : t -> int -> int = "" [@@bs.send]
 
-  external getInt16 : t -> int -> littleEndian:Js.boolean -> int = "" [@@bs.send]
-  external getInt16BigEndian : t -> int -> (_ [@bs.as 0]) -> int = "" [@@bs.send]
+  external getInt16: t -> int -> int = "" [@@bs.send]
   external getInt16LittleEndian : t -> int -> (_ [@bs.as 1]) -> int = "" [@@bs.send]
 
-  external getUint16 : t -> int -> littleEndian:Js.boolean -> int = "" [@@bs.send]
-  external getUint16BigEndian : t -> int -> (_ [@bs.as 0]) -> int = "" [@@bs.send]
+  external getUint16: t -> int -> int = "" [@@bs.send]
   external getUint16LittleEndian : t -> int -> (_ [@bs.as 1]) -> int = "" [@@bs.send]
 
-  external getInt32 : t -> int -> littleEndian:Js.boolean -> int = "" [@@bs.send]
-  external getInt32BigEndian : t -> int -> (_ [@bs.as 0]) -> int = "" [@@bs.send]
+  external getInt32: t -> int -> int = "" [@@bs.send]
   external getInt32LittleEndian : t -> int -> (_ [@bs.as 1]) -> int = "" [@@bs.send]
 
-  external getUint32 : t -> int -> littleEndian:Js.boolean -> int = "" [@@bs.send]
-  external getUint32BigEndian : t -> int -> (_ [@bs.as 0]) -> int = "" [@@bs.send]
+  external getUint32: t -> int -> int = "" [@@bs.send]
   external getUint32LittleEndian : t -> int -> (_ [@bs.as 1]) -> int = "" [@@bs.send]
 
-  external getFloat32 : t -> int -> littleEndian:Js.boolean -> float = "" [@@bs.send]
-  external getFloat32BigEndian : t -> int -> (_ [@bs.as 0]) -> int = "" [@@bs.send]
-  external getFloat32LittleEndian : t -> int -> (_ [@bs.as 1]) -> int = "" [@@bs.send]
+  external getFloat32: t -> int -> float = "" [@@bs.send]
+  external getFloat32LittleEndian : t -> int -> (_ [@bs.as 1]) -> float = "" [@@bs.send]
 
-  external getFloat64 : t -> int -> littleEndian:Js.boolean -> float = "" [@@bs.send]
-  external getFloat64BigEndian : t -> int -> (_ [@bs.as 0]) -> int = "" [@@bs.send]
-  external getFloat64LittleEndian : t -> int -> (_ [@bs.as 1]) -> int = "" [@@bs.send]
+  external getFloat64: t -> int -> float = "" [@@bs.send]
+  external getFloat64LittleEndian : t -> int -> (_ [@bs.as 1]) -> float = "" [@@bs.send]
 
   external setInt8 : t -> int -> int -> unit = "" [@@bs.send]
   external setUint8 : t -> int -> int -> unit = "" [@@bs.send]
 
-  external setInt16 : t -> int -> int -> littleEndian:Js.boolean -> unit = "" [@@bs.send]
-  external setInt16BigEndian : t -> int -> int -> (_ [@bs.as 0]) -> unit = "" [@@bs.send]
+  external setInt16: t -> int -> int -> unit = "" [@@bs.send]
   external setInt16LittleEndian : t -> int -> int -> (_ [@bs.as 1]) -> unit = "" [@@bs.send]
 
-  external setUint16 : t -> int -> int -> littleEndian:Js.boolean -> unit = "" [@@bs.send]
-  external setUint16BigEndian : t -> int -> int -> (_ [@bs.as 0]) -> unit = "" [@@bs.send]
+  external setUint16: t -> int -> int -> unit = "" [@@bs.send]
   external setUint16LittleEndian : t -> int -> int -> (_ [@bs.as 1]) -> unit = "" [@@bs.send]
 
-  external setInt32 : t -> int -> int -> littleEndian:Js.boolean -> unit = "" [@@bs.send]
-  external setInt32BigEndian : t -> int -> int -> (_ [@bs.as 0]) -> unit = "" [@@bs.send]
+  external setInt32: t -> int -> int -> unit = "" [@@bs.send]
   external setInt32LittleEndian : t -> int -> int -> (_ [@bs.as 1]) -> unit = "" [@@bs.send]
 
-  external setUint32 : t -> int -> int -> littleEndian:Js.boolean -> unit = "" [@@bs.send]
-  external setUint32BigEndian : t -> int -> int -> (_ [@bs.as 0]) -> unit = "" [@@bs.send]
+  external setUint32: t -> int -> int -> unit = "" [@@bs.send]
   external setUint32LittleEndian : t -> int -> int -> (_ [@bs.as 1]) -> unit = "" [@@bs.send]
 
-  external setFloat32 : t -> int -> float -> littleEndian:Js.boolean -> unit = "" [@@bs.send]
-  external setFloat32BigEndian : t -> int -> float -> (_ [@bs.as 0]) -> unit = "" [@@bs.send]
+  external setFloat32: t -> int -> float -> unit = "" [@@bs.send]
   external setFloat32LittleEndian : t -> int -> float -> (_ [@bs.as 1]) -> unit = "" [@@bs.send]
 
-  external setFloat64 : t -> int -> float -> littleEndian:Js.boolean -> unit = "" [@@bs.send]
-  external setFloat64BigEndian : t -> int -> float -> (_ [@bs.as 0]) -> unit = "" [@@bs.send]
+  external setFloat64: t -> int -> float -> unit = "" [@@bs.send]
   external setFloat64LittleEndian : t -> int -> float -> (_ [@bs.as 1]) -> unit = "" [@@bs.send]
 
 end
