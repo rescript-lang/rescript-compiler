@@ -32,8 +32,8 @@ type dir_index = int
 type  file_group = 
   { dir : string ; (* currently relative path expected for ninja file generation *)
     sources : Binary_cache.file_group_rouces ; 
-    resources : string list ;
-    bs_dependencies : string list;
+    resources : string list ; (* relative path *)
+    bs_dependencies : string list; (* relative path *)
     public : public;
     dir_index : dir_index; 
   } 

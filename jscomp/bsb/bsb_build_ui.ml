@@ -22,6 +22,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+module Bsb_dir = struct 
+  let readdir root dir = Sys.readdir (Filename.concat root dir)
+end
+
 type public = 
   | Export_all 
   | Export_set of String_set.t 
@@ -97,9 +101,16 @@ let print_arrays file_array oc offset  =
 
 let warning_unused_file : _ format = "WARNING: file %s under %s is ignored due to that it is not a valid module name"
 
-let  handle_list_files dir  loc_start loc_end : Ext_file_pp.interval list * _ =  
+type parsing_cxt = {
+  no_dev : bool ;
+  dir_index : dir_index ; 
+  cwd : string ;
+  root : string
+}
+
+let  handle_list_files ({ cwd = dir ; root} : parsing_cxt)  loc_start loc_end : Ext_file_pp.interval list * _ =  
   (** detect files to be populated later  *)
-  let files_array = Bsb_dir.readdir dir  in 
+  let files_array = Bsb_dir.readdir root dir  in 
   let dyn_file_array = String_vec.make (Array.length files_array) in 
   let files  =
     Array.fold_left (fun acc name -> 
@@ -140,12 +151,6 @@ let (++) (u : t)  (v : t)  =
       globbed_dirs = u.globbed_dirs @ v.globbed_dirs ; 
     }
 
-type parsing_cxt = {
-  no_dev : bool ;
-  dir_index : dir_index ; 
-  cwd : string ;
-  root : string
-}
 
 (** [dir_index] can be inherited  *)
 let rec 
@@ -193,7 +198,7 @@ and parsing_source_dir_map
   let cur_globbed_dirs = ref [] in 
   begin match String_map.find_opt Bsb_build_schemas.files x with 
     | Some (Arr {loc_start;loc_end; content = [||] }) -> (* [ ] *) 
-      let tasks, files =  handle_list_files  dir  loc_start loc_end in
+      let tasks, files =  handle_list_files cxt  loc_start loc_end in
       cur_update_queue := tasks ;
       cur_sources := files
     | Some (Arr {loc_start;loc_end; content = s }) -> (* [ a,b ] *)      
@@ -221,7 +226,7 @@ and parsing_source_dir_map
           fun name -> Str.string_match re name 0 && not (List.mem name excludes)
         | Some x, _ -> Bsb_exception.failf ~loc "slow-re expect a string literal"
         | None , _ -> Bsb_exception.failf ~loc  "missing field: slow-re"  in 
-      let file_array = Bsb_dir.readdir dir in 
+      let file_array = Bsb_dir.readdir cxt.root dir in 
       cur_sources := Array.fold_left (fun acc name -> 
           if predicate name then 
             Binary_cache.map_update  ~dir acc name 
@@ -229,7 +234,7 @@ and parsing_source_dir_map
         ) String_map.empty file_array;
       cur_globbed_dirs := [dir]              
     | None ->  (* No setting on [!files]*)
-      let file_array = Bsb_dir.readdir dir in 
+      let file_array = Bsb_dir.readdir cxt.root dir in 
       (** We should avoid temporary files *)
       cur_sources := 
         Array.fold_left (fun acc name -> 

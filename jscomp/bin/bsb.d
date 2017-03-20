@@ -1,11 +1,9 @@
-bin/bsb.ml : bsb/bsb_dir.ml
 bin/bsb.ml : bsb/bsb_gen.ml
 bin/bsb.ml : bsb/bsb_pkg.ml
 bin/bsb.ml : ext/ext_sys.ml
 bin/bsb.ml : ext/map_gen.ml
 bin/bsb.ml : ext/set_gen.ml
 bin/bsb.ml : ext/vec_gen.ml
-bin/bsb.ml : bsb/bsb_dir.mli
 bin/bsb.ml : bsb/bsb_file.ml
 bin/bsb.ml : bsb/bsb_gen.mli
 bin/bsb.ml : bsb/bsb_main.ml

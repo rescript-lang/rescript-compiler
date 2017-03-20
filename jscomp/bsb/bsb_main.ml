@@ -102,8 +102,8 @@ let build_bs_deps_dry_run deps =
            Bsb_unix.run_command_execv
              {cmd = vendor_ninja;
               cwd = cwd;
-              args  = [|"-C";Bsb_config.lib_bs|]
-             }
+              args  = [|vendor_ninja ; "-C";Bsb_config.lib_bs|]
+             };
 
          end
 

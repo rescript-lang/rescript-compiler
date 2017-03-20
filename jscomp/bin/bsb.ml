@@ -6360,132 +6360,6 @@ let map_update ?dir (map : file_group_rouces)  name : file_group_rouces  =
     map
 
 end
-module Bsb_dir : sig 
-#1 "bsb_dir.mli"
-
-
-val readdir : string -> string array
-
-(* val flush_cache : unit -> unit *)
-(* val reset_readdir_cache : unit -> unit *)
-
-(* val reset_readdir_cache_for : string -> unit *)
-
-
-end = struct
-#1 "bsb_dir.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-(*
-type ('a,'b) result = 
-  | Ok of 'a
-  | Error of 'b
-
-let warp f x = 
-  try Ok (f x ) with e -> Error e
-
-let (!) = Lazy.force 
-
-type dir =
-  {
-    dir_mtime : float ; 
-    dir_contents : string array ;
-  }
-
-type t = String_hashtbl.t 
-(* let cache = String_hashtbl.create 103 *)
-
-let dir_cache_magic_number = "BSDIR20161020"
-
-let write_dir_cache (fname : string)  (x : t) = 
-  let oc = open_out_bin fname in 
-  output_string oc dir_cache_magic_number ;
-  output_value oc x ; 
-  close_out oc 
-
-let read_dir_cache (fname : string) : t = 
-  let ic = open_in fname in 
-  let buffer = really_input_string ic (String.length dir_cache_magic_number) in
-  assert (buffer = dir_cache_magic_number);
-  let res : t = input_value ic  in 
-  close_in ic ; 
-  res
-
-(** FIXME: we should not share directory caches, since 
-    it may result in  concurrent write issues
-    Note, if no dir is ever read, we can leave without
-    this cache
-
-    TODO: does it make sense to share with other cache,
-    seems like not?
-*)
-let cache_name = ".bs_dir_cache"
-
-let cache = 
-  lazy (try read_dir_cache cache_name with _ -> String_hashtbl.create 103)
-
-let cache_dirty = ref false 
-
-let flush_cache () = 
-  if cache_dirty.contents then 
-    write_dir_cache cache_name !cache
-
-let () = Pervasives.at_exit flush_cache
-    
-let readdir dir =
-  let stat = Unix.stat dir in 
-  let st_mtime = stat.st_mtime in 
-  match String_hashtbl.find !cache dir with
-  | {dir_mtime} as e when st_mtime <= dir_mtime ->  
-    e.dir_contents
-  | _ -> 
-    let res =  Sys.readdir dir in
-    cache_dirty := true; 
-    String_hashtbl.replace !cache dir {dir_mtime = st_mtime ; dir_contents = res}; 
-    res
-  | exception Not_found ->
-    let res =  Sys.readdir dir in
-    cache_dirty := true ;
-    String_hashtbl.add !cache dir {dir_mtime = st_mtime ; dir_contents = res}; 
-    res
-
-let  reset_readdir_cache () =
-  cache_dirty := true ; 
-  String_hashtbl.clear !cache
-
-let reset_readdir_cache_for dir =
-  cache_dirty := true; 
-  String_hashtbl.remove !cache dir 
-*)
-
-(* TODO: see if it is worth turn caching on
-   if turned on, we need make sure avoid data racing issues
-*)
-let readdir = Sys.readdir 
-
-end
 module Ext_file_pp : sig 
 #1 "ext_file_pp.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -7354,8 +7228,8 @@ type dir_index = int
 type  file_group = 
   { dir : string ; (* currently relative path expected for ninja file generation *)
     sources : Binary_cache.file_group_rouces ; 
-    resources : string list ;
-    bs_dependencies : string list;
+    resources : string list ; (* relative path *)
+    bs_dependencies : string list; (* relative path *)
     public : public;
     dir_index : dir_index; 
   } 
@@ -7412,6 +7286,10 @@ end = struct
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+module Bsb_dir = struct 
+  let readdir root dir = Sys.readdir (Filename.concat root dir)
+end
 
 type public = 
   | Export_all 
@@ -7488,9 +7366,16 @@ let print_arrays file_array oc offset  =
 
 let warning_unused_file : _ format = "WARNING: file %s under %s is ignored due to that it is not a valid module name"
 
-let  handle_list_files dir  loc_start loc_end : Ext_file_pp.interval list * _ =  
+type parsing_cxt = {
+  no_dev : bool ;
+  dir_index : dir_index ; 
+  cwd : string ;
+  root : string
+}
+
+let  handle_list_files ({ cwd = dir ; root} : parsing_cxt)  loc_start loc_end : Ext_file_pp.interval list * _ =  
   (** detect files to be populated later  *)
-  let files_array = Bsb_dir.readdir dir  in 
+  let files_array = Bsb_dir.readdir root dir  in 
   let dyn_file_array = String_vec.make (Array.length files_array) in 
   let files  =
     Array.fold_left (fun acc name -> 
@@ -7531,12 +7416,6 @@ let (++) (u : t)  (v : t)  =
       globbed_dirs = u.globbed_dirs @ v.globbed_dirs ; 
     }
 
-type parsing_cxt = {
-  no_dev : bool ;
-  dir_index : dir_index ; 
-  cwd : string ;
-  root : string
-}
 
 (** [dir_index] can be inherited  *)
 let rec 
@@ -7584,7 +7463,7 @@ and parsing_source_dir_map
   let cur_globbed_dirs = ref [] in 
   begin match String_map.find_opt Bsb_build_schemas.files x with 
     | Some (Arr {loc_start;loc_end; content = [||] }) -> (* [ ] *) 
-      let tasks, files =  handle_list_files  dir  loc_start loc_end in
+      let tasks, files =  handle_list_files cxt  loc_start loc_end in
       cur_update_queue := tasks ;
       cur_sources := files
     | Some (Arr {loc_start;loc_end; content = s }) -> (* [ a,b ] *)      
@@ -7612,7 +7491,7 @@ and parsing_source_dir_map
           fun name -> Str.string_match re name 0 && not (List.mem name excludes)
         | Some x, _ -> Bsb_exception.failf ~loc "slow-re expect a string literal"
         | None , _ -> Bsb_exception.failf ~loc  "missing field: slow-re"  in 
-      let file_array = Bsb_dir.readdir dir in 
+      let file_array = Bsb_dir.readdir cxt.root dir in 
       cur_sources := Array.fold_left (fun acc name -> 
           if predicate name then 
             Binary_cache.map_update  ~dir acc name 
@@ -7620,7 +7499,7 @@ and parsing_source_dir_map
         ) String_map.empty file_array;
       cur_globbed_dirs := [dir]              
     | None ->  (* No setting on [!files]*)
-      let file_array = Bsb_dir.readdir dir in 
+      let file_array = Bsb_dir.readdir cxt.root dir in 
       (** We should avoid temporary files *)
       cur_sources := 
         Array.fold_left (fun acc name -> 
@@ -10085,8 +9964,8 @@ let build_bs_deps_dry_run deps =
            Bsb_unix.run_command_execv
              {cmd = vendor_ninja;
               cwd = cwd;
-              args  = [|"-C";Bsb_config.lib_bs|]
-             }
+              args  = [|vendor_ninja ; "-C";Bsb_config.lib_bs|]
+             };
 
          end
 
