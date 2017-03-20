@@ -34,28 +34,46 @@
 
 *)
 
+(** {2 Internal types for FFI}
 
-(** internal types for FFI, these types are not used by normal users *)
+these types are not used by normal users}
+*)
+
 type (-'obj, +'a) meth_callback
+(** internal *)
+
 type (-'arg, + 'result) meth
+(** itnernal *)
+
 type (-'arg, + 'result) fn (** Js uncurried function *)
+(** internal *)
 
 
-(** Types for JS objects *)
-(* tag::public_js_types[] *)
+(* {2 Types for JS objects} *)
+
 type +'a t
 (** Js object type *)
+
 type + 'a null
 (** nullable, value of this type can be either [null] or ['a]
     this type is the same as {!Js.Null.t}  *)
+
 type + 'a undefined
 (** value of this type can be either [undefined] or ['a]
     this type is the same as {!Js.Undefined.t}  *)
+
 type + 'a null_undefined
 (** value of this type can be [undefined], [null] or ['a]
     this type is the same as {!Js.Null_undefined.t}*)
+
 type boolean
-(* end::public_js_types[] *)
+(** The JS boolean type, can be [Js.true_] or [Js.false_] *)
+
+(* I'd like to move this and the other types into a Js_core module that can be
+   included back here, but the dependency hackery confuses me *)
+type (+'a, +'e) promise
+(** The promise type, defined here for interop *)
+
 
 (* tag::predefined_js_values[]*)
 external true_ : boolean = "true" [@@bs.val]

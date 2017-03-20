@@ -19,6 +19,12 @@ function viaInt8(_, _$1) {
   };
 }
 
+var x = new Int8Array(/* int array */[
+      1,
+      2,
+      3
+    ]);
+
 var suites_000 = /* tuple */[
   "array_buffer - make",
   function () {
@@ -2175,5 +2181,6 @@ Mt.from_pair_suites("js_typed_array_test.ml", suites);
 exports.mkI8    = mkI8;
 exports.via     = via;
 exports.viaInt8 = viaInt8;
+exports.x       = x;
 exports.suites  = suites;
-/*  Not a pure module */
+/* x Not a pure module */
