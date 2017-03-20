@@ -161,7 +161,7 @@ let output_ninja
       List.iter (fun x -> Bsb_ninja.output_build oc
                     ~output:x
                     ~input:(Bsb_config.proj_rel x)
-                    ~rule:Bsb_ninja.Rules.copy_resources) static_resources in
+                    ~rule:Bsb_rule.copy_resources) static_resources in
     Bsb_ninja.phony oc ~order_only_deps:(static_resources @ all_info.all_config_deps)
       ~inputs:[]
       ~output:Literals.build_ninja ;

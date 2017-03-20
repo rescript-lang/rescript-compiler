@@ -332,7 +332,7 @@ let interpret_json
     |> ignore ;
     begin match String_map.find_opt Bsb_build_schemas.sources map with 
       | Some x -> 
-        let res = Bsb_build_ui.parsing_sources
+        let res = Bsb_build_ui.parsing_sources !Bsb_config.no_dev
             Bsb_build_ui.lib_dir_index
             Filename.current_dir_name x in 
         generate_sourcedirs_meta res ;     

@@ -8520,7 +8520,11 @@ let interpret_json
     |> ignore ;
     begin match String_map.find_opt Bsb_build_schemas.sources map with 
       | Some x -> 
+<<<<<<< 479b93c0fa5db7560dc21601fbb064ff0d05979e
         let res = Bsb_build_ui.parsing_sources
+=======
+        let res = Bsb_build_ui.parsing_sources !Bsb_config.no_dev
+>>>>>>> fix build error
             Bsb_build_ui.lib_dir_index
             Filename.current_dir_name x in 
         generate_sourcedirs_meta res ;     
@@ -10033,6 +10037,12 @@ let build_bs_deps package_specs   =
                  regen;
                  separator |]})
 
+<<<<<<< 479b93c0fa5db7560dc21601fbb064ff0d05979e
+=======
+let annoymous filename =
+  String_vec.push  filename targets
+
+>>>>>>> fix build error
 let watch_mode = ref false
 let make_world = ref false
 let color_enabled = ref (Unix.isatty Unix.stdin)
