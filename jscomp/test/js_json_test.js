@@ -393,6 +393,10 @@ eq('File "js_json_test.ml", line 275, characters 12-19', Js_primitive.undefined_
 
 eq('File "js_json_test.ml", line 277, characters 12-19', Js_primitive.undefined_to_opt(JSON.stringify(undefined)), /* None */0);
 
+eq('File "js_json_test.ml", line 280, characters 5-12', Js_json.stringOfJson("test"), /* Some */["test"]);
+
+eq('File "js_json_test.ml", line 282, characters 5-12', Js_json.stringOfJson(1.23), /* None */0);
+
 Mt.from_pair_suites("js_json_test.ml", suites[0]);
 
 exports.suites     = suites;

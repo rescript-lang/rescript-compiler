@@ -276,4 +276,10 @@ let () = eq __LOC__ (Js.Json.stringifyAny Js.Null.empty) (Some "null")
 
 let () = eq __LOC__ (Js.Json.stringifyAny Js.Undefined.empty) None
 
+let () = 
+  eq __LOC__ 
+    (Js.Json.stringOfJson (Js.Json.string "test")) (Some "test");
+  eq __LOC__ 
+    (Js.Json.stringOfJson (Js.Json.number 1.23)) None
+
 let () = Mt.from_pair_suites __FILE__ !suites

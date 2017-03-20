@@ -61,6 +61,12 @@ let test (type a) (x : 'a) (v : a kind) : bool =
   | Array -> Js_array.isArray x 
   | Object -> (Obj.magic x) != Js.null && Js.typeof x = "object" && not (Js_array.isArray x )
 
+let stringOfJson json = 
+  let ty, x = reifyType json in 
+  match ty with
+  | String -> Some x 
+  | _ -> None
+
 external parse : string -> t = "JSON.parse" [@@bs.val]
 external stringifyAny : 'a -> string option = "JSON.stringify" [@@bs.val] [@@bs.return undefined_to_opt]
 (* TODO: more docs when parse error happens or stringify non-stringfy value *)

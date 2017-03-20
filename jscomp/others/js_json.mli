@@ -49,6 +49,10 @@ val reifyType : t -> 'b kind * 'b
 val test : 'a  -> 'b kind -> bool
 (** [test v kind] returns true if [v] is of [kind] *)
 
+val stringOfJson : t -> Js_string.t option
+(** [string_of_json json] returns [Some s] if [json] is a string, [None]
+    otherwise *)
+
 (** {2 Construtors} *)
 
 (** Those functions allows the construction of an arbitrary complex 
