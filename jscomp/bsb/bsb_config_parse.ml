@@ -334,8 +334,7 @@ let interpret_json
     begin match String_map.find_opt Bsb_build_schemas.sources map with 
       | Some x -> 
         let res = Bsb_build_ui.parsing_sources {no_dev; dir_index =
-            Bsb_build_ui.lib_dir_index; cwd = 
-            (* cwd *) Filename.current_dir_name}  x in 
+            Bsb_build_ui.lib_dir_index; cwd = Filename.current_dir_name; root = cwd}  x in 
         if generate_watch_metadata then
           generate_sourcedirs_meta cwd res ;     
         begin match List.sort Ext_file_pp.interval_compare  res.intervals with

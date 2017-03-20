@@ -51,7 +51,8 @@ val get_current_number_of_dev_groups : unit -> int
 type parsing_cxt = {
   no_dev : bool ;
   dir_index : dir_index ; 
-  cwd : string 
+  cwd : string ;
+  root : string 
 }
 
 
