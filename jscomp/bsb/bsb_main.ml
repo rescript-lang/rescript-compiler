@@ -25,7 +25,7 @@
 
 
 
-
+let bsppx_exe = "bsppx.exe"
 let bsdeps = ".bsdeps"
 
 let (//) = Ext_filename.combine
@@ -58,7 +58,11 @@ let separator = "--"
 
 let internal_package_specs = "-internal-package-specs"
 let internal_install = "-internal-install"
-let build_bs_deps package_specs   =
+
+let build_bs_deps  deps  =
+  let package_specs = 
+    (String_set.fold
+       (fun k acc -> k ^ "," ^ acc ) deps Ext_string.empty )  in 
   let bsc_dir = Bsb_build_util.get_bsc_dir cwd in
   let bsb_exe = bsc_dir // "bsb.exe" in
   Bsb_build_util.walk_all_deps  cwd
@@ -76,8 +80,62 @@ let build_bs_deps package_specs   =
                  regen;
                  separator |]})
 
+let build_bs_deps_dry_run deps =
+  let bsc_dir = Bsb_build_util.get_bsc_dir cwd in
+  let vendor_ninja = bsc_dir // "ninja.exe" in 
+  Bsb_build_util.walk_all_deps  cwd
+    (fun {top; cwd} ->
+       if not top then
+         begin
+           Bsb_build_util.mkp (cwd // Bsb_config.lib_bs);
+           let config = 
+             Bsb_config_parse.interpret_json 
+               ~override_package_specs:(Some deps)
+               ~generate_watch_metadata:false
+               ~bsc_dir
+               ~no_dev:true
+               cwd in 
+           Bsb_config_parse.merlin_file_gen ~cwd
+             (bsc_dir // bsppx_exe, 
+              bsc_dir // Literals.reactjs_jsx_ppx_exe) config;
+           Bsb_gen.output_ninja ~cwd ~bsc_dir config ;
+           Bsb_unix.run_command_execv
+             {cmd = vendor_ninja;
+              cwd = cwd;
+              args  = [|"-C";Bsb_config.lib_bs|]
+             }
+
+         end
+
+    )
+
+
+let annoymous filename =
+  String_vec.push  filename targets
+
+
 let watch_mode = ref false
-let make_world = ref false
+
+type make_world_config = {
+  mutable  set : bool ;
+  mutable dry_run : bool 
+}
+
+let make_world = {
+  set = false ;
+  dry_run = false;
+}
+
+(* let make_world_dry_run = ref false  *)
+
+let set_make_world () = 
+  make_world.set <- true
+
+let set_make_world_dry_run () = 
+  make_world.set <- true ; 
+  make_world.dry_run <- true 
+
+
 let color_enabled = ref (Unix.isatty Unix.stdin)
 let set_color ppf =
   Format.pp_set_formatter_tag_functions ppf 
@@ -142,10 +200,12 @@ let bsb_main_flags : (string * Arg.spec * string) list=
     " Clean all bs dependencies";
     "-clean", Arg.Unit clean_self,
     " Clean only current project";
-    "-make-world", Arg.Set make_world,
-    " Build all dependencies and itself "
+    "-make-world", Arg.Unit set_make_world,
+    " Build all dependencies and itself ";
+    "-make-world-dry-run", Arg.Unit set_make_world_dry_run,
+    " (internal) Debugging utitlies"
   ]
-let bsppx_exe = "bsppx.exe"
+
 (** Regenerate ninja file and return None if we dont need regenerate
     otherwise return some info
 *)
@@ -166,12 +226,16 @@ let regenerate_ninja cwd bsc_dir forced =
         print_endline "Also clean current repo due to we have detected a different compiler";
         clean_self (); 
       end ; 
+      Bsb_build_util.mkp (cwd // Bsb_config.lib_bs); 
       let config = 
         Bsb_config_parse.interpret_json 
           ~override_package_specs:!Bsb_config.cmd_package_specs
-          ~bsc_dir cwd in 
+          ~bsc_dir
+          ~generate_watch_metadata:true
+          ~no_dev:!Bsb_config.no_dev
+          cwd in 
       begin 
-        Bsb_config_parse.merlin_file_gen 
+        Bsb_config_parse.merlin_file_gen ~cwd
           (bsc_dir // bsppx_exe, 
            bsc_dir // Literals.reactjs_jsx_ppx_exe) config;
         Bsb_gen.output_ninja ~cwd ~bsc_dir config ; 
@@ -290,9 +354,11 @@ let make_world_deps (config : Bsb_config_types.t option) =
       *)
       Bsb_config_parse.package_specs_from_bsconfig ()
     | Some {package_specs} -> package_specs in
-  build_bs_deps 
-    (String_set.fold
-       (fun k acc -> k ^ "," ^ acc ) deps Ext_string.empty )
+  if make_world.dry_run then 
+    build_bs_deps_dry_run deps 
+  else 
+    build_bs_deps deps
+    
 
 let () =
   let bsc_dir = Bsb_build_util.get_bsc_dir cwd in
@@ -301,7 +367,7 @@ let () =
   (* see discussion #929 *)
   if Array.length Sys.argv <= 1 then
     begin
-      let config_opt =  (regenerate_ninja cwd bsc_dir false) in 
+      let config_opt =  regenerate_ninja cwd bsc_dir false in 
       ninja_command_exit vendor_ninja [||] config_opt
     end
   else
@@ -312,7 +378,8 @@ let () =
         begin
           Arg.parse bsb_main_flags handle_anonymous_arg usage;
           (* [-make-world] should never be combined with [-package-specs] *)
-          begin match !make_world, !force_regenerate with
+          let make_world = make_world.set in 
+          begin match make_world, !force_regenerate with
             | false, false -> 
               if !watch_mode then begin
                 watch_exit ()
@@ -347,7 +414,7 @@ let () =
           Arg.parse_argv bsb_args bsb_main_flags handle_anonymous_arg usage ;
           let config_opt = regenerate_ninja cwd bsc_dir !force_regenerate in
           (* [-make-world] should never be combined with [-package-specs] *)
-          if !make_world then
+          if make_world.set then
             make_world_deps config_opt ;
           if !watch_mode then watch_exit ()
           else ninja_command_exit vendor_ninja ninja_args config_opt

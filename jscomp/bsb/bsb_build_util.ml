@@ -177,38 +177,40 @@ let rec walk_all_deps_aux visited paths top dir cb =
       Format.fprintf Format.std_formatter
         "@{<info>Already visited@} %s@." cur_package_name
     else 
-      map
-      |?
-      (Bsb_build_schemas.bs_dependencies,
-       `Arr (fun (new_packages : Ext_json_types.t array) ->
-           new_packages
-           |> Array.iter (fun (js : Ext_json_types.t) ->
-               begin match js with
-                 | Str {str = new_package} ->
-                   begin match Bsb_pkg.resolve_bs_package ~cwd:dir new_package with
-                     | None -> 
-                       Bsb_exception.error (Bsb_exception.Package_not_found 
-                                              (new_package, Some bsconfig_json))
-                     | Some package_dir  ->
-                       Format.fprintf 
-                         Format.std_formatter "@{<info>Walking@} deps %s in %s from %s@."
-                         new_package
-                         package_dir
-                         cur_package_name;
+      begin 
+        map
+        |?
+        (Bsb_build_schemas.bs_dependencies,
+         `Arr (fun (new_packages : Ext_json_types.t array) ->
+             new_packages
+             |> Array.iter (fun (js : Ext_json_types.t) ->
+                 begin match js with
+                   | Str {str = new_package} ->
+                     begin match Bsb_pkg.resolve_bs_package ~cwd:dir new_package with
+                       | None -> 
+                         Bsb_exception.error (Bsb_exception.Package_not_found 
+                                                (new_package, Some bsconfig_json))
+                       | Some package_dir  ->
+                         Format.fprintf 
+                           Format.std_formatter "@{<info>Walking@} deps %s in %s from %s@."
+                           new_package
+                           package_dir
+                           cur_package_name;
 
-                       walk_all_deps_aux visited (cur_package_name +> paths)  false package_dir cb  ;
-                   end
+                         walk_all_deps_aux visited (cur_package_name +> paths)  false package_dir cb  ;
+                     end
 
 
-                 | _ -> 
-                   Bsb_exception.(failf ~loc 
-                                    "%s expect an array"
-                                    Bsb_build_schemas.bs_dependencies)
-               end
-             )))
-      |> ignore ;
-    cb {top ; cwd = dir};
-    String_hashtbl.add visited cur_package_name dir;
+                   | _ -> 
+                     Bsb_exception.(failf ~loc 
+                                      "%s expect an array"
+                                      Bsb_build_schemas.bs_dependencies)
+                 end
+               )))
+        |> ignore ;
+        cb {top ; cwd = dir};
+        String_hashtbl.add visited cur_package_name dir;
+      end
   | _ -> ()
   | exception _ -> failwith ( "failed to parse" ^ bsconfig_json ^ " properly")
     

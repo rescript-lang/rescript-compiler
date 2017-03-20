@@ -27,12 +27,15 @@ val package_specs_from_bsconfig :
 
 
 val merlin_file_gen : 
-    (string * string) -> Bsb_config_types.t -> unit    
+  cwd:string -> 
+  (string * string) -> Bsb_config_types.t -> unit    
 
 
 val interpret_json : 
     override_package_specs:Bsb_config.package_specs option -> 
     bsc_dir:string -> 
+    generate_watch_metadata:bool -> 
+    no_dev:bool -> 
     string -> 
     Bsb_config_types.t
 

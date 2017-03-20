@@ -6137,38 +6137,40 @@ let rec walk_all_deps_aux visited paths top dir cb =
       Format.fprintf Format.std_formatter
         "@{<info>Already visited@} %s@." cur_package_name
     else 
-      map
-      |?
-      (Bsb_build_schemas.bs_dependencies,
-       `Arr (fun (new_packages : Ext_json_types.t array) ->
-           new_packages
-           |> Array.iter (fun (js : Ext_json_types.t) ->
-               begin match js with
-                 | Str {str = new_package} ->
-                   begin match Bsb_pkg.resolve_bs_package ~cwd:dir new_package with
-                     | None -> 
-                       Bsb_exception.error (Bsb_exception.Package_not_found 
-                                              (new_package, Some bsconfig_json))
-                     | Some package_dir  ->
-                       Format.fprintf 
-                         Format.std_formatter "@{<info>Walking@} deps %s in %s from %s@."
-                         new_package
-                         package_dir
-                         cur_package_name;
+      begin 
+        map
+        |?
+        (Bsb_build_schemas.bs_dependencies,
+         `Arr (fun (new_packages : Ext_json_types.t array) ->
+             new_packages
+             |> Array.iter (fun (js : Ext_json_types.t) ->
+                 begin match js with
+                   | Str {str = new_package} ->
+                     begin match Bsb_pkg.resolve_bs_package ~cwd:dir new_package with
+                       | None -> 
+                         Bsb_exception.error (Bsb_exception.Package_not_found 
+                                                (new_package, Some bsconfig_json))
+                       | Some package_dir  ->
+                         Format.fprintf 
+                           Format.std_formatter "@{<info>Walking@} deps %s in %s from %s@."
+                           new_package
+                           package_dir
+                           cur_package_name;
 
-                       walk_all_deps_aux visited (cur_package_name +> paths)  false package_dir cb  ;
-                   end
+                         walk_all_deps_aux visited (cur_package_name +> paths)  false package_dir cb  ;
+                     end
 
 
-                 | _ -> 
-                   Bsb_exception.(failf ~loc 
-                                    "%s expect an array"
-                                    Bsb_build_schemas.bs_dependencies)
-               end
-             )))
-      |> ignore ;
-    cb {top ; cwd = dir};
-    String_hashtbl.add visited cur_package_name dir;
+                   | _ -> 
+                     Bsb_exception.(failf ~loc 
+                                      "%s expect an array"
+                                      Bsb_build_schemas.bs_dependencies)
+                 end
+               )))
+        |> ignore ;
+        cb {top ; cwd = dir};
+        String_hashtbl.add visited cur_package_name dir;
+      end
   | _ -> ()
   | exception _ -> failwith ( "failed to parse" ^ bsconfig_json ^ " properly")
     
@@ -8176,12 +8178,15 @@ val package_specs_from_bsconfig :
 
 
 val merlin_file_gen : 
-    (string * string) -> Bsb_config_types.t -> unit    
+  cwd:string -> 
+  (string * string) -> Bsb_config_types.t -> unit    
 
 
 val interpret_json : 
     override_package_specs:Bsb_config.package_specs option -> 
     bsc_dir:string -> 
+    generate_watch_metadata:bool -> 
+    no_dev:bool -> 
     string -> 
     Bsb_config_types.t
 
@@ -8300,7 +8305,7 @@ let package_specs_from_bsconfig () =
 
 
 (** [new_content] should start end finish with newline *)
-let revise_merlin new_content =
+let revise_merlin merlin new_content =
   if Sys.file_exists merlin then
     let merlin_chan = open_in_bin merlin in
     let size = in_channel_length merlin_chan in
@@ -8347,7 +8352,7 @@ let merlin_b = "\nB "
 
 
 let merlin_flg = "\nFLG "
-let merlin_file_gen 
+let merlin_file_gen ~cwd
     (built_in_ppx, reactjs_jsx_ppx)
     ({bs_file_groups = res_files ; 
       generate_merlin;
@@ -8414,7 +8419,7 @@ let merlin_file_gen
         Buffer.add_string buffer (Bsb_config.lib_bs//x.dir) ;
       ) ;
     Buffer.add_string buffer "\n";
-    revise_merlin buffer 
+    revise_merlin (cwd // merlin) buffer 
   end
 
 
@@ -8425,9 +8430,8 @@ let merlin_file_gen
 
 
 
-let generate_sourcedirs_meta (res : Bsb_build_ui.t) = 
-  let builddir = Bsb_config.lib_bs in 
-  let ochan = open_out_bin (builddir // sourcedirs_meta) in
+let generate_sourcedirs_meta cwd (res : Bsb_build_ui.t) = 
+  let ochan = open_out_bin (cwd // Bsb_config.lib_bs // sourcedirs_meta) in
   res.files |> List.iter
     (fun (x : Bsb_build_ui.file_group) ->
        output_string ochan x.dir; (* to [.sourcedirs] *)
@@ -8436,19 +8440,19 @@ let generate_sourcedirs_meta (res : Bsb_build_ui.t) =
   close_out ochan
 
 
+(** ATT: make sure such function is re-entrant. 
+    With a given [cwd] it works anywhere*)
 let interpret_json 
     ~override_package_specs
     ~bsc_dir 
+    ~generate_watch_metadata
+    ~no_dev 
     cwd  
 
   : Bsb_config_types.t =
-  let builddir = Bsb_config.lib_bs in
-  let () = Bsb_build_util.mkp builddir in
   
   let reason_react_jsx = ref false in 
-
-  let config_json_chan = open_in_bin Literals.bsconfig_json in
-  let global_data = Ext_json_parse.parse_json_from_chan config_json_chan  in
+  let config_json = (cwd // Literals.bsconfig_json) in
   let ocamllex = ref Bsb_default.ocamllex in 
   let refmt = ref None in
   let refmt_flags = ref Bsb_default.refmt_flags in
@@ -8474,11 +8478,13 @@ let interpret_json
      1. if [build.ninja] does use [ninja] we need set a variable
      2. we need store it so that we can call ninja correctly
   *)
-  let entries = ref [Bsb_config_types.JsTarget "Index"] in
+  let entries = ref Bsb_default.main_entries in
 
+  let config_json_chan = open_in_bin config_json  in
+  let global_data = Ext_json_parse.parse_json_from_chan config_json_chan  in
   match global_data with
   | Obj { map} ->
-
+    (* The default situation is empty *)
     (match String_map.find_opt Bsb_build_schemas.use_stdlib map with      
      | Some (False _) -> 
        ()
@@ -8526,26 +8532,32 @@ let interpret_json
     |> ignore ;
     begin match String_map.find_opt Bsb_build_schemas.sources map with 
       | Some x -> 
+<<<<<<< d26ead1acefe7e6b344f1f808aded238eb881371
 <<<<<<< 479b93c0fa5db7560dc21601fbb064ff0d05979e
         let res = Bsb_build_ui.parsing_sources
 =======
         let res = Bsb_build_ui.parsing_sources !Bsb_config.no_dev
 >>>>>>> fix build error
+=======
+        let res = Bsb_build_ui.parsing_sources no_dev
+>>>>>>> works -- fix parsing_sources bugs
             Bsb_build_ui.lib_dir_index
-            Filename.current_dir_name x in 
-        generate_sourcedirs_meta res ;     
+            (* cwd *) Filename.current_dir_name  x in 
+        if generate_watch_metadata then
+          generate_sourcedirs_meta cwd res ;     
         begin match List.sort Ext_file_pp.interval_compare  res.intervals with
           | [] -> ()
           | queue ->
             let file_size = in_channel_length config_json_chan in
-            let oc = open_out_bin config_file_bak in
+            let output_file = (cwd //config_file_bak) in 
+            let oc = open_out_bin output_file in
             let () =
               Ext_file_pp.process_wholes
                 queue file_size config_json_chan oc in
             close_out oc ;
             close_in config_json_chan ;
-            Unix.unlink Literals.bsconfig_json;
-            Unix.rename config_file_bak Literals.bsconfig_json
+            Unix.unlink config_json;
+            Unix.rename output_file config_json
         end;
 
         {
@@ -9993,7 +10005,7 @@ end = struct
 
 
 
-
+let bsppx_exe = "bsppx.exe"
 let bsdeps = ".bsdeps"
 
 let (//) = Ext_filename.combine
@@ -10026,7 +10038,11 @@ let separator = "--"
 
 let internal_package_specs = "-internal-package-specs"
 let internal_install = "-internal-install"
-let build_bs_deps package_specs   =
+
+let build_bs_deps  deps  =
+  let package_specs = 
+    (String_set.fold
+       (fun k acc -> k ^ "," ^ acc ) deps Ext_string.empty )  in 
   let bsc_dir = Bsb_build_util.get_bsc_dir cwd in
   let bsb_exe = bsc_dir // "bsb.exe" in
   Bsb_build_util.walk_all_deps  cwd
@@ -10044,14 +10060,67 @@ let build_bs_deps package_specs   =
                  regen;
                  separator |]})
 
+<<<<<<< d26ead1acefe7e6b344f1f808aded238eb881371
 <<<<<<< 479b93c0fa5db7560dc21601fbb064ff0d05979e
 =======
+=======
+let build_bs_deps_dry_run deps =
+  let bsc_dir = Bsb_build_util.get_bsc_dir cwd in
+  let vendor_ninja = bsc_dir // "ninja.exe" in 
+  Bsb_build_util.walk_all_deps  cwd
+    (fun {top; cwd} ->
+       if not top then
+         begin
+           Bsb_build_util.mkp (cwd // Bsb_config.lib_bs);
+           let config = 
+             Bsb_config_parse.interpret_json 
+               ~override_package_specs:(Some deps)
+               ~generate_watch_metadata:false
+               ~bsc_dir
+               ~no_dev:true
+               cwd in 
+           Bsb_config_parse.merlin_file_gen ~cwd
+             (bsc_dir // bsppx_exe, 
+              bsc_dir // Literals.reactjs_jsx_ppx_exe) config;
+           Bsb_gen.output_ninja ~cwd ~bsc_dir config ;
+           Bsb_unix.run_command_execv
+             {cmd = vendor_ninja;
+              cwd = cwd;
+              args  = [|"-C";Bsb_config.lib_bs|]
+             }
+
+         end
+
+    )
+
+
+>>>>>>> works -- fix parsing_sources bugs
 let annoymous filename =
   String_vec.push  filename targets
 
 >>>>>>> fix build error
 let watch_mode = ref false
-let make_world = ref false
+
+type make_world_config = {
+  mutable  set : bool ;
+  mutable dry_run : bool 
+}
+
+let make_world = {
+  set = false ;
+  dry_run = false;
+}
+
+(* let make_world_dry_run = ref false  *)
+
+let set_make_world () = 
+  make_world.set <- true
+
+let set_make_world_dry_run () = 
+  make_world.set <- true ; 
+  make_world.dry_run <- true 
+
+
 let color_enabled = ref (Unix.isatty Unix.stdin)
 let set_color ppf =
   Format.pp_set_formatter_tag_functions ppf 
@@ -10116,10 +10185,12 @@ let bsb_main_flags : (string * Arg.spec * string) list=
     " Clean all bs dependencies";
     "-clean", Arg.Unit clean_self,
     " Clean only current project";
-    "-make-world", Arg.Set make_world,
-    " Build all dependencies and itself "
+    "-make-world", Arg.Unit set_make_world,
+    " Build all dependencies and itself ";
+    "-make-world-dry-run", Arg.Unit set_make_world_dry_run,
+    " (internal) Debugging utitlies"
   ]
-let bsppx_exe = "bsppx.exe"
+
 (** Regenerate ninja file and return None if we dont need regenerate
     otherwise return some info
 *)
@@ -10140,12 +10211,16 @@ let regenerate_ninja cwd bsc_dir forced =
         print_endline "Also clean current repo due to we have detected a different compiler";
         clean_self (); 
       end ; 
+      Bsb_build_util.mkp (cwd // Bsb_config.lib_bs); 
       let config = 
         Bsb_config_parse.interpret_json 
           ~override_package_specs:!Bsb_config.cmd_package_specs
-          ~bsc_dir cwd in 
+          ~bsc_dir
+          ~generate_watch_metadata:true
+          ~no_dev:!Bsb_config.no_dev
+          cwd in 
       begin 
-        Bsb_config_parse.merlin_file_gen 
+        Bsb_config_parse.merlin_file_gen ~cwd
           (bsc_dir // bsppx_exe, 
            bsc_dir // Literals.reactjs_jsx_ppx_exe) config;
         Bsb_gen.output_ninja ~cwd ~bsc_dir config ; 
@@ -10264,9 +10339,11 @@ let make_world_deps (config : Bsb_config_types.t option) =
       *)
       Bsb_config_parse.package_specs_from_bsconfig ()
     | Some {package_specs} -> package_specs in
-  build_bs_deps 
-    (String_set.fold
-       (fun k acc -> k ^ "," ^ acc ) deps Ext_string.empty )
+  if make_world.dry_run then 
+    build_bs_deps_dry_run deps 
+  else 
+    build_bs_deps deps
+    
 
 let () =
   let bsc_dir = Bsb_build_util.get_bsc_dir cwd in
@@ -10275,7 +10352,7 @@ let () =
   (* see discussion #929 *)
   if Array.length Sys.argv <= 1 then
     begin
-      let config_opt =  (regenerate_ninja cwd bsc_dir false) in 
+      let config_opt =  regenerate_ninja cwd bsc_dir false in 
       ninja_command_exit vendor_ninja [||] config_opt
     end
   else
@@ -10286,7 +10363,8 @@ let () =
         begin
           Arg.parse bsb_main_flags handle_anonymous_arg usage;
           (* [-make-world] should never be combined with [-package-specs] *)
-          begin match !make_world, !force_regenerate with
+          let make_world = make_world.set in 
+          begin match make_world, !force_regenerate with
             | false, false -> 
               if !watch_mode then begin
                 watch_exit ()
@@ -10321,7 +10399,7 @@ let () =
           Arg.parse_argv bsb_args bsb_main_flags handle_anonymous_arg usage ;
           let config_opt = regenerate_ninja cwd bsc_dir !force_regenerate in
           (* [-make-world] should never be combined with [-package-specs] *)
-          if !make_world then
+          if make_world.set then
             make_world_deps config_opt ;
           if !watch_mode then watch_exit ()
           else ninja_command_exit vendor_ninja ninja_args config_opt

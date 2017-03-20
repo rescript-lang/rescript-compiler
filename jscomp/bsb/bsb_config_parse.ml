@@ -106,7 +106,7 @@ let package_specs_from_bsconfig () =
 
 
 (** [new_content] should start end finish with newline *)
-let revise_merlin new_content =
+let revise_merlin merlin new_content =
   if Sys.file_exists merlin then
     let merlin_chan = open_in_bin merlin in
     let size = in_channel_length merlin_chan in
@@ -153,7 +153,7 @@ let merlin_b = "\nB "
 
 
 let merlin_flg = "\nFLG "
-let merlin_file_gen 
+let merlin_file_gen ~cwd
     (built_in_ppx, reactjs_jsx_ppx)
     ({bs_file_groups = res_files ; 
       generate_merlin;
@@ -220,7 +220,7 @@ let merlin_file_gen
         Buffer.add_string buffer (Bsb_config.lib_bs//x.dir) ;
       ) ;
     Buffer.add_string buffer "\n";
-    revise_merlin buffer 
+    revise_merlin (cwd // merlin) buffer 
   end
 
 
@@ -231,9 +231,8 @@ let merlin_file_gen
 
 
 
-let generate_sourcedirs_meta (res : Bsb_build_ui.t) = 
-  let builddir = Bsb_config.lib_bs in 
-  let ochan = open_out_bin (builddir // sourcedirs_meta) in
+let generate_sourcedirs_meta cwd (res : Bsb_build_ui.t) = 
+  let ochan = open_out_bin (cwd // Bsb_config.lib_bs // sourcedirs_meta) in
   res.files |> List.iter
     (fun (x : Bsb_build_ui.file_group) ->
        output_string ochan x.dir; (* to [.sourcedirs] *)
@@ -242,19 +241,19 @@ let generate_sourcedirs_meta (res : Bsb_build_ui.t) =
   close_out ochan
 
 
+(** ATT: make sure such function is re-entrant. 
+    With a given [cwd] it works anywhere*)
 let interpret_json 
     ~override_package_specs
     ~bsc_dir 
+    ~generate_watch_metadata
+    ~no_dev 
     cwd  
 
   : Bsb_config_types.t =
-  let builddir = Bsb_config.lib_bs in
-  let () = Bsb_build_util.mkp builddir in
   
   let reason_react_jsx = ref false in 
-
-  let config_json_chan = open_in_bin Literals.bsconfig_json in
-  let global_data = Ext_json_parse.parse_json_from_chan config_json_chan  in
+  let config_json = (cwd // Literals.bsconfig_json) in
   let ocamllex = ref Bsb_default.ocamllex in 
   let refmt = ref None in
   let refmt_flags = ref Bsb_default.refmt_flags in
@@ -280,11 +279,13 @@ let interpret_json
      1. if [build.ninja] does use [ninja] we need set a variable
      2. we need store it so that we can call ninja correctly
   *)
-  let entries = ref [Bsb_config_types.JsTarget "Index"] in
+  let entries = ref Bsb_default.main_entries in
 
+  let config_json_chan = open_in_bin config_json  in
+  let global_data = Ext_json_parse.parse_json_from_chan config_json_chan  in
   match global_data with
   | Obj { map} ->
-
+    (* The default situation is empty *)
     (match String_map.find_opt Bsb_build_schemas.use_stdlib map with      
      | Some (False _) -> 
        ()
@@ -332,22 +333,24 @@ let interpret_json
     |> ignore ;
     begin match String_map.find_opt Bsb_build_schemas.sources map with 
       | Some x -> 
-        let res = Bsb_build_ui.parsing_sources !Bsb_config.no_dev
+        let res = Bsb_build_ui.parsing_sources no_dev
             Bsb_build_ui.lib_dir_index
-            Filename.current_dir_name x in 
-        generate_sourcedirs_meta res ;     
+            (* cwd *) Filename.current_dir_name  x in 
+        if generate_watch_metadata then
+          generate_sourcedirs_meta cwd res ;     
         begin match List.sort Ext_file_pp.interval_compare  res.intervals with
           | [] -> ()
           | queue ->
             let file_size = in_channel_length config_json_chan in
-            let oc = open_out_bin config_file_bak in
+            let output_file = (cwd //config_file_bak) in 
+            let oc = open_out_bin output_file in
             let () =
               Ext_file_pp.process_wholes
                 queue file_size config_json_chan oc in
             close_out oc ;
             close_in config_json_chan ;
-            Unix.unlink Literals.bsconfig_json;
-            Unix.rename config_file_bak Literals.bsconfig_json
+            Unix.unlink config_json;
+            Unix.rename output_file config_json
         end;
 
         {
