@@ -140,20 +140,25 @@ let (++) (u : t)  (v : t)  =
       globbed_dirs = u.globbed_dirs @ v.globbed_dirs ; 
     }
 
+type parsing_cxt = {
+  no_dev : bool ;
+  dir_index : dir_index ; 
+  cwd : string 
+}
 
 (** [dir_index] can be inherited  *)
 let rec 
-  parsing_simple_dir no_dev dir_index  cwd dir =
+  parsing_simple_dir {no_dev; dir_index;  cwd} dir =
   if no_dev && dir_index <> lib_dir_index then empty 
   else parsing_source_dir_map no_dev dir_index 
       (cwd // Ext_filename.simple_convert_node_path_to_os_path dir) 
       String_map.empty
 
-and parsing_source no_dev (dir_index : int) cwd (x : Ext_json_types.t )
+and parsing_source ({no_dev; dir_index ; cwd}) (x : Ext_json_types.t )
   : t  =
   match x with 
   | Str  { str = dir }  -> 
-    parsing_simple_dir no_dev dir_index cwd dir   
+    parsing_simple_dir {no_dev; dir_index; cwd} dir   
   | Obj {map} ->
     let current_dir_index = 
       match String_map.find_opt Bsb_build_schemas.type_ map with 
@@ -266,7 +271,7 @@ and parsing_source_dir_map no_dev current_dir_index dir (x : Ext_json_types.t St
     let children, children_update_queue, children_globbed_dirs = 
       match String_map.find_opt Bsb_build_schemas.subdirs x with 
       | Some s -> 
-        let res  = parsing_sources no_dev current_dir_index dir s in 
+        let res  = parsing_sources ({no_dev; dir_index = current_dir_index; cwd = dir} : parsing_cxt) s in 
         res.files ,
         res.intervals,
         res.globbed_dirs
@@ -282,16 +287,16 @@ and parsing_source_dir_map no_dev current_dir_index dir (x : Ext_json_types.t St
    parsing_source dir_index cwd (String_map.singleton Bsb_build_schemas.dir dir)
 *)
 
-and  parsing_arr_sources no_dev dir_index cwd (file_groups : Ext_json_types.t array)  = 
+and  parsing_arr_sources {no_dev; dir_index; cwd} (file_groups : Ext_json_types.t array)  = 
   Array.fold_left (fun  origin x ->
-      parsing_source no_dev dir_index cwd x ++ origin 
+      parsing_source {no_dev; dir_index; cwd} x ++ origin 
     ) empty  file_groups 
 
-and  parsing_sources no_dev dir_index cwd (sources : Ext_json_types.t )  = 
+and  parsing_sources ({no_dev; dir_index; cwd}: parsing_cxt) (sources : Ext_json_types.t )  = 
   match sources with   
   | Arr file_groups -> 
-    parsing_arr_sources no_dev dir_index cwd file_groups.content
-  | _ -> parsing_source no_dev dir_index cwd sources
+    parsing_arr_sources {no_dev; dir_index; cwd} file_groups.content
+  | _ -> parsing_source {no_dev; dir_index; cwd} sources
 
 
 

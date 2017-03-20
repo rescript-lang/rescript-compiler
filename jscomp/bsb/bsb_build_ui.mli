@@ -30,7 +30,7 @@ type public =
 type dir_index = int 
 
 type  file_group = 
-  { dir : string ;
+  { dir : string ; (* currently relative path expected for ninja file generation *)
     sources : Binary_cache.file_group_rouces ; 
     resources : string list ;
     bs_dependencies : string list;
@@ -48,15 +48,18 @@ val lib_dir_index : dir_index
 
 val get_current_number_of_dev_groups : unit -> int 
 
+type parsing_cxt = {
+  no_dev : bool ;
+  dir_index : dir_index ; 
+  cwd : string 
+}
 
 
 (** entry is to the 
     [sources] in the schema
 *)
 val parsing_sources : 
-  bool -> 
-  dir_index -> 
-  string -> 
+  parsing_cxt ->
   Ext_json_types.t  ->
   t 
   
