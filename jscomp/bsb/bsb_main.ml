@@ -62,7 +62,7 @@ let build_bs_deps package_specs   =
   let bsc_dir = Bsb_build_util.get_bsc_dir cwd in
   let bsb_exe = bsc_dir // "bsb.exe" in
   Bsb_build_util.walk_all_deps  cwd
-    (fun top cwd ->
+    (fun {top; cwd} ->
        if not top then
          Bsb_unix.run_command_execv
            {cmd = bsb_exe;
@@ -113,7 +113,7 @@ let clean_bs_garbage cwd =
 
 
 let clean_bs_deps () =
-  Bsb_build_util.walk_all_deps  cwd  (fun top cwd ->
+  Bsb_build_util.walk_all_deps  cwd  (fun {top; cwd} ->
       clean_bs_garbage cwd
     )
 

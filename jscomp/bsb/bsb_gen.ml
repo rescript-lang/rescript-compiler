@@ -69,13 +69,14 @@ let output_ninja
     reason_react_jsx
     }
   =
+  let () = Bsb_rule.reset () in 
   let bsc = bsc_dir // bsc_exe in   (* The path to [bsc.exe] independent of config  *)
   let bsdep = bsc_dir // bsb_helper_exe in (* The path to [bsb_heler.exe] *)
-  let builddir = Bsb_config.lib_bs in 
+  (* let builddir = Bsb_config.lib_bs in  *)
   let ppx_flags = Bsb_build_util.flag_concat dash_ppx ppx_flags in
   let bsc_flags =  String.concat Ext_string.single_space bsc_flags in
   let refmt_flags = String.concat Ext_string.single_space refmt_flags in
-  let oc = open_out_bin (builddir // Literals.build_ninja) in
+  let oc = open_out_bin (cwd // Bsb_config.lib_bs // Literals.build_ninja) in
   begin
     let () =
       output_string oc ninja_required_version ;
@@ -126,7 +127,7 @@ let output_ninja
           List.fold_left (fun (acc, dirs,acc_resources) ({Bsb_build_ui.sources ; dir; resources }) ->
               merge_module_info_map  acc  sources ,  dir::dirs , (List.map (fun x -> dir // x ) resources) @ acc_resources
             ) (String_map.empty,[],[]) bs_file_groups in
-        Binary_cache.write_build_cache (builddir // Binary_cache.bsbuild_cache) [|bs_groups|] ;
+        Binary_cache.write_build_cache (cwd // Bsb_config.lib_bs // Binary_cache.bsbuild_cache) [|bs_groups|] ;
         Bsb_ninja.output_kv
           Bsb_build_schemas.bsc_lib_includes (Bsb_build_util.flag_concat dash_i @@ 
           (all_includes source_dirs  ))  oc ;
@@ -151,7 +152,7 @@ let output_ninja
           Bsb_ninja.output_kv (Bsb_build_util.string_of_bsb_dev_include i)
             (Bsb_build_util.flag_concat "-I" @@ source_dirs.(i)) oc
         done  ;
-        Binary_cache.write_build_cache (builddir // Binary_cache.bsbuild_cache) bs_groups ;
+        Binary_cache.write_build_cache (cwd // Bsb_config.lib_bs // Binary_cache.bsbuild_cache) bs_groups ;
         static_resources;
     in
     let all_info =
