@@ -1,7 +1,7 @@
 "use strict";
 
 function addLink(element) {
-  const a = document.createElement("a");
+  var a = document.createElement("a");
   a.innerHTML
   a.className = "anchor"
   a.href = "#" + encodeURIComponent(element.id);
@@ -9,10 +9,11 @@ function addLink(element) {
 }
 
 function addLinks() {
-  document.querySelectorAll("[id]")
+  document
+    .querySelectorAll("[id]")
     .forEach(addLink);
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", function () {
   addLinks();
 });
