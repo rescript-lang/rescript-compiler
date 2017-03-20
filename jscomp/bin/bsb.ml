@@ -7368,6 +7368,7 @@ val get_current_number_of_dev_groups : unit -> int
     [sources] in the schema
 *)
 val parsing_sources : 
+  bool -> 
   dir_index -> 
   string -> 
   Ext_json_types.t  ->
@@ -7521,24 +7522,24 @@ let (++) (u : t)  (v : t)  =
 
 (** [dir_index] can be inherited  *)
 let rec 
-  parsing_simple_dir dir_index  cwd dir =
-  if !Bsb_config.no_dev && dir_index <> lib_dir_index then empty 
-  else parsing_source_dir_map dir_index 
+  parsing_simple_dir no_dev dir_index  cwd dir =
+  if no_dev && dir_index <> lib_dir_index then empty 
+  else parsing_source_dir_map no_dev dir_index 
       (cwd // Ext_filename.simple_convert_node_path_to_os_path dir) 
       String_map.empty
 
-and parsing_source (dir_index : int) cwd (x : Ext_json_types.t )
+and parsing_source no_dev (dir_index : int) cwd (x : Ext_json_types.t )
   : t  =
   match x with 
   | Str  { str = dir }  -> 
-    parsing_simple_dir dir_index cwd dir   
+    parsing_simple_dir no_dev dir_index cwd dir   
   | Obj {map} ->
     let current_dir_index = 
       match String_map.find_opt Bsb_build_schemas.type_ map with 
       | Some (Str {str="dev"}) -> get_dev_index ()
       | Some _ -> Bsb_exception.failwith_config x {|type field expect "dev" literal |}
       | None -> dir_index in 
-    if !Bsb_config.no_dev && current_dir_index <> lib_dir_index then empty 
+    if no_dev && current_dir_index <> lib_dir_index then empty 
     else 
       let dir = 
         match String_map.find_opt Bsb_build_schemas.dir map with 
@@ -7551,10 +7552,10 @@ and parsing_source (dir_index : int) cwd (x : Ext_json_types.t )
           {|required field %s  missing, please checkout the schema http://bloomberg.github.io/bucklescript/docson/#build-schema.json |} "dir"
       in
 
-      parsing_source_dir_map current_dir_index dir map
+      parsing_source_dir_map no_dev current_dir_index dir map
   | _ -> empty 
 
-and parsing_source_dir_map current_dir_index dir (x : Ext_json_types.t String_map.t) = 
+and parsing_source_dir_map no_dev current_dir_index dir (x : Ext_json_types.t String_map.t) = 
   let cur_sources = ref String_map.empty in
   let resources = ref [] in 
   let bs_dependencies = ref [] in
@@ -7644,7 +7645,7 @@ and parsing_source_dir_map current_dir_index dir (x : Ext_json_types.t String_ma
     let children, children_update_queue, children_globbed_dirs = 
       match String_map.find_opt Bsb_build_schemas.subdirs x with 
       | Some s -> 
-        let res  = parsing_sources current_dir_index dir s in 
+        let res  = parsing_sources no_dev current_dir_index dir s in 
         res.files ,
         res.intervals,
         res.globbed_dirs
@@ -7660,16 +7661,16 @@ and parsing_source_dir_map current_dir_index dir (x : Ext_json_types.t String_ma
    parsing_source dir_index cwd (String_map.singleton Bsb_build_schemas.dir dir)
 *)
 
-and  parsing_arr_sources dir_index cwd (file_groups : Ext_json_types.t array)  = 
+and  parsing_arr_sources no_dev dir_index cwd (file_groups : Ext_json_types.t array)  = 
   Array.fold_left (fun  origin x ->
-      parsing_source dir_index cwd x ++ origin 
+      parsing_source no_dev dir_index cwd x ++ origin 
     ) empty  file_groups 
 
-and  parsing_sources dir_index cwd (sources : Ext_json_types.t )  = 
+and  parsing_sources no_dev dir_index cwd (sources : Ext_json_types.t )  = 
   match sources with   
   | Arr file_groups -> 
-    parsing_arr_sources dir_index cwd file_groups.content
-  | _ -> parsing_source dir_index cwd sources
+    parsing_arr_sources no_dev dir_index cwd file_groups.content
+  | _ -> parsing_source no_dev dir_index cwd sources
 
 
 
@@ -8071,6 +8072,8 @@ val refmt_flags : string list
 
 val package_specs : String_set.t
 
+val main_entries : Bsb_config_types.entries_t list
+
 end = struct
 #1 "bsb_default.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -8132,6 +8135,8 @@ let ocamllex = "ocamllex.opt"
 let refmt_flags = ["--print"; "binary"]
 
 let package_specs = String_set.singleton Literals.commonjs
+
+let main_entries = [Bsb_config_types.JsTarget "Index"]
 
 end
 module Bsb_config_parse : sig 
@@ -8803,6 +8808,243 @@ let install_if_exists ~destdir input_name =
         copy_with_permission input_name (Filename.concat destdir (Filename.basename input_name))   
 
 end
+module Bsb_rule : sig 
+#1 "bsb_rule.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+type t  
+val get_name : t  -> out_channel -> string
+
+val define :
+  command:string ->
+  ?depfile:string ->
+  ?restat:unit -> 
+  ?description:string ->
+  string -> t 
+
+val build_ast_and_deps : t
+val build_ast_and_deps_from_reason_impl : t 
+val build_ast_and_deps_from_reason_intf : t 
+val build_bin_deps : t 
+val reload : t 
+val copy_resources : t
+val build_ml_from_mll : t 
+val build_cmj_js : t
+val build_cmj_cmi_js : t 
+val build_cmi : t
+
+val reset : unit -> unit
+
+end = struct
+#1 "bsb_rule.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+let rule_id = ref 0
+let rule_names = ref String_set.empty
+let ask_name name =
+  let current_id = !rule_id in
+  let () = incr rule_id in
+  match String_set.find name !rule_names with
+  | exception Not_found ->
+    rule_names := String_set.add name !rule_names ;
+    name
+  | _ ->
+    begin (* could be improved later
+             1. instead of having a global id, having a unique id per rule name
+             2. the rule id is increased only when actually used
+          *)
+      let new_name =  (name ^ Printf.sprintf "_%d" current_id) in
+      rule_names := String_set.add new_name  !rule_names ;
+      new_name
+    end
+type t = { mutable used : bool; rule_name : string  ; name : out_channel -> string }
+let get_name (x : t) oc = x.name oc
+let print_rule oc ~description ?restat ?depfile ~command   name  =
+  output_string oc "rule "; output_string oc name ; output_string oc "\n";
+  output_string oc "  command = "; output_string oc command; output_string oc "\n";
+  begin match depfile with
+    | None -> ()
+    | Some f ->
+      output_string oc "  depfile = "; output_string oc f; output_string oc  "\n"
+  end;
+  begin match restat with
+    | None -> ()
+    | Some () ->
+      output_string oc "  restat = 1"; output_string oc  "\n"
+  end;
+
+  output_string oc "  description = " ; output_string oc description; output_string oc "\n"
+
+
+let define
+    ~command
+    ?depfile
+    ?restat
+    ?(description = "\027[34mBuilding\027[39m \027[2m${out}\027[22m") (* blue, dim *)
+    name
+  =
+  let rec self = {
+    used  = false;
+    rule_name = ask_name name ;
+    name = fun oc ->
+      if not self.used then
+        begin
+          print_rule oc ~description ?depfile ?restat ~command name;
+          self.used <- true
+        end ;
+      self.rule_name
+  } in self
+
+
+let build_ast_and_deps =
+  define
+    ~command:"${bsc}  ${pp_flags} ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast ${in}"
+    "build_ast_and_deps"
+
+let build_ast_and_deps_from_reason_impl =
+  define
+    ~command:"${bsc} -pp \"${refmt} ${refmt_flags}\" ${reason_react_jsx}  ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -impl ${in}"
+    "build_ast_and_deps_from_reason_impl"
+
+let build_ast_and_deps_from_reason_intf =
+  (* we have to do this way,
+     because it need to be ppxed by bucklescript
+  *)
+  define
+    ~command:"${bsc} -pp \"${refmt} ${refmt_flags}\" ${reason_react_jsx} ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -intf ${in}"
+    "build_ast_and_deps_from_reason_intf"
+
+
+let build_bin_deps =
+  define
+    ~command:"${bsdep} -g ${bsb_dir_group} -MD ${in}"
+    "build_deps"
+
+let reload =
+  define
+    ~command:"${bsbuild} -init"
+    "reload"
+let copy_resources =
+  let name = "copy_resource" in
+  if Ext_sys.is_windows_or_cygwin then
+    define ~command:"cmd.exe /C copy /Y ${in} ${out} > null"
+      name
+  else
+    define
+      ~command:"cp ${in} ${out}"
+      name
+
+
+
+(* only generate mll no mli generated *)
+(* actually we would prefer generators in source ?
+   generator are divided into two categories:
+   1. not system dependent (ocamllex,ocamlyacc)
+   2. system dependent - has to be run on client's machine
+*)
+
+let build_ml_from_mll =
+  define
+    ~command:"${ocamllex} -o ${out} ${in}"
+    "build_ml_from_mll"
+(**************************************)
+(* below are rules not local any more *)
+(**************************************)
+
+(* [bsc_lib_includes] are fixed for libs
+   [bsc_extra_includes] are for app test etc
+   it wil be
+   {[
+     bsc_extra_includes = ${bsc_group_1_includes}
+   ]}
+   where [bsc_group_1_includes] will be pre-calcuated
+*)
+let build_cmj_js =
+  define
+    ~command:"${bsc} ${bs_package_flags} -bs-assume-has-mli -bs-no-builtin-ppx-ml -bs-no-implicit-include  \
+              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${bsc_flags} -o ${in} -c  ${in} ${postbuild}"
+
+    ~depfile:"${in}.d"
+    "build_cmj_only"
+
+let build_cmj_cmi_js =
+  define
+    ~command:"${bsc} ${bs_package_flags} -bs-assume-no-mli -bs-no-builtin-ppx-ml -bs-no-implicit-include \
+              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${bsc_flags} -o ${in} -c  ${in} ${postbuild}"
+    ~depfile:"${in}.d"
+    "build_cmj_cmi" (* the compiler should never consult [.cmi] when [.mli] does not exist *)
+let build_cmi =
+  define
+    ~command:"${bsc} ${bs_package_flags} -bs-no-builtin-ppx-mli -bs-no-implicit-include \
+              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${bsc_flags} -o ${out} -c  ${in}"
+    ~depfile:"${in}.d"
+    "build_cmi" (* the compiler should always consult [.cmi], current the vanilla ocaml compiler only consult [.cmi] when [.mli] found*)
+
+let reset () = 
+  rule_id := 0;
+  build_ast_and_deps.used <- false ;
+  build_ast_and_deps_from_reason_impl.used <- false ;  
+  build_ast_and_deps_from_reason_intf.used <- false ;
+  build_bin_deps.used <- false;
+  reload.used <- false; 
+  copy_resources.used <- false ;
+  build_ml_from_mll.used <- false ; 
+  build_cmj_js.used <- false;
+  build_cmj_cmi_js.used <- false ;
+  build_cmi.used <- false 
+
+
+
+end
 module Bsb_ninja : sig 
 #1 "bsb_ninja.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -8832,29 +9074,6 @@ module Bsb_ninja : sig
 
 
 
-module Rules : sig
-  type t  
-  val get_name : t  -> out_channel -> string
-    
-  val define :
-    command:string ->
-    ?depfile:string ->
-    ?restat:unit -> 
-    ?description:string ->
-    string -> t 
-
-  val build_ast_and_deps : t
-  val build_ast_and_deps_from_reason_impl : t 
-  val build_ast_and_deps_from_reason_intf : t 
-  val build_bin_deps : t 
-  val reload : t 
-  val copy_resources : t
-  val build_ml_from_mll : t 
-  val build_cmj_js : t
-  val build_cmj_cmi_js : t 
-  val build_cmi : t
-end
-
 
 (** output should always be marked explicitly,
    otherwise the build system can not figure out clearly
@@ -8870,7 +9089,7 @@ val output_build :
   ?restat:unit ->
   output:string ->
   input:string ->
-  rule:Rules.t -> out_channel -> unit
+  rule:Bsb_rule.t -> out_channel -> unit
 
 
 val phony  :
@@ -8897,6 +9116,7 @@ val handle_file_groups : out_channel ->
 
 (** TODO: need clean up when running across projects process *)
 (* val files_to_install : String_hash_set.t  *)
+
 end = struct
 #1 "bsb_ninja.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -8924,150 +9144,7 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-module Rules = struct
-
-  let rule_id = ref 0
-  let rule_names = ref String_set.empty
-  let ask_name name =
-    let current_id = !rule_id in
-    let () = incr rule_id in
-    match String_set.find name !rule_names with
-    | exception Not_found ->
-      rule_names := String_set.add name !rule_names ;
-      name
-    | _ ->
-      begin (* could be improved later
-               1. instead of having a global id, having a unique id per rule name
-               2. the rule id is increased only when actually used
-            *)
-        let new_name =  (name ^ Printf.sprintf "_%d" current_id) in
-        rule_names := String_set.add new_name  !rule_names ;
-        new_name
-      end
-  type t = { mutable used : bool; rule_name : string  ; name : out_channel -> string }
-  let get_name (x : t) oc = x.name oc
-  let print_rule oc ~description ?restat ?depfile ~command   name  =
-    output_string oc "rule "; output_string oc name ; output_string oc "\n";
-    output_string oc "  command = "; output_string oc command; output_string oc "\n";
-    begin match depfile with
-      | None -> ()
-      | Some f ->
-        output_string oc "  depfile = "; output_string oc f; output_string oc  "\n"
-    end;
-    begin match restat with
-      | None -> ()
-      | Some () ->
-        output_string oc "  restat = 1"; output_string oc  "\n"
-    end;
-
-    output_string oc "  description = " ; output_string oc description; output_string oc "\n"
-
-
-  let define
-      ~command
-      ?depfile
-      ?restat
-      ?(description = "\027[34mBuilding\027[39m \027[2m${out}\027[22m") (* blue, dim *)
-      name
-    =
-    let rec self = {
-      used  = false;
-      rule_name = ask_name name ;
-      name = fun oc ->
-        if not self.used then
-          begin
-            print_rule oc ~description ?depfile ?restat ~command name;
-            self.used <- true
-          end ;
-        self.rule_name
-    } in self
-
-
-  let build_ast_and_deps =
-    define
-      ~command:"${bsc}  ${pp_flags} ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast ${in}"
-      "build_ast_and_deps"
-
-  let build_ast_and_deps_from_reason_impl =
-    define
-      ~command:"${bsc} -pp \"${refmt} ${refmt_flags}\" ${reason_react_jsx}  ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -impl ${in}"
-      "build_ast_and_deps_from_reason_impl"
-
-  let build_ast_and_deps_from_reason_intf =
-    (* we have to do this way,
-       because it need to be ppxed by bucklescript
-    *)
-    define
-      ~command:"${bsc} -pp \"${refmt} ${refmt_flags}\" ${reason_react_jsx} ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -intf ${in}"
-      "build_ast_and_deps_from_reason_intf"
-
-
-  let build_bin_deps =
-    define
-      ~command:"${bsdep} -g ${bsb_dir_group} -MD ${in}"
-      "build_deps"
-
-  let reload =
-    define
-      ~command:"${bsbuild} -init"
-      "reload"
-  let copy_resources =
-    let name = "copy_resource" in
-    if Ext_sys.is_windows_or_cygwin then
-      define ~command:"cmd.exe /C copy /Y ${in} ${out} > null"
-      name
-    else
-    define
-      ~command:"cp ${in} ${out}"
-      name
-
-
-
-  (* only generate mll no mli generated *)
-  (* actually we would prefer generators in source ?
-     generator are divided into two categories:
-     1. not system dependent (ocamllex,ocamlyacc)
-     2. system dependent - has to be run on client's machine
-  *)
-
-  let build_ml_from_mll =
-    define
-      ~command:"${ocamllex} -o ${out} ${in}"
-      "build_ml_from_mll"
-  (**************************************)
-  (* below are rules not local any more *)
-  (**************************************)
-
-  (* [bsc_lib_includes] are fixed for libs
-     [bsc_extra_includes] are for app test etc
-     it wil be
-     {[
-       bsc_extra_includes = ${bsc_group_1_includes}
-     ]}
-     where [bsc_group_1_includes] will be pre-calcuated
-  *)
-  let build_cmj_js =
-    define
-      ~command:"${bsc} ${bs_package_flags} -bs-assume-has-mli -bs-no-builtin-ppx-ml -bs-no-implicit-include  \
-                ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${bsc_flags} -o ${in} -c  ${in} ${postbuild}"
-
-      ~depfile:"${in}.d"
-      "build_cmj_only"
-
-  let build_cmj_cmi_js =
-    define
-      ~command:"${bsc} ${bs_package_flags} -bs-assume-no-mli -bs-no-builtin-ppx-ml -bs-no-implicit-include \
-                ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${bsc_flags} -o ${in} -c  ${in} ${postbuild}"
-      ~depfile:"${in}.d"
-      "build_cmj_cmi" (* the compiler should never consult [.cmi] when [.mli] does not exist *)
-  let build_cmi =
-    define
-      ~command:"${bsc} ${bs_package_flags} -bs-no-builtin-ppx-mli -bs-no-implicit-include \
-                ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${bsc_flags} -o ${out} -c  ${in}"
-      ~depfile:"${in}.d"
-      "build_cmi" (* the compiler should always consult [.cmi], current the vanilla ocaml compiler only consult [.cmi] when [.mli] found*)
-end
-
+module Rules = Bsb_rule 
 let output_build
     ?(order_only_deps=[])
     ?(implicit_deps=[])
@@ -9080,7 +9157,7 @@ let output_build
     ~input
     ~rule
     oc =
-  let rule = Rules.get_name rule  oc in
+  let rule = Rules.get_name rule  oc in (* Trigger building if not used *)
   output_string oc "build ";
   output_string oc output ;
   outputs |> List.iter (fun s -> output_string oc Ext_string.single_space ; output_string oc s  );
@@ -9685,7 +9762,7 @@ let run_command_execv_unix  cmd =
       | Unix.WEXITED eid ->
         if eid <> 0 then 
           begin 
-            Format.fprintf Format.err_formatter "@{<error>Failue:@} %s \n Location: %s@." cmd.cmd cmd.cwd;
+            Format.fprintf Format.err_formatter "@{<error>Failure:@} %s \n Location: %s@." cmd.cmd cmd.cwd;
             exit eid    
           end;
       | Unix.WSIGNALED _ | Unix.WSTOPPED _ -> 

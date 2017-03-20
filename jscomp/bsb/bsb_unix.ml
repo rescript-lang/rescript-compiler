@@ -52,7 +52,7 @@ let run_command_execv_unix  cmd =
       | Unix.WEXITED eid ->
         if eid <> 0 then 
           begin 
-            Format.fprintf Format.err_formatter "@{<error>Failue:@} %s \n Location: %s@." cmd.cmd cmd.cwd;
+            Format.fprintf Format.err_formatter "@{<error>Failure:@} %s \n Location: %s@." cmd.cmd cmd.cwd;
             exit eid    
           end;
       | Unix.WSIGNALED _ | Unix.WSTOPPED _ -> 

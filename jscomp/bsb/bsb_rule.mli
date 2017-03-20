@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,46 +17,33 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type public = 
-  | Export_all 
-  | Export_set of String_set.t 
-  | Export_none
-    
-type dir_index = int 
-
-type  file_group = 
-  { dir : string ;
-    sources : Binary_cache.file_group_rouces ; 
-    resources : string list ;
-    bs_dependencies : string list;
-    public : public;
-    dir_index : dir_index; 
-  } 
-
-type t = 
-  { files :  file_group list ; 
-    intervals :  Ext_file_pp.interval list ;
-    globbed_dirs : string list ; 
-  }
-
-val lib_dir_index : dir_index 
-
-val get_current_number_of_dev_groups : unit -> int 
 
 
 
-(** entry is to the 
-    [sources] in the schema
-*)
-val parsing_sources : 
-  bool -> 
-  dir_index -> 
-  string -> 
-  Ext_json_types.t  ->
-  t 
-  
+type t  
+val get_name : t  -> out_channel -> string
+
+val define :
+  command:string ->
+  ?depfile:string ->
+  ?restat:unit -> 
+  ?description:string ->
+  string -> t 
+
+val build_ast_and_deps : t
+val build_ast_and_deps_from_reason_impl : t 
+val build_ast_and_deps_from_reason_intf : t 
+val build_bin_deps : t 
+val reload : t 
+val copy_resources : t
+val build_ml_from_mll : t 
+val build_cmj_js : t
+val build_cmj_cmi_js : t 
+val build_cmi : t
+
+val reset : unit -> unit

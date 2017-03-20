@@ -143,24 +143,24 @@ let (++) (u : t)  (v : t)  =
 
 (** [dir_index] can be inherited  *)
 let rec 
-  parsing_simple_dir dir_index  cwd dir =
-  if !Bsb_config.no_dev && dir_index <> lib_dir_index then empty 
-  else parsing_source_dir_map dir_index 
+  parsing_simple_dir no_dev dir_index  cwd dir =
+  if no_dev && dir_index <> lib_dir_index then empty 
+  else parsing_source_dir_map no_dev dir_index 
       (cwd // Ext_filename.simple_convert_node_path_to_os_path dir) 
       String_map.empty
 
-and parsing_source (dir_index : int) cwd (x : Ext_json_types.t )
+and parsing_source no_dev (dir_index : int) cwd (x : Ext_json_types.t )
   : t  =
   match x with 
   | Str  { str = dir }  -> 
-    parsing_simple_dir dir_index cwd dir   
+    parsing_simple_dir no_dev dir_index cwd dir   
   | Obj {map} ->
     let current_dir_index = 
       match String_map.find_opt Bsb_build_schemas.type_ map with 
       | Some (Str {str="dev"}) -> get_dev_index ()
       | Some _ -> Bsb_exception.failwith_config x {|type field expect "dev" literal |}
       | None -> dir_index in 
-    if !Bsb_config.no_dev && current_dir_index <> lib_dir_index then empty 
+    if no_dev && current_dir_index <> lib_dir_index then empty 
     else 
       let dir = 
         match String_map.find_opt Bsb_build_schemas.dir map with 
@@ -173,10 +173,10 @@ and parsing_source (dir_index : int) cwd (x : Ext_json_types.t )
           {|required field %s  missing, please checkout the schema http://bloomberg.github.io/bucklescript/docson/#build-schema.json |} "dir"
       in
 
-      parsing_source_dir_map current_dir_index dir map
+      parsing_source_dir_map no_dev current_dir_index dir map
   | _ -> empty 
 
-and parsing_source_dir_map current_dir_index dir (x : Ext_json_types.t String_map.t) = 
+and parsing_source_dir_map no_dev current_dir_index dir (x : Ext_json_types.t String_map.t) = 
   let cur_sources = ref String_map.empty in
   let resources = ref [] in 
   let bs_dependencies = ref [] in
@@ -266,7 +266,7 @@ and parsing_source_dir_map current_dir_index dir (x : Ext_json_types.t String_ma
     let children, children_update_queue, children_globbed_dirs = 
       match String_map.find_opt Bsb_build_schemas.subdirs x with 
       | Some s -> 
-        let res  = parsing_sources current_dir_index dir s in 
+        let res  = parsing_sources no_dev current_dir_index dir s in 
         res.files ,
         res.intervals,
         res.globbed_dirs
@@ -282,16 +282,16 @@ and parsing_source_dir_map current_dir_index dir (x : Ext_json_types.t String_ma
    parsing_source dir_index cwd (String_map.singleton Bsb_build_schemas.dir dir)
 *)
 
-and  parsing_arr_sources dir_index cwd (file_groups : Ext_json_types.t array)  = 
+and  parsing_arr_sources no_dev dir_index cwd (file_groups : Ext_json_types.t array)  = 
   Array.fold_left (fun  origin x ->
-      parsing_source dir_index cwd x ++ origin 
+      parsing_source no_dev dir_index cwd x ++ origin 
     ) empty  file_groups 
 
-and  parsing_sources dir_index cwd (sources : Ext_json_types.t )  = 
+and  parsing_sources no_dev dir_index cwd (sources : Ext_json_types.t )  = 
   match sources with   
   | Arr file_groups -> 
-    parsing_arr_sources dir_index cwd file_groups.content
-  | _ -> parsing_source dir_index cwd sources
+    parsing_arr_sources no_dev dir_index cwd file_groups.content
+  | _ -> parsing_source no_dev dir_index cwd sources
 
 
 
