@@ -59,6 +59,27 @@ let separator = "--"
 let internal_package_specs = "-internal-package-specs"
 let internal_install = "-internal-install"
 
+let install_targets cwd (config : Bsb_config_types.t option) =
+  match config with 
+  | None -> ()
+  | Some {files_to_install} -> 
+    let destdir = cwd // Bsb_config.lib_ocaml in
+    if not @@ Sys.file_exists destdir then begin Unix.mkdir destdir 0o777  end;
+    begin
+
+      String_hash_set.iter (fun x ->
+          Format.fprintf Format.std_formatter "@{<info>Trying to Installing %s@} @." x ;
+          Bsb_file.install_if_exists ~destdir (cwd // x ^  Literals.suffix_ml) ;
+          Bsb_file.install_if_exists ~destdir (cwd // x ^  Literals.suffix_re) ;
+          Bsb_file.install_if_exists ~destdir (cwd // x ^ Literals.suffix_mli) ;
+          Bsb_file.install_if_exists ~destdir (cwd // x ^  Literals.suffix_rei) ;
+          Bsb_file.install_if_exists ~destdir (cwd // Bsb_config.lib_bs//x ^ Literals.suffix_cmi) ;
+          Bsb_file.install_if_exists ~destdir (cwd // Bsb_config.lib_bs//x ^ Literals.suffix_cmj) ;
+          Bsb_file.install_if_exists ~destdir (cwd // Bsb_config.lib_bs//x ^ Literals.suffix_cmt) ;
+          Bsb_file.install_if_exists ~destdir (cwd // Bsb_config.lib_bs//x ^ Literals.suffix_cmti) ;
+        ) files_to_install
+    end
+
 let build_bs_deps  deps  =
   let package_specs = 
     (String_set.fold
@@ -105,6 +126,7 @@ let build_bs_deps_dry_run deps =
               args  = [|vendor_ninja ; "-C";Bsb_config.lib_bs|]
              };
 
+           install_targets cwd (Some config)
          end
 
     )
@@ -259,38 +281,20 @@ let print_string_args (args : string array) =
   done ;
   print_newline ()
 
-let install_targets (config : Bsb_config_types.t option) =
-  match config with 
-  | None -> ()
-  | Some {files_to_install} -> 
-    let destdir = Bsb_config.lib_ocaml in
-    if not @@ Sys.file_exists destdir then begin Unix.mkdir destdir 0o777  end;
-    begin
-      Format.fprintf Format.std_formatter "@{<info>Installing ..@} @.";
-      String_hash_set.iter (fun x ->
-          Bsb_file.install_if_exists ~destdir (x ^  Literals.suffix_ml) ;
-          Bsb_file.install_if_exists ~destdir (x ^  Literals.suffix_re) ;
-          Bsb_file.install_if_exists ~destdir (x ^ Literals.suffix_mli) ;
-          Bsb_file.install_if_exists ~destdir (x ^  Literals.suffix_rei) ;
-          Bsb_file.install_if_exists ~destdir (Bsb_config.lib_bs//x ^ Literals.suffix_cmi) ;
-          Bsb_file.install_if_exists ~destdir (Bsb_config.lib_bs//x ^ Literals.suffix_cmj) ;
-          Bsb_file.install_if_exists ~destdir (Bsb_config.lib_bs//x ^ Literals.suffix_cmt) ;
-          Bsb_file.install_if_exists ~destdir (Bsb_config.lib_bs//x ^ Literals.suffix_cmti) ;
-        ) files_to_install
-    end
+
 (* Note that [keepdepfile] only makes sense when combined with [deps] for optimizatoin
    It has to be the last command of [bsb]
 *)
-let exec_command_install_then_exit config install command =
+let exec_command_install_then_exit cwd config install command =
   print_endline command ;
   let exit_code = (Sys.command command ) in
   if exit_code <> 0 then begin
     exit exit_code
   end else begin
-    if install then begin  install_targets config end;
+    if install then begin  install_targets cwd config end;
     exit 0;
   end
-let ninja_command_exit (type t) vendor_ninja ninja_args  config : t =
+let ninja_command_exit (type t) cwd vendor_ninja ninja_args  config : t =
   let ninja_args_len = Array.length ninja_args in
   if ninja_args_len = 0 then
     begin
@@ -300,7 +304,7 @@ let ninja_command_exit (type t) vendor_ninja ninja_args  config : t =
         print_string_args args ;
         Unix.execvp vendor_ninja args
       | install, _ ->
-        exec_command_install_then_exit config install @@ Ext_string.inter3  (Filename.quote vendor_ninja) "-C" Bsb_config.lib_bs
+        exec_command_install_then_exit cwd config install @@ Ext_string.inter3  (Filename.quote vendor_ninja) "-C" Bsb_config.lib_bs
     end
   else
     let fixed_args_length = 3 in
@@ -321,7 +325,7 @@ let ninja_command_exit (type t) vendor_ninja ninja_args  config : t =
                          | 1 -> "-C"
                          | 2 -> Bsb_config.lib_bs
                          | _ -> Array.unsafe_get ninja_args (i - fixed_args_length) )) in
-        exec_command_install_then_exit config install @@ Ext_string.concat_array Ext_string.single_space args
+        exec_command_install_then_exit cwd config install @@ Ext_string.concat_array Ext_string.single_space args
     end
 
 
@@ -368,7 +372,7 @@ let () =
   if Array.length Sys.argv <= 1 then
     begin
       let config_opt =  regenerate_ninja cwd bsc_dir false in 
-      ninja_command_exit vendor_ninja [||] config_opt
+      ninja_command_exit cwd vendor_ninja [||] config_opt
     end
   else
     begin
@@ -403,7 +407,7 @@ let () =
                    [bsb -regen ]
                 *)
               end else if make_world then begin
-                ninja_command_exit vendor_ninja [||] config_opt
+                ninja_command_exit cwd vendor_ninja [||] config_opt
               end
           end;
 
@@ -417,7 +421,7 @@ let () =
           if make_world.set then
             make_world_deps config_opt ;
           if !watch_mode then watch_exit ()
-          else ninja_command_exit vendor_ninja ninja_args config_opt
+          else ninja_command_exit cwd vendor_ninja ninja_args config_opt
         end
     end
 (*with x ->
