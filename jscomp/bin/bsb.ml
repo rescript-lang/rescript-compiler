@@ -4257,16 +4257,23 @@ let  resolve_bs_package
 
 
 let cache = String_hashtbl.create 0 
-let resolve_bs_package ~cwd package = 
 
-  let result = resolve_bs_package ~cwd package in 
+(** TODO: collect all warnings and print later *)
+let resolve_bs_package ~cwd package = 
   match String_hashtbl.find_opt cache package with 
   | None -> 
+    let result = resolve_bs_package ~cwd package in 
+    Format.fprintf Format.std_formatter "@{<info>Package@} %s -> %s@." package result ; 
     String_hashtbl.add cache package result ;
     result 
   | Some x 
     -> 
-    Format.fprintf Format.err_formatter  "@{<warn>Duplicated package:@} %s %s (chosen) vs %s" package x result;
+    let result = resolve_bs_package ~cwd package in 
+    if result <> x then 
+      begin 
+        Format.fprintf Format.err_formatter  
+          "@{<warning>Duplicated package:@} %s %s (chosen) vs %s in %s @." package x result cwd;
+      end;
     x
 
 (** The package does not need to be a bspackage 
@@ -6170,18 +6177,12 @@ type package_context = {
      3. determinstic, since -make-world will also comes with -clean-world
 
 *)
+
+let pp_packages_rev ppf lst = 
+  Ext_list.rev_iter (fun  s ->  Format.fprintf ppf "%s " s) lst
+
 let rec walk_all_deps_aux visited paths top dir cb =
   let bsconfig_json =  (dir // Literals.bsconfig_json) in
-  let (+>) cur_package_name paths = 
-    if List.mem cur_package_name paths then 
-      begin 
-      Format.fprintf Format.err_formatter "@{<error>Cylic dependency@} %a @." 
-        (Format.pp_print_list  ~pp_sep:(fun ppf () -> Format.fprintf ppf " -> ") Format.pp_print_string)
-        (cur_package_name :: paths);
-      exit 2 ;
-      end
-    else cur_package_name :: paths 
-  in 
   match Ext_json_parse.parse_json_from_file bsconfig_json with
   | Obj {map; loc} ->
     let cur_package_name = 
@@ -6190,9 +6191,19 @@ let rec walk_all_deps_aux visited paths top dir cb =
       | Some _ 
       | None -> Bsb_exception.failf ~loc "package name missing in %s/bsconfig.json" dir 
     in 
+    let package_stacks = cur_package_name :: paths in 
+    let () = 
+      Format.fprintf Format.std_formatter "@{<info>Package stack:@} %a @." pp_packages_rev
+        package_stacks 
+    in 
+    if List.mem cur_package_name paths then
+      begin
+        Format.fprintf Format.err_formatter "@{<error>Cyclc dependencies in package stack@}@.";
+        exit 2 
+      end;
     if String_hashtbl.mem visited cur_package_name then 
       Format.fprintf Format.std_formatter
-        "@{<info>Already visited@} %s@." cur_package_name
+        "@{<info>Visited before@} %s@." cur_package_name
     else 
       begin 
         map
@@ -6205,7 +6216,7 @@ let rec walk_all_deps_aux visited paths top dir cb =
                    | Str {str = new_package} ->
                      let package_dir = 
                        Bsb_pkg.resolve_bs_package ~cwd:dir new_package in 
-                     walk_all_deps_aux visited (cur_package_name +> paths)  false package_dir cb  ;
+                     walk_all_deps_aux visited package_stacks  false package_dir cb  ;
                    | _ -> 
                      Bsb_exception.(failf ~loc 
                                       "%s expect an array"
@@ -9963,9 +9974,9 @@ let install_targets cwd (config : Bsb_config_types.t option) =
     let destdir = cwd // Bsb_config.lib_ocaml in
     if not @@ Sys.file_exists destdir then begin Unix.mkdir destdir 0o777  end;
     begin
-
+      Format.fprintf Format.std_formatter "@{<info>Installing@} @.";
       String_hash_set.iter (fun x ->
-          Format.fprintf Format.std_formatter "@{<info>Trying to Installing %s@} @." x ;
+
           Bsb_file.install_if_exists ~destdir (cwd // x ^  Literals.suffix_ml) ;
           Bsb_file.install_if_exists ~destdir (cwd // x ^  Literals.suffix_re) ;
           Bsb_file.install_if_exists ~destdir (cwd // x ^ Literals.suffix_mli) ;
@@ -9978,35 +9989,6 @@ let install_targets cwd (config : Bsb_config_types.t option) =
     end
 
 
-let build_bs_deps deps =
-  let bsc_dir = Bsb_build_util.get_bsc_dir cwd in
-  let vendor_ninja = bsc_dir // "ninja.exe" in 
-  Bsb_build_util.walk_all_deps  cwd
-    (fun {top; cwd} ->
-       if not top then
-         begin
-           Bsb_build_util.mkp (cwd // Bsb_config.lib_bs);
-           let config = 
-             Bsb_config_parse.interpret_json 
-               ~override_package_specs:(Some deps)
-               ~generate_watch_metadata:false
-               ~bsc_dir
-               ~no_dev:true
-               cwd in 
-           Bsb_config_parse.merlin_file_gen ~cwd
-             (bsc_dir // bsppx_exe, 
-              bsc_dir // Literals.reactjs_jsx_ppx_exe) config;
-           Bsb_gen.output_ninja ~cwd ~bsc_dir config ;
-           Bsb_unix.run_command_execv
-             {cmd = vendor_ninja;
-              cwd = cwd // Bsb_config.lib_bs;
-              args  = [|"ninja.exe" |]
-             };
-
-           install_targets cwd (Some config)
-         end
-
-    )
 
 
 (* let annoymous filename = *)
@@ -10061,43 +10043,19 @@ let clean_bs_garbage cwd =
       Bsb_unix.remove_dir_recursive x  in
   try
     List.iter aux Bsb_config.all_lib_artifacts
-
   with
     e ->
     Format.fprintf Format.err_formatter "@{<warning>Failed@} to clean due to %s" (Printexc.to_string e)
 
 
 let clean_bs_deps () =
-  Bsb_build_util.walk_all_deps  cwd  (fun {top; cwd} ->
+  Bsb_build_util.walk_all_deps  cwd  (fun { cwd} ->
+      (* whether top or not always do the cleaning *)
       clean_bs_garbage cwd
     )
 
 let clean_self () = clean_bs_garbage cwd
 
-
-let bsb_main_flags : (string * Arg.spec * string) list=
-  [
-    "-color", Arg.Set color_enabled,
-    " forced color output"
-    ;
-    "-no-color", Arg.Clear color_enabled,
-    " forced no color output";
-    "-w", Arg.Set watch_mode,
-    " Watch mode" ;
-    no_dev, Arg.Set Bsb_config.no_dev,
-    " (internal)Build dev dependencies in make-world and dev group(in combination with -regen)";
-    regen, Arg.Set force_regenerate,
-    " (internal)Always regenerate build.ninja no matter bsconfig.json is changed or not (for debugging purpose)"
-    ;
-    "-clean-world", Arg.Unit clean_bs_deps,
-    " Clean all bs dependencies";
-    "-clean", Arg.Unit clean_self,
-    " Clean only current project";
-    "-make-world", Arg.Unit set_make_world,
-    " Build all dependencies and itself ";
-    (* "-make-world-dry-run", Arg.Unit set_make_world_dry_run, *)
-    (* " (internal) Debugging utitlies" *)
-  ]
 
 (** Regenerate ninja file and return None if we dont need regenerate
     otherwise return some info
@@ -10142,6 +10100,31 @@ let regenerate_ninja cwd bsc_dir forced =
         Some config 
       end 
   end
+
+
+let bsb_main_flags : (string * Arg.spec * string) list=
+  [
+    "-color", Arg.Set color_enabled,
+    " forced color output"
+    ;
+    "-no-color", Arg.Clear color_enabled,
+    " forced no color output";
+    "-w", Arg.Set watch_mode,
+    " Watch mode" ;
+    no_dev, Arg.Set Bsb_config.no_dev,
+    " (internal)Build dev dependencies in make-world and dev group(in combination with -regen)";
+    regen, Arg.Set force_regenerate,
+    " (internal)Always regenerate build.ninja no matter bsconfig.json is changed or not (for debugging purpose)"
+    ;
+    "-clean-world", Arg.Unit clean_bs_deps,
+    " Clean all bs dependencies";
+    "-clean", Arg.Unit clean_self,
+    " Clean only current project";
+    "-make-world", Arg.Unit set_make_world,
+    " Build all dependencies and itself ";
+    (* "-make-world-dry-run", Arg.Unit set_make_world_dry_run, *)
+    (* " (internal) Debugging utitlies" *)
+  ]
 
 
 let print_string_args (args : string array) =
@@ -10218,6 +10201,38 @@ let usage = "Usage : bsb.exe <bsb-options> -- <ninja_options>\n\
 let handle_anonymous_arg arg =
   raise (Arg.Bad ("Unknown arg \"" ^ arg ^ "\""))
 
+
+let build_bs_deps deps =
+  let bsc_dir = Bsb_build_util.get_bsc_dir cwd in
+  let vendor_ninja = bsc_dir // "ninja.exe" in 
+  Bsb_build_util.walk_all_deps  cwd
+    (fun {top; cwd} ->
+       if not top then
+         begin
+           Bsb_build_util.mkp (cwd // Bsb_config.lib_bs);
+           let config = 
+             Bsb_config_parse.interpret_json 
+               ~override_package_specs:(Some deps)
+               ~generate_watch_metadata:false
+               ~bsc_dir
+               ~no_dev:true
+               cwd in 
+           Bsb_config_parse.merlin_file_gen ~cwd
+             (bsc_dir // bsppx_exe, 
+              bsc_dir // Literals.reactjs_jsx_ppx_exe) config;
+           Bsb_gen.output_ninja ~cwd ~bsc_dir config ;
+           Bsb_unix.run_command_execv
+             {cmd = vendor_ninja;
+              cwd = cwd // Bsb_config.lib_bs;
+              args  = [|"ninja.exe" |]
+             };
+
+           install_targets cwd (Some config)
+         end
+
+    )
+
+
 let make_world_deps (config : Bsb_config_types.t option) =
   print_endline "\nMaking the dependency world!";
   let deps =
@@ -10229,11 +10244,8 @@ let make_world_deps (config : Bsb_config_types.t option) =
       *)
       Bsb_config_parse.package_specs_from_bsconfig ()
     | Some {package_specs} -> package_specs in
-  (* if make_world.dry_run then  *)
-  (*   build_bs_deps_dry_run deps  *)
-  (* else  *)
-    build_bs_deps deps
-    
+  build_bs_deps deps
+
 
 let () =
   let bsc_dir = Bsb_build_util.get_bsc_dir cwd in

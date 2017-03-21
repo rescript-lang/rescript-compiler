@@ -46,15 +46,22 @@ let  resolve_bs_package
 
 let cache = String_hashtbl.create 0 
 
+(** TODO: collect all warnings and print later *)
 let resolve_bs_package ~cwd package = 
-  let result = resolve_bs_package ~cwd package in 
   match String_hashtbl.find_opt cache package with 
   | None -> 
+    let result = resolve_bs_package ~cwd package in 
+    Format.fprintf Format.std_formatter "@{<info>Package@} %s -> %s@." package result ; 
     String_hashtbl.add cache package result ;
     result 
   | Some x 
     -> 
-    Format.fprintf Format.err_formatter  "@{<warn>Duplicated package:@} %s %s (chosen) vs %s" package x result;
+    let result = resolve_bs_package ~cwd package in 
+    if result <> x then 
+      begin 
+        Format.fprintf Format.err_formatter  
+          "@{<warning>Duplicated package:@} %s %s (chosen) vs %s in %s @." package x result cwd;
+      end;
     x
 
 (** The package does not need to be a bspackage 

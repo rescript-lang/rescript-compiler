@@ -167,18 +167,12 @@ type package_context = {
      3. determinstic, since -make-world will also comes with -clean-world
 
 *)
+
+let pp_packages_rev ppf lst = 
+  Ext_list.rev_iter (fun  s ->  Format.fprintf ppf "%s " s) lst
+
 let rec walk_all_deps_aux visited paths top dir cb =
   let bsconfig_json =  (dir // Literals.bsconfig_json) in
-  let (+>) cur_package_name paths = 
-    if List.mem cur_package_name paths then 
-      begin 
-      Format.fprintf Format.err_formatter "@{<error>Cylic dependency@} %a @." 
-        (Format.pp_print_list  ~pp_sep:(fun ppf () -> Format.fprintf ppf " -> ") Format.pp_print_string)
-        (cur_package_name :: paths);
-      exit 2 ;
-      end
-    else cur_package_name :: paths 
-  in 
   match Ext_json_parse.parse_json_from_file bsconfig_json with
   | Obj {map; loc} ->
     let cur_package_name = 
@@ -187,9 +181,19 @@ let rec walk_all_deps_aux visited paths top dir cb =
       | Some _ 
       | None -> Bsb_exception.failf ~loc "package name missing in %s/bsconfig.json" dir 
     in 
+    let package_stacks = cur_package_name :: paths in 
+    let () = 
+      Format.fprintf Format.std_formatter "@{<info>Package stack:@} %a @." pp_packages_rev
+        package_stacks 
+    in 
+    if List.mem cur_package_name paths then
+      begin
+        Format.fprintf Format.err_formatter "@{<error>Cyclc dependencies in package stack@}@.";
+        exit 2 
+      end;
     if String_hashtbl.mem visited cur_package_name then 
       Format.fprintf Format.std_formatter
-        "@{<info>Already visited@} %s@." cur_package_name
+        "@{<info>Visited before@} %s@." cur_package_name
     else 
       begin 
         map
@@ -202,7 +206,7 @@ let rec walk_all_deps_aux visited paths top dir cb =
                    | Str {str = new_package} ->
                      let package_dir = 
                        Bsb_pkg.resolve_bs_package ~cwd:dir new_package in 
-                     walk_all_deps_aux visited (cur_package_name +> paths)  false package_dir cb  ;
+                     walk_all_deps_aux visited package_stacks  false package_dir cb  ;
                    | _ -> 
                      Bsb_exception.(failf ~loc 
                                       "%s expect an array"

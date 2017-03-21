@@ -62,9 +62,9 @@ let install_targets cwd (config : Bsb_config_types.t option) =
     let destdir = cwd // Bsb_config.lib_ocaml in
     if not @@ Sys.file_exists destdir then begin Unix.mkdir destdir 0o777  end;
     begin
-
+      Format.fprintf Format.std_formatter "@{<info>Installing@} @.";
       String_hash_set.iter (fun x ->
-          Format.fprintf Format.std_formatter "@{<info>Trying to Installing %s@} @." x ;
+
           Bsb_file.install_if_exists ~destdir (cwd // x ^  Literals.suffix_ml) ;
           Bsb_file.install_if_exists ~destdir (cwd // x ^  Literals.suffix_re) ;
           Bsb_file.install_if_exists ~destdir (cwd // x ^ Literals.suffix_mli) ;
@@ -77,35 +77,6 @@ let install_targets cwd (config : Bsb_config_types.t option) =
     end
 
 
-let build_bs_deps deps =
-  let bsc_dir = Bsb_build_util.get_bsc_dir cwd in
-  let vendor_ninja = bsc_dir // "ninja.exe" in 
-  Bsb_build_util.walk_all_deps  cwd
-    (fun {top; cwd} ->
-       if not top then
-         begin
-           Bsb_build_util.mkp (cwd // Bsb_config.lib_bs);
-           let config = 
-             Bsb_config_parse.interpret_json 
-               ~override_package_specs:(Some deps)
-               ~generate_watch_metadata:false
-               ~bsc_dir
-               ~no_dev:true
-               cwd in 
-           Bsb_config_parse.merlin_file_gen ~cwd
-             (bsc_dir // bsppx_exe, 
-              bsc_dir // Literals.reactjs_jsx_ppx_exe) config;
-           Bsb_gen.output_ninja ~cwd ~bsc_dir config ;
-           Bsb_unix.run_command_execv
-             {cmd = vendor_ninja;
-              cwd = cwd // Bsb_config.lib_bs;
-              args  = [|"ninja.exe" |]
-             };
-
-           install_targets cwd (Some config)
-         end
-
-    )
 
 
 (* let annoymous filename = *)
@@ -160,43 +131,19 @@ let clean_bs_garbage cwd =
       Bsb_unix.remove_dir_recursive x  in
   try
     List.iter aux Bsb_config.all_lib_artifacts
-
   with
     e ->
     Format.fprintf Format.err_formatter "@{<warning>Failed@} to clean due to %s" (Printexc.to_string e)
 
 
 let clean_bs_deps () =
-  Bsb_build_util.walk_all_deps  cwd  (fun {top; cwd} ->
+  Bsb_build_util.walk_all_deps  cwd  (fun { cwd} ->
+      (* whether top or not always do the cleaning *)
       clean_bs_garbage cwd
     )
 
 let clean_self () = clean_bs_garbage cwd
 
-
-let bsb_main_flags : (string * Arg.spec * string) list=
-  [
-    "-color", Arg.Set color_enabled,
-    " forced color output"
-    ;
-    "-no-color", Arg.Clear color_enabled,
-    " forced no color output";
-    "-w", Arg.Set watch_mode,
-    " Watch mode" ;
-    no_dev, Arg.Set Bsb_config.no_dev,
-    " (internal)Build dev dependencies in make-world and dev group(in combination with -regen)";
-    regen, Arg.Set force_regenerate,
-    " (internal)Always regenerate build.ninja no matter bsconfig.json is changed or not (for debugging purpose)"
-    ;
-    "-clean-world", Arg.Unit clean_bs_deps,
-    " Clean all bs dependencies";
-    "-clean", Arg.Unit clean_self,
-    " Clean only current project";
-    "-make-world", Arg.Unit set_make_world,
-    " Build all dependencies and itself ";
-    (* "-make-world-dry-run", Arg.Unit set_make_world_dry_run, *)
-    (* " (internal) Debugging utitlies" *)
-  ]
 
 (** Regenerate ninja file and return None if we dont need regenerate
     otherwise return some info
@@ -241,6 +188,31 @@ let regenerate_ninja cwd bsc_dir forced =
         Some config 
       end 
   end
+
+
+let bsb_main_flags : (string * Arg.spec * string) list=
+  [
+    "-color", Arg.Set color_enabled,
+    " forced color output"
+    ;
+    "-no-color", Arg.Clear color_enabled,
+    " forced no color output";
+    "-w", Arg.Set watch_mode,
+    " Watch mode" ;
+    no_dev, Arg.Set Bsb_config.no_dev,
+    " (internal)Build dev dependencies in make-world and dev group(in combination with -regen)";
+    regen, Arg.Set force_regenerate,
+    " (internal)Always regenerate build.ninja no matter bsconfig.json is changed or not (for debugging purpose)"
+    ;
+    "-clean-world", Arg.Unit clean_bs_deps,
+    " Clean all bs dependencies";
+    "-clean", Arg.Unit clean_self,
+    " Clean only current project";
+    "-make-world", Arg.Unit set_make_world,
+    " Build all dependencies and itself ";
+    (* "-make-world-dry-run", Arg.Unit set_make_world_dry_run, *)
+    (* " (internal) Debugging utitlies" *)
+  ]
 
 
 let print_string_args (args : string array) =
@@ -317,6 +289,38 @@ let usage = "Usage : bsb.exe <bsb-options> -- <ninja_options>\n\
 let handle_anonymous_arg arg =
   raise (Arg.Bad ("Unknown arg \"" ^ arg ^ "\""))
 
+
+let build_bs_deps deps =
+  let bsc_dir = Bsb_build_util.get_bsc_dir cwd in
+  let vendor_ninja = bsc_dir // "ninja.exe" in 
+  Bsb_build_util.walk_all_deps  cwd
+    (fun {top; cwd} ->
+       if not top then
+         begin
+           Bsb_build_util.mkp (cwd // Bsb_config.lib_bs);
+           let config = 
+             Bsb_config_parse.interpret_json 
+               ~override_package_specs:(Some deps)
+               ~generate_watch_metadata:false
+               ~bsc_dir
+               ~no_dev:true
+               cwd in 
+           Bsb_config_parse.merlin_file_gen ~cwd
+             (bsc_dir // bsppx_exe, 
+              bsc_dir // Literals.reactjs_jsx_ppx_exe) config;
+           Bsb_gen.output_ninja ~cwd ~bsc_dir config ;
+           Bsb_unix.run_command_execv
+             {cmd = vendor_ninja;
+              cwd = cwd // Bsb_config.lib_bs;
+              args  = [|"ninja.exe" |]
+             };
+
+           install_targets cwd (Some config)
+         end
+
+    )
+
+
 let make_world_deps (config : Bsb_config_types.t option) =
   print_endline "\nMaking the dependency world!";
   let deps =
@@ -328,11 +332,8 @@ let make_world_deps (config : Bsb_config_types.t option) =
       *)
       Bsb_config_parse.package_specs_from_bsconfig ()
     | Some {package_specs} -> package_specs in
-  (* if make_world.dry_run then  *)
-  (*   build_bs_deps_dry_run deps  *)
-  (* else  *)
-    build_bs_deps deps
-    
+  build_bs_deps deps
+
 
 let () =
   let bsc_dir = Bsb_build_util.get_bsc_dir cwd in
