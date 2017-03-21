@@ -56,25 +56,28 @@ let regen = "-regen"
 let separator = "--"
 
 
+let install ~destdir file = 
+  if Bsb_file.install_if_exists ~destdir file  then 
+    Format.fprintf Format.std_formatter "%s => %s @." file destdir 
 let install_targets cwd (config : Bsb_config_types.t option) =
   match config with 
   | None -> ()
   | Some {files_to_install} -> 
-    let destdir = cwd // Bsb_config.lib_ocaml in
+    let destdir = cwd // Bsb_config.lib_ocaml in (* lib is already there after building, so just mkdir [lib/ocaml] *)
     if not @@ Sys.file_exists destdir then begin Unix.mkdir destdir 0o777  end;
     begin
-      Format.fprintf Format.std_formatter "@{<info>Installing@} @.";
+      Format.fprintf Format.std_formatter "@{<info>Installing started@} @.";
       String_hash_set.iter (fun x ->
-
-          Bsb_file.install_if_exists ~destdir (cwd // x ^  Literals.suffix_ml) ;
-          Bsb_file.install_if_exists ~destdir (cwd // x ^  Literals.suffix_re) ;
-          Bsb_file.install_if_exists ~destdir (cwd // x ^ Literals.suffix_mli) ;
-          Bsb_file.install_if_exists ~destdir (cwd // x ^  Literals.suffix_rei) ;
-          Bsb_file.install_if_exists ~destdir (cwd // Bsb_config.lib_bs//x ^ Literals.suffix_cmi) ;
-          Bsb_file.install_if_exists ~destdir (cwd // Bsb_config.lib_bs//x ^ Literals.suffix_cmj) ;
-          Bsb_file.install_if_exists ~destdir (cwd // Bsb_config.lib_bs//x ^ Literals.suffix_cmt) ;
-          Bsb_file.install_if_exists ~destdir (cwd // Bsb_config.lib_bs//x ^ Literals.suffix_cmti) ;
-        ) files_to_install
+          install ~destdir (cwd // x ^  Literals.suffix_ml) ;
+          install ~destdir (cwd // x ^  Literals.suffix_re) ;
+          install ~destdir (cwd // x ^ Literals.suffix_mli) ;
+          install ~destdir (cwd // x ^  Literals.suffix_rei) ;
+          install ~destdir (cwd // Bsb_config.lib_bs//x ^ Literals.suffix_cmi) ;
+          install ~destdir (cwd // Bsb_config.lib_bs//x ^ Literals.suffix_cmj) ;
+          install ~destdir (cwd // Bsb_config.lib_bs//x ^ Literals.suffix_cmt) ;
+          install ~destdir (cwd // Bsb_config.lib_bs//x ^ Literals.suffix_cmti) ;
+        ) files_to_install;
+      Format.fprintf Format.std_formatter "@{<info>Installing finished@} @.";
     end
 
 
@@ -301,7 +304,7 @@ let build_bs_deps deps =
          begin 
            let config_opt = regenerate_ninja ~no_dev:true 
              ~override_package_specs:(Some deps) 
-             cwd bsc_dir false in 
+             cwd bsc_dir true in (* set true to force regenrate ninja file so we have [config_opt]*)
            Bsb_unix.run_command_execv
              {cmd = vendor_ninja;
               cwd = cwd // Bsb_config.lib_bs;
@@ -310,22 +313,6 @@ let build_bs_deps deps =
            (** When ninja is not regenerated, the build is good, so no need reinstall any more*)
            install_targets cwd config_opt;
          end
-
-         (* begin *)
-           (* Bsb_build_util.mkp (cwd // Bsb_config.lib_bs); *)
-           (* let config = *)
-           (*   Bsb_config_parse.interpret_json *)
-           (*     ~override_package_specs:(Some deps) *)
-           (*     ~generate_watch_metadata:false *)
-           (*     ~bsc_dir *)
-           (*     ~no_dev:true *)
-           (*     cwd in *)
-           (* Bsb_config_parse.merlin_file_gen ~cwd *)
-           (*   (bsc_dir // bsppx_exe, *)
-           (*    bsc_dir // Literals.reactjs_jsx_ppx_exe) config; *)
-           (* Bsb_gen.output_ninja ~cwd ~bsc_dir config ; *)
-         (* end *)
-
     )
 
 
