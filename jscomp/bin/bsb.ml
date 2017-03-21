@@ -2507,7 +2507,6 @@ val all_lib_artifacts : string list
 (* we need generate path relative to [lib/bs] directory in the opposite direction *)
 val rev_lib_bs_prefix : string -> string
 
-val no_dev: bool ref 
 
 (** default not install, only when -make-world, its dependencies will be installed  *)
 
@@ -2522,7 +2521,7 @@ type package_specs = String_set.t
 
 val cmd_package_specs : package_specs option ref 
 
-val cmd_override_package_specs : string -> unit
+(* val cmd_override_package_specs : string -> unit *)
 
 end = struct
 #1 "bsb_config.ml"
@@ -2589,7 +2588,7 @@ let proj_rel path = lazy_src_root_dir // path
     of bsb in configuration time
 *)
 
-let no_dev = ref false 
+
 
 
 
@@ -2606,16 +2605,16 @@ let supported_format x =
   x = Literals.es6_global ||
   x = Literals.amdjs_global
 
-let cmd_override_package_specs str = 
-  let lst = Ext_string.split ~keep_empty:false str ',' in
-  cmd_package_specs :=
-    Some (List.fold_left (fun acc x ->
-          let v =
-            if supported_format x then String_set.add x acc
-            else
-              failwith ("Unkonwn package spec " ^ x) in
-          v
-    ) String_set.empty lst)
+(* let cmd_override_package_specs str =  *)
+(*   let lst = Ext_string.split ~keep_empty:false str ',' in *)
+(*   cmd_package_specs := *)
+(*     Some (List.fold_left (fun acc x -> *)
+(*           let v = *)
+(*             if supported_format x then String_set.add x acc *)
+(*             else *)
+(*               failwith ("Unkonwn package spec " ^ x) in *)
+(*           v *)
+(*     ) String_set.empty lst) *)
 
 let bs_package_output = "-bs-package-output"
 
@@ -8663,14 +8662,14 @@ let to_str (check_resoult : check_result) =
   | Other s ->
     s
 
-let rec check_aux xs i finish =
+let rec check_aux cwd xs i finish =
   if i = finish then Good
   else
     let k = Array.unsafe_get  xs i  in
     let current_file = k.dir_or_file in
-    let stat = Unix.stat  current_file in
+    let stat = Unix.stat  (Filename.concat cwd  current_file) in
     if stat.st_mtime <= k.stamp then
-      check_aux xs (i + 1 ) finish
+      check_aux cwd xs (i + 1 ) finish
     else Other current_file
 
 
@@ -8703,7 +8702,7 @@ let check ~cwd forced file =
     if forced then Bsb_forced (* No need walk through *)
     else
       try
-        check_aux xs  0 (Array.length xs)
+        check_aux cwd xs  0 (Array.length xs)
       with _ -> Bsb_file_not_exist
   end
 
@@ -9963,9 +9962,10 @@ let watch_exit () =
          bsb_watcher
       |]
 
-let no_dev = "-no-dev"
+
 let regen = "-regen"
 let separator = "--"
+
 
 let install_targets cwd (config : Bsb_config_types.t option) =
   match config with 
@@ -10060,8 +10060,8 @@ let clean_self () = clean_bs_garbage cwd
 (** Regenerate ninja file and return None if we dont need regenerate
     otherwise return some info
 *)
-let regenerate_ninja cwd bsc_dir forced =
-  let output_deps = Bsb_config.lib_bs // bsdeps in
+let regenerate_ninja ~no_dev ~override_package_specs cwd bsc_dir forced =
+  let output_deps = cwd // Bsb_config.lib_bs // bsdeps in
   let reason : Bsb_dep_infos.check_result =
     Bsb_dep_infos.check ~cwd  forced output_deps in
   begin match reason  with 
@@ -10079,10 +10079,10 @@ let regenerate_ninja cwd bsc_dir forced =
       Bsb_build_util.mkp (cwd // Bsb_config.lib_bs); 
       let config = 
         Bsb_config_parse.interpret_json 
-          ~override_package_specs:!Bsb_config.cmd_package_specs
+          ~override_package_specs
           ~bsc_dir
           ~generate_watch_metadata:true
-          ~no_dev:!Bsb_config.no_dev
+          ~no_dev
           cwd in 
       begin 
         Bsb_config_parse.merlin_file_gen ~cwd
@@ -10093,7 +10093,7 @@ let regenerate_ninja cwd bsc_dir forced =
         |> List.map
           (fun x ->
              { Bsb_dep_infos.dir_or_file = x ;
-               stamp = (Unix.stat x).st_mtime
+               stamp = (Unix.stat (cwd // x)).st_mtime
              }
           )
         |> (fun x -> Bsb_dep_infos.store ~cwd output_deps (Array.of_list x));
@@ -10111,8 +10111,8 @@ let bsb_main_flags : (string * Arg.spec * string) list=
     " forced no color output";
     "-w", Arg.Set watch_mode,
     " Watch mode" ;
-    no_dev, Arg.Set Bsb_config.no_dev,
-    " (internal)Build dev dependencies in make-world and dev group(in combination with -regen)";
+    (* no_dev, Arg.Set Bsb_config.no_dev, *)
+    (* " (internal)Build dev dependencies in make-world and dev group(in combination with -regen)"; *)
     regen, Arg.Set force_regenerate,
     " (internal)Always regenerate build.ninja no matter bsconfig.json is changed or not (for debugging purpose)"
     ;
@@ -10203,32 +10203,39 @@ let handle_anonymous_arg arg =
 
 
 let build_bs_deps deps =
+
   let bsc_dir = Bsb_build_util.get_bsc_dir cwd in
-  let vendor_ninja = bsc_dir // "ninja.exe" in 
+  let vendor_ninja = bsc_dir // "ninja.exe" in
   Bsb_build_util.walk_all_deps  cwd
     (fun {top; cwd} ->
        if not top then
-         begin
-           Bsb_build_util.mkp (cwd // Bsb_config.lib_bs);
-           let config = 
-             Bsb_config_parse.interpret_json 
-               ~override_package_specs:(Some deps)
-               ~generate_watch_metadata:false
-               ~bsc_dir
-               ~no_dev:true
-               cwd in 
-           Bsb_config_parse.merlin_file_gen ~cwd
-             (bsc_dir // bsppx_exe, 
-              bsc_dir // Literals.reactjs_jsx_ppx_exe) config;
-           Bsb_gen.output_ninja ~cwd ~bsc_dir config ;
+         begin 
+           let config_opt = regenerate_ninja ~no_dev:true 
+             ~override_package_specs:(Some deps) 
+             cwd bsc_dir false in 
            Bsb_unix.run_command_execv
              {cmd = vendor_ninja;
               cwd = cwd // Bsb_config.lib_bs;
               args  = [|"ninja.exe" |]
              };
-
-           install_targets cwd (Some config)
+           (** When ninja is not regenerated, the build is good, so no need reinstall any more*)
+           install_targets cwd config_opt;
          end
+
+         (* begin *)
+           (* Bsb_build_util.mkp (cwd // Bsb_config.lib_bs); *)
+           (* let config = *)
+           (*   Bsb_config_parse.interpret_json *)
+           (*     ~override_package_specs:(Some deps) *)
+           (*     ~generate_watch_metadata:false *)
+           (*     ~bsc_dir *)
+           (*     ~no_dev:true *)
+           (*     cwd in *)
+           (* Bsb_config_parse.merlin_file_gen ~cwd *)
+           (*   (bsc_dir // bsppx_exe, *)
+           (*    bsc_dir // Literals.reactjs_jsx_ppx_exe) config; *)
+           (* Bsb_gen.output_ninja ~cwd ~bsc_dir config ; *)
+         (* end *)
 
     )
 
@@ -10254,7 +10261,7 @@ let () =
   (* see discussion #929 *)
   if Array.length Sys.argv <= 1 then
     begin
-      let config_opt =  regenerate_ninja cwd bsc_dir false in 
+      let config_opt =  regenerate_ninja ~override_package_specs:None ~no_dev:false cwd bsc_dir false in 
       ninja_command_exit ~install:false cwd vendor_ninja [||] config_opt
     end
   else
@@ -10278,7 +10285,7 @@ let () =
               end 
             | make_world, force_regenerate ->
               (* don't regenerate files when we only run [bsb -clean-world] *)
-              let config_opt = regenerate_ninja cwd bsc_dir force_regenerate in
+              let config_opt = regenerate_ninja ~override_package_specs:None ~no_dev:false cwd bsc_dir force_regenerate in
               if make_world then begin
                 make_world_deps config_opt
               end;
@@ -10299,7 +10306,7 @@ let () =
         -> (* -make-world all dependencies fall into this category *)
         begin
           Arg.parse_argv bsb_args bsb_main_flags handle_anonymous_arg usage ;
-          let config_opt = regenerate_ninja cwd bsc_dir !force_regenerate in
+          let config_opt = regenerate_ninja ~override_package_specs:None ~no_dev:false cwd bsc_dir !force_regenerate in
           (* [-make-world] should never be combined with [-package-specs] *)
           if make_world.set then
             make_world_deps config_opt ;

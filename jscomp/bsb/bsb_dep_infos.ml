@@ -70,14 +70,14 @@ let to_str (check_resoult : check_result) =
   | Other s ->
     s
 
-let rec check_aux xs i finish =
+let rec check_aux cwd xs i finish =
   if i = finish then Good
   else
     let k = Array.unsafe_get  xs i  in
     let current_file = k.dir_or_file in
-    let stat = Unix.stat  current_file in
+    let stat = Unix.stat  (Filename.concat cwd  current_file) in
     if stat.st_mtime <= k.stamp then
-      check_aux xs (i + 1 ) finish
+      check_aux cwd xs (i + 1 ) finish
     else Other current_file
 
 
@@ -110,7 +110,7 @@ let check ~cwd forced file =
     if forced then Bsb_forced (* No need walk through *)
     else
       try
-        check_aux xs  0 (Array.length xs)
+        check_aux cwd xs  0 (Array.length xs)
       with _ -> Bsb_file_not_exist
   end
 

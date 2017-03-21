@@ -34,7 +34,6 @@ val all_lib_artifacts : string list
 (* we need generate path relative to [lib/bs] directory in the opposite direction *)
 val rev_lib_bs_prefix : string -> string
 
-val no_dev: bool ref 
 
 (** default not install, only when -make-world, its dependencies will be installed  *)
 
@@ -49,4 +48,4 @@ type package_specs = String_set.t
 
 val cmd_package_specs : package_specs option ref 
 
-val cmd_override_package_specs : string -> unit
+(* val cmd_override_package_specs : string -> unit *)
