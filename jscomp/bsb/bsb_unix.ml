@@ -32,17 +32,20 @@ type command =
   }  
 
 
-
-let run_command_execv_unix  cmd =
-  match Unix.fork () with 
-  | 0 -> 
+let log cmd = 
     Format.fprintf Format.std_formatter "@{<info>Entering@} %s @." cmd.cwd ;  
-    Format.print_string "* " ; 
+    Format.fprintf Format.std_formatter "@{<info>Cmd:@} " ; 
     for i = 0 to Array.length cmd.args - 1 do
       Format.print_string cmd.args.(i);
       Format.print_string Ext_string.single_space
     done;
-    Format.print_newline ();
+    Format.print_newline ()
+let fail cmd =
+  Format.fprintf Format.err_formatter "@{<error>Failure:@} %s \n Location: %s@." cmd.cmd cmd.cwd
+let run_command_execv_unix  cmd =
+  match Unix.fork () with 
+  | 0 -> 
+    log cmd;
     Unix.chdir cmd.cwd;
     Unix.execv cmd.cmd cmd.args 
   | pid -> 
@@ -52,7 +55,7 @@ let run_command_execv_unix  cmd =
       | Unix.WEXITED eid ->
         if eid <> 0 then 
           begin 
-            Format.fprintf Format.err_formatter "@{<error>Failure:@} %s \n Location: %s@." cmd.cmd cmd.cwd;
+            fail cmd;
             exit eid    
           end;
       | Unix.WSIGNALED _ | Unix.WSTOPPED _ -> 
@@ -68,18 +71,12 @@ let run_command_execv_unix  cmd =
 *)
 let run_command_execv_win (cmd : command) =
   let old_cwd = Unix.getcwd () in 
-  print_endline ( "* Entering " ^ cmd.cwd ^ " from  "  ^ old_cwd);
-  print_string "* " ; 
-  for i = 0 to Array.length cmd.args - 1 do
-    print_string cmd.args.(i);
-    print_string Ext_string.single_space
-  done;
-  print_newline ();  
+  log cmd;
   Unix.chdir cmd.cwd;
   let eid = Sys.command (String.concat Ext_string.single_space (Array.to_list cmd.args)) in 
   if eid <> 0 then 
     begin 
-      prerr_endline ("* Failure : " ^ cmd.cmd ^ "\n* Location: " ^ cmd.cwd);
+      fail cmd;
       exit eid    
     end
   else  begin 

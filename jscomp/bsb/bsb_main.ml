@@ -55,10 +55,6 @@ let no_dev = "-no-dev"
 let regen = "-regen"
 let separator = "--"
 
-
-let internal_package_specs = "-internal-package-specs"
-(* let internal_install = "-internal-install" *)
-
 let install_targets cwd (config : Bsb_config_types.t option) =
   match config with 
   | None -> ()
@@ -80,28 +76,8 @@ let install_targets cwd (config : Bsb_config_types.t option) =
         ) files_to_install
     end
 
-let build_bs_deps  deps  =
-  let package_specs = 
-    (String_set.fold
-       (fun k acc -> k ^ "," ^ acc ) deps Ext_string.empty )  in 
-  let bsc_dir = Bsb_build_util.get_bsc_dir cwd in
-  let bsb_exe = bsc_dir // "bsb.exe" in
-  Bsb_build_util.walk_all_deps  cwd
-    (fun {top; cwd} ->
-       if not top then
-         Bsb_unix.run_command_execv
-           {cmd = bsb_exe;
-            cwd = cwd;
-            args  =
-              [| bsb_exe ;
-                 (* internal_install ;  *)
-                 no_dev; 
-                 internal_package_specs; 
-                 package_specs;
-                 regen;
-                 separator |]})
 
-let build_bs_deps_dry_run deps =
+let build_bs_deps deps =
   let bsc_dir = Bsb_build_util.get_bsc_dir cwd in
   let vendor_ninja = bsc_dir // "ninja.exe" in 
   Bsb_build_util.walk_all_deps  cwd
@@ -147,8 +123,6 @@ let make_world = {
   set = false ;
   dry_run = false;
 }
-
-(* let make_world_dry_run = ref false  *)
 
 let set_make_world () = 
   make_world.set <- true
@@ -214,16 +188,14 @@ let bsb_main_flags : (string * Arg.spec * string) list=
     regen, Arg.Set force_regenerate,
     " (internal)Always regenerate build.ninja no matter bsconfig.json is changed or not (for debugging purpose)"
     ;
-    internal_package_specs, Arg.String Bsb_config.cmd_override_package_specs,
-    " (internal)Overide package specs (in combination with -regen)";
     "-clean-world", Arg.Unit clean_bs_deps,
     " Clean all bs dependencies";
     "-clean", Arg.Unit clean_self,
     " Clean only current project";
     "-make-world", Arg.Unit set_make_world,
     " Build all dependencies and itself ";
-    "-make-world-dry-run", Arg.Unit set_make_world_dry_run,
-    " (internal) Debugging utitlies"
+    (* "-make-world-dry-run", Arg.Unit set_make_world_dry_run, *)
+    (* " (internal) Debugging utitlies" *)
   ]
 
 (** Regenerate ninja file and return None if we dont need regenerate
@@ -240,8 +212,7 @@ let regenerate_ninja cwd bsc_dir forced =
     | Bsb_file_not_exist 
     | Bsb_source_directory_changed  
     | Other _ -> 
-      print_string "Regenerating build spec : ";
-      print_endline (Bsb_dep_infos.to_str reason) ; 
+      Format.fprintf Format.std_formatter  "@{<info>Regenerating@} build spec : %s @." (Bsb_dep_infos.to_str reason);
       if reason = Bsb_bsc_version_mismatch then begin 
         print_endline "Also clean current repo due to we have detected a different compiler";
         clean_self (); 
@@ -357,9 +328,9 @@ let make_world_deps (config : Bsb_config_types.t option) =
       *)
       Bsb_config_parse.package_specs_from_bsconfig ()
     | Some {package_specs} -> package_specs in
-  if make_world.dry_run then 
-    build_bs_deps_dry_run deps 
-  else 
+  (* if make_world.dry_run then  *)
+  (*   build_bs_deps_dry_run deps  *)
+  (* else  *)
     build_bs_deps deps
     
 
