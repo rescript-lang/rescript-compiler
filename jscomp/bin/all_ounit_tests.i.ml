@@ -75,7 +75,7 @@ open OUnitTypes
 
 (** Most simple heuristic, just pick the first test. *)
 let simple state =
-  (* 154 *) List.hd state.tests_planned
+  (* 155 *) List.hd state.tests_planned
 
 end
 module OUnitUtils
@@ -98,22 +98,22 @@ let is_success =
 let is_failure = 
   function
     | RFailure _ -> (* 0 *) true
-    | RSuccess _ | RError _  | RSkip _ | RTodo _ -> (* 308 *) false
+    | RSuccess _ | RError _  | RSkip _ | RTodo _ -> (* 310 *) false
 
 let is_error = 
   function 
     | RError _ -> (* 0 *) true
-    | RSuccess _ | RFailure _ | RSkip _ | RTodo _ -> (* 308 *) false
+    | RSuccess _ | RFailure _ | RSkip _ | RTodo _ -> (* 310 *) false
 
 let is_skip = 
   function
     | RSkip _ -> (* 0 *) true
-    | RSuccess _ | RFailure _ | RError _  | RTodo _ -> (* 308 *) false
+    | RSuccess _ | RFailure _ | RError _  | RTodo _ -> (* 310 *) false
 
 let is_todo = 
   function
     | RTodo _ -> (* 0 *) true
-    | RSuccess _ | RFailure _ | RError _  | RSkip _ -> (* 308 *) false
+    | RSuccess _ | RFailure _ | RError _  | RSkip _ -> (* 310 *) false
 
 let result_flavour = 
   function
@@ -145,7 +145,7 @@ let rec was_successful =
     | [] -> (* 3 *) true
     | RSuccess _::t 
     | RSkip _::t -> 
-        (* 462 *) was_successful t
+        (* 465 *) was_successful t
 
     | RFailure _::_
     | RError _::_ 
@@ -155,22 +155,22 @@ let rec was_successful =
 let string_of_node = 
   function
     | ListItem n -> 
-        (* 616 *) string_of_int n
+        (* 620 *) string_of_int n
     | Label s -> 
-        (* 924 *) s
+        (* 930 *) s
 
 (* Return the number of available tests *)
 let rec test_case_count = 
   function
-    | TestCase _ -> (* 154 *) 1 
-    | TestLabel (_, t) -> (* 177 *) test_case_count t
+    | TestCase _ -> (* 155 *) 1 
+    | TestLabel (_, t) -> (* 178 *) test_case_count t
     | TestList l -> 
         (* 23 *) List.fold_left 
-          (fun c t -> (* 176 *) c + test_case_count t) 
+          (fun c t -> (* 177 *) c + test_case_count t) 
           0 l
 
 let string_of_path path =
-  (* 308 *) String.concat ":" (List.rev_map string_of_node path)
+  (* 310 *) String.concat ":" (List.rev_map string_of_node path)
 
 let buff_format_printf f = 
   (* 0 *) let buff = Buffer.create 13 in
@@ -194,12 +194,12 @@ let mapi f l =
 
 let fold_lefti f accu l =
   (* 23 *) let rec rfold_lefti cnt accup l = 
-    (* 199 *) match l with
+    (* 200 *) match l with
       | [] -> 
           (* 23 *) accup
 
       | h::t -> 
-          (* 176 *) rfold_lefti (cnt + 1) (f accup h cnt) t
+          (* 177 *) rfold_lefti (cnt + 1) (f accup h cnt) t
   in
     rfold_lefti 0 accu l
 
@@ -217,7 +217,7 @@ open OUnitUtils
 type event_type = GlobalEvent of global_event | TestEvent of test_event
 
 let format_event verbose event_type =
-  (* 926 *) match event_type with
+  (* 932 *) match event_type with
     | GlobalEvent e ->
         (* 2 *) begin
           match e with 
@@ -276,31 +276,31 @@ let format_event verbose event_type =
         end
 
     | TestEvent e ->
-        (* 924 *) begin
+        (* 930 *) begin
           let string_of_result = 
             if verbose then
-              (* 462 *) function
-                | RSuccess _      -> (* 154 *) "ok\n"
+              (* 465 *) function
+                | RSuccess _      -> (* 155 *) "ok\n"
                 | RFailure (_, _) -> (* 0 *) "FAIL\n"
                 | RError (_, _)   -> (* 0 *) "ERROR\n"
                 | RSkip (_, _)    -> (* 0 *) "SKIP\n"
                 | RTodo (_, _)    -> (* 0 *) "TODO\n"
             else
-              (* 462 *) function
-                | RSuccess _      -> (* 154 *) "."
+              (* 465 *) function
+                | RSuccess _      -> (* 155 *) "."
                 | RFailure (_, _) -> (* 0 *) "F"
                 | RError (_, _)   -> (* 0 *) "E"
                 | RSkip (_, _)    -> (* 0 *) "S"
                 | RTodo (_, _)    -> (* 0 *) "T"
           in
             if verbose then
-              (* 462 *) match e with 
+              (* 465 *) match e with 
                 | EStart p -> 
-                    (* 154 *) Printf.sprintf "%s start\n" (string_of_path p)
+                    (* 155 *) Printf.sprintf "%s start\n" (string_of_path p)
                 | EEnd p -> 
-                    (* 154 *) Printf.sprintf "%s end\n" (string_of_path p)
+                    (* 155 *) Printf.sprintf "%s end\n" (string_of_path p)
                 | EResult result -> 
-                    (* 154 *) string_of_result result
+                    (* 155 *) string_of_result result
                 | ELog (lvl, str) ->
                     (* 0 *) let prefix = 
                       match lvl with 
@@ -312,21 +312,21 @@ let format_event verbose event_type =
                 | ELogRaw str ->
                     (* 0 *) str
             else 
-              (* 462 *) match e with 
-                | EStart _ | EEnd _ | ELog _ | ELogRaw _ -> (* 308 *) ""
-                | EResult result -> (* 154 *) string_of_result result
+              (* 465 *) match e with 
+                | EStart _ | EEnd _ | ELog _ | ELogRaw _ -> (* 310 *) ""
+                | EResult result -> (* 155 *) string_of_result result
         end
 
 let file_logger fn =
   (* 1 *) let chn = open_out fn in
     (fun ev ->
-       (* 463 *) output_string chn (format_event true ev);
+       (* 466 *) output_string chn (format_event true ev);
        flush chn),
     (fun () -> (* 1 *) close_out chn)
 
 let std_logger verbose =
   (* 1 *) (fun ev -> 
-     (* 463 *) print_string (format_event verbose ev);
+     (* 466 *) print_string (format_event verbose ev);
      flush stdout),
   (fun () -> (* 1 *) ())
 
@@ -343,7 +343,7 @@ let create output_file_opt verbose (log,close) =
           (* 0 *) null_logger
   in
     (fun ev ->
-       (* 463 *) std_log ev; file_log ev; log ev),
+       (* 466 *) std_log ev; file_log ev; log ev),
     (fun () ->
        (* 1 *) std_close (); file_close (); close ())
 
@@ -705,7 +705,7 @@ let assert_failure msg =
   (* 0 *) failwith ("OUnit: " ^ msg)
 
 let assert_bool msg b =
-  (* 2009421 *) if not b then (* 0 *) assert_failure msg
+  (* 2009425 *) if not b then (* 0 *) assert_failure msg
 
 let assert_string str =
   (* 0 *) if not (str = "") then (* 0 *) assert_failure str
@@ -951,7 +951,7 @@ let (@?) = assert_bool
 
 (* Some shorthands which allows easy test construction *)
 let (>:) s t = (* 0 *) TestLabel(s, t)             (* infix *)
-let (>::) s f = (* 154 *) TestLabel(s, TestCase(f))  (* infix *)
+let (>::) s f = (* 155 *) TestLabel(s, TestCase(f))  (* infix *)
 let (>:::) s l = (* 23 *) TestLabel(s, TestList(l)) (* infix *)
 
 (* Utility function to manipulate test *)
@@ -1087,7 +1087,7 @@ let maybe_backtrace = ""
 (* Run all tests, report starts, errors, failures, and return the results *)
 let perform_test report test =
   (* 1 *) let run_test_case f path =
-    (* 154 *) try 
+    (* 155 *) try 
       f ();
       RSuccess path
     with
@@ -1106,22 +1106,22 @@ let perform_test report test =
   let rec flatten_test path acc = 
     function
       | TestCase(f) -> 
-          (* 154 *) (path, f) :: acc
+          (* 155 *) (path, f) :: acc
 
       | TestList (tests) ->
           (* 23 *) fold_lefti 
             (fun acc t cnt -> 
-               (* 176 *) flatten_test 
+               (* 177 *) flatten_test 
                  ((ListItem cnt)::path) 
                  acc t)
             acc tests
       
       | TestLabel (label, t) -> 
-          (* 177 *) flatten_test ((Label label)::path) acc t
+          (* 178 *) flatten_test ((Label label)::path) acc t
   in
   let test_cases = List.rev (flatten_test [] [] test) in
   let runner (path, f) = 
-    (* 154 *) let result = 
+    (* 155 *) let result = 
       report (EStart path);
       run_test_case f path 
     in
@@ -1130,18 +1130,18 @@ let perform_test report test =
       result
   in
   let rec iter state = 
-    (* 155 *) match state.tests_planned with 
+    (* 156 *) match state.tests_planned with 
       | [] ->
           (* 1 *) state.results
       | _ ->
-          (* 154 *) let (path, f) = !global_chooser state in            
+          (* 155 *) let (path, f) = !global_chooser state in            
           let result = runner (path, f) in
             iter 
               {
                 results = result :: state.results;
                 tests_planned = 
                   List.filter 
-                    (fun (path', _) -> (* 11935 *) path <> path') state.tests_planned
+                    (fun (path', _) -> (* 12090 *) path <> path') state.tests_planned
               }
   in
     iter {results = []; tests_planned = test_cases}
@@ -1171,7 +1171,7 @@ let run_test_tt ?verbose test =
     time_fun 
       perform_test 
       (fun ev ->
-         (* 462 *) log (OUnitLogger.TestEvent ev))
+         (* 465 *) log (OUnitLogger.TestEvent ev))
       test 
   in
     
@@ -1738,6 +1738,9 @@ val no_char : string -> char -> int -> int -> bool
 
 val no_slash : string -> bool 
 
+(** return negative means no slash, otherwise [i] means the place for first slash *)
+val no_slash_idx : string -> int 
+
 (** if no conversion happens, reference equality holds *)
 val replace_slash_backward : string -> string 
 
@@ -1762,6 +1765,7 @@ val single_colon : string
 
 val parent_dir_lit : string
 val current_dir_lit : string
+
 end = struct
 #1 "ext_string.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -2118,11 +2122,18 @@ let is_valid_source_name name : check_result =
     else (* 16 *) Invalid_module_name  
 
 (** TODO: can be improved to return a positive integer instead *)
-let rec unsafe_no_char x ch i  len = 
-  (* 34 *) i > len  || 
-  (String.unsafe_get x i <> ch && unsafe_no_char x ch (i + 1)  len)
+let rec unsafe_no_char x ch i  last_idx = 
+  (* 34 *) i > last_idx  || 
+  (String.unsafe_get x i <> ch && unsafe_no_char x ch (i + 1)  last_idx)
 
-let no_char x ch i len =
+let rec unsafe_no_char_idx x ch i last_idx = 
+  (* 13 *) if i > last_idx  then (* 1 *) -1 
+  else 
+    (* 12 *) if String.unsafe_get x i <> ch then 
+      (* 9 *) unsafe_no_char_idx x ch (i + 1)  last_idx
+    else (* 3 *) i
+
+let no_char x ch i len  : bool =
   (* 0 *) let str_len = String.length x in 
   if i < 0 || i >= str_len || len >= str_len then (* 0 *) invalid_arg "Ext_string.no_char"   
   else (* 0 *) unsafe_no_char x ch i len 
@@ -2130,6 +2141,9 @@ let no_char x ch i len =
 
 let no_slash x = 
   (* 5 *) unsafe_no_char x '/' 0 (String.length x - 1)
+
+let no_slash_idx x = 
+  (* 4 *) unsafe_no_char_idx x '/' 0 (String.length x - 1)
 
 let replace_slash_backward (x : string ) = 
   (* 1 *) let len = String.length x in 
@@ -2244,6 +2258,7 @@ let inter4 a b c d =
     
 let parent_dir_lit = ".."    
 let current_dir_lit = "."
+
 end
 module Ounit_array_tests
 = struct
@@ -12920,6 +12935,16 @@ let suites =
         );
     end;
     __LOC__ >:: begin fun _ -> 
+      (* 1 *) OUnit.assert_bool __LOC__ 
+        (Ext_string.no_slash_idx "xxx" < 0);
+      OUnit.assert_bool __LOC__ 
+        (Ext_string.no_slash_idx "xxx/" = 3);
+      OUnit.assert_bool __LOC__ 
+        (Ext_string.no_slash_idx "xxx/g/" = 3);
+      OUnit.assert_bool __LOC__ 
+        (Ext_string.no_slash_idx "/xxx/g/" = 0)
+    end;
+    __LOC__ >:: begin fun _ -> 
       (* 1 *) OUnit.assert_bool __LOC__
         (Ext_string.equal 
            (Ext_string.concat_array Ext_string.single_space [||])
@@ -12963,6 +12988,7 @@ let suites =
   
     end
   ]
+
 end
 module Ext_topsort : sig 
 #1 "ext_topsort.mli"

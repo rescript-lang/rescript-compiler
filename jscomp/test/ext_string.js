@@ -593,10 +593,10 @@ function is_valid_source_name(name) {
   }
 }
 
-function unsafe_no_char(x, ch, _i, len) {
+function unsafe_no_char(x, ch, _i, last_idx) {
   while(true) {
     var i = _i;
-    if (i > len) {
+    if (i > last_idx) {
       return /* true */1;
     }
     else if (x.charCodeAt(i) !== ch) {
@@ -606,6 +606,23 @@ function unsafe_no_char(x, ch, _i, len) {
     }
     else {
       return /* false */0;
+    }
+  };
+}
+
+function unsafe_no_char_idx(x, ch, _i, last_idx) {
+  while(true) {
+    var i = _i;
+    if (i > last_idx) {
+      return -1;
+    }
+    else if (x.charCodeAt(i) !== ch) {
+      _i = i + 1 | 0;
+      continue ;
+      
+    }
+    else {
+      return i;
     }
   };
 }
@@ -625,6 +642,10 @@ function no_char(x, ch, i, len) {
 
 function no_slash(x) {
   return unsafe_no_char(x, /* "/" */47, 0, x.length - 1 | 0);
+}
+
+function no_slash_idx(x) {
+  return unsafe_no_char_idx(x, /* "/" */47, 0, x.length - 1 | 0);
 }
 
 function replace_slash_backward(x) {
@@ -803,8 +824,10 @@ exports.rindex_opt                      = rindex_opt;
 exports.is_valid_module_file            = is_valid_module_file;
 exports.is_valid_source_name            = is_valid_source_name;
 exports.unsafe_no_char                  = unsafe_no_char;
+exports.unsafe_no_char_idx              = unsafe_no_char_idx;
 exports.no_char                         = no_char;
 exports.no_slash                        = no_slash;
+exports.no_slash_idx                    = no_slash_idx;
 exports.replace_slash_backward          = replace_slash_backward;
 exports.replace_backward_slash          = replace_backward_slash;
 exports.empty                           = empty;

@@ -25,29 +25,6 @@
 
 
 
-module Rules : sig
-  type t  
-  val get_name : t  -> out_channel -> string
-    
-  val define :
-    command:string ->
-    ?depfile:string ->
-    ?restat:unit -> 
-    ?description:string ->
-    string -> t 
-
-  val build_ast_and_deps : t
-  val build_ast_and_deps_from_reason_impl : t 
-  val build_ast_and_deps_from_reason_intf : t 
-  val build_bin_deps : t 
-  val reload : t 
-  val copy_resources : t
-  val build_ml_from_mll : t 
-  val build_cmj_js : t
-  val build_cmj_cmi_js : t 
-  val build_cmi : t
-end
-
 
 (** output should always be marked explicitly,
    otherwise the build system can not figure out clearly
@@ -63,7 +40,7 @@ val output_build :
   ?restat:unit ->
   output:string ->
   input:string ->
-  rule:Rules.t -> out_channel -> unit
+  rule:Bsb_rule.t -> out_channel -> unit
 
 
 val phony  :

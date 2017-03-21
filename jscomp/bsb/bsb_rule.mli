@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,36 +17,33 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-val common_js_prefix : string -> string
-val amd_js_prefix : string -> string 
-val goog_prefix : string -> string 
-val ocaml_bin_install_prefix : string -> string
-val proj_rel : string -> string
-val lib_bs : string
-val lib_ocaml : string
-val all_lib_artifacts : string list 
-(* we need generate path relative to [lib/bs] directory in the opposite direction *)
-val rev_lib_bs_prefix : string -> string
-
-val no_dev: bool ref 
-
-(** default not install, only when -make-world, its dependencies will be installed  *)
 
 
-val supported_format : string -> bool
+type t  
+val get_name : t  -> out_channel -> string
 
-val package_flag : format:string -> string -> string 
+val define :
+  command:string ->
+  ?depfile:string ->
+  ?restat:unit -> 
+  ?description:string ->
+  string -> t 
 
-val package_output : format:string -> string -> string 
+val build_ast_and_deps : t
+val build_ast_and_deps_from_reason_impl : t 
+val build_ast_and_deps_from_reason_intf : t 
+val build_bin_deps : t 
+val reload : t 
+val copy_resources : t
+val build_ml_from_mll : t 
+val build_cmj_js : t
+val build_cmj_cmi_js : t 
+val build_cmi : t
 
-type package_specs = String_set.t
-
-val cmd_package_specs : package_specs option ref 
-
-val cmd_override_package_specs : string -> unit
+val reset : unit -> unit

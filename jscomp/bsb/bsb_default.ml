@@ -57,3 +57,5 @@ let ocamllex = "ocamllex.opt"
 let refmt_flags = ["--print"; "binary"]
 
 let package_specs = String_set.singleton Literals.commonjs
+
+let main_entries = [Bsb_config_types.JsTarget "Index"]

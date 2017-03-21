@@ -352,11 +352,18 @@ let is_valid_source_name name : check_result =
     else Invalid_module_name  
 
 (** TODO: can be improved to return a positive integer instead *)
-let rec unsafe_no_char x ch i  len = 
-  i > len  || 
-  (String.unsafe_get x i <> ch && unsafe_no_char x ch (i + 1)  len)
+let rec unsafe_no_char x ch i  last_idx = 
+  i > last_idx  || 
+  (String.unsafe_get x i <> ch && unsafe_no_char x ch (i + 1)  last_idx)
 
-let no_char x ch i len =
+let rec unsafe_no_char_idx x ch i last_idx = 
+  if i > last_idx  then -1 
+  else 
+    if String.unsafe_get x i <> ch then 
+      unsafe_no_char_idx x ch (i + 1)  last_idx
+    else i
+
+let no_char x ch i len  : bool =
   let str_len = String.length x in 
   if i < 0 || i >= str_len || len >= str_len then invalid_arg "Ext_string.no_char"   
   else unsafe_no_char x ch i len 
@@ -364,6 +371,9 @@ let no_char x ch i len =
 
 let no_slash x = 
   unsafe_no_char x '/' 0 (String.length x - 1)
+
+let no_slash_idx x = 
+  unsafe_no_char_idx x '/' 0 (String.length x - 1)
 
 let replace_slash_backward (x : string ) = 
   let len = String.length x in 

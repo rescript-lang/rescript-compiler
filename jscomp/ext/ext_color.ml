@@ -1,4 +1,3 @@
-
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -24,18 +23,73 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-(** [resolve cwd module_name], 
-    [cwd] is current working directory, absolute path
-    Trying to find paths to load [module_name]
-    it is sepcialized for option [-bs-package-include] which requires
-    [npm_package_name/lib/ocaml]
-
-    it relies on [npm_config_prefix] env variable for global npm modules
-*)
-
-val resolve_bs_package : 
-    cwd:string ->  string -> string option
 
 
-val resolve_npm_package_file :
-    cwd:string -> string -> string option
+type color 
+  = Black
+  | Red
+  | Green
+  | Yellow
+  | Blue
+  | Magenta
+  | Cyan
+  | White
+
+type style 
+  = FG of color 
+  | BG of color 
+  | Bold
+
+
+let ansi_of_color = function
+  | Black -> "0"
+  | Red -> "1"
+  | Green -> "2"
+  | Yellow -> "3"
+  | Blue -> "4"
+  | Magenta -> "5"
+  | Cyan -> "6"
+  | White -> "7"
+
+let code_of_style = function
+  | FG Black -> "30"
+  | FG Red -> "31"
+  | FG Green -> "32"
+  | FG Yellow -> "33"
+  | FG Blue -> "34"
+  | FG Magenta -> "35"
+  | FG Cyan -> "36"
+  | FG White -> "37"
+  
+  | BG Black -> "40"
+  | BG Red -> "41"
+  | BG Green -> "42"
+  | BG Yellow -> "43"
+  | BG Blue -> "44"
+  | BG Magenta -> "45"
+  | BG Cyan -> "46"
+  | BG White -> "47"
+
+  | Bold -> "1"
+
+
+
+(** TODO: add more styles later *)
+let style_of_tag s = match s with
+  | "error" -> [Bold; FG Red]
+  | "warning" -> [Bold; FG Magenta]
+  | "info" -> [Bold; FG Yellow]
+  | _ -> []
+
+let ansi_of_tag s = 
+  let l = style_of_tag s in
+  let s =  String.concat ";" (List.map code_of_style l) in
+  "\x1b[" ^ s ^ "m"
+
+let color_enabled = ref true
+
+let reset_lit = "\x1b[0m" 
+
+
+
+
