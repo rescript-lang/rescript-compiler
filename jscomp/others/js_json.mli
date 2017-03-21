@@ -49,28 +49,28 @@ val reifyType : t -> 'b kind * 'b
 val test : 'a  -> 'b kind -> bool
 (** [test v kind] returns true if [v] is of [kind] *)
 
-val stringOfJSON : t -> Js_string.t option
-(** [stringOfJSON json] returns [Some s] if [json] is a string, [None]
+val decodeString : t -> Js_string.t option
+(** [decodeString json] returns [Some s] if [json] is a string, [None]
     otherwise *)
 
-val numberOfJSON : t -> float option
-(** [numberOfJSON json] returns [Some n] if [json] is a number, [None]
+val decodeNumber : t -> float option
+(** [decodeNumber json] returns [Some n] if [json] is a number, [None]
     otherwise *)
 
-val objectOfJSON : t -> t Js_dict.t option
-(** [objectOfJSON json] returns [Some o] if [json] is an object, [None]
+val decodeObject : t -> t Js_dict.t option
+(** [decodeObject json] returns [Some o] if [json] is an object, [None]
     otherwise *)
 
-val arrayOfJSON : t -> t array option
-(** [arrayOfJSON json] returns [Some a] if [json] is an array, [None]
+val decodeArray : t -> t array option
+(** [decodeArray json] returns [Some a] if [json] is an array, [None]
     otherwise *)
 
-val booleanOfJSON : t -> Js.boolean option
-(** [booleanOfJSON json] returns [Some b] if [json] is a boolean, [None]
+val decodeBoolean : t -> Js.boolean option
+(** [decodeBoolean json] returns [Some b] if [json] is a boolean, [None]
     otherwise *)
 
-val nullOfJSON : t -> 'a Js_null.t option
-(** [nullOfJSON json] returns [Some null] if [json] is a null, [None]
+val decodeNull : t -> 'a Js_null.t option
+(** [decodeNull json] returns [Some null] if [json] is a null, [None]
     otherwise *)
 
 (** {2 Construtors} *)

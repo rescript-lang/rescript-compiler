@@ -61,34 +61,34 @@ let test (type a) (x : 'a) (v : a kind) : bool =
   | Array -> Js_array.isArray x 
   | Object -> (Obj.magic x) != Js.null && Js.typeof x = "object" && not (Js_array.isArray x )
 
-let stringOfJSON json = 
+let decodeString json = 
   if Js.typeof json = "string" 
   then Some (Obj.magic (json:t) : string)
   else None 
 
-let numberOfJSON json = 
+let decodeNumber json = 
   if Js.typeof json = "number" 
   then Some (Obj.magic (json:t) : float)
   else None 
 
-let objectOfJSON json = 
+let decodeObject json = 
   if  Js.typeof json = "object" && 
       not (Js_array.isArray json) && 
       not ((Obj.magic json : 'a Js.null) == Js.null)
   then Some (Obj.magic (json:t) : t Js_dict.t)
   else None 
 
-let arrayOfJSON json = 
+let decodeArray json = 
   if Js_array.isArray json
   then Some (Obj.magic (json:t) : t array)
   else None 
 
-let booleanOfJSON json = 
+let decodeBoolean json = 
   if Js.typeof json = "boolean"
   then Some (Obj.magic (json:t) : Js.boolean)
   else None 
 
-let nullOfJSON json = 
+let decodeNull json = 
   if (Obj.magic json : 'a Js.null) == Js.null
   then Some Js.null
   else None 
