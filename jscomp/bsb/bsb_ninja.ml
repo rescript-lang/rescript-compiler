@@ -155,13 +155,13 @@ let (++) (us : info) (vs : info) =
 let install_file (file : string) files_to_install =
   String_hash_set.add  files_to_install (Ext_filename.chop_extension_if_any file )
 
-let handle_file_group oc ~package_specs ~js_post_build_cmd  files_to_install acc (group: Bsb_build_ui.file_group) : info =
+let handle_file_group oc ~package_specs ~js_post_build_cmd  
+    (files_to_install : String_hash_set.t) acc (group: Bsb_build_ui.file_group) : info =
   let handle_module_info  oc  module_name
       ( module_info : Binary_cache.module_info)
       bs_dependencies
       info  =
     let installable =
-      (* !Bsb_config.install *)true &&
       match group.public with
       | Export_all -> true
       | Export_none -> false

@@ -57,7 +57,7 @@ let separator = "--"
 
 
 let internal_package_specs = "-internal-package-specs"
-let internal_install = "-internal-install"
+(* let internal_install = "-internal-install" *)
 
 let install_targets cwd (config : Bsb_config_types.t option) =
   match config with 
@@ -94,7 +94,7 @@ let build_bs_deps  deps  =
             cwd = cwd;
             args  =
               [| bsb_exe ;
-                 internal_install ; 
+                 (* internal_install ;  *)
                  no_dev; 
                  internal_package_specs; 
                  package_specs;
@@ -122,8 +122,8 @@ let build_bs_deps_dry_run deps =
            Bsb_gen.output_ninja ~cwd ~bsc_dir config ;
            Bsb_unix.run_command_execv
              {cmd = vendor_ninja;
-              cwd = cwd;
-              args  = [|vendor_ninja ; "-C";Bsb_config.lib_bs|]
+              cwd = cwd // Bsb_config.lib_bs;
+              args  = [|"ninja.exe" |]
              };
 
            install_targets cwd (Some config)
@@ -209,8 +209,6 @@ let bsb_main_flags : (string * Arg.spec * string) list=
     " forced no color output";
     "-w", Arg.Set watch_mode,
     " Watch mode" ;
-    internal_install, Arg.Set Bsb_config.install,
-    " (internal)Install public interface or not, when make-world it will install(in combination with -regen to make sure it has effect)";
     no_dev, Arg.Set Bsb_config.no_dev,
     " (internal)Build dev dependencies in make-world and dev group(in combination with -regen)";
     regen, Arg.Set force_regenerate,
@@ -294,11 +292,12 @@ let exec_command_install_then_exit cwd config install command =
     if install then begin  install_targets cwd config end;
     exit 0;
   end
-let ninja_command_exit (type t) cwd vendor_ninja ninja_args  config : t =
+
+let ninja_command_exit (type t) ~install cwd vendor_ninja ninja_args  config : t =
   let ninja_args_len = Array.length ninja_args in
   if ninja_args_len = 0 then
     begin
-      match !Bsb_config.install, Ext_sys.is_windows_or_cygwin with
+      match install, Ext_sys.is_windows_or_cygwin with
       | false, false ->
         let args = [|"ninja.exe"; "-C"; Bsb_config.lib_bs |] in
         print_string_args args ;
@@ -308,7 +307,7 @@ let ninja_command_exit (type t) cwd vendor_ninja ninja_args  config : t =
     end
   else
     let fixed_args_length = 3 in
-    begin match !Bsb_config.install, Ext_sys.is_windows_or_cygwin with
+    begin match install, Ext_sys.is_windows_or_cygwin with
       | false, false ->
         let args = (Array.init (fixed_args_length + ninja_args_len)
                       (fun i -> match i with
@@ -325,7 +324,7 @@ let ninja_command_exit (type t) cwd vendor_ninja ninja_args  config : t =
                          | 1 -> "-C"
                          | 2 -> Bsb_config.lib_bs
                          | _ -> Array.unsafe_get ninja_args (i - fixed_args_length) )) in
-        exec_command_install_then_exit cwd config install @@ Ext_string.concat_array Ext_string.single_space args
+        exec_command_install_then_exit cwd config install  @@ Ext_string.concat_array Ext_string.single_space args
     end
 
 
@@ -372,7 +371,7 @@ let () =
   if Array.length Sys.argv <= 1 then
     begin
       let config_opt =  regenerate_ninja cwd bsc_dir false in 
-      ninja_command_exit cwd vendor_ninja [||] config_opt
+      ninja_command_exit ~install:false cwd vendor_ninja [||] config_opt
     end
   else
     begin
@@ -407,7 +406,7 @@ let () =
                    [bsb -regen ]
                 *)
               end else if make_world then begin
-                ninja_command_exit cwd vendor_ninja [||] config_opt
+                ninja_command_exit ~install:false cwd vendor_ninja [||] config_opt
               end
           end;
 
@@ -421,7 +420,7 @@ let () =
           if make_world.set then
             make_world_deps config_opt ;
           if !watch_mode then watch_exit ()
-          else ninja_command_exit cwd vendor_ninja ninja_args config_opt
+          else ninja_command_exit ~install:false cwd vendor_ninja ninja_args config_opt
         end
     end
 (*with x ->
