@@ -4,7 +4,9 @@ let (//) = Filename.concat
 
 
 
-
+(** It makes sense to have this function raise, when [bsb] could not resolve a package, it used to mean
+    a failure 
+*)
 let  resolve_bs_package  
     ~cwd
     name = 
@@ -12,7 +14,7 @@ let  resolve_bs_package
   let sub_path = name // marker  in
   let rec aux  cwd  = 
     let abs_marker =  cwd // Literals.node_modules // sub_path in 
-    if Sys.file_exists abs_marker then Some (Filename.dirname abs_marker)
+    if Sys.file_exists abs_marker then (* Some *) (Filename.dirname abs_marker)
     else 
       let cwd' = Filename.dirname cwd in (* TODO: may non-terminating when see symlinks *)
       if String.length cwd' < String.length cwd then  
@@ -23,22 +25,34 @@ let  resolve_bs_package
             Sys.getenv "npm_config_prefix" 
             // "lib" // Literals.node_modules // sub_path in
           if Sys.file_exists abs_marker
-          then Some (Filename.dirname abs_marker)
-          else None
-            (* Bs_exception.error (Bs_package_not_found name) *)
+          then 
+            Filename.dirname abs_marker
+          else
+            begin 
+              Format.fprintf Format.err_formatter 
+                "@{<error>Package not found: resolving pakcage %s in %s  @}@." name cwd ;             
+              Bsb_exception.error (Package_not_found (name, None))
+            end
         with 
-          Not_found -> None
-          (* Bs_exception.error (Bs_package_not_found name)           *)
+          Not_found -> 
+          begin 
+            Format.fprintf Format.err_formatter 
+              "@{<error>Package not found: resolving pakcage %s in %s  @}@." name cwd ;             
+            Bsb_exception.error (Package_not_found (name,None))
+          end
   in
   aux cwd 
+
 
 
 (** The package does not need to be a bspackage 
   example:
   {[
-    resolve_npm_package_file ~cwd "reason/refmt"
+    resolve_npm_package_file ~cwd "reason/refmt";;
+    resolve_npm_package_file ~cwd "reason/refmt/xx/yy"
   ]}
   It also returns the path name
+  Note the input [sub_path] is already converted to physical meaning path according to OS
 *)
 let resolve_npm_package_file ~cwd sub_path =
   let rec aux  cwd  = 

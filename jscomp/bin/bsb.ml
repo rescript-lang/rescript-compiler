@@ -508,6 +508,9 @@ val no_char : string -> char -> int -> int -> bool
 
 val no_slash : string -> bool 
 
+(** return negative means no slash, otherwise [i] means the place for first slash *)
+val no_slash_idx : string -> int 
+
 (** if no conversion happens, reference equality holds *)
 val replace_slash_backward : string -> string 
 
@@ -532,6 +535,7 @@ val single_colon : string
 
 val parent_dir_lit : string
 val current_dir_lit : string
+
 end = struct
 #1 "ext_string.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -888,11 +892,18 @@ let is_valid_source_name name : check_result =
     else Invalid_module_name  
 
 (** TODO: can be improved to return a positive integer instead *)
-let rec unsafe_no_char x ch i  len = 
-  i > len  || 
-  (String.unsafe_get x i <> ch && unsafe_no_char x ch (i + 1)  len)
+let rec unsafe_no_char x ch i  last_idx = 
+  i > last_idx  || 
+  (String.unsafe_get x i <> ch && unsafe_no_char x ch (i + 1)  last_idx)
 
-let no_char x ch i len =
+let rec unsafe_no_char_idx x ch i last_idx = 
+  if i > last_idx  then -1 
+  else 
+    if String.unsafe_get x i <> ch then 
+      unsafe_no_char_idx x ch (i + 1)  last_idx
+    else i
+
+let no_char x ch i len  : bool =
   let str_len = String.length x in 
   if i < 0 || i >= str_len || len >= str_len then invalid_arg "Ext_string.no_char"   
   else unsafe_no_char x ch i len 
@@ -900,6 +911,9 @@ let no_char x ch i len =
 
 let no_slash x = 
   unsafe_no_char x '/' 0 (String.length x - 1)
+
+let no_slash_idx x = 
+  unsafe_no_char_idx x '/' 0 (String.length x - 1)
 
 let replace_slash_backward (x : string ) = 
   let len = String.length x in 
@@ -1014,6 +1028,7 @@ let inter4 a b c d =
     
 let parent_dir_lit = ".."    
 let current_dir_lit = "."
+
 end
 module Literals : sig 
 #1 "literals.mli"
@@ -3699,12 +3714,14 @@ module Bsb_pkg : sig
     it relies on [npm_config_prefix] env variable for global npm modules
 *)
 
+(** @raise  when not found *)
 val resolve_bs_package : 
-    cwd:string ->  string -> string option
+    cwd:string ->  string -> string 
 
 
 val resolve_npm_package_file :
     cwd:string -> string -> string option
+
 end = struct
 #1 "bsb_pkg.ml"
 
@@ -3713,7 +3730,9 @@ let (//) = Filename.concat
 
 
 
-
+(** It makes sense to have this function raise, when [bsb] could not resolve a package, it used to mean
+    a failure 
+*)
 let  resolve_bs_package  
     ~cwd
     name = 
@@ -3721,7 +3740,7 @@ let  resolve_bs_package
   let sub_path = name // marker  in
   let rec aux  cwd  = 
     let abs_marker =  cwd // Literals.node_modules // sub_path in 
-    if Sys.file_exists abs_marker then Some (Filename.dirname abs_marker)
+    if Sys.file_exists abs_marker then (* Some *) (Filename.dirname abs_marker)
     else 
       let cwd' = Filename.dirname cwd in (* TODO: may non-terminating when see symlinks *)
       if String.length cwd' < String.length cwd then  
@@ -3732,22 +3751,34 @@ let  resolve_bs_package
             Sys.getenv "npm_config_prefix" 
             // "lib" // Literals.node_modules // sub_path in
           if Sys.file_exists abs_marker
-          then Some (Filename.dirname abs_marker)
-          else None
-            (* Bs_exception.error (Bs_package_not_found name) *)
+          then 
+            Filename.dirname abs_marker
+          else
+            begin 
+              Format.fprintf Format.err_formatter 
+                "@{<error>Package not found: resolving pakcage %s in %s  @}@." name cwd ;             
+              Bsb_exception.error (Package_not_found (name, None))
+            end
         with 
-          Not_found -> None
-          (* Bs_exception.error (Bs_package_not_found name)           *)
+          Not_found -> 
+          begin 
+            Format.fprintf Format.err_formatter 
+              "@{<error>Package not found: resolving pakcage %s in %s  @}@." name cwd ;             
+            Bsb_exception.error (Package_not_found (name,None))
+          end
   in
   aux cwd 
+
 
 
 (** The package does not need to be a bspackage 
   example:
   {[
-    resolve_npm_package_file ~cwd "reason/refmt"
+    resolve_npm_package_file ~cwd "reason/refmt";;
+    resolve_npm_package_file ~cwd "reason/refmt/xx/yy"
   ]}
   It also returns the path name
+  Note the input [sub_path] is already converted to physical meaning path according to OS
 *)
 let resolve_npm_package_file ~cwd sub_path =
   let rec aux  cwd  = 
@@ -3771,6 +3802,7 @@ let resolve_npm_package_file ~cwd sub_path =
           (* Bs_exception.error (Bs_package_not_found name)           *)
   in
   aux cwd 
+
 end
 module Ext_array : sig 
 #1 "ext_array.mli"
@@ -6147,21 +6179,9 @@ let rec walk_all_deps_aux visited paths top dir cb =
              |> Array.iter (fun (js : Ext_json_types.t) ->
                  begin match js with
                    | Str {str = new_package} ->
-                     begin match Bsb_pkg.resolve_bs_package ~cwd:dir new_package with
-                       | None -> 
-                         Bsb_exception.error (Bsb_exception.Package_not_found 
-                                                (new_package, Some bsconfig_json))
-                       | Some package_dir  ->
-                         Format.fprintf 
-                           Format.std_formatter "@{<info>Walking@} deps %s in %s from %s@."
-                           new_package
-                           package_dir
-                           cur_package_name;
-
-                         walk_all_deps_aux visited (cur_package_name +> paths)  false package_dir cb  ;
-                     end
-
-
+                     let package_dir = 
+                       Bsb_pkg.resolve_bs_package ~cwd:dir new_package in 
+                     walk_all_deps_aux visited (cur_package_name +> paths)  false package_dir cb  ;
                    | _ -> 
                      Bsb_exception.(failf ~loc 
                                       "%s expect an array"
@@ -8118,14 +8138,11 @@ let get_list_string = Bsb_build_util.get_list_string
 let (//) = Ext_filename.combine
 
 let resolve_package cwd  package_name = 
-  match Bsb_pkg.resolve_bs_package ~cwd package_name  with 
-  | None -> 
-    Bsb_exception.error (Package_not_found (package_name,None))
-  | Some x -> 
-    {
-      Bsb_config_types.package_name ;
-      package_install_path = x // Bsb_config.lib_ocaml
-    }
+  let x =  Bsb_pkg.resolve_bs_package ~cwd package_name  in
+  {
+    Bsb_config_types.package_name ;
+    package_install_path = x // Bsb_config.lib_ocaml
+  }
 
 
 let get_package_specs_from_array arr =  
@@ -9968,8 +9985,8 @@ let build_bs_deps deps =
     )
 
 
-let annoymous filename =
-  String_vec.push  filename targets
+(* let annoymous filename = *)
+(*   String_vec.push  filename targets *)
 
 
 let watch_mode = ref false

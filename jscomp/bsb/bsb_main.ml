@@ -108,8 +108,8 @@ let build_bs_deps deps =
     )
 
 
-let annoymous filename =
-  String_vec.push  filename targets
+(* let annoymous filename = *)
+(*   String_vec.push  filename targets *)
 
 
 let watch_mode = ref false

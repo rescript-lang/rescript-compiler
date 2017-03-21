@@ -27,14 +27,11 @@ let get_list_string = Bsb_build_util.get_list_string
 let (//) = Ext_filename.combine
 
 let resolve_package cwd  package_name = 
-  match Bsb_pkg.resolve_bs_package ~cwd package_name  with 
-  | None -> 
-    Bsb_exception.error (Package_not_found (package_name,None))
-  | Some x -> 
-    {
-      Bsb_config_types.package_name ;
-      package_install_path = x // Bsb_config.lib_ocaml
-    }
+  let x =  Bsb_pkg.resolve_bs_package ~cwd package_name  in
+  {
+    Bsb_config_types.package_name ;
+    package_install_path = x // Bsb_config.lib_ocaml
+  }
 
 
 let get_package_specs_from_array arr =  

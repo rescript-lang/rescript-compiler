@@ -33,8 +33,9 @@
     it relies on [npm_config_prefix] env variable for global npm modules
 *)
 
+(** @raise  when not found *)
 val resolve_bs_package : 
-    cwd:string ->  string -> string option
+    cwd:string ->  string -> string 
 
 
 val resolve_npm_package_file :

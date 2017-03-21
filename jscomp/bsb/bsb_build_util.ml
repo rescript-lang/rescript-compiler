@@ -186,21 +186,9 @@ let rec walk_all_deps_aux visited paths top dir cb =
              |> Array.iter (fun (js : Ext_json_types.t) ->
                  begin match js with
                    | Str {str = new_package} ->
-                     begin match Bsb_pkg.resolve_bs_package ~cwd:dir new_package with
-                       | None -> 
-                         Bsb_exception.error (Bsb_exception.Package_not_found 
-                                                (new_package, Some bsconfig_json))
-                       | Some package_dir  ->
-                         Format.fprintf 
-                           Format.std_formatter "@{<info>Walking@} deps %s in %s from %s@."
-                           new_package
-                           package_dir
-                           cur_package_name;
-
-                         walk_all_deps_aux visited (cur_package_name +> paths)  false package_dir cb  ;
-                     end
-
-
+                     let package_dir = 
+                       Bsb_pkg.resolve_bs_package ~cwd:dir new_package in 
+                     walk_all_deps_aux visited (cur_package_name +> paths)  false package_dir cb  ;
                    | _ -> 
                      Bsb_exception.(failf ~loc 
                                       "%s expect an array"
