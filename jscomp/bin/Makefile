@@ -32,8 +32,8 @@ refmt.exe: refmt_main.mli refmt_main.ml
 reactjs_jsx_ppx.exe:reactjs_ppx.mli reactjs_ppx.ml
 	$(NATIVE) -I +compiler-libs ocamlcommon.cmxa $^ -o $@
 
-config_whole_compiler.ml:config_whole_compiler.mlp ../config.js
-	node ../config.js
+config_whole_compiler.ml:config_whole_compiler.mlp ../config_compiler.js
+	node ../config_compiler.js
 bsc.exe: config_whole_compiler.mli config_whole_compiler.ml  whole_compiler.mli whole_compiler.ml
 	$(NATIVE) $(OCAMLOPT_FLAGS) $^  -o $@
 
