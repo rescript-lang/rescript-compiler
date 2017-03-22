@@ -393,77 +393,77 @@ eq('File "js_json_test.ml", line 275, characters 12-19', Js_primitive.undefined_
 
 eq('File "js_json_test.ml", line 277, characters 12-19', Js_primitive.undefined_to_opt(JSON.stringify(undefined)), /* None */0);
 
-eq('File "js_json_test.ml", line 280, characters 5-12', Js_json.stringOfJSON("test"), /* Some */["test"]);
+eq('File "js_json_test.ml", line 280, characters 5-12', Js_json.decodeString("test"), /* Some */["test"]);
 
-eq('File "js_json_test.ml", line 282, characters 5-12', Js_json.stringOfJSON(true), /* None */0);
+eq('File "js_json_test.ml", line 282, characters 5-12', Js_json.decodeString(true), /* None */0);
 
-eq('File "js_json_test.ml", line 284, characters 5-12', Js_json.stringOfJSON(/* array */[]), /* None */0);
+eq('File "js_json_test.ml", line 284, characters 5-12', Js_json.decodeString(/* array */[]), /* None */0);
 
-eq('File "js_json_test.ml", line 286, characters 5-12', Js_json.stringOfJSON(null), /* None */0);
+eq('File "js_json_test.ml", line 286, characters 5-12', Js_json.decodeString(null), /* None */0);
 
-eq('File "js_json_test.ml", line 288, characters 5-12', Js_json.stringOfJSON({ }), /* None */0);
+eq('File "js_json_test.ml", line 288, characters 5-12', Js_json.decodeString({ }), /* None */0);
 
-eq('File "js_json_test.ml", line 290, characters 5-12', Js_json.stringOfJSON(1.23), /* None */0);
+eq('File "js_json_test.ml", line 290, characters 5-12', Js_json.decodeString(1.23), /* None */0);
 
-eq('File "js_json_test.ml", line 294, characters 5-12', Js_json.numberOfJSON("test"), /* None */0);
+eq('File "js_json_test.ml", line 294, characters 5-12', Js_json.decodeNumber("test"), /* None */0);
 
-eq('File "js_json_test.ml", line 296, characters 5-12', Js_json.numberOfJSON(true), /* None */0);
+eq('File "js_json_test.ml", line 296, characters 5-12', Js_json.decodeNumber(true), /* None */0);
 
-eq('File "js_json_test.ml", line 298, characters 5-12', Js_json.numberOfJSON(/* array */[]), /* None */0);
+eq('File "js_json_test.ml", line 298, characters 5-12', Js_json.decodeNumber(/* array */[]), /* None */0);
 
-eq('File "js_json_test.ml", line 300, characters 5-12', Js_json.numberOfJSON(null), /* None */0);
+eq('File "js_json_test.ml", line 300, characters 5-12', Js_json.decodeNumber(null), /* None */0);
 
-eq('File "js_json_test.ml", line 302, characters 5-12', Js_json.numberOfJSON({ }), /* None */0);
+eq('File "js_json_test.ml", line 302, characters 5-12', Js_json.decodeNumber({ }), /* None */0);
 
-eq('File "js_json_test.ml", line 304, characters 5-12', Js_json.numberOfJSON(1.23), /* Some */[1.23]);
+eq('File "js_json_test.ml", line 304, characters 5-12', Js_json.decodeNumber(1.23), /* Some */[1.23]);
 
-eq('File "js_json_test.ml", line 308, characters 5-12', Js_json.objectOfJSON("test"), /* None */0);
+eq('File "js_json_test.ml", line 308, characters 5-12', Js_json.decodeObject("test"), /* None */0);
 
-eq('File "js_json_test.ml", line 310, characters 5-12', Js_json.objectOfJSON(true), /* None */0);
+eq('File "js_json_test.ml", line 310, characters 5-12', Js_json.decodeObject(true), /* None */0);
 
-eq('File "js_json_test.ml", line 312, characters 5-12', Js_json.objectOfJSON(/* array */[]), /* None */0);
+eq('File "js_json_test.ml", line 312, characters 5-12', Js_json.decodeObject(/* array */[]), /* None */0);
 
-eq('File "js_json_test.ml", line 314, characters 5-12', Js_json.objectOfJSON(null), /* None */0);
+eq('File "js_json_test.ml", line 314, characters 5-12', Js_json.decodeObject(null), /* None */0);
 
-eq('File "js_json_test.ml", line 316, characters 5-12', Js_json.objectOfJSON({ }), /* Some */[{ }]);
+eq('File "js_json_test.ml", line 316, characters 5-12', Js_json.decodeObject({ }), /* Some */[{ }]);
 
-eq('File "js_json_test.ml", line 319, characters 5-12', Js_json.objectOfJSON(1.23), /* None */0);
+eq('File "js_json_test.ml", line 319, characters 5-12', Js_json.decodeObject(1.23), /* None */0);
 
-eq('File "js_json_test.ml", line 323, characters 5-12', Js_json.arrayOfJSON("test"), /* None */0);
+eq('File "js_json_test.ml", line 323, characters 5-12', Js_json.decodeArray("test"), /* None */0);
 
-eq('File "js_json_test.ml", line 325, characters 5-12', Js_json.arrayOfJSON(true), /* None */0);
+eq('File "js_json_test.ml", line 325, characters 5-12', Js_json.decodeArray(true), /* None */0);
 
-eq('File "js_json_test.ml", line 327, characters 5-12', Js_json.arrayOfJSON(/* array */[]), /* Some */[/* array */[]]);
+eq('File "js_json_test.ml", line 327, characters 5-12', Js_json.decodeArray(/* array */[]), /* Some */[/* array */[]]);
 
-eq('File "js_json_test.ml", line 329, characters 5-12', Js_json.arrayOfJSON(null), /* None */0);
+eq('File "js_json_test.ml", line 329, characters 5-12', Js_json.decodeArray(null), /* None */0);
 
-eq('File "js_json_test.ml", line 331, characters 5-12', Js_json.arrayOfJSON({ }), /* None */0);
+eq('File "js_json_test.ml", line 331, characters 5-12', Js_json.decodeArray({ }), /* None */0);
 
-eq('File "js_json_test.ml", line 333, characters 5-12', Js_json.arrayOfJSON(1.23), /* None */0);
+eq('File "js_json_test.ml", line 333, characters 5-12', Js_json.decodeArray(1.23), /* None */0);
 
-eq('File "js_json_test.ml", line 337, characters 5-12', Js_json.booleanOfJSON("test"), /* None */0);
+eq('File "js_json_test.ml", line 337, characters 5-12', Js_json.decodeBoolean("test"), /* None */0);
 
-eq('File "js_json_test.ml", line 339, characters 5-12', Js_json.booleanOfJSON(true), /* Some */[true]);
+eq('File "js_json_test.ml", line 339, characters 5-12', Js_json.decodeBoolean(true), /* Some */[true]);
 
-eq('File "js_json_test.ml", line 341, characters 5-12', Js_json.booleanOfJSON(/* array */[]), /* None */0);
+eq('File "js_json_test.ml", line 341, characters 5-12', Js_json.decodeBoolean(/* array */[]), /* None */0);
 
-eq('File "js_json_test.ml", line 343, characters 5-12', Js_json.booleanOfJSON(null), /* None */0);
+eq('File "js_json_test.ml", line 343, characters 5-12', Js_json.decodeBoolean(null), /* None */0);
 
-eq('File "js_json_test.ml", line 345, characters 5-12', Js_json.booleanOfJSON({ }), /* None */0);
+eq('File "js_json_test.ml", line 345, characters 5-12', Js_json.decodeBoolean({ }), /* None */0);
 
-eq('File "js_json_test.ml", line 347, characters 5-12', Js_json.booleanOfJSON(1.23), /* None */0);
+eq('File "js_json_test.ml", line 347, characters 5-12', Js_json.decodeBoolean(1.23), /* None */0);
 
-eq('File "js_json_test.ml", line 351, characters 5-12', Js_json.nullOfJSON("test"), /* None */0);
+eq('File "js_json_test.ml", line 351, characters 5-12', Js_json.decodeNull("test"), /* None */0);
 
-eq('File "js_json_test.ml", line 353, characters 5-12', Js_json.nullOfJSON(true), /* None */0);
+eq('File "js_json_test.ml", line 353, characters 5-12', Js_json.decodeNull(true), /* None */0);
 
-eq('File "js_json_test.ml", line 355, characters 5-12', Js_json.nullOfJSON(/* array */[]), /* None */0);
+eq('File "js_json_test.ml", line 355, characters 5-12', Js_json.decodeNull(/* array */[]), /* None */0);
 
-eq('File "js_json_test.ml", line 357, characters 5-12', Js_json.nullOfJSON(null), /* Some */[null]);
+eq('File "js_json_test.ml", line 357, characters 5-12', Js_json.decodeNull(null), /* Some */[null]);
 
-eq('File "js_json_test.ml", line 359, characters 5-12', Js_json.nullOfJSON({ }), /* None */0);
+eq('File "js_json_test.ml", line 359, characters 5-12', Js_json.decodeNull({ }), /* None */0);
 
-eq('File "js_json_test.ml", line 361, characters 5-12', Js_json.nullOfJSON(1.23), /* None */0);
+eq('File "js_json_test.ml", line 361, characters 5-12', Js_json.decodeNull(1.23), /* None */0);
 
 Mt.from_pair_suites("js_json_test.ml", suites[0]);
 
