@@ -75,6 +75,7 @@ external repeat : int -> t = "" [@@bs.send.pipe: t] (** ES2015 *)
 
 external replace : t ->  t ->  t = "" [@@bs.send.pipe: t]
 external replaceByRe : Js_re.t ->  t ->  t = "replace" [@@bs.send.pipe: t]
+external replaceByFun1 : Js_re.t -> (t -> t -> t) -> t = "replace" [@@bs.send.pipe: t]
 
 external search : Js_re.t -> int = "" [@@bs.send.pipe: t]
 
