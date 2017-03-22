@@ -24,13 +24,16 @@
 
 (** Node Process API *)
 
-type t =
+type 'a t =
   < argv : string array;
     arch : string ;
     abort : unit -> unit [@bs.meth];
     chdir : string -> unit [@bs.meth];
     cwd : unit -> string [@bs.meth];
-    disconnect : unit -> unit [@bs.meth];    
+    disconnect : unit -> unit [@bs.meth];
+    platform : string;
+    env : 'a Js.Dict.t;
+    exit : int -> unit [@bs.meth];
   >   Js.t
-  
-external process : t = "" [@@bs.module]
+
+external process : _ t = "" [@@bs.module]
