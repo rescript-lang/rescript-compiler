@@ -93771,7 +93771,13 @@ and get_exp_with_args (cxt : Lam_compile_defs.cxt)  lam args_lambda
                      (E.call ~info:{arity=Full; call_info = Call_ml} acc first_part)
                      (Determin (a, rest, b))
                      continue (len - x)
-                 else  acc 
+                 else (* GPR #1423 *)
+                 if List.for_all Js_analyzer.is_simple_no_side_effect_expression args then 
+                   let params = Ext_list.init (x - len)
+                       (fun _ -> Ext_ident.create "param") in
+                   E.ocaml_fun params 
+                     [S.return (E.call ~info:{arity=Full; call_info=Call_ml} acc (args @ List.map E.var params))]
+                 else E.call ~info:Js_call_info.dummy acc args
                (* alpha conversion now? --
                   Since we did an alpha conversion before so it is not here
                *)
