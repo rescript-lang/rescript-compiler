@@ -26,5 +26,6 @@
 
 external intOfBool : bool -> int = "%identity"  
 
-external floatOfInt : int -> float = "%identity"  
+external floatOfInt : int -> float = "%identity"
+
 external dictOfObj : 'a Js.t -> 'b Js.Dict.t = "%identity"
