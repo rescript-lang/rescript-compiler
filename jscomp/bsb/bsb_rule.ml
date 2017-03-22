@@ -167,6 +167,7 @@ let build_cmi =
 
 let reset () = 
   rule_id := 0;
+  rule_names := String_set.empty;
   build_ast_and_deps.used <- false ;
   build_ast_and_deps_from_reason_impl.used <- false ;  
   build_ast_and_deps_from_reason_intf.used <- false ;

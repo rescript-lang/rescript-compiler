@@ -56,9 +56,12 @@ let regen = "-regen"
 let separator = "--"
 
 
+(** TODO: create the animation effect *)
 let install ~destdir file = 
   if Bsb_file.install_if_exists ~destdir file  then 
-    Format.fprintf Format.std_formatter "%s => %s @." file destdir 
+    Format.fprintf Format.std_formatter "%s => %s @." file destdir
+
+
 let install_targets cwd (config : Bsb_config_types.t option) =
   match config with 
   | None -> ()
@@ -128,7 +131,7 @@ let () =
 
 
 let clean_bs_garbage cwd =
-  Format.fprintf Format.std_formatter "@{<info>Cleaning @} in %s@." cwd ; 
+  Format.fprintf Format.std_formatter "@{<info>Cleaning:@} in %s@." cwd ; 
   let aux x =
     let x = (cwd // x)  in
     if Sys.file_exists x then
@@ -152,7 +155,7 @@ let clean_self () = clean_bs_garbage cwd
 (** Regenerate ninja file and return None if we dont need regenerate
     otherwise return some info
 *)
-let regenerate_ninja ~no_dev ~override_package_specs cwd bsc_dir forced =
+let regenerate_ninja ~no_dev ~override_package_specs ~generate_watch_metadata cwd bsc_dir forced =
   let output_deps = cwd // Bsb_config.lib_bs // bsdeps in
   let reason : Bsb_dep_infos.check_result =
     Bsb_dep_infos.check ~cwd  forced output_deps in
@@ -173,7 +176,7 @@ let regenerate_ninja ~no_dev ~override_package_specs cwd bsc_dir forced =
         Bsb_config_parse.interpret_json 
           ~override_package_specs
           ~bsc_dir
-          ~generate_watch_metadata:true
+          ~generate_watch_metadata
           ~no_dev
           cwd in 
       begin 
@@ -230,32 +233,29 @@ let print_string_args (args : string array) =
 (* Note that [keepdepfile] only makes sense when combined with [deps] for optimizatoin
    It has to be the last command of [bsb]
 *)
-let exec_command_install_then_exit cwd config install command =
+let exec_command_install_then_exit  command =
+  Format.fprintf Format.std_formatter "@{<info>CMD:@} %s@." command;
   print_endline command ;
-  let exit_code = (Sys.command command ) in
-  if exit_code <> 0 then begin
-    exit exit_code
-  end else begin
-    if install then begin  install_targets cwd config end;
-    exit 0;
-  end
+  exit (Sys.command command ) 
 
-let ninja_command_exit (type t) ~install cwd vendor_ninja ninja_args  config : t =
+let ninja_command_exit (type t)  cwd vendor_ninja ninja_args  config : t =
   let ninja_args_len = Array.length ninja_args in
   if ninja_args_len = 0 then
     begin
-      match install, Ext_sys.is_windows_or_cygwin with
-      | false, false ->
+      match Ext_sys.is_windows_or_cygwin with
+      |  false ->
         let args = [|"ninja.exe"; "-C"; Bsb_config.lib_bs |] in
         print_string_args args ;
         Unix.execvp vendor_ninja args
-      | install, _ ->
-        exec_command_install_then_exit cwd config install @@ Ext_string.inter3  (Filename.quote vendor_ninja) "-C" Bsb_config.lib_bs
+      | true ->
+        exec_command_install_then_exit
+        @@ Ext_string.inter3
+          (Filename.quote vendor_ninja) "-C" Bsb_config.lib_bs
     end
   else
     let fixed_args_length = 3 in
-    begin match install, Ext_sys.is_windows_or_cygwin with
-      | false, false ->
+    begin match  Ext_sys.is_windows_or_cygwin with
+      | false ->
         let args = (Array.init (fixed_args_length + ninja_args_len)
                       (fun i -> match i with
                          | 0 -> "ninja.exe"
@@ -264,14 +264,15 @@ let ninja_command_exit (type t) ~install cwd vendor_ninja ninja_args  config : t
                          | _ -> Array.unsafe_get ninja_args (i - fixed_args_length) )) in
         print_string_args args ;
         Unix.execvp vendor_ninja args
-      | install, _ ->
+      |  _ ->
         let args = (Array.init (fixed_args_length + ninja_args_len)
                       (fun i -> match i with
                          | 0 -> (Filename.quote vendor_ninja)
                          | 1 -> "-C"
                          | 2 -> Bsb_config.lib_bs
                          | _ -> Array.unsafe_get ninja_args (i - fixed_args_length) )) in
-        exec_command_install_then_exit cwd config install  @@ Ext_string.concat_array Ext_string.single_space args
+        exec_command_install_then_exit
+        @@ Ext_string.concat_array Ext_string.single_space args
     end
 
 
@@ -302,7 +303,8 @@ let build_bs_deps deps =
     (fun {top; cwd} ->
        if not top then
          begin 
-           let config_opt = regenerate_ninja ~no_dev:true 
+           let config_opt = regenerate_ninja ~no_dev:true
+               ~generate_watch_metadata:false
              ~override_package_specs:(Some deps) 
              cwd bsc_dir true in (* set true to force regenrate ninja file so we have [config_opt]*)
            Bsb_unix.run_command_execv
@@ -338,7 +340,7 @@ let () =
   if Array.length Sys.argv <= 1 then
     begin
       let config_opt =  regenerate_ninja ~override_package_specs:None ~no_dev:false cwd bsc_dir false in 
-      ninja_command_exit ~install:false cwd vendor_ninja [||] config_opt
+      ninja_command_exit  cwd vendor_ninja [||] config_opt
     end
   else
     begin
@@ -361,7 +363,7 @@ let () =
               end 
             | make_world, force_regenerate ->
               (* don't regenerate files when we only run [bsb -clean-world] *)
-              let config_opt = regenerate_ninja ~override_package_specs:None ~no_dev:false cwd bsc_dir force_regenerate in
+              let config_opt = regenerate_ninja ~generate_watch_metadata:true ~override_package_specs:None ~no_dev:false cwd bsc_dir force_regenerate in
               if make_world then begin
                 make_world_deps config_opt
               end;
@@ -373,7 +375,7 @@ let () =
                    [bsb -regen ]
                 *)
               end else if make_world then begin
-                ninja_command_exit ~install:false cwd vendor_ninja [||] config_opt
+                ninja_command_exit  cwd vendor_ninja [||] config_opt
               end
           end;
 
@@ -382,12 +384,12 @@ let () =
         -> (* -make-world all dependencies fall into this category *)
         begin
           Arg.parse_argv bsb_args bsb_main_flags handle_anonymous_arg usage ;
-          let config_opt = regenerate_ninja ~override_package_specs:None ~no_dev:false cwd bsc_dir !force_regenerate in
+          let config_opt = regenerate_ninja ~generate_watch_metadata:true ~override_package_specs:None ~no_dev:false cwd bsc_dir !force_regenerate in
           (* [-make-world] should never be combined with [-package-specs] *)
           if make_world.set then
             make_world_deps config_opt ;
           if !watch_mode then watch_exit ()
-          else ninja_command_exit ~install:false cwd vendor_ninja ninja_args config_opt
+          else ninja_command_exit  cwd vendor_ninja ninja_args config_opt
         end
     end
 (*with x ->

@@ -58,6 +58,10 @@ type parsing_cxt = {
 
 (** entry is to the 
     [sources] in the schema
+
+    [parsing_sources cxt json]
+    given a root, return an object which is
+    all relative paths, this function will do the IO
 *)
 val parsing_sources : 
   parsing_cxt ->

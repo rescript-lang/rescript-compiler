@@ -2521,7 +2521,7 @@ type package_specs = String_set.t
 
 val cmd_package_specs : package_specs option ref 
 
-(* val cmd_override_package_specs : string -> unit *)
+
 
 end = struct
 #1 "bsb_config.ml"
@@ -2605,16 +2605,6 @@ let supported_format x =
   x = Literals.es6_global ||
   x = Literals.amdjs_global
 
-(* let cmd_override_package_specs str =  *)
-(*   let lst = Ext_string.split ~keep_empty:false str ',' in *)
-(*   cmd_package_specs := *)
-(*     Some (List.fold_left (fun acc x -> *)
-(*           let v = *)
-(*             if supported_format x then String_set.add x acc *)
-(*             else *)
-(*               failwith ("Unkonwn package spec " ^ x) in *)
-(*           v *)
-(*     ) String_set.empty lst) *)
 
 let bs_package_output = "-bs-package-output"
 
@@ -7309,6 +7299,10 @@ type parsing_cxt = {
 
 (** entry is to the 
     [sources] in the schema
+
+    [parsing_sources cxt json]
+    given a root, return an object which is
+    all relative paths, this function will do the IO
 *)
 val parsing_sources : 
   parsing_cxt ->
@@ -7342,9 +7336,9 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-module Bsb_dir = struct 
-  let readdir root dir = Sys.readdir (Filename.concat root dir)
-end
+
+let readdir root dir = Sys.readdir (Filename.concat root dir)
+
 
 type public = 
   | Export_all 
@@ -7419,7 +7413,7 @@ let print_arrays file_array oc offset  =
     p_str "]" 
 
 
-let warning_unused_file : _ format = "WARNING: file %s under %s is ignored due to that it is not a valid module name"
+let warning_unused_file : _ format = "@{<warning>IGNORED@}: file %s under %s is ignored due to that it is not a valid module name@."
 
 type parsing_cxt = {
   no_dev : bool ;
@@ -7430,7 +7424,7 @@ type parsing_cxt = {
 
 let  handle_list_files ({ cwd = dir ; root} : parsing_cxt)  loc_start loc_end : Ext_file_pp.interval list * _ =  
   (** detect files to be populated later  *)
-  let files_array = Bsb_dir.readdir root dir  in 
+  let files_array = readdir root dir  in 
   let dyn_file_array = String_vec.make (Array.length files_array) in 
   let files  =
     Array.fold_left (fun acc name -> 
@@ -7440,11 +7434,9 @@ let  handle_list_files ({ cwd = dir ; root} : parsing_cxt)  loc_start loc_end : 
             String_vec.push name dyn_file_array ;
             new_acc 
           end 
-        | Invalid_module_name -> 
-          print_endline 
-            (Printf.sprintf warning_unused_file
-               name dir 
-            ) ; 
+        | Invalid_module_name ->
+          Format.fprintf Format.err_formatter
+            warning_unused_file name dir ;
           acc 
         | Suffix_mismatch -> acc 
       ) String_map.empty files_array in 
@@ -7477,7 +7469,9 @@ let rec
   parsing_simple_dir ({no_dev; dir_index;  cwd} as cxt ) dir =
   if no_dev && dir_index <> lib_dir_index then empty 
   else parsing_source_dir_map 
-    {cxt with cwd = (cwd // Ext_filename.simple_convert_node_path_to_os_path dir)}
+    {cxt with
+     cwd = cwd // Ext_filename.simple_convert_node_path_to_os_path dir
+    }
     String_map.empty
 
 and parsing_source ({no_dev; dir_index ; cwd} as cxt ) (x : Ext_json_types.t )
@@ -7508,8 +7502,10 @@ and parsing_source ({no_dev; dir_index ; cwd} as cxt ) (x : Ext_json_types.t )
   | _ -> empty 
 
 and parsing_source_dir_map 
-    ({no_dev; dir_index =  current_dir_index; cwd =  dir} as cxt )
-    (x : Ext_json_types.t String_map.t) = 
+    ({ cwd =  dir} as cxt )
+    (x : Ext_json_types.t String_map.t)
+    (* { dir : xx, files : ... } [dir] is already extracted *)
+  = 
   let cur_sources = ref String_map.empty in
   let resources = ref [] in 
   let bs_dependencies = ref [] in
@@ -7546,7 +7542,7 @@ and parsing_source_dir_map
           fun name -> Str.string_match re name 0 && not (List.mem name excludes)
         | Some x, _ -> Bsb_exception.failf ~loc "slow-re expect a string literal"
         | None , _ -> Bsb_exception.failf ~loc  "missing field: slow-re"  in 
-      let file_array = Bsb_dir.readdir cxt.root dir in 
+      let file_array = readdir cxt.root dir in 
       cur_sources := Array.fold_left (fun acc name -> 
           if predicate name then 
             Binary_cache.map_update  ~dir acc name 
@@ -7554,18 +7550,18 @@ and parsing_source_dir_map
         ) String_map.empty file_array;
       cur_globbed_dirs := [dir]              
     | None ->  (* No setting on [!files]*)
-      let file_array = Bsb_dir.readdir cxt.root dir in 
+      let file_array = readdir cxt.root dir in 
       (** We should avoid temporary files *)
       cur_sources := 
         Array.fold_left (fun acc name -> 
             match Ext_string.is_valid_source_name name with 
             | Good -> 
               Binary_cache.map_update  ~dir acc name 
-            | Invalid_module_name -> 
-              print_endline 
-                (Printf.sprintf warning_unused_file
-                   name dir 
-                ) ; 
+            | Invalid_module_name ->
+              Format.fprintf Format.err_formatter
+                warning_unused_file
+               name dir 
+              ; 
               acc 
             | Suffix_mismatch ->  acc
           ) String_map.empty file_array;
@@ -7577,7 +7573,7 @@ and parsing_source_dir_map
   |? (Bsb_build_schemas.bs_dependencies, `Arr (fun s -> bs_dependencies := get_list_string s ))
   |?  (Bsb_build_schemas.resources ,
        `Arr (fun s  ->
-           resources := get_list_string s
+           resources := get_list_string s 
          ))
   |? (Bsb_build_schemas.public, `Str_loc (fun s loc -> 
         if s = Bsb_build_schemas.export_all then public := Export_all else 
@@ -7594,7 +7590,7 @@ and parsing_source_dir_map
        resources = !resources;
        bs_dependencies = !bs_dependencies;
        public = !public;
-       dir_index = current_dir_index;
+       dir_index = cxt.dir_index ;
       } in 
     let children, children_update_queue, children_globbed_dirs = 
       match String_map.find_opt Bsb_build_schemas.subdirs x with 
@@ -8703,7 +8699,14 @@ let check ~cwd forced file =
     else
       try
         check_aux cwd xs  0 (Array.length xs)
-      with _ -> Bsb_file_not_exist
+      with e ->
+        begin
+          Format.fprintf
+            Format.std_formatter
+            "@{<info>Stat miss %s@}@."
+            (Printexc.to_string e);
+          Bsb_file_not_exist
+        end
   end
 
 let store ~cwd name file_stamps =
@@ -8719,7 +8722,7 @@ module Bsb_file : sig
 
 
 
-(** [true] *)
+(** return [true] if copied *)
 val install_if_exists : destdir:string -> string -> bool
 
 
@@ -8995,6 +8998,7 @@ let build_cmi =
 
 let reset () = 
   rule_id := 0;
+  rule_names := String_set.empty;
   build_ast_and_deps.used <- false ;
   build_ast_and_deps_from_reason_impl.used <- false ;  
   build_ast_and_deps_from_reason_intf.used <- false ;
@@ -9975,9 +9979,12 @@ let regen = "-regen"
 let separator = "--"
 
 
+(** TODO: create the animation effect *)
 let install ~destdir file = 
   if Bsb_file.install_if_exists ~destdir file  then 
-    Format.fprintf Format.std_formatter "%s => %s @." file destdir 
+    Format.fprintf Format.std_formatter "%s => %s @." file destdir
+
+
 let install_targets cwd (config : Bsb_config_types.t option) =
   match config with 
   | None -> ()
@@ -10047,7 +10054,7 @@ let () =
 
 
 let clean_bs_garbage cwd =
-  Format.fprintf Format.std_formatter "@{<info>Cleaning @} in %s@." cwd ; 
+  Format.fprintf Format.std_formatter "@{<info>Cleaning:@} in %s@." cwd ; 
   let aux x =
     let x = (cwd // x)  in
     if Sys.file_exists x then
@@ -10071,7 +10078,7 @@ let clean_self () = clean_bs_garbage cwd
 (** Regenerate ninja file and return None if we dont need regenerate
     otherwise return some info
 *)
-let regenerate_ninja ~no_dev ~override_package_specs cwd bsc_dir forced =
+let regenerate_ninja ~no_dev ~override_package_specs ~generate_watch_metadata cwd bsc_dir forced =
   let output_deps = cwd // Bsb_config.lib_bs // bsdeps in
   let reason : Bsb_dep_infos.check_result =
     Bsb_dep_infos.check ~cwd  forced output_deps in
@@ -10092,7 +10099,7 @@ let regenerate_ninja ~no_dev ~override_package_specs cwd bsc_dir forced =
         Bsb_config_parse.interpret_json 
           ~override_package_specs
           ~bsc_dir
-          ~generate_watch_metadata:true
+          ~generate_watch_metadata
           ~no_dev
           cwd in 
       begin 
@@ -10149,32 +10156,29 @@ let print_string_args (args : string array) =
 (* Note that [keepdepfile] only makes sense when combined with [deps] for optimizatoin
    It has to be the last command of [bsb]
 *)
-let exec_command_install_then_exit cwd config install command =
+let exec_command_install_then_exit  command =
+  Format.fprintf Format.std_formatter "@{<info>CMD:@} %s@." command;
   print_endline command ;
-  let exit_code = (Sys.command command ) in
-  if exit_code <> 0 then begin
-    exit exit_code
-  end else begin
-    if install then begin  install_targets cwd config end;
-    exit 0;
-  end
+  exit (Sys.command command ) 
 
-let ninja_command_exit (type t) ~install cwd vendor_ninja ninja_args  config : t =
+let ninja_command_exit (type t)  cwd vendor_ninja ninja_args  config : t =
   let ninja_args_len = Array.length ninja_args in
   if ninja_args_len = 0 then
     begin
-      match install, Ext_sys.is_windows_or_cygwin with
-      | false, false ->
+      match Ext_sys.is_windows_or_cygwin with
+      |  false ->
         let args = [|"ninja.exe"; "-C"; Bsb_config.lib_bs |] in
         print_string_args args ;
         Unix.execvp vendor_ninja args
-      | install, _ ->
-        exec_command_install_then_exit cwd config install @@ Ext_string.inter3  (Filename.quote vendor_ninja) "-C" Bsb_config.lib_bs
+      | true ->
+        exec_command_install_then_exit
+        @@ Ext_string.inter3
+          (Filename.quote vendor_ninja) "-C" Bsb_config.lib_bs
     end
   else
     let fixed_args_length = 3 in
-    begin match install, Ext_sys.is_windows_or_cygwin with
-      | false, false ->
+    begin match  Ext_sys.is_windows_or_cygwin with
+      | false ->
         let args = (Array.init (fixed_args_length + ninja_args_len)
                       (fun i -> match i with
                          | 0 -> "ninja.exe"
@@ -10183,14 +10187,15 @@ let ninja_command_exit (type t) ~install cwd vendor_ninja ninja_args  config : t
                          | _ -> Array.unsafe_get ninja_args (i - fixed_args_length) )) in
         print_string_args args ;
         Unix.execvp vendor_ninja args
-      | install, _ ->
+      |  _ ->
         let args = (Array.init (fixed_args_length + ninja_args_len)
                       (fun i -> match i with
                          | 0 -> (Filename.quote vendor_ninja)
                          | 1 -> "-C"
                          | 2 -> Bsb_config.lib_bs
                          | _ -> Array.unsafe_get ninja_args (i - fixed_args_length) )) in
-        exec_command_install_then_exit cwd config install  @@ Ext_string.concat_array Ext_string.single_space args
+        exec_command_install_then_exit
+        @@ Ext_string.concat_array Ext_string.single_space args
     end
 
 
@@ -10221,7 +10226,8 @@ let build_bs_deps deps =
     (fun {top; cwd} ->
        if not top then
          begin 
-           let config_opt = regenerate_ninja ~no_dev:true 
+           let config_opt = regenerate_ninja ~no_dev:true
+               ~generate_watch_metadata:false
              ~override_package_specs:(Some deps) 
              cwd bsc_dir true in (* set true to force regenrate ninja file so we have [config_opt]*)
            Bsb_unix.run_command_execv
@@ -10257,7 +10263,7 @@ let () =
   if Array.length Sys.argv <= 1 then
     begin
       let config_opt =  regenerate_ninja ~override_package_specs:None ~no_dev:false cwd bsc_dir false in 
-      ninja_command_exit ~install:false cwd vendor_ninja [||] config_opt
+      ninja_command_exit  cwd vendor_ninja [||] config_opt
     end
   else
     begin
@@ -10280,7 +10286,7 @@ let () =
               end 
             | make_world, force_regenerate ->
               (* don't regenerate files when we only run [bsb -clean-world] *)
-              let config_opt = regenerate_ninja ~override_package_specs:None ~no_dev:false cwd bsc_dir force_regenerate in
+              let config_opt = regenerate_ninja ~generate_watch_metadata:true ~override_package_specs:None ~no_dev:false cwd bsc_dir force_regenerate in
               if make_world then begin
                 make_world_deps config_opt
               end;
@@ -10292,7 +10298,7 @@ let () =
                    [bsb -regen ]
                 *)
               end else if make_world then begin
-                ninja_command_exit ~install:false cwd vendor_ninja [||] config_opt
+                ninja_command_exit  cwd vendor_ninja [||] config_opt
               end
           end;
 
@@ -10301,12 +10307,12 @@ let () =
         -> (* -make-world all dependencies fall into this category *)
         begin
           Arg.parse_argv bsb_args bsb_main_flags handle_anonymous_arg usage ;
-          let config_opt = regenerate_ninja ~override_package_specs:None ~no_dev:false cwd bsc_dir !force_regenerate in
+          let config_opt = regenerate_ninja ~generate_watch_metadata:true ~override_package_specs:None ~no_dev:false cwd bsc_dir !force_regenerate in
           (* [-make-world] should never be combined with [-package-specs] *)
           if make_world.set then
             make_world_deps config_opt ;
           if !watch_mode then watch_exit ()
-          else ninja_command_exit ~install:false cwd vendor_ninja ninja_args config_opt
+          else ninja_command_exit  cwd vendor_ninja ninja_args config_opt
         end
     end
 (*with x ->

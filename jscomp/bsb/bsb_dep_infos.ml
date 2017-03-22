@@ -111,7 +111,14 @@ let check ~cwd forced file =
     else
       try
         check_aux cwd xs  0 (Array.length xs)
-      with _ -> Bsb_file_not_exist
+      with e ->
+        begin
+          Format.fprintf
+            Format.std_formatter
+            "@{<info>Stat miss %s@}@."
+            (Printexc.to_string e);
+          Bsb_file_not_exist
+        end
   end
 
 let store ~cwd name file_stamps =
