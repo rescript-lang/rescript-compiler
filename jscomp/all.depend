@@ -20,6 +20,7 @@ ext/ext_file_pp.cmx : ext/ext_file_pp.cmi
 ext/ext_format.cmx : ext/ext_format.cmi
 ext/hashtbl_gen.cmx : ext/ext_util.cmx
 ext/ext_string.cmx : ext/ext_bytes.cmx ext/ext_string.cmi
+ext/ext_color.cmx : ext/ext_color.cmi
 ext/ext_utf8.cmx : ext/ext_utf8.cmi
 ext/ext_js_regex.cmx : ext/ext_utf8.cmx ext/ext_js_regex.cmi
 ext/string_hashtbl.cmx : ext/hashtbl_gen.cmx ext/ext_string.cmx \
@@ -101,6 +102,7 @@ ext/map_make.cmi : ext/map_gen.cmx
 ext/ext_file_pp.cmi :
 ext/ext_format.cmi :
 ext/ext_string.cmi :
+ext/ext_color.cmi :
 ext/ext_utf8.cmi :
 ext/ext_js_regex.cmi :
 ext/string_hashtbl.cmi : ext/hashtbl_gen.cmx
@@ -146,7 +148,6 @@ ext/ext_filename.cmi :
 common/bs_version.cmx : common/bs_version.cmi
 common/js_config.cmx : ext/ext_string.cmx ext/ext_pervasives.cmx \
     ext/ext_filename.cmx common/js_config.cmi
-common/bs_pkg.cmx : ext/literals.cmx common/bs_pkg.cmi
 common/ext_log.cmx : common/js_config.cmx common/ext_log.cmi
 common/bs_loc.cmx : common/bs_loc.cmi
 common/bs_warnings.cmx : ext/literals.cmx common/js_config.cmx \
@@ -157,7 +158,6 @@ common/binary_cache.cmx : ext/string_map.cmx ext/ext_filename.cmx \
     common/binary_cache.cmi
 common/bs_version.cmi :
 common/js_config.cmi :
-common/bs_pkg.cmi :
 common/ext_log.cmi :
 common/bs_loc.cmi :
 common/bs_warnings.cmi :
@@ -680,28 +680,27 @@ bsb/bsb_build_schemas.cmx :
 bsb/bsb_build_ui.cmx : ext/string_vec.cmx ext/string_set.cmx \
     ext/string_map.cmx ext/ext_string.cmx ext/ext_json_types.cmx \
     ext/ext_json.cmx ext/ext_filename.cmx ext/ext_file_pp.cmx \
-    bsb/bsb_exception.cmx bsb/bsb_dir.cmx bsb/bsb_config.cmx \
-    bsb/bsb_build_util.cmx bsb/bsb_build_schemas.cmx common/binary_cache.cmx \
-    bsb/bsb_build_ui.cmi
-bsb/bsb_build_util.cmx : ext/literals.cmx ext/ext_sys.cmx ext/ext_string.cmx \
-    ext/ext_list.cmx ext/ext_json_types.cmx ext/ext_json_parse.cmx \
-    ext/ext_json.cmx ext/ext_filename.cmx ext/ext_array.cmx \
+    bsb/bsb_exception.cmx bsb/bsb_build_util.cmx bsb/bsb_build_schemas.cmx \
+    common/binary_cache.cmx bsb/bsb_build_ui.cmi
+bsb/bsb_build_util.cmx : ext/string_map.cmx ext/string_hashtbl.cmx \
+    ext/literals.cmx ext/ext_sys.cmx ext/ext_string.cmx ext/ext_list.cmx \
+    ext/ext_json_types.cmx ext/ext_json_parse.cmx ext/ext_json.cmx \
+    ext/ext_filename.cmx ext/ext_array.cmx bsb/bsb_pkg.cmx \
     bsb/bsb_exception.cmx bsb/bsb_config.cmx bsb/bsb_build_schemas.cmx \
-    common/bs_pkg.cmx bsb/bsb_build_util.cmi
+    bsb/bsb_build_util.cmi
 bsb/bsb_config.cmx : ext/string_set.cmx ext/literals.cmx ext/ext_string.cmx \
     ext/ext_filename.cmx bsb/bsb_config.cmi
 bsb/bsb_config_parse.cmx : ext/string_set.cmx ext/string_map.cmx \
     ext/string_hash_set.cmx ext/literals.cmx ext/ext_string.cmx \
     ext/ext_json_types.cmx ext/ext_json_parse.cmx ext/ext_json.cmx \
     ext/ext_filename.cmx ext/ext_file_pp.cmx ext/ext_array.cmx \
-    bsb/bsb_exception.cmx bsb/bsb_default.cmx bsb/bsb_config_types.cmx \
+    bsb/bsb_pkg.cmx bsb/bsb_default.cmx bsb/bsb_config_types.cmx \
     bsb/bsb_config.cmx bsb/bsb_build_util.cmx bsb/bsb_build_ui.cmx \
-    bsb/bsb_build_schemas.cmx common/bs_version.cmx common/bs_pkg.cmx \
-    bsb/bsb_config_parse.cmi
+    bsb/bsb_build_schemas.cmx common/bs_version.cmx bsb/bsb_config_parse.cmi
 bsb/bsb_config_types.cmx : ext/string_hash_set.cmx bsb/bsb_config.cmx \
     bsb/bsb_build_ui.cmx
 bsb/bsb_default.cmx : ext/string_set.cmx ext/literals.cmx \
-    bsb/bsb_default.cmi
+    bsb/bsb_config_types.cmx bsb/bsb_default.cmi
 bsb/bsb_dep_infos.cmx : ext/ext_string.cmx common/bs_version.cmx \
     bsb/bsb_dep_infos.cmi
 bsb/bsb_dir.cmx : bsb/bsb_dir.cmi
@@ -709,30 +708,32 @@ bsb/bsb_exception.cmx : ext/ext_string.cmx ext/ext_position.cmx \
     ext/ext_json.cmx common/bs_version.cmx bsb/bsb_exception.cmi
 bsb/bsb_file.cmx : bsb/bsb_file.cmi
 bsb/bsb_gen.cmx : ext/string_map.cmx ext/literals.cmx ext/ext_string.cmx \
-    ext/ext_list.cmx ext/ext_filename.cmx bsb/bsb_ninja.cmx \
+    ext/ext_list.cmx ext/ext_filename.cmx bsb/bsb_rule.cmx bsb/bsb_ninja.cmx \
     bsb/bsb_config_types.cmx bsb/bsb_config.cmx bsb/bsb_build_util.cmx \
     bsb/bsb_build_ui.cmx bsb/bsb_build_schemas.cmx common/binary_cache.cmx \
     bsb/bsb_gen.cmi
 bsb/bsb_helper_main.cmx : depends/depends_post_process.cmx \
     bsb/bsb_helper_main.cmi
-bsb/bsb_main.cmx : ext/string_set.cmx ext/string_hash_set.cmx \
-    ext/literals.cmx ext/ext_sys.cmx ext/ext_string.cmx ext/ext_filename.cmx \
+bsb/bsb_main.cmx : ext/string_hash_set.cmx ext/literals.cmx ext/ext_sys.cmx \
+    ext/ext_string.cmx ext/ext_filename.cmx ext/ext_color.cmx \
     ext/ext_array.cmx bsb/bsb_unix.cmx bsb/bsb_gen.cmx bsb/bsb_file.cmx \
     bsb/bsb_dep_infos.cmx bsb/bsb_config_types.cmx bsb/bsb_config_parse.cmx \
     bsb/bsb_config.cmx bsb/bsb_build_util.cmx bsb/bsb_main.cmi
 bsb/bsb_ninja.cmx : ext/string_set.cmx ext/string_map.cmx \
-    ext/string_hash_set.cmx ext/literals.cmx ext/ext_sys.cmx \
-    ext/ext_string.cmx ext/ext_filename.cmx bsb/bsb_config.cmx \
+    ext/string_hash_set.cmx ext/literals.cmx ext/ext_string.cmx \
+    ext/ext_filename.cmx bsb/bsb_rule.cmx bsb/bsb_config.cmx \
     bsb/bsb_build_util.cmx bsb/bsb_build_ui.cmx bsb/bsb_build_schemas.cmx \
     common/binary_cache.cmx bsb/bsb_ninja.cmi
 bsb/bsb_os_dependent.cmx :
+bsb/bsb_pkg.cmx : ext/literals.cmx bsb/bsb_exception.cmx bsb/bsb_pkg.cmi
+bsb/bsb_rule.cmx : ext/string_set.cmx ext/ext_sys.cmx bsb/bsb_rule.cmi
 bsb/bsb_unix.cmx : ext/ext_sys.cmx ext/ext_string.cmx bsb/bsb_unix.cmi
 bsb/bsb_build_ui.cmi : ext/string_set.cmi ext/ext_json_types.cmx \
     ext/ext_file_pp.cmi common/binary_cache.cmi
 bsb/bsb_build_util.cmi : ext/ext_json_types.cmx
 bsb/bsb_config.cmi : ext/string_set.cmi
 bsb/bsb_config_parse.cmi : bsb/bsb_config_types.cmx bsb/bsb_config.cmi
-bsb/bsb_default.cmi : ext/string_set.cmi
+bsb/bsb_default.cmi : ext/string_set.cmi bsb/bsb_config_types.cmx
 bsb/bsb_dep_infos.cmi :
 bsb/bsb_dir.cmi :
 bsb/bsb_exception.cmi : ext/ext_position.cmi ext/ext_json_types.cmx
@@ -740,8 +741,10 @@ bsb/bsb_file.cmi :
 bsb/bsb_gen.cmi : bsb/bsb_config_types.cmx
 bsb/bsb_helper_main.cmi :
 bsb/bsb_main.cmi :
-bsb/bsb_ninja.cmi : ext/string_hash_set.cmi bsb/bsb_config.cmi \
-    bsb/bsb_build_ui.cmi
+bsb/bsb_ninja.cmi : ext/string_hash_set.cmi bsb/bsb_rule.cmi \
+    bsb/bsb_config.cmi bsb/bsb_build_ui.cmi
+bsb/bsb_pkg.cmi :
+bsb/bsb_rule.cmi :
 bsb/bsb_unix.cmi :
 jscmj_main.cmx : common/js_config.cmx core/js_cmj_format.cmx \
     ext/ext_string.cmx ext/ext_pp.cmx ext/ext_pervasives.cmx \

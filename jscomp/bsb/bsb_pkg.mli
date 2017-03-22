@@ -1,3 +1,4 @@
+
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -23,30 +24,19 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-val common_js_prefix : string -> string
-val amd_js_prefix : string -> string 
-val goog_prefix : string -> string 
-val ocaml_bin_install_prefix : string -> string
-val proj_rel : string -> string
-val lib_bs : string
-val lib_ocaml : string
-val all_lib_artifacts : string list 
-(* we need generate path relative to [lib/bs] directory in the opposite direction *)
-val rev_lib_bs_prefix : string -> string
+(** [resolve cwd module_name], 
+    [cwd] is current working directory, absolute path
+    Trying to find paths to load [module_name]
+    it is sepcialized for option [-bs-package-include] which requires
+    [npm_package_name/lib/ocaml]
 
-val no_dev: bool ref 
+    it relies on [npm_config_prefix] env variable for global npm modules
+*)
 
-(** default not install, only when -make-world, its dependencies will be installed  *)
+(** @raise  when not found *)
+val resolve_bs_package : 
+    cwd:string ->  string -> string 
 
 
-val supported_format : string -> bool
-
-val package_flag : format:string -> string -> string 
-
-val package_output : format:string -> string -> string 
-
-type package_specs = String_set.t
-
-val cmd_package_specs : package_specs option ref 
-
-val cmd_override_package_specs : string -> unit
+val resolve_npm_package_file :
+    cwd:string -> string -> string option
