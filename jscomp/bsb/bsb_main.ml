@@ -241,39 +241,37 @@ let exec_command_install_then_exit  command =
 let ninja_command_exit (type t)  cwd vendor_ninja ninja_args  config : t =
   let ninja_args_len = Array.length ninja_args in
   if ninja_args_len = 0 then
-    begin
-      match Ext_sys.is_windows_or_cygwin with
-      |  false ->
+    if Ext_sys.is_windows_or_cygwin then
+      exec_command_install_then_exit
+      @@ Ext_string.inter3
+        (Filename.quote vendor_ninja) "-C" Bsb_config.lib_bs
+    else 
         let args = [|"ninja.exe"; "-C"; Bsb_config.lib_bs |] in
         print_string_args args ;
         Unix.execvp vendor_ninja args
-      | true ->
-        exec_command_install_then_exit
-        @@ Ext_string.inter3
-          (Filename.quote vendor_ninja) "-C" Bsb_config.lib_bs
-    end
   else
     let fixed_args_length = 3 in
-    begin match  Ext_sys.is_windows_or_cygwin with
-      | false ->
-        let args = (Array.init (fixed_args_length + ninja_args_len)
-                      (fun i -> match i with
-                         | 0 -> "ninja.exe"
-                         | 1 -> "-C"
-                         | 2 -> Bsb_config.lib_bs
-                         | _ -> Array.unsafe_get ninja_args (i - fixed_args_length) )) in
-        print_string_args args ;
-        Unix.execvp vendor_ninja args
-      |  _ ->
-        let args = (Array.init (fixed_args_length + ninja_args_len)
-                      (fun i -> match i with
-                         | 0 -> (Filename.quote vendor_ninja)
-                         | 1 -> "-C"
-                         | 2 -> Bsb_config.lib_bs
-                         | _ -> Array.unsafe_get ninja_args (i - fixed_args_length) )) in
-        exec_command_install_then_exit
-        @@ Ext_string.concat_array Ext_string.single_space args
-    end
+    if 
+      Ext_sys.is_windows_or_cygwin then
+      let args = (Array.init (fixed_args_length + ninja_args_len)
+                    (fun i -> match i with
+                       | 0 -> (Filename.quote vendor_ninja)
+                       | 1 -> "-C"
+                       | 2 -> Bsb_config.lib_bs
+                       | _ -> Array.unsafe_get ninja_args (i - fixed_args_length) )) in
+      exec_command_install_then_exit
+      @@ Ext_string.concat_array Ext_string.single_space args
+    else 
+
+      let args = (Array.init (fixed_args_length + ninja_args_len)
+                    (fun i -> match i with
+                       | 0 -> "ninja.exe"
+                       | 1 -> "-C"
+                       | 2 -> Bsb_config.lib_bs
+                       | _ -> Array.unsafe_get ninja_args (i - fixed_args_length) )) in
+      print_string_args args ;
+      Unix.execvp vendor_ninja args
+
 
 
 
@@ -310,7 +308,7 @@ let build_bs_deps deps =
            Bsb_unix.run_command_execv
              {cmd = vendor_ninja;
               cwd = cwd // Bsb_config.lib_bs;
-              args  = [|"ninja.exe" |]
+              args  = [|vendor_ninja|]
              };
            (* When ninja is not regenerated, ninja will still do the build, 
               still need reinstall check

@@ -73,7 +73,10 @@ let run_command_execv_win (cmd : command) =
   let old_cwd = Unix.getcwd () in 
   log cmd;
   Unix.chdir cmd.cwd;
-  let eid = Sys.command (String.concat Ext_string.single_space (Array.to_list cmd.args)) in 
+  let eid =
+    Sys.command 
+      (String.concat Ext_string.single_space 
+                           (cmd.cmd ::( List.tl  @@ Array.to_list cmd.args))) in 
   if eid <> 0 then 
     begin 
       fail cmd;
