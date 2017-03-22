@@ -118,8 +118,8 @@ OTHERS := literals a test_ari test_export2 test_internalOO test_obj_simple_ffi t
 	compare_test\
 	js_cast_test\
 	gpr_1423_nav\
-	gpr_1423_app_test
-
+	gpr_1423_app_test\
+	bb
 
 # bs_uncurry_test
 # needs Lam to get rid of Uncurry arity first

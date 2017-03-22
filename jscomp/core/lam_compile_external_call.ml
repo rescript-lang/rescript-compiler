@@ -154,7 +154,7 @@ let assemble_args_splice call_loc ffi  js_splice arg_types args : E.t list * E.t
                 ls @ accs, eff 
               | _ -> 
                 Location.raise_errorf ~loc:call_loc
-                  {|function call with %s  is a primitive with [@@bs.splice], it expects its `bs.splice` argument to be a syntactic array in the call site and  all arguments to be supplied|}
+                  {|@{<error>Error:@} function call with %s  is a primitive with [@@bs.splice], it expects its `bs.splice` argument to be a syntactic array in the call site and  all arguments to be supplied|}
                   (Ast_ffi_types.name_of_ffi ffi)
             end
           | _ -> assert false 

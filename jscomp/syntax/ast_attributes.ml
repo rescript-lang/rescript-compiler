@@ -54,7 +54,7 @@ let process_method_attributes_rev (attrs : t) =
                | Some e -> 
                  Ast_payload.assert_bool_lit e)
 
-            else Location.raise_errorf ~loc "unsupported predicates"
+            else Bs_syntaxerr.err loc Unsupported_predicates
           ) (false, false) (Ast_payload.as_config_record_and_process loc payload)  in 
 
         ({st with get = Some result}, acc  )
@@ -71,7 +71,7 @@ let process_method_attributes_rev (attrs : t) =
                 if Ast_payload.assert_bool_lit e then 
                   `No_get
                 else `Get
-            else Location.raise_errorf ~loc "unsupported predicates"
+            else Bs_syntaxerr.err loc Unsupported_predicates
           ) `Get (Ast_payload.as_config_record_and_process loc payload)  in 
         (* properties -- void 
               [@@bs.set{only}]
@@ -94,9 +94,7 @@ let process_attributes_rev (attrs : t) =
         -> `Method, acc
       | "bs", _
       | "bs.this", _
-        -> Location.raise_errorf 
-             ~loc
-             "[@bs.this], [@bs], [@bs.meth] can not be applied at the same time"
+        -> Bs_syntaxerr.err loc Conflict_bs_bs_this_bs_meth
       | _ , _ -> 
         st, attr::acc 
     ) ( `Nothing, []) attrs
@@ -135,7 +133,8 @@ let process_derive_type attrs =
              (Ast_payload.as_config_record_and_process loc payload)}, acc 
       | {bs_deriving = `Has_deriving _}, "bs.deriving"
         -> 
-        Location.raise_errorf ~loc "duplicated bs.deriving attribute"
+        Bs_syntaxerr.err loc Duplicated_bs_deriving
+
       | _ , _ ->
         let st = 
           if txt = "nonrec" then 
@@ -168,7 +167,7 @@ let process_bs_string_int_uncurry attrs =
       | "bs.string", _
       | "bs.ignore", _
         -> 
-        Location.raise_errorf ~loc "conflict attributes "
+        Bs_syntaxerr.err loc Conflict_attributes
       | _ , _ -> st, (attr :: attrs )
     ) (`Nothing, []) attrs
 
@@ -181,12 +180,12 @@ let process_bs_string_as  attrs =
         ->
         begin match Ast_payload.is_single_string payload with 
           | None -> 
-            Location.raise_errorf ~loc "expect string literal "
+            Bs_syntaxerr.err loc Expect_string_literal
           | Some  _ as v->  (v, attrs)  
         end
       | "bs.as",  _ 
         -> 
-          Location.raise_errorf ~loc "duplicated bs.as "
+          Bs_syntaxerr.err loc Duplicated_bs_as 
       | _ , _ -> (st, attr::attrs) 
     ) (None, []) attrs
 
@@ -199,12 +198,12 @@ let process_bs_int_as  attrs =
         ->
         begin match Ast_payload.is_single_int payload with 
           | None -> 
-            Location.raise_errorf ~loc "expect int literal "
+            Bs_syntaxerr.err loc Expect_int_literal
           | Some  _ as v->  (v, attrs)  
         end
       | "bs.as",  _ 
         -> 
-          Location.raise_errorf ~loc "duplicated bs.as "
+        Bs_syntaxerr.err loc Duplicated_bs_as
       | _ , _ -> (st, attr::attrs) 
     ) (None, []) attrs
 
@@ -219,14 +218,14 @@ let process_bs_string_or_int_as attrs =
           | None -> 
             begin match Ast_payload.is_single_string payload with 
             | None -> 
-              Location.raise_errorf ~loc "expect int or string literal "
+              Bs_syntaxerr.err loc Expect_int_or_string_literal
             | Some s -> (Some (`Str s), attrs)
             end
           | Some   v->  (Some (`Int v), attrs)  
         end
       | "bs.as",  _ 
         -> 
-          Location.raise_errorf ~loc "duplicated bs.as "
+        Bs_syntaxerr.err loc Duplicated_bs_as
       | _ , _ -> (st, attr::attrs) 
     ) (None, []) attrs
 

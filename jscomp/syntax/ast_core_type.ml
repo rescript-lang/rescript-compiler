@@ -183,6 +183,6 @@ let list_of_arrow (ty : t) =
     | Ptyp_arrow(label,t1,t2) -> 
       aux t2 ((label,t1,ty.ptyp_attributes,ty.ptyp_loc) ::acc)
     | Ptyp_poly(_, ty) -> (* should not happen? *)
-      Location.raise_errorf ~loc:ty.ptyp_loc "Unhandled poly type"
+      Bs_syntaxerr.err ty.ptyp_loc Unhandled_poly_type
     | return_type -> ty, List.rev acc
   in aux ty []

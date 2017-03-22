@@ -1555,7 +1555,8 @@ let convert exports lam : _ * _  =
         | "#fn_mk" -> Pjs_fn_make (int_of_string p.prim_native_name)
         | "#fn_method" -> Pjs_fn_method (int_of_string p.prim_native_name)
         | "#unsafe_downgrade" -> Pjs_unsafe_downgrade (Ext_string.empty,loc)
-        | _ -> Location.raise_errorf ~loc "internal error, using unrecorgnized primitive %s" s 
+        | _ -> Location.raise_errorf ~loc
+                 "@{<error>Error:@} internal error, using unrecorgnized primitive %s" s 
       in
       prim ~primitive ~args loc 
   and aux_constant ( const : Lambda.structured_constant) : constant = 

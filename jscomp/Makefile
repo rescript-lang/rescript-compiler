@@ -216,7 +216,9 @@ EXT_CMXS=$(addprefix ext/, $(addsuffix .cmx, $(EXT_SRCS)))
 EXT_CMOS=$(addprefix ext/, $(addsuffix .cmo, $(EXT_SRCS)))
 COMMON_SRCS= bs_version js_config  ext_log bs_loc  bs_warnings  lam_methname  binary_cache
 COMMON_CMXS= $(addprefix common/, $(addsuffix .cmx, $(COMMON_SRCS)))
-SYNTAX_SRCS= ast_utf8_string\
+SYNTAX_SRCS= \
+	bs_syntaxerr\
+	ast_utf8_string\
 	ast_derive_constructor \
 	ast_derive_util \
 	ast_exp \
