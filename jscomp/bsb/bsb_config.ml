@@ -61,9 +61,9 @@ let proj_rel path = lazy_src_root_dir // path
     of bsb in configuration time
 *)
 
-let no_dev = ref false 
 
-let install = ref false 
+
+
 
 
 let cmd_package_specs = ref None 
@@ -78,16 +78,6 @@ let supported_format x =
   x = Literals.es6_global ||
   x = Literals.amdjs_global
 
-let cmd_override_package_specs str = 
-  let lst = Ext_string.split ~keep_empty:false str ',' in
-  cmd_package_specs :=
-    Some (List.fold_left (fun acc x ->
-          let v =
-            if supported_format x then String_set.add x acc
-            else
-              failwith ("Unkonwn package spec " ^ x) in
-          v
-    ) String_set.empty lst)
 
 let bs_package_output = "-bs-package-output"
 

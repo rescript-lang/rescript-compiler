@@ -62,6 +62,7 @@ let failf ?loc fmt =
             Format.asprintf "Error <bsconfig.json: %a> " Ext_position.print x  in 
     Format.ksprintf (fun s -> failwith (prefix ^ s)) fmt 
 
+let expect_an_array_fmt : _ format = "%s expect an array"
 let failwith_config config fmt =
   let loc = Ext_json.loc_of config in
   failf ~loc fmt 

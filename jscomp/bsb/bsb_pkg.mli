@@ -1,3 +1,4 @@
+
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -22,49 +23,18 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type public = 
-  | Export_all 
-  | Export_set of String_set.t 
-  | Export_none
-    
-type dir_index = int 
 
-type  file_group = 
-  { dir : string ; (* currently relative path expected for ninja file generation *)
-    sources : Binary_cache.file_group_rouces ; 
-    resources : string list ; (* relative path *)
-    bs_dependencies : string list; (* relative path *)
-    public : public;
-    dir_index : dir_index; 
-  } 
+(** [resolve cwd module_name], 
+    [cwd] is current working directory, absolute path
+    Trying to find paths to load [module_name]
+    it is sepcialized for option [-bs-package-include] which requires
+    [npm_package_name/lib/ocaml]
 
-type t = 
-  { files :  file_group list ; 
-    intervals :  Ext_file_pp.interval list ;
-    globbed_dirs : string list ; 
-  }
-
-val lib_dir_index : dir_index 
-
-val get_current_number_of_dev_groups : unit -> int 
-
-type parsing_cxt = {
-  no_dev : bool ;
-  dir_index : dir_index ; 
-  cwd : string ;
-  root : string 
-}
-
-
-(** entry is to the 
-    [sources] in the schema
-
-    [parsing_sources cxt json]
-    given a root, return an object which is
-    all relative paths, this function will do the IO
+    it relies on [npm_config_prefix] env variable for global npm modules
 *)
-val parsing_sources : 
-  parsing_cxt ->
-  Ext_json_types.t  ->
-  t 
-  
+
+(** @raise  when not found *)
+val resolve_bs_package : 
+    cwd:string ->  string -> string 
+
+

@@ -232,6 +232,16 @@ let suites =
         );
     end;
     __LOC__ >:: begin fun _ -> 
+      OUnit.assert_bool __LOC__ 
+        (Ext_string.no_slash_idx "xxx" < 0);
+      OUnit.assert_bool __LOC__ 
+        (Ext_string.no_slash_idx "xxx/" = 3);
+      OUnit.assert_bool __LOC__ 
+        (Ext_string.no_slash_idx "xxx/g/" = 3);
+      OUnit.assert_bool __LOC__ 
+        (Ext_string.no_slash_idx "/xxx/g/" = 0)
+    end;
+    __LOC__ >:: begin fun _ -> 
       OUnit.assert_bool __LOC__
         (Ext_string.equal 
            (Ext_string.concat_array Ext_string.single_space [||])

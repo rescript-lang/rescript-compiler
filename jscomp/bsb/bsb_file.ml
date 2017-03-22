@@ -20,7 +20,8 @@ let buffer = Bytes.create buffer_size;;
 let file_copy input_name output_name =
   let fd_in = openfile input_name [O_RDONLY] 0 in
   let fd_out = openfile output_name [O_WRONLY; O_CREAT; O_TRUNC] 0o666 in
-  let rec copy_loop () = match read fd_in buffer 0 buffer_size with
+  let rec copy_loop () =
+    match read fd_in buffer 0 buffer_size with
     |  0 -> ()
     | r -> ignore (write fd_out buffer 0 r); copy_loop ()
   in
@@ -35,4 +36,10 @@ let copy_with_permission input_name output_name =
 
 let install_if_exists ~destdir input_name = 
     if Sys.file_exists input_name then 
-        copy_with_permission input_name (Filename.concat destdir (Filename.basename input_name))   
+      let output_name = (Filename.concat destdir (Filename.basename input_name)) in
+      match Unix.stat output_name , Unix.stat input_name with
+      | {st_mtime = output_stamp}, {st_mtime = input_stamp} when input_stamp <= output_stamp 
+        -> false
+      | _ -> copy_with_permission input_name output_name; true 
+      | exception _ -> copy_with_permission input_name output_name; true
+    else false

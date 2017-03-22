@@ -22,49 +22,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type public = 
-  | Export_all 
-  | Export_set of String_set.t 
-  | Export_none
-    
-type dir_index = int 
 
-type  file_group = 
-  { dir : string ; (* currently relative path expected for ninja file generation *)
-    sources : Binary_cache.file_group_rouces ; 
-    resources : string list ; (* relative path *)
-    bs_dependencies : string list; (* relative path *)
-    public : public;
-    dir_index : dir_index; 
-  } 
+(** Input is the tag for example `@{<warning>@}` return escape code *)
+val ansi_of_tag : string -> string 
 
-type t = 
-  { files :  file_group list ; 
-    intervals :  Ext_file_pp.interval list ;
-    globbed_dirs : string list ; 
-  }
-
-val lib_dir_index : dir_index 
-
-val get_current_number_of_dev_groups : unit -> int 
-
-type parsing_cxt = {
-  no_dev : bool ;
-  dir_index : dir_index ; 
-  cwd : string ;
-  root : string 
-}
-
-
-(** entry is to the 
-    [sources] in the schema
-
-    [parsing_sources cxt json]
-    given a root, return an object which is
-    all relative paths, this function will do the IO
-*)
-val parsing_sources : 
-  parsing_cxt ->
-  Ext_json_types.t  ->
-  t 
-  
+val reset_lit : string
