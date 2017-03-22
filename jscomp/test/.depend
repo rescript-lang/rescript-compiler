@@ -64,6 +64,7 @@ bal_set_mini.cmj :
 bang_primitive.cmj :
 basic_module_test.cmj : ../stdlib/set.cmj pr6726.cmj offset.cmj \
     mt_global.cmj mt.cmj basic_module_test.cmi
+bb.cmj :
 bdd.cmj : ../stdlib/array.cmj
 bench.cmj : ../stdlib/array.cmj
 bigarray_test.cmj : ../stdlib/int32.cmj ../stdlib/complex.cmj \

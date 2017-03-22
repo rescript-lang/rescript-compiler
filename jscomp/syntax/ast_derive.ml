@@ -68,5 +68,7 @@ let dispatch_extension ({Asttypes.txt ; loc}) typ =
   let txt = Ext_string.tail_from txt (String.length Literals.bs_deriving_dot) in 
     match (Ast_payload.table_dispatch !derive_table 
             ({txt ; loc}, None)).expression_gen with 
-    | None -> Location.raise_errorf ~loc "%s is not registered" txt 
+    | None ->
+      Bs_syntaxerr.err loc (Unregistered txt)
+
     | Some f -> f typ

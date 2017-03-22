@@ -43,10 +43,11 @@ let get_arg_type ~nolabel optional
   let ptyp = if optional then Ast_core_type.extract_option_type_exn ptyp else ptyp in 
   if Ast_core_type.is_any ptyp then (* (_[@bs.as ])*)
     if optional then 
-      Location.raise_errorf ~loc:ptyp.ptyp_loc "_ is not allowed in combination with external optional type"
+      Bs_syntaxerr.err ptyp.ptyp_loc Invalid_underscore_type_in_external
     else begin match Ast_attributes.process_bs_string_or_int_as ptyp.Parsetree.ptyp_attributes with 
       |  None, _ -> 
-        Location.raise_errorf ~loc:ptyp.ptyp_loc "_ is not allowed in external type unless in (_[@bs.as])"
+        Bs_syntaxerr.err ptyp.ptyp_loc Invalid_underscore_type_in_external
+
       | Some (`Int i), others -> 
         Ast_attributes.warn_unused_attributes others;
         Arg_int_lit i, Ast_literal.type_int ~loc:ptyp.ptyp_loc ()  
@@ -83,17 +84,18 @@ let get_arg_type ~nolabel optional
                    `NonNull, ((Ext_pervasives.hash_variant label, label) :: acc),
                    (tag :: row_fields)
                end
-             | _ -> Location.raise_errorf ~loc:ptyp.ptyp_loc "Not a valid string type"
+             | _ -> Bs_syntaxerr.err ptyp.ptyp_loc Invalid_bs_string_type
+
            ) row_fields (`Nothing, [], [])) in 
       (match case with 
-       | `Nothing -> Location.raise_errorf ~loc:ptyp.ptyp_loc "Not a valid string type"
+       | `Nothing -> Bs_syntaxerr.err ptyp.ptyp_loc Invalid_bs_string_type
        | `Null -> NullString result 
        | `NonNull -> NonNullString result) , 
       {ptyp with ptyp_desc = Ptyp_variant(row_fields, Closed, None);
                  ptyp_attributes ;
       }
-    | (`String, _),  _ -> Location.raise_errorf ~loc:ptyp.ptyp_loc "Not a valid string type"
-
+    | (`String, _),  _ ->
+      Bs_syntaxerr.err ptyp.ptyp_loc Invalid_bs_string_type
     | (`Ignore, ptyp_attributes), _  -> 
       (Ignore, {ptyp with ptyp_attributes})
     | (`Int , ptyp_attributes),  Ptyp_variant ( row_fields, Closed, None) -> 
@@ -111,7 +113,9 @@ let get_arg_type ~nolabel optional
                     i + 1 , ((Ext_pervasives.hash_variant label , i):: acc ), rtag::row_fields
                 end
 
-              | _ -> Location.raise_errorf ~loc:ptyp.ptyp_loc "Not a valid string type"
+              | _ -> 
+                Bs_syntaxerr.err ptyp.ptyp_loc Invalid_bs_int_type
+
            ) (0, [],[]) row_fields) in 
       Int (List.rev acc),
       {ptyp with 
@@ -119,7 +123,7 @@ let get_arg_type ~nolabel optional
        ptyp_attributes
       }
 
-    | (`Int, _), _ -> Location.raise_errorf ~loc:ptyp.ptyp_loc "Not a valid string type"
+    | (`Int, _), _ -> Bs_syntaxerr.err ptyp.ptyp_loc Invalid_bs_int_type
     | (`Uncurry opt_arity, ptyp_attributes), ptyp_desc -> 
       let real_arity =  Ast_core_type.get_uncurry_arity ptyp in 
       (begin match opt_arity, real_arity with 
@@ -626,7 +630,8 @@ let handle_attributes
 
       | {set_index = true; _}
         ->
-        Location.raise_errorf ~loc "conflict attributes found"        
+        Bs_syntaxerr.err loc Conflict_ffi_attribute
+
 
       | {get_index = true;
 
@@ -652,7 +657,10 @@ let handle_attributes
         else Location.raise_errorf ~loc "Ill defined attribute [@@bs.get_index] (arity of 2)"
 
       | {get_index = true; _}
-        -> Location.raise_errorf ~loc "conflict attributes found"        
+
+        -> 
+        Bs_syntaxerr.err loc Conflict_ffi_attribute
+
 
 
 
@@ -677,7 +685,8 @@ let handle_attributes
           | [], `Nm_na,  _ -> Js_module_as_var external_module_name
           | _, `Nm_na, _ -> Js_module_as_fn {splice; external_module_name }
           | _, #bundle_source, #bundle_source ->
-            Location.raise_errorf ~loc "conflict attributes found"
+            Bs_syntaxerr.err loc Conflict_ffi_attribute
+
           | _, (`Nm_val _ | `Nm_external _) , `Nm_na
             -> Js_module_as_class external_module_name
           | _, `Nm_payload _ , `Nm_na
@@ -687,7 +696,9 @@ let handle_attributes
 
         end
       | {module_as_val = Some _; _}
-        -> Location.raise_errorf ~loc "conflict attributes found" 
+        -> 
+        Bs_syntaxerr.err loc Conflict_ffi_attribute
+
       | {call_name = (`Nm_val name | `Nm_external name | `Nm_payload name) ;
          splice; 
          external_module_name;
@@ -707,7 +718,9 @@ let handle_attributes
         } -> 
         Js_call {splice; name; external_module_name}
       | {call_name = #bundle_source ; _ } 
-        -> Location.raise_errorf ~loc "conflict attributes found"
+        ->
+        Bs_syntaxerr.err loc Conflict_ffi_attribute
+
 
       | {val_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
          external_module_name;
@@ -728,7 +741,9 @@ let handle_attributes
         -> 
         Js_global { name; external_module_name}
       | {val_name = #bundle_source ; _ }
-        -> Location.raise_errorf ~loc "conflict attributes found"
+        ->
+        Bs_syntaxerr.err loc Conflict_ffi_attribute
+
       | {splice ;
          external_module_name = (Some _ as external_module_name);
 
@@ -814,7 +829,9 @@ let handle_attributes
         } 
         -> Js_new {name; external_module_name; splice}
       | {new_name = #bundle_source ; _ }
-        -> Location.raise_errorf ~loc "conflict attributes found"
+        -> 
+        Bs_syntaxerr.err loc Conflict_ffi_attribute
+
 
       | {set_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
 
