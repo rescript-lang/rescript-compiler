@@ -86,7 +86,7 @@ let ansi_of_tag s =
   let s =  String.concat ";" (List.map code_of_style l) in
   "\x1b[" ^ s ^ "m"
 
-let color_enabled = ref true
+
 
 let reset_lit = "\x1b[0m" 
 

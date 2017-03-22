@@ -9906,7 +9906,7 @@ let ansi_of_tag s =
   let s =  String.concat ";" (List.map code_of_style l) in
   "\x1b[" ^ s ^ "m"
 
-let color_enabled = ref true
+
 
 let reset_lit = "\x1b[0m" 
 
@@ -10235,7 +10235,11 @@ let build_bs_deps deps =
               cwd = cwd // Bsb_config.lib_bs;
               args  = [|"ninja.exe" |]
              };
-           (** When ninja is not regenerated, the build is good, so no need reinstall any more*)
+           (* When ninja is not regenerated, ninja will still do the build, 
+              still need reinstall check
+              Note that we can check if ninja print "no work to do", 
+              then don't need reinstall more
+           *)
            install_targets cwd config_opt;
          end
     )
