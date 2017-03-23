@@ -14,13 +14,11 @@ function is_sorted(x) {
     var i = _i;
     if (i >= (len - 1 | 0)) {
       return /* true */1;
-    }
-    else if (Caml_obj.caml_lessthan(Caml_array.caml_array_get(x, i), Caml_array.caml_array_get(x, i + 1 | 0))) {
+    } else if (Caml_obj.caml_lessthan(Caml_array.caml_array_get(x, i), Caml_array.caml_array_get(x, i + 1 | 0))) {
       _i = i + 1 | 0;
       continue ;
       
-    }
-    else {
+    } else {
       return /* false */0;
     }
   };

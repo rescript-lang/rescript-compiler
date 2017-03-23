@@ -61,8 +61,7 @@ if (match !== undefined) {
     console.log(v);
   }
   
-}
-else {
+} else {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [

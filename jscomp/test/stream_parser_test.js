@@ -19,8 +19,7 @@ function parse(token) {
   var token$1 = function () {
     if (look_ahead[/* length */0]) {
       return Queue.pop(look_ahead);
-    }
-    else {
+    } else {
       try {
         return Curry._1(token, /* () */0);
       }
@@ -41,18 +40,15 @@ function parse(token) {
                     Parse_error,
                     "Unbalanced parens"
                   ];
-            }
-            else if (match[0] === ")") {
+            } else if (match[0] === ")") {
               return v;
-            }
-            else {
+            } else {
               throw [
                     Parse_error,
                     "Unbalanced parens"
                   ];
             }
-          }
-          else {
+          } else {
             Queue.push(e, look_ahead);
             throw [
                   Parse_error,
@@ -75,8 +71,7 @@ function parse(token) {
     if (e.tag) {
       Queue.push(e, look_ahead);
       return e1;
-    }
-    else {
+    } else {
       switch (e[0]) {
         case "*" : 
             return Caml_int32.imul(e1, parse_term_aux(parse_atom(/* () */0)));
@@ -93,8 +88,7 @@ function parse(token) {
     if (e.tag) {
       Queue.push(e, look_ahead);
       return e1;
-    }
-    else {
+    } else {
       switch (e[0]) {
         case "+" : 
             return e1 + parse_expr_aux(parse_term_aux(parse_atom(/* () */0))) | 0;
@@ -153,8 +147,7 @@ function l_parse(token) {
   var token$1 = function () {
     if (look_ahead[/* length */0]) {
       return Queue.pop(look_ahead);
-    }
-    else {
+    } else {
       try {
         return Curry._1(token, /* () */0);
       }
@@ -175,18 +168,15 @@ function l_parse(token) {
                     Parse_error,
                     "Unbalanced )"
                   ];
-            }
-            else if (t$1[0] === ")") {
+            } else if (t$1[0] === ")") {
               return v;
-            }
-            else {
+            } else {
               throw [
                     Parse_error,
                     "Unbalanced )"
                   ];
             }
-          }
-          else {
+          } else {
             throw [
                   Parse_error,
                   "Unexpected token"
@@ -209,8 +199,7 @@ function l_parse(token) {
       if (t.tag) {
         Queue.push(t, look_ahead);
         return a;
-      }
-      else {
+      } else {
         switch (t[0]) {
           case "*" : 
               _a = Caml_int32.imul(a, parse_f(/* () */0));
@@ -232,8 +221,7 @@ function l_parse(token) {
       if (t.tag) {
         Queue.push(t, look_ahead);
         return a;
-      }
-      else {
+      } else {
         switch (t[0]) {
           case "+" : 
               _a = a + parse_f_aux(parse_f(/* () */0)) | 0;

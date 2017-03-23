@@ -19,8 +19,7 @@ function cons_enum(_s, _e) {
       _s = s[0];
       continue ;
       
-    }
-    else {
+    } else {
       return e;
     }
   };
@@ -29,8 +28,7 @@ function cons_enum(_s, _e) {
 function height(param) {
   if (param) {
     return param[3];
-  }
-  else {
+  } else {
     return 0;
   }
 }
@@ -44,12 +42,10 @@ function min_elt(_param) {
         _param = l;
         continue ;
         
-      }
-      else {
+      } else {
         return param[1];
       }
-    }
-    else {
+    } else {
       throw Caml_builtin_exceptions.not_found;
     }
   };
@@ -64,12 +60,10 @@ function max_elt(_param) {
         _param = r;
         continue ;
         
-      }
-      else {
+      } else {
         return param[1];
       }
-    }
-    else {
+    } else {
       throw Caml_builtin_exceptions.not_found;
     }
   };
@@ -78,8 +72,7 @@ function max_elt(_param) {
 function is_empty(param) {
   if (param) {
     return /* false */0;
-  }
-  else {
+  } else {
     return /* true */1;
   }
 }
@@ -93,8 +86,7 @@ function cardinal_aux(_acc, _param) {
       _acc = cardinal_aux(acc + 1 | 0, param[2]);
       continue ;
       
-    }
-    else {
+    } else {
       return acc;
     }
   };
@@ -116,8 +108,7 @@ function elements_aux(_accu, _param) {
       ];
       continue ;
       
-    }
-    else {
+    } else {
       return accu;
     }
   };
@@ -136,8 +127,7 @@ function iter(f, _param) {
       _param = param[2];
       continue ;
       
-    }
-    else {
+    } else {
       return /* () */0;
     }
   };
@@ -152,8 +142,7 @@ function fold(f, _s, _accu) {
       _s = s[2];
       continue ;
       
-    }
-    else {
+    } else {
       return accu;
     }
   };
@@ -168,16 +157,13 @@ function for_all(p, _param) {
           _param = param[2];
           continue ;
           
-        }
-        else {
+        } else {
           return /* false */0;
         }
-      }
-      else {
+      } else {
         return /* false */0;
       }
-    }
-    else {
+    } else {
       return /* true */1;
     }
   };
@@ -189,17 +175,14 @@ function exists(p, _param) {
     if (param) {
       if (Curry._1(p, param[1])) {
         return /* true */1;
-      }
-      else if (exists(p, param[0])) {
+      } else if (exists(p, param[0])) {
         return /* true */1;
-      }
-      else {
+      } else {
         _param = param[2];
         continue ;
         
       }
-    }
-    else {
+    } else {
       return /* false */0;
     }
   };
@@ -209,15 +192,12 @@ function max_int3(a, b, c) {
   if (a >= b) {
     if (a >= c) {
       return a;
-    }
-    else {
+    } else {
       return c;
     }
-  }
-  else if (b >= c) {
+  } else if (b >= c) {
     return b;
-  }
-  else {
+  } else {
     return c;
   }
 }
@@ -225,8 +205,7 @@ function max_int3(a, b, c) {
 function max_int_2(a, b) {
   if (a >= b) {
     return a;
-  }
-  else {
+  } else {
     return b;
   }
 }
@@ -242,18 +221,15 @@ function check_height_and_diff(param) {
     var hr = check_height_and_diff(param[2]);
     if (h !== (max_int_2(hl, hr) + 1 | 0)) {
       throw Height_invariant_broken;
-    }
-    else {
+    } else {
       var diff = Pervasives.abs(hl - hr | 0);
       if (diff > 2) {
         throw Height_diff_borken;
-      }
-      else {
+      } else {
         return h;
       }
     }
-  }
-  else {
+  } else {
     return 0;
   }
 }
@@ -284,11 +260,9 @@ function internal_bal(l, v, r) {
       var ll = l[0];
       if (height(ll) >= height(lr)) {
         return create(ll, lv, create(lr, v, r));
-      }
-      else if (lr) {
+      } else if (lr) {
         return create(create(ll, lv, lr[0]), lr[1], create(lr[2], v, r));
-      }
-      else {
+      } else {
         throw [
               Caml_builtin_exceptions.assert_failure,
               [
@@ -298,8 +272,7 @@ function internal_bal(l, v, r) {
               ]
             ];
       }
-    }
-    else {
+    } else {
       throw [
             Caml_builtin_exceptions.assert_failure,
             [
@@ -309,19 +282,16 @@ function internal_bal(l, v, r) {
             ]
           ];
     }
-  }
-  else if (hr > (hl + 2 | 0)) {
+  } else if (hr > (hl + 2 | 0)) {
     if (r) {
       var rr = r[2];
       var rv = r[1];
       var rl = r[0];
       if (height(rr) >= height(rl)) {
         return create(create(l, v, rl), rv, rr);
-      }
-      else if (rl) {
+      } else if (rl) {
         return create(create(l, v, rl[0]), rl[1], create(rl[2], rv, rr));
-      }
-      else {
+      } else {
         throw [
               Caml_builtin_exceptions.assert_failure,
               [
@@ -331,8 +301,7 @@ function internal_bal(l, v, r) {
               ]
             ];
       }
-    }
-    else {
+    } else {
       throw [
             Caml_builtin_exceptions.assert_failure,
             [
@@ -342,8 +311,7 @@ function internal_bal(l, v, r) {
             ]
           ];
     }
-  }
-  else {
+  } else {
     return /* Node */[
             l,
             v,
@@ -358,12 +326,10 @@ function remove_min_elt(param) {
     var l = param[0];
     if (l) {
       return internal_bal(remove_min_elt(l), param[1], param[2]);
-    }
-    else {
+    } else {
       return param[2];
     }
-  }
-  else {
+  } else {
     throw [
           Caml_builtin_exceptions.invalid_argument,
           "Set.remove_min_elt"
@@ -384,12 +350,10 @@ function internal_merge(l, r) {
   if (l) {
     if (r) {
       return internal_bal(l, min_elt(r), remove_min_elt(r));
-    }
-    else {
+    } else {
       return l;
     }
-  }
-  else {
+  } else {
     return r;
   }
 }
@@ -397,8 +361,7 @@ function internal_merge(l, r) {
 function add_min_element(v, param) {
   if (param) {
     return internal_bal(add_min_element(v, param[0]), param[1], param[2]);
-  }
-  else {
+  } else {
     return singleton(v);
   }
 }
@@ -406,8 +369,7 @@ function add_min_element(v, param) {
 function add_max_element(v, param) {
   if (param) {
     return internal_bal(param[0], param[1], add_max_element(v, param[2]));
-  }
-  else {
+  } else {
     return singleton(v);
   }
 }
@@ -419,19 +381,15 @@ function internal_join(l, v, r) {
       var lh = l[3];
       if (lh > (rh + 2 | 0)) {
         return internal_bal(l[0], l[1], internal_join(l[2], v, r));
-      }
-      else if (rh > (lh + 2 | 0)) {
+      } else if (rh > (lh + 2 | 0)) {
         return internal_bal(internal_join(l, v, r[0]), r[1], r[2]);
-      }
-      else {
+      } else {
         return create(l, v, r);
       }
-    }
-    else {
+    } else {
       return add_max_element(v, l);
     }
-  }
-  else {
+  } else {
     return add_min_element(v, r);
   }
 }
@@ -440,12 +398,10 @@ function internal_concat(t1, t2) {
   if (t1) {
     if (t2) {
       return internal_join(t1, min_elt(t2), remove_min_elt(t2));
-    }
-    else {
+    } else {
       return t1;
     }
-  }
-  else {
+  } else {
     return t2;
   }
 }
@@ -458,12 +414,10 @@ function filter(p, param) {
     var r$prime = filter(p, param[2]);
     if (pv) {
       return internal_join(l$prime, v, r$prime);
-    }
-    else {
+    } else {
       return internal_concat(l$prime, r$prime);
     }
-  }
-  else {
+  } else {
     return /* Empty */0;
   }
 }
@@ -483,15 +437,13 @@ function partition(p, param) {
               internal_join(lt, v, rt),
               internal_concat(lf, rf)
             ];
-    }
-    else {
+    } else {
       return /* tuple */[
               internal_concat(lt, rt),
               internal_join(lf, v, rf)
             ];
     }
-  }
-  else {
+  } else {
     return /* tuple */[
             /* Empty */0,
             /* Empty */0
@@ -504,8 +456,7 @@ function of_sorted_list(l) {
     var exit = 0;
     if (n > 3 || n < 0) {
       exit = 1;
-    }
-    else {
+    } else {
       switch (n) {
         case 0 : 
             return /* tuple */[
@@ -523,8 +474,7 @@ function of_sorted_list(l) {
                       ],
                       l[1]
                     ];
-            }
-            else {
+            } else {
               exit = 1;
             }
             break;
@@ -546,12 +496,10 @@ function of_sorted_list(l) {
                         ],
                         match[1]
                       ];
-              }
-              else {
+              } else {
                 exit = 1;
               }
-            }
-            else {
+            } else {
               exit = 1;
             }
             break;
@@ -580,16 +528,13 @@ function of_sorted_list(l) {
                           ],
                           match$2[1]
                         ];
-                }
-                else {
+                } else {
                   exit = 1;
                 }
-              }
-              else {
+              } else {
                 exit = 1;
               }
-            }
-            else {
+            } else {
               exit = 1;
             }
             break;
@@ -606,8 +551,7 @@ function of_sorted_list(l) {
                 create(match$3[0], l$1[0], match$4[0]),
                 match$4[1]
               ];
-      }
-      else {
+      } else {
         throw [
               Caml_builtin_exceptions.assert_failure,
               [
@@ -634,8 +578,7 @@ function of_sorted_array(l) {
                 /* Empty */0,
                 1
               ];
-      }
-      else if (n === 2) {
+      } else if (n === 2) {
         var x0$1 = l[start];
         var x1 = l[start + 1 | 0];
         return /* Node */[
@@ -649,8 +592,7 @@ function of_sorted_array(l) {
                 /* Empty */0,
                 2
               ];
-      }
-      else if (n === 3) {
+      } else if (n === 3) {
         var x0$2 = l[start];
         var x1$1 = l[start + 1 | 0];
         var x2 = l[start + 2 | 0];
@@ -670,8 +612,7 @@ function of_sorted_array(l) {
                 ],
                 2
               ];
-      }
-      else {
+      } else {
         var nl = n / 2 | 0;
         var left = sub(start, nl, l);
         var mid = start + nl | 0;
@@ -679,8 +620,7 @@ function of_sorted_array(l) {
         var right = sub(mid + 1 | 0, (n - nl | 0) - 1 | 0, l);
         return create(left, v, right);
       }
-    }
-    else {
+    } else {
       return /* Empty */0;
     }
   };
@@ -705,12 +645,10 @@ function is_ordered(cmp, tree) {
                         v
                       ]
                     ];
-            }
-            else {
+            } else {
               return /* No */17505;
             }
-          }
-          else {
+          } else {
             var match$2 = match$1[1];
             if (Curry._2(cmp, v, match$2[0]) < 0) {
               return /* `V */[
@@ -720,17 +658,14 @@ function is_ordered(cmp, tree) {
                         match$2[1]
                       ]
                     ];
-            }
-            else {
+            } else {
               return /* No */17505;
             }
           }
-        }
-        else {
+        } else {
           return /* No */17505;
         }
-      }
-      else {
+      } else {
         var match$3 = match[1];
         var max_v = match$3[1];
         var min_v = match$3[0];
@@ -744,12 +679,10 @@ function is_ordered(cmp, tree) {
                       v
                     ]
                   ];
-          }
-          else {
+          } else {
             return /* No */17505;
           }
-        }
-        else {
+        } else {
           var match$5 = match$4[1];
           if (Curry._2(cmp, max_v, match$5[0]) < 0) {
             return /* `V */[
@@ -759,14 +692,12 @@ function is_ordered(cmp, tree) {
                       match$5[1]
                     ]
                   ];
-          }
-          else {
+          } else {
             return /* No */17505;
           }
         }
       }
-    }
-    else {
+    } else {
       return /* Empty */50834029;
     }
   };
@@ -787,22 +718,18 @@ function compare_aux(cmp, _e1, _e2) {
         var c = Curry._2(cmp, e1[0], e2[0]);
         if (c !== 0) {
           return c;
-        }
-        else {
+        } else {
           _e2 = cons_enum(e2[1], e2[2]);
           _e1 = cons_enum(e1[1], e1[2]);
           continue ;
           
         }
-      }
-      else {
+      } else {
         return 1;
       }
-    }
-    else if (e2) {
+    } else if (e2) {
       return -1;
-    }
-    else {
+    } else {
       return 0;
     }
   };

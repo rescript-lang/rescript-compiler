@@ -53,8 +53,7 @@ function print_or_error(fmt, x) {
                       ]),
                     "@[Error:%s@]@."
                   ]), x[1]);
-  }
-  else {
+  } else {
     return Curry._2(Format.fprintf(fmt, /* Format */[
                     /* Formatting_gen */Block.__(18, [
                         /* Open_box */Block.__(1, [/* Format */[

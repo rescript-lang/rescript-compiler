@@ -6,15 +6,12 @@ function bool_equal(x, y) {
   if (x !== 0) {
     if (y !== 0) {
       return /* true */1;
-    }
-    else {
+    } else {
       return /* false */0;
     }
-  }
-  else if (y !== 0) {
+  } else if (y !== 0) {
     return /* false */0;
-  }
-  else {
+  } else {
     return /* true */1;
   }
 }

@@ -180,11 +180,9 @@ var param$3 = /* int array */[
 var param$4 = $$Array.map(function (x) {
       if (x > 0) {
         return 1;
-      }
-      else if (x < 0) {
+      } else if (x < 0) {
         return -1;
-      }
-      else {
+      } else {
         return 0;
       }
     }, $$Array.map(function (param) {

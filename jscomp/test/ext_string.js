@@ -23,15 +23,13 @@ function split_by($staropt$star, is_delim, str) {
     if (pos === -1) {
       if (last_pos === 0 && !keep_empty) {
         return acc;
-      }
-      else {
+      } else {
         return /* :: */[
                 $$String.sub(str, 0, last_pos),
                 acc
               ];
       }
-    }
-    else if (Curry._1(is_delim, Caml_string.get(str, pos))) {
+    } else if (Curry._1(is_delim, Caml_string.get(str, pos))) {
       var new_len = (last_pos - pos | 0) - 1 | 0;
       if (new_len !== 0 || keep_empty) {
         var v = $$String.sub(str, pos + 1 | 0, new_len);
@@ -43,15 +41,13 @@ function split_by($staropt$star, is_delim, str) {
         ];
         continue ;
         
-      }
-      else {
+      } else {
         _pos = pos - 1 | 0;
         _last_pos = pos;
         continue ;
         
       }
-    }
-    else {
+    } else {
       _pos = pos - 1 | 0;
       continue ;
       
@@ -81,8 +77,7 @@ function trim(s) {
 function split(keep_empty, str, on) {
   if (str === "") {
     return /* [] */0;
-  }
-  else {
+  } else {
     return split_by(keep_empty, function (x) {
                 return +(x === on);
               }, str);
@@ -93,8 +88,7 @@ function quick_split_by_ws(str) {
   return split_by(/* Some */[/* false */0], function (x) {
               if (x === /* "\t" */9 || x === /* "\n" */10) {
                 return /* true */1;
-              }
-              else {
+              } else {
                 return +(x === /* " " */32);
               }
             }, str);
@@ -109,8 +103,7 @@ function starts_with(s, beg) {
       i = i + 1 | 0;
     };
     return +(i === beg_len);
-  }
-  else {
+  } else {
     return /* false */0;
   }
 }
@@ -120,8 +113,7 @@ function ends_with_index(s, end_) {
   var s_beg = end_.length - 1 | 0;
   if (s_beg > s_finish) {
     return -1;
-  }
-  else {
+  } else {
     var _j = s_finish;
     var _k = s_beg;
     while(true) {
@@ -129,14 +121,12 @@ function ends_with_index(s, end_) {
       var j = _j;
       if (k < 0) {
         return j + 1 | 0;
-      }
-      else if (s[j] === end_[k]) {
+      } else if (s[j] === end_[k]) {
         _k = k - 1 | 0;
         _j = j - 1 | 0;
         continue ;
         
-      }
-      else {
+      } else {
         return -1;
       }
     };
@@ -151,8 +141,7 @@ function ends_with_then_chop(s, beg) {
   var i = ends_with_index(s, beg);
   if (i >= 0) {
     return /* Some */[$$String.sub(s, 0, i)];
-  }
-  else {
+  } else {
     return /* None */0;
   }
 }
@@ -171,14 +160,12 @@ function check_any_suffix_case_then_chop(s, suffixes) {
       var id = ends_with_index(s, suffixes$1[0]);
       if (id >= 0) {
         return /* Some */[$$String.sub(s, 0, id)];
-      }
-      else {
+      } else {
         _suffixes = suffixes$1[1];
         continue ;
         
       }
-    }
-    else {
+    } else {
       return /* None */0;
     }
   };
@@ -190,31 +177,26 @@ function escaped(s) {
       var i = _i;
       if (i >= s.length) {
         return /* false */0;
-      }
-      else {
+      } else {
         var match = s.charCodeAt(i);
         if (match >= 32) {
           var switcher = match - 34 | 0;
           if (switcher > 58 || switcher < 0) {
             if (switcher >= 93) {
               return /* true */1;
-            }
-            else {
+            } else {
               _i = i + 1 | 0;
               continue ;
               
             }
-          }
-          else if (switcher > 57 || switcher < 1) {
+          } else if (switcher > 57 || switcher < 1) {
             return /* true */1;
-          }
-          else {
+          } else {
             _i = i + 1 | 0;
             continue ;
             
           }
-        }
-        else {
+        } else {
           return /* true */1;
         }
       }
@@ -222,8 +204,7 @@ function escaped(s) {
   };
   if (needs_escape(0)) {
     return Caml_string.bytes_to_string(Ext_bytes.escaped(Caml_string.bytes_of_string(s)));
-  }
-  else {
+  } else {
     return s;
   }
 }
@@ -233,13 +214,11 @@ function unsafe_for_all_range(s, _start, finish, p) {
     var start = _start;
     if (start > finish) {
       return /* true */1;
-    }
-    else if (Curry._1(p, s.charCodeAt(start))) {
+    } else if (Curry._1(p, s.charCodeAt(start))) {
       _start = start + 1 | 0;
       continue ;
       
-    }
-    else {
+    } else {
       return /* false */0;
     }
   };
@@ -252,8 +231,7 @@ function for_all_range(s, start, finish, p) {
           Caml_builtin_exceptions.invalid_argument,
           "Ext_string.for_all_range"
         ];
-  }
-  else {
+  } else {
     return unsafe_for_all_range(s, start, finish, p);
   }
 }
@@ -282,18 +260,15 @@ function unsafe_is_sub(sub, i, s, j, len) {
       var k = _k;
       if (k === len) {
         return /* true */1;
-      }
-      else if (sub[i + k | 0] === s[j + k | 0]) {
+      } else if (sub[i + k | 0] === s[j + k | 0]) {
         _k = k + 1 | 0;
         continue ;
         
-      }
-      else {
+      } else {
         return /* false */0;
       }
     };
-  }
-  else {
+  } else {
     return /* false */0;
   }
 }
@@ -317,8 +292,7 @@ function find($staropt$star, sub, s) {
   catch (exn){
     if (exn === Local_exit) {
       return i;
-    }
-    else {
+    } else {
       throw exn;
     }
   }
@@ -339,16 +313,14 @@ function non_overlap_count(sub, s) {
       var i = find(/* Some */[off], sub, s);
       if (i < 0) {
         return acc;
-      }
-      else {
+      } else {
         _off = i + sub_len | 0;
         _acc = acc + 1 | 0;
         continue ;
         
       }
     };
-  }
-  else {
+  } else {
     throw [
           Caml_builtin_exceptions.invalid_argument,
           "Ext_string.non_overlap_count"
@@ -371,8 +343,7 @@ function rfind(sub, s) {
   catch (exn){
     if (exn === Local_exit) {
       return i;
-    }
-    else {
+    } else {
       throw exn;
     }
   }
@@ -386,8 +357,7 @@ function tail_from(s, x) {
           Caml_builtin_exceptions.invalid_argument,
           s$1
         ];
-  }
-  else {
+  } else {
     return $$String.sub(s, x, len - x | 0);
   }
 }
@@ -402,8 +372,7 @@ function digits_of_str(s, offset, x) {
     var i = _i;
     if (i >= x$1) {
       return acc;
-    }
-    else {
+    } else {
       _acc = (Caml_int32.imul(10, acc) + Caml_string.get(s$1, offset + i | 0) | 0) - 48 | 0;
       _i = i + 1 | 0;
       continue ;
@@ -418,16 +387,14 @@ function starts_with_and_number(s, offset, beg) {
   var finish_delim = offset + beg_len | 0;
   if (finish_delim > s_len) {
     return -1;
-  }
-  else {
+  } else {
     var i = offset;
     while(i < finish_delim && s[i] === beg[i - offset | 0]) {
       i = i + 1 | 0;
     };
     if (i === finish_delim) {
       return digits_of_str(s, finish_delim, 2);
-    }
-    else {
+    } else {
       return -1;
     }
   }
@@ -454,8 +421,7 @@ function unsafe_concat_with_length(len, sep, l) {
           return /* () */0;
         }, l[1]);
     return Caml_string.bytes_to_string(r);
-  }
-  else {
+  } else {
     return "";
   }
 }
@@ -465,11 +431,9 @@ function rindex_rec(s, _i, c) {
     var i = _i;
     if (i < 0) {
       return i;
-    }
-    else if (s.charCodeAt(i) === c) {
+    } else if (s.charCodeAt(i) === c) {
       return i;
-    }
-    else {
+    } else {
       _i = i - 1 | 0;
       continue ;
       
@@ -482,11 +446,9 @@ function rindex_rec_opt(s, _i, c) {
     var i = _i;
     if (i < 0) {
       return /* None */0;
-    }
-    else if (s.charCodeAt(i) === c) {
+    } else if (s.charCodeAt(i) === c) {
       return /* Some */[i];
-    }
-    else {
+    } else {
       _i = i - 1 | 0;
       continue ;
       
@@ -510,15 +472,12 @@ function is_valid_module_file(s) {
     if (match >= 91) {
       if (match > 122 || match < 97) {
         return /* false */0;
-      }
-      else {
+      } else {
         exit = 1;
       }
-    }
-    else if (match >= 65) {
+    } else if (match >= 65) {
       exit = 1;
-    }
-    else {
+    } else {
       return /* false */0;
     }
     if (exit === 1) {
@@ -528,37 +487,29 @@ function is_valid_module_file(s) {
                     if (switcher > 5 || switcher < 0) {
                       if (switcher >= 32) {
                         return /* false */0;
-                      }
-                      else {
+                      } else {
                         return /* true */1;
                       }
-                    }
-                    else if (switcher !== 4) {
+                    } else if (switcher !== 4) {
                       return /* false */0;
-                    }
-                    else {
+                    } else {
                       return /* true */1;
                     }
-                  }
-                  else if (x >= 48) {
+                  } else if (x >= 48) {
                     if (x >= 58) {
                       return /* false */0;
-                    }
-                    else {
+                    } else {
                       return /* true */1;
                     }
-                  }
-                  else if (x !== 39) {
+                  } else if (x !== 39) {
                     return /* false */0;
-                  }
-                  else {
+                  } else {
                     return /* true */1;
                   }
                 });
     }
     
-  }
-  else {
+  } else {
     return /* false */0;
   }
 }
@@ -583,12 +534,10 @@ function is_valid_source_name(name) {
   if (match) {
     if (is_valid_module_file(match[0])) {
       return /* Good */0;
-    }
-    else {
+    } else {
       return /* Invalid_module_name */1;
     }
-  }
-  else {
+  } else {
     return /* Suffix_mismatch */2;
   }
 }
@@ -598,13 +547,11 @@ function unsafe_no_char(x, ch, _i, last_idx) {
     var i = _i;
     if (i > last_idx) {
       return /* true */1;
-    }
-    else if (x.charCodeAt(i) !== ch) {
+    } else if (x.charCodeAt(i) !== ch) {
       _i = i + 1 | 0;
       continue ;
       
-    }
-    else {
+    } else {
       return /* false */0;
     }
   };
@@ -615,13 +562,11 @@ function unsafe_no_char_idx(x, ch, _i, last_idx) {
     var i = _i;
     if (i > last_idx) {
       return -1;
-    }
-    else if (x.charCodeAt(i) !== ch) {
+    } else if (x.charCodeAt(i) !== ch) {
       _i = i + 1 | 0;
       continue ;
       
-    }
-    else {
+    } else {
       return i;
     }
   };
@@ -634,8 +579,7 @@ function no_char(x, ch, i, len) {
           Caml_builtin_exceptions.invalid_argument,
           "Ext_string.no_char"
         ];
-  }
-  else {
+  } else {
     return unsafe_no_char(x, ch, i, len);
   }
 }
@@ -652,13 +596,11 @@ function replace_slash_backward(x) {
   var len = x.length;
   if (unsafe_no_char(x, /* "/" */47, 0, len - 1 | 0)) {
     return x;
-  }
-  else {
+  } else {
     return $$String.map(function (x) {
                 if (x !== 47) {
                   return x;
-                }
-                else {
+                } else {
                   return /* "\\" */92;
                 }
               }, x);
@@ -669,13 +611,11 @@ function replace_backward_slash(x) {
   var len = x.length;
   if (unsafe_no_char(x, /* "\\" */92, 0, len - 1 | 0)) {
     return x;
-  }
-  else {
+  } else {
     return $$String.map(function (x) {
                 if (x !== 92) {
                   return x;
-                }
-                else {
+                } else {
                   return /* "/" */47;
                 }
               }, x);
@@ -709,12 +649,10 @@ function concat_array(sep, s) {
         current_offset = new_off_set + cur_len | 0;
       }
       return Caml_string.bytes_to_string(target);
-    }
-    else {
+    } else {
       return s[0];
     }
-  }
-  else {
+  } else {
     return empty;
   }
 }

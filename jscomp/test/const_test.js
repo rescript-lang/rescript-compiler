@@ -27,12 +27,10 @@ function h(x) {
   if (x !== 66) {
     if (x >= 67) {
       return 2;
-    }
-    else {
+    } else {
       return 0;
     }
-  }
-  else {
+  } else {
     return 1;
   }
 }

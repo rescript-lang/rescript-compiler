@@ -70,20 +70,16 @@ function f6(b) {
           if (b) {
             continue ;
             
-          }
-          else {
+          } else {
             return /* false */0;
           }
-        }
-        else {
+        } else {
           return /* false */0;
         }
-      }
-      else {
+      } else {
         return /* false */0;
       }
-    }
-    else {
+    } else {
       return /* false */0;
     }
   };
@@ -93,17 +89,13 @@ function f7(b) {
   while(true) {
     if (b) {
       return /* true */1;
-    }
-    else if (b) {
+    } else if (b) {
       return /* true */1;
-    }
-    else if (b) {
+    } else if (b) {
       return /* true */1;
-    }
-    else if (b) {
+    } else if (b) {
       return /* true */1;
-    }
-    else {
+    } else {
       continue ;
       
     }
@@ -118,18 +110,15 @@ function f8(_x, _y) {
       _y = y + 1 | 0;
       continue ;
       
-    }
-    else if (x < 5) {
+    } else if (x < 5) {
       _x = x - 1 | 0;
       continue ;
       
-    }
-    else if (x > 6) {
+    } else if (x > 6) {
       _x = x - 2 | 0;
       continue ;
       
-    }
-    else {
+    } else {
       return f8(x, y + 1 | 0) + f8(x - 1 | 0, y) | 0;
     }
   };

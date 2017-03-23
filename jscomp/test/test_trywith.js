@@ -91,8 +91,7 @@ function ff(g, x) {
   catch (exn$9){
     if (exn$9[0] === Caml_builtin_exceptions.undefined_recursive_module) {
       return /* () */0;
-    }
-    else {
+    } else {
       throw exn$9;
     }
   }
@@ -105,8 +104,7 @@ function u() {
 function f(x) {
   if (typeof x === "number") {
     return 2;
-  }
-  else {
+  } else {
     switch (x.tag | 0) {
       case 0 : 
           return 1;

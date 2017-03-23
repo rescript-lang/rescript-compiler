@@ -37,8 +37,7 @@ function f2(x) {
   if (x.tag) {
     var z = 33;
     y = z + 4 | 0;
-  }
-  else {
+  } else {
     var z$1 = 33;
     y = z$1 + 3 | 0;
   }
@@ -51,8 +50,7 @@ function f3(x) {
   v = 1;
   if (x.tag) {
     y = 4;
-  }
-  else {
+  } else {
     y = 3;
   }
   return y + 32 | 0;

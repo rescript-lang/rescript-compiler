@@ -8,8 +8,7 @@ function to_buffer(buff, ofs, len, _, _$1) {
           Caml_builtin_exceptions.invalid_argument,
           "Marshal.to_buffer: substring out of bounds"
         ];
-  }
-  else {
+  } else {
     return function () {
               throw "caml_output_value_to_buffer not implemented by bucklescript yet\n";
             }();

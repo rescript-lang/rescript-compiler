@@ -20,16 +20,13 @@ function is_mocha() {
       var exec = Path.basename(match$1[0]);
       if (exec === "mocha") {
         return /* true */1;
-      }
-      else {
+      } else {
         return +(exec === "_mocha");
       }
-    }
-    else {
+    } else {
       return /* false */0;
     }
-  }
-  else {
+  } else {
     return /* false */0;
   }
 }
@@ -44,8 +41,7 @@ function from_suites(name, suite) {
                     }, suite);
         });
     return /* () */0;
-  }
-  else {
+  } else {
     return /* () */0;
   }
 }
@@ -86,8 +82,7 @@ function from_pair_suites(name, suites) {
                                     var a = match[0];
                                     if (close_enough(/* None */0, a, b$1)) {
                                       return 0;
-                                    }
-                                    else {
+                                    } else {
                                       Assert.deepEqual(a, b$1);
                                       return /* () */0;
                                     }
@@ -96,8 +91,7 @@ function from_pair_suites(name, suites) {
                                     var a$1 = match[1];
                                     if (close_enough(/* Some */[match[0]], a$1, b$2)) {
                                       return 0;
-                                    }
-                                    else {
+                                    } else {
                                       Assert.deepEqual(a$1, b$2);
                                       return /* () */0;
                                     }
@@ -115,8 +109,7 @@ function from_pair_suites(name, suites) {
                       }, suites);
           });
       return /* () */0;
-    }
-    else {
+    } else {
       var name$1 = name;
       var suites$1 = suites;
       console.log(/* tuple */[
@@ -197,8 +190,7 @@ function from_pair_suites(name, suites) {
                   }
                 }, suites$1);
     }
-  }
-  else {
+  } else {
     return /* () */0;
   }
 }

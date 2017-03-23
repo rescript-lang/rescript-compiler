@@ -58,8 +58,7 @@ function f(children) {
                                             34
                                           ]
                                         ];
-                                  }
-                                  else {
+                                  } else {
                                     return /* array */[
                                             a0,
                                             a1,
@@ -79,8 +78,7 @@ function f(children) {
                                             children$15[0]
                                           ];
                                   }
-                                }
-                                else {
+                                } else {
                                   return /* array */[
                                           a0,
                                           a1,
@@ -99,8 +97,7 @@ function f(children) {
                                           a14
                                         ];
                                 }
-                              }
-                              else {
+                              } else {
                                 return /* array */[
                                         a0,
                                         a1,
@@ -118,8 +115,7 @@ function f(children) {
                                         a13
                                       ];
                               }
-                            }
-                            else {
+                            } else {
                               return /* array */[
                                       a0,
                                       a1,
@@ -136,8 +132,7 @@ function f(children) {
                                       a12
                                     ];
                             }
-                          }
-                          else {
+                          } else {
                             return /* array */[
                                     a0,
                                     a1,
@@ -153,8 +148,7 @@ function f(children) {
                                     a11
                                   ];
                           }
-                        }
-                        else {
+                        } else {
                           return /* array */[
                                   a0,
                                   a1,
@@ -169,8 +163,7 @@ function f(children) {
                                   a10
                                 ];
                         }
-                      }
-                      else {
+                      } else {
                         return /* array */[
                                 a0,
                                 a1,
@@ -184,8 +177,7 @@ function f(children) {
                                 a9
                               ];
                       }
-                    }
-                    else {
+                    } else {
                       return /* array */[
                               a0,
                               a1,
@@ -198,8 +190,7 @@ function f(children) {
                               a8
                             ];
                     }
-                  }
-                  else {
+                  } else {
                     return /* array */[
                             a0,
                             a1,
@@ -211,8 +202,7 @@ function f(children) {
                             a7
                           ];
                   }
-                }
-                else {
+                } else {
                   return /* array */[
                           a0,
                           a1,
@@ -223,8 +213,7 @@ function f(children) {
                           a6
                         ];
                 }
-              }
-              else {
+              } else {
                 return /* array */[
                         a0,
                         a1,
@@ -234,8 +223,7 @@ function f(children) {
                         a5
                       ];
               }
-            }
-            else {
+            } else {
               return /* array */[
                       a0,
                       a1,
@@ -244,8 +232,7 @@ function f(children) {
                       a4
                     ];
             }
-          }
-          else {
+          } else {
             return /* array */[
                     a0,
                     a1,
@@ -253,27 +240,23 @@ function f(children) {
                     a3
                   ];
           }
-        }
-        else {
+        } else {
           return /* array */[
                   a0,
                   a1,
                   a2
                 ];
         }
-      }
-      else {
+      } else {
         return /* array */[
                 a0,
                 a1
               ];
       }
-    }
-    else {
+    } else {
       return /* array */[a0];
     }
-  }
-  else {
+  } else {
     return /* array */[];
   }
 }

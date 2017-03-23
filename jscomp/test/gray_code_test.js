@@ -17,8 +17,7 @@ function gray_decode(n) {
       _p = p ^ n$1;
       continue ;
       
-    }
-    else {
+    } else {
       return p;
     }
   };
@@ -36,8 +35,7 @@ function bool_string(len, n) {
     }
     if (i <= 0) {
       return s;
-    }
-    else {
+    } else {
       _n = (n$1 >>> 1);
       _i = i - 1 | 0;
       continue ;

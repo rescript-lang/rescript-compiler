@@ -4,8 +4,7 @@
 function fib(n) {
   if (n === 0 || n === 1) {
     return 1;
-  }
-  else {
+  } else {
     return fib(n - 1 | 0) + fib(n - 2 | 0) | 0;
   }
 }
@@ -20,8 +19,7 @@ function fib2(n) {
     var a = _a;
     if (n === i) {
       return a;
-    }
-    else {
+    } else {
       _i = i + 1 | 0;
       _b = a + b | 0;
       _a = b;

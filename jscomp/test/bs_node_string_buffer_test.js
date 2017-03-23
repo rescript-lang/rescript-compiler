@@ -10,8 +10,7 @@ function f(str) {
           +Buffer.isBuffer(match[1])
         ]);
     return /* () */0;
-  }
-  else {
+  } else {
     console.log(/* tuple */[
           "string",
           match[1]

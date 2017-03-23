@@ -8,8 +8,7 @@ function test3(_n) {
       _n = n - 1 | 0;
       continue ;
       
-    }
-    else {
+    } else {
       return (n + 5 | 0) + 4 | 0;
     }
   };
@@ -22,8 +21,7 @@ function test2(_n) {
       _n = n - 1 | 0;
       continue ;
       
-    }
-    else {
+    } else {
       return test3(n) + 3 | 0;
     }
   };
@@ -36,8 +34,7 @@ function test0(_n) {
       _n = n - 1 | 0;
       continue ;
       
-    }
-    else {
+    } else {
       var _n$1 = n;
       while(true) {
         var n$1 = _n$1;
@@ -45,8 +42,7 @@ function test0(_n) {
           _n$1 = n$1 - 1 | 0;
           continue ;
           
-        }
-        else {
+        } else {
           return test2(n$1) + 2 | 0;
         }
       };

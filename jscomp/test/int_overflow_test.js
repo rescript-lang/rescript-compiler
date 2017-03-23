@@ -13,8 +13,7 @@ function hash_variant(s) {
   }
   if (accu > 1073741823) {
     return accu - -2147483648 | 0;
-  }
-  else {
+  } else {
     return accu;
   }
 }
@@ -27,8 +26,7 @@ function hash_variant2(s) {
   accu = accu & 2147483647;
   if (accu > 1073741823) {
     return accu - -2147483648 | 0;
-  }
-  else {
+  } else {
     return accu;
   }
 }
@@ -36,8 +34,7 @@ function hash_variant2(s) {
 function fib(n) {
   if (n !== 0 && n !== 1) {
     return fib(n - 1 | 0) + fib(n - 2 | 0) | 0;
-  }
-  else {
+  } else {
     return 1;
   }
 }

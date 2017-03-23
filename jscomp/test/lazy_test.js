@@ -51,8 +51,7 @@ function f(param) {
     var match$3 = param[2][/* contents */0];
     if (match$3) {
       return 1;
-    }
-    else {
+    } else {
       throw [
             Caml_builtin_exceptions.match_failure,
             [
@@ -62,8 +61,7 @@ function f(param) {
             ]
           ];
     }
-  }
-  else {
+  } else {
     return 0;
   }
 }
@@ -92,8 +90,7 @@ try {
 catch (exn){
   if (exn[0] === Caml_builtin_exceptions.match_failure) {
     h = 2;
-  }
-  else {
+  } else {
     throw exn;
   }
 }
@@ -118,11 +115,9 @@ function exotic(param) {
   var tag = param.tag | 0;
   if (tag === 250) {
     return param[0];
-  }
-  else if (tag === 246) {
+  } else if (tag === 246) {
     return CamlinternalLazy.force_lazy_block(param);
-  }
-  else {
+  } else {
     return param;
   }
 }

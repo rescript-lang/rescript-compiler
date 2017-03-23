@@ -28,8 +28,7 @@ function scan_rest(ib, accu) {
                 ]), function (param) {
               if (param === "]") {
                 return accu;
-              }
-              else {
+              } else {
                 var ib$1 = ib;
                 var accu$1 = accu;
                 return Curry._1(Scanf.bscanf(ib$1, /* Format */[

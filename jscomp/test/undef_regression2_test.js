@@ -48,8 +48,7 @@ function test() {
   if (match !== undefined) {
     console.log("dev mode");
     return /* () */0;
-  }
-  else {
+  } else {
     console.log("producton mode");
     return /* () */0;
   }
@@ -60,8 +59,7 @@ function test2() {
   if (match !== undefined) {
     console.log(match);
     return /* () */0;
-  }
-  else {
+  } else {
     console.log("non node environment");
     return /* () */0;
   }
@@ -70,8 +68,7 @@ function test2() {
 function test3() {
   if (Js_primitive.undefined_to_opt(typeof (__DEV__) === "undefined" ? undefined : (__DEV__))) {
     return 0;
-  }
-  else {
+  } else {
     console.log("production mode");
     return /* () */0;
   }

@@ -12,8 +12,7 @@ catch (exn){
   if (exn[0] === Caml_builtin_exceptions.invalid_argument) {
     console.log(exn[1]);
     hh = /* "a" */97;
-  }
-  else {
+  } else {
     throw exn;
   }
 }

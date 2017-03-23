@@ -105,14 +105,12 @@ function lookup_obj(obj, _param) {
       var obj$prime = param[0];
       if (Caml_obj.caml_equal(obj, obj$prime)) {
         return obj$prime;
-      }
-      else {
+      } else {
         _param = param[1];
         continue ;
         
       }
-    }
-    else {
+    } else {
       throw Caml_builtin_exceptions.not_found;
     }
   };

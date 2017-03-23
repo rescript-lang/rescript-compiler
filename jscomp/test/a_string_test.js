@@ -79,8 +79,7 @@ var suites_001 = /* :: */[
                             })(Ext_string.split_by(/* None */0, function (x) {
                                 if (x === /* " " */32) {
                                   return /* true */1;
-                                }
-                                else {
+                                } else {
                                   return +(x === /* "\t" */9);
                                 }
                               }, "h hgso hgso \t hi")),

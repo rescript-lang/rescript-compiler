@@ -16,14 +16,11 @@ var Int$1 = Caml_exceptions.create("Extensible_variant_test.Int");
 function to_int(x) {
   if (x[0] === Str) {
     return -1;
-  }
-  else if (x[0] === Int) {
+  } else if (x[0] === Int) {
     return x[1];
-  }
-  else if (x[0] === Int$1) {
+  } else if (x[0] === Int$1) {
     return x[2];
-  }
-  else {
+  } else {
     throw [
           Caml_builtin_exceptions.assert_failure,
           [

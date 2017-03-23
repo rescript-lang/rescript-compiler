@@ -15,22 +15,19 @@ function sub(_tr, _k) {
     if (tr) {
       if (k === 1) {
         return tr[0];
-      }
-      else {
+      } else {
         _k = k / 2 | 0;
         if (k % 2) {
           _tr = tr[2];
           continue ;
           
-        }
-        else {
+        } else {
           _tr = tr[1];
           continue ;
           
         }
       }
-    }
-    else {
+    } else {
       throw Caml_builtin_exceptions.not_found;
     }
   };
@@ -46,8 +43,7 @@ function update(tr, k, w) {
               l,
               r
             ];
-    }
-    else {
+    } else {
       var v = tr[0];
       if (k % 2) {
         return /* Br */[
@@ -55,8 +51,7 @@ function update(tr, k, w) {
                 l,
                 update(r, k / 2 | 0, w)
               ];
-      }
-      else {
+      } else {
         return /* Br */[
                 v,
                 update(l, k / 2 | 0, w),
@@ -64,15 +59,13 @@ function update(tr, k, w) {
               ];
       }
     }
-  }
-  else if (k === 1) {
+  } else if (k === 1) {
     return /* Br */[
             w,
             /* Lf */0,
             /* Lf */0
           ];
-  }
-  else {
+  } else {
     throw Caml_builtin_exceptions.not_found;
   }
 }
@@ -81,8 +74,7 @@ function $$delete(tr, n) {
   if (tr) {
     if (n === 1) {
       return /* Lf */0;
-    }
-    else {
+    } else {
       var r = tr[2];
       var l = tr[1];
       var v = tr[0];
@@ -92,8 +84,7 @@ function $$delete(tr, n) {
                 l,
                 $$delete(r, n / 2 | 0)
               ];
-      }
-      else {
+      } else {
         return /* Br */[
                 v,
                 $$delete(l, n / 2 | 0),
@@ -101,8 +92,7 @@ function $$delete(tr, n) {
               ];
       }
     }
-  }
-  else {
+  } else {
     throw Caml_builtin_exceptions.not_found;
   }
 }
@@ -114,8 +104,7 @@ function loext(tr, w) {
             loext(tr[2], tr[0]),
             tr[1]
           ];
-  }
-  else {
+  } else {
     return /* Br */[
             w,
             /* Lf */0,
@@ -133,8 +122,7 @@ function lorem(tr) {
               tr[2],
               lorem(l)
             ];
-    }
-    else if (tr[2]) {
+    } else if (tr[2]) {
       throw [
             Caml_builtin_exceptions.assert_failure,
             [
@@ -143,12 +131,10 @@ function lorem(tr) {
               9
             ]
           ];
-    }
-    else {
+    } else {
       return /* Lf */0;
     }
-  }
-  else {
+  } else {
     throw Caml_builtin_exceptions.not_found;
   }
 }
@@ -165,8 +151,7 @@ function length(param) {
 function get(param, i) {
   if (i >= 0 && i < param[1]) {
     return sub(param[0], i + 1 | 0);
-  }
-  else {
+  } else {
     throw [
           Caml_builtin_exceptions.invalid_argument,
           "Array.get"
@@ -181,8 +166,7 @@ function set(param, i, v) {
             update(param[0], i + 1 | 0, v),
             k
           ];
-  }
-  else {
+  } else {
     throw [
           Caml_builtin_exceptions.invalid_argument,
           "Array.set"
@@ -204,8 +188,7 @@ function pop_front(param) {
             lorem(param[0]),
             k - 1 | 0
           ];
-  }
-  else {
+  } else {
     throw [
           Caml_builtin_exceptions.invalid_argument,
           "Array.pop_front"
@@ -228,8 +211,7 @@ function pop_back(param) {
             $$delete(param[0], k),
             k - 1 | 0
           ];
-  }
-  else {
+  } else {
     throw [
           Caml_builtin_exceptions.invalid_argument,
           "Array.pop_back"
@@ -279,8 +261,7 @@ function sort(s) {
   var size = length(s);
   if (size <= 1) {
     return s;
-  }
-  else {
+  } else {
     var head = get(s, 0);
     var larger = sort(filter_from(1, function (x) {
               return Caml_obj.caml_greaterthan(x, head);

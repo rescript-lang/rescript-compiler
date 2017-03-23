@@ -36,8 +36,7 @@ function fib_init($$class) {
   CamlinternalOO.set_method($$class, calc, function (self$neg1, x) {
         if (x === 0 || x === 1) {
           return 1;
-        }
-        else {
+        } else {
           return Curry._2(self$neg1[0][calc], self$neg1, x - 1 | 0) + Curry._2(self$neg1[0][calc], self$neg1, x - 2 | 0) | 0;
         }
       });
@@ -64,8 +63,7 @@ function memo_fib_init($$class) {
             var v = Curry._2(calc$1, self$neg2, x);
             Hashtbl.add(self$neg2[cache], x, v);
             return v;
-          }
-          else {
+          } else {
             throw exn;
           }
         }

@@ -8,8 +8,7 @@ function map(f, param) {
             r,
             map(f, param[1])
           ];
-  }
-  else {
+  } else {
     return /* [] */0;
   }
 }

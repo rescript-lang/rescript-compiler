@@ -27,8 +27,7 @@ function eq(loc, x, y) {
 function check_healty(check) {
   if (!check.a && !check.b) {
     return 1 - check.c;
-  }
-  else {
+  } else {
     return /* false */0;
   }
 }
@@ -40,8 +39,7 @@ function basic_not(x) {
 function f(check) {
   if (check.x) {
     return check.y;
-  }
-  else {
+  } else {
     return /* false */0;
   }
 }

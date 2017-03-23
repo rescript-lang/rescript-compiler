@@ -10,8 +10,7 @@ function f(v) {
     return function (v) {
       return v + v | 0;
     };
-  }
-  else {
+  } else {
     return function (v) {
       return Caml_int32.imul(v, v);
     };

@@ -30,16 +30,14 @@ function _t_to_value(value) {
                 1,
                 /* array */[]
               ]);
-    }
-    else {
+    } else {
       return /* Variant */Block.__(13, [
                 all_branches_of_t,
                 0,
                 /* array */[]
               ]);
     }
-  }
-  else {
+  } else {
     switch (value.tag | 0) {
       case 0 : 
           return /* Variant */Block.__(13, [

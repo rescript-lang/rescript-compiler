@@ -36,8 +36,7 @@ function ierr(b, str, f) {
                           ]),
                         "%s "
                       ], f)), str);
-  }
-  else {
+  } else {
     return Curry._1(Format.ifprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */[
                         /* String */Block.__(2, [
                             /* No_padding */0,
@@ -88,8 +87,7 @@ function iwarn(b, str, f) {
                           ]),
                         "WARN: %s "
                       ], f)), str);
-  }
-  else {
+  } else {
     return Curry._1(Format.ifprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */[
                         /* String_literal */Block.__(11, [
                             "WARN: ",
@@ -137,8 +135,7 @@ function iinfo(b, str, f) {
                           ]),
                         "INFO: %s "
                       ], f)), str);
-  }
-  else {
+  } else {
     return Curry._1(Format.fprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */[
                         /* String_literal */Block.__(11, [
                             "INFO: ",

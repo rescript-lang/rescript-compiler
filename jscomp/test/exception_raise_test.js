@@ -23,14 +23,11 @@ function appf(g, x) {
     var exit = 0;
     if (exn === Local) {
       return 3;
-    }
-    else if (exn === Caml_builtin_exceptions.not_found) {
+    } else if (exn === Caml_builtin_exceptions.not_found) {
       return 2;
-    }
-    else if (exn[0] === A) {
+    } else if (exn[0] === A) {
       return 3;
-    }
-    else if (exn[0] === B) {
+    } else if (exn[0] === B) {
       var match = exn[1];
       if (match) {
         var match$1 = match[1];
@@ -38,30 +35,24 @@ function appf(g, x) {
           var match$2 = match$1[1];
           if (match$2) {
             return match$2[0];
-          }
-          else {
+          } else {
             exit = 1;
           }
-        }
-        else {
+        } else {
           exit = 1;
         }
-      }
-      else {
+      } else {
         exit = 1;
       }
-    }
-    else {
+    } else {
       exit = 1;
     }
     if (exit === 1) {
       if (exn[0] === C) {
         return exn[1];
-      }
-      else if (exn[0] === D) {
+      } else if (exn[0] === D) {
         return exn[1][0];
-      }
-      else {
+      } else {
         return 4;
       }
     }

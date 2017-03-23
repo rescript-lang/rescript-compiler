@@ -25,8 +25,7 @@ function add_dyn(kind,x,y){
 function string_of_kind(kind) {
   if (kind !== 0) {
     return "string";
-  }
-  else {
+  } else {
     return "float";
   }
 }

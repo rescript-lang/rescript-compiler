@@ -864,8 +864,7 @@ function fib(_n, _a, _b) {
       _n = n - 1 | 0;
       continue ;
       
-    }
-    else {
+    } else {
       return a;
     }
   };
@@ -880,8 +879,7 @@ function fac(_n, _acc) {
       _n = n - 1 | 0;
       continue ;
       
-    }
-    else {
+    } else {
       return acc;
     }
   };

@@ -352,8 +352,7 @@ function error(s) {
 function check(r, v, msg) {
   if (Caml_obj.caml_notequal(r[0], v)) {
     return error(msg);
-  }
-  else {
+  } else {
     return 0;
   }
 }

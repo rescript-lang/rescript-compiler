@@ -19,22 +19,19 @@ function compare2(x, y) {
     case 0 : 
         if (y !== 0) {
           return /* false */0;
-        }
-        else {
+        } else {
           return /* true */1;
         }
     case 1 : 
         if (y !== 1) {
           return /* false */0;
-        }
-        else {
+        } else {
           return /* true */1;
         }
     case 2 : 
         if (y >= 2) {
           return /* true */1;
-        }
-        else {
+        } else {
           return /* false */0;
         }
     

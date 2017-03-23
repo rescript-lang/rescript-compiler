@@ -4,8 +4,7 @@
 function height(param) {
   if (param) {
     return param[3];
-  }
-  else {
+  } else {
     return 0;
   }
 }
@@ -31,38 +30,30 @@ function bal(l, v, r) {
       var ll = l[0];
       if (height(ll) >= height(lr)) {
         return create(ll, lv, create(lr, v, r));
-      }
-      else if (lr) {
+      } else if (lr) {
         return create(create(ll, lv, lr[0]), lr[1], create(lr[2], v, r));
-      }
-      else {
+      } else {
         return /* Empty */0;
       }
-    }
-    else {
+    } else {
       return /* Empty */0;
     }
-  }
-  else if (hr > (hl + 2 | 0)) {
+  } else if (hr > (hl + 2 | 0)) {
     if (r) {
       var rr = r[2];
       var rv = r[1];
       var rl = r[0];
       if (height(rr) >= height(rl)) {
         return create(create(l, v, rl), rv, rr);
-      }
-      else if (rl) {
+      } else if (rl) {
         return create(create(l, v, rl[0]), rl[1], create(rl[2], rv, rr));
-      }
-      else {
+      } else {
         return /* Empty */0;
       }
-    }
-    else {
+    } else {
       return /* Empty */0;
     }
-  }
-  else {
+  } else {
     return /* Node */[
             l,
             v,
@@ -75,11 +66,9 @@ function bal(l, v, r) {
 function compare_int(x, y) {
   if (x > y) {
     return 1;
-  }
-  else if (x === y) {
+  } else if (x === y) {
     return 0;
-  }
-  else {
+  } else {
     return -1;
   }
 }
@@ -93,16 +82,13 @@ function add(x, t) {
     if (c) {
       if (c < 0) {
         return bal(add(x, l), v, r);
-      }
-      else {
+      } else {
         return bal(l, v, add(x, r));
       }
-    }
-    else {
+    } else {
       return t;
     }
-  }
-  else {
+  } else {
     return /* Node */[
             /* Empty */0,
             x,
@@ -123,12 +109,10 @@ function min_elt(_def, _param) {
         _def = param[1];
         continue ;
         
-      }
-      else {
+      } else {
         return param[1];
       }
-    }
-    else {
+    } else {
       return def;
     }
   };
@@ -137,8 +121,7 @@ function min_elt(_def, _param) {
 function remove_min_elt(l, v, r) {
   if (l) {
     return bal(remove_min_elt(l[0], l[1], l[2]), v, r);
-  }
-  else {
+  } else {
     return r;
   }
 }
@@ -148,12 +131,10 @@ function internal_merge(l, r) {
     if (r) {
       var rv = r[1];
       return bal(l, min_elt(rv, r), remove_min_elt(r[0], rv, r[2]));
-    }
-    else {
+    } else {
       return l;
     }
-  }
-  else {
+  } else {
     return r;
   }
 }
@@ -167,16 +148,13 @@ function remove(x, tree) {
     if (c) {
       if (c < 0) {
         return bal(remove(x, l), v, r);
-      }
-      else {
+      } else {
         return bal(l, v, remove(x, r));
       }
-    }
-    else {
+    } else {
       return internal_merge(l, r);
     }
-  }
-  else {
+  } else {
     return /* Empty */0;
   }
 }
@@ -190,12 +168,10 @@ function mem(x, _param) {
         _param = c < 0 ? param[0] : param[2];
         continue ;
         
-      }
-      else {
+      } else {
         return /* true */1;
       }
-    }
-    else {
+    } else {
       return /* false */0;
     }
   };

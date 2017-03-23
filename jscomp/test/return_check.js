@@ -8,8 +8,7 @@ function test(dom) {
   if (elem !== null) {
     console.log(elem);
     return 2;
-  }
-  else {
+  } else {
     return 1;
   }
 }
@@ -18,8 +17,7 @@ function f_undefined(xs, i) {
   var match = xs[i];
   if (match !== undefined) {
     return match;
-  }
-  else {
+  } else {
     throw [
           Caml_builtin_exceptions.assert_failure,
           [
@@ -36,8 +34,7 @@ function f_escaped_not(xs, i) {
   console.log("hei");
   if (x !== undefined) {
     return x;
-  }
-  else {
+  } else {
     return 1;
   }
 }
@@ -47,8 +44,7 @@ function f_escaped_1(xs, i) {
   return function () {
     if (x !== undefined) {
       return x;
-    }
-    else {
+    } else {
       return 1;
     }
   };
@@ -63,8 +59,7 @@ function f_null(xs, i) {
   var match = xs[i];
   if (match !== null) {
     return match;
-  }
-  else {
+  } else {
     throw [
           Caml_builtin_exceptions.assert_failure,
           [
@@ -87,8 +82,7 @@ function f_null_undefined(xs, i) {
             14
           ]
         ];
-  }
-  else {
+  } else {
     return match;
   }
 }

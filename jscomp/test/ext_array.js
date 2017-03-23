@@ -14,8 +14,7 @@ function reverse_range(a, i, len) {
       a[((i + len | 0) - 1 | 0) - k | 0] = t;
     }
     return /* () */0;
-  }
-  else {
+  } else {
     return /* () */0;
   }
 }
@@ -32,8 +31,7 @@ function reverse(a) {
       b[i] = a[(b_len - 1 | 0) - i | 0];
     }
     return b;
-  }
-  else {
+  } else {
     return /* array */[];
   }
 }
@@ -53,13 +51,11 @@ function reverse_of_list(l) {
         _i = i + 1 | 0;
         continue ;
         
-      }
-      else {
+      } else {
         return a;
       }
     };
-  }
-  else {
+  } else {
     return /* array */[];
   }
 }
@@ -73,8 +69,7 @@ function filter(f, a) {
     var acc = _acc;
     if (i === arr_len) {
       return reverse_of_list(acc);
-    }
-    else {
+    } else {
       var v = a[i];
       if (Curry._1(f, v)) {
         _i = i + 1 | 0;
@@ -84,8 +79,7 @@ function filter(f, a) {
         ];
         continue ;
         
-      }
-      else {
+      } else {
         _i = i + 1 | 0;
         continue ;
         
@@ -103,8 +97,7 @@ function filter_map(f, a) {
     var acc = _acc;
     if (i === arr_len) {
       return reverse_of_list(acc);
-    }
-    else {
+    } else {
       var v = a[i];
       var match = Curry._1(f, v);
       _i = i + 1 | 0;
@@ -115,8 +108,7 @@ function filter_map(f, a) {
         ];
         continue ;
         
-      }
-      else {
+      } else {
         continue ;
         
       }
@@ -130,8 +122,7 @@ function range(from, to_) {
           Caml_builtin_exceptions.invalid_argument,
           "Ext_array.range"
         ];
-  }
-  else {
+  } else {
     return $$Array.init((to_ - from | 0) + 1 | 0, function (i) {
                 return i + from | 0;
               });
@@ -145,8 +136,7 @@ function map2i(f, a, b) {
           Caml_builtin_exceptions.invalid_argument,
           "Ext_array.map2i"
         ];
-  }
-  else {
+  } else {
     return $$Array.mapi(function (i, a) {
                 return Curry._3(f, i, a, b[i]);
               }, a);
@@ -159,8 +149,7 @@ function tolist_aux(a, f, _i, _res) {
     var i = _i;
     if (i < 0) {
       return res;
-    }
-    else {
+    } else {
       var v = a[i];
       var match = Curry._1(f, v);
       _res = match ? /* :: */[
@@ -199,13 +188,11 @@ function of_list_map(f, a) {
         _i = i + 1 | 0;
         continue ;
         
-      }
-      else {
+      } else {
         return arr;
       }
     };
-  }
-  else {
+  } else {
     return /* array */[];
   }
 }
@@ -217,11 +204,9 @@ function rfind_with_index(arr, cmp, v) {
     var i = _i;
     if (i < 0) {
       return i;
-    }
-    else if (Curry._2(cmp, arr[i], v)) {
+    } else if (Curry._2(cmp, arr[i], v)) {
       return i;
-    }
-    else {
+    } else {
       _i = i - 1 | 0;
       continue ;
       
@@ -233,8 +218,7 @@ function rfind_and_split(arr, cmp, v) {
   var i = rfind_with_index(arr, cmp, v);
   if (i < 0) {
     return /* No_split */-226265796;
-  }
-  else {
+  } else {
     return /* `Split */[
             345791162,
             /* tuple */[
@@ -253,11 +237,9 @@ function find_with_index(arr, cmp, v) {
     var i = _i;
     if (i >= len$1) {
       return -1;
-    }
-    else if (Curry._2(cmp, arr[i], v)) {
+    } else if (Curry._2(cmp, arr[i], v)) {
       return i;
-    }
-    else {
+    } else {
       _i = i + 1 | 0;
       continue ;
       
@@ -269,8 +251,7 @@ function find_and_split(arr, cmp, v) {
   var i = find_with_index(arr, cmp, v);
   if (i < 0) {
     return /* No_split */-226265796;
-  }
-  else {
+  } else {
     return /* `Split */[
             345791162,
             /* tuple */[
@@ -288,11 +269,9 @@ function exists(p, a) {
     var i = _i;
     if (i === n) {
       return /* false */0;
-    }
-    else if (Curry._1(p, a[i])) {
+    } else if (Curry._1(p, a[i])) {
       return /* true */1;
-    }
-    else {
+    } else {
       _i = i + 1 | 0;
       continue ;
       
