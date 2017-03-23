@@ -13,6 +13,8 @@
 
 [@@@bs.config {no_export}]
 
+external dictOfObj : 'a Js.t -> 'b Js.Dict.t = "%identity"
+
 module Child_process = Node.Child_process
 module Process = Node.Process
 module Fs = Node.Fs
