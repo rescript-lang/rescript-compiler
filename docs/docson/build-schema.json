@@ -24,10 +24,14 @@
               "type": "string"
             }
         },
+        "bs-dependency": {
+            "type": "string",
+            "title": "dependency"
+        },
         "bs-dependencies": {
             "type": "array",
             "items": {
-              "type": "string"
+                "$ref": "#/definitions/bs-dependency"
             }
         },
         "js-post-build": {
@@ -238,13 +242,13 @@
     "description": "All paths are required to be in **Unix format** (foo/bar), the build system normalizes them for other platforms internally",
     "type": "object",
     "properties": {
+        "version": {
+            "type": "string",
+            "description": "The semantic version of the OCaml library"
+        },
         "name": {
             "type": "string",
             "description": "Package name"
-        },
-        "version": {
-            "type": "string",
-            "description": "The [semantic version](http://semver.org) of the library"
         },
         "sources": {
             "$ref": "#/definitions/sources",
