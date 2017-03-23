@@ -33,7 +33,8 @@ type t =
     disconnect : unit -> unit [@bs.meth];
     platform : string;
     env : string Js.Dict.t;
-    exit : int -> unit [@bs.meth];
   >   Js.t
 
 external process : t = "" [@@bs.module]
+
+external exit : int -> unit = "" [@@bs.module "process"]

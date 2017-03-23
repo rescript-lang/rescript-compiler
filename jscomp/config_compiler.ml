@@ -124,7 +124,7 @@ let () =
       let version = force_opt (Js.Dict.get config_map "version") in
       if Js.String.indexOf "4.02.3" version >= 0
         then patch_config dirname config_map is_windows
-        else Process.process##exit 2
+        else Process.exit 2
     | None ->
       prerr_endline "configuration failure";
-      Process.process##exit 2
+      Process.exit 2
