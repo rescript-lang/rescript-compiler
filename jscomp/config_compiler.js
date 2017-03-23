@@ -5,7 +5,6 @@ var Path                    = require("path");
 var $$Array                 = require("../lib/js/array");
 var Curry                   = require("../lib/js/curry");
 var Process                 = require("process");
-var Pervasives              = require("../lib/js/pervasives");
 var Child_process           = require("child_process");
 var Caml_builtin_exceptions = require("../lib/js/caml_builtin_exceptions");
 
@@ -84,10 +83,11 @@ function get_config_output(is_windows) {
                   value.trim()
                 ];
         });
+    console.log("keyvalues");
     $$Array.iter(function (param) {
-          return Pervasives.print_string(param[0] + (": " + param[1]));
+          console.log(param[0] + (": " + param[1]));
+          return /* () */0;
         }, keyvalues);
-    Pervasives.print_newline(/* () */0);
     var accum_pairs = function (acc, param) {
       acc[param[0]] = param[1];
       return acc;
@@ -153,7 +153,7 @@ if (match$1) {
   }
 }
 else {
-  console.log("configuration failure");
+  console.error("configuration failure");
   Process.exit(2);
 }
 

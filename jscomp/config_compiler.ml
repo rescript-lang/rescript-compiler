@@ -63,14 +63,12 @@ let patch_config jscomp_dir config_map is_windows =
     match (match_, is_windows) with
       | ("LIBDIR", true) ->
         "Filename.concat (Filename.concat (Filename.concat (Filename.dirname Sys.executable_name) \"..\") \"lib\") \"ocaml\""
-      | ("LIBDIR", false) -> (
+      | ("LIBDIR", false) ->
         let origin_path = Path.join [|jscomp_dir; ".."; "lib"; "ocaml"|] in
         Js.Json.stringify (Js.Json.string origin_path)
-      )
-      | _ -> (
+      | _ ->
         let map_val = Js.Dict.unsafeGet (Js_cast.dictOfObj map) match_ in
         Js.Dict.unsafeGet config_map map_val
-      )
   in
   let generated = Js.String.replaceByFun1 (Js.Re.fromStringWithFlags "%%(\\w+)%%" ~flags:"g") replace_values content in
   Fs.writeFileSync whole_compiler_config_output generated `utf8
@@ -93,8 +91,8 @@ let get_config_output is_windows =
         (Js.String.trim key, Js.String.trim value)
       )
     in
-    Array.iter (fun (key, value) -> print_string (key ^ ": " ^ value)) keyvalues;
-    print_newline ();
+    print_endline "keyvalues";
+    Array.iter (fun (key, value) -> print_endline (key ^ ": " ^ value)) keyvalues;
 
     let accum_pairs = fun acc (key, value) -> Js.Dict.set acc key value; acc in
     Some (Js.Array.reduce accum_pairs (Js.Dict.empty ()) keyvalues)
@@ -130,6 +128,6 @@ let () =
         | _ -> Process.process##exit 2
     )
     | None -> (
-      Js.log "configuration failure";
+      prerr_endline "configuration failure";
       Process.process##exit 2
     )
