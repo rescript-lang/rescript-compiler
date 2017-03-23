@@ -3,12 +3,29 @@
 var Fs                      = require("fs");
 var Path                    = require("path");
 var Process                 = require("process");
+var Js_primitive            = require("../lib/js/js_primitive");
 var Child_process           = require("child_process");
 var Caml_builtin_exceptions = require("../lib/js/caml_builtin_exceptions");
 
 var delete_env_var = (
   function(process, key) { delete process.env[key] }
 );
+
+function force_opt(param) {
+  if (param) {
+    return param[0];
+  }
+  else {
+    throw [
+          Caml_builtin_exceptions.assert_failure,
+          [
+            "config_compiler.ml",
+            29,
+            12
+          ]
+        ];
+  }
+}
 
 var map = {
   LIBDIR: "standard_library_default",
@@ -44,7 +61,7 @@ function patch_config(jscomp_dir, config_map, is_windows) {
   var whole_compiler_config = Path.join(jscomp_dir, "bin", "config_whole_compiler.mlp");
   var whole_compiler_config_output = Path.join(jscomp_dir, "bin", "config_whole_compiler.ml");
   var content = Fs.readFileSync(whole_compiler_config, "utf8");
-  var replace_values = function (_, match_) {
+  var replace_values = function (_, match_, _$1, _$2) {
     if (match_ === "LIBDIR") {
       if (is_windows !== 0) {
         return 'Filename.concat (Filename.concat (Filename.concat (Filename.dirname Sys.executable_name) "..") "lib") "ocaml"';
@@ -54,11 +71,11 @@ function patch_config(jscomp_dir, config_map, is_windows) {
       }
     }
     else {
-      var map_val = map[match_];
-      return config_map[map_val];
+      var map_val = force_opt(Js_primitive.undefined_to_opt(map[match_]));
+      return force_opt(Js_primitive.undefined_to_opt(config_map[map_val]));
     }
   };
-  var generated = content.replace(new RegExp("%%(\\w+)%%", "g"), replace_values);
+  var generated = content.replace((/%%(\w+)%%/g), replace_values);
   Fs.writeFileSync(whole_compiler_config_output, generated, "utf8");
   return /* () */0;
 }
@@ -97,23 +114,7 @@ function get_config_output(is_windows) {
   }
 }
 
-var match = typeof (__dirname) === "undefined" ? undefined : (__dirname);
-
-var dirname;
-
-if (match !== undefined) {
-  dirname = match;
-}
-else {
-  throw [
-        Caml_builtin_exceptions.assert_failure,
-        [
-          "config_compiler.ml",
-          107,
-          14
-        ]
-      ];
-}
+var dirname = force_opt(Js_primitive.undefined_to_opt(typeof (__dirname) === "undefined" ? undefined : (__dirname)));
 
 var working_dir = Process.cwd();
 
@@ -125,11 +126,11 @@ Process.env["OCAMLRUNPARAM"] = "b";
 
 var is_windows = +(Process.platform === "win32");
 
-var match$1 = get_config_output(is_windows);
+var match = get_config_output(is_windows);
 
-if (match$1) {
-  var config_map = match$1[0];
-  var version = config_map["version"];
+if (match) {
+  var config_map = match[0];
+  var version = force_opt(Js_primitive.undefined_to_opt(config_map["version"]));
   if (version.indexOf("4.02.3") >= 0) {
     patch_config(dirname, config_map, is_windows);
   }
