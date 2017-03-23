@@ -36,6 +36,10 @@ var test = {
   window: 3
 };
 
+function u() {
+  return $$window.switch();
+}
+
 var $$case = 3;
 
 exports.$$default = $$default;
@@ -45,4 +49,5 @@ exports.mk2       = mk2;
 exports.des       = des;
 exports.$$case    = $$case;
 exports.test      = test;
+exports.u         = u;
 /* default Not a pure module */

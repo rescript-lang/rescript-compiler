@@ -21,3 +21,6 @@ let case = 3
 
 let test =  [%obj{case ; window = 3}]
 
+external switch : window -> string = "" [@@bs.send]
+
+let u () = switch window
