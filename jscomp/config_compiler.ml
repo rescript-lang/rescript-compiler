@@ -65,7 +65,7 @@ let patch_config jscomp_dir config_map is_windows =
   let whole_compiler_config = Path.join [| jscomp_dir; "bin"; "config_whole_compiler.mlp" |] in
   let whole_compiler_config_output = Path.join [| jscomp_dir; "bin"; "config_whole_compiler.ml" |] in
   let content = Fs.readFileAsUtf8Sync whole_compiler_config in
-  let replace_values whole match_ =
+  let replace_values whole match_ offset s =
     match (match_, is_windows) with
       | ("LIBDIR", true) ->
         {|Filename.concat (Filename.concat (Filename.concat (Filename.dirname Sys.executable_name) "..") "lib") "ocaml"|}
@@ -76,7 +76,7 @@ let patch_config jscomp_dir config_map is_windows =
         let map_val = force_opt (Js.Dict.get (dictOfObj map) match_) in
         force_opt (Js.Dict.get config_map map_val)
   in
-  let generated = Js.String.replaceByFun1 [%re {|/%%(\w+)%%/g|}] replace_values content in
+  let generated = Js.String.unsafeReplaceBy1 [%re {|/%%(\w+)%%/g|}] replace_values content in
   Fs.writeFileAsUtf8Sync whole_compiler_config_output generated
 
 let get_config_output is_windows =
