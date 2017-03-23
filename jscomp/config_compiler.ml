@@ -93,8 +93,8 @@ let get_config_output is_windows =
         (Js.String.trim key, Js.String.trim value)
       )
     in
-    Array.iter (fun (key, value) -> print_endline (key ^ ": " ^ value)) keyvalues;
     Js.log "keyvalues";
+    Js.Array.forEach (fun (key, value) -> print_endline (key ^ ": " ^ value)) keyvalues;
 
     let accum_pairs = fun acc (key, value) -> Js.Dict.set acc key value; acc in
     Some (Js.Array.reduce accum_pairs (Js.Dict.empty ()) keyvalues)
