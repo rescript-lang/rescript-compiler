@@ -122,6 +122,8 @@ OTHERS := literals a test_ari test_export2 test_internalOO test_obj_simple_ffi t
 	export_keyword\
 	key_word_property\
 	key_word_property2\
+	key_word_property_plus_test\
+	global_mangles\
 	bb
 
 # bs_uncurry_test
