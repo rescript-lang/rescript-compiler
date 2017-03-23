@@ -56,12 +56,15 @@ let  () =
       apply_lazy ~source:a.(n - 2) ~target:a.(n - 1)
         !Ppx_entry.rewrite_implementation
         !Ppx_entry.rewrite_signature
-    else begin
-      Printf.eprintf "Usage: %s [extra_args] <infile> <outfile>\n%!"
-                     Sys.executable_name;
+    else
+      begin
+        Printf.eprintf "Usage: %s [extra_args] <infile> <outfile>\n%!"
+          Sys.executable_name;
+        exit 2
+      end
+  with exn ->
+    begin
+      Location.report_exception Format.err_formatter exn;
       exit 2
     end
-  with exn ->
-    prerr_endline (Printexc.to_string exn);
-    exit 2
 
