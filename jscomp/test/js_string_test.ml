@@ -109,6 +109,13 @@ let suites = Mt.[
     "replaceByRe", (fun _ ->
       Eq("fooBORKBORK", "foobarbaz" |> Js.String.replaceByRe [%re "/ba./g"] "BORK")
     );
+    "unsafeReplaceBy1", (fun _ ->
+      let replace = fun whole p1 offset s ->
+        if whole = "bar" then "BORK"
+        else "DORK"
+      in
+      Eq("fooBORKDORK", "foobarbaz" |> Js.String.unsafeReplaceBy1 [%re "/ba./g"] replace)
+    );
 
     "search", (fun _ ->
       Eq(3, "foobarbaz" |> Js.String.search [%re "/ba./g"])
