@@ -99,10 +99,6 @@ let get_config_output is_windows =
   with
     _ -> None
 
-let map_opt f = function
-  | Some x -> Some (f x)
-  | None   -> None
-
 let () =
   let dirname = match [%node __dirname] with
     | Some d -> d
@@ -121,13 +117,11 @@ let () =
   *)
   let is_windows = Process.process##platform = "win32" in
   match get_config_output is_windows with
-    | Some config_map -> (
-      let version = Js.Dict.get config_map "version" in
-      match map_opt (fun x -> Js.String.indexOf "4.02.3" x) version with
-        | Some index when index >= 0 -> patch_config dirname config_map is_windows
-        | _ -> Process.process##exit 2
-    )
-    | None -> (
+    | Some config_map ->
+      let version = Js.Dict.unsafeGet config_map "version" in
+      if Js.String.indexOf "4.02.3" version >= 0
+        then patch_config dirname config_map is_windows
+        else Process.process##exit 2
+    | None ->
       prerr_endline "configuration failure";
       Process.process##exit 2
-    )

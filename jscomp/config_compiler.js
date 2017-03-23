@@ -3,7 +3,6 @@
 var Fs                      = require("fs");
 var Path                    = require("path");
 var $$Array                 = require("../lib/js/array");
-var Curry                   = require("../lib/js/curry");
 var Process                 = require("process");
 var Child_process           = require("child_process");
 var Caml_builtin_exceptions = require("../lib/js/caml_builtin_exceptions");
@@ -99,15 +98,6 @@ function get_config_output(is_windows) {
   }
 }
 
-function map_opt(f, param) {
-  if (param) {
-    return /* Some */[Curry._1(f, param[0])];
-  }
-  else {
-    return /* None */0;
-  }
-}
-
 var match = typeof (__dirname) === "undefined" ? undefined : (__dirname);
 
 var dirname;
@@ -137,16 +127,8 @@ var match$1 = get_config_output(is_windows);
 if (match$1) {
   var config_map = match$1[0];
   var version = config_map["version"];
-  var match$2 = map_opt(function (x) {
-        return x.indexOf("4.02.3");
-      }, version === undefined ? /* None */0 : [version]);
-  if (match$2) {
-    if (match$2[0] >= 0) {
-      patch_config(dirname, config_map, is_windows);
-    }
-    else {
-      Process.exit(2);
-    }
+  if (version.indexOf("4.02.3") >= 0) {
+    patch_config(dirname, config_map, is_windows);
   }
   else {
     Process.exit(2);
