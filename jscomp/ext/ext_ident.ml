@@ -184,10 +184,22 @@ let reserved_words =
    "parseFloat";
    "parseInt";
    
-   (** reserved for commonjs *)   
+   (** reserved for commonjs and NodeJS globals*)   
    "require";
    "exports";
-   "module"
+   "module";
+    "clearImmediate";
+    "clearInterval";
+    "clearTimeout";
+    "console";
+    "global";
+    "process";
+    "require";
+    "setImmediate";
+    "setInterval";
+    "setTimeout";
+    "__dirname";
+    "__filename"
   |]
 
 let reserved_map = 

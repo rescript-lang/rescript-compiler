@@ -60953,10 +60953,22 @@ let reserved_words =
    "parseFloat";
    "parseInt";
    
-   (** reserved for commonjs *)   
+   (** reserved for commonjs and NodeJS globals*)   
    "require";
    "exports";
-   "module"
+   "module";
+    "clearImmediate";
+    "clearInterval";
+    "clearTimeout";
+    "console";
+    "global";
+    "process";
+    "require";
+    "setImmediate";
+    "setInterval";
+    "setTimeout";
+    "__dirname";
+    "__filename"
   |]
 
 let reserved_map = 
@@ -61049,6 +61061,7 @@ let equal ( x : Ident.t) ( y : Ident.t) =
   if x.stamp <> 0 then x.stamp = y.stamp
   else y.stamp = 0 && x.name = y.name
    
+
 end
 module Hash_set_ident_mask : sig 
 #1 "hash_set_ident_mask.mli"
