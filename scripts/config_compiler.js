@@ -48,26 +48,28 @@ function patch_config(jscomp_dir, config_map, is_windows) {
     if (match_ === "LIBDIR") {
       if (is_windows !== 0) {
         return 'Filename.concat (Filename.concat (Filename.concat (Filename.dirname Sys.executable_name) "..") "lib") "ocaml"';
-      }
-      else {
+      } else {
         return JSON.stringify(Path.join(jscomp_dir, "..", "lib", "ocaml"));
       }
-    }
-    else {
+    } else {
       var match = map[match_];
       if (match !== undefined) {
         var match$1 = config_map[match];
         if (match$1 !== undefined) {
           return match$1;
-        }
-        else {
-          console.log('No value for "' + (match + '"'));
+        } else {
+          console.log('No value found from ocamlopt.opt -config for "' + (match + '"'));
           return "";
         }
-      }
-      else {
-        console.log('No mapping for "' + (match_ + '"'));
-        return "";
+      } else {
+        throw [
+              Caml_builtin_exceptions.assert_failure,
+              [
+                "config_compiler.ml",
+                94,
+                20
+              ]
+            ];
       }
     }
   };
@@ -114,8 +116,7 @@ function should_patch(config_map) {
   var match = config_map["version"];
   if (match !== undefined) {
     return +(match.indexOf("4.02.3") >= 0);
-  }
-  else {
+  } else {
     return /* false */0;
   }
 }
@@ -126,13 +127,12 @@ var dirname;
 
 if (match !== undefined) {
   dirname = match;
-}
-else {
+} else {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
           "config_compiler.ml",
-          121,
+          134,
           14
         ]
       ];
@@ -153,13 +153,11 @@ var match$1 = get_config_output(is_windows);
 if (match$1) {
   var config_map = match$1[0];
   if (should_patch(config_map)) {
-    patch_config(dirname, config_map, is_windows);
-  }
-  else {
+    patch_config(Path.join(dirname, "..", "jscomp"), config_map, is_windows);
+  } else {
     Process.exit(2);
   }
-}
-else {
+} else {
   console.error("configuration failure");
   Process.exit(2);
 }

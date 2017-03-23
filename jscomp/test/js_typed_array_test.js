@@ -606,8 +606,7 @@ var suites_001 = /* :: */[
                                                                                       var b = +(n > 0);
                                                                                       if (b) {
                                                                                         return true;
-                                                                                      }
-                                                                                      else {
+                                                                                      } else {
                                                                                         return false;
                                                                                       }
                                                                                     })
@@ -628,8 +627,7 @@ var suites_001 = /* :: */[
                                                                                         var b = +(i > 0);
                                                                                         if (b) {
                                                                                           return true;
-                                                                                        }
-                                                                                        else {
+                                                                                        } else {
                                                                                           return false;
                                                                                         }
                                                                                       })
@@ -674,8 +672,7 @@ var suites_001 = /* :: */[
                                                                                             var b = +(i % 2 === 0);
                                                                                             if (b) {
                                                                                               return true;
-                                                                                            }
-                                                                                            else {
+                                                                                            } else {
                                                                                               return false;
                                                                                             }
                                                                                           })
@@ -915,8 +912,7 @@ var suites_001 = /* :: */[
                                                                                                                       var b = +(n <= 0);
                                                                                                                       if (b) {
                                                                                                                         return true;
-                                                                                                                      }
-                                                                                                                      else {
+                                                                                                                      } else {
                                                                                                                         return false;
                                                                                                                       }
                                                                                                                     })
@@ -938,8 +934,7 @@ var suites_001 = /* :: */[
                                                                                                                         var b = +(i <= 0);
                                                                                                                         if (b) {
                                                                                                                           return true;
-                                                                                                                        }
-                                                                                                                        else {
+                                                                                                                        } else {
                                                                                                                           return false;
                                                                                                                         }
                                                                                                                       })

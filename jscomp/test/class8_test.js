@@ -106,8 +106,7 @@ var money2 = CamlinternalOO.make_class([
 function min(x, y) {
   if (Caml_oo_curry.js2(5393368, 2, x, y)) {
     return x;
-  }
-  else {
+  } else {
     return y;
   }
 }

@@ -42,8 +42,7 @@ function does_raise(f, q) {
   catch (exn){
     if (exn === Queue.Empty) {
       return /* true */1;
-    }
-    else {
+    } else {
       throw exn;
     }
   }

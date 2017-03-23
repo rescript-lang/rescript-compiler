@@ -149,8 +149,7 @@ function $$return(x) {
 function $great$pipe$eq(e, f) {
   if (e) {
     return /* Some */[Curry._1(f, e[0])];
-  }
-  else {
+  } else {
     return /* None */0;
   }
 }
@@ -158,8 +157,7 @@ function $great$pipe$eq(e, f) {
 function $great$great$eq(e, f) {
   if (e) {
     return Curry._1(f, e[0]);
-  }
-  else {
+  } else {
     return /* None */0;
   }
 }
@@ -180,12 +178,10 @@ function map_opt(f, l) {
         ];
         continue ;
         
-      }
-      else {
+      } else {
         return /* None */0;
       }
-    }
-    else {
+    } else {
       return /* Some */[List.rev(acc)];
     }
   };
@@ -201,19 +197,16 @@ function list_any(f, e) {
         var res = Curry._1(f$1, l[0]);
         if (res) {
           return res;
-        }
-        else {
+        } else {
           _l = l[1];
           continue ;
           
         }
-      }
-      else {
+      } else {
         return /* None */0;
       }
     };
-  }
-  else {
+  } else {
     return /* None */0;
   }
 }
@@ -237,18 +230,15 @@ function list_all(f, e) {
           ];
           continue ;
           
-        }
-        else {
+        } else {
           continue ;
           
         }
-      }
-      else {
+      } else {
         return List.rev(acc);
       }
     };
-  }
-  else {
+  } else {
     return /* [] */0;
   }
 }
@@ -256,8 +246,7 @@ function list_all(f, e) {
 function _try_atom(e, f) {
   if (e[0] >= 848054398) {
     return /* None */0;
-  }
-  else {
+  } else {
     try {
       return /* Some */[Curry._1(f, e[1])];
     }
@@ -288,11 +277,9 @@ function to_string(e) {
 function to_pair(e) {
   if (typeof e === "number") {
     return /* None */0;
-  }
-  else if (e[0] !== 848054398) {
+  } else if (e[0] !== 848054398) {
     return /* None */0;
-  }
-  else {
+  } else {
     var match = e[1];
     if (match) {
       var match$1 = match[1];
@@ -301,12 +288,10 @@ function to_pair(e) {
                   match[0],
                   match$1[0]
                 ]];
-      }
-      else {
+      } else {
         return /* None */0;
       }
-    }
-    else {
+    } else {
       return /* None */0;
     }
   }
@@ -329,11 +314,9 @@ function to_pair_with(f1, f2, e) {
 function to_triple(e) {
   if (typeof e === "number") {
     return /* None */0;
-  }
-  else if (e[0] !== 848054398) {
+  } else if (e[0] !== 848054398) {
     return /* None */0;
-  }
-  else {
+  } else {
     var match = e[1];
     if (match) {
       var match$1 = match[1];
@@ -345,16 +328,13 @@ function to_triple(e) {
                     match$1[0],
                     match$2[0]
                   ]];
-        }
-        else {
+        } else {
           return /* None */0;
         }
-      }
-      else {
+      } else {
         return /* None */0;
       }
-    }
-    else {
+    } else {
       return /* None */0;
     }
   }
@@ -381,8 +361,7 @@ function to_triple_with(f1, f2, f3, e) {
 function to_list(e) {
   if (e[0] >= 848054398) {
     return /* Some */[e[1]];
-  }
-  else {
+  } else {
     return /* None */0;
   }
 }
@@ -390,8 +369,7 @@ function to_list(e) {
 function to_list_with(f, e) {
   if (e[0] >= 848054398) {
     return map_opt(f, e[1]);
-  }
-  else {
+  } else {
     return /* None */0;
   }
 }
@@ -408,13 +386,11 @@ function get_field(name, e) {
           _l = l[1];
           continue ;
           
-        }
-        else if (match[0] !== 848054398) {
+        } else if (match[0] !== 848054398) {
           _l = l[1];
           continue ;
           
-        }
-        else {
+        } else {
           var match$1 = match[1];
           if (match$1) {
             var match$2 = match$1[0];
@@ -422,49 +398,41 @@ function get_field(name, e) {
               _l = l[1];
               continue ;
               
-            }
-            else if (match$2[0] !== 726615281) {
+            } else if (match$2[0] !== 726615281) {
               _l = l[1];
               continue ;
               
-            }
-            else {
+            } else {
               var match$3 = match$1[1];
               if (match$3) {
                 if (match$3[1]) {
                   _l = l[1];
                   continue ;
                   
-                }
-                else if (Caml_obj.caml_equal(name$1, match$2[1])) {
+                } else if (Caml_obj.caml_equal(name$1, match$2[1])) {
                   return /* Some */[match$3[0]];
-                }
-                else {
+                } else {
                   _l = l[1];
                   continue ;
                   
                 }
-              }
-              else {
+              } else {
                 _l = l[1];
                 continue ;
                 
               }
             }
-          }
-          else {
+          } else {
             _l = l[1];
             continue ;
             
           }
         }
-      }
-      else {
+      } else {
         return /* None */0;
       }
     };
-  }
-  else {
+  } else {
     return /* None */0;
   }
 }
@@ -482,13 +450,11 @@ function _get_field_list(name, _l) {
         _l = l[1];
         continue ;
         
-      }
-      else if (match[0] !== 848054398) {
+      } else if (match[0] !== 848054398) {
         _l = l[1];
         continue ;
         
-      }
-      else {
+      } else {
         var match$1 = match[1];
         if (match$1) {
           var match$2 = match$1[0];
@@ -496,29 +462,24 @@ function _get_field_list(name, _l) {
             _l = l[1];
             continue ;
             
-          }
-          else if (match$2[0] !== 726615281) {
+          } else if (match$2[0] !== 726615281) {
             _l = l[1];
             continue ;
             
-          }
-          else if (Caml_obj.caml_equal(name, match$2[1])) {
+          } else if (Caml_obj.caml_equal(name, match$2[1])) {
             return /* Some */[match$1[1]];
-          }
-          else {
+          } else {
             _l = l[1];
             continue ;
             
           }
-        }
-        else {
+        } else {
           _l = l[1];
           continue ;
           
         }
       }
-    }
-    else {
+    } else {
       return /* None */0;
     }
   };
@@ -527,8 +488,7 @@ function _get_field_list(name, _l) {
 function field_list(name, f, e) {
   if (e[0] >= 848054398) {
     return $great$great$eq(_get_field_list(name, e[1]), f);
-  }
-  else {
+  } else {
     return /* None */0;
   }
 }
@@ -540,14 +500,12 @@ function _get_variant(s, args, _l) {
       var match = l[0];
       if (Caml_obj.caml_equal(s, match[0])) {
         return Curry._1(match[1], args);
-      }
-      else {
+      } else {
         _l = l[1];
         continue ;
         
       }
-    }
-    else {
+    } else {
       return /* None */0;
     }
   };
@@ -560,16 +518,13 @@ function get_variant(l, e) {
       var match$1 = match[0];
       if (typeof match$1 === "number" || match$1[0] !== 726615281) {
         return /* None */0;
-      }
-      else {
+      } else {
         return _get_variant(match$1[1], match[1], l);
       }
-    }
-    else {
+    } else {
       return /* None */0;
     }
-  }
-  else {
+  } else {
     return _get_variant(e[1], /* [] */0, l);
   }
 }
@@ -577,8 +532,7 @@ function get_variant(l, e) {
 function get_exn(e) {
   if (e) {
     return e[0];
-  }
-  else {
+  } else {
     throw [
           Caml_builtin_exceptions.failure,
           "CCSexp.Traverse.get_exn"

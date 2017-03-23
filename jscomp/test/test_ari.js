@@ -40,8 +40,7 @@ function length_aux(_len, _param) {
       _len = len + 1 | 0;
       continue ;
       
-    }
-    else {
+    } else {
       return len;
     }
   };

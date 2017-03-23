@@ -13,8 +13,7 @@ var suites_000 = /* tuple */[
                 "xxx",
                 Caml_array.caml_array_get(match, 0).substring(7)
               ]);
-    }
-    else {
+    } else {
       return /* FailWith */Block.__(9, ["regex should match"]);
     }
   }
@@ -27,8 +26,7 @@ var suites_001 = /* :: */[
       var match = (/https:\/\/(.*)/).exec("http://xxx.domain.com");
       if (match !== null) {
         return /* FailWith */Block.__(9, ["regex should not match"]);
-      }
-      else {
+      } else {
         return /* Ok */Block.__(4, [/* true */1]);
       }
     }
@@ -65,8 +63,7 @@ var suites_001 = /* :: */[
                         8,
                         match.index
                       ]);
-            }
-            else {
+            } else {
               return /* Fail */Block.__(8, [/* () */0]);
             }
           }
@@ -82,8 +79,7 @@ var suites_001 = /* :: */[
                           input,
                           match.input
                         ]);
-              }
-              else {
+              } else {
                 return /* Fail */Block.__(8, [/* () */0]);
               }
             }

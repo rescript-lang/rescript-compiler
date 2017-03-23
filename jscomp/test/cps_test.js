@@ -22,8 +22,7 @@ function test() {
         _n = n - 1 | 0;
         continue ;
         
-      }
-      else {
+      } else {
         return Curry._1(acc, /* () */0);
       }
     };

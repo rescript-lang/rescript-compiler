@@ -15,8 +15,7 @@ function insert(queue, prio, elt) {
               insert(right, p, e),
               left
             ];
-    }
-    else {
+    } else {
       return /* Node */[
               p,
               e,
@@ -24,8 +23,7 @@ function insert(queue, prio, elt) {
               left
             ];
     }
-  }
-  else {
+  } else {
     return /* Node */[
             prio,
             elt,
@@ -52,8 +50,7 @@ function remove_top(param) {
                   remove_top(left),
                   right
                 ];
-        }
-        else {
+        } else {
           return /* Node */[
                   rprio,
                   right[1],
@@ -61,16 +58,13 @@ function remove_top(param) {
                   remove_top(right)
                 ];
         }
-      }
-      else {
+      } else {
         return param[3];
       }
-    }
-    else {
+    } else {
       return left;
     }
-  }
-  else {
+  } else {
     throw Queue_is_empty;
   }
 }
@@ -82,8 +76,7 @@ function extract(queue) {
             queue[1],
             remove_top(queue)
           ];
-  }
-  else {
+  } else {
     throw Queue_is_empty;
   }
 }

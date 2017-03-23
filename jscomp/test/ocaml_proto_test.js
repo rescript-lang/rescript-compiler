@@ -103,8 +103,7 @@ function proto(syntax, file_option, $$package, $$import, message, $$enum, proto$
     var newrecord = proto$2.slice();
     newrecord[/* syntax */0] = syntax;
     proto$3 = newrecord;
-  }
-  else {
+  } else {
     proto$3 = proto$2;
   }
   var proto$4;
@@ -112,8 +111,7 @@ function proto(syntax, file_option, $$package, $$import, message, $$enum, proto$
     var newrecord$1 = proto$3.slice();
     newrecord$1[/* package */3] = $$package;
     proto$4 = newrecord$1;
-  }
-  else {
+  } else {
     proto$4 = proto$3;
   }
   var proto$5;
@@ -124,8 +122,7 @@ function proto(syntax, file_option, $$package, $$import, message, $$enum, proto$
       proto$2[/* messages */4]
     ];
     proto$5 = newrecord$2;
-  }
-  else {
+  } else {
     proto$5 = proto$4;
   }
   var proto$6;
@@ -136,8 +133,7 @@ function proto(syntax, file_option, $$package, $$import, message, $$enum, proto$
       proto$2[/* enums */5]
     ];
     proto$6 = newrecord$3;
-  }
-  else {
+  } else {
     proto$6 = proto$5;
   }
   var proto$7;
@@ -148,8 +144,7 @@ function proto(syntax, file_option, $$package, $$import, message, $$enum, proto$
       proto$2[/* imports */1]
     ];
     proto$7 = newrecord$4;
-  }
-  else {
+  } else {
     proto$7 = proto$6;
   }
   var proto$8;
@@ -160,8 +155,7 @@ function proto(syntax, file_option, $$package, $$import, message, $$enum, proto$
       proto$2[/* file_options */2]
     ];
     proto$8 = newrecord$5;
-  }
-  else {
+  } else {
     proto$8 = proto$7;
   }
   if (extend) {
@@ -171,8 +165,7 @@ function proto(syntax, file_option, $$package, $$import, message, $$enum, proto$
       proto$2[/* extends */6]
     ];
     return newrecord$6;
-  }
-  else {
+  } else {
     return proto$8;
   }
 }
@@ -187,8 +180,7 @@ function file_option(file_options, name) {
   catch (exn){
     if (exn === Caml_builtin_exceptions.not_found) {
       return /* None */0;
-    }
-    else {
+    } else {
       throw exn;
     }
   }
@@ -221,8 +213,7 @@ function rev_split_by_char(c, s) {
                 $$String.sub(s, i, s.length - i | 0),
                 l
               ];
-      }
-      else {
+      } else {
         throw exn;
       }
     }
@@ -237,12 +228,10 @@ function pop_last(param) {
               param[0],
               pop_last(tl)
             ];
-    }
-    else {
+    } else {
       return /* [] */0;
     }
-  }
-  else {
+  } else {
     throw [
           Caml_builtin_exceptions.failure,
           "Invalid argument [] for pop_last"
@@ -257,14 +246,12 @@ function apply_until(f, _param) {
       var x = Curry._1(f, param[0]);
       if (x) {
         return x;
-      }
-      else {
+      } else {
         _param = param[1];
         continue ;
         
       }
-    }
-    else {
+    } else {
       return /* None */0;
     }
   };
@@ -295,8 +282,7 @@ function string_fold_lefti(f, e0, s) {
     var acc = _acc;
     if (i === len) {
       return acc;
-    }
-    else {
+    } else {
       _i = i + 1 | 0;
       _acc = Curry._3(f, acc, i, s.charCodeAt(i));
       continue ;
@@ -308,8 +294,7 @@ function string_fold_lefti(f, e0, s) {
 function option_default(x, param) {
   if (param) {
     return param[0];
-  }
-  else {
+  } else {
     return x;
   }
 }
@@ -387,8 +372,7 @@ function prepare_error(param) {
                   ]),
                 "Syntax error"
               ]);
-  }
-  else {
+  } else {
     switch (param.tag | 0) {
       case 0 : 
           var match = param[0];
@@ -670,8 +654,7 @@ function add_loc(loc, exn) {
     var $js = exn[1];
     if (typeof $js === "number") {
       exit = 1;
-    }
-    else {
+    } else {
       switch ($js.tag | 0) {
         case 5 : 
         case 9 : 
@@ -684,8 +667,7 @@ function add_loc(loc, exn) {
           exit = 1;
       }
     }
-  }
-  else {
+  } else {
     exit = 1;
   }
   if (exit === 1) {
@@ -707,8 +689,7 @@ function add_loc(loc, exn) {
 Printexc.register_printer(function (exn) {
       if (exn[0] === Compilation_error) {
         return /* Some */[prepare_error(exn[1])];
-      }
-      else {
+      } else {
         return /* None */0;
       }
     });
@@ -1495,8 +1476,7 @@ function __ocaml_lex_string_rec(_l, lexbuf, ___ocaml_lex_state) {
       ___ocaml_lex_state = __ocaml_lex_state$1;
       continue ;
       
-    }
-    else {
+    } else {
       switch (__ocaml_lex_state$1) {
         case 0 : 
             var c = Lexing.lexeme_char(lexbuf, 1);
@@ -1533,8 +1513,7 @@ function __ocaml_lex_comment_rec(_l, lexbuf, ___ocaml_lex_state) {
       ___ocaml_lex_state = __ocaml_lex_state$1;
       continue ;
       
-    }
-    else {
+    } else {
       switch (__ocaml_lex_state$1) {
         case 0 : 
             update_loc(lexbuf);
@@ -1564,8 +1543,7 @@ function __ocaml_lex_multi_line_comment_rec(_l, lexbuf, ___ocaml_lex_state) {
       ___ocaml_lex_state = __ocaml_lex_state$1;
       continue ;
       
-    }
-    else {
+    } else {
       switch (__ocaml_lex_state$1) {
         case 0 : 
             update_loc(lexbuf);
@@ -1600,8 +1578,7 @@ function lexer(lexbuf) {
       ___ocaml_lex_state = __ocaml_lex_state$1;
       continue ;
       
-    }
-    else {
+    } else {
       switch (__ocaml_lex_state$1) {
         case 0 : 
             return /* LBRACE */15;
@@ -1631,8 +1608,7 @@ function lexer(lexbuf) {
               ___ocaml_lex_state = 0;
               continue ;
               
-            }
-            else {
+            } else {
               return /* EOF */25;
             }
             break;
@@ -1642,8 +1618,7 @@ function lexer(lexbuf) {
               ___ocaml_lex_state = 0;
               continue ;
               
-            }
-            else {
+            } else {
               return /* EOF */25;
             }
             break;
@@ -1651,8 +1626,7 @@ function lexer(lexbuf) {
             var match$2 = __ocaml_lex_string_rec(/* [] */0, lexbuf$1, 55);
             if (match$2) {
               return /* STRING */Block.__(2, [match$2[0]]);
-            }
-            else {
+            } else {
               return /* EOF */25;
             }
         case 14 : 
@@ -1736,8 +1710,7 @@ function lexer(lexbuf) {
 function let_decl_of_and(param) {
   if (param) {
     return "and";
-  }
-  else {
+  } else {
     return "let rec";
   }
 }
@@ -1765,18 +1738,15 @@ function string_of_basic_type(param) {
 function string_of_field_type(param) {
   if (typeof param === "number") {
     return "unit";
-  }
-  else if (param.tag) {
+  } else if (param.tag) {
     var param$1 = param[0];
     var match = param$1[/* udt_module */0];
     if (match) {
       return match[0] + ("." + param$1[/* udt_type_name */1]);
-    }
-    else {
+    } else {
       return param$1[/* udt_type_name */1];
     }
-  }
-  else {
+  } else {
     return string_of_basic_type(param[0]);
   }
 }
@@ -1784,8 +1754,7 @@ function string_of_field_type(param) {
 function string_of_repeated_type(param) {
   if (param !== 0) {
     return "Pbrt.Repeated_field.t";
-  }
-  else {
+  } else {
     return "list";
   }
 }
@@ -1824,8 +1793,7 @@ function string_of_record_field_type(param) {
                             ]),
                           "(%s, %s) %s"
                         ]), string_of_basic_type(match$1[2][0]), string_of_field_type(match$1[3][0]), "Hashtbl.t");
-        }
-        else {
+        } else {
           return Curry._3(Printf.sprintf(/* Format */[
                           /* Char_literal */Block.__(12, [
                               /* "(" */40,
@@ -1877,8 +1845,7 @@ function function_name_of_user_defined(prefix, param) {
                       ]),
                     "%s.%s_%s"
                   ]), match[0], prefix, param[/* udt_type_name */1]);
-  }
-  else {
+  } else {
     return Curry._2(Printf.sprintf(/* Format */[
                     /* String */Block.__(2, [
                         /* No_padding */0,
@@ -1910,14 +1877,12 @@ function string_of_payload_kind(capitalize, payload_kind, packed) {
           break;
       
     }
-  }
-  else {
+  } else {
     s = packed !== 0 ? "bytes" : "varint";
   }
   if (capitalize) {
     return Caml_string.bytes_to_string(Bytes.capitalize(Caml_string.bytes_of_string(s)));
-  }
-  else {
+  } else {
     return s;
   }
 }
@@ -1943,8 +1908,7 @@ function scope(scope$1, f) {
 function indentation_prefix(n) {
   if (n > 8 || n < 0) {
     return Caml_string.bytes_to_string(Bytes.make(n, /* " " */32));
-  }
-  else {
+  } else {
     switch (n) {
       case 0 : 
           return "";
@@ -1983,8 +1947,7 @@ function print(scope) {
           _acc = Pervasives.$at(sub, acc);
           continue ;
           
-        }
-        else {
+        } else {
           _param = param[1];
           _acc = /* :: */[
             indentation_prefix(i) + match[0],
@@ -1993,8 +1956,7 @@ function print(scope) {
           continue ;
           
         }
-      }
-      else {
+      } else {
         return acc;
       }
     };
@@ -2010,8 +1972,7 @@ function runtime_function(param) {
             Caml_builtin_exceptions.failure,
             "Invalid encoding/OCaml type combination"
           ];
-    }
-    else {
+    } else {
       var match$1 = param[1];
       if (typeof match$1 === "number") {
         switch (match$1) {
@@ -2061,19 +2022,16 @@ function runtime_function(param) {
                         Caml_builtin_exceptions.failure,
                         "Invalid encoding/OCaml type combination"
                       ];
-                }
-                else {
+                } else {
                   return "Pbrt.Encoder.string";
                 }
-              }
-              else {
+              } else {
                 return "Pbrt.Encoder.bytes";
               }
               break;
           
         }
-      }
-      else if (match$1[0] !== 0) {
+      } else if (match$1[0] !== 0) {
         switch (param[2]) {
           case 2 : 
               return "Pbrt.Encoder.int_as_zigzag";
@@ -2091,8 +2049,7 @@ function runtime_function(param) {
                   ];
           
         }
-      }
-      else {
+      } else {
         switch (param[2]) {
           case 2 : 
               return "Pbrt.Encoder.int_as_varint";
@@ -2113,8 +2070,7 @@ function runtime_function(param) {
         }
       }
     }
-  }
-  else {
+  } else {
     var match$3 = param[1];
     if (typeof match$3 === "number") {
       switch (match$3) {
@@ -2164,19 +2120,16 @@ function runtime_function(param) {
                       Caml_builtin_exceptions.failure,
                       "Invalid encoding/OCaml type combination"
                     ];
-              }
-              else {
+              } else {
                 return "Pbrt.Decoder.string";
               }
-            }
-            else {
+            } else {
               return "Pbrt.Decoder.bytes";
             }
             break;
         
       }
-    }
-    else if (match$3[0] !== 0) {
+    } else if (match$3[0] !== 0) {
       switch (param[2]) {
         case 2 : 
             return "Pbrt.Decoder.int_as_zigzag";
@@ -2194,8 +2147,7 @@ function runtime_function(param) {
                 ];
         
       }
-    }
-    else {
+    } else {
       switch (param[2]) {
         case 2 : 
             return "Pbrt.Decoder.int_as_varint";
@@ -2229,18 +2181,15 @@ function decode_basic_type(bt, pk) {
 function decode_field_f(field_type, pk) {
   if (typeof field_type === "number") {
     return "Pbrt.Decoder.empty_nested d";
-  }
-  else if (field_type.tag) {
+  } else if (field_type.tag) {
     var t = field_type[0];
     var f_name = function_name_of_user_defined("decode", t);
     if (t[/* udt_nested */2]) {
       return f_name + " (Pbrt.Decoder.nested d)";
-    }
-    else {
+    } else {
       return f_name + " d";
     }
-  }
-  else {
+  } else {
     return decode_basic_type(field_type[0], pk) + " d";
   }
 }
@@ -2262,8 +2211,7 @@ function gen_decode_record(and_, param, sc) {
         if (exit === 1) {
           if (rf_field_type[0][0] !== 0) {
             return acc;
-          }
-          else {
+          } else {
             return /* :: */[
                     param[/* rf_label */0],
                     acc
@@ -2506,8 +2454,7 @@ function gen_decode_record(and_, param, sc) {
                                                     });
                                                 return line$1(sc, ") () d;");
                                               });
-                                  }
-                                  else {
+                                  } else {
                                     return process_field_common(sc$3, encoding_number, string_of_nonpacked_pk(pk$2), function (sc) {
                                                 return line$1(sc, Curry._2(Printf.sprintf(/* Format */[
                                                                     /* String_literal */Block.__(11, [
@@ -2530,8 +2477,7 @@ function gen_decode_record(and_, param, sc) {
                                                                   ]), decode_field_f(field_type$2, pk$2), rf_label$3));
                                               });
                                   }
-                                }
-                                else if (is_packed !== 0) {
+                                } else if (is_packed !== 0) {
                                   return process_field_common(sc$3, encoding_number, "Bytes", function (sc) {
                                               return line$1(sc, Curry._2(Printf.sprintf(/* Format */[
                                                                   /* String_literal */Block.__(11, [
@@ -2553,8 +2499,7 @@ function gen_decode_record(and_, param, sc) {
                                                                   "v.%s <- Pbrt.Decoder.packed_fold (fun l d -> (%s)::l) [] d;"
                                                                 ]), rf_label$3, decode_field_f(field_type$2, pk$2)));
                                             });
-                                }
-                                else {
+                                } else {
                                   return process_field_common(sc$3, encoding_number, string_of_nonpacked_pk(pk$2), function (sc) {
                                               return line$1(sc, Curry._3(Printf.sprintf(/* Format */[
                                                                   /* String_literal */Block.__(11, [
@@ -2639,8 +2584,7 @@ function gen_decode_record(and_, param, sc) {
                                                                     ]),
                                                                   "Hashtbl.add v.%s a b;"
                                                                 ]), rf_label$4));
-                                            }
-                                            else {
+                                            } else {
                                               line$1(sc, Curry._1(Printf.sprintf(/* Format */[
                                                             /* String_literal */Block.__(11, [
                                                                 "v.",
@@ -2710,8 +2654,7 @@ function gen_decode_record(and_, param, sc) {
                                                                                 ]),
                                                                               "v.%s <- %s (%s);"
                                                                             ]), rf_label$5, vc_constructor, decode_field_f(vc_field_type[0], pk)));
-                                                        }
-                                                        else {
+                                                        } else {
                                                           line$1(sc, "Pbrt.Decoder.empty_nested d;");
                                                           return line$1(sc, Curry._2(Printf.sprintf(/* Format */[
                                                                               /* String_literal */Block.__(11, [
@@ -2836,8 +2779,7 @@ function gen_decode_variant(and_, param, sc) {
                                                         ]),
                                                       "| Some (%i, _) -> %s (%s)"
                                                     ]), vc_encoding_number, vc_constructor, decode_field_f(vc_field_type[0], param[/* vc_payload_kind */3])));
-                                }
-                                else {
+                                } else {
                                   return line$1(sc$1, Curry._2(Printf.sprintf(/* Format */[
                                                       /* String_literal */Block.__(11, [
                                                           "| Some (",
@@ -3033,8 +2975,7 @@ function log(x) {
   var match = __log__[0];
   if (match) {
     return Printf.fprintf(match[0], x);
-  }
-  else {
+  } else {
     return Printf.ifprintf(Pervasives.stdout, x);
   }
 }
@@ -3056,11 +2997,9 @@ function gen_pp_field(field_type) {
   var exit = 0;
   if (typeof field_type === "number") {
     exit = 1;
-  }
-  else if (field_type.tag) {
+  } else if (field_type.tag) {
     return function_name_of_user_defined("pp", field_type[0]);
-  }
-  else {
+  } else {
     exit = 1;
   }
   if (exit === 1) {
@@ -3217,8 +3156,7 @@ function gen_pp_record(and_, param, sc) {
                                                         ]),
                                                       'Pbrt.Pp.pp_record_field "%s" (Pbrt.Pp.pp_list %s) fmt (Pbrt.Repeated_field.to_list %s);'
                                                     ]), rf_label, field_string_of$2, var_name));
-                                }
-                                else {
+                                } else {
                                   return line$1(sc, Curry._3(Printf.sprintf(/* Format */[
                                                       /* String_literal */Block.__(11, [
                                                           'Pbrt.Pp.pp_record_field "',
@@ -3398,8 +3336,7 @@ function gen_pp_variant(and_, param, sc) {
                                                   ]),
                                                 '| %s x -> Format.fprintf fmt "@[%s(%%a)@]" %s x'
                                               ]), vc_constructor, vc_constructor, field_string_of));
-                          }
-                          else {
+                          } else {
                             return line$1(sc, Curry._2(Printf.sprintf(/* Format */[
                                                 /* String_literal */Block.__(11, [
                                                     "| ",
@@ -3549,8 +3486,7 @@ var Codegen_pp = /* module */[
 function height(param) {
   if (param) {
     return param[4];
-  }
-  else {
+  } else {
     return 0;
   }
 }
@@ -3578,25 +3514,21 @@ function bal(l, x, d, r) {
       var ll = l[0];
       if (height(ll) >= height(lr)) {
         return create(ll, lv, ld, create(lr, x, d, r));
-      }
-      else if (lr) {
+      } else if (lr) {
         return create(create(ll, lv, ld, lr[0]), lr[1], lr[2], create(lr[3], x, d, r));
-      }
-      else {
+      } else {
         throw [
               Caml_builtin_exceptions.invalid_argument,
               "Map.bal"
             ];
       }
-    }
-    else {
+    } else {
       throw [
             Caml_builtin_exceptions.invalid_argument,
             "Map.bal"
           ];
     }
-  }
-  else if (hr > (hl + 2 | 0)) {
+  } else if (hr > (hl + 2 | 0)) {
     if (r) {
       var rr = r[3];
       var rd = r[2];
@@ -3604,25 +3536,21 @@ function bal(l, x, d, r) {
       var rl = r[0];
       if (height(rr) >= height(rl)) {
         return create(create(l, x, d, rl), rv, rd, rr);
-      }
-      else if (rl) {
+      } else if (rl) {
         return create(create(l, x, d, rl[0]), rl[1], rl[2], create(rl[3], rv, rd, rr));
-      }
-      else {
+      } else {
         throw [
               Caml_builtin_exceptions.invalid_argument,
               "Map.bal"
             ];
       }
-    }
-    else {
+    } else {
       throw [
             Caml_builtin_exceptions.invalid_argument,
             "Map.bal"
           ];
     }
-  }
-  else {
+  } else {
     return /* Node */[
             l,
             x,
@@ -3643,12 +3571,10 @@ function add(x, data, param) {
     if (c) {
       if (c < 0) {
         return bal(add(x, data, l), v, d, r);
-      }
-      else {
+      } else {
         return bal(l, v, d, add(x, data, r));
       }
-    }
-    else {
+    } else {
       return /* Node */[
               l,
               x,
@@ -3657,8 +3583,7 @@ function add(x, data, param) {
               param[4]
             ];
     }
-  }
-  else {
+  } else {
     return /* Node */[
             /* Empty */0,
             x,
@@ -3678,12 +3603,10 @@ function find(x, _param) {
         _param = c < 0 ? param[0] : param[3];
         continue ;
         
-      }
-      else {
+      } else {
         return param[2];
       }
-    }
-    else {
+    } else {
       throw Caml_builtin_exceptions.not_found;
     }
   };
@@ -3701,8 +3624,7 @@ function map$1(f, param) {
             r$prime,
             param[4]
           ];
-  }
-  else {
+  } else {
     return /* Empty */0;
   }
 }
@@ -3716,8 +3638,7 @@ function fold(f, _m, _accu) {
       _m = m[3];
       continue ;
       
-    }
-    else {
+    } else {
       return accu;
     }
   };
@@ -3729,15 +3650,13 @@ function min_value(param) {
     var match$1 = param[1];
     if (match$1) {
       return /* Some */[Pervasives.min(match[0], match$1[0])];
-    }
-    else {
+    } else {
       throw [
             Caml_builtin_exceptions.failure,
             "min_value error"
           ];
     }
-  }
-  else {
+  } else {
     throw [
           Caml_builtin_exceptions.failure,
           "min_value error"
@@ -3751,15 +3670,13 @@ function eq_value(param) {
     var match$1 = param[1];
     if (match$1) {
       return Caml_obj.caml_equal(match[0], match$1[0]);
-    }
-    else {
+    } else {
       throw [
             Caml_builtin_exceptions.failure,
             "eq_value error"
           ];
     }
-  }
-  else {
+  } else {
     throw [
           Caml_builtin_exceptions.failure,
           "eq_value error"
@@ -3782,8 +3699,7 @@ function string_of_option(f, param) {
                       ]),
                     "Some(%s)"
                   ]), Curry._1(f, param[0]));
-  }
-  else {
+  } else {
     return "None";
   }
 }
@@ -3869,8 +3785,7 @@ function strong_connect(g, sccs, stack, index, v) {
                   stack,
                   index
                 ];
-        }
-        else {
+        } else {
           var match$1 = strong_connect(g, sccs, stack, index + 1 | 0, w);
           v[/* lowlink */2] = min_value(/* tuple */[
                 v[/* lowlink */2],
@@ -3949,8 +3864,7 @@ function strong_connect(g, sccs, stack, index, v) {
                     ],
                     splitted
                   ];
-          }
-          else {
+          } else {
             n[/* on_stack */3] = /* false */0;
             if (n[/* core */0][/* id */0] === v[/* core */0][/* id */0]) {
               return /* tuple */[
@@ -3961,8 +3875,7 @@ function strong_connect(g, sccs, stack, index, v) {
                       stack,
                       /* true */1
                     ];
-            }
-            else {
+            } else {
               return /* tuple */[
                       /* :: */[
                         n[/* core */0][/* id */0],
@@ -3986,8 +3899,7 @@ function strong_connect(g, sccs, stack, index, v) {
             List.rev(match$1[1]),
             index$1
           ];
-  }
-  else {
+  } else {
     return /* tuple */[
             sccs$1,
             stack$2,
@@ -4009,8 +3921,7 @@ function tarjan(g) {
                           stack,
                           index
                         ];
-                }
-                else {
+                } else {
                   return strong_connect(g$1, sccs, stack, index, n);
                 }
               }, g$1, /* tuple */[
@@ -4054,8 +3965,7 @@ function find_field_option(field_options, option_name) {
   catch (exn){
     if (exn === Caml_builtin_exceptions.not_found) {
       return /* None */0;
-    }
-    else {
+    } else {
       throw exn;
     }
   }
@@ -4110,8 +4020,7 @@ function scope_of_package(param) {
             /* packages */List.rev(rev_split_by_char(/* "." */46, param[0])),
             /* message_names : [] */0
           ];
-  }
-  else {
+  } else {
     return /* record */[
             /* packages : [] */0,
             /* message_names : [] */0
@@ -4127,8 +4036,7 @@ function unresolved_of_string(s) {
             /* type_name */match[0],
             /* from_root */+(Caml_string.get(s, 0) === /* "." */46)
           ];
-  }
-  else {
+  } else {
     throw [
           Compilation_error,
           /* Programatic_error */Block.__(4, [/* Invalid_string_split */0])
@@ -4203,16 +4111,14 @@ function compile_default_p2(all_types, field) {
         case 12 : 
             if (constant.tag === 1) {
               return /* Some */[constant];
-            }
-            else {
+            } else {
               return invalid_default_value(/* Some */[field_name$1], "invalid default type (bool expected)", /* () */0);
             }
             break;
         case 13 : 
             if (constant.tag) {
               return invalid_default_value(/* Some */[field_name$1], "invalid default type (string expected)", /* () */0);
-            }
-            else {
+            } else {
               return /* Some */[constant];
             }
             break;
@@ -4220,33 +4126,28 @@ function compile_default_p2(all_types, field) {
             return invalid_default_value(/* Some */[field_name$1], "default value not supported for bytes", /* () */0);
         
       }
-    }
-    else if (constant.tag === 4) {
+    } else if (constant.tag === 4) {
       var default_enum_value = constant[0];
       var match = type_of_id(all_types, field_type$1[0]);
       var spec = match[/* spec */4];
       if (spec.tag) {
         return invalid_default_value(/* Some */[field_name$1], "field of type message cannot have a default litteral value", /* () */0);
-      }
-      else {
+      } else {
         var default_enum_value$1 = apply_until(function (param) {
               var enum_value_name = param[/* enum_value_name */0];
               if (enum_value_name === default_enum_value) {
                 return /* Some */[enum_value_name];
-              }
-              else {
+              } else {
                 return /* None */0;
               }
             }, spec[0][/* enum_values */1]);
         if (default_enum_value$1) {
           return /* Some */[constant];
-        }
-        else {
+        } else {
           return invalid_default_value(/* Some */[field_name$1], "Invalid default enum value", /* () */0);
         }
       }
-    }
-    else {
+    } else {
       return invalid_default_value(/* Some */[field_name$1], "default value not supported for message", /* () */0);
     }
     switch (exit) {
@@ -4263,8 +4164,7 @@ function compile_default_p2(all_types, field) {
       case 2 : 
           if (constant.tag === 2) {
             return /* Some */[constant];
-          }
-          else {
+          } else {
             return invalid_default_value(/* Some */[field_name$1], "invalid default type (int expected)", /* () */0);
           }
           break;
@@ -4272,19 +4172,16 @@ function compile_default_p2(all_types, field) {
           if (constant.tag === 2) {
             if (constant[0] >= 0) {
               return /* Some */[constant];
-            }
-            else {
+            } else {
               return invalid_default_value(/* Some */[field_name$1], "negative default value for unsigned int", /* () */0);
             }
-          }
-          else {
+          } else {
             return invalid_default_value(/* Some */[field_name$1], "invalid default type (int expected)", /* () */0);
           }
           break;
       
     }
-  }
-  else {
+  } else {
     return /* None */0;
   }
 }
@@ -4299,8 +4196,7 @@ function get_default(_, field_options, _$1) {
   catch (exn){
     if (exn === Caml_builtin_exceptions.not_found) {
       return /* None */0;
-    }
-    else {
+    } else {
       throw exn;
     }
   }
@@ -4347,8 +4243,7 @@ function not_found(f) {
   catch (exn){
     if (exn === Caml_builtin_exceptions.not_found) {
       return /* true */1;
-    }
-    else {
+    } else {
       throw exn;
     }
   }
@@ -4363,12 +4258,10 @@ function list_assoc2(x, _param) {
         _param = param[1];
         continue ;
         
-      }
-      else {
+      } else {
         return match[0];
       }
-    }
-    else {
+    } else {
       throw Caml_builtin_exceptions.not_found;
     }
   };
@@ -4490,8 +4383,7 @@ function compile_message_p1(file_name, file_options, message_scope, param) {
               ],
               number_index
             ];
-    }
-    else {
+    } else {
       var field_name$1 = name;
       var previous_field_name = "";
       var message_name$1 = message_name;
@@ -4548,8 +4440,7 @@ function is_empty_message(param) {
   var match = param[/* spec */4];
   if (match.tag) {
     return +(0 === List.length(match[0][/* message_body */2]));
-  }
-  else {
+  } else {
     return /* false */0;
   }
 }
@@ -4558,8 +4449,7 @@ function type_name_of_type(param) {
   var match = param[/* spec */4];
   if (match.tag) {
     return match[0][/* message_name */1];
-  }
-  else {
+  } else {
     return match[0][/* enum_name */0];
   }
 }
@@ -4584,8 +4474,7 @@ function compile_message_p2(types, param, message) {
               field_scope,
               /* [] */0
             ];
-    }
-    else {
+    } else {
       var loop = function (_scopes, _l) {
         while(true) {
           var l = _l;
@@ -4598,8 +4487,7 @@ function compile_message_p2(types, param, message) {
             ];
             continue ;
             
-          }
-          else {
+          } else {
             return /* :: */[
                     field_scope,
                     scopes
@@ -4660,15 +4548,13 @@ function compile_message_p2(types, param, message) {
               return /* Field_type_bytes */14;
           
         }
-      }
-      else {
+      } else {
         throw [
               Compilation_error,
               /* Programatic_error */Block.__(4, [/* Unexpected_field_type */1])
             ];
       }
-    }
-    else {
+    } else {
       var unresolved = field_type[0];
       var type_name = unresolved[/* type_name */1];
       endline("[pbtt] " + string_of_unresolved(unresolved));
@@ -4726,16 +4612,14 @@ function compile_message_p2(types, param, message) {
             catch (exn){
               if (exn === Caml_builtin_exceptions.not_found) {
                 return /* None */0;
-              }
-              else {
+              } else {
                 throw exn;
               }
             }
           }, search_scopes$1);
       if (id) {
         return /* Field_type_type */[id[0]];
-      }
-      else {
+      } else {
         var field_name$1 = field_name;
         var type_ = type_name;
         var message_name$1 = message_name;
@@ -4841,8 +4725,7 @@ function node_of_proto_type(param) {
                     var field_type = param[0][/* field_type */1];
                     if (typeof field_type === "number") {
                       return /* [] */0;
-                    }
-                    else {
+                    } else {
                       return /* :: */[
                               field_type[0],
                               /* [] */0
@@ -4853,8 +4736,7 @@ function node_of_proto_type(param) {
                                     var field_type = param[/* field_type */1];
                                     if (typeof field_type === "number") {
                                       return /* [] */0;
-                                    }
-                                    else {
+                                    } else {
                                       return /* :: */[
                                               field_type[0],
                                               /* [] */0
@@ -4865,8 +4747,7 @@ function node_of_proto_type(param) {
                     var map_value_type = param[0][/* map_value_type */3];
                     if (typeof map_value_type === "number") {
                       return /* [] */0;
-                    }
-                    else {
+                    } else {
                       return /* :: */[
                               map_value_type[0],
                               /* [] */0
@@ -4879,8 +4760,7 @@ function node_of_proto_type(param) {
             /* id */id,
             /* sub */sub
           ];
-  }
-  else {
+  } else {
     return /* record */[
             /* id */id,
             /* sub : [] */0
@@ -4910,8 +4790,7 @@ function group(proto) {
 function type_decl_of_and(param) {
   if (param) {
     return "and";
-  }
-  else {
+  } else {
     return "type";
   }
 }
@@ -4926,8 +4805,7 @@ function gen_type_record(mutable_, and_, param, sc) {
       case 3 : 
           if (param[0][0] !== 0) {
             return /* true */1;
-          }
-          else {
+          } else {
             return /* false */0;
           }
       default:
@@ -4937,14 +4815,11 @@ function gen_type_record(mutable_, and_, param, sc) {
   var field_prefix = function (field_type, field_mutable) {
     if (field_mutable) {
       return "mutable ";
-    }
-    else if (is_imperative_type(field_type)) {
+    } else if (is_imperative_type(field_type)) {
       return "";
-    }
-    else if (mutable_$1) {
+    } else if (mutable_$1) {
       return "mutable ";
-    }
-    else {
+    } else {
       return "";
     }
   };
@@ -5034,8 +4909,7 @@ function gen_type_variant(and_, variant, sc) {
                                                   ]),
                                                 "| %s of %s"
                                               ]), vc_constructor, type_string));
-                          }
-                          else {
+                          } else {
                             return line$1(sc, Curry._1(Printf.sprintf(/* Format */[
                                                 /* String_literal */Block.__(11, [
                                                     "| ",
@@ -5169,16 +5043,14 @@ function gen_encode_field_type(with_key, sc, var_name, encoding_number, pk, is_p
   var encode_key = function (sc) {
     if (with_key) {
       return gen_encode_field_key(sc, encoding_number, pk, is_packed);
-    }
-    else {
+    } else {
       return /* () */0;
     }
   };
   if (typeof field_type === "number") {
     encode_key(sc);
     return line$1(sc, "Pbrt.Encoder.empty_nested encoder;");
-  }
-  else if (field_type.tag) {
+  } else if (field_type.tag) {
     var ud = field_type[0];
     encode_key(sc);
     var f_name = function_name_of_user_defined("encode", ud);
@@ -5202,8 +5074,7 @@ function gen_encode_field_type(with_key, sc, var_name, encoding_number, pk, is_p
                             ]),
                           "Pbrt.Encoder.nested (%s %s) encoder;"
                         ]), f_name, var_name));
-    }
-    else {
+    } else {
       return line$1(sc, Curry._2(Printf.sprintf(/* Format */[
                           /* String */Block.__(2, [
                               /* No_padding */0,
@@ -5221,8 +5092,7 @@ function gen_encode_field_type(with_key, sc, var_name, encoding_number, pk, is_p
                           "%s %s encoder;"
                         ]), f_name, var_name));
     }
-  }
-  else {
+  } else {
     encode_key(sc);
     var rt = encode_basic_type(field_type[0], pk);
     return line$1(sc, Curry._2(Printf.sprintf(/* Format */[
@@ -5364,8 +5234,7 @@ function gen_encode_record(and_, param, sc) {
                                                       ]), rf_label));
                                   });
                               return line$1(sc, ") encoder;");
-                            }
-                            else {
+                            } else {
                               line$1(sc, "Pbrt.Repeated_field.iter (fun x -> ");
                               scope(sc, function (sc) {
                                     return gen_encode_field_type(/* Some */[/* () */0], sc, "x", encoding_number$1, pk$1, is_packed, field_type$1);
@@ -5384,8 +5253,7 @@ function gen_encode_record(and_, param, sc) {
                                                   ") v.%s;"
                                                 ]), rf_label));
                             }
-                          }
-                          else if (is_packed !== 0) {
+                          } else if (is_packed !== 0) {
                             gen_encode_field_key(sc, encoding_number$1, pk$1, is_packed);
                             line$1(sc, "Pbrt.Encoder.nested (fun encoder ->");
                             scope(sc, function (sc) {
@@ -5408,8 +5276,7 @@ function gen_encode_record(and_, param, sc) {
                                                     ]), rf_label));
                                 });
                             return line$1(sc, ") encoder;");
-                          }
-                          else {
+                          } else {
                             line$1(sc, "List.iter (fun x -> ");
                             scope(sc, function (sc) {
                                   return gen_encode_field_type(/* Some */[/* () */0], sc, "x", encoding_number$1, pk$1, is_packed, field_type$1);
@@ -5456,8 +5323,7 @@ function gen_encode_record(and_, param, sc) {
                           line$1(sc, ") in");
                           if (match$3[0] !== 0) {
                             line$1(sc, "Hashtbl.iter (fun k v ->");
-                          }
-                          else {
+                          } else {
                             line$1(sc, "List.iter (fun (k, v) ->");
                           }
                           scope(sc, function (sc) {
@@ -5537,8 +5403,7 @@ function gen_encode_record(and_, param, sc) {
                                                     return gen_encode_field_type(/* Some */[/* () */0], sc, "x", vc_encoding_number, vc_payload_kind, /* false */0, field_type);
                                                   });
                                               return line$1(sc, ")");
-                                            }
-                                            else {
+                                            } else {
                                               line$1(sc, Curry._1(Printf.sprintf(/* Format */[
                                                             /* String_literal */Block.__(11, [
                                                                 "| ",
@@ -5619,8 +5484,7 @@ function gen_encode_variant(and_, variant, sc) {
                                   return gen_encode_field_type(/* Some */[/* () */0], sc, "x", vc_encoding_number, vc_payload_kind, /* false */0, field_type);
                                 });
                             return line$1(sc, ")");
-                          }
-                          else {
+                          } else {
                             line$1(sc, Curry._1(Printf.sprintf(/* Format */[
                                           /* String_literal */Block.__(11, [
                                               "| ",
@@ -5806,11 +5670,9 @@ var Codegen_encode = /* module */[
 function default_value_of_field_type(field_name, field_type, field_default) {
   if (typeof field_type === "number") {
     return "()";
-  }
-  else if (field_type.tag) {
+  } else if (field_type.tag) {
     return function_name_of_user_defined("default", field_type[0]) + " ()";
-  }
-  else {
+  } else {
     var field_name$1 = field_name;
     var basic_type = field_type[0];
     var field_default$1 = field_default;
@@ -5820,8 +5682,7 @@ function default_value_of_field_type(field_name, field_type, field_default) {
             var match = field_default$1[0];
             if (match.tag) {
               return invalid_default_value(field_name$1, "invalid default type", /* () */0);
-            }
-            else {
+            } else {
               return Curry._1(Printf.sprintf(/* Format */[
                               /* Char_literal */Block.__(12, [
                                   /* "\"" */34,
@@ -5836,8 +5697,7 @@ function default_value_of_field_type(field_name, field_type, field_default) {
                               '"%s"'
                             ]), match[0]);
             }
-          }
-          else {
+          } else {
             return '""';
           }
           break;
@@ -5846,12 +5706,10 @@ function default_value_of_field_type(field_name, field_type, field_default) {
             var match$1 = field_default$1[0];
             if (match$1.tag === 3) {
               return Pervasives.string_of_float(match$1[0]);
-            }
-            else {
+            } else {
               return invalid_default_value(field_name$1, "invalid default type", /* () */0);
             }
-          }
-          else {
+          } else {
             return "0.";
           }
           break;
@@ -5860,12 +5718,10 @@ function default_value_of_field_type(field_name, field_type, field_default) {
             var match$2 = field_default$1[0];
             if (match$2.tag === 2) {
               return "" + match$2[0];
-            }
-            else {
+            } else {
               return invalid_default_value(field_name$1, "invalid default type", /* () */0);
             }
-          }
-          else {
+          } else {
             return "0";
           }
           break;
@@ -5885,12 +5741,10 @@ function default_value_of_field_type(field_name, field_type, field_default) {
                                 ]),
                               "%il"
                             ]), match$3[0]);
-            }
-            else {
+            } else {
               return invalid_default_value(field_name$1, "invalid default type", /* () */0);
             }
-          }
-          else {
+          } else {
             return "0l";
           }
           break;
@@ -5910,12 +5764,10 @@ function default_value_of_field_type(field_name, field_type, field_default) {
                                 ]),
                               "%iL"
                             ]), match$4[0]);
-            }
-            else {
+            } else {
               return invalid_default_value(field_name$1, "invalid default type", /* () */0);
             }
-          }
-          else {
+          } else {
             return "0L";
           }
           break;
@@ -5924,8 +5776,7 @@ function default_value_of_field_type(field_name, field_type, field_default) {
             var match$5 = field_default$1[0];
             if (match$5.tag) {
               return invalid_default_value(field_name$1, "invalid default type", /* () */0);
-            }
-            else {
+            } else {
               return Curry._1(Printf.sprintf(/* Format */[
                               /* String_literal */Block.__(11, [
                                   'Bytes.of_string "',
@@ -5940,8 +5791,7 @@ function default_value_of_field_type(field_name, field_type, field_default) {
                               'Bytes.of_string "%s"'
                             ]), match$5[0]);
             }
-          }
-          else {
+          } else {
             return "Bytes.create 64";
           }
           break;
@@ -5952,16 +5802,13 @@ function default_value_of_field_type(field_name, field_type, field_default) {
               var b = match$6[0];
               if (b) {
                 return "true";
-              }
-              else {
+              } else {
                 return "false";
               }
-            }
-            else {
+            } else {
               return invalid_default_value(field_name$1, "invalid default type", /* () */0);
             }
-          }
-          else {
+          } else {
             return "false";
           }
           break;
@@ -6041,8 +5888,7 @@ function record_field_default_info(record_field) {
                         ]),
                       "%s (%s)"
                     ]), vc_constructor, dfvft(vc_field_type[0], /* None */0)) : vc_constructor;
-        }
-        else {
+        } else {
           throw [
                 Caml_builtin_exceptions.assert_failure,
                 [
@@ -6109,8 +5955,7 @@ function gen_default_record(mutable_, and_, param, sc) {
                                         ]), param[0], param[1]));
                     }, fields_default_info);
         });
-  }
-  else {
+  } else {
     line$1(sc, Curry._2(Printf.sprintf(/* Format */[
                   /* String */Block.__(2, [
                       /* No_padding */0,
@@ -6238,8 +6083,7 @@ function gen_default_variant(and_, param, sc) {
                             ]),
                           "%s default_%s () : %s = %s (%s)"
                         ]), decl, v_name, v_name, vc_constructor, default_value));
-    }
-    else {
+    } else {
       return line$1(sc, Curry._4(Printf.sprintf(/* Format */[
                           /* String */Block.__(2, [
                               /* No_padding */0,
@@ -6266,8 +6110,7 @@ function gen_default_variant(and_, param, sc) {
                           "%s default_%s (): %s = %s"
                         ]), decl, v_name, v_name, vc_constructor));
     }
-  }
-  else {
+  } else {
     throw [
           Caml_builtin_exceptions.failure,
           "programmatic TODO error"
@@ -6281,8 +6124,7 @@ function gen_default_const_variant(and_, param, sc) {
   var first_constructor_name;
   if (cv_constructors) {
     first_constructor_name = cv_constructors[0][0];
-  }
-  else {
+  } else {
     throw [
           Caml_builtin_exceptions.failure,
           "programmatic TODO error"
@@ -6478,16 +6320,14 @@ function rev_split_by_naming_convention(s) {
   var is_uppercase = function (c) {
     if (64 < c) {
       return +(c < 91);
-    }
-    else {
+    } else {
       return /* false */0;
     }
   };
   var add_sub_string = function (start_i, end_i, l) {
     if (start_i === end_i) {
       return l;
-    }
-    else {
+    } else {
       return /* :: */[
               $$String.sub(s, start_i, end_i - start_i | 0),
               l
@@ -6504,23 +6344,20 @@ function rev_split_by_naming_convention(s) {
                     start_i,
                     is_uppercase(c)
                   ];
-          }
-          else if (is_uppercase(c)) {
+          } else if (is_uppercase(c)) {
             return /* tuple */[
                     add_sub_string(start_i, i, l),
                     i,
                     /* true */1
                   ];
-          }
-          else {
+          } else {
             return /* tuple */[
                     l,
                     start_i,
                     is_uppercase(c)
                   ];
           }
-        }
-        else {
+        } else {
           return /* tuple */[
                   add_sub_string(start_i, i, l),
                   i + 1 | 0,
@@ -6625,8 +6462,7 @@ function module_of_file_name(file_name) {
             Compilation_error,
             /* Invalid_file_name */Block.__(6, [file_name$1])
           ];
-    }
-    else {
+    } else {
       throw exn;
     }
   }
@@ -6648,12 +6484,10 @@ function type_name(message_scope, name) {
   if (all_names$2) {
     if (all_names$2[1]) {
       return $$String.concat("_", all_names$2);
-    }
-    else {
+    } else {
       return fix_ocaml_keyword_conflict(all_names$2[0]);
     }
-  }
-  else {
+  } else {
     throw [
           Caml_builtin_exceptions.failure,
           "Programmatic error"
@@ -6686,13 +6520,11 @@ function encoding_info_of_field_type(all_types, field_type) {
           return /* Pk_bytes */2;
       
     }
-  }
-  else {
+  } else {
     var match = type_of_id(all_types, field_type[0]);
     if (match[/* spec */4].tag) {
       return /* Pk_bytes */2;
-    }
-    else {
+    } else {
       return /* Pk_varint */[/* false */0];
     }
   }
@@ -6705,16 +6537,14 @@ function encoding_of_field(all_types, field) {
     var match$1 = match[0];
     if (match$1.tag === 1) {
       packed = match$1[0];
-    }
-    else {
+    } else {
       var field_name$1 = field_name(field);
       throw [
             Compilation_error,
             /* Invalid_packed_option */Block.__(8, [field_name$1])
           ];
     }
-  }
-  else {
+  } else {
     packed = /* false */0;
   }
   var pk = encoding_info_of_field_type(all_types, field_type(field));
@@ -6732,8 +6562,7 @@ function compile_field_type(field_name, all_types, file_options, field_options, 
   if (match) {
     var match$1 = match[0];
     ocaml_type = match$1.tag === 4 && match$1[0] === "int_t" ? /* Int_t */-783406652 : /* None */870530776;
-  }
-  else {
+  } else {
     ocaml_type = /* None */870530776;
   }
   var match$2 = file_option(file_options, "int32_type");
@@ -6743,8 +6572,7 @@ function compile_field_type(field_name, all_types, file_options, field_options, 
     int32_type = match$3.tag === 4 ? (
         match$3[0] === "int_t" ? /* Ft_basic_type */Block.__(0, [/* Bt_int */2]) : /* Ft_basic_type */Block.__(0, [/* Bt_int32 */3])
       ) : /* Ft_basic_type */Block.__(0, [/* Bt_int32 */3]);
-  }
-  else {
+  } else {
     int32_type = /* Ft_basic_type */Block.__(0, [/* Bt_int32 */3]);
   }
   var match$4 = file_option(file_options, "int64_type");
@@ -6754,8 +6582,7 @@ function compile_field_type(field_name, all_types, file_options, field_options, 
     int64_type = match$5.tag === 4 ? (
         match$5[0] === "int_t" ? /* Ft_basic_type */Block.__(0, [/* Bt_int */2]) : /* Ft_basic_type */Block.__(0, [/* Bt_int64 */4])
       ) : /* Ft_basic_type */Block.__(0, [/* Bt_int64 */4]);
-  }
-  else {
+  } else {
     int64_type = /* Ft_basic_type */Block.__(0, [/* Bt_int64 */4]);
   }
   if (typeof field_type === "number") {
@@ -6769,8 +6596,7 @@ function compile_field_type(field_name, all_types, file_options, field_options, 
       case 8 : 
           if (ocaml_type !== -783406652) {
             return int32_type;
-          }
-          else {
+          } else {
             return /* Ft_basic_type */Block.__(0, [/* Bt_int */2]);
           }
       case 3 : 
@@ -6779,8 +6605,7 @@ function compile_field_type(field_name, all_types, file_options, field_options, 
       case 9 : 
           if (ocaml_type !== -783406652) {
             return int64_type;
-          }
-          else {
+          } else {
             return /* Ft_basic_type */Block.__(0, [/* Bt_int */2]);
           }
       case 10 : 
@@ -6795,8 +6620,7 @@ function compile_field_type(field_name, all_types, file_options, field_options, 
           return /* Ft_basic_type */Block.__(0, [/* Bt_bytes */5]);
       
     }
-  }
-  else {
+  } else {
     var all_types$1 = all_types;
     var file_name$1 = file_name;
     var i = field_type[0];
@@ -6813,16 +6637,14 @@ function compile_field_type(field_name, all_types, file_options, field_options, 
               Compilation_error,
               /* Programatic_error */Block.__(4, [/* No_type_found_for_id */2])
             ];
-      }
-      else {
+      } else {
         throw exn;
       }
     }
     if (exit === 1) {
       if (is_empty_message(t)) {
         return /* Ft_unit */0;
-      }
-      else {
+      } else {
         var udt_nested;
         udt_nested = t[/* spec */4].tag ? /* true */1 : /* false */0;
         var field_type_module = module_of_file_name(t[/* file_name */2]);
@@ -6834,8 +6656,7 @@ function compile_field_type(field_name, all_types, file_options, field_options, 
                       /* udt_type_name */udt_type_name,
                       /* udt_nested */udt_nested
                     ]]);
-        }
-        else {
+        } else {
           return /* Ft_user_defined_type */Block.__(1, [/* record */[
                       /* udt_module : Some */[field_type_module],
                       /* udt_type_name */udt_type_name,
@@ -6854,15 +6675,13 @@ function is_mutable(field_name, field_options) {
     var match$1 = match[0];
     if (match$1.tag === 1) {
       return match$1[0];
-    }
-    else {
+    } else {
       throw [
             Compilation_error,
             /* Invalid_mutable_option */Block.__(11, [field_name])
           ];
     }
-  }
-  else {
+  } else {
     return /* false */0;
   }
 }
@@ -6873,12 +6692,10 @@ function ocaml_container(field_options) {
     var match$1 = match[0];
     if (match$1.tag === 4) {
       return /* Some */[match$1[0]];
-    }
-    else {
+    } else {
       return /* None */0;
     }
-  }
-  else {
+  } else {
     return /* None */0;
   }
 }
@@ -6965,8 +6782,7 @@ function compile(proto_definition) {
                   /* file_options */file_options,
                   /* spec : Message */Block.__(1, [compile_message_p2(all_types, scope, spec[0])])
                 ];
-        }
-        else {
+        } else {
           return /* record */[
                   /* scope */scope,
                   /* id */id,
@@ -7001,8 +6817,7 @@ function compile(proto_definition) {
                           case 1 : 
                               if (message_body[1]) {
                                 exit = 1;
-                              }
-                              else {
+                              } else {
                                 var outer_message_names = Pervasives.$at(message_names, /* :: */[
                                       message_name,
                                       /* [] */0
@@ -7023,8 +6838,7 @@ function compile(proto_definition) {
                               break;
                           
                         }
-                      }
-                      else {
+                      } else {
                         return /* [] */0;
                       }
                       if (exit === 1) {
@@ -7052,22 +6866,19 @@ function compile(proto_definition) {
                                               pk,
                                               field_default$1
                                             ]]);
-                                      }
-                                      else {
+                                      } else {
                                         var match$2 = ocaml_container(field_options$1);
                                         var repeated_type;
                                         if (match$2) {
                                           if (match$2[0] === "repeated_field") {
                                             repeated_type = /* Rt_repeated_field */1;
-                                          }
-                                          else {
+                                          } else {
                                             throw [
                                                   Caml_builtin_exceptions.failure,
                                                   "Invalid ocaml_container attribute value"
                                                 ];
                                           }
-                                        }
-                                        else {
+                                        } else {
                                           repeated_type = /* Rt_list */0;
                                         }
                                         record_field_type = /* Rft_repeated_field */Block.__(2, [/* tuple */[
@@ -7078,8 +6889,7 @@ function compile(proto_definition) {
                                               match[2]
                                             ]]);
                                       }
-                                    }
-                                    else {
+                                    } else {
                                       record_field_type = /* Rft_optional */Block.__(1, [/* tuple */[
                                             field_type$1,
                                             encoding_number,
@@ -7153,14 +6963,12 @@ function compile(proto_definition) {
                                             Caml_builtin_exceptions.failure,
                                             "Only Basic Types are supported for map keys"
                                           ];
-                                    }
-                                    else if (key_type.tag) {
+                                    } else if (key_type.tag) {
                                       throw [
                                             Caml_builtin_exceptions.failure,
                                             "Only Basic Types are supported for map keys"
                                           ];
-                                    }
-                                    else {
+                                    } else {
                                       key_type$1 = key_type[0];
                                     }
                                     var value_type = compile_field_type(/* Some */[Curry._1(Printf.sprintf(/* Format */[
@@ -7179,15 +6987,13 @@ function compile(proto_definition) {
                                     if (match$3) {
                                       if (match$3[0] === "hashtbl") {
                                         associative_type = /* At_hashtable */1;
-                                      }
-                                      else {
+                                      } else {
                                         throw [
                                               Caml_builtin_exceptions.failure,
                                               "Invalid ocaml_container attribute value for map"
                                             ];
                                       }
-                                    }
-                                    else {
+                                    } else {
                                       associative_type = /* At_list */0;
                                     }
                                     var record_field_type$1 = /* Rft_associative_field */Block.__(3, [/* tuple */[
@@ -7239,8 +7045,7 @@ function compile(proto_definition) {
                                   ]);
                       }
                       
-                    }
-                    else {
+                    } else {
                       return /* :: */[
                               compile_enum(file_name, scope, match[0]),
                               /* [] */0
@@ -7278,8 +7083,7 @@ function compile(proto_definition) {
                                   line$1(sc, "");
                                   if (first) {
                                     return 1 - has_encoded;
-                                  }
-                                  else {
+                                  } else {
                                     return /* false */0;
                                   }
                                 }, /* true */1, types);

@@ -30,8 +30,7 @@ var cwd = Block.__(246, [function () {
 function path_as_directory(x) {
   if (x === "" || Ext_string.ends_with(x, Filename.dir_sep)) {
     return x;
-  }
-  else {
+  } else {
     return x + Filename.dir_sep;
   }
 }
@@ -44,8 +43,7 @@ function absolute_path(s) {
     s$2 = Filename.concat(tag === 250 ? cwd[0] : (
             tag === 246 ? CamlinternalLazy.force_lazy_block(cwd) : cwd
           ), s$1);
-  }
-  else {
+  } else {
     s$2 = s$1;
   }
   var aux = function (_s) {
@@ -56,18 +54,15 @@ function absolute_path(s) {
       var dir = match_001;
       if (dir === s) {
         return dir;
-      }
-      else {
+      } else {
         var base = match_000;
         if (base === Filename.current_dir_name) {
           _s = dir;
           continue ;
           
-        }
-        else if (base === Filename.parent_dir_name) {
+        } else if (base === Filename.parent_dir_name) {
           return Curry._1(Filename.dirname, aux(dir));
-        }
-        else {
+        } else {
           return Filename.concat(aux(dir), base);
         }
       }
@@ -102,8 +97,7 @@ function chop_extension($staropt$star, name) {
                         ]),
                       "Filename.chop_extension ( %s : %s )"
                     ]), loc, name);
-    }
-    else {
+    } else {
       throw exn;
     }
   }
@@ -116,8 +110,7 @@ function chop_extension_if_any(fname) {
   catch (exn){
     if (exn[0] === Caml_builtin_exceptions.invalid_argument) {
       return fname;
-    }
-    else {
+    } else {
       throw exn;
     }
   }
@@ -142,16 +135,13 @@ function relative_path(file_or_dir_1, file_or_dir_2) {
             _dir1 = dir1[1];
             continue ;
             
-          }
-          else {
+          } else {
             exit = 1;
           }
-        }
-        else {
+        } else {
           exit = 1;
         }
-      }
-      else {
+      } else {
         exit = 1;
       }
       if (exit === 1) {
@@ -166,15 +156,13 @@ function relative_path(file_or_dir_1, file_or_dir_2) {
   if (ys) {
     if (ys[0] === node_parent) {
       return $$String.concat(node_sep, ys);
-    }
-    else {
+    } else {
       return $$String.concat(node_sep, /* :: */[
                   node_current,
                   ys
                 ]);
     }
-  }
-  else {
+  } else {
     return $$String.concat(node_sep, /* :: */[
                 node_current,
                 ys
@@ -201,23 +189,20 @@ function node_relative_path(node_modules_shorten, file1, dep_file) {
                             ]),
                           "invalid path: %s"
                         ]), file2);
-        }
-        else {
+        } else {
           var curr_char = file2.charCodeAt(i);
           if (curr_char === os_path_separator_char || curr_char === /* "." */46) {
             _i = i + 1 | 0;
             continue ;
             
-          }
-          else {
+          } else {
             return i;
           }
         }
       };
     };
     return Ext_string.tail_from(file2, skip(v + Literals.node_modules_length | 0));
-  }
-  else {
+  } else {
     return relative_path(dep_file[0] >= 781515420 ? /* `File */[
                   781515420,
                   absolute_path(dep_file[1])
@@ -239,15 +224,13 @@ function find_root_filename(_cwd, filename) {
     var cwd = _cwd;
     if (Caml_sys.caml_sys_file_exists(Filename.concat(cwd, filename))) {
       return cwd;
-    }
-    else {
+    } else {
       var cwd$prime = Curry._1(Filename.dirname, cwd);
       if (cwd$prime.length < cwd.length) {
         _cwd = cwd$prime;
         continue ;
         
-      }
-      else {
+      } else {
         return Curry._2(Ext_pervasives.failwithf('File "ext_filename.ml", line 205, characters 13-20', /* Format */[
                         /* String */Block.__(2, [
                             /* No_padding */0,
@@ -291,14 +274,11 @@ function module_name_of_file_if_any(file) {
 function combine(p1, p2) {
   if (p1 === "" || p1 === Filename.current_dir_name) {
     return p2;
-  }
-  else if (p2 === "" || p2 === Filename.current_dir_name) {
+  } else if (p2 === "" || p2 === Filename.current_dir_name) {
     return p1;
-  }
-  else if (Curry._1(Filename.is_relative, p2)) {
+  } else if (Curry._1(Filename.is_relative, p2)) {
     return Filename.concat(p1, p2);
-  }
-  else {
+  } else {
     return p2;
   }
 }
@@ -315,15 +295,13 @@ function split_aux(p) {
               dir,
               acc
             ];
-    }
-    else {
+    } else {
       var new_path = Curry._1(Filename.basename, p$1);
       if (new_path === Filename.dir_sep) {
         _p = dir;
         continue ;
         
-      }
-      else {
+      } else {
         _acc = /* :: */[
           new_path,
           acc
@@ -342,8 +320,7 @@ function rel_normalized_absolute_path(from, to_) {
   var root2 = match$1[0];
   if (match[0] !== root2) {
     return root2;
-  }
-  else {
+  } else {
     var _xss = match[1];
     var _yss = match$1[1];
     while(true) {
@@ -357,24 +334,20 @@ function rel_normalized_absolute_path(from, to_) {
             _xss = xs;
             continue ;
             
-          }
-          else {
+          } else {
             var start = List.fold_left(function (acc, _) {
                   return Filename.concat(acc, Ext_string.parent_dir_lit);
                 }, Ext_string.parent_dir_lit, xs);
             return List.fold_left(Filename.concat, start, yss);
           }
-        }
-        else {
+        } else {
           return List.fold_left(function (acc, _) {
                       return Filename.concat(acc, Ext_string.parent_dir_lit);
                     }, Ext_string.parent_dir_lit, xs);
         }
-      }
-      else if (yss) {
+      } else if (yss) {
         return List.fold_left(Filename.concat, yss[0], yss[1]);
-      }
-      else {
+      } else {
         return Ext_string.empty;
       }
     };
@@ -385,8 +358,7 @@ function normalize_absolute_path(x) {
   var drop_if_exist = function (xs) {
     if (xs) {
       return xs[1];
-    }
-    else {
+    } else {
       return /* [] */0;
     }
   };
@@ -401,13 +373,11 @@ function normalize_absolute_path(x) {
         if (x === Ext_string.current_dir_lit) {
           continue ;
           
-        }
-        else if (x === Ext_string.parent_dir_lit) {
+        } else if (x === Ext_string.parent_dir_lit) {
           _acc = drop_if_exist(acc);
           continue ;
           
-        }
-        else {
+        } else {
           _acc = /* :: */[
             x,
             acc
@@ -415,8 +385,7 @@ function normalize_absolute_path(x) {
           continue ;
           
         }
-      }
-      else {
+      } else {
         return acc;
       }
     };
@@ -435,13 +404,11 @@ function normalize_absolute_path(x) {
         _acc = Filename.concat(rev_paths$1[0], acc);
         continue ;
         
-      }
-      else {
+      } else {
         return Filename.concat(root, acc);
       }
     };
-  }
-  else {
+  } else {
     return root;
   }
 }
@@ -450,8 +417,7 @@ function get_extension(x) {
   var pos = Ext_string.rindex_neg(x, /* "." */46);
   if (pos < 0) {
     return "";
-  }
-  else {
+  } else {
     return Ext_string.tail_from(x, pos);
   }
 }
@@ -462,11 +428,9 @@ if (Sys.unix) {
   simple_convert_node_path_to_os_path = function (x) {
     return x;
   };
-}
-else if (Sys.win32 || Sys.cygwin) {
+} else if (Sys.win32 || Sys.cygwin) {
   simple_convert_node_path_to_os_path = Ext_string.replace_slash_backward;
-}
-else {
+} else {
   var s = "Unknown OS : Unix";
   throw [
         Caml_builtin_exceptions.failure,

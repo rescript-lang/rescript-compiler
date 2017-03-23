@@ -8,8 +8,7 @@ console.log("list");
 function f(param) {
   if (param) {
     return "Some";
-  }
-  else {
+  } else {
     return "None";
   }
 }

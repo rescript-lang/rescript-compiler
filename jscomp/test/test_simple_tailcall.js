@@ -11,8 +11,7 @@ function tailcall() {
 function non_length(x) {
   if (x) {
     return 1 + non_length(x[1]) | 0;
-  }
-  else {
+  } else {
     return 0;
   }
 }
@@ -25,15 +24,13 @@ function length(_acc, _x) {
       var tl = x[1];
       if (tl) {
         return 1 + length(acc + 1 | 0, tl[1]) | 0;
-      }
-      else {
+      } else {
         _x = tl;
         _acc = acc + 1 | 0;
         continue ;
         
       }
-    }
-    else {
+    } else {
       return acc;
     }
   };

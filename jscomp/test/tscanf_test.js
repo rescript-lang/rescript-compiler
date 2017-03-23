@@ -424,8 +424,7 @@ function test4() {
                   ]), function (b0) {
                 return +(b0 === -0.113);
               });
-  }
-  else {
+  } else {
     return /* false */0;
   }
 }
@@ -535,13 +534,11 @@ function test5() {
                   ]), function (b1, b2, b3, b4) {
                 if (b1 === 1.0 && b2 === 1.1 && b3 === 0.0) {
                   return +(b4 === 0.13);
-                }
-                else {
+                } else {
                   return /* false */0;
                 }
               });
-  }
-  else {
+  } else {
     return /* false */0;
   }
 }
@@ -609,8 +606,7 @@ function test6() {
                             /* false */0
                           ]);
               });
-  }
-  else {
+  } else {
     return /* false */0;
   }
 }
@@ -651,13 +647,11 @@ function test7() {
                   ]), function (c1, c2, c3) {
                 if (c1 === /* "a" */97 && !c2) {
                   return +(c3 === /* "b" */98);
-                }
-                else {
+                } else {
                   return /* false */0;
                 }
               });
-  }
-  else {
+  } else {
     return /* false */0;
   }
 }
@@ -675,8 +669,7 @@ function verify_read(c) {
               "%C"
             ]), id) === c) {
     return 0;
-  }
-  else {
+  } else {
     throw [
           Caml_builtin_exceptions.assert_failure,
           [
@@ -781,8 +774,7 @@ function test9() {
                     ]), function (s) {
                   return s;
                 }) === " ");
-  }
-  else {
+  } else {
     return /* false */0;
   }
 }
@@ -841,8 +833,7 @@ function test10() {
       });
   if (res === "Unechaine:celle-cietcelle-la!" && unit('"a\\\n  b"') === "ab" && unit('"\\\n  ab"') === "ab" && unit('"\n\\\n  ab"') === "\nab" && unit('"\n\\\n  a\nb"') === "\na\nb" && unit('"\n\\\n  \\\n  a\nb"') === "\na\nb" && unit('"\n\\\n  a\n\\\nb\\\n"') === "\na\nb" && unit('"a\\\n  "') === "a") {
     return /* true */1;
-  }
-  else {
+  } else {
     return /* false */0;
   }
 }
@@ -924,13 +915,11 @@ function test11() {
                   ]), function (prenom, nom, poids) {
                 if (prenom === "Daniel" && nom === "de Rauglaudre") {
                   return +(poids === 66);
-                }
-                else {
+                } else {
                   return /* false */0;
                 }
               });
-  }
-  else {
+  } else {
     return /* false */0;
   }
 }
@@ -1138,13 +1127,11 @@ function test110() {
                   ]), function (x, y) {
                 if (x === "") {
                   return +(y === "poi !");
-                }
-                else {
+                } else {
                   return /* false */0;
                 }
               });
-  }
-  else {
+  } else {
     return /* false */0;
   }
 }
@@ -1399,15 +1386,13 @@ function scan_elems$1(ib, accu) {
                         Caml_builtin_exceptions.failure,
                         "scan_elems"
                       ];
-                }
-                else {
+                } else {
                   return List.rev(/* :: */[
                               i,
                               accu
                             ]);
                 }
-              }
-              else {
+              } else {
                 return scan_elems$1(ib, /* :: */[
                             i,
                             accu
@@ -1463,14 +1448,12 @@ function scan_elems$2(ib, accu) {
                 if (c >= 91) {
                   if (c >= 94) {
                     exit = 1;
-                  }
-                  else {
+                  } else {
                     switch (c - 91 | 0) {
                       case 0 : 
                           if (accu) {
                             exit = 1;
-                          }
-                          else {
+                          } else {
                             return scan_elems$2(ib, /* :: */[
                                         i,
                                         accu
@@ -1488,11 +1471,9 @@ function scan_elems$2(ib, accu) {
                       
                     }
                   }
-                }
-                else if (c !== 59) {
+                } else if (c !== 59) {
                   exit = 1;
-                }
-                else {
+                } else {
                   return scan_elems$2(ib, /* :: */[
                               i,
                               accu
@@ -1518,11 +1499,9 @@ function scan_elems$2(ib, accu) {
                 "]"
               ]), /* () */0);
       return accu;
-    }
-    else if (exn === Caml_builtin_exceptions.end_of_file) {
+    } else if (exn === Caml_builtin_exceptions.end_of_file) {
       return accu;
-    }
-    else {
+    } else {
       throw exn;
     }
   }
@@ -1567,8 +1546,7 @@ function test16() {
                       ]
                     ]
                   ]));
-  }
-  else {
+  } else {
     return /* false */0;
   }
 }
@@ -1662,8 +1640,7 @@ function test17() {
                   ]
                 ]
               ]);
-  }
-  else {
+  } else {
     return /* false */0;
   }
 }
@@ -1687,12 +1664,10 @@ function scan_rest(ib, accu) {
                         Caml_builtin_exceptions.failure,
                         "scan_rest"
                       ];
-                }
-                else {
+                } else {
                   return accu;
                 }
-              }
-              else {
+              } else {
                 return Curry._1(Scanf.bscanf(ib, /* Format */[
                                 /* Scan_char_set */Block.__(20, [
                                     /* None */0,
@@ -1703,8 +1678,7 @@ function scan_rest(ib, accu) {
                               ]), function (param) {
                             if (param === "]") {
                               return accu;
-                            }
-                            else {
+                            } else {
                               return Curry._1(Scanf.bscanf(ib, /* Format */[
                                               /* Char_literal */Block.__(12, [
                                                   /* " " */32,
@@ -1747,14 +1721,12 @@ function scan_elems$4(ib, accu) {
                       Caml_builtin_exceptions.failure,
                       "scan_elems"
                     ];
-              }
-              else if (accu) {
+              } else if (accu) {
                 throw [
                       Caml_builtin_exceptions.failure,
                       "scan_elems"
                     ];
-              }
-              else {
+              } else {
                 return Curry._1(Scanf.bscanf(ib, /* Format */[
                                 /* Scan_char_set */Block.__(20, [
                                     /* None */0,
@@ -1765,8 +1737,7 @@ function scan_elems$4(ib, accu) {
                               ]), function (param) {
                             if (param === "]") {
                               return accu;
-                            }
-                            else {
+                            } else {
                               return Curry._1(Scanf.bscanf(ib, /* Format */[
                                               /* Char_literal */Block.__(12, [
                                                   /* " " */32,
@@ -1801,13 +1772,11 @@ function test18() {
   var ib = Curry._1(Scanf.Scanning[/* from_string */6], "[]");
   if (List.rev(scan_elems$4(ib, /* [] */0))) {
     return /* false */0;
-  }
-  else {
+  } else {
     var ib$1 = Curry._1(Scanf.Scanning[/* from_string */6], "[ ]");
     if (List.rev(scan_elems$4(ib$1, /* [] */0))) {
       return /* false */0;
-    }
-    else {
+    } else {
       var ib$2 = Curry._1(Scanf.Scanning[/* from_string */6], "[1;2;3;4]");
       if (Caml_obj.caml_equal(List.rev(scan_elems$4(ib$2, /* [] */0)), /* :: */[
               1,
@@ -1836,8 +1805,7 @@ function test18() {
                       ]
                     ]
                   ]);
-      }
-      else {
+      } else {
         return /* false */0;
       }
     }
@@ -1875,8 +1843,7 @@ function scan_rest$1(ib, accu) {
                 ]), function (param) {
               if (param === "]") {
                 return accu;
-              }
-              else {
+              } else {
                 var ib$1 = ib;
                 var accu$1 = accu;
                 return Curry._1(Scanf.bscanf(ib$1, /* Format */[
@@ -1972,8 +1939,7 @@ function test22() {
                   ]
                 ]
               ]);
-  }
-  else {
+  } else {
     return /* false */0;
   }
 }
@@ -1989,8 +1955,7 @@ function scan_elems$5(ib, scan_elem, accu) {
                 ];
                 if (s === "") {
                   return accu$1;
-                }
-                else {
+                } else {
                   return scan_elems$5(ib, scan_elem, accu$1);
                 }
               });
@@ -1998,8 +1963,7 @@ function scan_elems$5(ib, scan_elem, accu) {
   catch (exn){
     if (exn[0] === Scanf.Scan_failure) {
       return accu;
-    }
-    else {
+    } else {
       throw exn;
     }
   }
@@ -2080,8 +2044,7 @@ function test23() {
                   ]
                 ]
               ]);
-  }
-  else {
+  } else {
     return /* false */0;
   }
 }
@@ -2210,8 +2173,7 @@ function test28() {
                   ]
                 ]
               ]);
-  }
-  else {
+  } else {
     return /* false */0;
   }
 }
@@ -2226,8 +2188,7 @@ function scan_elems$6(ib, scan_elem, accu) {
               ];
               if (s === "") {
                 return accu$1;
-              }
-              else {
+              } else {
                 return scan_elems$6(ib, scan_elem, accu$1);
               }
             }, function (_, _$1) {
@@ -2306,8 +2267,7 @@ function test29() {
                   ]
                 ]
               ]);
-  }
-  else {
+  } else {
     return /* false */0;
   }
 }
@@ -2364,8 +2324,7 @@ function test30() {
                   ]
                 ]
               ]);
-  }
-  else {
+  } else {
     return /* false */0;
   }
 }
@@ -2397,8 +2356,7 @@ function scan_elems$7(ib, scan_elem, accu) {
                             ]), function (s) {
                           if (s === "") {
                             return accu$1;
-                          }
-                          else {
+                          } else {
                             return scan_elems$7(ib, scan_elem, accu$1);
                           }
                         });
@@ -2496,8 +2454,7 @@ function test31() {
                   ]
                 ]
               ]);
-  }
-  else {
+  } else {
     return /* false */0;
   }
 }
@@ -2534,8 +2491,7 @@ function test32() {
                   ]
                 ]
               ]);
-  }
-  else {
+  } else {
     return /* false */0;
   }
 }
@@ -2566,8 +2522,7 @@ function scan_elems$8(ib, scan_elem_fmt, accu) {
                             ]), function (param) {
                           if (param === "") {
                             return accu$1;
-                          }
-                          else {
+                          } else {
                             return scan_elems$8(ib, scan_elem_fmt, accu$1);
                           }
                         });
@@ -2649,8 +2604,7 @@ function test33() {
                   ]
                 ]
               ]);
-  }
-  else {
+  } else {
     return /* false */0;
   }
 }
@@ -2687,8 +2641,7 @@ function test34() {
                   ]
                 ]
               ]);
-  }
-  else {
+  } else {
     return /* false */0;
   }
 }
@@ -2723,8 +2676,7 @@ function scan_elems$9(scan_elem, accu, ib) {
                                         ]), function (param) {
                                       if (param === "") {
                                         return accu$1;
-                                      }
-                                      else {
+                                      } else {
                                         return scan_elems$9(scan_elem, accu$1, ib);
                                       }
                                     });
@@ -2923,8 +2875,7 @@ function test35() {
                 "",
                 1
               ]);
-  }
-  else {
+  } else {
     return /* false */0;
   }
 }
@@ -2955,8 +2906,7 @@ function read_elems(read_elem, accu, ib) {
                 }), function (accu, s) {
               if (s === "") {
                 return accu;
-              }
-              else {
+              } else {
                 return read_elems(read_elem, accu, ib);
               }
             });
@@ -3049,8 +2999,7 @@ function test36() {
                 "",
                 0
               ]);
-  }
-  else {
+  } else {
     return /* false */0;
   }
 }
@@ -3073,8 +3022,7 @@ function test37() {
                     ]), function (x) {
                   return x;
                 }, 1) === 1);
-  }
-  else {
+  } else {
     return /* false */0;
   }
 }
@@ -3129,8 +3077,7 @@ function test38() {
                       ]),
                     " %!%!"
                   ]), /* true */1);
-  }
-  else {
+  } else {
     return /* false */0;
   }
 }
@@ -3141,16 +3088,14 @@ function test39() {
   var is_empty_buff = function (ib) {
     if (Curry._1(Scanf.Scanning[/* beginning_of_input */10], ib)) {
       return Curry._1(Scanf.Scanning[/* end_of_input */9], ib);
-    }
-    else {
+    } else {
       return /* false */0;
     }
   };
   var ib = Curry._1(Scanf.Scanning[/* from_string */6], "");
   if (is_empty_buff(ib)) {
     return is_empty_buff(ib);
-  }
-  else {
+  } else {
     return /* false */0;
   }
 }
@@ -3172,8 +3117,7 @@ function test40() {
                 ]), function (s1, s2) {
               if (s1 === "c") {
                 return +(s2 === "ba");
-              }
-              else {
+              } else {
                 return /* false */0;
               }
             });
@@ -3197,8 +3141,7 @@ function test41() {
                 ]), function (s1, s2) {
               if (s1 === "") {
                 return +(s2 === "cba");
-              }
-              else {
+              } else {
                 return /* false */0;
               }
             });
@@ -3226,8 +3169,7 @@ function test42() {
             ]), function (s1, s2, s3) {
           if (s1 === "def" && s2 === "cbaa") {
             return +(s3 === "ghi");
-          }
-          else {
+          } else {
             return /* false */0;
           }
         })) {
@@ -3244,8 +3186,7 @@ function test42() {
                   ]), function (s) {
                 return +(s === "defcbaaghi");
               });
-  }
-  else {
+  } else {
     return /* false */0;
   }
 }
@@ -3310,8 +3251,7 @@ function test45() {
                 ]), function (s1, s2, s3) {
               if (s1 === "12" && s2 === "2") {
                 return +(s3 === "");
-              }
-              else {
+              } else {
                 return /* false */0;
               }
             });
@@ -3458,8 +3398,7 @@ function test48() {
                       "%i"
                     ])) {
                 return +(s === "89");
-              }
-              else {
+              } else {
                 return /* false */0;
               }
             })) {
@@ -3564,68 +3503,52 @@ function test48() {
                                               39030,
                                               "yens"
                                             ]);
-                                }
-                                else {
+                                } else {
                                   return /* false */0;
                                 }
-                              }
-                              else {
+                              } else {
                                 return /* false */0;
                               }
-                            }
-                            else {
+                            } else {
                               return /* false */0;
                             }
-                          }
-                          else {
+                          } else {
                             return /* false */0;
                           }
-                        }
-                        else {
+                        } else {
                           return /* false */0;
                         }
-                      }
-                      else {
+                      } else {
                         return /* false */0;
                       }
-                    }
-                    else {
+                    } else {
                       return /* false */0;
                     }
-                  }
-                  else {
+                  } else {
                     return /* false */0;
                   }
-                }
-                else {
+                } else {
                   return /* false */0;
                 }
-              }
-              else {
+              } else {
                 return /* false */0;
               }
-            }
-            else {
+            } else {
               return /* false */0;
             }
-          }
-          else {
+          } else {
             return /* false */0;
           }
-        }
-        else {
+        } else {
           return /* false */0;
         }
-      }
-      else {
+      } else {
         return /* false */0;
       }
-    }
-    else {
+    } else {
       return /* false */0;
     }
-  }
-  else {
+  } else {
     return /* false */0;
   }
 }
@@ -3782,13 +3705,11 @@ function test49() {
                   ]), function (s, t) {
                 if (s === "a") {
                   return +(t === "b");
-                }
-                else {
+                } else {
                   return /* false */0;
                 }
               });
-  }
-  else {
+  } else {
     return /* false */0;
   }
 }
@@ -3803,8 +3724,7 @@ function next_char(ob, _) {
     ob[/* position */1] = 0;
     Buffer.add_string(ob, $$String.sub(s, 1, len - 1 | 0));
     return c;
-  }
-  else {
+  } else {
     throw Caml_builtin_exceptions.end_of_file;
   }
 }
@@ -3825,8 +3745,7 @@ function reader(ib, ob) {
     count[0] = 0;
     send_string(ob, "start");
     return writer(ib, ob);
-  }
-  else {
+  } else {
     return Curry._1(Scanf.bscanf(ib, /* Format */[
                     /* Scan_char_set */Block.__(20, [
                         /* None */0,
@@ -3841,15 +3760,13 @@ function reader(ib, ob) {
                 if (s === "stop") {
                   send_string(ob, "stop");
                   return writer(ib, ob);
-                }
-                else {
+                } else {
                   var l = s.length;
                   count[0] = l + count[0] | 0;
                   if (count[0] >= 100) {
                     send_string(ob, "stop");
                     send_string(ob, "" + count[0]);
-                  }
-                  else {
+                  } else {
                     send_string(ob, "" + l);
                   }
                   return writer(ib, ob);
@@ -3995,13 +3912,11 @@ function test51() {
                   ]), function (s1, s2) {
                 if (s1 === "Hello ") {
                   return +(s2 === "");
-                }
-                else {
+                } else {
                   return /* false */0;
                 }
               });
-  }
-  else {
+  } else {
     return /* false */0;
   }
 }
@@ -4221,13 +4136,11 @@ function test52() {
                   ]), function (s1, s2) {
                 if (s1 === "Hello") {
                   return +(s2 === "foo]");
-                }
-                else {
+                } else {
                   return /* false */0;
                 }
               });
-  }
-  else {
+  } else {
     return /* false */0;
   }
 }
@@ -4300,8 +4213,7 @@ function test53() {
                             /* lo */123
                           ]);
               });
-  }
-  else {
+  } else {
     return /* false */0;
   }
 }
@@ -4339,8 +4251,7 @@ function test56() {
                 -20,
                 3
               ]);
-  }
-  else {
+  } else {
     return /* false */0;
   }
 }
@@ -4542,13 +4453,11 @@ function test57() {
                         "%i"
                       ])) {
                   return +(s === "89");
-                }
-                else {
+                } else {
                   return /* false */0;
                 }
               });
-  }
-  else {
+  } else {
     return /* false */0;
   }
 }
@@ -4611,8 +4520,7 @@ function test58() {
                         ]),
                       "%[a-z0-9]%@%%%s"
                     ]), Pervasives.$caret) === "string1string2");
-  }
-  else {
+  } else {
     return /* false */0;
   }
 }
@@ -4660,13 +4568,11 @@ function test60() {
                   ]), function (s1, s2) {
                 if (s1 === "a") {
                   return +(s2 === "bc");
-                }
-                else {
+                } else {
                   return /* false */0;
                 }
               });
-  }
-  else {
+  } else {
     return /* false */0;
   }
 }

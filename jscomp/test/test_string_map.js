@@ -7,8 +7,7 @@ var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
 function height(param) {
   if (param) {
     return param[4];
-  }
-  else {
+  } else {
     return 0;
   }
 }
@@ -36,25 +35,21 @@ function bal(l, x, d, r) {
       var ll = l[0];
       if (height(ll) >= height(lr)) {
         return create(ll, lv, ld, create(lr, x, d, r));
-      }
-      else if (lr) {
+      } else if (lr) {
         return create(create(ll, lv, ld, lr[0]), lr[1], lr[2], create(lr[3], x, d, r));
-      }
-      else {
+      } else {
         throw [
               Caml_builtin_exceptions.invalid_argument,
               "Map.bal"
             ];
       }
-    }
-    else {
+    } else {
       throw [
             Caml_builtin_exceptions.invalid_argument,
             "Map.bal"
           ];
     }
-  }
-  else if (hr > (hl + 2 | 0)) {
+  } else if (hr > (hl + 2 | 0)) {
     if (r) {
       var rr = r[3];
       var rd = r[2];
@@ -62,25 +57,21 @@ function bal(l, x, d, r) {
       var rl = r[0];
       if (height(rr) >= height(rl)) {
         return create(create(l, x, d, rl), rv, rd, rr);
-      }
-      else if (rl) {
+      } else if (rl) {
         return create(create(l, x, d, rl[0]), rl[1], rl[2], create(rl[3], rv, rd, rr));
-      }
-      else {
+      } else {
         throw [
               Caml_builtin_exceptions.invalid_argument,
               "Map.bal"
             ];
       }
-    }
-    else {
+    } else {
       throw [
             Caml_builtin_exceptions.invalid_argument,
             "Map.bal"
           ];
     }
-  }
-  else {
+  } else {
     return /* Node */[
             l,
             x,
@@ -101,12 +92,10 @@ function add(x, data, param) {
     if (c) {
       if (c < 0) {
         return bal(add(x, data, l), v, d, r);
-      }
-      else {
+      } else {
         return bal(l, v, d, add(x, data, r));
       }
-    }
-    else {
+    } else {
       return /* Node */[
               l,
               x,
@@ -115,8 +104,7 @@ function add(x, data, param) {
               param[4]
             ];
     }
-  }
-  else {
+  } else {
     return /* Node */[
             /* Empty */0,
             x,
@@ -136,12 +124,10 @@ function find(x, _param) {
         _param = c < 0 ? param[0] : param[3];
         continue ;
         
-      }
-      else {
+      } else {
         return param[2];
       }
-    }
-    else {
+    } else {
       throw Caml_builtin_exceptions.not_found;
     }
   };

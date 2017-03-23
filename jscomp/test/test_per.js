@@ -28,8 +28,7 @@ var Exit = Caml_exceptions.create("Test_per.Exit");
 function min(x, y) {
   if (Caml_obj.caml_lessequal(x, y)) {
     return x;
-  }
-  else {
+  } else {
     return y;
   }
 }
@@ -37,8 +36,7 @@ function min(x, y) {
 function max(x, y) {
   if (Caml_obj.caml_greaterequal(x, y)) {
     return x;
-  }
-  else {
+  } else {
     return y;
   }
 }
@@ -46,8 +44,7 @@ function max(x, y) {
 function abs(x) {
   if (x >= 0) {
     return x;
-  }
-  else {
+  } else {
     return -x | 0;
   }
 }
@@ -73,8 +70,7 @@ function char_of_int(n) {
           Caml_builtin_exceptions.invalid_argument,
           "char_of_int"
         ];
-  }
-  else {
+  } else {
     return n;
   }
 }
@@ -82,8 +78,7 @@ function char_of_int(n) {
 function string_of_bool(b) {
   if (b) {
     return "true";
-  }
-  else {
+  } else {
     return "false";
   }
 }
@@ -113,23 +108,19 @@ function valid_float_lexem(s) {
     var i = _i;
     if (i >= l) {
       return $caret(s, ".");
-    }
-    else {
+    } else {
       var match = Caml_string.get(s, i);
       if (match >= 48) {
         if (match >= 58) {
           return s;
-        }
-        else {
+        } else {
           _i = i + 1 | 0;
           continue ;
           
         }
-      }
-      else if (match !== 45) {
+      } else if (match !== 45) {
         return s;
-      }
-      else {
+      } else {
         _i = i + 1 | 0;
         continue ;
         
@@ -148,8 +139,7 @@ function $at(l1, l2) {
             l1[0],
             $at(l1[1], l2)
           ];
-  }
-  else {
+  } else {
     return l2;
   }
 }
@@ -212,8 +202,7 @@ function flush_all() {
       _param = param[1];
       continue ;
       
-    }
-    else {
+    } else {
       return /* () */0;
     }
   };
@@ -233,8 +222,7 @@ function output(oc, s, ofs, len) {
           Caml_builtin_exceptions.invalid_argument,
           "output"
         ];
-  }
-  else {
+  } else {
     return Caml_io.caml_ml_output(oc, s, ofs, len);
   }
 }
@@ -245,8 +233,7 @@ function output_substring(oc, s, ofs, len) {
           Caml_builtin_exceptions.invalid_argument,
           "output_substring"
         ];
-  }
-  else {
+  } else {
     return Caml_io.caml_ml_output(oc, s, ofs, len);
   }
 }
@@ -313,8 +300,7 @@ function input(_, s, ofs, len) {
           Caml_builtin_exceptions.invalid_argument,
           "input"
         ];
-  }
-  else {
+  } else {
     return function () {
               throw "caml_ml_input not implemented by bucklescript yet\n";
             }();
@@ -327,8 +313,7 @@ function unsafe_really_input(_, _$1, _ofs, _len) {
     var ofs = _ofs;
     if (len <= 0) {
       return /* () */0;
-    }
-    else {
+    } else {
       var r = function () {
           throw "caml_ml_input not implemented by bucklescript yet\n";
         }();
@@ -337,8 +322,7 @@ function unsafe_really_input(_, _$1, _ofs, _len) {
         _ofs = ofs + r | 0;
         continue ;
         
-      }
-      else {
+      } else {
         throw Caml_builtin_exceptions.end_of_file;
       }
     }
@@ -351,8 +335,7 @@ function really_input(ic, s, ofs, len) {
           Caml_builtin_exceptions.invalid_argument,
           "really_input"
         ];
-  }
-  else {
+  } else {
     return unsafe_really_input(ic, s, ofs, len);
   }
 }
@@ -376,8 +359,7 @@ function input_line(chan) {
         _pos = pos - len | 0;
         continue ;
         
-      }
-      else {
+      } else {
         return buf;
       }
     };
@@ -403,12 +385,10 @@ function input_line(chan) {
                       res,
                       accu
                     ]);
-        }
-        else {
+        } else {
           return res;
         }
-      }
-      else {
+      } else {
         var beg = Caml_string.caml_create_string(-n | 0);
         (function () {
               throw "caml_ml_input not implemented by bucklescript yet\n";
@@ -421,11 +401,9 @@ function input_line(chan) {
         continue ;
         
       }
-    }
-    else if (accu) {
+    } else if (accu) {
       return build_result(Caml_string.caml_create_string(len), len, accu);
-    }
-    else {
+    } else {
       throw Caml_builtin_exceptions.end_of_file;
     }
   };

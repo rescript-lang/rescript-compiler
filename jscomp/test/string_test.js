@@ -36,8 +36,7 @@ function gg(x) {
   var a;
   if (x > 8 || x < 0) {
     a = 8;
-  }
-  else {
+  } else {
     switch (x) {
       case 0 : 
       case 1 : 
@@ -87,8 +86,7 @@ function rev_split_by_char(c, s) {
                 $$String.sub(s, i, s.length - i | 0),
                 l
               ];
-      }
-      else {
+      } else {
         throw exn;
       }
     }
@@ -116,8 +114,7 @@ function xsplit(delim, s) {
                     $$String.sub(s, 0, i),
                     l
                   ];
-          }
-          else {
+          } else {
             throw exn;
           }
         }
@@ -137,13 +134,11 @@ function xsplit(delim, s) {
           
         }
         
-      }
-      else {
+      } else {
         return l;
       }
     };
-  }
-  else {
+  } else {
     return /* [] */0;
   }
 }

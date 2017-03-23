@@ -15,8 +15,7 @@ function map(f, a) {
       r[i] = f$1(a$1[i]);
     }
     return r;
-  }
-  else {
+  } else {
     return /* array */[];
   }
 }
@@ -30,16 +29,14 @@ function init(l, f) {
             Caml_builtin_exceptions.invalid_argument,
             "Array.init"
           ];
-    }
-    else {
+    } else {
       var res = Caml_array.caml_make_vect(l$1, f$1(0));
       for(var i = 1 ,i_finish = l$1 - 1 | 0; i <= i_finish; ++i){
         res[i] = f$1(i);
       }
       return res;
     }
-  }
-  else {
+  } else {
     return /* array */[];
   }
 }

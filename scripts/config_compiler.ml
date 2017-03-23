@@ -55,7 +55,21 @@ let map = [%obj {
   _HOST = "host";
   _TARGET = "target";
   _SYSTHREAD_SUPPORT = "systhread_supported"; (* boolean *)
-}]
+}] 
+(** mapping is as follows:
+    "EXT_OBJ" in "config.mlp" map to "ext_obj" based on "ocamlopt.opt -config" output 
+    to look up, note that not all MACROS are available from "ocamlc.opt -config"
+    for example:
+    {[
+      let ar = "%%ARCMD%%"
+    ]}
+    but [ar] is not printed in `ocamlc.opt -config` as below 
+    {[
+      ar : ar
+    ]}
+    so that we could not find the replacement, which is fine, since bsc 
+    does not care about those native tools
+*)
 
 let patch_config jscomp_dir config_map is_windows =
   let whole_compiler_config = Path.join [| jscomp_dir; "bin"; "config_whole_compiler.mlp" |] in
@@ -74,12 +88,11 @@ let patch_config jscomp_dir config_map is_windows =
             match Js.Dict.get config_map map_val with
               | Some a -> a
               | None ->
-                Js.log ("No value for \"" ^ map_val ^ "\"");
+                Js.log ("No value found from ocamlopt.opt -config for \"" ^ map_val ^ "\"");
                 ""
           )
-          | None ->
-            Js.log ("No mapping for \"" ^ match_ ^ "\"");
-            ""
+          | None -> assert false 
+            (** It is always there *)
   in
   let generated = Js.String.unsafeReplaceBy1 [%re {|/%%(\w+)%%/g|}] replace_values content in
   Fs.writeFileAsUtf8Sync whole_compiler_config_output generated
@@ -134,9 +147,15 @@ let () =
   let is_windows = Process.process##platform = "win32" in
   match get_config_output is_windows with
     | Some config_map ->
-      if should_patch config_map
-        then patch_config dirname config_map is_windows
-        else Process.exit 2
+      if should_patch config_map then
+        patch_config
+            (Path.join [| dirname; ".."; "jscomp" |])
+            config_map is_windows
+      else Process.exit 2
     | None ->
       prerr_endline "configuration failure";
       Process.exit 2
+
+(* local variables: *)
+(* compile-command: "bscc -c config_compiler.ml" *)
+(* end: *)

@@ -11,12 +11,10 @@ function scanf_bad_input(_, x) {
   if (x[0] === Scan_failure) {
     s = x[1];
     exit = 1;
-  }
-  else if (x[0] === Caml_builtin_exceptions.failure) {
+  } else if (x[0] === Caml_builtin_exceptions.failure) {
     s = x[1];
     exit = 1;
-  }
-  else {
+  } else {
     throw x;
   }
   if (exit === 1) {

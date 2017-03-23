@@ -12,23 +12,18 @@ function escaped(s) {
     if (c >= 14) {
       if (c !== 34 && c !== 92) {
         exit = 1;
-      }
-      else {
+      } else {
         $js = 2;
       }
-    }
-    else if (c >= 11) {
+    } else if (c >= 11) {
       if (c >= 13) {
         $js = 2;
-      }
-      else {
+      } else {
         exit = 1;
       }
-    }
-    else if (c >= 8) {
+    } else if (c >= 8) {
       $js = 2;
-    }
-    else {
+    } else {
       exit = 1;
     }
     if (exit === 1) {
@@ -38,8 +33,7 @@ function escaped(s) {
   }
   if (n === s.length) {
     return Bytes.copy(s);
-  }
-  else {
+  } else {
     var s$prime = Caml_string.caml_create_string(n);
     n = 0;
     for(var i$1 = 0 ,i_finish$1 = s.length - 1 | 0; i$1 <= i_finish$1; ++i$1){
@@ -49,8 +43,7 @@ function escaped(s) {
       if (switcher > 58 || switcher < 0) {
         if (switcher >= -20) {
           exit$1 = 1;
-        }
-        else {
+        } else {
           switch (switcher + 34 | 0) {
             case 8 : 
                 s$prime[n] = /* "\\" */92;
@@ -87,20 +80,17 @@ function escaped(s) {
             
           }
         }
-      }
-      else if (switcher > 57 || switcher < 1) {
+      } else if (switcher > 57 || switcher < 1) {
         s$prime[n] = /* "\\" */92;
         n = n + 1 | 0;
         s$prime[n] = c$1;
-      }
-      else {
+      } else {
         exit$1 = 1;
       }
       if (exit$1 === 1) {
         if (Caml_string.caml_is_printable(c$1)) {
           s$prime[n] = c$1;
-        }
-        else {
+        } else {
           s$prime[n] = /* "\\" */92;
           n = n + 1 | 0;
           s$prime[n] = 48 + (c$1 / 100 | 0) | 0;

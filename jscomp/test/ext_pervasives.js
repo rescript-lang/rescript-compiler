@@ -57,14 +57,11 @@ function is_pos_pow(n) {
       var c = _c;
       if (n$1 <= 0) {
         return -2;
-      }
-      else if (n$1 === 1) {
+      } else if (n$1 === 1) {
         return c;
-      }
-      else if (n$1 & 1) {
+      } else if (n$1 & 1) {
         throw E;
-      }
-      else {
+      } else {
         _n = (n$1 >> 1);
         _c = c + 1 | 0;
         continue ;
@@ -75,8 +72,7 @@ function is_pos_pow(n) {
   catch (exn){
     if (exn === E) {
       return -1;
-    }
-    else {
+    } else {
       throw exn;
     }
   }
@@ -108,8 +104,7 @@ function bad_argf(fmt) {
 function dump(r) {
   if (typeof r === "number") {
     return "" + r;
-  }
-  else {
+  } else {
     var get_fields = function (_acc, _n) {
       while(true) {
         var n = _n;
@@ -123,8 +118,7 @@ function dump(r) {
           ];
           continue ;
           
-        }
-        else {
+        } else {
           return acc;
         }
       };
@@ -134,19 +128,16 @@ function dump(r) {
         var r = _r;
         if (typeof r === "number") {
           return Caml_obj.caml_equal(r, 0);
-        }
-        else {
+        } else {
           var s = r.length;
           var t = r.tag | 0;
           if (t) {
             return /* false */0;
-          }
-          else if (s === 2) {
+          } else if (s === 2) {
             _r = r[1];
             continue ;
             
-          }
-          else {
+          } else {
             return /* false */0;
           }
         }
@@ -155,8 +146,7 @@ function dump(r) {
     var get_list = function (r) {
       if (typeof r === "number") {
         return /* [] */0;
-      }
-      else {
+      } else {
         var h = r[0];
         var t = get_list(r[1]);
         return /* :: */[
@@ -170,15 +160,12 @@ function dump(r) {
     if (is_list(r)) {
       var fields = get_list(r);
       return "[" + ($$String.concat("; ", List.map(dump, fields)) + "]");
-    }
-    else if (t !== 0) {
+    } else if (t !== 0) {
       if (t === Obj.lazy_tag) {
         return "<lazy>";
-      }
-      else if (t === Obj.closure_tag) {
+      } else if (t === Obj.closure_tag) {
         return "<closure>";
-      }
-      else if (t === Obj.object_tag) {
+      } else if (t === Obj.object_tag) {
         var fields$1 = get_fields(/* [] */0, s);
         var match;
         if (fields$1) {
@@ -189,8 +176,7 @@ function dump(r) {
               match$1[0],
               match$1[1]
             ];
-          }
-          else {
+          } else {
             throw [
                   Caml_builtin_exceptions.assert_failure,
                   [
@@ -200,8 +186,7 @@ function dump(r) {
                   ]
                 ];
           }
-        }
-        else {
+        } else {
           throw [
                 Caml_builtin_exceptions.assert_failure,
                 [
@@ -212,36 +197,26 @@ function dump(r) {
               ];
         }
         return "Object #" + (dump(match[1]) + (" (" + ($$String.concat(", ", List.map(dump, match[2])) + ")")));
-      }
-      else if (t === Obj.infix_tag) {
+      } else if (t === Obj.infix_tag) {
         return "<infix>";
-      }
-      else if (t === Obj.forward_tag) {
+      } else if (t === Obj.forward_tag) {
         return "<forward>";
-      }
-      else if (t < Obj.no_scan_tag) {
+      } else if (t < Obj.no_scan_tag) {
         var fields$2 = get_fields(/* [] */0, s);
         return "Tag" + (t + (" (" + ($$String.concat(", ", List.map(dump, fields$2)) + ")")));
-      }
-      else if (t === Obj.string_tag) {
+      } else if (t === Obj.string_tag) {
         return '"' + ($$String.escaped(r) + '"');
-      }
-      else if (t === Obj.double_tag) {
+      } else if (t === Obj.double_tag) {
         return Pervasives.string_of_float(r);
-      }
-      else if (t === Obj.abstract_tag) {
+      } else if (t === Obj.abstract_tag) {
         return "<abstract>";
-      }
-      else if (t === Obj.custom_tag) {
+      } else if (t === Obj.custom_tag) {
         return "<custom>";
-      }
-      else if (t === Obj.custom_tag) {
+      } else if (t === Obj.custom_tag) {
         return "<final>";
-      }
-      else if (t === Obj.double_array_tag) {
+      } else if (t === Obj.double_array_tag) {
         return "[|" + ($$String.concat(";", $$Array.to_list($$Array.map(Pervasives.string_of_float, r))) + "|]");
-      }
-      else {
+      } else {
         var name = Curry._2(Printf.sprintf(/* Format */[
                   /* String_literal */Block.__(11, [
                       "unknown: tag ",
@@ -264,8 +239,7 @@ function dump(r) {
                 ]), t, s);
         return "<" + (name + ">");
       }
-    }
-    else {
+    } else {
       var fields$3 = get_fields(/* [] */0, s);
       return "(" + ($$String.concat(", ", List.map(dump, fields$3)) + ")");
     }
@@ -282,8 +256,7 @@ function hash_variant(s) {
   accu = accu & 2147483647;
   if (accu > 1073741823) {
     return accu - -2147483648 | 0;
-  }
-  else {
+  } else {
     return accu;
   }
 }

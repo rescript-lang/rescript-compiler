@@ -19,8 +19,7 @@ function get_tokens(lex, str) {
     var v = Curry._1(lex, buf);
     if (v === /* EOF */7) {
       return List.rev(acc);
-    }
-    else {
+    } else {
       _acc = /* :: */[
         v,
         acc
@@ -42,8 +41,7 @@ function from_tokens(lst) {
     if (match) {
       l[0] = match[1];
       return match[0];
-    }
-    else {
+    } else {
       throw Caml_builtin_exceptions.end_of_file;
     }
   };

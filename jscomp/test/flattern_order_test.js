@@ -37,8 +37,7 @@ function even(_n) {
       _n = n - 1 | 0;
       continue ;
       
-    }
-    else {
+    } else {
       return /* true */1;
     }
   };
@@ -49,12 +48,10 @@ function even2(n) {
     var n$1 = n - 1 | 0;
     if (n$1 === 1) {
       return /* true */1;
-    }
-    else {
+    } else {
       return even2(n$1 - 1 | 0);
     }
-  }
-  else {
+  } else {
     return /* true */1;
   }
 }

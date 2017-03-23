@@ -146,16 +146,14 @@ function enum_to_value(x) {
                 1,
                 /* array */[]
               ]);
-    }
-    else {
+    } else {
       return /* Variant */Block.__(13, [
                 shape$2,
                 0,
                 /* array */[]
               ]);
     }
-  }
-  else {
+  } else {
     return /* Variant */Block.__(13, [
               shape$2,
               2,

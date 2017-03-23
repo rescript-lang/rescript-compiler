@@ -15,8 +15,7 @@ function length_aux(_len, _param) {
       _len = len + 1 | 0;
       continue ;
       
-    }
-    else {
+    } else {
       return len;
     }
   };
@@ -29,8 +28,7 @@ function length(l) {
 function hd(param) {
   if (param) {
     return param[0];
-  }
-  else {
+  } else {
     throw [
           Caml_builtin_exceptions.failure,
           "hd"
@@ -41,8 +39,7 @@ function hd(param) {
 function tl(param) {
   if (param) {
     return param[1];
-  }
-  else {
+  } else {
     throw [
           Caml_builtin_exceptions.failure,
           "tl"
@@ -56,8 +53,7 @@ function nth(l, n) {
           Caml_builtin_exceptions.invalid_argument,
           "List.nth"
         ];
-  }
-  else {
+  } else {
     var _l = l;
     var _n = n;
     while(true) {
@@ -69,12 +65,10 @@ function nth(l, n) {
           _l = l$1[1];
           continue ;
           
-        }
-        else {
+        } else {
           return l$1[0];
         }
-      }
-      else {
+      } else {
         throw [
               Caml_builtin_exceptions.failure,
               "nth"
@@ -96,8 +90,7 @@ function rev_append(_l1, _l2) {
       _l1 = l1[1];
       continue ;
       
-    }
-    else {
+    } else {
       return l2;
     }
   };
@@ -110,8 +103,7 @@ function rev(l) {
 function flatten(param) {
   if (param) {
     return Pervasives.$at(param[0], flatten(param[1]));
-  }
-  else {
+  } else {
     return /* [] */0;
   }
 }
@@ -123,8 +115,7 @@ function map(f, param) {
             r,
             map(f, param[1])
           ];
-  }
-  else {
+  } else {
     return /* [] */0;
   }
 }
@@ -136,8 +127,7 @@ function mapi(i, f, param) {
             r,
             mapi(i + 1 | 0, f, param[1])
           ];
-  }
-  else {
+  } else {
     return /* [] */0;
   }
 }
@@ -160,8 +150,7 @@ function rev_map(f, l) {
       ];
       continue ;
       
-    }
-    else {
+    } else {
       return accu;
     }
   };
@@ -175,8 +164,7 @@ function iter(f, _param) {
       _param = param[1];
       continue ;
       
-    }
-    else {
+    } else {
       return /* () */0;
     }
   };
@@ -195,8 +183,7 @@ function iteri(f, l) {
       _i = i + 1 | 0;
       continue ;
       
-    }
-    else {
+    } else {
       return /* () */0;
     }
   };
@@ -211,8 +198,7 @@ function fold_left(f, _accu, _l) {
       _accu = Curry._2(f, accu, l[0]);
       continue ;
       
-    }
-    else {
+    } else {
       return accu;
     }
   };
@@ -221,8 +207,7 @@ function fold_left(f, _accu, _l) {
 function fold_right(f, l, accu) {
   if (l) {
     return Curry._2(f, l[0], fold_right(f, l[1], accu));
-  }
-  else {
+  } else {
     return accu;
   }
 }
@@ -235,21 +220,18 @@ function map2(f, l1, l2) {
               r,
               map2(f, l1[1], l2[1])
             ];
-    }
-    else {
+    } else {
       throw [
             Caml_builtin_exceptions.invalid_argument,
             "List.map2"
           ];
     }
-  }
-  else if (l2) {
+  } else if (l2) {
     throw [
           Caml_builtin_exceptions.invalid_argument,
           "List.map2"
         ];
-  }
-  else {
+  } else {
     return /* [] */0;
   }
 }
@@ -272,21 +254,18 @@ function rev_map2(f, l1, l2) {
         ];
         continue ;
         
-      }
-      else {
+      } else {
         throw [
               Caml_builtin_exceptions.invalid_argument,
               "List.rev_map2"
             ];
       }
-    }
-    else if (l2$1) {
+    } else if (l2$1) {
       throw [
             Caml_builtin_exceptions.invalid_argument,
             "List.rev_map2"
           ];
-    }
-    else {
+    } else {
       return accu;
     }
   };
@@ -303,21 +282,18 @@ function iter2(f, _l1, _l2) {
         _l1 = l1[1];
         continue ;
         
-      }
-      else {
+      } else {
         throw [
               Caml_builtin_exceptions.invalid_argument,
               "List.iter2"
             ];
       }
-    }
-    else if (l2) {
+    } else if (l2) {
       throw [
             Caml_builtin_exceptions.invalid_argument,
             "List.iter2"
           ];
-    }
-    else {
+    } else {
       return /* () */0;
     }
   };
@@ -335,21 +311,18 @@ function fold_left2(f, _accu, _l1, _l2) {
         _accu = Curry._3(f, accu, l1[0], l2[0]);
         continue ;
         
-      }
-      else {
+      } else {
         throw [
               Caml_builtin_exceptions.invalid_argument,
               "List.fold_left2"
             ];
       }
-    }
-    else if (l2) {
+    } else if (l2) {
       throw [
             Caml_builtin_exceptions.invalid_argument,
             "List.fold_left2"
           ];
-    }
-    else {
+    } else {
       return accu;
     }
   };
@@ -359,21 +332,18 @@ function fold_right2(f, l1, l2, accu) {
   if (l1) {
     if (l2) {
       return Curry._3(f, l1[0], l2[0], fold_right2(f, l1[1], l2[1], accu));
-    }
-    else {
+    } else {
       throw [
             Caml_builtin_exceptions.invalid_argument,
             "List.fold_right2"
           ];
     }
-  }
-  else if (l2) {
+  } else if (l2) {
     throw [
           Caml_builtin_exceptions.invalid_argument,
           "List.fold_right2"
         ];
-  }
-  else {
+  } else {
     return accu;
   }
 }
@@ -386,12 +356,10 @@ function for_all(p, _param) {
         _param = param[1];
         continue ;
         
-      }
-      else {
+      } else {
         return /* false */0;
       }
-    }
-    else {
+    } else {
       return /* true */1;
     }
   };
@@ -403,14 +371,12 @@ function exists(p, _param) {
     if (param) {
       if (Curry._1(p, param[0])) {
         return /* true */1;
-      }
-      else {
+      } else {
         _param = param[1];
         continue ;
         
       }
-    }
-    else {
+    } else {
       return /* false */0;
     }
   };
@@ -427,25 +393,21 @@ function for_all2(p, _l1, _l2) {
           _l1 = l1[1];
           continue ;
           
-        }
-        else {
+        } else {
           return /* false */0;
         }
-      }
-      else {
+      } else {
         throw [
               Caml_builtin_exceptions.invalid_argument,
               "List.for_all2"
             ];
       }
-    }
-    else if (l2) {
+    } else if (l2) {
       throw [
             Caml_builtin_exceptions.invalid_argument,
             "List.for_all2"
           ];
-    }
-    else {
+    } else {
       return /* true */1;
     }
   };
@@ -459,28 +421,24 @@ function exists2(p, _l1, _l2) {
       if (l2) {
         if (Curry._2(p, l1[0], l2[0])) {
           return /* true */1;
-        }
-        else {
+        } else {
           _l2 = l2[1];
           _l1 = l1[1];
           continue ;
           
         }
-      }
-      else {
+      } else {
         throw [
               Caml_builtin_exceptions.invalid_argument,
               "List.exists2"
             ];
       }
-    }
-    else if (l2) {
+    } else if (l2) {
       throw [
             Caml_builtin_exceptions.invalid_argument,
             "List.exists2"
           ];
-    }
-    else {
+    } else {
       return /* false */0;
     }
   };
@@ -494,12 +452,10 @@ function mem(x, _param) {
         _param = param[1];
         continue ;
         
-      }
-      else {
+      } else {
         return /* true */1;
       }
-    }
-    else {
+    } else {
       return /* false */0;
     }
   };
@@ -511,14 +467,12 @@ function memq(x, _param) {
     if (param) {
       if (param[0] === x) {
         return /* true */1;
-      }
-      else {
+      } else {
         _param = param[1];
         continue ;
         
       }
-    }
-    else {
+    } else {
       return /* false */0;
     }
   };
@@ -533,12 +487,10 @@ function assoc(x, _param) {
         _param = param[1];
         continue ;
         
-      }
-      else {
+      } else {
         return match[1];
       }
-    }
-    else {
+    } else {
       throw Caml_builtin_exceptions.not_found;
     }
   };
@@ -551,14 +503,12 @@ function assq(x, _param) {
       var match = param[0];
       if (match[0] === x) {
         return match[1];
-      }
-      else {
+      } else {
         _param = param[1];
         continue ;
         
       }
-    }
-    else {
+    } else {
       throw Caml_builtin_exceptions.not_found;
     }
   };
@@ -572,12 +522,10 @@ function mem_assoc(x, _param) {
         _param = param[1];
         continue ;
         
-      }
-      else {
+      } else {
         return /* true */1;
       }
-    }
-    else {
+    } else {
       return /* false */0;
     }
   };
@@ -589,14 +537,12 @@ function mem_assq(x, _param) {
     if (param) {
       if (param[0][0] === x) {
         return /* true */1;
-      }
-      else {
+      } else {
         _param = param[1];
         continue ;
         
       }
-    }
-    else {
+    } else {
       return /* false */0;
     }
   };
@@ -611,12 +557,10 @@ function remove_assoc(x, param) {
               pair,
               remove_assoc(x, l)
             ];
-    }
-    else {
+    } else {
       return l;
     }
-  }
-  else {
+  } else {
     return /* [] */0;
   }
 }
@@ -627,15 +571,13 @@ function remove_assq(x, param) {
     var pair = param[0];
     if (pair[0] === x) {
       return l;
-    }
-    else {
+    } else {
       return /* :: */[
               pair,
               remove_assq(x, l)
             ];
     }
-  }
-  else {
+  } else {
     return /* [] */0;
   }
 }
@@ -647,14 +589,12 @@ function find(p, _param) {
       var x = param[0];
       if (Curry._1(p, x)) {
         return x;
-      }
-      else {
+      } else {
         _param = param[1];
         continue ;
         
       }
-    }
-    else {
+    } else {
       throw Caml_builtin_exceptions.not_found;
     }
   };
@@ -678,14 +618,12 @@ function find_all(p) {
           ];
           continue ;
           
-        }
-        else {
+        } else {
           _param = l;
           continue ;
           
         }
-      }
-      else {
+      } else {
         return rev_append(accu, /* [] */0);
       }
     };
@@ -711,8 +649,7 @@ function partition(p, l) {
         ];
         continue ;
         
-      }
-      else {
+      } else {
         _param = l$1;
         _no = /* :: */[
           x,
@@ -721,8 +658,7 @@ function partition(p, l) {
         continue ;
         
       }
-    }
-    else {
+    } else {
       return /* tuple */[
               rev_append(yes, /* [] */0),
               rev_append(no, /* [] */0)
@@ -745,8 +681,7 @@ function split(param) {
               match$1[1]
             ]
           ];
-  }
-  else {
+  } else {
     return /* tuple */[
             /* [] */0,
             /* [] */0
@@ -764,21 +699,18 @@ function combine(l1, l2) {
               ],
               combine(l1[1], l2[1])
             ];
-    }
-    else {
+    } else {
       throw [
             Caml_builtin_exceptions.invalid_argument,
             "List.combine"
           ];
     }
-  }
-  else if (l2) {
+  } else if (l2) {
     throw [
           Caml_builtin_exceptions.invalid_argument,
           "List.combine"
         ];
-  }
-  else {
+  } else {
     return /* [] */0;
   }
 }
@@ -793,19 +725,16 @@ function merge(cmp, l1, l2) {
                 h1,
                 merge(cmp, l1[1], l2)
               ];
-      }
-      else {
+      } else {
         return /* :: */[
                 h2,
                 merge(cmp, l1, l2[1])
               ];
       }
-    }
-    else {
+    } else {
       return l1;
     }
-  }
-  else {
+  } else {
     return l2;
   }
 }
@@ -820,8 +749,7 @@ function chop(_k, _l) {
         _k = k - 1 | 0;
         continue ;
         
-      }
-      else {
+      } else {
         throw [
               Caml_builtin_exceptions.assert_failure,
               [
@@ -831,8 +759,7 @@ function chop(_k, _l) {
               ]
             ];
       }
-    }
-    else {
+    } else {
       return l;
     }
   };
@@ -844,8 +771,7 @@ function stable_sort(cmp, l) {
     if (n !== 2) {
       if (n !== 3) {
         exit = 1;
-      }
-      else if (l) {
+      } else if (l) {
         var match = l[1];
         if (match) {
           var match$1 = match[1];
@@ -865,8 +791,7 @@ function stable_sort(cmp, l) {
                           ]
                         ]
                       ];
-              }
-              else if (Curry._2(cmp, x1, x3) <= 0) {
+              } else if (Curry._2(cmp, x1, x3) <= 0) {
                 return /* :: */[
                         x1,
                         /* :: */[
@@ -877,8 +802,7 @@ function stable_sort(cmp, l) {
                           ]
                         ]
                       ];
-              }
-              else {
+              } else {
                 return /* :: */[
                         x3,
                         /* :: */[
@@ -890,8 +814,7 @@ function stable_sort(cmp, l) {
                         ]
                       ];
               }
-            }
-            else if (Curry._2(cmp, x1, x3) <= 0) {
+            } else if (Curry._2(cmp, x1, x3) <= 0) {
               return /* :: */[
                       x2,
                       /* :: */[
@@ -902,8 +825,7 @@ function stable_sort(cmp, l) {
                         ]
                       ]
                     ];
-            }
-            else if (Curry._2(cmp, x2, x3) <= 0) {
+            } else if (Curry._2(cmp, x2, x3) <= 0) {
               return /* :: */[
                       x2,
                       /* :: */[
@@ -914,8 +836,7 @@ function stable_sort(cmp, l) {
                         ]
                       ]
                     ];
-            }
-            else {
+            } else {
               return /* :: */[
                       x3,
                       /* :: */[
@@ -927,20 +848,16 @@ function stable_sort(cmp, l) {
                       ]
                     ];
             }
-          }
-          else {
+          } else {
             exit = 1;
           }
-        }
-        else {
+        } else {
           exit = 1;
         }
-      }
-      else {
+      } else {
         exit = 1;
       }
-    }
-    else if (l) {
+    } else if (l) {
       var match$2 = l[1];
       if (match$2) {
         var x2$1 = match$2[0];
@@ -953,8 +870,7 @@ function stable_sort(cmp, l) {
                     /* [] */0
                   ]
                 ];
-        }
-        else {
+        } else {
           return /* :: */[
                   x2$1,
                   /* :: */[
@@ -963,12 +879,10 @@ function stable_sort(cmp, l) {
                   ]
                 ];
         }
-      }
-      else {
+      } else {
         exit = 1;
       }
-    }
-    else {
+    } else {
       exit = 1;
     }
     if (exit === 1) {
@@ -996,8 +910,7 @@ function stable_sort(cmp, l) {
               _l1 = l1[1];
               continue ;
               
-            }
-            else {
+            } else {
               _accu = /* :: */[
                 h2,
                 accu
@@ -1006,12 +919,10 @@ function stable_sort(cmp, l) {
               continue ;
               
             }
-          }
-          else {
+          } else {
             return rev_append(l1, accu);
           }
-        }
-        else {
+        } else {
           return rev_append(l2$1, accu);
         }
       };
@@ -1023,8 +934,7 @@ function stable_sort(cmp, l) {
     if (n !== 2) {
       if (n !== 3) {
         exit = 1;
-      }
-      else if (l) {
+      } else if (l) {
         var match = l[1];
         if (match) {
           var match$1 = match[1];
@@ -1044,8 +954,7 @@ function stable_sort(cmp, l) {
                           ]
                         ]
                       ];
-              }
-              else if (Curry._2(cmp, x1, x3) > 0) {
+              } else if (Curry._2(cmp, x1, x3) > 0) {
                 return /* :: */[
                         x1,
                         /* :: */[
@@ -1056,8 +965,7 @@ function stable_sort(cmp, l) {
                           ]
                         ]
                       ];
-              }
-              else {
+              } else {
                 return /* :: */[
                         x3,
                         /* :: */[
@@ -1069,8 +977,7 @@ function stable_sort(cmp, l) {
                         ]
                       ];
               }
-            }
-            else if (Curry._2(cmp, x1, x3) > 0) {
+            } else if (Curry._2(cmp, x1, x3) > 0) {
               return /* :: */[
                       x2,
                       /* :: */[
@@ -1081,8 +988,7 @@ function stable_sort(cmp, l) {
                         ]
                       ]
                     ];
-            }
-            else if (Curry._2(cmp, x2, x3) > 0) {
+            } else if (Curry._2(cmp, x2, x3) > 0) {
               return /* :: */[
                       x2,
                       /* :: */[
@@ -1093,8 +999,7 @@ function stable_sort(cmp, l) {
                         ]
                       ]
                     ];
-            }
-            else {
+            } else {
               return /* :: */[
                       x3,
                       /* :: */[
@@ -1106,20 +1011,16 @@ function stable_sort(cmp, l) {
                       ]
                     ];
             }
-          }
-          else {
+          } else {
             exit = 1;
           }
-        }
-        else {
+        } else {
           exit = 1;
         }
-      }
-      else {
+      } else {
         exit = 1;
       }
-    }
-    else if (l) {
+    } else if (l) {
       var match$2 = l[1];
       if (match$2) {
         var x2$1 = match$2[0];
@@ -1132,8 +1033,7 @@ function stable_sort(cmp, l) {
                     /* [] */0
                   ]
                 ];
-        }
-        else {
+        } else {
           return /* :: */[
                   x2$1,
                   /* :: */[
@@ -1142,12 +1042,10 @@ function stable_sort(cmp, l) {
                   ]
                 ];
         }
-      }
-      else {
+      } else {
         exit = 1;
       }
-    }
-    else {
+    } else {
       exit = 1;
     }
     if (exit === 1) {
@@ -1175,8 +1073,7 @@ function stable_sort(cmp, l) {
               _l1 = l1[1];
               continue ;
               
-            }
-            else {
+            } else {
               _accu = /* :: */[
                 h2,
                 accu
@@ -1185,12 +1082,10 @@ function stable_sort(cmp, l) {
               continue ;
               
             }
-          }
-          else {
+          } else {
             return rev_append(l1, accu);
           }
-        }
-        else {
+        } else {
           return rev_append(l2$1, accu);
         }
       };
@@ -1200,8 +1095,7 @@ function stable_sort(cmp, l) {
   var len = length_aux(0, l);
   if (len < 2) {
     return l;
-  }
-  else {
+  } else {
     return sort(len, l);
   }
 }
@@ -1212,8 +1106,7 @@ function sort_uniq(cmp, l) {
     if (n !== 2) {
       if (n !== 3) {
         exit = 1;
-      }
-      else if (l) {
+      } else if (l) {
         var match = l[1];
         if (match) {
           var match$1 = match[1];
@@ -1237,8 +1130,7 @@ function sort_uniq(cmp, l) {
                               ]
                             ]
                           ];
-                  }
-                  else {
+                  } else {
                     var c$2 = Curry._2(cmp, x1, x3);
                     if (c$2) {
                       if (c$2 < 0) {
@@ -1252,8 +1144,7 @@ function sort_uniq(cmp, l) {
                                   ]
                                 ]
                               ];
-                      }
-                      else {
+                      } else {
                         return /* :: */[
                                 x3,
                                 /* :: */[
@@ -1265,8 +1156,7 @@ function sort_uniq(cmp, l) {
                                 ]
                               ];
                       }
-                    }
-                    else {
+                    } else {
                       return /* :: */[
                               x1,
                               /* :: */[
@@ -1276,8 +1166,7 @@ function sort_uniq(cmp, l) {
                             ];
                     }
                   }
-                }
-                else {
+                } else {
                   return /* :: */[
                           x1,
                           /* :: */[
@@ -1286,8 +1175,7 @@ function sort_uniq(cmp, l) {
                           ]
                         ];
                 }
-              }
-              else {
+              } else {
                 var c$3 = Curry._2(cmp, x1, x3);
                 if (c$3) {
                   if (c$3 < 0) {
@@ -1301,8 +1189,7 @@ function sort_uniq(cmp, l) {
                               ]
                             ]
                           ];
-                  }
-                  else {
+                  } else {
                     var c$4 = Curry._2(cmp, x2, x3);
                     if (c$4) {
                       if (c$4 < 0) {
@@ -1316,8 +1203,7 @@ function sort_uniq(cmp, l) {
                                   ]
                                 ]
                               ];
-                      }
-                      else {
+                      } else {
                         return /* :: */[
                                 x3,
                                 /* :: */[
@@ -1329,8 +1215,7 @@ function sort_uniq(cmp, l) {
                                 ]
                               ];
                       }
-                    }
-                    else {
+                    } else {
                       return /* :: */[
                               x2,
                               /* :: */[
@@ -1340,8 +1225,7 @@ function sort_uniq(cmp, l) {
                             ];
                     }
                   }
-                }
-                else {
+                } else {
                   return /* :: */[
                           x2,
                           /* :: */[
@@ -1351,8 +1235,7 @@ function sort_uniq(cmp, l) {
                         ];
                 }
               }
-            }
-            else {
+            } else {
               var c$5 = Curry._2(cmp, x2, x3);
               if (c$5) {
                 if (c$5 < 0) {
@@ -1363,8 +1246,7 @@ function sort_uniq(cmp, l) {
                             /* [] */0
                           ]
                         ];
-                }
-                else {
+                } else {
                   return /* :: */[
                           x3,
                           /* :: */[
@@ -1373,28 +1255,23 @@ function sort_uniq(cmp, l) {
                           ]
                         ];
                 }
-              }
-              else {
+              } else {
                 return /* :: */[
                         x2,
                         /* [] */0
                       ];
               }
             }
-          }
-          else {
+          } else {
             exit = 1;
           }
-        }
-        else {
+        } else {
           exit = 1;
         }
-      }
-      else {
+      } else {
         exit = 1;
       }
-    }
-    else if (l) {
+    } else if (l) {
       var match$2 = l[1];
       if (match$2) {
         var x2$1 = match$2[0];
@@ -1409,8 +1286,7 @@ function sort_uniq(cmp, l) {
                       /* [] */0
                     ]
                   ];
-          }
-          else {
+          } else {
             return /* :: */[
                     x2$1,
                     /* :: */[
@@ -1419,19 +1295,16 @@ function sort_uniq(cmp, l) {
                     ]
                   ];
           }
-        }
-        else {
+        } else {
           return /* :: */[
                   x1$1,
                   /* [] */0
                 ];
         }
-      }
-      else {
+      } else {
         exit = 1;
       }
-    }
-    else {
+    } else {
       exit = 1;
     }
     if (exit === 1) {
@@ -1463,8 +1336,7 @@ function sort_uniq(cmp, l) {
                 _l1 = t1;
                 continue ;
                 
-              }
-              else {
+              } else {
                 _accu = /* :: */[
                   h2,
                   accu
@@ -1473,8 +1345,7 @@ function sort_uniq(cmp, l) {
                 continue ;
                 
               }
-            }
-            else {
+            } else {
               _accu = /* :: */[
                 h1,
                 accu
@@ -1484,12 +1355,10 @@ function sort_uniq(cmp, l) {
               continue ;
               
             }
-          }
-          else {
+          } else {
             return rev_append(l1, accu);
           }
-        }
-        else {
+        } else {
           return rev_append(l2$1, accu);
         }
       };
@@ -1501,8 +1370,7 @@ function sort_uniq(cmp, l) {
     if (n !== 2) {
       if (n !== 3) {
         exit = 1;
-      }
-      else if (l) {
+      } else if (l) {
         var match = l[1];
         if (match) {
           var match$1 = match[1];
@@ -1526,8 +1394,7 @@ function sort_uniq(cmp, l) {
                               ]
                             ]
                           ];
-                  }
-                  else {
+                  } else {
                     var c$2 = Curry._2(cmp, x1, x3);
                     if (c$2) {
                       if (c$2 > 0) {
@@ -1541,8 +1408,7 @@ function sort_uniq(cmp, l) {
                                   ]
                                 ]
                               ];
-                      }
-                      else {
+                      } else {
                         return /* :: */[
                                 x3,
                                 /* :: */[
@@ -1554,8 +1420,7 @@ function sort_uniq(cmp, l) {
                                 ]
                               ];
                       }
-                    }
-                    else {
+                    } else {
                       return /* :: */[
                               x1,
                               /* :: */[
@@ -1565,8 +1430,7 @@ function sort_uniq(cmp, l) {
                             ];
                     }
                   }
-                }
-                else {
+                } else {
                   return /* :: */[
                           x1,
                           /* :: */[
@@ -1575,8 +1439,7 @@ function sort_uniq(cmp, l) {
                           ]
                         ];
                 }
-              }
-              else {
+              } else {
                 var c$3 = Curry._2(cmp, x1, x3);
                 if (c$3) {
                   if (c$3 > 0) {
@@ -1590,8 +1453,7 @@ function sort_uniq(cmp, l) {
                               ]
                             ]
                           ];
-                  }
-                  else {
+                  } else {
                     var c$4 = Curry._2(cmp, x2, x3);
                     if (c$4) {
                       if (c$4 > 0) {
@@ -1605,8 +1467,7 @@ function sort_uniq(cmp, l) {
                                   ]
                                 ]
                               ];
-                      }
-                      else {
+                      } else {
                         return /* :: */[
                                 x3,
                                 /* :: */[
@@ -1618,8 +1479,7 @@ function sort_uniq(cmp, l) {
                                 ]
                               ];
                       }
-                    }
-                    else {
+                    } else {
                       return /* :: */[
                               x2,
                               /* :: */[
@@ -1629,8 +1489,7 @@ function sort_uniq(cmp, l) {
                             ];
                     }
                   }
-                }
-                else {
+                } else {
                   return /* :: */[
                           x2,
                           /* :: */[
@@ -1640,8 +1499,7 @@ function sort_uniq(cmp, l) {
                         ];
                 }
               }
-            }
-            else {
+            } else {
               var c$5 = Curry._2(cmp, x2, x3);
               if (c$5) {
                 if (c$5 > 0) {
@@ -1652,8 +1510,7 @@ function sort_uniq(cmp, l) {
                             /* [] */0
                           ]
                         ];
-                }
-                else {
+                } else {
                   return /* :: */[
                           x3,
                           /* :: */[
@@ -1662,28 +1519,23 @@ function sort_uniq(cmp, l) {
                           ]
                         ];
                 }
-              }
-              else {
+              } else {
                 return /* :: */[
                         x2,
                         /* [] */0
                       ];
               }
             }
-          }
-          else {
+          } else {
             exit = 1;
           }
-        }
-        else {
+        } else {
           exit = 1;
         }
-      }
-      else {
+      } else {
         exit = 1;
       }
-    }
-    else if (l) {
+    } else if (l) {
       var match$2 = l[1];
       if (match$2) {
         var x2$1 = match$2[0];
@@ -1698,8 +1550,7 @@ function sort_uniq(cmp, l) {
                       /* [] */0
                     ]
                   ];
-          }
-          else {
+          } else {
             return /* :: */[
                     x2$1,
                     /* :: */[
@@ -1708,19 +1559,16 @@ function sort_uniq(cmp, l) {
                     ]
                   ];
           }
-        }
-        else {
+        } else {
           return /* :: */[
                   x1$1,
                   /* [] */0
                 ];
         }
-      }
-      else {
+      } else {
         exit = 1;
       }
-    }
-    else {
+    } else {
       exit = 1;
     }
     if (exit === 1) {
@@ -1752,8 +1600,7 @@ function sort_uniq(cmp, l) {
                 _l1 = t1;
                 continue ;
                 
-              }
-              else {
+              } else {
                 _accu = /* :: */[
                   h2,
                   accu
@@ -1762,8 +1609,7 @@ function sort_uniq(cmp, l) {
                 continue ;
                 
               }
-            }
-            else {
+            } else {
               _accu = /* :: */[
                 h1,
                 accu
@@ -1773,12 +1619,10 @@ function sort_uniq(cmp, l) {
               continue ;
               
             }
-          }
-          else {
+          } else {
             return rev_append(l1, accu);
           }
-        }
-        else {
+        } else {
           return rev_append(l2$1, accu);
         }
       };
@@ -1788,8 +1632,7 @@ function sort_uniq(cmp, l) {
   var len = length_aux(0, l);
   if (len < 2) {
     return l;
-  }
-  else {
+  } else {
     return sort(len, l);
   }
 }

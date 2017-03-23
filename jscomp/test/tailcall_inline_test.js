@@ -15,8 +15,7 @@ function f() {
         _acc = acc + n | 0;
         continue ;
         
-      }
-      else {
+      } else {
         return acc;
       }
     };

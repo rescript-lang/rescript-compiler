@@ -21,8 +21,7 @@ function split(x, tree) {
                 match[1],
                 Set_gen.internal_join(match[2], v, r)
               ];
-      }
-      else {
+      } else {
         var match$1 = split(x, r);
         return /* tuple */[
                 Set_gen.internal_join(l, v, match$1[0]),
@@ -30,16 +29,14 @@ function split(x, tree) {
                 match$1[2]
               ];
       }
-    }
-    else {
+    } else {
       return /* tuple */[
               l,
               /* true */1,
               r
             ];
     }
-  }
-  else {
+  } else {
     return /* tuple */[
             /* Empty */0,
             /* false */0,
@@ -57,16 +54,13 @@ function add(x, tree) {
     if (c) {
       if (c < 0) {
         return Set_gen.internal_bal(add(x, l), v, r);
-      }
-      else {
+      } else {
         return Set_gen.internal_bal(l, v, add(x, r));
       }
-    }
-    else {
+    } else {
       return tree;
     }
-  }
-  else {
+  } else {
     return /* Node */[
             /* Empty */0,
             x,
@@ -86,25 +80,20 @@ function union(s1, s2) {
       if (h1 >= h2) {
         if (h2 === 1) {
           return add(v2, s1);
-        }
-        else {
+        } else {
           var match = split(v1, s2);
           return Set_gen.internal_join(union(s1[0], match[0]), v1, union(s1[2], match[2]));
         }
-      }
-      else if (h1 === 1) {
+      } else if (h1 === 1) {
         return add(v1, s2);
-      }
-      else {
+      } else {
         var match$1 = split(v2, s1);
         return Set_gen.internal_join(union(match$1[0], s2[0]), v2, union(match$1[2], s2[2]));
       }
-    }
-    else {
+    } else {
       return s1;
     }
-  }
-  else {
+  } else {
     return s2;
   }
 }
@@ -119,16 +108,13 @@ function inter(s1, s2) {
       var l2 = match[0];
       if (match[1] !== 0) {
         return Set_gen.internal_join(inter(l1, l2), v1, inter(r1, match[2]));
-      }
-      else {
+      } else {
         return Set_gen.internal_concat(inter(l1, l2), inter(r1, match[2]));
       }
-    }
-    else {
+    } else {
       return /* Empty */0;
     }
-  }
-  else {
+  } else {
     return /* Empty */0;
   }
 }
@@ -143,16 +129,13 @@ function diff(s1, s2) {
       var l2 = match[0];
       if (match[1] !== 0) {
         return Set_gen.internal_concat(diff(l1, l2), diff(r1, match[2]));
-      }
-      else {
+      } else {
         return Set_gen.internal_join(diff(l1, l2), v1, diff(r1, match[2]));
       }
-    }
-    else {
+    } else {
       return s1;
     }
-  }
-  else {
+  } else {
     return /* Empty */0;
   }
 }
@@ -166,12 +149,10 @@ function mem(x, _tree) {
         _tree = c < 0 ? tree[0] : tree[2];
         continue ;
         
-      }
-      else {
+      } else {
         return /* true */1;
       }
-    }
-    else {
+    } else {
       return /* false */0;
     }
   };
@@ -186,16 +167,13 @@ function remove(x, tree) {
     if (c) {
       if (c < 0) {
         return Set_gen.internal_bal(remove(x, l), v, r);
-      }
-      else {
+      } else {
         return Set_gen.internal_bal(l, v, remove(x, r));
       }
-    }
-    else {
+    } else {
       return Set_gen.internal_merge(l, r);
     }
-  }
-  else {
+  } else {
     return /* Empty */0;
   }
 }
@@ -231,12 +209,10 @@ function subset(_s1, _s2) {
               _s1 = r1;
               continue ;
               
-            }
-            else {
+            } else {
               return /* false */0;
             }
-          }
-          else if (subset(/* Node */[
+          } else if (subset(/* Node */[
                   /* Empty */0,
                   v1,
                   r1,
@@ -245,26 +221,21 @@ function subset(_s1, _s2) {
             _s1 = l1;
             continue ;
             
-          }
-          else {
+          } else {
             return /* false */0;
           }
-        }
-        else if (subset(l1, l2)) {
+        } else if (subset(l1, l2)) {
           _s2 = r2;
           _s1 = r1;
           continue ;
           
-        }
-        else {
+        } else {
           return /* false */0;
         }
-      }
-      else {
+      } else {
         return /* false */0;
       }
-    }
-    else {
+    } else {
       return /* true */1;
     }
   };
@@ -280,12 +251,10 @@ function find(x, _tree) {
         _tree = c < 0 ? tree[0] : tree[2];
         continue ;
         
-      }
-      else {
+      } else {
         return v;
       }
-    }
-    else {
+    } else {
       throw Caml_builtin_exceptions.not_found;
     }
   };
@@ -307,28 +276,22 @@ function of_list(l) {
           if (match$3) {
             if (match$3[1]) {
               return Set_gen.of_sorted_list(List.sort_uniq($$String.compare, l));
-            }
-            else {
+            } else {
               return add(match$3[0], add(x3, add(x2, add(x1, Set_gen.singleton(x0)))));
             }
-          }
-          else {
+          } else {
             return add(x3, add(x2, add(x1, Set_gen.singleton(x0))));
           }
-        }
-        else {
+        } else {
           return add(x2, add(x1, Set_gen.singleton(x0)));
         }
-      }
-      else {
+      } else {
         return add(x1, Set_gen.singleton(x0));
       }
-    }
-    else {
+    } else {
       return Set_gen.singleton(x0);
     }
-  }
-  else {
+  } else {
     return /* Empty */0;
   }
 }

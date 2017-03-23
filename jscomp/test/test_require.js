@@ -11,16 +11,13 @@ if (match !== undefined) {
     if (match$2 !== undefined) {
       if (match$1 === match$2) {
         console.log("is main");
-      }
-      else {
+      } else {
         console.log("not main");
       }
-    }
-    else {
+    } else {
       console.log("not main");
     }
-  }
-  else {
+  } else {
     console.log("not main");
   }
 }

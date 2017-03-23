@@ -17,11 +17,9 @@ for(var i = 1; i <= 2; ++i){
         return f(((n + 1 | 0) + i | 0) - i | 0, j - 1 | 0);
       };
       return /* () */0;
-    }
-    else if (i === n) {
+    } else if (i === n) {
       return 0;
-    }
-    else {
+    } else {
       throw [
             Caml_builtin_exceptions.assert_failure,
             [

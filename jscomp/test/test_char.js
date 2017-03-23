@@ -12,8 +12,7 @@ function chr(n) {
           Caml_builtin_exceptions.invalid_argument,
           "Char.chr"
         ];
-  }
-  else {
+  } else {
     return n;
   }
 }
@@ -21,8 +20,7 @@ function chr(n) {
 function lowercase(c) {
   if (c >= /* "A" */65 && c <= /* "Z" */90 || c >= /* "\192" */192 && c <= /* "\214" */214 || c >= /* "\216" */216 && c <= /* "\222" */222) {
     return c + 32 | 0;
-  }
-  else {
+  } else {
     return c;
   }
 }
@@ -30,8 +28,7 @@ function lowercase(c) {
 function uppercase(c) {
   if (c >= /* "a" */97 && c <= /* "z" */122 || c >= /* "\224" */224 && c <= /* "\246" */246 || c >= /* "\248" */248 && c <= /* "\254" */254) {
     return c - 32 | 0;
-  }
-  else {
+  } else {
     return c;
   }
 }

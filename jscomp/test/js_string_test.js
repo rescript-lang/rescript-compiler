@@ -304,8 +304,7 @@ var suites_001 = /* :: */[
                                                               var replace = function (whole, _, _$1) {
                                                                 if (whole === "bar") {
                                                                   return "BORK";
-                                                                }
-                                                                else {
+                                                                } else {
                                                                   return "DORK";
                                                                 }
                                                               };
@@ -322,8 +321,7 @@ var suites_001 = /* :: */[
                                                                 var replace = function (whole, _, _$1, _$2) {
                                                                   if (whole === "bar") {
                                                                     return "BORK";
-                                                                  }
-                                                                  else {
+                                                                  } else {
                                                                     return "DORK";
                                                                   }
                                                                 };
@@ -340,8 +338,7 @@ var suites_001 = /* :: */[
                                                                   var replace = function (whole, _, _$1, _$2, _$3) {
                                                                     if (whole === "bar") {
                                                                       return "BORK";
-                                                                    }
-                                                                    else {
+                                                                    } else {
                                                                       return "DORK";
                                                                     }
                                                                   };
@@ -358,8 +355,7 @@ var suites_001 = /* :: */[
                                                                     var replace = function (whole, _, _$1, _$2, _$3, _$4) {
                                                                       if (whole === "bar") {
                                                                         return "BORK";
-                                                                      }
-                                                                      else {
+                                                                      } else {
                                                                         return "DORK";
                                                                       }
                                                                     };

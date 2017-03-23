@@ -58,20 +58,16 @@ function cmp(param, param$1) {
   var nh = param[1];
   if (Caml_obj.caml_lessthan(nh, ph)) {
     return -1;
-  }
-  else if (Caml_obj.caml_greaterthan(nh, ph)) {
+  } else if (Caml_obj.caml_greaterthan(nh, ph)) {
     return 1;
-  }
-  else {
+  } else {
     var pl = param$1[0];
     var nl = param[0];
     if (Caml_obj.caml_lessthan(nl, pl)) {
       return -1;
-    }
-    else if (Caml_obj.caml_greaterthan(nl, pl)) {
+    } else if (Caml_obj.caml_greaterthan(nl, pl)) {
       return 1;
-    }
-    else {
+    } else {
       return 0;
     }
   }
@@ -120,8 +116,7 @@ function pr(param) {
                       ]),
                     "%Ld%018Ld\n"
                   ]), nh, nl);
-  }
-  else {
+  } else {
     return Curry._1(Printf.bprintf(buf, /* Format */[
                     /* Int64 */Block.__(7, [
                         /* Int_d */0,
@@ -171,15 +166,13 @@ function merge(cmp, l1, l2) {
                           x1,
                           merge(cmp, ll1, l2)
                         ];
-                }
-                else {
+                } else {
                   return /* Cons */[
                           x2,
                           merge(cmp, l1, ll2)
                         ];
                 }
-              }
-              else {
+              } else {
                 return /* Cons */[
                         x1,
                         merge(cmp, ll1, ll2)
@@ -209,8 +202,7 @@ function iter_interval(f, _l, _param) {
       _l = match[1];
       continue ;
       
-    }
-    else {
+    } else {
       return /* () */0;
     }
   };
@@ -236,11 +228,9 @@ Caml_obj.caml_update_dummy(ham2, Block.__(246, [function () {
           var tag = lzarg.tag | 0;
           if (tag === 250) {
             return lzarg[0];
-          }
-          else if (tag === 246) {
+          } else if (tag === 246) {
             return CamlinternalLazy.force_lazy_block(lzarg);
-          }
-          else {
+          } else {
             return lzarg;
           }
         }]));
@@ -250,11 +240,9 @@ Caml_obj.caml_update_dummy(ham3, Block.__(246, [function () {
           var tag = lzarg.tag | 0;
           if (tag === 250) {
             return lzarg[0];
-          }
-          else if (tag === 246) {
+          } else if (tag === 246) {
             return CamlinternalLazy.force_lazy_block(lzarg);
-          }
-          else {
+          } else {
             return lzarg;
           }
         }]));
@@ -264,11 +252,9 @@ Caml_obj.caml_update_dummy(ham5, Block.__(246, [function () {
           var tag = lzarg.tag | 0;
           if (tag === 250) {
             return lzarg[0];
-          }
-          else if (tag === 246) {
+          } else if (tag === 246) {
             return CamlinternalLazy.force_lazy_block(lzarg);
-          }
-          else {
+          } else {
             return lzarg;
           }
         }]));

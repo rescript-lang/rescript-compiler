@@ -46,8 +46,7 @@ Caml_obj.caml_update_dummy(xx, /* :: */[
 function naive(n) {
   if (n === 0 || n === 1) {
     return 1;
-  }
-  else {
+  } else {
     return (n + naive(n - 1 | 0) | 0) + naive(n - 2 | 0) | 0;
   }
 }
@@ -72,8 +71,7 @@ var v = [function () {
 function fib(n) {
   if (n > 3 || n < 0) {
     return fib(n - 1 | 0) + fib(n - 2 | 0) | 0;
-  }
-  else {
+  } else {
     switch (n) {
       case 0 : 
           return four[0];
@@ -124,8 +122,7 @@ var xs = /* tuple */[
 function fib2(n) {
   if (n === 0 || n === 1) {
     return 1;
-  }
-  else {
+  } else {
     return fib2(n - 1 | 0) + fib2(n - 2 | 0) | 0;
   }
 }
@@ -135,8 +132,7 @@ var two = 2;
 function fib3(n) {
   if (n === 0 || n === 1) {
     return 1;
-  }
-  else {
+  } else {
     return fib3(n - 1 | 0) + fib3(n - 2 | 0) | 0;
   }
 }
@@ -146,12 +142,10 @@ function even(n) {
     var n$1 = n - 1 | 0;
     if (n$1 === 1) {
       return /* true */1;
-    }
-    else {
+    } else {
       return even(n$1 - 1 | 0);
     }
-  }
-  else {
+  } else {
     return /* true */1;
   }
 }
@@ -163,8 +157,7 @@ function even2(_n) {
       _n = n - 1 | 0;
       continue ;
       
-    }
-    else {
+    } else {
       return /* true */1;
     }
   };
@@ -190,8 +183,7 @@ function sum(_acc, _n) {
       _acc = acc + n | 0;
       continue ;
       
-    }
-    else {
+    } else {
       return acc;
     }
   };
@@ -273,8 +265,7 @@ var suites_001 = /* :: */[
         var match = a[1];
         if (match) {
           $js = match[0];
-        }
-        else {
+        } else {
           throw [
                 Caml_builtin_exceptions.assert_failure,
                 [
@@ -284,8 +275,7 @@ var suites_001 = /* :: */[
                 ]
               ];
         }
-      }
-      else {
+      } else {
         throw [
               Caml_builtin_exceptions.assert_failure,
               [
@@ -423,8 +413,7 @@ var suites_001 = /* :: */[
                                 11
                               ]
                             ];
-                      }
-                      else {
+                      } else {
                         return /* Eq */Block.__(0, [
                                   Curry._1(rec_variant_b[1], /* () */0),
                                   rec_variant_a
@@ -441,8 +430,7 @@ var suites_001 = /* :: */[
                                     Curry._1(rec_variant_a[1], /* () */0),
                                     rec_variant_b
                                   ]);
-                        }
-                        else {
+                        } else {
                           throw [
                                 Caml_builtin_exceptions.assert_failure,
                                 [

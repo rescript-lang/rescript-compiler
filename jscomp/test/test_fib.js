@@ -5,8 +5,7 @@ var Curry = require("../../lib/js/curry");
 function fib(n) {
   if (n === 0 || n === 1) {
     return 1;
-  }
-  else {
+  } else {
     return fib(n - 1 | 0) + fib(n - 2 | 0) | 0;
   }
 }
@@ -14,8 +13,7 @@ function fib(n) {
 function fib2(n) {
   if (n === 2 || n === 1) {
     return 1;
-  }
-  else {
+  } else {
     return fib2(n - 1 | 0) + fib2(n - 2 | 0) | 0;
   }
 }
@@ -46,8 +44,7 @@ function cons(x, y) {
 function length(x) {
   if (x) {
     return 1 + length(x[1]) | 0;
-  }
-  else {
+  } else {
     return 0;
   }
 }
@@ -58,8 +55,7 @@ function map(f, x) {
             Curry._1(f, x[0]),
             map(f, x[1])
           ];
-  }
-  else {
+  } else {
     return /* Nil */0;
   }
 }
@@ -88,8 +84,7 @@ function fib3(n) {
       _a = b;
       continue ;
       
-    }
-    else {
+    } else {
       return a;
     }
   };

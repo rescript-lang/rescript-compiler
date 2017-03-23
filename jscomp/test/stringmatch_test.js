@@ -5,8 +5,7 @@ var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
 function tst01(s) {
   if (s === "") {
     return 0;
-  }
-  else {
+  } else {
     return 1;
   }
 }
@@ -56,20 +55,16 @@ function tst02(s) {
               23
             ]
           ];
-    }
-    else {
+    } else {
       return 1;
     }
-  }
-  else if (len) {
+  } else if (len) {
     if (s === "A") {
       return 2;
-    }
-    else {
+    } else {
       return 3;
     }
-  }
-  else {
+  } else {
     throw [
           Caml_builtin_exceptions.assert_failure,
           [

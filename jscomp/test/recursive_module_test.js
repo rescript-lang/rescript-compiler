@@ -52,8 +52,7 @@ var M = Caml_module.init_mod([
 function fact(n) {
   if (n <= 1) {
     return 1;
-  }
-  else {
+  } else {
     return Caml_int32.imul(n, Curry._1(M[/* fact */0], n - 1 | 0));
   }
 }

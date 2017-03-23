@@ -36,8 +36,7 @@ function convert(s) {
                   var match = x.codePointAt(0);
                   if (match !== undefined) {
                     return match;
-                  }
-                  else {
+                  } else {
                     throw [
                           Caml_builtin_exceptions.assert_failure,
                           [

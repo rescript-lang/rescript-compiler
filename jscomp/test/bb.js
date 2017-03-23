@@ -6,12 +6,10 @@ function f(x) {
   if (x !== 98) {
     if (x >= 99) {
       return "c";
-    }
-    else {
+    } else {
       return "a";
     }
-  }
-  else {
+  } else {
     return "b";
   }
 }
@@ -61,12 +59,10 @@ function test(x) {
   if (match !== 98) {
     if (match >= 99) {
       return "c";
-    }
-    else {
+    } else {
       return "a";
     }
-  }
-  else {
+  } else {
     return "b";
   }
 }

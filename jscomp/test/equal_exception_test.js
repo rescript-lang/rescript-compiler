@@ -51,8 +51,7 @@ function is_exception() {
   catch (exn){
     if (exn === Caml_builtin_exceptions.not_found) {
       return /* () */0;
-    }
-    else {
+    } else {
       throw exn;
     }
   }
@@ -71,12 +70,10 @@ function is_normal_exception() {
     if (exn[0] === A) {
       if (exn[1] !== 3) {
         throw exn;
-      }
-      else {
+      } else {
         return /* () */0;
       }
-    }
-    else {
+    } else {
       throw exn;
     }
   }

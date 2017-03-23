@@ -18,8 +18,7 @@ function Make(funarg) {
     catch (exn){
       if (exn === Caml_builtin_exceptions.not_found) {
         return /* false */0;
-      }
-      else {
+      } else {
         throw exn;
       }
     }
@@ -72,8 +71,7 @@ function Make(funarg) {
             _successors = successors[1];
             continue ;
             
-          }
-          else {
+          } else {
             return step2(successor, /* :: */[
                         /* tuple */[
                           top$1,
@@ -82,8 +80,7 @@ function Make(funarg) {
                         rest_of_stack$1
                       ]);
           }
-        }
-        else {
+        } else {
           if (Curry._2(H[/* find */6], l_labels, top$1) === Curry._2(H[/* find */6], n_labels, top$1)) {
             cut_set[0] = /* :: */[
               top$1,
@@ -96,8 +93,7 @@ function Make(funarg) {
                   Caml_builtin_exceptions.invalid_argument,
                   "Graph.Mincut: graph not reducible"
                 ];
-          }
-          else if (rest_of_stack$1) {
+          } else if (rest_of_stack$1) {
             var match = rest_of_stack$1[0];
             var new_top = match[0];
             Curry._3(H[/* add */4], on_the_stack, top$1, /* false */0);
@@ -107,8 +103,7 @@ function Make(funarg) {
             _successors = match[1];
             continue ;
             
-          }
-          else {
+          } else {
             return cut_set[0];
           }
         }

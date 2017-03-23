@@ -7,8 +7,7 @@ function test_hi(x) {
   if (match !== null) {
     console.log(match);
     return 2;
-  }
-  else {
+  } else {
     return 1;
   }
 }

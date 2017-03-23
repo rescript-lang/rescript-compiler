@@ -4,14 +4,12 @@
 function f(obj) {
   if (typeof obj === "function") {
     return /* () */0;
-  }
-  else {
+  } else {
     var size = obj.length;
     if (size !== undefined) {
       console.log(size);
       return /* () */0;
-    }
-    else {
+    } else {
       return /* () */0;
     }
   }

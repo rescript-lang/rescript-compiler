@@ -35,8 +35,7 @@ function __ocaml_lex_token_rec(l, lexbuf, ___ocaml_lex_state) {
       ___ocaml_lex_state = __ocaml_lex_state$1;
       continue ;
       
-    }
-    else {
+    } else {
       switch (__ocaml_lex_state$1) {
         case 0 : 
             Curry._1(l, "new line");

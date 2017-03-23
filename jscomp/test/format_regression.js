@@ -54,8 +54,7 @@ function advance_loop(state) {
     var size$1 = int_of_size(size);
     if (size$1 < 0 && (state[/* pp_right_total */2] - state[/* pp_left_total */1] | 0) < state[/* pp_space_left */0]) {
       return 0;
-    }
-    else {
+    } else {
       take_queue(state[/* pp_queue */3]);
       Curry._1(format_pp_token(state, size$1 < 0 ? 1000000010 : size$1), match[/* token */1]);
       state[/* pp_left_total */1] = match[/* length */2] + state[/* pp_left_total */1] | 0;

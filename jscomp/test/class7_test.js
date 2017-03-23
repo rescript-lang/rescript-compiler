@@ -137,8 +137,7 @@ function backup_init($$class) {
           var match = self$neg3[copy];
           if (match) {
             return match[0];
-          }
-          else {
+          } else {
             return self$neg3;
           }
         }
@@ -184,8 +183,7 @@ function get(_p, _n) {
       _p = Caml_oo_curry.js1(-357537970, 7, p);
       continue ;
       
-    }
-    else {
+    } else {
       return Caml_oo_curry.js1(5144726, 6, p);
     }
   };
@@ -236,8 +234,7 @@ function backup2_init($$class) {
           var match = self$neg5[copy];
           if (match) {
             return match[0];
-          }
-          else {
+          } else {
             return self$neg5;
           }
         },
