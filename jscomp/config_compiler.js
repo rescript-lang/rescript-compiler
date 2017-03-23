@@ -107,8 +107,12 @@ if (match !== undefined) {
 }
 else {
   throw [
-        Caml_builtin_exceptions.failure,
-        "inconceivable!"
+        Caml_builtin_exceptions.assert_failure,
+        [
+          "config_compiler.ml",
+          105,
+          14
+        ]
       ];
 }
 

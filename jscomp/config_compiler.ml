@@ -102,7 +102,7 @@ let get_config_output is_windows =
 let () =
   let dirname = match [%node __dirname] with
     | Some d -> d
-    | None -> raise (Failure "inconceivable!")
+    | None -> assert false
   in
   let working_dir = Process.process##cwd () in
   print_endline ("Working dir " ^ working_dir);
