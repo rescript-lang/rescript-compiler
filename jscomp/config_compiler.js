@@ -2,13 +2,12 @@
 
 var Fs                      = require("fs");
 var Path                    = require("path");
-var $$Array                 = require("../lib/js/array");
 var Process                 = require("process");
 var Child_process           = require("child_process");
 var Caml_builtin_exceptions = require("../lib/js/caml_builtin_exceptions");
 
-var delete_key = (
-  function(obj, key) { delete obj[key] }
+var delete_env_var = (
+  function(process, key) { delete process.env[key] }
 );
 
 var map = {
@@ -83,10 +82,10 @@ function get_config_output(is_windows) {
                 ];
         });
     console.log("keyvalues");
-    $$Array.iter(function (param) {
+    keyvalues.forEach(function (param) {
           console.log(param[0] + (": " + param[1]));
           return /* () */0;
-        }, keyvalues);
+        });
     var accum_pairs = function (acc, param) {
       acc[param[0]] = param[1];
       return acc;
@@ -110,7 +109,7 @@ else {
         Caml_builtin_exceptions.assert_failure,
         [
           "config_compiler.ml",
-          105,
+          107,
           14
         ]
       ];
@@ -120,7 +119,7 @@ var working_dir = Process.cwd();
 
 console.log("Working dir " + working_dir);
 
-delete_key(Process.env, "OCAMLPARAM");
+delete_env_var(Process, "OCAMLPARAM");
 
 Process.env["OCAMLRUNPARAM"] = "b";
 
@@ -143,4 +142,4 @@ else {
   Process.exit(2);
 }
 
-/* delete_key Not a pure module */
+/* delete_env_var Not a pure module */
