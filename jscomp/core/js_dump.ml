@@ -1373,12 +1373,12 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
       | Some [{statement_desc = If _} as nest]
       | Some [{statement_desc = Block [ {statement_desc = If _ ; _} as nest] ; _}]
         ->
-        P.newline f;
+        P.space f;
         P.string f L.else_;
         P.space f;
         statement false cxt f nest 
       | Some s2 -> 
-        P.newline f;
+        P.space f;
         P.string f L.else_;
         P.space f ;
         block  cxt f s2 
