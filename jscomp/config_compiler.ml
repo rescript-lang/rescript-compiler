@@ -20,8 +20,8 @@ module Process = Node.Process
 module Fs = Node.Fs
 module Path = Node.Path
 
-let delete_key : _ Js.Dict.t -> string -> unit [@bs] = [%raw{|
-  function(obj, key) { delete obj[key] }
+let delete_env_var : Process.t -> string -> unit [@bs] = [%raw{|
+  function(process, key) { delete process[key] }
 |}]
 
 (* need check which variables exist when we update compiler *)
@@ -109,7 +109,7 @@ let () =
   let working_dir = Process.process##cwd () in
   print_endline ("Working dir " ^ working_dir);
 
-  delete_key Process.process##env "OCAMLPARAM" [@bs]; (* stdlib is already compiled using -bin-annot *)
+  delete_env_var Process.process "OCAMLPARAM" [@bs]; (* stdlib is already compiled using -bin-annot *)
   Js.Dict.set Process.process##env "OCAMLRUNPARAM" "b";
 
   (* This will not work on Windows
