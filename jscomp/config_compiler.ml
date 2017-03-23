@@ -58,9 +58,9 @@ let map = [%obj {
 }]
 
 let patch_config jscomp_dir config_map is_windows =
-  let content = Fs.readFileSync whole_compiler_config `utf8 in
   let whole_compiler_config = Path.join [| jscomp_dir; "bin"; "config_whole_compiler.mlp" |] in
   let whole_compiler_config_output = Path.join [| jscomp_dir; "bin"; "config_whole_compiler.ml" |] in
+  let content = Fs.readFileAsUtf8Sync whole_compiler_config in
   let replace_values whole match_ =
     match (match_, is_windows) with
       | ("LIBDIR", true) ->
@@ -73,7 +73,7 @@ let patch_config jscomp_dir config_map is_windows =
         Js.Dict.unsafeGet config_map map_val
   in
   let generated = Js.String.replaceByFun1 (Js.Re.fromStringWithFlags "%%(\\w+)%%" ~flags:"g") replace_values content in
-  Fs.writeFileSync whole_compiler_config_output generated `utf8
+  Fs.writeFileAsUtf8Sync whole_compiler_config_output generated
 
 let get_config_output is_windows =
   try
