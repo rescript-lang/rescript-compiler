@@ -4231,14 +4231,14 @@ let  resolve_bs_package
           else
             begin 
               Format.fprintf Format.err_formatter 
-                "@{<error>Package not found: resolving pakcage %s in %s  @}@." name cwd ;             
+                "@{<error>Package not found: resolving package %s in %s  @}@." name cwd ;             
               Bsb_exception.error (Package_not_found (name, None))
             end
         with 
           Not_found -> 
           begin 
             Format.fprintf Format.err_formatter 
-              "@{<error>Package not found: resolving pakcage %s in %s  @}@." name cwd ;             
+              "@{<error>Package not found: resolving package %s in %s  @}@." name cwd ;             
             Bsb_exception.error (Package_not_found (name,None))
           end
   in
