@@ -93,8 +93,8 @@ let get_config_output is_windows =
         (Js.String.trim key, Js.String.trim value)
       )
     in
-    print_endline "keyvalues";
     Array.iter (fun (key, value) -> print_endline (key ^ ": " ^ value)) keyvalues;
+    Js.log "keyvalues";
 
     let accum_pairs = fun acc (key, value) -> Js.Dict.set acc key value; acc in
     Some (Js.Array.reduce accum_pairs (Js.Dict.empty ()) keyvalues)
@@ -107,7 +107,7 @@ let () =
     | None -> assert false
   in
   let working_dir = Process.process##cwd () in
-  print_endline ("Working dir " ^ working_dir);
+  Js.log ("Working dir " ^ working_dir);
 
   delete_env_var Process.process "OCAMLPARAM" [@bs]; (* stdlib is already compiled using -bin-annot *)
   Js.Dict.set Process.process##env "OCAMLRUNPARAM" "b";
