@@ -24,6 +24,10 @@ let delete_env_var : Process.t -> string -> unit [@bs] = [%raw{|
   function(process, key) { delete process.env[key] }
 |}]
 
+let force_opt = function
+  | Some a -> a
+  | None -> assert false
+
 (* need check which variables exist when we update compiler *)
 let map = [%obj {
   _LIBDIR = "standard_library_default";
@@ -69,8 +73,8 @@ let patch_config jscomp_dir config_map is_windows =
         let origin_path = Path.join [|jscomp_dir; ".."; "lib"; "ocaml"|] in
         Js.Json.stringify (Js.Json.string origin_path)
       | _ ->
-        let map_val = Js.Dict.unsafeGet (dictOfObj map) match_ in
-        Js.Dict.unsafeGet config_map map_val
+        let map_val = force_opt (Js.Dict.get (dictOfObj map) match_) in
+        force_opt (Js.Dict.get config_map map_val)
   in
   let generated = Js.String.replaceByFun1 (Js.Re.fromStringWithFlags "%%(\\w+)%%" ~flags:"g") replace_values content in
   Fs.writeFileAsUtf8Sync whole_compiler_config_output generated
@@ -102,10 +106,7 @@ let get_config_output is_windows =
     _ -> None
 
 let () =
-  let dirname = match [%node __dirname] with
-    | Some d -> d
-    | None -> assert false
-  in
+  let dirname = force_opt [%node __dirname] in
   let working_dir = Process.process##cwd () in
   Js.log ("Working dir " ^ working_dir);
 
@@ -120,7 +121,7 @@ let () =
   let is_windows = Process.process##platform = "win32" in
   match get_config_output is_windows with
     | Some config_map ->
-      let version = Js.Dict.unsafeGet config_map "version" in
+      let version = force_opt (Js.Dict.get config_map "version") in
       if Js.String.indexOf "4.02.3" version >= 0
         then patch_config dirname config_map is_windows
         else Process.process##exit 2
