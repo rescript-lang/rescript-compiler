@@ -24,10 +24,6 @@ let delete_env_var : Process.t -> string -> unit [@bs] = [%raw{|
   function(process, key) { delete process.env[key] }
 |}]
 
-let force_opt = function
-  | Some a -> a
-  | None -> assert false
-
 (* need check which variables exist when we update compiler *)
 let map = [%obj {
   _LIBDIR = "standard_library_default";
@@ -73,8 +69,17 @@ let patch_config jscomp_dir config_map is_windows =
         let origin_path = Path.join [|jscomp_dir; ".."; "lib"; "ocaml"|] in
         Js.Json.stringify (Js.Json.string origin_path)
       | _ ->
-        let map_val = force_opt (Js.Dict.get (dictOfObj map) match_) in
-        force_opt (Js.Dict.get config_map map_val)
+        match Js.Dict.get (dictOfObj map) match_ with
+          | Some map_val -> (
+            match Js.Dict.get config_map map_val with
+              | Some a -> a
+              | None ->
+                Js.log ("No value for \"" ^ map_val ^ "\"");
+                ""
+          )
+          | None ->
+            Js.log ("No mapping for \"" ^ match_ ^ "\"");
+            ""
   in
   let generated = Js.String.unsafeReplaceBy1 [%re {|/%%(\w+)%%/g|}] replace_values content in
   Fs.writeFileAsUtf8Sync whole_compiler_config_output generated
@@ -105,8 +110,16 @@ let get_config_output is_windows =
   with
     _ -> None
 
+let should_patch config_map =
+  match Js.Dict.get config_map "version" with
+    | Some version -> Js.String.indexOf "4.02.3" version >= 0
+    | None -> false
+
 let () =
-  let dirname = force_opt [%node __dirname] in
+  let dirname = match [%node __dirname] with
+    | Some a -> a
+    | None -> assert false
+  in
   let working_dir = Process.process##cwd () in
   Js.log ("Working dir " ^ working_dir);
 
@@ -121,8 +134,7 @@ let () =
   let is_windows = Process.process##platform = "win32" in
   match get_config_output is_windows with
     | Some config_map ->
-      let version = force_opt (Js.Dict.get config_map "version") in
-      if Js.String.indexOf "4.02.3" version >= 0
+      if should_patch config_map
         then patch_config dirname config_map is_windows
         else Process.exit 2
     | None ->
