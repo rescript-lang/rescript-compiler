@@ -296,6 +296,7 @@ bin/whole_compiler.ml : stubs/bs_hash_stubs.ml
 bin/whole_compiler.ml : syntax/ast_external.ml
 bin/whole_compiler.ml : syntax/ast_literal.mli
 bin/whole_compiler.ml : syntax/ast_payload.mli
+bin/whole_compiler.ml : syntax/bs_syntaxerr.ml
 bin/whole_compiler.ml : ../ocaml/bytecomp/printlambda.ml
 bin/whole_compiler.ml : ../ocaml/bytecomp/translclass.ml
 bin/whole_compiler.ml : ../ocaml/bytecomp/translcore.mli

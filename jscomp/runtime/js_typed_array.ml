@@ -64,99 +64,100 @@ module TypedArray (Type: Type) = struct
 
   type elt = Type.t
   type 'a typed_array
+  type t = elt typed_array
 
-  external unsafe_get : elt typed_array -> int -> elt  = "" [@@bs.get_index]
-  external unsafe_set : elt typed_array -> int -> elt -> unit = "" [@@bs.set_index]
+  external unsafe_get : t -> int -> elt  = "" [@@bs.get_index]
+  external unsafe_set : t -> int -> elt -> unit = "" [@@bs.set_index]
 
-  external buffer : elt typed_array -> array_buffer = "" [@@bs.get]
-  external byteLength : elt typed_array -> int = "" [@@bs.get]
-  external byteOffset : elt typed_array -> int = "" [@@bs.get]
+  external buffer : t -> array_buffer = "" [@@bs.get]
+  external byteLength : t -> int = "" [@@bs.get]
+  external byteOffset : t -> int = "" [@@bs.get]
 
-  external setArray : elt array -> unit = "set" [@@bs.send.pipe: elt typed_array]
-  external setArrayOffset : elt array -> int -> unit = "set" [@@bs.send.pipe: elt typed_array]
+  external setArray : elt array -> unit = "set" [@@bs.send.pipe: t]
+  external setArrayOffset : elt array -> int -> unit = "set" [@@bs.send.pipe: t]
   (* There's also an overload for typed arrays, but don't know how to model that without subtyping *)
 
   (* Array interface(-ish)
   * ---
   *)
-  external length : elt typed_array -> int = "" [@@bs.get]
+  external length : t -> int = "" [@@bs.get]
 
   (* Mutator functions
   *)
-  external copyWithin : to_:int -> elt typed_array = "" [@@bs.send.pipe: elt typed_array]
-  external copyWithinFrom : to_:int -> from:int -> elt typed_array = "copyWithin" [@@bs.send.pipe: elt typed_array]
-  external copyWithinFromRange : to_:int -> start:int -> end_:int -> elt typed_array = "copyWithin" [@@bs.send.pipe: elt typed_array]
+  external copyWithin : to_:int -> t = "" [@@bs.send.pipe: t]
+  external copyWithinFrom : to_:int -> from:int -> t = "copyWithin" [@@bs.send.pipe: t]
+  external copyWithinFromRange : to_:int -> start:int -> end_:int -> t = "copyWithin" [@@bs.send.pipe: t]
 
-  external fillInPlace : elt -> elt typed_array = "fill" [@@bs.send.pipe: elt typed_array]
-  external fillFromInPlace : elt -> from:int -> elt typed_array = "fill" [@@bs.send.pipe: elt typed_array]
-  external fillRangeInPlace : elt -> start:int -> end_:int -> elt typed_array = "fill" [@@bs.send.pipe: elt typed_array]
+  external fillInPlace : elt -> t = "fill" [@@bs.send.pipe: t]
+  external fillFromInPlace : elt -> from:int -> t = "fill" [@@bs.send.pipe: t]
+  external fillRangeInPlace : elt -> start:int -> end_:int -> t = "fill" [@@bs.send.pipe: t]
 
-  external reverseInPlace : elt typed_array = "reverse" [@@bs.send.pipe: elt typed_array]
+  external reverseInPlace : t = "reverse" [@@bs.send.pipe: t]
 
-  external sortInPlace : elt typed_array = "sort" [@@bs.send.pipe: elt typed_array]
-  external sortInPlaceWith : (elt -> elt -> int [@bs]) -> elt typed_array = "sort" [@@bs.send.pipe: elt typed_array]
+  external sortInPlace : t = "sort" [@@bs.send.pipe: t]
+  external sortInPlaceWith : (elt -> elt -> int [@bs]) -> t = "sort" [@@bs.send.pipe: t]
 
   (* Accessor functions
   *)
-  external includes : elt -> Js.boolean = "" [@@bs.send.pipe: elt typed_array] (** ES2016 *)
+  external includes : elt -> Js.boolean = "" [@@bs.send.pipe: t] (** ES2016 *)
 
-  external indexOf : elt  -> int = "" [@@bs.send.pipe: elt typed_array]
-  external indexOfFrom : elt -> from:int -> int = "indexOf" [@@bs.send.pipe: elt typed_array]
+  external indexOf : elt  -> int = "" [@@bs.send.pipe: t]
+  external indexOfFrom : elt -> from:int -> int = "indexOf" [@@bs.send.pipe: t]
 
-  external join : string = "" [@@bs.send.pipe: elt typed_array]
-  external joinWith : string -> string = "join" [@@bs.send.pipe: elt typed_array]
+  external join : string = "" [@@bs.send.pipe: t]
+  external joinWith : string -> string = "join" [@@bs.send.pipe: t]
 
-  external lastIndexOf : elt -> int = "" [@@bs.send.pipe: elt typed_array]
-  external lastIndexOfFrom : elt -> from:int -> int = "lastIndexOf" [@@bs.send.pipe: elt typed_array]
+  external lastIndexOf : elt -> int = "" [@@bs.send.pipe: t]
+  external lastIndexOfFrom : elt -> from:int -> int = "lastIndexOf" [@@bs.send.pipe: t]
 
-  external slice : start:int -> end_:int -> elt typed_array = "" [@@bs.send.pipe: elt typed_array]
-  external copy : elt typed_array = "slice" [@@bs.send.pipe: elt typed_array]
-  external sliceFrom : int -> elt typed_array = "slice" [@@bs.send.pipe: elt typed_array]
+  external slice : start:int -> end_:int -> t = "" [@@bs.send.pipe: t]
+  external copy : t = "slice" [@@bs.send.pipe: t]
+  external sliceFrom : int -> t = "slice" [@@bs.send.pipe: t]
 
-  external toString : string = "" [@@bs.send.pipe: elt typed_array]
-  external toLocaleString : string = "" [@@bs.send.pipe: elt typed_array]
+  external toString : string = "" [@@bs.send.pipe: t]
+  external toLocaleString : string = "" [@@bs.send.pipe: t]
 
 
   (* Iteration functions
   *)
   (* commented out until bs has a plan for iterators
-  external entries : (int * elt) array_iter = "" [@@bs.send.pipe: elt typed_array]
+  external entries : (int * elt) array_iter = "" [@@bs.send.pipe: t]
   *)
 
-  external every : (elt  -> Js.boolean [@bs]) -> Js.boolean = "" [@@bs.send.pipe: elt typed_array]
-  external everyi : (elt -> int -> Js.boolean [@bs]) -> Js.boolean = "every" [@@bs.send.pipe: elt typed_array]
+  external every : (elt  -> Js.boolean [@bs]) -> Js.boolean = "" [@@bs.send.pipe: t]
+  external everyi : (elt -> int -> Js.boolean [@bs]) -> Js.boolean = "every" [@@bs.send.pipe: t]
 
   (** should we use [bool] or [boolan] seems they are intechangeable here *)
-  external filter : (elt -> bool [@bs]) -> elt typed_array = "" [@@bs.send.pipe: elt typed_array]
-  external filteri : (elt -> int  -> Js.boolean[@bs]) -> elt typed_array = "filter" [@@bs.send.pipe: elt typed_array]
+  external filter : (elt -> bool [@bs]) -> t = "" [@@bs.send.pipe: t]
+  external filteri : (elt -> int  -> Js.boolean[@bs]) -> t = "filter" [@@bs.send.pipe: t]
 
-  external find : (elt -> bool [@bs]) -> elt Js.undefined = "" [@@bs.send.pipe: elt typed_array]
-  external findi : (elt -> int -> bool [@bs]) -> elt Js.undefined  = "find" [@@bs.send.pipe: elt typed_array]
+  external find : (elt -> bool [@bs]) -> elt Js.undefined = "" [@@bs.send.pipe: t]
+  external findi : (elt -> int -> bool [@bs]) -> elt Js.undefined  = "find" [@@bs.send.pipe: t]
 
-  external findIndex : (elt -> bool [@bs]) -> int = "" [@@bs.send.pipe: elt typed_array]
-  external findIndexi : (elt -> int -> bool [@bs]) -> int = "findIndex" [@@bs.send.pipe: elt typed_array]
+  external findIndex : (elt -> bool [@bs]) -> int = "" [@@bs.send.pipe: t]
+  external findIndexi : (elt -> int -> bool [@bs]) -> int = "findIndex" [@@bs.send.pipe: t]
 
-  external forEach : (elt -> unit [@bs]) -> unit = "" [@@bs.send.pipe: elt typed_array]
-  external forEachi : (elt -> int -> unit [@bs]) -> unit  = "forEach" [@@bs.send.pipe: elt typed_array]
+  external forEach : (elt -> unit [@bs]) -> unit = "" [@@bs.send.pipe: t]
+  external forEachi : (elt -> int -> unit [@bs]) -> unit  = "forEach" [@@bs.send.pipe: t]
 
   (* commented out until bs has a plan for iterators
-  external keys : int array_iter = "" [@@bs.send.pipe: elt typed_array]
+  external keys : int array_iter = "" [@@bs.send.pipe: t]
   *)
 
-  external map : (elt  -> 'b [@bs]) -> 'b typed_array = "" [@@bs.send.pipe: elt typed_array]
-  external mapi : (elt -> int ->  'b [@bs]) -> 'b typed_array = "map" [@@bs.send.pipe: elt typed_array]
+  external map : (elt  -> 'b [@bs]) -> 'b typed_array = "" [@@bs.send.pipe: t]
+  external mapi : (elt -> int ->  'b [@bs]) -> 'b typed_array = "map" [@@bs.send.pipe: t]
 
-  external reduce :  ('b -> elt  -> 'b [@bs]) -> 'b -> 'b = "" [@@bs.send.pipe: elt typed_array]
-  external reducei : ('b -> elt -> int -> 'b [@bs]) -> 'b -> 'b = "reduce" [@@bs.send.pipe: elt typed_array]
+  external reduce :  ('b -> elt  -> 'b [@bs]) -> 'b -> 'b = "" [@@bs.send.pipe: t]
+  external reducei : ('b -> elt -> int -> 'b [@bs]) -> 'b -> 'b = "reduce" [@@bs.send.pipe: t]
 
-  external reduceRight :  ('b -> elt  -> 'b [@bs]) -> 'b -> 'b = "" [@@bs.send.pipe: elt typed_array]
-  external reduceRighti : ('b -> elt -> int -> 'b [@bs]) -> 'b -> 'b = "reduceRight" [@@bs.send.pipe: elt typed_array]
+  external reduceRight :  ('b -> elt  -> 'b [@bs]) -> 'b -> 'b = "" [@@bs.send.pipe: t]
+  external reduceRighti : ('b -> elt -> int -> 'b [@bs]) -> 'b -> 'b = "reduceRight" [@@bs.send.pipe: t]
 
-  external some : (elt  -> Js.boolean [@bs]) -> Js.boolean = "" [@@bs.send.pipe: elt typed_array]
-  external somei : (elt  -> int -> Js.boolean [@bs]) -> Js.boolean = "some" [@@bs.send.pipe: elt typed_array]
+  external some : (elt  -> Js.boolean [@bs]) -> Js.boolean = "" [@@bs.send.pipe: t]
+  external somei : (elt  -> int -> Js.boolean [@bs]) -> Js.boolean = "some" [@@bs.send.pipe: t]
 
   (* commented out until bs has a plan for iterators
-  external values : elt array_iter = "" [@@bs.send.pipe: elt typed_array]
+  external values : elt array_iter = "" [@@bs.send.pipe: t]
   *)
 end
 
@@ -169,15 +170,15 @@ module Int8Array = struct
 
   external _BYTES_PER_ELEMENT: int = "Int8Array.BYTES_PER_ELEMENT" [@@bs.val]
 
-  external make : elt array -> elt typed_array = "Int8Array" [@@bs.new]
-  external fromBuffer : array_buffer -> elt typed_array = "Int8Array" [@@bs.new]
+  external make : elt array -> t = "Int8Array" [@@bs.new]
+  external fromBuffer : array_buffer -> t = "Int8Array" [@@bs.new]
   (** can throw *)
-  external fromBufferOffset : array_buffer -> int -> elt typed_array = "Int8Array" [@@bs.new]
+  external fromBufferOffset : array_buffer -> int -> t = "Int8Array" [@@bs.new]
   (** can throw, offset is in bytes *)
-  external fromBufferRange : array_buffer -> offset:int -> length:int -> elt typed_array = "Int8Array" [@@bs.new]
+  external fromBufferRange : array_buffer -> offset:int -> length:int -> t = "Int8Array" [@@bs.new]
   (** can throw, offset is in bytes, length in elements *)
-  external fromLength : int -> elt typed_array = "Int8Array" [@@bs.new]
-  external from : elt array_like -> elt typed_array = "Int8Array.from" [@@bs.val]
+  external fromLength : int -> t = "Int8Array" [@@bs.new]
+  external from : elt array_like -> t = "Int8Array.from" [@@bs.val]
   (* *Array.of is redundant, use make *)
 
 end
@@ -191,15 +192,15 @@ module Uint8Array = struct
 
   external _BYTES_PER_ELEMENT: int = "Uint8Array.BYTES_PER_ELEMENT" [@@bs.val]
 
-  external make : elt array -> elt typed_array = "Uint8Array" [@@bs.new]
-  external fromBuffer : array_buffer -> elt typed_array = "Uint8Array" [@@bs.new]
+  external make : elt array -> t = "Uint8Array" [@@bs.new]
+  external fromBuffer : array_buffer -> t = "Uint8Array" [@@bs.new]
   (** can throw *)
-  external fromBufferOffset : array_buffer -> int -> elt typed_array = "Uint8Array" [@@bs.new]
+  external fromBufferOffset : array_buffer -> int -> t = "Uint8Array" [@@bs.new]
   (** can throw, offset is in bytes *)
-  external fromBufferRange : array_buffer -> offset:int -> length:int -> elt typed_array = "Uint8Array" [@@bs.new]
+  external fromBufferRange : array_buffer -> offset:int -> length:int -> t = "Uint8Array" [@@bs.new]
   (** can throw, offset is in bytes, length in elements *)
-  external fromLength : int -> elt typed_array = "Uint8Array" [@@bs.new]
-  external from : elt array_like -> elt typed_array = "Uint8Array.from" [@@bs.val]
+  external fromLength : int -> t = "Uint8Array" [@@bs.new]
+  external from : elt array_like -> t = "Uint8Array.from" [@@bs.val]
   (* *Array.of is redundant, use make *)
 end
 
@@ -212,15 +213,15 @@ module Uint8ClampedArray = struct
 
   external _BYTES_PER_ELEMENT: int = "Uint8ClampedArray.BYTES_PER_ELEMENT" [@@bs.val]
 
-  external make : elt array -> elt typed_array = "Uint8ClampedArray" [@@bs.new]
-  external fromBuffer : array_buffer -> elt typed_array = "Uint8ClampedArray" [@@bs.new]
+  external make : elt array -> t = "Uint8ClampedArray" [@@bs.new]
+  external fromBuffer : array_buffer -> t = "Uint8ClampedArray" [@@bs.new]
   (** can throw *)
-  external fromBufferOffset : array_buffer -> int -> elt typed_array = "Uint8ClampedArray" [@@bs.new]
+  external fromBufferOffset : array_buffer -> int -> t = "Uint8ClampedArray" [@@bs.new]
   (** can throw, offset is in bytes *)
-  external fromBufferRange : array_buffer -> offset:int -> length:int -> elt typed_array = "Uint8ClampedArray" [@@bs.new]
+  external fromBufferRange : array_buffer -> offset:int -> length:int -> t = "Uint8ClampedArray" [@@bs.new]
   (** can throw, offset is in bytes, length in elements *)
-  external fromLength : int -> elt typed_array = "Uint8ClampedArray" [@@bs.new]
-  external from : elt array_like -> elt typed_array = "Uint8ClampedArray.from" [@@bs.val]
+  external fromLength : int -> t = "Uint8ClampedArray" [@@bs.new]
+  external from : elt array_like -> t = "Uint8ClampedArray.from" [@@bs.val]
   (* *Array.of is redundant, use make *)
 end
 
@@ -233,15 +234,15 @@ module Int16Array = struct
 
   external _BYTES_PER_ELEMENT: int = "Int16Array.BYTES_PER_ELEMENT" [@@bs.val]
 
-  external make : elt array -> elt typed_array = "Int16Array" [@@bs.new]
-  external fromBuffer : array_buffer -> elt typed_array = "Int16Array" [@@bs.new]
+  external make : elt array -> t = "Int16Array" [@@bs.new]
+  external fromBuffer : array_buffer -> t = "Int16Array" [@@bs.new]
   (** can throw *)
-  external fromBufferOffset : array_buffer -> int -> elt typed_array = "Int16Array" [@@bs.new]
+  external fromBufferOffset : array_buffer -> int -> t = "Int16Array" [@@bs.new]
   (** can throw, offset is in bytes *)
-  external fromBufferRange : array_buffer -> offset:int -> length:int -> elt typed_array = "Int16Array" [@@bs.new]
+  external fromBufferRange : array_buffer -> offset:int -> length:int -> t = "Int16Array" [@@bs.new]
   (** can throw, offset is in bytes, length in elements *)
-  external fromLength : int -> elt typed_array = "Int16Array" [@@bs.new]
-  external from : elt array_like -> elt typed_array = "Int16Array.from" [@@bs.val]
+  external fromLength : int -> t = "Int16Array" [@@bs.new]
+  external from : elt array_like -> t = "Int16Array.from" [@@bs.val]
   (* *Array.of is redundant, use make *)
 end
 
@@ -254,15 +255,15 @@ module Uint16Array = struct
 
   external _BYTES_PER_ELEMENT: int = "Uint16Array.BYTES_PER_ELEMENT" [@@bs.val]
 
-  external make : elt array -> elt typed_array = "Uint16Array" [@@bs.new]
-  external fromBuffer : array_buffer -> elt typed_array = "Uint16Array" [@@bs.new]
+  external make : elt array -> t = "Uint16Array" [@@bs.new]
+  external fromBuffer : array_buffer -> t = "Uint16Array" [@@bs.new]
   (** can throw *)
-  external fromBufferOffset : array_buffer -> int -> elt typed_array = "Uint16Array" [@@bs.new]
+  external fromBufferOffset : array_buffer -> int -> t = "Uint16Array" [@@bs.new]
   (** can throw, offset is in bytes *)
-  external fromBufferRange : array_buffer -> offset:int -> length:int -> elt typed_array = "Uint16Array" [@@bs.new]
+  external fromBufferRange : array_buffer -> offset:int -> length:int -> t = "Uint16Array" [@@bs.new]
   (** can throw, offset is in bytes, length in elements *)
-  external fromLength : int -> elt typed_array = "Uint16Array" [@@bs.new]
-  external from : elt array_like -> elt typed_array = "Uint16Array.from" [@@bs.val]
+  external fromLength : int -> t = "Uint16Array" [@@bs.new]
+  external from : elt array_like -> t = "Uint16Array.from" [@@bs.val]
   (* *Array.of is redundant, use make *)
 end
 
@@ -275,20 +276,20 @@ module Int32Array = struct
 
   external _BYTES_PER_ELEMENT: int = "Int32Array.BYTES_PER_ELEMENT" [@@bs.val]
 
-  external make : elt array -> elt typed_array = "Int32Array" [@@bs.new]
-  external fromBuffer : array_buffer -> elt typed_array = "Int32Array" [@@bs.new]
+  external make : elt array -> t = "Int32Array" [@@bs.new]
+  external fromBuffer : array_buffer -> t = "Int32Array" [@@bs.new]
   (** can throw *)
-  external fromBufferOffset : array_buffer -> int -> elt typed_array = "Int32Array" [@@bs.new]
+  external fromBufferOffset : array_buffer -> int -> t = "Int32Array" [@@bs.new]
   (** can throw, offset is in bytes *)
-  external fromBufferRange : array_buffer -> offset:int -> length:int -> elt typed_array = "Int32Array" [@@bs.new]
+  external fromBufferRange : array_buffer -> offset:int -> length:int -> t = "Int32Array" [@@bs.new]
   (** can throw, offset is in bytes, length in elements *)
-  external fromLength : int -> elt typed_array = "Int32Array" [@@bs.new]
-  external from : elt array_like -> elt typed_array = "Int32Array.from" [@@bs.val]
+  external fromLength : int -> t = "Int32Array" [@@bs.new]
+  external from : elt array_like -> t = "Int32Array.from" [@@bs.val]
   (* *Array.of is redundant, use make *)
 
-  external create : int32 array -> elt typed_array = "Int32Array" [@@bs.new]
+  external create : int32 array -> t = "Int32Array" [@@bs.new]
   [@@ocaml.deprecated "use `make` instead"]
-  external of_buffer : array_buffer -> elt typed_array = "Int32Array" [@@bs.new]
+  external of_buffer : array_buffer -> t = "Int32Array" [@@bs.new]
   [@@ocaml.deprecated "use `fromBuffer` instead"]
 end
 module Int32_array = Int32Array
@@ -303,15 +304,15 @@ module Uint32Array = struct
 
   external _BYTES_PER_ELEMENT: int = "Uint32Array.BYTES_PER_ELEMENT" [@@bs.val]
 
-  external make : elt array -> elt typed_array = "Uint32Array" [@@bs.new]
-  external fromBuffer : array_buffer -> elt typed_array = "Uint32Array" [@@bs.new]
+  external make : elt array -> t = "Uint32Array" [@@bs.new]
+  external fromBuffer : array_buffer -> t = "Uint32Array" [@@bs.new]
   (** can throw *)
-  external fromBufferOffset : array_buffer -> int -> elt typed_array = "Uint32Array" [@@bs.new]
+  external fromBufferOffset : array_buffer -> int -> t = "Uint32Array" [@@bs.new]
   (** can throw, offset is in bytes *)
-  external fromBufferRange : array_buffer -> offset:int -> length:int -> elt typed_array = "Uint32Array" [@@bs.new]
+  external fromBufferRange : array_buffer -> offset:int -> length:int -> t = "Uint32Array" [@@bs.new]
   (** can throw, offset is in bytes, length in elements *)
-  external fromLength : int -> elt typed_array = "Uint32Array" [@@bs.new]
-  external from : elt array_like -> elt typed_array = "Uint32Array.from" [@@bs.val]
+  external fromLength : int -> t = "Uint32Array" [@@bs.new]
+  external from : elt array_like -> t = "Uint32Array.from" [@@bs.val]
   (* *Array.of is redundant, use make *)
 end
 
@@ -327,20 +328,20 @@ module Float32Array = struct
 
   external _BYTES_PER_ELEMENT: int = "Float32Array.BYTES_PER_ELEMENT" [@@bs.val]
 
-  external make : elt array -> elt typed_array = "Float32Array" [@@bs.new]
-  external fromBuffer : array_buffer -> elt typed_array = "Float32Array" [@@bs.new]
+  external make : elt array -> t = "Float32Array" [@@bs.new]
+  external fromBuffer : array_buffer -> t = "Float32Array" [@@bs.new]
   (** can throw *)
-  external fromBufferOffset : array_buffer -> int -> elt typed_array = "Float32Array" [@@bs.new]
+  external fromBufferOffset : array_buffer -> int -> t = "Float32Array" [@@bs.new]
   (** can throw, offset is in bytes *)
-  external fromBufferRange : array_buffer -> offset:int -> length:int -> elt typed_array = "Float32Array" [@@bs.new]
+  external fromBufferRange : array_buffer -> offset:int -> length:int -> t = "Float32Array" [@@bs.new]
   (** can throw, offset is in bytes, length in elements *)
-  external fromLength : int -> elt typed_array = "Float32Array" [@@bs.new]
-  external from : elt array_like -> elt typed_array = "Float32Array.from" [@@bs.val]
+  external fromLength : int -> t = "Float32Array" [@@bs.new]
+  external from : elt array_like -> t = "Float32Array.from" [@@bs.val]
   (* *Array.of is redundant, use make *)
 
-  external create : float array -> elt typed_array = "Float32Array" [@@bs.new]
+  external create : float array -> t = "Float32Array" [@@bs.new]
   [@@ocaml.deprecated "use `make` instead"]
-  external of_buffer : array_buffer -> elt typed_array = "Float32Array" [@@bs.new]
+  external of_buffer : array_buffer -> t = "Float32Array" [@@bs.new]
   [@@ocaml.deprecated "use `fromBuffer` instead"]
 end
 module Float32_array = Float32Array
@@ -355,21 +356,95 @@ module Float64Array = struct
 
   external _BYTES_PER_ELEMENT: int = "Float64Array.BYTES_PER_ELEMENT" [@@bs.val]
 
-  external make : elt array -> elt typed_array = "Float64Array" [@@bs.new]
-  external fromBuffer : array_buffer -> elt typed_array = "Float64Array" [@@bs.new]
+  external make : elt array -> t = "Float64Array" [@@bs.new]
+  external fromBuffer : array_buffer -> t = "Float64Array" [@@bs.new]
   (** can throw *)
-  external fromBufferOffset : array_buffer -> int -> elt typed_array = "Float64Array" [@@bs.new]
+  external fromBufferOffset : array_buffer -> int -> t = "Float64Array" [@@bs.new]
   (** can throw, offset is in bytes *)
-  external fromBufferRange : array_buffer -> offset:int -> length:int -> elt typed_array = "Float64Array" [@@bs.new]
+  external fromBufferRange : array_buffer -> offset:int -> length:int -> t = "Float64Array" [@@bs.new]
   (** can throw, offset is in bytes, length in elements *)
-  external fromLength : int -> elt typed_array = "Float64Array" [@@bs.new]
-  external from : elt array_like -> elt typed_array = "Float64Array.from" [@@bs.val]
+  external fromLength : int -> t = "Float64Array" [@@bs.new]
+  external from : elt array_like -> t = "Float64Array.from" [@@bs.val]
   (* *Array.of is redundant, use make *)
 
-  external create : float array -> elt typed_array = "Float64Array" [@@bs.new]
+  external create : float array -> t = "Float64Array" [@@bs.new]
   [@@ocaml.deprecated "use `make` instead"]
-  external of_buffer : array_buffer -> elt typed_array = "Float64Array" [@@bs.new]
+  external of_buffer : array_buffer -> t = "Float64Array" [@@bs.new]
   [@@ocaml.deprecated "use `fromBuffer` instead"]
 end
 module Float64_array = Float64Array
 [@ocaml.deprecated "use `Float64Array` instead"]
+
+module DataView = struct
+  (** The DataView view provides a low-level interface for reading and writing
+      multiple number types in an ArrayBuffer irrespective of the platform's endianness.
+
+    @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DataView> MDN
+  *)
+
+  type t
+
+  external make : array_buffer -> t = "DataView" [@@bs.new]
+  external fromBuffer : array_buffer -> t = "DataView" [@@bs.new]
+  external fromBufferOffset : array_buffer -> int -> t = "DataView" [@@bs.new]
+  external fromBufferRange : array_buffer -> offset:int -> length:int -> t = "DataView" [@@bs.new]
+
+  external buffer : t -> array_buffer = "" [@@bs.get]
+  external byteLength : t -> int = "" [@@bs.get]
+  external byteOffset : t -> int = "" [@@bs.get]
+
+  external getInt8 : t -> int -> int = "" [@@bs.send]
+  external getUint8 : t -> int -> int = "" [@@bs.send]
+
+  external getInt16: t -> int -> int = "" [@@bs.send]
+  external getInt16LittleEndian : t -> int -> (_ [@bs.as 1]) -> int =
+    "getInt16" [@@bs.send]
+
+  external getUint16: t -> int -> int = "" [@@bs.send]
+  external getUint16LittleEndian : t -> int -> (_ [@bs.as 1]) -> int =
+    "getUint16" [@@bs.send]
+
+  external getInt32: t -> int -> int = "" [@@bs.send]
+  external getInt32LittleEndian : t -> int -> (_ [@bs.as 1]) -> int =
+    "getInt32" [@@bs.send]
+
+  external getUint32: t -> int -> int = "" [@@bs.send]
+  external getUint32LittleEndian : t -> int -> (_ [@bs.as 1]) -> int =
+    "getUint32" [@@bs.send]
+
+  external getFloat32: t -> int -> float = "" [@@bs.send]
+  external getFloat32LittleEndian : t -> int -> (_ [@bs.as 1]) -> float =
+    "getFloat32" [@@bs.send]
+
+  external getFloat64: t -> int -> float = "" [@@bs.send]
+  external getFloat64LittleEndian : t -> int -> (_ [@bs.as 1]) -> float =
+    "getFloat64" [@@bs.send]
+
+  external setInt8 : t -> int -> int -> unit = "" [@@bs.send]
+  external setUint8 : t -> int -> int -> unit = "" [@@bs.send]
+
+  external setInt16: t -> int -> int -> unit = "" [@@bs.send]
+  external setInt16LittleEndian : t -> int -> int -> (_ [@bs.as 1]) -> unit =
+    "setInt16" [@@bs.send]
+
+  external setUint16: t -> int -> int -> unit = "" [@@bs.send]
+  external setUint16LittleEndian : t -> int -> int -> (_ [@bs.as 1]) -> unit =
+    "setUint16" [@@bs.send]
+
+  external setInt32: t -> int -> int -> unit = "" [@@bs.send]
+  external setInt32LittleEndian : t -> int -> int -> (_ [@bs.as 1]) -> unit =
+    "setInt32" [@@bs.send]
+
+  external setUint32: t -> int -> int -> unit = "" [@@bs.send]
+  external setUint32LittleEndian : t -> int -> int -> (_ [@bs.as 1]) -> unit =
+    "setUint32" [@@bs.send]
+
+  external setFloat32: t -> int -> float -> unit = "" [@@bs.send]
+  external setFloat32LittleEndian : t -> int -> float -> (_ [@bs.as 1]) -> unit =
+    "setFloat32" [@@bs.send]
+
+  external setFloat64: t -> int -> float -> unit = "" [@@bs.send]
+  external setFloat64LittleEndian : t -> int -> float -> (_ [@bs.as 1]) -> unit =
+    "setFloat64" [@@bs.send]
+
+end

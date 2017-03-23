@@ -1738,6 +1738,9 @@ val no_char : string -> char -> int -> int -> bool
 
 val no_slash : string -> bool 
 
+(** return negative means no slash, otherwise [i] means the place for first slash *)
+val no_slash_idx : string -> int 
+
 (** if no conversion happens, reference equality holds *)
 val replace_slash_backward : string -> string 
 
@@ -1762,6 +1765,7 @@ val single_colon : string
 
 val parent_dir_lit : string
 val current_dir_lit : string
+
 end = struct
 #1 "ext_string.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -2118,11 +2122,18 @@ let is_valid_source_name name : check_result =
     else Invalid_module_name  
 
 (** TODO: can be improved to return a positive integer instead *)
-let rec unsafe_no_char x ch i  len = 
-  i > len  || 
-  (String.unsafe_get x i <> ch && unsafe_no_char x ch (i + 1)  len)
+let rec unsafe_no_char x ch i  last_idx = 
+  i > last_idx  || 
+  (String.unsafe_get x i <> ch && unsafe_no_char x ch (i + 1)  last_idx)
 
-let no_char x ch i len =
+let rec unsafe_no_char_idx x ch i last_idx = 
+  if i > last_idx  then -1 
+  else 
+    if String.unsafe_get x i <> ch then 
+      unsafe_no_char_idx x ch (i + 1)  last_idx
+    else i
+
+let no_char x ch i len  : bool =
   let str_len = String.length x in 
   if i < 0 || i >= str_len || len >= str_len then invalid_arg "Ext_string.no_char"   
   else unsafe_no_char x ch i len 
@@ -2130,6 +2141,9 @@ let no_char x ch i len =
 
 let no_slash x = 
   unsafe_no_char x '/' 0 (String.length x - 1)
+
+let no_slash_idx x = 
+  unsafe_no_char_idx x '/' 0 (String.length x - 1)
 
 let replace_slash_backward (x : string ) = 
   let len = String.length x in 
@@ -2244,6 +2258,7 @@ let inter4 a b c d =
     
 let parent_dir_lit = ".."    
 let current_dir_lit = "."
+
 end
 module Ounit_array_tests
 = struct
@@ -12920,6 +12935,16 @@ let suites =
         );
     end;
     __LOC__ >:: begin fun _ -> 
+      OUnit.assert_bool __LOC__ 
+        (Ext_string.no_slash_idx "xxx" < 0);
+      OUnit.assert_bool __LOC__ 
+        (Ext_string.no_slash_idx "xxx/" = 3);
+      OUnit.assert_bool __LOC__ 
+        (Ext_string.no_slash_idx "xxx/g/" = 3);
+      OUnit.assert_bool __LOC__ 
+        (Ext_string.no_slash_idx "/xxx/g/" = 0)
+    end;
+    __LOC__ >:: begin fun _ -> 
       OUnit.assert_bool __LOC__
         (Ext_string.equal 
            (Ext_string.concat_array Ext_string.single_space [||])
@@ -12963,6 +12988,7 @@ let suites =
   
     end
   ]
+
 end
 module Ext_topsort : sig 
 #1 "ext_topsort.mli"

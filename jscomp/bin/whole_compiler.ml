@@ -20710,6 +20710,9 @@ val no_char : string -> char -> int -> int -> bool
 
 val no_slash : string -> bool 
 
+(** return negative means no slash, otherwise [i] means the place for first slash *)
+val no_slash_idx : string -> int 
+
 (** if no conversion happens, reference equality holds *)
 val replace_slash_backward : string -> string 
 
@@ -20734,6 +20737,7 @@ val single_colon : string
 
 val parent_dir_lit : string
 val current_dir_lit : string
+
 end = struct
 #1 "ext_string.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -21090,11 +21094,18 @@ let is_valid_source_name name : check_result =
     else Invalid_module_name  
 
 (** TODO: can be improved to return a positive integer instead *)
-let rec unsafe_no_char x ch i  len = 
-  i > len  || 
-  (String.unsafe_get x i <> ch && unsafe_no_char x ch (i + 1)  len)
+let rec unsafe_no_char x ch i  last_idx = 
+  i > last_idx  || 
+  (String.unsafe_get x i <> ch && unsafe_no_char x ch (i + 1)  last_idx)
 
-let no_char x ch i len =
+let rec unsafe_no_char_idx x ch i last_idx = 
+  if i > last_idx  then -1 
+  else 
+    if String.unsafe_get x i <> ch then 
+      unsafe_no_char_idx x ch (i + 1)  last_idx
+    else i
+
+let no_char x ch i len  : bool =
   let str_len = String.length x in 
   if i < 0 || i >= str_len || len >= str_len then invalid_arg "Ext_string.no_char"   
   else unsafe_no_char x ch i len 
@@ -21102,6 +21113,9 @@ let no_char x ch i len =
 
 let no_slash x = 
   unsafe_no_char x '/' 0 (String.length x - 1)
+
+let no_slash_idx x = 
+  unsafe_no_char_idx x '/' 0 (String.length x - 1)
 
 let replace_slash_backward (x : string ) = 
   let len = String.length x in 
@@ -21216,6 +21230,7 @@ let inter4 a b c d =
     
 let parent_dir_lit = ".."    
 let current_dir_lit = "."
+
 end
 module Ext_pervasives : sig 
 #1 "ext_pervasives.mli"
@@ -26288,6 +26303,33 @@ let prerr_warning loc x =
   if not (!Js_config.no_warn_ffi_type ) then
     print_string_warning loc (to_string x) 
 
+
+type error = 
+  | Unused_attribute of string
+  | Uninterpreted_delimiters of string
+
+exception  Error of Location.t * error
+
+let pp_error fmt x =
+  match x with 
+  | Unused_attribute str ->
+    Format.pp_print_string fmt Literals.unused_attribute;
+    Format.pp_print_string fmt str
+  | Uninterpreted_delimiters str -> 
+    Format.pp_print_string fmt "Uninterpreted delimiters" ;
+    Format.pp_print_string fmt str
+
+
+
+let () = 
+  Location.register_error_of_exn (function 
+    | Error (loc,err) -> 
+      Some (Location.error_of_printer loc pp_error err)
+    | _ -> None
+    )
+
+
+
 let warn_unused_attribute loc txt =
   if !Js_config.no_error_unused_bs_attribute then 
     begin 
@@ -26295,11 +26337,41 @@ let warn_unused_attribute loc txt =
       Format.pp_print_flush warning_formatter ()
     end
   else 
-    Location.raise_errorf 
-      ~loc "%s%s \n" Literals.unused_attribute txt 
+    raise (Error(loc, Unused_attribute txt))
 
 let error_unescaped_delimiter loc txt = 
-  Location.raise_errorf ~loc "Uninterpreted delimiters %s \n" txt 
+  raise (Error(loc, Uninterpreted_delimiters txt))
+
+
+
+
+
+
+(**
+Note the standard way of reporting error in compiler:
+
+val Location.register_error_of_exn : (exn -> Location.error option) -> unit 
+val Location.error_of_printer : Location.t ->
+  (Format.formatter -> error -> unit) -> error -> Location.error
+
+Define an error type
+
+type error 
+exception Error of Location.t * error 
+
+Provide a printer to error
+
+{[
+  let () = 
+    Location.register_error_of_exn
+      (function 
+        | Error(loc,err) -> 
+          Some (Location.error_of_printer loc pp_error err)
+        | _ -> None
+      )
+]}
+*)
+
 end
 module Bs_ast_invariant
 = struct
@@ -57961,6 +58033,104 @@ let to_undefined_type loc x =
 
 
 end
+module Bs_syntaxerr
+= struct
+#1 "bs_syntaxerr.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+type error 
+  = Unsupported_predicates
+  | Conflict_bs_bs_this_bs_meth  
+  | Duplicated_bs_deriving
+  | Conflict_attributes
+
+  | Duplicated_bs_as 
+  | Expect_int_literal
+  | Expect_string_literal
+  | Expect_int_or_string_literal
+  | Unhandled_poly_type
+  | Unregistered of string 
+  | Invalid_underscore_type_in_external
+  | Invalid_bs_string_type 
+  | Invalid_bs_int_type 
+  | Conflict_ffi_attribute
+
+let pp_error fmt err =
+  Format.pp_print_string fmt @@ match err with 
+  | Unsupported_predicates 
+    ->
+     "unsupported predicates"
+  | Conflict_bs_bs_this_bs_meth -> 
+     "[@bs.this], [@bs], [@bs.meth] can not be applied at the same time"
+  | Duplicated_bs_deriving
+    -> "duplicated bs.deriving attribute"
+  | Conflict_attributes
+    -> "conflict attributes " 
+  | Expect_string_literal
+    -> "expect string literal "
+  | Duplicated_bs_as 
+    -> 
+    "duplicated bs.as "
+  | Expect_int_literal 
+    -> 
+    "expect int literal "
+  | Expect_int_or_string_literal
+    ->
+    "expect int or string literal "
+  | Unhandled_poly_type 
+    -> 
+    "Unhandled poly type"
+  | Unregistered str 
+    -> "Unregistered " ^ str 
+  | Invalid_underscore_type_in_external
+    ->
+    "_ is not allowed in combination with external optional type"
+  | Invalid_bs_string_type
+    -> 
+    "Not a valid  type for [@bs.string]"
+  | Invalid_bs_int_type 
+    -> 
+    "Not a valid  type for [@bs.int]"
+  | Conflict_ffi_attribute
+    ->
+    "conflict attributes found" 
+ 
+exception  Error of Location.t * error
+
+let () = 
+  Location.register_error_of_exn (function
+    | Error(loc,err) -> 
+      Some (Location.error_of_printer loc pp_error err)
+    | _ -> None
+    )
+
+let err loc error = raise (Error(loc, error))
+
+end
 module Ast_core_type : sig 
 #1 "ast_core_type.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -58245,7 +58415,7 @@ let list_of_arrow (ty : t) =
     | Ptyp_arrow(label,t1,t2) -> 
       aux t2 ((label,t1,ty.ptyp_attributes,ty.ptyp_loc) ::acc)
     | Ptyp_poly(_, ty) -> (* should not happen? *)
-      Location.raise_errorf ~loc:ty.ptyp_loc "Unhandled poly type"
+      Bs_syntaxerr.err ty.ptyp_loc Unhandled_poly_type
     | return_type -> ty, List.rev acc
   in aux ty []
 
@@ -66752,7 +66922,8 @@ let convert exports lam : _ * _  =
         | "#fn_mk" -> Pjs_fn_make (int_of_string p.prim_native_name)
         | "#fn_method" -> Pjs_fn_method (int_of_string p.prim_native_name)
         | "#unsafe_downgrade" -> Pjs_unsafe_downgrade (Ext_string.empty,loc)
-        | _ -> Location.raise_errorf ~loc "internal error, using unrecorgnized primitive %s" s 
+        | _ -> Location.raise_errorf ~loc
+                 "@{<error>Error:@} internal error, using unrecorgnized primitive %s" s 
       in
       prim ~primitive ~args loc 
   and aux_constant ( const : Lambda.structured_constant) : constant = 
@@ -69099,7 +69270,7 @@ let small_int i : t =
   | i -> int (Int32.of_int i) 
 
 
-let access ?comment (e0 : t)  (e1 : t) : t = 
+let access ?comment (e0 : t)  (e1 : t) : t =
   match e0.expression_desc, e1.expression_desc with
   | Array (l,_mutable_flag) , Number (Int {i; _}) when no_side_effect e0-> 
     List.nth l  (Int32.to_int i)  (* Float i -- should not appear here *)
@@ -83196,11 +83367,36 @@ let pp_string f ?(quote='"') (* ?(utf=false)*) s =
   P.string f quote_s
 ;;
 
+(** used in printing keys 
+    {[
+      {"x" : x};;
+      {x : x }
+    ]}
+*)
 let property_string f s = 
   if Ext_ident.property_no_need_convert s  then 
     P.string f s
   else 
     pp_string f ~quote:(best_string_quote s) s
+
+(** used in property access 
+    {[
+      f.x ;;
+      f["x"];;
+    ]}
+*)
+let property_access f s = 
+  if Ext_ident.property_no_need_convert s  then
+    begin 
+      P.string f L.dot;
+      P.string f s; 
+    end
+  else
+    begin 
+      P.bracket_group f 1 @@ fun _ ->
+      pp_string f ~quote:( best_string_quote s) s
+    end
+
 
 (* TODO: check utf's correct semantics *)
 let pp_quote_string f s = 
@@ -83534,11 +83730,16 @@ and vident cxt f  (v : J.vident) =
   begin match v with 
     | Id v | Qualified(v, _, None) ->  
       ident cxt f v
-    | Qualified (id,_, Some name) ->
+    | Qualified (id, (Ml | Runtime),  Some name) ->
       let cxt = ident cxt f id in
       P.string f L.dot;
       P.string f (Ext_ident.convert true name);
       cxt
+    | Qualified (id, External _, Some name) ->
+      let cxt = ident cxt f id in
+      property_access f name ;
+      cxt
+
   end
 
 and expression l cxt  f (exp : J.expression) : Ext_pp_scope.t = 
@@ -84026,16 +84227,7 @@ and
   | Dot (e, s,normal) ->
     let action () = 
       let cxt = expression 15 cxt f e in
-      if Ext_ident.property_no_need_convert s  then
-        begin 
-          P.string f L.dot;
-          P.string f s; 
-        end
-      else
-        begin 
-          P.bracket_group f 1 @@ fun _ ->
-          pp_string f ~quote:( best_string_quote s) s
-        end;
+      property_access f s ;
       (* See [Js_program_loader.obj_of_exports] 
          maybe in the ast level we should have 
          refer and export
@@ -88083,7 +88275,6 @@ val set_array : J.expression -> J.expression -> J.expression -> J.expression
  *)
 
 val ref_array :  J.expression -> J.expression -> J.expression
-
 end = struct
 #1 "js_of_lam_array.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -88155,7 +88346,6 @@ let set_array  e e0 e1 =
 
 let ref_array  e e0 = 
   E.access  e  e0
-
 end
 module Js_of_lam_record : sig 
 #1 "js_of_lam_record.mli"
@@ -90635,7 +90825,7 @@ let assemble_args_splice call_loc ffi  js_splice arg_types args : E.t list * E.t
                 ls @ accs, eff 
               | _ -> 
                 Location.raise_errorf ~loc:call_loc
-                  {|function call with %s  is a primitive with [@@bs.splice], it expects its `bs.splice` argument to be a syntactic array in the call site and  all arguments to be supplied|}
+                  {|@{<error>Error:@} function call with %s  is a primitive with [@@bs.splice], it expects its `bs.splice` argument to be a syntactic array in the call site and  all arguments to be supplied|}
                   (Ast_ffi_types.name_of_ffi ffi)
             end
           | _ -> assert false 
@@ -91235,7 +91425,8 @@ let translate (prim_name : string)
     | _ ->  assert false 
     end
 
-  | "caml_array_get"
+  | "caml_array_get" -> 
+    call Js_config.array
   | "caml_array_get_addr"
   | "caml_array_get_float"
   | "caml_array_unsafe_get"
@@ -91244,7 +91435,8 @@ let translate (prim_name : string)
     | [e0;e1] -> Js_of_lam_array.ref_array e0 e1
     | _ -> assert false
     end
-  | "caml_array_set"
+  | "caml_array_set" ->
+    call Js_config.array
   | "caml_array_set_addr"
   | "caml_array_set_float"
   | "caml_array_unsafe_set"
@@ -92609,20 +92801,23 @@ let translate  loc
           (Int32.of_int i) 
       | _ -> assert false 
     end
-  | Parrayrefu _kind
-  | Parrayrefs _kind ->  
+  | Parrayrefu _kind ->  
     begin match args with
       | [e;e1] -> Js_of_lam_array.ref_array e e1 (* Todo: Constant Folding *)
       | _ -> assert false
     end
+  | Parrayrefs _kind ->
+    Lam_dispatch_primitive.translate "caml_array_get" args
   | Pmakearray kind -> 
     Js_of_lam_array.make_array Mutable kind args 
-  | Parraysetu _kind
-  | Parraysets _kind -> 
+  | Parraysetu _kind -> 
     begin match args with (* wrong*)
       | [e;e0;e1] -> decorate_side_effect cxt @@ Js_of_lam_array.set_array  e e0 e1
       | _ -> assert false
     end
+
+  | Parraysets _kind -> 
+    Lam_dispatch_primitive.translate "caml_array_set" args
   | Pccall prim -> 
     Lam_dispatch_primitive.translate prim.prim_name  args
   (* Lam_compile_external_call.translate loc cxt prim args *)
@@ -93485,25 +93680,6 @@ let translate ?loc name =
   else if i = 0 then name 
   else  String.sub name 0 i 
 
-(*
-let translate ?loc name =
-  let i = Ext_string.rfind ~sub:"_" name  in
-  if name.[0] = '_' then
-    if i <= 0 then
-      let len = (String.length name - 1) in
-      if len = 0 then
-        Location.raise_errorf ?loc "invalid label %s" name
-      else String.sub name 1 len
-    else
-      let len = (i - 1) in
-      if len = 0 then
-        Location.raise_errorf ?loc "invalid label %s" name 
-      else
-        String.sub name 1 len
-  else if i > 0 then
-    String.sub name 0 i
-  else name
-*)
 
 end
 module Lam_compile : sig 
@@ -93768,7 +93944,13 @@ and get_exp_with_args (cxt : Lam_compile_defs.cxt)  lam args_lambda
                      (E.call ~info:{arity=Full; call_info = Call_ml} acc first_part)
                      (Determin (a, rest, b))
                      continue (len - x)
-                 else  acc 
+                 else (* GPR #1423 *)
+                 if List.for_all Js_analyzer.is_simple_no_side_effect_expression args then 
+                   let params = Ext_list.init (x - len)
+                       (fun _ -> Ext_ident.create "param") in
+                   E.ocaml_fun params 
+                     [S.return (E.call ~info:{arity=Full; call_info=Call_ml} acc (args @ List.map E.var params))]
+                 else E.call ~info:Js_call_info.dummy acc args
                (* alpha conversion now? --
                   Since we did an alpha conversion before so it is not here
                *)
@@ -99816,7 +99998,7 @@ let process_method_attributes_rev (attrs : t) =
                | Some e -> 
                  Ast_payload.assert_bool_lit e)
 
-            else Location.raise_errorf ~loc "unsupported predicates"
+            else Bs_syntaxerr.err loc Unsupported_predicates
           ) (false, false) (Ast_payload.as_config_record_and_process loc payload)  in 
 
         ({st with get = Some result}, acc  )
@@ -99833,7 +100015,7 @@ let process_method_attributes_rev (attrs : t) =
                 if Ast_payload.assert_bool_lit e then 
                   `No_get
                 else `Get
-            else Location.raise_errorf ~loc "unsupported predicates"
+            else Bs_syntaxerr.err loc Unsupported_predicates
           ) `Get (Ast_payload.as_config_record_and_process loc payload)  in 
         (* properties -- void 
               [@@bs.set{only}]
@@ -99856,9 +100038,7 @@ let process_attributes_rev (attrs : t) =
         -> `Method, acc
       | "bs", _
       | "bs.this", _
-        -> Location.raise_errorf 
-             ~loc
-             "[@bs.this], [@bs], [@bs.meth] can not be applied at the same time"
+        -> Bs_syntaxerr.err loc Conflict_bs_bs_this_bs_meth
       | _ , _ -> 
         st, attr::acc 
     ) ( `Nothing, []) attrs
@@ -99897,7 +100077,8 @@ let process_derive_type attrs =
              (Ast_payload.as_config_record_and_process loc payload)}, acc 
       | {bs_deriving = `Has_deriving _}, "bs.deriving"
         -> 
-        Location.raise_errorf ~loc "duplicated bs.deriving attribute"
+        Bs_syntaxerr.err loc Duplicated_bs_deriving
+
       | _ , _ ->
         let st = 
           if txt = "nonrec" then 
@@ -99930,7 +100111,7 @@ let process_bs_string_int_uncurry attrs =
       | "bs.string", _
       | "bs.ignore", _
         -> 
-        Location.raise_errorf ~loc "conflict attributes "
+        Bs_syntaxerr.err loc Conflict_attributes
       | _ , _ -> st, (attr :: attrs )
     ) (`Nothing, []) attrs
 
@@ -99943,12 +100124,12 @@ let process_bs_string_as  attrs =
         ->
         begin match Ast_payload.is_single_string payload with 
           | None -> 
-            Location.raise_errorf ~loc "expect string literal "
+            Bs_syntaxerr.err loc Expect_string_literal
           | Some  _ as v->  (v, attrs)  
         end
       | "bs.as",  _ 
         -> 
-          Location.raise_errorf ~loc "duplicated bs.as "
+          Bs_syntaxerr.err loc Duplicated_bs_as 
       | _ , _ -> (st, attr::attrs) 
     ) (None, []) attrs
 
@@ -99961,12 +100142,12 @@ let process_bs_int_as  attrs =
         ->
         begin match Ast_payload.is_single_int payload with 
           | None -> 
-            Location.raise_errorf ~loc "expect int literal "
+            Bs_syntaxerr.err loc Expect_int_literal
           | Some  _ as v->  (v, attrs)  
         end
       | "bs.as",  _ 
         -> 
-          Location.raise_errorf ~loc "duplicated bs.as "
+        Bs_syntaxerr.err loc Duplicated_bs_as
       | _ , _ -> (st, attr::attrs) 
     ) (None, []) attrs
 
@@ -99981,14 +100162,14 @@ let process_bs_string_or_int_as attrs =
           | None -> 
             begin match Ast_payload.is_single_string payload with 
             | None -> 
-              Location.raise_errorf ~loc "expect int or string literal "
+              Bs_syntaxerr.err loc Expect_int_or_string_literal
             | Some s -> (Some (`Str s), attrs)
             end
           | Some   v->  (Some (`Int v), attrs)  
         end
       | "bs.as",  _ 
         -> 
-          Location.raise_errorf ~loc "duplicated bs.as "
+        Bs_syntaxerr.err loc Duplicated_bs_as
       | _ , _ -> (st, attr::attrs) 
     ) (None, []) attrs
 
@@ -100006,6 +100187,7 @@ let warn_unused_attributes attrs =
     List.iter (fun (({txt; loc}, _) : Parsetree.attribute) -> 
         Bs_warnings.warn_unused_attribute loc txt 
       ) attrs
+
 end
 module Ast_signature : sig 
 #1 "ast_signature.mli"
@@ -100270,7 +100452,9 @@ let dispatch_extension ({Asttypes.txt ; loc}) typ =
   let txt = Ext_string.tail_from txt (String.length Literals.bs_deriving_dot) in 
     match (Ast_payload.table_dispatch !derive_table 
             ({txt ; loc}, None)).expression_gen with 
-    | None -> Location.raise_errorf ~loc "%s is not registered" txt 
+    | None ->
+      Bs_syntaxerr.err loc (Unregistered txt)
+
     | Some f -> f typ
 
 end
@@ -101022,10 +101206,11 @@ let get_arg_type ~nolabel optional
   let ptyp = if optional then Ast_core_type.extract_option_type_exn ptyp else ptyp in 
   if Ast_core_type.is_any ptyp then (* (_[@bs.as ])*)
     if optional then 
-      Location.raise_errorf ~loc:ptyp.ptyp_loc "_ is not allowed in combination with external optional type"
+      Bs_syntaxerr.err ptyp.ptyp_loc Invalid_underscore_type_in_external
     else begin match Ast_attributes.process_bs_string_or_int_as ptyp.Parsetree.ptyp_attributes with 
       |  None, _ -> 
-        Location.raise_errorf ~loc:ptyp.ptyp_loc "_ is not allowed in external type unless in (_[@bs.as])"
+        Bs_syntaxerr.err ptyp.ptyp_loc Invalid_underscore_type_in_external
+
       | Some (`Int i), others -> 
         Ast_attributes.warn_unused_attributes others;
         Arg_int_lit i, Ast_literal.type_int ~loc:ptyp.ptyp_loc ()  
@@ -101062,17 +101247,18 @@ let get_arg_type ~nolabel optional
                    `NonNull, ((Ext_pervasives.hash_variant label, label) :: acc),
                    (tag :: row_fields)
                end
-             | _ -> Location.raise_errorf ~loc:ptyp.ptyp_loc "Not a valid string type"
+             | _ -> Bs_syntaxerr.err ptyp.ptyp_loc Invalid_bs_string_type
+
            ) row_fields (`Nothing, [], [])) in 
       (match case with 
-       | `Nothing -> Location.raise_errorf ~loc:ptyp.ptyp_loc "Not a valid string type"
+       | `Nothing -> Bs_syntaxerr.err ptyp.ptyp_loc Invalid_bs_string_type
        | `Null -> NullString result 
        | `NonNull -> NonNullString result) , 
       {ptyp with ptyp_desc = Ptyp_variant(row_fields, Closed, None);
                  ptyp_attributes ;
       }
-    | (`String, _),  _ -> Location.raise_errorf ~loc:ptyp.ptyp_loc "Not a valid string type"
-
+    | (`String, _),  _ ->
+      Bs_syntaxerr.err ptyp.ptyp_loc Invalid_bs_string_type
     | (`Ignore, ptyp_attributes), _  -> 
       (Ignore, {ptyp with ptyp_attributes})
     | (`Int , ptyp_attributes),  Ptyp_variant ( row_fields, Closed, None) -> 
@@ -101090,7 +101276,9 @@ let get_arg_type ~nolabel optional
                     i + 1 , ((Ext_pervasives.hash_variant label , i):: acc ), rtag::row_fields
                 end
 
-              | _ -> Location.raise_errorf ~loc:ptyp.ptyp_loc "Not a valid string type"
+              | _ -> 
+                Bs_syntaxerr.err ptyp.ptyp_loc Invalid_bs_int_type
+
            ) (0, [],[]) row_fields) in 
       Int (List.rev acc),
       {ptyp with 
@@ -101098,7 +101286,7 @@ let get_arg_type ~nolabel optional
        ptyp_attributes
       }
 
-    | (`Int, _), _ -> Location.raise_errorf ~loc:ptyp.ptyp_loc "Not a valid string type"
+    | (`Int, _), _ -> Bs_syntaxerr.err ptyp.ptyp_loc Invalid_bs_int_type
     | (`Uncurry opt_arity, ptyp_attributes), ptyp_desc -> 
       let real_arity =  Ast_core_type.get_uncurry_arity ptyp in 
       (begin match opt_arity, real_arity with 
@@ -101605,7 +101793,8 @@ let handle_attributes
 
       | {set_index = true; _}
         ->
-        Location.raise_errorf ~loc "conflict attributes found"        
+        Bs_syntaxerr.err loc Conflict_ffi_attribute
+
 
       | {get_index = true;
 
@@ -101631,7 +101820,10 @@ let handle_attributes
         else Location.raise_errorf ~loc "Ill defined attribute [@@bs.get_index] (arity of 2)"
 
       | {get_index = true; _}
-        -> Location.raise_errorf ~loc "conflict attributes found"        
+
+        -> 
+        Bs_syntaxerr.err loc Conflict_ffi_attribute
+
 
 
 
@@ -101656,7 +101848,8 @@ let handle_attributes
           | [], `Nm_na,  _ -> Js_module_as_var external_module_name
           | _, `Nm_na, _ -> Js_module_as_fn {splice; external_module_name }
           | _, #bundle_source, #bundle_source ->
-            Location.raise_errorf ~loc "conflict attributes found"
+            Bs_syntaxerr.err loc Conflict_ffi_attribute
+
           | _, (`Nm_val _ | `Nm_external _) , `Nm_na
             -> Js_module_as_class external_module_name
           | _, `Nm_payload _ , `Nm_na
@@ -101666,7 +101859,9 @@ let handle_attributes
 
         end
       | {module_as_val = Some _; _}
-        -> Location.raise_errorf ~loc "conflict attributes found" 
+        -> 
+        Bs_syntaxerr.err loc Conflict_ffi_attribute
+
       | {call_name = (`Nm_val name | `Nm_external name | `Nm_payload name) ;
          splice; 
          external_module_name;
@@ -101686,7 +101881,9 @@ let handle_attributes
         } -> 
         Js_call {splice; name; external_module_name}
       | {call_name = #bundle_source ; _ } 
-        -> Location.raise_errorf ~loc "conflict attributes found"
+        ->
+        Bs_syntaxerr.err loc Conflict_ffi_attribute
+
 
       | {val_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
          external_module_name;
@@ -101707,7 +101904,9 @@ let handle_attributes
         -> 
         Js_global { name; external_module_name}
       | {val_name = #bundle_source ; _ }
-        -> Location.raise_errorf ~loc "conflict attributes found"
+        ->
+        Bs_syntaxerr.err loc Conflict_ffi_attribute
+
       | {splice ;
          external_module_name = (Some _ as external_module_name);
 
@@ -101793,7 +101992,9 @@ let handle_attributes
         } 
         -> Js_new {name; external_module_name; splice}
       | {new_name = #bundle_source ; _ }
-        -> Location.raise_errorf ~loc "conflict attributes found"
+        -> 
+        Bs_syntaxerr.err loc Conflict_ffi_attribute
+
 
       | {set_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
 

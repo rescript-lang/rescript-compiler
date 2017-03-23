@@ -49,6 +49,30 @@ val reifyType : t -> 'b kind * 'b
 val test : 'a  -> 'b kind -> bool
 (** [test v kind] returns true if [v] is of [kind] *)
 
+val decodeString : t -> Js_string.t option
+(** [decodeString json] returns [Some s] if [json] is a string, [None]
+    otherwise *)
+
+val decodeNumber : t -> float option
+(** [decodeNumber json] returns [Some n] if [json] is a number, [None]
+    otherwise *)
+
+val decodeObject : t -> t Js_dict.t option
+(** [decodeObject json] returns [Some o] if [json] is an object, [None]
+    otherwise *)
+
+val decodeArray : t -> t array option
+(** [decodeArray json] returns [Some a] if [json] is an array, [None]
+    otherwise *)
+
+val decodeBoolean : t -> Js.boolean option
+(** [decodeBoolean json] returns [Some b] if [json] is a boolean, [None]
+    otherwise *)
+
+val decodeNull : t -> 'a Js_null.t option
+(** [decodeNull json] returns [Some null] if [json] is a null, [None]
+    otherwise *)
+
 (** {2 Construtors} *)
 
 (** Those functions allows the construction of an arbitrary complex 

@@ -228,3 +228,46 @@ We introduced `#` so that we can do some optimizations.
 http://www.2ality.com/2012/03/converting-to-string.html
 Note that `""+ Symbol()` does not work any more, we should favor `String` instead
 
+
+# name mangling
+
+## let bound identifier mangling
+
+### keyword
+Note there are two issues, if it is keyword, the output may not be parsable if we don't do name mangling
+
+
+```js
+> var case = 3
+< SyntaxError: Cannot use the keyword 'case' as a variable name.
+```
+### global variable 
+If it is global variable, it is parsable, it may trigger even subtle errors:
+
+```js
+(function(){ 'use strict'; var document = 3; console.log(document)})()
+VM1146:1 3
+3
+```  
+This could be problematic for bindings
+```ocaml
+let process = 3
+Process.env##OCAML
+```
+In general global variables would be problematic for bindings
+
+## property name mangling
+
+Nowadays, JS engine support keywords as property name very well
+
+```js
+var f = { true : true, false : false }
+```
+
+But it has problems when it is too simple for parsing
+```js
+var f = { true, false} // parsign rules ambiguity
+```
+
+If we don't do ES6, we should not go with name mangling, however, it is mostly due to we can 
+not express these keywords, such as `_open` as property in OCaml, so we did the name mangling

@@ -59,13 +59,6 @@ struct
 	    method character_encoding () =
 	      Printf.sprintf "<meta charset=\"%s\">\n" !charset
 
-      method init_style =
-        style <- "
-          <link rel=\"stylesheet\" href=\"../api_static/tomorrow-night.css\">\n
-          <link rel=\"stylesheet\" href=\"../api_static/style.css\" type=\"text/css\">\n
-          <script src=\"../api_static//highlight.pack.js\"></script>\n
-          <script>hljs.initHighlightingOnLoad();</script>"; (* nasty hack but who cares! *)
-
       method html_of_author_list = wrap_tag_list super#html_of_author_list
       method html_of_version_opt = wrap_tag_opt super#html_of_version_opt
       method html_of_before = wrap_tag_list super#html_of_before
@@ -313,96 +306,186 @@ struct
         bs b "</div>\n";
         self#html_of_info b t.ty_info;
         bs b "\n"
- 
-(*
-      method generate_for_module pre post modu =
+
+      val mutable navbar_module_index = ""
+
+      method private print_module_index b = 
+        bs b "<nav class=\"module-index\">";
+        bs b navbar_module_index;
+        bs b "</nav>\n";
+
+      (** Html code for navigation bar.
+        @param pre optional name for optional previous module/class
+        @param post optional name for optional next module/class
+        @param name name of current module/class *)
+      method print_navbar b pre post name =
+        self#print_module_index b; (* not really the appropriate place, but easy *)
+        bs b "<div class=\"navbar\">";
+        (
+        match pre with
+          None -> ()
+        | Some name ->
+            bp b "<a class=\"pre\" href=\"%s\" title=\"%s\">%s</a>\n"
+              (fst (Naming.html_files name))
+              name
+              Odoc_messages.previous
+        );
+        bs b "&nbsp;";
+        let father = Name.father name in
+        let href = if father = "" then self#index else fst (Naming.html_files father) in
+        let father_name = if father = "" then "Index" else father in
+        bp b "<a class=\"up\" href=\"%s\" title=\"%s\">%s</a>\n" href father_name Odoc_messages.up;
+        bs b "&nbsp;";
+        (
+        match post with
+          None -> ()
+        | Some name ->
+            bp b "<a class=\"post\" href=\"%s\" title=\"%s\">%s</a>\n"
+              (fst (Naming.html_files name))
+              name
+              Odoc_messages.next
+        );
+        bs b "</div>\n"
+
+      method private prepare_navbar_module_index module_list =
+        let print_one b m =
+          let html_file = fst (Naming.html_files m.m_name) in
+          bp b "<li><a href=\"%s\">%s</a></li>" html_file m.m_name 
+        in
+        navbar_module_index <- bufferize (fun b () ->
+          bs b "<ul>";
+          print_concat b "\n" (print_one b) module_list;
+          bs b "</ul>";
+        ) ()
+
+      (** A function to build the header of pages. *)
+      method prepare_header module_list =
+        let f b ?(nav=None) ?(comments=[]) t  =
+          bs b "<head>\n";
+          bs b "<link rel=\"stylesheet\" href=\"../api_static/tomorrow-night.css\">\n
+                <link rel=\"stylesheet\" href=\"../api_static/style.css\" type=\"text/css\">\n
+                <script src=\"../api_static//highlight.pack.js\"></script>\n
+                <script src=\"../api_static//script.js\"></script>\n
+                <script>hljs.initHighlightingOnLoad();</script>";
+          bs b (self#character_encoding ()) ;
+          (
+          match nav with
+            None -> ()
+          | Some (pre_opt, post_opt, name) ->
+              (match pre_opt with
+                None -> ()
+              | Some name ->
+                  bp b "<link rel=\"previous\" href=\"%s\">\n"
+                    (fst (Naming.html_files name));
+              );
+              (match post_opt with
+                None -> ()
+              | Some name ->
+                  bp b "<link rel=\"next\" href=\"%s\">\n"
+                    (fst (Naming.html_files name));
+              );
+          );
+          bs b "<title>";
+          bs b t ;
+          bs b "</title>\n</head>\n"
+        in
+        self#prepare_navbar_module_index module_list; (* not really the appopriate place to do this, but it's easy. Easy is good *)
+        header <- f
+
+      (** Generate the [<index_prefix>.html] file corresponding to the given module list.
+        @raise Failure if an error occurs.*)
+      method generate_index module_list =
         try
-          Odoc_info.verbose ("Generate for module "^modu.m_name);
-          let (html_file, _) = Naming.html_files modu.m_name in
-          let type_file = Naming.file_type_module_complete_target modu.m_name in
-          let code_file = Naming.file_code_module_complete_target modu.m_name in
-          let chanout = open_out (Filename.concat !Global.target_dir html_file) in
+          let chanout = open_out (Filename.concat !Global.target_dir self#index) in
           let b = new_buf () in
-          let pre_name = opt (fun m -> m.m_name) pre in
-          let post_name = opt (fun m -> m.m_name) post in
+          let title = match !Global.title with None -> "" | Some t -> self#escape t in
           bs b doctype ;
           bs b "<html>\n";
-          self#print_header b
-            ~nav: (Some (pre_name, post_name, modu.m_name))
-            ~comments: (Module.module_comments modu)
-            (self#inner_title modu.m_name);
-          bs b "<body>\n" ;
-          self#print_navbar b pre_name post_name modu.m_name ;
+          self#print_header b self#title;
+          bs b "<body class=\"index top\">\n";
+
           bs b "<h1>";
-          if modu.m_text_only then
-            bs b modu.m_name
-          else
-            (
-            bs b
-              (
-                if Module.module_is_functor modu then
-                  Odoc_messages.functo
-                else
-                  Odoc_messages.modul
-              );
-            bp b " <a href=\"%s\">%s</a>" type_file modu.m_name;
-            (
-              match modu.m_code with
-                None -> ()
-              | Some _ -> bp b " (<a href=\"%s\">.ml</a>)" code_file
-            )
-            );
-          bs b "</h1>\n";
-
-          if not modu.m_text_only then
-            self#html_of_module b ~with_link: false modu
-          else
-            self#html_of_info ~indent:false b modu.m_info;
-
-          (* parameters for functors *)
-          self#html_of_module_parameter_list b
-            (Name.father modu.m_name)
-            (Module.module_parameters modu);
-
-          (* a horizontal line *)
-          if not modu.m_text_only then bs b "<hr width=\"100%\">\n";
-
-          (* module elements *)
-          List.iter
-            (self#html_of_module_element b modu.m_name)
-            (Module.module_elements modu);
-
-          bs b "<div class=\"background\"></div>";
-          bs b "</body></html>";
+          bs b title;
+          bs b "</h1>\n" ;
+          let info = Odoc_info.apply_opt
+              (Odoc_info.info_of_comment_file module_list)
+              !Odoc_info.Global.intro_file
+          in
+          (
+          match info with
+            None ->
+              self#html_of_Index_list b;
+              bs b "<br/>";
+              self#html_of_Module_list b
+                (List.map (fun m -> m.m_name) module_list);
+          | Some i -> self#html_of_info ~indent: false b info
+          );
+          bs b "</body>\n</html>";
           Buffer.output_buffer chanout b;
-          close_out chanout;
-
-          (* generate html files for submodules *)
-          self#generate_elements  self#generate_for_module (Module.module_modules modu);
-          (* generate html files for module types *)
-          self#generate_elements  self#generate_for_module_type (Module.module_module_types modu);
-          (* generate html files for classes *)
-          self#generate_elements  self#generate_for_class (Module.module_classes modu);
-          (* generate html files for class types *)
-          self#generate_elements  self#generate_for_class_type (Module.module_class_types modu);
-
-          (* generate the file with the complete module type *)
-          self#output_module_type
-            modu.m_name
-            (Filename.concat !Global.target_dir type_file)
-            modu.m_type;
-
-          match modu.m_code with
-            None -> ()
-          | Some code ->
-              self#output_code' ~with_pre:false
-                modu.m_name
-                (Filename.concat !Global.target_dir code_file)
-                code
+          close_out chanout
         with
           Sys_error s ->
             raise (Failure s)
-*)
+
+
+      (** A method to create index files. *)
+      method generate_elements_index :
+          'a.
+          'a list ->
+            ('a -> Odoc_info.Name.t) ->
+              ('a -> Odoc_info.info option) ->
+                ('a -> string) -> string -> string -> unit =
+      fun elements name info target title simple_file ->
+        try
+          let chanout = open_out (Filename.concat !Global.target_dir simple_file) in
+          let b = new_buf () in
+          bs b "<html>\n";
+          self#print_header b (self#inner_title title);
+          bs b "<body class=\"index elements-index\">\n";
+          self#print_navbar b None None "";
+          bs b "<h1>";
+          bs b title;
+          bs b "</h1>\n" ;
+
+          let sorted_elements = List.sort
+              (fun e1 e2 -> compare (Name.simple (name e1)) (Name.simple (name e2)))
+              elements
+          in
+          let groups = Odoc_info.create_index_lists sorted_elements (fun e -> Name.simple (name e)) in
+          let f_ele e =
+            let simple_name = Name.simple (name e) in
+            let father_name = Name.father (name e) in
+            bp b "<tr><td><a href=\"%s\">%s</a> " (target e) (self#escape simple_name);
+            if simple_name <> father_name && father_name <> "" then
+              bp b "[<a href=\"%s\">%s</a>]" (fst (Naming.html_files father_name)) father_name;
+            bs b "</td>\n<td>";
+            self#html_of_info_first_sentence b (info e);
+            bs b "</td></tr>\n";
+          in
+          let f_group l =
+            match l with
+              [] -> ()
+            | e :: _ ->
+                let s =
+                  match (Char.uppercase (Name.simple (name e)).[0]) with
+                    'A'..'Z' as c -> String.make 1 c
+                  | _ -> ""
+                in
+                bs b "<tr><td align=\"left\"><br>";
+                bs b s ;
+                bs b "</td></tr>\n" ;
+                List.iter f_ele l
+          in
+          bs b "<table>\n";
+          List.iter f_group groups ;
+          bs b "</table>\n" ;
+          bs b "</body>\n</html>";
+          Buffer.output_buffer chanout b;
+          close_out chanout
+        with
+          Sys_error s ->
+            raise (Failure s)
+
       initializer
         tag_functions <- ("example", html_of_example self) :: tag_functions
   end

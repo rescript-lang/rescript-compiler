@@ -149,22 +149,3 @@ let translate ?loc name =
   else if i = 0 then name 
   else  String.sub name 0 i 
 
-(*
-let translate ?loc name =
-  let i = Ext_string.rfind ~sub:"_" name  in
-  if name.[0] = '_' then
-    if i <= 0 then
-      let len = (String.length name - 1) in
-      if len = 0 then
-        Location.raise_errorf ?loc "invalid label %s" name
-      else String.sub name 1 len
-    else
-      let len = (i - 1) in
-      if len = 0 then
-        Location.raise_errorf ?loc "invalid label %s" name 
-      else
-        String.sub name 1 len
-  else if i > 0 then
-    String.sub name 0 i
-  else name
-*)

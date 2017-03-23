@@ -36,3 +36,7 @@ val caml_array_concat : 'a array list -> 'a array
 val caml_make_vect : int -> 'a -> 'a array
 
 val caml_array_blit : 'a array -> int -> 'a array -> int -> int -> unit
+
+val caml_array_get: 'a array -> int -> 'a
+
+val caml_array_set: 'a array -> int -> 'a -> unit

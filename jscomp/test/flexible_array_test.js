@@ -5,6 +5,7 @@ var Block                   = require("../../lib/js/block");
 var Curry                   = require("../../lib/js/curry");
 var Format                  = require("../../lib/js/format");
 var Caml_obj                = require("../../lib/js/caml_obj");
+var Caml_array              = require("../../lib/js/caml_array");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
 
 function sub(_tr, _k) {
@@ -294,7 +295,7 @@ function sort(s) {
 function of_array(arr) {
   var v = empty;
   for(var i = 0 ,i_finish = arr.length - 1 | 0; i <= i_finish; ++i){
-    v = push_back(v, arr[i]);
+    v = push_back(v, Caml_array.caml_array_get(arr, i));
   }
   return v;
 }

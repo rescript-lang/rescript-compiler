@@ -56,17 +56,31 @@ let convert_and_resolve_path =
 *)
 let resolve_bsb_magic_file ~cwd ~desc p =
   let p_len = String.length p in
-  let no_slash = Ext_string.no_slash p in
-  if no_slash then
+  let no_slash = Ext_string.no_slash_idx p in
+  if no_slash < 0 then
     p
-  else if Filename.is_relative p &&
+  else 
+  if Filename.is_relative p &&
      p_len > 0 &&
      String.unsafe_get p 0 <> '.' then
-    let p = if Ext_sys.is_windows_or_cygwin then Ext_string.replace_slash_backward p else p in
-    match Bs_pkg.resolve_npm_package_file ~cwd p with
-    | None -> failwith (p ^ " not found when resolving " ^ desc)
-    | Some v -> v
+    let package_name, relative_path = 
+      String.sub p 0 no_slash , 
+      let p = String.sub p (no_slash + 1) (p_len - no_slash - 1 )in  
+      if Ext_sys.is_windows_or_cygwin then Ext_string.replace_slash_backward p 
+      else p
+    in 
+    (* let p = if Ext_sys.is_windows_or_cygwin then Ext_string.replace_slash_backward p else p in *)
+    let package_dir = Bsb_pkg.resolve_bs_package ~cwd package_name in
+    let path = package_dir // relative_path in 
+    if Sys.file_exists path then path
+    else 
+      begin 
+        Format.fprintf Format.err_formatter "@{<error>Could not resolve @} %s in %s" p cwd ; 
+        failwith (p ^ " not found when resolving " ^ desc)
+      end
+
   else
+    (* relative path [./x/y]*)
     convert_and_resolve_path p
 
 
@@ -93,7 +107,8 @@ let get_bsc_bsdep cwd =
 
 (** 
 {[
-mkp "a/b/c/d"
+mkp "a/b/c/d";;
+mkp "/a/b/c/d"
 ]}
 *)
 let rec mkp dir = 
@@ -137,35 +152,74 @@ let string_of_bsb_dev_include i =
 let (|?)  m (key, cb) =
   m  |> Ext_json.test key cb
 
-
+type package_context = {
+  cwd : string ; 
+  top : bool ; 
+}
 
 (**
   TODO: check duplicate package name
    ?use path as identity?
+
+   Basic requirements
+     1. cycle detection
+     2. avoid duplication
+     3. determinstic, since -make-world will also comes with -clean-world
+
 *)
-let rec walk_all_deps top dir cb =
+
+let pp_packages_rev ppf lst = 
+  Ext_list.rev_iter (fun  s ->  Format.fprintf ppf "%s " s) lst
+
+let rec walk_all_deps_aux visited paths top dir cb =
   let bsconfig_json =  (dir // Literals.bsconfig_json) in
   match Ext_json_parse.parse_json_from_file bsconfig_json with
-  | Obj {map} ->
-    map
-    |?
-    (Bsb_build_schemas.bs_dependencies,
-      `Arr (fun (new_packages : Ext_json_types.t array) ->
-         new_packages
-         |> Array.iter (fun (js : Ext_json_types.t) ->
-          begin match js with
-          | Str {str = new_package} ->
-            begin match Bs_pkg.resolve_bs_package ~cwd:dir new_package with
-            | None -> 
-              Bsb_exception.error (Bsb_exception.Package_not_found (new_package, Some bsconfig_json))
-            | Some package_dir  ->
-              walk_all_deps  false package_dir cb  ;
-            end;
-          | _ -> () (* TODO: add a log framework, warning here *)
-          end
-      )))
-    |> ignore ;
-    cb top dir
+  | Obj {map; loc} ->
+    let cur_package_name = 
+      match String_map.find_opt Bsb_build_schemas.name map  with 
+      | Some (Str {str }) -> str
+      | Some _ 
+      | None -> Bsb_exception.failf ~loc "package name missing in %s/bsconfig.json" dir 
+    in 
+    let package_stacks = cur_package_name :: paths in 
+    let () = 
+      Format.fprintf Format.std_formatter "@{<info>Package stack:@} %a @." pp_packages_rev
+        package_stacks 
+    in 
+    if List.mem cur_package_name paths then
+      begin
+        Format.fprintf Format.err_formatter "@{<error>Cyclc dependencies in package stack@}@.";
+        exit 2 
+      end;
+    if String_hashtbl.mem visited cur_package_name then 
+      Format.fprintf Format.std_formatter
+        "@{<info>Visited before@} %s@." cur_package_name
+    else 
+      begin 
+        map
+        |?
+        (Bsb_build_schemas.bs_dependencies,
+         `Arr (fun (new_packages : Ext_json_types.t array) ->
+             new_packages
+             |> Array.iter (fun (js : Ext_json_types.t) ->
+                 begin match js with
+                   | Str {str = new_package} ->
+                     let package_dir = 
+                       Bsb_pkg.resolve_bs_package ~cwd:dir new_package in 
+                     walk_all_deps_aux visited package_stacks  false package_dir cb  ;
+                   | _ -> 
+                     Bsb_exception.(failf ~loc 
+                                      "%s expect an array"
+                                      Bsb_build_schemas.bs_dependencies)
+                 end
+               )))
+        |> ignore ;
+        cb {top ; cwd = dir};
+        String_hashtbl.add visited cur_package_name dir;
+      end
   | _ -> ()
   | exception _ -> failwith ( "failed to parse" ^ bsconfig_json ^ " properly")
     
+let walk_all_deps dir cb = 
+  let visited = String_hashtbl.create 0 in 
+  walk_all_deps_aux visited [] true dir cb 

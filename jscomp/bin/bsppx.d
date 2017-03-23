@@ -75,6 +75,7 @@ bin/bsppx.ml : stubs/bs_hash_stubs.ml
 bin/bsppx.ml : syntax/ast_external.ml
 bin/bsppx.ml : syntax/ast_literal.mli
 bin/bsppx.ml : syntax/ast_payload.mli
+bin/bsppx.ml : syntax/bs_syntaxerr.ml
 bin/bsppx.ml : common/lam_methname.mli
 bin/bsppx.ml : ext/string_hash_set.mli
 bin/bsppx.ml : syntax/ast_core_type.ml

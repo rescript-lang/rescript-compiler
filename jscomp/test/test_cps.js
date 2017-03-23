@@ -29,11 +29,11 @@ function test_closure() {
         return x;
       });
   for(var i = 0; i <= 6; ++i){
-    arr[i] = (function(i){
-    return function () {
-      return i;
-    }
-    }(i));
+    Caml_array.caml_array_set(arr, i, (function(i){
+        return function () {
+          return i;
+        }
+        }(i)));
   }
   return arr;
 }

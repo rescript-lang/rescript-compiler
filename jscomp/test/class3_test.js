@@ -4,6 +4,7 @@ var Mt             = require("./mt");
 var List           = require("../../lib/js/list");
 var Block          = require("../../lib/js/block");
 var Curry          = require("../../lib/js/curry");
+var Caml_array     = require("../../lib/js/caml_array");
 var Caml_int32     = require("../../lib/js/caml_int32");
 var Pervasives     = require("../../lib/js/pervasives");
 var Caml_oo_curry  = require("../../lib/js/caml_oo_curry");
@@ -285,8 +286,7 @@ function printable_point2_init($$class) {
       ]);
   CamlinternalOO.add_initializer($$class, function (self$neg6) {
         console.log('initializingFile "class3_test.ml", line 76, characters 50-57');
-        v[0] = self$neg6[x];
-        return /* () */0;
+        return Caml_array.caml_array_set(v, 0, self$neg6[x]);
       });
   return function (_, self, x_init) {
     var origin = Caml_int32.imul(x_init / 10 | 0, 10);
