@@ -276,4 +276,89 @@ let () = eq __LOC__ (Js.Json.stringifyAny Js.Null.empty) (Some "null")
 
 let () = eq __LOC__ (Js.Json.stringifyAny Js.Undefined.empty) None
 
+let () = 
+  eq __LOC__ 
+    (Js.Json.decodeString (Js.Json.string "test")) (Some "test");
+  eq __LOC__ 
+    (Js.Json.decodeString (Js.Json.boolean Js.true_)) None;
+  eq __LOC__ 
+    (Js.Json.decodeString (Js.Json.array_ [||])) None;
+  eq __LOC__ 
+    (Js.Json.decodeString Js.Json.null) None;
+  eq __LOC__ 
+    (Js.Json.decodeString (Js.Json.object_ @@ Js.Dict.empty ())) None;
+  eq __LOC__ 
+    (Js.Json.decodeString (Js.Json.number 1.23)) None
+
+let () = 
+  eq __LOC__ 
+    (Js.Json.decodeNumber (Js.Json.string "test")) None;
+  eq __LOC__ 
+    (Js.Json.decodeNumber (Js.Json.boolean Js.true_)) None;
+  eq __LOC__ 
+    (Js.Json.decodeNumber (Js.Json.array_ [||])) None;
+  eq __LOC__ 
+    (Js.Json.decodeNumber Js.Json.null) None;
+  eq __LOC__ 
+    (Js.Json.decodeNumber (Js.Json.object_ @@ Js.Dict.empty ())) None;
+  eq __LOC__ 
+    (Js.Json.decodeNumber (Js.Json.number 1.23)) (Some 1.23)
+
+let () = 
+  eq __LOC__ 
+    (Js.Json.decodeObject (Js.Json.string "test")) None;
+  eq __LOC__ 
+    (Js.Json.decodeObject (Js.Json.boolean Js.true_)) None;
+  eq __LOC__ 
+    (Js.Json.decodeObject (Js.Json.array_ [||])) None;
+  eq __LOC__ 
+    (Js.Json.decodeObject Js.Json.null) None;
+  eq __LOC__ 
+    (Js.Json.decodeObject (Js.Json.object_ @@ Js.Dict.empty ())) 
+    (Some (Js.Dict.empty ()));
+  eq __LOC__ 
+    (Js.Json.decodeObject (Js.Json.number 1.23)) None
+
+let () = 
+  eq __LOC__ 
+    (Js.Json.decodeArray (Js.Json.string "test")) None;
+  eq __LOC__ 
+    (Js.Json.decodeArray (Js.Json.boolean Js.true_)) None;
+  eq __LOC__ 
+    (Js.Json.decodeArray (Js.Json.array_ [||])) (Some [||]);
+  eq __LOC__ 
+    (Js.Json.decodeArray Js.Json.null) None;
+  eq __LOC__ 
+    (Js.Json.decodeArray (Js.Json.object_ @@ Js.Dict.empty ())) None;
+  eq __LOC__ 
+    (Js.Json.decodeArray (Js.Json.number 1.23)) None
+
+let () = 
+  eq __LOC__ 
+    (Js.Json.decodeBoolean (Js.Json.string "test")) None;
+  eq __LOC__ 
+    (Js.Json.decodeBoolean (Js.Json.boolean Js.true_)) (Some Js.true_);
+  eq __LOC__ 
+    (Js.Json.decodeBoolean (Js.Json.array_ [||])) None;
+  eq __LOC__ 
+    (Js.Json.decodeBoolean Js.Json.null) None;
+  eq __LOC__ 
+    (Js.Json.decodeBoolean (Js.Json.object_ @@ Js.Dict.empty ())) None;
+  eq __LOC__ 
+    (Js.Json.decodeBoolean (Js.Json.number 1.23)) None
+
+let () = 
+  eq __LOC__ 
+    (Js.Json.decodeNull (Js.Json.string "test")) None;
+  eq __LOC__ 
+    (Js.Json.decodeNull (Js.Json.boolean Js.true_)) None;
+  eq __LOC__ 
+    (Js.Json.decodeNull (Js.Json.array_ [||])) None;
+  eq __LOC__ 
+    (Js.Json.decodeNull Js.Json.null) (Some Js.null);
+  eq __LOC__ 
+    (Js.Json.decodeNull (Js.Json.object_ @@ Js.Dict.empty ())) None;
+  eq __LOC__ 
+    (Js.Json.decodeNull (Js.Json.number 1.23)) None
+
 let () = Mt.from_pair_suites __FILE__ !suites

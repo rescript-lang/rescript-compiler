@@ -61,6 +61,38 @@ let test (type a) (x : 'a) (v : a kind) : bool =
   | Array -> Js_array.isArray x 
   | Object -> (Obj.magic x) != Js.null && Js.typeof x = "object" && not (Js_array.isArray x )
 
+let decodeString json = 
+  if Js.typeof json = "string" 
+  then Some (Obj.magic (json:t) : string)
+  else None 
+
+let decodeNumber json = 
+  if Js.typeof json = "number" 
+  then Some (Obj.magic (json:t) : float)
+  else None 
+
+let decodeObject json = 
+  if  Js.typeof json = "object" && 
+      not (Js_array.isArray json) && 
+      not ((Obj.magic json : 'a Js.null) == Js.null)
+  then Some (Obj.magic (json:t) : t Js_dict.t)
+  else None 
+
+let decodeArray json = 
+  if Js_array.isArray json
+  then Some (Obj.magic (json:t) : t array)
+  else None 
+
+let decodeBoolean json = 
+  if Js.typeof json = "boolean"
+  then Some (Obj.magic (json:t) : Js.boolean)
+  else None 
+
+let decodeNull json = 
+  if (Obj.magic json : 'a Js.null) == Js.null
+  then Some Js.null
+  else None 
+
 external parse : string -> t = "JSON.parse" [@@bs.val]
 external stringifyAny : 'a -> string option = "JSON.stringify" [@@bs.val] [@@bs.return undefined_to_opt]
 (* TODO: more docs when parse error happens or stringify non-stringfy value *)

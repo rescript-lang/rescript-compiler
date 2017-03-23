@@ -29,7 +29,6 @@ let () =
           |> Js.Array.indexOf "pervasive.cmi" in 
         let v = (exists >= 0 && non_exists < 0) in
         Js.log v;
-        eq __LOC__  v true
       | exception e -> 
         assert false
       end

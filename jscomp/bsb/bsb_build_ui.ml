@@ -22,6 +22,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+
+let readdir root dir = Sys.readdir (Filename.concat root dir)
+
+
 type public = 
   | Export_all 
   | Export_set of String_set.t 
@@ -95,11 +99,18 @@ let print_arrays file_array oc offset  =
     p_str "]" 
 
 
-let warning_unused_file : _ format = "WARNING: file %s under %s is ignored due to that it is not a valid module name"
+let warning_unused_file : _ format = "@{<warning>IGNORED@}: file %s under %s is ignored due to that it is not a valid module name@."
 
-let  handle_list_files dir  loc_start loc_end : Ext_file_pp.interval list * _ =  
+type parsing_cxt = {
+  no_dev : bool ;
+  dir_index : dir_index ; 
+  cwd : string ;
+  root : string
+}
+
+let  handle_list_files ({ cwd = dir ; root} : parsing_cxt)  loc_start loc_end : Ext_file_pp.interval list * _ =  
   (** detect files to be populated later  *)
-  let files_array = Bsb_dir.readdir dir  in 
+  let files_array = readdir root dir  in 
   let dyn_file_array = String_vec.make (Array.length files_array) in 
   let files  =
     Array.fold_left (fun acc name -> 
@@ -109,11 +120,9 @@ let  handle_list_files dir  loc_start loc_end : Ext_file_pp.interval list * _ =
             String_vec.push name dyn_file_array ;
             new_acc 
           end 
-        | Invalid_module_name -> 
-          print_endline 
-            (Printf.sprintf warning_unused_file
-               name dir 
-            ) ; 
+        | Invalid_module_name ->
+          Format.fprintf Format.err_formatter
+            warning_unused_file name dir ;
           acc 
         | Suffix_mismatch -> acc 
       ) String_map.empty files_array in 
@@ -143,24 +152,26 @@ let (++) (u : t)  (v : t)  =
 
 (** [dir_index] can be inherited  *)
 let rec 
-  parsing_simple_dir dir_index  cwd dir =
-  if !Bsb_config.no_dev && dir_index <> lib_dir_index then empty 
-  else parsing_source_dir_map dir_index 
-      (cwd // Ext_filename.simple_convert_node_path_to_os_path dir) 
-      String_map.empty
+  parsing_simple_dir ({no_dev; dir_index;  cwd} as cxt ) dir =
+  if no_dev && dir_index <> lib_dir_index then empty 
+  else parsing_source_dir_map 
+    {cxt with
+     cwd = cwd // Ext_filename.simple_convert_node_path_to_os_path dir
+    }
+    String_map.empty
 
-and parsing_source (dir_index : int) cwd (x : Ext_json_types.t )
+and parsing_source ({no_dev; dir_index ; cwd} as cxt ) (x : Ext_json_types.t )
   : t  =
   match x with 
   | Str  { str = dir }  -> 
-    parsing_simple_dir dir_index cwd dir   
+    parsing_simple_dir cxt dir   
   | Obj {map} ->
     let current_dir_index = 
       match String_map.find_opt Bsb_build_schemas.type_ map with 
       | Some (Str {str="dev"}) -> get_dev_index ()
       | Some _ -> Bsb_exception.failwith_config x {|type field expect "dev" literal |}
       | None -> dir_index in 
-    if !Bsb_config.no_dev && current_dir_index <> lib_dir_index then empty 
+    if no_dev && current_dir_index <> lib_dir_index then empty 
     else 
       let dir = 
         match String_map.find_opt Bsb_build_schemas.dir map with 
@@ -173,10 +184,14 @@ and parsing_source (dir_index : int) cwd (x : Ext_json_types.t )
           {|required field %s  missing, please checkout the schema http://bloomberg.github.io/bucklescript/docson/#build-schema.json |} "dir"
       in
 
-      parsing_source_dir_map current_dir_index dir map
+      parsing_source_dir_map {cxt with dir_index = current_dir_index; cwd=dir} map
   | _ -> empty 
 
-and parsing_source_dir_map current_dir_index dir (x : Ext_json_types.t String_map.t) = 
+and parsing_source_dir_map 
+    ({ cwd =  dir} as cxt )
+    (x : Ext_json_types.t String_map.t)
+    (* { dir : xx, files : ... } [dir] is already extracted *)
+  = 
   let cur_sources = ref String_map.empty in
   let resources = ref [] in 
   let bs_dependencies = ref [] in
@@ -185,7 +200,7 @@ and parsing_source_dir_map current_dir_index dir (x : Ext_json_types.t String_ma
   let cur_globbed_dirs = ref [] in 
   begin match String_map.find_opt Bsb_build_schemas.files x with 
     | Some (Arr {loc_start;loc_end; content = [||] }) -> (* [ ] *) 
-      let tasks, files =  handle_list_files  dir  loc_start loc_end in
+      let tasks, files =  handle_list_files cxt  loc_start loc_end in
       cur_update_queue := tasks ;
       cur_sources := files
     | Some (Arr {loc_start;loc_end; content = s }) -> (* [ a,b ] *)      
@@ -213,7 +228,7 @@ and parsing_source_dir_map current_dir_index dir (x : Ext_json_types.t String_ma
           fun name -> Str.string_match re name 0 && not (List.mem name excludes)
         | Some x, _ -> Bsb_exception.failf ~loc "slow-re expect a string literal"
         | None , _ -> Bsb_exception.failf ~loc  "missing field: slow-re"  in 
-      let file_array = Bsb_dir.readdir dir in 
+      let file_array = readdir cxt.root dir in 
       cur_sources := Array.fold_left (fun acc name -> 
           if predicate name then 
             Binary_cache.map_update  ~dir acc name 
@@ -221,18 +236,18 @@ and parsing_source_dir_map current_dir_index dir (x : Ext_json_types.t String_ma
         ) String_map.empty file_array;
       cur_globbed_dirs := [dir]              
     | None ->  (* No setting on [!files]*)
-      let file_array = Bsb_dir.readdir dir in 
+      let file_array = readdir cxt.root dir in 
       (** We should avoid temporary files *)
       cur_sources := 
         Array.fold_left (fun acc name -> 
             match Ext_string.is_valid_source_name name with 
             | Good -> 
               Binary_cache.map_update  ~dir acc name 
-            | Invalid_module_name -> 
-              print_endline 
-                (Printf.sprintf warning_unused_file
-                   name dir 
-                ) ; 
+            | Invalid_module_name ->
+              Format.fprintf Format.err_formatter
+                warning_unused_file
+               name dir 
+              ; 
               acc 
             | Suffix_mismatch ->  acc
           ) String_map.empty file_array;
@@ -244,7 +259,7 @@ and parsing_source_dir_map current_dir_index dir (x : Ext_json_types.t String_ma
   |? (Bsb_build_schemas.bs_dependencies, `Arr (fun s -> bs_dependencies := get_list_string s ))
   |?  (Bsb_build_schemas.resources ,
        `Arr (fun s  ->
-           resources := get_list_string s
+           resources := get_list_string s 
          ))
   |? (Bsb_build_schemas.public, `Str_loc (fun s loc -> 
         if s = Bsb_build_schemas.export_all then public := Export_all else 
@@ -261,12 +276,12 @@ and parsing_source_dir_map current_dir_index dir (x : Ext_json_types.t String_ma
        resources = !resources;
        bs_dependencies = !bs_dependencies;
        public = !public;
-       dir_index = current_dir_index;
+       dir_index = cxt.dir_index ;
       } in 
     let children, children_update_queue, children_globbed_dirs = 
       match String_map.find_opt Bsb_build_schemas.subdirs x with 
       | Some s -> 
-        let res  = parsing_sources current_dir_index dir s in 
+        let res  = parsing_sources cxt s in 
         res.files ,
         res.intervals,
         res.globbed_dirs
@@ -282,16 +297,16 @@ and parsing_source_dir_map current_dir_index dir (x : Ext_json_types.t String_ma
    parsing_source dir_index cwd (String_map.singleton Bsb_build_schemas.dir dir)
 *)
 
-and  parsing_arr_sources dir_index cwd (file_groups : Ext_json_types.t array)  = 
+and  parsing_arr_sources cxt (file_groups : Ext_json_types.t array)  = 
   Array.fold_left (fun  origin x ->
-      parsing_source dir_index cwd x ++ origin 
+      parsing_source cxt x ++ origin 
     ) empty  file_groups 
 
-and  parsing_sources dir_index cwd (sources : Ext_json_types.t )  = 
+and  parsing_sources ( cxt : parsing_cxt) (sources : Ext_json_types.t )  = 
   match sources with   
   | Arr file_groups -> 
-    parsing_arr_sources dir_index cwd file_groups.content
-  | _ -> parsing_source dir_index cwd sources
+    parsing_arr_sources cxt file_groups.content
+  | _ -> parsing_source cxt sources
 
 
 

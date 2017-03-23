@@ -10,7 +10,7 @@ let a, b , c =
    (let f3 = f2 100 in 
     (f3 2)),
    (let arr = Array.init 2 (fun _ -> 0) in
-    for i = 0 to 2 do
+    for i = 0 to 1 do
       let f3 = f2 i in
       arr.(i)<- (f3 2);
     done;

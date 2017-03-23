@@ -56,6 +56,33 @@ let prerr_warning loc x =
   if not (!Js_config.no_warn_ffi_type ) then
     print_string_warning loc (to_string x) 
 
+
+type error = 
+  | Unused_attribute of string
+  | Uninterpreted_delimiters of string
+
+exception  Error of Location.t * error
+
+let pp_error fmt x =
+  match x with 
+  | Unused_attribute str ->
+    Format.pp_print_string fmt Literals.unused_attribute;
+    Format.pp_print_string fmt str
+  | Uninterpreted_delimiters str -> 
+    Format.pp_print_string fmt "Uninterpreted delimiters" ;
+    Format.pp_print_string fmt str
+
+
+
+let () = 
+  Location.register_error_of_exn (function 
+    | Error (loc,err) -> 
+      Some (Location.error_of_printer loc pp_error err)
+    | _ -> None
+    )
+
+
+
 let warn_unused_attribute loc txt =
   if !Js_config.no_error_unused_bs_attribute then 
     begin 
@@ -63,8 +90,37 @@ let warn_unused_attribute loc txt =
       Format.pp_print_flush warning_formatter ()
     end
   else 
-    Location.raise_errorf 
-      ~loc "%s%s \n" Literals.unused_attribute txt 
+    raise (Error(loc, Unused_attribute txt))
 
 let error_unescaped_delimiter loc txt = 
-  Location.raise_errorf ~loc "Uninterpreted delimiters %s \n" txt 
+  raise (Error(loc, Uninterpreted_delimiters txt))
+
+
+
+
+
+
+(**
+Note the standard way of reporting error in compiler:
+
+val Location.register_error_of_exn : (exn -> Location.error option) -> unit 
+val Location.error_of_printer : Location.t ->
+  (Format.formatter -> error -> unit) -> error -> Location.error
+
+Define an error type
+
+type error 
+exception Error of Location.t * error 
+
+Provide a printer to error
+
+{[
+  let () = 
+    Location.register_error_of_exn
+      (function 
+        | Error(loc,err) -> 
+          Some (Location.error_of_printer loc pp_error err)
+        | _ -> None
+      )
+]}
+*)

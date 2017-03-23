@@ -9,7 +9,7 @@ var Caml_array = require("../../lib/js/caml_array");
 function to_array(q) {
   var v = Caml_array.caml_make_vect(q[/* length */0], 0);
   Queue.fold(function (i, e) {
-        v[i] = e;
+        Caml_array.caml_array_set(v, i, e);
         return i + 1 | 0;
       }, 0, q);
   return v;

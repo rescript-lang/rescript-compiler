@@ -15,13 +15,17 @@ bs_dyn_lib.cmj : bs_dyn.cmj bs_dyn_lib.cmi
 node_child_process.cmj :
 js_boolean.cmj : js_boolean.cmi
 js_math.cmj :
-js_dict.cmj :
+js_dict.cmj : js_dict.cmi
 js_date.cmj :
 js_global.cmj :
+js_cast.cmj : js_cast.cmi
 js_re.cmi :
 js_null_undefined.cmi :
 js_types.cmi :
-js_json.cmi : js_types.cmi js_string.cmj js_dict.cmj
+js_json.cmi : js_types.cmi js_string.cmj js_dict.cmi
 bs_dyn.cmi :
 bs_dyn_lib.cmi : bs_dyn.cmi
 js_boolean.cmi :
+js_dict.cmi :
+js_cast.cmi :
+dom.cmi :

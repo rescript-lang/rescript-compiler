@@ -80,7 +80,22 @@ var suites_001 = /* :: */[
                   ]);
         }
       ],
-      /* [] */0
+      /* :: */[
+        /* tuple */[
+          "assign",
+          function () {
+            return /* Eq */Block.__(0, [
+                      {
+                        a: 1
+                      },
+                      Object.assign({ }, {
+                            a: 1
+                          })
+                    ]);
+          }
+        ],
+        /* [] */0
+      ]
     ]
   ]
 ];

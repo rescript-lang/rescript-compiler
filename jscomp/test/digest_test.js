@@ -8,6 +8,7 @@ var Curry       = require("../../lib/js/curry");
 var Digest      = require("../../lib/js/digest");
 var Printf      = require("../../lib/js/printf");
 var Ext_array   = require("./ext_array");
+var Caml_array  = require("../../lib/js/caml_array");
 var Pervasives  = require("../../lib/js/pervasives");
 var Caml_string = require("../../lib/js/caml_string");
 
@@ -228,7 +229,7 @@ Mt.from_pair_suites("digest_test.ml", Pervasives.$at(/* :: */[
                           function () {
                             return /* Eq */Block.__(0, [
                                       Digest.to_hex(Digest.string(Caml_string.bytes_to_string(Bytes.make(i, /* "a" */97)))),
-                                      ref[i]
+                                      Caml_array.caml_array_get(ref, i)
                                     ]);
                           }
                         ];

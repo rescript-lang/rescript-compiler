@@ -19,8 +19,7 @@ Mt.from_pair_suites("Closure", /* :: */[
                       101,
                       /* int array */[
                         1,
-                        2,
-                        3
+                        2
                       ]
                     ]
                   ]);

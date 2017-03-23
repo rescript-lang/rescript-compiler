@@ -1,3 +1,15 @@
+/* reset */
+ul {
+  margin: 0;
+  padding: 0;
+}
+li {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+/* end reset */
+
 .param_info {
   margin-top: 4px;
   margin-left: 3em;
@@ -161,21 +173,45 @@ a > code:before {
 body {
   padding: 0;
   background: #272b2d;
+  padding-left: 200px;
 }
 
+/* the white background for the left column */
 body:before {
   content: "";
   position: fixed;
   z-index: -1;
   top: 0;
   bottom: 0;
-  width: 40%;
+  width: 40vw;
   min-width: 600px;
   background: white;
 }
 
 .navbar {
   padding: .5em 1em;
+}
+
+body > nav.module-index {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  margin-left: -200px;
+  width: 200px;
+  background: whitesmoke;
+  border-right: 1px solid #f5f5f5;
+  overflow-y: auto;
+}
+body > nav.module-index li > a {
+  display: block;
+  padding: .5em 1em;
+}
+/* remove on index pages */
+body.index {
+  padding-left: 0;
+}
+body.index > nav.module-index {
+  display: none;
 }
 
 body > h1 {
@@ -195,9 +231,21 @@ body > .type-declaration {
   padding-bottom: 1em;
   border-bottom: 1px solid #eee;
   margin-bottom: 1em;
-  padding-left: 16px;
+  padding-left: 20px;
   width: 40%;
   min-width: 600px;
+}
+
+body > pre .anchor,
+body > .type-declaration > pre .anchor {
+  visibility: hidden;
+  margin-right: .5ex;
+  margin-left: -1.5ex;
+}
+
+body > pre:hover .anchor,
+body > .type-declaration > pre:hover .anchor {
+  visibility: visible;
 }
 
 .info {
@@ -221,14 +269,18 @@ code.hljs {
 }
 
 .not-examples {
-  padding: 0 2em;
-  width: 40%;
+  width: 40vw;
   min-width: 600px;
+  padding: 0 2.5em; /* this needs to be here for the width calculation to be correct */
+}
+
+.not-examples .codepre {
+  margin: 1em 0;
 }
 
 .examples {
+  flex: 1;
   color: #d0d0d0;
-  width: 60%;
 }
 
 .examples > pre {
@@ -240,7 +292,7 @@ code.hljs {
   overflow-x: auto;
   background: #1d1f21;
   color: #c5c8c6;
-  padding: 0.5em;
+  padding: 1em 2em;
 }
 
 * {
@@ -256,13 +308,7 @@ table.typetable {
 }
 
 ul.indexlist {
-  margin: 0;
   padding-left: 16px;
-}
-ul.indexlist li {
-  list-style-type: none;
-  margin: 0;
-  padding: 0;
 }
 
 body > table {
@@ -283,6 +329,16 @@ body > table td:first-child {
 body > table .info {
   margin: 0;
   display: block;
+}
+
+@media (max-width: 1250px) {
+  body {
+    padding-left: 0;
+  }
+
+  body > nav.module-index {
+    display: none;
+  }
 }
 
 @media (max-width: 1000px) {
@@ -316,7 +372,7 @@ body > table .info {
   }
 
   .examples > pre {
-    margin: 1em 2em;
+    margin: 1em 0;
   }
 
   .examples .hljs {

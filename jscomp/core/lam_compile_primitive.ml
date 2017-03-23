@@ -640,20 +640,23 @@ let translate  loc
           (Int32.of_int i) 
       | _ -> assert false 
     end
-  | Parrayrefu _kind
-  | Parrayrefs _kind ->  
+  | Parrayrefu _kind ->  
     begin match args with
       | [e;e1] -> Js_of_lam_array.ref_array e e1 (* Todo: Constant Folding *)
       | _ -> assert false
     end
+  | Parrayrefs _kind ->
+    Lam_dispatch_primitive.translate "caml_array_get" args
   | Pmakearray kind -> 
     Js_of_lam_array.make_array Mutable kind args 
-  | Parraysetu _kind
-  | Parraysets _kind -> 
+  | Parraysetu _kind -> 
     begin match args with (* wrong*)
       | [e;e0;e1] -> decorate_side_effect cxt @@ Js_of_lam_array.set_array  e e0 e1
       | _ -> assert false
     end
+
+  | Parraysets _kind -> 
+    Lam_dispatch_primitive.translate "caml_array_set" args
   | Pccall prim -> 
     Lam_dispatch_primitive.translate prim.prim_name  args
   (* Lam_compile_external_call.translate loc cxt prim args *)

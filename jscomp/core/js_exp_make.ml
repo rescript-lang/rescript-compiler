@@ -293,7 +293,7 @@ let small_int i : t =
   | i -> int (Int32.of_int i) 
 
 
-let access ?comment (e0 : t)  (e1 : t) : t = 
+let access ?comment (e0 : t)  (e1 : t) : t =
   match e0.expression_desc, e1.expression_desc with
   | Array (l,_mutable_flag) , Number (Int {i; _}) when no_side_effect e0-> 
     List.nth l  (Int32.to_int i)  (* Float i -- should not appear here *)

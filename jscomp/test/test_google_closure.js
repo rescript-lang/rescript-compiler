@@ -1,6 +1,7 @@
 'use strict';
 
-var $$Array = require("../../lib/js/array");
+var $$Array    = require("../../lib/js/array");
+var Caml_array = require("../../lib/js/caml_array");
 
 function f(a, b, _) {
   return a + b | 0;
@@ -16,8 +17,8 @@ var arr = $$Array.init(2, function () {
       return 0;
     });
 
-for(var i = 0; i <= 2; ++i){
-  arr[i] = i + 1 | 0;
+for(var i = 0; i <= 1; ++i){
+  Caml_array.caml_array_set(arr, i, i + 1 | 0);
 }
 
 var match_000 = "" + 3;
