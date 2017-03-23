@@ -58,9 +58,9 @@ let map = [%obj {
 }]
 
 let patch_config jscomp_dir config_map is_windows =
-  let whole_compiler_config = Path.join([| jscomp_dir; "bin"; "config_whole_compiler.mlp" |]) in
-  let whole_compiler_config_output = Path.join([| jscomp_dir; "bin"; "config_whole_compiler.ml" |]) in
   let content = Fs.readFileSync whole_compiler_config `utf8 in
+  let whole_compiler_config = Path.join [| jscomp_dir; "bin"; "config_whole_compiler.mlp" |] in
+  let whole_compiler_config_output = Path.join [| jscomp_dir; "bin"; "config_whole_compiler.ml" |] in
   let replace_values whole match_ =
     match (match_, is_windows) with
       | ("LIBDIR", true) ->
