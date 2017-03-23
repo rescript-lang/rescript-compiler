@@ -64,7 +64,7 @@ let patch_config jscomp_dir config_map is_windows =
   let replace_values whole match_ =
     match (match_, is_windows) with
       | ("LIBDIR", true) ->
-        "Filename.concat (Filename.concat (Filename.concat (Filename.dirname Sys.executable_name) \"..\") \"lib\") \"ocaml\""
+        {|Filename.concat (Filename.concat (Filename.concat (Filename.dirname Sys.executable_name) "..") "lib") "ocaml"|}
       | ("LIBDIR", false) ->
         let origin_path = Path.join [|jscomp_dir; ".."; "lib"; "ocaml"|] in
         Js.Json.stringify (Js.Json.string origin_path)
