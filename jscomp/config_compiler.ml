@@ -82,7 +82,7 @@ let get_config_output is_windows =
       else "ocamlc.opt -config"
     in
     let config_output = Child_process.execSync ocamlc_config (Child_process.option ~encoding:"utf8" ()) in
-    print_endline ("config_output:\n" ^ config_output);
+    Js.log ("config_output:\n" ^ config_output);
 
     let keyvalues = Js.String.split "\n" config_output
       |> Js.Array.filter (fun x -> Js.String.length x > 0)
@@ -94,7 +94,7 @@ let get_config_output is_windows =
       )
     in
     Js.log "keyvalues";
-    Js.Array.forEach (fun (key, value) -> print_endline (key ^ ": " ^ value)) keyvalues;
+    Js.Array.forEach (fun (key, value) -> Js.log (key ^ ": " ^ value)) keyvalues;
 
     let accum_pairs = fun acc (key, value) -> Js.Dict.set acc key value; acc in
     Some (Js.Array.reduce accum_pairs (Js.Dict.empty ()) keyvalues)
