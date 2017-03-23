@@ -173,6 +173,7 @@ a > code:before {
 body {
   padding: 0;
   background: #272b2d;
+  background: white;
   padding-left: 200px;
 }
 
@@ -290,8 +291,11 @@ code.hljs {
 .examples .hljs {
   display: block;
   overflow-x: auto;
+  /*
   background: #1d1f21;
   color: #c5c8c6;
+  */
+  background: whitesmoke;
   padding: 1em 2em;
 }
 
@@ -366,6 +370,15 @@ body > table .info {
     width: 100%;
   }
 
+  .examples:before {
+    content: 'Examples';
+    font-weight: bold;
+    margin-top: 2em;
+    margin-left: 2.5em;
+    display: block;
+    color: #444;
+  }
+
   body > table {
     width: 100%;
     min-width: unset;
@@ -377,5 +390,6 @@ body > table .info {
 
   .examples .hljs {
     background: #2d3134;
+    background: whitesmoke;
   }
 }
