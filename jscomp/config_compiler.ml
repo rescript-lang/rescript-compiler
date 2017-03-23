@@ -69,7 +69,7 @@ let patch_config jscomp_dir config_map is_windows =
         let origin_path = Path.join [|jscomp_dir; ".."; "lib"; "ocaml"|] in
         Js.Json.stringify (Js.Json.string origin_path)
       | _ ->
-        let map_val = Js.Dict.unsafeGet (Js_cast.dictOfObj map) match_ in
+        let map_val = Js.Dict.unsafeGet (dictOfObj map) match_ in
         Js.Dict.unsafeGet config_map map_val
   in
   let generated = Js.String.replaceByFun1 (Js.Re.fromStringWithFlags "%%(\\w+)%%" ~flags:"g") replace_values content in
