@@ -83367,11 +83367,36 @@ let pp_string f ?(quote='"') (* ?(utf=false)*) s =
   P.string f quote_s
 ;;
 
+(** used in printing keys 
+    {[
+      {"x" : x};;
+      {x : x }
+    ]}
+*)
 let property_string f s = 
   if Ext_ident.property_no_need_convert s  then 
     P.string f s
   else 
     pp_string f ~quote:(best_string_quote s) s
+
+(** used in property access 
+    {[
+      f.x ;;
+      f["x"];;
+    ]}
+*)
+let property_access f s = 
+  if Ext_ident.property_no_need_convert s  then
+    begin 
+      P.string f L.dot;
+      P.string f s; 
+    end
+  else
+    begin 
+      P.bracket_group f 1 @@ fun _ ->
+      pp_string f ~quote:( best_string_quote s) s
+    end
+
 
 (* TODO: check utf's correct semantics *)
 let pp_quote_string f s = 
@@ -83705,11 +83730,16 @@ and vident cxt f  (v : J.vident) =
   begin match v with 
     | Id v | Qualified(v, _, None) ->  
       ident cxt f v
-    | Qualified (id,_, Some name) ->
+    | Qualified (id, (Ml | Runtime),  Some name) ->
       let cxt = ident cxt f id in
       P.string f L.dot;
       P.string f (Ext_ident.convert true name);
       cxt
+    | Qualified (id, External _, Some name) ->
+      let cxt = ident cxt f id in
+      property_access f name ;
+      cxt
+
   end
 
 and expression l cxt  f (exp : J.expression) : Ext_pp_scope.t = 
@@ -84197,16 +84227,7 @@ and
   | Dot (e, s,normal) ->
     let action () = 
       let cxt = expression 15 cxt f e in
-      if Ext_ident.property_no_need_convert s  then
-        begin 
-          P.string f L.dot;
-          P.string f s; 
-        end
-      else
-        begin 
-          P.bracket_group f 1 @@ fun _ ->
-          pp_string f ~quote:( best_string_quote s) s
-        end;
+      property_access f s ;
       (* See [Js_program_loader.obj_of_exports] 
          maybe in the ast level we should have 
          refer and export

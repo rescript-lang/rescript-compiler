@@ -139,6 +139,7 @@ event_ffi.cmj : ../stdlib/list.cmj ../runtime/js_unsafe.cmj \
 exception_alias.cmj : ../stdlib/list.cmj
 exception_raise_test.cmj : mt.cmj
 exception_value_test.cmj :
+export_keyword.cmj :
 ext_array.cmj : ../stdlib/list.cmj ../stdlib/array.cmj
 ext_bytes.cmj : ../stdlib/pervasives.cmj ../stdlib/bytes.cmj
 ext_filename.cmj : ../stdlib/sys.cmj ../stdlib/string.cmj literals.cmj \
@@ -272,6 +273,8 @@ js_val.cmj :
 jsoo_400_test.cmj : ../stdlib/string.cmj mt.cmj
 jsoo_485.cmj :
 jsoo_485_test.cmj :
+key_word_property.cmj :
+key_word_property2.cmj : export_keyword.cmj
 largest_int_flow.cmj :
 lazy_test.cmj : mt.cmj ../stdlib/lazy.cmj
 lexer_test.cmj : number_lexer.cmj mt.cmj ../stdlib/list.cmj \
