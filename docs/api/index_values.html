@@ -45,6 +45,7 @@
 <li><a href="Caml_utils.html">Caml_utils</a></li>
 <li><a href="Caml_weak.html">Caml_weak</a></li>
 <li><a href="Curry.html">Curry</a></li>
+<li><a href="Dom.html">Dom</a></li>
 <li><a href="Js.html">Js</a></li>
 <li><a href="Js_array.html">Js_array</a></li>
 <li><a href="Js_boolean.html">Js_boolean</a></li>
@@ -234,12 +235,6 @@ hyperbolic arccosine in raidans, can return NaN, ES2015
 <td></td></tr>
 <tr><td><a href="Curry.html#VALapply_args">apply_args</a> [<a href="Curry.html">Curry</a>]</td>
 <td></td></tr>
-<tr><td><a href="Js_json.html#VALarrayOfJSON">arrayOfJSON</a> [<a href="Js_json.html">Js_json</a>]</td>
-<td><div class="info">
-<code class="code">arrayOfJSON json</code> returns <code class="code">Some a</code> if <code class="code">json</code> is an array, <code class="code">None</code>
-    otherwise
-</div>
-</td></tr>
 <tr><td><a href="Js_json.html#VALarray_">array_</a> [<a href="Js_json.html">Js_json</a>]</td>
 <td><div class="info">
 <code class="code">array_ a</code> makes a JSON array of the <code class="code">Js.Json.t array</code> <code class="code">a</code>
@@ -316,12 +311,6 @@ Maps the contained value using the given function
 <tr><td><a href="Js_json.html#VALbooleanArray">booleanArray</a> [<a href="Js_json.html">Js_json</a>]</td>
 <td><div class="info">
 <code class="code">booleanArray</code> makes a JSON array of the <code class="code">Js.boolean array</code> <code class="code">a</code>
-</div>
-</td></tr>
-<tr><td><a href="Js_json.html#VALbooleanOfJSON">booleanOfJSON</a> [<a href="Js_json.html">Js_json</a>]</td>
-<td><div class="info">
-<code class="code">booleanOfJSON json</code> returns <code class="code">Some b</code> if <code class="code">json</code> is a boolean, <code class="code">None</code>
-    otherwise
 </div>
 </td></tr>
 <tr><td><a href="Js_typed_array.DataView.html#VALbuffer">buffer</a> [<a href="Js_typed_array.DataView.html">Js_typed_array.DataView</a>]</td>
@@ -696,6 +685,42 @@ hyperbolic cosine in radians, ES2015
 <tr><td align="left"><br>D</td></tr>
 <tr><td><a href="Js_unsafe.html#VALdebugger">debugger</a> [<a href="Js_unsafe.html">Js_unsafe</a>]</td>
 <td></td></tr>
+<tr><td><a href="Js_json.html#VALdecodeArray">decodeArray</a> [<a href="Js_json.html">Js_json</a>]</td>
+<td><div class="info">
+<code class="code">decodeArray json</code> returns <code class="code">Some a</code> if <code class="code">json</code> is an array, <code class="code">None</code>
+    otherwise
+</div>
+</td></tr>
+<tr><td><a href="Js_json.html#VALdecodeBoolean">decodeBoolean</a> [<a href="Js_json.html">Js_json</a>]</td>
+<td><div class="info">
+<code class="code">decodeBoolean json</code> returns <code class="code">Some b</code> if <code class="code">json</code> is a boolean, <code class="code">None</code>
+    otherwise
+</div>
+</td></tr>
+<tr><td><a href="Js_json.html#VALdecodeNull">decodeNull</a> [<a href="Js_json.html">Js_json</a>]</td>
+<td><div class="info">
+<code class="code">decodeNull json</code> returns <code class="code">Some null</code> if <code class="code">json</code> is a null, <code class="code">None</code>
+    otherwise
+</div>
+</td></tr>
+<tr><td><a href="Js_json.html#VALdecodeNumber">decodeNumber</a> [<a href="Js_json.html">Js_json</a>]</td>
+<td><div class="info">
+<code class="code">decodeNumber json</code> returns <code class="code">Some n</code> if <code class="code">json</code> is a number, <code class="code">None</code>
+    otherwise
+</div>
+</td></tr>
+<tr><td><a href="Js_json.html#VALdecodeObject">decodeObject</a> [<a href="Js_json.html">Js_json</a>]</td>
+<td><div class="info">
+<code class="code">decodeObject json</code> returns <code class="code">Some o</code> if <code class="code">json</code> is an object, <code class="code">None</code>
+    otherwise
+</div>
+</td></tr>
+<tr><td><a href="Js_json.html#VALdecodeString">decodeString</a> [<a href="Js_json.html">Js_json</a>]</td>
+<td><div class="info">
+<code class="code">decodeString json</code> returns <code class="code">Some s</code> if <code class="code">json</code> is a string, <code class="code">None</code>
+    otherwise
+</div>
+</td></tr>
 <tr><td><a href="Node_path.html#VALdelimiter">delimiter</a> [<a href="Node_path.html">Node_path</a>]</td>
 <td></td></tr>
 <tr><td><a href="Node_path.html#VALdirname">dirname</a> [<a href="Node_path.html">Node_path</a>]</td>
@@ -1737,12 +1762,6 @@ The <code class="code">null</code> value of type <code class="code">'a Js.null_u
 </td></tr>
 <tr><td><a href="Js.html#VALnull">null</a> [<a href="Js.html">Js</a>]</td>
 <td></td></tr>
-<tr><td><a href="Js_json.html#VALnullOfJSON">nullOfJSON</a> [<a href="Js_json.html">Js_json</a>]</td>
-<td><div class="info">
-<code class="code">nullOfJSON json</code> returns <code class="code">Some null</code> if <code class="code">json</code> is a null, <code class="code">None</code>
-    otherwise
-</div>
-</td></tr>
 <tr><td><a href="Js_primitive.html#VALnull_to_opt">null_to_opt</a> [<a href="Js_primitive.html">Js_primitive</a>]</td>
 <td></td></tr>
 <tr><td><a href="Js_primitive.html#VALnull_undefined_to_opt">null_undefined_to_opt</a> [<a href="Js_primitive.html">Js_primitive</a>]</td>
@@ -1757,22 +1776,10 @@ The <code class="code">null</code> value of type <code class="code">'a Js.null_u
 <code class="code">numberArray a</code> makes a JSON array of the <code class="code">float array</code> <code class="code">a</code>
 </div>
 </td></tr>
-<tr><td><a href="Js_json.html#VALnumberOfJSON">numberOfJSON</a> [<a href="Js_json.html">Js_json</a>]</td>
-<td><div class="info">
-<code class="code">numberOfJSON json</code> returns <code class="code">Some n</code> if <code class="code">json</code> is a number, <code class="code">None</code>
-    otherwise
-</div>
-</td></tr>
 <tr><td align="left"><br>O</td></tr>
 <tr><td><a href="Js_json.html#VALobjectArray">objectArray</a> [<a href="Js_json.html">Js_json</a>]</td>
 <td><div class="info">
 <code class="code">objectArray a</code> makes a JSON array of the <code class="code">JsDict.t array</code> <code class="code">a</code>
-</div>
-</td></tr>
-<tr><td><a href="Js_json.html#VALobjectOfJSON">objectOfJSON</a> [<a href="Js_json.html">Js_json</a>]</td>
-<td><div class="info">
-<code class="code">objectOfJSON json</code> returns <code class="code">Some o</code> if <code class="code">json</code> is an object, <code class="code">None</code>
-    otherwise
 </div>
 </td></tr>
 <tr><td><a href="Js_json.html#VALobject_">object_</a> [<a href="Js_json.html">Js_json</a>]</td>
@@ -2213,12 +2220,6 @@ returns a bool indicating whether the <code class="code">sticky</code> flag is s
 <tr><td><a href="Js_json.html#VALstringArray">stringArray</a> [<a href="Js_json.html">Js_json</a>]</td>
 <td><div class="info">
 <code class="code">stringArray a</code> makes a JSON array of the <code class="code">string array</code> <code class="code">a</code>
-</div>
-</td></tr>
-<tr><td><a href="Js_json.html#VALstringOfJSON">stringOfJSON</a> [<a href="Js_json.html">Js_json</a>]</td>
-<td><div class="info">
-<code class="code">stringOfJSON json</code> returns <code class="code">Some s</code> if <code class="code">json</code> is a string, <code class="code">None</code>
-    otherwise
 </div>
 </td></tr>
 <tr><td><a href="Caml_string.html#VALstring_of_char">string_of_char</a> [<a href="Caml_string.html">Caml_string</a>]</td>
