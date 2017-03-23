@@ -76,6 +76,66 @@ external repeat : int -> t = "" [@@bs.send.pipe: t] (** ES2015 *)
 external replace : t ->  t ->  t = "" [@@bs.send.pipe: t]
 external replaceByRe : Js_re.t ->  t ->  t = "replace" [@@bs.send.pipe: t]
 
+(** returns a new string with some or all matches of a pattern replaced by the
+value returned from the given function
+
+@example {[
+let str = "hello world!"
+let re = [%re "/hello/g"]
+let replaced = Js.String.unsafeReplaceBy0 re (fun match offset whole -> "hi")
+
+let () = Js.log replaced (* prints "hi world!" *)
+]}
+
+@see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#Specifying_a_function_as_a_parameter> MDN
+*)
+external unsafeReplaceBy0 : Js_re.t -> (t -> int -> t -> t [@bs.uncurry]) -> t = "replace" [@@bs.send.pipe: t]
+
+(** returns a new string with some or all matches of a pattern replaced by the
+value returned from the given function
+
+@example {[
+let str = "hello world!"
+let re = [%re "/hello/g"]
+let replaced = Js.String.unsafeReplaceBy1 re (fun match p1 offset whole -> "hi")
+
+let () = Js.log replaced (* prints "hi world!" *)
+]}
+
+@see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#Specifying_a_function_as_a_parameter> MDN
+*)
+external unsafeReplaceBy1 : Js_re.t -> (t -> t -> int -> t -> t [@bs.uncurry]) -> t = "replace" [@@bs.send.pipe: t]
+
+(** returns a new string with some or all matches of a pattern replaced by the
+value returned from the given function
+
+@example {[
+let str = "hello world!"
+let re = [%re "/hello/g"]
+let replaced = Js.String.unsafeReplaceBy2 re (fun match p1 p2 offset whole -> "hi")
+
+let () = Js.log replaced (* prints "hi world!" *)
+]}
+
+@see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#Specifying_a_function_as_a_parameter> MDN
+*)
+external unsafeReplaceBy2 : Js_re.t -> (t -> t -> t -> int -> t -> t [@bs.uncurry]) -> t = "replace" [@@bs.send.pipe: t]
+
+(** returns a new string with some or all matches of a pattern replaced by the
+value returned from the given function
+
+@example {[
+let str = "hello world!"
+let re = [%re "/hello/g"]
+let replaced = Js.String.unsafeReplaceBy3 re (fun match p1 p2 p3 offset whole -> "hi")
+
+let () = Js.log replaced (* prints "hi world!" *)
+]}
+
+@see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#Specifying_a_function_as_a_parameter> MDN
+*)
+external unsafeReplaceBy3 : Js_re.t -> (t -> t -> t -> t -> int -> t -> t [@bs.uncurry]) -> t = "replace" [@@bs.send.pipe: t]
+
 external search : Js_re.t -> int = "" [@@bs.send.pipe: t]
 
 external slice : from:int -> to_:int ->  t = "" [@@bs.send.pipe: t]

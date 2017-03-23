@@ -134,3 +134,26 @@ external readFileAsUtf8Sync :
 
 external existsSync : string -> bool = ""
 [@@bs.val] [@@bs.module "fs"]  
+
+external writeFileSync :
+  string ->
+  string ->
+  (
+    [ `hex
+    | `utf8
+    | `ascii
+    | `latin1
+    | `base64
+    | `ucs2
+    | `base64
+    | `binary
+    | `utf16le ][@bs.string]) ->
+  unit = "writeFileSync"
+[@@bs.val] [@@bs.module "fs"]
+
+external writeFileAsUtf8Sync :
+  string ->
+  string ->
+  (_[@bs.as "utf8"]) ->
+  unit = "writeFileSync"
+[@@bs.val] [@@bs.module "fs"]
