@@ -21,7 +21,7 @@ module Fs = Node.Fs
 module Path = Node.Path
 
 let delete_env_var : Process.t -> string -> unit [@bs] = [%raw{|
-  function(process, key) { delete process[key] }
+  function(process, key) { delete process.env[key] }
 |}]
 
 (* need check which variables exist when we update compiler *)
