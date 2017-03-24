@@ -459,6 +459,34 @@ let () =
   let open Js.Json in
   let open Decode in
   eq __LOC__ 
+    (nullable int (Encode.boolean Js.true_)) (Error "Expected number, got true");
+  eq __LOC__ 
+    (nullable int (Encode.float 1.23)) (Error "Expected integer, got 1.23");
+  eq __LOC__ 
+    (nullable int (Encode.int 23)) (Ok (Js.Null.return 23));
+  eq __LOC__ 
+    (nullable int (Encode.string "test")) (Error "Expected number, got \"test\"");
+  eq __LOC__ 
+    (nullable int Encode.null) (Ok Js.null);
+  eq __LOC__ 
+    (nullable int (Encode.array_ [||])) (Error "Expected number, got []");
+  eq __LOC__ 
+    (nullable int (Encode.object_ @@ Js.Dict.empty ())) (Error "Expected number, got {}");
+  eq __LOC__ 
+    (nullable boolean (Encode.boolean Js.true_)) (Ok (Js.Null.return Js.true_));
+  eq __LOC__ 
+    (nullable float (Encode.float 1.23)) (Ok (Js.Null.return 1.23));
+  eq __LOC__ 
+    (nullable string (Encode.string "test")) (Ok (Js.Null.return "test"));
+  eq __LOC__ 
+    (nullable null Encode.null) (Ok Js.null);
+  eq __LOC__ 
+    (nullable boolean (Encode.int 1)) (Error "Expected boolean, got 1")
+
+let () = 
+  let open Js.Json in
+  let open Decode in
+  eq __LOC__ 
     (array_ null (Encode.boolean Js.true_)) (Error "Expected array, got true");
   eq __LOC__ 
     (array_ null (Encode.float 1.23)) (Error "Expected array, got 1.23");
@@ -521,6 +549,35 @@ let () =
   eq __LOC__ 
     (dict string (parse {| { "a": null, "b": null } |}))
     (Error "Expected string, got null")
+
+let () = 
+  let open Js.Json in
+  let open Decode in
+  eq __LOC__ 
+    (optional int (Encode.boolean Js.true_)) (Error "Expected number, got true");
+  eq __LOC__ 
+    (optional int (Encode.float 1.23)) (Error "Expected integer, got 1.23");
+  eq __LOC__ 
+    (optional int (Encode.int 23)) (Ok (Some 23));
+  eq __LOC__ 
+    (optional int (Encode.string "test")) (Error "Expected number, got \"test\"");
+  eq __LOC__ 
+    (optional int Encode.null) (Error "Expected number, got null");
+  eq __LOC__ 
+    (optional int (Encode.array_ [||])) (Error "Expected number, got []");
+  eq __LOC__ 
+    (optional int (Encode.object_ @@ Js.Dict.empty ())) (Error "Expected number, got {}");
+  eq __LOC__ 
+    (optional boolean (Encode.boolean Js.true_)) (Ok (Some Js.true_));
+  eq __LOC__ 
+    (optional float (Encode.float 1.23)) (Ok (Some 1.23));
+  eq __LOC__ 
+    (optional string (Encode.string "test")) (Ok (Some "test"));
+  eq __LOC__ 
+    (optional null Encode.null) (Ok (Some Js.null));
+  eq __LOC__ 
+    (optional boolean (Encode.int 1)) (Error "Expected boolean, got 1")
+  (* TODO: undefined JSON values can't be constructed *)
 
 (* complex decode *)
 let () = 

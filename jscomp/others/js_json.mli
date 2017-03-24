@@ -57,31 +57,39 @@ module Decode: sig
   type 'a decoder = t -> ('a, string) result
 
   val boolean : Js.boolean decoder
-  (** [boolean json] returns [Some b] if [json] is a boolean, [None]
+  (** [boolean json] returns [Ok b] if [json] is a boolean, [Error message]
       otherwise *)
 
   val float : float decoder
-  (** [float json] returns [Some n] if [json] is a number, [None]
+  (** [float json] returns [Ok n] if [json] is a number, [Error message]
       otherwise *)
 
   val int : int decoder
-  (** [int json] returns [Some n] if [json] is an integer, [None]
+  (** [int json] returns [Ok n] if [json] is an integer, [Error message]
       otherwise *)
 
   val string : string decoder
-  (** [string json] returns [Some s] if [json] is a string, [None]
+  (** [string json] returns [Ok s] if [json] is a string, [Error message]
       otherwise *)
 
-  val null : 'a Js.Null.t decoder
-  (** [null json] returns [Some null] if [json] is a null, [None]
+  val null : 'a Js.null decoder
+  (** [null json] returns [Ok Js.Null.empty] if [json] is a null, [Error message]
+      otherwise *)
+
+  val nullable : 'a decoder -> 'a Js.null decoder
+  (** [nullable json] returns [Ok Js.null 'a] if [json] is an ['a] or null, [Error message]
+      otherwise *)
+
+  val optional : 'a decoder -> 'a option decoder
+  (** [null json] returns [Ok Some 'a] if [json] is an ['a], [Error. message]
       otherwise *)
 
   val array_ : 'a decoder -> 'a array decoder
-  (** [array_ json] returns [Some a] if [json] is an array, [None]
+  (** [array_ json] returns [Ok a] if [json] is an array, [Error message]
       otherwise *)
 
   val dict : 'a decoder -> 'a Js.Dict.t decoder
-  (** [dict json] returns [Some o] if [json] is an object, [None]
+  (** [dict json] returns [Ok o] if [json] is an object, [Error message]
       otherwise
   *)
 end
