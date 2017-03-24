@@ -71,6 +71,8 @@ module Decode = struct
   | Ok of 'a
   | Error of 'e
 
+  type 'a decoder = t -> ('a, string) result
+
   let boolean json = 
     if Js.typeof json = "boolean"
     then Ok (Obj.magic (json:t) : Js.boolean)
@@ -91,16 +93,68 @@ module Decode = struct
     then Ok Js.null
     else Error ("Expected null, got " ^ stringify json)
 
-  let array_ json = 
+  let array_ decode json = 
     if Js_array.isArray json
-    then Ok (Obj.magic (json:t) : t array)
+    then begin
+      (* TODO: Seriously rethink this for better balance between readability and perf *)
+      let source = (Obj.magic (json : t) : t array) in
+      let l = Array.length source in
+
+      if l = 0 then Ok [||]
+
+      else begin
+        let target = Array.make l (Obj.magic 0) in
+        let break = ref false in
+        let result = ref (Ok target) in
+        let i = ref 0 in
+        while not !break do
+          if !i >= l then break := true
+          else
+            match decode (Array.unsafe_get source !i) with
+            | Ok value ->
+              Array.set target !i value;
+              i := !i + 1
+            | Error message ->
+              result := Error message;
+              break := true
+        done;
+        !result
+      end
+    end
     else Error ("Expected array, got " ^ stringify json)
 
-  let dict json = 
+  let dict decode json = 
     if  Js.typeof json = "object" && 
         not (Js_array.isArray json) && 
         not ((Obj.magic json : 'a Js.null) == Js.null)
-    then Ok (Obj.magic (json:t) : t Js_dict.t)
+    then begin
+      (* TODO: Seriously rethink this for better balance between readability and perf *)
+      let source = (Obj.magic (json : t) : t Js_dict.t) in
+      let keys = Js_dict.keys source in
+      let l = Array.length keys in
+
+      if l = 0 then Ok (Js_dict.empty ())
+
+      else begin
+        let target = Js_dict.empty () in
+        let break = ref false in
+        let result = ref (Ok target) in
+        let i = ref 0 in
+        while not !break do
+          if !i >= l then break := true
+          else
+            let key = Array.unsafe_get keys !i in
+            match decode (Js_dict.unsafeGet source key) with
+            | Ok value ->
+              Js_dict.set target key value;
+              i := !i + 1
+            | Error message ->
+              result := Error message;
+              break := true
+        done;
+        !result
+      end
+    end
     else Error ("Expected object, got " ^ stringify json)
 
 end

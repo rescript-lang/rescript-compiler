@@ -54,27 +54,29 @@ module Decode: sig
   | Ok of 'a
   | Error of 'e
 
-  val boolean : t -> (Js.boolean, string) result 
+  type 'a decoder = t -> ('a, string) result
+
+  val boolean : Js.boolean decoder
   (** [boolean json] returns [Some b] if [json] is a boolean, [None]
       otherwise *)
 
-  val number : t -> (float, string) result
+  val number : float decoder
   (** [number json] returns [Some n] if [json] is a number, [None]
       otherwise *)
 
-  val string : t -> (Js_string.t, string) result
+  val string : string decoder
   (** [string json] returns [Some s] if [json] is a string, [None]
       otherwise *)
 
-  val null : t -> ('a Js_null.t, string) result
+  val null : 'a Js.Null.t decoder
   (** [null json] returns [Some null] if [json] is a null, [None]
       otherwise *)
 
-  val array_ : t -> (t array, string) result
+  val array_ : 'a decoder -> 'a array decoder
   (** [array_ json] returns [Some a] if [json] is an array, [None]
       otherwise *)
 
-  val dict : t -> (t Js_dict.t, string) result
+  val dict : 'a decoder -> 'a Js.Dict.t decoder
   (** [dict json] returns [Some o] if [json] is an object, [None]
       otherwise
   *)
