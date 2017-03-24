@@ -704,8 +704,7 @@ bsb/bsb_config_types.cmx : ext/string_hash_set.cmx bsb/bsb_config.cmx \
     bsb/bsb_build_ui.cmx
 bsb/bsb_default.cmx : ext/string_set.cmx ext/literals.cmx \
     bsb/bsb_config_types.cmx bsb/bsb_default.cmi
-bsb/bsb_dep_infos.cmx : ext/ext_string.cmx common/bs_version.cmx \
-    bsb/bsb_dep_infos.cmi
+bsb/bsb_dep_infos.cmx : common/bs_version.cmx bsb/bsb_dep_infos.cmi
 bsb/bsb_dir.cmx : bsb/bsb_dir.cmi
 bsb/bsb_exception.cmx : ext/ext_string.cmx ext/ext_position.cmx \
     ext/ext_json.cmx common/bs_version.cmx bsb/bsb_exception.cmi

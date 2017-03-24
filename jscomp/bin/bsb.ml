@@ -8577,7 +8577,7 @@ type check_result =
   | Bsb_forced
   | Other of string
 
-val to_str : check_result -> string 
+val pp_check_result : Format.formatter -> check_result -> unit
 val store : cwd:string -> string -> dep_info array -> unit
 
 
@@ -8645,9 +8645,9 @@ type check_result =
   | Bsb_forced
   | Other of string
 
-let to_str (check_resoult : check_result) =
-  match check_resoult with
-  | Good -> Ext_string.empty
+let pp_check_result fmt (check_resoult : check_result) =
+  Format.pp_print_string fmt (match check_resoult with
+  | Good -> "OK"
   | Bsb_file_not_exist -> "Dependencies information missing"
   | Bsb_source_directory_changed ->
     "Bsb source directory changed"
@@ -8655,8 +8655,7 @@ let to_str (check_resoult : check_result) =
     "Bsc or bsb version mismatch"
   | Bsb_forced ->
     "Bsb forced rebuild"
-  | Other s ->
-    s
+  | Other s -> s)
 
 let rec check_aux cwd xs i finish =
   if i = finish then Good
@@ -10085,14 +10084,17 @@ let regenerate_ninja ~no_dev ~override_package_specs ~generate_watch_metadata cw
   let output_deps = cwd // Bsb_config.lib_bs // bsdeps in
   let reason : Bsb_dep_infos.check_result =
     Bsb_dep_infos.check ~cwd  forced output_deps in
+  let () = 
+    Format.fprintf Format.std_formatter  
+      "@{<info>BSB check@} build spec : %a @." Bsb_dep_infos.pp_check_result reason in 
   begin match reason  with 
-    | Good -> None  (* Fast path *)
+    | Good ->
+      None  (* Fast path *)
     | Bsb_forced 
     | Bsb_bsc_version_mismatch 
     | Bsb_file_not_exist 
     | Bsb_source_directory_changed  
     | Other _ -> 
-      Format.fprintf Format.std_formatter  "@{<info>Regenerating@} build spec : %s @." (Bsb_dep_infos.to_str reason);
       if reason = Bsb_bsc_version_mismatch then begin 
         print_endline "Also clean current repo due to we have detected a different compiler";
         clean_self (); 
@@ -10164,7 +10166,8 @@ let exec_command_install_then_exit  command =
   print_endline command ;
   exit (Sys.command command ) 
 
-let ninja_command_exit (type t)  cwd vendor_ninja ninja_args  config : t =
+let ninja_command_exit (* (type t) *)
+    (* cwd *) vendor_ninja ninja_args  (* config *) (* : t *) =
   let ninja_args_len = Array.length ninja_args in
   if ninja_args_len = 0 then
     if Ext_sys.is_windows_or_cygwin then
@@ -10267,8 +10270,13 @@ let () =
   (* see discussion #929 *)
   if Array.length Sys.argv <= 1 then
     begin
-      let config_opt =  regenerate_ninja ~override_package_specs:None ~no_dev:false cwd bsc_dir false in 
-      ninja_command_exit  cwd vendor_ninja [||] config_opt
+      (* print_endline __LOC__; *)
+      let _config_opt =  
+        regenerate_ninja ~override_package_specs:None ~no_dev:false 
+          ~generate_watch_metadata:true
+          cwd bsc_dir false 
+      in 
+      ninja_command_exit  (* cwd *) vendor_ninja [||] (* config_opt *)
     end
   else
     begin
@@ -10303,7 +10311,7 @@ let () =
                    [bsb -regen ]
                 *)
               end else if make_world then begin
-                ninja_command_exit  cwd vendor_ninja [||] config_opt
+                ninja_command_exit  (* cwd *) vendor_ninja [||] (* config_opt *)
               end
           end;
 
@@ -10317,7 +10325,7 @@ let () =
           if make_world.set then
             make_world_deps config_opt ;
           if !watch_mode then watch_exit ()
-          else ninja_command_exit  cwd vendor_ninja ninja_args config_opt
+          else ninja_command_exit  (* cwd *) vendor_ninja ninja_args (* config_opt *)
         end
     end
 (*with x ->
