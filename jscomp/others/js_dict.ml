@@ -30,6 +30,9 @@ type 'a t
 (** The key type, an alias of string *)
 type key = string
 
+(** [empty ()] creates an empty dictionary *)
+external empty : unit -> 'a t = "" [@@bs.obj]
+
 (** [get dict key] returns the value associated with [key] in [dict] *)
 external get : 'a t -> key -> 'a option = "" [@@bs.get_index] [@@bs.return {undefined_to_opt}]
 
@@ -46,7 +49,10 @@ external set : 'a t -> key -> 'a -> unit = "" [@@bs.set_index]
 (** [keys dict] returns an array of all the keys in [dict] *)
 external keys : 'a t -> key array = "Object.keys" [@@bs.val]
 
-(** [empty ()] creates an empty dictionary *)
-external empty : unit -> 'a t = "" [@@bs.obj]
-
+let map f source =
+  let target = empty () in
+  keys source
+  |> Js.Array.forEach
+      (fun key -> set target key (f @@ unsafeGet source key));
+  target
 

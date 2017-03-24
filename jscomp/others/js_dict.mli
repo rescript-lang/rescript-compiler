@@ -32,6 +32,9 @@ type 'a t
 type key = string
 (** Key type *)
 
+external empty : unit -> 'a t = "" [@@bs.obj]
+(** [empty ()] returns en empty dictionary *)
+
 external get : 
   'a t -> 
   key -> 
@@ -56,5 +59,4 @@ external set : 'a t -> key -> 'a -> unit = "" [@@bs.set_index]
 external keys : 'a t -> string array = "Object.keys" [@@bs.val]
 (** [keys dict] returns all the keys in the dictionary [dict]*)
 
-external empty : unit -> 'a t = "" [@@bs.obj]
-(** [empty ()] returns en empty dictionary *)
+val map : ('a -> 'b) -> 'a t -> 'b t
