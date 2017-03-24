@@ -49,69 +49,137 @@ val reifyType : t -> 'b kind * 'b
 val test : 'a  -> 'b kind -> bool
 (** [test v kind] returns true if [v] is of [kind] *)
 
-val decodeString : t -> Js_string.t option
-(** [decodeString json] returns [Some s] if [json] is a string, [None]
-    otherwise *)
+module Decode: sig
+  val boolean : t -> Js.boolean option
+  (** [boolean json] returns [Some b] if [json] is a boolean, [None]
+      otherwise *)
 
-val decodeNumber : t -> float option
-(** [decodeNumber json] returns [Some n] if [json] is a number, [None]
-    otherwise *)
+  val number : t -> float option
+  (** [number json] returns [Some n] if [json] is a number, [None]
+      otherwise *)
 
-val decodeObject : t -> t Js_dict.t option
-(** [decodeObject json] returns [Some o] if [json] is an object, [None]
-    otherwise *)
+  val string : t -> Js_string.t option
+  (** [string json] returns [Some s] if [json] is a string, [None]
+      otherwise *)
 
-val decodeArray : t -> t array option
-(** [decodeArray json] returns [Some a] if [json] is an array, [None]
-    otherwise *)
+  val null : t -> 'a Js_null.t option
+  (** [null json] returns [Some null] if [json] is a null, [None]
+      otherwise *)
+
+  val array_ : t -> t array option
+  (** [array_ json] returns [Some a] if [json] is an array, [None]
+      otherwise *)
+
+  val dict : t -> t Js_dict.t option
+  (** [dict json] returns [Some o] if [json] is an object, [None]
+      otherwise
+  *)
+end
+
+module Encode: sig
+  external null : t = "" [@@bs.val]
+  (** [null] is the singleton null JSON value *)
+
+  external string : string -> t = "%identity"
+  (** [string s] makes a JSON string of the [string] [s] *)
+
+  external number : float -> t = "%identity"
+  (** [number n] makes a JSON number of the [float] [n] *)
+
+  external boolean : Js.boolean -> t = "%identity" 
+  (** [boolean b] makes a JSON boolean of the [Js.boolean] [b] *)
+
+  external object_ : t Js_dict.t -> t = "%identity"
+  (** [object_ dict] makes a JSON objet of the [Js.Dict.t] [dict] *)
+
+  external array_ : t array -> t = "%identity"
+  (** [array_ a] makes a JSON array of the [Js.Json.t array] [a] *)
+
+  (** The functions below are specialized for specific array type which 
+      happened to be already JSON object in the BuckleScript runtime. Therefore
+      they are more efficient (constant time rather than linear conversion). *) 
+
+  external stringArray : string array -> t = "%identity"
+  (** [stringArray a] makes a JSON array of the [string array] [a] *) 
+
+  external numberArray : float array -> t = "%identity"
+  (** [numberArray a] makes a JSON array of the [float array] [a] *)
+
+  external booleanArray : Js.boolean array -> t = "%identity"
+  (** [booleanArray] makes a JSON array of the [Js.boolean array] [a] *)
+
+  external objectArray : t Js_dict.t array -> t = "%identity"
+  (** [objectArray a] makes a JSON array of the [JsDict.t array] [a] *)
+end
+
 
 val decodeBoolean : t -> Js.boolean option
-(** [decodeBoolean json] returns [Some b] if [json] is a boolean, [None]
-    otherwise *)
+[@@deprecated "Please use `Decode.boolean` instead"]
+(** @deprecated Please use {! Decode.boolean} istead *)
+
+val decodeNumber : t -> float option
+[@@deprecated "Please use `Decode.number` instead"]
+(** @deprecated Please use {! Decode.number} istead *)
+
+val decodeString : t -> Js_string.t option
+[@@deprecated "Please use `Decode.string` instead"]
+(** @deprecated Please use {! Decode.string} istead *)
 
 val decodeNull : t -> 'a Js_null.t option
-(** [decodeNull json] returns [Some null] if [json] is a null, [None]
-    otherwise *)
+[@@deprecated "Please use `Decode.null` instead"]
+(** @deprecated Please use {! Decode.null} istead *)
 
-(** {2 Construtors} *)
+val decodeArray : t -> t array option
+[@@deprecated "Please use `Decode.array_` instead"]
+(** @deprecated Please use {! Decode.array_} istead *)
 
-(** Those functions allows the construction of an arbitrary complex 
-    JSON values. 
-*)
+val decodeObject : t -> t Js_dict.t option
+[@@deprecated "Please use `Decode.dict` instead"]
+(** @deprecated Please use {! Decode.dict} istead *)
 
-external null : t = "" [@@bs.val]
-(** [null] is the singleton null JSON value *)
 
-external string : string -> t = "%identity"
-(** [string s] makes a JSON string of the [string] [s] *)
-
-external number : float -> t = "%identity"
-(** [number n] makes a JSON number of the [float] [n] *)
 
 external boolean : Js.boolean -> t = "%identity" 
-(** [boolean b] makes a JSON boolean of the [Js.boolean] [b] *)
+[@@deprecated "Please use `Encode.boolean` instead"]
+(** @deprecated Please use {! Encode.boolean} istead *)
 
-external object_ : t Js_dict.t -> t = "%identity"
-(** [object_ dict] makes a JSON objet of the [Js.Dict.t] [dict] *)
+external number : float -> t = "%identity"
+[@@deprecated "Please use `Encode.number` instead"]
+(** @deprecated Please use {! Encode.number} istead *)
+
+external string : string -> t = "%identity"
+[@@deprecated "Please use `Encode.string` instead"]
+(** @deprecated Please use {! Encode.string} istead *)
+
+external null : t = "" [@@bs.val]
+[@@deprecated "Please use `Encode.null` instead"]
+(** @deprecated Please use {! Encode.null} istead *)
 
 external array_ : t array -> t = "%identity"
-(** [array_ a] makes a JSON array of the [Js.Json.t array] [a] *)
+[@@deprecated "Please use `Encode.array_` instead"]
+(** @deprecated Please use {! Encode.array_} istead *)
 
-(** The functions below are specialized for specific array type which 
-    happened to be already JSON object in the BuckleScript runtime. Therefore
-    they are more efficient (constant time rather than linear conversion). *) 
-
-external stringArray : string array -> t = "%identity"
-(** [stringArray a] makes a JSON array of the [string array] [a] *) 
-
-external numberArray : float array -> t = "%identity"
-(** [numberArray a] makes a JSON array of the [float array] [a] *)
+external object_ : t Js_dict.t -> t = "%identity"
+[@@deprecated "Please use `Encode.object_` instead"]
+(** @deprecated Please use {! Encode.object_} istead *)
 
 external booleanArray : Js.boolean array -> t = "%identity"
-(** [booleanArray] makes a JSON array of the [Js.boolean array] [a] *)
+[@@deprecated "Please use `Encode.booleanArray` instead"]
+(** @deprecated Please use {! Encode.booleanArray} istead *)
+
+external numberArray : float array -> t = "%identity"
+[@@deprecated "Please use `Encode.numberArray` instead"]
+(** @deprecated Please use {! Encode.numberArray} istead *)
+
+external stringArray : string array -> t = "%identity"
+[@@deprecated "Please use `Encode.stringArray` instead"]
+(** @deprecated Please use {! Encode.stringArray} istead *)
 
 external objectArray : t Js_dict.t array -> t = "%identity"
-(** [objectArray a] makes a JSON array of the [JsDict.t array] [a] *)
+[@@deprecated "Please use `Encode.objectArray` instead"]
+(** @deprecated Please use {! Encode.objectArray} istead *)
+
+
 
 (** {2 String conversion} *)
 
@@ -205,4 +273,4 @@ Js.log \@\@ Js.Json.stringify [| "foo"; "bar" |]
 @deprecated Please use {! reifyType} instead
 *) 
 val reify_type : 'a -> 'b kind * 'b 
-[@@ocaml.deprecated "Please use `reifyType`"]
+[@@deprecated "Please use `reifyType`"]
