@@ -8577,7 +8577,7 @@ type check_result =
   | Bsb_forced
   | Other of string
 
-val to_str : check_result -> string 
+val pp_check_result : Format.formatter -> check_result -> unit
 val store : cwd:string -> string -> dep_info array -> unit
 
 
@@ -8645,9 +8645,9 @@ type check_result =
   | Bsb_forced
   | Other of string
 
-let to_str (check_resoult : check_result) =
-  match check_resoult with
-  | Good -> Ext_string.empty
+let pp_check_result fmt (check_resoult : check_result) =
+  Format.pp_print_string fmt (match check_resoult with
+  | Good -> "OK"
   | Bsb_file_not_exist -> "Dependencies information missing"
   | Bsb_source_directory_changed ->
     "Bsb source directory changed"
@@ -8655,8 +8655,7 @@ let to_str (check_resoult : check_result) =
     "Bsc or bsb version mismatch"
   | Bsb_forced ->
     "Bsb forced rebuild"
-  | Other s ->
-    s
+  | Other s -> s)
 
 let rec check_aux cwd xs i finish =
   if i = finish then Good
@@ -10087,7 +10086,7 @@ let regenerate_ninja ~no_dev ~override_package_specs ~generate_watch_metadata cw
     Bsb_dep_infos.check ~cwd  forced output_deps in
   let () = 
     Format.fprintf Format.std_formatter  
-      "@{<info>BSB check@} build spec : %s @." (Bsb_dep_infos.to_str reason) in 
+      "@{<info>BSB check@} build spec : %a @." Bsb_dep_infos.pp_check_result reason in 
   begin match reason  with 
     | Good ->
       None  (* Fast path *)

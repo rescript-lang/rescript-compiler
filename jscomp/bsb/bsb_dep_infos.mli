@@ -51,7 +51,7 @@ type check_result =
   | Bsb_forced
   | Other of string
 
-val to_str : check_result -> string 
+val pp_check_result : Format.formatter -> check_result -> unit
 val store : cwd:string -> string -> dep_info array -> unit
 
 

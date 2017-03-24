@@ -161,7 +161,7 @@ let regenerate_ninja ~no_dev ~override_package_specs ~generate_watch_metadata cw
     Bsb_dep_infos.check ~cwd  forced output_deps in
   let () = 
     Format.fprintf Format.std_formatter  
-      "@{<info>BSB check@} build spec : %s @." (Bsb_dep_infos.to_str reason) in 
+      "@{<info>BSB check@} build spec : %a @." Bsb_dep_infos.pp_check_result reason in 
   begin match reason  with 
     | Good ->
       None  (* Fast path *)
