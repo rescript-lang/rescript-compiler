@@ -272,7 +272,7 @@ let () =
   (Js.Json.stringifyAny [%bs.obj {foo = 1; bar = "hello"; baz = [%bs.obj {baaz = 10}]}])
   (Some {|{"foo":1,"bar":"hello","baz":{"baaz":10}}|})
 
-let () = eq __LOC__ (Js.Json.stringifyAny Js.Null.empty) (Some "null")
+let () = eq __LOC__ (Js.Json.stringifyAny Js.null) (Some "null")
 
 let () = eq __LOC__ (Js.Json.stringifyAny Js.Undefined.empty) None
 
@@ -509,7 +509,7 @@ let () =
   eq __LOC__ 
     (array_ string (parse {| ["a", "b", "c"] |})) (Ok [| "a"; "b"; "c" |]);
   eq __LOC__ 
-    (array_ null (parse {| [null, null, null] |})) (Ok [| Js.Null.empty; Js.Null.empty; Js.Null.empty |]);
+    (array_ null (parse {| [null, null, null] |})) (Ok [| Js.null; Js.null; Js.null |]);
   eq __LOC__ 
     (array_ boolean (parse {| [1, 2, 3] |})) (Error "Expected boolean, got 1")
 
@@ -545,7 +545,7 @@ let () =
     (Ok (Obj.magic [%obj { a = "x"; b = "y" }]));
   eq __LOC__ 
     (dict null (parse {| { "a": null, "b": null } |}))
-    (Ok (Obj.magic [%obj { a = Js.Null.empty; b = Js.Null.empty }]));
+    (Ok (Obj.magic [%obj { a = Js.null; b = Js.null }]));
   eq __LOC__ 
     (dict string (parse {| { "a": null, "b": null } |}))
     (Error "Expected string, got null")
@@ -554,19 +554,56 @@ let () =
   let open Js.Json in
   let open Decode in
   eq __LOC__ 
-    (optional int (Encode.boolean Js.true_)) (Error "Expected number, got true");
+    (field "foo" null (Encode.boolean Js.true_)) (Error "Expected object, got true");
   eq __LOC__ 
-    (optional int (Encode.float 1.23)) (Error "Expected integer, got 1.23");
+    (field "foo" null (Encode.float 1.23)) (Error "Expected object, got 1.23");
+  eq __LOC__ 
+    (field "foo" null (Encode.int 23)) (Error "Expected object, got 23");
+  eq __LOC__ 
+    (field "foo" null (Encode.string "test")) (Error "Expected object, got \"test\"");
+  eq __LOC__ 
+    (field "foo" null Encode.null) (Error "Expected object, got null");
+  eq __LOC__ 
+    (field "foo" null (Encode.array_ [||])) (Error "Expected object, got []");
+  eq __LOC__ 
+    (field "foo" null (Encode.object_ @@ Js.Dict.empty ())) 
+    (Error "Expected field 'foo'");
+  eq __LOC__ 
+    (field "b" boolean (parse {| { "a": true, "b": false } |}))
+    (Ok Js.false_);
+  eq __LOC__ 
+    (field "b" float (parse {| { "a": 1.2, "b": 2.3 } |}))
+    (Ok 2.3);
+  eq __LOC__ 
+    (field "b" int (parse {| { "a": 1, "b": 2 } |}))
+    (Ok 2);
+  eq __LOC__ 
+    (field "b" string (parse {| { "a": "x", "b": "y" } |}))
+    (Ok "y");
+  eq __LOC__ 
+    (field "b" null (parse {| { "a": null, "b": null } |}))
+    (Ok Js.null);
+  eq __LOC__ 
+    (field "b" string (parse {| { "a": null, "b": null } |}))
+    (Error "Expected string, got null")
+
+let () = 
+  let open Js.Json in
+  let open Decode in
+  eq __LOC__ 
+    (optional int (Encode.boolean Js.true_)) (Ok None);
+  eq __LOC__ 
+    (optional int (Encode.float 1.23)) (Ok None);
   eq __LOC__ 
     (optional int (Encode.int 23)) (Ok (Some 23));
   eq __LOC__ 
-    (optional int (Encode.string "test")) (Error "Expected number, got \"test\"");
+    (optional int (Encode.string "test")) (Ok None);
   eq __LOC__ 
-    (optional int Encode.null) (Error "Expected number, got null");
+    (optional int Encode.null) (Ok None);
   eq __LOC__ 
-    (optional int (Encode.array_ [||])) (Error "Expected number, got []");
+    (optional int (Encode.array_ [||])) (Ok None);
   eq __LOC__ 
-    (optional int (Encode.object_ @@ Js.Dict.empty ())) (Error "Expected number, got {}");
+    (optional int (Encode.object_ @@ Js.Dict.empty ())) (Ok None);
   eq __LOC__ 
     (optional boolean (Encode.boolean Js.true_)) (Ok (Some Js.true_));
   eq __LOC__ 
@@ -576,8 +613,19 @@ let () =
   eq __LOC__ 
     (optional null Encode.null) (Ok (Some Js.null));
   eq __LOC__ 
-    (optional boolean (Encode.int 1)) (Error "Expected boolean, got 1")
-  (* TODO: undefined JSON values can't be constructed *)
+    (optional boolean (Encode.int 1)) (Ok None);
+  eq __LOC__ 
+    (optional (field "x" int) (parse {| { "x": 2} |})) (Ok (Some 2));
+  eq __LOC__ 
+    (optional (field "x" int) (parse {| { "x": 2.3} |})) (Ok None);
+  eq __LOC__ 
+    (optional (field "y" int) (parse {| { "x": 2} |})) (Ok None);
+  eq __LOC__ 
+    (field "x" (optional int) (parse {| { "x": 2} |})) (Ok (Some 2));
+  eq __LOC__ 
+    (field "x" (optional int) (parse {| { "x": 2.3} |})) (Ok None);
+  eq __LOC__ 
+    (field "y" (optional int) (parse {| { "x": 2} |})) (Error "Expected field 'y'")
 
 (* complex decode *)
 let () = 

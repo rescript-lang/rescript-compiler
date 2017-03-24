@@ -80,18 +80,24 @@ module Decode: sig
   (** [nullable json] returns [Ok Js.null 'a] if [json] is an ['a] or null, [Error message]
       otherwise *)
 
-  val optional : 'a decoder -> 'a option decoder
-  (** [null json] returns [Ok Some 'a] if [json] is an ['a], [Error. message]
-      otherwise *)
-
   val array_ : 'a decoder -> 'a array decoder
   (** [array_ json] returns [Ok a] if [json] is an array, [Error message]
       otherwise *)
 
   val dict : 'a decoder -> 'a Js.Dict.t decoder
-  (** [dict json] returns [Ok o] if [json] is an object, [Error message]
+  (** [dict decoder json] returns [Ok o] if [json] is an object, [Error message]
       otherwise
   *)
+
+  val field : string -> 'a decoder -> 'a decoder
+  (** [field key decoder json] returns [Ok v] if [json] is an object that includes
+      the property [key], [Error message] otherwise
+  *)
+
+  val optional : 'a decoder -> 'a option decoder
+  (** [null json] returns [Ok Some 'a] if [json] is an ['a], [Error. message]
+      otherwise *)
+
 end
 
 module Encode: sig

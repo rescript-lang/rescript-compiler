@@ -141,9 +141,9 @@ module Decode = struct
     else Error ("Expected array, got " ^ stringify json)
 
   let dict decode json = 
-    if  Js.typeof json = "object" && 
-        not (Js_array.isArray json) && 
-        not ((Obj.magic json : 'a Js.null) == Js.null)
+    if Js.typeof json = "object" && 
+       not (Js_array.isArray json) && 
+       not ((Obj.magic json : 'a Js.null) == Js.null)
     then begin
       (* TODO: Seriously rethink this for better balance between readability and perf *)
       let source = (Obj.magic (json : t) : t Js_dict.t) in
@@ -174,13 +174,22 @@ module Decode = struct
     end
     else Error ("Expected object, got " ^ stringify json)
 
+  let field key decode json =
+    if Js.typeof json = "object" && 
+       not (Js_array.isArray json) && 
+       not ((Obj.magic json : 'a Js.null) == Js.null)
+    then begin
+      let dict = (Obj.magic (json : t) : t Js.Dict.t) in
+      match Js.Dict.get dict key with
+      | Some value -> decode value
+      | None -> Error ("Expected field '" ^ key ^ "'")
+    end
+    else Error ("Expected object, got " ^ stringify json)
+
   let optional decode json =
-    if (Obj.magic json : 'a Js.undefined) == Js.undefined
-    then Ok None
-    else
-      match decode json with
-      | Ok value -> Ok (Some value)
-      | Error message -> Error message
+    match decode json with
+    | Ok value -> Ok (Some value)
+    | Error message -> Ok None
 
 end
 
