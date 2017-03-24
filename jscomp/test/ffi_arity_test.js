@@ -50,7 +50,8 @@ var vvv = [0];
 function fff() {
   console.log("x");
   console.log("x");
-  return vvv[0] = vvv[0] + 1 | 0;
+  vvv[0] = vvv[0] + 1 | 0;
+  return /* () */0;
 }
 
 function g() {

@@ -326,7 +326,8 @@ var i$7 = [1];
 
 List.iter(function (j) {
       assert_('File "stack_comp_test.ml", line 112, characters 27-34', +(i$7[0] === j));
-      return i$7[0] = i$7[0] + 1 | 0;
+      i$7[0] = i$7[0] + 1 | 0;
+      return /* () */0;
     }, s$5[/* c */0]);
 
 var s1$1 = /* record */[/* c : [] */0];

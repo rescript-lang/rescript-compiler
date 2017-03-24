@@ -9,7 +9,8 @@ function match_000() {
 }
 
 function match_001() {
-  return v[0] = v[0] + 1 | 0;
+  v[0] = v[0] + 1 | 0;
+  return /* () */0;
 }
 
 var reset = match_000;

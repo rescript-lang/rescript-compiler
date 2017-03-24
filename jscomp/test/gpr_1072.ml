@@ -170,13 +170,14 @@ let () =
         again4 ~y:() __LINE__ ();
         again4 ~x:(incr side_effect; ()) ~y:() __LINE__ ();
         again4 ~x:(incr side_effect; ()) ~y:(decr side_effect; ()) __LINE__ ();
-        again4 ~y:(decr side_effect; ()) __LINE__ ()
+        again4 ~y:(decr side_effect; ()) __LINE__ ();
+        again4 ~x:(incr side_effect) ~y:() __LINE__ ()
 
 
-(*
-external again5 : ?x__ignore:([`a of unit -> int | `b of string -> int ] [@bs.string])
- -> int -> unit = "" [@@bs.val]
 
- let v = again5 3 *)
+(* external again5 : ?x__ignore:([`a of unit -> int | `b of string -> int ] [@bs.string]) *)
+(*  -> int -> unit = "" [@@bs.val] *)
+
+(*  let v = again5 3 *)
 
  
