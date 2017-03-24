@@ -75,13 +75,21 @@ module Decode = struct
 
   let boolean json = 
     if Js.typeof json = "boolean"
-    then Ok (Obj.magic (json:t) : Js.boolean)
+    then Ok (Obj.magic (json : t) : Js.boolean)
     else Error ("Expected boolean, got " ^ stringify json)
 
-  let number json = 
+  let float json = 
     if Js.typeof json = "number" 
-    then Ok (Obj.magic (json:t) : float)
+    then Ok (Obj.magic (json : t) : float)
     else Error ("Expected number, got " ^ stringify json)
+
+  let int json = 
+    match float json with
+    | Ok float ->
+      if Js.Float.isInteger float
+      then Ok (Obj.magic (float : float) : int)
+      else Error ("Expected integer, got " ^ stringify json)
+    | Error message -> Error message
 
   let string json = 
     if Js.typeof json = "string" 

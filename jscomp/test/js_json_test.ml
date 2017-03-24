@@ -372,6 +372,8 @@ let () =
   eq __LOC__ 
     (boolean (Js.Json.number 1.23)) (Error "Expected boolean, got 1.23");
   eq __LOC__ 
+    (boolean (Js.Json.number 23.)) (Error "Expected boolean, got 23");
+  eq __LOC__ 
     (boolean (Js.Json.string "test")) (Error "Expected boolean, got \"test\"");
   eq __LOC__ 
     (boolean Js.Json.null) (Error "Expected boolean, got null");
@@ -383,17 +385,36 @@ let () =
 let () = 
   let open Js.Json.Decode in
   eq __LOC__ 
-    (number (Js.Json.boolean Js.true_)) (Error "Expected number, got true");
+    (float (Js.Json.boolean Js.true_)) (Error "Expected number, got true");
   eq __LOC__ 
-    (number (Js.Json.number 1.23)) (Ok 1.23);
+    (float (Js.Json.number 1.23)) (Ok 1.23);
   eq __LOC__ 
-    (number (Js.Json.string "test")) (Error "Expected number, got \"test\"");
+    (float (Js.Json.number 23.)) (Ok 23.);
   eq __LOC__ 
-    (number Js.Json.null) (Error "Expected number, got null");
+    (float (Js.Json.string "test")) (Error "Expected number, got \"test\"");
   eq __LOC__ 
-    (number (Js.Json.array_ [||])) (Error "Expected number, got []");
+    (float Js.Json.null) (Error "Expected number, got null");
   eq __LOC__ 
-    (number (Js.Json.object_ @@ Js.Dict.empty ())) (Error "Expected number, got {}")
+    (float (Js.Json.array_ [||])) (Error "Expected number, got []");
+  eq __LOC__ 
+    (float (Js.Json.object_ @@ Js.Dict.empty ())) (Error "Expected number, got {}")
+
+let () = 
+  let open Js.Json.Decode in
+  eq __LOC__ 
+    (int (Js.Json.boolean Js.true_)) (Error "Expected number, got true");
+  eq __LOC__ 
+    (int (Js.Json.number 1.23)) (Error "Expected integer, got 1.23");
+  eq __LOC__ 
+    (int (Js.Json.number 23.)) (Ok 23);
+  eq __LOC__ 
+    (int (Js.Json.string "test")) (Error "Expected number, got \"test\"");
+  eq __LOC__ 
+    (int Js.Json.null) (Error "Expected number, got null");
+  eq __LOC__ 
+    (int (Js.Json.array_ [||])) (Error "Expected number, got []");
+  eq __LOC__ 
+    (int (Js.Json.object_ @@ Js.Dict.empty ())) (Error "Expected number, got {}")
 
 let () = 
   let open Js.Json.Decode in
@@ -401,6 +422,8 @@ let () =
     (string (Js.Json.boolean Js.true_)) (Error "Expected string, got true");
   eq __LOC__ 
     (string (Js.Json.number 1.23)) (Error "Expected string, got 1.23");
+  eq __LOC__ 
+    (string (Js.Json.number 23.)) (Error "Expected string, got 23");
   eq __LOC__ 
     (string (Js.Json.string "test")) (Ok "test");
   eq __LOC__ 
@@ -417,6 +440,8 @@ let () =
   eq __LOC__ 
     (null (Js.Json.number 1.23)) (Error "Expected null, got 1.23");
   eq __LOC__ 
+    (null (Js.Json.number 23.)) (Error "Expected null, got 23");
+  eq __LOC__ 
     (null (Js.Json.string "test")) (Error "Expected null, got \"test\"");
   eq __LOC__ 
     (null Js.Json.null) (Ok Js.null);
@@ -432,6 +457,8 @@ let () =
   eq __LOC__ 
     (array_ null (Js.Json.number 1.23)) (Error "Expected array, got 1.23");
   eq __LOC__ 
+    (array_ null (Js.Json.number 23.)) (Error "Expected array, got 23");
+  eq __LOC__ 
     (array_ null (Js.Json.string "test")) (Error "Expected array, got \"test\"");
   eq __LOC__ 
     (array_ null Js.Json.null) (Error "Expected array, got null");
@@ -442,7 +469,9 @@ let () =
   eq __LOC__ 
     (array_ boolean (Js.Json.parse {| [true, false, true] |})) (Ok [| Js.true_; Js.false_; Js.true_ |]);
   eq __LOC__ 
-    (array_ number (Js.Json.parse {| [1, 2, 3] |})) (Ok [| 1.; 2.; 3. |]);
+    (array_ float (Js.Json.parse {| [1, 2, 3] |})) (Ok [| 1.; 2.; 3. |]);
+  eq __LOC__ 
+    (array_ int (Js.Json.parse {| [1, 2, 3] |})) (Ok [| 1; 2; 3 |]);
   eq __LOC__ 
     (array_ string (Js.Json.parse {| ["a", "b", "c"] |})) (Ok [| "a"; "b"; "c" |]);
   eq __LOC__ 
@@ -457,6 +486,8 @@ let () =
   eq __LOC__ 
     (dict null (Js.Json.number 1.23)) (Error "Expected object, got 1.23");
   eq __LOC__ 
+    (dict null (Js.Json.number 23.)) (Error "Expected object, got 23");
+  eq __LOC__ 
     (dict null (Js.Json.string "test")) (Error "Expected object, got \"test\"");
   eq __LOC__ 
     (dict null Js.Json.null) (Error "Expected object, got null");
@@ -469,7 +500,10 @@ let () =
     (dict boolean (Js.Json.parse {| { "a": true, "b": false } |}))
     (Ok (Obj.magic [%obj { a = true; b = false }]));
   eq __LOC__ 
-    (dict number (Js.Json.parse {| { "a": 1, "b": 2 } |}))
+    (dict float (Js.Json.parse {| { "a": 1.2, "b": 2.3 } |}))
+    (Ok (Obj.magic [%obj { a = 1.2; b = 2.3 }]));
+  eq __LOC__ 
+    (dict int (Js.Json.parse {| { "a": 1, "b": 2 } |}))
     (Ok (Obj.magic [%obj { a = 1; b = 2 }]));
   eq __LOC__ 
     (dict string (Js.Json.parse {| { "a": "x", "b": "y" } |}))
@@ -485,13 +519,13 @@ let () =
 let () = 
   let open Js.Json.Decode in
   eq __LOC__ 
-    (dict (array_ (array_ number)) (Js.Json.parse {| { "a": [[1, 2], [3]], "b": [[4], [5, 6]] } |}))
-    (Ok (Obj.magic [%obj { a = [| [|1.; 2.|]; [|3.|] |]; b = [| [|4.|]; [|5.; 6.|] |] }]));
+    (dict (array_ (array_ int)) (Js.Json.parse {| { "a": [[1, 2], [3]], "b": [[4], [5, 6]] } |}))
+    (Ok (Obj.magic [%obj { a = [| [|1; 2|]; [|3|] |]; b = [| [|4|]; [|5; 6|] |] }]));
   eq __LOC__ 
-    (dict (array_ (array_ number)) (Js.Json.parse {| { "a": [[1, 2], [true]], "b": [[4], [5, 6]] } |}))
+    (dict (array_ (array_ int)) (Js.Json.parse {| { "a": [[1, 2], [true]], "b": [[4], [5, 6]] } |}))
     (Error "Expected number, got true");
   eq __LOC__ 
-    (dict (array_ (array_ number)) (Js.Json.parse {| { "a": [[1, 2], "foo"], "b": [[4], [5, 6]] } |}))
+    (dict (array_ (array_ int)) (Js.Json.parse {| { "a": [[1, 2], "foo"], "b": [[4], [5, 6]] } |}))
     (Error "Expected array, got \"foo\"")
 
 let () = Mt.from_pair_suites __FILE__ !suites

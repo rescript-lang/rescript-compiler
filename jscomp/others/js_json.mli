@@ -60,8 +60,12 @@ module Decode: sig
   (** [boolean json] returns [Some b] if [json] is a boolean, [None]
       otherwise *)
 
-  val number : float decoder
-  (** [number json] returns [Some n] if [json] is a number, [None]
+  val float : float decoder
+  (** [float json] returns [Some n] if [json] is a number, [None]
+      otherwise *)
+
+  val int : int decoder
+  (** [int json] returns [Some n] if [json] is an integer, [None]
       otherwise *)
 
   val string : string decoder
@@ -121,69 +125,69 @@ end
 
 val decodeBoolean : t -> Js.boolean option
 [@@deprecated "Please use `Decode.boolean` instead"]
-(** @deprecated Please use {! Decode.boolean} istead *)
+(** @deprecated Please use {! Decode.boolean} instead *)
 
 val decodeNumber : t -> float option
 [@@deprecated "Please use `Decode.number` instead"]
-(** @deprecated Please use {! Decode.number} istead *)
+(** @deprecated Please use {! Decode.float} or {! Decode.int} instead *)
 
 val decodeString : t -> Js_string.t option
 [@@deprecated "Please use `Decode.string` instead"]
-(** @deprecated Please use {! Decode.string} istead *)
+(** @deprecated Please use {! Decode.string} instead *)
 
 val decodeNull : t -> 'a Js_null.t option
 [@@deprecated "Please use `Decode.null` instead"]
-(** @deprecated Please use {! Decode.null} istead *)
+(** @deprecated Please use {! Decode.null} instead *)
 
 val decodeArray : t -> t array option
 [@@deprecated "Please use `Decode.array_` instead"]
-(** @deprecated Please use {! Decode.array_} istead *)
+(** @deprecated Please use {! Decode.array_} instead *)
 
 val decodeObject : t -> t Js_dict.t option
 [@@deprecated "Please use `Decode.dict` instead"]
-(** @deprecated Please use {! Decode.dict} istead *)
+(** @deprecated Please use {! Decode.dict} instead *)
 
 
 
 external boolean : Js.boolean -> t = "%identity" 
 [@@deprecated "Please use `Encode.boolean` instead"]
-(** @deprecated Please use {! Encode.boolean} istead *)
+(** @deprecated Please use {! Encode.boolean} instead *)
 
 external number : float -> t = "%identity"
 [@@deprecated "Please use `Encode.number` instead"]
-(** @deprecated Please use {! Encode.number} istead *)
+(** @deprecated Please use {! Encode.number} instead *)
 
 external string : string -> t = "%identity"
 [@@deprecated "Please use `Encode.string` instead"]
-(** @deprecated Please use {! Encode.string} istead *)
+(** @deprecated Please use {! Encode.string} instead *)
 
 external null : t = "" [@@bs.val]
 [@@deprecated "Please use `Encode.null` instead"]
-(** @deprecated Please use {! Encode.null} istead *)
+(** @deprecated Please use {! Encode.null} instead *)
 
 external array_ : t array -> t = "%identity"
 [@@deprecated "Please use `Encode.array_` instead"]
-(** @deprecated Please use {! Encode.array_} istead *)
+(** @deprecated Please use {! Encode.array_} instead *)
 
 external object_ : t Js_dict.t -> t = "%identity"
 [@@deprecated "Please use `Encode.object_` instead"]
-(** @deprecated Please use {! Encode.object_} istead *)
+(** @deprecated Please use {! Encode.object_} instead *)
 
 external booleanArray : Js.boolean array -> t = "%identity"
 [@@deprecated "Please use `Encode.booleanArray` instead"]
-(** @deprecated Please use {! Encode.booleanArray} istead *)
+(** @deprecated Please use {! Encode.booleanArray} instead *)
 
 external numberArray : float array -> t = "%identity"
 [@@deprecated "Please use `Encode.numberArray` instead"]
-(** @deprecated Please use {! Encode.numberArray} istead *)
+(** @deprecated Please use {! Encode.numberArray} instead *)
 
 external stringArray : string array -> t = "%identity"
 [@@deprecated "Please use `Encode.stringArray` instead"]
-(** @deprecated Please use {! Encode.stringArray} istead *)
+(** @deprecated Please use {! Encode.stringArray} instead *)
 
 external objectArray : t Js_dict.t array -> t = "%identity"
 [@@deprecated "Please use `Encode.objectArray` instead"]
-(** @deprecated Please use {! Encode.objectArray} istead *)
+(** @deprecated Please use {! Encode.objectArray} instead *)
 
 
 
