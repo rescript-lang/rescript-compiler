@@ -50,27 +50,31 @@ val test : 'a  -> 'b kind -> bool
 (** [test v kind] returns true if [v] is of [kind] *)
 
 module Decode: sig
-  val boolean : t -> Js.boolean option
+  type ('a, 'e) result =
+  | Ok of 'a
+  | Error of 'e
+
+  val boolean : t -> (Js.boolean, string) result 
   (** [boolean json] returns [Some b] if [json] is a boolean, [None]
       otherwise *)
 
-  val number : t -> float option
+  val number : t -> (float, string) result
   (** [number json] returns [Some n] if [json] is a number, [None]
       otherwise *)
 
-  val string : t -> Js_string.t option
+  val string : t -> (Js_string.t, string) result
   (** [string json] returns [Some s] if [json] is a string, [None]
       otherwise *)
 
-  val null : t -> 'a Js_null.t option
+  val null : t -> ('a Js_null.t, string) result
   (** [null json] returns [Some null] if [json] is a null, [None]
       otherwise *)
 
-  val array_ : t -> t array option
+  val array_ : t -> (t array, string) result
   (** [array_ json] returns [Some a] if [json] is an array, [None]
       otherwise *)
 
-  val dict : t -> t Js_dict.t option
+  val dict : t -> (t Js_dict.t, string) result
   (** [dict json] returns [Some o] if [json] is an object, [None]
       otherwise
   *)

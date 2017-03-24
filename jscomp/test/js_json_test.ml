@@ -361,4 +361,99 @@ let () =
   eq __LOC__ 
     (Js.Json.decodeNull (Js.Json.number 1.23)) None
 
+
+
+
+
+let () = 
+  let open Js.Json.Decode in
+  eq __LOC__ 
+    (boolean (Js.Json.boolean Js.true_)) (Ok Js.true_);
+  eq __LOC__ 
+    (boolean (Js.Json.number 1.23)) (Error "Expected boolean, got 1.23");
+  eq __LOC__ 
+    (boolean (Js.Json.string "test")) (Error "Expected boolean, got \"test\"");
+  eq __LOC__ 
+    (boolean Js.Json.null) (Error "Expected boolean, got null");
+  eq __LOC__ 
+    (boolean (Js.Json.array_ [||])) (Error "Expected boolean, got []");
+  eq __LOC__ 
+    (boolean (Js.Json.object_ @@ Js.Dict.empty ())) (Error "Expected boolean, got {}")
+
+let () = 
+  let open Js.Json.Decode in
+  eq __LOC__ 
+    (number (Js.Json.boolean Js.true_)) (Error "Expected number, got true");
+  eq __LOC__ 
+    (number (Js.Json.number 1.23)) (Ok 1.23);
+  eq __LOC__ 
+    (number (Js.Json.string "test")) (Error "Expected number, got \"test\"");
+  eq __LOC__ 
+    (number Js.Json.null) (Error "Expected number, got null");
+  eq __LOC__ 
+    (number (Js.Json.array_ [||])) (Error "Expected number, got []");
+  eq __LOC__ 
+    (number (Js.Json.object_ @@ Js.Dict.empty ())) (Error "Expected number, got {}")
+
+let () = 
+  let open Js.Json.Decode in
+  eq __LOC__ 
+    (string (Js.Json.boolean Js.true_)) (Error "Expected string, got true");
+  eq __LOC__ 
+    (string (Js.Json.number 1.23)) (Error "Expected string, got 1.23");
+  eq __LOC__ 
+    (string (Js.Json.string "test")) (Ok "test");
+  eq __LOC__ 
+    (string Js.Json.null) (Error "Expected string, got null");
+  eq __LOC__ 
+    (string (Js.Json.array_ [||])) (Error "Expected string, got []");
+  eq __LOC__ 
+    (string (Js.Json.object_ @@ Js.Dict.empty ())) (Error "Expected string, got {}")
+
+let () = 
+  let open Js.Json.Decode in
+  eq __LOC__ 
+    (null (Js.Json.boolean Js.true_)) (Error "Expected null, got true");
+  eq __LOC__ 
+    (null (Js.Json.number 1.23)) (Error "Expected null, got 1.23");
+  eq __LOC__ 
+    (null (Js.Json.string "test")) (Error "Expected null, got \"test\"");
+  eq __LOC__ 
+    (null Js.Json.null) (Ok Js.null);
+  eq __LOC__ 
+    (null (Js.Json.array_ [||])) (Error "Expected null, got []");
+  eq __LOC__ 
+    (null (Js.Json.object_ @@ Js.Dict.empty ())) (Error "Expected null, got {}")
+
+let () = 
+  let open Js.Json.Decode in
+  eq __LOC__ 
+    (array_ (Js.Json.boolean Js.true_)) (Error "Expected array, got true");
+  eq __LOC__ 
+    (array_ (Js.Json.number 1.23)) (Error "Expected array, got 1.23");
+  eq __LOC__ 
+    (array_ (Js.Json.string "test")) (Error "Expected array, got \"test\"");
+  eq __LOC__ 
+    (array_ Js.Json.null) (Error "Expected array, got null");
+  eq __LOC__ 
+    (array_ (Js.Json.array_ [||])) (Ok [||]);
+  eq __LOC__ 
+    (array_ (Js.Json.object_ @@ Js.Dict.empty ())) (Error "Expected array, got {}")
+
+let () = 
+  let open Js.Json.Decode in
+  eq __LOC__ 
+    (dict (Js.Json.boolean Js.true_)) (Error "Expected object, got true");
+  eq __LOC__ 
+    (dict (Js.Json.number 1.23)) (Error "Expected object, got 1.23");
+  eq __LOC__ 
+    (dict (Js.Json.string "test")) (Error "Expected object, got \"test\"");
+  eq __LOC__ 
+    (dict Js.Json.null) (Error "Expected object, got null");
+  eq __LOC__ 
+    (dict (Js.Json.array_ [||])) (Error "Expected object, got []");
+  eq __LOC__ 
+    (dict (Js.Json.object_ @@ Js.Dict.empty ())) 
+    (Ok (Js.Dict.empty ()))
+
 let () = Mt.from_pair_suites __FILE__ !suites

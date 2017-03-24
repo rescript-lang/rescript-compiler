@@ -3,6 +3,7 @@
 var Mt                      = require("./mt");
 var $$Array                 = require("../../lib/js/array");
 var Block                   = require("../../lib/js/block");
+var Curry                   = require("../../lib/js/curry");
 var Js_json                 = require("../../lib/js/js_json");
 var Caml_obj                = require("../../lib/js/caml_obj");
 var Caml_array              = require("../../lib/js/caml_array");
@@ -445,6 +446,78 @@ eq('File "js_json_test.ml", line 357, characters 5-12', Js_json.decodeNull(null)
 eq('File "js_json_test.ml", line 359, characters 5-12', Js_json.decodeNull({ }), /* None */0);
 
 eq('File "js_json_test.ml", line 361, characters 5-12', Js_json.decodeNull(1.23), /* None */0);
+
+eq('File "js_json_test.ml", line 370, characters 5-12', Curry._1(Js_json.Decode[/* boolean */0], true), /* Ok */Block.__(0, [true]));
+
+eq('File "js_json_test.ml", line 372, characters 5-12', Curry._1(Js_json.Decode[/* boolean */0], 1.23), /* Error */Block.__(1, ["Expected boolean, got 1.23"]));
+
+eq('File "js_json_test.ml", line 374, characters 5-12', Curry._1(Js_json.Decode[/* boolean */0], "test"), /* Error */Block.__(1, ['Expected boolean, got "test"']));
+
+eq('File "js_json_test.ml", line 376, characters 5-12', Curry._1(Js_json.Decode[/* boolean */0], null), /* Error */Block.__(1, ["Expected boolean, got null"]));
+
+eq('File "js_json_test.ml", line 378, characters 5-12', Curry._1(Js_json.Decode[/* boolean */0], /* array */[]), /* Error */Block.__(1, ["Expected boolean, got []"]));
+
+eq('File "js_json_test.ml", line 380, characters 5-12', Curry._1(Js_json.Decode[/* boolean */0], { }), /* Error */Block.__(1, ["Expected boolean, got {}"]));
+
+eq('File "js_json_test.ml", line 385, characters 5-12', Curry._1(Js_json.Decode[/* number */1], true), /* Error */Block.__(1, ["Expected number, got true"]));
+
+eq('File "js_json_test.ml", line 387, characters 5-12', Curry._1(Js_json.Decode[/* number */1], 1.23), /* Ok */Block.__(0, [1.23]));
+
+eq('File "js_json_test.ml", line 389, characters 5-12', Curry._1(Js_json.Decode[/* number */1], "test"), /* Error */Block.__(1, ['Expected number, got "test"']));
+
+eq('File "js_json_test.ml", line 391, characters 5-12', Curry._1(Js_json.Decode[/* number */1], null), /* Error */Block.__(1, ["Expected number, got null"]));
+
+eq('File "js_json_test.ml", line 393, characters 5-12', Curry._1(Js_json.Decode[/* number */1], /* array */[]), /* Error */Block.__(1, ["Expected number, got []"]));
+
+eq('File "js_json_test.ml", line 395, characters 5-12', Curry._1(Js_json.Decode[/* number */1], { }), /* Error */Block.__(1, ["Expected number, got {}"]));
+
+eq('File "js_json_test.ml", line 400, characters 5-12', Curry._1(Js_json.Decode[/* string */2], true), /* Error */Block.__(1, ["Expected string, got true"]));
+
+eq('File "js_json_test.ml", line 402, characters 5-12', Curry._1(Js_json.Decode[/* string */2], 1.23), /* Error */Block.__(1, ["Expected string, got 1.23"]));
+
+eq('File "js_json_test.ml", line 404, characters 5-12', Curry._1(Js_json.Decode[/* string */2], "test"), /* Ok */Block.__(0, ["test"]));
+
+eq('File "js_json_test.ml", line 406, characters 5-12', Curry._1(Js_json.Decode[/* string */2], null), /* Error */Block.__(1, ["Expected string, got null"]));
+
+eq('File "js_json_test.ml", line 408, characters 5-12', Curry._1(Js_json.Decode[/* string */2], /* array */[]), /* Error */Block.__(1, ["Expected string, got []"]));
+
+eq('File "js_json_test.ml", line 410, characters 5-12', Curry._1(Js_json.Decode[/* string */2], { }), /* Error */Block.__(1, ["Expected string, got {}"]));
+
+eq('File "js_json_test.ml", line 415, characters 5-12', Curry._1(Js_json.Decode[/* null */3], true), /* Error */Block.__(1, ["Expected null, got true"]));
+
+eq('File "js_json_test.ml", line 417, characters 5-12', Curry._1(Js_json.Decode[/* null */3], 1.23), /* Error */Block.__(1, ["Expected null, got 1.23"]));
+
+eq('File "js_json_test.ml", line 419, characters 5-12', Curry._1(Js_json.Decode[/* null */3], "test"), /* Error */Block.__(1, ['Expected null, got "test"']));
+
+eq('File "js_json_test.ml", line 421, characters 5-12', Curry._1(Js_json.Decode[/* null */3], null), /* Ok */Block.__(0, [null]));
+
+eq('File "js_json_test.ml", line 423, characters 5-12', Curry._1(Js_json.Decode[/* null */3], /* array */[]), /* Error */Block.__(1, ["Expected null, got []"]));
+
+eq('File "js_json_test.ml", line 425, characters 5-12', Curry._1(Js_json.Decode[/* null */3], { }), /* Error */Block.__(1, ["Expected null, got {}"]));
+
+eq('File "js_json_test.ml", line 430, characters 5-12', Curry._1(Js_json.Decode[/* array_ */4], true), /* Error */Block.__(1, ["Expected array, got true"]));
+
+eq('File "js_json_test.ml", line 432, characters 5-12', Curry._1(Js_json.Decode[/* array_ */4], 1.23), /* Error */Block.__(1, ["Expected array, got 1.23"]));
+
+eq('File "js_json_test.ml", line 434, characters 5-12', Curry._1(Js_json.Decode[/* array_ */4], "test"), /* Error */Block.__(1, ['Expected array, got "test"']));
+
+eq('File "js_json_test.ml", line 436, characters 5-12', Curry._1(Js_json.Decode[/* array_ */4], null), /* Error */Block.__(1, ["Expected array, got null"]));
+
+eq('File "js_json_test.ml", line 438, characters 5-12', Curry._1(Js_json.Decode[/* array_ */4], /* array */[]), /* Ok */Block.__(0, [/* array */[]]));
+
+eq('File "js_json_test.ml", line 440, characters 5-12', Curry._1(Js_json.Decode[/* array_ */4], { }), /* Error */Block.__(1, ["Expected array, got {}"]));
+
+eq('File "js_json_test.ml", line 445, characters 5-12', Curry._1(Js_json.Decode[/* dict */5], true), /* Error */Block.__(1, ["Expected object, got true"]));
+
+eq('File "js_json_test.ml", line 447, characters 5-12', Curry._1(Js_json.Decode[/* dict */5], 1.23), /* Error */Block.__(1, ["Expected object, got 1.23"]));
+
+eq('File "js_json_test.ml", line 449, characters 5-12', Curry._1(Js_json.Decode[/* dict */5], "test"), /* Error */Block.__(1, ['Expected object, got "test"']));
+
+eq('File "js_json_test.ml", line 451, characters 5-12', Curry._1(Js_json.Decode[/* dict */5], null), /* Error */Block.__(1, ["Expected object, got null"]));
+
+eq('File "js_json_test.ml", line 453, characters 5-12', Curry._1(Js_json.Decode[/* dict */5], /* array */[]), /* Error */Block.__(1, ["Expected object, got []"]));
+
+eq('File "js_json_test.ml", line 455, characters 5-12', Curry._1(Js_json.Decode[/* dict */5], { }), /* Ok */Block.__(0, [{ }]));
 
 Mt.from_pair_suites("js_json_test.ml", suites[0]);
 
