@@ -76,365 +76,420 @@ var suites_001 = /* :: */[
             ],
             /* :: */[
               /* tuple */[
-                "toExponential",
+                "isFinite - infinity",
                 function () {
                   return /* Eq */Block.__(0, [
-                            "1.23456e+2",
-                            (123.456).toExponential()
+                            /* false */0,
+                            +Number.isInteger(Pervasives.infinity)
                           ]);
                 }
               ],
               /* :: */[
                 /* tuple */[
-                  "toExponential - large number",
+                  "isFinite - neg_infinity",
                   function () {
                     return /* Eq */Block.__(0, [
-                              "1.2e+21",
-                              (1.2e21).toExponential()
+                              /* false */0,
+                              +Number.isInteger(Pervasives.neg_infinity)
                             ]);
                   }
                 ],
                 /* :: */[
                   /* tuple */[
-                    "toExponentialWithPrecision - digits:2",
+                    "isFinite - _NaN",
                     function () {
                       return /* Eq */Block.__(0, [
-                                "1.23e+2",
-                                (123.456).toExponential(2)
+                                /* false */0,
+                                +Number.isInteger(NaN)
                               ]);
                     }
                   ],
                   /* :: */[
                     /* tuple */[
-                      "toExponentialWithPrecision - digits:4",
+                      "isFinite - 1.234",
                       function () {
                         return /* Eq */Block.__(0, [
-                                  "1.2346e+2",
-                                  (123.456).toExponential(4)
+                                  /* false */0,
+                                  +Number.isInteger(1.234)
                                 ]);
                       }
                     ],
                     /* :: */[
                       /* tuple */[
-                        "toExponentialWithPrecision - digits:20",
+                        "isFinite - 1234.",
                         function () {
                           return /* Eq */Block.__(0, [
-                                    "0.00000000000000000000e+0",
-                                    (0).toExponential(20)
+                                    /* true */1,
+                                    +isFinite(1234)
                                   ]);
                         }
                       ],
                       /* :: */[
                         /* tuple */[
-                          "toExponentialWithPrecision - digits:21",
+                          "toExponential",
                           function () {
-                            return /* ThrowAny */Block.__(7, [function () {
-                                        (0).toExponential(21);
-                                        return /* () */0;
-                                      }]);
+                            return /* Eq */Block.__(0, [
+                                      "1.23456e+2",
+                                      (123.456).toExponential()
+                                    ]);
                           }
                         ],
                         /* :: */[
                           /* tuple */[
-                            "toExponentialWithPrecision - digits:-1",
+                            "toExponential - large number",
                             function () {
-                              return /* ThrowAny */Block.__(7, [function () {
-                                          (0).toExponential(-1);
-                                          return /* () */0;
-                                        }]);
+                              return /* Eq */Block.__(0, [
+                                        "1.2e+21",
+                                        (1.2e21).toExponential()
+                                      ]);
                             }
                           ],
                           /* :: */[
                             /* tuple */[
-                              "toFixed",
+                              "toExponentialWithPrecision - digits:2",
                               function () {
                                 return /* Eq */Block.__(0, [
-                                          "123",
-                                          (123.456).toFixed()
+                                          "1.23e+2",
+                                          (123.456).toExponential(2)
                                         ]);
                               }
                             ],
                             /* :: */[
                               /* tuple */[
-                                "toFixed - large number",
+                                "toExponentialWithPrecision - digits:4",
                                 function () {
                                   return /* Eq */Block.__(0, [
-                                            "1.2e+21",
-                                            (1.2e21).toFixed()
+                                            "1.2346e+2",
+                                            (123.456).toExponential(4)
                                           ]);
                                 }
                               ],
                               /* :: */[
                                 /* tuple */[
-                                  "toFixedWithPrecision - digits:2",
+                                  "toExponentialWithPrecision - digits:20",
                                   function () {
                                     return /* Eq */Block.__(0, [
-                                              "123.46",
-                                              (123.456).toFixed(2)
+                                              "0.00000000000000000000e+0",
+                                              (0).toExponential(20)
                                             ]);
                                   }
                                 ],
                                 /* :: */[
                                   /* tuple */[
-                                    "toFixedWithPrecision - digits:4",
+                                    "toExponentialWithPrecision - digits:21",
                                     function () {
-                                      return /* Eq */Block.__(0, [
-                                                "123.4560",
-                                                (123.456).toFixed(4)
-                                              ]);
+                                      return /* ThrowAny */Block.__(7, [function () {
+                                                  (0).toExponential(21);
+                                                  return /* () */0;
+                                                }]);
                                     }
                                   ],
                                   /* :: */[
                                     /* tuple */[
-                                      "toFixedWithPrecision - digits:20",
+                                      "toExponentialWithPrecision - digits:-1",
                                       function () {
-                                        return /* Eq */Block.__(0, [
-                                                  "0.00000000000000000000",
-                                                  (0).toFixed(20)
-                                                ]);
+                                        return /* ThrowAny */Block.__(7, [function () {
+                                                    (0).toExponential(-1);
+                                                    return /* () */0;
+                                                  }]);
                                       }
                                     ],
                                     /* :: */[
                                       /* tuple */[
-                                        "toFixedWithPrecision - digits:21",
+                                        "toFixed",
                                         function () {
-                                          return /* ThrowAny */Block.__(7, [function () {
-                                                      (0).toFixed(21);
-                                                      return /* () */0;
-                                                    }]);
+                                          return /* Eq */Block.__(0, [
+                                                    "123",
+                                                    (123.456).toFixed()
+                                                  ]);
                                         }
                                       ],
                                       /* :: */[
                                         /* tuple */[
-                                          "toFixedWithPrecision - digits:-1",
+                                          "toFixed - large number",
                                           function () {
-                                            return /* ThrowAny */Block.__(7, [function () {
-                                                        (0).toFixed(-1);
-                                                        return /* () */0;
-                                                      }]);
+                                            return /* Eq */Block.__(0, [
+                                                      "1.2e+21",
+                                                      (1.2e21).toFixed()
+                                                    ]);
                                           }
                                         ],
                                         /* :: */[
                                           /* tuple */[
-                                            "toPrecision",
+                                            "toFixedWithPrecision - digits:2",
                                             function () {
                                               return /* Eq */Block.__(0, [
-                                                        "123.456",
-                                                        (123.456).toPrecision()
+                                                        "123.46",
+                                                        (123.456).toFixed(2)
                                                       ]);
                                             }
                                           ],
                                           /* :: */[
                                             /* tuple */[
-                                              "toPrecision - large number",
+                                              "toFixedWithPrecision - digits:4",
                                               function () {
                                                 return /* Eq */Block.__(0, [
-                                                          "1.2e+21",
-                                                          (1.2e21).toPrecision()
+                                                          "123.4560",
+                                                          (123.456).toFixed(4)
                                                         ]);
                                               }
                                             ],
                                             /* :: */[
                                               /* tuple */[
-                                                "toPrecisionWithPrecision - digits:2",
+                                                "toFixedWithPrecision - digits:20",
                                                 function () {
                                                   return /* Eq */Block.__(0, [
-                                                            "1.2e+2",
-                                                            (123.456).toPrecision(2)
+                                                            "0.00000000000000000000",
+                                                            (0).toFixed(20)
                                                           ]);
                                                 }
                                               ],
                                               /* :: */[
                                                 /* tuple */[
-                                                  "toPrecisionWithPrecision - digits:4",
+                                                  "toFixedWithPrecision - digits:21",
                                                   function () {
-                                                    return /* Eq */Block.__(0, [
-                                                              "123.5",
-                                                              (123.456).toPrecision(4)
-                                                            ]);
+                                                    return /* ThrowAny */Block.__(7, [function () {
+                                                                (0).toFixed(21);
+                                                                return /* () */0;
+                                                              }]);
                                                   }
                                                 ],
                                                 /* :: */[
                                                   /* tuple */[
-                                                    "toPrecisionWithPrecision - digits:20",
+                                                    "toFixedWithPrecision - digits:-1",
                                                     function () {
-                                                      return /* Eq */Block.__(0, [
-                                                                "0.0000000000000000000",
-                                                                (0).toPrecision(20)
-                                                              ]);
+                                                      return /* ThrowAny */Block.__(7, [function () {
+                                                                  (0).toFixed(-1);
+                                                                  return /* () */0;
+                                                                }]);
                                                     }
                                                   ],
                                                   /* :: */[
                                                     /* tuple */[
-                                                      "toPrecisionWithPrecision - digits:22",
+                                                      "toPrecision",
                                                       function () {
-                                                        return /* ThrowAny */Block.__(7, [function () {
-                                                                    (0).toPrecision(22);
-                                                                    return /* () */0;
-                                                                  }]);
+                                                        return /* Eq */Block.__(0, [
+                                                                  "123.456",
+                                                                  (123.456).toPrecision()
+                                                                ]);
                                                       }
                                                     ],
                                                     /* :: */[
                                                       /* tuple */[
-                                                        "toPrecisionWithPrecision - digits:-1",
+                                                        "toPrecision - large number",
                                                         function () {
-                                                          return /* ThrowAny */Block.__(7, [function () {
-                                                                      (0).toPrecision(-1);
-                                                                      return /* () */0;
-                                                                    }]);
+                                                          return /* Eq */Block.__(0, [
+                                                                    "1.2e+21",
+                                                                    (1.2e21).toPrecision()
+                                                                  ]);
                                                         }
                                                       ],
                                                       /* :: */[
                                                         /* tuple */[
-                                                          "toString",
+                                                          "toPrecisionWithPrecision - digits:2",
                                                           function () {
                                                             return /* Eq */Block.__(0, [
-                                                                      "1.23",
-                                                                      (1.23).toString()
+                                                                      "1.2e+2",
+                                                                      (123.456).toPrecision(2)
                                                                     ]);
                                                           }
                                                         ],
                                                         /* :: */[
                                                           /* tuple */[
-                                                            "toString - large number",
+                                                            "toPrecisionWithPrecision - digits:4",
                                                             function () {
                                                               return /* Eq */Block.__(0, [
-                                                                        "1.2e+21",
-                                                                        (1.2e21).toString()
+                                                                        "123.5",
+                                                                        (123.456).toPrecision(4)
                                                                       ]);
                                                             }
                                                           ],
                                                           /* :: */[
                                                             /* tuple */[
-                                                              "toStringWithRadix - radix:2",
+                                                              "toPrecisionWithPrecision - digits:20",
                                                               function () {
                                                                 return /* Eq */Block.__(0, [
-                                                                          "1111011.0111010010111100011010100111111011111001110111",
-                                                                          (123.456).toString(2)
+                                                                          "0.0000000000000000000",
+                                                                          (0).toPrecision(20)
                                                                         ]);
                                                               }
                                                             ],
                                                             /* :: */[
                                                               /* tuple */[
-                                                                "toStringWithRadix - radix:16",
+                                                                "toPrecisionWithPrecision - digits:22",
                                                                 function () {
-                                                                  return /* Eq */Block.__(0, [
-                                                                            "7b.74bc6a7ef9dc",
-                                                                            (123.456).toString(16)
-                                                                          ]);
+                                                                  return /* ThrowAny */Block.__(7, [function () {
+                                                                              (0).toPrecision(22);
+                                                                              return /* () */0;
+                                                                            }]);
                                                                 }
                                                               ],
                                                               /* :: */[
                                                                 /* tuple */[
-                                                                  "toStringWithRadix - radix:36",
+                                                                  "toPrecisionWithPrecision - digits:-1",
                                                                   function () {
-                                                                    return /* Eq */Block.__(0, [
-                                                                              "3f.gez4w97ry0a18ymf6qadcxr",
-                                                                              (123.456).toString(36)
-                                                                            ]);
+                                                                    return /* ThrowAny */Block.__(7, [function () {
+                                                                                (0).toPrecision(-1);
+                                                                                return /* () */0;
+                                                                              }]);
                                                                   }
                                                                 ],
                                                                 /* :: */[
                                                                   /* tuple */[
-                                                                    "toStringWithRadix - radix:37",
+                                                                    "toString",
                                                                     function () {
-                                                                      return /* ThrowAny */Block.__(7, [function () {
-                                                                                  (0).toString(37);
-                                                                                  return /* () */0;
-                                                                                }]);
+                                                                      return /* Eq */Block.__(0, [
+                                                                                "1.23",
+                                                                                (1.23).toString()
+                                                                              ]);
                                                                     }
                                                                   ],
                                                                   /* :: */[
                                                                     /* tuple */[
-                                                                      "toStringWithRadix - radix:1",
+                                                                      "toString - large number",
                                                                       function () {
-                                                                        return /* ThrowAny */Block.__(7, [function () {
-                                                                                    (0).toString(1);
-                                                                                    return /* () */0;
-                                                                                  }]);
+                                                                        return /* Eq */Block.__(0, [
+                                                                                  "1.2e+21",
+                                                                                  (1.2e21).toString()
+                                                                                ]);
                                                                       }
                                                                     ],
                                                                     /* :: */[
                                                                       /* tuple */[
-                                                                        "toStringWithRadix - radix:-1",
+                                                                        "toStringWithRadix - radix:2",
                                                                         function () {
-                                                                          return /* ThrowAny */Block.__(7, [function () {
-                                                                                      (0).toString(-1);
-                                                                                      return /* () */0;
-                                                                                    }]);
+                                                                          return /* Eq */Block.__(0, [
+                                                                                    "1111011.0111010010111100011010100111111011111001110111",
+                                                                                    (123.456).toString(2)
+                                                                                  ]);
                                                                         }
                                                                       ],
                                                                       /* :: */[
                                                                         /* tuple */[
-                                                                          "fromString - 123",
+                                                                          "toStringWithRadix - radix:16",
                                                                           function () {
                                                                             return /* Eq */Block.__(0, [
-                                                                                      123,
-                                                                                      Number("123")
+                                                                                      "7b.74bc6a7ef9dc",
+                                                                                      (123.456).toString(16)
                                                                                     ]);
                                                                           }
                                                                         ],
                                                                         /* :: */[
                                                                           /* tuple */[
-                                                                            "fromString - 12.3",
+                                                                            "toStringWithRadix - radix:36",
                                                                             function () {
                                                                               return /* Eq */Block.__(0, [
-                                                                                        12.3,
-                                                                                        Number("12.3")
+                                                                                        "3f.gez4w97ry0a18ymf6qadcxr",
+                                                                                        (123.456).toString(36)
                                                                                       ]);
                                                                             }
                                                                           ],
                                                                           /* :: */[
                                                                             /* tuple */[
-                                                                              "fromString - empty string",
+                                                                              "toStringWithRadix - radix:37",
                                                                               function () {
-                                                                                return /* Eq */Block.__(0, [
-                                                                                          0,
-                                                                                          Number("")
-                                                                                        ]);
+                                                                                return /* ThrowAny */Block.__(7, [function () {
+                                                                                            (0).toString(37);
+                                                                                            return /* () */0;
+                                                                                          }]);
                                                                               }
                                                                             ],
                                                                             /* :: */[
                                                                               /* tuple */[
-                                                                                "fromString - 0x11",
+                                                                                "toStringWithRadix - radix:1",
                                                                                 function () {
-                                                                                  return /* Eq */Block.__(0, [
-                                                                                            17,
-                                                                                            Number("0x11")
-                                                                                          ]);
+                                                                                  return /* ThrowAny */Block.__(7, [function () {
+                                                                                              (0).toString(1);
+                                                                                              return /* () */0;
+                                                                                            }]);
                                                                                 }
                                                                               ],
                                                                               /* :: */[
                                                                                 /* tuple */[
-                                                                                  "fromString - 0b11",
+                                                                                  "toStringWithRadix - radix:-1",
                                                                                   function () {
-                                                                                    return /* Eq */Block.__(0, [
-                                                                                              3,
-                                                                                              Number("0b11")
-                                                                                            ]);
+                                                                                    return /* ThrowAny */Block.__(7, [function () {
+                                                                                                (0).toString(-1);
+                                                                                                return /* () */0;
+                                                                                              }]);
                                                                                   }
                                                                                 ],
                                                                                 /* :: */[
                                                                                   /* tuple */[
-                                                                                    "fromString - 0o11",
+                                                                                    "fromString - 123",
                                                                                     function () {
                                                                                       return /* Eq */Block.__(0, [
-                                                                                                9,
-                                                                                                Number("0o11")
+                                                                                                123,
+                                                                                                Number("123")
                                                                                               ]);
                                                                                     }
                                                                                   ],
                                                                                   /* :: */[
                                                                                     /* tuple */[
-                                                                                      "fromString - invalid string",
+                                                                                      "fromString - 12.3",
                                                                                       function () {
                                                                                         return /* Eq */Block.__(0, [
-                                                                                                  /* true */1,
-                                                                                                  +isNaN(Number("foo"))
+                                                                                                  12.3,
+                                                                                                  Number("12.3")
                                                                                                 ]);
                                                                                       }
                                                                                     ],
-                                                                                    /* [] */0
+                                                                                    /* :: */[
+                                                                                      /* tuple */[
+                                                                                        "fromString - empty string",
+                                                                                        function () {
+                                                                                          return /* Eq */Block.__(0, [
+                                                                                                    0,
+                                                                                                    Number("")
+                                                                                                  ]);
+                                                                                        }
+                                                                                      ],
+                                                                                      /* :: */[
+                                                                                        /* tuple */[
+                                                                                          "fromString - 0x11",
+                                                                                          function () {
+                                                                                            return /* Eq */Block.__(0, [
+                                                                                                      17,
+                                                                                                      Number("0x11")
+                                                                                                    ]);
+                                                                                          }
+                                                                                        ],
+                                                                                        /* :: */[
+                                                                                          /* tuple */[
+                                                                                            "fromString - 0b11",
+                                                                                            function () {
+                                                                                              return /* Eq */Block.__(0, [
+                                                                                                        3,
+                                                                                                        Number("0b11")
+                                                                                                      ]);
+                                                                                            }
+                                                                                          ],
+                                                                                          /* :: */[
+                                                                                            /* tuple */[
+                                                                                              "fromString - 0o11",
+                                                                                              function () {
+                                                                                                return /* Eq */Block.__(0, [
+                                                                                                          9,
+                                                                                                          Number("0o11")
+                                                                                                        ]);
+                                                                                              }
+                                                                                            ],
+                                                                                            /* :: */[
+                                                                                              /* tuple */[
+                                                                                                "fromString - invalid string",
+                                                                                                function () {
+                                                                                                  return /* Eq */Block.__(0, [
+                                                                                                            /* true */1,
+                                                                                                            +isNaN(Number("foo"))
+                                                                                                          ]);
+                                                                                                }
+                                                                                              ],
+                                                                                              /* [] */0
+                                                                                            ]
+                                                                                          ]
+                                                                                        ]
+                                                                                      ]
+                                                                                    ]
                                                                                   ]
                                                                                 ]
                                                                               ]
