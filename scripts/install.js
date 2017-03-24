@@ -55,7 +55,7 @@ console.log('ninja binary is ready: ', ninja_bin_output)
 
 function non_windows_npm_release() {
     try {
-        child_process.execSync('node config_compiler.js', working_config)
+        child_process.execSync('node ../scripts/config_compiler.js', working_config)
         console.log("Build the compiler and runtime .. ")
         child_process.execSync("make world", working_config)
 
