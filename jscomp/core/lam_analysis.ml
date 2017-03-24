@@ -347,7 +347,7 @@ let destruct_pattern (body : Lam.t) params args =
   | _ -> false
     
 (** Hints to inlining *)
-let ok_to_inline ~body params args =
+let ok_to_inline_fun_when_app ~body params args =
   let s = size body in
   s < small_inline_size ||
   (destruct_pattern body params args) ||  
