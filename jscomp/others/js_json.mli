@@ -93,8 +93,11 @@ module Encode: sig
   external string : string -> t = "%identity"
   (** [string s] makes a JSON string of the [string] [s] *)
 
-  external number : float -> t = "%identity"
-  (** [number n] makes a JSON number of the [float] [n] *)
+  external float : float -> t = "%identity"
+  (** [float n] makes a JSON number of the [float] [n] *)
+
+  external int : int -> t = "%identity"
+  (** [int n] makes a JSON number of the [int] [n] *)
 
   external boolean : Js.boolean -> t = "%identity" 
   (** [boolean b] makes a JSON boolean of the [Js.boolean] [b] *)

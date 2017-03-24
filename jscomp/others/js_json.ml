@@ -169,7 +169,8 @@ end
 
 module Encode = struct
   external boolean : Js.boolean -> t = "%identity" 
-  external number : float -> t = "%identity"
+  external float : float -> t = "%identity"
+  external int : int -> t = "%identity"
   external string : string -> t = "%identity"
   external null : t = "" [@@bs.val]
   external array_ : t array -> t = "%identity"
