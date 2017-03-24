@@ -18,6 +18,7 @@ var path = require('path')
 var os = require('os')
 
 var os_type = os.type()
+var os_arch = os.arch()
 var is_windows = !(os_type.indexOf('Windows') < 0)
 var root_dir = path.join(__dirname,'..')
 var jscomp = path.join(root_dir, 'jscomp')
@@ -33,7 +34,7 @@ var vendor_ninja_version = '1.7.2'
 var ninja_bin_output = path.join(root_dir,'bin','ninja.exe')
 var ninja_vendor_dir = path.join(root_dir,'ninja-build')
 
-function build_ninja(){    
+function build_ninja(){
     console.log('No prebuilt Ninja, building Ninja now')
     var build_ninja_command = "tar -xf  ninja-1.7.2.tar.gz  && cd  ninja-1.7.2  && ./configure.py --bootstrap "
     child_process.execSync(build_ninja_command,{cwd:ninja_vendor_dir})
@@ -43,12 +44,11 @@ function build_ninja(){
 console.log('Prepare ninja binary ')
 if(is_windows){
     fs.rename(path.join(ninja_vendor_dir,'ninja.win'),ninja_bin_output)
-}
-else if(os_type==='Darwin'){
-    // build_ninja()
+} else if(os_type==='Darwin'){
     fs.renameSync(path.join(ninja_vendor_dir,'ninja.darwin'),ninja_bin_output)
-}  
-else {
+} else if (os_type === 'Linux' && os_arch === 'x64'){
+    fs.renameSync(path.join(ninja_vendor_dir,'ninja.linux64'),ninja_bin_output)
+} else {
     build_ninja()
 }
 console.log('ninja binary is ready: ', ninja_bin_output)
@@ -107,4 +107,3 @@ if (is_windows) {
 else {
     non_windows_npm_release()
 }
-
