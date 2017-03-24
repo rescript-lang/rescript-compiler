@@ -332,6 +332,7 @@ bin/whole_compiler.ml : core/js_of_lam_string.ml
 bin/whole_compiler.ml : core/js_of_lam_tuple.mli
 bin/whole_compiler.ml : core/js_pass_flatten.mli
 bin/whole_compiler.ml : core/lam_beta_reduce.mli
+bin/whole_compiler.ml : core/lam_bounded_vars.ml
 bin/whole_compiler.ml : core/lam_compile_defs.ml
 bin/whole_compiler.ml : core/lam_compile_env.mli
 bin/whole_compiler.ml : core/lam_compile_util.ml
@@ -353,6 +354,7 @@ bin/whole_compiler.ml : core/js_of_lam_record.mli
 bin/whole_compiler.ml : core/js_of_lam_string.mli
 bin/whole_compiler.ml : core/js_of_lam_variant.ml
 bin/whole_compiler.ml : core/js_program_loader.ml
+bin/whole_compiler.ml : core/lam_bounded_vars.mli
 bin/whole_compiler.ml : core/lam_compile_const.ml
 bin/whole_compiler.ml : core/lam_compile_defs.mli
 bin/whole_compiler.ml : core/lam_compile_group.ml

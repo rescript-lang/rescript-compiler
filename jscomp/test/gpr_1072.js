@@ -167,6 +167,8 @@ again4((side_effect[0] = side_effect[0] + 1 | 0, /* () */0), (side_effect[0] = s
 
 again4(undefined, (side_effect[0] = side_effect[0] - 1 | 0, /* () */0), 173);
 
+again4((side_effect[0] = side_effect[0] + 1 | 0, /* () */0), /* () */0, 174);
+
 exports.u            = u;
 exports.v_ice_cream3 = v_ice_cream3;
 exports.v_ice_cream4 = v_ice_cream4;

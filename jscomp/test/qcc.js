@@ -357,7 +357,8 @@ function out(x) {
   if (x !== 0) {
     out(x / 256 | 0);
     obuf[opos[0]] = Char.chr(x & 255);
-    return opos[0] = opos[0] + 1 | 0;
+    opos[0] = opos[0] + 1 | 0;
+    return /* () */0;
   } else {
     return 0;
   }
@@ -1675,7 +1676,8 @@ function elfgen(outf) {
           };
         };
         genrel(l);
-        return n$1[0] = n$1[0] + 1 | 0;
+        n$1[0] = n$1[0] + 1 | 0;
+        return /* () */0;
       });
   var hash = opos[0];
   var n$2 = ((rel - symtab | 0) / 24 | 0) - 1 | 0;

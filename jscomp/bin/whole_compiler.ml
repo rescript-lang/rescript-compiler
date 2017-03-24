@@ -65297,6 +65297,9 @@ type unop = t ->  t
 val inner_map : (t -> t) -> t -> t
 val inner_iter : (t -> unit) -> t -> unit 
 val free_variables : t -> Ident_set.t
+
+val no_bounded_variables : t -> bool 
+
 val hit_any_variables : Ident_set.t -> t -> bool
 val check : string -> t -> t 
 type bindings = (Ident.t * t) list
@@ -66085,6 +66088,64 @@ let free_variables l =
     end;
   in free l; 
   !fv
+
+
+
+let rec no_bounded_variables (l : t) =
+  begin
+    match (l : t) with 
+    | Lvar id -> true 
+    | Lconst _ -> true
+    | Lassign(_id, e) ->
+      no_bounded_variables e
+    | Lapply{fn; args; _} ->
+      no_bounded_variables fn && List.for_all no_bounded_variables args
+    | Lglobal_module _ -> true
+    | Lprim {args; primitive = _ ; } ->
+      List.for_all no_bounded_variables args
+    | Lswitch(arg, sw) ->
+      no_bounded_variables arg &&
+      List.for_all (fun (key, case) -> no_bounded_variables case) sw.sw_consts &&
+      List.for_all (fun (key, case) -> no_bounded_variables case) sw.sw_blocks &&
+      begin match sw.sw_failaction with 
+        | None -> true
+        | Some a -> no_bounded_variables a 
+      end
+    | Lstringswitch (arg,cases,default) ->
+      no_bounded_variables arg &&
+      List.for_all (fun (_,act) -> no_bounded_variables act) cases &&
+      begin match default with 
+        | None -> true
+        | Some a -> no_bounded_variables a 
+      end
+    | Lstaticraise (_,args) ->
+      List.for_all no_bounded_variables args
+    | Lifthenelse(e1, e2, e3) ->
+      no_bounded_variables e1 && no_bounded_variables e2 && no_bounded_variables e3
+    | Lsequence(e1, e2) ->
+      no_bounded_variables e1 && no_bounded_variables e2
+    | Lwhile(e1, e2) ->
+      no_bounded_variables e1 && no_bounded_variables e2
+    | Lsend (k, met, obj, args, _) ->
+      no_bounded_variables met  &&
+      no_bounded_variables obj &&
+      List.for_all no_bounded_variables args 
+    | Lifused (v, e) ->
+      no_bounded_variables e
+
+
+    | Lstaticcatch(e1, (_,vars), e2) ->
+      vars = [] && no_bounded_variables e1 &&  no_bounded_variables e2
+    | Ltrywith(e1, exn, e2) -> false
+    | Lfunction{body;params} ->
+      params = [] && no_bounded_variables body;
+    | Llet(str, id, arg, body) ->false
+    | Lletrec(decl, body) -> decl = [] && no_bounded_variables body 
+    | Lfor(v, e1, e2, dir, e3) -> false 
+
+  end
+
+
 
 
 (**
@@ -70536,7 +70597,7 @@ val no_side_effects : Lam.t -> bool
 
 val size : Lam.t -> int
 
-val ok_to_inline : body:Lam.t -> Lam.ident list -> Lam.t list -> bool
+val ok_to_inline_fun_when_app : body:Lam.t -> Lam.ident list -> Lam.t list -> bool
   
 val eq_lambda : Lam.t -> Lam.t -> bool 
 (** a conservative version of comparing two lambdas, mostly 
@@ -70900,7 +70961,7 @@ let destruct_pattern (body : Lam.t) params args =
   | _ -> false
     
 (** Hints to inlining *)
-let ok_to_inline ~body params args =
+let ok_to_inline_fun_when_app ~body params args =
   let s = size body in
   s < small_inline_size ||
   (destruct_pattern body params args) ||  
@@ -88617,6 +88678,219 @@ let simple_beta_reduce params body args =
   | _ -> None
 
 end
+module Lam_bounded_vars : sig 
+#1 "lam_bounded_vars.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+(** [rewrite tbl lam] 
+    Given a [tbl] to rewrite all bounded variables in [lam] 
+*)
+val rewrite : Lam.t Ident_hashtbl.t -> Lam.t -> Lam.t
+
+(** refresh lambda to replace all bounded vars for new ones *)
+val refresh : 
+  Lam.t -> 
+  Lam.t 
+
+end = struct
+#1 "lam_bounded_vars.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+(*
+   Given an [map], rewrite all let bound variables into new variables, 
+   note that the [map] is changed
+   example    
+   {[
+     let a/112 = 3 in a/112      
+   ]}
+   would be converted into 
+   {[
+     let a/113 = 3 in a/113     
+   ]}   
+
+   ATTENTION: [let] bound idents have to be renamed, 
+   Note we rely on an invariant that parameter could not be rebound 
+ *)
+
+(* 
+  Small function inline heuristics:
+  Even if a function is small, it does not mean it is good for inlining,
+  for example, in list.ml
+   {[
+     let rec length_aux len = function
+         [] -> len
+       | a::l -> length_aux (len + 1) l
+
+     let length l = length_aux 0 l
+   ]}   
+   if we inline [length], it will expose [length_aux] to the user, first, it make 
+   the code not very friendly, also since [length_aux] is used everywhere now, it 
+   may affect that we will not do the inlining of [length_aux] in [length]
+
+   Criteior for sure to inline   
+   1. small size, does not introduce extra symbols, non-exported and non-recursive   
+      non-recursive is required if we re-apply the strategy
+
+   Other Factors:   
+   2. number of invoked times
+   3. arguments are const or not   
+*)
+let rewrite (map :   _ Ident_hashtbl.t) 
+    (lam : Lam.t) : Lam.t = 
+
+  let rebind i = 
+    let i' = Ident.rename i in 
+    Ident_hashtbl.add map i (Lam.var i');
+    i' in
+  (* order matters, especially for let bindings *)
+  let rec 
+    option_map op = 
+    match op with 
+    | None -> None 
+    | Some x -> Some (aux x)
+  and aux (lam : Lam.t) : Lam.t = 
+    match lam with 
+    | Lvar v ->
+      Ident_hashtbl.find_default map v lam 
+    | Llet(str, v, l1, l2) ->
+      let v = rebind v in
+      let l1 = aux l1 in      
+      let l2 = aux l2 in
+      Lam.let_ str v  l1  l2 
+    | Lletrec(bindings, body) ->
+      (*order matters see GPR #405*)
+      let vars = List.map (fun (k, _) -> rebind k) bindings in 
+      let bindings = List.map2 (fun var (_,l) -> var, aux l) vars bindings in 
+      let body = aux body in       
+      Lam.letrec bindings body
+    | Lfunction{arity; kind; params; body} -> 
+      let params =  List.map rebind params in
+      let body = aux body in      
+      Lam.function_ ~arity ~kind ~params ~body
+    | Lstaticcatch(l1, (i,xs), l2) -> 
+      let l1 = aux l1 in
+      let xs = List.map rebind xs in
+      let l2 = aux l2 in
+      Lam.staticcatch l1 (i,xs) l2
+    | Lfor(ident, l1, l2, dir, l3) ->
+      let ident = rebind ident in 
+      let l1 = aux l1 in
+      let l2 = aux l2 in
+      let l3 = aux l3 in
+      Lam.for_ ident (aux  l1)  l2 dir  l3
+    | Lconst _ -> lam
+    | Lprim {primitive; args ; loc} ->
+      (* here it makes sure that global vars are not rebound *)      
+      Lam.prim ~primitive ~args:(List.map aux  args) loc
+    | Lglobal_module _ -> lam 
+    | Lapply {fn;  args; loc;  status } ->
+      let fn = aux fn in       
+      let args = List.map aux  args in 
+      Lam.apply fn  args loc status
+    | Lswitch(l, {sw_failaction; 
+                  sw_consts; 
+                  sw_blocks;
+                  sw_numblocks;
+                  sw_numconsts;
+                 }) ->
+      let l = aux l in
+      Lam.switch l
+              {sw_consts = 
+                 List.map (fun (v, l) -> v, aux  l) sw_consts;
+               sw_blocks = List.map (fun (v, l) -> v, aux  l) sw_blocks;
+               sw_numconsts = sw_numconsts;
+               sw_numblocks = sw_numblocks;
+               sw_failaction =  option_map sw_failaction
+              }
+    | Lstringswitch(l, sw, d) ->
+      let l = aux  l in
+      Lam.stringswitch l 
+                     (List.map (fun (i, l) -> i,aux  l) sw)
+                     (option_map d)
+    | Lstaticraise (i,ls) 
+      -> Lam.staticraise i (List.map aux  ls)
+    | Ltrywith(l1, v, l2) -> 
+      let l1 = aux l1 in
+      let v = rebind v in
+      let l2 = aux l2 in
+      Lam.try_ l1 v l2
+    | Lifthenelse(l1, l2, l3) -> 
+      let l1 = aux l1 in
+      let l2 = aux l2 in
+      let l3 = aux l3 in
+      Lam.if_ l1  l2   l3
+    | Lsequence(l1, l2) -> 
+      let l1 = aux l1 in
+      let l2 = aux l2 in
+      Lam.seq l1 l2
+    | Lwhile(l1, l2) -> 
+      let l1 = aux l1 in
+      let l2 = aux l2 in
+      Lam.while_  l1  l2
+    | Lassign(v, l) 
+      -> Lam.assign v (aux  l)
+    | Lsend(u, m, o, ll, v) ->
+      let m = aux m in 
+      let o = aux o in 
+      let ll = List.map aux ll in
+      Lam.send u  m  o  ll v
+    | Lifused(v, l) -> 
+      let l = aux l in 
+      Lam.ifused v  l
+  in 
+  aux lam
+
+
+let refresh lam = rewrite (Ident_hashtbl.create 17 : Lam.t Ident_hashtbl.t ) lam
+
+end
 module Lam_closure : sig 
 #1 "lam_closure.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -89109,9 +89383,6 @@ val propogate_beta_reduce :
   Lam.t
 
 
-val refresh : 
-  Lam.t -> 
-  Lam.t 
 
 (** 
    {[ Lam_beta_reduce.propogate_beta_reduce_with_map 
@@ -89172,154 +89443,6 @@ end = struct
 
 
 
-(*
-   Given an [map], rewrite all let bound variables into new variables, 
-   note that the [map] is changed
-   example    
-   {[
-     let a/112 = 3 in a/112      
-   ]}
-   would be converted into 
-   {[
-     let a/113 = 3 in a/113     
-   ]}   
-
-   ATTENTION: [let] bound idents have to be renamed, 
-   Note we rely on an invariant that parameter could not be rebound 
- *)
-
-(* 
-  Small function inline heuristics:
-  Even if a function is small, it does not mean it is good for inlining,
-  for example, in list.ml
-   {[
-     let rec length_aux len = function
-         [] -> len
-       | a::l -> length_aux (len + 1) l
-
-     let length l = length_aux 0 l
-   ]}   
-   if we inline [length], it will expose [length_aux] to the user, first, it make 
-   the code not very friendly, also since [length_aux] is used everywhere now, it 
-   may affect that we will not do the inlining of [length_aux] in [length]
-
-   Criteior for sure to inline   
-   1. small size, does not introduce extra symbols, non-exported and non-recursive   
-      non-recursive is required if we re-apply the strategy
-
-   Other Factors:   
-   2. number of invoked times
-   3. arguments are const or not   
-*)
-let rewrite (map :   _ Ident_hashtbl.t) 
-    (lam : Lam.t) : Lam.t = 
-
-  let rebind i = 
-    let i' = Ident.rename i in 
-    Ident_hashtbl.add map i (Lam.var i');
-    i' in
-  (* order matters, especially for let bindings *)
-  let rec 
-    option_map op = 
-    match op with 
-    | None -> None 
-    | Some x -> Some (aux x)
-  and aux (lam : Lam.t) : Lam.t = 
-    match lam with 
-    | Lvar v ->
-      Ident_hashtbl.find_default map v lam 
-    | Llet(str, v, l1, l2) ->
-      let v = rebind v in
-      let l1 = aux l1 in      
-      let l2 = aux l2 in
-      Lam.let_ str v  l1  l2 
-    | Lletrec(bindings, body) ->
-      (*order matters see GPR #405*)
-      let vars = List.map (fun (k, _) -> rebind k) bindings in 
-      let bindings = List.map2 (fun var (_,l) -> var, aux l) vars bindings in 
-      let body = aux body in       
-      Lam.letrec bindings body
-    | Lfunction{arity; kind; params; body} -> 
-      let params =  List.map rebind params in
-      let body = aux body in      
-      Lam.function_ ~arity ~kind ~params ~body
-    | Lstaticcatch(l1, (i,xs), l2) -> 
-      let l1 = aux l1 in
-      let xs = List.map rebind xs in
-      let l2 = aux l2 in
-      Lam.staticcatch l1 (i,xs) l2
-    | Lfor(ident, l1, l2, dir, l3) ->
-      let ident = rebind ident in 
-      let l1 = aux l1 in
-      let l2 = aux l2 in
-      let l3 = aux l3 in
-      Lam.for_ ident (aux  l1)  l2 dir  l3
-    | Lconst _ -> lam
-    | Lprim {primitive; args ; loc} ->
-      (* here it makes sure that global vars are not rebound *)      
-      Lam.prim ~primitive ~args:(List.map aux  args) loc
-    | Lglobal_module _ -> lam 
-    | Lapply {fn;  args; loc;  status } ->
-      let fn = aux fn in       
-      let args = List.map aux  args in 
-      Lam.apply fn  args loc status
-    | Lswitch(l, {sw_failaction; 
-                  sw_consts; 
-                  sw_blocks;
-                  sw_numblocks;
-                  sw_numconsts;
-                 }) ->
-      let l = aux l in
-      Lam.switch l
-              {sw_consts = 
-                 List.map (fun (v, l) -> v, aux  l) sw_consts;
-               sw_blocks = List.map (fun (v, l) -> v, aux  l) sw_blocks;
-               sw_numconsts = sw_numconsts;
-               sw_numblocks = sw_numblocks;
-               sw_failaction =  option_map sw_failaction
-              }
-    | Lstringswitch(l, sw, d) ->
-      let l = aux  l in
-      Lam.stringswitch l 
-                     (List.map (fun (i, l) -> i,aux  l) sw)
-                     (option_map d)
-    | Lstaticraise (i,ls) 
-      -> Lam.staticraise i (List.map aux  ls)
-    | Ltrywith(l1, v, l2) -> 
-      let l1 = aux l1 in
-      let v = rebind v in
-      let l2 = aux l2 in
-      Lam.try_ l1 v l2
-    | Lifthenelse(l1, l2, l3) -> 
-      let l1 = aux l1 in
-      let l2 = aux l2 in
-      let l3 = aux l3 in
-      Lam.if_ l1  l2   l3
-    | Lsequence(l1, l2) -> 
-      let l1 = aux l1 in
-      let l2 = aux l2 in
-      Lam.seq l1 l2
-    | Lwhile(l1, l2) -> 
-      let l1 = aux l1 in
-      let l2 = aux l2 in
-      Lam.while_  l1  l2
-    | Lassign(v, l) 
-      -> Lam.assign v (aux  l)
-    | Lsend(u, m, o, ll, v) ->
-      let m = aux m in 
-      let o = aux o in 
-      let ll = List.map aux ll in
-      Lam.send u  m  o  ll v
-    | Lifused(v, l) -> 
-      let l = aux l in 
-      Lam.ifused v  l
-  in 
-  aux lam
-
-
-let refresh lam = rewrite (Ident_hashtbl.create 17 : Lam.t Ident_hashtbl.t ) lam
-
-
 
 
 (* 
@@ -89359,7 +89482,7 @@ let propogate_beta_reduce
            let p = Ident.rename old_param in 
            (p,arg) :: rest_bindings , (Lam.var p) :: acc 
       )  ([],[]) params args in
-  let new_body = rewrite (Ident_hashtbl.of_list2 (List.rev params) (rev_new_params)) body in
+  let new_body = Lam_bounded_vars.rewrite (Ident_hashtbl.of_list2 (List.rev params) (rev_new_params)) body in
   List.fold_right
     (fun (param, (arg : Lam.t)) l -> 
        let arg = 
@@ -89420,7 +89543,7 @@ let propogate_beta_reduce_with_map
              let p = Ident.rename old_param in 
              (p,arg) :: rest_bindings , (Lam.var p) :: acc 
       )  ([],[]) params args in
-  let new_body = rewrite (Ident_hashtbl.of_list2 (List.rev params) (rev_new_params)) body in
+  let new_body = Lam_bounded_vars.rewrite (Ident_hashtbl.of_list2 (List.rev params) (rev_new_params)) body in
   List.fold_right
     (fun (param, (arg : Lam.t)) l -> 
        let arg = 
@@ -92673,7 +92796,7 @@ let translate  loc
     begin match args with
       | [e] -> 
         let v = (Js_of_lam_block.field Fld_na e 0l) in
-        E.assign  v (E.int32_add v (E.small_int  n))
+        E.seq (E.assign  v (E.int32_add v (E.small_int  n))) E.unit
       | _ -> assert false
     end
 
@@ -96893,19 +97016,26 @@ let subst_helper (subst : subst_tbl) (query : int -> int) lam =
 
               FIXME:   when inlining, need refresh local bound identifiers
           *)
-          let lam_size = Lam_analysis.size l2 in
+
           let ok_to_inline = 
             i >=0 && 
-            ( (j <= 2 && lam_size < Lam_analysis.exit_inline_size   )
-              || lam_size < 5)
+            (Lam.no_bounded_variables l2) &&
+            (let lam_size = Lam_analysis.size l2 in
+             (j <= 2 && lam_size < Lam_analysis.exit_inline_size   )
+             || lam_size < 5)
             (*TODO: when we do the case merging on the js side, 
               the j is not very indicative                
             *)             
           in 
-          if ok_to_inline (* && false *) 
+          if ok_to_inline 
+             (* #1438 when the action containes bounded variable 
+                to keep the invariant, everytime, we do an inlining,
+                we need refresh, just refreshing once is not enough
+             *)
           then 
             begin 
-              Int_hashtbl.add subst i (xs, Lam_beta_reduce.refresh @@ simplif l2) ;
+              Ext_log.dwarn __LOC__ "FUCK%d@." i;
+              Int_hashtbl.add subst i (xs, Lam_bounded_vars.refresh @@ simplif l2) ;
               simplif l1 (** l1 will inline *)
             end
           else Lam.staticcatch (simplif l1) (i,xs) (simplif l2)
@@ -98000,7 +98130,7 @@ let simplify_alias
               end
             else 
             if (* Lam_analysis.size body < Lam_analysis.small_inline_size *)
-              Lam_analysis.ok_to_inline ~body params args 
+              Lam_analysis.ok_to_inline_fun_when_app ~body params args 
             then 
 
                 (* let param_map =  *)

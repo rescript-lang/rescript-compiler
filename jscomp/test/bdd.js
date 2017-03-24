@@ -96,7 +96,8 @@ function insert(idl, idh, v, ind, bucket, newNode) {
           newNode,
           bucket
         ]);
-    return n_items[0] = n_items[0] + 1 | 0;
+    n_items[0] = n_items[0] + 1 | 0;
+    return /* () */0;
   } else {
     resize((sz_1[0] + sz_1[0] | 0) + 2 | 0);
     var ind$1 = hashVal(idl, idh, v) & sz_1[0];

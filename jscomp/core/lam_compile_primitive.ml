@@ -499,7 +499,7 @@ let translate  loc
     begin match args with
       | [e] -> 
         let v = (Js_of_lam_block.field Fld_na e 0l) in
-        E.assign  v (E.int32_add v (E.small_int  n))
+        E.seq (E.assign  v (E.int32_add v (E.small_int  n))) E.unit
       | _ -> assert false
     end
 

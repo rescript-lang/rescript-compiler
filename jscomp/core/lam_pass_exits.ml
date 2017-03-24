@@ -224,19 +224,26 @@ let subst_helper (subst : subst_tbl) (query : int -> int) lam =
 
               FIXME:   when inlining, need refresh local bound identifiers
           *)
-          let lam_size = Lam_analysis.size l2 in
+
           let ok_to_inline = 
             i >=0 && 
-            ( (j <= 2 && lam_size < Lam_analysis.exit_inline_size   )
-              || lam_size < 5)
+            (Lam.no_bounded_variables l2) &&
+            (let lam_size = Lam_analysis.size l2 in
+             (j <= 2 && lam_size < Lam_analysis.exit_inline_size   )
+             || lam_size < 5)
             (*TODO: when we do the case merging on the js side, 
               the j is not very indicative                
             *)             
           in 
-          if ok_to_inline (* && false *) 
+          if ok_to_inline 
+             (* #1438 when the action containes bounded variable 
+                to keep the invariant, everytime, we do an inlining,
+                we need refresh, just refreshing once is not enough
+             *)
           then 
             begin 
-              Int_hashtbl.add subst i (xs, Lam_beta_reduce.refresh @@ simplif l2) ;
+              Ext_log.dwarn __LOC__ "FUCK%d@." i;
+              Int_hashtbl.add subst i (xs, Lam_bounded_vars.refresh @@ simplif l2) ;
               simplif l1 (** l1 will inline *)
             end
           else Lam.staticcatch (simplif l1) (i,xs) (simplif l2)

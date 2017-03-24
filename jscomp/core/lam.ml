@@ -707,6 +707,64 @@ let free_variables l =
   !fv
 
 
+
+let rec no_bounded_variables (l : t) =
+  begin
+    match (l : t) with 
+    | Lvar id -> true 
+    | Lconst _ -> true
+    | Lassign(_id, e) ->
+      no_bounded_variables e
+    | Lapply{fn; args; _} ->
+      no_bounded_variables fn && List.for_all no_bounded_variables args
+    | Lglobal_module _ -> true
+    | Lprim {args; primitive = _ ; } ->
+      List.for_all no_bounded_variables args
+    | Lswitch(arg, sw) ->
+      no_bounded_variables arg &&
+      List.for_all (fun (key, case) -> no_bounded_variables case) sw.sw_consts &&
+      List.for_all (fun (key, case) -> no_bounded_variables case) sw.sw_blocks &&
+      begin match sw.sw_failaction with 
+        | None -> true
+        | Some a -> no_bounded_variables a 
+      end
+    | Lstringswitch (arg,cases,default) ->
+      no_bounded_variables arg &&
+      List.for_all (fun (_,act) -> no_bounded_variables act) cases &&
+      begin match default with 
+        | None -> true
+        | Some a -> no_bounded_variables a 
+      end
+    | Lstaticraise (_,args) ->
+      List.for_all no_bounded_variables args
+    | Lifthenelse(e1, e2, e3) ->
+      no_bounded_variables e1 && no_bounded_variables e2 && no_bounded_variables e3
+    | Lsequence(e1, e2) ->
+      no_bounded_variables e1 && no_bounded_variables e2
+    | Lwhile(e1, e2) ->
+      no_bounded_variables e1 && no_bounded_variables e2
+    | Lsend (k, met, obj, args, _) ->
+      no_bounded_variables met  &&
+      no_bounded_variables obj &&
+      List.for_all no_bounded_variables args 
+    | Lifused (v, e) ->
+      no_bounded_variables e
+
+
+    | Lstaticcatch(e1, (_,vars), e2) ->
+      vars = [] && no_bounded_variables e1 &&  no_bounded_variables e2
+    | Ltrywith(e1, exn, e2) -> false
+    | Lfunction{body;params} ->
+      params = [] && no_bounded_variables body;
+    | Llet(str, id, arg, body) ->false
+    | Lletrec(decl, body) -> decl = [] && no_bounded_variables body 
+    | Lfor(v, e1, e2, dir, e3) -> false 
+
+  end
+
+
+
+
 (**
    checks  
    1. variables are not bound twice 

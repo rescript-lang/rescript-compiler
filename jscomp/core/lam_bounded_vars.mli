@@ -23,26 +23,12 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
+(** [rewrite tbl lam] 
+    Given a [tbl] to rewrite all bounded variables in [lam] 
+*)
+val rewrite : Lam.t Ident_hashtbl.t -> Lam.t -> Lam.t
 
-
-
-
-(** A module which provides some basic analysis over lambda expression *)
-
-(** No side effect, but it might depend on data store *)
-val no_side_effects : Lam.t -> bool 
-
-val size : Lam.t -> int
-
-val ok_to_inline_fun_when_app : body:Lam.t -> Lam.ident list -> Lam.t list -> bool
-  
-val eq_lambda : Lam.t -> Lam.t -> bool 
-(** a conservative version of comparing two lambdas, mostly 
-    for looking for similar cases in switch
- *)
-
-val small_inline_size : int  
-val exit_inline_size : int  
-
-
-val safe_to_inline : Lam.t -> bool
+(** refresh lambda to replace all bounded vars for new ones *)
+val refresh : 
+  Lam.t -> 
+  Lam.t 

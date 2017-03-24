@@ -55,9 +55,6 @@ val propogate_beta_reduce :
   Lam.t
 
 
-val refresh : 
-  Lam.t -> 
-  Lam.t 
 
 (** 
    {[ Lam_beta_reduce.propogate_beta_reduce_with_map 
