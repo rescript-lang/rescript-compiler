@@ -108,7 +108,7 @@ var suites_001 = /* :: */[
                               86
                             ]
                           ],
-                          Object.entries({
+                          Js_dict.entries({
                                 foo: 43,
                                 bar: 86
                               })
@@ -124,7 +124,7 @@ var suites_001 = /* :: */[
                               43,
                               86
                             ],
-                            Object.values({
+                            Js_dict.values({
                                   foo: 43,
                                   bar: 86
                                 })
@@ -156,7 +156,7 @@ var suites_001 = /* :: */[
                                     46
                                   ]
                                 ],
-                                Object.entries(Js_dict.fromList(/* :: */[
+                                Js_dict.entries(Js_dict.fromList(/* :: */[
                                           /* tuple */[
                                             "x",
                                             23
@@ -197,7 +197,7 @@ var suites_001 = /* :: */[
                                         46
                                       ]
                                     ],
-                                    Object.entries(Js_dict.fromArray(/* array */[
+                                    Js_dict.entries(Js_dict.fromArray(/* array */[
                                               /* tuple */[
                                                 "x",
                                                 23

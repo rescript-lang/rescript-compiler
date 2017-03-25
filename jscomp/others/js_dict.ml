@@ -35,11 +35,15 @@ external unsafeGet : 'a t -> key -> 'a = "" [@@bs.get_index]
 external set : 'a t -> key -> 'a -> unit = "" [@@bs.set_index]  
 external keys : 'a t -> key array = "Object.keys" [@@bs.val]
 
-(* TODO: this is ES2017, should we polyfill? *)
-external entries : 'a t -> (key * 'a) array = "Object.entries" [@@bs.val]
+(* external entries : 'a t -> (key * 'a) array = "Object.entries" [@@bs.val] (* ES2017 *) *)
+let entries dict =
+  keys dict
+  |> Array.map (fun key -> (key, unsafeGet dict key))
 
-(* TODO: this is ES2017, should we polyfill? *)
-external values : 'a t -> 'a array = "Object.values" [@@bs.val]
+(* external values : 'a t -> 'a array = "Object.values" [@@bs.val] (* ES2017 *) *)
+let values dict =
+  keys dict
+  |> Array.map (unsafeGet dict)
 
 let fromList entries =
   let dict = empty () in

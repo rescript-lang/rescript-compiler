@@ -59,10 +59,12 @@ external set : 'a t -> key -> 'a -> unit = "" [@@bs.set_index]
 external keys : 'a t -> key array = "Object.keys" [@@bs.val]
 (** [keys dict] returns the keys in [dict] *)
 
-external entries : 'a t -> (key * 'a) array = "Object.entries" [@@bs.val]
+(* external entries : 'a t -> (key * 'a) array = "Object.entries" [@@bs.val] *)
+val entries : 'a t -> (key * 'a) array
 (** [entries dict] returns the key value pairs in [dict] (ES2017) *)
 
-external values : 'a t -> 'a array = "Object.values" [@@bs.val]
+(* external values : 'a t -> 'a array = "Object.values" [@@bs.val] *)
+val values : 'a t -> 'a array
 (** [entries dict] returns the values in [dict] (ES2017) *)
 
 val fromList : (key * 'a) list -> 'a t
