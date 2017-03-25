@@ -96,12 +96,6 @@ module Decode = struct
     then Ok (Obj.magic (json:t) : string)
     else Error ("Expected string, got " ^ stringify json)
 
-  (* TODO: remove this? *)
-  let null json = 
-    if (Obj.magic json : 'a Js.null) == Js.null
-    then Ok Js.null
-    else Error ("Expected null, got " ^ stringify json)
-
   let nullable decode json =
     if (Obj.magic json : 'a Js.null) == Js.null
     then Ok Js.null
@@ -109,6 +103,12 @@ module Decode = struct
       match decode json with
       | Ok value -> Ok (Js.Null.return value)
       | Error message -> Error message
+
+  (* TODO: remove this? *)
+  let nullAs value json = 
+    if (Obj.magic json : 'a Js.null) == Js.null
+    then Ok value
+    else Error ("Expected null, got " ^ stringify json)
 
   let array_ decode json = 
     if Js_array.isArray json
