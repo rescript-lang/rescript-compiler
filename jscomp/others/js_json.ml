@@ -34,6 +34,10 @@ type _ kind =
   | Boolean : Js.boolean kind
   | Null : Js_types.null_val kind
 
+type ('a, 'e) result =
+  | Ok of 'a
+  | Error of 'e
+
 let reify_type (type a) (x : 'a) : (a kind * a ) = 
   (if Js.typeof x = "string" then 
     Obj.magic String else
@@ -61,16 +65,17 @@ let test (type a) (x : 'a) (v : a kind) : bool =
   | Array -> Js_array.isArray x 
   | Object -> (Obj.magic x) != Js.null && Js.typeof x = "object" && not (Js_array.isArray x )
 
-external parse : string -> t = "JSON.parse" [@@bs.val]
+external unsafeParse : string -> t = "JSON.parse" [@@bs.val]
+
+let parse s =
+  try Ok (unsafeParse s) with
+  | e -> Error (Js.String.make e)
+
 external stringify: t -> string = "JSON.stringify" [@@bs.val]
 external stringifyAny : 'a -> string option = "JSON.stringify" [@@bs.val] [@@bs.return undefined_to_opt]
 (* TODO: more docs when parse error happens or stringify non-stringfy value *)
 
 module Decode = struct
-  type ('a, 'e) result =
-  | Ok of 'a
-  | Error of 'e
-
   type 'a decoder = t -> ('a, string) result
 
   let boolean json = 

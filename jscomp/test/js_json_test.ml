@@ -10,15 +10,25 @@ let add_test =
 let eq loc x y = 
   add_test loc (fun _ -> Mt.Eq (x, y)) 
 
+let throws loc f = 
+  add_test loc (fun _ -> Mt.ThrowAny f)
+
 let false_ loc =
   add_test loc (fun _ -> Mt.Ok false)
 
 let true_ loc =
   add_test loc (fun _ -> Mt.Ok true)
 
-let () = 
+let () =
+  eq __LOC__
+    (Js.Json.parse "null") (Ok (Obj.magic Js.null));
+  eq __LOC__
+    (Js.Json.parse "-") (Error "SyntaxError: Unexpected end of JSON input");
+  throws __LOC__
+    (fun () -> ignore (Js.Json.unsafeParse "-"))
 
-  let v = Js.Json.parse {| { "x" : [1, 2, 3 ] } |} in
+let () = 
+  let v = Js.Json.unsafeParse {| { "x" : [1, 2, 3 ] } |} in
 
   add_test __LOC__ (fun _ -> 
     let ty, x = Js.Json.reifyType v in
@@ -48,7 +58,7 @@ let () =
   eq __LOC__ (Js.Json.test v Object) true
 
 let () = 
-  let json = Js.Json.null |> Js.Json.stringify |> Js.Json.parse in 
+  let json = Js.Json.null |> Js.Json.stringify |> Js.Json.unsafeParse in 
   let ty, x = Js.Json.reifyType json in
   match ty with
   | Js.Json.Null -> true_ __LOC__
@@ -57,7 +67,7 @@ let () =
 let () = 
   let json = 
     Js.Json.string "test string" 
-    |> Js.Json.stringify |> Js.Json.parse 
+    |> Js.Json.stringify |> Js.Json.unsafeParse 
   in 
   let ty, x = Js.Json.reifyType json in
   match ty with
@@ -67,7 +77,7 @@ let () =
 let () = 
   let json = 
     Js.Json.number 1.23456789
-    |> Js.Json.stringify |> Js.Json.parse 
+    |> Js.Json.stringify |> Js.Json.unsafeParse 
   in 
   let ty, x = Js.Json.reifyType json in
   match ty with
@@ -77,7 +87,7 @@ let () =
 let () = 
   let json = 
     Js.Json.number (float_of_int 0xAFAFAFAF)
-    |> Js.Json.stringify |> Js.Json.parse 
+    |> Js.Json.stringify |> Js.Json.unsafeParse 
   in 
   let ty, x = Js.Json.reifyType json in
   match ty with
@@ -87,7 +97,7 @@ let () =
 let () = 
   let test v = 
     let json = 
-        Js.Json.boolean v |> Js.Json.stringify |> Js.Json.parse 
+        Js.Json.boolean v |> Js.Json.stringify |> Js.Json.unsafeParse 
     in 
     let ty, x = Js.Json.reifyType json in
     match ty with
@@ -102,11 +112,11 @@ let option_get = function | None -> assert false | Some x -> x
 
 let () = 
   let dict = Js_dict.empty  () in 
-  Js_dict.set dict "a" (Js_json.string "test string"); 
-  Js_dict.set dict "b" (Js_json.number 123.0); 
+  Js_dict.set dict "a" (Js.Json.string "test string"); 
+  Js_dict.set dict "b" (Js.Json.number 123.0); 
 
   let json = 
-    dict |> Js.Json.object_ |> Js.Json.stringify |> Js.Json.parse 
+    dict |> Js.Json.object_ |> Js.Json.stringify |> Js.Json.unsafeParse 
   in
 
   (* Make sure parsed as Object *)
@@ -137,7 +147,7 @@ let () =
 let eq_at_i 
       (type a) 
       (loc:string)
-      (json:Js_json.t) 
+      (json:Js.Json.t) 
       (i:int) 
       (kind:a Js.Json.kind) 
       (expected:a) : unit = 
@@ -159,7 +169,7 @@ let () =
     |> Array.map Js.Json.string
     |> Js.Json.array_
     |> Js.Json.stringify
-    |> Js.Json.parse 
+    |> Js.Json.unsafeParse 
   in 
   eq_at_i __LOC__ json 0 Js.Json.String "string 0";
   eq_at_i __LOC__ json 1 Js.Json.String "string 1";
@@ -171,7 +181,7 @@ let () =
     [| "string 0"; "string 1"; "string 2" |]
     |> Js.Json.stringArray
     |> Js.Json.stringify
-    |> Js.Json.parse 
+    |> Js.Json.unsafeParse 
   in 
   eq_at_i __LOC__ json 0 Js.Json.String "string 0";
   eq_at_i __LOC__ json 1 Js.Json.String "string 1";
@@ -184,7 +194,7 @@ let () =
     a  
     |> Js.Json.numberArray
     |> Js.Json.stringify
-    |> Js.Json.parse 
+    |> Js.Json.unsafeParse 
   in 
   (* Loop is unrolled to keep relevant location information *)
   eq_at_i __LOC__ json 0 Js.Json.Number a.(0);
@@ -199,7 +209,7 @@ let () =
     |> Array.map float_of_int
     |> Js.Json.numberArray
     |> Js.Json.stringify
-    |> Js.Json.parse 
+    |> Js.Json.unsafeParse 
   in 
   (* Loop is unrolled to keep relevant location information *)
   eq_at_i __LOC__ json 0 Js.Json.Number (float_of_int a.(0));
@@ -214,7 +224,7 @@ let () =
     |> Array.map Js_boolean.to_js_boolean
     |> Js.Json.booleanArray
     |> Js.Json.stringify
-    |> Js.Json.parse 
+    |> Js.Json.unsafeParse 
   in 
   (* Loop is unrolled to keep relevant location information *)
   eq_at_i __LOC__ json 0 Js.Json.Boolean (Js_boolean.to_js_boolean a.(0));
@@ -225,8 +235,8 @@ let () =
 let () =
   let make_d s i = 
     let d = Js_dict.empty() in 
-    Js_dict.set d "a" (Js_json.string s); 
-    Js_dict.set d "b" (Js_json.number (float_of_int i));
+    Js_dict.set d "a" (Js.Json.string s); 
+    Js_dict.set d "b" (Js.Json.number (float_of_int i));
     d
   in 
 
@@ -235,7 +245,7 @@ let () =
     a 
     |> Js.Json.objectArray
     |> Js.Json.stringify
-    |> Js.Json.parse 
+    |> Js.Json.unsafeParse 
   in
 
   let ty, x = Js.Json.reifyType json in 
@@ -256,7 +266,7 @@ let () =
 let () = 
   let invalid_json_str = "{{ A}" in
   try
-    let _ = Js_json.parse invalid_json_str in
+    let _ = Js.Json.unsafeParse invalid_json_str in
     false_ __LOC__
   with
   | exn -> 
@@ -507,17 +517,17 @@ let () =
   eq __LOC__ 
     (array_ int (Encode.object_ @@ Js.Dict.empty ())) (Error "Expected array, got {}");
   eq __LOC__ 
-    (array_ boolean (parse {| [true, false, true] |})) (Ok [| Js.true_; Js.false_; Js.true_ |]);
+    (array_ boolean (unsafeParse {| [true, false, true] |})) (Ok [| Js.true_; Js.false_; Js.true_ |]);
   eq __LOC__ 
-    (array_ float (parse {| [1, 2, 3] |})) (Ok [| 1.; 2.; 3. |]);
+    (array_ float (unsafeParse {| [1, 2, 3] |})) (Ok [| 1.; 2.; 3. |]);
   eq __LOC__ 
-    (array_ int (parse {| [1, 2, 3] |})) (Ok [| 1; 2; 3 |]);
+    (array_ int (unsafeParse {| [1, 2, 3] |})) (Ok [| 1; 2; 3 |]);
   eq __LOC__ 
-    (array_ string (parse {| ["a", "b", "c"] |})) (Ok [| "a"; "b"; "c" |]);
+    (array_ string (unsafeParse {| ["a", "b", "c"] |})) (Ok [| "a"; "b"; "c" |]);
   eq __LOC__ 
-    (array_ (nullAs Js.null) (parse {| [null, null, null] |})) (Ok [| Js.null; Js.null; Js.null |]);
+    (array_ (nullAs Js.null) (unsafeParse {| [null, null, null] |})) (Ok [| Js.null; Js.null; Js.null |]);
   eq __LOC__ 
-    (array_ boolean (parse {| [1, 2, 3] |})) (Error "Expected boolean, got 1")
+    (array_ boolean (unsafeParse {| [1, 2, 3] |})) (Error "Expected boolean, got 1")
 
 let () = 
   let open Js.Json in
@@ -538,22 +548,22 @@ let () =
     (dict int (Encode.object_ @@ Js.Dict.empty ())) 
     (Ok (Js.Dict.empty ()));
   eq __LOC__ 
-    (dict boolean (parse {| { "a": true, "b": false } |}))
+    (dict boolean (unsafeParse {| { "a": true, "b": false } |}))
     (Ok (Obj.magic [%obj { a = true; b = false }]));
   eq __LOC__ 
-    (dict float (parse {| { "a": 1.2, "b": 2.3 } |}))
+    (dict float (unsafeParse {| { "a": 1.2, "b": 2.3 } |}))
     (Ok (Obj.magic [%obj { a = 1.2; b = 2.3 }]));
   eq __LOC__ 
-    (dict int (parse {| { "a": 1, "b": 2 } |}))
+    (dict int (unsafeParse {| { "a": 1, "b": 2 } |}))
     (Ok (Obj.magic [%obj { a = 1; b = 2 }]));
   eq __LOC__ 
-    (dict string (parse {| { "a": "x", "b": "y" } |}))
+    (dict string (unsafeParse {| { "a": "x", "b": "y" } |}))
     (Ok (Obj.magic [%obj { a = "x"; b = "y" }]));
   eq __LOC__ 
-    (dict (nullAs Js.null) (parse {| { "a": null, "b": null } |}))
+    (dict (nullAs Js.null) (unsafeParse {| { "a": null, "b": null } |}))
     (Ok (Obj.magic [%obj { a = Js.null; b = Js.null }]));
   eq __LOC__ 
-    (dict string (parse {| { "a": null, "b": null } |}))
+    (dict string (unsafeParse {| { "a": null, "b": null } |}))
     (Error "Expected string, got null")
 
 let () = 
@@ -575,22 +585,22 @@ let () =
     (field "foo" int (Encode.object_ @@ Js.Dict.empty ())) 
     (Error "Expected field 'foo'");
   eq __LOC__ 
-    (field "b" boolean (parse {| { "a": true, "b": false } |}))
+    (field "b" boolean (unsafeParse {| { "a": true, "b": false } |}))
     (Ok Js.false_);
   eq __LOC__ 
-    (field "b" float (parse {| { "a": 1.2, "b": 2.3 } |}))
+    (field "b" float (unsafeParse {| { "a": 1.2, "b": 2.3 } |}))
     (Ok 2.3);
   eq __LOC__ 
-    (field "b" int (parse {| { "a": 1, "b": 2 } |}))
+    (field "b" int (unsafeParse {| { "a": 1, "b": 2 } |}))
     (Ok 2);
   eq __LOC__ 
-    (field "b" string (parse {| { "a": "x", "b": "y" } |}))
+    (field "b" string (unsafeParse {| { "a": "x", "b": "y" } |}))
     (Ok "y");
   eq __LOC__ 
-    (field "b" (nullAs Js.null) (parse {| { "a": null, "b": null } |}))
+    (field "b" (nullAs Js.null) (unsafeParse {| { "a": null, "b": null } |}))
     (Ok Js.null);
   eq __LOC__ 
-    (field "b" string (parse {| { "a": null, "b": null } |}))
+    (field "b" string (unsafeParse {| { "a": null, "b": null } |}))
     (Error "Expected string, got null")
 
 let () = 
@@ -621,30 +631,34 @@ let () =
   eq __LOC__ 
     (optional boolean (Encode.int 1)) (Ok None);
   eq __LOC__ 
-    (optional (field "x" int) (parse {| { "x": 2} |})) (Ok (Some 2));
+    (optional (field "x" int) (unsafeParse {| { "x": 2} |})) (Ok (Some 2));
   eq __LOC__ 
-    (optional (field "x" int) (parse {| { "x": 2.3} |})) (Ok None);
+    (optional (field "x" int) (unsafeParse {| { "x": 2.3} |})) (Ok None);
   eq __LOC__ 
-    (optional (field "y" int) (parse {| { "x": 2} |})) (Ok None);
+    (optional (field "y" int) (unsafeParse {| { "x": 2} |})) (Ok None);
   eq __LOC__ 
-    (field "x" (optional int) (parse {| { "x": 2} |})) (Ok (Some 2));
+    (field "x" (optional int) (unsafeParse {| { "x": 2} |})) (Ok (Some 2));
   eq __LOC__ 
-    (field "x" (optional int) (parse {| { "x": 2.3} |})) (Ok None);
+    (field "x" (optional int) (unsafeParse {| { "x": 2.3} |})) (Ok None);
   eq __LOC__ 
-    (field "y" (optional int) (parse {| { "x": 2} |})) (Error "Expected field 'y'")
+    (field "y" (optional int) (unsafeParse {| { "x": 2} |})) (Error "Expected field 'y'")
 
 (* composite decode *)
 let () = 
   let open Js.Json in
   let open Decode in
   eq __LOC__ 
-    (dict (array_ (array_ int)) (parse {| { "a": [[1, 2], [3]], "b": [[4], [5, 6]] } |}))
+    (dict (array_ (array_ int)) (unsafeParse {| { "a": [[1, 2], [3]], "b": [[4], [5, 6]] } |}))
     (Ok (Obj.magic [%obj { a = [| [|1; 2|]; [|3|] |]; b = [| [|4|]; [|5; 6|] |] }]));
   eq __LOC__ 
-    (dict (array_ (array_ int)) (parse {| { "a": [[1, 2], [true]], "b": [[4], [5, 6]] } |}))
+    (dict (array_ (array_ int)) (unsafeParse {| { "a": [[1, 2], [true]], "b": [[4], [5, 6]] } |}))
     (Error "Expected number, got true");
   eq __LOC__ 
-    (dict (array_ (array_ int)) (parse {| { "a": [[1, 2], "foo"], "b": [[4], [5, 6]] } |}))
-    (Error "Expected array, got \"foo\"")
+    (dict (array_ (array_ int)) (unsafeParse {| { "a": [[1, 2], "foo"], "b": [[4], [5, 6]] } |}))
+    (Error "Expected array, got \"foo\"");
+  eq __LOC__ 
+    (let json = unsafeParse {| { "foo": [1, 2, 3], "bar": "baz" } |} in
+    (field "foo" (array_ int) json, field "bar" string json))
+    (Ok [| 1; 2; 3 |], Ok "baz")
 
 let () = Mt.from_pair_suites __FILE__ !suites
