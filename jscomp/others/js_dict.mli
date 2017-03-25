@@ -56,7 +56,23 @@ Array.iter (fun key -> Js.log (Js_dict.unsafeGet dic key)) (Js_dict.keys dict)
 external set : 'a t -> key -> 'a -> unit = "" [@@bs.set_index]  
 (** [set dict key value] sets the [key]/[value] in [dict] *)
 
-external keys : 'a t -> string array = "Object.keys" [@@bs.val]
-(** [keys dict] returns all the keys in the dictionary [dict]*)
+external keys : 'a t -> key array = "Object.keys" [@@bs.val]
+(** [keys dict] returns the keys in [dict] *)
+
+external entries : 'a t -> (key * 'a) array = "Object.entries" [@@bs.val]
+(** [entries dict] returns the key value pairs in [dict] (ES2017) *)
+
+external values : 'a t -> 'a array = "Object.values" [@@bs.val]
+(** [entries dict] returns the values in [dict] (ES2017) *)
+
+val fromList : (key * 'a) list -> 'a t
+(** [fromList entries] creates a new dictionary using with containing each
+[(key, value)] pair in [entries] *)
+
+val fromArray : (key * 'a) array -> 'a t
+(** [fromArray entries] creates a new dictionary using with containing each
+[(key, value)] pair in [entries] *)
 
 val map : ('a -> 'b) -> 'a t -> 'b t
+(** [map f dict] maps [dict] to a new dictionary with the same keys,
+using [f] to map each value *)

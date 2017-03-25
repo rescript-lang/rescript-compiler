@@ -95,21 +95,144 @@ var suites_001 = /* :: */[
           ],
           /* :: */[
             /* tuple */[
-              "map",
+              "entries",
               function () {
                 return /* Eq */Block.__(0, [
-                          {
-                            foo: "43",
-                            bar: "86"
-                          },
-                          Js_dict.map(Pervasives.string_of_int, {
+                          /* array */[
+                            /* tuple */[
+                              "foo",
+                              43
+                            ],
+                            /* tuple */[
+                              "bar",
+                              86
+                            ]
+                          ],
+                          Object.entries({
                                 foo: 43,
                                 bar: 86
                               })
                         ]);
               }
             ],
-            /* [] */0
+            /* :: */[
+              /* tuple */[
+                "values",
+                function () {
+                  return /* Eq */Block.__(0, [
+                            /* int array */[
+                              43,
+                              86
+                            ],
+                            Object.values({
+                                  foo: 43,
+                                  bar: 86
+                                })
+                          ]);
+                }
+              ],
+              /* :: */[
+                /* tuple */[
+                  "fromList - []",
+                  function () {
+                    return /* Eq */Block.__(0, [
+                              { },
+                              Js_dict.fromList(/* [] */0)
+                            ]);
+                  }
+                ],
+                /* :: */[
+                  /* tuple */[
+                    "fromList",
+                    function () {
+                      return /* Eq */Block.__(0, [
+                                /* array */[
+                                  /* tuple */[
+                                    "x",
+                                    23
+                                  ],
+                                  /* tuple */[
+                                    "y",
+                                    46
+                                  ]
+                                ],
+                                Object.entries(Js_dict.fromList(/* :: */[
+                                          /* tuple */[
+                                            "x",
+                                            23
+                                          ],
+                                          /* :: */[
+                                            /* tuple */[
+                                              "y",
+                                              46
+                                            ],
+                                            /* [] */0
+                                          ]
+                                        ]))
+                              ]);
+                    }
+                  ],
+                  /* :: */[
+                    /* tuple */[
+                      "fromArray - []",
+                      function () {
+                        return /* Eq */Block.__(0, [
+                                  { },
+                                  Js_dict.fromArray(/* array */[])
+                                ]);
+                      }
+                    ],
+                    /* :: */[
+                      /* tuple */[
+                        "fromArray",
+                        function () {
+                          return /* Eq */Block.__(0, [
+                                    /* array */[
+                                      /* tuple */[
+                                        "x",
+                                        23
+                                      ],
+                                      /* tuple */[
+                                        "y",
+                                        46
+                                      ]
+                                    ],
+                                    Object.entries(Js_dict.fromArray(/* array */[
+                                              /* tuple */[
+                                                "x",
+                                                23
+                                              ],
+                                              /* tuple */[
+                                                "y",
+                                                46
+                                              ]
+                                            ]))
+                                  ]);
+                        }
+                      ],
+                      /* :: */[
+                        /* tuple */[
+                          "map",
+                          function () {
+                            return /* Eq */Block.__(0, [
+                                      {
+                                        foo: "43",
+                                        bar: "86"
+                                      },
+                                      Js_dict.map(Pervasives.string_of_int, {
+                                            foo: 43,
+                                            bar: 86
+                                          })
+                                    ]);
+                          }
+                        ],
+                        /* [] */0
+                      ]
+                    ]
+                  ]
+                ]
+              ]
+            ]
           ]
         ]
       ]

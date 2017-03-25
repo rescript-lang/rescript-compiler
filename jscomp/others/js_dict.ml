@@ -24,35 +24,36 @@
 
 (** Provides a simple key-value dictionary abstraction over native JavaScript objects *)
 
-(** The dict type *)
-type 'a t
 
-(** The key type, an alias of string *)
+type 'a t
 type key = string
 
-(** [empty ()] creates an empty dictionary *)
 external empty : unit -> 'a t = "" [@@bs.obj]
 
-(** [get dict key] returns the value associated with [key] in [dict] *)
 external get : 'a t -> key -> 'a option = "" [@@bs.get_index] [@@bs.return {undefined_to_opt}]
-
-(** [unsafeGet dict key] returns the value associated with [key] in [dict]
-
-This function will return an invalid value ([undefined]) if [key] does not exist in [dict]. It
-will not throw an error.
-*)
 external unsafeGet : 'a t -> key -> 'a = "" [@@bs.get_index] 
-
-(** [set dict key value] sets the value of [key] in [dict] to [value] *)
 external set : 'a t -> key -> 'a -> unit = "" [@@bs.set_index]  
-
-(** [keys dict] returns an array of all the keys in [dict] *)
 external keys : 'a t -> key array = "Object.keys" [@@bs.val]
+
+(* TODO: this is ES2017, should we polyfill? *)
+external entries : 'a t -> (key * 'a) array = "Object.entries" [@@bs.val]
+
+(* TODO: this is ES2017, should we polyfill? *)
+external values : 'a t -> 'a array = "Object.values" [@@bs.val]
+
+let fromList entries =
+  let dict = empty () in
+  entries |> List.iter (fun (key, value) -> set dict key value);
+  dict
+
+let fromArray entries =
+  let dict = empty () in
+  entries |> Array.iter (fun (key, value) -> set dict key value);
+  dict
 
 let map f source =
   let target = empty () in
   keys source
-  |> Js.Array.forEach
-      (fun key -> set target key (f @@ unsafeGet source key));
+  |> Array.iter (fun key -> set target key (f @@ unsafeGet source key));
   target
 
