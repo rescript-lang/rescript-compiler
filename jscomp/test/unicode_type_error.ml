@@ -1,5 +1,8 @@
 
-(*
-let f () = 
-    "这是一串很长的中文啊" ^ 2 ^  "x" (* The error message is (4,40)  which is wrong *)
-*)    
+
+(* let f () = *)
+
+(*   {j|这是一串很长的中文啊|j} *)
+
+
+(* let x = 1 + "x" *)

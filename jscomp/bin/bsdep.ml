@@ -1996,11 +1996,6 @@ val error: ?loc:t -> ?sub:error list -> ?if_highlight:string -> string -> error
 val errorf: ?loc:t -> ?sub:error list -> ?if_highlight:string
             -> ('a, Format.formatter, unit, error) format4 -> 'a
 
-val errorf_prefixed : ?loc:t -> ?sub:error list -> ?if_highlight:string
-                    -> ('a, Format.formatter, unit, error) format4 -> 'a
-  (* same as {!errorf}, but prints the error prefix "Error:" before yielding
-   * to the format string *)
-
 val raise_errorf: ?loc:t -> ?sub:error list -> ?if_highlight:string
             -> ('a, Format.formatter, unit, 'b) format4 -> 'a
 
@@ -2379,14 +2374,14 @@ let pp_ksprintf ?before k fmt =
       k msg)
     ppf fmt
 
+(* Shift the formatter's offset by the length of the error prefix, which
+   is always added by the compiler after the message has been formatted *)
+let print_phanton_error_prefix ppf =
+  Format.pp_print_as ppf (String.length error_prefix + 2 (* ": " *)) ""
+
 let errorf ?(loc = none) ?(sub = []) ?(if_highlight = "") fmt =
   pp_ksprintf
-    (fun msg -> {loc; msg; sub; if_highlight})
-    fmt
-
-let errorf_prefixed ?(loc=none) ?(sub=[]) ?(if_highlight="") fmt =
-  pp_ksprintf
-    ~before:(fun ppf -> fprintf ppf "%a " print_error_prefix ())
+    ~before:print_phanton_error_prefix
     (fun msg -> {loc; msg; sub; if_highlight})
     fmt
 
@@ -2421,10 +2416,8 @@ let rec default_error_reporter ppf ({loc; msg; sub; if_highlight} as err) =
   if highlighted then
     Format.pp_print_string ppf if_highlight
   else begin
-    print ppf loc;
-    Format.pp_print_string ppf msg;
-    List.iter (fun err -> Format.fprintf ppf "@\n@[<2>%a@]" default_error_reporter err)
-              sub
+    fprintf ppf "%a%a %s" print loc print_error_prefix () msg;
+    List.iter (Format.fprintf ppf "@\n@[<2>%a@]" default_error_reporter) sub
   end
 
 let error_reporter = ref default_error_reporter
@@ -2434,7 +2427,7 @@ let report_error ppf err =
 ;;
 
 let error_of_printer loc print x =
-  errorf_prefixed ~loc "%a@?" print x
+  errorf ~loc "%a@?" print x
 
 let error_of_printer_file print x =
   error_of_printer (in_file !input_name) print x
@@ -2443,11 +2436,11 @@ let () =
   register_error_of_exn
     (function
       | Sys_error msg ->
-          Some (errorf_prefixed ~loc:(in_file !input_name)
+          Some (errorf ~loc:(in_file !input_name)
                 "I/O error: %s" msg)
       | Warnings.Errors n ->
           Some
-            (errorf_prefixed ~loc:(in_file !input_name)
+            (errorf ~loc:(in_file !input_name)
              "Some fatal warnings were triggered (%d occurrences)" n)
       | _ ->
           None
@@ -2475,7 +2468,9 @@ let () =
     )
 
 let raise_errorf ?(loc = none) ?(sub = []) ?(if_highlight = "") =
-  pp_ksprintf (fun msg -> raise (Error ({loc; msg; sub; if_highlight})))
+  pp_ksprintf
+    ~before:print_phanton_error_prefix
+    (fun msg -> raise (Error ({loc; msg; sub; if_highlight})))
 
 end
 (** Interface as module  *)
@@ -4882,9 +4877,9 @@ exception Escape_error
 
 let prepare_error = function
   | Unclosed(opening_loc, opening, closing_loc, closing) ->
-      Location.errorf_prefixed ~loc:closing_loc
+      Location.errorf ~loc:closing_loc
         ~sub:[
-          Location.errorf_prefixed ~loc:opening_loc
+          Location.errorf ~loc:opening_loc
             "This '%s' might be unmatched" opening
         ]
         ~if_highlight:
@@ -4894,22 +4889,22 @@ let prepare_error = function
         "Syntax error: '%s' expected" closing
 
   | Expecting (loc, nonterm) ->
-      Location.errorf_prefixed ~loc "Syntax error: %s expected." nonterm
+      Location.errorf ~loc "Syntax error: %s expected." nonterm
   | Not_expecting (loc, nonterm) ->
-      Location.errorf_prefixed ~loc "Syntax error: %s not expected." nonterm
+      Location.errorf ~loc "Syntax error: %s not expected." nonterm
   | Applicative_path loc ->
-      Location.errorf_prefixed ~loc
+      Location.errorf ~loc
         "Syntax error: applicative paths of the form F(X).t \
          are not supported when the option -no-app-func is set."
   | Variable_in_scope (loc, var) ->
-      Location.errorf_prefixed ~loc
+      Location.errorf ~loc
         "In this scoped type, variable '%s \
          is reserved for the local type %s."
          var var
   | Other loc ->
-      Location.errorf_prefixed ~loc "Syntax error"
+      Location.errorf ~loc "Syntax error"
   | Ill_formed_ast (loc, s) ->
-      Location.errorf_prefixed ~loc "broken invariant in parsetree: %s" s
+      Location.errorf ~loc "broken invariant in parsetree: %s" s
 
 let () =
   Location.register_error_of_exn
@@ -24615,9 +24610,35 @@ type error
   | Invalid_bs_string_type 
   | Invalid_bs_int_type 
   | Conflict_ffi_attribute
-
+  | Not_supported_in_bs_deriving
+  | Canot_infer_arity_by_syntax
+  | Illegal_attribute
+  | Inconsistent_arity of int * int 
+  (* we still rqeuire users to have explicit annotation to avoid
+     {[ (((int -> int) -> int) -> int )]}
+  *)
+  | Not_supported_directive_in_bs_return
+  | Expect_opt_in_bs_return_to_opt
 let pp_error fmt err =
-  Format.pp_print_string fmt @@ match err with 
+  Format.pp_print_string fmt @@ match err with
+  | Expect_opt_in_bs_return_to_opt
+      ->
+        "bs.return directive *_to_opt expect return type to be \n\
+         syntax wise `_ option` for safety"
+
+  | Not_supported_directive_in_bs_return
+    ->
+    "Not supported return directive"                
+  | Illegal_attribute ->
+    "Illegal attributes"
+  | Canot_infer_arity_by_syntax
+    ->   "Can not infer the arity by syntax, either [@bs.uncurry n] or \n\
+              write it in arrow syntax "
+  | Inconsistent_arity (arity,n)
+      -> Printf.sprintf "Inconsistent arity %d vs %d" arity n 
+  | Not_supported_in_bs_deriving
+    ->
+    "not supported in deriving"
   | Unsupported_predicates 
     ->
      "unsupported predicates"
@@ -28075,8 +28096,9 @@ end = struct
 
 open Ast_helper
 
-let not_supported loc = 
-  Location.raise_errorf ~loc "not supported in deriving"
+let not_supported loc =
+  Bs_syntaxerr.err loc Not_supported_in_bs_deriving
+
 
 let current_name_set : string list ref = ref []
 
@@ -29768,19 +29790,13 @@ let get_arg_type ~nolabel optional
       (begin match opt_arity, real_arity with 
          | Some arity, `Not_function -> 
            Fn_uncurry_arity arity 
-         | None, `Not_function  -> 
-           Location.raise_errorf 
-             ~loc:ptyp.ptyp_loc 
-             "Can not infer the arity by syntax, either [@bs.uncurry n] or \n\
-              write it in arrow syntax
-          "
+         | None, `Not_function  ->
+           Bs_syntaxerr.err ptyp.ptyp_loc Canot_infer_arity_by_syntax
          | None, `Arity arity  ->         
            Fn_uncurry_arity arity
          | Some arity, `Arity n -> 
-           if n <> arity then 
-             Location.raise_errorf 
-               ~loc:ptyp.ptyp_loc 
-               "Inconsistent arity %d vs %d" arity n 
+           if n <> arity then
+             Bs_syntaxerr.err ptyp.ptyp_loc (Inconsistent_arity (arity,n))
            else Fn_uncurry_arity arity 
 
        end, {ptyp with ptyp_attributes})
@@ -29914,7 +29930,8 @@ let process_external_attributes
                               (prim_name_or_pval_prim :> bundle_source) ;
                           bind_name = Some pval_prim}
                   }
-                | _  -> Location.raise_errorf ~loc "Illegal attributes"
+                | _  ->
+                  Bs_syntaxerr.err loc Illegal_attribute
               end
             | "bs.splice" -> {st with splice = true}
             | "bs.send" -> 
@@ -29937,13 +29954,14 @@ let process_external_attributes
                   | "null_to_opt" -> Return_null_to_opt
                   | "null_undefined_to_opt" -> Return_null_undefined_to_opt
                   | "identity" -> Return_identity 
-                  | _ -> Location.raise_errorf ~loc "Not supported return directive"
+                  | _ ->
+                    Bs_syntaxerr.err loc Not_supported_directive_in_bs_return
                   end in
               begin match Ast_payload.as_ident payload with
                 | Some {loc ; txt = Lident txt} -> 
                   {st with return_wrapper = aux loc txt  }
-                | Some {loc ; txt = _ } -> 
-                  Location.raise_errorf ~loc "Not supported return directive"                
+                | Some {loc ; txt = _ } ->
+                  Bs_syntaxerr.err loc Not_supported_directive_in_bs_return
                 | None ->  
                   let actions = 
                     Ast_payload.as_config_record_and_process loc payload 
@@ -29951,8 +29969,8 @@ let process_external_attributes
                   begin match actions with 
                     | [ ({txt; _ },None) ] -> 
                       { st with return_wrapper = aux loc txt}
-                    | _ -> 
-                      Location.raise_errorf ~loc "Not supported return directive"
+                    | _ ->
+                      Bs_syntaxerr.err loc Not_supported_directive_in_bs_return
                   end
               end 
             | _ -> (Bs_warnings.warn_unused_attribute loc txt; st)
@@ -29988,11 +30006,8 @@ let check_return_wrapper
     -> 
     if Ast_core_type.is_user_option result_type then 
       wrapper
-    else 
-      Location.raise_errorf ~loc 
-        "bs.return directive *_to_opt expect return type to be \n\
-         syntax wise `_ option` for safety"
-
+    else
+      Bs_syntaxerr.err loc Expect_opt_in_bs_return_to_opt
   | Return_replaced_with_unit 
   | Return_to_ocaml_bool  -> 
     assert false (* Not going to happen from user input*)

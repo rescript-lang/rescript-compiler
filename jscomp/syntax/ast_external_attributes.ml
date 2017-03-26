@@ -129,19 +129,13 @@ let get_arg_type ~nolabel optional
       (begin match opt_arity, real_arity with 
          | Some arity, `Not_function -> 
            Fn_uncurry_arity arity 
-         | None, `Not_function  -> 
-           Location.raise_errorf 
-             ~loc:ptyp.ptyp_loc 
-             "Can not infer the arity by syntax, either [@bs.uncurry n] or \n\
-              write it in arrow syntax
-          "
+         | None, `Not_function  ->
+           Bs_syntaxerr.err ptyp.ptyp_loc Canot_infer_arity_by_syntax
          | None, `Arity arity  ->         
            Fn_uncurry_arity arity
          | Some arity, `Arity n -> 
-           if n <> arity then 
-             Location.raise_errorf 
-               ~loc:ptyp.ptyp_loc 
-               "Inconsistent arity %d vs %d" arity n 
+           if n <> arity then
+             Bs_syntaxerr.err ptyp.ptyp_loc (Inconsistent_arity (arity,n))
            else Fn_uncurry_arity arity 
 
        end, {ptyp with ptyp_attributes})
@@ -275,7 +269,8 @@ let process_external_attributes
                               (prim_name_or_pval_prim :> bundle_source) ;
                           bind_name = Some pval_prim}
                   }
-                | _  -> Location.raise_errorf ~loc "Illegal attributes"
+                | _  ->
+                  Bs_syntaxerr.err loc Illegal_attribute
               end
             | "bs.splice" -> {st with splice = true}
             | "bs.send" -> 
@@ -298,13 +293,14 @@ let process_external_attributes
                   | "null_to_opt" -> Return_null_to_opt
                   | "null_undefined_to_opt" -> Return_null_undefined_to_opt
                   | "identity" -> Return_identity 
-                  | _ -> Location.raise_errorf ~loc "Not supported return directive"
+                  | _ ->
+                    Bs_syntaxerr.err loc Not_supported_directive_in_bs_return
                   end in
               begin match Ast_payload.as_ident payload with
                 | Some {loc ; txt = Lident txt} -> 
                   {st with return_wrapper = aux loc txt  }
-                | Some {loc ; txt = _ } -> 
-                  Location.raise_errorf ~loc "Not supported return directive"                
+                | Some {loc ; txt = _ } ->
+                  Bs_syntaxerr.err loc Not_supported_directive_in_bs_return
                 | None ->  
                   let actions = 
                     Ast_payload.as_config_record_and_process loc payload 
@@ -312,8 +308,8 @@ let process_external_attributes
                   begin match actions with 
                     | [ ({txt; _ },None) ] -> 
                       { st with return_wrapper = aux loc txt}
-                    | _ -> 
-                      Location.raise_errorf ~loc "Not supported return directive"
+                    | _ ->
+                      Bs_syntaxerr.err loc Not_supported_directive_in_bs_return
                   end
               end 
             | _ -> (Bs_warnings.warn_unused_attribute loc txt; st)
@@ -349,11 +345,8 @@ let check_return_wrapper
     -> 
     if Ast_core_type.is_user_option result_type then 
       wrapper
-    else 
-      Location.raise_errorf ~loc 
-        "bs.return directive *_to_opt expect return type to be \n\
-         syntax wise `_ option` for safety"
-
+    else
+      Bs_syntaxerr.err loc Expect_opt_in_bs_return_to_opt
   | Return_replaced_with_unit 
   | Return_to_ocaml_bool  -> 
     assert false (* Not going to happen from user input*)

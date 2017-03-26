@@ -24,8 +24,9 @@
 
 open Ast_helper
 
-let not_supported loc = 
-  Location.raise_errorf ~loc "not supported in deriving"
+let not_supported loc =
+  Bs_syntaxerr.err loc Not_supported_in_bs_deriving
+
 
 let current_name_set : string list ref = ref []
 
