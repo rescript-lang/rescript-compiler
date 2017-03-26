@@ -12,7 +12,8 @@
 // This will be run in npm postinstall, don't use too fancy features here
 
 var child_process = require('child_process')
-var process = require('process')
+// var process = require('process')
+// Old NodeJS does not have such module
 var fs = require('fs')
 var path = require('path')
 var os = require('os')
