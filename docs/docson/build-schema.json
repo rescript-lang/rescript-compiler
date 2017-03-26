@@ -98,17 +98,16 @@
                         "public": {
                             "oneOf": [
                                 {
-                                    "enum": [
-                                        "all"
-                                    ],
-                                    "description": "All modules in this directory"
-                                },
-                                {
                                     "type": "array",
                                     "items": {
                                         "type": "string"
                                     },
                                     "description": "Selected modules, for example, [Module_a, Module_b] "
+                                },
+                                {
+                                    "enum": [
+                                        "all"
+                                    ]
                                 }
                             ],
                             "description": "Default: export all modules. It is recommended for library developers to hide some files/interfaces"
@@ -130,6 +129,7 @@
                                     "description": "A _unique_ name for each directory to refer as an internal dependency later"
                                 },
                                 {
+                                    "type": "object",
                                     "properties": {
                                         "name": {
                                             "type": "string"
