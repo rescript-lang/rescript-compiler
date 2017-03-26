@@ -37,27 +37,51 @@ external keys : 'a t -> key array = "Object.keys" [@@bs.val]
 
 (* external entries : 'a t -> (key * 'a) array = "Object.entries" [@@bs.val] (* ES2017 *) *)
 let entries dict =
-  keys dict
-  |> Array.map (fun key -> (key, unsafeGet dict key))
+  let keys = keys dict in
+  let l = Js.Array.length keys in
+  let values = Obj.magic (Array.make l 0) in
+  for i = 0 to l - 1 do
+    let key = keys.(i) in
+    values.(i) <- (key, unsafeGet dict key)
+  done;
+  values
 
 (* external values : 'a t -> 'a array = "Object.values" [@@bs.val] (* ES2017 *) *)
 let values dict =
-  keys dict
-  |> Array.map (unsafeGet dict)
+  let keys = keys dict in
+  let l = Js.Array.length keys in
+  let values = Obj.magic (Array.make l 0) in
+  for i = 0 to l - 1 do
+    values.(i) <- unsafeGet dict keys.(i)
+  done;
+  values
 
 let fromList entries =
   let dict = empty () in
-  entries |> List.iter (fun (key, value) -> set dict key value);
-  dict
+  let rec loop = function
+  | [] -> dict
+  | (key, value) :: rest ->
+    set dict key value;
+    loop rest
+  in
+  loop entries
 
 let fromArray entries =
   let dict = empty () in
-  entries |> Array.iter (fun (key, value) -> set dict key value);
+  let l = Js_array.length entries in
+  for i = 0 to l - 1 do
+    let (key, value) = entries.(i) in
+    set dict key value
+  done;
   dict
 
 let map f source =
   let target = empty () in
-  keys source
-  |> Array.iter (fun key -> set target key (f @@ unsafeGet source key));
+  let keys = keys source in
+  let l = Js.Array.length keys in
+  for i = 0 to l - 1 do
+    let key = keys.(i) in
+    set target key (f @@ unsafeGet source key)
+  done;
   target
 
