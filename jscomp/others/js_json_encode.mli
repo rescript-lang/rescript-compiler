@@ -58,6 +58,3 @@ external numberArray : float array -> Js.json = "%identity"
 
 external booleanArray : Js.boolean array -> Js.json = "%identity"
 (** [booleanArray] makes a JSON array of the [Js.boolean array] [a] *)
-
-external objectArray : Js.json Js_dict.t array -> Js.json = "%identity"
-(** [objectArray a] makes a JSON array of the [JsDict.t array] [a] *)

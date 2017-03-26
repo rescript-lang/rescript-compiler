@@ -1,0 +1,368 @@
+<!doctype html>
+<html>
+<head>
+<link rel="stylesheet" href="../api_static/tomorrow-night.css">
+
+                <link rel="stylesheet" href="../api_static/style.css" type="text/css">
+
+                <script src="../api_static//highlight.pack.js"></script>
+
+                <script src="../api_static//script.js"></script>
+
+                <script>hljs.initHighlightingOnLoad();</script><meta charset="utf-8">
+<link rel="next" href="Js_json.Encode.html">
+<title>Js_json.Decode</title>
+</head>
+<body>
+<nav class="module-index"><ul><li><a href="Block.html">Block</a></li>
+<li><a href="Bs.html">Bs</a></li>
+<li><a href="Bs_dyn.html">Bs_dyn</a></li>
+<li><a href="Bs_dyn_lib.html">Bs_dyn_lib</a></li>
+<li><a href="Bs_obj.html">Bs_obj</a></li>
+<li><a href="Bs_string.html">Bs_string</a></li>
+<li><a href="Caml_array.html">Caml_array</a></li>
+<li><a href="Caml_backtrace.html">Caml_backtrace</a></li>
+<li><a href="Caml_basic.html">Caml_basic</a></li>
+<li><a href="Caml_builtin_exceptions.html">Caml_builtin_exceptions</a></li>
+<li><a href="Caml_bytes.html">Caml_bytes</a></li>
+<li><a href="Caml_exceptions.html">Caml_exceptions</a></li>
+<li><a href="Caml_float.html">Caml_float</a></li>
+<li><a href="Caml_format.html">Caml_format</a></li>
+<li><a href="Caml_gc.html">Caml_gc</a></li>
+<li><a href="Caml_hash.html">Caml_hash</a></li>
+<li><a href="Caml_int32.html">Caml_int32</a></li>
+<li><a href="Caml_int64.html">Caml_int64</a></li>
+<li><a href="Caml_io.html">Caml_io</a></li>
+<li><a href="Caml_lexer.html">Caml_lexer</a></li>
+<li><a href="Caml_md5.html">Caml_md5</a></li>
+<li><a href="Caml_module.html">Caml_module</a></li>
+<li><a href="Caml_obj.html">Caml_obj</a></li>
+<li><a href="Caml_oo.html">Caml_oo</a></li>
+<li><a href="Caml_oo_curry.html">Caml_oo_curry</a></li>
+<li><a href="Caml_parser.html">Caml_parser</a></li>
+<li><a href="Caml_primitive.html">Caml_primitive</a></li>
+<li><a href="Caml_queue.html">Caml_queue</a></li>
+<li><a href="Caml_string.html">Caml_string</a></li>
+<li><a href="Caml_sys.html">Caml_sys</a></li>
+<li><a href="Caml_utils.html">Caml_utils</a></li>
+<li><a href="Caml_weak.html">Caml_weak</a></li>
+<li><a href="Curry.html">Curry</a></li>
+<li><a href="Dom.html">Dom</a></li>
+<li><a href="Js.html">Js</a></li>
+<li><a href="Js_array.html">Js_array</a></li>
+<li><a href="Js_boolean.html">Js_boolean</a></li>
+<li><a href="Js_cast.html">Js_cast</a></li>
+<li><a href="Js_date.html">Js_date</a></li>
+<li><a href="Js_dict.html">Js_dict</a></li>
+<li><a href="Js_float.html">Js_float</a></li>
+<li><a href="Js_global.html">Js_global</a></li>
+<li><a href="Js_int.html">Js_int</a></li>
+<li><a href="Js_int64.html">Js_int64</a></li>
+<li><a href="Js_json.html">Js_json</a></li>
+<li><a href="Js_math.html">Js_math</a></li>
+<li><a href="Js_nativeint.html">Js_nativeint</a></li>
+<li><a href="Js_null.html">Js_null</a></li>
+<li><a href="Js_null_undefined.html">Js_null_undefined</a></li>
+<li><a href="Js_obj.html">Js_obj</a></li>
+<li><a href="Js_primitive.html">Js_primitive</a></li>
+<li><a href="Js_re.html">Js_re</a></li>
+<li><a href="Js_string.html">Js_string</a></li>
+<li><a href="Js_typed_array.html">Js_typed_array</a></li>
+<li><a href="Js_types.html">Js_types</a></li>
+<li><a href="Js_undefined.html">Js_undefined</a></li>
+<li><a href="Js_unsafe.html">Js_unsafe</a></li>
+<li><a href="Node.html">Node</a></li>
+<li><a href="Node_buffer.html">Node_buffer</a></li>
+<li><a href="Node_child_process.html">Node_child_process</a></li>
+<li><a href="Node_fs.html">Node_fs</a></li>
+<li><a href="Node_module.html">Node_module</a></li>
+<li><a href="Node_path.html">Node_path</a></li>
+<li><a href="Node_process.html">Node_process</a></li></ul></nav>
+<div class="navbar">&nbsp;<a class="up" href="Js_json.html" title="Js_json">Up</a>
+&nbsp;<a class="post" href="Js_json.Encode.html" title="Js_json.Encode">Next</a>
+</div>
+<h1>Module <a href="type_Js_json.Decode.html">Js_json.Decode</a></h1>
+
+<pre><span class="keyword">module</span> Decode: <code class="code">sig</code> <a href="Js_json.Decode.html">..</a> <code class="code">end</code></pre><hr width="100%">
+<div class="type-declaration">
+<pre><span id="TYPEdecoder"><span class="keyword">type</span> <code class="type">'a</code> decoder</span> = <code class="type"><a href="Js_json.html#TYPEt">Js_json.t</a> -> ('a, string) <a href="Js_json.html#TYPEresult">Js_json.result</a></code> </pre>
+</div>
+<div class="info ">
+<div class="not-examples">
+The type of a decoder combinator<br>
+</div>
+<div class="examples">
+</div>
+</div>
+
+
+<pre><span id="VALboolean"><span class="keyword">val</span> boolean</span> : <code class="type"><a href="Js.html#TYPEboolean">Js.boolean</a> <a href="Js_json.Decode.html#TYPEdecoder">decoder</a></code></pre><div class="info ">
+<div class="not-examples">
+Decodes a JSON value into a <code class="code">Js.boolean</code>
+<p>
+
+  <b>Returns</b> <code class="code">Ok of Js.boolean</code> if the JSON value is a boolean, <code class="code">Error of string</code> otherwise.<br>
+</div>
+<div class="examples">
+<pre class="example"><pre class="codepre"><code class="code">    open Js.Json
+    let _ =
+
+    (* prints [Ok Js.true_] *)
+    Js.log @@ parse "true" |&gt; Decode.boolean
+
+    (* prints [Ok Js.false_] *)
+    Js.log @@ parse "true" |&gt; Decode.boolean
+
+    (* prints [Error ...] *)
+    Js.log @@ parse "123" |&gt; Decode.boolean
+
+    (* prints [Error ...] *)
+    Js.log @@ parse "null" |&gt; Decode.boolean
+  </code></pre></pre></div>
+</div>
+
+<pre><span id="VALfloat"><span class="keyword">val</span> float</span> : <code class="type">float <a href="Js_json.Decode.html#TYPEdecoder">decoder</a></code></pre><div class="info ">
+<div class="not-examples">
+Decodes a JSON value into a <code class="code">float</code>
+<p>
+
+  <b>Returns</b> <code class="code">Ok of float</code> if the JSON value is a number, <code class="code">Error of string</code> otherwise.<br>
+</div>
+<div class="examples">
+<pre class="example"><pre class="codepre"><code class="code">    open Js.Json
+    let _ =
+
+    (* prints [Ok 1.23] *)
+    Js.log @@ parse "1.23" |&gt; Decode.float
+
+    (* prints [Ok 23.] *)
+    Js.log @@ parse "23" |&gt; Decode.float
+
+    (* prints [Error ...] *)
+    Js.log @@ parse "true" |&gt; Decode.float
+
+    (* prints [Error ...] *)
+    Js.log @@ parse "null" |&gt; Decode.float
+  </code></pre></pre></div>
+</div>
+
+<pre><span id="VALint"><span class="keyword">val</span> int</span> : <code class="type">int <a href="Js_json.Decode.html#TYPEdecoder">decoder</a></code></pre><div class="info ">
+<div class="not-examples">
+Decodes a JSON value into an <code class="code">int</code>
+<p>
+
+  <b>Returns</b> <code class="code">Ok of int</code> if the JSON value is an integer, <code class="code">Error of string</code> otherwise.<br>
+</div>
+<div class="examples">
+<pre class="example"><pre class="codepre"><code class="code">    open Js.Json
+    let _ =
+
+    (* prints [Ok 23] *)
+    Js.log @@ parse "23" |&gt; Decode.int
+
+    (* prints [Error ...] *)
+    Js.log @@ parse "1.23" |&gt; Decode.int
+
+    (* prints [Error ...] *)
+    Js.log @@ parse "true" |&gt; Decode.int
+
+    (* prints [Error ...] *)
+    Js.log @@ parse "null" |&gt; Decode.int
+  </code></pre></pre></div>
+</div>
+
+<pre><span id="VALstring"><span class="keyword">val</span> string</span> : <code class="type">string <a href="Js_json.Decode.html#TYPEdecoder">decoder</a></code></pre><div class="info ">
+<div class="not-examples">
+Decodes a JSON value into a <code class="code">string</code>
+<p>
+
+  <b>Returns</b> <code class="code">Ok of string</code> if the JSON value is a string, <code class="code">Error of string</code> otherwise.<br>
+</div>
+<div class="examples">
+<pre class="example"><pre class="codepre"><code class="code">    open Js.Json
+    let _ =
+
+    (* prints [Ok "foo"] *)
+    Js.log @@ parse "\"foo\"" |&gt; Decode.string
+
+    (* prints [Error ...] *)
+    Js.log @@ parse "1.23" |&gt; Decode.string
+
+    (* prints [Error ...] *)
+    Js.log @@ parse "null" |&gt; Decode.string
+  </code></pre></pre></div>
+</div>
+
+<pre><span id="VALnullable"><span class="keyword">val</span> nullable</span> : <code class="type">'a <a href="Js_json.Decode.html#TYPEdecoder">decoder</a> -> 'a <a href="Js.html#TYPEnull">Js.null</a> <a href="Js_json.Decode.html#TYPEdecoder">decoder</a></code></pre><div class="info ">
+<div class="not-examples">
+Decodes a JSON value into an <code class="code">'a Js.null</code>
+<p>
+
+  <b>Returns</b> <code class="code">Ok Js.null</code> if the JSON value is <code class="code">null</code>, <code class="code">Ok of 'a Js.null</code> if the
+  given decoder succeeds, <code class="code">Error of string</code> otherwise.<br>
+</div>
+<div class="examples">
+<pre class="example"><pre class="codepre"><code class="code">    open Js.Json
+    let _ =
+
+    (* prints [Ok (Js.Null.return 23)] *)
+    Js.log @@ parse "23" |&gt; Decode.(nullable int)
+
+    (* prints [Error ...] *)
+    Js.log @@ parse "1.23" |&gt; Decode.(nullable int)
+
+    (* prints [Ok Js.null] *)
+    Js.log @@ parse "null" |&gt; Decode.(nullable int)
+  </code></pre></pre></div>
+</div>
+
+<pre><span id="VALnullAs"><span class="keyword">val</span> nullAs</span> : <code class="type">'a -> 'a <a href="Js_json.Decode.html#TYPEdecoder">decoder</a></code></pre><div class="info ">
+<div class="not-examples">
+Returns the given value if the JSON value is <code class="code">null</code>
+<p>
+
+  <b>Returns</b> <code class="code">Ok of 'a</code> if the JSON value is <code class="code">null</code>, <code class="code">Error of string</code> otherwise.<br>
+</div>
+<div class="examples">
+<pre class="example"><pre class="codepre"><code class="code">    open Js.Json
+    let _ =
+
+    (* prints [Error ...] *)
+    Js.log @@ parse "\"x\"" |&gt; Decode.nullAs "x"
+
+    (* prints [Ok "x"] *)
+    Js.log @@ parse "null" |&gt; Decode.nullAs "x"
+
+    (* prints [Ok None] *)
+    Js.log @@ parse "null" |&gt; Decode.nullAs None
+  </code></pre></pre></div>
+</div>
+
+<pre><span id="VALarray_"><span class="keyword">val</span> array_</span> : <code class="type">'a <a href="Js_json.Decode.html#TYPEdecoder">decoder</a> -> 'a array <a href="Js_json.Decode.html#TYPEdecoder">decoder</a></code></pre><div class="info ">
+<div class="not-examples">
+Decodes a JSON array into an <code class="code">'a array</code> using the given decoder on each array element
+<p>
+
+  <b>Returns</b> <code class="code">Ok of 'a array</code> if the JSON value is a JSON array and all its
+  elements are successfully decoded, <code class="code">Error of string</code> otherwise.<br>
+</div>
+<div class="examples">
+<pre class="example"><pre class="codepre"><code class="code">    open Js.Json
+    let _ =
+
+    (* prints [Ok [| 1; 2; 3 |]] *)
+    Js.log @@ parse "[1, 2, 3]" |&gt; Decode.(array_ int)
+
+    (* prints [Error ...] *)
+    Js.log @@ parse "[1, 2, "c"]" |&gt; Decode.(array_ int)
+
+    (* prints [Error ...] *)
+    Js.log @@ parse "123" |&gt; Decode.(array_ int)
+
+    (* prints [Ok None] *)
+    Js.log @@ parse "null" |&gt; Decode.(array_ int)
+  </code></pre></pre></div>
+</div>
+
+<pre><span id="VALdict"><span class="keyword">val</span> dict</span> : <code class="type">'a <a href="Js_json.Decode.html#TYPEdecoder">decoder</a> -> 'a Js.Dict.t <a href="Js_json.Decode.html#TYPEdecoder">decoder</a></code></pre><div class="info ">
+<div class="not-examples">
+Decodes a JSON object into a dict using the given decoder on each of its values
+<p>
+
+  <b>Returns</b> <code class="code">Ok of 'a Js.Dict.t</code> if the JSON value is a JSON object and all its
+  values are successfully decoded, <code class="code">Error of string</code> otherwise.<br>
+</div>
+<div class="examples">
+<pre class="example"><pre class="codepre"><code class="code">    open Js.Json
+    let _ =
+
+    (* prints [Ok (Js.Dict.fromList [("x", 23); ("y", 42)])] *)
+    Js.log @@ parse {| { "x": 23, "y": 42 } |} |&gt; Decode.(dict int)
+
+    (* prints [Error ...] *)
+    Js.log @@ parse {| { "x": 23, "y": "b" } |} |&gt; Decode.(dict int)
+
+    (* prints [Error ...] *)
+    Js.log @@ parse "123" |&gt; Decode.(dict int)
+
+    (* prints [Ok None] *)
+    Js.log @@ parse "null" |&gt; Decode.(dict int)
+  </code></pre></pre></div>
+</div>
+
+<pre><span id="VALfield"><span class="keyword">val</span> field</span> : <code class="type">string -> 'a <a href="Js_json.Decode.html#TYPEdecoder">decoder</a> -> 'a <a href="Js_json.Decode.html#TYPEdecoder">decoder</a></code></pre><div class="info ">
+<div class="not-examples">
+Decodes a JSON object with a specific field into the value of that field
+<p>
+
+  <b>Returns</b> <code class="code">Ok of 'a</code> if the JSON value is a JSON object with the given field
+  and a value that is successfully decoded with the given decoder, <code class="code">Error of string</code> otherwise.<br>
+</div>
+<div class="examples">
+<pre class="example"><pre class="codepre"><code class="code">    open Js.Json
+    let _ =
+
+    (* prints [Ok 23] *)
+    Js.log @@ parse {| { "x": 23, "y": 42 } |} |&gt; Decode.(field "x" int)
+
+    (* prints [Ok 23] *)
+    Js.log @@ parse {| { "x": 23, "y": "b" } |} |&gt; Decode.(field "x" int)
+
+    (* prints [Error ...] *)
+    Js.log @@ parse {| { "x": 23, "y": "b" } |} |&gt; Decode.(field "y" int)
+
+    (* prints [Error ...] *)
+    Js.log @@ parse "123" |&gt; Decode.(field "x" int)
+
+    (* prints [Ok None] *)
+    Js.log @@ parse "null" |&gt; Decode.(field "x" int)
+  </code></pre></pre></div>
+</div>
+
+<pre><span id="VALoptional"><span class="keyword">val</span> optional</span> : <code class="type">'a <a href="Js_json.Decode.html#TYPEdecoder">decoder</a> -> 'a option <a href="Js_json.Decode.html#TYPEdecoder">decoder</a></code></pre><div class="info ">
+<div class="not-examples">
+Maps a decoder <code class="code">result</code> to an option wrapped in an <code class="code">Ok</code> result
+<p>
+
+  <b>Returns</b> <code class="code">Ok (Some of 'a)</code> if the given decoder is successful, <code class="code">Ok None</code> if
+  it is not.
+<p>
+
+  This decoder will never return an <code class="code">Error</code>. Its purpose is to transform <code class="code">Error</code>s
+  of a given decoder into <code class="code">Ok</code>s by mapping its <code class="code">result</code> into an <code class="code">option</code> and then
+  returning that wrapped in an <code class="code">Ok</code>. This prevents a decoder error from terminating
+  a composite decoder, and is useful to decode optional JSON object fields.<br>
+</div>
+<div class="examples">
+<pre class="example"><pre class="codepre"><code class="code">    open Js.Json
+    let _ =
+
+    (* prints [Ok (Some 23)] *)
+    Js.log @@ parse "23" |&gt; Decode.(optional int)
+
+    (* prints [Ok None] *)
+    Js.log @@ parse 1.23 |&gt; Decode.(optional int)
+
+    (* prints [Ok None] *)
+    Js.log @@ parse "null" |&gt; Decode.(optional int)
+
+    (* prints [Ok (Some 23)] *)
+    Js.log @@ parse {| { "x": 23, "y": "b" } |} |&gt; Decode.(optional (field "x" int))
+
+    (* prints [Ok None] *)
+    Js.log @@ parse {| { "x": 23, "y": "b" } |} |&gt; Decode.(optional (field "y" int))
+
+    (* prints [Ok None] *)
+    Js.log @@ parse {| { "x": 23, "y": "b" } |} |&gt; Decode.(optional (field "z" int))
+
+    (* prints [Ok (Some 23)] *)
+    Js.log @@ parse {| { "x": 23, "y": "b" } |} |&gt; Decode.(field "x" (optional int))
+
+    (* prints [Ok None] *)
+    Js.log @@ parse {| { "x": 23, "y": "b" } |} |&gt; Decode.(field "y" (optional int))
+
+    (* prints [Error ...] *)
+    Js.log @@ parse {| { "x": 23, "y": "b" } |} |&gt; Decode.(field "z" (optional int))
+  </code></pre></pre></div>
+</div>
+</body></html>

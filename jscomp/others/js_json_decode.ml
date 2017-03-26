@@ -81,9 +81,9 @@ let array decode json =
       while not !break do
         if !i >= l then break := true
         else
-          match decode source.(!i) with
+          match decode (Array.unsafe_get source !i) with
           | Ok value ->
-            target.(!i) <- value;
+            Array.set target !i value;
             i := !i + 1
           | Error message ->
             result := Error message;
@@ -114,7 +114,7 @@ let dict decode json =
       while not !break do
         if !i >= l then break := true
         else
-          let key = keys.(!i) in
+          let key = (Array.unsafe_get keys !i) in
           match decode (Js_dict.unsafeGet source key) with
           | Ok value ->
             Js_dict.set target key value;

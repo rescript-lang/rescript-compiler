@@ -41,8 +41,8 @@ let entries dict =
   let l = Js.Array.length keys in
   let values = Obj.magic (Array.make l 0) in
   for i = 0 to l - 1 do
-    let key = keys.(i) in
-    values.(i) <- (key, unsafeGet dict key)
+    let key = Array.unsafe_get keys i in
+    Array.set values i (key, unsafeGet dict key)
   done;
   values
 
@@ -52,7 +52,7 @@ let values dict =
   let l = Js.Array.length keys in
   let values = Obj.magic (Array.make l 0) in
   for i = 0 to l - 1 do
-    values.(i) <- unsafeGet dict keys.(i)
+    Array.set values i (unsafeGet dict (Array.unsafe_get keys i))
   done;
   values
 
@@ -70,7 +70,7 @@ let fromArray entries =
   let dict = empty () in
   let l = Js_array.length entries in
   for i = 0 to l - 1 do
-    let (key, value) = entries.(i) in
+    let (key, value) = Array.unsafe_get entries i in
     set dict key value
   done;
   dict
@@ -80,7 +80,7 @@ let map f source =
   let keys = keys source in
   let l = Js.Array.length keys in
   for i = 0 to l - 1 do
-    let key = keys.(i) in
+    let key = Array.unsafe_get keys i in
     set target key (f @@ unsafeGet source key)
   done;
   target

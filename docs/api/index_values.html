@@ -235,10 +235,19 @@ hyperbolic arccosine in raidans, can return NaN, ES2015
 <td></td></tr>
 <tr><td><a href="Curry.html#VALapply_args">apply_args</a> [<a href="Curry.html">Curry</a>]</td>
 <td></td></tr>
-<tr><td><a href="Js_json.html#VALarray_">array_</a> [<a href="Js_json.html">Js_json</a>]</td>
+<tr><td><a href="Js_json.Encode.html#VALarray_">array_</a> [<a href="Js_json.Encode.html">Js_json.Encode</a>]</td>
 <td><div class="info">
 <code class="code">array_ a</code> makes a JSON array of the <code class="code">Js.Json.t array</code> <code class="code">a</code>
 </div>
+</td></tr>
+<tr><td><a href="Js_json.Decode.html#VALarray_">array_</a> [<a href="Js_json.Decode.html">Js_json.Decode</a>]</td>
+<td><div class="info">
+Decodes a JSON array into an <code class="code">'a array</code> using the given decoder on each array element
+</div>
+</td></tr>
+<tr><td><a href="Js_json.html#VALarray_">array_</a> [<a href="Js_json.html">Js_json</a>]</td>
+<td><div class="info">
+<span class="deprecated"></span></div>
 </td></tr>
 <tr><td><a href="Bs_dyn.html#VALarray_to_value">array_to_value</a> [<a href="Bs_dyn.html">Bs_dyn</a>]</td>
 <td><div class="info">
@@ -303,15 +312,28 @@ Maps the contained value using the given function
 <td></td></tr>
 <tr><td><a href="Bs_dyn.html#VALbool_to_value">bool_to_value</a> [<a href="Bs_dyn.html">Bs_dyn</a>]</td>
 <td></td></tr>
-<tr><td><a href="Js_json.html#VALboolean">boolean</a> [<a href="Js_json.html">Js_json</a>]</td>
+<tr><td><a href="Js_json.Encode.html#VALboolean">boolean</a> [<a href="Js_json.Encode.html">Js_json.Encode</a>]</td>
 <td><div class="info">
 <code class="code">boolean b</code> makes a JSON boolean of the <code class="code">Js.boolean</code> <code class="code">b</code>
 </div>
 </td></tr>
-<tr><td><a href="Js_json.html#VALbooleanArray">booleanArray</a> [<a href="Js_json.html">Js_json</a>]</td>
+<tr><td><a href="Js_json.Decode.html#VALboolean">boolean</a> [<a href="Js_json.Decode.html">Js_json.Decode</a>]</td>
+<td><div class="info">
+Decodes a JSON value into a <code class="code">Js.boolean</code>
+</div>
+</td></tr>
+<tr><td><a href="Js_json.html#VALboolean">boolean</a> [<a href="Js_json.html">Js_json</a>]</td>
+<td><div class="info">
+<span class="deprecated"></span></div>
+</td></tr>
+<tr><td><a href="Js_json.Encode.html#VALbooleanArray">booleanArray</a> [<a href="Js_json.Encode.html">Js_json.Encode</a>]</td>
 <td><div class="info">
 <code class="code">booleanArray</code> makes a JSON array of the <code class="code">Js.boolean array</code> <code class="code">a</code>
 </div>
+</td></tr>
+<tr><td><a href="Js_json.html#VALbooleanArray">booleanArray</a> [<a href="Js_json.html">Js_json</a>]</td>
+<td><div class="info">
+<span class="deprecated"></span></div>
 </td></tr>
 <tr><td><a href="Js_typed_array.DataView.html#VALbuffer">buffer</a> [<a href="Js_typed_array.DataView.html">Js_typed_array.DataView</a>]</td>
 <td></td></tr>
@@ -687,42 +709,35 @@ hyperbolic cosine in radians, ES2015
 <td></td></tr>
 <tr><td><a href="Js_json.html#VALdecodeArray">decodeArray</a> [<a href="Js_json.html">Js_json</a>]</td>
 <td><div class="info">
-<code class="code">decodeArray json</code> returns <code class="code">Some a</code> if <code class="code">json</code> is an array, <code class="code">None</code>
-    otherwise
-</div>
+<span class="deprecated"></span></div>
 </td></tr>
 <tr><td><a href="Js_json.html#VALdecodeBoolean">decodeBoolean</a> [<a href="Js_json.html">Js_json</a>]</td>
 <td><div class="info">
-<code class="code">decodeBoolean json</code> returns <code class="code">Some b</code> if <code class="code">json</code> is a boolean, <code class="code">None</code>
-    otherwise
-</div>
+<span class="deprecated"></span></div>
 </td></tr>
 <tr><td><a href="Js_json.html#VALdecodeNull">decodeNull</a> [<a href="Js_json.html">Js_json</a>]</td>
 <td><div class="info">
-<code class="code">decodeNull json</code> returns <code class="code">Some null</code> if <code class="code">json</code> is a null, <code class="code">None</code>
-    otherwise
-</div>
+<span class="deprecated"></span></div>
 </td></tr>
 <tr><td><a href="Js_json.html#VALdecodeNumber">decodeNumber</a> [<a href="Js_json.html">Js_json</a>]</td>
 <td><div class="info">
-<code class="code">decodeNumber json</code> returns <code class="code">Some n</code> if <code class="code">json</code> is a number, <code class="code">None</code>
-    otherwise
-</div>
+<span class="deprecated"></span></div>
 </td></tr>
 <tr><td><a href="Js_json.html#VALdecodeObject">decodeObject</a> [<a href="Js_json.html">Js_json</a>]</td>
 <td><div class="info">
-<code class="code">decodeObject json</code> returns <code class="code">Some o</code> if <code class="code">json</code> is an object, <code class="code">None</code>
-    otherwise
-</div>
+<span class="deprecated"></span></div>
 </td></tr>
 <tr><td><a href="Js_json.html#VALdecodeString">decodeString</a> [<a href="Js_json.html">Js_json</a>]</td>
 <td><div class="info">
-<code class="code">decodeString json</code> returns <code class="code">Some s</code> if <code class="code">json</code> is a string, <code class="code">None</code>
-    otherwise
-</div>
+<span class="deprecated"></span></div>
 </td></tr>
 <tr><td><a href="Node_path.html#VALdelimiter">delimiter</a> [<a href="Node_path.html">Node_path</a>]</td>
 <td></td></tr>
+<tr><td><a href="Js_json.Decode.html#VALdict">dict</a> [<a href="Js_json.Decode.html">Js_json.Decode</a>]</td>
+<td><div class="info">
+Decodes a JSON object into a dict using the given decoder on each of its values
+</div>
+</td></tr>
 <tr><td><a href="Node_path.html#VALdirname">dirname</a> [<a href="Node_path.html">Node_path</a>]</td>
 <td></td></tr>
 <tr><td><a href="Node_path.html#VALdirname_ext">dirname_ext</a> [<a href="Node_path.html">Node_path</a>]</td>
@@ -776,6 +791,11 @@ The empty value, <code class="code">null</code>
 ES2015
 </div>
 </td></tr>
+<tr><td><a href="Js_dict.html#VALentries">entries</a> [<a href="Js_dict.html">Js_dict</a>]</td>
+<td><div class="info">
+<code class="code">entries dict</code> returns the key value pairs in <code class="code">dict</code> (ES2017)
+</div>
+</td></tr>
 <tr><td><a href="Caml_int64.html#VALeq">eq</a> [<a href="Caml_int64.html">Caml_int64</a>]</td>
 <td></td></tr>
 <tr><td><a href="Js_typed_array.TypedArray.html#VALevery">every</a> [<a href="Js_typed_array.TypedArray.html">Js_typed_array.TypedArray</a>]</td>
@@ -794,6 +814,8 @@ executes a search on a given string using the given RegExp object
 <tr><td><a href="Node_child_process.html#VALexecSync">execSync</a> [<a href="Node_child_process.html">Node_child_process</a>]</td>
 <td></td></tr>
 <tr><td><a href="Node_fs.html#VALexistsSync">existsSync</a> [<a href="Node_fs.html">Node_fs</a>]</td>
+<td></td></tr>
+<tr><td><a href="Node_process.html#VALexit">exit</a> [<a href="Node_process.html">Node_process</a>]</td>
 <td></td></tr>
 <tr><td><a href="Js_float.html#VALexp">exp</a> [<a href="Js_float.html">Js_float</a>]</td>
 <td><div class="info">
@@ -818,6 +840,11 @@ natural exponential minus 1, ES2015
 <td></td></tr>
 <tr><td><a href="Node_fs.html#VALfchownSync">fchownSync</a> [<a href="Node_fs.html">Node_fs</a>]</td>
 <td></td></tr>
+<tr><td><a href="Js_json.Decode.html#VALfield">field</a> [<a href="Js_json.Decode.html">Js_json.Decode</a>]</td>
+<td><div class="info">
+Decodes a JSON object with a specific field into the value of that field
+</div>
+</td></tr>
 <tr><td><a href="Js_typed_array.TypedArray.html#VALfillFromInPlace">fillFromInPlace</a> [<a href="Js_typed_array.TypedArray.html">Js_typed_array.TypedArray</a>]</td>
 <td></td></tr>
 <tr><td><a href="Js_array.html#VALfillFromInPlace">fillFromInPlace</a> [<a href="Js_array.html">Js_array</a>]</td>
@@ -875,6 +902,16 @@ ES2015
 <tr><td><a href="Js_re.html#VALflags">flags</a> [<a href="Js_re.html">Js_re</a>]</td>
 <td><div class="info">
 returns the enabled flags as a string
+</div>
+</td></tr>
+<tr><td><a href="Js_json.Encode.html#VALfloat">float</a> [<a href="Js_json.Encode.html">Js_json.Encode</a>]</td>
+<td><div class="info">
+<code class="code">float n</code> makes a JSON number of the <code class="code">float</code> <code class="code">n</code>
+</div>
+</td></tr>
+<tr><td><a href="Js_json.Decode.html#VALfloat">float</a> [<a href="Js_json.Decode.html">Js_json.Decode</a>]</td>
+<td><div class="info">
+Decodes a JSON value into a <code class="code">float</code>
 </div>
 </td></tr>
 <tr><td><a href="Js_cast.html#VALfloatOfInt">floatOfInt</a> [<a href="Js_cast.html">Js_cast</a>]</td>
@@ -985,6 +1022,12 @@ largest int greater than or equal to the arugment
 <td></td></tr>
 <tr><td><a href="Js_array.html#VALfrom">from</a> [<a href="Js_array.html">Js_array</a>]</td>
 <td></td></tr>
+<tr><td><a href="Js_dict.html#VALfromArray">fromArray</a> [<a href="Js_dict.html">Js_dict</a>]</td>
+<td><div class="info">
+<code class="code">fromArray entries</code> creates a new dictionary using with containing each
+<code class="code">(key, value)</code> pair in <code class="code">entries</code>
+</div>
+</td></tr>
 <tr><td><a href="Js_typed_array.DataView.html#VALfromBuffer">fromBuffer</a> [<a href="Js_typed_array.DataView.html">Js_typed_array.DataView</a>]</td>
 <td></td></tr>
 <tr><td><a href="Js_typed_array.Float64Array.html#VALfromBuffer">fromBuffer</a> [<a href="Js_typed_array.Float64Array.html">Js_typed_array.Float64Array</a>]</td>
@@ -1155,6 +1198,12 @@ can throw, offset is in bytes, length in elements
 <tr><td><a href="Js_typed_array.Int8Array.html#VALfromLength">fromLength</a> [<a href="Js_typed_array.Int8Array.html">Js_typed_array.Int8Array</a>]</td>
 <td><div class="info">
 can throw, offset is in bytes, length in elements
+</div>
+</td></tr>
+<tr><td><a href="Js_dict.html#VALfromList">fromList</a> [<a href="Js_dict.html">Js_dict</a>]</td>
+<td><div class="info">
+<code class="code">fromList entries</code> creates a new dictionary using with containing each
+<code class="code">(key, value)</code> pair in <code class="code">entries</code>
 </div>
 </td></tr>
 <tr><td><a href="Js_array.html#VALfromMap">fromMap</a> [<a href="Js_array.html">Js_array</a>]</td>
@@ -1392,6 +1441,16 @@ ES2015
 the original input string
 </div>
 </td></tr>
+<tr><td><a href="Js_json.Encode.html#VALint">int</a> [<a href="Js_json.Encode.html">Js_json.Encode</a>]</td>
+<td><div class="info">
+<code class="code">int n</code> makes a JSON number of the <code class="code">int</code> <code class="code">n</code>
+</div>
+</td></tr>
+<tr><td><a href="Js_json.Decode.html#VALint">int</a> [<a href="Js_json.Decode.html">Js_json.Decode</a>]</td>
+<td><div class="info">
+Decodes a JSON value into an <code class="code">int</code>
+</div>
+</td></tr>
 <tr><td><a href="Bs_dyn.html#VALint32_to_value">int32_to_value</a> [<a href="Bs_dyn.html">Bs_dyn</a>]</td>
 <td></td></tr>
 <tr><td><a href="Bs_dyn.html#VALint64_to_value">int64_to_value</a> [<a href="Bs_dyn.html">Bs_dyn</a>]</td>
@@ -1418,6 +1477,11 @@ ES2015
 <tr><td><a href="Js_float.html#VALisFinite">isFinite</a> [<a href="Js_float.html">Js_float</a>]</td>
 <td><div class="info">
 Tests if the given value is finite
+</div>
+</td></tr>
+<tr><td><a href="Js_float.html#VALisInteger">isInteger</a> [<a href="Js_float.html">Js_float</a>]</td>
+<td><div class="info">
+Tests if the given value is an integer
 </div>
 </td></tr>
 <tr><td><a href="Js_float.html#VALisNaN">isNaN</a> [<a href="Js_float.html">Js_float</a>]</td>
@@ -1494,7 +1558,7 @@ For efficiency, <code class="code">args.(0)</code> would contain obj as well
 </td></tr>
 <tr><td><a href="Js_dict.html#VALkeys">keys</a> [<a href="Js_dict.html">Js_dict</a>]</td>
 <td><div class="info">
-<code class="code">keys dict</code> returns all the keys in the dictionary <code class="code">dict</code>
+<code class="code">keys dict</code> returns the keys in <code class="code">dict</code>
 </div>
 </td></tr>
 <tr><td align="left"><br>L</td></tr>
@@ -1622,6 +1686,12 @@ base 2 logarithm, can return NaN, ES2015
 <td></td></tr>
 <tr><td><a href="Js_typed_array.TypedArray.html#VALmap">map</a> [<a href="Js_typed_array.TypedArray.html">Js_typed_array.TypedArray</a>]</td>
 <td></td></tr>
+<tr><td><a href="Js_dict.html#VALmap">map</a> [<a href="Js_dict.html">Js_dict</a>]</td>
+<td><div class="info">
+<code class="code">map f dict</code> maps <code class="code">dict</code> to a new dictionary with the same keys,
+using <code class="code">f</code> to map each value
+</div>
+</td></tr>
 <tr><td><a href="Js_array.html#VALmap">map</a> [<a href="Js_array.html">Js_array</a>]</td>
 <td></td></tr>
 <tr><td><a href="Js_typed_array.TypedArray.html#VALmapi">mapi</a> [<a href="Js_typed_array.TypedArray.html">Js_typed_array.TypedArray</a>]</td>
@@ -1750,10 +1820,14 @@ ES2015
 <td></td></tr>
 <tr><td><a href="Js_date.html#VALnow">now</a> [<a href="Js_date.html">Js_date</a>]</td>
 <td></td></tr>
-<tr><td><a href="Js_json.html#VALnull">null</a> [<a href="Js_json.html">Js_json</a>]</td>
+<tr><td><a href="Js_json.Encode.html#VALnull">null</a> [<a href="Js_json.Encode.html">Js_json.Encode</a>]</td>
 <td><div class="info">
 <code class="code">null</code> is the singleton null JSON value
 </div>
+</td></tr>
+<tr><td><a href="Js_json.html#VALnull">null</a> [<a href="Js_json.html">Js_json</a>]</td>
+<td><div class="info">
+<span class="deprecated"></span></div>
 </td></tr>
 <tr><td><a href="Js_null_undefined.html#VALnull">null</a> [<a href="Js_null_undefined.html">Js_null_undefined</a>]</td>
 <td><div class="info">
@@ -1762,30 +1836,51 @@ The <code class="code">null</code> value of type <code class="code">'a Js.null_u
 </td></tr>
 <tr><td><a href="Js.html#VALnull">null</a> [<a href="Js.html">Js</a>]</td>
 <td></td></tr>
+<tr><td><a href="Js_json.Decode.html#VALnullAs">nullAs</a> [<a href="Js_json.Decode.html">Js_json.Decode</a>]</td>
+<td><div class="info">
+Returns the given value if the JSON value is <code class="code">null</code>
+</div>
+</td></tr>
 <tr><td><a href="Js_primitive.html#VALnull_to_opt">null_to_opt</a> [<a href="Js_primitive.html">Js_primitive</a>]</td>
 <td></td></tr>
 <tr><td><a href="Js_primitive.html#VALnull_undefined_to_opt">null_undefined_to_opt</a> [<a href="Js_primitive.html">Js_primitive</a>]</td>
 <td></td></tr>
-<tr><td><a href="Js_json.html#VALnumber">number</a> [<a href="Js_json.html">Js_json</a>]</td>
+<tr><td><a href="Js_json.Decode.html#VALnullable">nullable</a> [<a href="Js_json.Decode.html">Js_json.Decode</a>]</td>
 <td><div class="info">
-<code class="code">number n</code> makes a JSON number of the <code class="code">float</code> <code class="code">n</code>
+Decodes a JSON value into an <code class="code">'a Js.null</code>
 </div>
 </td></tr>
-<tr><td><a href="Js_json.html#VALnumberArray">numberArray</a> [<a href="Js_json.html">Js_json</a>]</td>
+<tr><td><a href="Js_json.html#VALnumber">number</a> [<a href="Js_json.html">Js_json</a>]</td>
+<td><div class="info">
+<span class="deprecated"></span></div>
+</td></tr>
+<tr><td><a href="Js_json.Encode.html#VALnumberArray">numberArray</a> [<a href="Js_json.Encode.html">Js_json.Encode</a>]</td>
 <td><div class="info">
 <code class="code">numberArray a</code> makes a JSON array of the <code class="code">float array</code> <code class="code">a</code>
 </div>
 </td></tr>
+<tr><td><a href="Js_json.html#VALnumberArray">numberArray</a> [<a href="Js_json.html">Js_json</a>]</td>
+<td><div class="info">
+<span class="deprecated"></span></div>
+</td></tr>
 <tr><td align="left"><br>O</td></tr>
-<tr><td><a href="Js_json.html#VALobjectArray">objectArray</a> [<a href="Js_json.html">Js_json</a>]</td>
+<tr><td><a href="Js_json.Encode.html#VALobjectArray">objectArray</a> [<a href="Js_json.Encode.html">Js_json.Encode</a>]</td>
 <td><div class="info">
 <code class="code">objectArray a</code> makes a JSON array of the <code class="code">JsDict.t array</code> <code class="code">a</code>
 </div>
 </td></tr>
-<tr><td><a href="Js_json.html#VALobject_">object_</a> [<a href="Js_json.html">Js_json</a>]</td>
+<tr><td><a href="Js_json.html#VALobjectArray">objectArray</a> [<a href="Js_json.html">Js_json</a>]</td>
+<td><div class="info">
+<span class="deprecated"></span></div>
+</td></tr>
+<tr><td><a href="Js_json.Encode.html#VALobject_">object_</a> [<a href="Js_json.Encode.html">Js_json.Encode</a>]</td>
 <td><div class="info">
 <code class="code">object_ dict</code> makes a JSON objet of the <code class="code">Js.Dict.t</code> <code class="code">dict</code>
 </div>
+</td></tr>
+<tr><td><a href="Js_json.html#VALobject_">object_</a> [<a href="Js_json.html">Js_json</a>]</td>
+<td><div class="info">
+<span class="deprecated"></span></div>
 </td></tr>
 <tr><td><a href="Js_float.html#VALof_any">of_any</a> [<a href="Js_float.html">Js_float</a>]</td>
 <td><div class="info">
@@ -1829,6 +1924,11 @@ there is no need to accept listener, since we return a <code class="code">watche
 <td></td></tr>
 <tr><td><a href="Bs_dyn.html#VALoption_to_value">option_to_value</a> [<a href="Bs_dyn.html">Bs_dyn</a>]</td>
 <td></td></tr>
+<tr><td><a href="Js_json.Decode.html#VALoptional">optional</a> [<a href="Js_json.Decode.html">Js_json.Decode</a>]</td>
+<td><div class="info">
+Maps a decoder <code class="code">result</code> to an option wrapped in an <code class="code">Ok</code> result
+</div>
+</td></tr>
 <tr><td><a href="Caml_int64.html#VALor_">or_</a> [<a href="Caml_int64.html">Caml_int64</a>]</td>
 <td></td></tr>
 <tr><td><a href="Caml_builtin_exceptions.html#VALout_of_memory">out_of_memory</a> [<a href="Caml_builtin_exceptions.html">Caml_builtin_exceptions</a>]</td>
@@ -2212,15 +2312,28 @@ ES2015
 returns a bool indicating whether the <code class="code">sticky</code> flag is set
 </div>
 </td></tr>
-<tr><td><a href="Js_json.html#VALstring">string</a> [<a href="Js_json.html">Js_json</a>]</td>
+<tr><td><a href="Js_json.Encode.html#VALstring">string</a> [<a href="Js_json.Encode.html">Js_json.Encode</a>]</td>
 <td><div class="info">
 <code class="code">string s</code> makes a JSON string of the <code class="code">string</code> <code class="code">s</code>
 </div>
 </td></tr>
-<tr><td><a href="Js_json.html#VALstringArray">stringArray</a> [<a href="Js_json.html">Js_json</a>]</td>
+<tr><td><a href="Js_json.Decode.html#VALstring">string</a> [<a href="Js_json.Decode.html">Js_json.Decode</a>]</td>
+<td><div class="info">
+Decodes a JSON value into a <code class="code">string</code>
+</div>
+</td></tr>
+<tr><td><a href="Js_json.html#VALstring">string</a> [<a href="Js_json.html">Js_json</a>]</td>
+<td><div class="info">
+<span class="deprecated"></span></div>
+</td></tr>
+<tr><td><a href="Js_json.Encode.html#VALstringArray">stringArray</a> [<a href="Js_json.Encode.html">Js_json.Encode</a>]</td>
 <td><div class="info">
 <code class="code">stringArray a</code> makes a JSON array of the <code class="code">string array</code> <code class="code">a</code>
 </div>
+</td></tr>
+<tr><td><a href="Js_json.html#VALstringArray">stringArray</a> [<a href="Js_json.html">Js_json</a>]</td>
+<td><div class="info">
+<span class="deprecated"></span></div>
 </td></tr>
 <tr><td><a href="Caml_string.html#VALstring_of_char">string_of_char</a> [<a href="Caml_string.html">Caml_string</a>]</td>
 <td></td></tr>
@@ -2507,6 +2620,35 @@ returns a bool indicating whether the <code class="code">unicode</code> flag is 
     otherwise an <b>undefined</b> value is returned.
 </div>
 </td></tr>
+<tr><td><a href="Js_json.html#VALunsafeParse">unsafeParse</a> [<a href="Js_json.html">Js_json</a>]</td>
+<td><div class="info">
+<code class="code">unsafeParse s</code> parses the string <code class="code">s</code> into a JSON data structure
+</div>
+</td></tr>
+<tr><td><a href="Js_string.html#VALunsafeReplaceBy0">unsafeReplaceBy0</a> [<a href="Js_string.html">Js_string</a>]</td>
+<td><div class="info">
+returns a new string with some or all matches of a pattern replaced by the
+value returned from the given function
+</div>
+</td></tr>
+<tr><td><a href="Js_string.html#VALunsafeReplaceBy1">unsafeReplaceBy1</a> [<a href="Js_string.html">Js_string</a>]</td>
+<td><div class="info">
+returns a new string with some or all matches of a pattern replaced by the
+value returned from the given function
+</div>
+</td></tr>
+<tr><td><a href="Js_string.html#VALunsafeReplaceBy2">unsafeReplaceBy2</a> [<a href="Js_string.html">Js_string</a>]</td>
+<td><div class="info">
+returns a new string with some or all matches of a pattern replaced by the
+value returned from the given function
+</div>
+</td></tr>
+<tr><td><a href="Js_string.html#VALunsafeReplaceBy3">unsafeReplaceBy3</a> [<a href="Js_string.html">Js_string</a>]</td>
+<td><div class="info">
+returns a new string with some or all matches of a pattern replaced by the
+value returned from the given function
+</div>
+</td></tr>
 <tr><td><a href="Bs_string.html#VALunsafe_blit">unsafe_blit</a> [<a href="Bs_string.html">Bs_string</a>]</td>
 <td></td></tr>
 <tr><td><a href="Js_math.html#VALunsafe_ceil">unsafe_ceil</a> [<a href="Js_math.html">Js_math</a>]</td>
@@ -2586,10 +2728,19 @@ truncate, ie.
 <tr><td align="left"><br>V</td></tr>
 <tr><td><a href="Js_date.html#VALvalueOf">valueOf</a> [<a href="Js_date.html">Js_date</a>]</td>
 <td></td></tr>
+<tr><td><a href="Js_dict.html#VALvalues">values</a> [<a href="Js_dict.html">Js_dict</a>]</td>
+<td><div class="info">
+<code class="code">entries dict</code> returns the values in <code class="code">dict</code> (ES2017)
+</div>
+</td></tr>
 <tr><td><a href="Bs_dyn.html#VALvariant_to_value">variant_to_value</a> [<a href="Bs_dyn.html">Bs_dyn</a>]</td>
 <td></td></tr>
 <tr><td align="left"><br>W</td></tr>
 <tr><td><a href="Node_fs.Watch.html#VALwatch">watch</a> [<a href="Node_fs.Watch.html">Node_fs.Watch</a>]</td>
+<td></td></tr>
+<tr><td><a href="Node_fs.html#VALwriteFileAsUtf8Sync">writeFileAsUtf8Sync</a> [<a href="Node_fs.html">Node_fs</a>]</td>
+<td></td></tr>
+<tr><td><a href="Node_fs.html#VALwriteFileSync">writeFileSync</a> [<a href="Node_fs.html">Node_fs</a>]</td>
 <td></td></tr>
 <tr><td align="left"><br>X</td></tr>
 <tr><td><a href="Caml_int64.html#VALxor">xor</a> [<a href="Caml_int64.html">Caml_int64</a>]</td>
