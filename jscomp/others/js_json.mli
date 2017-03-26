@@ -229,7 +229,7 @@ val test : 'a  -> 'b kind -> bool
 
 (** {2 String conversion} *)
 
-val parse : string -> (t, string) Result.result
+val parse : string -> (t, string) Bs.Result.result
 (** [parse s] parses the string [s] into a JSON data structure
 
 {b Returns} [Ok of t] if successful, [Error of string] if not.

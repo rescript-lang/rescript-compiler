@@ -38,7 +38,7 @@ it to be {i convenient}. For convenience you should look towards opinionated
 third-party libraries.
 *)
 
-type 'a decoder = Js.json -> ('a, string) Result.result
+type 'a decoder = Js.json -> ('a, string) Bs_result.result
 (** The type of a decoder combinator *)
 
 val boolean : Js.boolean decoder

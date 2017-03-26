@@ -64,7 +64,7 @@ let test (type a) (x : 'a) (v : a kind) : bool =
 external exnParse : string -> t = "JSON.parse" [@@bs.val]
 
 let parse s =
-  let open Result in
+  let open Bs.Result in
   try Ok (exnParse s) with
   | e -> Error (Js.String.make e)
 
