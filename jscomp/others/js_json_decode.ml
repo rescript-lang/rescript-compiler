@@ -64,12 +64,12 @@ let nullAs value json =
   then Ok value
   else Error ("Expected null, got " ^ Js_json.stringify json)
 
-let array_ decode json = 
+let array decode json = 
   if Js_array.isArray json
   then begin
     (* TODO: Seriously rethink this for better balance between readability and perf *)
     let source = (Obj.magic (json : Js.json) : Js.json array) in
-    let l = Array.length source in
+    let l = Js.Array.length source in
 
     if l = 0 then Ok [||]
 

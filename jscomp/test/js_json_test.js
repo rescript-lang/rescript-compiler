@@ -570,39 +570,39 @@ eq('File "js_json_test.ml", line 497, characters 5-12', Js_json_decode.nullAs(/*
 
 eq('File "js_json_test.ml", line 499, characters 5-12', Js_json_decode.nullAs(/* Some */["foo"], null), /* Ok */Block.__(0, [/* Some */["foo"]]));
 
-eq('File "js_json_test.ml", line 505, characters 5-12', Js_json_decode.array_(Js_json_decode.$$int, true), /* Error */Block.__(1, ["Expected array, got true"]));
+eq('File "js_json_test.ml", line 505, characters 5-12', Js_json_decode.array(Js_json_decode.$$int, true), /* Error */Block.__(1, ["Expected array, got true"]));
 
-eq('File "js_json_test.ml", line 507, characters 5-12', Js_json_decode.array_(Js_json_decode.$$int, 1.23), /* Error */Block.__(1, ["Expected array, got 1.23"]));
+eq('File "js_json_test.ml", line 507, characters 5-12', Js_json_decode.array(Js_json_decode.$$int, 1.23), /* Error */Block.__(1, ["Expected array, got 1.23"]));
 
-eq('File "js_json_test.ml", line 509, characters 5-12', Js_json_decode.array_(Js_json_decode.$$int, 23), /* Error */Block.__(1, ["Expected array, got 23"]));
+eq('File "js_json_test.ml", line 509, characters 5-12', Js_json_decode.array(Js_json_decode.$$int, 23), /* Error */Block.__(1, ["Expected array, got 23"]));
 
-eq('File "js_json_test.ml", line 511, characters 5-12', Js_json_decode.array_(Js_json_decode.$$int, "test"), /* Error */Block.__(1, ['Expected array, got "test"']));
+eq('File "js_json_test.ml", line 511, characters 5-12', Js_json_decode.array(Js_json_decode.$$int, "test"), /* Error */Block.__(1, ['Expected array, got "test"']));
 
-eq('File "js_json_test.ml", line 513, characters 5-12', Js_json_decode.array_(Js_json_decode.$$int, null), /* Error */Block.__(1, ["Expected array, got null"]));
+eq('File "js_json_test.ml", line 513, characters 5-12', Js_json_decode.array(Js_json_decode.$$int, null), /* Error */Block.__(1, ["Expected array, got null"]));
 
-eq('File "js_json_test.ml", line 515, characters 5-12', Js_json_decode.array_(Js_json_decode.$$int, /* array */[]), /* Ok */Block.__(0, [/* int array */[]]));
+eq('File "js_json_test.ml", line 515, characters 5-12', Js_json_decode.array(Js_json_decode.$$int, /* array */[]), /* Ok */Block.__(0, [/* int array */[]]));
 
-eq('File "js_json_test.ml", line 517, characters 5-12', Js_json_decode.array_(Js_json_decode.$$int, { }), /* Error */Block.__(1, ["Expected array, got {}"]));
+eq('File "js_json_test.ml", line 517, characters 5-12', Js_json_decode.array(Js_json_decode.$$int, { }), /* Error */Block.__(1, ["Expected array, got {}"]));
 
-eq('File "js_json_test.ml", line 519, characters 5-12', Js_json_decode.array_(Js_json_decode.$$boolean, JSON.parse(" [true, false, true] ")), /* Ok */Block.__(0, [/* array */[
+eq('File "js_json_test.ml", line 519, characters 5-12', Js_json_decode.array(Js_json_decode.$$boolean, JSON.parse(" [true, false, true] ")), /* Ok */Block.__(0, [/* array */[
           true,
           false,
           true
         ]]));
 
-eq('File "js_json_test.ml", line 521, characters 5-12', Js_json_decode.array_(Js_json_decode.$$float, JSON.parse(" [1, 2, 3] ")), /* Ok */Block.__(0, [/* float array */[
+eq('File "js_json_test.ml", line 521, characters 5-12', Js_json_decode.array(Js_json_decode.$$float, JSON.parse(" [1, 2, 3] ")), /* Ok */Block.__(0, [/* float array */[
           1,
           2,
           3
         ]]));
 
-eq('File "js_json_test.ml", line 523, characters 5-12', Js_json_decode.array_(Js_json_decode.$$int, JSON.parse(" [1, 2, 3] ")), /* Ok */Block.__(0, [/* int array */[
+eq('File "js_json_test.ml", line 523, characters 5-12', Js_json_decode.array(Js_json_decode.$$int, JSON.parse(" [1, 2, 3] ")), /* Ok */Block.__(0, [/* int array */[
           1,
           2,
           3
         ]]));
 
-eq('File "js_json_test.ml", line 525, characters 5-12', Js_json_decode.array_(Js_json_decode.string, JSON.parse(' ["a", "b", "c"] ')), /* Ok */Block.__(0, [/* array */[
+eq('File "js_json_test.ml", line 525, characters 5-12', Js_json_decode.array(Js_json_decode.string, JSON.parse(' ["a", "b", "c"] ')), /* Ok */Block.__(0, [/* array */[
           "a",
           "b",
           "c"
@@ -610,7 +610,7 @@ eq('File "js_json_test.ml", line 525, characters 5-12', Js_json_decode.array_(Js
 
 var partial_arg$1 = null;
 
-eq('File "js_json_test.ml", line 527, characters 5-12', Js_json_decode.array_(function (param) {
+eq('File "js_json_test.ml", line 527, characters 5-12', Js_json_decode.array(function (param) {
           return Js_json_decode.nullAs(partial_arg$1, param);
         }, JSON.parse(" [null, null, null] ")), /* Ok */Block.__(0, [/* array */[
           null,
@@ -618,7 +618,7 @@ eq('File "js_json_test.ml", line 527, characters 5-12', Js_json_decode.array_(fu
           null
         ]]));
 
-eq('File "js_json_test.ml", line 529, characters 5-12', Js_json_decode.array_(Js_json_decode.$$boolean, JSON.parse(" [1, 2, 3] ")), /* Error */Block.__(1, ["Expected boolean, got 1"]));
+eq('File "js_json_test.ml", line 529, characters 5-12', Js_json_decode.array(Js_json_decode.$$boolean, JSON.parse(" [1, 2, 3] ")), /* Error */Block.__(1, ["Expected boolean, got 1"]));
 
 eq('File "js_json_test.ml", line 535, characters 5-12', Js_json_decode.dict(Js_json_decode.$$int, true), /* Error */Block.__(1, ["Expected object, got true"]));
 
@@ -748,8 +748,8 @@ eq('File "js_json_test.ml", line 643, characters 5-12', Js_json_decode.field("y"
         }, JSON.parse(' { "x": 2} ')), /* Error */Block.__(1, ["Expected field 'y'"]));
 
 eq('File "js_json_test.ml", line 650, characters 5-12', Js_json_decode.dict(function (param) {
-          return Js_json_decode.array_(function (param) {
-                      return Js_json_decode.array_(Js_json_decode.$$int, param);
+          return Js_json_decode.array(function (param) {
+                      return Js_json_decode.array(Js_json_decode.$$int, param);
                     }, param);
         }, JSON.parse(' { "a": [[1, 2], [3]], "b": [[4], [5, 6]] } ')), /* Ok */Block.__(0, [{
           a: /* array */[
@@ -769,14 +769,14 @@ eq('File "js_json_test.ml", line 650, characters 5-12', Js_json_decode.dict(func
         }]));
 
 eq('File "js_json_test.ml", line 653, characters 5-12', Js_json_decode.dict(function (param) {
-          return Js_json_decode.array_(function (param) {
-                      return Js_json_decode.array_(Js_json_decode.$$int, param);
+          return Js_json_decode.array(function (param) {
+                      return Js_json_decode.array(Js_json_decode.$$int, param);
                     }, param);
         }, JSON.parse(' { "a": [[1, 2], [true]], "b": [[4], [5, 6]] } ')), /* Error */Block.__(1, ["Expected number, got true"]));
 
 eq('File "js_json_test.ml", line 656, characters 5-12', Js_json_decode.dict(function (param) {
-          return Js_json_decode.array_(function (param) {
-                      return Js_json_decode.array_(Js_json_decode.$$int, param);
+          return Js_json_decode.array(function (param) {
+                      return Js_json_decode.array(Js_json_decode.$$int, param);
                     }, param);
         }, JSON.parse(' { "a": [[1, 2], "foo"], "b": [[4], [5, 6]] } ')), /* Error */Block.__(1, ['Expected array, got "foo"']));
 
@@ -784,7 +784,7 @@ var json$11 = JSON.parse(' { "foo": [1, 2, 3], "bar": "baz" } ');
 
 eq('File "js_json_test.ml", line 659, characters 5-12', /* tuple */[
       Js_json_decode.field("foo", function (param) {
-            return Js_json_decode.array_(Js_json_decode.$$int, param);
+            return Js_json_decode.array(Js_json_decode.$$int, param);
           }, json$11),
       Js_json_decode.field("bar", Js_json_decode.string, json$11)
     ], /* tuple */[

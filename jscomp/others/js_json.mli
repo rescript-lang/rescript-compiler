@@ -72,7 +72,7 @@ open Js.Json
 let arrayOfInts str
   match parse str with
   | Ok value ->
-    match Decode.(array_ int value)
+    match Decode.(array int value)
     | Ok arr -> arr
     | Error _ -> []
   | Error message -> failWith message
@@ -134,7 +134,7 @@ let sum ns =
 (* prints `{ "foo": 6, "bar": 24 }` *)
 let _ =
   Js.log \@\@
-    mapJsonObjectString sun Decode.(array_ int) Encode.int {|
+    mapJsonObjectString sun Decode.(array int) Encode.int {|
       {
         "foo": [1, 2, 3],
         "bar": [9, 8, 7]
@@ -325,8 +325,8 @@ val decodeNull : t -> 'a Js_null.t option
 (** @deprecated Please use {! Decode.nullAs} instead *)
 
 val decodeArray : t -> t array option
-[@@deprecated "Please use `Decode.array_` instead"]
-(** @deprecated Please use {! Decode.array_} instead *)
+[@@deprecated "Please use `Decode.array` instead"]
+(** @deprecated Please use {! Decode.array} instead *)
 
 val decodeObject : t -> t Js_dict.t option
 [@@deprecated "Please use `Decode.dict` instead"]
@@ -351,8 +351,8 @@ external null : t = "" [@@bs.val]
 (** @deprecated Please use {! Encode.null} instead *)
 
 external array_ : t array -> t = "%identity"
-[@@deprecated "Please use `Encode.array_` instead"]
-(** @deprecated Please use {! Encode.array_} instead *)
+[@@deprecated "Please use `Encode.array` instead"]
+(** @deprecated Please use {! Encode.array} instead *)
 
 external object_ : t Js_dict.t -> t = "%identity"
 [@@deprecated "Please use `Encode.object_` instead"]

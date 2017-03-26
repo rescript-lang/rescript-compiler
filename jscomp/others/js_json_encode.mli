@@ -43,8 +43,8 @@ external boolean : Js.boolean -> Js.json = "%identity"
 external object_ : Js.json Js_dict.t -> Js.json = "%identity"
 (** [object_ dict] makes a JSON objet of the [Js.Dict.t] [dict] *)
 
-external array_ : Js.json array -> Js.json = "%identity"
-(** [array_ a] makes a JSON array of the [Js.Json.t array] [a] *)
+external array : Js.json array -> Js.json = "%identity"
+(** [array a] makes a JSON array of the [Js.Json.t array] [a] *)
 
 (** The functions below are specialized for specific array type which 
     happened to be already JSON object in the BuckleScript runtime. Therefore

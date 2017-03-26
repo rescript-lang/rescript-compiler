@@ -389,7 +389,7 @@ let () =
   eq __LOC__ 
     (boolean Encode.null) (Error "Expected boolean, got null");
   eq __LOC__ 
-    (boolean (Encode.array_ [||])) (Error "Expected boolean, got []");
+    (boolean (Encode.array [||])) (Error "Expected boolean, got []");
   eq __LOC__ 
     (boolean (Encode.object_ @@ Js.Dict.empty ())) (Error "Expected boolean, got {}")
 
@@ -407,7 +407,7 @@ let () =
   eq __LOC__ 
     (float Encode.null) (Error "Expected number, got null");
   eq __LOC__ 
-    (float (Encode.array_ [||])) (Error "Expected number, got []");
+    (float (Encode.array [||])) (Error "Expected number, got []");
   eq __LOC__ 
     (float (Encode.object_ @@ Js.Dict.empty ())) (Error "Expected number, got {}")
 
@@ -425,7 +425,7 @@ let () =
   eq __LOC__ 
     (int Encode.null) (Error "Expected number, got null");
   eq __LOC__ 
-    (int (Encode.array_ [||])) (Error "Expected number, got []");
+    (int (Encode.array [||])) (Error "Expected number, got []");
   eq __LOC__ 
     (int (Encode.object_ @@ Js.Dict.empty ())) (Error "Expected number, got {}")
 
@@ -443,7 +443,7 @@ let () =
   eq __LOC__ 
     (string Encode.null) (Error "Expected string, got null");
   eq __LOC__ 
-    (string (Encode.array_ [||])) (Error "Expected string, got []");
+    (string (Encode.array [||])) (Error "Expected string, got []");
   eq __LOC__ 
     (string (Encode.object_ @@ Js.Dict.empty ())) (Error "Expected string, got {}")
 
@@ -461,7 +461,7 @@ let () =
   eq __LOC__ 
     (nullable int Encode.null) (Ok Js.null);
   eq __LOC__ 
-    (nullable int (Encode.array_ [||])) (Error "Expected number, got []");
+    (nullable int (Encode.array [||])) (Error "Expected number, got []");
   eq __LOC__ 
     (nullable int (Encode.object_ @@ Js.Dict.empty ())) (Error "Expected number, got {}");
   eq __LOC__ 
@@ -489,7 +489,7 @@ let () =
   eq __LOC__ 
     (nullAs 0 Encode.null) (Ok 0);
   eq __LOC__ 
-    (nullAs 0 (Encode.array_ [||])) (Error "Expected null, got []");
+    (nullAs 0 (Encode.array [||])) (Error "Expected null, got []");
   eq __LOC__ 
     (nullAs 0 (Encode.object_ @@ Js.Dict.empty ())) (Error "Expected null, got {}");
   eq __LOC__ 
@@ -503,31 +503,31 @@ let () =
   let open Js.Json in
   let open Decode in
   eq __LOC__ 
-    (array_ int (Encode.boolean Js.true_)) (Error "Expected array, got true");
+    (array int (Encode.boolean Js.true_)) (Error "Expected array, got true");
   eq __LOC__ 
-    (array_ int (Encode.float 1.23)) (Error "Expected array, got 1.23");
+    (array int (Encode.float 1.23)) (Error "Expected array, got 1.23");
   eq __LOC__ 
-    (array_ int (Encode.int 23)) (Error "Expected array, got 23");
+    (array int (Encode.int 23)) (Error "Expected array, got 23");
   eq __LOC__ 
-    (array_ int (Encode.string "test")) (Error "Expected array, got \"test\"");
+    (array int (Encode.string "test")) (Error "Expected array, got \"test\"");
   eq __LOC__ 
-    (array_ int Encode.null) (Error "Expected array, got null");
+    (array int Encode.null) (Error "Expected array, got null");
   eq __LOC__ 
-    (array_ int (Encode.array_ [||])) (Ok [||]);
+    (array int (Encode.array [||])) (Ok [||]);
   eq __LOC__ 
-    (array_ int (Encode.object_ @@ Js.Dict.empty ())) (Error "Expected array, got {}");
+    (array int (Encode.object_ @@ Js.Dict.empty ())) (Error "Expected array, got {}");
   eq __LOC__ 
-    (array_ boolean (unsafeParse {| [true, false, true] |})) (Ok [| Js.true_; Js.false_; Js.true_ |]);
+    (array boolean (unsafeParse {| [true, false, true] |})) (Ok [| Js.true_; Js.false_; Js.true_ |]);
   eq __LOC__ 
-    (array_ float (unsafeParse {| [1, 2, 3] |})) (Ok [| 1.; 2.; 3. |]);
+    (array float (unsafeParse {| [1, 2, 3] |})) (Ok [| 1.; 2.; 3. |]);
   eq __LOC__ 
-    (array_ int (unsafeParse {| [1, 2, 3] |})) (Ok [| 1; 2; 3 |]);
+    (array int (unsafeParse {| [1, 2, 3] |})) (Ok [| 1; 2; 3 |]);
   eq __LOC__ 
-    (array_ string (unsafeParse {| ["a", "b", "c"] |})) (Ok [| "a"; "b"; "c" |]);
+    (array string (unsafeParse {| ["a", "b", "c"] |})) (Ok [| "a"; "b"; "c" |]);
   eq __LOC__ 
-    (array_ (nullAs Js.null) (unsafeParse {| [null, null, null] |})) (Ok [| Js.null; Js.null; Js.null |]);
+    (array (nullAs Js.null) (unsafeParse {| [null, null, null] |})) (Ok [| Js.null; Js.null; Js.null |]);
   eq __LOC__ 
-    (array_ boolean (unsafeParse {| [1, 2, 3] |})) (Error "Expected boolean, got 1")
+    (array boolean (unsafeParse {| [1, 2, 3] |})) (Error "Expected boolean, got 1")
 
 let () = 
   let open Js.Json in
@@ -543,7 +543,7 @@ let () =
   eq __LOC__ 
     (dict int Encode.null) (Error "Expected object, got null");
   eq __LOC__ 
-    (dict int (Encode.array_ [||])) (Error "Expected object, got []");
+    (dict int (Encode.array [||])) (Error "Expected object, got []");
   eq __LOC__ 
     (dict int (Encode.object_ @@ Js.Dict.empty ())) 
     (Ok (Js.Dict.empty ()));
@@ -580,7 +580,7 @@ let () =
   eq __LOC__ 
     (field "foo" int Encode.null) (Error "Expected object, got null");
   eq __LOC__ 
-    (field "foo" int (Encode.array_ [||])) (Error "Expected object, got []");
+    (field "foo" int (Encode.array [||])) (Error "Expected object, got []");
   eq __LOC__ 
     (field "foo" int (Encode.object_ @@ Js.Dict.empty ())) 
     (Error "Expected field 'foo'");
@@ -617,7 +617,7 @@ let () =
   eq __LOC__ 
     (optional int Encode.null) (Ok None);
   eq __LOC__ 
-    (optional int (Encode.array_ [||])) (Ok None);
+    (optional int (Encode.array [||])) (Ok None);
   eq __LOC__ 
     (optional int (Encode.object_ @@ Js.Dict.empty ())) (Ok None);
   eq __LOC__ 
@@ -648,17 +648,17 @@ let () =
   let open Js.Json in
   let open Decode in
   eq __LOC__ 
-    (dict (array_ (array_ int)) (unsafeParse {| { "a": [[1, 2], [3]], "b": [[4], [5, 6]] } |}))
+    (dict (array (array int)) (unsafeParse {| { "a": [[1, 2], [3]], "b": [[4], [5, 6]] } |}))
     (Ok (Obj.magic [%obj { a = [| [|1; 2|]; [|3|] |]; b = [| [|4|]; [|5; 6|] |] }]));
   eq __LOC__ 
-    (dict (array_ (array_ int)) (unsafeParse {| { "a": [[1, 2], [true]], "b": [[4], [5, 6]] } |}))
+    (dict (array (array int)) (unsafeParse {| { "a": [[1, 2], [true]], "b": [[4], [5, 6]] } |}))
     (Error "Expected number, got true");
   eq __LOC__ 
-    (dict (array_ (array_ int)) (unsafeParse {| { "a": [[1, 2], "foo"], "b": [[4], [5, 6]] } |}))
+    (dict (array (array int)) (unsafeParse {| { "a": [[1, 2], "foo"], "b": [[4], [5, 6]] } |}))
     (Error "Expected array, got \"foo\"");
   eq __LOC__ 
     (let json = unsafeParse {| { "foo": [1, 2, 3], "bar": "baz" } |} in
-    (field "foo" (array_ int) json, field "bar" string json))
+    (field "foo" (array int) json, field "bar" string json))
     (Ok [| 1; 2; 3 |], Ok "baz")
 
 let () = Mt.from_pair_suites __FILE__ !suites

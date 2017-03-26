@@ -171,7 +171,7 @@ val nullAs : 'a -> 'a decoder
 ]}
 *)
 
-val array_ : 'a decoder -> 'a array decoder
+val array : 'a decoder -> 'a array decoder
 (** Decodes a JSON array into an ['a array] using the given decoder on each array element
     
 {b Returns} [Ok of 'a array] if the JSON value is a JSON array and all its
@@ -182,16 +182,16 @@ elements are successfully decoded, [Error of string] otherwise.
   let _ =
 
   (* prints [Ok [| 1; 2; 3 |]] *)
-  Js.log \@\@ parse "[1, 2, 3]" |> Decode.(array_ int)
+  Js.log \@\@ parse "[1, 2, 3]" |> Decode.(array int)
 
   (* prints [Error ...] *)
-  Js.log \@\@ parse "[1, 2, "c"]" |> Decode.(array_ int)
+  Js.log \@\@ parse "[1, 2, "c"]" |> Decode.(array int)
 
   (* prints [Error ...] *)
-  Js.log \@\@ parse "123" |> Decode.(array_ int)
+  Js.log \@\@ parse "123" |> Decode.(array int)
 
   (* prints [Ok None] *)
-  Js.log \@\@ parse "null" |> Decode.(array_ int)
+  Js.log \@\@ parse "null" |> Decode.(array int)
 ]}
 *)
 
