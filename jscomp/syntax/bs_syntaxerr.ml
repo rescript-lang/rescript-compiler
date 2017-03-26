@@ -40,9 +40,35 @@ type error
   | Invalid_bs_string_type 
   | Invalid_bs_int_type 
   | Conflict_ffi_attribute
-
+  | Not_supported_in_bs_deriving
+  | Canot_infer_arity_by_syntax
+  | Illegal_attribute
+  | Inconsistent_arity of int * int 
+  (* we still rqeuire users to have explicit annotation to avoid
+     {[ (((int -> int) -> int) -> int )]}
+  *)
+  | Not_supported_directive_in_bs_return
+  | Expect_opt_in_bs_return_to_opt
 let pp_error fmt err =
-  Format.pp_print_string fmt @@ match err with 
+  Format.pp_print_string fmt @@ match err with
+  | Expect_opt_in_bs_return_to_opt
+      ->
+        "bs.return directive *_to_opt expect return type to be \n\
+         syntax wise `_ option` for safety"
+
+  | Not_supported_directive_in_bs_return
+    ->
+    "Not supported return directive"                
+  | Illegal_attribute ->
+    "Illegal attributes"
+  | Canot_infer_arity_by_syntax
+    ->   "Can not infer the arity by syntax, either [@bs.uncurry n] or \n\
+              write it in arrow syntax "
+  | Inconsistent_arity (arity,n)
+      -> Printf.sprintf "Inconsistent arity %d vs %d" arity n 
+  | Not_supported_in_bs_deriving
+    ->
+    "not supported in deriving"
   | Unsupported_predicates 
     ->
      "unsupported predicates"
