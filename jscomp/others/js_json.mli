@@ -32,9 +32,9 @@ This module has four aspects to it:
 
 {3 Parsing}
 
-{! parse} and {! unsafeParse} will both (try to) parse a JSON string into a JSON
+{! parse} and {! exnParse} will both (try to) parse a JSON string into a JSON
 data structure ({! Js.Json.t}), but behhaves differently when encountering a
-parse error. [unsafeParse] will raise a [SyntaxError], while [parse] will return
+parse error. [exnParse] will raise a [SyntaxError], while [parse] will return
 a [Js.Json.t result] indicating whether or not the parsing succeeded. There's
 not much more to it: [string] in, [Js.Json.t] out.
 
@@ -250,8 +250,8 @@ match Js.Json.reifyType json in
 @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse> MDN
 *)
 
-external unsafeParse : string -> t = "JSON.parse" [@@bs.val]
-(** [unsafeParse s] parses the string [s] into a JSON data structure
+external exnParse : string -> t = "JSON.parse" [@@bs.val]
+(** [exnParse s] parses the string [s] into a JSON data structure
 
 {b Returns} a JSON data structure
 
@@ -261,7 +261,7 @@ external unsafeParse : string -> t = "JSON.parse" [@@bs.val]
 (* parse a simple JSON string *)
 
 let json = 
-  try Js_json.unsafeParse {| "foo" |}  with
+  try Js_json.exnParse {| "foo" |}  with
   | _ -> failwith "Error parsing JSON string"
 in
 match Js.Json.reifyType json in

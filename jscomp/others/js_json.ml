@@ -61,11 +61,11 @@ let test (type a) (x : 'a) (v : a kind) : bool =
   | Array -> Js_array.isArray x 
   | Object -> (Obj.magic x) != Js.null && Js.typeof x = "object" && not (Js_array.isArray x )
 
-external unsafeParse : string -> t = "JSON.parse" [@@bs.val]
+external exnParse : string -> t = "JSON.parse" [@@bs.val]
 
 let parse s =
   let open Result in
-  try Ok (unsafeParse s) with
+  try Ok (exnParse s) with
   | e -> Error (Js.String.make e)
 
 external stringify: t -> string = "JSON.stringify" [@@bs.val]
