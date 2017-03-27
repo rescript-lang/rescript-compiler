@@ -41,13 +41,33 @@ function build_ninja(){
     fs.renameSync(path.join(ninja_vendor_dir, 'ninja-1.7.2','ninja'), ninja_bin_output)
 }
 
+// sanity check to make sure the binary actually runs. Used for Linux. Too many variants
+function test_ninja_compatible(binary_path) {
+    var version;
+    try {
+        version = child_process.execSync(binary_path + ' --version', {
+            encoding: 'utf-8',
+            stdio: ['pipe', 'pipe', 'ignore'] // execSync outputs to stdout even if we catch the error. Silent it here
+        }).trim();
+    } catch (e) {
+        return false;
+    }
+    return version === vendor_ninja_version;
+};
+
 console.log('Prepare ninja binary ')
 if(is_windows){
     fs.rename(path.join(ninja_vendor_dir,'ninja.win'),ninja_bin_output)
 } else if(os_type==='Darwin'){
     fs.renameSync(path.join(ninja_vendor_dir,'ninja.darwin'),ninja_bin_output)
 } else if (os_type === 'Linux' && os_arch === 'x64'){
-    fs.renameSync(path.join(ninja_vendor_dir,'ninja.linux64'),ninja_bin_output)
+    var binary = path.join(ninja_vendor_dir,'ninja.linux64');
+    if (test_ninja_compatible(binary)) {
+        fs.renameSync(binary, ninja_bin_output)
+    } else {
+        console.log('On linux, but the ninja linux binary is incompatible.');
+        build_ninja()
+    }
 } else {
     build_ninja()
 }
