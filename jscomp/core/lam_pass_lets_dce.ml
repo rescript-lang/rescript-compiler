@@ -128,13 +128,13 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
     | Lapply{fn = Lfunction{function_kind =  Curried; params; body};  args; _}
       when  Ext_list.same_length params args ->
       simplif (Lam_beta_reduce.beta_reduce  params body args)
-    | Lapply{ fn = Lfunction{function_kind = Tupled; params; body};
-              args = [Lprim {primitive = Pmakeblock _;  args; _}]; _}
-      (** TODO: keep track of this parameter in ocaml trunk,
-          can we switch to the tupled backend?
-      *)
-      when  Ext_list.same_length params  args ->
-      simplif (Lam_beta_reduce.beta_reduce params body args)
+    (* | Lapply{ fn = Lfunction{function_kind = Tupled; params; body}; *)
+    (*           args = [Lprim {primitive = Pmakeblock _;  args; _}]; _} *)
+    (*   (\** TODO: keep track of this parameter in ocaml trunk, *)
+    (*       can we switch to the tupled backend? *)
+    (*   *\) *)
+    (*   when  Ext_list.same_length params  args -> *)
+    (*   simplif (Lam_beta_reduce.beta_reduce params body args) *)
 
     | Lapply{fn = l1;args =  ll; loc; status} -> 
       Lam.apply (simplif l1) (List.map simplif ll) loc status

@@ -37,8 +37,8 @@ type set_field_dbg_info = Lambda.set_field_dbg_info
 type ident = Ident.t
 
 type function_kind 
-   = Curried 
-   | Tupled
+   = Curried
+   (* | Tupled *)
 
 type function_arities = 
   | Determin of bool * (int * Ident.t list option) list  * bool

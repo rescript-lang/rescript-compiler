@@ -247,13 +247,13 @@ let simplify_alias
     | Lapply{ fn = Lfunction{ function_kind = Curried ; params; body}; args; _}
       when  Ext_list.same_length params args ->
       simpl (Lam_beta_reduce.propogate_beta_reduce meta params body args)
-    | Lapply{ fn = Lfunction{function_kind =  Tupled;  params; body}; 
-             args = [Lprim {primitive = Pmakeblock _; args; _}]; _}
-      (** TODO: keep track of this parameter in ocaml trunk,
-          can we switch to the tupled backend?
-      *)
-      when  Ext_list.same_length params args ->
-      simpl (Lam_beta_reduce.propogate_beta_reduce meta params body args)
+    (* | Lapply{ fn = Lfunction{function_kind =  Tupled;  params; body};  *)
+    (*          args = [Lprim {primitive = Pmakeblock _; args; _}]; _} *)
+    (*   (\** TODO: keep track of this parameter in ocaml trunk, *)
+    (*       can we switch to the tupled backend? *)
+    (*   *\) *)
+    (*   when  Ext_list.same_length params args -> *)
+    (*   simpl (Lam_beta_reduce.propogate_beta_reduce meta params body args) *)
 
     | Lapply {fn = l1; args =  ll;  loc ; status} ->
       Lam.apply (simpl  l1) (List.map simpl  ll) loc status

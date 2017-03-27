@@ -36,9 +36,9 @@ type set_field_dbg_info = Lambda.set_field_dbg_info
 
 type ident = Ident.t
 
-type function_kind = Lambda.function_kind 
+type function_kind (* = Lambda.function_kind  *)
    = Curried 
-   | Tupled
+   (* | Tupled *)
 
 
 type function_arities = 
@@ -1765,9 +1765,10 @@ let convert exports lam : _ * _  =
           apply (aux fn) (List.map aux args) 
             loc App_na
       end
-    | Lfunction (function_kind,  params,body)
+    | Lfunction (Tupled,_,_) -> assert false
+    | Lfunction (Curried,  params,body)
       ->  function_ 
-            ~arity:(List.length params) ~function_kind ~params 
+            ~arity:(List.length params) ~function_kind:Curried ~params 
             ~body:(aux body)
     | Llet (kind,id,e,body) 
       ->

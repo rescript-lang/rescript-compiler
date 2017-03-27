@@ -384,15 +384,16 @@ let lambda use_env env ppf v  =
         match function_kind with
         | Curried ->
             List.iter (fun param -> fprintf ppf "@ %a" Ident.print param) params
-        | Tupled ->
-            fprintf ppf " (";
-            let first = ref true in
-            List.iter
-              (fun param ->
-                if !first then first := false else fprintf ppf ",@ ";
-                Ident.print ppf param)
-              params;
-            fprintf ppf ")" in
+        (* | Tupled -> *)
+        (*     fprintf ppf " ("; *)
+        (*     let first = ref true in *)
+        (*     List.iter *)
+        (*       (fun param -> *)
+        (*         if !first then first := false else fprintf ppf ",@ "; *)
+        (*         Ident.print ppf param) *)
+        (*       params; *)
+        (*     fprintf ppf ")"  *)
+      in
       fprintf ppf "@[<2>(function%a@ %a)@]" pr_params params lam body
   | Llet _ | Lletrec _ as x ->
       let args, body =   flatten x  in

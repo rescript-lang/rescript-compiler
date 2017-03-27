@@ -65099,8 +65099,8 @@ type set_field_dbg_info = Lambda.set_field_dbg_info
 type ident = Ident.t
 
 type function_kind 
-   = Curried 
-   | Tupled
+   = Curried
+   (* | Tupled *)
 
 type function_arities = 
   | Determin of bool * (int * Ident.t list option) list  * bool
@@ -65447,9 +65447,9 @@ type set_field_dbg_info = Lambda.set_field_dbg_info
 
 type ident = Ident.t
 
-type function_kind = Lambda.function_kind 
+type function_kind (* = Lambda.function_kind  *)
    = Curried 
-   | Tupled
+   (* | Tupled *)
 
 
 type function_arities = 
@@ -67176,9 +67176,10 @@ let convert exports lam : _ * _  =
           apply (aux fn) (List.map aux args) 
             loc App_na
       end
-    | Lfunction (function_kind,  params,body)
+    | Lfunction (Tupled,_,_) -> assert false
+    | Lfunction (Curried,  params,body)
       ->  function_ 
-            ~arity:(List.length params) ~function_kind ~params 
+            ~arity:(List.length params) ~function_kind:Curried ~params 
             ~body:(aux body)
     | Llet (kind,id,e,body) 
       ->
@@ -71667,15 +71668,16 @@ let lambda use_env env ppf v  =
         match function_kind with
         | Curried ->
             List.iter (fun param -> fprintf ppf "@ %a" Ident.print param) params
-        | Tupled ->
-            fprintf ppf " (";
-            let first = ref true in
-            List.iter
-              (fun param ->
-                if !first then first := false else fprintf ppf ",@ ";
-                Ident.print ppf param)
-              params;
-            fprintf ppf ")" in
+        (* | Tupled -> *)
+        (*     fprintf ppf " ("; *)
+        (*     let first = ref true in *)
+        (*     List.iter *)
+        (*       (fun param -> *)
+        (*         if !first then first := false else fprintf ppf ",@ "; *)
+        (*         Ident.print ppf param) *)
+        (*       params; *)
+        (*     fprintf ppf ")"  *)
+      in
       fprintf ppf "@[<2>(function%a@ %a)@]" pr_params params lam body
   | Llet _ | Lletrec _ as x ->
       let args, body =   flatten x  in
@@ -97308,10 +97310,10 @@ let collect_occurs  lam : occ_tbl =
     | Lapply{fn = Lfunction{function_kind= Curried; params; body};  args; _}
       when  Ext_list.same_length params args ->
       count bv (Lam_beta_reduce.beta_reduce  params body args)
-    | Lapply{fn = Lfunction{function_kind = Tupled; params; body};
-             args = [Lprim {primitive = Pmakeblock _;  args; _}]; _}
-      when  Ext_list.same_length params  args ->
-      count bv (Lam_beta_reduce.beta_reduce   params body args)
+    (* | Lapply{fn = Lfunction{function_kind = Tupled; params; body}; *)
+    (*          args = [Lprim {primitive = Pmakeblock _;  args; _}]; _} *)
+    (*   when  Ext_list.same_length params  args -> *)
+    (*   count bv (Lam_beta_reduce.beta_reduce   params body args) *)
     | Lapply{fn = l1; args= ll; _} ->
       count bv l1; List.iter (count bv) ll 
     | Lconst cst -> ()
@@ -97700,13 +97702,13 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
     | Lapply{fn = Lfunction{function_kind =  Curried; params; body};  args; _}
       when  Ext_list.same_length params args ->
       simplif (Lam_beta_reduce.beta_reduce  params body args)
-    | Lapply{ fn = Lfunction{function_kind = Tupled; params; body};
-              args = [Lprim {primitive = Pmakeblock _;  args; _}]; _}
-      (** TODO: keep track of this parameter in ocaml trunk,
-          can we switch to the tupled backend?
-      *)
-      when  Ext_list.same_length params  args ->
-      simplif (Lam_beta_reduce.beta_reduce params body args)
+    (* | Lapply{ fn = Lfunction{function_kind = Tupled; params; body}; *)
+    (*           args = [Lprim {primitive = Pmakeblock _;  args; _}]; _} *)
+    (*   (\** TODO: keep track of this parameter in ocaml trunk, *)
+    (*       can we switch to the tupled backend? *)
+    (*   *\) *)
+    (*   when  Ext_list.same_length params  args -> *)
+    (*   simplif (Lam_beta_reduce.beta_reduce params body args) *)
 
     | Lapply{fn = l1;args =  ll; loc; status} -> 
       Lam.apply (simplif l1) (List.map simplif ll) loc status
@@ -98209,13 +98211,13 @@ let simplify_alias
     | Lapply{ fn = Lfunction{ function_kind = Curried ; params; body}; args; _}
       when  Ext_list.same_length params args ->
       simpl (Lam_beta_reduce.propogate_beta_reduce meta params body args)
-    | Lapply{ fn = Lfunction{function_kind =  Tupled;  params; body}; 
-             args = [Lprim {primitive = Pmakeblock _; args; _}]; _}
-      (** TODO: keep track of this parameter in ocaml trunk,
-          can we switch to the tupled backend?
-      *)
-      when  Ext_list.same_length params args ->
-      simpl (Lam_beta_reduce.propogate_beta_reduce meta params body args)
+    (* | Lapply{ fn = Lfunction{function_kind =  Tupled;  params; body};  *)
+    (*          args = [Lprim {primitive = Pmakeblock _; args; _}]; _} *)
+    (*   (\** TODO: keep track of this parameter in ocaml trunk, *)
+    (*       can we switch to the tupled backend? *)
+    (*   *\) *)
+    (*   when  Ext_list.same_length params args -> *)
+    (*   simpl (Lam_beta_reduce.propogate_beta_reduce meta params body args) *)
 
     | Lapply {fn = l1; args =  ll;  loc ; status} ->
       Lam.apply (simpl  l1) (List.map simpl  ll) loc status
