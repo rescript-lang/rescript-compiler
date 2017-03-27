@@ -883,7 +883,7 @@ here we use OCaml objects to model module `demo`
 external demo : < height : int ; width : int > Js.t = "" [@@bs.module]
 -------------
 
-There are too kinds of types on the method name:
+There are two kinds of types on the method name:
 
   * normal type
 +
