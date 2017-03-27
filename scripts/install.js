@@ -18,6 +18,7 @@ var path = require('path')
 var os = require('os')
 
 var os_type = os.type()
+var os_arch = os.arch()
 var is_windows = !(os_type.indexOf('Windows') < 0)
 var root_dir = path.join(__dirname,'..')
 var jscomp = path.join(root_dir, 'jscomp')
@@ -33,22 +34,41 @@ var vendor_ninja_version = '1.7.2'
 var ninja_bin_output = path.join(root_dir,'bin','ninja.exe')
 var ninja_vendor_dir = path.join(root_dir,'ninja-build')
 
-function build_ninja(){    
+function build_ninja(){
     console.log('No prebuilt Ninja, building Ninja now')
     var build_ninja_command = "tar -xf  ninja-1.7.2.tar.gz  && cd  ninja-1.7.2  && ./configure.py --bootstrap "
     child_process.execSync(build_ninja_command,{cwd:ninja_vendor_dir})
     fs.renameSync(path.join(ninja_vendor_dir, 'ninja-1.7.2','ninja'), ninja_bin_output)
 }
 
+// sanity check to make sure the binary actually runs. Used for Linux. Too many variants
+function test_ninja_compatible(binary_path) {
+    var version;
+    try {
+        version = child_process.execSync(binary_path + ' --version', {
+            encoding: 'utf-8',
+            stdio: ['pipe', 'pipe', 'ignore'] // execSync outputs to stdout even if we catch the error. Silent it here
+        }).trim();
+    } catch (e) {
+        return false;
+    }
+    return version === vendor_ninja_version;
+};
+
 console.log('Prepare ninja binary ')
 if(is_windows){
     fs.rename(path.join(ninja_vendor_dir,'ninja.win'),ninja_bin_output)
-}
-else if(os_type==='Darwin'){
-    // build_ninja()
+} else if(os_type==='Darwin'){
     fs.renameSync(path.join(ninja_vendor_dir,'ninja.darwin'),ninja_bin_output)
-}  
-else {
+} else if (os_type === 'Linux' && os_arch === 'x64'){
+    var binary = path.join(ninja_vendor_dir,'ninja.linux64');
+    if (test_ninja_compatible(binary)) {
+        fs.renameSync(binary, ninja_bin_output)
+    } else {
+        console.log('On linux, but the ninja linux binary is incompatible.');
+        build_ninja()
+    }
+} else {
     build_ninja()
 }
 console.log('ninja binary is ready: ', ninja_bin_output)
@@ -107,4 +127,3 @@ if (is_windows) {
 else {
     non_windows_npm_release()
 }
-
