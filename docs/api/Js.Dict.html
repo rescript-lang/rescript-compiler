@@ -113,6 +113,14 @@ Key type<br>
 </div>
 
 
+<pre><span id="VALempty"><span class="keyword">val</span> empty</span> : <code class="type">unit -> 'a <a href="Js_dict.html#TYPEt">t</a></code></pre><div class="info ">
+<div class="not-examples">
+<code class="code">empty ()</code> returns en empty dictionary<br>
+</div>
+<div class="examples">
+</div>
+</div>
+
 <pre><span id="VALget"><span class="keyword">val</span> get</span> : <code class="type">'a <a href="Js_dict.html#TYPEt">t</a> -> <a href="Js_dict.html#TYPEkey">key</a> -> 'a option</code></pre><div class="info ">
 <div class="not-examples">
 <code class="code">get dict key</code> returns <code class="code">None</code> if the <code class="code">key</code> is not found in the 
@@ -142,17 +150,52 @@ Key type<br>
 </div>
 </div>
 
-<pre><span id="VALkeys"><span class="keyword">val</span> keys</span> : <code class="type">'a <a href="Js_dict.html#TYPEt">t</a> -> string array</code></pre><div class="info ">
+<pre><span id="VALkeys"><span class="keyword">val</span> keys</span> : <code class="type">'a <a href="Js_dict.html#TYPEt">t</a> -> <a href="Js_dict.html#TYPEkey">key</a> array</code></pre><div class="info ">
 <div class="not-examples">
-<code class="code">keys dict</code> returns all the keys in the dictionary <code class="code">dict</code><br>
+<code class="code">keys dict</code> returns the keys in <code class="code">dict</code><br>
 </div>
 <div class="examples">
 </div>
 </div>
 
-<pre><span id="VALempty"><span class="keyword">val</span> empty</span> : <code class="type">unit -> 'a <a href="Js_dict.html#TYPEt">t</a></code></pre><div class="info ">
+<pre><span id="VALentries"><span class="keyword">val</span> entries</span> : <code class="type">'a <a href="Js_dict.html#TYPEt">t</a> -> (<a href="Js_dict.html#TYPEkey">key</a> * 'a) array</code></pre><div class="info ">
 <div class="not-examples">
-<code class="code">empty ()</code> returns en empty dictionary<br>
+<code class="code">entries dict</code> returns the key value pairs in <code class="code">dict</code> (ES2017)<br>
+</div>
+<div class="examples">
+</div>
+</div>
+
+<pre><span id="VALvalues"><span class="keyword">val</span> values</span> : <code class="type">'a <a href="Js_dict.html#TYPEt">t</a> -> 'a array</code></pre><div class="info ">
+<div class="not-examples">
+<code class="code">entries dict</code> returns the values in <code class="code">dict</code> (ES2017)<br>
+</div>
+<div class="examples">
+</div>
+</div>
+
+<pre><span id="VALfromList"><span class="keyword">val</span> fromList</span> : <code class="type">(<a href="Js_dict.html#TYPEkey">key</a> * 'a) list -> 'a <a href="Js_dict.html#TYPEt">t</a></code></pre><div class="info ">
+<div class="not-examples">
+<code class="code">fromList entries</code> creates a new dictionary using with containing each
+<code class="code">(key, value)</code> pair in <code class="code">entries</code><br>
+</div>
+<div class="examples">
+</div>
+</div>
+
+<pre><span id="VALfromArray"><span class="keyword">val</span> fromArray</span> : <code class="type">(<a href="Js_dict.html#TYPEkey">key</a> * 'a) array -> 'a <a href="Js_dict.html#TYPEt">t</a></code></pre><div class="info ">
+<div class="not-examples">
+<code class="code">fromArray entries</code> creates a new dictionary using with containing each
+<code class="code">(key, value)</code> pair in <code class="code">entries</code><br>
+</div>
+<div class="examples">
+</div>
+</div>
+
+<pre><span id="VALmap"><span class="keyword">val</span> map</span> : <code class="type">('a -> 'b) -> 'a <a href="Js_dict.html#TYPEt">t</a> -> 'b <a href="Js_dict.html#TYPEt">t</a></code></pre><div class="info ">
+<div class="not-examples">
+<code class="code">map f dict</code> maps <code class="code">dict</code> to a new dictionary with the same keys,
+using <code class="code">f</code> to map each value<br>
 </div>
 <div class="examples">
 </div>

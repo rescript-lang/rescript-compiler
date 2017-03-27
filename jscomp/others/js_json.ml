@@ -24,7 +24,7 @@
 
 (** Efficient JSON encoding using JavaScript API *)
 
-type t
+type t = Js.json
 
 type _ kind = 
   | String : Js_string.t kind
@@ -61,50 +61,66 @@ let test (type a) (x : 'a) (v : a kind) : bool =
   | Array -> Js_array.isArray x 
   | Object -> (Obj.magic x) != Js.null && Js.typeof x = "object" && not (Js_array.isArray x )
 
-let decodeString json = 
+external exnParse : string -> t = "JSON.parse" [@@bs.val]
+
+let parse s =
+  let open Bs.Result in
+  try Ok (exnParse s) with
+  | e -> Error (Js.String.make e)
+
+external stringify: t -> string = "JSON.stringify" [@@bs.val]
+external stringifyAny : 'a -> string option = "JSON.stringify" [@@bs.val] [@@bs.return undefined_to_opt]
+(* TODO: more docs when parse error happens or stringify non-stringfy value *)
+
+module Decode = Js_json_decode
+module Encode = Js_json_encode
+
+let decodeBoolean json =
+  if Js.typeof json = "boolean"
+  then Some (Obj.magic (json:t) : Js.boolean)
+  else None 
+[@@deprecated "Please use `Decode.boolean` instead"]
+
+let decodeNumber json =
+  if Js.typeof json = "number" 
+  then Some (Obj.magic (json:t) : float)
+  else None
+[@@deprecated "Please use `Decode.number` instead"]
+
+let decodeString json =
   if Js.typeof json = "string" 
   then Some (Obj.magic (json:t) : string)
   else None 
+[@@deprecated "Please use `Decode.string` instead"]
 
-let decodeNumber json = 
-  if Js.typeof json = "number" 
-  then Some (Obj.magic (json:t) : float)
+let decodeNull json =
+  if (Obj.magic json : 'a Js.null) == Js.null
+  then Some Js.null
   else None 
+[@@deprecated "Please use `Decode.null` instead"]
 
-let decodeObject json = 
+let decodeArray json =
+  if Js_array.isArray json
+  then Some (Obj.magic (json:t) : t array)
+  else None 
+[@@deprecated "Please use `Decode.array_` instead"]
+
+let decodeObject json =
   if  Js.typeof json = "object" && 
       not (Js_array.isArray json) && 
       not ((Obj.magic json : 'a Js.null) == Js.null)
   then Some (Obj.magic (json:t) : t Js_dict.t)
-  else None 
+  else None
+[@@deprecated "Please use `Decode.dict` instead"]
 
-let decodeArray json = 
-  if Js_array.isArray json
-  then Some (Obj.magic (json:t) : t array)
-  else None 
 
-let decodeBoolean json = 
-  if Js.typeof json = "boolean"
-  then Some (Obj.magic (json:t) : Js.boolean)
-  else None 
-
-let decodeNull json = 
-  if (Obj.magic json : 'a Js.null) == Js.null
-  then Some Js.null
-  else None 
-
-external parse : string -> t = "JSON.parse" [@@bs.val]
-external stringifyAny : 'a -> string option = "JSON.stringify" [@@bs.val] [@@bs.return undefined_to_opt]
-(* TODO: more docs when parse error happens or stringify non-stringfy value *)
-
-external null : t = "" [@@bs.val]
-external string : string -> t = "%identity"
-external number : float -> t = "%identity"
-external boolean : Js.boolean -> t = "%identity" 
-external object_ : t Js_dict.t -> t = "%identity"
-external array_ : t array -> t = "%identity"
-external stringArray : string array -> t = "%identity"
-external numberArray : float array -> t = "%identity"
-external booleanArray : Js.boolean array -> t = "%identity"
-external objectArray : t Js_dict.t array -> t = "%identity"
-external stringify: t -> string = "JSON.stringify" [@@bs.val]
+external boolean : Js.boolean -> t = "%identity"  [@@deprecated "Please use `Encode.boolean` instead"]
+external number : float -> t = "%identity" [@@deprecated "Please use `Encode.number` instead"]
+external string : string -> t = "%identity" [@@deprecated "Please use `Encode.string` instead"]
+external null : t = "" [@@bs.val] [@@deprecated "Please use `Encode.null` instead"]
+external array_ : t array -> t = "%identity" [@@deprecated "Please use `Encode.array_` instead"]
+external object_ : t Js_dict.t -> t = "%identity" [@@deprecated "Please use `Encode.object_` instead"]
+external booleanArray : Js.boolean array -> t = "%identity" [@@deprecated "Please use `Encode.booleanArray` instead"]
+external numberArray : float array -> t = "%identity" [@@deprecated "Please use `Encode.numberArray` instead"]
+external stringArray : string array -> t = "%identity" [@@deprecated "Please use `Encode.stringArray` instead"]
+external objectArray : t Js_dict.t array -> t = "%identity" [@@deprecated "Please use `Encode.objectArray` instead"]

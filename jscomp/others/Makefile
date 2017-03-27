@@ -5,7 +5,8 @@ COMPILER=../bin/bsc.exe
 MAP_FILES= node bs
 
 SOURCE_LIST= node_path node_fs node_process dict node_module js_array js_string \
-	js_re js_null_undefined node_buffer js_types js_json js_obj bs_dyn bs_dyn_lib \
+	js_re js_null_undefined node_buffer js_types js_obj bs_dyn bs_dyn_lib \
+	bs_result js_json_encode js_json_decode js_json \
 	node_child_process js_boolean js_math js_dict js_date js_global js_cast dom
 
 $(addsuffix .cmj, $(SOURCE_LIST)): $(addsuffix .cmj, $(MAP_FILES))

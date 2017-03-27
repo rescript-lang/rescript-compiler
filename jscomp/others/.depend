@@ -7,24 +7,30 @@ js_string.cmj : js_re.cmi js_array.cmj
 js_null_undefined.cmj : js_null_undefined.cmi
 node_buffer.cmj : node.cmj
 js_types.cmj : js_types.cmi
-js_json.cmj : js_types.cmj js_string.cmj js_dict.cmj js_array.cmj \
-    js_json.cmi
 js_obj.cmj :
 bs_dyn.cmj : bs_dyn.cmi
 bs_dyn_lib.cmj : bs_dyn.cmj bs_dyn_lib.cmi
+js_json_decode.cmj : js_json.cmj js_dict.cmj js_array.cmj bs.cmj \
+    js_json_decode.cmi
+js_json.cmj : js_types.cmj js_string.cmj js_json_encode.cmi \
+    js_json_decode.cmj js_dict.cmj js_array.cmj bs.cmj js_json.cmi
 node_child_process.cmj :
 js_boolean.cmj : js_boolean.cmi
 js_math.cmj :
-js_dict.cmj : js_dict.cmi
+js_dict.cmj : js_array.cmj js_dict.cmi
 js_date.cmj :
 js_global.cmj :
 js_cast.cmj : js_cast.cmi
 js_re.cmi :
 js_null_undefined.cmi :
 js_types.cmi :
-js_json.cmi : js_types.cmi js_string.cmj js_dict.cmi
 bs_dyn.cmi :
 bs_dyn_lib.cmi : bs_dyn.cmi
+bs_result.cmi :
+js_json_encode.cmi : js_dict.cmi
+js_json_decode.cmi : bs_result.cmi
+js_json.cmi : js_types.cmi js_string.cmj js_json_encode.cmi \
+    js_json_decode.cmi js_dict.cmi bs.cmj
 js_boolean.cmi :
 js_dict.cmi :
 js_cast.cmi :

@@ -64,6 +64,31 @@ let _ = Js.Float.isFinite 1234
 *)
 external isFinite : float -> bool = "" [@@bs.val]
 
+(** Tests if the given value is an integer
+
+{b Returns} [true] if the given value is an integerr, [false] otherwise
+
+@example {[
+(* returns [false] *)
+let _ = Js.Float.isInteger infinity
+
+(* returns [false] *)
+let _ = Js.Float.isInteger neg_infinity
+
+(* returns [false] *)
+let _ = Js.Float.isInteger _NaN
+
+(* returns [false] *)
+let _ = Js.Float.isInteger 1.234
+
+(* returns [true] *)
+let _ = Js.Float.isFinite 1234
+]}
+
+@see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isInteger> MDN
+*)
+external isInteger : float -> bool = "Number.isInteger" [@@bs.val]
+
 (** Formats a [float] using exponential (scientific) notation
 
 {b Returns} a [string] representing the given value in exponential notation

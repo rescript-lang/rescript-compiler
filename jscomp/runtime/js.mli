@@ -59,6 +59,8 @@ type boolean
 type (+'a, +'e) promise
 (** The promise type, defined here for interop *)
 
+type json
+
 (* tag::predefined_js_values[]*)
 external true_ : boolean = "true" [@@bs.val]
 external false_ : boolean = "false" [@@bs.val]

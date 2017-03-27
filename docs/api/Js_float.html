@@ -142,6 +142,32 @@ let _ = Js.Float.isFinite 1234
 </code></pre></pre></div>
 </div>
 
+<pre><span id="VALisInteger"><span class="keyword">val</span> isInteger</span> : <code class="type">float -> bool</code></pre><div class="info ">
+<div class="not-examples">
+Tests if the given value is an integer
+<p>
+
+<b>Returns</b> <code class="code">true</code> if the given value is an integerr, <code class="code">false</code> otherwise<br>
+<div class="tag"><b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isInteger">MDN</a><br>
+</div></div>
+<div class="examples">
+<pre class="example"><pre class="codepre"><code class="code">(* returns [false] *)
+let _ = Js.Float.isInteger infinity
+
+(* returns [false] *)
+let _ = Js.Float.isInteger neg_infinity
+
+(* returns [false] *)
+let _ = Js.Float.isInteger _NaN
+
+(* returns [false] *)
+let _ = Js.Float.isInteger 1.234
+
+(* returns [true] *)
+let _ = Js.Float.isFinite 1234
+</code></pre></pre></div>
+</div>
+
 <pre><span id="VALtoExponential"><span class="keyword">val</span> toExponential</span> : <code class="type">float -> string</code></pre><div class="info ">
 <div class="not-examples">
 Formats a <code class="code">float</code> using exponential (scientific) notation

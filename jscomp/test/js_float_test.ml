@@ -18,6 +18,17 @@ let suites = Mt.[
   ("isFinite - 0.", (fun _ ->
     Eq(true, isFinite 0.)));
 
+  ("isFinite - infinity", (fun _ ->
+    Eq(false, isInteger infinity)));
+  ("isFinite - neg_infinity", (fun _ ->
+    Eq(false, isInteger neg_infinity)));
+  ("isFinite - _NaN", (fun _ ->
+    Eq(false, isInteger _NaN)));
+  ("isFinite - 1.234", (fun _ ->
+    Eq(false, isInteger 1.234)));
+  ("isFinite - 1234.", (fun _ ->
+    Eq(true, isFinite 1234.)));
+
   ("toExponential", (fun _ ->
     Eq("1.23456e+2", toExponential 123.456)));
   ("toExponential - large number", (fun _ ->
