@@ -176,6 +176,66 @@ ES2015<br>
 
 <pre><span id="VALreplace"><span class="keyword">val</span> replace</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre>
 <pre><span id="VALreplaceByRe"><span class="keyword">val</span> replaceByRe</span> : <code class="type"><a href="Js_re.html#TYPEt">Js_re.t</a> -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre>
+<pre><span id="VALunsafeReplaceBy0"><span class="keyword">val</span> unsafeReplaceBy0</span> : <code class="type"><a href="Js_re.html#TYPEt">Js_re.t</a> -><br>       (<a href="Js_string.html#TYPEt">t</a> -> int -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a>) -><br>       <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre><div class="info ">
+<div class="not-examples">
+returns a new string with some or all matches of a pattern replaced by the
+value returned from the given function<br>
+<div class="tag"><b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#Specifying_a_function_as_a_parameter">MDN</a><br>
+</div></div>
+<div class="examples">
+<pre class="example"><pre class="codepre"><code class="code">let str = "hello world!"
+let re = [%re "/hello/g"]
+let replaced = Js.String.unsafeReplaceBy0 re (fun match offset whole -&gt; "hi")
+
+let () = Js.log replaced (* prints "hi world!" *)
+</code></pre></pre></div>
+</div>
+
+<pre><span id="VALunsafeReplaceBy1"><span class="keyword">val</span> unsafeReplaceBy1</span> : <code class="type"><a href="Js_re.html#TYPEt">Js_re.t</a> -><br>       (<a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> -> int -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a>) -><br>       <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre><div class="info ">
+<div class="not-examples">
+returns a new string with some or all matches of a pattern replaced by the
+value returned from the given function<br>
+<div class="tag"><b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#Specifying_a_function_as_a_parameter">MDN</a><br>
+</div></div>
+<div class="examples">
+<pre class="example"><pre class="codepre"><code class="code">let str = "hello world!"
+let re = [%re "/hello/g"]
+let replaced = Js.String.unsafeReplaceBy1 re (fun match p1 offset whole -&gt; "hi")
+
+let () = Js.log replaced (* prints "hi world!" *)
+</code></pre></pre></div>
+</div>
+
+<pre><span id="VALunsafeReplaceBy2"><span class="keyword">val</span> unsafeReplaceBy2</span> : <code class="type"><a href="Js_re.html#TYPEt">Js_re.t</a> -><br>       (<a href="Js_string.html#TYPEt">t</a> -><br>        <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> -> int -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a>) -><br>       <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre><div class="info ">
+<div class="not-examples">
+returns a new string with some or all matches of a pattern replaced by the
+value returned from the given function<br>
+<div class="tag"><b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#Specifying_a_function_as_a_parameter">MDN</a><br>
+</div></div>
+<div class="examples">
+<pre class="example"><pre class="codepre"><code class="code">let str = "hello world!"
+let re = [%re "/hello/g"]
+let replaced = Js.String.unsafeReplaceBy2 re (fun match p1 p2 offset whole -&gt; "hi")
+
+let () = Js.log replaced (* prints "hi world!" *)
+</code></pre></pre></div>
+</div>
+
+<pre><span id="VALunsafeReplaceBy3"><span class="keyword">val</span> unsafeReplaceBy3</span> : <code class="type"><a href="Js_re.html#TYPEt">Js_re.t</a> -><br>       (<a href="Js_string.html#TYPEt">t</a> -><br>        <a href="Js_string.html#TYPEt">t</a> -><br>        <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> -> int -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a>) -><br>       <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre><div class="info ">
+<div class="not-examples">
+returns a new string with some or all matches of a pattern replaced by the
+value returned from the given function<br>
+<div class="tag"><b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#Specifying_a_function_as_a_parameter">MDN</a><br>
+</div></div>
+<div class="examples">
+<pre class="example"><pre class="codepre"><code class="code">let str = "hello world!"
+let re = [%re "/hello/g"]
+let replaced = Js.String.unsafeReplaceBy3 re (fun match p1 p2 p3 offset whole -&gt; "hi")
+
+let () = Js.log replaced (* prints "hi world!" *)
+</code></pre></pre></div>
+</div>
+
 <pre><span id="VALsearch"><span class="keyword">val</span> search</span> : <code class="type"><a href="Js_re.html#TYPEt">Js_re.t</a> -> <a href="Js_string.html#TYPEt">t</a> -> int</code></pre>
 <pre><span id="VALslice"><span class="keyword">val</span> slice</span> : <code class="type">from:int -> to_:int -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre>
 <pre><span id="VALsliceToEnd"><span class="keyword">val</span> sliceToEnd</span> : <code class="type">from:int -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre>
