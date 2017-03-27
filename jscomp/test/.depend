@@ -53,6 +53,7 @@ arith_lexer.cmj : ../stdlib/lexing.cmj arith_syntax.cmj arith_parser.cmj
 arith_parser.cmj : ../stdlib/parsing.cmj ../stdlib/obj.cmj \
     ../stdlib/lexing.cmj arith_syntax.cmj
 arith_syntax.cmj :
+arity_deopt.cmj : mt.cmj
 array_safe_get.cmj : ../stdlib/array.cmj
 array_subtle_test.cmj : mt.cmj ../runtime/js.cmj ../stdlib/array.cmj
 array_test.cmj : ../stdlib/pervasives.cmj mt.cmj ../stdlib/list.cmj \
