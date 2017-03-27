@@ -250,7 +250,7 @@ and compile_recursive_let
     (id : Ident.t)
     (arg : Lam.t)   : Js_output.t * Ident.t list = 
   match arg with 
-  |  Lfunction { kind; params; body; _}  -> 
+  |  Lfunction { function_kind; params; body; _}  -> 
 
     let continue_label = Lam_util.generate_label ~name:id.name () in
     (* TODO: Think about recursive value 
@@ -487,7 +487,7 @@ and
     (lam : Lam.t)  : Js_output.t  =
   begin
     match lam with 
-    | Lfunction{ kind; params; body} ->
+    | Lfunction{ function_kind; params; body} ->
       Js_output.handle_name_tail st should_return lam 
         (E.ocaml_fun
            params
@@ -845,7 +845,7 @@ and
       end
     | Lprim {primitive = Pjs_fn_method arity;  args = args_lambda} -> 
       begin match args_lambda with 
-        | [Lfunction{arity = len; kind; params; body} ] 
+        | [Lfunction{arity = len; function_kind; params; body} ] 
           when len = arity -> 
           Js_output.handle_block_return 
             st

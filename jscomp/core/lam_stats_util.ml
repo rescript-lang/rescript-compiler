@@ -182,7 +182,7 @@ let rec get_arity
         in
         take xs (List.length args) 
     end
-  | Lfunction {arity; kind; params; body = l} -> 
+  | Lfunction {arity; function_kind; params; body = l} -> 
     merge (arity, Some params)  (get_arity meta l)
   | Lswitch(l, {sw_failaction; 
                 sw_consts; 

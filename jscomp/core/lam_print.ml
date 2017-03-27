@@ -379,9 +379,9 @@ let lambda use_env env ppf v  =
       let lams ppf args =
         List.iter (fun l -> fprintf ppf "@ %a" lam l) args in
       fprintf ppf "@[<2>(apply@ %a%a)@]" lam fn lams args
-  | Lfunction{ kind; params; body; _} ->
+  | Lfunction{ function_kind; params; body; _} ->
       let pr_params ppf params =
-        match kind with
+        match function_kind with
         | Curried ->
             List.iter (fun param -> fprintf ppf "@ %a" Ident.print param) params
         | Tupled ->

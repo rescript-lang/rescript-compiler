@@ -36,6 +36,10 @@ type set_field_dbg_info = Lambda.set_field_dbg_info
 
 type ident = Ident.t
 
+type function_kind 
+   = Curried 
+   | Tupled
+
 type function_arities = 
   | Determin of bool * (int * Ident.t list option) list  * bool
   (** when the first argument is true, it is for sure 
@@ -216,9 +220,9 @@ and prim_info = private
   }
 and function_info = private
   { arity : int ; 
-   kind : Lambda.function_kind ; 
-   params : ident list ;
-   body : t 
+    function_kind : function_kind ; 
+    params : ident list ;
+    body : t 
   }
 and  t =  private
   | Lvar of ident
@@ -276,7 +280,7 @@ val const : constant -> t
 val apply : t -> t list -> Location.t -> apply_status -> t
 val function_ : 
   arity:int ->
-  kind:Lambda.function_kind -> params:ident list -> body:t -> t
+  function_kind:function_kind -> params:ident list -> body:t -> t
 
 val let_ : Lambda.let_kind -> ident -> t -> t -> t
 val letrec : (ident * t) list -> t -> t
