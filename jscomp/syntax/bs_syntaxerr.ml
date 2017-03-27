@@ -49,8 +49,11 @@ type error
   *)
   | Not_supported_directive_in_bs_return
   | Expect_opt_in_bs_return_to_opt
+  | Label_in_uncurried_bs_attribute
 let pp_error fmt err =
   Format.pp_print_string fmt @@ match err with
+  | Label_in_uncurried_bs_attribute 
+    -> "label is not allowed here, it is due to `bs.` attribute indicate uncurried calling convention which does not support label argument yet"
   | Expect_opt_in_bs_return_to_opt
       ->
         "bs.return directive *_to_opt expect return type to be \n\

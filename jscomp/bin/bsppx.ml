@@ -6634,8 +6634,11 @@ type error
   *)
   | Not_supported_directive_in_bs_return
   | Expect_opt_in_bs_return_to_opt
+  | Label_in_uncurried_bs_attribute
 let pp_error fmt err =
   Format.pp_print_string fmt @@ match err with
+  | Label_in_uncurried_bs_attribute 
+    -> "label is not allowed here, it is due to `bs.` attribute indicate uncurried calling convention which does not support label argument yet"
   | Expect_opt_in_bs_return_to_opt
       ->
         "bs.return directive *_to_opt expect return type to be \n\
@@ -14565,7 +14568,7 @@ let generic_apply  kind loc
   let args =
     List.map (fun (label,e) ->
         if label <> "" then
-          Location.raise_errorf ~loc "label is not allowed here"        ;
+          Bs_syntaxerr.err loc Label_in_uncurried_bs_attribute;
         self.expr self e
       ) args in
   let len = List.length args in 
@@ -14619,7 +14622,7 @@ let generic_to_uncurry_type  kind loc (mapper : Ast_mapper.mapper) label
     (first_arg : Parsetree.core_type) 
     (typ : Parsetree.core_type)  =
   if label <> "" then
-    Location.raise_errorf ~loc "label is not allowed";                 
+    Bs_syntaxerr.err loc Label_in_uncurried_bs_attribute;
 
   let rec aux acc (typ : Parsetree.core_type) = 
     (* in general, 
@@ -14633,7 +14636,7 @@ let generic_to_uncurry_type  kind loc (mapper : Ast_mapper.mapper) label
         | Ptyp_arrow (label, arg, body)
           -> 
           if label <> "" then
-            Location.raise_errorf ~loc:typ.ptyp_loc "label is not allowed";
+            Bs_syntaxerr.err typ.ptyp_loc Label_in_uncurried_bs_attribute;
           aux (mapper.typ mapper arg :: acc) body 
         | _ -> mapper.typ mapper typ, acc 
       end
@@ -14677,7 +14680,7 @@ let generic_to_uncurry_exp kind loc (self : Ast_mapper.mapper)  pat body
         | Pexp_fun (label,_, arg, body)
           -> 
           if label <> "" then
-            Location.raise_errorf ~loc "label is not allowed";
+            Bs_syntaxerr.err loc Label_in_uncurried_bs_attribute;
           aux (self.pat self arg :: acc) body 
         | _ -> self.expr self body, acc 
       end 
