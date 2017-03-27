@@ -295,7 +295,7 @@
         },
         "entries": {
             "$ref": "#/definitions/entries",
-            "description": "Used by bsb to build to different targets: native (ocamlopt), bytecode (ocamlc) or JS (bsc)"
+            "description": "(internal) Used by bsb to build to different targets: native (ocamlopt), bytecode (ocamlc) or JS (bsc)"
         },
         "generate-merlin": {
             "type": "boolean",

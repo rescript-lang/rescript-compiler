@@ -92,8 +92,9 @@ Node Process API<br>
 </div>
 <hr width="100%">
 <div class="type-declaration">
-<pre><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> = <code class="type">< abort : ([ `Arity_0 ], unit) <a href="Js.html#TYPEmeth">Js.meth</a>; arch : string; argv : string array;<br>         chdir : ([ `Arity_1 of string ], unit) <a href="Js.html#TYPEmeth">Js.meth</a>;<br>         cwd : ([ `Arity_0 ], string) <a href="Js.html#TYPEmeth">Js.meth</a>;<br>         disconnect : ([ `Arity_0 ], unit) <a href="Js.html#TYPEmeth">Js.meth</a> ><br>       <a href="Js.html#TYPEt">Js.t</a></code> </pre>
+<pre><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> = <code class="type">< abort : ([ `Arity_0 ], unit) <a href="Js.html#TYPEmeth">Js.meth</a>; arch : string; argv : string array;<br>         chdir : ([ `Arity_1 of string ], unit) <a href="Js.html#TYPEmeth">Js.meth</a>;<br>         cwd : ([ `Arity_0 ], string) <a href="Js.html#TYPEmeth">Js.meth</a>;<br>         disconnect : ([ `Arity_0 ], unit) <a href="Js.html#TYPEmeth">Js.meth</a>; env : string Js.Dict.t;<br>         platform : string ><br>       <a href="Js.html#TYPEt">Js.t</a></code> </pre>
 </div>
 
 
-<pre><span id="VALprocess"><span class="keyword">val</span> process</span> : <code class="type"><a href="Node_process.html#TYPEt">t</a></code></pre></body></html>
+<pre><span id="VALprocess"><span class="keyword">val</span> process</span> : <code class="type"><a href="Node_process.html#TYPEt">t</a></code></pre>
+<pre><span id="VALexit"><span class="keyword">val</span> exit</span> : <code class="type">int -> unit</code></pre></body></html>
