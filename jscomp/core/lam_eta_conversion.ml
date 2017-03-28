@@ -24,16 +24,20 @@
 
 
 (*
-  let f x y =  x + y 
-  Invariant: there is no currying 
-  here since f's arity is 2, no side effect 
-  f 3 --> function(y) -> f 3 y 
 *)
 
 (** 
-   [transform n loc status fn args]
+   [transform_under_supply n loc status fn args]
    n is the number of missing arguments required for [fn].
    Return a function of airty [n]
+   example:
+   {[
+     let f x y =  x + y ;;
+     (* Invariant: there is no currying 
+        here since f's arity is 2, no side effect *)
+     f 3 ;;
+     function (y) -> f 3 y 
+   ]}
 *) 
 let transform_under_supply n loc status fn args = 
   let extra_args = Ext_list.init n
@@ -166,7 +170,7 @@ let transform_under_supply n loc status fn args =
                     )
                 else (* len < arity *)
                   compile_lambda cxt 
-                    (Lam_eta_conversion.transform_under_supply arity 
+                    transform_under_supply arity 
                        Location.none App_na
                        fn  [] )
               (* let extra_args = Ext_list.init (arity - len) (fun _ ->   (Ident.create Literals.param)) in *)
@@ -175,7 +179,7 @@ let transform_under_supply n loc status fn args =
 
                                 | _ -> 
                                 compile_lambda cxt 
-                                (Lam_eta_conversion.transform_under_supply arity
+                                (transform_under_supply arity
                                 Location.none App_na  fn  [] )
                                 end *)
 

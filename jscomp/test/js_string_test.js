@@ -301,16 +301,16 @@ var suites_001 = /* :: */[
                                                           /* tuple */[
                                                             "unsafeReplaceBy0",
                                                             function () {
-                                                              var replace = function (whole, _, _$1) {
-                                                                if (whole === "bar") {
-                                                                  return "BORK";
-                                                                } else {
-                                                                  return "DORK";
-                                                                }
-                                                              };
                                                               return /* Eq */Block.__(0, [
                                                                         "fooBORKDORK",
-                                                                        "foobarbaz".replace((/ba./g), replace)
+                                                                        "foobarbaz".replace((/ba./g), function (param, param$1, param$2) {
+                                                                              var whole = param;
+                                                                              if (whole === "bar") {
+                                                                                return "BORK";
+                                                                              } else {
+                                                                                return "DORK";
+                                                                              }
+                                                                            })
                                                                       ]);
                                                             }
                                                           ],
@@ -318,16 +318,16 @@ var suites_001 = /* :: */[
                                                             /* tuple */[
                                                               "unsafeReplaceBy1",
                                                               function () {
-                                                                var replace = function (whole, _, _$1, _$2) {
-                                                                  if (whole === "bar") {
-                                                                    return "BORK";
-                                                                  } else {
-                                                                    return "DORK";
-                                                                  }
-                                                                };
                                                                 return /* Eq */Block.__(0, [
                                                                           "fooBORKDORK",
-                                                                          "foobarbaz".replace((/ba./g), replace)
+                                                                          "foobarbaz".replace((/ba./g), function (param, param$1, param$2, param$3) {
+                                                                                var whole = param;
+                                                                                if (whole === "bar") {
+                                                                                  return "BORK";
+                                                                                } else {
+                                                                                  return "DORK";
+                                                                                }
+                                                                              })
                                                                         ]);
                                                               }
                                                             ],
@@ -335,16 +335,16 @@ var suites_001 = /* :: */[
                                                               /* tuple */[
                                                                 "unsafeReplaceBy2",
                                                                 function () {
-                                                                  var replace = function (whole, _, _$1, _$2, _$3) {
-                                                                    if (whole === "bar") {
-                                                                      return "BORK";
-                                                                    } else {
-                                                                      return "DORK";
-                                                                    }
-                                                                  };
                                                                   return /* Eq */Block.__(0, [
                                                                             "fooBORKDORK",
-                                                                            "foobarbaz".replace((/ba./g), replace)
+                                                                            "foobarbaz".replace((/ba./g), function (param, param$1, param$2, param$3, param$4) {
+                                                                                  var whole = param;
+                                                                                  if (whole === "bar") {
+                                                                                    return "BORK";
+                                                                                  } else {
+                                                                                    return "DORK";
+                                                                                  }
+                                                                                })
                                                                           ]);
                                                                 }
                                                               ],
@@ -352,16 +352,16 @@ var suites_001 = /* :: */[
                                                                 /* tuple */[
                                                                   "unsafeReplaceBy3",
                                                                   function () {
-                                                                    var replace = function (whole, _, _$1, _$2, _$3, _$4) {
-                                                                      if (whole === "bar") {
-                                                                        return "BORK";
-                                                                      } else {
-                                                                        return "DORK";
-                                                                      }
-                                                                    };
                                                                     return /* Eq */Block.__(0, [
                                                                               "fooBORKDORK",
-                                                                              "foobarbaz".replace((/ba./g), replace)
+                                                                              "foobarbaz".replace((/ba./g), function (param, param$1, param$2, param$3, param$4, param$5) {
+                                                                                    var whole = param;
+                                                                                    if (whole === "bar") {
+                                                                                      return "BORK";
+                                                                                    } else {
+                                                                                      return "DORK";
+                                                                                    }
+                                                                                  })
                                                                             ]);
                                                                   }
                                                                 ],
