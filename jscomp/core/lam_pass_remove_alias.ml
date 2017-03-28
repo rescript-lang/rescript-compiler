@@ -244,21 +244,21 @@ let simplify_alias
 
       end
 
-    | Lapply{ fn = Lfunction{ kind = Curried ; params; body}; args; _}
+    | Lapply{ fn = Lfunction{ function_kind = Curried ; params; body}; args; _}
       when  Ext_list.same_length params args ->
       simpl (Lam_beta_reduce.propogate_beta_reduce meta params body args)
-    | Lapply{ fn = Lfunction{kind =  Tupled;  params; body}; 
-             args = [Lprim {primitive = Pmakeblock _; args; _}]; _}
-      (** TODO: keep track of this parameter in ocaml trunk,
-          can we switch to the tupled backend?
-      *)
-      when  Ext_list.same_length params args ->
-      simpl (Lam_beta_reduce.propogate_beta_reduce meta params body args)
+    (* | Lapply{ fn = Lfunction{function_kind =  Tupled;  params; body};  *)
+    (*          args = [Lprim {primitive = Pmakeblock _; args; _}]; _} *)
+    (*   (\** TODO: keep track of this parameter in ocaml trunk, *)
+    (*       can we switch to the tupled backend? *)
+    (*   *\) *)
+    (*   when  Ext_list.same_length params args -> *)
+    (*   simpl (Lam_beta_reduce.propogate_beta_reduce meta params body args) *)
 
     | Lapply {fn = l1; args =  ll;  loc ; status} ->
       Lam.apply (simpl  l1) (List.map simpl  ll) loc status
-    | Lfunction {arity; kind; params; body = l}
-      -> Lam.function_ ~arity ~kind ~params  ~body:(simpl  l)
+    | Lfunction {arity; function_kind; params; body = l}
+      -> Lam.function_ ~arity ~function_kind ~params  ~body:(simpl  l)
     | Lswitch (l, {sw_failaction; 
                    sw_consts; 
                    sw_blocks;

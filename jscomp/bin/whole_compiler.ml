@@ -65098,6 +65098,10 @@ type set_field_dbg_info = Lambda.set_field_dbg_info
 
 type ident = Ident.t
 
+type function_kind 
+   = Curried
+   (* | Tupled *)
+
 type function_arities = 
   | Determin of bool * (int * Ident.t list option) list  * bool
   (** when the first argument is true, it is for sure 
@@ -65278,9 +65282,9 @@ and prim_info = private
   }
 and function_info = private
   { arity : int ; 
-   kind : Lambda.function_kind ; 
-   params : ident list ;
-   body : t 
+    function_kind : function_kind ; 
+    params : ident list ;
+    body : t 
   }
 and  t =  private
   | Lvar of ident
@@ -65338,7 +65342,7 @@ val const : constant -> t
 val apply : t -> t list -> Location.t -> apply_status -> t
 val function_ : 
   arity:int ->
-  kind:Lambda.function_kind -> params:ident list -> body:t -> t
+  function_kind:function_kind -> params:ident list -> body:t -> t
 
 val let_ : Lambda.let_kind -> ident -> t -> t -> t
 val letrec : (ident * t) list -> t -> t
@@ -65442,6 +65446,11 @@ type field_dbg_info = Lambda.field_dbg_info
 type set_field_dbg_info = Lambda.set_field_dbg_info
 
 type ident = Ident.t
+
+type function_kind (* = Lambda.function_kind  *)
+   = Curried 
+   (* | Tupled *)
+
 
 type function_arities = 
   | Determin of bool * (int * Ident.t list option) list  * bool
@@ -65623,7 +65632,7 @@ module Types = struct
     }
   and function_info = 
     { arity : int ; 
-      kind : Lambda.function_kind ; 
+      function_kind : function_kind ; 
       params : ident list ;
       body : t 
     }
@@ -65683,7 +65692,7 @@ module X = struct
     = Types.function_info
     =
       { arity : int ; 
-        kind : Lambda.function_kind ; 
+        function_kind : function_kind ; 
         params : ident list ;
         body : t 
       }
@@ -65722,9 +65731,9 @@ let inner_map (f : t -> X.t ) (l : t) : X.t =
     let fn = f fn in
     let args = List.map f args in 
     Lapply { fn ; args; loc; status }
-  | Lfunction({body; arity; kind; params } ) ->
+  | Lfunction({body; arity; function_kind; params } ) ->
     let body = f body in 
-    Lfunction {body; arity; kind ; params}
+    Lfunction {body; arity; function_kind ; params}
   | Llet(str, id, arg, body) ->
     let arg = f arg in let body =  f body in
     Llet(str,id,arg,body)
@@ -65797,7 +65806,7 @@ let inner_iter (f : t -> unit ) (l : t) : unit =
   | Lapply ({fn; args; loc; status} )  ->
     f fn;
     List.iter f args 
-  | Lfunction({body; arity; kind; params } ) ->
+  | Lfunction({body; arity; function_kind; params } ) ->
     f body
   | Llet(str, id, arg, body) ->
     f arg ;
@@ -66314,7 +66323,7 @@ let const ct : t = Lconst ct
 *)
 let apply fn args loc status : t = 
   match fn with 
-  | Lfunction {kind ; params ;  
+  | Lfunction {function_kind ; params ;  
                body = Lprim {primitive = 
                                (Pundefined_to_opt | Pnull_to_opt | Pnull_undefined_to_opt | Pis_null | Pis_null_undefined | Pjs_boolean_to_bool | Pjs_typeof ) as wrap;
                              args = [Lprim ({primitive; args = inner_args} as primitive_call)]
@@ -66327,7 +66336,7 @@ let apply fn args loc status : t =
       | exception _ -> 
         Lapply { fn; args; loc; status }
     end  
-  | Lfunction {kind ; params; 
+  | Lfunction {function_kind ; params; 
                body = Lsequence (Lprim ({primitive; args = inner_args}as primitive_call), (Lconst _ as const )) }
     ->  
     begin match is_eta_conversion_exn params inner_args args with
@@ -66337,7 +66346,7 @@ let apply fn args loc status : t =
       | exception _ -> 
         Lapply { fn; args;  loc;    status }
     end 
-  | Lfunction {kind ; params; 
+  | Lfunction {function_kind ; params; 
                body =Lprim ({primitive; args = inner_args}as primitive_call) } 
 
     ->
@@ -66360,8 +66369,8 @@ let apply fn args loc status : t =
              status }
 
 
-let function_ ~arity ~kind ~params ~body : t = 
-  Lfunction { arity; kind; params ; body}
+let function_ ~arity ~function_kind ~params ~body : t = 
+  Lfunction { arity; function_kind; params ; body}
 
 let let_ kind id e body :  t 
   = Llet (kind,id,e,body)
@@ -67167,9 +67176,10 @@ let convert exports lam : _ * _  =
           apply (aux fn) (List.map aux args) 
             loc App_na
       end
-    | Lfunction (kind,  params,body)
+    | Lfunction (Tupled,_,_) -> assert false
+    | Lfunction (Curried,  params,body)
       ->  function_ 
-            ~arity:(List.length params) ~kind ~params 
+            ~arity:(List.length params) ~function_kind:Curried ~params 
             ~body:(aux body)
     | Llet (kind,id,e,body) 
       ->
@@ -71653,20 +71663,21 @@ let lambda use_env env ppf v  =
       let lams ppf args =
         List.iter (fun l -> fprintf ppf "@ %a" lam l) args in
       fprintf ppf "@[<2>(apply@ %a%a)@]" lam fn lams args
-  | Lfunction{ kind; params; body; _} ->
+  | Lfunction{ function_kind; params; body; _} ->
       let pr_params ppf params =
-        match kind with
+        match function_kind with
         | Curried ->
             List.iter (fun param -> fprintf ppf "@ %a" Ident.print param) params
-        | Tupled ->
-            fprintf ppf " (";
-            let first = ref true in
-            List.iter
-              (fun param ->
-                if !first then first := false else fprintf ppf ",@ ";
-                Ident.print ppf param)
-              params;
-            fprintf ppf ")" in
+        (* | Tupled -> *)
+        (*     fprintf ppf " ("; *)
+        (*     let first = ref true in *)
+        (*     List.iter *)
+        (*       (fun param -> *)
+        (*         if !first then first := false else fprintf ppf ",@ "; *)
+        (*         Ident.print ppf param) *)
+        (*       params; *)
+        (*     fprintf ppf ")"  *)
+      in
       fprintf ppf "@[<2>(function%a@ %a)@]" pr_params params lam body
   | Llet _ | Lletrec _ as x ->
       let args, body =   flatten x  in
@@ -72434,8 +72445,8 @@ let subst_lambda (s : Lam.t Ident_map.t) lam =
     | Lconst sc as l -> l
     | Lapply{fn; args; loc; status} -> 
       Lam.apply (subst fn) (List.map subst args) loc status
-    | Lfunction {arity; kind; params; body} -> 
-      Lam.function_ ~arity ~kind  ~params ~body:(subst body)
+    | Lfunction {arity; function_kind; params; body} -> 
+      Lam.function_ ~arity ~function_kind  ~params ~body:(subst body)
     | Llet(str, id, arg, body) -> 
       Lam.let_ str id (subst arg) (subst body)
     | Lletrec(decl, body) -> 
@@ -88834,10 +88845,10 @@ let rewrite (map :   _ Ident_hashtbl.t)
       let bindings = List.map2 (fun var (_,l) -> var, aux l) vars bindings in 
       let body = aux body in       
       Lam.letrec bindings body
-    | Lfunction{arity; kind; params; body} -> 
+    | Lfunction{arity; function_kind; params; body} -> 
       let params =  List.map rebind params in
       let body = aux body in      
-      Lam.function_ ~arity ~kind ~params ~body
+      Lam.function_ ~arity ~function_kind ~params ~body
     | Lstaticcatch(l1, (i,xs), l2) -> 
       let l1 = aux l1 in
       let xs = List.map rebind xs in
@@ -93233,7 +93244,7 @@ let transform_under_supply n loc status fn args =
        But it is dangerous to change the arity 
        of an existing function which may cause inconsistency
     *)
-    Lam.function_ ~arity:n ~kind:Curried ~params:extra_args
+    Lam.function_ ~arity:n ~function_kind:Curried ~params:extra_args
       ~body:(Lam.apply fn (args @ extra_lambdas) 
                loc 
                status
@@ -93241,7 +93252,7 @@ let transform_under_supply n loc status fn args =
   | fn::args , bindings ->
 
     let rest : Lam.t = 
-      Lam.function_ ~arity:n ~kind:Curried ~params:extra_args
+      Lam.function_ ~arity:n ~function_kind:Curried ~params:extra_args
         ~body:(Lam.apply fn (args @ extra_lambdas) 
                  loc 
                  status
@@ -93363,7 +93374,7 @@ let unsafe_adjust_to_arity loc ~to_:(to_:int) ?from
       else if to_ = 0 then  
         match fn with 
         | Lfunction{params = [param]; body} -> 
-          Lam.function_ ~arity:0 ~kind:Curried 
+          Lam.function_ ~arity:0 ~function_kind:Curried 
             ~params:[]
             ~body:(
               Lam.let_ Alias param Lam.unit body  
@@ -93384,7 +93395,7 @@ let unsafe_adjust_to_arity loc ~to_:(to_:int) ?from
 
           let cont = Lam.function_ 
               ~arity:0
-              ~kind:Curried 
+              ~function_kind:Curried 
               ~params:[]
               ~body:(
                 Lam.apply new_fn [Lam.unit ; Lam.unit ] loc App_na
@@ -93397,14 +93408,14 @@ let unsafe_adjust_to_arity loc ~to_:(to_:int) ?from
 
       else if to_ > from then 
         match fn with 
-        | Lfunction{params;body; kind} -> 
+        | Lfunction{params;body; function_kind} -> 
           (* {[fun x -> f]} -> 
              {[ fun x y -> f y ]}
           *)
           let extra_args = Ext_list.init (to_ - from) (fun _ -> Ident.create Literals.param) in 
           Lam.function_
             ~arity:to_ 
-            ~kind:Curried
+            ~function_kind:Curried
             ~params:(params @ extra_args )
             ~body:(Lam.apply body (List.map Lam.var extra_args) loc App_na)
         | _ -> 
@@ -93422,7 +93433,7 @@ let unsafe_adjust_to_arity loc ~to_:(to_:int) ?from
           let cont = 
             Lam.function_ 
               ~arity
-              ~kind:Curried
+              ~function_kind:Curried
               ~params:extra_args 
               ~body:(
                 let first_args, rest_args = Ext_list.take from extra_args in 
@@ -93443,17 +93454,17 @@ let unsafe_adjust_to_arity loc ~to_:(to_:int) ?from
         begin match fn with 
 
           | Lfunction 
-              {params; body; kind } (* TODO check arity = List.length params in debug mode *)
+              {params; body; function_kind } (* TODO check arity = List.length params in debug mode *)
             -> 
             let arity = to_ in 
             let extra_outer_args, extra_inner_args = Ext_list.take arity params in 
             Lam.function_ 
               ~arity 
-              ~kind:Curried
+              ~function_kind:Curried
               ~params:extra_outer_args 
               ~body:(
                 Lam.function_ ~arity:(from - to_)
-                  ~kind:Curried ~params:extra_inner_args ~body:body)
+                  ~function_kind:Curried ~params:extra_inner_args ~body:body)
           | _
             -> 
             let extra_outer_args = 
@@ -93469,11 +93480,12 @@ let unsafe_adjust_to_arity loc ~to_:(to_:int) ?from
                 Some partial_arg, Lam.var partial_arg
             in   
             let cont = 
-              Lam.function_ ~arity:to_ ~kind:Curried ~params:extra_outer_args 
+              Lam.function_ ~arity:to_ ~function_kind:Curried ~params:extra_outer_args 
                 ~body:(
                   let arity = from - to_ in 
-                  let extra_inner_args = Ext_list.init arity (fun _ -> Ident.create Literals.param ) in 
-                  Lam.function_ ~arity ~kind:Curried ~params:extra_inner_args 
+                  let extra_inner_args =
+                    Ext_list.init arity (fun _ -> Ident.create Literals.param ) in 
+                  Lam.function_ ~arity ~function_kind:Curried ~params:extra_inner_args 
                     ~body:(Lam.apply new_fn 
                              (Ext_list.map_acc (List.map Lam.var extra_inner_args) Lam.var extra_outer_args )      
                              loc App_ml_full)
@@ -93498,7 +93510,7 @@ let unsafe_adjust_to_arity loc ~to_:(to_:int) ?from
 
         let cont = Lam.function_ 
             ~arity:0
-            ~kind:Curried 
+            ~function_kind:Curried 
             ~params:[]
             ~body:(
               Lam.apply new_fn [Lam.unit] loc App_na
@@ -93521,6 +93533,7 @@ let unsafe_adjust_to_arity loc ~to_:(to_:int) ?from
      Lam.function_ ~arity ~kind:Curried ~params:extra_args 
        ~body:(Lam.apply fn (List.map Lam.var extra_args ) loc Lam.App_na )
     ) *)
+
 end
 module Lam_exit_code : sig 
 #1 "lam_exit_code.mli"
@@ -94142,7 +94155,7 @@ and compile_recursive_let
     (id : Ident.t)
     (arg : Lam.t)   : Js_output.t * Ident.t list = 
   match arg with 
-  |  Lfunction { kind; params; body; _}  -> 
+  |  Lfunction { function_kind; params; body; _}  -> 
 
     let continue_label = Lam_util.generate_label ~name:id.name () in
     (* TODO: Think about recursive value 
@@ -94379,7 +94392,7 @@ and
     (lam : Lam.t)  : Js_output.t  =
   begin
     match lam with 
-    | Lfunction{ kind; params; body} ->
+    | Lfunction{ function_kind; params; body} ->
       Js_output.handle_name_tail st should_return lam 
         (E.ocaml_fun
            params
@@ -94737,7 +94750,7 @@ and
       end
     | Lprim {primitive = Pjs_fn_method arity;  args = args_lambda} -> 
       begin match args_lambda with 
-        | [Lfunction{arity = len; kind; params; body} ] 
+        | [Lfunction{arity = len; function_kind; params; body} ] 
           when len = arity -> 
           Js_output.handle_block_return 
             st
@@ -95758,7 +95771,7 @@ let rec get_arity
         in
         take xs (List.length args) 
     end
-  | Lfunction {arity; kind; params; body = l} -> 
+  | Lfunction {arity; function_kind; params; body = l} -> 
     merge (arity, Some params)  (get_arity meta l)
   | Lswitch(l, {sw_failaction; 
                 sw_consts; 
@@ -95962,9 +95975,9 @@ let alpha_conversion (meta : Lam_stats.meta) (lam : Lam.t) : Lam.t =
       end
     | Lprim {primitive; args ; loc} -> 
       Lam.prim ~primitive ~args:(List.map simpl  args) loc
-    | Lfunction {arity; kind; params; body = l} ->
+    | Lfunction {arity; function_kind; params; body = l} ->
       (* Lam_mk.lfunction kind params (simpl l) *)
-      Lam.function_ ~arity ~kind ~params  ~body:(simpl  l)
+      Lam.function_ ~arity ~function_kind ~params  ~body:(simpl  l)
     | Lswitch (l, {sw_failaction; 
                   sw_consts; 
                   sw_blocks;
@@ -96557,8 +96570,8 @@ let deep_flatten
       let args = List.map aux args in
       Lam.prim ~primitive ~args loc
 
-    | Lfunction{arity; kind; params;  body = l} -> 
-      Lam.function_ ~arity ~kind ~params  ~body:(aux  l)
+    | Lfunction{arity; function_kind; params;  body = l} -> 
+      Lam.function_ ~arity ~function_kind ~params  ~body:(aux  l)
     | Lswitch(l, {sw_failaction; 
                   sw_consts; 
                   sw_blocks;
@@ -97068,8 +97081,8 @@ let subst_helper (subst : subst_tbl) (query : int -> int) lam =
     | Lvar _|Lconst _  -> lam
     | Lapply {fn = l1; args =  ll;  loc; status } -> 
       Lam.apply (simplif l1) (List.map simplif ll) loc status
-    | Lfunction {arity; kind; params; body =  l} -> 
-      Lam.function_ ~arity ~kind ~params ~body:(simplif l)
+    | Lfunction {arity; function_kind; params; body =  l} -> 
+      Lam.function_ ~arity ~function_kind ~params ~body:(simplif l)
     | Llet (kind, v, l1, l2) -> 
       Lam.let_ kind v (simplif l1) (simplif l2)
     | Lletrec (bindings, body) ->
@@ -97293,13 +97306,14 @@ let collect_occurs  lam : occ_tbl =
     | Lletrec(bindings, body) ->
       List.iter (fun (v, l) -> count bv l) bindings;
       count bv body
-    | Lapply{fn = Lfunction{kind= Curried; params; body};  args; _}
+        (** Note there is a difference here when do beta reduction for *)
+    | Lapply{fn = Lfunction{function_kind= Curried; params; body};  args; _}
       when  Ext_list.same_length params args ->
       count bv (Lam_beta_reduce.beta_reduce  params body args)
-    | Lapply{fn = Lfunction{kind = Tupled; params; body};
-             args = [Lprim {primitive = Pmakeblock _;  args; _}]; _}
-      when  Ext_list.same_length params  args ->
-      count bv (Lam_beta_reduce.beta_reduce   params body args)
+    (* | Lapply{fn = Lfunction{function_kind = Tupled; params; body}; *)
+    (*          args = [Lprim {primitive = Pmakeblock _;  args; _}]; _} *)
+    (*   when  Ext_list.same_length params  args -> *)
+    (*   count bv (Lam_beta_reduce.beta_reduce   params body args) *)
     | Lapply{fn = l1; args= ll; _} ->
       count bv l1; List.iter (count bv) ll 
     | Lconst cst -> ()
@@ -97420,7 +97434,7 @@ let rec eliminate_ref id (lam : Lam.t) =
     if Ident.same v id then raise_notrace Real_reference else lam
   | Lprim {primitive = Pfield (0,_); args =  [Lvar v]} when Ident.same v id ->
     Lam.var id
-  | Lfunction{ kind; params; body} as lam ->
+  | Lfunction{ function_kind; params; body} as lam ->
     if Ident_set.mem id (Lam.free_variables  lam)
     then raise_notrace Real_reference
     else lam
@@ -97685,21 +97699,21 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
       else simplif l2
     | Lsequence(l1, l2) -> Lam.seq (simplif l1) (simplif l2)
 
-    | Lapply{fn = Lfunction{kind =  Curried; params; body};  args; _}
+    | Lapply{fn = Lfunction{function_kind =  Curried; params; body};  args; _}
       when  Ext_list.same_length params args ->
       simplif (Lam_beta_reduce.beta_reduce  params body args)
-    | Lapply{ fn = Lfunction{kind = Tupled; params; body};
-              args = [Lprim {primitive = Pmakeblock _;  args; _}]; _}
-      (** TODO: keep track of this parameter in ocaml trunk,
-          can we switch to the tupled backend?
-      *)
-      when  Ext_list.same_length params  args ->
-      simplif (Lam_beta_reduce.beta_reduce params body args)
+    (* | Lapply{ fn = Lfunction{function_kind = Tupled; params; body}; *)
+    (*           args = [Lprim {primitive = Pmakeblock _;  args; _}]; _} *)
+    (*   (\** TODO: keep track of this parameter in ocaml trunk, *)
+    (*       can we switch to the tupled backend? *)
+    (*   *\) *)
+    (*   when  Ext_list.same_length params  args -> *)
+    (*   simplif (Lam_beta_reduce.beta_reduce params body args) *)
 
     | Lapply{fn = l1;args =  ll; loc; status} -> 
       Lam.apply (simplif l1) (List.map simplif ll) loc status
-    | Lfunction{arity; kind; params; body = l} ->
-      Lam.function_ ~arity ~kind ~params ~body:(simplif l)
+    | Lfunction{arity; function_kind; params; body = l} ->
+      Lam.function_ ~arity ~function_kind ~params ~body:(simplif l)
     | Lconst _ -> lam
     | Lletrec(bindings, body) ->
       Lam.letrec 
@@ -98194,21 +98208,21 @@ let simplify_alias
 
       end
 
-    | Lapply{ fn = Lfunction{ kind = Curried ; params; body}; args; _}
+    | Lapply{ fn = Lfunction{ function_kind = Curried ; params; body}; args; _}
       when  Ext_list.same_length params args ->
       simpl (Lam_beta_reduce.propogate_beta_reduce meta params body args)
-    | Lapply{ fn = Lfunction{kind =  Tupled;  params; body}; 
-             args = [Lprim {primitive = Pmakeblock _; args; _}]; _}
-      (** TODO: keep track of this parameter in ocaml trunk,
-          can we switch to the tupled backend?
-      *)
-      when  Ext_list.same_length params args ->
-      simpl (Lam_beta_reduce.propogate_beta_reduce meta params body args)
+    (* | Lapply{ fn = Lfunction{function_kind =  Tupled;  params; body};  *)
+    (*          args = [Lprim {primitive = Pmakeblock _; args; _}]; _} *)
+    (*   (\** TODO: keep track of this parameter in ocaml trunk, *)
+    (*       can we switch to the tupled backend? *)
+    (*   *\) *)
+    (*   when  Ext_list.same_length params args -> *)
+    (*   simpl (Lam_beta_reduce.propogate_beta_reduce meta params body args) *)
 
     | Lapply {fn = l1; args =  ll;  loc ; status} ->
       Lam.apply (simpl  l1) (List.map simpl  ll) loc status
-    | Lfunction {arity; kind; params; body = l}
-      -> Lam.function_ ~arity ~kind ~params  ~body:(simpl  l)
+    | Lfunction {arity; function_kind; params; body = l}
+      -> Lam.function_ ~arity ~function_kind ~params  ~body:(simpl  l)
     | Lswitch (l, {sw_failaction; 
                    sw_consts; 
                    sw_blocks;

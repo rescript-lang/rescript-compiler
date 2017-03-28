@@ -58,8 +58,8 @@ let subst_lambda (s : Lam.t Ident_map.t) lam =
     | Lconst sc as l -> l
     | Lapply{fn; args; loc; status} -> 
       Lam.apply (subst fn) (List.map subst args) loc status
-    | Lfunction {arity; kind; params; body} -> 
-      Lam.function_ ~arity ~kind  ~params ~body:(subst body)
+    | Lfunction {arity; function_kind; params; body} -> 
+      Lam.function_ ~arity ~function_kind  ~params ~body:(subst body)
     | Llet(str, id, arg, body) -> 
       Lam.let_ str id (subst arg) (subst body)
     | Lletrec(decl, body) -> 

@@ -126,6 +126,7 @@ OTHERS := literals a test_ari test_export2 test_internalOO test_obj_simple_ffi t
 	global_mangles\
 	gpr_1438\
 	unicode_type_error\
+	arity_deopt\
 	bb
 
 # bs_uncurry_test

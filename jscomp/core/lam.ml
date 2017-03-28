@@ -36,6 +36,11 @@ type set_field_dbg_info = Lambda.set_field_dbg_info
 
 type ident = Ident.t
 
+type function_kind (* = Lambda.function_kind  *)
+   = Curried 
+   (* | Tupled *)
+
+
 type function_arities = 
   | Determin of bool * (int * Ident.t list option) list  * bool
   | NA 
@@ -216,7 +221,7 @@ module Types = struct
     }
   and function_info = 
     { arity : int ; 
-      kind : Lambda.function_kind ; 
+      function_kind : function_kind ; 
       params : ident list ;
       body : t 
     }
@@ -276,7 +281,7 @@ module X = struct
     = Types.function_info
     =
       { arity : int ; 
-        kind : Lambda.function_kind ; 
+        function_kind : function_kind ; 
         params : ident list ;
         body : t 
       }
@@ -315,9 +320,9 @@ let inner_map (f : t -> X.t ) (l : t) : X.t =
     let fn = f fn in
     let args = List.map f args in 
     Lapply { fn ; args; loc; status }
-  | Lfunction({body; arity; kind; params } ) ->
+  | Lfunction({body; arity; function_kind; params } ) ->
     let body = f body in 
-    Lfunction {body; arity; kind ; params}
+    Lfunction {body; arity; function_kind ; params}
   | Llet(str, id, arg, body) ->
     let arg = f arg in let body =  f body in
     Llet(str,id,arg,body)
@@ -390,7 +395,7 @@ let inner_iter (f : t -> unit ) (l : t) : unit =
   | Lapply ({fn; args; loc; status} )  ->
     f fn;
     List.iter f args 
-  | Lfunction({body; arity; kind; params } ) ->
+  | Lfunction({body; arity; function_kind; params } ) ->
     f body
   | Llet(str, id, arg, body) ->
     f arg ;
@@ -907,7 +912,7 @@ let const ct : t = Lconst ct
 *)
 let apply fn args loc status : t = 
   match fn with 
-  | Lfunction {kind ; params ;  
+  | Lfunction {function_kind ; params ;  
                body = Lprim {primitive = 
                                (Pundefined_to_opt | Pnull_to_opt | Pnull_undefined_to_opt | Pis_null | Pis_null_undefined | Pjs_boolean_to_bool | Pjs_typeof ) as wrap;
                              args = [Lprim ({primitive; args = inner_args} as primitive_call)]
@@ -920,7 +925,7 @@ let apply fn args loc status : t =
       | exception _ -> 
         Lapply { fn; args; loc; status }
     end  
-  | Lfunction {kind ; params; 
+  | Lfunction {function_kind ; params; 
                body = Lsequence (Lprim ({primitive; args = inner_args}as primitive_call), (Lconst _ as const )) }
     ->  
     begin match is_eta_conversion_exn params inner_args args with
@@ -930,7 +935,7 @@ let apply fn args loc status : t =
       | exception _ -> 
         Lapply { fn; args;  loc;    status }
     end 
-  | Lfunction {kind ; params; 
+  | Lfunction {function_kind ; params; 
                body =Lprim ({primitive; args = inner_args}as primitive_call) } 
 
     ->
@@ -953,8 +958,8 @@ let apply fn args loc status : t =
              status }
 
 
-let function_ ~arity ~kind ~params ~body : t = 
-  Lfunction { arity; kind; params ; body}
+let function_ ~arity ~function_kind ~params ~body : t = 
+  Lfunction { arity; function_kind; params ; body}
 
 let let_ kind id e body :  t 
   = Llet (kind,id,e,body)
@@ -1760,9 +1765,10 @@ let convert exports lam : _ * _  =
           apply (aux fn) (List.map aux args) 
             loc App_na
       end
-    | Lfunction (kind,  params,body)
+    | Lfunction (Tupled,_,_) -> assert false
+    | Lfunction (Curried,  params,body)
       ->  function_ 
-            ~arity:(List.length params) ~kind ~params 
+            ~arity:(List.length params) ~function_kind:Curried ~params 
             ~body:(aux body)
     | Llet (kind,id,e,body) 
       ->
