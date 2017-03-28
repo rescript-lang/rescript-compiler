@@ -10,7 +10,7 @@
                 "es6",
                 "es6-global"
             ],
-            "description": "amdjs-global and es6-glboal will generate relative `require` paths instead of relying on NodeJS' module resolution"
+            "description": "amdjs-global and es6-global will generate relative `require` paths instead of relying on NodeJS' module resolution"
         },
         "package-specs": {
             "type": "array",
