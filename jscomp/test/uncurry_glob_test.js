@@ -13,14 +13,12 @@ function f() {
   return 3;
 }
 
-f();
-
 function $plus$great(a, h) {
   return h(a);
 }
 
 function u(h) {
-  return $plus$great(3, h);
+  return h(3);
 }
 
 exports.v           = v;

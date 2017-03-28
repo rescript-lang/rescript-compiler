@@ -165,7 +165,7 @@ let translate  loc
   | Pjs_unsafe_downgrade _
   | Pdebugger 
   | Pjs_fn_run _ 
-  | Pjs_fn_make _
+  (* | Pjs_fn_make _ *)
 
   | Pjs_fn_runmethod _ 
     -> assert false (* already handled by {!Lam_compile} *)

@@ -27,7 +27,7 @@ var u = f(a);
 
 var v = f(b);
 
-var vv = h(b);
+var vv = b.u(1, 2);
 
 exports.a  = a;
 exports.b  = b;

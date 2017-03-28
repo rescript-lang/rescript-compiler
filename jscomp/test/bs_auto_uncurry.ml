@@ -31,6 +31,19 @@ external map2 :
     -> 'c array = "map2"    
     [@@bs.val]
 
+external map3 : 
+  'b array -> ('a -> 'b -> 'c [@bs.uncurry])
+  -> 'c array = ""    
+[@@bs.send.pipe: 'a array]
+
+let map3_f x  = 
+  [|1;2;3|] |> map3 [|1;2|] x
+
+let map3_f_1 a  = 
+  [|1;2;3|] |> map3 [|1;2|] (fun x -> a x)
+
+let map3_f_2 a  = 
+  [|1;2;3|] |> map3 [|1;2|] (fun x -> a )
 
 external ff : 
     int -> (int [@bs.ignore]) -> (int -> int -> int [@bs.uncurry]) -> int 

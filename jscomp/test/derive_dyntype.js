@@ -43,15 +43,15 @@ function _t_to_value(value) {
           return /* Variant */Block.__(13, [
                     all_branches_of_t,
                     2,
-                    /* array */[Bs_dyn.int_to_value(value[0])]
+                    /* array */[/* Int */Block.__(2, [value[0]])]
                   ]);
       case 1 : 
           return /* Variant */Block.__(13, [
                     all_branches_of_t,
                     3,
                     /* array */[
-                      Bs_dyn.int_to_value(value[0]),
-                      Bs_dyn.int_to_value(value[1])
+                      /* Int */Block.__(2, [value[0]]),
+                      /* Int */Block.__(2, [value[1]])
                     ]
                   ]);
       case 2 : 
@@ -83,9 +83,9 @@ function u_to_value(value) {
   return /* Record */Block.__(12, [
             shape,
             /* array */[
-              Bs_dyn.int_to_value(value[/* x */0]),
+              /* Int */Block.__(2, [value[/* x */0]]),
               t_to_value(value[/* y */1]),
-              Bs_dyn.string_to_value(value[/* z */2])
+              /* String */Block.__(7, [value[/* z */2]])
             ]
           ]);
 }

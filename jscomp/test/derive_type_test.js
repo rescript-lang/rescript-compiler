@@ -1,7 +1,6 @@
 'use strict';
 
-var Block  = require("../../lib/js/block");
-var Bs_dyn = require("../../lib/js/bs_dyn");
+var Block = require("../../lib/js/block");
 
 var shape = /* array */[
   "x",
@@ -13,8 +12,8 @@ function vv_to_value(x) {
   return /* Record */Block.__(12, [
             shape,
             /* array */[
-              Bs_dyn.int_to_value(args[/* x */0]),
-              Bs_dyn.string_to_value(args[/* y */1])
+              /* Int */Block.__(2, [args[/* x */0]]),
+              /* String */Block.__(7, [args[/* y */1]])
             ]
           ]);
 }

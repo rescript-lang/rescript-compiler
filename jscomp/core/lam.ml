@@ -176,7 +176,7 @@ type primitive =
   | Pupdate_mod
   | Praw_js_code_exp of string 
   | Praw_js_code_stmt of string 
-  | Pjs_fn_make of int 
+  (* | Pjs_fn_make of int  *)
   | Pjs_fn_run of int 
   | Pjs_fn_method of int 
   | Pjs_fn_runmethod of int
@@ -894,12 +894,12 @@ let rec is_eta_conversion_exn
   | x::xs, Lvar y::ys, r::rest 
     when Ident.same x y ->
     r :: is_eta_conversion_exn xs ys rest 
-  | x::xs, 
-    (Lprim ({primitive = Pjs_fn_make _; 
-             args = [Lvar y] } as p ) ::ys),
-    r :: rest when Ident.same x y -> 
-    Lprim ({p with args = [ r]}) :: 
-    is_eta_conversion_exn xs ys rest 
+  (* | x::xs,  *)
+  (*   (Lprim ({primitive = Pjs_fn_make _;  *)
+  (*            args = [Lvar y] } as p ) ::ys), *)
+  (*   r :: rest when Ident.same x y ->  *)
+  (*   Lprim ({p with args = [ r]}) ::  *)
+  (*   is_eta_conversion_exn xs ys rest  *)
   | [], [], [] -> []
   | _, _, _ -> raise_notrace Not_simple_form
 
@@ -954,6 +954,7 @@ let apply fn args loc status : t =
       Lapply {fn = new_fn ; args ; loc = loc; status } 
   *)
   (* same as previous App status*)
+
   | _ -> 
     Lapply { fn; args;  loc  ;
              status }
@@ -1422,14 +1423,14 @@ module Lift = struct
 end
 
 let prim ~primitive:(prim : primitive) ~args:(ll : t list) loc  : t =
-  match prim with 
-  | Pjs_fn_make arity -> 
-    begin match ll with 
-    | [fn]
-      -> unsafe_adjust_to_arity loc ~to_:arity ?from:None fn
-    | _ -> assert false
-    end
-  | _ ->  
+  (* match prim with  *)
+  (* | Pjs_fn_make arity ->  *)
+  (*   begin match ll with  *)
+  (*   | [fn] *)
+  (*     -> unsafe_adjust_to_arity loc ~to_:arity ?from:None fn *)
+  (*   | _ -> assert false *)
+  (*   end *)
+  (* | _ ->   *)
   let default () : t = Lprim { primitive = prim ;args =  ll ; loc} in 
   match ll with 
   | [Lconst a] -> 
@@ -1625,7 +1626,9 @@ let rec transform_uncurried_arg_type loc (arg_types : Ast_ffi_types.arg_kind lis
     let (o_arg_types, o_args) = 
       transform_uncurried_arg_type loc xs ys in 
     { Ast_ffi_types.arg_type = Nothing ; arg_label } :: o_arg_types , 
-    prim ~primitive:(Pjs_fn_make n) ~args:[y] loc :: o_args 
+    (* prim ~primitive:(Pjs_fn_make n) ~args:[y] loc *)
+    unsafe_adjust_to_arity loc ~to_:n ?from:None y
+    :: o_args 
   |  x  ::xs, y::ys -> 
     begin match x with 
       | {arg_type = Arg_int_lit  _ | Arg_string_lit _ }  -> 
@@ -1911,6 +1914,22 @@ let convert exports lam : _ * _  =
     else if s =  "#debugger"  then 
       (* ATT: Currently, the arity is one due to PPX *)
       prim ~primitive:Pdebugger ~args:[] loc 
+    else if s = "#fn_mk"  then 
+      let arity = (int_of_string p.prim_native_name) in
+      match args with 
+      | [fn] -> 
+        let fn = aux fn in 
+        unsafe_adjust_to_arity loc ~to_:arity ?from:None fn
+      | _ -> assert false
+    else if s = "#fn_run" then 
+      let arity = (int_of_string p.prim_native_name) in
+      let args = List.map aux args in 
+      match args with 
+      | [Lprim {primitive = Pjs_unsafe_downgrade _ ; }; _ ]
+        -> prim ~primitive:(Pjs_fn_run arity) ~args loc
+      | fn :: rest -> 
+        apply fn rest loc App_js_full
+      | [] -> assert false
     else 
       let args = List.map aux args in 
       let primitive = match s with 
@@ -1950,8 +1969,9 @@ let convert exports lam : _ * _  =
         | "#unsafe_neq" -> Pjscomp Cneq
 
         | "#typeof" -> Pjs_typeof
-        | "#fn_run" | "#method_run" -> Pjs_fn_run(int_of_string p.prim_native_name)
-        | "#fn_mk" -> Pjs_fn_make (int_of_string p.prim_native_name)
+        (* | "#fn_run"  *)
+        | "#method_run" -> Pjs_fn_run(int_of_string p.prim_native_name)
+        (* | "#fn_mk" -> Pjs_fn_make (int_of_string p.prim_native_name) *)
         | "#fn_method" -> Pjs_fn_method (int_of_string p.prim_native_name)
         | "#unsafe_downgrade" -> Pjs_unsafe_downgrade (Ext_string.empty,loc)
         | _ -> Location.raise_errorf ~loc

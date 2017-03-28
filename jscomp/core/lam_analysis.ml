@@ -76,7 +76,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Pnull_to_opt       
       | Pundefined_to_opt         
       | Pnull_undefined_to_opt 
-      | Pjs_fn_make _         
+      (* | Pjs_fn_make _          *)
       | Pjs_object_create _
         (** TODO: check *)      
       | Pbytes_to_string 
@@ -576,7 +576,7 @@ and eq_primitive ( lhs : Lam.primitive) (rhs : Lam.primitive) =
   | Pbigstring_set_64 b -> (match rhs with Pbigstring_set_64 b1 -> b = b1 | _ -> false )      
   | Pctconst compile_time_constant -> (match rhs with Pctconst compile_time_constant1 -> eq_compile_time_constant compile_time_constant compile_time_constant1 | _ -> false)
   | Pjs_unsafe_downgrade ( s,_loc) -> (match rhs with Pjs_unsafe_downgrade (s1,_) -> s = s1 | _ -> false)  
-  | Pjs_fn_make i -> (match rhs with Pjs_fn_make i1 -> i = i1 | _ -> false)
+  (* | Pjs_fn_make i -> (match rhs with Pjs_fn_make i1 -> i = i1 | _ -> false) *)
   | Pjs_fn_run i -> (match rhs with Pjs_fn_run i1 -> i = i1 | _ -> false)
   | Pjs_fn_method i -> (match rhs with Pjs_fn_method i1 -> i = i1 | _ ->  false )
   | Pjs_fn_runmethod i -> (match rhs with Pjs_fn_runmethod i1 -> i = i1 | _ -> false ) 

@@ -24,8 +24,6 @@ function eq(loc, x, y) {
   return /* () */0;
 }
 
-var u = 3;
-
 function nullary() {
   return 3;
 }
@@ -34,11 +32,13 @@ function unary(a) {
   return a + 3 | 0;
 }
 
-var xx = unary(3);
-
-eq('File "ppx_apply_test.ml", line 17, characters 5-12', u, 3);
+eq('File "ppx_apply_test.ml", line 17, characters 5-12', 3, 3);
 
 Mt.from_pair_suites("ppx_apply_test.ml", suites[0]);
+
+var u = 3;
+
+var xx = 6;
 
 exports.suites  = suites;
 exports.test_id = test_id;
@@ -47,4 +47,4 @@ exports.u       = u;
 exports.nullary = nullary;
 exports.unary   = unary;
 exports.xx      = xx;
-/* u Not a pure module */
+/*  Not a pure module */

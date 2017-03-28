@@ -18,11 +18,11 @@ function vv_to_value(x) {
   return /* Record */Block.__(12, [
             shape,
             /* array */[
-              Bs_dyn.int_to_value(args[/* x */0]),
-              Bs_dyn.string_to_value(args[/* y */1]),
-              Bs_dyn.int_to_value(args[/* a */2]),
-              Bs_dyn.float_to_value(args[/* b */3]),
-              Bs_dyn.int32_to_value(args[/* c */4]),
+              /* Int */Block.__(2, [args[/* x */0]]),
+              /* String */Block.__(7, [args[/* y */1]]),
+              /* Int */Block.__(2, [args[/* a */2]]),
+              /* Float */Block.__(5, [args[/* b */3]]),
+              /* Int32 */Block.__(0, [args[/* c */4]]),
               Bs_dyn.tuple_6_to_value(Bs_dyn.int_to_value, Bs_dyn.string_to_value, Bs_dyn.list_to_value(Bs_dyn.string_to_value), Bs_dyn.list_to_value(Bs_dyn.float_to_value), Bs_dyn.array_to_value(Bs_dyn.array_to_value(Bs_dyn.string_to_value)), Bs_dyn.int_to_value)(args[/* tuple */5])
             ]
           ]);
@@ -56,15 +56,15 @@ function uu_to_value(x) {
         return /* Variant */Block.__(13, [
                   shape$1,
                   0,
-                  /* array */[Bs_dyn.int_to_value(param[0])]
+                  /* array */[/* Int */Block.__(2, [param[0]])]
                 ]);
     case 1 : 
         return /* Variant */Block.__(13, [
                   shape$1,
                   1,
                   /* array */[
-                    Bs_dyn.int_to_value(param[0]),
-                    Bs_dyn.string_to_value(param[1])
+                    /* Int */Block.__(2, [param[0]]),
+                    /* String */Block.__(7, [param[1]])
                   ]
                 ]);
     case 2 : 
@@ -137,8 +137,7 @@ var shape$2 = /* record */[
   shape_001$1
 ];
 
-function enum_to_value(x) {
-  var param = x;
+function enum_to_value_(param) {
   if (typeof param === "number") {
     if (param !== 0) {
       return /* Variant */Block.__(13, [
@@ -162,7 +161,7 @@ function enum_to_value(x) {
   }
 }
 
-console.log(Bs_dyn_lib.to_string(enum_to_value(/* C */[3])));
+console.log(Bs_dyn_lib.to_string(enum_to_value_(/* C */[3])));
 
 var t_to_value = Bs_dyn.int_to_value;
 

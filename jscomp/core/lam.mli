@@ -174,7 +174,7 @@ type primitive =
   | Praw_js_code_exp of string 
   | Praw_js_code_stmt of string 
   
-  | Pjs_fn_make of int 
+  (* | Pjs_fn_make of int  *)
   | Pjs_fn_run of int 
   | Pjs_fn_method of int 
   | Pjs_fn_runmethod of int 

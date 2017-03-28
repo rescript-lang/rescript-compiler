@@ -114,7 +114,7 @@ let primitive ppf (prim : Lam.primitive) = match prim with
   | Pjs_unsafe_downgrade (s,_loc) -> fprintf ppf "##%s" s 
   | Pjs_function_length -> fprintf ppf "#function_length"
   | Pjs_fn_run i -> fprintf ppf "#fn_run_%i" i 
-  | Pjs_fn_make i -> fprintf ppf "js_fn_make_%i" i
+  (* | Pjs_fn_make i -> fprintf ppf "js_fn_make_%i" i *)
   | Pjs_fn_method i -> fprintf ppf "js_fn_method_%i" i 
   | Pjs_fn_runmethod i -> fprintf ppf "js_fn_runmethod_%i" i 
   | Pdebugger -> fprintf ppf "debugger"

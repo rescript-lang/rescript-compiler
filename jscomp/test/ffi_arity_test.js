@@ -66,7 +66,7 @@ function abc(x, y, z) {
 
 var abc_u = abc;
 
-g();
+fff(/* () */0);
 
 Mt.from_pair_suites("ffi_arity_test.ml", /* :: */[
       /* tuple */[

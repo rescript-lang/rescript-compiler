@@ -867,12 +867,12 @@ and
       end
 
 
-    | Lprim {primitive = Pjs_fn_make arity;  args = [fn]; loc } -> 
-          compile_lambda cxt (Lam_eta_conversion.unsafe_adjust_to_arity loc ~to_:arity ?from:None fn)
+    (* | Lprim {primitive = Pjs_fn_make arity;  args = [fn]; loc } ->  *)
+    (*       compile_lambda cxt (Lam_eta_conversion.unsafe_adjust_to_arity loc ~to_:arity ?from:None fn) *)
 
-    | Lprim {primitive = Pjs_fn_make arity;  
-      args = [] | _::_::_ } -> 
-      assert false 
+    (* | Lprim {primitive = Pjs_fn_make arity;   *)
+    (*   args = [] | _::_::_ } ->  *)
+    (*   assert false  *)
     | Lglobal_module i -> 
       (* introduced by 
          1. {[ include Array --> let include  = Array  ]}

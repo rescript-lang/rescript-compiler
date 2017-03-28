@@ -30,6 +30,41 @@ var xs = Array.prototype.map.call(/* int array */[
       };
     });
 
+function map3_f(x) {
+  return /* int array */[
+            1,
+            2,
+            3
+          ].map3(/* int array */[
+              1,
+              2
+            ], Curry.__2(x));
+}
+
+function map3_f_1(a) {
+  return /* int array */[
+            1,
+            2,
+            3
+          ].map3(/* int array */[
+              1,
+              2
+            ], Curry.__2(a));
+}
+
+function map3_f_2(a) {
+  return /* int array */[
+            1,
+            2,
+            3
+          ].map3(/* int array */[
+              1,
+              2
+            ], function (_, param) {
+              return Curry._1(a, param);
+            });
+}
+
 function f_0() {
   return hi(function () {
               return /* () */0;
@@ -121,6 +156,9 @@ var f_unit_magic = unit_magic(/* () */0);
 exports.xbs          = xbs;
 exports.f            = f;
 exports.xs           = xs;
+exports.map3_f       = map3_f;
+exports.map3_f_1     = map3_f_1;
+exports.map3_f_2     = map3_f_2;
 exports.f_0          = f_0;
 exports.f_01         = f_01;
 exports.f_02         = f_02;
