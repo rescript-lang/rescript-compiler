@@ -97,21 +97,16 @@ let string_of_module_id ~output_prefix
           Js_config.get_current_package_name_and_path module_system  
         in
         begin match module_system,  dependency_pkg_info, current_pkg_info with
-          | _, NotFound , _ -> 
-            Ext_pervasives.failwithf ~loc:__LOC__ 
-              " @[dependent module is not found while %s not in search path - compiling %s @] "
-              js_file !Location.input_name 
+          | _, NotFound , _ 
+            -> 
+            Bs_exception.error (Missing_ml_dependency js_file)
           | Goog, (Empty | Package_script _), _ 
             -> 
-            Ext_pervasives.failwithf ~loc:__LOC__ 
-              " @[%s was not compiled with goog support  in search path - while compiling %s @] "
-              js_file !Location.input_name 
+            Bs_exception.error (Dependency_script_module_dependent_not js_file)
           | (AmdJS | NodeJS | Es6 | Es6_global | AmdJS_global),
             ( Empty | Package_script _) ,
             Found _  -> 
-            Ext_pervasives.failwithf ~loc:__LOC__
-              "@[dependency %s was compiled in script mode - while compiling %s in package mode @]"
-              js_file !Location.input_name              
+            Bs_exception.error (Dependency_script_module_dependent_not js_file)
           | Goog , Found (package_name, x), _  -> 
             package_name  ^ "." ^  String.uncapitalize id.name
           | (AmdJS | NodeJS| Es6 | Es6_global|AmdJS_global),

@@ -194,7 +194,7 @@ let array_conv =
 
 
 (* https://mathiasbynens.be/notes/javascript-escapes *)
-let pp_string f ?(quote='"') (* ?(utf=false)*) s =
+let pp_string f  (* ?(utf=false)*) s =
   let pp_raw_string f (* ?(utf=false)*) s = 
     let l = String.length s in
     for i = 0 to l - 1 do
@@ -228,20 +228,14 @@ let pp_string f ?(quote='"') (* ?(utf=false)*) s =
         P.string f "\\x";
         P.string f (Array.unsafe_get array_conv (c lsr 4));
         P.string f (Array.unsafe_get array_conv (c land 0xf))
-      (* | '\'' -> P.string f "\\'" *)
-      (* | '\"' -> P.string f "\\\"" *)
+      | '\"' -> P.string f "\\\"" (* quote*)
       | _ ->
-        begin 
-          (if c = quote  then
-             P.string f "\\");           
           P.string f (Array.unsafe_get array_str1 (Char.code c))
-        end
     done
   in
-  let quote_s = String.make 1 quote in
-  P.string f quote_s;
+  P.string f "\"";
   pp_raw_string f (*~utf*) s ;
-  P.string f quote_s
+  P.string f "\""
 ;;
 
 (** used in printing keys 
@@ -1749,7 +1743,7 @@ let imports  cxt f (modules : (Ident.t * string) list ) =
       P.nspace f (margin - String.length s + 1) ;      
       P.string f L.from;
       P.space f;
-      pp_string f (file ^ ".js") ;
+      pp_string f file ;
       semi f ;
       P.newline f ;
     ) reversed_list;

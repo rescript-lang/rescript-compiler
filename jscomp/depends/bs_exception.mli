@@ -31,6 +31,8 @@ type error =
   | Bs_package_not_found of string                                                        
   | Bs_main_not_exist of string 
   | Bs_invalid_path of string
+  | Missing_ml_dependency of string 
+  | Dependency_script_module_dependent_not  of string
 (*
 TODO: In the futrue, we should refine dependency [bsb] 
 should not rely on such exception, it should have its own exception handling
