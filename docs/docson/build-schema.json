@@ -217,9 +217,10 @@
                     "items": {
                         "type": "string"
                     },
-                    "description": "It will append flags to the default, the current default is -no-alias-deps -w -40+6+7+27+32..39+44+45"
+                    "description": "Default: `[\"-no-alias-deps\", \"-w\", \"-40+6+7+27+32..39+44+45\"]`. [Here](https://github.com/bloomberg/bucklescript/blob/0db762aea73fc9f28ebd08e9eb92f1e072f44c2d/jscomp/bsb/bsb_default.ml#L26) are the meanings of the warning flags"
                 },
                 {
+                    "type": "object",
                     "properties": {
                         "kind" :
                         {
@@ -230,7 +231,10 @@
                         ]
                         },
                         "flags" : {
-                         "$ref" :    "#/definitions/stringArray"
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
                         }
                     },
                     "description": "(Not implemented yet)"
@@ -263,11 +267,8 @@
             "description": "BuckleScript comes with [Reason](http://facebook.github.io/reason/) by default. Specific configurations here."
         },
         "bsc-flags": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "Flags for bsc.exe. Default: `[\"-no-alias-deps\", \"-w\", \"-40+6+7+27+32..39+44+45\"]`. [Here](https://github.com/bloomberg/bucklescript/blob/0db762aea73fc9f28ebd08e9eb92f1e072f44c2d/jscomp/bsb/bsb_default.ml#L26) are the meanings of the warning flags"
+            "$ref": "#/definitions/bsc-flags",
+            "description": "Flags passed to bsc.exe"
         },
         "ppx-flags": {
             "$ref": "#/definitions/ppx-specs",
