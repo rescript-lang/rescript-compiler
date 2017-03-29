@@ -1170,7 +1170,7 @@ Output:
 
 var u = { x : { y : { z : 3 } }, fn : function (u, v) {return u + v}}
 var h = u.x.y.z
-var a = h.fn
+var a = u.fn
 var b = a(1,2)
 -----------------------------------------------------------------
 
