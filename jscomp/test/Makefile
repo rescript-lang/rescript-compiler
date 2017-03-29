@@ -1,7 +1,7 @@
 include ../Makefile.shared
 
 CAMLC=../bin/bsc.exe
-
+BSPACK=../bin/bspack.exe
 INCLUDES= -I ../stdlib  -I ../runtime -I ../others/
 
 OTHERS := literals a test_ari test_export2 test_internalOO test_obj_simple_ffi test_scope \
@@ -128,7 +128,8 @@ OTHERS := literals a test_ari test_export2 test_internalOO test_obj_simple_ffi t
 	unicode_type_error\
 	arity_deopt\
 	switch_case_test\
-	bb
+	bb\
+	ocaml_parsetree_test
 
 # bs_uncurry_test
 # needs Lam to get rid of Uncurry arity first
@@ -175,7 +176,8 @@ number_lexer.ml: number_lexer.mll
 	$(CAMLLEX) $<
 simple_lexer_test.ml: simple_lexer_test.mll
 	$(CAMLLEX) $<
-
+ocaml_parsetree_test.ml: ocaml_parsetree_main.ml
+	$(BSPACK) -bs-main Ocaml_parsetree_main -bs-MD  -I ../../ocaml/parsing/ -I ../../ocaml/utils/ -o ocaml_parsetree_test.ml
 -include .depend
 
 depend:
