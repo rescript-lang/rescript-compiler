@@ -25787,7 +25787,7 @@ val hash : string
 val weak : string
 val js_primitive : string
 val module_ : string
-
+val missing_polyfill : string
 (** Debugging utilies *)
 val set_current_file : string -> unit 
 val get_current_file : unit -> string
@@ -26014,6 +26014,7 @@ let int32 = "Caml_int32"
 let block = "Block"
 let js_primitive = "Js_primitive"
 let module_ = "Caml_module"
+let missing_polyfill = "Caml_missing_polyfill"
 let current_file = ref ""
 let debug_file = ref ""
 

@@ -22322,7 +22322,7 @@ val hash : string
 val weak : string
 val js_primitive : string
 val module_ : string
-
+val missing_polyfill : string
 (** Debugging utilies *)
 val set_current_file : string -> unit 
 val get_current_file : unit -> string
@@ -22549,6 +22549,7 @@ let int32 = "Caml_int32"
 let block = "Block"
 let js_primitive = "Js_primitive"
 let module_ = "Caml_module"
+let missing_polyfill = "Caml_missing_polyfill"
 let current_file = ref ""
 let debug_file = ref ""
 
@@ -70398,18 +70399,23 @@ let js_bool ?comment x : t =
 let is_undef ?comment x = triple_equal ?comment x undefined
 
 
-let not_implemented ?comment (s : string) =  
-  call ~info:Js_call_info.ml_full_call
-    {
-      comment ;
-      expression_desc = 
-        Fun (false,[], (
-            [{J.statement_desc =
-                Throw (str ?comment 
-                         (s ^ " not implemented by bucklescript yet\n")) ;
-              comment}]) ,
-             Js_fun_env.empty 0)
-    } []
+let not_implemented ?comment (s : string) : t =  
+  runtime_call
+    Js_config.missing_polyfill
+    "not_implemented" 
+    [str (s ^ " not implemented by bucklescript yet\n")]
+
+  (* call ~info:Js_call_info.ml_full_call *)
+  (*   { *)
+  (*     comment ; *)
+  (*     expression_desc =  *)
+  (*       Fun (false,[], ( *)
+  (*           [{J.statement_desc = *)
+  (*               Throw (str ?comment  *)
+  (*                        (s ^ " not implemented by bucklescript yet\n")) ; *)
+  (*             comment}]) , *)
+  (*            Js_fun_env.empty 0) *)
+  (*   } [] *)
 
 
 
@@ -91926,7 +91932,7 @@ let translate (prim_name : string)
   | "caml_sys_system_command" 
   | "caml_sys_getcwd" (* check browser or nodejs *)
   | "caml_sys_is_directory"
-  | "caml_sys_file_exists"
+  (* | "caml_sys_file_exists" *)
     -> 
     call Js_config.sys
   | "caml_lex_engine"

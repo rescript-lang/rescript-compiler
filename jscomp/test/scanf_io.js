@@ -12,6 +12,7 @@ var Caml_io                 = require("../../lib/js/caml_io.js");
 var Caml_obj                = require("../../lib/js/caml_obj.js");
 var Pervasives              = require("../../lib/js/pervasives.js");
 var Caml_string             = require("../../lib/js/caml_string.js");
+var Caml_missing_polyfill   = require("../../lib/js/caml_missing_polyfill.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var tscanf_data_file = "tscanf_data";
@@ -52,9 +53,7 @@ function write_tscanf_data_file(fname, lines) {
   create_tscanf_data(ob, lines);
   Buffer.output_buffer(oc, ob);
   Caml_io.caml_ml_flush(oc);
-  return function () {
-            throw "caml_ml_close_channel not implemented by bucklescript yet\n";
-          }();
+  return Caml_missing_polyfill.not_implemented("caml_ml_close_channel not implemented by bucklescript yet\n");
 }
 
 function get_lines(fname) {

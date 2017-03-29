@@ -1301,17 +1301,22 @@ let js_bool ?comment x : t =
 let is_undef ?comment x = triple_equal ?comment x undefined
 
 
-let not_implemented ?comment (s : string) =  
-  call ~info:Js_call_info.ml_full_call
-    {
-      comment ;
-      expression_desc = 
-        Fun (false,[], (
-            [{J.statement_desc =
-                Throw (str ?comment 
-                         (s ^ " not implemented by bucklescript yet\n")) ;
-              comment}]) ,
-             Js_fun_env.empty 0)
-    } []
+let not_implemented ?comment (s : string) : t =  
+  runtime_call
+    Js_config.missing_polyfill
+    "not_implemented" 
+    [str (s ^ " not implemented by bucklescript yet\n")]
+
+  (* call ~info:Js_call_info.ml_full_call *)
+  (*   { *)
+  (*     comment ; *)
+  (*     expression_desc =  *)
+  (*       Fun (false,[], ( *)
+  (*           [{J.statement_desc = *)
+  (*               Throw (str ?comment  *)
+  (*                        (s ^ " not implemented by bucklescript yet\n")) ; *)
+  (*             comment}]) , *)
+  (*            Js_fun_env.empty 0) *)
+  (*   } [] *)
 
 

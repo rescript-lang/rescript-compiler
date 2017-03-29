@@ -16,21 +16,18 @@ var Caml_bytes              = require("../../lib/js/caml_bytes.js");
 var Caml_int32              = require("../../lib/js/caml_int32.js");
 var Pervasives              = require("../../lib/js/pervasives.js");
 var Caml_string             = require("../../lib/js/caml_string.js");
+var Caml_missing_polyfill   = require("../../lib/js/caml_missing_polyfill.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function _with_in(filename, f) {
   var ic = Pervasives.open_in_bin(filename);
   try {
     var x = Curry._1(f, ic);
-    (function () {
-          throw "caml_ml_close_channel not implemented by bucklescript yet\n";
-        }());
+    Caml_missing_polyfill.not_implemented("caml_ml_close_channel not implemented by bucklescript yet\n");
     return x;
   }
   catch (e){
-    (function () {
-          throw "caml_ml_close_channel not implemented by bucklescript yet\n";
-        }());
+    Caml_missing_polyfill.not_implemented("caml_ml_close_channel not implemented by bucklescript yet\n");
     return /* `Error */[
             106380200,
             Printexc.to_string(e)
@@ -318,16 +315,12 @@ function to_file_seq(filename, seq) {
   try {
     var x = Curry._1(f, oc);
     Caml_io.caml_ml_flush(oc);
-    (function () {
-          throw "caml_ml_close_channel not implemented by bucklescript yet\n";
-        }());
+    Caml_missing_polyfill.not_implemented("caml_ml_close_channel not implemented by bucklescript yet\n");
     return x;
   }
   catch (e){
     Caml_io.caml_ml_flush(oc);
-    (function () {
-          throw "caml_ml_close_channel not implemented by bucklescript yet\n";
-        }());
+    Caml_missing_polyfill.not_implemented("caml_ml_close_channel not implemented by bucklescript yet\n");
     throw e;
   }
 }
