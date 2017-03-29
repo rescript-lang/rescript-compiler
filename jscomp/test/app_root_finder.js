@@ -2,7 +2,7 @@
 
 var Fs                      = require("fs");
 var Path                    = require("path");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
+var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var package_json = "package.json";
 

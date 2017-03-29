@@ -1,6 +1,6 @@
 'use strict';
 
-var Sys = require("../../lib/js/sys");
+var Sys = require("../../lib/js/sys.js");
 
 var is_windows_or_cygwin = Sys.win32 || Sys.cygwin;
 

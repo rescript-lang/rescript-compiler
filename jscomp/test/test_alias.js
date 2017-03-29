@@ -1,7 +1,7 @@
 'use strict';
 
-var List              = require("../../lib/js/list");
-var Test_global_print = require("./test_global_print");
+var List              = require("../../lib/js/list.js");
+var Test_global_print = require("./test_global_print.js");
 
 var v = List.length;
 

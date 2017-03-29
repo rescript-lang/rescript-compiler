@@ -1,9 +1,9 @@
 'use strict';
 
-var Mt          = require("./mt");
-var Block       = require("../../lib/js/block");
-var Bytes       = require("../../lib/js/bytes");
-var Caml_string = require("../../lib/js/caml_string");
+var Mt          = require("./mt.js");
+var Block       = require("../../lib/js/block.js");
+var Bytes       = require("../../lib/js/bytes.js");
+var Caml_string = require("../../lib/js/caml_string.js");
 
 var suites = [/* [] */0];
 

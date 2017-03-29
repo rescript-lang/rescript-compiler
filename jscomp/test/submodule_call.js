@@ -1,7 +1,7 @@
 'use strict';
 
-var Curry     = require("../../lib/js/curry");
-var Submodule = require("./submodule");
+var Curry     = require("../../lib/js/curry.js");
+var Submodule = require("./submodule.js");
 
 var a0 = Curry._2(Submodule.A0[/* a0 */0], 1, 2);
 

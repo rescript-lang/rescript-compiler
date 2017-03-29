@@ -1,11 +1,11 @@
 'use strict';
 
-var List                    = require("../../lib/js/list");
-var $$Array                 = require("../../lib/js/array");
-var $$String                = require("../../lib/js/string");
-var Set_gen                 = require("./set_gen");
-var Caml_string             = require("../../lib/js/caml_string");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
+var List                    = require("../../lib/js/list.js");
+var $$Array                 = require("../../lib/js/array.js");
+var $$String                = require("../../lib/js/string.js");
+var Set_gen                 = require("./set_gen.js");
+var Caml_string             = require("../../lib/js/caml_string.js");
+var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function split(x, tree) {
   if (tree) {

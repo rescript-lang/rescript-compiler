@@ -1,9 +1,9 @@
 'use strict';
 
-var Mt    = require("./mt");
-var List  = require("../../lib/js/list");
-var Block = require("../../lib/js/block");
-var Stack = require("../../lib/js/stack");
+var Mt    = require("./mt.js");
+var List  = require("../../lib/js/list.js");
+var Block = require("../../lib/js/block.js");
+var Stack = require("../../lib/js/stack.js");
 
 function to_list(v) {
   var acc = /* [] */0;

@@ -1,8 +1,8 @@
 'use strict';
 
-var Mt    = require("./mt");
-var List  = require("../../lib/js/list");
-var Block = require("../../lib/js/block");
+var Mt    = require("./mt.js");
+var List  = require("../../lib/js/list.js");
+var Block = require("../../lib/js/block.js");
 
 function length() {
   return 3;

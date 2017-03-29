@@ -1,6 +1,6 @@
 'use strict';
 
-var Pervasives = require("../../lib/js/pervasives");
+var Pervasives = require("../../lib/js/pervasives.js");
 
 Pervasives.print_int(3);
 

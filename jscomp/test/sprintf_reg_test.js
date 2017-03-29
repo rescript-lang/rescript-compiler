@@ -1,10 +1,10 @@
 'use strict';
 
-var Mt        = require("./mt");
-var Block     = require("../../lib/js/block");
-var Curry     = require("../../lib/js/curry");
-var Printf    = require("../../lib/js/printf");
-var Mt_global = require("./mt_global");
+var Mt        = require("./mt.js");
+var Block     = require("../../lib/js/block.js");
+var Curry     = require("../../lib/js/curry.js");
+var Printf    = require("../../lib/js/printf.js");
+var Mt_global = require("./mt_global.js");
 
 var suites = [/* [] */0];
 

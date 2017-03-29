@@ -1,10 +1,10 @@
 'use strict';
 
-var Block       = require("../../lib/js/block");
-var Curry       = require("../../lib/js/curry");
-var Lexing      = require("../../lib/js/lexing");
-var Pervasives  = require("../../lib/js/pervasives");
-var Caml_format = require("../../lib/js/caml_format");
+var Block       = require("../../lib/js/block.js");
+var Curry       = require("../../lib/js/curry.js");
+var Lexing      = require("../../lib/js/lexing.js");
+var Pervasives  = require("../../lib/js/pervasives.js");
+var Caml_format = require("../../lib/js/caml_format.js");
 
 var __ocaml_lex_tables = /* record */[
   /* lex_base */"\0\0\xf6\xff\xf7\xff\xf8\xff\xf9\xff\xfa\xff\xfb\xff\xfc\xff:\0\x85\0\xff\xff",

@@ -1,14 +1,14 @@
 'use strict';
 
-var Mt             = require("./mt");
-var List           = require("../../lib/js/list");
-var Block          = require("../../lib/js/block");
-var Curry          = require("../../lib/js/curry");
-var Caml_array     = require("../../lib/js/caml_array");
-var Caml_int32     = require("../../lib/js/caml_int32");
-var Pervasives     = require("../../lib/js/pervasives");
-var Caml_oo_curry  = require("../../lib/js/caml_oo_curry");
-var CamlinternalOO = require("../../lib/js/camlinternalOO");
+var Mt             = require("./mt.js");
+var List           = require("../../lib/js/list.js");
+var Block          = require("../../lib/js/block.js");
+var Curry          = require("../../lib/js/curry.js");
+var Caml_array     = require("../../lib/js/caml_array.js");
+var Caml_int32     = require("../../lib/js/caml_int32.js");
+var Pervasives     = require("../../lib/js/pervasives.js");
+var Caml_oo_curry  = require("../../lib/js/caml_oo_curry.js");
+var CamlinternalOO = require("../../lib/js/camlinternalOO.js");
 
 var shared = [
   "bump",

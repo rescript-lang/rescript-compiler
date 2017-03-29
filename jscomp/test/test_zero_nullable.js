@@ -1,9 +1,9 @@
 'use strict';
 
-var Mt           = require("./mt");
-var Block        = require("../../lib/js/block");
-var Curry        = require("../../lib/js/curry");
-var Js_primitive = require("../../lib/js/js_primitive");
+var Mt           = require("./mt.js");
+var Block        = require("../../lib/js/block.js");
+var Curry        = require("../../lib/js/curry.js");
+var Js_primitive = require("../../lib/js/js_primitive.js");
 
 var suites = [/* [] */0];
 

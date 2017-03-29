@@ -1,13 +1,13 @@
 'use strict';
 
-var Mt         = require("./mt");
-var List       = require("../../lib/js/list");
-var $$Array    = require("../../lib/js/array");
-var Block      = require("../../lib/js/block");
-var Curry      = require("../../lib/js/curry");
-var Hashtbl    = require("../../lib/js/hashtbl");
-var Caml_obj   = require("../../lib/js/caml_obj");
-var MoreLabels = require("../../lib/js/moreLabels");
+var Mt         = require("./mt.js");
+var List       = require("../../lib/js/list.js");
+var $$Array    = require("../../lib/js/array.js");
+var Block      = require("../../lib/js/block.js");
+var Curry      = require("../../lib/js/curry.js");
+var Hashtbl    = require("../../lib/js/hashtbl.js");
+var Caml_obj   = require("../../lib/js/caml_obj.js");
+var MoreLabels = require("../../lib/js/moreLabels.js");
 
 function to_list(tbl) {
   return Hashtbl.fold(function (k, v, acc) {

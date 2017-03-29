@@ -1,9 +1,9 @@
 'use strict';
 
-var Mt           = require("./mt");
-var Block        = require("../../lib/js/block");
-var Curry        = require("../../lib/js/curry");
-var Gpr_1423_nav = require("./gpr_1423_nav");
+var Mt           = require("./mt.js");
+var Block        = require("../../lib/js/block.js");
+var Curry        = require("../../lib/js/curry.js");
+var Gpr_1423_nav = require("./gpr_1423_nav.js");
 
 var suites = [/* [] */0];
 

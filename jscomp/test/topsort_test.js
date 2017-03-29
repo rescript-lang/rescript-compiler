@@ -1,13 +1,13 @@
 'use strict';
 
-var List                    = require("../../lib/js/list");
-var Curry                   = require("../../lib/js/curry");
-var $$String                = require("../../lib/js/string");
-var Caml_obj                = require("../../lib/js/caml_obj");
-var Pervasives              = require("../../lib/js/pervasives");
-var Caml_string             = require("../../lib/js/caml_string");
-var Caml_exceptions         = require("../../lib/js/caml_exceptions");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
+var List                    = require("../../lib/js/list.js");
+var Curry                   = require("../../lib/js/curry.js");
+var $$String                = require("../../lib/js/string.js");
+var Caml_obj                = require("../../lib/js/caml_obj.js");
+var Pervasives              = require("../../lib/js/pervasives.js");
+var Caml_string             = require("../../lib/js/caml_string.js");
+var Caml_exceptions         = require("../../lib/js/caml_exceptions.js");
+var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var graph = /* :: */[
   /* tuple */[

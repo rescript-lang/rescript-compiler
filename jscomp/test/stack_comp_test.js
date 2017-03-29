@@ -1,11 +1,11 @@
 'use strict';
 
-var Mt        = require("./mt");
-var List      = require("../../lib/js/list");
-var Curry     = require("../../lib/js/curry");
-var Stack     = require("../../lib/js/stack");
-var Caml_obj  = require("../../lib/js/caml_obj");
-var Mt_global = require("./mt_global");
+var Mt        = require("./mt.js");
+var List      = require("../../lib/js/list.js");
+var Curry     = require("../../lib/js/curry.js");
+var Stack     = require("../../lib/js/stack.js");
+var Caml_obj  = require("../../lib/js/caml_obj.js");
+var Mt_global = require("./mt_global.js");
 
 var suites = [/* [] */0];
 

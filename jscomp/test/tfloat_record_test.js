@@ -1,14 +1,14 @@
 'use strict';
 
-var Mt          = require("./mt");
-var $$Array     = require("../../lib/js/array");
-var Block       = require("../../lib/js/block");
-var Curry       = require("../../lib/js/curry");
-var Buffer      = require("../../lib/js/buffer");
-var Format      = require("../../lib/js/format");
-var Mt_global   = require("./mt_global");
-var Pervasives  = require("../../lib/js/pervasives");
-var Float_array = require("./float_array");
+var Mt          = require("./mt.js");
+var $$Array     = require("../../lib/js/array.js");
+var Block       = require("../../lib/js/block.js");
+var Curry       = require("../../lib/js/curry.js");
+var Buffer      = require("../../lib/js/buffer.js");
+var Format      = require("../../lib/js/format.js");
+var Mt_global   = require("./mt_global.js");
+var Pervasives  = require("../../lib/js/pervasives.js");
+var Float_array = require("./float_array.js");
 
 var buf = Buffer.create(50);
 

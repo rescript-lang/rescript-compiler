@@ -1,8 +1,8 @@
 'use strict';
 
-var Mt                      = require("./mt");
-var Block                   = require("../../lib/js/block");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
+var Mt                      = require("./mt.js");
+var Block                   = require("../../lib/js/block.js");
+var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var v = Caml_builtin_exceptions.not_found;
 

@@ -1,6 +1,6 @@
 'use strict';
 
-var Bytes = require("../../lib/js/bytes");
+var Bytes = require("../../lib/js/bytes.js");
 
 function gray_encode(b) {
   return b ^ (b >>> 1);

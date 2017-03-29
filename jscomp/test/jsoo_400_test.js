@@ -1,8 +1,8 @@
 'use strict';
 
-var Mt         = require("./mt");
-var Block      = require("../../lib/js/block");
-var Caml_int32 = require("../../lib/js/caml_int32");
+var Mt         = require("./mt.js");
+var Block      = require("../../lib/js/block.js");
+var Caml_int32 = require("../../lib/js/caml_int32.js");
 
 function u() {
   var exit = 0;

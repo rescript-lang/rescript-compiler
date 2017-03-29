@@ -1,7 +1,7 @@
 'use strict';
 
-var Js_primitive            = require("../../lib/js/js_primitive");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
+var Js_primitive            = require("../../lib/js/js_primitive.js");
+var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function test(dom) {
   var elem = dom.getElementById("haha");

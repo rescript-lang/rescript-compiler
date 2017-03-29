@@ -1,9 +1,9 @@
 'use strict';
 
-var Mt           = require("./mt");
-var $$Array      = require("../../lib/js/array");
-var Block        = require("../../lib/js/block");
-var Ext_filename = require("./ext_filename");
+var Mt           = require("./mt.js");
+var $$Array      = require("../../lib/js/array.js");
+var Block        = require("../../lib/js/block.js");
+var Ext_filename = require("./ext_filename.js");
 
 var suites = [/* [] */0];
 
@@ -46,7 +46,7 @@ eq("File \"a_filename_test.ml\", line 22, characters 5-12", test(/* `File */[
         ], /* `File */[
           781515420,
           "./a/u/g.c"
-        ]), "./u/g");
+        ]), "./u/g.c");
 
 eq("File \"a_filename_test.ml\", line 27, characters 5-12", test(/* `File */[
           781515420,
@@ -86,7 +86,7 @@ eq("File \"a_filename_test.ml\", line 50, characters 5-12", test(/* `File */[
         ], /* `File */[
           781515420,
           "./a/b.js"
-        ]), "./b");
+        ]), "./b.js");
 
 eq("File \"a_filename_test.ml\", line 55, characters 5-12", test(/* `Dir */[
           3405101,
@@ -94,7 +94,7 @@ eq("File \"a_filename_test.ml\", line 55, characters 5-12", test(/* `Dir */[
         ], /* `File */[
           781515420,
           "./a/b.js"
-        ]), "./b");
+        ]), "./b.js");
 
 eq("File \"a_filename_test.ml\", line 60, characters 5-12", Ext_filename.get_extension("a.txt"), ".txt");
 

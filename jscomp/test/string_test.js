@@ -1,13 +1,13 @@
 'use strict';
 
-var Mt                      = require("./mt");
-var List                    = require("../../lib/js/list");
-var Block                   = require("../../lib/js/block");
-var Bytes                   = require("../../lib/js/bytes");
-var $$String                = require("../../lib/js/string");
-var Ext_string              = require("./ext_string");
-var Caml_string             = require("../../lib/js/caml_string");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
+var Mt                      = require("./mt.js");
+var List                    = require("../../lib/js/list.js");
+var Block                   = require("../../lib/js/block.js");
+var Bytes                   = require("../../lib/js/bytes.js");
+var $$String                = require("../../lib/js/string.js");
+var Ext_string              = require("./ext_string.js");
+var Caml_string             = require("../../lib/js/caml_string.js");
+var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function ff(x) {
   var a;

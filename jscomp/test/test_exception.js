@@ -1,8 +1,8 @@
 'use strict';
 
-var Test_common             = require("./test_common");
-var Caml_exceptions         = require("../../lib/js/caml_exceptions");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
+var Test_common             = require("./test_common.js");
+var Caml_exceptions         = require("../../lib/js/caml_exceptions.js");
+var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var Local = Caml_exceptions.create("Test_exception.Local");
 

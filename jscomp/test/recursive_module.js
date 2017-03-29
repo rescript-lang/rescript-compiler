@@ -1,6 +1,6 @@
 'use strict';
 
-var Caml_module = require("../../lib/js/caml_module");
+var Caml_module = require("../../lib/js/caml_module.js");
 
 var Int32 = Caml_module.init_mod([
       "recursive_module.ml",

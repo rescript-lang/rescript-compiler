@@ -1,17 +1,17 @@
 'use strict';
 
-var Obj                     = require("../../lib/js/obj");
-var Sys                     = require("../../lib/js/sys");
-var List                    = require("../../lib/js/list");
-var $$Array                 = require("../../lib/js/array");
-var Curry                   = require("../../lib/js/curry");
-var Caml_oo                 = require("../../lib/js/caml_oo");
-var Caml_obj                = require("../../lib/js/caml_obj");
-var Caml_array              = require("../../lib/js/caml_array");
-var Caml_int32              = require("../../lib/js/caml_int32");
-var Caml_string             = require("../../lib/js/caml_string");
-var Caml_exceptions         = require("../../lib/js/caml_exceptions");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
+var Obj                     = require("../../lib/js/obj.js");
+var Sys                     = require("../../lib/js/sys.js");
+var List                    = require("../../lib/js/list.js");
+var $$Array                 = require("../../lib/js/array.js");
+var Curry                   = require("../../lib/js/curry.js");
+var Caml_oo                 = require("../../lib/js/caml_oo.js");
+var Caml_obj                = require("../../lib/js/caml_obj.js");
+var Caml_array              = require("../../lib/js/caml_array.js");
+var Caml_int32              = require("../../lib/js/caml_int32.js");
+var Caml_string             = require("../../lib/js/caml_string.js");
+var Caml_exceptions         = require("../../lib/js/caml_exceptions.js");
+var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function copy(o) {
   return Caml_exceptions.caml_set_oo_id(Caml_obj.caml_obj_dup(o));

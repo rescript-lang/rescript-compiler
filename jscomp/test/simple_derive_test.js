@@ -1,8 +1,8 @@
 'use strict';
 
-var Block      = require("../../lib/js/block");
-var Bs_dyn     = require("../../lib/js/bs_dyn");
-var Bs_dyn_lib = require("../../lib/js/bs_dyn_lib");
+var Block      = require("../../lib/js/block.js");
+var Bs_dyn     = require("../../lib/js/bs_dyn.js");
+var Bs_dyn_lib = require("../../lib/js/bs_dyn_lib.js");
 
 var shape = /* array */[
   "x",

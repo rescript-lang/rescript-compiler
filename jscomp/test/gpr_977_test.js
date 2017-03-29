@@ -1,8 +1,8 @@
 'use strict';
 
-var Mt    = require("./mt");
-var Block = require("../../lib/js/block");
-var Int32 = require("../../lib/js/int32");
+var Mt    = require("./mt.js");
+var Block = require("../../lib/js/block.js");
+var Int32 = require("../../lib/js/int32.js");
 
 var suites = [/* [] */0];
 

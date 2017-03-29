@@ -1,6 +1,6 @@
 'use strict';
 
-var Block = require("../../lib/js/block");
+var Block = require("../../lib/js/block.js");
 
 function u_x(param) {
   return param[/* u_x */0];

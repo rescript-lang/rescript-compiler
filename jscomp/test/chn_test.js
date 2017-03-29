@@ -1,10 +1,10 @@
 'use strict';
 
-var Mt                      = require("./mt");
-var $$Array                 = require("../../lib/js/array");
-var Block                   = require("../../lib/js/block");
-var Caml_string             = require("../../lib/js/caml_string");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
+var Mt                      = require("./mt.js");
+var $$Array                 = require("../../lib/js/array.js");
+var Block                   = require("../../lib/js/block.js");
+var Caml_string             = require("../../lib/js/caml_string.js");
+var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var suites = [/* [] */0];
 

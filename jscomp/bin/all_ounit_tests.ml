@@ -10676,7 +10676,7 @@ let node_relative_path node_modules_shorten (file1 : t)
        | `File x -> `File (absolute_path x)
        | `Dir x -> `Dir(absolute_path x))
     ^ node_sep ^
-    chop_extension_if_any (Filename.basename file2)
+    (* chop_extension_if_any *) (Filename.basename file2)
 
 
 
@@ -10847,6 +10847,7 @@ let simple_convert_node_path_to_os_path =
   else if Sys.win32 || Sys.cygwin then 
     Ext_string.replace_slash_backward 
   else failwith ("Unknown OS : " ^ Sys.os_type)
+
 end
 module Ounit_path_tests
 = struct

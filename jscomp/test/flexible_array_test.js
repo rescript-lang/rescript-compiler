@@ -1,12 +1,12 @@
 'use strict';
 
-var $$Array                 = require("../../lib/js/array");
-var Block                   = require("../../lib/js/block");
-var Curry                   = require("../../lib/js/curry");
-var Format                  = require("../../lib/js/format");
-var Caml_obj                = require("../../lib/js/caml_obj");
-var Caml_array              = require("../../lib/js/caml_array");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
+var $$Array                 = require("../../lib/js/array.js");
+var Block                   = require("../../lib/js/block.js");
+var Curry                   = require("../../lib/js/curry.js");
+var Format                  = require("../../lib/js/format.js");
+var Caml_obj                = require("../../lib/js/caml_obj.js");
+var Caml_array              = require("../../lib/js/caml_array.js");
+var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function sub(_tr, _k) {
   while(true) {

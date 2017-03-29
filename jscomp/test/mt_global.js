@@ -1,6 +1,6 @@
 'use strict';
 
-var Block = require("../../lib/js/block");
+var Block = require("../../lib/js/block.js");
 
 function collect_eq(test_id, suites, loc, x, y) {
   test_id[0] = test_id[0] + 1 | 0;

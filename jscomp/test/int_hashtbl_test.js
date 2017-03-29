@@ -1,12 +1,12 @@
 'use strict';
 
-var Mt       = require("./mt");
-var List     = require("../../lib/js/list");
-var $$Array  = require("../../lib/js/array");
-var Block    = require("../../lib/js/block");
-var Curry    = require("../../lib/js/curry");
-var Hashtbl  = require("../../lib/js/hashtbl");
-var Caml_obj = require("../../lib/js/caml_obj");
+var Mt       = require("./mt.js");
+var List     = require("../../lib/js/list.js");
+var $$Array  = require("../../lib/js/array.js");
+var Block    = require("../../lib/js/block.js");
+var Curry    = require("../../lib/js/curry.js");
+var Hashtbl  = require("../../lib/js/hashtbl.js");
+var Caml_obj = require("../../lib/js/caml_obj.js");
 
 function f(H) {
   var tbl = Curry._1(H[/* create */0], 17);

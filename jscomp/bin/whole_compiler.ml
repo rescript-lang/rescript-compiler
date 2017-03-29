@@ -21997,7 +21997,7 @@ let node_relative_path node_modules_shorten (file1 : t)
        | `File x -> `File (absolute_path x)
        | `Dir x -> `Dir(absolute_path x))
     ^ node_sep ^
-    chop_extension_if_any (Filename.basename file2)
+    (* chop_extension_if_any *) (Filename.basename file2)
 
 
 
@@ -22168,6 +22168,7 @@ let simple_convert_node_path_to_os_path =
   else if Sys.win32 || Sys.cygwin then 
     Ext_string.replace_slash_backward 
   else failwith ("Unknown OS : " ^ Sys.os_type)
+
 end
 module Js_config : sig 
 #1 "js_config.mli"
@@ -83069,7 +83070,7 @@ let string_of_module_id ~output_prefix
       | Ml  -> 
         let id = x.id in
         let modulename = String.uncapitalize id.name in
-        let js_file = Printf.sprintf "%s.js" modulename in
+        let js_file =  modulename ^ Literals.suffix_js in
         let rebase different_package package_dir dep =
           let current_unit_dir =
             `Dir (Js_config.get_output_dir ~pkg_dir:package_dir module_system output_prefix) in
@@ -83102,11 +83103,11 @@ let string_of_module_id ~output_prefix
             Found(current_package, path) -> 
             if  current_package = package_name then 
               let package_dir = Lazy.force Ext_filename.package_dir in
-              rebase false package_dir (`File (package_dir // x // modulename)) 
+              rebase false package_dir (`File (package_dir // x // js_file)) 
             else 
               begin match module_system with 
               | AmdJS | NodeJS | Es6 -> 
-                package_name // x // modulename
+                package_name // x // js_file
               | Goog -> assert false (* see above *)
               | Es6_global 
               | AmdJS_global -> 
@@ -83120,7 +83121,7 @@ let string_of_module_id ~output_prefix
                     (Js_config.get_output_dir ~pkg_dir:(Lazy.force Ext_filename.package_dir)
                        module_system output_prefix)
                     ((Filename.dirname 
-                        (Filename.dirname (Filename.dirname cmj_path))) // x // modulename)              
+                        (Filename.dirname (Filename.dirname cmj_path))) // x // js_file)              
                 end
               end
           | (AmdJS | NodeJS | Es6 | AmdJS_global | Es6_global), Found(package_name, x), 
@@ -83129,12 +83130,12 @@ let string_of_module_id ~output_prefix
             if current_package = package_name then 
               let package_dir = Lazy.force Ext_filename.package_dir in
               rebase false package_dir (`File (
-                  package_dir // x // modulename)) 
+                  package_dir // x // js_file)) 
             else 
-              package_name // x // modulename
+              package_name // x // js_file
           | (AmdJS | NodeJS | Es6 | AmdJS_global | Es6_global), 
             Found(package_name, x), Empty 
-            ->    package_name // x // modulename
+            ->    package_name // x // js_file
           |  (AmdJS | NodeJS | Es6 | AmdJS_global | Es6_global), 
              (Empty | Package_script _) , 
              (Empty  | Package_script _)
@@ -83143,6 +83144,9 @@ let string_of_module_id ~output_prefix
               | Some file -> 
                 let package_dir = Lazy.force Ext_filename.package_dir in
                 rebase true package_dir (`File file) 
+              (* Code path: when dependency is commonjs 
+                 while depedent is Empty or PackageScript
+              *)
               | None -> 
                 Bs_exception.error (Js_not_found js_file)
             end

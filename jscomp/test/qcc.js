@@ -1,21 +1,21 @@
 'use strict';
 
-var Sys                     = require("../../lib/js/sys");
-var Char                    = require("../../lib/js/char");
-var List                    = require("../../lib/js/list");
-var Block                   = require("../../lib/js/block");
-var Bytes                   = require("../../lib/js/bytes");
-var Curry                   = require("../../lib/js/curry");
-var Printf                  = require("../../lib/js/printf");
-var $$String                = require("../../lib/js/string");
-var Caml_io                 = require("../../lib/js/caml_io");
-var Caml_obj                = require("../../lib/js/caml_obj");
-var Caml_array              = require("../../lib/js/caml_array");
-var Caml_bytes              = require("../../lib/js/caml_bytes");
-var Caml_int32              = require("../../lib/js/caml_int32");
-var Pervasives              = require("../../lib/js/pervasives");
-var Caml_string             = require("../../lib/js/caml_string");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
+var Sys                     = require("../../lib/js/sys.js");
+var Char                    = require("../../lib/js/char.js");
+var List                    = require("../../lib/js/list.js");
+var Block                   = require("../../lib/js/block.js");
+var Bytes                   = require("../../lib/js/bytes.js");
+var Curry                   = require("../../lib/js/curry.js");
+var Printf                  = require("../../lib/js/printf.js");
+var $$String                = require("../../lib/js/string.js");
+var Caml_io                 = require("../../lib/js/caml_io.js");
+var Caml_obj                = require("../../lib/js/caml_obj.js");
+var Caml_array              = require("../../lib/js/caml_array.js");
+var Caml_bytes              = require("../../lib/js/caml_bytes.js");
+var Caml_int32              = require("../../lib/js/caml_int32.js");
+var Pervasives              = require("../../lib/js/pervasives.js");
+var Caml_string             = require("../../lib/js/caml_string.js");
+var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var dbg = [/* true */1];
 

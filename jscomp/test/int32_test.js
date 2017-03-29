@@ -1,14 +1,14 @@
 'use strict';
 
-var Mt         = require("./mt");
-var $$Array    = require("../../lib/js/array");
-var Block      = require("../../lib/js/block");
-var Curry      = require("../../lib/js/curry");
-var Int32      = require("../../lib/js/int32");
-var Format     = require("../../lib/js/format");
-var Ext_array  = require("./ext_array");
-var Caml_int32 = require("../../lib/js/caml_int32");
-var Pervasives = require("../../lib/js/pervasives");
+var Mt         = require("./mt.js");
+var $$Array    = require("../../lib/js/array.js");
+var Block      = require("../../lib/js/block.js");
+var Curry      = require("../../lib/js/curry.js");
+var Int32      = require("../../lib/js/int32.js");
+var Format     = require("../../lib/js/format.js");
+var Ext_array  = require("./ext_array.js");
+var Caml_int32 = require("../../lib/js/caml_int32.js");
+var Pervasives = require("../../lib/js/pervasives.js");
 
 function f(x) {
   return /* tuple */[

@@ -1,7 +1,7 @@
 'use strict';
 
-var $$Array    = require("../../lib/js/array");
-var Caml_array = require("../../lib/js/caml_array");
+var $$Array    = require("../../lib/js/array.js");
+var Caml_array = require("../../lib/js/caml_array.js");
 
 function f(a, b, _) {
   return a + b | 0;

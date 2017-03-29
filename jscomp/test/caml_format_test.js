@@ -1,18 +1,18 @@
 'use strict';
 
-var Mt          = require("./mt");
-var $$Array     = require("../../lib/js/array");
-var Block       = require("../../lib/js/block");
-var Curry       = require("../../lib/js/curry");
-var Int64       = require("../../lib/js/int64");
-var Buffer      = require("../../lib/js/buffer");
-var Format      = require("../../lib/js/format");
-var Printf      = require("../../lib/js/printf");
-var Caml_obj    = require("../../lib/js/caml_obj");
-var Caml_float  = require("../../lib/js/caml_float");
-var Caml_int64  = require("../../lib/js/caml_int64");
-var Pervasives  = require("../../lib/js/pervasives");
-var Caml_format = require("../../lib/js/caml_format");
+var Mt          = require("./mt.js");
+var $$Array     = require("../../lib/js/array.js");
+var Block       = require("../../lib/js/block.js");
+var Curry       = require("../../lib/js/curry.js");
+var Int64       = require("../../lib/js/int64.js");
+var Buffer      = require("../../lib/js/buffer.js");
+var Format      = require("../../lib/js/format.js");
+var Printf      = require("../../lib/js/printf.js");
+var Caml_obj    = require("../../lib/js/caml_obj.js");
+var Caml_float  = require("../../lib/js/caml_float.js");
+var Caml_int64  = require("../../lib/js/caml_int64.js");
+var Pervasives  = require("../../lib/js/pervasives.js");
+var Caml_format = require("../../lib/js/caml_format.js");
 
 var of_string = Caml_obj.caml_obj_dup(/* array */[
       /* tuple */[

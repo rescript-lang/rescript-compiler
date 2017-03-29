@@ -1,7 +1,7 @@
 'use strict';
 
-var Caml_bytes  = require("../../lib/js/caml_bytes");
-var Caml_string = require("../../lib/js/caml_string");
+var Caml_bytes  = require("../../lib/js/caml_bytes.js");
+var Caml_string = require("../../lib/js/caml_string.js");
 
 var v = "ghos";
 

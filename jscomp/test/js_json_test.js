@@ -1,14 +1,14 @@
 'use strict';
 
-var Mt                      = require("./mt");
-var $$Array                 = require("../../lib/js/array");
-var Block                   = require("../../lib/js/block");
-var Js_json                 = require("../../lib/js/js_json");
-var Caml_obj                = require("../../lib/js/caml_obj");
-var Caml_array              = require("../../lib/js/caml_array");
-var Js_boolean              = require("../../lib/js/js_boolean");
-var Js_primitive            = require("../../lib/js/js_primitive");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
+var Mt                      = require("./mt.js");
+var $$Array                 = require("../../lib/js/array.js");
+var Block                   = require("../../lib/js/block.js");
+var Js_json                 = require("../../lib/js/js_json.js");
+var Caml_obj                = require("../../lib/js/caml_obj.js");
+var Caml_array              = require("../../lib/js/caml_array.js");
+var Js_boolean              = require("../../lib/js/js_boolean.js");
+var Js_primitive            = require("../../lib/js/js_primitive.js");
+var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var suites = [/* [] */0];
 

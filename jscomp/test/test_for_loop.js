@@ -1,9 +1,9 @@
 'use strict';
 
-var $$Array    = require("../../lib/js/array");
-var Curry      = require("../../lib/js/curry");
-var Caml_array = require("../../lib/js/caml_array");
-var Caml_int32 = require("../../lib/js/caml_int32");
+var $$Array    = require("../../lib/js/array.js");
+var Curry      = require("../../lib/js/curry.js");
+var Caml_array = require("../../lib/js/caml_array.js");
+var Caml_int32 = require("../../lib/js/caml_int32.js");
 
 function for_(x) {
   for(var i = 0 ,i_finish = (console.log("hi"), x.length); i <= i_finish; ++i){

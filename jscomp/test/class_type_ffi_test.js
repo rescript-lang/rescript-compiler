@@ -1,6 +1,6 @@
 'use strict';
 
-var Curry = require("../../lib/js/curry");
+var Curry = require("../../lib/js/curry.js");
 
 function sum_float_array(arr) {
   var v = 0;

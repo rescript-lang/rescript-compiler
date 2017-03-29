@@ -22,7 +22,7 @@ let () =
   eq __LOC__
     (test
        (`File "./a/b.c")
-       (`File "./a/u/g.c")) "./u/g";
+       (`File "./a/u/g.c")) "./u/g.c";
 
   eq __LOC__ 
     (test
@@ -51,12 +51,12 @@ let () =
     (test
            (`File "./a/c")
            (`File "./a/b.js"))
-    "./b"         ;
+    "./b.js"         ;
   eq __LOC__
     (test
            (`Dir "./a/")
            (`File "./a/b.js"))
-    "./b";
+    "./b.js";
   eq __LOC__ 
     (Ext_filename.get_extension "a.txt"
     )

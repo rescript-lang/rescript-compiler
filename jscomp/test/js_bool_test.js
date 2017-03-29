@@ -1,8 +1,8 @@
 'use strict';
 
-var Mt       = require("./mt");
-var Block    = require("../../lib/js/block");
-var Caml_obj = require("../../lib/js/caml_obj");
+var Mt       = require("./mt.js");
+var Block    = require("../../lib/js/block.js");
+var Caml_obj = require("../../lib/js/caml_obj.js");
 
 function f(x) {
   if (x) {

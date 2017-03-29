@@ -1,8 +1,8 @@
 'use strict';
 
-var Mt         = require("./mt");
-var Block      = require("../../lib/js/block");
-var Caml_array = require("../../lib/js/caml_array");
+var Mt         = require("./mt.js");
+var Block      = require("../../lib/js/block.js");
+var Caml_array = require("../../lib/js/caml_array.js");
 
 var a = /* float array */[
   0,

@@ -1,22 +1,22 @@
 'use strict';
 
-var Mt                      = require("./mt");
-var List                    = require("../../lib/js/list");
-var Block                   = require("../../lib/js/block");
-var Bytes                   = require("../../lib/js/bytes");
-var Curry                   = require("../../lib/js/curry");
-var Scanf                   = require("../../lib/js/scanf");
-var Buffer                  = require("../../lib/js/buffer");
-var Printf                  = require("../../lib/js/printf");
-var $$String                = require("../../lib/js/string");
-var Testing                 = require("./testing");
-var Caml_obj                = require("../../lib/js/caml_obj");
-var Mt_global               = require("./mt_global");
-var Caml_int64              = require("../../lib/js/caml_int64");
-var Pervasives              = require("../../lib/js/pervasives");
-var Caml_format             = require("../../lib/js/caml_format");
-var Caml_string             = require("../../lib/js/caml_string");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
+var Mt                      = require("./mt.js");
+var List                    = require("../../lib/js/list.js");
+var Block                   = require("../../lib/js/block.js");
+var Bytes                   = require("../../lib/js/bytes.js");
+var Curry                   = require("../../lib/js/curry.js");
+var Scanf                   = require("../../lib/js/scanf.js");
+var Buffer                  = require("../../lib/js/buffer.js");
+var Printf                  = require("../../lib/js/printf.js");
+var $$String                = require("../../lib/js/string.js");
+var Testing                 = require("./testing.js");
+var Caml_obj                = require("../../lib/js/caml_obj.js");
+var Mt_global               = require("./mt_global.js");
+var Caml_int64              = require("../../lib/js/caml_int64.js");
+var Pervasives              = require("../../lib/js/pervasives.js");
+var Caml_format             = require("../../lib/js/caml_format.js");
+var Caml_string             = require("../../lib/js/caml_string.js");
+var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var suites = [/* [] */0];
 

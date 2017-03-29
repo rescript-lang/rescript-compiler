@@ -1,6 +1,6 @@
 'use strict';
 
-var CamlinternalOO = require("../../lib/js/camlinternalOO");
+var CamlinternalOO = require("../../lib/js/camlinternalOO.js");
 
 var $$class = CamlinternalOO.create_table(0);
 

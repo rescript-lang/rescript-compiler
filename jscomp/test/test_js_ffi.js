@@ -1,6 +1,6 @@
 'use strict';
 
-var $$String = require("../../lib/js/string");
+var $$String = require("../../lib/js/string.js");
 
 function v() {
   t([$$String.compare]);

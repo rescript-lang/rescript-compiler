@@ -1,10 +1,10 @@
 'use strict';
 
-var Mt         = require("./mt");
-var Block      = require("../../lib/js/block");
-var Int64      = require("../../lib/js/int64");
-var Caml_int64 = require("../../lib/js/caml_int64");
-var Pervasives = require("../../lib/js/pervasives");
+var Mt         = require("./mt.js");
+var Block      = require("../../lib/js/block.js");
+var Int64      = require("../../lib/js/int64.js");
+var Caml_int64 = require("../../lib/js/caml_int64.js");
+var Pervasives = require("../../lib/js/pervasives.js");
 
 var suites = [/* [] */0];
 

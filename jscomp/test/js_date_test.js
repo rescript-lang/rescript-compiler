@@ -1,7 +1,7 @@
 'use strict';
 
-var Mt    = require("./mt");
-var Block = require("../../lib/js/block");
+var Mt    = require("./mt.js");
+var Block = require("../../lib/js/block.js");
 
 function date() {
   return new Date("1976-03-08T12:34:56.789+01:23");

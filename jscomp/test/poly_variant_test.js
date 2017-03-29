@@ -1,8 +1,8 @@
 'use strict';
 
-var Mt    = require("./mt");
+var Mt    = require("./mt.js");
 var Fs    = require("fs");
-var Block = require("../../lib/js/block");
+var Block = require("../../lib/js/block.js");
 
 var suites = [/* [] */0];
 

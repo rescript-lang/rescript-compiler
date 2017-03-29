@@ -1,14 +1,14 @@
 'use strict';
 
-var List                    = require("../../lib/js/list");
-var Block                   = require("../../lib/js/block");
-var Curry                   = require("../../lib/js/curry");
-var Printf                  = require("../../lib/js/printf");
-var $$String                = require("../../lib/js/string");
-var Caml_obj                = require("../../lib/js/caml_obj");
-var Pervasives              = require("../../lib/js/pervasives");
-var Caml_format             = require("../../lib/js/caml_format");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
+var List                    = require("../../lib/js/list.js");
+var Block                   = require("../../lib/js/block.js");
+var Curry                   = require("../../lib/js/curry.js");
+var Printf                  = require("../../lib/js/printf.js");
+var $$String                = require("../../lib/js/string.js");
+var Caml_obj                = require("../../lib/js/caml_obj.js");
+var Pervasives              = require("../../lib/js/pervasives.js");
+var Caml_format             = require("../../lib/js/caml_format.js");
+var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function split(delim, s) {
   var len = s.length;

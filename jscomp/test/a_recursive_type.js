@@ -1,6 +1,6 @@
 'use strict';
 
-var Curry = require("../../lib/js/curry");
+var Curry = require("../../lib/js/curry.js");
 
 function g(x) {
   return Curry._1(x[0], x);
