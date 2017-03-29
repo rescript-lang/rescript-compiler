@@ -1158,7 +1158,7 @@ let u = [%bs.obj {
   fn = fun [@bs] u v -> u + v // <1>
   } ]
 let h = u##x##y##z
-let a = h##fn
+let a = u##fn
 let b = a 1 2 [@bs]
 --------------
 <1> `fn` property is not method, it does not rely on `this`.
