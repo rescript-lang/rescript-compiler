@@ -2991,7 +2991,7 @@ are fulfilled (including optional arguments), it is common to have a <code>unit<
   <span class="tok-n">fn</span> <span class="tok-o">=</span> <span class="tok-k">fun</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">]</span> <span class="tok-n">u</span> <span class="tok-n">v</span> <span class="tok-o">-&gt;</span> <span class="tok-n">u</span> <span class="tok-o">+</span> <span class="tok-n">v</span> <b class="conum">(1)</b>
   <span class="tok-o">}</span> <span class="tok-o">]</span>
 <span class="tok-k">let</span> <span class="tok-n">h</span> <span class="tok-o">=</span> <span class="tok-n">u</span><span class="tok-o">##</span><span class="tok-n">x</span><span class="tok-o">##</span><span class="tok-n">y</span><span class="tok-o">##</span><span class="tok-n">z</span>
-<span class="tok-k">let</span> <span class="tok-n">a</span> <span class="tok-o">=</span> <span class="tok-n">h</span><span class="tok-o">##</span><span class="tok-n">fn</span>
+<span class="tok-k">let</span> <span class="tok-n">a</span> <span class="tok-o">=</span> <span class="tok-n">u</span><span class="tok-o">##</span><span class="tok-n">fn</span>
 <span class="tok-k">let</span> <span class="tok-n">b</span> <span class="tok-o">=</span> <span class="tok-n">a</span> <span class="tok-mi">1</span> <span class="tok-mi">2</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">]</span></code></pre>
 </div>
 </div>
@@ -3010,7 +3010,7 @@ We will show how to create JS method in OCaml later.</p>
 <div class="content">
 <pre class="pygments highlight"><code data-lang="js"><span class="tok-kd">var</span> <span class="tok-nx">u</span> <span class="tok-o">=</span> <span class="tok-p">{</span> <span class="tok-nx">x</span> <span class="tok-o">:</span> <span class="tok-p">{</span> <span class="tok-nx">y</span> <span class="tok-o">:</span> <span class="tok-p">{</span> <span class="tok-nx">z</span> <span class="tok-o">:</span> <span class="tok-mi">3</span> <span class="tok-p">}</span> <span class="tok-p">},</span> <span class="tok-nx">fn</span> <span class="tok-o">:</span> <span class="tok-kd">function</span> <span class="tok-p">(</span><span class="tok-nx">u</span><span class="tok-p">,</span> <span class="tok-nx">v</span><span class="tok-p">)</span> <span class="tok-p">{</span><span class="tok-k">return</span> <span class="tok-nx">u</span> <span class="tok-o">+</span> <span class="tok-nx">v</span><span class="tok-p">}}</span>
 <span class="tok-kd">var</span> <span class="tok-nx">h</span> <span class="tok-o">=</span> <span class="tok-nx">u</span><span class="tok-p">.</span><span class="tok-nx">x</span><span class="tok-p">.</span><span class="tok-nx">y</span><span class="tok-p">.</span><span class="tok-nx">z</span>
-<span class="tok-kd">var</span> <span class="tok-nx">a</span> <span class="tok-o">=</span> <span class="tok-nx">h</span><span class="tok-p">.</span><span class="tok-nx">fn</span>
+<span class="tok-kd">var</span> <span class="tok-nx">a</span> <span class="tok-o">=</span> <span class="tok-nx">u</span><span class="tok-p">.</span><span class="tok-nx">fn</span>
 <span class="tok-kd">var</span> <span class="tok-nx">b</span> <span class="tok-o">=</span> <span class="tok-nx">a</span><span class="tok-p">(</span><span class="tok-mi">1</span><span class="tok-p">,</span><span class="tok-mi">2</span><span class="tok-p">)</span></code></pre>
 </div>
 </div>
