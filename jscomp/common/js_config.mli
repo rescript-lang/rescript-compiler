@@ -148,7 +148,7 @@ val hash : string
 val weak : string
 val js_primitive : string
 val module_ : string
-
+val missing_polyfill : string
 (** Debugging utilies *)
 val set_current_file : string -> unit 
 val get_current_file : unit -> string

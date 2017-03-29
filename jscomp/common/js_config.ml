@@ -200,6 +200,7 @@ let int32 = "Caml_int32"
 let block = "Block"
 let js_primitive = "Js_primitive"
 let module_ = "Caml_module"
+let missing_polyfill = "Caml_missing_polyfill"
 let current_file = ref ""
 let debug_file = ref ""
 

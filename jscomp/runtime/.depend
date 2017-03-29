@@ -29,6 +29,7 @@ caml_oo.cmj : caml_array.cmj bs_obj.cmj caml_oo.cmi
 curry.cmj : caml_array.cmj
 caml_oo_curry.cmj : curry.cmj caml_oo.cmj
 caml_module.cmj :
+caml_missing_polyfill.cmj : caml_missing_polyfill.cmi
 bs_string.cmj :
 js_float.cmj :
 bs_obj.cmj : js.cmj
@@ -59,5 +60,6 @@ caml_gc.cmi :
 js_primitive.cmi : js_undefined.cmi js.cmi
 caml_basic.cmi : js_undefined.cmi js.cmi
 caml_oo.cmi :
+caml_missing_polyfill.cmi :
 js_null.cmi : js.cmi
 js_undefined.cmi : js.cmi

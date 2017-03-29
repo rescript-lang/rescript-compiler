@@ -15,6 +15,7 @@ var Pervasives              = require("../../lib/js/pervasives.js");
 var Caml_string             = require("../../lib/js/caml_string.js");
 var Ext_pervasives          = require("./ext_pervasives.js");
 var CamlinternalLazy        = require("../../lib/js/camlinternalLazy.js");
+var Caml_missing_polyfill   = require("../../lib/js/caml_missing_polyfill.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var node_sep = "/";
@@ -222,7 +223,7 @@ function node_relative_path(node_modules_shorten, file1, dep_file) {
 function find_root_filename(_cwd, filename) {
   while(true) {
     var cwd = _cwd;
-    if (Caml_sys.caml_sys_file_exists(Filename.concat(cwd, filename))) {
+    if (Caml_missing_polyfill.not_implemented("caml_sys_file_exists not implemented by bucklescript yet\n")) {
       return cwd;
     } else {
       var cwd$prime = Curry._1(Filename.dirname, cwd);

@@ -9,6 +9,7 @@ OTHERS= caml_array caml_string caml_bytes\
 	caml_format caml_md5 caml_queue caml_hash caml_weak\
 	caml_backtrace caml_int32 caml_gc js_typed_array \
 	js_primitive caml_basic caml_oo curry caml_oo_curry caml_module \
+	caml_missing_polyfill\
 	bs_string  js_float bs_obj js_nativeint js_int js_null js_undefined
 
 SOURCE_LIST= $(OTHERS) caml_builtin_exceptions  block  js js_unsafe

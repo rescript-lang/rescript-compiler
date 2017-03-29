@@ -129,7 +129,8 @@ OTHERS := literals a test_ari test_export2 test_internalOO test_obj_simple_ffi t
 	arity_deopt\
 	switch_case_test\
 	bb\
-	ocaml_parsetree_test
+	ocaml_parsetree_test\
+	ocaml_typedtree_test
 
 # bs_uncurry_test
 # needs Lam to get rid of Uncurry arity first
@@ -177,7 +178,11 @@ number_lexer.ml: number_lexer.mll
 simple_lexer_test.ml: simple_lexer_test.mll
 	$(CAMLLEX) $<
 ocaml_parsetree_test.ml: ocaml_parsetree_main.ml
-	$(BSPACK) -bs-main Ocaml_parsetree_main -bs-MD  -I ../../ocaml/parsing/ -I ../../ocaml/utils/ -o ocaml_parsetree_test.ml
+	$(BSPACK) -bs-main Ocaml_parsetree_main -bs-MD  -I ../../ocaml/parsing/ -I ../../ocaml/utils/ -o $@
+
+ocaml_typedtree_test.ml: ocaml_typed_tree_main.ml
+	$(BSPACK) -bs-main Ocaml_typed_tree_main -bs-MD -I ../../ocaml/parsing/ -I ../../ocaml/utils/ -I ../../ocaml/typing/ -o $@
+
 -include .depend
 
 depend:

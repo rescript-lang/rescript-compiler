@@ -31,6 +31,7 @@ var Caml_format             = require("../../lib/js/caml_format.js");
 var Caml_string             = require("../../lib/js/caml_string.js");
 var Caml_exceptions         = require("../../lib/js/caml_exceptions.js");
 var CamlinternalLazy        = require("../../lib/js/camlinternalLazy.js");
+var Caml_missing_polyfill   = require("../../lib/js/caml_missing_polyfill.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var fast = [/* false */0];
@@ -1222,9 +1223,7 @@ function highlight_terminfo(ppf, num_lines, lb, locs) {
     throw Pervasives.Exit;
   }
   Caml_io.caml_ml_flush(Pervasives.stdout);
-  (function () {
-        throw "caml_terminfo_backup not implemented by bucklescript yet\n";
-      }());
+  Caml_missing_polyfill.not_implemented("caml_terminfo_backup not implemented by bucklescript yet\n");
   var bol = /* false */0;
   Pervasives.print_string("# ");
   for(var pos = 0 ,pos_finish = (lb[/* lex_buffer_len */2] - pos0 | 0) - 1 | 0; pos <= pos_finish; ++pos){
@@ -1237,29 +1236,21 @@ function highlight_terminfo(ppf, num_lines, lb, locs) {
             return +(pos === loc[/* loc_start */0][/* pos_cnum */3]);
           }
           }(pos)), locs)) {
-      (function () {
-            throw "caml_terminfo_standout not implemented by bucklescript yet\n";
-          }());
+      Caml_missing_polyfill.not_implemented("caml_terminfo_standout not implemented by bucklescript yet\n");
     }
     if (List.exists((function(pos){
           return function (loc) {
             return +(pos === loc[/* loc_end */1][/* pos_cnum */3]);
           }
           }(pos)), locs)) {
-      (function () {
-            throw "caml_terminfo_standout not implemented by bucklescript yet\n";
-          }());
+      Caml_missing_polyfill.not_implemented("caml_terminfo_standout not implemented by bucklescript yet\n");
     }
     var c = Caml_bytes.get(lb[/* lex_buffer */1], pos + pos0 | 0);
     Pervasives.print_char(c);
     bol = +(c === /* "\n" */10);
   }
-  (function () {
-        throw "caml_terminfo_standout not implemented by bucklescript yet\n";
-      }());
-  (function () {
-        throw "caml_terminfo_resume not implemented by bucklescript yet\n";
-      }());
+  Caml_missing_polyfill.not_implemented("caml_terminfo_standout not implemented by bucklescript yet\n");
+  Caml_missing_polyfill.not_implemented("caml_terminfo_resume not implemented by bucklescript yet\n");
   return Caml_io.caml_ml_flush(Pervasives.stdout);
 }
 
@@ -1413,9 +1404,7 @@ function highlight_locations(ppf, locs) {
           return /* false */0;
         }
       } else {
-        status[0] = function () {
-            throw "caml_terminfo_setup not implemented by bucklescript yet\n";
-          }();
+        status[0] = Caml_missing_polyfill.not_implemented("caml_terminfo_setup not implemented by bucklescript yet\n");
         continue ;
         
       }

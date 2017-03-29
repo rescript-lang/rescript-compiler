@@ -1,5 +1,6 @@
 'use strict';
 
+var Caml_missing_polyfill   = require("../../lib/js/caml_missing_polyfill.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function to_buffer(buff, ofs, len, _, _$1) {
@@ -9,9 +10,7 @@ function to_buffer(buff, ofs, len, _, _$1) {
           "Marshal.to_buffer: substring out of bounds"
         ];
   } else {
-    return function () {
-              throw "caml_output_value_to_buffer not implemented by bucklescript yet\n";
-            }();
+    return Caml_missing_polyfill.not_implemented("caml_output_value_to_buffer not implemented by bucklescript yet\n");
   }
 }
 
