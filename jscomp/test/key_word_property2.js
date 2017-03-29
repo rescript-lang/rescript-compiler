@@ -1,6 +1,6 @@
 'use strict';
 
-var Export_keyword = require("./export_keyword");
+var Export_keyword = require("./export_keyword.js");
 
 function test2(v) {
   return {

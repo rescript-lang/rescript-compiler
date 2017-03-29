@@ -1,7 +1,7 @@
 'use strict';
 
-var Caml_oo_curry  = require("../../lib/js/caml_oo_curry");
-var CamlinternalOO = require("../../lib/js/camlinternalOO");
+var Caml_oo_curry  = require("../../lib/js/caml_oo_curry.js");
+var CamlinternalOO = require("../../lib/js/camlinternalOO.js");
 
 function f(o) {
   return Caml_oo_curry.js4(23297, 1, o, 1, 2, 3);

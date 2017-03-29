@@ -1,10 +1,10 @@
 'use strict';
 
-var Mt             = require("./mt");
-var Block          = require("../../lib/js/block");
-var Curry          = require("../../lib/js/curry");
-var Caml_oo_curry  = require("../../lib/js/caml_oo_curry");
-var CamlinternalOO = require("../../lib/js/camlinternalOO");
+var Mt             = require("./mt.js");
+var Block          = require("../../lib/js/block.js");
+var Curry          = require("../../lib/js/curry.js");
+var Caml_oo_curry  = require("../../lib/js/caml_oo_curry.js");
+var CamlinternalOO = require("../../lib/js/camlinternalOO.js");
 
 function f(u) {
   return Caml_oo_curry.js2(5740587, 1, u, 32);

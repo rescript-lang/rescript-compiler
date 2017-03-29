@@ -1,13 +1,13 @@
 'use strict';
 
-var Curry            = require("../../lib/js/curry");
-var Caml_array       = require("../../lib/js/caml_array");
-var Pervasives       = require("../../lib/js/pervasives");
-var CamlinternalLazy = require("../../lib/js/camlinternalLazy");
+var Curry            = require("../../lib/js/curry.js");
+var Caml_array       = require("../../lib/js/caml_array.js");
+var Pervasives       = require("../../lib/js/pervasives.js");
+var CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
 
 function a4(prim) {
   return [
-          'File "test_primitive.ml", line 30, characters 9-19',
+          "File \"test_primitive.ml\", line 30, characters 9-19",
           prim
         ];
 }
@@ -94,7 +94,7 @@ function fib(n) {
   }
 }
 
-var a0 = 'File "test_primitive.ml", line 26, characters 9-16';
+var a0 = "File \"test_primitive.ml\", line 26, characters 9-16";
 
 var a1 = "test_primitive.ml";
 

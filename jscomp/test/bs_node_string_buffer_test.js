@@ -1,6 +1,6 @@
 'use strict';
 
-var Node = require("../../lib/js/node");
+var Node = require("../../lib/js/node.js");
 
 function f(str) {
   var match = Node.test(str);

@@ -1,7 +1,7 @@
 'use strict';
 
-var Mt    = require("./mt");
-var Block = require("../../lib/js/block");
+var Mt    = require("./mt.js");
+var Block = require("../../lib/js/block.js");
 
 var suites = [/* [] */0];
 
@@ -102,33 +102,33 @@ function f12(x) {
   return x.__;
 }
 
-eq('File "name_mangle_test.ml", line 85, characters 7-14', f0(({open:0})), 1);
+eq("File \"name_mangle_test.ml\", line 85, characters 7-14", f0(({open:0})), 1);
 
-eq('File "name_mangle_test.ml", line 86, characters 7-14', f1(({in:0})), 1);
+eq("File \"name_mangle_test.ml\", line 86, characters 7-14", f1(({in:0})), 1);
 
-eq('File "name_mangle_test.ml", line 87, characters 7-14', f2(({MAX_LENGTH:0})), 1);
+eq("File \"name_mangle_test.ml\", line 87, characters 7-14", f2(({MAX_LENGTH:0})), 1);
 
-eq('File "name_mangle_test.ml", line 88, characters 7-14', f3(({Capital:0})), 1);
+eq("File \"name_mangle_test.ml\", line 88, characters 7-14", f3(({Capital:0})), 1);
 
-eq('File "name_mangle_test.ml", line 89, characters 7-14', f4(({_open:0})), 1);
+eq("File \"name_mangle_test.ml\", line 89, characters 7-14", f4(({_open:0})), 1);
 
-eq('File "name_mangle_test.ml", line 90, characters 7-14', f5(({open:0})), 1);
+eq("File \"name_mangle_test.ml\", line 90, characters 7-14", f5(({open:0})), 1);
 
-eq('File "name_mangle_test.ml", line 91, characters 7-14', f6(({ "'x" :0} )), 1);
+eq("File \"name_mangle_test.ml\", line 91, characters 7-14", f6(({ "'x" :0} )), 1);
 
-eq('File "name_mangle_test.ml", line 92, characters 7-14', f7(({_Capital:0})), 1);
+eq("File \"name_mangle_test.ml\", line 92, characters 7-14", f7(({_Capital:0})), 1);
 
-eq('File "name_mangle_test.ml", line 93, characters 7-14', f8(({_MAX:0})), 1);
+eq("File \"name_mangle_test.ml\", line 93, characters 7-14", f8(({_MAX:0})), 1);
 
-eq('File "name_mangle_test.ml", line 94, characters 7-14', f9(({__:0})), 1);
+eq("File \"name_mangle_test.ml\", line 94, characters 7-14", f9(({__:0})), 1);
 
-eq('File "name_mangle_test.ml", line 95, characters 7-14', f10(({__x:0})), 1);
+eq("File \"name_mangle_test.ml\", line 95, characters 7-14", f10(({__x:0})), 1);
 
-eq('File "name_mangle_test.ml", line 96, characters 7-14', f11(({_:0})), 1);
+eq("File \"name_mangle_test.ml\", line 96, characters 7-14", f11(({_:0})), 1);
 
-eq('File "name_mangle_test.ml", line 97, characters 7-14', f12(({__:0})), 1);
+eq("File \"name_mangle_test.ml\", line 97, characters 7-14", f12(({__:0})), 1);
 
-Mt.from_pair_suites('File "name_mangle_test.ml", line 101, characters 23-30', suites[0]);
+Mt.from_pair_suites("File \"name_mangle_test.ml\", line 101, characters 23-30", suites[0]);
 
 exports.suites  = suites;
 exports.test_id = test_id;

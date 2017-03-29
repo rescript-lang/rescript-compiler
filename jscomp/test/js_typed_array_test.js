@@ -1,9 +1,9 @@
 'use strict';
 
-var Mt      = require("./mt");
-var $$Array = require("../../lib/js/array");
-var Block   = require("../../lib/js/block");
-var Curry   = require("../../lib/js/curry");
+var Mt      = require("./mt.js");
+var $$Array = require("../../lib/js/array.js");
+var Block   = require("../../lib/js/block.js");
+var Curry   = require("../../lib/js/curry.js");
 
 function mkI8(a) {
   return new Int8Array(a);

@@ -1,12 +1,12 @@
 'use strict';
 
-var Mt                      = require("./mt");
-var Block                   = require("../../lib/js/block");
-var Curry                   = require("../../lib/js/curry");
-var Hashtbl                 = require("../../lib/js/hashtbl");
-var Caml_oo_curry           = require("../../lib/js/caml_oo_curry");
-var CamlinternalOO          = require("../../lib/js/camlinternalOO");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
+var Mt                      = require("./mt.js");
+var Block                   = require("../../lib/js/block.js");
+var Curry                   = require("../../lib/js/curry.js");
+var Hashtbl                 = require("../../lib/js/hashtbl.js");
+var Caml_oo_curry           = require("../../lib/js/caml_oo_curry.js");
+var CamlinternalOO          = require("../../lib/js/camlinternalOO.js");
+var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var shared = ["calc"];
 
@@ -80,7 +80,7 @@ var memo_fib = CamlinternalOO.make_class(shared, memo_fib_init);
 
 var tmp = Curry._1(memo_fib[0], 0);
 
-eq('File "class_fib_open_recursion_test.ml", line 33, characters 5-12', Caml_oo_curry.js2(-1044768619, 1, tmp, 40), 165580141);
+eq("File \"class_fib_open_recursion_test.ml\", line 33, characters 5-12", Caml_oo_curry.js2(-1044768619, 1, tmp, 40), 165580141);
 
 Mt.from_pair_suites("class_fib_open_recursion_test.ml", suites[0]);
 

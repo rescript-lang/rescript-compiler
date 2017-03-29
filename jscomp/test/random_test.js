@@ -1,13 +1,13 @@
 'use strict';
 
-var Mt         = require("./mt");
-var Block      = require("../../lib/js/block");
-var Curry      = require("../../lib/js/curry");
-var Int64      = require("../../lib/js/int64");
-var Printf     = require("../../lib/js/printf");
-var Random     = require("../../lib/js/random");
-var Mt_global  = require("./mt_global");
-var Caml_array = require("../../lib/js/caml_array");
+var Mt         = require("./mt.js");
+var Block      = require("../../lib/js/block.js");
+var Curry      = require("../../lib/js/curry.js");
+var Int64      = require("../../lib/js/int64.js");
+var Printf     = require("../../lib/js/printf.js");
+var Random     = require("../../lib/js/random.js");
+var Mt_global  = require("./mt_global.js");
+var Caml_array = require("../../lib/js/caml_array.js");
 
 var id = [0];
 
@@ -39,7 +39,7 @@ Random.self_init(/* () */0);
 
 var param$1 = Random.$$int(10000);
 
-Mt_global.collect_neq(id, suites, 'File "random_test.ml", line 12, characters 6-13', param$1, param);
+Mt_global.collect_neq(id, suites, "File \"random_test.ml\", line 12, characters 6-13", param$1, param);
 
 Random.init(0);
 
@@ -62,7 +62,7 @@ var param$2 = /* array */[
   /* false */0
 ];
 
-Mt_global.collect_eq(id, suites, 'File "random_test.ml", line 26, characters 5-12', v, param$2);
+Mt_global.collect_eq(id, suites, "File \"random_test.ml\", line 26, characters 5-12", v, param$2);
 
 var f = Random.int64(Int64.max_int);
 

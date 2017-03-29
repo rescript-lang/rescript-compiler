@@ -1,7 +1,7 @@
 'use strict';
 
-var Mt    = require("./mt");
-var Block = require("../../lib/js/block");
+var Mt    = require("./mt.js");
+var Block = require("../../lib/js/block.js");
 
 var keys = ( function (x){return Object.keys(x)});
 
@@ -47,7 +47,7 @@ var string_config = {
   low: "32"
 };
 
-eq('File "ffi_js_test.ml", line 33, characters 5-12', /* tuple */[
+eq("File \"ffi_js_test.ml\", line 32, characters 5-12", /* tuple */[
       6,
       $$high_order(1)(2, 3)
     ]);
@@ -86,22 +86,22 @@ var v_obj = {
   }
 };
 
-eq('File "ffi_js_test.ml", line 44, characters 5-12', /* tuple */[
+eq("File \"ffi_js_test.ml\", line 44, characters 5-12", /* tuple */[
       Object.keys(int_config).length,
       2
     ]);
 
-eq('File "ffi_js_test.ml", line 45, characters 5-12', /* tuple */[
+eq("File \"ffi_js_test.ml\", line 45, characters 5-12", /* tuple */[
       Object.keys(string_config).length,
       2
     ]);
 
-eq('File "ffi_js_test.ml", line 46, characters 5-12', /* tuple */[
+eq("File \"ffi_js_test.ml\", line 46, characters 5-12", /* tuple */[
       Object.keys(v_obj).indexOf("hi_x"),
       -1
     ]);
 
-eq('File "ffi_js_test.ml", line 47, characters 5-12', /* tuple */[
+eq("File \"ffi_js_test.ml\", line 47, characters 5-12", /* tuple */[
       Object.keys(v_obj).indexOf("hi"),
       0
     ]);
@@ -113,7 +113,7 @@ var side_effect_config = (u[0] = u[0] + 1 | 0, {
     low: 32
   });
 
-eq('File "ffi_js_test.ml", line 54, characters 5-12', /* tuple */[
+eq("File \"ffi_js_test.ml\", line 54, characters 5-12", /* tuple */[
       u[0],
       4
     ]);
@@ -134,6 +134,14 @@ function vvvv(z) {
   return z.ff_pipe2();
 }
 
+function create_prim() {
+  return {
+          "x'": 3,
+          "x''": 3,
+          "x''''": 2
+        };
+}
+
 Mt.from_pair_suites("ffi_js_test.ml", suites[0]);
 
 exports.keys               = keys;
@@ -150,4 +158,5 @@ exports.vv                 = vv;
 exports.v                  = v;
 exports.vvv                = vvv;
 exports.vvvv               = vvvv;
+exports.create_prim        = create_prim;
 /* keys Not a pure module */

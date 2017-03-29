@@ -1,10 +1,10 @@
 'use strict';
 
-var List                    = require("../../lib/js/list");
-var Curry                   = require("../../lib/js/curry");
-var Queue                   = require("../../lib/js/queue");
-var Caml_obj                = require("../../lib/js/caml_obj");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
+var List                    = require("../../lib/js/list.js");
+var Curry                   = require("../../lib/js/curry.js");
+var Queue                   = require("../../lib/js/queue.js");
+var Caml_obj                = require("../../lib/js/caml_obj.js");
+var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function to_list(q) {
   return List.rev(Queue.fold(function (l, x) {

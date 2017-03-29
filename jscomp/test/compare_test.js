@@ -1,6 +1,6 @@
 'use strict';
 
-var Caml_obj = require("../../lib/js/caml_obj");
+var Caml_obj = require("../../lib/js/caml_obj.js");
 
 function compare(x, y) {
   switch (x) {

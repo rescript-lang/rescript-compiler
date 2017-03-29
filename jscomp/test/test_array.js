@@ -1,7 +1,7 @@
 'use strict';
 
-var $$Array    = require("../../lib/js/array");
-var Caml_array = require("../../lib/js/caml_array");
+var $$Array    = require("../../lib/js/array.js");
+var Caml_array = require("../../lib/js/caml_array.js");
 
 var v = Caml_array.caml_make_vect(6, 5);
 

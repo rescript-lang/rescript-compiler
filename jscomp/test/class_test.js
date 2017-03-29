@@ -1,10 +1,10 @@
 'use strict';
 
-var Mt             = require("./mt");
-var Block          = require("../../lib/js/block");
-var Curry          = require("../../lib/js/curry");
-var Caml_oo_curry  = require("../../lib/js/caml_oo_curry");
-var CamlinternalOO = require("../../lib/js/camlinternalOO");
+var Mt             = require("./mt.js");
+var Block          = require("../../lib/js/block.js");
+var Curry          = require("../../lib/js/curry.js");
+var Caml_oo_curry  = require("../../lib/js/caml_oo_curry.js");
+var CamlinternalOO = require("../../lib/js/camlinternalOO.js");
 
 var shared = [
   "move",
@@ -84,7 +84,7 @@ var two = Caml_oo_curry.js1(291546447, 5, tmp$1);
 
 Mt.from_pair_suites("class_test.ml", /* :: */[
       /* tuple */[
-        'File "class_test.ml", line 33, characters 4-11',
+        "File \"class_test.ml\", line 33, characters 4-11",
         function () {
           return /* Eq */Block.__(0, [
                     zero,
@@ -94,7 +94,7 @@ Mt.from_pair_suites("class_test.ml", /* :: */[
       ],
       /* :: */[
         /* tuple */[
-          'File "class_test.ml", line 34, characters 4-11',
+          "File \"class_test.ml\", line 34, characters 4-11",
           function () {
             return /* Eq */Block.__(0, [
                       three,
@@ -104,7 +104,7 @@ Mt.from_pair_suites("class_test.ml", /* :: */[
         ],
         /* :: */[
           /* tuple */[
-            'File "class_test.ml", line 35, characters 4-11',
+            "File \"class_test.ml\", line 35, characters 4-11",
             function () {
               return /* Eq */Block.__(0, [
                         one,
@@ -114,7 +114,7 @@ Mt.from_pair_suites("class_test.ml", /* :: */[
           ],
           /* :: */[
             /* tuple */[
-              'File "class_test.ml", line 36, characters 4-11',
+              "File \"class_test.ml\", line 36, characters 4-11",
               function () {
                 return /* Eq */Block.__(0, [
                           two,

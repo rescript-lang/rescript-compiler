@@ -1,10 +1,10 @@
 'use strict';
 
-var Mt         = require("./mt");
-var Block      = require("../../lib/js/block");
-var Curry      = require("../../lib/js/curry");
-var Format     = require("../../lib/js/format");
-var Pervasives = require("../../lib/js/pervasives");
+var Mt         = require("./mt.js");
+var Block      = require("../../lib/js/block.js");
+var Curry      = require("../../lib/js/curry.js");
+var Format     = require("../../lib/js/format.js");
+var Pervasives = require("../../lib/js/pervasives.js");
 
 var suites = [/* [] */0];
 
@@ -46,7 +46,7 @@ function u() {
             ]);
 }
 
-eq('File "format_test.ml", line 12, characters 5-12', Curry._1(Format.asprintf(u(/* () */0)), "x"), "xx xyy");
+eq("File \"format_test.ml\", line 12, characters 5-12", Curry._1(Format.asprintf(u(/* () */0)), "x"), "xx xyy");
 
 Mt.from_pair_suites("format_test.ml", suites[0]);
 

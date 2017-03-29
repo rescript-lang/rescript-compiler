@@ -1,10 +1,10 @@
 'use strict';
 
-var Mt        = require("./mt");
-var Block     = require("../../lib/js/block");
-var Curry     = require("../../lib/js/curry");
-var Scanf     = require("../../lib/js/scanf");
-var Mt_global = require("./mt_global");
+var Mt        = require("./mt.js");
+var Block     = require("../../lib/js/block.js");
+var Curry     = require("../../lib/js/curry.js");
+var Scanf     = require("../../lib/js/scanf.js");
+var Mt_global = require("./mt_global.js");
 
 var suites = [/* [] */0];
 
@@ -14,7 +14,7 @@ function eq(f, param) {
   return Mt_global.collect_eq(test_id, suites, f, param[0], param[1]);
 }
 
-eq('File "scanf_test.ml", line 6, characters 5-12', /* tuple */[
+eq("File \"scanf_test.ml\", line 6, characters 5-12", /* tuple */[
       Curry._1(Scanf.sscanf("32 31", /* Format */[
                 /* Int */Block.__(4, [
                     /* Int_d */0,

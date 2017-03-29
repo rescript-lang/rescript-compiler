@@ -1,7 +1,7 @@
 'use strict';
 
-var Mt          = require("./mt");
-var Block       = require("../../lib/js/block");
+var Mt          = require("./mt.js");
+var Block       = require("../../lib/js/block.js");
 var JoinClasses = require("./joinClasses");
 
 var suites = [/* [] */0];
@@ -36,7 +36,7 @@ var pair = /* tuple */[
 
 console.log(pair);
 
-eq('File "module_splice_test.ml", line 21, characters 5-12', pair);
+eq("File \"module_splice_test.ml\", line 21, characters 5-12", pair);
 
 Mt.from_pair_suites("module_splice_test.ml", suites[0]);
 

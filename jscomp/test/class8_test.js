@@ -1,12 +1,12 @@
 'use strict';
 
-var Mt              = require("./mt");
-var Block           = require("../../lib/js/block");
-var Curry           = require("../../lib/js/curry");
-var Caml_obj        = require("../../lib/js/caml_obj");
-var Caml_oo_curry   = require("../../lib/js/caml_oo_curry");
-var CamlinternalOO  = require("../../lib/js/camlinternalOO");
-var Caml_exceptions = require("../../lib/js/caml_exceptions");
+var Mt              = require("./mt.js");
+var Block           = require("../../lib/js/block.js");
+var Curry           = require("../../lib/js/curry.js");
+var Caml_obj        = require("../../lib/js/caml_obj.js");
+var Caml_oo_curry   = require("../../lib/js/caml_oo_curry.js");
+var CamlinternalOO  = require("../../lib/js/camlinternalOO.js");
+var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 
 var shared = [
   "leq",
@@ -113,11 +113,11 @@ function min(x, y) {
 
 var tmp = min(Curry._2(money[0], 0, 1.0), Curry._2(money[0], 0, 3.0));
 
-eq('File "class8_test.ml", line 34, characters 5-12', 1, Caml_oo_curry.js1(834174833, 3, tmp));
+eq("File \"class8_test.ml\", line 34, characters 5-12", 1, Caml_oo_curry.js1(834174833, 3, tmp));
 
 var tmp$1 = min(Curry._2(money2[0], 0, 5.0), Curry._2(money2[0], 0, 3));
 
-eq('File "class8_test.ml", line 39, characters 5-12', 3, Caml_oo_curry.js1(834174833, 4, tmp$1));
+eq("File \"class8_test.ml\", line 39, characters 5-12", 3, Caml_oo_curry.js1(834174833, 4, tmp$1));
 
 Mt.from_pair_suites("class8_test.ml", suites[0]);
 

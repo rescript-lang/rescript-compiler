@@ -1,9 +1,9 @@
 'use strict';
 
-var Mt           = require("./mt");
-var Block        = require("../../lib/js/block");
-var Curry        = require("../../lib/js/curry");
-var Js_primitive = require("../../lib/js/js_primitive");
+var Mt           = require("./mt.js");
+var Block        = require("../../lib/js/block.js");
+var Curry        = require("../../lib/js/curry.js");
+var Js_primitive = require("../../lib/js/js_primitive.js");
 
 var suites = [/* [] */0];
 
@@ -271,19 +271,19 @@ var Test_null_def = /* module */[
   /* f11 */f11$2
 ];
 
-eq('File "test_zero_nullable.ml", line 227, characters 7-14', f1$2(0), 1);
+eq("File \"test_zero_nullable.ml\", line 227, characters 7-14", f1$2(0), 1);
 
-eq('File "test_zero_nullable.ml", line 228, characters 7-14', f1$2((null)), 3);
+eq("File \"test_zero_nullable.ml\", line 228, characters 7-14", f1$2((null)), 3);
 
-eq('File "test_zero_nullable.ml", line 229, characters 7-14', f1$2((undefined)), 3);
+eq("File \"test_zero_nullable.ml\", line 229, characters 7-14", f1$2((undefined)), 3);
 
-eq('File "test_zero_nullable.ml", line 231, characters 7-14', f1(0), 1);
+eq("File \"test_zero_nullable.ml\", line 231, characters 7-14", f1(0), 1);
 
-eq('File "test_zero_nullable.ml", line 232, characters 7-14', f1((null)), 3);
+eq("File \"test_zero_nullable.ml\", line 232, characters 7-14", f1((null)), 3);
 
-eq('File "test_zero_nullable.ml", line 234, characters 7-14', f1$1(0), 1);
+eq("File \"test_zero_nullable.ml\", line 234, characters 7-14", f1$1(0), 1);
 
-eq('File "test_zero_nullable.ml", line 235, characters 7-14', f1$1((undefined)), 3);
+eq("File \"test_zero_nullable.ml\", line 235, characters 7-14", f1$1((undefined)), 3);
 
 Mt.from_pair_suites("test_zero_nullable.ml", suites[0]);
 

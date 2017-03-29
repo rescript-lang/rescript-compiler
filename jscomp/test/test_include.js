@@ -1,8 +1,8 @@
 'use strict';
 
-var List       = require("../../lib/js/list");
-var $$String   = require("../../lib/js/string");
-var Test_order = require("./test_order");
+var List       = require("../../lib/js/list.js");
+var $$String   = require("../../lib/js/string.js");
+var Test_order = require("./test_order.js");
 
 function Make(U) {
   var compare = U[0];

@@ -1,8 +1,8 @@
 'use strict';
 
-var Mt             = require("./mt");
-var Block          = require("../../lib/js/block");
-var Global_mangles = require("./global_mangles");
+var Mt             = require("./mt.js");
+var Block          = require("../../lib/js/block.js");
+var Global_mangles = require("./global_mangles.js");
 
 var suites = [/* [] */0];
 
@@ -25,7 +25,7 @@ function eq(loc, x, y) {
   return /* () */0;
 }
 
-eq('File "key_word_property_plus_test.ml", line 10, characters 5-12', /* array */[
+eq("File \"key_word_property_plus_test.ml\", line 10, characters 5-12", /* array */[
         1,
         2,
         3,

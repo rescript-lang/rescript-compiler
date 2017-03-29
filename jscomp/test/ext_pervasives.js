@@ -1,20 +1,20 @@
 'use strict';
 
-var Arg                     = require("../../lib/js/arg");
-var Obj                     = require("../../lib/js/obj");
-var List                    = require("../../lib/js/list");
-var $$Array                 = require("../../lib/js/array");
-var Block                   = require("../../lib/js/block");
-var Curry                   = require("../../lib/js/curry");
-var Format                  = require("../../lib/js/format");
-var Printf                  = require("../../lib/js/printf");
-var $$String                = require("../../lib/js/string");
-var Caml_obj                = require("../../lib/js/caml_obj");
-var Caml_int32              = require("../../lib/js/caml_int32");
-var Pervasives              = require("../../lib/js/pervasives");
-var Caml_string             = require("../../lib/js/caml_string");
-var Caml_exceptions         = require("../../lib/js/caml_exceptions");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
+var Arg                     = require("../../lib/js/arg.js");
+var Obj                     = require("../../lib/js/obj.js");
+var List                    = require("../../lib/js/list.js");
+var $$Array                 = require("../../lib/js/array.js");
+var Block                   = require("../../lib/js/block.js");
+var Curry                   = require("../../lib/js/curry.js");
+var Format                  = require("../../lib/js/format.js");
+var Printf                  = require("../../lib/js/printf.js");
+var $$String                = require("../../lib/js/string.js");
+var Caml_obj                = require("../../lib/js/caml_obj.js");
+var Caml_int32              = require("../../lib/js/caml_int32.js");
+var Pervasives              = require("../../lib/js/pervasives.js");
+var Caml_string             = require("../../lib/js/caml_string.js");
+var Caml_exceptions         = require("../../lib/js/caml_exceptions.js");
+var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function $$finally(v, action, f) {
   var exit = 0;
@@ -205,7 +205,7 @@ function dump(r) {
         var fields$2 = get_fields(/* [] */0, s);
         return "Tag" + (t + (" (" + ($$String.concat(", ", List.map(dump, fields$2)) + ")")));
       } else if (t === Obj.string_tag) {
-        return '"' + ($$String.escaped(r) + '"');
+        return "\"" + ($$String.escaped(r) + "\"");
       } else if (t === Obj.double_tag) {
         return Pervasives.string_of_float(r);
       } else if (t === Obj.abstract_tag) {

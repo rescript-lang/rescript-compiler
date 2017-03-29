@@ -118,6 +118,7 @@ module L = struct
   let minus_minus = "--"
   let caml_block = "Block"
   let caml_block_create = "__"
+  let case = "case" 
 end
 let return_indent = (String.length L.return / Ext_pp.indent_length) 
 
@@ -193,7 +194,7 @@ let array_conv =
 
 
 (* https://mathiasbynens.be/notes/javascript-escapes *)
-let pp_string f ?(quote='"') (* ?(utf=false)*) s =
+let pp_string f  (* ?(utf=false)*) s =
   let pp_raw_string f (* ?(utf=false)*) s = 
     let l = String.length s in
     for i = 0 to l - 1 do
@@ -227,20 +228,14 @@ let pp_string f ?(quote='"') (* ?(utf=false)*) s =
         P.string f "\\x";
         P.string f (Array.unsafe_get array_conv (c lsr 4));
         P.string f (Array.unsafe_get array_conv (c land 0xf))
-      (* | '\'' -> P.string f "\\'" *)
-      (* | '\"' -> P.string f "\\\"" *)
+      | '\"' -> P.string f "\\\"" (* quote*)
       | _ ->
-        begin 
-          (if c = quote  then
-             P.string f "\\");           
           P.string f (Array.unsafe_get array_str1 (Char.code c))
-        end
     done
   in
-  let quote_s = String.make 1 quote in
-  P.string f quote_s;
+  P.string f "\"";
   pp_raw_string f (*~utf*) s ;
-  P.string f quote_s
+  P.string f "\""
 ;;
 
 (** used in printing keys 
@@ -253,7 +248,7 @@ let property_string f s =
   if Ext_ident.property_no_need_convert s  then 
     P.string f s
   else 
-    pp_string f ~quote:(best_string_quote s) s
+    pp_string f s
 
 (** used in property access 
     {[
@@ -270,13 +265,10 @@ let property_access f s =
   else
     begin 
       P.bracket_group f 1 @@ fun _ ->
-      pp_string f ~quote:( best_string_quote s) s
+      pp_string f s
     end
 
 
-(* TODO: check utf's correct semantics *)
-let pp_quote_string f s = 
-  pp_string f  ~quote:(best_string_quote s ) s 
 
 let rec comma_idents  cxt f (ls : Ident.t list)  =
   match ls with
@@ -567,8 +559,9 @@ and output_one : 'a .
     let cxt = 
       P.group f 1 @@ fun _ -> 
       P.group f 1 @@ (fun _ -> 
-          P.string f "case ";
-          pp_cond  f e;
+          P.string f L.case;
+          P.space f ;
+          pp_cond  f e; (* could be integer or string*)
           P.space f ;
           P.string f L.colon  );
 
@@ -801,9 +794,8 @@ and
     (*TODO --
        when utf8-> it will not escape '\\' which is definitely not we want
     *)
-      let quote = best_string_quote s in 
-      pp_string f  ~quote s;
-     cxt 
+    pp_string f  s;
+    cxt 
 
   | Raw_js_code (s,info) -> 
     begin match info with 
@@ -1589,7 +1581,7 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
     in
     P.space f;
     P.brace_vgroup f 1 @@ fun _ -> 
-    let cxt = loop cxt f (fun f i -> pp_quote_string f i ) cc in
+    let cxt = loop cxt f (fun f i -> pp_string f i ) cc in
     (match def with
      | None -> cxt
      | Some def ->
@@ -1722,7 +1714,7 @@ let requires require_lit cxt f (modules : (Ident.t * string) list ) =
       P.space f;
       P.string f require_lit;
       P.paren_group f 0 @@ (fun _ ->
-          pp_string f ~quote:(best_string_quote s) file  );
+          pp_string f file  );
       semi f ;
       P.newline f ;
     ) reversed_list;
@@ -1740,6 +1732,7 @@ let imports  cxt f (modules : (Ident.t * string) list ) =
       (cxt, [], 0)  modules in
   P.force_newline f ;    
   Ext_list.rev_iter (fun (s,file) ->
+      
       P.string f L.import;
       P.space f ;
       P.string f L.star ;
@@ -1750,9 +1743,7 @@ let imports  cxt f (modules : (Ident.t * string) list ) =
       P.nspace f (margin - String.length s + 1) ;      
       P.string f L.from;
       P.space f;
-      
-      pp_string f ~quote:(best_string_quote s) file  
-      ;
+      pp_string f file ;
       semi f ;
       P.newline f ;
     ) reversed_list;
@@ -1817,7 +1808,7 @@ let amd_program ~output_prefix kind f (  x : J.deps_program) =
       let s = Js_program_loader.string_of_module_id ~output_prefix kind x in
       P.string f L.comma ;
       P.space f; 
-      pp_string f  ~quote:(best_string_quote s) s;
+      pp_string f  s;
     ) x.modules ;
   P.string f "]";
   P.string f L.comma;

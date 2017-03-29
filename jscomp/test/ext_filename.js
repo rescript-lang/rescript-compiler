@@ -1,21 +1,21 @@
 'use strict';
 
-var Sys                     = require("../../lib/js/sys");
-var List                    = require("../../lib/js/list");
-var Block                   = require("../../lib/js/block");
-var Bytes                   = require("../../lib/js/bytes");
-var Curry                   = require("../../lib/js/curry");
-var Format                  = require("../../lib/js/format");
-var $$String                = require("../../lib/js/string");
-var Caml_sys                = require("../../lib/js/caml_sys");
-var Filename                = require("../../lib/js/filename");
-var Literals                = require("./literals");
-var Ext_string              = require("./ext_string");
-var Pervasives              = require("../../lib/js/pervasives");
-var Caml_string             = require("../../lib/js/caml_string");
-var Ext_pervasives          = require("./ext_pervasives");
-var CamlinternalLazy        = require("../../lib/js/camlinternalLazy");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
+var Sys                     = require("../../lib/js/sys.js");
+var List                    = require("../../lib/js/list.js");
+var Block                   = require("../../lib/js/block.js");
+var Bytes                   = require("../../lib/js/bytes.js");
+var Curry                   = require("../../lib/js/curry.js");
+var Format                  = require("../../lib/js/format.js");
+var $$String                = require("../../lib/js/string.js");
+var Caml_sys                = require("../../lib/js/caml_sys.js");
+var Filename                = require("../../lib/js/filename.js");
+var Literals                = require("./literals.js");
+var Ext_string              = require("./ext_string.js");
+var Pervasives              = require("../../lib/js/pervasives.js");
+var Caml_string             = require("../../lib/js/caml_string.js");
+var Ext_pervasives          = require("./ext_pervasives.js");
+var CamlinternalLazy        = require("../../lib/js/camlinternalLazy.js");
+var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var node_sep = "/";
 
@@ -179,7 +179,7 @@ function node_relative_path(node_modules_shorten, file1, dep_file) {
       while(true) {
         var i = _i;
         if (i >= len) {
-          return Curry._1(Ext_pervasives.failwithf('File "ext_filename.ml", line 162, characters 38-45', /* Format */[
+          return Curry._1(Ext_pervasives.failwithf("File \"ext_filename.ml\", line 162, characters 38-45", /* Format */[
                           /* String_literal */Block.__(11, [
                               "invalid path: ",
                               /* String */Block.__(2, [
@@ -215,7 +215,7 @@ function node_relative_path(node_modules_shorten, file1, dep_file) {
                 ] : /* `Dir */[
                   3405101,
                   absolute_path(file1[1])
-                ]) + (node_sep + chop_extension_if_any(Curry._1(Filename.basename, file2)));
+                ]) + (node_sep + Curry._1(Filename.basename, file2));
   }
 }
 
@@ -231,7 +231,7 @@ function find_root_filename(_cwd, filename) {
         continue ;
         
       } else {
-        return Curry._2(Ext_pervasives.failwithf('File "ext_filename.ml", line 205, characters 13-20', /* Format */[
+        return Curry._2(Ext_pervasives.failwithf("File \"ext_filename.ml\", line 205, characters 13-20", /* Format */[
                         /* String */Block.__(2, [
                             /* No_padding */0,
                             /* String_literal */Block.__(11, [

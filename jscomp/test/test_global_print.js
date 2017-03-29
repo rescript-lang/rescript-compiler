@@ -1,6 +1,6 @@
 'use strict';
 
-var Hashtbl = require("../../lib/js/hashtbl");
+var Hashtbl = require("../../lib/js/hashtbl.js");
 
 var List = /* module */[/* u */3];
 

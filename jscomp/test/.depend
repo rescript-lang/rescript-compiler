@@ -419,6 +419,7 @@ submodule_call.cmj : submodule.cmj
 swap_test.cmj : ../stdlib/printf.cmj mt.cmj ../stdlib/list.cmj \
     ../stdlib/int64.cmj ../stdlib/int32.cmj ../stdlib/format.cmj \
     ../stdlib/array.cmj
+switch_case_test.cmj : mt.cmj
 tailcall_inline_test.cmj : mt.cmj ../stdlib/array.cmj
 test.cmj :
 test_alias.cmj : test_global_print.cmj

@@ -1,6 +1,6 @@
 'use strict';
 
-var Caml_array = require("../../lib/js/caml_array");
+var Caml_array = require("../../lib/js/caml_array.js");
 
 function g(x) {
   return /* float array */[

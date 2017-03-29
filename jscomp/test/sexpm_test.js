@@ -1,10 +1,10 @@
 'use strict';
 
-var Mt     = require("./mt");
-var Block  = require("../../lib/js/block");
-var Curry  = require("../../lib/js/curry");
-var Sexpm  = require("./sexpm");
-var Format = require("../../lib/js/format");
+var Mt     = require("./mt.js");
+var Block  = require("../../lib/js/block.js");
+var Curry  = require("../../lib/js/curry.js");
+var Sexpm  = require("./sexpm.js");
+var Format = require("../../lib/js/format.js");
 
 var suites = [/* [] */0];
 
@@ -78,7 +78,7 @@ function print_or_error(fmt, x) {
 
 var a = Sexpm.parse_string("(x x gh 3 3)");
 
-eq('File "sexpm_test.ml", line 17, characters 7-14', /* tuple */[
+eq("File \"sexpm_test.ml\", line 17, characters 7-14", /* tuple */[
       /* `Ok */[
         17724,
         /* `List */[
@@ -119,7 +119,7 @@ eq('File "sexpm_test.ml", line 17, characters 7-14', /* tuple */[
       a
     ]);
 
-eq('File "sexpm_test.ml", line 21, characters 7-14', /* tuple */[
+eq("File \"sexpm_test.ml\", line 21, characters 7-14", /* tuple */[
       Curry._2(Format.asprintf(/* Format */[
                   /* Alpha */Block.__(15, [/* End_of_format */0]),
                   "%a"

@@ -1,6 +1,6 @@
 'use strict';
 
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
+var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function to_buffer(buff, ofs, len, _, _$1) {
   if (ofs < 0 || len < 0 || ofs > (buff.length - len | 0)) {

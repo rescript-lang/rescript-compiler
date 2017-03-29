@@ -1,22 +1,22 @@
 'use strict';
 
-var Sys                     = require("../../lib/js/sys");
-var Char                    = require("../../lib/js/char");
-var List                    = require("../../lib/js/list");
-var Block                   = require("../../lib/js/block");
-var Bytes                   = require("../../lib/js/bytes");
-var Curry                   = require("../../lib/js/curry");
-var Buffer                  = require("../../lib/js/buffer");
-var Format                  = require("../../lib/js/format");
-var Printf                  = require("../../lib/js/printf");
-var $$String                = require("../../lib/js/string");
-var Caml_io                 = require("../../lib/js/caml_io");
-var Printexc                = require("../../lib/js/printexc");
-var Caml_bytes              = require("../../lib/js/caml_bytes");
-var Caml_int32              = require("../../lib/js/caml_int32");
-var Pervasives              = require("../../lib/js/pervasives");
-var Caml_string             = require("../../lib/js/caml_string");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
+var Sys                     = require("../../lib/js/sys.js");
+var Char                    = require("../../lib/js/char.js");
+var List                    = require("../../lib/js/list.js");
+var Block                   = require("../../lib/js/block.js");
+var Bytes                   = require("../../lib/js/bytes.js");
+var Curry                   = require("../../lib/js/curry.js");
+var Buffer                  = require("../../lib/js/buffer.js");
+var Format                  = require("../../lib/js/format.js");
+var Printf                  = require("../../lib/js/printf.js");
+var $$String                = require("../../lib/js/string.js");
+var Caml_io                 = require("../../lib/js/caml_io.js");
+var Printexc                = require("../../lib/js/printexc.js");
+var Caml_bytes              = require("../../lib/js/caml_bytes.js");
+var Caml_int32              = require("../../lib/js/caml_int32.js");
+var Pervasives              = require("../../lib/js/pervasives.js");
+var Caml_string             = require("../../lib/js/caml_string.js");
+var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function _with_in(filename, f) {
   var ic = Pervasives.open_in_bin(filename);
@@ -140,7 +140,7 @@ function to_buf(b, t) {
                                 ])
                             ])
                         ]),
-                      '"%s"'
+                      "\"%s\""
                     ]), $$String.escaped(s));
     } else {
       return Buffer.add_string(b, s);
@@ -242,7 +242,7 @@ function print(fmt, t) {
                                 ])
                             ])
                         ]),
-                      '"%s"'
+                      "\"%s\""
                     ]), $$String.escaped(s));
     } else {
       return Format.pp_print_string(fmt, s);
@@ -292,7 +292,7 @@ function print_noindent(fmt, t) {
                                 ])
                             ])
                         ]),
-                      '"%s"'
+                      "\"%s\""
                     ]), $$String.escaped(s));
     } else {
       return Format.pp_print_string(fmt, s);

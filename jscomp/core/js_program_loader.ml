@@ -84,7 +84,7 @@ let string_of_module_id ~output_prefix
       | Ml  -> 
         let id = x.id in
         let modulename = String.uncapitalize id.name in
-        let js_file = Printf.sprintf "%s.js" modulename in
+        let js_file =  modulename ^ Literals.suffix_js in
         let rebase different_package package_dir dep =
           let current_unit_dir =
             `Dir (Js_config.get_output_dir ~pkg_dir:package_dir module_system output_prefix) in
@@ -97,21 +97,16 @@ let string_of_module_id ~output_prefix
           Js_config.get_current_package_name_and_path module_system  
         in
         begin match module_system,  dependency_pkg_info, current_pkg_info with
-          | _, NotFound , _ -> 
-            Ext_pervasives.failwithf ~loc:__LOC__ 
-              " @[dependent module is not found while %s not in search path - compiling %s @] "
-              js_file !Location.input_name 
+          | _, NotFound , _ 
+            -> 
+            Bs_exception.error (Missing_ml_dependency js_file)
           | Goog, (Empty | Package_script _), _ 
             -> 
-            Ext_pervasives.failwithf ~loc:__LOC__ 
-              " @[%s was not compiled with goog support  in search path - while compiling %s @] "
-              js_file !Location.input_name 
+            Bs_exception.error (Dependency_script_module_dependent_not js_file)
           | (AmdJS | NodeJS | Es6 | Es6_global | AmdJS_global),
             ( Empty | Package_script _) ,
             Found _  -> 
-            Ext_pervasives.failwithf ~loc:__LOC__
-              "@[dependency %s was compiled in script mode - while compiling %s in package mode @]"
-              js_file !Location.input_name              
+            Bs_exception.error (Dependency_script_module_dependent_not js_file)
           | Goog , Found (package_name, x), _  -> 
             package_name  ^ "." ^  String.uncapitalize id.name
           | (AmdJS | NodeJS| Es6 | Es6_global|AmdJS_global),
@@ -122,11 +117,11 @@ let string_of_module_id ~output_prefix
             Found(current_package, path) -> 
             if  current_package = package_name then 
               let package_dir = Lazy.force Ext_filename.package_dir in
-              rebase false package_dir (`File (package_dir // x // modulename)) 
+              rebase false package_dir (`File (package_dir // x // js_file)) 
             else 
               begin match module_system with 
               | AmdJS | NodeJS | Es6 -> 
-                package_name // x // modulename
+                package_name // x // js_file
               | Goog -> assert false (* see above *)
               | Es6_global 
               | AmdJS_global -> 
@@ -140,7 +135,7 @@ let string_of_module_id ~output_prefix
                     (Js_config.get_output_dir ~pkg_dir:(Lazy.force Ext_filename.package_dir)
                        module_system output_prefix)
                     ((Filename.dirname 
-                        (Filename.dirname (Filename.dirname cmj_path))) // x // modulename)              
+                        (Filename.dirname (Filename.dirname cmj_path))) // x // js_file)              
                 end
               end
           | (AmdJS | NodeJS | Es6 | AmdJS_global | Es6_global), Found(package_name, x), 
@@ -149,12 +144,12 @@ let string_of_module_id ~output_prefix
             if current_package = package_name then 
               let package_dir = Lazy.force Ext_filename.package_dir in
               rebase false package_dir (`File (
-                  package_dir // x // modulename)) 
+                  package_dir // x // js_file)) 
             else 
-              package_name // x // modulename
+              package_name // x // js_file
           | (AmdJS | NodeJS | Es6 | AmdJS_global | Es6_global), 
             Found(package_name, x), Empty 
-            ->    package_name // x // modulename
+            ->    package_name // x // js_file
           |  (AmdJS | NodeJS | Es6 | AmdJS_global | Es6_global), 
              (Empty | Package_script _) , 
              (Empty  | Package_script _)
@@ -163,6 +158,9 @@ let string_of_module_id ~output_prefix
               | Some file -> 
                 let package_dir = Lazy.force Ext_filename.package_dir in
                 rebase true package_dir (`File file) 
+              (* Code path: when dependency is commonjs 
+                 while depedent is Empty or PackageScript
+              *)
               | None -> 
                 Bs_exception.error (Js_not_found js_file)
             end

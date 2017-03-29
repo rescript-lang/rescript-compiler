@@ -1,7 +1,7 @@
 'use strict';
 
-var Curry      = require("../../lib/js/curry");
-var Caml_array = require("../../lib/js/caml_array");
+var Curry      = require("../../lib/js/curry.js");
+var Caml_array = require("../../lib/js/caml_array.js");
 
 function f(_n, _acc) {
   while(true) {

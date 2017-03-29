@@ -1,6 +1,6 @@
 'use strict';
 
-var Simple_derive_test = require("./simple_derive_test");
+var Simple_derive_test = require("./simple_derive_test.js");
 
 var hh = 3;
 

@@ -1,10 +1,10 @@
 'use strict';
 
-var Mt          = require("./mt");
-var Block       = require("../../lib/js/block");
-var Curry       = require("../../lib/js/curry");
-var Caml_int32  = require("../../lib/js/caml_int32");
-var Caml_module = require("../../lib/js/caml_module");
+var Mt          = require("./mt.js");
+var Block       = require("../../lib/js/block.js");
+var Curry       = require("../../lib/js/curry.js");
+var Caml_int32  = require("../../lib/js/caml_int32.js");
+var Caml_module = require("../../lib/js/caml_module.js");
 
 var suites = [/* [] */0];
 
@@ -66,10 +66,10 @@ var Fact = /* module */[
   /* fact */fact$1
 ];
 
-eq('File "recursive_module_test.ml", line 30, characters 5-12', 120, Curry._1(fact$1, 5));
+eq("File \"recursive_module_test.ml\", line 30, characters 5-12", 120, Curry._1(fact$1, 5));
 
 add(/* tuple */[
-      'File "recursive_module_test.ml", line 34, characters 7-14',
+      "File \"recursive_module_test.ml\", line 34, characters 7-14",
       function () {
         return /* ThrowAny */Block.__(7, [function () {
                     Curry._1(Int3[/* u */0], 3);

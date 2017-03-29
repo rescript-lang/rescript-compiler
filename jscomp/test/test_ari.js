@@ -2,8 +2,8 @@
 
 var U     = require("U");
 var VV    = require("VV");
-var List  = require("../../lib/js/list");
-var Curry = require("../../lib/js/curry");
+var List  = require("../../lib/js/list.js");
+var Curry = require("../../lib/js/curry.js");
 
 function f(x) {
   return function (param) {

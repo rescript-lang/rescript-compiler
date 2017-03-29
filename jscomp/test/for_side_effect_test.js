@@ -1,7 +1,7 @@
 'use strict';
 
-var Mt    = require("./mt");
-var Block = require("../../lib/js/block");
+var Mt    = require("./mt.js");
+var Block = require("../../lib/js/block.js");
 
 function tst() {
   for(var i = (console.log("hi"), 0) ,i_finish = (console.log("hello"), 3); i <= i_finish; ++i){

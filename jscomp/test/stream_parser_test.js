@@ -1,13 +1,13 @@
 'use strict';
 
-var Mt              = require("./mt");
-var Block           = require("../../lib/js/block");
-var Curry           = require("../../lib/js/curry");
-var Queue           = require("../../lib/js/queue");
-var Genlex          = require("../../lib/js/genlex");
-var Stream          = require("../../lib/js/stream");
-var Caml_int32      = require("../../lib/js/caml_int32");
-var Caml_exceptions = require("../../lib/js/caml_exceptions");
+var Mt              = require("./mt.js");
+var Block           = require("../../lib/js/block.js");
+var Curry           = require("../../lib/js/curry.js");
+var Queue           = require("../../lib/js/queue.js");
+var Genlex          = require("../../lib/js/genlex.js");
+var Stream          = require("../../lib/js/stream.js");
+var Caml_int32      = require("../../lib/js/caml_int32.js");
+var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 
 var Parse_error = Caml_exceptions.create("Stream_parser_test.Parse_error");
 
@@ -271,7 +271,7 @@ function eq(loc, x, y) {
 
 var match = parse(token(Stream.of_string("1 + 2 + (3  - 2) * 3 * 3  - 2 a")));
 
-eq('File "stream_parser_test.ml", line 132, characters 5-12', /* tuple */[
+eq("File \"stream_parser_test.ml\", line 132, characters 5-12", /* tuple */[
       match[0],
       match[1]
     ], /* tuple */[
@@ -282,7 +282,7 @@ eq('File "stream_parser_test.ml", line 132, characters 5-12', /* tuple */[
       ]
     ]);
 
-eq('File "stream_parser_test.ml", line 133, characters 5-12', /* tuple */[
+eq("File \"stream_parser_test.ml\", line 133, characters 5-12", /* tuple */[
       2,
       /* :: */[
         /* Kwd */Block.__(0, ["=="]),
@@ -290,7 +290,7 @@ eq('File "stream_parser_test.ml", line 133, characters 5-12', /* tuple */[
       ]
     ], parse(token(Stream.of_string("3 - 2  - 1"))));
 
-eq('File "stream_parser_test.ml", line 134, characters 5-12', /* tuple */[
+eq("File \"stream_parser_test.ml\", line 134, characters 5-12", /* tuple */[
       0,
       /* :: */[
         /* Kwd */Block.__(0, ["=="]),

@@ -1,8 +1,8 @@
 'use strict';
 
-var Mt    = require("./mt");
+var Mt    = require("./mt.js");
 var Fs    = require("fs");
-var Block = require("../../lib/js/block");
+var Block = require("../../lib/js/block.js");
 
 var suites = [/* [] */0];
 
@@ -59,13 +59,13 @@ var vv = /* int array */[
   hey_int(4)
 ];
 
-eq('File "poly_variant_test.ml", line 58, characters 5-12', vv, /* int array */[
+eq("File \"poly_variant_test.ml\", line 58, characters 5-12", vv, /* int array */[
       3,
       0,
       4
     ]);
 
-eq('File "poly_variant_test.ml", line 59, characters 5-12', /* tuple */[
+eq("File \"poly_variant_test.ml\", line 59, characters 5-12", /* tuple */[
       hey_int(5),
       hey_int(6)
     ], /* tuple */[
@@ -73,7 +73,7 @@ eq('File "poly_variant_test.ml", line 59, characters 5-12', /* tuple */[
       6
     ]);
 
-eq('File "poly_variant_test.ml", line 60, characters 5-12', uu, /* array */[
+eq("File \"poly_variant_test.ml\", line 60, characters 5-12", uu, /* array */[
       "on_open",
       "on_closed",
       "in"

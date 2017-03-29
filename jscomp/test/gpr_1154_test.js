@@ -1,10 +1,10 @@
 'use strict';
 
-var Mt         = require("./mt");
-var Block      = require("../../lib/js/block");
-var Int64      = require("../../lib/js/int64");
-var Caml_int64 = require("../../lib/js/caml_int64");
-var Pervasives = require("../../lib/js/pervasives");
+var Mt         = require("./mt.js");
+var Block      = require("../../lib/js/block.js");
+var Int64      = require("../../lib/js/int64.js");
+var Caml_int64 = require("../../lib/js/caml_int64.js");
+var Pervasives = require("../../lib/js/pervasives.js");
 
 var suites = [/* [] */0];
 
@@ -49,7 +49,7 @@ function g2(x) {
 
 var a = Caml_int64.or_(Int64.one, (v[0] = v[0] + 1 | 0, Int64.one));
 
-eq('File "gpr_1154_test.ml", line 27, characters 12-19', v[0], 1);
+eq("File \"gpr_1154_test.ml\", line 27, characters 12-19", v[0], 1);
 
 Mt.from_pair_suites("gpr_1154_test.ml", suites[0]);
 

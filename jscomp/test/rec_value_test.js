@@ -1,12 +1,12 @@
 'use strict';
 
-var Mt                      = require("./mt");
-var List                    = require("../../lib/js/list");
-var Block                   = require("../../lib/js/block");
-var Curry                   = require("../../lib/js/curry");
-var Caml_obj                = require("../../lib/js/caml_obj");
-var CamlinternalLazy        = require("../../lib/js/camlinternalLazy");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
+var Mt                      = require("./mt.js");
+var List                    = require("../../lib/js/list.js");
+var Block                   = require("../../lib/js/block.js");
+var Curry                   = require("../../lib/js/curry.js");
+var Caml_obj                = require("../../lib/js/caml_obj.js");
+var CamlinternalLazy        = require("../../lib/js/camlinternalLazy.js");
+var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var x = [];
 
@@ -303,7 +303,7 @@ var suites_001 = /* :: */[
     ],
     /* :: */[
       /* tuple */[
-        'File "rec_value_test.ml", line 111, characters 2-9',
+        "File \"rec_value_test.ml\", line 111, characters 2-9",
         function () {
           return /* Eq */Block.__(0, [
                     /* :: */[
@@ -319,7 +319,7 @@ var suites_001 = /* :: */[
       ],
       /* :: */[
         /* tuple */[
-          'File "rec_value_test.ml", line 114, characters 2-9',
+          "File \"rec_value_test.ml\", line 114, characters 2-9",
           function () {
             return /* Eq */Block.__(0, [
                       /* :: */[
@@ -335,7 +335,7 @@ var suites_001 = /* :: */[
         ],
         /* :: */[
           /* tuple */[
-            'File "rec_value_test.ml", line 117, characters 2-9',
+            "File \"rec_value_test.ml\", line 117, characters 2-9",
             function () {
               return /* Eq */Block.__(0, [
                         /* :: */[
@@ -354,7 +354,7 @@ var suites_001 = /* :: */[
           ],
           /* :: */[
             /* tuple */[
-              'File "rec_value_test.ml", line 120, characters 2-9',
+              "File \"rec_value_test.ml\", line 120, characters 2-9",
               function () {
                 return /* Eq */Block.__(0, [
                           /* :: */[
@@ -376,7 +376,7 @@ var suites_001 = /* :: */[
             ],
             /* :: */[
               /* tuple */[
-                'File "rec_value_test.ml", line 123, characters 2-9',
+                "File \"rec_value_test.ml\", line 123, characters 2-9",
                 function () {
                   return /* Eq */Block.__(0, [
                             /* :: */[
@@ -392,7 +392,7 @@ var suites_001 = /* :: */[
               ],
               /* :: */[
                 /* tuple */[
-                  'File "rec_value_test.ml", line 126, characters 2-9',
+                  "File \"rec_value_test.ml\", line 126, characters 2-9",
                   function () {
                     return /* Eq */Block.__(0, [
                               3,
@@ -402,7 +402,7 @@ var suites_001 = /* :: */[
                 ],
                 /* :: */[
                   /* tuple */[
-                    'File "rec_value_test.ml", line 129, characters 2-9',
+                    "File \"rec_value_test.ml\", line 129, characters 2-9",
                     function () {
                       if (rec_variant_b.tag) {
                         throw [
@@ -423,7 +423,7 @@ var suites_001 = /* :: */[
                   ],
                   /* :: */[
                     /* tuple */[
-                      'File "rec_value_test.ml", line 134, characters 2-9',
+                      "File \"rec_value_test.ml\", line 134, characters 2-9",
                       function () {
                         if (rec_variant_a.tag) {
                           return /* Eq */Block.__(0, [

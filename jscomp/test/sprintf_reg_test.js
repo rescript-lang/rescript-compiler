@@ -1,10 +1,10 @@
 'use strict';
 
-var Mt        = require("./mt");
-var Block     = require("../../lib/js/block");
-var Curry     = require("../../lib/js/curry");
-var Printf    = require("../../lib/js/printf");
-var Mt_global = require("./mt_global");
+var Mt        = require("./mt.js");
+var Block     = require("../../lib/js/block.js");
+var Curry     = require("../../lib/js/curry.js");
+var Printf    = require("../../lib/js/printf.js");
+var Mt_global = require("./mt_global.js");
 
 var suites = [/* [] */0];
 
@@ -35,7 +35,7 @@ var s = Curry._1(Printf.sprintf(/* Format */[
       "32%s"
     ]);
 
-eq('File "sprintf_reg_test.ml", line 8, characters 5-12', /* tuple */[
+eq("File \"sprintf_reg_test.ml\", line 8, characters 5-12", /* tuple */[
       s,
       "%s."
     ]);
@@ -66,7 +66,7 @@ var s$1 = Curry._2(Printf.sprintf(/* Format */[
       "spells one %s"
     ]);
 
-eq('File "sprintf_reg_test.ml", line 14, characters 5-12', /* tuple */[
+eq("File \"sprintf_reg_test.ml\", line 14, characters 5-12", /* tuple */[
       s$1,
       "1 %s"
     ]);

@@ -1,8 +1,8 @@
 'use strict';
 
-var Caml_oo_curry           = require("../../lib/js/caml_oo_curry");
-var CamlinternalOO          = require("../../lib/js/camlinternalOO");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
+var Caml_oo_curry           = require("../../lib/js/caml_oo_curry.js");
+var CamlinternalOO          = require("../../lib/js/camlinternalOO.js");
+var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var shared = ["add"];
 

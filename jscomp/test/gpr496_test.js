@@ -1,8 +1,8 @@
 'use strict';
 
-var Mt       = require("./mt");
-var Block    = require("../../lib/js/block");
-var Caml_obj = require("../../lib/js/caml_obj");
+var Mt       = require("./mt.js");
+var Block    = require("../../lib/js/block.js");
+var Caml_obj = require("../../lib/js/caml_obj.js");
 
 var suites = [/* [] */0];
 
@@ -71,7 +71,7 @@ var u = /* tuple */[
   u_007
 ];
 
-eq('File "gpr496_test.ml", line 32, characters 12-19', expected, u);
+eq("File \"gpr496_test.ml\", line 32, characters 12-19", expected, u);
 
 Mt.from_pair_suites("gpr496_test.ml", suites[0]);
 

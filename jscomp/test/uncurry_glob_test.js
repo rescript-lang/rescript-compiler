@@ -1,6 +1,6 @@
 'use strict';
 
-var Caml_utils = require("../../lib/js/caml_utils");
+var Caml_utils = require("../../lib/js/caml_utils.js");
 
 var v = Caml_utils.repeat(100, "x");
 

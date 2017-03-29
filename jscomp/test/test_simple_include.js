@@ -1,6 +1,6 @@
 'use strict';
 
-var $$Array = require("../../lib/js/array");
+var $$Array = require("../../lib/js/array.js");
 
 var v = [32];
 

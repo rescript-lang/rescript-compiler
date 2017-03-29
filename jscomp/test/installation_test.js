@@ -1,12 +1,12 @@
 'use strict';
 
-var Mt                      = require("./mt");
+var Mt                      = require("./mt.js");
 var Fs                      = require("fs");
 var Path                    = require("path");
-var Block                   = require("../../lib/js/block");
+var Block                   = require("../../lib/js/block.js");
 var Child_process           = require("child_process");
-var App_root_finder         = require("./app_root_finder");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
+var App_root_finder         = require("./app_root_finder.js");
+var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var suites = [/* [] */0];
 

@@ -1,7 +1,7 @@
 'use strict';
 
-var Mt    = require("./mt");
-var Block = require("../../lib/js/block");
+var Mt    = require("./mt.js");
+var Block = require("../../lib/js/block.js");
 
 var suites = [/* [] */0];
 
@@ -29,15 +29,15 @@ function eq(loc, x, y) {
             });
 }
 
-eq('File "js_cast_test.ml", line 13, characters 12-19', /* true */1, 1);
+eq("File \"js_cast_test.ml\", line 13, characters 12-19", /* true */1, 1);
 
-eq('File "js_cast_test.ml", line 15, characters 12-19', /* false */0, 0);
+eq("File \"js_cast_test.ml\", line 15, characters 12-19", /* false */0, 0);
 
-eq('File "js_cast_test.ml", line 17, characters 12-19', 0, 0.0);
+eq("File \"js_cast_test.ml\", line 17, characters 12-19", 0, 0.0);
 
-eq('File "js_cast_test.ml", line 19, characters 12-19', 1, 1.0);
+eq("File \"js_cast_test.ml\", line 19, characters 12-19", 1, 1.0);
 
-eq('File "js_cast_test.ml", line 21, characters 12-19', 123456789, 123456789.0);
+eq("File \"js_cast_test.ml\", line 21, characters 12-19", 123456789, 123456789.0);
 
 Mt.from_pair_suites("js_cast_test.ml", suites[0]);
 

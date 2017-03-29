@@ -1,16 +1,16 @@
 'use strict';
 
-var Mt          = require("./mt");
-var $$Array     = require("../../lib/js/array");
-var Block       = require("../../lib/js/block");
-var Bytes       = require("../../lib/js/bytes");
-var Curry       = require("../../lib/js/curry");
-var Digest      = require("../../lib/js/digest");
-var Printf      = require("../../lib/js/printf");
-var Ext_array   = require("./ext_array");
-var Caml_array  = require("../../lib/js/caml_array");
-var Pervasives  = require("../../lib/js/pervasives");
-var Caml_string = require("../../lib/js/caml_string");
+var Mt          = require("./mt.js");
+var $$Array     = require("../../lib/js/array.js");
+var Block       = require("../../lib/js/block.js");
+var Bytes       = require("../../lib/js/bytes.js");
+var Curry       = require("../../lib/js/curry.js");
+var Digest      = require("../../lib/js/digest.js");
+var Printf      = require("../../lib/js/printf.js");
+var Ext_array   = require("./ext_array.js");
+var Caml_array  = require("../../lib/js/caml_array.js");
+var Pervasives  = require("../../lib/js/pervasives.js");
+var Caml_string = require("../../lib/js/caml_string.js");
 
 function f(x) {
   return Digest.to_hex(Digest.string(x));
@@ -151,7 +151,7 @@ var ref = /* array */[
 
 Mt.from_pair_suites("digest_test.ml", Pervasives.$at(/* :: */[
           /* tuple */[
-            'File "digest_test.ml", line 6, characters 4-11',
+            "File \"digest_test.ml\", line 6, characters 4-11",
             function () {
               return /* Eq */Block.__(0, [
                         Digest.to_hex(Digest.string("value")),
@@ -161,7 +161,7 @@ Mt.from_pair_suites("digest_test.ml", Pervasives.$at(/* :: */[
           ],
           /* :: */[
             /* tuple */[
-              'File "digest_test.ml", line 7, characters 4-11',
+              "File \"digest_test.ml\", line 7, characters 4-11",
               function () {
                 return /* Eq */Block.__(0, [
                           Digest.to_hex(Digest.string("The quick brown fox jumps over the lazy dog")),
@@ -171,7 +171,7 @@ Mt.from_pair_suites("digest_test.ml", Pervasives.$at(/* :: */[
             ],
             /* :: */[
               /* tuple */[
-                'File "digest_test.ml", line 9, characters 4-11',
+                "File \"digest_test.ml\", line 9, characters 4-11",
                 function () {
                   return /* Eq */Block.__(0, [
                             Digest.to_hex(Digest.string("The quick brown fox jumps over the lazy dog.")),
@@ -181,7 +181,7 @@ Mt.from_pair_suites("digest_test.ml", Pervasives.$at(/* :: */[
               ],
               /* :: */[
                 /* tuple */[
-                  'File "digest_test.ml", line 11, characters 4-11',
+                  "File \"digest_test.ml\", line 11, characters 4-11",
                   function () {
                     return /* Eq */Block.__(0, [
                               Digest.to_hex(Digest.string("")),
@@ -191,7 +191,7 @@ Mt.from_pair_suites("digest_test.ml", Pervasives.$at(/* :: */[
                 ],
                 /* :: */[
                   /* tuple */[
-                    'File "digest_test.ml", line 12, characters 4-11',
+                    "File \"digest_test.ml\", line 12, characters 4-11",
                     function () {
                       return /* Eq */Block.__(0, [
                                 Digest.to_hex(Digest.string("The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.")),
@@ -201,7 +201,7 @@ Mt.from_pair_suites("digest_test.ml", Pervasives.$at(/* :: */[
                   ],
                   /* :: */[
                     /* tuple */[
-                      'File "digest_test.ml", line 13, characters 4-11',
+                      "File \"digest_test.ml\", line 13, characters 4-11",
                       function () {
                         return /* Eq */Block.__(0, [
                                   Digest.to_hex(Digest.string("The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.")),

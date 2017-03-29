@@ -1,9 +1,9 @@
 'use strict';
 
-var Mt           = require("./mt");
-var Block        = require("../../lib/js/block");
-var Curry        = require("../../lib/js/curry");
-var Gpr_1423_nav = require("./gpr_1423_nav");
+var Mt           = require("./mt.js");
+var Block        = require("../../lib/js/block.js");
+var Curry        = require("../../lib/js/curry.js");
+var Gpr_1423_nav = require("./gpr_1423_nav.js");
 
 var suites = [/* [] */0];
 
@@ -41,7 +41,7 @@ function foo2(f) {
   return Curry._2(f, "a1", /* () */0);
 }
 
-eq('File "gpr_1423_app_test.ml", line 18, characters 7-14', Curry._1(function (param) {
+eq("File \"gpr_1423_app_test.ml\", line 18, characters 7-14", Curry._1(function (param) {
             return function (param$1) {
               return Gpr_1423_nav.busted(param, "a2", param$1);
             };

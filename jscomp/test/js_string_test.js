@@ -1,8 +1,8 @@
 'use strict';
 
-var Mt           = require("./mt");
-var Block        = require("../../lib/js/block");
-var Js_primitive = require("../../lib/js/js_primitive");
+var Mt           = require("./mt.js");
+var Block        = require("../../lib/js/block.js");
+var Js_primitive = require("../../lib/js/js_primitive.js");
 
 var suites_000 = /* tuple */[
   "make",
@@ -564,7 +564,7 @@ var suites_001 = /* :: */[
                                                                                                         "anchor",
                                                                                                         function () {
                                                                                                           return /* Eq */Block.__(0, [
-                                                                                                                    '<a name="bar">foo</a>',
+                                                                                                                    "<a name=\"bar\">foo</a>",
                                                                                                                     "foo".anchor("bar")
                                                                                                                   ]);
                                                                                                         }
@@ -574,14 +574,14 @@ var suites_001 = /* :: */[
                                                                                                           "link",
                                                                                                           function () {
                                                                                                             return /* Eq */Block.__(0, [
-                                                                                                                      '<a href="https://reason.ml">foo</a>',
+                                                                                                                      "<a href=\"https://reason.ml\">foo</a>",
                                                                                                                       "foo".link("https://reason.ml")
                                                                                                                     ]);
                                                                                                           }
                                                                                                         ],
                                                                                                         /* :: */[
                                                                                                           /* tuple */[
-                                                                                                            'File "js_string_test.ml", line 211, characters 4-11',
+                                                                                                            "File \"js_string_test.ml\", line 211, characters 4-11",
                                                                                                             function () {
                                                                                                               return /* Ok */Block.__(4, [+"ab".includes("a")]);
                                                                                                             }

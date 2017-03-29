@@ -1,9 +1,9 @@
 'use strict';
 
-var Mt           = require("./mt");
-var Block        = require("../../lib/js/block");
-var Js_null      = require("../../lib/js/js_null");
-var Js_primitive = require("../../lib/js/js_primitive");
+var Mt           = require("./mt.js");
+var Block        = require("../../lib/js/block.js");
+var Js_null      = require("../../lib/js/js_null.js");
+var Js_primitive = require("../../lib/js/js_primitive.js");
 
 var suites_000 = /* tuple */[
   "to_opt - empty",

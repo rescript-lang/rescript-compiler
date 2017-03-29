@@ -1,6 +1,6 @@
 'use strict';
 
-var Caml_string = require("../../lib/js/caml_string");
+var Caml_string = require("../../lib/js/caml_string.js");
 
 var f = Caml_string.bytes_to_string;
 

@@ -1,6 +1,6 @@
 'use strict';
 
-var Js_primitive = require("../../lib/js/js_primitive");
+var Js_primitive = require("../../lib/js/js_primitive.js");
 
 function Make() {
   var opt_get = function (f, i) {

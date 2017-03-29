@@ -1,7 +1,7 @@
 'use strict';
 
 var UI      = require("@ui");
-var Curry   = require("../../lib/js/curry");
+var Curry   = require("../../lib/js/curry.js");
 var BUI     = require("@blp/ui");
 var Runtime = require("@runtime");
 

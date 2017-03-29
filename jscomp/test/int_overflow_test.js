@@ -1,10 +1,10 @@
 'use strict';
 
-var Mt          = require("./mt");
-var Block       = require("../../lib/js/block");
-var Int32       = require("../../lib/js/int32");
-var Caml_int32  = require("../../lib/js/caml_int32");
-var Caml_string = require("../../lib/js/caml_string");
+var Mt          = require("./mt.js");
+var Block       = require("../../lib/js/block.js");
+var Int32       = require("../../lib/js/int32.js");
+var Caml_int32  = require("../../lib/js/caml_int32.js");
+var Caml_string = require("../../lib/js/caml_string.js");
 
 function hash_variant(s) {
   var accu = 0;
@@ -101,7 +101,7 @@ Mt.from_pair_suites("int_overflow_test.ml", /* :: */[
                 ],
                 /* :: */[
                   /* tuple */[
-                    'File "int_overflow_test.ml", line 37, characters 2-9',
+                    "File \"int_overflow_test.ml\", line 37, characters 2-9",
                     function () {
                       return /* Eq */Block.__(0, [
                                 hash_variant2("xxyyzzuuxxzzyy00112233"),
@@ -111,7 +111,7 @@ Mt.from_pair_suites("int_overflow_test.ml", /* :: */[
                   ],
                   /* :: */[
                     /* tuple */[
-                      'File "int_overflow_test.ml", line 38, characters 2-9',
+                      "File \"int_overflow_test.ml\", line 38, characters 2-9",
                       function () {
                         return /* Eq */Block.__(0, [
                                   hash_variant2("xxyyzxzzyy"),
@@ -161,7 +161,7 @@ Mt.from_pair_suites("int_overflow_test.ml", /* :: */[
                             ],
                             /* :: */[
                               /* tuple */[
-                                'File "int_overflow_test.ml", line 44, characters 3-10',
+                                "File \"int_overflow_test.ml\", line 44, characters 3-10",
                                 function () {
                                   return /* Eq */Block.__(0, [
                                             Number("3") | 0,
@@ -171,7 +171,7 @@ Mt.from_pair_suites("int_overflow_test.ml", /* :: */[
                               ],
                               /* :: */[
                                 /* tuple */[
-                                  'File "int_overflow_test.ml", line 46, characters 3-10',
+                                  "File \"int_overflow_test.ml\", line 46, characters 3-10",
                                   function () {
                                     return /* Eq */Block.__(0, [
                                               Number("3.2") | 0,

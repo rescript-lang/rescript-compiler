@@ -1,10 +1,10 @@
 'use strict';
 
-var Mt                      = require("./mt");
-var Lazy                    = require("../../lib/js/lazy");
-var Block                   = require("../../lib/js/block");
-var CamlinternalLazy        = require("../../lib/js/camlinternalLazy");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
+var Mt                      = require("./mt.js");
+var Lazy                    = require("../../lib/js/lazy.js");
+var Block                   = require("../../lib/js/block.js");
+var CamlinternalLazy        = require("../../lib/js/camlinternalLazy.js");
+var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var u = [3];
 

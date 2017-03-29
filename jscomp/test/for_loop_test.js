@@ -1,11 +1,11 @@
 'use strict';
 
-var List       = require("../../lib/js/list");
-var $$Array    = require("../../lib/js/array");
-var Block      = require("../../lib/js/block");
-var Curry      = require("../../lib/js/curry");
-var Caml_array = require("../../lib/js/caml_array");
-var Caml_int32 = require("../../lib/js/caml_int32");
+var List       = require("../../lib/js/list.js");
+var $$Array    = require("../../lib/js/array.js");
+var Block      = require("../../lib/js/block.js");
+var Curry      = require("../../lib/js/curry.js");
+var Caml_array = require("../../lib/js/caml_array.js");
+var Caml_int32 = require("../../lib/js/caml_int32.js");
 
 function for_3(x) {
   var v = [0];

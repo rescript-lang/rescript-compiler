@@ -1,13 +1,13 @@
 'use strict';
 
-var Mt                      = require("./mt");
-var List                    = require("../../lib/js/list");
-var Block                   = require("../../lib/js/block");
-var Curry                   = require("../../lib/js/curry");
-var Scanf                   = require("../../lib/js/scanf");
-var Printf                  = require("../../lib/js/printf");
-var Mt_global               = require("./mt_global");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
+var Mt                      = require("./mt.js");
+var List                    = require("../../lib/js/list.js");
+var Block                   = require("../../lib/js/block.js");
+var Curry                   = require("../../lib/js/curry.js");
+var Scanf                   = require("../../lib/js/scanf.js");
+var Printf                  = require("../../lib/js/printf.js");
+var Mt_global               = require("./mt_global.js");
+var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var suites = [/* [] */0];
 
@@ -94,7 +94,7 @@ function scan_int_list(ib) {
   return List.rev(scan_rest(ib, /* [] */0));
 }
 
-eq('File "scanf_reference_error_regression_test.ml", line 36, characters 5-12', /* tuple */[
+eq("File \"scanf_reference_error_regression_test.ml\", line 36, characters 5-12", /* tuple */[
       scan_int_list(Curry._1(Scanf.Scanning[/* from_string */6], "[]")),
       /* [] */0
     ]);

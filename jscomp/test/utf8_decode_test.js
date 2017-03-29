@@ -1,12 +1,12 @@
 'use strict';
 
-var Mt                      = require("./mt");
-var List                    = require("../../lib/js/list");
-var Block                   = require("../../lib/js/block");
-var Curry                   = require("../../lib/js/curry");
-var Stream                  = require("../../lib/js/stream");
-var Caml_bytes              = require("../../lib/js/caml_bytes");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
+var Mt                      = require("./mt.js");
+var List                    = require("../../lib/js/list.js");
+var Block                   = require("../../lib/js/block.js");
+var Curry                   = require("../../lib/js/curry.js");
+var Stream                  = require("../../lib/js/stream.js");
+var Caml_bytes              = require("../../lib/js/caml_bytes.js");
+var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function classify(chr) {
   if (chr & 128) {
@@ -238,7 +238,7 @@ Stream.iter(add, utf8_decode(Stream.of_string("\xe4\xbd\xa0\xe5\xa5\xbdBuckleScr
 
 var codes = List.rev(v[0]);
 
-eq('File "utf8_decode_test.ml", line 125, characters 5-12', /* tuple */[
+eq("File \"utf8_decode_test.ml\", line 125, characters 5-12", /* tuple */[
       /* true */1,
       eq_list(function (x, y) {
             return +(x === y);

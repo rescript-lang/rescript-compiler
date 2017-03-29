@@ -1,14 +1,14 @@
 'use strict';
 
-var Mt             = require("./mt");
-var List           = require("../../lib/js/list");
-var Block          = require("../../lib/js/block");
-var Curry          = require("../../lib/js/curry");
-var Caml_array     = require("../../lib/js/caml_array");
-var Caml_int32     = require("../../lib/js/caml_int32");
-var Pervasives     = require("../../lib/js/pervasives");
-var Caml_oo_curry  = require("../../lib/js/caml_oo_curry");
-var CamlinternalOO = require("../../lib/js/camlinternalOO");
+var Mt             = require("./mt.js");
+var List           = require("../../lib/js/list.js");
+var Block          = require("../../lib/js/block.js");
+var Curry          = require("../../lib/js/curry.js");
+var Caml_array     = require("../../lib/js/caml_array.js");
+var Caml_int32     = require("../../lib/js/caml_int32.js");
+var Pervasives     = require("../../lib/js/pervasives.js");
+var Caml_oo_curry  = require("../../lib/js/caml_oo_curry.js");
+var CamlinternalOO = require("../../lib/js/camlinternalOO.js");
 
 var shared = [
   "bump",
@@ -109,7 +109,7 @@ var point = CamlinternalOO.make_class(shared$1, point_init);
 
 var p = Curry._2(point[0], 0, 7);
 
-eq('File "class3_test.ml", line 17, characters 12-19', Caml_oo_curry.js1(291546447, 1, p), 7);
+eq("File \"class3_test.ml\", line 17, characters 12-19", Caml_oo_curry.js1(291546447, 1, p), 7);
 
 function adjusted_point_init($$class) {
   var origin = CamlinternalOO.new_variable($$class, "");
@@ -146,7 +146,7 @@ var adjusted_point = CamlinternalOO.make_class(shared$4, adjusted_point_init);
 
 var tmp = Curry._2(adjusted_point[0], 0, 31);
 
-eq('File "class3_test.ml", line 28, characters 13-20', Caml_oo_curry.js1(291546447, 2, tmp), 30);
+eq("File \"class3_test.ml\", line 28, characters 13-20", Caml_oo_curry.js1(291546447, 2, tmp), 30);
 
 function new_init(obj_init, self, x_init) {
   return Curry._2(obj_init, self, Caml_int32.imul(x_init / 10 | 0, 10));
@@ -181,7 +181,7 @@ var adjusted_point2 = [
 
 var tmp$1 = Curry._2(adjusted_point2_000, 0, 31);
 
-eq('File "class3_test.ml", line 33, characters 12-19', Caml_oo_curry.js1(291546447, 3, tmp$1), 30);
+eq("File \"class3_test.ml\", line 33, characters 12-19", Caml_oo_curry.js1(291546447, 3, tmp$1), 30);
 
 function printable_point_init($$class) {
   var ids = CamlinternalOO.new_methods_variables($$class, shared$8, shared$5);
@@ -215,7 +215,7 @@ var printable_point = CamlinternalOO.make_class(shared$6, printable_point_init);
 
 var p$1 = Curry._2(printable_point[0], 0, 7);
 
-eq('File "class3_test.ml", line 49, characters 11-18', Caml_oo_curry.js1(-930392019, 4, p$1), 7);
+eq("File \"class3_test.ml\", line 49, characters 11-18", Caml_oo_curry.js1(-930392019, 4, p$1), 7);
 
 var ints = [/* [] */0];
 
@@ -285,7 +285,7 @@ function printable_point2_init($$class) {
         }
       ]);
   CamlinternalOO.add_initializer($$class, function (self$neg6) {
-        console.log('initializingFile "class3_test.ml", line 76, characters 50-57');
+        console.log("initializingFile \"class3_test.ml\", line 76, characters 50-57");
         return Caml_array.caml_array_set(v, 0, self$neg6[x]);
       });
   return function (_, self, x_init) {
@@ -300,7 +300,7 @@ var printable_point2 = CamlinternalOO.make_class(shared$6, printable_point2_init
 
 Curry._2(printable_point2[0], 0, 31);
 
-eq('File "class3_test.ml", line 81, characters 12-19', v, /* int array */[
+eq("File \"class3_test.ml\", line 81, characters 12-19", v, /* int array */[
       30,
       3
     ]);
@@ -361,7 +361,7 @@ Caml_oo_curry.js2(-933174511, 8, h, 32);
 
 var v$1 = Caml_oo_curry.js1(-792262820, 9, h);
 
-eq('File "class3_test.ml", line 107, characters 12-19', v$1, 32);
+eq("File \"class3_test.ml\", line 107, characters 12-19", v$1, 32);
 
 function abstract_point2_001($$class) {
   var ids = CamlinternalOO.new_methods_variables($$class, shared$2, shared$5);
@@ -412,7 +412,7 @@ Caml_oo_curry.js2(-933174511, 10, h$1, 32);
 
 var vv = Caml_oo_curry.js1(-792262820, 11, h$1);
 
-eq('File "class3_test.ml", line 128, characters 12-19', vv, 32);
+eq("File \"class3_test.ml\", line 128, characters 12-19", vv, 32);
 
 function restricted_point_init($$class) {
   var ids = CamlinternalOO.new_methods_variables($$class, [
@@ -457,7 +457,7 @@ Caml_oo_curry.js1(-1054863370, 12, p$2);
 
 var h$2 = Caml_oo_curry.js1(291546447, 13, p$2);
 
-eq('File "class3_test.ml", line 144, characters 12-19', h$2, 1);
+eq("File \"class3_test.ml\", line 144, characters 12-19", h$2, 1);
 
 function point_again_init($$class) {
   CamlinternalOO.get_method_label($$class, "move");
@@ -482,7 +482,7 @@ Caml_oo_curry.js1(-1054863370, 16, p$3);
 
 var hh = Caml_oo_curry.js1(291546447, 17, p$3);
 
-eq('File "class3_test.ml", line 161, characters 12-19', hh, 8);
+eq("File \"class3_test.ml\", line 161, characters 12-19", hh, 8);
 
 function point_again2_init($$class) {
   var inh = CamlinternalOO.inherits($$class, shared$5, 0, shared, restricted_point, 1);
@@ -506,7 +506,7 @@ Caml_oo_curry.js1(-1054863370, 20, p$4);
 
 var hhh = Caml_oo_curry.js1(291546447, 21, p$4);
 
-eq('File "class3_test.ml", line 177, characters 12-19', hhh, 35);
+eq("File \"class3_test.ml\", line 177, characters 12-19", hhh, 35);
 
 function point_again3_init($$class) {
   var move = CamlinternalOO.get_method_label($$class, "move");
@@ -533,7 +533,7 @@ Caml_oo_curry.js1(-1054863370, 24, p$5);
 
 var hhhh = Caml_oo_curry.js1(291546447, 25, p$5);
 
-eq('File "class3_test.ml", line 195, characters 12-19', hhhh, 305);
+eq("File \"class3_test.ml\", line 195, characters 12-19", hhhh, 305);
 
 Mt.from_pair_suites("class3_test.ml", suites[0]);
 

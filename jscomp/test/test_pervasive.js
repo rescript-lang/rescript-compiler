@@ -1,7 +1,7 @@
 'use strict';
 
-var List       = require("../../lib/js/list");
-var Pervasives = require("../../lib/js/pervasives");
+var List       = require("../../lib/js/list.js");
+var Pervasives = require("../../lib/js/pervasives.js");
 
 var Pervasives$1 = /* module */[
   /* length */List.length,

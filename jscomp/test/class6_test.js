@@ -1,13 +1,13 @@
 'use strict';
 
-var Mt                      = require("./mt");
-var Block                   = require("../../lib/js/block");
-var Curry                   = require("../../lib/js/curry");
-var Caml_obj                = require("../../lib/js/caml_obj");
-var Caml_oo_curry           = require("../../lib/js/caml_oo_curry");
-var CamlinternalOO          = require("../../lib/js/camlinternalOO");
-var Caml_exceptions         = require("../../lib/js/caml_exceptions");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
+var Mt                      = require("./mt.js");
+var Block                   = require("../../lib/js/block.js");
+var Curry                   = require("../../lib/js/curry.js");
+var Caml_obj                = require("../../lib/js/caml_obj.js");
+var Caml_oo_curry           = require("../../lib/js/caml_oo_curry.js");
+var CamlinternalOO          = require("../../lib/js/camlinternalOO.js");
+var Caml_exceptions         = require("../../lib/js/caml_exceptions.js");
+var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var shared = [
   "move",
@@ -217,7 +217,7 @@ var p$1 = Curry._2(functional_point[0], 0, 7);
 
 var tmp = Caml_oo_curry.js2(-933174511, 2, p$1, 3);
 
-eq('File "class6_test.ml", line 60, characters 5-12', /* tuple */[
+eq("File \"class6_test.ml\", line 60, characters 5-12", /* tuple */[
       7,
       10,
       7
@@ -268,7 +268,7 @@ var p$2 = Curry._2(bad_functional_point_000, 0, 7);
 
 var tmp$1 = Caml_oo_curry.js2(-933174511, 6, p$2, 3);
 
-eq('File "class6_test.ml", line 74, characters 5-12', /* tuple */[
+eq("File \"class6_test.ml\", line 74, characters 5-12", /* tuple */[
       7,
       10,
       7

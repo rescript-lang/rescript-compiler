@@ -1,7 +1,7 @@
 'use strict';
 
-var Mt    = require("./mt");
-var Block = require("../../lib/js/block");
+var Mt    = require("./mt.js");
+var Block = require("../../lib/js/block.js");
 
 var suites = [/* [] */0];
 
@@ -54,7 +54,7 @@ function hg(x) {
   return x.open + x.end | 0;
 }
 
-eq('File "method_name_test.ml", line 39, characters 12-19', 35, hg(h));
+eq("File \"method_name_test.ml\", line 39, characters 12-19", 35, hg(h));
 
 Mt.from_pair_suites("method_name_test.ml", suites[0]);
 

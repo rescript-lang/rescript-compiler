@@ -1,6 +1,6 @@
 'use strict';
 
-var Caml_exceptions = require("../../lib/js/caml_exceptions");
+var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 
 var U = Caml_exceptions.create("Test_common.U");
 

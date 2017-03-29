@@ -1,12 +1,12 @@
 'use strict';
 
-var Mt             = require("./mt");
-var List           = require("../../lib/js/list");
-var Block          = require("../../lib/js/block");
-var Curry          = require("../../lib/js/curry");
-var Pervasives     = require("../../lib/js/pervasives");
-var Caml_oo_curry  = require("../../lib/js/caml_oo_curry");
-var CamlinternalOO = require("../../lib/js/camlinternalOO");
+var Mt             = require("./mt.js");
+var List           = require("../../lib/js/list.js");
+var Block          = require("../../lib/js/block.js");
+var Curry          = require("../../lib/js/curry.js");
+var Pervasives     = require("../../lib/js/pervasives.js");
+var Caml_oo_curry  = require("../../lib/js/caml_oo_curry.js");
+var CamlinternalOO = require("../../lib/js/camlinternalOO.js");
 
 var shared = [
   "move",
@@ -117,7 +117,7 @@ var printable_colored_point = CamlinternalOO.make_class([
 
 var p = Curry._3(printable_colored_point[0], 0, 17, "red");
 
-eq('File "class5_test.ml", line 32, characters 12-19', Caml_oo_curry.js1(-930392019, 1, p), "(17, red)");
+eq("File \"class5_test.ml\", line 32, characters 12-19", Caml_oo_curry.js1(-930392019, 1, p), "(17, red)");
 
 function ref_init($$class) {
   var ids = CamlinternalOO.new_methods_variables($$class, [
@@ -156,7 +156,7 @@ Caml_oo_curry.js2(5741474, 2, r, 2);
 
 var v = Caml_oo_curry.js1(5144726, 3, r);
 
-eq('File "class5_test.ml", line 43, characters 12-19', v, 2);
+eq("File \"class5_test.ml\", line 43, characters 12-19", v, 2);
 
 function intlist_init($$class) {
   var l = CamlinternalOO.new_variable($$class, "");
@@ -193,7 +193,7 @@ var l = Curry._2(intlist[0], 0, /* :: */[
       ]
     ]);
 
-eq('File "class5_test.ml", line 54, characters 5-12', 6, Caml_oo_curry.js3(-1010803711, 4, l, function (x, y) {
+eq("File \"class5_test.ml\", line 54, characters 5-12", 6, Caml_oo_curry.js3(-1010803711, 4, l, function (x, y) {
           return x + y | 0;
         }, 0));
 
@@ -232,7 +232,7 @@ var l$1 = Curry._2(intlist2[0], 0, /* :: */[
       ]
     ]);
 
-eq('File "class5_test.ml", line 67, characters 5-12', /* tuple */[
+eq("File \"class5_test.ml\", line 67, characters 5-12", /* tuple */[
       6,
       "1 2 3 "
     ], /* tuple */[
@@ -303,7 +303,7 @@ var b = match_001;
 
 var a = match_000;
 
-eq('File "class5_test.ml", line 94, characters 5-12', /* tuple */[
+eq("File \"class5_test.ml\", line 94, characters 5-12", /* tuple */[
       5,
       2
     ], /* tuple */[

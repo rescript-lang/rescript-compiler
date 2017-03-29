@@ -1,8 +1,8 @@
 'use strict';
 
-var Caml_array              = require("../../lib/js/caml_array");
-var Caml_int32              = require("../../lib/js/caml_int32");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
+var Caml_array              = require("../../lib/js/caml_array.js");
+var Caml_int32              = require("../../lib/js/caml_int32.js");
+var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function $$eval(_bdd, vars) {
   while(true) {

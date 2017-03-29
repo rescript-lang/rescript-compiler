@@ -1,9 +1,9 @@
 'use strict';
 
-var Mt         = require("./mt");
-var List       = require("../../lib/js/list");
-var Block      = require("../../lib/js/block");
-var Ext_string = require("./ext_string");
+var Mt         = require("./mt.js");
+var List       = require("../../lib/js/list.js");
+var Block      = require("../../lib/js/block.js");
+var Ext_string = require("./ext_string.js");
 
 var suites_000 = /* tuple */[
   "split",

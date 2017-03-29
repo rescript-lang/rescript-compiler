@@ -1,14 +1,14 @@
 'use strict';
 
-var Mt          = require("./mt");
-var $$Array     = require("../../lib/js/array");
-var Block       = require("../../lib/js/block");
-var Curry       = require("../../lib/js/curry");
-var Buffer      = require("../../lib/js/buffer");
-var Format      = require("../../lib/js/format");
-var Mt_global   = require("./mt_global");
-var Pervasives  = require("../../lib/js/pervasives");
-var Float_array = require("./float_array");
+var Mt          = require("./mt.js");
+var $$Array     = require("../../lib/js/array.js");
+var Block       = require("../../lib/js/block.js");
+var Curry       = require("../../lib/js/curry.js");
+var Buffer      = require("../../lib/js/buffer.js");
+var Format      = require("../../lib/js/format.js");
+var Mt_global   = require("./mt_global.js");
+var Pervasives  = require("../../lib/js/pervasives.js");
+var Float_array = require("./float_array.js");
 
 var buf = Buffer.create(50);
 
@@ -64,7 +64,7 @@ function eq(f, a, b) {
   return Mt_global.collect_eq(test_id, suites, f, a, b);
 }
 
-eq('File "tfloat_record_test.ml", line 43, characters 5-12', Buffer.contents(buf), "1.\n1.\n2.\n3.\n\n1.\n2.\n3.\n4.\n5.\n6.\n7.\n8.\n9.\n0.\n1.\n2.\n3.\n4.\n5.\n6.\n7.\n8.\n9.\n0.\n1.\n2.\n3.\n4.\n5.\n6.\n7.\n8.\n9.\n0.\n1.\n2.\n3.\n4.\n5.\n6.\n7.\n8.\n9.\n0.\n\n");
+eq("File \"tfloat_record_test.ml\", line 43, characters 5-12", Buffer.contents(buf), "1.\n1.\n2.\n3.\n\n1.\n2.\n3.\n4.\n5.\n6.\n7.\n8.\n9.\n0.\n1.\n2.\n3.\n4.\n5.\n6.\n7.\n8.\n9.\n0.\n1.\n2.\n3.\n4.\n5.\n6.\n7.\n8.\n9.\n0.\n1.\n2.\n3.\n4.\n5.\n6.\n7.\n8.\n9.\n0.\n\n");
 
 Mt.from_pair_suites("tfloat_record_test.ml", suites[0]);
 

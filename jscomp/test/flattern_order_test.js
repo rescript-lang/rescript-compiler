@@ -1,7 +1,7 @@
 'use strict';
 
-var List     = require("../../lib/js/list");
-var Caml_obj = require("../../lib/js/caml_obj");
+var List     = require("../../lib/js/list.js");
+var Caml_obj = require("../../lib/js/caml_obj.js");
 
 var ys = [];
 
