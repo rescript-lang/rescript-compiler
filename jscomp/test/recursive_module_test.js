@@ -66,10 +66,10 @@ var Fact = /* module */[
   /* fact */fact$1
 ];
 
-eq('File "recursive_module_test.ml", line 30, characters 5-12', 120, Curry._1(fact$1, 5));
+eq("File \"recursive_module_test.ml\", line 30, characters 5-12", 120, Curry._1(fact$1, 5));
 
 add(/* tuple */[
-      'File "recursive_module_test.ml", line 34, characters 7-14',
+      "File \"recursive_module_test.ml\", line 34, characters 7-14",
       function () {
         return /* ThrowAny */Block.__(7, [function () {
                     Curry._1(Int3[/* u */0], 3);

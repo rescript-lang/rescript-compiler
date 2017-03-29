@@ -91,7 +91,7 @@ catch (exn$2){
 
 Mt.from_pair_suites("exception_raise_test.ml", /* :: */[
       /* tuple */[
-        'File "exception_raise_test.ml", line 97, characters 4-11',
+        "File \"exception_raise_test.ml\", line 97, characters 4-11",
         function () {
           return /* Eq */Block.__(0, [
                     /* tuple */[

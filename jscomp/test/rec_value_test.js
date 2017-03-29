@@ -303,7 +303,7 @@ var suites_001 = /* :: */[
     ],
     /* :: */[
       /* tuple */[
-        'File "rec_value_test.ml", line 111, characters 2-9',
+        "File \"rec_value_test.ml\", line 111, characters 2-9",
         function () {
           return /* Eq */Block.__(0, [
                     /* :: */[
@@ -319,7 +319,7 @@ var suites_001 = /* :: */[
       ],
       /* :: */[
         /* tuple */[
-          'File "rec_value_test.ml", line 114, characters 2-9',
+          "File \"rec_value_test.ml\", line 114, characters 2-9",
           function () {
             return /* Eq */Block.__(0, [
                       /* :: */[
@@ -335,7 +335,7 @@ var suites_001 = /* :: */[
         ],
         /* :: */[
           /* tuple */[
-            'File "rec_value_test.ml", line 117, characters 2-9',
+            "File \"rec_value_test.ml\", line 117, characters 2-9",
             function () {
               return /* Eq */Block.__(0, [
                         /* :: */[
@@ -354,7 +354,7 @@ var suites_001 = /* :: */[
           ],
           /* :: */[
             /* tuple */[
-              'File "rec_value_test.ml", line 120, characters 2-9',
+              "File \"rec_value_test.ml\", line 120, characters 2-9",
               function () {
                 return /* Eq */Block.__(0, [
                           /* :: */[
@@ -376,7 +376,7 @@ var suites_001 = /* :: */[
             ],
             /* :: */[
               /* tuple */[
-                'File "rec_value_test.ml", line 123, characters 2-9',
+                "File \"rec_value_test.ml\", line 123, characters 2-9",
                 function () {
                   return /* Eq */Block.__(0, [
                             /* :: */[
@@ -392,7 +392,7 @@ var suites_001 = /* :: */[
               ],
               /* :: */[
                 /* tuple */[
-                  'File "rec_value_test.ml", line 126, characters 2-9',
+                  "File \"rec_value_test.ml\", line 126, characters 2-9",
                   function () {
                     return /* Eq */Block.__(0, [
                               3,
@@ -402,7 +402,7 @@ var suites_001 = /* :: */[
                 ],
                 /* :: */[
                   /* tuple */[
-                    'File "rec_value_test.ml", line 129, characters 2-9',
+                    "File \"rec_value_test.ml\", line 129, characters 2-9",
                     function () {
                       if (rec_variant_b.tag) {
                         throw [
@@ -423,7 +423,7 @@ var suites_001 = /* :: */[
                   ],
                   /* :: */[
                     /* tuple */[
-                      'File "rec_value_test.ml", line 134, characters 2-9',
+                      "File \"rec_value_test.ml\", line 134, characters 2-9",
                       function () {
                         if (rec_variant_a.tag) {
                           return /* Eq */Block.__(0, [

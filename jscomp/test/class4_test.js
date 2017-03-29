@@ -183,7 +183,7 @@ var colored_point = CamlinternalOO.make_class([
 
 var p$prime = Curry._3(colored_point[0], 0, 5, "red");
 
-eq('File "class4_test.ml", line 67, characters 5-12', /* tuple */[
+eq("File \"class4_test.ml\", line 67, characters 5-12", /* tuple */[
       5,
       "red"
     ], /* tuple */[
@@ -195,7 +195,7 @@ function get_succ_x(p) {
   return Caml_oo_curry.js1(291546447, 3, p) + 1 | 0;
 }
 
-eq('File "class4_test.ml", line 71, characters 12-19', 6, get_succ_x(p$prime));
+eq("File \"class4_test.ml\", line 71, characters 12-19", 6, get_succ_x(p$prime));
 
 function set_x(p) {
   return Caml_oo_curry.js1(-97543333, 4, p);

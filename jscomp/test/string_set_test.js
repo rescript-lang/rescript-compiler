@@ -31,7 +31,7 @@ for(var i = 0; i <= 99999; ++i){
   s = String_set.add("" + i, s);
 }
 
-eq('File "string_set_test.ml", line 16, characters 5-12', String_set.cardinal(s), 100000);
+eq("File \"string_set_test.ml\", line 16, characters 5-12", String_set.cardinal(s), 100000);
 
 Mt.from_pair_suites("string_set_test.ml", suites[0]);
 

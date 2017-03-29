@@ -94,7 +94,7 @@ function scan_int_list(ib) {
   return List.rev(scan_rest(ib, /* [] */0));
 }
 
-eq('File "scanf_reference_error_regression_test.ml", line 36, characters 5-12', /* tuple */[
+eq("File \"scanf_reference_error_regression_test.ml\", line 36, characters 5-12", /* tuple */[
       scan_int_list(Curry._1(Scanf.Scanning[/* from_string */6], "[]")),
       /* [] */0
     ]);

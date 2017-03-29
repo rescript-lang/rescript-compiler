@@ -24,7 +24,7 @@ function eq(loc, x, y) {
   return /* () */0;
 }
 
-eq('File "ffi_array_test.ml", line 12, characters 5-12', /* int array */[
+eq("File \"ffi_array_test.ml\", line 12, characters 5-12", /* int array */[
         1,
         2,
         3,

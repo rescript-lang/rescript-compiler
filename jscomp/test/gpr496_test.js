@@ -71,7 +71,7 @@ var u = /* tuple */[
   u_007
 ];
 
-eq('File "gpr496_test.ml", line 32, characters 12-19', expected, u);
+eq("File \"gpr496_test.ml\", line 32, characters 12-19", expected, u);
 
 Mt.from_pair_suites("gpr496_test.ml", suites[0]);
 

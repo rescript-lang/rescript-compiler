@@ -42,7 +42,7 @@ var res = Caml_string.bytes_to_string(b);
 
 console.log(res);
 
-eq('File "bytes_split_gpr_743_test.ml", line 17, characters 5-12', /* tuple */[
+eq("File \"bytes_split_gpr_743_test.ml\", line 17, characters 5-12", /* tuple */[
       "aab",
       res
     ]);
@@ -61,7 +61,7 @@ var res2 = Caml_string.bytes_to_string(b$1);
 
 console.log(res2);
 
-eq('File "bytes_split_gpr_743_test.ml", line 32, characters 5-12', /* tuple */[
+eq("File \"bytes_split_gpr_743_test.ml\", line 32, characters 5-12", /* tuple */[
       "bcc",
       res2
     ]);

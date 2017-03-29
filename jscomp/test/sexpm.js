@@ -140,7 +140,7 @@ function to_buf(b, t) {
                                 ])
                             ])
                         ]),
-                      '"%s"'
+                      "\"%s\""
                     ]), $$String.escaped(s));
     } else {
       return Buffer.add_string(b, s);
@@ -242,7 +242,7 @@ function print(fmt, t) {
                                 ])
                             ])
                         ]),
-                      '"%s"'
+                      "\"%s\""
                     ]), $$String.escaped(s));
     } else {
       return Format.pp_print_string(fmt, s);
@@ -292,7 +292,7 @@ function print_noindent(fmt, t) {
                                 ])
                             ])
                         ]),
-                      '"%s"'
+                      "\"%s\""
                     ]), $$String.escaped(s));
     } else {
       return Format.pp_print_string(fmt, s);

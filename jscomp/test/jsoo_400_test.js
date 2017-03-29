@@ -22,7 +22,7 @@ function u() {
 
 Mt.from_pair_suites("jsoo_400_test.ml", /* :: */[
       /* tuple */[
-        'File "jsoo_400_test.ml", line 8, characters 3-10',
+        "File \"jsoo_400_test.ml\", line 8, characters 3-10",
         function () {
           return /* ThrowAny */Block.__(7, [function () {
                       u(/* () */0);

@@ -205,7 +205,7 @@ function dump(r) {
         var fields$2 = get_fields(/* [] */0, s);
         return "Tag" + (t + (" (" + ($$String.concat(", ", List.map(dump, fields$2)) + ")")));
       } else if (t === Obj.string_tag) {
-        return '"' + ($$String.escaped(r) + '"');
+        return "\"" + ($$String.escaped(r) + "\"");
       } else if (t === Obj.double_tag) {
         return Pervasives.string_of_float(r);
       } else if (t === Obj.abstract_tag) {

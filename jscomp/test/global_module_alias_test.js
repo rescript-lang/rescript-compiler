@@ -135,7 +135,7 @@ function f() {
         ];
 }
 
-eq('File "global_module_alias_test.ml", line 51, characters 5-12', List.length(/* :: */[
+eq("File \"global_module_alias_test.ml\", line 51, characters 5-12", List.length(/* :: */[
           1,
           /* :: */[
             2,
@@ -214,7 +214,7 @@ var H = /* module */[
   /* merge */List.merge
 ];
 
-eq('File "global_module_alias_test.ml", line 57, characters 5-12', v[0], 12);
+eq("File \"global_module_alias_test.ml\", line 57, characters 5-12", v[0], 12);
 
 function g() {
   return List.length(/* :: */[
@@ -284,7 +284,7 @@ function xx() {
         ];
 }
 
-eq('File "global_module_alias_test.ml", line 86, characters 5-12', g(/* () */0), 4);
+eq("File \"global_module_alias_test.ml\", line 86, characters 5-12", g(/* () */0), 4);
 
 v[0] = v[0] + 1 | 0;
 
@@ -292,7 +292,7 @@ v[0] = v[0] + 1 | 0;
 
 v[0] = v[0] + 1 | 0;
 
-eq('File "global_module_alias_test.ml", line 92, characters 5-12', List.length(/* :: */[
+eq("File \"global_module_alias_test.ml\", line 92, characters 5-12", List.length(/* :: */[
           1,
           /* :: */[
             2,
@@ -303,11 +303,11 @@ eq('File "global_module_alias_test.ml", line 92, characters 5-12', List.length(/
           ]
         ]), 3);
 
-eq('File "global_module_alias_test.ml", line 93, characters 5-12', v[0], 15);
+eq("File \"global_module_alias_test.ml\", line 93, characters 5-12", v[0], 15);
 
 var H$1 = f(/* () */0);
 
-eq('File "global_module_alias_test.ml", line 95, characters 5-12', Curry._1(H$1[/* length */0], /* :: */[
+eq("File \"global_module_alias_test.ml\", line 95, characters 5-12", Curry._1(H$1[/* length */0], /* :: */[
           1,
           /* :: */[
             2,
@@ -315,7 +315,7 @@ eq('File "global_module_alias_test.ml", line 95, characters 5-12', Curry._1(H$1[
           ]
         ]), 2);
 
-eq('File "global_module_alias_test.ml", line 96, characters 5-12', v[0], 21);
+eq("File \"global_module_alias_test.ml\", line 96, characters 5-12", v[0], 21);
 
 Mt.from_pair_suites("global_module_alias_test.ml", suites[0]);
 

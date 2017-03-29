@@ -56,9 +56,9 @@ var p = /* tuple */[
   p_001
 ];
 
-eq('File "gpr_627_test.ml", line 26, characters 5-12', p);
+eq("File \"gpr_627_test.ml\", line 26, characters 5-12", p);
 
-eq('File "gpr_627_test.ml", line 27, characters 5-12', /* tuple */[
+eq("File \"gpr_627_test.ml\", line 27, characters 5-12", /* tuple */[
       v.hi(1, 2),
       6
     ]);

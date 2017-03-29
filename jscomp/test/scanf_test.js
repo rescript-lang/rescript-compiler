@@ -14,7 +14,7 @@ function eq(f, param) {
   return Mt_global.collect_eq(test_id, suites, f, param[0], param[1]);
 }
 
-eq('File "scanf_test.ml", line 6, characters 5-12', /* tuple */[
+eq("File \"scanf_test.ml\", line 6, characters 5-12", /* tuple */[
       Curry._1(Scanf.sscanf("32 31", /* Format */[
                 /* Int */Block.__(4, [
                     /* Int_d */0,

@@ -11,7 +11,6 @@ let keys :  Obj.t -> string array [@bs] = [%bs.raw " function (x){return Object.
 |}]
 external high_order: int -> (int -> int -> int  [@bs]) = "$$high_order" [@@bs.val]
 
-
 let suites :  Mt.pair_suites ref  = ref []
 let test_id = ref 0
 let eq loc (x, y) = 
@@ -31,6 +30,7 @@ let string_config = config ~kind:Str ~hi:3  ~low:"32"
 
 let () = 
   eq __LOC__ (6, ((high_order 1 ) 2 3 [@bs]))
+
 
 let same_type = 
   ([int_config; [%obj{hi= 3 ; low = 32}]],
@@ -66,5 +66,6 @@ let v z = ff z ()
 let vvv z = z |> ff_pipe ()
 
 let vvvv z = z |> ff_pipe2 
+let create_prim () =  [%obj{ x' = 3 ; x'' = 3; x'''' = 2}]
 
 let () = Mt.from_pair_suites __FILE__ !suites

@@ -194,8 +194,8 @@ Mt.from_pair_suites("string_test.ml", /* :: */[
                 "escape_quote",
                 function () {
                   return /* Eq */Block.__(0, [
-                            '\\"\\"',
-                            $$String.escaped('""')
+                            "\\\"\\\"",
+                            $$String.escaped("\"\"")
                           ]);
                 }
               ],

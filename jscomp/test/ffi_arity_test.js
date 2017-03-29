@@ -70,7 +70,7 @@ g();
 
 Mt.from_pair_suites("ffi_arity_test.ml", /* :: */[
       /* tuple */[
-        'File "ffi_arity_test.ml", line 45, characters 4-11',
+        "File \"ffi_arity_test.ml\", line 45, characters 4-11",
         function () {
           return /* Eq */Block.__(0, [
                     v,
@@ -84,7 +84,7 @@ Mt.from_pair_suites("ffi_arity_test.ml", /* :: */[
       ],
       /* :: */[
         /* tuple */[
-          'File "ffi_arity_test.ml", line 46, characters 4-11',
+          "File \"ffi_arity_test.ml\", line 46, characters 4-11",
           function () {
             return /* Eq */Block.__(0, [
                       vv,
@@ -98,7 +98,7 @@ Mt.from_pair_suites("ffi_arity_test.ml", /* :: */[
         ],
         /* :: */[
           /* tuple */[
-            'File "ffi_arity_test.ml", line 47, characters 4-11',
+            "File \"ffi_arity_test.ml\", line 47, characters 4-11",
             function () {
               return /* Eq */Block.__(0, [
                         hh,
@@ -112,7 +112,7 @@ Mt.from_pair_suites("ffi_arity_test.ml", /* :: */[
           ],
           /* :: */[
             /* tuple */[
-              'File "ffi_arity_test.ml", line 48, characters 4-11',
+              "File \"ffi_arity_test.ml\", line 48, characters 4-11",
               function () {
                 return /* Eq */Block.__(0, [
                           /* int array */[
@@ -136,7 +136,7 @@ Mt.from_pair_suites("ffi_arity_test.ml", /* :: */[
             ],
             /* :: */[
               /* tuple */[
-                'File "ffi_arity_test.ml", line 53, characters 4-11',
+                "File \"ffi_arity_test.ml\", line 53, characters 4-11",
                 function () {
                   return /* Eq */Block.__(0, [
                             /* int array */[

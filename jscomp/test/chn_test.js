@@ -49,9 +49,9 @@ function convert(s) {
                 }));
 }
 
-eq('File "chn_test.ml", line 25, characters 7-14', "你好，\n世界", "你好，\n世界");
+eq("File \"chn_test.ml\", line 25, characters 7-14", "你好，\n世界", "你好，\n世界");
 
-eq('File "chn_test.ml", line 27, characters 7-14', convert("汉字是世界上最美丽的character"), /* :: */[
+eq("File \"chn_test.ml\", line 27, characters 7-14", convert("汉字是世界上最美丽的character"), /* :: */[
       27721,
       /* :: */[
         23383,
@@ -110,7 +110,7 @@ eq('File "chn_test.ml", line 27, characters 7-14', convert("汉字是世界上�
       ]
     ]);
 
-eq('File "chn_test.ml", line 48, characters 5-12', convert("\x3f\x3fa"), /* :: */[
+eq("File \"chn_test.ml\", line 48, characters 5-12", convert("\x3f\x3fa"), /* :: */[
       63,
       /* :: */[
         63,
@@ -121,7 +121,7 @@ eq('File "chn_test.ml", line 48, characters 5-12', convert("\x3f\x3fa"), /* :: *
       ]
     ]);
 
-eq('File "chn_test.ml", line 50, characters 5-12', convert("??a"), /* :: */[
+eq("File \"chn_test.ml\", line 50, characters 5-12", convert("??a"), /* :: */[
       63,
       /* :: */[
         63,
@@ -132,7 +132,7 @@ eq('File "chn_test.ml", line 50, characters 5-12', convert("??a"), /* :: */[
       ]
     ]);
 
-eq('File "chn_test.ml", line 52, characters 5-12', convert("\u003f\x3fa"), /* :: */[
+eq("File \"chn_test.ml\", line 52, characters 5-12", convert("\u003f\x3fa"), /* :: */[
       63,
       /* :: */[
         63,
@@ -143,7 +143,7 @@ eq('File "chn_test.ml", line 52, characters 5-12', convert("\u003f\x3fa"), /* ::
       ]
     ]);
 
-eq('File "chn_test.ml", line 54, characters 5-12', convert("🚀🚀a"), /* :: */[
+eq("File \"chn_test.ml\", line 54, characters 5-12", convert("🚀🚀a"), /* :: */[
       128640,
       /* :: */[
         128640,
@@ -154,7 +154,7 @@ eq('File "chn_test.ml", line 54, characters 5-12', convert("🚀🚀a"), /* :: *
       ]
     ]);
 
-eq('File "chn_test.ml", line 56, characters 5-12', convert("\uD83D\uDE80a"), /* :: */[
+eq("File \"chn_test.ml\", line 56, characters 5-12", convert("\uD83D\uDE80a"), /* :: */[
       128640,
       /* :: */[
         97,
@@ -162,7 +162,7 @@ eq('File "chn_test.ml", line 56, characters 5-12', convert("\uD83D\uDE80a"), /* 
       ]
     ]);
 
-eq('File "chn_test.ml", line 58, characters 5-12', convert("\uD83D\uDE80\x3f"), /* :: */[
+eq("File \"chn_test.ml\", line 58, characters 5-12", convert("\uD83D\uDE80\x3f"), /* :: */[
       128640,
       /* :: */[
         63,
@@ -170,7 +170,7 @@ eq('File "chn_test.ml", line 58, characters 5-12', convert("\uD83D\uDE80\x3f"), 
       ]
     ]);
 
-eq('File "chn_test.ml", line 63, characters 5-12', convert("\uD83D\uDE80\uD83D\uDE80a"), /* :: */[
+eq("File \"chn_test.ml\", line 63, characters 5-12", convert("\uD83D\uDE80\uD83D\uDE80a"), /* :: */[
       128640,
       /* :: */[
         128640,
@@ -185,12 +185,12 @@ eq("No inline string length", "\uD83D\uDE80\0".length, 3);
 
 eq("No inline string access", Caml_string.get("\uD83D\uDE80\0", 0) & 255, 61);
 
-eq('File "chn_test.ml", line 79, characters 5-12', convert("\uD83D\uDE80"), /* :: */[
+eq("File \"chn_test.ml\", line 79, characters 5-12", convert("\uD83D\uDE80"), /* :: */[
       128640,
       /* [] */0
     ]);
 
-eq('File "chn_test.ml", line 81, characters 5-12', convert("\uD83D\uDE80\uD83D\uDE80"), /* :: */[
+eq("File \"chn_test.ml\", line 81, characters 5-12", convert("\uD83D\uDE80\uD83D\uDE80"), /* :: */[
       128640,
       /* :: */[
         128640,
@@ -198,7 +198,7 @@ eq('File "chn_test.ml", line 81, characters 5-12', convert("\uD83D\uDE80\uD83D\u
       ]
     ]);
 
-eq('File "chn_test.ml", line 82, characters 5-12', convert(" \b\t\n\v\f\ra"), /* :: */[
+eq("File \"chn_test.ml\", line 82, characters 5-12", convert(" \b\t\n\v\f\ra"), /* :: */[
       32,
       /* :: */[
         8,
@@ -224,7 +224,7 @@ eq('File "chn_test.ml", line 82, characters 5-12', convert(" \b\t\n\v\f\ra"), /*
       ]
     ]);
 
-eq('File "chn_test.ml", line 89, characters 6-13', convert(" \b\t\n\v\f\r\"\'\\\0a"), /* :: */[
+eq("File \"chn_test.ml\", line 89, characters 6-13", convert(" \b\t\n\v\f\r\"\'\\\0a"), /* :: */[
       32,
       /* :: */[
         8,

@@ -167,7 +167,7 @@ var suites_001 = /* :: */[
               ],
               /* :: */[
                 /* tuple */[
-                  'File "caml_compare_test.ml", line 17, characters 4-11',
+                  "File \"caml_compare_test.ml\", line 17, characters 4-11",
                   function () {
                     return /* Eq */Block.__(0, [
                               /* true */1,
@@ -177,7 +177,7 @@ var suites_001 = /* :: */[
                 ],
                 /* :: */[
                   /* tuple */[
-                    'File "caml_compare_test.ml", line 28, characters 4-11',
+                    "File \"caml_compare_test.ml\", line 28, characters 4-11",
                     function () {
                       return /* Eq */Block.__(0, [
                                 /* true */1,
@@ -190,7 +190,7 @@ var suites_001 = /* :: */[
                   ],
                   /* :: */[
                     /* tuple */[
-                      'File "caml_compare_test.ml", line 31, characters 4-11',
+                      "File \"caml_compare_test.ml\", line 31, characters 4-11",
                       function () {
                         return /* Eq */Block.__(0, [
                                   /* true */1,
@@ -203,7 +203,7 @@ var suites_001 = /* :: */[
                     ],
                     /* :: */[
                       /* tuple */[
-                        'File "caml_compare_test.ml", line 34, characters 4-11',
+                        "File \"caml_compare_test.ml\", line 34, characters 4-11",
                         function () {
                           return /* Eq */Block.__(0, [
                                     /* true */1,
@@ -270,7 +270,7 @@ var suites_001 = /* :: */[
                       ],
                       /* :: */[
                         /* tuple */[
-                          'File "caml_compare_test.ml", line 37, characters 4-11',
+                          "File \"caml_compare_test.ml\", line 37, characters 4-11",
                           function () {
                             return /* Eq */Block.__(0, [
                                       /* true */1,
@@ -337,7 +337,7 @@ var suites_001 = /* :: */[
                         ],
                         /* :: */[
                           /* tuple */[
-                            'File "caml_compare_test.ml", line 41, characters 4-11',
+                            "File \"caml_compare_test.ml\", line 41, characters 4-11",
                             function () {
                               return /* Eq */Block.__(0, [
                                         /* false */0,
@@ -350,7 +350,7 @@ var suites_001 = /* :: */[
                           ],
                           /* :: */[
                             /* tuple */[
-                              'File "caml_compare_test.ml", line 44, characters 4-11',
+                              "File \"caml_compare_test.ml\", line 44, characters 4-11",
                               function () {
                                 return /* Eq */Block.__(0, [
                                           /* false */0,
@@ -363,7 +363,7 @@ var suites_001 = /* :: */[
                             ],
                             /* :: */[
                               /* tuple */[
-                                'File "caml_compare_test.ml", line 47, characters 4-11',
+                                "File \"caml_compare_test.ml\", line 47, characters 4-11",
                                 function () {
                                   return /* Eq */Block.__(0, [
                                             /* false */0,
@@ -430,7 +430,7 @@ var suites_001 = /* :: */[
                               ],
                               /* :: */[
                                 /* tuple */[
-                                  'File "caml_compare_test.ml", line 50, characters 4-11',
+                                  "File \"caml_compare_test.ml\", line 50, characters 4-11",
                                   function () {
                                     return /* Eq */Block.__(0, [
                                               /* false */0,

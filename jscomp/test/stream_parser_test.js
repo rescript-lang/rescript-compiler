@@ -271,7 +271,7 @@ function eq(loc, x, y) {
 
 var match = parse(token(Stream.of_string("1 + 2 + (3  - 2) * 3 * 3  - 2 a")));
 
-eq('File "stream_parser_test.ml", line 132, characters 5-12', /* tuple */[
+eq("File \"stream_parser_test.ml\", line 132, characters 5-12", /* tuple */[
       match[0],
       match[1]
     ], /* tuple */[
@@ -282,7 +282,7 @@ eq('File "stream_parser_test.ml", line 132, characters 5-12', /* tuple */[
       ]
     ]);
 
-eq('File "stream_parser_test.ml", line 133, characters 5-12', /* tuple */[
+eq("File \"stream_parser_test.ml\", line 133, characters 5-12", /* tuple */[
       2,
       /* :: */[
         /* Kwd */Block.__(0, ["=="]),
@@ -290,7 +290,7 @@ eq('File "stream_parser_test.ml", line 133, characters 5-12', /* tuple */[
       ]
     ], parse(token(Stream.of_string("3 - 2  - 1"))));
 
-eq('File "stream_parser_test.ml", line 134, characters 5-12', /* tuple */[
+eq("File \"stream_parser_test.ml\", line 134, characters 5-12", /* tuple */[
       0,
       /* :: */[
         /* Kwd */Block.__(0, ["=="]),

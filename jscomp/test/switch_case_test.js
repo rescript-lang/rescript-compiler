@@ -24,44 +24,33 @@ function eq(loc, x, y) {
   return /* () */0;
 }
 
-
-function Make (){
-  this.data = []
-  for(var i = 0; i < arguments.length; ++i){
-   this.data[i] = arguments[i]
-}
-}
-
-Make.prototype.sum = function(){
-  var result  = 0;
-  for(var k = 0; k < this.data.length; ++k){
-    result = result + this.data[k]
-  };
-  return result
-}  
-
-Make.prototype.add = function(){
-  
-} 
-
-;
-
 function f(x) {
-  return x.test("a", "b").test("a", "b");
+  switch (x) {
+    case "xx\"" : 
+        return 1;
+    case "xx'''" : 
+        return 0;
+    case "xx\\\"" : 
+        return 2;
+    case "xx\\\"\"" : 
+        return 3;
+    default:
+      return 4;
+  }
 }
 
-var v = new Make(1, 2, 3, 4);
+eq("File \"switch_case_test.ml\", line 19, characters 7-14", f("xx'''"), 0);
 
-var u = v.sum();
+eq("File \"switch_case_test.ml\", line 20, characters 7-14", f("xx\""), 1);
 
-eq("File \"ffi_splice_test.ml\", line 57, characters 12-19", u, 10);
+eq("File \"switch_case_test.ml\", line 21, characters 7-14", f("xx\\\""), 2);
 
-Mt.from_pair_suites("ffi_splice_test.ml", suites[0]);
+eq("File \"switch_case_test.ml\", line 22, characters 7-14", f("xx\\\"\""), 3);
+
+Mt.from_pair_suites("switch_case_test.ml", suites[0]);
 
 exports.suites  = suites;
 exports.test_id = test_id;
 exports.eq      = eq;
 exports.f       = f;
-exports.v       = v;
-exports.u       = u;
 /*  Not a pure module */

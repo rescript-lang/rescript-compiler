@@ -154,7 +154,7 @@ var $star$tilde = Caml_int32.imul;
 
 Mt.from_pair_suites("int32_test.ml", Pervasives.$at(/* :: */[
           /* tuple */[
-            'File "int32_test.ml", line 32, characters 2-9',
+            "File \"int32_test.ml\", line 32, characters 2-9",
             function () {
               return /* Eq */Block.__(0, [
                         1,
@@ -164,7 +164,7 @@ Mt.from_pair_suites("int32_test.ml", Pervasives.$at(/* :: */[
           ],
           /* :: */[
             /* tuple */[
-              'File "int32_test.ml", line 33, characters 2-9',
+              "File \"int32_test.ml\", line 33, characters 2-9",
               function () {
                 return /* Eq */Block.__(0, [
                           -2147483647,

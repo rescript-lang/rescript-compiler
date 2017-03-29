@@ -49,7 +49,7 @@ if (match$2 !== undefined) {
         match$2.id,
         match$2.paths
       ]);
-  eq('File "fs_test.ml", line 45, characters 7-14', /* tuple */[
+  eq("File \"fs_test.ml\", line 45, characters 7-14", /* tuple */[
         pathobj.name,
         "test"
       ]);

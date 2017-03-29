@@ -44,12 +44,12 @@ function f(check) {
   }
 }
 
-eq('File "gpr_904_test.ml", line 23, characters 5-12', f({
+eq("File \"gpr_904_test.ml\", line 23, characters 5-12", f({
           x: /* true */1,
           y: /* false */0
         }), /* false */0);
 
-eq('File "gpr_904_test.ml", line 26, characters 5-12', check_healty({
+eq("File \"gpr_904_test.ml\", line 26, characters 5-12", check_healty({
           a: /* false */0,
           b: /* false */0,
           c: /* true */1

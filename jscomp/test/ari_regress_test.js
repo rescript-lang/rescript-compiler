@@ -60,7 +60,7 @@ var suites_001 = /* :: */[
     ],
     /* :: */[
       /* tuple */[
-        'File "ari_regress_test.ml", line 20, characters 4-11',
+        "File \"ari_regress_test.ml\", line 20, characters 4-11",
         function () {
           return /* Eq */Block.__(0, [
                     h[0],
