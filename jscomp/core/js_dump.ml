@@ -1740,6 +1740,7 @@ let imports  cxt f (modules : (Ident.t * string) list ) =
       (cxt, [], 0)  modules in
   P.force_newline f ;    
   Ext_list.rev_iter (fun (s,file) ->
+      
       P.string f L.import;
       P.space f ;
       P.string f L.star ;
@@ -1750,8 +1751,8 @@ let imports  cxt f (modules : (Ident.t * string) list ) =
       P.nspace f (margin - String.length s + 1) ;      
       P.string f L.from;
       P.space f;
-      
-      pp_string f ~quote:(best_string_quote s) file  
+
+      pp_string f ~quote:(best_string_quote s) (file ^ ".js")
       ;
       semi f ;
       P.newline f ;
