@@ -21,6 +21,7 @@ literals.cmi :
 map_test.cmi :
 mt.cmi :
 mt_global.cmi : mt.cmi
+ocaml_parsetree_test.cmi :
 ocaml_proto_test.cmi :
 poly_variant_test.cmi :
 polymorphism_test.cmi :
@@ -332,6 +333,15 @@ obj_literal_ppx_test.cmj : ../runtime/js.cmj
 obj_magic_test.cmj : ../stdlib/obj.cmj mt.cmj
 obj_test.cmj : mt.cmj
 obj_type_test.cmj : ../runtime/js.cmj
+ocaml_parsetree_main.cmj : mt.cmj ../stdlib/lexing.cmj
+ocaml_parsetree_test.cmj : ../stdlib/sys.cmj ../stdlib/string.cmj \
+    ../stdlib/printf.cmj ../stdlib/parsing.cmj ../stdlib/obj.cmj \
+    ../others/node.cmj ../stdlib/nativeint.cmj ../stdlib/list.cmj \
+    ../stdlib/lexing.cmj ../stdlib/lazy.cmj ../runtime/js.cmj \
+    ../stdlib/int64.cmj ../stdlib/int32.cmj ../stdlib/hashtbl.cmj \
+    ../stdlib/format.cmj ../stdlib/filename.cmj ../stdlib/char.cmj \
+    ../stdlib/bytes.cmj ../stdlib/buffer.cmj ../stdlib/array.cmj \
+    ../stdlib/arg.cmj ocaml_parsetree_test.cmi
 ocaml_proto_test.cmj : ../stdlib/string.cmj ../stdlib/printf.cmj \
     ../stdlib/printexc.cmj ../stdlib/pervasives.cmj ../stdlib/parsing.cmj \
     ../stdlib/obj.cmj mt.cmj ../stdlib/map.cmj ../stdlib/list.cmj \
