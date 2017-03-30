@@ -74,45 +74,55 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
         | _ -> Lam.let_ Alias v (simplif l1) (simplif l2)
         (* for Alias, in most cases [l1] is already simplified *)
       end
-    | Llet( StrictOpt as kind,
-            v, (Lprim {primitive = (Pmakeblock(0, tag_info, Mutable) 
-                                    as primitive); 
-                       args = [linit] ; loc}), lbody)
-      ->
-      if not @@ used v then simplif lbody (*GPR #1746*) 
-      else 
-        let slinit = simplif linit in
-        let slbody = simplif lbody in
-        begin 
-          try (** TODO: record all references variables *)
-            Lam_util.refine_let
-              ~kind:Variable v slinit
-              (Lam_pass_eliminate_ref.eliminate_ref v slbody)
-          with Lam_pass_eliminate_ref.Real_reference ->
-            Lam_util.refine_let 
-              ~kind v (Lam.prim ~primitive ~args:[slinit] loc)
-              slbody
-        end
-    | Llet(StrictOpt as kind, v, l1, l2) ->
+    | Llet(StrictOpt as kind, v, l1, lbody) ->
       (** can not be inlined since [l1] depend on the store
           {[
             let v = [|1;2;3|]
           ]}
           get [StrictOpt] here,  we can not inline v, 
           since the value of [v] can be changed
+          
+          GPR #1476 
+          Note to pass the sanitizer, we do need remove dead code (not just best effort)
+          This logic is tied to {!Lam_pass_count.count}
+          {[
+            if kind = Strict || used v then count bv l1
+          ]}
+          If the code which should be removed is not removed, it will hold references 
+          to other variables which is already removed.
       *)
       if not @@ used v 
-      then simplif l2
-      else 
-        let l1 = simplif l1 in         
+      then simplif lbody (* GPR #1476 *)
+      else
         begin match l1 with 
-        | Lconst(Const_string s) -> 
-          Ident_hashtbl.add string_table v s; 
-          (* we need move [simplif l2] later, since adding Hashtbl does have side effect *)
-          Lam.let_ Alias v l1 (simplif l2)
+        | (Lprim {primitive = (Pmakeblock(0, tag_info, Mutable) 
+                                    as primitive); 
+                       args = [linit] ; loc})
+          -> 
+          let slinit = simplif linit in
+          let slbody = simplif lbody in
+          begin 
+            try (** TODO: record all references variables *)
+              Lam_util.refine_let
+                ~kind:Variable v slinit
+                (Lam_pass_eliminate_ref.eliminate_ref v slbody)
+            with Lam_pass_eliminate_ref.Real_reference ->
+              Lam_util.refine_let 
+                ~kind v (Lam.prim ~primitive ~args:[slinit] loc)
+                slbody
+          end
+
         | _ -> 
-          Lam_util.refine_let ~kind v l1 (simplif l2)
-        end  
+          let l1 = simplif l1 in         
+          begin match l1 with 
+            | Lconst(Const_string s) -> 
+              Ident_hashtbl.add string_table v s; 
+              (* we need move [simplif lbody] later, since adding Hashtbl does have side effect *)
+              Lam.let_ Alias v l1 (simplif lbody)
+            | _ -> 
+              Lam_util.refine_let ~kind v l1 (simplif lbody)
+          end  
+        end
     (* TODO: check if it is correct rollback to [StrictOpt]? *)
 
     | Llet((Strict | Variable as kind), v, l1, l2) -> 
