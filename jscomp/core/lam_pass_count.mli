@@ -24,4 +24,6 @@ type used_info = {
 type occ_tbl  = used_info Ident_hashtbl.t
 
 val dummy_info : unit -> used_info
-val collect_occurs : Lam.t -> occ_tbl 
+val collect_occurs : Lam.t -> occ_tbl
+
+val pp_occ_tbl : Format.formatter -> occ_tbl -> unit   
