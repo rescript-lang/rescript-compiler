@@ -23,6 +23,7 @@ mt.cmi :
 mt_global.cmi : mt.cmi
 ocaml_parsetree_test.cmi :
 ocaml_proto_test.cmi :
+ocaml_typedtree_test.cmi :
 poly_variant_test.cmi :
 polymorphism_test.cmi :
 scanf_reference_error_regression_test.cmi :
@@ -358,7 +359,7 @@ ocaml_typedtree_test.cmj : ../stdlib/weak.cmj ../stdlib/sys.cmj \
     ../stdlib/format.cmj ../stdlib/filename.cmj ../stdlib/digest.cmj \
     ../stdlib/char.cmj ../stdlib/camlinternalFormatBasics.cmj \
     ../stdlib/camlinternalFormat.cmj ../stdlib/bytes.cmj ../stdlib/buffer.cmj \
-    ../stdlib/array.cmj ../stdlib/arg.cmj
+    ../stdlib/array.cmj ../stdlib/arg.cmj ocaml_typedtree_test.cmi
 of_string_test.cmj : mt.cmj
 offset.cmj : ../stdlib/string.cmj ../stdlib/set.cmj
 oo_js_test_date.cmj : mt.cmj ../runtime/js.cmj

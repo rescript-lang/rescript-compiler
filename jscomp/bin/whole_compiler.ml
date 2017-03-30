@@ -97177,7 +97177,10 @@ type used_info = {
 type occ_tbl  = used_info Ident_hashtbl.t
 
 val dummy_info : unit -> used_info
-val collect_occurs : Lam.t -> occ_tbl 
+val collect_occurs : Lam.t -> occ_tbl
+
+val pp_occ_tbl : Format.formatter -> occ_tbl -> unit   
+
 end = struct
 #1 "lam_pass_count.ml"
 (***********************************************************************)
@@ -97218,7 +97221,13 @@ let absorb_info (x : used_info) (y : used_info) =
     x.times <- x0 + y0;
     if captured then x.captured <- true
 
+let pp_info fmt (x : used_info) = 
+  Format.fprintf fmt "(<captured:%b>:%d)"  x.captured x.times
 
+let pp_occ_tbl fmt tbl = 
+  Ident_hashtbl.iter (fun k v -> 
+      Format.fprintf fmt "@[%a@ %a@]@." Ident.print k pp_info v 
+    ) tbl 
 (* The global table [occ] associates to each let-bound identifier
    the number of its uses (as a reference):
    - 0 if never used
@@ -97604,7 +97613,7 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
       ->
       Ident_hashtbl.add subst v (simplif (Lam.var w));
       simplif l2
-    | Llet((Strict | StrictOpt as kind) ,
+    | Llet(Strict as kind,
            v, (Lprim {primitive = (Pmakeblock(0, tag_info, Mutable) 
                                    as primitive); 
                       args = [linit] ; loc}), lbody)
@@ -97655,6 +97664,25 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
         | _ -> Lam.let_ Alias v (simplif l1) (simplif l2)
         (* for Alias, in most cases [l1] is already simplified *)
       end
+    | Llet( StrictOpt as kind,
+            v, (Lprim {primitive = (Pmakeblock(0, tag_info, Mutable) 
+                                    as primitive); 
+                       args = [linit] ; loc}), lbody)
+      ->
+      if not @@ used v then simplif lbody (*GPR #1746*) 
+      else 
+        let slinit = simplif linit in
+        let slbody = simplif lbody in
+        begin 
+          try (** TODO: record all references variables *)
+            Lam_util.refine_let
+              ~kind:Variable v slinit
+              (Lam_pass_eliminate_ref.eliminate_ref v slbody)
+          with Lam_pass_eliminate_ref.Real_reference ->
+            Lam_util.refine_let 
+              ~kind v (Lam.prim ~primitive ~args:[slinit] loc)
+              slbody
+        end
     | Llet(StrictOpt as kind, v, l1, l2) ->
       (** can not be inlined since [l1] depend on the store
           {[
@@ -97823,6 +97851,7 @@ let apply_lets  occ lambda =
 
 let simplify_lets  (lam : Lam.t) = 
   let occ =  Lam_pass_count.collect_occurs  lam in 
+
   apply_lets  occ   lam
 
 end
@@ -98811,8 +98840,9 @@ let compile  ~filename output_prefix env _sigs
   in 
   let lam, may_required_modules = Lam.convert export_ident_sets lam in 
   let _d  = fun s lam -> 
+    let result = Lam_util.dump env s lam  in
 
-    Lam_util.dump env s lam  
+    result 
   in
   let _j = Js_pass_debug.dump in
   let lam = _d "initial"  lam in
@@ -98850,11 +98880,11 @@ let compile  ~filename output_prefix env _sigs
     |>  Lam_pass_remove_alias.simplify_alias meta 
     |> _d "alpha_conversion"
     |>  Lam_pass_alpha_conversion.alpha_conversion meta
-    |> _d "simplify_lets"
+    |> _d "before-simplify_lets"
     (* we should investigate a better way to put different passes : )*)
     |> Lam_pass_lets_dce.simplify_lets 
 
-    |> _d "simplify_lets"
+    |> _d "before-simplify-exits"
     (* |> (fun lam -> Lam_pass_collect.collect_helper meta lam 
        ; Lam_pass_remove_alias.simplify_alias meta lam) *)
     (* |> Lam_group_pass.scc_pass

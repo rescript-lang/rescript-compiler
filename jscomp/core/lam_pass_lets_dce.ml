@@ -23,7 +23,7 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
       ->
       Ident_hashtbl.add subst v (simplif (Lam.var w));
       simplif l2
-    | Llet((Strict | StrictOpt as kind) ,
+    | Llet(Strict as kind,
            v, (Lprim {primitive = (Pmakeblock(0, tag_info, Mutable) 
                                    as primitive); 
                       args = [linit] ; loc}), lbody)
@@ -74,6 +74,25 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
         | _ -> Lam.let_ Alias v (simplif l1) (simplif l2)
         (* for Alias, in most cases [l1] is already simplified *)
       end
+    | Llet( StrictOpt as kind,
+            v, (Lprim {primitive = (Pmakeblock(0, tag_info, Mutable) 
+                                    as primitive); 
+                       args = [linit] ; loc}), lbody)
+      ->
+      if not @@ used v then simplif lbody (*GPR #1746*) 
+      else 
+        let slinit = simplif linit in
+        let slbody = simplif lbody in
+        begin 
+          try (** TODO: record all references variables *)
+            Lam_util.refine_let
+              ~kind:Variable v slinit
+              (Lam_pass_eliminate_ref.eliminate_ref v slbody)
+          with Lam_pass_eliminate_ref.Real_reference ->
+            Lam_util.refine_let 
+              ~kind v (Lam.prim ~primitive ~args:[slinit] loc)
+              slbody
+        end
     | Llet(StrictOpt as kind, v, l1, l2) ->
       (** can not be inlined since [l1] depend on the store
           {[
@@ -242,4 +261,7 @@ let apply_lets  occ lambda =
 
 let simplify_lets  (lam : Lam.t) = 
   let occ =  Lam_pass_count.collect_occurs  lam in 
+#if BS_DEBUG then 
+  Ext_log.dwarn "OCCTBL" "@[%a@]@." Lam_pass_count.pp_occ_tbl occ ;
+#end
   apply_lets  occ   lam

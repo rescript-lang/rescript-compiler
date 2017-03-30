@@ -556,7 +556,8 @@ core/lam_pass_eliminate_ref.cmx : core/lam.cmx ext/ident_set.cmx \
 core/lam_pass_lets_dce.cmx : core/lam_util.cmx \
     core/lam_pass_eliminate_ref.cmx core/lam_pass_count.cmx \
     core/lam_beta_reduce.cmx core/lam_analysis.cmx core/lam.cmx \
-    ext/ident_hashtbl.cmx ext/ext_list.cmx core/lam_pass_lets_dce.cmi
+    ext/ident_hashtbl.cmx common/ext_log.cmx ext/ext_list.cmx \
+    core/lam_pass_lets_dce.cmi
 core/lam_pass_remove_alias.cmx : core/lam_util.cmx core/lam_stats.cmx \
     core/lam_inline_util.cmx core/lam_compile_env.cmx core/lam_closure.cmx \
     core/lam_beta_reduce.cmx core/lam_analysis.cmx core/lam.cmx \
