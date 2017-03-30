@@ -98810,7 +98810,10 @@ let compile  ~filename output_prefix env _sigs
     Lam_compile_env.reset () ;
   in 
   let lam, may_required_modules = Lam.convert export_ident_sets lam in 
-  let _d  = Lam_util.dump env  in
+  let _d  = fun s lam -> 
+
+    Lam_util.dump env s lam  
+  in
   let _j = Js_pass_debug.dump in
   let lam = _d "initial"  lam in
   let lam  = Lam_pass_deep_flatten.deep_flatten lam in

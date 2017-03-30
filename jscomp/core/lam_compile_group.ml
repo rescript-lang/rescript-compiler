@@ -193,7 +193,13 @@ let compile  ~filename output_prefix env _sigs
     Lam_compile_env.reset () ;
   in 
   let lam, may_required_modules = Lam.convert export_ident_sets lam in 
-  let _d  = Lam_util.dump env  in
+  let _d  = fun s lam -> 
+#if BS_DEBUG then 
+    Ext_log.dwarn __LOC__ "CHECK PASS %s@." s;
+    ignore @@ Lam.check (Js_config.get_current_file ()) lam;
+#end
+    Lam_util.dump env s lam  
+  in
   let _j = Js_pass_debug.dump in
   let lam = _d "initial"  lam in
   let lam  = Lam_pass_deep_flatten.deep_flatten lam in
@@ -376,7 +382,7 @@ let lambda_as_module
   begin 
     Js_config.set_current_file filename ;  
 #if BS_DEBUG then    
-    Js_config.set_debug_file "gpr_1438.ml";
+    Js_config.set_debug_file "ocaml_typedtree_test.ml";
 #end    
     let lambda_output = compile ~filename output_prefix env sigs lam in
     let (//) = Filename.concat in 
