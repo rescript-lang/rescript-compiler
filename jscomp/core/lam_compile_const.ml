@@ -91,3 +91,12 @@ let rec translate (x : Lam.constant ) : J.expression =
 
   | Const_immstring s ->  (*TODO *)
     E.str s  (* TODO: check *)
+
+
+let translate_arg_cst (cst : Ast_arg.cst) = 
+  (match cst with 
+   | Arg_int_lit i -> 
+     E.int (Int32.of_int i)
+   | Arg_string_lit i -> 
+     E.str i
+   | Arg_js_null  -> assert false)

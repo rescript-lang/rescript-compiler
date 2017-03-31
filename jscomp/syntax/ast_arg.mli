@@ -25,7 +25,10 @@
 type cst = 
   | Arg_int_lit of int 
   | Arg_string_lit of string 
-
+  (* | Arg_js_true *)
+  (* | Arg_js_false *)
+  | Arg_js_null
+  
 
 type label = private
   | Label of string * cst option 

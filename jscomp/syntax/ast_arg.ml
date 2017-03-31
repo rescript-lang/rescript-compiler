@@ -28,7 +28,7 @@ type cst =
   | Arg_int_lit of int 
   | Arg_string_lit of string 
 
-
+  | Arg_js_null
 type label = 
   | Label of string * cst option 
   | Empty of cst option

@@ -133,15 +133,10 @@ let assemble_args_splice call_loc ffi  js_splice arg_types args : E.t list * E.t
   let rec aux (labels : Ast_arg.kind list) args = 
     match labels, args with 
     | [] , [] -> empty_pair
-    | { arg_label =  Empty (Some (Arg_int_lit i)) } :: labels  , args 
-    | { arg_label =  Label (_, Some (Arg_int_lit i))} :: labels  , args -> 
-      let accs, eff = aux labels args in 
-      E.int (Int32.of_int i) ::accs, eff 
-    | { arg_label =  Label (_, Some (Arg_string_lit i))} :: labels , args 
-    | { arg_label =  Empty (Some (Arg_string_lit i)) } :: labels , args
-      -> 
-      let accs, eff = aux labels args in 
-      E.str i :: accs, eff
+    | { arg_label =  Empty (Some cst) } :: labels  , args 
+    | { arg_label =  Label (_, Some cst)} :: labels  , args -> 
+      let accs, eff = aux labels args in
+      Lam_compile_const.translate_arg_cst cst :: accs, eff 
     | ({arg_label = Empty None | Label (_,None) | Optional _ } as arg_kind) ::labels, arg :: args
       ->  
       if js_splice && args = [] then 

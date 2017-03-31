@@ -43,15 +43,10 @@ let assemble_args_obj (labels : Ast_arg.kind list) (args : J.expression list) =
   let rec aux (labels : Ast_arg.kind list) args = 
     match labels, args with 
     | [] , [] as empty_pair -> empty_pair
-    | {arg_label = Label (label, Some (Arg_int_lit i))} :: labels  , args -> 
+    | {arg_label = Label (label, Some cst )} :: labels  , args -> 
       let accs, eff = aux labels args in 
-      (Js_op.Key label, E.int (Int32.of_int i) )::accs, eff 
-    | {arg_label = Label(label, Some (Arg_string_lit i))} :: labels , args 
-      -> 
-      let accs, eff = aux labels args in 
-      (Js_op.Key label, E.str i) :: accs, eff
-    | {arg_label = Empty (Some (Arg_int_lit i)) } :: rest  , args -> assert false 
-    | {arg_label = Empty(Some (Arg_string_lit i))} :: rest , args -> assert false 
+      (Js_op.Key label, Lam_compile_const.translate_arg_cst cst )::accs, eff 
+    | {arg_label = Empty (Some _) } :: rest  , args -> assert false 
     | {arg_label = Empty None }::labels, arg::args 
       ->  
       let (accs, eff) as r  = aux labels args in 
