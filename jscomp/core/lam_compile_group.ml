@@ -193,14 +193,7 @@ let compile  ~filename output_prefix env _sigs
     Lam_compile_env.reset () ;
   in 
   let lam, may_required_modules = Lam.convert export_ident_sets lam in 
-  let _d  = fun s lam -> 
-    let result = Lam_util.dump env s lam  in
-#if BS_DEBUG then 
-    Ext_log.dwarn __LOC__ "CHECK PASS %s@." s;
-    ignore @@ Lam.check (Js_config.get_current_file ()) lam;
-#end
-    result 
-  in
+  let _d  = Lam_util.dump env  in
   let _j = Js_pass_debug.dump in
   let lam = _d "initial"  lam in
   let lam  = Lam_pass_deep_flatten.deep_flatten lam in
@@ -237,11 +230,11 @@ let compile  ~filename output_prefix env _sigs
     |>  Lam_pass_remove_alias.simplify_alias meta 
     |> _d "alpha_conversion"
     |>  Lam_pass_alpha_conversion.alpha_conversion meta
-    |> _d "before-simplify_lets"
+    |> _d "simplify_lets"
     (* we should investigate a better way to put different passes : )*)
     |> Lam_pass_lets_dce.simplify_lets 
 
-    |> _d "before-simplify-exits"
+    |> _d "simplify_lets"
     (* |> (fun lam -> Lam_pass_collect.collect_helper meta lam 
        ; Lam_pass_remove_alias.simplify_alias meta lam) *)
     (* |> Lam_group_pass.scc_pass
@@ -383,7 +376,7 @@ let lambda_as_module
   begin 
     Js_config.set_current_file filename ;  
 #if BS_DEBUG then    
-    Js_config.set_debug_file "ocaml_typedtree_test.ml";
+    Js_config.set_debug_file "gpr_1438.ml";
 #end    
     let lambda_output = compile ~filename output_prefix env sigs lam in
     let (//) = Filename.concat in 
