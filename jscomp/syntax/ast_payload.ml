@@ -31,9 +31,9 @@ let is_single_string (x : t ) =
         Pstr_eval (
           {pexp_desc = 
              Pexp_constant 
-               (Const_string (name,_));
+               (Const_string (name,dec));
            _},_);
-      _}] -> Some name
+      _}] -> Some (name,dec)
   | _  -> None
 
 let is_single_int (x : t ) = 

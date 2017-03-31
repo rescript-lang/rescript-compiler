@@ -87,6 +87,11 @@ external on_exit_slice4 :
 external on_exit_slice5 : 
     int 
     -> (_ [@bs.as 3]) 
+    -> (_ [@bs.as {json|true|json}])
+    -> (_ [@bs.as {json|false|json}])
+    -> (_ [@bs.as {json|"你好"|json}])
+    -> (_ [@bs.as {json| ["你好",1,2,3] |json}])
+    -> (_ [@bs.as {json| [{ "arr" : ["你好",1,2,3], "encoding" : "utf8"}] |json}])
     -> (_ [@bs.as "xxx"]) 
     -> ([`a|`b|`c] [@bs.int])
     -> (_ [@bs.as "yyy"]) 
@@ -127,3 +132,4 @@ external io_config :
     stdio:( _ [@bs.as "inherit"]) -> cwd:string -> unit -> _  = "" [@@bs.obj]
 
 let config = io_config ~cwd:"." ()   
+

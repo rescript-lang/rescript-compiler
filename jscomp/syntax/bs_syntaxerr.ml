@@ -33,7 +33,7 @@ type error
   | Duplicated_bs_as 
   | Expect_int_literal
   | Expect_string_literal
-  | Expect_int_or_string_literal
+  | Expect_int_or_string_or_json_literal
   | Unhandled_poly_type
   | Unregistered of string 
   | Invalid_underscore_type_in_external
@@ -89,9 +89,9 @@ let pp_error fmt err =
   | Expect_int_literal 
     -> 
     "expect int literal "
-  | Expect_int_or_string_literal
+  | Expect_int_or_string_or_json_literal
     ->
-    "expect int or string literal "
+    "expect int or string literal or json literal ({json||json}) "
   | Unhandled_poly_type 
     -> 
     "Unhandled poly type"

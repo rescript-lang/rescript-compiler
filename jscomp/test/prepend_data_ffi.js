@@ -30,19 +30,19 @@ process.on(function (i) {
 xx(3, 3, "xxx", "a", "b");
 
 function f(x) {
-  x.xx(104, /* int array */[
+  x.xx(109, /* int array */[
         1,
         2,
         3
       ]);
-  x.xx(105, 3, "xxx", /* int array */[
+  x.xx(110, 3, "xxx", /* int array */[
         1,
         2,
         3
       ]);
-  x.xx(106, 3, "xxx", 1, 2, 3);
-  x.xx(107, 3, "xxx", 0, "b", 1, 2, 3, 4, 5);
-  x.xx(108, 3, "xxx", 0, "yyy", "b", 1, 2, 3, 4, 5);
+  x.xx(111, 3, "xxx", 1, 2, 3);
+  x.xx(112, 3, "xxx", 0, "b", 1, 2, 3, 4, 5);
+  x.xx(113, 3, true, false, ("你好"), ( ["你好",1,2,3] ), ( [{ "arr" : ["你好",1,2,3], "encoding" : "utf8"}] ), "xxx", 0, "yyy", "b", 1, 2, 3, 4, 5);
   return /* () */0;
 }
 

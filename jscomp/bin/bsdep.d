@@ -15,6 +15,7 @@ bin/bsdep.ml : ../ocaml/parsing/lexer.ml
 bin/bsdep.ml : ../ocaml/parsing/parse.ml
 bin/bsdep.ml : ../ocaml/utils/clflags.ml
 bin/bsdep.ml : common/bs_loc.ml
+bin/bsdep.ml : ext/ext_array.ml
 bin/bsdep.ml : ext/ext_bytes.ml
 bin/bsdep.ml : ext/ext_char.mli
 bin/bsdep.ml : ext/ext_list.mli
@@ -32,6 +33,7 @@ bin/bsdep.ml : ../ocaml/utils/clflags.mli
 bin/bsdep.ml : ../ocaml/utils/terminfo.ml
 bin/bsdep.ml : ../ocaml/utils/warnings.ml
 bin/bsdep.ml : common/bs_loc.mli
+bin/bsdep.ml : ext/ext_array.mli
 bin/bsdep.ml : ext/ext_bytes.mli
 bin/bsdep.ml : ext/ext_string.ml
 bin/bsdep.ml : ext/string_map.ml
@@ -56,6 +58,7 @@ bin/bsdep.ml : bin/configDummy.mli
 bin/bsdep.ml : common/js_config.ml
 bin/bsdep.ml : ext/ext_filename.ml
 bin/bsdep.ml : ext/ext_js_regex.ml
+bin/bsdep.ml : ext/ext_position.ml
 bin/bsdep.ml : ext/hash_set_gen.ml
 bin/bsdep.ml : syntax/ast_comb.mli
 bin/bsdep.ml : syntax/ast_util.mli
@@ -68,6 +71,7 @@ bin/bsdep.ml : common/bs_version.ml
 bin/bsdep.ml : common/js_config.mli
 bin/bsdep.ml : ext/ext_filename.mli
 bin/bsdep.ml : ext/ext_js_regex.mli
+bin/bsdep.ml : ext/ext_position.mli
 bin/bsdep.ml : syntax/ast_derive.ml
 bin/bsdep.ml : syntax/ppx_entry.mli
 bin/bsdep.ml : ../ocaml/parsing/ast_helper.ml
@@ -78,6 +82,8 @@ bin/bsdep.ml : ../ocaml/parsing/parsetree.mli
 bin/bsdep.ml : ../ocaml/parsing/syntaxerr.mli
 bin/bsdep.ml : common/bs_version.mli
 bin/bsdep.ml : common/bs_warnings.ml
+bin/bsdep.ml : ext/ext_json_parse.ml
+bin/bsdep.ml : ext/ext_json_types.ml
 bin/bsdep.ml : ext/ext_pervasives.ml
 bin/bsdep.ml : syntax/ast_derive.mli
 bin/bsdep.ml : syntax/ast_literal.ml
@@ -87,6 +93,7 @@ bin/bsdep.ml : ../ocaml/parsing/ast_mapper.mli
 bin/bsdep.ml : ../ocaml/parsing/docstrings.mli
 bin/bsdep.ml : common/bs_warnings.mli
 bin/bsdep.ml : common/lam_methname.ml
+bin/bsdep.ml : ext/ext_json_parse.mli
 bin/bsdep.ml : ext/ext_pervasives.mli
 bin/bsdep.ml : ext/string_hash_set.ml
 bin/bsdep.ml : stubs/bs_hash_stubs.ml

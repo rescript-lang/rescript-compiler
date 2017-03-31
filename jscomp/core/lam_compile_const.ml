@@ -94,9 +94,14 @@ let rec translate (x : Lam.constant ) : J.expression =
 
 
 let translate_arg_cst (cst : Ast_arg.cst) = 
-  (match cst with 
+  match cst with 
    | Arg_int_lit i -> 
      E.int (Int32.of_int i)
    | Arg_string_lit i -> 
      E.str i
-   | Arg_js_null  -> assert false)
+   | Arg_js_null  -> E.raw_js_code Exp "null"
+   | Arg_js_json s 
+     -> E.raw_js_code Exp s
+
+   | Arg_js_true  -> E.js_bool true
+   | Arg_js_false -> E.js_bool false 

@@ -181,7 +181,7 @@ let process_bs_string_as  attrs =
         begin match Ast_payload.is_single_string payload with 
           | None -> 
             Bs_syntaxerr.err loc Expect_string_literal
-          | Some  _ as v->  (v, attrs)  
+          | Some  (v,dec) ->  ( Some v, attrs)  
         end
       | "bs.as",  _ 
         -> 
@@ -217,9 +217,11 @@ let process_bs_string_or_int_as attrs =
         begin match Ast_payload.is_single_int payload with 
           | None -> 
             begin match Ast_payload.is_single_string payload with 
-            | None -> 
-              Bs_syntaxerr.err loc Expect_int_or_string_literal
-            | Some s -> (Some (`Str s), attrs)
+            | Some (s,None) -> (Some (`Str (s)), attrs)
+            | Some (s, Some "json") -> (Some (`Json_str s ), attrs)
+            | None | Some (_, Some _) -> 
+              Bs_syntaxerr.err loc Expect_int_or_string_or_json_literal
+
             end
           | Some   v->  (Some (`Int v), attrs)  
         end

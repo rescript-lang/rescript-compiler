@@ -22,14 +22,15 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type cst = 
+type cst = private
   | Arg_int_lit of int 
   | Arg_string_lit of string 
   (* | Arg_js_true *)
   (* | Arg_js_false *)
   | Arg_js_null
-  
-
+  | Arg_js_true
+  | Arg_js_false
+  | Arg_js_json of string
 type label = private
   | Label of string * cst option 
   | Empty of cst option
@@ -53,6 +54,10 @@ type kind =
     arg_type : ty;
     arg_label :label
   }
+
+val cst_json : string -> cst 
+val cst_int : int -> cst 
+val cst_string : string -> cst 
 
 val empty_label : label
 val empty_lit : cst -> label 

@@ -50,10 +50,14 @@ let get_arg_type ~nolabel optional
 
       | Some (`Int i), others -> 
         Ast_attributes.warn_unused_attributes others;
-        Arg_cst(Arg_int_lit i), Ast_literal.type_int ~loc:ptyp.ptyp_loc ()  
+        Arg_cst(Ast_arg.cst_int i), Ast_literal.type_int ~loc:ptyp.ptyp_loc ()  
       | Some (`Str i), others -> 
         Ast_attributes.warn_unused_attributes others;
-        Arg_cst (Arg_string_lit i), Ast_literal.type_string ~loc:ptyp.ptyp_loc () 
+        Arg_cst (Ast_arg.cst_string i), Ast_literal.type_string ~loc:ptyp.ptyp_loc () 
+      | Some (`Json_str s), others ->
+        Ast_attributes.warn_unused_attributes others;
+        Arg_cst (Ast_arg.cst_json s), Ast_literal.type_string ~loc:ptyp.ptyp_loc () 
+
     end 
   else (* ([`a|`b] [@bs.string]) *)
     match Ast_attributes.process_bs_string_int_uncurry ptyp.ptyp_attributes, ptyp.ptyp_desc with 
@@ -237,7 +241,7 @@ let process_external_attributes
     (prim_attributes : Ast_attributes.t) : _ * Ast_attributes.t =
   let name_from_payload_or_prim payload : name_source =
     match Ast_payload.is_single_string payload with
-    | Some  val_name ->  `Nm_payload val_name
+    | Some  (val_name, _) ->  `Nm_payload val_name
     | None ->  (prim_name_or_pval_prim :> name_source)
   in
   List.fold_left 

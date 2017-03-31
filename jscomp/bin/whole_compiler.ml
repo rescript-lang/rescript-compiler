@@ -57719,6 +57719,1112 @@ let iinfo b str f  =
 
 
 end
+module Ext_array : sig 
+#1 "ext_array.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+(** Some utilities for {!Array} operations *)
+val reverse_range : 'a array -> int -> int -> unit
+val reverse_in_place : 'a array -> unit
+val reverse : 'a array -> 'a array 
+val reverse_of_list : 'a list -> 'a array
+
+val filter : ('a -> bool) -> 'a array -> 'a array
+
+val filter_map : ('a -> 'b option) -> 'a array -> 'b array
+
+val range : int -> int -> int array
+
+val map2i : (int -> 'a -> 'b -> 'c ) -> 'a array -> 'b array -> 'c array
+
+val to_list_map : ('a -> 'b option) -> 'a array -> 'b list 
+
+val to_list_map_acc : 
+  ('a -> 'b option) -> 
+  'a array -> 
+  'b list -> 
+  'b list 
+
+val of_list_map : ('a -> 'b) -> 'a list -> 'b array 
+
+val rfind_with_index : 'a array -> ('a -> 'b -> bool) -> 'b -> int
+
+
+type 'a split = [ `No_split | `Split of 'a array * 'a array ]
+
+val rfind_and_split : 
+  'a array ->
+  ('a -> 'b -> bool) ->
+  'b -> 'a split
+
+val find_and_split : 
+  'a array ->
+  ('a -> 'b -> bool) ->
+  'b -> 'a split
+
+val exists : ('a -> bool) -> 'a array -> bool 
+
+val is_empty : 'a array -> bool 
+end = struct
+#1 "ext_array.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+let reverse_range a i len =
+  if len = 0 then ()
+  else
+    for k = 0 to (len-1)/2 do
+      let t = Array.unsafe_get a (i+k) in
+      Array.unsafe_set a (i+k) ( Array.unsafe_get a (i+len-1-k));
+      Array.unsafe_set a (i+len-1-k) t;
+    done
+
+
+let reverse_in_place a =
+  reverse_range a 0 (Array.length a)
+
+let reverse a =
+  let b_len = Array.length a in
+  if b_len = 0 then [||] else  
+  let b = Array.copy a in  
+  for i = 0 to  b_len - 1 do
+      Array.unsafe_set b i (Array.unsafe_get a (b_len - 1 -i )) 
+  done;
+  b  
+
+let reverse_of_list =  function
+  | [] -> [||]
+  | hd::tl as l ->
+    let len = List.length l in
+    let a = Array.make len hd in
+    let rec fill i = function
+      | [] -> a
+      | hd::tl -> Array.unsafe_set a (len - i - 2) hd; fill (i+1) tl in
+    fill 0 tl
+
+let filter f a =
+  let arr_len = Array.length a in
+  let rec aux acc i =
+    if i = arr_len 
+    then reverse_of_list acc 
+    else
+      let v = Array.unsafe_get a i in
+      if f  v then 
+        aux (v::acc) (i+1)
+      else aux acc (i + 1) 
+  in aux [] 0
+
+
+let filter_map (f : _ -> _ option) a =
+  let arr_len = Array.length a in
+  let rec aux acc i =
+    if i = arr_len 
+    then reverse_of_list acc 
+    else
+      let v = Array.unsafe_get a i in
+      match f  v with 
+      | Some v -> 
+        aux (v::acc) (i+1)
+      | None -> 
+        aux acc (i + 1) 
+  in aux [] 0
+
+let range from to_ =
+  if from > to_ then invalid_arg "Ext_array.range"  
+  else Array.init (to_ - from + 1) (fun i -> i + from)
+
+let map2i f a b = 
+  let len = Array.length a in 
+  if len <> Array.length b then 
+    invalid_arg "Ext_array.map2i"  
+  else
+    Array.mapi (fun i a -> f i  a ( Array.unsafe_get b i )) a 
+
+
+ let rec tolist_aux a f  i res =
+    if i < 0 then res else
+      let v = Array.unsafe_get a i in
+      tolist_aux a f  (i - 1)
+        (match f v with
+         | Some v -> v :: res
+         | None -> res) 
+
+let to_list_map f a = 
+  tolist_aux a f (Array.length a - 1) []
+
+let to_list_map_acc f a acc = 
+  tolist_aux a f (Array.length a - 1) acc
+
+
+(* TODO: What would happen if [f] raise, memory leak? *)
+let of_list_map f a = 
+  match a with 
+  | [] -> [||]
+  | h::tl -> 
+    let hd = f h in 
+    let len = List.length tl + 1 in 
+    let arr = Array.make len hd  in
+    let rec fill i = function
+    | [] -> arr 
+    | hd :: tl -> 
+      Array.unsafe_set arr i (f hd); 
+      fill (i + 1) tl in 
+    fill 1 tl
+  
+(**
+{[
+# rfind_with_index [|1;2;3|] (=) 2;;
+- : int = 1
+# rfind_with_index [|1;2;3|] (=) 1;;
+- : int = 0
+# rfind_with_index [|1;2;3|] (=) 3;;
+- : int = 2
+# rfind_with_index [|1;2;3|] (=) 4;;
+- : int = -1
+]}
+*)
+let rfind_with_index arr cmp v = 
+  let len = Array.length arr in 
+  let rec aux i = 
+    if i < 0 then i
+    else if  cmp (Array.unsafe_get arr i) v then i
+    else aux (i - 1) in 
+  aux (len - 1)
+
+type 'a split = [ `No_split | `Split of 'a array * 'a array ]
+let rfind_and_split arr cmp v : _ split = 
+  let i = rfind_with_index arr cmp v in 
+  if  i < 0 then 
+    `No_split 
+  else 
+    `Split (Array.sub arr 0 i , Array.sub arr  (i + 1 ) (Array.length arr - i - 1 ))
+
+
+let find_with_index arr cmp v = 
+  let len  = Array.length arr in 
+  let rec aux i len = 
+    if i >= len then -1 
+    else if cmp (Array.unsafe_get arr i ) v then i 
+    else aux (i + 1) len in 
+  aux 0 len
+
+let find_and_split arr cmp v : _ split = 
+  let i = find_with_index arr cmp v in 
+  if i < 0 then 
+    `No_split
+  else
+    `Split (Array.sub arr 0 i, Array.sub arr (i + 1 ) (Array.length arr - i - 1))        
+
+(** TODO: available since 4.03, use {!Array.exists} *)
+
+let exists p a =
+  let n = Array.length a in
+  let rec loop i =
+    if i = n then false
+    else if p (Array.unsafe_get a i) then true
+    else loop (succ i) in
+  loop 0
+
+
+let is_empty arr =
+  Array.length arr = 0
+end
+module Ext_json_types
+= struct
+#1 "ext_json_types.ml"
+(* Copyright (C) 2015-2017 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type loc = Lexing.position
+type json_str = 
+  { str : string ; loc : loc}
+
+type json_flo  =
+  { str : string ; loc : loc}
+type json_array =
+  { content : t array ; 
+    loc_start : loc ; 
+    loc_end : loc ; 
+  }
+
+and json_map = 
+  { map : t String_map.t ; loc :  loc }
+and t = 
+  | True of loc 
+  | False of loc 
+  | Null of loc 
+  | Flo of json_flo
+  | Str of json_str
+  | Arr  of json_array
+  | Obj of json_map
+   
+
+end
+module Ext_position : sig 
+#1 "ext_position.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type t = Lexing.position = {
+    pos_fname : string ;
+    pos_lnum : int ;
+    pos_bol : int ;
+    pos_cnum : int
+}
+
+
+val print : Format.formatter -> t -> unit 
+end = struct
+#1 "ext_position.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type t = Lexing.position = {
+    pos_fname : string ;
+    pos_lnum : int ;
+    pos_bol : int ;
+    pos_cnum : int
+}
+
+
+let print fmt (pos : t) = 
+  Format.fprintf fmt "(%d,%d)" pos.pos_lnum (pos.pos_cnum - pos.pos_bol)
+
+
+
+
+
+
+end
+module Ext_json_parse : sig 
+#1 "ext_json_parse.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+val parse_json : Lexing.lexbuf -> Ext_json_types.t 
+val parse_json_from_string : string -> Ext_json_types.t 
+val parse_json_from_chan : in_channel -> Ext_json_types.t 
+val parse_json_from_file  : string -> Ext_json_types.t
+
+
+end = struct
+#1 "ext_json_parse.ml"
+# 1 "ext/ext_json_parse.mll"
+ 
+type error =
+  | Illegal_character of char
+  | Unterminated_string
+  | Unterminated_comment
+  | Illegal_escape of string
+  | Unexpected_token 
+  | Expect_comma_or_rbracket
+  | Expect_comma_or_rbrace
+  | Expect_colon
+  | Expect_string_or_rbrace 
+  | Expect_eof 
+  (* | Trailing_comma_in_obj *)
+  (* | Trailing_comma_in_array *)
+exception Error of error * Lexing.position * Lexing.position;;
+
+let fprintf  = Format.fprintf
+let report_error ppf = function
+  | Illegal_character c ->
+      fprintf ppf "Illegal character (%s)" (Char.escaped c)
+  | Illegal_escape s ->
+      fprintf ppf "Illegal backslash escape in string or character (%s)" s
+  | Unterminated_string -> 
+      fprintf ppf "Unterminated_string"
+  | Expect_comma_or_rbracket ->
+    fprintf ppf "Expect_comma_or_rbracket"
+  | Expect_comma_or_rbrace -> 
+    fprintf ppf "Expect_comma_or_rbrace"
+  | Expect_colon -> 
+    fprintf ppf "Expect_colon"
+  | Expect_string_or_rbrace  -> 
+    fprintf ppf "Expect_string_or_rbrace"
+  | Expect_eof  -> 
+    fprintf ppf "Expect_eof"
+  | Unexpected_token 
+    ->
+    fprintf ppf "Unexpected_token"
+  (* | Trailing_comma_in_obj  *)
+  (*   -> fprintf ppf "Trailing_comma_in_obj" *)
+  (* | Trailing_comma_in_array  *)
+  (*   -> fprintf ppf "Trailing_comma_in_array" *)
+  | Unterminated_comment 
+    -> fprintf ppf "Unterminated_comment"
+         
+
+
+let () = 
+  Printexc.register_printer
+    (function x -> 
+     match x with 
+     | Error (e , a, b) -> 
+       Some (Format.asprintf "@[%a:@ %a@ -@ %a)@]" report_error e 
+               Ext_position.print a Ext_position.print b)
+     | _ -> None
+    )
+
+
+
+
+type token = 
+  | Comma
+  | Eof
+  | False
+  | Lbrace
+  | Lbracket
+  | Null
+  | Colon
+  | Number of string
+  | Rbrace
+  | Rbracket
+  | String of string
+  | True   
+  
+
+let error  (lexbuf : Lexing.lexbuf) e = 
+  raise (Error (e, lexbuf.lex_start_p, lexbuf.lex_curr_p))
+
+let lexeme_len (x : Lexing.lexbuf) =
+  x.lex_curr_pos - x.lex_start_pos
+
+let update_loc ({ lex_curr_p; _ } as lexbuf : Lexing.lexbuf) diff =
+  lexbuf.lex_curr_p <-
+    {
+      lex_curr_p with
+      pos_lnum = lex_curr_p.pos_lnum + 1;
+      pos_bol = lex_curr_p.pos_cnum - diff;
+    }
+
+let char_for_backslash = function
+  | 'n' -> '\010'
+  | 'r' -> '\013'
+  | 'b' -> '\008'
+  | 't' -> '\009'
+  | c -> c
+
+let dec_code c1 c2 c3 =
+  100 * (Char.code c1 - 48) + 10 * (Char.code c2 - 48) + (Char.code c3 - 48)
+
+let hex_code c1 c2 =
+  let d1 = Char.code c1 in
+  let val1 =
+    if d1 >= 97 then d1 - 87
+    else if d1 >= 65 then d1 - 55
+    else d1 - 48 in
+  let d2 = Char.code c2 in
+  let val2 =
+    if d2 >= 97 then d2 - 87
+    else if d2 >= 65 then d2 - 55
+    else d2 - 48 in
+  val1 * 16 + val2
+
+let lf = '\010'
+
+# 116 "ext/ext_json_parse.ml"
+let __ocaml_lex_tables = {
+  Lexing.lex_base = 
+   "\000\000\239\255\240\255\241\255\000\000\025\000\011\000\244\255\
+    \245\255\246\255\247\255\248\255\249\255\000\000\000\000\000\000\
+    \041\000\001\000\254\255\005\000\005\000\253\255\001\000\002\000\
+    \252\255\000\000\000\000\003\000\251\255\001\000\003\000\250\255\
+    \079\000\089\000\099\000\121\000\131\000\141\000\153\000\163\000\
+    \001\000\253\255\254\255\023\000\255\255\006\000\246\255\189\000\
+    \248\255\215\000\255\255\249\255\249\000\181\000\252\255\009\000\
+    \063\000\075\000\234\000\251\255\032\001\250\255";
+  Lexing.lex_backtrk = 
+   "\255\255\255\255\255\255\255\255\013\000\013\000\016\000\255\255\
+    \255\255\255\255\255\255\255\255\255\255\016\000\016\000\016\000\
+    \016\000\016\000\255\255\000\000\012\000\255\255\255\255\255\255\
+    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
+    \255\255\255\255\013\000\255\255\013\000\255\255\013\000\255\255\
+    \255\255\255\255\255\255\001\000\255\255\255\255\255\255\008\000\
+    \255\255\255\255\255\255\255\255\006\000\006\000\255\255\006\000\
+    \001\000\002\000\255\255\255\255\255\255\255\255";
+  Lexing.lex_default = 
+   "\001\000\000\000\000\000\000\000\255\255\255\255\255\255\000\000\
+    \000\000\000\000\000\000\000\000\000\000\255\255\255\255\255\255\
+    \255\255\255\255\000\000\255\255\020\000\000\000\255\255\255\255\
+    \000\000\255\255\255\255\255\255\000\000\255\255\255\255\000\000\
+    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
+    \042\000\000\000\000\000\255\255\000\000\047\000\000\000\047\000\
+    \000\000\051\000\000\000\000\000\255\255\255\255\000\000\255\255\
+    \255\255\255\255\255\255\000\000\255\255\000\000";
+  Lexing.lex_trans = 
+   "\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
+    \000\000\019\000\018\000\018\000\019\000\017\000\019\000\255\255\
+    \048\000\019\000\255\255\057\000\000\000\000\000\000\000\000\000\
+    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
+    \019\000\000\000\003\000\000\000\000\000\019\000\000\000\000\000\
+    \050\000\000\000\000\000\043\000\008\000\006\000\033\000\016\000\
+    \004\000\005\000\005\000\005\000\005\000\005\000\005\000\005\000\
+    \005\000\005\000\007\000\004\000\005\000\005\000\005\000\005\000\
+    \005\000\005\000\005\000\005\000\005\000\032\000\044\000\033\000\
+    \056\000\005\000\005\000\005\000\005\000\005\000\005\000\005\000\
+    \005\000\005\000\005\000\021\000\057\000\000\000\000\000\000\000\
+    \020\000\000\000\000\000\012\000\000\000\011\000\032\000\056\000\
+    \000\000\025\000\049\000\000\000\000\000\032\000\014\000\024\000\
+    \028\000\000\000\000\000\057\000\026\000\030\000\013\000\031\000\
+    \000\000\000\000\022\000\027\000\015\000\029\000\023\000\000\000\
+    \000\000\000\000\039\000\010\000\039\000\009\000\032\000\038\000\
+    \038\000\038\000\038\000\038\000\038\000\038\000\038\000\038\000\
+    \038\000\034\000\034\000\034\000\034\000\034\000\034\000\034\000\
+    \034\000\034\000\034\000\034\000\034\000\034\000\034\000\034\000\
+    \034\000\034\000\034\000\034\000\034\000\000\000\000\000\000\000\
+    \000\000\000\000\000\000\000\000\037\000\000\000\037\000\000\000\
+    \035\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\
+    \036\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\
+    \036\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\
+    \036\000\036\000\036\000\036\000\036\000\036\000\036\000\255\255\
+    \035\000\038\000\038\000\038\000\038\000\038\000\038\000\038\000\
+    \038\000\038\000\038\000\038\000\038\000\038\000\038\000\038\000\
+    \038\000\038\000\038\000\038\000\038\000\000\000\000\000\255\255\
+    \000\000\056\000\000\000\000\000\055\000\058\000\058\000\058\000\
+    \058\000\058\000\058\000\058\000\058\000\058\000\058\000\000\000\
+    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\054\000\
+    \000\000\054\000\000\000\000\000\000\000\000\000\054\000\000\000\
+    \002\000\041\000\000\000\000\000\000\000\255\255\046\000\053\000\
+    \053\000\053\000\053\000\053\000\053\000\053\000\053\000\053\000\
+    \053\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
+    \000\000\255\255\059\000\059\000\059\000\059\000\059\000\059\000\
+    \059\000\059\000\059\000\059\000\000\000\000\000\000\000\000\000\
+    \000\000\060\000\060\000\060\000\060\000\060\000\060\000\060\000\
+    \060\000\060\000\060\000\054\000\000\000\000\000\000\000\000\000\
+    \000\000\054\000\060\000\060\000\060\000\060\000\060\000\060\000\
+    \000\000\000\000\000\000\000\000\000\000\054\000\000\000\000\000\
+    \000\000\054\000\000\000\054\000\000\000\000\000\000\000\052\000\
+    \061\000\061\000\061\000\061\000\061\000\061\000\061\000\061\000\
+    \061\000\061\000\060\000\060\000\060\000\060\000\060\000\060\000\
+    \000\000\061\000\061\000\061\000\061\000\061\000\061\000\000\000\
+    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
+    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
+    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
+    \000\000\061\000\061\000\061\000\061\000\061\000\061\000\000\000\
+    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
+    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
+    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
+    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
+    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
+    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
+    \000\000\000\000\000\000\000\000\000\000\255\255\000\000\000\000\
+    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
+    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
+    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\255\255\
+    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
+    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
+    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
+    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
+    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
+    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
+    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
+    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
+    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
+    \000\000";
+  Lexing.lex_check = 
+   "\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
+    \255\255\000\000\000\000\017\000\000\000\000\000\019\000\020\000\
+    \045\000\019\000\020\000\055\000\255\255\255\255\255\255\255\255\
+    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
+    \000\000\255\255\000\000\255\255\255\255\019\000\255\255\255\255\
+    \045\000\255\255\255\255\040\000\000\000\000\000\004\000\000\000\
+    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
+    \000\000\000\000\000\000\006\000\006\000\006\000\006\000\006\000\
+    \006\000\006\000\006\000\006\000\006\000\004\000\043\000\005\000\
+    \056\000\005\000\005\000\005\000\005\000\005\000\005\000\005\000\
+    \005\000\005\000\005\000\016\000\057\000\255\255\255\255\255\255\
+    \016\000\255\255\255\255\000\000\255\255\000\000\005\000\056\000\
+    \255\255\014\000\045\000\255\255\255\255\004\000\000\000\023\000\
+    \027\000\255\255\255\255\057\000\025\000\029\000\000\000\030\000\
+    \255\255\255\255\015\000\026\000\000\000\013\000\022\000\255\255\
+    \255\255\255\255\032\000\000\000\032\000\000\000\005\000\032\000\
+    \032\000\032\000\032\000\032\000\032\000\032\000\032\000\032\000\
+    \032\000\033\000\033\000\033\000\033\000\033\000\033\000\033\000\
+    \033\000\033\000\033\000\034\000\034\000\034\000\034\000\034\000\
+    \034\000\034\000\034\000\034\000\034\000\255\255\255\255\255\255\
+    \255\255\255\255\255\255\255\255\035\000\255\255\035\000\255\255\
+    \034\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\
+    \035\000\035\000\035\000\036\000\036\000\036\000\036\000\036\000\
+    \036\000\036\000\036\000\036\000\036\000\037\000\037\000\037\000\
+    \037\000\037\000\037\000\037\000\037\000\037\000\037\000\047\000\
+    \034\000\038\000\038\000\038\000\038\000\038\000\038\000\038\000\
+    \038\000\038\000\038\000\039\000\039\000\039\000\039\000\039\000\
+    \039\000\039\000\039\000\039\000\039\000\255\255\255\255\047\000\
+    \255\255\049\000\255\255\255\255\049\000\053\000\053\000\053\000\
+    \053\000\053\000\053\000\053\000\053\000\053\000\053\000\255\255\
+    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\049\000\
+    \255\255\049\000\255\255\255\255\255\255\255\255\049\000\255\255\
+    \000\000\040\000\255\255\255\255\255\255\020\000\045\000\049\000\
+    \049\000\049\000\049\000\049\000\049\000\049\000\049\000\049\000\
+    \049\000\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
+    \255\255\047\000\058\000\058\000\058\000\058\000\058\000\058\000\
+    \058\000\058\000\058\000\058\000\255\255\255\255\255\255\255\255\
+    \255\255\052\000\052\000\052\000\052\000\052\000\052\000\052\000\
+    \052\000\052\000\052\000\049\000\255\255\255\255\255\255\255\255\
+    \255\255\049\000\052\000\052\000\052\000\052\000\052\000\052\000\
+    \255\255\255\255\255\255\255\255\255\255\049\000\255\255\255\255\
+    \255\255\049\000\255\255\049\000\255\255\255\255\255\255\049\000\
+    \060\000\060\000\060\000\060\000\060\000\060\000\060\000\060\000\
+    \060\000\060\000\052\000\052\000\052\000\052\000\052\000\052\000\
+    \255\255\060\000\060\000\060\000\060\000\060\000\060\000\255\255\
+    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
+    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
+    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
+    \255\255\060\000\060\000\060\000\060\000\060\000\060\000\255\255\
+    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
+    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
+    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
+    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
+    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
+    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
+    \255\255\255\255\255\255\255\255\255\255\047\000\255\255\255\255\
+    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
+    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
+    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\049\000\
+    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
+    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
+    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
+    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
+    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
+    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
+    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
+    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
+    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
+    \255\255";
+  Lexing.lex_base_code = 
+   "";
+  Lexing.lex_backtrk_code = 
+   "";
+  Lexing.lex_default_code = 
+   "";
+  Lexing.lex_trans_code = 
+   "";
+  Lexing.lex_check_code = 
+   "";
+  Lexing.lex_code = 
+   "";
+}
+
+let rec lex_json buf lexbuf =
+    __ocaml_lex_lex_json_rec buf lexbuf 0
+and __ocaml_lex_lex_json_rec buf lexbuf __ocaml_lex_state =
+  match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
+      | 0 ->
+# 134 "ext/ext_json_parse.mll"
+          ( lex_json buf lexbuf)
+# 306 "ext/ext_json_parse.ml"
+
+  | 1 ->
+# 135 "ext/ext_json_parse.mll"
+                   ( 
+    update_loc lexbuf 0;
+    lex_json buf  lexbuf
+  )
+# 314 "ext/ext_json_parse.ml"
+
+  | 2 ->
+# 139 "ext/ext_json_parse.mll"
+                ( comment buf lexbuf)
+# 319 "ext/ext_json_parse.ml"
+
+  | 3 ->
+# 140 "ext/ext_json_parse.mll"
+         ( True)
+# 324 "ext/ext_json_parse.ml"
+
+  | 4 ->
+# 141 "ext/ext_json_parse.mll"
+          (False)
+# 329 "ext/ext_json_parse.ml"
+
+  | 5 ->
+# 142 "ext/ext_json_parse.mll"
+         (Null)
+# 334 "ext/ext_json_parse.ml"
+
+  | 6 ->
+# 143 "ext/ext_json_parse.mll"
+       (Lbracket)
+# 339 "ext/ext_json_parse.ml"
+
+  | 7 ->
+# 144 "ext/ext_json_parse.mll"
+       (Rbracket)
+# 344 "ext/ext_json_parse.ml"
+
+  | 8 ->
+# 145 "ext/ext_json_parse.mll"
+       (Lbrace)
+# 349 "ext/ext_json_parse.ml"
+
+  | 9 ->
+# 146 "ext/ext_json_parse.mll"
+       (Rbrace)
+# 354 "ext/ext_json_parse.ml"
+
+  | 10 ->
+# 147 "ext/ext_json_parse.mll"
+       (Comma)
+# 359 "ext/ext_json_parse.ml"
+
+  | 11 ->
+# 148 "ext/ext_json_parse.mll"
+        (Colon)
+# 364 "ext/ext_json_parse.ml"
+
+  | 12 ->
+# 149 "ext/ext_json_parse.mll"
+                      (lex_json buf lexbuf)
+# 369 "ext/ext_json_parse.ml"
+
+  | 13 ->
+# 151 "ext/ext_json_parse.mll"
+         ( Number (Lexing.lexeme lexbuf))
+# 374 "ext/ext_json_parse.ml"
+
+  | 14 ->
+# 153 "ext/ext_json_parse.mll"
+      (
+  let pos = Lexing.lexeme_start_p lexbuf in
+  scan_string buf pos lexbuf;
+  let content = (Buffer.contents  buf) in 
+  Buffer.clear buf ;
+  String content 
+)
+# 385 "ext/ext_json_parse.ml"
+
+  | 15 ->
+# 160 "ext/ext_json_parse.mll"
+       (Eof )
+# 390 "ext/ext_json_parse.ml"
+
+  | 16 ->
+let
+# 161 "ext/ext_json_parse.mll"
+       c
+# 396 "ext/ext_json_parse.ml"
+= Lexing.sub_lexeme_char lexbuf lexbuf.Lexing.lex_start_pos in
+# 161 "ext/ext_json_parse.mll"
+          ( error lexbuf (Illegal_character c ))
+# 400 "ext/ext_json_parse.ml"
+
+  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
+      __ocaml_lex_lex_json_rec buf lexbuf __ocaml_lex_state
+
+and comment buf lexbuf =
+    __ocaml_lex_comment_rec buf lexbuf 40
+and __ocaml_lex_comment_rec buf lexbuf __ocaml_lex_state =
+  match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
+      | 0 ->
+# 163 "ext/ext_json_parse.mll"
+              (lex_json buf lexbuf)
+# 412 "ext/ext_json_parse.ml"
+
+  | 1 ->
+# 164 "ext/ext_json_parse.mll"
+     (comment buf lexbuf)
+# 417 "ext/ext_json_parse.ml"
+
+  | 2 ->
+# 165 "ext/ext_json_parse.mll"
+       (error lexbuf Unterminated_comment)
+# 422 "ext/ext_json_parse.ml"
+
+  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
+      __ocaml_lex_comment_rec buf lexbuf __ocaml_lex_state
+
+and scan_string buf start lexbuf =
+    __ocaml_lex_scan_string_rec buf start lexbuf 45
+and __ocaml_lex_scan_string_rec buf start lexbuf __ocaml_lex_state =
+  match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
+      | 0 ->
+# 169 "ext/ext_json_parse.mll"
+      ( () )
+# 434 "ext/ext_json_parse.ml"
+
+  | 1 ->
+# 171 "ext/ext_json_parse.mll"
+  (
+        let len = lexeme_len lexbuf - 2 in
+        update_loc lexbuf len;
+
+        scan_string buf start lexbuf
+      )
+# 444 "ext/ext_json_parse.ml"
+
+  | 2 ->
+# 178 "ext/ext_json_parse.mll"
+      (
+        let len = lexeme_len lexbuf - 3 in
+        update_loc lexbuf len;
+        scan_string buf start lexbuf
+      )
+# 453 "ext/ext_json_parse.ml"
+
+  | 3 ->
+let
+# 183 "ext/ext_json_parse.mll"
+                                               c
+# 459 "ext/ext_json_parse.ml"
+= Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 1) in
+# 184 "ext/ext_json_parse.mll"
+      (
+        Buffer.add_char buf (char_for_backslash c);
+        scan_string buf start lexbuf
+      )
+# 466 "ext/ext_json_parse.ml"
+
+  | 4 ->
+let
+# 188 "ext/ext_json_parse.mll"
+                 c1
+# 472 "ext/ext_json_parse.ml"
+= Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 1)
+and
+# 188 "ext/ext_json_parse.mll"
+                               c2
+# 477 "ext/ext_json_parse.ml"
+= Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 2)
+and
+# 188 "ext/ext_json_parse.mll"
+                                             c3
+# 482 "ext/ext_json_parse.ml"
+= Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 3)
+and
+# 188 "ext/ext_json_parse.mll"
+                                                    s
+# 487 "ext/ext_json_parse.ml"
+= Lexing.sub_lexeme lexbuf lexbuf.Lexing.lex_start_pos (lexbuf.Lexing.lex_start_pos + 4) in
+# 189 "ext/ext_json_parse.mll"
+      (
+        let v = dec_code c1 c2 c3 in
+        if v > 255 then
+          error lexbuf (Illegal_escape s) ;
+        Buffer.add_char buf (Char.chr v);
+
+        scan_string buf start lexbuf
+      )
+# 498 "ext/ext_json_parse.ml"
+
+  | 5 ->
+let
+# 197 "ext/ext_json_parse.mll"
+                        c1
+# 504 "ext/ext_json_parse.ml"
+= Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 2)
+and
+# 197 "ext/ext_json_parse.mll"
+                                         c2
+# 509 "ext/ext_json_parse.ml"
+= Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 3) in
+# 198 "ext/ext_json_parse.mll"
+      (
+        let v = hex_code c1 c2 in
+        Buffer.add_char buf (Char.chr v);
+
+        scan_string buf start lexbuf
+      )
+# 518 "ext/ext_json_parse.ml"
+
+  | 6 ->
+let
+# 204 "ext/ext_json_parse.mll"
+             c
+# 524 "ext/ext_json_parse.ml"
+= Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 1) in
+# 205 "ext/ext_json_parse.mll"
+      (
+        Buffer.add_char buf '\\';
+        Buffer.add_char buf c;
+
+        scan_string buf start lexbuf
+      )
+# 533 "ext/ext_json_parse.ml"
+
+  | 7 ->
+# 212 "ext/ext_json_parse.mll"
+      (
+        update_loc lexbuf 0;
+        Buffer.add_char buf lf;
+
+        scan_string buf start lexbuf
+      )
+# 543 "ext/ext_json_parse.ml"
+
+  | 8 ->
+# 219 "ext/ext_json_parse.mll"
+      (
+        let ofs = lexbuf.lex_start_pos in
+        let len = lexbuf.lex_curr_pos - ofs in
+        Buffer.add_substring buf lexbuf.lex_buffer ofs len;
+
+        scan_string buf start lexbuf
+      )
+# 554 "ext/ext_json_parse.ml"
+
+  | 9 ->
+# 227 "ext/ext_json_parse.mll"
+      (
+        error lexbuf Unterminated_string
+      )
+# 561 "ext/ext_json_parse.ml"
+
+  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
+      __ocaml_lex_scan_string_rec buf start lexbuf __ocaml_lex_state
+
+;;
+
+# 231 "ext/ext_json_parse.mll"
+ 
+
+
+
+
+
+
+let rec parse_json lexbuf =
+  let buf = Buffer.create 64 in 
+  let look_ahead = ref None in
+  let token () : token = 
+    match !look_ahead with 
+    | None ->  
+      lex_json buf lexbuf 
+    | Some x -> 
+      look_ahead := None ;
+      x 
+  in
+  let push e = look_ahead := Some e in 
+  let rec json (lexbuf : Lexing.lexbuf) : Ext_json_types.t = 
+    match token () with 
+    | True -> True lexbuf.lex_start_p
+    | False -> False lexbuf.lex_start_p
+    | Null -> Null lexbuf.lex_start_p
+    | Number s ->  Flo {str = s; loc = lexbuf.lex_start_p}  
+    | String s -> Str { str = s; loc =    lexbuf.lex_start_p}
+    | Lbracket -> parse_array  lexbuf.lex_start_p lexbuf.lex_curr_p [] lexbuf
+    | Lbrace -> parse_map lexbuf.lex_start_p String_map.empty lexbuf
+    |  _ -> error lexbuf Unexpected_token
+(** Note if we remove [trailing_comma] support 
+    we should report errors (actually more work), for example 
+    {[
+    match token () with 
+    | Rbracket ->
+      if trailing_comma then
+        error lexbuf Trailing_comma_in_array
+      else
+    ]} 
+    {[
+    match token () with 
+    | Rbrace -> 
+      if trailing_comma then
+        error lexbuf Trailing_comma_in_obj
+      else
+
+    ]}   
+ *)
+  and parse_array   loc_start loc_finish acc lexbuf 
+    : Ext_json_types.t =
+    match token () with 
+    | Rbracket ->
+        Arr {loc_start ; content = Ext_array.reverse_of_list acc ; 
+              loc_end = lexbuf.lex_curr_p }
+    | x -> 
+      push x ;
+      let new_one = json lexbuf in 
+      begin match token ()  with 
+      | Comma -> 
+          parse_array  loc_start loc_finish (new_one :: acc) lexbuf 
+      | Rbracket 
+        -> Arr {content = (Ext_array.reverse_of_list (new_one::acc));
+                     loc_start ; 
+                     loc_end = lexbuf.lex_curr_p }
+      | _ -> 
+        error lexbuf Expect_comma_or_rbracket
+      end
+  and parse_map loc_start  acc lexbuf : Ext_json_types.t = 
+    match token () with 
+    | Rbrace -> 
+        Obj { map = acc ; loc = loc_start}
+    | String key -> 
+      begin match token () with 
+      | Colon ->
+        let value = json lexbuf in
+        begin match token () with 
+        | Rbrace -> Obj {map = String_map.add key value acc ; loc = loc_start}
+        | Comma -> 
+          parse_map loc_start  (String_map.add key value acc) lexbuf 
+        | _ -> error lexbuf Expect_comma_or_rbrace
+        end
+      | _ -> error lexbuf Expect_colon
+      end
+    | _ -> error lexbuf Expect_string_or_rbrace
+  in 
+  let v = json lexbuf in 
+  match token () with 
+  | Eof -> v 
+  | _ -> error lexbuf Expect_eof
+
+let parse_json_from_string s = 
+  parse_json (Lexing.from_string s )
+
+let parse_json_from_chan in_chan = 
+  let lexbuf = Lexing.from_channel in_chan in 
+  parse_json lexbuf 
+
+let parse_json_from_file s = 
+  let in_chan = open_in s in 
+  let lexbuf = Lexing.from_channel in_chan in 
+  match parse_json lexbuf with 
+  | exception e -> close_in in_chan ; raise e
+  | v  -> close_in in_chan;  v
+
+
+
+
+
+# 676 "ext/ext_json_parse.ml"
+
+end
 module Ast_arg : sig 
 #1 "ast_arg.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -57745,11 +58851,15 @@ module Ast_arg : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type cst = 
+type cst = private
   | Arg_int_lit of int 
   | Arg_string_lit of string 
-
-
+  (* | Arg_js_true *)
+  (* | Arg_js_false *)
+  | Arg_js_null
+  | Arg_js_true
+  | Arg_js_false
+  | Arg_js_json of string
 type label = private
   | Label of string * cst option 
   | Empty of cst option
@@ -57773,6 +58883,10 @@ type kind =
     arg_type : ty;
     arg_label :label
   }
+
+val cst_json : string -> cst 
+val cst_int : int -> cst 
+val cst_string : string -> cst 
 
 val empty_label : label
 val empty_lit : cst -> label 
@@ -57812,7 +58926,10 @@ type cst =
   | Arg_int_lit of int 
   | Arg_string_lit of string 
 
-
+  | Arg_js_null
+  | Arg_js_true
+  | Arg_js_false
+  | Arg_js_json of string
 type label = 
   | Label of string * cst option 
   | Empty of cst option
@@ -57837,7 +58954,14 @@ type kind =
     arg_label : label
   }
 
-
+let cst_json s : cst  =
+  match Ext_json_parse.parse_json (Lexing.from_string s) with 
+  | True _ -> Arg_js_true
+  | False _ -> Arg_js_false 
+  | Null _ -> Arg_js_null 
+  | _ -> Arg_js_json s 
+let cst_int i = Arg_int_lit i 
+let cst_string s = Arg_string_lit s 
 let empty_label = Empty None 
 let empty_lit s = Empty (Some s) 
 let label s cst = Label(s,cst)
@@ -58192,268 +59316,6 @@ let from_string s : t =
         "compiler version mismatch, please do a clean build"
   else Ffi_normal    
 
-end
-module Ext_array : sig 
-#1 "ext_array.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-(** Some utilities for {!Array} operations *)
-val reverse_range : 'a array -> int -> int -> unit
-val reverse_in_place : 'a array -> unit
-val reverse : 'a array -> 'a array 
-val reverse_of_list : 'a list -> 'a array
-
-val filter : ('a -> bool) -> 'a array -> 'a array
-
-val filter_map : ('a -> 'b option) -> 'a array -> 'b array
-
-val range : int -> int -> int array
-
-val map2i : (int -> 'a -> 'b -> 'c ) -> 'a array -> 'b array -> 'c array
-
-val to_list_map : ('a -> 'b option) -> 'a array -> 'b list 
-
-val to_list_map_acc : 
-  ('a -> 'b option) -> 
-  'a array -> 
-  'b list -> 
-  'b list 
-
-val of_list_map : ('a -> 'b) -> 'a list -> 'b array 
-
-val rfind_with_index : 'a array -> ('a -> 'b -> bool) -> 'b -> int
-
-
-type 'a split = [ `No_split | `Split of 'a array * 'a array ]
-
-val rfind_and_split : 
-  'a array ->
-  ('a -> 'b -> bool) ->
-  'b -> 'a split
-
-val find_and_split : 
-  'a array ->
-  ('a -> 'b -> bool) ->
-  'b -> 'a split
-
-val exists : ('a -> bool) -> 'a array -> bool 
-
-val is_empty : 'a array -> bool 
-end = struct
-#1 "ext_array.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-let reverse_range a i len =
-  if len = 0 then ()
-  else
-    for k = 0 to (len-1)/2 do
-      let t = Array.unsafe_get a (i+k) in
-      Array.unsafe_set a (i+k) ( Array.unsafe_get a (i+len-1-k));
-      Array.unsafe_set a (i+len-1-k) t;
-    done
-
-
-let reverse_in_place a =
-  reverse_range a 0 (Array.length a)
-
-let reverse a =
-  let b_len = Array.length a in
-  if b_len = 0 then [||] else  
-  let b = Array.copy a in  
-  for i = 0 to  b_len - 1 do
-      Array.unsafe_set b i (Array.unsafe_get a (b_len - 1 -i )) 
-  done;
-  b  
-
-let reverse_of_list =  function
-  | [] -> [||]
-  | hd::tl as l ->
-    let len = List.length l in
-    let a = Array.make len hd in
-    let rec fill i = function
-      | [] -> a
-      | hd::tl -> Array.unsafe_set a (len - i - 2) hd; fill (i+1) tl in
-    fill 0 tl
-
-let filter f a =
-  let arr_len = Array.length a in
-  let rec aux acc i =
-    if i = arr_len 
-    then reverse_of_list acc 
-    else
-      let v = Array.unsafe_get a i in
-      if f  v then 
-        aux (v::acc) (i+1)
-      else aux acc (i + 1) 
-  in aux [] 0
-
-
-let filter_map (f : _ -> _ option) a =
-  let arr_len = Array.length a in
-  let rec aux acc i =
-    if i = arr_len 
-    then reverse_of_list acc 
-    else
-      let v = Array.unsafe_get a i in
-      match f  v with 
-      | Some v -> 
-        aux (v::acc) (i+1)
-      | None -> 
-        aux acc (i + 1) 
-  in aux [] 0
-
-let range from to_ =
-  if from > to_ then invalid_arg "Ext_array.range"  
-  else Array.init (to_ - from + 1) (fun i -> i + from)
-
-let map2i f a b = 
-  let len = Array.length a in 
-  if len <> Array.length b then 
-    invalid_arg "Ext_array.map2i"  
-  else
-    Array.mapi (fun i a -> f i  a ( Array.unsafe_get b i )) a 
-
-
- let rec tolist_aux a f  i res =
-    if i < 0 then res else
-      let v = Array.unsafe_get a i in
-      tolist_aux a f  (i - 1)
-        (match f v with
-         | Some v -> v :: res
-         | None -> res) 
-
-let to_list_map f a = 
-  tolist_aux a f (Array.length a - 1) []
-
-let to_list_map_acc f a acc = 
-  tolist_aux a f (Array.length a - 1) acc
-
-
-(* TODO: What would happen if [f] raise, memory leak? *)
-let of_list_map f a = 
-  match a with 
-  | [] -> [||]
-  | h::tl -> 
-    let hd = f h in 
-    let len = List.length tl + 1 in 
-    let arr = Array.make len hd  in
-    let rec fill i = function
-    | [] -> arr 
-    | hd :: tl -> 
-      Array.unsafe_set arr i (f hd); 
-      fill (i + 1) tl in 
-    fill 1 tl
-  
-(**
-{[
-# rfind_with_index [|1;2;3|] (=) 2;;
-- : int = 1
-# rfind_with_index [|1;2;3|] (=) 1;;
-- : int = 0
-# rfind_with_index [|1;2;3|] (=) 3;;
-- : int = 2
-# rfind_with_index [|1;2;3|] (=) 4;;
-- : int = -1
-]}
-*)
-let rfind_with_index arr cmp v = 
-  let len = Array.length arr in 
-  let rec aux i = 
-    if i < 0 then i
-    else if  cmp (Array.unsafe_get arr i) v then i
-    else aux (i - 1) in 
-  aux (len - 1)
-
-type 'a split = [ `No_split | `Split of 'a array * 'a array ]
-let rfind_and_split arr cmp v : _ split = 
-  let i = rfind_with_index arr cmp v in 
-  if  i < 0 then 
-    `No_split 
-  else 
-    `Split (Array.sub arr 0 i , Array.sub arr  (i + 1 ) (Array.length arr - i - 1 ))
-
-
-let find_with_index arr cmp v = 
-  let len  = Array.length arr in 
-  let rec aux i len = 
-    if i >= len then -1 
-    else if cmp (Array.unsafe_get arr i ) v then i 
-    else aux (i + 1) len in 
-  aux 0 len
-
-let find_and_split arr cmp v : _ split = 
-  let i = find_with_index arr cmp v in 
-  if i < 0 then 
-    `No_split
-  else
-    `Split (Array.sub arr 0 i, Array.sub arr (i + 1 ) (Array.length arr - i - 1))        
-
-(** TODO: available since 4.03, use {!Array.exists} *)
-
-let exists p a =
-  let n = Array.length a in
-  let rec loop i =
-    if i = n then false
-    else if p (Array.unsafe_get a i) then true
-    else loop (succ i) in
-  loop 0
-
-
-let is_empty arr =
-  Array.length arr = 0
 end
 module Vec_gen
 = struct
@@ -89593,6 +90455,9 @@ module Lam_compile_const : sig
 
 val translate : Lam.constant -> J.expression
 
+
+val translate_arg_cst : Ast_arg.cst -> J.expression
+
 end = struct
 #1 "lam_compile_const.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -89688,6 +90553,20 @@ let rec translate (x : Lam.constant ) : J.expression =
 
   | Const_immstring s ->  (*TODO *)
     E.str s  (* TODO: check *)
+
+
+let translate_arg_cst (cst : Ast_arg.cst) = 
+  match cst with 
+   | Arg_int_lit i -> 
+     E.int (Int32.of_int i)
+   | Arg_string_lit i -> 
+     E.str i
+   | Arg_js_null  -> E.raw_js_code Exp "null"
+   | Arg_js_json s 
+     -> E.raw_js_code Exp s
+
+   | Arg_js_true  -> E.js_bool true
+   | Arg_js_false -> E.js_bool false 
 
 end
 module Js_of_lam_exception : sig 
@@ -90338,15 +91217,10 @@ let assemble_args_splice call_loc ffi  js_splice arg_types args : E.t list * E.t
   let rec aux (labels : Ast_arg.kind list) args = 
     match labels, args with 
     | [] , [] -> empty_pair
-    | { arg_label =  Empty (Some (Arg_int_lit i)) } :: labels  , args 
-    | { arg_label =  Label (_, Some (Arg_int_lit i))} :: labels  , args -> 
-      let accs, eff = aux labels args in 
-      E.int (Int32.of_int i) ::accs, eff 
-    | { arg_label =  Label (_, Some (Arg_string_lit i))} :: labels , args 
-    | { arg_label =  Empty (Some (Arg_string_lit i)) } :: labels , args
-      -> 
-      let accs, eff = aux labels args in 
-      E.str i :: accs, eff
+    | { arg_label =  Empty (Some cst) } :: labels  , args 
+    | { arg_label =  Label (_, Some cst)} :: labels  , args -> 
+      let accs, eff = aux labels args in
+      Lam_compile_const.translate_arg_cst cst :: accs, eff 
     | ({arg_label = Empty None | Label (_,None) | Optional _ } as arg_kind) ::labels, arg :: args
       ->  
       if js_splice && args = [] then 
@@ -90635,15 +91509,10 @@ let assemble_args_obj (labels : Ast_arg.kind list) (args : J.expression list) =
   let rec aux (labels : Ast_arg.kind list) args = 
     match labels, args with 
     | [] , [] as empty_pair -> empty_pair
-    | {arg_label = Label (label, Some (Arg_int_lit i))} :: labels  , args -> 
+    | {arg_label = Label (label, Some cst )} :: labels  , args -> 
       let accs, eff = aux labels args in 
-      (Js_op.Key label, E.int (Int32.of_int i) )::accs, eff 
-    | {arg_label = Label(label, Some (Arg_string_lit i))} :: labels , args 
-      -> 
-      let accs, eff = aux labels args in 
-      (Js_op.Key label, E.str i) :: accs, eff
-    | {arg_label = Empty (Some (Arg_int_lit i)) } :: rest  , args -> assert false 
-    | {arg_label = Empty(Some (Arg_string_lit i))} :: rest , args -> assert false 
+      (Js_op.Key label, Lam_compile_const.translate_arg_cst cst )::accs, eff 
+    | {arg_label = Empty (Some _) } :: rest  , args -> assert false 
     | {arg_label = Empty None }::labels, arg::args 
       ->  
       let (accs, eff) as r  = aux labels args in 
@@ -99220,7 +100089,7 @@ type label_expr = lid  * Parsetree.expression
 type action = 
    lid * Parsetree.expression option
 
-val is_single_string : t -> string option
+val is_single_string : t -> (string * string option) option
 val is_single_int : t -> int option 
 
 type rtn = Not_String_Lteral | JS_Regex_Check_Failed | Correct of Parsetree.expression
@@ -99292,9 +100161,9 @@ let is_single_string (x : t ) =
         Pstr_eval (
           {pexp_desc = 
              Pexp_constant 
-               (Const_string (name,_));
+               (Const_string (name,dec));
            _},_);
-      _}] -> Some name
+      _}] -> Some (name,dec)
   | _  -> None
 
 let is_single_int (x : t ) = 
@@ -99491,7 +100360,7 @@ type error
   | Duplicated_bs_as 
   | Expect_int_literal
   | Expect_string_literal
-  | Expect_int_or_string_literal
+  | Expect_int_or_string_or_json_literal
   | Unhandled_poly_type
   | Unregistered of string 
   | Invalid_underscore_type_in_external
@@ -99547,9 +100416,9 @@ let pp_error fmt err =
   | Expect_int_literal 
     -> 
     "expect int literal "
-  | Expect_int_or_string_literal
+  | Expect_int_or_string_or_json_literal
     ->
-    "expect int or string literal "
+    "expect int or string literal or json literal ({json||json}) "
   | Unhandled_poly_type 
     -> 
     "Unhandled poly type"
@@ -99638,7 +100507,9 @@ val process_bs_int_as :
 
 val process_bs_string_or_int_as : 
     t ->
-    [ `Int of int | `Str of string ] option *
+    [ `Int of int 
+    | `Str of string
+    | `Json_str of string  ] option *
     (string Asttypes.loc * Parsetree.payload) list
 
 
@@ -99839,7 +100710,7 @@ let process_bs_string_as  attrs =
         begin match Ast_payload.is_single_string payload with 
           | None -> 
             Bs_syntaxerr.err loc Expect_string_literal
-          | Some  _ as v->  (v, attrs)  
+          | Some  (v,dec) ->  ( Some v, attrs)  
         end
       | "bs.as",  _ 
         -> 
@@ -99875,9 +100746,11 @@ let process_bs_string_or_int_as attrs =
         begin match Ast_payload.is_single_int payload with 
           | None -> 
             begin match Ast_payload.is_single_string payload with 
-            | None -> 
-              Bs_syntaxerr.err loc Expect_int_or_string_literal
-            | Some s -> (Some (`Str s), attrs)
+            | Some (s,None) -> (Some (`Str (s)), attrs)
+            | Some (s, Some "json") -> (Some (`Json_str s ), attrs)
+            | None | Some (_, Some _) -> 
+              Bs_syntaxerr.err loc Expect_int_or_string_or_json_literal
+
             end
           | Some   v->  (Some (`Int v), attrs)  
         end
@@ -101515,10 +102388,14 @@ let get_arg_type ~nolabel optional
 
       | Some (`Int i), others -> 
         Ast_attributes.warn_unused_attributes others;
-        Arg_cst(Arg_int_lit i), Ast_literal.type_int ~loc:ptyp.ptyp_loc ()  
+        Arg_cst(Ast_arg.cst_int i), Ast_literal.type_int ~loc:ptyp.ptyp_loc ()  
       | Some (`Str i), others -> 
         Ast_attributes.warn_unused_attributes others;
-        Arg_cst (Arg_string_lit i), Ast_literal.type_string ~loc:ptyp.ptyp_loc () 
+        Arg_cst (Ast_arg.cst_string i), Ast_literal.type_string ~loc:ptyp.ptyp_loc () 
+      | Some (`Json_str s), others ->
+        Ast_attributes.warn_unused_attributes others;
+        Arg_cst (Ast_arg.cst_json s), Ast_literal.type_string ~loc:ptyp.ptyp_loc () 
+
     end 
   else (* ([`a|`b] [@bs.string]) *)
     match Ast_attributes.process_bs_string_int_uncurry ptyp.ptyp_attributes, ptyp.ptyp_desc with 
@@ -101702,7 +102579,7 @@ let process_external_attributes
     (prim_attributes : Ast_attributes.t) : _ * Ast_attributes.t =
   let name_from_payload_or_prim payload : name_source =
     match Ast_payload.is_single_string payload with
-    | Some  val_name ->  `Nm_payload val_name
+    | Some  (val_name, _) ->  `Nm_payload val_name
     | None ->  (prim_name_or_pval_prim :> name_source)
   in
   List.fold_left 

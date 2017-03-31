@@ -29,6 +29,9 @@ type cst =
   | Arg_string_lit of string 
 
   | Arg_js_null
+  | Arg_js_true
+  | Arg_js_false
+  | Arg_js_json of string
 type label = 
   | Label of string * cst option 
   | Empty of cst option
@@ -53,7 +56,14 @@ type kind =
     arg_label : label
   }
 
-
+let cst_json s : cst  =
+  match Ext_json_parse.parse_json (Lexing.from_string s) with 
+  | True _ -> Arg_js_true
+  | False _ -> Arg_js_false 
+  | Null _ -> Arg_js_null 
+  | _ -> Arg_js_json s 
+let cst_int i = Arg_int_lit i 
+let cst_string s = Arg_string_lit s 
 let empty_label = Empty None 
 let empty_lit s = Empty (Some s) 
 let label s cst = Label(s,cst)

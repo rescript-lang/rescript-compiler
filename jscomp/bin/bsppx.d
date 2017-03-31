@@ -10,6 +10,7 @@ bin/bsppx.ml : ext/ext_util.ml
 bin/bsppx.ml : ext/literals.ml
 bin/bsppx.ml : ../ocaml/utils/clflags.ml
 bin/bsppx.ml : common/bs_loc.ml
+bin/bsppx.ml : ext/ext_array.ml
 bin/bsppx.ml : ext/ext_bytes.ml
 bin/bsppx.ml : ext/ext_char.mli
 bin/bsppx.ml : ext/ext_list.mli
@@ -20,6 +21,7 @@ bin/bsppx.ml : ../ocaml/utils/clflags.mli
 bin/bsppx.ml : ../ocaml/utils/terminfo.ml
 bin/bsppx.ml : ../ocaml/utils/warnings.ml
 bin/bsppx.ml : common/bs_loc.mli
+bin/bsppx.ml : ext/ext_array.mli
 bin/bsppx.ml : ext/ext_bytes.mli
 bin/bsppx.ml : ext/ext_string.ml
 bin/bsppx.ml : ext/string_map.ml
@@ -42,6 +44,7 @@ bin/bsppx.ml : bin/configDummy.mli
 bin/bsppx.ml : common/js_config.ml
 bin/bsppx.ml : ext/ext_filename.ml
 bin/bsppx.ml : ext/ext_js_regex.ml
+bin/bsppx.ml : ext/ext_position.ml
 bin/bsppx.ml : ext/hash_set_gen.ml
 bin/bsppx.ml : syntax/ast_comb.mli
 bin/bsppx.ml : syntax/ast_util.mli
@@ -53,6 +56,7 @@ bin/bsppx.ml : common/bs_version.ml
 bin/bsppx.ml : common/js_config.mli
 bin/bsppx.ml : ext/ext_filename.mli
 bin/bsppx.ml : ext/ext_js_regex.mli
+bin/bsppx.ml : ext/ext_position.mli
 bin/bsppx.ml : syntax/ast_derive.ml
 bin/bsppx.ml : syntax/ppx_entry.mli
 bin/bsppx.ml : ../ocaml/parsing/ast_helper.ml
@@ -62,6 +66,8 @@ bin/bsppx.ml : ../ocaml/parsing/longident.mli
 bin/bsppx.ml : ../ocaml/parsing/parsetree.mli
 bin/bsppx.ml : common/bs_version.mli
 bin/bsppx.ml : common/bs_warnings.ml
+bin/bsppx.ml : ext/ext_json_parse.ml
+bin/bsppx.ml : ext/ext_json_types.ml
 bin/bsppx.ml : ext/ext_pervasives.ml
 bin/bsppx.ml : syntax/ast_derive.mli
 bin/bsppx.ml : syntax/ast_literal.ml
@@ -71,6 +77,7 @@ bin/bsppx.ml : ../ocaml/parsing/ast_mapper.mli
 bin/bsppx.ml : ../ocaml/parsing/docstrings.mli
 bin/bsppx.ml : common/bs_warnings.mli
 bin/bsppx.ml : common/lam_methname.ml
+bin/bsppx.ml : ext/ext_json_parse.mli
 bin/bsppx.ml : ext/ext_pervasives.mli
 bin/bsppx.ml : ext/string_hash_set.ml
 bin/bsppx.ml : stubs/bs_hash_stubs.ml
