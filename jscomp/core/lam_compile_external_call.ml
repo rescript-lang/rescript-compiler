@@ -84,17 +84,16 @@ let ocaml_to_js_eff
   let arg =
     match arg_label with
     | Optional label -> Js_of_lam_option.get_default_undefined arg 
-    | Label _ | Empty -> arg 
-    | Label_int_lit _ 
-    | Label_string_lit _ 
-    | Empty_int_lit _ 
-    | Empty_string_lit _  -> assert false in 
+    | Label (_, None) | Empty None -> arg 
+    | Label (_, Some _) 
+    | Empty ( Some _)
+      -> assert false in 
   match arg_type with
-  | Arg_int_lit _ | Arg_string_lit _ -> assert false 
+  | Arg_cst _ -> assert false 
   | Fn_uncurry_arity _ -> assert false  
   (* has to be preprocessed by {!Lam} module first *)
   | Extern_unit ->  
-    (if arg_label = Empty then [] else [E.unit]), 
+    (if arg_label = Empty None then [] else [E.unit]), 
     (if Js_analyzer.no_side_effect_expression arg then 
        []
      else 
@@ -134,16 +133,16 @@ let assemble_args_splice call_loc ffi  js_splice arg_types args : E.t list * E.t
   let rec aux (labels : Ast_ffi_types.arg_kind list) args = 
     match labels, args with 
     | [] , [] -> empty_pair
-    | { arg_label =  Empty_int_lit i } :: labels  , args 
-    | { arg_label =  Label_int_lit (_,i)} :: labels  , args -> 
+    | { arg_label =  Empty (Some (Arg_int_lit i)) } :: labels  , args 
+    | { arg_label =  Label (_, Some (Arg_int_lit i))} :: labels  , args -> 
       let accs, eff = aux labels args in 
       E.int (Int32.of_int i) ::accs, eff 
-    | { arg_label =  Label_string_lit(_,i)} :: labels , args 
-    | { arg_label =  Empty_string_lit i} :: labels , args
+    | { arg_label =  Label (_, Some (Arg_string_lit i))} :: labels , args 
+    | { arg_label =  Empty (Some (Arg_string_lit i)) } :: labels , args
       -> 
       let accs, eff = aux labels args in 
       E.str i :: accs, eff
-    | ({arg_label = Empty | Label _ | Optional _ } as arg_kind) ::labels, arg :: args
+    | ({arg_label = Empty None | Label (_,None) | Optional _ } as arg_kind) ::labels, arg :: args
       ->  
       if js_splice && args = [] then 
         let accs, eff = aux labels [] in 
@@ -163,7 +162,7 @@ let assemble_args_splice call_loc ffi  js_splice arg_types args : E.t list * E.t
         let accs, eff = aux labels args in 
         let acc, new_eff = ocaml_to_js_eff arg_kind arg in 
         acc @ accs, new_eff @ eff
-    | { arg_label = Empty | Label _ | Optional _  } :: _ , [] -> assert false 
+    | { arg_label = Empty None | Label (_,None) | Optional _  } :: _ , [] -> assert false 
     | [],  _ :: _  -> assert false      
 
   in 
@@ -314,9 +313,9 @@ let translate_ffi
     begin match args, arg_types with 
       | [obj; v], _ -> 
         E.assign (E.dot obj name) v         
-      | [obj], [_; {arg_type = Arg_int_lit i }] ->
+      | [obj], [_; {arg_type = Arg_cst (Arg_int_lit i) }] ->
         E.assign (E.dot obj name) (E.int (Int32.of_int i))  
-      | [obj], [_; {arg_type = Arg_string_lit i }] ->
+      | [obj], [_; {arg_type = Arg_cst (Arg_string_lit i) }] ->
         E.assign (E.dot obj name) (E.str i)          
       | _ -> 
         assert false 

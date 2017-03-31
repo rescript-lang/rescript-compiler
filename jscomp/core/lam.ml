@@ -1292,7 +1292,7 @@ let rec transform_uncurried_arg_type loc (arg_types : Ast_ffi_types.arg_kind lis
     prim ~primitive:(Pjs_fn_make n) ~args:[y] loc :: o_args 
   |  x  ::xs, y::ys -> 
     begin match x with 
-      | {arg_type = Arg_int_lit  _ | Arg_string_lit _ }  -> 
+      | {arg_type = Arg_cst _ }  -> 
         let o_arg_types, o_args = transform_uncurried_arg_type loc xs args in 
         x :: o_arg_types , o_args 
       | _ -> 

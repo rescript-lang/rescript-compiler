@@ -58210,12 +58210,16 @@ type arg_label =
     | Label_string_lit of string * string *)
   | Optional of string 
   | Empty
+
+type arg_cst = 
+  | Arg_int_lit of int 
+  | Arg_string_lit of string 
+
 type arg_type = 
   | NullString of (int * string) list 
   | NonNullString of (int * string) list 
   | Int of (int * int ) list 
-  | Arg_int_lit of int 
-  | Arg_string_lit of string 
+  | Arg_cst of arg_cst
   | Fn_uncurry_arity of int (* annotated with [@bs.uncurry ] or [@bs.uncurry 2]*)  
   | Array 
   | Extern_unit
@@ -58298,12 +58302,15 @@ type arg_label =
   | Optional of string 
   | Empty (* it will be ignored , side effect will be recorded *)
 
+type arg_cst = 
+  | Arg_int_lit of int 
+  | Arg_string_lit of string 
+
 type arg_type = 
   | NullString of (int * string) list (* `a does not have any value*)
   | NonNullString of (int * string) list (* `a of int *)
   | Int of (int * int ) list (* ([`a | `b ] [@bs.int])*)
-  | Arg_int_lit of int 
-  | Arg_string_lit of string 
+  | Arg_cst of arg_cst
   | Fn_uncurry_arity of int (* annotated with [@bs.uncurry ] or [@bs.uncurry 2]*)
     (* maybe we can improve it as a combination of {!Asttypes.constant} and tuple *)
   | Array 
@@ -58520,13 +58527,13 @@ type js_module_as_fn =
 
 type arg_type = Ast_core_type.arg_type
 type arg_label = 
-  | Label of string 
-  | Label_int_lit of string * int 
-  | Label_string_lit of string * string 
+  | Label of string * Ast_core_type.arg_cst option 
+  (* | label_int_lit of string * int  *)
+  (* | Label_string_lit of string * string  *)
   | Optional of string 
-  | Empty (* it will be ignored , side effect will be recorded *)
-  | Empty_int_lit of int 
-  | Empty_string_lit of string 
+  | Empty of Ast_core_type.arg_cst option  (* it will be ignored , side effect will be recorded *)
+  (* | Empty_int_lit of int  *)
+  (* | Empty_string_lit of string  *)
 
 type arg_kind = 
   {
@@ -58645,8 +58652,7 @@ type arg_type = Ast_core_type.arg_type =
   | NullString of (int * string) list (* `a does not have any value*)
   | NonNullString of (int * string) list (* `a of int *)
   | Int of (int * int ) list (* ([`a | `b ] [@bs.int])*)
-  | Arg_int_lit of int 
-  | Arg_string_lit of string 
+  | Arg_cst of Ast_core_type.arg_cst
   | Fn_uncurry_arity of int (* annotated with [@bs.uncurry ] or [@bs.uncurry 2]*)
   (* maybe we can improve it as a combination of {!Asttypes.constant} and tuple *)
   | Array 
@@ -58657,13 +58663,11 @@ type arg_type = Ast_core_type.arg_type =
   | Ignore (* annotated with [@bs.ignore] *)
 
 type arg_label = 
-  | Label of string 
-  | Label_int_lit of string * int 
-  | Label_string_lit of string * string 
+  | Label of string * Ast_core_type.arg_cst option
   | Optional of string 
-  | Empty (* it will be ignored , side effect will be recorded *)
-  | Empty_int_lit of int 
-  | Empty_string_lit of string 
+  | Empty of Ast_core_type.arg_cst option  (* it will be ignored , side effect will be recorded *)
+
+
 (**TODO: maybe we can merge [arg_label] and [arg_type] *)
 type arg_kind = 
   {
@@ -66716,7 +66720,7 @@ let rec transform_uncurried_arg_type loc (arg_types : Ast_ffi_types.arg_kind lis
     prim ~primitive:(Pjs_fn_make n) ~args:[y] loc :: o_args 
   |  x  ::xs, y::ys -> 
     begin match x with 
-      | {arg_type = Arg_int_lit  _ | Arg_string_lit _ }  -> 
+      | {arg_type = Arg_cst _ }  -> 
         let o_arg_types, o_args = transform_uncurried_arg_type loc xs args in 
         x :: o_arg_types , o_args 
       | _ -> 
@@ -90933,17 +90937,16 @@ let ocaml_to_js_eff
   let arg =
     match arg_label with
     | Optional label -> Js_of_lam_option.get_default_undefined arg 
-    | Label _ | Empty -> arg 
-    | Label_int_lit _ 
-    | Label_string_lit _ 
-    | Empty_int_lit _ 
-    | Empty_string_lit _  -> assert false in 
+    | Label (_, None) | Empty None -> arg 
+    | Label (_, Some _) 
+    | Empty ( Some _)
+      -> assert false in 
   match arg_type with
-  | Arg_int_lit _ | Arg_string_lit _ -> assert false 
+  | Arg_cst _ -> assert false 
   | Fn_uncurry_arity _ -> assert false  
   (* has to be preprocessed by {!Lam} module first *)
   | Extern_unit ->  
-    (if arg_label = Empty then [] else [E.unit]), 
+    (if arg_label = Empty None then [] else [E.unit]), 
     (if Js_analyzer.no_side_effect_expression arg then 
        []
      else 
@@ -90983,16 +90986,16 @@ let assemble_args_splice call_loc ffi  js_splice arg_types args : E.t list * E.t
   let rec aux (labels : Ast_ffi_types.arg_kind list) args = 
     match labels, args with 
     | [] , [] -> empty_pair
-    | { arg_label =  Empty_int_lit i } :: labels  , args 
-    | { arg_label =  Label_int_lit (_,i)} :: labels  , args -> 
+    | { arg_label =  Empty (Some (Arg_int_lit i)) } :: labels  , args 
+    | { arg_label =  Label (_, Some (Arg_int_lit i))} :: labels  , args -> 
       let accs, eff = aux labels args in 
       E.int (Int32.of_int i) ::accs, eff 
-    | { arg_label =  Label_string_lit(_,i)} :: labels , args 
-    | { arg_label =  Empty_string_lit i} :: labels , args
+    | { arg_label =  Label (_, Some (Arg_string_lit i))} :: labels , args 
+    | { arg_label =  Empty (Some (Arg_string_lit i)) } :: labels , args
       -> 
       let accs, eff = aux labels args in 
       E.str i :: accs, eff
-    | ({arg_label = Empty | Label _ | Optional _ } as arg_kind) ::labels, arg :: args
+    | ({arg_label = Empty None | Label (_,None) | Optional _ } as arg_kind) ::labels, arg :: args
       ->  
       if js_splice && args = [] then 
         let accs, eff = aux labels [] in 
@@ -91012,7 +91015,7 @@ let assemble_args_splice call_loc ffi  js_splice arg_types args : E.t list * E.t
         let accs, eff = aux labels args in 
         let acc, new_eff = ocaml_to_js_eff arg_kind arg in 
         acc @ accs, new_eff @ eff
-    | { arg_label = Empty | Label _ | Optional _  } :: _ , [] -> assert false 
+    | { arg_label = Empty None | Label (_,None) | Optional _  } :: _ , [] -> assert false 
     | [],  _ :: _  -> assert false      
 
   in 
@@ -91163,9 +91166,9 @@ let translate_ffi
     begin match args, arg_types with 
       | [obj; v], _ -> 
         E.assign (E.dot obj name) v         
-      | [obj], [_; {arg_type = Arg_int_lit i }] ->
+      | [obj], [_; {arg_type = Arg_cst (Arg_int_lit i) }] ->
         E.assign (E.dot obj name) (E.int (Int32.of_int i))  
-      | [obj], [_; {arg_type = Arg_string_lit i }] ->
+      | [obj], [_; {arg_type = Arg_cst (Arg_string_lit i) }] ->
         E.assign (E.dot obj name) (E.str i)          
       | _ -> 
         assert false 
@@ -91279,21 +91282,21 @@ let assemble_args_obj (labels : Ast_ffi_types.arg_kind list) (args : J.expressio
   let rec aux (labels : Ast_ffi_types.arg_kind list) args = 
     match labels, args with 
     | [] , [] as empty_pair -> empty_pair
-    | {arg_label = Label_int_lit (label,i)} :: labels  , args -> 
+    | {arg_label = Label (label, Some (Arg_int_lit i))} :: labels  , args -> 
       let accs, eff = aux labels args in 
       (Js_op.Key label, E.int (Int32.of_int i) )::accs, eff 
-    | {arg_label = Label_string_lit(label,i)} :: labels , args 
+    | {arg_label = Label(label, Some (Arg_string_lit i))} :: labels , args 
       -> 
       let accs, eff = aux labels args in 
       (Js_op.Key label, E.str i) :: accs, eff
-    | {arg_label = Empty_int_lit i } :: rest  , args -> assert false 
-    | {arg_label = Empty_string_lit i} :: rest , args -> assert false 
-    | {arg_label = Empty }::labels, arg::args 
+    | {arg_label = Empty (Some (Arg_int_lit i)) } :: rest  , args -> assert false 
+    | {arg_label = Empty(Some (Arg_string_lit i))} :: rest , args -> assert false 
+    | {arg_label = Empty None }::labels, arg::args 
       ->  
       let (accs, eff) as r  = aux labels args in 
       if Js_analyzer.no_side_effect_expression arg then r 
       else (accs, arg::eff)
-    | ({arg_label = Label label  } as arg_kind)::labels, arg::args 
+    | ({arg_label = Label (label,None)  } as arg_kind)::labels, arg::args 
       -> 
       let accs, eff = aux labels args in 
       let acc, new_eff = Lam_compile_external_call.ocaml_to_js_eff arg_kind arg in 
@@ -91319,7 +91322,7 @@ let assemble_args_obj (labels : Ast_ffi_types.arg_kind list) (args : J.expressio
           end 
       end
 
-    | {arg_label = Empty | Label _ | Optional _  } :: _ , [] -> assert false 
+    | {arg_label = Empty None | Label (_,None) | Optional _  } :: _ , [] -> assert false 
     | [],  _ :: _  -> assert false 
   in 
   let map, eff = aux labels args in 
@@ -101445,10 +101448,10 @@ let get_arg_type ~nolabel optional
 
       | Some (`Int i), others -> 
         Ast_attributes.warn_unused_attributes others;
-        Arg_int_lit i, Ast_literal.type_int ~loc:ptyp.ptyp_loc ()  
+        Arg_cst(Arg_int_lit i), Ast_literal.type_int ~loc:ptyp.ptyp_loc ()  
       | Some (`Str i), others -> 
         Ast_attributes.warn_unused_attributes others;
-        Arg_string_lit i, Ast_literal.type_string ~loc:ptyp.ptyp_loc () 
+        Arg_cst (Arg_string_lit i), Ast_literal.type_string ~loc:ptyp.ptyp_loc () 
     end 
   else (* ([`a|`b] [@bs.string]) *)
     match Ast_attributes.process_bs_string_int_uncurry ptyp.ptyp_attributes, ptyp.ptyp_desc with 
@@ -101817,7 +101820,7 @@ let handle_attributes
                    let arg_type, new_ty = get_arg_type ~nolabel:true false ty in 
                    begin match arg_type with 
                      | Extern_unit ->  
-                       { Ast_ffi_types.arg_label = Empty; arg_type }, (label,new_ty,attr,loc)::arg_types, result_types
+                       { Ast_ffi_types.arg_label = Empty None; arg_type }, (label,new_ty,attr,loc)::arg_types, result_types
                      | _ ->  
                        Location.raise_errorf ~loc "expect label, optional, or unit here"
                    end 
@@ -101825,31 +101828,31 @@ let handle_attributes
                    let arg_type, new_ty = get_arg_type ~nolabel:false false ty in 
                    begin match arg_type with 
                      | Ignore -> 
-                       { arg_label = Empty ; arg_type }, 
+                       { arg_label = Empty None ; arg_type }, 
                        (label,new_ty,attr,loc)::arg_types, result_types
-                     | Ast_core_type.Arg_int_lit i  -> 
+                     | Arg_cst (Arg_int_lit _ as i)  -> 
                        let s = (Lam_methname.translate ~loc name) in
-                       {arg_label = Label_int_lit (s,i) ; arg_type }, 
+                       {arg_label = Label (s, Some i) ; arg_type }, 
                        arg_types, (* ignored in [arg_types], reserved in [result_types] *)
                        ((name , [], new_ty) :: result_types)
-                     | Ast_core_type.Arg_string_lit i -> 
+                     | Arg_cst (Arg_string_lit _ as i) -> 
                        let s = (Lam_methname.translate ~loc name) in
-                       {arg_label = Label_string_lit (s,i) ; arg_type }, 
+                       {arg_label = Label (s, Some i) ; arg_type }, 
                        arg_types, 
                        ((name , [], new_ty) :: result_types)
                      | Nothing | Array -> 
                        let s = (Lam_methname.translate ~loc name) in
-                       {arg_label = Label s ; arg_type },
+                       {arg_label = Label (s,None) ; arg_type },
                        (label,new_ty,attr,loc)::arg_types, 
                        ((name , [], new_ty) :: result_types)
                      | Int _  -> 
                        let s = Lam_methname.translate ~loc name in
-                       {arg_label = Label s; arg_type},
+                       {arg_label = Label (s,None); arg_type},
                        (label,new_ty,attr,loc)::arg_types, 
                        ((name, [], Ast_literal.type_int ~loc ()) :: result_types)  
                      | NullString _ -> 
                        let s = Lam_methname.translate ~loc name in
-                       {arg_label = Label s; arg_type}, 
+                       {arg_label = Label (s,None); arg_type}, 
                        (label,new_ty,attr,loc)::arg_types, 
                        ((name, [], Ast_literal.type_string ~loc ()) :: result_types)  
                      | Fn_uncurry_arity _ -> 
@@ -101866,7 +101869,7 @@ let handle_attributes
                    let new_ty = Ast_core_type.lift_option_type new_ty_extract in 
                    begin match arg_type with 
                      | Ignore -> 
-                       {arg_label = Empty ; arg_type}, 
+                       {arg_label = Empty None ; arg_type}, 
                        (label,new_ty,attr,loc)::arg_types, result_types
 
                      | Nothing | Array -> 
@@ -101884,8 +101887,8 @@ let handle_attributes
                        {arg_label = Optional s ; arg_type }, 
                        (label,new_ty,attr,loc)::arg_types,
                        ((name, [], Ast_comb.to_undefined_type loc @@ Ast_literal.type_string ~loc ()) :: result_types)                      
-                     | Arg_int_lit _   
-                     | Arg_string_lit _ -> 
+                     | Arg_cst _   
+                       -> 
                        Location.raise_errorf ~loc "bs.as is not supported with optional yet"
                      | Fn_uncurry_arity _ -> 
                        Location.raise_errorf ~loc
@@ -101947,21 +101950,21 @@ let handle_attributes
                    ((label, Ast_core_type.lift_option_type new_ty , attr,loc) :: arg_types) end
              | Label s  -> 
                begin match get_arg_type ~nolabel:false false  ty with
-                 | (Arg_int_lit i as arg_type), new_ty -> 
-                   Label_int_lit(s,i), arg_type, arg_types
-                 | (Arg_string_lit i as arg_type), new_ty -> 
-                   Label_string_lit(s,i), arg_type,  arg_types
+                 | (Arg_cst (Arg_int_lit _ as i) as arg_type), new_ty -> 
+                   Label(s, Some i), arg_type, arg_types
+                 | (Arg_cst (Arg_string_lit _ as  i) as arg_type), new_ty -> 
+                   Label(s, Some i), arg_type,  arg_types
                  | arg_type, new_ty -> 
-                   Label s, arg_type, (label, new_ty,attr,loc) :: arg_types
+                   Label (s,None), arg_type, (label, new_ty,attr,loc) :: arg_types
                end
              | Empty -> 
                begin match get_arg_type ~nolabel:true false  ty with 
-                 | (Arg_int_lit i as arg_type), new_ty -> 
-                   Empty_int_lit i , arg_type,  arg_types
-                 | (Arg_string_lit i as arg_type), new_ty -> 
-                   Empty_string_lit i, arg_type,  arg_types
+                 | (Arg_cst (Arg_int_lit _ as i) as arg_type), new_ty -> 
+                   Empty (Some i) , arg_type,  arg_types
+                 | (Arg_cst (Arg_string_lit _ as i) as arg_type), new_ty -> 
+                   Empty(Some i), arg_type,  arg_types
                  | arg_type, new_ty -> 
-                   Empty, arg_type, (label, new_ty,attr,loc) :: arg_types
+                   Empty None, arg_type, (label, new_ty,attr,loc) :: arg_types
                end
            in
            (if i = 0 && splice  then
@@ -101978,10 +101981,10 @@ let handle_attributes
          | {val_send_pipe = Some obj; _ } ->      
            let arg_type, new_ty = get_arg_type ~nolabel:true false obj in 
            begin match arg_type with 
-             | Arg_int_lit _ | Arg_string_lit _ -> 
+             | Arg_cst _ -> 
                Location.raise_errorf ~loc:obj.ptyp_loc "[@bs.as] is not supported in bs.send type "
              | _ -> 
-               [{ arg_label = Empty ; 
+               [{ arg_label = Empty None; 
                   arg_type (* more error checking *)
                 }],
                ["", new_ty, [], obj.ptyp_loc]
@@ -102321,7 +102324,7 @@ let pval_prim_of_labels labels =
       List.fold_right 
         (fun {Asttypes.loc ; txt } arg_kinds
           ->
-            let arg_label =  Ast_ffi_types.Label (Lam_methname.translate ~loc txt) in
+            let arg_label =  Ast_ffi_types.Label (Lam_methname.translate ~loc txt, None) in
             {Ast_ffi_types.arg_type = Nothing ; 
              arg_label  } :: arg_kinds
         )

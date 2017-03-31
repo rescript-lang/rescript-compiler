@@ -59,13 +59,11 @@ type js_module_as_fn =
 
 type arg_type = Ast_core_type.arg_type
 type arg_label = 
-  | Label of string 
-  | Label_int_lit of string * int 
-  | Label_string_lit of string * string 
+  | Label of string * Ast_core_type.arg_cst option 
+  | Empty of Ast_core_type.arg_cst option
+  (* it will be ignored , side effect will be recorded *)
   | Optional of string 
-  | Empty (* it will be ignored , side effect will be recorded *)
-  | Empty_int_lit of int 
-  | Empty_string_lit of string 
+
 
 type arg_kind = 
   {

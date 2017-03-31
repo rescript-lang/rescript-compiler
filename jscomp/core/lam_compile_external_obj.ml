@@ -43,21 +43,21 @@ let assemble_args_obj (labels : Ast_ffi_types.arg_kind list) (args : J.expressio
   let rec aux (labels : Ast_ffi_types.arg_kind list) args = 
     match labels, args with 
     | [] , [] as empty_pair -> empty_pair
-    | {arg_label = Label_int_lit (label,i)} :: labels  , args -> 
+    | {arg_label = Label (label, Some (Arg_int_lit i))} :: labels  , args -> 
       let accs, eff = aux labels args in 
       (Js_op.Key label, E.int (Int32.of_int i) )::accs, eff 
-    | {arg_label = Label_string_lit(label,i)} :: labels , args 
+    | {arg_label = Label(label, Some (Arg_string_lit i))} :: labels , args 
       -> 
       let accs, eff = aux labels args in 
       (Js_op.Key label, E.str i) :: accs, eff
-    | {arg_label = Empty_int_lit i } :: rest  , args -> assert false 
-    | {arg_label = Empty_string_lit i} :: rest , args -> assert false 
-    | {arg_label = Empty }::labels, arg::args 
+    | {arg_label = Empty (Some (Arg_int_lit i)) } :: rest  , args -> assert false 
+    | {arg_label = Empty(Some (Arg_string_lit i))} :: rest , args -> assert false 
+    | {arg_label = Empty None }::labels, arg::args 
       ->  
       let (accs, eff) as r  = aux labels args in 
       if Js_analyzer.no_side_effect_expression arg then r 
       else (accs, arg::eff)
-    | ({arg_label = Label label  } as arg_kind)::labels, arg::args 
+    | ({arg_label = Label (label,None)  } as arg_kind)::labels, arg::args 
       -> 
       let accs, eff = aux labels args in 
       let acc, new_eff = Lam_compile_external_call.ocaml_to_js_eff arg_kind arg in 
@@ -83,7 +83,7 @@ let assemble_args_obj (labels : Ast_ffi_types.arg_kind list) (args : J.expressio
           end 
       end
 
-    | {arg_label = Empty | Label _ | Optional _  } :: _ , [] -> assert false 
+    | {arg_label = Empty None | Label (_,None) | Optional _  } :: _ , [] -> assert false 
     | [],  _ :: _  -> assert false 
   in 
   let map, eff = aux labels args in 

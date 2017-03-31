@@ -29,12 +29,15 @@ type arg_label =
   | Optional of string 
   | Empty (* it will be ignored , side effect will be recorded *)
 
+type arg_cst = 
+  | Arg_int_lit of int 
+  | Arg_string_lit of string 
+
 type arg_type = 
   | NullString of (int * string) list (* `a does not have any value*)
   | NonNullString of (int * string) list (* `a of int *)
   | Int of (int * int ) list (* ([`a | `b ] [@bs.int])*)
-  | Arg_int_lit of int 
-  | Arg_string_lit of string 
+  | Arg_cst of arg_cst
   | Fn_uncurry_arity of int (* annotated with [@bs.uncurry ] or [@bs.uncurry 2]*)
     (* maybe we can improve it as a combination of {!Asttypes.constant} and tuple *)
   | Array 
