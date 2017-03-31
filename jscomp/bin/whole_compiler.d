@@ -113,6 +113,7 @@ bin/whole_compiler.ml : ext/ext_string.ml
 bin/whole_compiler.ml : ext/ident_map.mli
 bin/whole_compiler.ml : ext/ident_set.mli
 bin/whole_compiler.ml : ext/string_map.ml
+bin/whole_compiler.ml : syntax/ast_arg.ml
 bin/whole_compiler.ml : syntax/ast_exp.ml
 bin/whole_compiler.ml : syntax/ast_pat.ml
 bin/whole_compiler.ml : ../ocaml/bytecomp/lambda.ml
@@ -148,6 +149,7 @@ bin/whole_compiler.ml : ext/hashtbl_gen.ml
 bin/whole_compiler.ml : ext/int_hashtbl.ml
 bin/whole_compiler.ml : ext/int_vec_vec.ml
 bin/whole_compiler.ml : ext/string_map.mli
+bin/whole_compiler.ml : syntax/ast_arg.mli
 bin/whole_compiler.ml : syntax/ast_comb.ml
 bin/whole_compiler.ml : syntax/ast_exp.mli
 bin/whole_compiler.ml : syntax/ast_pat.mli

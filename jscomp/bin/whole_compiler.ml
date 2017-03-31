@@ -57719,8 +57719,8 @@ let iinfo b str f  =
 
 
 end
-module Ast_literal : sig 
-#1 "ast_literal.mli"
+module Ast_arg : sig 
+#1 "ast_arg.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -57745,572 +57745,22 @@ module Ast_literal : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-type 'a  lit = ?loc: Location.t -> unit -> 'a
-module Lid : sig
-  type t = Longident.t 
-  val val_unit : t 
-  val type_unit : t 
-  val type_int : t 
-  val js_fn : t 
-  val js_meth : t 
-  val js_meth_callback : t 
-  val js_obj : t 
-
-  val ignore_id : t 
-  val js_null : t 
-  val js_undefined : t
-  val js_null_undefined : t 
-  val js_re_id : t 
-  val js_unsafe : t 
-end
-
-type expression_lit = Parsetree.expression lit 
-type core_type_lit = Parsetree.core_type lit 
-type pattern_lit = Parsetree.pattern lit 
-
-val val_unit : expression_lit
-
-val type_unit : core_type_lit
-
-val type_string : core_type_lit
-val type_int : core_type_lit 
-val type_any : core_type_lit
-
-val pat_unit : pattern_lit
-
-end = struct
-#1 "ast_literal.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-open Ast_helper
-
-
-module Lid = struct 
-  type t = Longident.t 
-  let val_unit : t = Lident "()"
-  let type_unit : t = Lident "unit"
-  let type_string : t = Lident "string"
-  let type_int : t = Lident "int" (* use *predef* *)
-  (* TODO should be renamed in to {!Js.fn} *)
-  (* TODO should be moved into {!Js.t} Later *)
-  let js_fn = Longident.Ldot (Lident "Js", "fn")
-  let js_meth = Longident.Ldot (Lident "Js", "meth")
-  let js_meth_callback = Longident.Ldot (Lident "Js", "meth_callback")
-  let js_obj = Longident.Ldot (Lident "Js", "t") 
-  let ignore_id = Longident.Ldot (Lident "Pervasives", "ignore")
-  let js_null  = Longident.Ldot (Lident "Js", "null")
-  let js_undefined = Longident.Ldot (Lident "Js", "undefined")
-  let js_null_undefined = Longident.Ldot (Lident "Js", "null_undefined")
-  let js_re_id = Longident.Ldot (Lident "Js_re", "t")
-  let js_unsafe = Longident.Lident "Js_unsafe"
-end
-
-module No_loc = struct 
-  let loc = Location.none
-  let val_unit = 
-    Ast_helper.Exp.construct {txt = Lid.val_unit; loc }  None
-  let type_unit =   
-    Ast_helper.Typ.mk  (Ptyp_constr ({ txt = Lid.type_unit; loc}, []))
-  let type_int = 
-    Ast_helper.Typ.mk (Ptyp_constr ({txt = Lid.type_int; loc}, []))  
-  let type_string =   
-    Ast_helper.Typ.mk  (Ptyp_constr ({ txt = Lid.type_string; loc}, []))
-
-  let type_any = Ast_helper.Typ.any ()
-  let pat_unit = Pat.construct {txt = Lid.val_unit; loc} None
-end 
-
-type 'a  lit = ?loc: Location.t -> unit -> 'a
-type expression_lit = Parsetree.expression lit 
-type core_type_lit = Parsetree.core_type lit 
-type pattern_lit = Parsetree.pattern lit 
-
-let val_unit ?loc () = 
-  match loc with 
-  | None -> No_loc.val_unit
-  | Some loc -> Ast_helper.Exp.construct {txt = Lid.val_unit; loc}  None
-
-
-let type_unit ?loc () = 
-  match loc with
-  | None ->     
-    No_loc.type_unit
-  | Some loc -> 
-    Ast_helper.Typ.mk ~loc  (Ptyp_constr ({ txt = Lid.type_unit; loc}, []))
-
-
-let type_string ?loc () = 
-  match loc with 
-  | None -> No_loc.type_string 
-  | Some loc ->     
-    Ast_helper.Typ.mk ~loc  (Ptyp_constr ({ txt = Lid.type_string; loc}, []))
-
-let type_int ?loc () = 
-  match loc with 
-  | None -> No_loc.type_int
-  | Some loc ->     
-    Ast_helper.Typ.mk ~loc  (Ptyp_constr ({ txt = Lid.type_int; loc}, []))
-
-let type_any ?loc () = 
-  match loc with 
-  | None -> No_loc.type_any
-  | Some loc -> Ast_helper.Typ.any ~loc ()
-
-let pat_unit ?loc () = 
-  match loc with 
-  | None -> No_loc.pat_unit
-  | Some loc -> 
-    Pat.construct ~loc {txt = Lid.val_unit; loc} None
-
-end
-module Ast_comb : sig 
-#1 "ast_comb.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-val exp_apply_no_label : 
-  ?loc:Location.t ->
-  ?attrs:Parsetree.attributes ->
-  Parsetree.expression -> Parsetree.expression list -> Parsetree.expression
-
-val fun_no_label : 
-  ?loc:Location.t ->
-  ?attrs:Parsetree.attributes ->
-  Parsetree.pattern -> Parsetree.expression -> Parsetree.expression
-
-val arrow_no_label : 
-  ?loc:Location.t ->
-  ?attrs:Parsetree.attributes ->
-  Parsetree.core_type -> Parsetree.core_type -> Parsetree.core_type
-
-(* note we first declare its type is [unit], 
-   then [ignore] it, [ignore] is necessary since 
-   the js value  maybe not be of type [unit] and 
-   we can use [unit] value (though very little chance) 
-   sometimes
-*)
-val discard_exp_as_unit : 
-  Location.t -> Parsetree.expression -> Parsetree.expression
-
-
-val tuple_type_pair : 
-  ?loc:Ast_helper.loc ->
-  [< `Make | `Run ] ->
-  int -> Parsetree.core_type * Parsetree.core_type list * Parsetree.core_type
-
-val to_js_type :
-  Location.t -> Parsetree.core_type -> Parsetree.core_type
-
-
-(** TODO: make it work for browser too *)
-val to_undefined_type :
-  Location.t -> Parsetree.core_type -> Parsetree.core_type  
-
-val to_js_re_type : Location.t -> Parsetree.core_type
-
-end = struct
-#1 "ast_comb.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-open Ast_helper 
-
-let exp_apply_no_label ?loc ?attrs a b = 
-  Exp.apply ?loc ?attrs a (List.map (fun x -> "", x) b)
-
-let fun_no_label ?loc ?attrs  pat body = 
-  Exp.fun_ ?loc ?attrs "" None pat body
-
-let arrow_no_label ?loc ?attrs b c = 
-  Typ.arrow ?loc ?attrs "" b c 
-
-let discard_exp_as_unit loc e = 
-  exp_apply_no_label ~loc     
-    (Exp.ident ~loc {txt = Ast_literal.Lid.ignore_id; loc})
-    [Exp.constraint_ ~loc e 
-       (Ast_literal.type_unit ~loc ())]
-
-
-let tuple_type_pair ?loc kind arity = 
-  let prefix  = "a" in
-  if arity = 0 then 
-    let ty = Typ.var ?loc ( prefix ^ "0") in 
-    match kind with 
-    | `Run -> ty,  [], ty 
-    | `Make -> 
-      (Typ.arrow "" ?loc
-         (Ast_literal.type_unit ?loc ())
-         ty ,
-       [], ty)
-  else
-    let number = arity + 1 in
-    let tys = Ext_list.init number (fun i -> 
-        Typ.var ?loc (prefix ^ string_of_int (number - i - 1))
-      )  in
-    match tys with 
-    | result :: rest -> 
-      Ext_list.reduce_from_left (fun r arg -> Typ.arrow "" ?loc arg r) tys, 
-      List.rev rest , result
-    | [] -> assert false
-    
-    
-
-let js_obj_type_id  = 
-  Ast_literal.Lid.js_obj 
-
-let re_id  = 
-  Ast_literal.Lid.js_re_id 
-
-let to_js_type loc  x  = 
-  Typ.constr ~loc {txt = js_obj_type_id; loc} [x]
-
-let to_js_re_type loc  =
-  Typ.constr ~loc { txt = re_id ; loc} []
-    
-let to_undefined_type loc x =
-  Typ.constr ~loc
-    {txt = Ast_literal.Lid.js_undefined ; loc}
-    [x]  
-
-
-end
-module Bs_syntaxerr
-= struct
-#1 "bs_syntaxerr.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-type error 
-  = Unsupported_predicates
-  | Conflict_bs_bs_this_bs_meth  
-  | Duplicated_bs_deriving
-  | Conflict_attributes
-
-  | Duplicated_bs_as 
-  | Expect_int_literal
-  | Expect_string_literal
-  | Expect_int_or_string_literal
-  | Unhandled_poly_type
-  | Unregistered of string 
-  | Invalid_underscore_type_in_external
-  | Invalid_bs_string_type 
-  | Invalid_bs_int_type 
-  | Conflict_ffi_attribute
-  | Not_supported_in_bs_deriving
-  | Canot_infer_arity_by_syntax
-  | Illegal_attribute
-  | Inconsistent_arity of int * int 
-  (* we still rqeuire users to have explicit annotation to avoid
-     {[ (((int -> int) -> int) -> int )]}
-  *)
-  | Not_supported_directive_in_bs_return
-  | Expect_opt_in_bs_return_to_opt
-  | Label_in_uncurried_bs_attribute
-let pp_error fmt err =
-  Format.pp_print_string fmt @@ match err with
-  | Label_in_uncurried_bs_attribute 
-    -> "label is not allowed here, it is due to `bs.` attribute indicate uncurried calling convention which does not support label argument yet"
-  | Expect_opt_in_bs_return_to_opt
-      ->
-        "bs.return directive *_to_opt expect return type to be \n\
-         syntax wise `_ option` for safety"
-
-  | Not_supported_directive_in_bs_return
-    ->
-    "Not supported return directive"                
-  | Illegal_attribute ->
-    "Illegal attributes"
-  | Canot_infer_arity_by_syntax
-    ->   "Can not infer the arity by syntax, either [@bs.uncurry n] or \n\
-              write it in arrow syntax "
-  | Inconsistent_arity (arity,n)
-      -> Printf.sprintf "Inconsistent arity %d vs %d" arity n 
-  | Not_supported_in_bs_deriving
-    ->
-    "not supported in deriving"
-  | Unsupported_predicates 
-    ->
-     "unsupported predicates"
-  | Conflict_bs_bs_this_bs_meth -> 
-     "[@bs.this], [@bs], [@bs.meth] can not be applied at the same time"
-  | Duplicated_bs_deriving
-    -> "duplicated bs.deriving attribute"
-  | Conflict_attributes
-    -> "conflict attributes " 
-  | Expect_string_literal
-    -> "expect string literal "
-  | Duplicated_bs_as 
-    -> 
-    "duplicated bs.as "
-  | Expect_int_literal 
-    -> 
-    "expect int literal "
-  | Expect_int_or_string_literal
-    ->
-    "expect int or string literal "
-  | Unhandled_poly_type 
-    -> 
-    "Unhandled poly type"
-  | Unregistered str 
-    -> "Unregistered " ^ str 
-  | Invalid_underscore_type_in_external
-    ->
-    "_ is not allowed in combination with external optional type"
-  | Invalid_bs_string_type
-    -> 
-    "Not a valid  type for [@bs.string]"
-  | Invalid_bs_int_type 
-    -> 
-    "Not a valid  type for [@bs.int]"
-  | Conflict_ffi_attribute
-    ->
-    "conflict attributes found" 
- 
-exception  Error of Location.t * error
-
-let () = 
-  Location.register_error_of_exn (function
-    | Error(loc,err) -> 
-      Some (Location.error_of_printer loc pp_error err)
-    | _ -> None
-    )
-
-let err loc error = raise (Error(loc, error))
-
-end
-module Ast_core_type : sig 
-#1 "ast_core_type.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type t = Parsetree.core_type 
-
-
-val extract_option_type_exn : t -> t 
-val lift_option_type : t -> t 
-val is_any : t -> bool 
-val replace_result : t -> t -> t
-
-val is_unit : t -> bool 
-val is_array : t -> bool 
-type arg_label =
-  | Label of string 
-  (*| Label_int_lit of string * int 
-    | Label_string_lit of string * string *)
-  | Optional of string 
-  | Empty
-
-type arg_cst = 
+type cst = 
   | Arg_int_lit of int 
   | Arg_string_lit of string 
 
-type arg_type = 
-  | NullString of (int * string) list 
-  | NonNullString of (int * string) list 
-  | Int of (int * int ) list 
-  | Arg_cst of arg_cst
-  | Fn_uncurry_arity of int (* annotated with [@bs.uncurry ] or [@bs.uncurry 2]*)  
-  | Array 
-  | Extern_unit
-  | Nothing
-  | Ignore
 
-(** for 
-       [x:t] -> "x"
-       [?x:t] -> "?x"
-*)
-val label_name : string -> arg_label
-
-
-
-
-
-(** return a function type 
-    [from_labels ~loc tyvars labels]
-    example output:
-    {[x:'a0 -> y:'a1 -> < x :'a0 ;y :'a1  > Js.t]}
-*)
-val from_labels :
-  loc:Location.t -> int ->  string Asttypes.loc list -> t
-
-val make_obj :
-  loc:Location.t ->
-  (string * Parsetree.attributes * t) list ->
-  t
-
-val is_user_option : t -> bool 
-
-val is_user_bool : t -> bool
-
-val is_user_int : t -> bool
-
-val is_optional_label : string -> bool 
-
-(** 
-  returns 0 when it can not tell arity from the syntax 
-*)
-val get_uncurry_arity : t -> [`Arity of int | `Not_function ]
-
-
-(** fails when Ptyp_poly *)
-val list_of_arrow : 
-  t -> 
-  t *  (Asttypes.label * t * Parsetree.attributes * Location.t) list
-
-
-end = struct
-#1 "ast_core_type.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type t = Parsetree.core_type 
-
-type arg_label =
-  | Label of string 
+type label = 
+  | Label of string * cst option 
+  | Empty of cst option
   | Optional of string 
-  | Empty (* it will be ignored , side effect will be recorded *)
+  (* it will be ignored , side effect will be recorded *)
 
-type arg_cst = 
-  | Arg_int_lit of int 
-  | Arg_string_lit of string 
-
-type arg_type = 
+type ty = 
   | NullString of (int * string) list (* `a does not have any value*)
   | NonNullString of (int * string) list (* `a of int *)
   | Int of (int * int ) list (* ([`a | `b ] [@bs.int])*)
-  | Arg_cst of arg_cst
+  | Arg_cst of cst
   | Fn_uncurry_arity of int (* annotated with [@bs.uncurry ] or [@bs.uncurry 2]*)
     (* maybe we can improve it as a combination of {!Asttypes.constant} and tuple *)
   | Array 
@@ -58318,150 +57768,68 @@ type arg_type =
   | Nothing
   | Ignore
 
+type kind = 
+  {
+    arg_type : ty;
+    arg_label :label
+  }
 
-let extract_option_type_exn (ty : t) = 
-  begin match ty with
-    | {ptyp_desc =
-         Ptyp_constr({txt =
-                        Ldot (Lident "*predef*", "option") },
-                     [ty])}
-      ->                
-      ty
-    | _ -> assert false                 
-  end      
+end = struct
+#1 "ast_arg.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-let predef_option : Longident.t = Longident.Ldot (Lident "*predef*", "option")
-let predef_int : Longident.t = Ldot (Lident "*predef*", "int")
+(** type definitions for external argument *)
 
-
-let lift_option_type (ty:t) : t = 
-  {ptyp_desc =
-     Ptyp_constr(
-       {txt = predef_option;
-        loc = ty.ptyp_loc} 
-        , [ty]);
-        ptyp_loc = ty.ptyp_loc;
-      ptyp_attributes = []
-    }
-
-let is_any (ty : t) = 
-  match ty with {ptyp_desc = Ptyp_any} -> true | _ -> false
-
-open Ast_helper
-
-let replace_result ty result = 
-  let rec aux (ty : Parsetree.core_type) = 
-    match ty with 
-    | { ptyp_desc = 
-          Ptyp_arrow (label,t1,t2)
-      } -> { ty with ptyp_desc = Ptyp_arrow(label,t1, aux t2)}
-    | {ptyp_desc = Ptyp_poly(fs,ty)} 
-      ->  {ty with ptyp_desc = Ptyp_poly(fs, aux ty)}
-    | _ -> result in 
-  aux ty 
-
-let is_unit (ty : t ) = 
-  match ty.ptyp_desc with 
-  | Ptyp_constr({txt =Lident "unit"}, []) -> true
-  | _ -> false 
-
-let is_array (ty : t) = 
-  match ty.ptyp_desc with 
-  | Ptyp_constr({txt =Lident "array"}, [_]) -> true
-  | _ -> false 
-
-let is_user_option (ty : t) = 
-  match ty.ptyp_desc with 
-  | Ptyp_constr({txt = Lident "option"},[_]) -> true 
-  | _ -> false 
-
-let is_user_bool (ty : t) = 
-  match ty.ptyp_desc with 
-  | Ptyp_constr({txt = Lident "bool"},[]) -> true 
-  | _ -> false 
-
-let is_user_int (ty : t) = 
-  match ty.ptyp_desc with 
-  | Ptyp_constr({txt = Lident "int"},[]) -> true 
-  | _ -> false 
-
-let is_optional_label l =
-  String.length l > 0 && l.[0] = '?'
-
-let label_name l : arg_label =
-  if l = "" then Empty else 
-  if is_optional_label l 
-  then Optional (String.sub l 1 (String.length l - 1))
-  else Label l
+type cst = 
+  | Arg_int_lit of int 
+  | Arg_string_lit of string 
 
 
-(* Note that OCaml type checker will not allow arbitrary 
-   name as type variables, for example:
-   {[
-     '_x'_
-   ]}
-   will be recognized as a invalid program
-*)
-let from_labels ~loc arity labels 
-  : t =
-  let tyvars = 
-    ((Ext_list.init arity (fun i ->      
-         Typ.var ~loc ("a" ^ string_of_int i)))) in
-  let result_type =
-    Ast_comb.to_js_type loc  
-      (Typ.object_ ~loc
-         (List.map2 (fun x y -> x.Asttypes.txt ,[], y) labels tyvars) Closed)
-  in 
-  List.fold_right2 
-    (fun {Asttypes.loc ; txt = label }
-      tyvar acc -> Typ.arrow ~loc label tyvar acc) labels tyvars  result_type
+type label = 
+  | Label of string * cst option 
+  | Empty of cst option
+  | Optional of string 
+  (* it will be ignored , side effect will be recorded *)
 
+type ty = 
+  | NullString of (int * string) list (* `a does not have any value*)
+  | NonNullString of (int * string) list (* `a of int *)
+  | Int of (int * int ) list (* ([`a | `b ] [@bs.int])*)
+  | Arg_cst of cst
+  | Fn_uncurry_arity of int (* annotated with [@bs.uncurry ] or [@bs.uncurry 2]*)
+    (* maybe we can improve it as a combination of {!Asttypes.constant} and tuple *)
+  | Array 
+  | Extern_unit
+  | Nothing
+  | Ignore
 
-let make_obj ~loc xs =
-  Ast_comb.to_js_type loc @@
-  Ast_helper.Typ.object_  ~loc xs   Closed
-
-
-
-(** 
-
-{[ 'a . 'a -> 'b ]} 
-OCaml does not support such syntax yet
-{[ 'a -> ('a. 'a -> 'b) ]}
-
-*)
-let rec get_uncurry_arity_aux  (ty : t) acc = 
-    match ty.ptyp_desc with 
-    | Ptyp_arrow(_, _ , new_ty) -> 
-      get_uncurry_arity_aux new_ty (succ acc)
-    | Ptyp_poly (_,ty) -> 
-      get_uncurry_arity_aux ty acc 
-    | _ -> acc 
-
-(**
-  {[ unit -> 'b ]} return arity 1 
-  {[ 'a1 -> 'a2 -> ... 'aN -> 'b ]} return arity N   
-*)
-let get_uncurry_arity (ty : t ) = 
-  match ty.ptyp_desc  with 
-  | Ptyp_arrow("", {ptyp_desc = (Ptyp_constr ({txt = Lident "unit"}, []))}, 
-    ({ptyp_desc = Ptyp_arrow _ } as rest  )) -> `Arity (get_uncurry_arity_aux rest 1 )
-  | Ptyp_arrow("", {ptyp_desc = (Ptyp_constr ({txt = Lident "unit"}, []))}, _) -> `Arity 0
-  | Ptyp_arrow(_,_,rest ) -> 
-    `Arity(get_uncurry_arity_aux rest 1)
-  | _ -> `Not_function 
-
-
-
-let list_of_arrow (ty : t) = 
-  let rec aux (ty : t) acc = 
-    match ty.ptyp_desc with 
-    | Ptyp_arrow(label,t1,t2) -> 
-      aux t2 ((label,t1,ty.ptyp_attributes,ty.ptyp_loc) ::acc)
-    | Ptyp_poly(_, ty) -> (* should not happen? *)
-      Bs_syntaxerr.err ty.ptyp_loc Unhandled_poly_type
-    | return_type -> ty, List.rev acc
-  in aux ty []
+type kind = 
+  {
+    arg_type : ty;
+    arg_label : label
+  }
 
 end
 module Ast_ffi_types : sig 
@@ -58525,23 +57893,12 @@ type js_module_as_fn =
     splice : bool 
   }
 
-type arg_type = Ast_core_type.arg_type
-type arg_label = 
-  | Label of string * Ast_core_type.arg_cst option 
-  (* | label_int_lit of string * int  *)
-  (* | Label_string_lit of string * string  *)
-  | Optional of string 
-  | Empty of Ast_core_type.arg_cst option  (* it will be ignored , side effect will be recorded *)
-  (* | Empty_int_lit of int  *)
-  (* | Empty_string_lit of string  *)
+type arg_type = Ast_arg.ty
 
-type arg_kind = 
-  {
-    arg_type : arg_type;
-    arg_label : arg_label
-  }
+type arg_label = Ast_arg.label 
 
-type obj_create = arg_kind list
+
+type obj_create = Ast_arg.kind list
 
 type ffi = 
   (* | Obj_create of obj_create*)
@@ -58567,7 +57924,7 @@ type return_wrapper =
   | Return_replaced_with_unit    
 
 type t  = 
-  | Ffi_bs of arg_kind list  *
+  | Ffi_bs of Ast_arg.kind list  *
      return_wrapper * ffi
   | Ffi_obj_create of obj_create
   | Ffi_normal 
@@ -58648,33 +58005,14 @@ type js_module_as_fn =
 (** TODO: information between [arg_type] and [arg_label] are duplicated, 
   design a more compact representation so that it is also easy to seralize by hand
 *)  
-type arg_type = Ast_core_type.arg_type =
-  | NullString of (int * string) list (* `a does not have any value*)
-  | NonNullString of (int * string) list (* `a of int *)
-  | Int of (int * int ) list (* ([`a | `b ] [@bs.int])*)
-  | Arg_cst of Ast_core_type.arg_cst
-  | Fn_uncurry_arity of int (* annotated with [@bs.uncurry ] or [@bs.uncurry 2]*)
-  (* maybe we can improve it as a combination of {!Asttypes.constant} and tuple *)
-  | Array 
-  | Extern_unit
-  | Nothing
+type arg_type = Ast_arg.ty
 
-  
-  | Ignore (* annotated with [@bs.ignore] *)
+type arg_label = Ast_arg.label
 
-type arg_label = 
-  | Label of string * Ast_core_type.arg_cst option
-  | Optional of string 
-  | Empty of Ast_core_type.arg_cst option  (* it will be ignored , side effect will be recorded *)
 
 
 (**TODO: maybe we can merge [arg_label] and [arg_type] *)
-type arg_kind = 
-  {
-    arg_type : arg_type;
-    arg_label : arg_label
-  }
-type obj_create = arg_kind list
+type obj_create = Ast_arg.kind list
 
 type ffi = 
   (* | Obj_create of obj_create *)
@@ -58720,7 +58058,7 @@ type return_wrapper =
   | Return_to_ocaml_bool
   | Return_replaced_with_unit    
 type t  = 
-  | Ffi_bs of arg_kind list  *
+  | Ffi_bs of Ast_arg.kind list  *
      return_wrapper * ffi 
   (**  [Ffi_bs(args,return,ffi) ]
        [return] means return value is unit or not, 
@@ -65159,7 +64497,7 @@ type primitive =
   | Pjs_call of
     (* Location.t *  [loc] is passed down *)
     string *  (* prim_name *)
-    Ast_ffi_types.arg_kind list * (* arg_types *)
+    Ast_arg.kind list * (* arg_types *)
     (* Ast_external_attributes.return_wrapper *) (* result_type *)
     Ast_ffi_types.ffi  (* ffi *)
   | Pjs_object_create of Ast_ffi_types.obj_create
@@ -65507,7 +64845,7 @@ type primitive =
   | Pjs_call of
       (* Location.t *  [loc] is passed down *)
       string *  (* prim_name *)
-      Ast_ffi_types.arg_kind list * (* arg_types *)
+      Ast_arg.kind list * (* arg_types *)
       Ast_ffi_types.ffi  (* ffi *)
 
   (* Ast_ffi_types.arg_kind list * bool * Ast_ffi_types.ffi  *)
@@ -66684,7 +66022,7 @@ let may_depend = Lam_module_ident.Hash_set.add
 
 
 let rec no_auto_uncurried_arg_types 
-    (xs : Ast_ffi_types.arg_kind list)  = 
+    (xs : Ast_arg.kind list)  = 
   match xs with 
   | [] -> true 
   | {arg_type = Fn_uncurry_arity _ } :: _ ->
@@ -66709,14 +66047,14 @@ let result_wrap loc (result_type : Ast_ffi_types.return_wrapper) result  =
 (* TODO: sort out the order here
    consolidate {!Lam_compile_external_call.assemble_args_splice}
 *)
-let rec transform_uncurried_arg_type loc (arg_types : Ast_ffi_types.arg_kind list) 
+let rec transform_uncurried_arg_type loc (arg_types : Ast_arg.kind list) 
     (args : t list ) = 
   match arg_types,args with 
   | { arg_type = Fn_uncurry_arity n ; arg_label } :: xs,
     y::ys -> 
     let (o_arg_types, o_args) = 
       transform_uncurried_arg_type loc xs ys in 
-    { Ast_ffi_types.arg_type = Nothing ; arg_label } :: o_arg_types , 
+    { Ast_arg.arg_type = Nothing ; arg_label } :: o_arg_types , 
     prim ~primitive:(Pjs_fn_make n) ~args:[y] loc :: o_args 
   |  x  ::xs, y::ys -> 
     begin match x with 
@@ -90830,7 +90168,7 @@ module Lam_compile_external_call : sig
 
 (** Compile ocaml external function call to JS IR. *) 
 val ocaml_to_js_eff : 
-  Ast_ffi_types.arg_kind -> 
+  Ast_arg.kind -> 
   J.expression -> 
   J.expression list * J.expression list  
 
@@ -90839,7 +90177,7 @@ val translate_ffi :
   Ast_ffi_types.ffi -> 
   (* string -> *) (* Not used.. *)
   Lam_compile_defs.cxt -> 
-  Ast_ffi_types.arg_kind list -> 
+  Ast_arg.kind list -> 
   (*bool -> *)
   J.expression list -> 
   J.expression 
@@ -90931,7 +90269,7 @@ let handle_external_opt
      This would not work with [NonNullString]
 *)
 let ocaml_to_js_eff 
-    ({ Ast_ffi_types.arg_label;  arg_type })
+    ({ Ast_arg.arg_label;  arg_type })
     (arg : J.expression) 
   : E.t list * E.t list  =
   let arg =
@@ -90983,7 +90321,7 @@ let add_eff eff e =
    Invariant : Array encoding
 *)
 let assemble_args_splice call_loc ffi  js_splice arg_types args : E.t list * E.t option = 
-  let rec aux (labels : Ast_ffi_types.arg_kind list) args = 
+  let rec aux (labels : Ast_arg.kind list) args = 
     match labels, args with 
     | [] , [] -> empty_pair
     | { arg_label =  Empty (Some (Arg_int_lit i)) } :: labels  , args 
@@ -91232,9 +90570,10 @@ module Lam_compile_external_obj : sig
  *)
 
 val assemble_args_obj :
-  Ast_ffi_types.arg_kind list -> 
+  Ast_arg.kind list -> 
   J.expression list -> 
   J.expression 
+
 end = struct
 #1 "lam_compile_external_obj.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -91278,8 +90617,8 @@ module E = Js_exp_make
    But the default to be undefined  seems reasonable 
 *)
   
-let assemble_args_obj (labels : Ast_ffi_types.arg_kind list) (args : J.expression list) = 
-  let rec aux (labels : Ast_ffi_types.arg_kind list) args = 
+let assemble_args_obj (labels : Ast_arg.kind list) (args : J.expression list) = 
+  let rec aux (labels : Ast_arg.kind list) args = 
     match labels, args with 
     | [] , [] as empty_pair -> empty_pair
     | {arg_label = Label (label, Some (Arg_int_lit i))} :: labels  , args -> 
@@ -100100,6 +99439,133 @@ let table_dispatch table (action : action)
     end
 
 end
+module Bs_syntaxerr
+= struct
+#1 "bs_syntaxerr.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+type error 
+  = Unsupported_predicates
+  | Conflict_bs_bs_this_bs_meth  
+  | Duplicated_bs_deriving
+  | Conflict_attributes
+
+  | Duplicated_bs_as 
+  | Expect_int_literal
+  | Expect_string_literal
+  | Expect_int_or_string_literal
+  | Unhandled_poly_type
+  | Unregistered of string 
+  | Invalid_underscore_type_in_external
+  | Invalid_bs_string_type 
+  | Invalid_bs_int_type 
+  | Conflict_ffi_attribute
+  | Not_supported_in_bs_deriving
+  | Canot_infer_arity_by_syntax
+  | Illegal_attribute
+  | Inconsistent_arity of int * int 
+  (* we still rqeuire users to have explicit annotation to avoid
+     {[ (((int -> int) -> int) -> int )]}
+  *)
+  | Not_supported_directive_in_bs_return
+  | Expect_opt_in_bs_return_to_opt
+  | Label_in_uncurried_bs_attribute
+let pp_error fmt err =
+  Format.pp_print_string fmt @@ match err with
+  | Label_in_uncurried_bs_attribute 
+    -> "label is not allowed here, it is due to `bs.` attribute indicate uncurried calling convention which does not support label argument yet"
+  | Expect_opt_in_bs_return_to_opt
+      ->
+        "bs.return directive *_to_opt expect return type to be \n\
+         syntax wise `_ option` for safety"
+
+  | Not_supported_directive_in_bs_return
+    ->
+    "Not supported return directive"                
+  | Illegal_attribute ->
+    "Illegal attributes"
+  | Canot_infer_arity_by_syntax
+    ->   "Can not infer the arity by syntax, either [@bs.uncurry n] or \n\
+              write it in arrow syntax "
+  | Inconsistent_arity (arity,n)
+      -> Printf.sprintf "Inconsistent arity %d vs %d" arity n 
+  | Not_supported_in_bs_deriving
+    ->
+    "not supported in deriving"
+  | Unsupported_predicates 
+    ->
+     "unsupported predicates"
+  | Conflict_bs_bs_this_bs_meth -> 
+     "[@bs.this], [@bs], [@bs.meth] can not be applied at the same time"
+  | Duplicated_bs_deriving
+    -> "duplicated bs.deriving attribute"
+  | Conflict_attributes
+    -> "conflict attributes " 
+  | Expect_string_literal
+    -> "expect string literal "
+  | Duplicated_bs_as 
+    -> 
+    "duplicated bs.as "
+  | Expect_int_literal 
+    -> 
+    "expect int literal "
+  | Expect_int_or_string_literal
+    ->
+    "expect int or string literal "
+  | Unhandled_poly_type 
+    -> 
+    "Unhandled poly type"
+  | Unregistered str 
+    -> "Unregistered " ^ str 
+  | Invalid_underscore_type_in_external
+    ->
+    "_ is not allowed in combination with external optional type"
+  | Invalid_bs_string_type
+    -> 
+    "Not a valid  type for [@bs.string]"
+  | Invalid_bs_int_type 
+    -> 
+    "Not a valid  type for [@bs.int]"
+  | Conflict_ffi_attribute
+    ->
+    "conflict attributes found" 
+ 
+exception  Error of Location.t * error
+
+let () = 
+  Location.register_error_of_exn (function
+    | Error(loc,err) -> 
+      Some (Location.error_of_printer loc pp_error err)
+    | _ -> None
+    )
+
+let err loc error = raise (Error(loc, error))
+
+end
 module Ast_attributes : sig 
 #1 "ast_attributes.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -100421,6 +99887,593 @@ let warn_unused_attributes attrs =
     List.iter (fun (({txt; loc}, _) : Parsetree.attribute) -> 
         Bs_warnings.warn_unused_attribute loc txt 
       ) attrs
+
+end
+module Ast_literal : sig 
+#1 "ast_literal.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type 'a  lit = ?loc: Location.t -> unit -> 'a
+module Lid : sig
+  type t = Longident.t 
+  val val_unit : t 
+  val type_unit : t 
+  val type_int : t 
+  val js_fn : t 
+  val js_meth : t 
+  val js_meth_callback : t 
+  val js_obj : t 
+
+  val ignore_id : t 
+  val js_null : t 
+  val js_undefined : t
+  val js_null_undefined : t 
+  val js_re_id : t 
+  val js_unsafe : t 
+end
+
+type expression_lit = Parsetree.expression lit 
+type core_type_lit = Parsetree.core_type lit 
+type pattern_lit = Parsetree.pattern lit 
+
+val val_unit : expression_lit
+
+val type_unit : core_type_lit
+
+val type_string : core_type_lit
+val type_int : core_type_lit 
+val type_any : core_type_lit
+
+val pat_unit : pattern_lit
+
+end = struct
+#1 "ast_literal.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+open Ast_helper
+
+
+module Lid = struct 
+  type t = Longident.t 
+  let val_unit : t = Lident "()"
+  let type_unit : t = Lident "unit"
+  let type_string : t = Lident "string"
+  let type_int : t = Lident "int" (* use *predef* *)
+  (* TODO should be renamed in to {!Js.fn} *)
+  (* TODO should be moved into {!Js.t} Later *)
+  let js_fn = Longident.Ldot (Lident "Js", "fn")
+  let js_meth = Longident.Ldot (Lident "Js", "meth")
+  let js_meth_callback = Longident.Ldot (Lident "Js", "meth_callback")
+  let js_obj = Longident.Ldot (Lident "Js", "t") 
+  let ignore_id = Longident.Ldot (Lident "Pervasives", "ignore")
+  let js_null  = Longident.Ldot (Lident "Js", "null")
+  let js_undefined = Longident.Ldot (Lident "Js", "undefined")
+  let js_null_undefined = Longident.Ldot (Lident "Js", "null_undefined")
+  let js_re_id = Longident.Ldot (Lident "Js_re", "t")
+  let js_unsafe = Longident.Lident "Js_unsafe"
+end
+
+module No_loc = struct 
+  let loc = Location.none
+  let val_unit = 
+    Ast_helper.Exp.construct {txt = Lid.val_unit; loc }  None
+  let type_unit =   
+    Ast_helper.Typ.mk  (Ptyp_constr ({ txt = Lid.type_unit; loc}, []))
+  let type_int = 
+    Ast_helper.Typ.mk (Ptyp_constr ({txt = Lid.type_int; loc}, []))  
+  let type_string =   
+    Ast_helper.Typ.mk  (Ptyp_constr ({ txt = Lid.type_string; loc}, []))
+
+  let type_any = Ast_helper.Typ.any ()
+  let pat_unit = Pat.construct {txt = Lid.val_unit; loc} None
+end 
+
+type 'a  lit = ?loc: Location.t -> unit -> 'a
+type expression_lit = Parsetree.expression lit 
+type core_type_lit = Parsetree.core_type lit 
+type pattern_lit = Parsetree.pattern lit 
+
+let val_unit ?loc () = 
+  match loc with 
+  | None -> No_loc.val_unit
+  | Some loc -> Ast_helper.Exp.construct {txt = Lid.val_unit; loc}  None
+
+
+let type_unit ?loc () = 
+  match loc with
+  | None ->     
+    No_loc.type_unit
+  | Some loc -> 
+    Ast_helper.Typ.mk ~loc  (Ptyp_constr ({ txt = Lid.type_unit; loc}, []))
+
+
+let type_string ?loc () = 
+  match loc with 
+  | None -> No_loc.type_string 
+  | Some loc ->     
+    Ast_helper.Typ.mk ~loc  (Ptyp_constr ({ txt = Lid.type_string; loc}, []))
+
+let type_int ?loc () = 
+  match loc with 
+  | None -> No_loc.type_int
+  | Some loc ->     
+    Ast_helper.Typ.mk ~loc  (Ptyp_constr ({ txt = Lid.type_int; loc}, []))
+
+let type_any ?loc () = 
+  match loc with 
+  | None -> No_loc.type_any
+  | Some loc -> Ast_helper.Typ.any ~loc ()
+
+let pat_unit ?loc () = 
+  match loc with 
+  | None -> No_loc.pat_unit
+  | Some loc -> 
+    Pat.construct ~loc {txt = Lid.val_unit; loc} None
+
+end
+module Ast_comb : sig 
+#1 "ast_comb.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+val exp_apply_no_label : 
+  ?loc:Location.t ->
+  ?attrs:Parsetree.attributes ->
+  Parsetree.expression -> Parsetree.expression list -> Parsetree.expression
+
+val fun_no_label : 
+  ?loc:Location.t ->
+  ?attrs:Parsetree.attributes ->
+  Parsetree.pattern -> Parsetree.expression -> Parsetree.expression
+
+val arrow_no_label : 
+  ?loc:Location.t ->
+  ?attrs:Parsetree.attributes ->
+  Parsetree.core_type -> Parsetree.core_type -> Parsetree.core_type
+
+(* note we first declare its type is [unit], 
+   then [ignore] it, [ignore] is necessary since 
+   the js value  maybe not be of type [unit] and 
+   we can use [unit] value (though very little chance) 
+   sometimes
+*)
+val discard_exp_as_unit : 
+  Location.t -> Parsetree.expression -> Parsetree.expression
+
+
+val tuple_type_pair : 
+  ?loc:Ast_helper.loc ->
+  [< `Make | `Run ] ->
+  int -> Parsetree.core_type * Parsetree.core_type list * Parsetree.core_type
+
+val to_js_type :
+  Location.t -> Parsetree.core_type -> Parsetree.core_type
+
+
+(** TODO: make it work for browser too *)
+val to_undefined_type :
+  Location.t -> Parsetree.core_type -> Parsetree.core_type  
+
+val to_js_re_type : Location.t -> Parsetree.core_type
+
+end = struct
+#1 "ast_comb.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+open Ast_helper 
+
+let exp_apply_no_label ?loc ?attrs a b = 
+  Exp.apply ?loc ?attrs a (List.map (fun x -> "", x) b)
+
+let fun_no_label ?loc ?attrs  pat body = 
+  Exp.fun_ ?loc ?attrs "" None pat body
+
+let arrow_no_label ?loc ?attrs b c = 
+  Typ.arrow ?loc ?attrs "" b c 
+
+let discard_exp_as_unit loc e = 
+  exp_apply_no_label ~loc     
+    (Exp.ident ~loc {txt = Ast_literal.Lid.ignore_id; loc})
+    [Exp.constraint_ ~loc e 
+       (Ast_literal.type_unit ~loc ())]
+
+
+let tuple_type_pair ?loc kind arity = 
+  let prefix  = "a" in
+  if arity = 0 then 
+    let ty = Typ.var ?loc ( prefix ^ "0") in 
+    match kind with 
+    | `Run -> ty,  [], ty 
+    | `Make -> 
+      (Typ.arrow "" ?loc
+         (Ast_literal.type_unit ?loc ())
+         ty ,
+       [], ty)
+  else
+    let number = arity + 1 in
+    let tys = Ext_list.init number (fun i -> 
+        Typ.var ?loc (prefix ^ string_of_int (number - i - 1))
+      )  in
+    match tys with 
+    | result :: rest -> 
+      Ext_list.reduce_from_left (fun r arg -> Typ.arrow "" ?loc arg r) tys, 
+      List.rev rest , result
+    | [] -> assert false
+    
+    
+
+let js_obj_type_id  = 
+  Ast_literal.Lid.js_obj 
+
+let re_id  = 
+  Ast_literal.Lid.js_re_id 
+
+let to_js_type loc  x  = 
+  Typ.constr ~loc {txt = js_obj_type_id; loc} [x]
+
+let to_js_re_type loc  =
+  Typ.constr ~loc { txt = re_id ; loc} []
+    
+let to_undefined_type loc x =
+  Typ.constr ~loc
+    {txt = Ast_literal.Lid.js_undefined ; loc}
+    [x]  
+
+
+end
+module Ast_core_type : sig 
+#1 "ast_core_type.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type t = Parsetree.core_type 
+
+
+val extract_option_type_exn : t -> t 
+val lift_option_type : t -> t 
+val is_any : t -> bool 
+val replace_result : t -> t -> t
+
+val is_unit : t -> bool 
+val is_array : t -> bool 
+type arg_label =
+  | Label of string 
+  | Optional of string 
+  | Empty
+
+
+(** for 
+       [x:t] -> "x"
+       [?x:t] -> "?x"
+*)
+val label_name : string -> arg_label
+
+
+
+
+
+(** return a function type 
+    [from_labels ~loc tyvars labels]
+    example output:
+    {[x:'a0 -> y:'a1 -> < x :'a0 ;y :'a1  > Js.t]}
+*)
+val from_labels :
+  loc:Location.t -> int ->  string Asttypes.loc list -> t
+
+val make_obj :
+  loc:Location.t ->
+  (string * Parsetree.attributes * t) list ->
+  t
+
+val is_user_option : t -> bool 
+
+val is_user_bool : t -> bool
+
+val is_user_int : t -> bool
+
+val is_optional_label : string -> bool 
+
+(** 
+  returns 0 when it can not tell arity from the syntax 
+*)
+val get_uncurry_arity : t -> [`Arity of int | `Not_function ]
+
+
+(** fails when Ptyp_poly *)
+val list_of_arrow : 
+  t -> 
+  t *  (Asttypes.label * t * Parsetree.attributes * Location.t) list
+
+
+end = struct
+#1 "ast_core_type.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type t = Parsetree.core_type 
+
+type arg_label =
+  | Label of string 
+  | Optional of string 
+  | Empty (* it will be ignored , side effect will be recorded *)
+
+
+
+let extract_option_type_exn (ty : t) = 
+  begin match ty with
+    | {ptyp_desc =
+         Ptyp_constr({txt =
+                        Ldot (Lident "*predef*", "option") },
+                     [ty])}
+      ->                
+      ty
+    | _ -> assert false                 
+  end      
+
+let predef_option : Longident.t = Longident.Ldot (Lident "*predef*", "option")
+let predef_int : Longident.t = Ldot (Lident "*predef*", "int")
+
+
+let lift_option_type (ty:t) : t = 
+  {ptyp_desc =
+     Ptyp_constr(
+       {txt = predef_option;
+        loc = ty.ptyp_loc} 
+        , [ty]);
+        ptyp_loc = ty.ptyp_loc;
+      ptyp_attributes = []
+    }
+
+let is_any (ty : t) = 
+  match ty with {ptyp_desc = Ptyp_any} -> true | _ -> false
+
+open Ast_helper
+
+let replace_result ty result = 
+  let rec aux (ty : Parsetree.core_type) = 
+    match ty with 
+    | { ptyp_desc = 
+          Ptyp_arrow (label,t1,t2)
+      } -> { ty with ptyp_desc = Ptyp_arrow(label,t1, aux t2)}
+    | {ptyp_desc = Ptyp_poly(fs,ty)} 
+      ->  {ty with ptyp_desc = Ptyp_poly(fs, aux ty)}
+    | _ -> result in 
+  aux ty 
+
+let is_unit (ty : t ) = 
+  match ty.ptyp_desc with 
+  | Ptyp_constr({txt =Lident "unit"}, []) -> true
+  | _ -> false 
+
+let is_array (ty : t) = 
+  match ty.ptyp_desc with 
+  | Ptyp_constr({txt =Lident "array"}, [_]) -> true
+  | _ -> false 
+
+let is_user_option (ty : t) = 
+  match ty.ptyp_desc with 
+  | Ptyp_constr({txt = Lident "option"},[_]) -> true 
+  | _ -> false 
+
+let is_user_bool (ty : t) = 
+  match ty.ptyp_desc with 
+  | Ptyp_constr({txt = Lident "bool"},[]) -> true 
+  | _ -> false 
+
+let is_user_int (ty : t) = 
+  match ty.ptyp_desc with 
+  | Ptyp_constr({txt = Lident "int"},[]) -> true 
+  | _ -> false 
+
+let is_optional_label l =
+  String.length l > 0 && l.[0] = '?'
+
+let label_name l : arg_label =
+  if l = "" then Empty else 
+  if is_optional_label l 
+  then Optional (String.sub l 1 (String.length l - 1))
+  else Label l
+
+
+(* Note that OCaml type checker will not allow arbitrary 
+   name as type variables, for example:
+   {[
+     '_x'_
+   ]}
+   will be recognized as a invalid program
+*)
+let from_labels ~loc arity labels 
+  : t =
+  let tyvars = 
+    ((Ext_list.init arity (fun i ->      
+         Typ.var ~loc ("a" ^ string_of_int i)))) in
+  let result_type =
+    Ast_comb.to_js_type loc  
+      (Typ.object_ ~loc
+         (List.map2 (fun x y -> x.Asttypes.txt ,[], y) labels tyvars) Closed)
+  in 
+  List.fold_right2 
+    (fun {Asttypes.loc ; txt = label }
+      tyvar acc -> Typ.arrow ~loc label tyvar acc) labels tyvars  result_type
+
+
+let make_obj ~loc xs =
+  Ast_comb.to_js_type loc @@
+  Ast_helper.Typ.object_  ~loc xs   Closed
+
+
+
+(** 
+
+{[ 'a . 'a -> 'b ]} 
+OCaml does not support such syntax yet
+{[ 'a -> ('a. 'a -> 'b) ]}
+
+*)
+let rec get_uncurry_arity_aux  (ty : t) acc = 
+    match ty.ptyp_desc with 
+    | Ptyp_arrow(_, _ , new_ty) -> 
+      get_uncurry_arity_aux new_ty (succ acc)
+    | Ptyp_poly (_,ty) -> 
+      get_uncurry_arity_aux ty acc 
+    | _ -> acc 
+
+(**
+  {[ unit -> 'b ]} return arity 1 
+  {[ 'a1 -> 'a2 -> ... 'aN -> 'b ]} return arity N   
+*)
+let get_uncurry_arity (ty : t ) = 
+  match ty.ptyp_desc  with 
+  | Ptyp_arrow("", {ptyp_desc = (Ptyp_constr ({txt = Lident "unit"}, []))}, 
+    ({ptyp_desc = Ptyp_arrow _ } as rest  )) -> `Arity (get_uncurry_arity_aux rest 1 )
+  | Ptyp_arrow("", {ptyp_desc = (Ptyp_constr ({txt = Lident "unit"}, []))}, _) -> `Arity 0
+  | Ptyp_arrow(_,_,rest ) -> 
+    `Arity(get_uncurry_arity_aux rest 1)
+  | _ -> `Not_function 
+
+
+
+let list_of_arrow (ty : t) = 
+  let rec aux (ty : t) acc = 
+    match ty.ptyp_desc with 
+    | Ptyp_arrow(label,t1,t2) -> 
+      aux t2 ((label,t1,ty.ptyp_attributes,ty.ptyp_loc) ::acc)
+    | Ptyp_poly(_, ty) -> (* should not happen? *)
+      Bs_syntaxerr.err ty.ptyp_loc Unhandled_poly_type
+    | return_type -> ty, List.rev acc
+  in aux ty []
 
 end
 module Ast_signature : sig 
@@ -101437,7 +101490,7 @@ end = struct
 *)
 let get_arg_type ~nolabel optional 
     (ptyp : Ast_core_type.t) : 
-  Ast_core_type.arg_type * Ast_core_type.t  = 
+  Ast_arg.ty * Ast_core_type.t  = 
   let ptyp = if optional then Ast_core_type.extract_option_type_exn ptyp else ptyp in 
   if Ast_core_type.is_any ptyp then (* (_[@bs.as ])*)
     if optional then 
@@ -101820,7 +101873,7 @@ let handle_attributes
                    let arg_type, new_ty = get_arg_type ~nolabel:true false ty in 
                    begin match arg_type with 
                      | Extern_unit ->  
-                       { Ast_ffi_types.arg_label = Empty None; arg_type }, (label,new_ty,attr,loc)::arg_types, result_types
+                       { Ast_arg.arg_label = Empty None; arg_type }, (label,new_ty,attr,loc)::arg_types, result_types
                      | _ ->  
                        Location.raise_errorf ~loc "expect label, optional, or unit here"
                    end 
@@ -101946,7 +101999,7 @@ let handle_attributes
                      ~loc
                      "[@@bs.string] does not work with optional when it has arities in label %s" label
                  | _ -> 
-                   Ast_ffi_types.Optional s, arg_type, 
+                   Ast_arg.Optional s, arg_type, 
                    ((label, Ast_core_type.lift_option_type new_ty , attr,loc) :: arg_types) end
              | Label s  -> 
                begin match get_arg_type ~nolabel:false false  ty with
@@ -101971,7 +102024,7 @@ let handle_attributes
               match arg_type with 
               | Array  -> ()
               | _ ->  Location.raise_errorf ~loc "[@@bs.splice] expect last type to array");
-           ({ Ast_ffi_types.arg_label  ; 
+           ({ Ast_arg.arg_label  ; 
               arg_type 
             } :: arg_type_specs,
             new_arg_types,
@@ -102324,8 +102377,8 @@ let pval_prim_of_labels labels =
       List.fold_right 
         (fun {Asttypes.loc ; txt } arg_kinds
           ->
-            let arg_label =  Ast_ffi_types.Label (Lam_methname.translate ~loc txt, None) in
-            {Ast_ffi_types.arg_type = Nothing ; 
+            let arg_label =  Ast_arg.Label (Lam_methname.translate ~loc txt, None) in
+            {Ast_arg.arg_type = Nothing ; 
              arg_label  } :: arg_kinds
         )
         labels [] in 

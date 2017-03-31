@@ -27480,25 +27480,9 @@ val is_unit : t -> bool
 val is_array : t -> bool 
 type arg_label =
   | Label of string 
-  (*| Label_int_lit of string * int 
-    | Label_string_lit of string * string *)
   | Optional of string 
   | Empty
 
-type arg_cst = 
-  | Arg_int_lit of int 
-  | Arg_string_lit of string 
-
-type arg_type = 
-  | NullString of (int * string) list 
-  | NonNullString of (int * string) list 
-  | Int of (int * int ) list 
-  | Arg_cst of arg_cst
-  | Fn_uncurry_arity of int (* annotated with [@bs.uncurry ] or [@bs.uncurry 2]*)  
-  | Array 
-  | Extern_unit
-  | Nothing
-  | Ignore
 
 (** for 
        [x:t] -> "x"
@@ -27576,21 +27560,6 @@ type arg_label =
   | Optional of string 
   | Empty (* it will be ignored , side effect will be recorded *)
 
-type arg_cst = 
-  | Arg_int_lit of int 
-  | Arg_string_lit of string 
-
-type arg_type = 
-  | NullString of (int * string) list (* `a does not have any value*)
-  | NonNullString of (int * string) list (* `a of int *)
-  | Int of (int * int ) list (* ([`a | `b ] [@bs.int])*)
-  | Arg_cst of arg_cst
-  | Fn_uncurry_arity of int (* annotated with [@bs.uncurry ] or [@bs.uncurry 2]*)
-    (* maybe we can improve it as a combination of {!Asttypes.constant} and tuple *)
-  | Array 
-  | Extern_unit
-  | Nothing
-  | Ignore
 
 
 let extract_option_type_exn (ty : t) = 
@@ -28577,6 +28546,119 @@ let init () =
 
 
 end
+module Ast_arg : sig 
+#1 "ast_arg.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type cst = 
+  | Arg_int_lit of int 
+  | Arg_string_lit of string 
+
+
+type label = 
+  | Label of string * cst option 
+  | Empty of cst option
+  | Optional of string 
+  (* it will be ignored , side effect will be recorded *)
+
+type ty = 
+  | NullString of (int * string) list (* `a does not have any value*)
+  | NonNullString of (int * string) list (* `a of int *)
+  | Int of (int * int ) list (* ([`a | `b ] [@bs.int])*)
+  | Arg_cst of cst
+  | Fn_uncurry_arity of int (* annotated with [@bs.uncurry ] or [@bs.uncurry 2]*)
+    (* maybe we can improve it as a combination of {!Asttypes.constant} and tuple *)
+  | Array 
+  | Extern_unit
+  | Nothing
+  | Ignore
+
+type kind = 
+  {
+    arg_type : ty;
+    arg_label :label
+  }
+
+end = struct
+#1 "ast_arg.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+(** type definitions for external argument *)
+
+type cst = 
+  | Arg_int_lit of int 
+  | Arg_string_lit of string 
+
+
+type label = 
+  | Label of string * cst option 
+  | Empty of cst option
+  | Optional of string 
+  (* it will be ignored , side effect will be recorded *)
+
+type ty = 
+  | NullString of (int * string) list (* `a does not have any value*)
+  | NonNullString of (int * string) list (* `a of int *)
+  | Int of (int * int ) list (* ([`a | `b ] [@bs.int])*)
+  | Arg_cst of cst
+  | Fn_uncurry_arity of int (* annotated with [@bs.uncurry ] or [@bs.uncurry 2]*)
+    (* maybe we can improve it as a combination of {!Asttypes.constant} and tuple *)
+  | Array 
+  | Extern_unit
+  | Nothing
+  | Ignore
+
+type kind = 
+  {
+    arg_type : ty;
+    arg_label : label
+  }
+
+end
 module Ast_ffi_types : sig 
 #1 "ast_ffi_types.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -28638,23 +28720,12 @@ type js_module_as_fn =
     splice : bool 
   }
 
-type arg_type = Ast_core_type.arg_type
-type arg_label = 
-  | Label of string * Ast_core_type.arg_cst option 
-  (* | label_int_lit of string * int  *)
-  (* | Label_string_lit of string * string  *)
-  | Optional of string 
-  | Empty of Ast_core_type.arg_cst option  (* it will be ignored , side effect will be recorded *)
-  (* | Empty_int_lit of int  *)
-  (* | Empty_string_lit of string  *)
+type arg_type = Ast_arg.ty
 
-type arg_kind = 
-  {
-    arg_type : arg_type;
-    arg_label : arg_label
-  }
+type arg_label = Ast_arg.label 
 
-type obj_create = arg_kind list
+
+type obj_create = Ast_arg.kind list
 
 type ffi = 
   (* | Obj_create of obj_create*)
@@ -28680,7 +28751,7 @@ type return_wrapper =
   | Return_replaced_with_unit    
 
 type t  = 
-  | Ffi_bs of arg_kind list  *
+  | Ffi_bs of Ast_arg.kind list  *
      return_wrapper * ffi
   | Ffi_obj_create of obj_create
   | Ffi_normal 
@@ -28761,33 +28832,14 @@ type js_module_as_fn =
 (** TODO: information between [arg_type] and [arg_label] are duplicated, 
   design a more compact representation so that it is also easy to seralize by hand
 *)  
-type arg_type = Ast_core_type.arg_type =
-  | NullString of (int * string) list (* `a does not have any value*)
-  | NonNullString of (int * string) list (* `a of int *)
-  | Int of (int * int ) list (* ([`a | `b ] [@bs.int])*)
-  | Arg_cst of Ast_core_type.arg_cst
-  | Fn_uncurry_arity of int (* annotated with [@bs.uncurry ] or [@bs.uncurry 2]*)
-  (* maybe we can improve it as a combination of {!Asttypes.constant} and tuple *)
-  | Array 
-  | Extern_unit
-  | Nothing
+type arg_type = Ast_arg.ty
 
-  
-  | Ignore (* annotated with [@bs.ignore] *)
+type arg_label = Ast_arg.label
 
-type arg_label = 
-  | Label of string * Ast_core_type.arg_cst option
-  | Optional of string 
-  | Empty of Ast_core_type.arg_cst option  (* it will be ignored , side effect will be recorded *)
 
 
 (**TODO: maybe we can merge [arg_label] and [arg_type] *)
-type arg_kind = 
-  {
-    arg_type : arg_type;
-    arg_label : arg_label
-  }
-type obj_create = arg_kind list
+type obj_create = Ast_arg.kind list
 
 type ffi = 
   (* | Obj_create of obj_create *)
@@ -28833,7 +28885,7 @@ type return_wrapper =
   | Return_to_ocaml_bool
   | Return_replaced_with_unit    
 type t  = 
-  | Ffi_bs of arg_kind list  *
+  | Ffi_bs of Ast_arg.kind list  *
      return_wrapper * ffi 
   (**  [Ffi_bs(args,return,ffi) ]
        [return] means return value is unit or not, 
@@ -29709,7 +29761,7 @@ end = struct
 *)
 let get_arg_type ~nolabel optional 
     (ptyp : Ast_core_type.t) : 
-  Ast_core_type.arg_type * Ast_core_type.t  = 
+  Ast_arg.ty * Ast_core_type.t  = 
   let ptyp = if optional then Ast_core_type.extract_option_type_exn ptyp else ptyp in 
   if Ast_core_type.is_any ptyp then (* (_[@bs.as ])*)
     if optional then 
@@ -30092,7 +30144,7 @@ let handle_attributes
                    let arg_type, new_ty = get_arg_type ~nolabel:true false ty in 
                    begin match arg_type with 
                      | Extern_unit ->  
-                       { Ast_ffi_types.arg_label = Empty None; arg_type }, (label,new_ty,attr,loc)::arg_types, result_types
+                       { Ast_arg.arg_label = Empty None; arg_type }, (label,new_ty,attr,loc)::arg_types, result_types
                      | _ ->  
                        Location.raise_errorf ~loc "expect label, optional, or unit here"
                    end 
@@ -30218,7 +30270,7 @@ let handle_attributes
                      ~loc
                      "[@@bs.string] does not work with optional when it has arities in label %s" label
                  | _ -> 
-                   Ast_ffi_types.Optional s, arg_type, 
+                   Ast_arg.Optional s, arg_type, 
                    ((label, Ast_core_type.lift_option_type new_ty , attr,loc) :: arg_types) end
              | Label s  -> 
                begin match get_arg_type ~nolabel:false false  ty with
@@ -30243,7 +30295,7 @@ let handle_attributes
               match arg_type with 
               | Array  -> ()
               | _ ->  Location.raise_errorf ~loc "[@@bs.splice] expect last type to array");
-           ({ Ast_ffi_types.arg_label  ; 
+           ({ Ast_arg.arg_label  ; 
               arg_type 
             } :: arg_type_specs,
             new_arg_types,
@@ -30596,8 +30648,8 @@ let pval_prim_of_labels labels =
       List.fold_right 
         (fun {Asttypes.loc ; txt } arg_kinds
           ->
-            let arg_label =  Ast_ffi_types.Label (Lam_methname.translate ~loc txt, None) in
-            {Ast_ffi_types.arg_type = Nothing ; 
+            let arg_label =  Ast_arg.Label (Lam_methname.translate ~loc txt, None) in
+            {Ast_arg.arg_type = Nothing ; 
              arg_label  } :: arg_kinds
         )
         labels [] in 

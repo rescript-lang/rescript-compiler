@@ -38,6 +38,6 @@
  *)
 
 val assemble_args_obj :
-  Ast_ffi_types.arg_kind list -> 
+  Ast_arg.kind list -> 
   J.expression list -> 
   J.expression 

@@ -39,8 +39,8 @@ module E = Js_exp_make
    But the default to be undefined  seems reasonable 
 *)
   
-let assemble_args_obj (labels : Ast_ffi_types.arg_kind list) (args : J.expression list) = 
-  let rec aux (labels : Ast_ffi_types.arg_kind list) args = 
+let assemble_args_obj (labels : Ast_arg.kind list) (args : J.expression list) = 
+  let rec aux (labels : Ast_arg.kind list) args = 
     match labels, args with 
     | [] , [] as empty_pair -> empty_pair
     | {arg_label = Label (label, Some (Arg_int_lit i))} :: labels  , args -> 

@@ -39,7 +39,7 @@
 *)
 let get_arg_type ~nolabel optional 
     (ptyp : Ast_core_type.t) : 
-  Ast_core_type.arg_type * Ast_core_type.t  = 
+  Ast_arg.ty * Ast_core_type.t  = 
   let ptyp = if optional then Ast_core_type.extract_option_type_exn ptyp else ptyp in 
   if Ast_core_type.is_any ptyp then (* (_[@bs.as ])*)
     if optional then 
@@ -422,7 +422,7 @@ let handle_attributes
                    let arg_type, new_ty = get_arg_type ~nolabel:true false ty in 
                    begin match arg_type with 
                      | Extern_unit ->  
-                       { Ast_ffi_types.arg_label = Empty None; arg_type }, (label,new_ty,attr,loc)::arg_types, result_types
+                       { Ast_arg.arg_label = Empty None; arg_type }, (label,new_ty,attr,loc)::arg_types, result_types
                      | _ ->  
                        Location.raise_errorf ~loc "expect label, optional, or unit here"
                    end 
@@ -548,7 +548,7 @@ let handle_attributes
                      ~loc
                      "[@@bs.string] does not work with optional when it has arities in label %s" label
                  | _ -> 
-                   Ast_ffi_types.Optional s, arg_type, 
+                   Ast_arg.Optional s, arg_type, 
                    ((label, Ast_core_type.lift_option_type new_ty , attr,loc) :: arg_types) end
              | Label s  -> 
                begin match get_arg_type ~nolabel:false false  ty with
@@ -573,7 +573,7 @@ let handle_attributes
               match arg_type with 
               | Array  -> ()
               | _ ->  Location.raise_errorf ~loc "[@@bs.splice] expect last type to array");
-           ({ Ast_ffi_types.arg_label  ; 
+           ({ Ast_arg.arg_label  ; 
               arg_type 
             } :: arg_type_specs,
             new_arg_types,
@@ -926,8 +926,8 @@ let pval_prim_of_labels labels =
       List.fold_right 
         (fun {Asttypes.loc ; txt } arg_kinds
           ->
-            let arg_label =  Ast_ffi_types.Label (Lam_methname.translate ~loc txt, None) in
-            {Ast_ffi_types.arg_type = Nothing ; 
+            let arg_label =  Ast_arg.Label (Lam_methname.translate ~loc txt, None) in
+            {Ast_arg.arg_type = Nothing ; 
              arg_label  } :: arg_kinds
         )
         labels [] in 
