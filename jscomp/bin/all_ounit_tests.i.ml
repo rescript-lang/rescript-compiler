@@ -75,7 +75,7 @@ open OUnitTypes
 
 (** Most simple heuristic, just pick the first test. *)
 let simple state =
-  (* 155 *) List.hd state.tests_planned
+  (* 157 *) List.hd state.tests_planned
 
 end
 module OUnitUtils
@@ -98,22 +98,22 @@ let is_success =
 let is_failure = 
   function
     | RFailure _ -> (* 0 *) true
-    | RSuccess _ | RError _  | RSkip _ | RTodo _ -> (* 310 *) false
+    | RSuccess _ | RError _  | RSkip _ | RTodo _ -> (* 314 *) false
 
 let is_error = 
   function 
     | RError _ -> (* 0 *) true
-    | RSuccess _ | RFailure _ | RSkip _ | RTodo _ -> (* 310 *) false
+    | RSuccess _ | RFailure _ | RSkip _ | RTodo _ -> (* 314 *) false
 
 let is_skip = 
   function
     | RSkip _ -> (* 0 *) true
-    | RSuccess _ | RFailure _ | RError _  | RTodo _ -> (* 310 *) false
+    | RSuccess _ | RFailure _ | RError _  | RTodo _ -> (* 314 *) false
 
 let is_todo = 
   function
     | RTodo _ -> (* 0 *) true
-    | RSuccess _ | RFailure _ | RError _  | RSkip _ -> (* 310 *) false
+    | RSuccess _ | RFailure _ | RError _  | RSkip _ -> (* 314 *) false
 
 let result_flavour = 
   function
@@ -145,7 +145,7 @@ let rec was_successful =
     | [] -> (* 3 *) true
     | RSuccess _::t 
     | RSkip _::t -> 
-        (* 465 *) was_successful t
+        (* 471 *) was_successful t
 
     | RFailure _::_
     | RError _::_ 
@@ -155,22 +155,22 @@ let rec was_successful =
 let string_of_node = 
   function
     | ListItem n -> 
-        (* 620 *) string_of_int n
+        (* 628 *) string_of_int n
     | Label s -> 
-        (* 930 *) s
+        (* 942 *) s
 
 (* Return the number of available tests *)
 let rec test_case_count = 
   function
-    | TestCase _ -> (* 155 *) 1 
-    | TestLabel (_, t) -> (* 178 *) test_case_count t
+    | TestCase _ -> (* 157 *) 1 
+    | TestLabel (_, t) -> (* 180 *) test_case_count t
     | TestList l -> 
         (* 23 *) List.fold_left 
-          (fun c t -> (* 177 *) c + test_case_count t) 
+          (fun c t -> (* 179 *) c + test_case_count t) 
           0 l
 
 let string_of_path path =
-  (* 310 *) String.concat ":" (List.rev_map string_of_node path)
+  (* 314 *) String.concat ":" (List.rev_map string_of_node path)
 
 let buff_format_printf f = 
   (* 0 *) let buff = Buffer.create 13 in
@@ -194,12 +194,12 @@ let mapi f l =
 
 let fold_lefti f accu l =
   (* 23 *) let rec rfold_lefti cnt accup l = 
-    (* 200 *) match l with
+    (* 202 *) match l with
       | [] -> 
           (* 23 *) accup
 
       | h::t -> 
-          (* 177 *) rfold_lefti (cnt + 1) (f accup h cnt) t
+          (* 179 *) rfold_lefti (cnt + 1) (f accup h cnt) t
   in
     rfold_lefti 0 accu l
 
@@ -217,7 +217,7 @@ open OUnitUtils
 type event_type = GlobalEvent of global_event | TestEvent of test_event
 
 let format_event verbose event_type =
-  (* 932 *) match event_type with
+  (* 944 *) match event_type with
     | GlobalEvent e ->
         (* 2 *) begin
           match e with 
@@ -276,31 +276,31 @@ let format_event verbose event_type =
         end
 
     | TestEvent e ->
-        (* 930 *) begin
+        (* 942 *) begin
           let string_of_result = 
             if verbose then
-              (* 465 *) function
-                | RSuccess _      -> (* 155 *) "ok\n"
+              (* 471 *) function
+                | RSuccess _      -> (* 157 *) "ok\n"
                 | RFailure (_, _) -> (* 0 *) "FAIL\n"
                 | RError (_, _)   -> (* 0 *) "ERROR\n"
                 | RSkip (_, _)    -> (* 0 *) "SKIP\n"
                 | RTodo (_, _)    -> (* 0 *) "TODO\n"
             else
-              (* 465 *) function
-                | RSuccess _      -> (* 155 *) "."
+              (* 471 *) function
+                | RSuccess _      -> (* 157 *) "."
                 | RFailure (_, _) -> (* 0 *) "F"
                 | RError (_, _)   -> (* 0 *) "E"
                 | RSkip (_, _)    -> (* 0 *) "S"
                 | RTodo (_, _)    -> (* 0 *) "T"
           in
             if verbose then
-              (* 465 *) match e with 
+              (* 471 *) match e with 
                 | EStart p -> 
-                    (* 155 *) Printf.sprintf "%s start\n" (string_of_path p)
+                    (* 157 *) Printf.sprintf "%s start\n" (string_of_path p)
                 | EEnd p -> 
-                    (* 155 *) Printf.sprintf "%s end\n" (string_of_path p)
+                    (* 157 *) Printf.sprintf "%s end\n" (string_of_path p)
                 | EResult result -> 
-                    (* 155 *) string_of_result result
+                    (* 157 *) string_of_result result
                 | ELog (lvl, str) ->
                     (* 0 *) let prefix = 
                       match lvl with 
@@ -312,21 +312,21 @@ let format_event verbose event_type =
                 | ELogRaw str ->
                     (* 0 *) str
             else 
-              (* 465 *) match e with 
-                | EStart _ | EEnd _ | ELog _ | ELogRaw _ -> (* 310 *) ""
-                | EResult result -> (* 155 *) string_of_result result
+              (* 471 *) match e with 
+                | EStart _ | EEnd _ | ELog _ | ELogRaw _ -> (* 314 *) ""
+                | EResult result -> (* 157 *) string_of_result result
         end
 
 let file_logger fn =
   (* 1 *) let chn = open_out fn in
     (fun ev ->
-       (* 466 *) output_string chn (format_event true ev);
+       (* 472 *) output_string chn (format_event true ev);
        flush chn),
     (fun () -> (* 1 *) close_out chn)
 
 let std_logger verbose =
   (* 1 *) (fun ev -> 
-     (* 466 *) print_string (format_event verbose ev);
+     (* 472 *) print_string (format_event verbose ev);
      flush stdout),
   (fun () -> (* 1 *) ())
 
@@ -343,7 +343,7 @@ let create output_file_opt verbose (log,close) =
           (* 0 *) null_logger
   in
     (fun ev ->
-       (* 466 *) std_log ev; file_log ev; log ev),
+       (* 472 *) std_log ev; file_log ev; log ev),
     (fun () ->
        (* 1 *) std_close (); file_close (); close ())
 
@@ -705,7 +705,7 @@ let assert_failure msg =
   (* 0 *) failwith ("OUnit: " ^ msg)
 
 let assert_bool msg b =
-  (* 2009425 *) if not b then (* 0 *) assert_failure msg
+  (* 2009427 *) if not b then (* 0 *) assert_failure msg
 
 let assert_string str =
   (* 0 *) if not (str = "") then (* 0 *) assert_failure str
@@ -951,7 +951,7 @@ let (@?) = assert_bool
 
 (* Some shorthands which allows easy test construction *)
 let (>:) s t = (* 0 *) TestLabel(s, t)             (* infix *)
-let (>::) s f = (* 155 *) TestLabel(s, TestCase(f))  (* infix *)
+let (>::) s f = (* 157 *) TestLabel(s, TestCase(f))  (* infix *)
 let (>:::) s l = (* 23 *) TestLabel(s, TestList(l)) (* infix *)
 
 (* Utility function to manipulate test *)
@@ -1087,7 +1087,7 @@ let maybe_backtrace = ""
 (* Run all tests, report starts, errors, failures, and return the results *)
 let perform_test report test =
   (* 1 *) let run_test_case f path =
-    (* 155 *) try 
+    (* 157 *) try 
       f ();
       RSuccess path
     with
@@ -1106,22 +1106,22 @@ let perform_test report test =
   let rec flatten_test path acc = 
     function
       | TestCase(f) -> 
-          (* 155 *) (path, f) :: acc
+          (* 157 *) (path, f) :: acc
 
       | TestList (tests) ->
           (* 23 *) fold_lefti 
             (fun acc t cnt -> 
-               (* 177 *) flatten_test 
+               (* 179 *) flatten_test 
                  ((ListItem cnt)::path) 
                  acc t)
             acc tests
       
       | TestLabel (label, t) -> 
-          (* 178 *) flatten_test ((Label label)::path) acc t
+          (* 180 *) flatten_test ((Label label)::path) acc t
   in
   let test_cases = List.rev (flatten_test [] [] test) in
   let runner (path, f) = 
-    (* 155 *) let result = 
+    (* 157 *) let result = 
       report (EStart path);
       run_test_case f path 
     in
@@ -1130,18 +1130,18 @@ let perform_test report test =
       result
   in
   let rec iter state = 
-    (* 156 *) match state.tests_planned with 
+    (* 158 *) match state.tests_planned with 
       | [] ->
           (* 1 *) state.results
       | _ ->
-          (* 155 *) let (path, f) = !global_chooser state in            
+          (* 157 *) let (path, f) = !global_chooser state in            
           let result = runner (path, f) in
             iter 
               {
                 results = result :: state.results;
                 tests_planned = 
                   List.filter 
-                    (fun (path', _) -> (* 12090 *) path <> path') state.tests_planned
+                    (fun (path', _) -> (* 12403 *) path <> path') state.tests_planned
               }
   in
     iter {results = []; tests_planned = test_cases}
@@ -1171,7 +1171,7 @@ let run_test_tt ?verbose test =
     time_fun 
       perform_test 
       (fun ev ->
-         (* 465 *) log (OUnitLogger.TestEvent ev))
+         (* 471 *) log (OUnitLogger.TestEvent ev))
       test 
   in
     
@@ -1934,7 +1934,7 @@ let for_all_range s ~start ~finish p =
 let for_all (p : char -> bool) s =   
   (* 3 *) unsafe_for_all_range s ~start:0  ~finish:(String.length s - 1) p 
 
-let is_empty s = (* 3 *) String.length s = 0
+let is_empty s = (* 4 *) String.length s = 0
 
 
 let repeat n s  =
@@ -1950,11 +1950,11 @@ let equal (x : string) y  = (* 0 *) x = y
 
 
 let unsafe_is_sub ~sub i s j ~len =
-  (* 745 *) let rec check k =
-    (* 960 *) if k = len
-    then (* 37 *) true
+  (* 785 *) let rec check k =
+    (* 1020 *) if k = len
+    then (* 38 *) true
     else 
-      (* 923 *) String.unsafe_get sub (i+k) = 
+      (* 982 *) String.unsafe_get sub (i+k) = 
       String.unsafe_get s (j+k) && check (k+1)
   in
   j+len <= String.length s && check 0
@@ -1962,21 +1962,21 @@ let unsafe_is_sub ~sub i s j ~len =
 
 exception Local_exit 
 let find ?(start=0) ~sub s =
-  (* 43 *) let n = String.length sub in
+  (* 44 *) let n = String.length sub in
   let s_len = String.length s in 
   let i = ref start in  
   try
     while !i + n <= s_len do
-      (* 737 *) if unsafe_is_sub ~sub 0 s !i ~len:n then
-        (* 35 *) raise_notrace Local_exit;
+      (* 777 *) if unsafe_is_sub ~sub 0 s !i ~len:n then
+        (* 36 *) raise_notrace Local_exit;
       incr i
     done;
     -1
   with Local_exit ->
-    (* 35 *) !i
+    (* 36 *) !i
 
 let contain_substring s sub = 
-  (* 13 *) find s ~sub >= 0 
+  (* 14 *) find s ~sub >= 0 
 
 (** TODO: optimize 
     avoid nonterminating when string is empty 
@@ -2052,7 +2052,7 @@ let starts_with_and_number s ~offset beg =
     else 
       (* 2 *) -1 
 
-let equal (x : string) y  = (* 8829969 *) x = y
+let equal (x : string) y  = (* 8829971 *) x = y
 
 let unsafe_concat_with_length len sep l =
   (* 0 *) match l with 
@@ -3772,7 +3772,7 @@ let rec safe_dup fd =
   end
 
 let safe_close fd =
-  (* 32 *) try Unix.close fd with Unix.Unix_error(_,_,_) -> (* 0 *) ()
+  (* 36 *) try Unix.close fd with Unix.Unix_error(_,_,_) -> (* 0 *) ()
 
 
 type output = {
@@ -3782,7 +3782,7 @@ type output = {
 }
 
 let perform command args = 
-  (* 16 *) let new_fd_in, new_fd_out = Unix.pipe () in 
+  (* 18 *) let new_fd_in, new_fd_out = Unix.pipe () in 
   let err_fd_in, err_fd_out = Unix.pipe () in 
   match Unix.fork () with 
   | 0 -> 
@@ -3801,7 +3801,7 @@ let perform command args =
        when all the descriptiors on a pipe's output are closed, a call to 
        [write] on its input kills the writing process (EPIPE).
     *)
-    (* 16 *) safe_close new_fd_out ; 
+    (* 18 *) safe_close new_fd_out ; 
     safe_close err_fd_out ; 
     let in_chan = Unix.in_channel_of_descr new_fd_in in 
     let err_in_chan = Unix.in_channel_of_descr err_fd_in in 
@@ -3809,20 +3809,20 @@ let perform command args =
     let err_buf = Buffer.create 1024 in 
     (try 
        while true do 
-         (* 70 *) Buffer.add_string buf (input_line in_chan );             
+         (* 77 *) Buffer.add_string buf (input_line in_chan );             
          Buffer.add_char buf '\n'
        done;
      with
-       End_of_file -> (* 16 *) ()) ; 
+       End_of_file -> (* 18 *) ()) ; 
     (try 
        while true do 
-         (* 145 *) Buffer.add_string err_buf (input_line err_in_chan );
+         (* 147 *) Buffer.add_string err_buf (input_line err_in_chan );
          Buffer.add_char err_buf '\n'
        done;
      with
-       End_of_file -> (* 16 *) ()) ; 
+       End_of_file -> (* 18 *) ()) ; 
     let exit_code = match snd @@ Unix.waitpid [] pid with 
-      | Unix.WEXITED exit_code -> (* 16 *) exit_code 
+      | Unix.WEXITED exit_code -> (* 18 *) exit_code 
       | Unix.WSIGNALED _signal_number 
       | Unix.WSTOPPED _signal_number  -> (* 0 *) 127 in 
     {
@@ -3833,7 +3833,7 @@ let perform command args =
 
 
 let perform_bsc args = 
-  (* 16 *) perform bsc_exe 
+  (* 18 *) perform bsc_exe 
     (Array.append 
        [|bsc_exe ; 
          "-bs-package-name" ; "bs-platform"; 
@@ -3850,7 +3850,7 @@ let perform_bsc args =
        |] args)
 
 let bsc_eval str = 
-  (* 13 *) perform_bsc [|"-bs-eval"; str|]        
+  (* 15 *) perform_bsc [|"-bs-eval"; str|]        
 
   let debug_output o = 
   (* 0 *) Printf.printf "\nexit_code:%d\nstdout:%s\nstderr:%s\n"
@@ -4017,8 +4017,23 @@ external ff :
          ( [`a | `b ] [@bs.string] ) 
          (* auto-convert to ocaml poly-variant *)
       *)
-    end
+    end;
 
+    __LOC__ >:: begin fun _ -> 
+      (* 1 *) let should_err = bsc_eval {|
+      type t 
+      external mk : int -> (_ [@bs.as {json| { x : 3 } |json}]) ->  t = "" [@@bs.val]
+      |} in 
+      OUnit.assert_bool __LOC__ (Ext_string.contain_substring should_err.stderr "Invalid json literal")
+    end
+    ;
+    __LOC__ >:: begin fun _ -> 
+      (* 1 *) let should_err = bsc_eval {|
+      type t 
+      external mk : int -> (_ [@bs.as {json| { "x" : 3 } |json}]) ->  t = "" [@@bs.val]
+      |} in 
+      OUnit.assert_bool __LOC__ (Ext_string.is_empty should_err.stderr)
+    end
 
 
   ]
@@ -4284,12 +4299,12 @@ let stats h =
    bucket_histogram = histo }
 
 let rec small_bucket_mem eq_key key lst =
-  (* 26191 *) match lst with 
-  | [] -> (* 2022 *) false 
+  (* 26203 *) match lst with 
+  | [] -> (* 2032 *) false 
   | key1::rest -> 
-    (* 24169 *) eq_key key   key1 ||
+    (* 24171 *) eq_key key   key1 ||
     match rest with 
-    | [] -> (* 1964 *) false 
+    | [] -> (* 1965 *) false 
     | key2 :: rest -> 
       (* 7398 *) eq_key key   key2 ||
       match rest with 
@@ -5052,7 +5067,7 @@ end = struct
 # 31
 type key = string 
 let key_index (h :  _ Hash_set_gen.t ) (key : key) =
-  (* 214 *) (Bs_hash_stubs.hash_string  key) land (Array.length h.data - 1)
+  (* 226 *) (Bs_hash_stubs.hash_string  key) land (Array.length h.data - 1)
 let eq_key = Ext_string.equal 
 type  t = key  Hash_set_gen.t 
 
@@ -5081,11 +5096,11 @@ let remove (h : _ Hash_set_gen.t) key =
 
 
 let add (h : _ Hash_set_gen.t) key =
-  (* 204 *) let i = key_index h key  in 
+  (* 216 *) let i = key_index h key  in 
   let h_data = h.data in 
   let old_bucket = (Array.unsafe_get h_data i) in
   if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
-    (* 203 *) begin 
+    (* 214 *) begin 
       Array.unsafe_set h_data i (key :: old_bucket);
       h.size <- h.size + 1 ;
       if h.size > Array.length h_data lsl 1 then (* 0 *) Hash_set_gen.resize key_index h
@@ -6156,17 +6171,29 @@ let reserved_words =
    "parseFloat";
    "parseInt";
    
-   (** reserved for commonjs *)   
+   (** reserved for commonjs and NodeJS globals*)   
    "require";
    "exports";
-   "module"
+   "module";
+    "clearImmediate";
+    "clearInterval";
+    "clearTimeout";
+    "console";
+    "global";
+    "process";
+    "require";
+    "setImmediate";
+    "setInterval";
+    "setTimeout";
+    "__dirname";
+    "__filename"
   |]
 
 let reserved_map = 
   let len = Array.length reserved_words in 
   let set =  String_hash_set.create 1024 in (* large hash set for perfect hashing *)
   for i = 0 to len - 1 do 
-    (* 103 *) String_hash_set.add set reserved_words.(i);
+    (* 115 *) String_hash_set.add set reserved_words.(i);
   done ;
   set 
 
@@ -6252,6 +6279,7 @@ let equal ( x : Ident.t) ( y : Ident.t) =
   (* 9498 *) if x.stamp <> 0 then (* 9498 *) x.stamp = y.stamp
   else (* 0 *) y.stamp = 0 && x.name = y.name
    
+
 end
 module Hash_set_ident_mask : sig 
 #1 "hash_set_ident_mask.mli"
@@ -8354,10 +8382,17 @@ module Ext_json_parse : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type error_info
+
+exception Error of error_info
+
+val pp_error : Format.formatter -> error_info -> unit 
 
 val parse_json : Lexing.lexbuf -> Ext_json_types.t 
 val parse_json_from_string : string -> Ext_json_types.t 
+
 val parse_json_from_chan : in_channel -> Ext_json_types.t 
+
 val parse_json_from_file  : string -> Ext_json_types.t
 
 
@@ -8409,16 +8444,32 @@ let report_error ppf = function
     -> (* 0 *) fprintf ppf "Unterminated_comment"
          
 
+type  error_info  = 
+  { error : error ;
+    loc_start : Lexing.position; 
+    loc_end :Lexing.position;
+  }
+
+let pp_error fmt {error; loc_start ; loc_end } = 
+  (* 0 *) Format.fprintf fmt "@[%a:@ %a@ -@ %a)@]" 
+    report_error error
+    Ext_position.print loc_start
+    Ext_position.print loc_end
+
+exception Error of error_info
+
+
 
 let () = 
   Printexc.register_printer
     (function x -> 
      (* 2 *) match x with 
-     | Error (e , a, b) -> 
-       (* 0 *) Some (Format.asprintf "@[%a:@ %a@ -@ %a)@]" report_error e 
-               Ext_position.print a Ext_position.print b)
+     | Error error_info -> 
+       (* 0 *) Some (Format.asprintf "%a" pp_error error_info)
+
      | _ -> (* 2 *) None
     )
+
 
 
 
@@ -8437,9 +8488,11 @@ type token =
   | String of string
   | True   
   
-
 let error  (lexbuf : Lexing.lexbuf) e = 
-  (* 5 *) raise (Error (e, lexbuf.lex_start_p, lexbuf.lex_curr_p))
+  (* 5 *) raise (Error { error =  e; 
+                 loc_start =  lexbuf.lex_start_p; 
+                 loc_end = lexbuf.lex_curr_p})
+
 
 let lexeme_len (x : Lexing.lexbuf) =
   (* 0 *) x.lex_curr_pos - x.lex_start_pos
@@ -8477,7 +8530,7 @@ let hex_code c1 c2 =
 
 let lf = '\010'
 
-# 116 "ext/ext_json_parse.ml"
+# 134 "ext/ext_json_parse.ml"
 let __ocaml_lex_tables = {
   Lexing.lex_base = 
    "\000\000\239\255\240\255\241\255\000\000\025\000\011\000\244\255\
@@ -8665,80 +8718,80 @@ let rec lex_json buf lexbuf =
 and __ocaml_lex_lex_json_rec buf lexbuf __ocaml_lex_state =
   (* 86 *) match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 134 "ext/ext_json_parse.mll"
+# 152 "ext/ext_json_parse.mll"
           (* 31 *) ( lex_json buf lexbuf)
-# 306 "ext/ext_json_parse.ml"
+# 324 "ext/ext_json_parse.ml"
 
   | 1 ->
-# 135 "ext/ext_json_parse.mll"
+# 153 "ext/ext_json_parse.mll"
                    (* 0 *) ( 
     update_loc lexbuf 0;
     lex_json buf  lexbuf
   )
-# 314 "ext/ext_json_parse.ml"
+# 332 "ext/ext_json_parse.ml"
 
   | 2 ->
-# 139 "ext/ext_json_parse.mll"
+# 157 "ext/ext_json_parse.mll"
                 (* 0 *) ( comment buf lexbuf)
-# 319 "ext/ext_json_parse.ml"
+# 337 "ext/ext_json_parse.ml"
 
   | 3 ->
-# 140 "ext/ext_json_parse.mll"
+# 158 "ext/ext_json_parse.mll"
          (* 0 *) ( True)
-# 324 "ext/ext_json_parse.ml"
+# 342 "ext/ext_json_parse.ml"
 
   | 4 ->
-# 141 "ext/ext_json_parse.mll"
+# 159 "ext/ext_json_parse.mll"
           (* 0 *) (False)
-# 329 "ext/ext_json_parse.ml"
+# 347 "ext/ext_json_parse.ml"
 
   | 5 ->
-# 142 "ext/ext_json_parse.mll"
+# 160 "ext/ext_json_parse.mll"
          (* 0 *) (Null)
-# 334 "ext/ext_json_parse.ml"
+# 352 "ext/ext_json_parse.ml"
 
   | 6 ->
-# 143 "ext/ext_json_parse.mll"
+# 161 "ext/ext_json_parse.mll"
        (* 5 *) (Lbracket)
-# 339 "ext/ext_json_parse.ml"
+# 357 "ext/ext_json_parse.ml"
 
   | 7 ->
-# 144 "ext/ext_json_parse.mll"
+# 162 "ext/ext_json_parse.mll"
        (* 3 *) (Rbracket)
-# 344 "ext/ext_json_parse.ml"
+# 362 "ext/ext_json_parse.ml"
 
   | 8 ->
-# 145 "ext/ext_json_parse.mll"
+# 163 "ext/ext_json_parse.mll"
        (* 6 *) (Lbrace)
-# 349 "ext/ext_json_parse.ml"
+# 367 "ext/ext_json_parse.ml"
 
   | 9 ->
-# 146 "ext/ext_json_parse.mll"
+# 164 "ext/ext_json_parse.mll"
        (* 3 *) (Rbrace)
-# 354 "ext/ext_json_parse.ml"
+# 372 "ext/ext_json_parse.ml"
 
   | 10 ->
-# 147 "ext/ext_json_parse.mll"
+# 165 "ext/ext_json_parse.mll"
        (* 13 *) (Comma)
-# 359 "ext/ext_json_parse.ml"
+# 377 "ext/ext_json_parse.ml"
 
   | 11 ->
-# 148 "ext/ext_json_parse.mll"
+# 166 "ext/ext_json_parse.mll"
         (* 4 *) (Colon)
-# 364 "ext/ext_json_parse.ml"
+# 382 "ext/ext_json_parse.ml"
 
   | 12 ->
-# 149 "ext/ext_json_parse.mll"
+# 167 "ext/ext_json_parse.mll"
                       (* 0 *) (lex_json buf lexbuf)
-# 369 "ext/ext_json_parse.ml"
+# 387 "ext/ext_json_parse.ml"
 
   | 13 ->
-# 151 "ext/ext_json_parse.mll"
+# 169 "ext/ext_json_parse.mll"
          (* 11 *) ( Number (Lexing.lexeme lexbuf))
-# 374 "ext/ext_json_parse.ml"
+# 392 "ext/ext_json_parse.ml"
 
   | 14 ->
-# 153 "ext/ext_json_parse.mll"
+# 171 "ext/ext_json_parse.mll"
       (* 4 *) (
   let pos = Lexing.lexeme_start_p lexbuf in
   scan_string buf pos lexbuf;
@@ -8746,22 +8799,22 @@ and __ocaml_lex_lex_json_rec buf lexbuf __ocaml_lex_state =
   Buffer.clear buf ;
   String content 
 )
-# 385 "ext/ext_json_parse.ml"
+# 403 "ext/ext_json_parse.ml"
 
   | 15 ->
-# 160 "ext/ext_json_parse.mll"
+# 178 "ext/ext_json_parse.mll"
        (* 6 *) (Eof )
-# 390 "ext/ext_json_parse.ml"
+# 408 "ext/ext_json_parse.ml"
 
   | 16 ->
 (* 0 *) let
-# 161 "ext/ext_json_parse.mll"
+# 179 "ext/ext_json_parse.mll"
        c
-# 396 "ext/ext_json_parse.ml"
+# 414 "ext/ext_json_parse.ml"
 = Lexing.sub_lexeme_char lexbuf lexbuf.Lexing.lex_start_pos in
-# 161 "ext/ext_json_parse.mll"
+# 179 "ext/ext_json_parse.mll"
           ( error lexbuf (Illegal_character c ))
-# 400 "ext/ext_json_parse.ml"
+# 418 "ext/ext_json_parse.ml"
 
   | __ocaml_lex_state -> (* 0 *) lexbuf.Lexing.refill_buff lexbuf; 
       __ocaml_lex_lex_json_rec buf lexbuf __ocaml_lex_state
@@ -8771,19 +8824,19 @@ and comment buf lexbuf =
 and __ocaml_lex_comment_rec buf lexbuf __ocaml_lex_state =
   (* 0 *) match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 163 "ext/ext_json_parse.mll"
+# 181 "ext/ext_json_parse.mll"
               (* 0 *) (lex_json buf lexbuf)
-# 412 "ext/ext_json_parse.ml"
+# 430 "ext/ext_json_parse.ml"
 
   | 1 ->
-# 164 "ext/ext_json_parse.mll"
+# 182 "ext/ext_json_parse.mll"
      (* 0 *) (comment buf lexbuf)
-# 417 "ext/ext_json_parse.ml"
+# 435 "ext/ext_json_parse.ml"
 
   | 2 ->
-# 165 "ext/ext_json_parse.mll"
+# 183 "ext/ext_json_parse.mll"
        (* 0 *) (error lexbuf Unterminated_comment)
-# 422 "ext/ext_json_parse.ml"
+# 440 "ext/ext_json_parse.ml"
 
   | __ocaml_lex_state -> (* 0 *) lexbuf.Lexing.refill_buff lexbuf; 
       __ocaml_lex_comment_rec buf lexbuf __ocaml_lex_state
@@ -8793,64 +8846,64 @@ and scan_string buf start lexbuf =
 and __ocaml_lex_scan_string_rec buf start lexbuf __ocaml_lex_state =
   (* 8 *) match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 169 "ext/ext_json_parse.mll"
+# 187 "ext/ext_json_parse.mll"
       (* 4 *) ( () )
-# 434 "ext/ext_json_parse.ml"
+# 452 "ext/ext_json_parse.ml"
 
   | 1 ->
-# 171 "ext/ext_json_parse.mll"
+# 189 "ext/ext_json_parse.mll"
   (* 0 *) (
         let len = lexeme_len lexbuf - 2 in
         update_loc lexbuf len;
 
         scan_string buf start lexbuf
       )
-# 444 "ext/ext_json_parse.ml"
+# 462 "ext/ext_json_parse.ml"
 
   | 2 ->
-# 178 "ext/ext_json_parse.mll"
+# 196 "ext/ext_json_parse.mll"
       (* 0 *) (
         let len = lexeme_len lexbuf - 3 in
         update_loc lexbuf len;
         scan_string buf start lexbuf
       )
-# 453 "ext/ext_json_parse.ml"
+# 471 "ext/ext_json_parse.ml"
 
   | 3 ->
 (* 0 *) let
-# 183 "ext/ext_json_parse.mll"
+# 201 "ext/ext_json_parse.mll"
                                                c
-# 459 "ext/ext_json_parse.ml"
+# 477 "ext/ext_json_parse.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 1) in
-# 184 "ext/ext_json_parse.mll"
+# 202 "ext/ext_json_parse.mll"
       (
         Buffer.add_char buf (char_for_backslash c);
         scan_string buf start lexbuf
       )
-# 466 "ext/ext_json_parse.ml"
+# 484 "ext/ext_json_parse.ml"
 
   | 4 ->
 (* 0 *) let
-# 188 "ext/ext_json_parse.mll"
+# 206 "ext/ext_json_parse.mll"
                  c1
-# 472 "ext/ext_json_parse.ml"
+# 490 "ext/ext_json_parse.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 1)
 and
-# 188 "ext/ext_json_parse.mll"
+# 206 "ext/ext_json_parse.mll"
                                c2
-# 477 "ext/ext_json_parse.ml"
+# 495 "ext/ext_json_parse.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 2)
 and
-# 188 "ext/ext_json_parse.mll"
+# 206 "ext/ext_json_parse.mll"
                                              c3
-# 482 "ext/ext_json_parse.ml"
+# 500 "ext/ext_json_parse.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 3)
 and
-# 188 "ext/ext_json_parse.mll"
+# 206 "ext/ext_json_parse.mll"
                                                     s
-# 487 "ext/ext_json_parse.ml"
+# 505 "ext/ext_json_parse.ml"
 = Lexing.sub_lexeme lexbuf lexbuf.Lexing.lex_start_pos (lexbuf.Lexing.lex_start_pos + 4) in
-# 189 "ext/ext_json_parse.mll"
+# 207 "ext/ext_json_parse.mll"
       (
         let v = dec_code c1 c2 c3 in
         if v > 255 then
@@ -8859,55 +8912,55 @@ and
 
         scan_string buf start lexbuf
       )
-# 498 "ext/ext_json_parse.ml"
+# 516 "ext/ext_json_parse.ml"
 
   | 5 ->
 (* 0 *) let
-# 197 "ext/ext_json_parse.mll"
+# 215 "ext/ext_json_parse.mll"
                         c1
-# 504 "ext/ext_json_parse.ml"
+# 522 "ext/ext_json_parse.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 2)
 and
-# 197 "ext/ext_json_parse.mll"
+# 215 "ext/ext_json_parse.mll"
                                          c2
-# 509 "ext/ext_json_parse.ml"
+# 527 "ext/ext_json_parse.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 3) in
-# 198 "ext/ext_json_parse.mll"
+# 216 "ext/ext_json_parse.mll"
       (
         let v = hex_code c1 c2 in
         Buffer.add_char buf (Char.chr v);
 
         scan_string buf start lexbuf
       )
-# 518 "ext/ext_json_parse.ml"
+# 536 "ext/ext_json_parse.ml"
 
   | 6 ->
 (* 0 *) let
-# 204 "ext/ext_json_parse.mll"
+# 222 "ext/ext_json_parse.mll"
              c
-# 524 "ext/ext_json_parse.ml"
+# 542 "ext/ext_json_parse.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 1) in
-# 205 "ext/ext_json_parse.mll"
+# 223 "ext/ext_json_parse.mll"
       (
         Buffer.add_char buf '\\';
         Buffer.add_char buf c;
 
         scan_string buf start lexbuf
       )
-# 533 "ext/ext_json_parse.ml"
+# 551 "ext/ext_json_parse.ml"
 
   | 7 ->
-# 212 "ext/ext_json_parse.mll"
+# 230 "ext/ext_json_parse.mll"
       (* 0 *) (
         update_loc lexbuf 0;
         Buffer.add_char buf lf;
 
         scan_string buf start lexbuf
       )
-# 543 "ext/ext_json_parse.ml"
+# 561 "ext/ext_json_parse.ml"
 
   | 8 ->
-# 219 "ext/ext_json_parse.mll"
+# 237 "ext/ext_json_parse.mll"
       (* 4 *) (
         let ofs = lexbuf.lex_start_pos in
         let len = lexbuf.lex_curr_pos - ofs in
@@ -8915,21 +8968,21 @@ and
 
         scan_string buf start lexbuf
       )
-# 554 "ext/ext_json_parse.ml"
+# 572 "ext/ext_json_parse.ml"
 
   | 9 ->
-# 227 "ext/ext_json_parse.mll"
+# 245 "ext/ext_json_parse.mll"
       (* 0 *) (
         error lexbuf Unterminated_string
       )
-# 561 "ext/ext_json_parse.ml"
+# 579 "ext/ext_json_parse.ml"
 
   | __ocaml_lex_state -> (* 0 *) lexbuf.Lexing.refill_buff lexbuf; 
       __ocaml_lex_scan_string_rec buf start lexbuf __ocaml_lex_state
 
 ;;
 
-# 231 "ext/ext_json_parse.mll"
+# 249 "ext/ext_json_parse.mll"
  
 
 
@@ -9037,7 +9090,7 @@ let parse_json_from_file s =
 
 
 
-# 676 "ext/ext_json_parse.ml"
+# 694 "ext/ext_json_parse.ml"
 
 end
 module Ounit_json_tests
@@ -10663,7 +10716,7 @@ let node_relative_path node_modules_shorten (file1 : t)
        | `File x -> (* 0 *) `File (absolute_path x)
        | `Dir x -> (* 0 *) `Dir(absolute_path x))
     ^ node_sep ^
-    chop_extension_if_any (Filename.basename file2)
+    (* chop_extension_if_any *) (Filename.basename file2)
 
 
 
@@ -10834,6 +10887,7 @@ let simple_convert_node_path_to_os_path =
   else (* 0 *) if Sys.win32 || Sys.cygwin then 
     (* 0 *) Ext_string.replace_slash_backward 
   else (* 0 *) failwith ("Unknown OS : " ^ Sys.os_type)
+
 end
 module Ounit_path_tests
 = struct

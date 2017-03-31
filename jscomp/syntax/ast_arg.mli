@@ -55,7 +55,7 @@ type kind =
     arg_label :label
   }
 
-val cst_json : string -> cst 
+val cst_json : Location.t -> string -> cst 
 val cst_int : int -> cst 
 val cst_string : string -> cst 
 

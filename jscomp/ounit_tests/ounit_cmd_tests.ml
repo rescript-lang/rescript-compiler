@@ -155,8 +155,23 @@ external ff :
          ( [`a | `b ] [@bs.string] ) 
          (* auto-convert to ocaml poly-variant *)
       *)
-    end
+    end;
 
+    __LOC__ >:: begin fun _ -> 
+      let should_err = bsc_eval {|
+      type t 
+      external mk : int -> (_ [@bs.as {json| { x : 3 } |json}]) ->  t = "" [@@bs.val]
+      |} in 
+      OUnit.assert_bool __LOC__ (Ext_string.contain_substring should_err.stderr "Invalid json literal")
+    end
+    ;
+    __LOC__ >:: begin fun _ -> 
+      let should_err = bsc_eval {|
+      type t 
+      external mk : int -> (_ [@bs.as {json| { "x" : 3 } |json}]) ->  t = "" [@@bs.val]
+      |} in 
+      OUnit.assert_bool __LOC__ (Ext_string.is_empty should_err.stderr)
+    end
 
 
   ]

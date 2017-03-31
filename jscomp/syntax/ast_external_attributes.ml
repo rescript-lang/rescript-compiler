@@ -44,7 +44,8 @@ let get_arg_type ~nolabel optional
   if Ast_core_type.is_any ptyp then (* (_[@bs.as ])*)
     if optional then 
       Bs_syntaxerr.err ptyp.ptyp_loc Invalid_underscore_type_in_external
-    else begin match Ast_attributes.process_bs_string_or_int_as ptyp.Parsetree.ptyp_attributes with 
+    else begin
+      match Ast_attributes.process_bs_string_or_int_as ptyp.Parsetree.ptyp_attributes with 
       |  None, _ -> 
         Bs_syntaxerr.err ptyp.ptyp_loc Invalid_underscore_type_in_external
 
@@ -56,7 +57,8 @@ let get_arg_type ~nolabel optional
         Arg_cst (Ast_arg.cst_string i), Ast_literal.type_string ~loc:ptyp.ptyp_loc () 
       | Some (`Json_str s), others ->
         Ast_attributes.warn_unused_attributes others;
-        Arg_cst (Ast_arg.cst_json s), Ast_literal.type_string ~loc:ptyp.ptyp_loc () 
+        Arg_cst (Ast_arg.cst_json ptyp.ptyp_loc s),
+        Ast_literal.type_string ~loc:ptyp.ptyp_loc () 
 
     end 
   else (* ([`a|`b] [@bs.string]) *)

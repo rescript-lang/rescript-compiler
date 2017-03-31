@@ -22,9 +22,16 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type error_info
+
+exception Error of error_info
+
+val pp_error : Format.formatter -> error_info -> unit 
 
 val parse_json : Lexing.lexbuf -> Ext_json_types.t 
 val parse_json_from_string : string -> Ext_json_types.t 
+
 val parse_json_from_chan : in_channel -> Ext_json_types.t 
+
 val parse_json_from_file  : string -> Ext_json_types.t
 

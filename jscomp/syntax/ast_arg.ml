@@ -56,12 +56,30 @@ type kind =
     arg_label : label
   }
 
-let cst_json s : cst  =
+type invalid_json = Ext_json_parse.error_info
+
+let pp_invaild_json fmt err = 
+  Format.fprintf fmt "@[Invalid json literal:  %a@]@." 
+    Ext_json_parse.pp_error err 
+exception Error of Location.t * invalid_json
+
+let () = 
+  Location.register_error_of_exn (function 
+    | Error (loc,err) -> 
+      Some (Location.error_of_printer loc pp_invaild_json err)
+    | _ -> None
+    )
+
+
+let cst_json loc s : cst  =
   match Ext_json_parse.parse_json (Lexing.from_string s) with 
   | True _ -> Arg_js_true
   | False _ -> Arg_js_false 
   | Null _ -> Arg_js_null 
   | _ -> Arg_js_json s 
+  | exception Ext_json_parse.Error error_info
+    -> raise (Error (loc , error_info))
+
 let cst_int i = Arg_int_lit i 
 let cst_string s = Arg_string_lit s 
 let empty_label = Empty None 

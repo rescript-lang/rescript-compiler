@@ -92,6 +92,7 @@ external on_exit_slice5 :
     -> (_ [@bs.as {json|"你好"|json}])
     -> (_ [@bs.as {json| ["你好",1,2,3] |json}])
     -> (_ [@bs.as {json| [{ "arr" : ["你好",1,2,3], "encoding" : "utf8"}] |json}])
+    -> (_ [@bs.as {json| [{ "arr" : ["你好",1,2,3], "encoding" : "utf8"}] |json}])
     -> (_ [@bs.as "xxx"]) 
     -> ([`a|`b|`c] [@bs.int])
     -> (_ [@bs.as "yyy"]) 
