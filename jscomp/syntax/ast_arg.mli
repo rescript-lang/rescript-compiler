@@ -22,30 +22,45 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type cst = private
+  | Arg_int_lit of int 
+  | Arg_string_lit of string 
+  (* | Arg_js_true *)
+  (* | Arg_js_false *)
+  | Arg_js_null
+  | Arg_js_true
+  | Arg_js_false
+  | Arg_js_json of string
+type label = private
+  | Label of string * cst option 
+  | Empty of cst option
+  | Optional of string 
+  (* it will be ignored , side effect will be recorded *)
 
+type ty = 
+  | NullString of (int * string) list (* `a does not have any value*)
+  | NonNullString of (int * string) list (* `a of int *)
+  | Int of (int * int ) list (* ([`a | `b ] [@bs.int])*)
+  | Arg_cst of cst
+  | Fn_uncurry_arity of int (* annotated with [@bs.uncurry ] or [@bs.uncurry 2]*)
+    (* maybe we can improve it as a combination of {!Asttypes.constant} and tuple *)
+  | Array 
+  | Extern_unit
+  | Nothing
+  | Ignore
 
+type kind = 
+  {
+    arg_type : ty;
+    arg_label :label
+  }
 
+val cst_json : Location.t -> string -> cst 
+val cst_int : int -> cst 
+val cst_string : string -> cst 
 
-
-
-
-(** Compile ocaml external function call to JS IR. *) 
-val ocaml_to_js_eff : 
-  Ast_arg.kind -> 
-  J.expression -> 
-  J.expression list * J.expression list  
-
-val translate_ffi :
-  Location.t -> 
-  Ast_ffi_types.ffi -> 
-  (* string -> *) (* Not used.. *)
-  Lam_compile_defs.cxt -> 
-  Ast_arg.kind list -> 
-  (*bool -> *)
-  J.expression list -> 
-  J.expression 
-  
-(** TODO: document supported attributes
-    Attributes starting with `js` are reserved
-    examples: "bs.splice"
- *)
+val empty_label : label
+val empty_lit : cst -> label 
+val label :  string -> cst option -> label
+val optional  : string -> label
+val empty_kind : ty -> kind

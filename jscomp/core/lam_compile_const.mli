@@ -32,3 +32,6 @@
 (** Compile lambda constant to JS *)
 
 val translate : Lam.constant -> J.expression
+
+
+val translate_arg_cst : Ast_arg.cst -> J.expression

@@ -57,23 +57,12 @@ type js_module_as_fn =
     splice : bool 
   }
 
-type arg_type = Ast_core_type.arg_type
-type arg_label = 
-  | Label of string 
-  | Label_int_lit of string * int 
-  | Label_string_lit of string * string 
-  | Optional of string 
-  | Empty (* it will be ignored , side effect will be recorded *)
-  | Empty_int_lit of int 
-  | Empty_string_lit of string 
+type arg_type = Ast_arg.ty
 
-type arg_kind = 
-  {
-    arg_type : arg_type;
-    arg_label : arg_label
-  }
+type arg_label = Ast_arg.label 
 
-type obj_create = arg_kind list
+
+type obj_create = Ast_arg.kind list
 
 type ffi = 
   (* | Obj_create of obj_create*)
@@ -99,7 +88,7 @@ type return_wrapper =
   | Return_replaced_with_unit    
 
 type t  = 
-  | Ffi_bs of arg_kind list  *
+  | Ffi_bs of Ast_arg.kind list  *
      return_wrapper * ffi
   | Ffi_obj_create of obj_create
   | Ffi_normal 

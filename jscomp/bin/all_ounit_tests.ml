@@ -4017,8 +4017,23 @@ external ff :
          ( [`a | `b ] [@bs.string] ) 
          (* auto-convert to ocaml poly-variant *)
       *)
-    end
+    end;
 
+    __LOC__ >:: begin fun _ -> 
+      let should_err = bsc_eval {|
+      type t 
+      external mk : int -> (_ [@bs.as {json| { x : 3 } |json}]) ->  t = "" [@@bs.val]
+      |} in 
+      OUnit.assert_bool __LOC__ (Ext_string.contain_substring should_err.stderr "Invalid json literal")
+    end
+    ;
+    __LOC__ >:: begin fun _ -> 
+      let should_err = bsc_eval {|
+      type t 
+      external mk : int -> (_ [@bs.as {json| { "x" : 3 } |json}]) ->  t = "" [@@bs.val]
+      |} in 
+      OUnit.assert_bool __LOC__ (Ext_string.is_empty should_err.stderr)
+    end
 
 
   ]
@@ -8367,10 +8382,17 @@ module Ext_json_parse : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type error_info
+
+exception Error of error_info
+
+val pp_error : Format.formatter -> error_info -> unit 
 
 val parse_json : Lexing.lexbuf -> Ext_json_types.t 
 val parse_json_from_string : string -> Ext_json_types.t 
+
 val parse_json_from_chan : in_channel -> Ext_json_types.t 
+
 val parse_json_from_file  : string -> Ext_json_types.t
 
 
@@ -8422,16 +8444,32 @@ let report_error ppf = function
     -> fprintf ppf "Unterminated_comment"
          
 
+type  error_info  = 
+  { error : error ;
+    loc_start : Lexing.position; 
+    loc_end :Lexing.position;
+  }
+
+let pp_error fmt {error; loc_start ; loc_end } = 
+  Format.fprintf fmt "@[%a:@ %a@ -@ %a)@]" 
+    report_error error
+    Ext_position.print loc_start
+    Ext_position.print loc_end
+
+exception Error of error_info
+
+
 
 let () = 
   Printexc.register_printer
     (function x -> 
      match x with 
-     | Error (e , a, b) -> 
-       Some (Format.asprintf "@[%a:@ %a@ -@ %a)@]" report_error e 
-               Ext_position.print a Ext_position.print b)
+     | Error error_info -> 
+       Some (Format.asprintf "%a" pp_error error_info)
+
      | _ -> None
     )
+
 
 
 
@@ -8450,9 +8488,11 @@ type token =
   | String of string
   | True   
   
-
 let error  (lexbuf : Lexing.lexbuf) e = 
-  raise (Error (e, lexbuf.lex_start_p, lexbuf.lex_curr_p))
+  raise (Error { error =  e; 
+                 loc_start =  lexbuf.lex_start_p; 
+                 loc_end = lexbuf.lex_curr_p})
+
 
 let lexeme_len (x : Lexing.lexbuf) =
   x.lex_curr_pos - x.lex_start_pos
@@ -8490,7 +8530,7 @@ let hex_code c1 c2 =
 
 let lf = '\010'
 
-# 116 "ext/ext_json_parse.ml"
+# 134 "ext/ext_json_parse.ml"
 let __ocaml_lex_tables = {
   Lexing.lex_base = 
    "\000\000\239\255\240\255\241\255\000\000\025\000\011\000\244\255\
@@ -8678,80 +8718,80 @@ let rec lex_json buf lexbuf =
 and __ocaml_lex_lex_json_rec buf lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 134 "ext/ext_json_parse.mll"
+# 152 "ext/ext_json_parse.mll"
           ( lex_json buf lexbuf)
-# 306 "ext/ext_json_parse.ml"
+# 324 "ext/ext_json_parse.ml"
 
   | 1 ->
-# 135 "ext/ext_json_parse.mll"
+# 153 "ext/ext_json_parse.mll"
                    ( 
     update_loc lexbuf 0;
     lex_json buf  lexbuf
   )
-# 314 "ext/ext_json_parse.ml"
+# 332 "ext/ext_json_parse.ml"
 
   | 2 ->
-# 139 "ext/ext_json_parse.mll"
+# 157 "ext/ext_json_parse.mll"
                 ( comment buf lexbuf)
-# 319 "ext/ext_json_parse.ml"
+# 337 "ext/ext_json_parse.ml"
 
   | 3 ->
-# 140 "ext/ext_json_parse.mll"
+# 158 "ext/ext_json_parse.mll"
          ( True)
-# 324 "ext/ext_json_parse.ml"
+# 342 "ext/ext_json_parse.ml"
 
   | 4 ->
-# 141 "ext/ext_json_parse.mll"
+# 159 "ext/ext_json_parse.mll"
           (False)
-# 329 "ext/ext_json_parse.ml"
+# 347 "ext/ext_json_parse.ml"
 
   | 5 ->
-# 142 "ext/ext_json_parse.mll"
+# 160 "ext/ext_json_parse.mll"
          (Null)
-# 334 "ext/ext_json_parse.ml"
+# 352 "ext/ext_json_parse.ml"
 
   | 6 ->
-# 143 "ext/ext_json_parse.mll"
+# 161 "ext/ext_json_parse.mll"
        (Lbracket)
-# 339 "ext/ext_json_parse.ml"
+# 357 "ext/ext_json_parse.ml"
 
   | 7 ->
-# 144 "ext/ext_json_parse.mll"
+# 162 "ext/ext_json_parse.mll"
        (Rbracket)
-# 344 "ext/ext_json_parse.ml"
+# 362 "ext/ext_json_parse.ml"
 
   | 8 ->
-# 145 "ext/ext_json_parse.mll"
+# 163 "ext/ext_json_parse.mll"
        (Lbrace)
-# 349 "ext/ext_json_parse.ml"
+# 367 "ext/ext_json_parse.ml"
 
   | 9 ->
-# 146 "ext/ext_json_parse.mll"
+# 164 "ext/ext_json_parse.mll"
        (Rbrace)
-# 354 "ext/ext_json_parse.ml"
+# 372 "ext/ext_json_parse.ml"
 
   | 10 ->
-# 147 "ext/ext_json_parse.mll"
+# 165 "ext/ext_json_parse.mll"
        (Comma)
-# 359 "ext/ext_json_parse.ml"
+# 377 "ext/ext_json_parse.ml"
 
   | 11 ->
-# 148 "ext/ext_json_parse.mll"
+# 166 "ext/ext_json_parse.mll"
         (Colon)
-# 364 "ext/ext_json_parse.ml"
+# 382 "ext/ext_json_parse.ml"
 
   | 12 ->
-# 149 "ext/ext_json_parse.mll"
+# 167 "ext/ext_json_parse.mll"
                       (lex_json buf lexbuf)
-# 369 "ext/ext_json_parse.ml"
+# 387 "ext/ext_json_parse.ml"
 
   | 13 ->
-# 151 "ext/ext_json_parse.mll"
+# 169 "ext/ext_json_parse.mll"
          ( Number (Lexing.lexeme lexbuf))
-# 374 "ext/ext_json_parse.ml"
+# 392 "ext/ext_json_parse.ml"
 
   | 14 ->
-# 153 "ext/ext_json_parse.mll"
+# 171 "ext/ext_json_parse.mll"
       (
   let pos = Lexing.lexeme_start_p lexbuf in
   scan_string buf pos lexbuf;
@@ -8759,22 +8799,22 @@ and __ocaml_lex_lex_json_rec buf lexbuf __ocaml_lex_state =
   Buffer.clear buf ;
   String content 
 )
-# 385 "ext/ext_json_parse.ml"
+# 403 "ext/ext_json_parse.ml"
 
   | 15 ->
-# 160 "ext/ext_json_parse.mll"
+# 178 "ext/ext_json_parse.mll"
        (Eof )
-# 390 "ext/ext_json_parse.ml"
+# 408 "ext/ext_json_parse.ml"
 
   | 16 ->
 let
-# 161 "ext/ext_json_parse.mll"
+# 179 "ext/ext_json_parse.mll"
        c
-# 396 "ext/ext_json_parse.ml"
+# 414 "ext/ext_json_parse.ml"
 = Lexing.sub_lexeme_char lexbuf lexbuf.Lexing.lex_start_pos in
-# 161 "ext/ext_json_parse.mll"
+# 179 "ext/ext_json_parse.mll"
           ( error lexbuf (Illegal_character c ))
-# 400 "ext/ext_json_parse.ml"
+# 418 "ext/ext_json_parse.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
       __ocaml_lex_lex_json_rec buf lexbuf __ocaml_lex_state
@@ -8784,19 +8824,19 @@ and comment buf lexbuf =
 and __ocaml_lex_comment_rec buf lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 163 "ext/ext_json_parse.mll"
+# 181 "ext/ext_json_parse.mll"
               (lex_json buf lexbuf)
-# 412 "ext/ext_json_parse.ml"
+# 430 "ext/ext_json_parse.ml"
 
   | 1 ->
-# 164 "ext/ext_json_parse.mll"
+# 182 "ext/ext_json_parse.mll"
      (comment buf lexbuf)
-# 417 "ext/ext_json_parse.ml"
+# 435 "ext/ext_json_parse.ml"
 
   | 2 ->
-# 165 "ext/ext_json_parse.mll"
+# 183 "ext/ext_json_parse.mll"
        (error lexbuf Unterminated_comment)
-# 422 "ext/ext_json_parse.ml"
+# 440 "ext/ext_json_parse.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
       __ocaml_lex_comment_rec buf lexbuf __ocaml_lex_state
@@ -8806,64 +8846,64 @@ and scan_string buf start lexbuf =
 and __ocaml_lex_scan_string_rec buf start lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 169 "ext/ext_json_parse.mll"
+# 187 "ext/ext_json_parse.mll"
       ( () )
-# 434 "ext/ext_json_parse.ml"
+# 452 "ext/ext_json_parse.ml"
 
   | 1 ->
-# 171 "ext/ext_json_parse.mll"
+# 189 "ext/ext_json_parse.mll"
   (
         let len = lexeme_len lexbuf - 2 in
         update_loc lexbuf len;
 
         scan_string buf start lexbuf
       )
-# 444 "ext/ext_json_parse.ml"
+# 462 "ext/ext_json_parse.ml"
 
   | 2 ->
-# 178 "ext/ext_json_parse.mll"
+# 196 "ext/ext_json_parse.mll"
       (
         let len = lexeme_len lexbuf - 3 in
         update_loc lexbuf len;
         scan_string buf start lexbuf
       )
-# 453 "ext/ext_json_parse.ml"
+# 471 "ext/ext_json_parse.ml"
 
   | 3 ->
 let
-# 183 "ext/ext_json_parse.mll"
+# 201 "ext/ext_json_parse.mll"
                                                c
-# 459 "ext/ext_json_parse.ml"
+# 477 "ext/ext_json_parse.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 1) in
-# 184 "ext/ext_json_parse.mll"
+# 202 "ext/ext_json_parse.mll"
       (
         Buffer.add_char buf (char_for_backslash c);
         scan_string buf start lexbuf
       )
-# 466 "ext/ext_json_parse.ml"
+# 484 "ext/ext_json_parse.ml"
 
   | 4 ->
 let
-# 188 "ext/ext_json_parse.mll"
+# 206 "ext/ext_json_parse.mll"
                  c1
-# 472 "ext/ext_json_parse.ml"
+# 490 "ext/ext_json_parse.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 1)
 and
-# 188 "ext/ext_json_parse.mll"
+# 206 "ext/ext_json_parse.mll"
                                c2
-# 477 "ext/ext_json_parse.ml"
+# 495 "ext/ext_json_parse.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 2)
 and
-# 188 "ext/ext_json_parse.mll"
+# 206 "ext/ext_json_parse.mll"
                                              c3
-# 482 "ext/ext_json_parse.ml"
+# 500 "ext/ext_json_parse.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 3)
 and
-# 188 "ext/ext_json_parse.mll"
+# 206 "ext/ext_json_parse.mll"
                                                     s
-# 487 "ext/ext_json_parse.ml"
+# 505 "ext/ext_json_parse.ml"
 = Lexing.sub_lexeme lexbuf lexbuf.Lexing.lex_start_pos (lexbuf.Lexing.lex_start_pos + 4) in
-# 189 "ext/ext_json_parse.mll"
+# 207 "ext/ext_json_parse.mll"
       (
         let v = dec_code c1 c2 c3 in
         if v > 255 then
@@ -8872,55 +8912,55 @@ and
 
         scan_string buf start lexbuf
       )
-# 498 "ext/ext_json_parse.ml"
+# 516 "ext/ext_json_parse.ml"
 
   | 5 ->
 let
-# 197 "ext/ext_json_parse.mll"
+# 215 "ext/ext_json_parse.mll"
                         c1
-# 504 "ext/ext_json_parse.ml"
+# 522 "ext/ext_json_parse.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 2)
 and
-# 197 "ext/ext_json_parse.mll"
+# 215 "ext/ext_json_parse.mll"
                                          c2
-# 509 "ext/ext_json_parse.ml"
+# 527 "ext/ext_json_parse.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 3) in
-# 198 "ext/ext_json_parse.mll"
+# 216 "ext/ext_json_parse.mll"
       (
         let v = hex_code c1 c2 in
         Buffer.add_char buf (Char.chr v);
 
         scan_string buf start lexbuf
       )
-# 518 "ext/ext_json_parse.ml"
+# 536 "ext/ext_json_parse.ml"
 
   | 6 ->
 let
-# 204 "ext/ext_json_parse.mll"
+# 222 "ext/ext_json_parse.mll"
              c
-# 524 "ext/ext_json_parse.ml"
+# 542 "ext/ext_json_parse.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 1) in
-# 205 "ext/ext_json_parse.mll"
+# 223 "ext/ext_json_parse.mll"
       (
         Buffer.add_char buf '\\';
         Buffer.add_char buf c;
 
         scan_string buf start lexbuf
       )
-# 533 "ext/ext_json_parse.ml"
+# 551 "ext/ext_json_parse.ml"
 
   | 7 ->
-# 212 "ext/ext_json_parse.mll"
+# 230 "ext/ext_json_parse.mll"
       (
         update_loc lexbuf 0;
         Buffer.add_char buf lf;
 
         scan_string buf start lexbuf
       )
-# 543 "ext/ext_json_parse.ml"
+# 561 "ext/ext_json_parse.ml"
 
   | 8 ->
-# 219 "ext/ext_json_parse.mll"
+# 237 "ext/ext_json_parse.mll"
       (
         let ofs = lexbuf.lex_start_pos in
         let len = lexbuf.lex_curr_pos - ofs in
@@ -8928,21 +8968,21 @@ let
 
         scan_string buf start lexbuf
       )
-# 554 "ext/ext_json_parse.ml"
+# 572 "ext/ext_json_parse.ml"
 
   | 9 ->
-# 227 "ext/ext_json_parse.mll"
+# 245 "ext/ext_json_parse.mll"
       (
         error lexbuf Unterminated_string
       )
-# 561 "ext/ext_json_parse.ml"
+# 579 "ext/ext_json_parse.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
       __ocaml_lex_scan_string_rec buf start lexbuf __ocaml_lex_state
 
 ;;
 
-# 231 "ext/ext_json_parse.mll"
+# 249 "ext/ext_json_parse.mll"
  
 
 
@@ -9050,7 +9090,7 @@ let parse_json_from_file s =
 
 
 
-# 676 "ext/ext_json_parse.ml"
+# 694 "ext/ext_json_parse.ml"
 
 end
 module Ounit_json_tests

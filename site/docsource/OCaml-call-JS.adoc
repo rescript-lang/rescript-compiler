@@ -133,7 +133,7 @@ external imul : int -> int -> int =
 external create_date : unit -> t = "Date" [@@bs.new]
 let date = create_date ()
 ----------
-Output:
+.Output:
 [source,js]
 ----------
 var date = new Date();
@@ -143,7 +143,7 @@ var date = new Date();
 
 #### Binding to a value from a module: bs.module
 
-Input:
+.Input:
 [source,ocaml]
 --------
 external add : int -> int -> int = "add" [@@bs.module "x"]
@@ -153,7 +153,7 @@ let g = add2 3 4
 --------
 <1> "U" will hint the compiler to generate a better name for the module, see output
 
-Output:
+.Output:
 [source,js]
 -----------
 var U = require("y");
@@ -206,13 +206,13 @@ external get_by_id : dom -> string -> id =
 
 The object is always the first argument and actual arguments follow.
 
-Input:
+.Input:
 [source,ocaml]
 --------
 get_by_id dom "xx"
 --------
 
-Output:
+.Output:
 [source,js]
 --------
 dom.getElementById("xx")
@@ -360,7 +360,7 @@ let register rl =
 --------------
 <1> This is a very powerful typing: each event can have its own _different types_.
 
-Output:
+.Output:
 [source,js]
 ----------
 function register(rl) {
@@ -398,7 +398,7 @@ let v = add 0 1 2 // <1>
 -------------
 <1> the first argument will be erased
 
-Output:
+.Output:
 [source,javascript]
 -----------
 var v = add (1,2)
@@ -450,7 +450,7 @@ let () =
         Js.log( "error code: " ^ string_of_int exit_code ))      
 --------------
 
-Output
+.Output
 [source,js]
 -----------
 process.on("exit", function (exit_code) {
@@ -472,7 +472,7 @@ let register (p : process) =
 
 --------------
 
-Output
+.Output
 [source,js]
 -----------
 function register(p) {
@@ -483,7 +483,7 @@ function register(p) {
 }
 -----------
 
-Input
+.Input
 [source,ocaml]
 --------------
 external io_config : 
@@ -492,7 +492,7 @@ external io_config :
 let config = io_config ~cwd:"." ()   
 --------------
 
-Output
+.Output
 [source,js]
 -----------
 var config = {
@@ -500,6 +500,40 @@ var config = {
   cwd: "."
 };
 -----------
+
+### Fixed Arguments with arbitrary JSON literal (@since 1.6.1)
+
+So the payload can be more flexiblie with JSON literal support
+
+[source,ocaml]
+--------------
+external on_exit_slice5 : 
+    int 
+    -> (_ [@bs.as 3]) 
+    -> (_ [@bs.as {json|true|json}])
+    -> (_ [@bs.as {json|false|json}])
+    -> (_ [@bs.as {json|"你好"|json}])
+    -> (_ [@bs.as {json| ["你好",1,2,3] |json}])
+    -> (_ [@bs.as {json| [{ "arr" : ["你好",1,2,3], "encoding" : "utf8"}] |json}])
+    -> (_ [@bs.as {json| [{ "arr" : ["你好",1,2,3], "encoding" : "utf8"}] |json}])
+    -> (_ [@bs.as "xxx"]) 
+    -> ([`a|`b|`c] [@bs.int])
+    -> (_ [@bs.as "yyy"]) 
+    -> ([`a|`b|`c] [@bs.string])
+    -> int array
+    -> unit 
+    = 
+    "xx" [@@bs.send.pipe: t] [@@bs.splice]
+
+let _ = x |> on_exit_slice5 __LINE__ `a `b [|1;2;3;4;5|]
+--------------
+
+.Output
+[source,js]
+-----------
+x.xx(114, 3, true, false, ("你好"), ( ["你好",1,2,3] ), ( [{ "arr" : ["你好",1,2,3], "encoding" : "utf8"}] ), ( [{ "arr" : ["你好",1,2,3], "encoding" : "utf8"}] ), "xxx", 0, "yyy", "b", 1, 2, 3, 4, 5)
+-----------
+
 
 ### Binding to NodeJS special variables: bs.node
 
@@ -812,7 +846,7 @@ set_onload x begin fun [@bs.this] o v ->
 end
 -----------------------
 
-Output:
+.Output:
 [source,js]
 ------------------------------
 x.onload = function(v){
@@ -1073,7 +1107,7 @@ let u = [%bs.obj { x = { y = { z = 3}}} ] // <1>
 --------------
 <1> `bs.obj` extension is used to mark `{}` as JS objects
 
-Output:
+.Output:
 [source,js]
 --------------------------------
 var u = { x : { y : { z : 3 }}}}
@@ -1109,7 +1143,7 @@ let xs = [%bs.obj [| { x = 3 } ; { x = 3 } |] : < x : int  > array  ]
 let ys = [%bs.obj [| { x = 3 } ; { x = 4 } |] ]
 -------------
 
-Output:
+.Output:
 [source,js]
 ---------------------------------
 var xs = [ { x : 3 } , { x : 3 } ]
@@ -1125,7 +1159,7 @@ external make_config : hi:int -> lo:int -> unit -> t = "" [@@bs.obj]
 let v = make_config ~hi:2 ~lo:3
 --------------
 
-Output:
+.Output:
 [source,js]
 -----------------------
 var v = { hi : 2 , lo : 3 }
@@ -1142,7 +1176,7 @@ let v = make_config ~lo:2 ~hi:3  ()
     of arguments is undefined. Since the order does not matter, to make sure the compiler realize all the arguments
     are fulfilled (including optional arguments), it is common to have a `unit` type before the result.
 
-Output:
+.Output:
 [source,js]
 ------------------------
 var u = {hi : 3}
@@ -1164,7 +1198,7 @@ let b = a 1 2 [@bs]
 <1> `fn` property is not method, it does not rely on `this`.
 We will show how to create JS method in OCaml later.
 
-Output:
+.Output:
 [source,js]
 -----------------------------------------------------------------
 
@@ -1213,7 +1247,7 @@ let v2  =
 <1> `self` is bound to `this` in generated JS code
 <2> `[@bs]` marks `object .. end` as a JS object
 
-Output:
+.Output:
 [source,js]
 -----------
 var v2 = {
@@ -1258,7 +1292,7 @@ let f (u : rect) =
    u##draw ()
 --------------
 
-Output:
+.Output:
 [source,js]
 -----------
 function f(u){

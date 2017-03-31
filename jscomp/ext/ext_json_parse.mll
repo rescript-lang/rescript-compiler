@@ -43,16 +43,32 @@ let report_error ppf = function
     -> fprintf ppf "Unterminated_comment"
          
 
+type  error_info  = 
+  { error : error ;
+    loc_start : Lexing.position; 
+    loc_end :Lexing.position;
+  }
+
+let pp_error fmt {error; loc_start ; loc_end } = 
+  Format.fprintf fmt "@[%a:@ %a@ -@ %a)@]" 
+    report_error error
+    Ext_position.print loc_start
+    Ext_position.print loc_end
+
+exception Error of error_info
+
+
 
 let () = 
   Printexc.register_printer
     (function x -> 
      match x with 
-     | Error (e , a, b) -> 
-       Some (Format.asprintf "@[%a:@ %a@ -@ %a)@]" report_error e 
-               Ext_position.print a Ext_position.print b)
+     | Error error_info -> 
+       Some (Format.asprintf "%a" pp_error error_info)
+
      | _ -> None
     )
+
 
 
 
@@ -71,9 +87,11 @@ type token =
   | String of string
   | True   
   
-
 let error  (lexbuf : Lexing.lexbuf) e = 
-  raise (Error (e, lexbuf.lex_start_p, lexbuf.lex_curr_p))
+  raise (Error { error =  e; 
+                 loc_start =  lexbuf.lex_start_p; 
+                 loc_end = lexbuf.lex_curr_p})
+
 
 let lexeme_len (x : Lexing.lexbuf) =
   x.lex_curr_pos - x.lex_start_pos

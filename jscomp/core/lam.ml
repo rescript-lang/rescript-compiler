@@ -79,7 +79,7 @@ type primitive =
   | Pjs_call of
       (* Location.t *  [loc] is passed down *)
       string *  (* prim_name *)
-      Ast_ffi_types.arg_kind list * (* arg_types *)
+      Ast_arg.kind list * (* arg_types *)
       Ast_ffi_types.ffi  (* ffi *)
 
   (* Ast_ffi_types.arg_kind list * bool * Ast_ffi_types.ffi  *)
@@ -1256,7 +1256,7 @@ let may_depend = Lam_module_ident.Hash_set.add
 
 
 let rec no_auto_uncurried_arg_types 
-    (xs : Ast_ffi_types.arg_kind list)  = 
+    (xs : Ast_arg.kind list)  = 
   match xs with 
   | [] -> true 
   | {arg_type = Fn_uncurry_arity _ } :: _ ->
@@ -1281,18 +1281,18 @@ let result_wrap loc (result_type : Ast_ffi_types.return_wrapper) result  =
 (* TODO: sort out the order here
    consolidate {!Lam_compile_external_call.assemble_args_splice}
 *)
-let rec transform_uncurried_arg_type loc (arg_types : Ast_ffi_types.arg_kind list) 
+let rec transform_uncurried_arg_type loc (arg_types : Ast_arg.kind list) 
     (args : t list ) = 
   match arg_types,args with 
   | { arg_type = Fn_uncurry_arity n ; arg_label } :: xs,
     y::ys -> 
     let (o_arg_types, o_args) = 
       transform_uncurried_arg_type loc xs ys in 
-    { Ast_ffi_types.arg_type = Nothing ; arg_label } :: o_arg_types , 
+    { Ast_arg.arg_type = Nothing ; arg_label } :: o_arg_types , 
     prim ~primitive:(Pjs_fn_make n) ~args:[y] loc :: o_args 
   |  x  ::xs, y::ys -> 
     begin match x with 
-      | {arg_type = Arg_int_lit  _ | Arg_string_lit _ }  -> 
+      | {arg_type = Arg_cst _ }  -> 
         let o_arg_types, o_args = transform_uncurried_arg_type loc xs args in 
         x :: o_arg_types , o_args 
       | _ -> 

@@ -34,21 +34,9 @@ val is_unit : t -> bool
 val is_array : t -> bool 
 type arg_label =
   | Label of string 
-  (*| Label_int_lit of string * int 
-    | Label_string_lit of string * string *)
   | Optional of string 
   | Empty
-type arg_type = 
-  | NullString of (int * string) list 
-  | NonNullString of (int * string) list 
-  | Int of (int * int ) list 
-  | Arg_int_lit of int 
-  | Arg_string_lit of string 
-  | Fn_uncurry_arity of int (* annotated with [@bs.uncurry ] or [@bs.uncurry 2]*)  
-  | Array 
-  | Extern_unit
-  | Nothing
-  | Ignore
+
 
 (** for 
        [x:t] -> "x"
