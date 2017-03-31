@@ -93,7 +93,7 @@ let ocaml_to_js_eff
   | Fn_uncurry_arity _ -> assert false  
   (* has to be preprocessed by {!Lam} module first *)
   | Extern_unit ->  
-    (if arg_label = Empty None then [] else [E.unit]), 
+    (if arg_label = Ast_arg.empty_label then [] else [E.unit]), 
     (if Js_analyzer.no_side_effect_expression arg then 
        []
      else 

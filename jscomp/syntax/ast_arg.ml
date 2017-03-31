@@ -52,3 +52,11 @@ type kind =
     arg_type : ty;
     arg_label : label
   }
+
+
+let empty_label = Empty None 
+let empty_lit s = Empty (Some s) 
+let label s cst = Label(s,cst)
+let optional s = Optional s 
+
+let empty_kind arg_type = { arg_label = empty_label ; arg_type }

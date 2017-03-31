@@ -27,7 +27,7 @@ type cst =
   | Arg_string_lit of string 
 
 
-type label = 
+type label = private
   | Label of string * cst option 
   | Empty of cst option
   | Optional of string 
@@ -50,3 +50,9 @@ type kind =
     arg_type : ty;
     arg_label :label
   }
+
+val empty_label : label
+val empty_lit : cst -> label 
+val label :  string -> cst option -> label
+val optional  : string -> label
+val empty_kind : ty -> kind
