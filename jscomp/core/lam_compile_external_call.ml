@@ -308,10 +308,8 @@ let translate_ffi
     begin match args, arg_types with 
       | [obj; v], _ -> 
         E.assign (E.dot obj name) v         
-      | [obj], [_; {arg_type = Arg_cst (Arg_int_lit i) }] ->
-        E.assign (E.dot obj name) (E.int (Int32.of_int i))  
-      | [obj], [_; {arg_type = Arg_cst (Arg_string_lit i) }] ->
-        E.assign (E.dot obj name) (E.str i)          
+      | [obj], [_; {arg_type = Arg_cst cst }] ->
+        E.assign (E.dot obj name) (Lam_compile_const.translate_arg_cst cst)
       | _ -> 
         assert false 
     end
