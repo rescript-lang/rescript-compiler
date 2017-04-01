@@ -93,11 +93,3 @@ let decode_utf8_string s =
       end
   in decode_utf8_cont s 0 (String.length s); 
   List.rev !lst
-
-
-(** To decode {j||j} we need verify in the ast so that we have better error 
-    location, then we do the decode later
-*)  
-
-let verify s loc = 
-  assert false

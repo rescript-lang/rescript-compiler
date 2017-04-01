@@ -100017,13 +100017,6 @@ let decode_utf8_string s =
   in decode_utf8_cont s 0 (String.length s); 
   List.rev !lst
 
-
-(** To decode {j||j} we need verify in the ast so that we have better error 
-    location, then we do the decode later
-*)  
-
-let verify s loc = 
-  assert false
 end
 module Ext_js_regex : sig 
 #1 "ext_js_regex.mli"
@@ -103640,12 +103633,9 @@ let split_es6_string s =
     end in _split s 0 []
 
 let make_string_constant_exp s loc = let new_loc = compute_new_loc loc s in
-  let s_len  = String.length s in
-  let buf = Buffer.create (s_len * 2) in
-  check_and_transform loc buf s 0 s_len;
   let new_exp:Parsetree.expression = {
     pexp_loc = new_loc;
-    pexp_desc = Pexp_constant (Const_string (Buffer.contents buf, Some Literals.escaped_j_delimiter));
+    pexp_desc = Pexp_constant (Const_string (s, Some Literals.escaped_j_delimiter));
     pexp_attributes = [];
   } in new_exp, new_loc
 
@@ -103668,7 +103658,10 @@ let rec _transform_individual_expression exp_list loc nl = match exp_list with
     | Delim p -> let new_exp, new_loc = make_variable_exp p loc  in _transform_individual_expression rexp new_loc (new_exp::nl)
 
 let transform_es6_style_template_string s loc =
-  let sub_strs = split_es6_string s
+  let s_len  = String.length s in
+  let buf = Buffer.create (s_len * 2) in
+  check_and_transform loc buf s 0 s_len;
+  let sub_strs = split_es6_string (Buffer.contents buf)
   in match sub_strs with 
   | Left (starti, endi) -> let new_loc = error_reporting_loc loc starti endi in Location.raise_errorf ~loc:new_loc "Not a valid es6 style string"
   | Right subs -> _transform_individual_expression subs loc []

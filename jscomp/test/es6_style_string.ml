@@ -15,7 +15,7 @@ let c = {j| \$ |j}
 
 let empty2 = {j| \$ |j}
 
-let escape0 = {j|\\$x|j}
+let escape0 = {j|\\$str|j}
 
 (*this will trigger an error since we dont allow empty parameter in string template*)
 (*let empty3 = {j| $ |j}*)

@@ -107,17 +107,17 @@ let suites =
     end;
     __LOC__ >:: begin fun _ ->
       (* Testing {j|\\$x|j}*)
-      let l = Ast_utf8_string.split_es6_string "\\\\$x" in
+      let l = Ast_utf8_string.split_es6_string {|\\$x|} in
       l =~ Right [Text "\\"; Delim "x"]
     end;
     __LOC__ >:: begin fun _ ->
       (*{j| \$ |j}*)
-      let l = Ast_utf8_string.split_es6_string "\\$" in
+      let l = Ast_utf8_string.split_es6_string {|\$|} in
       l =~ Right [Text "$"]
     end;
     __LOC__ >:: begin fun _ ->
       (*{j| \\\$x |j}*)
-      let l = Ast_utf8_string.split_es6_string "\\\\\\$" in
-      l =~ Right [Text "\$"]
+      let l = Ast_utf8_string.split_es6_string {|\\\$x|} in
+      l =~ Right [Text "\$x"]
     end; 
   ]
