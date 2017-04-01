@@ -67518,16 +67518,18 @@ let convert exports lam : _ * _  =
     | Lprim(Pccall a, args, loc)  -> 
       let prim_name = a.prim_name in    
       let prim_name_len  = String.length prim_name in 
-      if prim_name_len > 0 && String.unsafe_get prim_name 0 = '#' then 
-        aux_js_primitive a args loc 
-      else 
-        let args = List.map aux args in 
         begin match Ast_ffi_types.from_string a.prim_native_name with 
-          | Ffi_normal ->           
-            prim ~primitive:(Pccall a) ~args loc
-          | Ffi_obj_create labels -> 
+          | Ffi_normal ->
+            if prim_name_len > 0 && String.unsafe_get prim_name 0 = '#' then 
+              aux_js_primitive a args loc 
+            else 
+              let args = List.map aux args in 
+              prim ~primitive:(Pccall a) ~args loc
+          | Ffi_obj_create labels ->
+            let args = List.map aux args in 
             prim ~primitive:(Pjs_object_create labels) ~args loc 
-          | Ffi_bs(arg_types, result_type, ffi) ->         
+          | Ffi_bs(arg_types, result_type, ffi) ->
+            let args = List.map aux args in 
             if no_auto_uncurried_arg_types arg_types then   
               result_wrap loc result_type @@ prim ~primitive:(Pjs_call(prim_name, arg_types, ffi)) 
                 ~args loc 
