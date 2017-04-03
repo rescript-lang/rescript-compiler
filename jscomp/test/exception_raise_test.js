@@ -3,6 +3,7 @@
 var Mt                      = require("./mt.js");
 var Block                   = require("../../lib/js/block.js");
 var Curry                   = require("../../lib/js/curry.js");
+var Js_exn                  = require("../../lib/js/js_exn.js");
 var Caml_exceptions         = require("../../lib/js/caml_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
@@ -20,15 +21,16 @@ function appf(g, x) {
     return Curry._1(g, x);
   }
   catch (exn){
+    var exn$1 = Js_exn.internalToOCamlException(exn);
     var exit = 0;
-    if (exn === Local) {
+    if (exn$1 === Local) {
       return 3;
-    } else if (exn === Caml_builtin_exceptions.not_found) {
+    } else if (exn$1 === Caml_builtin_exceptions.not_found) {
       return 2;
-    } else if (exn[0] === A) {
+    } else if (exn$1[0] === A) {
       return 3;
-    } else if (exn[0] === B) {
-      var match = exn[1];
+    } else if (exn$1[0] === B) {
+      var match = exn$1[1];
       if (match) {
         var match$1 = match[1];
         if (match$1) {
@@ -48,10 +50,10 @@ function appf(g, x) {
       exit = 1;
     }
     if (exit === 1) {
-      if (exn[0] === C) {
-        return exn[1];
-      } else if (exn[0] === D) {
-        return exn[1][0];
+      if (exn$1[0] === C) {
+        return exn$1[1];
+      } else if (exn$1[0] === D) {
+        return exn$1[1][0];
       } else {
         return 4;
       }
@@ -68,7 +70,8 @@ try {
   f = ( function () {throw (new Error ("x"))} ());
 }
 catch (exn){
-  f = exn[0] === A ? exn[1] : 2;
+  var exn$1 = Js_exn.internalToOCamlException(exn);
+  f = exn$1[0] === A ? exn$1[1] : 2;
 }
 
 var ff;
@@ -76,8 +79,9 @@ var ff;
 try {
   ff = ( function () {throw 3} ());
 }
-catch (exn$1){
-  ff = exn$1[0] === A ? exn$1[1] : 2;
+catch (exn$2){
+  var exn$3 = Js_exn.internalToOCamlException(exn$2);
+  ff = exn$3[0] === A ? exn$3[1] : 2;
 }
 
 var fff;
@@ -85,8 +89,9 @@ var fff;
 try {
   fff = ( function () {throw 2} ());
 }
-catch (exn$2){
-  fff = exn$2[0] === A ? exn$2[1] : 2;
+catch (exn$4){
+  var exn$5 = Js_exn.internalToOCamlException(exn$4);
+  fff = exn$5[0] === A ? exn$5[1] : 2;
 }
 
 Mt.from_pair_suites("exception_raise_test.ml", /* :: */[

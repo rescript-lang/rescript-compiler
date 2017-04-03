@@ -33,6 +33,14 @@ external return : 'a -> 'a t = "%identity"
 (** Returns [true] if the given value is [empty] ([undefined]), [false] otherwise *)
 external test : 'a t -> bool =  "#is_undef"
 
+
+(**
+   @since 1.6.1
+   Returns [true] if the given value is [empty] ([undefined])
+*)
+external testAny : 'a -> bool = "#is_undef"
+
+
 (** The empty value, [undefined] *)
 external empty : 'a t = "undefined" [@@bs.val]
 

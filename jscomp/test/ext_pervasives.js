@@ -7,6 +7,7 @@ var $$Array                 = require("../../lib/js/array.js");
 var Block                   = require("../../lib/js/block.js");
 var Curry                   = require("../../lib/js/curry.js");
 var Format                  = require("../../lib/js/format.js");
+var Js_exn                  = require("../../lib/js/js_exn.js");
 var Printf                  = require("../../lib/js/printf.js");
 var $$String                = require("../../lib/js/string.js");
 var Caml_obj                = require("../../lib/js/caml_obj.js");
@@ -24,8 +25,9 @@ function $$finally(v, action, f) {
     exit = 1;
   }
   catch (e$1){
+    var e$2 = Js_exn.internalToOCamlException(e$1);
     Curry._1(action, v);
-    throw e$1;
+    throw e$2;
   }
   if (exit === 1) {
     Curry._1(action, v);
@@ -70,10 +72,11 @@ function is_pos_pow(n) {
     };
   }
   catch (exn){
-    if (exn === E) {
+    var exn$1 = Js_exn.internalToOCamlException(exn);
+    if (exn$1 === E) {
       return -1;
     } else {
-      throw exn;
+      throw exn$1;
     }
   }
 }

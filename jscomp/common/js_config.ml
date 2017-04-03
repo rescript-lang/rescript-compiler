@@ -201,6 +201,8 @@ let block = "Block"
 let js_primitive = "Js_primitive"
 let module_ = "Caml_module"
 let missing_polyfill = "Caml_missing_polyfill"
+let exn = "Js_exn"
+
 let current_file = ref ""
 let debug_file = ref ""
 

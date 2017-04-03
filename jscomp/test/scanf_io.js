@@ -7,6 +7,7 @@ var Curry                   = require("../../lib/js/curry.js");
 var Scanf                   = require("../../lib/js/scanf.js");
 var Buffer                  = require("../../lib/js/buffer.js");
 var Digest                  = require("../../lib/js/digest.js");
+var Js_exn                  = require("../../lib/js/js_exn.js");
 var Printf                  = require("../../lib/js/printf.js");
 var Caml_io                 = require("../../lib/js/caml_io.js");
 var Caml_obj                = require("../../lib/js/caml_obj.js");
@@ -93,7 +94,8 @@ function get_lines(fname) {
     return List.rev(l[0]);
   }
   catch (exn){
-    if (exn[0] === Scanf.Scan_failure) {
+    var exn$1 = Js_exn.internalToOCamlException(exn);
+    if (exn$1[0] === Scanf.Scan_failure) {
       var s = Curry._2(Printf.sprintf(/* Format */[
                 /* String_literal */Block.__(11, [
                     "in file ",
@@ -109,12 +111,12 @@ function get_lines(fname) {
                       ])
                   ]),
                 "in file %s, %s"
-              ]), fname, exn[1]);
+              ]), fname, exn$1[1]);
       throw [
             Caml_builtin_exceptions.failure,
             s
           ];
-    } else if (exn === Caml_builtin_exceptions.end_of_file) {
+    } else if (exn$1 === Caml_builtin_exceptions.end_of_file) {
       var s$1 = Curry._1(Printf.sprintf(/* Format */[
                 /* String_literal */Block.__(11, [
                     "in file ",
@@ -133,7 +135,7 @@ function get_lines(fname) {
             s$1
           ];
     } else {
-      throw exn;
+      throw exn$1;
     }
   }
 }
@@ -166,10 +168,11 @@ function add_digest_ib(ob, ib) {
     return /* () */0;
   }
   catch (exn){
-    if (exn === Caml_builtin_exceptions.end_of_file) {
+    var exn$1 = Js_exn.internalToOCamlException(exn);
+    if (exn$1 === Caml_builtin_exceptions.end_of_file) {
       return /* () */0;
     } else {
-      throw exn;
+      throw exn$1;
     }
   }
 }

@@ -7,6 +7,7 @@ var Bytes                   = require("../../lib/js/bytes.js");
 var Curry                   = require("../../lib/js/curry.js");
 var Scanf                   = require("../../lib/js/scanf.js");
 var Buffer                  = require("../../lib/js/buffer.js");
+var Js_exn                  = require("../../lib/js/js_exn.js");
 var Printf                  = require("../../lib/js/printf.js");
 var $$String                = require("../../lib/js/string.js");
 var Testing                 = require("./testing.js");
@@ -1490,7 +1491,8 @@ function scan_elems$2(ib, accu) {
               });
   }
   catch (exn){
-    if (exn[0] === Scanf.Scan_failure) {
+    var exn$1 = Js_exn.internalToOCamlException(exn);
+    if (exn$1[0] === Scanf.Scan_failure) {
       Curry._1(Scanf.bscanf(ib, /* Format */[
                 /* Char_literal */Block.__(12, [
                     /* "]" */93,
@@ -1499,10 +1501,10 @@ function scan_elems$2(ib, accu) {
                 "]"
               ]), /* () */0);
       return accu;
-    } else if (exn === Caml_builtin_exceptions.end_of_file) {
+    } else if (exn$1 === Caml_builtin_exceptions.end_of_file) {
       return accu;
     } else {
-      throw exn;
+      throw exn$1;
     }
   }
 }
@@ -1961,10 +1963,11 @@ function scan_elems$5(ib, scan_elem, accu) {
               });
   }
   catch (exn){
-    if (exn[0] === Scanf.Scan_failure) {
+    var exn$1 = Js_exn.internalToOCamlException(exn);
+    if (exn$1[0] === Scanf.Scan_failure) {
       return accu;
     } else {
-      throw exn;
+      throw exn$1;
     }
   }
 }

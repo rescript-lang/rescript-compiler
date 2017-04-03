@@ -3,6 +3,7 @@
 var List                    = require("../../lib/js/list.js");
 var Curry                   = require("../../lib/js/curry.js");
 var Queue                   = require("../../lib/js/queue.js");
+var Js_exn                  = require("../../lib/js/js_exn.js");
 var Caml_obj                = require("../../lib/js/caml_obj.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
@@ -40,10 +41,11 @@ function does_raise(f, q) {
     return /* false */0;
   }
   catch (exn){
-    if (exn === Queue.Empty) {
+    var exn$1 = Js_exn.internalToOCamlException(exn);
+    if (exn$1 === Queue.Empty) {
       return /* true */1;
     } else {
-      throw exn;
+      throw exn$1;
     }
   }
 }

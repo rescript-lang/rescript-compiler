@@ -3,6 +3,7 @@
 var List                    = require("../../lib/js/list.js");
 var Bytes                   = require("../../lib/js/bytes.js");
 var Curry                   = require("../../lib/js/curry.js");
+var Js_exn                  = require("../../lib/js/js_exn.js");
 var $$String                = require("../../lib/js/string.js");
 var Ext_bytes               = require("./ext_bytes.js");
 var Caml_int32              = require("../../lib/js/caml_int32.js");
@@ -290,10 +291,11 @@ function find($staropt$star, sub, s) {
     return -1;
   }
   catch (exn){
-    if (exn === Local_exit) {
+    var exn$1 = Js_exn.internalToOCamlException(exn);
+    if (exn$1 === Local_exit) {
       return i;
     } else {
-      throw exn;
+      throw exn$1;
     }
   }
 }
@@ -341,10 +343,11 @@ function rfind(sub, s) {
     return -1;
   }
   catch (exn){
-    if (exn === Local_exit) {
+    var exn$1 = Js_exn.internalToOCamlException(exn);
+    if (exn$1 === Local_exit) {
       return i;
     } else {
-      throw exn;
+      throw exn$1;
     }
   }
 }

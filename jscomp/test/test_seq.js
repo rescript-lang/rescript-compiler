@@ -2,6 +2,7 @@
 
 var Block                   = require("../../lib/js/block.js");
 var Curry                   = require("../../lib/js/curry.js");
+var Js_exn                  = require("../../lib/js/js_exn.js");
 var Caml_obj                = require("../../lib/js/caml_obj.js");
 var Pervasives              = require("../../lib/js/pervasives.js");
 var Caml_exceptions         = require("../../lib/js/caml_exceptions.js");
@@ -54,7 +55,8 @@ function add_help(speclist) {
     add1 = /* [] */0;
   }
   catch (exn){
-    if (exn === Caml_builtin_exceptions.not_found) {
+    var exn$1 = Js_exn.internalToOCamlException(exn);
+    if (exn$1 === Caml_builtin_exceptions.not_found) {
       add1 = /* :: */[
         /* tuple */[
           "-help",
@@ -64,7 +66,7 @@ function add_help(speclist) {
         /* [] */0
       ];
     } else {
-      throw exn;
+      throw exn$1;
     }
   }
   var add2;
@@ -72,8 +74,9 @@ function add_help(speclist) {
     assoc3("--help", speclist);
     add2 = /* [] */0;
   }
-  catch (exn$1){
-    if (exn$1 === Caml_builtin_exceptions.not_found) {
+  catch (exn$2){
+    var exn$3 = Js_exn.internalToOCamlException(exn$2);
+    if (exn$3 === Caml_builtin_exceptions.not_found) {
       add2 = /* :: */[
         /* tuple */[
           "--help",
@@ -83,7 +86,7 @@ function add_help(speclist) {
         /* [] */0
       ];
     } else {
-      throw exn$1;
+      throw exn$3;
     }
   }
   return Pervasives.$at(speclist, Pervasives.$at(add1, add2));

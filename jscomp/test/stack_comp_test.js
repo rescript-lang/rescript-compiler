@@ -4,6 +4,7 @@ var Mt        = require("./mt.js");
 var List      = require("../../lib/js/list.js");
 var Curry     = require("../../lib/js/curry.js");
 var Stack     = require("../../lib/js/stack.js");
+var Js_exn    = require("../../lib/js/js_exn.js");
 var Caml_obj  = require("../../lib/js/caml_obj.js");
 var Mt_global = require("./mt_global.js");
 
@@ -54,10 +55,11 @@ function does_raise(f, s) {
     return /* false */0;
   }
   catch (exn){
-    if (exn === Stack.Empty) {
+    var exn$1 = Js_exn.internalToOCamlException(exn);
+    if (exn$1 === Stack.Empty) {
       return /* true */1;
     } else {
-      throw exn;
+      throw exn$1;
     }
   }
 }

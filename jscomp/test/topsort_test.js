@@ -2,6 +2,7 @@
 
 var List                    = require("../../lib/js/list.js");
 var Curry                   = require("../../lib/js/curry.js");
+var Js_exn                  = require("../../lib/js/js_exn.js");
 var $$String                = require("../../lib/js/string.js");
 var Caml_obj                = require("../../lib/js/caml_obj.js");
 var Pervasives              = require("../../lib/js/pervasives.js");
@@ -1368,9 +1369,10 @@ try {
       ];
 }
 catch (exn){
+  var exn$1 = Js_exn.internalToOCamlException(exn);
   var exit = 0;
-  if (exn[0] === Cycle) {
-    var match = exn[1];
+  if (exn$1[0] === Cycle) {
+    var match = exn$1[1];
     if (match) {
       if (match[0] === "go") {
         var match$1 = match[1];

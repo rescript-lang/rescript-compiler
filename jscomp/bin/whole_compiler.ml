@@ -22323,6 +22323,7 @@ val weak : string
 val js_primitive : string
 val module_ : string
 val missing_polyfill : string
+val exn : string
 (** Debugging utilies *)
 val set_current_file : string -> unit 
 val get_current_file : unit -> string
@@ -22550,6 +22551,8 @@ let block = "Block"
 let js_primitive = "Js_primitive"
 let module_ = "Caml_module"
 let missing_polyfill = "Caml_missing_polyfill"
+let exn = "Js_exn"
+
 let current_file = ref ""
 let debug_file = ref ""
 
@@ -65530,7 +65533,7 @@ type primitive =
   | Pjs_is_instance_array
   | Pcaml_obj_length
   | Pcaml_obj_set_length
-  
+  | Pwrap_exn (* convert either JS exception or OCaml exception into OCaml format *)  
 
 type switch  =
   { sw_numconsts: int;
@@ -65880,7 +65883,7 @@ type primitive =
   | Pjs_is_instance_array
   | Pcaml_obj_length
   | Pcaml_obj_set_length
-
+  | Pwrap_exn (* convert either JS exception or OCaml exception into OCaml format *)
 
 type apply_status =
   | App_na
@@ -67567,8 +67570,19 @@ let convert exports lam : _ * _  =
       Lstaticraise (id, List.map aux args)
     | Lstaticcatch (b, (i, ids), handler) -> 
       Lstaticcatch (aux b, (i,ids), aux handler)
-    | Ltrywith (b, id, handler) -> 
-      Ltrywith (aux b, id, aux handler)
+    | Ltrywith (b, id, handler) ->
+      (** TODO:
+          2. Check some optimizations
+      *)
+      let newId = Ident.rename id in 
+      let body = aux b in 
+      let handler = aux handler in 
+      Ltrywith (body, newId, 
+                let_ StrictOpt id 
+                  (prim ~primitive:Pwrap_exn ~args:[var newId] Location.none)
+                  handler
+               ) 
+
     | Lifthenelse (b,then_,else_) -> 
       Lifthenelse (aux b, aux then_, aux else_)
     | Lsequence (a,b) 
@@ -71070,6 +71084,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Pjs_function_length
       | Pcaml_obj_length
       | Pjs_is_instance_array
+      | Pwrap_exn
         -> true
       | Pjs_string_of_small_array
       | Pcaml_obj_set_length        
@@ -71394,6 +71409,7 @@ let rec
   
 and eq_primitive ( lhs : Lam.primitive) (rhs : Lam.primitive) = 
   match lhs with 
+  | Pwrap_exn -> rhs = Pwrap_exn
   | Pbytes_to_string ->  rhs = Pbytes_to_string 
   | Pbytes_of_string ->  rhs = Pbytes_of_string
   | Praise -> rhs = Praise
@@ -71666,6 +71682,7 @@ let string_of_loc_kind (loc : Lambda.loc_kind) =
   | Loc_LOC -> "loc_LOC"
 
 let primitive ppf (prim : Lam.primitive) = match prim with 
+  | Pwrap_exn -> fprintf ppf "#exn"
   | Pjs_string_of_small_array -> fprintf ppf "#string_of_small_array"
   | Pjs_is_instance_array -> fprintf ppf "#is_instance_array"
   | Pcaml_obj_length -> fprintf ppf "#obj_length"
@@ -92653,6 +92670,8 @@ let translate  loc
     (prim : Lam.primitive)
     (args : J.expression list) : J.expression = 
   match prim with
+  | Pwrap_exn -> 
+    E.runtime_call Js_config.exn "internalToOCamlException" args 
   | Lam.Praw_js_code_exp s -> 
     E.raw_js_code Exp s  
   | Lam.Praw_js_code_stmt s -> 

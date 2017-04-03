@@ -3,6 +3,7 @@
 var Mt                      = require("./mt.js");
 var Block                   = require("../../lib/js/block.js");
 var Curry                   = require("../../lib/js/curry.js");
+var Js_exn                  = require("../../lib/js/js_exn.js");
 var Hashtbl                 = require("../../lib/js/hashtbl.js");
 var Caml_oo_curry           = require("../../lib/js/caml_oo_curry.js");
 var CamlinternalOO          = require("../../lib/js/camlinternalOO.js");
@@ -59,12 +60,13 @@ function memo_fib_init($$class) {
           return Hashtbl.find(self$neg2[cache], x);
         }
         catch (exn){
-          if (exn === Caml_builtin_exceptions.not_found) {
+          var exn$1 = Js_exn.internalToOCamlException(exn);
+          if (exn$1 === Caml_builtin_exceptions.not_found) {
             var v = Curry._2(calc$1, self$neg2, x);
             Hashtbl.add(self$neg2[cache], x, v);
             return v;
           } else {
-            throw exn;
+            throw exn$1;
           }
         }
       });

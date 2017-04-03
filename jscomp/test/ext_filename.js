@@ -6,6 +6,7 @@ var Block                   = require("../../lib/js/block.js");
 var Bytes                   = require("../../lib/js/bytes.js");
 var Curry                   = require("../../lib/js/curry.js");
 var Format                  = require("../../lib/js/format.js");
+var Js_exn                  = require("../../lib/js/js_exn.js");
 var $$String                = require("../../lib/js/string.js");
 var Caml_sys                = require("../../lib/js/caml_sys.js");
 var Filename                = require("../../lib/js/filename.js");
@@ -78,7 +79,8 @@ function chop_extension($staropt$star, name) {
     return Filename.chop_extension(name);
   }
   catch (exn){
-    if (exn[0] === Caml_builtin_exceptions.invalid_argument) {
+    var exn$1 = Js_exn.internalToOCamlException(exn);
+    if (exn$1[0] === Caml_builtin_exceptions.invalid_argument) {
       return Curry._2(Format.ksprintf(Pervasives.invalid_arg, /* Format */[
                       /* String_literal */Block.__(11, [
                           "Filename.chop_extension ( ",
@@ -99,7 +101,7 @@ function chop_extension($staropt$star, name) {
                       "Filename.chop_extension ( %s : %s )"
                     ]), loc, name);
     } else {
-      throw exn;
+      throw exn$1;
     }
   }
 }
@@ -109,10 +111,11 @@ function chop_extension_if_any(fname) {
     return Filename.chop_extension(fname);
   }
   catch (exn){
-    if (exn[0] === Caml_builtin_exceptions.invalid_argument) {
+    var exn$1 = Js_exn.internalToOCamlException(exn);
+    if (exn$1[0] === Caml_builtin_exceptions.invalid_argument) {
       return fname;
     } else {
-      throw exn;
+      throw exn$1;
     }
   }
 }

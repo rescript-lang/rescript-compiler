@@ -4,6 +4,7 @@ var Mt     = require("./mt.js");
 var List   = require("../../lib/js/list.js");
 var Block  = require("../../lib/js/block.js");
 var Genlex = require("../../lib/js/genlex.js");
+var Js_exn = require("../../lib/js/js_exn.js");
 var Stream = require("../../lib/js/stream.js");
 
 var lexer = Genlex.make_lexer(/* :: */[
@@ -43,10 +44,11 @@ function to_list(s) {
       exit = 1;
     }
     catch (exn){
-      if (exn === Stream.Failure) {
+      var exn$1 = Js_exn.internalToOCamlException(exn);
+      if (exn$1 === Stream.Failure) {
         return List.rev(acc);
       } else {
-        throw exn;
+        throw exn$1;
       }
     }
     if (exit === 1) {

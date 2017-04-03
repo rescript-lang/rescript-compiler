@@ -1,6 +1,7 @@
 'use strict';
 
 var Curry                   = require("../../lib/js/curry.js");
+var Js_exn                  = require("../../lib/js/js_exn.js");
 var Hashtbl                 = require("../../lib/js/hashtbl.js");
 var Pervasives              = require("../../lib/js/pervasives.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
@@ -16,10 +17,11 @@ function Make(funarg) {
       return Curry._2(H[/* find */6], htbl, x);
     }
     catch (exn){
-      if (exn === Caml_builtin_exceptions.not_found) {
+      var exn$1 = Js_exn.internalToOCamlException(exn);
+      if (exn$1 === Caml_builtin_exceptions.not_found) {
         return /* false */0;
       } else {
-        throw exn;
+        throw exn$1;
       }
     }
   };

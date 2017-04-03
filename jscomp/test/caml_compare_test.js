@@ -2,6 +2,7 @@
 
 var Mt                      = require("./mt.js");
 var Block                   = require("../../lib/js/block.js");
+var Js_exn                  = require("../../lib/js/js_exn.js");
 var Caml_obj                = require("../../lib/js/caml_obj.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
@@ -15,7 +16,8 @@ try {
       });
 }
 catch (exn){
-  function_equal_test = exn[0] === Caml_builtin_exceptions.invalid_argument && exn[1] === "equal: functional value" ? /* true */1 : /* false */0;
+  var exn$1 = Js_exn.internalToOCamlException(exn);
+  function_equal_test = exn$1[0] === Caml_builtin_exceptions.invalid_argument && exn$1[1] === "equal: functional value" ? /* true */1 : /* false */0;
 }
 
 var suites_000 = /* tuple */[
