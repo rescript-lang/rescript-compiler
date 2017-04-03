@@ -1,0 +1,53 @@
+## Exception handling between OCaml and JS (@since 1.6.1)
+
+In Js world, exception could be any data, while OCaml exception is structured data format and supports pattern match, catch OCaml exception on JS side is no-op.
+
+### Catch JS exception
+
+To catch Js exception on OCaml side, we categorize all JS exceptions to belong to `Js.Exn.Error`.
+
+[source,ocaml]
+--------------
+let example1 () = 
+    match Js.Json.exnParse {| {"x"  }|} with 
+    | exception Js.Exn.Error err -> 
+        Js.log @@ err##stack;
+        None
+    | v -> Some v 
+
+let example2 () = 
+    try Some (Js.Json.exnParse {| {"x"}|}) with 
+    Js.Exn.Error _ -> None    
+--------------
+
+The exception definition of `Js.Exn.Error` is as below:
+
+[source,ocaml]
+--------------
+type t = 
+  < stack : string Js.undefined ;
+    message : string Js.undefined ; 
+    name : string Js.undefined;
+    fileName : string Js.undefined
+  > Js.t
+
+exception Error of t 
+--------------
+
+### Raise JS style exception
+
+We provide such functions 
+
+[source,ocaml]
+--------------
+(** Raise Js exception Error object with stacktrace *)
+val error : string -> 'a
+val evalError : string -> 'a
+val rangeError : string -> 'a
+val referenceError :  string -> 'a
+val syntaxError : string -> 'a
+val typeError : string -> 'a
+val uriError :  string -> 'a
+--------------
+
+Please consult module `Js.Error` for more details
