@@ -319,3 +319,87 @@ two call sites
 transl_function exp.exp_loc false ...
 transl_function e.exp_loc !Clflags.native_code ...
 ```
+
+## exception wrap and unwrap
+
+### Pack and Unpack OCaml exceptions
+
+http://eli.thegreenplace.net/2013/10/22/classical-inheritance-in-javascript-es5
+
+http://stackoverflow.com/questions/1382107/whats-a-good-way-to-extend-error-in-javascript
+
+
+https://caml.inria.fr/mantis/print_bug_page.php?bug_id=7375
+
+http://stackoverflow.com/questions/3734236/how-can-i-rethrow-an-exception-in-javascript-but-preserve-the-stack
+```js
+class OCamlError extends Error{
+  constructor(payload){
+    super("OCamlError")
+    this.payload = payload
+  }
+}
+```
+
+We can see the output from typescript to get a sense of what it will be transpiled into.
+
+This works reasonably well (tested on Safari and Chrome)
+
+```js
+function OCamlError(camlExnData){
+  var self = Error.call(this, "OCamlError")
+  self.camlExnData = camlExnData
+  return self
+}
+```
+
+```js
+function unpackError(exn){
+  if(exn.camlExnData !== undefined){
+    return exn.camlExnData
+  } else {
+    return exn
+  }
+}
+```
+```js
+function packError(exn){
+  if (Obj.tag(exn) === 248){
+    return new OCamlError(exn)
+  } else {
+    return exn
+  }
+}
+```
+So whenever we raise an OCaml exception, we always wrapped it as a JS error.
+Now we unpack it, it could be OCaml exception or JS exception, so we  did 
+a runtime dispatch.
+
+Some potential optimization
+
+```ocaml
+try f x with 
+Not_found -> ..
+JsError e
+```
+
+currently it would be transalted as 
+
+```js
+try {
+  f(x)
+  }
+catch(e){
+  var e = unpackError(e)
+  if (e === Caml_builtin_exceptions.Not_found ){
+    ...
+  } else {
+    throw packError(e) // re-raise
+  }
+} 
+```
+
+need check `Praise of raise_kind`
+
+*Conclusion*: it is very hard to get it right when changig ocaml exception representation and js exception representation at the same time in the combination of *re-raiase*
+

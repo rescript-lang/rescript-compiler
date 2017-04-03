@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
+ * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,33 +17,33 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** Provides functionality for dealing with the ['a Js.undefined] type *)
+type t = 
+  < stack : string Js.undefined ;
+    message : string Js.undefined ; 
+    name : string Js.undefined;
+    fileName : string Js.undefined
+  > Js.t
 
-type + 'a t = 'a Js.undefined
-external to_opt : 'a t -> 'a option = "#undefined_to_opt"
-external return : 'a -> 'a t = "%identity"
-external test : 'a t -> bool =  "#is_undef"
-external testAny : 'a -> bool = "#is_undef"
-  
-external empty : 'a t = "undefined"
-[@@bs.val]
 
-let bind x f =
-  match to_opt x with
-  | None -> empty
-  | Some x -> return (f  x [@bs])
+exception Error of t
 
-let iter x f =
-  match to_opt x with
-  | None ->  ()
-  | Some x -> f x [@bs]
 
-let from_opt x =
-  match x with
-  | None -> empty
-  | Some x -> return x
+external stack : t -> string option = ""
+  [@@bs.get] [@@bs.return undefined_to_opt]
+
+(** Used by the compiler internally *)
+val internalToOCamlException : Obj.t -> exn
+
+(** Raise Js exception Error object with stacktrace *)
+val error : string -> 'a
+val evalError : string -> 'a
+val rangeError : string -> 'a
+val referenceError :  string -> 'a
+val syntaxError : string -> 'a
+val typeError : string -> 'a
+val uriError :  string -> 'a

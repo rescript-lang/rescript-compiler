@@ -22323,6 +22323,7 @@ val weak : string
 val js_primitive : string
 val module_ : string
 val missing_polyfill : string
+val exn : string
 (** Debugging utilies *)
 val set_current_file : string -> unit 
 val get_current_file : unit -> string
@@ -22550,6 +22551,8 @@ let block = "Block"
 let js_primitive = "Js_primitive"
 let module_ = "Caml_module"
 let missing_polyfill = "Caml_missing_polyfill"
+let exn = "Js_exn"
+
 let current_file = ref ""
 let debug_file = ref ""
 
@@ -62533,6 +62536,244 @@ let invariant t =
 
 
 end
+module Ext_int : sig 
+#1 "ext_int.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type t = int
+val compare : t -> t -> int 
+val equal : t -> t -> bool 
+
+end = struct
+#1 "ext_int.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type t = int
+
+let compare (x : t) (y : t) = Pervasives.compare x y 
+
+let equal (x : t) (y : t) = x = y
+
+end
+module Int_hashtbl : sig 
+#1 "int_hashtbl.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+include Hashtbl_gen.S with type key = int
+
+
+
+
+end = struct
+#1 "int_hashtbl.ml"
+# 15 "ext/hashtbl.cppo.ml"
+type key = int 
+type 'a t = (key, 'a)  Hashtbl_gen.t 
+let key_index (h : _ t ) (key : key) =
+  (Bs_hash_stubs.hash_int  key ) land (Array.length h.data - 1)
+let eq_key = Ext_int.equal   
+
+
+# 33
+type ('a, 'b) bucketlist = ('a,'b) Hashtbl_gen.bucketlist
+let create = Hashtbl_gen.create
+let clear = Hashtbl_gen.clear
+let reset = Hashtbl_gen.reset
+let copy = Hashtbl_gen.copy
+let iter = Hashtbl_gen.iter
+let fold = Hashtbl_gen.fold
+let length = Hashtbl_gen.length
+let stats = Hashtbl_gen.stats
+
+
+
+let add (h : _ t) key info =
+  let i = key_index h key in
+  let h_data = h.data in   
+  Array.unsafe_set h_data i (Cons(key, info, (Array.unsafe_get h_data i)));
+  h.size <- h.size + 1;
+  if h.size > Array.length h_data lsl 1 then Hashtbl_gen.resize key_index h
+
+(* after upgrade to 4.04 we should provide an efficient [replace_or_init] *)
+let modify_or_init (h : _ t) key modf default =
+  let rec find_bucket (bucketlist : _ bucketlist)  =
+    match bucketlist with
+    | Cons(k,i,next) ->
+      if eq_key k key then begin modf i; false end
+      else find_bucket next 
+    | Empty -> true in
+  let i = key_index h key in 
+  let h_data = h.data in 
+  if find_bucket (Array.unsafe_get h_data i) then
+    begin 
+      Array.unsafe_set h_data i  (Cons(key,default (), Array.unsafe_get h_data i));
+      h.size <- h.size + 1 ;
+      if h.size > Array.length h_data lsl 1 then Hashtbl_gen.resize key_index h 
+    end
+
+
+let rec remove_bucket key (h : _ t) (bucketlist : _ bucketlist) : _ bucketlist = 
+  match bucketlist with  
+  | Empty ->
+    Empty
+  | Cons(k, i, next) ->
+    if eq_key k key 
+    then begin h.size <- h.size - 1; next end
+    else Cons(k, i, remove_bucket key h next) 
+
+let remove (h : _ t ) key =
+  let i = key_index h key in
+  let h_data = h.data in 
+  let old_h_szie = h.size in 
+  let new_bucket = remove_bucket key h (Array.unsafe_get h_data i) in  
+  if old_h_szie <> h.size then 
+    Array.unsafe_set h_data i  new_bucket
+
+let rec find_rec key (bucketlist : _ bucketlist) = match bucketlist with  
+  | Empty ->
+    raise Not_found
+  | Cons(k, d, rest) ->
+    if eq_key key k then d else find_rec key rest
+
+let find_exn (h : _ t) key =
+  match Array.unsafe_get h.data (key_index h key) with
+  | Empty -> raise Not_found
+  | Cons(k1, d1, rest1) ->
+    if eq_key key k1 then d1 else
+      match rest1 with
+      | Empty -> raise Not_found
+      | Cons(k2, d2, rest2) ->
+        if eq_key key k2 then d2 else
+          match rest2 with
+          | Empty -> raise Not_found
+          | Cons(k3, d3, rest3) ->
+            if eq_key key k3  then d3 else find_rec key rest3
+
+let find_opt (h : _ t) key =
+  Hashtbl_gen.small_bucket_opt eq_key key (Array.unsafe_get h.data (key_index h key))
+
+let find_key_opt (h : _ t) key =
+  Hashtbl_gen.small_bucket_key_opt eq_key key (Array.unsafe_get h.data (key_index h key))
+  
+let find_default (h : _ t) key default = 
+  Hashtbl_gen.small_bucket_default eq_key key default (Array.unsafe_get h.data (key_index h key))
+let find_all (h : _ t) key =
+  let rec find_in_bucket (bucketlist : _ bucketlist) = match bucketlist with 
+    | Empty ->
+      []
+    | Cons(k, d, rest) ->
+      if eq_key k key 
+      then d :: find_in_bucket rest
+      else find_in_bucket rest in
+  find_in_bucket (Array.unsafe_get h.data (key_index h key))
+
+let replace h key info =
+  let rec replace_bucket (bucketlist : _ bucketlist) : _ bucketlist = match bucketlist with 
+    | Empty ->
+      raise_notrace Not_found
+    | Cons(k, i, next) ->
+      if eq_key k key
+      then Cons(key, info, next)
+      else Cons(k, i, replace_bucket next) in
+  let i = key_index h key in
+  let h_data = h.data in 
+  let l = Array.unsafe_get h_data i in
+  try
+    Array.unsafe_set h_data i  (replace_bucket l)
+  with Not_found ->
+    begin 
+      Array.unsafe_set h_data i (Cons(key, info, l));
+      h.size <- h.size + 1;
+      if h.size > Array.length h_data lsl 1 then Hashtbl_gen.resize key_index h;
+    end 
+
+let mem (h : _ t) key =
+  let rec mem_in_bucket (bucketlist : _ bucketlist) = match bucketlist with 
+    | Empty ->
+      false
+    | Cons(k, d, rest) ->
+      eq_key k key  || mem_in_bucket rest in
+  mem_in_bucket (Array.unsafe_get h.data (key_index h key))
+
+
+let of_list2 ks vs = 
+  let len = List.length ks in 
+  let map = create len in 
+  List.iter2 (fun k v -> add map k v) ks vs ; 
+  map
+
+
+end
 module Int_vec_util : sig 
 #1 "int_vec_util.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -65530,7 +65771,7 @@ type primitive =
   | Pjs_is_instance_array
   | Pcaml_obj_length
   | Pcaml_obj_set_length
-  
+  | Pwrap_exn (* convert either JS exception or OCaml exception into OCaml format *)  
 
 type switch  =
   { sw_numconsts: int;
@@ -65880,7 +66121,7 @@ type primitive =
   | Pjs_is_instance_array
   | Pcaml_obj_length
   | Pcaml_obj_set_length
-
+  | Pwrap_exn (* convert either JS exception or OCaml exception into OCaml format *)
 
 type apply_status =
   | App_na
@@ -67237,7 +67478,8 @@ type required_modules = Lam_module_ident.Hash_set.t
 
 
 let convert exports lam : _ * _  = 
-  let alias = Ident_hashtbl.create 64 in 
+  let alias_tbl = Ident_hashtbl.create 64 in 
+  let exit_map = Int_hashtbl.create 0 in 
   let may_depends = Lam_module_ident.Hash_set.create 0 in 
 
   let rec
@@ -67331,7 +67573,7 @@ let convert exports lam : _ * _  =
   and aux (lam : Lambda.lambda) : t = 
     match lam with 
     | Lvar x -> 
-      let var = Ident_hashtbl.find_default alias x x in
+      let var = Ident_hashtbl.find_default alias_tbl x x in
       if Ident.persistent var then 
         Lglobal_module var 
       else       
@@ -67460,14 +67702,14 @@ let convert exports lam : _ * _  =
 
       begin match kind, e with 
         | Alias , (Lvar u ) ->
-          let new_u = (Ident_hashtbl.find_default alias u u) in
-          Ident_hashtbl.add alias id new_u ;
+          let new_u = (Ident_hashtbl.find_default alias_tbl u u) in
+          Ident_hashtbl.add alias_tbl id new_u ;
           if Ident_set.mem id exports then 
             Llet(kind, id, Lvar new_u, aux body)
           else aux body   
         | Alias ,  Lprim (Pgetglobal u,[], _) when not (Ident.is_predef_exn u)
           ->         
-          Ident_hashtbl.add alias id u;          
+          Ident_hashtbl.add alias_tbl id u;          
           may_depend may_depends (Lam_module_ident.of_ml u);
 
           if Ident_set.mem id exports then 
@@ -67562,13 +67804,34 @@ let convert exports lam : _ * _  =
                      | None -> None
                      | Some x -> Some (aux x)
                     )    
-
+    | Lstaticraise (id,[]) ->
+      begin match Int_hashtbl.find_opt exit_map id  with
+      | None -> Lstaticraise (id,[])
+      | Some new_id -> Lstaticraise (new_id,[])
+      end               
     | Lstaticraise (id, args) -> 
       Lstaticraise (id, List.map aux args)
+    | Lstaticcatch (b, (i,[]), Lstaticraise (j,[]) ) 
+      -> (* peep-hole [i] aliased to [j] *)
+
+        let new_i = Int_hashtbl.find_default exit_map j j in 
+        Int_hashtbl.add exit_map i new_i ; 
+        aux b
     | Lstaticcatch (b, (i, ids), handler) -> 
       Lstaticcatch (aux b, (i,ids), aux handler)
-    | Ltrywith (b, id, handler) -> 
-      Ltrywith (aux b, id, aux handler)
+    | Ltrywith (b, id, handler) ->
+      (** TODO:
+          2. Check some optimizations
+      *)
+      (*let newId = Ident.rename id in 
+      let body = aux b in 
+      let handler = aux handler in 
+      Ltrywith (body, newId, 
+                let_ StrictOpt id 
+                  (prim ~primitive:Pwrap_exn ~args:[var newId] Location.none)
+                  handler
+               ) *)
+       Ltrywith (aux b, id, aux handler)       
     | Lifthenelse (b,then_,else_) -> 
       Lifthenelse (aux b, aux then_, aux else_)
     | Lsequence (a,b) 
@@ -71070,6 +71333,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Pjs_function_length
       | Pcaml_obj_length
       | Pjs_is_instance_array
+      | Pwrap_exn
         -> true
       | Pjs_string_of_small_array
       | Pcaml_obj_set_length        
@@ -71394,6 +71658,7 @@ let rec
   
 and eq_primitive ( lhs : Lam.primitive) (rhs : Lam.primitive) = 
   match lhs with 
+  | Pwrap_exn -> rhs = Pwrap_exn
   | Pbytes_to_string ->  rhs = Pbytes_to_string 
   | Pbytes_of_string ->  rhs = Pbytes_of_string
   | Praise -> rhs = Praise
@@ -71666,6 +71931,7 @@ let string_of_loc_kind (loc : Lambda.loc_kind) =
   | Loc_LOC -> "loc_LOC"
 
 let primitive ppf (prim : Lam.primitive) = match prim with 
+  | Pwrap_exn -> fprintf ppf "#exn"
   | Pjs_string_of_small_array -> fprintf ppf "#string_of_small_array"
   | Pjs_is_instance_array -> fprintf ppf "#is_instance_array"
   | Pcaml_obj_length -> fprintf ppf "#obj_length"
@@ -72141,71 +72407,6 @@ let seriaize env (filename : string) (lam : Lam.t) : unit =
     close_out ou;
     Format.set_margin old
   end
-
-end
-module Ext_int : sig 
-#1 "ext_int.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-type t = int
-val compare : t -> t -> int 
-val equal : t -> t -> bool 
-
-end = struct
-#1 "ext_int.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-type t = int
-
-let compare (x : t) (y : t) = Pervasives.compare x y 
-
-let equal (x : t) (y : t) = x = y
 
 end
 module Int_hash_set : sig 
@@ -92653,6 +92854,8 @@ let translate  loc
     (prim : Lam.primitive)
     (args : J.expression list) : J.expression = 
   match prim with
+  | Pwrap_exn -> 
+    E.runtime_call Js_config.exn "internalToOCamlException" args 
   | Lam.Praw_js_code_exp s -> 
     E.raw_js_code Exp s  
   | Lam.Praw_js_code_stmt s -> 
@@ -96899,179 +97102,6 @@ let deep_flatten
   in aux lam
 
 end
-module Int_hashtbl : sig 
-#1 "int_hashtbl.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-include Hashtbl_gen.S with type key = int
-
-
-
-
-end = struct
-#1 "int_hashtbl.ml"
-# 15 "ext/hashtbl.cppo.ml"
-type key = int 
-type 'a t = (key, 'a)  Hashtbl_gen.t 
-let key_index (h : _ t ) (key : key) =
-  (Bs_hash_stubs.hash_int  key ) land (Array.length h.data - 1)
-let eq_key = Ext_int.equal   
-
-
-# 33
-type ('a, 'b) bucketlist = ('a,'b) Hashtbl_gen.bucketlist
-let create = Hashtbl_gen.create
-let clear = Hashtbl_gen.clear
-let reset = Hashtbl_gen.reset
-let copy = Hashtbl_gen.copy
-let iter = Hashtbl_gen.iter
-let fold = Hashtbl_gen.fold
-let length = Hashtbl_gen.length
-let stats = Hashtbl_gen.stats
-
-
-
-let add (h : _ t) key info =
-  let i = key_index h key in
-  let h_data = h.data in   
-  Array.unsafe_set h_data i (Cons(key, info, (Array.unsafe_get h_data i)));
-  h.size <- h.size + 1;
-  if h.size > Array.length h_data lsl 1 then Hashtbl_gen.resize key_index h
-
-(* after upgrade to 4.04 we should provide an efficient [replace_or_init] *)
-let modify_or_init (h : _ t) key modf default =
-  let rec find_bucket (bucketlist : _ bucketlist)  =
-    match bucketlist with
-    | Cons(k,i,next) ->
-      if eq_key k key then begin modf i; false end
-      else find_bucket next 
-    | Empty -> true in
-  let i = key_index h key in 
-  let h_data = h.data in 
-  if find_bucket (Array.unsafe_get h_data i) then
-    begin 
-      Array.unsafe_set h_data i  (Cons(key,default (), Array.unsafe_get h_data i));
-      h.size <- h.size + 1 ;
-      if h.size > Array.length h_data lsl 1 then Hashtbl_gen.resize key_index h 
-    end
-
-
-let rec remove_bucket key (h : _ t) (bucketlist : _ bucketlist) : _ bucketlist = 
-  match bucketlist with  
-  | Empty ->
-    Empty
-  | Cons(k, i, next) ->
-    if eq_key k key 
-    then begin h.size <- h.size - 1; next end
-    else Cons(k, i, remove_bucket key h next) 
-
-let remove (h : _ t ) key =
-  let i = key_index h key in
-  let h_data = h.data in 
-  let old_h_szie = h.size in 
-  let new_bucket = remove_bucket key h (Array.unsafe_get h_data i) in  
-  if old_h_szie <> h.size then 
-    Array.unsafe_set h_data i  new_bucket
-
-let rec find_rec key (bucketlist : _ bucketlist) = match bucketlist with  
-  | Empty ->
-    raise Not_found
-  | Cons(k, d, rest) ->
-    if eq_key key k then d else find_rec key rest
-
-let find_exn (h : _ t) key =
-  match Array.unsafe_get h.data (key_index h key) with
-  | Empty -> raise Not_found
-  | Cons(k1, d1, rest1) ->
-    if eq_key key k1 then d1 else
-      match rest1 with
-      | Empty -> raise Not_found
-      | Cons(k2, d2, rest2) ->
-        if eq_key key k2 then d2 else
-          match rest2 with
-          | Empty -> raise Not_found
-          | Cons(k3, d3, rest3) ->
-            if eq_key key k3  then d3 else find_rec key rest3
-
-let find_opt (h : _ t) key =
-  Hashtbl_gen.small_bucket_opt eq_key key (Array.unsafe_get h.data (key_index h key))
-
-let find_key_opt (h : _ t) key =
-  Hashtbl_gen.small_bucket_key_opt eq_key key (Array.unsafe_get h.data (key_index h key))
-  
-let find_default (h : _ t) key default = 
-  Hashtbl_gen.small_bucket_default eq_key key default (Array.unsafe_get h.data (key_index h key))
-let find_all (h : _ t) key =
-  let rec find_in_bucket (bucketlist : _ bucketlist) = match bucketlist with 
-    | Empty ->
-      []
-    | Cons(k, d, rest) ->
-      if eq_key k key 
-      then d :: find_in_bucket rest
-      else find_in_bucket rest in
-  find_in_bucket (Array.unsafe_get h.data (key_index h key))
-
-let replace h key info =
-  let rec replace_bucket (bucketlist : _ bucketlist) : _ bucketlist = match bucketlist with 
-    | Empty ->
-      raise_notrace Not_found
-    | Cons(k, i, next) ->
-      if eq_key k key
-      then Cons(key, info, next)
-      else Cons(k, i, replace_bucket next) in
-  let i = key_index h key in
-  let h_data = h.data in 
-  let l = Array.unsafe_get h_data i in
-  try
-    Array.unsafe_set h_data i  (replace_bucket l)
-  with Not_found ->
-    begin 
-      Array.unsafe_set h_data i (Cons(key, info, l));
-      h.size <- h.size + 1;
-      if h.size > Array.length h_data lsl 1 then Hashtbl_gen.resize key_index h;
-    end 
-
-let mem (h : _ t) key =
-  let rec mem_in_bucket (bucketlist : _ bucketlist) = match bucketlist with 
-    | Empty ->
-      false
-    | Cons(k, d, rest) ->
-      eq_key k key  || mem_in_bucket rest in
-  mem_in_bucket (Array.unsafe_get h.data (key_index h key))
-
-
-let of_list2 ks vs = 
-  let len = List.length ks in 
-  let map = create len in 
-  List.iter2 (fun k v -> add map k v) ks vs ; 
-  map
-
-
-end
 module Lam_pass_exits : sig 
 #1 "lam_pass_exits.mli"
 (***********************************************************************)
@@ -97092,11 +97122,7 @@ module Lam_pass_exits : sig
     [simplif] module
  *)
 
-val count_helper : Lam.t -> int ref Int_hashtbl.t
 
-type subst_tbl = (Ident.t list * Lam.t) Int_hashtbl.t
-
-val subst_helper : subst_tbl -> (int -> int) -> Lam.t -> Lam.t
 
 val simplify_exits : Lam.t -> Lam.t
 
@@ -97134,33 +97160,42 @@ end = struct
    ]}
 *)
 
+(** Don't modify it .. *)
+let default_zero = ref 0
+
 (* Count occurrences of (exit n ...) statements *)
 let count_exit exits i =
-  match 
-    (Int_hashtbl.find_opt exits i)
-  with
-  | None -> 0
-  | Some v -> !v 
+  !(Int_hashtbl.find_default exits i default_zero)
 
-and incr_exit exits i =
+let incr_exit exits i =
   Int_hashtbl.modify_or_init exits i incr (fun _ -> ref 1)
 
 
+(** 
+  This funcition counts how each [exit] is used, it will affect how the following optimizations performed.
+  
+  Some smart cases (this requires the following optimizations follow it): 
+  
+  {[
+    Lstaticcatch(l1, (i,_), l2) 
+  ]}
+  If [l1] does not contain [(exit i)],
+  [l2] will be removed, so don't count it.
+  
+  About Switch default branch handling, it maybe backend-specific
+  See https://github.com/ocaml/ocaml/commit/fcf3571123e2c914768e34f1bd17e4cbaaa7d212#diff-704f66c0fa0fc9339230b39ce7d90919 
+  For Lstringswitch ^
+  
+  For Lswitch, if it is not exhuastive pattern match, default will be counted twice.
+  Since for pattern match,  we will  test whether it is  an integer or block, both have default cases predicate: [sw_numconsts] vs nconsts
+*)
 let count_helper  (lam : Lam.t) : int ref Int_hashtbl.t  = 
   let exits  = Int_hashtbl.create 17 in
   let rec count (lam : Lam.t) = 
     match lam with 
     | Lstaticraise (i,ls) -> incr_exit exits i ; List.iter count ls
-    | Lstaticcatch (l1,(i,[]),Lstaticraise (j,[])) ->
-      (* i will be replaced by j in l1, so each occurence of i in l1
-         increases j's ref count *)
-      count l1 ;
-      let ic = count_exit exits i in
-      Int_hashtbl.modify_or_init exits j (fun x -> x := !x + ic) (fun _ -> ref ic)
     | Lstaticcatch(l1, (i,_), l2) ->
       count l1;
-      (* If l1 does not contain (exit i),
-         l2 will be removed, so don't count its exits *)
       if count_exit exits i > 0 
       then
         count l2
@@ -97170,15 +97205,7 @@ let count_helper  (lam : Lam.t) : int ref Int_hashtbl.t  =
       begin 
         match  d with
         | None -> ()
-        | Some d -> 
-          (* See https://github.com/ocaml/ocaml/commit/fcf3571123e2c914768e34f1bd17e4cbaaa7d212#diff-704f66c0fa0fc9339230b39ce7d90919 
-             might only necessary for native backend
-          *)
-          count d
-          (* begin match sw with *)
-          (* | []|[_] -> count d *)
-          (* | _ -> count d; count d (\** ASK: default will get replicated *\) *)
-          (* end *)
+        | Some d ->  count d
       end
     | Lvar _| Lconst _ -> ()
     | Lapply{fn = l1; args =  ll; _} -> count l1; List.iter count ll
@@ -97208,21 +97235,12 @@ let count_helper  (lam : Lam.t) : int ref Int_hashtbl.t  =
     match sw.sw_failaction with
     | None -> ()
     | Some al ->
-      let nconsts = List.length sw.sw_consts
-      and nblocks = List.length sw.sw_blocks in
-      if
-        nconsts < sw.sw_numconsts && nblocks < sw.sw_numblocks
-      then 
-        (*
-              Reason: for pattern match, 
-              we will  test whether it is 
-              an integer or block, both have default cases
-              predicate: [sw_numconsts] vs nconsts
-          *)
-
-        begin 
+      let nconsts = List.length sw.sw_consts in 
+      let nblocks = List.length sw.sw_blocks in
+      if nconsts < sw.sw_numconsts && nblocks < sw.sw_numblocks
+      then begin 
           count al ; count al
-        end 
+      end 
       else 
         begin (* default action will occur once *)
           assert (nconsts < sw.sw_numconsts || nblocks < sw.sw_numblocks) ;
@@ -97232,16 +97250,29 @@ let count_helper  (lam : Lam.t) : int ref Int_hashtbl.t  =
   exits
 ;;
 
-type subst_tbl = (Ident.t list * Lam.t) Int_hashtbl.t
+(** The third argument is its occurrence,
+  when do the substitution, if its occurence is > 1,
+  we should refresh
+ *)
+type lam_subst = 
+  | Id of Lam.t 
+  | Refresh of Lam.t
 
-(*
-   Second pass simplify  ``catch body with (i ...) handler''
+type subst_tbl = (Ident.t list * lam_subst ) Int_hashtbl.t
+
+let to_lam x = 
+  match x with 
+  | Id x -> x 
+  | Refresh x -> Lam_bounded_vars.refresh x 
+
+(**
+   Simplify  ``catch body with (i ...) handler''
       - if (exit i ...) does not occur in body, suppress catch
       - if (exit i ...) occurs exactly once in body,
         substitute it with handler
       - If handler is a single variable, replace (exit i ..) with it
-*)
-(*
+
+
   Note:
     In ``catch body with (i x1 .. xn) handler''
      Substituted expression is
@@ -97252,42 +97283,7 @@ type subst_tbl = (Ident.t list * Lam.t) Int_hashtbl.t
      (No alpha conversion of ``handler'' is presently needed, since
      substitution of several ``(exit i ...)''
      occurs only when ``handler'' is a variable.)
-*)
-
-
-let subst_helper (subst : subst_tbl) (query : int -> int) lam = 
-  let rec simplif (lam : Lam.t) = 
-    match lam with 
-    | Lstaticraise (i,[])  ->
-      begin match Int_hashtbl.find_opt subst i with
-        | Some (_, handler) -> handler
-        | None -> lam
-      end
-    | Lstaticraise (i,ls) ->
-      let ls = List.map simplif ls in
-      begin 
-        match Int_hashtbl.find_opt subst i with
-        | Some (xs,handler) -> 
-          let ys = List.map Ident.rename xs in
-          let env =
-            List.fold_right2
-              (fun x y t -> Ident_map.add x (Lam.var y) t)
-              xs ys Ident_map.empty in
-          List.fold_right2
-            (fun y l r -> Lam.let_ Alias y l r)
-            ys ls 
-            (Lam_util.subst_lambda  env  handler)
-        | None -> Lam.staticraise i ls
-      end
-    | Lstaticcatch (l1,(i,[]),(Lstaticraise (j,[]) as l2)) ->
-      Int_hashtbl.add subst i ([],simplif l2) ;
-      simplif l1 (** l1 will inline the exit handler *)
-    | Lstaticcatch (l1,(i,xs),l2) ->
-      begin 
-        match query i, l2 with
-        | 0,_ -> simplif l1
-
-        (* Note that 
+  Note that 
            for [query] result = 2, 
            the non-inline cost is 
            {[
@@ -97312,12 +97308,44 @@ let subst_helper (subst : subst_tbl) (query : int -> int) lam =
            since the outer is a traditional [try .. catch] body, 
            if it is guaranteed to be non throw, then we can inline
         *)
+
+let subst_helper (subst : subst_tbl) (query : int -> int) lam = 
+  let rec simplif (lam : Lam.t) = 
+    match lam with 
+    | Lstaticraise (i,[])  ->
+      begin match Int_hashtbl.find_opt subst i with
+        | Some (_,handler) -> to_lam handler
+        | None -> lam
+      end
+    | Lstaticraise (i,ls) ->
+      let ls = List.map simplif ls in
+      begin 
+        match Int_hashtbl.find_opt subst i with
+        | Some (xs, handler) -> 
+          let handler = to_lam handler in 
+          let ys = List.map Ident.rename xs in
+          let env =
+            List.fold_right2
+              (fun x y t -> Ident_map.add x (Lam.var y) t)
+              xs ys Ident_map.empty in
+          List.fold_right2
+            (fun y l r -> Lam.let_ Alias y l r)
+            ys ls 
+            (Lam_util.subst_lambda  env  handler)
+        | None -> Lam.staticraise i ls
+      end
+    | Lstaticcatch (l1,(i,xs),l2) ->
+      begin 
+        let i_occur = query i in 
+        match i_occur , l2 with
+        | 0,_ -> simplif l1
+
         | ( _ , Lvar _
           | _, Lconst _) ->  
-          Int_hashtbl.add subst i (xs,simplif l2) ;
+          Int_hashtbl.add subst i (xs, Id (simplif l2)) ;
           simplif l1 (** l1 will inline *)
         | 1,_ when i >= 0 -> (** Ask: Note that we have predicate i >=0 *)
-          Int_hashtbl.add subst i (xs,simplif l2) ;
+          Int_hashtbl.add subst i (xs, Id (simplif l2)) ;
           simplif l1 (** l1 will inline *)
         | j,_ ->
 
@@ -97339,15 +97367,14 @@ let subst_helper (subst : subst_tbl) (query : int -> int) lam =
               the j is not very indicative                
             *)             
           in 
-          if ok_to_inline 
+          if ok_to_inline (* && false *)
              (* #1438 when the action containes bounded variable 
                 to keep the invariant, everytime, we do an inlining,
                 we need refresh, just refreshing once is not enough
              *)
           then 
             begin 
-              Ext_log.dwarn __LOC__ "FUCK%d@." i;
-              Int_hashtbl.add subst i (xs, Lam_bounded_vars.refresh @@ simplif l2) ;
+              Int_hashtbl.add subst i (xs,  Refresh(simplif l2)) ;
               simplif l1 (** l1 will inline *)
             end
           else Lam.staticcatch (simplif l1) (i,xs) (simplif l2)

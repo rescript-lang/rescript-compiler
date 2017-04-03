@@ -1,6 +1,6 @@
 node_path.cmj :
 node_fs.cmj : node.cmj js_string.cmj
-node_process.cmj :
+node_process.cmj : js_dict.cmj
 node_module.cmj : node.cmj js_dict.cmj
 js_array.cmj :
 js_string.cmj : js_re.cmi js_array.cmj

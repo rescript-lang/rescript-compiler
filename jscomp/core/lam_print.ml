@@ -101,6 +101,7 @@ let string_of_loc_kind (loc : Lambda.loc_kind) =
   | Loc_LOC -> "loc_LOC"
 
 let primitive ppf (prim : Lam.primitive) = match prim with 
+  | Pwrap_exn -> fprintf ppf "#exn"
   | Pjs_string_of_small_array -> fprintf ppf "#string_of_small_array"
   | Pjs_is_instance_array -> fprintf ppf "#is_instance_array"
   | Pcaml_obj_length -> fprintf ppf "#obj_length"

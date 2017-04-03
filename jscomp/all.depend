@@ -334,7 +334,7 @@ core/lam_compile_primitive.cmi : core/lam_compile_defs.cmi core/lam.cmi \
     core/j.cmx
 core/lam_compile.cmi : core/lam_compile_defs.cmi core/lam.cmi \
     core/js_output.cmi core/j.cmx
-core/lam_pass_exits.cmi : core/lam.cmi ext/int_hashtbl.cmi
+core/lam_pass_exits.cmi : core/lam.cmi
 core/lam_pass_count.cmi : core/lam.cmi ext/ident_hashtbl.cmi
 core/lam_pass_eliminate_ref.cmi : core/lam.cmi
 core/lam_pass_lets_dce.cmi : core/lam.cmi
@@ -360,10 +360,10 @@ core/lam_module_ident.cmx : core/js_op.cmx common/js_config.cmx core/j.cmx \
 core/lam.cmx : ext/ordered_hash_map_local_ident.cmx \
     core/ocaml_stdlib_slots.cmx ext/literals.cmx core/lam_module_ident.cmx \
     common/js_config.cmx ext/int_vec_vec.cmx ext/int_vec_util.cmx \
-    ext/int_vec.cmx ext/ident_set.cmx ext/ident_hashtbl.cmx \
-    ext/ident_hash_set.cmx ext/hash_set_ident_mask.cmx ext/ext_string.cmx \
-    ext/ext_scc.cmx ext/ext_list.cmx syntax/ast_ffi_types.cmx \
-    syntax/ast_arg.cmx core/lam.cmi
+    ext/int_vec.cmx ext/int_hashtbl.cmx ext/ident_set.cmx \
+    ext/ident_hashtbl.cmx ext/ident_hash_set.cmx ext/hash_set_ident_mask.cmx \
+    ext/ext_string.cmx ext/ext_scc.cmx ext/ext_list.cmx \
+    syntax/ast_ffi_types.cmx syntax/ast_arg.cmx core/lam.cmi
 core/lam_print.cmx : core/lam.cmx core/lam_print.cmi
 core/lam_beta_reduce_util.cmx : core/lam.cmx ext/ident_hashtbl.cmx \
     core/lam_beta_reduce_util.cmi
@@ -552,7 +552,7 @@ core/lam_compile.cmx : ext/literals.cmx core/lam_util.cmx \
     core/lam_compile.cmi
 core/lam_pass_exits.cmx : core/lam_util.cmx core/lam_bounded_vars.cmx \
     core/lam_analysis.cmx core/lam.cmx ext/int_hashtbl.cmx ext/ident_map.cmx \
-    common/ext_log.cmx core/lam_pass_exits.cmi
+    core/lam_pass_exits.cmi
 core/lam_pass_count.cmx : core/lam_beta_reduce.cmx core/lam.cmx \
     ext/ident_map.cmx ext/ident_hashtbl.cmx ext/ext_list.cmx \
     core/lam_pass_count.cmi
