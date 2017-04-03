@@ -1897,7 +1897,7 @@ let convert exports lam : _ * _  =
       (** TODO:
           2. Check some optimizations
       *)
-      (* let newId = Ident.rename id in 
+      (*let newId = Ident.rename id in 
       let body = aux b in 
       let handler = aux handler in 
       Ltrywith (body, newId, 
@@ -1905,7 +1905,7 @@ let convert exports lam : _ * _  =
                   (prim ~primitive:Pwrap_exn ~args:[var newId] Location.none)
                   handler
                ) *)
-        Ltrywith (aux b, id, aux handler)       
+       Ltrywith (aux b, id, aux handler)       
     | Lifthenelse (b,then_,else_) -> 
       Lifthenelse (aux b, aux then_, aux else_)
     | Lsequence (a,b) 

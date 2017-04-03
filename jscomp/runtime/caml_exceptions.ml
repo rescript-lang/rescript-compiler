@@ -60,9 +60,10 @@ let create (str : string) : Caml_builtin_exceptions.exception_block =
   Obj.set_tag (Obj.repr v) 248 (* Obj.object_tag*);
   v 
 
+external isUndefined : 'a -> bool = "#is_undef"
 (** It could be either customized exception or built in exception *)
 let isCamlException e = 
   let slot = Obj.field e 0 in 
-  not (Js.Undefined.testAny slot) &&
+  not (isUndefined slot) &&
   (Obj.tag slot = 248
    || (Js.typeof (Obj.field slot 0) == "string"))
