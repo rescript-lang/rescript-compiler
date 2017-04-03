@@ -25788,6 +25788,7 @@ val weak : string
 val js_primitive : string
 val module_ : string
 val missing_polyfill : string
+val exn : string
 (** Debugging utilies *)
 val set_current_file : string -> unit 
 val get_current_file : unit -> string
@@ -26015,6 +26016,8 @@ let block = "Block"
 let js_primitive = "Js_primitive"
 let module_ = "Caml_module"
 let missing_polyfill = "Caml_missing_polyfill"
+let exn = "Js_exn"
+
 let current_file = ref ""
 let debug_file = ref ""
 

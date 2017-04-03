@@ -16,10 +16,6 @@
     [simplif] module
  *)
 
-val count_helper : Lam.t -> int ref Int_hashtbl.t
 
-type subst_tbl = (Ident.t list * Lam.t) Int_hashtbl.t
-
-val subst_helper : subst_tbl -> (int -> int) -> Lam.t -> Lam.t
 
 val simplify_exits : Lam.t -> Lam.t

@@ -195,7 +195,7 @@ type primitive =
   | Pjs_is_instance_array
   | Pcaml_obj_length
   | Pcaml_obj_set_length
-
+  | Pwrap_exn (* convert either JS exception or OCaml exception into OCaml format *)
 
 type apply_status =
   | App_na
@@ -1552,7 +1552,8 @@ type required_modules = Lam_module_ident.Hash_set.t
 
 
 let convert exports lam : _ * _  = 
-  let alias = Ident_hashtbl.create 64 in 
+  let alias_tbl = Ident_hashtbl.create 64 in 
+  let exit_map = Int_hashtbl.create 0 in 
   let may_depends = Lam_module_ident.Hash_set.create 0 in 
 
   let rec
@@ -1646,7 +1647,7 @@ let convert exports lam : _ * _  =
   and aux (lam : Lambda.lambda) : t = 
     match lam with 
     | Lvar x -> 
-      let var = Ident_hashtbl.find_default alias x x in
+      let var = Ident_hashtbl.find_default alias_tbl x x in
       if Ident.persistent var then 
         Lglobal_module var 
       else       
@@ -1775,14 +1776,14 @@ let convert exports lam : _ * _  =
 
       begin match kind, e with 
         | Alias , (Lvar u ) ->
-          let new_u = (Ident_hashtbl.find_default alias u u) in
-          Ident_hashtbl.add alias id new_u ;
+          let new_u = (Ident_hashtbl.find_default alias_tbl u u) in
+          Ident_hashtbl.add alias_tbl id new_u ;
           if Ident_set.mem id exports then 
             Llet(kind, id, Lvar new_u, aux body)
           else aux body   
         | Alias ,  Lprim (Pgetglobal u,[], _) when not (Ident.is_predef_exn u)
           ->         
-          Ident_hashtbl.add alias id u;          
+          Ident_hashtbl.add alias_tbl id u;          
           may_depend may_depends (Lam_module_ident.of_ml u);
 
           if Ident_set.mem id exports then 
@@ -1877,13 +1878,34 @@ let convert exports lam : _ * _  =
                      | None -> None
                      | Some x -> Some (aux x)
                     )    
-
+    | Lstaticraise (id,[]) ->
+      begin match Int_hashtbl.find_opt exit_map id  with
+      | None -> Lstaticraise (id,[])
+      | Some new_id -> Lstaticraise (new_id,[])
+      end               
     | Lstaticraise (id, args) -> 
       Lstaticraise (id, List.map aux args)
+    | Lstaticcatch (b, (i,[]), Lstaticraise (j,[]) ) 
+      -> (* peep-hole [i] aliased to [j] *)
+
+        let new_i = Int_hashtbl.find_default exit_map j j in 
+        Int_hashtbl.add exit_map i new_i ; 
+        aux b
     | Lstaticcatch (b, (i, ids), handler) -> 
       Lstaticcatch (aux b, (i,ids), aux handler)
-    | Ltrywith (b, id, handler) -> 
-      Ltrywith (aux b, id, aux handler)
+    | Ltrywith (b, id, handler) ->
+      (** TODO:
+          2. Check some optimizations
+      *)
+      (* let newId = Ident.rename id in 
+      let body = aux b in 
+      let handler = aux handler in 
+      Ltrywith (body, newId, 
+                let_ StrictOpt id 
+                  (prim ~primitive:Pwrap_exn ~args:[var newId] Location.none)
+                  handler
+               ) *)
+        Ltrywith (aux b, id, aux handler)       
     | Lifthenelse (b,then_,else_) -> 
       Lifthenelse (aux b, aux then_, aux else_)
     | Lsequence (a,b) 

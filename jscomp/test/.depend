@@ -118,6 +118,7 @@ const_test.cmj :
 cont_int_fold_test.cmj :
 cps_test.cmj : mt.cmj ../stdlib/array.cmj
 cross_module_inline_test.cmj :
+custom_error_test.cmj : ../runtime/js.cmj
 debug_keep_test.cmj :
 debugger_test.cmj : ../runtime/js.cmj
 demo.cmj : ../runtime/js.cmj demo_binding.cmj
@@ -141,7 +142,8 @@ event_ffi.cmj : ../stdlib/list.cmj ../runtime/js_unsafe.cmj \
     ../runtime/js.cmj
 exception_alias.cmj : ../stdlib/list.cmj
 exception_raise_test.cmj : mt.cmj
-exception_value_test.cmj :
+exception_rebound_err.cmj : ../runtime/js.cmj
+exception_value_test.cmj : ../runtime/js.cmj
 export_keyword.cmj :
 ext_array.cmj : ../stdlib/list.cmj ../stdlib/array.cmj
 ext_bytes.cmj : ../stdlib/pervasives.cmj ../stdlib/bytes.cmj

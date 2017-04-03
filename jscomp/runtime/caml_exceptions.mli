@@ -34,3 +34,5 @@ val caml_set_oo_id :
 val get_id : unit -> nativeint
 
 val create : string -> Caml_builtin_exceptions.exception_block
+
+val isCamlException : Obj.t -> bool

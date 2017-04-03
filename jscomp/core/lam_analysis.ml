@@ -141,6 +141,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Pjs_function_length
       | Pcaml_obj_length
       | Pjs_is_instance_array
+      | Pwrap_exn
         -> true
       | Pjs_string_of_small_array
       | Pcaml_obj_set_length        
@@ -465,6 +466,7 @@ let rec
   
 and eq_primitive ( lhs : Lam.primitive) (rhs : Lam.primitive) = 
   match lhs with 
+  | Pwrap_exn -> rhs = Pwrap_exn
   | Pbytes_to_string ->  rhs = Pbytes_to_string 
   | Pbytes_of_string ->  rhs = Pbytes_of_string
   | Praise -> rhs = Praise

@@ -30,33 +30,42 @@
    ]}
 *)
 
+(** Don't modify it .. *)
+let default_zero = ref 0
+
 (* Count occurrences of (exit n ...) statements *)
 let count_exit exits i =
-  match 
-    (Int_hashtbl.find_opt exits i)
-  with
-  | None -> 0
-  | Some v -> !v 
+  !(Int_hashtbl.find_default exits i default_zero)
 
-and incr_exit exits i =
+let incr_exit exits i =
   Int_hashtbl.modify_or_init exits i incr (fun _ -> ref 1)
 
 
+(** 
+  This funcition counts how each [exit] is used, it will affect how the following optimizations performed.
+  
+  Some smart cases (this requires the following optimizations follow it): 
+  
+  {[
+    Lstaticcatch(l1, (i,_), l2) 
+  ]}
+  If [l1] does not contain [(exit i)],
+  [l2] will be removed, so don't count it.
+  
+  About Switch default branch handling, it maybe backend-specific
+  See https://github.com/ocaml/ocaml/commit/fcf3571123e2c914768e34f1bd17e4cbaaa7d212#diff-704f66c0fa0fc9339230b39ce7d90919 
+  For Lstringswitch ^
+  
+  For Lswitch, if it is not exhuastive pattern match, default will be counted twice.
+  Since for pattern match,  we will  test whether it is  an integer or block, both have default cases predicate: [sw_numconsts] vs nconsts
+*)
 let count_helper  (lam : Lam.t) : int ref Int_hashtbl.t  = 
   let exits  = Int_hashtbl.create 17 in
   let rec count (lam : Lam.t) = 
     match lam with 
     | Lstaticraise (i,ls) -> incr_exit exits i ; List.iter count ls
-    | Lstaticcatch (l1,(i,[]),Lstaticraise (j,[])) ->
-      (* i will be replaced by j in l1, so each occurence of i in l1
-         increases j's ref count *)
-      count l1 ;
-      let ic = count_exit exits i in
-      Int_hashtbl.modify_or_init exits j (fun x -> x := !x + ic) (fun _ -> ref ic)
     | Lstaticcatch(l1, (i,_), l2) ->
       count l1;
-      (* If l1 does not contain (exit i),
-         l2 will be removed, so don't count its exits *)
       if count_exit exits i > 0 
       then
         count l2
@@ -66,15 +75,7 @@ let count_helper  (lam : Lam.t) : int ref Int_hashtbl.t  =
       begin 
         match  d with
         | None -> ()
-        | Some d -> 
-          (* See https://github.com/ocaml/ocaml/commit/fcf3571123e2c914768e34f1bd17e4cbaaa7d212#diff-704f66c0fa0fc9339230b39ce7d90919 
-             might only necessary for native backend
-          *)
-          count d
-          (* begin match sw with *)
-          (* | []|[_] -> count d *)
-          (* | _ -> count d; count d (\** ASK: default will get replicated *\) *)
-          (* end *)
+        | Some d ->  count d
       end
     | Lvar _| Lconst _ -> ()
     | Lapply{fn = l1; args =  ll; _} -> count l1; List.iter count ll
@@ -104,21 +105,12 @@ let count_helper  (lam : Lam.t) : int ref Int_hashtbl.t  =
     match sw.sw_failaction with
     | None -> ()
     | Some al ->
-      let nconsts = List.length sw.sw_consts
-      and nblocks = List.length sw.sw_blocks in
-      if
-        nconsts < sw.sw_numconsts && nblocks < sw.sw_numblocks
-      then 
-        (*
-              Reason: for pattern match, 
-              we will  test whether it is 
-              an integer or block, both have default cases
-              predicate: [sw_numconsts] vs nconsts
-          *)
-
-        begin 
+      let nconsts = List.length sw.sw_consts in 
+      let nblocks = List.length sw.sw_blocks in
+      if nconsts < sw.sw_numconsts && nblocks < sw.sw_numblocks
+      then begin 
           count al ; count al
-        end 
+      end 
       else 
         begin (* default action will occur once *)
           assert (nconsts < sw.sw_numconsts || nblocks < sw.sw_numblocks) ;
@@ -128,16 +120,29 @@ let count_helper  (lam : Lam.t) : int ref Int_hashtbl.t  =
   exits
 ;;
 
-type subst_tbl = (Ident.t list * Lam.t) Int_hashtbl.t
+(** The third argument is its occurrence,
+  when do the substitution, if its occurence is > 1,
+  we should refresh
+ *)
+type lam_subst = 
+  | Id of Lam.t 
+  | Refresh of Lam.t
 
-(*
-   Second pass simplify  ``catch body with (i ...) handler''
+type subst_tbl = (Ident.t list * lam_subst ) Int_hashtbl.t
+
+let to_lam x = 
+  match x with 
+  | Id x -> x 
+  | Refresh x -> Lam_bounded_vars.refresh x 
+
+(**
+   Simplify  ``catch body with (i ...) handler''
       - if (exit i ...) does not occur in body, suppress catch
       - if (exit i ...) occurs exactly once in body,
         substitute it with handler
       - If handler is a single variable, replace (exit i ..) with it
-*)
-(*
+
+
   Note:
     In ``catch body with (i x1 .. xn) handler''
      Substituted expression is
@@ -148,42 +153,7 @@ type subst_tbl = (Ident.t list * Lam.t) Int_hashtbl.t
      (No alpha conversion of ``handler'' is presently needed, since
      substitution of several ``(exit i ...)''
      occurs only when ``handler'' is a variable.)
-*)
-
-
-let subst_helper (subst : subst_tbl) (query : int -> int) lam = 
-  let rec simplif (lam : Lam.t) = 
-    match lam with 
-    | Lstaticraise (i,[])  ->
-      begin match Int_hashtbl.find_opt subst i with
-        | Some (_, handler) -> handler
-        | None -> lam
-      end
-    | Lstaticraise (i,ls) ->
-      let ls = List.map simplif ls in
-      begin 
-        match Int_hashtbl.find_opt subst i with
-        | Some (xs,handler) -> 
-          let ys = List.map Ident.rename xs in
-          let env =
-            List.fold_right2
-              (fun x y t -> Ident_map.add x (Lam.var y) t)
-              xs ys Ident_map.empty in
-          List.fold_right2
-            (fun y l r -> Lam.let_ Alias y l r)
-            ys ls 
-            (Lam_util.subst_lambda  env  handler)
-        | None -> Lam.staticraise i ls
-      end
-    | Lstaticcatch (l1,(i,[]),(Lstaticraise (j,[]) as l2)) ->
-      Int_hashtbl.add subst i ([],simplif l2) ;
-      simplif l1 (** l1 will inline the exit handler *)
-    | Lstaticcatch (l1,(i,xs),l2) ->
-      begin 
-        match query i, l2 with
-        | 0,_ -> simplif l1
-
-        (* Note that 
+  Note that 
            for [query] result = 2, 
            the non-inline cost is 
            {[
@@ -208,12 +178,44 @@ let subst_helper (subst : subst_tbl) (query : int -> int) lam =
            since the outer is a traditional [try .. catch] body, 
            if it is guaranteed to be non throw, then we can inline
         *)
+
+let subst_helper (subst : subst_tbl) (query : int -> int) lam = 
+  let rec simplif (lam : Lam.t) = 
+    match lam with 
+    | Lstaticraise (i,[])  ->
+      begin match Int_hashtbl.find_opt subst i with
+        | Some (_,handler) -> to_lam handler
+        | None -> lam
+      end
+    | Lstaticraise (i,ls) ->
+      let ls = List.map simplif ls in
+      begin 
+        match Int_hashtbl.find_opt subst i with
+        | Some (xs, handler) -> 
+          let handler = to_lam handler in 
+          let ys = List.map Ident.rename xs in
+          let env =
+            List.fold_right2
+              (fun x y t -> Ident_map.add x (Lam.var y) t)
+              xs ys Ident_map.empty in
+          List.fold_right2
+            (fun y l r -> Lam.let_ Alias y l r)
+            ys ls 
+            (Lam_util.subst_lambda  env  handler)
+        | None -> Lam.staticraise i ls
+      end
+    | Lstaticcatch (l1,(i,xs),l2) ->
+      begin 
+        let i_occur = query i in 
+        match i_occur , l2 with
+        | 0,_ -> simplif l1
+
         | ( _ , Lvar _
           | _, Lconst _) ->  
-          Int_hashtbl.add subst i (xs,simplif l2) ;
+          Int_hashtbl.add subst i (xs, Id (simplif l2)) ;
           simplif l1 (** l1 will inline *)
         | 1,_ when i >= 0 -> (** Ask: Note that we have predicate i >=0 *)
-          Int_hashtbl.add subst i (xs,simplif l2) ;
+          Int_hashtbl.add subst i (xs, Id (simplif l2)) ;
           simplif l1 (** l1 will inline *)
         | j,_ ->
 
@@ -235,15 +237,14 @@ let subst_helper (subst : subst_tbl) (query : int -> int) lam =
               the j is not very indicative                
             *)             
           in 
-          if ok_to_inline 
+          if ok_to_inline (* && false *)
              (* #1438 when the action containes bounded variable 
                 to keep the invariant, everytime, we do an inlining,
                 we need refresh, just refreshing once is not enough
              *)
           then 
             begin 
-              Ext_log.dwarn __LOC__ "FUCK%d@." i;
-              Int_hashtbl.add subst i (xs, Lam_bounded_vars.refresh @@ simplif l2) ;
+              Int_hashtbl.add subst i (xs,  Refresh(simplif l2)) ;
               simplif l1 (** l1 will inline *)
             end
           else Lam.staticcatch (simplif l1) (i,xs) (simplif l2)

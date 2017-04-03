@@ -22,47 +22,28 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** *)
+type t = 
+  < stack : string Js.undefined ;
+    message : string Js.undefined ; 
+    name : string Js.undefined;
+    fileName : string Js.undefined
+  > Js.t
 
 
+exception Error of t
 
 
-(** 
-   Could be exported for better inlining
-   It's common that we have 
-   {[ a = caml_set_oo_id([248,"string",0]) ]}
-   This can be inlined as 
-   {[ a = caml_set_oo_id([248,"tag", caml_oo_last_id++]) ]}
-*)
+external stack : t -> string option = ""
+  [@@bs.get] [@@bs.return undefined_to_opt]
 
-let id = ref 0n
+(** Used by the compiler internally *)
+val internalToOCamlException : Obj.t -> exn
 
-
-(* see  #251
-   {[
-     CAMLprim value caml_set_oo_id (value obj) {
-       Field(obj, 1) = oo_last_id;
-       oo_last_id += 2;
-       return obj;
-     }
-
-   ]}*)
-let caml_set_oo_id (b : Caml_builtin_exceptions.exception_block)  = 
-    Obj.set_field (Obj.repr b) 1 (Obj.repr !id);
-    id := Nativeint.add !id  1n; 
-    b
-
-let get_id () = 
-  id := Nativeint.add !id 1n; !id
-
-let create (str : string) : Caml_builtin_exceptions.exception_block = 
-  let v = ( str, get_id ()) in 
-  Obj.set_tag (Obj.repr v) 248 (* Obj.object_tag*);
-  v 
-
-(** It could be either customized exception or built in exception *)
-let isCamlException e = 
-  let slot = Obj.field e 0 in 
-  not (Js.Undefined.testAny slot) &&
-  (Obj.tag slot = 248
-   || (Js.typeof (Obj.field slot 0) == "string"))
+(** Raise Js exception Error object with stacktrace *)
+val error : string -> 'a
+val evalError : string -> 'a
+val rangeError : string -> 'a
+val referenceError :  string -> 'a
+val syntaxError : string -> 'a
+val typeError : string -> 'a
+val uriError :  string -> 'a
