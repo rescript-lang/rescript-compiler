@@ -95,6 +95,9 @@ external object_ : t Js_dict.t -> t = "%identity"
 (** [object_ dict] makes a JSON objet of the [Js.Dict.t] [dict] *)
 
 external array_ : t array -> t = "%identity"
+[@@ocaml.deprecated "please use Js.Json.array instead "]
+
+external array : t array -> t = "%identity"
 (** [array_ a] makes a JSON array of the [Js.Json.t array] [a] *)
 
 (** The functions below are specialized for specific array type which 
@@ -116,6 +119,9 @@ external objectArray : t Js_dict.t array -> t = "%identity"
 (** {2 String conversion} *)
 
 external parse : string -> t = "JSON.parse" [@@bs.val]
+[@@ocaml.deprecated "Plase use {!Js.Json.exnParse} instead"]
+
+external exnParse : string -> t = "JSON.parse" [@@bs.val]
 (** [parse s] parses the string [s] into a JSON data structure
 
 {b Returns} a JSON data structure

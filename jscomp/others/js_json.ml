@@ -94,6 +94,9 @@ let decodeNull json =
   else None 
 
 external parse : string -> t = "JSON.parse" [@@bs.val]
+
+external exnParse : string -> t = "JSON.parse" [@@bs.val]
+
 external stringifyAny : 'a -> string option = "JSON.stringify" [@@bs.val] [@@bs.return undefined_to_opt]
 (* TODO: more docs when parse error happens or stringify non-stringfy value *)
 
@@ -102,7 +105,10 @@ external string : string -> t = "%identity"
 external number : float -> t = "%identity"
 external boolean : Js.boolean -> t = "%identity" 
 external object_ : t Js_dict.t -> t = "%identity"
+
 external array_ : t array -> t = "%identity"
+
+external array : t array -> t = "%identity"
 external stringArray : string array -> t = "%identity"
 external numberArray : float array -> t = "%identity"
 external booleanArray : Js.boolean array -> t = "%identity"
