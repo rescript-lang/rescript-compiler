@@ -33,6 +33,7 @@
 <li><a href="Caml_io.html">Caml_io</a></li>
 <li><a href="Caml_lexer.html">Caml_lexer</a></li>
 <li><a href="Caml_md5.html">Caml_md5</a></li>
+<li><a href="Caml_missing_polyfill.html">Caml_missing_polyfill</a></li>
 <li><a href="Caml_module.html">Caml_module</a></li>
 <li><a href="Caml_obj.html">Caml_obj</a></li>
 <li><a href="Caml_oo.html">Caml_oo</a></li>
@@ -52,6 +53,7 @@
 <li><a href="Js_cast.html">Js_cast</a></li>
 <li><a href="Js_date.html">Js_date</a></li>
 <li><a href="Js_dict.html">Js_dict</a></li>
+<li><a href="Js_exn.html">Js_exn</a></li>
 <li><a href="Js_float.html">Js_float</a></li>
 <li><a href="Js_global.html">Js_global</a></li>
 <li><a href="Js_int.html">Js_int</a></li>
@@ -235,11 +237,13 @@ hyperbolic arccosine in raidans, can return NaN, ES2015
 <td></td></tr>
 <tr><td><a href="Curry.html#VALapply_args">apply_args</a> [<a href="Curry.html">Curry</a>]</td>
 <td></td></tr>
-<tr><td><a href="Js_json.html#VALarray_">array_</a> [<a href="Js_json.html">Js_json</a>]</td>
+<tr><td><a href="Js_json.html#VALarray">array</a> [<a href="Js_json.html">Js_json</a>]</td>
 <td><div class="info">
 <code class="code">array_ a</code> makes a JSON array of the <code class="code">Js.Json.t array</code> <code class="code">a</code>
 </div>
 </td></tr>
+<tr><td><a href="Js_json.html#VALarray_">array_</a> [<a href="Js_json.html">Js_json</a>]</td>
+<td></td></tr>
 <tr><td><a href="Bs_dyn.html#VALarray_to_value">array_to_value</a> [<a href="Bs_dyn.html">Bs_dyn</a>]</td>
 <td><div class="info">
 Make sure <code class="code">value_of*</code> below are  always fully applied
@@ -778,6 +782,13 @@ ES2015
 </td></tr>
 <tr><td><a href="Caml_int64.html#VALeq">eq</a> [<a href="Caml_int64.html">Caml_int64</a>]</td>
 <td></td></tr>
+<tr><td><a href="Js_exn.html#VALerror">error</a> [<a href="Js_exn.html">Js_exn</a>]</td>
+<td><div class="info">
+Raise Js exception Error object with stacktrace
+</div>
+</td></tr>
+<tr><td><a href="Js_exn.html#VALevalError">evalError</a> [<a href="Js_exn.html">Js_exn</a>]</td>
+<td></td></tr>
 <tr><td><a href="Js_typed_array.TypedArray.html#VALevery">every</a> [<a href="Js_typed_array.TypedArray.html">Js_typed_array.TypedArray</a>]</td>
 <td></td></tr>
 <tr><td><a href="Js_array.html#VALevery">every</a> [<a href="Js_array.html">Js_array</a>]</td>
@@ -797,6 +808,11 @@ executes a search on a given string using the given RegExp object
 <td></td></tr>
 <tr><td><a href="Node_process.html#VALexit">exit</a> [<a href="Node_process.html">Node_process</a>]</td>
 <td></td></tr>
+<tr><td><a href="Js_json.html#VALexnParse">exnParse</a> [<a href="Js_json.html">Js_json</a>]</td>
+<td><div class="info">
+<code class="code">parse s</code> parses the string <code class="code">s</code> into a JSON data structure
+</div>
+</td></tr>
 <tr><td><a href="Js_float.html#VALexp">exp</a> [<a href="Js_float.html">Js_float</a>]</td>
 <td><div class="info">
 <span class="deprecated"></span></div>
@@ -1406,6 +1422,11 @@ the original input string
 </td></tr>
 <tr><td><a href="Bs_dyn.html#VALint_to_value">int_to_value</a> [<a href="Bs_dyn.html">Bs_dyn</a>]</td>
 <td></td></tr>
+<tr><td><a href="Js_exn.html#VALinternalToOCamlException">internalToOCamlException</a> [<a href="Js_exn.html">Js_exn</a>]</td>
+<td><div class="info">
+Used by the compiler internally
+</div>
+</td></tr>
 <tr><td><a href="Caml_builtin_exceptions.html#VALinvalid_argument">invalid_argument</a> [<a href="Caml_builtin_exceptions.html">Caml_builtin_exceptions</a>]</td>
 <td></td></tr>
 <tr><td><a href="Node_path.html#VALisAbsolute">isAbsolute</a> [<a href="Node_path.html">Node_path</a>]</td>
@@ -1417,6 +1438,11 @@ ES2015
 </td></tr>
 <tr><td><a href="Node_buffer.html#VALisBuffer">isBuffer</a> [<a href="Node_buffer.html">Node_buffer</a>]</td>
 <td></td></tr>
+<tr><td><a href="Caml_exceptions.html#VALisCamlException">isCamlException</a> [<a href="Caml_exceptions.html">Caml_exceptions</a>]</td>
+<td><div class="info">
+It could be either customized exception or built in exception
+</div>
+</td></tr>
 <tr><td><a href="Js_float.html#VALisFinite">isFinite</a> [<a href="Js_float.html">Js_float</a>]</td>
 <td><div class="info">
 Tests if the given value is finite
@@ -1750,6 +1776,8 @@ ES2015
 <td></td></tr>
 <tr><td><a href="Caml_builtin_exceptions.html#VALnot_found">not_found</a> [<a href="Caml_builtin_exceptions.html">Caml_builtin_exceptions</a>]</td>
 <td></td></tr>
+<tr><td><a href="Caml_missing_polyfill.html#VALnot_implemented">not_implemented</a> [<a href="Caml_missing_polyfill.html">Caml_missing_polyfill</a>]</td>
+<td></td></tr>
 <tr><td><a href="Js_date.html#VALnow">now</a> [<a href="Js_date.html">Js_date</a>]</td>
 <td></td></tr>
 <tr><td><a href="Js_json.html#VALnull">null</a> [<a href="Js_json.html">Js_json</a>]</td>
@@ -1839,10 +1867,7 @@ there is no need to accept listener, since we return a <code class="code">watche
 <tr><td><a href="Node_path.html#VALparse">parse</a> [<a href="Node_path.html">Node_path</a>]</td>
 <td></td></tr>
 <tr><td><a href="Js_json.html#VALparse">parse</a> [<a href="Js_json.html">Js_json</a>]</td>
-<td><div class="info">
-<code class="code">parse s</code> parses the string <code class="code">s</code> into a JSON data structure
-</div>
-</td></tr>
+<td></td></tr>
 <tr><td><a href="Js_date.html#VALparse">parse</a> [<a href="Js_date.html">Js_date</a>]</td>
 <td></td></tr>
 <tr><td><a href="Js_array.html#VALpop">pop</a> [<a href="Js_array.html">Js_array</a>]</td>
@@ -1883,6 +1908,8 @@ random number in [0,1)
 random number in [min,max)
 </div>
 </td></tr>
+<tr><td><a href="Js_exn.html#VALrangeError">rangeError</a> [<a href="Js_exn.html">Js_exn</a>]</td>
+<td></td></tr>
 <tr><td><a href="Js_unsafe.html#VALraw_expr">raw_expr</a> [<a href="Js_unsafe.html">Js_unsafe</a>]</td>
 <td></td></tr>
 <tr><td><a href="Js_unsafe.html#VALraw_stmt">raw_stmt</a> [<a href="Js_unsafe.html">Js_unsafe</a>]</td>
@@ -1915,6 +1942,8 @@ Most fs functions let you omit the callback argument.
 <tr><td><a href="Js_typed_array.TypedArray.html#VALreducei">reducei</a> [<a href="Js_typed_array.TypedArray.html">Js_typed_array.TypedArray</a>]</td>
 <td></td></tr>
 <tr><td><a href="Js_array.html#VALreducei">reducei</a> [<a href="Js_array.html">Js_array</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_exn.html#VALreferenceError">referenceError</a> [<a href="Js_exn.html">Js_exn</a>]</td>
 <td></td></tr>
 <tr><td><a href="Js_json.html#VALreifyType">reifyType</a> [<a href="Js_json.html">Js_json</a>]</td>
 <td><div class="info">
@@ -2194,6 +2223,8 @@ returns the pattern as a string
 square root, can return NaN
 </div>
 </td></tr>
+<tr><td><a href="Js_exn.html#VALstack">stack</a> [<a href="Js_exn.html">Js_exn</a>]</td>
+<td></td></tr>
 <tr><td><a href="Caml_builtin_exceptions.html#VALstack_overflow">stack_overflow</a> [<a href="Caml_builtin_exceptions.html">Caml_builtin_exceptions</a>]</td>
 <td></td></tr>
 <tr><td><a href="Js_string.html#VALstartsWith">startsWith</a> [<a href="Js_string.html">Js_string</a>]</td>
@@ -2252,6 +2283,8 @@ returns a bool indicating whether the <code class="code">sticky</code> flag is s
 <td></td></tr>
 <tr><td><a href="Caml_int64.html#VALswap">swap</a> [<a href="Caml_int64.html">Caml_int64</a>]</td>
 <td></td></tr>
+<tr><td><a href="Js_exn.html#VALsyntaxError">syntaxError</a> [<a href="Js_exn.html">Js_exn</a>]</td>
+<td></td></tr>
 <tr><td><a href="Caml_builtin_exceptions.html#VALsys_blocked_io">sys_blocked_io</a> [<a href="Caml_builtin_exceptions.html">Caml_builtin_exceptions</a>]</td>
 <td></td></tr>
 <tr><td><a href="Caml_builtin_exceptions.html#VALsys_error">sys_error</a> [<a href="Caml_builtin_exceptions.html">Caml_builtin_exceptions</a>]</td>
@@ -2305,6 +2338,10 @@ Returns <code class="code">true</code> if the given value is <code class="code">
 <tr><td><a href="Js_null.html#VALtest">test</a> [<a href="Js_null.html">Js_null</a>]</td>
 <td><div class="info">
 Returns <code class="code">true</code> if the given value is <code class="code">empty</code> (<code class="code">null</code>), <code class="code">false</code> otherwise
+</div>
+</td></tr>
+<tr><td><a href="Js_undefined.html#VALtestAny">testAny</a> [<a href="Js_undefined.html">Js_undefined</a>]</td>
+<td><div class="info">
 </div>
 </td></tr>
 <tr><td><a href="Js_date.html#VALtoDateString">toDateString</a> [<a href="Js_date.html">Js_date</a>]</td>
@@ -2479,6 +2516,8 @@ truncate, ie.
 <td></td></tr>
 <tr><td><a href="Bs_dyn.html#VALtuple_6_to_value">tuple_6_to_value</a> [<a href="Bs_dyn.html">Bs_dyn</a>]</td>
 <td></td></tr>
+<tr><td><a href="Js_exn.html#VALtypeError">typeError</a> [<a href="Js_exn.html">Js_exn</a>]</td>
+<td></td></tr>
 <tr><td><a href="Js.html#VALtypeof">typeof</a> [<a href="Js.html">Js</a>]</td>
 <td><div class="info">
 <code class="code">typeof x</code> will be compiled as <code class="code">typeof x</code> in JS
@@ -2598,6 +2637,8 @@ truncate, ie.
 <tr><td><a href="Js_array.html#VALunshiftMany">unshiftMany</a> [<a href="Js_array.html">Js_array</a>]</td>
 <td></td></tr>
 <tr><td><a href="Caml_module.html#VALupdate_mod">update_mod</a> [<a href="Caml_module.html">Caml_module</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_exn.html#VALuriError">uriError</a> [<a href="Js_exn.html">Js_exn</a>]</td>
 <td></td></tr>
 <tr><td><a href="Js_date.html#VALutcWithYM">utcWithYM</a> [<a href="Js_date.html">Js_date</a>]</td>
 <td></td></tr>

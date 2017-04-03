@@ -36,6 +36,7 @@
 <li><a href="Caml_io.html">Caml_io</a></li>
 <li><a href="Caml_lexer.html">Caml_lexer</a></li>
 <li><a href="Caml_md5.html">Caml_md5</a></li>
+<li><a href="Caml_missing_polyfill.html">Caml_missing_polyfill</a></li>
 <li><a href="Caml_module.html">Caml_module</a></li>
 <li><a href="Caml_obj.html">Caml_obj</a></li>
 <li><a href="Caml_oo.html">Caml_oo</a></li>
@@ -55,6 +56,7 @@
 <li><a href="Js_cast.html">Js_cast</a></li>
 <li><a href="Js_date.html">Js_date</a></li>
 <li><a href="Js_dict.html">Js_dict</a></li>
+<li><a href="Js_exn.html">Js_exn</a></li>
 <li><a href="Js_float.html">Js_float</a></li>
 <li><a href="Js_global.html">Js_global</a></li>
 <li><a href="Js_int.html">Js_int</a></li>
@@ -262,7 +264,8 @@ Underlying type of a JSON value<br>
 </div>
 </div>
 
-<pre><span id="VALarray_"><span class="keyword">val</span> array_</span> : <code class="type"><a href="Js_json.html#TYPEt">t</a> array -> <a href="Js_json.html#TYPEt">t</a></code></pre><div class="info ">
+<pre><span id="VALarray_"><span class="keyword">val</span> array_</span> : <code class="type"><a href="Js_json.html#TYPEt">t</a> array -> <a href="Js_json.html#TYPEt">t</a></code></pre>
+<pre><span id="VALarray"><span class="keyword">val</span> array</span> : <code class="type"><a href="Js_json.html#TYPEt">t</a> array -> <a href="Js_json.html#TYPEt">t</a></code></pre><div class="info ">
 <div class="not-examples">
 <code class="code">array_ a</code> makes a JSON array of the <code class="code">Js.Json.t array</code> <code class="code">a</code><br>
 </div>
@@ -302,7 +305,8 @@ Underlying type of a JSON value<br>
 </div>
 </div>
 
-<pre><span id="VALparse"><span class="keyword">val</span> parse</span> : <code class="type">string -> <a href="Js_json.html#TYPEt">t</a></code></pre><div class="info ">
+<pre><span id="VALparse"><span class="keyword">val</span> parse</span> : <code class="type">string -> <a href="Js_json.html#TYPEt">t</a></code></pre>
+<pre><span id="VALexnParse"><span class="keyword">val</span> exnParse</span> : <code class="type">string -> <a href="Js_json.html#TYPEt">t</a></code></pre><div class="info ">
 <div class="not-examples">
 <code class="code">parse s</code> parses the string <code class="code">s</code> into a JSON data structure
 <p>
