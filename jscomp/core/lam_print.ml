@@ -165,8 +165,8 @@ let primitive ppf (prim : Lam.primitive) = match prim with
   | Plslint -> fprintf ppf "lsl"
   | Plsrint -> fprintf ppf "lsr"
   | Pasrint -> fprintf ppf "asr"
-  | Pintcomp(Ceq) -> fprintf ppf "=="
-  | Pintcomp(Cneq) -> fprintf ppf "!="
+  | Pintcomp(Ceq) -> fprintf ppf "==[int]"
+  | Pintcomp(Cneq) -> fprintf ppf "!=[int]"
   | Pintcomp(Clt) -> fprintf ppf "<"
   | Pintcomp(Cle) -> fprintf ppf "<="
   | Pintcomp(Cgt) -> fprintf ppf ">"
@@ -235,7 +235,7 @@ let primitive ppf (prim : Lam.primitive) = match prim with
   | Plslbint bi -> print_boxed_integer "lsl" ppf bi
   | Plsrbint bi -> print_boxed_integer "lsr" ppf bi
   | Pasrbint bi -> print_boxed_integer "asr" ppf bi
-  | Pbintcomp(bi, Ceq) -> print_boxed_integer "==" ppf bi
+  | Pbintcomp(bi, Ceq) -> print_boxed_integer "==[bint]" ppf bi
   | Pbintcomp(bi, Cneq) -> print_boxed_integer "!=" ppf bi
   | Pbintcomp(bi, Clt) -> print_boxed_integer "<" ppf bi
   | Pbintcomp(bi, Cgt) -> print_boxed_integer ">" ppf bi

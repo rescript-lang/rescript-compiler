@@ -2,6 +2,7 @@
 
 var Mt                      = require("./mt.js");
 var Block                   = require("../../lib/js/block.js");
+var Js_exn                  = require("../../lib/js/js_exn.js");
 var Caml_obj                = require("../../lib/js/caml_obj.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
@@ -14,7 +15,8 @@ try {
         return x + 2 | 0;
       });
 }
-catch (exn){
+catch (raw_exn){
+  var exn = Js_exn.internalToOCamlException(raw_exn);
   function_equal_test = exn[0] === Caml_builtin_exceptions.invalid_argument && exn[1] === "equal: functional value" ? /* true */1 : /* false */0;
 }
 

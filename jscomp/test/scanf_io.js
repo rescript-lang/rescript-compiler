@@ -7,6 +7,7 @@ var Curry                   = require("../../lib/js/curry.js");
 var Scanf                   = require("../../lib/js/scanf.js");
 var Buffer                  = require("../../lib/js/buffer.js");
 var Digest                  = require("../../lib/js/digest.js");
+var Js_exn                  = require("../../lib/js/js_exn.js");
 var Printf                  = require("../../lib/js/printf.js");
 var Caml_io                 = require("../../lib/js/caml_io.js");
 var Caml_obj                = require("../../lib/js/caml_obj.js");
@@ -92,7 +93,8 @@ function get_lines(fname) {
     };
     return List.rev(l[0]);
   }
-  catch (exn){
+  catch (raw_exn){
+    var exn = Js_exn.internalToOCamlException(raw_exn);
     if (exn[0] === Scanf.Scan_failure) {
       var s = Curry._2(Printf.sprintf(/* Format */[
                 /* String_literal */Block.__(11, [
