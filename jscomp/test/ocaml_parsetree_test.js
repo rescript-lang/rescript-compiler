@@ -11,6 +11,7 @@ var Bytes                   = require("../../lib/js/bytes.js");
 var Curry                   = require("../../lib/js/curry.js");
 var Buffer                  = require("../../lib/js/buffer.js");
 var Format                  = require("../../lib/js/format.js");
+var Js_exn                  = require("../../lib/js/js_exn.js");
 var Lexing                  = require("../../lib/js/lexing.js");
 var Printf                  = require("../../lib/js/printf.js");
 var $$String                = require("../../lib/js/string.js");
@@ -10831,7 +10832,8 @@ function token(lexbuf) {
             try {
               return /* INT */Block.__(7, [cvt_int_literal(Lexing.lexeme(lexbuf$1))]);
             }
-            catch (exn$1){
+            catch (raw_exn){
+              var exn$1 = Js_exn.internalToOCamlException(raw_exn);
               if (exn$1[0] === Caml_builtin_exceptions.failure) {
                 throw [
                       $$Error$2,
@@ -10849,7 +10851,8 @@ function token(lexbuf) {
             try {
               return /* INT32 */Block.__(8, [cvt_int32_literal(Lexing.lexeme(lexbuf$1))]);
             }
-            catch (exn$2){
+            catch (raw_exn$1){
+              var exn$2 = Js_exn.internalToOCamlException(raw_exn$1);
               if (exn$2[0] === Caml_builtin_exceptions.failure) {
                 throw [
                       $$Error$2,
@@ -10865,7 +10868,8 @@ function token(lexbuf) {
             try {
               return /* INT64 */Block.__(9, [cvt_int64_literal(Lexing.lexeme(lexbuf$1))]);
             }
-            catch (exn$3){
+            catch (raw_exn$2){
+              var exn$3 = Js_exn.internalToOCamlException(raw_exn$2);
               if (exn$3[0] === Caml_builtin_exceptions.failure) {
                 throw [
                       $$Error$2,
@@ -10881,7 +10885,8 @@ function token(lexbuf) {
             try {
               return /* NATIVEINT */Block.__(12, [cvt_nativeint_literal(Lexing.lexeme(lexbuf$1))]);
             }
-            catch (exn$4){
+            catch (raw_exn$3){
+              var exn$4 = Js_exn.internalToOCamlException(raw_exn$3);
               if (exn$4[0] === Caml_builtin_exceptions.failure) {
                 throw [
                       $$Error$2,
@@ -11251,7 +11256,8 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
             try {
               string(lexbuf);
             }
-            catch (exn){
+            catch (raw_exn){
+              var exn = Js_exn.internalToOCamlException(raw_exn);
               if (exn[0] === $$Error$2) {
                 var match$1 = exn[1];
                 if (typeof match$1 === "number") {
@@ -11301,7 +11307,8 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
             try {
               __ocaml_lex_quoted_string_rec(delim$1, lexbuf, 183);
             }
-            catch (exn$1){
+            catch (raw_exn$1){
+              var exn$1 = Js_exn.internalToOCamlException(raw_exn$1);
               if (exn$1[0] === $$Error$2) {
                 var match$3 = exn$1[1];
                 if (typeof match$3 === "number") {
@@ -11810,7 +11817,8 @@ function skip_phrase(lexbuf) {
         
       }
     }
-    catch (exn){
+    catch (raw_exn){
+      var exn = Js_exn.internalToOCamlException(raw_exn);
       if (exn[0] === $$Error$2) {
         var $js = exn[1];
         if (typeof $js === "number") {
@@ -11854,7 +11862,8 @@ function wrap(parsing_fun, lexbuf) {
     warn_bad_docstrings(/* () */0);
     return ast;
   }
-  catch (err){
+  catch (raw_err){
+    var err = Js_exn.internalToOCamlException(raw_err);
     var exit = 0;
     var exit$1 = 0;
     if (err[0] === $$Error$2) {

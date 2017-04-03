@@ -3,7 +3,7 @@
 
 
 let test_js_error () = 
-  match Js.Json.parse {| {"x" : }|} with
+  match Js.Json.exnParse {| {"x" : }|} with
   | (exception
     Js.Exn.Error err ) ->
     Js.log @@ Js.Exn.stack err;
@@ -12,10 +12,21 @@ let test_js_error () =
 
 
 let test_js_error2 () = 
-  try Js.Json.parse {| {"x" : }|} with
+  try Js.Json.exnParse {| {"x" : }|} with
   |(Js.Exn.Error err ) as e ->
     Js.log @@ Js.Exn.stack err;
     raise e
+
+let example1 () = 
+    match Js.Json.exnParse {| {"x"  }|} with 
+    | exception Js.Exn.Error err -> 
+        Js.log @@ err##stack;
+        None
+    | v -> Some v 
+
+let example2 () = 
+    try Some (Js.Json.exnParse {| {"x"}|}) with 
+    Js.Exn.Error _ -> None        
 
 (*let () = 
   Js.log @@ test_js_error () 

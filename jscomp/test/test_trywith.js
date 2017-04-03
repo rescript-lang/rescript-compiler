@@ -1,6 +1,7 @@
 'use strict';
 
 var Curry                   = require("../../lib/js/curry.js");
+var Js_exn                  = require("../../lib/js/js_exn.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function ff(g, x) {
@@ -25,7 +26,8 @@ function ff(g, x) {
   try {
     Curry._1(g, x);
   }
-  catch (exn$2){
+  catch (raw_exn){
+    var exn$2 = Js_exn.internalToOCamlException(raw_exn);
     if (exn$2[0] !== Caml_builtin_exceptions.sys_error) {
       throw exn$2;
     }
@@ -34,7 +36,8 @@ function ff(g, x) {
   try {
     Curry._1(g, x);
   }
-  catch (exn$3){
+  catch (raw_exn$1){
+    var exn$3 = Js_exn.internalToOCamlException(raw_exn$1);
     if (exn$3[0] !== Caml_builtin_exceptions.invalid_argument) {
       throw exn$3;
     }
@@ -52,7 +55,8 @@ function ff(g, x) {
   try {
     Curry._1(g, x);
   }
-  catch (exn$5){
+  catch (raw_exn$2){
+    var exn$5 = Js_exn.internalToOCamlException(raw_exn$2);
     if (exn$5[0] !== Caml_builtin_exceptions.match_failure) {
       throw exn$5;
     }
@@ -79,7 +83,8 @@ function ff(g, x) {
   try {
     Curry._1(g, x);
   }
-  catch (exn$8){
+  catch (raw_exn$3){
+    var exn$8 = Js_exn.internalToOCamlException(raw_exn$3);
     if (exn$8[0] !== Caml_builtin_exceptions.assert_failure) {
       throw exn$8;
     }
@@ -88,7 +93,8 @@ function ff(g, x) {
   try {
     return Curry._1(g, x);
   }
-  catch (exn$9){
+  catch (raw_exn$4){
+    var exn$9 = Js_exn.internalToOCamlException(raw_exn$4);
     if (exn$9[0] === Caml_builtin_exceptions.undefined_recursive_module) {
       return /* () */0;
     } else {

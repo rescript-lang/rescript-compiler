@@ -10,3 +10,6 @@ let test_js_error4 () =
   | B -> 5  
   | C (1,2) -> 6
   | e -> 7
+
+let f g = 
+  try g () with Not_found -> 1 

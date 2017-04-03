@@ -8,6 +8,7 @@ var Bytes                   = require("../../lib/js/bytes.js");
 var Curry                   = require("../../lib/js/curry.js");
 var Buffer                  = require("../../lib/js/buffer.js");
 var Format                  = require("../../lib/js/format.js");
+var Js_exn                  = require("../../lib/js/js_exn.js");
 var Printf                  = require("../../lib/js/printf.js");
 var $$String                = require("../../lib/js/string.js");
 var Caml_io                 = require("../../lib/js/caml_io.js");
@@ -26,7 +27,8 @@ function _with_in(filename, f) {
     Caml_missing_polyfill.not_implemented("caml_ml_close_channel not implemented by bucklescript yet\n");
     return x;
   }
-  catch (e){
+  catch (raw_e){
+    var e = Js_exn.internalToOCamlException(raw_e);
     Caml_missing_polyfill.not_implemented("caml_ml_close_channel not implemented by bucklescript yet\n");
     return /* `Error */[
             106380200,

@@ -248,6 +248,25 @@ function dump(r) {
 
 var dump$1 = dump;
 
+function pp_any(fmt, v) {
+  return Curry._1(Format.fprintf(fmt, /* Format */[
+                  /* Formatting_gen */Block.__(18, [
+                      /* Open_box */Block.__(1, [/* Format */[
+                            /* End_of_format */0,
+                            ""
+                          ]]),
+                      /* String */Block.__(2, [
+                          /* No_padding */0,
+                          /* Formatting_lit */Block.__(17, [
+                              /* Close_box */0,
+                              /* End_of_format */0
+                            ])
+                        ])
+                    ]),
+                  "@[%s@]"
+                ]), dump$1(v));
+}
+
 function hash_variant(s) {
   var accu = 0;
   for(var i = 0 ,i_finish = s.length - 1 | 0; i <= i_finish; ++i){
@@ -269,5 +288,6 @@ exports.failwithf         = failwithf;
 exports.invalid_argf      = invalid_argf;
 exports.bad_argf          = bad_argf;
 exports.dump              = dump$1;
+exports.pp_any            = pp_any;
 exports.hash_variant      = hash_variant;
 /* Format Not a pure module */

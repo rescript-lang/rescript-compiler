@@ -586,6 +586,77 @@ let hit_any_variables (fv : Ident_set.t) l : bool  =
     end;
   in hit l
 
+(** A conservative approach to avoid packing exceptions *)
+let exception_id_destructed (fv : Ident.t) l : bool  =
+  let rec hit (l : t) =
+    begin
+      match (l : t) with 
+      | Lvar id ->
+        Ext_log.dwarn __LOC__ "[HIT]%s/%d@." id.name id.stamp ; 
+        Ident.same id fv       
+      | Lassign(id, e) ->
+        Ident.same id fv || hit e
+      | Lstaticcatch(e1, (_,vars), e2) ->
+        hit e1 || hit e2
+      | Ltrywith(e1, exn, e2) ->
+        hit e1 || hit e2
+      | Lfunction{body;params} ->
+        hit body;
+      | Llet(str, id, arg, body) ->
+        hit arg || hit body
+      | Lletrec(decl, body) ->
+        hit body ||
+        List.exists (fun (id, exp) -> hit exp) decl
+      | Lfor(v, e1, e2, dir, e3) ->
+        hit e1 || hit e2 || hit e3
+      | Lconst _ -> false 
+      | Lapply{fn; args; _} ->
+        hit fn || List.exists hit args
+      | Lglobal_module _  (* global persistent module, play safe *)
+        -> false        
+      | Lprim {primitive = Pintcomp _ ; 
+        args = ([x;y ])  } ->    
+        begin match x,y with 
+        | Lvar _, Lvar _ -> false 
+        | Lvar _, _ -> hit y 
+        | _, Lvar _ -> hit x 
+        | _, _  -> hit x || hit y 
+        end      
+      | Lprim {primitive = Praise ; args = [Lvar _]} -> false 
+      | Lprim {primitive ; args; _} ->
+        (*Ext_log.dwarn __LOC__ "[FUCKPRIMITIVE]%a@." 
+        Ext_pervasives.pp_any primitive; *)
+        List.exists hit args
+      | Lswitch(arg, sw) ->
+        hit arg ||
+        List.exists (fun (key, case) -> hit case) sw.sw_consts ||
+        List.exists (fun (key, case) -> hit case) sw.sw_blocks ||
+        begin match sw.sw_failaction with 
+          | None -> false
+          | Some a -> hit a 
+        end
+      | Lstringswitch (arg,cases,default) ->
+        hit arg ||
+        List.exists (fun (_,act) -> hit act) cases ||
+        begin match default with 
+          | None -> false
+          | Some a -> hit a 
+        end
+      | Lstaticraise (_,args) ->
+        List.exists hit args
+      | Lifthenelse(e1, e2, e3) ->
+        hit e1 || hit e2 || hit e3
+      | Lsequence(e1, e2) ->
+        hit e1 || hit e2
+      | Lwhile(e1, e2) ->
+        hit e1 || hit e2
+      | Lsend (k, met, obj, args, _) ->
+        hit met || hit obj || List.exists hit args 
+      | Lifused (v, e) ->
+        hit e
+    end;
+  in hit l  
+
 let hit_mask (fv : Hash_set_ident_mask.t) l =
   let rec hit (l : t) =
     begin
@@ -1894,18 +1965,17 @@ let convert exports lam : _ * _  =
     | Lstaticcatch (b, (i, ids), handler) -> 
       Lstaticcatch (aux b, (i,ids), aux handler)
     | Ltrywith (b, id, handler) ->
-      (** TODO:
-          2. Check some optimizations
-      *)
-      (*let newId = Ident.rename id in 
       let body = aux b in 
       let handler = aux handler in 
-      Ltrywith (body, newId, 
+      if exception_id_destructed id handler then 
+       let newId = Ident.create ("raw_" ^ id.name) in 
+        Ltrywith (body, newId, 
                 let_ StrictOpt id 
                   (prim ~primitive:Pwrap_exn ~args:[var newId] Location.none)
                   handler
-               ) *)
-       Ltrywith (aux b, id, aux handler)       
+               ) 
+      else 
+       Ltrywith( body, id, handler)
     | Lifthenelse (b,then_,else_) -> 
       Lifthenelse (aux b, aux then_, aux else_)
     | Lsequence (a,b) 
@@ -1928,7 +1998,6 @@ let convert exports lam : _ * _  =
             | _ -> assert false 
           end
         | b ->     
-          (* Format.fprintf Format.err_formatter "weird: %d@." (Obj.tag (Obj.repr b));  *)
           Lsend(kind, aux a,  b, List.map aux ls, loc )
       end
     | Levent (e, event) ->

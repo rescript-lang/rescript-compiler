@@ -1,5 +1,7 @@
 'use strict';
 
+var Curry                   = require("../../lib/js/curry.js");
+var Js_exn                  = require("../../lib/js/js_exn.js");
 var Caml_exceptions         = require("../../lib/js/caml_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
@@ -14,7 +16,8 @@ function test_js_error4() {
     JSON.parse(" {\"x\"}");
     return 1;
   }
-  catch (e){
+  catch (raw_e){
+    var e = Js_exn.internalToOCamlException(raw_e);
     var exit = 0;
     if (e === Caml_builtin_exceptions.not_found) {
       return 2;
@@ -52,8 +55,22 @@ function test_js_error4() {
   }
 }
 
+function f(g) {
+  try {
+    return Curry._1(g, /* () */0);
+  }
+  catch (exn){
+    if (exn === Caml_builtin_exceptions.not_found) {
+      return 1;
+    } else {
+      throw exn;
+    }
+  }
+}
+
 exports.A              = A;
 exports.B              = B;
 exports.C              = C;
 exports.test_js_error4 = test_js_error4;
+exports.f              = f;
 /* No side effect */

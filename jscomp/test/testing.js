@@ -3,6 +3,7 @@
 var Block                   = require("../../lib/js/block.js");
 var Curry                   = require("../../lib/js/curry.js");
 var Scanf                   = require("../../lib/js/scanf.js");
+var Js_exn                  = require("../../lib/js/js_exn.js");
 var Printf                  = require("../../lib/js/printf.js");
 var Caml_io                 = require("../../lib/js/caml_io.js");
 var Caml_obj                = require("../../lib/js/caml_obj.js");
@@ -103,7 +104,8 @@ function test_raises_exc_p(pred, f, x) {
     print_failure_test_succeed(/* () */0);
     return /* false */0;
   }
-  catch (x$1){
+  catch (raw_x){
+    var x$1 = Js_exn.internalToOCamlException(raw_x);
     if (Curry._1(pred, x$1)) {
       return /* true */1;
     } else {
