@@ -11,6 +11,7 @@ var Bytes                   = require("../../lib/js/bytes.js");
 var Curry                   = require("../../lib/js/curry.js");
 var Buffer                  = require("../../lib/js/buffer.js");
 var Format                  = require("../../lib/js/format.js");
+var Js_exn                  = require("../../lib/js/js_exn.js");
 var Lexing                  = require("../../lib/js/lexing.js");
 var Printf                  = require("../../lib/js/printf.js");
 var $$String                = require("../../lib/js/string.js");
@@ -33,6 +34,17 @@ var Caml_exceptions         = require("../../lib/js/caml_exceptions.js");
 var CamlinternalLazy        = require("../../lib/js/camlinternalLazy.js");
 var Caml_missing_polyfill   = require("../../lib/js/caml_missing_polyfill.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
+
+try {
+  Caml_sys.caml_sys_getenv("BSLIB");
+}
+catch (exn){
+  var exn$1 = Js_exn.internalToOCamlException(exn);
+  if (exn$1 !== Caml_builtin_exceptions.not_found) {
+    throw exn$1;
+  }
+  
+}
 
 var fast = [/* false */0];
 
@@ -162,10 +174,11 @@ function set_color_tag_handling(ppf) {
       }
     }
     catch (exn){
-      if (exn === Caml_builtin_exceptions.not_found) {
+      var exn$1 = Js_exn.internalToOCamlException(exn);
+      if (exn$1 === Caml_builtin_exceptions.not_found) {
         return Curry._1(or_else, s);
       } else {
-        throw exn;
+        throw exn$1;
       }
     }
   };
@@ -184,10 +197,11 @@ function set_color_tag_handling(ppf) {
       }
     }
     catch (exn){
-      if (exn === Caml_builtin_exceptions.not_found) {
+      var exn$1 = Js_exn.internalToOCamlException(exn);
+      if (exn$1 === Caml_builtin_exceptions.not_found) {
         return Curry._1(or_else, s);
       } else {
-        throw exn;
+        throw exn$1;
       }
     }
   };
@@ -1378,10 +1392,11 @@ function highlight_locations(ppf, locs) {
             norepeat = +(Caml_sys.caml_sys_getenv("TERM") === "norepeat");
           }
           catch (exn){
-            if (exn === Caml_builtin_exceptions.not_found) {
+            var exn$1 = Js_exn.internalToOCamlException(exn);
+            if (exn$1 === Caml_builtin_exceptions.not_found) {
               norepeat = /* false */0;
             } else {
-              throw exn;
+              throw exn$1;
             }
           }
           if (norepeat) {
@@ -1392,11 +1407,12 @@ function highlight_locations(ppf, locs) {
               highlight_dumb(ppf, match$1[0], loc1);
               return /* true */1;
             }
-            catch (exn$1){
-              if (exn$1 === Pervasives.Exit) {
+            catch (exn$2){
+              var exn$3 = Js_exn.internalToOCamlException(exn$2);
+              if (exn$3 === Pervasives.Exit) {
                 return /* false */0;
               } else {
-                throw exn$1;
+                throw exn$3;
               }
             }
           }
@@ -1415,11 +1431,12 @@ function highlight_locations(ppf, locs) {
           highlight_terminfo(ppf, match[0], match$2[0], locs);
           return /* true */1;
         }
-        catch (exn$2){
-          if (exn$2 === Pervasives.Exit) {
+        catch (exn$4){
+          var exn$5 = Js_exn.internalToOCamlException(exn$4);
+          if (exn$5 === Pervasives.Exit) {
             return /* false */0;
           } else {
-            throw exn$2;
+            throw exn$5;
           }
         }
       } else {
@@ -2224,10 +2241,11 @@ function get_pre_docs(pos) {
     return get_docstring(/* false */0, dsl);
   }
   catch (exn){
-    if (exn === Caml_builtin_exceptions.not_found) {
+    var exn$1 = Js_exn.internalToOCamlException(exn);
+    if (exn$1 === Caml_builtin_exceptions.not_found) {
       return /* None */0;
     } else {
-      throw exn;
+      throw exn$1;
     }
   }
 }
@@ -2237,10 +2255,11 @@ function mark_pre_docs(pos) {
     return associate_docstrings(Hashtbl.find(pre_table, pos));
   }
   catch (exn){
-    if (exn === Caml_builtin_exceptions.not_found) {
+    var exn$1 = Js_exn.internalToOCamlException(exn);
+    if (exn$1 === Caml_builtin_exceptions.not_found) {
       return /* () */0;
     } else {
-      throw exn;
+      throw exn$1;
     }
   }
 }
@@ -2262,10 +2281,11 @@ function get_post_docs(pos) {
     return get_docstring(/* false */0, dsl);
   }
   catch (exn){
-    if (exn === Caml_builtin_exceptions.not_found) {
+    var exn$1 = Js_exn.internalToOCamlException(exn);
+    if (exn$1 === Caml_builtin_exceptions.not_found) {
       return /* None */0;
     } else {
-      throw exn;
+      throw exn$1;
     }
   }
 }
@@ -2275,10 +2295,11 @@ function mark_post_docs(pos) {
     return associate_docstrings(Hashtbl.find(post_table, pos));
   }
   catch (exn){
-    if (exn === Caml_builtin_exceptions.not_found) {
+    var exn$1 = Js_exn.internalToOCamlException(exn);
+    if (exn$1 === Caml_builtin_exceptions.not_found) {
       return /* () */0;
     } else {
-      throw exn;
+      throw exn$1;
     }
   }
 }
@@ -2289,10 +2310,11 @@ function get_info(pos) {
     return get_docstring(/* true */1, dsl);
   }
   catch (exn){
-    if (exn === Caml_builtin_exceptions.not_found) {
+    var exn$1 = Js_exn.internalToOCamlException(exn);
+    if (exn$1 === Caml_builtin_exceptions.not_found) {
       return /* None */0;
     } else {
-      throw exn;
+      throw exn$1;
     }
   }
 }
@@ -2312,10 +2334,11 @@ function get_text(pos) {
     return get_docstrings(Hashtbl.find(floating_table, pos));
   }
   catch (exn){
-    if (exn === Caml_builtin_exceptions.not_found) {
+    var exn$1 = Js_exn.internalToOCamlException(exn);
+    if (exn$1 === Caml_builtin_exceptions.not_found) {
       return /* [] */0;
     } else {
-      throw exn;
+      throw exn$1;
     }
   }
 }
@@ -2335,10 +2358,11 @@ function get_pre_extra_text(pos) {
     return get_docstrings(Hashtbl.find(pre_extra_table, pos));
   }
   catch (exn){
-    if (exn === Caml_builtin_exceptions.not_found) {
+    var exn$1 = Js_exn.internalToOCamlException(exn);
+    if (exn$1 === Caml_builtin_exceptions.not_found) {
       return /* [] */0;
     } else {
-      throw exn;
+      throw exn$1;
     }
   }
 }
@@ -2358,10 +2382,11 @@ function get_post_extra_text(pos) {
     return get_docstrings(Hashtbl.find(post_extra_table, pos));
   }
   catch (exn){
-    if (exn === Caml_builtin_exceptions.not_found) {
+    var exn$1 = Js_exn.internalToOCamlException(exn);
+    if (exn$1 === Caml_builtin_exceptions.not_found) {
       return /* [] */0;
     } else {
-      throw exn;
+      throw exn$1;
     }
   }
 }
@@ -9356,11 +9381,12 @@ try {
   i = Bytes.rindex(Caml_string.bytes_of_string(Sys.ocaml_version), /* "+" */43);
   exit = 1;
 }
-catch (exn){
-  if (exn === Caml_builtin_exceptions.not_found) {
+catch (exn$2){
+  var exn$3 = Js_exn.internalToOCamlException(exn$2);
+  if (exn$3 === Caml_builtin_exceptions.not_found) {
     $js = "";
   } else {
-    throw exn;
+    throw exn$3;
   }
 }
 
@@ -9451,34 +9477,36 @@ function query(_, str) {
     exit = 1;
   }
   catch (exn){
-    if (exn === Caml_builtin_exceptions.not_found) {
+    var exn$1 = Js_exn.internalToOCamlException(exn);
+    if (exn$1 === Caml_builtin_exceptions.not_found) {
       try {
         return Hashtbl.find(directive_built_in_values, str);
       }
-      catch (exn$1){
-        if (exn$1 === Caml_builtin_exceptions.not_found) {
+      catch (exn$2){
+        var exn$3 = Js_exn.internalToOCamlException(exn$2);
+        if (exn$3 === Caml_builtin_exceptions.not_found) {
           return /* Dir_bool */Block.__(0, [/* false */0]);
         } else {
-          throw exn$1;
+          throw exn$3;
         }
       }
     } else {
-      throw exn;
+      throw exn$1;
     }
   }
   if (exit === 1) {
     try {
       return /* Dir_bool */Block.__(0, [Pervasives.bool_of_string(v)]);
     }
-    catch (exn$2){
+    catch (exn$4){
       try {
         return /* Dir_int */Block.__(2, [Caml_format.caml_int_of_string(v)]);
       }
-      catch (exn$3){
+      catch (exn$5){
         try {
           return /* Dir_float */Block.__(1, [Caml_format.caml_float_of_string(v)]);
         }
-        catch (exn$4){
+        catch (exn$6){
           return /* Dir_string */Block.__(3, [v]);
         }
       }
@@ -10812,10 +10840,11 @@ function token(lexbuf) {
               return Hashtbl.find(keyword_table, s);
             }
             catch (exn){
-              if (exn === Caml_builtin_exceptions.not_found) {
+              var exn$1 = Js_exn.internalToOCamlException(exn);
+              if (exn$1 === Caml_builtin_exceptions.not_found) {
                 return /* LIDENT */Block.__(11, [s]);
               } else {
-                throw exn;
+                throw exn$1;
               }
             }
             break;
@@ -10831,15 +10860,16 @@ function token(lexbuf) {
             try {
               return /* INT */Block.__(7, [cvt_int_literal(Lexing.lexeme(lexbuf$1))]);
             }
-            catch (exn$1){
-              if (exn$1[0] === Caml_builtin_exceptions.failure) {
+            catch (exn$2){
+              var exn$3 = Js_exn.internalToOCamlException(exn$2);
+              if (exn$3[0] === Caml_builtin_exceptions.failure) {
                 throw [
                       $$Error$2,
                       /* Literal_overflow */Block.__(5, ["int"]),
                       curr(lexbuf$1)
                     ];
               } else {
-                throw exn$1;
+                throw exn$3;
               }
             }
             break;
@@ -10849,15 +10879,16 @@ function token(lexbuf) {
             try {
               return /* INT32 */Block.__(8, [cvt_int32_literal(Lexing.lexeme(lexbuf$1))]);
             }
-            catch (exn$2){
-              if (exn$2[0] === Caml_builtin_exceptions.failure) {
+            catch (exn$4){
+              var exn$5 = Js_exn.internalToOCamlException(exn$4);
+              if (exn$5[0] === Caml_builtin_exceptions.failure) {
                 throw [
                       $$Error$2,
                       /* Literal_overflow */Block.__(5, ["int32"]),
                       curr(lexbuf$1)
                     ];
               } else {
-                throw exn$2;
+                throw exn$5;
               }
             }
             break;
@@ -10865,15 +10896,16 @@ function token(lexbuf) {
             try {
               return /* INT64 */Block.__(9, [cvt_int64_literal(Lexing.lexeme(lexbuf$1))]);
             }
-            catch (exn$3){
-              if (exn$3[0] === Caml_builtin_exceptions.failure) {
+            catch (exn$6){
+              var exn$7 = Js_exn.internalToOCamlException(exn$6);
+              if (exn$7[0] === Caml_builtin_exceptions.failure) {
                 throw [
                       $$Error$2,
                       /* Literal_overflow */Block.__(5, ["int64"]),
                       curr(lexbuf$1)
                     ];
               } else {
-                throw exn$3;
+                throw exn$7;
               }
             }
             break;
@@ -10881,15 +10913,16 @@ function token(lexbuf) {
             try {
               return /* NATIVEINT */Block.__(12, [cvt_nativeint_literal(Lexing.lexeme(lexbuf$1))]);
             }
-            catch (exn$4){
-              if (exn$4[0] === Caml_builtin_exceptions.failure) {
+            catch (exn$8){
+              var exn$9 = Js_exn.internalToOCamlException(exn$8);
+              if (exn$9[0] === Caml_builtin_exceptions.failure) {
                 throw [
                       $$Error$2,
                       /* Literal_overflow */Block.__(5, ["nativeint"]),
                       curr(lexbuf$1)
                     ];
               } else {
-                throw exn$4;
+                throw exn$9;
               }
             }
             break;
@@ -11252,11 +11285,12 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
               string(lexbuf);
             }
             catch (exn){
-              if (exn[0] === $$Error$2) {
-                var match$1 = exn[1];
+              var exn$1 = Js_exn.internalToOCamlException(exn);
+              if (exn$1[0] === $$Error$2) {
+                var match$1 = exn$1[1];
                 if (typeof match$1 === "number") {
                   if (match$1 !== 0) {
-                    throw exn;
+                    throw exn$1;
                   } else {
                     var match$2 = comment_start_loc[0];
                     if (match$2) {
@@ -11266,7 +11300,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
                             $$Error$2,
                             /* Unterminated_string_in_comment */Block.__(3, [
                                 start,
-                                exn[2]
+                                exn$1[2]
                               ]),
                             match$2[0]
                           ];
@@ -11282,10 +11316,10 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
                     }
                   }
                 } else {
-                  throw exn;
+                  throw exn$1;
                 }
               } else {
-                throw exn;
+                throw exn$1;
               }
             }
             is_in_string[0] = /* false */0;
@@ -11301,12 +11335,13 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
             try {
               __ocaml_lex_quoted_string_rec(delim$1, lexbuf, 183);
             }
-            catch (exn$1){
-              if (exn$1[0] === $$Error$2) {
-                var match$3 = exn$1[1];
+            catch (exn$2){
+              var exn$3 = Js_exn.internalToOCamlException(exn$2);
+              if (exn$3[0] === $$Error$2) {
+                var match$3 = exn$3[1];
                 if (typeof match$3 === "number") {
                   if (match$3 !== 0) {
-                    throw exn$1;
+                    throw exn$3;
                   } else {
                     var match$4 = comment_start_loc[0];
                     if (match$4) {
@@ -11316,7 +11351,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
                             $$Error$2,
                             /* Unterminated_string_in_comment */Block.__(3, [
                                 start$1,
-                                exn$1[2]
+                                exn$3[2]
                               ]),
                             match$4[0]
                           ];
@@ -11332,10 +11367,10 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
                     }
                   }
                 } else {
-                  throw exn$1;
+                  throw exn$3;
                 }
               } else {
-                throw exn$1;
+                throw exn$3;
               }
             }
             is_in_string[0] = /* false */0;
@@ -11811,11 +11846,12 @@ function skip_phrase(lexbuf) {
       }
     }
     catch (exn){
-      if (exn[0] === $$Error$2) {
-        var $js = exn[1];
+      var exn$1 = Js_exn.internalToOCamlException(exn);
+      if (exn$1[0] === $$Error$2) {
+        var $js = exn$1[1];
         if (typeof $js === "number") {
           if ($js) {
-            throw exn;
+            throw exn$1;
           } else {
             continue ;
             
@@ -11827,11 +11863,11 @@ function skip_phrase(lexbuf) {
             case 3 : 
                 continue ;
                 default:
-              throw exn;
+              throw exn$1;
           }
         }
       } else {
-        throw exn;
+        throw exn$1;
       }
     }
   };
@@ -11855,17 +11891,18 @@ function wrap(parsing_fun, lexbuf) {
     return ast;
   }
   catch (err){
+    var err$1 = Js_exn.internalToOCamlException(err);
     var exit = 0;
     var exit$1 = 0;
-    if (err[0] === $$Error$2) {
-      var $js = err[1];
+    if (err$1[0] === $$Error$2) {
+      var $js = err$1[1];
       if (typeof $js === "number") {
         exit$1 = 2;
       } else if ($js.tag) {
         exit$1 = 2;
       } else if (input_name[0] === "//toplevel//") {
         skip_phrase(lexbuf);
-        throw err;
+        throw err$1;
       } else {
         exit$1 = 2;
       }
@@ -11873,23 +11910,23 @@ function wrap(parsing_fun, lexbuf) {
       exit$1 = 2;
     }
     if (exit$1 === 2) {
-      if (err[0] === $$Error$1) {
+      if (err$1[0] === $$Error$1) {
         if (input_name[0] === "//toplevel//") {
           maybe_skip_phrase(lexbuf);
-          throw err;
-        } else if (err === Parsing.Parse_error) {
+          throw err$1;
+        } else if (err$1 === Parsing.Parse_error) {
           exit = 1;
-        } else if (err === Escape_error) {
+        } else if (err$1 === Escape_error) {
           exit = 1;
         } else {
-          throw err;
+          throw err$1;
         }
-      } else if (err === Parsing.Parse_error) {
+      } else if (err$1 === Parsing.Parse_error) {
         exit = 1;
-      } else if (err === Escape_error) {
+      } else if (err$1 === Escape_error) {
         exit = 1;
       } else {
-        throw err;
+        throw err$1;
       }
     }
     if (exit === 1) {

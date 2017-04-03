@@ -132,7 +132,8 @@ OTHERS := literals a test_ari test_export2 test_internalOO test_obj_simple_ffi t
 	ocaml_parsetree_test\
 	ocaml_typedtree_test\
 	gpr_1484\
-	gpr_1481
+	gpr_1481\
+	custom_error_test
 
 # bs_uncurry_test
 # needs Lam to get rid of Uncurry arity first

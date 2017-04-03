@@ -8,6 +8,7 @@ var Bytes                   = require("../../lib/js/bytes.js");
 var Curry                   = require("../../lib/js/curry.js");
 var Buffer                  = require("../../lib/js/buffer.js");
 var Format                  = require("../../lib/js/format.js");
+var Js_exn                  = require("../../lib/js/js_exn.js");
 var Printf                  = require("../../lib/js/printf.js");
 var $$String                = require("../../lib/js/string.js");
 var Caml_io                 = require("../../lib/js/caml_io.js");
@@ -27,10 +28,11 @@ function _with_in(filename, f) {
     return x;
   }
   catch (e){
+    var e$1 = Js_exn.internalToOCamlException(e);
     Caml_missing_polyfill.not_implemented("caml_ml_close_channel not implemented by bucklescript yet\n");
     return /* `Error */[
             106380200,
-            Printexc.to_string(e)
+            Printexc.to_string(e$1)
           ];
   }
 }
@@ -87,10 +89,11 @@ function _must_escape(s) {
     return /* false */0;
   }
   catch (exn){
-    if (exn === Pervasives.Exit) {
+    var exn$1 = Js_exn.internalToOCamlException(exn);
+    if (exn$1 === Pervasives.Exit) {
       return /* true */1;
     } else {
-      throw exn;
+      throw exn$1;
     }
   }
 }
@@ -319,9 +322,10 @@ function to_file_seq(filename, seq) {
     return x;
   }
   catch (e){
+    var e$1 = Js_exn.internalToOCamlException(e);
     Caml_io.caml_ml_flush(oc);
     Caml_missing_polyfill.not_implemented("caml_ml_close_channel not implemented by bucklescript yet\n");
-    throw e;
+    throw e$1;
   }
 }
 

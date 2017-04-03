@@ -195,7 +195,7 @@ type primitive =
   | Pjs_is_instance_array
   | Pcaml_obj_length
   | Pcaml_obj_set_length
-
+  | Pwrap_exn (* convert either JS exception or OCaml exception into OCaml format *)
 
 type apply_status =
   | App_na
@@ -1882,8 +1882,19 @@ let convert exports lam : _ * _  =
       Lstaticraise (id, List.map aux args)
     | Lstaticcatch (b, (i, ids), handler) -> 
       Lstaticcatch (aux b, (i,ids), aux handler)
-    | Ltrywith (b, id, handler) -> 
-      Ltrywith (aux b, id, aux handler)
+    | Ltrywith (b, id, handler) ->
+      (** TODO:
+          2. Check some optimizations
+      *)
+      let newId = Ident.rename id in 
+      let body = aux b in 
+      let handler = aux handler in 
+      Ltrywith (body, newId, 
+                let_ StrictOpt id 
+                  (prim ~primitive:Pwrap_exn ~args:[var newId] Location.none)
+                  handler
+               ) 
+
     | Lifthenelse (b,then_,else_) -> 
       Lifthenelse (aux b, aux then_, aux else_)
     | Lsequence (a,b) 

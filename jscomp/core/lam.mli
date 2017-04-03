@@ -194,7 +194,7 @@ type primitive =
   | Pjs_is_instance_array
   | Pcaml_obj_length
   | Pcaml_obj_set_length
-  
+  | Pwrap_exn (* convert either JS exception or OCaml exception into OCaml format *)  
 
 type switch  =
   { sw_numconsts: int;

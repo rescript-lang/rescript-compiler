@@ -6,6 +6,7 @@ var List                    = require("../../lib/js/list.js");
 var Block                   = require("../../lib/js/block.js");
 var Bytes                   = require("../../lib/js/bytes.js");
 var Curry                   = require("../../lib/js/curry.js");
+var Js_exn                  = require("../../lib/js/js_exn.js");
 var Lexing                  = require("../../lib/js/lexing.js");
 var Printf                  = require("../../lib/js/printf.js");
 var $$String                = require("../../lib/js/string.js");
@@ -178,10 +179,11 @@ function file_option(file_options, name) {
     exit = 1;
   }
   catch (exn){
-    if (exn === Caml_builtin_exceptions.not_found) {
+    var exn$1 = Js_exn.internalToOCamlException(exn);
+    if (exn$1 === Caml_builtin_exceptions.not_found) {
       return /* None */0;
     } else {
-      throw exn;
+      throw exn$1;
     }
   }
   if (exit === 1) {
@@ -208,13 +210,14 @@ function rev_split_by_char(c, s) {
       
     }
     catch (exn){
-      if (exn === Caml_builtin_exceptions.not_found) {
+      var exn$1 = Js_exn.internalToOCamlException(exn);
+      if (exn$1 === Caml_builtin_exceptions.not_found) {
         return /* :: */[
                 $$String.sub(s, i, s.length - i | 0),
                 l
               ];
       } else {
-        throw exn;
+        throw exn$1;
       }
     }
   };
@@ -3963,10 +3966,11 @@ function find_field_option(field_options, option_name) {
     exit = 1;
   }
   catch (exn){
-    if (exn === Caml_builtin_exceptions.not_found) {
+    var exn$1 = Js_exn.internalToOCamlException(exn);
+    if (exn$1 === Caml_builtin_exceptions.not_found) {
       return /* None */0;
     } else {
-      throw exn;
+      throw exn$1;
     }
   }
   if (exit === 1) {
@@ -4194,10 +4198,11 @@ function get_default(_, field_options, _$1) {
     exit = 1;
   }
   catch (exn){
-    if (exn === Caml_builtin_exceptions.not_found) {
+    var exn$1 = Js_exn.internalToOCamlException(exn);
+    if (exn$1 === Caml_builtin_exceptions.not_found) {
       return /* None */0;
     } else {
-      throw exn;
+      throw exn$1;
     }
   }
   if (exit === 1) {
@@ -4241,10 +4246,11 @@ function not_found(f) {
     return /* false */0;
   }
   catch (exn){
-    if (exn === Caml_builtin_exceptions.not_found) {
+    var exn$1 = Js_exn.internalToOCamlException(exn);
+    if (exn$1 === Caml_builtin_exceptions.not_found) {
       return /* true */1;
     } else {
-      throw exn;
+      throw exn$1;
     }
   }
 }
@@ -4610,10 +4616,11 @@ function compile_message_p2(types, param, message) {
               return /* Some */[type_id_of_type(t)];
             }
             catch (exn){
-              if (exn === Caml_builtin_exceptions.not_found) {
+              var exn$1 = Js_exn.internalToOCamlException(exn);
+              if (exn$1 === Caml_builtin_exceptions.not_found) {
                 return /* None */0;
               } else {
-                throw exn;
+                throw exn$1;
               }
             }
           }, search_scopes$1);
@@ -6457,13 +6464,14 @@ function module_of_file_name(file_name) {
     exit = 1;
   }
   catch (exn){
-    if (exn === Caml_builtin_exceptions.not_found) {
+    var exn$1 = Js_exn.internalToOCamlException(exn);
+    if (exn$1 === Caml_builtin_exceptions.not_found) {
       throw [
             Compilation_error,
             /* Invalid_file_name */Block.__(6, [file_name$1])
           ];
     } else {
-      throw exn;
+      throw exn$1;
     }
   }
   if (exit === 1) {
@@ -6632,13 +6640,14 @@ function compile_field_type(field_name, all_types, file_options, field_options, 
       exit = 1;
     }
     catch (exn){
-      if (exn === Caml_builtin_exceptions.not_found) {
+      var exn$1 = Js_exn.internalToOCamlException(exn);
+      if (exn$1 === Caml_builtin_exceptions.not_found) {
         throw [
               Compilation_error,
               /* Programatic_error */Block.__(4, [/* No_type_found_for_id */2])
             ];
       } else {
-        throw exn;
+        throw exn$1;
       }
     }
     if (exit === 1) {
@@ -6763,7 +6772,8 @@ function compile(proto_definition) {
     proto = proto_(lexer, lexbuf);
   }
   catch (exn){
-    throw add_loc(from_lexbuf(lexbuf), exn);
+    var exn$1 = Js_exn.internalToOCamlException(exn);
+    throw add_loc(from_lexbuf(lexbuf), exn$1);
   }
   var all_pbtt_msgs = compile_proto_p1("tmp.proto", proto);
   var all_pbtt_msgs$1 = List.map(function (param) {

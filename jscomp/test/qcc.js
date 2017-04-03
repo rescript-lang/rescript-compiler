@@ -6,6 +6,7 @@ var List                    = require("../../lib/js/list.js");
 var Block                   = require("../../lib/js/block.js");
 var Bytes                   = require("../../lib/js/bytes.js");
 var Curry                   = require("../../lib/js/curry.js");
+var Js_exn                  = require("../../lib/js/js_exn.js");
 var Printf                  = require("../../lib/js/printf.js");
 var $$String                = require("../../lib/js/string.js");
 var Caml_io                 = require("../../lib/js/caml_io.js");
@@ -202,10 +203,11 @@ function next() {
     match = /* Some */[skip(/* () */0)];
   }
   catch (exn){
-    if (exn === Caml_builtin_exceptions.end_of_file) {
+    var exn$1 = Js_exn.internalToOCamlException(exn);
+    if (exn$1 === Caml_builtin_exceptions.end_of_file) {
       match = /* None */0;
     } else {
-      throw exn;
+      throw exn$1;
     }
   }
   if (match) {

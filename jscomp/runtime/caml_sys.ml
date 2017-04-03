@@ -43,9 +43,11 @@ function $$caml_sys_getenv(n) {
   }
 |}]
 
+(** TODO: rewrite in OCaml *)
 external caml_sys_getenv : string -> string = "$$caml_sys_getenv"
   [@@bs.val ] (* [@@bs.local] *)
 (* TODO: improve [js_pass_scope] to avoid remove unused n here *)
+
 
 [%%bs.raw{|
 function $$date(){

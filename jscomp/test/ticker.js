@@ -3,6 +3,7 @@
 var List                    = require("../../lib/js/list.js");
 var Block                   = require("../../lib/js/block.js");
 var Curry                   = require("../../lib/js/curry.js");
+var Js_exn                  = require("../../lib/js/js_exn.js");
 var Printf                  = require("../../lib/js/printf.js");
 var $$String                = require("../../lib/js/string.js");
 var Caml_obj                = require("../../lib/js/caml_obj.js");
@@ -26,13 +27,14 @@ function split(delim, s) {
           exit = 1;
         }
         catch (exn){
-          if (exn === Caml_builtin_exceptions.not_found) {
+          var exn$1 = Js_exn.internalToOCamlException(exn);
+          if (exn$1 === Caml_builtin_exceptions.not_found) {
             return /* :: */[
                     $$String.sub(s, 0, i),
                     l
                   ];
           } else {
-            throw exn;
+            throw exn$1;
           }
         }
         if (exit === 1) {

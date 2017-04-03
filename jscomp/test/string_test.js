@@ -4,6 +4,7 @@ var Mt                      = require("./mt.js");
 var List                    = require("../../lib/js/list.js");
 var Block                   = require("../../lib/js/block.js");
 var Bytes                   = require("../../lib/js/bytes.js");
+var Js_exn                  = require("../../lib/js/js_exn.js");
 var $$String                = require("../../lib/js/string.js");
 var Ext_string              = require("./ext_string.js");
 var Caml_string             = require("../../lib/js/caml_string.js");
@@ -81,13 +82,14 @@ function rev_split_by_char(c, s) {
       
     }
     catch (exn){
-      if (exn === Caml_builtin_exceptions.not_found) {
+      var exn$1 = Js_exn.internalToOCamlException(exn);
+      if (exn$1 === Caml_builtin_exceptions.not_found) {
         return /* :: */[
                 $$String.sub(s, i, s.length - i | 0),
                 l
               ];
       } else {
-        throw exn;
+        throw exn$1;
       }
     }
   };
@@ -109,13 +111,14 @@ function xsplit(delim, s) {
           exit = 1;
         }
         catch (exn){
-          if (exn === Caml_builtin_exceptions.not_found) {
+          var exn$1 = Js_exn.internalToOCamlException(exn);
+          if (exn$1 === Caml_builtin_exceptions.not_found) {
             return /* :: */[
                     $$String.sub(s, 0, i),
                     l
                   ];
           } else {
-            throw exn;
+            throw exn$1;
           }
         }
         if (exit === 1) {

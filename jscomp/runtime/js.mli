@@ -89,11 +89,12 @@ external unsafe_ge : 'a -> 'a -> bool = "#unsafe_ge"
 (* end::utility_functions[]*)
 
 (* tag::nested_built_in_modules[] *)
-(** {3 nested modules}*)
+(** {4 nested modules}*)
 
 module Null = Js_null
 module Undefined = Js_undefined
 module Null_undefined = Js_null_undefined
+module Exn = Js_exn
 (* end::nested_built_in_modules[] *)
 
 (** {8 nested modules} *experimental* API, please refer to

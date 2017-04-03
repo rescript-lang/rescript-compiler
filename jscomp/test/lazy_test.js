@@ -3,6 +3,7 @@
 var Mt                      = require("./mt.js");
 var Lazy                    = require("../../lib/js/lazy.js");
 var Block                   = require("../../lib/js/block.js");
+var Js_exn                  = require("../../lib/js/js_exn.js");
 var CamlinternalLazy        = require("../../lib/js/camlinternalLazy.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
@@ -88,10 +89,11 @@ try {
       ]);
 }
 catch (exn){
-  if (exn[0] === Caml_builtin_exceptions.match_failure) {
+  var exn$1 = Js_exn.internalToOCamlException(exn);
+  if (exn$1[0] === Caml_builtin_exceptions.match_failure) {
     h = 2;
   } else {
-    throw exn;
+    throw exn$1;
   }
 }
 

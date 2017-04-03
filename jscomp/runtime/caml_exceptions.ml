@@ -59,3 +59,10 @@ let create (str : string) : Caml_builtin_exceptions.exception_block =
   let v = ( str, get_id ()) in 
   Obj.set_tag (Obj.repr v) 248 (* Obj.object_tag*);
   v 
+
+(** It could be either customized exception or built in exception *)
+let isCamlException e = 
+  let slot = Obj.field e 0 in 
+  not (Js.Undefined.testAny slot) &&
+  (Obj.tag slot = 248
+   || (Js.typeof (Obj.field slot 0) == "string"))
