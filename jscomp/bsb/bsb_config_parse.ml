@@ -156,6 +156,7 @@ let merlin_file_gen ~cwd
       generate_merlin;
       ppx_flags;
       bs_dependencies;
+      bs_dev_dependencies;
       bsc_flags; 
       built_in_dependency;
       external_includes; 
@@ -201,7 +202,16 @@ let merlin_file_gen ~cwd
       String.concat Ext_string.single_space 
         (Literals.dash_nostdlib::bsc_flags)  in 
     Buffer.add_string buffer bsc_string_flag ;
+
     bs_dependencies 
+    |> List.iter (fun package ->
+        let path = package.Bsb_config_types.package_install_path in
+        Buffer.add_string buffer merlin_s ;
+        Buffer.add_string buffer path ;
+        Buffer.add_string buffer merlin_b;
+        Buffer.add_string buffer path ;
+      );
+    bs_dev_dependencies (**TODO: shall we generate .merlin for dev packages ?*)
     |> List.iter (fun package ->
         let path = package.Bsb_config_types.package_install_path in
         Buffer.add_string buffer merlin_s ;
@@ -272,6 +282,7 @@ let interpret_json
      Make sure it works with [-make-world] [-clean-world]
   *)
   let bs_dependencies = ref [] in 
+  let bs_dev_dependencies = ref [] in
   (* Setting ninja is a bit complex
      1. if [build.ninja] does use [ninja] we need set a variable
      2. we need store it so that we can call ninja correctly
@@ -314,6 +325,8 @@ let interpret_json
         ocamllex := Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.ocamllex s ))
 
     |? (Bsb_build_schemas.bs_dependencies, `Arr (fun s -> bs_dependencies := Bsb_build_util.get_list_string s |> List.map (resolve_package cwd)))
+    |? (Bsb_build_schemas.bs_dev_dependencies, `Arr (fun s -> bs_dev_dependencies := Bsb_build_util.get_list_string s |> List.map (resolve_package cwd)))
+
     (* More design *)
     |? (Bsb_build_schemas.bs_external_includes, `Arr (fun s -> bs_external_includes := get_list_string s))
     |? (Bsb_build_schemas.bsc_flags, `Arr (fun s -> bsc_flags := Bsb_build_util.get_list_string_acc s !bsc_flags))
@@ -362,6 +375,7 @@ let interpret_json
           bsc_flags = !bsc_flags ;
           ppx_flags = !ppx_flags ;
           bs_dependencies = !bs_dependencies;
+          bs_dev_dependencies = !bs_dev_dependencies;
           refmt = !refmt ;
           refmt_flags = !refmt_flags ;
           js_post_build_cmd =  !js_post_build_cmd ;

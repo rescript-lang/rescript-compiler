@@ -28,7 +28,7 @@
             "type": "string",
             "title": "dependency"
         },
-        "bs-dependencies": {
+        "dependencies": {
             "type": "array",
             "items": {
                 "$ref": "#/definitions/bs-dependency"
@@ -90,10 +90,6 @@
                                     ]
                                 }
                             ]
-                        },
-                        "bs-dependencies": {
-                            "$ref": "#/definitions/bs-dependencies",
-                            "description": "More dependencies added to this group"
                         },
                         "public": {
                             "oneOf": [
@@ -259,9 +255,14 @@
             "description": "Source code location"
         },
         "bs-dependencies": {
-            "$ref": "#/definitions/bs-dependencies",
+            "$ref": "#/definitions/dependencies",
             "description": "OCaml/Reason dependencies of the library, like in package.json. Currently searches in `node_modules`"
         },
+        "bs-dev-dependencies": {
+            "$ref": "#/definitions/dependencies",
+            "description": "OCaml/Reason dev dependencies of the library, like in package.json. Currently searches in `node_modules`"
+        },
+
         "reason": {
             "$ref": "#/definitions/reason-specs",
             "description": "BuckleScript comes with [Reason](http://facebook.github.io/reason/) by default. Specific configurations here."

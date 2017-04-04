@@ -50,7 +50,6 @@ type  file_group =
   { dir : string ;
     sources : Binary_cache.file_group_rouces; 
     resources : string list ;
-    bs_dependencies : string list ;
     public : public ;
     dir_index : dir_index 
   } 
@@ -194,7 +193,6 @@ and parsing_source_dir_map
   = 
   let cur_sources = ref String_map.empty in
   let resources = ref [] in 
-  let bs_dependencies = ref [] in
   let public = ref Export_all in (* TODO: move to {!Bsb_default} later*)
   let cur_update_queue = ref [] in 
   let cur_globbed_dirs = ref [] in 
@@ -256,7 +254,6 @@ and parsing_source_dir_map
 
   end;
   x   
-  |? (Bsb_build_schemas.bs_dependencies, `Arr (fun s -> bs_dependencies := get_list_string s ))
   |?  (Bsb_build_schemas.resources ,
        `Arr (fun s  ->
            resources := get_list_string s 
@@ -274,7 +271,6 @@ and parsing_source_dir_map
       {dir = dir; 
        sources = !cur_sources; 
        resources = !resources;
-       bs_dependencies = !bs_dependencies;
        public = !public;
        dir_index = cxt.dir_index ;
       } in 

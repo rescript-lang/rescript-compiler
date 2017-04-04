@@ -23,12 +23,12 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-type bs_dependency = 
+type dependency = 
   {
     package_name : string ; 
     package_install_path : string ; 
   }
-type bs_dependencies = bs_dependency list 
+type dependencies = dependency list 
 
 (* `string` is a path to the entrypoint *)
 type entries_t = JsTarget of string | NativeTarget of string | BytecodeTarget of string
@@ -40,9 +40,9 @@ type t =
     external_includes : string list ; 
     bsc_flags : string list ;
     ppx_flags : string list ;
-    bs_dependencies : bs_dependencies;
-    
-    built_in_dependency : bs_dependency option; 
+    bs_dependencies : dependencies;
+    bs_dev_dependencies : dependencies;
+    built_in_dependency : dependency option; 
     (*TODO: maybe we should always resolve bs-platform 
       so that we can calculate correct relative path in 
       [.merlin]

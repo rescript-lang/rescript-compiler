@@ -159,7 +159,6 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd
     (files_to_install : String_hash_set.t) acc (group: Bsb_build_ui.file_group) : info =
   let handle_module_info  oc  module_name
       ( module_info : Binary_cache.module_info)
-      bs_dependencies
       info  =
     let installable =
       match group.public with
@@ -186,31 +185,23 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd
       (* let output_mldeps = output_file_sans_extension ^ Literals.suffix_mldeps in  *)
       (* let output_mlideps = output_file_sans_extension ^ Literals.suffix_mlideps in  *)
       let shadows =
-        let package_flags =
-          ( "bs_package_flags",
-            `Append
-              (String_set.fold (fun s acc ->
-                  Ext_string.inter2 acc (Bsb_config.package_flag ~format:s (Filename.dirname output_cmi))
+        ( "bs_package_flags",
+          `Append
+            (String_set.fold (fun s acc ->
+                 Ext_string.inter2 acc (Bsb_config.package_flag ~format:s (Filename.dirname output_cmi))
 
-                 ) package_specs Ext_string.empty)
-          ) ::
-          (if group.dir_index = 0 then [] else
-             [("bsc_extra_includes",
-               `Overwrite
-                 ("${" ^ Bsb_build_util.string_of_bsb_dev_include group.dir_index ^ "}")
-              )]
-          )
-        in
-
-        match bs_dependencies with
-        | [] -> package_flags
-        | _ ->
-          (
-            "bs_package_includes",
-            `Append
-              (Bsb_build_util.flag_concat "-bs-package-include" bs_dependencies)
-          )
-          :: package_flags
+               ) package_specs Ext_string.empty)
+        ) ::
+        (if group.dir_index = 0 then [] else
+           [
+             "bs_package_includes", `Append "$bs_package_dev_includes"
+             ;
+             ("bsc_extra_includes",
+              `Overwrite
+                ("${" ^ Bsb_build_util.string_of_bsb_dev_include group.dir_index ^ "}")
+             )
+           ]
+        )
       in
       if kind = `Mll then
         output_build oc
@@ -323,7 +314,7 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd
 
   in
   String_map.fold (fun  k v  acc ->
-      handle_module_info  oc k v group.bs_dependencies acc
+      handle_module_info  oc k v acc
     ) group.sources  acc
 
 
