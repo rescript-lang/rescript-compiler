@@ -25,50 +25,33 @@
 
 
 
-(** *)
 
-let caml_raise_not_found () = raise Not_found
+external getEnv : 'a -> string -> string option = "" [@@bs.get_index] [@@bs.return undefined_to_opt]
+let caml_sys_getenv s =
+    match [%external process ] with 
+    | None -> raise Not_found
+    | Some x ->  
+      begin match getEnv x##env s with 
+      | None -> raise Not_found
+      | Some x -> x 
+      end
 
-[%%bs.raw{|
-function $$caml_sys_getenv(n) {
-    //nodejs env
-    if (typeof process !== 'undefined'
-        && process.env
-        && process.env[n] != undefined){
-        return process.env[n]
-    }
-    else{ 
-     caml_raise_not_found()
-    };
-  }
-|}]
 
-(** TODO: rewrite in OCaml *)
-external caml_sys_getenv : string -> string = "$$caml_sys_getenv"
-  [@@bs.val ] (* [@@bs.local] *)
 (* TODO: improve [js_pass_scope] to avoid remove unused n here *)
 
+external now : unit -> float = "" [@@bs.val "Date.now"]
 
-[%%bs.raw{|
-function $$date(){
-  return (+new Date())
-};
 
-|}]
+let caml_initial_time = now ()  *. 0.001
 
-external current_date : unit -> float = "$$date"
-  [@@bs.val ] (* [@@bs.local] *)
-
-let caml_initial_time = current_date ()  *. 0.001
-
-let caml_sys_time () = (current_date () *. 0.001) -. caml_initial_time
+let caml_sys_time () = (now () *. 0.001) -. caml_initial_time
 
 external random : unit -> float = "Math.random" [@@bs.val]
 
 let caml_sys_random_seed () : nativeint array = 
    [|
      Nativeint.of_float 
-     ((Nativeint.to_float (Nativeint.logxor (Nativeint.of_float (current_date ()))
+     ((Nativeint.to_float (Nativeint.logxor (Nativeint.of_float (now ()))
                              0xffffffffn)) *. random ()) |]
 
 let caml_sys_system_command () = 127

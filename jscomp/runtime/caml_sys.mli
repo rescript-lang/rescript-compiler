@@ -25,9 +25,9 @@
 
 
 
-(** *)
 
-val caml_raise_not_found : unit -> 'a
+
+
 
 val caml_sys_getenv : string -> string
 

@@ -59,7 +59,7 @@ let annotate (meta : Lam_stats.meta)
  *)
 let collect_helper  (meta : Lam_stats.meta) (lam : Lam.t)  = 
   let rec collect_bind rec_flag
-      (kind : Lambda.let_kind) 
+      (kind : Lam.let_kind) 
       (ident : Ident.t)
       (lam : Lam.t) = 
     match lam with 

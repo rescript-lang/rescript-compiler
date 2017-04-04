@@ -88,6 +88,8 @@ bytes_split_gpr_743_test.cmj : mt.cmj ../runtime/js.cmj ../stdlib/bytes.cmj
 caml_compare_test.cmj : mt.cmj
 caml_format_test.cmj : ../stdlib/printf.cmj mt.cmj ../stdlib/int64.cmj \
     ../stdlib/format.cmj ../stdlib/buffer.cmj ../stdlib/array.cmj
+caml_sys_poly_fill_test.cmj : ../stdlib/sys.cmj ../others/node_process.cmj \
+    mt.cmj
 chain_code_test.cmj : mt.cmj ../runtime/js_unsafe.cmj
 chn_test.cmj : ../stdlib/string.cmj mt.cmj ../others/js_string.cmj \
     ../others/js_array.cmj ../runtime/js.cmj ../stdlib/char.cmj \
@@ -332,6 +334,7 @@ nested_include.cmj :
 nested_module_alias.cmj : ../stdlib/list.cmj
 nested_obj_literal.cmj :
 nested_obj_test.cmj :
+nested_pattern_match_test.cmj :
 noassert.cmj :
 node_fs_test.cmj : ../others/node.cmj ../runtime/js.cmj
 node_path_test.cmj : ../runtime/js.cmj

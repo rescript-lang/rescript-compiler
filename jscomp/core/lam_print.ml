@@ -300,7 +300,7 @@ let kind = function
   | Variable -> "v" 
   | Recursive -> "r"
 
-let to_print_kind (k : Lambda.let_kind) : print_kind = 
+let to_print_kind (k : Lam.let_kind) : print_kind = 
   match k with 
   | Alias -> Alias 
   | Strict -> Strict

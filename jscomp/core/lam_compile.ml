@@ -398,7 +398,7 @@ and compile_general_cases :
   (J.expression -> J.expression -> J.expression) -> 
   Lam_compile_defs.cxt -> 
   (?default:J.block ->
-   ?declaration:Lambda.let_kind * Ident.t  -> 
+   ?declaration:Lam.let_kind * Ident.t  -> 
    _ -> 'a J.case_clause list ->  J.statement) -> 
   _ -> 
   ('a * Lam.t) list -> default_case -> J.block 

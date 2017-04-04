@@ -36,7 +36,7 @@ type set_field_dbg_info = Lambda.set_field_dbg_info
 
 type ident = Ident.t
 
-type function_kind (* = Lambda.function_kind  *)
+type function_kind
    = Curried 
    (* | Tupled *)
 
@@ -45,6 +45,16 @@ type function_arities =
   | Determin of bool * (int * Ident.t list option) list  * bool
   | NA 
 
+type let_kind = Lambda.let_kind
+    = Strict
+    | Alias
+    | StrictOpt
+    | Variable
+
+type meth_kind = Lambda.meth_kind 
+  = Self 
+  | Public of string option 
+  | Cached 
 
 type constant = 
   | Const_int of int
@@ -231,7 +241,7 @@ module Types = struct
     | Lconst of constant
     | Lapply of apply_info
     | Lfunction of function_info
-    | Llet of Lambda.let_kind * ident * t * t
+    | Llet of let_kind * ident * t * t
     | Lletrec of (ident * t) list * t
     | Lprim of prim_info
     | Lswitch of t * switch
@@ -244,12 +254,8 @@ module Types = struct
     | Lwhile of t * t
     | Lfor of ident * t * t * Asttypes.direction_flag * t
     | Lassign of ident * t
-    | Lsend of Lambda.meth_kind * t * t * t list * Location.t
+    | Lsend of meth_kind * t * t * t list * Location.t
     | Lifused of ident * t
-      (* | Levent of t * Lambda.lambda_event 
-         [Levent] in the branch hurt pattern match, 
-         we should use record for trivial debugger info
-      *)
 end 
 
 module X = struct 
@@ -293,7 +299,7 @@ module X = struct
       | Lconst of constant
       | Lapply of apply_info
       | Lfunction of function_info
-      | Llet of Lambda.let_kind * ident * t * t
+      | Llet of let_kind * ident * t * t
       | Lletrec of (ident * t) list * t
       | Lprim of prim_info
       | Lswitch of t * switch
@@ -306,7 +312,7 @@ module X = struct
       | Lwhile of t * t
       | Lfor of ident * t * t * Asttypes.direction_flag * t
       | Lassign of ident * t
-      | Lsend of Lambda.meth_kind * t * t * t list * Location.t
+      | Lsend of meth_kind * t * t * t list * Location.t
       | Lifused of ident * t
 end
 include Types 
@@ -1111,7 +1117,7 @@ let try_  body id  handler : t =
 let for_ v e1 e2 dir e3 : t  = 
   Lfor(v,e1,e2,dir,e3)
 
-let event l (_event : Lambda.lambda_event) = l 
+
 
 let ifused v l : t  = 
   Lifused (v,l)
@@ -1125,7 +1131,7 @@ let staticcatch  a b c : t = Lstaticcatch(a,b,c)
 
 let staticraise a b : t = Lstaticraise(a,b)
 
-let comparison (cmp : Lambda.comparison) a b : bool = 
+let comparison (cmp : comparison) a b : bool = 
   match cmp with 
   | Ceq -> a = b 
   | Cneq -> a <> b 

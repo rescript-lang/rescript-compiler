@@ -36,9 +36,21 @@ type set_field_dbg_info = Lambda.set_field_dbg_info
 
 type ident = Ident.t
 
+type let_kind = Lambda.let_kind
+    = Strict
+    | Alias
+    | StrictOpt
+    | Variable
+
+type meth_kind = Lambda.meth_kind 
+  = Self 
+  | Public of string option 
+  | Cached 
+
 type function_kind 
    = Curried
    (* | Tupled *)
+
 
 type function_arities = 
   | Determin of bool * (int * Ident.t list option) list  * bool
@@ -230,7 +242,7 @@ and  t =  private
   | Lconst of constant
   | Lapply of apply_info
   | Lfunction of function_info
-  | Llet of Lambda.let_kind * ident * t * t
+  | Llet of let_kind * ident * t * t
   | Lletrec of (ident * t) list * t
   | Lprim of prim_info
   | Lswitch of t * switch
@@ -282,7 +294,7 @@ val function_ :
   arity:int ->
   function_kind:function_kind -> params:ident list -> body:t -> t
 
-val let_ : Lambda.let_kind -> ident -> t -> t -> t
+val let_ : let_kind -> ident -> t -> t -> t
 val letrec : (ident * t) list -> t -> t
 val if_ : triop
 val switch : t -> switch  -> t 
@@ -297,7 +309,7 @@ val sequand : binop
 val not_ : Location.t ->  unop
 val seq : binop
 val while_ : binop
-val event : t -> Lambda.lambda_event -> t  
+(* val event : t -> Lambda.lambda_event -> t   *)
 val try_ : t -> ident -> t  -> t 
 val ifused : ident -> t -> t
 val assign : ident -> t -> t 

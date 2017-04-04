@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,42 +17,25 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** Provides a simple key-value dictionary abstraction over native JavaScript objects *)
+type t =
+  < argv : string array;
+    arch : string ;
+    abort : unit -> unit [@bs.meth];
+    chdir : string -> unit [@bs.meth];
+    cwd : unit -> string [@bs.meth];
+    disconnect : unit -> unit [@bs.meth];
+    platform : string;
+    env : string Js_dict.t; (* ocamldep sucks which can not map [Js.Dic.t] to [Js_dict.t]*)
+  >   Js.t
 
-(** The dict type *)
-type 'a t
+external process : t = "" [@@bs.module]
 
-(** The key type, an alias of string *)
-type key = string
+external exit : int -> unit = "" [@@bs.module "process"]
 
-(** [get dict key] returns the value associated with [key] in [dict] *)
-external get : 'a t -> key -> 'a option = "" [@@bs.get_index] [@@bs.return {undefined_to_opt}]
-
-(** [unsafeGet dict key] returns the value associated with [key] in [dict]
-
-This function will return an invalid value ([undefined]) if [key] does not exist in [dict]. It
-will not throw an error.
-*)
-external unsafeGet : 'a t -> key -> 'a = "" [@@bs.get_index] 
-
-(** [set dict key value] sets the value of [key] in [dict] to [value] *)
-external set : 'a t -> key -> 'a -> unit = "" [@@bs.set_index]  
-
-(** [keys dict] returns an array of all the keys in [dict] *)
-external keys : 'a t -> key array = "Object.keys" [@@bs.val]
-
-(** [empty ()] creates an empty dictionary *)
-external empty : unit -> 'a t = "" [@@bs.obj]
-
-
-let unsafeDeleteKey : string t -> string -> unit [@bs] = [%raw{|
-  function(dict,key){
-     delete dict[key];
-     return 0
-   }
-|}]
+val putEnvVar : string -> string -> unit
+val deleteEnvVar : string -> unit

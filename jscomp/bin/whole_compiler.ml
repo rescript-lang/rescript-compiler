@@ -65616,9 +65616,21 @@ type set_field_dbg_info = Lambda.set_field_dbg_info
 
 type ident = Ident.t
 
+type let_kind = Lambda.let_kind
+    = Strict
+    | Alias
+    | StrictOpt
+    | Variable
+
+type meth_kind = Lambda.meth_kind 
+  = Self 
+  | Public of string option 
+  | Cached 
+
 type function_kind 
    = Curried
    (* | Tupled *)
+
 
 type function_arities = 
   | Determin of bool * (int * Ident.t list option) list  * bool
@@ -65810,7 +65822,7 @@ and  t =  private
   | Lconst of constant
   | Lapply of apply_info
   | Lfunction of function_info
-  | Llet of Lambda.let_kind * ident * t * t
+  | Llet of let_kind * ident * t * t
   | Lletrec of (ident * t) list * t
   | Lprim of prim_info
   | Lswitch of t * switch
@@ -65862,7 +65874,7 @@ val function_ :
   arity:int ->
   function_kind:function_kind -> params:ident list -> body:t -> t
 
-val let_ : Lambda.let_kind -> ident -> t -> t -> t
+val let_ : let_kind -> ident -> t -> t -> t
 val letrec : (ident * t) list -> t -> t
 val if_ : triop
 val switch : t -> switch  -> t 
@@ -65877,7 +65889,7 @@ val sequand : binop
 val not_ : Location.t ->  unop
 val seq : binop
 val while_ : binop
-val event : t -> Lambda.lambda_event -> t  
+(* val event : t -> Lambda.lambda_event -> t   *)
 val try_ : t -> ident -> t  -> t 
 val ifused : ident -> t -> t
 val assign : ident -> t -> t 
@@ -65965,7 +65977,7 @@ type set_field_dbg_info = Lambda.set_field_dbg_info
 
 type ident = Ident.t
 
-type function_kind (* = Lambda.function_kind  *)
+type function_kind
    = Curried 
    (* | Tupled *)
 
@@ -65974,6 +65986,16 @@ type function_arities =
   | Determin of bool * (int * Ident.t list option) list  * bool
   | NA 
 
+type let_kind = Lambda.let_kind
+    = Strict
+    | Alias
+    | StrictOpt
+    | Variable
+
+type meth_kind = Lambda.meth_kind 
+  = Self 
+  | Public of string option 
+  | Cached 
 
 type constant = 
   | Const_int of int
@@ -66160,7 +66182,7 @@ module Types = struct
     | Lconst of constant
     | Lapply of apply_info
     | Lfunction of function_info
-    | Llet of Lambda.let_kind * ident * t * t
+    | Llet of let_kind * ident * t * t
     | Lletrec of (ident * t) list * t
     | Lprim of prim_info
     | Lswitch of t * switch
@@ -66173,12 +66195,8 @@ module Types = struct
     | Lwhile of t * t
     | Lfor of ident * t * t * Asttypes.direction_flag * t
     | Lassign of ident * t
-    | Lsend of Lambda.meth_kind * t * t * t list * Location.t
+    | Lsend of meth_kind * t * t * t list * Location.t
     | Lifused of ident * t
-      (* | Levent of t * Lambda.lambda_event 
-         [Levent] in the branch hurt pattern match, 
-         we should use record for trivial debugger info
-      *)
 end 
 
 module X = struct 
@@ -66222,7 +66240,7 @@ module X = struct
       | Lconst of constant
       | Lapply of apply_info
       | Lfunction of function_info
-      | Llet of Lambda.let_kind * ident * t * t
+      | Llet of let_kind * ident * t * t
       | Lletrec of (ident * t) list * t
       | Lprim of prim_info
       | Lswitch of t * switch
@@ -66235,7 +66253,7 @@ module X = struct
       | Lwhile of t * t
       | Lfor of ident * t * t * Asttypes.direction_flag * t
       | Lassign of ident * t
-      | Lsend of Lambda.meth_kind * t * t * t list * Location.t
+      | Lsend of meth_kind * t * t * t list * Location.t
       | Lifused of ident * t
 end
 include Types 
@@ -67040,7 +67058,7 @@ let try_  body id  handler : t =
 let for_ v e1 e2 dir e3 : t  = 
   Lfor(v,e1,e2,dir,e3)
 
-let event l (_event : Lambda.lambda_event) = l 
+
 
 let ifused v l : t  = 
   Lifused (v,l)
@@ -67054,7 +67072,7 @@ let staticcatch  a b c : t = Lstaticcatch(a,b,c)
 
 let staticraise a b : t = Lstaticraise(a,b)
 
-let comparison (cmp : Lambda.comparison) a b : bool = 
+let comparison (cmp : comparison) a b : bool = 
   match cmp with 
   | Ceq -> a = b 
   | Cneq -> a <> b 
@@ -72202,7 +72220,7 @@ let kind = function
   | Variable -> "v" 
   | Recursive -> "r"
 
-let to_print_kind (k : Lambda.let_kind) : print_kind = 
+let to_print_kind (k : Lam.let_kind) : print_kind = 
   match k with 
   | Alias -> Alias 
   | Strict -> Strict
@@ -72901,11 +72919,11 @@ val field_flatten_get :
 
 
 val alias_ident_or_global : Lam_stats.meta ->
-  Ident.t -> Ident.t -> Lam_stats.kind -> Lambda.let_kind -> unit 
+  Ident.t -> Ident.t -> Lam_stats.kind -> Lam.let_kind -> unit 
 
 
 val refine_let : 
-    kind:Lambda.let_kind  ->
+    kind:Lam.let_kind  ->
       Ident.t -> Lam.t -> Lam.t -> Lam.t
 
 
@@ -73054,7 +73072,7 @@ let refine_let
     ~kind param
     (arg : Lam.t) (l : Lam.t)  : Lam.t =
 
-  match (kind : Lambda.let_kind ), arg, l  with 
+  match (kind : Lam.let_kind ), arg, l  with 
   | _, _, Lvar w when Ident.same w param (* let k = xx in k *)
     -> arg (* TODO: optimize here -- it's safe to do substitution here *)
   | _, _, Lprim {primitive ; args =  [Lvar w]; loc ; _} when Ident.same w param 
@@ -73116,7 +73134,7 @@ let refine_let
     Lam.let_ Strict param arg  l *)
 
 let alias_ident_or_global (meta : Lam_stats.meta) (k:Ident.t) (v:Ident.t) 
-    (v_kind : Lam_stats.kind) (let_kind : Lambda.let_kind) =
+    (v_kind : Lam_stats.kind) (let_kind : Lam.let_kind) =
   (** treat rec as Strict, k is assigned to v 
       {[ let k = v ]}
   *)
@@ -73309,7 +73327,7 @@ val throw : ?comment:string  -> J.expression -> t
 
 val if_ : 
   ?comment:string  ->
-  ?declaration: Lambda.let_kind * Ident.t ->
+  ?declaration: Lam.let_kind * Ident.t ->
   (* when it's not None, we also need make a variable declaration in the
      begininnig, however, we can optmize such case
   *)
@@ -73321,20 +73339,20 @@ val if_ :
 val block : ?comment:string  -> J.block -> t
 
 val int_switch :
-  ?comment:string -> ?declaration:Lambda.let_kind * Ident.t -> 
+  ?comment:string -> ?declaration:Lam.let_kind * Ident.t -> 
   ?default:J.block -> J.expression -> int J.case_clause list -> t 
 
-val string_switch : ?comment:string -> ?declaration:Lambda.let_kind * Ident.t -> 
+val string_switch : ?comment:string -> ?declaration:Lam.let_kind * Ident.t -> 
   ?default:J.block -> J.expression -> string J.case_clause list -> t
 
 val declare_variable : ?comment:string ->
   ?ident_info:J.ident_info 
-  -> kind:Lambda.let_kind -> Ident.t -> t
+  -> kind:Lam.let_kind -> Ident.t -> t
 
 val define : 
   ?comment:string ->
   ?ident_info:J.ident_info ->
-  kind:Lambda.let_kind -> Ident.t -> J.expression  -> t
+  kind:Lam.let_kind -> Ident.t -> J.expression  -> t
 
 val alias_variable :
   ?comment:string -> ?exp:J.expression -> Ident.t -> t
@@ -85923,7 +85941,7 @@ type value = {
     order_id : int
   }
 
-type let_kind = Lambda.let_kind
+type let_kind = Lam.let_kind
 
 type st = 
   | EffectCall
@@ -86031,7 +86049,7 @@ type return_type =
    (* have a mutable field to notifiy it's actually triggered *)
    (* anonoymous function does not have identifier *)
 
-type let_kind = Lambda.let_kind
+type let_kind = Lam.let_kind
 
 type st = 
   | EffectCall
@@ -88302,7 +88320,7 @@ module Lam_group : sig
 
 
 type t = 
-  | Single of Lambda.let_kind  * Ident.t * Lam.t
+  | Single of Lam.let_kind  * Ident.t * Lam.t
   | Recursive of (Ident.t * Lam.t) list
   | Nop of Lam.t 
 
@@ -88346,14 +88364,14 @@ end = struct
 
 (** This is not a recursive type definition *)
 type t = 
-  | Single of Lambda.let_kind  * Ident.t * Lam.t
+  | Single of Lam.let_kind  * Ident.t * Lam.t
   | Recursive of (Ident.t * Lam.t) list
   | Nop of Lam.t 
 
 
 let pp = Format.fprintf 
 
-let str_of_kind (kind : Lambda.let_kind) = 
+let str_of_kind (kind : Lam.let_kind) = 
   match kind with 
   | Alias -> "a"
   | Strict -> ""
@@ -94441,7 +94459,7 @@ module Lam_compile : sig
 (** Compile single lambda IR to JS IR  *)
 
 val compile_let : 
-  Lambda.let_kind ->
+  Lam.let_kind ->
   Lam_compile_defs.cxt -> 
   J.ident -> 
   Lam.t -> 
@@ -94853,7 +94871,7 @@ and compile_general_cases :
   (J.expression -> J.expression -> J.expression) -> 
   Lam_compile_defs.cxt -> 
   (?default:J.block ->
-   ?declaration:Lambda.let_kind * Ident.t  -> 
+   ?declaration:Lam.let_kind * Ident.t  -> 
    _ -> 'a J.case_clause list ->  J.statement) -> 
   _ -> 
   ('a * Lam.t) list -> default_case -> J.block 
@@ -96733,7 +96751,7 @@ let annotate (meta : Lam_stats.meta)
  *)
 let collect_helper  (meta : Lam_stats.meta) (lam : Lam.t)  = 
   let rec collect_bind rec_flag
-      (kind : Lambda.let_kind) 
+      (kind : Lam.let_kind) 
       (ident : Ident.t)
       (lam : Lam.t) = 
     match lam with 

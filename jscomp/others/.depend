@@ -1,6 +1,6 @@
 node_path.cmj :
 node_fs.cmj : node.cmj js_string.cmj
-node_process.cmj : js_dict.cmj
+node_process.cmj : js_dict.cmj node_process.cmi
 node_module.cmj : node.cmj js_dict.cmj
 js_array.cmj :
 js_string.cmj : js_re.cmi js_array.cmj
@@ -19,6 +19,7 @@ js_dict.cmj : js_dict.cmi
 js_date.cmj :
 js_global.cmj :
 js_cast.cmj : js_cast.cmi
+node_process.cmi : js_dict.cmi
 js_re.cmi :
 js_null_undefined.cmi :
 js_types.cmi :
