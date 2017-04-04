@@ -59,6 +59,7 @@ let output_ninja
     bsc_flags ; 
     ppx_flags;
     bs_dependencies;
+    bs_dev_dependencies;
     refmt;
     refmt_flags;
     js_post_build_cmd;
@@ -100,6 +101,7 @@ let output_ninja
           "bsc_flags", bsc_flags ;
           "ppx_flags", ppx_flags;
           "bs_package_includes", (Bsb_build_util.flag_concat dash_i @@ List.map (fun x -> x.Bsb_config_types.package_install_path) bs_dependencies);
+          "bs_package_dev_includes", (Bsb_build_util.flag_concat dash_i @@ List.map (fun x -> x.Bsb_config_types.package_install_path) bs_dev_dependencies);  
           "refmt", (match refmt with None -> bsc_dir // refmt_exe | Some x -> x) ;
           "reason_react_jsx",
             ( if reason_react_jsx then "-ppx " ^ Filename.quote (bsc_dir // Literals.reactjs_jsx_ppx_exe)

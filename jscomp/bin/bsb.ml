@@ -14,6 +14,7 @@ let refmt_flags = "refmt-flags"
 let bs_external_includes = "bs-external-includes"
 let bs_lib_dir = "bs-lib-dir"
 let bs_dependencies = "bs-dependencies"
+let bs_dev_dependencies = "bs-dev-dependencies"
 let bs_copy_or_symlink = "bs-copy-or-symlink"
 let sources = "sources"
 let dir = "dir"
@@ -6242,6 +6243,27 @@ let rec walk_all_deps_aux visited paths top dir cb =
                  end
                )))
         |> ignore ;
+        if top then begin
+          map
+          |?
+          (Bsb_build_schemas.bs_dev_dependencies,
+           `Arr (fun (new_packages : Ext_json_types.t array) ->
+               new_packages
+               |> Array.iter (fun (js : Ext_json_types.t) ->
+                   begin match js with
+                     | Str {str = new_package} ->
+                       let package_dir = 
+                         Bsb_pkg.resolve_bs_package ~cwd:dir new_package in 
+                       walk_all_deps_aux visited package_stacks  false package_dir cb  ;
+                     | _ -> 
+                       Bsb_exception.(failf ~loc 
+                                        "%s expect an array"
+                                        Bsb_build_schemas.bs_dev_dependencies)
+                   end
+                 )))
+          |> ignore ;
+        end
+        ;
         cb {top ; cwd = dir};
         String_hashtbl.add visited cur_package_name dir;
       end
@@ -7303,7 +7325,6 @@ type  file_group =
   { dir : string ; (* currently relative path expected for ninja file generation *)
     sources : Binary_cache.file_group_rouces ; 
     resources : string list ; (* relative path *)
-    bs_dependencies : string list; (* relative path *)
     public : public;
     dir_index : dir_index; 
   } 
@@ -7393,7 +7414,6 @@ type  file_group =
   { dir : string ;
     sources : Binary_cache.file_group_rouces; 
     resources : string list ;
-    bs_dependencies : string list ;
     public : public ;
     dir_index : dir_index 
   } 
@@ -7537,7 +7557,6 @@ and parsing_source_dir_map
   = 
   let cur_sources = ref String_map.empty in
   let resources = ref [] in 
-  let bs_dependencies = ref [] in
   let public = ref Export_all in (* TODO: move to {!Bsb_default} later*)
   let cur_update_queue = ref [] in 
   let cur_globbed_dirs = ref [] in 
@@ -7599,7 +7618,6 @@ and parsing_source_dir_map
 
   end;
   x   
-  |? (Bsb_build_schemas.bs_dependencies, `Arr (fun s -> bs_dependencies := get_list_string s ))
   |?  (Bsb_build_schemas.resources ,
        `Arr (fun s  ->
            resources := get_list_string s 
@@ -7617,7 +7635,6 @@ and parsing_source_dir_map
       {dir = dir; 
        sources = !cur_sources; 
        resources = !resources;
-       bs_dependencies = !bs_dependencies;
        public = !public;
        dir_index = cxt.dir_index ;
       } in 
@@ -7978,12 +7995,12 @@ module Bsb_config_types
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-type bs_dependency = 
+type dependency = 
   {
     package_name : string ; 
     package_install_path : string ; 
   }
-type bs_dependencies = bs_dependency list 
+type dependencies = dependency list 
 
 (* `string` is a path to the entrypoint *)
 type entries_t = JsTarget of string | NativeTarget of string | BytecodeTarget of string
@@ -7995,9 +8012,9 @@ type t =
     external_includes : string list ; 
     bsc_flags : string list ;
     ppx_flags : string list ;
-    bs_dependencies : bs_dependencies;
-    
-    built_in_dependency : bs_dependency option; 
+    bs_dependencies : dependencies;
+    bs_dev_dependencies : dependencies;
+    built_in_dependency : dependency option; 
     (*TODO: maybe we should always resolve bs-platform 
       so that we can calculate correct relative path in 
       [.merlin]
@@ -8326,6 +8343,7 @@ let merlin_file_gen ~cwd
       generate_merlin;
       ppx_flags;
       bs_dependencies;
+      bs_dev_dependencies;
       bsc_flags; 
       built_in_dependency;
       external_includes; 
@@ -8371,7 +8389,16 @@ let merlin_file_gen ~cwd
       String.concat Ext_string.single_space 
         (Literals.dash_nostdlib::bsc_flags)  in 
     Buffer.add_string buffer bsc_string_flag ;
+
     bs_dependencies 
+    |> List.iter (fun package ->
+        let path = package.Bsb_config_types.package_install_path in
+        Buffer.add_string buffer merlin_s ;
+        Buffer.add_string buffer path ;
+        Buffer.add_string buffer merlin_b;
+        Buffer.add_string buffer path ;
+      );
+    bs_dev_dependencies (**TODO: shall we generate .merlin for dev packages ?*)
     |> List.iter (fun package ->
         let path = package.Bsb_config_types.package_install_path in
         Buffer.add_string buffer merlin_s ;
@@ -8442,6 +8469,7 @@ let interpret_json
      Make sure it works with [-make-world] [-clean-world]
   *)
   let bs_dependencies = ref [] in 
+  let bs_dev_dependencies = ref [] in
   (* Setting ninja is a bit complex
      1. if [build.ninja] does use [ninja] we need set a variable
      2. we need store it so that we can call ninja correctly
@@ -8484,6 +8512,8 @@ let interpret_json
         ocamllex := Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.ocamllex s ))
 
     |? (Bsb_build_schemas.bs_dependencies, `Arr (fun s -> bs_dependencies := Bsb_build_util.get_list_string s |> List.map (resolve_package cwd)))
+    |? (Bsb_build_schemas.bs_dev_dependencies, `Arr (fun s -> bs_dev_dependencies := Bsb_build_util.get_list_string s |> List.map (resolve_package cwd)))
+
     (* More design *)
     |? (Bsb_build_schemas.bs_external_includes, `Arr (fun s -> bs_external_includes := get_list_string s))
     |? (Bsb_build_schemas.bsc_flags, `Arr (fun s -> bsc_flags := Bsb_build_util.get_list_string_acc s !bsc_flags))
@@ -8532,6 +8562,7 @@ let interpret_json
           bsc_flags = !bsc_flags ;
           ppx_flags = !ppx_flags ;
           bs_dependencies = !bs_dependencies;
+          bs_dev_dependencies = !bs_dev_dependencies;
           refmt = !refmt ;
           refmt_flags = !refmt_flags ;
           js_post_build_cmd =  !js_post_build_cmd ;
@@ -9276,7 +9307,6 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd
     (files_to_install : String_hash_set.t) acc (group: Bsb_build_ui.file_group) : info =
   let handle_module_info  oc  module_name
       ( module_info : Binary_cache.module_info)
-      bs_dependencies
       info  =
     let installable =
       match group.public with
@@ -9303,31 +9333,23 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd
       (* let output_mldeps = output_file_sans_extension ^ Literals.suffix_mldeps in  *)
       (* let output_mlideps = output_file_sans_extension ^ Literals.suffix_mlideps in  *)
       let shadows =
-        let package_flags =
-          ( "bs_package_flags",
-            `Append
-              (String_set.fold (fun s acc ->
-                  Ext_string.inter2 acc (Bsb_config.package_flag ~format:s (Filename.dirname output_cmi))
+        ( "bs_package_flags",
+          `Append
+            (String_set.fold (fun s acc ->
+                 Ext_string.inter2 acc (Bsb_config.package_flag ~format:s (Filename.dirname output_cmi))
 
-                 ) package_specs Ext_string.empty)
-          ) ::
-          (if group.dir_index = 0 then [] else
-             [("bsc_extra_includes",
-               `Overwrite
-                 ("${" ^ Bsb_build_util.string_of_bsb_dev_include group.dir_index ^ "}")
-              )]
-          )
-        in
-
-        match bs_dependencies with
-        | [] -> package_flags
-        | _ ->
-          (
-            "bs_package_includes",
-            `Append
-              (Bsb_build_util.flag_concat "-bs-package-include" bs_dependencies)
-          )
-          :: package_flags
+               ) package_specs Ext_string.empty)
+        ) ::
+        (if group.dir_index = 0 then [] else
+           [
+             "bs_package_includes", `Append "$bs_package_dev_includes"
+             ;
+             ("bsc_extra_includes",
+              `Overwrite
+                ("${" ^ Bsb_build_util.string_of_bsb_dev_include group.dir_index ^ "}")
+             )
+           ]
+        )
       in
       if kind = `Mll then
         output_build oc
@@ -9440,7 +9462,7 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd
 
   in
   String_map.fold (fun  k v  acc ->
-      handle_module_info  oc k v group.bs_dependencies acc
+      handle_module_info  oc k v acc
     ) group.sources  acc
 
 
@@ -9546,6 +9568,7 @@ let output_ninja
     bsc_flags ; 
     ppx_flags;
     bs_dependencies;
+    bs_dev_dependencies;
     refmt;
     refmt_flags;
     js_post_build_cmd;
@@ -9587,6 +9610,7 @@ let output_ninja
           "bsc_flags", bsc_flags ;
           "ppx_flags", ppx_flags;
           "bs_package_includes", (Bsb_build_util.flag_concat dash_i @@ List.map (fun x -> x.Bsb_config_types.package_install_path) bs_dependencies);
+          "bs_package_dev_includes", (Bsb_build_util.flag_concat dash_i @@ List.map (fun x -> x.Bsb_config_types.package_install_path) bs_dev_dependencies);  
           "refmt", (match refmt with None -> bsc_dir // refmt_exe | Some x -> x) ;
           "reason_react_jsx",
             ( if reason_react_jsx then "-ppx " ^ Filename.quote (bsc_dir // Literals.reactjs_jsx_ppx_exe)
