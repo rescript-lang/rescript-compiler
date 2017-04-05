@@ -1,7 +1,6 @@
 
 
 
-
 let test_js_error () = 
   match Js.Json.exnParse {| {"x" : }|} with
   | (exception
@@ -20,7 +19,7 @@ let test_js_error2 () =
 let example1 () = 
     match Js.Json.exnParse {| {"x"  }|} with 
     | exception Js.Exn.Error err -> 
-        Js.log @@ err##stack;
+        Js.log @@ Js.Exn.stack err;
         None
     | v -> Some v 
 
