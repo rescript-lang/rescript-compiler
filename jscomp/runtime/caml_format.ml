@@ -145,18 +145,16 @@ let caml_int64_of_string s =
 
   let rec aux acc k = 
     if k = len then acc 
-    else 
+    else             
       let a = s.[k] in
       if a  = '_' then aux acc ( k +  1) 
-      else 
+      else     
         let v = Int64.of_int @@ parse_digit a in  
-        if v < 0L || v >=  base then 
+        if v < 0L || v >=  base || acc > threshold then 
           caml_failwith "int64_of_string"
         else 
           let acc = base *~ acc +~  v in 
-          if acc > threshold then 
-            caml_failwith "int64_of_string"
-          else aux acc  ( k +   1)
+          aux acc  ( k +   1)
   in 
   let res = sign *~ aux d (i + 1) in 
   let or_res = Int64.logor res 0L in 
