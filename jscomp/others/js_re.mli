@@ -73,7 +73,7 @@ let contentOf tag xmlString =
   Js.Re.fromString ("<" ^ tag ^ ">(.|\n)*?<\/" ^ tag ^">")
     |> Js.Re.exec xmlString
     |> function
-      | Some result => Some (Js.Re.matches result).(1)
+      | Some result -> Some (Js.Re.matches result).(1)
       | None -> None
 ]}
 *)
