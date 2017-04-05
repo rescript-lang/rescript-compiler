@@ -58,7 +58,15 @@ let () =
     Obj.set_tag (Obj.repr sys_blocked_io) object_tag;
     Obj.set_tag (Obj.repr assert_failure) object_tag;
     Obj.set_tag (Obj.repr undefined_recursive_module) object_tag
-(* TODO: 
-   1. is it necessary to tag [248] here
-   2. is it okay to remove the negative value
+
+(**: 
+   1. Is it necessary to tag [248] here
+   For compatibility reasons: tag [248] will make 
+   `Printexc.to_string` happy see #1501
+   2. Is it okay to remove the negative value
+   For marshalling? 
+   3. Global exception is encoded the same as user defined exception 
+   (for nullary and non-nullary), except
+   - time stamp
+   - its name is not qualified
 *)

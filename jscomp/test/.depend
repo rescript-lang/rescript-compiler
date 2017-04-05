@@ -143,6 +143,7 @@ event_ffi.cmj : ../stdlib/list.cmj ../runtime/js_unsafe.cmj \
 exception_alias.cmj : ../stdlib/list.cmj
 exception_raise_test.cmj : mt.cmj
 exception_rebound_err.cmj : ../runtime/js.cmj
+exception_repr_test.cmj : ../stdlib/printexc.cmj mt.cmj ../stdlib/format.cmj
 exception_value_test.cmj : ../runtime/js.cmj
 export_keyword.cmj :
 ext_array.cmj : ../stdlib/list.cmj ../stdlib/array.cmj
