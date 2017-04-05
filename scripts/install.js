@@ -20,6 +20,7 @@ var os = require('os')
 var os_type = os.type()
 var os_arch = os.arch()
 var is_windows = !(os_type.indexOf('Windows') < 0)
+var is_bsd =  !(os_type.indexOf('BSD') < 0)
 var root_dir = path.join(__dirname,'..')
 var jscomp = path.join(root_dir, 'jscomp')
 var jscomp_bin = path.join(jscomp, 'bin')
@@ -74,26 +75,27 @@ if(is_windows){
 console.log('ninja binary is ready: ', ninja_bin_output)
 
 function non_windows_npm_release() {
+    var make = is_bsd ? 'gmake' : 'make';
     try {
         child_process.execSync('node ../scripts/config_compiler.js', working_config)
         console.log("Build the compiler and runtime .. ")
-        child_process.execSync("make world", working_config)
+        child_process.execSync(make + " world", working_config)
 
     } catch (e) {
         child_process.execSync(path.join(__dirname, 'buildocaml.sh')) // TODO: sh -c ? this will be wrong if we have white space in the path
         process.env.PATH = path.join(__dirname, '..', 'bin') + path.delimiter + process.env.PATH
         console.log('configure again with local ocaml installed')
         if (process.env.BS_TRAVIS_CI) {
-            child_process.execSync("make travis-world-test", working_config)
+            child_process.execSync(make + " travis-world-test", working_config)
         } else {
-            child_process.execSync("make world", working_config)
+            child_process.execSync(make + " world", working_config)
         }
 
         clean.clean()
     }
 
     console.log("Installing")
-    child_process.execSync('make VERBOSE=true install', working_config)
+    child_process.execSync(make + ' VERBOSE=true install', working_config)
 
 }
 
