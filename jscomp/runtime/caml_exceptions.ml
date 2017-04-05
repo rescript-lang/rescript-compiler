@@ -55,15 +55,18 @@ let caml_set_oo_id (b : Caml_builtin_exceptions.exception_block)  =
 let get_id () = 
   id := Nativeint.add !id 1n; !id
 
+let object_tag = 248
+
 let create (str : string) : Caml_builtin_exceptions.exception_block = 
   let v = ( str, get_id ()) in 
-  Obj.set_tag (Obj.repr v) 248 (* Obj.object_tag*);
+  Obj.set_tag (Obj.repr v) object_tag;
   v 
 
 external isUndefined : 'a -> bool = "#is_undef"
 (** It could be either customized exception or built in exception *)
 let isCamlException e = 
+  Obj.tag e = object_tag  (* nullary exception *)
+  ||
   let slot = Obj.field e 0 in 
   not (isUndefined slot) &&
-  (Obj.tag slot = 248
-   || (Js.typeof (Obj.field slot 0) == "string"))
+  (Obj.tag slot = object_tag)

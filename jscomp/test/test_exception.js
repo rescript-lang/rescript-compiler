@@ -35,10 +35,16 @@ function xx() {
       ];
 }
 
-exports.Local = Local;
-exports.f     = f;
-exports.g     = g;
-exports.h     = h;
-exports.x     = x;
-exports.xx    = xx;
+var Nullary = Caml_exceptions.create("Test_exception.Nullary");
+
+var a = Nullary;
+
+exports.Local   = Local;
+exports.f       = f;
+exports.g       = g;
+exports.h       = h;
+exports.x       = x;
+exports.xx      = xx;
+exports.Nullary = Nullary;
+exports.a       = a;
 /* No side effect */

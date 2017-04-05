@@ -30,8 +30,9 @@
 
 type exception_block = string * nativeint 
 
+let object_tag = 248
 
-let out_of_memory =  "Out_of_memory", 0n
+let out_of_memory =  "Out_of_memory", 0n 
 let sys_error = "Sys_error", -1n
 let failure =  "Failure", -2n
 let invalid_argument =  "Invalid_argument", -3n
@@ -44,6 +45,19 @@ let sys_blocked_io =  "Sys_blocked_io", -9n
 let assert_failure =  "Assert_failure", -10n
 let undefined_recursive_module =  "Undefined_recursive_module", -11n
 
+let () =
+    Obj.set_tag (Obj.repr out_of_memory ) object_tag;
+    Obj.set_tag (Obj.repr sys_error) object_tag;
+    Obj.set_tag (Obj.repr failure) object_tag;
+    Obj.set_tag (Obj.repr invalid_argument) object_tag;
+    Obj.set_tag (Obj.repr end_of_file) object_tag;
+    Obj.set_tag (Obj.repr division_by_zero) object_tag;
+    Obj.set_tag (Obj.repr not_found) object_tag ; 
+    Obj.set_tag (Obj.repr match_failure) object_tag;
+    Obj.set_tag (Obj.repr stack_overflow) object_tag;
+    Obj.set_tag (Obj.repr sys_blocked_io) object_tag;
+    Obj.set_tag (Obj.repr assert_failure) object_tag;
+    Obj.set_tag (Obj.repr undefined_recursive_module) object_tag
 (* TODO: 
    1. is it necessary to tag [248] here
    2. is it okay to remove the negative value
