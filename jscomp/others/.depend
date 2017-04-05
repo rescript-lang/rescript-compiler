@@ -12,7 +12,7 @@ js_json.cmj : js_types.cmj js_string.cmj js_dict.cmj js_array.cmj \
 js_obj.cmj :
 bs_dyn.cmj : bs_dyn.cmi
 bs_dyn_lib.cmj : bs_dyn.cmj bs_dyn_lib.cmi
-node_child_process.cmj :
+node_child_process.cmj : node.cmj
 js_boolean.cmj : js_boolean.cmi
 js_math.cmj :
 js_dict.cmj : js_dict.cmi

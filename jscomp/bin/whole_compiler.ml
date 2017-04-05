@@ -92477,20 +92477,21 @@ let translate (prim_name : string)
     (** No cross compilation *)
     Js_of_lam_tuple.make [E.str Sys.os_type; E.small_int  Sys.word_size; 
                           E.bool Sys.big_endian ]
-  | "caml_sys_get_argv" -> 
+  | "caml_sys_get_argv" 
     (** TODO: refine
         Inlined here is helpful for DCE
         {[ external get_argv: unit -> string * string array = "caml_sys_get_argv" ]}
     *)
-    Js_of_lam_tuple.make [E.str "cmd"; 
-                          Js_of_lam_array.make_array NA Pgenarray []
-                         ]
+    (* Js_of_lam_tuple.make [E.str "cmd";  *)
+    (*                       Js_of_lam_array.make_array NA Pgenarray [] *)
+    (*                      ] *)
   | "caml_sys_time"
   | "caml_sys_random_seed"
   | "caml_sys_getenv"
   | "caml_sys_system_command" 
   | "caml_sys_getcwd" (* check browser or nodejs *)
   | "caml_sys_is_directory"
+  | "caml_sys_exit"
   (* | "caml_sys_file_exists" *)
     -> 
     call Js_config.sys
@@ -92820,7 +92821,7 @@ let translate (prim_name : string)
   | "caml_ml_input_int"
   | "caml_ml_close_channel"
   | "caml_ml_output_int"
-  | "caml_sys_exit"
+
   | "caml_ml_channel_size_64"
   | "caml_ml_channel_size"
   | "caml_ml_pos_in_64"

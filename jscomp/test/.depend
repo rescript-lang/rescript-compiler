@@ -50,6 +50,7 @@ abstract_type.cmj : abstract_type.cmi
 alias_test.cmj : ../stdlib/string.cmj alias_test.cmi
 and_or_tailcall_test.cmj : mt.cmj
 app_root_finder.cmj : ../others/node.cmj ../runtime/js.cmj
+argv_test.cmj : ../stdlib/arg.cmj
 ari_regress_test.cmj : mt.cmj ari_regress_test.cmi
 arith_lexer.cmj : ../stdlib/lexing.cmj arith_syntax.cmj arith_parser.cmj
 arith_parser.cmj : ../stdlib/parsing.cmj ../stdlib/obj.cmj \
