@@ -211,6 +211,7 @@ gpr_1423_nav.cmj :
 gpr_1438.cmj :
 gpr_1481.cmj : ../runtime/js.cmj
 gpr_1484.cmj :
+gpr_1503_test.cmj : mt.cmj ../stdlib/int64.cmj
 gpr_405_test.cmj : ../stdlib/hashtbl.cmj gpr_405_test.cmi
 gpr_441.cmj :
 gpr_459_test.cmj : mt.cmj
