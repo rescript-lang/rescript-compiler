@@ -142,7 +142,9 @@ OTHERS := literals a test_ari test_export2 test_internalOO test_obj_simple_ffi t
 	nested_pattern_match_test\
 	caml_sys_poly_fill_test\
 	argv_test\
-	promise_catch_test
+	promise_catch_test\
+	exception_rebind_test\
+	exception_def
 
 
 # bs_uncurry_test
