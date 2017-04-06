@@ -92,6 +92,7 @@ bin/bsppx.ml : syntax/ast_external.mli
 bin/bsppx.ml : syntax/ast_ffi_types.ml
 bin/bsppx.ml : syntax/ast_signature.ml
 bin/bsppx.ml : syntax/ast_structure.ml
+bin/bsppx.ml : syntax/bs_syntaxerr.mli
 bin/bsppx.ml : syntax/ast_attributes.ml
 bin/bsppx.ml : syntax/ast_core_type.mli
 bin/bsppx.ml : syntax/ast_derive_dyn.ml

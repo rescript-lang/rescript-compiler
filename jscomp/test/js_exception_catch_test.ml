@@ -49,7 +49,7 @@ let () =
   eq __LOC__ (test (fun _ -> raise B)) `B;
   eq __LOC__ (test (fun _ -> raise (C(1,2)))) `C;
   eq __LOC__ (test (fun _ -> raise (C(0,2)))) `C_any;
-  eq __LOC__ (test (fun _ -> Js.Exn.error "x")) `Js_error;
+  eq __LOC__ (test (fun _ -> Js.Exn.raiseError "x")) `Js_error;
   eq __LOC__ (test (fun _ -> failwith "x")) `Any
 
 ;;

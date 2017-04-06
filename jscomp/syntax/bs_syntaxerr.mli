@@ -22,40 +22,34 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type error 
+  = Unsupported_predicates
+  | Conflict_bs_bs_this_bs_meth  
+  | Duplicated_bs_deriving
+  | Conflict_attributes
 
-type t = Parsetree.pattern
+  | Duplicated_bs_as 
+  | Expect_int_literal
+  | Expect_string_literal
+  | Expect_int_or_string_or_json_literal
+  | Unhandled_poly_type
+  | Unregistered of string 
+  | Invalid_underscore_type_in_external
+  | Invalid_bs_string_type 
+  | Invalid_bs_int_type 
+  | Conflict_ffi_attribute
+  | Not_supported_in_bs_deriving
+  | Canot_infer_arity_by_syntax
+  | Illegal_attribute
+  | Inconsistent_arity of int * int 
+  (* we still rqeuire users to have explicit annotation to avoid
+     {[ (((int -> int) -> int) -> int )]}
+  *)
+  | Not_supported_directive_in_bs_return
+  | Expect_opt_in_bs_return_to_opt
+  | Label_in_uncurried_bs_attribute
+
+  | Bs_this_simple_pattern
 
 
-let is_unit_cont ~yes ~no (p : t)  =
-  match p  with
-  | {ppat_desc = Ppat_construct({txt = Lident "()"}, None)}
-    -> yes 
-  | _ -> no
-
-
-(** [arity_of_fun pat e] tells the arity of 
-    expression [fun pat -> e]
-*)
-let arity_of_fun
-    (pat : Parsetree.pattern)
-    (e : Parsetree.expression) =
-  let rec aux (e : Parsetree.expression)  =
-    match e.pexp_desc with
-    | Pexp_fun ("", None, pat, e) ->
-      1 + aux e       
-    | Pexp_fun _
-      -> Location.raise_errorf
-           ~loc:e.pexp_loc "Lable is not allowed in JS object"
-    | _ -> 0 in
-  is_unit_cont ~yes:0 ~no:1 pat + aux e 
-
-
-let rec is_single_variable_pattern_conservative  (p : t ) =
-  match p.ppat_desc with 
-  | Parsetree.Ppat_any 
-  | Parsetree.Ppat_var _ -> true 
-  | Parsetree.Ppat_alias (p,_) 
-  | Parsetree.Ppat_constraint (p, _) -> 
-    is_single_variable_pattern_conservative p 
-  
-  | _ -> false
+val err : Location.t -> error -> 'a

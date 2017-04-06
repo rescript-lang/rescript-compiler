@@ -24,21 +24,27 @@
 
 type t 
 
+type exn += private Error of t 
 
-exception Error of t
 
 
 external stack : t -> string option = ""
   [@@bs.get] [@@bs.return undefined_to_opt]
+external message : t -> string option = ""
+  [@@bs.get] [@@bs.return undefined_to_opt] 
+external name : t -> string option = ""
+  [@@bs.get] [@@bs.return undefined_to_opt] 
+external fileName : t -> string option = ""
+  [@@bs.get] [@@bs.return undefined_to_opt] 
 
 (** Used by the compiler internally *)
 val internalToOCamlException : Obj.t -> exn
 
 (** Raise Js exception Error object with stacktrace *)
-val error : string -> 'a
-val evalError : string -> 'a
-val rangeError : string -> 'a
-val referenceError :  string -> 'a
-val syntaxError : string -> 'a
-val typeError : string -> 'a
-val uriError :  string -> 'a
+val raiseError : string -> 'a
+val raiseEvalError : string -> 'a
+val raiseRangeError : string -> 'a
+val raiseReferenceError :  string -> 'a
+val raiseSyntaxError : string -> 'a
+val raiseTypeError : string -> 'a
+val raiseUriError :  string -> 'a

@@ -93,6 +93,28 @@ let fff  =
   | A x -> x 
   | _ -> 2 
 
+let a0 = 
+  try [%bs.raw{| function (){throw 2} () |}] with (* throw is a statement *)
+  | A x -> x 
+  | Js.Exn.Error v -> Obj.magic v   
+  | _ -> assert false 
+
+
+let a1 : exn  = 
+  try [%bs.raw{| function (){throw 2} () |}] with (* throw is a statement *)
+  | e -> e 
+
+let a2 : exn  = 
+  try [%bs.raw{| function (){throw (new Error("x"))} () |}] with (* throw is a statement *)
+  | e -> e 
+
+
 ;; Mt.from_pair_suites __FILE__ Mt.[
-    __LOC__, (fun _ -> Eq ((f,ff,fff), (2,2,2)))
+    __LOC__, (fun _ -> Eq ((f,ff,fff,a0), (2,2,2,2)));
+    (* __LOC__, (fun _ -> Eq (Js.Exn.Error (Obj.magic 2) , a1)) *)
+    __LOC__, (fun _ -> 
+        match a1 with 
+        | Js.Exn.Error v -> Eq (Obj.magic  v , 2)
+        | _ -> assert false 
+      )
 ]

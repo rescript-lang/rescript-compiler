@@ -230,6 +230,14 @@ let generic_to_uncurry_exp kind loc (self : Ast_mapper.mapper)  pat body
     | _, _ -> self.expr self body, acc  
   in 
   let first_arg = self.pat self pat in  
+  let () = 
+    match kind with 
+    | `Method_callback -> 
+      if not @@ Ast_pat.is_single_variable_pattern_conservative first_arg then
+        Bs_syntaxerr.err first_arg.ppat_loc  Bs_this_simple_pattern
+    | _ -> ()
+  in 
+
   let result, rev_extra_args = aux [first_arg] body in 
   let body = 
     List.fold_left (fun e p -> Ast_comb.fun_no_label ~loc p e )

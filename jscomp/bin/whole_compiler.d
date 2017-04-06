@@ -328,6 +328,7 @@ bin/whole_compiler.ml : syntax/ast_external.mli
 bin/whole_compiler.ml : syntax/ast_ffi_types.ml
 bin/whole_compiler.ml : syntax/ast_signature.ml
 bin/whole_compiler.ml : syntax/ast_structure.ml
+bin/whole_compiler.ml : syntax/bs_syntaxerr.mli
 bin/whole_compiler.ml : ../ocaml/bytecomp/printlambda.mli
 bin/whole_compiler.ml : ../ocaml/bytecomp/translclass.mli
 bin/whole_compiler.ml : core/js_of_lam_array.mli
