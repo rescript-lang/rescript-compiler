@@ -10,6 +10,8 @@ let eq loc x y =
 exception Hi 
 exception Hello
 exception A of int 
+exception AAA = Exception_def.A 
+
 ;; Printexc.register_printer (function 
     | Hi  -> Some "hey"
     | A s -> Some (Format.asprintf "A(%d)" s )
@@ -21,7 +23,8 @@ exception A of int
 let () = 
     eq __LOC__ "hey" (Printexc.to_string Hi);
     eq __LOC__ "A(1)" (Printexc.to_string (A 1));
-    eq __LOC__ "Exception_repr_test.Hello" (Printexc.to_string Hello)
+    eq __LOC__ "Exception_repr_test.Hello" (Printexc.to_string Hello);
+    eq __LOC__ "A" (Printexc.to_string @@ AAA 3)
 
 ;; Mt.from_pair_suites __FILE__ !suites
 
