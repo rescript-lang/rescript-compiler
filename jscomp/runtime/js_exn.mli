@@ -30,6 +30,12 @@ exception Error of t
 
 external stack : t -> string option = ""
   [@@bs.get] [@@bs.return undefined_to_opt]
+external message : t -> string option = ""
+  [@@bs.get] [@@bs.return undefined_to_opt] 
+external name : t -> string option = ""
+  [@@bs.get] [@@bs.return undefined_to_opt] 
+external fileName : t -> string option = ""
+  [@@bs.get] [@@bs.return undefined_to_opt] 
 
 (** Used by the compiler internally *)
 val internalToOCamlException : Obj.t -> exn

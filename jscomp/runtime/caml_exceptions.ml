@@ -63,10 +63,44 @@ let create (str : string) : Caml_builtin_exceptions.exception_block =
   v 
 
 external isUndefined : 'a -> bool = "#is_undef"
-(** It could be either customized exception or built in exception *)
-let isCamlException e = 
+
+
+(**
+  This function should never throw
+  It could be either customized exception or built in exception 
+  Note due to that in OCaml extensible variants have the same 
+  runtime representation as exception, so we can not 
+  really tell the difference. 
+  
+  However, if we make a false alarm, classified extensible variant 
+  as exception, it will be OKAY for nested pattern match
+
+   {[
+     match toExn x : exn option with 
+     | Some _ 
+       -> Js.log "Could be an OCaml exception or an open variant"
+          (* If it is an Open variant, it will never pattern match, 
+             This is Okay, since exception could never have exhaustive pattern match
+             
+          *)
+     | None -> Js.log "Not an OCaml exception for sure"
+   ]}
+
+   However, there is still something wrong, since if user write such code
+   {[
+     match toExn x with 
+     | Some _ -> (* assert it is indeed an exception *)
+       (* This assertion is wrong, since it could be an open variant *)
+     | None -> (* assert it is not an exception *)
+   ]}
+
+   This is not a problem in `try .. with` since the logic above is not expressible, see more design in [destruct_exn.md]
+  *)
+let isCamlExceptionOrOpenVariant e = 
   Obj.tag e = object_tag  (* nullary exception *)
   ||
   let slot = Obj.field e 0 in 
   not (isUndefined slot) &&
   (Obj.tag slot = object_tag)
+
+
