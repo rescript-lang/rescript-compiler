@@ -147,7 +147,9 @@ OTHERS := literals a test_ari test_export2 test_internalOO test_obj_simple_ffi t
 	exception_def\
 	test_other_exn\
 	rebind_module\
-	rebind_module_test
+	rebind_module_test\
+	js_promise_basic_test
+
 
 
 # bs_uncurry_test
