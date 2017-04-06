@@ -28,7 +28,7 @@
 
 
 type t = 
-  | Single of Lambda.let_kind  * Ident.t * Lam.t
+  | Single of Lam.let_kind  * Ident.t * Lam.t
   | Recursive of (Ident.t * Lam.t) list
   | Nop of Lam.t 
 

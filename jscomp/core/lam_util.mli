@@ -43,11 +43,11 @@ val field_flatten_get :
 
 
 val alias_ident_or_global : Lam_stats.meta ->
-  Ident.t -> Ident.t -> Lam_stats.kind -> Lambda.let_kind -> unit 
+  Ident.t -> Ident.t -> Lam_stats.kind -> Lam.let_kind -> unit 
 
 
 val refine_let : 
-    kind:Lambda.let_kind  ->
+    kind:Lam.let_kind  ->
       Ident.t -> Lam.t -> Lam.t -> Lam.t
 
 

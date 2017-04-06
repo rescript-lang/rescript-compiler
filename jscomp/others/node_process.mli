@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,33 +17,29 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** Node Child Process API *)
+type t =
+  < argv : string array;
+    arch : string ;
+    abort : unit -> unit [@bs.meth];
+    chdir : string -> unit [@bs.meth];
+    cwd : unit -> string [@bs.meth];
+    disconnect : unit -> unit [@bs.meth];
+    platform : string;
+    env : string Js_dict.t; (* ocamldep sucks which can not map [Js.Dic.t] to [Js_dict.t]*)
+  >   Js.t
 
-type option 
+external process : t = "" [@@bs.module]
 
-external option : ?cwd:string -> ?encoding:string -> unit -> option = "" [@@bs.obj]
+external exit : int -> unit = "" [@@bs.module "process"]
 
-(* TODO: when no option it would return buffer  *)
-external execSync : string -> option -> string = "" [@@bs.module "child_process"]
+(** The process.uptime() method returns the number of seconds 
+   the current Node.js process has been running.) *)
+external uptime : t -> unit -> float = "" [@@bs.send]
 
-(* Note we have to make it abstract type, since if you declare it as
-   [ < pid : float > Js.t ], then you will create other external
-   functions which will work with this type too, it is not what you want
-*)
-type spawnResult
-
-
-external spawnSync : string -> spawnResult = "" [@@bs.module "child_process"]
-
-external readAs : spawnResult -> 
-  < pid : int ; 
-    status : int Js.null;
-    signal : string Js.null ; 
-    stdout : Node.string_buffer Js.null ;
-    stderr : Node.string_buffer Js.null > Js.t = 
-  "%identity"
+val putEnvVar : string -> string -> unit
+val deleteEnvVar : string -> unit

@@ -46,7 +46,7 @@ type value = {
     order_id : int
   }
 
-type let_kind = Lambda.let_kind
+type let_kind = Lam.let_kind
 
 type st = 
   | EffectCall

@@ -3642,7 +3642,7 @@ more examples, please visit
 <pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">let</span> <span class="tok-n">example1</span> <span class="tok-bp">()</span> <span class="tok-o">=</span>
     <span class="tok-k">match</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-nn">Json</span><span class="tok-p">.</span><span class="tok-n">exnParse</span> <span class="tok-o">{|</span> <span class="tok-o">{</span><span class="tok-s2">&quot;x&quot;</span>  <span class="tok-o">}|}</span> <span class="tok-k">with</span>
     <span class="tok-o">|</span> <span class="tok-k">exception</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-nn">Exn</span><span class="tok-p">.</span><span class="tok-nc">Error</span> <span class="tok-n">err</span> <span class="tok-o">-&gt;</span>
-        <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">log</span> <span class="tok-o">@@</span> <span class="tok-n">err</span><span class="tok-o">##</span><span class="tok-n">stack</span><span class="tok-o">;</span>
+        <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">log</span> <span class="tok-o">@@</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-nn">Exn</span><span class="tok-p">.</span><span class="tok-n">stack</span> <span class="tok-n">err</span><span class="tok-o">;</span>
         <span class="tok-nc">None</span>
     <span class="tok-o">|</span> <span class="tok-n">v</span> <span class="tok-o">-&gt;</span> <span class="tok-nc">Some</span> <span class="tok-n">v</span>
 

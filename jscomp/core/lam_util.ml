@@ -113,7 +113,7 @@ let refine_let
     ~kind param
     (arg : Lam.t) (l : Lam.t)  : Lam.t =
 
-  match (kind : Lambda.let_kind ), arg, l  with 
+  match (kind : Lam.let_kind ), arg, l  with 
   | _, _, Lvar w when Ident.same w param (* let k = xx in k *)
     -> arg (* TODO: optimize here -- it's safe to do substitution here *)
   | _, _, Lprim {primitive ; args =  [Lvar w]; loc ; _} when Ident.same w param 
@@ -175,7 +175,7 @@ let refine_let
     Lam.let_ Strict param arg  l *)
 
 let alias_ident_or_global (meta : Lam_stats.meta) (k:Ident.t) (v:Ident.t) 
-    (v_kind : Lam_stats.kind) (let_kind : Lambda.let_kind) =
+    (v_kind : Lam_stats.kind) (let_kind : Lam.let_kind) =
   (** treat rec as Strict, k is assigned to v 
       {[ let k = v ]}
   *)

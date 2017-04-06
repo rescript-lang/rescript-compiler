@@ -6,7 +6,7 @@ caml_int64.cmj : js_typed_array.cmj js_float.cmj caml_utils.cmj \
     caml_int32.cmj bs_string.cmj caml_int64.cmi
 caml_exceptions.cmj : caml_builtin_exceptions.cmj caml_exceptions.cmi
 caml_utils.cmj : caml_utils.cmi
-caml_sys.cmj : caml_sys.cmi
+caml_sys.cmj : js.cmj caml_sys.cmi
 caml_io.cmj : js_undefined.cmj js.cmj bs_string.cmj
 caml_float.cmj : js_typed_array.cmj js_float.cmj caml_float.cmi
 caml_lexer.cmj : caml_lexer.cmi
@@ -32,7 +32,7 @@ caml_module.cmj :
 caml_missing_polyfill.cmj : caml_missing_polyfill.cmi
 bs_string.cmj :
 js_float.cmj :
-js_exn.cmj : js.cmj caml_exceptions.cmj js_exn.cmi
+js_exn.cmj : caml_exceptions.cmj js_exn.cmi
 bs_obj.cmj : js.cmj
 js_nativeint.cmj :
 js_int.cmj :
@@ -62,6 +62,6 @@ js_primitive.cmi : js_undefined.cmi js.cmi
 caml_basic.cmi : js_undefined.cmi js.cmi
 caml_oo.cmi :
 caml_missing_polyfill.cmi :
-js_exn.cmi : js.cmi
+js_exn.cmi :
 js_null.cmi : js.cmi
 js_undefined.cmi : js.cmi

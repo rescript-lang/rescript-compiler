@@ -28,14 +28,14 @@
 
 (** This is not a recursive type definition *)
 type t = 
-  | Single of Lambda.let_kind  * Ident.t * Lam.t
+  | Single of Lam.let_kind  * Ident.t * Lam.t
   | Recursive of (Ident.t * Lam.t) list
   | Nop of Lam.t 
 
 
 let pp = Format.fprintf 
 
-let str_of_kind (kind : Lambda.let_kind) = 
+let str_of_kind (kind : Lam.let_kind) = 
   match kind with 
   | Alias -> "a"
   | Strict -> ""

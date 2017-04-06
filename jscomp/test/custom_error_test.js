@@ -51,7 +51,7 @@ function example1() {
   catch (raw_exn){
     var exn = Js_exn.internalToOCamlException(raw_exn);
     if (exn[0] === Js_exn.$$Error) {
-      console.log(exn[1].stack);
+      console.log(Js_primitive.undefined_to_opt(exn[1].stack));
       return /* None */0;
     } else {
       throw exn;

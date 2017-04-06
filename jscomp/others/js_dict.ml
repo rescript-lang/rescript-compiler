@@ -50,3 +50,9 @@ external keys : 'a t -> key array = "Object.keys" [@@bs.val]
 external empty : unit -> 'a t = "" [@@bs.obj]
 
 
+let unsafeDeleteKey : string t -> string -> unit [@bs] = [%raw{|
+  function(dict,key){
+     delete dict[key];
+     return 0
+   }
+|}]

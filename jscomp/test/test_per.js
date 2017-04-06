@@ -3,6 +3,7 @@
 var Curry                    = require("../../lib/js/curry.js");
 var Caml_io                  = require("../../lib/js/caml_io.js");
 var Caml_obj                 = require("../../lib/js/caml_obj.js");
+var Caml_sys                 = require("../../lib/js/caml_sys.js");
 var Caml_format              = require("../../lib/js/caml_format.js");
 var Caml_string              = require("../../lib/js/caml_string.js");
 var Caml_exceptions          = require("../../lib/js/caml_exceptions.js");
@@ -502,9 +503,9 @@ function do_at_exit() {
   return Curry._1(exit_function[0], /* () */0);
 }
 
-function exit() {
+function exit(retcode) {
   Curry._1(exit_function[0], /* () */0);
-  return Caml_missing_polyfill.not_implemented("caml_sys_exit not implemented by bucklescript yet\n");
+  return Caml_sys.caml_sys_exit(retcode);
 }
 
 var max_int = 2147483647;

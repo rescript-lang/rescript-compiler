@@ -60,7 +60,7 @@ type return_type =
    (* have a mutable field to notifiy it's actually triggered *)
    (* anonoymous function does not have identifier *)
 
-type let_kind = Lambda.let_kind
+type let_kind = Lam.let_kind
 
 type st = 
   | EffectCall

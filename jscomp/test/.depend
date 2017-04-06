@@ -50,6 +50,7 @@ abstract_type.cmj : abstract_type.cmi
 alias_test.cmj : ../stdlib/string.cmj alias_test.cmi
 and_or_tailcall_test.cmj : mt.cmj
 app_root_finder.cmj : ../others/node.cmj ../runtime/js.cmj
+argv_test.cmj : ../stdlib/arg.cmj
 ari_regress_test.cmj : mt.cmj ari_regress_test.cmi
 arith_lexer.cmj : ../stdlib/lexing.cmj arith_syntax.cmj arith_parser.cmj
 arith_parser.cmj : ../stdlib/parsing.cmj ../stdlib/obj.cmj \
@@ -88,6 +89,8 @@ bytes_split_gpr_743_test.cmj : mt.cmj ../runtime/js.cmj ../stdlib/bytes.cmj
 caml_compare_test.cmj : mt.cmj
 caml_format_test.cmj : ../stdlib/printf.cmj mt.cmj ../stdlib/int64.cmj \
     ../stdlib/format.cmj ../stdlib/buffer.cmj ../stdlib/array.cmj
+caml_sys_poly_fill_test.cmj : ../stdlib/sys.cmj ../others/node_process.cmj \
+    mt.cmj
 chain_code_test.cmj : mt.cmj ../runtime/js_unsafe.cmj
 chn_test.cmj : ../stdlib/string.cmj mt.cmj ../others/js_string.cmj \
     ../others/js_array.cmj ../runtime/js.cmj ../stdlib/char.cmj \
@@ -332,6 +335,7 @@ nested_include.cmj :
 nested_module_alias.cmj : ../stdlib/list.cmj
 nested_obj_literal.cmj :
 nested_obj_test.cmj :
+nested_pattern_match_test.cmj :
 noassert.cmj :
 node_fs_test.cmj : ../others/node.cmj ../runtime/js.cmj
 node_path_test.cmj : ../runtime/js.cmj
