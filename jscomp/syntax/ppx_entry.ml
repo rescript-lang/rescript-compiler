@@ -271,16 +271,16 @@ let rec unsafe_mapper : Ast_mapper.mapper =
             (Ast_comb.to_js_re_type loc)
         | Pexp_extension ({txt = "bs.external" | "external" ; loc }, payload) -> 
           begin match Ast_payload.as_ident payload with 
-          | Some {txt = Lident x}
-            -> Ast_util.handle_external loc x
+            | Some {txt = Lident x}
+              -> Ast_util.handle_external loc x
             (* do we need support [%external gg.xx ] 
-               
+
                {[ Js.Undefined.to_opt (if Js.typeof x == "undefined" then x else Js.Undefined.empty ) ]}
             *)
 
-          | None | Some _ -> 
-            Location.raise_errorf ~loc 
-            "external expects a single identifier"
+            | None | Some _ -> 
+              Location.raise_errorf ~loc 
+                "external expects a single identifier"
           end 
         | Pexp_extension
             ({txt = ("bs.node" | "node"); loc},
@@ -301,7 +301,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                 Ast_util.handle_external loc (strip name)  in
               let typ =
                 Ast_core_type.lift_option_type  
-                 @@                 
+                @@                 
                 if name = "_module" then
                   Typ.constr ~loc
                     { txt = Ldot (Lident "Node", "node_module") ;
@@ -329,13 +329,16 @@ let rec unsafe_mapper : Ast_mapper.mapper =
           end             
         |Pexp_constant (Const_string (s, (Some delim))) 
           ->         
-          if Ext_string.equal delim Literals.unescaped_js_delimiter then 
+          if Ext_string.equal delim Literals.unescaped_js_delimiter then
             let s_len  = String.length s in 
             let buf = Buffer.create (s_len * 2) in 
             Ast_utf8_string.check_and_transform loc buf s 0 s_len ;  
             { e with pexp_desc = Pexp_constant (Const_string (Buffer.contents buf, Some Literals.escaped_j_delimiter))}
-          else if Ext_string.equal delim Literals.unescaped_j_delimiter then 
-            Location.raise_errorf ~loc "{j||j} is reserved for future use" 
+          else if Ext_string.equal delim Literals.unescaped_j_delimiter then
+            let starting_loc = {loc with loc_end = loc.loc_start} in
+            let empty_string_concat_exp = {e with pexp_desc = Pexp_constant (Const_string ("", None)); pexp_loc = starting_loc} in
+            let exps_list = Ast_utf8_string.transform_es6_style_template_string s starting_loc in
+            Ast_utf8_string.fold_expression_list_with_string_concat empty_string_concat_exp exps_list
           else e 
 
         (** [bs.debugger], its output should not be rewritten any more*)
@@ -728,4 +731,3 @@ let rewrite_implementation : (Parsetree.structure -> Parsetree.structure) ref =
         | _ -> 
           unsafe_mapper.structure  unsafe_mapper x  in 
       reset (); result )
-

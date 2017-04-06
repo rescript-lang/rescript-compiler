@@ -1765,6 +1765,11 @@ val error: ?loc:t -> ?sub:error list -> ?if_highlight:string -> string -> error
 val errorf: ?loc:t -> ?sub:error list -> ?if_highlight:string
             -> ('a, Format.formatter, unit, error) format4 -> 'a
 
+val errorf_prefixed : ?loc:t -> ?sub:error list -> ?if_highlight:string
+                    -> ('a, Format.formatter, unit, error) format4 -> 'a
+  (* same as {!errorf}, but prints the error prefix "Error:" before yielding
+   * to the format string *)
+
 val raise_errorf: ?loc:t -> ?sub:error list -> ?if_highlight:string
             -> ('a, Format.formatter, unit, 'b) format4 -> 'a
 
@@ -2143,14 +2148,14 @@ let pp_ksprintf ?before k fmt =
       k msg)
     ppf fmt
 
-(* Shift the formatter's offset by the length of the error prefix, which
-   is always added by the compiler after the message has been formatted *)
-let print_phanton_error_prefix ppf =
-  Format.pp_print_as ppf (String.length error_prefix + 2 (* ": " *)) ""
-
 let errorf ?(loc = none) ?(sub = []) ?(if_highlight = "") fmt =
   pp_ksprintf
-    ~before:print_phanton_error_prefix
+    (fun msg -> {loc; msg; sub; if_highlight})
+    fmt
+
+let errorf_prefixed ?(loc=none) ?(sub=[]) ?(if_highlight="") fmt =
+  pp_ksprintf
+    ~before:(fun ppf -> fprintf ppf "%a " print_error_prefix ())
     (fun msg -> {loc; msg; sub; if_highlight})
     fmt
 
@@ -2185,8 +2190,10 @@ let rec default_error_reporter ppf ({loc; msg; sub; if_highlight} as err) =
   if highlighted then
     Format.pp_print_string ppf if_highlight
   else begin
-    fprintf ppf "%a%a %s" print loc print_error_prefix () msg;
-    List.iter (Format.fprintf ppf "@\n@[<2>%a@]" default_error_reporter) sub
+    print ppf loc;
+    Format.pp_print_string ppf msg;
+    List.iter (fun err -> Format.fprintf ppf "@\n@[<2>%a@]" default_error_reporter err)
+              sub
   end
 
 let error_reporter = ref default_error_reporter
@@ -2196,7 +2203,7 @@ let report_error ppf err =
 ;;
 
 let error_of_printer loc print x =
-  errorf ~loc "%a@?" print x
+  errorf_prefixed ~loc "%a@?" print x
 
 let error_of_printer_file print x =
   error_of_printer (in_file !input_name) print x
@@ -2205,11 +2212,11 @@ let () =
   register_error_of_exn
     (function
       | Sys_error msg ->
-          Some (errorf ~loc:(in_file !input_name)
+          Some (errorf_prefixed ~loc:(in_file !input_name)
                 "I/O error: %s" msg)
       | Warnings.Errors n ->
           Some
-            (errorf ~loc:(in_file !input_name)
+            (errorf_prefixed ~loc:(in_file !input_name)
              "Some fatal warnings were triggered (%d occurrences)" n)
       | _ ->
           None
@@ -2237,9 +2244,7 @@ let () =
     )
 
 let raise_errorf ?(loc = none) ?(sub = []) ?(if_highlight = "") =
-  pp_ksprintf
-    ~before:print_phanton_error_prefix
-    (fun msg -> raise (Error ({loc; msg; sub; if_highlight})))
+  pp_ksprintf (fun msg -> raise (Error ({loc; msg; sub; if_highlight})))
 
 end
 (** Interface as module  *)
@@ -4646,9 +4651,9 @@ exception Escape_error
 
 let prepare_error = function
   | Unclosed(opening_loc, opening, closing_loc, closing) ->
-      Location.errorf ~loc:closing_loc
+      Location.errorf_prefixed ~loc:closing_loc
         ~sub:[
-          Location.errorf ~loc:opening_loc
+          Location.errorf_prefixed ~loc:opening_loc
             "This '%s' might be unmatched" opening
         ]
         ~if_highlight:
@@ -4658,22 +4663,22 @@ let prepare_error = function
         "Syntax error: '%s' expected" closing
 
   | Expecting (loc, nonterm) ->
-      Location.errorf ~loc "Syntax error: %s expected." nonterm
+      Location.errorf_prefixed ~loc "Syntax error: %s expected." nonterm
   | Not_expecting (loc, nonterm) ->
-      Location.errorf ~loc "Syntax error: %s not expected." nonterm
+      Location.errorf_prefixed ~loc "Syntax error: %s not expected." nonterm
   | Applicative_path loc ->
-      Location.errorf ~loc
+      Location.errorf_prefixed ~loc
         "Syntax error: applicative paths of the form F(X).t \
          are not supported when the option -no-app-func is set."
   | Variable_in_scope (loc, var) ->
-      Location.errorf ~loc
+      Location.errorf_prefixed ~loc
         "In this scoped type, variable '%s \
          is reserved for the local type %s."
          var var
   | Other loc ->
-      Location.errorf ~loc "Syntax error"
+      Location.errorf_prefixed ~loc "Syntax error"
   | Ill_formed_ast (loc, s) ->
-      Location.errorf ~loc "broken invariant in parsetree: %s" s
+      Location.errorf_prefixed ~loc "broken invariant in parsetree: %s" s
 
 let () =
   Location.register_error_of_exn
@@ -20733,6 +20738,8 @@ val single_colon : string
 val parent_dir_lit : string
 val current_dir_lit : string
 
+val append_char : string -> char -> string
+
 end = struct
 #1 "ext_string.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -20764,6 +20771,7 @@ end = struct
 
 
 
+let append_char s c = s ^ String.make 1 c
 
 (*
    {[ split " test_unsafe_obj_ffi_ppx.cmi" ~keep_empty:false ' ']}
@@ -100127,13 +100135,6 @@ let decode_utf8_string s =
   in decode_utf8_cont s 0 (String.length s); 
   List.rev !lst
 
-
-(** To decode {j||j} we need verify in the ast so that we have better error 
-    location, then we do the decode later
-*)  
-
-let verify s loc = 
-  assert false
 end
 module Ext_js_regex : sig 
 #1 "ext_js_regex.mli"
@@ -103545,7 +103546,7 @@ module Ast_utf8_string
 = struct
 #1 "ast_utf8_string.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -103563,132 +103564,234 @@ module Ast_utf8_string
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
 let rec check_and_transform loc buf s byte_offset s_len =
   if byte_offset = s_len then ()
-  else 
-    let current_char = s.[byte_offset] in 
-    match Ext_utf8.classify current_char with 
-    | Single c -> 
-      if c = 92 (* Char.code '\\' = 92 *)then 
-        begin 
+  else
+    let current_char = s.[byte_offset] in
+    match Ext_utf8.classify current_char with
+    | Single c ->
+      if c = 92 (* Char.code '\\' = 92 *)then
+        begin
           (* we share the same escape sequence with js *)
-          Buffer.add_char buf current_char; 
-          escape_code loc buf s (byte_offset+1) s_len 
-        end 
+          Buffer.add_char buf current_char;
+          escape_code loc buf s (byte_offset+1) s_len
+        end
       else
-        begin 
-          (if c = 34 (* Char.code '\"' = 34 *) || c = 39 (* Char.code '\'' = 39 *) then 
-             begin 
+        begin
+          (if c = 34 (* Char.code '\"' = 34 *) || c = 39 (* Char.code '\'' = 39 *) then
+             begin
                Buffer.add_char buf '\\';
-               Buffer.add_char buf current_char ; 
+               Buffer.add_char buf current_char ;
 
              end
-           else if  c = 10 then begin 
+           else if  c = 10 then begin
              (* Char.code '\n' = 10 *)
              (* we can not just print new line*)
              Buffer.add_string buf "\\n";
 
-             (* seems we don't need 
-                escape "\b" "\f" 
-                we need escape "\n" "\r" since 
+             (* seems we don't need
+                escape "\b" "\f"
+                we need escape "\n" "\r" since
                 ocaml multiple-line allows [\n]
-                visual input while es5 string 
-                does not 
+                visual input while es5 string
+                does not
              *)
-           end 
-           else if c = 13 then begin 
-               Buffer.add_string buf "\\r"
-            end
-           else begin 
+           end
+           else if c = 13 then begin
+             Buffer.add_string buf "\\r"
+           end
+           else begin
              Buffer.add_char buf current_char;
 
            end);
-          check_and_transform loc buf s (byte_offset + 1) s_len 
+          check_and_transform loc buf s (byte_offset + 1) s_len
         end
-    | Invalid 
+    | Invalid
     | Cont _ -> Location.raise_errorf ~loc "Not utf8 source string"
-    | Leading (n,_) -> 
+    | Leading (n,_) ->
       let i' = Ext_utf8.next s ~remaining:n  byte_offset in
-      if i' < 0 then 
+      if i' < 0 then
         Location.raise_errorf ~loc "Not valid utf8 souce string"
-      else 
-        begin 
-          for k = byte_offset to i' do 
-            Buffer.add_char buf s.[k]; 
-          done;   
-          check_and_transform loc buf s (i' + 1) s_len 
+      else
+        begin
+          for k = byte_offset to i' do
+            Buffer.add_char buf s.[k];
+          done;
+          check_and_transform loc buf s (i' + 1) s_len
         end
-and escape_code loc buf s offset s_len = 
-  if offset >= s_len then 
-    Location.raise_errorf ~loc "\\ is the end of string" 
-  else 
-    let cur_char = s.[offset] in 
-    match cur_char with 
+and escape_code loc buf s offset s_len =
+  if offset >= s_len then
+    Location.raise_errorf ~loc "\\ is the end of string"
+  else
+    let cur_char = s.[offset] in
+    match cur_char with
     | '\\'
-    | 'b' 
-    | 't' 
-    | 'n' 
+    | 'b'
+    | 't'
+    | 'n'
     | 'v'
     | 'f'
-    | 'r' 
-    | '0' 
+    | 'r'
+    | '0'
     | '$'
-      -> 
-      begin 
+      ->
+      begin
         Buffer.add_char buf cur_char ;
-        check_and_transform loc buf s (offset + 1) s_len 
-      end 
-    | 'u' -> 
-      begin 
+        check_and_transform loc buf s (offset + 1) s_len
+      end
+    | 'u' ->
+      begin
         Buffer.add_char buf cur_char;
-        unicode loc buf s (offset + 1) s_len 
-      end 
-    | 'x' -> begin 
-        Buffer.add_char buf cur_char ; 
-        two_hex loc buf s (offset + 1) s_len 
-      end 
+        unicode loc buf s (offset + 1) s_len
+      end
+    | 'x' -> begin
+        Buffer.add_char buf cur_char ;
+        two_hex loc buf s (offset + 1) s_len
+      end
     | _ -> Location.raise_errorf ~loc "invalid escape code"
-and two_hex loc buf s offset s_len = 
-  if offset + 1 >= s_len then 
+and two_hex loc buf s offset s_len =
+  if offset + 1 >= s_len then
     Location.raise_errorf ~loc "\\x need at least two chars";
-  let a, b = s.[offset], s.[offset + 1] in 
-  if Ext_char.valid_hex a && Ext_char.valid_hex b then 
-    begin 
-      Buffer.add_char buf a ; 
-      Buffer.add_char buf b ; 
-      check_and_transform loc buf s (offset + 2) s_len 
+  let a, b = s.[offset], s.[offset + 1] in
+  if Ext_char.valid_hex a && Ext_char.valid_hex b then
+    begin
+      Buffer.add_char buf a ;
+      Buffer.add_char buf b ;
+      check_and_transform loc buf s (offset + 2) s_len
     end
   else Location.raise_errorf ~loc "%c%c is not a valid hex code" a b
 
-and unicode loc buf s offset s_len = 
-  if offset + 3 >= s_len then 
+and unicode loc buf s offset s_len =
+  if offset + 3 >= s_len then
     Location.raise_errorf ~loc "\\u need at least four chars";
   let a0,a1,a2,a3 = s.[offset], s.[offset+1], s.[offset+2], s.[offset+3] in
-  if 
+  if
     Ext_char.valid_hex a0 &&
     Ext_char.valid_hex a1 &&
     Ext_char.valid_hex a2 &&
-    Ext_char.valid_hex a3 then 
-    begin 
+    Ext_char.valid_hex a3 then
+    begin
       Buffer.add_char buf a0;
       Buffer.add_char buf a1;
       Buffer.add_char buf a2;
-      Buffer.add_char buf a3;  
-      check_and_transform loc buf s  (offset + 4) s_len 
-    end 
-  else 
+      Buffer.add_char buf a3;
+      check_and_transform loc buf s  (offset + 4) s_len
+    end
+  else
     Location.raise_errorf ~loc "%c%c%c%c is not a valid unicode point"
-      a0 a1 a2 a3 
+      a0 a1 a2 a3
 (* http://www.2ality.com/2015/01/es6-strings.html
    console.log('\uD83D\uDE80'); (* ES6*)
    console.log('\u{1F680}');
-*)   
+*)
+
+type interpo = Text of string | Delim of string
+
+type ('a, 'b) either = Left of 'a | Right of 'b
+
+let consume_text s start_index =
+  let rec _consume_text s index last_char new_word =
+    if index = String.length s then new_word, String.length s
+    else begin
+      match s.[index] with
+      | '\\' -> (if index + 1 = String.length s then "", index else
+                   match s.[index+1] with
+                   | '\\' -> _consume_text s (index+2) ' ' (Ext_string.append_char new_word '\\')
+                   | '$' -> _consume_text s (index+2) ' ' (Ext_string.append_char new_word '$')
+                   | c -> _consume_text s (index+1) '\\' (Ext_string.append_char new_word '\\'))
+      | '$' -> (new_word, index)
+      | c -> _consume_text s (index + 1) c (Ext_string.append_char new_word c)
+    end
+  in _consume_text s start_index ' ' ""
+
+let consume_delim s start_index =
+  let with_par = ref false in
+  let rec _consume_delim s index ident =
+    if index = String.length s then (if !with_par = true then (None, index) else (Some ident, index))
+    else
+      match s.[index] with
+      | '(' -> (if !with_par = false then (with_par := true; _consume_delim s (index+1) ident) else (None, index))
+      | ')' -> (if !with_par = false then (None, index + 1) else (with_par := false; (Some ident, index+1)))
+      | '$' -> (_consume_delim s (index+1) ident)
+      | 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9'| '_' ->_consume_delim s (index+1) (Ext_string.append_char ident s.[index])
+      | _ -> if !with_par = false then (Some ident, index) else (None, index + 1)
+  in match s with
+  | "" -> (Some "", start_index)
+  | _ -> if start_index = String.length s then (Some "", start_index)
+    else (if s.[start_index] <> '$' then (None, start_index)
+          else _consume_delim s start_index "")
+
+
+let compute_new_loc (loc:Location.t) s = let length = String.length s in
+  let new_loc =
+    {loc with loc_start = {loc.loc_start with pos_cnum = loc.loc_end.pos_cnum};
+              loc_end = {loc.loc_start with pos_cnum = loc.loc_end.pos_cnum + length}}
+  in new_loc
+
+let error_reporting_loc (loc:Location.t) start_index end_index =
+  let new_loc =
+    {loc with loc_start = {loc.loc_start with pos_cnum = loc.loc_start.pos_cnum + start_index};
+              loc_end   = {loc.loc_end   with pos_cnum = loc.loc_start.pos_cnum + end_index }} in new_loc
+
+let split_es6_string s =
+  let rec _split s index nl =
+    if index >= String.length s then Right (List.rev nl)
+    else begin
+      match consume_text s index, consume_delim s index with
+      | ("" , str_index)  , (None   , err_index) -> Left (index, err_index)
+      | (str,  str_index) , (None   , _) -> _split s (str_index) (Text str::nl)
+      | ("" , _), (Some "" , par_index) -> Left (index, par_index)
+      | ("" , _), (Some par, par_index) -> _split s (par_index) (Delim par::nl)
+      | _, _ -> Left (0, String.length s)
+    end in _split s 0 []
+
+let make_string_constant_exp s loc = let new_loc = compute_new_loc loc s in
+  let new_exp:Parsetree.expression = {
+    pexp_loc = new_loc;
+    pexp_desc = Pexp_constant (Const_string (s, Some Literals.escaped_j_delimiter));
+    pexp_attributes = [];
+  } in new_exp, new_loc
+
+let make_variable_exp p loc = let new_loc = compute_new_loc loc p in
+  let ident = Parsetree.Pexp_ident { txt = (Longident.Lident p); loc = loc } in
+  let js_to_string = Parsetree.Pexp_ident { txt =
+                                              Longident.Ldot (Longident.Ldot ((Longident.Lident "Js"), "String"), "make"); loc = loc } in
+  let apply_exp:Parsetree.expression_desc = Parsetree.Pexp_apply ({pexp_desc = js_to_string; pexp_loc = new_loc; pexp_attributes = []},
+                                                                  [("", {pexp_desc = ident; pexp_loc = new_loc; pexp_attributes = []} )]) in
+  let new_exp:Parsetree.expression = {
+    pexp_loc = new_loc;
+    pexp_desc = apply_exp;
+    pexp_attributes = [];
+  } in new_exp, new_loc
+
+let rec _transform_individual_expression exp_list loc nl = match exp_list with
+  | [] -> List.rev nl
+  | exp::rexp -> match exp with
+    | Text s -> let new_exp, new_loc = make_string_constant_exp s loc  in _transform_individual_expression rexp new_loc (new_exp::nl)
+    | Delim p -> let new_exp, new_loc = make_variable_exp p loc  in _transform_individual_expression rexp new_loc (new_exp::nl)
+
+let transform_es6_style_template_string s loc =
+  let s_len  = String.length s in
+  let buf = Buffer.create (s_len * 2) in
+  check_and_transform loc buf s 0 s_len;
+  let sub_strs = split_es6_string (Buffer.contents buf)
+  in match sub_strs with 
+  | Left (starti, endi) -> let new_loc = error_reporting_loc loc starti endi in Location.raise_errorf ~loc:new_loc "Not a valid es6 style string"
+  | Right subs -> _transform_individual_expression subs loc []
+
+let rec fold_expression_list_with_string_concat prev (exp_list:Parsetree.expression list) = match exp_list with
+  | [] -> prev
+  | (e::re) ->
+    let string_concat_exp:Parsetree.expression = {e with pexp_desc = Parsetree.Pexp_ident
+                                                             {txt = Longident.Ldot (Longident.Lident ("Pervasives"), "^"); loc = e.pexp_loc}} in
+    let new_string_exp = {e with pexp_desc = Parsetree.Pexp_apply (string_concat_exp, [("", prev); ("", e)])} in
+    fold_expression_list_with_string_concat new_string_exp re
+
 end
 module Ast_exp : sig 
 #1 "ast_exp.mli"
@@ -105197,16 +105300,16 @@ let rec unsafe_mapper : Ast_mapper.mapper =
             (Ast_comb.to_js_re_type loc)
         | Pexp_extension ({txt = "bs.external" | "external" ; loc }, payload) -> 
           begin match Ast_payload.as_ident payload with 
-          | Some {txt = Lident x}
-            -> Ast_util.handle_external loc x
+            | Some {txt = Lident x}
+              -> Ast_util.handle_external loc x
             (* do we need support [%external gg.xx ] 
-               
+
                {[ Js.Undefined.to_opt (if Js.typeof x == "undefined" then x else Js.Undefined.empty ) ]}
             *)
 
-          | None | Some _ -> 
-            Location.raise_errorf ~loc 
-            "external expects a single identifier"
+            | None | Some _ -> 
+              Location.raise_errorf ~loc 
+                "external expects a single identifier"
           end 
         | Pexp_extension
             ({txt = ("bs.node" | "node"); loc},
@@ -105227,7 +105330,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                 Ast_util.handle_external loc (strip name)  in
               let typ =
                 Ast_core_type.lift_option_type  
-                 @@                 
+                @@                 
                 if name = "_module" then
                   Typ.constr ~loc
                     { txt = Ldot (Lident "Node", "node_module") ;
@@ -105255,13 +105358,16 @@ let rec unsafe_mapper : Ast_mapper.mapper =
           end             
         |Pexp_constant (Const_string (s, (Some delim))) 
           ->         
-          if Ext_string.equal delim Literals.unescaped_js_delimiter then 
+          if Ext_string.equal delim Literals.unescaped_js_delimiter then
             let s_len  = String.length s in 
             let buf = Buffer.create (s_len * 2) in 
             Ast_utf8_string.check_and_transform loc buf s 0 s_len ;  
             { e with pexp_desc = Pexp_constant (Const_string (Buffer.contents buf, Some Literals.escaped_j_delimiter))}
-          else if Ext_string.equal delim Literals.unescaped_j_delimiter then 
-            Location.raise_errorf ~loc "{j||j} is reserved for future use" 
+          else if Ext_string.equal delim Literals.unescaped_j_delimiter then
+            let starting_loc = {loc with loc_end = loc.loc_start} in
+            let empty_string_concat_exp = {e with pexp_desc = Pexp_constant (Const_string ("", None)); pexp_loc = starting_loc} in
+            let exps_list = Ast_utf8_string.transform_es6_style_template_string s starting_loc in
+            Ast_utf8_string.fold_expression_list_with_string_concat empty_string_concat_exp exps_list
           else e 
 
         (** [bs.debugger], its output should not be rewritten any more*)
@@ -105654,7 +105760,6 @@ let rewrite_implementation : (Parsetree.structure -> Parsetree.structure) ref =
         | _ -> 
           unsafe_mapper.structure  unsafe_mapper x  in 
       reset (); result )
-
 
 end
 module Ocaml_parse : sig 
