@@ -108,6 +108,7 @@ bin/bsdep.ml : syntax/ast_external.mli
 bin/bsdep.ml : syntax/ast_ffi_types.ml
 bin/bsdep.ml : syntax/ast_signature.ml
 bin/bsdep.ml : syntax/ast_structure.ml
+bin/bsdep.ml : syntax/bs_syntaxerr.mli
 bin/bsdep.ml : syntax/ast_attributes.ml
 bin/bsdep.ml : syntax/ast_core_type.mli
 bin/bsdep.ml : syntax/ast_derive_dyn.ml

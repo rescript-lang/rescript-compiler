@@ -24565,8 +24565,65 @@ let table_dispatch table (action : action)
     end
 
 end
-module Bs_syntaxerr
-= struct
+module Bs_syntaxerr : sig 
+#1 "bs_syntaxerr.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type error 
+  = Unsupported_predicates
+  | Conflict_bs_bs_this_bs_meth  
+  | Duplicated_bs_deriving
+  | Conflict_attributes
+
+  | Duplicated_bs_as 
+  | Expect_int_literal
+  | Expect_string_literal
+  | Expect_int_or_string_or_json_literal
+  | Unhandled_poly_type
+  | Unregistered of string 
+  | Invalid_underscore_type_in_external
+  | Invalid_bs_string_type 
+  | Invalid_bs_int_type 
+  | Conflict_ffi_attribute
+  | Not_supported_in_bs_deriving
+  | Canot_infer_arity_by_syntax
+  | Illegal_attribute
+  | Inconsistent_arity of int * int 
+  (* we still rqeuire users to have explicit annotation to avoid
+     {[ (((int -> int) -> int) -> int )]}
+  *)
+  | Not_supported_directive_in_bs_return
+  | Expect_opt_in_bs_return_to_opt
+  | Label_in_uncurried_bs_attribute
+
+  | Bs_this_simple_pattern
+
+
+val err : Location.t -> error -> 'a
+
+end = struct
 #1 "bs_syntaxerr.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
@@ -24620,6 +24677,9 @@ type error
   | Not_supported_directive_in_bs_return
   | Expect_opt_in_bs_return_to_opt
   | Label_in_uncurried_bs_attribute
+
+  | Bs_this_simple_pattern
+
 let pp_error fmt err =
   Format.pp_print_string fmt @@ match err with
   | Label_in_uncurried_bs_attribute 
@@ -24679,8 +24739,12 @@ let pp_error fmt err =
   | Conflict_ffi_attribute
     ->
     "conflict attributes found" 
- 
-exception  Error of Location.t * error
+  | Bs_this_simple_pattern
+    -> 
+    "[@bs.this] expect its pattern variable to be simple form"
+
+type exn +=  Error of Location.t * error
+
 
 let () = 
   Location.register_error_of_exn (function
@@ -32330,6 +32394,9 @@ val is_unit_cont : yes:'a -> no:'a -> t -> 'a
     expression [fun pat -> e]*)
 val arity_of_fun : t -> Parsetree.expression -> int
 
+
+val is_single_variable_pattern_conservative : t -> bool
+
 end = struct
 #1 "ast_pat.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -32382,6 +32449,17 @@ let arity_of_fun
            ~loc:e.pexp_loc "Lable is not allowed in JS object"
     | _ -> 0 in
   is_unit_cont ~yes:0 ~no:1 pat + aux e 
+
+
+let rec is_single_variable_pattern_conservative  (p : t ) =
+  match p.ppat_desc with 
+  | Parsetree.Ppat_any 
+  | Parsetree.Ppat_var _ -> true 
+  | Parsetree.Ppat_alias (p,_) 
+  | Parsetree.Ppat_constraint (p, _) -> 
+    is_single_variable_pattern_conservative p 
+  
+  | _ -> false
 
 end
 module Ast_util : sig 
@@ -32750,6 +32828,14 @@ let generic_to_uncurry_exp kind loc (self : Ast_mapper.mapper)  pat body
     | _, _ -> self.expr self body, acc  
   in 
   let first_arg = self.pat self pat in  
+  let () = 
+    match kind with 
+    | `Method_callback -> 
+      if not @@ Ast_pat.is_single_variable_pattern_conservative first_arg then
+        Bs_syntaxerr.err first_arg.ppat_loc  Bs_this_simple_pattern
+    | _ -> ()
+  in 
+
   let result, rev_extra_args = aux [first_arg] body in 
   let body = 
     List.fold_left (fun e p -> Ast_comb.fun_no_label ~loc p e )

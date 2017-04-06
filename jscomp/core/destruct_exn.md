@@ -37,3 +37,45 @@ match%exn v with
 ```
 Or any vagous pattern which needs us to answer if 
 it is an exception or not
+
+
+Another proposal is 
+```ocaml
+match%exn computation with 
+| A ..
+| B .. 
+| Js.NonCamlOpenVariant .. 
+| v ->  ..
+```
+
+Here we pack the data `v` 
+
+==>
+```
+
+match (Js_enx.internalTOOCamlException compuation) with
+| A .. 
+| B 
+| exception .. )
+```
+
+The same problem is
+
+```
+match (Js_enx.internalTOOCamlException compuation) with
+| _ -> ..
+```
+
+What will happen if JS side `raises` an OCaml extensible variant, 
+we view it as OCaml exception..
+It is slightly differnt in OCaml, since it always start from `catch(id)..` 
+where `id` is defined by the compiler
+
+Another very similar proposal would be 
+
+```ocaml
+fun[@bs:exn] e -> 
+  match e with 
+  | Js.Exn.Error ..
+  | .. 
+```

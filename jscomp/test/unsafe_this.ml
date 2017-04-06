@@ -41,6 +41,13 @@ let hh (x : 'a fn) = h (x : _ fn :>   (< l : int ; y :int > Js.t, int) u )
 
 (* let m = [%bs.method fun o (x,y) -> o##length < x && o##length > y ] *)
 
+let should_okay = fun [@bs.this] self y u -> self + y + u
+let should_okay2 = fun [@bs.this] (self : _ ) y u -> y + u
+(* let should_fail = fun [@bs.this] (Some x as v) y u -> y + u *)
+
+(*let f_fail = fun [@bs.this] (Some _ as x ) y u -> y + u*)
+let f_okay = fun [@bs.this] ( _ as x ) y u -> y + u + x
+
 
 
 

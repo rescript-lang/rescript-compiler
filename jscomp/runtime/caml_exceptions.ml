@@ -48,9 +48,9 @@ let id = ref 0n
 
    ]}*)
 let caml_set_oo_id (b : Caml_builtin_exceptions.exception_block)  = 
-    Obj.set_field (Obj.repr b) 1 (Obj.repr !id);
-    id := Nativeint.add !id  1n; 
-    b
+  Obj.set_field (Obj.repr b) 1 (Obj.repr !id);
+  id := Nativeint.add !id  1n; 
+  b
 
 let get_id () = 
   id := Nativeint.add !id 1n; !id
@@ -66,23 +66,23 @@ external isUndefined : 'a -> bool = "#is_undef"
 
 
 (**
-  This function should never throw
-  It could be either customized exception or built in exception 
-  Note due to that in OCaml extensible variants have the same 
-  runtime representation as exception, so we can not 
-  really tell the difference. 
-  
-  However, if we make a false alarm, classified extensible variant 
-  as exception, it will be OKAY for nested pattern match
+   This function should never throw
+   It could be either customized exception or built in exception 
+   Note due to that in OCaml extensible variants have the same 
+   runtime representation as exception, so we can not 
+   really tell the difference. 
+
+   However, if we make a false alarm, classified extensible variant 
+   as exception, it will be OKAY for nested pattern match
 
    {[
      match toExn x : exn option with 
      | Some _ 
        -> Js.log "Could be an OCaml exception or an open variant"
-          (* If it is an Open variant, it will never pattern match, 
-             This is Okay, since exception could never have exhaustive pattern match
-             
-          *)
+     (* If it is an Open variant, it will never pattern match, 
+        This is Okay, since exception could never have exhaustive pattern match
+
+     *)
      | None -> Js.log "Not an OCaml exception for sure"
    ]}
 
@@ -95,12 +95,14 @@ external isUndefined : 'a -> bool = "#is_undef"
    ]}
 
    This is not a problem in `try .. with` since the logic above is not expressible, see more design in [destruct_exn.md]
-  *)
+*)
 let isCamlExceptionOrOpenVariant e = 
-  Obj.tag e = object_tag  (* nullary exception *)
-  ||
-  let slot = Obj.field e 0 in 
-  not (isUndefined slot) &&
-  (Obj.tag slot = object_tag)
+  if isUndefined e then false 
+  else 
+    Obj.tag e = object_tag  (* nullary exception *)
+    ||
+    let slot = Obj.field e 0 in 
+    not (isUndefined slot) &&
+    (Obj.tag slot = object_tag)
 
 

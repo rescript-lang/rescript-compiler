@@ -50,6 +50,9 @@ type error
   | Not_supported_directive_in_bs_return
   | Expect_opt_in_bs_return_to_opt
   | Label_in_uncurried_bs_attribute
+
+  | Bs_this_simple_pattern
+
 let pp_error fmt err =
   Format.pp_print_string fmt @@ match err with
   | Label_in_uncurried_bs_attribute 
@@ -109,8 +112,12 @@ let pp_error fmt err =
   | Conflict_ffi_attribute
     ->
     "conflict attributes found" 
- 
-exception  Error of Location.t * error
+  | Bs_this_simple_pattern
+    -> 
+    "[@bs.this] expect its pattern variable to be simple form"
+
+type exn +=  Error of Location.t * error
+
 
 let () = 
   Location.register_error_of_exn (function
