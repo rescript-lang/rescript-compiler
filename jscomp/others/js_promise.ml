@@ -32,8 +32,9 @@
 type + 'a t 
 type error (* abstract error type *)
 
-external make : (('a -> unit) -> ('e -> unit) -> unit [@bs.uncurry]) -> 'a t = "Promise" [@@bs.new]
 
+external make : (('a -> unit [@bs]) -> ('e -> unit [@bs]) -> unit [@bs.uncurry]) -> 'a t = "Promise" [@@bs.new]
+(* [make (fun resolve reject -> .. )] *)
 external resolve : 'a -> 'a t = "Promise.resolve" [@@bs.val]
 external reject : 'any -> 'a t = "Promise.reject" [@@bs.val]
 external all : 'a t array -> 'a array t = "Promise.all" [@@bs.val]

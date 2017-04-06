@@ -1,6 +1,5 @@
 'use strict';
 
-var Curry                   = require("../../lib/js/curry.js");
 var Caml_array              = require("../../lib/js/caml_array.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
@@ -172,7 +171,7 @@ function raceTest() {
 
 function createPromiseRejectTest() {
   return new Promise(function (_, reject) {
-                return Curry._1(reject, "error");
+                return reject("error");
               }).catch(function (error) {
               assert_bool(+(error === "error"));
               return h;
@@ -181,7 +180,7 @@ function createPromiseRejectTest() {
 
 function createPromiseFulfillTest() {
   return new Promise(function (resolve, _) {
-                  return Curry._1(resolve, "success");
+                  return resolve("success");
                 }).then(function (resolved) {
                 assert_bool(+(resolved === "success"));
                 return h;

@@ -108,11 +108,11 @@ let raceTest () =
   |> catch fail
 
 let createPromiseRejectTest () =
-  make (fun _ reject -> reject "error")
+  make (fun _ reject -> reject "error" [@bs])
   |> catch (fun error -> assert_bool (Obj.magic error = "error"); h)
 
 let createPromiseFulfillTest () =
-  make (fun resolve _ -> resolve "success")
+  make (fun resolve _ -> resolve "success" [@bs])
   >>= (fun resolved -> assert_bool (Obj.magic resolved = "success"); h)
   |> catch fail
 
