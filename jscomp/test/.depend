@@ -393,7 +393,7 @@ print_alpha_test.cmj : mt.cmj ../runtime/js.cmj
 printf_sim.cmj : ../stdlib/printf.cmj
 printf_test.cmj : ../stdlib/printf.cmj mt.cmj ../stdlib/format.cmj
 promise.cmj : ../runtime/js.cmj
-promise_catch_test.cmj : ../stdlib/obj.cmj ../runtime/js.cmj
+promise_catch_test.cmj : mt.cmj ../runtime/js.cmj
 qcc.cmj : ../stdlib/sys.cmj ../stdlib/string.cmj ../stdlib/printf.cmj \
     ../stdlib/list.cmj ../stdlib/char.cmj ../stdlib/bytes.cmj \
     ../stdlib/array.cmj
@@ -433,6 +433,7 @@ simple_lexer_test.cmj : ../stdlib/string.cmj mt.cmj ../stdlib/lexing.cmj
 simplify_lambda_632o.cmj :
 single_module_alias.cmj : ../stdlib/list.cmj
 small_inline_test.cmj :
+special_xx.cmj : ../runtime/js.cmj
 sprintf_reg_test.cmj : ../stdlib/printf.cmj mt_global.cmj mt.cmj
 stack_comp_test.cmj : ../stdlib/stack.cmj mt_global.cmj mt.cmj
 stack_test.cmj : ../stdlib/stack.cmj mt.cmj ../stdlib/list.cmj

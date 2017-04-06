@@ -44,10 +44,10 @@ external fileName : t -> string option = ""
      - : int = 248
    ]}
 *)
-let internalToOCamlException (e : Obj.t) =
-  if Caml_exceptions.isCamlExceptionOrOpenVariant e  then
+let internalToOCamlException (type u) (e : u)  =
+  if Caml_exceptions.isCamlExceptionOrOpenVariant (Obj.magic e)  then
     (Obj.magic e  : exn)
-  else Error (Obj.magic (e : Obj.t) : t) 
+  else Error (Obj.magic (e : u) : t) 
 
 type error
 external makeError : string -> error = "Error" [@@bs.new]

@@ -109,6 +109,9 @@ val js_property :
   loc ->
   Parsetree.expression -> string -> Parsetree.expression_desc
 
+val to_exn_fn : 
+  (Ast_pat.t -> Ast_exp.t -> Parsetree.expression_desc)
+  cxt 
 val handle_debugger : 
   loc -> Ast_payload.t -> Parsetree.expression_desc
 

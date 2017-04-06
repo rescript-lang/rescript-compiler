@@ -50,6 +50,6 @@ type error
   | Label_in_uncurried_bs_attribute
 
   | Bs_this_simple_pattern
-
+  | Bs_exn_single_variable 
 
 val err : Location.t -> error -> 'a

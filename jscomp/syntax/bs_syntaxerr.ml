@@ -52,6 +52,7 @@ type error
   | Label_in_uncurried_bs_attribute
 
   | Bs_this_simple_pattern
+  | Bs_exn_single_variable 
 
 let pp_error fmt err =
   Format.pp_print_string fmt @@ match err with
@@ -115,6 +116,9 @@ let pp_error fmt err =
   | Bs_this_simple_pattern
     -> 
     "[@bs.this] expect its pattern variable to be simple form"
+  | Bs_exn_single_variable 
+    -> 
+    "[@bs.exn] expect its pattern to be a identifier"
 
 type exn +=  Error of Location.t * error
 

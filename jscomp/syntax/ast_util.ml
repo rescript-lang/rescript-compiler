@@ -285,6 +285,44 @@ let to_uncurry_fn   =
 let to_method_callback  = 
   generic_to_uncurry_exp `Method_callback 
 
+(**
+   {[ fun  pat ->  body ]}
+   --
+   [pat] has to be simple pattern 
+   {[
+     fun e -> 
+       let e = Js.Exn.internalToOCamlException (Obj.repr pat) in 
+       body
+   ]}
+*)
+let to_exn_fn (_all_loc : Location.t)
+    (self : Ast_mapper.mapper) (pat : Ast_pat.t) body = 
+  let loc  = pat.ppat_loc in 
+  match pat.ppat_desc with 
+  | Ppat_var ({txt } ) -> 
+    let body = self.expr self body in 
+    Parsetree.Pexp_fun
+      (Ext_string.empty, None, pat, 
+       Ast_helper.Exp.let_ ~loc Nonrecursive
+         [ Ast_helper.Vb.mk ~loc pat 
+             (
+               Exp.apply ~loc
+                 (
+                   Exp.ident  ~loc
+                     {txt =
+                        Ldot (Ldot (Lident "Js", "Exn"),
+                              "internalToOCamlException"); 
+                      loc })
+                 [("",Exp.ident ~loc {txt = Lident txt ; loc})]
+             )
+
+         ] body 
+      )
+      
+  | _ -> 
+    Bs_syntaxerr.err loc Bs_exn_single_variable 
+
+
 
 let handle_debugger loc payload = 
   if Ast_payload.as_empty_structure payload then
