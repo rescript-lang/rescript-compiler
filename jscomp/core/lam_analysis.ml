@@ -45,7 +45,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
           match prim_name,args with 
           | ("caml_register_named_value"
             (* register to c runtime does not make sense  in ocaml *)
-            | "caml_set_oo_id" 
+            (* | "caml_set_oo_id"  *) (* it does have side effect, just in creation path it happens not to have *)
             | "caml_is_js"
             | "caml_int64_float_of_bits"
              (* more safe to check if arguments are constant *)
@@ -67,7 +67,8 @@ let rec no_side_effects (lam : Lam.t) : bool =
            *)
           | _ , _-> false
         end 
-
+      | Pcreate_extension _
+      (* | Pcreate_exception _ *)
       | Pjs_boolean_to_bool
       | Pjs_typeof
       | Pis_null
@@ -466,6 +467,8 @@ let rec
   
 and eq_primitive ( lhs : Lam.primitive) (rhs : Lam.primitive) = 
   match lhs with 
+  | Pcreate_extension a -> begin match rhs with Pcreate_extension b -> a = (b : string) | _ -> false end
+  (* | Pcreate_exception a -> begin match rhs with Pcreate_exception b -> a = (b : string) | _ -> false end *)
   | Pwrap_exn -> rhs = Pwrap_exn
   | Pbytes_to_string ->  rhs = Pbytes_to_string 
   | Pbytes_of_string ->  rhs = Pbytes_of_string

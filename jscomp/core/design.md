@@ -403,3 +403,17 @@ need check `Praise of raise_kind`
 
 *Conclusion*: it is very hard to get it right when changig ocaml exception representation and js exception representation at the same time in the combination of *re-raiase*
 
+
+## Several module components can have the same name #978
+
+Note BuckleScript compiler simply complain if exports have the same component name, this keeps its soundness.
+A funny thing is that open variants does not have record disambiguion so that 
+
+```ocaml
+type a = ..
+type b = ..
+type a += A 
+type b += A
+```
+The compiler will only expose the last `A`, which means, BuckleScript will not complain, the limitation 
+of the compiler preserves its soundness

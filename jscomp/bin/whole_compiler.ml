@@ -65815,6 +65815,9 @@ type primitive =
   | Pcaml_obj_set_length
   | Pwrap_exn (* convert either JS exception or OCaml exception into OCaml format *)  
 
+  (* | Pcreate_exception of string  *)
+  | Pcreate_extension of string 
+
 type switch  =
   { sw_numconsts: int;
     sw_consts: (int * t) list;
@@ -66174,6 +66177,9 @@ type primitive =
   | Pcaml_obj_length
   | Pcaml_obj_set_length
   | Pwrap_exn (* convert either JS exception or OCaml exception into OCaml format *)
+
+  (* | Pcreate_exception of string  *)
+  | Pcreate_extension of string 
 
 type apply_status =
   | App_na
@@ -67884,8 +67890,24 @@ let convert exports lam : _ * _  =
             if prim_name_len > 0 && String.unsafe_get prim_name 0 = '#' then 
               aux_js_primitive a args loc 
             else 
-              let args = List.map aux args in 
-              prim ~primitive:(Pccall a) ~args loc
+              (* COMPILER CHECK *)
+              (* Here the invariant we should keep is that all exception 
+                 created should be captured
+              *)
+              if a.prim_name = "caml_set_oo_id" then (**)
+                begin match  args with 
+                  | [ Lprim (Pmakeblock(tag,( Blk_exception| Blk_extension), _),
+                             Lconst (Const_base(Const_string(name,_))) :: _,
+                             loc
+                            )] 
+                    -> prim ~primitive:(Pcreate_extension name) ~args:[] loc 
+                  | _ -> 
+                    let args = List.map aux args in 
+                    prim ~primitive:(Pccall a) ~args loc
+                end
+              else  
+                let args = List.map aux args in 
+                prim ~primitive:(Pccall a) ~args loc
           | Ffi_obj_create labels ->
             let args = List.map aux args in 
             prim ~primitive:(Pjs_object_create labels) ~args loc 
@@ -71356,7 +71378,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
           match prim_name,args with 
           | ("caml_register_named_value"
             (* register to c runtime does not make sense  in ocaml *)
-            | "caml_set_oo_id" 
+            (* | "caml_set_oo_id"  *) (* it does have side effect, just in creation path it happens not to have *)
             | "caml_is_js"
             | "caml_int64_float_of_bits"
              (* more safe to check if arguments are constant *)
@@ -71378,7 +71400,8 @@ let rec no_side_effects (lam : Lam.t) : bool =
            *)
           | _ , _-> false
         end 
-
+      | Pcreate_extension _
+      (* | Pcreate_exception _ *)
       | Pjs_boolean_to_bool
       | Pjs_typeof
       | Pis_null
@@ -71777,6 +71800,8 @@ let rec
   
 and eq_primitive ( lhs : Lam.primitive) (rhs : Lam.primitive) = 
   match lhs with 
+  | Pcreate_extension a -> begin match rhs with Pcreate_extension b -> a = (b : string) | _ -> false end
+  (* | Pcreate_exception a -> begin match rhs with Pcreate_exception b -> a = (b : string) | _ -> false end *)
   | Pwrap_exn -> rhs = Pwrap_exn
   | Pbytes_to_string ->  rhs = Pbytes_to_string 
   | Pbytes_of_string ->  rhs = Pbytes_of_string
@@ -72050,6 +72075,8 @@ let string_of_loc_kind (loc : Lambda.loc_kind) =
   | Loc_LOC -> "loc_LOC"
 
 let primitive ppf (prim : Lam.primitive) = match prim with 
+  (* | Pcreate_exception s -> fprintf ppf "[exn-create]%S" s  *)
+  | Pcreate_extension s -> fprintf ppf "[ext-create]%S" s 
   | Pwrap_exn -> fprintf ppf "#exn"
   | Pjs_string_of_small_array -> fprintf ppf "#string_of_small_array"
   | Pjs_is_instance_array -> fprintf ppf "#is_instance_array"
@@ -90973,8 +91000,9 @@ module Js_of_lam_exception : sig
 val get_builtin_by_name : string -> J.expression
 
 
-
 val caml_set_oo_id : J.expression list -> J.expression
+val make : J.expression  -> J.expression
+(* val make_extension : J.expression  -> J.expression *)
 
 end = struct
 #1 "js_of_lam_exception.ml"
@@ -91012,21 +91040,6 @@ end = struct
  *)
 module E = Js_exp_make 
 
-let match_exception_def (args : J.expression list) = 
-  match args with   
-  | [{ expression_desc  = 
-               Caml_block (
-                 [ exception_str; 
-                   {expression_desc = J.Number (Int { i = 0l; _}); _}
-                 ],
-                 mutable_flag, 
-                 {expression_desc = J.Number (Int {i = object_tag; _}); _}, _ );
-              _} ] -> 
-    if object_tag = 248l (* Obj.object_tag *) then
-      Some ( exception_str, mutable_flag)    
-    else
-      None
-  | _ -> None
 
 (* Sync up with [caml_set_oo_id] 
    Note if we inline {!Caml_exceptions.create}, 
@@ -91035,27 +91048,46 @@ let match_exception_def (args : J.expression list) =
    never dig into it internally, so maybe {!Obj.set_tag} 
    is not necessary at all
 *)
-let make_exception exception_str mutable_flag : J.expression = 
+let make exception_str  : J.expression = 
   E.runtime_call Js_config.exceptions Literals.create [exception_str]
 
-
+(* let make_extension exception_str  : J.expression =  *)
+(*   E.runtime_call Js_config.exceptions "makeExtension" [exception_str] *)
 
 
 let get_builtin_by_name name = 
   E.runtime_ref Js_config.builtin_exceptions (String.lowercase name)
 
+
+(* let match_exception_def (args : J.expression list) =  *)
+(*   match args with    *)
+(*   | [{ expression_desc  =  *)
+(*                Caml_block ( *)
+(*                  [ exception_str;  *)
+(*                    {expression_desc = J.Number (Int { i = 0l; _}); _} *)
+(*                  ], *)
+(*                  mutable_flag,  *)
+(*                  {expression_desc = J.Number (Int {i = object_tag; _}); _}, _ ); *)
+(*               _} ] ->  *)
+(*     if object_tag = 248l (\* Obj.object_tag *\) then *)
+(*       Some ( exception_str, mutable_flag)     *)
+(*     else *)
+(*       None *)
+(*   | _ -> None *)
+
 let caml_set_oo_id args = 
-    begin match match_exception_def args with 
-    | Some ( exception_str, mutable_flag)
-      -> 
-      make_exception exception_str mutable_flag      
-    | _ ->
       (**
          If we can guarantee this code path is never hit, we can do 
          a better job for encoding of exception and extension?
       *)
       E.runtime_call Js_config.exceptions "caml_set_oo_id" args 
-    end
+    (* begin match match_exception_def args with  *)
+    (* | Some ( exception_str, mutable_flag) *)
+    (*   ->  *)
+    (*   make_exception exception_str  *)
+    (* | _ -> *)
+
+    (* end *)
 
 end
 module Js_of_lam_float_record : sig 
@@ -92487,13 +92519,11 @@ let translate (prim_name : string)
      _ -> unit  
      major_slice : int -> int 
   *)
+  (** Note we captured [exception/extension] creation in the early pass, this primitive is 
+      like normal one to set the identifier *)
+  
   | "caml_set_oo_id" 
     ->
-    (** ATT: relevant to how exception is encoded in OCaml 
-        IDea: maybe we can delay compile primitive into js?
-        benefit: 
-        less code side when serialzation, and more knowledge in jsir
-    *)
     Js_of_lam_exception.caml_set_oo_id args 
 
   | "caml_sys_const_big_endian" -> 
@@ -92978,6 +93008,12 @@ let translate  loc
     (prim : Lam.primitive)
     (args : J.expression list) : J.expression = 
   match prim with
+  (* | Pcreate_exception s  *)
+  (*   ->  *)
+  (*   Js_of_lam_exception.make_exception (E.str s) *)
+  | Pcreate_extension s 
+    -> 
+    Js_of_lam_exception.make (E.str s)
   | Pwrap_exn -> 
     E.runtime_call Js_config.exn "internalToOCamlException" args 
   | Lam.Praw_js_code_exp s -> 

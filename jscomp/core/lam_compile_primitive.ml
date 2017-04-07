@@ -46,6 +46,12 @@ let translate  loc
     (prim : Lam.primitive)
     (args : J.expression list) : J.expression = 
   match prim with
+  (* | Pcreate_exception s  *)
+  (*   ->  *)
+  (*   Js_of_lam_exception.make_exception (E.str s) *)
+  | Pcreate_extension s 
+    -> 
+    Js_of_lam_exception.make (E.str s)
   | Pwrap_exn -> 
     E.runtime_call Js_config.exn "internalToOCamlException" args 
   | Lam.Praw_js_code_exp s -> 

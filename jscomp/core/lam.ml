@@ -207,6 +207,9 @@ type primitive =
   | Pcaml_obj_set_length
   | Pwrap_exn (* convert either JS exception or OCaml exception into OCaml format *)
 
+  (* | Pcreate_exception of string  *)
+  | Pcreate_extension of string 
+
 type apply_status =
   | App_na
   | App_ml_full
@@ -1916,8 +1919,24 @@ let convert exports lam : _ * _  =
             if prim_name_len > 0 && String.unsafe_get prim_name 0 = '#' then 
               aux_js_primitive a args loc 
             else 
-              let args = List.map aux args in 
-              prim ~primitive:(Pccall a) ~args loc
+              (* COMPILER CHECK *)
+              (* Here the invariant we should keep is that all exception 
+                 created should be captured
+              *)
+              if a.prim_name = "caml_set_oo_id" then (**)
+                begin match  args with 
+                  | [ Lprim (Pmakeblock(tag,( Blk_exception| Blk_extension), _),
+                             Lconst (Const_base(Const_string(name,_))) :: _,
+                             loc
+                            )] 
+                    -> prim ~primitive:(Pcreate_extension name) ~args:[] loc 
+                  | _ -> 
+                    let args = List.map aux args in 
+                    prim ~primitive:(Pccall a) ~args loc
+                end
+              else  
+                let args = List.map aux args in 
+                prim ~primitive:(Pccall a) ~args loc
           | Ffi_obj_create labels ->
             let args = List.map aux args in 
             prim ~primitive:(Pjs_object_create labels) ~args loc 

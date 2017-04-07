@@ -62,6 +62,11 @@ let create (str : string) : Caml_builtin_exceptions.exception_block =
   Obj.set_tag (Obj.repr v) object_tag;
   v 
 
+(* let makeExtension (str : string) : Caml_builtin_exceptions.exception_block =  *)
+(*   let v = ( str, get_id ()) in  *)
+(*   Obj.set_tag (Obj.repr v) object_tag; *)
+(*   v  *)
+
 external isUndefined : 'a -> bool = "#is_undef"
 
 
