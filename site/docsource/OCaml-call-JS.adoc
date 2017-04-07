@@ -323,7 +323,7 @@ var Fs = require("fs");
 Fs.readFileSync("xx.txt", "ascii");
 -----------
 
-Polymoprhic variants can also be used to model _enums_.
+Polymorphic variants can also be used to model _enums_.
 
 [source,ocaml]
 -------------
@@ -384,7 +384,7 @@ function register(rl) {
  will do such conversion in the runtime, but it should be always correct.
 =========
 
-#### Phantom Arguments and ad-hoc polyrmophism
+#### Phantom Arguments and ad-hoc polymorphism
 
 `bs.ignore` allows arguments to be erased after passing to JS functional call, the side effect will
 still be recorded.
