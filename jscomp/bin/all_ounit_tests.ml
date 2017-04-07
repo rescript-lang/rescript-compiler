@@ -3570,11 +3570,22 @@ val node_modules_length : int
 val package_json : string
 val bsconfig_json : string
 val build_ninja : string
+
+(* Name of the library file created for each external dependency. *)
+val library_file : string
+
+val suffix_a : string
 val suffix_cmj : string
+val suffix_cmo : string
+val suffix_cma : string
 val suffix_cmi : string
+val suffix_cmx : string
+val suffix_cmxa : string
 val suffix_ml : string
 val suffix_mlast : string 
+val suffix_mlast_simple : string
 val suffix_mliast : string
+val suffix_mliast_simple : string
 val suffix_mll : string
 val suffix_re : string
 val suffix_rei : string 
@@ -3688,8 +3699,16 @@ let package_json = "package.json"
 let bsconfig_json = "bsconfig.json"
 let build_ninja = "build.ninja"
 
+(* Name of the library file created for each external dependency. *)
+let library_file = "lib"
+
+let suffix_a = ".a"
 let suffix_cmj = ".cmj"
+let suffix_cmo = ".cmo"
+let suffix_cma = ".cma"
 let suffix_cmi = ".cmi"
+let suffix_cmx = ".cmx"
+let suffix_cmxa = ".cmxa"
 let suffix_mll = ".mll"
 let suffix_ml = ".ml"
 let suffix_mli = ".mli"
@@ -3699,7 +3718,9 @@ let suffix_rei = ".rei"
 let suffix_cmt = ".cmt" 
 let suffix_cmti = ".cmti" 
 let suffix_mlast = ".mlast"
+let suffix_mlast_simple = ".mlast_simple"
 let suffix_mliast = ".mliast"
+let suffix_mliast_simple = ".mliast_simple"
 let suffix_d = ".d"
 let suffix_mlastd = ".mlast.d"
 let suffix_mliastd = ".mliast.d"

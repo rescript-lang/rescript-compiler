@@ -22,5 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type compilation_kind_t = Js | Bytecode | Native
+
 val handle_bin_depfile : 
-  string option -> string -> int ->  unit
+  string option -> compilation_kind:compilation_kind_t -> string -> int ->  unit

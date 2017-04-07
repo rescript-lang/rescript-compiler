@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,38 +17,10 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-type elt = String.t
-val compare_elt : elt -> elt -> int 
-(***********************************************************************)             
-type t
-val empty: t
-val is_empty: t -> bool
-val iter: (elt -> unit) -> t -> unit
-val fold: (elt -> 'a -> 'a) -> t -> 'a -> 'a
-val for_all: (elt -> bool) -> t -> bool
-val exists: (elt -> bool) -> t -> bool
-val singleton: elt -> t
-val cardinal: t -> int
-val elements: t -> elt list
-val remove : elt -> t -> t
-val min_elt: t -> elt
-val max_elt: t -> elt
-val choose: t -> elt
-val of_sorted_list : elt list -> t 
-val of_sorted_array : elt array -> t
-val partition: (elt -> bool) -> t -> t * t
-
-val mem: elt -> t -> bool
-val add: elt -> t -> t
-
-val of_list : elt list -> t
-val find : elt -> t -> elt 
-(***********************************************************************) 
+(* This reads the header part of the mlast file, which simply encodes a set that indicates all of the deps of the current library. *)
+val read_dependency_graph_from_mlast_file : string -> String_set.t
