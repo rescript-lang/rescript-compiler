@@ -32,21 +32,6 @@
  *)
 module E = Js_exp_make 
 
-let match_exception_def (args : J.expression list) = 
-  match args with   
-  | [{ expression_desc  = 
-               Caml_block (
-                 [ exception_str; 
-                   {expression_desc = J.Number (Int { i = 0l; _}); _}
-                 ],
-                 mutable_flag, 
-                 {expression_desc = J.Number (Int {i = object_tag; _}); _}, _ );
-              _} ] -> 
-    if object_tag = 248l (* Obj.object_tag *) then
-      Some ( exception_str, mutable_flag)    
-    else
-      None
-  | _ -> None
 
 (* Sync up with [caml_set_oo_id] 
    Note if we inline {!Caml_exceptions.create}, 
@@ -55,24 +40,43 @@ let match_exception_def (args : J.expression list) =
    never dig into it internally, so maybe {!Obj.set_tag} 
    is not necessary at all
 *)
-let make_exception exception_str mutable_flag : J.expression = 
+let make exception_str  : J.expression = 
   E.runtime_call Js_config.exceptions Literals.create [exception_str]
 
-
+(* let make_extension exception_str  : J.expression =  *)
+(*   E.runtime_call Js_config.exceptions "makeExtension" [exception_str] *)
 
 
 let get_builtin_by_name name = 
   E.runtime_ref Js_config.builtin_exceptions (String.lowercase name)
 
+
+(* let match_exception_def (args : J.expression list) =  *)
+(*   match args with    *)
+(*   | [{ expression_desc  =  *)
+(*                Caml_block ( *)
+(*                  [ exception_str;  *)
+(*                    {expression_desc = J.Number (Int { i = 0l; _}); _} *)
+(*                  ], *)
+(*                  mutable_flag,  *)
+(*                  {expression_desc = J.Number (Int {i = object_tag; _}); _}, _ ); *)
+(*               _} ] ->  *)
+(*     if object_tag = 248l (\* Obj.object_tag *\) then *)
+(*       Some ( exception_str, mutable_flag)     *)
+(*     else *)
+(*       None *)
+(*   | _ -> None *)
+
 let caml_set_oo_id args = 
-    begin match match_exception_def args with 
-    | Some ( exception_str, mutable_flag)
-      -> 
-      make_exception exception_str mutable_flag      
-    | _ ->
       (**
          If we can guarantee this code path is never hit, we can do 
          a better job for encoding of exception and extension?
       *)
       E.runtime_call Js_config.exceptions "caml_set_oo_id" args 
-    end
+    (* begin match match_exception_def args with  *)
+    (* | Some ( exception_str, mutable_flag) *)
+    (*   ->  *)
+    (*   make_exception exception_str  *)
+    (* | _ -> *)
+
+    (* end *)

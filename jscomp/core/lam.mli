@@ -208,6 +208,9 @@ type primitive =
   | Pcaml_obj_set_length
   | Pwrap_exn (* convert either JS exception or OCaml exception into OCaml format *)  
 
+  (* | Pcreate_exception of string  *)
+  | Pcreate_extension of string 
+
 type switch  =
   { sw_numconsts: int;
     sw_consts: (int * t) list;

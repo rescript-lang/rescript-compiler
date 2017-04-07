@@ -439,13 +439,11 @@ let translate (prim_name : string)
      _ -> unit  
      major_slice : int -> int 
   *)
+  (** Note we captured [exception/extension] creation in the early pass, this primitive is 
+      like normal one to set the identifier *)
+  
   | "caml_set_oo_id" 
     ->
-    (** ATT: relevant to how exception is encoded in OCaml 
-        IDea: maybe we can delay compile primitive into js?
-        benefit: 
-        less code side when serialzation, and more knowledge in jsir
-    *)
     Js_of_lam_exception.caml_set_oo_id args 
 
   | "caml_sys_const_big_endian" -> 
