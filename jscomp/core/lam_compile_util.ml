@@ -51,6 +51,8 @@ let comment_of_tag_info  (x : Lambda.tag_info) =
   | Blk_module _ ->  
      (* Turn it on next time to save some noise diff*)
     Some "module"
+  | Blk_exception -> Some "exception"
+  | Blk_extension -> Some "extension"
   | Blk_na -> None 
 let comment_of_pointer_info (x :  Lambda.pointer_info)= 
   match x with 

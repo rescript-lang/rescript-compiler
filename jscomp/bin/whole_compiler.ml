@@ -63570,6 +63570,8 @@ type tag_info =
   | Blk_variant of string 
   | Blk_record of string array
   | Blk_module of string list option
+  | Blk_exception
+  | Blk_extension
   | Blk_na
 
 val default_tag_info : tag_info
@@ -63880,6 +63882,8 @@ type tag_info =
   | Blk_variant of string 
   | Blk_record of string array (* when its empty means we dont get such information *)
   | Blk_module of string list option
+  | Blk_exception
+  | Blk_extension
   | Blk_na
 
 let default_tag_info : tag_info = Blk_na
@@ -64685,6 +64689,8 @@ type tag_info = Lambda.tag_info =
   | Blk_variant of string 
   | Blk_record of string array
   | Blk_module of string list option
+  | Blk_exception
+  | Blk_extension
   | Blk_na
 
 type length_object = 
@@ -69398,6 +69404,8 @@ let comment_of_tag_info  (x : Lambda.tag_info) =
   | Blk_module _ ->  
      (* Turn it on next time to save some noise diff*)
     Some "module"
+  | Blk_exception -> Some "exception"
+  | Blk_extension -> Some "extension"
   | Blk_na -> None 
 let comment_of_pointer_info (x :  Lambda.pointer_info)= 
   match x with 
@@ -81180,8 +81188,12 @@ let transl_extension_constructor env path ext =
   let loc = ext.ext_loc in
   match ext.ext_kind with
     Text_decl(args, ret) ->
+      let tag_info =
+        if Path.same ext.ext_type.ext_type_path Predef.path_exn then
+          Blk_exception
+        else Blk_extension in 
       Lprim(prim_set_oo_id,
-            [Lprim(Pmakeblock(Obj.object_tag, Lambda.default_tag_info, Mutable),
+            [Lprim(Pmakeblock(Obj.object_tag, tag_info, Mutable),
                    [Lconst(Const_base(Const_string (name,None)));
                     Lconst(Const_base(Const_int 0))], loc)], loc)
   | Text_rebind(path, lid) ->
