@@ -31,6 +31,7 @@ module Lid = struct
   let type_unit : t = Lident "unit"
   let type_string : t = Lident "string"
   let type_int : t = Lident "int" (* use *predef* *)
+  let type_exn : t = Lident "exn" (* use *predef* *)
   (* TODO should be renamed in to {!Js.fn} *)
   (* TODO should be moved into {!Js.t} Later *)
   let js_fn = Longident.Ldot (Lident "Js", "fn")
@@ -49,8 +50,12 @@ module No_loc = struct
   let loc = Location.none
   let val_unit = 
     Ast_helper.Exp.construct {txt = Lid.val_unit; loc }  None
+
   let type_unit =   
     Ast_helper.Typ.mk  (Ptyp_constr ({ txt = Lid.type_unit; loc}, []))
+  let type_exn =   
+    Ast_helper.Typ.mk  (Ptyp_constr ({ txt = Lid.type_unit; loc}, []))
+
   let type_int = 
     Ast_helper.Typ.mk (Ptyp_constr ({txt = Lid.type_int; loc}, []))  
   let type_string =   
@@ -77,6 +82,13 @@ let type_unit ?loc () =
     No_loc.type_unit
   | Some loc -> 
     Ast_helper.Typ.mk ~loc  (Ptyp_constr ({ txt = Lid.type_unit; loc}, []))
+
+let type_exn ?loc () = 
+  match loc with
+  | None ->     
+    No_loc.type_exn
+  | Some loc -> 
+    Ast_helper.Typ.mk ~loc  (Ptyp_constr ({ txt = Lid.type_exn; loc}, []))
 
 
 let type_string ?loc () = 

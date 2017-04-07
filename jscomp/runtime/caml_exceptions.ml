@@ -104,9 +104,9 @@ external isUndefined : 'a -> bool = "#is_undef"
 let isCamlExceptionOrOpenVariant e = 
   if isUndefined e then false 
   else 
-    Obj.tag e = object_tag  (* nullary exception *)
+    Obj.tag (Obj.repr e) = object_tag  (* nullary exception *)
     ||
-    let slot = Obj.field e 0 in 
+    let slot = Obj.field (Obj.repr e) 0 in 
     not (isUndefined slot) &&
     (Obj.tag slot = object_tag)
 

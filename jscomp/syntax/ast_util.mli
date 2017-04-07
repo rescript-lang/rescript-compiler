@@ -127,4 +127,6 @@ val ocaml_obj_as_js_object :
    Parsetree.expression_desc) cxt   
 
 
- 
+ val convertBsErrorFunction : 
+   
+   (Ast_helper.attrs -> Parsetree.case list -> Parsetree.expression) cxt

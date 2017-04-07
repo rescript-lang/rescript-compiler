@@ -35,6 +35,8 @@ val process_method_attributes_rev :
 val process_attributes_rev : 
   t -> [ `Meth_callback | `Nothing | `Uncurry | `Method ] * t 
 
+val process_pexp_fun_attributes_rev :
+  t -> [ `Nothing | `Exn ] * t 
 val process_bs : 
   t -> [ `Nothing | `Has] * t 
 

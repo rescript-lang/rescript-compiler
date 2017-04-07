@@ -99,6 +99,17 @@ let process_attributes_rev (attrs : t) =
         st, attr::acc 
     ) ( `Nothing, []) attrs
 
+let process_pexp_fun_attributes_rev (attrs : t) = 
+  List.fold_left (fun (st, acc) (({txt; loc}, _) as attr : attr) -> 
+      match txt, st  with 
+      | "bs.open", (`Nothing | `Exn) 
+        -> 
+        `Exn, acc
+
+      | _ , _ -> 
+        st, attr::acc 
+    ) ( `Nothing, []) attrs
+
 let process_bs attrs = 
   List.fold_left (fun (st, acc) (({txt; loc}, _) as attr : attr) -> 
       match txt, st  with 

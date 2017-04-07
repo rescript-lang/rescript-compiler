@@ -630,3 +630,53 @@ let record_as_js_object
     args 
 
 
+
+let isCamlExceptionOrOpenVariant = Longident.parse "Caml_exceptions.isCamlExceptionOrOpenVariant"
+let obj_magic = Longident.parse "Obj.magic"
+
+let rec checkCases (cases : Parsetree.case list) = 
+  List.iter check_case cases 
+and check_case case = 
+  check_pat case.pc_lhs 
+and check_pat (pat : Parsetree.pattern) = 
+  match pat.ppat_desc with 
+  | Ppat_construct _ -> ()
+  | Ppat_or (l,r) -> 
+    check_pat l; check_pat r 
+  | _ ->  Location.raise_errorf ~loc:pat.ppat_loc "Unsupported pattern in `bs.open`" 
+
+let convertBsErrorFunction loc  (self : Ast_mapper.mapper) attrs (cases : Parsetree.case list ) =
+  let txt  = "match" in 
+  let txt_expr = Exp.ident ~loc {txt = Lident txt; loc} in 
+  let none = Exp.constraint_ ~loc 
+      (Exp.construct ~loc {txt = Lident "None" ; loc} None) 
+      (Ast_core_type.lift_option_type (Typ.any ~loc ())) in
+  let () = checkCases cases in  
+  let cases = self.cases self cases in 
+  Exp.fun_ ~attrs ~loc ""  None ( Pat.var ~loc  {txt; loc })
+    (Exp.ifthenelse
+    ~loc 
+    (Exp.apply ~loc (Exp.ident ~loc {txt = isCamlExceptionOrOpenVariant ; loc}) ["", txt_expr ])
+    (Exp.match_ ~loc 
+       (Exp.constraint_ ~loc 
+          (Exp.apply  ~loc (Exp.ident ~loc {txt =  obj_magic; loc}) ["", txt_expr])
+          (Ast_literal.type_exn ~loc ())
+       )
+      (List.map (fun (x :Parsetree.case ) ->
+           let pc_rhs = x.pc_rhs in 
+           let  loc  = pc_rhs.pexp_loc in
+           {
+             x with pc_rhs = 
+                      Exp.constraint_ ~loc 
+                        (Exp.construct ~loc {txt = Lident "Some";loc} (Some pc_rhs))
+                        (Ast_core_type.lift_option_type (Typ.any ~loc ())  )
+           }
+
+         ) cases 
+     @ [
+       Exp.case  (Pat.any ~loc ()) none
+     ])
+    )
+    (Some none))
+    
+                       

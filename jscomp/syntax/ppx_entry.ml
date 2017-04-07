@@ -356,6 +356,13 @@ let rec unsafe_mapper : Ast_mapper.mapper =
           Ast_derive.dispatch_extension lid typ
 
         (** End rewriting *)
+        | Pexp_function cases -> 
+          begin match Ast_attributes.process_pexp_fun_attributes_rev e.pexp_attributes with 
+          | `Nothing, _ -> 
+            Ast_mapper.default_mapper.expr self  e 
+          | `Exn, pexp_attributes -> 
+            Ast_util.convertBsErrorFunction loc self  pexp_attributes cases
+          end
         | Pexp_fun ("", None, pat , body)
           ->
           begin match Ast_attributes.process_attributes_rev e.pexp_attributes with 
