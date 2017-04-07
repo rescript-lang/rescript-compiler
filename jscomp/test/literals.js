@@ -69,15 +69,31 @@ var bsconfig_json = "bsconfig.json";
 
 var build_ninja = "build.ninja";
 
+var library_file = "lib";
+
+var suffix_a = ".a";
+
 var suffix_cmj = ".cmj";
 
+var suffix_cmo = ".cmo";
+
+var suffix_cma = ".cma";
+
 var suffix_cmi = ".cmi";
+
+var suffix_cmx = ".cmx";
+
+var suffix_cmxa = ".cmxa";
 
 var suffix_ml = ".ml";
 
 var suffix_mlast = ".mlast";
 
+var suffix_mlast_simple = ".mlast_simple";
+
 var suffix_mliast = ".mliast";
+
+var suffix_mliast_simple = ".mliast_simple";
 
 var suffix_mll = ".mll";
 
@@ -163,11 +179,19 @@ exports.node_modules_length    = node_modules_length;
 exports.package_json           = package_json;
 exports.bsconfig_json          = bsconfig_json;
 exports.build_ninja            = build_ninja;
+exports.library_file           = library_file;
+exports.suffix_a               = suffix_a;
 exports.suffix_cmj             = suffix_cmj;
+exports.suffix_cmo             = suffix_cmo;
+exports.suffix_cma             = suffix_cma;
 exports.suffix_cmi             = suffix_cmi;
+exports.suffix_cmx             = suffix_cmx;
+exports.suffix_cmxa            = suffix_cmxa;
 exports.suffix_ml              = suffix_ml;
 exports.suffix_mlast           = suffix_mlast;
+exports.suffix_mlast_simple    = suffix_mlast_simple;
 exports.suffix_mliast          = suffix_mliast;
+exports.suffix_mliast_simple   = suffix_mliast_simple;
 exports.suffix_mll             = suffix_mll;
 exports.suffix_re              = suffix_re;
 exports.suffix_rei             = suffix_rei;
