@@ -197,6 +197,8 @@ let handle_core_type
         Ast_util.to_method_type loc self label args body
       | `Nothing , _ -> 
         Ast_mapper.default_mapper.typ self ty
+      | `Exn_convert, _  ->  
+        Location.raise_errorf ~loc "Invalid use of attribute `bs.exn`"
     end
   | {
     ptyp_desc =  Ptyp_object ( methods, closed_flag) ;
@@ -212,6 +214,8 @@ let handle_core_type
               | `Nothing, attrs -> attrs, core_type
               | `Uncurry, attrs ->
                 attrs, Ast_attributes.bs +> ty
+              | `Exn_convert, _ -> 
+                Location.raise_errorf ~loc "bs.get/set conflicts with bs.exn"
               | `Method, _
                 -> Location.raise_errorf ~loc "bs.get/set conflicts with bs.meth"
               | `Meth_callback, attrs ->
@@ -224,6 +228,8 @@ let handle_core_type
               | `Nothing, attrs -> attrs, core_type
               | `Uncurry, attrs ->
                 attrs, Ast_attributes.bs +> ty 
+              | `Exn_convert, _ -> 
+                Location.raise_errorf ~loc "bs.get/set conflicts with bs.exn"
               | `Method, _
                 -> Location.raise_errorf ~loc "bs.get/set conflicts with bs.meth"
               | `Meth_callback, attrs ->
@@ -239,6 +245,8 @@ let handle_core_type
                 attrs, Ast_attributes.bs +> ty 
               | `Method, attrs -> 
                 attrs, Ast_attributes.bs_method +> ty 
+              | `Exn_convert, _ -> 
+                Location.raise_errorf ~loc "Invalid use of `bs.exn'"
               | `Meth_callback, attrs ->
                 attrs, Ast_attributes.bs_this +> ty  in            
             label, attrs, self.typ self core_type in
@@ -361,13 +369,21 @@ let rec unsafe_mapper : Ast_mapper.mapper =
           begin match Ast_attributes.process_attributes_rev e.pexp_attributes with 
             | `Nothing, _ 
               -> Ast_mapper.default_mapper.expr self e 
-            |   `Uncurry, pexp_attributes
+            | `Uncurry, pexp_attributes
               -> 
               {e with 
                pexp_desc = Ast_util.to_uncurry_fn loc self pat body  ;
                pexp_attributes}
+            | `Exn_convert, pexp_attributes 
+              -> 
+              {e with 
+               pexp_desc = Ast_util.to_exn_fn loc self pat body;
+               pexp_attributes
+              }
             | `Method , _
-              ->  Location.raise_errorf ~loc "bs.meth is not supported in function expression"
+              ->
+              Location.raise_errorf ~loc
+                "bs.meth is not supported in function expression"
             | `Meth_callback , pexp_attributes
               -> 
               {e with pexp_desc = Ast_util.to_method_callback loc  self pat body ;

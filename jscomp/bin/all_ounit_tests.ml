@@ -4074,6 +4074,16 @@ external ff :
         (Ext_string.contain_substring  should_err.stderr "simple")
     end;
     
+    __LOC__ >:: begin fun _ -> 
+      let should_err = bsc_eval {|
+let handler2 = fun [@bs.exn] (a,b) x -> 
+  match a with 
+  | _ -> x + 1
+
+|} in 
+      OUnit.assert_bool __LOC__ 
+        (Ext_string.contain_substring should_err.stderr "identifier")
+    end
   ]
 
 

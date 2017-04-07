@@ -24619,7 +24619,7 @@ type error
   | Label_in_uncurried_bs_attribute
 
   | Bs_this_simple_pattern
-
+  | Bs_exn_single_variable 
 
 val err : Location.t -> error -> 'a
 
@@ -24679,6 +24679,7 @@ type error
   | Label_in_uncurried_bs_attribute
 
   | Bs_this_simple_pattern
+  | Bs_exn_single_variable 
 
 let pp_error fmt err =
   Format.pp_print_string fmt @@ match err with
@@ -24742,6 +24743,9 @@ let pp_error fmt err =
   | Bs_this_simple_pattern
     -> 
     "[@bs.this] expect its pattern variable to be simple form"
+  | Bs_exn_single_variable 
+    -> 
+    "[@bs.exn] expect its pattern to be a identifier"
 
 type exn +=  Error of Location.t * error
 
@@ -26354,7 +26358,7 @@ val process_method_attributes_rev :
   (bool * bool , [`Get | `No_get ]) st * t 
 
 val process_attributes_rev : 
-  t -> [ `Meth_callback | `Nothing | `Uncurry | `Method ] * t 
+  t -> [ `Meth_callback | `Nothing | `Uncurry | `Method | `Exn_convert ] * t 
 
 val process_bs : 
   t -> [ `Nothing | `Has] * t 
@@ -26487,10 +26491,13 @@ let process_attributes_rev (attrs : t) =
         `Uncurry, acc
       | "bs.this", (`Nothing | `Meth_callback)
         ->  `Meth_callback, acc
+      | "bs.exn", (`Nothing | `Exn_convert)
+        -> `Exn_convert, acc 
       | "bs.meth",  (`Nothing | `Method)
         -> `Method, acc
       | "bs", _
       | "bs.this", _
+      | "bs.exn", _
         -> Bs_syntaxerr.err loc Conflict_bs_bs_this_bs_meth
       | _ , _ -> 
         st, attr::acc 
@@ -32596,6 +32603,9 @@ val js_property :
   loc ->
   Parsetree.expression -> string -> Parsetree.expression_desc
 
+val to_exn_fn : 
+  (Ast_pat.t -> Ast_exp.t -> Parsetree.expression_desc)
+  cxt 
 val handle_debugger : 
   loc -> Ast_payload.t -> Parsetree.expression_desc
 
@@ -32615,6 +32625,7 @@ val ocaml_obj_as_js_object :
 
 
  
+
 end = struct
 #1 "ast_util.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -32903,6 +32914,44 @@ let to_uncurry_fn   =
   generic_to_uncurry_exp `Fn
 let to_method_callback  = 
   generic_to_uncurry_exp `Method_callback 
+
+(**
+   {[ fun  pat ->  body ]}
+   --
+   [pat] has to be simple pattern 
+   {[
+     fun e -> 
+       let e = Js.Exn.internalToOCamlException (Obj.repr pat) in 
+       body
+   ]}
+*)
+let to_exn_fn (_all_loc : Location.t)
+    (self : Ast_mapper.mapper) (pat : Ast_pat.t) body = 
+  let loc  = pat.ppat_loc in 
+  match pat.ppat_desc with 
+  | Ppat_var ({txt } ) -> 
+    let body = self.expr self body in 
+    Parsetree.Pexp_fun
+      (Ext_string.empty, None, pat, 
+       Ast_helper.Exp.let_ ~loc Nonrecursive
+         [ Ast_helper.Vb.mk ~loc pat 
+             (
+               Exp.apply ~loc
+                 (
+                   Exp.ident  ~loc
+                     {txt =
+                        Ldot (Ldot (Lident "Js", "Exn"),
+                              "internalToOCamlException"); 
+                      loc })
+                 [("",Exp.ident ~loc {txt = Lident txt ; loc})]
+             )
+
+         ] body 
+      )
+      
+  | _ -> 
+    Bs_syntaxerr.err loc Bs_exn_single_variable 
+
 
 
 let handle_debugger loc payload = 
@@ -33644,6 +33693,8 @@ let handle_core_type
         Ast_util.to_method_type loc self label args body
       | `Nothing , _ -> 
         Ast_mapper.default_mapper.typ self ty
+      | `Exn_convert, _  ->  
+        Location.raise_errorf ~loc "Invalid use of attribute `bs.exn`"
     end
   | {
     ptyp_desc =  Ptyp_object ( methods, closed_flag) ;
@@ -33659,6 +33710,8 @@ let handle_core_type
               | `Nothing, attrs -> attrs, core_type
               | `Uncurry, attrs ->
                 attrs, Ast_attributes.bs +> ty
+              | `Exn_convert, _ -> 
+                Location.raise_errorf ~loc "bs.get/set conflicts with bs.exn"
               | `Method, _
                 -> Location.raise_errorf ~loc "bs.get/set conflicts with bs.meth"
               | `Meth_callback, attrs ->
@@ -33671,6 +33724,8 @@ let handle_core_type
               | `Nothing, attrs -> attrs, core_type
               | `Uncurry, attrs ->
                 attrs, Ast_attributes.bs +> ty 
+              | `Exn_convert, _ -> 
+                Location.raise_errorf ~loc "bs.get/set conflicts with bs.exn"
               | `Method, _
                 -> Location.raise_errorf ~loc "bs.get/set conflicts with bs.meth"
               | `Meth_callback, attrs ->
@@ -33686,6 +33741,8 @@ let handle_core_type
                 attrs, Ast_attributes.bs +> ty 
               | `Method, attrs -> 
                 attrs, Ast_attributes.bs_method +> ty 
+              | `Exn_convert, _ -> 
+                Location.raise_errorf ~loc "Invalid use of `bs.exn'"
               | `Meth_callback, attrs ->
                 attrs, Ast_attributes.bs_this +> ty  in            
             label, attrs, self.typ self core_type in
@@ -33808,13 +33865,21 @@ let rec unsafe_mapper : Ast_mapper.mapper =
           begin match Ast_attributes.process_attributes_rev e.pexp_attributes with 
             | `Nothing, _ 
               -> Ast_mapper.default_mapper.expr self e 
-            |   `Uncurry, pexp_attributes
+            | `Uncurry, pexp_attributes
               -> 
               {e with 
                pexp_desc = Ast_util.to_uncurry_fn loc self pat body  ;
                pexp_attributes}
+            | `Exn_convert, pexp_attributes 
+              -> 
+              {e with 
+               pexp_desc = Ast_util.to_exn_fn loc self pat body;
+               pexp_attributes
+              }
             | `Method , _
-              ->  Location.raise_errorf ~loc "bs.meth is not supported in function expression"
+              ->
+              Location.raise_errorf ~loc
+                "bs.meth is not supported in function expression"
             | `Meth_callback , pexp_attributes
               -> 
               {e with pexp_desc = Ast_util.to_method_callback loc  self pat body ;

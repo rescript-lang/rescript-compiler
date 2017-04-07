@@ -237,7 +237,8 @@ syntax/ast_derive_projector.cmi :
 syntax/ast_ffi_types.cmi : syntax/ast_arg.cmi
 syntax/ast_external_attributes.cmi : common/bs_loc.cmi \
     syntax/ast_core_type.cmi syntax/ast_attributes.cmi
-syntax/ast_util.cmi : syntax/ast_payload.cmi
+syntax/ast_util.cmi : syntax/ast_payload.cmi syntax/ast_pat.cmi \
+    syntax/ast_exp.cmi
 syntax/ppx_entry.cmi :
 depends/depends_post_process.cmi :
 depends/bs_exception.cmi :

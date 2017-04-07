@@ -90,10 +90,13 @@ let process_attributes_rev (attrs : t) =
         `Uncurry, acc
       | "bs.this", (`Nothing | `Meth_callback)
         ->  `Meth_callback, acc
+      | "bs.exn", (`Nothing | `Exn_convert)
+        -> `Exn_convert, acc 
       | "bs.meth",  (`Nothing | `Method)
         -> `Method, acc
       | "bs", _
       | "bs.this", _
+      | "bs.exn", _
         -> Bs_syntaxerr.err loc Conflict_bs_bs_this_bs_meth
       | _ , _ -> 
         st, attr::acc 
