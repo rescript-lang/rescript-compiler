@@ -726,8 +726,19 @@ bsb/bsb_gen.cmx : ext/string_map.cmx ext/literals.cmx ext/ext_string.cmx \
     bsb/bsb_config_types.cmx bsb/bsb_config.cmx bsb/bsb_build_util.cmx \
     bsb/bsb_build_ui.cmx bsb/bsb_build_schemas.cmx common/binary_cache.cmx \
     bsb/bsb_gen.cmi
-bsb/bsb_helper_main.cmx : depends/depends_post_process.cmx \
-    bsb/bsb_helper_main.cmi
+bsb/bsb_helper_dep_graph.cmx : ext/string_set.cmx ext/string_map.cmx \
+    ext/string_hashtbl.cmx bsb/bsb_helper_dep_graph.cmi
+bsb/bsb_helper_extract.cmx : ext/string_set.cmx ext/ext_string.cmx \
+    bsb/bsb_helper_extract.cmi
+bsb/bsb_helper_linker.cmx : ext/string_map.cmx ext/literals.cmx \
+    ext/ext_filename.cmx bsb/bsb_helper_extract.cmx \
+    bsb/bsb_helper_dep_graph.cmx bsb/bsb_helper_linker.cmi
+bsb/bsb_helper_main.cmx : ext/ext_filename.cmx \
+    depends/depends_post_process.cmx bsb/bsb_helper_packer.cmx \
+    bsb/bsb_helper_linker.cmx bsb/bsb_helper_main.cmi
+bsb/bsb_helper_packer.cmx : ext/string_set.cmx ext/string_map.cmx \
+    ext/literals.cmx ext/ext_filename.cmx bsb/bsb_helper_extract.cmx \
+    bsb/bsb_helper_dep_graph.cmx bsb/bsb_helper_packer.cmi
 bsb/bsb_main.cmx : ext/string_hash_set.cmx ext/literals.cmx ext/ext_sys.cmx \
     ext/ext_string.cmx ext/ext_filename.cmx ext/ext_color.cmx \
     ext/ext_array.cmx bsb/bsb_unix.cmx bsb/bsb_gen.cmx bsb/bsb_file.cmx \
@@ -754,7 +765,12 @@ bsb/bsb_dir.cmi :
 bsb/bsb_exception.cmi : ext/ext_position.cmi ext/ext_json_types.cmx
 bsb/bsb_file.cmi :
 bsb/bsb_gen.cmi : bsb/bsb_config_types.cmx
+bsb/bsb_helper_dep_graph.cmi : ext/string_set.cmi ext/string_map.cmi \
+    ext/string_hashtbl.cmi
+bsb/bsb_helper_extract.cmi : ext/string_set.cmi
+bsb/bsb_helper_linker.cmi :
 bsb/bsb_helper_main.cmi :
+bsb/bsb_helper_packer.cmi :
 bsb/bsb_main.cmi :
 bsb/bsb_ninja.cmi : ext/string_hash_set.cmi bsb/bsb_rule.cmi \
     bsb/bsb_config.cmi bsb/bsb_build_ui.cmi

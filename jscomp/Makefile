@@ -284,6 +284,8 @@ BSB_SRCS= bsb_config \
 	bsb_pkg \
 	bsb_build_schemas \
 	bsb_build_util \
+	bsb_helper_linker\
+	bsb_helper_extract\
 	bsb_dir \
 	bsb_rule\
 	bsb_ninja \

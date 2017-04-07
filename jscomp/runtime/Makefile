@@ -14,6 +14,7 @@ OTHERS= caml_array caml_string caml_bytes\
 
 SOURCE_LIST= $(OTHERS) caml_builtin_exceptions  block  js js_unsafe
 
+caml_sys.cmj: js_undefined.cmj
 caml_oo.cmj : caml_array.cmj
 js_unsafe.cmj:js_unsafe.cmi js.cmj js.cmi
 js_unsafe.cmi js.cmj: js.cmi
