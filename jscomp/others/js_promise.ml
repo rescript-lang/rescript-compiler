@@ -33,10 +33,11 @@ type + 'a t
 type error (* abstract error type *)
 
 
-external make : (('a -> unit [@bs]) -> ('e -> unit [@bs]) -> unit [@bs.uncurry]) -> 'a t = "Promise" [@@bs.new]
+external make : (resolve:('a -> unit [@bs]) ->
+                 reject:('e -> unit [@bs]) -> unit [@bs.uncurry]) -> 'a t = "Promise" [@@bs.new]
 (* [make (fun resolve reject -> .. )] *)
 external resolve : 'a -> 'a t = "Promise.resolve" [@@bs.val]
-external reject : 'any -> 'a t = "Promise.reject" [@@bs.val]
+external reject : exn -> 'a t = "Promise.reject" [@@bs.val]
 external all : 'a t array -> 'a array t = "Promise.all" [@@bs.val]
 external all2 : 'a0 t -> 'a1 t -> ('a0 * 'a1) t = "Promise.all" [@@bs.val]
 external all3 : 'a0 t -> 'a1 t -> 'a2 t -> ('a0 * 'a1 * 'a2 ) t = "Promise.all" [@@bs.val]
@@ -48,7 +49,7 @@ external race : 'a t array -> 'a t = "Promise.race" [@@bs.val]
 
 external then_ : ('a -> 'b t [@bs.uncurry]) -> 'b t = "then" [@@bs.send.pipe: 'a t]
 
-external (>>=) : 'a  t -> ('a -> 'b t [@bs.uncurry]) -> 'b t = "then" [@@bs.send]
+
 
 external catch : (error -> 'a t [@bs.uncurry]) -> 'a t = "catch" [@@bs.send.pipe: 'a t]
 (* [ p|> catch handler]
@@ -57,3 +58,12 @@ external catch : (error -> 'a t [@bs.uncurry]) -> 'a t = "catch" [@@bs.send.pipe
     to make it strict we enforce reject handler
     https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/catch
  *)
+
+
+(*
+let errorAsExn (x :  error) (e  : (exn ->'a option))= 
+  if Caml_exceptions.isCamlExceptionOrOpenVariant (Obj.magic x ) then 
+     e (Obj.magic x) 
+  else None
+[%bs.error?  ]
+*)

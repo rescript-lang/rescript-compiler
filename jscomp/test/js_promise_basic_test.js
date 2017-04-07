@@ -42,9 +42,9 @@ function andThenTest() {
 }
 
 function catchTest() {
-  var p = Promise.reject("error");
+  var p = Promise.reject(Caml_builtin_exceptions.not_found);
   return p.then(fail).catch(function (error) {
-              return Promise.resolve(assert_bool(+(error === "error")));
+              return Promise.resolve(assert_bool(+(error === Caml_builtin_exceptions.not_found)));
             });
 }
 
@@ -58,7 +58,7 @@ function orResolvedTest() {
 }
 
 function orRejectedTest() {
-  var p = Promise.reject("error");
+  var p = Promise.reject(Caml_builtin_exceptions.not_found);
   return p.catch(function () {
                   return Promise.resolve(22);
                 }).then(function (value) {
@@ -76,7 +76,7 @@ function orElseResolvedTest() {
 }
 
 function orElseRejectedResolveTest() {
-  var p = Promise.reject("error");
+  var p = Promise.reject(Caml_builtin_exceptions.not_found);
   return p.catch(function () {
                   return Promise.resolve(22);
                 }).then(function (value) {
@@ -85,11 +85,11 @@ function orElseRejectedResolveTest() {
 }
 
 function orElseRejectedRejectTest() {
-  var p = Promise.reject("error");
+  var p = Promise.reject(Caml_builtin_exceptions.not_found);
   return p.catch(function () {
-                  return Promise.reject("error 2");
+                  return Promise.reject(Caml_builtin_exceptions.stack_overflow);
                 }).then(fail).catch(function (error) {
-              return Promise.resolve(assert_bool(+(error === "error 2")));
+              return Promise.resolve(assert_bool(+(error === Caml_builtin_exceptions.stack_overflow)));
             });
 }
 
@@ -101,9 +101,9 @@ function resolveTest() {
 }
 
 function rejectTest() {
-  var p = Promise.reject("error");
+  var p = Promise.reject(Caml_builtin_exceptions.not_found);
   return p.catch(function (error) {
-              return Promise.resolve(assert_bool(+(error === "error")));
+              return Promise.resolve(assert_bool(+(error === Caml_builtin_exceptions.not_found)));
             });
 }
 
@@ -115,9 +115,9 @@ function thenCatchChainResolvedTest() {
 }
 
 function thenCatchChainRejectedTest() {
-  var p = Promise.reject("error");
+  var p = Promise.reject(Caml_builtin_exceptions.not_found);
   return p.then(fail).catch(function (error) {
-              return Promise.resolve(assert_bool(+(error === "error")));
+              return Promise.resolve(assert_bool(+(error === Caml_builtin_exceptions.not_found)));
             });
 }
 
@@ -143,14 +143,14 @@ function allResolvedTest() {
 function allRejectTest() {
   var p1 = Promise.resolve(1);
   var p2 = Promise.resolve(3);
-  var p3 = Promise.reject("error");
+  var p3 = Promise.reject(Caml_builtin_exceptions.not_found);
   var promises = /* array */[
     p1,
     p2,
     p3
   ];
   return Promise.all(promises).then(fail).catch(function (error) {
-              assert_bool(+(error === "error"));
+              assert_bool(+(error === Caml_builtin_exceptions.not_found));
               return h;
             });
 }
@@ -171,9 +171,9 @@ function raceTest() {
 
 function createPromiseRejectTest() {
   return new Promise(function (_, reject) {
-                return reject("error");
+                return reject(Caml_builtin_exceptions.not_found);
               }).catch(function (error) {
-              assert_bool(+(error === "error"));
+              assert_bool(+(error === Caml_builtin_exceptions.not_found));
               return h;
             });
 }

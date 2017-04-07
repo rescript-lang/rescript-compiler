@@ -151,6 +151,7 @@ exception_rebound_err.cmj : ../runtime/js.cmj
 exception_repr_test.cmj : ../stdlib/printexc.cmj mt.cmj ../stdlib/format.cmj \
     exception_def.cmj
 exception_value_test.cmj : ../runtime/js.cmj
+exn_error_pattern.cmj :
 export_keyword.cmj :
 ext_array.cmj : ../stdlib/list.cmj ../stdlib/array.cmj
 ext_bytes.cmj : ../stdlib/pervasives.cmj ../stdlib/bytes.cmj
