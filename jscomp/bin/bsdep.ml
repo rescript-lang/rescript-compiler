@@ -33660,7 +33660,7 @@ let handle_core_type
               | `Uncurry, attrs ->
                 attrs, Ast_attributes.bs +> ty
               | `Method, _
-                -> Location.raise_errorf "bs.get/set conflicts with bs.meth"
+                -> Location.raise_errorf ~loc "bs.get/set conflicts with bs.meth"
               | `Meth_callback, attrs ->
                 attrs, Ast_attributes.bs_this +> ty 
             in 
@@ -33672,7 +33672,7 @@ let handle_core_type
               | `Uncurry, attrs ->
                 attrs, Ast_attributes.bs +> ty 
               | `Method, _
-                -> Location.raise_errorf "bs.get/set conflicts with bs.meth"
+                -> Location.raise_errorf ~loc "bs.get/set conflicts with bs.meth"
               | `Meth_callback, attrs ->
                 attrs, Ast_attributes.bs_this +> ty
             in               
