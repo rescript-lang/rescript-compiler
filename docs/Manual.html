@@ -607,6 +607,11 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_raise_js_style_exception">Raise JS style exception</a></li>
 </ul>
 </li>
+<li><a href="#__code_bs_open_code_type_safe_external_data_source_handling_since_1_6_1"><code>bs.open</code>: Type safe external data-source handling (@@since 1.6.1)</a>
+<ul class="sectlevel2">
+<li><a href="#_use_cases">Use cases</a></li>
+</ul>
+</li>
 <li><a href="#_js_module">Js module</a>
 <ul class="sectlevel2">
 <li><a href="#_null_and_undefined">Null and Undefined</a></li>
@@ -3686,6 +3691,61 @@ more examples, please visit
 </div>
 <div class="paragraph">
 <p>Please consult module <code>Js.Error</code> for more details</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="__code_bs_open_code_type_safe_external_data_source_handling_since_1_6_1"><a class="anchor" href="#__code_bs_open_code_type_safe_external_data_source_handling_since_1_6_1"></a><code>bs.open</code>: Type safe external data-source handling (@@since 1.6.1)</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>There are some cases, the data-source could either come from JS land or OCaml land, it is very hard to give precise type information.
+For example, for an extenral promise whose creation could come from JS API, its failed value caused by <code>Promise.reject</code> could be in any shape.</p>
+</div>
+<div class="paragraph">
+<p>BuckleScript provides a solution to filter out OCaml structured exception data from the mixed data source,
+it preserves the type safety while allow uesrs to deal with mixed source.</p>
+</div>
+<div class="paragraph">
+<p>It makes use of OCaml&#8217;s extensible variant, so that uers can pack mix value of type <code>exn</code> with JS data-source</p>
+</div>
+<div class="listingblock">
+<div class="title">Example</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">let</span> <span class="tok-n">handleData</span> <span class="tok-o">=</span> <span class="tok-k">function</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-k">open</span><span class="tok-o">]</span>
+   <span class="tok-o">|</span> <span class="tok-nc">Invalid_argument</span> <span class="tok-o">_</span> <span class="tok-o">-&gt;</span> <span class="tok-mi">0</span>
+   <span class="tok-o">|</span> <span class="tok-nc">Not_found</span> <span class="tok-o">-&gt;</span> <span class="tok-mi">1</span>
+   <span class="tok-o">|</span> <span class="tok-nc">Sys_error</span> <span class="tok-o">_</span> <span class="tok-o">-&gt;</span> <span class="tok-mi">2</span>
+
+<span class="tok-k">val</span> <span class="tok-n">handleData</span> <span class="tok-o">:</span>  <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">int</span> <span class="tok-n">option</span> <b class="conum">(1)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>For any input source, as long as it matches the exception pattern (nested pattern match supported), the matched value is returned, otherwise return None.</p>
+</li>
+</ol>
+</div>
+<div class="sect2">
+<h3 id="_use_cases"><a class="anchor" href="#_use_cases"></a>Use cases</h3>
+<div class="paragraph">
+<p>Take promise for example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">let</span> <span class="tok-n">v</span> <span class="tok-o">=</span> <span class="tok-nn">Promise</span><span class="tok-p">.</span><span class="tok-n">reject</span> <span class="tok-nc">Not_found</span>
+<span class="tok-k">let</span> <span class="tok-n">handlePromiseFaiure</span> <span class="tok-o">=</span> <span class="tok-k">function</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-k">open</span><span class="tok-o">]</span>
+   <span class="tok-o">|</span> <span class="tok-nc">Not_found</span> <span class="tok-o">-&gt;</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">log</span> <span class="tok-s2">&quot;Not found&quot;</span><span class="tok-o">;</span>  <span class="tok-o">(</span><span class="tok-nn">Promise</span><span class="tok-p">.</span><span class="tok-n">resolve</span> <span class="tok-bp">()</span><span class="tok-o">)</span>
+
+<span class="tok-k">let</span> <span class="tok-bp">()</span> <span class="tok-o">=</span>
+   <span class="tok-n">v</span>
+   <span class="tok-o">|&gt;</span> <span class="tok-nn">Promise</span><span class="tok-p">.</span><span class="tok-n">catch</span> <span class="tok-o">(</span><span class="tok-k">fun</span> <span class="tok-n">error</span> <span class="tok-o">-&gt;</span>
+        <span class="tok-k">match</span> <span class="tok-n">handlePromiseFaiure</span> <span class="tok-n">error</span> <span class="tok-k">with</span>
+        <span class="tok-o">|</span> <span class="tok-nc">Some</span> <span class="tok-n">x</span> <span class="tok-o">-&gt;</span> <span class="tok-n">x</span>
+        <span class="tok-o">|</span> <span class="tok-nc">None</span> <span class="tok-o">-&gt;</span> <span class="tok-k">raise</span> <span class="tok-nc">UnhandledPromise</span>
+    <span class="tok-o">)</span></code></pre>
+</div>
 </div>
 </div>
 </div>

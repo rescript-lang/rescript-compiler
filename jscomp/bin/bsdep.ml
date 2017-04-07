@@ -26356,6 +26356,8 @@ val process_method_attributes_rev :
 val process_attributes_rev : 
   t -> [ `Meth_callback | `Nothing | `Uncurry | `Method ] * t 
 
+val process_pexp_fun_attributes_rev :
+  t -> [ `Nothing | `Exn ] * t 
 val process_bs : 
   t -> [ `Nothing | `Has] * t 
 
@@ -26492,6 +26494,17 @@ let process_attributes_rev (attrs : t) =
       | "bs", _
       | "bs.this", _
         -> Bs_syntaxerr.err loc Conflict_bs_bs_this_bs_meth
+      | _ , _ -> 
+        st, attr::acc 
+    ) ( `Nothing, []) attrs
+
+let process_pexp_fun_attributes_rev (attrs : t) = 
+  List.fold_left (fun (st, acc) (({txt; loc}, _) as attr : attr) -> 
+      match txt, st  with 
+      | "bs.open", (`Nothing | `Exn) 
+        -> 
+        `Exn, acc
+
       | _ , _ -> 
         st, attr::acc 
     ) ( `Nothing, []) attrs
@@ -26697,7 +26710,7 @@ type pattern_lit = Parsetree.pattern lit
 val val_unit : expression_lit
 
 val type_unit : core_type_lit
-
+val type_exn : core_type_lit
 val type_string : core_type_lit
 val type_int : core_type_lit 
 val type_any : core_type_lit
@@ -26739,6 +26752,7 @@ module Lid = struct
   let type_unit : t = Lident "unit"
   let type_string : t = Lident "string"
   let type_int : t = Lident "int" (* use *predef* *)
+  let type_exn : t = Lident "exn" (* use *predef* *)
   (* TODO should be renamed in to {!Js.fn} *)
   (* TODO should be moved into {!Js.t} Later *)
   let js_fn = Longident.Ldot (Lident "Js", "fn")
@@ -26757,8 +26771,12 @@ module No_loc = struct
   let loc = Location.none
   let val_unit = 
     Ast_helper.Exp.construct {txt = Lid.val_unit; loc }  None
+
   let type_unit =   
     Ast_helper.Typ.mk  (Ptyp_constr ({ txt = Lid.type_unit; loc}, []))
+  let type_exn =   
+    Ast_helper.Typ.mk  (Ptyp_constr ({ txt = Lid.type_unit; loc}, []))
+
   let type_int = 
     Ast_helper.Typ.mk (Ptyp_constr ({txt = Lid.type_int; loc}, []))  
   let type_string =   
@@ -26785,6 +26803,13 @@ let type_unit ?loc () =
     No_loc.type_unit
   | Some loc -> 
     Ast_helper.Typ.mk ~loc  (Ptyp_constr ({ txt = Lid.type_unit; loc}, []))
+
+let type_exn ?loc () = 
+  match loc with
+  | None ->     
+    No_loc.type_exn
+  | Some loc -> 
+    Ast_helper.Typ.mk ~loc  (Ptyp_constr ({ txt = Lid.type_exn; loc}, []))
 
 
 let type_string ?loc () = 
@@ -32614,7 +32639,10 @@ val ocaml_obj_as_js_object :
    Parsetree.expression_desc) cxt   
 
 
- 
+ val convertBsErrorFunction : 
+   
+   (Ast_helper.attrs -> Parsetree.case list -> Parsetree.expression) cxt
+
 end = struct
 #1 "ast_util.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -33250,6 +33278,56 @@ let record_as_js_object
 
 
 
+let isCamlExceptionOrOpenVariant = Longident.parse "Caml_exceptions.isCamlExceptionOrOpenVariant"
+let obj_magic = Longident.parse "Obj.magic"
+
+let rec checkCases (cases : Parsetree.case list) = 
+  List.iter check_case cases 
+and check_case case = 
+  check_pat case.pc_lhs 
+and check_pat (pat : Parsetree.pattern) = 
+  match pat.ppat_desc with 
+  | Ppat_construct _ -> ()
+  | Ppat_or (l,r) -> 
+    check_pat l; check_pat r 
+  | _ ->  Location.raise_errorf ~loc:pat.ppat_loc "Unsupported pattern in `bs.open`" 
+
+let convertBsErrorFunction loc  (self : Ast_mapper.mapper) attrs (cases : Parsetree.case list ) =
+  let txt  = "match" in 
+  let txt_expr = Exp.ident ~loc {txt = Lident txt; loc} in 
+  let none = Exp.constraint_ ~loc 
+      (Exp.construct ~loc {txt = Lident "None" ; loc} None) 
+      (Ast_core_type.lift_option_type (Typ.any ~loc ())) in
+  let () = checkCases cases in  
+  let cases = self.cases self cases in 
+  Exp.fun_ ~attrs ~loc ""  None ( Pat.var ~loc  {txt; loc })
+    (Exp.ifthenelse
+    ~loc 
+    (Exp.apply ~loc (Exp.ident ~loc {txt = isCamlExceptionOrOpenVariant ; loc}) ["", txt_expr ])
+    (Exp.match_ ~loc 
+       (Exp.constraint_ ~loc 
+          (Exp.apply  ~loc (Exp.ident ~loc {txt =  obj_magic; loc}) ["", txt_expr])
+          (Ast_literal.type_exn ~loc ())
+       )
+      (List.map (fun (x :Parsetree.case ) ->
+           let pc_rhs = x.pc_rhs in 
+           let  loc  = pc_rhs.pexp_loc in
+           {
+             x with pc_rhs = 
+                      Exp.constraint_ ~loc 
+                        (Exp.construct ~loc {txt = Lident "Some";loc} (Some pc_rhs))
+                        (Ast_core_type.lift_option_type (Typ.any ~loc ())  )
+           }
+
+         ) cases 
+     @ [
+       Exp.case  (Pat.any ~loc ()) none
+     ])
+    )
+    (Some none))
+    
+                       
+
 end
 module Ext_ref : sig 
 #1 "ext_ref.mli"
@@ -33803,6 +33881,13 @@ let rec unsafe_mapper : Ast_mapper.mapper =
           Ast_derive.dispatch_extension lid typ
 
         (** End rewriting *)
+        | Pexp_function cases -> 
+          begin match Ast_attributes.process_pexp_fun_attributes_rev e.pexp_attributes with 
+          | `Nothing, _ -> 
+            Ast_mapper.default_mapper.expr self  e 
+          | `Exn, pexp_attributes -> 
+            Ast_util.convertBsErrorFunction loc self  pexp_attributes cases
+          end
         | Pexp_fun ("", None, pat , body)
           ->
           begin match Ast_attributes.process_attributes_rev e.pexp_attributes with 
