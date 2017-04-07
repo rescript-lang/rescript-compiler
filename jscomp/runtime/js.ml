@@ -72,7 +72,9 @@ type boolean
 (* I'd like to move this and the other types into a Js_core module that can be
    included back here, but the dependency hackery confuses me *)
 type (+'a, +'e) promise
-(** The promise type, defined here for interop *)
+(** The promise type, defined here for interop 
+    @deprecated Please use {!Js.Promise.t} instead
+*)
 
 
 (* tag::predefined_js_values[]*)

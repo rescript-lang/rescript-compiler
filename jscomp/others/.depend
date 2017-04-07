@@ -19,6 +19,7 @@ js_dict.cmj : js_dict.cmi
 js_date.cmj :
 js_global.cmj :
 js_cast.cmj : js_cast.cmi
+js_promise.cmj :
 node_process.cmi : js_dict.cmi
 js_re.cmi :
 js_null_undefined.cmi :
