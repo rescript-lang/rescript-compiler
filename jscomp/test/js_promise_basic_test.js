@@ -1,6 +1,7 @@
 'use strict';
 
 var Caml_array              = require("../../lib/js/caml_array.js");
+var Caml_exceptions         = require("../../lib/js/caml_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function assert_bool(b) {
@@ -41,11 +42,27 @@ function andThenTest() {
             });
 }
 
+var h = Promise.resolve(/* () */0);
+
+function assertIsNotFound(x) {
+  var match = Caml_exceptions.isCamlExceptionOrOpenVariant(x) && x === Caml_builtin_exceptions.not_found ? /* Some */[0] : /* None */0;
+  if (match) {
+    return h;
+  } else {
+    throw [
+          Caml_builtin_exceptions.assert_failure,
+          [
+            "js_promise_basic_test.ml",
+            29,
+            9
+          ]
+        ];
+  }
+}
+
 function catchTest() {
   var p = Promise.reject(Caml_builtin_exceptions.not_found);
-  return p.then(fail).catch(function (error) {
-              return Promise.resolve(assert_bool(+(error === Caml_builtin_exceptions.not_found)));
-            });
+  return p.then(fail).catch(assertIsNotFound);
 }
 
 function orResolvedTest() {
@@ -89,7 +106,19 @@ function orElseRejectedRejectTest() {
   return p.catch(function () {
                   return Promise.reject(Caml_builtin_exceptions.stack_overflow);
                 }).then(fail).catch(function (error) {
-              return Promise.resolve(assert_bool(+(error === Caml_builtin_exceptions.stack_overflow)));
+              var match = Caml_exceptions.isCamlExceptionOrOpenVariant(error) && error === Caml_builtin_exceptions.stack_overflow ? /* Some */[0] : /* None */0;
+              if (match) {
+                return h;
+              } else {
+                throw [
+                      Caml_builtin_exceptions.assert_failure,
+                      [
+                        "js_promise_basic_test.ml",
+                        70,
+                        18
+                      ]
+                    ];
+              }
             });
 }
 
@@ -102,9 +131,7 @@ function resolveTest() {
 
 function rejectTest() {
   var p = Promise.reject(Caml_builtin_exceptions.not_found);
-  return p.catch(function (error) {
-              return Promise.resolve(assert_bool(+(error === Caml_builtin_exceptions.not_found)));
-            });
+  return p.catch(assertIsNotFound);
 }
 
 function thenCatchChainResolvedTest() {
@@ -116,12 +143,8 @@ function thenCatchChainResolvedTest() {
 
 function thenCatchChainRejectedTest() {
   var p = Promise.reject(Caml_builtin_exceptions.not_found);
-  return p.then(fail).catch(function (error) {
-              return Promise.resolve(assert_bool(+(error === Caml_builtin_exceptions.not_found)));
-            });
+  return p.then(fail).catch(assertIsNotFound);
 }
-
-var h = Promise.resolve(/* () */0);
 
 function allResolvedTest() {
   var p1 = Promise.resolve(1);
@@ -221,6 +244,8 @@ exports.assert_bool                = assert_bool;
 exports.fail                       = fail;
 exports.thenTest                   = thenTest;
 exports.andThenTest                = andThenTest;
+exports.h                          = h;
+exports.assertIsNotFound           = assertIsNotFound;
 exports.catchTest                  = catchTest;
 exports.orResolvedTest             = orResolvedTest;
 exports.orRejectedTest             = orRejectedTest;
@@ -231,7 +256,6 @@ exports.resolveTest                = resolveTest;
 exports.rejectTest                 = rejectTest;
 exports.thenCatchChainResolvedTest = thenCatchChainResolvedTest;
 exports.thenCatchChainRejectedTest = thenCatchChainRejectedTest;
-exports.h                          = h;
 exports.allResolvedTest            = allResolvedTest;
 exports.allRejectTest              = allRejectTest;
 exports.raceTest                   = raceTest;

@@ -20,11 +20,21 @@ let andThenTest () =
   p |> then_ (fun _ -> resolve (12))
     |> then_ (fun y -> resolve @@ assert_bool (y = 12))
 
+let h = resolve ()
+
+let assertIsNotFound (x : Js_promise.error) = 
+  match (function [@bs.open]
+  | Not_found -> 0) x with 
+  | Some _ -> h
+  | _ -> assert false 
+
+(** would be nice to have [%bs.open? Stack_overflow]*)
 let catchTest () =
   let p = reject Not_found in
   p |> then_ fail
     |> catch (fun error -> 
-      resolve @@ assert_bool (Obj.magic error == Not_found))
+      assertIsNotFound error
+    )
 
 let orResolvedTest () =
   let p = resolve 42 in
@@ -54,7 +64,11 @@ let orElseRejectedRejectTest () =
   let p = reject Not_found in
   p |> catch (fun _ -> reject Stack_overflow)
     |> then_ fail
-    |> catch (fun error -> resolve @@ assert_bool (Obj.magic error == Stack_overflow))
+    |> catch (fun error ->
+        match (function [@bs.open] Stack_overflow -> 0) error with 
+        | Some _ -> h 
+        | None -> assert false 
+        (* resolve @@ assert_bool (Obj.magic error == Stack_overflow) *))
 
 let resolveTest () =
   let p1 = resolve 10 in
@@ -62,7 +76,11 @@ let resolveTest () =
 
 let rejectTest () =
   let p = reject Not_found in
-  p |> catch (fun error -> resolve @@ assert_bool (Obj.magic error == Not_found))
+  p |> catch
+    (fun error ->
+       assertIsNotFound error
+       (* resolve @@ assert_bool (Obj.magic error == Not_found) *)
+    )
 
 let thenCatchChainResolvedTest () =
   let p = resolve 20 in
@@ -72,9 +90,11 @@ let thenCatchChainResolvedTest () =
 let thenCatchChainRejectedTest () =
   let p = reject Not_found in
   p |> then_ fail
-    |> catch (fun error -> resolve @@ assert_bool (Obj.magic error == Not_found))
+    |> catch (fun error -> 
+      assertIsNotFound error
+      (* resolve @@ assert_bool (Obj.magic error == Not_found) *))
 
-let h = resolve ()
+
 let allResolvedTest () =
   let p1 = resolve 1 in
   let p2 = resolve 2 in
