@@ -16,7 +16,7 @@ let true_ loc =
   add_test loc (fun _ -> Mt.Ok true)
 
 let () =
-  match Js.Json.exnParse {| {"x"}|} with 
+  match Js.Json.parseExn {| {"x"}|} with 
   | exception Js.Exn.Error x -> 
     true_ __LOC__
   | e -> false_ __LOC__

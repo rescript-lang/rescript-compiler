@@ -18,7 +18,7 @@ let true_ loc =
 
 let () = 
 
-  let v = Js.Json.exnParse {| { "x" : [1, 2, 3 ] } |} in
+  let v = Js.Json.parseExn {| { "x" : [1, 2, 3 ] } |} in
 
   add_test __LOC__ (fun _ -> 
     let ty, x = Js.Json.reifyType v in
@@ -48,7 +48,7 @@ let () =
   eq __LOC__ (Js.Json.test v Object) true
 
 let () = 
-  let json = Js.Json.null |> Js.Json.stringify |> Js.Json.exnParse in 
+  let json = Js.Json.null |> Js.Json.stringify |> Js.Json.parseExn in 
   let ty, x = Js.Json.reifyType json in
   match ty with
   | Js.Json.Null -> true_ __LOC__
@@ -57,7 +57,7 @@ let () =
 let () = 
   let json = 
     Js.Json.string "test string" 
-    |> Js.Json.stringify |> Js.Json.exnParse 
+    |> Js.Json.stringify |> Js.Json.parseExn 
   in 
   let ty, x = Js.Json.reifyType json in
   match ty with
@@ -67,7 +67,7 @@ let () =
 let () = 
   let json = 
     Js.Json.number 1.23456789
-    |> Js.Json.stringify |> Js.Json.exnParse 
+    |> Js.Json.stringify |> Js.Json.parseExn 
   in 
   let ty, x = Js.Json.reifyType json in
   match ty with
@@ -77,7 +77,7 @@ let () =
 let () = 
   let json = 
     Js.Json.number (float_of_int 0xAFAFAFAF)
-    |> Js.Json.stringify |> Js.Json.exnParse 
+    |> Js.Json.stringify |> Js.Json.parseExn 
   in 
   let ty, x = Js.Json.reifyType json in
   match ty with
@@ -87,7 +87,7 @@ let () =
 let () = 
   let test v = 
     let json = 
-        Js.Json.boolean v |> Js.Json.stringify |> Js.Json.exnParse 
+        Js.Json.boolean v |> Js.Json.stringify |> Js.Json.parseExn 
     in 
     let ty, x = Js.Json.reifyType json in
     match ty with
@@ -106,7 +106,7 @@ let () =
   Js_dict.set dict "b" (Js_json.number 123.0); 
 
   let json = 
-    dict |> Js.Json.object_ |> Js.Json.stringify |> Js.Json.exnParse 
+    dict |> Js.Json.object_ |> Js.Json.stringify |> Js.Json.parseExn 
   in
 
   (* Make sure parsed as Object *)
@@ -159,7 +159,7 @@ let () =
     |> Array.map Js.Json.string
     |> Js.Json.array
     |> Js.Json.stringify
-    |> Js.Json.exnParse 
+    |> Js.Json.parseExn 
   in 
   eq_at_i __LOC__ json 0 Js.Json.String "string 0";
   eq_at_i __LOC__ json 1 Js.Json.String "string 1";
@@ -171,7 +171,7 @@ let () =
     [| "string 0"; "string 1"; "string 2" |]
     |> Js.Json.stringArray
     |> Js.Json.stringify
-    |> Js.Json.exnParse 
+    |> Js.Json.parseExn 
   in 
   eq_at_i __LOC__ json 0 Js.Json.String "string 0";
   eq_at_i __LOC__ json 1 Js.Json.String "string 1";
@@ -184,7 +184,7 @@ let () =
     a  
     |> Js.Json.numberArray
     |> Js.Json.stringify
-    |> Js.Json.exnParse 
+    |> Js.Json.parseExn 
   in 
   (* Loop is unrolled to keep relevant location information *)
   eq_at_i __LOC__ json 0 Js.Json.Number a.(0);
@@ -199,7 +199,7 @@ let () =
     |> Array.map float_of_int
     |> Js.Json.numberArray
     |> Js.Json.stringify
-    |> Js.Json.exnParse 
+    |> Js.Json.parseExn 
   in 
   (* Loop is unrolled to keep relevant location information *)
   eq_at_i __LOC__ json 0 Js.Json.Number (float_of_int a.(0));
@@ -214,7 +214,7 @@ let () =
     |> Array.map Js_boolean.to_js_boolean
     |> Js.Json.booleanArray
     |> Js.Json.stringify
-    |> Js.Json.exnParse 
+    |> Js.Json.parseExn 
   in 
   (* Loop is unrolled to keep relevant location information *)
   eq_at_i __LOC__ json 0 Js.Json.Boolean (Js_boolean.to_js_boolean a.(0));
@@ -235,7 +235,7 @@ let () =
     a 
     |> Js.Json.objectArray
     |> Js.Json.stringify
-    |> Js.Json.exnParse 
+    |> Js.Json.parseExn 
   in
 
   let ty, x = Js.Json.reifyType json in 
@@ -256,7 +256,7 @@ let () =
 let () = 
   let invalid_json_str = "{{ A}" in
   try
-    let _ = Js_json.exnParse invalid_json_str in
+    let _ = Js_json.parseExn invalid_json_str in
     false_ __LOC__
   with
   | exn -> 
