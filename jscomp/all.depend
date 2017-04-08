@@ -164,7 +164,8 @@ common/bs_warnings.cmi :
 common/lam_methname.cmi :
 common/binary_cache.cmi : ext/string_map.cmi
 syntax/bs_syntaxerr.cmx : syntax/bs_syntaxerr.cmi
-syntax/ast_utf8_string.cmx : ext/ext_utf8.cmx ext/ext_char.cmx
+syntax/ast_utf8_string.cmx : ext/ext_utf8.cmx ext/ext_char.cmx \
+    syntax/ast_utf8_string.cmi
 syntax/ast_derive_constructor.cmx :
 syntax/ast_derive_util.cmx :
 syntax/ast_exp.cmx : syntax/ast_exp.cmi
@@ -217,6 +218,7 @@ syntax/ppx_entry.cmx : ext/string_map.cmx ext/literals.cmx \
     syntax/ast_derive_dyn.cmx syntax/ast_derive.cmx syntax/ast_core_type.cmx \
     syntax/ast_comb.cmx syntax/ast_attributes.cmx syntax/ppx_entry.cmi
 syntax/bs_syntaxerr.cmi :
+syntax/ast_utf8_string.cmi :
 syntax/ast_exp.cmi :
 syntax/ast_external.cmi :
 syntax/ast_lift.cmi :
