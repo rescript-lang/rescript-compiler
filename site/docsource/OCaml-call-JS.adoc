@@ -1071,19 +1071,19 @@ them as property getters/setters.
 [source,ocaml]
 --------------------------------------------------------------
 type y = <
- height : int [@@bs.set {no_get}] // <1>
+  height : int [@bs.set {no_get}] // <1>
 > Js.t
 type y0 = <
- height : int [@@bs.set] [@@bs.get {null}] // <2>
+  height : int [@bs.set] [@bs.get {null}] // <2>
 > Js.t
 type y1 = <
-  height : int [@@bs.set] [@@bs.get {undefined}] // <3>
+  height : int [@bs.set] [@bs.get {undefined}] // <3>
 > Js.t
 type y2 = <
-  height : int [@@bs.set] [@@bs.get {undefined; null}] // <4>
+  height : int [@bs.set] [@bs.get {undefined; null}] // <4>
 > Js.t
 type y3 = <
-  height : int [@@bs.get {undefined ; null}] // <5>
+  height : int [@bs.get {undefined ; null}] // <5>
 > Js.t
 
 --------------------------------------------------------------
