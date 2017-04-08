@@ -675,12 +675,14 @@ ounit_tests/ounit_cmd_tests.cmx : ounit_tests/ounit_cmd_util.cmx \
     ounit/oUnit.cmx ext/literals.cmx ext/ext_string.cmx
 ounit_tests/ounit_ffi_error_debug_test.cmx : ounit_tests/ounit_cmd_util.cmx \
     ounit/oUnit.cmx ext/ext_string.cmx
+ounit_tests/ounit_unicode_tests.cmx : ounit/oUnit.cmx ext/ext_string.cmx \
+    syntax/ast_utf8_string.cmx
 ounit_tests/ounit_tests_main.cmx : ext/resize_array.cmx \
     ounit_tests/ounit_vec_test.cmx ounit_tests/ounit_utf8_test.cmx \
     ounit_tests/ounit_union_find_tests.cmx \
-    ounit_tests/ounit_topsort_tests.cmx ounit_tests/ounit_string_tests.cmx \
-    ounit_tests/ounit_sexp_tests.cmx ounit_tests/ounit_scc_tests.cmx \
-    ounit_tests/ounit_path_tests.cmx \
+    ounit_tests/ounit_unicode_tests.cmx ounit_tests/ounit_topsort_tests.cmx \
+    ounit_tests/ounit_string_tests.cmx ounit_tests/ounit_sexp_tests.cmx \
+    ounit_tests/ounit_scc_tests.cmx ounit_tests/ounit_path_tests.cmx \
     ounit_tests/ounit_ordered_hash_set_tests.cmx \
     ounit_tests/ounit_map_tests.cmx ounit_tests/ounit_list_test.cmx \
     ounit_tests/ounit_json_tests.cmx \

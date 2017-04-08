@@ -331,7 +331,8 @@ let rec unsafe_mapper : Ast_mapper.mapper =
           ->         
           if Ext_string.equal delim Literals.unescaped_js_delimiter then 
             let js_str = Ast_utf8_string.transform loc s in 
-            { e with pexp_desc = Pexp_constant (Const_string (js_str, Some Literals.escaped_j_delimiter))}
+            { e with pexp_desc = 
+              Pexp_constant (Const_string (js_str, Some Literals.escaped_j_delimiter))}
           else if Ext_string.equal delim Literals.unescaped_j_delimiter then 
             Location.raise_errorf ~loc "{j||j} is reserved for future use" 
           else e 
