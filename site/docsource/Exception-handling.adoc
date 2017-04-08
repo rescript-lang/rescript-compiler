@@ -71,7 +71,7 @@ let handleData = function [@bs.open]
    | Not_found -> 1 
    | Sys_error _ -> 2 
 
-val handleData : 'a -> int option // <1>
+val handleData : 'a -> int option (* <1> *)
 --------------
 <1> For any input source, as long as it matches the exception pattern (nested pattern match supported), the matched value is returned, otherwise return None.
 

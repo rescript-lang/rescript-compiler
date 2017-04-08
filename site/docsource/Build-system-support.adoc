@@ -255,9 +255,9 @@ Suppose you are in `bucklescript-have-tea` top directory,
 
 [source,sh]
 ----------
-npm install // <1>
-npm install bs-platform <2>
-./node_modules/.bin/bsb -clean-world -make-world -w <3>
+npm install # <1>
+npm install bs-platform # <2>
+./node_modules/.bin/bsb -clean-world -make-world -w # <3>
 ----------
 <1> Install the dependencies
 <2> Install peer dependencies
@@ -341,8 +341,8 @@ such as https://facebook.github.io/watchman/[watchman] for example, will need th
 .build.sh
 [source,sh]
 -----------
-make -r -j8 all <1>
-make depend // <2>
+make -r -j8 all # <1>
+make depend # <2>
 -----------
 <1> build
 <2> update the dependency

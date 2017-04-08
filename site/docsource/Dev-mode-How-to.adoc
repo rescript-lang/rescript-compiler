@@ -11,7 +11,7 @@ This section will focus on how to contribute to this repo.
 * Having https://opam.ocaml.org/[opam] installed
 
     opam switch 4.02.3+buckle-master # use our OCaml compiler
-    opam install camlp4  <1>
+    opam install camlp4 # <1>
 +
 `Camlp4` is used to generate OCaml code for processing large AST. (`j.ml` file), if you don't
 change `j.ml` (most likely you won't), so you probably don't need it
