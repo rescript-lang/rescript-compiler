@@ -9,7 +9,7 @@ To catch Js exception on OCaml side, we categorize all JS exceptions to belong t
 [source,ocaml]
 --------------
 let example1 () = 
-    match Js.Json.exnParse {| {"x"  }|} with 
+    match Js.Json.exnParse {| {"x" }|} with 
     | exception Js.Exn.Error err -> 
         Js.log @@ Js.Exn.stack err;
         None
@@ -17,7 +17,7 @@ let example1 () =
 
 let example2 () = 
     try Some (Js.Json.exnParse {| {"x"}|}) with 
-    Js.Exn.Error _ -> None    
+    Js.Exn.Error _ -> None
 --------------
 
 The exception definition of `Js.Exn.Error` is as below:
@@ -44,10 +44,10 @@ We provide such functions
 val error : string -> 'a
 val evalError : string -> 'a
 val rangeError : string -> 'a
-val referenceError :  string -> 'a
+val referenceError : string -> 'a
 val syntaxError : string -> 'a
 val typeError : string -> 'a
-val uriError :  string -> 'a
+val uriError : string -> 'a
 --------------
 
 Please consult module `Js.Error` for more details
@@ -71,7 +71,7 @@ let handleData = function [@bs.open]
    | Not_found -> 1 
    | Sys_error _ -> 2 
 
-val handleData :  'a -> int option // <1>  
+val handleData : 'a -> int option // <1>
 --------------
 <1> For any input source, as long as it matches the exception pattern (nested pattern match supported), the matched value is returned, otherwise return None.
 
@@ -84,7 +84,7 @@ Take promise for example:
 --------------
 let v = Promise.reject Not_found
 let handlePromiseFaiure = function [@bs.open]
-   | Not_found -> Js.log "Not found";  (Promise.resolve ())
+   | Not_found -> Js.log "Not found"; (Promise.resolve ())
    
 let () = 
    v 
@@ -92,5 +92,5 @@ let () =
         match handlePromiseFaiure error with 
         | Some x -> x 
         | None -> raise UnhandledPromise
-    )   
+    )
 --------------

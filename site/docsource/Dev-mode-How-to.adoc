@@ -97,7 +97,7 @@ For example some simple tests would be like:
 --------------
 let suites : _ Mt.pair_suites =
    ["hey", (fun _ -> Eq(true, 3 > 2));
-       "hi", (fun _ ->  Neq(2,3));
+       "hi", (fun _ -> Neq(2,3));
        "hello", (fun _ -> Approx(3.0, 3.0));
        "throw", (fun _ -> ThrowAny(fun _ -> raise 3))
        ]

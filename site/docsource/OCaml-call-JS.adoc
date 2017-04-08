@@ -80,15 +80,15 @@ with syntax as described below:
 
 [source,ocaml]
 ----------------------------------------------------------
-external value-name :  typexpr =  external-declaration  attributes
-external-declaration :=  string-literal
+external value-name : typexpr = external-declaration attributes
+external-declaration := string-literal
 ----------------------------------------------------------
 
 Users need to declare types for foreign functions
 (JS functions for BuckleScript or C functions for native compiler)
 and provide customized `attributes`.
 
-####  Binding to global value: bs.val
+#### Binding to global value: bs.val
 
 [source,ocaml]
 ---------------
@@ -314,7 +314,7 @@ external readFileSync :
 let _ =
   readFileSync ~name:"xx.txt" `my_name
 --------------
-<1> Here we intentionally made an example to show how to  customize a name
+<1> Here we intentionally made an example to show how to customize a name
 
 Ouptut:
 [source,js]
@@ -329,10 +329,10 @@ Polymorphic variants can also be used to model _enums_.
 -------------
 external test_int_type :
   ([ `on_closed // <1>
-   | `on_open [@bs.as 3]  // <2>
+   | `on_open [@bs.as 3] // <2>
    | `in_bin // <3>
    ]
-   [@bs.int])  -> int  =
+   [@bs.int]) -> int =
   "" [@@bs.val]
 -------------
 <1> _`on_closed_ will be encoded as 0
@@ -426,7 +426,7 @@ let string_of_kind (type t) (kind : t kind) =
   | Float -> "float"
   | String -> "string"
 
-external add_dyn : ('a kind [@bs.ignore]) -> string ->  'a -> 'a -> 'a = ""
+external add_dyn : ('a kind [@bs.ignore]) -> string -> 'a -> 'a -> 'a = ""
 [@@bs.val]
 
 let add2 k x y =
@@ -447,7 +447,7 @@ external process_on_exit : (_ [@bs.as "exit"]) -> (int -> unit) -> unit =
 
 let () = 
     process_on_exit (fun exit_code -> 
-        Js.log( "error code: " ^ string_of_int exit_code ))      
+        Js.log( "error code: " ^ string_of_int exit_code ))
 --------------
 
 .Output
@@ -465,10 +465,10 @@ It can also be used in combination with other attributes, for example:
 --------------
 type process
 
-external on_exit :  (_ [@bs.as "exit"]) -> (int -> unit) -> unit = 
+external on_exit : (_ [@bs.as "exit"]) -> (int -> unit) -> unit = 
     "on" [@@bs.send.pipe: process]
 let register (p : process) = 
-        p |> on_exit (fun i -> Js.log i )
+        p |> on_exit (fun i -> Js.log i)
 
 --------------
 
@@ -487,9 +487,9 @@ function register(p) {
 [source,ocaml]
 --------------
 external io_config : 
-    stdio:( _ [@bs.as "inherit"]) -> cwd:string -> unit -> _  = "" [@@bs.obj]
+    stdio:(_ [@bs.as "inherit"]) -> cwd:string -> unit -> _ = "" [@@bs.obj]
 
-let config = io_config ~cwd:"." ()   
+let config = io_config ~cwd:"." ()
 --------------
 
 .Output
@@ -587,7 +587,7 @@ let f x y = x + y
 
 [source,ocaml]
 --------------------------------------------
-let g x  = let z  = x + 1 in fun y -> x + z
+let g x = let z = x + 1 in fun y -> x + z
 --------------------------------------------
 
 In OCaml they all have the same type; however,
@@ -676,7 +676,7 @@ Another more complex example:
 [source,ocaml]
 -----------------------------------------------------
 type 'a return = int -> 'a [@bs]
-type 'a u0 = int -> string -> 'a return  [@bs] // <1>
+type 'a u0 = int -> string -> 'a return [@bs] // <1>
 type 'a u1 = int -> string -> int -> 'a [@bs] // <2>
 type 'a u2 = int -> string -> (int -> 'a [@bs]) [@bs] // <3>
 -----------------------------------------------------
@@ -944,7 +944,7 @@ For example:
 --------------
 let test f =
   f##hi 1 // <1>
-let test2 f   =
+let test2 f =
   let u = f##hi in
   u 1
 let test3 f =
@@ -994,7 +994,7 @@ type rect = < height : int ; wdith : int ; draw : unit -> unit [@bs.meth] > Js.t
 #### How to consume JS property and methods
 
 
-As we said:  `##` is used in both object method dispatch and field access.
+As we said: `##` is used in both object method dispatch and field access.
 
 [source,ocaml]
 -------------------------------------------------------------
@@ -1036,7 +1036,7 @@ let b = f1##f 1 2
 The compiler will infer as below:
 [source,ocaml]
 --------------
-val f0 : < f : int -> int -> int  > Js.t
+val f0 : < f : int -> int -> int > Js.t
 val f1 : < f : int -> int -> int [@bs.meth] > Js.t
 --------------
 
@@ -1062,7 +1062,7 @@ function instead, so it is still sound and type safe.
 
 
 
-#####  getter/setter annotation to JS properties
+##### getter/setter annotation to JS properties
 
 Since OCaml's object system does not have getters/setters, we introduced two
 attributes `bs.get` and `bs.set` to help inform BuckleScript to compile
@@ -1070,7 +1070,7 @@ them as property getters/setters.
 
 [source,ocaml]
 --------------------------------------------------------------
-type y  = <
+type y = <
  height : int [@@bs.set {no_get}] // <1>
 > Js.t
 type y0 = <
@@ -1083,7 +1083,7 @@ type y2 = <
   height : int [@@bs.set] [@@bs.get {undefined; null}] // <4>
 > Js.t
 type y3 = <
-  height : int  [@@bs.get {undefined ; null}] // <5>
+  height : int [@@bs.get {undefined ; null}] // <5>
 > Js.t
 
 --------------------------------------------------------------
@@ -1117,15 +1117,15 @@ The compiler would infer `u` as type:
 
 [source,ocaml]
 --------------------
-val u : < x :  < y : < z : int > Js.t >  Js.t > Js.t
+val u : < x : < y : < z : int > Js.t > Js.t > Js.t
 --------------------
 
-To make it more symmetric,  extension `bs.obj` can also be applied
+To make it more symmetric, extension `bs.obj` can also be applied
 into the type level, so you can write:
 
 [source,ocaml]
 --------------
-val u : [%bs.obj: < x : < y < z : int > > > ]
+val u : [%bs.obj: < x : < y : < z : int > > > ]
 --------------
 
 Users can also write expression and types together as below:
@@ -1139,7 +1139,7 @@ Objects in a collection also works:
 
 [source,ocaml]
 -------------
-let xs = [%bs.obj [| { x = 3 } ; { x = 3 } |] : < x : int  > array  ]
+let xs = [%bs.obj [| { x = 3 } ; { x = 3 } |] : < x : int > array ]
 let ys = [%bs.obj [| { x = 3 } ; { x = 4 } |] ]
 -------------
 
@@ -1170,7 +1170,7 @@ Option argument is also supported:
 ---------------------------------------------------------------------
 external make_config : hi:int -> ?lo:int -> unit -> t = "" [@@bs.obj] // <1>
 let u = make_config ~hi:3 ()
-let v = make_config ~lo:2 ~hi:3  ()
+let v = make_config ~lo:2 ~hi:3 ()
 ---------------------------------------------------------------------
 <1> In OCaml, the order of label does not matter, and the evaluation order
     of arguments is undefined. Since the order does not matter, to make sure the compiler realize all the arguments
@@ -1226,7 +1226,7 @@ The compiler will infer the type of `b` as
 
 [source,ocaml]
 --------------
-val b : 'a -> 'b ->  < fn :  'a -> 'b -> 'c [@bs] > Js.t -> 'c
+val b : 'a -> 'b -> < fn : 'a -> 'b -> 'c [@bs] > Js.t -> 'c
 --------------
 =====
 
@@ -1236,11 +1236,11 @@ The objects created above can not use `this` in the method, this is supported in
 BuckleScript too.
 [source,ocaml]
 --------------
-let v2  =
+let v2 =
   let x = 3. in
   object (self) // <1>
-    method hi x  y = self##say x +. y
-    method say x =  x *. self## x ()
+    method hi x y = self##say x +. y
+    method say x = x *. self##x ()
     method x () = x
   end [@bs] // <2>
 --------------
@@ -1268,11 +1268,11 @@ var v2 = {
 Compiler infers the type of `v2` as below:
 [source,ocaml]
 --------------
-val v2 : object
-  method hi : float -> float -> float
-  method say : float -> float
-  method x : unit -> float
-end [@bs]
+val v2 : <
+  hi : float -> float -> float;
+  say : float -> float;
+  x : unit -> float
+> [@bs]
 --------------
 
 
@@ -1364,7 +1364,7 @@ f.draw(x,y)
       drop the first '_'
    * Else if the rest happens to be a keyword,
       drop the first '_'
-   * Else, nothing mangled       
+   * Else, nothing mangled
 =======
 
 
@@ -1389,10 +1389,10 @@ external getElementById : string -> element option = ""
 [@@bs.send.pipe:dom] [@@bs.return null_to_opt] // <1>
 
 let test dom = 
-    let elem = dom |> getElementById "haha"  in
+    let elem = dom |> getElementById "haha" in
     match elem with 
     | None -> 1 
-    | Some ui -> Js.log ui ; 2   
+    | Some ui -> Js.log ui ; 2
 -------------
 <1> `null_to_opt` attribute will automatically convert null to `option`
 
@@ -1454,7 +1454,7 @@ get the job done.
 =========
 
 
-####  Detect global variable existence `bs.external` (@since 1.5.1)
+#### Detect global variable existence `bs.external` (@since 1.5.1)
 
 Before we dive into embedding arbitrary JS code, a quite common use case of embedding untyped JS code is detect a global variable (feature detection), Bucklescript provides a relatively type safe approach for such use case: `bs.external` (or `extenral`),
  `[%bs.external a_single_identifier]` is a value of `_ option` type, see examples below 
@@ -1533,7 +1533,7 @@ Other examples:
 
 [source,ocaml]
 -------------
-let x  : string = [%bs.raw{|"\x01\x02"|}]
+let x : string = [%bs.raw{|"\x01\x02"|}]
 -------------
 
 
@@ -1594,7 +1594,7 @@ We introduced `bs.re` for Javascript regex expressions:
 
 [source,ocaml]
 ------------------------
-let f  = [%bs.re "/b/g"]
+let f = [%bs.re "/b/g"]
 ------------------------
 
 The compiler will infer `f` has type `Js.Re.t` and generate code as
@@ -1636,7 +1636,7 @@ Since, `mochajs` is a test framework, we also need some assertion
 
 [source,ocaml]
 ----------
-external eq : 'a -> 'a -> unit = "deepEqual"  [@@bs.module "assert"]
+external eq : 'a -> 'a -> unit = "deepEqual" [@@bs.module "assert"]
 ----------
 
 On top of this we can write normal OCaml functions, for example:
@@ -1644,7 +1644,7 @@ On top of this we can write normal OCaml functions, for example:
 [source,ocaml]
 ----------
 let assert_equal = eq
-let from_suites name suite  =
+let from_suites name suite =
     describe name (fun [@bs] () ->
          List.iter (fun (name, code) -> it name code) suite
          )

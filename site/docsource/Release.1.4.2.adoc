@@ -13,7 +13,7 @@ goog module system too.
 There are quite lots of enhancements to the build system, we strongly recommend users to re-read
 the documentation http://bloomberg.github.io/bucklescript/Manual.html#_build_system_support
 
-2. FFI add a new feature: http://bloomberg.github.io/bucklescript/Manual.html#_fixed_arguments  
+2. FFI add a new feature: http://bloomberg.github.io/bucklescript/Manual.html#_fixed_arguments
 
 3. FFI can handle `bs.obj` and `bs.string` combination:
    https://github.com/bloomberg/bucklescript/issues/1072

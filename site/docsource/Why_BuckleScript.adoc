@@ -8,7 +8,7 @@ need to install binaries or use package managers to access software,
 just a link will work.
 
 Another important factor is that the JavaScript VM is quite fast and
-keeps getting faster.  The JavaScript platform is therefore
+keeps getting faster. The JavaScript platform is therefore
 increasingly capable of supporting large applications.
 
 ### Problems of JavaScript && how BuckleScript solves them
@@ -69,11 +69,11 @@ http://www.scala-lang.org/[Scala] or
   {BuckleScript-playground}[playground], the native backend is one
   order faster than the JS backend.
 
-Un-readable JS Code and hard to integrate with existing JS  libraries::
+Un-readable JS Code and hard to integrate with existing JS libraries::
 When compiling to JavaScript, many systems
   generate code, that while syntactically and semantically correct is
   not human-readable and very difficult to debug and profile.
-  Our BuckleScript implementation and the multi-pass compilation  strategy of OCaml,
+  Our BuckleScript implementation and the multi-pass compilation strategy of OCaml,
   allows us to avoid {name-mangling}[name-mangling],
   and produce JavaScript code that is human-readable and easier to debug and
   maintain. More importantly, this makes integration with existing JS
