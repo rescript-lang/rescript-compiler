@@ -1269,9 +1269,9 @@ Compiler infers the type of `v2` as below:
 [source,ocaml]
 --------------
 val v2 : <
-  hi : float -> float -> float;
-  say : float -> float;
-  x : unit -> float
+  hi : float -> float -> float [@bs.meth];
+  say : float -> float [@bs.meth];
+  x : unit -> float [@bs.meth]
 > [@bs]
 --------------
 
