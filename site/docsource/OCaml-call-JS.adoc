@@ -999,7 +999,7 @@ As we said: `##` is used in both object method dispatch and field access.
 [source,ocaml]
 -------------------------------------------------------------
 f##property // <1>
-f##property#= v
+f##property #= v
 f##js_method args0 args1 args2 <2>
 -------------------------------------------------------------
 <1> property get should not come with any argument as we discussed above, which will be checked by the compiler.
@@ -1285,8 +1285,8 @@ let f (u : rect) =
   (* the type annotation is un-necessary,
      but it gives better error message
   *)
-   Js.log u##height ;
-   Js.log u##width ;
+   Js.log u##height;
+   Js.log u##width;
    u##width #= 30;
    u##height #= 30;
    u##draw ()
