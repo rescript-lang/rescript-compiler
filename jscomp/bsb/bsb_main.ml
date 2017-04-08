@@ -56,20 +56,30 @@ let regen = "-regen"
 let separator = "--"
 
 
-(** TODO: create the animation effect *)
-let install ~destdir file = 
-  if Bsb_file.install_if_exists ~destdir file  then 
-    Format.fprintf Format.std_formatter "%s => %s @." file destdir
 
 
 let install_targets cwd (config : Bsb_config_types.t option) =
+  (** TODO: create the animation effect *)
+  let install ~destdir file = 
+    if Bsb_file.install_if_exists ~destdir file  then 
+      begin 
+        ()
+        (*Format.pp_print_string Format.std_formatter "=> "; 
+        Format.pp_print_string Format.std_formatter destdir;
+        Format.pp_print_string Format.std_formatter "<= ";
+        Format.pp_print_string Format.std_formatter file ;
+        Format.pp_print_string Format.std_formatter "\r"; 
+        Format.pp_print_flush Format.std_formatter ();*)
+      end
+  in
   match config with 
   | None -> ()
   | Some {files_to_install} -> 
     let destdir = cwd // Bsb_config.lib_ocaml in (* lib is already there after building, so just mkdir [lib/ocaml] *)
     if not @@ Sys.file_exists destdir then begin Unix.mkdir destdir 0o777  end;
     begin
-      Format.fprintf Format.std_formatter "@{<info>Installing started@} @.";
+      Format.fprintf Format.std_formatter "@{<info>Installing started@}@.";
+      (*Format.pp_print_flush Format.std_formatter ();*)
       String_hash_set.iter (fun x ->
           install ~destdir (cwd // x ^  Literals.suffix_ml) ;
           install ~destdir (cwd // x ^  Literals.suffix_re) ;
@@ -242,7 +252,7 @@ let exec_command_install_then_exit  command =
   exit (Sys.command command ) 
 
 let ninja_command_exit (* (type t) *)
-    (* cwd *) vendor_ninja ninja_args  (* config *) (* : t *) =
+  (* cwd *) vendor_ninja ninja_args  (* config *) (* : t *) =
   let ninja_args_len = Array.length ninja_args in
   if ninja_args_len = 0 then
     if Ext_sys.is_windows_or_cygwin then
@@ -250,9 +260,9 @@ let ninja_command_exit (* (type t) *)
       @@ Ext_string.inter3
         (Filename.quote vendor_ninja) "-C" Bsb_config.lib_bs
     else 
-        let args = [|"ninja.exe"; "-C"; Bsb_config.lib_bs |] in
-        print_string_args args ;
-        Unix.execvp vendor_ninja args
+      let args = [|"ninja.exe"; "-C"; Bsb_config.lib_bs |] in
+      print_string_args args ;
+      Unix.execvp vendor_ninja args
   else
     let fixed_args_length = 3 in
     if 
@@ -307,8 +317,8 @@ let build_bs_deps deps =
          begin 
            let config_opt = regenerate_ninja ~no_dev:true
                ~generate_watch_metadata:false
-             ~override_package_specs:(Some deps) 
-             cwd bsc_dir true in (* set true to force regenrate ninja file so we have [config_opt]*)
+               ~override_package_specs:(Some deps) 
+               cwd bsc_dir true in (* set true to force regenrate ninja file so we have [config_opt]*)
            Bsb_unix.run_command_execv
              {cmd = vendor_ninja;
               cwd = cwd // Bsb_config.lib_bs;
