@@ -121,7 +121,7 @@ external objectArray : t Js_dict.t array -> t = "%identity"
 external parse : string -> t = "JSON.parse" [@@bs.val]
 [@@ocaml.deprecated "Plase use {!Js.Json.exnParse} instead"]
 
-external exnParse : string -> t = "JSON.parse" [@@bs.val]
+external parseExn : string -> t = "JSON.parse" [@@bs.val]
 (** [parse s] parses the string [s] into a JSON data structure
 
 {b Returns} a JSON data structure
