@@ -325,7 +325,13 @@ let interpret_json
         ocamllex := Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.ocamllex s ))
 
     |? (Bsb_build_schemas.bs_dependencies, `Arr (fun s -> bs_dependencies := Bsb_build_util.get_list_string s |> List.map (resolve_package cwd)))
-    |? (Bsb_build_schemas.bs_dev_dependencies, `Arr (fun s -> bs_dev_dependencies := Bsb_build_util.get_list_string s |> List.map (resolve_package cwd)))
+    |? (Bsb_build_schemas.bs_dev_dependencies,
+        `Arr (fun s ->
+            if not  no_dev then 
+              bs_dev_dependencies
+              := Bsb_build_util.get_list_string s
+                 |> List.map (resolve_package cwd))
+       )
 
     (* More design *)
     |? (Bsb_build_schemas.bs_external_includes, `Arr (fun s -> bs_external_includes := get_list_string s))
