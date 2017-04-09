@@ -142,7 +142,7 @@ This is a very small extension to the OCaml language, it is backward compatible 
 --------------
 let f x =
   x
-#elif (* <1> *)
+#elif // <1>
 --------------
 <1> `#elif` at the beginning of a line is interpreted as static if, there is no issue with `#if` or `#end`, since they are already keywords.
 ======

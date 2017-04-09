@@ -147,7 +147,7 @@ var date = new Date();
 [source,ocaml]
 --------
 external add : int -> int -> int = "add" [@@bs.module "x"]
-external add2 : int -> int -> int = "add2"[@@bs.module "y", "U"] (* <1> *)
+external add2 : int -> int -> int = "add2"[@@bs.module "y", "U"] // <1>
 let f = add 3 4
 let g = add2 3 4
 --------
@@ -178,7 +178,7 @@ external add : int -> int -> int = "" [@@bs.module "x"]
 [source,ocaml]
 --------------
 type http
-external http : http = "http" [@@bs.module] (* <1> *)
+external http : http = "http" [@@bs.module] // <1>
 --------------
 <1> `external-declaration` is the module name
 
@@ -224,7 +224,7 @@ is put in the position of last argument to help user write in a _chaining style_
 [source,ocaml]
 --------------
 external map : ('a -> 'b [@bs]) -> 'b array =
-  "" [@@bs.send.pipe: 'a array] (* <1> *)
+  "" [@@bs.send.pipe: 'a array] // <1>
 external forEach: ('a -> unit [@bs]) -> 'a array =
   "" [@@bs.send.pipe: 'a array]
 let test arr =
@@ -306,7 +306,7 @@ way by using annotated polymorphic variant.
 external readFileSync :
   name:string ->
   ([ `utf8
-   | `my_name [@bs.as "ascii"] (* <1> *)
+   | `my_name [@bs.as "ascii"] // <1>
    ] [@bs.string]) ->
   string = ""
   [@@bs.module "fs"]
@@ -328,9 +328,9 @@ Polymorphic variants can also be used to model _enums_.
 [source,ocaml]
 -------------
 external test_int_type :
-  ([ `on_closed (* <1> *)
-   | `on_open [@bs.as 3] (* <2> *)
-   | `in_bin (* <3> *)
+  ([ `on_closed // <1>
+   | `on_open [@bs.as 3] // <2>
+   | `in_bin // <3>
    ]
    [@bs.int]) -> int =
   "" [@@bs.val]
@@ -350,7 +350,7 @@ external on :
     (
     [ `close of unit -> unit
     | `line of string -> unit
-    ] (* <1> *)
+    ] // <1>
     [@bs.string])
     -> readline = "" [@@bs.send.pipe: readline]
 let register rl =
@@ -394,7 +394,7 @@ For example,
 -------------
 external add : (int [@bs.ignore]) -> int -> int = ""
 [@@bs.val]
-let v = add 0 1 2 (* <1> *)
+let v = add 0 1 2 // <1>
 -------------
 <1> the first argument will be erased
 
@@ -676,9 +676,9 @@ Another more complex example:
 [source,ocaml]
 -----------------------------------------------------
 type 'a return = int -> 'a [@bs]
-type 'a u0 = int -> string -> 'a return [@bs] (* <1> *)
-type 'a u1 = int -> string -> int -> 'a [@bs] (* <2> *)
-type 'a u2 = int -> string -> (int -> 'a [@bs]) [@bs] (* <3> *)
+type 'a u0 = int -> string -> 'a return [@bs] // <1>
+type 'a u1 = int -> string -> int -> 'a [@bs] // <2>
+type 'a u2 = int -> string -> (int -> 'a [@bs]) [@bs] // <3>
 -----------------------------------------------------
 <1>  `u0` has arity of 2, return a function
    with arity 1
@@ -694,8 +694,8 @@ For example:
 
 [source,ocaml]
 --------------
-external map : 'a array -> ('a -> 'b[@bs]) -> 'b array = "" [@@bs.send] (* <1> *)
-map [|1;2;3|] (fun [@bs] x -> x + 1) (* <2> *)
+external map : 'a array -> ('a -> 'b[@bs]) -> 'b array = "" [@@bs.send] // <1>
+map [|1;2;3|] (fun [@bs] x -> x + 1) // <2>
 --------------
 <1> `[@bs]` annotation in definition site
 <2> `[@bs]` annotation in call site 
@@ -705,8 +705,8 @@ only once.
 
 [source,ocaml]
 --------------
-external map : 'a array -> ('a -> 'b [@bs.uncurry]) -> 'b array = "" [@@bs.send] (* <1> *)
-map [|1;2;3|] (fun x -> x+ 1) (* <2> *)
+external map : 'a array -> ('a -> 'b [@bs.uncurry]) -> 'b array = "" [@@bs.send] // <1>
+map [|1;2;3|] (fun x -> x+ 1) // <2>
 --------------
 <1> `[@bs.uncurry]` annotation in definition site 
 <2> Idiomatic OCaml code
@@ -850,7 +850,7 @@ end
 [source,js]
 ------------------------------
 x.onload = function(v){
-  var o = this; // <1>
+  var o = this ; // <1>
   console.log(o.response + v);
 }
 ------------------------------
@@ -943,7 +943,7 @@ For example:
 [source,ocaml]
 --------------
 let test f =
-  f##hi 1 (* <1> *)
+  f##hi 1 // <1>
 let test2 f =
   let u = f##hi in
   u 1
@@ -956,7 +956,7 @@ let test3 f =
 The compiler would infer types differently
 [source,ocaml]
 --------------
-val test : < hi : int -> 'a [@bs.meth]; .. > -> 'a (* <1> *)
+val test : < hi : int -> 'a [@bs.meth]; .. > -> 'a // <1>
 val test2 : < hi : int -> 'a ; .. > -> 'a
 val test3 : < hi : int -> 'a [@bs]; .. >
 --------------
@@ -973,7 +973,7 @@ class type _rect = object
   method height : int
   method width : int
   method draw : unit -> unit
-end [@bs] (* <1> *)
+end [@bs] // <1>
 type rect = _rect Js.t
 --------------------------------
 <1> `class type` annotated with `[@bs]` is treated as a JS class type,
@@ -998,9 +998,9 @@ As we said: `##` is used in both object method dispatch and field access.
 
 [source,ocaml]
 -------------------------------------------------------------
-f##property (* <1> *)
+f##property // <1>
 f##property #= v
-f##js_method args0 args1 args2 (* <2> *)
+f##js_method args0 args1 args2 <2>
 -------------------------------------------------------------
 <1> property get should not come with any argument as we discussed above, which will be checked by the compiler.
 <2> Here `method` is of arity 3.
@@ -1045,7 +1045,7 @@ If we type `console` properly in OCaml, user could only write
 --------------
 console##log "fine"
 let u = console##log
-let () = u "fine" (* <1> *)
+let () = u "fine" // <1>
 --------------
 <1> OCaml compiler will complain
 
@@ -1071,19 +1071,19 @@ them as property getters/setters.
 [source,ocaml]
 --------------------------------------------------------------
 type y = <
-  height : int [@bs.set {no_get}] (* <1> *)
+  height : int [@bs.set {no_get}] // <1>
 > Js.t
 type y0 = <
-  height : int [@bs.set] [@bs.get {null}] (* <2> *)
+  height : int [@bs.set] [@bs.get {null}] // <2>
 > Js.t
 type y1 = <
-  height : int [@bs.set] [@bs.get {undefined}] (* <3> *)
+  height : int [@bs.set] [@bs.get {undefined}] // <3>
 > Js.t
 type y2 = <
-  height : int [@bs.set] [@bs.get {undefined; null}] (* <4> *)
+  height : int [@bs.set] [@bs.get {undefined; null}] // <4>
 > Js.t
 type y3 = <
-  height : int [@bs.get {undefined ; null}] (* <5> *)
+  height : int [@bs.get {undefined ; null}] // <5>
 > Js.t
 
 --------------------------------------------------------------
@@ -1103,7 +1103,7 @@ create JS objects in a type safe way on the OCaml side:
 
 [source,ocaml]
 --------------
-let u = [%bs.obj { x = { y = { z = 3}}} ] (* <1> *)
+let u = [%bs.obj { x = { y = { z = 3}}} ] // <1>
 --------------
 <1> `bs.obj` extension is used to mark `{}` as JS objects
 
@@ -1168,7 +1168,7 @@ var v = { hi : 2 , lo : 3 }
 Option argument is also supported:
 [source,ocaml]
 ---------------------------------------------------------------------
-external make_config : hi:int -> ?lo:int -> unit -> t = "" [@@bs.obj] (* <1> *)
+external make_config : hi:int -> ?lo:int -> unit -> t = "" [@@bs.obj] // <1>
 let u = make_config ~hi:3 ()
 let v = make_config ~lo:2 ~hi:3 ()
 ---------------------------------------------------------------------
@@ -1189,7 +1189,7 @@ Now, we can write JS style code in OCaml too (in a type safe way):
 --------------
 let u = [%bs.obj {
   x = { y = { z = 3 } };
-  fn = fun [@bs] u v -> u + v (* <1> *)
+  fn = fun [@bs] u v -> u + v // <1>
   } ]
 let h = u##x##y##z
 let a = u##fn
@@ -1238,11 +1238,11 @@ BuckleScript too.
 --------------
 let v2 =
   let x = 3. in
-  object (self) (* <1> *)
+  object (self) // <1>
     method hi x y = self##say x +. y
     method say x = x *. self##x ()
     method x () = x
-  end [@bs] (* <2> *)
+  end [@bs] // <2>
 --------------
 <1> `self` is bound to `this` in generated JS code
 <2> `[@bs]` marks `object .. end` as a JS object
@@ -1386,7 +1386,7 @@ Below is a contrived core example:
 type element
 type dom
 external getElementById : string -> element option = "" 
-[@@bs.send.pipe:dom] [@@bs.return null_to_opt] (* <1> *)
+[@@bs.send.pipe:dom] [@@bs.return null_to_opt] // <1>
 
 let test dom = 
     let elem = dom |> getElementById "haha" in
