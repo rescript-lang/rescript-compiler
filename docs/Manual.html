@@ -735,12 +735,12 @@ in the <a href="http://bloomberg.github.io/bucklescript/js-demo/">browser</a>.</
 <div class="title">Note</div>
 </td>
 <td class="content">
-<div class="title">PDF version is  <a href="http://bloomberg.github.io/bucklescript/Manual.pdf">available</a>.</div>
+<div class="title">PDF version is <a href="http://bloomberg.github.io/bucklescript/Manual.pdf">available</a>.</div>
 <div class="paragraph">
 <p>Documents under <a href="https://github.com/bloomberg/bucklescript/Manual.html"><em>bloomberg.github.io</em></a> match the <a href="https://github.com/bloomberg/bucklescript">master branch</a>.</p>
 </div>
 <div class="paragraph">
-<p>They are also  distributed (<code>docs/Manual.html</code>, <code>docs/Manual.pdf</code>) together with your <a href="#_installation">Installation</a> (with the exact version).
+<p>They are also distributed (<code>docs/Manual.html</code>, <code>docs/Manual.pdf</code>) together with your <a href="#_installation">Installation</a> (with the exact version).
 If you find errors or omissions in this document, please don&#8217;t
 hesitate to submit an issue, sources are <a href="https://github.com/bloomberg/bucklescript/tree/master/site/docsource">here</a>.</p>
 </div>
@@ -763,7 +763,7 @@ just a link will work.</p>
 </div>
 <div class="paragraph">
 <p>Another important factor is that the JavaScript VM is quite fast and
-keeps getting faster.  The JavaScript platform is therefore
+keeps getting faster. The JavaScript platform is therefore
 increasingly capable of supporting large applications.</p>
 </div>
 </div>
@@ -848,12 +848,12 @@ offline <a href="https://github.com/jashkenas/coffeescript/wiki/list-of-language
   <a href="http://bloomberg.github.io/bucklescript/js-demo/">playground</a>, the native backend is one
   order faster than the JS backend.</p>
 </dd>
-<dt class="hdlist1">Un-readable JS Code and hard to integrate with existing JS  libraries</dt>
+<dt class="hdlist1">Un-readable JS Code and hard to integrate with existing JS libraries</dt>
 <dd>
 <p>When compiling to JavaScript, many systems
   generate code, that while syntactically and semantically correct is
   not human-readable and very difficult to debug and profile.
-  Our BuckleScript implementation and the multi-pass compilation  strategy of OCaml,
+  Our BuckleScript implementation and the multi-pass compilation strategy of OCaml,
   allows us to avoid <a href="https://en.wikipedia.org/wiki/Name_mangling">name-mangling</a>,
   and produce JavaScript code that is human-readable and easier to debug and
   maintain. More importantly, this makes integration with existing JS
@@ -1003,7 +1003,7 @@ make install</code></pre>
 <p>The patched compiler is installed locally into your <code>$(pwd)/bin</code>
 directory. To start using it temporarily, check if <code>ocamlc.opt</code> and
 <code>ocamlopt.opt</code> exist in <code>$(pwd)/bin</code>, and temporarily add the location
-to your <code>$(PATH)</code> (e.g.  <code>PATH=$(pwd)/bin:$PATH</code>).</p>
+to your <code>$(PATH)</code> (e.g. <code>PATH=$(pwd)/bin:$PATH</code>).</p>
 </div>
 <div class="paragraph">
 <div class="title">Building BuckleScript</div>
@@ -1055,7 +1055,7 @@ as below:</p>
 <div class="content">
 <pre class="pygments highlight"><code data-lang="js"><span class="tok-p">{</span>
     <span class="tok-s2">&quot;name&quot;</span> <span class="tok-o">:</span> <span class="tok-s2">&quot;hello&quot;</span><span class="tok-p">,</span>
-    <span class="tok-s2">&quot;sources&quot;</span> <span class="tok-o">:</span> <span class="tok-p">{</span> <span class="tok-s2">&quot;dir&quot;</span> <span class="tok-o">:</span>  <span class="tok-s2">&quot;src&quot;</span><span class="tok-p">}</span>
+    <span class="tok-s2">&quot;sources&quot;</span> <span class="tok-o">:</span> <span class="tok-p">{</span> <span class="tok-s2">&quot;dir&quot;</span> <span class="tok-o">:</span> <span class="tok-s2">&quot;src&quot;</span><span class="tok-p">}</span>
 <span class="tok-p">}</span></code></pre>
 </div>
 </div>
@@ -1127,7 +1127,7 @@ as below:</p>
 </ol>
 </div>
 <div class="paragraph">
-<p>User can  also run <code>watch</code> mode to see changes instantly while editing.</p>
+<p>User can also run <code>watch</code> mode to see changes instantly while editing.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1163,7 +1163,7 @@ will call <code>fib</code>.</p>
 <div class="content">
 <pre class="pygments highlight"><code data-lang="js"><span class="tok-p">{</span>
     <span class="tok-s2">&quot;name&quot;</span> <span class="tok-o">:</span> <span class="tok-s2">&quot;helo&quot;</span><span class="tok-p">,</span>
-    <span class="tok-s2">&quot;sources&quot;</span> <span class="tok-o">:</span> <span class="tok-p">{</span> <span class="tok-s2">&quot;dir&quot;</span> <span class="tok-o">:</span>  <span class="tok-s2">&quot;src&quot;</span><span class="tok-p">}</span>
+    <span class="tok-s2">&quot;sources&quot;</span> <span class="tok-o">:</span> <span class="tok-p">{</span> <span class="tok-s2">&quot;dir&quot;</span> <span class="tok-o">:</span> <span class="tok-s2">&quot;src&quot;</span><span class="tok-p">}</span>
 <span class="tok-p">}</span></code></pre>
 </div>
 </div>
@@ -1187,7 +1187,7 @@ will call <code>fib</code>.</p>
 <div class="listingblock">
 <div class="title">src/fib.ml</div>
 <div class="content">
-<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">let</span>  <span class="tok-n">fib</span> <span class="tok-n">n</span>  <span class="tok-o">=</span>
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">let</span> <span class="tok-n">fib</span> <span class="tok-n">n</span> <span class="tok-o">=</span>
   <span class="tok-k">let</span> <span class="tok-k">rec</span> <span class="tok-n">aux</span> <span class="tok-n">n</span> <span class="tok-n">a</span> <span class="tok-n">b</span> <span class="tok-o">=</span>
     <span class="tok-k">if</span> <span class="tok-n">n</span> <span class="tok-o">=</span> <span class="tok-mi">0</span> <span class="tok-k">then</span> <span class="tok-n">a</span>
     <span class="tok-k">else</span>
@@ -1517,8 +1517,8 @@ with syntax as described below:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">external</span> <span class="tok-k">value</span><span class="tok-o">-</span><span class="tok-n">name</span> <span class="tok-o">:</span>  <span class="tok-n">typexpr</span> <span class="tok-o">=</span>  <span class="tok-k">external</span><span class="tok-o">-</span><span class="tok-n">declaration</span>  <span class="tok-n">attributes</span>
-<span class="tok-k">external</span><span class="tok-o">-</span><span class="tok-n">declaration</span> <span class="tok-o">:=</span>  <span class="tok-kt">string</span><span class="tok-o">-</span><span class="tok-n">literal</span></code></pre>
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">external</span> <span class="tok-k">value</span><span class="tok-o">-</span><span class="tok-n">name</span> <span class="tok-o">:</span> <span class="tok-n">typexpr</span> <span class="tok-o">=</span> <span class="tok-k">external</span><span class="tok-o">-</span><span class="tok-n">declaration</span> <span class="tok-n">attributes</span>
+<span class="tok-k">external</span><span class="tok-o">-</span><span class="tok-n">declaration</span> <span class="tok-o">:=</span> <span class="tok-kt">string</span><span class="tok-o">-</span><span class="tok-n">literal</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1848,7 +1848,7 @@ way by using annotated polymorphic variant.</p>
 <div class="colist arabic">
 <ol>
 <li>
-<p>Here we intentionally made an example to show how to  customize a name</p>
+<p>Here we intentionally made an example to show how to customize a name</p>
 </li>
 </ol>
 </div>
@@ -1868,10 +1868,10 @@ way by using annotated polymorphic variant.</p>
 <div class="content">
 <pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">external</span> <span class="tok-n">test_int_type</span> <span class="tok-o">:</span>
   <span class="tok-o">([</span> <span class="tok-o">`</span><span class="tok-n">on_closed</span> <b class="conum">(1)</b>
-   <span class="tok-o">|</span> <span class="tok-o">`</span><span class="tok-n">on_open</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-k">as</span> <span class="tok-mi">3</span><span class="tok-o">]</span>  <b class="conum">(2)</b>
+   <span class="tok-o">|</span> <span class="tok-o">`</span><span class="tok-n">on_open</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-k">as</span> <span class="tok-mi">3</span><span class="tok-o">]</span> <b class="conum">(2)</b>
    <span class="tok-o">|</span> <span class="tok-o">`</span><span class="tok-n">in_bin</span> <b class="conum">(3)</b>
    <span class="tok-o">]</span>
-   <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-kt">int</span><span class="tok-o">])</span>  <span class="tok-o">-&gt;</span> <span class="tok-kt">int</span>  <span class="tok-o">=</span>
+   <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-kt">int</span><span class="tok-o">])</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">int</span> <span class="tok-o">=</span>
   <span class="tok-s2">&quot;&quot;</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-k">val</span><span class="tok-o">]</span></code></pre>
 </div>
 </div>
@@ -2013,7 +2013,7 @@ still be recorded.</p>
   <span class="tok-o">|</span> <span class="tok-nc">Float</span> <span class="tok-o">-&gt;</span> <span class="tok-s2">&quot;float&quot;</span>
   <span class="tok-o">|</span> <span class="tok-nc">String</span> <span class="tok-o">-&gt;</span> <span class="tok-s2">&quot;string&quot;</span>
 
-<span class="tok-k">external</span> <span class="tok-n">add_dyn</span> <span class="tok-o">:</span> <span class="tok-o">(</span><span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-n">kind</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">ignore</span><span class="tok-o">])</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">string</span> <span class="tok-o">-&gt;</span>  <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;&quot;</span>
+<span class="tok-k">external</span> <span class="tok-n">add_dyn</span> <span class="tok-o">:</span> <span class="tok-o">(</span><span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-n">kind</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">ignore</span><span class="tok-o">])</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">string</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;&quot;</span>
 <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-k">val</span><span class="tok-o">]</span>
 
 <span class="tok-k">let</span> <span class="tok-n">add2</span> <span class="tok-n">k</span> <span class="tok-n">x</span> <span class="tok-n">y</span> <span class="tok-o">=</span>
@@ -2057,10 +2057,10 @@ data.</p>
 <div class="content">
 <pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">type</span> <span class="tok-n">process</span>
 
-<span class="tok-k">external</span> <span class="tok-n">on_exit</span> <span class="tok-o">:</span>  <span class="tok-o">(_</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-k">as</span> <span class="tok-s2">&quot;exit&quot;</span><span class="tok-o">])</span> <span class="tok-o">-&gt;</span> <span class="tok-o">(</span><span class="tok-kt">int</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">unit</span><span class="tok-o">)</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">unit</span> <span class="tok-o">=</span>
+<span class="tok-k">external</span> <span class="tok-n">on_exit</span> <span class="tok-o">:</span> <span class="tok-o">(_</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-k">as</span> <span class="tok-s2">&quot;exit&quot;</span><span class="tok-o">])</span> <span class="tok-o">-&gt;</span> <span class="tok-o">(</span><span class="tok-kt">int</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">unit</span><span class="tok-o">)</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">unit</span> <span class="tok-o">=</span>
     <span class="tok-s2">&quot;on&quot;</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">send</span><span class="tok-o">.</span><span class="tok-n">pipe</span><span class="tok-o">:</span> <span class="tok-n">process</span><span class="tok-o">]</span>
 <span class="tok-k">let</span> <span class="tok-n">register</span> <span class="tok-o">(</span><span class="tok-n">p</span> <span class="tok-o">:</span> <span class="tok-n">process</span><span class="tok-o">)</span> <span class="tok-o">=</span>
-        <span class="tok-n">p</span> <span class="tok-o">|&gt;</span> <span class="tok-n">on_exit</span> <span class="tok-o">(</span><span class="tok-k">fun</span> <span class="tok-n">i</span> <span class="tok-o">-&gt;</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">log</span> <span class="tok-n">i</span> <span class="tok-o">)</span></code></pre>
+        <span class="tok-n">p</span> <span class="tok-o">|&gt;</span> <span class="tok-n">on_exit</span> <span class="tok-o">(</span><span class="tok-k">fun</span> <span class="tok-n">i</span> <span class="tok-o">-&gt;</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">log</span> <span class="tok-n">i</span><span class="tok-o">)</span></code></pre>
 </div>
 </div>
 <div class="listingblock">
@@ -2078,7 +2078,7 @@ data.</p>
 <div class="title">Input</div>
 <div class="content">
 <pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">external</span> <span class="tok-n">io_config</span> <span class="tok-o">:</span>
-    <span class="tok-n">stdio</span><span class="tok-o">:(</span> <span class="tok-o">_</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-k">as</span> <span class="tok-s2">&quot;inherit&quot;</span><span class="tok-o">])</span> <span class="tok-o">-&gt;</span> <span class="tok-n">cwd</span><span class="tok-o">:</span><span class="tok-kt">string</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">unit</span> <span class="tok-o">-&gt;</span> <span class="tok-o">_</span>  <span class="tok-o">=</span> <span class="tok-s2">&quot;&quot;</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">obj</span><span class="tok-o">]</span>
+    <span class="tok-n">stdio</span><span class="tok-o">:(_</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-k">as</span> <span class="tok-s2">&quot;inherit&quot;</span><span class="tok-o">])</span> <span class="tok-o">-&gt;</span> <span class="tok-n">cwd</span><span class="tok-o">:</span><span class="tok-kt">string</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">unit</span> <span class="tok-o">-&gt;</span> <span class="tok-o">_</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;&quot;</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">obj</span><span class="tok-o">]</span>
 
 <span class="tok-k">let</span> <span class="tok-n">config</span> <span class="tok-o">=</span> <span class="tok-n">io_config</span> <span class="tok-o">~</span><span class="tok-n">cwd</span><span class="tok-o">:</span><span class="tok-s2">&quot;.&quot;</span> <span class="tok-bp">()</span></code></pre>
 </div>
@@ -2184,7 +2184,7 @@ reading the type <code>'a &#8594; 'b &#8594; 'c</code>, it can be in several cas
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">let</span> <span class="tok-n">g</span> <span class="tok-n">x</span>  <span class="tok-o">=</span> <span class="tok-k">let</span> <span class="tok-n">z</span>  <span class="tok-o">=</span> <span class="tok-n">x</span> <span class="tok-o">+</span> <span class="tok-mi">1</span> <span class="tok-k">in</span> <span class="tok-k">fun</span> <span class="tok-n">y</span> <span class="tok-o">-&gt;</span> <span class="tok-n">x</span> <span class="tok-o">+</span> <span class="tok-n">z</span></code></pre>
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">let</span> <span class="tok-n">g</span> <span class="tok-n">x</span> <span class="tok-o">=</span> <span class="tok-k">let</span> <span class="tok-n">z</span> <span class="tok-o">=</span> <span class="tok-n">x</span> <span class="tok-o">+</span> <span class="tok-mi">1</span> <span class="tok-k">in</span> <span class="tok-k">fun</span> <span class="tok-n">y</span> <span class="tok-o">-&gt;</span> <span class="tok-n">x</span> <span class="tok-o">+</span> <span class="tok-n">z</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2284,7 +2284,7 @@ will complain.</p>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">type</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-n">return</span> <span class="tok-o">=</span> <span class="tok-kt">int</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">]</span>
-<span class="tok-k">type</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-n">u0</span> <span class="tok-o">=</span> <span class="tok-kt">int</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">string</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-n">return</span>  <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">]</span> <b class="conum">(1)</b>
+<span class="tok-k">type</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-n">u0</span> <span class="tok-o">=</span> <span class="tok-kt">int</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">string</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-n">return</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">]</span> <b class="conum">(1)</b>
 <span class="tok-k">type</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-n">u1</span> <span class="tok-o">=</span> <span class="tok-kt">int</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">string</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">int</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">]</span> <b class="conum">(2)</b>
 <span class="tok-k">type</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-n">u2</span> <span class="tok-o">=</span> <span class="tok-kt">int</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">string</span> <span class="tok-o">-&gt;</span> <span class="tok-o">(</span><span class="tok-kt">int</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">])</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">]</span> <b class="conum">(3)</b></code></pre>
 </div>
@@ -2646,7 +2646,7 @@ its arguments all at the same time, since its semantics depends on <code>this</c
 <div class="content">
 <pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">let</span> <span class="tok-n">test</span> <span class="tok-n">f</span> <span class="tok-o">=</span>
   <span class="tok-n">f</span><span class="tok-o">##</span><span class="tok-n">hi</span> <span class="tok-mi">1</span> <b class="conum">(1)</b>
-<span class="tok-k">let</span> <span class="tok-n">test2</span> <span class="tok-n">f</span>   <span class="tok-o">=</span>
+<span class="tok-k">let</span> <span class="tok-n">test2</span> <span class="tok-n">f</span> <span class="tok-o">=</span>
   <span class="tok-k">let</span> <span class="tok-n">u</span> <span class="tok-o">=</span> <span class="tok-n">f</span><span class="tok-o">##</span><span class="tok-n">hi</span> <span class="tok-k">in</span>
   <span class="tok-n">u</span> <span class="tok-mi">1</span>
 <span class="tok-k">let</span> <span class="tok-n">test3</span> <span class="tok-n">f</span> <span class="tok-o">=</span>
@@ -2720,12 +2720,12 @@ are treated as properties.</p>
 <div class="sect3">
 <h4 id="_how_to_consume_js_property_and_methods"><a class="anchor" href="#_how_to_consume_js_property_and_methods"></a>How to consume JS property and methods</h4>
 <div class="paragraph">
-<p>As we said:  <code>##</code> is used in both object method dispatch and field access.</p>
+<p>As we said: <code>##</code> is used in both object method dispatch and field access.</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-n">f</span><span class="tok-o">##</span><span class="tok-n">property</span> <b class="conum">(1)</b>
-<span class="tok-n">f</span><span class="tok-o">##</span><span class="tok-n">property</span><span class="tok-o">#=</span> <span class="tok-n">v</span>
+<span class="tok-n">f</span><span class="tok-o">##</span><span class="tok-n">property</span> <span class="tok-o">#=</span> <span class="tok-n">v</span>
 <span class="tok-n">f</span><span class="tok-o">##</span><span class="tok-n">js_method</span> <span class="tok-n">args0</span> <span class="tok-n">args1</span> <span class="tok-n">args2</span> <b class="conum">(2)</b></code></pre>
 </div>
 </div>
@@ -2791,7 +2791,7 @@ be guaranteed by OCaml&#8217;s type checker, a classic example shown below:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">val</span> <span class="tok-n">f0</span> <span class="tok-o">:</span> <span class="tok-o">&lt;</span> <span class="tok-n">f</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">int</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">int</span>  <span class="tok-o">&gt;</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">t</span>
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">val</span> <span class="tok-n">f0</span> <span class="tok-o">:</span> <span class="tok-o">&lt;</span> <span class="tok-n">f</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">int</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">int</span> <span class="tok-o">&gt;</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">t</span>
 <span class="tok-k">val</span> <span class="tok-n">f1</span> <span class="tok-o">:</span> <span class="tok-o">&lt;</span> <span class="tok-n">f</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">int</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">int</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">meth</span><span class="tok-o">]</span> <span class="tok-o">&gt;</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">t</span></code></pre>
 </div>
 </div>
@@ -2837,20 +2837,20 @@ them as property getters/setters.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">type</span> <span class="tok-n">y</span>  <span class="tok-o">=</span> <span class="tok-o">&lt;</span>
- <span class="tok-n">height</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">set</span> <span class="tok-o">{</span><span class="tok-n">no_get</span><span class="tok-o">}]</span> <b class="conum">(1)</b>
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">type</span> <span class="tok-n">y</span> <span class="tok-o">=</span> <span class="tok-o">&lt;</span>
+  <span class="tok-n">height</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">set</span> <span class="tok-o">{</span><span class="tok-n">no_get</span><span class="tok-o">}]</span> <b class="conum">(1)</b>
 <span class="tok-o">&gt;</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">t</span>
 <span class="tok-k">type</span> <span class="tok-n">y0</span> <span class="tok-o">=</span> <span class="tok-o">&lt;</span>
- <span class="tok-n">height</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">set</span><span class="tok-o">]</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">get</span> <span class="tok-o">{</span><span class="tok-n">null</span><span class="tok-o">}]</span> <b class="conum">(2)</b>
+  <span class="tok-n">height</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">set</span><span class="tok-o">]</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">get</span> <span class="tok-o">{</span><span class="tok-n">null</span><span class="tok-o">}]</span> <b class="conum">(2)</b>
 <span class="tok-o">&gt;</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">t</span>
 <span class="tok-k">type</span> <span class="tok-n">y1</span> <span class="tok-o">=</span> <span class="tok-o">&lt;</span>
-  <span class="tok-n">height</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">set</span><span class="tok-o">]</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">get</span> <span class="tok-o">{</span><span class="tok-n">undefined</span><span class="tok-o">}]</span> <b class="conum">(3)</b>
+  <span class="tok-n">height</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">set</span><span class="tok-o">]</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">get</span> <span class="tok-o">{</span><span class="tok-n">undefined</span><span class="tok-o">}]</span> <b class="conum">(3)</b>
 <span class="tok-o">&gt;</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">t</span>
 <span class="tok-k">type</span> <span class="tok-n">y2</span> <span class="tok-o">=</span> <span class="tok-o">&lt;</span>
-  <span class="tok-n">height</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">set</span><span class="tok-o">]</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">get</span> <span class="tok-o">{</span><span class="tok-n">undefined</span><span class="tok-o">;</span> <span class="tok-n">null</span><span class="tok-o">}]</span> <b class="conum">(4)</b>
+  <span class="tok-n">height</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">set</span><span class="tok-o">]</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">get</span> <span class="tok-o">{</span><span class="tok-n">undefined</span><span class="tok-o">;</span> <span class="tok-n">null</span><span class="tok-o">}]</span> <b class="conum">(4)</b>
 <span class="tok-o">&gt;</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">t</span>
 <span class="tok-k">type</span> <span class="tok-n">y3</span> <span class="tok-o">=</span> <span class="tok-o">&lt;</span>
-  <span class="tok-n">height</span> <span class="tok-o">:</span> <span class="tok-kt">int</span>  <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">get</span> <span class="tok-o">{</span><span class="tok-n">undefined</span> <span class="tok-o">;</span> <span class="tok-n">null</span><span class="tok-o">}]</span> <b class="conum">(5)</b>
+  <span class="tok-n">height</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">get</span> <span class="tok-o">{</span><span class="tok-n">undefined</span> <span class="tok-o">;</span> <span class="tok-n">null</span><span class="tok-o">}]</span> <b class="conum">(5)</b>
 <span class="tok-o">&gt;</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">t</span></code></pre>
 </div>
 </div>
@@ -2916,16 +2916,16 @@ create JS objects in a type safe way on the OCaml side:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">val</span> <span class="tok-n">u</span> <span class="tok-o">:</span> <span class="tok-o">&lt;</span> <span class="tok-n">x</span> <span class="tok-o">:</span>  <span class="tok-o">&lt;</span> <span class="tok-n">y</span> <span class="tok-o">:</span> <span class="tok-o">&lt;</span> <span class="tok-n">z</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">&gt;</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">t</span> <span class="tok-o">&gt;</span>  <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">t</span> <span class="tok-o">&gt;</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">t</span></code></pre>
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">val</span> <span class="tok-n">u</span> <span class="tok-o">:</span> <span class="tok-o">&lt;</span> <span class="tok-n">x</span> <span class="tok-o">:</span> <span class="tok-o">&lt;</span> <span class="tok-n">y</span> <span class="tok-o">:</span> <span class="tok-o">&lt;</span> <span class="tok-n">z</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">&gt;</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">t</span> <span class="tok-o">&gt;</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">t</span> <span class="tok-o">&gt;</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">t</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>To make it more symmetric,  extension <code>bs.obj</code> can also be applied
+<p>To make it more symmetric, extension <code>bs.obj</code> can also be applied
 into the type level, so you can write:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">val</span> <span class="tok-n">u</span> <span class="tok-o">:</span> <span class="tok-o">[%</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">obj</span><span class="tok-o">:</span> <span class="tok-o">&lt;</span> <span class="tok-n">x</span> <span class="tok-o">:</span> <span class="tok-o">&lt;</span> <span class="tok-n">y</span> <span class="tok-o">&lt;</span> <span class="tok-n">z</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">&gt;</span> <span class="tok-o">&gt;</span> <span class="tok-o">&gt;</span> <span class="tok-o">]</span></code></pre>
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">val</span> <span class="tok-n">u</span> <span class="tok-o">:</span> <span class="tok-o">[%</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">obj</span><span class="tok-o">:</span> <span class="tok-o">&lt;</span> <span class="tok-n">x</span> <span class="tok-o">:</span> <span class="tok-o">&lt;</span> <span class="tok-n">y</span> <span class="tok-o">:</span> <span class="tok-o">&lt;</span> <span class="tok-n">z</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">&gt;</span> <span class="tok-o">&gt;</span> <span class="tok-o">&gt;</span> <span class="tok-o">]</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2941,7 +2941,7 @@ into the type level, so you can write:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">let</span> <span class="tok-n">xs</span> <span class="tok-o">=</span> <span class="tok-o">[%</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">obj</span> <span class="tok-o">[|</span> <span class="tok-o">{</span> <span class="tok-n">x</span> <span class="tok-o">=</span> <span class="tok-mi">3</span> <span class="tok-o">}</span> <span class="tok-o">;</span> <span class="tok-o">{</span> <span class="tok-n">x</span> <span class="tok-o">=</span> <span class="tok-mi">3</span> <span class="tok-o">}</span> <span class="tok-o">|]</span> <span class="tok-o">:</span> <span class="tok-o">&lt;</span> <span class="tok-n">x</span> <span class="tok-o">:</span> <span class="tok-kt">int</span>  <span class="tok-o">&gt;</span> <span class="tok-kt">array</span>  <span class="tok-o">]</span>
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">let</span> <span class="tok-n">xs</span> <span class="tok-o">=</span> <span class="tok-o">[%</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">obj</span> <span class="tok-o">[|</span> <span class="tok-o">{</span> <span class="tok-n">x</span> <span class="tok-o">=</span> <span class="tok-mi">3</span> <span class="tok-o">}</span> <span class="tok-o">;</span> <span class="tok-o">{</span> <span class="tok-n">x</span> <span class="tok-o">=</span> <span class="tok-mi">3</span> <span class="tok-o">}</span> <span class="tok-o">|]</span> <span class="tok-o">:</span> <span class="tok-o">&lt;</span> <span class="tok-n">x</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">&gt;</span> <span class="tok-kt">array</span> <span class="tok-o">]</span>
 <span class="tok-k">let</span> <span class="tok-n">ys</span> <span class="tok-o">=</span> <span class="tok-o">[%</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">obj</span> <span class="tok-o">[|</span> <span class="tok-o">{</span> <span class="tok-n">x</span> <span class="tok-o">=</span> <span class="tok-mi">3</span> <span class="tok-o">}</span> <span class="tok-o">;</span> <span class="tok-o">{</span> <span class="tok-n">x</span> <span class="tok-o">=</span> <span class="tok-mi">4</span> <span class="tok-o">}</span> <span class="tok-o">|]</span> <span class="tok-o">]</span></code></pre>
 </div>
 </div>
@@ -2977,7 +2977,7 @@ into the type level, so you can write:</p>
 <div class="content">
 <pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">external</span> <span class="tok-n">make_config</span> <span class="tok-o">:</span> <span class="tok-n">hi</span><span class="tok-o">:</span><span class="tok-kt">int</span> <span class="tok-o">-&gt;</span> <span class="tok-o">?</span><span class="tok-n">lo</span><span class="tok-o">:</span><span class="tok-kt">int</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">unit</span> <span class="tok-o">-&gt;</span> <span class="tok-n">t</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;&quot;</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">obj</span><span class="tok-o">]</span> <b class="conum">(1)</b>
 <span class="tok-k">let</span> <span class="tok-n">u</span> <span class="tok-o">=</span> <span class="tok-n">make_config</span> <span class="tok-o">~</span><span class="tok-n">hi</span><span class="tok-o">:</span><span class="tok-mi">3</span> <span class="tok-bp">()</span>
-<span class="tok-k">let</span> <span class="tok-n">v</span> <span class="tok-o">=</span> <span class="tok-n">make_config</span> <span class="tok-o">~</span><span class="tok-n">lo</span><span class="tok-o">:</span><span class="tok-mi">2</span> <span class="tok-o">~</span><span class="tok-n">hi</span><span class="tok-o">:</span><span class="tok-mi">3</span>  <span class="tok-bp">()</span></code></pre>
+<span class="tok-k">let</span> <span class="tok-n">v</span> <span class="tok-o">=</span> <span class="tok-n">make_config</span> <span class="tok-o">~</span><span class="tok-n">lo</span><span class="tok-o">:</span><span class="tok-mi">2</span> <span class="tok-o">~</span><span class="tok-n">hi</span><span class="tok-o">:</span><span class="tok-mi">3</span> <span class="tok-bp">()</span></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -3055,7 +3055,7 @@ is available:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">val</span> <span class="tok-n">b</span> <span class="tok-o">:</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">b</span> <span class="tok-o">-&gt;</span>  <span class="tok-o">&lt;</span> <span class="tok-n">fn</span> <span class="tok-o">:</span>  <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">b</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">c</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">]</span> <span class="tok-o">&gt;</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">t</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">c</span></code></pre>
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">val</span> <span class="tok-n">b</span> <span class="tok-o">:</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">b</span> <span class="tok-o">-&gt;</span> <span class="tok-o">&lt;</span> <span class="tok-n">fn</span> <span class="tok-o">:</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">b</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">c</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">]</span> <span class="tok-o">&gt;</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">t</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">c</span></code></pre>
 </div>
 </div>
 </td>
@@ -3071,11 +3071,11 @@ BuckleScript too.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">let</span> <span class="tok-n">v2</span>  <span class="tok-o">=</span>
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">let</span> <span class="tok-n">v2</span> <span class="tok-o">=</span>
   <span class="tok-k">let</span> <span class="tok-n">x</span> <span class="tok-o">=</span> <span class="tok-mi">3</span><span class="tok-o">.</span> <span class="tok-k">in</span>
   <span class="tok-k">object</span> <span class="tok-o">(</span><span class="tok-n">self</span><span class="tok-o">)</span> <b class="conum">(1)</b>
-    <span class="tok-k">method</span> <span class="tok-n">hi</span> <span class="tok-n">x</span>  <span class="tok-n">y</span> <span class="tok-o">=</span> <span class="tok-n">self</span><span class="tok-o">##</span><span class="tok-n">say</span> <span class="tok-n">x</span> <span class="tok-o">+.</span> <span class="tok-n">y</span>
-    <span class="tok-k">method</span> <span class="tok-n">say</span> <span class="tok-n">x</span> <span class="tok-o">=</span>  <span class="tok-n">x</span> <span class="tok-o">*.</span> <span class="tok-n">self</span><span class="tok-o">##</span> <span class="tok-n">x</span> <span class="tok-bp">()</span>
+    <span class="tok-k">method</span> <span class="tok-n">hi</span> <span class="tok-n">x</span> <span class="tok-n">y</span> <span class="tok-o">=</span> <span class="tok-n">self</span><span class="tok-o">##</span><span class="tok-n">say</span> <span class="tok-n">x</span> <span class="tok-o">+.</span> <span class="tok-n">y</span>
+    <span class="tok-k">method</span> <span class="tok-n">say</span> <span class="tok-n">x</span> <span class="tok-o">=</span> <span class="tok-n">x</span> <span class="tok-o">*.</span> <span class="tok-n">self</span><span class="tok-o">##</span><span class="tok-n">x</span> <span class="tok-bp">()</span>
     <span class="tok-k">method</span> <span class="tok-n">x</span> <span class="tok-bp">()</span> <span class="tok-o">=</span> <span class="tok-n">x</span>
   <span class="tok-k">end</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">]</span> <b class="conum">(2)</b></code></pre>
 </div>
@@ -3113,11 +3113,11 @@ BuckleScript too.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">val</span> <span class="tok-n">v2</span> <span class="tok-o">:</span> <span class="tok-k">object</span>
-  <span class="tok-k">method</span> <span class="tok-n">hi</span> <span class="tok-o">:</span> <span class="tok-kt">float</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">float</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">float</span>
-  <span class="tok-k">method</span> <span class="tok-n">say</span> <span class="tok-o">:</span> <span class="tok-kt">float</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">float</span>
-  <span class="tok-k">method</span> <span class="tok-n">x</span> <span class="tok-o">:</span> <span class="tok-kt">unit</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">float</span>
-<span class="tok-k">end</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">]</span></code></pre>
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">val</span> <span class="tok-n">v2</span> <span class="tok-o">:</span> <span class="tok-o">&lt;</span>
+  <span class="tok-n">hi</span> <span class="tok-o">:</span> <span class="tok-kt">float</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">float</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">float</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">meth</span><span class="tok-o">];</span>
+  <span class="tok-n">say</span> <span class="tok-o">:</span> <span class="tok-kt">float</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">float</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">meth</span><span class="tok-o">];</span>
+  <span class="tok-n">x</span> <span class="tok-o">:</span> <span class="tok-kt">unit</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">float</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">meth</span><span class="tok-o">]</span>
+<span class="tok-o">&gt;</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">]</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -3129,8 +3129,8 @@ BuckleScript too.</p>
   <span class="tok-c">(* the type annotation is un-necessary,</span>
 <span class="tok-c">     but it gives better error message</span>
 <span class="tok-c">  *)</span>
-   <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">log</span> <span class="tok-n">u</span><span class="tok-o">##</span><span class="tok-n">height</span> <span class="tok-o">;</span>
-   <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">log</span> <span class="tok-n">u</span><span class="tok-o">##</span><span class="tok-n">width</span> <span class="tok-o">;</span>
+   <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">log</span> <span class="tok-n">u</span><span class="tok-o">##</span><span class="tok-n">height</span><span class="tok-o">;</span>
+   <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">log</span> <span class="tok-n">u</span><span class="tok-o">##</span><span class="tok-n">width</span><span class="tok-o">;</span>
    <span class="tok-n">u</span><span class="tok-o">##</span><span class="tok-n">width</span> <span class="tok-o">#=</span> <span class="tok-mi">30</span><span class="tok-o">;</span>
    <span class="tok-n">u</span><span class="tok-o">##</span><span class="tok-n">height</span> <span class="tok-o">#=</span> <span class="tok-mi">30</span><span class="tok-o">;</span>
    <span class="tok-n">u</span><span class="tok-o">##</span><span class="tok-n">draw</span> <span class="tok-bp">()</span></code></pre>
@@ -3281,7 +3281,7 @@ drop the first '_'</p>
 <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">send</span><span class="tok-o">.</span><span class="tok-n">pipe</span><span class="tok-o">:</span><span class="tok-n">dom</span><span class="tok-o">]</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">return</span> <span class="tok-n">null_to_opt</span><span class="tok-o">]</span> <b class="conum">(1)</b>
 
 <span class="tok-k">let</span> <span class="tok-n">test</span> <span class="tok-n">dom</span> <span class="tok-o">=</span>
-    <span class="tok-k">let</span> <span class="tok-n">elem</span> <span class="tok-o">=</span> <span class="tok-n">dom</span> <span class="tok-o">|&gt;</span> <span class="tok-n">getElementById</span> <span class="tok-s2">&quot;haha&quot;</span>  <span class="tok-k">in</span>
+    <span class="tok-k">let</span> <span class="tok-n">elem</span> <span class="tok-o">=</span> <span class="tok-n">dom</span> <span class="tok-o">|&gt;</span> <span class="tok-n">getElementById</span> <span class="tok-s2">&quot;haha&quot;</span> <span class="tok-k">in</span>
     <span class="tok-k">match</span> <span class="tok-n">elem</span> <span class="tok-k">with</span>
     <span class="tok-o">|</span> <span class="tok-nc">None</span> <span class="tok-o">-&gt;</span> <span class="tok-mi">1</span>
     <span class="tok-o">|</span> <span class="tok-nc">Some</span> <span class="tok-n">ui</span> <span class="tok-o">-&gt;</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">log</span> <span class="tok-n">ui</span> <span class="tok-o">;</span> <span class="tok-mi">2</span></code></pre>
@@ -3460,7 +3460,7 @@ refer to external OCaml symbols in raw JS code.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">let</span> <span class="tok-n">x</span>  <span class="tok-o">:</span> <span class="tok-kt">string</span> <span class="tok-o">=</span> <span class="tok-o">[%</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">raw</span><span class="tok-o">{|</span><span class="tok-s2">&quot;</span><span class="tok-se">\x01\x02</span><span class="tok-s2">&quot;</span><span class="tok-o">|}]</span></code></pre>
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">let</span> <span class="tok-n">x</span> <span class="tok-o">:</span> <span class="tok-kt">string</span> <span class="tok-o">=</span> <span class="tok-o">[%</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">raw</span><span class="tok-o">{|</span><span class="tok-s2">&quot;</span><span class="tok-se">\x01\x02</span><span class="tok-s2">&quot;</span><span class="tok-o">|}]</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -3540,7 +3540,7 @@ that the order is correct.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">let</span> <span class="tok-n">f</span>  <span class="tok-o">=</span> <span class="tok-o">[%</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">re</span> <span class="tok-s2">&quot;/b/g&quot;</span><span class="tok-o">]</span></code></pre>
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">let</span> <span class="tok-n">f</span> <span class="tok-o">=</span> <span class="tok-o">[%</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">re</span> <span class="tok-s2">&quot;/b/g&quot;</span><span class="tok-o">]</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -3591,7 +3591,7 @@ more examples, please visit
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">external</span> <span class="tok-n">eq</span> <span class="tok-o">:</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">unit</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;deepEqual&quot;</span>  <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-k">module</span> <span class="tok-s2">&quot;assert&quot;</span><span class="tok-o">]</span></code></pre>
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">external</span> <span class="tok-n">eq</span> <span class="tok-o">:</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">unit</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;deepEqual&quot;</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-k">module</span> <span class="tok-s2">&quot;assert&quot;</span><span class="tok-o">]</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -3600,7 +3600,7 @@ more examples, please visit
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">let</span> <span class="tok-n">assert_equal</span> <span class="tok-o">=</span> <span class="tok-n">eq</span>
-<span class="tok-k">let</span> <span class="tok-n">from_suites</span> <span class="tok-n">name</span> <span class="tok-n">suite</span>  <span class="tok-o">=</span>
+<span class="tok-k">let</span> <span class="tok-n">from_suites</span> <span class="tok-n">name</span> <span class="tok-n">suite</span> <span class="tok-o">=</span>
     <span class="tok-n">describe</span> <span class="tok-n">name</span> <span class="tok-o">(</span><span class="tok-k">fun</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">]</span> <span class="tok-bp">()</span> <span class="tok-o">-&gt;</span>
          <span class="tok-nn">List</span><span class="tok-p">.</span><span class="tok-n">iter</span> <span class="tok-o">(</span><span class="tok-k">fun</span> <span class="tok-o">(</span><span class="tok-n">name</span><span class="tok-o">,</span> <span class="tok-n">code</span><span class="tok-o">)</span> <span class="tok-o">-&gt;</span> <span class="tok-n">it</span> <span class="tok-n">name</span> <span class="tok-n">code</span><span class="tok-o">)</span> <span class="tok-n">suite</span>
          <span class="tok-o">)</span></code></pre>
@@ -3645,7 +3645,7 @@ more examples, please visit
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">let</span> <span class="tok-n">example1</span> <span class="tok-bp">()</span> <span class="tok-o">=</span>
-    <span class="tok-k">match</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-nn">Json</span><span class="tok-p">.</span><span class="tok-n">exnParse</span> <span class="tok-o">{|</span> <span class="tok-o">{</span><span class="tok-s2">&quot;x&quot;</span>  <span class="tok-o">}|}</span> <span class="tok-k">with</span>
+    <span class="tok-k">match</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-nn">Json</span><span class="tok-p">.</span><span class="tok-n">exnParse</span> <span class="tok-o">{|</span> <span class="tok-o">{</span><span class="tok-s2">&quot;x&quot;</span> <span class="tok-o">}|}</span> <span class="tok-k">with</span>
     <span class="tok-o">|</span> <span class="tok-k">exception</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-nn">Exn</span><span class="tok-p">.</span><span class="tok-nc">Error</span> <span class="tok-n">err</span> <span class="tok-o">-&gt;</span>
         <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">log</span> <span class="tok-o">@@</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-nn">Exn</span><span class="tok-p">.</span><span class="tok-n">stack</span> <span class="tok-n">err</span><span class="tok-o">;</span>
         <span class="tok-nc">None</span>
@@ -3683,10 +3683,10 @@ more examples, please visit
 <span class="tok-k">val</span> <span class="tok-n">error</span> <span class="tok-o">:</span> <span class="tok-kt">string</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span>
 <span class="tok-k">val</span> <span class="tok-n">evalError</span> <span class="tok-o">:</span> <span class="tok-kt">string</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span>
 <span class="tok-k">val</span> <span class="tok-n">rangeError</span> <span class="tok-o">:</span> <span class="tok-kt">string</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span>
-<span class="tok-k">val</span> <span class="tok-n">referenceError</span> <span class="tok-o">:</span>  <span class="tok-kt">string</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span>
+<span class="tok-k">val</span> <span class="tok-n">referenceError</span> <span class="tok-o">:</span> <span class="tok-kt">string</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span>
 <span class="tok-k">val</span> <span class="tok-n">syntaxError</span> <span class="tok-o">:</span> <span class="tok-kt">string</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span>
 <span class="tok-k">val</span> <span class="tok-n">typeError</span> <span class="tok-o">:</span> <span class="tok-kt">string</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span>
-<span class="tok-k">val</span> <span class="tok-n">uriError</span> <span class="tok-o">:</span>  <span class="tok-kt">string</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span></code></pre>
+<span class="tok-k">val</span> <span class="tok-n">uriError</span> <span class="tok-o">:</span> <span class="tok-kt">string</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -3717,7 +3717,7 @@ it preserves the type safety while allow uesrs to deal with mixed source.</p>
    <span class="tok-o">|</span> <span class="tok-nc">Not_found</span> <span class="tok-o">-&gt;</span> <span class="tok-mi">1</span>
    <span class="tok-o">|</span> <span class="tok-nc">Sys_error</span> <span class="tok-o">_</span> <span class="tok-o">-&gt;</span> <span class="tok-mi">2</span>
 
-<span class="tok-k">val</span> <span class="tok-n">handleData</span> <span class="tok-o">:</span>  <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">int</span> <span class="tok-n">option</span> <b class="conum">(1)</b></code></pre>
+<span class="tok-k">val</span> <span class="tok-n">handleData</span> <span class="tok-o">:</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">int</span> <span class="tok-n">option</span> <b class="conum">(1)</b></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -3736,7 +3736,7 @@ it preserves the type safety while allow uesrs to deal with mixed source.</p>
 <div class="content">
 <pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">let</span> <span class="tok-n">v</span> <span class="tok-o">=</span> <span class="tok-nn">Promise</span><span class="tok-p">.</span><span class="tok-n">reject</span> <span class="tok-nc">Not_found</span>
 <span class="tok-k">let</span> <span class="tok-n">handlePromiseFaiure</span> <span class="tok-o">=</span> <span class="tok-k">function</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-k">open</span><span class="tok-o">]</span>
-   <span class="tok-o">|</span> <span class="tok-nc">Not_found</span> <span class="tok-o">-&gt;</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">log</span> <span class="tok-s2">&quot;Not found&quot;</span><span class="tok-o">;</span>  <span class="tok-o">(</span><span class="tok-nn">Promise</span><span class="tok-p">.</span><span class="tok-n">resolve</span> <span class="tok-bp">()</span><span class="tok-o">)</span>
+   <span class="tok-o">|</span> <span class="tok-nc">Not_found</span> <span class="tok-o">-&gt;</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">log</span> <span class="tok-s2">&quot;Not found&quot;</span><span class="tok-o">;</span> <span class="tok-o">(</span><span class="tok-nn">Promise</span><span class="tok-p">.</span><span class="tok-n">resolve</span> <span class="tok-bp">()</span><span class="tok-o">)</span>
 
 <span class="tok-k">let</span> <span class="tok-bp">()</span> <span class="tok-o">=</span>
    <span class="tok-n">v</span>
@@ -4326,8 +4326,8 @@ atom
 <li>
 <p>value of UIDENT comes from either built-in values (with documented types) or an environment variable,
 if it is literally <code>true</code>, <code>false</code> then it is <code>bool</code>, else if it is parsable by <code>int_of_string</code>
-then it is  of type int, else if it is parsable by <code>float_of_string</code> then it is float, otherwise
-it would  be string</p>
+then it is of type int, else if it is parsable by <code>float_of_string</code> then it is float, otherwise
+it would be string</p>
 </li>
 <li>
 <p>In <code>lhs operator rhs</code>, <code>lhs</code> and <code>rhs</code> are always the same type and return boolean.
@@ -4470,7 +4470,7 @@ inlining, arity inference and other information.</p>
 <div class="sect2">
 <h3 id="_bucklescript_build_system_code_bsb_code"><a class="anchor" href="#_bucklescript_build_system_code_bsb_code"></a>BuckleScript build system: <code>bsb</code></h3>
 <div class="paragraph">
-<p>BuckleScript proivdes a native build tool on top of Google&#8217;s  <a href="https://github.com/ninja-build/ninja/releases">ninja-build</a>.
+<p>BuckleScript proivdes a native build tool on top of Google&#8217;s <a href="https://github.com/ninja-build/ninja/releases">ninja-build</a>.
 It is designed for a fast feedback loop (typically 100ms feedback loop) and works cross platform.</p>
 </div>
 <div class="paragraph">
@@ -4528,7 +4528,7 @@ either <code>bsb</code> (slightly higher latency but symlinked into <code>.bin</
 <div class="paragraph">
 <p>The entry point is <code>bsb</code>.
 It will check if there is already <code>build.ninja</code> in the build directory,
-and if not or it needs to be regenerated it will generate the file  <code>build.ninja</code>
+and if not or it needs to be regenerated it will generate the file <code>build.ninja</code>
 and delegate the hard work to <code>ninja</code>.</p>
 </div>
 <div class="paragraph">
@@ -4698,7 +4698,7 @@ to build. In that case you can mark it as dev only:</p>
   <span class="tok-s2">&quot;name&quot;</span><span class="tok-o">:</span> <span class="tok-s2">&quot;bucklescript-tea&quot;</span><span class="tok-p">,</span>
   <span class="tok-s2">&quot;version&quot;</span><span class="tok-o">:</span> <span class="tok-s2">&quot;0.1.3&quot;</span><span class="tok-p">,</span>
   <span class="tok-s2">&quot;sources&quot;</span><span class="tok-o">:</span> <span class="tok-p">[</span>
-   <span class="tok-s2">&quot;src&quot;</span><span class="tok-p">,</span>   <b class="conum">(1)</b>
+   <span class="tok-s2">&quot;src&quot;</span><span class="tok-p">,</span> <b class="conum">(1)</b>
     <span class="tok-p">{</span>
       <span class="tok-s2">&quot;dir&quot;</span><span class="tok-o">:</span> <span class="tok-s2">&quot;test&quot;</span><span class="tok-p">,</span>
       <span class="tok-s2">&quot;type&quot;</span><span class="tok-o">:</span> <span class="tok-s2">&quot;dev&quot;</span> <b class="conum">(2)</b>
@@ -4750,7 +4750,7 @@ to build. In that case you can mark it as dev only:</p>
 <div class="content">
 <pre class="pygments highlight"><code data-lang="js"><span class="tok-p">{</span>
     <span class="tok-s2">&quot;name&quot;</span> <span class="tok-o">:</span> <span class="tok-s2">&quot;bucklescript-have-tea&quot;</span><span class="tok-p">,</span>
-    <span class="tok-s2">&quot;sources&quot;</span> <span class="tok-o">:</span>  <span class="tok-s2">&quot;src&quot;</span><span class="tok-p">,</span>
+    <span class="tok-s2">&quot;sources&quot;</span> <span class="tok-o">:</span> <span class="tok-s2">&quot;src&quot;</span><span class="tok-p">,</span>
     <span class="tok-s2">&quot;bs-dependencies&quot;</span><span class="tok-o">:</span> <span class="tok-p">[</span>
       <span class="tok-s2">&quot;bucklescript-tea&quot;</span>
     <span class="tok-p">]</span>
@@ -4854,15 +4854,15 @@ are <em>curious</em> about how the build works.</p>
 <pre class="pygments highlight"><code data-lang="make"><span class="tok-nv">OCAMLC</span><span class="tok-o">=</span>bsc.exe <b class="conum">(1)</b>
 <span class="tok-nv">OCAMLDEP</span><span class="tok-o">=</span>bsdep.exe <b class="conum">(2)</b>
 <span class="tok-nv">SOURCE_LIST</span> <span class="tok-o">:=</span> src_a src_b
-<span class="tok-nv">SOURCE_MLI</span>  <span class="tok-o">=</span> <span class="tok-k">$(</span>addsuffix .mli, <span class="tok-k">$(</span>SOURCE_LIST<span class="tok-k">))</span>
-<span class="tok-nv">SOURCE_ML</span>   <span class="tok-o">=</span> <span class="tok-k">$(</span>addsuffix .ml, <span class="tok-k">$(</span>SOURCE_LIST<span class="tok-k">))</span>
+<span class="tok-nv">SOURCE_MLI</span> <span class="tok-o">=</span> <span class="tok-k">$(</span>addsuffix .mli, <span class="tok-k">$(</span>SOURCE_LIST<span class="tok-k">))</span>
+<span class="tok-nv">SOURCE_ML</span>  <span class="tok-o">=</span> <span class="tok-k">$(</span>addsuffix .ml, <span class="tok-k">$(</span>SOURCE_LIST<span class="tok-k">))</span>
 <span class="tok-nv">TARGETS</span> <span class="tok-o">:=</span> <span class="tok-k">$(</span>addsuffix .cmj, <span class="tok-k">$(</span>SOURCE_LIST<span class="tok-k">))</span>
 <span class="tok-nv">INCLUDES</span><span class="tok-o">=</span>
 <span class="tok-nf">all</span><span class="tok-o">:</span> <span class="tok-k">$(</span><span class="tok-nv">TARGETS</span><span class="tok-k">)</span>
 <span class="tok-nf">.mli</span><span class="tok-o">:</span>.<span class="tok-n">cmi</span>
-        <span class="tok-k">$(</span>OCAMLC<span class="tok-k">)</span> <span class="tok-k">$(</span>INCLUDES<span class="tok-k">)</span> <span class="tok-k">$(</span>COMPFLAGS<span class="tok-k">)</span>  -c <span class="tok-nv">$&lt;</span>
+        <span class="tok-k">$(</span>OCAMLC<span class="tok-k">)</span> <span class="tok-k">$(</span>INCLUDES<span class="tok-k">)</span> <span class="tok-k">$(</span>COMPFLAGS<span class="tok-k">)</span> -c <span class="tok-nv">$&lt;</span>
 <span class="tok-nf">.ml</span><span class="tok-o">:</span>.<span class="tok-n">cmj</span>:
-        <span class="tok-k">$(</span>OCAMLC<span class="tok-k">)</span> <span class="tok-k">$(</span>INCLUDES<span class="tok-k">)</span> <span class="tok-k">$(</span>COMPFLAGS<span class="tok-k">)</span>  -c <span class="tok-nv">$&lt;</span>
+        <span class="tok-k">$(</span>OCAMLC<span class="tok-k">)</span> <span class="tok-k">$(</span>INCLUDES<span class="tok-k">)</span> <span class="tok-k">$(</span>COMPFLAGS<span class="tok-k">)</span> -c <span class="tok-nv">$&lt;</span>
 <span class="tok-cp">-include .depend</span>
 <span class="tok-nf">depend</span><span class="tok-o">:</span>
         <span class="tok-k">$(</span>OCAMLDEP<span class="tok-k">)</span> <span class="tok-k">$(</span>INCLUDES<span class="tok-k">)</span> <span class="tok-k">$(</span>SOURCE_ML<span class="tok-k">)</span> <span class="tok-k">$(</span>SOURCE_MLI<span class="tok-k">)</span> &gt; .depend</code></pre>
@@ -5264,7 +5264,7 @@ JavaScript; instead, the OCaml stdlib provides three functions: <code>List.cons<
 <div class="title">Note</div>
 </td>
 <td class="content">
-We might encode it as buffer  in NodeJS.
+We might encode it as buffer in NodeJS.
 </td>
 </tr>
 </table>
@@ -5285,7 +5285,7 @@ We might encode it as buffer  in NodeJS.
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">type</span> <span class="tok-n">t</span> <span class="tok-o">=</span> <span class="tok-o">{</span> <span class="tok-n">x</span> <span class="tok-o">:</span> <span class="tok-kt">int</span><span class="tok-o">;</span> <span class="tok-n">y</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">}</span>
-<span class="tok-k">let</span> <span class="tok-n">v</span> <span class="tok-o">=</span> <span class="tok-o">{</span><span class="tok-n">x</span> <span class="tok-o">=</span> <span class="tok-mi">1</span><span class="tok-o">;</span>  <span class="tok-n">y</span> <span class="tok-o">=</span> <span class="tok-mi">2</span><span class="tok-o">}</span></code></pre>
+<span class="tok-k">let</span> <span class="tok-n">v</span> <span class="tok-o">=</span> <span class="tok-o">{</span><span class="tok-n">x</span> <span class="tok-o">=</span> <span class="tok-mi">1</span><span class="tok-o">;</span> <span class="tok-n">y</span> <span class="tok-o">=</span> <span class="tok-mi">2</span><span class="tok-o">}</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -5379,8 +5379,8 @@ We might encode it as buffer  in NodeJS.
 <pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">type</span> <span class="tok-n">u</span> <span class="tok-o">=</span>
      <span class="tok-o">|</span> <span class="tok-nc">A</span> <span class="tok-k">of</span> <span class="tok-kt">string</span>
      <span class="tok-o">|</span> <span class="tok-nc">B</span> <span class="tok-k">of</span> <span class="tok-kt">int</span>
-<span class="tok-c">(* A a --&gt;  [a].tag=0 -- tag 0 assignment is optional *)</span>
-<span class="tok-c">(* B b --&gt;  [b].tag=1 *)</span></code></pre>
+<span class="tok-c">(* A a --&gt; [a].tag=0 -- tag 0 assignment is optional *)</span>
+<span class="tok-c">(* B b --&gt; [b].tag=1 *)</span></code></pre>
 </div>
 </div></div></td>
 </tr>
@@ -5704,7 +5704,7 @@ the compiler you modified.</p>
 <div class="content">
 <pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">let</span> <span class="tok-n">suites</span> <span class="tok-o">:</span> <span class="tok-o">_</span> <span class="tok-nn">Mt</span><span class="tok-p">.</span><span class="tok-n">pair_suites</span> <span class="tok-o">=</span>
    <span class="tok-o">[</span><span class="tok-s2">&quot;hey&quot;</span><span class="tok-o">,</span> <span class="tok-o">(</span><span class="tok-k">fun</span> <span class="tok-o">_</span> <span class="tok-o">-&gt;</span> <span class="tok-nc">Eq</span><span class="tok-o">(</span><span class="tok-bp">true</span><span class="tok-o">,</span> <span class="tok-mi">3</span> <span class="tok-o">&gt;</span> <span class="tok-mi">2</span><span class="tok-o">));</span>
-       <span class="tok-s2">&quot;hi&quot;</span><span class="tok-o">,</span> <span class="tok-o">(</span><span class="tok-k">fun</span> <span class="tok-o">_</span> <span class="tok-o">-&gt;</span>  <span class="tok-nc">Neq</span><span class="tok-o">(</span><span class="tok-mi">2</span><span class="tok-o">,</span><span class="tok-mi">3</span><span class="tok-o">));</span>
+       <span class="tok-s2">&quot;hi&quot;</span><span class="tok-o">,</span> <span class="tok-o">(</span><span class="tok-k">fun</span> <span class="tok-o">_</span> <span class="tok-o">-&gt;</span> <span class="tok-nc">Neq</span><span class="tok-o">(</span><span class="tok-mi">2</span><span class="tok-o">,</span><span class="tok-mi">3</span><span class="tok-o">));</span>
        <span class="tok-s2">&quot;hello&quot;</span><span class="tok-o">,</span> <span class="tok-o">(</span><span class="tok-k">fun</span> <span class="tok-o">_</span> <span class="tok-o">-&gt;</span> <span class="tok-nc">Approx</span><span class="tok-o">(</span><span class="tok-mi">3</span><span class="tok-o">.</span><span class="tok-mi">0</span><span class="tok-o">,</span> <span class="tok-mi">3</span><span class="tok-o">.</span><span class="tok-mi">0</span><span class="tok-o">));</span>
        <span class="tok-s2">&quot;throw&quot;</span><span class="tok-o">,</span> <span class="tok-o">(</span><span class="tok-k">fun</span> <span class="tok-o">_</span> <span class="tok-o">-&gt;</span> <span class="tok-nc">ThrowAny</span><span class="tok-o">(</span><span class="tok-k">fun</span> <span class="tok-o">_</span> <span class="tok-o">-&gt;</span> <span class="tok-k">raise</span> <span class="tok-mi">3</span><span class="tok-o">))</span>
        <span class="tok-o">]</span>
