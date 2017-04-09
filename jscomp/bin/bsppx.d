@@ -106,5 +106,7 @@ bin/bsppx.ml : syntax/ast_utf8_string.ml
 bin/bsppx.ml : syntax/ast_utf8_string.mli
 bin/bsppx.ml : syntax/ast_derive_projector.ml
 bin/bsppx.ml : syntax/ast_derive_projector.mli
+bin/bsppx.ml : syntax/ast_utf8_string_interp.ml
 bin/bsppx.ml : syntax/ast_external_attributes.ml
+bin/bsppx.ml : syntax/ast_utf8_string_interp.mli
 bin/bsppx.ml : syntax/ast_external_attributes.mli

@@ -448,6 +448,7 @@ stream_parser_test.cmj : ../stdlib/stream.cmj ../stdlib/queue.cmj mt.cmj \
     ../stdlib/genlex.cmj
 string_bound_get_test.cmj : ../stdlib/string.cmj ../stdlib/bytes.cmj
 string_get_set_test.cmj : mt.cmj
+string_interp_test.cmj : ../runtime/js.cmj
 string_literal_print_test.cmj : mt.cmj
 string_runtime_test.cmj : ../stdlib/string.cmj mt.cmj ../stdlib/list.cmj \
     ../runtime/caml_string.cmj ../stdlib/bytes.cmj

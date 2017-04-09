@@ -75,7 +75,7 @@ open OUnitTypes
 
 (** Most simple heuristic, just pick the first test. *)
 let simple state =
-  (* 161 *) List.hd state.tests_planned
+  (* 188 *) List.hd state.tests_planned
 
 end
 module OUnitUtils
@@ -98,22 +98,22 @@ let is_success =
 let is_failure = 
   function
     | RFailure _ -> (* 0 *) true
-    | RSuccess _ | RError _  | RSkip _ | RTodo _ -> (* 322 *) false
+    | RSuccess _ | RError _  | RSkip _ | RTodo _ -> (* 376 *) false
 
 let is_error = 
   function 
     | RError _ -> (* 0 *) true
-    | RSuccess _ | RFailure _ | RSkip _ | RTodo _ -> (* 322 *) false
+    | RSuccess _ | RFailure _ | RSkip _ | RTodo _ -> (* 376 *) false
 
 let is_skip = 
   function
     | RSkip _ -> (* 0 *) true
-    | RSuccess _ | RFailure _ | RError _  | RTodo _ -> (* 322 *) false
+    | RSuccess _ | RFailure _ | RError _  | RTodo _ -> (* 376 *) false
 
 let is_todo = 
   function
     | RTodo _ -> (* 0 *) true
-    | RSuccess _ | RFailure _ | RError _  | RSkip _ -> (* 322 *) false
+    | RSuccess _ | RFailure _ | RError _  | RSkip _ -> (* 376 *) false
 
 let result_flavour = 
   function
@@ -145,7 +145,7 @@ let rec was_successful =
     | [] -> (* 3 *) true
     | RSuccess _::t 
     | RSkip _::t -> 
-        (* 483 *) was_successful t
+        (* 564 *) was_successful t
 
     | RFailure _::_
     | RError _::_ 
@@ -155,22 +155,22 @@ let rec was_successful =
 let string_of_node = 
   function
     | ListItem n -> 
-        (* 644 *) string_of_int n
+        (* 752 *) string_of_int n
     | Label s -> 
-        (* 966 *) s
+        (* 1128 *) s
 
 (* Return the number of available tests *)
 let rec test_case_count = 
   function
-    | TestCase _ -> (* 161 *) 1 
-    | TestLabel (_, t) -> (* 185 *) test_case_count t
+    | TestCase _ -> (* 188 *) 1 
+    | TestLabel (_, t) -> (* 212 *) test_case_count t
     | TestList l -> 
         (* 24 *) List.fold_left 
-          (fun c t -> (* 184 *) c + test_case_count t) 
+          (fun c t -> (* 211 *) c + test_case_count t) 
           0 l
 
 let string_of_path path =
-  (* 322 *) String.concat ":" (List.rev_map string_of_node path)
+  (* 376 *) String.concat ":" (List.rev_map string_of_node path)
 
 let buff_format_printf f = 
   (* 0 *) let buff = Buffer.create 13 in
@@ -194,12 +194,12 @@ let mapi f l =
 
 let fold_lefti f accu l =
   (* 24 *) let rec rfold_lefti cnt accup l = 
-    (* 208 *) match l with
+    (* 235 *) match l with
       | [] -> 
           (* 24 *) accup
 
       | h::t -> 
-          (* 184 *) rfold_lefti (cnt + 1) (f accup h cnt) t
+          (* 211 *) rfold_lefti (cnt + 1) (f accup h cnt) t
   in
     rfold_lefti 0 accu l
 
@@ -217,7 +217,7 @@ open OUnitUtils
 type event_type = GlobalEvent of global_event | TestEvent of test_event
 
 let format_event verbose event_type =
-  (* 968 *) match event_type with
+  (* 1130 *) match event_type with
     | GlobalEvent e ->
         (* 2 *) begin
           match e with 
@@ -276,31 +276,31 @@ let format_event verbose event_type =
         end
 
     | TestEvent e ->
-        (* 966 *) begin
+        (* 1128 *) begin
           let string_of_result = 
             if verbose then
-              (* 483 *) function
-                | RSuccess _      -> (* 161 *) "ok\n"
+              (* 564 *) function
+                | RSuccess _      -> (* 188 *) "ok\n"
                 | RFailure (_, _) -> (* 0 *) "FAIL\n"
                 | RError (_, _)   -> (* 0 *) "ERROR\n"
                 | RSkip (_, _)    -> (* 0 *) "SKIP\n"
                 | RTodo (_, _)    -> (* 0 *) "TODO\n"
             else
-              (* 483 *) function
-                | RSuccess _      -> (* 161 *) "."
+              (* 564 *) function
+                | RSuccess _      -> (* 188 *) "."
                 | RFailure (_, _) -> (* 0 *) "F"
                 | RError (_, _)   -> (* 0 *) "E"
                 | RSkip (_, _)    -> (* 0 *) "S"
                 | RTodo (_, _)    -> (* 0 *) "T"
           in
             if verbose then
-              (* 483 *) match e with 
+              (* 564 *) match e with 
                 | EStart p -> 
-                    (* 161 *) Printf.sprintf "%s start\n" (string_of_path p)
+                    (* 188 *) Printf.sprintf "%s start\n" (string_of_path p)
                 | EEnd p -> 
-                    (* 161 *) Printf.sprintf "%s end\n" (string_of_path p)
+                    (* 188 *) Printf.sprintf "%s end\n" (string_of_path p)
                 | EResult result -> 
-                    (* 161 *) string_of_result result
+                    (* 188 *) string_of_result result
                 | ELog (lvl, str) ->
                     (* 0 *) let prefix = 
                       match lvl with 
@@ -312,21 +312,21 @@ let format_event verbose event_type =
                 | ELogRaw str ->
                     (* 0 *) str
             else 
-              (* 483 *) match e with 
-                | EStart _ | EEnd _ | ELog _ | ELogRaw _ -> (* 322 *) ""
-                | EResult result -> (* 161 *) string_of_result result
+              (* 564 *) match e with 
+                | EStart _ | EEnd _ | ELog _ | ELogRaw _ -> (* 376 *) ""
+                | EResult result -> (* 188 *) string_of_result result
         end
 
 let file_logger fn =
   (* 1 *) let chn = open_out fn in
     (fun ev ->
-       (* 484 *) output_string chn (format_event true ev);
+       (* 565 *) output_string chn (format_event true ev);
        flush chn),
     (fun () -> (* 1 *) close_out chn)
 
 let std_logger verbose =
   (* 1 *) (fun ev -> 
-     (* 484 *) print_string (format_event verbose ev);
+     (* 565 *) print_string (format_event verbose ev);
      flush stdout),
   (fun () -> (* 1 *) ())
 
@@ -343,7 +343,7 @@ let create output_file_opt verbose (log,close) =
           (* 0 *) null_logger
   in
     (fun ev ->
-       (* 484 *) std_log ev; file_log ev; log ev),
+       (* 565 *) std_log ev; file_log ev; log ev),
     (fun () ->
        (* 1 *) std_close (); file_close (); close ())
 
@@ -705,13 +705,13 @@ let assert_failure msg =
   (* 0 *) failwith ("OUnit: " ^ msg)
 
 let assert_bool msg b =
-  (* 2009429 *) if not b then (* 0 *) assert_failure msg
+  (* 2009437 *) if not b then (* 0 *) assert_failure msg
 
 let assert_string str =
   (* 0 *) if not (str = "") then (* 0 *) assert_failure str
 
 let assert_equal ?(cmp = ( = )) ?printer ?pp_diff ?msg expected actual =
-  (* 2001510 *) let get_error_string () =
+  (* 2001534 *) let get_error_string () =
     (* 0 *) let res =
       buff_format_printf
         (fun fmt ->
@@ -951,7 +951,7 @@ let (@?) = assert_bool
 
 (* Some shorthands which allows easy test construction *)
 let (>:) s t = (* 0 *) TestLabel(s, t)             (* infix *)
-let (>::) s f = (* 161 *) TestLabel(s, TestCase(f))  (* infix *)
+let (>::) s f = (* 188 *) TestLabel(s, TestCase(f))  (* infix *)
 let (>:::) s l = (* 24 *) TestLabel(s, TestList(l)) (* infix *)
 
 (* Utility function to manipulate test *)
@@ -1087,7 +1087,7 @@ let maybe_backtrace = ""
 (* Run all tests, report starts, errors, failures, and return the results *)
 let perform_test report test =
   (* 1 *) let run_test_case f path =
-    (* 161 *) try 
+    (* 188 *) try 
       f ();
       RSuccess path
     with
@@ -1106,22 +1106,22 @@ let perform_test report test =
   let rec flatten_test path acc = 
     function
       | TestCase(f) -> 
-          (* 161 *) (path, f) :: acc
+          (* 188 *) (path, f) :: acc
 
       | TestList (tests) ->
           (* 24 *) fold_lefti 
             (fun acc t cnt -> 
-               (* 184 *) flatten_test 
+               (* 211 *) flatten_test 
                  ((ListItem cnt)::path) 
                  acc t)
             acc tests
       
       | TestLabel (label, t) -> 
-          (* 185 *) flatten_test ((Label label)::path) acc t
+          (* 212 *) flatten_test ((Label label)::path) acc t
   in
   let test_cases = List.rev (flatten_test [] [] test) in
   let runner (path, f) = 
-    (* 161 *) let result = 
+    (* 188 *) let result = 
       report (EStart path);
       run_test_case f path 
     in
@@ -1130,18 +1130,18 @@ let perform_test report test =
       result
   in
   let rec iter state = 
-    (* 162 *) match state.tests_planned with 
+    (* 189 *) match state.tests_planned with 
       | [] ->
           (* 1 *) state.results
       | _ ->
-          (* 161 *) let (path, f) = !global_chooser state in            
+          (* 188 *) let (path, f) = !global_chooser state in            
           let result = runner (path, f) in
             iter 
               {
                 results = result :: state.results;
                 tests_planned = 
                   List.filter 
-                    (fun (path', _) -> (* 13041 *) path <> path') state.tests_planned
+                    (fun (path', _) -> (* 17766 *) path <> path') state.tests_planned
               }
   in
     iter {results = []; tests_planned = test_cases}
@@ -1171,7 +1171,7 @@ let run_test_tt ?verbose test =
     time_fun 
       perform_test 
       (fun ev ->
-         (* 483 *) log (OUnitLogger.TestEvent ev))
+         (* 564 *) log (OUnitLogger.TestEvent ev))
       test 
   in
     
@@ -1922,19 +1922,19 @@ let escaped s =
 
 *)
 let rec unsafe_for_all_range s ~start ~finish p =     
-  (* 41 *) start > finish ||
+  (* 131 *) start > finish ||
   p (String.unsafe_get s start) && 
   unsafe_for_all_range s ~start:(start + 1) ~finish p
 
 let for_all_range s ~start ~finish p = 
-  (* 6 *) let len = String.length s in 
+  (* 28 *) let len = String.length s in 
   if start < 0 || finish >= len then (* 1 *) invalid_arg "Ext_string.for_all_range"
-  else (* 5 *) unsafe_for_all_range s ~start ~finish p 
+  else (* 27 *) unsafe_for_all_range s ~start ~finish p 
 
 let for_all (p : char -> bool) s =   
   (* 3 *) unsafe_for_all_range s ~start:0  ~finish:(String.length s - 1) p 
 
-let is_empty s = (* 4 *) String.length s = 0
+let is_empty s = (* 65 *) String.length s = 0
 
 
 let repeat n s  =
@@ -2052,7 +2052,7 @@ let starts_with_and_number s ~offset beg =
     else 
       (* 2 *) -1 
 
-let equal (x : string) y  = (* 8829973 *) x = y
+let equal (x : string) y  = (* 8829975 *) x = y
 
 let unsafe_concat_with_length len sep l =
   (* 0 *) match l with 
@@ -7355,15 +7355,15 @@ type byte =
 
 (** [classify chr] returns the {!byte} corresponding to [chr] *)
 let classify chr =
-  (* 75 *) let c = int_of_char chr in
+  (* 280 *) let c = int_of_char chr in
   (* Classify byte according to leftmost 0 bit *)
-  if c land 0b1000_0000 = 0 then (* 50 *) Single c else
+  if c land 0b1000_0000 = 0 then (* 171 *) Single c else
     (* c 0b0____*)
-  (* 25 *) if c land 0b0100_0000 = 0 then (* 17 *) Cont (c land 0b0011_1111) else
+  (* 109 *) if c land 0b0100_0000 = 0 then (* 73 *) Cont (c land 0b0011_1111) else
     (* c 0b10___*)
-  (* 8 *) if c land 0b0010_0000 = 0 then (* 0 *) Leading (1, c land 0b0001_1111) else
+  (* 36 *) if c land 0b0010_0000 = 0 then (* 0 *) Leading (1, c land 0b0001_1111) else
     (* c 0b110__*)
-  (* 8 *) if c land 0b0001_0000 = 0 then (* 7 *) Leading (2, c land 0b0000_1111) else
+  (* 36 *) if c land 0b0001_0000 = 0 then (* 35 *) Leading (2, c land 0b0000_1111) else
     (* c 0b1110_ *)
   (* 1 *) if c land 0b0000_1000 = 0 then (* 1 *) Leading (3, c land 0b0000_0111) else
     (* c 0b1111_0___*)
@@ -7389,10 +7389,10 @@ let rec follow s n (c : int) offset =
 
 
 let rec next s ~remaining  offset = 
-  (* 0 *) if remaining = 0 then (* 0 *) offset 
+  (* 84 *) if remaining = 0 then (* 28 *) offset 
   else 
-    (* 0 *) begin match classify s.[offset+1] with
-      | Cont cc -> (* 0 *) next s ~remaining:(remaining-1) (offset+1)
+    (* 56 *) begin match classify s.[offset+1] with
+      | Cont cc -> (* 56 *) next s ~remaining:(remaining-1) (offset+1)
       | _ ->  (* 0 *) -1 
       | exception _ ->  (* 0 *) -1 (* it can happen when out of bound *)
     end
@@ -13361,10 +13361,10 @@ let escaped = function
 
 
 let valid_hex x = 
-    (* 0 *) match x with 
+    (* 12 *) match x with 
     | '0' .. '9'
     | 'a' .. 'f'
-    | 'A' .. 'F' -> (* 0 *) true
+    | 'A' .. 'F' -> (* 12 *) true
     | _ -> (* 0 *) false 
 end
 module Ast_utf8_string : sig 
@@ -13394,8 +13394,24 @@ module Ast_utf8_string : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
+type error 
+
+
+type exn += Error of int  (* offset *) * error 
+
+val pp_error :  Format.formatter -> error -> unit  
+
+
+  
+(* module Interp : sig *)
+(*   val check_and_transform : int -> string -> int -> cxt -> unit *)
+(*   val transform_test : string -> segments *)
+(* end *)
+val transform_test : string -> string 
 
 val transform : Location.t -> string -> string      
+
+
 end = struct
 #1 "ast_utf8_string.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -13423,103 +13439,674 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-let rec check_and_transform loc buf s byte_offset s_len =
-  (* 6 *) if byte_offset = s_len then (* 2 *) ()
+
+type error = 
+  | Invalid_code_point 
+  | Unterminated_backslash
+  | Invalid_escape_code of char 
+  | Invalid_hex_escape
+  | Invalid_unicode_escape
+  | Unterminated_variable
+  | Invalid_interpreted_var
+  | Empty_var
+  | Unmatched_paren
+
+let pp_error fmt err = 
+  (* 0 *) Format.pp_print_string fmt @@  match err with 
+  | Invalid_code_point -> (* 0 *) "Invalid code point"
+  | Unterminated_backslash -> (* 0 *) "\\ ended unexpectedly"
+  | Invalid_escape_code c -> (* 0 *) "Invalid escape code: " ^ String.make 1 c 
+  | Invalid_hex_escape -> 
+    (* 0 *) "Invalid \\x escape"
+  | Invalid_unicode_escape -> (* 0 *) "Invalid \\u escape"
+  | Unterminated_variable -> (* 0 *) "$ unterminated"
+  | Invalid_interpreted_var -> (* 0 *) "Invalid variable to interpolated"    
+  | Empty_var -> (* 0 *) "empty var"
+  | Unmatched_paren -> (* 0 *) "Unmatched paren"
+type exn += Error of int  (* offset *) * error 
+
+
+
+
+let error ~loc error = 
+  (* 3 *) raise (Error (loc, error))
+
+(** Note the [loc] really should be the utf8-offset, it has nothing to do with our 
+    escaping mechanism
+*)
+(* we can not just print new line in ES5 
+   seems we don't need 
+   escape "\b" "\f" 
+   we need escape "\n" "\r" since 
+   ocaml multiple-line allows [\n]
+   visual input while es5 string 
+   does not*)
+
+let rec check_and_transform (loc : int ) buf s byte_offset s_len =
+  (* 39 *) if byte_offset = s_len then (* 4 *) ()
   else 
-    (* 4 *) let current_char = s.[byte_offset] in 
+    (* 35 *) let current_char = s.[byte_offset] in 
     match Ext_utf8.classify current_char with 
-    | Single c -> 
-      (* 4 *) if c = 92 (* Char.code '\\' = 92 *)then 
-        (* 0 *) begin 
-          (* we share the same escape sequence with js *)
-          Buffer.add_char buf current_char; 
-          escape_code loc buf s (byte_offset+1) s_len 
-        end 
-      else
-        (* 4 *) begin 
-          (if c = 34 (* Char.code '\"' = 34 *) || c = 39 (* Char.code '\'' = 39 *) then 
-             (* 0 *) begin 
-               Buffer.add_char buf '\\';
-               Buffer.add_char buf current_char ; 
+    | Single 92 (* '\\' *) -> 
+      (* 14 *) escape_code (loc + 1) buf s (byte_offset+1) s_len
+    | Single 34 ->
+      (* 0 *) Buffer.add_string buf "\\\"";
+      check_and_transform (loc + 1) buf s (byte_offset + 1) s_len
+    | Single 39 -> 
+      (* 0 *) Buffer.add_string buf "\\'";
+      check_and_transform (loc + 1) buf s (byte_offset + 1) s_len 
+    | Single 10 ->          
+      (* 1 *) Buffer.add_string buf "\\n";
+      check_and_transform (loc + 1) buf s (byte_offset + 1) s_len 
+    | Single 13 -> 
+      (* 0 *) Buffer.add_string buf "\\r";
+      check_and_transform (loc + 1) buf s (byte_offset + 1) s_len 
+    | Single _ -> 
+      (* 16 *) Buffer.add_char buf current_char;
+      check_and_transform (loc + 1) buf s (byte_offset + 1) s_len 
 
-             end
-           else (* 4 *) if  c = 10 (* '\n' *)then (* 1 *) begin 
-             Buffer.add_string buf "\\n";
-             (* we can not just print new line in ES5 
-                seems we don't need 
-                escape "\b" "\f" 
-                we need escape "\n" "\r" since 
-                ocaml multiple-line allows [\n]
-                visual input while es5 string 
-                does not*)
-           end 
-           else (* 3 *) if c = 13 then (* 0 *) begin 
-               Buffer.add_string buf "\\r"
-            end
-           else (* 3 *) begin 
-             Buffer.add_char buf current_char;
-
-           end);
-          check_and_transform loc buf s (byte_offset + 1) s_len 
-        end
     | Invalid 
-    | Cont _ -> (* 0 *) Location.raise_errorf ~loc "Not utf8 source string"
+    | Cont _ -> (* 0 *) error ~loc Invalid_code_point
     | Leading (n,_) -> 
-      (* 0 *) let i' = Ext_utf8.next s ~remaining:n  byte_offset in
+      (* 4 *) let i' = Ext_utf8.next s ~remaining:n  byte_offset in
       if i' < 0 then 
-        (* 0 *) Location.raise_errorf ~loc "Not valid utf8 souce string"
+        (* 0 *) error ~loc Invalid_code_point
       else 
-        (* 0 *) begin 
+        (* 4 *) begin 
           for k = byte_offset to i' do 
-            (* 0 *) Buffer.add_char buf s.[k]; 
+            (* 12 *) Buffer.add_char buf s.[k]; 
           done;   
-          check_and_transform loc buf s (i' + 1) s_len 
+          check_and_transform (loc + 1 ) buf s (i' + 1) s_len 
         end
+(* we share the same escape sequence with js *)        
 and escape_code loc buf s offset s_len = 
-  (* 0 *) if offset >= s_len then 
-    (* 0 *) Location.raise_errorf ~loc "\\ is the end of string" 
-  else 
-    (* 0 *) let cur_char = s.[offset] in 
-    match cur_char with 
-    | '\\'
-    | 'b' 
-    | 't' 
-    | 'n' 
-    | 'v'
-    | 'f'
-    | 'r' 
-    | '0' 
-    | '$'
-      -> 
-      (* 0 *) begin 
-        Buffer.add_char buf cur_char ;
-        check_and_transform loc buf s (offset + 1) s_len 
-      end 
-    | 'u' -> 
-      (* 0 *) begin 
-        Buffer.add_char buf cur_char;
-        unicode loc buf s (offset + 1) s_len 
-      end 
-    | 'x' -> (* 0 *) begin 
-        Buffer.add_char buf cur_char ; 
-        two_hex loc buf s (offset + 1) s_len 
-      end 
-    | _ -> (* 0 *) Location.raise_errorf ~loc "invalid escape code"
+  (* 14 *) if offset >= s_len then 
+    (* 3 *) error ~loc Unterminated_backslash
+  else
+    (* 11 *) Buffer.add_char buf '\\'; 
+  let cur_char = s.[offset] in
+  match cur_char with 
+  | '\\'
+  | 'b' 
+  | 't' 
+  | 'n' 
+  | 'v'
+  | 'f'
+  | 'r' 
+  | '0' 
+  | '$'
+    -> 
+    (* 10 *) begin 
+      Buffer.add_char buf cur_char ;
+      check_and_transform (loc + 1) buf s (offset + 1) s_len 
+    end 
+  | 'u' -> 
+    (* 1 *) begin 
+      Buffer.add_char buf cur_char;
+      unicode (loc + 1) buf s (offset + 1) s_len 
+    end 
+  | 'x' -> (* 0 *) begin 
+      Buffer.add_char buf cur_char ; 
+      two_hex (loc + 1) buf s (offset + 1) s_len 
+    end 
+  | _ -> (* 0 *) error ~loc (Invalid_escape_code cur_char)
 and two_hex loc buf s offset s_len = 
   (* 0 *) if offset + 1 >= s_len then 
-    (* 0 *) Location.raise_errorf ~loc "\\x need at least two chars";
+    (* 0 *) error ~loc Invalid_hex_escape;
+  (*Location.raise_errorf ~loc "\\x need at least two chars";*)
   let a, b = s.[offset], s.[offset + 1] in 
   if Ext_char.valid_hex a && Ext_char.valid_hex b then 
     (* 0 *) begin 
       Buffer.add_char buf a ; 
       Buffer.add_char buf b ; 
-      check_and_transform loc buf s (offset + 2) s_len 
+      check_and_transform (loc + 2) buf s (offset + 2) s_len 
     end
-  else (* 0 *) Location.raise_errorf ~loc "%c%c is not a valid hex code" a b
+  else
+    (* 0 *) error ~loc Invalid_hex_escape
+(*Location.raise_errorf ~loc "%c%c is not a valid hex code" a b*)
 
 and unicode loc buf s offset s_len = 
+  (* 1 *) if offset + 3 >= s_len then 
+    (* 0 *) error ~loc Invalid_unicode_escape
+  (*Location.raise_errorf ~loc "\\u need at least four chars"*)
+  ;
+  let a0,a1,a2,a3 = s.[offset], s.[offset+1], s.[offset+2], s.[offset+3] in
+  if 
+    Ext_char.valid_hex a0 &&
+    Ext_char.valid_hex a1 &&
+    Ext_char.valid_hex a2 &&
+    Ext_char.valid_hex a3 then 
+    (* 1 *) begin 
+      Buffer.add_char buf a0;
+      Buffer.add_char buf a1;
+      Buffer.add_char buf a2;
+      Buffer.add_char buf a3;  
+      check_and_transform (loc + 4) buf s  (offset + 4) s_len 
+    end 
+  else
+    (* 0 *) error ~loc Invalid_unicode_escape 
+(*Location.raise_errorf ~loc "%c%c%c%c is not a valid unicode point"
+  a0 a1 a2 a3 *)
+(* http://www.2ality.com/2015/01/es6-strings.html
+   console.log('\uD83D\uDE80'); (* ES6*)
+   console.log('\u{1F680}');
+*)   
+
+
+
+
+
+
+
+
+
+let transform_test s =
+  (* 7 *) let s_len = String.length s in 
+  let buf = Buffer.create (s_len * 2) in
+  check_and_transform 0 buf s 0 s_len;
+  Buffer.contents buf
+
+let transform loc s = 
+  (* 0 *) let s_len = String.length s in 
+  let buf = Buffer.create (s_len * 2) in
+  try
+    check_and_transform 0 buf s 0 s_len;
+    Buffer.contents buf 
+  with
+    Error (offset, error)
+    ->  (* 0 *) Location.raise_errorf ~loc "Offset: %d, %a" offset pp_error error
+
+
+
+end
+module Bs_loc : sig 
+#1 "bs_loc.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type t = Location.t = {
+  loc_start : Lexing.position;
+  loc_end : Lexing.position ; 
+  loc_ghost : bool
+} 
+
+val is_ghost : t -> bool
+val merge : t -> t -> t 
+val none : t 
+
+
+end = struct
+#1 "bs_loc.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type t = Location.t = {
+  loc_start : Lexing.position;
+  loc_end : Lexing.position ; 
+  loc_ghost : bool
+} 
+
+let is_ghost x = (* 0 *) x.loc_ghost
+
+let merge (l: t) (r : t) = 
+  (* 0 *) if is_ghost l then (* 0 *) r 
+  else (* 0 *) if is_ghost r then (* 0 *) l 
+  else (* 0 *) match l,r with 
+  | {loc_start ; }, {loc_end; _} (* TODO: improve*)
+    -> 
+    (* 0 *) {loc_start ;loc_end; loc_ghost = false}
+
+let none = Location.none
+
+end
+module Ast_utf8_string_interp : sig 
+#1 "ast_utf8_string_interp.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type kind =
+  | String
+  | Var
+type error = private
+  | Invalid_code_point
+  | Unterminated_backslash
+  | Invalid_escape_code of char
+  | Invalid_hex_escape
+  | Invalid_unicode_escape
+  | Unterminated_variable
+  | Unmatched_paren
+  | Invalid_syntax_of_var of string 
+
+(** Note the position is about code point *)
+type pos = { lnum : int ; offset : int ; byte_bol : int }
+
+type segment = {
+  start : pos;
+  finish : pos ;
+  kind : kind;
+  content : string ;
+} 
+
+type segments = segment list  
+
+type cxt = {
+  mutable segment_start : pos ;
+  buf : Buffer.t ;
+  s_len : int ;
+  mutable segments : segments;
+  mutable pos_bol : int; (* record the abs position of current beginning line *)
+  mutable byte_bol : int ; 
+  mutable pos_lnum : int ; (* record the line number *)
+}
+
+type exn += Error of pos *  pos * error 
+
+val empty_segment : segment -> bool
+
+val transform_test : string -> segment list
+val transform_interp : Location.t -> string -> Parsetree.expression
+
+end = struct
+#1 "ast_utf8_string_interp.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type error = 
+  | Invalid_code_point
+  | Unterminated_backslash
+  | Invalid_escape_code of char
+  | Invalid_hex_escape
+  | Invalid_unicode_escape
+  | Unterminated_variable
+  | Unmatched_paren
+  | Invalid_syntax_of_var of string 
+type kind =
+  | String
+  | Var
+
+
+(** Note the position is about code point *)
+type pos = { 
+  lnum : int ; 
+  offset : int ;
+  byte_bol : int (* Note it actually needs to be in sync with OCaml's lexing semantics *)
+}
+
+
+type segment = {
+  start : pos;
+  finish : pos ;
+  kind : kind;
+  content : string ;
+} 
+
+type segments = segment list 
+
+
+type cxt = {
+  mutable segment_start : pos ;
+  buf : Buffer.t ;
+  s_len : int ;
+  mutable segments : segments;
+  mutable pos_bol : int; (* record the abs position of current beginning line *)
+  mutable byte_bol : int ; 
+  mutable pos_lnum : int ; (* record the line number *)
+}
+
+
+type exn += Error of pos *  pos * error 
+
+let pp_error fmt err = 
+  (* 0 *) Format.pp_print_string fmt @@  match err with 
+  | Invalid_code_point -> (* 0 *) "Invalid code point"
+  | Unterminated_backslash -> (* 0 *) "\\ ended unexpectedly"
+  | Invalid_escape_code c -> (* 0 *) "Invalid escape code: " ^ String.make 1 c 
+  | Invalid_hex_escape -> 
+    (* 0 *) "Invalid \\x escape"
+  | Invalid_unicode_escape -> (* 0 *) "Invalid \\u escape"
+  | Unterminated_variable -> (* 0 *) "$ unterminated"
+  | Unmatched_paren -> (* 0 *) "Unmatched paren"
+  | Invalid_syntax_of_var s -> (* 0 *) "`" ^s ^ "' is not a valid syntax of interpolated identifer"
+let valid_lead_identifier_char x = 
+  (* 43 *) match x with
+  | 'a'..'z' | '_' -> (* 40 *) true
+  | _ -> (* 3 *) false
+
+let valid_identifier_char x = 
+  (* 114 *) match x with
+  | 'a'..'z' 
+  | 'A'..'Z'
+  | '0'..'9'
+  | '_' | '\''-> (* 100 *) true
+  | _ -> (* 14 *) false
+(** Invariant: [valid_lead_identifier] has to be [valid_identifier] *)
+
+let valid_identifier s =
+  (* 26 *) let s_len = String.length s in 
+  if s_len = 0 then (* 2 *) false 
+  else
+    (* 24 *) valid_lead_identifier_char s.[0] &&
+    Ext_string.for_all_range s ~start:0 ~finish:(s_len - 1) valid_identifier_char
+
+      
+let is_space x = 
+  (* 0 *) match x with
+  | ' ' | '\n' | '\t' -> (* 0 *) true
+  | _ -> (* 0 *) false
+
+
+
+(**
+   FIXME: multiple line offset 
+   if there is no line offset. Note {|{j||} border will never trigger a new line
+*)
+let update_position border 
+    ({lnum ; offset;byte_bol } : pos)
+    (pos : Lexing.position)= 
+  (* 0 *) if lnum = 0 then 
+    (* 0 *) {pos with pos_cnum = pos.pos_cnum + border + offset  }
+    (** When no newline, the column number is [border + offset] *)
+  else 
+    (* 0 *) {
+      pos with 
+      pos_lnum = pos.pos_lnum + lnum ;
+      pos_bol = pos.pos_cnum + border + byte_bol;
+      pos_cnum = pos.pos_cnum + border + byte_bol + offset;
+      (** when newline, the column number is [offset] *)
+    }  
+let update border
+    (start : pos) 
+    (finish : pos) (loc : Location.t) : Location.t = 
+  (* 0 *) let start_pos = loc.loc_start in 
+  { loc  with 
+    loc_start = 
+      update_position  border start start_pos;
+    loc_end = 
+      update_position border finish start_pos
+  }
+
+
+(** Note [Var] kind can not be mpty  *)
+let empty_segment {content } =
+  (* 61 *) Ext_string.is_empty content
+
+
+
+let update_newline ~byte_bol loc  cxt = 
+  (* 5 *) cxt.pos_lnum <- cxt.pos_lnum + 1 ; 
+  cxt.pos_bol <- loc;
+  cxt.byte_bol <- byte_bol  
+
+let pos_error cxt ~loc error = 
+  (* 8 *) raise (Error 
+           (cxt.segment_start,
+            { lnum = cxt.pos_lnum ; offset = loc - cxt.pos_bol ; byte_bol = cxt.byte_bol}, error))
+
+let add_var_segment cxt loc  = 
+  (* 26 *) let content =  Buffer.contents cxt.buf in
+  Buffer.clear cxt.buf ;
+  let next_loc = {
+    lnum = cxt.pos_lnum ; offset = loc - cxt.pos_bol ; 
+    byte_bol = cxt.byte_bol } in
+  if valid_identifier content then 
+    (* 21 *) begin 
+      cxt.segments <- 
+        { start = cxt.segment_start; 
+          finish =  next_loc ;
+          kind = Var; 
+          content} :: cxt.segments ;
+      cxt.segment_start <- next_loc
+    end
+  else (* 5 *) pos_error cxt ~loc (Invalid_syntax_of_var content)
+
+let add_str_segment cxt loc   =
+  (* 48 *) let content =  Buffer.contents cxt.buf in
+  Buffer.clear cxt.buf ;
+  let next_loc = {
+    lnum = cxt.pos_lnum ; offset = loc - cxt.pos_bol ; 
+    byte_bol = cxt.byte_bol } in
+  cxt.segments <- 
+    { start = cxt.segment_start; 
+      finish =  next_loc ;
+      kind = String; 
+      content} :: cxt.segments ;
+  cxt.segment_start <- next_loc
+
+
+  
+
+
+let rec check_and_transform (loc : int )  s byte_offset ({s_len; buf} as cxt : cxt) =
+  (* 137 *) if byte_offset = s_len then
+    (* 19 *) add_str_segment cxt loc 
+  else 
+    (* 118 *) let current_char = s.[byte_offset] in 
+    match Ext_utf8.classify current_char with 
+    | Single 92 (* '\\' *) -> 
+      (* 5 *) escape_code (loc + 1)  s (byte_offset+1) cxt
+    | Single 34 ->
+      (* 0 *) Buffer.add_string buf "\\\"";
+      check_and_transform (loc + 1)  s (byte_offset + 1) cxt
+    | Single 39 -> 
+      (* 0 *) Buffer.add_string buf "\\'";
+      check_and_transform (loc + 1)  s (byte_offset + 1) cxt
+    | Single 10 ->          
+
+      (* 5 *) Buffer.add_string buf "\\n";
+      let loc = loc + 1 in 
+      let byte_offset = byte_offset + 1 in 
+      update_newline ~byte_bol:byte_offset loc cxt ; (* Note variable could not have new-line *)
+      check_and_transform loc  s byte_offset cxt
+    | Single 13 -> 
+      (* 0 *) Buffer.add_string buf "\\r";
+      check_and_transform (loc + 1)  s (byte_offset + 1) cxt
+    | Single 36 -> (* $ *)
+      (* 29 *) add_str_segment cxt loc  ; 
+      let offset = byte_offset + 1 in
+      if offset >= s_len then
+        (* 1 *) pos_error ~loc cxt  Unterminated_variable
+      else
+        (* 28 *) let cur_char = s.[offset] in
+        if cur_char = '(' then
+          (* 9 *) expect_var_paren  (loc + 2)  s (offset + 1) cxt
+        else
+          (* 19 *) expect_simple_var (loc + 1)  s offset cxt
+    | Single _ -> 
+      (* 55 *) Buffer.add_char buf current_char;
+      check_and_transform (loc + 1)  s (byte_offset + 1) cxt
+
+    | Invalid 
+    | Cont _ -> (* 0 *) pos_error ~loc cxt Invalid_code_point
+    | Leading (n,_) -> 
+      (* 24 *) let i' = Ext_utf8.next s ~remaining:n  byte_offset in
+      if i' < 0 then 
+        (* 0 *) pos_error cxt ~loc Invalid_code_point
+      else 
+        (* 24 *) begin 
+          for k = byte_offset to i' do 
+            (* 72 *) Buffer.add_char buf s.[k]; 
+          done;   
+          check_and_transform (loc + 1 )  s (i' + 1) cxt
+        end
+(**Lets keep identifier simple, so that we could generating a function easier in the future
+   for example
+   let f = [%fn{| $x + $y = $x_add_y |}]
+*)
+and expect_simple_var  loc  s offset ({buf; s_len} as cxt) =
+  (* 19 *) let v = ref offset in
+  (* prerr_endline @@ Ext_pervasives.dump (s, has_paren, (is_space s.[!v]), !v); *)
+  if not (offset < s_len  && valid_lead_identifier_char s.[offset]) then 
+    (* 1 *) pos_error cxt ~loc (Invalid_syntax_of_var Ext_string.empty)
+  else 
+    (* 18 *) begin 
+      while !v < s_len && valid_identifier_char s.[!v]  do (* TODO*)
+        (* 32 *) let cur_char = s.[!v] in
+        Buffer.add_char buf cur_char;
+        incr v ;
+      done;
+      let added_length = !v - offset in
+      let loc = added_length + loc in 
+      add_var_segment cxt loc  ; 
+      check_and_transform loc  s (added_length + offset) cxt
+    end
+and expect_var_paren  loc  s offset ({buf; s_len} as cxt) =
+  (* 9 *) let v = ref offset in
+  (* prerr_endline @@ Ext_pervasives.dump (s, has_paren, (is_space s.[!v]), !v); *)
+  while !v < s_len &&  s.[!v] <> ')' do 
+    (* 54 *) let cur_char = s.[!v] in
+    Buffer.add_char buf cur_char;
+    incr v ;
+  done;
+  let added_length = !v - offset in
+  let loc = added_length +  1 + loc  in
+  if !v < s_len && s.[!v] = ')' then
+    (* 8 *) begin 
+      add_var_segment cxt loc ; 
+      check_and_transform loc  s (added_length + 1 + offset) cxt 
+    end
+  else
+    (* 1 *) pos_error cxt ~loc Unmatched_paren
+
+
+
+
+
+(* we share the same escape sequence with js *)        
+and escape_code loc  s offset ({ buf; s_len} as cxt) = 
+  (* 5 *) if offset >= s_len then 
+    (* 0 *) pos_error cxt ~loc Unterminated_backslash
+  else
+    (* 5 *) Buffer.add_char buf '\\'; 
+  let cur_char = s.[offset] in
+  match cur_char with 
+  | '\\'
+  | 'b' 
+  | 't' 
+  | 'n' 
+  | 'v'
+  | 'f'
+  | 'r' 
+  | '0' 
+  | '$'
+    -> 
+    (* 1 *) begin 
+      Buffer.add_char buf cur_char ;
+      check_and_transform (loc + 1)  s (offset + 1) cxt
+    end 
+  | 'u' -> 
+    (* 0 *) begin 
+      Buffer.add_char buf cur_char;
+      unicode (loc + 1) s (offset + 1) cxt
+    end 
+  | 'x' -> (* 4 *) begin 
+      Buffer.add_char buf cur_char ; 
+      two_hex (loc + 1)  s (offset + 1) cxt
+    end 
+  | _ -> (* 0 *) pos_error cxt ~loc (Invalid_escape_code cur_char)
+and two_hex loc  s offset ({buf ; s_len} as cxt) = 
+  (* 4 *) if offset + 1 >= s_len then 
+    (* 0 *) pos_error cxt ~loc Invalid_hex_escape;
+  let a, b = s.[offset], s.[offset + 1] in 
+  if Ext_char.valid_hex a && Ext_char.valid_hex b then 
+    (* 4 *) begin 
+      Buffer.add_char buf a ; 
+      Buffer.add_char buf b ; 
+      check_and_transform (loc + 2)  s (offset + 2) cxt
+    end
+  else
+    (* 0 *) pos_error cxt ~loc Invalid_hex_escape
+
+
+and unicode loc  s offset ({buf ; s_len} as cxt) = 
   (* 0 *) if offset + 3 >= s_len then 
-    (* 0 *) Location.raise_errorf ~loc "\\u need at least four chars";
+    (* 0 *) pos_error cxt ~loc Invalid_unicode_escape
+  ;
   let a0,a1,a2,a3 = s.[offset], s.[offset+1], s.[offset+2], s.[offset+3] in
   if 
     Ext_char.valid_hex a0 &&
@@ -13531,21 +14118,110 @@ and unicode loc buf s offset s_len =
       Buffer.add_char buf a1;
       Buffer.add_char buf a2;
       Buffer.add_char buf a3;  
-      check_and_transform loc buf s  (offset + 4) s_len 
+      check_and_transform (loc + 4) s  (offset + 4) cxt
     end 
-  else 
-    (* 0 *) Location.raise_errorf ~loc "%c%c%c%c is not a valid unicode point"
-      a0 a1 a2 a3 
-(* http://www.2ality.com/2015/01/es6-strings.html
-   console.log('\uD83D\uDE80'); (* ES6*)
-   console.log('\u{1F680}');
-*)   
-
-let transform loc s = 
-  (* 2 *) let s_len = String.length s in 
+  else
+    (* 0 *) pos_error cxt ~loc Invalid_unicode_escape 
+let transform_test s =
+  (* 27 *) let s_len = String.length s in
   let buf = Buffer.create (s_len * 2) in
-  check_and_transform loc buf s 0 s_len;
-  Buffer.contents buf 
+  let cxt = 
+    { segment_start = {lnum = 0; offset = 0; byte_bol = 0}; 
+      buf ;
+      s_len;
+      segments = [];
+      pos_lnum = 0;          
+      byte_bol = 0;
+      pos_bol = 0;
+
+    } in 
+  check_and_transform 0 s 0 cxt;
+  List.rev cxt.segments
+
+
+(** TODO: test empty var $() $ failure, 
+    Allow identifers x.A.y *)    
+
+open Ast_helper     
+
+(** Longident.parse "Pervasives.^" *)
+let concat_ident  : Longident.t = 
+  Ldot (Lident "Pervasives", "^")
+   (* JS string concatMany *)
+    (* Ldot (Ldot (Lident "Js", "String"), "concat") *)
+
+(* Longident.parse "Js.String.make"     *)
+let to_string_ident : Longident.t = 
+    Ldot (Ldot (Lident "Js", "String"), "make")
+
+
+
+let escaped = Some Literals.escaped_j_delimiter 
+
+let concat_exp 
+  (a : Parsetree.expression)
+  (b : Parsetree.expression) : Parsetree.expression = 
+  (* 0 *) let loc = Bs_loc.merge a.pexp_loc b.pexp_loc in 
+  Exp.apply ~loc 
+  (Exp.ident { txt =concat_ident; loc})
+    ["",a ;
+     "",b]
+
+let border = String.length "{j|"
+
+let aux loc (segment : segment) =  
+  (* 0 *) match segment with 
+  | {start ; finish; kind ; content} 
+    -> 
+    (* 0 *) let loc = update border start finish  loc in 
+    begin match kind with 
+      | String -> 
+        (* 0 *) Exp.constant 
+          ~loc
+          (Const_string (content, escaped)) 
+      | Var -> 
+        (* 0 *) Exp.apply ~loc 
+          (Exp.ident ~loc {loc ; txt = to_string_ident })
+          [
+            "",
+            Exp.ident ~loc {loc ; txt = Lident content}
+          ]
+    end 
+
+
+let transform_interp loc s = 
+  (* 0 *) let s_len = String.length s in 
+  let buf = Buffer.create (s_len * 2 ) in 
+  try 
+    let cxt : cxt = 
+      { segment_start = {lnum = 0; offset = 0; byte_bol = 0}; 
+        buf ;
+        s_len;
+        segments = [];
+        pos_lnum = 0;          
+        byte_bol = 0;
+        pos_bol = 0;
+
+      } in 
+
+    check_and_transform 0 s 0 cxt; 
+    let rev_segments =  cxt.segments in 
+    match rev_segments with 
+    | [] -> 
+      (* 0 *) Exp.constant ~loc 
+        (Const_string ("", Some Literals.escaped_j_delimiter)) 
+    | [ segment] -> 
+      (* 0 *) aux loc segment 
+    | a::rest -> 
+      (* 0 *) List.fold_left (fun (acc : Parsetree.expression)
+       (x : segment) ->
+          (* 0 *) concat_exp (aux loc x) acc )
+        (aux loc a) rest
+  with 
+    Error (start,pos, error) 
+    -> 
+    (* 0 *) Location.raise_errorf ~loc:(update border start pos loc )
+      "%a"  pp_error error 
 
 end
 module Ounit_unicode_tests
@@ -13555,19 +14231,294 @@ let ((>::),
      (>:::)) = OUnit.((>::),(>:::))
 
 let (=~) a b = 
-    (* 2 *) OUnit.assert_equal ~cmp:Ext_string.equal a b 
+    (* 4 *) OUnit.assert_equal ~cmp:Ext_string.equal a b 
 
+(** Test for single line *)
+let (==~) a b =
+  (* 11 *) OUnit.assert_equal
+    (Ast_utf8_string_interp.transform_test a
+     |> List.filter (fun x -> (* 33 *) not @@ Ast_utf8_string_interp.empty_segment x)
+     |> List.map (fun 
+      ({start = {offset = a}; finish = {offset = b}; kind ; content }
+       : Ast_utf8_string_interp.segment) -> 
+      (* 28 *) a,b,kind,content
+      )
+    )
+    b 
+
+let (==*) a b =
+  (* 8 *) let segments = 
+    Ast_utf8_string_interp.transform_test a
+     |> List.filter (fun x -> (* 28 *) not @@ Ast_utf8_string_interp.empty_segment x)
+     |> List.map (fun 
+      ({start = {lnum=la; offset = a}; finish = {lnum = lb; offset = b}; kind ; content } 
+        : Ast_utf8_string_interp.segment) -> 
+      (* 24 *) la,a,lb,b,kind,content
+      )
+   in 
+   OUnit.assert_equal segments b 
 let suites = 
     __FILE__
     >:::
     [
         __LOC__ >:: begin fun _ ->
-            (* 1 *) Ast_utf8_string.transform Location.none {|x|} =~ {|x|}
+            (* 1 *) Ast_utf8_string.transform_test {|x|} =~ {|x|}
         end;
         __LOC__ >:: begin fun _ ->
-            (* 1 *) Ast_utf8_string.transform Location.none "a\nb" =~ {|a\nb|}
+            (* 1 *) Ast_utf8_string.transform_test "a\nb" =~ {|a\nb|}
+        end;
+        __LOC__ >:: begin fun _ ->
+            (* 1 *) Ast_utf8_string.transform_test
+            "\\n" =~ "\\n"
+        end;
+        __LOC__ >:: begin fun _ ->
+          (* 1 *) Ast_utf8_string.transform_test
+            "\\\\\\b\\t\\n\\v\\f\\r\\0\\$" =~
+          "\\\\\\b\\t\\n\\v\\f\\r\\0\\$"
+        end;
+
+        __LOC__ >:: begin fun _ ->
+           (* 1 *) match Ast_utf8_string.transform_test
+             {|\|} with
+           | exception Ast_utf8_string.Error(offset,_) ->
+            (* 1 *) OUnit.assert_equal offset 1
+           | _ -> (* 0 *) OUnit.assert_failure __LOC__
+        end ;
+         __LOC__ >:: begin fun _ ->
+           (* 1 *) match Ast_utf8_string.transform_test
+             {|你\|} with
+           | exception Ast_utf8_string.Error(offset,_) ->
+            (* 1 *) OUnit.assert_equal offset 2
+           | _ -> (* 0 *) OUnit.assert_failure __LOC__
+        end ;
+         __LOC__ >:: begin fun _ ->
+           (* 1 *) match Ast_utf8_string.transform_test
+             {|你BuckleScript,好啊\uffff\|} with
+           | exception Ast_utf8_string.Error(offset,_) ->
+            (* 1 *) OUnit.assert_equal offset 23
+           | _ -> (* 0 *) OUnit.assert_failure __LOC__
+        end ;
+
+        __LOC__ >:: begin fun _ ->
+          (* 1 *) "hie $x hi 你好" ==~
+            [
+              0,4, String, "hie ";
+              4,6, Var, "x";
+              6,12,String, " hi 你好"
+            ]
+        end;
+        __LOC__ >:: begin fun _ ->
+          (* 1 *) "x" ==~
+          [0,1, String, "x"]
+        end;
+
+        __LOC__ >:: begin fun _ ->
+          (* 1 *) "" ==~
+          []
+        end;
+        __LOC__ >:: begin fun _ ->
+          (* 1 *) "你好" ==~
+          [0,2,String, "你好"]
+        end;
+        __LOC__ >:: begin fun _ ->
+          (* 1 *) "你好$x" ==~
+          [0,2,String, "你好";
+           2,4,Var, "x";
+
+          ]
+        end
+        ;
+        __LOC__ >:: begin fun _ ->
+          (* 1 *) "你好$this" ==~
+          [
+            0,2,String, "你好";
+            2,7,Var, "this";
+          ]
+        end
+        ;
+        __LOC__ >:: begin fun _ ->
+          (* 1 *) "你好$(this)" ==~
+          [
+            0,2,String, "你好";
+            2,9,Var, "this"
+          ];
+
+          "你好$this)" ==~
+          [
+             0,2,String, "你好";
+             2,7,Var, "this";
+             7,8,String,")"
+          ];
+          {|\xff\xff你好 $x |} ==~
+          [
+            0,11,String, {|\xff\xff你好 |};
+            11,13, Var, "x";
+            13,14, String, " "
+          ];
+          {|\xff\xff你好 $x 不吃亏了buckle $y $z = $sum|}
+          ==~
+          [(0, 11, String,{|\xff\xff你好 |} );
+           (11, 13, Var, "x");
+           (13, 25, String,{| 不吃亏了buckle |} );
+           (25, 27, Var, "y");
+           (27, 28, String, " ");
+           (28, 30, Var, "z");
+           (30, 33, String, " = ");
+           (33, 37, Var, "sum");
+           ]
+        end
+        ;
+        __LOC__ >:: begin fun _ ->
+          (* 1 *) "你好 $(this_is_a_var)  x" ==~
+          [
+            0,3,String, "你好 ";
+            3,19,Var, "this_is_a_var";
+            19,22, String, "  x"
+          ]
+        end
+        ;
+
+        __LOC__ >:: begin fun _ ->
+        (* 1 *) "hi\n$x\n" ==*
+        [
+          0,0,1,0,String, "hi\\n";
+          1,0,1,2,Var, "x" ;
+          1,2,2,0,String,"\\n"
+        ];
+        "$x" ==*
+        [0,0,0,2,Var,"x"];
+        
+
+        "\n$x\n" ==*
+        [
+          0,0,1,0,String,"\\n";
+          1,0,1,2,Var,"x";
+          1,2,2,0,String,"\\n"
+        ]
+        end;
+
+        __LOC__ >:: begin fun _ -> 
+        (* 1 *) "\n$(x_this_is_cool) " ==*
+        [
+          0,0,1,0,String, "\\n";
+          1,0,1,17,Var, "x_this_is_cool";
+          1,17,1,18,String, " "
+        ]
+        end;
+        __LOC__ >:: begin fun _ -> 
+        (* 1 *) " $x + $y = $sum " ==*
+        [
+          0,0,0,1,String , " ";
+          0,1,0,3,Var, "x";
+          0,3,0,6,String, " + ";
+          0,6,0,8,Var, "y";
+          0,8,0,11,String, " = ";
+          0,11,0,15,Var, "sum";
+          0,15,0,16,String, " "
+        ]
+        end;
+        __LOC__ >:: begin fun _ -> 
+        (* 1 *) "中文 | $a " ==*
+        [
+          0,0,0,5,String, "中文 | ";
+          0,5,0,7,Var, "a";
+          0,7,0,8,String, " "
+        ]
+        end
+        ;
+        __LOC__ >:: begin fun _ ->
+          (* 1 *) {|Hello \\$world|} ==*
+          [
+            0,0,0,8,String,"Hello \\\\";
+            0,8,0,14,Var, "world"
+          ]
+        end
+        ;
+        __LOC__ >:: begin fun _ -> 
+          (* 1 *) {|$x)|} ==*
+          [
+            0,0,0,2,Var,"x";
+            0,2,0,3,String,")"
+          ]
+        end;
+        __LOC__ >:: begin fun _ ->
+          (* 1 *) match Ast_utf8_string_interp.transform_test {j| $( ()) |j}
+          with 
+          |exception Ast_utf8_string_interp.Error
+              ({lnum = 0; offset = 1; byte_bol = 0},
+               {lnum = 0; offset = 6; byte_bol = 0}, Invalid_syntax_of_var " (")
+            -> (* 1 *) OUnit.assert_bool __LOC__ true 
+          | _ -> (* 0 *) OUnit.assert_bool __LOC__ false 
+        end
+        ;
+        __LOC__ >:: begin fun _ -> 
+          (* 1 *) match Ast_utf8_string_interp.transform_test {|$()|}
+          with 
+          | exception Ast_utf8_string_interp.Error ({lnum = 0; offset = 0; byte_bol = 0},
+                             {lnum = 0; offset = 3; byte_bol = 0}, Invalid_syntax_of_var "")
+            -> (* 1 *) OUnit.assert_bool __LOC__ true 
+          | _ -> (* 0 *) OUnit.assert_bool __LOC__ false
+        end
+        ;
+        __LOC__ >:: begin fun _ ->
+          (* 1 *) match Ast_utf8_string_interp.transform_test {|$ ()|}
+          with 
+          | exception Ast_utf8_string_interp.Error 
+              ({lnum = 0; offset = 0; byte_bol = 0},
+               {lnum = 0; offset = 1; byte_bol = 0}, Invalid_syntax_of_var "")
+            -> (* 1 *) OUnit.assert_bool __LOC__ true 
+          | _ -> (* 0 *) OUnit.assert_bool __LOC__ false
+        end ;
+        __LOC__ >:: begin fun _ -> 
+          (* 1 *) match Ast_utf8_string_interp.transform_test {|$()|} with 
+          | exception Ast_utf8_string_interp.Error 
+              ({lnum = 0; offset = 0; byte_bol = 0},
+               {lnum = 0; offset = 3; byte_bol = 0}, Invalid_syntax_of_var "")
+            -> (* 1 *) OUnit.assert_bool __LOC__ true
+          | _ -> (* 0 *) OUnit.assert_bool __LOC__ false 
+        end
+        ;
+        __LOC__ >:: begin fun _ -> 
+          (* 1 *) match Ast_utf8_string_interp.transform_test {|$(hello world)|} with 
+          | exception Ast_utf8_string_interp.Error 
+              ({lnum = 0; offset = 0; byte_bol = 0},
+               {lnum = 0; offset = 14; byte_bol = 0}, Invalid_syntax_of_var "hello world")
+            -> (* 1 *) OUnit.assert_bool __LOC__ true
+          | _ -> (* 0 *) OUnit.assert_bool __LOC__ false 
+        end
+
+
+        ;
+        __LOC__ >:: begin fun _ -> 
+          (* 1 *) match Ast_utf8_string_interp.transform_test {|$( hi*) |} with 
+          | exception Ast_utf8_string_interp.Error 
+              ({lnum = 0; offset = 0; byte_bol = 0},
+               {lnum = 0; offset = 7; byte_bol = 0}, Invalid_syntax_of_var " hi*")
+            -> 
+            (* 1 *) OUnit.assert_bool __LOC__ true
+          | _ -> (* 0 *) OUnit.assert_bool __LOC__ false 
+        end;
+        __LOC__ >:: begin fun _ -> 
+          (* 1 *) match Ast_utf8_string_interp.transform_test {|xx $|} with 
+          | exception Ast_utf8_string_interp.Error 
+              ({lnum = 0; offset = 3; byte_bol = 0},
+               {lnum = 0; offset = 3; byte_bol = 0}, Unterminated_variable)
+            -> 
+            (* 1 *) OUnit.assert_bool __LOC__ true 
+          | _ -> (* 0 *) OUnit.assert_bool __LOC__ false
+        end ;
+
+        __LOC__ >:: begin fun _ ->
+          (* 1 *) match Ast_utf8_string_interp.transform_test {|$(world |}; with 
+          | exception Ast_utf8_string_interp.Error 
+              ({lnum = 0; offset = 0; byte_bol = 0},
+               {lnum = 0; offset = 9; byte_bol = 0}, Unmatched_paren)
+            -> 
+            (* 1 *) OUnit.assert_bool __LOC__ true 
+          | _ -> (* 0 *) OUnit.assert_bool __LOC__ false
         end
     ]
+
 end
 module Union_find : sig 
 #1 "union_find.mli"

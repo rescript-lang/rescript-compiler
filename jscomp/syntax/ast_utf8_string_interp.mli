@@ -23,20 +23,44 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-type error 
+type kind =
+  | String
+  | Var
+type error = private
+  | Invalid_code_point
+  | Unterminated_backslash
+  | Invalid_escape_code of char
+  | Invalid_hex_escape
+  | Invalid_unicode_escape
+  | Unterminated_variable
+  | Unmatched_paren
+  | Invalid_syntax_of_var of string 
 
+(** Note the position is about code point *)
+type pos = { lnum : int ; offset : int ; byte_bol : int }
 
-type exn += Error of int  (* offset *) * error 
+type segment = {
+  start : pos;
+  finish : pos ;
+  kind : kind;
+  content : string ;
+} 
 
-val pp_error :  Format.formatter -> error -> unit  
+type segments = segment list  
 
+type cxt = {
+  mutable segment_start : pos ;
+  buf : Buffer.t ;
+  s_len : int ;
+  mutable segments : segments;
+  mutable pos_bol : int; (* record the abs position of current beginning line *)
+  mutable byte_bol : int ; 
+  mutable pos_lnum : int ; (* record the line number *)
+}
 
-  
-(* module Interp : sig *)
-(*   val check_and_transform : int -> string -> int -> cxt -> unit *)
-(*   val transform_test : string -> segments *)
-(* end *)
-val transform_test : string -> string 
+type exn += Error of pos *  pos * error 
 
-val transform : Location.t -> string -> string      
+val empty_segment : segment -> bool
 
+val transform_test : string -> segment list
+val transform_interp : Location.t -> string -> Parsetree.expression

@@ -124,5 +124,7 @@ bin/bsdep.ml : core/bs_conditional_initial.ml
 bin/bsdep.ml : syntax/ast_derive_projector.ml
 bin/bsdep.ml : core/bs_conditional_initial.mli
 bin/bsdep.ml : syntax/ast_derive_projector.mli
+bin/bsdep.ml : syntax/ast_utf8_string_interp.ml
 bin/bsdep.ml : syntax/ast_external_attributes.ml
+bin/bsdep.ml : syntax/ast_utf8_string_interp.mli
 bin/bsdep.ml : syntax/ast_external_attributes.mli
