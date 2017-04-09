@@ -32074,8 +32074,36 @@ let valid_hex x =
     | 'A' .. 'F' -> true
     | _ -> false 
 end
-module Ast_utf8_string
-= struct
+module Ast_utf8_string : sig 
+#1 "ast_utf8_string.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+val transform : Location.t -> string -> string      
+end = struct
 #1 "ast_utf8_string.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
@@ -32122,18 +32150,15 @@ let rec check_and_transform loc buf s byte_offset s_len =
                Buffer.add_char buf current_char ; 
 
              end
-           else if  c = 10 then begin 
-             (* Char.code '\n' = 10 *)
-             (* we can not just print new line*)
+           else if  c = 10 (* '\n' *)then begin 
              Buffer.add_string buf "\\n";
-
-             (* seems we don't need 
+             (* we can not just print new line in ES5 
+                seems we don't need 
                 escape "\b" "\f" 
                 we need escape "\n" "\r" since 
                 ocaml multiple-line allows [\n]
                 visual input while es5 string 
-                does not 
-             *)
+                does not*)
            end 
            else if c = 13 then begin 
                Buffer.add_string buf "\\r"
@@ -32222,6 +32247,13 @@ and unicode loc buf s offset s_len =
    console.log('\uD83D\uDE80'); (* ES6*)
    console.log('\u{1F680}');
 *)   
+
+let transform loc s = 
+  let s_len = String.length s in 
+  let buf = Buffer.create (s_len * 2) in
+  check_and_transform loc buf s 0 s_len;
+  Buffer.contents buf 
+
 end
 module Ast_exp : sig 
 #1 "ast_exp.mli"
@@ -33864,10 +33896,9 @@ let rec unsafe_mapper : Ast_mapper.mapper =
         |Pexp_constant (Const_string (s, (Some delim))) 
           ->         
           if Ext_string.equal delim Literals.unescaped_js_delimiter then 
-            let s_len  = String.length s in 
-            let buf = Buffer.create (s_len * 2) in 
-            Ast_utf8_string.check_and_transform loc buf s 0 s_len ;  
-            { e with pexp_desc = Pexp_constant (Const_string (Buffer.contents buf, Some Literals.escaped_j_delimiter))}
+            let js_str = Ast_utf8_string.transform loc s in 
+            { e with pexp_desc = 
+              Pexp_constant (Const_string (js_str, Some Literals.escaped_j_delimiter))}
           else if Ext_string.equal delim Literals.unescaped_j_delimiter then 
             Location.raise_errorf ~loc "{j||j} is reserved for future use" 
           else e 

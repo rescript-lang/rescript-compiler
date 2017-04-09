@@ -43,18 +43,15 @@ let rec check_and_transform loc buf s byte_offset s_len =
                Buffer.add_char buf current_char ; 
 
              end
-           else if  c = 10 then begin 
-             (* Char.code '\n' = 10 *)
-             (* we can not just print new line*)
+           else if  c = 10 (* '\n' *)then begin 
              Buffer.add_string buf "\\n";
-
-             (* seems we don't need 
+             (* we can not just print new line in ES5 
+                seems we don't need 
                 escape "\b" "\f" 
                 we need escape "\n" "\r" since 
                 ocaml multiple-line allows [\n]
                 visual input while es5 string 
-                does not 
-             *)
+                does not*)
            end 
            else if c = 13 then begin 
                Buffer.add_string buf "\\r"
@@ -143,3 +140,9 @@ and unicode loc buf s offset s_len =
    console.log('\uD83D\uDE80'); (* ES6*)
    console.log('\u{1F680}');
 *)   
+
+let transform loc s = 
+  let s_len = String.length s in 
+  let buf = Buffer.create (s_len * 2) in
+  check_and_transform loc buf s 0 s_len;
+  Buffer.contents buf 

@@ -387,6 +387,7 @@ bin/whole_compiler.ml : core/lam_pass_lets_dce.mli
 bin/whole_compiler.ml : core/ocaml_stdlib_slots.ml
 bin/whole_compiler.ml : core/type_int_to_string.ml
 bin/whole_compiler.ml : ext/hash_set_ident_mask.ml
+bin/whole_compiler.ml : syntax/ast_utf8_string.mli
 bin/whole_compiler.ml : syntax/bs_ast_invariant.ml
 bin/whole_compiler.ml : syntax/bs_ast_iterator.mli
 bin/whole_compiler.ml : core/js_of_lam_exception.ml

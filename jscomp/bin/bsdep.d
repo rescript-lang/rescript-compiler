@@ -119,6 +119,7 @@ bin/bsdep.ml : syntax/ast_attributes.mli
 bin/bsdep.ml : syntax/ast_derive_dyn.mli
 bin/bsdep.ml : syntax/ast_derive_util.ml
 bin/bsdep.ml : syntax/ast_utf8_string.ml
+bin/bsdep.ml : syntax/ast_utf8_string.mli
 bin/bsdep.ml : core/bs_conditional_initial.ml
 bin/bsdep.ml : syntax/ast_derive_projector.ml
 bin/bsdep.ml : core/bs_conditional_initial.mli

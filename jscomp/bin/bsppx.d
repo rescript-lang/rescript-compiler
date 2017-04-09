@@ -103,6 +103,7 @@ bin/bsppx.ml : syntax/ast_attributes.mli
 bin/bsppx.ml : syntax/ast_derive_dyn.mli
 bin/bsppx.ml : syntax/ast_derive_util.ml
 bin/bsppx.ml : syntax/ast_utf8_string.ml
+bin/bsppx.ml : syntax/ast_utf8_string.mli
 bin/bsppx.ml : syntax/ast_derive_projector.ml
 bin/bsppx.ml : syntax/ast_derive_projector.mli
 bin/bsppx.ml : syntax/ast_external_attributes.ml

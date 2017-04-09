@@ -39,6 +39,7 @@ let suites =
     Ounit_ffi_error_debug_test.suites;
     Ounit_js_regex_checker_tests.suites;
     Ounit_utf8_test.suites;
+    Ounit_unicode_tests.suites;
   ]
 let _ = 
   OUnit.run_test_tt_main suites

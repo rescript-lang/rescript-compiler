@@ -7,6 +7,7 @@ bin/all_ounit_tests.ml : ext/set_gen.ml
 bin/all_ounit_tests.ml : ext/set_int.ml
 bin/all_ounit_tests.ml : ext/vec_gen.ml
 bin/all_ounit_tests.ml : ounit/oUnit.ml
+bin/all_ounit_tests.ml : ext/ext_char.ml
 bin/all_ounit_tests.ml : ext/ext_int.mli
 bin/all_ounit_tests.ml : ext/ext_json.ml
 bin/all_ounit_tests.ml : ext/ext_list.ml
@@ -23,6 +24,7 @@ bin/all_ounit_tests.ml : ext/set_poly.ml
 bin/all_ounit_tests.ml : ounit/oUnit.mli
 bin/all_ounit_tests.ml : ext/ext_array.ml
 bin/all_ounit_tests.ml : ext/ext_bytes.ml
+bin/all_ounit_tests.ml : ext/ext_char.mli
 bin/all_ounit_tests.ml : ext/ext_ident.ml
 bin/all_ounit_tests.ml : ext/ext_json.mli
 bin/all_ounit_tests.ml : ext/ext_list.mli
@@ -75,7 +77,9 @@ bin/all_ounit_tests.ml : ext/string_hash_set.ml
 bin/all_ounit_tests.ml : ext/string_hashtbl.mli
 bin/all_ounit_tests.ml : stubs/bs_hash_stubs.ml
 bin/all_ounit_tests.ml : ext/string_hash_set.mli
+bin/all_ounit_tests.ml : syntax/ast_utf8_string.ml
 bin/all_ounit_tests.ml : ext/hash_set_ident_mask.ml
+bin/all_ounit_tests.ml : syntax/ast_utf8_string.mli
 bin/all_ounit_tests.ml : ext/hash_set_ident_mask.mli
 bin/all_ounit_tests.ml : ext/ordered_hash_set_gen.ml
 bin/all_ounit_tests.ml : ounit_tests/ounit_cmd_util.ml
@@ -100,6 +104,7 @@ bin/all_ounit_tests.ml : ounit_tests/ounit_string_tests.ml
 bin/all_ounit_tests.ml : ounit_tests/ounit_hashtbl_tests.ml
 bin/all_ounit_tests.ml : ounit_tests/ounit_int_vec_tests.ml
 bin/all_ounit_tests.ml : ounit_tests/ounit_topsort_tests.ml
+bin/all_ounit_tests.ml : ounit_tests/ounit_unicode_tests.ml
 bin/all_ounit_tests.ml : ounit_tests/ounit_bal_tree_tests.ml
 bin/all_ounit_tests.ml : ounit_tests/ounit_hash_set_tests.ml
 bin/all_ounit_tests.ml : ounit_tests/ounit_hash_stubs_test.ml
