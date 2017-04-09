@@ -56,8 +56,8 @@ atom
 - type of FLOAT is `float`
 - value of UIDENT comes from either built-in values (with documented types) or an environment variable,
   if it is literally `true`, `false` then it is `bool`, else if it is parsable by `int_of_string`
-  then it is  of type int, else if it is parsable by `float_of_string` then it is float, otherwise
-  it would  be string
+  then it is of type int, else if it is parsable by `float_of_string` then it is float, otherwise
+  it would be string
 - In `lhs operator rhs`, `lhs` and `rhs` are always the same type and return boolean.
   `=~` is a semantic version operator which requires both sides to be string.
 
@@ -142,7 +142,7 @@ This is a very small extension to the OCaml language, it is backward compatible 
 --------------
 let f x =
   x
-#elif // <1>
+#elif (* <1> *)
 --------------
 <1> `#elif` at the beginning of a line is interpreted as static if, there is no issue with `#if` or `#end`, since they are already keywords.
 ======

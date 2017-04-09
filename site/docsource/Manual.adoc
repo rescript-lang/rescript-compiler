@@ -26,11 +26,11 @@ whole compiler is compiled into JS (and ASM) so that you can play with it
 in the {BuckleScript-playground}[browser].
 
 [NOTE]
-.PDF version is  http://bloomberg.github.io/bucklescript/Manual.pdf[available].
+.PDF version is http://bloomberg.github.io/bucklescript/Manual.pdf[available].
 ====
 Documents under https://github.com/bloomberg/bucklescript/Manual.html[_bloomberg.github.io_] match the https://github.com/bloomberg/bucklescript[master branch].
 
-They are also  distributed (`docs/Manual.html`, `docs/Manual.pdf`) together with your <<Installation>> (with the exact version).
+They are also distributed (`docs/Manual.html`, `docs/Manual.pdf`) together with your <<Installation>> (with the exact version).
 If you find errors or omissions in this document, please don't
 hesitate to submit an issue, sources are https://github.com/bloomberg/bucklescript/tree/master/site/docsource[here].
 ====

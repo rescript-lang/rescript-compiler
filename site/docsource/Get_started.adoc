@@ -11,7 +11,7 @@
 ----
 {
     "name" : "hello",
-    "sources" : { "dir" :  "src"}
+    "sources" : { "dir" : "src"}
 }
 ----
 
@@ -58,11 +58,11 @@ Now you should see a file called `lib/js/src/main_entry.js` generated as below:
 
 console.log("hello world");
 
-/*  Not a pure module */ <1>
+/*  Not a pure module */ // <1>
 ----
 <1> The compiler detects this module is impure due to the side effect.
 
-User can  also run `watch` mode to see changes instantly while editing.
+User can also run `watch` mode to see changes instantly while editing.
 
 [source,sh]
 ----
@@ -85,7 +85,7 @@ will call `fib`.
 ----
 {
     "name" : "helo",
-    "sources" : { "dir" :  "src"}
+    "sources" : { "dir" : "src"}
 }
 ----
 +
@@ -107,7 +107,7 @@ will call `fib`.
 [source,ocaml]
 .src/fib.ml
 ------
-let  fib n  =
+let fib n =
   let rec aux n a b =
     if n = 0 then a
     else
@@ -120,7 +120,7 @@ let  fib n  =
 ------
 let () =
   for i = 0 to 10 do
-    Js.log (Fib.fib i) <1>
+    Js.log (Fib.fib i) (* <1> *)
   done
 ------
 <1> `Js` module is a built-in module shipped with BuckleScript

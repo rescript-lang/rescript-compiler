@@ -11,7 +11,7 @@ This section will focus on how to contribute to this repo.
 * Having https://opam.ocaml.org/[opam] installed
 
     opam switch 4.02.3+buckle-master # use our OCaml compiler
-    opam install camlp4  <1>
+    opam install camlp4 # <1>
 +
 `Camlp4` is used to generate OCaml code for processing large AST. (`j.ml` file), if you don't
 change `j.ml` (most likely you won't), so you probably don't need it
@@ -97,7 +97,7 @@ For example some simple tests would be like:
 --------------
 let suites : _ Mt.pair_suites =
    ["hey", (fun _ -> Eq(true, 3 > 2));
-       "hi", (fun _ ->  Neq(2,3));
+       "hi", (fun _ -> Neq(2,3));
        "hello", (fun _ -> Approx(3.0, 3.0));
        "throw", (fun _ -> ThrowAny(fun _ -> raise 3))
        ]

@@ -131,7 +131,7 @@ let test () =
   for i = 0 to count do
     m := IntMap.add i i !m
   done;
-  for i = 0 to count  do
+  for i = 0 to count do
     ignore (IntMap.find i !m)
   done
 

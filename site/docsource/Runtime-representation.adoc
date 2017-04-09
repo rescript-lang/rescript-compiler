@@ -21,7 +21,7 @@ JavaScript; instead, the OCaml stdlib provides three functions: `List.cons`, `Li
 | nativeint | number
 | int32 | number
 | float | number
-| bool  a| number
+| bool a| number
 
 - true -> 1
 - false -> 0
@@ -34,18 +34,18 @@ for example:
 
 - 'a' -> `97`
 | string | string
-| bytes  a| number array
+| bytes a| number array
 
-NOTE: We might encode it as buffer  in NodeJS.
+NOTE: We might encode it as buffer in NodeJS.
 
 | 'a array | Array
-| record   a| Array *internal*
+| record a| Array *internal*
 
 For instance:
 [source,ocaml]
 --------------
 type t = { x : int; y : int }
-let v = {x = 1;  y = 2}
+let v = {x = 1; y = 2}
 --------------
 Output:
 [source,js]
@@ -53,13 +53,13 @@ Output:
 var v = [1,2]
 ------
 
-| tuple    a| Array
+| tuple a| Array
 
 For example:
 
 * (3,4) -> [3,4]
 
-| ``'a option` a|  *internal*
+| ``'a option` a| *internal*
 
 For example:
 
@@ -93,8 +93,8 @@ Complex Variants: (Variants with more than one non-nullary constructor)
 type u =
      \| A of string
      \| B of int
-(* A a -->  [a].tag=0 -- tag 0 assignment is optional *)
-(* B b -->  [b].tag=1 *)
+(* A a --> [a].tag=0 -- tag 0 assignment is optional *)
+(* B b --> [b].tag=1 *)
 -------------
 
 
@@ -106,7 +106,7 @@ type u =
 `a (* 97 *)
 `a 1 2 (* [97, [1,2] ]*)
 -------------
-| exception |  *internal*
+| exception | *internal*
 | extension | *internal*
 
 | object | *internal*

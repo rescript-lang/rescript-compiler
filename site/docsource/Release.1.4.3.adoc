@@ -9,6 +9,6 @@ Besides a number of minor bug fixes, most notable changes
 module resolution
 "amdjs-globa" is similar to "es6-global"
 
-The es6 module  is  in perfect combination with rollup as a bundler, see this link
+The es6 module is in perfect combination with rollup as a bundler, see this link
 about how good the dead code elimination is https://twitter.com/bobzhang1988/status/827562467148623875
 

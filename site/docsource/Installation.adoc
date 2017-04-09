@@ -99,7 +99,7 @@ make install
 The patched compiler is installed locally into your `$(pwd)/bin`
 directory. To start using it temporarily, check if `ocamlc.opt` and
 `ocamlopt.opt` exist in `$(pwd)/bin`, and temporarily add the location
-to your `$(PATH)` (e.g.  `PATH=$(pwd)/bin:$PATH`).
+to your `$(PATH)` (e.g. `PATH=$(pwd)/bin:$PATH`).
 
 .Building BuckleScript
 

@@ -15,7 +15,7 @@ inlining, arity inference and other information.
 
 === BuckleScript build system: `bsb`
 
-BuckleScript proivdes a native build tool on top of Google's  https://github.com/ninja-build/ninja/releases[ninja-build]. 
+BuckleScript proivdes a native build tool on top of Google's https://github.com/ninja-build/ninja/releases[ninja-build]. 
 It is designed for a fast feedback loop (typically 100ms feedback loop) and works cross platform. 
 
 // [INFO]
@@ -57,9 +57,9 @@ Here is a *minimal* configuration:
 
 .bsconfig.json
 [source,js]
------------  
+-----------
 { 
-  "name": "test", // package name, required <1>  
+  "name": "test", // package name, required <1>
   "sources": "src" // <2>
 }
 -----------
@@ -69,32 +69,32 @@ Here is a *minimal* configuration:
 
 The entry point is `bsb`.
 It will check if there is already `build.ninja` in the build directory, 
-and if not or it needs to be regenerated it will generate the file  `build.ninja` 
+and if not or it needs to be regenerated it will generate the file `build.ninja` 
 and delegate the hard work to `ninja`.
 
 
 The directory layout (after building) would be
 
 -----------
-.                                                                                                                    
-├── lib                                                                                                                                                                                                                      
-│   ├── bs                                                                                                           
-│   │   ├── src                                                                                                      
-│   │   └── test                                                                                                                                                                                                              
-│   ├── js                                                                                                           
-│   │   ├── src                                                                                                      
+.
+├── lib
+│   ├── bs
+│   │   ├── src
 │   │   └── test
-│   ├── amdjs // <1>     
-│   │   ├── src                                                                                                      
+│   ├── js
+│   │   ├── src
 │   │   └── test
-│   ├── goog  // <2>                                                                                                
-│   │   ├── src                       
+│   ├── amdjs // <1>
+│   │   ├── src
 │   │   └── test
-│   └── ocaml                                                                                                        
-├── scripts                                                                                                          
-├── src                                                                                                              
-└── test   
------------  
+│   ├── goog  // <2>
+│   │   ├── src
+│   │   └── test
+│   └── ocaml
+├── scripts
+├── src
+└── test
+-----------
 <1> Will generate amdjs modules if flags are turned on
 <2> Will generate goog modules if flags are turned on 
 
@@ -191,9 +191,9 @@ Below is a json configuration for the https://github.com/OvermindDL1/bucklescrip
 -----------
 {
   "name": "bucklescript-tea",
-  "version": "0.1.3",  
+  "version": "0.1.3",
   "sources": [
-   "src",   // <1>
+   "src", // <1>
     {
       "dir": "test",
       "type": "dev" // <2>
@@ -230,9 +230,9 @@ Now, we have a repo https://github.com/bobzhang/bucklescript-have-tea[bucklescri
 -----------
 {
     "name" : "bucklescript-have-tea",
-    "sources" :  "src",
+    "sources" : "src",
     "bs-dependencies": [
-      "bucklescript-tea"  
+      "bucklescript-tea"
     ]
 }
 -----------
@@ -255,9 +255,9 @@ Suppose you are in `bucklescript-have-tea` top directory,
 
 [source,sh]
 ----------
-npm install // <1>
-npm install bs-platform <2>
-./node_modules/.bin/bsb -clean-world -make-world -w <3>
+npm install # <1>
+npm install bs-platform # <2>
+./node_modules/.bin/bsb -clean-world -make-world -w # <3>
 ----------
 <1> Install the dependencies
 <2> Install peer dependencies
@@ -270,7 +270,7 @@ You can also change the `package-specs` to have another module format, for examp
 {
   ... , 
   "package-specs" : ["amdjs", "commonjs"],
-  ...      
+  ...
 }
 ----------
 
@@ -302,15 +302,15 @@ Here is a simple Makefile to get started:
 OCAMLC=bsc.exe # <1>
 OCAMLDEP=bsdep.exe # <2>
 SOURCE_LIST := src_a src_b
-SOURCE_MLI  = $(addsuffix .mli, $(SOURCE_LIST))
-SOURCE_ML   = $(addsuffix .ml, $(SOURCE_LIST))
+SOURCE_MLI = $(addsuffix .mli, $(SOURCE_LIST))
+SOURCE_ML  = $(addsuffix .ml, $(SOURCE_LIST))
 TARGETS := $(addsuffix .cmj, $(SOURCE_LIST))
 INCLUDES=
 all: $(TARGETS)
 .mli:.cmi
-        $(OCAMLC) $(INCLUDES) $(COMPFLAGS)  -c $<
+        $(OCAMLC) $(INCLUDES) $(COMPFLAGS) -c $<
 .ml:.cmj:
-        $(OCAMLC) $(INCLUDES) $(COMPFLAGS)  -c $<
+        $(OCAMLC) $(INCLUDES) $(COMPFLAGS) -c $<
 -include .depend
 depend:
         $(OCAMLDEP) $(INCLUDES) $(SOURCE_ML) $(SOURCE_MLI) > .depend
@@ -341,8 +341,8 @@ such as https://facebook.github.io/watchman/[watchman] for example, will need th
 .build.sh
 [source,sh]
 -----------
-make -r -j8 all <1>
-make depend // <2>
+make -r -j8 all # <1>
+make depend # <2>
 -----------
 <1> build
 <2> update the dependency
