@@ -43,16 +43,16 @@ let convert_and_resolve_path =
       let p = Ext_string.replace_slash_backward p in
       Bsb_config.proj_rel p 
   else failwith ("Unknown OS :" ^ Sys.os_type)
-(* we only need convert the path in the begining*)
+(* we only need convert the path in the beginning *)
 
 
 (* Magic path resolution:
    foo => foo
    foo/ => /absolute/path/to/projectRoot/node_modules/foo
-   foo/bar => /absolute/path/to/projectRoot/node_modules/foo.bar
+   foo/bar => /absolute/path/to/projectRoot/node_modules/foo/bar
    /foo/bar => /foo/bar
    ./foo/bar => /absolute/path/to/projectRoot/./foo/bar
-   Input is node path, output is OS dependent path
+   Input is node path, output is OS dependent (normalized) path
 *)
 let resolve_bsb_magic_file ~cwd ~desc p =
   let p_len = String.length p in
@@ -164,7 +164,7 @@ type package_context = {
    Basic requirements
      1. cycle detection
      2. avoid duplication
-     3. determinstic, since -make-world will also comes with -clean-world
+     3. deterministic, since -make-world will also comes with -clean-world
 
 *)
 
