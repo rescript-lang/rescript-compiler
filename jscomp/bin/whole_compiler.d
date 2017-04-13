@@ -419,10 +419,12 @@ bin/whole_compiler.ml : core/lam_pass_eliminate_ref.mli
 bin/whole_compiler.ml : syntax/ast_derive_projector.mli
 bin/whole_compiler.ml : core/js_pass_tailcall_inline.mli
 bin/whole_compiler.ml : core/lam_compile_external_obj.ml
+bin/whole_compiler.ml : syntax/ast_utf8_string_interp.ml
 bin/whole_compiler.ml : core/lam_compile_external_call.ml
 bin/whole_compiler.ml : core/lam_compile_external_obj.mli
 bin/whole_compiler.ml : core/lam_pass_alpha_conversion.ml
 bin/whole_compiler.ml : syntax/ast_external_attributes.ml
+bin/whole_compiler.ml : syntax/ast_utf8_string_interp.mli
 bin/whole_compiler.ml : core/lam_compile_external_call.mli
 bin/whole_compiler.ml : core/lam_pass_alpha_conversion.mli
 bin/whole_compiler.ml : syntax/ast_external_attributes.mli

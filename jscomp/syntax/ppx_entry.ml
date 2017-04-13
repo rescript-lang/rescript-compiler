@@ -334,7 +334,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
             { e with pexp_desc = 
               Pexp_constant (Const_string (js_str, Some Literals.escaped_j_delimiter))}
           else if Ext_string.equal delim Literals.unescaped_j_delimiter then 
-            Location.raise_errorf ~loc "{j||j} is reserved for future use" 
+            Ast_utf8_string_interp.transform_interp loc s             
           else e 
 
         (** [bs.debugger], its output should not be rewritten any more*)

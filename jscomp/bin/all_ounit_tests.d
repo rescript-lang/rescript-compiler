@@ -22,6 +22,7 @@ bin/all_ounit_tests.ml : ext/literals.ml
 bin/all_ounit_tests.ml : ext/set_int.mli
 bin/all_ounit_tests.ml : ext/set_poly.ml
 bin/all_ounit_tests.ml : ounit/oUnit.mli
+bin/all_ounit_tests.ml : common/bs_loc.ml
 bin/all_ounit_tests.ml : ext/ext_array.ml
 bin/all_ounit_tests.ml : ext/ext_bytes.ml
 bin/all_ounit_tests.ml : ext/ext_char.mli
@@ -34,6 +35,7 @@ bin/all_ounit_tests.ml : ext/ext_util.mli
 bin/all_ounit_tests.ml : ext/hash_set.mli
 bin/all_ounit_tests.ml : ext/literals.mli
 bin/all_ounit_tests.ml : ext/set_poly.mli
+bin/all_ounit_tests.ml : common/bs_loc.mli
 bin/all_ounit_tests.ml : ext/ext_array.mli
 bin/all_ounit_tests.ml : ext/ext_bytes.mli
 bin/all_ounit_tests.ml : ext/ext_ident.mli
@@ -100,7 +102,9 @@ bin/all_ounit_tests.ml : ounit_tests/ounit_tests_util.ml
 bin/all_ounit_tests.ml : ounit_tests/ounit_array_tests.ml
 bin/all_ounit_tests.ml : ounit_tests/ounit_data_random.ml
 bin/all_ounit_tests.ml : ounit_tests/ounit_tests_main.mli
+bin/all_ounit_tests.ml : syntax/ast_utf8_string_interp.ml
 bin/all_ounit_tests.ml : ounit_tests/ounit_string_tests.ml
+bin/all_ounit_tests.ml : syntax/ast_utf8_string_interp.mli
 bin/all_ounit_tests.ml : ounit_tests/ounit_hashtbl_tests.ml
 bin/all_ounit_tests.ml : ounit_tests/ounit_int_vec_tests.ml
 bin/all_ounit_tests.ml : ounit_tests/ounit_topsort_tests.ml

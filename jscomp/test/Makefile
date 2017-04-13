@@ -149,8 +149,8 @@ OTHERS := literals a test_ari test_export2 test_internalOO test_obj_simple_ffi t
 	rebind_module\
 	rebind_module_test\
 	js_promise_basic_test\
-	exn_error_pattern
-
+	exn_error_pattern\
+	string_interp_test
 
 
 # bs_uncurry_test

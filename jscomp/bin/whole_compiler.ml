@@ -103740,8 +103740,24 @@ module Ast_utf8_string : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
+type error 
+
+
+type exn += Error of int  (* offset *) * error 
+
+val pp_error :  Format.formatter -> error -> unit  
+
+
+  
+(* module Interp : sig *)
+(*   val check_and_transform : int -> string -> int -> cxt -> unit *)
+(*   val transform_test : string -> segments *)
+(* end *)
+val transform_test : string -> string 
 
 val transform : Location.t -> string -> string      
+
+
 end = struct
 #1 "ast_utf8_string.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -103769,103 +103785,132 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-let rec check_and_transform loc buf s byte_offset s_len =
+
+type error = 
+  | Invalid_code_point 
+  | Unterminated_backslash
+  | Invalid_escape_code of char 
+  | Invalid_hex_escape
+  | Invalid_unicode_escape
+
+let pp_error fmt err = 
+  Format.pp_print_string fmt @@  match err with 
+  | Invalid_code_point -> "Invalid code point"
+  | Unterminated_backslash -> "\\ ended unexpectedly"
+  | Invalid_escape_code c -> "Invalid escape code: " ^ String.make 1 c 
+  | Invalid_hex_escape -> 
+    "Invalid \\x escape"
+  | Invalid_unicode_escape -> "Invalid \\u escape"
+
+
+
+type exn += Error of int  (* offset *) * error 
+
+
+
+
+let error ~loc error = 
+  raise (Error (loc, error))
+
+(** Note the [loc] really should be the utf8-offset, it has nothing to do with our 
+    escaping mechanism
+*)
+(* we can not just print new line in ES5 
+   seems we don't need 
+   escape "\b" "\f" 
+   we need escape "\n" "\r" since 
+   ocaml multiple-line allows [\n]
+   visual input while es5 string 
+   does not*)
+
+let rec check_and_transform (loc : int ) buf s byte_offset s_len =
   if byte_offset = s_len then ()
   else 
     let current_char = s.[byte_offset] in 
     match Ext_utf8.classify current_char with 
-    | Single c -> 
-      if c = 92 (* Char.code '\\' = 92 *)then 
-        begin 
-          (* we share the same escape sequence with js *)
-          Buffer.add_char buf current_char; 
-          escape_code loc buf s (byte_offset+1) s_len 
-        end 
-      else
-        begin 
-          (if c = 34 (* Char.code '\"' = 34 *) || c = 39 (* Char.code '\'' = 39 *) then 
-             begin 
-               Buffer.add_char buf '\\';
-               Buffer.add_char buf current_char ; 
+    | Single 92 (* '\\' *) -> 
+      escape_code (loc + 1) buf s (byte_offset+1) s_len
+    | Single 34 ->
+      Buffer.add_string buf "\\\"";
+      check_and_transform (loc + 1) buf s (byte_offset + 1) s_len
+    | Single 39 -> 
+      Buffer.add_string buf "\\'";
+      check_and_transform (loc + 1) buf s (byte_offset + 1) s_len 
+    | Single 10 ->          
+      Buffer.add_string buf "\\n";
+      check_and_transform (loc + 1) buf s (byte_offset + 1) s_len 
+    | Single 13 -> 
+      Buffer.add_string buf "\\r";
+      check_and_transform (loc + 1) buf s (byte_offset + 1) s_len 
+    | Single _ -> 
+      Buffer.add_char buf current_char;
+      check_and_transform (loc + 1) buf s (byte_offset + 1) s_len 
 
-             end
-           else if  c = 10 (* '\n' *)then begin 
-             Buffer.add_string buf "\\n";
-             (* we can not just print new line in ES5 
-                seems we don't need 
-                escape "\b" "\f" 
-                we need escape "\n" "\r" since 
-                ocaml multiple-line allows [\n]
-                visual input while es5 string 
-                does not*)
-           end 
-           else if c = 13 then begin 
-               Buffer.add_string buf "\\r"
-            end
-           else begin 
-             Buffer.add_char buf current_char;
-
-           end);
-          check_and_transform loc buf s (byte_offset + 1) s_len 
-        end
     | Invalid 
-    | Cont _ -> Location.raise_errorf ~loc "Not utf8 source string"
+    | Cont _ -> error ~loc Invalid_code_point
     | Leading (n,_) -> 
       let i' = Ext_utf8.next s ~remaining:n  byte_offset in
       if i' < 0 then 
-        Location.raise_errorf ~loc "Not valid utf8 souce string"
+        error ~loc Invalid_code_point
       else 
         begin 
           for k = byte_offset to i' do 
             Buffer.add_char buf s.[k]; 
           done;   
-          check_and_transform loc buf s (i' + 1) s_len 
+          check_and_transform (loc + 1 ) buf s (i' + 1) s_len 
         end
+(* we share the same escape sequence with js *)        
 and escape_code loc buf s offset s_len = 
   if offset >= s_len then 
-    Location.raise_errorf ~loc "\\ is the end of string" 
-  else 
-    let cur_char = s.[offset] in 
-    match cur_char with 
-    | '\\'
-    | 'b' 
-    | 't' 
-    | 'n' 
-    | 'v'
-    | 'f'
-    | 'r' 
-    | '0' 
-    | '$'
-      -> 
-      begin 
-        Buffer.add_char buf cur_char ;
-        check_and_transform loc buf s (offset + 1) s_len 
-      end 
-    | 'u' -> 
-      begin 
-        Buffer.add_char buf cur_char;
-        unicode loc buf s (offset + 1) s_len 
-      end 
-    | 'x' -> begin 
-        Buffer.add_char buf cur_char ; 
-        two_hex loc buf s (offset + 1) s_len 
-      end 
-    | _ -> Location.raise_errorf ~loc "invalid escape code"
+    error ~loc Unterminated_backslash
+  else
+    Buffer.add_char buf '\\'; 
+  let cur_char = s.[offset] in
+  match cur_char with 
+  | '\\'
+  | 'b' 
+  | 't' 
+  | 'n' 
+  | 'v'
+  | 'f'
+  | 'r' 
+  | '0' 
+  | '$'
+    -> 
+    begin 
+      Buffer.add_char buf cur_char ;
+      check_and_transform (loc + 1) buf s (offset + 1) s_len 
+    end 
+  | 'u' -> 
+    begin 
+      Buffer.add_char buf cur_char;
+      unicode (loc + 1) buf s (offset + 1) s_len 
+    end 
+  | 'x' -> begin 
+      Buffer.add_char buf cur_char ; 
+      two_hex (loc + 1) buf s (offset + 1) s_len 
+    end 
+  | _ -> error ~loc (Invalid_escape_code cur_char)
 and two_hex loc buf s offset s_len = 
   if offset + 1 >= s_len then 
-    Location.raise_errorf ~loc "\\x need at least two chars";
+    error ~loc Invalid_hex_escape;
+  (*Location.raise_errorf ~loc "\\x need at least two chars";*)
   let a, b = s.[offset], s.[offset + 1] in 
   if Ext_char.valid_hex a && Ext_char.valid_hex b then 
     begin 
       Buffer.add_char buf a ; 
       Buffer.add_char buf b ; 
-      check_and_transform loc buf s (offset + 2) s_len 
+      check_and_transform (loc + 2) buf s (offset + 2) s_len 
     end
-  else Location.raise_errorf ~loc "%c%c is not a valid hex code" a b
+  else
+    error ~loc Invalid_hex_escape
+(*Location.raise_errorf ~loc "%c%c is not a valid hex code" a b*)
 
 and unicode loc buf s offset s_len = 
   if offset + 3 >= s_len then 
-    Location.raise_errorf ~loc "\\u need at least four chars";
+    error ~loc Invalid_unicode_escape
+  (*Location.raise_errorf ~loc "\\u need at least four chars"*)
+  ;
   let a0,a1,a2,a3 = s.[offset], s.[offset+1], s.[offset+2], s.[offset+3] in
   if 
     Ext_char.valid_hex a0 &&
@@ -103877,21 +103922,564 @@ and unicode loc buf s offset s_len =
       Buffer.add_char buf a1;
       Buffer.add_char buf a2;
       Buffer.add_char buf a3;  
-      check_and_transform loc buf s  (offset + 4) s_len 
+      check_and_transform (loc + 4) buf s  (offset + 4) s_len 
     end 
-  else 
-    Location.raise_errorf ~loc "%c%c%c%c is not a valid unicode point"
-      a0 a1 a2 a3 
+  else
+    error ~loc Invalid_unicode_escape 
+(*Location.raise_errorf ~loc "%c%c%c%c is not a valid unicode point"
+  a0 a1 a2 a3 *)
 (* http://www.2ality.com/2015/01/es6-strings.html
    console.log('\uD83D\uDE80'); (* ES6*)
    console.log('\u{1F680}');
 *)   
 
+
+
+
+
+
+
+
+
+let transform_test s =
+  let s_len = String.length s in 
+  let buf = Buffer.create (s_len * 2) in
+  check_and_transform 0 buf s 0 s_len;
+  Buffer.contents buf
+
 let transform loc s = 
   let s_len = String.length s in 
   let buf = Buffer.create (s_len * 2) in
-  check_and_transform loc buf s 0 s_len;
-  Buffer.contents buf 
+  try
+    check_and_transform 0 buf s 0 s_len;
+    Buffer.contents buf 
+  with
+    Error (offset, error)
+    ->  Location.raise_errorf ~loc "Offset: %d, %a" offset pp_error error
+
+
+
+end
+module Ast_utf8_string_interp : sig 
+#1 "ast_utf8_string_interp.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type kind =
+  | String
+  | Var
+type error = private
+  | Invalid_code_point
+  | Unterminated_backslash
+  | Invalid_escape_code of char
+  | Invalid_hex_escape
+  | Invalid_unicode_escape
+  | Unterminated_variable
+  | Unmatched_paren
+  | Invalid_syntax_of_var of string 
+
+(** Note the position is about code point *)
+type pos = { lnum : int ; offset : int ; byte_bol : int }
+
+type segment = {
+  start : pos;
+  finish : pos ;
+  kind : kind;
+  content : string ;
+} 
+
+type segments = segment list  
+
+type cxt = {
+  mutable segment_start : pos ;
+  buf : Buffer.t ;
+  s_len : int ;
+  mutable segments : segments;
+  mutable pos_bol : int; (* record the abs position of current beginning line *)
+  mutable byte_bol : int ; 
+  mutable pos_lnum : int ; (* record the line number *)
+}
+
+type exn += Error of pos *  pos * error 
+
+val empty_segment : segment -> bool
+
+val transform_test : string -> segment list
+val transform_interp : Location.t -> string -> Parsetree.expression
+
+end = struct
+#1 "ast_utf8_string_interp.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type error = 
+  | Invalid_code_point
+  | Unterminated_backslash
+  | Invalid_escape_code of char
+  | Invalid_hex_escape
+  | Invalid_unicode_escape
+  | Unterminated_variable
+  | Unmatched_paren
+  | Invalid_syntax_of_var of string 
+type kind =
+  | String
+  | Var
+
+
+(** Note the position is about code point *)
+type pos = { 
+  lnum : int ; 
+  offset : int ;
+  byte_bol : int (* Note it actually needs to be in sync with OCaml's lexing semantics *)
+}
+
+
+type segment = {
+  start : pos;
+  finish : pos ;
+  kind : kind;
+  content : string ;
+} 
+
+type segments = segment list 
+
+
+type cxt = {
+  mutable segment_start : pos ;
+  buf : Buffer.t ;
+  s_len : int ;
+  mutable segments : segments;
+  mutable pos_bol : int; (* record the abs position of current beginning line *)
+  mutable byte_bol : int ; 
+  mutable pos_lnum : int ; (* record the line number *)
+}
+
+
+type exn += Error of pos *  pos * error 
+
+let pp_error fmt err = 
+  Format.pp_print_string fmt @@  match err with 
+  | Invalid_code_point -> "Invalid code point"
+  | Unterminated_backslash -> "\\ ended unexpectedly"
+  | Invalid_escape_code c -> "Invalid escape code: " ^ String.make 1 c 
+  | Invalid_hex_escape -> 
+    "Invalid \\x escape"
+  | Invalid_unicode_escape -> "Invalid \\u escape"
+  | Unterminated_variable -> "$ unterminated"
+  | Unmatched_paren -> "Unmatched paren"
+  | Invalid_syntax_of_var s -> "`" ^s ^ "' is not a valid syntax of interpolated identifer"
+let valid_lead_identifier_char x = 
+  match x with
+  | 'a'..'z' | '_' -> true
+  | _ -> false
+
+let valid_identifier_char x = 
+  match x with
+  | 'a'..'z' 
+  | 'A'..'Z'
+  | '0'..'9'
+  | '_' | '\''-> true
+  | _ -> false
+(** Invariant: [valid_lead_identifier] has to be [valid_identifier] *)
+
+let valid_identifier s =
+  let s_len = String.length s in 
+  if s_len = 0 then false 
+  else
+    valid_lead_identifier_char s.[0] &&
+    Ext_string.for_all_range s ~start:0 ~finish:(s_len - 1) valid_identifier_char
+
+      
+let is_space x = 
+  match x with
+  | ' ' | '\n' | '\t' -> true
+  | _ -> false
+
+
+
+(**
+   FIXME: multiple line offset 
+   if there is no line offset. Note {|{j||} border will never trigger a new line
+*)
+let update_position border 
+    ({lnum ; offset;byte_bol } : pos)
+    (pos : Lexing.position)= 
+  if lnum = 0 then 
+    {pos with pos_cnum = pos.pos_cnum + border + offset  }
+    (** When no newline, the column number is [border + offset] *)
+  else 
+    {
+      pos with 
+      pos_lnum = pos.pos_lnum + lnum ;
+      pos_bol = pos.pos_cnum + border + byte_bol;
+      pos_cnum = pos.pos_cnum + border + byte_bol + offset;
+      (** when newline, the column number is [offset] *)
+    }  
+let update border
+    (start : pos) 
+    (finish : pos) (loc : Location.t) : Location.t = 
+  let start_pos = loc.loc_start in 
+  { loc  with 
+    loc_start = 
+      update_position  border start start_pos;
+    loc_end = 
+      update_position border finish start_pos
+  }
+
+
+(** Note [Var] kind can not be mpty  *)
+let empty_segment {content } =
+  Ext_string.is_empty content
+
+
+
+let update_newline ~byte_bol loc  cxt = 
+  cxt.pos_lnum <- cxt.pos_lnum + 1 ; 
+  cxt.pos_bol <- loc;
+  cxt.byte_bol <- byte_bol  
+
+let pos_error cxt ~loc error = 
+  raise (Error 
+           (cxt.segment_start,
+            { lnum = cxt.pos_lnum ; offset = loc - cxt.pos_bol ; byte_bol = cxt.byte_bol}, error))
+
+let add_var_segment cxt loc  = 
+  let content =  Buffer.contents cxt.buf in
+  Buffer.clear cxt.buf ;
+  let next_loc = {
+    lnum = cxt.pos_lnum ; offset = loc - cxt.pos_bol ; 
+    byte_bol = cxt.byte_bol } in
+  if valid_identifier content then 
+    begin 
+      cxt.segments <- 
+        { start = cxt.segment_start; 
+          finish =  next_loc ;
+          kind = Var; 
+          content} :: cxt.segments ;
+      cxt.segment_start <- next_loc
+    end
+  else pos_error cxt ~loc (Invalid_syntax_of_var content)
+
+let add_str_segment cxt loc   =
+  let content =  Buffer.contents cxt.buf in
+  Buffer.clear cxt.buf ;
+  let next_loc = {
+    lnum = cxt.pos_lnum ; offset = loc - cxt.pos_bol ; 
+    byte_bol = cxt.byte_bol } in
+  cxt.segments <- 
+    { start = cxt.segment_start; 
+      finish =  next_loc ;
+      kind = String; 
+      content} :: cxt.segments ;
+  cxt.segment_start <- next_loc
+
+
+  
+
+
+let rec check_and_transform (loc : int )  s byte_offset ({s_len; buf} as cxt : cxt) =
+  if byte_offset = s_len then
+    add_str_segment cxt loc 
+  else 
+    let current_char = s.[byte_offset] in 
+    match Ext_utf8.classify current_char with 
+    | Single 92 (* '\\' *) -> 
+      escape_code (loc + 1)  s (byte_offset+1) cxt
+    | Single 34 ->
+      Buffer.add_string buf "\\\"";
+      check_and_transform (loc + 1)  s (byte_offset + 1) cxt
+    | Single 39 -> 
+      Buffer.add_string buf "\\'";
+      check_and_transform (loc + 1)  s (byte_offset + 1) cxt
+    | Single 10 ->          
+
+      Buffer.add_string buf "\\n";
+      let loc = loc + 1 in 
+      let byte_offset = byte_offset + 1 in 
+      update_newline ~byte_bol:byte_offset loc cxt ; (* Note variable could not have new-line *)
+      check_and_transform loc  s byte_offset cxt
+    | Single 13 -> 
+      Buffer.add_string buf "\\r";
+      check_and_transform (loc + 1)  s (byte_offset + 1) cxt
+    | Single 36 -> (* $ *)
+      add_str_segment cxt loc  ; 
+      let offset = byte_offset + 1 in
+      if offset >= s_len then
+        pos_error ~loc cxt  Unterminated_variable
+      else
+        let cur_char = s.[offset] in
+        if cur_char = '(' then
+          expect_var_paren  (loc + 2)  s (offset + 1) cxt
+        else
+          expect_simple_var (loc + 1)  s offset cxt
+    | Single _ -> 
+      Buffer.add_char buf current_char;
+      check_and_transform (loc + 1)  s (byte_offset + 1) cxt
+
+    | Invalid 
+    | Cont _ -> pos_error ~loc cxt Invalid_code_point
+    | Leading (n,_) -> 
+      let i' = Ext_utf8.next s ~remaining:n  byte_offset in
+      if i' < 0 then 
+        pos_error cxt ~loc Invalid_code_point
+      else 
+        begin 
+          for k = byte_offset to i' do 
+            Buffer.add_char buf s.[k]; 
+          done;   
+          check_and_transform (loc + 1 )  s (i' + 1) cxt
+        end
+(**Lets keep identifier simple, so that we could generating a function easier in the future
+   for example
+   let f = [%fn{| $x + $y = $x_add_y |}]
+*)
+and expect_simple_var  loc  s offset ({buf; s_len} as cxt) =
+  let v = ref offset in
+  (* prerr_endline @@ Ext_pervasives.dump (s, has_paren, (is_space s.[!v]), !v); *)
+  if not (offset < s_len  && valid_lead_identifier_char s.[offset]) then 
+    pos_error cxt ~loc (Invalid_syntax_of_var Ext_string.empty)
+  else 
+    begin 
+      while !v < s_len && valid_identifier_char s.[!v]  do (* TODO*)
+        let cur_char = s.[!v] in
+        Buffer.add_char buf cur_char;
+        incr v ;
+      done;
+      let added_length = !v - offset in
+      let loc = added_length + loc in 
+      add_var_segment cxt loc  ; 
+      check_and_transform loc  s (added_length + offset) cxt
+    end
+and expect_var_paren  loc  s offset ({buf; s_len} as cxt) =
+  let v = ref offset in
+  (* prerr_endline @@ Ext_pervasives.dump (s, has_paren, (is_space s.[!v]), !v); *)
+  while !v < s_len &&  s.[!v] <> ')' do 
+    let cur_char = s.[!v] in
+    Buffer.add_char buf cur_char;
+    incr v ;
+  done;
+  let added_length = !v - offset in
+  let loc = added_length +  1 + loc  in
+  if !v < s_len && s.[!v] = ')' then
+    begin 
+      add_var_segment cxt loc ; 
+      check_and_transform loc  s (added_length + 1 + offset) cxt 
+    end
+  else
+    pos_error cxt ~loc Unmatched_paren
+
+
+
+
+
+(* we share the same escape sequence with js *)        
+and escape_code loc  s offset ({ buf; s_len} as cxt) = 
+  if offset >= s_len then 
+    pos_error cxt ~loc Unterminated_backslash
+  else
+    Buffer.add_char buf '\\'; 
+  let cur_char = s.[offset] in
+  match cur_char with 
+  | '\\'
+  | 'b' 
+  | 't' 
+  | 'n' 
+  | 'v'
+  | 'f'
+  | 'r' 
+  | '0' 
+  | '$'
+    -> 
+    begin 
+      Buffer.add_char buf cur_char ;
+      check_and_transform (loc + 1)  s (offset + 1) cxt
+    end 
+  | 'u' -> 
+    begin 
+      Buffer.add_char buf cur_char;
+      unicode (loc + 1) s (offset + 1) cxt
+    end 
+  | 'x' -> begin 
+      Buffer.add_char buf cur_char ; 
+      two_hex (loc + 1)  s (offset + 1) cxt
+    end 
+  | _ -> pos_error cxt ~loc (Invalid_escape_code cur_char)
+and two_hex loc  s offset ({buf ; s_len} as cxt) = 
+  if offset + 1 >= s_len then 
+    pos_error cxt ~loc Invalid_hex_escape;
+  let a, b = s.[offset], s.[offset + 1] in 
+  if Ext_char.valid_hex a && Ext_char.valid_hex b then 
+    begin 
+      Buffer.add_char buf a ; 
+      Buffer.add_char buf b ; 
+      check_and_transform (loc + 2)  s (offset + 2) cxt
+    end
+  else
+    pos_error cxt ~loc Invalid_hex_escape
+
+
+and unicode loc  s offset ({buf ; s_len} as cxt) = 
+  if offset + 3 >= s_len then 
+    pos_error cxt ~loc Invalid_unicode_escape
+  ;
+  let a0,a1,a2,a3 = s.[offset], s.[offset+1], s.[offset+2], s.[offset+3] in
+  if 
+    Ext_char.valid_hex a0 &&
+    Ext_char.valid_hex a1 &&
+    Ext_char.valid_hex a2 &&
+    Ext_char.valid_hex a3 then 
+    begin 
+      Buffer.add_char buf a0;
+      Buffer.add_char buf a1;
+      Buffer.add_char buf a2;
+      Buffer.add_char buf a3;  
+      check_and_transform (loc + 4) s  (offset + 4) cxt
+    end 
+  else
+    pos_error cxt ~loc Invalid_unicode_escape 
+let transform_test s =
+  let s_len = String.length s in
+  let buf = Buffer.create (s_len * 2) in
+  let cxt = 
+    { segment_start = {lnum = 0; offset = 0; byte_bol = 0}; 
+      buf ;
+      s_len;
+      segments = [];
+      pos_lnum = 0;          
+      byte_bol = 0;
+      pos_bol = 0;
+
+    } in 
+  check_and_transform 0 s 0 cxt;
+  List.rev cxt.segments
+
+
+(** TODO: test empty var $() $ failure, 
+    Allow identifers x.A.y *)    
+
+open Ast_helper     
+
+(** Longident.parse "Pervasives.^" *)
+let concat_ident  : Longident.t = 
+  Ldot (Lident "Pervasives", "^")
+   (* JS string concatMany *)
+    (* Ldot (Ldot (Lident "Js", "String"), "concat") *)
+
+(* Longident.parse "Js.String.make"     *)
+let to_string_ident : Longident.t = 
+    Ldot (Ldot (Lident "Js", "String"), "make")
+
+
+
+let escaped = Some Literals.escaped_j_delimiter 
+
+let concat_exp 
+  (a : Parsetree.expression)
+  (b : Parsetree.expression) : Parsetree.expression = 
+  let loc = Bs_loc.merge a.pexp_loc b.pexp_loc in 
+  Exp.apply ~loc 
+  (Exp.ident { txt =concat_ident; loc})
+    ["",a ;
+     "",b]
+
+let border = String.length "{j|"
+
+let aux loc (segment : segment) =  
+  match segment with 
+  | {start ; finish; kind ; content} 
+    -> 
+    let loc = update border start finish  loc in 
+    begin match kind with 
+      | String -> 
+        Exp.constant 
+          ~loc
+          (Const_string (content, escaped)) 
+      | Var -> 
+        Exp.apply ~loc 
+          (Exp.ident ~loc {loc ; txt = to_string_ident })
+          [
+            "",
+            Exp.ident ~loc {loc ; txt = Lident content}
+          ]
+    end 
+
+
+let transform_interp loc s = 
+  let s_len = String.length s in 
+  let buf = Buffer.create (s_len * 2 ) in 
+  try 
+    let cxt : cxt = 
+      { segment_start = {lnum = 0; offset = 0; byte_bol = 0}; 
+        buf ;
+        s_len;
+        segments = [];
+        pos_lnum = 0;          
+        byte_bol = 0;
+        pos_bol = 0;
+
+      } in 
+
+    check_and_transform 0 s 0 cxt; 
+    let rev_segments =  cxt.segments in 
+    match rev_segments with 
+    | [] -> 
+      Exp.constant ~loc 
+        (Const_string ("", Some Literals.escaped_j_delimiter)) 
+    | [ segment] -> 
+      aux loc segment 
+    | a::rest -> 
+      List.fold_left (fun (acc : Parsetree.expression)
+       (x : segment) ->
+          concat_exp (aux loc x) acc )
+        (aux loc a) rest
+  with 
+    Error (start,pos, error) 
+    -> 
+    Location.raise_errorf ~loc:(update border start pos loc )
+      "%a"  pp_error error 
 
 end
 module Ast_exp : sig 
@@ -105539,7 +106127,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
             { e with pexp_desc = 
               Pexp_constant (Const_string (js_str, Some Literals.escaped_j_delimiter))}
           else if Ext_string.equal delim Literals.unescaped_j_delimiter then 
-            Location.raise_errorf ~loc "{j||j} is reserved for future use" 
+            Ast_utf8_string_interp.transform_interp loc s             
           else e 
 
         (** [bs.debugger], its output should not be rewritten any more*)

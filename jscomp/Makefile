@@ -220,6 +220,7 @@ COMMON_CMXS= $(addprefix common/, $(addsuffix .cmx, $(COMMON_SRCS)))
 SYNTAX_SRCS= \
 	bs_syntaxerr\
 	ast_utf8_string\
+	ast_utf8_string_interp\
 	ast_derive_constructor \
 	ast_derive_util \
 	ast_exp \
@@ -566,5 +567,7 @@ odoc_gen:
 docs: odoc_gen
 	ocamldoc.opt -nostdlib -I stdlib -g ../odoc_gen/generator.cmxs -charset utf-8 -css-style ../../odoc_gen/style.css -sort -ppx bin/bsppx.exe -I others -I runtime -d ../docs/api $(DOCS_SOURCES)
 
-toplevel: bs_hash.cma ext.cma
+top: bs_hash.cma ext.cma
+repl: top
+	rlwrap ocaml	
 .PHONY: release   releasebuild libs snapshotml force-snapshotml toplevel
