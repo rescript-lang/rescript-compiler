@@ -27,7 +27,7 @@ let a6 x = {j|$(x)|j}
 let a7 x0 x3 x5 
   = {j|\\$x0,\$x1,\\\$x2,\\\\$x3, \\\\\$x4,\\\\\\$x5|j}
 
-let f a_1 a_2 = {j| hello $a_1, wlecome to $(a_2)  |j}
+let ffff a_1 a_2 = {j| hello $a_1, wlecome to $(a_2)  |j}
 
 
 (* let test = {j|

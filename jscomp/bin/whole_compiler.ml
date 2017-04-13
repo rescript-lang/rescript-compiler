@@ -170,6 +170,7 @@ type mli_status = Mli_na | Mli_exists | Mli_non_exists
 val no_implicit_current_dir : bool ref
 val assume_no_mli : mli_status ref 
 val record_event_when_debug : bool ref 
+val bs_vscode : bool
 
 
 type color_setting = Auto | Always | Never
@@ -301,6 +302,11 @@ type mli_status = Mli_na | Mli_exists | Mli_non_exists
 let no_implicit_current_dir = ref false
 let assume_no_mli = ref Mli_na
 let record_event_when_debug = ref true (* turned off in BuckleScript*)
+let bs_vscode = 
+    try ignore @@ Sys.getenv "BS_VSCODE" ; true with _ -> false
+    (* We get it from environment variable mostly due to 
+       we don't want to rebuild when flip on or off
+    *)
 
 
 type color_setting = Auto | Always | Never
@@ -2053,7 +2059,10 @@ let setup_colors () =
 let print_loc ppf loc =
   setup_colors ();
   let (file, line, startchar) = get_pos_info loc.loc_start in
-  let startchar = try ignore @@ Sys.getenv "BS_VSCODE" ; startchar + 1 with _ -> startchar in 
+ 
+  let startchar = 
+    if Clflags.bs_vscode then startchar + 1 else startchar in 
+    
   let endchar = loc.loc_end.pos_cnum - loc.loc_start.pos_cnum + startchar in
   if file = "//toplevel//" then begin
     if highlight_locations ppf [loc] then () else
@@ -46804,7 +46813,12 @@ let check_deprecated loc attrs s =
     | ({txt = "ocaml.deprecated"|"deprecated"; _}, p) ->
       begin match string_of_payload p with
       | Some txt ->
-          Location.prerr_warning loc (Warnings.Deprecated (s ^ "\n" ^ txt))
+ 
+if Clflags.bs_vscode then    
+     Location.prerr_warning loc (Warnings.Deprecated (s ^ " " ^ txt))
+else           
+     Location.prerr_warning loc (Warnings.Deprecated (s ^ "\n" ^ txt))
+          
       | None ->
           Location.prerr_warning loc (Warnings.Deprecated s)
       end

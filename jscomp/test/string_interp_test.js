@@ -25,6 +25,10 @@ function a7(x0, x3, x5) {
   return "\\" + (String(x0) + (",\$x1,\\\$x2,\\\\" + (String(x3) + (", \\\\\$x4,\\\\\\" + (String(x5) + "")))));
 }
 
+function ffff(a_1, a_2) {
+  return " hello " + (String(a_1) + (", wlecome to " + (String(a_2) + "  ")));
+}
+
 function f(x, y) {
   var sum = x + y | 0;
   console.log(" " + (String(x) + (" + " + (String(y) + (" = " + (String(sum) + " "))))));
@@ -74,6 +78,7 @@ exports.a4          = a4;
 exports.a5          = a5;
 exports.a6          = a6;
 exports.a7          = a7;
+exports.ffff        = ffff;
 exports.f           = f;
 exports.world       = world;
 exports.hello_world = hello_world;
