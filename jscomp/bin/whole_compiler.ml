@@ -85130,8 +85130,10 @@ and ipp_comment : 'a . P.t -> 'a  -> unit = fun   f comment ->
 *)
 
 and pp_comment f comment = 
-  if String.length comment > 0 then 
-    P.string f "/* "; P.string f comment ; P.string f " */" 
+  if String.length comment > 0 then
+    begin 
+      P.string f "/* "; P.string f comment ; P.string f " */"
+    end
 
 and pp_comment_option f comment  = 
   match comment with 
