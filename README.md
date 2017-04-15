@@ -34,6 +34,8 @@ See http://bloomberg.github.io/bucklescript/Manual.html for detailed documentati
 like to contribute content [see here](https://github.com/bloomberg/bucklescript/blob/master/site/docsource)
 for the documentation source.
 
+See http://bloomberg.github.io/bucklescript/api/ for Libraries shipped with BuckleScript.
+
 ## How BuckleScript Works
 
 BuckleScript leverages the existing OCaml compiler and toolchain to produce JavaScript that closely

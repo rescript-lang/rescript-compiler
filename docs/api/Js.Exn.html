@@ -15,40 +15,9 @@
 <title>Js.Exn</title>
 </head>
 <body>
-<nav class="module-index"><ul><li><a href="Block.html">Block</a></li>
-<li><a href="Bs.html">Bs</a></li>
+<nav class="module-index"><ul><li><a href="Bs.html">Bs</a></li>
 <li><a href="Bs_dyn.html">Bs_dyn</a></li>
 <li><a href="Bs_dyn_lib.html">Bs_dyn_lib</a></li>
-<li><a href="Bs_obj.html">Bs_obj</a></li>
-<li><a href="Bs_string.html">Bs_string</a></li>
-<li><a href="Caml_array.html">Caml_array</a></li>
-<li><a href="Caml_backtrace.html">Caml_backtrace</a></li>
-<li><a href="Caml_basic.html">Caml_basic</a></li>
-<li><a href="Caml_builtin_exceptions.html">Caml_builtin_exceptions</a></li>
-<li><a href="Caml_bytes.html">Caml_bytes</a></li>
-<li><a href="Caml_exceptions.html">Caml_exceptions</a></li>
-<li><a href="Caml_float.html">Caml_float</a></li>
-<li><a href="Caml_format.html">Caml_format</a></li>
-<li><a href="Caml_gc.html">Caml_gc</a></li>
-<li><a href="Caml_hash.html">Caml_hash</a></li>
-<li><a href="Caml_int32.html">Caml_int32</a></li>
-<li><a href="Caml_int64.html">Caml_int64</a></li>
-<li><a href="Caml_io.html">Caml_io</a></li>
-<li><a href="Caml_lexer.html">Caml_lexer</a></li>
-<li><a href="Caml_md5.html">Caml_md5</a></li>
-<li><a href="Caml_missing_polyfill.html">Caml_missing_polyfill</a></li>
-<li><a href="Caml_module.html">Caml_module</a></li>
-<li><a href="Caml_obj.html">Caml_obj</a></li>
-<li><a href="Caml_oo.html">Caml_oo</a></li>
-<li><a href="Caml_oo_curry.html">Caml_oo_curry</a></li>
-<li><a href="Caml_parser.html">Caml_parser</a></li>
-<li><a href="Caml_primitive.html">Caml_primitive</a></li>
-<li><a href="Caml_queue.html">Caml_queue</a></li>
-<li><a href="Caml_string.html">Caml_string</a></li>
-<li><a href="Caml_sys.html">Caml_sys</a></li>
-<li><a href="Caml_utils.html">Caml_utils</a></li>
-<li><a href="Caml_weak.html">Caml_weak</a></li>
-<li><a href="Curry.html">Curry</a></li>
 <li><a href="Dom.html">Dom</a></li>
 <li><a href="Js.html">Js</a></li>
 <li><a href="Js_array.html">Js_array</a></li>
@@ -68,6 +37,7 @@
 <li><a href="Js_null_undefined.html">Js_null_undefined</a></li>
 <li><a href="Js_obj.html">Js_obj</a></li>
 <li><a href="Js_primitive.html">Js_primitive</a></li>
+<li><a href="Js_promise.html">Js_promise</a></li>
 <li><a href="Js_re.html">Js_re</a></li>
 <li><a href="Js_string.html">Js_string</a></li>
 <li><a href="Js_typed_array.html">Js_typed_array</a></li>
@@ -89,13 +59,24 @@
 
 <pre><span class="keyword">module</span> Exn: <code class="type"><a href="Js_exn.html">Js_exn</a></code></pre><hr width="100%">
 <div class="type-declaration">
-<pre><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> = <code class="type">< fileName : string <a href="Js.html#TYPEundefined">Js.undefined</a>; message : string <a href="Js.html#TYPEundefined">Js.undefined</a>;<br>         name : string <a href="Js.html#TYPEundefined">Js.undefined</a>; stack : string <a href="Js.html#TYPEundefined">Js.undefined</a> ><br>       <a href="Js.html#TYPEt">Js.t</a></code> </pre>
+<pre><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> </pre>
 </div>
 
+<pre><code><span class="keyword">type</span> <code class="type"></code>exn += private </code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="EXTENSIONError">Error</span> <span class="keyword">of</span> <code class="type"><a href="Js_exn.html#TYPEt">t</a></code></code></td>
 
-<pre><span id="EXCEPTIONError"><span class="keyword">exception</span> Error</span> <span class="keyword">of</span> <code class="type"><a href="Js_exn.html#TYPEt">t</a></code></pre>
+</tr></table>
+
+
 
 <pre><span id="VALstack"><span class="keyword">val</span> stack</span> : <code class="type"><a href="Js_exn.html#TYPEt">t</a> -> string option</code></pre>
+<pre><span id="VALmessage"><span class="keyword">val</span> message</span> : <code class="type"><a href="Js_exn.html#TYPEt">t</a> -> string option</code></pre>
+<pre><span id="VALname"><span class="keyword">val</span> name</span> : <code class="type"><a href="Js_exn.html#TYPEt">t</a> -> string option</code></pre>
+<pre><span id="VALfileName"><span class="keyword">val</span> fileName</span> : <code class="type"><a href="Js_exn.html#TYPEt">t</a> -> string option</code></pre>
 <pre><span id="VALinternalToOCamlException"><span class="keyword">val</span> internalToOCamlException</span> : <code class="type">Obj.t -> exn</code></pre><div class="info ">
 <div class="not-examples">
 Used by the compiler internally<br>
@@ -104,7 +85,7 @@ Used by the compiler internally<br>
 </div>
 </div>
 
-<pre><span id="VALerror"><span class="keyword">val</span> error</span> : <code class="type">string -> 'a</code></pre><div class="info ">
+<pre><span id="VALraiseError"><span class="keyword">val</span> raiseError</span> : <code class="type">string -> 'a</code></pre><div class="info ">
 <div class="not-examples">
 Raise Js exception Error object with stacktrace<br>
 </div>
@@ -112,9 +93,9 @@ Raise Js exception Error object with stacktrace<br>
 </div>
 </div>
 
-<pre><span id="VALevalError"><span class="keyword">val</span> evalError</span> : <code class="type">string -> 'a</code></pre>
-<pre><span id="VALrangeError"><span class="keyword">val</span> rangeError</span> : <code class="type">string -> 'a</code></pre>
-<pre><span id="VALreferenceError"><span class="keyword">val</span> referenceError</span> : <code class="type">string -> 'a</code></pre>
-<pre><span id="VALsyntaxError"><span class="keyword">val</span> syntaxError</span> : <code class="type">string -> 'a</code></pre>
-<pre><span id="VALtypeError"><span class="keyword">val</span> typeError</span> : <code class="type">string -> 'a</code></pre>
-<pre><span id="VALuriError"><span class="keyword">val</span> uriError</span> : <code class="type">string -> 'a</code></pre></body></html>
+<pre><span id="VALraiseEvalError"><span class="keyword">val</span> raiseEvalError</span> : <code class="type">string -> 'a</code></pre>
+<pre><span id="VALraiseRangeError"><span class="keyword">val</span> raiseRangeError</span> : <code class="type">string -> 'a</code></pre>
+<pre><span id="VALraiseReferenceError"><span class="keyword">val</span> raiseReferenceError</span> : <code class="type">string -> 'a</code></pre>
+<pre><span id="VALraiseSyntaxError"><span class="keyword">val</span> raiseSyntaxError</span> : <code class="type">string -> 'a</code></pre>
+<pre><span id="VALraiseTypeError"><span class="keyword">val</span> raiseTypeError</span> : <code class="type">string -> 'a</code></pre>
+<pre><span id="VALraiseUriError"><span class="keyword">val</span> raiseUriError</span> : <code class="type">string -> 'a</code></pre></body></html>

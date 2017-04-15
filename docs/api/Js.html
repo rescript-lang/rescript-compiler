@@ -15,40 +15,9 @@
 <title>Js</title>
 </head>
 <body>
-<nav class="module-index"><ul><li><a href="Block.html">Block</a></li>
-<li><a href="Bs.html">Bs</a></li>
+<nav class="module-index"><ul><li><a href="Bs.html">Bs</a></li>
 <li><a href="Bs_dyn.html">Bs_dyn</a></li>
 <li><a href="Bs_dyn_lib.html">Bs_dyn_lib</a></li>
-<li><a href="Bs_obj.html">Bs_obj</a></li>
-<li><a href="Bs_string.html">Bs_string</a></li>
-<li><a href="Caml_array.html">Caml_array</a></li>
-<li><a href="Caml_backtrace.html">Caml_backtrace</a></li>
-<li><a href="Caml_basic.html">Caml_basic</a></li>
-<li><a href="Caml_builtin_exceptions.html">Caml_builtin_exceptions</a></li>
-<li><a href="Caml_bytes.html">Caml_bytes</a></li>
-<li><a href="Caml_exceptions.html">Caml_exceptions</a></li>
-<li><a href="Caml_float.html">Caml_float</a></li>
-<li><a href="Caml_format.html">Caml_format</a></li>
-<li><a href="Caml_gc.html">Caml_gc</a></li>
-<li><a href="Caml_hash.html">Caml_hash</a></li>
-<li><a href="Caml_int32.html">Caml_int32</a></li>
-<li><a href="Caml_int64.html">Caml_int64</a></li>
-<li><a href="Caml_io.html">Caml_io</a></li>
-<li><a href="Caml_lexer.html">Caml_lexer</a></li>
-<li><a href="Caml_md5.html">Caml_md5</a></li>
-<li><a href="Caml_missing_polyfill.html">Caml_missing_polyfill</a></li>
-<li><a href="Caml_module.html">Caml_module</a></li>
-<li><a href="Caml_obj.html">Caml_obj</a></li>
-<li><a href="Caml_oo.html">Caml_oo</a></li>
-<li><a href="Caml_oo_curry.html">Caml_oo_curry</a></li>
-<li><a href="Caml_parser.html">Caml_parser</a></li>
-<li><a href="Caml_primitive.html">Caml_primitive</a></li>
-<li><a href="Caml_queue.html">Caml_queue</a></li>
-<li><a href="Caml_string.html">Caml_string</a></li>
-<li><a href="Caml_sys.html">Caml_sys</a></li>
-<li><a href="Caml_utils.html">Caml_utils</a></li>
-<li><a href="Caml_weak.html">Caml_weak</a></li>
-<li><a href="Curry.html">Curry</a></li>
 <li><a href="Dom.html">Dom</a></li>
 <li><a href="Js.html">Js</a></li>
 <li><a href="Js_array.html">Js_array</a></li>
@@ -68,6 +37,7 @@
 <li><a href="Js_null_undefined.html">Js_null_undefined</a></li>
 <li><a href="Js_obj.html">Js_obj</a></li>
 <li><a href="Js_primitive.html">Js_primitive</a></li>
+<li><a href="Js_promise.html">Js_promise</a></li>
 <li><a href="Js_re.html">Js_re</a></li>
 <li><a href="Js_string.html">Js_string</a></li>
 <li><a href="Js_typed_array.html">Js_typed_array</a></li>
@@ -121,6 +91,13 @@ internal types for FFI, these types are not used by normal users<br>
 
 <div class="type-declaration">
 <pre><span id="TYPEmeth"><span class="keyword">type</span> <code class="type">(-'arg, +'result)</code> meth</span> </pre>
+</div>
+<div class="info ">
+<div class="not-examples">
+itnernal<br>
+</div>
+<div class="examples">
+</div>
 </div>
 
 <div class="type-declaration">
@@ -186,12 +163,20 @@ value of this type can be <code class="code">undefined</code>, <code class="code
 <div class="type-declaration">
 <pre><span id="TYPEboolean"><span class="keyword">type</span> <code class="type"></code>boolean</span> </pre>
 </div>
+<div class="info ">
+<div class="not-examples">
+The JS boolean type, can be <code class="code">Js.true_</code> or <code class="code">Js.false_</code><br>
+</div>
+<div class="examples">
+</div>
+</div>
 
 <div class="type-declaration">
 <pre><span id="TYPEpromise"><span class="keyword">type</span> <code class="type">(+'a, +'e)</code> promise</span> </pre>
 </div>
 <div class="info ">
 <div class="not-examples">
+<div class="warning"><span class="label">Deprecated.</span>Please use <code class="code">Js.Promise.t</code> instead</div>
 The promise type, defined here for interop<br>
 </div>
 <div class="examples">

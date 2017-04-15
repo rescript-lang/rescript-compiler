@@ -561,11 +561,13 @@ clean:
 DOCS_SOURCES+=$(shell ls runtime/*.ml*)
 DOCS_SOURCES+=$(shell ls others/*.ml*)
 
-odoc_gen:
+../odoc_gen/generator.cmxs :../odoc_gen/generator.ml
 	ocamlopt.opt -I +compiler-libs -I +ocamldoc -shared -o ../odoc_gen/generator.cmxs ../odoc_gen/generator.ml
 
-docs: odoc_gen
-	ocamldoc.opt -nostdlib -I stdlib -g ../odoc_gen/generator.cmxs -charset utf-8 -css-style ../../odoc_gen/style.css -sort -ppx bin/bsppx.exe -I others -I runtime -d ../docs/api $(DOCS_SOURCES)
+docs: ../odoc_gen/generator.cmxs
+	make -C bin bsppx.exe
+	node ../scripts/doc_gen.js
+# ocamldoc.opt -nostdlib -I stdlib -g ../odoc_gen/generator.cmxs -charset utf-8 -css-style ../../odoc_gen/style.css -sort -ppx bin/bsppx.exe -I others -I runtime -d ../docs/api $(DOCS_SOURCES)
 
 top: bs_hash.cma ext.cma
 repl: top

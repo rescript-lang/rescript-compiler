@@ -1,0 +1,35 @@
+
+{1 Libraries shipped with BuckleScript}
+
+BuckleScript is mostly a compiler, but it does ship some libraries for users' convenience
+
+{2 4 libraries}
+
+{!Js} 
+
+This library are mostly bindings to JS, it should work with both NodeJS and Browser.
+It is strongly recommended to use qualified name instead of flatten module name. 
+For example
+{[
+    [| 1; 2 ; 3 |] 
+    |> Js.Array.map (fun x -> x + 1 )
+    |> Js.log 
+]}
+
+{!Node}
+
+This library contains bindings to NodeJS, it is still work in progress, use it with care, 
+and we may break API backward compatiblity in the future.
+
+{!Dom}
+
+This library are for DOM API, currently it only defines some 
+types for diferent packages to talk to each other
+
+{!Bs}
+
+This namespace is reserved for providing some utilities in the future
+
+BuckleScript also shipped the vanilla OCaml standard library.
+@see <https://caml.inria.fr/pub/docs/manual-ocaml-4.02/stdlib.html> OCaml standard library
+
