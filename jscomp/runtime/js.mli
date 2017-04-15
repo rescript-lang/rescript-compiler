@@ -33,8 +33,7 @@
 (** This library provides bindings and necessary support for JS FFI. 
     It contains all bindings into [Js] namespace.
 
-    For example:
-    {[
+    Example {[
         [| 1;2;3;4|]
         |> Js.Array.map (fun x -> x + 1 )
         |> Js.Array.reduce (+) 0
@@ -53,8 +52,8 @@ type (-'arg, + 'result) fn (** Js uncurried function *)
 
 type +'a t
 (** Js object type.  
-    For example
-    {[
+   
+    Example {[
         let x : < x : int ; y : int > Js.t =
             [%obj{ x = 1 ; y = 2}]
     ]}
@@ -129,21 +128,53 @@ external unsafe_ge : 'a -> 'a -> bool = "#unsafe_ge"
 (** {12 nested modules}*)
 
 module Null = Js_null
+(** Provide utilities arond ['a null] *)
+
 module Undefined = Js_undefined
+(** Provide utilities around {!undefined} *)
 module Null_undefined = Js_null_undefined
+(** Provide utilities arond {!null_undefined} *)
+
 module Exn = Js_exn
+(** Provide utilities for dealing with Js exceptions *)
+
 module Array = Js_array
-module Boolean = Js_boolean
-module Date = Js_date
-module Dict = Js_dict
-module Global = Js_global
-module Json = Js_json
-module Math = Js_math
-module Obj  = Js_obj
-module Re = Js_re
+(** Provide bindings to Js array*)
 module String = Js_string
-module Typed_array = Js_typed_array
-module Types = Js_types
-module Float = Js_float
-module Int = Js_int
+(** Provide bindings to JS string *)
+module Boolean = Js_boolean
+(** Provide utilties for {!boolean} *)
+
+module Re = Js_re
+(** Provide bindings to Js regex expression *)
+
 module Promise = Js_promise
+(** Provide bindings to JS promise *)
+
+module Date = Js_date
+(** Provide bindings for JS Date *)
+
+module Dict = Js_dict
+(** Provide utilities for JS dictionary object *)
+
+module Global = Js_global
+(** Provide bindings to JS global functions in global namespace*)
+
+module Json = Js_json
+(** Provide utilities for json *)
+
+module Math = Js_math
+(** Provide bindings for JS [Math] object *)
+
+module Obj  = Js_obj
+(** Provide utilities for {!Js.t} *)
+
+module Typed_array = Js_typed_array
+(** Provide bindings for JS typed array *)
+
+module Types = Js_types
+(** Provide utilities for maninpulatig JS types  *)
+module Float = Js_float
+(** Provide utilities for JS float *)
+module Int = Js_int
+(** Provide utilities for int *)
