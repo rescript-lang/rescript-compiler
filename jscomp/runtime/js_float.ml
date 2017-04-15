@@ -282,37 +282,37 @@ external to_exponential : float -> prec:int -> string = "toExponential" [@@bs.se
 [@@ocaml.deprecated "Use `toExponential` instead"]
 
 (**
-@deprecated Use {! Js.Math.exp} instead
+@deprecated Use [exp] in {!Js.Math} instead
 *)
 external exp : float -> float = "Math.exp" [@@bs.val]
 [@@ocaml.deprecated "Use `Js.Math.exp` instead"]
 
 (**
-@deprecated Use {! Js.Math.log} instead
+@deprecated Use [log] in {!Js.Math} instead
 *)
 external log : float -> float = "Math.log" [@@bs.val]
 [@@ocaml.deprecated "Use `Js.Math.log` instead"]
 
 (**
-@deprecated Use {! Js.Math._LN2} instead
+@deprecated Use [_LN2] in {!Js.Math} instead
 *)
 external log2 : float = "Math.LN2" [@@bs.val]  
 [@@ocaml.deprecated "Use `Js.Math._LN2` instead"]
 
 (**
-@deprecated Use {! Js.Math.max_float} instead
+@deprecated Use [max_float] in {! Js.Math} instead
 *)
 external max : float -> float -> float = "Math.max" [@@bs.val]
 [@@ocaml.deprecated "Use `Js.Math.max_float` instead"]
 
 (**
-@deprecated Use {! Js.Math.random} instead
+@deprecated Use [random] in {!Js.Math} instead
 *)
 external random : unit -> float = "Math.random" [@@bs.val]
 [@@ocaml.deprecated "Use `Js.Math.random` instead"]
 
 (**
-@deprecated Use one of the appropriate conversion funtions instead
+@deprecated This is an unsafe function, please use a proper conversion function
 *)
 external of_any : 'a -> float = "Number" [@@bs.val]
-[@@ocaml.deprecated "Use one of the appropriate conversion functions instead"]
+[@@ocaml.deprecated "This is an unsafe function, please use a proper conversion function"]

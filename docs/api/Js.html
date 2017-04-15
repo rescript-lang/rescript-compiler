@@ -59,66 +59,31 @@
 
 <pre><span class="keyword">module</span> Js: <code class="code">sig</code> <a href="Js.html">..</a> <code class="code">end</code></pre><div class="info module top">
 <div class="not-examples">
-The Entry point to the JavaScript API
+This library provides bindings and necessary support for JS FFI. 
+    It contains all bindings into <code class="code">Js</code> namespace.
 <p>
 
-    This module will  be exported
-<p>
-<ul>
-<li>It does not have any code, all its code will be inlined so that
-       there will be never
-       <pre class="codepre"><code class="code"> require('js')</code></pre></li>
-</ul>
-<ul>
-<li>Its interface should be minimal</li>
-</ul>
-<br>
+    For example:
+    <pre class="codepre"><code class="code">        [| 1;2;3;4|]
+        |&gt; Js.Array.map (fun x -&gt; x + 1 )
+        |&gt; Js.Array.reduce (+) 0
+        |&gt; Js.log 
+    </code></pre><br>
 </div>
 <div class="examples">
 </div>
 </div>
 <hr width="100%">
 <div class="type-declaration">
-<pre><span id="TYPEmeth_callback"><span class="keyword">type</span> <code class="type">(-'obj, +'a)</code> meth_callback</span> </pre>
-</div>
-<div class="info ">
-<div class="not-examples">
-internal types for FFI, these types are not used by normal users<br>
-</div>
-<div class="examples">
-</div>
-</div>
-
-<div class="type-declaration">
-<pre><span id="TYPEmeth"><span class="keyword">type</span> <code class="type">(-'arg, +'result)</code> meth</span> </pre>
-</div>
-<div class="info ">
-<div class="not-examples">
-itnernal<br>
-</div>
-<div class="examples">
-</div>
-</div>
-
-<div class="type-declaration">
-<pre><span id="TYPEfn"><span class="keyword">type</span> <code class="type">(-'arg, +'result)</code> fn</span> </pre>
-</div>
-<div class="info ">
-<div class="not-examples">
-Js uncurried function<br>
-</div>
-<div class="examples">
-</div>
-</div>
-
-<div class="type-declaration">
 <pre><span id="TYPEt"><span class="keyword">type</span> <code class="type">+'a</code> t</span> </pre>
 </div>
 <div class="info ">
 <div class="not-examples">
-Types for JS objects
-<p>
-Js object type<br>
+Js object type.  
+    For example
+    <pre class="codepre"><code class="code">        let x : &lt; x : int ; y : int &gt; Js.t =
+            [%obj{ x = 1 ; y = 2}]
+    </code></pre><br>
 </div>
 <div class="examples">
 </div>
@@ -130,7 +95,7 @@ Js object type<br>
 <div class="info ">
 <div class="not-examples">
 nullable, value of this type can be either <code class="code">null</code> or <code class="code">'a</code>
-    this type is the same as <code class="code">Js.Null.t</code><br>
+    this type is the same as type <code class="code">t</code> in <a href="Js.Null.html"><code class="code">Js.Null</code></a><br>
 </div>
 <div class="examples">
 </div>
@@ -142,7 +107,7 @@ nullable, value of this type can be either <code class="code">null</code> or <co
 <div class="info ">
 <div class="not-examples">
 value of this type can be either <code class="code">undefined</code> or <code class="code">'a</code>
-    this type is the same as <code class="code">Js.Undefined.t</code><br>
+    this type is the same as type <code class="code">t</code> in <a href="Js.Undefined.html"><code class="code">Js.Undefined</code></a><br>
 </div>
 <div class="examples">
 </div>
@@ -154,7 +119,7 @@ value of this type can be either <code class="code">undefined</code> or <code cl
 <div class="info ">
 <div class="not-examples">
 value of this type can be <code class="code">undefined</code>, <code class="code">null</code> or <code class="code">'a</code>
-    this type is the same as <code class="code">Js.Null_undefined.t</code><br>
+    this type is the same as type <code class="code">t</code> n <a href="Js.Null_undefined.html"><code class="code">Js.Null_undefined</code></a><br>
 </div>
 <div class="examples">
 </div>
@@ -165,7 +130,9 @@ value of this type can be <code class="code">undefined</code>, <code class="code
 </div>
 <div class="info ">
 <div class="not-examples">
-The JS boolean type, can be <code class="code">Js.true_</code> or <code class="code">Js.false_</code><br>
+The value could be either  <a href="Js.html#VALtrue_"><code class="code">Js.true_</code></a> or <a href="Js.html#VALfalse_"><code class="code">Js.false_</code></a>.
+     Note in BuckleScript, <code class="code">boolean</code> has different representation from OCaml's <code class="code">bool</code>,
+     see conversion functions in <a href="Js.Boolean.html"><code class="code">Js.Boolean</code></a><br>
 </div>
 <div class="examples">
 </div>
@@ -176,8 +143,8 @@ The JS boolean type, can be <code class="code">Js.true_</code> or <code class="c
 </div>
 <div class="info ">
 <div class="not-examples">
-<div class="warning"><span class="label">Deprecated.</span>Please use <code class="code">Js.Promise.t</code> instead</div>
-The promise type, defined here for interop<br>
+<div class="warning"><span class="label">Deprecated.</span>please use <a href="Js.Promise.html"><code class="code">Js.Promise</code></a></div>
+The promise type, defined here for interoperation across packages<br>
 </div>
 <div class="examples">
 </div>
@@ -186,8 +153,22 @@ The promise type, defined here for interop<br>
 
 <pre><span id="VALtrue_"><span class="keyword">val</span> true_</span> : <code class="type"><a href="Js.html#TYPEboolean">boolean</a></code></pre>
 <pre><span id="VALfalse_"><span class="keyword">val</span> false_</span> : <code class="type"><a href="Js.html#TYPEboolean">boolean</a></code></pre>
-<pre><span id="VALnull"><span class="keyword">val</span> null</span> : <code class="type">'a <a href="Js.html#TYPEnull">null</a></code></pre>
-<pre><span id="VALundefined"><span class="keyword">val</span> undefined</span> : <code class="type">'a <a href="Js.html#TYPEundefined">undefined</a></code></pre>
+<pre><span id="VALnull"><span class="keyword">val</span> null</span> : <code class="type">'a <a href="Js.html#TYPEnull">null</a></code></pre><div class="info ">
+<div class="not-examples">
+The same as <code class="code">empty</code> in <a href="Js.Null.html"><code class="code">Js.Null</code></a> will be compiled as <code class="code">null</code><br>
+</div>
+<div class="examples">
+</div>
+</div>
+
+<pre><span id="VALundefined"><span class="keyword">val</span> undefined</span> : <code class="type">'a <a href="Js.html#TYPEundefined">undefined</a></code></pre><div class="info ">
+<div class="not-examples">
+The same as  <code class="code">empty</code> <a href="Js.Undefined.html"><code class="code">Js.Undefined</code></a> will be compiled as <code class="code">undefined</code><br>
+</div>
+<div class="examples">
+</div>
+</div>
+
 <pre><span id="VALto_bool"><span class="keyword">val</span> to_bool</span> : <code class="type"><a href="Js.html#TYPEboolean">boolean</a> -> bool</code></pre><div class="info ">
 <div class="not-examples">
 convert Js boolean to OCaml bool<br>
@@ -198,7 +179,8 @@ convert Js boolean to OCaml bool<br>
 
 <pre><span id="VALtypeof"><span class="keyword">val</span> typeof</span> : <code class="type">'a -> string</code></pre><div class="info ">
 <div class="not-examples">
-<code class="code">typeof x</code> will be compiled as <code class="code">typeof x</code> in JS<br>
+<code class="code">typeof x</code> will be compiled as <code class="code">typeof x</code> in JS 
+    Please consider functions in <a href="Js.Types.html"><code class="code">Js.Types</code></a> for a type safe way of reflection<br>
 </div>
 <div class="examples">
 </div>
@@ -206,7 +188,7 @@ convert Js boolean to OCaml bool<br>
 
 <pre><span id="VALlog"><span class="keyword">val</span> log</span> : <code class="type">'a -> unit</code></pre><div class="info ">
 <div class="not-examples">
-A convenience function to log<br>
+A convenience function to log everything<br>
 </div>
 <div class="examples">
 </div>
@@ -214,7 +196,9 @@ A convenience function to log<br>
 
 <pre><span id="VALunsafe_lt"><span class="keyword">val</span> unsafe_lt</span> : <code class="type">'a -> 'a -> bool</code></pre><div class="info ">
 <div class="not-examples">
-<code class="code">unsafe_lt a b</code> will be compiled as <code class="code">a &lt; b</code><br>
+<code class="code">unsafe_lt a b</code> will be compiled as <code class="code">a &lt; b</code>,
+    It is marked as unsafe, since it is impossible 
+    to give a proper semantics for comparision which applies to any type<br>
 </div>
 <div class="examples">
 </div>
@@ -222,7 +206,8 @@ A convenience function to log<br>
 
 <pre><span id="VALunsafe_le"><span class="keyword">val</span> unsafe_le</span> : <code class="type">'a -> 'a -> bool</code></pre><div class="info ">
 <div class="not-examples">
-<code class="code">unsafe_le a b</code> will be compiled as <code class="code">a &lt;= b</code><br>
+<code class="code">unsafe_le a b</code> will be compiled as <code class="code">a &lt;= b</code> 
+    see also <a href="Js.html#VALunsafe_lt"><code class="code">Js.unsafe_lt</code></a><br>
 </div>
 <div class="examples">
 </div>
@@ -230,7 +215,8 @@ A convenience function to log<br>
 
 <pre><span id="VALunsafe_gt"><span class="keyword">val</span> unsafe_gt</span> : <code class="type">'a -> 'a -> bool</code></pre><div class="info ">
 <div class="not-examples">
-<code class="code">unsafe_gt a b</code> will be compiled as <code class="code">a &gt; b</code><br>
+<code class="code">unsafe_gt a b</code> will be compiled as <code class="code">a &gt; b</code> 
+     see also <a href="Js.html#VALunsafe_lt"><code class="code">Js.unsafe_lt</code></a><br>
 </div>
 <div class="examples">
 </div>
@@ -238,7 +224,8 @@ A convenience function to log<br>
 
 <pre><span id="VALunsafe_ge"><span class="keyword">val</span> unsafe_ge</span> : <code class="type">'a -> 'a -> bool</code></pre><div class="info ">
 <div class="not-examples">
-<code class="code">unsafe_ge a b</code> will be compiled as <code class="code">a &gt;= b</code><br>
+<code class="code">unsafe_ge a b</code> will be compiled as <code class="code">a &gt;= b</code> 
+    see also <a href="Js.html#VALunsafe_lt"><code class="code">Js.unsafe_lt</code></a><br>
 </div>
 <div class="examples">
 </div>
@@ -261,4 +248,5 @@ A convenience function to log<br>
 <pre><span class="keyword">module</span> <a href="Js.Typed_array.html">Typed_array</a>: <code class="type"><a href="Js_typed_array.html">Js_typed_array</a></code></pre>
 <pre><span class="keyword">module</span> <a href="Js.Types.html">Types</a>: <code class="type"><a href="Js_types.html">Js_types</a></code></pre>
 <pre><span class="keyword">module</span> <a href="Js.Float.html">Float</a>: <code class="type"><a href="Js_float.html">Js_float</a></code></pre>
-<pre><span class="keyword">module</span> <a href="Js.Int.html">Int</a>: <code class="type"><a href="Js_int.html">Js_int</a></code></pre></body></html>
+<pre><span class="keyword">module</span> <a href="Js.Int.html">Int</a>: <code class="type"><a href="Js_int.html">Js_int</a></code></pre>
+<pre><span class="keyword">module</span> <a href="Js.Promise.html">Promise</a>: <code class="type"><a href="Js_promise.html">Js_promise</a></code></pre></body></html>

@@ -49,7 +49,7 @@ type node_module = <
        children : node_module array ;
        paths : string array;       
 > Js.t
- (** WARN: 
+ (* WARN: 
      its path name should not be changed 
      see {!Ppx_entry}
 *)
@@ -60,7 +60,7 @@ type node_require = <
   resolve : string -> string [@bs]
   (* @raise exception   *)
 > Js.t 
-(** WARN:
+(* WARN:
     its path name should not be changed 
     see {!Ppx_entry}
 *)

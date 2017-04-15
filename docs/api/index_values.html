@@ -1139,7 +1139,7 @@ natural logarithm, can return NaN
 </td></tr>
 <tr><td><a href="Js.html#VALlog">log</a> [<a href="Js.html">Js</a>]</td>
 <td><div class="info">
-A convenience function to log
+A convenience function to log everything
 </div>
 </td></tr>
 <tr><td><a href="Js_math.html#VALlog10">log10</a> [<a href="Js_math.html">Js_math</a>]</td>
@@ -1319,7 +1319,10 @@ The <code class="code">null</code> value of type <code class="code">'a Js.null_u
 </div>
 </td></tr>
 <tr><td><a href="Js.html#VALnull">null</a> [<a href="Js.html">Js</a>]</td>
-<td></td></tr>
+<td><div class="info">
+The same as <code class="code">empty</code> in <a href="Js.Null.html"><code class="code">Js.Null</code></a> will be compiled as <code class="code">null</code>
+</div>
+</td></tr>
 <tr><td><a href="Js_primitive.html#VALnull_to_opt">null_to_opt</a> [<a href="Js_primitive.html">Js_primitive</a>]</td>
 <td></td></tr>
 <tr><td><a href="Js_primitive.html#VALnull_undefined_to_opt">null_undefined_to_opt</a> [<a href="Js_primitive.html">Js_primitive</a>]</td>
@@ -2004,7 +2007,8 @@ truncate, ie.
 <td></td></tr>
 <tr><td><a href="Js.html#VALtypeof">typeof</a> [<a href="Js.html">Js</a>]</td>
 <td><div class="info">
-<code class="code">typeof x</code> will be compiled as <code class="code">typeof x</code> in JS
+<code class="code">typeof x</code> will be compiled as <code class="code">typeof x</code> in JS 
+    Please consider functions in <a href="Js.Types.html"><code class="code">Js.Types</code></a> for a type safe way of reflection
 </div>
 </td></tr>
 <tr><td align="left"><br>U</td></tr>
@@ -2014,7 +2018,10 @@ The <code class="code">undefined</code> value of type <code class="code">'a Js.n
 </div>
 </td></tr>
 <tr><td><a href="Js.html#VALundefined">undefined</a> [<a href="Js.html">Js</a>]</td>
-<td></td></tr>
+<td><div class="info">
+The same as  <code class="code">empty</code> <a href="Js.Undefined.html"><code class="code">Js.Undefined</code></a> will be compiled as <code class="code">undefined</code>
+</div>
+</td></tr>
 <tr><td><a href="Js_primitive.html#VALundefined_to_opt">undefined_to_opt</a> [<a href="Js_primitive.html">Js_primitive</a>]</td>
 <td></td></tr>
 <tr><td><a href="Js_re.html#VALunicode">unicode</a> [<a href="Js_re.html">Js_re</a>]</td>
@@ -2077,24 +2084,29 @@ may return values not representable by <code class="code">int</code>
 </td></tr>
 <tr><td><a href="Js.html#VALunsafe_ge">unsafe_ge</a> [<a href="Js.html">Js</a>]</td>
 <td><div class="info">
-<code class="code">unsafe_ge a b</code> will be compiled as <code class="code">a &gt;= b</code>
+<code class="code">unsafe_ge a b</code> will be compiled as <code class="code">a &gt;= b</code> 
+    see also <a href="Js.html#VALunsafe_lt"><code class="code">Js.unsafe_lt</code></a>
 </div>
 </td></tr>
 <tr><td><a href="Js_typed_array.TypedArray.html#VALunsafe_get">unsafe_get</a> [<a href="Js_typed_array.TypedArray.html">Js_typed_array.TypedArray</a>]</td>
 <td></td></tr>
 <tr><td><a href="Js.html#VALunsafe_gt">unsafe_gt</a> [<a href="Js.html">Js</a>]</td>
 <td><div class="info">
-<code class="code">unsafe_gt a b</code> will be compiled as <code class="code">a &gt; b</code>
+<code class="code">unsafe_gt a b</code> will be compiled as <code class="code">a &gt; b</code> 
+     see also <a href="Js.html#VALunsafe_lt"><code class="code">Js.unsafe_lt</code></a>
 </div>
 </td></tr>
 <tr><td><a href="Js.html#VALunsafe_le">unsafe_le</a> [<a href="Js.html">Js</a>]</td>
 <td><div class="info">
-<code class="code">unsafe_le a b</code> will be compiled as <code class="code">a &lt;= b</code>
+<code class="code">unsafe_le a b</code> will be compiled as <code class="code">a &lt;= b</code> 
+    see also <a href="Js.html#VALunsafe_lt"><code class="code">Js.unsafe_lt</code></a>
 </div>
 </td></tr>
 <tr><td><a href="Js.html#VALunsafe_lt">unsafe_lt</a> [<a href="Js.html">Js</a>]</td>
 <td><div class="info">
-<code class="code">unsafe_lt a b</code> will be compiled as <code class="code">a &lt; b</code>
+<code class="code">unsafe_lt a b</code> will be compiled as <code class="code">a &lt; b</code>,
+    It is marked as unsafe, since it is impossible 
+    to give a proper semantics for comparision which applies to any type
 </div>
 </td></tr>
 <tr><td><a href="Js_math.html#VALunsafe_round">unsafe_round</a> [<a href="Js_math.html">Js_math</a>]</td>

@@ -22,84 +22,116 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** The Entry point to the JavaScript API
 
-    This module will  be exported
-
+(* DESIGN:  
     - It does not have any code, all its code will be inlined so that
        there will be never
        {[ require('js')]}
-
     - Its interface should be minimal
-
 *)
 
-(** internal types for FFI, these types are not used by normal users *)
+(** This library provides bindings and necessary support for JS FFI. 
+    It contains all bindings into [Js] namespace.
+
+    For example:
+    {[
+        [| 1;2;3;4|]
+        |> Js.Array.map (fun x -> x + 1 )
+        |> Js.Array.reduce (+) 0
+        |> Js.log 
+    ]}
+*)
+
+(**/**)
+(* internal types for FFI, these types are not used by normal users *)
 type (-'obj, +'a) meth_callback
 type (-'arg, + 'result) meth
 type (-'arg, + 'result) fn (** Js uncurried function *)
-
+(**/**)
 
 (** Types for JS objects *)
-(* tag::public_js_types[]*)
+
 type +'a t
-(** Js object type *)
+(** Js object type.  
+    For example
+    {[
+        let x : < x : int ; y : int > Js.t =
+            [%obj{ x = 1 ; y = 2}]
+    ]}
+ *)
+
 type + 'a null
 (** nullable, value of this type can be either [null] or ['a]
-    this type is the same as {!Js.Null.t}  *)
+    this type is the same as type [t] in {!Null}    
+*)
+
 type + 'a undefined
 (** value of this type can be either [undefined] or ['a]
-    this type is the same as {!Js.Undefined.t}  *)
+    this type is the same as type [t] in {!Undefined}  *)
+
 type + 'a null_undefined
 (** value of this type can be [undefined], [null] or ['a]
-    this type is the same as {!Js.Null_undefined.t}*)
+    this type is the same as type [t] n {!Null_undefined} *)
+
 type boolean
-(* end::public_js_types[]*)
+(** The value could be either  {!Js.true_} or {!Js.false_}.
+     Note in BuckleScript, [boolean] has different representation from OCaml's [bool],
+     see conversion functions in {!Boolean} *)
 
 type (+'a, +'e) promise
-(** The promise type, defined here for interop *)
+(** The promise type, defined here for interoperation across packages 
+    @deprecated please use {!Js.Promise}
+*)
 
-(* tag::predefined_js_values[]*)
+
 external true_ : boolean = "true" [@@bs.val]
 external false_ : boolean = "false" [@@bs.val]
-external null : 'a null = ""
-[@@bs.val] (* The same as {!Js.Null.empty} will be compiled as [null]*)
-external undefined : 'a undefined = ""
-[@@bs.val] (* The same as  {!Js.Undefined.empty} will be compiled as [undefined]*)
-(* end::predefined_js_values[]*)
 
-(* tag::utility_functions[]*)
+external null : 'a null = "" [@@bs.val] 
+(** The same as [empty] in {!Js.Null} will be compiled as [null]*)
+
+external undefined : 'a undefined = "" [@@bs.val] 
+(** The same as  [empty] {!Js.Undefined} will be compiled as [undefined]*)
+
+
 external to_bool : boolean -> bool = "#boolean_to_bool"
 (** convert Js boolean to OCaml bool *)
+
 external typeof : 'a -> string = "#typeof"
-(** [typeof x] will be compiled as [typeof x] in JS *)
+(** [typeof x] will be compiled as [typeof x] in JS 
+    Please consider functions in {!Types} for a type safe way of reflection 
+*)
+
 external log : 'a -> unit = "console.log" [@@bs.val]
-(** A convenience function to log *)
+(** A convenience function to log everything *)
 
 (** {4 operators }*)
 
 external unsafe_lt : 'a -> 'a -> bool = "#unsafe_lt"
-(**  [unsafe_lt a b] will be compiled as [a < b] *)
+(** [unsafe_lt a b] will be compiled as [a < b].
+    It is marked as unsafe, since it is impossible 
+    to give a proper semantics for comparision which applies to any type
+ *)
 external unsafe_le : 'a -> 'a -> bool = "#unsafe_le"
-(**  [unsafe_le a b] will be compiled as [a <= b] *)
+(**  [unsafe_le a b] will be compiled as [a <= b]. 
+    See also {!unsafe_lt}
+*)
 external unsafe_gt : 'a -> 'a -> bool = "#unsafe_gt"
-(**  [unsafe_gt a b] will be compiled as [a > b] *)
+(**  [unsafe_gt a b] will be compiled as [a > b]. 
+     See also {!unsafe_lt}
+*)
 external unsafe_ge : 'a -> 'a -> bool = "#unsafe_ge"
-(**  [unsafe_ge a b] will be compiled as [a >= b] *)
-(* end::utility_functions[]*)
+(**  [unsafe_ge a b] will be compiled as [a >= b].
+    See also {!unsafe_lt}
+*)
 
-(* tag::nested_built_in_modules[] *)
-(** {4 nested modules}*)
+
+(** {12 nested modules}*)
 
 module Null = Js_null
 module Undefined = Js_undefined
 module Null_undefined = Js_null_undefined
 module Exn = Js_exn
-(* end::nested_built_in_modules[] *)
-
-(** {8 nested modules} *experimental* API, please refer to
-  {! Js_dict}, {! Js_array}, {! Js_string} and {! Js_re} for more details *)
-
 module Array = Js_array
 module Boolean = Js_boolean
 module Date = Js_date
@@ -114,3 +146,4 @@ module Typed_array = Js_typed_array
 module Types = Js_types
 module Float = Js_float
 module Int = Js_int
+module Promise = Js_promise
