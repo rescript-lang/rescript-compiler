@@ -12,40 +12,9 @@
 <title>Index of types</title>
 </head>
 <body class="index elements-index">
-<nav class="module-index"><ul><li><a href="Block.html">Block</a></li>
-<li><a href="Bs.html">Bs</a></li>
+<nav class="module-index"><ul><li><a href="Bs.html">Bs</a></li>
 <li><a href="Bs_dyn.html">Bs_dyn</a></li>
 <li><a href="Bs_dyn_lib.html">Bs_dyn_lib</a></li>
-<li><a href="Bs_obj.html">Bs_obj</a></li>
-<li><a href="Bs_string.html">Bs_string</a></li>
-<li><a href="Caml_array.html">Caml_array</a></li>
-<li><a href="Caml_backtrace.html">Caml_backtrace</a></li>
-<li><a href="Caml_basic.html">Caml_basic</a></li>
-<li><a href="Caml_builtin_exceptions.html">Caml_builtin_exceptions</a></li>
-<li><a href="Caml_bytes.html">Caml_bytes</a></li>
-<li><a href="Caml_exceptions.html">Caml_exceptions</a></li>
-<li><a href="Caml_float.html">Caml_float</a></li>
-<li><a href="Caml_format.html">Caml_format</a></li>
-<li><a href="Caml_gc.html">Caml_gc</a></li>
-<li><a href="Caml_hash.html">Caml_hash</a></li>
-<li><a href="Caml_int32.html">Caml_int32</a></li>
-<li><a href="Caml_int64.html">Caml_int64</a></li>
-<li><a href="Caml_io.html">Caml_io</a></li>
-<li><a href="Caml_lexer.html">Caml_lexer</a></li>
-<li><a href="Caml_md5.html">Caml_md5</a></li>
-<li><a href="Caml_missing_polyfill.html">Caml_missing_polyfill</a></li>
-<li><a href="Caml_module.html">Caml_module</a></li>
-<li><a href="Caml_obj.html">Caml_obj</a></li>
-<li><a href="Caml_oo.html">Caml_oo</a></li>
-<li><a href="Caml_oo_curry.html">Caml_oo_curry</a></li>
-<li><a href="Caml_parser.html">Caml_parser</a></li>
-<li><a href="Caml_primitive.html">Caml_primitive</a></li>
-<li><a href="Caml_queue.html">Caml_queue</a></li>
-<li><a href="Caml_string.html">Caml_string</a></li>
-<li><a href="Caml_sys.html">Caml_sys</a></li>
-<li><a href="Caml_utils.html">Caml_utils</a></li>
-<li><a href="Caml_weak.html">Caml_weak</a></li>
-<li><a href="Curry.html">Curry</a></li>
 <li><a href="Dom.html">Dom</a></li>
 <li><a href="Js.html">Js</a></li>
 <li><a href="Js_array.html">Js_array</a></li>
@@ -65,6 +34,7 @@
 <li><a href="Js_null_undefined.html">Js_null_undefined</a></li>
 <li><a href="Js_obj.html">Js_obj</a></li>
 <li><a href="Js_primitive.html">Js_primitive</a></li>
+<li><a href="Js_promise.html">Js_promise</a></li>
 <li><a href="Js_re.html">Js_re</a></li>
 <li><a href="Js_string.html">Js_string</a></li>
 <li><a href="Js_typed_array.html">Js_typed_array</a></li>
@@ -174,8 +144,6 @@
 <td></td></tr>
 <tr><td><a href="Dom.html#TYPEanimationEvent">animationEvent</a> [<a href="Dom.html">Dom</a>]</td>
 <td></td></tr>
-<tr><td><a href="Bs_obj.html#TYPEany">any</a> [<a href="Bs_obj.html">Bs_obj</a>]</td>
-<td></td></tr>
 <tr><td><a href="Js_typed_array.html#TYPEarray_buffer">array_buffer</a> [<a href="Js_typed_array.html">Js_typed_array</a>]</td>
 <td></td></tr>
 <tr><td><a href="Js_typed_array.html#TYPEarray_like">array_like</a> [<a href="Js_typed_array.html">Js_typed_array</a>]</td>
@@ -188,7 +156,10 @@
 <tr><td><a href="Dom.html#TYPEbeforeUnloadEvent">beforeUnloadEvent</a> [<a href="Dom.html">Dom</a>]</td>
 <td></td></tr>
 <tr><td><a href="Js.html#TYPEboolean">boolean</a> [<a href="Js.html">Js</a>]</td>
-<td></td></tr>
+<td><div class="info">
+The JS boolean type, can be <code class="code">Js.true_</code> or <code class="code">Js.false_</code>
+</div>
+</td></tr>
 <tr><td><a href="Node.html#TYPEbuffer">buffer</a> [<a href="Node.html">Node</a>]</td>
 <td></td></tr>
 <tr><td align="left"><br>C</td></tr>
@@ -203,8 +174,6 @@
 <tr><td><a href="Dom.html#TYPEcloseEvent">closeEvent</a> [<a href="Dom.html">Dom</a>]</td>
 <td></td></tr>
 <tr><td><a href="Dom.html#TYPEcomment">comment</a> [<a href="Dom.html">Dom</a>]</td>
-<td></td></tr>
-<tr><td><a href="Caml_int64.html#TYPEcomparison">comparison</a> [<a href="Caml_int64.html">Caml_int64</a>]</td>
 <td></td></tr>
 <tr><td><a href="Dom.html#TYPEcompositionEvent">compositionEvent</a> [<a href="Dom.html">Dom</a>]</td>
 <td></td></tr>
@@ -246,7 +215,7 @@
 <td></td></tr>
 <tr><td><a href="Js_typed_array.TypedArray.html#TYPEelt">elt</a> [<a href="Js_typed_array.TypedArray.html">Js_typed_array.TypedArray</a>]</td>
 <td></td></tr>
-<tr><td><a href="Caml_obj.html#TYPEeq">eq</a> [<a href="Caml_obj.html">Caml_obj</a>]</td>
+<tr><td><a href="Js_promise.html#TYPEerror">error</a> [<a href="Js_promise.html">Js_promise</a>]</td>
 <td></td></tr>
 <tr><td><a href="Dom.html#TYPEerrorEvent">errorEvent</a> [<a href="Dom.html">Dom</a>]</td>
 <td></td></tr>
@@ -259,8 +228,6 @@
 <tr><td><a href="Dom.html#TYPEeventTarget_like">eventTarget_like</a> [<a href="Dom.html">Dom</a>]</td>
 <td></td></tr>
 <tr><td><a href="Dom.html#TYPEevent_like">event_like</a> [<a href="Dom.html">Dom</a>]</td>
-<td></td></tr>
-<tr><td><a href="Caml_builtin_exceptions.html#TYPEexception_block">exception_block</a> [<a href="Caml_builtin_exceptions.html">Caml_builtin_exceptions</a>]</td>
 <td></td></tr>
 <tr><td align="left"><br>F</td></tr>
 <tr><td><a href="Node_fs.html#TYPEfd">fd</a> [<a href="Node_fs.html">Node_fs</a>]</td>
@@ -317,7 +284,10 @@ Underlying type of a JSON value
 <td></td></tr>
 <tr><td align="left"><br>M</td></tr>
 <tr><td><a href="Js.html#TYPEmeth">meth</a> [<a href="Js.html">Js</a>]</td>
-<td></td></tr>
+<td><div class="info">
+itnernal
+</div>
+</td></tr>
 <tr><td><a href="Js.html#TYPEmeth_callback">meth_callback</a> [<a href="Js.html">Js</a>]</td>
 <td><div class="info">
 internal types for FFI, these types are not used by normal users
@@ -382,8 +352,6 @@ This type has only one value <code class="code">null</code>
 <td></td></tr>
 <tr><td><a href="Node_child_process.html#TYPEoption">option</a> [<a href="Node_child_process.html">Node_child_process</a>]</td>
 <td></td></tr>
-<tr><td><a href="Caml_io.html#TYPEout_channel">out_channel</a> [<a href="Caml_io.html">Caml_io</a>]</td>
-<td></td></tr>
 <tr><td align="left"><br>P</td></tr>
 <tr><td><a href="Dom.html#TYPEpageTransitionEvent">pageTransitionEvent</a> [<a href="Dom.html">Dom</a>]</td>
 <td></td></tr>
@@ -404,8 +372,8 @@ The relative path to a filename can be used.
 <td></td></tr>
 <tr><td><a href="Js.html#TYPEpromise">promise</a> [<a href="Js.html">Js</a>]</td>
 <td><div class="info">
-The promise type, defined here for interop
-</div>
+<span class="deprecated">The promise type, defined here for interop
+</span></div>
 </td></tr>
 <tr><td align="left"><br>R</td></tr>
 <tr><td><a href="Dom.html#TYPErange">range</a> [<a href="Dom.html">Dom</a>]</td>
@@ -424,12 +392,8 @@ the result of a executing a RegExp on a string
 <td></td></tr>
 <tr><td><a href="Dom.html#TYPEshadowRoot">shadowRoot</a> [<a href="Dom.html">Dom</a>]</td>
 <td></td></tr>
-<tr><td><a href="Caml_module.html#TYPEshape">shape</a> [<a href="Caml_module.html">Caml_module</a>]</td>
-<td><div class="info">
-Note that we have to provide a drop in replacement, since compiler internally will
-    spit out ("CamlinternalMod".
-</div>
-</td></tr>
+<tr><td><a href="Node_child_process.html#TYPEspawnResult">spawnResult</a> [<a href="Node_child_process.html">Node_child_process</a>]</td>
+<td></td></tr>
 <tr><td><a href="Dom.html#TYPEstorageEvent">storageEvent</a> [<a href="Dom.html">Dom</a>]</td>
 <td></td></tr>
 <tr><td><a href="Node.html#TYPEstring_buffer">string_buffer</a> [<a href="Node.html">Node</a>]</td>
@@ -453,6 +417,8 @@ Js symbol type only available in ES6
 <tr><td><a href="Node_process.html#TYPEt">t</a> [<a href="Node_process.html">Node_process</a>]</td>
 <td></td></tr>
 <tr><td><a href="Node_fs.Watch.html#TYPEt">t</a> [<a href="Node_fs.Watch.html">Node_fs.Watch</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_promise.html#TYPEt">t</a> [<a href="Js_promise.html">Js_promise</a>]</td>
 <td></td></tr>
 <tr><td><a href="Js_types.html#TYPEt">t</a> [<a href="Js_types.html">Js_types</a>]</td>
 <td></td></tr>
@@ -507,12 +473,6 @@ Local alias for <code class="code">'a Js.null</code>
 Types for JS objects
 </div>
 </td></tr>
-<tr><td><a href="Caml_weak.html#TYPEt">t</a> [<a href="Caml_weak.html">Caml_weak</a>]</td>
-<td></td></tr>
-<tr><td><a href="Caml_queue.html#TYPEt">t</a> [<a href="Caml_queue.html">Caml_queue</a>]</td>
-<td></td></tr>
-<tr><td><a href="Caml_int64.html#TYPEt">t</a> [<a href="Caml_int64.html">Caml_int64</a>]</td>
-<td></td></tr>
 <tr><td><a href="Dom.html#TYPEtext">text</a> [<a href="Dom.html">Dom</a>]</td>
 <td></td></tr>
 <tr><td><a href="Dom.html#TYPEtimeEvent">timeEvent</a> [<a href="Dom.html">Dom</a>]</td>

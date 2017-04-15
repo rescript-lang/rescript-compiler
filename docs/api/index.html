@@ -16,16 +16,13 @@
 <h1></h1>
 <ul class="indexlist">
 <li><a href="index_types.html">Index of types</a></li>
-<li><a href="index_exceptions.html">Index of exceptions</a></li>
+<li><a href="index_extensions.html">Index of extensions</a></li>
 <li><a href="index_values.html">Index of values</a></li>
 <li><a href="index_modules.html">Index of modules</a></li>
 <li><a href="index_module_types.html">Index of module types</a></li>
 </ul>
 <br/><br>
 <table class="indextable">
-<tr><td class="module"><a href="Block.html">Block</a></td><td><div class="info">
-</div>
-</td></tr>
 <tr><td class="module"><a href="Bs.html">Bs</a></td><td><div class="info">
 place holder for node bindings
 </div>
@@ -37,95 +34,6 @@ An experimentation of runtime types in OCaml,
 </td></tr>
 <tr><td class="module"><a href="Bs_dyn_lib.html">Bs_dyn_lib</a></td><td><div class="info">
 experimental API
-</div>
-</td></tr>
-<tr><td class="module"><a href="Bs_obj.html">Bs_obj</a></td><td><div class="info">
-</div>
-</td></tr>
-<tr><td class="module"><a href="Bs_string.html">Bs_string</a></td><td><div class="info">
-</div>
-</td></tr>
-<tr><td class="module"><a href="Caml_array.html">Caml_array</a></td><td><div class="info">
-</div>
-</td></tr>
-<tr><td class="module"><a href="Caml_backtrace.html">Caml_backtrace</a></td><td><div class="info">
-</div>
-</td></tr>
-<tr><td class="module"><a href="Caml_basic.html">Caml_basic</a></td><td><div class="info">
-</div>
-</td></tr>
-<tr><td class="module"><a href="Caml_builtin_exceptions.html">Caml_builtin_exceptions</a></td><td><div class="info">
-</div>
-</td></tr>
-<tr><td class="module"><a href="Caml_bytes.html">Caml_bytes</a></td><td><div class="info">
-</div>
-</td></tr>
-<tr><td class="module"><a href="Caml_exceptions.html">Caml_exceptions</a></td><td><div class="info">
-</div>
-</td></tr>
-<tr><td class="module"><a href="Caml_float.html">Caml_float</a></td><td><div class="info">
-</div>
-</td></tr>
-<tr><td class="module"><a href="Caml_format.html">Caml_format</a></td><td><div class="info">
-</div>
-</td></tr>
-<tr><td class="module"><a href="Caml_gc.html">Caml_gc</a></td><td><div class="info">
-</div>
-</td></tr>
-<tr><td class="module"><a href="Caml_hash.html">Caml_hash</a></td><td><div class="info">
-</div>
-</td></tr>
-<tr><td class="module"><a href="Caml_int32.html">Caml_int32</a></td><td><div class="info">
-</div>
-</td></tr>
-<tr><td class="module"><a href="Caml_int64.html">Caml_int64</a></td><td><div class="info">
-</div>
-</td></tr>
-<tr><td class="module"><a href="Caml_io.html">Caml_io</a></td><td><div class="info">
-</div>
-</td></tr>
-<tr><td class="module"><a href="Caml_lexer.html">Caml_lexer</a></td><td><div class="info">
-</div>
-</td></tr>
-<tr><td class="module"><a href="Caml_md5.html">Caml_md5</a></td><td><div class="info">
-</div>
-</td></tr>
-<tr><td class="module"><a href="Caml_missing_polyfill.html">Caml_missing_polyfill</a></td><td></td></tr>
-<tr><td class="module"><a href="Caml_module.html">Caml_module</a></td><td><div class="info">
-</div>
-</td></tr>
-<tr><td class="module"><a href="Caml_obj.html">Caml_obj</a></td><td><div class="info">
-</div>
-</td></tr>
-<tr><td class="module"><a href="Caml_oo.html">Caml_oo</a></td><td><div class="info">
-</div>
-</td></tr>
-<tr><td class="module"><a href="Caml_oo_curry.html">Caml_oo_curry</a></td><td><div class="info">
-</div>
-</td></tr>
-<tr><td class="module"><a href="Caml_parser.html">Caml_parser</a></td><td><div class="info">
-</div>
-</td></tr>
-<tr><td class="module"><a href="Caml_primitive.html">Caml_primitive</a></td><td><div class="info">
-</div>
-</td></tr>
-<tr><td class="module"><a href="Caml_queue.html">Caml_queue</a></td><td><div class="info">
-Adapted by Hongbo Zhang for Js backend and minimal code size
-</div>
-</td></tr>
-<tr><td class="module"><a href="Caml_string.html">Caml_string</a></td><td><div class="info">
-</div>
-</td></tr>
-<tr><td class="module"><a href="Caml_sys.html">Caml_sys</a></td><td><div class="info">
-</div>
-</td></tr>
-<tr><td class="module"><a href="Caml_utils.html">Caml_utils</a></td><td><div class="info">
-</div>
-</td></tr>
-<tr><td class="module"><a href="Caml_weak.html">Caml_weak</a></td><td><div class="info">
-</div>
-</td></tr>
-<tr><td class="module"><a href="Curry.html">Curry</a></td><td><div class="info">
 </div>
 </td></tr>
 <tr><td class="module"><a href="Dom.html">Dom</a></td><td></td></tr>
@@ -199,6 +107,12 @@ Provides functions for inspecting and maniplating native JavaScript objects
 <tr><td class="module"><a href="Js_primitive.html">Js_primitive</a></td><td><div class="info">
 </div>
 </td></tr>
+<tr><td class="module"><a href="Js_promise.html">Js_promise</a></td><td><div class="info">
+Specialized bindings to Promise, note for simplicity,  
+    this binding does not track the error type, it treat it as an opaque type
+    <pre class="codepre"><code class="code">    </code></pre>
+</div>
+</td></tr>
 <tr><td class="module"><a href="Js_re.html">Js_re</a></td><td><div class="info">
 Provides bindings for JavaScript Regular Expressions
 </div>
@@ -246,7 +160,8 @@ Node Path API
 </div>
 </td></tr>
 <tr><td class="module"><a href="Node_process.html">Node_process</a></td><td><div class="info">
-Node Process API
+The process.uptime() method returns the number of seconds 
+   the current Node.js process has been running.)
 </div>
 </td></tr>
 </table>
