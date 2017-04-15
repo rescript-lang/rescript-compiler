@@ -14,156 +14,52 @@
 </head>
 <body class="index top">
 <h1></h1>
-<ul class="indexlist">
-<li><a href="index_types.html">Index of types</a></li>
-<li><a href="index_extensions.html">Index of extensions</a></li>
-<li><a href="index_values.html">Index of values</a></li>
-<li><a href="index_modules.html">Index of modules</a></li>
-<li><a href="index_module_types.html">Index of module types</a></li>
-</ul>
-<br/><br>
-<table class="indextable">
-<tr><td class="module"><a href="Bs.html">Bs</a></td><td><div class="info">
-place holder for node bindings
+<div class="not-examples">
+<h1 id="1_LibrariesshippedwithBuckleScript">Libraries shipped with BuckleScript</h1>
+<p>
+
+BuckleScript is mostly a compiler, but it does ship some libraries for users' convenience
+<p>
+
+<h2 id="2_4libraries">4 libraries</h2>
+<p>
+
+<a href="Js.html"><code class="code">Js</code></a> 
+<p>
+
+This library are mostly bindings to JS, it should work with both NodeJS and Browser.
+It is strongly recommended to use qualified name instead of flatten module name. 
+For example
+<pre class="codepre"><code class="code">    [| 1; 2 ; 3 |] 
+    |&gt; Js.Array.map (fun x -&gt; x + 1 )
+    |&gt; Js.log 
+</code></pre>
+<p>
+
+<a href="Node.html"><code class="code">Node</code></a>
+<p>
+
+This library contains bindings to NodeJS, it is still work in progress, use it with care, 
+and we may break API backward compatiblity in the future.
+<p>
+
+<a href="Dom.html"><code class="code">Dom</code></a>
+<p>
+
+This library are for DOM API, currently it only defines some 
+types for diferent packages to talk to each other
+<p>
+
+<a href="Bs.html"><code class="code">Bs</code></a>
+<p>
+
+This namespace is reserved for providing some utilities in the future
+<p>
+
+BuckleScript also shipped the vanilla OCaml standard library.<br>
+<div class="tag"><b>See also</b> <a href="https://caml.inria.fr/pub/docs/manual-ocaml-4.02/stdlib.html">OCaml standard library</a><br>
+</div></div>
+<div class="examples">
 </div>
-</td></tr>
-<tr><td class="module"><a href="Bs_dyn.html">Bs_dyn</a></td><td><div class="info">
-An experimentation of runtime types in OCaml,
-    unstable API, only for internal use
-</div>
-</td></tr>
-<tr><td class="module"><a href="Bs_dyn_lib.html">Bs_dyn_lib</a></td><td><div class="info">
-experimental API
-</div>
-</td></tr>
-<tr><td class="module"><a href="Dom.html">Dom</a></td><td></td></tr>
-<tr><td class="module"><a href="Js.html">Js</a></td><td><div class="info">
-The Entry point to the JavaScript API
-</div>
-</td></tr>
-<tr><td class="module"><a href="Js_array.html">Js_array</a></td><td><div class="info">
-JavaScript Array API
-</div>
-</td></tr>
-<tr><td class="module"><a href="Js_boolean.html">Js_boolean</a></td><td><div class="info">
-Contains functions for dealing with JavaScript booleans
-</div>
-</td></tr>
-<tr><td class="module"><a href="Js_cast.html">Js_cast</a></td><td><div class="info">
-Safe cast between OCaml values which share the same 
-    runtime representation
-</div>
-</td></tr>
-<tr><td class="module"><a href="Js_date.html">Js_date</a></td><td><div class="info">
-JavaScript Date API
-</div>
-</td></tr>
-<tr><td class="module"><a href="Js_dict.html">Js_dict</a></td><td><div class="info">
-Dictionary type (ie an '{ }' JS object).
-</div>
-</td></tr>
-<tr><td class="module"><a href="Js_exn.html">Js_exn</a></td><td><div class="info">
-Used by the compiler internally
-</div>
-</td></tr>
-<tr><td class="module"><a href="Js_float.html">Js_float</a></td><td><div class="info">
-Provides functions for inspecting and manipulating <code class="code">float</code>s
-</div>
-</td></tr>
-<tr><td class="module"><a href="Js_global.html">Js_global</a></td><td><div class="info">
-Contains functions available in the global scope (<code class="code">window</code> in a browser context)
-</div>
-</td></tr>
-<tr><td class="module"><a href="Js_int.html">Js_int</a></td><td><div class="info">
-Provides functions for inspecting and manipulating <code class="code">int</code>s
-</div>
-</td></tr>
-<tr><td class="module"><a href="Js_int64.html">Js_int64</a></td><td><div class="info">
-</div>
-</td></tr>
-<tr><td class="module"><a href="Js_json.html">Js_json</a></td><td><div class="info">
-Efficient JSON encoding using JavaScript API
-</div>
-</td></tr>
-<tr><td class="module"><a href="Js_math.html">Js_math</a></td><td><div class="info">
-JavaScript Math API
-</div>
-</td></tr>
-<tr><td class="module"><a href="Js_nativeint.html">Js_nativeint</a></td><td><div class="info">
-</div>
-</td></tr>
-<tr><td class="module"><a href="Js_null.html">Js_null</a></td><td><div class="info">
-Provides functionality for dealing with the <code class="code">'a Js.null</code> type
-</div>
-</td></tr>
-<tr><td class="module"><a href="Js_null_undefined.html">Js_null_undefined</a></td><td><div class="info">
-Contains functionality for dealing with values that can be both <code class="code">null</code> and <code class="code">undefined</code>
-</div>
-</td></tr>
-<tr><td class="module"><a href="Js_obj.html">Js_obj</a></td><td><div class="info">
-Provides functions for inspecting and maniplating native JavaScript objects
-</div>
-</td></tr>
-<tr><td class="module"><a href="Js_primitive.html">Js_primitive</a></td><td><div class="info">
-</div>
-</td></tr>
-<tr><td class="module"><a href="Js_promise.html">Js_promise</a></td><td><div class="info">
-Specialized bindings to Promise, note for simplicity,  
-    this binding does not track the error type, it treat it as an opaque type
-    <pre class="codepre"><code class="code">    </code></pre>
-</div>
-</td></tr>
-<tr><td class="module"><a href="Js_re.html">Js_re</a></td><td><div class="info">
-Provides bindings for JavaScript Regular Expressions
-</div>
-</td></tr>
-<tr><td class="module"><a href="Js_string.html">Js_string</a></td><td><div class="info">
-JavaScript String API
-</div>
-</td></tr>
-<tr><td class="module"><a href="Js_typed_array.html">Js_typed_array</a></td><td><div class="info">
-JavaScript Typed Array API
-</div>
-</td></tr>
-<tr><td class="module"><a href="Js_types.html">Js_types</a></td><td><div class="info">
-</div>
-</td></tr>
-<tr><td class="module"><a href="Js_undefined.html">Js_undefined</a></td><td><div class="info">
-Provides functionality for dealing with the <code class="code">'a Js.undefined</code> type
-</div>
-</td></tr>
-<tr><td class="module"><a href="Js_unsafe.html">Js_unsafe</a></td><td><div class="info">
-</div>
-</td></tr>
-<tr><td class="module"><a href="Node.html">Node</a></td><td><div class="info">
-place holder for node bindings
-</div>
-</td></tr>
-<tr><td class="module"><a href="Node_buffer.html">Node_buffer</a></td><td><div class="info">
-Node Buffer API
-</div>
-</td></tr>
-<tr><td class="module"><a href="Node_child_process.html">Node_child_process</a></td><td><div class="info">
-Node Child Process API
-</div>
-</td></tr>
-<tr><td class="module"><a href="Node_fs.html">Node_fs</a></td><td><div class="info">
-Node FS API
-</div>
-</td></tr>
-<tr><td class="module"><a href="Node_module.html">Node_module</a></td><td><div class="info">
-Node Module API
-</div>
-</td></tr>
-<tr><td class="module"><a href="Node_path.html">Node_path</a></td><td><div class="info">
-Node Path API
-</div>
-</td></tr>
-<tr><td class="module"><a href="Node_process.html">Node_process</a></td><td><div class="info">
-The process.uptime() method returns the number of seconds 
-   the current Node.js process has been running.)
-</div>
-</td></tr>
-</table>
 </body>
 </html>

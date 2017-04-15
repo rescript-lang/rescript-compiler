@@ -33,7 +33,9 @@ var others_files =
 var odoc_gendir = path.join(__dirname,'..', 'odoc_gen')
 var bsppx = path.join(__dirname,'..','jscomp','bin','bsppx.exe')
 var api_doc_dir = path.join(__dirname,'..','docs','api') 
-var prefix_flags = `ocamldoc.opt -w -40 -nostdlib -I ${stdlib_dir} -I ${others_dir} -I ${runtime_dir} -g ${odoc_gendir}/generator.cmxs -charset utf-8  -sort -ppx ${bsppx}  -d ${api_doc_dir}`
+var intro = path.join(__dirname,'..','docs','api','intro.txt')
+
+var prefix_flags = `ocamldoc.opt -w -40 -nostdlib -I ${stdlib_dir} -I ${others_dir} -I ${runtime_dir} -g ${odoc_gendir}/generator.cmxs -charset utf-8  -intro ${intro} -sort -ppx ${bsppx}  -d ${api_doc_dir}`
 
 
 // It seems ocamldoc does need require all files for indexing modules, WTF ocamldoc !!
