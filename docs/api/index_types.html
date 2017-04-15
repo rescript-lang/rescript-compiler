@@ -157,7 +157,7 @@
 <td></td></tr>
 <tr><td><a href="Js.html#TYPEboolean">boolean</a> [<a href="Js.html">Js</a>]</td>
 <td><div class="info">
-The JS boolean type, can be <code class="code">Js.true_</code> or <code class="code">Js.false_</code>
+The value could be either  <a href="Js.html#VALtrue_"><code class="code">Js.true_</code></a> or <a href="Js.html#VALfalse_"><code class="code">Js.false_</code></a>.
 </div>
 </td></tr>
 <tr><td><a href="Node.html#TYPEbuffer">buffer</a> [<a href="Node.html">Node</a>]</td>
@@ -232,11 +232,6 @@ The JS boolean type, can be <code class="code">Js.true_</code> or <code class="c
 <tr><td align="left"><br>F</td></tr>
 <tr><td><a href="Node_fs.html#TYPEfd">fd</a> [<a href="Node_fs.html">Node_fs</a>]</td>
 <td></td></tr>
-<tr><td><a href="Js.html#TYPEfn">fn</a> [<a href="Js.html">Js</a>]</td>
-<td><div class="info">
-Js uncurried function
-</div>
-</td></tr>
 <tr><td><a href="Dom.html#TYPEfocusEvent">focusEvent</a> [<a href="Dom.html">Dom</a>]</td>
 <td></td></tr>
 <tr><td><a href="Js_types.html#TYPEfunction_val">function_val</a> [<a href="Js_types.html">Js_types</a>]</td>
@@ -283,16 +278,6 @@ Underlying type of a JSON value
 <tr><td><a href="Dom.html#TYPElocation">location</a> [<a href="Dom.html">Dom</a>]</td>
 <td></td></tr>
 <tr><td align="left"><br>M</td></tr>
-<tr><td><a href="Js.html#TYPEmeth">meth</a> [<a href="Js.html">Js</a>]</td>
-<td><div class="info">
-itnernal
-</div>
-</td></tr>
-<tr><td><a href="Js.html#TYPEmeth_callback">meth_callback</a> [<a href="Js.html">Js</a>]</td>
-<td><div class="info">
-internal types for FFI, these types are not used by normal users
-</div>
-</td></tr>
 <tr><td><a href="Dom.html#TYPEmouseEvent">mouseEvent</a> [<a href="Dom.html">Dom</a>]</td>
 <td></td></tr>
 <tr><td><a href="Dom.html#TYPEmouseEvent_like">mouseEvent_like</a> [<a href="Dom.html">Dom</a>]</td>
@@ -317,29 +302,19 @@ internal types for FFI, these types are not used by normal users
 <tr><td><a href="Dom.html#TYPEnode_like">node_like</a> [<a href="Dom.html">Dom</a>]</td>
 <td></td></tr>
 <tr><td><a href="Node.html#TYPEnode_module">node_module</a> [<a href="Node.html">Node</a>]</td>
-<td><div class="info">
-WARN: 
-     its path name should not be changed 
-     see <code class="code">Ppx_entry</code>
-</div>
-</td></tr>
+<td></td></tr>
 <tr><td><a href="Node.html#TYPEnode_require">node_require</a> [<a href="Node.html">Node</a>]</td>
-<td><div class="info">
-WARN:
-    its path name should not be changed 
-    see <code class="code">Ppx_entry</code>
-</div>
-</td></tr>
+<td></td></tr>
 <tr><td><a href="Js.html#TYPEnull">null</a> [<a href="Js.html">Js</a>]</td>
 <td><div class="info">
 nullable, value of this type can be either <code class="code">null</code> or <code class="code">'a</code>
-    this type is the same as <code class="code">Js.Null.t</code>
+    this type is the same as type <code class="code">t</code> in <a href="Js.Null.html"><code class="code">Js.Null</code></a>
 </div>
 </td></tr>
 <tr><td><a href="Js.html#TYPEnull_undefined">null_undefined</a> [<a href="Js.html">Js</a>]</td>
 <td><div class="info">
 value of this type can be <code class="code">undefined</code>, <code class="code">null</code> or <code class="code">'a</code>
-    this type is the same as <code class="code">Js.Null_undefined.t</code>
+    this type is the same as type <code class="code">t</code> n <a href="Js.Null_undefined.html"><code class="code">Js.Null_undefined</code></a>
 </div>
 </td></tr>
 <tr><td><a href="Js_types.html#TYPEnull_val">null_val</a> [<a href="Js_types.html">Js_types</a>]</td>
@@ -372,7 +347,7 @@ The relative path to a filename can be used.
 <td></td></tr>
 <tr><td><a href="Js.html#TYPEpromise">promise</a> [<a href="Js.html">Js</a>]</td>
 <td><div class="info">
-<span class="deprecated">The promise type, defined here for interop
+<span class="deprecated">The promise type, defined here for interoperation across packages
 </span></div>
 </td></tr>
 <tr><td align="left"><br>R</td></tr>
@@ -418,8 +393,6 @@ Js symbol type only available in ES6
 <td></td></tr>
 <tr><td><a href="Node_fs.Watch.html#TYPEt">t</a> [<a href="Node_fs.Watch.html">Node_fs.Watch</a>]</td>
 <td></td></tr>
-<tr><td><a href="Js_promise.html#TYPEt">t</a> [<a href="Js_promise.html">Js_promise</a>]</td>
-<td></td></tr>
 <tr><td><a href="Js_types.html#TYPEt">t</a> [<a href="Js_types.html">Js_types</a>]</td>
 <td></td></tr>
 <tr><td><a href="Js_typed_array.Type.html#TYPEt">t</a> [<a href="Js_typed_array.Type.html">Js_typed_array.Type</a>]</td>
@@ -430,13 +403,6 @@ Js symbol type only available in ES6
 <td></td></tr>
 <tr><td><a href="Js_typed_array.ArrayBuffer.html#TYPEt">t</a> [<a href="Js_typed_array.ArrayBuffer.html">Js_typed_array.ArrayBuffer</a>]</td>
 <td></td></tr>
-<tr><td><a href="Js_string.html#TYPEt">t</a> [<a href="Js_string.html">Js_string</a>]</td>
-<td></td></tr>
-<tr><td><a href="Js_re.html#TYPEt">t</a> [<a href="Js_re.html">Js_re</a>]</td>
-<td><div class="info">
-the RegExp object
-</div>
-</td></tr>
 <tr><td><a href="Js_json.html#TYPEt">t</a> [<a href="Js_json.html">Js_json</a>]</td>
 <td><div class="info">
 The JSON data structure
@@ -448,6 +414,15 @@ Dictionary type (ie an '{ }' JS object).
 </div>
 </td></tr>
 <tr><td><a href="Js_date.html#TYPEt">t</a> [<a href="Js_date.html">Js_date</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_promise.html#TYPEt">t</a> [<a href="Js_promise.html">Js_promise</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_re.html#TYPEt">t</a> [<a href="Js_re.html">Js_re</a>]</td>
+<td><div class="info">
+the RegExp object
+</div>
+</td></tr>
+<tr><td><a href="Js_string.html#TYPEt">t</a> [<a href="Js_string.html">Js_string</a>]</td>
 <td></td></tr>
 <tr><td><a href="Js_array.html#TYPEt">t</a> [<a href="Js_array.html">Js_array</a>]</td>
 <td></td></tr>
@@ -470,7 +445,7 @@ Local alias for <code class="code">'a Js.null</code>
 </td></tr>
 <tr><td><a href="Js.html#TYPEt">t</a> [<a href="Js.html">Js</a>]</td>
 <td><div class="info">
-Types for JS objects
+Js object type.
 </div>
 </td></tr>
 <tr><td><a href="Dom.html#TYPEtext">text</a> [<a href="Dom.html">Dom</a>]</td>
@@ -502,7 +477,7 @@ identifies a timeout started by <a href="Js_global.html#VALsetTimeout"><code cla
 <tr><td><a href="Js.html#TYPEundefined">undefined</a> [<a href="Js.html">Js</a>]</td>
 <td><div class="info">
 value of this type can be either <code class="code">undefined</code> or <code class="code">'a</code>
-    this type is the same as <code class="code">Js.Undefined.t</code>
+    this type is the same as type <code class="code">t</code> in <a href="Js.Undefined.html"><code class="code">Js.Undefined</code></a>
 </div>
 </td></tr>
 <tr><td><a href="Js_types.html#TYPEundefined_val">undefined_val</a> [<a href="Js_types.html">Js_types</a>]</td>

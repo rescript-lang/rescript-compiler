@@ -56,7 +56,9 @@ type +'a t
 
 type + 'a null
 (** nullable, value of this type can be either [null] or ['a]
-    this type is the same as {!Js.Null.t}  *)
+    this type is the same as [Js.Null.t] 
+    See {!Js.Null}
+ *)
 
 type + 'a undefined
 (** value of this type can be either [undefined] or ['a]
@@ -73,7 +75,7 @@ type boolean
    included back here, but the dependency hackery confuses me *)
 type (+'a, +'e) promise
 (** The promise type, defined here for interop 
-    @deprecated Please use {!Js.Promise.t} instead
+    @deprecated Please use {!Js.Promise} instead
 *)
 
 
@@ -131,4 +133,4 @@ module Typed_array = Js_typed_array
 module Types = Js_types
 module Float = Js_float
 module Int = Js_int
-
+module Promise = Js_promise

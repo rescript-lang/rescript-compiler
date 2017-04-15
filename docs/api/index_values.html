@@ -826,13 +826,13 @@ ES2015
 Parses the given <code class="code">string</code> into a <code class="code">float</code> using JavaScript semantics
 </div>
 </td></tr>
+<tr><td><a href="Js_date.html#VALfromString">fromString</a> [<a href="Js_date.html">Js_date</a>]</td>
+<td></td></tr>
 <tr><td><a href="Js_re.html#VALfromString">fromString</a> [<a href="Js_re.html">Js_re</a>]</td>
 <td><div class="info">
 Constructs a RegExp object (<a href="Js_re.html#TYPEt"><code class="code">Js_re.t</code></a>) from a string
 </div>
 </td></tr>
-<tr><td><a href="Js_date.html#VALfromString">fromString</a> [<a href="Js_date.html">Js_date</a>]</td>
-<td></td></tr>
 <tr><td><a href="Js_re.html#VALfromStringWithFlags">fromStringWithFlags</a> [<a href="Js_re.html">Js_re</a>]</td>
 <td><div class="info">
 Constructs a RegExp object (<a href="Js_re.html#TYPEt"><code class="code">Js_re.t</code></a>) from a string with the given <code class="code">flags</code>
@@ -861,14 +861,14 @@ round to nearest single precision float, ES2015
 <tr><td><a href="Node_fs.html#VALftruncateSync">ftruncateSync</a> [<a href="Node_fs.html">Node_fs</a>]</td>
 <td></td></tr>
 <tr><td align="left"><br>G</td></tr>
-<tr><td><a href="Js_string.html#VALget">get</a> [<a href="Js_string.html">Js_string</a>]</td>
-<td></td></tr>
 <tr><td><a href="Js_dict.html#VALget">get</a> [<a href="Js_dict.html">Js_dict</a>]</td>
 <td><div class="info">
 <code class="code">get dict key</code> returns <code class="code">None</code> if the <code class="code">key</code> is not found in the 
     dictionary, <code class="code">Some value</code> otherwise
 </div>
 </td></tr>
+<tr><td><a href="Js_string.html#VALget">get</a> [<a href="Js_string.html">Js_string</a>]</td>
+<td></td></tr>
 <tr><td><a href="Js_date.html#VALgetDate">getDate</a> [<a href="Js_date.html">Js_date</a>]</td>
 <td></td></tr>
 <tr><td><a href="Js_date.html#VALgetDay">getDay</a> [<a href="Js_date.html">Js_date</a>]</td>
@@ -1139,7 +1139,7 @@ natural logarithm, can return NaN
 </td></tr>
 <tr><td><a href="Js.html#VALlog">log</a> [<a href="Js.html">Js</a>]</td>
 <td><div class="info">
-A convenience function to log
+A convenience function to log everything
 </div>
 </td></tr>
 <tr><td><a href="Js_math.html#VALlog10">log10</a> [<a href="Js_math.html">Js_math</a>]</td>
@@ -1162,8 +1162,6 @@ base 2 logarithm, can return NaN, ES2015
 </div>
 </td></tr>
 <tr><td align="left"><br>M</td></tr>
-<tr><td><a href="Js_promise.html#VALmake">make</a> [<a href="Js_promise.html">Js_promise</a>]</td>
-<td></td></tr>
 <tr><td><a href="Js_typed_array.DataView.html#VALmake">make</a> [<a href="Js_typed_array.DataView.html">Js_typed_array.DataView</a>]</td>
 <td></td></tr>
 <tr><td><a href="Js_typed_array.Float64Array.html#VALmake">make</a> [<a href="Js_typed_array.Float64Array.html">Js_typed_array.Float64Array</a>]</td>
@@ -1186,9 +1184,11 @@ base 2 logarithm, can return NaN, ES2015
 <td></td></tr>
 <tr><td><a href="Js_typed_array.ArrayBuffer.html#VALmake">make</a> [<a href="Js_typed_array.ArrayBuffer.html">Js_typed_array.ArrayBuffer</a>]</td>
 <td></td></tr>
-<tr><td><a href="Js_string.html#VALmake">make</a> [<a href="Js_string.html">Js_string</a>]</td>
-<td></td></tr>
 <tr><td><a href="Js_date.html#VALmake">make</a> [<a href="Js_date.html">Js_date</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_promise.html#VALmake">make</a> [<a href="Js_promise.html">Js_promise</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_string.html#VALmake">make</a> [<a href="Js_string.html">Js_string</a>]</td>
 <td></td></tr>
 <tr><td><a href="Js_date.html#VALmakeWithYM">makeWithYM</a> [<a href="Js_date.html">Js_date</a>]</td>
 <td></td></tr>
@@ -1319,7 +1319,10 @@ The <code class="code">null</code> value of type <code class="code">'a Js.null_u
 </div>
 </td></tr>
 <tr><td><a href="Js.html#VALnull">null</a> [<a href="Js.html">Js</a>]</td>
-<td></td></tr>
+<td><div class="info">
+The same as <code class="code">empty</code> in <a href="Js.Null.html"><code class="code">Js.Null</code></a> will be compiled as <code class="code">null</code>
+</div>
+</td></tr>
 <tr><td><a href="Js_primitive.html#VALnull_to_opt">null_to_opt</a> [<a href="Js_primitive.html">Js_primitive</a>]</td>
 <td></td></tr>
 <tr><td><a href="Js_primitive.html#VALnull_undefined_to_opt">null_undefined_to_opt</a> [<a href="Js_primitive.html">Js_primitive</a>]</td>
@@ -1809,14 +1812,14 @@ We except a good inliner will eliminate such boxing in the future
   </code></pre>
 </div>
 </td></tr>
-<tr><td><a href="Js_re.html#VALtest">test</a> [<a href="Js_re.html">Js_re</a>]</td>
-<td><div class="info">
-tests whether the given RegExp object will match a given string
-</div>
-</td></tr>
 <tr><td><a href="Js_json.html#VALtest">test</a> [<a href="Js_json.html">Js_json</a>]</td>
 <td><div class="info">
 <code class="code">test v kind</code> returns true if <code class="code">v</code> is of <code class="code">kind</code>
+</div>
+</td></tr>
+<tr><td><a href="Js_re.html#VALtest">test</a> [<a href="Js_re.html">Js_re</a>]</td>
+<td><div class="info">
+tests whether the given RegExp object will match a given string
 </div>
 </td></tr>
 <tr><td><a href="Js_null_undefined.html#VALtest">test</a> [<a href="Js_null_undefined.html">Js_null_undefined</a>]</td>
@@ -2004,7 +2007,8 @@ truncate, ie.
 <td></td></tr>
 <tr><td><a href="Js.html#VALtypeof">typeof</a> [<a href="Js.html">Js</a>]</td>
 <td><div class="info">
-<code class="code">typeof x</code> will be compiled as <code class="code">typeof x</code> in JS
+<code class="code">typeof x</code> will be compiled as <code class="code">typeof x</code> in JS 
+    Please consider functions in <a href="Js.Types.html"><code class="code">Js.Types</code></a> for a type safe way of reflection
 </div>
 </td></tr>
 <tr><td align="left"><br>U</td></tr>
@@ -2014,7 +2018,10 @@ The <code class="code">undefined</code> value of type <code class="code">'a Js.n
 </div>
 </td></tr>
 <tr><td><a href="Js.html#VALundefined">undefined</a> [<a href="Js.html">Js</a>]</td>
-<td></td></tr>
+<td><div class="info">
+The same as  <code class="code">empty</code> <a href="Js.Undefined.html"><code class="code">Js.Undefined</code></a> will be compiled as <code class="code">undefined</code>
+</div>
+</td></tr>
 <tr><td><a href="Js_primitive.html#VALundefined_to_opt">undefined_to_opt</a> [<a href="Js_primitive.html">Js_primitive</a>]</td>
 <td></td></tr>
 <tr><td><a href="Js_re.html#VALunicode">unicode</a> [<a href="Js_re.html">Js_re</a>]</td>
@@ -2077,24 +2084,24 @@ may return values not representable by <code class="code">int</code>
 </td></tr>
 <tr><td><a href="Js.html#VALunsafe_ge">unsafe_ge</a> [<a href="Js.html">Js</a>]</td>
 <td><div class="info">
-<code class="code">unsafe_ge a b</code> will be compiled as <code class="code">a &gt;= b</code>
+<code class="code">unsafe_ge a b</code> will be compiled as <code class="code">a &gt;= b</code>.
 </div>
 </td></tr>
 <tr><td><a href="Js_typed_array.TypedArray.html#VALunsafe_get">unsafe_get</a> [<a href="Js_typed_array.TypedArray.html">Js_typed_array.TypedArray</a>]</td>
 <td></td></tr>
 <tr><td><a href="Js.html#VALunsafe_gt">unsafe_gt</a> [<a href="Js.html">Js</a>]</td>
 <td><div class="info">
-<code class="code">unsafe_gt a b</code> will be compiled as <code class="code">a &gt; b</code>
+<code class="code">unsafe_gt a b</code> will be compiled as <code class="code">a &gt; b</code>.
 </div>
 </td></tr>
 <tr><td><a href="Js.html#VALunsafe_le">unsafe_le</a> [<a href="Js.html">Js</a>]</td>
 <td><div class="info">
-<code class="code">unsafe_le a b</code> will be compiled as <code class="code">a &lt;= b</code>
+<code class="code">unsafe_le a b</code> will be compiled as <code class="code">a &lt;= b</code>.
 </div>
 </td></tr>
 <tr><td><a href="Js.html#VALunsafe_lt">unsafe_lt</a> [<a href="Js.html">Js</a>]</td>
 <td><div class="info">
-<code class="code">unsafe_lt a b</code> will be compiled as <code class="code">a &lt; b</code>
+<code class="code">unsafe_lt a b</code> will be compiled as <code class="code">a &lt; b</code>.
 </div>
 </td></tr>
 <tr><td><a href="Js_math.html#VALunsafe_round">unsafe_round</a> [<a href="Js_math.html">Js_math</a>]</td>

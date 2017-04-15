@@ -78,27 +78,9 @@ place holder for node bindings<br>
 <div class="type-declaration">
 <pre><span id="TYPEnode_module"><span class="keyword">type</span> <code class="type"></code>node_module</span> = <code class="type">< children : <a href="Node.html#TYPEnode_module">node_module</a> array; exports : <a href="Node.html#TYPEnode_exports">node_exports</a>;<br>         filename : string; id : string; loaded : <a href="Js.html#TYPEboolean">Js.boolean</a>;<br>         parrent : <a href="Node.html#TYPEnode_module">node_module</a> <a href="Js.html#TYPEnull_undefined">Js.null_undefined</a>; paths : string array ><br>       <a href="Js.html#TYPEt">Js.t</a></code> </pre>
 </div>
-<div class="info ">
-<div class="not-examples">
-WARN: 
-     its path name should not be changed 
-     see <code class="code">Ppx_entry</code><br>
-</div>
-<div class="examples">
-</div>
-</div>
 
 <div class="type-declaration">
-<pre><span id="TYPEnode_require"><span class="keyword">type</span> <code class="type"></code>node_require</span> = <code class="type">< main : <a href="Node.html#TYPEnode_module">node_module</a> <a href="Js.html#TYPEundefined">Js.undefined</a>;<br>         resolve : ([ `Arity_1 of string ], string) <a href="Js.html#TYPEfn">Js.fn</a> ><br>       <a href="Js.html#TYPEt">Js.t</a></code> </pre>
-</div>
-<div class="info ">
-<div class="not-examples">
-WARN:
-    its path name should not be changed 
-    see <code class="code">Ppx_entry</code><br>
-</div>
-<div class="examples">
-</div>
+<pre><span id="TYPEnode_require"><span class="keyword">type</span> <code class="type"></code>node_require</span> = <code class="type">< main : <a href="Node.html#TYPEnode_module">node_module</a> <a href="Js.html#TYPEundefined">Js.undefined</a>;<br>         resolve : ([ `Arity_1 of string ], string) Js.fn ><br>       <a href="Js.html#TYPEt">Js.t</a></code> </pre>
 </div>
 
 <div class="type-declaration">

@@ -57,7 +57,14 @@
 </div>
 <h1>Module <a href="type_Js.Undefined.html">Js.Undefined</a></h1>
 
-<pre><span class="keyword">module</span> Undefined: <code class="type"><a href="Js_undefined.html">Js_undefined</a></code></pre><hr width="100%">
+<pre><span class="keyword">module</span> Undefined: <code class="type"><a href="Js_undefined.html">Js_undefined</a></code></pre><div class="info module top">
+<div class="not-examples">
+Provide utilities around <a href="Js.html#VALundefined"><code class="code">Js.undefined</code></a><br>
+</div>
+<div class="examples">
+</div>
+</div>
+<hr width="100%">
 <div class="type-declaration">
 <pre><span id="TYPEt"><span class="keyword">type</span> <code class="type">'a</code> t</span> = <code class="type">'a <a href="Js.html#TYPEundefined">Js.undefined</a></code> </pre>
 </div>
@@ -103,7 +110,7 @@ The empty value, <code class="code">undefined</code><br>
 </div>
 </div>
 
-<pre><span id="VALbind"><span class="keyword">val</span> bind</span> : <code class="type">'a <a href="Js_undefined.html#TYPEt">t</a> -> ([ `Arity_1 of 'a ], 'b) <a href="Js.html#TYPEfn">Js.fn</a> -> 'b <a href="Js_undefined.html#TYPEt">t</a></code></pre><div class="info ">
+<pre><span id="VALbind"><span class="keyword">val</span> bind</span> : <code class="type">'a <a href="Js_undefined.html#TYPEt">t</a> -> ([ `Arity_1 of 'a ], 'b) Js.fn -> 'b <a href="Js_undefined.html#TYPEt">t</a></code></pre><div class="info ">
 <div class="not-examples">
 Maps the contained value using the given function
 <p>
@@ -117,7 +124,7 @@ the given function <code class="code">a' -&gt; 'b</code>, then wrapped back up a
 </code></pre></pre></div>
 </div>
 
-<pre><span id="VALiter"><span class="keyword">val</span> iter</span> : <code class="type">'a <a href="Js_undefined.html#TYPEt">t</a> -> ([ `Arity_1 of 'a ], unit) <a href="Js.html#TYPEfn">Js.fn</a> -> unit</code></pre><div class="info ">
+<pre><span id="VALiter"><span class="keyword">val</span> iter</span> : <code class="type">'a <a href="Js_undefined.html#TYPEt">t</a> -> ([ `Arity_1 of 'a ], unit) Js.fn -> unit</code></pre><div class="info ">
 <div class="not-examples">
 Iterates over the contained value with the given function
 <p>
