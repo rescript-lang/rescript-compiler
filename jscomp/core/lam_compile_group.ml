@@ -383,7 +383,7 @@ let lambda_as_module
   begin 
     Js_config.set_current_file filename ;  
 #if BS_DEBUG then    
-    Js_config.set_debug_file "nested_pattern_match_test.ml";
+    Js_config.set_debug_file "webpack_config.ml";
 #end    
     let lambda_output = compile ~filename output_prefix env sigs lam in
     let (//) = Filename.concat in 

@@ -166,7 +166,7 @@ let string_of_module_id ~output_prefix
             end
           
         end
-      | External name -> name 
+      | External name -> name (* the literal string for external package *)
         (** This may not be enough, 
           1. For cross packages, we may need settle 
             down a single js package
