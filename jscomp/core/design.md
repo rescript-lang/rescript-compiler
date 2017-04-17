@@ -417,3 +417,9 @@ type b += A
 ```
 The compiler will only expose the last `A`, which means, BuckleScript will not complain, the limitation 
 of the compiler preserves its soundness
+
+## print import module names
+
+for `create_js_module`, we first create a mapping to make it a proper
+module name, (also cached in a hashtbl). Note it is not a Js id, which
+fails `Ext_ident.is_js`

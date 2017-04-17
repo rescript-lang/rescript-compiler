@@ -85,27 +85,58 @@ let reset () =
   Translmod.reset ();
   Lam_module_ident.Hash.clear cached_tbl 
 
+
+
+
+(* This is for a js exeternal module, we can change it when printing
+   for example
+   {[
+   var React$1 = require('react');
+   React$1.render(..)
+   ]}
+
+   Given a name, if duplicated, they should  have the same id
+ *)
+
+let create_js_module (hint_name : string) : Ident.t = 
+  let hint_name = 
+    String.concat "" @@ List.map (String.capitalize ) @@ 
+    Ext_string.split hint_name '-' in
+  Ident.create hint_name
+
 (** 
-   Any [id] put in the [cached_tbl] should be always valid,
-   since it is already used in the code gen, 
-   the older will have higher precedence
+   Any [id] as long as put in the [cached_tbl] should be always valid,
+
+   Since it is already used in the code gen, the older will have higher precedence
+   So for freshly created id, we will test if it is already there not not 
+   (using key *only* involves external module name), 
+
+   If it is already there, we discard the freshly made one, 
+   Otherwise, we add it into cache table, and use it 
+
 *)
 let add_js_module ?hint_name module_name : Ident.t 
   = 
   let id = 
     match hint_name with
-    | None -> Ext_ident.create_js_module module_name 
-    | Some hint_name -> Ext_ident.create_js_module hint_name in
+    | Some (* _ *)  hint_name
+      -> create_js_module hint_name
+    | None -> create_js_module module_name 
+  in
   let lam_module_ident = 
     Lam_module_ident.of_external id module_name in  
   match Lam_module_ident.Hash.find_key_opt cached_tbl lam_module_ident with   
-  | None -> 
+  | None ->
+    (* Ext_log.dwarn __LOC__ "HASH MISS %a@." Ext_pervasives.pp_any (lam_module_ident); *)
     Lam_module_ident.Hash.add 
       cached_tbl 
       lam_module_ident
       External;
     id
-  | Some old_key -> old_key.id 
+  | Some old_key ->
+    (* Ext_log.dwarn __LOC__ *)
+    (*   "HASH HIT %a@." Ext_pervasives.pp_any (old_key,lam_module_ident); *)
+    old_key.id 
 
 
 

@@ -29,9 +29,9 @@
 
 
 
-let js_flag = 0b1000 (* check with ocaml compiler *)
+let js_flag = 0b1_000 (* check with ocaml compiler *)
 
-let js_module_flag = 0b1_0000 (* javascript external modules *)
+(* let js_module_flag = 0b10_000 (\* javascript external modules *\) *)
 (* TODO:
     check name conflicts with javascript conventions
     {[
@@ -39,7 +39,7 @@ let js_module_flag = 0b1_0000 (* javascript external modules *)
     - : string = "$caret"
     ]}
  *)
-let js_object_flag = 0b10_0000 (* javascript object flags *)
+let js_object_flag = 0b100_000 (* javascript object flags *)
 
 let is_js (i : Ident.t) = 
   i.flags land js_flag <> 0 
@@ -47,8 +47,6 @@ let is_js (i : Ident.t) =
 let is_js_or_global (i : Ident.t) = 
   i.flags land (8 lor 1) <> 0 
 
-let is_js_module (i : Ident.t) =
-  i.flags land js_module_flag <> 0 
 
 let is_js_object (i : Ident.t) = 
   i.flags land js_object_flag <> 0 
@@ -77,19 +75,18 @@ let create_js_module (name : string) : Ident.t =
   let name = 
     String.concat "" @@ List.map (String.capitalize ) @@ 
     Ext_string.split name '-' in
-  (* TODO: if we do such transformation, we should avoid 
-      collision for example:
+  (* TODO: if we do such transformation, we should avoid       collision for example:
       react-dom 
       react--dom
       check collision later
    *)
   match String_hashtbl.find_exn js_module_table name  with 
   | exception Not_found -> 
-      let v = Ident.create name in
-      let ans = { v with flags = js_module_flag} in 
+      let ans = Ident.create name in
+      (* let ans = { v with flags = js_module_flag} in  *)
       String_hashtbl.add js_module_table name ans;
       ans
-  | v -> v 
+  | v -> (* v *) Ident.rename v  
 
 let create = Ident.create
 

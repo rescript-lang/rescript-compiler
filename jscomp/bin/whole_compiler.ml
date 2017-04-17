@@ -61137,7 +61137,7 @@ val create_js : string -> Ident.t
 
 val create : string -> Ident.t
 
-val create_js_module : string -> Ident.t 
+(* val create_js_module : string -> Ident.t  *)
 
 val make_js_object : Ident.t -> unit
 
@@ -61196,9 +61196,9 @@ end = struct
 
 
 
-let js_flag = 0b1000 (* check with ocaml compiler *)
+let js_flag = 0b1_000 (* check with ocaml compiler *)
 
-let js_module_flag = 0b1_0000 (* javascript external modules *)
+(* let js_module_flag = 0b10_000 (\* javascript external modules *\) *)
 (* TODO:
     check name conflicts with javascript conventions
     {[
@@ -61206,7 +61206,7 @@ let js_module_flag = 0b1_0000 (* javascript external modules *)
     - : string = "$caret"
     ]}
  *)
-let js_object_flag = 0b10_0000 (* javascript object flags *)
+let js_object_flag = 0b100_000 (* javascript object flags *)
 
 let is_js (i : Ident.t) = 
   i.flags land js_flag <> 0 
@@ -61214,8 +61214,6 @@ let is_js (i : Ident.t) =
 let is_js_or_global (i : Ident.t) = 
   i.flags land (8 lor 1) <> 0 
 
-let is_js_module (i : Ident.t) =
-  i.flags land js_module_flag <> 0 
 
 let is_js_object (i : Ident.t) = 
   i.flags land js_object_flag <> 0 
@@ -61244,19 +61242,18 @@ let create_js_module (name : string) : Ident.t =
   let name = 
     String.concat "" @@ List.map (String.capitalize ) @@ 
     Ext_string.split name '-' in
-  (* TODO: if we do such transformation, we should avoid 
-      collision for example:
+  (* TODO: if we do such transformation, we should avoid       collision for example:
       react-dom 
       react--dom
       check collision later
    *)
   match String_hashtbl.find_exn js_module_table name  with 
   | exception Not_found -> 
-      let v = Ident.create name in
-      let ans = { v with flags = js_module_flag} in 
+      let ans = Ident.create name in
+      (* let ans = { v with flags = js_module_flag} in  *)
       String_hashtbl.add js_module_table name ans;
       ans
-  | v -> v 
+  | v -> (* v *) Ident.rename v  
 
 let create = Ident.create
 
@@ -82622,27 +82619,58 @@ let reset () =
   Translmod.reset ();
   Lam_module_ident.Hash.clear cached_tbl 
 
+
+
+
+(* This is for a js exeternal module, we can change it when printing
+   for example
+   {[
+   var React$1 = require('react');
+   React$1.render(..)
+   ]}
+
+   Given a name, if duplicated, they should  have the same id
+ *)
+
+let create_js_module (hint_name : string) : Ident.t = 
+  let hint_name = 
+    String.concat "" @@ List.map (String.capitalize ) @@ 
+    Ext_string.split hint_name '-' in
+  Ident.create hint_name
+
 (** 
-   Any [id] put in the [cached_tbl] should be always valid,
-   since it is already used in the code gen, 
-   the older will have higher precedence
+   Any [id] as long as put in the [cached_tbl] should be always valid,
+
+   Since it is already used in the code gen, the older will have higher precedence
+   So for freshly created id, we will test if it is already there not not 
+   (using key *only* involves external module name), 
+
+   If it is already there, we discard the freshly made one, 
+   Otherwise, we add it into cache table, and use it 
+
 *)
 let add_js_module ?hint_name module_name : Ident.t 
   = 
   let id = 
     match hint_name with
-    | None -> Ext_ident.create_js_module module_name 
-    | Some hint_name -> Ext_ident.create_js_module hint_name in
+    | Some (* _ *)  hint_name
+      -> create_js_module hint_name
+    | None -> create_js_module module_name 
+  in
   let lam_module_ident = 
     Lam_module_ident.of_external id module_name in  
   match Lam_module_ident.Hash.find_key_opt cached_tbl lam_module_ident with   
-  | None -> 
+  | None ->
+    (* Ext_log.dwarn __LOC__ "HASH MISS %a@." Ext_pervasives.pp_any (lam_module_ident); *)
     Lam_module_ident.Hash.add 
       cached_tbl 
       lam_module_ident
       External;
     id
-  | Some old_key -> old_key.id 
+  | Some old_key ->
+    (* Ext_log.dwarn __LOC__ *)
+    (*   "HASH HIT %a@." Ext_pervasives.pp_any (old_key,lam_module_ident); *)
+    old_key.id 
 
 
 
@@ -83845,7 +83873,7 @@ let string_of_module_id ~output_prefix
             end
           
         end
-      | External name -> name 
+      | External name -> name (* the literal string for external package *)
         (** This may not be enough, 
           1. For cross packages, we may need settle 
             down a single js package
