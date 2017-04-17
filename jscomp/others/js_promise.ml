@@ -34,7 +34,7 @@ type error (* abstract error type *)
 
 
 external make : (resolve:('a -> unit [@bs]) ->
-                 reject:('e -> unit [@bs]) -> unit [@bs.uncurry]) -> 'a t = "Promise" [@@bs.new]
+                 reject:(exn -> unit [@bs]) -> unit [@bs.uncurry]) -> 'a t = "Promise" [@@bs.new]
 (* [make (fun resolve reject -> .. )] *)
 external resolve : 'a -> 'a t = "Promise.resolve" [@@bs.val]
 external reject : exn -> 'a t = "Promise.reject" [@@bs.val]

@@ -1,6 +1,6 @@
 # https://github.com/bloomberg/bucklescript[BuckleScript] User Manual
 Hongbo Zhang
-v1.6.1+dev
+v1.7.0
 :toc: left
 :toclevels: 4
 :source-highlighter: pygments
@@ -26,15 +26,16 @@ whole compiler is compiled into JS (and ASM) so that you can play with it
 in the {BuckleScript-playground}[browser].
 
 [NOTE]
-.PDF version is http://bloomberg.github.io/bucklescript/Manual.pdf[available].
+
 ====
 Documents under https://github.com/bloomberg/bucklescript/Manual.html[_bloomberg.github.io_] match the https://github.com/bloomberg/bucklescript[master branch].
 
-They are also distributed (`docs/Manual.html`, `docs/Manual.pdf`) together with your <<Installation>> (with the exact version).
 If you find errors or omissions in this document, please don't
 hesitate to submit an issue, sources are https://github.com/bloomberg/bucklescript/tree/master/site/docsource[here].
 ====
 
+// .PDF version is http://bloomberg.github.io/bucklescript/Manual.pdf[available].
+// They are also distributed (`docs/Manual.html`, `docs/Manual.pdf`) together with your <<Installation>> (with the exact version).
 
 
 include::./Why_BuckleScript.adoc[]
@@ -74,5 +75,15 @@ include::./Dev-mode-How-to.adoc[]
 include::./Differences-from-js_of_ocaml.adoc[]
 
 [appendix]
+== Library API documentation 
+
+There is a small Library comes with `bs-platform`, its documentation is 
+http://bloomberg.github.io/bucklescript/api/[available].
+
+
+[appendix]
 include::./CHANGELOG.adoc[]
+
+
+
 

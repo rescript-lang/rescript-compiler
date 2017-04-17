@@ -561,8 +561,9 @@ clean:
 DOCS_SOURCES+=$(shell ls runtime/*.ml*)
 DOCS_SOURCES+=$(shell ls others/*.ml*)
 
-../odoc_gen/generator.cmxs :../odoc_gen/generator.ml
-	ocamlopt.opt -I +compiler-libs -I +ocamldoc -shared -o ../odoc_gen/generator.cmxs ../odoc_gen/generator.ml
+# 
+../odoc_gen/generator.cmxs : ../odoc_gen/generator.mli ../odoc_gen/generator.ml
+	ocamlopt.opt -I +compiler-libs -I +ocamldoc -shared -I ../odoc_gen  -o $@ $^
 
 docs: ../odoc_gen/generator.cmxs
 	make -C bin bsppx.exe
