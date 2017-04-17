@@ -66,16 +66,19 @@
 <pre><span id="VALconfig"><span class="keyword">val</span> config</span> : <code class="type">?persistent:<a href="Js.html#TYPEboolean">Js.boolean</a> -><br>       ?recursive:<a href="Js.html#TYPEboolean">Js.boolean</a> -><br>       ?encoding:<a href="Js_string.html#TYPEt">Js_string.t</a> -> unit -> <a href="Node_fs.Watch.html#TYPEconfig">config</a></code></pre>
 <pre><span id="VALwatch"><span class="keyword">val</span> watch</span> : <code class="type">string -> ?config:<a href="Node_fs.Watch.html#TYPEconfig">config</a> -> unit -> <a href="Node_fs.Watch.html#TYPEt">t</a></code></pre>
 <pre><span id="VALon"><span class="keyword">val</span> on</span> : <code class="type">[ `change of (string -> <a href="Node.html#TYPEstring_buffer">Node.string_buffer</a> -> unit [@bs])<br>       | `error of (unit -> unit [@bs]) ] -> <a href="Node_fs.Watch.html#TYPEt">t</a> -> <a href="Node_fs.Watch.html#TYPEt">t</a></code></pre><div class="info ">
-<div class="not-examples">
-there is no need to accept listener, since we return a <code class="code">watcher</code> 
+                   <div class="not-examples">
+                   there is no need to accept listener, since we return a <code class="code">watcher</code> 
       back it can register event listener there .
       Currently we introduce a type <code class="code">string_buffer</code>, for the 
       <code class="code">filename</code>, it will be <code class="code">Buffer</code> when the encoding is `utf8. 
       This is dependent type which can be tracked by GADT in some way, 
       but to make things simple, let's just introduce an or type<br>
-</div>
-<div class="examples">
-</div>
-</div>
+ 
+                   </div>
+                   <div class="examples">
+                   
+                   </div>
+                   </div>
 
+                 
 <pre><span id="VALclose"><span class="keyword">val</span> close</span> : <code class="type">unit -> <a href="Node_fs.Watch.html#TYPEt">t</a> -> unit</code></pre></body></html>

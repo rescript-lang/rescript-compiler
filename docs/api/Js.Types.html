@@ -58,24 +58,30 @@
 <h1>Module <a href="type_Js.Types.html">Js.Types</a></h1>
 
 <pre><span class="keyword">module</span> Types: <code class="type"><a href="Js_types.html">Js_types</a></code></pre><div class="info module top">
-<div class="not-examples">
-Provide utilities for maninpulatig JS types<br>
-</div>
-<div class="examples">
-</div>
-</div>
-<hr width="100%">
+                   <div class="not-examples">
+                   Provide utilities for maninpulatig JS types<br>
+ 
+                   </div>
+                   <div class="examples">
+                   
+                   </div>
+                   </div>
+
+                 <hr width="100%">
 <div class="type-declaration">
 <pre><span id="TYPEsymbol"><span class="keyword">type</span> <code class="type"></code>symbol</span> </pre>
 </div>
 <div class="info ">
-<div class="not-examples">
-Js symbol type only available in ES6<br>
-</div>
-<div class="examples">
-</div>
-</div>
+                   <div class="not-examples">
+                   Js symbol type only available in ES6<br>
+ 
+                   </div>
+                   <div class="examples">
+                   
+                   </div>
+                   </div>
 
+                 
 <div class="type-declaration">
 <pre><span id="TYPEobj_val"><span class="keyword">type</span> <code class="type"></code>obj_val</span> </pre>
 </div>
@@ -84,24 +90,30 @@ Js symbol type only available in ES6<br>
 <pre><span id="TYPEundefined_val"><span class="keyword">type</span> <code class="type"></code>undefined_val</span> </pre>
 </div>
 <div class="info ">
-<div class="not-examples">
-This type has only one value <code class="code">undefined</code><br>
-</div>
-<div class="examples">
-</div>
-</div>
+                   <div class="not-examples">
+                   This type has only one value <code class="code">undefined</code><br>
+ 
+                   </div>
+                   <div class="examples">
+                   
+                   </div>
+                   </div>
 
+                 
 <div class="type-declaration">
 <pre><span id="TYPEnull_val"><span class="keyword">type</span> <code class="type"></code>null_val</span> </pre>
 </div>
 <div class="info ">
-<div class="not-examples">
-This type has only one value <code class="code">null</code><br>
-</div>
-<div class="examples">
-</div>
-</div>
+                   <div class="not-examples">
+                   This type has only one value <code class="code">null</code><br>
+ 
+                   </div>
+                   <div class="examples">
+                   
+                   </div>
+                   </div>
 
+                 
 <div class="type-declaration">
 <pre><span id="TYPEfunction_val"><span class="keyword">type</span> <code class="type"></code>function_val</span> </pre>
 </div>
@@ -169,25 +181,31 @@ This type has only one value <code class="code">null</code><br>
 
 
 <pre><span id="VALreify_type"><span class="keyword">val</span> reify_type</span> : <code class="type">'a -> 'b <a href="Js_types.html#TYPEt">t</a> * 'b</code></pre><div class="info ">
-<div class="not-examples">
-given any value it returns its type and the same value.
+                   <div class="not-examples">
+                   given any value it returns its type and the same value.
     Note that  since <code class="code">'b t</code> is GADT, the type system will reify its type automatically,
     for example
     <pre class="codepre"><code class="code">    match reify_type "3" with
     | String, v -&gt; v  ^ " this type safe control flow analysis will infer v as string"
     | _ -&gt; assert false
     </code></pre><br>
-</div>
-<div class="examples">
-</div>
-</div>
+ 
+                   </div>
+                   <div class="examples">
+                   
+                   </div>
+                   </div>
 
+                 
 <pre><span id="VALtest"><span class="keyword">val</span> test</span> : <code class="type">'a -> 'b <a href="Js_types.html#TYPEt">t</a> -> bool</code></pre><div class="info ">
-<div class="not-examples">
-<pre class="codepre"><code class="code">  test "x" String = true
+                   <div class="not-examples">
+                   <pre class="codepre"><code class="code">  test "x" String = true
   </code></pre><br>
-</div>
-<div class="examples">
-</div>
-</div>
-</body></html>
+ 
+                   </div>
+                   <div class="examples">
+                   
+                   </div>
+                   </div>
+
+                 </body></html>

@@ -54,54 +54,76 @@ struct
     object(self)
       inherit G.html as super
 
-      val mutable doctype = "<!doctype html>\n"
+      val! mutable doctype = "<!doctype html>\n"
 
-	    method character_encoding () =
-	      Printf.sprintf "<meta charset=\"%s\">\n" !charset
+      method! character_encoding () =
+	Printf.sprintf "<meta charset=\"%s\">\n" !charset
+   
+      method! html_of_author_list = wrap_tag_list super#html_of_author_list
+      method! html_of_version_opt = wrap_tag_opt super#html_of_version_opt
+      method! html_of_before = wrap_tag_list super#html_of_before
+      method! html_of_since_opt = wrap_tag_opt super#html_of_since_opt
+      method! html_of_raised_exceptions = wrap_tag_list super#html_of_raised_exceptions
+      method! html_of_return_opt = wrap_tag_opt super#html_of_return_opt
+      method! html_of_sees = wrap_tag_list super#html_of_sees
 
-      method html_of_author_list = wrap_tag_list super#html_of_author_list
-      method html_of_version_opt = wrap_tag_opt super#html_of_version_opt
-      method html_of_before = wrap_tag_list super#html_of_before
-      method html_of_since_opt = wrap_tag_opt super#html_of_since_opt
-      method html_of_raised_exceptions = wrap_tag_list super#html_of_raised_exceptions
-      method html_of_return_opt = wrap_tag_opt super#html_of_return_opt
-      method html_of_sees = wrap_tag_list super#html_of_sees
-
-      method html_of_info ?(cls="") ?(indent=true) b info_opt =
+      method! html_of_info ?(cls="") ?(indent=true) b info_opt =
         match info_opt with
           None ->
             ()
         | Some info ->
             let module M = Odoc_info in
-            if indent then bs b ("<div class=\"info "^cls^"\">\n");
-            bs b "<div class=\"not-examples\">\n";
-            begin match info.M.i_deprecated with
-              None -> ()
-            | Some d ->
-                bs b "<div class=\"warning\">";
-                bs b "<span class=\"label\">";
-                bs b Odoc_messages.deprecated ;
-                bs b "</span>" ;
-                self#html_of_text b d;
-                bs b "</div>\n"
-            end;
-            begin match info.M.i_desc with
-              None -> ()
-            | Some d when d = [Odoc_info.Raw ""] -> ()
-            | Some d -> self#html_of_text b d; bs b "<br>\n"
-            end;
-            self#html_of_author_list b info.M.i_authors;
-            self#html_of_version_opt b info.M.i_version;
-            self#html_of_before b info.M.i_before;
-            self#html_of_since_opt b info.M.i_since;
-            self#html_of_raised_exceptions b info.M.i_raised_exceptions;
-            self#html_of_return_opt b info.M.i_return_value;
-            self#html_of_sees b info.M.i_sees;
-            bs b "</div>\n";
-            bs b "<div class=\"examples\">\n";
-            self#html_of_custom b info.M.i_custom;
-            bs b "</div>\n";
-            if indent then bs b "</div>\n"
+            bp b {|%a
+                   <div class="not-examples">
+                   %a 
+                   </div>
+                   <div class="examples">
+                   %a
+                   </div>
+                   %a
+                 |} 
+              (fun b indent -> if indent then bp b {|<div class="info %s">|} cls)
+              indent
+            (* if indent then bs b ("<div class=\"info "^cls^"\">\n"); *)
+            (* bs b "<div class=\"not-examples\">\n"; *)
+              (fun  b info ->
+                 begin match info.M.i_deprecated with
+                     None -> ()
+                   | Some d ->
+                     bp b {|<div class="warning">
+                            <span class="label">
+                            %s
+                            </span>
+                            %a
+                            </div>
+                          |} 
+                       Odoc_messages.deprecated
+                       (fun b d -> self#html_of_text b d) d 
+                       (* bs b "<div class=\"warning\">"; *)
+                       (* bs b "<span class=\"label\">"; *)
+                       (* bs b Odoc_messages.deprecated ; *)
+                       (* bs b "</span>" ; *)
+                       (* self#html_of_text b d; *)
+                       (* bs b "</div>\n" *)
+                 end;
+                 begin match info.M.i_desc with
+                     None -> ()
+                   | Some d when d = [Odoc_info.Raw ""] -> ()
+                   | Some d -> self#html_of_text b d; bs b "<br>\n"
+                 end;
+                 self#html_of_author_list b info.M.i_authors;
+                 self#html_of_version_opt b info.M.i_version;
+                 self#html_of_before b info.M.i_before;
+                 self#html_of_since_opt b info.M.i_since;
+                 self#html_of_raised_exceptions b info.M.i_raised_exceptions;
+                 self#html_of_return_opt b info.M.i_return_value;
+                 self#html_of_sees b info.M.i_sees) info
+
+            (* bs b "</div>\n"; *)
+            (* bs b "<div class=\"examples\">\n"; *)
+              (fun b info ->  self#html_of_custom b info.M.i_custom) info
+            (* bs b "</div>\n"; *)
+            (fun b indent -> if indent then bs b "</div>\n") indent 
 
       (** Print html code for the given list of custom tagged texts. *)
       method html_of_custom b l =
@@ -491,3 +513,7 @@ struct
   end
 end
 let _ = Odoc_args.extend_html_generator (module Generator : Odoc_gen.Html_functor);
+
+(* local variables: *)
+(* compile-command: "ocamlc.opt -I +compiler-libs -I +ocamldoc -c generator.mli generator.ml" *)
+(* end: *)

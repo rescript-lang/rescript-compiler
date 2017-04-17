@@ -58,25 +58,31 @@
 <h1>Module <a href="type_Js.Obj.html">Js.Obj</a></h1>
 
 <pre><span class="keyword">module</span> Obj: <code class="type"><a href="Js_obj.html">Js_obj</a></code></pre><div class="info module top">
-<div class="not-examples">
-Provide utilities for <a href="Js.html#TYPEt"><code class="code">Js.t</code></a><br>
-</div>
-<div class="examples">
-</div>
-</div>
-<hr width="100%">
+                   <div class="not-examples">
+                   Provide utilities for <a href="Js.html#TYPEt"><code class="code">Js.t</code></a><br>
+ 
+                   </div>
+                   <div class="examples">
+                   
+                   </div>
+                   </div>
+
+                 <hr width="100%">
 
 <pre><span id="VALempty"><span class="keyword">val</span> empty</span> : <code class="type">unit -> < .. > <a href="Js.html#TYPEt">Js.t</a></code></pre><div class="info ">
-<div class="not-examples">
-<code class="code">empty ()</code> returns the empty object <code class="code">{}</code><br>
-</div>
-<div class="examples">
-</div>
-</div>
+                   <div class="not-examples">
+                   <code class="code">empty ()</code> returns the empty object <code class="code">{}</code><br>
+ 
+                   </div>
+                   <div class="examples">
+                   
+                   </div>
+                   </div>
 
+                 
 <pre><span id="VALassign"><span class="keyword">val</span> assign</span> : <code class="type">< .. > <a href="Js.html#TYPEt">Js.t</a> -> < .. > <a href="Js.html#TYPEt">Js.t</a> -> < .. > <a href="Js.html#TYPEt">Js.t</a></code></pre><div class="info ">
-<div class="not-examples">
-<code class="code">assign target source</code> copies properties from <code class="code">source</code> to <code class="code">target</code>
+                   <div class="not-examples">
+                   <code class="code">assign target source</code> copies properties from <code class="code">source</code> to <code class="code">target</code>
 <p>
 
 Properties in <code class="code">target</code> will be overwritten by properties in <code class="code">source</code> if they
@@ -85,9 +91,10 @@ have the same key.
 
 <b>Returns</b> <code class="code">target</code><br>
 <div class="tag"><b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign">MDN</a><br>
-</div></div>
-<div class="examples">
-<pre class="example"><pre class="codepre"><code class="code">(* Copy an object *)
+</div> 
+                   </div>
+                   <div class="examples">
+                   <pre class="example"><pre class="codepre"><code class="code">(* Copy an object *)
 
 let obj = [%obj { a = 1 }]
 
@@ -107,15 +114,20 @@ let _ = Js.log obj
 
 (* prints "{ a: 1, b: 2 }", target is modified *)
 let _ = Js.log target
-</code></pre></pre></div>
-</div>
+</code></pre></pre>
+                   </div>
+                   </div>
 
+                 
 <pre><span id="VALkeys"><span class="keyword">val</span> keys</span> : <code class="type">'a <a href="Js.html#TYPEt">Js.t</a> -> string array</code></pre><div class="info ">
-<div class="not-examples">
-<code class="code">keys obj</code> returns an array of the keys of <code class="code">obj</code>'s own enumerable properties<br>
+                   <div class="not-examples">
+                   <code class="code">keys obj</code> returns an array of the keys of <code class="code">obj</code>'s own enumerable properties<br>
 <div class="tag"><b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/keys">MDN</a><br>
-</div></div>
-<div class="examples">
-</div>
-</div>
-</body></html>
+</div> 
+                   </div>
+                   <div class="examples">
+                   
+                   </div>
+                   </div>
+
+                 </body></html>

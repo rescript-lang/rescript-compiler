@@ -58,25 +58,31 @@
 <h1>Module <a href="type_Node_fs.html">Node_fs</a></h1>
 
 <pre><span class="keyword">module</span> Node_fs: <code class="code">sig</code> <a href="Node_fs.html">..</a> <code class="code">end</code></pre><div class="info module top">
-<div class="not-examples">
-Node FS API<br>
+                   <div class="not-examples">
+                   Node FS API<br>
 <div class="tag"><b>See also</b> <a href="https://blogs.janestreet.com/a-and-a/">refernce documentation</a><br>
-</div></div>
-<div class="examples">
-</div>
-</div>
-<hr width="100%">
+</div> 
+                   </div>
+                   <div class="examples">
+                   
+                   </div>
+                   </div>
+
+                 <hr width="100%">
 
 <pre><span id="VALreaddirSync"><span class="keyword">val</span> readdirSync</span> : <code class="type">string -> string array</code></pre><div class="info ">
-<div class="not-examples">
-Most fs functions let you omit the callback argument. If you do, a default
+                   <div class="not-examples">
+                   Most fs functions let you omit the callback argument. If you do, a default
     callback is used that rethrows errors. To get a trace to the original call
     site, set the `NODE_DEBUG` environment variable:<br>
-</div>
-<div class="examples">
-</div>
-</div>
+ 
+                   </div>
+                   <div class="examples">
+                   
+                   </div>
+                   </div>
 
+                 
 <pre><span id="VALrenameSync"><span class="keyword">val</span> renameSync</span> : <code class="type">string -> string</code></pre><div class="type-declaration">
 <pre><span id="TYPEfd"><span class="keyword">type</span> <code class="type"></code>fd</span> = private <code class="type">int</code> </pre>
 </div>
@@ -85,14 +91,17 @@ Most fs functions let you omit the callback argument. If you do, a default
 <pre><span id="TYPEpath"><span class="keyword">type</span> <code class="type"></code>path</span> = <code class="type">string</code> </pre>
 </div>
 <div class="info ">
-<div class="not-examples">
-The relative path to a filename can be used. Remember, however, that this path
+                   <div class="not-examples">
+                   The relative path to a filename can be used. Remember, however, that this path
    will be relative to <code class="code">process.cwd()</code>.<br>
-</div>
-<div class="examples">
-</div>
-</div>
+ 
+                   </div>
+                   <div class="examples">
+                   
+                   </div>
+                   </div>
 
+                 
 
 <pre><span class="keyword">module</span> <a href="Node_fs.Watch.html">Watch</a>: <code class="code">sig</code> <a href="Node_fs.Watch.html">..</a> <code class="code">end</code></pre>
 <pre><span id="VALftruncateSync"><span class="keyword">val</span> ftruncateSync</span> : <code class="type"><a href="Node_fs.html#TYPEfd">fd</a> -> int -> unit</code></pre>
