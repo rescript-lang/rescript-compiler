@@ -34,12 +34,19 @@ var odoc_gendir = path.join(__dirname,'..', 'odoc_gen')
 var bsppx = path.join(__dirname,'..','jscomp','bin','bsppx.exe')
 var api_doc_dir = path.join(__dirname,'..','docs','api') 
 var intro = path.join(__dirname,'..','docs','api','intro.txt')
+// 
+var generator = `-g ${odoc_gendir}/generator.cmxs`
+var prefix_flags = `ocamldoc.opt ${generator}  -w -40 -nostdlib -I ${stdlib_dir} -I ${others_dir} -I ${runtime_dir} -charset utf-8  -intro ${intro} -sort -ppx ${bsppx}  -d ${api_doc_dir}`
 
-var prefix_flags = `ocamldoc.opt -w -40 -nostdlib -I ${stdlib_dir} -I ${others_dir} -I ${runtime_dir} -g ${odoc_gendir}/generator.cmxs -charset utf-8  -intro ${intro} -sort -ppx ${bsppx}  -d ${api_doc_dir}`
-
+// -html it is weird
+// It is weird, -html will unload the plugin
 
 // It seems ocamldoc does need require all files for indexing modules, WTF ocamldoc !!
-child_process.execSync(`${prefix_flags}  ${runtime_files} ${others_files}`, {cwd : jscomp})
+var cmd = `${prefix_flags}  ${runtime_files} ${others_files}`
+
+console.log(`Running ${cmd}`)
+
+child_process.execSync(cmd, {cwd : jscomp})
 
 // console.log(`runtime files : ${runtime_files}`) 
 // child_process.execSync(`${prefix_flags} ${runtime_files} `, {cwd : runtime_dir})

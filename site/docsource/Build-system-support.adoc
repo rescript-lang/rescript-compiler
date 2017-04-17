@@ -217,7 +217,7 @@ Below is a json configuration for the https://github.com/OvermindDL1/bucklescrip
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "peerDependencies": {
-    "bs-platform": "^1.4.2" // <1>
+    "bs-platform": "^1.7.0" // <1>
   }
 }
 -----------
@@ -245,7 +245,7 @@ Now, we have a repo https://github.com/bobzhang/bucklescript-have-tea[bucklescri
     "name" : "bucklescript-have-tea", 
     "version" : "0.1.0",
     "dependencies" : { "bucklescript-tea" : "^0.1.2" }, // <1>
-    "peerDependencies" : { "bs-platform" : "^1.4.2" } //<2>
+    "peerDependencies" : { "bs-platform" : "^1.7.0" } //<2>
 }
 -----------
 <1> List `bucklescript-tea` as dependency
