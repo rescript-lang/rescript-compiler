@@ -270,7 +270,7 @@ external fromString : string -> float = "Number" [@@bs.val]
 
 
 (**
-@deprecated Use {_NaN} instead
+@deprecated Use {!_NaN} instead
 *)
 external nan : float = "NaN" [@@bs.val] 
 [@@ocaml.deprecated "Use `_NaN` instead"]

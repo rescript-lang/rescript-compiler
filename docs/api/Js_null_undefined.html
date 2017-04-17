@@ -1,20 +1,15 @@
 <!doctype html>
 <html>
 <head>
-<link rel="stylesheet" href="../api_static/tomorrow-night.css">
-
-                <link rel="stylesheet" href="../api_static/style.css" type="text/css">
-
-                <script src="../api_static//highlight.pack.js"></script>
-
-                <script src="../api_static//script.js"></script>
-
-                <script>hljs.initHighlightingOnLoad();</script><meta charset="utf-8">
-<link rel="previous" href="Js_null.html">
-<link rel="next" href="Js_obj.html">
-<title>Js_null_undefined</title>
-</head>
-<body>
+                 <link rel="stylesheet" href="../api_static/tomorrow-night.css">
+                 <link rel="stylesheet" href="../api_static/style.css" type="text/css">
+                 <script src="../api_static//highlight.pack.js"></script>
+                 <script src="../api_static//script.js"></script>
+                 <script>hljs.initHighlightingOnLoad();</script> 
+                 <meta charset="utf8">
+                 <link rel="previous" href="Js_null.html"><link rel="next" href="Js_obj.html">
+                 <title> Js_null_undefined </title></head> 
+               <body>
 <nav class="module-index"><ul><li><a href="Bs.html">Bs</a></li>
 <li><a href="Bs_dyn.html">Bs_dyn</a></li>
 <li><a href="Bs_dyn_lib.html">Bs_dyn_lib</a></li>
@@ -58,97 +53,113 @@
 <h1>Module <a href="type_Js_null_undefined.html">Js_null_undefined</a></h1>
 
 <pre><span class="keyword">module</span> Js_null_undefined: <code class="code">sig</code> <a href="Js_null_undefined.html">..</a> <code class="code">end</code></pre><div class="info module top">
-<div class="not-examples">
-Contains functionality for dealing with values that can be both <code class="code">null</code> and <code class="code">undefined</code><br>
-</div>
-<div class="examples">
-</div>
-</div>
-<hr width="100%">
+                    <div class="not-examples">
+                    Contains functionality for dealing with values that can be both <code class="code">null</code> and <code class="code">undefined</code><br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  <hr width="100%">
 <div class="type-declaration">
 <pre><span id="TYPEt"><span class="keyword">type</span> <code class="type">'a</code> t</span> = <code class="type">'a <a href="Js.html#TYPEnull_undefined">Js.null_undefined</a></code> </pre>
 </div>
 <div class="info ">
-<div class="not-examples">
-Local alias for <code class="code">'a Js.null_undefined</code><br>
-</div>
-<div class="examples">
-</div>
-</div>
+                    <div class="not-examples">
+                    Local alias for <code class="code">'a Js.null_undefined</code><br>
+ 
+                    </div>
+                    
+                    </div>
 
+                  
 
 <pre><span id="VALreturn"><span class="keyword">val</span> return</span> : <code class="type">'a -> 'a <a href="Js_null_undefined.html#TYPEt">t</a></code></pre><div class="info ">
-<div class="not-examples">
-Constructs a value of <code class="code">'a Js.null_undefined</code> containing a value of <code class="code">'a</code><br>
-</div>
-<div class="examples">
-</div>
-</div>
+                    <div class="not-examples">
+                    Constructs a value of <code class="code">'a Js.null_undefined</code> containing a value of <code class="code">'a</code><br>
+ 
+                    </div>
+                    
+                    </div>
 
+                  
 <pre><span id="VALtest"><span class="keyword">val</span> test</span> : <code class="type">'a <a href="Js_null_undefined.html#TYPEt">t</a> -> bool</code></pre><div class="info ">
-<div class="not-examples">
-Returns <code class="code">true</code> if the given value is <code class="code">null</code> or <code class="code">undefined</code>, <code class="code">false</code> otherwise<br>
-</div>
-<div class="examples">
-</div>
-</div>
+                    <div class="not-examples">
+                    Returns <code class="code">true</code> if the given value is <code class="code">null</code> or <code class="code">undefined</code>, <code class="code">false</code> otherwise<br>
+ 
+                    </div>
+                    
+                    </div>
 
+                  
 <pre><span id="VALnull"><span class="keyword">val</span> null</span> : <code class="type">'a <a href="Js_null_undefined.html#TYPEt">t</a></code></pre><div class="info ">
-<div class="not-examples">
-The <code class="code">null</code> value of type <code class="code">'a Js.null_undefined</code><br>
-</div>
-<div class="examples">
-</div>
-</div>
+                    <div class="not-examples">
+                    The <code class="code">null</code> value of type <code class="code">'a Js.null_undefined</code><br>
+ 
+                    </div>
+                    
+                    </div>
 
+                  
 <pre><span id="VALundefined"><span class="keyword">val</span> undefined</span> : <code class="type">'a <a href="Js_null_undefined.html#TYPEt">t</a></code></pre><div class="info ">
-<div class="not-examples">
-The <code class="code">undefined</code> value of type <code class="code">'a Js.null_undefined</code><br>
-</div>
-<div class="examples">
-</div>
-</div>
+                    <div class="not-examples">
+                    The <code class="code">undefined</code> value of type <code class="code">'a Js.null_undefined</code><br>
+ 
+                    </div>
+                    
+                    </div>
 
+                  
 <pre><span id="VALempty"><span class="keyword">val</span> empty</span> : <code class="type">'a <a href="Js_null_undefined.html#TYPEt">t</a></code></pre><div class="info ">
-<div class="not-examples">
-<div class="warning"><span class="label">Deprecated.</span>Use <a href="Js_null_undefined.html#VALnull"><code class="code">Js_null_undefined.null</code></a> or <a href="Js_null_undefined.html#VALundefined"><code class="code">Js_null_undefined.undefined</code></a> instead</div>
-The empty value, <code class="code">undefined</code><br>
-</div>
-<div class="examples">
-</div>
-</div>
+                    <div class="not-examples">
+                    <div class="warning">
+                              <span class="label">Deprecated.</span>
+                              Use <a href="Js_null_undefined.html#VALnull"><code class="code">Js_null_undefined.null</code></a> or <a href="Js_null_undefined.html#VALundefined"><code class="code">Js_null_undefined.undefined</code></a> instead
+                              </div>
+                            The empty value, <code class="code">undefined</code><br>
+ 
+                    </div>
+                    
+                    </div>
 
+                  
 <pre><span id="VALbind"><span class="keyword">val</span> bind</span> : <code class="type">'a <a href="Js_null_undefined.html#TYPEt">t</a> -> ('a -> 'b [@bs]) -> 'b <a href="Js_null_undefined.html#TYPEt">t</a></code></pre><div class="info ">
-<div class="not-examples">
-Maps the contained value using the given function
+                    <div class="not-examples">
+                    Maps the contained value using the given function
 <p>
 
 If <code class="code">'a Js.null_undefined</code> contains a value, that value is unwrapped, mapped to a <code class="code">'b</code> using
 the given function <code class="code">a' -&gt; 'b</code>, then wrapped back up and returned as <code class="code">'b Js.null_undefined</code><br>
-</div>
-<div class="examples">
-<pre class="example"><pre class="codepre"><code class="code">let maybeGreetWorld (maybeGreeting: string Js.null_undefined) =
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">let maybeGreetWorld (maybeGreeting: string Js.null_undefined) =
   Js.Undefined.bind maybeGreeting (fun greeting -&gt; greeting ^ " world!")
-</code></pre></pre></div>
-</div>
+</code></pre>  </pre>
+                    </div>
+                    </div>
 
+                  
 <pre><span id="VALiter"><span class="keyword">val</span> iter</span> : <code class="type">'a <a href="Js_null_undefined.html#TYPEt">t</a> -> ('a -> unit [@bs]) -> unit</code></pre><div class="info ">
-<div class="not-examples">
-Iterates over the contained value with the given function
+                    <div class="not-examples">
+                    Iterates over the contained value with the given function
 <p>
 
 If <code class="code">'a Js.null_undefined</code> contains a value, that value is unwrapped and applied to
 the given function.<br>
-</div>
-<div class="examples">
-<pre class="example"><pre class="codepre"><code class="code">let maybeSay (maybeMessage: string Js.null_undefined) =
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">let maybeSay (maybeMessage: string Js.null_undefined) =
   Js.Null_undefined.iter maybeMessage (fun message -&gt; Js.log message)
-</code></pre></pre></div>
-</div>
+</code></pre>  </pre>
+                    </div>
+                    </div>
 
+                  
 <pre><span id="VALfrom_opt"><span class="keyword">val</span> from_opt</span> : <code class="type">'a option -> 'a <a href="Js_null_undefined.html#TYPEt">t</a></code></pre><div class="info ">
-<div class="not-examples">
-Maps <code class="code">'a option</code> to <code class="code">'a Js.null_undefined</code>
+                    <div class="not-examples">
+                    Maps <code class="code">'a option</code> to <code class="code">'a Js.null_undefined</code>
 <p>
 
 <table>
@@ -156,14 +167,15 @@ Maps <code class="code">'a option</code> to <code class="code">'a Js.null_undefi
 <tr> <td>None <td>-> <td>undefined
 </table>
 <br>
-</div>
-<div class="examples">
-</div>
-</div>
+ 
+                    </div>
+                    
+                    </div>
 
+                  
 <pre><span id="VALto_opt"><span class="keyword">val</span> to_opt</span> : <code class="type">'a <a href="Js_null_undefined.html#TYPEt">t</a> -> 'a option</code></pre><div class="info ">
-<div class="not-examples">
-Maps <code class="code">'a Js.null_undefined</code> to <code class="code">'a option</code>
+                    <div class="not-examples">
+                    Maps <code class="code">'a Js.null_undefined</code> to <code class="code">'a option</code>
 <p>
 
 <table>
@@ -172,8 +184,9 @@ Maps <code class="code">'a Js.null_undefined</code> to <code class="code">'a opt
 <tr> <td>null <td>-> <td>None
 </table>
 <br>
-</div>
-<div class="examples">
-</div>
-</div>
-</body></html>
+ 
+                    </div>
+                    
+                    </div>
+
+                  </body></html>

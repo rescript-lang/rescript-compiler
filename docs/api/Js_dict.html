@@ -1,20 +1,15 @@
 <!doctype html>
 <html>
 <head>
-<link rel="stylesheet" href="../api_static/tomorrow-night.css">
-
-                <link rel="stylesheet" href="../api_static/style.css" type="text/css">
-
-                <script src="../api_static//highlight.pack.js"></script>
-
-                <script src="../api_static//script.js"></script>
-
-                <script>hljs.initHighlightingOnLoad();</script><meta charset="utf-8">
-<link rel="previous" href="Js_date.html">
-<link rel="next" href="Js_exn.html">
-<title>Js_dict</title>
-</head>
-<body>
+                 <link rel="stylesheet" href="../api_static/tomorrow-night.css">
+                 <link rel="stylesheet" href="../api_static/style.css" type="text/css">
+                 <script src="../api_static//highlight.pack.js"></script>
+                 <script src="../api_static//script.js"></script>
+                 <script>hljs.initHighlightingOnLoad();</script> 
+                 <meta charset="utf8">
+                 <link rel="previous" href="Js_date.html"><link rel="next" href="Js_exn.html">
+                 <title> Js_dict </title></head> 
+               <body>
 <nav class="module-index"><ul><li><a href="Bs.html">Bs</a></li>
 <li><a href="Bs_dyn.html">Bs_dyn</a></li>
 <li><a href="Bs_dyn_lib.html">Bs_dyn_lib</a></li>
@@ -58,94 +53,105 @@
 <h1>Module <a href="type_Js_dict.html">Js_dict</a></h1>
 
 <pre><span class="keyword">module</span> Js_dict: <code class="code">sig</code> <a href="Js_dict.html">..</a> <code class="code">end</code></pre><div class="info module top">
-<div class="not-examples">
-Dictionary type (ie an '{ }' JS object). However it is restricted 
+                    <div class="not-examples">
+                    Dictionary type (ie an '{ }' JS object). However it is restricted 
     to hold a single type; therefore values must have the same type. 
 <p>
 
     This Dictionary type is mostly use with the <code class="code">Js_json.t</code> type.<br>
-</div>
-<div class="examples">
-</div>
-</div>
-<hr width="100%">
+ 
+                    </div>
+                    
+                    </div>
+
+                  <hr width="100%">
 <div class="type-declaration">
 <pre><span id="TYPEt"><span class="keyword">type</span> <code class="type">'a</code> t</span> </pre>
 </div>
 <div class="info ">
-<div class="not-examples">
-Dictionary type (ie an '{ }' JS object). However it is restricted 
+                    <div class="not-examples">
+                    Dictionary type (ie an '{ }' JS object). However it is restricted 
     to hold a single type; therefore values must have the same type. 
 <p>
 
     This Dictionary type is mostly use with the <code class="code">Js_json.t</code> type.<br>
-</div>
-<div class="examples">
-</div>
-</div>
+ 
+                    </div>
+                    
+                    </div>
 
+                  
 <div class="type-declaration">
 <pre><span id="TYPEkey"><span class="keyword">type</span> <code class="type"></code>key</span> = <code class="type">string</code> </pre>
 </div>
 <div class="info ">
-<div class="not-examples">
-Key type<br>
-</div>
-<div class="examples">
-</div>
-</div>
+                    <div class="not-examples">
+                    Key type<br>
+ 
+                    </div>
+                    
+                    </div>
 
+                  
 
 <pre><span id="VALget"><span class="keyword">val</span> get</span> : <code class="type">'a <a href="Js_dict.html#TYPEt">t</a> -> <a href="Js_dict.html#TYPEkey">key</a> -> 'a option</code></pre><div class="info ">
-<div class="not-examples">
-<code class="code">get dict key</code> returns <code class="code">None</code> if the <code class="code">key</code> is not found in the 
+                    <div class="not-examples">
+                    <code class="code">get dict key</code> returns <code class="code">None</code> if the <code class="code">key</code> is not found in the 
     dictionary, <code class="code">Some value</code> otherwise<br>
-</div>
-<div class="examples">
-</div>
-</div>
+ 
+                    </div>
+                    
+                    </div>
 
+                  
 <pre><span id="VALunsafeGet"><span class="keyword">val</span> unsafeGet</span> : <code class="type">'a <a href="Js_dict.html#TYPEt">t</a> -> <a href="Js_dict.html#TYPEkey">key</a> -> 'a</code></pre><div class="info ">
-<div class="not-examples">
-<code class="code">unsafeGet dict key</code> return the value if the <code class="code">key</code> exists, 
+                    <div class="not-examples">
+                    <code class="code">unsafeGet dict key</code> return the value if the <code class="code">key</code> exists, 
     otherwise an <b>undefined</b> value is returned. Must be used only 
     when the existence of a key is certain. (i.e. when having called <code class="code">keys</code>
     function previously.<br>
-</div>
-<div class="examples">
-<pre class="example"><pre class="codepre"><code class="code">Array.iter (fun key -&gt; Js.log (Js_dict.unsafeGet dic key)) (Js_dict.keys dict) 
-</code></pre></pre></div>
-</div>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">Array.iter (fun key -&gt; Js.log (Js_dict.unsafeGet dic key)) (Js_dict.keys dict) 
+</code></pre>  </pre>
+                    </div>
+                    </div>
 
+                  
 <pre><span id="VALset"><span class="keyword">val</span> set</span> : <code class="type">'a <a href="Js_dict.html#TYPEt">t</a> -> <a href="Js_dict.html#TYPEkey">key</a> -> 'a -> unit</code></pre><div class="info ">
-<div class="not-examples">
-<code class="code">set dict key value</code> sets the <code class="code">key</code>/<code class="code">value</code> in <code class="code">dict</code><br>
-</div>
-<div class="examples">
-</div>
-</div>
+                    <div class="not-examples">
+                    <code class="code">set dict key value</code> sets the <code class="code">key</code>/<code class="code">value</code> in <code class="code">dict</code><br>
+ 
+                    </div>
+                    
+                    </div>
 
+                  
 <pre><span id="VALkeys"><span class="keyword">val</span> keys</span> : <code class="type">'a <a href="Js_dict.html#TYPEt">t</a> -> string array</code></pre><div class="info ">
-<div class="not-examples">
-<code class="code">keys dict</code> returns all the keys in the dictionary <code class="code">dict</code><br>
-</div>
-<div class="examples">
-</div>
-</div>
+                    <div class="not-examples">
+                    <code class="code">keys dict</code> returns all the keys in the dictionary <code class="code">dict</code><br>
+ 
+                    </div>
+                    
+                    </div>
 
+                  
 <pre><span id="VALempty"><span class="keyword">val</span> empty</span> : <code class="type">unit -> 'a <a href="Js_dict.html#TYPEt">t</a></code></pre><div class="info ">
-<div class="not-examples">
-<code class="code">empty ()</code> returns en empty dictionary<br>
-</div>
-<div class="examples">
-</div>
-</div>
+                    <div class="not-examples">
+                    <code class="code">empty ()</code> returns en empty dictionary<br>
+ 
+                    </div>
+                    
+                    </div>
 
+                  
 <pre><span id="VALunsafeDeleteKey"><span class="keyword">val</span> unsafeDeleteKey</span> : <code class="type">(string <a href="Js_dict.html#TYPEt">t</a> -> string -> unit [@bs])</code></pre><div class="info ">
-<div class="not-examples">
-Experimental internal funciton<br>
-</div>
-<div class="examples">
-</div>
-</div>
-</body></html>
+                    <div class="not-examples">
+                    Experimental internal funciton<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  </body></html>

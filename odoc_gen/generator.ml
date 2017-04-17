@@ -14,10 +14,16 @@ let new_buf () = Buffer.create 1024
 let bp = Printf.bprintf
 let bs = Buffer.add_string
 
-let bufferize f =
+let bufferize f t =
   let b = new_buf () in
-  (fun t -> f b t; Buffer.contents b)
+  f b t;
+  Buffer.contents b
 
+let opt_iter opt f = 
+  match opt with 
+  | None -> ()
+  | Some x -> f x 
+let (|?) = opt_iter
 let print_concat b sep f =
   let rec iter = function
       [] -> ()
@@ -31,22 +37,24 @@ let print_concat b sep f =
 
 let charset = ref "utf-8"
 
-let html_of_example g t =
-  let text = bufferize g#html_of_text t in
-  "<pre class=\"example\">" ^ text ^ "</pre>"
+
+type tag_function = Odoc_info.text -> string
+
+let html_of_example b g t  =
+  bp b {|<pre class="example"> %a  </pre>|} g#html_of_text t 
 
 let wrap_tag f b v =
-  bs b "<div class=\"tag\">";
-  f b v;
-  bs b "</div>"
+  bp b {|<div class="tag"> %a </div>|} f  v
 
 let wrap_tag_list f b = function
-| [] -> ()
-| l -> wrap_tag f b l
+  | [] -> ()
+  | l -> wrap_tag f b l
 
 let wrap_tag_opt f b = function
-| None -> ()
-| v -> wrap_tag f b v
+  | None -> ()
+  | v -> wrap_tag f b v
+let encoding = 	 {|<meta charset="utf8">|}
+
 
 module Generator (G : Odoc_html.Html_generator) =
 struct
@@ -54,57 +62,72 @@ struct
     object(self)
       inherit G.html as super
 
-      val mutable doctype = "<!doctype html>\n"
+      val! mutable doctype = "<!doctype html>\n"
 
-	    method character_encoding () =
-	      Printf.sprintf "<meta charset=\"%s\">\n" !charset
+      method! character_encoding () = encoding
 
-      method html_of_author_list = wrap_tag_list super#html_of_author_list
-      method html_of_version_opt = wrap_tag_opt super#html_of_version_opt
-      method html_of_before = wrap_tag_list super#html_of_before
-      method html_of_since_opt = wrap_tag_opt super#html_of_since_opt
-      method html_of_raised_exceptions = wrap_tag_list super#html_of_raised_exceptions
-      method html_of_return_opt = wrap_tag_opt super#html_of_return_opt
-      method html_of_sees = wrap_tag_list super#html_of_sees
+   
+      method! html_of_author_list = wrap_tag_list super#html_of_author_list
+      method! html_of_version_opt = wrap_tag_opt super#html_of_version_opt
+      method! html_of_before = wrap_tag_list super#html_of_before
+      method! html_of_since_opt = wrap_tag_opt super#html_of_since_opt
+      method! html_of_raised_exceptions = wrap_tag_list super#html_of_raised_exceptions
+      method! html_of_return_opt = wrap_tag_opt super#html_of_return_opt
+      method! html_of_sees = wrap_tag_list super#html_of_sees
 
-      method html_of_info ?(cls="") ?(indent=true) b info_opt =
-        match info_opt with
-          None ->
-            ()
-        | Some info ->
-            let module M = Odoc_info in
-            if indent then bs b ("<div class=\"info "^cls^"\">\n");
-            bs b "<div class=\"not-examples\">\n";
-            begin match info.M.i_deprecated with
-              None -> ()
-            | Some d ->
-                bs b "<div class=\"warning\">";
-                bs b "<span class=\"label\">";
-                bs b Odoc_messages.deprecated ;
-                bs b "</span>" ;
-                self#html_of_text b d;
-                bs b "</div>\n"
-            end;
-            begin match info.M.i_desc with
-              None -> ()
-            | Some d when d = [Odoc_info.Raw ""] -> ()
-            | Some d -> self#html_of_text b d; bs b "<br>\n"
-            end;
-            self#html_of_author_list b info.M.i_authors;
-            self#html_of_version_opt b info.M.i_version;
-            self#html_of_before b info.M.i_before;
-            self#html_of_since_opt b info.M.i_since;
-            self#html_of_raised_exceptions b info.M.i_raised_exceptions;
-            self#html_of_return_opt b info.M.i_return_value;
-            self#html_of_sees b info.M.i_sees;
-            bs b "</div>\n";
-            bs b "<div class=\"examples\">\n";
-            self#html_of_custom b info.M.i_custom;
-            bs b "</div>\n";
-            if indent then bs b "</div>\n"
+      method! html_of_info ?(cls="") ?(indent=true) b 
+          (info_opt : Odoc_info.info option) =
+        opt_iter info_opt
+          (fun ({
+               i_authors ; i_version; i_before ; i_since ; i_raised_exceptions ; 
+               i_return_value ; 
+               i_sees;
+               i_deprecated; 
+               i_desc;
+               i_custom
+             } ) ->
+             bp b {|%a
+                    <div class="not-examples">
+                    %a 
+                    </div>
+                    %a
+                    %a
+                  |} 
+               (fun b indent -> if indent then bp b {|<div class="info %s">|} cls)
+               indent
+               (fun  b () ->
+                  opt_iter  i_deprecated
+                    (fun d ->
+                       bp b {|<div class="warning">
+                              <span class="label">%s</span>
+                              %a
+                              </div>
+                            |} 
+                         Odoc_messages.deprecated self#html_of_text  d );
+                  opt_iter i_desc 
+                    (function 
+                      | [Odoc_info.Raw ""] -> ()
+                      |  d -> self#html_of_text b d; bs b "<br>\n"
+                    );
+                  self#html_of_author_list b i_authors;
+                  self#html_of_version_opt b i_version;
+                  self#html_of_before b i_before;
+                  self#html_of_since_opt b i_since;
+                  self#html_of_raised_exceptions b i_raised_exceptions;
+                  self#html_of_return_opt b i_return_value;
+                  self#html_of_sees b i_sees)
+               ()
+               (fun b () ->  
+                  if i_custom <> [] then 
+                    bp b {| <div class="examples">
+                    %a
+                    </div>|}
+                    self#html_of_custom  i_custom
+               ) ()
+               (fun b indent -> if indent then bs b "</div>\n") indent )
 
       (** Print html code for the given list of custom tagged texts. *)
-      method html_of_custom b l =
+      method! html_of_custom b l =
         List.iter
           (fun (tag, text) ->
             try
@@ -116,44 +139,44 @@ struct
           )
           l
 
-      method private output_code' ?(with_pre=true) in_title file code =
-        try
-          let chanout = open_out file in
-          let b = new_buf () in
-          bs b "<html>";
-          self#print_header b (self#inner_title in_title);
-          bs b"<body>\n";
-          self#html_of_code ~with_pre b code;
-          bs b "</body></html>";
-          Buffer.output_buffer chanout b;
-          close_out chanout
-        with
-          Sys_error s ->
-            incr Odoc_info.errors ;
-            prerr_endline s
 
       (** Print html code for a type. *)
-      method html_of_type b t =
+      method! html_of_type b t =
         bs b "<div class=\"type-declaration\">";
         Odoc_info.reset_type_names ();
         let father = Name.father t.ty_name in
         let print_field_prefix () =
-          bs b "<tr>\n<td align=\"left\" valign=\"top\" >\n";
-          bs b "<code>&nbsp;&nbsp;</code>";
-          bs b "</td>\n<td align=\"left\" valign=\"top\" >\n";
-          bs b "<code>";
+          bp b {|<tr>
+                 
+                 <td align="left" valign="top" >
+                 <code>&nbsp;&nbsp;</code>
+                 </td> 
+                 
+                 <td align="left" valign="top" >
+                 <code>
+               |}
         in
         let print_field_comment = function
           | None -> ()
           | Some t ->
-              bs b "<td class=\"typefieldcomment\" align=\"left\" valign=\"top\" >";
-              bs b "<code>";
-              bs b "(*";
-              bs b "</code></td>";
-              bs b "<td class=\"typefieldcomment\" align=\"left\" valign=\"top\" >";
-              self#html_of_info b (Some t);
-              bs b "</td><td class=\"typefieldcomment\" align=\"left\" valign=\"bottom\" >";
-              bs b "<code>*)</code></td>"
+            bp b {|
+
+            <td class="typefieldcomment" align="left" valign="top" >
+            <code>
+            (*
+            </code>
+            </td>
+            
+            <td class="typefieldcomment" align="left" valign="top" >
+            %a
+            </td>
+
+            <td class="typefieldcomment" align="left" valign="bottom" >
+            <code>
+            *)
+            </code>
+            </td>
+            |} (fun b x -> self#html_of_info b x) (Some t)
         in
         bs b
           (match t.ty_manifest, t.ty_kind with
@@ -166,8 +189,13 @@ struct
           | Some _, Type_variant _
           | Some _, Type_record _ -> "\n<pre>"
           );
-        bp b "<span id=\"%s\">" (Naming.type_target t);
+
+        bp b 
+          {|<span id="%s">|}
+          (Naming.type_target t);
+
         bs b ((self#keyword "type")^" ");
+
         self#html_of_type_expr_param_list b father t;
         (match t.ty_parameters with [] -> () | _ -> bs b " ");
         bs b (Name.simple t.ty_name);
@@ -318,7 +346,7 @@ struct
         @param pre optional name for optional previous module/class
         @param post optional name for optional next module/class
         @param name name of current module/class *)
-      method print_navbar b pre post name =
+      method! print_navbar b pre post name =
         self#print_module_index b; (* not really the appropriate place, but easy *)
         bs b "<div class=\"navbar\">";
         (
@@ -359,42 +387,45 @@ struct
         ) ()
 
       (** A function to build the header of pages. *)
-      method prepare_header module_list =
+      method! prepare_header module_list =
         let f b ?(nav=None) ?(comments=[]) t  =
-          bs b "<head>\n";
-          bs b "<link rel=\"stylesheet\" href=\"../api_static/tomorrow-night.css\">\n
-                <link rel=\"stylesheet\" href=\"../api_static/style.css\" type=\"text/css\">\n
-                <script src=\"../api_static//highlight.pack.js\"></script>\n
-                <script src=\"../api_static//script.js\"></script>\n
-                <script>hljs.initHighlightingOnLoad();</script>";
-          bs b (self#character_encoding ()) ;
-          (
-          match nav with
-            None -> ()
-          | Some (pre_opt, post_opt, name) ->
-              (match pre_opt with
-                None -> ()
-              | Some name ->
-                  bp b "<link rel=\"previous\" href=\"%s\">\n"
-                    (fst (Naming.html_files name));
-              );
-              (match post_opt with
-                None -> ()
-              | Some name ->
-                  bp b "<link rel=\"next\" href=\"%s\">\n"
-                    (fst (Naming.html_files name));
-              );
-          );
-          bs b "<title>";
-          bs b t ;
-          bs b "</title>\n</head>\n"
+
+          bp b {|<head>
+                 <link rel="stylesheet" href="../api_static/tomorrow-night.css">
+                 <link rel="stylesheet" href="../api_static/style.css" type="text/css">
+                 <script src="../api_static//highlight.pack.js"></script>
+                 <script src="../api_static//script.js"></script>
+                 <script>hljs.initHighlightingOnLoad();</script> 
+                 %s
+                 %a
+                 <title> %s </title></head> 
+               |} 
+            encoding
+
+          (fun b nav -> 
+            nav |?
+            (fun (pre_opt, post_opt, _name) ->
+               pre_opt |?
+               (fun name ->
+                  bp b {|<link rel="previous" href="%s">|}
+                    (fst (Naming.html_files name))
+               );
+               ( post_opt |?
+                 (fun name ->
+                    bp b {|<link rel="next" href="%s">|}
+                      (fst (Naming.html_files name));
+                 )))
+          )
+          nav
+          t
         in
-        self#prepare_navbar_module_index module_list; (* not really the appopriate place to do this, but it's easy. Easy is good *)
+        self#prepare_navbar_module_index module_list; 
+        (* not really the appopriate place to do this, but it's easy. Easy is good *)
         header <- f
 
       (** Generate the [<index_prefix>.html] file corresponding to the given module list.
         @raise Failure if an error occurs.*)
-      method generate_index module_list =
+      method! generate_index module_list =
         try
           let chanout = open_out (Filename.concat !Global.target_dir self#index) in
           let b = new_buf () in
@@ -429,7 +460,7 @@ struct
 
 
       (** A method to create index files. *)
-      method generate_elements_index :
+      method! generate_elements_index :
           'a.
           'a list ->
             ('a -> Odoc_info.Name.t) ->
@@ -487,7 +518,13 @@ struct
             raise (Failure s)
 
       initializer
-        tag_functions <- ("example", html_of_example self) :: tag_functions
+        tag_functions <- ("example", 
+                          bufferize (fun b text -> html_of_example b self text))
+                         :: tag_functions
   end
 end
 let _ = Odoc_args.extend_html_generator (module Generator : Odoc_gen.Html_functor);
+
+(* local variables: *)
+(* compile-command: "ocamlc.opt -I +compiler-libs -I +ocamldoc -c generator.mli generator.ml" *)
+(* end: *)
