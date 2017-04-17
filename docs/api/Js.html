@@ -55,17 +55,16 @@
 <pre><span class="keyword">module</span> Js: <code class="code">sig</code> <a href="Js.html">..</a> <code class="code">end</code></pre><div class="info module top">
                     <div class="not-examples">
                     This library provides bindings and necessary support for JS FFI. 
-    It contains all bindings into <code class="code">Js</code> namespace.
-<p>
-
-    Example <pre class="codepre"><code class="code">        [| 1;2;3;4|]
+    It contains all bindings into <code class="code">Js</code> namespace.<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">        [| 1;2;3;4|]
         |&gt; Js.Array.map (fun x -&gt; x + 1 )
         |&gt; Js.Array.reduce (+) 0
         |&gt; Js.log 
-    </code></pre><br>
- 
+    </code></pre>  </pre>
                     </div>
-                    
                     </div>
 
                   <hr width="100%">
@@ -74,15 +73,14 @@
 </div>
 <div class="info ">
                     <div class="not-examples">
-                    Js object type.  
-<p>
-
-    Example <pre class="codepre"><code class="code">        let x : &lt; x : int ; y : int &gt; Js.t =
-            [%obj{ x = 1 ; y = 2}]
-    </code></pre><br>
+                    Js object type.<br>
  
                     </div>
-                    
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">        let x : &lt; x : int ; y : int &gt; Js.t =
+            [%obj{ x = 1 ; y = 2}]
+    </code></pre>  </pre>
+                    </div>
                     </div>
 
                   
@@ -245,79 +243,117 @@
                     </div>
 
                   
-<pre><span class="keyword">module</span> <a href="Js.Null.html">Null</a>: <code class="type"><a href="Js_null.html">Js_null</a></code></pre><div class="info">
-Provide utilities arond <code class="code">'a null</code>
-</div>
-
-<pre><span class="keyword">module</span> <a href="Js.Undefined.html">Undefined</a>: <code class="type"><a href="Js_undefined.html">Js_undefined</a></code></pre><div class="info">
-Provide utilities around <a href="Js.html#VALundefined"><code class="code">Js.undefined</code></a>
-</div>
-
-<pre><span class="keyword">module</span> <a href="Js.Null_undefined.html">Null_undefined</a>: <code class="type"><a href="Js_null_undefined.html">Js_null_undefined</a></code></pre><div class="info">
-Provide utilities arond <a href="Js.html#TYPEnull_undefined"><code class="code">Js.null_undefined</code></a>
-</div>
-
-<pre><span class="keyword">module</span> <a href="Js.Exn.html">Exn</a>: <code class="type"><a href="Js_exn.html">Js_exn</a></code></pre><div class="info">
-Provide utilities for dealing with Js exceptions
-</div>
-
-<pre><span class="keyword">module</span> <a href="Js.Array.html">Array</a>: <code class="type"><a href="Js_array.html">Js_array</a></code></pre><div class="info">
-Provide bindings to Js array
-</div>
-
-<pre><span class="keyword">module</span> <a href="Js.String.html">String</a>: <code class="type"><a href="Js_string.html">Js_string</a></code></pre><div class="info">
-Provide bindings to JS string
-</div>
-
-<pre><span class="keyword">module</span> <a href="Js.Boolean.html">Boolean</a>: <code class="type"><a href="Js_boolean.html">Js_boolean</a></code></pre><div class="info">
-Provide utilties for <a href="Js.html#TYPEboolean"><code class="code">Js.boolean</code></a>
-</div>
-
-<pre><span class="keyword">module</span> <a href="Js.Re.html">Re</a>: <code class="type"><a href="Js_re.html">Js_re</a></code></pre><div class="info">
-Provide bindings to Js regex expression
-</div>
-
-<pre><span class="keyword">module</span> <a href="Js.Promise.html">Promise</a>: <code class="type"><a href="Js_promise.html">Js_promise</a></code></pre><div class="info">
-Provide bindings to JS promise
-</div>
-
-<pre><span class="keyword">module</span> <a href="Js.Date.html">Date</a>: <code class="type"><a href="Js_date.html">Js_date</a></code></pre><div class="info">
-Provide bindings for JS Date
-</div>
-
-<pre><span class="keyword">module</span> <a href="Js.Dict.html">Dict</a>: <code class="type"><a href="Js_dict.html">Js_dict</a></code></pre><div class="info">
-Provide utilities for JS dictionary object
-</div>
-
-<pre><span class="keyword">module</span> <a href="Js.Global.html">Global</a>: <code class="type"><a href="Js_global.html">Js_global</a></code></pre><div class="info">
-Provide bindings to JS global functions in global namespace
-</div>
-
-<pre><span class="keyword">module</span> <a href="Js.Json.html">Json</a>: <code class="type"><a href="Js_json.html">Js_json</a></code></pre><div class="info">
-Provide utilities for json
-</div>
-
-<pre><span class="keyword">module</span> <a href="Js.Math.html">Math</a>: <code class="type"><a href="Js_math.html">Js_math</a></code></pre><div class="info">
-Provide bindings for JS <code class="code">Math</code> object
-</div>
-
-<pre><span class="keyword">module</span> <a href="Js.Obj.html">Obj</a>: <code class="type"><a href="Js_obj.html">Js_obj</a></code></pre><div class="info">
-Provide utilities for <a href="Js.html#TYPEt"><code class="code">Js.t</code></a>
-</div>
-
-<pre><span class="keyword">module</span> <a href="Js.Typed_array.html">Typed_array</a>: <code class="type"><a href="Js_typed_array.html">Js_typed_array</a></code></pre><div class="info">
-Provide bindings for JS typed array
-</div>
-
-<pre><span class="keyword">module</span> <a href="Js.Types.html">Types</a>: <code class="type"><a href="Js_types.html">Js_types</a></code></pre><div class="info">
-Provide utilities for maninpulatig JS types
-</div>
-
-<pre><span class="keyword">module</span> <a href="Js.Float.html">Float</a>: <code class="type"><a href="Js_float.html">Js_float</a></code></pre><div class="info">
-Provide utilities for JS float
-</div>
-
-<pre><span class="keyword">module</span> <a href="Js.Int.html">Int</a>: <code class="type"><a href="Js_int.html">Js_int</a></code></pre><div class="info">
-Provide utilities for int
-</div>
-</body></html>
+<pre><span class="keyword">module</span> <a href="Js.Null.html">Null</a>: <code class="type"><a href="Js_null.html">Js_null</a></code></pre> <div class="info">                     
+                <div class="not-examples">
+                    Provide utilities arond <code class="code">'a null</code><br>
+ 
+                </div>
+                </div> 
+<pre><span class="keyword">module</span> <a href="Js.Undefined.html">Undefined</a>: <code class="type"><a href="Js_undefined.html">Js_undefined</a></code></pre> <div class="info">                     
+                <div class="not-examples">
+                    Provide utilities around <a href="Js.html#VALundefined"><code class="code">Js.undefined</code></a><br>
+ 
+                </div>
+                </div> 
+<pre><span class="keyword">module</span> <a href="Js.Null_undefined.html">Null_undefined</a>: <code class="type"><a href="Js_null_undefined.html">Js_null_undefined</a></code></pre> <div class="info">                     
+                <div class="not-examples">
+                    Provide utilities arond <a href="Js.html#TYPEnull_undefined"><code class="code">Js.null_undefined</code></a><br>
+ 
+                </div>
+                </div> 
+<pre><span class="keyword">module</span> <a href="Js.Exn.html">Exn</a>: <code class="type"><a href="Js_exn.html">Js_exn</a></code></pre> <div class="info">                     
+                <div class="not-examples">
+                    Provide utilities for dealing with Js exceptions<br>
+ 
+                </div>
+                </div> 
+<pre><span class="keyword">module</span> <a href="Js.Array.html">Array</a>: <code class="type"><a href="Js_array.html">Js_array</a></code></pre> <div class="info">                     
+                <div class="not-examples">
+                    Provide bindings to Js array<br>
+ 
+                </div>
+                </div> 
+<pre><span class="keyword">module</span> <a href="Js.String.html">String</a>: <code class="type"><a href="Js_string.html">Js_string</a></code></pre> <div class="info">                     
+                <div class="not-examples">
+                    Provide bindings to JS string<br>
+ 
+                </div>
+                </div> 
+<pre><span class="keyword">module</span> <a href="Js.Boolean.html">Boolean</a>: <code class="type"><a href="Js_boolean.html">Js_boolean</a></code></pre> <div class="info">                     
+                <div class="not-examples">
+                    Provide utilties for <a href="Js.html#TYPEboolean"><code class="code">Js.boolean</code></a><br>
+ 
+                </div>
+                </div> 
+<pre><span class="keyword">module</span> <a href="Js.Re.html">Re</a>: <code class="type"><a href="Js_re.html">Js_re</a></code></pre> <div class="info">                     
+                <div class="not-examples">
+                    Provide bindings to Js regex expression<br>
+ 
+                </div>
+                </div> 
+<pre><span class="keyword">module</span> <a href="Js.Promise.html">Promise</a>: <code class="type"><a href="Js_promise.html">Js_promise</a></code></pre> <div class="info">                     
+                <div class="not-examples">
+                    Provide bindings to JS promise<br>
+ 
+                </div>
+                </div> 
+<pre><span class="keyword">module</span> <a href="Js.Date.html">Date</a>: <code class="type"><a href="Js_date.html">Js_date</a></code></pre> <div class="info">                     
+                <div class="not-examples">
+                    Provide bindings for JS Date<br>
+ 
+                </div>
+                </div> 
+<pre><span class="keyword">module</span> <a href="Js.Dict.html">Dict</a>: <code class="type"><a href="Js_dict.html">Js_dict</a></code></pre> <div class="info">                     
+                <div class="not-examples">
+                    Provide utilities for JS dictionary object<br>
+ 
+                </div>
+                </div> 
+<pre><span class="keyword">module</span> <a href="Js.Global.html">Global</a>: <code class="type"><a href="Js_global.html">Js_global</a></code></pre> <div class="info">                     
+                <div class="not-examples">
+                    Provide bindings to JS global functions in global namespace<br>
+ 
+                </div>
+                </div> 
+<pre><span class="keyword">module</span> <a href="Js.Json.html">Json</a>: <code class="type"><a href="Js_json.html">Js_json</a></code></pre> <div class="info">                     
+                <div class="not-examples">
+                    Provide utilities for json<br>
+ 
+                </div>
+                </div> 
+<pre><span class="keyword">module</span> <a href="Js.Math.html">Math</a>: <code class="type"><a href="Js_math.html">Js_math</a></code></pre> <div class="info">                     
+                <div class="not-examples">
+                    Provide bindings for JS <code class="code">Math</code> object<br>
+ 
+                </div>
+                </div> 
+<pre><span class="keyword">module</span> <a href="Js.Obj.html">Obj</a>: <code class="type"><a href="Js_obj.html">Js_obj</a></code></pre> <div class="info">                     
+                <div class="not-examples">
+                    Provide utilities for <a href="Js.html#TYPEt"><code class="code">Js.t</code></a><br>
+ 
+                </div>
+                </div> 
+<pre><span class="keyword">module</span> <a href="Js.Typed_array.html">Typed_array</a>: <code class="type"><a href="Js_typed_array.html">Js_typed_array</a></code></pre> <div class="info">                     
+                <div class="not-examples">
+                    Provide bindings for JS typed array<br>
+ 
+                </div>
+                </div> 
+<pre><span class="keyword">module</span> <a href="Js.Types.html">Types</a>: <code class="type"><a href="Js_types.html">Js_types</a></code></pre> <div class="info">                     
+                <div class="not-examples">
+                    Provide utilities for maninpulatig JS types<br>
+ 
+                </div>
+                </div> 
+<pre><span class="keyword">module</span> <a href="Js.Float.html">Float</a>: <code class="type"><a href="Js_float.html">Js_float</a></code></pre> <div class="info">                     
+                <div class="not-examples">
+                    Provide utilities for JS float<br>
+ 
+                </div>
+                </div> 
+<pre><span class="keyword">module</span> <a href="Js.Int.html">Int</a>: <code class="type"><a href="Js_int.html">Js_int</a></code></pre> <div class="info">                     
+                <div class="not-examples">
+                    Provide utilities for int<br>
+ 
+                </div>
+                </div> </body></html>

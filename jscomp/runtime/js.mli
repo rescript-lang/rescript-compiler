@@ -33,7 +33,7 @@
 (** This library provides bindings and necessary support for JS FFI. 
     It contains all bindings into [Js] namespace.
 
-    Example {[
+    @example {[
         [| 1;2;3;4|]
         |> Js.Array.map (fun x -> x + 1 )
         |> Js.Array.reduce (+) 0
@@ -53,7 +53,7 @@ type (-'arg, + 'result) fn (** Js uncurried function *)
 type +'a t
 (** Js object type.  
    
-    Example {[
+    @example {[
         let x : < x : int ; y : int > Js.t =
             [%obj{ x = 1 ; y = 2}]
     ]}
