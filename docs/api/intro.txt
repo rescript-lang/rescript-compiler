@@ -1,3 +1,4 @@
+{!indexlist}
 
 {1 Libraries shipped with BuckleScript}
 

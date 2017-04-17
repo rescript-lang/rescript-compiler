@@ -1,20 +1,15 @@
 <!doctype html>
 <html>
 <head>
-<link rel="stylesheet" href="../api_static/tomorrow-night.css">
-
-                <link rel="stylesheet" href="../api_static/style.css" type="text/css">
-
-                <script src="../api_static//highlight.pack.js"></script>
-
-                <script src="../api_static//script.js"></script>
-
-                <script>hljs.initHighlightingOnLoad();</script><meta charset="utf-8">
-<link rel="previous" href="Js_float.html">
-<link rel="next" href="Js_int.html">
-<title>Js_global</title>
-</head>
-<body>
+                 <link rel="stylesheet" href="../api_static/tomorrow-night.css">
+                 <link rel="stylesheet" href="../api_static/style.css" type="text/css">
+                 <script src="../api_static//highlight.pack.js"></script>
+                 <script src="../api_static//script.js"></script>
+                 <script>hljs.initHighlightingOnLoad();</script> 
+                 <meta charset="utf8">
+                 <link rel="previous" href="Js_float.html"><link rel="next" href="Js_int.html">
+                 <title> Js_global </title></head> 
+               <body>
 <nav class="module-index"><ul><li><a href="Bs.html">Bs</a></li>
 <li><a href="Bs_dyn.html">Bs_dyn</a></li>
 <li><a href="Bs_dyn_lib.html">Bs_dyn_lib</a></li>
@@ -58,53 +53,47 @@
 <h1>Module <a href="type_Js_global.html">Js_global</a></h1>
 
 <pre><span class="keyword">module</span> Js_global: <code class="code">sig</code> <a href="Js_global.html">..</a> <code class="code">end</code></pre><div class="info module top">
-                   <div class="not-examples">
-                   Contains functions available in the global scope (<code class="code">window</code> in a browser context)<br>
+                    <div class="not-examples">
+                    Contains functions available in the global scope (<code class="code">window</code> in a browser context)<br>
  
-                   </div>
-                   <div class="examples">
-                   
-                   </div>
-                   </div>
+                    </div>
+                    
+                    </div>
 
-                 <hr width="100%">
+                  <hr width="100%">
 <div class="type-declaration">
 <pre><span id="TYPEintervalId"><span class="keyword">type</span> <code class="type"></code>intervalId</span> </pre>
 </div>
 <div class="info ">
-                   <div class="not-examples">
-                   identifies an interval started by <a href="Js_global.html#VALsetInterval"><code class="code">Js_global.setInterval</code></a><br>
+                    <div class="not-examples">
+                    identifies an interval started by <a href="Js_global.html#VALsetInterval"><code class="code">Js_global.setInterval</code></a><br>
  
-                   </div>
-                   <div class="examples">
-                   
-                   </div>
-                   </div>
+                    </div>
+                    
+                    </div>
 
-                 
+                  
 <div class="type-declaration">
 <pre><span id="TYPEtimeoutId"><span class="keyword">type</span> <code class="type"></code>timeoutId</span> </pre>
 </div>
 <div class="info ">
-                   <div class="not-examples">
-                   identifies a timeout started by <a href="Js_global.html#VALsetTimeout"><code class="code">Js_global.setTimeout</code></a><br>
+                    <div class="not-examples">
+                    identifies a timeout started by <a href="Js_global.html#VALsetTimeout"><code class="code">Js_global.setTimeout</code></a><br>
  
-                   </div>
-                   <div class="examples">
-                   
-                   </div>
-                   </div>
+                    </div>
+                    
+                    </div>
 
-                 
+                  
 
 <pre><span id="VALclearInterval"><span class="keyword">val</span> clearInterval</span> : <code class="type"><a href="Js_global.html#TYPEintervalId">intervalId</a> -> unit</code></pre><div class="info ">
-                   <div class="not-examples">
-                   clears an interval started by <a href="Js_global.html#VALsetInterval"><code class="code">Js_global.setInterval</code></a><br>
-<div class="tag"><b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/clearInterval">MDN</a><br>
-</div> 
-                   </div>
-                   <div class="examples">
-                   <pre class="example"><pre class="codepre"><code class="code">(* API for a somewhat aggressive snoozing alarm clock *)
+                    <div class="not-examples">
+                    clears an interval started by <a href="Js_global.html#VALsetInterval"><code class="code">Js_global.setInterval</code></a><br>
+<div class="tag"> <b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/clearInterval">MDN</a><br>
+ </div> 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">(* API for a somewhat aggressive snoozing alarm clock *)
 
 let interval = Js.Undefined.empty
 
@@ -117,19 +106,19 @@ let snooze mins =
 
 let cancel () =
   Js.Undefined.iter Js.Global.clearInterval !interval
-</code></pre></pre>
-                   </div>
-                   </div>
+</code></pre>  </pre>
+                    </div>
+                    </div>
 
-                 
+                  
 <pre><span id="VALclearTimeout"><span class="keyword">val</span> clearTimeout</span> : <code class="type"><a href="Js_global.html#TYPEtimeoutId">timeoutId</a> -> unit</code></pre><div class="info ">
-                   <div class="not-examples">
-                   clears a timeout started by <a href="Js_global.html#VALsetTimeout"><code class="code">Js_global.setTimeout</code></a><br>
-<div class="tag"><b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/clearTimeout">MDN</a><br>
-</div> 
-                   </div>
-                   <div class="examples">
-                   <pre class="example"><pre class="codepre"><code class="code">(* A simple model of a code monkey's brain *)
+                    <div class="not-examples">
+                    clears a timeout started by <a href="Js_global.html#VALsetTimeout"><code class="code">Js_global.setTimeout</code></a><br>
+<div class="tag"> <b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/clearTimeout">MDN</a><br>
+ </div> 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">(* A simple model of a code monkey's brain *)
 
 let timer = Js.Undefined.empty
 
@@ -139,22 +128,22 @@ let work () =
 let procrastinate mins =
   Js.Undefined.iter fun Js.Global.clearTimeout !timer
   Js.Global.setTimeout work (mins * 60 * 1000)
-</code></pre></pre>
-                   </div>
-                   </div>
+</code></pre>  </pre>
+                    </div>
+                    </div>
 
-                 
+                  
 <pre><span id="VALsetInterval"><span class="keyword">val</span> setInterval</span> : <code class="type">(unit -> unit) -> int -> <a href="Js_global.html#TYPEintervalId">intervalId</a></code></pre><div class="info ">
-                   <div class="not-examples">
-                   <i>repeatedly</i> executes a callback with a specified interval (in milliseconds) between calls
+                    <div class="not-examples">
+                    <i>repeatedly</i> executes a callback with a specified interval (in milliseconds) between calls
 <p>
 
 <b>returns</b> an <a href="Js_global.html#TYPEintervalId"><code class="code">Js_global.intervalId</code></a> that can be passed to <a href="Js_global.html#VALclearInterval"><code class="code">Js_global.clearInterval</code></a> to cancel the timeout<br>
-<div class="tag"><b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setInterval">MDN</a><br>
-</div> 
-                   </div>
-                   <div class="examples">
-                   <pre class="example"><pre class="codepre"><code class="code">(* Will count up and print the count to the console every second *)
+<div class="tag"> <b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setInterval">MDN</a><br>
+ </div> 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">(* Will count up and print the count to the console every second *)
 
 let count = ref 0
 
@@ -163,29 +152,29 @@ let tick () =
 
 let _ =
   Js.Global.setInterval tick 1000
-</code></pre></pre>
-                   </div>
-                   </div>
+</code></pre>  </pre>
+                    </div>
+                    </div>
 
-                 
+                  
 <pre><span id="VALsetTimeout"><span class="keyword">val</span> setTimeout</span> : <code class="type">(unit -> unit) -> int -> <a href="Js_global.html#TYPEtimeoutId">timeoutId</a></code></pre><div class="info ">
-                   <div class="not-examples">
-                   executes a callback after a specified delay (in milliseconds)
+                    <div class="not-examples">
+                    executes a callback after a specified delay (in milliseconds)
 <p>
 
 <b>returns</b> a <a href="Js_global.html#TYPEtimeoutId"><code class="code">Js_global.timeoutId</code></a> that can be passed to <a href="Js_global.html#VALclearTimeout"><code class="code">Js_global.clearTimeout</code></a> to cancel the timeout<br>
-<div class="tag"><b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setTimeout">MDN</a><br>
-</div> 
-                   </div>
-                   <div class="examples">
-                   <pre class="example"><pre class="codepre"><code class="code">(* Prints "Timed out!" in the console after one second *)
+<div class="tag"> <b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setTimeout">MDN</a><br>
+ </div> 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">(* Prints "Timed out!" in the console after one second *)
 
 let message = "Timed out!"
 
 let _ =
   Js.Global.setTimeout (fun () -&gt; Js.log message) 1000
-</code></pre></pre>
-                   </div>
-                   </div>
+</code></pre>  </pre>
+                    </div>
+                    </div>
 
-                 </body></html>
+                  </body></html>

@@ -1,20 +1,15 @@
 <!doctype html>
 <html>
 <head>
-<link rel="stylesheet" href="../api_static/tomorrow-night.css">
-
-                <link rel="stylesheet" href="../api_static/style.css" type="text/css">
-
-                <script src="../api_static//highlight.pack.js"></script>
-
-                <script src="../api_static//script.js"></script>
-
-                <script>hljs.initHighlightingOnLoad();</script><meta charset="utf-8">
-<link rel="previous" href="Js_promise.html">
-<link rel="next" href="Js_string.html">
-<title>Js_re</title>
-</head>
-<body>
+                 <link rel="stylesheet" href="../api_static/tomorrow-night.css">
+                 <link rel="stylesheet" href="../api_static/style.css" type="text/css">
+                 <script src="../api_static//highlight.pack.js"></script>
+                 <script src="../api_static//script.js"></script>
+                 <script>hljs.initHighlightingOnLoad();</script> 
+                 <meta charset="utf8">
+                 <link rel="previous" href="Js_promise.html"><link rel="next" href="Js_string.html">
+                 <title> Js_re </title></head> 
+               <body>
 <nav class="module-index"><ul><li><a href="Bs.html">Bs</a></li>
 <li><a href="Bs_dyn.html">Bs_dyn</a></li>
 <li><a href="Bs_dyn_lib.html">Bs_dyn_lib</a></li>
@@ -58,8 +53,8 @@
 <h1>Module <a href="type_Js_re.html">Js_re</a></h1>
 
 <pre><span class="keyword">module</span> Js_re: <code class="code">sig</code> <a href="Js_re.html">..</a> <code class="code">end</code></pre><div class="info module top">
-                   <div class="not-examples">
-                   Provides bindings for JavaScript Regular Expressions
+                    <div class="not-examples">
+                    Provides bindings for JavaScript Regular Expressions
 <p>
 
 <h4 id="4_Syntaxsugar">Syntax sugar</h4>
@@ -70,91 +65,81 @@ will evaluate to a <a href="Js_re.html#TYPEt"><code class="code">Js_re.t</code><
 <b>Note:</b> This is not an immutable API. A RegExp object with the <code class="code">global</code> ("g")
 flag set will modify the <a href="Js_re.html#VALlastIndex"><code class="code">Js_re.lastIndex</code></a> property when the RegExp object is used,
 and subsequent uses will ocntinue the search from the previous <a href="Js_re.html#VALlastIndex"><code class="code">Js_re.lastIndex</code></a>.<br>
-<div class="tag"><b>See also</b><ul><li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp">JavaScript API reference on MDN</a></li>
+<div class="tag"> <b>See also</b><ul><li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp">JavaScript API reference on MDN</a></li>
 <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions">JavaScript Regular Expressions Guide on MDN</a></li>
 </ul>
-</div> 
-                   </div>
-                   <div class="examples">
-                   <pre class="example"><pre class="codepre"><code class="code">let maybeMatches = "banana" |&gt; Js.String.match_ [[%re "/na+/g"]]
-</code></pre></pre>
-                   </div>
-                   </div>
+ </div> 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">let maybeMatches = "banana" |&gt; Js.String.match_ [[%re "/na+/g"]]
+</code></pre>  </pre>
+                    </div>
+                    </div>
 
-                 <hr width="100%">
+                  <hr width="100%">
 <div class="type-declaration">
 <pre><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> </pre>
 </div>
 <div class="info ">
-                   <div class="not-examples">
-                   the RegExp object<br>
+                    <div class="not-examples">
+                    the RegExp object<br>
  
-                   </div>
-                   <div class="examples">
-                   
-                   </div>
-                   </div>
+                    </div>
+                    
+                    </div>
 
-                 
+                  
 <div class="type-declaration">
 <pre><span id="TYPEresult"><span class="keyword">type</span> <code class="type"></code>result</span> </pre>
 </div>
 <div class="info ">
-                   <div class="not-examples">
-                   the result of a executing a RegExp on a string<br>
+                    <div class="not-examples">
+                    the result of a executing a RegExp on a string<br>
  
-                   </div>
-                   <div class="examples">
-                   
-                   </div>
-                   </div>
+                    </div>
+                    
+                    </div>
 
-                 
+                  
 
 <pre><span id="VALmatches"><span class="keyword">val</span> matches</span> : <code class="type"><a href="Js_re.html#TYPEresult">result</a> -> string array</code></pre><div class="info ">
-                   <div class="not-examples">
-                   an array of the matches, the first is the full match and the remaining are the substring matches<br>
+                    <div class="not-examples">
+                    an array of the matches, the first is the full match and the remaining are the substring matches<br>
  
-                   </div>
-                   <div class="examples">
-                   
-                   </div>
-                   </div>
+                    </div>
+                    
+                    </div>
 
-                 
+                  
 <pre><span id="VALindex"><span class="keyword">val</span> index</span> : <code class="type"><a href="Js_re.html#TYPEresult">result</a> -> int</code></pre><div class="info ">
-                   <div class="not-examples">
-                   0-based index of the match in the input string<br>
+                    <div class="not-examples">
+                    0-based index of the match in the input string<br>
  
-                   </div>
-                   <div class="examples">
-                   
-                   </div>
-                   </div>
+                    </div>
+                    
+                    </div>
 
-                 
+                  
 <pre><span id="VALinput"><span class="keyword">val</span> input</span> : <code class="type"><a href="Js_re.html#TYPEresult">result</a> -> string</code></pre><div class="info ">
-                   <div class="not-examples">
-                   the original input string<br>
+                    <div class="not-examples">
+                    the original input string<br>
  
-                   </div>
-                   <div class="examples">
-                   
-                   </div>
-                   </div>
+                    </div>
+                    
+                    </div>
 
-                 
+                  
 <pre><span id="VALfromString"><span class="keyword">val</span> fromString</span> : <code class="type">string -> <a href="Js_re.html#TYPEt">t</a></code></pre><div class="info ">
-                   <div class="not-examples">
-                   Constructs a RegExp object (<a href="Js_re.html#TYPEt"><code class="code">Js_re.t</code></a>) from a string
+                    <div class="not-examples">
+                    Constructs a RegExp object (<a href="Js_re.html#TYPEt"><code class="code">Js_re.t</code></a>) from a string
 <p>
 
 Regex literals (<code class="code">[%re "/.../"]</code>) should generally be preferred, but
 <code class="code">fromString</code> is very useful when you need to insert a string into a regex.<br>
  
-                   </div>
-                   <div class="examples">
-                   <pre class="example"><pre class="codepre"><code class="code">(* A function that extracts the content of the first element with the given tag *)
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">(* A function that extracts the content of the first element with the given tag *)
 
 let contentOf tag xmlString =
   Js.Re.fromString ("&lt;" ^ tag ^ "&gt;(.|\n)*?&lt;\/" ^ tag ^"&gt;")
@@ -162,14 +147,14 @@ let contentOf tag xmlString =
     |&gt; function
       | Some result -&gt; Some (Js.Re.matches result).(1)
       | None -&gt; None
-</code></pre></pre>
-                   </div>
-                   </div>
+</code></pre>  </pre>
+                    </div>
+                    </div>
 
-                 
+                  
 <pre><span id="VALfromStringWithFlags"><span class="keyword">val</span> fromStringWithFlags</span> : <code class="type">string -> flags:string -> <a href="Js_re.html#TYPEt">t</a></code></pre><div class="info ">
-                   <div class="not-examples">
-                   Constructs a RegExp object (<a href="Js_re.html#TYPEt"><code class="code">Js_re.t</code></a>) from a string with the given <code class="code">flags</code>
+                    <div class="not-examples">
+                    Constructs a RegExp object (<a href="Js_re.html#TYPEt"><code class="code">Js_re.t</code></a>) from a string with the given <code class="code">flags</code>
 <p>
 
 See <a href="Js_re.html#VALfromString"><code class="code">Js_re.fromString</code></a>
@@ -185,58 +170,50 @@ Valid flags:
 </table>
 <br>
  
-                   </div>
-                   <div class="examples">
-                   
-                   </div>
-                   </div>
+                    </div>
+                    
+                    </div>
 
-                 
+                  
 <pre><span id="VALflags"><span class="keyword">val</span> flags</span> : <code class="type"><a href="Js_re.html#TYPEt">t</a> -> string</code></pre><div class="info ">
-                   <div class="not-examples">
-                   returns the enabled flags as a string<br>
+                    <div class="not-examples">
+                    returns the enabled flags as a string<br>
  
-                   </div>
-                   <div class="examples">
-                   
-                   </div>
-                   </div>
+                    </div>
+                    
+                    </div>
 
-                 
+                  
 <pre><span id="VALglobal"><span class="keyword">val</span> global</span> : <code class="type"><a href="Js_re.html#TYPEt">t</a> -> bool</code></pre><div class="info ">
-                   <div class="not-examples">
-                   returns a bool indicating whether the <code class="code">global</code> flag is set<br>
+                    <div class="not-examples">
+                    returns a bool indicating whether the <code class="code">global</code> flag is set<br>
  
-                   </div>
-                   <div class="examples">
-                   
-                   </div>
-                   </div>
+                    </div>
+                    
+                    </div>
 
-                 
+                  
 <pre><span id="VALignoreCase"><span class="keyword">val</span> ignoreCase</span> : <code class="type"><a href="Js_re.html#TYPEt">t</a> -> bool</code></pre><div class="info ">
-                   <div class="not-examples">
-                   returns a bool indicating whether the <code class="code">ignoreCase</code> flag is set<br>
+                    <div class="not-examples">
+                    returns a bool indicating whether the <code class="code">ignoreCase</code> flag is set<br>
  
-                   </div>
-                   <div class="examples">
-                   
-                   </div>
-                   </div>
+                    </div>
+                    
+                    </div>
 
-                 
+                  
 <pre><span id="VALlastIndex"><span class="keyword">val</span> lastIndex</span> : <code class="type"><a href="Js_re.html#TYPEt">t</a> -> int</code></pre><div class="info ">
-                   <div class="not-examples">
-                   returns the index where the next match will start its search
+                    <div class="not-examples">
+                    returns the index where the next match will start its search
 <p>
 
 This property will be modified when the RegExp object is used, if the <code class="code">global</code> ("g")
 flag is set.<br>
-<div class="tag"><b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/lastIndex">MDN</a><br>
-</div> 
-                   </div>
-                   <div class="examples">
-                   <pre class="example"><pre class="codepre"><code class="code">(* Finds and prints successive matches *)
+<div class="tag"> <b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/lastIndex">MDN</a><br>
+ </div> 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">(* Finds and prints successive matches *)
 
 let re = [%re "/ab*/g"] in
 let str = "abbcdefabh" in
@@ -250,88 +227,80 @@ while not !break do
     let next = string_of_int (Js.Re.lastIndex re) in
     Js.log ("Found " ^ match_ ^ ". Next match starts at " ^ next)
 done
-</code></pre></pre>
-                   </div>
-                   </div>
+</code></pre>  </pre>
+                    </div>
+                    </div>
 
-                 
+                  
 <pre><span id="VALmultiline"><span class="keyword">val</span> multiline</span> : <code class="type"><a href="Js_re.html#TYPEt">t</a> -> bool</code></pre><div class="info ">
-                   <div class="not-examples">
-                   returns a bool indicating whether the <code class="code">multiline</code> flag is set<br>
+                    <div class="not-examples">
+                    returns a bool indicating whether the <code class="code">multiline</code> flag is set<br>
  
-                   </div>
-                   <div class="examples">
-                   
-                   </div>
-                   </div>
+                    </div>
+                    
+                    </div>
 
-                 
+                  
 <pre><span id="VALsource"><span class="keyword">val</span> source</span> : <code class="type"><a href="Js_re.html#TYPEt">t</a> -> string</code></pre><div class="info ">
-                   <div class="not-examples">
-                   returns the pattern as a string<br>
+                    <div class="not-examples">
+                    returns the pattern as a string<br>
  
-                   </div>
-                   <div class="examples">
-                   
-                   </div>
-                   </div>
+                    </div>
+                    
+                    </div>
 
-                 
+                  
 <pre><span id="VALsticky"><span class="keyword">val</span> sticky</span> : <code class="type"><a href="Js_re.html#TYPEt">t</a> -> bool</code></pre><div class="info ">
-                   <div class="not-examples">
-                   returns a bool indicating whether the <code class="code">sticky</code> flag is set<br>
+                    <div class="not-examples">
+                    returns a bool indicating whether the <code class="code">sticky</code> flag is set<br>
  
-                   </div>
-                   <div class="examples">
-                   
-                   </div>
-                   </div>
+                    </div>
+                    
+                    </div>
 
-                 
+                  
 <pre><span id="VALunicode"><span class="keyword">val</span> unicode</span> : <code class="type"><a href="Js_re.html#TYPEt">t</a> -> bool</code></pre><div class="info ">
-                   <div class="not-examples">
-                   returns a bool indicating whether the <code class="code">unicode</code> flag is set<br>
+                    <div class="not-examples">
+                    returns a bool indicating whether the <code class="code">unicode</code> flag is set<br>
  
-                   </div>
-                   <div class="examples">
-                   
-                   </div>
-                   </div>
+                    </div>
+                    
+                    </div>
 
-                 
+                  
 <pre><span id="VALexec"><span class="keyword">val</span> exec</span> : <code class="type">string -> <a href="Js_re.html#TYPEt">t</a> -> <a href="Js_re.html#TYPEresult">result</a> option</code></pre><div class="info ">
-                   <div class="not-examples">
-                   executes a search on a given string using the given RegExp object
+                    <div class="not-examples">
+                    executes a search on a given string using the given RegExp object
 <p>
 
 <b>returns</b> <code class="code">Some</code> <a href="Js_re.html#TYPEresult"><code class="code">Js_re.result</code></a> if a match is found, <code class="code">None</code> otherwise<br>
-<div class="tag"><b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/exec">MDN</a><br>
-</div> 
-                   </div>
-                   <div class="examples">
-                   <pre class="example"><pre class="codepre"><code class="code">(* Match "quick brown" followed by "jumps", ignoring characters in between
+<div class="tag"> <b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/exec">MDN</a><br>
+ </div> 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">(* Match "quick brown" followed by "jumps", ignoring characters in between
  * Remember "brown" and "jumps"
  * Ignore case
  *)
 
 let re = [%re "/quick\s(brown).+?(jumps)/ig" in
 let result = re |&gt; Js.Re.exec "The Quick Brown Fox Jumps Over The Lazy Dog"
-</code></pre></pre>
-                   </div>
-                   </div>
+</code></pre>  </pre>
+                    </div>
+                    </div>
 
-                 
+                  
 <pre><span id="VALtest"><span class="keyword">val</span> test</span> : <code class="type">string -> <a href="Js_re.html#TYPEt">t</a> -> bool</code></pre><div class="info ">
-                   <div class="not-examples">
-                   tests whether the given RegExp object will match a given string
+                    <div class="not-examples">
+                    tests whether the given RegExp object will match a given string
 <p>
 
 <b>returns</b> <code class="code">true</code> if a match is found, <code class="code">false</code> otherwise<br>
-<div class="tag"><b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/test">MDN</a><br>
-</div> 
-                   </div>
-                   <div class="examples">
-                   <pre class="example"><pre class="codepre"><code class="code">(* A simple implementation of Js.String.startsWith *)
+<div class="tag"> <b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/test">MDN</a><br>
+ </div> 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">(* A simple implementation of Js.String.startsWith *)
 
 let str = "hello world!"
 
@@ -340,8 +309,8 @@ let startsWith substring target =
     |&gt; Js.Re.test target
 
 let () = Js.log (str |&gt; startsWith "hello") (* prints "true" *)
-</code></pre></pre>
-                   </div>
-                   </div>
+</code></pre>  </pre>
+                    </div>
+                    </div>
 
-                 </body></html>
+                  </body></html>

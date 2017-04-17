@@ -1,20 +1,15 @@
 <!doctype html>
 <html>
 <head>
-<link rel="stylesheet" href="../api_static/tomorrow-night.css">
-
-                <link rel="stylesheet" href="../api_static/style.css" type="text/css">
-
-                <script src="../api_static//highlight.pack.js"></script>
-
-                <script src="../api_static//script.js"></script>
-
-                <script>hljs.initHighlightingOnLoad();</script><meta charset="utf-8">
-<link rel="previous" href="Js.Array.html">
-<link rel="next" href="Js.Boolean.html">
-<title>Js.String</title>
-</head>
-<body>
+                 <link rel="stylesheet" href="../api_static/tomorrow-night.css">
+                 <link rel="stylesheet" href="../api_static/style.css" type="text/css">
+                 <script src="../api_static//highlight.pack.js"></script>
+                 <script src="../api_static//script.js"></script>
+                 <script>hljs.initHighlightingOnLoad();</script> 
+                 <meta charset="utf8">
+                 <link rel="previous" href="Js.Array.html"><link rel="next" href="Js.Boolean.html">
+                 <title> Js.String </title></head> 
+               <body>
 <nav class="module-index"><ul><li><a href="Bs.html">Bs</a></li>
 <li><a href="Bs_dyn.html">Bs_dyn</a></li>
 <li><a href="Bs_dyn_lib.html">Bs_dyn_lib</a></li>
@@ -58,16 +53,14 @@
 <h1>Module <a href="type_Js.String.html">Js.String</a></h1>
 
 <pre><span class="keyword">module</span> String: <code class="type"><a href="Js_string.html">Js_string</a></code></pre><div class="info module top">
-                   <div class="not-examples">
-                   Provide bindings to JS string<br>
+                    <div class="not-examples">
+                    Provide bindings to JS string<br>
  
-                   </div>
-                   <div class="examples">
-                   
-                   </div>
-                   </div>
+                    </div>
+                    
+                    </div>
 
-                 <hr width="100%">
+                  <hr width="100%">
 <div class="type-declaration">
 <pre><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> = <code class="type">string</code> </pre>
 </div>
@@ -78,16 +71,14 @@
 <pre><span id="VALfromCharCodeMany"><span class="keyword">val</span> fromCharCodeMany</span> : <code class="type">int array -> <a href="Js_string.html#TYPEt">t</a></code></pre>
 <pre><span id="VALfromCodePoint"><span class="keyword">val</span> fromCodePoint</span> : <code class="type">int -> <a href="Js_string.html#TYPEt">t</a></code></pre>
 <pre><span id="VALfromCodePointMany"><span class="keyword">val</span> fromCodePointMany</span> : <code class="type">int array -> <a href="Js_string.html#TYPEt">t</a></code></pre><div class="info ">
-                   <div class="not-examples">
-                   ES2015<br>
+                    <div class="not-examples">
+                    ES2015<br>
  
-                   </div>
-                   <div class="examples">
-                   
-                   </div>
-                   </div>
+                    </div>
+                    
+                    </div>
 
-                 <br>
+                  <br>
 ES2015<br>
 
 <pre><span id="VALlength"><span class="keyword">val</span> length</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> int</code></pre>
@@ -95,50 +86,44 @@ ES2015<br>
 <pre><span id="VALcharAt"><span class="keyword">val</span> charAt</span> : <code class="type">int -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre>
 <pre><span id="VALcharCodeAt"><span class="keyword">val</span> charCodeAt</span> : <code class="type">int -> <a href="Js_string.html#TYPEt">t</a> -> float</code></pre>
 <pre><span id="VALcodePointAt"><span class="keyword">val</span> codePointAt</span> : <code class="type">int -> <a href="Js_string.html#TYPEt">t</a> -> int option</code></pre><div class="info ">
-                   <div class="not-examples">
-                   type it as <code class="code">float</code> due to that it may return NAN  
+                    <div class="not-examples">
+                    type it as <code class="code">float</code> due to that it may return NAN  
     different from <code class="code">charCodeAt</code>
     <pre class="codepre"><code class="code">        "\u{01003f}".charCodeAt(0) - 55296
         "\u{01003f}".codePointAt(0) - 65599
     </code></pre><br>
  
-                   </div>
-                   <div class="examples">
-                   
-                   </div>
-                   </div>
+                    </div>
+                    
+                    </div>
 
-                 <br>
+                  <br>
 ES2015<br>
 
 <pre><span id="VALconcat"><span class="keyword">val</span> concat</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre>
 <pre><span id="VALconcatMany"><span class="keyword">val</span> concatMany</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> array -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre>
 <pre><span id="VALendsWith"><span class="keyword">val</span> endsWith</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> -> bool</code></pre>
 <pre><span id="VALendsWithFrom"><span class="keyword">val</span> endsWithFrom</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> int -> <a href="Js_string.html#TYPEt">t</a> -> bool</code></pre><div class="info ">
-                   <div class="not-examples">
-                   ES2015<br>
+                    <div class="not-examples">
+                    ES2015<br>
  
-                   </div>
-                   <div class="examples">
-                   
-                   </div>
-                   </div>
+                    </div>
+                    
+                    </div>
 
-                 <br>
+                  <br>
 ES2015<br>
 
 <pre><span id="VALincludes"><span class="keyword">val</span> includes</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> -> bool</code></pre>
 <pre><span id="VALincludesFrom"><span class="keyword">val</span> includesFrom</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> int -> <a href="Js_string.html#TYPEt">t</a> -> bool</code></pre><div class="info ">
-                   <div class="not-examples">
-                   ES2015<br>
+                    <div class="not-examples">
+                    ES2015<br>
  
-                   </div>
-                   <div class="examples">
-                   
-                   </div>
-                   </div>
+                    </div>
+                    
+                    </div>
 
-                 <br>
+                  <br>
 ES2015<br>
 
 <pre><span id="VALindexOf"><span class="keyword">val</span> indexOf</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> -> int</code></pre>
@@ -149,16 +134,14 @@ ES2015<br>
 <pre><span id="VALmatch_"><span class="keyword">val</span> match_</span> : <code class="type"><a href="Js_re.html#TYPEt">Js_re.t</a> -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> array option</code></pre>
 <pre><span id="VALnormalize"><span class="keyword">val</span> normalize</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre>
 <pre><span id="VALnormalizeByForm"><span class="keyword">val</span> normalizeByForm</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre><div class="info ">
-                   <div class="not-examples">
-                   ES2015<br>
+                    <div class="not-examples">
+                    ES2015<br>
  
-                   </div>
-                   <div class="examples">
-                   
-                   </div>
-                   </div>
+                    </div>
+                    
+                    </div>
 
-                 <br>
+                  <br>
 ES2015<br>
 
 <pre><span id="VALrepeat"><span class="keyword">val</span> repeat</span> : <code class="type">int -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre><br>
@@ -167,77 +150,77 @@ ES2015<br>
 <pre><span id="VALreplace"><span class="keyword">val</span> replace</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre>
 <pre><span id="VALreplaceByRe"><span class="keyword">val</span> replaceByRe</span> : <code class="type"><a href="Js_re.html#TYPEt">Js_re.t</a> -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre>
 <pre><span id="VALunsafeReplaceBy0"><span class="keyword">val</span> unsafeReplaceBy0</span> : <code class="type"><a href="Js_re.html#TYPEt">Js_re.t</a> -><br>       (<a href="Js_string.html#TYPEt">t</a> -> int -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a>) -><br>       <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre><div class="info ">
-                   <div class="not-examples">
-                   returns a new string with some or all matches of a pattern replaced by the
+                    <div class="not-examples">
+                    returns a new string with some or all matches of a pattern replaced by the
 value returned from the given function<br>
-<div class="tag"><b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#Specifying_a_function_as_a_parameter">MDN</a><br>
-</div> 
-                   </div>
-                   <div class="examples">
-                   <pre class="example"><pre class="codepre"><code class="code">let str = "hello world!"
+<div class="tag"> <b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#Specifying_a_function_as_a_parameter">MDN</a><br>
+ </div> 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">let str = "hello world!"
 let re = [%re "/hello/g"]
 let replaced = Js.String.unsafeReplaceBy0 re (fun match offset whole -&gt; "hi")
 
 let () = Js.log replaced (* prints "hi world!" *)
-</code></pre></pre>
-                   </div>
-                   </div>
+</code></pre>  </pre>
+                    </div>
+                    </div>
 
-                 
+                  
 <pre><span id="VALunsafeReplaceBy1"><span class="keyword">val</span> unsafeReplaceBy1</span> : <code class="type"><a href="Js_re.html#TYPEt">Js_re.t</a> -><br>       (<a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> -> int -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a>) -><br>       <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre><div class="info ">
-                   <div class="not-examples">
-                   returns a new string with some or all matches of a pattern replaced by the
+                    <div class="not-examples">
+                    returns a new string with some or all matches of a pattern replaced by the
 value returned from the given function<br>
-<div class="tag"><b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#Specifying_a_function_as_a_parameter">MDN</a><br>
-</div> 
-                   </div>
-                   <div class="examples">
-                   <pre class="example"><pre class="codepre"><code class="code">let str = "hello world!"
+<div class="tag"> <b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#Specifying_a_function_as_a_parameter">MDN</a><br>
+ </div> 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">let str = "hello world!"
 let re = [%re "/hello/g"]
 let replaced = Js.String.unsafeReplaceBy1 re (fun match p1 offset whole -&gt; "hi")
 
 let () = Js.log replaced (* prints "hi world!" *)
-</code></pre></pre>
-                   </div>
-                   </div>
+</code></pre>  </pre>
+                    </div>
+                    </div>
 
-                 
+                  
 <pre><span id="VALunsafeReplaceBy2"><span class="keyword">val</span> unsafeReplaceBy2</span> : <code class="type"><a href="Js_re.html#TYPEt">Js_re.t</a> -><br>       (<a href="Js_string.html#TYPEt">t</a> -><br>        <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> -> int -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a>) -><br>       <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre><div class="info ">
-                   <div class="not-examples">
-                   returns a new string with some or all matches of a pattern replaced by the
+                    <div class="not-examples">
+                    returns a new string with some or all matches of a pattern replaced by the
 value returned from the given function<br>
-<div class="tag"><b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#Specifying_a_function_as_a_parameter">MDN</a><br>
-</div> 
-                   </div>
-                   <div class="examples">
-                   <pre class="example"><pre class="codepre"><code class="code">let str = "hello world!"
+<div class="tag"> <b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#Specifying_a_function_as_a_parameter">MDN</a><br>
+ </div> 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">let str = "hello world!"
 let re = [%re "/hello/g"]
 let replaced = Js.String.unsafeReplaceBy2 re (fun match p1 p2 offset whole -&gt; "hi")
 
 let () = Js.log replaced (* prints "hi world!" *)
-</code></pre></pre>
-                   </div>
-                   </div>
+</code></pre>  </pre>
+                    </div>
+                    </div>
 
-                 
+                  
 <pre><span id="VALunsafeReplaceBy3"><span class="keyword">val</span> unsafeReplaceBy3</span> : <code class="type"><a href="Js_re.html#TYPEt">Js_re.t</a> -><br>       (<a href="Js_string.html#TYPEt">t</a> -><br>        <a href="Js_string.html#TYPEt">t</a> -><br>        <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> -> int -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a>) -><br>       <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre><div class="info ">
-                   <div class="not-examples">
-                   returns a new string with some or all matches of a pattern replaced by the
+                    <div class="not-examples">
+                    returns a new string with some or all matches of a pattern replaced by the
 value returned from the given function<br>
-<div class="tag"><b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#Specifying_a_function_as_a_parameter">MDN</a><br>
-</div> 
-                   </div>
-                   <div class="examples">
-                   <pre class="example"><pre class="codepre"><code class="code">let str = "hello world!"
+<div class="tag"> <b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#Specifying_a_function_as_a_parameter">MDN</a><br>
+ </div> 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">let str = "hello world!"
 let re = [%re "/hello/g"]
 let replaced = Js.String.unsafeReplaceBy3 re (fun match p1 p2 p3 offset whole -&gt; "hi")
 
 let () = Js.log replaced (* prints "hi world!" *)
-</code></pre></pre>
-                   </div>
-                   </div>
+</code></pre>  </pre>
+                    </div>
+                    </div>
 
-                 
+                  
 <pre><span id="VALsearch"><span class="keyword">val</span> search</span> : <code class="type"><a href="Js_re.html#TYPEt">Js_re.t</a> -> <a href="Js_string.html#TYPEt">t</a> -> int</code></pre>
 <pre><span id="VALslice"><span class="keyword">val</span> slice</span> : <code class="type">from:int -> to_:int -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre>
 <pre><span id="VALsliceToEnd"><span class="keyword">val</span> sliceToEnd</span> : <code class="type">from:int -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre>
@@ -249,16 +232,14 @@ let () = Js.log replaced (* prints "hi world!" *)
 <pre><span id="VALsplitRegexpLimited"><span class="keyword">val</span> splitRegexpLimited</span> : <code class="type"><a href="Js_re.html#TYPEt">Js_re.t</a> -> int -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> array</code></pre>
 <pre><span id="VALstartsWith"><span class="keyword">val</span> startsWith</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> -> bool</code></pre>
 <pre><span id="VALstartsWithFrom"><span class="keyword">val</span> startsWithFrom</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> int -> <a href="Js_string.html#TYPEt">t</a> -> bool</code></pre><div class="info ">
-                   <div class="not-examples">
-                   ES2015<br>
+                    <div class="not-examples">
+                    ES2015<br>
  
-                   </div>
-                   <div class="examples">
-                   
-                   </div>
-                   </div>
+                    </div>
+                    
+                    </div>
 
-                 <br>
+                  <br>
 ES2015<br>
 
 <pre><span id="VALsubstr"><span class="keyword">val</span> substr</span> : <code class="type">from:int -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre>
@@ -272,16 +253,14 @@ ES2015<br>
 <pre><span id="VALtrim"><span class="keyword">val</span> trim</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre>
 <pre><span id="VALanchor"><span class="keyword">val</span> anchor</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre>
 <pre><span id="VALlink"><span class="keyword">val</span> link</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre><div class="info ">
-                   <div class="not-examples">
-                   ES2015<br>
+                    <div class="not-examples">
+                    ES2015<br>
  
-                   </div>
-                   <div class="examples">
-                   
-                   </div>
-                   </div>
+                    </div>
+                    
+                    </div>
 
-                 <br>
+                  <br>
 ES2015<br>
 
 <pre><span id="VALcastToArrayLike"><span class="keyword">val</span> castToArrayLike</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> <a href="Js_array.html#TYPEarray_like">Js_array.array_like</a></code></pre></body></html>

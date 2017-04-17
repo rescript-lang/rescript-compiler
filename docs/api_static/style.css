@@ -282,10 +282,12 @@ code.hljs {
 .examples {
   flex: 1;
   color: #d0d0d0;
+  /* padding: 0 2.5em; */
 }
 
 .examples > pre {
   margin: 0 2em 1em;
+
 }
 
 .examples .hljs {
@@ -296,7 +298,8 @@ code.hljs {
   color: #c5c8c6;
   */
   background: whitesmoke;
-  padding: 1em 2em;
+  padding: 1em 2.5em;
+  /* padding: 0 2.5em; */
 }
 
 * {
@@ -335,7 +338,8 @@ body > table .info {
   display: block;
 }
 
-@media (max-width: 1250px) {
+/* @media (max-width: 1250px) { */
+@media  {
   body {
     padding-left: 0;
   }
@@ -345,7 +349,8 @@ body > table .info {
   }
 }
 
-@media (max-width: 1000px) {
+/* @media (max-width: 1000px) { */
+@media {
   body:before {
     width: 100%;
     min-width: unset;

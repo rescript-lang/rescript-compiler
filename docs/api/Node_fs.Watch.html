@@ -1,18 +1,15 @@
 <!doctype html>
 <html>
 <head>
-<link rel="stylesheet" href="../api_static/tomorrow-night.css">
-
-                <link rel="stylesheet" href="../api_static/style.css" type="text/css">
-
-                <script src="../api_static//highlight.pack.js"></script>
-
-                <script src="../api_static//script.js"></script>
-
-                <script>hljs.initHighlightingOnLoad();</script><meta charset="utf-8">
-<title>Node_fs.Watch</title>
-</head>
-<body>
+                 <link rel="stylesheet" href="../api_static/tomorrow-night.css">
+                 <link rel="stylesheet" href="../api_static/style.css" type="text/css">
+                 <script src="../api_static//highlight.pack.js"></script>
+                 <script src="../api_static//script.js"></script>
+                 <script>hljs.initHighlightingOnLoad();</script> 
+                 <meta charset="utf8">
+                 
+                 <title> Node_fs.Watch </title></head> 
+               <body>
 <nav class="module-index"><ul><li><a href="Bs.html">Bs</a></li>
 <li><a href="Bs_dyn.html">Bs_dyn</a></li>
 <li><a href="Bs_dyn_lib.html">Bs_dyn_lib</a></li>
@@ -66,19 +63,17 @@
 <pre><span id="VALconfig"><span class="keyword">val</span> config</span> : <code class="type">?persistent:<a href="Js.html#TYPEboolean">Js.boolean</a> -><br>       ?recursive:<a href="Js.html#TYPEboolean">Js.boolean</a> -><br>       ?encoding:<a href="Js_string.html#TYPEt">Js_string.t</a> -> unit -> <a href="Node_fs.Watch.html#TYPEconfig">config</a></code></pre>
 <pre><span id="VALwatch"><span class="keyword">val</span> watch</span> : <code class="type">string -> ?config:<a href="Node_fs.Watch.html#TYPEconfig">config</a> -> unit -> <a href="Node_fs.Watch.html#TYPEt">t</a></code></pre>
 <pre><span id="VALon"><span class="keyword">val</span> on</span> : <code class="type">[ `change of (string -> <a href="Node.html#TYPEstring_buffer">Node.string_buffer</a> -> unit [@bs])<br>       | `error of (unit -> unit [@bs]) ] -> <a href="Node_fs.Watch.html#TYPEt">t</a> -> <a href="Node_fs.Watch.html#TYPEt">t</a></code></pre><div class="info ">
-                   <div class="not-examples">
-                   there is no need to accept listener, since we return a <code class="code">watcher</code> 
+                    <div class="not-examples">
+                    there is no need to accept listener, since we return a <code class="code">watcher</code> 
       back it can register event listener there .
       Currently we introduce a type <code class="code">string_buffer</code>, for the 
       <code class="code">filename</code>, it will be <code class="code">Buffer</code> when the encoding is `utf8. 
       This is dependent type which can be tracked by GADT in some way, 
       but to make things simple, let's just introduce an or type<br>
  
-                   </div>
-                   <div class="examples">
-                   
-                   </div>
-                   </div>
+                    </div>
+                    
+                    </div>
 
-                 
+                  
 <pre><span id="VALclose"><span class="keyword">val</span> close</span> : <code class="type">unit -> <a href="Node_fs.Watch.html#TYPEt">t</a> -> unit</code></pre></body></html>

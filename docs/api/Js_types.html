@@ -1,20 +1,15 @@
 <!doctype html>
 <html>
 <head>
-<link rel="stylesheet" href="../api_static/tomorrow-night.css">
-
-                <link rel="stylesheet" href="../api_static/style.css" type="text/css">
-
-                <script src="../api_static//highlight.pack.js"></script>
-
-                <script src="../api_static//script.js"></script>
-
-                <script>hljs.initHighlightingOnLoad();</script><meta charset="utf-8">
-<link rel="previous" href="Js_typed_array.html">
-<link rel="next" href="Js_undefined.html">
-<title>Js_types</title>
-</head>
-<body>
+                 <link rel="stylesheet" href="../api_static/tomorrow-night.css">
+                 <link rel="stylesheet" href="../api_static/style.css" type="text/css">
+                 <script src="../api_static//highlight.pack.js"></script>
+                 <script src="../api_static//script.js"></script>
+                 <script>hljs.initHighlightingOnLoad();</script> 
+                 <meta charset="utf8">
+                 <link rel="previous" href="Js_typed_array.html"><link rel="next" href="Js_undefined.html">
+                 <title> Js_types </title></head> 
+               <body>
 <nav class="module-index"><ul><li><a href="Bs.html">Bs</a></li>
 <li><a href="Bs_dyn.html">Bs_dyn</a></li>
 <li><a href="Bs_dyn_lib.html">Bs_dyn_lib</a></li>
@@ -58,29 +53,25 @@
 <h1>Module <a href="type_Js_types.html">Js_types</a></h1>
 
 <pre><span class="keyword">module</span> Js_types: <code class="code">sig</code> <a href="Js_types.html">..</a> <code class="code">end</code></pre><div class="info module top">
-                   <div class="not-examples">
+                    <div class="not-examples">
+                     
+                    </div>
                     
-                   </div>
-                   <div class="examples">
-                   
-                   </div>
-                   </div>
+                    </div>
 
-                 <hr width="100%">
+                  <hr width="100%">
 <div class="type-declaration">
 <pre><span id="TYPEsymbol"><span class="keyword">type</span> <code class="type"></code>symbol</span> </pre>
 </div>
 <div class="info ">
-                   <div class="not-examples">
-                   Js symbol type only available in ES6<br>
+                    <div class="not-examples">
+                    Js symbol type only available in ES6<br>
  
-                   </div>
-                   <div class="examples">
-                   
-                   </div>
-                   </div>
+                    </div>
+                    
+                    </div>
 
-                 
+                  
 <div class="type-declaration">
 <pre><span id="TYPEobj_val"><span class="keyword">type</span> <code class="type"></code>obj_val</span> </pre>
 </div>
@@ -89,30 +80,26 @@
 <pre><span id="TYPEundefined_val"><span class="keyword">type</span> <code class="type"></code>undefined_val</span> </pre>
 </div>
 <div class="info ">
-                   <div class="not-examples">
-                   This type has only one value <code class="code">undefined</code><br>
+                    <div class="not-examples">
+                    This type has only one value <code class="code">undefined</code><br>
  
-                   </div>
-                   <div class="examples">
-                   
-                   </div>
-                   </div>
+                    </div>
+                    
+                    </div>
 
-                 
+                  
 <div class="type-declaration">
 <pre><span id="TYPEnull_val"><span class="keyword">type</span> <code class="type"></code>null_val</span> </pre>
 </div>
 <div class="info ">
-                   <div class="not-examples">
-                   This type has only one value <code class="code">null</code><br>
+                    <div class="not-examples">
+                    This type has only one value <code class="code">null</code><br>
  
-                   </div>
-                   <div class="examples">
-                   
-                   </div>
-                   </div>
+                    </div>
+                    
+                    </div>
 
-                 
+                  
 <div class="type-declaration">
 <pre><span id="TYPEfunction_val"><span class="keyword">type</span> <code class="type"></code>function_val</span> </pre>
 </div>
@@ -180,31 +167,28 @@
 
 
 <pre><span id="VALreify_type"><span class="keyword">val</span> reify_type</span> : <code class="type">'a -> 'b <a href="Js_types.html#TYPEt">t</a> * 'b</code></pre><div class="info ">
-                   <div class="not-examples">
-                   given any value it returns its type and the same value.
-    Note that  since <code class="code">'b t</code> is GADT, the type system will reify its type automatically,
-    for example
-    <pre class="codepre"><code class="code">    match reify_type "3" with
+                    <div class="not-examples">
+                    Given any value it returns its type and the same value.
+    Note that  since <code class="code">'b t</code> is GADT, the type system will reify its type automatically,<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">    match reify_type "3" with
     | String, v -&gt; v  ^ " this type safe control flow analysis will infer v as string"
     | _ -&gt; assert false
-    </code></pre><br>
- 
-                   </div>
-                   <div class="examples">
-                   
-                   </div>
-                   </div>
+    </code></pre>  </pre>
+                    </div>
+                    </div>
 
-                 
+                  
 <pre><span id="VALtest"><span class="keyword">val</span> test</span> : <code class="type">'a -> 'b <a href="Js_types.html#TYPEt">t</a> -> bool</code></pre><div class="info ">
-                   <div class="not-examples">
-                   <pre class="codepre"><code class="code">  test "x" String = true
-  </code></pre><br>
- 
-                   </div>
-                   <div class="examples">
-                   
-                   </div>
-                   </div>
+                    <div class="not-examples">
+                     
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">  test "x" String = true
+  </code></pre>  </pre>
+                    </div>
+                    </div>
 
-                 </body></html>
+                  </body></html>
