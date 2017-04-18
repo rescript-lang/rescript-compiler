@@ -1,4 +1,4 @@
-## Exception handling between OCaml and JS (@since 1.6.1)
+## Exception handling between OCaml and JS (@since 1.7.0)
 
 In Js world, exception could be any data, while OCaml exception is structured data format and supports pattern match, catch OCaml exception on JS side is no-op.
 
@@ -53,7 +53,7 @@ val uriError : string -> 'a
 Please consult module `Js.Error` for more details
 
 
-## `bs.open`: Type safe external data-source handling (@@since 1.6.1)
+## `bs.open`: Type safe external data-source handling (@@since 1.7.0)
 
 There are some cases, the data-source could either come from JS land or OCaml land, it is very hard to give precise type information. 
 For example, for an extenral promise whose creation could come from JS API, its failed value caused by `Promise.reject` could be in any shape.
