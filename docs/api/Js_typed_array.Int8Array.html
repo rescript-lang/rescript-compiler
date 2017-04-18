@@ -7,7 +7,7 @@
                  <script src="../api_static//script.js"></script>
                  <script>hljs.initHighlightingOnLoad();</script> 
                  <meta charset="utf8">
-                 <link rel="previous" href="Js_typed_array.TypedArray.html"><link rel="next" href="Js_typed_array.Uint8Array.html">
+                 <link rel="previous" href="Js_typed_array.ArrayBuffer.html"><link rel="next" href="Js_typed_array.Uint8Array.html">
                  <title> Js_typed_array.Int8Array </title></head> 
                <body>
 <nav class="module-index"><ul><li><a href="Bs.html">Bs</a></li>
@@ -46,7 +46,7 @@
 <li><a href="Node_module.html">Node_module</a></li>
 <li><a href="Node_path.html">Node_path</a></li>
 <li><a href="Node_process.html">Node_process</a></li></ul></nav>
-<div class="navbar"><a class="pre" href="Js_typed_array.TypedArray.html" title="Js_typed_array.TypedArray">Previous</a>
+<div class="navbar"><a class="pre" href="Js_typed_array.ArrayBuffer.html" title="Js_typed_array.ArrayBuffer">Previous</a>
 &nbsp;<a class="up" href="Js_typed_array.html" title="Js_typed_array">Up</a>
 &nbsp;<a class="post" href="Js_typed_array.Uint8Array.html" title="Js_typed_array.Uint8Array">Next</a>
 </div>
@@ -55,11 +55,18 @@
 <pre><span class="keyword">module</span> Int8Array: <code class="code">sig</code> <a href="Js_typed_array.Int8Array.html">..</a> <code class="code">end</code></pre><hr width="100%">
 
 <pre><span class="keyword">include</span> struct ... end</pre>
+<div class="info ">
+                    <div class="not-examples">
+                    see signatures in <code class="code">S</code><br>
+ 
+                    </div>
+                    
+                    </div>
 
+                  
 <pre><span id="VAL_BYTES_PER_ELEMENT"><span class="keyword">val</span> _BYTES_PER_ELEMENT</span> : <code class="type">int</code></pre>
 <pre><span id="VALmake"><span class="keyword">val</span> make</span> : <code class="type">elt array -> t</code></pre>
-<pre><span id="VALfromBuffer"><span class="keyword">val</span> fromBuffer</span> : <code class="type"><a href="Js_typed_array.html#TYPEarray_buffer">Js_typed_array.array_buffer</a> -> t</code></pre>
-<pre><span id="VALfromBufferOffset"><span class="keyword">val</span> fromBufferOffset</span> : <code class="type"><a href="Js_typed_array.html#TYPEarray_buffer">Js_typed_array.array_buffer</a> -> int -> t</code></pre><div class="info ">
+<pre><span id="VALfromBuffer"><span class="keyword">val</span> fromBuffer</span> : <code class="type"><a href="Js_typed_array.html#TYPEarray_buffer">Js_typed_array.array_buffer</a> -> t</code></pre><div class="info ">
                     <div class="not-examples">
                     can throw<br>
  
@@ -68,10 +75,11 @@
                     </div>
 
                   
+<pre><span id="VALfromBufferOffset"><span class="keyword">val</span> fromBufferOffset</span> : <code class="type"><a href="Js_typed_array.html#TYPEarray_buffer">Js_typed_array.array_buffer</a> -> int -> t</code></pre>
 <pre><span id="VALfromBufferRange"><span class="keyword">val</span> fromBufferRange</span> : <code class="type"><a href="Js_typed_array.html#TYPEarray_buffer">Js_typed_array.array_buffer</a> -> offset:int -> length:int -> t</code></pre><div class="info ">
                     <div class="not-examples">
-                    can throw, offset is in bytes<br>
- 
+                    <div class="tag"> <b>Raises</b> <code>Js.Exn.Error</code> raise Js exception<br>
+ </div> 
                     </div>
                     
                     </div>
@@ -79,8 +87,8 @@
                   
 <pre><span id="VALfromLength"><span class="keyword">val</span> fromLength</span> : <code class="type">int -> t</code></pre><div class="info ">
                     <div class="not-examples">
-                    can throw, offset is in bytes, length in elements<br>
- 
+                    <div class="tag"> <b>Raises</b> <code>Js.Exn.Error</code> raises Js exception<br>
+ </div> 
                     </div>
                     
                     </div>

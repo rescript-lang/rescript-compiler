@@ -22,8 +22,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** place holder for node bindings *)
+(** place holder for BuckleScript datastructures *)
 
+(**/*)
 module Dyn = Bs_dyn
 
 module Dyn_lib = Bs_dyn_lib
+(**/*)

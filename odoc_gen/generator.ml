@@ -75,6 +75,28 @@ struct
       method! html_of_return_opt = wrap_tag_opt super#html_of_return_opt
       method! html_of_sees = wrap_tag_list super#html_of_sees
 
+      method! html_of_info_first_sentence b info_opt =
+        bp b {| <div class="info">                     
+                <div class="not-examples">
+                    %a 
+                </div>
+                </div> |} (fun b () -> 
+        info_opt |? fun ({i_deprecated;i_desc} : Odoc_info.info ) ->
+          i_deprecated
+          |? (fun d ->
+              bp b {|<div class="warning">
+                     <span class="label">%s</span>
+                     %a
+                     </div>
+                   |} 
+                Odoc_messages.deprecated self#html_of_text  d );
+          i_desc |?
+          (function 
+            | [Odoc_info.Raw ""] -> ()
+            |  d -> self#html_of_text b d; bs b "<br>\n"
+          )) ();
+
+
       method! html_of_info ?(cls="") ?(indent=true) b 
           (info_opt : Odoc_info.info option) =
         opt_iter info_opt
@@ -96,7 +118,7 @@ struct
                (fun b indent -> if indent then bp b {|<div class="info %s">|} cls)
                indent
                (fun  b () ->
-                  opt_iter  i_deprecated
+                  i_deprecated |?
                     (fun d ->
                        bp b {|<div class="warning">
                               <span class="label">%s</span>
@@ -104,7 +126,7 @@ struct
                               </div>
                             |} 
                          Odoc_messages.deprecated self#html_of_text  d );
-                  opt_iter i_desc 
+                  i_desc |?
                     (function 
                       | [Odoc_info.Raw ""] -> ()
                       |  d -> self#html_of_text b d; bs b "<br>\n"
