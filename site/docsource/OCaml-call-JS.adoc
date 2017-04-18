@@ -53,7 +53,7 @@ Js.log {js|\x3f\u003f\b\t\n\v\f\r\0"'|js}
 console.log("\x3f\u003f\b\t\n\v\f\r\0\"\'");
 --------------
 
-#### Unicode support with string interpolation (@since 1.6.1)
+#### Unicode support with string interpolation (@since 1.7.0)
 
 Like `{js||js}`, `{j||j}` not only allowed unicode point, but also variable inerpolation.
 
@@ -530,7 +530,7 @@ var config = {
 };
 -----------
 
-### Fixed Arguments with arbitrary JSON literal (@since 1.6.1)
+### Fixed Arguments with arbitrary JSON literal (@since 1.7.0)
 
 So the payload can be more flexiblie with JSON literal support
 
