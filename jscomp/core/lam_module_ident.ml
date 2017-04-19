@@ -50,32 +50,43 @@ let name  x : string  =
   | Ml  | Runtime ->  x.id.name
   | External v -> v  
 
-let equal (x : t) y = 
-  match x.kind with 
-  | External x_kind-> 
-    begin match y.kind with 
-      | External y_kind -> 
-        x_kind = (y_kind : string)
-      | _ -> false 
-    end
-  | Ml -> y.kind = Ml && Ext_ident.equal x.id y.id 
-  | Runtime -> 
-    y.kind = Runtime  && Ext_ident.equal x.id y.id
-let hash (x : t) = 
-  match x.kind with 
-  | External x_kind -> Bs_hash_stubs.hash_string x_kind 
-  | Ml | Runtime -> 
-    let x_id = x.id in 
-    Bs_hash_stubs.hash_stamp_and_name x_id.stamp x_id.name 
+module Cmp = struct 
+  type nonrec t = t
+  let equal (x : t) y = 
+    match x.kind with 
+    | External x_kind-> 
+      begin match y.kind with 
+        | External y_kind -> 
+          x_kind = (y_kind : string)
+        | _ -> false 
+      end
+    | Ml 
+    | Runtime -> Ext_ident.equal x.id y.id 
+  (* #1556
+     Note the main difference between [Ml] and [Runtime] is 
+     that we have more assumptions about [Runtime] module, 
+     like its purity etc, and its name uniqueues, in the pattern match 
+     {[
+       Qualified (_,Runtime, Some "caml_int_compare")
+     ]}
+     and we could do more optimziations.
+     However, here if it is [hit] 
+     (an Ml module = an Runtime module), which means both exists, 
+     so adding either does not matter
+     if it is not hit, fine
+  *)
+  (* | Ml -> y.kind = Ml &&  *)
+  (* | Runtime ->  *)
+  (*   y.kind = Runtime  && Ext_ident.equal x.id y.id *)
+  let hash (x : t) = 
+    match x.kind with 
+    | External x_kind -> Bs_hash_stubs.hash_string x_kind 
+    | Ml 
+    | Runtime -> 
+      let x_id = x.id in 
+      Bs_hash_stubs.hash_stamp_and_name x_id.stamp x_id.name 
+end
 
-module Hash = Hashtbl_make.Make(struct 
-    type nonrec t = t 
-    let hash   = hash
-    let equal  = equal 
-  end)
+module Hash = Hashtbl_make.Make (Cmp)
 
-module Hash_set = Hash_set.Make( struct 
-    type nonrec t = t 
-    let hash   = hash
-    let equal  = equal     
-end)
+module Hash_set = Hash_set.Make (Cmp)
