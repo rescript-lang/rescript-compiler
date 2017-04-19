@@ -2,7 +2,6 @@
 
 var Curry                   = require("../../lib/js/curry.js");
 var Js_exn                  = require("../../lib/js/js_exn.js");
-var Js_exn                  = require("../../lib/js/js_exn.js");
 var Js_primitive            = require("../../lib/js/js_primitive.js");
 var Caml_exceptions         = require("../../lib/js/caml_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");

@@ -1,7 +1,6 @@
 'use strict';
 
 var Js_exn       = require("../../lib/js/js_exn.js");
-var Js_exn       = require("../../lib/js/js_exn.js");
 var Js_primitive = require("../../lib/js/js_primitive.js");
 
 function test_js_error() {

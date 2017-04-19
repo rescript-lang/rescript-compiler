@@ -5,7 +5,6 @@ var List        = require("../../lib/js/list.js");
 var Block       = require("../../lib/js/block.js");
 var Bytes       = require("../../lib/js/bytes.js");
 var Caml_string = require("../../lib/js/caml_string.js");
-var Caml_string = require("../../lib/js/caml_string.js");
 
 var suites_000 = /* tuple */[
   "string_of_char_array",

@@ -1,0 +1,10 @@
+
+
+BuckleScript 1.7.2:
+==================
+
+Bug fixes:
+
+- #1556, fix duplicated requires of runtime (report by Chenglou) 
+
+
