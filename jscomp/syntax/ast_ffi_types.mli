@@ -32,7 +32,8 @@ type pipe = bool
 type js_call = { 
   name : string;
   external_module_name : external_module_name option;
-  splice : bool 
+  splice : bool ;
+  scopes : string list 
 }
 
 type js_send = { 
@@ -43,13 +44,15 @@ type js_send = {
 
 type js_global_val = {
   name : string ; 
-  external_module_name : external_module_name option
+  external_module_name : external_module_name option;
+  scopes : string list
 }
 
 type js_new_val = {
   name : string ; 
   external_module_name : external_module_name option;
   splice : bool ;
+  scopes : string list;
 }
 
 type js_module_as_fn = 

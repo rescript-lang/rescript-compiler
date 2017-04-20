@@ -12,7 +12,7 @@ var CommentBox = React.createClass({
 type obj_spec 
 type react_dom_element
 external react_create_class : 
-    obj_spec -> react_dom_element = "react_create_class" [@@bs.val "createClass" "React"]
+    obj_spec -> react_dom_element = "react_create_class" [@@bs.val (* "createClass" "React" *)]
 type react_dom_component
 external mk_obj_spec :
         ?display_name:string ->

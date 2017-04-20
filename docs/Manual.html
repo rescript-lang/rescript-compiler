@@ -538,6 +538,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_binding_to_simple_js_functions_values">Binding to simple JS functions values</a>
 <ul class="sectlevel3">
 <li><a href="#_binding_to_global_value_bs_val">Binding to global value: bs.val</a></li>
+<li><a href="#_scoped_values_bs_scope_since_1_7_2">Scoped values: bs.scope (@since 1.7.2)</a></li>
 <li><a href="#_binding_to_javascript_constructor_bs_new">Binding to JavaScript constructor: bs.new</a></li>
 <li><a href="#_binding_to_a_value_from_a_module_bs_module">Binding to a value from a module: bs.module</a></li>
 <li><a href="#_binding_the_whole_module_as_a_value_or_function">Binding the whole module as a value or function</a></li>
@@ -1611,6 +1612,68 @@ give the JavaScript foreign function a different name:</p>
 </td>
 </tr>
 </table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_scoped_values_bs_scope_since_1_7_2"><a class="anchor" href="#_scoped_values_bs_scope_since_1_7_2"></a>Scoped values: bs.scope (@since 1.7.2)</h4>
+<div class="paragraph">
+<p>In JS library, it is quite common to use a name as namespace,
+for example, if the user want to write a binding to
+<code>vscode.commands.executeCommand</code>, assume <code>vscode</code> is a module name,
+the user needs needs to type <code>commands</code> properly before typing <code>executeCommand</code>, and in practice, it is rarely useful to call <code>vscode.commands</code> alone, for this reason, we introduce a convient sugar: <code>bs.scope</code></p>
+</div>
+<div class="listingblock">
+<div class="title">Example</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">type</span> <span class="tok-n">param</span>
+<span class="tok-k">external</span> <span class="tok-n">executeCommands</span> <span class="tok-o">:</span> <span class="tok-kt">string</span> <span class="tok-o">-&gt;</span> <span class="tok-n">param</span> <span class="tok-kt">array</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">unit</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;&quot;</span>
+<span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">scope</span> <span class="tok-s2">&quot;commands&quot;</span><span class="tok-o">]</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-k">module</span> <span class="tok-s2">&quot;vscode&quot;</span><span class="tok-o">][@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">splice</span><span class="tok-o">]</span>
+
+<span class="tok-k">let</span> <span class="tok-n">f</span> <span class="tok-n">a</span> <span class="tok-n">b</span> <span class="tok-n">c</span>  <span class="tok-o">=</span>
+  <span class="tok-n">executeCommands</span> <span class="tok-s2">&quot;hi&quot;</span>  <span class="tok-o">[|</span><span class="tok-n">a</span><span class="tok-o">;</span><span class="tok-n">b</span><span class="tok-o">;</span><span class="tok-n">c</span><span class="tok-o">|]</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Output</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span class="tok-kd">var</span> <span class="tok-nx">Vscode</span> <span class="tok-o">=</span> <span class="tok-nx">require</span><span class="tok-p">(</span><span class="tok-s2">&quot;vscode&quot;</span><span class="tok-p">);</span>
+<span class="tok-kd">function</span> <span class="tok-nx">f</span><span class="tok-p">(</span><span class="tok-nx">a</span><span class="tok-p">,</span> <span class="tok-nx">b</span><span class="tok-p">,</span> <span class="tok-nx">c</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+  <span class="tok-nx">Vscode</span><span class="tok-p">.</span><span class="tok-nx">commands</span><span class="tok-p">.</span><span class="tok-nx">executeCommands</span><span class="tok-p">(</span><span class="tok-s2">&quot;hi&quot;</span><span class="tok-p">,</span> <span class="tok-nx">a</span><span class="tok-p">,</span> <span class="tok-nx">b</span><span class="tok-p">,</span> <span class="tok-nx">c</span><span class="tok-p">);</span>
+  <span class="tok-k">return</span> <span class="tok-nx">process</span><span class="tok-p">.</span><span class="tok-nx">env</span><span class="tok-p">;</span>
+<span class="tok-p">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>NOTE <code>bs.scope</code> can also be chained as below:</p>
+</div>
+<div class="listingblock">
+<div class="title">Exmaple</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">external</span> <span class="tok-n">makeBuffer</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">-&gt;</span> <span class="tok-n">buffer</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;Buffer&quot;</span>
+<span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-k">new</span><span class="tok-o">]</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">scope</span> <span class="tok-s2">&quot;global&quot;</span><span class="tok-o">]</span>
+<span class="tok-k">external</span> <span class="tok-n">hi</span> <span class="tok-o">:</span> <span class="tok-kt">string</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;&quot;</span>
+<span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-k">module</span> <span class="tok-s2">&quot;z&quot;</span><span class="tok-o">]</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">scope</span> <span class="tok-s2">&quot;a0&quot;</span><span class="tok-o">,</span> <span class="tok-s2">&quot;a1&quot;</span><span class="tok-o">,</span> <span class="tok-s2">&quot;a2&quot;</span><span class="tok-o">]</span>
+<span class="tok-k">external</span> <span class="tok-n">ho</span> <span class="tok-o">:</span> <span class="tok-kt">string</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;&quot;</span>
+<span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-k">val</span><span class="tok-o">]</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">scope</span> <span class="tok-s2">&quot;a0&quot;</span><span class="tok-o">,</span><span class="tok-s2">&quot;a1&quot;</span><span class="tok-o">,</span><span class="tok-s2">&quot;a2&quot;</span><span class="tok-o">]</span>
+<span class="tok-k">external</span> <span class="tok-n">imul</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">int</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">int</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;&quot;</span>
+<span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-k">val</span><span class="tok-o">]</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">scope</span> <span class="tok-s2">&quot;Math&quot;</span><span class="tok-o">]</span>
+<span class="tok-k">let</span> <span class="tok-n">f2</span> <span class="tok-bp">()</span>  <span class="tok-o">=</span>
+  <span class="tok-n">makeBuffer</span> <span class="tok-mi">20</span> <span class="tok-o">,</span> <span class="tok-n">hi</span> <span class="tok-o">,</span> <span class="tok-n">ho</span><span class="tok-o">,</span> <span class="tok-n">imul</span> <span class="tok-mi">1</span> <span class="tok-mi">2</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Output</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span class="tok-kd">var</span> <span class="tok-nx">Z</span>      <span class="tok-o">=</span> <span class="tok-nx">require</span><span class="tok-p">(</span><span class="tok-s2">&quot;z&quot;</span><span class="tok-p">);</span>
+<span class="tok-kd">function</span> <span class="tok-nx">f2</span><span class="tok-p">()</span> <span class="tok-p">{</span>
+  <span class="tok-k">return</span> <span class="tok-cm">/* tuple */</span><span class="tok-p">[</span>
+          <span class="tok-k">new</span> <span class="tok-p">(</span><span class="tok-nx">global</span><span class="tok-p">.</span><span class="tok-nx">Buffer</span><span class="tok-p">)(</span><span class="tok-mi">20</span><span class="tok-p">),</span>
+          <span class="tok-nx">Z</span><span class="tok-p">.</span><span class="tok-nx">a0</span><span class="tok-p">.</span><span class="tok-nx">a1</span><span class="tok-p">.</span><span class="tok-nx">a2</span><span class="tok-p">.</span><span class="tok-nx">hi</span><span class="tok-p">,</span>
+          <span class="tok-nx">a0</span><span class="tok-p">.</span><span class="tok-nx">a1</span><span class="tok-p">.</span><span class="tok-nx">a2</span><span class="tok-p">.</span><span class="tok-nx">ho</span><span class="tok-p">,</span>
+          <span class="tok-nb">Math</span><span class="tok-p">.</span><span class="tok-nx">imul</span><span class="tok-p">(</span><span class="tok-mi">1</span><span class="tok-p">,</span> <span class="tok-mi">2</span><span class="tok-p">)</span>
+        <span class="tok-p">];</span>
+<span class="tok-p">}</span></code></pre>
+</div>
 </div>
 </div>
 <div class="sect3">

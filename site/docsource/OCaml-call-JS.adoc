@@ -153,6 +153,66 @@ external imul : int -> int -> int =
 ---------------
 =====
 
+#### Scoped values: bs.scope (@since 1.7.2) 
+
+In JS library, it is quite common to use a name as namespace, 
+for example, if the user want to write a binding to 
+`vscode.commands.executeCommand`, assume `vscode` is a module name, 
+the user needs needs to type `commands` properly before typing `executeCommand`, and in practice, it is rarely useful to call `vscode.commands` alone, for this reason, we introduce a convient sugar: `bs.scope`
+
+.Example
+[source,ocaml]
+--------------
+type param 
+external executeCommands : string -> param array -> unit = "" 
+[@@bs.scope "commands"] [@@bs.module "vscode"][@@bs.splice]
+
+let f a b c  = 
+  executeCommands "hi"  [|a;b;c|]
+--------------
+
+.Output
+[source,js]
+--------------
+var Vscode = require("vscode");
+function f(a, b, c) {
+  Vscode.commands.executeCommands("hi", a, b, c);
+  return process.env;
+}
+--------------
+
+NOTE `bs.scope` can also be chained as below:
+
+.Exmaple
+[source,ocaml]
+-------------
+external makeBuffer : int -> buffer = "Buffer"
+[@@bs.new] [@@bs.scope "global"]
+external hi : string = "" 
+[@@bs.module "z"] [@@bs.scope "a0", "a1", "a2"]
+external ho : string = "" 
+[@@bs.val] [@@bs.scope "a0","a1","a2"]
+external imul : int -> int -> int = ""
+[@@bs.val] [@@bs.scope "Math"]
+let f2 ()  = 
+  makeBuffer 20 , hi , ho, imul 1 2 
+-------------
+
+.Output
+[source,js]
+-------------
+var Z      = require("z");
+function f2() {
+  return /* tuple */[
+          new (global.Buffer)(20),
+          Z.a0.a1.a2.hi,
+          a0.a1.a2.ho,
+          Math.imul(1, 2)
+        ];
+}
+-------------
+
+
 #### Binding to JavaScript constructor: bs.new
 
 `bs.new` is used to create a JavaScript object.

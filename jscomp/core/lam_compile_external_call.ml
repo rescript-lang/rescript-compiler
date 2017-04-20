@@ -169,6 +169,29 @@ let assemble_args_splice call_loc ffi  js_splice arg_types args : E.t list * E.t
       Some (E.fuse_to_seq x xs) 
   end
 
+let translate_scoped_module_val module_name fn  scopes = 
+  match handle_external_opt module_name with 
+  | Some (id,external_name) ->
+    begin match scopes with 
+      | [] -> 
+        E.external_var_dot ~external_name ~dot:fn id 
+        (* E.dot (E.var id) fn *)
+      | x :: rest -> 
+        (* let start = E.dot (E.var id )  x in  *)
+        let start = E.external_var_dot ~external_name ~dot:x id in 
+        List.fold_left (fun acc x -> E.dot  acc x) start (rest @ [fn])
+    end
+  | None ->  
+    (*  no [@@bs.module], assume it's global *)
+    begin match scopes with 
+      | [] -> 
+        (* E.external_var_dot ~external_name ~dot:fn id  *)
+        E.js_var fn
+      | x::rest -> 
+        let start = E.js_var x  in 
+        List.fold_left (fun acc x -> E.dot acc x) start (rest @ [fn])
+    end
+
 
 let translate_ffi 
     call_loc (ffi : Ast_ffi_types.ffi ) 
@@ -180,14 +203,10 @@ let translate_ffi
 
   | Js_call{ external_module_name = module_name; 
              name = fn; splice = js_splice ; 
+             scopes
 
            } -> 
-    let fn =  
-      match handle_external_opt module_name with 
-      | Some (id,_) -> 
-        E.dot (E.var id) fn
-      | None ->  E.js_var fn
-    in
+    let fn =  translate_scoped_module_val module_name fn scopes in 
     let args, eff  = assemble_args_splice   call_loc ffi js_splice arg_types args in 
     add_eff eff @@              
     E.call ~info:{arity=Full; call_info = Call_na} fn args
@@ -225,7 +244,8 @@ let translate_ffi
 
   | Js_new { external_module_name = module_name; 
              name = fn;
-             splice 
+             splice ;
+             scopes
            } -> 
     (* This has some side effect, it will 
        mark its identifier (If it has) as an object,
@@ -236,17 +256,7 @@ let translate_ffi
        as much as we can(in alias table)
     *)
     let args, eff = assemble_args_splice  call_loc  ffi splice arg_types args in
-    let fn =  
-      match handle_external_opt module_name with 
-      | Some (id,name) ->  
-        E.external_var_dot id ~external_name:name ~dot:fn
-
-      | None -> 
-        (** TODO: check, no [@@bs.module], 
-            assume it's global *)
-        E.js_var fn
-
-    in
+    let fn =  translate_scoped_module_val module_name fn scopes in 
     add_eff eff 
       begin 
         (match cxt.st with 
@@ -260,23 +270,20 @@ let translate_ffi
 
 
 
-  | Js_global {name; external_module_name} -> 
+  | Js_global {name; external_module_name; scopes} -> 
 
     (* TODO #11
        1. check args -- error checking 
        2. support [@@bs.scope "window"]
        we need know whether we should call [add_js_module] or not 
     *)
-    begin match name, handle_external_opt external_module_name with 
-      | "true", None -> E.js_bool true
-      | "false", None -> E.js_bool false
-      | "null", None -> E.nil 
-      | "undefined", None -> E.undefined
-      | _, Some(id,mod_name)
-        -> E.external_var_dot id ~external_name:mod_name ~dot:name
-      | _, None -> 
-
-        E.var (Ext_ident.create_js name)
+    begin match name, handle_external_opt external_module_name , scopes with 
+      | "true", None, []  -> E.js_bool true
+      | "false", None, [] -> E.js_bool false
+      | "null", None, [] -> E.nil 
+      | "undefined", None, [] -> E.undefined
+      | _, _, _ -> 
+        translate_scoped_module_val external_module_name name scopes
     end
   | Js_send {splice  = js_splice ; name ; pipe = false} -> 
     begin match args  with
