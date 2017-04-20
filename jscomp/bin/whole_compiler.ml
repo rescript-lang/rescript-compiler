@@ -91789,6 +91789,7 @@ let translate_scoped_module_val module_name fn  scopes =
         List.fold_left (fun acc x -> E.dot  acc x) start (rest @ [fn])
     end
   | None ->  
+    (*  no [@@bs.module], assume it's global *)
     begin match scopes with 
       | [] -> 
         (* E.external_var_dot ~external_name ~dot:fn id  *)
@@ -91862,29 +91863,7 @@ let translate_ffi
        as much as we can(in alias table)
     *)
     let args, eff = assemble_args_splice  call_loc  ffi splice arg_types args in
-    let fn =  
-      match handle_external_opt module_name with 
-      | Some (id,name) ->  
-        begin match scopes with 
-        | [] -> 
-          E.external_var_dot id ~external_name:name ~dot:fn
-        | x::rest -> 
-          let start =  
-            E.external_var_dot id ~external_name:name ~dot:x in
-          List.fold_left (fun acc x -> E.dot acc x ) start (rest @ [fn])
-        end
-        (** TODO: check, no [@@bs.module], 
-            assume it's global *)
-      | None ->
-        begin match scopes with 
-        | [] -> 
-          E.js_var fn
-        | x::rest -> 
-          let start = E.js_var x in
-          List.fold_left (fun acc x -> E.dot acc x ) start (rest @ [fn])
-        end
-
-    in
+    let fn =  translate_scoped_module_val module_name fn scopes in 
     add_eff eff 
       begin 
         (match cxt.st with 
@@ -91905,23 +91884,13 @@ let translate_ffi
        2. support [@@bs.scope "window"]
        we need know whether we should call [add_js_module] or not 
     *)
-    begin match name, handle_external_opt external_module_name, scopes with 
+    begin match name, handle_external_opt external_module_name , scopes with 
       | "true", None, []  -> E.js_bool true
       | "false", None, [] -> E.js_bool false
       | "null", None, [] -> E.nil 
       | "undefined", None, [] -> E.undefined
-      | _, Some(id,mod_name), []
-        -> 
-        E.external_var_dot id ~external_name:mod_name ~dot:name
-      | _, Some(id,mod_name), x::rest
-        -> 
-        let start =  
-          E.external_var_dot id ~external_name:mod_name ~dot:x in
-        List.fold_left (fun acc x -> E.dot acc x ) start (rest @ [name])
-      | _, None, [] -> E.js_var name 
-      | _, None, x::rest -> 
-        let start = E.js_var x in
-        List.fold_left (fun acc x -> E.dot acc x ) start (rest @ [name])
+      | _, _, _ -> 
+        translate_scoped_module_val external_module_name name scopes
     end
   | Js_send {splice  = js_splice ; name ; pipe = false} -> 
     begin match args  with
