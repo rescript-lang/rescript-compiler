@@ -59149,7 +59149,8 @@ type pipe = bool
 type js_call = { 
   name : string;
   external_module_name : external_module_name option;
-  splice : bool 
+  splice : bool ;
+  scopes : string list 
 }
 
 type js_send = { 
@@ -59160,13 +59161,15 @@ type js_send = {
 
 type js_global_val = {
   name : string ; 
-  external_module_name : external_module_name option
+  external_module_name : external_module_name option;
+  scopes : string list
 }
 
 type js_new_val = {
   name : string ; 
   external_module_name : external_module_name option;
   splice : bool ;
+  scopes : string list;
 }
 
 type js_module_as_fn = 
@@ -59258,7 +59261,8 @@ type pipe = bool
 type js_call = { 
   name : string;
   external_module_name : external_module_name option;
-  splice : bool 
+  splice : bool ;
+  scopes : string list ; 
 }
 
 type js_send = { 
@@ -59269,18 +59273,21 @@ type js_send = {
 
 type js_global_val = {
   name : string ; 
-  external_module_name : external_module_name option
+  external_module_name : external_module_name option;
+  scopes : string list ;
 }
 
 type js_new_val = {
   name : string ; 
   external_module_name : external_module_name option;
   splice : bool ;
+  scopes : string list;
 }
 
 type js_module_as_fn = 
   { external_module_name : external_module_name;
-    splice : bool 
+    splice : bool ;
+
   }
   
 (** TODO: information between [arg_type] and [arg_label] are duplicated, 
@@ -59384,12 +59391,12 @@ let valid_global_name ?loc txt =
     List.iter
       (fun s ->
          if not (valid_ident s) then
-           Location.raise_errorf ?loc "Not a valid name %s"  txt
+           Location.raise_errorf ?loc "Not a valid global name %s"  txt
       ) v      
 
 let valid_method_name ?loc txt =         
   if not (valid_ident txt) then
-    Location.raise_errorf ?loc "Not a valid name %s"  txt
+    Location.raise_errorf ?loc "Not a valid method name %s"  txt
 
 
 
@@ -91780,13 +91787,27 @@ let translate_ffi
 
   | Js_call{ external_module_name = module_name; 
              name = fn; splice = js_splice ; 
+             scopes
 
            } -> 
     let fn =  
       match handle_external_opt module_name with 
-      | Some (id,_) -> 
-        E.dot (E.var id) fn
-      | None ->  E.js_var fn
+      | Some (id,_) ->
+        begin match scopes with 
+        | [] -> 
+          E.dot (E.var id) fn
+        | x :: rest -> 
+          let start = E.dot (E.var id )  x in 
+          List.fold_left (fun acc x -> E.dot  acc x) start (rest @ [fn])
+        end
+      | None ->  
+        begin match scopes with 
+        | [] -> 
+          E.js_var fn
+        | x::rest -> 
+          let start = E.js_var x  in 
+          List.fold_left (fun acc x -> E.dot acc x) start (rest @ [fn])
+        end
     in
     let args, eff  = assemble_args_splice   call_loc ffi js_splice arg_types args in 
     add_eff eff @@              
@@ -91825,7 +91846,8 @@ let translate_ffi
 
   | Js_new { external_module_name = module_name; 
              name = fn;
-             splice 
+             splice ;
+             scopes
            } -> 
     (* This has some side effect, it will 
        mark its identifier (If it has) as an object,
@@ -91839,12 +91861,24 @@ let translate_ffi
     let fn =  
       match handle_external_opt module_name with 
       | Some (id,name) ->  
-        E.external_var_dot id ~external_name:name ~dot:fn
-
-      | None -> 
+        begin match scopes with 
+        | [] -> 
+          E.external_var_dot id ~external_name:name ~dot:fn
+        | x::rest -> 
+          let start =  
+            E.external_var_dot id ~external_name:name ~dot:x in
+          List.fold_left (fun acc x -> E.dot acc x ) start (rest @ [fn])
+        end
         (** TODO: check, no [@@bs.module], 
             assume it's global *)
-        E.js_var fn
+      | None ->
+        begin match scopes with 
+        | [] -> 
+          E.js_var fn
+        | x::rest -> 
+          let start = E.js_var x in
+          List.fold_left (fun acc x -> E.dot acc x ) start (rest @ [fn])
+        end
 
     in
     add_eff eff 
@@ -91860,23 +91894,30 @@ let translate_ffi
 
 
 
-  | Js_global {name; external_module_name} -> 
+  | Js_global {name; external_module_name; scopes} -> 
 
     (* TODO #11
        1. check args -- error checking 
        2. support [@@bs.scope "window"]
        we need know whether we should call [add_js_module] or not 
     *)
-    begin match name, handle_external_opt external_module_name with 
-      | "true", None -> E.js_bool true
-      | "false", None -> E.js_bool false
-      | "null", None -> E.nil 
-      | "undefined", None -> E.undefined
-      | _, Some(id,mod_name)
-        -> E.external_var_dot id ~external_name:mod_name ~dot:name
-      | _, None -> 
-
-        E.var (Ext_ident.create_js name)
+    begin match name, handle_external_opt external_module_name, scopes with 
+      | "true", None, []  -> E.js_bool true
+      | "false", None, [] -> E.js_bool false
+      | "null", None, [] -> E.nil 
+      | "undefined", None, [] -> E.undefined
+      | _, Some(id,mod_name), []
+        -> 
+        E.external_var_dot id ~external_name:mod_name ~dot:name
+      | _, Some(id,mod_name), x::rest
+        -> 
+        let start =  
+          E.external_var_dot id ~external_name:mod_name ~dot:x in
+        List.fold_left (fun acc x -> E.dot acc x ) start (rest @ [name])
+      | _, None, [] -> E.js_var name 
+      | _, None, x::rest -> 
+        let start = E.js_var x in
+        List.fold_left (fun acc x -> E.dot acc x ) start (rest @ [name])
     end
   | Js_send {splice  = js_splice ; name ; pipe = false} -> 
     begin match args  with
@@ -102975,12 +103016,14 @@ type st =
     val_send : name_source ;
     val_send_pipe : Ast_core_type.t option;    
     splice : bool ; (* mutable *)
+    scopes : string list ; 
     set_index : bool; (* mutable *)
     get_index : bool;
     new_name : name_source ;
     call_name : name_source ;
     set_name : name_source ;
     get_name : name_source ;
+
     mk_obj : bool ;
     return_wrapper : Ast_ffi_types.return_wrapper ;
 
@@ -102994,6 +103037,7 @@ let init_st =
     val_send = `Nm_na;
     val_send_pipe = None;    
     splice = false;
+    scopes = [];
     set_index = false;
     get_index = false;
     new_name = `Nm_na;
@@ -103002,6 +103046,7 @@ let init_st =
     get_name = `Nm_na ;
     mk_obj = false ; 
     return_wrapper = Return_unset; 
+
   }
 
 
@@ -103013,10 +103058,23 @@ let process_external_attributes
     (prim_name_or_pval_prim: [< bundle_source ] as 'a)
     pval_prim
     (prim_attributes : Ast_attributes.t) : _ * Ast_attributes.t =
-  let name_from_payload_or_prim payload : name_source =
-    match Ast_payload.is_single_string payload with
-    | Some  (val_name, _) ->  `Nm_payload val_name
-    | None ->  (prim_name_or_pval_prim :> name_source)
+
+  (* shared by `[@@bs.val]`, `[@@bs.send]`, 
+     `[@@bs.set]`, `[@@bs.get]` , `[@@bs.new]` 
+     `[@@bs.send.pipe]` does not use it 
+  *)
+  let name_from_payload_or_prim ~loc (payload : Parsetree.payload) : name_source =
+    match payload with 
+    | PStr [] -> 
+      (prim_name_or_pval_prim :> name_source)  
+    (* It is okay to have [@@bs.val] without payload *)
+    | _ -> 
+      begin match Ast_payload.is_single_string payload with
+        | Some  (val_name, _) ->  `Nm_payload val_name
+        | None ->  
+          Location.raise_errorf ~loc "Invalid payload"
+      end
+
   in
   List.fold_left 
     (fun (st, attrs)
@@ -103026,9 +103084,9 @@ let process_external_attributes
           begin match txt with 
             | "bs.val" ->  
               if no_arguments then
-                {st with val_name = name_from_payload_or_prim payload}
+                {st with val_name = name_from_payload_or_prim ~loc payload}
               else 
-                {st with call_name = name_from_payload_or_prim payload}
+                {st with call_name = name_from_payload_or_prim ~loc  payload}
 
             | "bs.module" -> 
               begin match Ast_payload.assert_strings loc payload with 
@@ -103050,17 +103108,26 @@ let process_external_attributes
                 | _  ->
                   Bs_syntaxerr.err loc Illegal_attribute
               end
+            | "bs.scope" ->
+              begin match Ast_payload.assert_strings loc payload with 
+              | [] -> 
+                Bs_syntaxerr.err loc Illegal_attribute 
+                  (* We need err on empty scope, so we can tell the difference 
+                     between unset/set
+                  *)
+              | scopes ->  { st with scopes = scopes }
+              end
             | "bs.splice" -> {st with splice = true}
             | "bs.send" -> 
-              { st with val_send = name_from_payload_or_prim payload}
+              { st with val_send = name_from_payload_or_prim ~loc payload}
             | "bs.send.pipe"
               ->
               { st with val_send_pipe = Some (Ast_payload.as_core_type loc payload)}                
             | "bs.set" -> 
-              {st with set_name = name_from_payload_or_prim payload}
-            | "bs.get" -> {st with get_name = name_from_payload_or_prim payload}
+              {st with set_name = name_from_payload_or_prim ~loc  payload}
+            | "bs.get" -> {st with get_name = name_from_payload_or_prim ~loc payload}
 
-            | "bs.new" -> {st with new_name = name_from_payload_or_prim payload}
+            | "bs.new" -> {st with new_name = name_from_payload_or_prim ~loc payload}
             | "bs.set_index" -> {st with set_index = true}
             | "bs.get_index"-> {st with get_index = true}
             | "bs.obj" -> {st with mk_obj = true}
@@ -103185,6 +103252,7 @@ let handle_attributes
         return_wrapper = Return_unset ;        
         set_index = false ; 
         mk_obj = _; 
+        scopes = [];
         (* wrapper does not work with [bs.obj]
            TODO: better error message *)
       } -> 
@@ -103374,6 +103442,7 @@ let handle_attributes
          val_send = `Nm_na;
          val_send_pipe = None;    
          splice = false;
+         scopes = [];
          get_index = false;
          new_name = `Nm_na;
          call_name = `Nm_na;
@@ -103382,6 +103451,7 @@ let handle_attributes
 
          return_wrapper = _; 
          mk_obj = _ ; 
+
         } 
         ->
         if String.length prim_name <> 0 then 
@@ -103405,6 +103475,7 @@ let handle_attributes
          val_send_pipe = None;    
 
          splice = false;
+         scopes = [];
          new_name = `Nm_na;
          call_name = `Nm_na;
          set_name = `Nm_na ;
@@ -103436,7 +103507,8 @@ let handle_attributes
          external_module_name = None ;
          val_send = `Nm_na;
          val_send_pipe = None;    
-         splice ;
+         scopes = []; (* module as var does not need scopes *)
+         splice;
          call_name = `Nm_na;
          set_name = `Nm_na ;
          get_name = `Nm_na ;         
@@ -103464,6 +103536,7 @@ let handle_attributes
 
       | {call_name = (`Nm_val name | `Nm_external name | `Nm_payload name) ;
          splice; 
+         scopes ;
          external_module_name;
 
          val_name = `Nm_na ;
@@ -103479,7 +103552,7 @@ let handle_attributes
          mk_obj = _ ; 
          return_wrapper = _ ; 
         } -> 
-        Js_call {splice; name; external_module_name}
+        Js_call {splice; name; external_module_name; scopes }
       | {call_name = #bundle_source ; _ } 
         ->
         Bs_syntaxerr.err loc Conflict_ffi_attribute
@@ -103500,14 +103573,16 @@ let handle_attributes
          mk_obj = _; 
          return_wrapper = _; 
          splice = false ;
+         scopes ;
         } 
         -> 
-        Js_global { name; external_module_name}
+        Js_global { name; external_module_name; scopes}
       | {val_name = #bundle_source ; _ }
         ->
         Bs_syntaxerr.err loc Conflict_ffi_attribute
 
       | {splice ;
+         scopes ;
          external_module_name = (Some _ as external_module_name);
 
          val_name = `Nm_na ;         
@@ -103526,10 +103601,11 @@ let handle_attributes
         ->
         let name = string_of_bundle_source prim_name_or_pval_prim in
         if arg_type_specs_length  = 0 then
-          Js_global { name; external_module_name}
-        else  Js_call {splice; name; external_module_name}                     
+          Js_global { name; external_module_name; scopes}
+        else  Js_call {splice; name; external_module_name; scopes}                     
       | {val_send = (`Nm_val name | `Nm_external name | `Nm_payload name); 
          splice;
+         scopes  = []; 
          val_send_pipe = None;
          val_name = `Nm_na  ;
          call_name = `Nm_na ;
@@ -103564,6 +103640,7 @@ let handle_attributes
          external_module_name = None ;
          mk_obj = _;
          return_wrapper = _; 
+         scopes = [];
          splice ; 
         } -> 
         (** can be one argument *)
@@ -103587,10 +103664,12 @@ let handle_attributes
          set_name = `Nm_na ;
          get_name = `Nm_na ;
          splice ;
+         scopes; 
          mk_obj = _ ; 
          return_wrapper = _ ; 
+
         } 
-        -> Js_new {name; external_module_name; splice}
+        -> Js_new {name; external_module_name; splice; scopes}
       | {new_name = #bundle_source ; _ }
         -> 
         Bs_syntaxerr.err loc Conflict_ffi_attribute
@@ -103611,6 +103690,7 @@ let handle_attributes
          splice = false; 
          mk_obj = _ ;
          return_wrapper = _; 
+         scopes = [];
         } 
         -> 
         if arg_type_specs_length = 2 then 
@@ -103635,6 +103715,7 @@ let handle_attributes
          splice = false ; 
          mk_obj = _;
          return_wrapper = _;
+         scopes = []
         }
         ->
         if arg_type_specs_length = 1 then  
@@ -103656,10 +103737,12 @@ let handle_attributes
          set_name = `Nm_na ;
          external_module_name = None;
          splice = _ ; 
+         scopes = _;
          mk_obj = _;
          return_wrapper = _;
+
         }       
-       ->  Location.raise_errorf ~loc "Could not infer which FFI category it belongs to, maybe you forgot [@@bs.val]? "  in 
+       ->  Location.raise_errorf ~loc "Could not infer which FFI category it belongs to, maybe you forgot [%@%@bs.val]? "  in 
     begin 
       Ast_ffi_types.check_ffi ~loc ffi;
       (* result type can not be labeled *)

@@ -32,7 +32,8 @@ type pipe = bool
 type js_call = { 
   name : string;
   external_module_name : external_module_name option;
-  splice : bool 
+  splice : bool ;
+  scopes : string list ; 
 }
 
 type js_send = { 
@@ -43,18 +44,21 @@ type js_send = {
 
 type js_global_val = {
   name : string ; 
-  external_module_name : external_module_name option
+  external_module_name : external_module_name option;
+  scopes : string list ;
 }
 
 type js_new_val = {
   name : string ; 
   external_module_name : external_module_name option;
   splice : bool ;
+  scopes : string list;
 }
 
 type js_module_as_fn = 
   { external_module_name : external_module_name;
-    splice : bool 
+    splice : bool ;
+
   }
   
 (** TODO: information between [arg_type] and [arg_label] are duplicated, 
@@ -158,12 +162,12 @@ let valid_global_name ?loc txt =
     List.iter
       (fun s ->
          if not (valid_ident s) then
-           Location.raise_errorf ?loc "Not a valid name %s"  txt
+           Location.raise_errorf ?loc "Not a valid global name %s"  txt
       ) v      
 
 let valid_method_name ?loc txt =         
   if not (valid_ident txt) then
-    Location.raise_errorf ?loc "Not a valid name %s"  txt
+    Location.raise_errorf ?loc "Not a valid method name %s"  txt
 
 
 

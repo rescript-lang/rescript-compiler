@@ -203,12 +203,14 @@ type st =
     val_send : name_source ;
     val_send_pipe : Ast_core_type.t option;    
     splice : bool ; (* mutable *)
+    scopes : string list ; 
     set_index : bool; (* mutable *)
     get_index : bool;
     new_name : name_source ;
     call_name : name_source ;
     set_name : name_source ;
     get_name : name_source ;
+
     mk_obj : bool ;
     return_wrapper : Ast_ffi_types.return_wrapper ;
 
@@ -222,6 +224,7 @@ let init_st =
     val_send = `Nm_na;
     val_send_pipe = None;    
     splice = false;
+    scopes = [];
     set_index = false;
     get_index = false;
     new_name = `Nm_na;
@@ -230,6 +233,7 @@ let init_st =
     get_name = `Nm_na ;
     mk_obj = false ; 
     return_wrapper = Return_unset; 
+
   }
 
 
@@ -241,10 +245,23 @@ let process_external_attributes
     (prim_name_or_pval_prim: [< bundle_source ] as 'a)
     pval_prim
     (prim_attributes : Ast_attributes.t) : _ * Ast_attributes.t =
-  let name_from_payload_or_prim payload : name_source =
-    match Ast_payload.is_single_string payload with
-    | Some  (val_name, _) ->  `Nm_payload val_name
-    | None ->  (prim_name_or_pval_prim :> name_source)
+
+  (* shared by `[@@bs.val]`, `[@@bs.send]`, 
+     `[@@bs.set]`, `[@@bs.get]` , `[@@bs.new]` 
+     `[@@bs.send.pipe]` does not use it 
+  *)
+  let name_from_payload_or_prim ~loc (payload : Parsetree.payload) : name_source =
+    match payload with 
+    | PStr [] -> 
+      (prim_name_or_pval_prim :> name_source)  
+    (* It is okay to have [@@bs.val] without payload *)
+    | _ -> 
+      begin match Ast_payload.is_single_string payload with
+        | Some  (val_name, _) ->  `Nm_payload val_name
+        | None ->  
+          Location.raise_errorf ~loc "Invalid payload"
+      end
+
   in
   List.fold_left 
     (fun (st, attrs)
@@ -254,9 +271,9 @@ let process_external_attributes
           begin match txt with 
             | "bs.val" ->  
               if no_arguments then
-                {st with val_name = name_from_payload_or_prim payload}
+                {st with val_name = name_from_payload_or_prim ~loc payload}
               else 
-                {st with call_name = name_from_payload_or_prim payload}
+                {st with call_name = name_from_payload_or_prim ~loc  payload}
 
             | "bs.module" -> 
               begin match Ast_payload.assert_strings loc payload with 
@@ -278,17 +295,26 @@ let process_external_attributes
                 | _  ->
                   Bs_syntaxerr.err loc Illegal_attribute
               end
+            | "bs.scope" ->
+              begin match Ast_payload.assert_strings loc payload with 
+              | [] -> 
+                Bs_syntaxerr.err loc Illegal_attribute 
+                  (* We need err on empty scope, so we can tell the difference 
+                     between unset/set
+                  *)
+              | scopes ->  { st with scopes = scopes }
+              end
             | "bs.splice" -> {st with splice = true}
             | "bs.send" -> 
-              { st with val_send = name_from_payload_or_prim payload}
+              { st with val_send = name_from_payload_or_prim ~loc payload}
             | "bs.send.pipe"
               ->
               { st with val_send_pipe = Some (Ast_payload.as_core_type loc payload)}                
             | "bs.set" -> 
-              {st with set_name = name_from_payload_or_prim payload}
-            | "bs.get" -> {st with get_name = name_from_payload_or_prim payload}
+              {st with set_name = name_from_payload_or_prim ~loc  payload}
+            | "bs.get" -> {st with get_name = name_from_payload_or_prim ~loc payload}
 
-            | "bs.new" -> {st with new_name = name_from_payload_or_prim payload}
+            | "bs.new" -> {st with new_name = name_from_payload_or_prim ~loc payload}
             | "bs.set_index" -> {st with set_index = true}
             | "bs.get_index"-> {st with get_index = true}
             | "bs.obj" -> {st with mk_obj = true}
@@ -413,6 +439,7 @@ let handle_attributes
         return_wrapper = Return_unset ;        
         set_index = false ; 
         mk_obj = _; 
+        scopes = [];
         (* wrapper does not work with [bs.obj]
            TODO: better error message *)
       } -> 
@@ -602,6 +629,7 @@ let handle_attributes
          val_send = `Nm_na;
          val_send_pipe = None;    
          splice = false;
+         scopes = [];
          get_index = false;
          new_name = `Nm_na;
          call_name = `Nm_na;
@@ -610,6 +638,7 @@ let handle_attributes
 
          return_wrapper = _; 
          mk_obj = _ ; 
+
         } 
         ->
         if String.length prim_name <> 0 then 
@@ -633,6 +662,7 @@ let handle_attributes
          val_send_pipe = None;    
 
          splice = false;
+         scopes = [];
          new_name = `Nm_na;
          call_name = `Nm_na;
          set_name = `Nm_na ;
@@ -664,7 +694,8 @@ let handle_attributes
          external_module_name = None ;
          val_send = `Nm_na;
          val_send_pipe = None;    
-         splice ;
+         scopes = []; (* module as var does not need scopes *)
+         splice;
          call_name = `Nm_na;
          set_name = `Nm_na ;
          get_name = `Nm_na ;         
@@ -692,6 +723,7 @@ let handle_attributes
 
       | {call_name = (`Nm_val name | `Nm_external name | `Nm_payload name) ;
          splice; 
+         scopes ;
          external_module_name;
 
          val_name = `Nm_na ;
@@ -707,7 +739,7 @@ let handle_attributes
          mk_obj = _ ; 
          return_wrapper = _ ; 
         } -> 
-        Js_call {splice; name; external_module_name}
+        Js_call {splice; name; external_module_name; scopes }
       | {call_name = #bundle_source ; _ } 
         ->
         Bs_syntaxerr.err loc Conflict_ffi_attribute
@@ -728,14 +760,16 @@ let handle_attributes
          mk_obj = _; 
          return_wrapper = _; 
          splice = false ;
+         scopes ;
         } 
         -> 
-        Js_global { name; external_module_name}
+        Js_global { name; external_module_name; scopes}
       | {val_name = #bundle_source ; _ }
         ->
         Bs_syntaxerr.err loc Conflict_ffi_attribute
 
       | {splice ;
+         scopes ;
          external_module_name = (Some _ as external_module_name);
 
          val_name = `Nm_na ;         
@@ -754,10 +788,11 @@ let handle_attributes
         ->
         let name = string_of_bundle_source prim_name_or_pval_prim in
         if arg_type_specs_length  = 0 then
-          Js_global { name; external_module_name}
-        else  Js_call {splice; name; external_module_name}                     
+          Js_global { name; external_module_name; scopes}
+        else  Js_call {splice; name; external_module_name; scopes}                     
       | {val_send = (`Nm_val name | `Nm_external name | `Nm_payload name); 
          splice;
+         scopes  = []; 
          val_send_pipe = None;
          val_name = `Nm_na  ;
          call_name = `Nm_na ;
@@ -792,6 +827,7 @@ let handle_attributes
          external_module_name = None ;
          mk_obj = _;
          return_wrapper = _; 
+         scopes = [];
          splice ; 
         } -> 
         (** can be one argument *)
@@ -815,10 +851,12 @@ let handle_attributes
          set_name = `Nm_na ;
          get_name = `Nm_na ;
          splice ;
+         scopes; 
          mk_obj = _ ; 
          return_wrapper = _ ; 
+
         } 
-        -> Js_new {name; external_module_name; splice}
+        -> Js_new {name; external_module_name; splice; scopes}
       | {new_name = #bundle_source ; _ }
         -> 
         Bs_syntaxerr.err loc Conflict_ffi_attribute
@@ -839,6 +877,7 @@ let handle_attributes
          splice = false; 
          mk_obj = _ ;
          return_wrapper = _; 
+         scopes = [];
         } 
         -> 
         if arg_type_specs_length = 2 then 
@@ -863,6 +902,7 @@ let handle_attributes
          splice = false ; 
          mk_obj = _;
          return_wrapper = _;
+         scopes = []
         }
         ->
         if arg_type_specs_length = 1 then  
@@ -884,10 +924,12 @@ let handle_attributes
          set_name = `Nm_na ;
          external_module_name = None;
          splice = _ ; 
+         scopes = _;
          mk_obj = _;
          return_wrapper = _;
+
         }       
-       ->  Location.raise_errorf ~loc "Could not infer which FFI category it belongs to, maybe you forgot [@@bs.val]? "  in 
+       ->  Location.raise_errorf ~loc "Could not infer which FFI category it belongs to, maybe you forgot [%@%@bs.val]? "  in 
     begin 
       Ast_ffi_types.check_ffi ~loc ffi;
       (* result type can not be labeled *)
