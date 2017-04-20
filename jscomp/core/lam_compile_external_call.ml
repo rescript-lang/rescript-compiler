@@ -169,6 +169,28 @@ let assemble_args_splice call_loc ffi  js_splice arg_types args : E.t list * E.t
       Some (E.fuse_to_seq x xs) 
   end
 
+let translate_scoped_module_val module_name fn  scopes = 
+  match handle_external_opt module_name with 
+  | Some (id,external_name) ->
+    begin match scopes with 
+      | [] -> 
+        E.external_var_dot ~external_name ~dot:fn id 
+        (* E.dot (E.var id) fn *)
+      | x :: rest -> 
+        (* let start = E.dot (E.var id )  x in  *)
+        let start = E.external_var_dot ~external_name ~dot:x id in 
+        List.fold_left (fun acc x -> E.dot  acc x) start (rest @ [fn])
+    end
+  | None ->  
+    begin match scopes with 
+      | [] -> 
+        (* E.external_var_dot ~external_name ~dot:fn id  *)
+        E.js_var fn
+      | x::rest -> 
+        let start = E.js_var x  in 
+        List.fold_left (fun acc x -> E.dot acc x) start (rest @ [fn])
+    end
+
 
 let translate_ffi 
     call_loc (ffi : Ast_ffi_types.ffi ) 
@@ -183,25 +205,7 @@ let translate_ffi
              scopes
 
            } -> 
-    let fn =  
-      match handle_external_opt module_name with 
-      | Some (id,_) ->
-        begin match scopes with 
-        | [] -> 
-          E.dot (E.var id) fn
-        | x :: rest -> 
-          let start = E.dot (E.var id )  x in 
-          List.fold_left (fun acc x -> E.dot  acc x) start (rest @ [fn])
-        end
-      | None ->  
-        begin match scopes with 
-        | [] -> 
-          E.js_var fn
-        | x::rest -> 
-          let start = E.js_var x  in 
-          List.fold_left (fun acc x -> E.dot acc x) start (rest @ [fn])
-        end
-    in
+    let fn =  translate_scoped_module_val module_name fn scopes in 
     let args, eff  = assemble_args_splice   call_loc ffi js_splice arg_types args in 
     add_eff eff @@              
     E.call ~info:{arity=Full; call_info = Call_na} fn args

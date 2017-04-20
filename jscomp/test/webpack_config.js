@@ -1,7 +1,7 @@
 'use strict';
 
-var List      = require("List");
-var List$1    = require("../../lib/js/list.js");
+var List      = require("../../lib/js/list.js");
+var List$1    = require("List");
 var List$2    = require("reactV");
 var List$3    = require("reactX");
 var Configx   = require("../../../webpack.config.js");
@@ -44,15 +44,18 @@ function f() {
         ];
 }
 
-List.xx();
+List$1.xx();
 
-List$1.length(/* :: */[
-      1,
-      /* :: */[
-        2,
-        /* [] */0
-      ]
-    ]);
+/* tuple */[
+  List.length(/* :: */[
+        1,
+        /* :: */[
+          2,
+          /* [] */0
+        ]
+      ]),
+  List.length(/* [] */0)
+];
 
 exports.WebpackConfig              = WebpackConfig;
 exports.WebpackDevMiddlewareConfig = WebpackDevMiddlewareConfig;
