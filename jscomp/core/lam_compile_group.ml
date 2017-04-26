@@ -214,7 +214,8 @@ let compile  ~filename output_prefix env _sigs
       |> _d "flattern"
       |>  Lam_pass_exits.simplify_exits
       |> _d "simplyf_exits"
-      |>  Lam_pass_remove_alias.simplify_alias  meta 
+      |> (fun lam -> Lam_pass_collect.collect_helper meta lam; lam)
+      |>  Lam_pass_remove_alias.simplify_alias  meta
       |> _d "simplify_alias"
       |> Lam_pass_deep_flatten.deep_flatten
       |> _d "flatten"
@@ -383,7 +384,7 @@ let lambda_as_module
   begin 
     Js_config.set_current_file filename ;  
 #if BS_DEBUG then    
-    Js_config.set_debug_file "webpack_config.ml";
+    Js_config.set_debug_file "mario_game.ml";
 #end    
     let lambda_output = compile ~filename output_prefix env sigs lam in
     let (//) = Filename.concat in 

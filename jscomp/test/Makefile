@@ -153,7 +153,8 @@ OTHERS := literals a test_ari test_export2 test_internalOO test_obj_simple_ffi t
 	string_interp_test\
 	gpr_1539_test\
 	webpack_config\
-	bs_qualified
+	bs_qualified\
+	mario_game
 
 
 # bs_uncurry_test

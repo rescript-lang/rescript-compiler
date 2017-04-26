@@ -320,6 +320,8 @@ loop_suites_test.cmj : mt.cmj for_loop_test.cmj
 map_find_test.cmj : mt.cmj ../stdlib/map.cmj ../stdlib/list.cmj
 map_test.cmj : ../stdlib/string.cmj ../stdlib/pervasives.cmj mt.cmj \
     ../stdlib/map.cmj ../stdlib/list.cmj map_test.cmi
+mario_game.cmj : ../stdlib/random.cmj ../stdlib/printf.cmj \
+    ../stdlib/list.cmj ../runtime/js.cmj ../others/dom.cmi
 method_chain.cmj :
 method_name_test.cmj : mt.cmj
 minimal_test.cmj :
