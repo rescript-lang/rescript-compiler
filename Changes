@@ -7,6 +7,8 @@ Bug fixes:
 
 - #1556, fix duplicated requires of runtime (report by Chenglou) 
 
+- #1568, internal compiler error
+
 Features:
 
 - #1564: scoped values in FF, see `bs.scope` in the Manual
