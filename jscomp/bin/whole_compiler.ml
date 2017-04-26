@@ -99451,7 +99451,8 @@ let compile  ~filename output_prefix env _sigs
       |> _d "flattern"
       |>  Lam_pass_exits.simplify_exits
       |> _d "simplyf_exits"
-      |>  Lam_pass_remove_alias.simplify_alias  meta 
+      |> (fun lam -> Lam_pass_collect.collect_helper meta lam; lam)
+      |>  Lam_pass_remove_alias.simplify_alias  meta
       |> _d "simplify_alias"
       |> Lam_pass_deep_flatten.deep_flatten
       |> _d "flatten"
