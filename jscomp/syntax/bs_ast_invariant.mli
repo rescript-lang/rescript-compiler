@@ -22,62 +22,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type t = Parsetree.core_type 
 
-
-val extract_option_type_exn : t -> t 
-val lift_option_type : t -> t 
-val is_any : t -> bool 
-val replace_result : t -> t -> t
-
-val is_unit : t -> bool 
-val is_array : t -> bool 
-type arg_label =
-  | Label of string 
-  | Optional of string 
-  | Empty
-
-
-(** for 
-       [x:t] -> "x"
-       [?x:t] -> "?x"
-*)
-val label_name : string -> arg_label
-
-
-
-
-
-(** return a function type 
-    [from_labels ~loc tyvars labels]
-    example output:
-    {[x:'a0 -> y:'a1 -> < x :'a0 ;y :'a1  > Js.t]}
-*)
-val from_labels :
-  loc:Location.t -> int ->  string Asttypes.loc list -> t
-
-val make_obj :
-  loc:Location.t ->
-  (string * Parsetree.attributes * t) list ->
-  t
-
-val is_user_option : t -> bool 
-
-val is_user_bool : t -> bool
-
-val is_user_int : t -> bool
-
-val is_optional_label : string -> bool 
-
-(** 
-  returns 0 when it can not tell arity from the syntax 
-*)
-val get_uncurry_arity : t -> [`Arity of int | `Not_function ]
-
-
-(** fails when Ptyp_poly *)
-val list_of_arrow : 
-  t -> 
-  t *  (Asttypes.label * t * Parsetree.attributes * Location.t) list
-
-val is_arity_one : t -> bool 
+(** Ast invariant checking for detecting errors *)
+val emit_external_warnings : Bs_ast_iterator.iterator

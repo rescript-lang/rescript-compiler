@@ -9670,6 +9670,7 @@ val list_of_arrow :
   t -> 
   t *  (Asttypes.label * t * Parsetree.attributes * Location.t) list
 
+val is_arity_one : t -> bool 
 
 end = struct
 #1 "ast_core_type.ml"
@@ -9826,8 +9827,9 @@ let rec get_uncurry_arity_aux  (ty : t) acc =
     | _ -> acc 
 
 (**
-  {[ unit -> 'b ]} return arity 1 
-  {[ 'a1 -> 'a2 -> ... 'aN -> 'b ]} return arity N   
+   {[ unit -> 'a1 -> a2']}  arity 2 
+   {[ unit -> 'b ]} return arity 0 
+   {[ 'a1 -> 'a2 -> ... 'aN -> 'b ]} return arity N   
 *)
 let get_uncurry_arity (ty : t ) = 
   match ty.ptyp_desc  with 
@@ -9838,8 +9840,11 @@ let get_uncurry_arity (ty : t ) =
     `Arity(get_uncurry_arity_aux rest 1)
   | _ -> `Not_function 
 
+let get_curry_arity  ty =
+  get_uncurry_arity_aux ty 0
 
-
+let is_arity_one ty = get_curry_arity ty =  1
+                      
 let list_of_arrow (ty : t) = 
   let rec aux (ty : t) acc = 
     match ty.ptyp_desc with 

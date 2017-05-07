@@ -24,3 +24,8 @@ include N
 (* let () = v.[0] <- 'a' *)
 
 end : sig end)
+
+
+
+(* [%%bs.cast.x: 'a -> 'b  ] *)
+(* external f : int -> (int -> int) = "%identity" *)
