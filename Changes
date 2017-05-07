@@ -1,6 +1,13 @@
 
+BuckleScript 1.7.4:
+==================
 
-BuckleScript 1.7.2:
+intenral tools:
+
+- #1583, add -U -D support for bspack
+
+
+BuckleScript 1.7.3:
 ==================
 
 Bug fixes:
