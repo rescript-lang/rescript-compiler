@@ -275,7 +275,15 @@ let alias_module s =
       end
   | _ -> raise (Arg.Bad "invalid module alias format like A=B")
 
-
+let undefine_symbol (s : string) = 
+  Lexer.remove_directive_built_in_value s 
+let define_symbol (s : string) = 
+  match Ext_string.split ~keep_empty:true s '=' with
+  | [key; v] -> 
+    if not @@ Lexer.define_key_value key v  then 
+      raise (Arg.Bad ("illegal definition: " ^ s))
+  | _ -> raise (Arg.Bad ("illegal definition: " ^ s))
+ 
 let specs : (string * Arg.spec * string) list =
   [ 
     "-bs-no-implicit-include", (Arg.Set no_implicit_include),
@@ -300,7 +308,11 @@ let specs : (string * Arg.spec * string) list =
     "-bs-main", (Arg.String set_main_module),
     " set the main entry module";
     "-I",  (Arg.String add_include),
-    " add dir to search path"
+    " add dir to search path";
+    "-U", Arg.String undefine_symbol,
+    " Undefine a symbol when bspacking";
+    "-D", Arg.String define_symbol, 
+    " Define a symbol when bspacking"
   ]
 
 

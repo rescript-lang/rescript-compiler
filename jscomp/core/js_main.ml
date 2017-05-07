@@ -74,47 +74,14 @@ let set_noassert () =
   Js_config.set_no_any_assert ();
   Clflags.noassert := true
 
-let pp_directive_value fmt (x : Lexer.directive_value) =
-  match x with
-  | Dir_bool b -> Format.pp_print_bool fmt b
-  | Dir_int b -> Format.pp_print_int fmt b
-  | Dir_float b -> Format.pp_print_float fmt b
-  | Dir_string s  -> Format.fprintf fmt "%S" s
                        
-let list_variables () =
-  let fmt = Format.err_formatter in
-  Lexer.iter_directive_built_in_value
-    (fun s  dir_value ->
-       Format.fprintf
-         fmt "@[%s@ %a@]@."
-         s pp_directive_value dir_value
-         
-    )
-
 let define_variable s =
   match Ext_string.split ~keep_empty:true s '=' with
-  | [key; v] when
-      String.length key > 0
-      && Char.uppercase (key.[0]) = key.[0]
-    ->
-    Lexer.replace_directive_built_in_value key
-      begin
-        (* NEED Sync up across {!lexer.mll} {!bspp.ml} and here,
-           TODO: put it in {!lexer.mll}
-        *)
-        try Dir_bool (bool_of_string v) with 
-          _ -> 
-          begin 
-            try Dir_int (int_of_string v )
-            with 
-              _ -> 
-              begin try (Dir_float (float_of_string v)) 
-                with _ -> Dir_string v
-              end
-          end
-      end
+  | [key; v] -> 
+    if not @@ Lexer.define_key_value key v  then 
+      raise (Arg.Bad ("illegal definition: " ^ s))
+  | _ -> raise (Arg.Bad ("illegal definition: " ^ s))
 
-  | _ -> raise (Arg.Bad ("illegal definition" ^ s))
   
 let buckle_script_flags =
   ("-bs-no-implicit-include", Arg.Set Clflags.no_implicit_current_dir
@@ -131,7 +98,7 @@ let buckle_script_flags =
   )
   ::
   ("-bs-list-conditionals",
-   Arg.Unit list_variables,
+   Arg.Unit (fun () -> Lexer.list_variables Format.err_formatter),
    " List existing conditional variables")
   ::
   (

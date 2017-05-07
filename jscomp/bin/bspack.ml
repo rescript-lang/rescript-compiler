@@ -1,5 +1,5 @@
-module Config_bspack : sig 
-#1 "config_bspack.mli"
+module ConfigDummy : sig 
+#1 "configDummy.mli"
 (***********************************************************************)
 (*                                                                     *)
 (*                                OCaml                                *)
@@ -132,7 +132,7 @@ val print_config : out_channel -> unit;;
 
 
 end = struct
-#1 "config_bspack.ml"
+#1 "configDummy.ml"
 (***********************************************************************)
 (*                                                                     *)
 (*                                OCaml                                *)
@@ -229,7 +229,7 @@ let print_config oc = ()
 ;;
 
 end
-module Config = Config_bspack 
+module Config = ConfigDummy 
 module Clflags : sig 
 #1 "clflags.mli"
 (***********************************************************************)
@@ -338,6 +338,7 @@ type mli_status = Mli_na | Mli_exists | Mli_non_exists
 val no_implicit_current_dir : bool ref
 val assume_no_mli : mli_status ref 
 val record_event_when_debug : bool ref 
+val bs_vscode : bool
 
 
 type color_setting = Auto | Always | Never
@@ -469,6 +470,11 @@ type mli_status = Mli_na | Mli_exists | Mli_non_exists
 let no_implicit_current_dir = ref false
 let assume_no_mli = ref Mli_na
 let record_event_when_debug = ref true (* turned off in BuckleScript*)
+let bs_vscode = 
+    try ignore @@ Sys.getenv "BS_VSCODE" ; true with _ -> false
+    (* We get it from environment variable mostly due to 
+       we don't want to rebuild when flip on or off
+    *)
 
 
 type color_setting = Auto | Always | Never
@@ -1933,11 +1939,6 @@ val error: ?loc:t -> ?sub:error list -> ?if_highlight:string -> string -> error
 val errorf: ?loc:t -> ?sub:error list -> ?if_highlight:string
             -> ('a, Format.formatter, unit, error) format4 -> 'a
 
-val errorf_prefixed : ?loc:t -> ?sub:error list -> ?if_highlight:string
-                    -> ('a, Format.formatter, unit, error) format4 -> 'a
-  (* same as {!errorf}, but prints the error prefix "Error:" before yielding
-   * to the format string *)
-
 val raise_errorf: ?loc:t -> ?sub:error list -> ?if_highlight:string
             -> ('a, Format.formatter, unit, 'b) format4 -> 'a
 
@@ -2226,7 +2227,10 @@ let setup_colors () =
 let print_loc ppf loc =
   setup_colors ();
   let (file, line, startchar) = get_pos_info loc.loc_start in
-  let startchar = try ignore @@ Sys.getenv "BS_VSCODE" ; startchar + 1 with _ -> startchar in 
+ 
+  let startchar = 
+    if Clflags.bs_vscode then startchar + 1 else startchar in 
+    
   let endchar = loc.loc_end.pos_cnum - loc.loc_start.pos_cnum + startchar in
   if file = "//toplevel//" then begin
     if highlight_locations ppf [loc] then () else
@@ -2316,14 +2320,14 @@ let pp_ksprintf ?before k fmt =
       k msg)
     ppf fmt
 
+(* Shift the formatter's offset by the length of the error prefix, which
+   is always added by the compiler after the message has been formatted *)
+let print_phanton_error_prefix ppf =
+  Format.pp_print_as ppf (String.length error_prefix + 2 (* ": " *)) ""
+
 let errorf ?(loc = none) ?(sub = []) ?(if_highlight = "") fmt =
   pp_ksprintf
-    (fun msg -> {loc; msg; sub; if_highlight})
-    fmt
-
-let errorf_prefixed ?(loc=none) ?(sub=[]) ?(if_highlight="") fmt =
-  pp_ksprintf
-    ~before:(fun ppf -> fprintf ppf "%a " print_error_prefix ())
+    ~before:print_phanton_error_prefix
     (fun msg -> {loc; msg; sub; if_highlight})
     fmt
 
@@ -2358,10 +2362,8 @@ let rec default_error_reporter ppf ({loc; msg; sub; if_highlight} as err) =
   if highlighted then
     Format.pp_print_string ppf if_highlight
   else begin
-    print ppf loc;
-    Format.pp_print_string ppf msg;
-    List.iter (fun err -> Format.fprintf ppf "@\n@[<2>%a@]" default_error_reporter err)
-              sub
+    fprintf ppf "%a%a %s" print loc print_error_prefix () msg;
+    List.iter (Format.fprintf ppf "@\n@[<2>%a@]" default_error_reporter) sub
   end
 
 let error_reporter = ref default_error_reporter
@@ -2371,7 +2373,7 @@ let report_error ppf err =
 ;;
 
 let error_of_printer loc print x =
-  errorf_prefixed ~loc "%a@?" print x
+  errorf ~loc "%a@?" print x
 
 let error_of_printer_file print x =
   error_of_printer (in_file !input_name) print x
@@ -2380,11 +2382,11 @@ let () =
   register_error_of_exn
     (function
       | Sys_error msg ->
-          Some (errorf_prefixed ~loc:(in_file !input_name)
+          Some (errorf ~loc:(in_file !input_name)
                 "I/O error: %s" msg)
       | Warnings.Errors n ->
           Some
-            (errorf_prefixed ~loc:(in_file !input_name)
+            (errorf ~loc:(in_file !input_name)
              "Some fatal warnings were triggered (%d occurrences)" n)
       | _ ->
           None
@@ -2412,7 +2414,9 @@ let () =
     )
 
 let raise_errorf ?(loc = none) ?(sub = []) ?(if_highlight = "") =
-  pp_ksprintf (fun msg -> raise (Error ({loc; msg; sub; if_highlight})))
+  pp_ksprintf
+    ~before:print_phanton_error_prefix
+    (fun msg -> raise (Error ({loc; msg; sub; if_highlight})))
 
 end
 module Bs_exception : sig 
@@ -2450,6 +2454,8 @@ type error =
   | Bs_package_not_found of string                                                        
   | Bs_main_not_exist of string 
   | Bs_invalid_path of string
+  | Missing_ml_dependency of string 
+  | Dependency_script_module_dependent_not  of string
 (*
 TODO: In the futrue, we should refine dependency [bsb] 
 should not rely on such exception, it should have its own exception handling
@@ -2497,12 +2503,21 @@ type error =
   | Bs_package_not_found of string                            
   | Bs_main_not_exist of string 
   | Bs_invalid_path of string
+  | Missing_ml_dependency of string 
+  | Dependency_script_module_dependent_not  of string 
   (** TODO: we need add location handling *)    
 exception Error of error
 
 let error err = raise (Error err)
 
 let report_error ppf = function
+  | Dependency_script_module_dependent_not s
+    -> 
+    Format.fprintf ppf 
+      "%s is compiled in script mode while its dependent is not"
+      s
+  | Missing_ml_dependency s -> 
+    Format.fprintf ppf "Missing dependency %s in search path" s 
   | Cmj_not_found s ->
     Format.fprintf ppf "%s not found, cmj format is generated by BuckleScript" s
   | Js_not_found s -> 
@@ -3960,7 +3975,7 @@ val bad_argf : ('a, unit, string, 'b) format4 -> 'a
 
 
 val dump : 'a -> string 
-
+val pp_any : Format.formatter -> 'a -> unit 
 external id : 'a -> 'a = "%identity"
 
 (** Copied from {!Btype.hash_variant}:
@@ -4120,6 +4135,9 @@ let rec dump r =
 
 let dump v = dump (Obj.repr v)
 
+let pp_any fmt v = 
+  Format.fprintf fmt "@[%s@]"
+  (dump v )
 external id : 'a -> 'a = "%identity"
 
 
@@ -4364,6 +4382,9 @@ val no_char : string -> char -> int -> int -> bool
 
 val no_slash : string -> bool 
 
+(** return negative means no slash, otherwise [i] means the place for first slash *)
+val no_slash_idx : string -> int 
+
 (** if no conversion happens, reference equality holds *)
 val replace_slash_backward : string -> string 
 
@@ -4388,6 +4409,7 @@ val single_colon : string
 
 val parent_dir_lit : string
 val current_dir_lit : string
+
 end = struct
 #1 "ext_string.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -4744,11 +4766,18 @@ let is_valid_source_name name : check_result =
     else Invalid_module_name  
 
 (** TODO: can be improved to return a positive integer instead *)
-let rec unsafe_no_char x ch i  len = 
-  i > len  || 
-  (String.unsafe_get x i <> ch && unsafe_no_char x ch (i + 1)  len)
+let rec unsafe_no_char x ch i  last_idx = 
+  i > last_idx  || 
+  (String.unsafe_get x i <> ch && unsafe_no_char x ch (i + 1)  last_idx)
 
-let no_char x ch i len =
+let rec unsafe_no_char_idx x ch i last_idx = 
+  if i > last_idx  then -1 
+  else 
+    if String.unsafe_get x i <> ch then 
+      unsafe_no_char_idx x ch (i + 1)  last_idx
+    else i
+
+let no_char x ch i len  : bool =
   let str_len = String.length x in 
   if i < 0 || i >= str_len || len >= str_len then invalid_arg "Ext_string.no_char"   
   else unsafe_no_char x ch i len 
@@ -4756,6 +4785,9 @@ let no_char x ch i len =
 
 let no_slash x = 
   unsafe_no_char x '/' 0 (String.length x - 1)
+
+let no_slash_idx x = 
+  unsafe_no_char_idx x '/' 0 (String.length x - 1)
 
 let replace_slash_backward (x : string ) = 
   let len = String.length x in 
@@ -4870,6 +4902,7 @@ let inter4 a b c d =
     
 let parent_dir_lit = ".."    
 let current_dir_lit = "."
+
 end
 module Literals : sig 
 #1 "literals.mli"
@@ -4952,11 +4985,22 @@ val node_modules_length : int
 val package_json : string
 val bsconfig_json : string
 val build_ninja : string
+
+(* Name of the library file created for each external dependency. *)
+val library_file : string
+
+val suffix_a : string
 val suffix_cmj : string
+val suffix_cmo : string
+val suffix_cma : string
 val suffix_cmi : string
+val suffix_cmx : string
+val suffix_cmxa : string
 val suffix_ml : string
 val suffix_mlast : string 
+val suffix_mlast_simple : string
 val suffix_mliast : string
+val suffix_mliast_simple : string
 val suffix_mll : string
 val suffix_re : string
 val suffix_rei : string 
@@ -4987,6 +5031,7 @@ val unescaped_js_delimiter : string
 
 val native : string
 val bytecode : string
+val js : string
 
 end = struct
 #1 "literals.ml"
@@ -5069,8 +5114,16 @@ let package_json = "package.json"
 let bsconfig_json = "bsconfig.json"
 let build_ninja = "build.ninja"
 
+(* Name of the library file created for each external dependency. *)
+let library_file = "lib"
+
+let suffix_a = ".a"
 let suffix_cmj = ".cmj"
+let suffix_cmo = ".cmo"
+let suffix_cma = ".cma"
 let suffix_cmi = ".cmi"
+let suffix_cmx = ".cmx"
+let suffix_cmxa = ".cmxa"
 let suffix_mll = ".mll"
 let suffix_ml = ".ml"
 let suffix_mli = ".mli"
@@ -5080,7 +5133,9 @@ let suffix_rei = ".rei"
 let suffix_cmt = ".cmt" 
 let suffix_cmti = ".cmti" 
 let suffix_mlast = ".mlast"
+let suffix_mlast_simple = ".mlast_simple"
 let suffix_mliast = ".mliast"
+let suffix_mliast_simple = ".mliast_simple"
 let suffix_d = ".d"
 let suffix_mlastd = ".mlast.d"
 let suffix_mliastd = ".mliast.d"
@@ -5103,6 +5158,7 @@ let escaped_j_delimiter =  "*j" (* not user level syntax allowed *)
 
 let native = "native"
 let bytecode = "bytecode"
+let js = "js"
 
 end
 module Ext_filename : sig 
@@ -5409,7 +5465,7 @@ let node_relative_path node_modules_shorten (file1 : t)
        | `File x -> `File (absolute_path x)
        | `Dir x -> `Dir(absolute_path x))
     ^ node_sep ^
-    chop_extension_if_any (Filename.basename file2)
+    (* chop_extension_if_any *) (Filename.basename file2)
 
 
 
@@ -5580,6 +5636,7 @@ let simple_convert_node_path_to_os_path =
   else if Sys.win32 || Sys.cygwin then 
     Ext_string.replace_slash_backward 
   else failwith ("Unknown OS : " ^ Sys.os_type)
+
 end
 module Ext_format : sig 
 #1 "ext_format.mli"
@@ -6487,7 +6544,8 @@ val hash : string
 val weak : string
 val js_primitive : string
 val module_ : string
-
+val missing_polyfill : string
+val exn : string
 (** Debugging utilies *)
 val set_current_file : string -> unit 
 val get_current_file : unit -> string
@@ -6714,6 +6772,9 @@ let int32 = "Caml_int32"
 let block = "Block"
 let js_primitive = "Js_primitive"
 let module_ = "Caml_module"
+let missing_polyfill = "Caml_missing_polyfill"
+let exn = "Js_exn"
+
 let current_file = ref ""
 let debug_file = ref ""
 
@@ -9797,9 +9858,9 @@ exception Escape_error
 
 let prepare_error = function
   | Unclosed(opening_loc, opening, closing_loc, closing) ->
-      Location.errorf_prefixed ~loc:closing_loc
+      Location.errorf ~loc:closing_loc
         ~sub:[
-          Location.errorf_prefixed ~loc:opening_loc
+          Location.errorf ~loc:opening_loc
             "This '%s' might be unmatched" opening
         ]
         ~if_highlight:
@@ -9809,22 +9870,22 @@ let prepare_error = function
         "Syntax error: '%s' expected" closing
 
   | Expecting (loc, nonterm) ->
-      Location.errorf_prefixed ~loc "Syntax error: %s expected." nonterm
+      Location.errorf ~loc "Syntax error: %s expected." nonterm
   | Not_expecting (loc, nonterm) ->
-      Location.errorf_prefixed ~loc "Syntax error: %s not expected." nonterm
+      Location.errorf ~loc "Syntax error: %s not expected." nonterm
   | Applicative_path loc ->
-      Location.errorf_prefixed ~loc
+      Location.errorf ~loc
         "Syntax error: applicative paths of the form F(X).t \
          are not supported when the option -no-app-func is set."
   | Variable_in_scope (loc, var) ->
-      Location.errorf_prefixed ~loc
+      Location.errorf ~loc
         "In this scoped type, variable '%s \
          is reserved for the local type %s."
          var var
   | Other loc ->
-      Location.errorf_prefixed ~loc "Syntax error"
+      Location.errorf ~loc "Syntax error"
   | Ill_formed_ast (loc, s) ->
-      Location.errorf_prefixed ~loc "broken invariant in parsetree: %s" s
+      Location.errorf ~loc "broken invariant in parsetree: %s" s
 
 let () =
   Location.register_error_of_exn
@@ -22152,17 +22213,14 @@ val init : unit -> unit
 val token: Lexing.lexbuf -> Parser.token
 val skip_sharp_bang: Lexing.lexbuf -> unit
 
-type directive_type = 
-  | Dir_type_bool 
-  | Dir_type_float 
-  | Dir_type_int 
-  | Dir_type_string 
+type directive_type 
 
-type directive_value =
-  | Dir_bool of bool 
-  | Dir_float of float
-  | Dir_int of int
-  | Dir_string of string
+(* type directive_value = *)
+(*   | Dir_bool of bool  *)
+(*   | Dir_float of float *)
+(*   | Dir_int of int *)
+(*   | Dir_string of string *)
+(*   | Dir_null *)
 
 type error =
   | Illegal_character of char
@@ -22214,21 +22272,30 @@ val set_preprocessor :
   unit
 
 
-val replace_directive_built_in_value : 
-  string ->  directive_value -> unit
+(* val replace_directive_built_in_value :  *)
+(*   string ->  directive_value -> unit *)
 
 (** Raises Not_found *)
-val find_directive_built_in_value :
-  string -> directive_value
+(* val find_directive_built_in_value : *)
+(*   string -> directive_value *)
 
-val iter_directive_built_in_value : 
-  (string -> directive_value -> unit) -> unit
+(* val iter_directive_built_in_value :  *)
+(*   (string -> directive_value -> unit) -> unit *)
 
 
 (** semantic version predicate *)
 val semver : Location.t ->   string -> string -> bool
 
 val filter_directive_from_lexbuf : Lexing.lexbuf -> (int * int) list
+
+val replace_directive_int : string -> int -> unit
+val replace_directive_string : string -> string -> unit
+val replace_directive_bool : string -> bool -> unit 
+val remove_directive_built_in_value : string -> unit
+
+(** @return false means failed to define *)
+val define_key_value : string -> string -> bool
+val list_variables : Format.formatter -> unit
 
 end = struct
 #1 "lexer.ml"
@@ -22243,12 +22310,14 @@ type directive_value =
   | Dir_float of float
   | Dir_int of int
   | Dir_string of string
+  | Dir_null 
 
 type directive_type = 
   | Dir_type_bool 
   | Dir_type_float 
   | Dir_type_int 
   | Dir_type_string 
+  | Dir_type_null 
 
 let type_of_directive x =
   match x with 
@@ -22256,6 +22325,7 @@ let type_of_directive x =
   | Dir_float _ -> Dir_type_float
   | Dir_int _ -> Dir_type_int
   | Dir_string _ -> Dir_type_string
+  | Dir_null -> Dir_type_null
 
 let string_of_type_directive x = 
   match x with 
@@ -22263,6 +22333,7 @@ let string_of_type_directive x =
   | Dir_type_float  -> "float"
   | Dir_type_int  -> "int"
   | Dir_type_string  -> "string"
+  | Dir_type_null -> "null"
 
 type error =
   | Illegal_character of char
@@ -22297,6 +22368,18 @@ let directive_built_in_values  =
 
 let replace_directive_built_in_value k v = 
   Hashtbl.replace directive_built_in_values k v 
+
+let remove_directive_built_in_value k  = 
+  Hashtbl.replace directive_built_in_values k Dir_null
+
+let replace_directive_int k v = 
+  Hashtbl.replace directive_built_in_values k (Dir_int v)
+
+let replace_directive_bool k v = 
+  Hashtbl.replace directive_built_in_values k (Dir_bool v)
+
+let replace_directive_string k v = 
+  Hashtbl.replace directive_built_in_values k (Dir_string v)
 
 let () =
   (* Note we use {!Config} instead of {!Sys} becasue 
@@ -22407,34 +22490,79 @@ let semver loc lhs str =
     | `Exact -> lversion = version 
 
 
-    
-let defined str = 
-  try ignore @@ Sys.getenv str; true with _ -> 
-    try ignore @@ find_directive_built_in_value str ; true with _ ->  false
+let pp_directive_value fmt (x : directive_value) =
+  match x with
+  | Dir_bool b -> Format.pp_print_bool fmt b
+  | Dir_int b -> Format.pp_print_int fmt b
+  | Dir_float b -> Format.pp_print_float fmt b
+  | Dir_string s  -> Format.fprintf fmt "%S" s
+  | Dir_null -> Format.pp_print_string fmt "null"    
+
+let list_variables fmt = 
+  iter_directive_built_in_value 
+    (fun s  dir_value ->
+       Format.fprintf
+         fmt "@[%s@ %a@]@."
+         s pp_directive_value dir_value
+    )
+
+let defined str =
+  begin match  find_directive_built_in_value str with 
+  |  Dir_null -> false 
+  | _ ->  true
+  | exception _ -> 
+      try ignore @@ Sys.getenv str; true with _ ->  false 
+  end
+
 let query loc str =
-  match Sys.getenv str with
-  | v ->
-      begin 
+  begin match find_directive_built_in_value str with
+  | Dir_null -> Dir_bool false
+  | v -> v
+  | exception Not_found ->
+      begin match Sys.getenv str with 
+      | v -> 
+          begin 
+            try Dir_bool (bool_of_string v) with 
+              _ -> 
+                begin 
+                  try Dir_int (int_of_string v )
+                  with 
+                    _ -> 
+                      begin try (Dir_float (float_of_string v)) 
+                      with _ -> Dir_string v
+                      end
+                end
+          end
+      | exception Not_found -> 
+          Dir_bool false
+      end
+  end
+
+
+let define_key_value key v  =
+  if String.length key > 0
+      && Char.uppercase (key.[0]) = key.[0] then 
+    begin 
+      replace_directive_built_in_value key
+      begin
+        (* NEED Sync up across {!lexer.mll} {!bspp.ml} and here,
+           TODO: put it in {!lexer.mll}
+        *)
         try Dir_bool (bool_of_string v) with 
           _ -> 
-            begin 
-              try Dir_int (int_of_string v )
-              with 
-                _ -> 
-                  begin try (Dir_float (float_of_string v)) 
-                  with _ -> Dir_string v
-                  end
-            end
-      end
+          begin 
+            try Dir_int (int_of_string v )
+            with 
+              _ -> 
+              begin try (Dir_float (float_of_string v)) 
+                with _ -> Dir_string v
+              end
+          end
+      end;
+    true
+    end
+  else false 
 
-
-  | exception Not_found ->
-      begin
-        try find_directive_built_in_value str 
-        with
-        | Not_found ->
-            Dir_bool false
-      end
 
 let value_of_token loc (t : Parser.token)  = 
   match t with 
@@ -22892,7 +23020,7 @@ let () =
     )
 
 
-# 666 "parsing/lexer.ml"
+# 727 "parsing/lexer.ml"
 let __ocaml_lex_tables = {
   Lexing.lex_base = 
    "\000\000\164\255\165\255\224\000\003\001\038\001\073\001\108\001\
@@ -24135,123 +24263,123 @@ let rec token lexbuf =
 and __ocaml_lex_token_rec lexbuf __ocaml_lex_state =
   match Lexing.new_engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 706 "parsing/lexer.mll"
+# 767 "parsing/lexer.mll"
                  (
       if not !escaped_newlines then
         raise (Error(Illegal_character (Lexing.lexeme_char lexbuf 0),
                      Location.curr lexbuf));
       update_loc lexbuf None 1 false 0;
       token lexbuf )
-# 1916 "parsing/lexer.ml"
+# 1977 "parsing/lexer.ml"
 
   | 1 ->
-# 713 "parsing/lexer.mll"
+# 774 "parsing/lexer.mll"
       ( update_loc lexbuf None 1 false 0;
         EOL )
-# 1922 "parsing/lexer.ml"
+# 1983 "parsing/lexer.ml"
 
   | 2 ->
-# 716 "parsing/lexer.mll"
+# 777 "parsing/lexer.mll"
       ( token lexbuf )
-# 1927 "parsing/lexer.ml"
+# 1988 "parsing/lexer.ml"
 
   | 3 ->
-# 718 "parsing/lexer.mll"
+# 779 "parsing/lexer.mll"
       ( UNDERSCORE )
-# 1932 "parsing/lexer.ml"
+# 1993 "parsing/lexer.ml"
 
   | 4 ->
-# 720 "parsing/lexer.mll"
+# 781 "parsing/lexer.mll"
       ( TILDE )
-# 1937 "parsing/lexer.ml"
+# 1998 "parsing/lexer.ml"
 
   | 5 ->
-# 722 "parsing/lexer.mll"
+# 783 "parsing/lexer.mll"
       ( LABEL (get_label_name lexbuf) )
-# 1942 "parsing/lexer.ml"
+# 2003 "parsing/lexer.ml"
 
   | 6 ->
-# 724 "parsing/lexer.mll"
+# 785 "parsing/lexer.mll"
       ( warn_latin1 lexbuf; LABEL (get_label_name lexbuf) )
-# 1947 "parsing/lexer.ml"
+# 2008 "parsing/lexer.ml"
 
   | 7 ->
-# 726 "parsing/lexer.mll"
+# 787 "parsing/lexer.mll"
       ( QUESTION )
-# 1952 "parsing/lexer.ml"
+# 2013 "parsing/lexer.ml"
 
   | 8 ->
-# 728 "parsing/lexer.mll"
+# 789 "parsing/lexer.mll"
       ( OPTLABEL (get_label_name lexbuf) )
-# 1957 "parsing/lexer.ml"
+# 2018 "parsing/lexer.ml"
 
   | 9 ->
-# 730 "parsing/lexer.mll"
+# 791 "parsing/lexer.mll"
       ( warn_latin1 lexbuf; OPTLABEL (get_label_name lexbuf) )
-# 1962 "parsing/lexer.ml"
+# 2023 "parsing/lexer.ml"
 
   | 10 ->
-# 732 "parsing/lexer.mll"
+# 793 "parsing/lexer.mll"
       ( let s = Lexing.lexeme lexbuf in
         try Hashtbl.find keyword_table s
         with Not_found -> LIDENT s )
-# 1969 "parsing/lexer.ml"
+# 2030 "parsing/lexer.ml"
 
   | 11 ->
-# 736 "parsing/lexer.mll"
+# 797 "parsing/lexer.mll"
       ( warn_latin1 lexbuf; LIDENT (Lexing.lexeme lexbuf) )
-# 1974 "parsing/lexer.ml"
+# 2035 "parsing/lexer.ml"
 
   | 12 ->
-# 738 "parsing/lexer.mll"
+# 799 "parsing/lexer.mll"
       ( UIDENT(Lexing.lexeme lexbuf) )
-# 1979 "parsing/lexer.ml"
+# 2040 "parsing/lexer.ml"
 
   | 13 ->
-# 740 "parsing/lexer.mll"
+# 801 "parsing/lexer.mll"
       ( warn_latin1 lexbuf; UIDENT(Lexing.lexeme lexbuf) )
-# 1984 "parsing/lexer.ml"
+# 2045 "parsing/lexer.ml"
 
   | 14 ->
-# 742 "parsing/lexer.mll"
+# 803 "parsing/lexer.mll"
       ( try
           INT (cvt_int_literal (Lexing.lexeme lexbuf))
         with Failure _ ->
           raise (Error(Literal_overflow "int", Location.curr lexbuf))
       )
-# 1993 "parsing/lexer.ml"
+# 2054 "parsing/lexer.ml"
 
   | 15 ->
-# 748 "parsing/lexer.mll"
+# 809 "parsing/lexer.mll"
       ( FLOAT (remove_underscores(Lexing.lexeme lexbuf)) )
-# 1998 "parsing/lexer.ml"
+# 2059 "parsing/lexer.ml"
 
   | 16 ->
-# 750 "parsing/lexer.mll"
+# 811 "parsing/lexer.mll"
       ( try
           INT32 (cvt_int32_literal (Lexing.lexeme lexbuf))
         with Failure _ ->
           raise (Error(Literal_overflow "int32", Location.curr lexbuf)) )
-# 2006 "parsing/lexer.ml"
+# 2067 "parsing/lexer.ml"
 
   | 17 ->
-# 755 "parsing/lexer.mll"
+# 816 "parsing/lexer.mll"
       ( try
           INT64 (cvt_int64_literal (Lexing.lexeme lexbuf))
         with Failure _ ->
           raise (Error(Literal_overflow "int64", Location.curr lexbuf)) )
-# 2014 "parsing/lexer.ml"
+# 2075 "parsing/lexer.ml"
 
   | 18 ->
-# 760 "parsing/lexer.mll"
+# 821 "parsing/lexer.mll"
       ( try
           NATIVEINT (cvt_nativeint_literal (Lexing.lexeme lexbuf))
         with Failure _ ->
           raise (Error(Literal_overflow "nativeint", Location.curr lexbuf)) )
-# 2022 "parsing/lexer.ml"
+# 2083 "parsing/lexer.ml"
 
   | 19 ->
-# 765 "parsing/lexer.mll"
+# 826 "parsing/lexer.mll"
       ( reset_string_buffer();
         is_in_string := true;
         let string_start = lexbuf.lex_start_p in
@@ -24260,10 +24388,10 @@ and __ocaml_lex_token_rec lexbuf __ocaml_lex_state =
         is_in_string := false;
         lexbuf.lex_start_p <- string_start;
         STRING (get_stored_string(), None) )
-# 2034 "parsing/lexer.ml"
+# 2095 "parsing/lexer.ml"
 
   | 20 ->
-# 774 "parsing/lexer.mll"
+# 835 "parsing/lexer.mll"
       ( reset_string_buffer();
         let delim = Lexing.lexeme lexbuf in
         let delim = String.sub delim 1 (String.length delim - 2) in
@@ -24274,64 +24402,64 @@ and __ocaml_lex_token_rec lexbuf __ocaml_lex_state =
         is_in_string := false;
         lexbuf.lex_start_p <- string_start;
         STRING (get_stored_string(), Some delim) )
-# 2048 "parsing/lexer.ml"
+# 2109 "parsing/lexer.ml"
 
   | 21 ->
-# 785 "parsing/lexer.mll"
+# 846 "parsing/lexer.mll"
       ( update_loc lexbuf None 1 false 1;
         CHAR (Lexing.lexeme_char lexbuf 1) )
-# 2054 "parsing/lexer.ml"
+# 2115 "parsing/lexer.ml"
 
   | 22 ->
-# 788 "parsing/lexer.mll"
+# 849 "parsing/lexer.mll"
       ( CHAR(Lexing.lexeme_char lexbuf 1) )
-# 2059 "parsing/lexer.ml"
+# 2120 "parsing/lexer.ml"
 
   | 23 ->
-# 790 "parsing/lexer.mll"
+# 851 "parsing/lexer.mll"
       ( CHAR(char_for_backslash (Lexing.lexeme_char lexbuf 2)) )
-# 2064 "parsing/lexer.ml"
+# 2125 "parsing/lexer.ml"
 
   | 24 ->
-# 792 "parsing/lexer.mll"
+# 853 "parsing/lexer.mll"
       ( CHAR(char_for_decimal_code lexbuf 2) )
-# 2069 "parsing/lexer.ml"
+# 2130 "parsing/lexer.ml"
 
   | 25 ->
-# 794 "parsing/lexer.mll"
+# 855 "parsing/lexer.mll"
       ( CHAR(char_for_hexadecimal_code lexbuf 3) )
-# 2074 "parsing/lexer.ml"
+# 2135 "parsing/lexer.ml"
 
   | 26 ->
-# 796 "parsing/lexer.mll"
+# 857 "parsing/lexer.mll"
       ( let l = Lexing.lexeme lexbuf in
         let esc = String.sub l 1 (String.length l - 1) in
         raise (Error(Illegal_escape esc, Location.curr lexbuf))
       )
-# 2082 "parsing/lexer.ml"
+# 2143 "parsing/lexer.ml"
 
   | 27 ->
-# 801 "parsing/lexer.mll"
+# 862 "parsing/lexer.mll"
       ( let s, loc = with_comment_buffer comment lexbuf in
         COMMENT (s, loc) )
-# 2088 "parsing/lexer.ml"
+# 2149 "parsing/lexer.ml"
 
   | 28 ->
-# 804 "parsing/lexer.mll"
+# 865 "parsing/lexer.mll"
       ( let s, loc = with_comment_buffer comment lexbuf in
 
         DOCSTRING (Docstrings.docstring s loc) 
 
 )
-# 2099 "parsing/lexer.ml"
+# 2160 "parsing/lexer.ml"
 
   | 29 ->
 let
-# 811 "parsing/lexer.mll"
+# 872 "parsing/lexer.mll"
                     stars
-# 2105 "parsing/lexer.ml"
+# 2166 "parsing/lexer.ml"
 = Lexing.sub_lexeme lexbuf lexbuf.Lexing.lex_start_pos lexbuf.Lexing.lex_curr_pos in
-# 812 "parsing/lexer.mll"
+# 873 "parsing/lexer.mll"
       ( let s, loc =
           with_comment_buffer
             (fun lexbuf ->
@@ -24340,28 +24468,28 @@ let
             lexbuf
         in
         COMMENT (s, loc) )
-# 2116 "parsing/lexer.ml"
+# 2177 "parsing/lexer.ml"
 
   | 30 ->
-# 821 "parsing/lexer.mll"
+# 882 "parsing/lexer.mll"
       ( if !print_warnings then
           Location.prerr_warning (Location.curr lexbuf) Warnings.Comment_start;
         let s, loc = with_comment_buffer comment lexbuf in
         COMMENT (s, loc) )
-# 2124 "parsing/lexer.ml"
+# 2185 "parsing/lexer.ml"
 
   | 31 ->
 let
-# 825 "parsing/lexer.mll"
+# 886 "parsing/lexer.mll"
                    stars
-# 2130 "parsing/lexer.ml"
+# 2191 "parsing/lexer.ml"
 = Lexing.sub_lexeme lexbuf lexbuf.Lexing.lex_start_pos (lexbuf.Lexing.lex_curr_pos + -2) in
-# 826 "parsing/lexer.mll"
+# 887 "parsing/lexer.mll"
       ( COMMENT (stars, Location.curr lexbuf) )
-# 2134 "parsing/lexer.ml"
+# 2195 "parsing/lexer.ml"
 
   | 32 ->
-# 828 "parsing/lexer.mll"
+# 889 "parsing/lexer.mll"
       ( let loc = Location.curr lexbuf in
         Location.prerr_warning loc Warnings.Comment_not_end;
         lexbuf.Lexing.lex_curr_pos <- lexbuf.Lexing.lex_curr_pos - 1;
@@ -24369,307 +24497,307 @@ let
         lexbuf.lex_curr_p <- { curpos with pos_cnum = curpos.pos_cnum - 1 };
         STAR
       )
-# 2145 "parsing/lexer.ml"
+# 2206 "parsing/lexer.ml"
 
   | 33 ->
 let
-# 835 "parsing/lexer.mll"
+# 896 "parsing/lexer.mll"
                                    num
-# 2151 "parsing/lexer.ml"
+# 2212 "parsing/lexer.ml"
 = Lexing.sub_lexeme lexbuf lexbuf.Lexing.lex_mem.(0) lexbuf.Lexing.lex_mem.(1)
 and
-# 836 "parsing/lexer.mll"
+# 897 "parsing/lexer.mll"
                                            name
-# 2156 "parsing/lexer.ml"
+# 2217 "parsing/lexer.ml"
 = Lexing.sub_lexeme_opt lexbuf lexbuf.Lexing.lex_mem.(3) lexbuf.Lexing.lex_mem.(2) in
-# 838 "parsing/lexer.mll"
+# 899 "parsing/lexer.mll"
       ( update_loc lexbuf name (int_of_string num) true 0;
         token lexbuf
       )
-# 2162 "parsing/lexer.ml"
+# 2223 "parsing/lexer.ml"
 
   | 34 ->
-# 841 "parsing/lexer.mll"
+# 902 "parsing/lexer.mll"
          ( SHARP )
-# 2167 "parsing/lexer.ml"
+# 2228 "parsing/lexer.ml"
 
   | 35 ->
-# 842 "parsing/lexer.mll"
+# 903 "parsing/lexer.mll"
          ( AMPERSAND )
-# 2172 "parsing/lexer.ml"
+# 2233 "parsing/lexer.ml"
 
   | 36 ->
-# 843 "parsing/lexer.mll"
+# 904 "parsing/lexer.mll"
          ( AMPERAMPER )
-# 2177 "parsing/lexer.ml"
+# 2238 "parsing/lexer.ml"
 
   | 37 ->
-# 844 "parsing/lexer.mll"
+# 905 "parsing/lexer.mll"
          ( BACKQUOTE )
-# 2182 "parsing/lexer.ml"
+# 2243 "parsing/lexer.ml"
 
   | 38 ->
-# 845 "parsing/lexer.mll"
+# 906 "parsing/lexer.mll"
          ( QUOTE )
-# 2187 "parsing/lexer.ml"
+# 2248 "parsing/lexer.ml"
 
   | 39 ->
-# 846 "parsing/lexer.mll"
+# 907 "parsing/lexer.mll"
          ( LPAREN )
-# 2192 "parsing/lexer.ml"
+# 2253 "parsing/lexer.ml"
 
   | 40 ->
-# 847 "parsing/lexer.mll"
+# 908 "parsing/lexer.mll"
          ( RPAREN )
-# 2197 "parsing/lexer.ml"
+# 2258 "parsing/lexer.ml"
 
   | 41 ->
-# 848 "parsing/lexer.mll"
+# 909 "parsing/lexer.mll"
          ( STAR )
-# 2202 "parsing/lexer.ml"
+# 2263 "parsing/lexer.ml"
 
   | 42 ->
-# 849 "parsing/lexer.mll"
+# 910 "parsing/lexer.mll"
          ( COMMA )
-# 2207 "parsing/lexer.ml"
+# 2268 "parsing/lexer.ml"
 
   | 43 ->
-# 850 "parsing/lexer.mll"
+# 911 "parsing/lexer.mll"
          ( MINUSGREATER )
-# 2212 "parsing/lexer.ml"
+# 2273 "parsing/lexer.ml"
 
   | 44 ->
-# 851 "parsing/lexer.mll"
+# 912 "parsing/lexer.mll"
          ( DOT )
-# 2217 "parsing/lexer.ml"
+# 2278 "parsing/lexer.ml"
 
   | 45 ->
-# 852 "parsing/lexer.mll"
+# 913 "parsing/lexer.mll"
          ( DOTDOT )
-# 2222 "parsing/lexer.ml"
+# 2283 "parsing/lexer.ml"
 
   | 46 ->
-# 853 "parsing/lexer.mll"
+# 914 "parsing/lexer.mll"
          ( COLON )
-# 2227 "parsing/lexer.ml"
+# 2288 "parsing/lexer.ml"
 
   | 47 ->
-# 854 "parsing/lexer.mll"
+# 915 "parsing/lexer.mll"
          ( COLONCOLON )
-# 2232 "parsing/lexer.ml"
+# 2293 "parsing/lexer.ml"
 
   | 48 ->
-# 855 "parsing/lexer.mll"
+# 916 "parsing/lexer.mll"
          ( COLONEQUAL )
-# 2237 "parsing/lexer.ml"
+# 2298 "parsing/lexer.ml"
 
   | 49 ->
-# 856 "parsing/lexer.mll"
+# 917 "parsing/lexer.mll"
          ( COLONGREATER )
-# 2242 "parsing/lexer.ml"
+# 2303 "parsing/lexer.ml"
 
   | 50 ->
-# 857 "parsing/lexer.mll"
+# 918 "parsing/lexer.mll"
          ( SEMI )
-# 2247 "parsing/lexer.ml"
+# 2308 "parsing/lexer.ml"
 
   | 51 ->
-# 858 "parsing/lexer.mll"
+# 919 "parsing/lexer.mll"
          ( SEMISEMI )
-# 2252 "parsing/lexer.ml"
+# 2313 "parsing/lexer.ml"
 
   | 52 ->
-# 859 "parsing/lexer.mll"
+# 920 "parsing/lexer.mll"
          ( LESS )
-# 2257 "parsing/lexer.ml"
+# 2318 "parsing/lexer.ml"
 
   | 53 ->
-# 860 "parsing/lexer.mll"
+# 921 "parsing/lexer.mll"
          ( LESSMINUS )
-# 2262 "parsing/lexer.ml"
+# 2323 "parsing/lexer.ml"
 
   | 54 ->
-# 861 "parsing/lexer.mll"
+# 922 "parsing/lexer.mll"
          ( EQUAL )
-# 2267 "parsing/lexer.ml"
+# 2328 "parsing/lexer.ml"
 
   | 55 ->
-# 862 "parsing/lexer.mll"
+# 923 "parsing/lexer.mll"
          ( LBRACKET )
-# 2272 "parsing/lexer.ml"
+# 2333 "parsing/lexer.ml"
 
   | 56 ->
-# 863 "parsing/lexer.mll"
+# 924 "parsing/lexer.mll"
          ( LBRACKETBAR )
-# 2277 "parsing/lexer.ml"
+# 2338 "parsing/lexer.ml"
 
   | 57 ->
-# 864 "parsing/lexer.mll"
+# 925 "parsing/lexer.mll"
          ( LBRACKETLESS )
-# 2282 "parsing/lexer.ml"
+# 2343 "parsing/lexer.ml"
 
   | 58 ->
-# 865 "parsing/lexer.mll"
+# 926 "parsing/lexer.mll"
          ( LBRACKETGREATER )
-# 2287 "parsing/lexer.ml"
+# 2348 "parsing/lexer.ml"
 
   | 59 ->
-# 866 "parsing/lexer.mll"
+# 927 "parsing/lexer.mll"
          ( RBRACKET )
-# 2292 "parsing/lexer.ml"
+# 2353 "parsing/lexer.ml"
 
   | 60 ->
-# 867 "parsing/lexer.mll"
+# 928 "parsing/lexer.mll"
          ( LBRACE )
-# 2297 "parsing/lexer.ml"
+# 2358 "parsing/lexer.ml"
 
   | 61 ->
-# 868 "parsing/lexer.mll"
+# 929 "parsing/lexer.mll"
          ( LBRACELESS )
-# 2302 "parsing/lexer.ml"
+# 2363 "parsing/lexer.ml"
 
   | 62 ->
-# 869 "parsing/lexer.mll"
+# 930 "parsing/lexer.mll"
          ( BAR )
-# 2307 "parsing/lexer.ml"
+# 2368 "parsing/lexer.ml"
 
   | 63 ->
-# 870 "parsing/lexer.mll"
+# 931 "parsing/lexer.mll"
          ( BARBAR )
-# 2312 "parsing/lexer.ml"
+# 2373 "parsing/lexer.ml"
 
   | 64 ->
-# 871 "parsing/lexer.mll"
+# 932 "parsing/lexer.mll"
          ( BARRBRACKET )
-# 2317 "parsing/lexer.ml"
+# 2378 "parsing/lexer.ml"
 
   | 65 ->
-# 872 "parsing/lexer.mll"
+# 933 "parsing/lexer.mll"
          ( GREATER )
-# 2322 "parsing/lexer.ml"
+# 2383 "parsing/lexer.ml"
 
   | 66 ->
-# 873 "parsing/lexer.mll"
+# 934 "parsing/lexer.mll"
          ( GREATERRBRACKET )
-# 2327 "parsing/lexer.ml"
+# 2388 "parsing/lexer.ml"
 
   | 67 ->
-# 874 "parsing/lexer.mll"
+# 935 "parsing/lexer.mll"
          ( RBRACE )
-# 2332 "parsing/lexer.ml"
+# 2393 "parsing/lexer.ml"
 
   | 68 ->
-# 875 "parsing/lexer.mll"
+# 936 "parsing/lexer.mll"
          ( GREATERRBRACE )
-# 2337 "parsing/lexer.ml"
+# 2398 "parsing/lexer.ml"
 
   | 69 ->
-# 876 "parsing/lexer.mll"
+# 937 "parsing/lexer.mll"
          ( LBRACKETAT )
-# 2342 "parsing/lexer.ml"
+# 2403 "parsing/lexer.ml"
 
   | 70 ->
-# 877 "parsing/lexer.mll"
+# 938 "parsing/lexer.mll"
          ( LBRACKETPERCENT )
-# 2347 "parsing/lexer.ml"
+# 2408 "parsing/lexer.ml"
 
   | 71 ->
-# 878 "parsing/lexer.mll"
+# 939 "parsing/lexer.mll"
           ( LBRACKETPERCENTPERCENT )
-# 2352 "parsing/lexer.ml"
+# 2413 "parsing/lexer.ml"
 
   | 72 ->
-# 879 "parsing/lexer.mll"
+# 940 "parsing/lexer.mll"
           ( LBRACKETATAT )
-# 2357 "parsing/lexer.ml"
+# 2418 "parsing/lexer.ml"
 
   | 73 ->
-# 880 "parsing/lexer.mll"
+# 941 "parsing/lexer.mll"
            ( LBRACKETATATAT )
-# 2362 "parsing/lexer.ml"
+# 2423 "parsing/lexer.ml"
 
   | 74 ->
-# 881 "parsing/lexer.mll"
+# 942 "parsing/lexer.mll"
          ( BANG )
-# 2367 "parsing/lexer.ml"
+# 2428 "parsing/lexer.ml"
 
   | 75 ->
-# 882 "parsing/lexer.mll"
+# 943 "parsing/lexer.mll"
          ( INFIXOP0 "!=" )
-# 2372 "parsing/lexer.ml"
+# 2433 "parsing/lexer.ml"
 
   | 76 ->
-# 883 "parsing/lexer.mll"
+# 944 "parsing/lexer.mll"
          ( PLUS )
-# 2377 "parsing/lexer.ml"
+# 2438 "parsing/lexer.ml"
 
   | 77 ->
-# 884 "parsing/lexer.mll"
+# 945 "parsing/lexer.mll"
          ( PLUSDOT )
-# 2382 "parsing/lexer.ml"
+# 2443 "parsing/lexer.ml"
 
   | 78 ->
-# 885 "parsing/lexer.mll"
+# 946 "parsing/lexer.mll"
          ( PLUSEQ )
-# 2387 "parsing/lexer.ml"
+# 2448 "parsing/lexer.ml"
 
   | 79 ->
-# 886 "parsing/lexer.mll"
+# 947 "parsing/lexer.mll"
          ( MINUS )
-# 2392 "parsing/lexer.ml"
+# 2453 "parsing/lexer.ml"
 
   | 80 ->
-# 887 "parsing/lexer.mll"
+# 948 "parsing/lexer.mll"
          ( MINUSDOT )
-# 2397 "parsing/lexer.ml"
+# 2458 "parsing/lexer.ml"
 
   | 81 ->
-# 890 "parsing/lexer.mll"
+# 951 "parsing/lexer.mll"
             ( PREFIXOP(Lexing.lexeme lexbuf) )
-# 2402 "parsing/lexer.ml"
+# 2463 "parsing/lexer.ml"
 
   | 82 ->
-# 892 "parsing/lexer.mll"
+# 953 "parsing/lexer.mll"
             ( PREFIXOP(Lexing.lexeme lexbuf) )
-# 2407 "parsing/lexer.ml"
+# 2468 "parsing/lexer.ml"
 
   | 83 ->
-# 894 "parsing/lexer.mll"
+# 955 "parsing/lexer.mll"
             ( INFIXOP0(Lexing.lexeme lexbuf) )
-# 2412 "parsing/lexer.ml"
+# 2473 "parsing/lexer.ml"
 
   | 84 ->
-# 896 "parsing/lexer.mll"
+# 957 "parsing/lexer.mll"
             ( INFIXOP1(Lexing.lexeme lexbuf) )
-# 2417 "parsing/lexer.ml"
+# 2478 "parsing/lexer.ml"
 
   | 85 ->
-# 898 "parsing/lexer.mll"
+# 959 "parsing/lexer.mll"
             ( INFIXOP2(Lexing.lexeme lexbuf) )
-# 2422 "parsing/lexer.ml"
+# 2483 "parsing/lexer.ml"
 
   | 86 ->
-# 900 "parsing/lexer.mll"
+# 961 "parsing/lexer.mll"
             ( INFIXOP4(Lexing.lexeme lexbuf) )
-# 2427 "parsing/lexer.ml"
+# 2488 "parsing/lexer.ml"
 
   | 87 ->
-# 901 "parsing/lexer.mll"
+# 962 "parsing/lexer.mll"
             ( PERCENT )
-# 2432 "parsing/lexer.ml"
+# 2493 "parsing/lexer.ml"
 
   | 88 ->
-# 903 "parsing/lexer.mll"
+# 964 "parsing/lexer.mll"
             ( INFIXOP3(Lexing.lexeme lexbuf) )
-# 2437 "parsing/lexer.ml"
+# 2498 "parsing/lexer.ml"
 
   | 89 ->
-# 905 "parsing/lexer.mll"
+# 966 "parsing/lexer.mll"
             ( SHARPOP(Lexing.lexeme lexbuf) )
-# 2442 "parsing/lexer.ml"
+# 2503 "parsing/lexer.ml"
 
   | 90 ->
-# 906 "parsing/lexer.mll"
+# 967 "parsing/lexer.mll"
         (
       if !if_then_else <> Dir_out then
         if !if_then_else = Dir_if_true then
@@ -24679,14 +24807,14 @@ and
         EOF
         
     )
-# 2455 "parsing/lexer.ml"
+# 2516 "parsing/lexer.ml"
 
   | 91 ->
-# 916 "parsing/lexer.mll"
+# 977 "parsing/lexer.mll"
       ( raise (Error(Illegal_character (Lexing.lexeme_char lexbuf 0),
                      Location.curr lexbuf))
       )
-# 2462 "parsing/lexer.ml"
+# 2523 "parsing/lexer.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
       __ocaml_lex_token_rec lexbuf __ocaml_lex_state
@@ -24696,15 +24824,15 @@ and comment lexbuf =
 and __ocaml_lex_comment_rec lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 922 "parsing/lexer.mll"
+# 983 "parsing/lexer.mll"
       ( comment_start_loc := (Location.curr lexbuf) :: !comment_start_loc;
         store_lexeme lexbuf;
         comment lexbuf;
       )
-# 2477 "parsing/lexer.ml"
+# 2538 "parsing/lexer.ml"
 
   | 1 ->
-# 927 "parsing/lexer.mll"
+# 988 "parsing/lexer.mll"
       ( match !comment_start_loc with
         | [] -> assert false
         | [_] -> comment_start_loc := []; Location.curr lexbuf
@@ -24712,10 +24840,10 @@ and __ocaml_lex_comment_rec lexbuf __ocaml_lex_state =
                   store_lexeme lexbuf;
                   comment lexbuf;
        )
-# 2488 "parsing/lexer.ml"
+# 2549 "parsing/lexer.ml"
 
   | 2 ->
-# 935 "parsing/lexer.mll"
+# 996 "parsing/lexer.mll"
       (
         string_start_loc := Location.curr lexbuf;
         store_string_char '"';
@@ -24733,10 +24861,10 @@ and __ocaml_lex_comment_rec lexbuf __ocaml_lex_state =
         is_in_string := false;
         store_string_char '"';
         comment lexbuf )
-# 2509 "parsing/lexer.ml"
+# 2570 "parsing/lexer.ml"
 
   | 3 ->
-# 953 "parsing/lexer.mll"
+# 1014 "parsing/lexer.mll"
       (
         let delim = Lexing.lexeme lexbuf in
         let delim = String.sub delim 1 (String.length delim - 2) in
@@ -24758,43 +24886,43 @@ and __ocaml_lex_comment_rec lexbuf __ocaml_lex_state =
         store_string delim;
         store_string_char '}';
         comment lexbuf )
-# 2534 "parsing/lexer.ml"
+# 2595 "parsing/lexer.ml"
 
   | 4 ->
-# 976 "parsing/lexer.mll"
+# 1037 "parsing/lexer.mll"
       ( store_lexeme lexbuf; comment lexbuf )
-# 2539 "parsing/lexer.ml"
+# 2600 "parsing/lexer.ml"
 
   | 5 ->
-# 978 "parsing/lexer.mll"
+# 1039 "parsing/lexer.mll"
       ( update_loc lexbuf None 1 false 1;
         store_lexeme lexbuf;
         comment lexbuf
       )
-# 2547 "parsing/lexer.ml"
+# 2608 "parsing/lexer.ml"
 
   | 6 ->
-# 983 "parsing/lexer.mll"
+# 1044 "parsing/lexer.mll"
       ( store_lexeme lexbuf; comment lexbuf )
-# 2552 "parsing/lexer.ml"
+# 2613 "parsing/lexer.ml"
 
   | 7 ->
-# 985 "parsing/lexer.mll"
+# 1046 "parsing/lexer.mll"
       ( store_lexeme lexbuf; comment lexbuf )
-# 2557 "parsing/lexer.ml"
+# 2618 "parsing/lexer.ml"
 
   | 8 ->
-# 987 "parsing/lexer.mll"
+# 1048 "parsing/lexer.mll"
       ( store_lexeme lexbuf; comment lexbuf )
-# 2562 "parsing/lexer.ml"
+# 2623 "parsing/lexer.ml"
 
   | 9 ->
-# 989 "parsing/lexer.mll"
+# 1050 "parsing/lexer.mll"
       ( store_lexeme lexbuf; comment lexbuf )
-# 2567 "parsing/lexer.ml"
+# 2628 "parsing/lexer.ml"
 
   | 10 ->
-# 991 "parsing/lexer.mll"
+# 1052 "parsing/lexer.mll"
       ( match !comment_start_loc with
         | [] -> assert false
         | loc :: _ ->
@@ -24802,20 +24930,20 @@ and __ocaml_lex_comment_rec lexbuf __ocaml_lex_state =
           comment_start_loc := [];
           raise (Error (Unterminated_comment start, loc))
       )
-# 2578 "parsing/lexer.ml"
+# 2639 "parsing/lexer.ml"
 
   | 11 ->
-# 999 "parsing/lexer.mll"
+# 1060 "parsing/lexer.mll"
       ( update_loc lexbuf None 1 false 0;
         store_lexeme lexbuf;
         comment lexbuf
       )
-# 2586 "parsing/lexer.ml"
+# 2647 "parsing/lexer.ml"
 
   | 12 ->
-# 1004 "parsing/lexer.mll"
+# 1065 "parsing/lexer.mll"
       ( store_lexeme lexbuf; comment lexbuf )
-# 2591 "parsing/lexer.ml"
+# 2652 "parsing/lexer.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
       __ocaml_lex_comment_rec lexbuf __ocaml_lex_state
@@ -24825,42 +24953,42 @@ and string lexbuf =
 and __ocaml_lex_string_rec lexbuf __ocaml_lex_state =
   match Lexing.new_engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 1008 "parsing/lexer.mll"
+# 1069 "parsing/lexer.mll"
       ( () )
-# 2603 "parsing/lexer.ml"
+# 2664 "parsing/lexer.ml"
 
   | 1 ->
 let
-# 1009 "parsing/lexer.mll"
+# 1070 "parsing/lexer.mll"
                                   space
-# 2609 "parsing/lexer.ml"
+# 2670 "parsing/lexer.ml"
 = Lexing.sub_lexeme lexbuf lexbuf.Lexing.lex_mem.(0) lexbuf.Lexing.lex_curr_pos in
-# 1010 "parsing/lexer.mll"
+# 1071 "parsing/lexer.mll"
       ( update_loc lexbuf None 1 false (String.length space);
         string lexbuf
       )
-# 2615 "parsing/lexer.ml"
+# 2676 "parsing/lexer.ml"
 
   | 2 ->
-# 1014 "parsing/lexer.mll"
+# 1075 "parsing/lexer.mll"
       ( store_string_char(char_for_backslash(Lexing.lexeme_char lexbuf 1));
         string lexbuf )
-# 2621 "parsing/lexer.ml"
+# 2682 "parsing/lexer.ml"
 
   | 3 ->
-# 1017 "parsing/lexer.mll"
+# 1078 "parsing/lexer.mll"
       ( store_string_char(char_for_decimal_code lexbuf 1);
          string lexbuf )
-# 2627 "parsing/lexer.ml"
+# 2688 "parsing/lexer.ml"
 
   | 4 ->
-# 1020 "parsing/lexer.mll"
+# 1081 "parsing/lexer.mll"
       ( store_string_char(char_for_hexadecimal_code lexbuf 2);
          string lexbuf )
-# 2633 "parsing/lexer.ml"
+# 2694 "parsing/lexer.ml"
 
   | 5 ->
-# 1023 "parsing/lexer.mll"
+# 1084 "parsing/lexer.mll"
       ( if in_comment ()
         then string lexbuf
         else begin
@@ -24875,29 +25003,29 @@ let
           string lexbuf
         end
       )
-# 2651 "parsing/lexer.ml"
+# 2712 "parsing/lexer.ml"
 
   | 6 ->
-# 1038 "parsing/lexer.mll"
+# 1099 "parsing/lexer.mll"
       ( if not (in_comment ()) then
           Location.prerr_warning (Location.curr lexbuf) Warnings.Eol_in_string;
         update_loc lexbuf None 1 false 0;
         store_lexeme lexbuf;
         string lexbuf
       )
-# 2661 "parsing/lexer.ml"
+# 2722 "parsing/lexer.ml"
 
   | 7 ->
-# 1045 "parsing/lexer.mll"
+# 1106 "parsing/lexer.mll"
       ( is_in_string := false;
         raise (Error (Unterminated_string, !string_start_loc)) )
-# 2667 "parsing/lexer.ml"
+# 2728 "parsing/lexer.ml"
 
   | 8 ->
-# 1048 "parsing/lexer.mll"
+# 1109 "parsing/lexer.mll"
       ( store_string_char(Lexing.lexeme_char lexbuf 0);
         string lexbuf )
-# 2673 "parsing/lexer.ml"
+# 2734 "parsing/lexer.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
       __ocaml_lex_string_rec lexbuf __ocaml_lex_state
@@ -24907,34 +25035,34 @@ and quoted_string delim lexbuf =
 and __ocaml_lex_quoted_string_rec delim lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 1053 "parsing/lexer.mll"
+# 1114 "parsing/lexer.mll"
       ( update_loc lexbuf None 1 false 0;
         store_lexeme lexbuf;
         quoted_string delim lexbuf
       )
-# 2688 "parsing/lexer.ml"
+# 2749 "parsing/lexer.ml"
 
   | 1 ->
-# 1058 "parsing/lexer.mll"
+# 1119 "parsing/lexer.mll"
       ( is_in_string := false;
         raise (Error (Unterminated_string, !string_start_loc)) )
-# 2694 "parsing/lexer.ml"
+# 2755 "parsing/lexer.ml"
 
   | 2 ->
-# 1061 "parsing/lexer.mll"
+# 1122 "parsing/lexer.mll"
       (
         let edelim = Lexing.lexeme lexbuf in
         let edelim = String.sub edelim 1 (String.length edelim - 2) in
         if delim = edelim then ()
         else (store_lexeme lexbuf; quoted_string delim lexbuf)
       )
-# 2704 "parsing/lexer.ml"
+# 2765 "parsing/lexer.ml"
 
   | 3 ->
-# 1068 "parsing/lexer.mll"
+# 1129 "parsing/lexer.mll"
       ( store_string_char(Lexing.lexeme_char lexbuf 0);
         quoted_string delim lexbuf )
-# 2710 "parsing/lexer.ml"
+# 2771 "parsing/lexer.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
       __ocaml_lex_quoted_string_rec delim lexbuf __ocaml_lex_state
@@ -24944,26 +25072,26 @@ and skip_sharp_bang lexbuf =
 and __ocaml_lex_skip_sharp_bang_rec lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 1073 "parsing/lexer.mll"
+# 1134 "parsing/lexer.mll"
        ( update_loc lexbuf None 3 false 0 )
-# 2722 "parsing/lexer.ml"
+# 2783 "parsing/lexer.ml"
 
   | 1 ->
-# 1075 "parsing/lexer.mll"
+# 1136 "parsing/lexer.mll"
        ( update_loc lexbuf None 1 false 0 )
-# 2727 "parsing/lexer.ml"
+# 2788 "parsing/lexer.ml"
 
   | 2 ->
-# 1076 "parsing/lexer.mll"
+# 1137 "parsing/lexer.mll"
        ( () )
-# 2732 "parsing/lexer.ml"
+# 2793 "parsing/lexer.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
       __ocaml_lex_skip_sharp_bang_rec lexbuf __ocaml_lex_state
 
 ;;
 
-# 1078 "parsing/lexer.mll"
+# 1139 "parsing/lexer.mll"
  
 
   let at_bol lexbuf = 
@@ -25198,7 +25326,7 @@ and __ocaml_lex_skip_sharp_bang_rec lexbuf __ocaml_lex_state =
     preprocessor := Some (init, preprocess)
 
 
-# 2974 "parsing/lexer.ml"
+# 3035 "parsing/lexer.ml"
 
 end
 module Parse : sig 
@@ -25821,6 +25949,7 @@ val exists: (elt -> bool) -> t -> bool
 val singleton: elt -> t
 val cardinal: t -> int
 val elements: t -> elt list
+val remove : elt -> t -> t
 val min_elt: t -> elt
 val max_elt: t -> elt
 val choose: t -> elt
@@ -25834,9 +25963,6 @@ val add: elt -> t -> t
 val of_list : elt list -> t
 val find : elt -> t -> elt 
 (***********************************************************************) 
-
-
-
 
 end = struct
 #1 "string_set.ml"
@@ -26339,7 +26465,15 @@ let alias_module s =
       end
   | _ -> raise (Arg.Bad "invalid module alias format like A=B")
 
-
+let undefine_symbol (s : string) = 
+  Lexer.remove_directive_built_in_value s 
+let define_symbol (s : string) = 
+  match Ext_string.split ~keep_empty:true s '=' with
+  | [key; v] -> 
+    if not @@ Lexer.define_key_value key v  then 
+      raise (Arg.Bad ("illegal definition: " ^ s))
+  | _ -> raise (Arg.Bad ("illegal definition: " ^ s))
+ 
 let specs : (string * Arg.spec * string) list =
   [ 
     "-bs-no-implicit-include", (Arg.Set no_implicit_include),
@@ -26364,7 +26498,11 @@ let specs : (string * Arg.spec * string) list =
     "-bs-main", (Arg.String set_main_module),
     " set the main entry module";
     "-I",  (Arg.String add_include),
-    " add dir to search path"
+    " add dir to search path";
+    "-U", Arg.String undefine_symbol,
+    " Undefine a symbol when bspacking";
+    "-D", Arg.String define_symbol, 
+    " Define a symbol when bspacking"
   ]
 
 
