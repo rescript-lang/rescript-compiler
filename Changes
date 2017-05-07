@@ -2,6 +2,11 @@
 BuckleScript 1.7.4:
 ==================
 
+intenral tools:
+
+- #1583, add -U -D support for bspack
+
+
 BuckleScript 1.7.3:
 ==================
 
