@@ -231,14 +231,15 @@ SYNTAX_SRCS= \
 	ast_arg \
 	ast_payload \
 	ast_signature \
-	ast_structure bs_ast_iterator bs_ast_invariant \
+	ast_structure bs_ast_iterator  \
 	ast_derive ast_comb ast_attributes\
 	ast_core_type ast_derive_dyn\
 	ast_derive_projector \
 	ast_ffi_types\
 	ast_external_attributes\
 	ast_util\
-	ppx_entry
+	ppx_entry\
+	bs_ast_invariant
 # not a good name ast_util	 
 SYNTAX_CMXS=$(addprefix syntax/, $(addsuffix .cmx, $(SYNTAX_SRCS)))
 DEPENDS_SRCS= depends_post_process bs_exception ast_extract binary_ast  

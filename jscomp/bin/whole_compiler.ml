@@ -17096,7 +17096,7 @@ val list_variables : Format.formatter -> unit
 
 end = struct
 #1 "lexer.ml"
-# 15 "parsing/lexer.mll"
+# 15 "../ocaml/parsing/lexer.mll"
  
 open Lexing
 open Misc
@@ -17817,7 +17817,7 @@ let () =
     )
 
 
-# 727 "parsing/lexer.ml"
+# 727 "../ocaml/parsing/lexer.ml"
 let __ocaml_lex_tables = {
   Lexing.lex_base = 
    "\000\000\164\255\165\255\224\000\003\001\038\001\073\001\108\001\
@@ -19060,123 +19060,123 @@ let rec token lexbuf =
 and __ocaml_lex_token_rec lexbuf __ocaml_lex_state =
   match Lexing.new_engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 767 "parsing/lexer.mll"
+# 767 "../ocaml/parsing/lexer.mll"
                  (
       if not !escaped_newlines then
         raise (Error(Illegal_character (Lexing.lexeme_char lexbuf 0),
                      Location.curr lexbuf));
       update_loc lexbuf None 1 false 0;
       token lexbuf )
-# 1977 "parsing/lexer.ml"
+# 1977 "../ocaml/parsing/lexer.ml"
 
   | 1 ->
-# 774 "parsing/lexer.mll"
+# 774 "../ocaml/parsing/lexer.mll"
       ( update_loc lexbuf None 1 false 0;
         EOL )
-# 1983 "parsing/lexer.ml"
+# 1983 "../ocaml/parsing/lexer.ml"
 
   | 2 ->
-# 777 "parsing/lexer.mll"
+# 777 "../ocaml/parsing/lexer.mll"
       ( token lexbuf )
-# 1988 "parsing/lexer.ml"
+# 1988 "../ocaml/parsing/lexer.ml"
 
   | 3 ->
-# 779 "parsing/lexer.mll"
+# 779 "../ocaml/parsing/lexer.mll"
       ( UNDERSCORE )
-# 1993 "parsing/lexer.ml"
+# 1993 "../ocaml/parsing/lexer.ml"
 
   | 4 ->
-# 781 "parsing/lexer.mll"
+# 781 "../ocaml/parsing/lexer.mll"
       ( TILDE )
-# 1998 "parsing/lexer.ml"
+# 1998 "../ocaml/parsing/lexer.ml"
 
   | 5 ->
-# 783 "parsing/lexer.mll"
+# 783 "../ocaml/parsing/lexer.mll"
       ( LABEL (get_label_name lexbuf) )
-# 2003 "parsing/lexer.ml"
+# 2003 "../ocaml/parsing/lexer.ml"
 
   | 6 ->
-# 785 "parsing/lexer.mll"
+# 785 "../ocaml/parsing/lexer.mll"
       ( warn_latin1 lexbuf; LABEL (get_label_name lexbuf) )
-# 2008 "parsing/lexer.ml"
+# 2008 "../ocaml/parsing/lexer.ml"
 
   | 7 ->
-# 787 "parsing/lexer.mll"
+# 787 "../ocaml/parsing/lexer.mll"
       ( QUESTION )
-# 2013 "parsing/lexer.ml"
+# 2013 "../ocaml/parsing/lexer.ml"
 
   | 8 ->
-# 789 "parsing/lexer.mll"
+# 789 "../ocaml/parsing/lexer.mll"
       ( OPTLABEL (get_label_name lexbuf) )
-# 2018 "parsing/lexer.ml"
+# 2018 "../ocaml/parsing/lexer.ml"
 
   | 9 ->
-# 791 "parsing/lexer.mll"
+# 791 "../ocaml/parsing/lexer.mll"
       ( warn_latin1 lexbuf; OPTLABEL (get_label_name lexbuf) )
-# 2023 "parsing/lexer.ml"
+# 2023 "../ocaml/parsing/lexer.ml"
 
   | 10 ->
-# 793 "parsing/lexer.mll"
+# 793 "../ocaml/parsing/lexer.mll"
       ( let s = Lexing.lexeme lexbuf in
         try Hashtbl.find keyword_table s
         with Not_found -> LIDENT s )
-# 2030 "parsing/lexer.ml"
+# 2030 "../ocaml/parsing/lexer.ml"
 
   | 11 ->
-# 797 "parsing/lexer.mll"
+# 797 "../ocaml/parsing/lexer.mll"
       ( warn_latin1 lexbuf; LIDENT (Lexing.lexeme lexbuf) )
-# 2035 "parsing/lexer.ml"
+# 2035 "../ocaml/parsing/lexer.ml"
 
   | 12 ->
-# 799 "parsing/lexer.mll"
+# 799 "../ocaml/parsing/lexer.mll"
       ( UIDENT(Lexing.lexeme lexbuf) )
-# 2040 "parsing/lexer.ml"
+# 2040 "../ocaml/parsing/lexer.ml"
 
   | 13 ->
-# 801 "parsing/lexer.mll"
+# 801 "../ocaml/parsing/lexer.mll"
       ( warn_latin1 lexbuf; UIDENT(Lexing.lexeme lexbuf) )
-# 2045 "parsing/lexer.ml"
+# 2045 "../ocaml/parsing/lexer.ml"
 
   | 14 ->
-# 803 "parsing/lexer.mll"
+# 803 "../ocaml/parsing/lexer.mll"
       ( try
           INT (cvt_int_literal (Lexing.lexeme lexbuf))
         with Failure _ ->
           raise (Error(Literal_overflow "int", Location.curr lexbuf))
       )
-# 2054 "parsing/lexer.ml"
+# 2054 "../ocaml/parsing/lexer.ml"
 
   | 15 ->
-# 809 "parsing/lexer.mll"
+# 809 "../ocaml/parsing/lexer.mll"
       ( FLOAT (remove_underscores(Lexing.lexeme lexbuf)) )
-# 2059 "parsing/lexer.ml"
+# 2059 "../ocaml/parsing/lexer.ml"
 
   | 16 ->
-# 811 "parsing/lexer.mll"
+# 811 "../ocaml/parsing/lexer.mll"
       ( try
           INT32 (cvt_int32_literal (Lexing.lexeme lexbuf))
         with Failure _ ->
           raise (Error(Literal_overflow "int32", Location.curr lexbuf)) )
-# 2067 "parsing/lexer.ml"
+# 2067 "../ocaml/parsing/lexer.ml"
 
   | 17 ->
-# 816 "parsing/lexer.mll"
+# 816 "../ocaml/parsing/lexer.mll"
       ( try
           INT64 (cvt_int64_literal (Lexing.lexeme lexbuf))
         with Failure _ ->
           raise (Error(Literal_overflow "int64", Location.curr lexbuf)) )
-# 2075 "parsing/lexer.ml"
+# 2075 "../ocaml/parsing/lexer.ml"
 
   | 18 ->
-# 821 "parsing/lexer.mll"
+# 821 "../ocaml/parsing/lexer.mll"
       ( try
           NATIVEINT (cvt_nativeint_literal (Lexing.lexeme lexbuf))
         with Failure _ ->
           raise (Error(Literal_overflow "nativeint", Location.curr lexbuf)) )
-# 2083 "parsing/lexer.ml"
+# 2083 "../ocaml/parsing/lexer.ml"
 
   | 19 ->
-# 826 "parsing/lexer.mll"
+# 826 "../ocaml/parsing/lexer.mll"
       ( reset_string_buffer();
         is_in_string := true;
         let string_start = lexbuf.lex_start_p in
@@ -19185,10 +19185,10 @@ and __ocaml_lex_token_rec lexbuf __ocaml_lex_state =
         is_in_string := false;
         lexbuf.lex_start_p <- string_start;
         STRING (get_stored_string(), None) )
-# 2095 "parsing/lexer.ml"
+# 2095 "../ocaml/parsing/lexer.ml"
 
   | 20 ->
-# 835 "parsing/lexer.mll"
+# 835 "../ocaml/parsing/lexer.mll"
       ( reset_string_buffer();
         let delim = Lexing.lexeme lexbuf in
         let delim = String.sub delim 1 (String.length delim - 2) in
@@ -19199,64 +19199,64 @@ and __ocaml_lex_token_rec lexbuf __ocaml_lex_state =
         is_in_string := false;
         lexbuf.lex_start_p <- string_start;
         STRING (get_stored_string(), Some delim) )
-# 2109 "parsing/lexer.ml"
+# 2109 "../ocaml/parsing/lexer.ml"
 
   | 21 ->
-# 846 "parsing/lexer.mll"
+# 846 "../ocaml/parsing/lexer.mll"
       ( update_loc lexbuf None 1 false 1;
         CHAR (Lexing.lexeme_char lexbuf 1) )
-# 2115 "parsing/lexer.ml"
+# 2115 "../ocaml/parsing/lexer.ml"
 
   | 22 ->
-# 849 "parsing/lexer.mll"
+# 849 "../ocaml/parsing/lexer.mll"
       ( CHAR(Lexing.lexeme_char lexbuf 1) )
-# 2120 "parsing/lexer.ml"
+# 2120 "../ocaml/parsing/lexer.ml"
 
   | 23 ->
-# 851 "parsing/lexer.mll"
+# 851 "../ocaml/parsing/lexer.mll"
       ( CHAR(char_for_backslash (Lexing.lexeme_char lexbuf 2)) )
-# 2125 "parsing/lexer.ml"
+# 2125 "../ocaml/parsing/lexer.ml"
 
   | 24 ->
-# 853 "parsing/lexer.mll"
+# 853 "../ocaml/parsing/lexer.mll"
       ( CHAR(char_for_decimal_code lexbuf 2) )
-# 2130 "parsing/lexer.ml"
+# 2130 "../ocaml/parsing/lexer.ml"
 
   | 25 ->
-# 855 "parsing/lexer.mll"
+# 855 "../ocaml/parsing/lexer.mll"
       ( CHAR(char_for_hexadecimal_code lexbuf 3) )
-# 2135 "parsing/lexer.ml"
+# 2135 "../ocaml/parsing/lexer.ml"
 
   | 26 ->
-# 857 "parsing/lexer.mll"
+# 857 "../ocaml/parsing/lexer.mll"
       ( let l = Lexing.lexeme lexbuf in
         let esc = String.sub l 1 (String.length l - 1) in
         raise (Error(Illegal_escape esc, Location.curr lexbuf))
       )
-# 2143 "parsing/lexer.ml"
+# 2143 "../ocaml/parsing/lexer.ml"
 
   | 27 ->
-# 862 "parsing/lexer.mll"
+# 862 "../ocaml/parsing/lexer.mll"
       ( let s, loc = with_comment_buffer comment lexbuf in
         COMMENT (s, loc) )
-# 2149 "parsing/lexer.ml"
+# 2149 "../ocaml/parsing/lexer.ml"
 
   | 28 ->
-# 865 "parsing/lexer.mll"
+# 865 "../ocaml/parsing/lexer.mll"
       ( let s, loc = with_comment_buffer comment lexbuf in
 
         DOCSTRING (Docstrings.docstring s loc) 
 
 )
-# 2160 "parsing/lexer.ml"
+# 2160 "../ocaml/parsing/lexer.ml"
 
   | 29 ->
 let
-# 872 "parsing/lexer.mll"
+# 872 "../ocaml/parsing/lexer.mll"
                     stars
-# 2166 "parsing/lexer.ml"
+# 2166 "../ocaml/parsing/lexer.ml"
 = Lexing.sub_lexeme lexbuf lexbuf.Lexing.lex_start_pos lexbuf.Lexing.lex_curr_pos in
-# 873 "parsing/lexer.mll"
+# 873 "../ocaml/parsing/lexer.mll"
       ( let s, loc =
           with_comment_buffer
             (fun lexbuf ->
@@ -19265,28 +19265,28 @@ let
             lexbuf
         in
         COMMENT (s, loc) )
-# 2177 "parsing/lexer.ml"
+# 2177 "../ocaml/parsing/lexer.ml"
 
   | 30 ->
-# 882 "parsing/lexer.mll"
+# 882 "../ocaml/parsing/lexer.mll"
       ( if !print_warnings then
           Location.prerr_warning (Location.curr lexbuf) Warnings.Comment_start;
         let s, loc = with_comment_buffer comment lexbuf in
         COMMENT (s, loc) )
-# 2185 "parsing/lexer.ml"
+# 2185 "../ocaml/parsing/lexer.ml"
 
   | 31 ->
 let
-# 886 "parsing/lexer.mll"
+# 886 "../ocaml/parsing/lexer.mll"
                    stars
-# 2191 "parsing/lexer.ml"
+# 2191 "../ocaml/parsing/lexer.ml"
 = Lexing.sub_lexeme lexbuf lexbuf.Lexing.lex_start_pos (lexbuf.Lexing.lex_curr_pos + -2) in
-# 887 "parsing/lexer.mll"
+# 887 "../ocaml/parsing/lexer.mll"
       ( COMMENT (stars, Location.curr lexbuf) )
-# 2195 "parsing/lexer.ml"
+# 2195 "../ocaml/parsing/lexer.ml"
 
   | 32 ->
-# 889 "parsing/lexer.mll"
+# 889 "../ocaml/parsing/lexer.mll"
       ( let loc = Location.curr lexbuf in
         Location.prerr_warning loc Warnings.Comment_not_end;
         lexbuf.Lexing.lex_curr_pos <- lexbuf.Lexing.lex_curr_pos - 1;
@@ -19294,307 +19294,307 @@ let
         lexbuf.lex_curr_p <- { curpos with pos_cnum = curpos.pos_cnum - 1 };
         STAR
       )
-# 2206 "parsing/lexer.ml"
+# 2206 "../ocaml/parsing/lexer.ml"
 
   | 33 ->
 let
-# 896 "parsing/lexer.mll"
+# 896 "../ocaml/parsing/lexer.mll"
                                    num
-# 2212 "parsing/lexer.ml"
+# 2212 "../ocaml/parsing/lexer.ml"
 = Lexing.sub_lexeme lexbuf lexbuf.Lexing.lex_mem.(0) lexbuf.Lexing.lex_mem.(1)
 and
-# 897 "parsing/lexer.mll"
+# 897 "../ocaml/parsing/lexer.mll"
                                            name
-# 2217 "parsing/lexer.ml"
+# 2217 "../ocaml/parsing/lexer.ml"
 = Lexing.sub_lexeme_opt lexbuf lexbuf.Lexing.lex_mem.(3) lexbuf.Lexing.lex_mem.(2) in
-# 899 "parsing/lexer.mll"
+# 899 "../ocaml/parsing/lexer.mll"
       ( update_loc lexbuf name (int_of_string num) true 0;
         token lexbuf
       )
-# 2223 "parsing/lexer.ml"
+# 2223 "../ocaml/parsing/lexer.ml"
 
   | 34 ->
-# 902 "parsing/lexer.mll"
+# 902 "../ocaml/parsing/lexer.mll"
          ( SHARP )
-# 2228 "parsing/lexer.ml"
+# 2228 "../ocaml/parsing/lexer.ml"
 
   | 35 ->
-# 903 "parsing/lexer.mll"
+# 903 "../ocaml/parsing/lexer.mll"
          ( AMPERSAND )
-# 2233 "parsing/lexer.ml"
+# 2233 "../ocaml/parsing/lexer.ml"
 
   | 36 ->
-# 904 "parsing/lexer.mll"
+# 904 "../ocaml/parsing/lexer.mll"
          ( AMPERAMPER )
-# 2238 "parsing/lexer.ml"
+# 2238 "../ocaml/parsing/lexer.ml"
 
   | 37 ->
-# 905 "parsing/lexer.mll"
+# 905 "../ocaml/parsing/lexer.mll"
          ( BACKQUOTE )
-# 2243 "parsing/lexer.ml"
+# 2243 "../ocaml/parsing/lexer.ml"
 
   | 38 ->
-# 906 "parsing/lexer.mll"
+# 906 "../ocaml/parsing/lexer.mll"
          ( QUOTE )
-# 2248 "parsing/lexer.ml"
+# 2248 "../ocaml/parsing/lexer.ml"
 
   | 39 ->
-# 907 "parsing/lexer.mll"
+# 907 "../ocaml/parsing/lexer.mll"
          ( LPAREN )
-# 2253 "parsing/lexer.ml"
+# 2253 "../ocaml/parsing/lexer.ml"
 
   | 40 ->
-# 908 "parsing/lexer.mll"
+# 908 "../ocaml/parsing/lexer.mll"
          ( RPAREN )
-# 2258 "parsing/lexer.ml"
+# 2258 "../ocaml/parsing/lexer.ml"
 
   | 41 ->
-# 909 "parsing/lexer.mll"
+# 909 "../ocaml/parsing/lexer.mll"
          ( STAR )
-# 2263 "parsing/lexer.ml"
+# 2263 "../ocaml/parsing/lexer.ml"
 
   | 42 ->
-# 910 "parsing/lexer.mll"
+# 910 "../ocaml/parsing/lexer.mll"
          ( COMMA )
-# 2268 "parsing/lexer.ml"
+# 2268 "../ocaml/parsing/lexer.ml"
 
   | 43 ->
-# 911 "parsing/lexer.mll"
+# 911 "../ocaml/parsing/lexer.mll"
          ( MINUSGREATER )
-# 2273 "parsing/lexer.ml"
+# 2273 "../ocaml/parsing/lexer.ml"
 
   | 44 ->
-# 912 "parsing/lexer.mll"
+# 912 "../ocaml/parsing/lexer.mll"
          ( DOT )
-# 2278 "parsing/lexer.ml"
+# 2278 "../ocaml/parsing/lexer.ml"
 
   | 45 ->
-# 913 "parsing/lexer.mll"
+# 913 "../ocaml/parsing/lexer.mll"
          ( DOTDOT )
-# 2283 "parsing/lexer.ml"
+# 2283 "../ocaml/parsing/lexer.ml"
 
   | 46 ->
-# 914 "parsing/lexer.mll"
+# 914 "../ocaml/parsing/lexer.mll"
          ( COLON )
-# 2288 "parsing/lexer.ml"
+# 2288 "../ocaml/parsing/lexer.ml"
 
   | 47 ->
-# 915 "parsing/lexer.mll"
+# 915 "../ocaml/parsing/lexer.mll"
          ( COLONCOLON )
-# 2293 "parsing/lexer.ml"
+# 2293 "../ocaml/parsing/lexer.ml"
 
   | 48 ->
-# 916 "parsing/lexer.mll"
+# 916 "../ocaml/parsing/lexer.mll"
          ( COLONEQUAL )
-# 2298 "parsing/lexer.ml"
+# 2298 "../ocaml/parsing/lexer.ml"
 
   | 49 ->
-# 917 "parsing/lexer.mll"
+# 917 "../ocaml/parsing/lexer.mll"
          ( COLONGREATER )
-# 2303 "parsing/lexer.ml"
+# 2303 "../ocaml/parsing/lexer.ml"
 
   | 50 ->
-# 918 "parsing/lexer.mll"
+# 918 "../ocaml/parsing/lexer.mll"
          ( SEMI )
-# 2308 "parsing/lexer.ml"
+# 2308 "../ocaml/parsing/lexer.ml"
 
   | 51 ->
-# 919 "parsing/lexer.mll"
+# 919 "../ocaml/parsing/lexer.mll"
          ( SEMISEMI )
-# 2313 "parsing/lexer.ml"
+# 2313 "../ocaml/parsing/lexer.ml"
 
   | 52 ->
-# 920 "parsing/lexer.mll"
+# 920 "../ocaml/parsing/lexer.mll"
          ( LESS )
-# 2318 "parsing/lexer.ml"
+# 2318 "../ocaml/parsing/lexer.ml"
 
   | 53 ->
-# 921 "parsing/lexer.mll"
+# 921 "../ocaml/parsing/lexer.mll"
          ( LESSMINUS )
-# 2323 "parsing/lexer.ml"
+# 2323 "../ocaml/parsing/lexer.ml"
 
   | 54 ->
-# 922 "parsing/lexer.mll"
+# 922 "../ocaml/parsing/lexer.mll"
          ( EQUAL )
-# 2328 "parsing/lexer.ml"
+# 2328 "../ocaml/parsing/lexer.ml"
 
   | 55 ->
-# 923 "parsing/lexer.mll"
+# 923 "../ocaml/parsing/lexer.mll"
          ( LBRACKET )
-# 2333 "parsing/lexer.ml"
+# 2333 "../ocaml/parsing/lexer.ml"
 
   | 56 ->
-# 924 "parsing/lexer.mll"
+# 924 "../ocaml/parsing/lexer.mll"
          ( LBRACKETBAR )
-# 2338 "parsing/lexer.ml"
+# 2338 "../ocaml/parsing/lexer.ml"
 
   | 57 ->
-# 925 "parsing/lexer.mll"
+# 925 "../ocaml/parsing/lexer.mll"
          ( LBRACKETLESS )
-# 2343 "parsing/lexer.ml"
+# 2343 "../ocaml/parsing/lexer.ml"
 
   | 58 ->
-# 926 "parsing/lexer.mll"
+# 926 "../ocaml/parsing/lexer.mll"
          ( LBRACKETGREATER )
-# 2348 "parsing/lexer.ml"
+# 2348 "../ocaml/parsing/lexer.ml"
 
   | 59 ->
-# 927 "parsing/lexer.mll"
+# 927 "../ocaml/parsing/lexer.mll"
          ( RBRACKET )
-# 2353 "parsing/lexer.ml"
+# 2353 "../ocaml/parsing/lexer.ml"
 
   | 60 ->
-# 928 "parsing/lexer.mll"
+# 928 "../ocaml/parsing/lexer.mll"
          ( LBRACE )
-# 2358 "parsing/lexer.ml"
+# 2358 "../ocaml/parsing/lexer.ml"
 
   | 61 ->
-# 929 "parsing/lexer.mll"
+# 929 "../ocaml/parsing/lexer.mll"
          ( LBRACELESS )
-# 2363 "parsing/lexer.ml"
+# 2363 "../ocaml/parsing/lexer.ml"
 
   | 62 ->
-# 930 "parsing/lexer.mll"
+# 930 "../ocaml/parsing/lexer.mll"
          ( BAR )
-# 2368 "parsing/lexer.ml"
+# 2368 "../ocaml/parsing/lexer.ml"
 
   | 63 ->
-# 931 "parsing/lexer.mll"
+# 931 "../ocaml/parsing/lexer.mll"
          ( BARBAR )
-# 2373 "parsing/lexer.ml"
+# 2373 "../ocaml/parsing/lexer.ml"
 
   | 64 ->
-# 932 "parsing/lexer.mll"
+# 932 "../ocaml/parsing/lexer.mll"
          ( BARRBRACKET )
-# 2378 "parsing/lexer.ml"
+# 2378 "../ocaml/parsing/lexer.ml"
 
   | 65 ->
-# 933 "parsing/lexer.mll"
+# 933 "../ocaml/parsing/lexer.mll"
          ( GREATER )
-# 2383 "parsing/lexer.ml"
+# 2383 "../ocaml/parsing/lexer.ml"
 
   | 66 ->
-# 934 "parsing/lexer.mll"
+# 934 "../ocaml/parsing/lexer.mll"
          ( GREATERRBRACKET )
-# 2388 "parsing/lexer.ml"
+# 2388 "../ocaml/parsing/lexer.ml"
 
   | 67 ->
-# 935 "parsing/lexer.mll"
+# 935 "../ocaml/parsing/lexer.mll"
          ( RBRACE )
-# 2393 "parsing/lexer.ml"
+# 2393 "../ocaml/parsing/lexer.ml"
 
   | 68 ->
-# 936 "parsing/lexer.mll"
+# 936 "../ocaml/parsing/lexer.mll"
          ( GREATERRBRACE )
-# 2398 "parsing/lexer.ml"
+# 2398 "../ocaml/parsing/lexer.ml"
 
   | 69 ->
-# 937 "parsing/lexer.mll"
+# 937 "../ocaml/parsing/lexer.mll"
          ( LBRACKETAT )
-# 2403 "parsing/lexer.ml"
+# 2403 "../ocaml/parsing/lexer.ml"
 
   | 70 ->
-# 938 "parsing/lexer.mll"
+# 938 "../ocaml/parsing/lexer.mll"
          ( LBRACKETPERCENT )
-# 2408 "parsing/lexer.ml"
+# 2408 "../ocaml/parsing/lexer.ml"
 
   | 71 ->
-# 939 "parsing/lexer.mll"
+# 939 "../ocaml/parsing/lexer.mll"
           ( LBRACKETPERCENTPERCENT )
-# 2413 "parsing/lexer.ml"
+# 2413 "../ocaml/parsing/lexer.ml"
 
   | 72 ->
-# 940 "parsing/lexer.mll"
+# 940 "../ocaml/parsing/lexer.mll"
           ( LBRACKETATAT )
-# 2418 "parsing/lexer.ml"
+# 2418 "../ocaml/parsing/lexer.ml"
 
   | 73 ->
-# 941 "parsing/lexer.mll"
+# 941 "../ocaml/parsing/lexer.mll"
            ( LBRACKETATATAT )
-# 2423 "parsing/lexer.ml"
+# 2423 "../ocaml/parsing/lexer.ml"
 
   | 74 ->
-# 942 "parsing/lexer.mll"
+# 942 "../ocaml/parsing/lexer.mll"
          ( BANG )
-# 2428 "parsing/lexer.ml"
+# 2428 "../ocaml/parsing/lexer.ml"
 
   | 75 ->
-# 943 "parsing/lexer.mll"
+# 943 "../ocaml/parsing/lexer.mll"
          ( INFIXOP0 "!=" )
-# 2433 "parsing/lexer.ml"
+# 2433 "../ocaml/parsing/lexer.ml"
 
   | 76 ->
-# 944 "parsing/lexer.mll"
+# 944 "../ocaml/parsing/lexer.mll"
          ( PLUS )
-# 2438 "parsing/lexer.ml"
+# 2438 "../ocaml/parsing/lexer.ml"
 
   | 77 ->
-# 945 "parsing/lexer.mll"
+# 945 "../ocaml/parsing/lexer.mll"
          ( PLUSDOT )
-# 2443 "parsing/lexer.ml"
+# 2443 "../ocaml/parsing/lexer.ml"
 
   | 78 ->
-# 946 "parsing/lexer.mll"
+# 946 "../ocaml/parsing/lexer.mll"
          ( PLUSEQ )
-# 2448 "parsing/lexer.ml"
+# 2448 "../ocaml/parsing/lexer.ml"
 
   | 79 ->
-# 947 "parsing/lexer.mll"
+# 947 "../ocaml/parsing/lexer.mll"
          ( MINUS )
-# 2453 "parsing/lexer.ml"
+# 2453 "../ocaml/parsing/lexer.ml"
 
   | 80 ->
-# 948 "parsing/lexer.mll"
+# 948 "../ocaml/parsing/lexer.mll"
          ( MINUSDOT )
-# 2458 "parsing/lexer.ml"
+# 2458 "../ocaml/parsing/lexer.ml"
 
   | 81 ->
-# 951 "parsing/lexer.mll"
+# 951 "../ocaml/parsing/lexer.mll"
             ( PREFIXOP(Lexing.lexeme lexbuf) )
-# 2463 "parsing/lexer.ml"
+# 2463 "../ocaml/parsing/lexer.ml"
 
   | 82 ->
-# 953 "parsing/lexer.mll"
+# 953 "../ocaml/parsing/lexer.mll"
             ( PREFIXOP(Lexing.lexeme lexbuf) )
-# 2468 "parsing/lexer.ml"
+# 2468 "../ocaml/parsing/lexer.ml"
 
   | 83 ->
-# 955 "parsing/lexer.mll"
+# 955 "../ocaml/parsing/lexer.mll"
             ( INFIXOP0(Lexing.lexeme lexbuf) )
-# 2473 "parsing/lexer.ml"
+# 2473 "../ocaml/parsing/lexer.ml"
 
   | 84 ->
-# 957 "parsing/lexer.mll"
+# 957 "../ocaml/parsing/lexer.mll"
             ( INFIXOP1(Lexing.lexeme lexbuf) )
-# 2478 "parsing/lexer.ml"
+# 2478 "../ocaml/parsing/lexer.ml"
 
   | 85 ->
-# 959 "parsing/lexer.mll"
+# 959 "../ocaml/parsing/lexer.mll"
             ( INFIXOP2(Lexing.lexeme lexbuf) )
-# 2483 "parsing/lexer.ml"
+# 2483 "../ocaml/parsing/lexer.ml"
 
   | 86 ->
-# 961 "parsing/lexer.mll"
+# 961 "../ocaml/parsing/lexer.mll"
             ( INFIXOP4(Lexing.lexeme lexbuf) )
-# 2488 "parsing/lexer.ml"
+# 2488 "../ocaml/parsing/lexer.ml"
 
   | 87 ->
-# 962 "parsing/lexer.mll"
+# 962 "../ocaml/parsing/lexer.mll"
             ( PERCENT )
-# 2493 "parsing/lexer.ml"
+# 2493 "../ocaml/parsing/lexer.ml"
 
   | 88 ->
-# 964 "parsing/lexer.mll"
+# 964 "../ocaml/parsing/lexer.mll"
             ( INFIXOP3(Lexing.lexeme lexbuf) )
-# 2498 "parsing/lexer.ml"
+# 2498 "../ocaml/parsing/lexer.ml"
 
   | 89 ->
-# 966 "parsing/lexer.mll"
+# 966 "../ocaml/parsing/lexer.mll"
             ( SHARPOP(Lexing.lexeme lexbuf) )
-# 2503 "parsing/lexer.ml"
+# 2503 "../ocaml/parsing/lexer.ml"
 
   | 90 ->
-# 967 "parsing/lexer.mll"
+# 967 "../ocaml/parsing/lexer.mll"
         (
       if !if_then_else <> Dir_out then
         if !if_then_else = Dir_if_true then
@@ -19604,14 +19604,14 @@ and
         EOF
         
     )
-# 2516 "parsing/lexer.ml"
+# 2516 "../ocaml/parsing/lexer.ml"
 
   | 91 ->
-# 977 "parsing/lexer.mll"
+# 977 "../ocaml/parsing/lexer.mll"
       ( raise (Error(Illegal_character (Lexing.lexeme_char lexbuf 0),
                      Location.curr lexbuf))
       )
-# 2523 "parsing/lexer.ml"
+# 2523 "../ocaml/parsing/lexer.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
       __ocaml_lex_token_rec lexbuf __ocaml_lex_state
@@ -19621,15 +19621,15 @@ and comment lexbuf =
 and __ocaml_lex_comment_rec lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 983 "parsing/lexer.mll"
+# 983 "../ocaml/parsing/lexer.mll"
       ( comment_start_loc := (Location.curr lexbuf) :: !comment_start_loc;
         store_lexeme lexbuf;
         comment lexbuf;
       )
-# 2538 "parsing/lexer.ml"
+# 2538 "../ocaml/parsing/lexer.ml"
 
   | 1 ->
-# 988 "parsing/lexer.mll"
+# 988 "../ocaml/parsing/lexer.mll"
       ( match !comment_start_loc with
         | [] -> assert false
         | [_] -> comment_start_loc := []; Location.curr lexbuf
@@ -19637,10 +19637,10 @@ and __ocaml_lex_comment_rec lexbuf __ocaml_lex_state =
                   store_lexeme lexbuf;
                   comment lexbuf;
        )
-# 2549 "parsing/lexer.ml"
+# 2549 "../ocaml/parsing/lexer.ml"
 
   | 2 ->
-# 996 "parsing/lexer.mll"
+# 996 "../ocaml/parsing/lexer.mll"
       (
         string_start_loc := Location.curr lexbuf;
         store_string_char '"';
@@ -19658,10 +19658,10 @@ and __ocaml_lex_comment_rec lexbuf __ocaml_lex_state =
         is_in_string := false;
         store_string_char '"';
         comment lexbuf )
-# 2570 "parsing/lexer.ml"
+# 2570 "../ocaml/parsing/lexer.ml"
 
   | 3 ->
-# 1014 "parsing/lexer.mll"
+# 1014 "../ocaml/parsing/lexer.mll"
       (
         let delim = Lexing.lexeme lexbuf in
         let delim = String.sub delim 1 (String.length delim - 2) in
@@ -19683,43 +19683,43 @@ and __ocaml_lex_comment_rec lexbuf __ocaml_lex_state =
         store_string delim;
         store_string_char '}';
         comment lexbuf )
-# 2595 "parsing/lexer.ml"
+# 2595 "../ocaml/parsing/lexer.ml"
 
   | 4 ->
-# 1037 "parsing/lexer.mll"
+# 1037 "../ocaml/parsing/lexer.mll"
       ( store_lexeme lexbuf; comment lexbuf )
-# 2600 "parsing/lexer.ml"
+# 2600 "../ocaml/parsing/lexer.ml"
 
   | 5 ->
-# 1039 "parsing/lexer.mll"
+# 1039 "../ocaml/parsing/lexer.mll"
       ( update_loc lexbuf None 1 false 1;
         store_lexeme lexbuf;
         comment lexbuf
       )
-# 2608 "parsing/lexer.ml"
+# 2608 "../ocaml/parsing/lexer.ml"
 
   | 6 ->
-# 1044 "parsing/lexer.mll"
+# 1044 "../ocaml/parsing/lexer.mll"
       ( store_lexeme lexbuf; comment lexbuf )
-# 2613 "parsing/lexer.ml"
+# 2613 "../ocaml/parsing/lexer.ml"
 
   | 7 ->
-# 1046 "parsing/lexer.mll"
+# 1046 "../ocaml/parsing/lexer.mll"
       ( store_lexeme lexbuf; comment lexbuf )
-# 2618 "parsing/lexer.ml"
+# 2618 "../ocaml/parsing/lexer.ml"
 
   | 8 ->
-# 1048 "parsing/lexer.mll"
+# 1048 "../ocaml/parsing/lexer.mll"
       ( store_lexeme lexbuf; comment lexbuf )
-# 2623 "parsing/lexer.ml"
+# 2623 "../ocaml/parsing/lexer.ml"
 
   | 9 ->
-# 1050 "parsing/lexer.mll"
+# 1050 "../ocaml/parsing/lexer.mll"
       ( store_lexeme lexbuf; comment lexbuf )
-# 2628 "parsing/lexer.ml"
+# 2628 "../ocaml/parsing/lexer.ml"
 
   | 10 ->
-# 1052 "parsing/lexer.mll"
+# 1052 "../ocaml/parsing/lexer.mll"
       ( match !comment_start_loc with
         | [] -> assert false
         | loc :: _ ->
@@ -19727,20 +19727,20 @@ and __ocaml_lex_comment_rec lexbuf __ocaml_lex_state =
           comment_start_loc := [];
           raise (Error (Unterminated_comment start, loc))
       )
-# 2639 "parsing/lexer.ml"
+# 2639 "../ocaml/parsing/lexer.ml"
 
   | 11 ->
-# 1060 "parsing/lexer.mll"
+# 1060 "../ocaml/parsing/lexer.mll"
       ( update_loc lexbuf None 1 false 0;
         store_lexeme lexbuf;
         comment lexbuf
       )
-# 2647 "parsing/lexer.ml"
+# 2647 "../ocaml/parsing/lexer.ml"
 
   | 12 ->
-# 1065 "parsing/lexer.mll"
+# 1065 "../ocaml/parsing/lexer.mll"
       ( store_lexeme lexbuf; comment lexbuf )
-# 2652 "parsing/lexer.ml"
+# 2652 "../ocaml/parsing/lexer.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
       __ocaml_lex_comment_rec lexbuf __ocaml_lex_state
@@ -19750,42 +19750,42 @@ and string lexbuf =
 and __ocaml_lex_string_rec lexbuf __ocaml_lex_state =
   match Lexing.new_engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 1069 "parsing/lexer.mll"
+# 1069 "../ocaml/parsing/lexer.mll"
       ( () )
-# 2664 "parsing/lexer.ml"
+# 2664 "../ocaml/parsing/lexer.ml"
 
   | 1 ->
 let
-# 1070 "parsing/lexer.mll"
+# 1070 "../ocaml/parsing/lexer.mll"
                                   space
-# 2670 "parsing/lexer.ml"
+# 2670 "../ocaml/parsing/lexer.ml"
 = Lexing.sub_lexeme lexbuf lexbuf.Lexing.lex_mem.(0) lexbuf.Lexing.lex_curr_pos in
-# 1071 "parsing/lexer.mll"
+# 1071 "../ocaml/parsing/lexer.mll"
       ( update_loc lexbuf None 1 false (String.length space);
         string lexbuf
       )
-# 2676 "parsing/lexer.ml"
+# 2676 "../ocaml/parsing/lexer.ml"
 
   | 2 ->
-# 1075 "parsing/lexer.mll"
+# 1075 "../ocaml/parsing/lexer.mll"
       ( store_string_char(char_for_backslash(Lexing.lexeme_char lexbuf 1));
         string lexbuf )
-# 2682 "parsing/lexer.ml"
+# 2682 "../ocaml/parsing/lexer.ml"
 
   | 3 ->
-# 1078 "parsing/lexer.mll"
+# 1078 "../ocaml/parsing/lexer.mll"
       ( store_string_char(char_for_decimal_code lexbuf 1);
          string lexbuf )
-# 2688 "parsing/lexer.ml"
+# 2688 "../ocaml/parsing/lexer.ml"
 
   | 4 ->
-# 1081 "parsing/lexer.mll"
+# 1081 "../ocaml/parsing/lexer.mll"
       ( store_string_char(char_for_hexadecimal_code lexbuf 2);
          string lexbuf )
-# 2694 "parsing/lexer.ml"
+# 2694 "../ocaml/parsing/lexer.ml"
 
   | 5 ->
-# 1084 "parsing/lexer.mll"
+# 1084 "../ocaml/parsing/lexer.mll"
       ( if in_comment ()
         then string lexbuf
         else begin
@@ -19800,29 +19800,29 @@ let
           string lexbuf
         end
       )
-# 2712 "parsing/lexer.ml"
+# 2712 "../ocaml/parsing/lexer.ml"
 
   | 6 ->
-# 1099 "parsing/lexer.mll"
+# 1099 "../ocaml/parsing/lexer.mll"
       ( if not (in_comment ()) then
           Location.prerr_warning (Location.curr lexbuf) Warnings.Eol_in_string;
         update_loc lexbuf None 1 false 0;
         store_lexeme lexbuf;
         string lexbuf
       )
-# 2722 "parsing/lexer.ml"
+# 2722 "../ocaml/parsing/lexer.ml"
 
   | 7 ->
-# 1106 "parsing/lexer.mll"
+# 1106 "../ocaml/parsing/lexer.mll"
       ( is_in_string := false;
         raise (Error (Unterminated_string, !string_start_loc)) )
-# 2728 "parsing/lexer.ml"
+# 2728 "../ocaml/parsing/lexer.ml"
 
   | 8 ->
-# 1109 "parsing/lexer.mll"
+# 1109 "../ocaml/parsing/lexer.mll"
       ( store_string_char(Lexing.lexeme_char lexbuf 0);
         string lexbuf )
-# 2734 "parsing/lexer.ml"
+# 2734 "../ocaml/parsing/lexer.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
       __ocaml_lex_string_rec lexbuf __ocaml_lex_state
@@ -19832,34 +19832,34 @@ and quoted_string delim lexbuf =
 and __ocaml_lex_quoted_string_rec delim lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 1114 "parsing/lexer.mll"
+# 1114 "../ocaml/parsing/lexer.mll"
       ( update_loc lexbuf None 1 false 0;
         store_lexeme lexbuf;
         quoted_string delim lexbuf
       )
-# 2749 "parsing/lexer.ml"
+# 2749 "../ocaml/parsing/lexer.ml"
 
   | 1 ->
-# 1119 "parsing/lexer.mll"
+# 1119 "../ocaml/parsing/lexer.mll"
       ( is_in_string := false;
         raise (Error (Unterminated_string, !string_start_loc)) )
-# 2755 "parsing/lexer.ml"
+# 2755 "../ocaml/parsing/lexer.ml"
 
   | 2 ->
-# 1122 "parsing/lexer.mll"
+# 1122 "../ocaml/parsing/lexer.mll"
       (
         let edelim = Lexing.lexeme lexbuf in
         let edelim = String.sub edelim 1 (String.length edelim - 2) in
         if delim = edelim then ()
         else (store_lexeme lexbuf; quoted_string delim lexbuf)
       )
-# 2765 "parsing/lexer.ml"
+# 2765 "../ocaml/parsing/lexer.ml"
 
   | 3 ->
-# 1129 "parsing/lexer.mll"
+# 1129 "../ocaml/parsing/lexer.mll"
       ( store_string_char(Lexing.lexeme_char lexbuf 0);
         quoted_string delim lexbuf )
-# 2771 "parsing/lexer.ml"
+# 2771 "../ocaml/parsing/lexer.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
       __ocaml_lex_quoted_string_rec delim lexbuf __ocaml_lex_state
@@ -19869,26 +19869,26 @@ and skip_sharp_bang lexbuf =
 and __ocaml_lex_skip_sharp_bang_rec lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 1134 "parsing/lexer.mll"
+# 1134 "../ocaml/parsing/lexer.mll"
        ( update_loc lexbuf None 3 false 0 )
-# 2783 "parsing/lexer.ml"
+# 2783 "../ocaml/parsing/lexer.ml"
 
   | 1 ->
-# 1136 "parsing/lexer.mll"
+# 1136 "../ocaml/parsing/lexer.mll"
        ( update_loc lexbuf None 1 false 0 )
-# 2788 "parsing/lexer.ml"
+# 2788 "../ocaml/parsing/lexer.ml"
 
   | 2 ->
-# 1137 "parsing/lexer.mll"
+# 1137 "../ocaml/parsing/lexer.mll"
        ( () )
-# 2793 "parsing/lexer.ml"
+# 2793 "../ocaml/parsing/lexer.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
       __ocaml_lex_skip_sharp_bang_rec lexbuf __ocaml_lex_state
 
 ;;
 
-# 1139 "parsing/lexer.mll"
+# 1139 "../ocaml/parsing/lexer.mll"
  
 
   let at_bol lexbuf = 
@@ -20123,7 +20123,7 @@ and __ocaml_lex_skip_sharp_bang_rec lexbuf __ocaml_lex_state =
     preprocessor := Some (init, preprocess)
 
 
-# 3035 "parsing/lexer.ml"
+# 3035 "../ocaml/parsing/lexer.ml"
 
 end
 module Bs_conditional_initial : sig 
@@ -25635,6 +25635,801 @@ let write_ast (type t) ~(fname : string) ~output (kind : t Ast_extract.kind) ( p
 
 
 end
+module Ast_literal : sig 
+#1 "ast_literal.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type 'a  lit = ?loc: Location.t -> unit -> 'a
+module Lid : sig
+  type t = Longident.t 
+  val val_unit : t 
+  val type_unit : t 
+  val type_int : t 
+  val js_fn : t 
+  val js_meth : t 
+  val js_meth_callback : t 
+  val js_obj : t 
+
+  val ignore_id : t 
+  val js_null : t 
+  val js_undefined : t
+  val js_null_undefined : t 
+  val js_re_id : t 
+  val js_unsafe : t 
+end
+
+type expression_lit = Parsetree.expression lit 
+type core_type_lit = Parsetree.core_type lit 
+type pattern_lit = Parsetree.pattern lit 
+
+val val_unit : expression_lit
+
+val type_unit : core_type_lit
+val type_exn : core_type_lit
+val type_string : core_type_lit
+val type_int : core_type_lit 
+val type_any : core_type_lit
+
+val pat_unit : pattern_lit
+
+end = struct
+#1 "ast_literal.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+open Ast_helper
+
+
+module Lid = struct 
+  type t = Longident.t 
+  let val_unit : t = Lident "()"
+  let type_unit : t = Lident "unit"
+  let type_string : t = Lident "string"
+  let type_int : t = Lident "int" (* use *predef* *)
+  let type_exn : t = Lident "exn" (* use *predef* *)
+  (* TODO should be renamed in to {!Js.fn} *)
+  (* TODO should be moved into {!Js.t} Later *)
+  let js_fn = Longident.Ldot (Lident "Js", "fn")
+  let js_meth = Longident.Ldot (Lident "Js", "meth")
+  let js_meth_callback = Longident.Ldot (Lident "Js", "meth_callback")
+  let js_obj = Longident.Ldot (Lident "Js", "t") 
+  let ignore_id = Longident.Ldot (Lident "Pervasives", "ignore")
+  let js_null  = Longident.Ldot (Lident "Js", "null")
+  let js_undefined = Longident.Ldot (Lident "Js", "undefined")
+  let js_null_undefined = Longident.Ldot (Lident "Js", "null_undefined")
+  let js_re_id = Longident.Ldot (Lident "Js_re", "t")
+  let js_unsafe = Longident.Lident "Js_unsafe"
+end
+
+module No_loc = struct 
+  let loc = Location.none
+  let val_unit = 
+    Ast_helper.Exp.construct {txt = Lid.val_unit; loc }  None
+
+  let type_unit =   
+    Ast_helper.Typ.mk  (Ptyp_constr ({ txt = Lid.type_unit; loc}, []))
+  let type_exn =   
+    Ast_helper.Typ.mk  (Ptyp_constr ({ txt = Lid.type_unit; loc}, []))
+
+  let type_int = 
+    Ast_helper.Typ.mk (Ptyp_constr ({txt = Lid.type_int; loc}, []))  
+  let type_string =   
+    Ast_helper.Typ.mk  (Ptyp_constr ({ txt = Lid.type_string; loc}, []))
+
+  let type_any = Ast_helper.Typ.any ()
+  let pat_unit = Pat.construct {txt = Lid.val_unit; loc} None
+end 
+
+type 'a  lit = ?loc: Location.t -> unit -> 'a
+type expression_lit = Parsetree.expression lit 
+type core_type_lit = Parsetree.core_type lit 
+type pattern_lit = Parsetree.pattern lit 
+
+let val_unit ?loc () = 
+  match loc with 
+  | None -> No_loc.val_unit
+  | Some loc -> Ast_helper.Exp.construct {txt = Lid.val_unit; loc}  None
+
+
+let type_unit ?loc () = 
+  match loc with
+  | None ->     
+    No_loc.type_unit
+  | Some loc -> 
+    Ast_helper.Typ.mk ~loc  (Ptyp_constr ({ txt = Lid.type_unit; loc}, []))
+
+let type_exn ?loc () = 
+  match loc with
+  | None ->     
+    No_loc.type_exn
+  | Some loc -> 
+    Ast_helper.Typ.mk ~loc  (Ptyp_constr ({ txt = Lid.type_exn; loc}, []))
+
+
+let type_string ?loc () = 
+  match loc with 
+  | None -> No_loc.type_string 
+  | Some loc ->     
+    Ast_helper.Typ.mk ~loc  (Ptyp_constr ({ txt = Lid.type_string; loc}, []))
+
+let type_int ?loc () = 
+  match loc with 
+  | None -> No_loc.type_int
+  | Some loc ->     
+    Ast_helper.Typ.mk ~loc  (Ptyp_constr ({ txt = Lid.type_int; loc}, []))
+
+let type_any ?loc () = 
+  match loc with 
+  | None -> No_loc.type_any
+  | Some loc -> Ast_helper.Typ.any ~loc ()
+
+let pat_unit ?loc () = 
+  match loc with 
+  | None -> No_loc.pat_unit
+  | Some loc -> 
+    Pat.construct ~loc {txt = Lid.val_unit; loc} None
+
+end
+module Ast_comb : sig 
+#1 "ast_comb.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+val exp_apply_no_label : 
+  ?loc:Location.t ->
+  ?attrs:Parsetree.attributes ->
+  Parsetree.expression -> Parsetree.expression list -> Parsetree.expression
+
+val fun_no_label : 
+  ?loc:Location.t ->
+  ?attrs:Parsetree.attributes ->
+  Parsetree.pattern -> Parsetree.expression -> Parsetree.expression
+
+val arrow_no_label : 
+  ?loc:Location.t ->
+  ?attrs:Parsetree.attributes ->
+  Parsetree.core_type -> Parsetree.core_type -> Parsetree.core_type
+
+(* note we first declare its type is [unit], 
+   then [ignore] it, [ignore] is necessary since 
+   the js value  maybe not be of type [unit] and 
+   we can use [unit] value (though very little chance) 
+   sometimes
+*)
+val discard_exp_as_unit : 
+  Location.t -> Parsetree.expression -> Parsetree.expression
+
+
+val tuple_type_pair : 
+  ?loc:Ast_helper.loc ->
+  [< `Make | `Run ] ->
+  int -> Parsetree.core_type * Parsetree.core_type list * Parsetree.core_type
+
+val to_js_type :
+  Location.t -> Parsetree.core_type -> Parsetree.core_type
+
+
+(** TODO: make it work for browser too *)
+val to_undefined_type :
+  Location.t -> Parsetree.core_type -> Parsetree.core_type  
+
+val to_js_re_type : Location.t -> Parsetree.core_type
+
+end = struct
+#1 "ast_comb.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+open Ast_helper 
+
+let exp_apply_no_label ?loc ?attrs a b = 
+  Exp.apply ?loc ?attrs a (List.map (fun x -> "", x) b)
+
+let fun_no_label ?loc ?attrs  pat body = 
+  Exp.fun_ ?loc ?attrs "" None pat body
+
+let arrow_no_label ?loc ?attrs b c = 
+  Typ.arrow ?loc ?attrs "" b c 
+
+let discard_exp_as_unit loc e = 
+  exp_apply_no_label ~loc     
+    (Exp.ident ~loc {txt = Ast_literal.Lid.ignore_id; loc})
+    [Exp.constraint_ ~loc e 
+       (Ast_literal.type_unit ~loc ())]
+
+
+let tuple_type_pair ?loc kind arity = 
+  let prefix  = "a" in
+  if arity = 0 then 
+    let ty = Typ.var ?loc ( prefix ^ "0") in 
+    match kind with 
+    | `Run -> ty,  [], ty 
+    | `Make -> 
+      (Typ.arrow "" ?loc
+         (Ast_literal.type_unit ?loc ())
+         ty ,
+       [], ty)
+  else
+    let number = arity + 1 in
+    let tys = Ext_list.init number (fun i -> 
+        Typ.var ?loc (prefix ^ string_of_int (number - i - 1))
+      )  in
+    match tys with 
+    | result :: rest -> 
+      Ext_list.reduce_from_left (fun r arg -> Typ.arrow "" ?loc arg r) tys, 
+      List.rev rest , result
+    | [] -> assert false
+    
+    
+
+let js_obj_type_id  = 
+  Ast_literal.Lid.js_obj 
+
+let re_id  = 
+  Ast_literal.Lid.js_re_id 
+
+let to_js_type loc  x  = 
+  Typ.constr ~loc {txt = js_obj_type_id; loc} [x]
+
+let to_js_re_type loc  =
+  Typ.constr ~loc { txt = re_id ; loc} []
+    
+let to_undefined_type loc x =
+  Typ.constr ~loc
+    {txt = Ast_literal.Lid.js_undefined ; loc}
+    [x]  
+
+
+end
+module Bs_syntaxerr : sig 
+#1 "bs_syntaxerr.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type error 
+  = Unsupported_predicates
+  | Conflict_bs_bs_this_bs_meth  
+  | Duplicated_bs_deriving
+  | Conflict_attributes
+
+  | Duplicated_bs_as 
+  | Expect_int_literal
+  | Expect_string_literal
+  | Expect_int_or_string_or_json_literal
+  | Unhandled_poly_type
+  | Unregistered of string 
+  | Invalid_underscore_type_in_external
+  | Invalid_bs_string_type 
+  | Invalid_bs_int_type 
+  | Conflict_ffi_attribute
+  | Not_supported_in_bs_deriving
+  | Canot_infer_arity_by_syntax
+  | Illegal_attribute
+  | Inconsistent_arity of int * int 
+  (* we still rqeuire users to have explicit annotation to avoid
+     {[ (((int -> int) -> int) -> int )]}
+  *)
+  | Not_supported_directive_in_bs_return
+  | Expect_opt_in_bs_return_to_opt
+  | Label_in_uncurried_bs_attribute
+
+  | Bs_this_simple_pattern
+
+
+val err : Location.t -> error -> 'a
+
+end = struct
+#1 "bs_syntaxerr.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+type error 
+  = Unsupported_predicates
+  | Conflict_bs_bs_this_bs_meth  
+  | Duplicated_bs_deriving
+  | Conflict_attributes
+
+  | Duplicated_bs_as 
+  | Expect_int_literal
+  | Expect_string_literal
+  | Expect_int_or_string_or_json_literal
+  | Unhandled_poly_type
+  | Unregistered of string 
+  | Invalid_underscore_type_in_external
+  | Invalid_bs_string_type 
+  | Invalid_bs_int_type 
+  | Conflict_ffi_attribute
+  | Not_supported_in_bs_deriving
+  | Canot_infer_arity_by_syntax
+  | Illegal_attribute
+  | Inconsistent_arity of int * int 
+  (* we still rqeuire users to have explicit annotation to avoid
+     {[ (((int -> int) -> int) -> int )]}
+  *)
+  | Not_supported_directive_in_bs_return
+  | Expect_opt_in_bs_return_to_opt
+  | Label_in_uncurried_bs_attribute
+
+  | Bs_this_simple_pattern
+
+let pp_error fmt err =
+  Format.pp_print_string fmt @@ match err with
+  | Label_in_uncurried_bs_attribute 
+    -> "label is not allowed here, it is due to `bs.` attribute indicate uncurried calling convention which does not support label argument yet"
+  | Expect_opt_in_bs_return_to_opt
+      ->
+        "bs.return directive *_to_opt expect return type to be \n\
+         syntax wise `_ option` for safety"
+
+  | Not_supported_directive_in_bs_return
+    ->
+    "Not supported return directive"                
+  | Illegal_attribute ->
+    "Illegal attributes"
+  | Canot_infer_arity_by_syntax
+    ->   "Can not infer the arity by syntax, either [@bs.uncurry n] or \n\
+              write it in arrow syntax "
+  | Inconsistent_arity (arity,n)
+      -> Printf.sprintf "Inconsistent arity %d vs %d" arity n 
+  | Not_supported_in_bs_deriving
+    ->
+    "not supported in deriving"
+  | Unsupported_predicates 
+    ->
+     "unsupported predicates"
+  | Conflict_bs_bs_this_bs_meth -> 
+     "[@bs.this], [@bs], [@bs.meth] can not be applied at the same time"
+  | Duplicated_bs_deriving
+    -> "duplicated bs.deriving attribute"
+  | Conflict_attributes
+    -> "conflict attributes " 
+  | Expect_string_literal
+    -> "expect string literal "
+  | Duplicated_bs_as 
+    -> 
+    "duplicated bs.as "
+  | Expect_int_literal 
+    -> 
+    "expect int literal "
+  | Expect_int_or_string_or_json_literal
+    ->
+    "expect int or string literal or json literal ({json||json}) "
+  | Unhandled_poly_type 
+    -> 
+    "Unhandled poly type"
+  | Unregistered str 
+    -> "Unregistered " ^ str 
+  | Invalid_underscore_type_in_external
+    ->
+    "_ is not allowed in combination with external optional type"
+  | Invalid_bs_string_type
+    -> 
+    "Not a valid  type for [@bs.string]"
+  | Invalid_bs_int_type 
+    -> 
+    "Not a valid  type for [@bs.int]"
+  | Conflict_ffi_attribute
+    ->
+    "conflict attributes found" 
+  | Bs_this_simple_pattern
+    -> 
+    "[@bs.this] expect its pattern variable to be simple form"
+
+type exn +=  Error of Location.t * error
+
+
+let () = 
+  Location.register_error_of_exn (function
+    | Error(loc,err) -> 
+      Some (Location.error_of_printer loc pp_error err)
+    | _ -> None
+    )
+
+let err loc error = raise (Error(loc, error))
+
+end
+module Ast_core_type : sig 
+#1 "ast_core_type.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type t = Parsetree.core_type 
+
+
+val extract_option_type_exn : t -> t 
+val lift_option_type : t -> t 
+val is_any : t -> bool 
+val replace_result : t -> t -> t
+
+val is_unit : t -> bool 
+val is_array : t -> bool 
+type arg_label =
+  | Label of string 
+  | Optional of string 
+  | Empty
+
+
+(** for 
+       [x:t] -> "x"
+       [?x:t] -> "?x"
+*)
+val label_name : string -> arg_label
+
+
+
+
+
+(** return a function type 
+    [from_labels ~loc tyvars labels]
+    example output:
+    {[x:'a0 -> y:'a1 -> < x :'a0 ;y :'a1  > Js.t]}
+*)
+val from_labels :
+  loc:Location.t -> int ->  string Asttypes.loc list -> t
+
+val make_obj :
+  loc:Location.t ->
+  (string * Parsetree.attributes * t) list ->
+  t
+
+val is_user_option : t -> bool 
+
+val is_user_bool : t -> bool
+
+val is_user_int : t -> bool
+
+val is_optional_label : string -> bool 
+
+(** 
+  returns 0 when it can not tell arity from the syntax 
+*)
+val get_uncurry_arity : t -> [`Arity of int | `Not_function ]
+
+
+(** fails when Ptyp_poly *)
+val list_of_arrow : 
+  t -> 
+  t *  (Asttypes.label * t * Parsetree.attributes * Location.t) list
+
+val is_arity_one : t -> bool 
+
+end = struct
+#1 "ast_core_type.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type t = Parsetree.core_type 
+
+type arg_label =
+  | Label of string 
+  | Optional of string 
+  | Empty (* it will be ignored , side effect will be recorded *)
+
+
+
+let extract_option_type_exn (ty : t) = 
+  begin match ty with
+    | {ptyp_desc =
+         Ptyp_constr({txt =
+                        Ldot (Lident "*predef*", "option") },
+                     [ty])}
+      ->                
+      ty
+    | _ -> assert false                 
+  end      
+
+let predef_option : Longident.t = Longident.Ldot (Lident "*predef*", "option")
+let predef_int : Longident.t = Ldot (Lident "*predef*", "int")
+
+
+let lift_option_type (ty:t) : t = 
+  {ptyp_desc =
+     Ptyp_constr(
+       {txt = predef_option;
+        loc = ty.ptyp_loc} 
+        , [ty]);
+        ptyp_loc = ty.ptyp_loc;
+      ptyp_attributes = []
+    }
+
+let is_any (ty : t) = 
+  match ty with {ptyp_desc = Ptyp_any} -> true | _ -> false
+
+open Ast_helper
+
+let replace_result ty result = 
+  let rec aux (ty : Parsetree.core_type) = 
+    match ty with 
+    | { ptyp_desc = 
+          Ptyp_arrow (label,t1,t2)
+      } -> { ty with ptyp_desc = Ptyp_arrow(label,t1, aux t2)}
+    | {ptyp_desc = Ptyp_poly(fs,ty)} 
+      ->  {ty with ptyp_desc = Ptyp_poly(fs, aux ty)}
+    | _ -> result in 
+  aux ty 
+
+let is_unit (ty : t ) = 
+  match ty.ptyp_desc with 
+  | Ptyp_constr({txt =Lident "unit"}, []) -> true
+  | _ -> false 
+
+let is_array (ty : t) = 
+  match ty.ptyp_desc with 
+  | Ptyp_constr({txt =Lident "array"}, [_]) -> true
+  | _ -> false 
+
+let is_user_option (ty : t) = 
+  match ty.ptyp_desc with 
+  | Ptyp_constr({txt = Lident "option"},[_]) -> true 
+  | _ -> false 
+
+let is_user_bool (ty : t) = 
+  match ty.ptyp_desc with 
+  | Ptyp_constr({txt = Lident "bool"},[]) -> true 
+  | _ -> false 
+
+let is_user_int (ty : t) = 
+  match ty.ptyp_desc with 
+  | Ptyp_constr({txt = Lident "int"},[]) -> true 
+  | _ -> false 
+
+let is_optional_label l =
+  String.length l > 0 && l.[0] = '?'
+
+let label_name l : arg_label =
+  if l = "" then Empty else 
+  if is_optional_label l 
+  then Optional (String.sub l 1 (String.length l - 1))
+  else Label l
+
+
+(* Note that OCaml type checker will not allow arbitrary 
+   name as type variables, for example:
+   {[
+     '_x'_
+   ]}
+   will be recognized as a invalid program
+*)
+let from_labels ~loc arity labels 
+  : t =
+  let tyvars = 
+    ((Ext_list.init arity (fun i ->      
+         Typ.var ~loc ("a" ^ string_of_int i)))) in
+  let result_type =
+    Ast_comb.to_js_type loc  
+      (Typ.object_ ~loc
+         (List.map2 (fun x y -> x.Asttypes.txt ,[], y) labels tyvars) Closed)
+  in 
+  List.fold_right2 
+    (fun {Asttypes.loc ; txt = label }
+      tyvar acc -> Typ.arrow ~loc label tyvar acc) labels tyvars  result_type
+
+
+let make_obj ~loc xs =
+  Ast_comb.to_js_type loc @@
+  Ast_helper.Typ.object_  ~loc xs   Closed
+
+
+
+(** 
+
+{[ 'a . 'a -> 'b ]} 
+OCaml does not support such syntax yet
+{[ 'a -> ('a. 'a -> 'b) ]}
+
+*)
+let rec get_uncurry_arity_aux  (ty : t) acc = 
+    match ty.ptyp_desc with 
+    | Ptyp_arrow(_, _ , new_ty) -> 
+      get_uncurry_arity_aux new_ty (succ acc)
+    | Ptyp_poly (_,ty) -> 
+      get_uncurry_arity_aux ty acc 
+    | _ -> acc 
+
+(**
+   {[ unit -> 'a1 -> a2']}  arity 2 
+   {[ unit -> 'b ]} return arity 0 
+   {[ 'a1 -> 'a2 -> ... 'aN -> 'b ]} return arity N   
+*)
+let get_uncurry_arity (ty : t ) = 
+  match ty.ptyp_desc  with 
+  | Ptyp_arrow("", {ptyp_desc = (Ptyp_constr ({txt = Lident "unit"}, []))}, 
+    ({ptyp_desc = Ptyp_arrow _ } as rest  )) -> `Arity (get_uncurry_arity_aux rest 1 )
+  | Ptyp_arrow("", {ptyp_desc = (Ptyp_constr ({txt = Lident "unit"}, []))}, _) -> `Arity 0
+  | Ptyp_arrow(_,_,rest ) -> 
+    `Arity(get_uncurry_arity_aux rest 1)
+  | _ -> `Not_function 
+
+let get_curry_arity  ty =
+  get_uncurry_arity_aux ty 0
+
+let is_arity_one ty = get_curry_arity ty =  1
+                      
+let list_of_arrow (ty : t) = 
+  let rec aux (ty : t) acc = 
+    match ty.ptyp_desc with 
+    | Ptyp_arrow(label,t1,t2) -> 
+      aux t2 ((label,t1,ty.ptyp_attributes,ty.ptyp_loc) ::acc)
+    | Ptyp_poly(_, ty) -> (* should not happen? *)
+      Bs_syntaxerr.err ty.ptyp_loc Unhandled_poly_type
+    | return_type -> ty, List.rev acc
+  in aux ty []
+
+end
 module Bs_ast_iterator : sig 
 #1 "bs_ast_iterator.mli"
 (**************************************************************************)
@@ -26484,8 +27279,37 @@ Provide a printer to error
 *)
 
 end
-module Bs_ast_invariant
-= struct
+module Bs_ast_invariant : sig 
+#1 "bs_ast_invariant.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+(** Ast invariant checking for detecting errors *)
+val emit_external_warnings : Bs_ast_iterator.iterator
+
+end = struct
 #1 "bs_ast_invariant.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
@@ -26521,7 +27345,8 @@ let is_bs_attribute txt =
   (len = 2 ||
    String.unsafe_get txt 2 = '.'
   )
-  
+
+
 let emit_external_warnings : Bs_ast_iterator .iterator=
   {
     Bs_ast_iterator.default_iterator with
@@ -26531,14 +27356,33 @@ let emit_external_warnings : Bs_ast_iterator .iterator=
           if is_bs_attribute txt  then
             Bs_warnings.warn_unused_attribute loc txt 
       );
-    expr = (fun _ a -> 
+    expr = (fun self a -> 
       match a.Parsetree.pexp_desc with 
       | Pexp_constant (Const_string (_, Some s)) 
         when Ext_string.equal s Literals.unescaped_j_delimiter 
         || Ext_string.equal s Literals.unescaped_js_delimiter -> 
         Bs_warnings.error_unescaped_delimiter a.pexp_loc s 
-      | _ -> ()
-    ) 
+      | _ -> Bs_ast_iterator.default_iterator.expr self a 
+    );
+    value_description =
+    (fun self v -> 
+       match v with 
+       | ( {
+            pval_loc;
+            pval_prim =
+               "%identity"::_;
+            pval_type
+        } : Parsetree.value_description)
+         when not
+             (Ast_core_type.is_arity_one pval_type)
+         -> 
+           Location.raise_errorf
+             ~loc:pval_loc
+             "%%identity expect its type to be of form 'a -> 'b (arity 1)"
+       | _ ->
+         Bs_ast_iterator.default_iterator.value_description self v 
+         
+      )
   }
 
 end
@@ -100759,197 +101603,6 @@ let table_dispatch table (action : action)
     end
 
 end
-module Bs_syntaxerr : sig 
-#1 "bs_syntaxerr.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type error 
-  = Unsupported_predicates
-  | Conflict_bs_bs_this_bs_meth  
-  | Duplicated_bs_deriving
-  | Conflict_attributes
-
-  | Duplicated_bs_as 
-  | Expect_int_literal
-  | Expect_string_literal
-  | Expect_int_or_string_or_json_literal
-  | Unhandled_poly_type
-  | Unregistered of string 
-  | Invalid_underscore_type_in_external
-  | Invalid_bs_string_type 
-  | Invalid_bs_int_type 
-  | Conflict_ffi_attribute
-  | Not_supported_in_bs_deriving
-  | Canot_infer_arity_by_syntax
-  | Illegal_attribute
-  | Inconsistent_arity of int * int 
-  (* we still rqeuire users to have explicit annotation to avoid
-     {[ (((int -> int) -> int) -> int )]}
-  *)
-  | Not_supported_directive_in_bs_return
-  | Expect_opt_in_bs_return_to_opt
-  | Label_in_uncurried_bs_attribute
-
-  | Bs_this_simple_pattern
-
-
-val err : Location.t -> error -> 'a
-
-end = struct
-#1 "bs_syntaxerr.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-type error 
-  = Unsupported_predicates
-  | Conflict_bs_bs_this_bs_meth  
-  | Duplicated_bs_deriving
-  | Conflict_attributes
-
-  | Duplicated_bs_as 
-  | Expect_int_literal
-  | Expect_string_literal
-  | Expect_int_or_string_or_json_literal
-  | Unhandled_poly_type
-  | Unregistered of string 
-  | Invalid_underscore_type_in_external
-  | Invalid_bs_string_type 
-  | Invalid_bs_int_type 
-  | Conflict_ffi_attribute
-  | Not_supported_in_bs_deriving
-  | Canot_infer_arity_by_syntax
-  | Illegal_attribute
-  | Inconsistent_arity of int * int 
-  (* we still rqeuire users to have explicit annotation to avoid
-     {[ (((int -> int) -> int) -> int )]}
-  *)
-  | Not_supported_directive_in_bs_return
-  | Expect_opt_in_bs_return_to_opt
-  | Label_in_uncurried_bs_attribute
-
-  | Bs_this_simple_pattern
-
-let pp_error fmt err =
-  Format.pp_print_string fmt @@ match err with
-  | Label_in_uncurried_bs_attribute 
-    -> "label is not allowed here, it is due to `bs.` attribute indicate uncurried calling convention which does not support label argument yet"
-  | Expect_opt_in_bs_return_to_opt
-      ->
-        "bs.return directive *_to_opt expect return type to be \n\
-         syntax wise `_ option` for safety"
-
-  | Not_supported_directive_in_bs_return
-    ->
-    "Not supported return directive"                
-  | Illegal_attribute ->
-    "Illegal attributes"
-  | Canot_infer_arity_by_syntax
-    ->   "Can not infer the arity by syntax, either [@bs.uncurry n] or \n\
-              write it in arrow syntax "
-  | Inconsistent_arity (arity,n)
-      -> Printf.sprintf "Inconsistent arity %d vs %d" arity n 
-  | Not_supported_in_bs_deriving
-    ->
-    "not supported in deriving"
-  | Unsupported_predicates 
-    ->
-     "unsupported predicates"
-  | Conflict_bs_bs_this_bs_meth -> 
-     "[@bs.this], [@bs], [@bs.meth] can not be applied at the same time"
-  | Duplicated_bs_deriving
-    -> "duplicated bs.deriving attribute"
-  | Conflict_attributes
-    -> "conflict attributes " 
-  | Expect_string_literal
-    -> "expect string literal "
-  | Duplicated_bs_as 
-    -> 
-    "duplicated bs.as "
-  | Expect_int_literal 
-    -> 
-    "expect int literal "
-  | Expect_int_or_string_or_json_literal
-    ->
-    "expect int or string literal or json literal ({json||json}) "
-  | Unhandled_poly_type 
-    -> 
-    "Unhandled poly type"
-  | Unregistered str 
-    -> "Unregistered " ^ str 
-  | Invalid_underscore_type_in_external
-    ->
-    "_ is not allowed in combination with external optional type"
-  | Invalid_bs_string_type
-    -> 
-    "Not a valid  type for [@bs.string]"
-  | Invalid_bs_int_type 
-    -> 
-    "Not a valid  type for [@bs.int]"
-  | Conflict_ffi_attribute
-    ->
-    "conflict attributes found" 
-  | Bs_this_simple_pattern
-    -> 
-    "[@bs.this] expect its pattern variable to be simple form"
-
-type exn +=  Error of Location.t * error
-
-
-let () = 
-  Location.register_error_of_exn (function
-    | Error(loc,err) -> 
-      Some (Location.error_of_printer loc pp_error err)
-    | _ -> None
-    )
-
-let err loc error = raise (Error(loc, error))
-
-end
 module Ast_attributes : sig 
 #1 "ast_attributes.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -101288,605 +101941,6 @@ let warn_unused_attributes attrs =
     List.iter (fun (({txt; loc}, _) : Parsetree.attribute) -> 
         Bs_warnings.warn_unused_attribute loc txt 
       ) attrs
-
-end
-module Ast_literal : sig 
-#1 "ast_literal.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-type 'a  lit = ?loc: Location.t -> unit -> 'a
-module Lid : sig
-  type t = Longident.t 
-  val val_unit : t 
-  val type_unit : t 
-  val type_int : t 
-  val js_fn : t 
-  val js_meth : t 
-  val js_meth_callback : t 
-  val js_obj : t 
-
-  val ignore_id : t 
-  val js_null : t 
-  val js_undefined : t
-  val js_null_undefined : t 
-  val js_re_id : t 
-  val js_unsafe : t 
-end
-
-type expression_lit = Parsetree.expression lit 
-type core_type_lit = Parsetree.core_type lit 
-type pattern_lit = Parsetree.pattern lit 
-
-val val_unit : expression_lit
-
-val type_unit : core_type_lit
-val type_exn : core_type_lit
-val type_string : core_type_lit
-val type_int : core_type_lit 
-val type_any : core_type_lit
-
-val pat_unit : pattern_lit
-
-end = struct
-#1 "ast_literal.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-open Ast_helper
-
-
-module Lid = struct 
-  type t = Longident.t 
-  let val_unit : t = Lident "()"
-  let type_unit : t = Lident "unit"
-  let type_string : t = Lident "string"
-  let type_int : t = Lident "int" (* use *predef* *)
-  let type_exn : t = Lident "exn" (* use *predef* *)
-  (* TODO should be renamed in to {!Js.fn} *)
-  (* TODO should be moved into {!Js.t} Later *)
-  let js_fn = Longident.Ldot (Lident "Js", "fn")
-  let js_meth = Longident.Ldot (Lident "Js", "meth")
-  let js_meth_callback = Longident.Ldot (Lident "Js", "meth_callback")
-  let js_obj = Longident.Ldot (Lident "Js", "t") 
-  let ignore_id = Longident.Ldot (Lident "Pervasives", "ignore")
-  let js_null  = Longident.Ldot (Lident "Js", "null")
-  let js_undefined = Longident.Ldot (Lident "Js", "undefined")
-  let js_null_undefined = Longident.Ldot (Lident "Js", "null_undefined")
-  let js_re_id = Longident.Ldot (Lident "Js_re", "t")
-  let js_unsafe = Longident.Lident "Js_unsafe"
-end
-
-module No_loc = struct 
-  let loc = Location.none
-  let val_unit = 
-    Ast_helper.Exp.construct {txt = Lid.val_unit; loc }  None
-
-  let type_unit =   
-    Ast_helper.Typ.mk  (Ptyp_constr ({ txt = Lid.type_unit; loc}, []))
-  let type_exn =   
-    Ast_helper.Typ.mk  (Ptyp_constr ({ txt = Lid.type_unit; loc}, []))
-
-  let type_int = 
-    Ast_helper.Typ.mk (Ptyp_constr ({txt = Lid.type_int; loc}, []))  
-  let type_string =   
-    Ast_helper.Typ.mk  (Ptyp_constr ({ txt = Lid.type_string; loc}, []))
-
-  let type_any = Ast_helper.Typ.any ()
-  let pat_unit = Pat.construct {txt = Lid.val_unit; loc} None
-end 
-
-type 'a  lit = ?loc: Location.t -> unit -> 'a
-type expression_lit = Parsetree.expression lit 
-type core_type_lit = Parsetree.core_type lit 
-type pattern_lit = Parsetree.pattern lit 
-
-let val_unit ?loc () = 
-  match loc with 
-  | None -> No_loc.val_unit
-  | Some loc -> Ast_helper.Exp.construct {txt = Lid.val_unit; loc}  None
-
-
-let type_unit ?loc () = 
-  match loc with
-  | None ->     
-    No_loc.type_unit
-  | Some loc -> 
-    Ast_helper.Typ.mk ~loc  (Ptyp_constr ({ txt = Lid.type_unit; loc}, []))
-
-let type_exn ?loc () = 
-  match loc with
-  | None ->     
-    No_loc.type_exn
-  | Some loc -> 
-    Ast_helper.Typ.mk ~loc  (Ptyp_constr ({ txt = Lid.type_exn; loc}, []))
-
-
-let type_string ?loc () = 
-  match loc with 
-  | None -> No_loc.type_string 
-  | Some loc ->     
-    Ast_helper.Typ.mk ~loc  (Ptyp_constr ({ txt = Lid.type_string; loc}, []))
-
-let type_int ?loc () = 
-  match loc with 
-  | None -> No_loc.type_int
-  | Some loc ->     
-    Ast_helper.Typ.mk ~loc  (Ptyp_constr ({ txt = Lid.type_int; loc}, []))
-
-let type_any ?loc () = 
-  match loc with 
-  | None -> No_loc.type_any
-  | Some loc -> Ast_helper.Typ.any ~loc ()
-
-let pat_unit ?loc () = 
-  match loc with 
-  | None -> No_loc.pat_unit
-  | Some loc -> 
-    Pat.construct ~loc {txt = Lid.val_unit; loc} None
-
-end
-module Ast_comb : sig 
-#1 "ast_comb.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-val exp_apply_no_label : 
-  ?loc:Location.t ->
-  ?attrs:Parsetree.attributes ->
-  Parsetree.expression -> Parsetree.expression list -> Parsetree.expression
-
-val fun_no_label : 
-  ?loc:Location.t ->
-  ?attrs:Parsetree.attributes ->
-  Parsetree.pattern -> Parsetree.expression -> Parsetree.expression
-
-val arrow_no_label : 
-  ?loc:Location.t ->
-  ?attrs:Parsetree.attributes ->
-  Parsetree.core_type -> Parsetree.core_type -> Parsetree.core_type
-
-(* note we first declare its type is [unit], 
-   then [ignore] it, [ignore] is necessary since 
-   the js value  maybe not be of type [unit] and 
-   we can use [unit] value (though very little chance) 
-   sometimes
-*)
-val discard_exp_as_unit : 
-  Location.t -> Parsetree.expression -> Parsetree.expression
-
-
-val tuple_type_pair : 
-  ?loc:Ast_helper.loc ->
-  [< `Make | `Run ] ->
-  int -> Parsetree.core_type * Parsetree.core_type list * Parsetree.core_type
-
-val to_js_type :
-  Location.t -> Parsetree.core_type -> Parsetree.core_type
-
-
-(** TODO: make it work for browser too *)
-val to_undefined_type :
-  Location.t -> Parsetree.core_type -> Parsetree.core_type  
-
-val to_js_re_type : Location.t -> Parsetree.core_type
-
-end = struct
-#1 "ast_comb.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-open Ast_helper 
-
-let exp_apply_no_label ?loc ?attrs a b = 
-  Exp.apply ?loc ?attrs a (List.map (fun x -> "", x) b)
-
-let fun_no_label ?loc ?attrs  pat body = 
-  Exp.fun_ ?loc ?attrs "" None pat body
-
-let arrow_no_label ?loc ?attrs b c = 
-  Typ.arrow ?loc ?attrs "" b c 
-
-let discard_exp_as_unit loc e = 
-  exp_apply_no_label ~loc     
-    (Exp.ident ~loc {txt = Ast_literal.Lid.ignore_id; loc})
-    [Exp.constraint_ ~loc e 
-       (Ast_literal.type_unit ~loc ())]
-
-
-let tuple_type_pair ?loc kind arity = 
-  let prefix  = "a" in
-  if arity = 0 then 
-    let ty = Typ.var ?loc ( prefix ^ "0") in 
-    match kind with 
-    | `Run -> ty,  [], ty 
-    | `Make -> 
-      (Typ.arrow "" ?loc
-         (Ast_literal.type_unit ?loc ())
-         ty ,
-       [], ty)
-  else
-    let number = arity + 1 in
-    let tys = Ext_list.init number (fun i -> 
-        Typ.var ?loc (prefix ^ string_of_int (number - i - 1))
-      )  in
-    match tys with 
-    | result :: rest -> 
-      Ext_list.reduce_from_left (fun r arg -> Typ.arrow "" ?loc arg r) tys, 
-      List.rev rest , result
-    | [] -> assert false
-    
-    
-
-let js_obj_type_id  = 
-  Ast_literal.Lid.js_obj 
-
-let re_id  = 
-  Ast_literal.Lid.js_re_id 
-
-let to_js_type loc  x  = 
-  Typ.constr ~loc {txt = js_obj_type_id; loc} [x]
-
-let to_js_re_type loc  =
-  Typ.constr ~loc { txt = re_id ; loc} []
-    
-let to_undefined_type loc x =
-  Typ.constr ~loc
-    {txt = Ast_literal.Lid.js_undefined ; loc}
-    [x]  
-
-
-end
-module Ast_core_type : sig 
-#1 "ast_core_type.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type t = Parsetree.core_type 
-
-
-val extract_option_type_exn : t -> t 
-val lift_option_type : t -> t 
-val is_any : t -> bool 
-val replace_result : t -> t -> t
-
-val is_unit : t -> bool 
-val is_array : t -> bool 
-type arg_label =
-  | Label of string 
-  | Optional of string 
-  | Empty
-
-
-(** for 
-       [x:t] -> "x"
-       [?x:t] -> "?x"
-*)
-val label_name : string -> arg_label
-
-
-
-
-
-(** return a function type 
-    [from_labels ~loc tyvars labels]
-    example output:
-    {[x:'a0 -> y:'a1 -> < x :'a0 ;y :'a1  > Js.t]}
-*)
-val from_labels :
-  loc:Location.t -> int ->  string Asttypes.loc list -> t
-
-val make_obj :
-  loc:Location.t ->
-  (string * Parsetree.attributes * t) list ->
-  t
-
-val is_user_option : t -> bool 
-
-val is_user_bool : t -> bool
-
-val is_user_int : t -> bool
-
-val is_optional_label : string -> bool 
-
-(** 
-  returns 0 when it can not tell arity from the syntax 
-*)
-val get_uncurry_arity : t -> [`Arity of int | `Not_function ]
-
-
-(** fails when Ptyp_poly *)
-val list_of_arrow : 
-  t -> 
-  t *  (Asttypes.label * t * Parsetree.attributes * Location.t) list
-
-
-end = struct
-#1 "ast_core_type.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type t = Parsetree.core_type 
-
-type arg_label =
-  | Label of string 
-  | Optional of string 
-  | Empty (* it will be ignored , side effect will be recorded *)
-
-
-
-let extract_option_type_exn (ty : t) = 
-  begin match ty with
-    | {ptyp_desc =
-         Ptyp_constr({txt =
-                        Ldot (Lident "*predef*", "option") },
-                     [ty])}
-      ->                
-      ty
-    | _ -> assert false                 
-  end      
-
-let predef_option : Longident.t = Longident.Ldot (Lident "*predef*", "option")
-let predef_int : Longident.t = Ldot (Lident "*predef*", "int")
-
-
-let lift_option_type (ty:t) : t = 
-  {ptyp_desc =
-     Ptyp_constr(
-       {txt = predef_option;
-        loc = ty.ptyp_loc} 
-        , [ty]);
-        ptyp_loc = ty.ptyp_loc;
-      ptyp_attributes = []
-    }
-
-let is_any (ty : t) = 
-  match ty with {ptyp_desc = Ptyp_any} -> true | _ -> false
-
-open Ast_helper
-
-let replace_result ty result = 
-  let rec aux (ty : Parsetree.core_type) = 
-    match ty with 
-    | { ptyp_desc = 
-          Ptyp_arrow (label,t1,t2)
-      } -> { ty with ptyp_desc = Ptyp_arrow(label,t1, aux t2)}
-    | {ptyp_desc = Ptyp_poly(fs,ty)} 
-      ->  {ty with ptyp_desc = Ptyp_poly(fs, aux ty)}
-    | _ -> result in 
-  aux ty 
-
-let is_unit (ty : t ) = 
-  match ty.ptyp_desc with 
-  | Ptyp_constr({txt =Lident "unit"}, []) -> true
-  | _ -> false 
-
-let is_array (ty : t) = 
-  match ty.ptyp_desc with 
-  | Ptyp_constr({txt =Lident "array"}, [_]) -> true
-  | _ -> false 
-
-let is_user_option (ty : t) = 
-  match ty.ptyp_desc with 
-  | Ptyp_constr({txt = Lident "option"},[_]) -> true 
-  | _ -> false 
-
-let is_user_bool (ty : t) = 
-  match ty.ptyp_desc with 
-  | Ptyp_constr({txt = Lident "bool"},[]) -> true 
-  | _ -> false 
-
-let is_user_int (ty : t) = 
-  match ty.ptyp_desc with 
-  | Ptyp_constr({txt = Lident "int"},[]) -> true 
-  | _ -> false 
-
-let is_optional_label l =
-  String.length l > 0 && l.[0] = '?'
-
-let label_name l : arg_label =
-  if l = "" then Empty else 
-  if is_optional_label l 
-  then Optional (String.sub l 1 (String.length l - 1))
-  else Label l
-
-
-(* Note that OCaml type checker will not allow arbitrary 
-   name as type variables, for example:
-   {[
-     '_x'_
-   ]}
-   will be recognized as a invalid program
-*)
-let from_labels ~loc arity labels 
-  : t =
-  let tyvars = 
-    ((Ext_list.init arity (fun i ->      
-         Typ.var ~loc ("a" ^ string_of_int i)))) in
-  let result_type =
-    Ast_comb.to_js_type loc  
-      (Typ.object_ ~loc
-         (List.map2 (fun x y -> x.Asttypes.txt ,[], y) labels tyvars) Closed)
-  in 
-  List.fold_right2 
-    (fun {Asttypes.loc ; txt = label }
-      tyvar acc -> Typ.arrow ~loc label tyvar acc) labels tyvars  result_type
-
-
-let make_obj ~loc xs =
-  Ast_comb.to_js_type loc @@
-  Ast_helper.Typ.object_  ~loc xs   Closed
-
-
-
-(** 
-
-{[ 'a . 'a -> 'b ]} 
-OCaml does not support such syntax yet
-{[ 'a -> ('a. 'a -> 'b) ]}
-
-*)
-let rec get_uncurry_arity_aux  (ty : t) acc = 
-    match ty.ptyp_desc with 
-    | Ptyp_arrow(_, _ , new_ty) -> 
-      get_uncurry_arity_aux new_ty (succ acc)
-    | Ptyp_poly (_,ty) -> 
-      get_uncurry_arity_aux ty acc 
-    | _ -> acc 
-
-(**
-  {[ unit -> 'b ]} return arity 1 
-  {[ 'a1 -> 'a2 -> ... 'aN -> 'b ]} return arity N   
-*)
-let get_uncurry_arity (ty : t ) = 
-  match ty.ptyp_desc  with 
-  | Ptyp_arrow("", {ptyp_desc = (Ptyp_constr ({txt = Lident "unit"}, []))}, 
-    ({ptyp_desc = Ptyp_arrow _ } as rest  )) -> `Arity (get_uncurry_arity_aux rest 1 )
-  | Ptyp_arrow("", {ptyp_desc = (Ptyp_constr ({txt = Lident "unit"}, []))}, _) -> `Arity 0
-  | Ptyp_arrow(_,_,rest ) -> 
-    `Arity(get_uncurry_arity_aux rest 1)
-  | _ -> `Not_function 
-
-
-
-let list_of_arrow (ty : t) = 
-  let rec aux (ty : t) acc = 
-    match ty.ptyp_desc with 
-    | Ptyp_arrow(label,t1,t2) -> 
-      aux t2 ((label,t1,ty.ptyp_attributes,ty.ptyp_loc) ::acc)
-    | Ptyp_poly(_, ty) -> (* should not happen? *)
-      Bs_syntaxerr.err ty.ptyp_loc Unhandled_poly_type
-    | return_type -> ty, List.rev acc
-  in aux ty []
 
 end
 module Ast_signature : sig 

@@ -197,6 +197,49 @@ external ff :
      |} in 
       OUnit.assert_bool __LOC__ 
         (Ext_string.contain_substring should_err.stderr "Not a valid method name")
-    end    
+    end;
+
+
+
+
+    __LOC__ >:: begin fun _ ->
+      let should_err = bsc_eval {|
+          external f : int = "%identity"
+|} in
+      OUnit.assert_bool __LOC__
+        (not (Ext_string.is_empty should_err.stderr))
+    end;
+
+    __LOC__ >:: begin fun _ ->
+      let should_err = bsc_eval {|
+          external f : int -> int = "%identity"
+|} in
+      OUnit.assert_bool __LOC__
+         (Ext_string.is_empty should_err.stderr)
+    end;
+    __LOC__ >:: begin fun _ ->
+      let should_err = bsc_eval {|
+          external f : int -> int -> int = "%identity"
+|} in
+      OUnit.assert_bool __LOC__
+         (not (Ext_string.is_empty should_err.stderr))
+    end;
+    __LOC__ >:: begin fun _ ->
+      let should_err = bsc_eval {|
+          external f : (int -> int) -> int = "%identity"
+|} in
+      OUnit.assert_bool __LOC__
+        ( (Ext_string.is_empty should_err.stderr))
+
+    end;
+
+    __LOC__ >:: begin fun _ ->
+      let should_err = bsc_eval {|
+          external f : int -> (int-> int) = "%identity"
+|} in
+      OUnit.assert_bool __LOC__
+        (not (Ext_string.is_empty should_err.stderr))
+
+    end
   ]
 

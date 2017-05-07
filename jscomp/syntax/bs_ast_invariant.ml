@@ -32,7 +32,8 @@ let is_bs_attribute txt =
   (len = 2 ||
    String.unsafe_get txt 2 = '.'
   )
-  
+
+
 let emit_external_warnings : Bs_ast_iterator .iterator=
   {
     Bs_ast_iterator.default_iterator with
@@ -42,12 +43,31 @@ let emit_external_warnings : Bs_ast_iterator .iterator=
           if is_bs_attribute txt  then
             Bs_warnings.warn_unused_attribute loc txt 
       );
-    expr = (fun _ a -> 
+    expr = (fun self a -> 
       match a.Parsetree.pexp_desc with 
       | Pexp_constant (Const_string (_, Some s)) 
         when Ext_string.equal s Literals.unescaped_j_delimiter 
         || Ext_string.equal s Literals.unescaped_js_delimiter -> 
         Bs_warnings.error_unescaped_delimiter a.pexp_loc s 
-      | _ -> ()
-    ) 
+      | _ -> Bs_ast_iterator.default_iterator.expr self a 
+    );
+    value_description =
+    (fun self v -> 
+       match v with 
+       | ( {
+            pval_loc;
+            pval_prim =
+               "%identity"::_;
+            pval_type
+        } : Parsetree.value_description)
+         when not
+             (Ast_core_type.is_arity_one pval_type)
+         -> 
+           Location.raise_errorf
+             ~loc:pval_loc
+             "%%identity expect its type to be of form 'a -> 'b (arity 1)"
+       | _ ->
+         Bs_ast_iterator.default_iterator.value_description self v 
+         
+      )
   }

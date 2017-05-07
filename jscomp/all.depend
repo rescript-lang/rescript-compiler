@@ -182,8 +182,6 @@ syntax/ast_payload.cmx : ext/string_map.cmx ext/ext_js_regex.cmx \
 syntax/ast_signature.cmx : syntax/ast_signature.cmi
 syntax/ast_structure.cmx : syntax/ast_signature.cmx syntax/ast_structure.cmi
 syntax/bs_ast_iterator.cmx : syntax/bs_ast_iterator.cmi
-syntax/bs_ast_invariant.cmx : ext/literals.cmx ext/ext_string.cmx \
-    common/bs_warnings.cmx syntax/bs_ast_iterator.cmx
 syntax/ast_derive.cmx : ext/string_map.cmx ext/literals.cmx \
     ext/ext_string.cmx ext/ext_list.cmx syntax/bs_syntaxerr.cmx \
     syntax/ast_structure.cmx syntax/ast_signature.cmx syntax/ast_payload.cmx \
@@ -221,6 +219,9 @@ syntax/ppx_entry.cmx : ext/string_map.cmx ext/literals.cmx \
     syntax/ast_derive_projector.cmx syntax/ast_derive_dyn.cmx \
     syntax/ast_derive.cmx syntax/ast_core_type.cmx syntax/ast_comb.cmx \
     syntax/ast_attributes.cmx syntax/ppx_entry.cmi
+syntax/bs_ast_invariant.cmx : ext/literals.cmx ext/ext_string.cmx \
+    common/bs_warnings.cmx syntax/bs_ast_iterator.cmx \
+    syntax/ast_core_type.cmx syntax/bs_ast_invariant.cmi
 syntax/bs_syntaxerr.cmi :
 syntax/ast_utf8_string.cmi :
 syntax/ast_utf8_string_interp.cmi :
@@ -246,6 +247,7 @@ syntax/ast_external_attributes.cmi : common/bs_loc.cmi \
     syntax/ast_core_type.cmi syntax/ast_attributes.cmi
 syntax/ast_util.cmi : syntax/ast_payload.cmi
 syntax/ppx_entry.cmi :
+syntax/bs_ast_invariant.cmi : syntax/bs_ast_iterator.cmi
 depends/depends_post_process.cmi :
 depends/bs_exception.cmi :
 depends/ast_extract.cmi : ext/string_map.cmi ext/string_hashtbl.cmi

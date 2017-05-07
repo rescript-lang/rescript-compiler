@@ -396,6 +396,7 @@ bin/whole_compiler.ml : core/lam_eta_conversion.mli
 bin/whole_compiler.ml : core/ocaml_batch_compile.ml
 bin/whole_compiler.ml : ext/hash_set_ident_mask.mli
 bin/whole_compiler.ml : ext/ordered_hash_map_gen.ml
+bin/whole_compiler.ml : syntax/bs_ast_invariant.mli
 bin/whole_compiler.ml : core/js_of_lam_exception.mli
 bin/whole_compiler.ml : core/lam_beta_reduce_util.ml
 bin/whole_compiler.ml : core/ocaml_batch_compile.mli
