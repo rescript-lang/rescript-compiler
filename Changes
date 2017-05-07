@@ -6,6 +6,9 @@ intenral tools:
 
 - #1583, add -U -D support for bspack
 
+Bug fixes :
+
+- #1581, more error checking
 
 BuckleScript 1.7.3:
 ==================
