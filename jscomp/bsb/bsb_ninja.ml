@@ -36,7 +36,7 @@ let output_build
     ~input
     ~rule
     oc =
-  let rule = Rules.get_name rule  oc in (* Trigger building if not used *)
+  let rule = Bsb_rule.get_name rule  oc in (* Trigger building if not used *)
   output_string oc "build ";
   output_string oc output ;
   outputs |> List.iter (fun s -> output_string oc Ext_string.single_space ; output_string oc s  );
@@ -129,12 +129,13 @@ let output_kvs kvs oc =
 let (//) = Ext_filename.combine
 
 type info =
-  { all_config_deps : string list  ;
-    all_installs :  string list}
+  { all_config_deps : string list  ; (* Figure out [.d] files *)
+    (*all_installs :  string list*)
+    }
 
 let zero : info =
   { all_config_deps = [] ;
-    all_installs = []
+    (*all_installs = []*)
   }
 
 let (++) (us : info) (vs : info) =
@@ -144,7 +145,7 @@ let (++) (us : info) (vs : info) =
     {
       all_config_deps  = us.all_config_deps @ vs.all_config_deps
     ;
-      all_installs = us.all_installs @ vs.all_installs
+      (*all_installs = us.all_installs @ vs.all_installs*)
     }
 
 (** This set is stateful, we should make it functional in the future.
@@ -255,7 +256,9 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd
               ~implicit_deps:deps
               ~rule:rule_name ;
             if installable then begin install_file file_input files_to_install end;
-            {all_config_deps = [output_mlastd]; all_installs = [output_cmi];  }
+            {all_config_deps = [output_mlastd]; 
+            (*all_installs = [output_cmi];  *)
+            }
 
           end
         | `Mli
@@ -284,7 +287,7 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd
           if installable then begin install_file file_input files_to_install end ;
           {
             all_config_deps = [output_mliastd];
-            all_installs = [output_cmi] ;
+            (*all_installs = [output_cmi] ;*)
 
           }
 
@@ -313,9 +316,23 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd
     end ++ info
 
   in
+  (*
+  group.generators
+  |> List.iter (fun  ({output; input; cmd}  : Bsb_build_ui.generator)-> 
+    output_build oc ~output:(Bsb_config.proj_rel output) 
+    ~input:(Bsb_config.proj_rel input)
+    ~rule:cmd 
+  ); 
+  *) (* we need create a rule for it --
+  {[
+    rule ocamllex 
+  ]}
+  *)
+  begin 
   String_map.fold (fun  k v  acc ->
       handle_module_info  oc k v acc
-    ) group.sources  acc
+    ) group.sources  acc ; 
+  end
 
 
 let handle_file_groups

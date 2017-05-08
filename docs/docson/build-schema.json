@@ -21,7 +21,7 @@
         "ppx-specs": {
             "type": "array",
             "items": {
-              "type": "string"
+                "type": "string"
             }
         },
         "bs-dependency": {
@@ -38,9 +38,36 @@
             "type": "object",
             "properties": {
                 "cmd": {
-                  "type": "string"
+                    "type": "string"
                 }
             }
+        },
+        "rule-generator": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "command": {
+                    "type": "string"
+                }
+            },
+            "description": "The shell command is running in *dev* time, and you generated could should be checked in, the depedency is tracked properly during dev time,example: `{ \"name\" : \"ocamllex\", \"command\" : \"ocamllex.opt $in -o $out\"}`"
+        },
+        "build-generator": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "edge": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "description": "(WIP) Note that we will add the directory path accordingly"
         },
         "sourceItem": {
             "title": "sourceItem",
@@ -90,6 +117,13 @@
                                     ]
                                 }
                             ]
+                        },
+                        "generators": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/build-generator"
+                            },
+                            "description": "(WIP) Files generated in dev time"
                         },
                         "public": {
                             "oneOf": [
@@ -174,34 +208,34 @@
             "description": "Example: `\"src\"` or `[\"src\", \"test\"]` or `[{\"dir\": \"src\", \"subdirs\": [...]}]`"
         },
         "targetItems": {
-          "type": "object",
-          "properties": {
-            "kind": {
-              "enum": [
-                "native",
-                "bytecode",
-                "js"
-              ],
-              "description": "The compiler to use for the target"
-            },
-            "main": {
-              "type": "string",
-              "description": "Name of the main module used as entry point for this target. 'entry-point' isn't used when this project is built as a dependency."
+            "type": "object",
+            "properties": {
+                "kind": {
+                    "enum": [
+                        "native",
+                        "bytecode",
+                        "js"
+                    ],
+                    "description": "The compiler to use for the target"
+                },
+                "main": {
+                    "type": "string",
+                    "description": "Name of the main module used as entry point for this target. 'entry-point' isn't used when this project is built as a dependency."
+                }
             }
-          }
         },
         "entries": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/targetItems"
-          },
-          "description": "A list of buildable targets"
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/targetItems"
+            },
+            "description": "A list of buildable targets"
         },
         "reason-specs": {
             "type": "object",
             "properties": {
-                "react-jsx" : {
-                    "type" : "boolean",
+                "react-jsx": {
+                    "type": "boolean",
                     "description": "Whether to apply the [Reason-React](https://github.com/reasonml/reason-react)-specific JSX PPX transformation."
                 }
             }
@@ -221,15 +255,15 @@
                         "kind" :
                         {
                             "enum": [
-                            "reset",
-                            "prefix",
-                            "append"
-                        ]
+                                "reset",
+                                "prefix",
+                                "append"
+                            ]
                         },
-                        "flags" : {
+                        "flags": {
                             "type": "array",
                             "items": {
-                              "type": "string"
+                                "type": "string"
                             }
                         }
                     },
@@ -262,7 +296,13 @@
             "$ref": "#/definitions/dependencies",
             "description": "OCaml/Reason dev dependencies of the library, like in package.json. Currently searches in `node_modules`"
         },
-
+        "generators": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/rule-generator"
+            },
+            "description": "(WIP) Pre defined rules"
+        },
         "reason": {
             "$ref": "#/definitions/reason-specs",
             "description": "BuckleScript comes with [Reason](http://facebook.github.io/reason/) by default. Specific configurations here."
@@ -303,14 +343,14 @@
             "type": "boolean",
             "description": "Whether to generate the `.merlin` file for [Merlin](https://github.com/ocaml/merlin). Default: true"
         },
-        "use-stdlib" : {
-            "type" : "boolean",
+        "use-stdlib": {
+            "type": "boolean",
             "description": "(Experimental) whether to use the OCaml standard library. Default: true"
         },
         "bs-external-includes": {
             "type": "array",
             "items": {
-              "type": "string"
+                "type": "string"
             },
             "description": "(Not needed usually) external include directories, which will be applied `-I` to all compilation units"
         },
@@ -321,7 +361,7 @@
         "refmt-flags": {
             "type": "array",
             "items": {
-              "type": "string"
+                "type": "string"
             },
             "description": "(Not needed usually) arguments to pass to `refmt` above. Default: `[\"--print\", \"binary\"]`."
         }

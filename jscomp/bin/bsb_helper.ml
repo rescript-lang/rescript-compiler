@@ -3998,8 +3998,9 @@ val bsbuild_cache : string
 
 
 
-(** if not added, it is guaranteed the reference equality will 
-    be held
+(** 
+  Currently it is okay to have duplicated module, 
+  In the future, we may emit a warning 
 *)
 val map_update : 
   ?dir:string -> file_group_rouces ->  string -> file_group_rouces

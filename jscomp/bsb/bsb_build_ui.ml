@@ -40,7 +40,10 @@ let get_dev_index, get_current_number_of_dev_groups =
    (fun _ -> !dir_index ))
 
 
-
+type build_generator = 
+  { input : string list ;
+    output : string list;
+    command : string}
 (** 
    0 : lib 
    1 : dev 1 
@@ -51,7 +54,11 @@ type  file_group =
     sources : Binary_cache.file_group_rouces; 
     resources : string list ;
     public : public ;
-    dir_index : dir_index 
+    dir_index : dir_index ;
+    generators : build_generator list ; 
+    (** output of [generators] should be added to [sources],
+      if it is [.ml,.mli,.re,.rei]
+    *)
   } 
 
 (**
@@ -60,7 +67,7 @@ type  file_group =
      otherwise it will be idented twice
 *)
 
-type t = 
+type t =   
   { files :  file_group list ; 
     intervals :  Ext_file_pp.interval list ;    
     globbed_dirs : string list ; 
@@ -107,7 +114,9 @@ type parsing_cxt = {
   root : string
 }
 
-let  handle_list_files ({ cwd = dir ; root} : parsing_cxt)  loc_start loc_end : Ext_file_pp.interval list * _ =  
+let  handle_list_files acc
+  ({ cwd = dir ; root} : parsing_cxt)  
+    loc_start loc_end : Ext_file_pp.interval list * _ =    
   (** detect files to be populated later  *)
   let files_array = readdir root dir  in 
   let dyn_file_array = String_vec.make (Array.length files_array) in 
@@ -124,7 +133,7 @@ let  handle_list_files ({ cwd = dir ; root} : parsing_cxt)  loc_start loc_end : 
             warning_unused_file name dir ;
           acc 
         | Suffix_mismatch -> acc 
-      ) String_map.empty files_array in 
+      ) acc files_array in 
   [{Ext_file_pp.loc_start ;
     loc_end; action = (`print (print_arrays dyn_file_array))}],
   files
@@ -191,14 +200,45 @@ and parsing_source_dir_map
     (x : Ext_json_types.t String_map.t)
     (* { dir : xx, files : ... } [dir] is already extracted *)
   = 
-  let cur_sources = ref String_map.empty in
+  let cur_sources : Binary_cache.module_info String_map.t ref = ref String_map.empty in
   let resources = ref [] in 
   let public = ref Export_all in (* TODO: move to {!Bsb_default} later*)
   let cur_update_queue = ref [] in 
   let cur_globbed_dirs = ref [] in 
+  let generators : build_generator list ref  = ref [] in
+  (* begin match String_map.find_opt Bsb_build_schemas.generators x with  *)
+  (* | Some (Arr { content }) ->  *)
+  (*   (\* TODO: need check is dev build or not *\) *)
+  (*   content |> Array.iter (fun (x : Ext_json_types.t) -> *)
+  (*     match x with  *)
+  (*     | Obj { map = generator; loc} ->  *)
+  (*       begin match String_map.find_opt Bsb_build_schemas.input generator, *)
+  (*         String_map.find_opt Bsb_build_schemas.output generator,  *)
+  (*         String_map.find_opt Bsb_build_schemas.cmd generator *)
+  (*        with  *)
+  (*        | Some (Str{str = input}), Some (Str {str = output}), Some (Str {str = cmd})->   *)
+  (*         generators := {input ; output ; cmd } :: !generators; *)
+  (*         (\** Now adding source files, it may be re-added again later when scanning files *)
+  (*          *\) *)
+  (*          begin match Ext_string.is_valid_source_name output with *)
+  (*          | Good -> *)
+  (*            cur_sources := Binary_cache.map_update ~dir !cur_sources output *)
+  (*          | Invalid_module_name ->  *)
+  (*             () *)
+  (*             (\*Format.fprintf Format.err_formatter warning_unused_file output dir *\) *)
+  (*          | Suffix_mismatch -> () *)
+  (*          end *)
+  (*        | _ ->  *)
+  (*         Bsb_exception.failf ~loc "Invalid generator format" *)
+  (*        end *)
+  (*     | _ -> () *)
+  (*      ) *)
+  (* | Some _ | None -> () *)
+  (* end *)
+  (* ; *)
   begin match String_map.find_opt Bsb_build_schemas.files x with 
     | Some (Arr {loc_start;loc_end; content = [||] }) -> (* [ ] *) 
-      let tasks, files =  handle_list_files cxt  loc_start loc_end in
+      let tasks, files =  handle_list_files !cur_sources cxt  loc_start loc_end in
       cur_update_queue := tasks ;
       cur_sources := files
     | Some (Arr {loc_start;loc_end; content = s }) -> (* [ a,b ] *)      
@@ -208,7 +248,7 @@ and parsing_source_dir_map
             | Str {str = s} -> 
               Binary_cache.map_update ~dir acc s
             | _ -> acc
-          ) String_map.empty s    
+          ) !cur_sources s    
     | Some (Obj {map = m; loc} ) -> (* { excludes : [], slow_re : "" }*)
       let excludes = 
         match String_map.find_opt Bsb_build_schemas.excludes m with 
@@ -231,7 +271,7 @@ and parsing_source_dir_map
           if predicate name then 
             Binary_cache.map_update  ~dir acc name 
           else acc
-        ) String_map.empty file_array;
+        ) !cur_sources file_array;
       cur_globbed_dirs := [dir]              
     | None ->  (* No setting on [!files]*)
       let file_array = readdir cxt.root dir in 
@@ -248,7 +288,7 @@ and parsing_source_dir_map
               ; 
               acc 
             | Suffix_mismatch ->  acc
-          ) String_map.empty file_array;
+          ) !cur_sources file_array;
       cur_globbed_dirs :=  [dir]  
     | Some x -> Bsb_exception.failwith_config x "files field expect array or object "
 
@@ -273,6 +313,7 @@ and parsing_source_dir_map
        resources = !resources;
        public = !public;
        dir_index = cxt.dir_index ;
+       generators = !generators ; 
       } in 
     let children, children_update_queue, children_globbed_dirs = 
       match String_map.find_opt Bsb_build_schemas.subdirs x with 
