@@ -52,7 +52,7 @@ val output_kvs : (string * string) array -> out_channel -> unit
 
 type info = {
   all_config_deps : string list  ;
-  all_installs :  string list 
+  (*all_installs :  string list *)
 }
 
 val zero : info 

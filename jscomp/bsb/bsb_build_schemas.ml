@@ -45,3 +45,6 @@ let react_jsx = "react-jsx"
 let entries = "entries"
 let kind = "kind"
 let main = "main"
+
+let generators = "generators"
+let command = "command"
