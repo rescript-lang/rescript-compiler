@@ -99,7 +99,9 @@ let string_of_module_id ~output_prefix
         begin match module_system,  dependency_pkg_info, current_pkg_info with
           | _, NotFound , _ 
             -> 
-            Bs_exception.error (Missing_ml_dependency js_file)
+            Bs_exception.error (Missing_ml_dependency modulename)
+          (*TODO: log which module info is not done
+          *)
           | Goog, (Empty | Package_script _), _ 
             -> 
             Bs_exception.error (Dependency_script_module_dependent_not js_file)
