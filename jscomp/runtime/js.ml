@@ -94,6 +94,8 @@ external to_bool : boolean -> bool = "#boolean_to_bool"
 external typeof : 'a -> string = "#typeof"
 (** [typeof x] will be compiled as [typeof x] in JS *)
 external log : 'a -> unit = "console.log" [@@bs.val]
+external log2 : 'a -> 'b -> unit = "console.log" [@@bs.val]
+external log3 : 'a -> 'b -> 'c -> unit = "console.log" [@@bs.val]
 (** A convenience function to log *)
 
 (** {4 operators }*)

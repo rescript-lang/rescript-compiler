@@ -23,20 +23,24 @@ CAMLC=$(CAMLRUN) $(COMPILER)
 #          -safe-string
 BS_COMMON_FLAGS= -bs-no-version-header -bs-no-builtin-ppx-ml -bs-no-builtin-ppx-mli -bs-diagnose -bs-no-check-div-by-zero -bs-cross-module-opt -bs-package-name bs-platform
 
-ifdef BS_RELEASE_BUILD
-BS_FLAGS=  $(BS_COMMON_FLAGS) -bs-package-output commonjs:lib/js -bs-package-output goog:lib/goog -bs-package-output amdjs:lib/amdjs -bs-package-output es6:lib/es6
-else
-BS_FLAGS=  $(BS_COMMON_FLAGS) -bs-package-output commonjs:lib/js 
-endif
+include ../Makefile.shared
 
+# ifdef BS_RELEASE_BUILD
+# BS_FLAGS=  $(BS_COMMON_FLAGS) -bs-package-output commonjs:lib/js -bs-package-output goog:lib/goog -bs-package-output amdjs:lib/amdjs -bs-package-output es6:lib/es6
+# else
+# BS_FLAGS=  $(BS_COMMON_FLAGS) -bs-package-output commonjs:lib/js 
+# endif
+
+BS_FLAGS= $(BS_COMMON_FLAGS) $(BS_PKG_FLAGS) 
 COMPFLAGS= $(BS_FLAGS) -strict-sequence -w +33..39 -g -warn-error A  -nostdlib \
           -safe-string -I ../runtime $(PROD_BS_FLAGS)
 
 
 # OPTCOMPILER=ocamlopt.opt
 # CAMLOPT=$(CAMLRUN) $(OPTCOMPILER)
-CAMLDEP=ocamldep.opt 
+#CAMLDEP=ocamldep.opt 
 # CAMLDEP=$(CAMLRUN) ../tools/ocamldep
+
 
 OBJS=camlinternalFormatBasics.cmo pervasives.cmo $(OTHERS)
 OTHERS=array.cmo list.cmo char.cmo bytes.cmo string.cmo sys.cmo \

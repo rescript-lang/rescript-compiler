@@ -35,11 +35,7 @@ RUNTIME := $(addsuffix .cmj, $(SOURCE_LIST)) $(addsuffix .cmi, $(SOURCE_LIST))
 
 BS_COMMON_FLAGS= -no-alias-deps -bs-no-version-header -bs-diagnose -bs-no-check-div-by-zero -bs-cross-module-opt -bs-package-name bs-platform
 
-ifdef BS_RELEASE_BUILD
-BS_FLAGS=  $(BS_COMMON_FLAGS) -bs-package-output commonjs:lib/js -bs-package-output goog:lib/goog -bs-package-output amdjs:lib/amdjs -bs-package-output es6:lib/es6
-else
-BS_FLAGS=  $(BS_COMMON_FLAGS) -bs-package-output commonjs:lib/js
-endif
+BS_FLAGS=  $(BS_COMMON_FLAGS) $(BS_PKG_FLAGS)
 
 COMPFLAGS += $(BS_FLAGS) -I ../stdlib -nostdlib -nopervasives -open Pervasives -unsafe -warn-error A -w -40-49 -bin-annot 
 

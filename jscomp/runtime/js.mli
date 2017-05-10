@@ -102,6 +102,8 @@ external typeof : 'a -> string = "#typeof"
 *)
 
 external log : 'a -> unit = "console.log" [@@bs.val]
+external log2 : 'a -> 'b -> unit = "console.log" [@@bs.val]
+external log3 : 'a -> 'b -> 'c -> unit = "console.log" [@@bs.val]
 (** A convenience function to log everything *)
 
 (** {4 operators }*)
