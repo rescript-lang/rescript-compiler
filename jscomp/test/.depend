@@ -272,7 +272,8 @@ int_map.cmj : ../stdlib/map.cmj
 int_overflow_test.cmj : ../stdlib/string.cmj mt.cmj ../runtime/js_float.cmj \
     ../stdlib/int32.cmj ../stdlib/char.cmj
 io_test.cmj : ../runtime/js.cmj
-js_array_test.cmj : mt.cmj ../runtime/js.cmj
+js_array_test.cmj : mt.cmj ../runtime/js.cmj ../others/bs.cmj \
+    ../stdlib/array.cmj
 js_bool_test.cmj : mt.cmj ../runtime/js.cmj
 js_cast_test.cmj : mt.cmj ../others/js_cast.cmj
 js_date_test.cmj : mt.cmj ../runtime/js_float.cmj ../runtime/js.cmj
@@ -393,7 +394,8 @@ poly_variant_test.cmj : mt.cmj ../runtime/js.cmj poly_variant_test.cmi
 polymorphism_test.cmj : polymorphism_test.cmi
 polyvar_test.cmj : ../runtime/js.cmj
 ppx_apply_test.cmj : mt.cmj
-ppx_this_obj_field.cmj : mt.cmj ../runtime/js.cmj
+ppx_this_obj_field.cmj : mt.cmj ../runtime/js.cmj ../others/bs.cmj \
+    ../stdlib/array.cmj
 ppx_this_obj_test.cmj : mt.cmj
 pq_test.cmj :
 pr6726.cmj :

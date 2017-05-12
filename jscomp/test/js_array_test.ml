@@ -1,6 +1,20 @@
 
-
 let suites = Mt.[
+    __LOC__ , (fun _ -> 
+        Eq ([|2;4|], 
+            let  x = [|1;2;3;4;5|] in 
+            Bs.Array.filterInPlace (fun[@bs] x ->  x mod 2 = 0) x;
+            x
+
+           )
+      );
+    __LOC__, (fun _ -> 
+        Eq ( true, 
+             let  x= [|1;2;3;4;5|] in 
+             Bs.Array.filterInPlace  (fun [@bs] x -> x > 10) x ;
+             Array.length x = 0
+           )
+      );
     (* es2015, unable to test because nothing currently implements array_like
     "from", (fun _ ->
       Eq(

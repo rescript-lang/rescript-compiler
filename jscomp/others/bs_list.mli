@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,20 +17,30 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** place holder for BuckleScript datastructures *)
 
-(**/*)
-module Dyn = Bs_dyn
+type 'a t  = 'a list 
 
-module Dyn_lib = Bs_dyn_lib
-(**/*)
+val length : 'a t -> int
 
-module Array = Bs_array
-module List = Bs_list 
-module Option = Bs_option 
-module Result = Bs_result
+val cons : 'a -> 'a t -> 'a t 
+
+val isEmpty : 'a t -> bool 
+
+val hd : 'a t -> 'a option
+
+val tl : 'a t -> 'a t option
+
+val nth : 'a t -> int -> 'a option
+
+val revAppend : 'a t -> 'a t -> 'a t
+
+val rev : 'a t -> 'a t
+
+val mapRev : ('a -> 'b [@bs]) -> 'a t -> 'b t
+
+val map : ('a -> 'b [@bs]) -> 'a t -> 'b t
