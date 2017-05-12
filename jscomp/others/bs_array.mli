@@ -33,3 +33,7 @@ val pushBack : 'a -> 'a t -> unit
 val memByRef : 'a -> 'a t -> bool
 
 val iter : ('a -> unit [@bs]) -> 'a array -> unit
+
+val ofList : 'a list -> 'a t 
+
+val map : ('a -> 'b [@bs]) -> 'a t -> 'b t 

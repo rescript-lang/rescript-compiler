@@ -36,7 +36,7 @@ let isNone = function
 
 let getExn x =
   match x with 
-  | None -> Js_exn.raiseError {j| $__LOC__: Bs.Option.unsafeGet|j}
+  | None -> Js_exn.raiseError "Bs_option.getExn"
   | Some x -> x 
 
 let equal eq a b =

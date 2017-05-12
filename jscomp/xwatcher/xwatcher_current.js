@@ -26,7 +26,7 @@ var lock = Xwatcher_util.makeLock(/* () */0);
 var events = Xwatcher_util.makeEventObj(/* () */0);
 
 function exec() {
-  return Xwatcher_util.buildWithShell("make -r -j5   check", events, lock, function () {
+  return Xwatcher_util.buildWithShell("./watch-build.sh", events, lock, function () {
               return /* () */0;
             });
 }
@@ -50,7 +50,11 @@ Bs_array.iter(function (x) {
       "core",
       "syntax",
       "ext",
-      "depends"
+      "depends",
+      "others",
+      "ounit",
+      "ounit_tests",
+      "test"
     ]);
 
 exec(/* () */0);

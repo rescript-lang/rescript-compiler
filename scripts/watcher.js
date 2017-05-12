@@ -5,7 +5,49 @@ var Path = require('path');
 var Process = require('process');
 var Child_process = require('child_process');
 
-function iter(f, xs) {
+var invalid_argument = /* tuple */[
+  "Invalid_argument",
+  -3
+];
+
+invalid_argument.tag = 248;
+
+
+/*  Not a pure module */
+
+/* No side effect */
+
+/* No side effect */
+
+/* No side effect */
+
+/* No side effect */
+
+/* stdin Not a pure module */
+
+/* No side effect */
+
+/* imul Not a pure module */
+
+/* repeat Not a pure module */
+
+/* two_ptr_32_dbl Not a pure module */
+
+/* float_of_string Not a pure module */
+
+/* No side effect */
+
+/* No side effect */
+
+/* not_implemented Not a pure module */
+
+/* No side effect */
+
+/* No side effect */
+
+/* No side effect */
+
+function iter$$1(f, xs) {
   for(var i = 0 ,i_finish = xs.length - 1 | 0; i <= i_finish; ++i){
     f(xs[i]);
   }
@@ -19,8 +61,7 @@ function getExn(x) {
   if (x) {
     return x[0];
   } else {
-    var str = " " + (String("File \"bs_option.ml\", line 39, characters 34-42") + ": Bs.Option.unsafeGet");
-    throw new Error(str);
+    throw new Error("Bs_option.getExn");
   }
 }
 
@@ -180,7 +221,7 @@ var lock = makeLock(/* () */0);
 var events = makeEventObj(/* () */0);
 
 function exec() {
-  return buildWithShell("make -r -j5   check", events, lock, function () {
+  return buildWithShell("./watch-build.sh", events, lock, function () {
               return /* () */0;
             });
 }
@@ -197,14 +238,18 @@ function watch$1(dir) {
 
 putEnvVar("BS_VSCODE", "1");
 
-iter(function (x) {
+iter$$1(function (x) {
       watch$1(Path.join(jscomp, x));
       return /* () */0;
     }, /* array */[
       "core",
       "syntax",
       "ext",
-      "depends"
+      "depends",
+      "others",
+      "ounit",
+      "ounit_tests",
+      "test"
     ]);
 
 exec(/* () */0);

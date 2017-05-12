@@ -26,7 +26,7 @@ let jscomp =
 
 let lock = Xwatcher_util.makeLock ()
 let events = Xwatcher_util.makeEventObj ()
-let command = "make -r -j5   check"
+let command = "./watch-build.sh"
 let exec () = 
   buildWithShell command events lock (fun [@bs] () -> ())
 let watch dir   = 
@@ -43,7 +43,7 @@ let () =
   Node.Process.putEnvVar "BS_VSCODE" "1";
   Bs.Array.iter (fun [@bs] x -> 
       ignore @@ watch (Node.Path.join [|jscomp; x|])
-    ) [| "core"; "syntax"; "ext"; "depends"; "others"|];
+    ) [| "core"; "syntax"; "ext"; "depends"; "others"; "ounit"; "ounit_tests"; "test"|];
   (* watch jscomp_core ; *)
   exec ()
 

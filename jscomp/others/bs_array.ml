@@ -62,3 +62,24 @@ let iterX f  xs =
     f (Array.unsafe_get xs i) 
   done 
 *)
+
+external createUnsafe : int -> 'a t = "Array" [@@bs.new]
+
+let ofList xs = 
+  match xs with 
+  | [] -> [||]
+  | l ->
+    let a = createUnsafe (List.length l) in 
+    let rec fill i = function
+        | [] -> a
+        | hd::tl -> Array.unsafe_set a i hd; fill (i+1) tl in
+    fill 0 l
+
+let map f a =
+  let l = Array.length a in
+  let r = createUnsafe l in
+  for i = 0 to l - 1 do
+      Array.unsafe_set r i (f(Array.unsafe_get a i) [@bs])
+  done;
+  r
+  
