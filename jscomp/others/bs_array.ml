@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,20 +17,69 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** place holder for BuckleScript datastructures *)
+type 'a t = 'a array
 
-(**/*)
-module Dyn = Bs_dyn
+(** @param a array 
+    @param p predicate 
+*)
+let filterInPlace p a = 
+  let  i = ref 0 in 
+  let j = ref 0 in 
+  while !i < Array.length a do 
+    let v = Array.unsafe_get a !i in 
+    if p v   [@bs] then 
+      begin 
+        Array.unsafe_set a !j v ;
+        incr j
+      end;
+    incr i 
+  done;
+  ignore @@ Js_array.removeFromInPlace ~pos:!j a 
 
-module Dyn_lib = Bs_dyn_lib
-(**/*)
+let empty a  = 
+  ignore @@ Js.Array.removeFromInPlace ~pos:0 a
 
-module Array = Bs_array
-module List = Bs_list 
-module Option = Bs_option 
-module Result = Bs_result
+let pushBack x xs = 
+  ignore @@ Js.Array.push x xs 
+
+(** Find by JS (===)  equality *)
+let memByRef x xs = 
+  Js.Array.indexOf x xs >= 0 
+
+let iter f  xs = 
+  for i = 0 to Array.length xs - 1 do 
+    f (Array.unsafe_get xs i) [@bs]
+  done 
+
+(* here [f] is of type ['a -> 'b]
+let iterX f  xs = 
+  for i = 0 to Array.length xs - 1 do 
+    f (Array.unsafe_get xs i) 
+  done 
+*)
+
+external createUnsafe : int -> 'a t = "Array" [@@bs.new]
+
+let ofList xs = 
+  match xs with 
+  | [] -> [||]
+  | l ->
+    let a = createUnsafe (List.length l) in 
+    let rec fill i = function
+        | [] -> a
+        | hd::tl -> Array.unsafe_set a i hd; fill (i+1) tl in
+    fill 0 l
+
+let map f a =
+  let l = Array.length a in
+  let r = createUnsafe l in
+  for i = 0 to l - 1 do
+      Array.unsafe_set r i (f(Array.unsafe_get a i) [@bs])
+  done;
+  r
+  

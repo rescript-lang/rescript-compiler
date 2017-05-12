@@ -56,14 +56,30 @@ let u =
 
 let test_type = [u ; v]
 
-let z =
+let z : < getX : (unit -> int [@bs.meth]); setX : (int -> unit [@bs.meth]) > Js.t  =
   object (self)
     val x = ref 3 
     method setX x = self##x := x
     method getX () =  ! (self##x)
   end [@bs]
 
-let zz =
+let eventObj  : <
+  empty : (unit -> unit [@bs.meth]);
+    needRebuild : (unit -> bool [@bs.meth]);
+    push : string  * string -> unit [@bs.meth]
+  >
+  Js.t
+  = 
+  object (self)
+    val events : (string * string) array = [||]
+    method empty () = Bs.Array.empty (self##events)
+    method push a = (Bs.Array.pushBack a (self##events) : unit )
+    method needRebuild () = Array.length self##events <> 0
+    (* method currentEvents () = self##events *)
+  end [@bs]
+
+let test__ x = eventObj##push   x 
+let zz : < getX : (unit -> int [@bs.meth]); setX : (int -> unit [@bs.meth]) > Js.t=
   object (self)
     val mutable x =  3 
     method setX x = self##x #= x

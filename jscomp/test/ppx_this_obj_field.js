@@ -111,6 +111,30 @@ var z = {
   }
 };
 
+var eventObj = {
+  events: /* array */[],
+  empty: function () {
+    var self = this ;
+    var a = self.events;
+    a.splice(0);
+    return /* () */0;
+  },
+  push: function (a) {
+    var self = this ;
+    var xs = self.events;
+    xs.push(a);
+    return /* () */0;
+  },
+  needRebuild: function () {
+    var self = this ;
+    return +(self.events.length !== 0);
+  }
+};
+
+function test__(x) {
+  return eventObj.push(x);
+}
+
 var zz = {
   x: 3,
   setX: function (x) {
@@ -133,7 +157,7 @@ var test_type2 = /* :: */[
   test_type2_001
 ];
 
-eq("File \"ppx_this_obj_field.ml\", line 76, characters 5-12", /* tuple */[
+eq("File \"ppx_this_obj_field.ml\", line 92, characters 5-12", /* tuple */[
       6,
       v5.say()
     ]);
@@ -150,7 +174,7 @@ var c = v.say();
 
 v.incr();
 
-eq("File \"ppx_this_obj_field.ml\", line 83, characters 5-12", /* tuple */[
+eq("File \"ppx_this_obj_field.ml\", line 99, characters 5-12", /* tuple */[
       /* tuple */[
         3,
         4,
@@ -169,7 +193,7 @@ z.setX(32);
 
 var bb = z.getX();
 
-eq("File \"ppx_this_obj_field.ml\", line 87, characters 5-12", /* tuple */[
+eq("File \"ppx_this_obj_field.ml\", line 103, characters 5-12", /* tuple */[
       /* tuple */[
         3,
         32
@@ -190,6 +214,8 @@ exports.v          = v;
 exports.u          = u;
 exports.test_type  = test_type;
 exports.z          = z;
+exports.eventObj   = eventObj;
+exports.test__     = test__;
 exports.zz         = zz;
 exports.test_type2 = test_type2;
 /* v5 Not a pure module */

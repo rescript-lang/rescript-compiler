@@ -10,7 +10,7 @@ BYTE=ocamlc.opt$(EXE)
 OCAMLLEX=ocamllex.opt$(EXE)
 CAMLP4OF=camlp4of
 CAMLDEP=ocamldep.opt$(EXE)
-COMPFLAGS=-g -w +6-40-30-23 -warn-error +a-40-30-23
+COMPFLAGS=-g -w +6-40-30-23 -warn-error +a-40-30-23 -absname
 # COMPFLAGS+= -S
 
 

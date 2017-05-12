@@ -75,7 +75,7 @@ module Watch = struct
   [@@bs.send.pipe: t]
 
 
-  external close : unit -> unit = "" [@@bs.send.pipe:t]
+  external close :  unit = "" [@@bs.send.pipe:t]
 end
 
 external ftruncateSync : fd -> int -> unit = "" [@@bs.module "fs"]    

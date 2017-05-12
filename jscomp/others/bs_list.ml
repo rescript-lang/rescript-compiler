@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,20 +17,60 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** place holder for BuckleScript datastructures *)
+(** WIP: List operations *)
+type 'a t = 'a list 
 
-(**/*)
-module Dyn = Bs_dyn
 
-module Dyn_lib = Bs_dyn_lib
-(**/*)
 
-module Array = Bs_array
-module List = Bs_list 
-module Option = Bs_option 
-module Result = Bs_result
+let rec lengthAux len = function
+  | [] -> len
+  | a::l -> lengthAux (len + 1) l
+
+let length l = lengthAux 0 l
+
+let cons  x xs = x :: xs 
+
+let isEmpty x =  x = []
+
+let hd = function
+  | [] -> None
+  | a::l -> Some a
+
+let tl = function
+  | [] -> None
+  | a::l -> Some l
+
+let nth l n =
+  if n < 0 then None else
+  let rec nth_aux l n =
+    match l with
+    | [] -> None
+    | a::l -> if n = 0 then Some a else nth_aux l (n-1)
+  in nth_aux l n
+
+
+
+let rec revAppend l1 l2 =
+  match l1 with
+  | [] -> l2
+  | a :: l -> revAppend l (a :: l2)
+
+let rev l = revAppend l []
+
+
+let rec mapRevAux f acc ls =
+  match ls with 
+  | [] ->  acc 
+  | a::l -> 
+    mapRevAux f (f a [@bs] :: acc) l 
+
+let mapRev f ls = mapRevAux f [] ls 
+
+let rec map f ls = rev @@ mapRevAux f [] ls 
+
+

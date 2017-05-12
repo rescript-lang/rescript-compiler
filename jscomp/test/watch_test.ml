@@ -5,7 +5,6 @@ let test path =
     path
     ~config:(config ~recursive:Js.true_ ())
     ()
-  |> on (`change (fun [@bs] event string_buffer -> Js.log (event, string_buffer)))
-  |> close ()
-
+  |> on (`change (fun [@bs] event string_buffer -> Js.log (event, string_buffer)))  
+  |> close 
 

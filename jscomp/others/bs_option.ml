@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,20 +17,41 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** place holder for BuckleScript datastructures *)
+type 'a t = 'a option
 
-(**/*)
-module Dyn = Bs_dyn
+let some x = Some x 
 
-module Dyn_lib = Bs_dyn_lib
-(**/*)
+let isSome = function
+  | None -> false
+  | Some _ -> true
 
-module Array = Bs_array
-module List = Bs_list 
-module Option = Bs_option 
-module Result = Bs_result
+let isNone = function
+  | None -> true
+  | Some _ -> false
+
+let getExn x =
+  match x with 
+  | None -> Js_exn.raiseError "Bs_option.getExn"
+  | Some x -> x 
+
+let equal eq a b =
+  match a  with 
+  | None -> b = None 
+  | Some x -> 
+    begin match b with 
+    | None -> false 
+    | Some y -> eq x y [@bs]
+    end
+
+let andThen f x =
+  match x with 
+  | None -> None 
+  | Some x -> f x [@bs]
+
+
+
