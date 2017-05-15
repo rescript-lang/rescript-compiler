@@ -5,6 +5,59 @@ var Process = require('process');
 var Fs = require('fs');
 var Child_process = require('child_process');
 
+function getExn(x) {
+  if (x) {
+    return x[0];
+  } else {
+    throw new Error("Bs_option.getExn");
+  }
+}
+
+
+/* No side effect */
+
+var invalid_argument = /* tuple */[
+  "Invalid_argument",
+  -3
+];
+
+invalid_argument.tag = 248;
+
+
+/*  Not a pure module */
+
+/* No side effect */
+
+/* No side effect */
+
+/* No side effect */
+
+/* No side effect */
+
+/* stdin Not a pure module */
+
+/* No side effect */
+
+/* imul Not a pure module */
+
+/* repeat Not a pure module */
+
+/* two_ptr_32_dbl Not a pure module */
+
+/* float_of_string Not a pure module */
+
+/* No side effect */
+
+/* No side effect */
+
+/* not_implemented Not a pure module */
+
+/* No side effect */
+
+/* No side effect */
+
+/* No side effect */
+
 function filterInPlace(p, a) {
   var i = 0;
   var j = 0;
@@ -22,18 +75,6 @@ function filterInPlace(p, a) {
 
 function memByRef(x, xs) {
   return +(xs.indexOf(x) >= 0);
-}
-
-
-/* No side effect */
-
-function getExn(x) {
-  if (x) {
-    return x[0];
-  } else {
-    var str = " " + (String("File \"bs_option.ml\", line 39, characters 34-42") + ": Bs.Option.unsafeGet");
-    throw new Error(str);
-  }
 }
 
 

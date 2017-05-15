@@ -5,6 +5,17 @@ var Path = require('path');
 var Process = require('process');
 var Child_process = require('child_process');
 
+function getExn(x) {
+  if (x) {
+    return x[0];
+  } else {
+    throw new Error("Bs_option.getExn");
+  }
+}
+
+
+/* No side effect */
+
 var invalid_argument = /* tuple */[
   "Invalid_argument",
   -3
@@ -52,17 +63,6 @@ function iter$$1(f, xs) {
     f(xs[i]);
   }
   return /* () */0;
-}
-
-
-/* No side effect */
-
-function getExn(x) {
-  if (x) {
-    return x[0];
-  } else {
-    throw new Error("Bs_option.getExn");
-  }
 }
 
 
@@ -249,7 +249,9 @@ iter$$1(function (x) {
       "others",
       "ounit",
       "ounit_tests",
-      "test"
+      "test",
+      "runtime",
+      "xwatcher"
     ]);
 
 exec(/* () */0);

@@ -17,11 +17,39 @@ let () =
 
 
 
+let id x = 
+  eq __LOC__ 
+   (Bs.Vector.(toList @@ ofList x )) x 
 
 let () =
-  eq __LOC__ (Bs.Array.ofList [1;2;3]) [|1;2;3|];
+  eq __LOC__ (Bs.Vector.ofList [1;2;3]) [|1;2;3|];
   eq  __LOC__ 
-  ( Bs.Array.map (fun [@bs] x -> x + 1) [|1;2;3|] )
-  [|2;3;4|]
+  ( Bs.Vector.map (fun [@bs] x -> x + 1) [|1;2;3|] )
+  [|2;3;4|];
+  eq __LOC__  (Bs.Vector.make 5 3)
+    [|3;3;3;3;3|];
+  eq __LOC__ 
+  ( let a = Bs.Vector.init 5  (fun [@bs] i -> i + 1) in 
+    Bs.Vector.filterInPlace (fun [@bs] j -> j mod 2 = 0) a ; 
+    a 
+  )
+  [|2;4|];
+
+  eq __LOC__ 
+  ( let a = Bs.Vector.init 5  (fun [@bs] i -> i + 1) in 
+    Bs.Vector.filterInPlace (fun [@bs] j -> j mod 2 <> 0) a ; 
+    a 
+  )
+  [|1;3;5|];
+
+  eq __LOC__  
+    (Bs.Vector.ofList [1;2;3] ) [|1;2;3|];
+  eq __LOC__
+    (Bs.Vector.ofList [1])   [|1|];
+  id []  ;
+  id [1];
+  id [1;2;3;4;5];
+  id (Bs.Vector.(toList @@ init 100 (fun [@bs] i -> i  ) ))
+  
 
 ;; Mt.from_pair_suites __LOC__ !suites  

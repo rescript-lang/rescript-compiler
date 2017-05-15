@@ -25,8 +25,8 @@ let rec onChange  = fun  eventType fileName ->
 and idle () = 
   let watchFiles = getWatchFiles sourceDirs in 
   watchers 
-   |> Bs.Array.filterInPlace (fun [@bs] {dir ; watcher} -> 
-      if dir = bsconfig || Bs.Array.memByRef dir watchFiles then true 
+   |> Bs.Vector.filterInPlace (fun [@bs] {dir ; watcher} -> 
+      if dir = bsconfig || Bs.Vector.memByRef dir watchFiles then true 
       else 
         begin 
           Js.log {j| $dir is no longer watched|j} ;
@@ -38,13 +38,13 @@ and idle () =
     if not (Js.Array.some (fun {dir = watcher_dir} -> watcher_dir = dir) watchers) then 
       begin 
         Js.log {j|watching dir $dir now |j};
-        Bs.Array.pushBack (makeWatcher dir (fun [@bs] x y  -> onChange x y ))  watchers
+        Bs.Vector.pushBack (makeWatcher dir (fun [@bs] x y  -> onChange x y ))  watchers
       end
      )
 
 let () = 
   Node.Process.putEnvVar "BS_VSCODE" "1";
-  Bs.Array.pushBack (makeWatcher bsconfig (fun [@bs] x y -> onChange x y)) watchers; 
+  Bs.Vector.pushBack (makeWatcher bsconfig (fun [@bs] x y -> onChange x y)) watchers; 
   build bsb events lock  (fun [@bs] () -> idle () )
 (* local variables: *)
 (* compile-command: "bscc -bs-package-output es6:jscomp/xwatcher -c xwatcher_util.mli xwatcher_util.ml xwatcher.ml && rollup --silent -f cjs xwatcher.js -o ../bin/bsb_watcher.future.js " *)

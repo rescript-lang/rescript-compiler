@@ -1,8 +1,9 @@
 'use strict';
 
-var Mt       = require("./mt.js");
-var Block    = require("../../lib/js/block.js");
-var Bs_array = require("../../lib/js/bs_array.js");
+var Mt         = require("./mt.js");
+var Block      = require("../../lib/js/block.js");
+var Bs_vector  = require("../../lib/js/bs_vector.js");
+var Caml_array = require("../../lib/js/caml_array.js");
 
 var suites = [/* [] */0];
 
@@ -38,7 +39,11 @@ console.log(/* int array */[
           return x + y | 0;
         }, 0));
 
-eq("File \"bs_array_test.ml\", line 22, characters 5-12", Bs_array.ofList(/* :: */[
+function id(x) {
+  return eq("File \"bs_array_test.ml\", line 21, characters 5-12", Bs_vector.toList(Bs_vector.ofList(x)), x);
+}
+
+eq("File \"bs_array_test.ml\", line 25, characters 5-12", Bs_vector.ofList(/* :: */[
           1,
           /* :: */[
             2,
@@ -53,7 +58,7 @@ eq("File \"bs_array_test.ml\", line 22, characters 5-12", Bs_array.ofList(/* :: 
       3
     ]);
 
-eq("File \"bs_array_test.ml\", line 23, characters 6-13", Bs_array.map(function (x) {
+eq("File \"bs_array_test.ml\", line 26, characters 6-13", Bs_vector.map(function (x) {
           return x + 1 | 0;
         }, /* int array */[
           1,
@@ -65,9 +70,89 @@ eq("File \"bs_array_test.ml\", line 23, characters 6-13", Bs_array.map(function 
       4
     ]);
 
-Mt.from_pair_suites("File \"bs_array_test.ml\", line 27, characters 23-30", suites[0]);
+eq("File \"bs_array_test.ml\", line 29, characters 5-12", Caml_array.caml_make_vect(5, 3), /* array */[
+      3,
+      3,
+      3,
+      3,
+      3
+    ]);
+
+var a = Bs_vector.init(5, function (i) {
+      return i + 1 | 0;
+    });
+
+eq("File \"bs_array_test.ml\", line 31, characters 5-12", (Bs_vector.filterInPlace(function (j) {
+            return +(j % 2 === 0);
+          }, a), a), /* int array */[
+      2,
+      4
+    ]);
+
+var a$1 = Bs_vector.init(5, function (i) {
+      return i + 1 | 0;
+    });
+
+eq("File \"bs_array_test.ml\", line 38, characters 5-12", (Bs_vector.filterInPlace(function (j) {
+            return +(j % 2 !== 0);
+          }, a$1), a$1), /* int array */[
+      1,
+      3,
+      5
+    ]);
+
+eq("File \"bs_array_test.ml\", line 45, characters 5-12", Bs_vector.ofList(/* :: */[
+          1,
+          /* :: */[
+            2,
+            /* :: */[
+              3,
+              /* [] */0
+            ]
+          ]
+        ]), /* int array */[
+      1,
+      2,
+      3
+    ]);
+
+eq("File \"bs_array_test.ml\", line 47, characters 5-12", Bs_vector.ofList(/* :: */[
+          1,
+          /* [] */0
+        ]), /* int array */[1]);
+
+id(/* [] */0);
+
+id(/* :: */[
+      1,
+      /* [] */0
+    ]);
+
+id(/* :: */[
+      1,
+      /* :: */[
+        2,
+        /* :: */[
+          3,
+          /* :: */[
+            4,
+            /* :: */[
+              5,
+              /* [] */0
+            ]
+          ]
+        ]
+      ]
+    ]);
+
+id(Bs_vector.toList(Bs_vector.init(100, function (i) {
+              return i;
+            })));
+
+Mt.from_pair_suites("File \"bs_array_test.ml\", line 55, characters 23-30", suites[0]);
 
 exports.suites  = suites;
 exports.test_id = test_id;
 exports.eq      = eq;
+exports.id      = id;
 /*  Not a pure module */

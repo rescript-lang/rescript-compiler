@@ -2,7 +2,7 @@
 
 var Mt           = require("./mt.js");
 var Block        = require("../../lib/js/block.js");
-var Bs_array     = require("../../lib/js/bs_array.js");
+var Bs_vector    = require("../../lib/js/bs_vector.js");
 var Js_primitive = require("../../lib/js/js_primitive.js");
 
 var suites_000 = /* tuple */[
@@ -20,7 +20,7 @@ var suites_000 = /* tuple */[
                 2,
                 4
               ],
-              (Bs_array.filterInPlace(function (x) {
+              (Bs_vector.filterInPlace(function (x) {
                       return +(x % 2 === 0);
                     }, x), x)
             ]);
@@ -40,7 +40,7 @@ var suites_001 = /* :: */[
       ];
       return /* Eq */Block.__(0, [
                 /* true */1,
-                (Bs_array.filterInPlace(function (x) {
+                (Bs_vector.filterInPlace(function (x) {
                         return +(x > 10);
                       }, x), +(x.length === 0))
               ]);

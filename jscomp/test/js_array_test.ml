@@ -3,7 +3,7 @@ let suites = Mt.[
     __LOC__ , (fun _ -> 
         Eq ([|2;4|], 
             let  x = [|1;2;3;4;5|] in 
-            Bs.Array.filterInPlace (fun[@bs] x ->  x mod 2 = 0) x;
+            Bs.Vector.filterInPlace (fun[@bs] x ->  x mod 2 = 0) x;
             x
 
            )
@@ -11,7 +11,7 @@ let suites = Mt.[
     __LOC__, (fun _ -> 
         Eq ( true, 
              let  x= [|1;2;3;4;5|] in 
-             Bs.Array.filterInPlace  (fun [@bs] x -> x > 10) x ;
+             Bs.Vector.filterInPlace  (fun [@bs] x -> x > 10) x ;
              Array.length x = 0
            )
       );
