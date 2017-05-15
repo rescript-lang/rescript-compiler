@@ -39,7 +39,7 @@ type error
   | Invalid_underscore_type_in_external
   | Invalid_bs_string_type 
   | Invalid_bs_int_type 
-  | Conflict_ffi_attribute
+  | Conflict_ffi_attribute of string
   | Not_supported_in_bs_deriving
   | Canot_infer_arity_by_syntax
   | Illegal_attribute
@@ -83,7 +83,7 @@ let pp_error fmt err =
   | Duplicated_bs_deriving
     -> "duplicated bs.deriving attribute"
   | Conflict_attributes
-    -> "conflict attributes " 
+    -> "conflicting attributes " 
   | Expect_string_literal
     -> "expect string literal "
   | Duplicated_bs_as 
@@ -109,9 +109,9 @@ let pp_error fmt err =
   | Invalid_bs_int_type 
     -> 
     "Not a valid  type for [@bs.int]"
-  | Conflict_ffi_attribute
+  | Conflict_ffi_attribute str
     ->
-    "conflict attributes found" 
+    "Conflicting FFI attributes found: " ^ str
   | Bs_this_simple_pattern
     -> 
     "[@bs.this] expect its pattern variable to be simple form"
