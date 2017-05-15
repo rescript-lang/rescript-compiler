@@ -6,7 +6,7 @@ MAP_FILES= node bs
 
 SOURCE_LIST= node_path node_fs node_process dict node_module js_array js_string \
 	js_re js_null_undefined node_buffer js_types js_json js_obj \
-	bs_dyn bs_dyn_lib bs_array bs_list bs_option bs_result \
+	bs_dyn bs_dyn_lib bs_vector bs_list bs_option bs_result \
 	node_child_process js_boolean js_math js_dict js_date js_global js_cast js_promise dom
 
 $(addsuffix .cmj, $(SOURCE_LIST)): $(addsuffix .cmj, $(MAP_FILES))

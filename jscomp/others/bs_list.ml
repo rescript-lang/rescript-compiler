@@ -73,4 +73,23 @@ let mapRev f ls = mapRevAux f [] ls
 
 let rec map f ls = rev @@ mapRevAux f [] ls 
 
+let rec iter f = function
+    [] -> ()
+  | a::l -> f a [@bs]; iter f l
+
+let rec iteri i f = function
+    [] -> ()
+  | a::l -> f i a [@bs]; iteri (i + 1) f l
+
+let iteri f l = iteri 0 f l
+
+let rec foldLeft f accu l =
+  match l with
+    [] -> accu
+  | a::l -> foldLeft f (f accu a [@bs]) l
+
+let rec foldRight f l accu =
+  match l with
+    [] -> accu
+  | a::l -> f a (foldRight f l accu) [@bs]
 

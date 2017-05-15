@@ -6,11 +6,7 @@ open Xwatcher_util
 let source_dirname  = 
   Bs.Option.getExn [%external __dirname]
 
-(* let jscomp = Node.Path.join [| source_dirname ; ".."|] *)
 
-(* let jscomp_core = Node.Path.join [| jscomp; "core"|] *)
-(* let jscomp_syntax = Node.Path.join [| jscomp; "syntax"|] *)
-(* let jscomp_ext = Node.Path.join [| jscomp; "ext"|] *)
 let cwd = Node.Process.cwd ()
 let bsconfig = "bsconfig.json"
 
@@ -41,10 +37,11 @@ let watch dir   =
 let () = 
 
   Node.Process.putEnvVar "BS_VSCODE" "1";
-  Bs.Array.iter (fun [@bs] x -> 
+  Bs.Vector.iter (fun [@bs] x -> 
       ignore @@ watch (Node.Path.join [|jscomp; x|])
-    ) [| "core"; "syntax"; "ext"; "depends"; "others"; "ounit"; "ounit_tests"; "test"|];
-  (* watch jscomp_core ; *)
+    ) [| "core"; "syntax"; "ext"; "depends"; "others";
+         "ounit"; "ounit_tests"; "test"; "runtime";"xwatcher"|];
+  
   exec ()
 
 (* local variables: *)

@@ -28,7 +28,7 @@
 external new_uninitialized : int -> 'a array = "Array" [@@bs.new]
 external append : 'a array -> 'a array -> 'a array = "concat" [@@bs.send]
 
-external make : int -> 'a -> 'a array = "caml_make_vect"
+
 
 let caml_array_sub (x : 'a array) (offset : int) (len : int) = 
   let result = new_uninitialized len  in

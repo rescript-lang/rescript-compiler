@@ -15,10 +15,13 @@ echo "Making libs"
 make libs 
 echo "Making test"
 make -C test -j30 all
+echo "Making xwatcher"
+make -C xwatcher all
 
 echo "Update depend, snapshot"
 make -j7 depend snapshotml
 make -C test depend 
 make -C runtime depend
 make -C others depend
+make -C xwatcher depend
 echo "Done"

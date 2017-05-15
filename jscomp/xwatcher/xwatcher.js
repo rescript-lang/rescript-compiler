@@ -1,8 +1,8 @@
 'use strict';
 
 import * as Path          from "path";
-import * as Bs_array      from "../../lib/es6/bs_array.js";
 import * as Bs_option     from "../../lib/es6/bs_option.js";
+import * as Bs_vector     from "../../lib/es6/bs_vector.js";
 import * as Js_primitive  from "../../lib/es6/js_primitive.js";
 import * as Node_process  from "../../lib/es6/node_process.js";
 import * as Xwatcher_util from "./xwatcher_util.js";
@@ -34,9 +34,9 @@ function onChange(eventType, fileName) {
 
 function idle() {
   var watchFiles = Xwatcher_util.getWatchFiles(sourceDirs);
-  Bs_array.filterInPlace(function (param) {
+  Bs_vector.filterInPlace(function (param) {
         var dir = param[/* dir */0];
-        if (dir === bsconfig || Bs_array.memByRef(dir, watchFiles)) {
+        if (dir === bsconfig || Bs_vector.memByRef(dir, watchFiles)) {
           return /* true */1;
         } else {
           console.log(" " + (String(dir) + " is no longer watched"));

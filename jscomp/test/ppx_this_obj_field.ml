@@ -72,8 +72,8 @@ let eventObj  : <
   = 
   object (self)
     val events : (string * string) array = [||]
-    method empty () = Bs.Array.empty (self##events)
-    method push a = (Bs.Array.pushBack a (self##events) : unit )
+    method empty () = Bs.Vector.empty (self##events)
+    method push a = (Bs.Vector.pushBack a (self##events) : unit )
     method needRebuild () = Array.length self##events <> 0
     (* method currentEvents () = self##events *)
   end [@bs]

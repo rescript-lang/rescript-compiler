@@ -33,11 +33,15 @@
 
 (** *)
 
-(** TODO: make it resizable instead 
+(* TODO: make it resizable instead 
     option1: set new index directly
     option2: create a new array    
+    Note [Array.make] is recognized 
+    as a special primitive for better 
+    side effect analysis
 *)
-let caml_methods_cache = Caml_array.make 1000 0 
+let caml_methods_cache = 
+    Array.make 1000 0 
 
 external get_methods : CamlinternalOO.obj -> CamlinternalOO.closure array =
   "%field0"

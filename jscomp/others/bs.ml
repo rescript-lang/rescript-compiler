@@ -30,7 +30,7 @@ module Dyn = Bs_dyn
 module Dyn_lib = Bs_dyn_lib
 (**/*)
 
-module Array = Bs_array
+module Vector = Bs_vector
 module List = Bs_list 
 module Option = Bs_option 
 module Result = Bs_result

@@ -3,8 +3,8 @@
 import * as Fs            from "fs";
 import * as Path          from "path";
 import * as Process       from "process";
-import * as Bs_array      from "../../lib/es6/bs_array.js";
 import * as Bs_option     from "../../lib/es6/bs_option.js";
+import * as Bs_vector     from "../../lib/es6/bs_vector.js";
 import * as Js_primitive  from "../../lib/es6/js_primitive.js";
 import * as Node_process  from "../../lib/es6/node_process.js";
 import * as Xwatcher_util from "./xwatcher_util.js";
@@ -43,7 +43,7 @@ function watch(dir) {
 
 Node_process.putEnvVar("BS_VSCODE", "1");
 
-Bs_array.iter(function (x) {
+Bs_vector.iter(function (x) {
       watch(Path.join(jscomp, x));
       return /* () */0;
     }, /* array */[
@@ -54,7 +54,9 @@ Bs_array.iter(function (x) {
       "others",
       "ounit",
       "ounit_tests",
-      "test"
+      "test",
+      "runtime",
+      "xwatcher"
     ]);
 
 exec(/* () */0);
