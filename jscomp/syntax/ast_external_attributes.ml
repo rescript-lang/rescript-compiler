@@ -629,7 +629,7 @@ let handle_attributes
          val_send = `Nm_na;
          val_send_pipe = None;    
          splice = false;
-         scopes = [];
+         scopes ;
          get_index = false;
          new_name = `Nm_na;
          call_name = `Nm_na;
@@ -644,7 +644,7 @@ let handle_attributes
         if String.length prim_name <> 0 then 
           Location.raise_errorf ~loc "[@@bs.set_index] expect external names to be empty string";
         if arg_type_specs_length = 3 then 
-          Js_set_index
+          Js_set_index {js_set_index_scopes = scopes}
         else 
           Location.raise_errorf ~loc "Ill defined attribute [@@bs.set_index](arity of 3)"
 
@@ -662,7 +662,7 @@ let handle_attributes
          val_send_pipe = None;    
 
          splice = false;
-         scopes = [];
+         scopes ;
          new_name = `Nm_na;
          call_name = `Nm_na;
          set_name = `Nm_na ;
@@ -674,7 +674,7 @@ let handle_attributes
         if String.length prim_name <> 0 then 
           Location.raise_errorf ~loc "[@@bs.get_index] expect external names to be empty string";
         if arg_type_specs_length = 2 then 
-          Js_get_index
+          Js_get_index {js_get_index_scopes = scopes}
         else Location.raise_errorf ~loc "Ill defined attribute [@@bs.get_index] (arity of 2)"
 
       | {get_index = true; _}
@@ -792,7 +792,7 @@ let handle_attributes
         else  Js_call {splice; name; external_module_name; scopes}                     
       | {val_send = (`Nm_val name | `Nm_external name | `Nm_payload name); 
          splice;
-         scopes  = []; 
+         scopes; 
          val_send_pipe = None;
          val_name = `Nm_na  ;
          call_name = `Nm_na ;
@@ -807,7 +807,7 @@ let handle_attributes
          return_wrapper = _ ; 
         } -> 
         if arg_type_specs_length > 0 then 
-          Js_send {splice ; name; pipe = false}
+          Js_send {splice ; name; js_send_scopes = scopes ;  pipe = false}
         else 
           Location.raise_errorf ~loc "Ill defined attribute [@@bs.send] (at least one argument)"
       | {val_send = #bundle_source; _ } 
@@ -827,12 +827,13 @@ let handle_attributes
          external_module_name = None ;
          mk_obj = _;
          return_wrapper = _; 
-         scopes = [];
+         scopes;
          splice ; 
         } -> 
         (** can be one argument *)
         Js_send {splice  ;
                  name = string_of_bundle_source prim_name_or_pval_prim;
+                 js_send_scopes = scopes;
                  pipe = true}
 
       | {val_send_pipe = Some _ ; _} 
@@ -877,11 +878,11 @@ let handle_attributes
          splice = false; 
          mk_obj = _ ;
          return_wrapper = _; 
-         scopes = [];
+         scopes ;
         } 
         -> 
         if arg_type_specs_length = 2 then 
-          Js_set name 
+          Js_set { js_set_scopes = scopes ; js_set_name = name}
         else  Location.raise_errorf ~loc "Ill defined attribute [@@bs.set] (two args required)"
       
       | {set_name = #bundle_source; _}
@@ -902,11 +903,11 @@ let handle_attributes
          splice = false ; 
          mk_obj = _;
          return_wrapper = _;
-         scopes = []
+         scopes
         }
         ->
         if arg_type_specs_length = 1 then  
-          Js_get name
+          Js_get { js_get_name = name; js_get_scopes = scopes }
         else 
           Location.raise_errorf ~loc "Ill defined attribute [@@bs.get] (only one argument)"
       | {get_name = #bundle_source; _}

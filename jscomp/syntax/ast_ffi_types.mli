@@ -39,7 +39,8 @@ type js_call = {
 type js_send = { 
   name : string ;
   splice : bool ; 
-  pipe : pipe   
+  pipe : pipe  ;
+  js_send_scopes : string list; 
 } (* we know it is a js send, but what will happen if you pass an ocaml objct *)
 
 type js_global_val = {
@@ -67,6 +68,29 @@ type arg_label = Ast_arg.label
 
 type obj_create = Ast_arg.kind list
 
+type js_get =  
+  { js_get_name : string   ;
+    js_get_scopes :  string list;
+  }
+
+type js_set = 
+  { js_set_name : string  ;
+    js_set_scopes : string list 
+  }
+
+
+type js_get_index =   {
+  js_get_index_scopes : string list 
+}
+
+type js_set_index = {
+  js_set_index_scopes : string list 
+} 
+
+(*val empty_js_get_index : js_get_index
+val empty_js_set_index : js_set_index  *)
+
+
 type ffi = 
   (* | Obj_create of obj_create*)
   | Js_global of js_global_val 
@@ -76,10 +100,10 @@ type ffi =
   | Js_call of js_call 
   | Js_send of js_send
   | Js_new of js_new_val
-  | Js_set of string
-  | Js_get of string
-  | Js_get_index
-  | Js_set_index
+  | Js_set of js_set
+  | Js_get of js_get
+  | Js_get_index of js_get_index
+  | Js_set_index of js_set_index 
 
 type return_wrapper = 
   | Return_unset 
