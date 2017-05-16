@@ -251,7 +251,8 @@ iter$$1(function (x) {
       "ounit_tests",
       "test",
       "runtime",
-      "xwatcher"
+      "xwatcher",
+      "bsb"
     ]);
 
 exec(/* () */0);
