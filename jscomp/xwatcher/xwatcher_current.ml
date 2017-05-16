@@ -50,6 +50,4 @@ let () =
 
   exec ()
 
-(* local variables: *)
-(* compile-command: "bscc -bs-package-output es6:jscomp/xwatcher -c xwatcher_util.mli xwatcher_util.ml xwatcher_current.ml && rollup --silent -f cjs xwatcher_current.js -o ../../scripts/watcher.js " *)
-(* end: *)
+

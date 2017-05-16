@@ -83,8 +83,7 @@ let string_of_module_id ~output_prefix
       | Runtime  
       | Ml  -> 
         let id = x.id in
-        let modulename = String.uncapitalize id.name in
-        let js_file =  modulename ^ Literals.suffix_js in
+        let js_file = Ext_filename.output_js_basename id.name in 
         let rebase different_package package_dir dep =
           let current_unit_dir =
             `Dir (Js_config.get_output_dir ~pkg_dir:package_dir module_system output_prefix) in
@@ -99,7 +98,7 @@ let string_of_module_id ~output_prefix
         begin match module_system,  dependency_pkg_info, current_pkg_info with
           | _, NotFound , _ 
             -> 
-            Bs_exception.error (Missing_ml_dependency modulename)
+            Bs_exception.error (Missing_ml_dependency x.id.name)
           (*TODO: log which module info is not done
           *)
           | Goog, (Empty | Package_script _), _ 

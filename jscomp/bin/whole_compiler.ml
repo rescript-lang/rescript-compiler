@@ -21904,6 +21904,12 @@ get_extension "a" = ""
 val get_extension : string -> string
 
 val simple_convert_node_path_to_os_path : string -> string
+
+(* Note  we have to output uncapitalized file Name, 
+  or at least be consistent, since by reading cmi file on Case insensitive OS, we don't really know it is `list.cmi` or `List.cmi`, so that `require (./list.js)` or `require(./List.js)`
+  relevant issues: #1609, #913 
+*)
+val output_js_basename :  string -> string 
 end = struct
 #1 "ext_filename.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -22269,6 +22275,9 @@ let simple_convert_node_path_to_os_path =
     Ext_string.replace_slash_backward 
   else failwith ("Unknown OS : " ^ Sys.os_type)
 
+
+let output_js_basename s = 
+  String.uncapitalize s ^ Literals.suffix_js
 end
 module Js_config : sig 
 #1 "js_config.mli"
@@ -84776,8 +84785,7 @@ let string_of_module_id ~output_prefix
       | Runtime  
       | Ml  -> 
         let id = x.id in
-        let modulename = String.uncapitalize id.name in
-        let js_file =  modulename ^ Literals.suffix_js in
+        let js_file = Ext_filename.output_js_basename id.name in 
         let rebase different_package package_dir dep =
           let current_unit_dir =
             `Dir (Js_config.get_output_dir ~pkg_dir:package_dir module_system output_prefix) in
@@ -84792,7 +84800,7 @@ let string_of_module_id ~output_prefix
         begin match module_system,  dependency_pkg_info, current_pkg_info with
           | _, NotFound , _ 
             -> 
-            Bs_exception.error (Missing_ml_dependency modulename)
+            Bs_exception.error (Missing_ml_dependency x.id.name)
           (*TODO: log which module info is not done
           *)
           | Goog, (Empty | Package_script _), _ 

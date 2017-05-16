@@ -179,7 +179,7 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd
       let output_cmj =  output_file_sans_extension ^ Literals.suffix_cmj in
       let output_js =
         String_set.fold (fun s acc ->
-          Bsb_config.package_output ~format:s (output_file_sans_extension ^ Literals.suffix_js)
+          Bsb_config.package_output ~format:s (Ext_filename.output_js_basename output_file_sans_extension)
           :: acc
           ) package_specs []
       in

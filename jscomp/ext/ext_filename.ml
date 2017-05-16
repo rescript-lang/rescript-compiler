@@ -360,3 +360,7 @@ let simple_convert_node_path_to_os_path =
   else if Sys.win32 || Sys.cygwin then 
     Ext_string.replace_slash_backward 
   else failwith ("Unknown OS : " ^ Sys.os_type)
+
+
+let output_js_basename s = 
+  String.uncapitalize s ^ Literals.suffix_js
