@@ -30084,7 +30084,8 @@ type js_call = {
 type js_send = { 
   name : string ;
   splice : bool ; 
-  pipe : pipe   
+  pipe : pipe  ;
+  js_send_scopes : string list; 
 } (* we know it is a js send, but what will happen if you pass an ocaml objct *)
 
 type js_global_val = {
@@ -30112,6 +30113,29 @@ type arg_label = Ast_arg.label
 
 type obj_create = Ast_arg.kind list
 
+type js_get =  
+  { js_get_name : string   ;
+    js_get_scopes :  string list;
+  }
+
+type js_set = 
+  { js_set_name : string  ;
+    js_set_scopes : string list 
+  }
+
+
+type js_get_index =   {
+  js_get_index_scopes : string list 
+}
+
+type js_set_index = {
+  js_set_index_scopes : string list 
+} 
+
+(*val empty_js_get_index : js_get_index
+val empty_js_set_index : js_set_index  *)
+
+
 type ffi = 
   (* | Obj_create of obj_create*)
   | Js_global of js_global_val 
@@ -30121,10 +30145,10 @@ type ffi =
   | Js_call of js_call 
   | Js_send of js_send
   | Js_new of js_new_val
-  | Js_set of string
-  | Js_get of string
-  | Js_get_index
-  | Js_set_index
+  | Js_set of js_set
+  | Js_get of js_get
+  | Js_get_index of js_get_index
+  | Js_set_index of js_set_index 
 
 type return_wrapper = 
   | Return_unset 
@@ -30196,7 +30220,8 @@ type js_call = {
 type js_send = { 
   name : string ;
   splice : bool ; 
-  pipe : pipe   
+  pipe : pipe   ;
+  js_send_scopes : string list; 
 } (* we know it is a js send, but what will happen if you pass an ocaml objct *)
 
 type js_global_val = {
@@ -30217,14 +30242,29 @@ type js_module_as_fn =
     splice : bool ;
 
   }
-  
+type js_get =  
+  { js_get_name : string   ;
+    js_get_scopes :  string list;
+  }
+
+type js_set = 
+  { js_set_name : string  ;
+    js_set_scopes : string list 
+  }
+
+type js_get_index =   {
+  js_get_index_scopes : string list 
+}
+
+type js_set_index = {
+  js_set_index_scopes : string list 
+}  
 (** TODO: information between [arg_type] and [arg_label] are duplicated, 
   design a more compact representation so that it is also easy to seralize by hand
 *)  
 type arg_type = Ast_arg.ty
 
 type arg_label = Ast_arg.label
-
 
 
 (**TODO: maybe we can merge [arg_label] and [arg_type] *)
@@ -30239,17 +30279,17 @@ type ffi =
   | Js_call of js_call 
   | Js_send of js_send
   | Js_new of js_new_val
-  | Js_set of string
-  | Js_get of string
-  | Js_get_index
-  | Js_set_index
+  | Js_set of js_set
+  | Js_get of js_get
+  | Js_get_index of js_get_index
+  | Js_set_index of js_set_index 
 
 let name_of_ffi ffi =
   match ffi with 
-  | Js_get_index -> "[@@bs.get_index]"
-  | Js_set_index -> "[@@bs.set_index]"
-  | Js_get s -> Printf.sprintf "[@@bs.get %S]" s 
-  | Js_set s -> Printf.sprintf "[@@bs.set %S]" s 
+  | Js_get_index _scope -> "[@@bs.get_index ..]"
+  | Js_set_index _scope -> "[@@bs.set_index ..]"
+  | Js_get { js_get_name = s} -> Printf.sprintf "[@@bs.get %S]" s 
+  | Js_set { js_set_name = s} -> Printf.sprintf "[@@bs.set %S]" s 
   | Js_call v  -> Printf.sprintf "[@@bs.val %S]" v.name
   | Js_send v  -> Printf.sprintf "[@@bs.send %S]" v.name
   | Js_module_as_fn v  -> Printf.sprintf "[@@bs.val %S]" v.external_module_name.bundle
@@ -30343,11 +30383,12 @@ let check_ffi ?loc ffi =
   match ffi with 
   | Js_global {name} -> valid_global_name ?loc  name
   | Js_send {name } 
-  | Js_set  name
-  | Js_get name
+  | Js_set  {js_set_name = name}
+  | Js_get { js_get_name = name}
     ->  valid_method_name ?loc name
   (* | Obj_create _ -> () *)
-  | Js_get_index | Js_set_index 
+  | Js_get_index  _ (* TODO: check scopes *)
+  | Js_set_index _
     -> ()
 
   | Js_module_as_var external_module_name
@@ -31740,7 +31781,7 @@ let handle_attributes
          val_send = `Nm_na;
          val_send_pipe = None;    
          splice = false;
-         scopes = [];
+         scopes ;
          get_index = false;
          new_name = `Nm_na;
          call_name = `Nm_na;
@@ -31755,7 +31796,7 @@ let handle_attributes
         if String.length prim_name <> 0 then 
           Location.raise_errorf ~loc "[@@bs.set_index] expect external names to be empty string";
         if arg_type_specs_length = 3 then 
-          Js_set_index
+          Js_set_index {js_set_index_scopes = scopes}
         else 
           Location.raise_errorf ~loc "Ill defined attribute [@@bs.set_index](arity of 3)"
 
@@ -31773,7 +31814,7 @@ let handle_attributes
          val_send_pipe = None;    
 
          splice = false;
-         scopes = [];
+         scopes ;
          new_name = `Nm_na;
          call_name = `Nm_na;
          set_name = `Nm_na ;
@@ -31785,7 +31826,7 @@ let handle_attributes
         if String.length prim_name <> 0 then 
           Location.raise_errorf ~loc "[@@bs.get_index] expect external names to be empty string";
         if arg_type_specs_length = 2 then 
-          Js_get_index
+          Js_get_index {js_get_index_scopes = scopes}
         else Location.raise_errorf ~loc "Ill defined attribute [@@bs.get_index] (arity of 2)"
 
       | {get_index = true; _}
@@ -31903,7 +31944,7 @@ let handle_attributes
         else  Js_call {splice; name; external_module_name; scopes}                     
       | {val_send = (`Nm_val name | `Nm_external name | `Nm_payload name); 
          splice;
-         scopes  = []; 
+         scopes; 
          val_send_pipe = None;
          val_name = `Nm_na  ;
          call_name = `Nm_na ;
@@ -31918,7 +31959,7 @@ let handle_attributes
          return_wrapper = _ ; 
         } -> 
         if arg_type_specs_length > 0 then 
-          Js_send {splice ; name; pipe = false}
+          Js_send {splice ; name; js_send_scopes = scopes ;  pipe = false}
         else 
           Location.raise_errorf ~loc "Ill defined attribute [@@bs.send] (at least one argument)"
       | {val_send = #bundle_source; _ } 
@@ -31938,12 +31979,13 @@ let handle_attributes
          external_module_name = None ;
          mk_obj = _;
          return_wrapper = _; 
-         scopes = [];
+         scopes;
          splice ; 
         } -> 
         (** can be one argument *)
         Js_send {splice  ;
                  name = string_of_bundle_source prim_name_or_pval_prim;
+                 js_send_scopes = scopes;
                  pipe = true}
 
       | {val_send_pipe = Some _ ; _} 
@@ -31988,11 +32030,11 @@ let handle_attributes
          splice = false; 
          mk_obj = _ ;
          return_wrapper = _; 
-         scopes = [];
+         scopes ;
         } 
         -> 
         if arg_type_specs_length = 2 then 
-          Js_set name 
+          Js_set { js_set_scopes = scopes ; js_set_name = name}
         else  Location.raise_errorf ~loc "Ill defined attribute [@@bs.set] (two args required)"
       
       | {set_name = #bundle_source; _}
@@ -32013,11 +32055,11 @@ let handle_attributes
          splice = false ; 
          mk_obj = _;
          return_wrapper = _;
-         scopes = []
+         scopes
         }
         ->
         if arg_type_specs_length = 1 then  
-          Js_get name
+          Js_get { js_get_name = name; js_get_scopes = scopes }
         else 
           Location.raise_errorf ~loc "Ill defined attribute [@@bs.get] (only one argument)"
       | {get_name = #bundle_source; _}

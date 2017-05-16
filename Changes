@@ -6,6 +6,10 @@ intenral tools:
 
 - #1583, add -U -D support for bspack
 
+Features:
+
+- #1613, allow bs.scope with bs.send/bs.send.pipe/bs.set/bs.get/bs.set_index/bs.get_index
+
 Bug fixes :
 
 - #1581, more error checking
