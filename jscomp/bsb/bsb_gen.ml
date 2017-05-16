@@ -185,21 +185,22 @@ let output_ninja
        to build JS *)
     | None -> List.hd entries, true
     | Some root_project_entry -> root_project_entry, false in
-    let all_info =
+    let (all_info, should_build) =
     match root_project_entry with
     | Bsb_config_types.JsTarget _ -> 
     print_endline @@ "JS and is allow: " ^ (string_of_bool (List.mem Bsb_config_types.Js allowed_build_kinds));
       if List.mem Bsb_config_types.Js allowed_build_kinds then
-        Bsb_ninja.handle_file_groups oc
+        (Bsb_ninja.handle_file_groups oc
           ~package_specs
           ~js_post_build_cmd
           ~files_to_install
           bs_file_groups 
-          Bsb_ninja.zero
-      else Bsb_ninja.zero
+          Bsb_ninja.zero, 
+        true)
+      else (Bsb_ninja.zero, false)
     | Bsb_config_types.BytecodeTarget _ ->
       if List.mem Bsb_config_types.Bytecode allowed_build_kinds then
-        Bsb_ninja_native.handle_file_groups oc
+        (Bsb_ninja_native.handle_file_groups oc
           ~root_project_entry
           ~compile_target:Bsb_ninja_native.Bytecode
           ~is_top_level
@@ -208,11 +209,12 @@ let output_ninja
           ~files_to_install
           ~static_libraries:(clibs @ static_libraries)
           bs_file_groups
-          Bsb_ninja.zero
-      else Bsb_ninja.zero
+          Bsb_ninja.zero,
+        true)
+      else (Bsb_ninja.zero, false)
     | Bsb_config_types.NativeTarget _ ->
       if List.mem Bsb_config_types.Native allowed_build_kinds then
-        Bsb_ninja_native.handle_file_groups oc
+        (Bsb_ninja_native.handle_file_groups oc
           ~root_project_entry
           ~compile_target:Bsb_ninja_native.Native
           ~is_top_level
@@ -221,8 +223,9 @@ let output_ninja
           ~files_to_install
           ~static_libraries:(clibs @ static_libraries)
           bs_file_groups
-          Bsb_ninja.zero
-      else Bsb_ninja.zero
+          Bsb_ninja.zero,
+        true)
+      else (Bsb_ninja.zero, false)
       in
     let () =
       List.iter (fun x -> Bsb_ninja.output_build oc
@@ -232,7 +235,7 @@ let output_ninja
     (* If we have a build_script, we'll trust the user and use that to build the package instead. 
      We generate one simple rule that'll just call that string as a command. *)
   let _ = match build_script with
-  | Some build_script ->
+  | Some build_script when should_build ->
     let build_script = Ext_string.ninja_escaped build_script in
     let ocaml_lib = Bsb_build_util.get_ocaml_lib_dir cwd in
     (* TODO(sansouci): Fix this super ghetto environment variable setup... This is not cross platform! *)
@@ -245,7 +248,7 @@ let output_ninja
       ~input:""
       ~output:Literals.build_ninja
       ~rule;
-  | None ->
+  | _ ->
     Bsb_ninja.phony oc ~order_only_deps:(static_resources @ all_info.all_config_deps)
       ~inputs:[]
       ~output:Literals.build_ninja ; in

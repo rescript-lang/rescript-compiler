@@ -38,7 +38,7 @@ let (++) (us : Bsb_ninja.info) (vs : Bsb_ninja.info) =
     {
       all_config_deps  = us.all_config_deps @ vs.all_config_deps
     ;
-      all_installs = us.all_installs @ vs.all_installs
+      (* all_installs = us.all_installs @ vs.all_installs *)
     }
 
 let install_file (file : string) files_to_install =
@@ -161,7 +161,9 @@ let handle_file_group oc
               ~implicit_deps:deps
               ~rule:rule_name ;
             if installable then begin install_file file_input files_to_install end;
-            {all_config_deps = [output_mlastd]; all_installs = [output_cmi];  }
+            {all_config_deps = [output_mlastd]; 
+            (* all_installs = [output_cmi];   *)
+            }
 
           end
         | `Mli
@@ -195,7 +197,7 @@ let handle_file_group oc
           if installable then begin install_file file_input files_to_install end ;
           {
             all_config_deps = [output_mliastd];
-            all_installs = [output_cmi];
+            (* all_installs = [output_cmi]; *)
           }
 
       end
@@ -318,7 +320,9 @@ let pack oc ret  ~root_project_entry ~file_groups =
       ~inputs:all_cmo_or_cmx_files
       ~implicit_deps:all_cmi_files
       ~rule:rule_name ;
-    ret ++ ({all_config_deps = []; all_installs = [output_cma_or_cmxa]; })
+    ret ++ ({all_config_deps = []; 
+    (* all_installs = [output_cma_or_cmxa];  *)
+  })
   end else ret
 
 let handle_file_groups oc
