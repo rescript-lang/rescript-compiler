@@ -252,7 +252,8 @@ iter$$1(function (x) {
       "test",
       "runtime",
       "xwatcher",
-      "bsb"
+      "bsb",
+      "common"
     ]);
 
 exec(/* () */0);

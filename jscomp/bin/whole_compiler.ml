@@ -22331,7 +22331,7 @@ val cmj_ext : string
 (* val set_browser : unit -> unit *)
 
 
-val get_ext : unit -> string
+(*val get_ext : unit -> string*)
 
 (** depends on [package_infos], used in {!Js_program_loader} *)
 val get_output_dir : pkg_dir:string -> module_system -> string -> string
@@ -22503,12 +22503,11 @@ type packages_info =
 
 
 
-let ext = ref ".js"
 let cmj_ext = ".cmj"
 
 
 
-let get_ext () = !ext
+(*let get_ext () = !ext*)
 
 
 let packages_info : packages_info ref = ref Empty
@@ -100600,10 +100599,10 @@ let lambda_as_module
     let (//) = Filename.concat in 
     let basename =  
       (* #758, output_prefix is already chopped *)
-      (Filename.basename
+      Ext_filename.output_js_basename (Filename.basename
          output_prefix (* -o *)
          (* filename *) (* see #757  *)
-      ) ^  Js_config.get_ext() in
+      ) in
     (* Not re-entrant *)
     match Js_config.get_packages_info () with 
     | Empty 
@@ -100618,7 +100617,7 @@ let lambda_as_module
               Lazy.force Ext_filename.cwd // 
               Filename.dirname filename 
             else 
-              Filename.dirname filename) // String.uncapitalize basename
+              Filename.dirname filename) //  basename
           (* #913
              only generate little-case js file
           *)
@@ -100636,7 +100635,7 @@ let lambda_as_module
           Ext_pervasives.with_file_as_chan
             (Lazy.force Ext_filename.package_dir //
              _path //
-             String.uncapitalize basename
+              basename
              (* #913 only generate little-case js file *)
             ) output_chan
 
@@ -110655,7 +110654,9 @@ let process_result ppf  main_file ast_table result =
   ;
   if not (!Clflags.compile_only) then
     Sys.command
-      ("node " ^ Filename.chop_extension main_file ^ ".js")
+      ("node " ^
+        Ext_filename.output_js_basename (Filename.chop_extension main_file)
+         )
   else 0
 
 type task = 

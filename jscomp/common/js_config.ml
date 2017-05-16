@@ -44,12 +44,11 @@ type packages_info =
 
 
 
-let ext = ref ".js"
 let cmj_ext = ".cmj"
 
 
 
-let get_ext () = !ext
+(*let get_ext () = !ext*)
 
 
 let packages_info : packages_info ref = ref Empty

@@ -45,7 +45,8 @@ let () =
        "ounit"; "ounit_tests"; "test"; 
        "runtime";
        "xwatcher";
-       "bsb"
+       "bsb";
+       "common"
        |];
 
   exec ()

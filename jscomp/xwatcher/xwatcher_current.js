@@ -57,7 +57,8 @@ Bs_vector.iter(function (x) {
       "test",
       "runtime",
       "xwatcher",
-      "bsb"
+      "bsb",
+      "common"
     ]);
 
 exec(/* () */0);

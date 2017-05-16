@@ -28,7 +28,7 @@ let get_files dir =
     Sys.readdir dir 
     |> Ext_array.filter_map 
         (fun  x -> 
-          if Ext_string.ends_with x ".js" && x <> "unix.js" &&
+          if Ext_string.ends_with x Literals.suffix_js && x <> "unix.js" &&
              x <> "bigarray.js" && x <> "std_exit.js" &&
              x <> "unixLabels.js"
           then 
