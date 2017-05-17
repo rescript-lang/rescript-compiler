@@ -39,11 +39,16 @@ let () =
   Node.Process.putEnvVar "BS_VSCODE" "1";
   Bs.Vector.iter (fun [@bs] x -> 
       ignore @@ watch (Node.Path.join [|jscomp; x|])
-    ) [| "core"; "syntax"; "ext"; "depends"; "others";
-         "ounit"; "ounit_tests"; "test"; "runtime";"xwatcher"|];
-  
+    ) 
+    [| "core"; "syntax"; "ext"; "depends"; 
+       "others";
+       "ounit"; "ounit_tests"; "test"; 
+       "runtime";
+       "xwatcher";
+       "bsb";
+       "common"
+       |];
+
   exec ()
 
-(* local variables: *)
-(* compile-command: "bscc -bs-package-output es6:jscomp/xwatcher -c xwatcher_util.mli xwatcher_util.ml xwatcher_current.ml && rollup --silent -f cjs xwatcher_current.js -o ../../scripts/watcher.js " *)
-(* end: *)
+

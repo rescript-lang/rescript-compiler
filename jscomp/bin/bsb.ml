@@ -1405,6 +1405,12 @@ get_extension "a" = ""
 val get_extension : string -> string
 
 val simple_convert_node_path_to_os_path : string -> string
+
+(* Note  we have to output uncapitalized file Name, 
+  or at least be consistent, since by reading cmi file on Case insensitive OS, we don't really know it is `list.cmi` or `List.cmi`, so that `require (./list.js)` or `require(./List.js)`
+  relevant issues: #1609, #913 
+*)
+val output_js_basename :  string -> string 
 end = struct
 #1 "ext_filename.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -1770,6 +1776,9 @@ let simple_convert_node_path_to_os_path =
     Ext_string.replace_slash_backward 
   else failwith ("Unknown OS : " ^ Sys.os_type)
 
+
+let output_js_basename s = 
+  String.uncapitalize s ^ Literals.suffix_js
 end
 module Set_gen
 = struct
@@ -2671,7 +2680,7 @@ let package_output ~format:s output=
     else goog_prefix
   in
   (proj_rel @@ prefix output )
-(* output_file_sans_extension ^ Literals.suffix_js *) 
+
 
 
 
@@ -9406,7 +9415,7 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd
       let output_cmj =  output_file_sans_extension ^ Literals.suffix_cmj in
       let output_js =
         String_set.fold (fun s acc ->
-          Bsb_config.package_output ~format:s (output_file_sans_extension ^ Literals.suffix_js)
+          Bsb_config.package_output ~format:s (Ext_filename.output_js_basename output_file_sans_extension)
           :: acc
           ) package_specs []
       in

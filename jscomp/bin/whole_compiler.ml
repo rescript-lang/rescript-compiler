@@ -21904,6 +21904,12 @@ get_extension "a" = ""
 val get_extension : string -> string
 
 val simple_convert_node_path_to_os_path : string -> string
+
+(* Note  we have to output uncapitalized file Name, 
+  or at least be consistent, since by reading cmi file on Case insensitive OS, we don't really know it is `list.cmi` or `List.cmi`, so that `require (./list.js)` or `require(./List.js)`
+  relevant issues: #1609, #913 
+*)
+val output_js_basename :  string -> string 
 end = struct
 #1 "ext_filename.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -22269,6 +22275,9 @@ let simple_convert_node_path_to_os_path =
     Ext_string.replace_slash_backward 
   else failwith ("Unknown OS : " ^ Sys.os_type)
 
+
+let output_js_basename s = 
+  String.uncapitalize s ^ Literals.suffix_js
 end
 module Js_config : sig 
 #1 "js_config.mli"
@@ -22322,7 +22331,7 @@ val cmj_ext : string
 (* val set_browser : unit -> unit *)
 
 
-val get_ext : unit -> string
+(*val get_ext : unit -> string*)
 
 (** depends on [package_infos], used in {!Js_program_loader} *)
 val get_output_dir : pkg_dir:string -> module_system -> string -> string
@@ -22494,12 +22503,11 @@ type packages_info =
 
 
 
-let ext = ref ".js"
 let cmj_ext = ".cmj"
 
 
 
-let get_ext () = !ext
+(*let get_ext () = !ext*)
 
 
 let packages_info : packages_info ref = ref Empty
@@ -84776,8 +84784,7 @@ let string_of_module_id ~output_prefix
       | Runtime  
       | Ml  -> 
         let id = x.id in
-        let modulename = String.uncapitalize id.name in
-        let js_file =  modulename ^ Literals.suffix_js in
+        let js_file = Ext_filename.output_js_basename id.name in 
         let rebase different_package package_dir dep =
           let current_unit_dir =
             `Dir (Js_config.get_output_dir ~pkg_dir:package_dir module_system output_prefix) in
@@ -84792,7 +84799,7 @@ let string_of_module_id ~output_prefix
         begin match module_system,  dependency_pkg_info, current_pkg_info with
           | _, NotFound , _ 
             -> 
-            Bs_exception.error (Missing_ml_dependency modulename)
+            Bs_exception.error (Missing_ml_dependency x.id.name)
           (*TODO: log which module info is not done
           *)
           | Goog, (Empty | Package_script _), _ 
@@ -100592,10 +100599,10 @@ let lambda_as_module
     let (//) = Filename.concat in 
     let basename =  
       (* #758, output_prefix is already chopped *)
-      (Filename.basename
+      Ext_filename.output_js_basename (Filename.basename
          output_prefix (* -o *)
          (* filename *) (* see #757  *)
-      ) ^  Js_config.get_ext() in
+      ) in
     (* Not re-entrant *)
     match Js_config.get_packages_info () with 
     | Empty 
@@ -100610,7 +100617,7 @@ let lambda_as_module
               Lazy.force Ext_filename.cwd // 
               Filename.dirname filename 
             else 
-              Filename.dirname filename) // String.uncapitalize basename
+              Filename.dirname filename) //  basename
           (* #913
              only generate little-case js file
           *)
@@ -100628,7 +100635,7 @@ let lambda_as_module
           Ext_pervasives.with_file_as_chan
             (Lazy.force Ext_filename.package_dir //
              _path //
-             String.uncapitalize basename
+              basename
              (* #913 only generate little-case js file *)
             ) output_chan
 
@@ -110647,7 +110654,9 @@ let process_result ppf  main_file ast_table result =
   ;
   if not (!Clflags.compile_only) then
     Sys.command
-      ("node " ^ Filename.chop_extension main_file ^ ".js")
+      ("node " ^
+        Ext_filename.output_js_basename (Filename.chop_extension main_file)
+         )
   else 0
 
 type task = 

@@ -25433,6 +25433,12 @@ get_extension "a" = ""
 val get_extension : string -> string
 
 val simple_convert_node_path_to_os_path : string -> string
+
+(* Note  we have to output uncapitalized file Name, 
+  or at least be consistent, since by reading cmi file on Case insensitive OS, we don't really know it is `list.cmi` or `List.cmi`, so that `require (./list.js)` or `require(./List.js)`
+  relevant issues: #1609, #913 
+*)
+val output_js_basename :  string -> string 
 end = struct
 #1 "ext_filename.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -25798,6 +25804,9 @@ let simple_convert_node_path_to_os_path =
     Ext_string.replace_slash_backward 
   else failwith ("Unknown OS : " ^ Sys.os_type)
 
+
+let output_js_basename s = 
+  String.uncapitalize s ^ Literals.suffix_js
 end
 module Js_config : sig 
 #1 "js_config.mli"
@@ -25851,7 +25860,7 @@ val cmj_ext : string
 (* val set_browser : unit -> unit *)
 
 
-val get_ext : unit -> string
+(*val get_ext : unit -> string*)
 
 (** depends on [package_infos], used in {!Js_program_loader} *)
 val get_output_dir : pkg_dir:string -> module_system -> string -> string
@@ -26023,12 +26032,11 @@ type packages_info =
 
 
 
-let ext = ref ".js"
 let cmj_ext = ".cmj"
 
 
 
-let get_ext () = !ext
+(*let get_ext () = !ext*)
 
 
 let packages_info : packages_info ref = ref Empty

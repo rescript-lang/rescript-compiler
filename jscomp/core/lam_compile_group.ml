@@ -390,10 +390,10 @@ let lambda_as_module
     let (//) = Filename.concat in 
     let basename =  
       (* #758, output_prefix is already chopped *)
-      (Filename.basename
+      Ext_filename.output_js_basename (Filename.basename
          output_prefix (* -o *)
          (* filename *) (* see #757  *)
-      ) ^  Js_config.get_ext() in
+      ) in
     (* Not re-entrant *)
     match Js_config.get_packages_info () with 
     | Empty 
@@ -408,7 +408,7 @@ let lambda_as_module
               Lazy.force Ext_filename.cwd // 
               Filename.dirname filename 
             else 
-              Filename.dirname filename) // String.uncapitalize basename
+              Filename.dirname filename) //  basename
           (* #913
              only generate little-case js file
           *)
@@ -426,7 +426,7 @@ let lambda_as_module
           Ext_pervasives.with_file_as_chan
             (Lazy.force Ext_filename.package_dir //
              _path //
-             String.uncapitalize basename
+              basename
              (* #913 only generate little-case js file *)
             ) output_chan
 

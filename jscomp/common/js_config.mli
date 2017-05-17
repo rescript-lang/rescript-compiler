@@ -48,7 +48,7 @@ val cmj_ext : string
 (* val set_browser : unit -> unit *)
 
 
-val get_ext : unit -> string
+(*val get_ext : unit -> string*)
 
 (** depends on [package_infos], used in {!Js_program_loader} *)
 val get_output_dir : pkg_dir:string -> module_system -> string -> string

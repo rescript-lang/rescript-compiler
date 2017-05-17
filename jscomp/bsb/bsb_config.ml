@@ -117,7 +117,7 @@ let package_output ~format:s output=
     else goog_prefix
   in
   (proj_rel @@ prefix output )
-(* output_file_sans_extension ^ Literals.suffix_js *) 
+
 
 
 
