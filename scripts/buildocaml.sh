@@ -28,4 +28,4 @@ else
     fi
 fi
 
-cd $OCAML &&  ./configure -prefix "$(dirname "$PWD")"  -no-ocamldoc -no-ocamlbuild -no-shared-libs -no-curses -no-graph -no-pthread -no-debugger  && make -j9 world.opt && make install  && cd ..
+cd $OCAML &&  ./configure -prefix "$(dirname "$PWD")"  -no-ocamldoc -no-ocamlbuild -no-shared-libs -no-curses -no-graph -no-pthread -no-debugger  && make -j9 world.opt && make install && make -C stdlib install && cd ..
