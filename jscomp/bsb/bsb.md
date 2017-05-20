@@ -8,7 +8,7 @@ cases:
 one directory have two same files -- ignore, does not matter here?
 two directories ha
 
-# generate ninja fron file groups
+# generate ninja from file groups
 
 `Bsb_build_ui.file_group list`
 one directory, one kind --
@@ -46,10 +46,10 @@ https://groups.google.com/forum/#!searchin/ninja-build/post$20process%7Csort:rel
 
 # Performance tweaks
 
-Writing(truncating) files are siginificantly slower (20~30x) and it destroies cache(see Appendix), we should 
+Writing(truncating) files are significantly slower (20~30x) and it destroys cache(see Appendix), we should 
 try to avoid writing too many files.
 
-bsb is optimized for incremental build (espeically for modifing files ).
+bsb is optimized for incremental build (especially for modifying files ).
 
 There is a trade off here: if we generate `.bsdep` file, whenever adding or removing file, `.bscache` will not 
 impact the integrity of `.bsdep`, so that it will run `.bsdep -> .d`.
@@ -149,13 +149,27 @@ let () =
 
 # package-flags
 
- when designing bsc commandline flags, we ask user to specify the output path of package output 
+ when designing bsc command line flags, we ask user to specify the output path of package output 
  instead of calculating, 
  the reason is that the user input can be absolute path or relative path, to calculate 
  we also need the location of package.json.
 
- ## TODO: seems we can do it 
+
+ ## document when regenerating `build.ninja`
  
+ - when `bsb.exe` path is changed
+ - when `bsb.exe` version is changed 
+
+ ## other internal options
+ 
+-no-dev -- don't build dev directory group
+-install -- install files
+
+## document when regenerating `.merlin`
+
+## TODO: seems we can do it 
+
+1. instead of specifying the whole relative path, just specifying the offset 
  ```
 -bs-package-output commonjs:+lib/js -bs-package-output amdjs:+lib/amdjs xx.mlast
  ```   
@@ -178,12 +192,5 @@ let () =
 
  however, the bsc is almost sitting in `lib/bs`
 
- ## document when regenerating `build.ninja`
- 
- - when `bsb.exe` path is changed
- - when `bsb.exe` version is changed 
-
- ## other internal options
- 
--no-dev -- don't build dev directory group
--install -- install files
+2. caching Directory operations
+3. Read `bsconfig.json` from watchcer  side, so that we can caching io operations more effeciently?

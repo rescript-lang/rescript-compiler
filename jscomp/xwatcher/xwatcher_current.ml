@@ -1,3 +1,4 @@
+
 [@@@bs.config {no_export}]
 
 open Xwatcher_util
@@ -27,7 +28,7 @@ let exec () =
   buildWithShell command events lock (fun [@bs] () -> ())
 let watch dir   = 
   makeWatcher dir 
-    (fun [@bs] event fileName -> 
+    (fun [@bs] _event fileName -> 
        (* Js.log {j| $event :  $fileName |j}; *)
        if Js.String.endsWith ".ml" fileName 
        || Js.String.endsWith ".mli" fileName
