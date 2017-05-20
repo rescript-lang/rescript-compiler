@@ -6630,7 +6630,7 @@ type error
   | Invalid_underscore_type_in_external
   | Invalid_bs_string_type 
   | Invalid_bs_int_type 
-  | Conflict_ffi_attribute
+  | Conflict_ffi_attribute of string
   | Not_supported_in_bs_deriving
   | Canot_infer_arity_by_syntax
   | Illegal_attribute
@@ -6690,7 +6690,7 @@ type error
   | Invalid_underscore_type_in_external
   | Invalid_bs_string_type 
   | Invalid_bs_int_type 
-  | Conflict_ffi_attribute
+  | Conflict_ffi_attribute of string
   | Not_supported_in_bs_deriving
   | Canot_infer_arity_by_syntax
   | Illegal_attribute
@@ -6734,7 +6734,7 @@ let pp_error fmt err =
   | Duplicated_bs_deriving
     -> "duplicated bs.deriving attribute"
   | Conflict_attributes
-    -> "conflict attributes " 
+    -> "conflicting attributes " 
   | Expect_string_literal
     -> "expect string literal "
   | Duplicated_bs_as 
@@ -6760,9 +6760,9 @@ let pp_error fmt err =
   | Invalid_bs_int_type 
     -> 
     "Not a valid  type for [@bs.int]"
-  | Conflict_ffi_attribute
+  | Conflict_ffi_attribute str
     ->
-    "conflict attributes found" 
+    "Conflicting FFI attributes found: " ^ str
   | Bs_this_simple_pattern
     -> 
     "[@bs.this] expect its pattern variable to be simple form"
@@ -13726,7 +13726,7 @@ let handle_attributes
           left_attrs
         end
 
-      | _ -> Location.raise_errorf ~loc "conflict attributes found [@@bs.obj]"  
+      | _ -> Location.raise_errorf ~loc "Attribute found that conflicts with [@@bs.obj]"  
 
     end  
 
@@ -13821,7 +13821,7 @@ let handle_attributes
 
       | {set_index = true; _}
         ->
-        Bs_syntaxerr.err loc Conflict_ffi_attribute
+        Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.set_index]")
 
 
       | {get_index = true;
@@ -13851,7 +13851,7 @@ let handle_attributes
       | {get_index = true; _}
 
         -> 
-        Bs_syntaxerr.err loc Conflict_ffi_attribute
+        Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.get_index]")
 
 
 
@@ -13878,19 +13878,18 @@ let handle_attributes
           | [], `Nm_na,  _ -> Js_module_as_var external_module_name
           | _, `Nm_na, _ -> Js_module_as_fn {splice; external_module_name }
           | _, #bundle_source, #bundle_source ->
-            Bs_syntaxerr.err loc Conflict_ffi_attribute
+            Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.module].")
 
           | _, (`Nm_val _ | `Nm_external _) , `Nm_na
             -> Js_module_as_class external_module_name
           | _, `Nm_payload _ , `Nm_na
             ->
             Location.raise_errorf ~loc
-              "conflict attributes found: (bs.new should not carry payload here)"
-
+              "Incorrect FFI attribute found: (bs.new should not carry a payload here)"
         end
-      | {module_as_val = Some _; _}
+      | {module_as_val = Some x; _}
         -> 
-        Bs_syntaxerr.err loc Conflict_ffi_attribute
+        Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.module].")
 
       | {call_name = (`Nm_val name | `Nm_external name | `Nm_payload name) ;
          splice; 
@@ -13913,7 +13912,7 @@ let handle_attributes
         Js_call {splice; name; external_module_name; scopes }
       | {call_name = #bundle_source ; _ } 
         ->
-        Bs_syntaxerr.err loc Conflict_ffi_attribute
+        Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.val]")
 
 
       | {val_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
@@ -13937,7 +13936,7 @@ let handle_attributes
         Js_global { name; external_module_name; scopes}
       | {val_name = #bundle_source ; _ }
         ->
-        Bs_syntaxerr.err loc Conflict_ffi_attribute
+        Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.val]")
 
       | {splice ;
          scopes ;
@@ -13982,7 +13981,7 @@ let handle_attributes
         else 
           Location.raise_errorf ~loc "Ill defined attribute [@@bs.send] (at least one argument)"
       | {val_send = #bundle_source; _ } 
-        -> Location.raise_errorf ~loc "conflict attributes found with [@@bs.send]"
+        -> Location.raise_errorf ~loc "You used an FFI attribute that can't be used with [@@bs.send]"
 
       | {val_send_pipe = Some typ; 
          (* splice = (false as splice); *)
@@ -14031,7 +14030,7 @@ let handle_attributes
         -> Js_new {name; external_module_name; splice; scopes}
       | {new_name = #bundle_source ; _ }
         -> 
-        Bs_syntaxerr.err loc Conflict_ffi_attribute
+        Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.new]")
 
 
       | {set_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
@@ -14082,7 +14081,7 @@ let handle_attributes
         else 
           Location.raise_errorf ~loc "Ill defined attribute [@@bs.get] (only one argument)"
       | {get_name = #bundle_source; _}
-        -> Location.raise_errorf ~loc "conflict attributes found with [@@bs.get]"
+        -> Location.raise_errorf ~loc "Attribute found that conflicts with [@@bs.get]"
 
       | {get_name = `Nm_na;
          val_name = `Nm_na  ;
