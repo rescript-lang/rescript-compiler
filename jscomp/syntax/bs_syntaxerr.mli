@@ -37,7 +37,7 @@ type error
   | Invalid_underscore_type_in_external
   | Invalid_bs_string_type 
   | Invalid_bs_int_type 
-  | Conflict_ffi_attribute
+  | Conflict_ffi_attribute of string
   | Not_supported_in_bs_deriving
   | Canot_infer_arity_by_syntax
   | Illegal_attribute
