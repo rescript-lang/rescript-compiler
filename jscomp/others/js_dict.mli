@@ -78,6 +78,6 @@ val fromArray : (key * 'a) array -> 'a t
 (** [fromArray entries] creates a new dictionary using with containing each
 [(key, value)] pair in [entries] *)
 
-val map : ('a -> 'b) -> 'a t -> 'b t
+val map : ('a -> 'b [@bs]) -> 'a t -> 'b t
 (** [map f dict] maps [dict] to a new dictionary with the same keys,
 using [f] to map each value *)

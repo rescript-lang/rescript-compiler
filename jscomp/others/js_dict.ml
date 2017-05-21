@@ -57,15 +57,15 @@ let unsafeDeleteKey : string t -> string -> unit [@bs] = [%raw{|
    }
 |}]
 
+external unsafeCreate : int -> 'a array = "Array" [@@bs.new]
 (* external entries : 'a t -> (key * 'a) array = "Object.entries" [@@bs.val] (* ES2017 *) *)
 let entries dict =
   let keys = keys dict in
   let l = Js.Array.length keys in
-  (* TODO: Get rid of Obj.magic *)
-  let values = Obj.magic (Array.make l 0) in
+  let values = unsafeCreate l in
   for i = 0 to l - 1 do
     let key = Array.unsafe_get keys i in
-    Array.set values i (key, unsafeGet dict key)
+    Array.unsafe_set values i (key, unsafeGet dict key)
   done;
   values
 
@@ -73,10 +73,9 @@ let entries dict =
 let values dict =
   let keys = keys dict in
   let l = Js.Array.length keys in
-  (* TODO: Get rid of Obj.magic *)
-  let values = Obj.magic (Array.make l 0) in
+  let values = unsafeCreate l in
   for i = 0 to l - 1 do
-    Array.set values i (unsafeGet dict (Array.unsafe_get keys i))
+    Array.unsafe_set values i (unsafeGet dict (Array.unsafe_get keys i))
   done;
   values
 
@@ -105,6 +104,6 @@ let map f source =
   let l = Js.Array.length keys in
   for i = 0 to l - 1 do
     let key = Array.unsafe_get keys i in
-    set target key (f @@ unsafeGet source key)
+    set target key (f (unsafeGet source key) [@bs])
   done;
   target
