@@ -94,30 +94,14 @@ let install_targets cwd (config : Bsb_config_types.t option) =
     end
 
 
-
-
-(* let annoymous filename = *)
-(*   String_vec.push  filename targets *)
-
-
 let watch_mode = ref false
 
-type make_world_config = {
-  mutable  set : bool ;
-  mutable dry_run : bool 
-}
 
-let make_world = {
-  set = false ;
-  dry_run = false;
-}
+let make_world = ref false 
 
-let set_make_world () = 
-  make_world.set <- true
+let set_make_world () = make_world := true
 
-let set_make_world_dry_run () = 
-  make_world.set <- true ; 
-  make_world.dry_run <- true 
+
 
 
 let color_enabled = ref (Unix.isatty Unix.stdin)
@@ -165,7 +149,7 @@ let clean_self () = clean_bs_garbage cwd
 (** Regenerate ninja file and return None if we dont need regenerate
     otherwise return some info
 *)
-let regenerate_ninja ~no_dev ~override_package_specs ~generate_watch_metadata cwd bsc_dir forced =
+let regenerate_ninja ~no_dev ~override_package_specs ~generate_watch_metadata cwd bsc_dir ~forced =
   let output_deps = cwd // Bsb_config.lib_bs // bsdeps in
   let reason : Bsb_dep_infos.check_result =
     Bsb_dep_infos.check ~cwd  forced output_deps in
@@ -218,9 +202,7 @@ let bsb_main_flags : (string * Arg.spec * string) list=
     "-no-color", Arg.Clear color_enabled,
     " forced no color output";
     "-w", Arg.Set watch_mode,
-    " Watch mode" ;
-    (* no_dev, Arg.Set Bsb_config.no_dev, *)
-    (* " (internal)Build dev dependencies in make-world and dev group(in combination with -regen)"; *)
+    " Watch mode" ;     
     regen, Arg.Set force_regenerate,
     " (internal)Always regenerate build.ninja no matter bsconfig.json is changed or not (for debugging purpose)"
     ;
@@ -230,8 +212,6 @@ let bsb_main_flags : (string * Arg.spec * string) list=
     " Clean only current project";
     "-make-world", Arg.Unit set_make_world,
     " Build all dependencies and itself ";
-    (* "-make-world-dry-run", Arg.Unit set_make_world_dry_run, *)
-    (* " (internal) Debugging utitlies" *)
   ]
 
 
@@ -251,8 +231,7 @@ let exec_command_install_then_exit  command =
   print_endline command ;
   exit (Sys.command command ) 
 
-let ninja_command_exit (* (type t) *)
-  (* cwd *) vendor_ninja ninja_args  (* config *) (* : t *) =
+let ninja_command_exit  vendor_ninja ninja_args  =
   let ninja_args_len = Array.length ninja_args in
   if ninja_args_len = 0 then
     if Ext_sys.is_windows_or_cygwin then
@@ -318,7 +297,8 @@ let build_bs_deps deps =
            let config_opt = regenerate_ninja ~no_dev:true
                ~generate_watch_metadata:false
                ~override_package_specs:(Some deps) 
-               cwd bsc_dir true in (* set true to force regenrate ninja file so we have [config_opt]*)
+               ~forced:true
+               cwd bsc_dir  in (* set true to force regenrate ninja file so we have [config_opt]*)
            Bsb_unix.run_command_execv
              {cmd = vendor_ninja;
               cwd = cwd // Bsb_config.lib_bs;
@@ -347,31 +327,30 @@ let make_world_deps (config : Bsb_config_types.t option) =
     | Some {package_specs} -> package_specs in
   build_bs_deps deps
 
-
+(* see discussion #929, if we catch the exception, we don't have stacktrace... *)
 let () =
   let bsc_dir = Bsb_build_util.get_bsc_dir cwd in
-  let vendor_ninja = bsc_dir // "ninja.exe" in
-  (* try *)
-  (* see discussion #929 *)
-  if Array.length Sys.argv <= 1 then
+  let vendor_ninja = bsc_dir // "ninja.exe" in  
+  match Sys.argv with 
+  | [| _ |] ->  (* specialize this path [ninja] which is used in wathcer  *)
     begin
-      (* print_endline __LOC__; *)
       let _config_opt =  
         regenerate_ninja ~override_package_specs:None ~no_dev:false 
           ~generate_watch_metadata:true
-          cwd bsc_dir false 
+          ~forced:false 
+          cwd bsc_dir 
       in 
-      ninja_command_exit  (* cwd *) vendor_ninja [||] (* config_opt *)
+      ninja_command_exit  vendor_ninja [||] 
     end
-  else
+  | argv -> 
     begin
-      match Ext_array.find_and_split Sys.argv Ext_string.equal separator with
+      match Ext_array.find_and_split argv Ext_string.equal separator with
       | `No_split
         ->
         begin
           Arg.parse bsb_main_flags handle_anonymous_arg usage;
           (* [-make-world] should never be combined with [-package-specs] *)
-          let make_world = make_world.set in 
+          let make_world = !make_world in 
           begin match make_world, !force_regenerate with
             | false, false -> 
               if !watch_mode then begin
@@ -384,7 +363,7 @@ let () =
               end 
             | make_world, force_regenerate ->
               (* don't regenerate files when we only run [bsb -clean-world] *)
-              let config_opt = regenerate_ninja ~generate_watch_metadata:true ~override_package_specs:None ~no_dev:false cwd bsc_dir force_regenerate in
+              let config_opt = regenerate_ninja ~generate_watch_metadata:true ~override_package_specs:None ~no_dev:false ~forced:force_regenerate cwd bsc_dir  in
               if make_world then begin
                 make_world_deps config_opt
               end;
@@ -396,7 +375,7 @@ let () =
                    [bsb -regen ]
                 *)
               end else if make_world then begin
-                ninja_command_exit  (* cwd *) vendor_ninja [||] (* config_opt *)
+                ninja_command_exit  vendor_ninja [||] 
               end
           end;
 
@@ -405,15 +384,11 @@ let () =
         -> (* -make-world all dependencies fall into this category *)
         begin
           Arg.parse_argv bsb_args bsb_main_flags handle_anonymous_arg usage ;
-          let config_opt = regenerate_ninja ~generate_watch_metadata:true ~override_package_specs:None ~no_dev:false cwd bsc_dir !force_regenerate in
+          let config_opt = regenerate_ninja ~generate_watch_metadata:true ~override_package_specs:None ~no_dev:false cwd bsc_dir ~forced:!force_regenerate in
           (* [-make-world] should never be combined with [-package-specs] *)
-          if make_world.set then
+          if !make_world then
             make_world_deps config_opt ;
           if !watch_mode then watch_exit ()
-          else ninja_command_exit  (* cwd *) vendor_ninja ninja_args (* config_opt *)
+          else ninja_command_exit  vendor_ninja ninja_args 
         end
     end
-(*with x ->
-  prerr_endline @@ Printexc.to_string x ;
-  exit 2*)
-(* with [try, with], there is no stacktrace anymore .. *)

@@ -727,7 +727,6 @@ bsb/bsb_config_types.cmx : ext/string_hash_set.cmx bsb/bsb_config.cmx \
 bsb/bsb_default.cmx : ext/string_set.cmx ext/literals.cmx \
     bsb/bsb_config_types.cmx bsb/bsb_default.cmi
 bsb/bsb_dep_infos.cmx : common/bs_version.cmx bsb/bsb_dep_infos.cmi
-bsb/bsb_dir.cmx : bsb/bsb_dir.cmi
 bsb/bsb_exception.cmx : ext/ext_string.cmx ext/ext_position.cmx \
     ext/ext_json.cmx common/bs_version.cmx bsb/bsb_exception.cmi
 bsb/bsb_file.cmx : bsb/bsb_file.cmi
@@ -771,7 +770,6 @@ bsb/bsb_config.cmi : ext/string_set.cmi
 bsb/bsb_config_parse.cmi : bsb/bsb_config_types.cmx bsb/bsb_config.cmi
 bsb/bsb_default.cmi : ext/string_set.cmi bsb/bsb_config_types.cmx
 bsb/bsb_dep_infos.cmi :
-bsb/bsb_dir.cmi :
 bsb/bsb_exception.cmi : ext/ext_position.cmi ext/ext_json_types.cmx
 bsb/bsb_file.cmi :
 bsb/bsb_gen.cmi : bsb/bsb_config_types.cmx
