@@ -3,7 +3,6 @@
 var Mt           = require("./mt.js");
 var Block        = require("../../lib/js/block.js");
 var Js_dict      = require("../../lib/js/js_dict.js");
-var Pervasives   = require("../../lib/js/pervasives.js");
 var Js_primitive = require("../../lib/js/js_primitive.js");
 
 function obj() {
@@ -219,7 +218,9 @@ var suites_001 = /* :: */[
                                         foo: "43",
                                         bar: "86"
                                       },
-                                      Js_dict.map(Pervasives.string_of_int, {
+                                      Js_dict.map(function (i) {
+                                            return "" + i;
+                                          }, {
                                             foo: 43,
                                             bar: 86
                                           })
