@@ -75,7 +75,7 @@ open OUnitTypes
 
 (** Most simple heuristic, just pick the first test. *)
 let simple state =
-  (* 194 *) List.hd state.tests_planned
+  (* 200 *) List.hd state.tests_planned
 
 end
 module OUnitUtils
@@ -98,22 +98,22 @@ let is_success =
 let is_failure = 
   function
     | RFailure _ -> (* 0 *) true
-    | RSuccess _ | RError _  | RSkip _ | RTodo _ -> (* 388 *) false
+    | RSuccess _ | RError _  | RSkip _ | RTodo _ -> (* 400 *) false
 
 let is_error = 
   function 
     | RError _ -> (* 0 *) true
-    | RSuccess _ | RFailure _ | RSkip _ | RTodo _ -> (* 388 *) false
+    | RSuccess _ | RFailure _ | RSkip _ | RTodo _ -> (* 400 *) false
 
 let is_skip = 
   function
     | RSkip _ -> (* 0 *) true
-    | RSuccess _ | RFailure _ | RError _  | RTodo _ -> (* 388 *) false
+    | RSuccess _ | RFailure _ | RError _  | RTodo _ -> (* 400 *) false
 
 let is_todo = 
   function
     | RTodo _ -> (* 0 *) true
-    | RSuccess _ | RFailure _ | RError _  | RSkip _ -> (* 388 *) false
+    | RSuccess _ | RFailure _ | RError _  | RSkip _ -> (* 400 *) false
 
 let result_flavour = 
   function
@@ -145,7 +145,7 @@ let rec was_successful =
     | [] -> (* 3 *) true
     | RSuccess _::t 
     | RSkip _::t -> 
-        (* 582 *) was_successful t
+        (* 600 *) was_successful t
 
     | RFailure _::_
     | RError _::_ 
@@ -155,22 +155,22 @@ let rec was_successful =
 let string_of_node = 
   function
     | ListItem n -> 
-        (* 776 *) string_of_int n
+        (* 800 *) string_of_int n
     | Label s -> 
-        (* 1164 *) s
+        (* 1200 *) s
 
 (* Return the number of available tests *)
 let rec test_case_count = 
   function
-    | TestCase _ -> (* 194 *) 1 
-    | TestLabel (_, t) -> (* 218 *) test_case_count t
+    | TestCase _ -> (* 200 *) 1 
+    | TestLabel (_, t) -> (* 225 *) test_case_count t
     | TestList l -> 
-        (* 24 *) List.fold_left 
-          (fun c t -> (* 217 *) c + test_case_count t) 
+        (* 25 *) List.fold_left 
+          (fun c t -> (* 224 *) c + test_case_count t) 
           0 l
 
 let string_of_path path =
-  (* 388 *) String.concat ":" (List.rev_map string_of_node path)
+  (* 400 *) String.concat ":" (List.rev_map string_of_node path)
 
 let buff_format_printf f = 
   (* 0 *) let buff = Buffer.create 13 in
@@ -193,13 +193,13 @@ let mapi f l =
     rmapi 0 l
 
 let fold_lefti f accu l =
-  (* 24 *) let rec rfold_lefti cnt accup l = 
-    (* 241 *) match l with
+  (* 25 *) let rec rfold_lefti cnt accup l = 
+    (* 249 *) match l with
       | [] -> 
-          (* 24 *) accup
+          (* 25 *) accup
 
       | h::t -> 
-          (* 217 *) rfold_lefti (cnt + 1) (f accup h cnt) t
+          (* 224 *) rfold_lefti (cnt + 1) (f accup h cnt) t
   in
     rfold_lefti 0 accu l
 
@@ -217,7 +217,7 @@ open OUnitUtils
 type event_type = GlobalEvent of global_event | TestEvent of test_event
 
 let format_event verbose event_type =
-  (* 1166 *) match event_type with
+  (* 1202 *) match event_type with
     | GlobalEvent e ->
         (* 2 *) begin
           match e with 
@@ -276,31 +276,31 @@ let format_event verbose event_type =
         end
 
     | TestEvent e ->
-        (* 1164 *) begin
+        (* 1200 *) begin
           let string_of_result = 
             if verbose then
-              (* 582 *) function
-                | RSuccess _      -> (* 194 *) "ok\n"
+              (* 600 *) function
+                | RSuccess _      -> (* 200 *) "ok\n"
                 | RFailure (_, _) -> (* 0 *) "FAIL\n"
                 | RError (_, _)   -> (* 0 *) "ERROR\n"
                 | RSkip (_, _)    -> (* 0 *) "SKIP\n"
                 | RTodo (_, _)    -> (* 0 *) "TODO\n"
             else
-              (* 582 *) function
-                | RSuccess _      -> (* 194 *) "."
+              (* 600 *) function
+                | RSuccess _      -> (* 200 *) "."
                 | RFailure (_, _) -> (* 0 *) "F"
                 | RError (_, _)   -> (* 0 *) "E"
                 | RSkip (_, _)    -> (* 0 *) "S"
                 | RTodo (_, _)    -> (* 0 *) "T"
           in
             if verbose then
-              (* 582 *) match e with 
+              (* 600 *) match e with 
                 | EStart p -> 
-                    (* 194 *) Printf.sprintf "%s start\n" (string_of_path p)
+                    (* 200 *) Printf.sprintf "%s start\n" (string_of_path p)
                 | EEnd p -> 
-                    (* 194 *) Printf.sprintf "%s end\n" (string_of_path p)
+                    (* 200 *) Printf.sprintf "%s end\n" (string_of_path p)
                 | EResult result -> 
-                    (* 194 *) string_of_result result
+                    (* 200 *) string_of_result result
                 | ELog (lvl, str) ->
                     (* 0 *) let prefix = 
                       match lvl with 
@@ -312,21 +312,21 @@ let format_event verbose event_type =
                 | ELogRaw str ->
                     (* 0 *) str
             else 
-              (* 582 *) match e with 
-                | EStart _ | EEnd _ | ELog _ | ELogRaw _ -> (* 388 *) ""
-                | EResult result -> (* 194 *) string_of_result result
+              (* 600 *) match e with 
+                | EStart _ | EEnd _ | ELog _ | ELogRaw _ -> (* 400 *) ""
+                | EResult result -> (* 200 *) string_of_result result
         end
 
 let file_logger fn =
   (* 1 *) let chn = open_out fn in
     (fun ev ->
-       (* 583 *) output_string chn (format_event true ev);
+       (* 601 *) output_string chn (format_event true ev);
        flush chn),
     (fun () -> (* 1 *) close_out chn)
 
 let std_logger verbose =
   (* 1 *) (fun ev -> 
-     (* 583 *) print_string (format_event verbose ev);
+     (* 601 *) print_string (format_event verbose ev);
      flush stdout),
   (fun () -> (* 1 *) ())
 
@@ -343,7 +343,7 @@ let create output_file_opt verbose (log,close) =
           (* 0 *) null_logger
   in
     (fun ev ->
-       (* 583 *) std_log ev; file_log ev; log ev),
+       (* 601 *) std_log ev; file_log ev; log ev),
     (fun () ->
        (* 1 *) std_close (); file_close (); close ())
 
@@ -711,7 +711,7 @@ let assert_string str =
   (* 0 *) if not (str = "") then (* 0 *) assert_failure str
 
 let assert_equal ?(cmp = ( = )) ?printer ?pp_diff ?msg expected actual =
-  (* 2001534 *) let get_error_string () =
+  (* 2001542 *) let get_error_string () =
     (* 0 *) let res =
       buff_format_printf
         (fun fmt ->
@@ -951,8 +951,8 @@ let (@?) = assert_bool
 
 (* Some shorthands which allows easy test construction *)
 let (>:) s t = (* 0 *) TestLabel(s, t)             (* infix *)
-let (>::) s f = (* 194 *) TestLabel(s, TestCase(f))  (* infix *)
-let (>:::) s l = (* 24 *) TestLabel(s, TestList(l)) (* infix *)
+let (>::) s f = (* 200 *) TestLabel(s, TestCase(f))  (* infix *)
+let (>:::) s l = (* 25 *) TestLabel(s, TestList(l)) (* infix *)
 
 (* Utility function to manipulate test *)
 let rec test_decorate g =
@@ -1087,7 +1087,7 @@ let maybe_backtrace = ""
 (* Run all tests, report starts, errors, failures, and return the results *)
 let perform_test report test =
   (* 1 *) let run_test_case f path =
-    (* 194 *) try 
+    (* 200 *) try 
       f ();
       RSuccess path
     with
@@ -1106,22 +1106,22 @@ let perform_test report test =
   let rec flatten_test path acc = 
     function
       | TestCase(f) -> 
-          (* 194 *) (path, f) :: acc
+          (* 200 *) (path, f) :: acc
 
       | TestList (tests) ->
-          (* 24 *) fold_lefti 
+          (* 25 *) fold_lefti 
             (fun acc t cnt -> 
-               (* 217 *) flatten_test 
+               (* 224 *) flatten_test 
                  ((ListItem cnt)::path) 
                  acc t)
             acc tests
       
       | TestLabel (label, t) -> 
-          (* 218 *) flatten_test ((Label label)::path) acc t
+          (* 225 *) flatten_test ((Label label)::path) acc t
   in
   let test_cases = List.rev (flatten_test [] [] test) in
   let runner (path, f) = 
-    (* 194 *) let result = 
+    (* 200 *) let result = 
       report (EStart path);
       run_test_case f path 
     in
@@ -1130,18 +1130,18 @@ let perform_test report test =
       result
   in
   let rec iter state = 
-    (* 195 *) match state.tests_planned with 
+    (* 201 *) match state.tests_planned with 
       | [] ->
           (* 1 *) state.results
       | _ ->
-          (* 194 *) let (path, f) = !global_chooser state in            
+          (* 200 *) let (path, f) = !global_chooser state in            
           let result = runner (path, f) in
             iter 
               {
                 results = result :: state.results;
                 tests_planned = 
                   List.filter 
-                    (fun (path', _) -> (* 18915 *) path <> path') state.tests_planned
+                    (fun (path', _) -> (* 20100 *) path <> path') state.tests_planned
               }
   in
     iter {results = []; tests_planned = test_cases}
@@ -1171,7 +1171,7 @@ let run_test_tt ?verbose test =
     time_fun 
       perform_test 
       (fun ev ->
-         (* 582 *) log (OUnitLogger.TestEvent ev))
+         (* 600 *) log (OUnitLogger.TestEvent ev))
       test 
   in
     
@@ -3489,6 +3489,254 @@ let bench () =
   end ; 
 
 end
+module Bsb_regex : sig 
+#1 "bsb_regex.mli"
+
+
+
+val global_substitute:
+ string ->
+  (string -> string list -> string)
+  -> string -> string
+end = struct
+#1 "bsb_regex.ml"
+let string_after s n = (* 8 *) String.sub s n (String.length s - n)
+
+
+
+(* There seems to be a bug in {!Str.global_substitute} 
+{[
+Str.global_substitute (Str.regexp "\\${bsb:\\([-a-zA-Z0-9]+\\)}") (fun x -> (x^":found")) {|   ${bsb:hello-world}  ${bsb:x} ${x}|}  ;;
+- : bytes =
+"      ${bsb:hello-world}  ${bsb:x} ${x}:found     ${bsb:hello-world}  ${bsb:x} ${x}:found ${x}"
+]}
+*)
+
+let global_substitute expr repl_fun text =
+  (* 8 *) let text_len = String.length text in 
+  let expr = Str.regexp expr in  
+  let rec replace accu start last_was_empty =
+    (* 20 *) let startpos = if last_was_empty then (* 0 *) start + 1 else (* 20 *) start in
+    if startpos > text_len then
+      (* 0 *) string_after text start :: accu
+    else
+      (* 20 *) match Str.search_forward expr text startpos with
+      | exception Not_found -> 
+        (* 8 *) string_after text start :: accu
+      |  pos ->
+        (* 12 *) let end_pos = Str.match_end() in
+        let matched = (Str.matched_string text) in 
+        let  groups = 
+            let rec aux n  acc = 
+                (* 24 *) match Str.matched_group n text with 
+                | exception (Not_found | Invalid_argument _ ) 
+                    -> (* 12 *) acc 
+                | v -> (* 12 *) aux (succ n) (v::acc) in 
+             aux 1 []  in 
+        let repl_text = repl_fun matched groups  in
+        replace (repl_text :: String.sub text start (pos-start) :: accu)
+          end_pos (end_pos = pos)
+  in
+  String.concat "" (List.rev (replace [] 0 false))
+
+end
+module Ounit_bsb_regex_tests
+= struct
+#1 "ounit_bsb_regex_tests.ml"
+
+
+let ((>::),
+     (>:::)) = OUnit.((>::),(>:::))
+
+let (=~) = OUnit.assert_equal
+
+
+let test_eq x y  = 
+    (* 8 *) Bsb_regex.global_substitute "\\${bsb:\\([-a-zA-Z0-9]+\\)}"
+        (fun _ groups -> 
+            (* 12 *) match groups with 
+            | x::xs -> (* 12 *) x 
+            | _ -> (* 0 *) assert false 
+        ) x =~ y 
+
+
+let suites = 
+    __FILE__ 
+    >:::
+    [
+        __LOC__ >:: begin fun _ -> 
+        (* 1 *) test_eq 
+        {| hi hi hi ${bsb:name}
+        ${bsb:x}
+        ${bsb:u}
+        |}        
+        {| hi hi hi name
+        x
+        u
+        |}
+    end;
+    __LOC__ >:: begin  fun _ ->
+    (* 1 *) test_eq  "xx" "xx";
+    test_eq "${bsb:x}" "x";
+    test_eq "a${bsb:x}" "ax";
+    
+    end;
+
+    __LOC__ >:: begin fun _ ->
+        (* 1 *) test_eq "${bsb:x}x" "xx"
+    end;
+
+    __LOC__ >:: begin fun _ -> 
+        (* 1 *) test_eq {|
+{
+  "name": "${bsb:name}",
+  "version": "${bsb:proj-version}",
+  "sources": [
+    "src"
+  ],
+  "reason" : { "react-jsx" : true},
+  "bs-dependencies" : [
+      // add your bs-dependencies here 
+  ]
+}
+|} {|
+{
+  "name": "name",
+  "version": "proj-version",
+  "sources": [
+    "src"
+  ],
+  "reason" : { "react-jsx" : true},
+  "bs-dependencies" : [
+      // add your bs-dependencies here 
+  ]
+}
+|}
+    end
+
+    ;
+    __LOC__ >:: begin fun _ -> 
+    (* 1 *) test_eq {|
+{
+  "name": "${bsb:name}",
+  "version": "${bsb:proj-version}",
+  "scripts": {
+    "clean": "bsb -clean",
+    "clean:all": "bsb -clean-world",
+    "build": "bsb",
+    "build:all": "bsb -make-world",
+    "watch": "bsb -w",
+  },
+  "keywords": [
+    "Bucklescript"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "bs-platform": "${bsb:bs-version}"
+  }
+}
+|} {|
+{
+  "name": "name",
+  "version": "proj-version",
+  "scripts": {
+    "clean": "bsb -clean",
+    "clean:all": "bsb -clean-world",
+    "build": "bsb",
+    "build:all": "bsb -make-world",
+    "watch": "bsb -w",
+  },
+  "keywords": [
+    "Bucklescript"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "bs-platform": "bs-version"
+  }
+}
+|}
+    end;
+    __LOC__ >:: begin fun _ -> 
+    (* 1 *) test_eq {|
+{
+    "version": "0.1.0",
+    "command": "${bsb:bsb}",
+    "options": {
+        "cwd": "${workspaceRoot}"
+    },
+    "isShellCommand": true,
+    "args": [
+        "-w"
+    ],
+    "showOutput": "always",
+    "isWatching": true,
+    "problemMatcher": {
+        "fileLocation": "absolute",
+        "owner": "ocaml",
+        "watching": {
+            "activeOnStart": true,
+            "beginsPattern": ">>>> Start compiling",
+            "endsPattern": ">>>> Finish compiling"
+        },
+        "pattern": [
+            {
+                "regexp": "^File \"(.*)\", line (\\d+)(?:, characters (\\d+)-(\\d+))?:$",
+                "file": 1,
+                "line": 2,
+                "column": 3,
+                "endColumn": 4
+            },
+            {
+                "regexp": "^(?:(?:Parse\\s+)?(Warning|[Ee]rror)(?:\\s+\\d+)?:)?\\s+(.*)$",
+                "severity": 1,
+                "message": 2,
+                "loop": true
+            }
+        ]
+    }
+}
+|} {|
+{
+    "version": "0.1.0",
+    "command": "bsb",
+    "options": {
+        "cwd": "${workspaceRoot}"
+    },
+    "isShellCommand": true,
+    "args": [
+        "-w"
+    ],
+    "showOutput": "always",
+    "isWatching": true,
+    "problemMatcher": {
+        "fileLocation": "absolute",
+        "owner": "ocaml",
+        "watching": {
+            "activeOnStart": true,
+            "beginsPattern": ">>>> Start compiling",
+            "endsPattern": ">>>> Finish compiling"
+        },
+        "pattern": [
+            {
+                "regexp": "^File \"(.*)\", line (\\d+)(?:, characters (\\d+)-(\\d+))?:$",
+                "file": 1,
+                "line": 2,
+                "column": 3,
+                "endColumn": 4
+            },
+            {
+                "regexp": "^(?:(?:Parse\\s+)?(Warning|[Ee]rror)(?:\\s+\\d+)?:)?\\s+(.*)$",
+                "severity": 1,
+                "message": 2,
+                "loop": true
+            }
+        ]
+    }
+}
+|}
+    end
+    ]
+end
 module Literals : sig 
 #1 "literals.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -4123,7 +4371,23 @@ external ff :
       OUnit.assert_bool __LOC__
         (not (Ext_string.is_empty should_err.stderr))
 
-    end
+    end;
+
+    (* __LOC__ >:: begin fun _ ->  *)
+    (*   let should_infer = perform_bsc [| "-i"; "-bs-eval"|] {| *)
+    (*      let  f = fun [@bs] x -> let (a,b) = x in a + b  *)
+    (* |}  in  *)
+    (*   let infer_type  = bsc_eval (Printf.sprintf {| *)
+
+    (*      let f : %s  = fun [@bs] x -> let (a,b) = x in a + b  *)
+    (*  |} should_infer.stdout ) in  *)
+    (*  begin  *)
+    (*    Ounit_cmd_util.debug_output should_infer ; *)
+    (*    Ounit_cmd_util.debug_output infer_type ; *)
+    (*    OUnit.assert_bool __LOC__  *)
+    (*      ((Ext_string.is_empty infer_type.stderr)) *)
+    (*  end *)
+    (* end *)
   ]
 
 
@@ -10611,6 +10875,12 @@ get_extension "a" = ""
 val get_extension : string -> string
 
 val simple_convert_node_path_to_os_path : string -> string
+
+(* Note  we have to output uncapitalized file Name, 
+  or at least be consistent, since by reading cmi file on Case insensitive OS, we don't really know it is `list.cmi` or `List.cmi`, so that `require (./list.js)` or `require(./List.js)`
+  relevant issues: #1609, #913 
+*)
+val output_js_basename :  string -> string 
 end = struct
 #1 "ext_filename.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -10976,6 +11246,9 @@ let simple_convert_node_path_to_os_path =
     (* 0 *) Ext_string.replace_slash_backward 
   else (* 0 *) failwith ("Unknown OS : " ^ Sys.os_type)
 
+
+let output_js_basename s = 
+  (* 0 *) String.uncapitalize s ^ Literals.suffix_js
 end
 module Ounit_path_tests
 = struct
@@ -15908,6 +16181,7 @@ let suites =
     Ounit_js_regex_checker_tests.suites;
     Ounit_utf8_test.suites;
     Ounit_unicode_tests.suites;
+    Ounit_bsb_regex_tests.suites;
   ]
 let _ = 
   OUnit.run_test_tt_main suites

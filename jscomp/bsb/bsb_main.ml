@@ -37,7 +37,8 @@ let cwd = Sys.getcwd ()
 
 let node_lit = "node"
 
-
+let current_theme = ref "basic"
+let set_theme s = current_theme := s 
 
 let watch_exit () =
   print_endline "\nStart Watching now ";
@@ -193,7 +194,6 @@ let regenerate_ninja ~no_dev ~override_package_specs ~generate_watch_metadata cw
       end 
   end
 
-
 let bsb_main_flags : (string * Arg.spec * string) list=
   [
     "-color", Arg.Set color_enabled,
@@ -212,6 +212,8 @@ let bsb_main_flags : (string * Arg.spec * string) list=
     " Clean only current project";
     "-make-world", Arg.Unit set_make_world,
     " Build all dependencies and itself ";
+    "-init", Arg.String (fun  x -> Bsb_init.init_sample_project ~cwd ~theme:!current_theme x ),
+    " Init sample project to get started"
   ]
 
 

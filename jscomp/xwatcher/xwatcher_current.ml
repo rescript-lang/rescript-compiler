@@ -32,7 +32,9 @@ let watch dir   =
        (* Js.log {j| $event :  $fileName |j}; *)
        if Js.String.endsWith ".ml" fileName 
        || Js.String.endsWith ".mli" fileName
-       || Js.String.endsWith ".cppo" fileName then 
+       || Js.String.endsWith ".cppo" fileName 
+       || Js.String.endsWith ".js" fileName 
+       || fileName = "Makefile" || fileName = "Makefile.shared" then 
          exec ()
     )
 
@@ -52,7 +54,8 @@ let () =
            "runtime";
            "xwatcher";
            "bsb";
-           "common"
+           "common";
+           "."
         |];
 
       exec ()

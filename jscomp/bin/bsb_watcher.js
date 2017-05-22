@@ -1,6 +1,6 @@
+//@ts-check
 var fs = require('fs')
 var child_process = require('child_process')
-
 var path = require('path')
 
 
@@ -14,7 +14,7 @@ var bsb_exe  = "bsb.exe"
 var bsb = path.join(__dirname, bsb_exe)
 var bsconfig = "bsconfig.json"
 
-var is_building = false;
+
 var reasons_to_rebuild = [];
 
 /**
@@ -22,14 +22,19 @@ var reasons_to_rebuild = [];
  */
 var watchers = [];
 
-function get_building_status() {
-    return is_building;
-}
 
-function mark_is_building() {
-    is_building = true;
-    console.log("Rebuilding since", reasons_to_rebuild);
-    reasons_to_rebuild = [];
+var is_building = false;
+function releaseBuild(){
+    is_building = false 
+}
+function acquireBuild(){
+    if(is_building){
+        return false
+    }
+    else {
+        is_building = true
+        return true
+    }
 }
 var sourcedirs = path.join('lib', 'bs', '.sourcedirs')
 function watch_build(watch_files) {
@@ -57,23 +62,24 @@ function watch_build(watch_files) {
             // console.log(dir, 'already watched')
         }
     }
-    /*
-    watchers = watch_files.map(function (dir) {
-        var watcher = fs.watch(dir)
-        return  {dir : dir , watcher : watcher}
-    })
-    watchers.forEach(function (watcher) {
-        watcher.watcher.on('change', on_change)
-    })
-    return watchers;
-    */
 };
 
+function needRebuild(){
+    reasons_to_rebuild.some(function(v){
+        // var event = v[0]
+        var reason = v[1]
+        if (reason!== undefined){
+            return !(reason === '.merlin' ||  reason.endsWith('.js'))
+        } else {
+            return true // conservative 
+        }        
+    })
+    // return reasons_to_rebuild.length != 0
+}
 function build_finished_callback() {
     console.log(">>>> Finish compiling")
-    is_building = false;
-    if (reasons_to_rebuild.length != 0) {
-
+    releaseBuild()
+    if (needRebuild()) {
         build()
     } else {
         var files = getWatchFiles(sourcedirs);
@@ -81,20 +87,18 @@ function build_finished_callback() {
     }
 }
 function build() {
-    if (get_building_status()) {
-
-    }
-    else {
+    if (acquireBuild()) {
         console.log(">>>> Start compiling");
-        mark_is_building()
+        console.log("Rebuilding since", reasons_to_rebuild);
+        reasons_to_rebuild = [];
         child_process
-          .spawn(bsb, {stdio: 'inherit'})
+          .spawn(bsb, [],{stdio: 'inherit'})
           .on('exit', build_finished_callback);
     }
 }
 function on_change(event, reason) {
     console.log("Event", event);
-    reasons_to_rebuild.push(event + ' : '+ reason)
+    reasons_to_rebuild.push([event, reason])
     build()
 }
 function getWatchFiles(file) {

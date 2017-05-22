@@ -22,6 +22,7 @@ bin/all_ounit_tests.ml : ext/literals.ml
 bin/all_ounit_tests.ml : ext/set_int.mli
 bin/all_ounit_tests.ml : ext/set_poly.ml
 bin/all_ounit_tests.ml : ounit/oUnit.mli
+bin/all_ounit_tests.ml : bsb/bsb_regex.ml
 bin/all_ounit_tests.ml : common/bs_loc.ml
 bin/all_ounit_tests.ml : ext/ext_array.ml
 bin/all_ounit_tests.ml : ext/ext_bytes.ml
@@ -35,6 +36,7 @@ bin/all_ounit_tests.ml : ext/ext_util.mli
 bin/all_ounit_tests.ml : ext/hash_set.mli
 bin/all_ounit_tests.ml : ext/literals.mli
 bin/all_ounit_tests.ml : ext/set_poly.mli
+bin/all_ounit_tests.ml : bsb/bsb_regex.mli
 bin/all_ounit_tests.ml : common/bs_loc.mli
 bin/all_ounit_tests.ml : ext/ext_array.mli
 bin/all_ounit_tests.ml : ext/ext_bytes.mli
@@ -111,6 +113,7 @@ bin/all_ounit_tests.ml : ounit_tests/ounit_topsort_tests.ml
 bin/all_ounit_tests.ml : ounit_tests/ounit_unicode_tests.ml
 bin/all_ounit_tests.ml : ounit_tests/ounit_bal_tree_tests.ml
 bin/all_ounit_tests.ml : ounit_tests/ounit_hash_set_tests.ml
+bin/all_ounit_tests.ml : ounit_tests/ounit_bsb_regex_tests.ml
 bin/all_ounit_tests.ml : ounit_tests/ounit_hash_stubs_test.ml
 bin/all_ounit_tests.ml : ounit_tests/ounit_ident_mask_tests.ml
 bin/all_ounit_tests.ml : ounit_tests/ounit_union_find_tests.ml

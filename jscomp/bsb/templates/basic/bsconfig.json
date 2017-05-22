@@ -1,0 +1,11 @@
+{
+  "name": "${bsb:name}",
+  "version": "${bsb:proj-version}",
+  "sources": [
+    "src"
+  ],
+  "reason" : { "react-jsx" : true},
+  "bs-dependencies" : [
+      // add your bs-dependencies here 
+  ]
+}
