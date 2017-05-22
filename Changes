@@ -2,13 +2,14 @@
 BuckleScript 1.7.4:
 ==================
 
-intenral tools:
+internal tools:
 
 - #1583, add -U -D support for bspack
 
 Features:
 
 - #1613, allow bs.scope with bs.send/bs.send.pipe/bs.set/bs.get/bs.set_index/bs.get_index
+- #1605, add the functions `entries`, `values`, `fromList`, `fromArray` and `map` to `Js.Dict`
 
 Bug fixes :
 
