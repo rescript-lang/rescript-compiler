@@ -1,3 +1,4 @@
+//@ts-check
 var child_process = require('child_process')
 
 var fs = require('fs')
@@ -80,7 +81,7 @@ function install(){
     files = fs.readdirSync(jscomp_runtime)
     files.forEach(function(file){
 	var format_file = path.parse(file)
-	var special_files = ['js', 'js_unsafe', 'js_null', 'js_undefined', 'js_typed_array']
+	var special_files = ['js', 'js_unsafe', 'js_null', 'js_undefined', 'js_typed_array', 'caml_exceptions']
 	var installed_fmt = ['.cmt','.cmti', '.cmj']
 	if( 
 	    format_file &&
