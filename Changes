@@ -9,7 +9,7 @@ internal tools:
 Features:
 
 - #1613, allow bs.scope with bs.send/bs.send.pipe/bs.set/bs.get/bs.set_index/bs.get_index
-- #1605, add the functions `entries`, `values`, `fromList`, `fromArray` and `map` to `Js.Dict`
+- #1604, add the functions `entries`, `values`, `fromList`, `fromArray` and `map` to `Js.Dict`
 
 Bug fixes :
 
