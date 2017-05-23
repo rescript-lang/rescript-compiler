@@ -514,7 +514,8 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </li>
 <li><a href="#_get_started">Get Started</a>
 <ul class="sectlevel2">
-<li><a href="#_first_example">First example</a></li>
+<li><a href="#_using_existing_templates_since_1_7_4">Using existing templates (@since 1.7.4 )</a></li>
+<li><a href="#_first_example_by_hand_without_samples">First example by hand without samples</a></li>
 <li><a href="#_an_example_with_multiple_modules">An example with multiple modules</a></li>
 </ul>
 </li>
@@ -1062,7 +1063,50 @@ The built compiler is not <em>relocatable</em> out of box, please don&#8217;t mo
 <h2 id="_get_started"><a class="anchor" href="#_get_started"></a>Get Started</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_first_example"><a class="anchor" href="#_first_example"></a>First example</h3>
+<h3 id="_using_existing_templates_since_1_7_4"><a class="anchor" href="#_using_existing_templates_since_1_7_4"></a>Using existing templates (@since 1.7.4 )</h3>
+<div class="paragraph">
+<p>BuckleScript provide some project templates, to help people get started on board as fast as possible.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="sh">npm install -g bs-platform <span class="tok-o">&amp;&amp;</span> bsb -init hello <span class="tok-o">&amp;&amp;</span> <span class="tok-nb">cd </span>hello <span class="tok-o">&amp;&amp;</span> npm run build</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>First, it installs <code>bs-platform</code> globally, then we use the command line tool <code>bsb</code> to set up a sample project named <code>hello</code>, then we run the build.</p>
+</div>
+<div class="paragraph">
+<p>The output project layout is similar as below</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="sh">hello&gt;tree -d .
+.
+<span class="tok-p">|</span>---.vscode
+├── lib
+│   ├── bs
+│   │   └── src
+│   └── js
+│       └── src
+├── node_modules
+│   └── bs-platform -&gt; ...
+└── src</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To enter watch mode, you can run <code>npm run watch</code>,
+then you can edit <code>src/demo.ml</code> and see it compiled on the fly, and changes are updated on <code>lib/js/src/demo.js</code></p>
+</div>
+<div class="paragraph">
+<p>If you happen to use VSCode as editor, we provide <code>.vscode/tasks.json</code> as well, type <code>Tasks&gt;build</code>, it will enter watch mode, the great thing is that VSCode comes with
+a <code>Problems</code> panel which has a much nicer UI.</p>
+</div>
+<div class="paragraph">
+<p>Currently there are not too many  project templates, you can contribute more project templates here <a href="https://github.com/bloomberg/bucklescript/tree/master/jscomp/bsb/templates">here</a>,</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_first_example_by_hand_without_samples"><a class="anchor" href="#_first_example_by_hand_without_samples"></a>First example by hand without samples</h3>
 <div class="ulist">
 <ul>
 <li>
