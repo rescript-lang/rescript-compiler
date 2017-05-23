@@ -213,7 +213,11 @@ let bsb_main_flags : (string * Arg.spec * string) list=
     "-make-world", Arg.Unit set_make_world,
     " Build all dependencies and itself ";
     "-init", Arg.String (fun  x -> Bsb_init.init_sample_project ~cwd ~theme:!current_theme x ),
-    " Init sample project to get started"
+    " Init sample project to get started";
+    "-theme", Arg.String (fun s -> current_theme := s),
+    " The theme for project initialization, default is basic(https://github.com/bloomberg/bucklescript/tree/master/jscomp/bsb/templates)";
+    "-themes", Arg.Unit Bsb_init.list_themes,
+    " List all available themes"
   ]
 
 

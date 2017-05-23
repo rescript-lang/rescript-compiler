@@ -59,6 +59,18 @@ let rec process_theme_aux env cwd (x : OCamlRes.Res.node) =
     Unix.mkdir (cwd//current) 0o777;
     List.iter (fun x -> process_theme_aux env (cwd//current) x ) nodes
   
+let list_themes () =
+  Format.fprintf Format.std_formatter "Available themes: @.";
+  Bsb_templates.root 
+  |>
+  List.iter (fun (x : OCamlRes.Res.node)  ->
+    match  x with 
+    | Dir (x, _) -> 
+      Format.fprintf Format.std_formatter "%s@." x 
+      
+    | _ -> ()
+  ) 
+  
 (* @raise [Not_found] *)  
 let process_themes name theme proj_dir (themes : OCamlRes.Res.node list ) = 
   let env = String_hashtbl.create 0 in 
@@ -74,6 +86,7 @@ let process_themes name theme proj_dir (themes : OCamlRes.Res.node list ) =
     | File _ -> false 
   ) themes  with 
   | exception Not_found -> 
+    list_themes ();
     raise (Arg.Bad( "theme " ^ name ^ " not found")  )
   | Dir(_theme, nodes ) -> 
     List.iter (fun node -> process_theme_aux env proj_dir node ) nodes
@@ -106,27 +119,3 @@ let init_sample_project ~cwd ~theme name =
   end
 
 
-(*begin 
-        
-        Format.fprintf Format.std_formatter "Entering directory %s@." name;  
-        enter_dir cwd name begin fun _ -> 
-          (* whenever we run `Unix.chdir` [cwd] is no longer meaningful *)
-          Ext_io.write_file ( "package.json")  (replace package_json_tmpl env);
-          let exit_code = Sys.command npm_link in 
-          if exit_code <> 0 then 
-            begin
-              prerr_endline ("failed to run : " ^ npm_link);
-              exit exit_code
-            end
-          else
-            begin
-              Unix.mkdir  ( ".vscode") 0o777;
-              Unix.mkdir ("src") 0o777;
-              Ext_io.write_file ( ".vscode"//"tasks.json") (replace vscode_task_json_impl env);    
-              Ext_io.write_file ("bsconfig.json") (replace bsconfig_json_tmpl env);
-              Ext_io.write_file ("src"// "test.ml") {|let () = Js.log "hello BuckleScript" |};
-              Format.fprintf Format.std_formatter 
-                "Set up the project template finished!@.";
-            end ;
-        end
-      end*)

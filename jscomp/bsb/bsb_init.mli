@@ -26,3 +26,5 @@
 
 
 val init_sample_project : cwd:string -> theme:string ->  string -> unit 
+
+val list_themes : unit -> unit 
