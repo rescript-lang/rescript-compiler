@@ -5,7 +5,7 @@ open Xwatcher_util
 
 
 let source_dirname  = 
-  Bs.Option.getExn [%external __dirname]
+  Js.Option.getExn [%external __dirname]
 
 
 let cwd = Node.Process.cwd ()
@@ -45,7 +45,7 @@ let () =
     Xwatcher_util.spawnInheritIgnore command
   | _ -> 
     begin 
-      Bs.Vector.iter (fun [@bs] x -> 
+      Js.Vector.iter (fun [@bs] x -> 
           ignore @@ watch (Node.Path.join [|jscomp; x|])
         ) 
         [| "core"; "syntax"; "ext"; "depends"; 

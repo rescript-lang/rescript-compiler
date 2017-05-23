@@ -37,8 +37,9 @@ val memByRef : 'a -> 'a t -> bool
 
 val iter : ('a -> unit [@bs]) -> 'a t -> unit
 val iteri : (int -> 'a -> unit [@bs]) -> 'a t -> unit 
-val ofList : 'a Bs_list.t -> 'a t 
-val toList : 'a t -> 'a Bs_list.t 
+
+val ofList : 'a Js_list.t -> 'a t 
+val toList : 'a t -> 'a Js_list.t 
 
 val map : ('a -> 'b [@bs]) -> 'a t -> 'b t 
 val mapi : (int -> 'a -> 'b [@bs]) -> 'a t -> 'b t 
@@ -80,7 +81,9 @@ external make : int -> 'a -> 'a t = "caml_make_vect"
 
 
 val init : int -> (int -> 'a [@bs]) -> 'a t 
-(** @raise RangeError *)
+(** @param n size 
+    @param fn callback
+    @raise RangeError when [n] is negative  *)
 
 (*val append : 'a t -> 'a t -> 'a t *)
 (** create a new array, there is no shallow-sharing

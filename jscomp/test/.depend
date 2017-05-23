@@ -74,7 +74,7 @@ bench.cmj : ../stdlib/array.cmj
 bigarray_test.cmj : ../stdlib/int32.cmj ../stdlib/complex.cmj \
     ../stdlib/bigarray.cmj
 boolean_test.cmj : test_bool_equal.cmj mt.cmj
-bs_array_test.cmj : mt.cmj ../runtime/js.cmj ../others/bs.cmj
+bs_array_test.cmj : mt.cmj ../runtime/js.cmj
 bs_auto_uncurry.cmj : ../runtime/js.cmj
 bs_auto_uncurry_test.cmj : mt.cmj ../others/js_array.cmj ../runtime/js.cmj
 bs_ignore_effect.cmj : mt.cmj
@@ -272,8 +272,7 @@ int_map.cmj : ../stdlib/map.cmj
 int_overflow_test.cmj : ../stdlib/string.cmj mt.cmj ../runtime/js_float.cmj \
     ../stdlib/int32.cmj ../stdlib/char.cmj
 io_test.cmj : ../runtime/js.cmj
-js_array_test.cmj : mt.cmj ../runtime/js.cmj ../others/bs.cmj \
-    ../stdlib/array.cmj
+js_array_test.cmj : mt.cmj ../runtime/js.cmj ../stdlib/array.cmj
 js_bool_test.cmj : mt.cmj ../runtime/js.cmj
 js_cast_test.cmj : mt.cmj ../others/js_cast.cmj
 js_date_test.cmj : mt.cmj ../runtime/js_float.cmj ../runtime/js.cmj
@@ -394,8 +393,7 @@ poly_variant_test.cmj : mt.cmj ../runtime/js.cmj poly_variant_test.cmi
 polymorphism_test.cmj : polymorphism_test.cmi
 polyvar_test.cmj : ../runtime/js.cmj
 ppx_apply_test.cmj : mt.cmj
-ppx_this_obj_field.cmj : mt.cmj ../runtime/js.cmj ../others/bs.cmj \
-    ../stdlib/array.cmj
+ppx_this_obj_field.cmj : mt.cmj ../runtime/js.cmj ../stdlib/array.cmj
 ppx_this_obj_test.cmj : mt.cmj
 pq_test.cmj :
 pr6726.cmj :
@@ -406,7 +404,7 @@ print_alpha_test.cmj : mt.cmj ../runtime/js.cmj
 printf_sim.cmj : ../stdlib/printf.cmj
 printf_test.cmj : ../stdlib/printf.cmj mt.cmj ../stdlib/format.cmj
 promise.cmj : ../runtime/js.cmj
-promise_catch_test.cmj : ../stdlib/obj.cmj ../runtime/js.cmj
+promise_catch_test.cmj : ../stdlib/obj.cmj mt.cmj ../runtime/js.cmj
 qcc.cmj : ../stdlib/sys.cmj ../stdlib/string.cmj ../stdlib/printf.cmj \
     ../stdlib/list.cmj ../stdlib/char.cmj ../stdlib/bytes.cmj \
     ../stdlib/array.cmj

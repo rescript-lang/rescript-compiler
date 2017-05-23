@@ -155,3 +155,5 @@ let _ = Js.log \@\@ Js.Int.toStringWithRadix 123456 ~radix:36
 @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toString> MDN
 *)
 external toStringWithRadix : int -> radix:int -> string = "toString" [@@bs.send]
+
+let equal (x: int) y = x = y

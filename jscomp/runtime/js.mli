@@ -180,3 +180,14 @@ module Float = Js_float
 (** Provide utilities for JS float *)
 module Int = Js_int
 (** Provide utilities for int *)
+
+module Option = Js_option
+(** Provide utilities for option *)
+
+module Result = Js_result
+(** definie the interface for result *)
+
+module List = Js_list 
+(** Provide utilties for list *)
+
+module Vector = Js_vector 

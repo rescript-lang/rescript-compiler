@@ -24,14 +24,40 @@
 
 type 'a t = 'a option
 
-val some : 'a -> 'a option
+let some x = Some x 
 
-val isSome : 'a option -> bool
+let isSome = function
+  | None -> false
+  | Some _ -> true
 
-val isNone : 'a option -> bool
+let isSomeValue eq v x =
+  match x with 
+  | None -> false 
+  | Some x -> eq v x [@bs]
 
-val getExn : 'a option -> 'a
 
-val equal : ('a -> 'b -> bool [@bs]) -> 'a option -> 'b option -> bool
+let isNone = function
+  | None -> true
+  | Some _ -> false
 
-val andThen : ('a -> 'b option [@bs]) -> 'a option -> 'b option
+let getExn x =
+  match x with 
+  | None -> Js_exn.raiseError "Bs_option.getExn"
+  | Some x -> x 
+
+let equal eq a b =
+  match a  with 
+  | None -> b = None 
+  | Some x -> 
+    begin match b with 
+    | None -> false 
+    | Some y -> eq x y [@bs]
+    end
+
+let andThen f x =
+  match x with 
+  | None -> None 
+  | Some x -> f x [@bs]
+
+
+
