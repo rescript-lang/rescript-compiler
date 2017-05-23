@@ -8,6 +8,8 @@ internal tools:
 
 Features:
 
+- #1630, add modules Option, Result, List, and Vector into Js namesapace, update docs
+
 - #1613, allow bs.scope with bs.send/bs.send.pipe/bs.set/bs.get/bs.set_index/bs.get_index
 - #1604, add the functions `entries`, `values`, `fromList`, `fromArray` and `map` to `Js.Dict`
 
