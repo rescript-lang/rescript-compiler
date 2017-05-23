@@ -10,12 +10,12 @@ js_types.cmj : js_types.cmi
 js_json.cmj : js_types.cmj js_string.cmj js_dict.cmj js_array.cmj \
     js_json.cmi
 js_obj.cmj :
+js_vector.cmj : js_array.cmj js_vector.cmi
+js_list.cmj : js_list.cmi
+js_option.cmj : js_option.cmi
+js_result.cmj : js_result.cmi
 bs_dyn.cmj : bs_dyn.cmi
 bs_dyn_lib.cmj : bs_dyn.cmj bs_dyn_lib.cmi
-bs_vector.cmj : js_array.cmj bs_vector.cmi
-bs_list.cmj : bs_list.cmi
-bs_option.cmj : bs_option.cmi
-bs_result.cmj :
 node_child_process.cmj : node.cmj
 js_boolean.cmj : js_boolean.cmi
 js_math.cmj :
@@ -29,11 +29,12 @@ js_re.cmi :
 js_null_undefined.cmi :
 js_types.cmi :
 js_json.cmi : js_types.cmi js_string.cmj js_dict.cmi
+js_vector.cmi : js_list.cmi
+js_list.cmi :
+js_option.cmi :
+js_result.cmi :
 bs_dyn.cmi :
 bs_dyn_lib.cmi : bs_dyn.cmi
-bs_vector.cmi : bs_list.cmi
-bs_list.cmi :
-bs_option.cmi :
 js_boolean.cmi :
 js_dict.cmi :
 js_cast.cmi :

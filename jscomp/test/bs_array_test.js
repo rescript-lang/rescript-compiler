@@ -2,7 +2,7 @@
 
 var Mt         = require("./mt.js");
 var Block      = require("../../lib/js/block.js");
-var Bs_vector  = require("../../lib/js/bs_vector.js");
+var Js_vector  = require("../../lib/js/js_vector.js");
 var Caml_array = require("../../lib/js/caml_array.js");
 
 var suites = [/* [] */0];
@@ -40,10 +40,10 @@ console.log(/* int array */[
         }, 0));
 
 function id(x) {
-  return eq("File \"bs_array_test.ml\", line 21, characters 5-12", Bs_vector.toList(Bs_vector.ofList(x)), x);
+  return eq("File \"bs_array_test.ml\", line 21, characters 5-12", Js_vector.toList(Js_vector.ofList(x)), x);
 }
 
-eq("File \"bs_array_test.ml\", line 25, characters 5-12", Bs_vector.ofList(/* :: */[
+eq("File \"bs_array_test.ml\", line 25, characters 5-12", Js_vector.ofList(/* :: */[
           1,
           /* :: */[
             2,
@@ -58,7 +58,7 @@ eq("File \"bs_array_test.ml\", line 25, characters 5-12", Bs_vector.ofList(/* ::
       3
     ]);
 
-eq("File \"bs_array_test.ml\", line 26, characters 6-13", Bs_vector.map(function (x) {
+eq("File \"bs_array_test.ml\", line 26, characters 6-13", Js_vector.map(function (x) {
           return x + 1 | 0;
         }, /* int array */[
           1,
@@ -78,22 +78,22 @@ eq("File \"bs_array_test.ml\", line 29, characters 5-12", Caml_array.caml_make_v
       3
     ]);
 
-var a = Bs_vector.init(5, function (i) {
+var a = Js_vector.init(5, function (i) {
       return i + 1 | 0;
     });
 
-eq("File \"bs_array_test.ml\", line 31, characters 5-12", (Bs_vector.filterInPlace(function (j) {
+eq("File \"bs_array_test.ml\", line 31, characters 5-12", (Js_vector.filterInPlace(function (j) {
             return +(j % 2 === 0);
           }, a), a), /* int array */[
       2,
       4
     ]);
 
-var a$1 = Bs_vector.init(5, function (i) {
+var a$1 = Js_vector.init(5, function (i) {
       return i + 1 | 0;
     });
 
-eq("File \"bs_array_test.ml\", line 38, characters 5-12", (Bs_vector.filterInPlace(function (j) {
+eq("File \"bs_array_test.ml\", line 38, characters 5-12", (Js_vector.filterInPlace(function (j) {
             return +(j % 2 !== 0);
           }, a$1), a$1), /* int array */[
       1,
@@ -101,7 +101,7 @@ eq("File \"bs_array_test.ml\", line 38, characters 5-12", (Bs_vector.filterInPla
       5
     ]);
 
-eq("File \"bs_array_test.ml\", line 45, characters 5-12", Bs_vector.ofList(/* :: */[
+eq("File \"bs_array_test.ml\", line 45, characters 5-12", Js_vector.ofList(/* :: */[
           1,
           /* :: */[
             2,
@@ -116,7 +116,7 @@ eq("File \"bs_array_test.ml\", line 45, characters 5-12", Bs_vector.ofList(/* ::
       3
     ]);
 
-eq("File \"bs_array_test.ml\", line 47, characters 5-12", Bs_vector.ofList(/* :: */[
+eq("File \"bs_array_test.ml\", line 47, characters 5-12", Js_vector.ofList(/* :: */[
           1,
           /* [] */0
         ]), /* int array */[1]);
@@ -145,7 +145,7 @@ id(/* :: */[
       ]
     ]);
 
-id(Bs_vector.toList(Bs_vector.init(100, function (i) {
+id(Js_vector.toList(Js_vector.init(100, function (i) {
               return i;
             })));
 

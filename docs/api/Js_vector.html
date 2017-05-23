@@ -1,0 +1,182 @@
+<!doctype html>
+<html>
+<head>
+                 <link rel="stylesheet" href="../api_static/tomorrow-night.css">
+                 <link rel="stylesheet" href="../api_static/style.css" type="text/css">
+                 <script src="../api_static//highlight.pack.js"></script>
+                 <script src="../api_static//script.js"></script>
+                 <script>hljs.initHighlightingOnLoad();</script> 
+                 <meta charset="utf8">
+                 <link rel="previous" href="Js_unsafe.html"><link rel="next" href="Node.html">
+                 <title> Js_vector </title></head> 
+               <body>
+<nav class="module-index"><ul><li><a href="Bs.html">Bs</a></li>
+<li><a href="Bs_dyn.html">Bs_dyn</a></li>
+<li><a href="Bs_dyn_lib.html">Bs_dyn_lib</a></li>
+<li><a href="Dom.html">Dom</a></li>
+<li><a href="Js.html">Js</a></li>
+<li><a href="Js_array.html">Js_array</a></li>
+<li><a href="Js_boolean.html">Js_boolean</a></li>
+<li><a href="Js_cast.html">Js_cast</a></li>
+<li><a href="Js_date.html">Js_date</a></li>
+<li><a href="Js_dict.html">Js_dict</a></li>
+<li><a href="Js_exn.html">Js_exn</a></li>
+<li><a href="Js_float.html">Js_float</a></li>
+<li><a href="Js_global.html">Js_global</a></li>
+<li><a href="Js_int.html">Js_int</a></li>
+<li><a href="Js_int64.html">Js_int64</a></li>
+<li><a href="Js_json.html">Js_json</a></li>
+<li><a href="Js_list.html">Js_list</a></li>
+<li><a href="Js_math.html">Js_math</a></li>
+<li><a href="Js_nativeint.html">Js_nativeint</a></li>
+<li><a href="Js_null.html">Js_null</a></li>
+<li><a href="Js_null_undefined.html">Js_null_undefined</a></li>
+<li><a href="Js_obj.html">Js_obj</a></li>
+<li><a href="Js_option.html">Js_option</a></li>
+<li><a href="Js_primitive.html">Js_primitive</a></li>
+<li><a href="Js_promise.html">Js_promise</a></li>
+<li><a href="Js_re.html">Js_re</a></li>
+<li><a href="Js_result.html">Js_result</a></li>
+<li><a href="Js_string.html">Js_string</a></li>
+<li><a href="Js_typed_array.html">Js_typed_array</a></li>
+<li><a href="Js_types.html">Js_types</a></li>
+<li><a href="Js_undefined.html">Js_undefined</a></li>
+<li><a href="Js_unsafe.html">Js_unsafe</a></li>
+<li><a href="Js_vector.html">Js_vector</a></li>
+<li><a href="Node.html">Node</a></li>
+<li><a href="Node_buffer.html">Node_buffer</a></li>
+<li><a href="Node_child_process.html">Node_child_process</a></li>
+<li><a href="Node_fs.html">Node_fs</a></li>
+<li><a href="Node_module.html">Node_module</a></li>
+<li><a href="Node_path.html">Node_path</a></li>
+<li><a href="Node_process.html">Node_process</a></li></ul></nav>
+<div class="navbar"><a class="pre" href="Js_unsafe.html" title="Js_unsafe">Previous</a>
+&nbsp;<a class="up" href="index.html" title="Index">Up</a>
+&nbsp;<a class="post" href="Node.html" title="Node">Next</a>
+</div>
+<h1>Module <a href="type_Js_vector.html">Js_vector</a></h1>
+
+<pre><span class="keyword">module</span> Js_vector: <code class="code">sig</code> <a href="Js_vector.html">..</a> <code class="code">end</code></pre><div class="info module top">
+                    <div class="not-examples">
+                    shallow copy<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  <hr width="100%">
+<div class="type-declaration">
+<pre><span id="TYPEt"><span class="keyword">type</span> <code class="type">'a</code> t</span> = <code class="type">'a array</code> </pre>
+</div>
+
+
+<pre><span id="VALfilterInPlace"><span class="keyword">val</span> filterInPlace</span> : <code class="type">('a -> bool [@bs]) -> 'a <a href="Js_vector.html#TYPEt">t</a> -> unit</code></pre><div class="info ">
+                    <div class="not-examples">
+                     
+                    </div>
+                    
+                    </div>
+
+                  <div class="param_info"><code class="code">p</code> : predicate</div>
+<div class="param_info"><code class="code">a</code> : array</div>
+
+<pre><span id="VALempty"><span class="keyword">val</span> empty</span> : <code class="type">'a <a href="Js_vector.html#TYPEt">t</a> -> unit</code></pre>
+<pre><span id="VALpushBack"><span class="keyword">val</span> pushBack</span> : <code class="type">'a -> 'a <a href="Js_vector.html#TYPEt">t</a> -> unit</code></pre>
+<pre><span id="VALcopy"><span class="keyword">val</span> copy</span> : <code class="type">'a <a href="Js_vector.html#TYPEt">t</a> -> 'a <a href="Js_vector.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    shallow copy<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALmemByRef"><span class="keyword">val</span> memByRef</span> : <code class="type">'a -> 'a <a href="Js_vector.html#TYPEt">t</a> -> bool</code></pre><div class="info ">
+                    <div class="not-examples">
+                    Find by JS (===)  equality<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALiter"><span class="keyword">val</span> iter</span> : <code class="type">('a -> unit [@bs]) -> 'a <a href="Js_vector.html#TYPEt">t</a> -> unit</code></pre>
+<pre><span id="VALiteri"><span class="keyword">val</span> iteri</span> : <code class="type">(int -> 'a -> unit [@bs]) -> 'a <a href="Js_vector.html#TYPEt">t</a> -> unit</code></pre>
+<pre><span id="VALofList"><span class="keyword">val</span> ofList</span> : <code class="type">'a <a href="Js_list.html#TYPEt">Js_list.t</a> -> 'a <a href="Js_vector.html#TYPEt">t</a></code></pre>
+<pre><span id="VALtoList"><span class="keyword">val</span> toList</span> : <code class="type">'a <a href="Js_vector.html#TYPEt">t</a> -> 'a <a href="Js_list.html#TYPEt">Js_list.t</a></code></pre>
+<pre><span id="VALmap"><span class="keyword">val</span> map</span> : <code class="type">('a -> 'b [@bs]) -> 'a <a href="Js_vector.html#TYPEt">t</a> -> 'b <a href="Js_vector.html#TYPEt">t</a></code></pre>
+<pre><span id="VALmapi"><span class="keyword">val</span> mapi</span> : <code class="type">(int -> 'a -> 'b [@bs]) -> 'a <a href="Js_vector.html#TYPEt">t</a> -> 'b <a href="Js_vector.html#TYPEt">t</a></code></pre>
+<pre><span id="VALfoldLeft"><span class="keyword">val</span> foldLeft</span> : <code class="type">('a -> 'b -> 'a [@bs]) -> 'a -> 'b <a href="Js_vector.html#TYPEt">t</a> -> 'a</code></pre>
+<pre><span id="VALfoldRight"><span class="keyword">val</span> foldRight</span> : <code class="type">('b -> 'a -> 'a [@bs]) -> 'b <a href="Js_vector.html#TYPEt">t</a> -> 'a -> 'a</code></pre>
+<pre><span id="VALlength"><span class="keyword">val</span> length</span> : <code class="type">'a <a href="Js_vector.html#TYPEt">t</a> -> int</code></pre><div class="info ">
+                    <div class="not-examples">
+                    Return the length (number of elements) of the given array.<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALget"><span class="keyword">val</span> get</span> : <code class="type">'a <a href="Js_vector.html#TYPEt">t</a> -> int -> 'a</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">Array.get a n</code> returns the element number <code class="code">n</code> of array <code class="code">a</code>.
+   The first element has number 0.
+   The last element has number <code class="code">Array.length a - 1</code>.
+   You can also write <code class="code">a.(n)</code> instead of <code class="code">Array.get a n</code>.
+<p>
+
+   Raise <code class="code">Invalid_argument "index out of bounds"</code>
+   if <code class="code">n</code> is outside the range 0 to <code class="code">(Array.length a - 1)</code>.<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALset"><span class="keyword">val</span> set</span> : <code class="type">'a <a href="Js_vector.html#TYPEt">t</a> -> int -> 'a -> unit</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">Array.set a n x</code> modifies array <code class="code">a</code> in place, replacing
+   element number <code class="code">n</code> with <code class="code">x</code>.
+   You can also write <code class="code">a.(n) &lt;- x</code> instead of <code class="code">Array.set a n x</code>.
+<p>
+
+   Raise <code class="code">Invalid_argument "index out of bounds"</code>
+   if <code class="code">n</code> is outside the range 0 to <code class="code">Array.length a - 1</code>.<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALmake"><span class="keyword">val</span> make</span> : <code class="type">int -> 'a -> 'a <a href="Js_vector.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">Array.make n x</code> returns a fresh array of length <code class="code">n</code>,
+   initialized with <code class="code">x</code>.
+   All the elements of this new array are initially
+   physically equal to <code class="code">x</code> (in the sense of the <code class="code">==</code> predicate).
+   Consequently, if <code class="code">x</code> is mutable, it is shared among all elements
+   of the array, and modifying <code class="code">x</code> through one of the array entries
+   will modify all other entries at the same time.
+<p>
+
+   Raise <code class="code">Invalid_argument</code> if <code class="code">n &lt; 0</code> or <code class="code">n &gt; Sys.max_array_length</code>.
+   If the value of <code class="code">x</code> is a floating-point number, then the maximum
+   size is only <code class="code">Sys.max_array_length / 2</code>.<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALinit"><span class="keyword">val</span> init</span> : <code class="type">int -> (int -> 'a [@bs]) -> 'a <a href="Js_vector.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <div class="tag"> <b>Raises</b> <code>RangeError</code> when <code class="code">n</code> is negative<br>
+ </div> 
+                    </div>
+                    
+                    </div>
+
+                  <div class="param_info"><code class="code">n</code> : size</div>
+
+<pre><span id="VALunsafe_get"><span class="keyword">val</span> unsafe_get</span> : <code class="type">'a <a href="Js_vector.html#TYPEt">t</a> -> int -> 'a</code></pre>
+<pre><span id="VALunsafe_set"><span class="keyword">val</span> unsafe_set</span> : <code class="type">'a <a href="Js_vector.html#TYPEt">t</a> -> int -> 'a -> unit</code></pre></body></html>

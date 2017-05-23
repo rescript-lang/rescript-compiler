@@ -50,9 +50,8 @@ val iter : ('a -> unit [@bs]) -> 'a t -> unit
 val iteri : (int -> 'a -> unit [@bs]) -> 'a t -> unit 
 
 val foldLeft : ('a -> 'b -> 'a [@bs]) -> 'a -> 'b list -> 'a
-(** [Bs.List.foldLeft f a [b1; ...; bn]] is
-   [f (... (f (f a b1 [@bs]) b2) ...) bn]. *)
+(** Application order is left to right, tail recurisve *)
 
 val foldRight : ('a -> 'b -> 'b [@bs]) -> 'a list -> 'b -> 'b
-(** [Bs.List.foldRight f [a1; ...; an] b] is
-   [f a1 (f a2 (... (f an b [@bs]) ...))].  Not tail-recursive. *)
+(** Application order is right to left
+    Not tail-recursive currently. *)

@@ -1,4 +1,4 @@
-
+//@ts-check
 
 // This assume you already have cmi at hand
 // Okay to use ES6 since it is generated before shipping

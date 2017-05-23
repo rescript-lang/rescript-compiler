@@ -7,7 +7,7 @@
                  <script src="../api_static//script.js"></script>
                  <script>hljs.initHighlightingOnLoad();</script> 
                  <meta charset="utf8">
-                 <link rel="previous" href="Js_re.html"><link rel="next" href="Js_typed_array.html">
+                 <link rel="previous" href="Js_result.html"><link rel="next" href="Js_typed_array.html">
                  <title> Js_string </title></head> 
                <body>
 <nav class="module-index"><ul><li><a href="Bs.html">Bs</a></li>
@@ -26,19 +26,23 @@
 <li><a href="Js_int.html">Js_int</a></li>
 <li><a href="Js_int64.html">Js_int64</a></li>
 <li><a href="Js_json.html">Js_json</a></li>
+<li><a href="Js_list.html">Js_list</a></li>
 <li><a href="Js_math.html">Js_math</a></li>
 <li><a href="Js_nativeint.html">Js_nativeint</a></li>
 <li><a href="Js_null.html">Js_null</a></li>
 <li><a href="Js_null_undefined.html">Js_null_undefined</a></li>
 <li><a href="Js_obj.html">Js_obj</a></li>
+<li><a href="Js_option.html">Js_option</a></li>
 <li><a href="Js_primitive.html">Js_primitive</a></li>
 <li><a href="Js_promise.html">Js_promise</a></li>
 <li><a href="Js_re.html">Js_re</a></li>
+<li><a href="Js_result.html">Js_result</a></li>
 <li><a href="Js_string.html">Js_string</a></li>
 <li><a href="Js_typed_array.html">Js_typed_array</a></li>
 <li><a href="Js_types.html">Js_types</a></li>
 <li><a href="Js_undefined.html">Js_undefined</a></li>
 <li><a href="Js_unsafe.html">Js_unsafe</a></li>
+<li><a href="Js_vector.html">Js_vector</a></li>
 <li><a href="Node.html">Node</a></li>
 <li><a href="Node_buffer.html">Node_buffer</a></li>
 <li><a href="Node_child_process.html">Node_child_process</a></li>
@@ -46,7 +50,7 @@
 <li><a href="Node_module.html">Node_module</a></li>
 <li><a href="Node_path.html">Node_path</a></li>
 <li><a href="Node_process.html">Node_process</a></li></ul></nav>
-<div class="navbar"><a class="pre" href="Js_re.html" title="Js_re">Previous</a>
+<div class="navbar"><a class="pre" href="Js_result.html" title="Js_result">Previous</a>
 &nbsp;<a class="up" href="index.html" title="Index">Up</a>
 &nbsp;<a class="post" href="Js_typed_array.html" title="Js_typed_array">Next</a>
 </div>
@@ -102,16 +106,11 @@ ES2015<br>
 
 <pre><span id="VALconcat"><span class="keyword">val</span> concat</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre>
 <pre><span id="VALconcatMany"><span class="keyword">val</span> concatMany</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> array -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre>
-<pre><span id="VALendsWith"><span class="keyword">val</span> endsWith</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> -> bool</code></pre>
-<pre><span id="VALendsWithFrom"><span class="keyword">val</span> endsWithFrom</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> int -> <a href="Js_string.html#TYPEt">t</a> -> bool</code></pre><div class="info ">
-                    <div class="not-examples">
-                    ES2015<br>
- 
-                    </div>
-                    
-                    </div>
+<pre><span id="VALendsWith"><span class="keyword">val</span> endsWith</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> -> bool</code></pre><br>
+ES2015:
+    Sample usage: <pre class="codepre"><code class="code"> x |&gt; Js.String.endsWith ".ml"</code></pre><br>
 
-                  <br>
+<pre><span id="VALendsWithFrom"><span class="keyword">val</span> endsWithFrom</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> int -> <a href="Js_string.html#TYPEt">t</a> -> bool</code></pre><br>
 ES2015<br>
 
 <pre><span id="VALincludes"><span class="keyword">val</span> includes</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> -> bool</code></pre>

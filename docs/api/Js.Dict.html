@@ -26,19 +26,23 @@
 <li><a href="Js_int.html">Js_int</a></li>
 <li><a href="Js_int64.html">Js_int64</a></li>
 <li><a href="Js_json.html">Js_json</a></li>
+<li><a href="Js_list.html">Js_list</a></li>
 <li><a href="Js_math.html">Js_math</a></li>
 <li><a href="Js_nativeint.html">Js_nativeint</a></li>
 <li><a href="Js_null.html">Js_null</a></li>
 <li><a href="Js_null_undefined.html">Js_null_undefined</a></li>
 <li><a href="Js_obj.html">Js_obj</a></li>
+<li><a href="Js_option.html">Js_option</a></li>
 <li><a href="Js_primitive.html">Js_primitive</a></li>
 <li><a href="Js_promise.html">Js_promise</a></li>
 <li><a href="Js_re.html">Js_re</a></li>
+<li><a href="Js_result.html">Js_result</a></li>
 <li><a href="Js_string.html">Js_string</a></li>
 <li><a href="Js_typed_array.html">Js_typed_array</a></li>
 <li><a href="Js_types.html">Js_types</a></li>
 <li><a href="Js_undefined.html">Js_undefined</a></li>
 <li><a href="Js_unsafe.html">Js_unsafe</a></li>
+<li><a href="Js_vector.html">Js_vector</a></li>
 <li><a href="Node.html">Node</a></li>
 <li><a href="Node_buffer.html">Node_buffer</a></li>
 <li><a href="Node_child_process.html">Node_child_process</a></li>
@@ -145,6 +149,54 @@
 <pre><span id="VALunsafeDeleteKey"><span class="keyword">val</span> unsafeDeleteKey</span> : <code class="type">(string <a href="Js_dict.html#TYPEt">t</a> -> string -> unit [@bs])</code></pre><div class="info ">
                     <div class="not-examples">
                     Experimental internal funciton<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALentries"><span class="keyword">val</span> entries</span> : <code class="type">'a <a href="Js_dict.html#TYPEt">t</a> -> (<a href="Js_dict.html#TYPEkey">key</a> * 'a) array</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">entries dict</code> returns the key value pairs in <code class="code">dict</code> (ES2017)<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALvalues"><span class="keyword">val</span> values</span> : <code class="type">'a <a href="Js_dict.html#TYPEt">t</a> -> 'a array</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">entries dict</code> returns the values in <code class="code">dict</code> (ES2017)<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALfromList"><span class="keyword">val</span> fromList</span> : <code class="type">(<a href="Js_dict.html#TYPEkey">key</a> * 'a) list -> 'a <a href="Js_dict.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">fromList entries</code> creates a new dictionary using with containing each
+<code class="code">(key, value)</code> pair in <code class="code">entries</code><br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALfromArray"><span class="keyword">val</span> fromArray</span> : <code class="type">(<a href="Js_dict.html#TYPEkey">key</a> * 'a) array -> 'a <a href="Js_dict.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">fromArray entries</code> creates a new dictionary using with containing each
+<code class="code">(key, value)</code> pair in <code class="code">entries</code><br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALmap"><span class="keyword">val</span> map</span> : <code class="type">('a -> 'b [@bs]) -> 'a <a href="Js_dict.html#TYPEt">t</a> -> 'b <a href="Js_dict.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">map f dict</code> maps <code class="code">dict</code> to a new dictionary with the same keys,
+using <code class="code">f</code> to map each value<br>
  
                     </div>
                     

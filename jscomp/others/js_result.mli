@@ -22,36 +22,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type 'a t = 'a option
-
-let some x = Some x 
-
-let isSome = function
-  | None -> false
-  | Some _ -> true
-
-let isNone = function
-  | None -> true
-  | Some _ -> false
-
-let getExn x =
-  match x with 
-  | None -> Js_exn.raiseError "Bs_option.getExn"
-  | Some x -> x 
-
-let equal eq a b =
-  match a  with 
-  | None -> b = None 
-  | Some x -> 
-    begin match b with 
-    | None -> false 
-    | Some y -> eq x y [@bs]
-    end
-
-let andThen f x =
-  match x with 
-  | None -> None 
-  | Some x -> f x [@bs]
-
-
-
+type (+'good, +'bad) t =
+  | Ok of 'good
+  | Error of 'bad

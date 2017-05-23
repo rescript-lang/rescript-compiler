@@ -136,3 +136,7 @@ module Types = Js_types
 module Float = Js_float
 module Int = Js_int
 module Promise = Js_promise
+module Option = Js_option
+module Result = Js_result
+module List = Js_list 
+module Vector = Js_vector
