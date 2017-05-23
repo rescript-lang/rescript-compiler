@@ -35,21 +35,27 @@ let watch dir   =
        || Js.String.endsWith ".cppo" fileName then 
          exec ()
     )
+
 let () = 
-
   Node.Process.putEnvVar "BS_VSCODE" "1";
-  Bs.Vector.iter (fun [@bs] x -> 
-      ignore @@ watch (Node.Path.join [|jscomp; x|])
-    ) 
-    [| "core"; "syntax"; "ext"; "depends"; 
-       "others";
-       "ounit"; "ounit_tests"; "test"; 
-       "runtime";
-       "xwatcher";
-       "bsb";
-       "common"
-       |];
+  match Js.Array.sliceFrom 2  Node.Process.argv  with 
+  | [|"-build"|] -> 
+    Xwatcher_util.spawnInheritIgnore command
+  | _ -> 
+    begin 
+      Bs.Vector.iter (fun [@bs] x -> 
+          ignore @@ watch (Node.Path.join [|jscomp; x|])
+        ) 
+        [| "core"; "syntax"; "ext"; "depends"; 
+           "others";
+           "ounit"; "ounit_tests"; "test"; 
+           "runtime";
+           "xwatcher";
+           "bsb";
+           "common"
+        |];
 
-  exec ()
+      exec ()
+    end
 
 

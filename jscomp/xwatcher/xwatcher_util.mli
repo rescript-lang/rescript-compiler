@@ -23,3 +23,7 @@ val findFile : prev:string -> cwd:string -> string -> string
 val getWatchFiles : string -> Js.String.t Js.Array.t
 type watcher = { dir : string ; watcher : Node.Fs.Watch.t }
 val makeWatcher : string -> (string -> string -> unit [@bs]) -> watcher
+
+external spawnInheritIgnore : string -> 
+  (_ [@bs.as {json| [ ]|json}]) -> 
+  (_ [@bs.as {json| { "stdio" : "inherit", "shell" : true }|json}]) -> unit = "spawn" [@@bs.module "child_process"]

@@ -19,7 +19,7 @@ bs_result.cmj :
 node_child_process.cmj : node.cmj
 js_boolean.cmj : js_boolean.cmi
 js_math.cmj :
-js_dict.cmj : js_dict.cmi
+js_dict.cmj : js_array.cmj js_dict.cmi
 js_date.cmj :
 js_global.cmj :
 js_cast.cmj : js_cast.cmi

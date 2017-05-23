@@ -8,6 +8,7 @@ import * as Bs_vector     from "../../lib/es6/bs_vector.js";
 import * as Js_primitive  from "../../lib/es6/js_primitive.js";
 import * as Node_process  from "../../lib/es6/node_process.js";
 import * as Xwatcher_util from "./xwatcher_util.js";
+import * as Child_process from "child_process";
 
 Bs_option.getExn(Js_primitive.undefined_to_opt(typeof (__dirname) === "undefined" ? undefined : (__dirname)));
 
@@ -25,8 +26,10 @@ var lock = Xwatcher_util.makeLock(/* () */0);
 
 var events = Xwatcher_util.makeEventObj(/* () */0);
 
+var command = "./watch-build.sh";
+
 function exec() {
-  return Xwatcher_util.buildWithShell("./watch-build.sh", events, lock, function () {
+  return Xwatcher_util.buildWithShell(command, events, lock, function () {
               return /* () */0;
             });
 }
@@ -43,25 +46,41 @@ function watch(dir) {
 
 Node_process.putEnvVar("BS_VSCODE", "1");
 
-Bs_vector.iter(function (x) {
-      watch(Path.join(jscomp, x));
-      return /* () */0;
-    }, /* array */[
-      "core",
-      "syntax",
-      "ext",
-      "depends",
-      "others",
-      "ounit",
-      "ounit_tests",
-      "test",
-      "runtime",
-      "xwatcher",
-      "bsb",
-      "common"
-    ]);
+var match = Process.argv.slice(2);
 
-exec(/* () */0);
+var exit = 0;
+
+if (match.length !== 1) {
+  exit = 1;
+} else {
+  var match$1 = match[0];
+  if (match$1 === "-build") {
+    Child_process.spawn(command, ( [ ]), ( { "stdio" : "inherit", "shell" : true }));
+  } else {
+    exit = 1;
+  }
+}
+
+if (exit === 1) {
+  Bs_vector.iter(function (x) {
+        watch(Path.join(jscomp, x));
+        return /* () */0;
+      }, /* array */[
+        "core",
+        "syntax",
+        "ext",
+        "depends",
+        "others",
+        "ounit",
+        "ounit_tests",
+        "test",
+        "runtime",
+        "xwatcher",
+        "bsb",
+        "common"
+      ]);
+  exec(/* () */0);
+}
 
 export {
   
