@@ -36,7 +36,7 @@ type t =
   >   Js.t
 
 external process : t = "" [@@bs.module]
-
+external argv : string array = "" [@@bs.module "process"]
 external exit : int -> unit = "" [@@bs.module "process"]
 external cwd : unit -> string = "" [@@bs.module "process"]
 (** The process.uptime() method returns the number of seconds 

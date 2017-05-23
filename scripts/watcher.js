@@ -220,8 +220,10 @@ var lock = makeLock(/* () */0);
 
 var events = makeEventObj(/* () */0);
 
+var command = "./watch-build.sh";
+
 function exec() {
-  return buildWithShell("./watch-build.sh", events, lock, function () {
+  return buildWithShell(command, events, lock, function () {
               return /* () */0;
             });
 }
@@ -238,25 +240,41 @@ function watch$1(dir) {
 
 putEnvVar("BS_VSCODE", "1");
 
-iter$$1(function (x) {
-      watch$1(Path.join(jscomp, x));
-      return /* () */0;
-    }, /* array */[
-      "core",
-      "syntax",
-      "ext",
-      "depends",
-      "others",
-      "ounit",
-      "ounit_tests",
-      "test",
-      "runtime",
-      "xwatcher",
-      "bsb",
-      "common"
-    ]);
+var match = Process.argv.slice(2);
 
-exec(/* () */0);
+var exit = 0;
+
+if (match.length !== 1) {
+  exit = 1;
+} else {
+  var match$1 = match[0];
+  if (match$1 === "-build") {
+    Child_process.spawn(command, ( [ ]), ( { "stdio" : "inherit", "shell" : true }));
+  } else {
+    exit = 1;
+  }
+}
+
+if (exit === 1) {
+  iter$$1(function (x) {
+        watch$1(Path.join(jscomp, x));
+        return /* () */0;
+      }, /* array */[
+        "core",
+        "syntax",
+        "ext",
+        "depends",
+        "others",
+        "ounit",
+        "ounit_tests",
+        "test",
+        "runtime",
+        "xwatcher",
+        "bsb",
+        "common"
+      ]);
+  exec(/* () */0);
+}
 
 
 /*  Not a pure module */

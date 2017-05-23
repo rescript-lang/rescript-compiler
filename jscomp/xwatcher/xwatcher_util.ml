@@ -47,6 +47,11 @@ external spawnInherit : string ->
 
 external onExit : (_ [@bs.as "exit"]) -> (unit -> unit [@bs.uncurry]) -> unit = "on" [@@bs.send.pipe: t]
 
+
+external spawnInheritIgnore : string -> 
+  (_ [@bs.as {json| [ ]|json}]) -> 
+  (_ [@bs.as {json| { "stdio" : "inherit", "shell" : true }|json}]) -> unit = "spawn" [@@bs.module "child_process"]
+
 (* let (acquireBuild, releaseBuild) =  *)
 (*   let isBuilding = ref false in  *)
 (*   (fun [@bs]() ->  if !isBuilding then false else begin isBuilding := true ; true end), *)
