@@ -151,6 +151,7 @@ OUNIT_TESTS_SRCS =  ounit_tests_util \
 	ounit_cmd_tests\
 	ounit_ffi_error_debug_test\
 	ounit_unicode_tests\
+	ounit_bsb_regex_tests\
 	ounit_tests_main
 OUNIT_TESTS_CMXS = $(addprefix ounit_tests/, $(addsuffix .cmx, $(OUNIT_TESTS_SRCS)))
 
@@ -298,7 +299,11 @@ BSB_SRCS= bsb_config \
 	bsb_file\
 	bsb_config_types\
 	bsb_config_parse\
-	bsb_unix
+	bsb_unix\
+	bsb_regex\
+	oCamlRes\
+	bsb_templates\
+	bsb_init
 
 BSB_CMXS=$(addprefix bsb/, $(addsuffix .cmx, $(BSB_SRCS)))
 MAIN_SRCS= jsgen_main jscmj_main bsb/bsb_main bsb/bsb_helper_main
@@ -344,7 +349,7 @@ bin/jsgen.exe:ext.cmxa jsgen_main.cmx
 
 
 depend:
-	$(CAMLDEP) -native -I stubs -I ext -I common -I syntax -I depends -I core -I ounit -I ounit_tests -I bsb \
+	$(CAMLDEP) -absname -native -I stubs -I ext -I common -I syntax -I depends -I core -I ounit -I ounit_tests -I bsb \
 	$(addprefix stubs/, $(addsuffix .ml, $(STUB_SRCS))) \
 	$(addprefix stubs/, $(addsuffix .mli, $(STUB_SRCS))) \
 	$(addprefix ext/, $(addsuffix .ml, $(EXT_SRCS))) \
@@ -414,9 +419,10 @@ SNAPSHOT_DEPS=$(SNAPSHOT_SRCS:.ml=.d)
 # Note the currently snapshot mode means if we don't
 # generate ml files it will not be included
 
-
+themes:
+	cd bsb && ./pack-templates.sh
 snapshotml:./bin/bspack.exe $(SNAPSHOT_SRCS)
-
+	
 force-snapshotml:
 	rm -f $(SNAPSHOT_DEPS) $(SNAPSHOT_SRCS)
 	make snapshotml
@@ -450,7 +456,7 @@ bin/all_ounit_tests.ml:./bin/bspack.exe
 
 
 bin/all_ounit_tests.exe: stubs/ext_basic_hash_stubs.c bin/all_ounit_tests.mli bin/all_ounit_tests.ml
-	ocamloptp -I +compiler-libs ocamlcommon.cmxa -P a -g -I bin -w -a unix.cmxa $^ -o $@
+	ocamloptp -I +compiler-libs ocamlcommon.cmxa -P a -g -I bin -w -a unix.cmxa str.cmxa $^ -o $@
 
 test:bin/all_ounit_tests.exe
 	$^ && ocamlprof bin/all_ounit_tests.ml > bin/all_ounit_tests.i.ml &&	rm ocamlprof.dump
@@ -528,7 +534,7 @@ world:
 travis-world-test:
 	$(MAKE) world
 	@echo "Making test"
-	$(NATIVE) -g -I bin -I +compiler-libs -w -a ocamlcommon.cmxa unix.cmxa stubs/ext_basic_hash_stubs.c bin/all_ounit_tests.mli bin/all_ounit_tests.ml -o bin/all_ounit_tests.exe && bin/all_ounit_tests.exe
+	$(NATIVE) -g -I bin -I +compiler-libs -w -a ocamlcommon.cmxa unix.cmxa str.cmxa stubs/ext_basic_hash_stubs.c bin/all_ounit_tests.mli bin/all_ounit_tests.ml -o bin/all_ounit_tests.exe && bin/all_ounit_tests.exe
 	$(MAKE) -C test all
 	@echo "Making test finsihed"
 

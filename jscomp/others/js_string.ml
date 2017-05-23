@@ -51,7 +51,11 @@ external codePointAt : int -> int option = "" [@@bs.send.pipe: t] [@@bs.return {
 external concat : t -> t = "" [@@bs.send.pipe: t]
 external concatMany : t array -> t = "concat" [@@bs.send.pipe: t] [@@bs.splice]
 
-external endsWith : t -> bool = "" [@@bs.send.pipe: t] (** ES2015 *)
+external endsWith : t -> bool = "" [@@bs.send.pipe: t] 
+(** ES2015:
+    Sample usage: {[ x |> Js.String.endsWith ".ml"]} 
+*)
+
 external endsWithFrom : t -> int -> bool = "endsWith" [@@bs.send.pipe: t] (** ES2015 *)
 
 external includes : t -> bool = "" [@@bs.send.pipe: t] (** ES2015 *)

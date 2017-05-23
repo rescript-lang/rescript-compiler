@@ -3489,6 +3489,254 @@ let bench () =
   end ; 
 
 end
+module Bsb_regex : sig 
+#1 "bsb_regex.mli"
+
+
+
+val global_substitute:
+ string ->
+  (string -> string list -> string)
+  -> string -> string
+end = struct
+#1 "bsb_regex.ml"
+let string_after s n = String.sub s n (String.length s - n)
+
+
+
+(* There seems to be a bug in {!Str.global_substitute} 
+{[
+Str.global_substitute (Str.regexp "\\${bsb:\\([-a-zA-Z0-9]+\\)}") (fun x -> (x^":found")) {|   ${bsb:hello-world}  ${bsb:x} ${x}|}  ;;
+- : bytes =
+"      ${bsb:hello-world}  ${bsb:x} ${x}:found     ${bsb:hello-world}  ${bsb:x} ${x}:found ${x}"
+]}
+*)
+
+let global_substitute expr repl_fun text =
+  let text_len = String.length text in 
+  let expr = Str.regexp expr in  
+  let rec replace accu start last_was_empty =
+    let startpos = if last_was_empty then start + 1 else start in
+    if startpos > text_len then
+      string_after text start :: accu
+    else
+      match Str.search_forward expr text startpos with
+      | exception Not_found -> 
+        string_after text start :: accu
+      |  pos ->
+        let end_pos = Str.match_end() in
+        let matched = (Str.matched_string text) in 
+        let  groups = 
+            let rec aux n  acc = 
+                match Str.matched_group n text with 
+                | exception (Not_found | Invalid_argument _ ) 
+                    -> acc 
+                | v -> aux (succ n) (v::acc) in 
+             aux 1 []  in 
+        let repl_text = repl_fun matched groups  in
+        replace (repl_text :: String.sub text start (pos-start) :: accu)
+          end_pos (end_pos = pos)
+  in
+  String.concat "" (List.rev (replace [] 0 false))
+
+end
+module Ounit_bsb_regex_tests
+= struct
+#1 "ounit_bsb_regex_tests.ml"
+
+
+let ((>::),
+     (>:::)) = OUnit.((>::),(>:::))
+
+let (=~) = OUnit.assert_equal
+
+
+let test_eq x y  = 
+    Bsb_regex.global_substitute "\\${bsb:\\([-a-zA-Z0-9]+\\)}"
+        (fun _ groups -> 
+            match groups with 
+            | x::xs -> x 
+            | _ -> assert false 
+        ) x =~ y 
+
+
+let suites = 
+    __FILE__ 
+    >:::
+    [
+        __LOC__ >:: begin fun _ -> 
+        test_eq 
+        {| hi hi hi ${bsb:name}
+        ${bsb:x}
+        ${bsb:u}
+        |}        
+        {| hi hi hi name
+        x
+        u
+        |}
+    end;
+    __LOC__ >:: begin  fun _ ->
+    test_eq  "xx" "xx";
+    test_eq "${bsb:x}" "x";
+    test_eq "a${bsb:x}" "ax";
+    
+    end;
+
+    __LOC__ >:: begin fun _ ->
+        test_eq "${bsb:x}x" "xx"
+    end;
+
+    __LOC__ >:: begin fun _ -> 
+        test_eq {|
+{
+  "name": "${bsb:name}",
+  "version": "${bsb:proj-version}",
+  "sources": [
+    "src"
+  ],
+  "reason" : { "react-jsx" : true},
+  "bs-dependencies" : [
+      // add your bs-dependencies here 
+  ]
+}
+|} {|
+{
+  "name": "name",
+  "version": "proj-version",
+  "sources": [
+    "src"
+  ],
+  "reason" : { "react-jsx" : true},
+  "bs-dependencies" : [
+      // add your bs-dependencies here 
+  ]
+}
+|}
+    end
+
+    ;
+    __LOC__ >:: begin fun _ -> 
+    test_eq {|
+{
+  "name": "${bsb:name}",
+  "version": "${bsb:proj-version}",
+  "scripts": {
+    "clean": "bsb -clean",
+    "clean:all": "bsb -clean-world",
+    "build": "bsb",
+    "build:all": "bsb -make-world",
+    "watch": "bsb -w",
+  },
+  "keywords": [
+    "Bucklescript"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "bs-platform": "${bsb:bs-version}"
+  }
+}
+|} {|
+{
+  "name": "name",
+  "version": "proj-version",
+  "scripts": {
+    "clean": "bsb -clean",
+    "clean:all": "bsb -clean-world",
+    "build": "bsb",
+    "build:all": "bsb -make-world",
+    "watch": "bsb -w",
+  },
+  "keywords": [
+    "Bucklescript"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "bs-platform": "bs-version"
+  }
+}
+|}
+    end;
+    __LOC__ >:: begin fun _ -> 
+    test_eq {|
+{
+    "version": "0.1.0",
+    "command": "${bsb:bsb}",
+    "options": {
+        "cwd": "${workspaceRoot}"
+    },
+    "isShellCommand": true,
+    "args": [
+        "-w"
+    ],
+    "showOutput": "always",
+    "isWatching": true,
+    "problemMatcher": {
+        "fileLocation": "absolute",
+        "owner": "ocaml",
+        "watching": {
+            "activeOnStart": true,
+            "beginsPattern": ">>>> Start compiling",
+            "endsPattern": ">>>> Finish compiling"
+        },
+        "pattern": [
+            {
+                "regexp": "^File \"(.*)\", line (\\d+)(?:, characters (\\d+)-(\\d+))?:$",
+                "file": 1,
+                "line": 2,
+                "column": 3,
+                "endColumn": 4
+            },
+            {
+                "regexp": "^(?:(?:Parse\\s+)?(Warning|[Ee]rror)(?:\\s+\\d+)?:)?\\s+(.*)$",
+                "severity": 1,
+                "message": 2,
+                "loop": true
+            }
+        ]
+    }
+}
+|} {|
+{
+    "version": "0.1.0",
+    "command": "bsb",
+    "options": {
+        "cwd": "${workspaceRoot}"
+    },
+    "isShellCommand": true,
+    "args": [
+        "-w"
+    ],
+    "showOutput": "always",
+    "isWatching": true,
+    "problemMatcher": {
+        "fileLocation": "absolute",
+        "owner": "ocaml",
+        "watching": {
+            "activeOnStart": true,
+            "beginsPattern": ">>>> Start compiling",
+            "endsPattern": ">>>> Finish compiling"
+        },
+        "pattern": [
+            {
+                "regexp": "^File \"(.*)\", line (\\d+)(?:, characters (\\d+)-(\\d+))?:$",
+                "file": 1,
+                "line": 2,
+                "column": 3,
+                "endColumn": 4
+            },
+            {
+                "regexp": "^(?:(?:Parse\\s+)?(Warning|[Ee]rror)(?:\\s+\\d+)?:)?\\s+(.*)$",
+                "severity": 1,
+                "message": 2,
+                "loop": true
+            }
+        ]
+    }
+}
+|}
+    end
+    ]
+end
 module Literals : sig 
 #1 "literals.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -15933,6 +16181,7 @@ let suites =
     Ounit_js_regex_checker_tests.suites;
     Ounit_utf8_test.suites;
     Ounit_unicode_tests.suites;
+    Ounit_bsb_regex_tests.suites;
   ]
 let _ = 
   OUnit.run_test_tt_main suites
