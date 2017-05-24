@@ -64,17 +64,29 @@ function watch_build(watch_files) {
     }
 };
 
+
+/**
+ * 
+ * @param {string} eventType 
+ * @param {string} fileName 
+ */
+function validEvent(eventType,fileName){
+    return  !(fileName === '.merlin' ||  fileName.endsWith('.js'))
+}
+/**
+ * @return {boolean}
+ */
 function needRebuild(){
-    reasons_to_rebuild.some(function(v){
-        // var event = v[0]
-        var reason = v[1]
-        if (reason!== undefined){
-            return !(reason === '.merlin' ||  reason.endsWith('.js'))
-        } else {
-            return true // conservative 
-        }        
-    })
-    // return reasons_to_rebuild.length != 0
+    // return reasons_to_rebuild.some(function(v){
+    //     // var event = v[0]
+    //     var reason = v[1]
+    //     if (reason!== undefined){
+    //         return !(reason === '.merlin' ||  reason.endsWith('.js'))
+    //     } else {
+    //         return true // conservative 
+    //     }        
+    // })
+    return reasons_to_rebuild.length != 0
 }
 function build_finished_callback() {
     console.log(">>>> Finish compiling")
@@ -96,10 +108,20 @@ function build() {
           .on('exit', build_finished_callback);
     }
 }
+/**
+ * 
+ * @param {string} event 
+ * @param {string} reason 
+ */
 function on_change(event, reason) {
-    console.log("Event", event);
-    reasons_to_rebuild.push([event, reason])
-    build()
+    // console.log("Event", event);
+    if(validEvent(event,reason)){
+        reasons_to_rebuild.push([event, reason])
+    }
+    
+    if(needRebuild()){
+        build()
+    }    
 }
 function getWatchFiles(file) {
     if (fs.existsSync(file)){
