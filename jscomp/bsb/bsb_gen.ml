@@ -239,8 +239,14 @@ let output_ninja
     let build_script = Ext_string.ninja_escaped build_script in
     let ocaml_lib = Bsb_build_util.get_ocaml_lib_dir cwd in
     (* TODO(sansouci): Fix this super ghetto environment variable setup... This is not cross platform! *)
+<<<<<<< HEAD
     let envvars = "OCAML_LIB=" ^ (Bytes.to_string ocaml_lib) ^ " " 
                 ^ "PATH=$$PATH:" ^ (root_project_dir // "node_modules" // ".bin") ^ ":" ^ ocaml_dir ^ " && " in
+=======
+    let envvars = "export OCAML_LIB=" ^ ocaml_lib ^ " && " 
+                ^ "export OCAML_SYSTHREADS=" ^ (ocaml_src // "otherlibs" // "systhreads") ^ " && " 
+                ^ "export PATH=$$PATH:" ^ (root_project_dir // "node_modules" // ".bin") ^ ":" ^ ocaml_dir ^ ":" ^ (root_project_dir // "node_modules" // "bs-platform" // "bin") ^ " && " in
+>>>>>>> Update to export instead. More robust.
     (* We move out of lib/bs so that the command is ran from the root project. *)
     let rule = Bsb_rule.define ~command:("cd ../.. && " ^ envvars ^ build_script) "build_script" in
     Bsb_ninja.output_build oc
