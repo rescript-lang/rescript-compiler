@@ -47,11 +47,11 @@ let tl = function
 
 let nth l n =
   if n < 0 then None else
-  let rec nth_aux l n =
-    match l with
-    | [] -> None
-    | a::l -> if n = 0 then Some a else nth_aux l (n-1)
-  in nth_aux l n
+    let rec nth_aux l n =
+      match l with
+      | [] -> None
+      | a::l -> if n = 0 then Some a else nth_aux l (n-1)
+    in nth_aux l n
 
 
 
@@ -88,8 +88,73 @@ let rec foldLeft f accu l =
     [] -> accu
   | a::l -> foldLeft f (f accu a [@bs]) l
 
-let rec foldRight f l accu =
-  match l with
-    [] -> accu
-  | a::l -> f a (foldRight f l accu) [@bs]
+let foldRightMaxStack = 1000
 
+
+let rec tailLoop f  acc = function
+  | [] -> acc
+  | h :: t -> tailLoop f (f h acc [@bs]) t
+
+let foldRight f l init =
+  let rec loop n = function
+    | [] -> init
+    | h :: t ->
+      if n < foldRightMaxStack then
+        f h (loop (n+1) t) [@bs]
+      else
+        f h (tailLoop f init (rev t)) [@bs]
+  in
+  loop 0 l
+
+
+let rec flattenAux  acc  lx =
+  match lx with
+  | [] -> rev acc 
+  | y::ys -> flattenAux  (revAppend  y   acc )  ys 
+
+let flatten  lx =
+  flattenAux  [] lx
+
+
+let rec filterRevAux f acc xs =   
+  match xs with 
+  | [] ->  acc 
+  | y :: ys -> 
+    begin match f y [@bs] with 
+      | false ->   filterRevAux f acc ys 
+      | true -> filterRevAux f  (y::acc) ys
+    end 
+
+let filter f xs  =  rev @@ filterRevAux f [] xs 
+
+let rec filterMapRevAux (f:  'a -> 'b option [@bs]) acc xs =   
+  match xs with 
+  | [] ->  acc 
+  | y :: ys -> 
+    begin match f y [@bs] with 
+      | None ->   filterMapRevAux f acc ys 
+      | Some z -> filterMapRevAux f  (z::acc) ys
+    end 
+
+let rec filterMap f xs = 
+  rev @@ filterMapRevAux f [] xs
+
+
+let rec countByAux f acc xs = 
+  match xs with 
+  | [] -> acc 
+  | y::ys -> 
+    countByAux f (if f y [@bs] then acc + 1 else acc) ys
+
+let rec countBy f xs = countByAux f 0 xs    
+
+let init n f = 
+  Js_vector.toList @@ Js_vector.init n f 
+
+let rec equal cmp xs ys = 
+  match xs,ys with 
+  | [], [] -> true 
+  | x::xs, y::ys -> 
+    if cmp x y [@bs] then equal cmp xs ys 
+    else false 
+  | _, _ -> false   

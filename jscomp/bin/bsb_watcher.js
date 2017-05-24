@@ -77,15 +77,6 @@ function validEvent(eventType,fileName){
  * @return {boolean}
  */
 function needRebuild(){
-    // return reasons_to_rebuild.some(function(v){
-    //     // var event = v[0]
-    //     var reason = v[1]
-    //     if (reason!== undefined){
-    //         return !(reason === '.merlin' ||  reason.endsWith('.js'))
-    //     } else {
-    //         return true // conservative 
-    //     }        
-    // })
     return reasons_to_rebuild.length != 0
 }
 function build_finished_callback() {
@@ -113,15 +104,15 @@ function build() {
  * @param {string} event 
  * @param {string} reason 
  */
-function on_change(event, reason) {
-    // console.log("Event", event);
+function on_change(event, reason) {    
     if(validEvent(event,reason)){
+        console.log("Event", event);
         reasons_to_rebuild.push([event, reason])
-    }
-    
-    if(needRebuild()){
-        build()
+        if(needRebuild()){
+            build()
+        }    
     }    
+    
 }
 function getWatchFiles(file) {
     if (fs.existsSync(file)){

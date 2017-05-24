@@ -54,4 +54,16 @@ val foldLeft : ('a -> 'b -> 'a [@bs]) -> 'a -> 'b list -> 'a
 
 val foldRight : ('a -> 'b -> 'b [@bs]) -> 'a list -> 'b -> 'b
 (** Application order is right to left
-    Not tail-recursive currently. *)
+    tail-recursive. *)
+
+val flatten : 'a t t  -> 'a t
+
+val filter : ('a -> bool [@bs]) -> 'a t -> 'a t 
+
+val filterMap : ('a -> 'b option [@bs]) -> 'a t -> 'b t
+
+val countBy : ('a -> bool [@bs]) -> 'a list -> int 
+
+val init : int -> (int -> 'a [@bs]) -> 'a t 
+
+val equal : ('a -> 'a -> bool [@bs]) -> 'a list -> 'a list -> bool
