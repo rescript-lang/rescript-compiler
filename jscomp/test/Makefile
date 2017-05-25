@@ -155,8 +155,8 @@ OTHERS := literals a test_ari test_export2 test_internalOO test_obj_simple_ffi t
 	webpack_config\
 	bs_qualified\
 	mario_game\
-	gpr_1600_test
-
+	gpr_1600_test\
+	js_list_test
 
 # bs_uncurry_test
 # needs Lam to get rid of Uncurry arity first

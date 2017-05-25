@@ -38,8 +38,8 @@ val memByRef : 'a -> 'a t -> bool
 val iter : ('a -> unit [@bs]) -> 'a t -> unit
 val iteri : (int -> 'a -> unit [@bs]) -> 'a t -> unit 
 
-val ofList : 'a Js_list.t -> 'a t 
-val toList : 'a t -> 'a Js_list.t 
+val ofList : 'a list -> 'a t 
+val toList : 'a t -> 'a list
 
 val map : ('a -> 'b [@bs]) -> 'a t -> 'b t 
 val mapi : (int -> 'a -> 'b [@bs]) -> 'a t -> 'b t 
