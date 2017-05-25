@@ -3538,7 +3538,7 @@ get the job done.</p>
 <div class="sect3">
 <h4 id="_detect_global_variable_existence_code_bs_external_code_since_1_5_1"><a class="anchor" href="#_detect_global_variable_existence_code_bs_external_code_since_1_5_1"></a>Detect global variable existence <code>bs.external</code> (@since 1.5.1)</h4>
 <div class="paragraph">
-<p>Before we dive into embedding arbitrary JS code, a quite common use case of embedding untyped JS code is detect a global variable (feature detection), Bucklescript provides a relatively type safe approach for such use case: <code>bs.external</code> (or <code>extenral</code>),
+<p>Before we dive into embedding arbitrary JS code, a quite common use case of embedding untyped JS code is detect a global variable (feature detection), Bucklescript provides a relatively type safe approach for such use case: <code>bs.external</code> (or <code>external</code>),
  <code>[%bs.external a_single_identifier]</code> is a value of <code>_ option</code> type, see examples below</p>
 </div>
 <div class="listingblock">
@@ -3858,7 +3858,7 @@ more examples, please visit
 <div class="sectionbody">
 <div class="paragraph">
 <p>There are some cases, the data-source could either come from JS land or OCaml land, it is very hard to give precise type information.
-For example, for an extenral promise whose creation could come from JS API, its failed value caused by <code>Promise.reject</code> could be in any shape.</p>
+For example, for an external promise whose creation could come from JS API, its failed value caused by <code>Promise.reject</code> could be in any shape.</p>
 </div>
 <div class="paragraph">
 <p>BuckleScript provides a solution to filter out OCaml structured exception data from the mixed data source,
