@@ -56,7 +56,7 @@ Please consult module `Js.Error` for more details
 ## `bs.open`: Type safe external data-source handling (@@since 1.7.0)
 
 There are some cases, the data-source could either come from JS land or OCaml land, it is very hard to give precise type information. 
-For example, for an extenral promise whose creation could come from JS API, its failed value caused by `Promise.reject` could be in any shape.
+For example, for an external promise whose creation could come from JS API, its failed value caused by `Promise.reject` could be in any shape.
 
 BuckleScript provides a solution to filter out OCaml structured exception data from the mixed data source, 
 it preserves the type safety while allow uesrs to deal with mixed source. 
