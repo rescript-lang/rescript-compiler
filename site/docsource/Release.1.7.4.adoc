@@ -4,7 +4,7 @@ Full changes: https://github.com/bloomberg/bucklescript/blob/master/Changes.md#b
 
 Main highlights:
 
-1. Create a BuckleScript project and build in a single line(works on all platforms including Windows)
+1. Create a BuckleScript project and build in a single line(works on all platforms with zero dependencies including Windows)
 
 [source,sh]
 -----------
