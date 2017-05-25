@@ -1545,7 +1545,7 @@ get the job done.
 
 #### Detect global variable existence `bs.external` (@since 1.5.1)
 
-Before we dive into embedding arbitrary JS code, a quite common use case of embedding untyped JS code is detect a global variable (feature detection), Bucklescript provides a relatively type safe approach for such use case: `bs.external` (or `extenral`),
+Before we dive into embedding arbitrary JS code, a quite common use case of embedding untyped JS code is detect a global variable (feature detection), Bucklescript provides a relatively type safe approach for such use case: `bs.external` (or `external`),
  `[%bs.external a_single_identifier]` is a value of `_ option` type, see examples below 
 
 [source,ocaml]
