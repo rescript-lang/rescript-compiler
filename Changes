@@ -1,5 +1,5 @@
 
-BuckleScript 1.7.4:
+BuckleScript 1.7.4(May 24, 2017):
 ==================
 
 internal tools:
@@ -18,6 +18,8 @@ Features:
 Bug fixes :
 
 - #1581, more error checking
+- #1633, fix missing installations
+- #1581, more error checking %identity
 
 BuckleScript 1.7.3:
 ==================

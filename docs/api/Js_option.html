@@ -64,6 +64,7 @@
 
 <pre><span id="VALsome"><span class="keyword">val</span> some</span> : <code class="type">'a -> 'a option</code></pre>
 <pre><span id="VALisSome"><span class="keyword">val</span> isSome</span> : <code class="type">'a option -> bool</code></pre>
+<pre><span id="VALisSomeValue"><span class="keyword">val</span> isSomeValue</span> : <code class="type">('a -> 'a -> bool [@bs]) -> 'a -> 'a option -> bool</code></pre>
 <pre><span id="VALisNone"><span class="keyword">val</span> isNone</span> : <code class="type">'a option -> bool</code></pre>
 <pre><span id="VALgetExn"><span class="keyword">val</span> getExn</span> : <code class="type">'a option -> 'a</code></pre>
 <pre><span id="VALequal"><span class="keyword">val</span> equal</span> : <code class="type">('a -> 'b -> bool [@bs]) -> 'a option -> 'b option -> bool</code></pre>
