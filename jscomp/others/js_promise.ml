@@ -36,16 +36,16 @@ type error (* abstract error type *)
 external make : (resolve:('a -> unit [@bs]) ->
                  reject:(exn -> unit [@bs]) -> unit [@bs.uncurry]) -> 'a t = "Promise" [@@bs.new]
 (* [make (fun resolve reject -> .. )] *)
-external resolve : 'a -> 'a t = "Promise.resolve" [@@bs.val]
-external reject : exn -> 'a t = "Promise.reject" [@@bs.val]
-external all : 'a t array -> 'a array t = "Promise.all" [@@bs.val]
-external all2 : 'a0 t -> 'a1 t -> ('a0 * 'a1) t = "Promise.all" [@@bs.val]
-external all3 : 'a0 t -> 'a1 t -> 'a2 t -> ('a0 * 'a1 * 'a2 ) t = "Promise.all" [@@bs.val]
-external all4 : 'a0 t -> 'a1 t -> 'a2 t  -> 'a3 t -> ('a0 * 'a1 * 'a2 * 'a3 ) t = "Promise.all" [@@bs.val]
-external all5 : 'a0 t -> 'a1 t -> 'a2 t  -> 'a3 t -> 'a4 t ->   ('a0 * 'a1 * 'a2 * 'a3 * 'a4 ) t = "Promise.all" [@@bs.val]
-external all6 : 'a0 t -> 'a1 t -> 'a2 t  -> 'a3 t -> 'a4 t -> 'a5 t ->    ('a0 * 'a1 * 'a2 * 'a3 * 'a4 * 'a5 ) t = "Promise.all" [@@bs.val]
+external resolve : 'a -> 'a t = "resolve" [@@bs.val] [@@bs.scope "Promise"]
+external reject : exn -> 'a t = "reject" [@@bs.val] [@@bs.scope "Promise"]
+external all : 'a t array -> 'a array t = "all" [@@bs.val] [@@bs.scope "Promise"]
+external all2 : 'a0 t -> 'a1 t -> ('a0 * 'a1) t = "all" [@@bs.val] [@@bs.scope "Promise"]
+external all3 : 'a0 t -> 'a1 t -> 'a2 t -> ('a0 * 'a1 * 'a2 ) t = "all" [@@bs.val] [@@bs.scope "Promise"]
+external all4 : 'a0 t -> 'a1 t -> 'a2 t  -> 'a3 t -> ('a0 * 'a1 * 'a2 * 'a3 ) t = "all" [@@bs.val] [@@bs.scope "Promise"]
+external all5 : 'a0 t -> 'a1 t -> 'a2 t  -> 'a3 t -> 'a4 t ->   ('a0 * 'a1 * 'a2 * 'a3 * 'a4 ) t = "all" [@@bs.val] [@@bs.scope "Promise"]
+external all6 : 'a0 t -> 'a1 t -> 'a2 t  -> 'a3 t -> 'a4 t -> 'a5 t ->    ('a0 * 'a1 * 'a2 * 'a3 * 'a4 * 'a5 ) t = "all" [@@bs.val] [@@bs.scope "Promise"]
 
-external race : 'a t array -> 'a t = "Promise.race" [@@bs.val]
+external race : 'a t array -> 'a t = "race" [@@bs.val] [@@bs.scope "Promise"]
 
 external then_ : ('a -> 'b t [@bs.uncurry]) -> 'b t = "then" [@@bs.send.pipe: 'a t]
 
