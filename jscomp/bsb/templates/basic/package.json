@@ -9,7 +9,7 @@
     "watch": "bsb -make-world -w"
   },
   "keywords": [
-    "Bucklescript"
+    "BuckleScript"
   ],
   "license": "MIT",
   "devDependencies": {

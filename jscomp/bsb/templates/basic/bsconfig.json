@@ -4,7 +4,7 @@
   "sources": [
     "src"
   ],
-  "reason" : { "react-jsx" : true},
+  "reason" : { "react-jsx" : true },
   "bs-dependencies" : [
       // add your bs-dependencies here 
   ]
