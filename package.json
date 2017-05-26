@@ -24,7 +24,8 @@
     }
   },
   "bin" : {
-      "bsb" : "bin/bsb"
+      "bsb" : "bin/bsb",
+      "bsc": "bin/bsc"
    },
   "scripts": {
     "test": "mocha './jscomp/test/**/*test.js' ",

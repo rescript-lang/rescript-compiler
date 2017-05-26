@@ -66,6 +66,7 @@ odoc_gen/*.cmxs
 !bin/bsppx
 !bin/bspack
 !/bin/bsb
+!/bin/bsc
 !ocaml.tar.gz
 
 #ninja
