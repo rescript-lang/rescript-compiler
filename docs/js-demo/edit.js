@@ -201,6 +201,13 @@ function changeEvalButton(bool) {
   onEvalButtonChange();
 }
 
+//checks for URL hash & decodes to oCaml if present
+var clientHash = window.location.hash.split('#')[1];
+
+if (clientHash) {
+  myCode1Mirror.setValue(atob(clientHash));
+}
+
 //creates a hashed URL from OCaml code
 $('#share').click(function (e) {
   var hashedCode = btoa(myCode1Mirror.getValue());
