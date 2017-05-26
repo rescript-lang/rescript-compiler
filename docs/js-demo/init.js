@@ -61,3 +61,4 @@
 // }else{
 //  start()
 // }
+start()
