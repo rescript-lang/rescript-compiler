@@ -118,5 +118,6 @@ let root = OCamlRes.Res.([
        lib/bs\n\
        *.mlast\n\
        *.mliast\n\
-       .vscode")])
+       .vscode\n\
+       .merlin")])
 ])
