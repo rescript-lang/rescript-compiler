@@ -1,9 +1,14 @@
 
 # Next
 
+# Next
+
 - #1648, exposed `bsc` in the npm environment
 
-# BuckleScript 1.7.4 (May 24, 2017):
+- #1647, speical handling `bsb -init .` to reuse current directory
+
+# 1.7.4(May 24, 2017):
+
 
 
 internal tools:
@@ -25,7 +30,7 @@ Bug fixes :
 - #1633, fix missing installations
 - #1581, more error checking %identity
 
-# BuckleScript 1.7.3:
+# 1.7.3:
 
 Bug fixes:
 
