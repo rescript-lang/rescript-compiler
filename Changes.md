@@ -1,6 +1,9 @@
 
+# Next
 
-# BuckleScript 1.7.4(May 24, 2017):
+- #1648, exposed `bsc` in the npm environment
+
+# BuckleScript 1.7.4 (May 24, 2017):
 
 
 internal tools:
