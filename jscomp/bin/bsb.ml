@@ -9698,14 +9698,14 @@ let output_ninja
     let () =
       output_string oc ninja_required_version ;
       output_string oc "bs_package_flags = ";
-      output_string oc ("-bs-package-name "  ^ package_name);
+      output_string oc ("-bs-package-name "  ^ (Filename.quote package_name));
       output_string oc "\n";
       let bsc_flags = 
         Ext_string.inter2  Literals.dash_nostdlib @@
         match built_in_dependency with 
         | None -> bsc_flags   
         | Some {package_install_path} -> 
-          Ext_string.inter3 dash_i package_install_path bsc_flags
+          Ext_string.inter3 dash_i (Filename.quote package_install_path) bsc_flags
   
       in 
       Bsb_ninja.output_kvs
