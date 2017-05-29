@@ -168,9 +168,9 @@ let rec caml_compare (a : Obj.t) (b : Obj.t) : int =
     | false, true -> 1 
     | false, false -> 
       if a_type = "boolean"
-      || a_type = "null"
       || a_type = "undefined"
-      then
+      || a == (Obj.repr Js_null.empty)
+      then (* TODO: refine semantics when comparing with [null] *)
         unsafe_js_compare a b
       else if a_type = "function" || b_type = "function"
       then raise (Invalid_argument "compare: functional value")
@@ -224,6 +224,10 @@ and aux_length_b_short (a : Obj.t) (b : Obj.t) i short_length =
 
 type eq = Obj.t -> Obj.t -> bool
 
+
+(** It is easier to do equality check than comparision, since as long as its
+  basic type is not the same, it will not equal 
+*)
 let rec caml_equal (a : Obj.t) (b : Obj.t) : bool =
   (*front and formoest, we do not compare function values*)
   if a == b then true
@@ -233,7 +237,7 @@ let rec caml_equal (a : Obj.t) (b : Obj.t) : bool =
     ||  a_type = "number"
     ||  a_type = "boolean"
     ||  a_type = "undefined"
-    ||  a_type = "null"
+    ||  a == (Obj.magic Js_null.empty)
     then false
     else 
       let b_type = Js.typeof b in 
@@ -241,7 +245,7 @@ let rec caml_equal (a : Obj.t) (b : Obj.t) : bool =
       then raise (Invalid_argument "equal: functional value")
       (* first, check using reference equality *)
       else (* a_type = "object" || "symbol" *)
-      if b_type = "number" || b_type = "null" || b_type = "undefined" then false 
+      if b_type = "number" || b_type = "undefined" || b == Obj.magic Js_null.empty then false 
       else 
         let tag_a = Bs_obj.tag a in
         let tag_b = Bs_obj.tag b in
