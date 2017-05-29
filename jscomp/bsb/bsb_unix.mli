@@ -42,3 +42,7 @@ val run_command_execv :   command -> unit
 (* val remove_dirs_recursive : string ->  string array -> unit *)
 
 val remove_dir_recursive : string -> unit 
+
+(* Run a command in the default shell and capture the stdout into a buffer. Returns the contents of
+   that buffer. *)
+val run_command_capture_stdout: string -> string

@@ -287,6 +287,7 @@ BSB_SRCS= bsb_config \
 	bsb_exception\
 	bsb_pkg \
 	bsb_build_schemas \
+	bsb_unix\
 	bsb_build_util \
 	bsb_helper_linker\
 	bsb_helper_extract\
@@ -299,7 +300,6 @@ BSB_SRCS= bsb_config \
 	bsb_file\
 	bsb_config_types\
 	bsb_config_parse\
-	bsb_unix\
 	bsb_regex\
 	oCamlRes\
 	bsb_templates\

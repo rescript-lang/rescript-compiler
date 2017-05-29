@@ -24,10 +24,11 @@
 
 type pack_t = PackBytecode | PackNative
 
-let pack pack_byte_or_native ~batch_files ~includes =
+let pack pack_byte_or_native ~batch_files ~includes ~cwd =
+  let ocaml_dir = Bsb_build_util.get_ocaml_dir cwd in
   let suffix_object_files, suffix_library_files, compiler = begin match pack_byte_or_native with
-  | PackBytecode -> Literals.suffix_cmo, Literals.suffix_cma , "ocamlc.opt"
-  | PackNative   -> Literals.suffix_cmx, Literals.suffix_cmxa, "ocamlopt.opt"
+  | PackBytecode -> Literals.suffix_cmo, Literals.suffix_cma , Ext_filename.combine ocaml_dir "ocamlc.opt"
+  | PackNative   -> Literals.suffix_cmx, Literals.suffix_cmxa, Ext_filename.combine ocaml_dir "ocamlopt.opt"
   end in
   let module_to_filepath = List.fold_left
     (fun m v ->
