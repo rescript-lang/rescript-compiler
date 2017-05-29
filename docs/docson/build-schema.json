@@ -240,6 +240,10 @@
                 }
             }
         },
+        "warnings": {
+            "type": "string",
+            "description": "Default: \"-40+6+7+27+32..39+44+45\". [Here](https://github.com/bloomberg/bucklescript/blob/0db762aea73fc9f28ebd08e9eb92f1e072f44c2d/jscomp/bsb/bsb_default.ml#L26) are the meanings of the warning flags"
+        },
         "bsc-flags": {
             "oneOf": [
                 {
@@ -247,7 +251,7 @@
                     "items": {
                         "type": "string"
                     },
-                    "description": "Default: `[\"-no-alias-deps\", \"-w\", \"-40+6+7+27+32..39+44+45\"]`. [Here](https://github.com/bloomberg/bucklescript/blob/0db762aea73fc9f28ebd08e9eb92f1e072f44c2d/jscomp/bsb/bsb_default.ml#L26) are the meanings of the warning flags"
+                    "description": "Default: `[\"-no-alias-deps\"]`"
                 },
                 {
                     "type": "object",
@@ -310,6 +314,10 @@
         "bsc-flags": {
             "$ref": "#/definitions/bsc-flags",
             "description": "Flags passed to bsc.exe"
+        },
+        "warnings": {
+            "$ref": "#/definitions/warnings",
+            "description": "Flags passed to bsc.exe following the ocaml syntax to turn warnings on or off, or turn them into errors. See [-w warning-list](https://caml.inria.fr/pub/docs/manual-ocaml/native.html)"
         },
         "ppx-flags": {
             "$ref": "#/definitions/ppx-specs",
