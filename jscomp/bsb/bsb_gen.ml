@@ -82,7 +82,7 @@ let output_ninja
     let () =
       output_string oc ninja_required_version ;
       output_string oc "bs_package_flags = ";
-      output_string oc ("-bs-package-name "  ^ (Filename.quote package_name));
+      output_string oc ("-bs-package-name "  ^ package_name);
       output_string oc "\n";
       let bsc_flags = 
         Ext_string.inter2  Literals.dash_nostdlib @@
