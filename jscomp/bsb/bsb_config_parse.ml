@@ -95,7 +95,19 @@ let package_specs_from_bsconfig () =
     | _ -> assert false
   end
 
-
+let warnings_from_bsconfig () = 
+  let json = Ext_json_parse.parse_json_from_file Literals.bsconfig_json in
+  begin match json with
+    | Obj {map} ->
+      let warnings = ref Bsb_default.warnings in
+      begin 
+        match String_map.find_opt Bsb_build_schemas.warnings map with 
+        | Some (Arr s) -> warnings := Bsb_build_util.get_list_string_acc s.content !warnings
+        | Some _ | None -> ()
+      end;
+      !warnings
+    | _ -> assert false
+  end
 
 
 
@@ -126,6 +138,7 @@ let interpret_json
       since it is external configuration, no {!Bsb_build_util.convert_and_resolve_path}
   *)
   let bsc_flags = ref Bsb_default.bsc_flags in  
+  let warnings = ref Bsb_default.warnings in
   let ppx_flags = ref []in 
 
   let js_post_build_cmd = ref None in 
@@ -210,6 +223,7 @@ let interpret_json
     (* More design *)
     |? (Bsb_build_schemas.bs_external_includes, `Arr (fun s -> bs_external_includes := get_list_string s))
     |? (Bsb_build_schemas.bsc_flags, `Arr (fun s -> bsc_flags := Bsb_build_util.get_list_string_acc s !bsc_flags))
+    |? (Bsb_build_schemas.warnings, `Arr (fun s -> warnings := Bsb_build_util.get_list_string_acc s !warnings))
     |? (Bsb_build_schemas.ppx_flags, `Arr (fun s -> 
         ppx_flags := s |> get_list_string |> List.map (fun p ->
             if p = "" then failwith "invalid ppx, empty string found"
@@ -253,6 +267,7 @@ let interpret_json
           ocamllex = !ocamllex ; 
           external_includes = !bs_external_includes;
           bsc_flags = !bsc_flags ;
+          warnings = !warnings;
           ppx_flags = !ppx_flags ;
           bs_dependencies = !bs_dependencies;
           bs_dev_dependencies = !bs_dev_dependencies;

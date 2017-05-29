@@ -188,7 +188,7 @@ let regenerate_ninja
       begin 
         Bsb_merlin_gen.merlin_file_gen ~cwd
           (bsc_dir // bsppx_exe) config;
-        Bsb_gen.output_ninja ~cwd ~bsc_dir config ; 
+        Bsb_gen.output_ninja ~cwd ~bsc_dir ~no_dev config ; 
         Literals.bsconfig_json :: config.globbed_dirs
         |> List.map
           (fun x ->
@@ -239,45 +239,40 @@ let print_string_args (args : string array) =
 (* Note that [keepdepfile] only makes sense when combined with [deps] for optimization
    It has to be the last command of [bsb]
 *)
-let exec_command_install_then_exit  command =
-  Format.fprintf Format.std_formatter "@{<info>CMD:@} %s@." command;
-  print_endline command ;
-  exit (Sys.command command ) 
-
-(* Execute the underlying ninja build call, then exit (as opposed to keep watching) *)
-let ninja_command_exit  vendor_ninja ninja_args  =
+let ninja_command_exit  ?warnings:(warnings=[]) vendor_ninja ninja_args  =
   let ninja_args_len = Array.length ninja_args in
+  let prevEnv = Unix.environment () in
+  let newEnv = if warnings <> [] then
+    let prevEnvLength = Array.length prevEnv in
+    Array.init (prevEnvLength + 1)
+      (fun i -> if i < prevEnvLength then 
+        Array.unsafe_get prevEnv i
+      else
+        (List.fold_left (fun acc w -> acc ^ w) "OCAMLPARAM=w=" warnings) ^ ",_")
+  else prevEnv in
   if ninja_args_len = 0 then
-    if Ext_sys.is_windows_or_cygwin then
-      exec_command_install_then_exit
-      @@ Ext_string.inter3
-        (Filename.quote vendor_ninja) "-C" Bsb_config.lib_bs
-    else 
-      let args = [|"ninja.exe"; "-C"; Bsb_config.lib_bs |] in
-      print_string_args args ;
-      Unix.execvp vendor_ninja args
+    let args = [|"ninja.exe"; "-C"; Bsb_config.lib_bs |] in
+    print_string_args args ;
+    Unix.execvpe vendor_ninja args newEnv
   else
     let fixed_args_length = 3 in
-    if 
-      Ext_sys.is_windows_or_cygwin then
-      let args = (Array.init (fixed_args_length + ninja_args_len)
+    let args = if Ext_sys.is_windows_or_cygwin then
+      (Array.init (fixed_args_length + ninja_args_len)
                     (fun i -> match i with
                        | 0 -> (Filename.quote vendor_ninja)
                        | 1 -> "-C"
                        | 2 -> Bsb_config.lib_bs
-                       | _ -> Array.unsafe_get ninja_args (i - fixed_args_length) )) in
-      exec_command_install_then_exit
-      @@ Ext_string.concat_array Ext_string.single_space args
+                       | _ -> Array.unsafe_get ninja_args (i - fixed_args_length) ))
     else 
-
-      let args = (Array.init (fixed_args_length + ninja_args_len)
+      (Array.init (fixed_args_length + ninja_args_len)
                     (fun i -> match i with
                        | 0 -> "ninja.exe"
                        | 1 -> "-C"
                        | 2 -> Bsb_config.lib_bs
-                       | _ -> Array.unsafe_get ninja_args (i - fixed_args_length) )) in
-      print_string_args args ;
-      Unix.execvp vendor_ninja args
+                       | _ -> Array.unsafe_get ninja_args (i - fixed_args_length) )) 
+    in
+    print_string_args args ;
+    Unix.execvpe vendor_ninja args newEnv
 
 
 
@@ -304,6 +299,9 @@ let build_bs_deps deps =
 
   let bsc_dir = Bsb_build_util.get_bsc_dir cwd in
   let vendor_ninja = bsc_dir // "ninja.exe" in
+  let prevEnv = Unix.environment () in
+  let prevEnvLength = Array.length prevEnv in
+  let newEnv = Array.make (prevEnvLength + 1) "" in
   Bsb_build_util.walk_all_deps  cwd
     (fun {top; cwd} ->
        if not top then
@@ -313,10 +311,27 @@ let build_bs_deps deps =
                ~override_package_specs:(Some deps) 
                ~forced:true
                cwd bsc_dir  in (* set true to force regenrate ninja file so we have [config_opt]*)
+            let warnings = begin match config_opt with
+              | None -> Bsb_config_parse.warnings_from_bsconfig ()
+              | Some {warnings} -> warnings 
+            end in
+            let env = if warnings <> [] then begin
+              Array.iteri
+                (fun i el -> 
+                  if i < prevEnvLength then 
+                    Array.unsafe_set newEnv i el
+                  else
+                    Array.unsafe_set newEnv i
+                      ((List.fold_left (fun acc w -> acc ^ w) "OCAMLPARAM=warn-error=" warnings) ^ ",_")) newEnv;
+                newEnv
+            end else 
+              prevEnv 
+            in
            Bsb_unix.run_command_execv
              {cmd = vendor_ninja;
               cwd = cwd // Bsb_config.lib_bs;
-              args  = [|vendor_ninja|]
+              args  = [|vendor_ninja|];
+              env = env
              };
            (* When ninja is not regenerated, ninja will still do the build, 
               still need reinstall check
@@ -354,7 +369,8 @@ let () =
           ~forced:false 
           cwd bsc_dir 
       in 
-      ninja_command_exit  vendor_ninja [||] 
+      let warnings = Bsb_config_parse.warnings_from_bsconfig () in
+      ninja_command_exit  vendor_ninja [||] ~warnings
     end
   | argv -> 
     begin
@@ -386,15 +402,19 @@ let () =
                 if make_world then begin
                   make_world_deps config_opt
                 end;
-                if !watch_mode then begin
+                if !watch_mode then 
                   watch_exit ()
                   (* ninja is not triggered in this case
                      There are several cases we wish ninja will not be triggered.
                      [bsb -clean-world]
                      [bsb -regen ]
                   *)
-                end else if make_world then begin
-                  ninja_command_exit  vendor_ninja [||] 
+                else if make_world then begin
+                  let warnings = match config_opt with
+                  | None -> Bsb_config_parse.warnings_from_bsconfig ()
+                  | Some {warnings} -> warnings 
+                  in
+                  ninja_command_exit  vendor_ninja [||] ~warnings
                 end
             end;
         end
@@ -407,6 +427,11 @@ let () =
           if !make_world then
             make_world_deps config_opt ;
           if !watch_mode then watch_exit ()
-          else ninja_command_exit  vendor_ninja ninja_args 
+          else 
+            let warnings = begin match config_opt with
+              | None -> Bsb_config_parse.warnings_from_bsconfig ()
+              | Some {warnings} -> warnings 
+              end in
+          ninja_command_exit  vendor_ninja ninja_args ~warnings
         end
     end

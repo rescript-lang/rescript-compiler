@@ -25,7 +25,8 @@
 val package_specs_from_bsconfig : 
     unit -> Bsb_config.package_specs
 
-
+val warnings_from_bsconfig : 
+    unit -> string list
 
 
 val interpret_json : 

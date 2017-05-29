@@ -52,12 +52,14 @@ let ninja_required_version = "ninja_required_version = 1.5.1 \n"
 
 let output_ninja
     ~cwd 
-    ~bsc_dir           
+    ~bsc_dir
+    ~no_dev
     {
     Bsb_config_types.package_name;
     ocamllex;
     external_includes;
     bsc_flags ; 
+    warnings;
     ppx_flags;
     bs_dependencies;
     bs_dev_dependencies;
@@ -73,7 +75,7 @@ let output_ninja
   =
   let () = Bsb_rule.reset () in 
   let bsc = bsc_dir // bsc_exe in   (* The path to [bsc.exe] independent of config  *)
-  let bsdep = bsc_dir // bsb_helper_exe in (* The path to [bsb_heler.exe] *)
+  let bsb_helper = bsc_dir // bsb_helper_exe in (* The path to [bsb_heler.exe] *)
   (* let builddir = Bsb_config.lib_bs in  *)
   let ppx_flags = Bsb_build_util.flag_concat dash_ppx ppx_flags in
   let bsc_flags =  String.concat Ext_string.single_space bsc_flags in
@@ -103,7 +105,7 @@ let output_ninja
         [|
           "src_root_dir", cwd (* TODO: need check its integrity -- allow relocate or not? *);
           "bsc", bsc ;
-          "bsdep", bsdep;
+          "bsb_helper", bsb_helper;
           "ocamllex", ocamllex;
           "bsc_flags", bsc_flags ;
           "ppx_flags", ppx_flags;

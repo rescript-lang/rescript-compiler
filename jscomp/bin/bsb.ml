@@ -22,6 +22,7 @@ let files = "files"
 let subdirs = "subdirs"
 let ocamllex = "ocamllex"
 let bsc_flags = "bsc-flags"
+let warnings = "warnings"
 let excludes = "excludes"
 let slow_re = "slow-re"
 let resources = "resources"
@@ -8216,6 +8217,7 @@ type t =
     ocamllex : string ; 
     external_includes : string list ; 
     bsc_flags : string list ;
+    warnings : string list;
     ppx_flags : string list ;
     bs_dependencies : dependencies;
     bs_dev_dependencies : dependencies;
@@ -8263,7 +8265,7 @@ module Bsb_default : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
+val warnings : string list
 
 val bsc_flags : string list 
 
@@ -8323,12 +8325,12 @@ end = struct
         https://caml.inria.fr/mantis/view.php?id=6352
 
 *)  
+let warnings = ["-40+6+7+27+32..39+44+45"]
+
 let bsc_flags = 
   [
     "-no-alias-deps";
     "-color"; "always" ;
-    "-w"; "-40+6+7+27+32..39+44+45"
-
   ]
 
 let ocamllex = "ocamllex.opt"  
@@ -8642,7 +8644,8 @@ module Bsb_config_parse : sig
 val package_specs_from_bsconfig : 
     unit -> Bsb_config.package_specs
 
-
+val warnings_from_bsconfig : 
+    unit -> string list
 
 
 val interpret_json : 
@@ -8757,7 +8760,19 @@ let package_specs_from_bsconfig () =
     | _ -> assert false
   end
 
-
+let warnings_from_bsconfig () = 
+  let json = Ext_json_parse.parse_json_from_file Literals.bsconfig_json in
+  begin match json with
+    | Obj {map} ->
+      let warnings = ref Bsb_default.warnings in
+      begin 
+        match String_map.find_opt Bsb_build_schemas.warnings map with 
+        | Some (Arr s) -> warnings := Bsb_build_util.get_list_string_acc s.content !warnings
+        | Some _ | None -> ()
+      end;
+      !warnings
+    | _ -> assert false
+  end
 
 
 
@@ -8788,6 +8803,7 @@ let interpret_json
       since it is external configuration, no {!Bsb_build_util.convert_and_resolve_path}
   *)
   let bsc_flags = ref Bsb_default.bsc_flags in  
+  let warnings = ref Bsb_default.warnings in
   let ppx_flags = ref []in 
 
   let js_post_build_cmd = ref None in 
@@ -8872,6 +8888,7 @@ let interpret_json
     (* More design *)
     |? (Bsb_build_schemas.bs_external_includes, `Arr (fun s -> bs_external_includes := get_list_string s))
     |? (Bsb_build_schemas.bsc_flags, `Arr (fun s -> bsc_flags := Bsb_build_util.get_list_string_acc s !bsc_flags))
+    |? (Bsb_build_schemas.warnings, `Arr (fun s -> warnings := Bsb_build_util.get_list_string_acc s !warnings))
     |? (Bsb_build_schemas.ppx_flags, `Arr (fun s -> 
         ppx_flags := s |> get_list_string |> List.map (fun p ->
             if p = "" then failwith "invalid ppx, empty string found"
@@ -8915,6 +8932,7 @@ let interpret_json
           ocamllex = !ocamllex ; 
           external_includes = !bs_external_includes;
           bsc_flags = !bsc_flags ;
+          warnings = !warnings;
           ppx_flags = !ppx_flags ;
           bs_dependencies = !bs_dependencies;
           bs_dev_dependencies = !bs_dev_dependencies;
@@ -9328,28 +9346,55 @@ let define
 
 let build_ast_and_deps =
   define
-    ~command:"${bsc}  ${pp_flags} ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast ${in}"
+    ~command:"${bsc}  ${pp_flags} ${ppx_flags} ${warnings} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast ${in}"
     "build_ast_and_deps"
+    
+let build_ast_and_deps_simple =
+  define
+    ~command:"${bsc}  ${pp_flags} ${ppx_flags} ${warnings} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -bs-simple-binary-ast ${in}"
+    "build_ast_and_deps_simple"
 
 let build_ast_and_deps_from_reason_impl =
   define
-    ~command:"${bsc} -pp \"${refmt} ${refmt_flags}\" ${reason_react_jsx}  ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -impl ${in}"
+    ~command:"${bsc} -pp \"${refmt} ${refmt_flags}\" ${reason_react_jsx}  ${ppx_flags} ${warnings} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -impl ${in}"
     "build_ast_and_deps_from_reason_impl"
+    
+let build_ast_and_deps_from_reason_impl_simple =
+  define
+    ~command:"${bsc} -pp \"${refmt} ${refmt_flags}\" ${reason_react_jsx}  ${ppx_flags} ${warnings} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -bs-simple-binary-ast -impl ${in}"
+    "build_ast_and_deps_from_reason_impl_simple"
 
 let build_ast_and_deps_from_reason_intf =
   (* we have to do this way,
      because it need to be ppxed by bucklescript
   *)
   define
-    ~command:"${bsc} -pp \"${refmt} ${refmt_flags}\" ${reason_react_jsx} ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -intf ${in}"
+    ~command:"${bsc} -pp \"${refmt} ${refmt_flags}\" ${reason_react_jsx} ${ppx_flags} ${warnings} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -intf ${in}"
     "build_ast_and_deps_from_reason_intf"
+
+let build_ast_and_deps_from_reason_intf_simple =
+  (* we have to do this way,
+     because it need to be ppxed by bucklescript
+  *)
+  define
+    ~command:"${bsc} -pp \"${refmt} ${refmt_flags}\" ${reason_react_jsx} ${ppx_flags} ${warnings} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -bs-simple-binary-ast -intf ${in}"
+    "build_ast_and_deps_from_reason_intf_simple"
 
 
 let build_bin_deps =
   define
-    ~command:"${bsdep} -g ${bsb_dir_group} -MD ${in}"
+    ~command:"${bsb_helper} -g ${bsb_dir_group} -MD ${in}"
     "build_deps"
+let build_bin_deps_bytecode =
+  define
+    ~command:"${bsb_helper} -g ${bsb_dir_group} -MD-bytecode ${in}"
+    "build_deps_bytecode"
 
+let build_bin_deps_native =
+  define
+    ~command:"${bsb_helper} -g ${bsb_dir_group} -MD-native ${in}"
+    "build_deps_native"
+    
 let reload =
   define
     ~command:"${bsbuild} -init"
@@ -9392,7 +9437,7 @@ let build_ml_from_mll =
 let build_cmj_js =
   define
     ~command:"${bsc} ${bs_package_flags} -bs-assume-has-mli -bs-no-builtin-ppx-ml -bs-no-implicit-include  \
-              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${bsc_flags} -o ${in} -c  ${in} ${postbuild}"
+              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${warnings} ${bsc_flags} -o ${in} -c  ${in} ${postbuild}"
 
     ~depfile:"${in}.d"
     "build_cmj_only"
@@ -9400,31 +9445,94 @@ let build_cmj_js =
 let build_cmj_cmi_js =
   define
     ~command:"${bsc} ${bs_package_flags} -bs-assume-no-mli -bs-no-builtin-ppx-ml -bs-no-implicit-include \
-              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${bsc_flags} -o ${in} -c  ${in} ${postbuild}"
+              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${warnings} ${bsc_flags} -o ${in} -c  ${in} ${postbuild}"
     ~depfile:"${in}.d"
     "build_cmj_cmi" (* the compiler should never consult [.cmi] when [.mli] does not exist *)
 let build_cmi =
   define
     ~command:"${bsc} ${bs_package_flags} -bs-no-builtin-ppx-mli -bs-no-implicit-include \
-              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${bsc_flags} -o ${out} -c  ${in}"
+              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${warnings} ${bsc_flags} -o ${out} -c  ${in}"
     ~depfile:"${in}.d"
     "build_cmi" (* the compiler should always consult [.cmi], current the vanilla ocaml compiler only consult [.cmi] when [.mli] found*)
 
+let build_cmo_cmi_bytecode =
+  define
+    ~command:"${ocamlc} ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} \
+              -o ${out} ${warnings} -c -intf-suffix .mliast_simple -impl ${in}_simple ${postbuild}"
+    ~depfile:"${in}.d"
+    "build_cmo_cmi_bytecode"
+    
+let build_cmi_bytecode =
+  define
+    ~command:"${ocamlc} ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} \
+              -o ${out} ${warnings} -c -intf ${in}_simple ${postbuild}"
+    ~depfile:"${in}.d"
+    "build_cmi_bytecode"
+
+let build_cmx_cmi_native =
+  define
+    ~command:"${ocamlopt} ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} \
+              -o ${out} ${warnings} -c -intf-suffix .mliast_simple -impl ${in}_simple ${postbuild}"
+    ~depfile:"${in}.d"
+    "build_cmx_cmi_native"
+
+let build_cmi_native =
+  define
+    ~command:"${ocamlopt} ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} \
+              -o ${out} ${warnings} -c -intf ${in}_simple ${postbuild}"
+    ~depfile:"${in}.d"
+    "build_cmi_native"
+
+
+let linking_bytecode =
+  define
+    ~command:"${bsb_helper} -bs-main ${main_module} ${static_libraries} ${external_deps_for_linking} ${in} -link-bytecode ${out}"
+    "linking_bytecode"
+
+let linking_native =
+  define
+    ~command:"${bsb_helper} -bs-main ${main_module} ${static_libraries} ${external_deps_for_linking} ${in} -link-native ${out}"
+    "linking_native"
+
+
+let build_cma_library =
+  define
+    ~command:"${bsb_helper} ${static_libraries} ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} \
+              ${in} -pack-bytecode-library"
+    "build_cma_library"
+
+let build_cmxa_library =
+  define
+    ~command:"${bsb_helper} ${static_libraries} ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} \
+              ${in} -pack-native-library"
+    "build_cmxa_library"
+    
 let reset () = 
   rule_id := 0;
   rule_names := String_set.empty;
   build_ast_and_deps.used <- false ;
+  build_ast_and_deps_simple.used <- false ;
   build_ast_and_deps_from_reason_impl.used <- false ;  
+  build_ast_and_deps_from_reason_impl_simple.used <- false ;  
   build_ast_and_deps_from_reason_intf.used <- false ;
+  build_ast_and_deps_from_reason_intf_simple.used <- false ;
   build_bin_deps.used <- false;
+  build_bin_deps_bytecode.used <- false;
+  build_bin_deps_native.used <- false;
   reload.used <- false; 
   copy_resources.used <- false ;
   build_ml_from_mll.used <- false ; 
   build_cmj_js.used <- false;
   build_cmj_cmi_js.used <- false ;
-  build_cmi.used <- false 
-
-
+  build_cmi.used <- false;
+  build_cmo_cmi_bytecode.used <- false;
+  build_cmi_bytecode.used <- false;
+  build_cmx_cmi_native.used <- false;
+  build_cmi_native.used <- false;
+  linking_bytecode.used <- false;
+  linking_native.used <- false;
+  build_cma_library.used <- false;
+  build_cmxa_library.used <- false;
 
 end
 module Bsb_ninja : sig 
@@ -9877,6 +9985,7 @@ module Bsb_gen : sig
 val output_ninja :
   cwd:string ->
   bsc_dir:string ->  
+  no_dev:bool ->
   Bsb_config_types.t -> unit 
 
 end = struct
@@ -9935,12 +10044,14 @@ let ninja_required_version = "ninja_required_version = 1.5.1 \n"
 
 let output_ninja
     ~cwd 
-    ~bsc_dir           
+    ~bsc_dir
+    ~no_dev
     {
     Bsb_config_types.package_name;
     ocamllex;
     external_includes;
     bsc_flags ; 
+    warnings;
     ppx_flags;
     bs_dependencies;
     bs_dev_dependencies;
@@ -9956,7 +10067,7 @@ let output_ninja
   =
   let () = Bsb_rule.reset () in 
   let bsc = bsc_dir // bsc_exe in   (* The path to [bsc.exe] independent of config  *)
-  let bsdep = bsc_dir // bsb_helper_exe in (* The path to [bsb_heler.exe] *)
+  let bsb_helper = bsc_dir // bsb_helper_exe in (* The path to [bsb_heler.exe] *)
   (* let builddir = Bsb_config.lib_bs in  *)
   let ppx_flags = Bsb_build_util.flag_concat dash_ppx ppx_flags in
   let bsc_flags =  String.concat Ext_string.single_space bsc_flags in
@@ -9986,7 +10097,7 @@ let output_ninja
         [|
           "src_root_dir", cwd (* TODO: need check its integrity -- allow relocate or not? *);
           "bsc", bsc ;
-          "bsdep", bsdep;
+          "bsb_helper", bsb_helper;
           "ocamllex", ocamllex;
           "bsc_flags", bsc_flags ;
           "ppx_flags", ppx_flags;
@@ -11122,7 +11233,8 @@ type command =
   { 
     cmd : string ;
     cwd : string ; 
-    args : string array 
+    args : string array;
+    env : string array;
   }  
 
 
@@ -11138,6 +11250,7 @@ val run_command_execv :   command -> unit
 (* val remove_dirs_recursive : string ->  string array -> unit *)
 
 val remove_dir_recursive : string -> unit 
+
 end = struct
 #1 "bsb_unix.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -11170,7 +11283,8 @@ type command =
   { 
     cmd : string ;
     cwd : string ; 
-    args : string array 
+    args : string array;
+    env : string array;
   }  
 
 
@@ -11189,7 +11303,7 @@ let run_command_execv_unix  cmd =
   | 0 -> 
     log cmd;
     Unix.chdir cmd.cwd;
-    Unix.execv cmd.cmd cmd.args 
+    Unix.execve cmd.cmd cmd.args cmd.env
   | pid -> 
     match Unix.waitpid [] pid  with 
     | pid, process_status ->       
@@ -11577,7 +11691,7 @@ let regenerate_ninja
       begin 
         Bsb_merlin_gen.merlin_file_gen ~cwd
           (bsc_dir // bsppx_exe) config;
-        Bsb_gen.output_ninja ~cwd ~bsc_dir config ; 
+        Bsb_gen.output_ninja ~cwd ~bsc_dir ~no_dev config ; 
         Literals.bsconfig_json :: config.globbed_dirs
         |> List.map
           (fun x ->
@@ -11628,45 +11742,40 @@ let print_string_args (args : string array) =
 (* Note that [keepdepfile] only makes sense when combined with [deps] for optimization
    It has to be the last command of [bsb]
 *)
-let exec_command_install_then_exit  command =
-  Format.fprintf Format.std_formatter "@{<info>CMD:@} %s@." command;
-  print_endline command ;
-  exit (Sys.command command ) 
-
-(* Execute the underlying ninja build call, then exit (as opposed to keep watching) *)
-let ninja_command_exit  vendor_ninja ninja_args  =
+let ninja_command_exit  ?warnings:(warnings=[]) vendor_ninja ninja_args  =
   let ninja_args_len = Array.length ninja_args in
+  let prevEnv = Unix.environment () in
+  let newEnv = if warnings <> [] then
+    let prevEnvLength = Array.length prevEnv in
+    Array.init (prevEnvLength + 1)
+      (fun i -> if i < prevEnvLength then 
+        Array.unsafe_get prevEnv i
+      else
+        (List.fold_left (fun acc w -> acc ^ w) "OCAMLPARAM=w=" warnings) ^ ",_")
+  else prevEnv in
   if ninja_args_len = 0 then
-    if Ext_sys.is_windows_or_cygwin then
-      exec_command_install_then_exit
-      @@ Ext_string.inter3
-        (Filename.quote vendor_ninja) "-C" Bsb_config.lib_bs
-    else 
-      let args = [|"ninja.exe"; "-C"; Bsb_config.lib_bs |] in
-      print_string_args args ;
-      Unix.execvp vendor_ninja args
+    let args = [|"ninja.exe"; "-C"; Bsb_config.lib_bs |] in
+    print_string_args args ;
+    Unix.execvpe vendor_ninja args newEnv
   else
     let fixed_args_length = 3 in
-    if 
-      Ext_sys.is_windows_or_cygwin then
-      let args = (Array.init (fixed_args_length + ninja_args_len)
+    let args = if Ext_sys.is_windows_or_cygwin then
+      (Array.init (fixed_args_length + ninja_args_len)
                     (fun i -> match i with
                        | 0 -> (Filename.quote vendor_ninja)
                        | 1 -> "-C"
                        | 2 -> Bsb_config.lib_bs
-                       | _ -> Array.unsafe_get ninja_args (i - fixed_args_length) )) in
-      exec_command_install_then_exit
-      @@ Ext_string.concat_array Ext_string.single_space args
+                       | _ -> Array.unsafe_get ninja_args (i - fixed_args_length) ))
     else 
-
-      let args = (Array.init (fixed_args_length + ninja_args_len)
+      (Array.init (fixed_args_length + ninja_args_len)
                     (fun i -> match i with
                        | 0 -> "ninja.exe"
                        | 1 -> "-C"
                        | 2 -> Bsb_config.lib_bs
-                       | _ -> Array.unsafe_get ninja_args (i - fixed_args_length) )) in
-      print_string_args args ;
-      Unix.execvp vendor_ninja args
+                       | _ -> Array.unsafe_get ninja_args (i - fixed_args_length) )) 
+    in
+    print_string_args args ;
+    Unix.execvpe vendor_ninja args newEnv
 
 
 
@@ -11693,6 +11802,9 @@ let build_bs_deps deps =
 
   let bsc_dir = Bsb_build_util.get_bsc_dir cwd in
   let vendor_ninja = bsc_dir // "ninja.exe" in
+  let prevEnv = Unix.environment () in
+  let prevEnvLength = Array.length prevEnv in
+  let newEnv = Array.make (prevEnvLength + 1) "" in
   Bsb_build_util.walk_all_deps  cwd
     (fun {top; cwd} ->
        if not top then
@@ -11702,10 +11814,27 @@ let build_bs_deps deps =
                ~override_package_specs:(Some deps) 
                ~forced:true
                cwd bsc_dir  in (* set true to force regenrate ninja file so we have [config_opt]*)
+            let warnings = begin match config_opt with
+              | None -> Bsb_config_parse.warnings_from_bsconfig ()
+              | Some {warnings} -> warnings 
+            end in
+            let env = if warnings <> [] then begin
+              Array.iteri
+                (fun i el -> 
+                  if i < prevEnvLength then 
+                    Array.unsafe_set newEnv i el
+                  else
+                    Array.unsafe_set newEnv i
+                      ((List.fold_left (fun acc w -> acc ^ w) "OCAMLPARAM=warn-error=" warnings) ^ ",_")) newEnv;
+                newEnv
+            end else 
+              prevEnv 
+            in
            Bsb_unix.run_command_execv
              {cmd = vendor_ninja;
               cwd = cwd // Bsb_config.lib_bs;
-              args  = [|vendor_ninja|]
+              args  = [|vendor_ninja|];
+              env = env
              };
            (* When ninja is not regenerated, ninja will still do the build, 
               still need reinstall check
@@ -11743,7 +11872,8 @@ let () =
           ~forced:false 
           cwd bsc_dir 
       in 
-      ninja_command_exit  vendor_ninja [||] 
+      let warnings = Bsb_config_parse.warnings_from_bsconfig () in
+      ninja_command_exit  vendor_ninja [||] ~warnings
     end
   | argv -> 
     begin
@@ -11775,15 +11905,19 @@ let () =
                 if make_world then begin
                   make_world_deps config_opt
                 end;
-                if !watch_mode then begin
+                if !watch_mode then 
                   watch_exit ()
                   (* ninja is not triggered in this case
                      There are several cases we wish ninja will not be triggered.
                      [bsb -clean-world]
                      [bsb -regen ]
                   *)
-                end else if make_world then begin
-                  ninja_command_exit  vendor_ninja [||] 
+                else if make_world then begin
+                  let warnings = match config_opt with
+                  | None -> Bsb_config_parse.warnings_from_bsconfig ()
+                  | Some {warnings} -> warnings 
+                  in
+                  ninja_command_exit  vendor_ninja [||] ~warnings
                 end
             end;
         end
@@ -11796,7 +11930,12 @@ let () =
           if !make_world then
             make_world_deps config_opt ;
           if !watch_mode then watch_exit ()
-          else ninja_command_exit  vendor_ninja ninja_args 
+          else 
+            let warnings = begin match config_opt with
+              | None -> Bsb_config_parse.warnings_from_bsconfig ()
+              | Some {warnings} -> warnings 
+              end in
+          ninja_command_exit  vendor_ninja ninja_args ~warnings
         end
     end
 
