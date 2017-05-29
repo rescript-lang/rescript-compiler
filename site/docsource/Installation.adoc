@@ -110,6 +110,7 @@ the previous section.
 
 [source,sh]
 -----------
+cd ../jscomp
 make world
 -----------
 

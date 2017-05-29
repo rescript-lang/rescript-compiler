@@ -120,7 +120,9 @@ To build libs, tests and run all tests:
 
 ### Contributing to the documentation
 
-You'll need http://asciidoctor.org/[Asciidoctor] installed. Modify the section you want in `site/docsource/`, then run `site/docsource/build.sh`.
+You'll need http://asciidoctor.org/[Asciidoctor] installed and on your `PATH`.
+Go into `site/docsource/`, modify the section you want, and run `build.sh`.
+You can check the `build.compile` file for debug output.
 
 ### Contributing to the API reference
 
