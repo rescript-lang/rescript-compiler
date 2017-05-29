@@ -1,10 +1,13 @@
 
-# Next
+
 
 # Next
 
+Fixes:
+- #1655, fix #1653 Js.Promise.all[n] interfaces
+
+Features:
 - #1648, exposed `bsc` in the npm environment
-
 - #1647, speical handling `bsb -init .` to reuse current directory
 
 # 1.7.4(May 24, 2017):

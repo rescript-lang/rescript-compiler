@@ -1,8 +1,32 @@
 'use strict';
 
+var Mt                      = require("./mt.js");
+var List                    = require("../../lib/js/list.js");
+var Block                   = require("../../lib/js/block.js");
 var Caml_array              = require("../../lib/js/caml_array.js");
 var Caml_exceptions         = require("../../lib/js/caml_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
+
+var suites = [/* [] */0];
+
+var test_id = [0];
+
+function eq(loc, x, y) {
+  test_id[0] = test_id[0] + 1 | 0;
+  suites[0] = /* :: */[
+    /* tuple */[
+      loc + (" id " + test_id[0]),
+      function () {
+        return /* Eq */Block.__(0, [
+                  x,
+                  y
+                ]);
+      }
+    ],
+    suites[0]
+  ];
+  return /* () */0;
+}
 
 function assert_bool(b) {
   if (b) {
@@ -20,7 +44,7 @@ function fail() {
         Caml_builtin_exceptions.assert_failure,
         [
           "js_promise_basic_test.ml",
-          12,
+          19,
           2
         ]
       ];
@@ -53,7 +77,7 @@ function assertIsNotFound(x) {
           Caml_builtin_exceptions.assert_failure,
           [
             "js_promise_basic_test.ml",
-            29,
+            36,
             9
           ]
         ];
@@ -114,7 +138,7 @@ function orElseRejectedRejectTest() {
                       Caml_builtin_exceptions.assert_failure,
                       [
                         "js_promise_basic_test.ml",
-                        70,
+                        77,
                         18
                       ]
                     ];
@@ -240,6 +264,29 @@ createPromiseRejectTest(/* () */0);
 
 createPromiseFulfillTest(/* () */0);
 
+Promise.all(/* tuple */[
+        Promise.resolve(2),
+        Promise.resolve(3)
+      ]).then(function (param) {
+      eq("File \"js_promise_basic_test.ml\", line 169, characters 7-14", /* tuple */[
+            param[0],
+            param[1]
+          ], /* tuple */[
+            2,
+            3
+          ]);
+      return Promise.resolve(/* () */0);
+    });
+
+console.log(List.length(suites[0]));
+
+console.log("hey");
+
+Mt.from_pair_suites("js_promise_basic_test.ml", suites[0]);
+
+exports.suites                     = suites;
+exports.test_id                    = test_id;
+exports.eq                         = eq;
 exports.assert_bool                = assert_bool;
 exports.fail                       = fail;
 exports.thenTest                   = thenTest;

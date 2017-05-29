@@ -39,11 +39,11 @@ external make : (resolve:('a -> unit [@bs]) ->
 external resolve : 'a -> 'a t = "resolve" [@@bs.val] [@@bs.scope "Promise"]
 external reject : exn -> 'a t = "reject" [@@bs.val] [@@bs.scope "Promise"]
 external all : 'a t array -> 'a array t = "all" [@@bs.val] [@@bs.scope "Promise"]
-external all2 : 'a0 t -> 'a1 t -> ('a0 * 'a1) t = "all" [@@bs.val] [@@bs.scope "Promise"]
-external all3 : 'a0 t -> 'a1 t -> 'a2 t -> ('a0 * 'a1 * 'a2 ) t = "all" [@@bs.val] [@@bs.scope "Promise"]
-external all4 : 'a0 t -> 'a1 t -> 'a2 t  -> 'a3 t -> ('a0 * 'a1 * 'a2 * 'a3 ) t = "all" [@@bs.val] [@@bs.scope "Promise"]
-external all5 : 'a0 t -> 'a1 t -> 'a2 t  -> 'a3 t -> 'a4 t ->   ('a0 * 'a1 * 'a2 * 'a3 * 'a4 ) t = "all" [@@bs.val] [@@bs.scope "Promise"]
-external all6 : 'a0 t -> 'a1 t -> 'a2 t  -> 'a3 t -> 'a4 t -> 'a5 t ->    ('a0 * 'a1 * 'a2 * 'a3 * 'a4 * 'a5 ) t = "all" [@@bs.val] [@@bs.scope "Promise"]
+external all2 : 'a0 t * 'a1 t -> ('a0 * 'a1) t = "all" [@@bs.val] [@@bs.scope "Promise"]
+external all3 : 'a0 t * 'a1 t * 'a2 t -> ('a0 * 'a1 * 'a2 ) t = "all" [@@bs.val] [@@bs.scope "Promise"]
+external all4 : 'a0 t * 'a1 t * 'a2 t  * 'a3 t -> ('a0 * 'a1 * 'a2 * 'a3 ) t = "all" [@@bs.val] [@@bs.scope "Promise"]
+external all5 : 'a0 t * 'a1 t * 'a2 t  * 'a3 t * 'a4 t ->   ('a0 * 'a1 * 'a2 * 'a3 * 'a4 ) t = "all" [@@bs.val] [@@bs.scope "Promise"]
+external all6 : 'a0 t * 'a1 t * 'a2 t  * 'a3 t * 'a4 t * 'a5 t ->    ('a0 * 'a1 * 'a2 * 'a3 * 'a4 * 'a5 ) t = "all" [@@bs.val] [@@bs.scope "Promise"]
 
 external race : 'a t array -> 'a t = "race" [@@bs.val] [@@bs.scope "Promise"]
 
