@@ -24,10 +24,11 @@
 
 type link_t = LinkBytecode of string | LinkNative of string
 
-let link link_byte_or_native ~main_module ~batch_files ~includes =
+let link link_byte_or_native ~main_module ~batch_files ~includes ~cwd =
+  let ocaml_dir = Bsb_build_util.get_ocaml_dir cwd in
   let suffix_object_files, suffix_library_files, compiler, output_file = begin match link_byte_or_native with
-  | LinkBytecode output_file -> Literals.suffix_cmo, Literals.suffix_cma , "ocamlc.opt"  , output_file
-  | LinkNative output_file   -> Literals.suffix_cmx, Literals.suffix_cmxa, "ocamlopt.opt", output_file
+  | LinkBytecode output_file -> Literals.suffix_cmo, Literals.suffix_cma , Ext_filename.combine ocaml_dir "ocamlc.opt"  , output_file
+  | LinkNative output_file   -> Literals.suffix_cmx, Literals.suffix_cmxa, Ext_filename.combine ocaml_dir "ocamlopt.opt", output_file
   end in
   (* Map used to track the path to the files as the dependency_graph that we're going to read from the mlast file only contains module names *)
   let module_to_filepath = List.fold_left

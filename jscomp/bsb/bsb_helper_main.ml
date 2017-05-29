@@ -27,13 +27,12 @@ let main_module = ref None
 let set_main_module modulename =
     main_module := Some modulename
 
-let includes :  _ list ref = ref []
+let normalize cwd s =
+  Ext_filename.normalize_absolute_path (Ext_filename.combine cwd s)
 
-let add_include =
-  let normalize cwd s =
-    Ext_filename.normalize_absolute_path (Ext_filename.combine cwd s) in
-  fun dir ->
-    includes := (normalize (Sys.getcwd ()) dir) :: !includes
+let includes = ref []
+let add_include dir =
+  includes := dir :: !includes
 
 let batch_files = ref []
 let collect_file name =
@@ -46,11 +45,13 @@ let link link_byte_or_native =
   begin match !main_module with
   | None -> failwith "Linking needs a main module. Please add -main-module MyMainModule to the invocation."
   | Some main_module ->
-    Bsb_helper_linker.link 
+    let cwd = Sys.getcwd () in
+    Bsb_helper_linker.link
       link_byte_or_native
       ~main_module:main_module
-      ~includes:!includes
+      ~includes:(List.map (normalize cwd) !includes)
       ~batch_files:!batch_files
+      ~cwd
   end
 
 let anonymous filename =
@@ -110,18 +111,22 @@ let () =
     " link native files into an executable";
 
     "-pack-native-library", (Arg.Unit (fun () -> 
+      let cwd = Sys.getcwd () in
       Bsb_helper_packer.pack
         Bsb_helper_packer.PackNative
-        ~includes:!includes
+        ~includes:(List.map (normalize cwd) !includes)
         ~batch_files:!batch_files
+        ~cwd
     )),
     " pack native files (cmx) into a library file (cmxa)";
 
     "-pack-bytecode-library", (Arg.Unit (fun () -> 
+      let cwd = Sys.getcwd () in
       Bsb_helper_packer.pack
         Bsb_helper_packer.PackBytecode
-        ~includes:!includes
+        ~includes:(List.map (normalize cwd) !includes)
         ~batch_files:!batch_files
+        ~cwd
     )),
     " pack bytecode files (cmo) into a library file (cma)";
     ] anonymous usage

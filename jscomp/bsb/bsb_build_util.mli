@@ -82,3 +82,7 @@ type package_context = {
 }
 
 val walk_all_deps : string -> (package_context -> unit) -> unit
+
+(* Given the root project directory, will return an absolute path to either a globally installed 
+   ocaml or Bucklescript's vendored ocaml if there is no global ocaml. *)
+val get_ocaml_dir: string -> string
