@@ -5,7 +5,7 @@
 
 Fixes:
 - #1655, fix #1653 Js.Promise.all[n] interfaces
-
+- #1658, fix typeof = "null" issue
 Features:
 - #1648, exposed `bsc` in the npm environment
 - #1647, speical handling `bsb -init .` to reuse current directory
