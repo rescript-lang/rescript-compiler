@@ -1032,7 +1032,8 @@ the previous section.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="sh">make world</code></pre>
+<pre class="pygments highlight"><code data-lang="sh"><span class="tok-nb">cd</span> ../jscomp
+make world</code></pre>
 </div>
 </div>
 <hr>
@@ -5902,7 +5903,9 @@ the compiler you modified.</p>
 <div class="sect2">
 <h3 id="_contributing_to_the_documentation"><a class="anchor" href="#_contributing_to_the_documentation"></a>Contributing to the documentation</h3>
 <div class="paragraph">
-<p>You&#8217;ll need <a href="http://asciidoctor.org/">Asciidoctor</a> installed. Modify the section you want in <code>site/docsource/</code>, then run <code>site/docsource/build.sh</code>.</p>
+<p>You&#8217;ll need <a href="http://asciidoctor.org/">Asciidoctor</a> installed and on your <code>PATH</code>.
+Go into <code>site/docsource/</code>, modify the section you want, and run <code>build.sh</code>.
+You can check the <code>build.compile</code> file for debug output.</p>
 </div>
 </div>
 <div class="sect2">

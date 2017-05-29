@@ -48,7 +48,7 @@ type _ t =
 let reify_type (type a) (x : 'a) :  (a t * a ) =  
   if Js.typeof x = "undefined" then 
     (Obj.magic Undefined, Obj.magic x) else
-  if Js.typeof x = "null" then 
+  if x == (Obj.magic Js_null.empty)  then 
     (Obj.magic Null, Obj.magic x) else 
   if Js.typeof x = "number" then 
     (Obj.magic Number, Obj.magic x ) else 
@@ -76,7 +76,7 @@ let test (type a) (x : 'a) (v : a t) : bool =
     Js.typeof x = "undefined" 
   | Null 
     -> 
-    Js.typeof x = "Js.null"
+    x == (Obj.magic Js_null.empty)
   | String
     -> 
     Js.typeof x = "string" 
