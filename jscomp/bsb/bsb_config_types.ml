@@ -39,6 +39,7 @@ type t =
     ocamllex : string ; 
     external_includes : string list ; 
     bsc_flags : string list ;
+    warnings : string;
     ppx_flags : string list ;
     bs_dependencies : dependencies;
     bs_dev_dependencies : dependencies;

@@ -57,6 +57,7 @@ let output_ninja
     ocamllex;
     external_includes;
     bsc_flags ; 
+    warnings;
     ppx_flags;
     bs_dependencies;
     bs_dev_dependencies;
@@ -99,6 +100,7 @@ let output_ninja
           "bsdep", bsdep;
           "ocamllex", ocamllex;
           "bsc_flags", bsc_flags ;
+          "warnings", "-w " ^ warnings;
           "ppx_flags", ppx_flags;
           "bs_package_includes", (Bsb_build_util.flag_concat dash_i @@ List.map (fun x -> x.Bsb_config_types.package_install_path) bs_dependencies);
           "bs_package_dev_includes", (Bsb_build_util.flag_concat dash_i @@ List.map (fun x -> x.Bsb_config_types.package_install_path) bs_dev_dependencies);  

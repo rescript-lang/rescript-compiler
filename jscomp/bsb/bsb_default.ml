@@ -44,12 +44,12 @@
         https://caml.inria.fr/mantis/view.php?id=6352
 
 *)  
+let warnings = "-40+6+7+27+32..39+44+45"
+
 let bsc_flags = 
   [
     "-no-alias-deps";
     "-color"; "always" ;
-    "-w"; "-40+6+7+27+32..39+44+45"
-
   ]
 
 let ocamllex = "ocamllex.opt"  

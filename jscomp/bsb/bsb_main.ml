@@ -322,15 +322,15 @@ let build_bs_deps deps =
 
 let make_world_deps (config : Bsb_config_types.t option) =
   print_endline "\nMaking the dependency world!";
-  let deps =
+  let (deps, _) =
     match config with
     | None ->
       (* When this running bsb does not read bsconfig.json,
          we will read such json file to know which [package-specs]
          it wants
       *)
-      Bsb_config_parse.package_specs_from_bsconfig ()
-    | Some {package_specs} -> package_specs in
+      Bsb_config_parse.package_specs_and_entries_from_bsconfig ()
+    | Some {package_specs; entries} -> (package_specs, entries) in
   build_bs_deps deps
 
 (* see discussion #929, if we catch the exception, we don't have stacktrace... *)

@@ -22,6 +22,7 @@ let files = "files"
 let subdirs = "subdirs"
 let ocamllex = "ocamllex"
 let bsc_flags = "bsc-flags"
+let warnings = "warnings"
 let excludes = "excludes"
 let slow_re = "slow-re"
 let resources = "resources"
@@ -8093,6 +8094,7 @@ type t =
     ocamllex : string ; 
     external_includes : string list ; 
     bsc_flags : string list ;
+    warnings : string;
     ppx_flags : string list ;
     bs_dependencies : dependencies;
     bs_dev_dependencies : dependencies;
@@ -8140,7 +8142,7 @@ module Bsb_default : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
+val warnings : string
 
 val bsc_flags : string list 
 
@@ -8200,12 +8202,12 @@ end = struct
         https://caml.inria.fr/mantis/view.php?id=6352
 
 *)  
+let warnings = "-40+6+7+27+32..39+44+45"
+
 let bsc_flags = 
   [
     "-no-alias-deps";
     "-color"; "always" ;
-    "-w"; "-40+6+7+27+32..39+44+45"
-
   ]
 
 let ocamllex = "ocamllex.opt"  
@@ -8243,8 +8245,8 @@ module Bsb_config_parse : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-val package_specs_from_bsconfig : 
-    unit -> Bsb_config.package_specs
+val package_specs_and_entries_from_bsconfig : 
+    unit -> Bsb_config.package_specs * Bsb_config_types.entries_t list
 
 
 val merlin_file_gen : 
@@ -8355,16 +8357,19 @@ let merlin_trailer = "####BSB GENERATED: NO EDIT}"
 let merlin_trailer_length = String.length merlin_trailer
 
 
-let package_specs_from_bsconfig () = 
+let package_specs_and_entries_from_bsconfig () = 
   let json = Ext_json_parse.parse_json_from_file Literals.bsconfig_json in
   begin match json with
     | Obj {map} ->
-      begin 
-        match String_map.find_opt Bsb_build_schemas.package_specs map with 
-        | Some (Arr s ) -> 
-          get_package_specs_from_array s.content
-        | Some _
-        | None -> Bsb_default.package_specs
+      begin
+        let package_specs = ref (Bsb_default.package_specs) in
+        let entries = ref Bsb_default.main_entries in
+        map
+          |? (Bsb_build_schemas.package_specs, 
+              `Arr (fun s -> package_specs := get_package_specs_from_array s))
+          |? (Bsb_build_schemas.entries, `Arr (fun s -> entries := parse_entries s))
+          |> ignore;
+        (!package_specs, !entries)
       end
     | _ -> assert false
   end
@@ -8539,6 +8544,7 @@ let interpret_json
       since it is external configuration, no {!Bsb_build_util.convert_and_resolve_path}
   *)
   let bsc_flags = ref Bsb_default.bsc_flags in  
+  let warnings = ref Bsb_default.warnings in
   let ppx_flags = ref []in 
 
   let js_post_build_cmd = ref None in 
@@ -8605,6 +8611,7 @@ let interpret_json
     (* More design *)
     |? (Bsb_build_schemas.bs_external_includes, `Arr (fun s -> bs_external_includes := get_list_string s))
     |? (Bsb_build_schemas.bsc_flags, `Arr (fun s -> bsc_flags := Bsb_build_util.get_list_string_acc s !bsc_flags))
+    |? (Bsb_build_schemas.warnings, `Str (fun s -> warnings := s))
     |? (Bsb_build_schemas.ppx_flags, `Arr (fun s -> 
         ppx_flags := s |> get_list_string |> List.map (fun p ->
             if p = "" then failwith "invalid ppx, empty string found"
@@ -8648,6 +8655,7 @@ let interpret_json
           ocamllex = !ocamllex ; 
           external_includes = !bs_external_includes;
           bsc_flags = !bsc_flags ;
+          warnings = !warnings;
           ppx_flags = !ppx_flags ;
           bs_dependencies = !bs_dependencies;
           bs_dev_dependencies = !bs_dev_dependencies;
@@ -9061,12 +9069,12 @@ let define
 
 let build_ast_and_deps =
   define
-    ~command:"${bsc}  ${pp_flags} ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast ${in}"
+    ~command:"${bsc}  ${pp_flags} ${ppx_flags} ${warnings} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast ${in}"
     "build_ast_and_deps"
 
 let build_ast_and_deps_from_reason_impl =
   define
-    ~command:"${bsc} -pp \"${refmt} ${refmt_flags}\" ${reason_react_jsx}  ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -impl ${in}"
+    ~command:"${bsc} -pp \"${refmt} ${refmt_flags}\" ${reason_react_jsx}  ${ppx_flags} ${warnings} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -impl ${in}"
     "build_ast_and_deps_from_reason_impl"
 
 let build_ast_and_deps_from_reason_intf =
@@ -9074,7 +9082,7 @@ let build_ast_and_deps_from_reason_intf =
      because it need to be ppxed by bucklescript
   *)
   define
-    ~command:"${bsc} -pp \"${refmt} ${refmt_flags}\" ${reason_react_jsx} ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -intf ${in}"
+    ~command:"${bsc} -pp \"${refmt} ${refmt_flags}\" ${reason_react_jsx} ${ppx_flags} ${warnings} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -intf ${in}"
     "build_ast_and_deps_from_reason_intf"
 
 
@@ -9125,7 +9133,7 @@ let build_ml_from_mll =
 let build_cmj_js =
   define
     ~command:"${bsc} ${bs_package_flags} -bs-assume-has-mli -bs-no-builtin-ppx-ml -bs-no-implicit-include  \
-              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${bsc_flags} -o ${in} -c  ${in} ${postbuild}"
+              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${warnings} ${bsc_flags} -o ${in} -c  ${in} ${postbuild}"
 
     ~depfile:"${in}.d"
     "build_cmj_only"
@@ -9133,13 +9141,13 @@ let build_cmj_js =
 let build_cmj_cmi_js =
   define
     ~command:"${bsc} ${bs_package_flags} -bs-assume-no-mli -bs-no-builtin-ppx-ml -bs-no-implicit-include \
-              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${bsc_flags} -o ${in} -c  ${in} ${postbuild}"
+              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${warnings} ${bsc_flags} -o ${in} -c  ${in} ${postbuild}"
     ~depfile:"${in}.d"
     "build_cmj_cmi" (* the compiler should never consult [.cmi] when [.mli] does not exist *)
 let build_cmi =
   define
     ~command:"${bsc} ${bs_package_flags} -bs-no-builtin-ppx-mli -bs-no-implicit-include \
-              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${bsc_flags} -o ${out} -c  ${in}"
+              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${warnings} ${bsc_flags} -o ${out} -c  ${in}"
     ~depfile:"${in}.d"
     "build_cmi" (* the compiler should always consult [.cmi], current the vanilla ocaml compiler only consult [.cmi] when [.mli] found*)
 
@@ -9673,6 +9681,7 @@ let output_ninja
     ocamllex;
     external_includes;
     bsc_flags ; 
+    warnings;
     ppx_flags;
     bs_dependencies;
     bs_dev_dependencies;
@@ -9715,6 +9724,7 @@ let output_ninja
           "bsdep", bsdep;
           "ocamllex", ocamllex;
           "bsc_flags", bsc_flags ;
+          "warnings", "-w " ^ warnings;
           "ppx_flags", ppx_flags;
           "bs_package_includes", (Bsb_build_util.flag_concat dash_i @@ List.map (fun x -> x.Bsb_config_types.package_install_path) bs_dependencies);
           "bs_package_dev_includes", (Bsb_build_util.flag_concat dash_i @@ List.map (fun x -> x.Bsb_config_types.package_install_path) bs_dev_dependencies);  
@@ -10853,15 +10863,15 @@ let build_bs_deps deps =
 
 let make_world_deps (config : Bsb_config_types.t option) =
   print_endline "\nMaking the dependency world!";
-  let deps =
+  let (deps, _) =
     match config with
     | None ->
       (* When this running bsb does not read bsconfig.json,
          we will read such json file to know which [package-specs]
          it wants
       *)
-      Bsb_config_parse.package_specs_from_bsconfig ()
-    | Some {package_specs} -> package_specs in
+      Bsb_config_parse.package_specs_and_entries_from_bsconfig ()
+    | Some {package_specs; entries} -> (package_specs, entries) in
   build_bs_deps deps
 
 (* see discussion #929, if we catch the exception, we don't have stacktrace... *)
