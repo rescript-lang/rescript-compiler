@@ -1873,15 +1873,15 @@ let starts_with s beg =
     end with [beg]
 *)
 let ends_with_index s end_ = 
-  (* 63 *) let s_finish = String.length s - 1 in
+  (* 53 *) let s_finish = String.length s - 1 in
   let s_beg = String.length end_ - 1 in
   if s_beg > s_finish then (* 0 *) -1
   else
-    (* 63 *) let rec aux j k = 
-      (* 159 *) if k < 0 then (* 27 *) (j + 1)
-      else (* 132 *) if String.unsafe_get s j = String.unsafe_get end_ k then 
-        (* 96 *) aux (j - 1) (k - 1)
-      else  (* 36 *) -1 in 
+    (* 53 *) let rec aux j k = 
+      (* 144 *) if k < 0 then (* 26 *) (j + 1)
+      else (* 118 *) if String.unsafe_get s j = String.unsafe_get end_ k then 
+        (* 91 *) aux (j - 1) (k - 1)
+      else  (* 27 *) -1 in 
     aux s_finish s_beg
 
 let ends_with s end_ = (* 0 *) ends_with_index s end_ >= 0 
@@ -1898,13 +1898,13 @@ let check_any_suffix_case s suffixes =
   (* 0 *) List.exists (fun x -> (* 0 *) check_suffix_case s x) suffixes
 
 let check_any_suffix_case_then_chop s suffixes = 
-  (* 27 *) let rec aux suffixes = 
-    (* 62 *) match suffixes with 
+  (* 26 *) let rec aux suffixes = 
+    (* 52 *) match suffixes with 
     | [] -> (* 1 *) None 
     | x::xs -> 
-      (* 61 *) let id = ends_with_index s x in 
-      if id >= 0 then (* 26 *) Some (String.sub s 0 id)
-      else (* 35 *) aux xs in 
+      (* 51 *) let id = ends_with_index s x in 
+      if id >= 0 then (* 25 *) Some (String.sub s 0 id)
+      else (* 26 *) aux xs in 
   aux suffixes    
 
 
@@ -1931,7 +1931,7 @@ let escaped s =
 
 *)
 let rec unsafe_for_all_range s ~start ~finish p =     
-  (* 154 *) start > finish ||
+  (* 153 *) start > finish ||
   p (String.unsafe_get s start) && 
   unsafe_for_all_range s ~start:(start + 1) ~finish p
 
@@ -2098,12 +2098,12 @@ let rindex_opt s c =
   (* 0 *) rindex_rec_opt s (String.length s - 1) c;;
 
 let is_valid_module_file (s : string) = 
-  (* 26 *) let len = String.length s in 
+  (* 25 *) let len = String.length s in 
   len > 0 &&
   match String.unsafe_get s 0 with 
   | 'A' .. 'Z'
   | 'a' .. 'z' -> 
-    (* 12 *) unsafe_for_all_range s ~start:1 ~finish:(len - 1)
+    (* 11 *) unsafe_for_all_range s ~start:1 ~finish:(len - 1)
       (fun x -> 
          (* 9 *) match x with 
          | 'A'..'Z' | 'a'..'z' | '0'..'9' | '_' | '\'' -> (* 7 *) true
@@ -2140,15 +2140,16 @@ type check_result =
    Make {!Ext_filename} not stateful
 *)
 let is_valid_source_name name : check_result =
-  (* 27 *) match check_any_suffix_case_then_chop name [
+  (* 26 *) match check_any_suffix_case_then_chop name [
       ".ml"; 
       ".re";
-      ".mli"; ".mll"; ".rei"
+      ".mli"; 
+      ".rei"
     ] with 
   | None -> (* 1 *) Suffix_mismatch
   | Some x -> 
-    (* 26 *) if is_valid_module_file  x then
-      (* 10 *) Good
+    (* 25 *) if is_valid_module_file  x then
+      (* 9 *) Good
     else (* 16 *) Invalid_module_name  
 
 (** TODO: can be improved to return a positive integer instead *)
@@ -13197,8 +13198,8 @@ let suites =
 
     __LOC__ >:: begin fun _ -> 
       (* 1 *) OUnit.assert_bool __LOC__ @@
-      List.for_all (fun x -> (* 10 *) Ext_string.is_valid_source_name x = Good)
-        ["x.ml"; "x.mli"; "x.re"; "x.rei"; "x.mll"; 
+      List.for_all (fun x -> (* 9 *) Ext_string.is_valid_source_name x = Good)
+        ["x.ml"; "x.mli"; "x.re"; "x.rei"; 
          "A_x.ml"; "ab.ml"; "a_.ml"; "a__.ml";
          "ax.ml"];
       OUnit.assert_bool __LOC__ @@ not @@

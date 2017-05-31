@@ -365,7 +365,8 @@ A typical example would be like this
 -----------
 {
     "generators" : [
-        { "ocamlyacc" : "ocamlyacc $in" }
+        { "name" : "ocamlyacc" ,
+          "command" : "ocamlyacc $in" }
     ],    
     ...,
     "sources" : {
