@@ -45,6 +45,7 @@ var log_output = PROMPT;
 var ERR_OUTPUT = "Warnings: "
 var err_output = ERR_OUTPUT;
 
+
 function reset_log_output (){ log_output  = PROMPT;}
 function reset_error_output(){ err_output = ERR_OUTPUT;}
 function get_log_output(){
@@ -201,19 +202,44 @@ function changeEvalButton(bool) {
   onEvalButtonChange();
 }
 
-//checks for URL hash & decodes to oCaml if present
-var clientHash = window.location.hash.split('#')[1];
-
-if (clientHash) {
-  myCode1Mirror.setValue(atob(clientHash));
-}
-
-//creates a hashed URL from OCaml code
+//creates a hashed URL from OCaml code IF encoded hash is under 1,950 characters
+//otherwise creates a github gist
 $('#share').click(function (e) {
   var hashedCode = btoa(myCode1Mirror.getValue());
-  $('#shareModal').modal('show');
-  var url = 'https://bloomberg.github.io/bucklescript/js-demo/#' + hashedCode;
-  $('#shareModalBody').html('<a href=' + '"' + url + '"' + 'target="_blank"' + '>' + url + '</a>');
+  if (hashedCode.length <= 1950) {
+    var url = 'https://bloomberg.github.io/bucklescript/js-demo/#' + hashedCode;
+    $('#shareModal').modal('show');
+    $('#shareModalBody').height('auto').html('<a href=' + '"' + url + '"' + 'target="_blank"' + '>' + url + '</a>');
+  } else {
+    var state = $(this).button('loading');
+    var request =
+    {
+      "description": "BuckleScript Gist",
+      "public": true,
+      "files": {
+        "gist.ml": {
+          "content": myCode1Mirror.getValue()
+        }
+      }
+    };
+
+    $
+      .ajax({ url:'https://api.github.com/gists',
+              type: 'POST',
+              data: JSON.stringify(request)
+            })
+      .done(function (response) {
+        state.button('reset');
+        $('#shareModal').modal('show');
+        var url = 'https://bloomberg.github.io/bucklescript/js-demo/?gist=' + response.id;
+        $('#shareModalBody').html('<a href=' + '"' + url + '"' + 'target="_blank"' + '>' + url + '</a>');
+      })
+      .error(function (err) {
+        state.button('reset');
+        $('#shareModal').modal('show');
+        $('#shareModalBody').text('Sorry! Currently GitHub\'s API limits the number of requests we can send per hour. Please try again later.');
+      })
+  }
 });
 
 //copy link to clipboard
