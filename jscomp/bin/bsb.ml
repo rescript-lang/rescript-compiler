@@ -48,9 +48,10 @@ let react_jsx = "react-jsx"
 let entries = "entries"
 let kind = "kind"
 let main = "main"
-
+let cut_generators = "cut-generators"
 let generators = "generators"
 let command = "command"
+let edge = "edge"
 
 end
 module Ext_pervasives : sig 
@@ -3357,7 +3358,7 @@ type json_str =
   { str : string ; loc : loc}
 
 type json_flo  =
-  { str : string ; loc : loc}
+  { flo : string ; loc : loc}
 type json_array =
   { content : t array ; 
     loc_start : loc ; 
@@ -3552,7 +3553,7 @@ let test   ?(fail=(fun () -> ())) key
         end      
        | True _, `Bool cb -> cb true
        | False _, `Bool cb  -> cb false 
-       | Flo {str = s} , `Flo cb  -> cb s 
+       | Flo {flo = s} , `Flo cb  -> cb s 
        | Obj {map = b} , `Obj cb -> cb b 
        | Arr {content}, `Arr cb -> cb content 
        | Arr {content; loc_start ; loc_end}, `Arr_loc cb -> 
@@ -5247,7 +5248,7 @@ let rec parse_json lexbuf =
     | True -> True lexbuf.lex_start_p
     | False -> False lexbuf.lex_start_p
     | Null -> Null lexbuf.lex_start_p
-    | Number s ->  Flo {str = s; loc = lexbuf.lex_start_p}  
+    | Number s ->  Flo {flo = s; loc = lexbuf.lex_start_p}  
     | String s -> Str { str = s; loc =    lexbuf.lex_start_p}
     | Lbracket -> parse_array  lexbuf.lex_start_p lexbuf.lex_curr_p [] lexbuf
     | Lbrace -> parse_map lexbuf.lex_start_p String_map.empty lexbuf
