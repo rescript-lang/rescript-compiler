@@ -59047,7 +59047,7 @@ type json_str =
   { str : string ; loc : loc}
 
 type json_flo  =
-  { str : string ; loc : loc}
+  { flo : string ; loc : loc}
 type json_array =
   { content : t array ; 
     loc_start : loc ; 
@@ -59798,7 +59798,7 @@ let rec parse_json lexbuf =
     | True -> True lexbuf.lex_start_p
     | False -> False lexbuf.lex_start_p
     | Null -> Null lexbuf.lex_start_p
-    | Number s ->  Flo {str = s; loc = lexbuf.lex_start_p}  
+    | Number s ->  Flo {flo = s; loc = lexbuf.lex_start_p}  
     | String s -> Str { str = s; loc =    lexbuf.lex_start_p}
     | Lbracket -> parse_array  lexbuf.lex_start_p lexbuf.lex_curr_p [] lexbuf
     | Lbrace -> parse_map lexbuf.lex_start_p String_map.empty lexbuf

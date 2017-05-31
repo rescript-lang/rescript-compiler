@@ -32,7 +32,7 @@ let test   ?(fail=(fun () -> ())) key
         end      
        | True _, `Bool cb -> cb true
        | False _, `Bool cb  -> cb false 
-       | Flo {str = s} , `Flo cb  -> cb s 
+       | Flo {flo = s} , `Flo cb  -> cb s 
        | Obj {map = b} , `Obj cb -> cb b 
        | Arr {content}, `Arr cb -> cb content 
        | Arr {content; loc_start ; loc_end}, `Arr_loc cb -> 

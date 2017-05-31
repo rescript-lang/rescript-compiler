@@ -62,7 +62,7 @@ let suites =
       let v1 = parse_json_from_string {| [ 1, 3 ]|} in
       let test (v : Ext_json_types.t) = 
         match v with 
-        | Arr { content = [| Flo {str = "1"} ; Flo { str = "3"} |] } -> ()
+        | Arr { content = [| Flo {flo = "1"} ; Flo { flo = "3"} |] } -> ()
         | _ -> OUnit.assert_failure "trailing comma array" in 
       test v ;
       test v1
