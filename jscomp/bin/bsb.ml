@@ -6377,7 +6377,6 @@ type module_info =
   {
     mli : mli_kind ; 
     ml : ml_kind ; 
-    mll : string option 
   }
 
 type file_group_rouces = module_info String_map.t 
@@ -6445,7 +6444,7 @@ type module_info =
   {
     mli : mli_kind ; 
     ml : ml_kind ; 
-    mll : string option ;
+    (*mll : string option ;*)
   }
 
 
@@ -6460,7 +6459,7 @@ let module_info_magic_number = "BSBUILD20161019"
 let dir_of_module_info (x : module_info)
   = 
   match x with 
-  | { mli; ml; mll} -> 
+  | { mli; ml;  } -> 
     begin match mli with 
     | Mli s | Rei s -> 
       Filename.dirname s 
@@ -6468,11 +6467,11 @@ let dir_of_module_info (x : module_info)
       begin match ml with 
       | Ml s | Re s -> 
         Filename.dirname s 
-      | Ml_empty -> 
-        begin match mll with 
+      | Ml_empty -> Ext_string.empty
+        (*begin match mll with 
         | None -> ""
         | Some s -> Filename.dirname s 
-        end 
+        end *)
       end
     end
 
@@ -6494,7 +6493,7 @@ let read_build_cache bsbuild : t =
 let bsbuild_cache = ".bsbuild"
 
 
-let empty_module_info = {mli = Mli_empty ; mll = None ; ml = Ml_empty}
+let empty_module_info = {mli = Mli_empty ;  ml = Ml_empty}
 
 let adjust_module_info x suffix name =
   match suffix with 
@@ -6502,7 +6501,6 @@ let adjust_module_info x suffix name =
   | ".re" -> {x with ml = Re name}
   | ".mli" ->  {x with mli = Mli name}
   | ".rei" -> { x with mli = Rei name}
-  | ".mll" -> {x with mll = Some name}
   | _ -> failwith ("don't know what to do with " ^ name)
 
 let map_update ?dir (map : file_group_rouces)  name : file_group_rouces  = 
@@ -9508,11 +9506,11 @@ let handle_file_group oc ~custom_rules
       | Export_all -> true
       | Export_none -> false
       | Export_set set ->  String_set.mem module_name set in
-    let emit_build (kind : [`Ml | `Mll | `Re | `Mli | `Rei ])  file_input : info =
+    let emit_build (kind : [`Ml | `Re | `Mli | `Rei ])  file_input : info =
       let filename_sans_extension = Filename.chop_extension file_input in
       let input = Bsb_config.proj_rel file_input in
       let output_file_sans_extension = filename_sans_extension in
-      let output_ml = output_file_sans_extension ^ Literals.suffix_ml in
+      (*let output_ml = output_file_sans_extension ^ Literals.suffix_ml in*)
       let output_mlast = output_file_sans_extension  ^ Literals.suffix_mlast in
       let output_mlastd = output_file_sans_extension ^ Literals.suffix_mlastd in
       let output_mliast = output_file_sans_extension ^ Literals.suffix_mliast in
@@ -9546,20 +9544,20 @@ let handle_file_group oc ~custom_rules
            ]
         )
       in
-      if kind = `Mll then
+      (*if kind = `Mll then
         output_build oc
           ~output:output_ml
           ~input
-          ~rule: Rules.build_ml_from_mll ;
+          ~rule: Rules.build_ml_from_mll ;*)
       begin match kind with
-        | `Mll
+        (*| `Mll*)
         | `Ml
         | `Re ->
           let input, rule  =
             if kind = `Re then
               input, Rules.build_ast_and_deps_from_reason_impl
-            else if kind = `Mll then
-              output_ml, Rules.build_ast_and_deps
+            (*else if kind = `Mll then
+              output_ml, Rules.build_ast_and_deps*)
             else
               input, Rules.build_ast_and_deps
           in
@@ -9647,15 +9645,7 @@ let handle_file_group oc ~custom_rules
         emit_build `Rei rei_file
       | Mli_empty -> zero
     end ++
-    begin match module_info.mll with
-      | Some mll_file ->
-        begin match module_info.ml with
-          | Ml_empty -> emit_build `Mll mll_file
-          | Ml input | Re input ->
-            failwith ("both "^ mll_file ^ " and " ^ input ^ " are found in source listings" )
-        end
-      | None -> zero
-    end ++ info
+    info
 
   in
   let map_to_source_dir = 

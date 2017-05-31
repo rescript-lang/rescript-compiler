@@ -36,7 +36,6 @@ type module_info =
   {
     mli : mli_kind ; 
     ml : ml_kind ; 
-    mll : string option 
   }
 
 type file_group_rouces = module_info String_map.t 
