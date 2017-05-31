@@ -275,6 +275,7 @@ let interpret_json
   let js_post_build_cmd = ref None in 
   let built_in_package = ref None in
   let generate_merlin = ref true in 
+  let generators = ref String_map.empty in 
   let package_specs = ref (String_set.singleton Literals.commonjs) in 
   (* When we plan to add more deps here,
      Make sure check it is consistent that for nested deps, we have a 
@@ -288,7 +289,7 @@ let interpret_json
      2. we need store it so that we can call ninja correctly
   *)
   let entries = ref Bsb_default.main_entries in
-
+  let cut_generators = ref false in 
   let config_json_chan = open_in_bin config_json  in
   let global_data = Ext_json_parse.parse_json_from_chan config_json_chan  in
   match global_data with
@@ -342,6 +343,20 @@ let interpret_json
             else Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.ppx_flags p
           )
       ))
+    |? (Bsb_build_schemas.cut_generators, `Bool (fun b -> cut_generators := b))
+    |? (Bsb_build_schemas.generators, `Arr (fun s ->
+        generators :=
+          Array.fold_left (fun acc json -> 
+            match (json : Ext_json_types.t) with 
+            | Obj {map = m ; loc}  -> 
+              begin match String_map.find_opt  Bsb_build_schemas.name m,
+                          String_map.find_opt  Bsb_build_schemas.command m with 
+              | Some (Str {str = name}), Some ( Str {str = command}) -> 
+                String_map.add name command acc 
+              | _, _ -> 
+                Bsb_exception.failf ~loc {| generators exepect format like { "name" : "cppo",  "command"  : "cppo $in -o $out"} |}
+              end
+            | _ -> acc ) String_map.empty  s  ))
     |? (Bsb_build_schemas.refmt, `Str (fun s -> 
         refmt := Some (Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.refmt s) ))
     |? (Bsb_build_schemas.refmt_flags, `Arr (fun s -> refmt_flags := get_list_string s))
@@ -349,8 +364,11 @@ let interpret_json
     |> ignore ;
     begin match String_map.find_opt Bsb_build_schemas.sources map with 
       | Some x -> 
-        let res = Bsb_build_ui.parsing_sources {no_dev; dir_index =
-            Bsb_build_ui.lib_dir_index; cwd = Filename.current_dir_name; root = cwd}  x in 
+        let res = Bsb_build_ui.parsing_sources 
+            {no_dev; 
+             dir_index =
+               Bsb_build_ui.lib_dir_index; cwd = Filename.current_dir_name; 
+             root = cwd; cut_generators = !cut_generators}  x in 
         if generate_watch_metadata then
           generate_sourcedirs_meta cwd res ;     
         begin match List.sort Ext_file_pp.interval_compare  res.intervals with
@@ -394,7 +412,9 @@ let interpret_json
           built_in_dependency = !built_in_package;
           generate_merlin = !generate_merlin ;
           reason_react_jsx = !reason_react_jsx ;  
-          entries = !entries
+          entries = !entries;
+          generators = !generators ; 
+          cut_generators = !cut_generators
         }
       | None -> failwith "no sources specified, please checkout the schema for more details"
     end

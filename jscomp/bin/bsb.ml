@@ -7415,7 +7415,8 @@ type parsing_cxt = {
   no_dev : bool ;
   dir_index : dir_index ; 
   cwd : string ;
-  root : string 
+  root : string ;
+  cut_generators : bool
 }
 
 
@@ -7547,7 +7548,8 @@ type parsing_cxt = {
   no_dev : bool ;
   dir_index : dir_index ; 
   cwd : string ;
-  root : string
+  root : string;
+  cut_generators : bool
 }
 
 let  handle_list_files acc
@@ -7593,6 +7595,29 @@ let (++) (u : t)  (v : t)  =
       globbed_dirs = u.globbed_dirs @ v.globbed_dirs ; 
     }
 
+let get_input_output loc_start (content : Ext_json_types.t array) = 
+  let error () = 
+    Bsb_exception.failf ~loc:loc_start {| invalid edge format, expect  ["input" , ":", "output" ]|}
+  in  
+  match Ext_array.find_and_split content 
+          (fun x () -> match x with Str { str =":"} -> true | _ -> false )
+          () with 
+  | `No_split -> error ()
+  | `Split (  output, input) -> 
+    Ext_array.to_list_map (fun (x : Ext_json_types.t) -> 
+        match x with
+        | Str {str = ":"} -> 
+          error ()
+        | Str {str } ->           
+          Some str 
+        | _ -> None) output ,
+    Ext_array.to_list_map (fun (x : Ext_json_types.t) -> 
+        match x with
+        | Str {str = ":"} -> 
+          error () 
+        | Str {str} -> 
+            Some str (* More rigirous error checking: It would trigger a ninja syntax error *)
+        | _ -> None) input
 
 (** [dir_index] can be inherited  *)
 let rec 
@@ -7632,7 +7657,7 @@ and parsing_source ({no_dev; dir_index ; cwd} as cxt ) (x : Ext_json_types.t )
   | _ -> empty 
 
 and parsing_source_dir_map 
-    ({ cwd =  dir} as cxt )
+    ({ cwd =  dir; no_dev; cut_generators } as cxt )
     (x : Ext_json_types.t String_map.t)
     (* { dir : xx, files : ... } [dir] is already extracted *)
   = 
@@ -7642,36 +7667,42 @@ and parsing_source_dir_map
   let cur_update_queue = ref [] in 
   let cur_globbed_dirs = ref [] in 
   let generators : build_generator list ref  = ref [] in
-  (* begin match String_map.find_opt Bsb_build_schemas.generators x with  *)
-  (* | Some (Arr { content }) ->  *)
-  (*   (\* TODO: need check is dev build or not *\) *)
-  (*   content |> Array.iter (fun (x : Ext_json_types.t) -> *)
-  (*     match x with  *)
-  (*     | Obj { map = generator; loc} ->  *)
-  (*       begin match String_map.find_opt Bsb_build_schemas.input generator, *)
-  (*         String_map.find_opt Bsb_build_schemas.output generator,  *)
-  (*         String_map.find_opt Bsb_build_schemas.cmd generator *)
-  (*        with  *)
-  (*        | Some (Str{str = input}), Some (Str {str = output}), Some (Str {str = cmd})->   *)
-  (*         generators := {input ; output ; cmd } :: !generators; *)
-  (*         (\** Now adding source files, it may be re-added again later when scanning files *)
-  (*          *\) *)
-  (*          begin match Ext_string.is_valid_source_name output with *)
-  (*          | Good -> *)
-  (*            cur_sources := Binary_cache.map_update ~dir !cur_sources output *)
-  (*          | Invalid_module_name ->  *)
-  (*             () *)
-  (*             (\*Format.fprintf Format.err_formatter warning_unused_file output dir *\) *)
-  (*          | Suffix_mismatch -> () *)
-  (*          end *)
-  (*        | _ ->  *)
-  (*         Bsb_exception.failf ~loc "Invalid generator format" *)
-  (*        end *)
-  (*     | _ -> () *)
-  (*      ) *)
-  (* | Some _ | None -> () *)
-  (* end *)
-  (* ; *)
+  begin match String_map.find_opt Bsb_build_schemas.generators x with
+  | Some (Arr { content ; loc_start}) ->
+    (* Need check is dev build or not *)
+    content 
+    |> Array.iter (fun (x : Ext_json_types.t) ->
+      match x with
+      | Obj { map = generator; loc} ->
+        begin match String_map.find_opt Bsb_build_schemas.name generator,
+          String_map.find_opt Bsb_build_schemas.edge generator
+         with
+         | Some (Str{str = command}), Some (Arr {content })->
+
+           let output, input = get_input_output loc_start content in 
+           if not cut_generators && not no_dev then begin 
+             generators := {input ; output ; command } :: !generators
+           end;
+          (** Now adding source files, it may be re-added again later when scanning files *)
+           output |> List.iter begin fun  output -> 
+             begin match Ext_string.is_valid_source_name output with
+               | Good ->
+                 cur_sources := Binary_cache.map_update ~dir !cur_sources output
+               | Invalid_module_name ->
+                 ()
+               (*Format.fprintf Format.err_formatter warning_unused_file output dir *)
+               | Suffix_mismatch -> ()
+             end
+           end
+         | _ ->
+          Bsb_exception.failf ~loc "Invalid generator format"
+         end
+      | _ -> Bsb_exception.failf ~loc:(Ext_json.loc_of x) "Invalid generator format"
+       )
+  | Some x  -> Bsb_exception.failf ~loc:(Ext_json.loc_of x ) "Invalid generators format"
+  | None -> ()
+  end
+  ;
   begin match String_map.find_opt Bsb_build_schemas.files x with 
     | Some (Arr {loc_start;loc_end; content = [||] }) -> (* [ ] *) 
       let tasks, files =  handle_list_files !cur_sources cxt  loc_start loc_end in
@@ -8142,6 +8173,8 @@ type t =
     generate_merlin : bool ; 
     reason_react_jsx : bool ; (* whether apply PPX transform or not*)
     entries : entries_t list ;
+    generators : string String_map.t ; 
+    cut_generators : bool; (* note when used as a dev mode, we will always ignore it *)
   }
 
 end
@@ -8575,6 +8608,7 @@ let interpret_json
   let js_post_build_cmd = ref None in 
   let built_in_package = ref None in
   let generate_merlin = ref true in 
+  let generators = ref String_map.empty in 
   let package_specs = ref (String_set.singleton Literals.commonjs) in 
   (* When we plan to add more deps here,
      Make sure check it is consistent that for nested deps, we have a 
@@ -8588,7 +8622,7 @@ let interpret_json
      2. we need store it so that we can call ninja correctly
   *)
   let entries = ref Bsb_default.main_entries in
-
+  let cut_generators = ref false in 
   let config_json_chan = open_in_bin config_json  in
   let global_data = Ext_json_parse.parse_json_from_chan config_json_chan  in
   match global_data with
@@ -8642,6 +8676,20 @@ let interpret_json
             else Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.ppx_flags p
           )
       ))
+    |? (Bsb_build_schemas.cut_generators, `Bool (fun b -> cut_generators := b))
+    |? (Bsb_build_schemas.generators, `Arr (fun s ->
+        generators :=
+          Array.fold_left (fun acc json -> 
+            match (json : Ext_json_types.t) with 
+            | Obj {map = m ; loc}  -> 
+              begin match String_map.find_opt  Bsb_build_schemas.name m,
+                          String_map.find_opt  Bsb_build_schemas.command m with 
+              | Some (Str {str = name}), Some ( Str {str = command}) -> 
+                String_map.add name command acc 
+              | _, _ -> 
+                Bsb_exception.failf ~loc {| generators exepect format like { "name" : "cppo",  "command"  : "cppo $in -o $out"} |}
+              end
+            | _ -> acc ) String_map.empty  s  ))
     |? (Bsb_build_schemas.refmt, `Str (fun s -> 
         refmt := Some (Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.refmt s) ))
     |? (Bsb_build_schemas.refmt_flags, `Arr (fun s -> refmt_flags := get_list_string s))
@@ -8649,8 +8697,11 @@ let interpret_json
     |> ignore ;
     begin match String_map.find_opt Bsb_build_schemas.sources map with 
       | Some x -> 
-        let res = Bsb_build_ui.parsing_sources {no_dev; dir_index =
-            Bsb_build_ui.lib_dir_index; cwd = Filename.current_dir_name; root = cwd}  x in 
+        let res = Bsb_build_ui.parsing_sources 
+            {no_dev; 
+             dir_index =
+               Bsb_build_ui.lib_dir_index; cwd = Filename.current_dir_name; 
+             root = cwd; cut_generators = !cut_generators}  x in 
         if generate_watch_metadata then
           generate_sourcedirs_meta cwd res ;     
         begin match List.sort Ext_file_pp.interval_compare  res.intervals with
@@ -8694,7 +8745,9 @@ let interpret_json
           built_in_dependency = !built_in_package;
           generate_merlin = !generate_merlin ;
           reason_react_jsx = !reason_react_jsx ;  
-          entries = !entries
+          entries = !entries;
+          generators = !generators ; 
+          cut_generators = !cut_generators
         }
       | None -> failwith "no sources specified, please checkout the schema for more details"
     end
@@ -8983,14 +9036,8 @@ module Bsb_rule : sig
 
 
 type t  
-val get_name : t  -> out_channel -> string
 
-val define :
-  command:string ->
-  ?depfile:string ->
-  ?restat:unit -> 
-  ?description:string ->
-  string -> t 
+val get_name : t  -> out_channel -> string
 
 val build_ast_and_deps : t
 val build_ast_and_deps_from_reason_impl : t 
@@ -9003,7 +9050,18 @@ val build_cmj_js : t
 val build_cmj_cmi_js : t 
 val build_cmi : t
 
-val reset : unit -> unit
+
+(** rules are generally composed of built-in rules and customized rules, there are two design choices:
+    1. respect custom rules with the same name, then we need adjust our built-in 
+    rules dynamically in case the conflict.
+    2. respect our built-in rules, then we only need re-load custom rules for each bsconfig.json
+*)
+
+
+(** Since now we generate ninja files per bsconfig.json in a single process, 
+    we must make sure it is re-entrant
+*)
+val reset : string String_map.t -> t String_map.t
 
 end = struct
 #1 "bsb_rule.ml"
@@ -9070,6 +9128,7 @@ let print_rule oc ~description ?restat ?depfile ~command   name  =
   output_string oc "  description = " ; output_string oc description; output_string oc "\n"
 
 
+(** allocate an unique name for such rule*)
 let define
     ~command
     ?depfile
@@ -9077,17 +9136,21 @@ let define
     ?(description = "\027[34mBuilding\027[39m \027[2m${out}\027[22m") (* blue, dim *)
     name
   =
+  let rule_name = ask_name name  in 
   let rec self = {
     used  = false;
-    rule_name = ask_name name ;
+    rule_name ;
     name = fun oc ->
       if not self.used then
         begin
-          print_rule oc ~description ?depfile ?restat ~command name;
+          print_rule oc ~description ?depfile ?restat ~command rule_name;
           self.used <- true
         end ;
-      self.rule_name
+      rule_name
   } in self
+
+
+
 
 
 let build_ast_and_deps =
@@ -9174,20 +9237,30 @@ let build_cmi =
     ~depfile:"${in}.d"
     "build_cmi" (* the compiler should always consult [.cmi], current the vanilla ocaml compiler only consult [.cmi] when [.mli] found*)
 
-let reset () = 
-  rule_id := 0;
-  rule_names := String_set.empty;
-  build_ast_and_deps.used <- false ;
-  build_ast_and_deps_from_reason_impl.used <- false ;  
-  build_ast_and_deps_from_reason_intf.used <- false ;
-  build_bin_deps.used <- false;
-  reload.used <- false; 
-  copy_resources.used <- false ;
-  build_ml_from_mll.used <- false ; 
-  build_cmj_js.used <- false;
-  build_cmj_cmi_js.used <- false ;
-  build_cmi.used <- false 
 
+(* a snapshot of rule_names environment*)
+let built_in_rule_names = !rule_names 
+let built_in_rule_id = !rule_id
+
+let reset (custom_rules : string String_map.t) = 
+  begin 
+    rule_id := built_in_rule_id;
+    rule_names := built_in_rule_names;
+
+    build_ast_and_deps.used <- false ;
+    build_ast_and_deps_from_reason_impl.used <- false ;  
+    build_ast_and_deps_from_reason_intf.used <- false ;
+    build_bin_deps.used <- false;
+    reload.used <- false; 
+    copy_resources.used <- false ;
+    build_ml_from_mll.used <- false ; 
+    build_cmj_js.used <- false;
+    build_cmj_cmi_js.used <- false ;
+    build_cmi.used <- false ;
+    String_map.mapi (fun name command -> 
+        define ~command name
+      ) custom_rules
+  end
 
 
 end
@@ -9257,6 +9330,7 @@ val handle_file_groups : out_channel ->
   package_specs:Bsb_config.package_specs ->  
   js_post_build_cmd:string option -> 
   files_to_install:String_hash_set.t ->  
+  custom_rules:Bsb_rule.t String_map.t -> 
   Bsb_build_ui.file_group list ->
   info -> info
 
@@ -9423,7 +9497,8 @@ let (++) (us : info) (vs : info) =
 let install_file (file : string) files_to_install =
   String_hash_set.add  files_to_install (Ext_filename.chop_extension_if_any file )
 
-let handle_file_group oc ~package_specs ~js_post_build_cmd  
+let handle_file_group oc ~custom_rules 
+    ~package_specs ~js_post_build_cmd  
     (files_to_install : String_hash_set.t) acc (group: Bsb_build_ui.file_group) : info =
   let handle_module_info  oc  module_name
       ( module_info : Binary_cache.module_info)
@@ -9583,14 +9658,26 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd
     end ++ info
 
   in
-  (*
+  let map_to_source_dir = 
+    (fun x -> Bsb_config.proj_rel (group.dir //x )) in
   group.generators
-  |> List.iter (fun  ({output; input; cmd}  : Bsb_build_ui.generator)-> 
-    output_build oc ~output:(Bsb_config.proj_rel output) 
-    ~input:(Bsb_config.proj_rel input)
-    ~rule:cmd 
-  ); 
-  *) (* we need create a rule for it --
+  |> List.iter (fun  ({output; input; command}  : Bsb_build_ui.build_generator)-> 
+      begin match String_map.find_opt command custom_rules with 
+      | None -> Ext_pervasives.failwithf ~loc:__LOC__ "custom rule %s used but  not defined" command
+      | Some rule -> 
+        begin match output, input with
+        | output::outputs, input::inputs -> 
+          output_build oc 
+            ~outputs:(List.map map_to_source_dir  outputs)
+            ~inputs:(List.map map_to_source_dir inputs) 
+            ~output:(map_to_source_dir output)
+            ~input:(map_to_source_dir input)
+            ~rule
+        | [], _ (* either output or input can not be empty *)
+        | _, []  -> assert false (* Error should be raised earlier *)
+        end
+      end
+  );  (* we need create a rule for it --
   {[
     rule ocamllex 
   ]}
@@ -9604,9 +9691,9 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd
 
 let handle_file_groups
  oc ~package_specs ~js_post_build_cmd
-  ~files_to_install
+  ~files_to_install ~custom_rules
   (file_groups  :  Bsb_build_ui.file_group list) st =
-  List.fold_left (handle_file_group oc ~package_specs ~js_post_build_cmd files_to_install ) st  file_groups
+  List.fold_left (handle_file_group oc ~package_specs ~custom_rules ~js_post_build_cmd files_to_install ) st  file_groups
 
 end
 module Bsb_gen : sig 
@@ -9694,30 +9781,29 @@ let dash_i = "-I"
 let refmt_exe = "refmt.exe"
 let dash_ppx = "-ppx"
 
-let ninja_required_version = "ninja_required_version = 1.5.1 \n"
-
 let output_ninja
     ~cwd 
     ~bsc_dir           
-    {
-    Bsb_config_types.package_name;
-    ocamllex;
-    external_includes;
-    bsc_flags ; 
-    ppx_flags;
-    bs_dependencies;
-    bs_dev_dependencies;
-    refmt;
-    refmt_flags;
-    js_post_build_cmd;
-    package_specs;
-    bs_file_groups;
-    files_to_install;
-    built_in_dependency;
-    reason_react_jsx
-    }
+    ({
+      package_name;
+      ocamllex;
+      external_includes;
+      bsc_flags ; 
+      ppx_flags;
+      bs_dependencies;
+      bs_dev_dependencies;
+      refmt;
+      refmt_flags;
+      js_post_build_cmd;
+      package_specs;
+      bs_file_groups;
+      files_to_install;
+      built_in_dependency;
+      reason_react_jsx;
+      generators ;
+    } : Bsb_config_types.t)
   =
-  let () = Bsb_rule.reset () in 
+  let custom_rules = Bsb_rule.reset generators in 
   let bsc = bsc_dir // bsc_exe in   (* The path to [bsc.exe] independent of config  *)
   let bsdep = bsc_dir // bsb_helper_exe in (* The path to [bsb_heler.exe] *)
   (* let builddir = Bsb_config.lib_bs in  *)
@@ -9727,7 +9813,6 @@ let output_ninja
   let oc = open_out_bin (cwd // Bsb_config.lib_bs // Literals.build_ninja) in
   begin
     let () =
-      output_string oc ninja_required_version ;
       output_string oc "bs_package_flags = ";
       output_string oc ("-bs-package-name "  ^ package_name);
       output_string oc "\n";
@@ -9805,7 +9890,8 @@ let output_ninja
         static_resources;
     in
     let all_info =
-      Bsb_ninja.handle_file_groups oc
+      Bsb_ninja.handle_file_groups oc       
+        ~custom_rules
         ~js_post_build_cmd  ~package_specs ~files_to_install bs_file_groups Bsb_ninja.zero  in
     let () =
       List.iter (fun x -> Bsb_ninja.output_build oc

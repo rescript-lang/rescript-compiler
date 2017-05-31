@@ -60,7 +60,8 @@ type parsing_cxt = {
   no_dev : bool ;
   dir_index : dir_index ; 
   cwd : string ;
-  root : string 
+  root : string ;
+  cut_generators : bool
 }
 
 

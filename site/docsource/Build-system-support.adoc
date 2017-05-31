@@ -349,3 +349,50 @@ make depend // <2>
 
 
 Now in your working directory, type `watchman -j < build.json` and enjoy the lightning build speed.
+
+=== Customize rules (generators support, @since 1.7.4) 
+
+It is quite common that programmers use some pre-processors to generate some bolierpolate code during developement.
+
+Note pre-processors can be classified as two categories, one is system-dependent which should be delayed until running on user machines, the other is system-indepdent , lex, yacc, m4, re2c, etc, which could be executed anytime.
+
+BuckleScript has built in support for conditional compilation, this section is about the second part, since it is system-indepdent, we ask users to always generate such code and check in before shipping, this would help cut the dependencies for end users.
+
+A typical example would be like this
+
+.Bsb using ocamlyacc
+[source,js]
+-----------
+{
+    "generators" : [
+        { "ocamlyacc" : "ocamlyacc $in" }
+    ],    
+    ...,
+    "sources" : {
+        "dir" : "src",
+        "generators" : [
+            {
+                "name" : "ocamlyacc",
+                "edge" : ["test.ml", "test.mli", ":", "test.mly"]
+            }
+        ]
+    }
+}
+-----------
+
+
+Note `ocamlyacc` will generate in `test.ml` and `test.mli` in the same directory with `test.mly`, user should check in generated file since then users would not need run  ocamlyacc again, this would apply to `menhir` as well.
+
+When users are developing current project, `bsb` will track the dependencies between `test.ml` and `test.mly` properly, when released 
+as  a package, `bsb` will cut such dependency, so that users will 
+only need the generated `test.ml`, to help test such behavior in development mode, users could set it manually
+
+[source,js]
+-----------
+{
+    ...,
+    "cut-generators" : true
+}
+-----------
+
+Then `bsb` will not re-generate `test.ml` whenever `test.mly` changes.

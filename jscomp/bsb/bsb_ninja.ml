@@ -156,7 +156,8 @@ let (++) (us : info) (vs : info) =
 let install_file (file : string) files_to_install =
   String_hash_set.add  files_to_install (Ext_filename.chop_extension_if_any file )
 
-let handle_file_group oc ~package_specs ~js_post_build_cmd  
+let handle_file_group oc ~custom_rules 
+    ~package_specs ~js_post_build_cmd  
     (files_to_install : String_hash_set.t) acc (group: Bsb_build_ui.file_group) : info =
   let handle_module_info  oc  module_name
       ( module_info : Binary_cache.module_info)
@@ -316,14 +317,26 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd
     end ++ info
 
   in
-  (*
+  let map_to_source_dir = 
+    (fun x -> Bsb_config.proj_rel (group.dir //x )) in
   group.generators
-  |> List.iter (fun  ({output; input; cmd}  : Bsb_build_ui.generator)-> 
-    output_build oc ~output:(Bsb_config.proj_rel output) 
-    ~input:(Bsb_config.proj_rel input)
-    ~rule:cmd 
-  ); 
-  *) (* we need create a rule for it --
+  |> List.iter (fun  ({output; input; command}  : Bsb_build_ui.build_generator)-> 
+      begin match String_map.find_opt command custom_rules with 
+      | None -> Ext_pervasives.failwithf ~loc:__LOC__ "custom rule %s used but  not defined" command
+      | Some rule -> 
+        begin match output, input with
+        | output::outputs, input::inputs -> 
+          output_build oc 
+            ~outputs:(List.map map_to_source_dir  outputs)
+            ~inputs:(List.map map_to_source_dir inputs) 
+            ~output:(map_to_source_dir output)
+            ~input:(map_to_source_dir input)
+            ~rule
+        | [], _ (* either output or input can not be empty *)
+        | _, []  -> assert false (* Error should be raised earlier *)
+        end
+      end
+  );  (* we need create a rule for it --
   {[
     rule ocamllex 
   ]}
@@ -337,6 +350,6 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd
 
 let handle_file_groups
  oc ~package_specs ~js_post_build_cmd
-  ~files_to_install
+  ~files_to_install ~custom_rules
   (file_groups  :  Bsb_build_ui.file_group list) st =
-  List.fold_left (handle_file_group oc ~package_specs ~js_post_build_cmd files_to_install ) st  file_groups
+  List.fold_left (handle_file_group oc ~package_specs ~custom_rules ~js_post_build_cmd files_to_install ) st  file_groups
