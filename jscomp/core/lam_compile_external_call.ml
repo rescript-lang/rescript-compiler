@@ -316,25 +316,29 @@ let translate_ffi
     E.call ~info:{arity=Full; call_info = Call_na}  (E.dot self name) args
 
   | Js_get {js_get_name = name; js_get_scopes = scopes } -> 
+    let args,cur_eff = assemble_args call_loc ffi false arg_types args in 
+    add_eff cur_eff @@ 
     begin match args with 
       | [obj] ->
         let obj = translate_scoped_access scopes obj in 
         E.dot obj name        
-      | _ -> assert false 
+      | _ -> assert false  (* Note these assertion happens in call site *)
     end  
   | Js_set {js_set_name = name; js_set_scopes = scopes  } -> 
+    (* assert (js_splice = false) ;  *)
+    let args,cur_eff = assemble_args call_loc ffi false arg_types args in 
+    add_eff cur_eff @@
     begin match args, arg_types with 
       | [obj; v], _ -> 
         let obj = translate_scoped_access scopes obj in
         E.assign (E.dot obj name) v         
-      | [obj], [_; {arg_type = Arg_cst cst ; _ }] ->
-        let obj = translate_scoped_access scopes obj in 
-        E.assign (E.dot obj name) (Lam_compile_const.translate_arg_cst cst)
       | _ -> 
         assert false 
     end
   | Js_get_index { js_get_index_scopes = scopes }
     -> 
+    let args,cur_eff = assemble_args call_loc ffi false arg_types args in 
+    add_eff cur_eff @@ 
     begin match args with
       | [obj; v ] -> 
         Js_arr.ref_array (translate_scoped_access scopes obj) v 
@@ -342,6 +346,8 @@ let translate_ffi
     end
   | Js_set_index { js_set_index_scopes = scopes }
     -> 
+    let args,cur_eff = assemble_args call_loc ffi false arg_types args in 
+    add_eff cur_eff @@ 
     begin match args with 
       | [obj; v ; value] -> 
           Js_arr.set_array (translate_scoped_access scopes obj) v value
