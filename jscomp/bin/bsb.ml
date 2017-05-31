@@ -9615,6 +9615,7 @@ module Bsb_gen : sig
 val output_ninja :
   cwd:string ->
   bsc_dir:string ->  
+  no_dev:bool ->
   Bsb_config_types.t -> unit 
 
 end = struct
@@ -9672,7 +9673,8 @@ let ninja_required_version = "ninja_required_version = 1.5.1 \n"
 
 let output_ninja
     ~cwd 
-    ~bsc_dir           
+    ~bsc_dir
+    ~no_dev
     {
     Bsb_config_types.package_name;
     ocamllex;
@@ -9721,7 +9723,7 @@ let output_ninja
           "bsdep", bsdep;
           "ocamllex", ocamllex;
           "bsc_flags", bsc_flags ;
-          "warnings", "-w " ^ warnings;
+          "warnings", (if no_dev then "-warn-error " else "-w ") ^ warnings;
           "ppx_flags", ppx_flags;
           "bs_package_includes", (Bsb_build_util.flag_concat dash_i @@ List.map (fun x -> x.Bsb_config_types.package_install_path) bs_dependencies);
           "bs_package_dev_includes", (Bsb_build_util.flag_concat dash_i @@ List.map (fun x -> x.Bsb_config_types.package_install_path) bs_dev_dependencies);  
@@ -10719,7 +10721,7 @@ let regenerate_ninja ~no_dev ~override_package_specs ~generate_watch_metadata cw
         Bsb_config_parse.merlin_file_gen ~cwd
           (bsc_dir // bsppx_exe, 
            bsc_dir // Literals.reactjs_jsx_ppx_exe) config;
-        Bsb_gen.output_ninja ~cwd ~bsc_dir config ; 
+        Bsb_gen.output_ninja ~cwd ~bsc_dir ~no_dev config ; 
         Literals.bsconfig_json :: config.globbed_dirs
         |> List.map
           (fun x ->

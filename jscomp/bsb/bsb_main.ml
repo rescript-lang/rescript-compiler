@@ -181,7 +181,7 @@ let regenerate_ninja ~no_dev ~override_package_specs ~generate_watch_metadata cw
         Bsb_config_parse.merlin_file_gen ~cwd
           (bsc_dir // bsppx_exe, 
            bsc_dir // Literals.reactjs_jsx_ppx_exe) config;
-        Bsb_gen.output_ninja ~cwd ~bsc_dir config ; 
+        Bsb_gen.output_ninja ~cwd ~bsc_dir ~no_dev config ; 
         Literals.bsconfig_json :: config.globbed_dirs
         |> List.map
           (fun x ->
