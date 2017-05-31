@@ -8245,8 +8245,8 @@ module Bsb_config_parse : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-val package_specs_and_entries_from_bsconfig : 
-    unit -> Bsb_config.package_specs * Bsb_config_types.entries_t list
+val package_specs_from_bsconfig : 
+    unit -> Bsb_config.package_specs
 
 
 val merlin_file_gen : 
@@ -8357,19 +8357,16 @@ let merlin_trailer = "####BSB GENERATED: NO EDIT}"
 let merlin_trailer_length = String.length merlin_trailer
 
 
-let package_specs_and_entries_from_bsconfig () = 
+let package_specs_from_bsconfig () = 
   let json = Ext_json_parse.parse_json_from_file Literals.bsconfig_json in
   begin match json with
     | Obj {map} ->
-      begin
-        let package_specs = ref (Bsb_default.package_specs) in
-        let entries = ref Bsb_default.main_entries in
-        map
-          |? (Bsb_build_schemas.package_specs, 
-              `Arr (fun s -> package_specs := get_package_specs_from_array s))
-          |? (Bsb_build_schemas.entries, `Arr (fun s -> entries := parse_entries s))
-          |> ignore;
-        (!package_specs, !entries)
+      begin 
+        match String_map.find_opt Bsb_build_schemas.package_specs map with 
+        | Some (Arr s ) -> 
+          get_package_specs_from_array s.content
+        | Some _
+        | None -> Bsb_default.package_specs
       end
     | _ -> assert false
   end
@@ -10863,15 +10860,15 @@ let build_bs_deps deps =
 
 let make_world_deps (config : Bsb_config_types.t option) =
   print_endline "\nMaking the dependency world!";
-  let (deps, _) =
+  let deps =
     match config with
     | None ->
       (* When this running bsb does not read bsconfig.json,
          we will read such json file to know which [package-specs]
          it wants
       *)
-      Bsb_config_parse.package_specs_and_entries_from_bsconfig ()
-    | Some {package_specs; entries} -> (package_specs, entries) in
+      Bsb_config_parse.package_specs_from_bsconfig ()
+    | Some {package_specs} -> package_specs in
   build_bs_deps deps
 
 (* see discussion #929, if we catch the exception, we don't have stacktrace... *)
