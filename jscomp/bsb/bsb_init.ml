@@ -30,10 +30,6 @@ let replace s env : string =
   Bsb_regex.global_substitute "\\${bsb:\\([-a-zA-Z0-9]+\\)}" 
     (fun (_s : string) templates -> 
        match templates with 
-       (* special case for name, package names cannot have spaces *)
-       | "name"::_ ->
-         Str.global_replace (Str.regexp " ") "-"
-           (String_hashtbl.find_exn env "name")
        | key::_ -> 
          String_hashtbl.find_exn  env key
        | _ -> assert false 
