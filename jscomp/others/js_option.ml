@@ -59,5 +59,27 @@ let andThen f x =
   | None -> None 
   | Some x -> f x [@bs]
 
+let map f x =
+  match x with
+  | None -> None
+  | Some x -> Some (f x [@bs])
 
+let orValue a x =
+  match x with
+  | None -> a
+  | Some x -> x
 
+let filter f x =
+  match x with
+  | None -> None
+  | Some x -> 
+    if f x [@bs] then
+      Some x
+    else
+      None
+
+let firstSome a b =
+  match (a, b) with
+  | (Some _, _) -> a
+  | (None, Some _) -> b
+  | (None, None) -> None

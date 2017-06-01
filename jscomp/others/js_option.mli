@@ -37,3 +37,11 @@ val getExn : 'a option -> 'a
 val equal : ('a -> 'b -> bool [@bs]) -> 'a option -> 'b option -> bool
 
 val andThen : ('a -> 'b option [@bs]) -> 'a option -> 'b option
+
+val map : ('a -> 'b [@bs]) -> 'a option -> 'b option
+
+val orValue : 'a -> 'a option -> 'a
+
+val filter : ('a -> bool [@bs]) -> 'a option -> 'a option
+
+val firstSome : 'a option -> 'a option -> 'a option
