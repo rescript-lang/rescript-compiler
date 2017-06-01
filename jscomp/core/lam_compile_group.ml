@@ -196,8 +196,9 @@ let compile  ~filename output_prefix env _sigs
   let _d  = fun s lam -> 
     let result = Lam_util.dump env s lam  in
 #if BS_DEBUG then 
-    Ext_log.dwarn __LOC__ "CHECK PASS %s@." s;
+    Ext_log.dwarn __LOC__ "START CHECKING PASS %s@." s;
     ignore @@ Lam.check (Js_config.get_current_file ()) lam;
+    Ext_log.dwarn __LOC__ "FINISH CHECKING PASS %s@." s;
 #end
     result 
   in
@@ -384,7 +385,7 @@ let lambda_as_module
   begin 
     Js_config.set_current_file filename ;  
 #if BS_DEBUG then    
-    Js_config.set_debug_file "mario_game.ml";
+    Js_config.set_debug_file "gpr_1667_test.ml";
 #end    
     let lambda_output = compile ~filename output_prefix env sigs lam in
     let (//) = Filename.concat in 

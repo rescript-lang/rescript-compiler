@@ -74193,7 +74193,10 @@ let refine_let
     (arg : Lam.t) (l : Lam.t)  : Lam.t =
 
   match (kind : Lam.let_kind ), arg, l  with 
-  | _, _, Lvar w when Ident.same w param (* let k = xx in k *)
+  | _, _, Lvar w when Ident.same w param 
+    (* let k = xx in k
+      there is no [rec] so [k] would not appear in [xx]
+     *)
     -> arg (* TODO: optimize here -- it's safe to do substitution here *)
   | _, _, Lprim {primitive ; args =  [Lvar w]; loc ; _} when Ident.same w param 
                                                           &&  (function | Lam.Pmakeblock _ -> false | _ ->  true) primitive
@@ -74206,12 +74209,18 @@ let refine_let
   (*     let v= subst_lambda (Ident_map.singleton param arg ) l in *)
   (*     Ext_log.err "@[substitution << @]@."; *)
   (* v *)
-  | _, _, Lapply {fn; args = [Lvar w]; loc; status} when Ident.same w param -> 
+  | _, _, Lapply {fn; args = [Lvar w]; loc; status} when
+   Ident.same w param &&
+    (not (Lam.hit_any_variables (Ident_set.singleton param) fn ))
+   -> 
     (** does not work for multiple args since 
         evaluation order unspecified, does not apply 
         for [js] in general, since the scope of js ir is loosen
 
         here we remove the definition of [param]
+        {[ let k = v in (body) k 
+        ]}
+        #1667 make sure body does not hit k 
     *)
     Lam.apply fn [arg] loc status
   | (Strict | StrictOpt ),
