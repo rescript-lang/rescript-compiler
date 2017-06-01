@@ -207,7 +207,7 @@ function changeEvalButton(bool) {
 $('#share').click(function (e) {
   var hashedCode = btoa(myCode1Mirror.getValue());
   if (hashedCode.length <= 1950) {
-    var url = 'https://bloomberg.github.io/bucklescript/js-demo/#' + hashedCode;
+    var url = window.location.href + '#' + hashedCode;
     $('#shareModal').modal('show');
     $('#shareModalBody').height('auto').html('<a href=' + '"' + url + '"' + 'target="_blank"' + '>' + url + '</a>');
   } else {
@@ -231,7 +231,7 @@ $('#share').click(function (e) {
       .done(function (response) {
         state.button('reset');
         $('#shareModal').modal('show');
-        var url = 'https://bloomberg.github.io/bucklescript/js-demo/?gist=' + response.id;
+        var url = window.location.href + '?gist=' + response.id;
         $('#shareModalBody').html('<a href=' + '"' + url + '"' + 'target="_blank"' + '>' + url + '</a>');
       })
       .error(function (err) {
