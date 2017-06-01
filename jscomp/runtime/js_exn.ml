@@ -69,7 +69,7 @@ let raiseRangeError str =
 
 type reference_error 
 
-external makeReferenceError : string  -> reference_error = "RerferenceError" [@@bs.new]
+external makeReferenceError : string  -> reference_error = "ReferenceError" [@@bs.new]
 
 let raiseReferenceError str = 
   raise (Obj.magic (makeReferenceError str))
