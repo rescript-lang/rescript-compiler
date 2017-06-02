@@ -1,5 +1,4 @@
 {
   "name": "${bsb:name}",
-  "sources": ["src"],
-  "reason" : { "react-jsx" : true }
+  "sources": ["src"]
 }

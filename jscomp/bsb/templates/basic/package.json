@@ -2,10 +2,8 @@
   "name": "${bsb:name}",
   "version": "${bsb:proj-version}",
   "scripts": {
-    "clean": "bsb -clean",
-    "clean:all": "bsb -clean-world",
-    "build": "bsb",
-    "build:all": "bsb -make-world",
+    "clean": "bsb -clean-world",
+    "build": "bsb -make-world",
     "watch": "bsb -make-world -w"
   },
   "keywords": [
