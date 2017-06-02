@@ -511,6 +511,15 @@ type check_result =
 val is_valid_source_name :
    string -> check_result
 
+(* TODO handle cases like 
+   '@angular/core'
+   its directory structure is like 
+   {[
+     @angualar
+     |-------- core
+   ]}
+*)
+val is_valid_npm_package_name : string -> bool 
 val no_char : string -> char -> int -> int -> bool 
 
 
@@ -876,6 +885,27 @@ let is_valid_module_file (s : string) =
       (fun x -> 
          match x with 
          | 'A'..'Z' | 'a'..'z' | '0'..'9' | '_' | '\'' -> true
+         | _ -> false )
+  | _ -> false 
+
+
+(* https://docs.npmjs.com/files/package.json 
+  Some rules:
+  The name must be less than or equal to 214 characters. This includes the scope for scoped packages.
+  The name can't start with a dot or an underscore.
+  New packages must not have uppercase letters in the name.
+  The name ends up being part of a URL, an argument on the command line, and a folder name. Therefore, the name can't contain any non-URL-safe characters.
+*)
+let is_valid_npm_package_name (s : string) = 
+  let len = String.length s in 
+  len <= 214 && (* magic number forced by npm *)
+  len > 0 &&
+  match String.unsafe_get s 0 with 
+  | 'a' .. 'z' | '@' -> 
+    unsafe_for_all_range s ~start:1 ~finish:(len - 1)
+      (fun x -> 
+         match x with 
+         |  'a'..'z' | '0'..'9' | '_' | '-' -> true
          | _ -> false )
   | _ -> false 
 
@@ -10221,7 +10251,6 @@ let process_themes env theme proj_dir (themes : OCamlRes.Res.node list ) =
     List.iter (fun node -> process_theme_aux env proj_dir node ) nodes
   | _ -> assert false  
 
-
 (** TODO: run npm link *)
 let init_sample_project ~cwd ~theme name = 
   let env = String_hashtbl.create 0 in 
@@ -10239,34 +10268,44 @@ let init_sample_project ~cwd ~theme name =
         prerr_endline ("failed to run : " ^ npm_link);
         exit exit_code
       end
-  in 
-  let ensure_no_spaces name =
-    if String.contains name ' '
-    then begin
-      Format.fprintf Format.err_formatter "Package name cannot contain spaces: %s@." name ;
-      exit 2
-    end
-  in
+  in   
   begin match name with 
     | "." -> 
-      let folder = Filename.basename cwd in
-      ensure_no_spaces folder;
-      String_hashtbl.add env "name" folder;
-      action ()
-    | _ -> 
-      ensure_no_spaces name;
-      Format.fprintf Format.std_formatter "Making directory %s@." name;  
-      if Sys.file_exists name then 
+      let name = Filename.basename cwd in
+      if Ext_string.is_valid_npm_package_name name then 
         begin 
-          Format.fprintf Format.err_formatter "%s already existed@." name ;
-          exit 2
-        end 
-      else
-        begin              
-          Unix.mkdir name 0o777;     
           String_hashtbl.add env "name" name;
-          enter_dir cwd name action
+          action ()
         end
+      else 
+        begin
+          Format.fprintf Format.err_formatter 
+            "@{<error>Invalid package name@} %S @."
+            name ;
+          exit 2    
+        end
+
+    | _ -> 
+      if Ext_string.is_valid_npm_package_name name 
+      then begin 
+        Format.fprintf Format.std_formatter "Making directory %s@." name;  
+        if Sys.file_exists name then 
+          begin 
+            Format.fprintf Format.err_formatter "%s already existed@." name ;
+            exit 2
+          end 
+        else
+          begin              
+            Unix.mkdir name 0o777;     
+            String_hashtbl.add env "name" name;
+            enter_dir cwd name action
+          end
+      end else begin 
+        Format.fprintf Format.err_formatter 
+          "@{<error>Invalid package name@} %S @."
+          name ;
+        exit 2                        
+      end 
   end
 
 
