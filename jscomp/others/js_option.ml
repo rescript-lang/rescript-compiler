@@ -64,7 +64,7 @@ let map f x =
   | None -> None
   | Some x -> Some (f x [@bs])
 
-let orValue a x =
+let default a x =
   match x with
   | None -> a
   | Some x -> x

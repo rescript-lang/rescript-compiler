@@ -168,21 +168,21 @@ var option_suites_001 = /* :: */[
                             ],
                             /* :: */[
                               /* tuple */[
-                                "option_orValue_Some",
+                                "option_default_Some",
                                 function () {
                                   return /* Eq */Block.__(0, [
                                             2,
-                                            Js_option.orValue(3, /* Some */[2])
+                                            Js_option.$$default(3, /* Some */[2])
                                           ]);
                                 }
                               ],
                               /* :: */[
                                 /* tuple */[
-                                  "option_orValue_None",
+                                  "option_default_None",
                                   function () {
                                     return /* Eq */Block.__(0, [
                                               3,
-                                              Js_option.orValue(3, /* None */0)
+                                              Js_option.$$default(3, /* None */0)
                                             ]);
                                   }
                                 ],

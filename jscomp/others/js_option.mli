@@ -40,7 +40,7 @@ val andThen : ('a -> 'b option [@bs]) -> 'a option -> 'b option
 
 val map : ('a -> 'b [@bs]) -> 'a option -> 'b option
 
-val orValue : 'a -> 'a option -> 'a
+val default : 'a -> 'a option -> 'a
 
 val filter : ('a -> bool [@bs]) -> 'a option -> 'a option
 

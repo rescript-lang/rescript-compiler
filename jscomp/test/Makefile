@@ -157,6 +157,7 @@ OTHERS := literals a test_ari test_export2 test_internalOO test_obj_simple_ffi t
 	mario_game\
 	gpr_1600_test\
 	js_list_test\
+	js_option_test\
 	gpr_1658_test\
 	gpr_1667_test
 
