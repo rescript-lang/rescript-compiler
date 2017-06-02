@@ -4,13 +4,13 @@
   "scripts": {
     "clean": "bsb -clean-world",
     "build": "bsb -make-world",
-    "watch": "bsb -make-world -w"
+    "start": "bsb -make-world -w"
   },
   "keywords": [
     "BuckleScript"
   ],
   "license": "MIT",
   "devDependencies": {
-    "bs-platform": "${bsb:bs-version}"
+    "bs-platform": "^${bsb:bs-version}"
   }
 }

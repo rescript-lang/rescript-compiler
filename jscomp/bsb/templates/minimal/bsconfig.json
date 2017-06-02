@@ -1,0 +1,4 @@
+{
+  "name": "${bsb:name}",
+  "sources": ["src"]
+}
