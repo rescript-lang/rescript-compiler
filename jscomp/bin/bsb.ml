@@ -9706,7 +9706,7 @@ let output_ninja
         match built_in_dependency with 
         | None -> bsc_flags   
         | Some {package_install_path} -> 
-          Ext_string.inter3 dash_i package_install_path bsc_flags
+          Ext_string.inter3 dash_i (Filename.quote package_install_path) bsc_flags
   
       in 
       Bsb_ninja.output_kvs
@@ -9870,7 +9870,7 @@ let root = OCamlRes.Res.([
         "\n\
          \n\
          let () = Js.log \"Hello, BuckleScript\"")]) ;
-    File ("ReadME.md",
+    File ("README.md",
       "\n\
        \n\
        # Build\n\
@@ -10211,11 +10211,21 @@ let init_sample_project ~cwd ~theme name =
         exit exit_code
       end
   in 
+  let ensure_no_spaces name =
+    if String.contains name ' '
+    then begin
+      Format.fprintf Format.err_formatter "Package name cannot contain spaces: %s@." name ;
+      exit 2
+    end
+  in
   begin match name with 
     | "." -> 
-      String_hashtbl.add env "name"  (Filename.basename cwd);
+      let folder = Filename.basename cwd in
+      ensure_no_spaces folder;
+      String_hashtbl.add env "name" folder;
       action ()
     | _ -> 
+      ensure_no_spaces name;
       Format.fprintf Format.std_formatter "Making directory %s@." name;  
       if Sys.file_exists name then 
         begin 

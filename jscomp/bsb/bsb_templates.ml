@@ -6,7 +6,7 @@ let root = OCamlRes.Res.([
         "\n\
          \n\
          let () = Js.log \"Hello, BuckleScript\"")]) ;
-    File ("ReadME.md",
+    File ("README.md",
       "\n\
        \n\
        # Build\n\

@@ -89,7 +89,7 @@ let output_ninja
         match built_in_dependency with 
         | None -> bsc_flags   
         | Some {package_install_path} -> 
-          Ext_string.inter3 dash_i package_install_path bsc_flags
+          Ext_string.inter3 dash_i (Filename.quote package_install_path) bsc_flags
   
       in 
       Bsb_ninja.output_kvs
