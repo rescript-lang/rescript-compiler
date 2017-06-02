@@ -107,6 +107,15 @@ type check_result =
 val is_valid_source_name :
    string -> check_result
 
+(* TODO handle cases like 
+   '@angular/core'
+   its directory structure is like 
+   {[
+     @angualar
+     |-------- core
+   ]}
+*)
+val is_valid_npm_package_name : string -> bool 
 val no_char : string -> char -> int -> int -> bool 
 
 

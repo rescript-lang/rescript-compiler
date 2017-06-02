@@ -514,6 +514,53 @@ function is_valid_module_file(s) {
   }
 }
 
+function is_valid_npm_package_name(s) {
+  var len = s.length;
+  if (len <= 214) {
+    if (len > 0) {
+      var match = s.charCodeAt(0);
+      var exit = 0;
+      if (match >= 97) {
+        if (match >= 123) {
+          return /* false */0;
+        } else {
+          exit = 1;
+        }
+      } else if (match !== 64) {
+        return /* false */0;
+      } else {
+        exit = 1;
+      }
+      if (exit === 1) {
+        return unsafe_for_all_range(s, 1, len - 1 | 0, function (x) {
+                    if (x >= 58) {
+                      if (x >= 97) {
+                        if (x >= 123) {
+                          return /* false */0;
+                        } else {
+                          return /* true */1;
+                        }
+                      } else if (x !== 95) {
+                        return /* false */0;
+                      } else {
+                        return /* true */1;
+                      }
+                    } else if (x !== 45 && x < 48) {
+                      return /* false */0;
+                    } else {
+                      return /* true */1;
+                    }
+                  });
+      }
+      
+    } else {
+      return /* false */0;
+    }
+  } else {
+    return /* false */0;
+  }
+}
+
 function is_valid_source_name(name) {
   var match = check_any_suffix_case_then_chop(name, /* :: */[
         ".ml",
@@ -760,6 +807,7 @@ exports.rindex_rec_opt                  = rindex_rec_opt;
 exports.rindex_neg                      = rindex_neg;
 exports.rindex_opt                      = rindex_opt;
 exports.is_valid_module_file            = is_valid_module_file;
+exports.is_valid_npm_package_name       = is_valid_npm_package_name;
 exports.is_valid_source_name            = is_valid_source_name;
 exports.unsafe_no_char                  = unsafe_no_char;
 exports.unsafe_no_char_idx              = unsafe_no_char_idx;
