@@ -36,7 +36,7 @@ type callback =
   | `Id of (Ext_json_types.t -> unit )
   ]
 
-  
+
 type path = string list 
 
 type status = 
@@ -46,26 +46,26 @@ type status =
 
 let test   ?(fail=(fun () -> ())) key 
     (cb : callback) (m  : Ext_json_types.t String_map.t)
-     =
-     begin match String_map.find_exn key m, cb with 
-       | exception Not_found  ->
-        begin match cb with `Not_found f ->  f ()
-        | _ -> fail ()
-        end      
-       | True _, `Bool cb -> cb true
-       | False _, `Bool cb  -> cb false 
-       | Flo {flo = s} , `Flo cb  -> cb s 
-       | Obj {map = b} , `Obj cb -> cb b 
-       | Arr {content}, `Arr cb -> cb content 
-       | Arr {content; loc_start ; loc_end}, `Arr_loc cb -> 
-         cb content  loc_start loc_end 
-       | Null _, `Null cb  -> cb ()
-       | Str {str = s }, `Str cb  -> cb s 
-       | Str {str = s ; loc }, `Str_loc cb -> cb s loc 
-       |  any  , `Id  cb -> cb any
-       | _, _ -> fail () 
-     end;
-     m
+  =
+  begin match String_map.find_exn key m, cb with 
+    | exception Not_found  ->
+      begin match cb with `Not_found f ->  f ()
+                        | _ -> fail ()
+      end      
+    | True _, `Bool cb -> cb true
+    | False _, `Bool cb  -> cb false 
+    | Flo {flo = s} , `Flo cb  -> cb s 
+    | Obj {map = b} , `Obj cb -> cb b 
+    | Arr {content}, `Arr cb -> cb content 
+    | Arr {content; loc_start ; loc_end}, `Arr_loc cb -> 
+      cb content  loc_start loc_end 
+    | Null _, `Null cb  -> cb ()
+    | Str {str = s }, `Str cb  -> cb s 
+    | Str {str = s ; loc }, `Str_loc cb -> cb s loc 
+    |  any  , `Id  cb -> cb any
+    | _, _ -> fail () 
+  end;
+  m
 let query path (json : Ext_json_types.t ) =
   let rec aux acc paths json =
     match path with 
@@ -89,7 +89,50 @@ let loc_of (x : Ext_json_types.t) =
   | Arr p -> p.loc_start
   | Obj p -> p.loc
   | Flo p -> p.loc
- 
 
 
+let rec equal 
+    (x : Ext_json_types.t)
+    (y : Ext_json_types.t) = 
+  match x with 
+  | Null _ -> (* [%p? Null _ ] *)
+    begin match y with
+      | Null _ -> true
+      | _ -> false end
+  | Str {str } -> 
+    begin match y with 
+      | Str {str = str2} -> str = str2
+      | _ -> false end
+  | Flo {flo} 
+    ->
+    begin match y with
+      |  Flo {flo = flo2} -> 
+        flo = flo2 
+      | _ -> false
+    end
+  | True _ -> 
+    begin match y with 
+      | True _ -> true 
+      | _ -> false 
+    end
+  | False _ -> 
+    begin match y with 
+      | False _ -> true 
+      | _ -> false 
+    end     
+  | Arr {content} 
+    -> 
+    begin match y with 
+      | Arr {content = content2}
+        ->
+        Ext_array.for_all2_no_exn equal content content2
+      | _ -> false 
+    end
+
+  | Obj {map} -> 
+    begin match y with 
+      | Obj { map = map2} -> 
+        String_map.equal equal map map2
+      | _ -> false 
+    end 
 

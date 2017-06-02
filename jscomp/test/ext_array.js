@@ -283,6 +283,31 @@ function is_empty(arr) {
   return +(arr.length === 0);
 }
 
+function unsafe_loop(_index, len, p, xs, ys) {
+  while(true) {
+    var index = _index;
+    if (index >= len) {
+      return /* true */1;
+    } else if (Curry._2(p, xs[index], ys[index])) {
+      _index = index + 1 | 0;
+      continue ;
+      
+    } else {
+      return /* false */0;
+    }
+  };
+}
+
+function for_all2_no_exn(p, xs, ys) {
+  var len_xs = xs.length;
+  var len_ys = ys.length;
+  if (len_xs === len_ys) {
+    return unsafe_loop(0, len_xs, p, xs, ys);
+  } else {
+    return /* false */0;
+  }
+}
+
 exports.reverse_range    = reverse_range;
 exports.reverse_in_place = reverse_in_place;
 exports.reverse          = reverse;
@@ -301,4 +326,6 @@ exports.find_with_index  = find_with_index;
 exports.find_and_split   = find_and_split;
 exports.exists           = exists;
 exports.is_empty         = is_empty;
+exports.unsafe_loop      = unsafe_loop;
+exports.for_all2_no_exn  = for_all2_no_exn;
 /* No side effect */
