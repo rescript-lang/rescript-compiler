@@ -76,8 +76,10 @@ ext/ext_sexp.cmx : ext/ext_sexp.cmi
 ext/ext_json_types.cmx : ext/string_map.cmx
 ext/ext_json_parse.cmx : ext/string_map.cmx ext/ext_position.cmx \
     ext/ext_json_types.cmx ext/ext_array.cmx ext/ext_json_parse.cmi
+ext/ext_json_write.cmx : ext/string_map.cmx ext/ext_json_types.cmx \
+    ext/ext_json_write.cmi
 ext/ext_json.cmx : ext/string_map.cmx ext/ext_json_types.cmx \
-    ext/ext_json.cmi
+    ext/ext_array.cmx ext/ext_json.cmi
 ext/ident_hash_set.cmx : ext/hash_set_gen.cmx ext/ext_ident.cmx \
     stubs/bs_hash_stubs.cmx ext/ident_hash_set.cmi
 ext/hash_set_poly.cmx : ext/hash_set_gen.cmx ext/hash_set_poly.cmi
@@ -138,6 +140,7 @@ ext/ext_pp_scope.cmi : ext/ident_set.cmi
 ext/ext_io.cmi :
 ext/ext_sexp.cmi :
 ext/ext_json_parse.cmi : ext/ext_json_types.cmx
+ext/ext_json_write.cmi : ext/ext_json_types.cmx
 ext/ext_json.cmi : ext/string_map.cmi ext/ext_position.cmi \
     ext/ext_json_types.cmx
 ext/ident_hash_set.cmi : ext/hash_set_gen.cmx
@@ -655,7 +658,8 @@ ounit_tests/ounit_scc_tests.cmx : ext/string_hashtbl.cmx ounit/oUnit.cmx \
     ext/int_vec_vec.cmx ext/int_vec.cmx ext/ext_string.cmx ext/ext_scc.cmx
 ounit_tests/ounit_hashtbl_tests.cmx : ext/string_hashtbl.cmx ounit/oUnit.cmx
 ounit_tests/ounit_json_tests.cmx : ext/string_map.cmx ounit/oUnit.cmx \
-    ext/ext_json_types.cmx ext/ext_json_parse.cmx ext/ext_json.cmx
+    ext/ext_pervasives.cmx ext/ext_json_write.cmx ext/ext_json_types.cmx \
+    ext/ext_json_parse.cmx ext/ext_json.cmx
 ounit_tests/ounit_map_tests.cmx : ounit/oUnit.cmx ext/int_map.cmx
 ounit_tests/ounit_ordered_hash_set_tests.cmx : \
     ext/ordered_hash_set_string.cmx ounit/oUnit.cmx ext/ext_util.cmx \

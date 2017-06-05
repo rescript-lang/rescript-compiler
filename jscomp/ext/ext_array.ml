@@ -184,3 +184,18 @@ let exists p a =
 
 let is_empty arr =
   Array.length arr = 0
+
+
+let rec unsafe_loop index len p xs ys  = 
+  if index >= len then true
+  else 
+    p 
+      (Array.unsafe_get xs index)
+      (Array.unsafe_get ys index) &&
+      unsafe_loop (succ index) len p xs ys 
+   
+let for_all2_no_exn p xs ys = 
+  let len_xs = Array.length xs in 
+  let len_ys = Array.length ys in 
+  len_xs = len_ys &&    
+  unsafe_loop 0 len_xs p xs ys

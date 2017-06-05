@@ -54,3 +54,5 @@ val test:
 val query : path -> Ext_json_types.t ->  status
 
 val loc_of : Ext_json_types.t -> Ext_position.t
+
+val equal : Ext_json_types.t -> Ext_json_types.t -> bool 
