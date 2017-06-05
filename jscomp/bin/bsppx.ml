@@ -17683,7 +17683,7 @@ let handle_core_type
           let get ty name attrs =
             let attrs, core_type =
               match Ast_attributes.process_attributes_rev attrs with
-              | `Nothing, attrs -> attrs, core_type
+              | `Nothing, attrs -> attrs, ty (* #1678 *)
               | `Uncurry, attrs ->
                 attrs, Ast_attributes.bs +> ty
               | `Method, _
@@ -17695,7 +17695,7 @@ let handle_core_type
           let set ty name attrs =
             let attrs, core_type =
               match Ast_attributes.process_attributes_rev attrs with
-              | `Nothing, attrs -> attrs, core_type
+              | `Nothing, attrs -> attrs, ty
               | `Uncurry, attrs ->
                 attrs, Ast_attributes.bs +> ty 
               | `Method, _
