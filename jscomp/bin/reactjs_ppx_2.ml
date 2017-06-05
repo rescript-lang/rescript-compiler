@@ -25392,9 +25392,9 @@ open Migrate_parsetree
 module To_current = Convert(OCaml_404)(OCaml_current)
 
 end
-module Reactjs_jsx_ppx
+module Reactjs_jsx_ppx_2
 = struct
-#1 "reactjs_jsx_ppx.ml"
+#1 "reactjs_jsx_ppx_2.ml"
 (* transform `div props1::a props2::b children::[foo, bar] () [@JSX]` into
    `ReactDOMRe.createElement "div" props::[%bs.obj {props1: 1, props2: b}] [|foo, bar|]`.
 
@@ -25577,7 +25577,7 @@ let jsxMapper () =
             | Some 1 -> oldJSX
             | Some 2 -> newJSX modulePath
             | Some _ -> assert false
-            | None -> oldJSX
+            | None -> newJSX modulePath
           in f mapper loc attrs callExpression callArguments
         (* div prop1::foo prop2:bar children::[bla] () *)
         (* turn that into ReactDOMRe.createElement props::(ReactDOMRe.props props1::foo props2::bar ()) [|bla|] *)
