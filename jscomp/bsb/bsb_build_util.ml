@@ -244,3 +244,18 @@ let rec walk_all_deps_aux visited paths top dir cb =
 let walk_all_deps dir cb = 
   let visited = String_hashtbl.create 0 in 
   walk_all_deps_aux visited [] true dir cb 
+
+let get_ocaml_dir cwd =
+  if Ext_sys.is_windows_or_cygwin then begin
+    Format.fprintf Format.err_formatter "@{<warning>Windows not supported.@}";
+    (Filename.dirname (get_bsc_dir cwd)) // "ocaml_src"
+  end else begin
+    let ocamlc = Bsb_unix.run_command_capture_stdout "which ocamlc" in
+    (* TODO(sansouci): Probably pretty brittle. If there is no output to stdout
+       it's likely there was an error on stderr of the kind "ocamlc not found".
+       We just assume that it's bad either way and we simply fallback to the
+       local `ocamlc`. *)
+    if ocamlc = "" then
+      (Filename.dirname (get_bsc_dir cwd)) // "ocaml_src"
+    else Filename.dirname ocamlc
+  end
