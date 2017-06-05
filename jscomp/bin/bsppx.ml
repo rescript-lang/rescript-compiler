@@ -5628,7 +5628,8 @@ let is_valid_source_name name : check_result =
   match check_any_suffix_case_then_chop name [
       ".ml"; 
       ".re";
-      ".mli"; ".mll"; ".rei"
+      ".mli"; 
+      ".rei"
     ] with 
   | None -> Suffix_mismatch
   | Some x -> 
@@ -10806,6 +10807,12 @@ val find_and_split :
 val exists : ('a -> bool) -> 'a array -> bool 
 
 val is_empty : 'a array -> bool 
+
+val for_all2_no_exn : 
+  ('a -> 'b -> bool) -> 
+  'a array ->
+  'b array -> 
+  bool
 end = struct
 #1 "ext_array.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -10994,6 +11001,21 @@ let exists p a =
 
 let is_empty arr =
   Array.length arr = 0
+
+
+let rec unsafe_loop index len p xs ys  = 
+  if index >= len then true
+  else 
+    p 
+      (Array.unsafe_get xs index)
+      (Array.unsafe_get ys index) &&
+      unsafe_loop (succ index) len p xs ys 
+   
+let for_all2_no_exn p xs ys = 
+  let len_xs = Array.length xs in 
+  let len_ys = Array.length ys in 
+  len_xs = len_ys &&    
+  unsafe_loop 0 len_xs p xs ys
 end
 module Ext_json_types
 = struct

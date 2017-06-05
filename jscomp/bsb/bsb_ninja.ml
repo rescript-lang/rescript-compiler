@@ -156,7 +156,8 @@ let (++) (us : info) (vs : info) =
 let install_file (file : string) files_to_install =
   String_hash_set.add  files_to_install (Ext_filename.chop_extension_if_any file )
 
-let handle_file_group oc ~package_specs ~js_post_build_cmd  
+let handle_file_group oc ~custom_rules 
+    ~package_specs ~js_post_build_cmd  
     (files_to_install : String_hash_set.t) acc (group: Bsb_build_ui.file_group) : info =
   let handle_module_info  oc  module_name
       ( module_info : Binary_cache.module_info)
@@ -166,11 +167,11 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd
       | Export_all -> true
       | Export_none -> false
       | Export_set set ->  String_set.mem module_name set in
-    let emit_build (kind : [`Ml | `Mll | `Re | `Mli | `Rei ])  file_input : info =
+    let emit_build (kind : [`Ml | `Re | `Mli | `Rei ])  file_input : info =
       let filename_sans_extension = Filename.chop_extension file_input in
       let input = Bsb_config.proj_rel file_input in
       let output_file_sans_extension = filename_sans_extension in
-      let output_ml = output_file_sans_extension ^ Literals.suffix_ml in
+      (*let output_ml = output_file_sans_extension ^ Literals.suffix_ml in*)
       let output_mlast = output_file_sans_extension  ^ Literals.suffix_mlast in
       let output_mlastd = output_file_sans_extension ^ Literals.suffix_mlastd in
       let output_mliast = output_file_sans_extension ^ Literals.suffix_mliast in
@@ -204,20 +205,20 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd
            ]
         )
       in
-      if kind = `Mll then
+      (*if kind = `Mll then
         output_build oc
           ~output:output_ml
           ~input
-          ~rule: Rules.build_ml_from_mll ;
+          ~rule: Rules.build_ml_from_mll ;*)
       begin match kind with
-        | `Mll
+        (*| `Mll*)
         | `Ml
         | `Re ->
           let input, rule  =
             if kind = `Re then
               input, Rules.build_ast_and_deps_from_reason_impl
-            else if kind = `Mll then
-              output_ml, Rules.build_ast_and_deps
+            (*else if kind = `Mll then
+              output_ml, Rules.build_ast_and_deps*)
             else
               input, Rules.build_ast_and_deps
           in
@@ -305,25 +306,29 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd
         emit_build `Rei rei_file
       | Mli_empty -> zero
     end ++
-    begin match module_info.mll with
-      | Some mll_file ->
-        begin match module_info.ml with
-          | Ml_empty -> emit_build `Mll mll_file
-          | Ml input | Re input ->
-            failwith ("both "^ mll_file ^ " and " ^ input ^ " are found in source listings" )
-        end
-      | None -> zero
-    end ++ info
+    info
 
   in
-  (*
+  let map_to_source_dir = 
+    (fun x -> Bsb_config.proj_rel (group.dir //x )) in
   group.generators
-  |> List.iter (fun  ({output; input; cmd}  : Bsb_build_ui.generator)-> 
-    output_build oc ~output:(Bsb_config.proj_rel output) 
-    ~input:(Bsb_config.proj_rel input)
-    ~rule:cmd 
-  ); 
-  *) (* we need create a rule for it --
+  |> List.iter (fun  ({output; input; command}  : Bsb_build_ui.build_generator)-> 
+      begin match String_map.find_opt command custom_rules with 
+      | None -> Ext_pervasives.failwithf ~loc:__LOC__ "custom rule %s used but  not defined" command
+      | Some rule -> 
+        begin match output, input with
+        | output::outputs, input::inputs -> 
+          output_build oc 
+            ~outputs:(List.map map_to_source_dir  outputs)
+            ~inputs:(List.map map_to_source_dir inputs) 
+            ~output:(map_to_source_dir output)
+            ~input:(map_to_source_dir input)
+            ~rule
+        | [], _ (* either output or input can not be empty *)
+        | _, []  -> assert false (* Error should be raised earlier *)
+        end
+      end
+  );  (* we need create a rule for it --
   {[
     rule ocamllex 
   ]}
@@ -337,6 +342,6 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd
 
 let handle_file_groups
  oc ~package_specs ~js_post_build_cmd
-  ~files_to_install
+  ~files_to_install ~custom_rules
   (file_groups  :  Bsb_build_ui.file_group list) st =
-  List.fold_left (handle_file_group oc ~package_specs ~js_post_build_cmd files_to_install ) st  file_groups
+  List.fold_left (handle_file_group oc ~package_specs ~custom_rules ~js_post_build_cmd files_to_install ) st  file_groups

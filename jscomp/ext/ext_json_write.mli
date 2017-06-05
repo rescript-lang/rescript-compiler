@@ -23,32 +23,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
+val to_string : Ext_json_types.t -> string 
 
 
-type t  
-
-val get_name : t  -> out_channel -> string
-
-val build_ast_and_deps : t
-val build_ast_and_deps_from_reason_impl : t 
-val build_ast_and_deps_from_reason_intf : t 
-val build_bin_deps : t 
-val reload : t 
-val copy_resources : t
-val build_ml_from_mll : t 
-val build_cmj_js : t
-val build_cmj_cmi_js : t 
-val build_cmi : t
-
-
-(** rules are generally composed of built-in rules and customized rules, there are two design choices:
-    1. respect custom rules with the same name, then we need adjust our built-in 
-    rules dynamically in case the conflict.
-    2. respect our built-in rules, then we only need re-load custom rules for each bsconfig.json
-*)
-
-
-(** Since now we generate ninja files per bsconfig.json in a single process, 
-    we must make sure it is re-entrant
-*)
-val reset : string String_map.t -> t String_map.t
+val to_channel : out_channel -> Ext_json_types.t -> unit

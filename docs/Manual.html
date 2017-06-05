@@ -679,6 +679,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </li>
 <li><a href="#_a_real_world_example_of_using_code_bsb_code">A real world example of using <code>bsb</code></a></li>
 <li><a href="#_build_using_make">Build using Make</a></li>
+<li><a href="#_customize_rules_generators_support_since_1_7_4">Customize rules (generators support, @since 1.7.4)</a></li>
 </ul>
 </li>
 <li><a href="#_faq">FAQ</a></li>
@@ -5084,6 +5085,61 @@ make depend <b class="conum">(2)</b></code></pre>
 </div>
 <div class="paragraph">
 <p>Now in your working directory, type <code>watchman -j &lt; build.json</code> and enjoy the lightning build speed.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_customize_rules_generators_support_since_1_7_4"><a class="anchor" href="#_customize_rules_generators_support_since_1_7_4"></a>Customize rules (generators support, @since 1.7.4)</h3>
+<div class="paragraph">
+<p>It is quite common that programmers use some pre-processors to generate some bolierpolate code during developement.</p>
+</div>
+<div class="paragraph">
+<p>Note pre-processors can be classified as two categories, one is system-dependent which should be delayed until running on user machines, the other is system-indepdent , lex, yacc, m4, re2c, etc, which could be executed anytime.</p>
+</div>
+<div class="paragraph">
+<p>BuckleScript has built in support for conditional compilation, this section is about the second part, since it is system-indepdent, we ask users to always generate such code and check in before shipping, this would help cut the dependencies for end users.</p>
+</div>
+<div class="paragraph">
+<p>A typical example would be like this</p>
+</div>
+<div class="listingblock">
+<div class="title">Bsb using ocamlyacc</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span class="tok-p">{</span>
+    <span class="tok-s2">&quot;generators&quot;</span> <span class="tok-o">:</span> <span class="tok-p">[</span>
+        <span class="tok-p">{</span> <span class="tok-s2">&quot;name&quot;</span> <span class="tok-o">:</span> <span class="tok-s2">&quot;ocamlyacc&quot;</span> <span class="tok-p">,</span>
+          <span class="tok-s2">&quot;command&quot;</span> <span class="tok-o">:</span> <span class="tok-s2">&quot;ocamlyacc $in&quot;</span> <span class="tok-p">}</span>
+    <span class="tok-p">],</span>
+    <span class="tok-p">...,</span>
+    <span class="tok-s2">&quot;sources&quot;</span> <span class="tok-o">:</span> <span class="tok-p">{</span>
+        <span class="tok-s2">&quot;dir&quot;</span> <span class="tok-o">:</span> <span class="tok-s2">&quot;src&quot;</span><span class="tok-p">,</span>
+        <span class="tok-s2">&quot;generators&quot;</span> <span class="tok-o">:</span> <span class="tok-p">[</span>
+            <span class="tok-p">{</span>
+                <span class="tok-s2">&quot;name&quot;</span> <span class="tok-o">:</span> <span class="tok-s2">&quot;ocamlyacc&quot;</span><span class="tok-p">,</span>
+                <span class="tok-s2">&quot;edge&quot;</span> <span class="tok-o">:</span> <span class="tok-p">[</span><span class="tok-s2">&quot;test.ml&quot;</span><span class="tok-p">,</span> <span class="tok-s2">&quot;test.mli&quot;</span><span class="tok-p">,</span> <span class="tok-s2">&quot;:&quot;</span><span class="tok-p">,</span> <span class="tok-s2">&quot;test.mly&quot;</span><span class="tok-p">]</span>
+            <span class="tok-p">}</span>
+        <span class="tok-p">]</span>
+    <span class="tok-p">}</span>
+<span class="tok-p">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note <code>ocamlyacc</code> will generate in <code>test.ml</code> and <code>test.mli</code> in the same directory with <code>test.mly</code>, user should check in generated file since then users would not need run  ocamlyacc again, this would apply to <code>menhir</code> as well.</p>
+</div>
+<div class="paragraph">
+<p>When users are developing current project, <code>bsb</code> will track the dependencies between <code>test.ml</code> and <code>test.mly</code> properly, when released
+as  a package, <code>bsb</code> will cut such dependency, so that users will
+only need the generated <code>test.ml</code>, to help test such behavior in development mode, users could set it manually</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span class="tok-p">{</span>
+    <span class="tok-p">...,</span>
+    <span class="tok-s2">&quot;cut-generators&quot;</span> <span class="tok-o">:</span> <span class="tok-kc">true</span>
+<span class="tok-p">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then <code>bsb</code> will not re-generate <code>test.ml</code> whenever <code>test.mly</code> changes.</p>
 </div>
 </div>
 </div>
