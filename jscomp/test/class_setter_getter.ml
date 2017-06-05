@@ -25,3 +25,15 @@ class type _y3 = object
 end[@bs]
 type y3 = _y3 Js.t
 
+
+type yy2 = < height : int [@bs.get{undefined ; null}] [@bs.set] > Js.t
+
+
+let fff (x : yy2) = 
+   x##height #= 2 
+
+
+let ff (x : y2) (z : yy2) = 
+   [ x ##height ; 
+    z##height
+   ]
