@@ -46,7 +46,7 @@ type  file_group =
 
 
 type t = 
-  { files :  file_group list ; 
+  { files :  file_group list ; (* flattened list of directories *)
     intervals :  Ext_file_pp.interval list ;
     globbed_dirs : string list ; 
 
@@ -60,7 +60,8 @@ type parsing_cxt = {
   no_dev : bool ;
   dir_index : dir_index ; 
   cwd : string ;
-  root : string 
+  root : string ;
+  cut_generators : bool
 }
 
 

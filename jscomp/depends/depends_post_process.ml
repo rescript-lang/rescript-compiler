@@ -72,7 +72,7 @@ let handle_bin_depfile
       Array.fold_left
         (fun ((acc, len) as v) k  -> 
            match String_map.find_opt k data.(0) with
-           | Some ({ml = Ml s | Re s  } | {mll = Some s }) 
+           | Some {ml = Ml s | Re s  }  
              -> 
              let new_file = op_concat @@ Filename.chop_extension s ^ suffix_inteface  
              in (new_file :: acc , len + String.length new_file + length_space)
@@ -84,7 +84,7 @@ let handle_bin_depfile
              if index = 0 then v 
              else 
                begin match String_map.find_opt k data.(index) with 
-                 | Some ({ml = Ml s | Re s  } | {mll = Some s }) 
+                 | Some {ml = Ml s | Re s  }
                    -> 
                    let new_file = op_concat @@ Filename.chop_extension s ^ suffix_inteface  
                    in (new_file :: acc , len + String.length new_file + length_space)
@@ -112,7 +112,6 @@ let handle_bin_depfile
             (fun ((acc, len) as v) k ->
                match String_map.find_opt k data.(0) with 
                | Some ({ ml = Ml f | Re f  }
-                      | { mll = Some f }
                       | { mli = Mli f | Rei f }) -> 
                  let new_file = (op_concat @@ Filename.chop_extension f ^ Literals.suffix_cmi) in
                  (new_file :: acc , len + String.length new_file + length_space)
@@ -122,7 +121,6 @@ let handle_bin_depfile
                  else 
                    begin  match String_map.find_opt k data.(index) with 
                      | Some ({ ml = Ml f | Re f  }
-                            | { mll = Some f }
                             | { mli = Mli f | Rei f }) -> 
                        let new_file = (op_concat @@ Filename.chop_extension f ^ Literals.suffix_cmi) in
                        (new_file :: acc , len + String.length new_file + length_space)

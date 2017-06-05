@@ -106,7 +106,7 @@ function build() {
  */
 function on_change(event, reason) {    
     if(validEvent(event,reason)){
-        console.log("Event", event);
+        console.log("Event", event, reason);
         reasons_to_rebuild.push([event, reason])
         if(needRebuild()){
             build()

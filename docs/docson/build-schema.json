@@ -303,6 +303,10 @@
             },
             "description": "(WIP) Pre defined rules"
         },
+        "cut-generators" : {
+            "type": "boolean",
+            "description": "Ignore generators, cut the dependency on generator tools"
+        },
         "reason": {
             "$ref": "#/definitions/reason-specs",
             "description": "BuckleScript comes with [Reason](http://facebook.github.io/reason/) by default. Specific configurations here."

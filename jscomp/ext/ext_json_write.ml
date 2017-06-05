@@ -34,8 +34,7 @@ let rec encode_aux (x : Ext_json_types.t )
   | Null _ -> a "null"
   | Str {str = s }  -> a (quot s)
   | Flo {flo = s} -> 
-    a s (* 
-    since our parsing keep the original float representation, we just dump it as is, there is no cases like [nan] *)
+    a s (* since our parsing keep the original float representation, we just dump it as is, there is no cases like [nan] *)
   | Arr  {content} -> 
     begin match content with 
       | [||] -> a "[]"
