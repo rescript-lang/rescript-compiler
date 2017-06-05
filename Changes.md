@@ -4,6 +4,7 @@
 # Next
 
 Fixes:
+- #1676, `bsb -w` will always build regardless of filetype when fs.watch doesn't send a filename
 - #1655, fix #1653 Js.Promise.all[n] interfaces
 - #1658, fix typeof = "null" issue
 - #1656, bs.get/set/get_index/set_index respects bs.ignore
