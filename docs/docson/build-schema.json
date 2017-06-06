@@ -18,6 +18,20 @@
                 "$ref": "#/definitions/module-format"
             }
         },
+        "react-jsx-version" : {
+            "title" : "jsx-version",
+            "oneOf" : [
+                {
+                    "type" : "boolean",
+                    "description" : "backward compatible mode, true means on with the default to be version 1 (the default value is subject to change)"
+                },
+                {
+                    "type" : "number",
+                    "description": "jsx version number, current recommend version number is 2"
+                }
+            ]
+        }
+        ,
         "ppx-specs": {
             "type": "array",
             "items": {
@@ -235,7 +249,7 @@
             "type": "object",
             "properties": {
                 "react-jsx": {
-                    "type": "boolean",
+                    "$ref": "#/definitions/react-jsx-version",
                     "description": "Whether to apply the [Reason-React](https://github.com/reasonml/reason-react)-specific JSX PPX transformation."
                 }
             }

@@ -115,7 +115,7 @@ val unused_attribute : string
 val dash_nostdlib : string
 
 val reactjs_jsx_ppx_exe : string 
-
+val reactjs_jsx_ppx_2_exe : string 
 val unescaped_j_delimiter : string 
 val escaped_j_delimiter : string 
 

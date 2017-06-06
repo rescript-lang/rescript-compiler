@@ -1187,7 +1187,7 @@ val unused_attribute : string
 val dash_nostdlib : string
 
 val reactjs_jsx_ppx_exe : string 
-
+val reactjs_jsx_ppx_2_exe : string 
 val unescaped_j_delimiter : string 
 val escaped_j_delimiter : string 
 
@@ -1315,7 +1315,7 @@ let unused_attribute = "Unused attribute "
 let dash_nostdlib = "-nostdlib"
 
 let reactjs_jsx_ppx_exe  = "reactjs_jsx_ppx.exe"
-
+let reactjs_jsx_ppx_2_exe = "reactjs_jsx_ppx_2.exe"
 let unescaped_j_delimiter = "j"
 let unescaped_js_delimiter = "js"
 let escaped_j_delimiter =  "*j" (* not user level syntax allowed *)
@@ -8208,6 +8208,8 @@ type dependencies = dependency list
 (* `string` is a path to the entrypoint *)
 type entries_t = JsTarget of string | NativeTarget of string | BytecodeTarget of string
 
+type reason_react_jsx = string option 
+
 type t = 
   {
     package_name : string ; 
@@ -8230,7 +8232,7 @@ type t =
     bs_file_groups : Bsb_build_ui.file_group list ;
     files_to_install : String_hash_set.t ;
     generate_merlin : bool ; 
-    reason_react_jsx : bool ; (* whether apply PPX transform or not*)
+    reason_react_jsx : reason_react_jsx ; (* whether apply PPX transform or not*)
     entries : entries_t list ;
   }
 
@@ -8559,10 +8561,12 @@ let merlin_file_gen ~cwd
     |> List.iter (fun x ->
         Buffer.add_string buffer (merlin_flg_ppx ^ x )
       );
-    if reason_react_jsx then   
+    (match reason_react_jsx with
+    | Some s -> 
       begin 
-        Buffer.add_string buffer (merlin_flg_ppx ^ reactjs_jsx_ppx)
-      end;
+        Buffer.add_string buffer (merlin_flg_ppx ^ s)
+      end
+    | None -> ());
     Buffer.add_string buffer (merlin_flg_ppx  ^ built_in_ppx);
     (*
     (match external_includes with 
@@ -8649,7 +8653,7 @@ let interpret_json
 
   : Bsb_config_types.t =
   
-  let reason_react_jsx = ref false in 
+  let reason_react_jsx = ref None in 
   let config_json = (cwd // Literals.bsconfig_json) in
   let ocamllex = ref Bsb_default.ocamllex in 
   let refmt = ref None in
@@ -8693,9 +8697,27 @@ let interpret_json
     ) ;
     map
     |? (Bsb_build_schemas.reason, `Obj begin fun m -> 
-        m |? (Bsb_build_schemas.react_jsx, 
-              `Bool (fun b -> reason_react_jsx := b))
-        |> ignore 
+      match String_map.find_opt Bsb_build_schemas.react_jsx m with 
+      
+      | Some (False _)
+      | None -> ()
+      | Some (Flo{loc; flo}) -> 
+        begin match flo with 
+        | "1" -> 
+        reason_react_jsx := 
+            Some (Filename.quote (Filename.concat bsc_dir Literals.reactjs_jsx_ppx_exe) )
+        | "2" -> 
+          reason_react_jsx := 
+            Some (Filename.quote 
+              (Filename.concat bsc_dir Literals.reactjs_jsx_ppx_2_exe) )
+        | _ -> Bsb_exception.failf ~loc "Unsupported jsx version %s" flo
+        end
+      | Some (True _) -> 
+        reason_react_jsx := 
+            Some (Filename.quote (Filename.concat bsc_dir Literals.reactjs_jsx_ppx_exe) 
+            )
+      | Some x -> Bsb_exception.failf ~loc:(Ext_json.loc_of x) 
+      "Unexpected input for jsx"
       end)
     |? (Bsb_build_schemas.generate_merlin, `Bool (fun b ->
         generate_merlin := b
@@ -9786,6 +9808,7 @@ let dash_ppx = "-ppx"
 
 let ninja_required_version = "ninja_required_version = 1.5.1 \n"
 
+
 let output_ninja
     ~cwd 
     ~bsc_dir           
@@ -9829,6 +9852,12 @@ let output_ninja
           Ext_string.inter3 dash_i (Filename.quote package_install_path) bsc_flags
   
       in 
+      let reason_react_jsx_flag = 
+        match reason_react_jsx with 
+        | None -> Ext_string.empty          
+        | Some  s -> 
+          "-ppx " ^ s         
+      in 
       Bsb_ninja.output_kvs
         [|
           "src_root_dir", cwd (* TODO: need check its integrity -- allow relocate or not? *);
@@ -9840,9 +9869,8 @@ let output_ninja
           "bs_package_includes", (Bsb_build_util.flag_concat dash_i @@ List.map (fun x -> x.Bsb_config_types.package_install_path) bs_dependencies);
           "bs_package_dev_includes", (Bsb_build_util.flag_concat dash_i @@ List.map (fun x -> x.Bsb_config_types.package_install_path) bs_dev_dependencies);  
           "refmt", (match refmt with None -> bsc_dir // refmt_exe | Some x -> x) ;
-          "reason_react_jsx",
-            ( if reason_react_jsx then "-ppx " ^ Filename.quote (bsc_dir // Literals.reactjs_jsx_ppx_exe)
-              else Ext_string.empty  ) ; (* make it configurable in the future *)
+          "reason_react_jsx", reason_react_jsx_flag
+             ; (* make it configurable in the future *)
           "refmt_flags", refmt_flags;
           Bsb_build_schemas.bsb_dir_group, "0"  (*TODO: avoid name conflict in the future *)
         |] oc ;

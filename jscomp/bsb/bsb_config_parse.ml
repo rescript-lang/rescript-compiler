@@ -151,7 +151,7 @@ let merlin_b = "\nB "
 
 let merlin_flg = "\nFLG "
 let merlin_file_gen ~cwd
-    (built_in_ppx, reactjs_jsx_ppx)
+    (built_in_ppx, _reactjs_jsx_ppx)
     ({bs_file_groups = res_files ; 
       generate_merlin;
       ppx_flags;
@@ -169,10 +169,12 @@ let merlin_file_gen ~cwd
     |> List.iter (fun x ->
         Buffer.add_string buffer (merlin_flg_ppx ^ x )
       );
-    if reason_react_jsx then   
+    (match reason_react_jsx with
+    | Some s -> 
       begin 
-        Buffer.add_string buffer (merlin_flg_ppx ^ reactjs_jsx_ppx)
-      end;
+        Buffer.add_string buffer (merlin_flg_ppx ^ s)
+      end
+    | None -> ());
     Buffer.add_string buffer (merlin_flg_ppx  ^ built_in_ppx);
     (*
     (match external_includes with 
@@ -259,7 +261,7 @@ let interpret_json
 
   : Bsb_config_types.t =
   
-  let reason_react_jsx = ref false in 
+  let reason_react_jsx = ref None in 
   let config_json = (cwd // Literals.bsconfig_json) in
   let ocamllex = ref Bsb_default.ocamllex in 
   let refmt = ref None in
@@ -303,9 +305,27 @@ let interpret_json
     ) ;
     map
     |? (Bsb_build_schemas.reason, `Obj begin fun m -> 
-        m |? (Bsb_build_schemas.react_jsx, 
-              `Bool (fun b -> reason_react_jsx := b))
-        |> ignore 
+      match String_map.find_opt Bsb_build_schemas.react_jsx m with 
+      
+      | Some (False _)
+      | None -> ()
+      | Some (Flo{loc; flo}) -> 
+        begin match flo with 
+        | "1" -> 
+        reason_react_jsx := 
+            Some (Filename.quote (Filename.concat bsc_dir Literals.reactjs_jsx_ppx_exe) )
+        | "2" -> 
+          reason_react_jsx := 
+            Some (Filename.quote 
+              (Filename.concat bsc_dir Literals.reactjs_jsx_ppx_2_exe) )
+        | _ -> Bsb_exception.failf ~loc "Unsupported jsx version %s" flo
+        end
+      | Some (True _) -> 
+        reason_react_jsx := 
+            Some (Filename.quote (Filename.concat bsc_dir Literals.reactjs_jsx_ppx_exe) 
+            )
+      | Some x -> Bsb_exception.failf ~loc:(Ext_json.loc_of x) 
+      "Unexpected input for jsx"
       end)
     |? (Bsb_build_schemas.generate_merlin, `Bool (fun b ->
         generate_merlin := b
