@@ -32,6 +32,9 @@ refmt.exe: refmt_main.mli refmt_main.ml
 reactjs_jsx_ppx.exe:reactjs_ppx.mli reactjs_ppx.ml
 	$(NATIVE) -no-alias-deps -I +compiler-libs ocamlcommon.cmxa $^ -o $@
 
+reactjs_jsx_ppx_2.exe:reactjs_ppx_2.mli reactjs_ppx_2.ml
+	$(NATIVE) -no-alias-deps -I +compiler-libs ocamlcommon.cmxa $^ -o $@
+
 config_whole_compiler.ml:config_whole_compiler.mlp ../../scripts/config_compiler.js
 	node ../../scripts/config_compiler.js
 bsc.exe: config_whole_compiler.mli config_whole_compiler.ml  whole_compiler.mli whole_compiler.ml
@@ -43,4 +46,4 @@ bspack.exe: bspack.mli bspack.ml
 bspack.js:	bspack.mli bspack.ml
 	$(BSC) $(BSC_FLAGS) $^
 
-all: bsppx.exe bspp.exe bsdep.exe bsc.exe bspack.exe bsb.exe bsb_helper.exe refmt.exe reactjs_jsx_ppx.exe
+all: bsppx.exe bspp.exe bsdep.exe bsc.exe bspack.exe bsb.exe bsb_helper.exe refmt.exe reactjs_jsx_ppx.exe reactjs_jsx_ppx_2.exe
