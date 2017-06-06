@@ -724,9 +724,10 @@ bsb/bsb_config_parse.cmx : ext/string_set.cmx ext/string_map.cmx \
     ext/string_hash_set.cmx ext/literals.cmx ext/ext_string.cmx \
     ext/ext_json_types.cmx ext/ext_json_parse.cmx ext/ext_json.cmx \
     ext/ext_filename.cmx ext/ext_file_pp.cmx ext/ext_array.cmx \
-    bsb/bsb_pkg.cmx bsb/bsb_default.cmx bsb/bsb_config_types.cmx \
-    bsb/bsb_config.cmx bsb/bsb_build_util.cmx bsb/bsb_build_ui.cmx \
-    bsb/bsb_build_schemas.cmx common/bs_version.cmx bsb/bsb_config_parse.cmi
+    bsb/bsb_pkg.cmx bsb/bsb_exception.cmx bsb/bsb_default.cmx \
+    bsb/bsb_config_types.cmx bsb/bsb_config.cmx bsb/bsb_build_util.cmx \
+    bsb/bsb_build_ui.cmx bsb/bsb_build_schemas.cmx common/bs_version.cmx \
+    bsb/bsb_config_parse.cmi
 bsb/bsb_config_types.cmx : ext/string_hash_set.cmx bsb/bsb_config.cmx \
     bsb/bsb_build_ui.cmx
 bsb/bsb_default.cmx : ext/string_set.cmx ext/literals.cmx \

@@ -25214,7 +25214,7 @@ val unused_attribute : string
 val dash_nostdlib : string
 
 val reactjs_jsx_ppx_exe : string 
-
+val reactjs_jsx_ppx_2_exe : string 
 val unescaped_j_delimiter : string 
 val escaped_j_delimiter : string 
 
@@ -25342,7 +25342,7 @@ let unused_attribute = "Unused attribute "
 let dash_nostdlib = "-nostdlib"
 
 let reactjs_jsx_ppx_exe  = "reactjs_jsx_ppx.exe"
-
+let reactjs_jsx_ppx_2_exe = "reactjs_jsx_ppx_2.exe"
 let unescaped_j_delimiter = "j"
 let unescaped_js_delimiter = "js"
 let escaped_j_delimiter =  "*j" (* not user level syntax allowed *)

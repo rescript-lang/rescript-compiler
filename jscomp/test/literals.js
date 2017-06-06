@@ -133,6 +133,8 @@ var dash_nostdlib = "-nostdlib";
 
 var reactjs_jsx_ppx_exe = "reactjs_jsx_ppx.exe";
 
+var reactjs_jsx_ppx_2_exe = "reactjs_jsx_ppx_2.exe";
+
 var unescaped_j_delimiter = "j";
 
 var escaped_j_delimiter = "*j";
@@ -211,6 +213,7 @@ exports.amdjs_global           = amdjs_global;
 exports.unused_attribute       = unused_attribute;
 exports.dash_nostdlib          = dash_nostdlib;
 exports.reactjs_jsx_ppx_exe    = reactjs_jsx_ppx_exe;
+exports.reactjs_jsx_ppx_2_exe  = reactjs_jsx_ppx_2_exe;
 exports.unescaped_j_delimiter  = unescaped_j_delimiter;
 exports.escaped_j_delimiter    = escaped_j_delimiter;
 exports.unescaped_js_delimiter = unescaped_js_delimiter;
