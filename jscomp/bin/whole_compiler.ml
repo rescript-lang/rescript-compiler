@@ -25771,16 +25771,19 @@ module Lid = struct
   let type_exn : t = Lident "exn" (* use *predef* *)
   (* TODO should be renamed in to {!Js.fn} *)
   (* TODO should be moved into {!Js.t} Later *)
-  let js_fn = Longident.Ldot (Lident "Js", "fn")
-  let js_meth = Longident.Ldot (Lident "Js", "meth")
-  let js_meth_callback = Longident.Ldot (Lident "Js", "meth_callback")
-  let js_obj = Longident.Ldot (Lident "Js", "t") 
-  let ignore_id = Longident.Ldot (Lident "Pervasives", "ignore")
-  let js_null  = Longident.Ldot (Lident "Js", "null")
-  let js_undefined = Longident.Ldot (Lident "Js", "undefined")
-  let js_null_undefined = Longident.Ldot (Lident "Js", "null_undefined")
-  let js_re_id = Longident.Ldot (Lident "Js_re", "t")
-  let js_unsafe = Longident.Lident "Js_unsafe"
+  let js_fn : t = 
+      Ldot (Ldot (Lident "Js", "Internal"),  "fn")
+  let js_meth : t = 
+      Ldot (Ldot (Lident "Js", "Internal") , "meth")
+  let js_meth_callback : t = 
+      Ldot (Ldot (Lident "Js", "Internal"), "meth_callback")
+  let js_obj : t = Ldot (Lident "Js", "t") 
+  let ignore_id : t = Ldot (Lident "Pervasives", "ignore")
+  let js_null  : t = Ldot (Lident "Js", "null")
+  let js_undefined : t = Ldot (Lident "Js", "undefined")
+  let js_null_undefined : t = Ldot (Lident "Js", "null_undefined")
+  let js_re_id : t = Ldot (Ldot (Lident "Js", "Re"), "t")
+  let js_unsafe : t = Lident "Js_unsafe"
 end
 
 module No_loc = struct 
@@ -41511,7 +41514,8 @@ and print_simple_out_type ppf =
       fprintf ppf "@[%a%s#%a@]" print_typargs tyl (if ng then "_" else "")
         print_ident id
          
-  | Otyp_constr ((Oide_dot (Oide_ident "Js", ("fn" | "meth" as name )) as id) ,
+  | Otyp_constr ( (Oide_dot ((Oide_dot (Oide_ident "Js", "Internal")),
+                             ("fn" | "meth" as name )) as id) ,
                  ([Otyp_variant(_,Ovar_fields [ variant, _, tys], _,_); result] as tyl))
     ->
       (* Otyp_arrow*)
@@ -41547,7 +41551,7 @@ and print_simple_out_type ppf =
           | _ -> assert false 
           end
       end
-  | Otyp_constr ((Oide_dot (Oide_ident "Js", "meth_callback" ) as id) ,
+  | Otyp_constr ((Oide_dot (Oide_dot (Oide_ident "Js", "Internal"), "meth_callback" ) as id) ,
                  ([Otyp_variant(_,Ovar_fields [ variant, _, tys], _,_); result] as tyl))
     ->
       let make tys result =

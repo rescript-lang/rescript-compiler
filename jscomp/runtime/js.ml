@@ -39,15 +39,7 @@
 these types are not used by normal users}
 *)
 
-type (-'obj, +'a) meth_callback
-(** internal *)
-
-type (-'arg, + 'result) meth
-(** itnernal *)
-
-type (-'arg, + 'result) fn (** Js uncurried function *)
-(** internal *)
-
+module Internal = Js_internal
 
 (* {2 Types for JS objects} *)
 

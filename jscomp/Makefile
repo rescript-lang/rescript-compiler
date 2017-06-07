@@ -543,6 +543,11 @@ travis-world-test:
 
 DEST=../lib/ocaml
 DEST_BIN=../bin
+
+# TODO: sync up with 
+# scripts/build_uitil.js 
+# function install 
+# scripts/build_util.install
 install:
 	@echo "copy exe"
 	mkdir -p $(DEST_BIN) $(DEST)
@@ -551,6 +556,7 @@ install:
 	cp ./runtime/*.cmt* ./runtime/*.cmj* ./stdlib/*.cm* ./others/*.ml ./others/*.mli  ./others/*.cm* \
 	 ./runtime/js.ml  ./runtime/js.cmi \
 	./runtime/js_unsafe.cmi \
+	./runtime/js_internal.cmi \
 	./runtime/caml_exceptions.mli ./runtime/caml_exceptions.ml ./runtime/caml_exceptions.cmi \
 	./runtime/js_null.ml ./runtime/js_null.cmi \
 	./runtime/js_undefined.ml ./runtime/js_undefined.cmi \

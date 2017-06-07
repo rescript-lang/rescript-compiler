@@ -7,8 +7,8 @@
                  <script src="../api_static//script.js"></script>
                  <script>hljs.initHighlightingOnLoad();</script> 
                  <meta charset="utf8">
-                 <link rel="previous" href="Js.Math.html"><link rel="next" href="Js.Typed_array.html">
-                 <title> Js.Obj </title></head> 
+                 <link rel="previous" href="Js_int64.html"><link rel="next" href="Js_json.html">
+                 <title> Js_internal </title></head> 
                <body>
 <nav class="module-index"><ul><li><a href="Bs.html">Bs</a></li>
 <li><a href="Bs_dyn.html">Bs_dyn</a></li>
@@ -51,77 +51,57 @@
 <li><a href="Node_module.html">Node_module</a></li>
 <li><a href="Node_path.html">Node_path</a></li>
 <li><a href="Node_process.html">Node_process</a></li></ul></nav>
-<div class="navbar"><a class="pre" href="Js.Math.html" title="Js.Math">Previous</a>
-&nbsp;<a class="up" href="Js.html" title="Js">Up</a>
-&nbsp;<a class="post" href="Js.Typed_array.html" title="Js.Typed_array">Next</a>
+<div class="navbar"><a class="pre" href="Js_int64.html" title="Js_int64">Previous</a>
+&nbsp;<a class="up" href="index.html" title="Index">Up</a>
+&nbsp;<a class="post" href="Js_json.html" title="Js_json">Next</a>
 </div>
-<h1>Module <a href="type_Js.Obj.html">Js.Obj</a></h1>
+<h1>Module <a href="type_Js_internal.html">Js_internal</a></h1>
 
-<pre><span class="keyword">module</span> Obj: <code class="type"><a href="Js_obj.html">Js_obj</a></code></pre><div class="info module top">
+<pre><span class="keyword">module</span> Js_internal: <code class="code">sig</code> <a href="Js_internal.html">..</a> <code class="code">end</code></pre><div class="info module top">
                     <div class="not-examples">
-                    Provide utilities for <a href="Js.html#TYPEt"><code class="code">Js.t</code></a><br>
+                    Internal types which are used to support uncurry and method,         they are not supposed to be exposed to external users<br>
  
                     </div>
                     
                     </div>
 
                   <hr width="100%">
-
-<pre><span id="VALempty"><span class="keyword">val</span> empty</span> : <code class="type">unit -> < .. > <a href="Js.html#TYPEt">Js.t</a></code></pre><div class="info ">
+<div class="type-declaration">
+<pre><span id="TYPEmeth_callback"><span class="keyword">type</span> <code class="type">(-'obj, +'a)</code> meth_callback</span> </pre>
+</div>
+<div class="info ">
                     <div class="not-examples">
-                    <code class="code">empty ()</code> returns the empty object <code class="code">{}</code><br>
+                    internal<br>
  
                     </div>
                     
                     </div>
 
                   
-<pre><span id="VALassign"><span class="keyword">val</span> assign</span> : <code class="type">< .. > <a href="Js.html#TYPEt">Js.t</a> -> < .. > <a href="Js.html#TYPEt">Js.t</a> -> < .. > <a href="Js.html#TYPEt">Js.t</a></code></pre><div class="info ">
+<div class="type-declaration">
+<pre><span id="TYPEmeth"><span class="keyword">type</span> <code class="type">(-'arg, +'result)</code> meth</span> </pre>
+</div>
+<div class="info ">
                     <div class="not-examples">
-                    <code class="code">assign target source</code> copies properties from <code class="code">source</code> to <code class="code">target</code>
-<p>
-
-Properties in <code class="code">target</code> will be overwritten by properties in <code class="code">source</code> if they
-have the same key.
-<p>
-
-<b>Returns</b> <code class="code">target</code><br>
-<div class="tag"> <b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign">MDN</a><br>
- </div> 
-                    </div>
-                     <div class="examples">
-                    <pre class="example"> <pre class="codepre"><code class="code">(* Copy an object *)
-
-let obj = [%obj { a = 1 }]
-
-let copy = Js.Object.assign (Js.Object.empty ()) obj
-
-(* prints "{ a: 1 }" *)
-let _ = Js.log copy
-</code></pre>  </pre><pre class="example"> <pre class="codepre"><code class="code">(* Merge objects with same properties *)
-
-let target = [%obj { a = 1; b = 1; }]
-let source = [%obj { b = 2; }]
-
-let obj = Js.Object.assign target source
-
-(* prints "{ a: 1, b: 2 }" *)
-let _ = Js.log obj
-
-(* prints "{ a: 1, b: 2 }", target is modified *)
-let _ = Js.log target
-</code></pre>  </pre>
-                    </div>
-                    </div>
-
-                  
-<pre><span id="VALkeys"><span class="keyword">val</span> keys</span> : <code class="type">'a <a href="Js.html#TYPEt">Js.t</a> -> string array</code></pre><div class="info ">
-                    <div class="not-examples">
-                    <code class="code">keys obj</code> returns an array of the keys of <code class="code">obj</code>'s own enumerable properties<br>
-<div class="tag"> <b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/keys">MDN</a><br>
- </div> 
+                    itnernal<br>
+ 
                     </div>
                     
                     </div>
 
-                  </body></html>
+                  
+<div class="type-declaration">
+<pre><span id="TYPEfn"><span class="keyword">type</span> <code class="type">(-'arg, +'result)</code> fn</span> </pre>
+</div>
+<div class="info ">
+                    <div class="not-examples">
+                    Js uncurried function<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<br>
+internal<br>
+</body></html>

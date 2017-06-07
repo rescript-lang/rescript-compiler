@@ -41,11 +41,10 @@
     ]}
 *)
 
-(**/**)
 (* internal types for FFI, these types are not used by normal users *)
-type (-'obj, +'a) meth_callback
-type (-'arg, + 'result) meth
-type (-'arg, + 'result) fn (** Js uncurried function *)
+
+(**/**)
+module Internal = Js_internal
 (**/**)
 
 (** Types for JS objects *)
