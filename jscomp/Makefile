@@ -555,8 +555,8 @@ install:
 	@echo "copy stdlib"
 	cp ./runtime/*.cmt* ./runtime/*.cmj* ./stdlib/*.cm* ./others/*.ml ./others/*.mli  ./others/*.cm* \
 	 ./runtime/js.ml  ./runtime/js.cmi \
-	./runtime/js_unsafe.cmi ./runtime/js_unsafe.cmj \
-	./runtime/js_internal.cmi ./runtime/js_internal.cmj\
+	./runtime/js_unsafe.cmi \
+	./runtime/js_internal.cmi \
 	./runtime/caml_exceptions.mli ./runtime/caml_exceptions.ml ./runtime/caml_exceptions.cmi \
 	./runtime/js_null.ml ./runtime/js_null.cmi \
 	./runtime/js_undefined.ml ./runtime/js_undefined.cmi \
