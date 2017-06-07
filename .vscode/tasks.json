@@ -13,7 +13,7 @@
         "fileLocation": "absolute",
         "owner": "ocaml",
         "watching": {
-            "activeOnStart": true,
+            "activeOnStart": false,
             "beginsPattern": ">>>> Start compiling",
             "endsPattern": ">>>> Finish compiling"
         },

@@ -296,6 +296,7 @@ BSB_SRCS= bsb_config \
 	bsb_build_ui \
 	bsb_default\
 	bsb_dep_infos\
+	bsb_merlin_gen\
 	bsb_gen\
 	bsb_file\
 	bsb_config_types\
