@@ -52,12 +52,14 @@ let ninja_required_version = "ninja_required_version = 1.5.1 \n"
 
 let output_ninja
     ~cwd 
-    ~bsc_dir           
+    ~bsc_dir
+    ~no_dev
     {
     Bsb_config_types.package_name;
     ocamllex;
     external_includes;
     bsc_flags ; 
+    warnings;
     ppx_flags;
     bs_dependencies;
     bs_dev_dependencies;
@@ -106,6 +108,7 @@ let output_ninja
           "bsdep", bsdep;
           "ocamllex", ocamllex;
           "bsc_flags", bsc_flags ;
+          "warnings", (if no_dev then "-warn-error " else "-w ") ^ warnings;
           "ppx_flags", ppx_flags;
           "bs_package_includes", (Bsb_build_util.flag_concat dash_i @@ List.map (fun x -> x.Bsb_config_types.package_install_path) bs_dependencies);
           "bs_package_dev_includes", (Bsb_build_util.flag_concat dash_i @@ List.map (fun x -> x.Bsb_config_types.package_install_path) bs_dev_dependencies);  

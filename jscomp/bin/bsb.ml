@@ -22,6 +22,7 @@ let files = "files"
 let subdirs = "subdirs"
 let ocamllex = "ocamllex"
 let bsc_flags = "bsc-flags"
+let warnings = "warnings"
 let excludes = "excludes"
 let slow_re = "slow-re"
 let resources = "resources"
@@ -8216,6 +8217,7 @@ type t =
     ocamllex : string ; 
     external_includes : string list ; 
     bsc_flags : string list ;
+    warnings : string;
     ppx_flags : string list ;
     bs_dependencies : dependencies;
     bs_dev_dependencies : dependencies;
@@ -8263,7 +8265,7 @@ module Bsb_default : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
+val warnings : string
 
 val bsc_flags : string list 
 
@@ -8323,12 +8325,12 @@ end = struct
         https://caml.inria.fr/mantis/view.php?id=6352
 
 *)  
+let warnings = "-40+6+7+27+32..39+44+45"
+
 let bsc_flags = 
   [
     "-no-alias-deps";
     "-color"; "always" ;
-    "-w"; "-40+6+7+27+32..39+44+45"
-
   ]
 
 let ocamllex = "ocamllex.opt"  
@@ -8664,6 +8666,7 @@ let interpret_json
       since it is external configuration, no {!Bsb_build_util.convert_and_resolve_path}
   *)
   let bsc_flags = ref Bsb_default.bsc_flags in  
+  let warnings = ref Bsb_default.warnings in
   let ppx_flags = ref []in 
 
   let js_post_build_cmd = ref None in 
@@ -8748,6 +8751,7 @@ let interpret_json
     (* More design *)
     |? (Bsb_build_schemas.bs_external_includes, `Arr (fun s -> bs_external_includes := get_list_string s))
     |? (Bsb_build_schemas.bsc_flags, `Arr (fun s -> bsc_flags := Bsb_build_util.get_list_string_acc s !bsc_flags))
+    |? (Bsb_build_schemas.warnings, `Str (fun s -> warnings := s))
     |? (Bsb_build_schemas.ppx_flags, `Arr (fun s -> 
         ppx_flags := s |> get_list_string |> List.map (fun p ->
             if p = "" then failwith "invalid ppx, empty string found"
@@ -8791,6 +8795,7 @@ let interpret_json
           ocamllex = !ocamllex ; 
           external_includes = !bs_external_includes;
           bsc_flags = !bsc_flags ;
+          warnings = !warnings;
           ppx_flags = !ppx_flags ;
           bs_dependencies = !bs_dependencies;
           bs_dev_dependencies = !bs_dev_dependencies;
@@ -9204,12 +9209,12 @@ let define
 
 let build_ast_and_deps =
   define
-    ~command:"${bsc}  ${pp_flags} ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast ${in}"
+    ~command:"${bsc}  ${pp_flags} ${ppx_flags} ${warnings} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast ${in}"
     "build_ast_and_deps"
 
 let build_ast_and_deps_from_reason_impl =
   define
-    ~command:"${bsc} -pp \"${refmt} ${refmt_flags}\" ${reason_react_jsx}  ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -impl ${in}"
+    ~command:"${bsc} -pp \"${refmt} ${refmt_flags}\" ${reason_react_jsx}  ${ppx_flags} ${warnings} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -impl ${in}"
     "build_ast_and_deps_from_reason_impl"
 
 let build_ast_and_deps_from_reason_intf =
@@ -9217,7 +9222,7 @@ let build_ast_and_deps_from_reason_intf =
      because it need to be ppxed by bucklescript
   *)
   define
-    ~command:"${bsc} -pp \"${refmt} ${refmt_flags}\" ${reason_react_jsx} ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -intf ${in}"
+    ~command:"${bsc} -pp \"${refmt} ${refmt_flags}\" ${reason_react_jsx} ${ppx_flags} ${warnings} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -intf ${in}"
     "build_ast_and_deps_from_reason_intf"
 
 
@@ -9268,7 +9273,7 @@ let build_ml_from_mll =
 let build_cmj_js =
   define
     ~command:"${bsc} ${bs_package_flags} -bs-assume-has-mli -bs-no-builtin-ppx-ml -bs-no-implicit-include  \
-              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${bsc_flags} -o ${in} -c  ${in} ${postbuild}"
+              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${warnings} ${bsc_flags} -o ${in} -c  ${in} ${postbuild}"
 
     ~depfile:"${in}.d"
     "build_cmj_only"
@@ -9276,13 +9281,13 @@ let build_cmj_js =
 let build_cmj_cmi_js =
   define
     ~command:"${bsc} ${bs_package_flags} -bs-assume-no-mli -bs-no-builtin-ppx-ml -bs-no-implicit-include \
-              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${bsc_flags} -o ${in} -c  ${in} ${postbuild}"
+              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${warnings} ${bsc_flags} -o ${in} -c  ${in} ${postbuild}"
     ~depfile:"${in}.d"
     "build_cmj_cmi" (* the compiler should never consult [.cmi] when [.mli] does not exist *)
 let build_cmi =
   define
     ~command:"${bsc} ${bs_package_flags} -bs-no-builtin-ppx-mli -bs-no-implicit-include \
-              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${bsc_flags} -o ${out} -c  ${in}"
+              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${warnings} ${bsc_flags} -o ${out} -c  ${in}"
     ~depfile:"${in}.d"
     "build_cmi" (* the compiler should always consult [.cmi], current the vanilla ocaml compiler only consult [.cmi] when [.mli] found*)
 
@@ -9753,6 +9758,7 @@ module Bsb_gen : sig
 val output_ninja :
   cwd:string ->
   bsc_dir:string ->  
+  no_dev:bool ->
   Bsb_config_types.t -> unit 
 
 end = struct
@@ -9811,12 +9817,14 @@ let ninja_required_version = "ninja_required_version = 1.5.1 \n"
 
 let output_ninja
     ~cwd 
-    ~bsc_dir           
+    ~bsc_dir
+    ~no_dev
     {
     Bsb_config_types.package_name;
     ocamllex;
     external_includes;
     bsc_flags ; 
+    warnings;
     ppx_flags;
     bs_dependencies;
     bs_dev_dependencies;
@@ -9865,6 +9873,7 @@ let output_ninja
           "bsdep", bsdep;
           "ocamllex", ocamllex;
           "bsc_flags", bsc_flags ;
+          "warnings", (if no_dev then "-warn-error " else "-w ") ^ warnings;
           "ppx_flags", ppx_flags;
           "bs_package_includes", (Bsb_build_util.flag_concat dash_i @@ List.map (fun x -> x.Bsb_config_types.package_install_path) bs_dependencies);
           "bs_package_dev_includes", (Bsb_build_util.flag_concat dash_i @@ List.map (fun x -> x.Bsb_config_types.package_install_path) bs_dev_dependencies);  
@@ -10909,7 +10918,7 @@ let regenerate_ninja ~no_dev ~override_package_specs ~generate_watch_metadata cw
         Bsb_config_parse.merlin_file_gen ~cwd
           (bsc_dir // bsppx_exe, 
            bsc_dir // Literals.reactjs_jsx_ppx_exe) config;
-        Bsb_gen.output_ninja ~cwd ~bsc_dir config ; 
+        Bsb_gen.output_ninja ~cwd ~bsc_dir ~no_dev config ; 
         Literals.bsconfig_json :: config.globbed_dirs
         |> List.map
           (fun x ->
