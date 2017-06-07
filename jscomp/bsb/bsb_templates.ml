@@ -6,72 +6,23 @@ let root = OCamlRes.Res.([
         "\n\
          \n\
          let () = Js.log \"Hello, BuckleScript\"")]) ;
-    File (".gitignore",
-      "*.exe\n\
-       *.obj\n\
-       *.out\n\
-       *.compile\n\
-       *.native\n\
-       *.byte\n\
-       *.cmo\n\
-       *.annot\n\
-       *.cmi\n\
-       *.cmx\n\
-       *.cmt\n\
-       *.cmti\n\
-       *.cma\n\
-       *.a\n\
-       *.cmxa\n\
-       *.obj\n\
-       *~\n\
-       *.annot\n\
-       *.cmj\n\
-       *.bak\n\
-       lib/bs\n\
-       *.mlast\n\
-       *.mliast\n\
-       .vscode\n\
-       .merlin") ;
-    Dir (".vscode", [
-      File ("tasks.json",
-        "{\n\
-        \    \"version\": \"${bsb:proj-version}\",\n\
-        \    \"command\": \"npm\",\n\
-        \    \"options\": {\n\
-        \        \"cwd\": \"${workspaceRoot}\"\n\
-        \    },\n\
-        \    \"isShellCommand\": true,\n\
-        \    \"args\": [\n\
-        \        \"run\",\n\
-        \        \"watch\"\n\
-        \    ],\n\
-        \    \"showOutput\": \"always\",\n\
-        \    \"isBackground\": true,\n\
-        \    \"problemMatcher\": {\n\
-        \        \"fileLocation\": \"absolute\",\n\
-        \        \"owner\": \"ocaml\",\n\
-        \        \"watching\": {\n\
-        \            \"activeOnStart\": true,\n\
-        \            \"beginsPattern\": \">>>> Start compiling\",\n\
-        \            \"endsPattern\": \">>>> Finish compiling\"\n\
-        \        },\n\
-        \        \"pattern\": [\n\
-        \            {\n\
-        \                \"regexp\": \"^File \\\"(.*)\\\", line (\\\\d+)(?:, characters (\\\\d+)-(\\\\d+))?:$\",\n\
-        \                \"file\": 1,\n\
-        \                \"line\": 2,\n\
-        \                \"column\": 3,\n\
-        \                \"endColumn\": 4\n\
-        \            },\n\
-        \            {\n\
-        \                \"regexp\": \"^(?:(?:Parse\\\\s+)?(Warning|[Ee]rror)(?:\\\\s+\\\\d+)?:)?\\\\s+(.*)$\",\n\
-        \                \"severity\": 1,\n\
-        \                \"message\": 2,\n\
-        \                \"loop\": true\n\
-        \            }\n\
-        \        ]\n\
-        \    }\n\
-         }")]) ;
+    File ("README.md",
+      "\n\
+       \n\
+       # Build\n\
+       ```\n\
+       npm run build\n\
+       ```\n\
+       \n\
+       # Watch\n\
+       \n\
+       ```\n\
+       npm run watch\n\
+       ```\n\
+       \n\
+       \n\
+       # Editor\n\
+       If you use `vscode`, Press `Windows + Shift + B` it will build automatically") ;
     File ("package.json",
       "{\n\
       \  \"name\": \"${bsb:name}\",\n\
@@ -100,30 +51,77 @@ let root = OCamlRes.Res.([
       \      // add your bs-dependencies here \n\
       \  ]\n\
        }") ;
-    File ("README.md",
-      "\n\
-       \n\
-       # Build\n\
-       ```\n\
-       npm run build\n\
-       ```\n\
-       \n\
-       # Watch\n\
-       \n\
-       ```\n\
-       npm run watch\n\
-       ```\n\
-       \n\
-       \n\
-       # Editor\n\
-       If you use `vscode`, Press `Windows + Shift + B` it will build automatically")]) ;
+    Dir (".vscode", [
+      File ("tasks.json",
+        "{\n\
+        \    \"version\": \"${bsb:proj-version}\",\n\
+        \    \"command\": \"npm\",\n\
+        \    \"options\": {\n\
+        \        \"cwd\": \"${workspaceRoot}\"\n\
+        \    },\n\
+        \    \"isShellCommand\": true,\n\
+        \    \"args\": [\n\
+        \        \"run\",\n\
+        \        \"watch\"\n\
+        \    ],\n\
+        \    \"showOutput\": \"always\",\n\
+        \    \"isBackground\": true,\n\
+        \    \"problemMatcher\": {\n\
+        \        \"fileLocation\": \"absolute\",\n\
+        \        \"owner\": \"ocaml\",\n\
+        \        \"watching\": {\n\
+        \            \"activeOnStart\": false,\n\
+        \            \"beginsPattern\": \">>>> Start compiling\",\n\
+        \            \"endsPattern\": \">>>> Finish compiling\"\n\
+        \        },\n\
+        \        \"pattern\": [\n\
+        \            {\n\
+        \                \"regexp\": \"^File \\\"(.*)\\\", line (\\\\d+)(?:, characters (\\\\d+)-(\\\\d+))?:$\",\n\
+        \                \"file\": 1,\n\
+        \                \"line\": 2,\n\
+        \                \"column\": 3,\n\
+        \                \"endColumn\": 4\n\
+        \            },\n\
+        \            {\n\
+        \                \"regexp\": \"^(?:(?:Parse\\\\s+)?(Warning|[Ee]rror)(?:\\\\s+\\\\d+)?:)?\\\\s+(.*)$\",\n\
+        \                \"severity\": 1,\n\
+        \                \"message\": 2,\n\
+        \                \"loop\": true\n\
+        \            }\n\
+        \        ]\n\
+        \    }\n\
+         }")]) ;
+    File (".gitignore",
+      "*.exe\n\
+       *.obj\n\
+       *.out\n\
+       *.compile\n\
+       *.native\n\
+       *.byte\n\
+       *.cmo\n\
+       *.annot\n\
+       *.cmi\n\
+       *.cmx\n\
+       *.cmt\n\
+       *.cmti\n\
+       *.cma\n\
+       *.a\n\
+       *.cmxa\n\
+       *.obj\n\
+       *~\n\
+       *.annot\n\
+       *.cmj\n\
+       *.bak\n\
+       lib/bs\n\
+       *.mlast\n\
+       *.mliast\n\
+       .vscode\n\
+       .merlin")]) ;
   Dir ("minimal", [
     Dir ("src", [ File ("main.ml", "")]) ;
-    File (".gitignore",
-      "lib\n\
-       node_modules\n\
-       .merlin\n\
-       npm-debug.log") ;
+    File ("README.md",
+      "\n\
+      \  # ${bsb:name}") ;
     File ("package.json",
       "{\n\
       \  \"name\": \"${bsb:name}\",\n\
@@ -146,7 +144,9 @@ let root = OCamlRes.Res.([
       \  \"name\": \"${bsb:name}\",\n\
       \  \"sources\": [\"src\"]\n\
        }") ;
-    File ("README.md",
-      "\n\
-      \  # ${bsb:name}")])
+    File (".gitignore",
+      "lib\n\
+       node_modules\n\
+       .merlin\n\
+       npm-debug.log")])
 ])
