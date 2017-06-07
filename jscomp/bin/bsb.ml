@@ -8543,7 +8543,7 @@ let merlin_b = "\nB "
 
 let merlin_flg = "\nFLG "
 let merlin_file_gen ~cwd
-    (built_in_ppx, reactjs_jsx_ppx)
+    (built_in_ppx, _reactjs_jsx_ppx)
     ({bs_file_groups = res_files ; 
       generate_merlin;
       ppx_flags;
