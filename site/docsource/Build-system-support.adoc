@@ -15,25 +15,25 @@ inlining, arity inference and other information.
 
 === BuckleScript build system: `bsb`
 
-BuckleScript proivdes a native build tool on top of Google's https://github.com/ninja-build/ninja/releases[ninja-build]. 
-It is designed for a fast feedback loop (typically 100ms feedback loop) and works cross platform. 
+BuckleScript provides a native build tool on top of Google's https://github.com/ninja-build/ninja/releases[ninja-build].
+It is designed for a fast feedback loop (typically 100ms feedback loop) and works cross platform.
 
 // [INFO]
 // ======
 // Currently for non-Windows users, they need to install ninja first (version >= 1.7.1).
-// Please don't be confused with the npm ninja, 
+// Please don't be confused with the npm ninja,
 // we are using Google's https://github.com/ninja-build/ninja/releases[ninja-build].
 // ======
 
-`bsb` can be running in any subdirectory. It is a schema based build tool and the schema is 
+`bsb` can be running in any subdirectory. It is a schema based build tool and the schema is
 http://bloomberg.github.io/bucklescript/docson/#build-schema.json[available]. It is strongly recommended to **check out the http://bloomberg.github.io/bucklescript/docson/#build-schema.json[schema]**
 after you finish reading the tutorials below.
 
-If your editor supports JSON schema validation and auto-completion like https://code.visualstudio.com/docs/languages/json[VSCode], 
+If your editor supports JSON schema validation and auto-completion like https://code.visualstudio.com/docs/languages/json[VSCode],
 below is a configuration to help you get auto-completion and validation for free:
 
 .settings.json
-[source,js] 
+[source,js]
 ------------
 {
     "json.schemas": [
@@ -45,12 +45,12 @@ below is a configuration to help you get auto-completion and validation for free
         }
     ],
     // ....
-}    
+}
 ------------
 
-The build system is installed as `bsb.exe` in `bs-platform/bin/bsb.exe`. Due to a known issue in npm, 
-we create a JS wrapper (which is accessible in `.bin` too) so the user can call 
-either `bsb` (slightly higher latency but symlinked into `.bin`) or `bsb.exe` 
+The build system is installed as `bsb.exe` in `bs-platform/bin/bsb.exe`. Due to a known issue in npm,
+we create a JS wrapper (which is accessible in `.bin` too) so the user can call
+either `bsb` (slightly higher latency but symlinked into `.bin`) or `bsb.exe`
 
 
 Here is a *minimal* configuration:
@@ -58,7 +58,7 @@ Here is a *minimal* configuration:
 .bsconfig.json
 [source,js]
 -----------
-{ 
+{
   "name": "test", // package name, required <1>
   "sources": "src" // <2>
 }
@@ -68,8 +68,8 @@ Here is a *minimal* configuration:
 
 
 The entry point is `bsb`.
-It will check if there is already `build.ninja` in the build directory, 
-and if not or it needs to be regenerated it will generate the file `build.ninja` 
+It will check if there is already `build.ninja` in the build directory,
+and if not or it needs to be regenerated it will generate the file `build.ninja`
 and delegate the hard work to `ninja`.
 
 
@@ -96,7 +96,7 @@ The directory layout (after building) would be
 └── test
 -----------
 <1> Will generate amdjs modules if flags are turned on
-<2> Will generate goog modules if flags are turned on 
+<2> Will generate goog modules if flags are turned on
 
 We wrap `bsb.exe` as `bsb` so that it will work across different platforms.
 
@@ -106,7 +106,7 @@ We wrap `bsb.exe` as `bsb` so that it will work across different platforms.
 bsb // <1>
 bsb -w // <2>
 --------------------
-<1> Do the plain build 
+<1> Do the plain build
 <2> Do the plain build and watch
 
 
@@ -145,7 +145,7 @@ List your dependency in `bs-dependencies` and install it via `npm install` as be
 }
 -----------
 
-After your `npm install`, 
+After your `npm install`,
 [source,sh]
 ----------
 bsb -clean-world // <1>
@@ -166,7 +166,7 @@ bsb -clean-world -make-world -w
 ==== Mark your directory as dev only
 
 
-Note sometimes, you have directories which are just tests that you don't need your dependency 
+Note sometimes, you have directories which are just tests that you don't need your dependency
 to build. In that case you can mark it as dev only:
 
 .bsconfig.json
@@ -242,7 +242,7 @@ Now, we have a repo https://github.com/bobzhang/bucklescript-have-tea[bucklescri
 [source,js]
 -----------
 {
-    "name" : "bucklescript-have-tea", 
+    "name" : "bucklescript-have-tea",
     "version" : "0.1.0",
     "dependencies" : { "bucklescript-tea" : "^0.1.2" }, // <1>
     "peerDependencies" : { "bs-platform" : "^1.7.0" } //<2>
@@ -251,7 +251,7 @@ Now, we have a repo https://github.com/bobzhang/bucklescript-have-tea[bucklescri
 <1> List `bucklescript-tea` as dependency
 <2> List `bs-platform` as peer dependency
 
-Suppose you are in `bucklescript-have-tea` top directory, 
+Suppose you are in `bucklescript-have-tea` top directory,
 
 [source,sh]
 ----------
@@ -268,17 +268,17 @@ You can also change the `package-specs` to have another module format, for examp
 [source,js]
 ----------
 {
-  ... , 
+  ... ,
   "package-specs" : ["amdjs", "commonjs"],
   ...
 }
 ----------
 
-Rerun the command 
+Rerun the command
 
 [source,sh]
 ----------
-bsb -clean-world -make-world 
+bsb -clean-world -make-world
 ----------
 
 You will get both `commonjs` and `amdjs` support. In the end, we suggest you http://bloomberg.github.io/bucklescript/docson/#build-schema.json[check out the schema] and enjoy the build!
@@ -288,7 +288,7 @@ You will get both `commonjs` and `amdjs` support. In the end, we suggest you htt
 === Build using Make
 [WARNING]
 ========
-`bsb` is the officially recommended build system. This section is included here only for people who 
+`bsb` is the officially recommended build system. This section is included here only for people who
 are _curious_ about how the build works.
 ========
 

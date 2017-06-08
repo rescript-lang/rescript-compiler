@@ -92,10 +92,10 @@ include::./Dev-mode-How-to.adoc[]
 include::./Differences-from-js_of_ocaml.adoc[]
 
 [appendix]
-== Library API documentation 
+== Library API documentation
 
-There is a small Library comes with `bs-platform`, its documentation is 
-http://bloomberg.github.io/bucklescript/api/[available].
+There is a small library that comes with `bs-platform`, its documentation is
+http://bloomberg.github.io/bucklescript/api/[here].
 
 
 [appendix]

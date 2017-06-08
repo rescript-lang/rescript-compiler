@@ -19,14 +19,14 @@ In OCaml, string is an immutable byte sequence (like GoLang), so if the user typ
 Js.log "你好"
 --------------
 
-It will be translated into 
+It will be translated into
 
 [source,js]
 -----------
 console.log("\xe4\xbd\xa0\xe5\xa5\xbd");
 -----------
 
-Luckily, OCaml allows customized multiple-line string support, BuckleScript *reserves* the delimiter `js` and `j` (`j` is unused so far). 
+Luckily, OCaml allows customized multiple-line string support, BuckleScript *reserves* the delimiter `js` and `j` (`j` is unused so far).
 
 [source,ocaml]
 --------------
@@ -153,21 +153,21 @@ external imul : int -> int -> int =
 ---------------
 =====
 
-#### Scoped values: bs.scope (@since 1.7.2) 
+#### Scoped values: bs.scope (@since 1.7.2)
 
-In JS library, it is quite common to use a name as namespace, 
-for example, if the user want to write a binding to 
-`vscode.commands.executeCommand`, assume `vscode` is a module name, 
+In JS library, it is quite common to use a name as namespace,
+for example, if the user want to write a binding to
+`vscode.commands.executeCommand`, assume `vscode` is a module name,
 the user needs needs to type `commands` properly before typing `executeCommand`, and in practice, it is rarely useful to call `vscode.commands` alone, for this reason, we introduce a convient sugar: `bs.scope`
 
 .Example
 [source,ocaml]
 --------------
-type param 
-external executeCommands : string -> param array -> unit = "" 
+type param
+external executeCommands : string -> param array -> unit = ""
 [@@bs.scope "commands"] [@@bs.module "vscode"][@@bs.splice]
 
-let f a b c  = 
+let f a b c  =
   executeCommands "hi"  [|a;b;c|]
 --------------
 
@@ -188,14 +188,14 @@ NOTE `bs.scope` can also be chained as below:
 -------------
 external makeBuffer : int -> buffer = "Buffer"
 [@@bs.new] [@@bs.scope "global"]
-external hi : string = "" 
+external hi : string = ""
 [@@bs.module "z"] [@@bs.scope "a0", "a1", "a2"]
-external ho : string = "" 
+external ho : string = ""
 [@@bs.val] [@@bs.scope "a0","a1","a2"]
 external imul : int -> int -> int = ""
 [@@bs.val] [@@bs.scope "Math"]
-let f2 ()  = 
-  makeBuffer 20 , hi , ho, imul 1 2 
+let f2 ()  =
+  makeBuffer 20 , hi , ho, imul 1 2
 -------------
 
 .Output
@@ -524,7 +524,7 @@ let add2 k x y =
 
 ### Fixed Arguments
 
-Contrary to the Phantom arguments, `_[@bs.as]` is introduced to attach the const 
+Contrary to the Phantom arguments, `_[@bs.as]` is introduced to attach the const
 data.
 
 For example:
@@ -534,8 +534,8 @@ For example:
 external process_on_exit : (_ [@bs.as "exit"]) -> (int -> unit) -> unit =
   "process.on" [@@bs.val]
 
-let () = 
-    process_on_exit (fun exit_code -> 
+let () =
+    process_on_exit (fun exit_code ->
         Js.log( "error code: " ^ string_of_int exit_code ))
 --------------
 
@@ -554,9 +554,9 @@ It can also be used in combination with other attributes, for example:
 --------------
 type process
 
-external on_exit : (_ [@bs.as "exit"]) -> (int -> unit) -> unit = 
+external on_exit : (_ [@bs.as "exit"]) -> (int -> unit) -> unit =
     "on" [@@bs.send.pipe: process]
-let register (p : process) = 
+let register (p : process) =
         p |> on_exit (fun i -> Js.log i)
 
 --------------
@@ -575,7 +575,7 @@ function register(p) {
 .Input
 [source,ocaml]
 --------------
-external io_config : 
+external io_config :
     stdio:(_ [@bs.as "inherit"]) -> cwd:string -> unit -> _ = "" [@@bs.obj]
 
 let config = io_config ~cwd:"." ()
@@ -596,22 +596,22 @@ So the payload can be more flexiblie with JSON literal support
 
 [source,ocaml]
 --------------
-external on_exit_slice5 : 
-    int 
-    -> (_ [@bs.as 3]) 
+external on_exit_slice5 :
+    int
+    -> (_ [@bs.as 3])
     -> (_ [@bs.as {json|true|json}])
     -> (_ [@bs.as {json|false|json}])
     -> (_ [@bs.as {json|"你好"|json}])
     -> (_ [@bs.as {json| ["你好",1,2,3] |json}])
     -> (_ [@bs.as {json| [{ "arr" : ["你好",1,2,3], "encoding" : "utf8"}] |json}])
     -> (_ [@bs.as {json| [{ "arr" : ["你好",1,2,3], "encoding" : "utf8"}] |json}])
-    -> (_ [@bs.as "xxx"]) 
+    -> (_ [@bs.as "xxx"])
     -> ([`a|`b|`c] [@bs.int])
-    -> (_ [@bs.as "yyy"]) 
+    -> (_ [@bs.as "yyy"])
     -> ([`a|`b|`c] [@bs.string])
     -> int array
-    -> unit 
-    = 
+    -> unit
+    =
     "xx" [@@bs.send.pipe: t] [@@bs.splice]
 
 let _ = x |> on_exit_slice5 __LINE__ `a `b [|1;2;3;4;5|]
@@ -776,7 +776,7 @@ type 'a u2 = int -> string -> (int -> 'a [@bs]) [@bs] // <3>
 
 #### [@bs.uncurry] for implicit uncurried callback (@since 1.5.0)
 
-Note the `[@bs]` annotation already solved the problem completely, but it has a drawback 
+Note the `[@bs]` annotation already solved the problem completely, but it has a drawback
 that it requires users to write `[@bs]` both in definition site and call site.
 
 For example:
@@ -787,9 +787,9 @@ external map : 'a array -> ('a -> 'b[@bs]) -> 'b array = "" [@@bs.send] // <1>
 map [|1;2;3|] (fun [@bs] x -> x + 1) // <2>
 --------------
 <1> `[@bs]` annotation in definition site
-<2> `[@bs]` annotation in call site 
+<2> `[@bs]` annotation in call site
 
-This is less convenient for end users, so we introduce another implicit annotation `[@bs.uncurry]` so that the compiler will automatically wrap the curried callback (from OCaml side) to JS uncurried callback. In this way, the `[@bs.uncurry]` annotation is defined 
+This is less convenient for end users, so we introduce another implicit annotation `[@bs.uncurry]` so that the compiler will automatically wrap the curried callback (from OCaml side) to JS uncurried callback. In this way, the `[@bs.uncurry]` annotation is defined
 only once.
 
 [source,ocaml]
@@ -797,12 +797,12 @@ only once.
 external map : 'a array -> ('a -> 'b [@bs.uncurry]) -> 'b array = "" [@@bs.send] // <1>
 map [|1;2;3|] (fun x -> x+ 1) // <2>
 --------------
-<1> `[@bs.uncurry]` annotation in definition site 
+<1> `[@bs.uncurry]` annotation in definition site
 <2> Idiomatic OCaml code
 
 [NOTE]
 ======
-In general, `bs.uncurry` is recommended, and compiler will do lots of optimizations to resolve the `curry` to `uncurry` calling convention at compile time. However, there are some cases the compiler optimizer could not do it, in that case, it will be converted runtime. 
+In general, `bs.uncurry` is recommended, and compiler will do lots of optimizations to resolve the `curry` to `uncurry` calling convention at compile time. However, there are some cases the compiler optimizer could not do it, in that case, it will be converted runtime.
 
 This means `[@bs]` are completely static behavior (no any runtime cost), while `[@bs.uncurry]` is more convenient for end users but in some very rare cases it might be slower than `[@bs]`
 ======
@@ -1408,7 +1408,7 @@ f
 There are two cases, where we might want to do name mangling for a JS object method name.
 
 First, in OCaml, some names are keywords, so we want to add an underscore to avoid a syntax
-error. 
+error.
 
 .Key-word method:
 [source,ocaml]
@@ -1446,9 +1446,9 @@ f.draw(x,y)
 .Rules
 =======
 . If `__[rest]` appears in the label, index from the right to left.
-   * If index = 0, nothing mangled 
+   * If index = 0, nothing mangled
    * If index > 0, `__[rest]` is dropped
-. Else if `_` is the first char 
+. Else if `_` is the first char
    * If the following char is not 'a' .. 'z',
       drop the first '_'
    * Else if the rest happens to be a keyword,
@@ -1460,7 +1460,7 @@ f.draw(x,y)
 ### Return value checking (@since 1.5.1)
 
 In general, the FFI code is error prone, and potentially will leak in
-`undefined` or `null` values. 
+`undefined` or `null` values.
 
 So we introduced auto coercion for return values to gain two benefits:
 
@@ -1474,13 +1474,13 @@ Below is a contrived core example:
 -------------
 type element
 type dom
-external getElementById : string -> element option = "" 
+external getElementById : string -> element option = ""
 [@@bs.send.pipe:dom] [@@bs.return null_to_opt] // <1>
 
-let test dom = 
+let test dom =
     let elem = dom |> getElementById "haha" in
-    match elem with 
-    | None -> 1 
+    match elem with
+    | None -> 1
     | Some ui -> Js.log ui ; 2
 -------------
 <1> `null_to_opt` attribute will automatically convert null to `option`
@@ -1501,30 +1501,30 @@ function test(dom) {
 -------------
 <1> nullable checking without boxing due to compiler optimizations
 
-Currently 4 directives are supported: `null_to_opt`, `undefined_to_opt`, 
+Currently 4 directives are supported: `null_to_opt`, `undefined_to_opt`,
 `null_undefined_to_opt` and `identity`.
 
 [NOTE]
 ======
 `null_to_opt`, `undefined_to_opt` and `null_undefined_to_opt` will *semantically*
-convert a nullable value to `option` which is a boxed value, but the compiler will 
-do smart optimizations to *remove such boxing overhead* when the returned value is destructed 
+convert a nullable value to `option` which is a boxed value, but the compiler will
+do smart optimizations to *remove such boxing overhead* when the returned value is destructed
 in the same routine.
 
 The three directives above require users to write literally `_ option`. It is
 in theory not necessary, but it is required to reduce user errors.
 
-When the return type is `unit`: the compiler will append its return value 
+When the return type is `unit`: the compiler will append its return value
 with an OCaml `unit` literal to make sure it does return `unit`. Its main purpose
-is to make the user consume FFI in idiomatic OCaml code, the cost is *very very small* and 
+is to make the user consume FFI in idiomatic OCaml code, the cost is *very very small* and
 the compiler will do smart optimizations to remove it when the returned value is not used (mostly likely).
- 
-When the return type is `bool`, the compiler will coerce its return value from 
+
+When the return type is `bool`, the compiler will coerce its return value from
 JS boolean to OCaml boolean. The cost is also *very small* and compiler will remove
-such coercion when it is not needed. Note even if your external FFI does return OCaml `bool` or `unit`, 
+such coercion when it is not needed. Note even if your external FFI does return OCaml `bool` or `unit`,
 such implicit coercion will *cause no harm*.
 
-`identity` will make sure that compiler will do nothing about the returned value. It 
+`identity` will make sure that compiler will do nothing about the returned value. It
 is rarely used, but introduced here for debugging purpose.
 ======
 
@@ -1546,14 +1546,14 @@ get the job done.
 #### Detect global variable existence `bs.external` (@since 1.5.1)
 
 Before we dive into embedding arbitrary JS code, a quite common use case of embedding untyped JS code is detect a global variable (feature detection), Bucklescript provides a relatively type safe approach for such use case: `bs.external` (or `external`),
- `[%bs.external a_single_identifier]` is a value of `_ option` type, see examples below 
+ `[%bs.external a_single_identifier]` is a value of `_ option` type, see examples below
 
 [source,ocaml]
 --------------
-let test () = 
-  match [%external __DEV__] with 
+let test () =
+  match [%external __DEV__] with
   | Some _ -> Js.log "dev mode"
-  | None -> Js.log "producton mode"
+  | None -> Js.log "production mode"
 --------------
 
 .Output
@@ -1566,7 +1566,7 @@ function test() {
     return /* () */0;
   }
   else {
-    console.log("producton mode");
+    console.log("production mode");
     return /* () */0;
   }
 }
@@ -1574,9 +1574,9 @@ function test() {
 
 [source,ocaml]
 --------------
-let test2 () = 
-  match [%external __filename] with 
-  | Some f -> Js.log f 
+let test2 () =
+  match [%external __filename] with
+  | Some f -> Js.log f
   | None -> Js.log "non node environment"
 --------------
 

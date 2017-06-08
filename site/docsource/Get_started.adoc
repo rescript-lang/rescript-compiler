@@ -31,10 +31,10 @@ hello>tree -d .
 To enter watch mode, you can run `npm run watch`,
 then you can edit `src/demo.ml` and see it compiled on the fly, and changes are updated on `lib/js/src/demo.js`
 
-If you happen to use VSCode as editor, we provide `.vscode/tasks.json` as well, type `Tasks>build`, it will enter watch mode, the great thing is that VSCode comes with 
-a `Problems` panel which has a much nicer UI. 
+If you happen to use VSCode as editor, we provide `.vscode/tasks.json` as well, type `Tasks>build`, it will enter watch mode, the great thing is that VSCode comes with
+a `Problems` panel which has a much nicer UI.
 
-Currently there are not too many  project templates, you can contribute more project templates here https://github.com/bloomberg/bucklescript/tree/master/jscomp/bsb/templates[here], 
+Currently there are not too many  project templates, you can contribute more project templates here https://github.com/bloomberg/bucklescript/tree/master/jscomp/bsb/templates[here],
 
 ### First example by hand without samples
 
