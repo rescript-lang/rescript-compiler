@@ -13,9 +13,9 @@ however, there are some areas where we view things differently from
 refer readers to some of the original informal
 https://github.com/ocsigen/js_of_ocaml/issues/338[discussions].
 
-* Js_of_ocaml takes lowlevel bytecode from OCaml compiler, BuckleScript
-takes the highlevel rawlambda representation from OCaml compiler
-* Js_of_ocaml focuses more on existing OCaml eco-system(opam) while
+* Js_of_ocaml takes low-level bytecode from OCaml compiler, BuckleScript
+takes the high-level rawlambda representation from OCaml compiler
+* Js_of_ocaml focuses more on existing OCaml ecosystem(opam) while
 BuckleScript's major goal is to target npm
 * Js_of_ocaml and BuckleScript have slightly different runtime encoding
 in several places, for example, BuckleScript encodes OCaml Array as JS

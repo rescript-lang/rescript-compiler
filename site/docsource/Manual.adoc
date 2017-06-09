@@ -45,7 +45,7 @@ in the {BuckleScript-playground}[browser].
 [NOTE]
 
 ====
-Documents under https://github.com/bloomberg/bucklescript/Manual.html[_bloomberg.github.io_] match the https://github.com/bloomberg/bucklescript[master branch].
+Documentation under https://bloomberg.github.io/bucklescript/Manual.html[_bloomberg.github.io_] match the https://github.com/bloomberg/bucklescript[master branch].
 
 If you find errors or omissions in this document, please don't
 hesitate to submit an issue, sources are https://github.com/bloomberg/bucklescript/tree/master/site/docsource[here].
@@ -92,10 +92,10 @@ include::./Dev-mode-How-to.adoc[]
 include::./Differences-from-js_of_ocaml.adoc[]
 
 [appendix]
-== Library API documentation 
+== Library API documentation
 
-There is a small Library comes with `bs-platform`, its documentation is 
-http://bloomberg.github.io/bucklescript/api/[available].
+There is a small library that comes with `bs-platform`, its documentation is
+http://bloomberg.github.io/bucklescript/api/[here].
 
 
 [appendix]

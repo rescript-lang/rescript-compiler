@@ -37,7 +37,7 @@ we'd like it to be, so in order to actually use them we need to lift the type we
 want to use them with. For this purpose BuckleScript defines the type `'a Js.null`,
 `'a Js.undefined' and `'a Js.null_undefined` (for values that can be both
 `null`, `undefined` and `'a`). As well as the corresponding modules `Js.Null`,
-`Js.Undefined` and `Js.Null_undefined` for working with these tpyes.
+`Js.Undefined` and `Js.Null_undefined` for working with these types.
 
 Here's an example showing `Js.Null` used directly:
 
@@ -62,7 +62,7 @@ to maintain:
 -------------
 external try_some_thing : string Js.null -> int Js.null = ...
 
-let try_some_thing_maybe ( v : string option) : int option = 
+let try_some_thing_maybe ( v : string option) : int option =
   Js.Null.to_opt (try_some_thing (Js.Null.from_opt v))
 -------------
 
