@@ -6,9 +6,9 @@ var List  = require("../../lib/js/list.js");
 var Curry = require("../../lib/js/curry.js");
 
 function f(x) {
-  return function (param) {
-    return x + param | 0;
-  };
+  return (function (param) {
+      return x + param | 0;
+    });
 }
 
 function f1(x, y) {

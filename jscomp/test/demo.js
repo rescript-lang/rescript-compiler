@@ -22,11 +22,11 @@ var data = /* array */[
 
 function ui_layout(compile, lookup, appContext) {
   var init = Curry._1(compile, "bid  - ask");
-  var computeFunction = [function (env) {
-      return Curry._1(init, function (key) {
-                  return Curry._2(lookup, env, key);
-                });
-    }];
+  var computeFunction = [(function (env) {
+        return Curry._1(init, (function (key) {
+                      return Curry._2(lookup, env, key);
+                    }));
+      })];
   var hw1 = new BUI.HostedWindow();
   var hc = new BUI.HostedContent();
   var stackPanel = new UI.StackPanel();
@@ -87,37 +87,37 @@ function ui_layout(compile, lookup, appContext) {
   inputCode.minHeight = 100;
   button.text = "update formula";
   button.minHeight = 20;
-  button.on("click", function () {
-        try {
-          var hot_function = Curry._1(compile, inputCode.text);
-          computeFunction[0] = function (env) {
-            return Curry._1(hot_function, function (key) {
-                        return Curry._2(lookup, env, key);
-                      });
-          };
-          return /* () */0;
-        }
-        catch (e){
-          return /* () */0;
-        }
-      });
-  Runtime.setInterval(function () {
-        return grid.dataSource = Array.prototype.map.call(data, function (param) {
-                    var price = param[/* price */1];
-                    var bid = price + 20 * Math.random();
-                    var ask = price + 20 * Math.random();
-                    var result = Curry._1(computeFunction[0], {
-                          bid: bid,
-                          ask: ask
-                        });
-                    return /* array */[
-                            mk_titleRow(param[/* ticker */0]),
-                            mk_titleRow(bid.toFixed(2)),
-                            mk_titleRow(ask.toFixed(2)),
-                            mk_titleRow(result.toFixed(2))
-                          ];
-                  });
-      }, 100);
+  button.on("click", (function () {
+          try {
+            var hot_function = Curry._1(compile, inputCode.text);
+            computeFunction[0] = (function (env) {
+                return Curry._1(hot_function, (function (key) {
+                              return Curry._2(lookup, env, key);
+                            }));
+              });
+            return /* () */0;
+          }
+          catch (e){
+            return /* () */0;
+          }
+        }));
+  Runtime.setInterval((function () {
+          return grid.dataSource = Array.prototype.map.call(data, (function (param) {
+                        var price = param[/* price */1];
+                        var bid = price + 20 * Math.random();
+                        var ask = price + 20 * Math.random();
+                        var result = Curry._1(computeFunction[0], {
+                              bid: bid,
+                              ask: ask
+                            });
+                        return /* array */[
+                                mk_titleRow(param[/* ticker */0]),
+                                mk_titleRow(bid.toFixed(2)),
+                                mk_titleRow(ask.toFixed(2)),
+                                mk_titleRow(result.toFixed(2))
+                              ];
+                      }));
+        }), 100);
   return hw1;
 }
 

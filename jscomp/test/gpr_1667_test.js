@@ -12,23 +12,23 @@ function eq(loc, x, y) {
   suites[0] = /* :: */[
     /* tuple */[
       loc + (" id " + test_id[0]),
-      function () {
-        return /* Eq */Block.__(0, [
-                  x,
-                  y
-                ]);
-      }
+      (function () {
+          return /* Eq */Block.__(0, [
+                    x,
+                    y
+                  ]);
+        })
     ],
     suites[0]
   ];
   return /* () */0;
 }
 
-+(function () {
-      return 0;
-    }(function (_, _$1) {
-        return /* false */0;
-      }) === 0);
++((function () {
+        return 0;
+      })((function (_, _$1) {
+          return /* false */0;
+        })) === 0);
 
 eq("File \"gpr_1667_test.ml\", line 18, characters 7-14", 0, 0);
 

@@ -24,9 +24,9 @@ function f(_n, _acc) {
 }
 
 function test_closure() {
-  var arr = Caml_array.caml_make_vect(6, function (x) {
-        return x;
-      });
+  var arr = Caml_array.caml_make_vect(6, (function (x) {
+          return x;
+        }));
   for(var i = 0; i <= 6; ++i){
     Caml_array.caml_array_set(arr, i, (function(i){
         return function () {
@@ -37,9 +37,9 @@ function test_closure() {
   return arr;
 }
 
-f(10, function () {
-      return /* () */0;
-    });
+f(10, (function () {
+        return /* () */0;
+      }));
 
 exports.f            = f;
 exports.test_closure = test_closure;

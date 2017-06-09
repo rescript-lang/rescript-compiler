@@ -80,16 +80,16 @@ function get_lines(fname) {
                       ])
                   ]),
                 " %S -> %S; "
-              ]), function (x, y) {
-            l[0] = /* :: */[
-              /* tuple */[
-                x,
-                y
-              ],
-              l[0]
-            ];
-            return /* () */0;
-          });
+              ]), (function (x, y) {
+              l[0] = /* :: */[
+                /* tuple */[
+                  x,
+                  y
+                ],
+                l[0]
+              ];
+              return /* () */0;
+            }));
     };
     return List.rev(l[0]);
   }

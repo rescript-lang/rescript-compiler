@@ -31,9 +31,9 @@ eq("File \"scanf_test.ml\", line 6, characters 5-12", /* tuple */[
                       ])
                   ]),
                 "%d %d"
-              ]), function (x, y) {
-            return x + y | 0;
-          }),
+              ]), (function (x, y) {
+              return x + y | 0;
+            })),
       63
     ]);
 

@@ -63,33 +63,33 @@ function to_list(s) {
 
 var suites_000 = /* tuple */[
   "lexer_stream_genlex",
-  function () {
-    return /* Eq */Block.__(0, [
-              /* :: */[
-                /* Int */Block.__(2, [3]),
+  (function () {
+      return /* Eq */Block.__(0, [
                 /* :: */[
-                  /* Kwd */Block.__(0, ["("]),
+                  /* Int */Block.__(2, [3]),
                   /* :: */[
-                    /* Int */Block.__(2, [3]),
+                    /* Kwd */Block.__(0, ["("]),
                     /* :: */[
-                      /* Kwd */Block.__(0, ["+"]),
+                      /* Int */Block.__(2, [3]),
                       /* :: */[
-                        /* Int */Block.__(2, [2]),
+                        /* Kwd */Block.__(0, ["+"]),
                         /* :: */[
-                          /* Int */Block.__(2, [-1]),
+                          /* Int */Block.__(2, [2]),
                           /* :: */[
-                            /* Kwd */Block.__(0, [")"]),
-                            /* [] */0
+                            /* Int */Block.__(2, [-1]),
+                            /* :: */[
+                              /* Kwd */Block.__(0, [")"]),
+                              /* [] */0
+                            ]
                           ]
                         ]
                       ]
                     ]
                   ]
-                ]
-              ],
-              to_list(lexer(Stream.of_string("3(3 + 2 -1)")))
-            ]);
-  }
+                ],
+                to_list(lexer(Stream.of_string("3(3 + 2 -1)")))
+              ]);
+    })
 ];
 
 var suites = /* :: */[

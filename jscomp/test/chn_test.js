@@ -15,12 +15,12 @@ function eq(loc, x, y) {
   suites[0] = /* :: */[
     /* tuple */[
       loc + (" id " + test_id[0]),
-      function () {
-        return /* Eq */Block.__(0, [
-                  x,
-                  y
-                ]);
-      }
+      (function () {
+          return /* Eq */Block.__(0, [
+                    x,
+                    y
+                  ]);
+        })
     ],
     suites[0]
   ];
@@ -32,21 +32,21 @@ console.log("你好，\n世界");
 console.log("\x3f\u003f\b\t\n\v\f\r\0\"\'");
 
 function convert(s) {
-  return $$Array.to_list(Array.from(s, function (x) {
-                  var match = x.codePointAt(0);
-                  if (match !== undefined) {
-                    return match;
-                  } else {
-                    throw [
-                          Caml_builtin_exceptions.assert_failure,
-                          [
-                            "chn_test.ml",
-                            20,
-                            18
-                          ]
-                        ];
-                  }
-                }));
+  return $$Array.to_list(Array.from(s, (function (x) {
+                    var match = x.codePointAt(0);
+                    if (match !== undefined) {
+                      return match;
+                    } else {
+                      throw [
+                            Caml_builtin_exceptions.assert_failure,
+                            [
+                              "chn_test.ml",
+                              20,
+                              18
+                            ]
+                          ];
+                    }
+                  })));
 }
 
 eq("File \"chn_test.ml\", line 25, characters 7-14", "你好，\n世界", "你好，\n世界");

@@ -42,142 +42,142 @@ function fib(n) {
 Mt.from_pair_suites("int_overflow_test.ml", /* :: */[
       /* tuple */[
         "plus_overflow",
-        function () {
-          return /* Eq */Block.__(0, [
-                    /* true */1,
-                    +((Int32.max_int + 1 | 0) === Int32.min_int)
-                  ]);
-        }
+        (function () {
+            return /* Eq */Block.__(0, [
+                      /* true */1,
+                      +((Int32.max_int + 1 | 0) === Int32.min_int)
+                    ]);
+          })
       ],
       /* :: */[
         /* tuple */[
           "minus_overflow",
-          function () {
-            return /* Eq */Block.__(0, [
-                      /* true */1,
-                      +((Int32.min_int - Int32.one | 0) === Int32.max_int)
-                    ]);
-          }
+          (function () {
+              return /* Eq */Block.__(0, [
+                        /* true */1,
+                        +((Int32.min_int - Int32.one | 0) === Int32.max_int)
+                      ]);
+            })
         ],
         /* :: */[
           /* tuple */[
             "flow_again",
-            function () {
-              return /* Eq */Block.__(0, [
-                        2147483646,
-                        (Int32.max_int + Int32.max_int | 0) + Int32.min_int | 0
-                      ]);
-            }
+            (function () {
+                return /* Eq */Block.__(0, [
+                          2147483646,
+                          (Int32.max_int + Int32.max_int | 0) + Int32.min_int | 0
+                        ]);
+              })
           ],
           /* :: */[
             /* tuple */[
               "flow_again",
-              function () {
-                return /* Eq */Block.__(0, [
-                          -2,
-                          Int32.max_int + Int32.max_int | 0
-                        ]);
-              }
+              (function () {
+                  return /* Eq */Block.__(0, [
+                            -2,
+                            Int32.max_int + Int32.max_int | 0
+                          ]);
+                })
             ],
             /* :: */[
               /* tuple */[
                 "hash_test",
-                function () {
-                  return /* Eq */Block.__(0, [
-                            hash_variant("xxyyzzuuxxzzyy00112233"),
-                            544087776
-                          ]);
-                }
+                (function () {
+                    return /* Eq */Block.__(0, [
+                              hash_variant("xxyyzzuuxxzzyy00112233"),
+                              544087776
+                            ]);
+                  })
               ],
               /* :: */[
                 /* tuple */[
                   "hash_test2",
-                  function () {
-                    return /* Eq */Block.__(0, [
-                              hash_variant("xxyyzxzzyy"),
-                              -449896130
-                            ]);
-                  }
+                  (function () {
+                      return /* Eq */Block.__(0, [
+                                hash_variant("xxyyzxzzyy"),
+                                -449896130
+                              ]);
+                    })
                 ],
                 /* :: */[
                   /* tuple */[
                     "File \"int_overflow_test.ml\", line 37, characters 2-9",
-                    function () {
-                      return /* Eq */Block.__(0, [
-                                hash_variant2("xxyyzzuuxxzzyy00112233"),
-                                544087776
-                              ]);
-                    }
+                    (function () {
+                        return /* Eq */Block.__(0, [
+                                  hash_variant2("xxyyzzuuxxzzyy00112233"),
+                                  544087776
+                                ]);
+                      })
                   ],
                   /* :: */[
                     /* tuple */[
                       "File \"int_overflow_test.ml\", line 38, characters 2-9",
-                      function () {
-                        return /* Eq */Block.__(0, [
-                                  hash_variant2("xxyyzxzzyy"),
-                                  -449896130
-                                ]);
-                      }
+                      (function () {
+                          return /* Eq */Block.__(0, [
+                                    hash_variant2("xxyyzxzzyy"),
+                                    -449896130
+                                  ]);
+                        })
                     ],
                     /* :: */[
                       /* tuple */[
                         "int_literal_flow",
-                        function () {
-                          return /* Eq */Block.__(0, [
-                                    -1,
-                                    -1
-                                  ]);
-                        }
-                      ],
-                      /* :: */[
-                        /* tuple */[
-                          "int_literal_flow2",
-                          function () {
+                        (function () {
                             return /* Eq */Block.__(0, [
                                       -1,
                                       -1
                                     ]);
-                          }
-                        ],
-                        /* :: */[
-                          /* tuple */[
-                            "int_literal_flow3",
-                            function () {
+                          })
+                      ],
+                      /* :: */[
+                        /* tuple */[
+                          "int_literal_flow2",
+                          (function () {
                               return /* Eq */Block.__(0, [
                                         -1,
                                         -1
                                       ]);
-                            }
+                            })
+                        ],
+                        /* :: */[
+                          /* tuple */[
+                            "int_literal_flow3",
+                            (function () {
+                                return /* Eq */Block.__(0, [
+                                          -1,
+                                          -1
+                                        ]);
+                              })
                           ],
                           /* :: */[
                             /* tuple */[
                               "int32_mul",
-                              function () {
-                                return /* Eq */Block.__(0, [
-                                          -33554431,
-                                          -33554431
-                                        ]);
-                              }
+                              (function () {
+                                  return /* Eq */Block.__(0, [
+                                            -33554431,
+                                            -33554431
+                                          ]);
+                                })
                             ],
                             /* :: */[
                               /* tuple */[
                                 "File \"int_overflow_test.ml\", line 44, characters 3-10",
-                                function () {
-                                  return /* Eq */Block.__(0, [
-                                            Number("3") | 0,
-                                            3
-                                          ]);
-                                }
+                                (function () {
+                                    return /* Eq */Block.__(0, [
+                                              Number("3") | 0,
+                                              3
+                                            ]);
+                                  })
                               ],
                               /* :: */[
                                 /* tuple */[
                                   "File \"int_overflow_test.ml\", line 46, characters 3-10",
-                                  function () {
-                                    return /* Eq */Block.__(0, [
-                                              Number("3.2") | 0,
-                                              3
-                                            ]);
-                                  }
+                                  (function () {
+                                      return /* Eq */Block.__(0, [
+                                                Number("3.2") | 0,
+                                                3
+                                              ]);
+                                    })
                                 ],
                                 /* [] */0
                               ]

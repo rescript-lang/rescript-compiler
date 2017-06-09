@@ -12,46 +12,46 @@ function is_block(x) {
 
 var suites_000 = /* tuple */[
   "is_block_test1",
-  function () {
-    return /* Eq */Block.__(0, [
-              /* false */0,
-              (3).length !== undefined
-            ]);
-  }
+  (function () {
+      return /* Eq */Block.__(0, [
+                /* false */0,
+                (3).length !== undefined
+              ]);
+    })
 ];
 
 var suites_001 = /* :: */[
   /* tuple */[
     "is_block_test2",
-    function () {
-      return /* Eq */Block.__(0, [
-                /* true */1,
-                /* :: */[
-                  3,
-                  /* [] */0
-                ].length !== undefined
-              ]);
-    }
+    (function () {
+        return /* Eq */Block.__(0, [
+                  /* true */1,
+                  /* :: */[
+                    3,
+                    /* [] */0
+                  ].length !== undefined
+                ]);
+      })
   ],
   /* :: */[
     /* tuple */[
       "is_block_test3",
-      function () {
-        return /* Eq */Block.__(0, [
-                  /* true */1,
-                  "x".length !== undefined
-                ]);
-      }
+      (function () {
+          return /* Eq */Block.__(0, [
+                    /* true */1,
+                    "x".length !== undefined
+                  ]);
+        })
     ],
     /* :: */[
       /* tuple */[
         "is_block_test4",
-        function () {
-          return /* Eq */Block.__(0, [
-                    /* false */0,
-                    (3.0).length !== undefined
-                  ]);
-        }
+        (function () {
+            return /* Eq */Block.__(0, [
+                      /* false */0,
+                      (3.0).length !== undefined
+                    ]);
+          })
       ],
       /* [] */0
     ]

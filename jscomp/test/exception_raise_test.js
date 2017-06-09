@@ -138,43 +138,43 @@ catch (raw_e$1){
 Mt.from_pair_suites("exception_raise_test.ml", /* :: */[
       /* tuple */[
         "File \"exception_raise_test.ml\", line 113, characters 4-11",
-        function () {
-          return /* Eq */Block.__(0, [
-                    /* tuple */[
-                      f,
-                      ff,
-                      fff,
-                      a0
-                    ],
-                    /* tuple */[
-                      2,
-                      2,
-                      2,
-                      2
-                    ]
-                  ]);
-        }
+        (function () {
+            return /* Eq */Block.__(0, [
+                      /* tuple */[
+                        f,
+                        ff,
+                        fff,
+                        a0
+                      ],
+                      /* tuple */[
+                        2,
+                        2,
+                        2,
+                        2
+                      ]
+                    ]);
+          })
       ],
       /* :: */[
         /* tuple */[
           "File \"exception_raise_test.ml\", line 115, characters 4-11",
-          function () {
-            if (a1[0] === Js_exn.$$Error) {
-              return /* Eq */Block.__(0, [
-                        a1[1],
-                        2
-                      ]);
-            } else {
-              throw [
-                    Caml_builtin_exceptions.assert_failure,
-                    [
-                      "exception_raise_test.ml",
-                      118,
-                      15
-                    ]
-                  ];
-            }
-          }
+          (function () {
+              if (a1[0] === Js_exn.$$Error) {
+                return /* Eq */Block.__(0, [
+                          a1[1],
+                          2
+                        ]);
+              } else {
+                throw [
+                      Caml_builtin_exceptions.assert_failure,
+                      [
+                        "exception_raise_test.ml",
+                        118,
+                        15
+                      ]
+                    ];
+              }
+            })
         ],
         /* [] */0
       ]

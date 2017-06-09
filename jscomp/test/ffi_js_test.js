@@ -25,12 +25,12 @@ function eq(loc, param) {
   suites[0] = /* :: */[
     /* tuple */[
       loc + (" id " + test_id[0]),
-      function () {
-        return /* Eq */Block.__(0, [
-                  x,
-                  y
-                ]);
-      }
+      (function () {
+          return /* Eq */Block.__(0, [
+                    x,
+                    y
+                  ]);
+        })
     ],
     suites[0]
   ];
@@ -80,10 +80,10 @@ var same_type = /* tuple */[
 ];
 
 var v_obj = {
-  hi: function () {
-    console.log("hei");
-    return /* () */0;
-  }
+  hi: (function () {
+      console.log("hei");
+      return /* () */0;
+    })
 };
 
 eq("File \"ffi_js_test.ml\", line 44, characters 5-12", /* tuple */[

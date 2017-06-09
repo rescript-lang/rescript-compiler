@@ -341,44 +341,14 @@ function find(x, _param) {
 }
 
 function of_list(kvs) {
-  return List.fold_left(function (acc, param) {
-              return add(param[0], param[1], acc);
-            }, /* Empty */0, kvs);
+  return List.fold_left((function (acc, param) {
+                return add(param[0], param[1], acc);
+              }), /* Empty */0, kvs);
 }
 
 var int_map_suites_000 = /* tuple */[
   "add",
-  function () {
-    var v = of_list(/* :: */[
-          /* tuple */[
-            1,
-            /* "1" */49
-          ],
-          /* :: */[
-            /* tuple */[
-              2,
-              /* "3" */51
-            ],
-            /* :: */[
-              /* tuple */[
-                3,
-                /* "4" */52
-              ],
-              /* [] */0
-            ]
-          ]
-        ]);
-    return /* Eq */Block.__(0, [
-              cardinal(v),
-              3
-            ]);
-  }
-];
-
-var int_map_suites_001 = /* :: */[
-  /* tuple */[
-    "equal",
-    function () {
+  (function () {
       var v = of_list(/* :: */[
             /* tuple */[
               1,
@@ -398,35 +368,17 @@ var int_map_suites_001 = /* :: */[
               ]
             ]
           ]);
-      var u = of_list(/* :: */[
-            /* tuple */[
-              2,
-              /* "3" */51
-            ],
-            /* :: */[
-              /* tuple */[
-                3,
-                /* "4" */52
-              ],
-              /* :: */[
-                /* tuple */[
-                  1,
-                  /* "1" */49
-                ],
-                /* [] */0
-              ]
-            ]
-          ]);
       return /* Eq */Block.__(0, [
-                compare(Caml_obj.caml_compare, u, v),
-                0
+                cardinal(v),
+                3
               ]);
-    }
-  ],
-  /* :: */[
-    /* tuple */[
-      "equal2",
-      function () {
+    })
+];
+
+var int_map_suites_001 = /* :: */[
+  /* tuple */[
+    "equal",
+    (function () {
         var v = of_list(/* :: */[
               /* tuple */[
                 1,
@@ -466,33 +418,81 @@ var int_map_suites_001 = /* :: */[
               ]
             ]);
         return /* Eq */Block.__(0, [
-                  /* true */1,
-                  equal(function (x, y) {
-                        return +(x === y);
-                      }, u, v)
+                  compare(Caml_obj.caml_compare, u, v),
+                  0
                 ]);
-      }
+      })
+  ],
+  /* :: */[
+    /* tuple */[
+      "equal2",
+      (function () {
+          var v = of_list(/* :: */[
+                /* tuple */[
+                  1,
+                  /* "1" */49
+                ],
+                /* :: */[
+                  /* tuple */[
+                    2,
+                    /* "3" */51
+                  ],
+                  /* :: */[
+                    /* tuple */[
+                      3,
+                      /* "4" */52
+                    ],
+                    /* [] */0
+                  ]
+                ]
+              ]);
+          var u = of_list(/* :: */[
+                /* tuple */[
+                  2,
+                  /* "3" */51
+                ],
+                /* :: */[
+                  /* tuple */[
+                    3,
+                    /* "4" */52
+                  ],
+                  /* :: */[
+                    /* tuple */[
+                      1,
+                      /* "1" */49
+                    ],
+                    /* [] */0
+                  ]
+                ]
+              ]);
+          return /* Eq */Block.__(0, [
+                    /* true */1,
+                    equal((function (x, y) {
+                            return +(x === y);
+                          }), u, v)
+                  ]);
+        })
     ],
     /* :: */[
       /* tuple */[
         "iteration",
-        function () {
-          var m = /* Empty */0;
-          for(var i = 0; i <= 10000; ++i){
-            m = add$1("" + i, "" + i, m);
-          }
-          var v = -1;
-          for(var i$1 = 0; i$1 <= 10000; ++i$1){
-            if (find("" + i$1, m) !== "" + i$1) {
-              v = i$1;
+        (function () {
+            var m = /* Empty */0;
+            for(var i = 0; i <= 10000; ++i){
+              m = add$1("" + i, "" + i, m);
             }
-            
-          }
-          return /* Eq */Block.__(0, [
-                    v,
-                    -1
-                  ]);
-        }
+            var v = -1;
+            for(var i$1 = 0; i$1 <= 10000; ++i$1){
+              if (find("" + i$1, m) !== "" + i$1) {
+                v = i$1;
+              }
+              
+            }
+            return /* Eq */Block.__(0, [
+                      v,
+                      -1
+                    ]);
+          })
       ],
       /* [] */0
     ]

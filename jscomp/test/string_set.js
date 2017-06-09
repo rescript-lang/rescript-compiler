@@ -297,9 +297,9 @@ function of_list(l) {
 }
 
 function of_array(l) {
-  return $$Array.fold_left(function (acc, x) {
-              return add(x, acc);
-            }, /* Empty */0, l);
+  return $$Array.fold_left((function (acc, x) {
+                return add(x, acc);
+              }), /* Empty */0, l);
 }
 
 function invariant(t) {

@@ -8,14 +8,14 @@ function f(a, b, _) {
 }
 
 function f2(a) {
-  return function () {
-    return a + 1 | 0;
-  };
+  return (function () {
+      return a + 1 | 0;
+    });
 }
 
-var arr = $$Array.init(2, function () {
-      return 0;
-    });
+var arr = $$Array.init(2, (function () {
+        return 0;
+      }));
 
 for(var i = 0; i <= 1; ++i){
   Caml_array.caml_array_set(arr, i, i + 1 | 0);

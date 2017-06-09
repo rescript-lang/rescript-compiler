@@ -103,12 +103,12 @@ function parse(token) {
   var r = parse_expr_aux(parse_term_aux(parse_atom(/* () */0)));
   return /* tuple */[
           r,
-          Queue.fold(function (acc, x) {
-                return /* :: */[
-                        x,
-                        acc
-                      ];
-              }, /* [] */0, look_ahead)
+          Queue.fold((function (acc, x) {
+                  return /* :: */[
+                          x,
+                          acc
+                        ];
+                }), /* [] */0, look_ahead)
         ];
 }
 
@@ -134,9 +134,9 @@ var lexer = Genlex.make_lexer(/* :: */[
 
 function token(chars) {
   var strm = lexer(chars);
-  return function () {
-    return Stream.next(strm);
-  };
+  return (function () {
+      return Stream.next(strm);
+    });
 }
 
 function l_parse(token) {
@@ -239,12 +239,12 @@ function l_parse(token) {
   var r = parse_t_aux(parse_f_aux(parse_f(/* () */0)));
   return /* tuple */[
           r,
-          Queue.fold(function (acc, x) {
-                return /* :: */[
-                        x,
-                        acc
-                      ];
-              }, /* [] */0, look_ahead)
+          Queue.fold((function (acc, x) {
+                  return /* :: */[
+                          x,
+                          acc
+                        ];
+                }), /* [] */0, look_ahead)
         ];
 }
 
@@ -257,12 +257,12 @@ function eq(loc, x, y) {
   suites[0] = /* :: */[
     /* tuple */[
       loc + (" id " + test_id[0]),
-      function () {
-        return /* Eq */Block.__(0, [
-                  x,
-                  y
-                ]);
-      }
+      (function () {
+          return /* Eq */Block.__(0, [
+                    x,
+                    y
+                  ]);
+        })
     ],
     suites[0]
   ];

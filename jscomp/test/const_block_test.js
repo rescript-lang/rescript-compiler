@@ -56,21 +56,21 @@ var suites_000 = /* tuple */[
 var suites_001 = /* :: */[
   /* tuple */[
     "avoid_mutable_inline_test",
-    function () {
-      Caml_array.caml_array_set(c, 0, 3);
-      Caml_array.caml_array_set(c, 1, 4);
-      return /* Eq */Block.__(0, [
-                /* array */[
-                  3,
-                  4,
-                  2,
-                  3,
-                  4,
-                  5
-                ],
-                c
-              ]);
-    }
+    (function () {
+        Caml_array.caml_array_set(c, 0, 3);
+        Caml_array.caml_array_set(c, 1, 4);
+        return /* Eq */Block.__(0, [
+                  /* array */[
+                    3,
+                    4,
+                    2,
+                    3,
+                    4,
+                    5
+                  ],
+                  c
+                ]);
+      })
   ],
   /* [] */0
 ];

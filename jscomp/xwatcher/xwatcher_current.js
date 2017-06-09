@@ -29,19 +29,19 @@ var events = Xwatcher_util.makeEventObj(/* () */0);
 var command = "./watch-build.sh";
 
 function exec() {
-  return Xwatcher_util.buildWithShell(command, events, lock, function () {
-              return /* () */0;
-            });
+  return Xwatcher_util.buildWithShell(command, events, lock, (function () {
+                return /* () */0;
+              }));
 }
 
 function watch(dir) {
-  return Xwatcher_util.makeWatcher(dir, function (_, fileName) {
-              if (fileName.endsWith(".ml") || fileName.endsWith(".mli") || fileName.endsWith(".cppo") || fileName.endsWith(".js") || fileName === "Makefile" || fileName === "Makefile.shared") {
-                return exec(/* () */0);
-              } else {
-                return 0;
-              }
-            });
+  return Xwatcher_util.makeWatcher(dir, (function (_, fileName) {
+                if (fileName.endsWith(".ml") || fileName.endsWith(".mli") || fileName.endsWith(".cppo") || fileName.endsWith(".js") || fileName === "Makefile" || fileName === "Makefile.shared") {
+                  return exec(/* () */0);
+                } else {
+                  return 0;
+                }
+              }));
 }
 
 Node_process.putEnvVar("BS_VSCODE", "1");
@@ -62,10 +62,10 @@ if (match.length !== 1) {
 }
 
 if (exit === 1) {
-  Js_vector.iter(function (x) {
-        watch(Path.join(jscomp, x));
-        return /* () */0;
-      }, /* array */[
+  Js_vector.iter((function (x) {
+          watch(Path.join(jscomp, x));
+          return /* () */0;
+        }), /* array */[
         "core",
         "syntax",
         "ext",

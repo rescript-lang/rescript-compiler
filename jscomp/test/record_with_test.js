@@ -26,12 +26,12 @@ function f(g, h) {
 
 var suites_000 = /* tuple */[
   "eq_with",
-  function () {
-    return /* Eq */Block.__(0, [
-              v,
-              newrecord
-            ]);
-  }
+  (function () {
+      return /* Eq */Block.__(0, [
+                v,
+                newrecord
+              ]);
+    })
 ];
 
 var suites = /* :: */[

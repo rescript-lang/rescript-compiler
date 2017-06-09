@@ -29,47 +29,47 @@ function f() {
 
 var suites_000 = /* tuple */[
   "acc",
-  function () {
-    return /* Eq */Block.__(0, [
-              f(/* () */0),
-              /* array */[
-                0,
-                1,
-                3,
-                6,
-                10,
-                15,
-                21,
-                28,
-                36,
-                45
-              ]
-            ]);
-  }
+  (function () {
+      return /* Eq */Block.__(0, [
+                f(/* () */0),
+                /* array */[
+                  0,
+                  1,
+                  3,
+                  6,
+                  10,
+                  15,
+                  21,
+                  28,
+                  36,
+                  45
+                ]
+              ]);
+    })
 ];
 
 var suites_001 = /* :: */[
   /* tuple */[
     "array_to_list",
-    function () {
-      return /* Eq */Block.__(0, [
-                /* :: */[
-                  1,
+    (function () {
+        return /* Eq */Block.__(0, [
                   /* :: */[
-                    2,
+                    1,
                     /* :: */[
-                      3,
-                      /* [] */0
-                    ]
-                  ]
-                ],
-                $$Array.to_list(/* int array */[
-                      1,
                       2,
-                      3
-                    ])
-              ]);
-    }
+                      /* :: */[
+                        3,
+                        /* [] */0
+                      ]
+                    ]
+                  ],
+                  $$Array.to_list(/* int array */[
+                        1,
+                        2,
+                        3
+                      ])
+                ]);
+      })
   ],
   /* [] */0
 ];

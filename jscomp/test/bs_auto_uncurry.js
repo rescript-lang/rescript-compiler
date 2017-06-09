@@ -7,9 +7,9 @@ var xbs = Array.prototype.map.call(/* int array */[
       2,
       3,
       5
-    ], function (x) {
-      return x + 1 | 0;
-    });
+    ], (function (x) {
+        return x + 1 | 0;
+      }));
 
 function f(cb) {
   return Array.prototype.map.call(/* int array */[
@@ -24,37 +24,37 @@ var xs = Array.prototype.map.call(/* int array */[
       1,
       1,
       2
-    ], function (x) {
-      return function (y) {
-        return (y + x | 0) + 1 | 0;
-      };
-    });
+    ], (function (x) {
+        return (function (y) {
+            return (y + x | 0) + 1 | 0;
+          });
+      }));
 
 function f_0() {
-  return hi(function () {
-              return /* () */0;
-            });
+  return hi((function () {
+                return /* () */0;
+              }));
 }
 
 function f_01() {
-  return hi(function () {
-              console.log("x");
-              return /* () */0;
-            });
+  return hi((function () {
+                console.log("x");
+                return /* () */0;
+              }));
 }
 
 function f_02(xs) {
-  return hi(function () {
-              xs[0] = /* () */0;
-              console.log("x");
-              return /* () */0;
-            });
+  return hi((function () {
+                xs[0] = /* () */0;
+                console.log("x");
+                return /* () */0;
+              }));
 }
 
 function f_03(_, u) {
-  return hi(function () {
-              return Curry._1(u, /* () */0);
-            });
+  return hi((function () {
+                return Curry._1(u, /* () */0);
+              }));
 }
 
 function fishy(x, y, z) {
@@ -75,27 +75,27 @@ function add3(x, y, z) {
 }
 
 function h2(x) {
-  return ff(x, function (prim, prim$1) {
-              return prim + prim$1 | 0;
-            });
+  return ff(x, (function (prim, prim$1) {
+                return prim + prim$1 | 0;
+              }));
 }
 
 function h3(x) {
-  return ff(x, function (param, param$1) {
-              return add3(1, param, param$1);
-            });
+  return ff(x, (function (param, param$1) {
+                return add3(1, param, param$1);
+              }));
 }
 
 function h4(x) {
-  return ff1(x, 3, function (param, param$1) {
-              return add3(1, param, param$1);
-            });
+  return ff1(x, 3, (function (param, param$1) {
+                return add3(1, param, param$1);
+              }));
 }
 
 function h5(x) {
-  return ff2(x, "3", function (param, param$1) {
-              return add3(2, param, param$1);
-            });
+  return ff2(x, "3", (function (param, param$1) {
+                return add3(2, param, param$1);
+              }));
 }
 
 function add(x, y) {

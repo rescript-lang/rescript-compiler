@@ -8,23 +8,23 @@ var v = (Number.EPSILON?Number.EPSILON:2.220446049250313e-16);
 
 var suites_000 = /* tuple */[
   "epsilon",
-  function () {
-    return /* Eq */Block.__(0, [
-              Pervasives.epsilon_float,
-              v
-            ]);
-  }
+  (function () {
+      return /* Eq */Block.__(0, [
+                Pervasives.epsilon_float,
+                v
+              ]);
+    })
 ];
 
 var suites_001 = /* :: */[
   /* tuple */[
     "raw_epsilon",
-    function () {
-      return /* Eq */Block.__(0, [
-                2.220446049250313e-16,
-                v
-              ]);
-    }
+    (function () {
+        return /* Eq */Block.__(0, [
+                  2.220446049250313e-16,
+                  v
+                ]);
+      })
   ],
   /* [] */0
 ];

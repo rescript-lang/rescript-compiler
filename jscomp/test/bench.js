@@ -53,15 +53,15 @@ function fold_left(f, x, a) {
 }
 
 function f2() {
-  var arr = init(3000000, function (i) {
-        return i;
-      });
-  var b = map(function (i) {
-        return i + i - 1;
-      }, arr);
-  var v = fold_left(function (prim, prim$1) {
-        return prim + prim$1;
-      }, 0, b);
+  var arr = init(3000000, (function (i) {
+          return i;
+        }));
+  var b = map((function (i) {
+          return i + i - 1;
+        }), arr);
+  var v = fold_left((function (prim, prim$1) {
+          return prim + prim$1;
+        }), 0, b);
   console.log(Pervasives.string_of_float(v));
   return /* () */0;
 }

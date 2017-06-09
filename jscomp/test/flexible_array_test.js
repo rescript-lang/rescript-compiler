@@ -263,12 +263,12 @@ function sort(s) {
     return s;
   } else {
     var head = get(s, 0);
-    var larger = sort(filter_from(1, function (x) {
-              return Caml_obj.caml_greaterthan(x, head);
-            }, s));
-    var smaller = sort(filter_from(1, function (x) {
-              return Caml_obj.caml_lessequal(x, head);
-            }, s));
+    var larger = sort(filter_from(1, (function (x) {
+                return Caml_obj.caml_greaterthan(x, head);
+              }), s));
+    var smaller = sort(filter_from(1, (function (x) {
+                return Caml_obj.caml_lessequal(x, head);
+              }), s));
     return append(smaller, push_front(larger, head));
   }
 }
@@ -329,13 +329,13 @@ if (!$eq$tilde(sort(u), /* array */[
       ];
 }
 
-var v = $$Array.init(500, function (i) {
-      return 500 - i | 0;
-    });
+var v = $$Array.init(500, (function (i) {
+        return 500 - i | 0;
+      }));
 
-$eq$tilde(sort(of_array(v)), $$Array.init(500, function (i) {
-          return i + 1 | 0;
-        }));
+$eq$tilde(sort(of_array(v)), $$Array.init(500, (function (i) {
+            return i + 1 | 0;
+          })));
 
 exports.sub       = sub;
 exports.update    = update;

@@ -123,9 +123,9 @@ function range(from, to_) {
           "Ext_array.range"
         ];
   } else {
-    return $$Array.init((to_ - from | 0) + 1 | 0, function (i) {
-                return i + from | 0;
-              });
+    return $$Array.init((to_ - from | 0) + 1 | 0, (function (i) {
+                  return i + from | 0;
+                }));
   }
 }
 
@@ -137,9 +137,9 @@ function map2i(f, a, b) {
           "Ext_array.map2i"
         ];
   } else {
-    return $$Array.mapi(function (i, a) {
-                return Curry._3(f, i, a, b[i]);
-              }, a);
+    return $$Array.mapi((function (i, a) {
+                  return Curry._3(f, i, a, b[i]);
+                }), a);
   }
 }
 

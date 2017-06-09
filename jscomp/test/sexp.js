@@ -136,9 +136,9 @@ function of_field(name, t) {
 function of_record(l) {
   return /* `List */[
           848054398,
-          List.map(function (param) {
-                return of_field(param[0], param[1]);
-              }, l)
+          List.map((function (param) {
+                  return of_field(param[0], param[1]);
+                }), l)
         ];
 }
 
@@ -269,9 +269,9 @@ function to_float(e) {
 }
 
 function to_string(e) {
-  return _try_atom(e, function (x) {
-              return x;
-            });
+  return _try_atom(e, (function (x) {
+                return x;
+              }));
 }
 
 function to_pair(e) {
@@ -298,17 +298,17 @@ function to_pair(e) {
 }
 
 function to_pair_with(f1, f2, e) {
-  return $great$great$eq(to_pair(e), function (param) {
-              var y = param[1];
-              return $great$great$eq(Curry._1(f1, param[0]), function (x) {
-                          return $great$great$eq(Curry._1(f2, y), function (y) {
-                                      return /* Some */[/* tuple */[
-                                                x,
-                                                y
-                                              ]];
-                                    });
-                        });
-            });
+  return $great$great$eq(to_pair(e), (function (param) {
+                var y = param[1];
+                return $great$great$eq(Curry._1(f1, param[0]), (function (x) {
+                              return $great$great$eq(Curry._1(f2, y), (function (y) {
+                                            return /* Some */[/* tuple */[
+                                                      x,
+                                                      y
+                                                    ]];
+                                          }));
+                            }));
+              }));
 }
 
 function to_triple(e) {
@@ -341,21 +341,21 @@ function to_triple(e) {
 }
 
 function to_triple_with(f1, f2, f3, e) {
-  return $great$great$eq(to_triple(e), function (param) {
-              var z = param[2];
-              var y = param[1];
-              return $great$great$eq(Curry._1(f1, param[0]), function (x) {
-                          return $great$great$eq(Curry._1(f2, y), function (y) {
-                                      return $great$great$eq(Curry._1(f3, z), function (z) {
-                                                  return /* Some */[/* tuple */[
-                                                            x,
-                                                            y,
-                                                            z
-                                                          ]];
-                                                });
-                                    });
-                        });
-            });
+  return $great$great$eq(to_triple(e), (function (param) {
+                var z = param[2];
+                var y = param[1];
+                return $great$great$eq(Curry._1(f1, param[0]), (function (x) {
+                              return $great$great$eq(Curry._1(f2, y), (function (y) {
+                                            return $great$great$eq(Curry._1(f3, z), (function (z) {
+                                                          return /* Some */[/* tuple */[
+                                                                    x,
+                                                                    y,
+                                                                    z
+                                                                  ]];
+                                                        }));
+                                          }));
+                            }));
+              }));
 }
 
 function to_list(e) {

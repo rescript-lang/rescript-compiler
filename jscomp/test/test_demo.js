@@ -43,23 +43,23 @@ function f(x, y, z) {
 
 function g(x, y) {
   var u = x + y | 0;
-  return function (z) {
-    return u + z | 0;
-  };
+  return (function (z) {
+      return u + z | 0;
+    });
 }
 
 function g1(x, y) {
   var u = x + y | 0;
-  return function (xx, yy) {
-    return (xx + yy | 0) + u | 0;
-  };
+  return (function (xx, yy) {
+      return (xx + yy | 0) + u | 0;
+    });
 }
 
 var u = 8;
 
-var x = function (z) {
-    return u + z | 0;
-  }(6);
+var x = (function (z) {
+      return u + z | 0;
+    })(6);
 
 var u$1 = 7;
 

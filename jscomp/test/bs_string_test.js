@@ -12,21 +12,21 @@ function eq(loc, x, y) {
   suites[0] = /* :: */[
     /* tuple */[
       loc + (" id " + test_id[0]),
-      function () {
-        return /* Eq */Block.__(0, [
-                  x,
-                  y
-                ]);
-      }
+      (function () {
+          return /* Eq */Block.__(0, [
+                    x,
+                    y
+                  ]);
+        })
     ],
     suites[0]
   ];
   return /* () */0;
 }
 
-eq("File \"bs_string_test.ml\", line 11, characters 5-12", "ghso ghso g".split(" ").reduce(function (x, y) {
-          return x + ("-" + y);
-        }, ""), "-ghso-ghso-g");
+eq("File \"bs_string_test.ml\", line 11, characters 5-12", "ghso ghso g".split(" ").reduce((function (x, y) {
+            return x + ("-" + y);
+          }), ""), "-ghso-ghso-g");
 
 Mt.from_pair_suites("bs_string_test.ml", suites[0]);
 

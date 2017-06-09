@@ -14,12 +14,12 @@ function eq(loc, param) {
   suites[0] = /* :: */[
     /* tuple */[
       loc + (" id " + test_id[0]),
-      function () {
-        return /* Eq */Block.__(0, [
-                  x,
-                  y
-                ]);
-      }
+      (function () {
+          return /* Eq */Block.__(0, [
+                    x,
+                    y
+                  ]);
+        })
     ],
     suites[0]
   ];
@@ -29,63 +29,63 @@ function eq(loc, param) {
 var v5 = {
   x: 3,
   y: 3,
-  setY: function (v) {
-    var self = this ;
-    self.y = 2;
-    return /* tuple */[
-            self.y,
-            v
-          ];
-  },
-  say: function () {
-    var self = this ;
-    return self.x + self.y | 0;
-  },
-  hihi: function () {
-    var self = this ;
-    return self.x + self.say() | 0;
-  },
-  bark: function () {
-    console.log("bark");
-    return /* () */0;
-  },
-  xz: function () {
-    return 3;
-  }
+  setY: (function (v) {
+      var self = this ;
+      self.y = 2;
+      return /* tuple */[
+              self.y,
+              v
+            ];
+    }),
+  say: (function () {
+      var self = this ;
+      return self.x + self.y | 0;
+    }),
+  hihi: (function () {
+      var self = this ;
+      return self.x + self.say() | 0;
+    }),
+  bark: (function () {
+      console.log("bark");
+      return /* () */0;
+    }),
+  xz: (function () {
+      return 3;
+    })
 };
 
 var v = {
   x: 3,
   y: 0,
-  reset: function () {
-    var self = this ;
-    return self.y = 0;
-  },
-  incr: function () {
-    var self = this ;
-    return self.y = self.y + 1 | 0;
-  },
-  getY: function () {
-    var self = this ;
-    return self.y;
-  },
-  say: function () {
-    var self = this ;
-    return self.x + self.y | 0;
-  }
+  reset: (function () {
+      var self = this ;
+      return self.y = 0;
+    }),
+  incr: (function () {
+      var self = this ;
+      return self.y = self.y + 1 | 0;
+    }),
+  getY: (function () {
+      var self = this ;
+      return self.y;
+    }),
+  say: (function () {
+      var self = this ;
+      return self.x + self.y | 0;
+    })
 };
 
 var u = {
-  incr: function () {
-    console.log("hey");
-    return /* () */0;
-  },
-  getY: function () {
-    return 3;
-  },
-  say: function () {
-    return 7;
-  }
+  incr: (function () {
+      console.log("hey");
+      return /* () */0;
+    }),
+  getY: (function () {
+      return 3;
+    }),
+  say: (function () {
+      return 7;
+    })
 };
 
 var test_type_001 = /* :: */[
@@ -100,35 +100,35 @@ var test_type = /* :: */[
 
 var z = {
   x: [3],
-  setX: function (x) {
-    var self = this ;
-    self.x[0] = x;
-    return /* () */0;
-  },
-  getX: function () {
-    var self = this ;
-    return self.x[0];
-  }
+  setX: (function (x) {
+      var self = this ;
+      self.x[0] = x;
+      return /* () */0;
+    }),
+  getX: (function () {
+      var self = this ;
+      return self.x[0];
+    })
 };
 
 var eventObj = {
   events: /* array */[],
-  empty: function () {
-    var self = this ;
-    var a = self.events;
-    a.splice(0);
-    return /* () */0;
-  },
-  push: function (a) {
-    var self = this ;
-    var xs = self.events;
-    xs.push(a);
-    return /* () */0;
-  },
-  needRebuild: function () {
-    var self = this ;
-    return +(self.events.length !== 0);
-  }
+  empty: (function () {
+      var self = this ;
+      var a = self.events;
+      a.splice(0);
+      return /* () */0;
+    }),
+  push: (function (a) {
+      var self = this ;
+      var xs = self.events;
+      xs.push(a);
+      return /* () */0;
+    }),
+  needRebuild: (function () {
+      var self = this ;
+      return +(self.events.length !== 0);
+    })
 };
 
 function test__(x) {
@@ -137,14 +137,14 @@ function test__(x) {
 
 var zz = {
   x: 3,
-  setX: function (x) {
-    var self = this ;
-    return self.x = x;
-  },
-  getX: function () {
-    var self = this ;
-    return self.x;
-  }
+  setX: (function (x) {
+      var self = this ;
+      return self.x = x;
+    }),
+  getX: (function () {
+      var self = this ;
+      return self.x;
+    })
 };
 
 var test_type2_001 = /* :: */[

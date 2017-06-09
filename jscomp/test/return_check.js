@@ -41,13 +41,13 @@ function f_escaped_not(xs, i) {
 
 function f_escaped_1(xs, i) {
   var x = xs[i];
-  return function () {
-    if (x !== undefined) {
-      return x;
-    } else {
-      return 1;
-    }
-  };
+  return (function () {
+      if (x !== undefined) {
+        return x;
+      } else {
+        return 1;
+      }
+    });
 }
 
 function f_escaped_2(xs, i) {

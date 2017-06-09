@@ -15,12 +15,12 @@ function eq(loc, x, y) {
   suites[0] = /* :: */[
     /* tuple */[
       loc + (" id " + test_id[0]),
-      function () {
-        return /* Eq */Block.__(0, [
-                  x,
-                  y
-                ]);
-      }
+      (function () {
+          return /* Eq */Block.__(0, [
+                    x,
+                    y
+                  ]);
+        })
     ],
     suites[0]
   ];
@@ -77,13 +77,13 @@ eq("File \"js_list_test.ml\", line 11, characters 7-14", Js_list.flatten(/* :: *
       ]
     ]);
 
-eq("File \"js_list_test.ml\", line 14, characters 7-14", Js_list.filterMap(function (x) {
-          if (x % 2) {
-            return /* None */0;
-          } else {
-            return /* Some */[x];
-          }
-        }, /* :: */[
+eq("File \"js_list_test.ml\", line 14, characters 7-14", Js_list.filterMap((function (x) {
+            if (x % 2) {
+              return /* None */0;
+            } else {
+              return /* Some */[x];
+            }
+          }), /* :: */[
           1,
           /* :: */[
             2,
@@ -115,13 +115,13 @@ eq("File \"js_list_test.ml\", line 14, characters 7-14", Js_list.filterMap(funct
       ]
     ]);
 
-eq("File \"js_list_test.ml\", line 17, characters 7-14", Js_list.filterMap(function (x) {
-          if (x % 2) {
-            return /* None */0;
-          } else {
-            return /* Some */[x];
-          }
-        }, /* :: */[
+eq("File \"js_list_test.ml\", line 17, characters 7-14", Js_list.filterMap((function (x) {
+            if (x % 2) {
+              return /* None */0;
+            } else {
+              return /* Some */[x];
+            }
+          }), /* :: */[
           1,
           /* :: */[
             2,
@@ -150,9 +150,9 @@ eq("File \"js_list_test.ml\", line 17, characters 7-14", Js_list.filterMap(funct
       ]
     ]);
 
-eq("File \"js_list_test.ml\", line 20, characters 7-14", Js_list.countBy(function (x) {
-          return +(x % 2 === 0);
-        }, /* :: */[
+eq("File \"js_list_test.ml\", line 20, characters 7-14", Js_list.countBy((function (x) {
+            return +(x % 2 === 0);
+          }), /* :: */[
           1,
           /* :: */[
             2,
@@ -178,24 +178,24 @@ function f(i) {
 
 var v = Js_vector.toList(Js_vector.init(100000, f));
 
-eq("File \"js_list_test.ml\", line 23, characters 7-14", Js_list.countBy(function (x) {
-          return +(x % 2 === 0);
-        }, v), 50000);
+eq("File \"js_list_test.ml\", line 23, characters 7-14", Js_list.countBy((function (x) {
+            return +(x % 2 === 0);
+          }), v), 50000);
 
-var vv = Js_list.foldRight(function (x, y) {
-      return /* :: */[
-              x,
-              y
-            ];
-    }, v, /* [] */0);
+var vv = Js_list.foldRight((function (x, y) {
+        return /* :: */[
+                x,
+                y
+              ];
+      }), v, /* [] */0);
 
-eq("File \"js_list_test.ml\", line 27, characters 7-14", /* true */1, Js_list.equal(function (x, y) {
-          return +(x === y);
-        }, v, vv));
+eq("File \"js_list_test.ml\", line 27, characters 7-14", /* true */1, Js_list.equal((function (x, y) {
+            return +(x === y);
+          }), v, vv));
 
-var vvv = Js_list.filter(function (x) {
-      return +(x % 10 === 0);
-    }, vv);
+var vvv = Js_list.filter((function (x) {
+        return +(x % 10 === 0);
+      }), vv);
 
 eq("File \"js_list_test.ml\", line 31, characters 7-14", Js_list.length(vvv), 10000);
 
@@ -203,9 +203,9 @@ function f$1(x) {
   return Caml_int32.imul(x, 10);
 }
 
-eq("File \"js_list_test.ml\", line 32, characters 7-14", /* true */1, Js_list.equal(function (x, y) {
-          return +(x === y);
-        }, vvv, Js_vector.toList(Js_vector.init(10000, f$1))));
+eq("File \"js_list_test.ml\", line 32, characters 7-14", /* true */1, Js_list.equal((function (x, y) {
+            return +(x === y);
+          }), vvv, Js_vector.toList(Js_vector.init(10000, f$1))));
 
 Mt.from_pair_suites("js_list_test.ml", suites[0]);
 

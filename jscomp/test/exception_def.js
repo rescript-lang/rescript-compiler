@@ -17,13 +17,13 @@ var Ax = Caml_exceptions.create("Exception_def.Ax");
 
 var XXX = Caml_exceptions.create("Exception_def.XXX");
 
-Printexc.register_printer(function (param) {
-      if (param[0] === A) {
-        return /* Some */["A"];
-      } else {
-        return /* None */0;
-      }
-    });
+Printexc.register_printer((function (param) {
+        if (param[0] === A) {
+          return /* Some */["A"];
+        } else {
+          return /* None */0;
+        }
+      }));
 
 var a = 3;
 

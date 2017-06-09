@@ -5,25 +5,25 @@ var Block = require("../../lib/js/block.js");
 
 var suites_000 = /* tuple */[
   "setTimeout/clearTimeout sanity check",
-  function () {
-    var handle = setTimeout(function () {
-          return /* () */0;
-        }, 0);
-    clearTimeout(handle);
-    return /* Ok */Block.__(4, [/* true */1]);
-  }
+  (function () {
+      var handle = setTimeout((function () {
+              return /* () */0;
+            }), 0);
+      clearTimeout(handle);
+      return /* Ok */Block.__(4, [/* true */1]);
+    })
 ];
 
 var suites_001 = /* :: */[
   /* tuple */[
     "setInerval/clearInterval sanity check",
-    function () {
-      var handle = setInterval(function () {
-            return /* () */0;
-          }, 0);
-      clearInterval(handle);
-      return /* Ok */Block.__(4, [/* true */1]);
-    }
+    (function () {
+        var handle = setInterval((function () {
+                return /* () */0;
+              }), 0);
+        clearInterval(handle);
+        return /* Ok */Block.__(4, [/* true */1]);
+      })
   ],
   /* [] */0
 ];

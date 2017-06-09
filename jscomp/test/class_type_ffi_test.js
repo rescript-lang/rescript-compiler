@@ -48,42 +48,42 @@ function off2(o, a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12) {
 }
 
 function mk_f() {
-  return function (a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12) {
-    return Curry.app(a0, [
-                a1,
-                a2,
-                a3,
-                a4,
-                a5,
-                a6,
-                a7,
-                a8,
-                a9,
-                a10,
-                a11,
-                a12
-              ]);
-  };
+  return (function (a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12) {
+      return Curry.app(a0, [
+                  a1,
+                  a2,
+                  a3,
+                  a4,
+                  a5,
+                  a6,
+                  a7,
+                  a8,
+                  a9,
+                  a10,
+                  a11,
+                  a12
+                ]);
+    });
 }
 
 function omk_f() {
   return {
-          huge_methdo: function (a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12) {
-            return Curry.app(a0, [
-                        a1,
-                        a2,
-                        a3,
-                        a4,
-                        a5,
-                        a6,
-                        a7,
-                        a8,
-                        a9,
-                        a10,
-                        a11,
-                        a12
-                      ]);
-          }
+          huge_methdo: (function (a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12) {
+              return Curry.app(a0, [
+                          a1,
+                          a2,
+                          a3,
+                          a4,
+                          a5,
+                          a6,
+                          a7,
+                          a8,
+                          a9,
+                          a10,
+                          a11,
+                          a12
+                        ]);
+            })
         };
 }
 

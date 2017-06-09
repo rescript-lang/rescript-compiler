@@ -36,33 +36,33 @@ var v = ( true);
 
 var suites_000 = /* tuple */[
   "caml_bool_eq_caml_bool",
-  function () {
-    return /* Eq */Block.__(0, [
-              u,
-              f(true)
-            ]);
-  }
+  (function () {
+      return /* Eq */Block.__(0, [
+                u,
+                f(true)
+              ]);
+    })
 ];
 
 var suites_001 = /* :: */[
   /* tuple */[
     "js_bool_eq_js_bool",
-    function () {
-      return /* Eq */Block.__(0, [
-                v,
-                true
-              ]);
-    }
+    (function () {
+        return /* Eq */Block.__(0, [
+                  v,
+                  true
+                ]);
+      })
   ],
   /* :: */[
     /* tuple */[
       "js_bool_neq_acml_bool",
-      function () {
-        return /* Eq */Block.__(0, [
-                  /* false */0,
-                  Caml_obj.caml_equal(f(true), (true))
-                ]);
-      }
+      (function () {
+          return /* Eq */Block.__(0, [
+                    /* false */0,
+                    Caml_obj.caml_equal(f(true), (true))
+                  ]);
+        })
     ],
     /* [] */0
   ]

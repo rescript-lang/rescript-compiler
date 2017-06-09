@@ -25,62 +25,62 @@ function scan_rest(ib, accu) {
                       /* End_of_format */0
                     ]),
                   "%[]]"
-                ]), function (param) {
-              if (param === "]") {
-                return accu;
-              } else {
-                var ib$1 = ib;
-                var accu$1 = accu;
-                return Curry._1(Scanf.bscanf(ib$1, /* Format */[
-                                /* Char_literal */Block.__(12, [
-                                    /* " " */32,
-                                    /* Int */Block.__(4, [
-                                        /* Int_i */3,
-                                        /* No_padding */0,
-                                        /* No_precision */0,
-                                        /* Char_literal */Block.__(12, [
-                                            /* " " */32,
-                                            /* End_of_format */0
-                                          ])
-                                      ])
-                                  ]),
-                                " %i "
-                              ]), function (i) {
-                            var ib$2 = ib$1;
-                            var accu$2 = /* :: */[
-                              i,
-                              accu$1
-                            ];
-                            return Curry._1(Scanf.bscanf(ib$2, /* Format */[
-                                            /* Scan_char_set */Block.__(20, [
-                                                /* Some */[1],
-                                                "\0\0\0\0\0\0\0\b\0\0\0 \0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
-                                                /* End_of_format */0
-                                              ]),
-                                            "%1[];]"
-                                          ]), function (param) {
-                                        switch (param) {
-                                          case ";" : 
-                                              return scan_rest(ib$2, accu$2);
-                                          case "]" : 
-                                              return accu$2;
-                                          default:
-                                            var s = Printf.sprintf(/* Format */[
-                                                  /* String_literal */Block.__(11, [
-                                                      "scan_int_list",
-                                                      /* End_of_format */0
-                                                    ]),
-                                                  "scan_int_list"
-                                                ]);
-                                            throw [
-                                                  Caml_builtin_exceptions.failure,
-                                                  s
-                                                ];
-                                        }
-                                      });
-                          });
-              }
-            });
+                ]), (function (param) {
+                if (param === "]") {
+                  return accu;
+                } else {
+                  var ib$1 = ib;
+                  var accu$1 = accu;
+                  return Curry._1(Scanf.bscanf(ib$1, /* Format */[
+                                  /* Char_literal */Block.__(12, [
+                                      /* " " */32,
+                                      /* Int */Block.__(4, [
+                                          /* Int_i */3,
+                                          /* No_padding */0,
+                                          /* No_precision */0,
+                                          /* Char_literal */Block.__(12, [
+                                              /* " " */32,
+                                              /* End_of_format */0
+                                            ])
+                                        ])
+                                    ]),
+                                  " %i "
+                                ]), (function (i) {
+                                var ib$2 = ib$1;
+                                var accu$2 = /* :: */[
+                                  i,
+                                  accu$1
+                                ];
+                                return Curry._1(Scanf.bscanf(ib$2, /* Format */[
+                                                /* Scan_char_set */Block.__(20, [
+                                                    /* Some */[1],
+                                                    "\0\0\0\0\0\0\0\b\0\0\0 \0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
+                                                    /* End_of_format */0
+                                                  ]),
+                                                "%1[];]"
+                                              ]), (function (param) {
+                                              switch (param) {
+                                                case ";" : 
+                                                    return scan_rest(ib$2, accu$2);
+                                                case "]" : 
+                                                    return accu$2;
+                                                default:
+                                                  var s = Printf.sprintf(/* Format */[
+                                                        /* String_literal */Block.__(11, [
+                                                            "scan_int_list",
+                                                            /* End_of_format */0
+                                                          ]),
+                                                        "scan_int_list"
+                                                      ]);
+                                                  throw [
+                                                        Caml_builtin_exceptions.failure,
+                                                        s
+                                                      ];
+                                              }
+                                            }));
+                              }));
+                }
+              }));
 }
 
 function scan_int_list(ib) {

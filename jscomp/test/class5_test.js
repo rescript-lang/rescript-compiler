@@ -29,12 +29,12 @@ function eq(loc, x, y) {
   suites[0] = /* :: */[
     /* tuple */[
       loc + (" id " + test_id[0]),
-      function () {
-        return /* Eq */Block.__(0, [
-                  x,
-                  y
-                ]);
-      }
+      (function () {
+          return /* Eq */Block.__(0, [
+                    x,
+                    y
+                  ]);
+        })
     ],
     suites[0]
   ];
@@ -53,24 +53,24 @@ function printable_point_init($$class) {
   var x = ids[3];
   CamlinternalOO.set_methods($$class, /* array */[
         get_x,
-        function (self$neg1) {
-          return self$neg1[x];
-        },
+        (function (self$neg1) {
+            return self$neg1[x];
+          }),
         move,
-        function (self$neg1, d) {
-          self$neg1[x] = self$neg1[x] + d | 0;
-          return /* () */0;
-        },
+        (function (self$neg1, d) {
+            self$neg1[x] = self$neg1[x] + d | 0;
+            return /* () */0;
+          }),
         print,
-        function (self$neg1) {
-          return "" + Curry._1(self$neg1[0][get_x], self$neg1);
-        }
+        (function (self$neg1) {
+            return "" + Curry._1(self$neg1[0][get_x], self$neg1);
+          })
       ]);
-  return function (_, self, x_init) {
-    var self$1 = CamlinternalOO.create_object_opt(self, $$class);
-    self$1[x] = x_init;
-    return self$1;
-  };
+  return (function (_, self, x_init) {
+      var self$1 = CamlinternalOO.create_object_opt(self, $$class);
+      self$1[x] = x_init;
+      return self$1;
+    });
 }
 
 var printable_point = CamlinternalOO.make_class([
@@ -87,9 +87,9 @@ function printable_colored_point_init($$class) {
   var print = ids[0];
   var color = ids[1];
   var c = ids[2];
-  CamlinternalOO.set_method($$class, color, function (self$neg2) {
-        return self$neg2[c];
-      });
+  CamlinternalOO.set_method($$class, color, (function (self$neg2) {
+          return self$neg2[c];
+        }));
   var inh = CamlinternalOO.inherits($$class, shared$1, 0, [
         "get_x",
         "move",
@@ -97,15 +97,15 @@ function printable_colored_point_init($$class) {
       ], printable_point, 1);
   var obj_init = inh[0];
   var print$1 = inh[4];
-  CamlinternalOO.set_method($$class, print, function (self$neg2) {
-        return "(" + (Curry._1(print$1, self$neg2) + (", " + (Curry._1(self$neg2[0][color], self$neg2) + ")")));
-      });
-  return function (_, self, y, c$1) {
-    var self$1 = CamlinternalOO.create_object_opt(self, $$class);
-    self$1[c] = c$1;
-    Curry._2(obj_init, self$1, y);
-    return CamlinternalOO.run_initializers_opt(self, self$1, $$class);
-  };
+  CamlinternalOO.set_method($$class, print, (function (self$neg2) {
+          return "(" + (Curry._1(print$1, self$neg2) + (", " + (Curry._1(self$neg2[0][color], self$neg2) + ")")));
+        }));
+  return (function (_, self, y, c$1) {
+      var self$1 = CamlinternalOO.create_object_opt(self, $$class);
+      self$1[c] = c$1;
+      Curry._2(obj_init, self$1, y);
+      return CamlinternalOO.run_initializers_opt(self, self$1, $$class);
+    });
 }
 
 var printable_colored_point = CamlinternalOO.make_class([
@@ -129,20 +129,20 @@ function ref_init($$class) {
   var x = ids[2];
   CamlinternalOO.set_methods($$class, /* array */[
         get,
-        function (self$neg3) {
-          return self$neg3[x];
-        },
+        (function (self$neg3) {
+            return self$neg3[x];
+          }),
         set,
-        function (self$neg3, y) {
-          self$neg3[x] = y;
-          return /* () */0;
-        }
+        (function (self$neg3, y) {
+            self$neg3[x] = y;
+            return /* () */0;
+          })
       ]);
-  return function (_, self, x_init) {
-    var self$1 = CamlinternalOO.create_object_opt(self, $$class);
-    self$1[x] = x_init;
-    return self$1;
-  };
+  return (function (_, self, x_init) {
+      var self$1 = CamlinternalOO.create_object_opt(self, $$class);
+      self$1[x] = x_init;
+      return self$1;
+    });
 }
 
 var ref = CamlinternalOO.make_class([
@@ -165,19 +165,19 @@ function intlist_init($$class) {
   var empty = ids[1];
   CamlinternalOO.set_methods($$class, /* array */[
         empty,
-        function (self$neg4) {
-          return +(self$neg4[l] === /* [] */0);
-        },
+        (function (self$neg4) {
+            return +(self$neg4[l] === /* [] */0);
+          }),
         fold,
-        function (self$neg4, f, accu) {
-          return List.fold_left(f, accu, self$neg4[l]);
-        }
+        (function (self$neg4, f, accu) {
+            return List.fold_left(f, accu, self$neg4[l]);
+          })
       ]);
-  return function (_, self, l$1) {
-    var self$1 = CamlinternalOO.create_object_opt(self, $$class);
-    self$1[l] = l$1;
-    return self$1;
-  };
+  return (function (_, self, l$1) {
+      var self$1 = CamlinternalOO.create_object_opt(self, $$class);
+      self$1[l] = l$1;
+      return self$1;
+    });
 }
 
 var intlist = CamlinternalOO.make_class(shared$2, intlist_init);
@@ -193,9 +193,9 @@ var l = Curry._2(intlist[0], 0, /* :: */[
       ]
     ]);
 
-eq("File \"class5_test.ml\", line 54, characters 5-12", 6, Caml_oo_curry.js3(-1010803711, 4, l, function (x, y) {
-          return x + y | 0;
-        }, 0));
+eq("File \"class5_test.ml\", line 54, characters 5-12", 6, Caml_oo_curry.js3(-1010803711, 4, l, (function (x, y) {
+            return x + y | 0;
+          }), 0));
 
 function intlist2_init($$class) {
   var l = CamlinternalOO.new_variable($$class, "");
@@ -204,19 +204,19 @@ function intlist2_init($$class) {
   var empty = ids[1];
   CamlinternalOO.set_methods($$class, /* array */[
         empty,
-        function (self$neg5) {
-          return +(self$neg5[l] === /* [] */0);
-        },
+        (function (self$neg5) {
+            return +(self$neg5[l] === /* [] */0);
+          }),
         fold,
-        function (self$neg5, f, accu) {
-          return List.fold_left(f, accu, self$neg5[l]);
-        }
+        (function (self$neg5, f, accu) {
+            return List.fold_left(f, accu, self$neg5[l]);
+          })
       ]);
-  return function (_, self, l$1) {
-    var self$1 = CamlinternalOO.create_object_opt(self, $$class);
-    self$1[l] = l$1;
-    return self$1;
-  };
+  return (function (_, self, l$1) {
+      var self$1 = CamlinternalOO.create_object_opt(self, $$class);
+      self$1[l] = l$1;
+      return self$1;
+    });
 }
 
 var intlist2 = CamlinternalOO.make_class(shared$2, intlist2_init);
@@ -236,12 +236,12 @@ eq("File \"class5_test.ml\", line 67, characters 5-12", /* tuple */[
       6,
       "1 2 3 "
     ], /* tuple */[
-      Caml_oo_curry.js3(-1010803711, 5, l$1, function (x, y) {
-            return x + y | 0;
-          }, 0),
-      Caml_oo_curry.js3(-1010803711, 6, l$1, function (s, x) {
-            return s + (x + " ");
-          }, "")
+      Caml_oo_curry.js3(-1010803711, 5, l$1, (function (x, y) {
+              return x + y | 0;
+            }), 0),
+      Caml_oo_curry.js3(-1010803711, 6, l$1, (function (s, x) {
+              return s + (x + " ");
+            }), "")
     ]);
 
 function point_init($$class) {
@@ -251,20 +251,20 @@ function point_init($$class) {
   var x = ids[2];
   CamlinternalOO.set_methods($$class, /* array */[
         get_x,
-        function (self$neg6) {
-          return self$neg6[x];
-        },
+        (function (self$neg6) {
+            return self$neg6[x];
+          }),
         move,
-        function (self$neg6, d) {
-          self$neg6[x] = self$neg6[x] + d | 0;
-          return /* () */0;
-        }
+        (function (self$neg6, d) {
+            self$neg6[x] = self$neg6[x] + d | 0;
+            return /* () */0;
+          })
       ]);
-  return function (_, self, x_init) {
-    var self$1 = CamlinternalOO.create_object_opt(self, $$class);
-    self$1[x] = x_init;
-    return self$1;
-  };
+  return (function (_, self, x_init) {
+      var self$1 = CamlinternalOO.create_object_opt(self, $$class);
+      self$1[x] = x_init;
+      return self$1;
+    });
 }
 
 var point = CamlinternalOO.make_class(shared, point_init);
@@ -277,14 +277,14 @@ function distance_point_init($$class) {
       ], point, 1);
   var obj_init = inh[0];
   var x = inh[1];
-  CamlinternalOO.set_method($$class, distance, function (self$neg7, other) {
-        return Pervasives.abs(Caml_oo_curry.js1(291546447, 7, other) - self$neg7[x] | 0);
-      });
-  return function (_, self, x) {
-    var self$1 = CamlinternalOO.create_object_opt(self, $$class);
-    Curry._2(obj_init, self$1, x);
-    return CamlinternalOO.run_initializers_opt(self, self$1, $$class);
-  };
+  CamlinternalOO.set_method($$class, distance, (function (self$neg7, other) {
+          return Pervasives.abs(Caml_oo_curry.js1(291546447, 7, other) - self$neg7[x] | 0);
+        }));
+  return (function (_, self, x) {
+      var self$1 = CamlinternalOO.create_object_opt(self, $$class);
+      Curry._2(obj_init, self$1, x);
+      return CamlinternalOO.run_initializers_opt(self, self$1, $$class);
+    });
 }
 
 var distance_point = CamlinternalOO.make_class([

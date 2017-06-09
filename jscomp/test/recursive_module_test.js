@@ -15,12 +15,12 @@ function eq(loc, x, y) {
   suites[0] = /* :: */[
     /* tuple */[
       loc + (" id " + test_id[0]),
-      function () {
-        return /* Eq */Block.__(0, [
-                  x,
-                  y
-                ]);
-      }
+      (function () {
+          return /* Eq */Block.__(0, [
+                    x,
+                    y
+                  ]);
+        })
     ],
     suites[0]
   ];
@@ -70,12 +70,12 @@ eq("File \"recursive_module_test.ml\", line 30, characters 5-12", 120, Curry._1(
 
 add(/* tuple */[
       "File \"recursive_module_test.ml\", line 34, characters 7-14",
-      function () {
-        return /* ThrowAny */Block.__(7, [function () {
-                    Curry._1(Int3[/* u */0], 3);
-                    return /* () */0;
-                  }]);
-      }
+      (function () {
+          return /* ThrowAny */Block.__(7, [(function () {
+                        Curry._1(Int3[/* u */0], 3);
+                        return /* () */0;
+                      })]);
+        })
     ]);
 
 Mt.from_pair_suites("recursive_module_test.ml", suites[0]);

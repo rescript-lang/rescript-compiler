@@ -116,41 +116,41 @@ function test_raises_exc_p(pred, f, x) {
 }
 
 function test_raises_some_exc(f) {
-  return function (param) {
-    return test_raises_exc_p(function () {
-                return /* true */1;
-              }, f, param);
-  };
+  return (function (param) {
+      return test_raises_exc_p((function () {
+                    return /* true */1;
+                  }), f, param);
+    });
 }
 
 function test_raises_this_exc(exc) {
-  return function (param, param$1) {
-    return test_raises_exc_p(function (x) {
-                return Caml_obj.caml_equal(x, exc);
-              }, param, param$1);
-  };
+  return (function (param, param$1) {
+      return test_raises_exc_p((function (x) {
+                    return Caml_obj.caml_equal(x, exc);
+                  }), param, param$1);
+    });
 }
 
 function failure_test(f, x, s) {
   var s$1 = s;
   var f$1 = f;
   var x$1 = x;
-  return test_raises_exc_p(function (x) {
-              return Caml_obj.caml_equal(x, [
-                          Caml_builtin_exceptions.failure,
-                          s$1
-                        ]);
-            }, f$1, x$1);
+  return test_raises_exc_p((function (x) {
+                return Caml_obj.caml_equal(x, [
+                            Caml_builtin_exceptions.failure,
+                            s$1
+                          ]);
+              }), f$1, x$1);
 }
 
 function scan_failure_test(f, x) {
-  return test_raises_exc_p(function (param) {
-              if (param[0] === Scanf.Scan_failure) {
-                return /* true */1;
-              } else {
-                return /* false */0;
-              }
-            }, f, x);
+  return test_raises_exc_p((function (param) {
+                if (param[0] === Scanf.Scan_failure) {
+                  return /* true */1;
+                } else {
+                  return /* false */0;
+                }
+              }), f, x);
 }
 
 exports.test                 = test;

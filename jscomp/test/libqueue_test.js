@@ -7,12 +7,12 @@ var Caml_obj                = require("../../lib/js/caml_obj.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function to_list(q) {
-  return List.rev(Queue.fold(function (l, x) {
-                  return /* :: */[
-                          x,
-                          l
-                        ];
-                }, /* [] */0, q));
+  return List.rev(Queue.fold((function (l, x) {
+                    return /* :: */[
+                            x,
+                            l
+                          ];
+                  }), /* [] */0, q));
 }
 
 var Q = /* module */[
@@ -760,20 +760,20 @@ for(var i$6 = 1; i$6 <= 10; ++i$6){
 
 var i$7 = [1];
 
-Queue.iter(function (j) {
-      if (i$7[0] !== j) {
-        throw [
-              Caml_builtin_exceptions.assert_failure,
-              [
-                "libqueue_test.ml",
-                107,
-                19
-              ]
-            ];
-      }
-      i$7[0] = i$7[0] + 1 | 0;
-      return /* () */0;
-    }, q$5);
+Queue.iter((function (j) {
+        if (i$7[0] !== j) {
+          throw [
+                Caml_builtin_exceptions.assert_failure,
+                [
+                  "libqueue_test.ml",
+                  107,
+                  19
+                ]
+              ];
+        }
+        i$7[0] = i$7[0] + 1 | 0;
+        return /* () */0;
+      }), q$5);
 
 var q1$1 = /* record */[
   /* length */0,

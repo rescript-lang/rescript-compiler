@@ -15,9 +15,9 @@ function configX() {
   return Configx$1.configX();
 }
 
-var U = /* module */[function () {
-    return Configx.configX();
-  }];
+var U = /* module */[(function () {
+      return Configx.configX();
+    })];
 
 var A = /* module */[];
 
@@ -25,22 +25,22 @@ var B = /* module */[];
 
 function f() {
   return /* tuple */[
-          function () {
-            List$3.ff();
-            return /* () */0;
-          },
-          function () {
-            List$3.ff2();
-            return /* () */0;
-          },
-          function () {
-            List$2.ff();
-            return /* () */0;
-          },
-          function () {
-            List$2.ff2();
-            return /* () */0;
-          }
+          (function () {
+              List$3.ff();
+              return /* () */0;
+            }),
+          (function () {
+              List$3.ff2();
+              return /* () */0;
+            }),
+          (function () {
+              List$2.ff();
+              return /* () */0;
+            }),
+          (function () {
+              List$2.ff2();
+              return /* () */0;
+            })
         ];
 }
 

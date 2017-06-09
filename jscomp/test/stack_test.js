@@ -26,21 +26,21 @@ function v() {
 
 var suites_000 = /* tuple */[
   "push_test",
-  function () {
-    return /* Eq */Block.__(0, [
-              /* :: */[
-                1,
+  (function () {
+      return /* Eq */Block.__(0, [
                 /* :: */[
-                  4,
+                  1,
                   /* :: */[
-                    3,
-                    /* [] */0
+                    4,
+                    /* :: */[
+                      3,
+                      /* [] */0
+                    ]
                   ]
-                ]
-              ],
-              v(/* () */0)
-            ]);
-  }
+                ],
+                v(/* () */0)
+              ]);
+    })
 ];
 
 var suites = /* :: */[

@@ -30,21 +30,21 @@ var hello = ids[3];
 
 CamlinternalOO.set_methods($$class, /* array */[
       hi,
-      function (_, v, z) {
-        return v + z | 0;
-      },
+      (function (_, v, z) {
+          return v + z | 0;
+        }),
       id1,
-      function () {
-        return 3;
-      },
+      (function () {
+          return 3;
+        }),
       id2,
-      function () {
-        return 4;
-      },
+      (function () {
+          return 4;
+        }),
       hello,
-      function (_, v) {
-        return v;
-      }
+      (function (_, v) {
+          return v;
+        })
     ]);
 
 CamlinternalOO.init_class($$class);
@@ -55,9 +55,9 @@ var $$class$1 = CamlinternalOO.create_table(["id"]);
 
 var id = CamlinternalOO.get_method_label($$class$1, "id");
 
-CamlinternalOO.set_method($$class$1, id, function () {
-      return "uu";
-    });
+CamlinternalOO.set_method($$class$1, id, (function () {
+        return "uu";
+      }));
 
 CamlinternalOO.init_class($$class$1);
 
@@ -67,9 +67,9 @@ var $$class$2 = CamlinternalOO.create_table(shared);
 
 var add = CamlinternalOO.get_method_label($$class$2, "add");
 
-CamlinternalOO.set_method($$class$2, add, function (_, x, y) {
-      return x + y | 0;
-    });
+CamlinternalOO.set_method($$class$2, add, (function (_, x, y) {
+        return x + y | 0;
+      }));
 
 CamlinternalOO.init_class($$class$2);
 
@@ -79,9 +79,9 @@ var $$class$3 = CamlinternalOO.create_table(shared);
 
 var add$1 = CamlinternalOO.get_method_label($$class$3, "add");
 
-CamlinternalOO.set_method($$class$3, add$1, function (_, x, y) {
-      return x + y | 0;
-    });
+CamlinternalOO.set_method($$class$3, add$1, (function (_, x, y) {
+        return x + y | 0;
+      }));
 
 CamlinternalOO.init_class($$class$3);
 

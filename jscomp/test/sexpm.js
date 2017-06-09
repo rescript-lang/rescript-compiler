@@ -103,12 +103,12 @@ function to_buf(b, t) {
     if (l) {
       if (l[1]) {
         Buffer.add_char(b, /* "(" */40);
-        List.iteri(function (i, t$prime) {
-              if (i > 0) {
-                Buffer.add_char(b, /* " " */32);
-              }
-              return to_buf(b, t$prime);
-            }, l);
+        List.iteri((function (i, t$prime) {
+                if (i > 0) {
+                  Buffer.add_char(b, /* " " */32);
+                }
+                return to_buf(b, t$prime);
+              }), l);
         return Buffer.add_char(b, /* ")" */41);
       } else {
         return Curry._2(Printf.bprintf(b, /* Format */[
@@ -174,22 +174,22 @@ function print(fmt, t) {
                 ]),
               "@[<hov1>("
             ]);
-        List.iteri(function (i, t$prime) {
-              if (i > 0) {
-                Format.fprintf(fmt, /* Format */[
-                      /* Formatting_lit */Block.__(17, [
-                          /* Break */Block.__(0, [
-                              "@ ",
-                              1,
-                              0
-                            ]),
-                          /* End_of_format */0
-                        ]),
-                      "@ "
-                    ]);
-              }
-              return print(fmt, t$prime);
-            }, l);
+        List.iteri((function (i, t$prime) {
+                if (i > 0) {
+                  Format.fprintf(fmt, /* Format */[
+                        /* Formatting_lit */Block.__(17, [
+                            /* Break */Block.__(0, [
+                                "@ ",
+                                1,
+                                0
+                              ]),
+                            /* End_of_format */0
+                          ]),
+                        "@ "
+                      ]);
+                }
+                return print(fmt, t$prime);
+              }), l);
         return Format.fprintf(fmt, /* Format */[
                     /* Char_literal */Block.__(12, [
                         /* ")" */41,
@@ -255,12 +255,12 @@ function print_noindent(fmt, t) {
     if (l) {
       if (l[1]) {
         Format.pp_print_char(fmt, /* "(" */40);
-        List.iteri(function (i, t$prime) {
-              if (i > 0) {
-                Format.pp_print_char(fmt, /* " " */32);
-              }
-              return print_noindent(fmt, t$prime);
-            }, l);
+        List.iteri((function (i, t$prime) {
+                if (i > 0) {
+                  Format.pp_print_char(fmt, /* " " */32);
+                }
+                return print_noindent(fmt, t$prime);
+              }), l);
         return Format.pp_print_char(fmt, /* ")" */41);
       } else {
         return Curry._2(Format.fprintf(fmt, /* Format */[
@@ -308,10 +308,10 @@ function to_chan(oc, t) {
 function to_file_seq(filename, seq) {
   var filename$1 = filename;
   var f = function (oc) {
-    return Curry._1(seq, function (t) {
-                to_chan(oc, t);
-                return Caml_io.caml_ml_output_char(oc, /* "\n" */10);
-              });
+    return Curry._1(seq, (function (t) {
+                  to_chan(oc, t);
+                  return Caml_io.caml_ml_output_char(oc, /* "\n" */10);
+                }));
   };
   var oc = Pervasives.open_out(filename$1);
   try {
@@ -328,9 +328,9 @@ function to_file_seq(filename, seq) {
 }
 
 function to_file(filename, t) {
-  return to_file_seq(filename, function (k) {
-              return Curry._1(k, t);
-            });
+  return to_file_seq(filename, (function (k) {
+                return Curry._1(k, t);
+              }));
 }
 
 function $$return(x) {
@@ -426,13 +426,13 @@ function _error(t, msg) {
               ]),
             "at %d, %d: "
           ]), t[/* line */5], t[/* col */6]);
-  return Printf.kbprintf(function (b) {
-              var msg$prime = Buffer.contents(b);
-              return /* `Error */[
-                      106380200,
-                      msg$prime
-                    ];
-            }, b, msg);
+  return Printf.kbprintf((function (b) {
+                var msg$prime = Buffer.contents(b);
+                return /* `Error */[
+                        106380200,
+                        msg$prime
+                      ];
+              }), b, msg);
 }
 
 function _error_eof(t) {
@@ -448,9 +448,9 @@ function _error_eof(t) {
 function expr(k, t) {
   while(true) {
     if (t[/* i */3] === t[/* len */4]) {
-      return _refill(t, function (param) {
-                  return expr(k, param);
-                }, _error_eof);
+      return _refill(t, (function (param) {
+                    return expr(k, param);
+                  }), _error_eof);
     } else {
       var c = _get(t);
       if (c >= 11) {
@@ -486,9 +486,9 @@ function expr_starting_with(c, k, t) {
                   ]);
       }
     } else {
-      return skip_comment(function (_, _$1) {
-                  return expr(k, t);
-                }, t);
+      return skip_comment((function (_, _$1) {
+                    return expr(k, t);
+                  }), t);
     }
   } else if (c >= 11) {
     if (c >= 32) {
@@ -544,9 +544,9 @@ function expr_starting_with(c, k, t) {
 function expr_list(acc, k, t) {
   while(true) {
     if (t[/* i */3] === t[/* len */4]) {
-      return _refill(t, function (param) {
-                  return expr_list(acc, k, param);
-                }, _error_eof);
+      return _refill(t, (function (param) {
+                    return expr_list(acc, k, param);
+                  }), _error_eof);
     } else {
       var c = _get(t);
       var exit = 0;
@@ -567,41 +567,41 @@ function expr_list(acc, k, t) {
         exit = 1;
       }
       if (exit === 1) {
-        return expr_starting_with(c, function (last, e) {
-                    var exit = 0;
-                    if (last) {
-                      var match = last[0];
-                      if (match !== 40) {
-                        if (match !== 41) {
-                          exit = 1;
+        return expr_starting_with(c, (function (last, e) {
+                      var exit = 0;
+                      if (last) {
+                        var match = last[0];
+                        if (match !== 40) {
+                          if (match !== 41) {
+                            exit = 1;
+                          } else {
+                            return Curry._2(k, /* None */0, /* `List */[
+                                        848054398,
+                                        List.rev(/* :: */[
+                                              e,
+                                              acc
+                                            ])
+                                      ]);
+                          }
                         } else {
-                          return Curry._2(k, /* None */0, /* `List */[
-                                      848054398,
-                                      List.rev(/* :: */[
-                                            e,
-                                            acc
-                                          ])
-                                    ]);
+                          return expr_list(/* [] */0, (function (_, l) {
+                                        return expr_list(/* :: */[
+                                                    l,
+                                                    acc
+                                                  ], k, t);
+                                      }), t);
                         }
                       } else {
-                        return expr_list(/* [] */0, function (_, l) {
-                                    return expr_list(/* :: */[
-                                                l,
-                                                acc
-                                              ], k, t);
-                                  }, t);
+                        exit = 1;
                       }
-                    } else {
-                      exit = 1;
-                    }
-                    if (exit === 1) {
-                      return expr_list(/* :: */[
-                                  e,
-                                  acc
-                                ], k, t);
-                    }
-                    
-                  }, t);
+                      if (exit === 1) {
+                        return expr_list(/* :: */[
+                                    e,
+                                    acc
+                                  ], k, t);
+                      }
+                      
+                    }), t);
       }
       
     }
@@ -620,11 +620,11 @@ function _return_atom(last, k, t) {
 function atom(k, t) {
   while(true) {
     if (t[/* i */3] === t[/* len */4]) {
-      return _refill(t, function (param) {
-                  return atom(k, param);
-                }, function (param) {
-                  return _return_atom(/* None */0, k, param);
-                });
+      return _refill(t, (function (param) {
+                    return atom(k, param);
+                  }), (function (param) {
+                    return _return_atom(/* None */0, k, param);
+                  }));
     } else {
       var c = _get(t);
       var exit = 0;
@@ -684,9 +684,9 @@ function atom(k, t) {
 function quoted(k, t) {
   while(true) {
     if (t[/* i */3] === t[/* len */4]) {
-      return _refill(t, function (param) {
-                  return quoted(k, param);
-                }, _error_eof);
+      return _refill(t, (function (param) {
+                    return quoted(k, param);
+                  }), _error_eof);
     } else {
       var c = _get(t);
       var exit = 0;
@@ -694,10 +694,10 @@ function quoted(k, t) {
         if (c !== 92) {
           exit = 1;
         } else {
-          return escaped(function (c) {
-                      Buffer.add_char(t[/* atom */2], c);
-                      return quoted(k, t);
-                    }, t);
+          return escaped((function (c) {
+                        Buffer.add_char(t[/* atom */2], c);
+                        return quoted(k, t);
+                      }), t);
         }
       } else {
         return _return_atom(/* None */0, k, t);
@@ -714,9 +714,9 @@ function quoted(k, t) {
 
 function escaped(k, t) {
   if (t[/* i */3] === t[/* len */4]) {
-    return _refill(t, function (param) {
-                return escaped(k, param);
-              }, _error_eof);
+    return _refill(t, (function (param) {
+                  return escaped(k, param);
+                }), _error_eof);
   } else {
     var c = _get(t);
     var exit = 0;
@@ -768,9 +768,9 @@ function escaped(k, t) {
     }
     if (exit$1 === 2) {
       if (_is_digit(c)) {
-        return read2int(c - /* "0" */48 | 0, function (n) {
-                    return Curry._1(k, Char.chr(n));
-                  }, t);
+        return read2int(c - /* "0" */48 | 0, (function (n) {
+                      return Curry._1(k, Char.chr(n));
+                    }), t);
       } else {
         exit = 1;
       }
@@ -793,9 +793,9 @@ function escaped(k, t) {
 
 function read2int(i, k, t) {
   if (t[/* i */3] === t[/* len */4]) {
-    return _refill(t, function (param) {
-                return read2int(i, k, param);
-              }, _error_eof);
+    return _refill(t, (function (param) {
+                  return read2int(i, k, param);
+                }), _error_eof);
   } else {
     var c = _get(t);
     if (_is_digit(c)) {
@@ -817,9 +817,9 @@ function read2int(i, k, t) {
 
 function read1int(i, k, t) {
   if (t[/* i */3] === t[/* len */4]) {
-    return _refill(t, function (param) {
-                return read1int(i, k, param);
-              }, _error_eof);
+    return _refill(t, (function (param) {
+                  return read1int(i, k, param);
+                }), _error_eof);
   } else {
     var c = _get(t);
     if (_is_digit(c)) {
@@ -842,9 +842,9 @@ function read1int(i, k, t) {
 function skip_comment(k, t) {
   while(true) {
     if (t[/* i */3] === t[/* len */4]) {
-      return _refill(t, function (param) {
-                  return skip_comment(k, param);
-                }, _error_eof);
+      return _refill(t, (function (param) {
+                    return skip_comment(k, param);
+                  }), _error_eof);
     } else {
       var match = _get(t);
       if (match !== 10) {
@@ -860,11 +860,11 @@ function skip_comment(k, t) {
 function expr_or_end(k, t) {
   while(true) {
     if (t[/* i */3] === t[/* len */4]) {
-      return _refill(t, function (param) {
-                  return expr_or_end(k, param);
-                }, function () {
-                  return /* End */3455931;
-                });
+      return _refill(t, (function (param) {
+                    return expr_or_end(k, param);
+                  }), (function () {
+                    return /* End */3455931;
+                  }));
     } else {
       var c = _get(t);
       if (c >= 11) {
@@ -885,12 +885,12 @@ function expr_or_end(k, t) {
 }
 
 function next(t) {
-  return expr_or_end(function (_, x) {
-              return /* `Ok */[
-                      17724,
-                      x
-                    ];
-            }, t);
+  return expr_or_end((function (_, x) {
+                return /* `Ok */[
+                        17724,
+                        x
+                      ];
+              }), t);
 }
 
 function parse_string(s) {
@@ -918,9 +918,9 @@ function parse_string(s) {
 }
 
 function parse_chan(bufsize, ic) {
-  var d = make(bufsize, function (param, param$1, param$2) {
-        return Pervasives.input(ic, param, param$1, param$2);
-      });
+  var d = make(bufsize, (function (param, param$1, param$2) {
+          return Pervasives.input(ic, param, param$1, param$2);
+        }));
   var res = next(d);
   if (typeof res === "number") {
     return /* `Error */[
@@ -933,23 +933,23 @@ function parse_chan(bufsize, ic) {
 }
 
 function parse_chan_gen(bufsize, ic) {
-  var d = make(bufsize, function (param, param$1, param$2) {
-        return Pervasives.input(ic, param, param$1, param$2);
-      });
-  return function () {
-    var e = next(d);
-    if (typeof e === "number") {
-      return /* None */0;
-    } else {
-      return /* Some */[e];
-    }
-  };
+  var d = make(bufsize, (function (param, param$1, param$2) {
+          return Pervasives.input(ic, param, param$1, param$2);
+        }));
+  return (function () {
+      var e = next(d);
+      if (typeof e === "number") {
+        return /* None */0;
+      } else {
+        return /* Some */[e];
+      }
+    });
 }
 
 function parse_chan_list(bufsize, ic) {
-  var d = make(bufsize, function (param, param$1, param$2) {
-        return Pervasives.input(ic, param, param$1, param$2);
-      });
+  var d = make(bufsize, (function (param, param$1, param$2) {
+          return Pervasives.input(ic, param, param$1, param$2);
+        }));
   var _acc = /* [] */0;
   while(true) {
     var acc = _acc;
@@ -973,15 +973,15 @@ function parse_chan_list(bufsize, ic) {
 }
 
 function parse_file(filename) {
-  return _with_in(filename, function (ic) {
-              return parse_chan(/* None */0, ic);
-            });
+  return _with_in(filename, (function (ic) {
+                return parse_chan(/* None */0, ic);
+              }));
 }
 
 function parse_file_list(filename) {
-  return _with_in(filename, function (ic) {
-              return parse_chan_list(/* None */0, ic);
-            });
+  return _with_in(filename, (function (ic) {
+                return parse_chan_list(/* None */0, ic);
+              }));
 }
 
 function MakeDecode(funarg) {
@@ -1007,15 +1007,15 @@ function MakeDecode(funarg) {
     }
   };
   var _refill = function (t, k_succ, k_fail) {
-    return Curry._2($great$great$eq, Curry._3(t[/* refill */1], t[/* buf */0], 0, t[/* buf */0].length), function (n) {
-                t[/* i */3] = 0;
-                t[/* len */4] = n;
-                if (n) {
-                  return Curry._1(k_succ, t);
-                } else {
-                  return Curry._1(k_fail, t);
-                }
-              });
+    return Curry._2($great$great$eq, Curry._3(t[/* refill */1], t[/* buf */0], 0, t[/* buf */0].length), (function (n) {
+                  t[/* i */3] = 0;
+                  t[/* len */4] = n;
+                  if (n) {
+                    return Curry._1(k_succ, t);
+                  } else {
+                    return Curry._1(k_fail, t);
+                  }
+                }));
   };
   var _get = function (t) {
     if (t[/* i */3] >= t[/* len */4]) {
@@ -1063,13 +1063,13 @@ function MakeDecode(funarg) {
                 ]),
               "at %d, %d: "
             ]), t[/* line */5], t[/* col */6]);
-    return Printf.kbprintf(function (b) {
-                var msg$prime = Buffer.contents(b);
-                return Curry._1(funarg[/* return */0], /* `Error */[
-                            106380200,
-                            msg$prime
-                          ]);
-              }, b, msg);
+    return Printf.kbprintf((function (b) {
+                  var msg$prime = Buffer.contents(b);
+                  return Curry._1(funarg[/* return */0], /* `Error */[
+                              106380200,
+                              msg$prime
+                            ]);
+                }), b, msg);
   };
   var _error_eof = function (t) {
     return _error(t, /* Format */[
@@ -1083,9 +1083,9 @@ function MakeDecode(funarg) {
   var expr = function (k, t) {
     while(true) {
       if (t[/* i */3] === t[/* len */4]) {
-        return _refill(t, function (param) {
-                    return expr(k, param);
-                  }, _error_eof);
+        return _refill(t, (function (param) {
+                      return expr(k, param);
+                    }), _error_eof);
       } else {
         var c = _get(t);
         if (c >= 11) {
@@ -1120,9 +1120,9 @@ function MakeDecode(funarg) {
                     ]);
         }
       } else {
-        return skip_comment(function (_, _$1) {
-                    return expr(k, t);
-                  }, t);
+        return skip_comment((function (_, _$1) {
+                      return expr(k, t);
+                    }), t);
       }
     } else if (c >= 11) {
       if (c >= 32) {
@@ -1177,9 +1177,9 @@ function MakeDecode(funarg) {
   var expr_list = function (acc, k, t) {
     while(true) {
       if (t[/* i */3] === t[/* len */4]) {
-        return _refill(t, function (param) {
-                    return expr_list(acc, k, param);
-                  }, _error_eof);
+        return _refill(t, (function (param) {
+                      return expr_list(acc, k, param);
+                    }), _error_eof);
       } else {
         var c = _get(t);
         var exit = 0;
@@ -1200,41 +1200,41 @@ function MakeDecode(funarg) {
           exit = 1;
         }
         if (exit === 1) {
-          return expr_starting_with(c, function (last, e) {
-                      var exit = 0;
-                      if (last) {
-                        var match = last[0];
-                        if (match !== 40) {
-                          if (match !== 41) {
-                            exit = 1;
+          return expr_starting_with(c, (function (last, e) {
+                        var exit = 0;
+                        if (last) {
+                          var match = last[0];
+                          if (match !== 40) {
+                            if (match !== 41) {
+                              exit = 1;
+                            } else {
+                              return Curry._2(k, /* None */0, /* `List */[
+                                          848054398,
+                                          List.rev(/* :: */[
+                                                e,
+                                                acc
+                                              ])
+                                        ]);
+                            }
                           } else {
-                            return Curry._2(k, /* None */0, /* `List */[
-                                        848054398,
-                                        List.rev(/* :: */[
-                                              e,
-                                              acc
-                                            ])
-                                      ]);
+                            return expr_list(/* [] */0, (function (_, l) {
+                                          return expr_list(/* :: */[
+                                                      l,
+                                                      acc
+                                                    ], k, t);
+                                        }), t);
                           }
                         } else {
-                          return expr_list(/* [] */0, function (_, l) {
-                                      return expr_list(/* :: */[
-                                                  l,
-                                                  acc
-                                                ], k, t);
-                                    }, t);
+                          exit = 1;
                         }
-                      } else {
-                        exit = 1;
-                      }
-                      if (exit === 1) {
-                        return expr_list(/* :: */[
-                                    e,
-                                    acc
-                                  ], k, t);
-                      }
-                      
-                    }, t);
+                        if (exit === 1) {
+                          return expr_list(/* :: */[
+                                      e,
+                                      acc
+                                    ], k, t);
+                        }
+                        
+                      }), t);
         }
         
       }
@@ -1251,11 +1251,11 @@ function MakeDecode(funarg) {
   var atom = function (k, t) {
     while(true) {
       if (t[/* i */3] === t[/* len */4]) {
-        return _refill(t, function (param) {
-                    return atom(k, param);
-                  }, function (param) {
-                    return _return_atom(/* None */0, k, param);
-                  });
+        return _refill(t, (function (param) {
+                      return atom(k, param);
+                    }), (function (param) {
+                      return _return_atom(/* None */0, k, param);
+                    }));
       } else {
         var c = _get(t);
         var exit = 0;
@@ -1314,9 +1314,9 @@ function MakeDecode(funarg) {
   var quoted = function (k, t) {
     while(true) {
       if (t[/* i */3] === t[/* len */4]) {
-        return _refill(t, function (param) {
-                    return quoted(k, param);
-                  }, _error_eof);
+        return _refill(t, (function (param) {
+                      return quoted(k, param);
+                    }), _error_eof);
       } else {
         var c = _get(t);
         var exit = 0;
@@ -1324,10 +1324,10 @@ function MakeDecode(funarg) {
           if (c !== 92) {
             exit = 1;
           } else {
-            return escaped(function (c) {
-                        Buffer.add_char(t[/* atom */2], c);
-                        return quoted(k, t);
-                      }, t);
+            return escaped((function (c) {
+                          Buffer.add_char(t[/* atom */2], c);
+                          return quoted(k, t);
+                        }), t);
           }
         } else {
           return _return_atom(/* None */0, k, t);
@@ -1343,9 +1343,9 @@ function MakeDecode(funarg) {
   };
   var escaped = function (k, t) {
     if (t[/* i */3] === t[/* len */4]) {
-      return _refill(t, function (param) {
-                  return escaped(k, param);
-                }, _error_eof);
+      return _refill(t, (function (param) {
+                    return escaped(k, param);
+                  }), _error_eof);
     } else {
       var c = _get(t);
       var exit = 0;
@@ -1397,9 +1397,9 @@ function MakeDecode(funarg) {
       }
       if (exit$1 === 2) {
         if (_is_digit(c)) {
-          return read2int(c - /* "0" */48 | 0, function (n) {
-                      return Curry._1(k, Char.chr(n));
-                    }, t);
+          return read2int(c - /* "0" */48 | 0, (function (n) {
+                        return Curry._1(k, Char.chr(n));
+                      }), t);
         } else {
           exit = 1;
         }
@@ -1421,9 +1421,9 @@ function MakeDecode(funarg) {
   };
   var read2int = function (i, k, t) {
     if (t[/* i */3] === t[/* len */4]) {
-      return _refill(t, function (param) {
-                  return read2int(i, k, param);
-                }, _error_eof);
+      return _refill(t, (function (param) {
+                    return read2int(i, k, param);
+                  }), _error_eof);
     } else {
       var c = _get(t);
       if (_is_digit(c)) {
@@ -1444,9 +1444,9 @@ function MakeDecode(funarg) {
   };
   var read1int = function (i, k, t) {
     if (t[/* i */3] === t[/* len */4]) {
-      return _refill(t, function (param) {
-                  return read1int(i, k, param);
-                }, _error_eof);
+      return _refill(t, (function (param) {
+                    return read1int(i, k, param);
+                  }), _error_eof);
     } else {
       var c = _get(t);
       if (_is_digit(c)) {
@@ -1468,9 +1468,9 @@ function MakeDecode(funarg) {
   var skip_comment = function (k, t) {
     while(true) {
       if (t[/* i */3] === t[/* len */4]) {
-        return _refill(t, function (param) {
-                    return skip_comment(k, param);
-                  }, _error_eof);
+        return _refill(t, (function (param) {
+                      return skip_comment(k, param);
+                    }), _error_eof);
       } else {
         var match = _get(t);
         if (match !== 10) {
@@ -1485,11 +1485,11 @@ function MakeDecode(funarg) {
   var expr_or_end = function (k, t) {
     while(true) {
       if (t[/* i */3] === t[/* len */4]) {
-        return _refill(t, function (param) {
-                    return expr_or_end(k, param);
-                  }, function () {
-                    return Curry._1(funarg[/* return */0], /* End */3455931);
-                  });
+        return _refill(t, (function (param) {
+                      return expr_or_end(k, param);
+                    }), (function () {
+                      return Curry._1(funarg[/* return */0], /* End */3455931);
+                    }));
       } else {
         var c = _get(t);
         if (c >= 11) {
@@ -1509,12 +1509,12 @@ function MakeDecode(funarg) {
     };
   };
   var next = function (t) {
-    return expr_or_end(function (_, x) {
-                return Curry._1(funarg[/* return */0], /* `Ok */[
-                            17724,
-                            x
-                          ]);
-              }, t);
+    return expr_or_end((function (_, x) {
+                  return Curry._1(funarg[/* return */0], /* `Ok */[
+                              17724,
+                              x
+                            ]);
+                }), t);
   };
   return [
           make,

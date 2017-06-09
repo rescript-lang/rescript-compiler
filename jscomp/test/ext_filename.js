@@ -25,9 +25,9 @@ var node_parent = "..";
 
 var node_current = ".";
 
-var cwd = Block.__(246, [function () {
-      return Caml_sys.caml_sys_getcwd(/* () */0);
-    }]);
+var cwd = Block.__(246, [(function () {
+        return Caml_sys.caml_sys_getcwd(/* () */0);
+      })]);
 
 function path_as_directory(x) {
   if (x === "" || Ext_string.ends_with(x, Filename.dir_sep)) {
@@ -149,9 +149,9 @@ function relative_path(file_or_dir_1, file_or_dir_2) {
         exit = 1;
       }
       if (exit === 1) {
-        return Pervasives.$at(List.map(function () {
-                        return node_parent;
-                      }, dir2), dir1);
+        return Pervasives.$at(List.map((function () {
+                          return node_parent;
+                        }), dir2), dir1);
       }
       
     };
@@ -257,13 +257,13 @@ function find_package_json_dir(cwd) {
   return find_root_filename(cwd, Literals.bsconfig_json);
 }
 
-var package_dir = Block.__(246, [function () {
-      var tag = cwd.tag | 0;
-      var cwd$1 = tag === 250 ? cwd[0] : (
-          tag === 246 ? CamlinternalLazy.force_lazy_block(cwd) : cwd
-        );
-      return find_root_filename(cwd$1, Literals.bsconfig_json);
-    }]);
+var package_dir = Block.__(246, [(function () {
+        var tag = cwd.tag | 0;
+        var cwd$1 = tag === 250 ? cwd[0] : (
+            tag === 246 ? CamlinternalLazy.force_lazy_block(cwd) : cwd
+          );
+        return find_root_filename(cwd$1, Literals.bsconfig_json);
+      })]);
 
 function module_name_of_file(file) {
   var s = Filename.chop_extension(Curry._1(Filename.basename, file));
@@ -339,15 +339,15 @@ function rel_normalized_absolute_path(from, to_) {
             continue ;
             
           } else {
-            var start = List.fold_left(function (acc, _) {
-                  return Filename.concat(acc, Ext_string.parent_dir_lit);
-                }, Ext_string.parent_dir_lit, xs);
+            var start = List.fold_left((function (acc, _) {
+                    return Filename.concat(acc, Ext_string.parent_dir_lit);
+                  }), Ext_string.parent_dir_lit, xs);
             return List.fold_left(Filename.concat, start, yss);
           }
         } else {
-          return List.fold_left(function (acc, _) {
-                      return Filename.concat(acc, Ext_string.parent_dir_lit);
-                    }, Ext_string.parent_dir_lit, xs);
+          return List.fold_left((function (acc, _) {
+                        return Filename.concat(acc, Ext_string.parent_dir_lit);
+                      }), Ext_string.parent_dir_lit, xs);
         }
       } else if (yss) {
         return List.fold_left(Filename.concat, yss[0], yss[1]);
@@ -429,9 +429,9 @@ function get_extension(x) {
 var simple_convert_node_path_to_os_path;
 
 if (Sys.unix) {
-  simple_convert_node_path_to_os_path = function (x) {
-    return x;
-  };
+  simple_convert_node_path_to_os_path = (function (x) {
+      return x;
+    });
 } else if (Sys.win32 || Sys.cygwin) {
   simple_convert_node_path_to_os_path = Ext_string.replace_slash_backward;
 } else {

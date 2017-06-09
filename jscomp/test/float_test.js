@@ -18,15 +18,15 @@ var suites = match_001;
 var test_id = match_000;
 
 function eq(loc) {
-  return function (param, param$1) {
-    return Mt_global.collect_eq(test_id, suites, loc, param, param$1);
-  };
+  return (function (param, param$1) {
+      return Mt_global.collect_eq(test_id, suites, loc, param, param$1);
+    });
 }
 
 function approx(loc) {
-  return function (param, param$1) {
-    return Mt_global.collect_approx(test_id, suites, loc, param, param$1);
-  };
+  return (function (param, param$1) {
+      return Mt_global.collect_approx(test_id, suites, loc, param, param$1);
+    });
 }
 
 var match = Caml_float.caml_frexp_float(12.0);
@@ -116,30 +116,30 @@ var results = $$Array.append(/* array */[
     ]);
 
 function from_pairs(ps) {
-  return $$Array.to_list($$Array.mapi(function (i, param) {
-                  var b = param[1];
-                  var a = param[0];
-                  return /* tuple */[
-                          Curry._1(Printf.sprintf(/* Format */[
-                                    /* String_literal */Block.__(11, [
-                                        "pair ",
-                                        /* Int */Block.__(4, [
-                                            /* Int_d */0,
-                                            /* No_padding */0,
-                                            /* No_precision */0,
-                                            /* End_of_format */0
-                                          ])
-                                      ]),
-                                    "pair %d"
-                                  ]), i),
-                          function () {
-                            return /* Approx */Block.__(5, [
-                                      a,
-                                      b
-                                    ]);
-                          }
-                        ];
-                }, ps));
+  return $$Array.to_list($$Array.mapi((function (i, param) {
+                    var b = param[1];
+                    var a = param[0];
+                    return /* tuple */[
+                            Curry._1(Printf.sprintf(/* Format */[
+                                      /* String_literal */Block.__(11, [
+                                          "pair ",
+                                          /* Int */Block.__(4, [
+                                              /* Int_d */0,
+                                              /* No_padding */0,
+                                              /* No_precision */0,
+                                              /* End_of_format */0
+                                            ])
+                                        ]),
+                                      "pair %d"
+                                    ]), i),
+                            (function () {
+                                return /* Approx */Block.__(5, [
+                                          a,
+                                          b
+                                        ]);
+                              })
+                          ];
+                  }), ps));
 }
 
 var float_compare = Caml_float.caml_float_compare;
@@ -177,17 +177,17 @@ var param$3 = /* int array */[
   1
 ];
 
-var param$4 = $$Array.map(function (x) {
-      if (x > 0) {
-        return 1;
-      } else if (x < 0) {
-        return -1;
-      } else {
-        return 0;
-      }
-    }, $$Array.map(function (param) {
-          return Caml_float.caml_float_compare(param[0], param[1]);
-        }, /* array */[
+var param$4 = $$Array.map((function (x) {
+        if (x > 0) {
+          return 1;
+        } else if (x < 0) {
+          return -1;
+        } else {
+          return 0;
+        }
+      }), $$Array.map((function (param) {
+            return Caml_float.caml_float_compare(param[0], param[1]);
+          }), /* array */[
           /* tuple */[
             1,
             3
@@ -237,42 +237,42 @@ var a = match$4[0];
 Mt.from_pair_suites("float_test.ml", Pervasives.$at(/* :: */[
           /* tuple */[
             "mod_float",
-            function () {
-              return /* Approx */Block.__(5, [
-                        3.2 % 0.5,
-                        0.200000000000000178
-                      ]);
-            }
+            (function () {
+                return /* Approx */Block.__(5, [
+                          3.2 % 0.5,
+                          0.200000000000000178
+                        ]);
+              })
           ],
           /* :: */[
             /* tuple */[
               "modf_float1",
-              function () {
-                return /* Approx */Block.__(5, [
-                          a,
-                          0.299999999999997158
-                        ]);
-              }
+              (function () {
+                  return /* Approx */Block.__(5, [
+                            a,
+                            0.299999999999997158
+                          ]);
+                })
             ],
             /* :: */[
               /* tuple */[
                 "modf_float2",
-                function () {
-                  return /* Approx */Block.__(5, [
-                            b,
-                            32
-                          ]);
-                }
+                (function () {
+                    return /* Approx */Block.__(5, [
+                              b,
+                              32
+                            ]);
+                  })
               ],
               /* :: */[
                 /* tuple */[
                   "int_of_float",
-                  function () {
-                    return /* Eq */Block.__(0, [
-                              3,
-                              3
-                            ]);
-                  }
+                  (function () {
+                      return /* Eq */Block.__(0, [
+                                3,
+                                3
+                              ]);
+                    })
                 ],
                 /* [] */0
               ]

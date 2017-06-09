@@ -12,38 +12,38 @@ function even(x) {
 }
 
 function bark() {
-  return function (x, y) {
-    var o = this ;
-    console.log(/* tuple */[
-          o.length,
-          o.x,
-          o.y,
-          x,
-          y
-        ]);
-    return x + y | 0;
-  };
+  return (function (x, y) {
+      var o = this ;
+      console.log(/* tuple */[
+            o.length,
+            o.x,
+            o.y,
+            x,
+            y
+          ]);
+      return x + y | 0;
+    });
 }
 
 var js_obj = {
-  bark: function (x, y) {
-    var o = this ;
-    console.log(o);
-    return x + y | 0;
-  }
+  bark: (function (x, y) {
+      var o = this ;
+      console.log(o);
+      return x + y | 0;
+    })
 };
 
 function f(x) {
-  x.onload = function () {
-    var o = this ;
-    console.log(o);
-    return /* () */0;
-  };
-  return x.addEventListener("onload", function () {
-              var o = this ;
-              console.log(o.response);
-              return /* () */0;
-            });
+  x.onload = (function () {
+      var o = this ;
+      console.log(o);
+      return /* () */0;
+    });
+  return x.addEventListener("onload", (function () {
+                var o = this ;
+                console.log(o.response);
+                return /* () */0;
+              }));
 }
 
 function u(x) {

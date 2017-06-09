@@ -44,23 +44,23 @@ function v(x) {
 
 var suites_000 = /* tuple */[
   "const",
-  function () {
-    return /* Eq */Block.__(0, [
-              1,
-              1
-            ]);
-  }
+  (function () {
+      return /* Eq */Block.__(0, [
+                1,
+                1
+              ]);
+    })
 ];
 
 var suites_001 = /* :: */[
   /* tuple */[
     "other",
-    function () {
-      return /* Eq */Block.__(0, [
-                3,
-                3
-              ]);
-    }
+    (function () {
+        return /* Eq */Block.__(0, [
+                  3,
+                  3
+                ]);
+      })
   ],
   /* [] */0
 ];

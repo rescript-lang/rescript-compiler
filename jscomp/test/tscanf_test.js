@@ -250,9 +250,9 @@ function test4() {
                   /* End_of_format */0
                 ]),
               "%f"
-            ]), function (b0) {
-          return +(b0 === 1.0);
-        }) && Curry._1(Scanf.bscanf(Curry._1(Scanf.Scanning[/* from_string */6], "-1"), /* Format */[
+            ]), (function (b0) {
+            return +(b0 === 1.0);
+          })) && Curry._1(Scanf.bscanf(Curry._1(Scanf.Scanning[/* from_string */6], "-1"), /* Format */[
               /* Float */Block.__(8, [
                   /* Float_f */0,
                   /* No_padding */0,
@@ -260,9 +260,9 @@ function test4() {
                   /* End_of_format */0
                 ]),
               "%f"
-            ]), function (b0) {
-          return +(b0 === -1.0);
-        }) && Curry._1(Scanf.bscanf(Curry._1(Scanf.Scanning[/* from_string */6], "+1"), /* Format */[
+            ]), (function (b0) {
+            return +(b0 === -1.0);
+          })) && Curry._1(Scanf.bscanf(Curry._1(Scanf.Scanning[/* from_string */6], "+1"), /* Format */[
               /* Float */Block.__(8, [
                   /* Float_f */0,
                   /* No_padding */0,
@@ -270,9 +270,9 @@ function test4() {
                   /* End_of_format */0
                 ]),
               "%f"
-            ]), function (b0) {
-          return +(b0 === 1.0);
-        }) && Curry._1(Scanf.bscanf(Curry._1(Scanf.Scanning[/* from_string */6], "1."), /* Format */[
+            ]), (function (b0) {
+            return +(b0 === 1.0);
+          })) && Curry._1(Scanf.bscanf(Curry._1(Scanf.Scanning[/* from_string */6], "1."), /* Format */[
               /* Float */Block.__(8, [
                   /* Float_f */0,
                   /* No_padding */0,
@@ -280,9 +280,9 @@ function test4() {
                   /* End_of_format */0
                 ]),
               "%f"
-            ]), function (b0) {
-          return +(b0 === 1.0);
-        }) && Curry._1(Scanf.bscanf(Curry._1(Scanf.Scanning[/* from_string */6], ".1"), /* Format */[
+            ]), (function (b0) {
+            return +(b0 === 1.0);
+          })) && Curry._1(Scanf.bscanf(Curry._1(Scanf.Scanning[/* from_string */6], ".1"), /* Format */[
               /* Float */Block.__(8, [
                   /* Float_f */0,
                   /* No_padding */0,
@@ -290,9 +290,9 @@ function test4() {
                   /* End_of_format */0
                 ]),
               "%f"
-            ]), function (b0) {
-          return +(b0 === 0.1);
-        }) && Curry._1(Scanf.bscanf(Curry._1(Scanf.Scanning[/* from_string */6], "-.1"), /* Format */[
+            ]), (function (b0) {
+            return +(b0 === 0.1);
+          })) && Curry._1(Scanf.bscanf(Curry._1(Scanf.Scanning[/* from_string */6], "-.1"), /* Format */[
               /* Float */Block.__(8, [
                   /* Float_f */0,
                   /* No_padding */0,
@@ -300,9 +300,9 @@ function test4() {
                   /* End_of_format */0
                 ]),
               "%f"
-            ]), function (b0) {
-          return +(b0 === -0.1);
-        }) && Curry._1(Scanf.bscanf(Curry._1(Scanf.Scanning[/* from_string */6], "+.1"), /* Format */[
+            ]), (function (b0) {
+            return +(b0 === -0.1);
+          })) && Curry._1(Scanf.bscanf(Curry._1(Scanf.Scanning[/* from_string */6], "+.1"), /* Format */[
               /* Float */Block.__(8, [
                   /* Float_f */0,
                   /* No_padding */0,
@@ -310,9 +310,9 @@ function test4() {
                   /* End_of_format */0
                 ]),
               "%f"
-            ]), function (b0) {
-          return +(b0 === 0.1);
-        }) && Curry._1(Scanf.bscanf(Curry._1(Scanf.Scanning[/* from_string */6], "+1."), /* Format */[
+            ]), (function (b0) {
+            return +(b0 === 0.1);
+          })) && Curry._1(Scanf.bscanf(Curry._1(Scanf.Scanning[/* from_string */6], "+1."), /* Format */[
               /* Float */Block.__(8, [
                   /* Float_f */0,
                   /* No_padding */0,
@@ -320,9 +320,9 @@ function test4() {
                   /* End_of_format */0
                 ]),
               "%f"
-            ]), function (b0) {
-          return +(b0 === 1.0);
-        }) && Curry._1(Scanf.bscanf(Curry._1(Scanf.Scanning[/* from_string */6], "-1."), /* Format */[
+            ]), (function (b0) {
+            return +(b0 === 1.0);
+          })) && Curry._1(Scanf.bscanf(Curry._1(Scanf.Scanning[/* from_string */6], "-1."), /* Format */[
               /* Float */Block.__(8, [
                   /* Float_f */0,
                   /* No_padding */0,
@@ -330,9 +330,9 @@ function test4() {
                   /* End_of_format */0
                 ]),
               "%f"
-            ]), function (b0) {
-          return +(b0 === -1.0);
-        }) && Curry._1(Scanf.bscanf(Curry._1(Scanf.Scanning[/* from_string */6], "0 1. 1.3"), /* Format */[
+            ]), (function (b0) {
+            return +(b0 === -1.0);
+          })) && Curry._1(Scanf.bscanf(Curry._1(Scanf.Scanning[/* from_string */6], "0 1. 1.3"), /* Format */[
               /* Float */Block.__(8, [
                   /* Float_f */0,
                   /* No_padding */0,
@@ -356,9 +356,9 @@ function test4() {
                     ])
                 ]),
               "%f %f %f"
-            ]), function (b0, b1, b2) {
-          return b0 === 0.0 && b1 === 1.0 ? +(b2 === 1.3) : /* false */0;
-        }) && Curry._1(Scanf.bscanf(Curry._1(Scanf.Scanning[/* from_string */6], "0.113"), /* Format */[
+            ]), (function (b0, b1, b2) {
+            return b0 === 0.0 && b1 === 1.0 ? +(b2 === 1.3) : /* false */0;
+          })) && Curry._1(Scanf.bscanf(Curry._1(Scanf.Scanning[/* from_string */6], "0.113"), /* Format */[
               /* Float */Block.__(8, [
                   /* Float_f */0,
                   /* Lit_padding */Block.__(0, [
@@ -369,9 +369,9 @@ function test4() {
                   /* End_of_format */0
                 ]),
               "%4f"
-            ]), function (b0) {
-          return +(b0 === 0.11);
-        }) && Curry._1(Scanf.bscanf(Curry._1(Scanf.Scanning[/* from_string */6], "0.113"), /* Format */[
+            ]), (function (b0) {
+            return +(b0 === 0.11);
+          })) && Curry._1(Scanf.bscanf(Curry._1(Scanf.Scanning[/* from_string */6], "0.113"), /* Format */[
               /* Float */Block.__(8, [
                   /* Float_f */0,
                   /* Lit_padding */Block.__(0, [
@@ -382,9 +382,9 @@ function test4() {
                   /* End_of_format */0
                 ]),
               "%5f"
-            ]), function (b0) {
-          return +(b0 === 0.113);
-        }) && Curry._1(Scanf.bscanf(Curry._1(Scanf.Scanning[/* from_string */6], "000.113"), /* Format */[
+            ]), (function (b0) {
+            return +(b0 === 0.113);
+          })) && Curry._1(Scanf.bscanf(Curry._1(Scanf.Scanning[/* from_string */6], "000.113"), /* Format */[
               /* Float */Block.__(8, [
                   /* Float_f */0,
                   /* Lit_padding */Block.__(0, [
@@ -395,9 +395,9 @@ function test4() {
                   /* End_of_format */0
                 ]),
               "%15f"
-            ]), function (b0) {
-          return +(b0 === 0.113);
-        }) && Curry._1(Scanf.bscanf(Curry._1(Scanf.Scanning[/* from_string */6], "+000.113"), /* Format */[
+            ]), (function (b0) {
+            return +(b0 === 0.113);
+          })) && Curry._1(Scanf.bscanf(Curry._1(Scanf.Scanning[/* from_string */6], "+000.113"), /* Format */[
               /* Float */Block.__(8, [
                   /* Float_f */0,
                   /* Lit_padding */Block.__(0, [
@@ -408,9 +408,9 @@ function test4() {
                   /* End_of_format */0
                 ]),
               "%15f"
-            ]), function (b0) {
-          return +(b0 === 0.113);
-        })) {
+            ]), (function (b0) {
+            return +(b0 === 0.113);
+          }))) {
     return Curry._1(Scanf.bscanf(Curry._1(Scanf.Scanning[/* from_string */6], "-000.113"), /* Format */[
                     /* Float */Block.__(8, [
                         /* Float_f */0,
@@ -422,9 +422,9 @@ function test4() {
                         /* End_of_format */0
                       ]),
                     "%15f"
-                  ]), function (b0) {
-                return +(b0 === -0.113);
-              });
+                  ]), (function (b0) {
+                  return +(b0 === -0.113);
+                }));
   } else {
     return /* false */0;
   }
@@ -441,9 +441,9 @@ function test5() {
                   /* End_of_format */0
                 ]),
               "%e"
-            ]), function (b) {
-          return +(b === 10.0);
-        }) && Curry._1(Scanf.bscanf(Curry._1(Scanf.Scanning[/* from_string */6], "1e+1"), /* Format */[
+            ]), (function (b) {
+            return +(b === 10.0);
+          })) && Curry._1(Scanf.bscanf(Curry._1(Scanf.Scanning[/* from_string */6], "1e+1"), /* Format */[
               /* Float */Block.__(8, [
                   /* Float_e */3,
                   /* No_padding */0,
@@ -451,9 +451,9 @@ function test5() {
                   /* End_of_format */0
                 ]),
               "%e"
-            ]), function (b) {
-          return +(b === 10.0);
-        }) && Curry._1(Scanf.bscanf(Curry._1(Scanf.Scanning[/* from_string */6], "10e-1"), /* Format */[
+            ]), (function (b) {
+            return +(b === 10.0);
+          })) && Curry._1(Scanf.bscanf(Curry._1(Scanf.Scanning[/* from_string */6], "10e-1"), /* Format */[
               /* Float */Block.__(8, [
                   /* Float_e */3,
                   /* No_padding */0,
@@ -461,9 +461,9 @@ function test5() {
                   /* End_of_format */0
                 ]),
               "%e"
-            ]), function (b) {
-          return +(b === 1.0);
-        }) && Curry._1(Scanf.bscanf(Curry._1(Scanf.Scanning[/* from_string */6], "10.e-1"), /* Format */[
+            ]), (function (b) {
+            return +(b === 1.0);
+          })) && Curry._1(Scanf.bscanf(Curry._1(Scanf.Scanning[/* from_string */6], "10.e-1"), /* Format */[
               /* Float */Block.__(8, [
                   /* Float_e */3,
                   /* No_padding */0,
@@ -471,9 +471,9 @@ function test5() {
                   /* End_of_format */0
                 ]),
               "%e"
-            ]), function (b) {
-          return +(b === 1.0);
-        }) && Curry._1(Scanf.bscanf(Curry._1(Scanf.Scanning[/* from_string */6], "1e1 1.e+1 1.3e-1"), /* Format */[
+            ]), (function (b) {
+            return +(b === 1.0);
+          })) && Curry._1(Scanf.bscanf(Curry._1(Scanf.Scanning[/* from_string */6], "1e1 1.e+1 1.3e-1"), /* Format */[
               /* Float */Block.__(8, [
                   /* Float_e */3,
                   /* No_padding */0,
@@ -497,9 +497,9 @@ function test5() {
                     ])
                 ]),
               "%e %e %e"
-            ]), function (b1, b2, b3) {
-          return b1 === 10.0 && b2 === b1 ? +(b3 === 0.13) : /* false */0;
-        })) {
+            ]), (function (b1, b2, b3) {
+            return b1 === 10.0 && b2 === b1 ? +(b3 === 0.13) : /* false */0;
+          }))) {
     return Curry._1(Scanf.bscanf(Curry._1(Scanf.Scanning[/* from_string */6], "1 1.1 0e+1 1.3e-1"), /* Format */[
                     /* Float */Block.__(8, [
                         /* Float_g */9,
@@ -532,13 +532,13 @@ function test5() {
                           ])
                       ]),
                     "%g %g %g %g"
-                  ]), function (b1, b2, b3, b4) {
-                if (b1 === 1.0 && b2 === 1.1 && b3 === 0.0) {
-                  return +(b4 === 0.13);
-                } else {
-                  return /* false */0;
-                }
-              });
+                  ]), (function (b1, b2, b3, b4) {
+                  if (b1 === 1.0 && b2 === 1.1 && b3 === 0.0) {
+                    return +(b4 === 0.13);
+                  } else {
+                    return /* false */0;
+                  }
+                }));
   } else {
     return /* false */0;
   }
@@ -550,63 +550,63 @@ function test6() {
   if (Curry._1(Scanf.bscanf(Curry._1(Scanf.Scanning[/* from_string */6], "truetrue"), /* Format */[
               /* Bool */Block.__(9, [/* Bool */Block.__(9, [/* End_of_format */0])]),
               "%B%B"
-            ]), function (b1, b2) {
-          return Caml_obj.caml_equal(/* tuple */[
-                      b1,
-                      b2
-                    ], /* tuple */[
-                      /* true */1,
-                      /* true */1
-                    ]);
-        }) && Curry._1(Scanf.bscanf(Curry._1(Scanf.Scanning[/* from_string */6], "truefalse"), /* Format */[
+            ]), (function (b1, b2) {
+            return Caml_obj.caml_equal(/* tuple */[
+                        b1,
+                        b2
+                      ], /* tuple */[
+                        /* true */1,
+                        /* true */1
+                      ]);
+          })) && Curry._1(Scanf.bscanf(Curry._1(Scanf.Scanning[/* from_string */6], "truefalse"), /* Format */[
               /* Bool */Block.__(9, [/* Bool */Block.__(9, [/* End_of_format */0])]),
               "%B%B"
-            ]), function (b1, b2) {
-          return Caml_obj.caml_equal(/* tuple */[
-                      b1,
-                      b2
-                    ], /* tuple */[
-                      /* true */1,
-                      /* false */0
-                    ]);
-        }) && Curry._1(Scanf.bscanf(Curry._1(Scanf.Scanning[/* from_string */6], "falsetrue"), /* Format */[
+            ]), (function (b1, b2) {
+            return Caml_obj.caml_equal(/* tuple */[
+                        b1,
+                        b2
+                      ], /* tuple */[
+                        /* true */1,
+                        /* false */0
+                      ]);
+          })) && Curry._1(Scanf.bscanf(Curry._1(Scanf.Scanning[/* from_string */6], "falsetrue"), /* Format */[
               /* Bool */Block.__(9, [/* Bool */Block.__(9, [/* End_of_format */0])]),
               "%B%B"
-            ]), function (b1, b2) {
-          return Caml_obj.caml_equal(/* tuple */[
-                      b1,
-                      b2
-                    ], /* tuple */[
-                      /* false */0,
-                      /* true */1
-                    ]);
-        }) && Curry._1(Scanf.bscanf(Curry._1(Scanf.Scanning[/* from_string */6], "falsefalse"), /* Format */[
+            ]), (function (b1, b2) {
+            return Caml_obj.caml_equal(/* tuple */[
+                        b1,
+                        b2
+                      ], /* tuple */[
+                        /* false */0,
+                        /* true */1
+                      ]);
+          })) && Curry._1(Scanf.bscanf(Curry._1(Scanf.Scanning[/* from_string */6], "falsefalse"), /* Format */[
               /* Bool */Block.__(9, [/* Bool */Block.__(9, [/* End_of_format */0])]),
               "%B%B"
-            ]), function (b1, b2) {
-          return Caml_obj.caml_equal(/* tuple */[
-                      b1,
-                      b2
-                    ], /* tuple */[
-                      /* false */0,
-                      /* false */0
-                    ]);
-        })) {
+            ]), (function (b1, b2) {
+            return Caml_obj.caml_equal(/* tuple */[
+                        b1,
+                        b2
+                      ], /* tuple */[
+                        /* false */0,
+                        /* false */0
+                      ]);
+          }))) {
     return Curry._1(Scanf.bscanf(Curry._1(Scanf.Scanning[/* from_string */6], "true false"), /* Format */[
                     /* Bool */Block.__(9, [/* Char_literal */Block.__(12, [
                             /* " " */32,
                             /* Bool */Block.__(9, [/* End_of_format */0])
                           ])]),
                     "%B %B"
-                  ]), function (b1, b2) {
-                return Caml_obj.caml_equal(/* tuple */[
-                            b1,
-                            b2
-                          ], /* tuple */[
-                            /* true */1,
-                            /* false */0
-                          ]);
-              });
+                  ]), (function (b1, b2) {
+                  return Caml_obj.caml_equal(/* tuple */[
+                              b1,
+                              b2
+                            ], /* tuple */[
+                              /* true */1,
+                              /* false */0
+                            ]);
+                }));
   } else {
     return /* false */0;
   }
@@ -630,9 +630,9 @@ function test7() {
                             ])])
                     ])]),
               "%C %C %C %C %C"
-            ]), function (c1, c2, c3, c4, c5) {
-          return c1 === /* "a" */97 && c2 === /* "\n" */10 && c3 === /* "\t" */9 && !c4 ? +(c5 === /* " " */32) : /* false */0;
-        })) {
+            ]), (function (c1, c2, c3, c4, c5) {
+            return c1 === /* "a" */97 && c2 === /* "\n" */10 && c3 === /* "\t" */9 && !c4 ? +(c5 === /* " " */32) : /* false */0;
+          }))) {
     return Curry._1(Scanf.bscanf(Curry._1(Scanf.Scanning[/* from_string */6], "a \n \t \0  b"), /* Format */[
                     /* Char */Block.__(0, [/* Char_literal */Block.__(12, [
                             /* " " */32,
@@ -645,13 +645,13 @@ function test7() {
                                   ])])
                           ])]),
                     "%c %c %c "
-                  ]), function (c1, c2, c3) {
-                if (c1 === /* "a" */97 && !c2) {
-                  return +(c3 === /* "b" */98);
-                } else {
-                  return /* false */0;
-                }
-              });
+                  ]), (function (c1, c2, c3) {
+                  if (c1 === /* "a" */97 && !c2) {
+                    return +(c3 === /* "b" */98);
+                  } else {
+                    return /* false */0;
+                  }
+                }));
   } else {
     return /* false */0;
   }
@@ -731,50 +731,50 @@ function test9() {
                   /* End_of_format */0
                 ]),
               "%S"
-            ]), function (s) {
-          return s;
-        }) === "\xef" && Curry._1(Scanf.sscanf("\"\\xef\\xbb\\xbf\"", /* Format */[
+            ]), (function (s) {
+            return s;
+          })) === "\xef" && Curry._1(Scanf.sscanf("\"\\xef\\xbb\\xbf\"", /* Format */[
               /* Caml_string */Block.__(3, [
                   /* No_padding */0,
                   /* End_of_format */0
                 ]),
               "%S"
-            ]), function (s) {
-          return s;
-        }) === test9_string && Curry._1(Scanf.sscanf("\"\\xef\\xbb\\xbf\"", /* Format */[
+            ]), (function (s) {
+            return s;
+          })) === test9_string && Curry._1(Scanf.sscanf("\"\\xef\\xbb\\xbf\"", /* Format */[
               /* Caml_string */Block.__(3, [
                   /* No_padding */0,
                   /* End_of_format */0
                 ]),
               "%S"
-            ]), function (s) {
-          return s;
-        }) === "\xef\xbb\xbf" && Curry._1(Scanf.sscanf("\"\xef\xbb\xbf\"", /* Format */[
+            ]), (function (s) {
+            return s;
+          })) === "\xef\xbb\xbf" && Curry._1(Scanf.sscanf("\"\xef\xbb\xbf\"", /* Format */[
               /* Caml_string */Block.__(3, [
                   /* No_padding */0,
                   /* End_of_format */0
                 ]),
               "%S"
-            ]), function (s) {
-          return s;
-        }) === test9_string && Curry._1(Scanf.sscanf("\"\\\\xef\\\\xbb\\\\xbf\"", /* Format */[
+            ]), (function (s) {
+            return s;
+          })) === test9_string && Curry._1(Scanf.sscanf("\"\\\\xef\\\\xbb\\\\xbf\"", /* Format */[
               /* Caml_string */Block.__(3, [
                   /* No_padding */0,
                   /* End_of_format */0
                 ]),
               "%S"
-            ]), function (s) {
-          return s;
-        }) === "\\xef\\xbb\\xbf") {
+            ]), (function (s) {
+            return s;
+          })) === "\\xef\\xbb\\xbf") {
     return +(Curry._1(Scanf.sscanf("\" \"", /* Format */[
                       /* Caml_string */Block.__(3, [
                           /* No_padding */0,
                           /* End_of_format */0
                         ]),
                       "%S"
-                    ]), function (s) {
-                  return s;
-                }) === " ");
+                    ]), (function (s) {
+                    return s;
+                  })) === " ");
   } else {
     return /* false */0;
   }
@@ -829,9 +829,9 @@ function test10() {
                   ])
               ]),
             "%s %s %S %s %S %s"
-          ]), function (s1, s2, s3, s4, s5, s6) {
-        return s1 + (s2 + (s3 + (s4 + (s5 + s6))));
-      });
+          ]), (function (s1, s2, s3, s4, s5, s6) {
+          return s1 + (s2 + (s3 + (s4 + (s5 + s6))));
+        }));
   if (res === "Unechaine:celle-cietcelle-la!" && unit("\"a\\\n  b\"") === "ab" && unit("\"\\\n  ab\"") === "ab" && unit("\"\n\\\n  ab\"") === "\nab" && unit("\"\n\\\n  a\nb\"") === "\na\nb" && unit("\"\n\\\n  \\\n  a\nb\"") === "\na\nb" && unit("\"\n\\\n  a\n\\\nb\\\n\"") === "\na\nb" && unit("\"a\\\n  \"") === "a") {
     return /* true */1;
   } else {
@@ -860,9 +860,9 @@ function test11() {
                     ])
                 ]),
               "%s %s %s"
-            ]), function (prenom, nom, poids) {
-          return prenom === "Pierre" && nom === "Weis" ? +(Caml_format.caml_int_of_string(poids) === 70) : /* false */0;
-        }) && Curry._1(Scanf.sscanf("Jean-Luc\tde Leage\t68", /* Format */[
+            ]), (function (prenom, nom, poids) {
+            return prenom === "Pierre" && nom === "Weis" ? +(Caml_format.caml_int_of_string(poids) === 70) : /* false */0;
+          })) && Curry._1(Scanf.sscanf("Jean-Luc\tde Leage\t68", /* Format */[
               /* Scan_char_set */Block.__(20, [
                   /* None */0,
                   "\xff\xfd\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff",
@@ -884,9 +884,9 @@ function test11() {
                     ])
                 ]),
               "%[^\t] %[^\t] %d"
-            ]), function (prenom, nom, poids) {
-          return prenom === "Jean-Luc" && nom === "de Leage" ? +(poids === 68) : /* false */0;
-        })) {
+            ]), (function (prenom, nom, poids) {
+            return prenom === "Jean-Luc" && nom === "de Leage" ? +(poids === 68) : /* false */0;
+          }))) {
     return Curry._1(Scanf.sscanf("Daniel\tde Rauglaudre\t66", /* Format */[
                     /* String */Block.__(2, [
                         /* No_padding */0,
@@ -913,13 +913,13 @@ function test11() {
                           ])
                       ]),
                     "%s@\t %s@\t %d"
-                  ]), function (prenom, nom, poids) {
-                if (prenom === "Daniel" && nom === "de Rauglaudre") {
-                  return +(poids === 66);
-                } else {
-                  return /* false */0;
-                }
-              });
+                  ]), (function (prenom, nom, poids) {
+                  if (prenom === "Daniel" && nom === "de Rauglaudre") {
+                    return +(poids === 66);
+                  } else {
+                    return /* false */0;
+                  }
+                }));
   } else {
     return /* false */0;
   }
@@ -932,17 +932,17 @@ function test110() {
                   /* End_of_format */0
                 ]),
               " "
-            ]), function (x) {
-          return x;
-        }, "") === "" && Curry._1(Scanf.sscanf("", /* Format */[
+            ]), (function (x) {
+            return x;
+          }), "") === "" && Curry._1(Scanf.sscanf("", /* Format */[
               /* String */Block.__(2, [
                   /* No_padding */0,
                   /* End_of_format */0
                 ]),
               "%s"
-            ]), function (x) {
-          return +(x === "");
-        }) && Curry._1(Scanf.sscanf("", /* Format */[
+            ]), (function (x) {
+            return +(x === "");
+          })) && Curry._1(Scanf.sscanf("", /* Format */[
               /* String */Block.__(2, [
                   /* No_padding */0,
                   /* String */Block.__(2, [
@@ -951,9 +951,9 @@ function test110() {
                     ])
                 ]),
               "%s%s"
-            ]), function (x, y) {
-          return x === "" ? +(y === "") : /* false */0;
-        }) && Curry._1(Scanf.sscanf("", /* Format */[
+            ]), (function (x, y) {
+            return x === "" ? +(y === "") : /* false */0;
+          })) && Curry._1(Scanf.sscanf("", /* Format */[
               /* String */Block.__(2, [
                   /* No_padding */0,
                   /* Char_literal */Block.__(12, [
@@ -962,9 +962,9 @@ function test110() {
                     ])
                 ]),
               "%s "
-            ]), function (x) {
-          return +(x === "");
-        }) && Curry._1(Scanf.sscanf("", /* Format */[
+            ]), (function (x) {
+            return +(x === "");
+          })) && Curry._1(Scanf.sscanf("", /* Format */[
               /* Char_literal */Block.__(12, [
                   /* " " */32,
                   /* String */Block.__(2, [
@@ -973,9 +973,9 @@ function test110() {
                     ])
                 ]),
               " %s"
-            ]), function (x) {
-          return +(x === "");
-        }) && Curry._1(Scanf.sscanf("", /* Format */[
+            ]), (function (x) {
+            return +(x === "");
+          })) && Curry._1(Scanf.sscanf("", /* Format */[
               /* Char_literal */Block.__(12, [
                   /* " " */32,
                   /* String */Block.__(2, [
@@ -987,18 +987,18 @@ function test110() {
                     ])
                 ]),
               " %s "
-            ]), function (x) {
-          return +(x === "");
-        }) && Curry._1(Scanf.sscanf("", /* Format */[
+            ]), (function (x) {
+            return +(x === "");
+          })) && Curry._1(Scanf.sscanf("", /* Format */[
               /* Scan_char_set */Block.__(20, [
                   /* None */0,
                   "\xff\xfb\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff",
                   /* End_of_format */0
                 ]),
               "%[^\n]"
-            ]), function (x) {
-          return +(x === "");
-        }) && Curry._1(Scanf.sscanf("", /* Format */[
+            ]), (function (x) {
+            return +(x === "");
+          })) && Curry._1(Scanf.sscanf("", /* Format */[
               /* Scan_char_set */Block.__(20, [
                   /* None */0,
                   "\xff\xfb\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff",
@@ -1008,17 +1008,17 @@ function test110() {
                     ])
                 ]),
               "%[^\n] "
-            ]), function (x) {
-          return +(x === "");
-        }) && Curry._1(Scanf.sscanf(" ", /* Format */[
+            ]), (function (x) {
+            return +(x === "");
+          })) && Curry._1(Scanf.sscanf(" ", /* Format */[
               /* String */Block.__(2, [
                   /* No_padding */0,
                   /* End_of_format */0
                 ]),
               "%s"
-            ]), function (x) {
-          return +(x === "");
-        }) && Curry._1(Scanf.sscanf(" ", /* Format */[
+            ]), (function (x) {
+            return +(x === "");
+          })) && Curry._1(Scanf.sscanf(" ", /* Format */[
               /* String */Block.__(2, [
                   /* No_padding */0,
                   /* String */Block.__(2, [
@@ -1027,9 +1027,9 @@ function test110() {
                     ])
                 ]),
               "%s%s"
-            ]), function (x, y) {
-          return x === "" ? +(y === "") : /* false */0;
-        }) && Curry._1(Scanf.sscanf(" ", /* Format */[
+            ]), (function (x, y) {
+            return x === "" ? +(y === "") : /* false */0;
+          })) && Curry._1(Scanf.sscanf(" ", /* Format */[
               /* Char_literal */Block.__(12, [
                   /* " " */32,
                   /* String */Block.__(2, [
@@ -1041,9 +1041,9 @@ function test110() {
                     ])
                 ]),
               " %s "
-            ]), function (x) {
-          return +(x === "");
-        }) && Curry._1(Scanf.sscanf(" ", /* Format */[
+            ]), (function (x) {
+            return +(x === "");
+          })) && Curry._1(Scanf.sscanf(" ", /* Format */[
               /* Char_literal */Block.__(12, [
                   /* " " */32,
                   /* String */Block.__(2, [
@@ -1058,9 +1058,9 @@ function test110() {
                     ])
                 ]),
               " %s %s"
-            ]), function (x, y) {
-          return x === "" ? +(x === y) : /* false */0;
-        }) && Curry._1(Scanf.sscanf(" ", /* Format */[
+            ]), (function (x, y) {
+            return x === "" ? +(x === y) : /* false */0;
+          })) && Curry._1(Scanf.sscanf(" ", /* Format */[
               /* Char_literal */Block.__(12, [
                   /* " " */32,
                   /* String */Block.__(2, [
@@ -1079,9 +1079,9 @@ function test110() {
                     ])
                 ]),
               " %s@ %s"
-            ]), function (x, y) {
-          return x === "" ? +(x === y) : /* false */0;
-        }) && Curry._1(Scanf.sscanf(" poi !", /* Format */[
+            ]), (function (x, y) {
+            return x === "" ? +(x === y) : /* false */0;
+          })) && Curry._1(Scanf.sscanf(" poi !", /* Format */[
               /* Char_literal */Block.__(12, [
                   /* " " */32,
                   /* String */Block.__(2, [
@@ -1103,9 +1103,9 @@ function test110() {
                     ])
                 ]),
               " %s@ %s@."
-            ]), function (x, y) {
-          return x === "poi" ? +(y === "!") : /* false */0;
-        })) {
+            ]), (function (x, y) {
+            return x === "poi" ? +(y === "!") : /* false */0;
+          }))) {
     return Curry._1(Scanf.sscanf(" poi !", /* Format */[
                     /* String */Block.__(2, [
                         /* No_padding */0,
@@ -1125,13 +1125,13 @@ function test110() {
                           ])
                       ]),
                     "%s@ %s@."
-                  ]), function (x, y) {
-                if (x === "") {
-                  return +(y === "poi !");
-                } else {
-                  return /* false */0;
-                }
-              });
+                  ]), (function (x, y) {
+                  if (x === "") {
+                    return +(y === "poi !");
+                  } else {
+                    return /* false */0;
+                  }
+                }));
   } else {
     return /* false */0;
   }
@@ -1148,9 +1148,9 @@ function test111() {
                         ])
                     ]),
                   "%[^\n]@\n"
-                ]), function (x) {
-              return +(x === "");
-            });
+                ]), (function (x) {
+                return +(x === "");
+              }));
 }
 
 test("File \"tscanf_test.ml\", line 293, characters 5-12", test11(/* () */0) && test110(/* () */0) && test111(/* () */0));
@@ -1181,76 +1181,76 @@ function f(ib) {
                         ])
                     ]),
                   " %i;"
-                ]), function (i) {
-              return Curry._1(Scanf.bscanf(ib, /* Format */[
-                              /* Char_literal */Block.__(12, [
-                                  /* " " */32,
-                                  /* Int */Block.__(4, [
-                                      /* Int_i */3,
-                                      /* No_padding */0,
-                                      /* No_precision */0,
-                                      /* Char_literal */Block.__(12, [
-                                          /* ";" */59,
-                                          /* End_of_format */0
-                                        ])
-                                    ])
-                                ]),
-                              " %i;"
-                            ]), function (j) {
-                          return Curry._1(Scanf.bscanf(ib, /* Format */[
-                                          /* Char_literal */Block.__(12, [
-                                              /* " " */32,
-                                              /* Int */Block.__(4, [
-                                                  /* Int_i */3,
-                                                  /* No_padding */0,
-                                                  /* No_precision */0,
-                                                  /* Char_literal */Block.__(12, [
-                                                      /* ";" */59,
-                                                      /* End_of_format */0
-                                                    ])
-                                                ])
-                                            ]),
-                                          " %i;"
-                                        ]), function (k) {
-                                      return Curry._1(Scanf.bscanf(ib, /* Format */[
+                ]), (function (i) {
+                return Curry._1(Scanf.bscanf(ib, /* Format */[
+                                /* Char_literal */Block.__(12, [
+                                    /* " " */32,
+                                    /* Int */Block.__(4, [
+                                        /* Int_i */3,
+                                        /* No_padding */0,
+                                        /* No_precision */0,
+                                        /* Char_literal */Block.__(12, [
+                                            /* ";" */59,
+                                            /* End_of_format */0
+                                          ])
+                                      ])
+                                  ]),
+                                " %i;"
+                              ]), (function (j) {
+                              return Curry._1(Scanf.bscanf(ib, /* Format */[
+                                              /* Char_literal */Block.__(12, [
+                                                  /* " " */32,
+                                                  /* Int */Block.__(4, [
+                                                      /* Int_i */3,
+                                                      /* No_padding */0,
+                                                      /* No_precision */0,
                                                       /* Char_literal */Block.__(12, [
-                                                          /* " " */32,
-                                                          /* Int */Block.__(4, [
-                                                              /* Int_i */3,
-                                                              /* No_padding */0,
-                                                              /* No_precision */0,
-                                                              /* Char_literal */Block.__(12, [
-                                                                  /* ";" */59,
-                                                                  /* End_of_format */0
-                                                                ])
-                                                            ])
-                                                        ]),
-                                                      " %i;"
-                                                    ]), function (l) {
-                                                  Curry._1(Scanf.bscanf(ib, /* Format */[
-                                                            /* String_literal */Block.__(11, [
-                                                                " ]",
-                                                                /* End_of_format */0
+                                                          /* ";" */59,
+                                                          /* End_of_format */0
+                                                        ])
+                                                    ])
+                                                ]),
+                                              " %i;"
+                                            ]), (function (k) {
+                                            return Curry._1(Scanf.bscanf(ib, /* Format */[
+                                                            /* Char_literal */Block.__(12, [
+                                                                /* " " */32,
+                                                                /* Int */Block.__(4, [
+                                                                    /* Int_i */3,
+                                                                    /* No_padding */0,
+                                                                    /* No_precision */0,
+                                                                    /* Char_literal */Block.__(12, [
+                                                                        /* ";" */59,
+                                                                        /* End_of_format */0
+                                                                      ])
+                                                                  ])
                                                               ]),
-                                                            " ]"
-                                                          ]), /* () */0);
-                                                  return /* :: */[
-                                                          i,
-                                                          /* :: */[
-                                                            j,
-                                                            /* :: */[
-                                                              k,
-                                                              /* :: */[
-                                                                l,
-                                                                /* [] */0
-                                                              ]
-                                                            ]
-                                                          ]
-                                                        ];
-                                                });
-                                    });
-                        });
-            });
+                                                            " %i;"
+                                                          ]), (function (l) {
+                                                          Curry._1(Scanf.bscanf(ib, /* Format */[
+                                                                    /* String_literal */Block.__(11, [
+                                                                        " ]",
+                                                                        /* End_of_format */0
+                                                                      ]),
+                                                                    " ]"
+                                                                  ]), /* () */0);
+                                                          return /* :: */[
+                                                                  i,
+                                                                  /* :: */[
+                                                                    j,
+                                                                    /* :: */[
+                                                                      k,
+                                                                      /* :: */[
+                                                                        l,
+                                                                        /* [] */0
+                                                                      ]
+                                                                    ]
+                                                                  ]
+                                                                ];
+                                                        }));
+                                          }));
+                            }));
+              }));
 }
 
 function test12() {
@@ -1287,12 +1287,12 @@ function scan_elems(ib, accu) {
                           ])
                       ]),
                     " %i;"
-                  ]), function (i) {
-                return scan_elems(ib, /* :: */[
-                            i,
-                            accu
-                          ]);
-              });
+                  ]), (function (i) {
+                  return scan_elems(ib, /* :: */[
+                              i,
+                              accu
+                            ]);
+                }));
   }
   catch (exn){
     return accu;
@@ -1380,26 +1380,26 @@ function scan_elems$1(ib, accu) {
                         ])
                     ]),
                   " %i %c"
-                ]), function (i, c) {
-              if (c !== 59) {
-                if (c !== 93) {
-                  throw [
-                        Caml_builtin_exceptions.failure,
-                        "scan_elems"
-                      ];
+                ]), (function (i, c) {
+                if (c !== 59) {
+                  if (c !== 93) {
+                    throw [
+                          Caml_builtin_exceptions.failure,
+                          "scan_elems"
+                        ];
+                  } else {
+                    return List.rev(/* :: */[
+                                i,
+                                accu
+                              ]);
+                  }
                 } else {
-                  return List.rev(/* :: */[
+                  return scan_elems$1(ib, /* :: */[
                               i,
                               accu
                             ]);
                 }
-              } else {
-                return scan_elems$1(ib, /* :: */[
-                            i,
-                            accu
-                          ]);
-              }
-            });
+              }));
 }
 
 function scan_int_list$1(ib) {
@@ -1444,51 +1444,51 @@ function scan_elems$2(ib, accu) {
                               ])
                           ])]),
                     "%c %i"
-                  ]), function (c, i) {
-                var exit = 0;
-                if (c >= 91) {
-                  if (c >= 94) {
-                    exit = 1;
-                  } else {
-                    switch (c - 91 | 0) {
-                      case 0 : 
-                          if (accu) {
+                  ]), (function (c, i) {
+                  var exit = 0;
+                  if (c >= 91) {
+                    if (c >= 94) {
+                      exit = 1;
+                    } else {
+                      switch (c - 91 | 0) {
+                        case 0 : 
+                            if (accu) {
+                              exit = 1;
+                            } else {
+                              return scan_elems$2(ib, /* :: */[
+                                          i,
+                                          accu
+                                        ]);
+                            }
+                            break;
+                        case 1 : 
                             exit = 1;
-                          } else {
-                            return scan_elems$2(ib, /* :: */[
+                            break;
+                        case 2 : 
+                            return List.rev(/* :: */[
                                         i,
                                         accu
                                       ]);
-                          }
-                          break;
-                      case 1 : 
-                          exit = 1;
-                          break;
-                      case 2 : 
-                          return List.rev(/* :: */[
-                                      i,
-                                      accu
-                                    ]);
-                      
+                        
+                      }
                     }
+                  } else if (c !== 59) {
+                    exit = 1;
+                  } else {
+                    return scan_elems$2(ib, /* :: */[
+                                i,
+                                accu
+                              ]);
                   }
-                } else if (c !== 59) {
-                  exit = 1;
-                } else {
-                  return scan_elems$2(ib, /* :: */[
-                              i,
-                              accu
-                            ]);
-                }
-                if (exit === 1) {
-                  console.log(Caml_string.bytes_to_string(Bytes.make(1, c)));
-                  throw [
-                        Caml_builtin_exceptions.failure,
-                        "scan_elems"
-                      ];
-                }
-                
-              });
+                  if (exit === 1) {
+                    console.log(Caml_string.bytes_to_string(Bytes.make(1, c)));
+                    throw [
+                          Caml_builtin_exceptions.failure,
+                          "scan_elems"
+                        ];
+                  }
+                  
+                }));
   }
   catch (raw_exn){
     var exn = Js_exn.internalToOCamlException(raw_exn);
@@ -1571,25 +1571,25 @@ function scan_elems$3(ib, accu) {
                         ])
                     ]),
                   " %i%[]; \t\n\r]"
-                ]), function (i, s) {
-              switch (s) {
-                case ";" : 
-                    return scan_elems$3(ib, /* :: */[
-                                i,
-                                accu
-                              ]);
-                case "]" : 
+                ]), (function (i, s) {
+                switch (s) {
+                  case ";" : 
+                      return scan_elems$3(ib, /* :: */[
+                                  i,
+                                  accu
+                                ]);
+                  case "]" : 
+                      return List.rev(/* :: */[
+                                  i,
+                                  accu
+                                ]);
+                  default:
                     return List.rev(/* :: */[
                                 i,
                                 accu
                               ]);
-                default:
-                  return List.rev(/* :: */[
-                              i,
-                              accu
-                            ]);
-              }
-            });
+                }
+              }));
 }
 
 function scan_int_list$2(ib) {
@@ -1659,52 +1659,52 @@ function scan_rest(ib, accu) {
                             ])])
                     ]),
                   " %c "
-                ]), function (c) {
-              if (c !== 59) {
-                if (c !== 93) {
-                  throw [
-                        Caml_builtin_exceptions.failure,
-                        "scan_rest"
-                      ];
+                ]), (function (c) {
+                if (c !== 59) {
+                  if (c !== 93) {
+                    throw [
+                          Caml_builtin_exceptions.failure,
+                          "scan_rest"
+                        ];
+                  } else {
+                    return accu;
+                  }
                 } else {
-                  return accu;
-                }
-              } else {
-                return Curry._1(Scanf.bscanf(ib, /* Format */[
-                                /* Scan_char_set */Block.__(20, [
-                                    /* None */0,
-                                    "\0\0\0\0\0\0\0\0\0\0\0 \0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
-                                    /* End_of_format */0
-                                  ]),
-                                "%[]]"
-                              ]), function (param) {
-                            if (param === "]") {
-                              return accu;
-                            } else {
-                              return Curry._1(Scanf.bscanf(ib, /* Format */[
-                                              /* Char_literal */Block.__(12, [
-                                                  /* " " */32,
-                                                  /* Int */Block.__(4, [
-                                                      /* Int_i */3,
-                                                      /* No_padding */0,
-                                                      /* No_precision */0,
-                                                      /* Char_literal */Block.__(12, [
-                                                          /* " " */32,
-                                                          /* End_of_format */0
+                  return Curry._1(Scanf.bscanf(ib, /* Format */[
+                                  /* Scan_char_set */Block.__(20, [
+                                      /* None */0,
+                                      "\0\0\0\0\0\0\0\0\0\0\0 \0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
+                                      /* End_of_format */0
+                                    ]),
+                                  "%[]]"
+                                ]), (function (param) {
+                                if (param === "]") {
+                                  return accu;
+                                } else {
+                                  return Curry._1(Scanf.bscanf(ib, /* Format */[
+                                                  /* Char_literal */Block.__(12, [
+                                                      /* " " */32,
+                                                      /* Int */Block.__(4, [
+                                                          /* Int_i */3,
+                                                          /* No_padding */0,
+                                                          /* No_precision */0,
+                                                          /* Char_literal */Block.__(12, [
+                                                              /* " " */32,
+                                                              /* End_of_format */0
+                                                            ])
                                                         ])
-                                                    ])
-                                                ]),
-                                              " %i "
-                                            ]), function (i) {
-                                          return scan_rest(ib, /* :: */[
-                                                      i,
-                                                      accu
-                                                    ]);
-                                        });
-                            }
-                          });
-              }
-            });
+                                                    ]),
+                                                  " %i "
+                                                ]), (function (i) {
+                                                return scan_rest(ib, /* :: */[
+                                                            i,
+                                                            accu
+                                                          ]);
+                                              }));
+                                }
+                              }));
+                }
+              }));
 }
 
 function scan_elems$4(ib, accu) {
@@ -1717,53 +1717,53 @@ function scan_elems$4(ib, accu) {
                             ])])
                     ]),
                   " %c "
-                ]), function (c) {
-              if (c !== 91) {
-                throw [
-                      Caml_builtin_exceptions.failure,
-                      "scan_elems"
-                    ];
-              } else if (accu) {
-                throw [
-                      Caml_builtin_exceptions.failure,
-                      "scan_elems"
-                    ];
-              } else {
-                return Curry._1(Scanf.bscanf(ib, /* Format */[
-                                /* Scan_char_set */Block.__(20, [
-                                    /* None */0,
-                                    "\0\0\0\0\0\0\0\0\0\0\0 \0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
-                                    /* End_of_format */0
-                                  ]),
-                                "%[]]"
-                              ]), function (param) {
-                            if (param === "]") {
-                              return accu;
-                            } else {
-                              return Curry._1(Scanf.bscanf(ib, /* Format */[
-                                              /* Char_literal */Block.__(12, [
-                                                  /* " " */32,
-                                                  /* Int */Block.__(4, [
-                                                      /* Int_i */3,
-                                                      /* No_padding */0,
-                                                      /* No_precision */0,
-                                                      /* Char_literal */Block.__(12, [
-                                                          /* " " */32,
-                                                          /* End_of_format */0
+                ]), (function (c) {
+                if (c !== 91) {
+                  throw [
+                        Caml_builtin_exceptions.failure,
+                        "scan_elems"
+                      ];
+                } else if (accu) {
+                  throw [
+                        Caml_builtin_exceptions.failure,
+                        "scan_elems"
+                      ];
+                } else {
+                  return Curry._1(Scanf.bscanf(ib, /* Format */[
+                                  /* Scan_char_set */Block.__(20, [
+                                      /* None */0,
+                                      "\0\0\0\0\0\0\0\0\0\0\0 \0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
+                                      /* End_of_format */0
+                                    ]),
+                                  "%[]]"
+                                ]), (function (param) {
+                                if (param === "]") {
+                                  return accu;
+                                } else {
+                                  return Curry._1(Scanf.bscanf(ib, /* Format */[
+                                                  /* Char_literal */Block.__(12, [
+                                                      /* " " */32,
+                                                      /* Int */Block.__(4, [
+                                                          /* Int_i */3,
+                                                          /* No_padding */0,
+                                                          /* No_precision */0,
+                                                          /* Char_literal */Block.__(12, [
+                                                              /* " " */32,
+                                                              /* End_of_format */0
+                                                            ])
                                                         ])
-                                                    ])
-                                                ]),
-                                              " %i "
-                                            ]), function (i) {
-                                          return scan_rest(ib, /* :: */[
-                                                      i,
-                                                      accu
-                                                    ]);
-                                        });
-                            }
-                          });
-              }
-            });
+                                                    ]),
+                                                  " %i "
+                                                ]), (function (i) {
+                                                return scan_rest(ib, /* :: */[
+                                                            i,
+                                                            accu
+                                                          ]);
+                                              }));
+                                }
+                              }));
+                }
+              }));
 }
 
 function scan_int_list$3(ib) {
@@ -1842,62 +1842,62 @@ function scan_rest$1(ib, accu) {
                       /* End_of_format */0
                     ]),
                   "%[]]"
-                ]), function (param) {
-              if (param === "]") {
-                return accu;
-              } else {
-                var ib$1 = ib;
-                var accu$1 = accu;
-                return Curry._1(Scanf.bscanf(ib$1, /* Format */[
-                                /* Char_literal */Block.__(12, [
-                                    /* " " */32,
-                                    /* Int */Block.__(4, [
-                                        /* Int_i */3,
-                                        /* No_padding */0,
-                                        /* No_precision */0,
-                                        /* Char_literal */Block.__(12, [
-                                            /* " " */32,
-                                            /* End_of_format */0
-                                          ])
-                                      ])
-                                  ]),
-                                " %i "
-                              ]), function (i) {
-                            var ib$2 = ib$1;
-                            var accu$2 = /* :: */[
-                              i,
-                              accu$1
-                            ];
-                            return Curry._1(Scanf.bscanf(ib$2, /* Format */[
-                                            /* Scan_char_set */Block.__(20, [
-                                                /* Some */[1],
-                                                "\0\0\0\0\0\0\0\b\0\0\0 \0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
-                                                /* End_of_format */0
-                                              ]),
-                                            "%1[];]"
-                                          ]), function (param) {
-                                        switch (param) {
-                                          case ";" : 
-                                              return scan_rest$1(ib$2, accu$2);
-                                          case "]" : 
-                                              return accu$2;
-                                          default:
-                                            var s = Printf.sprintf(/* Format */[
-                                                  /* String_literal */Block.__(11, [
-                                                      "scan_int_list",
-                                                      /* End_of_format */0
-                                                    ]),
-                                                  "scan_int_list"
-                                                ]);
-                                            throw [
-                                                  Caml_builtin_exceptions.failure,
-                                                  s
-                                                ];
-                                        }
-                                      });
-                          });
-              }
-            });
+                ]), (function (param) {
+                if (param === "]") {
+                  return accu;
+                } else {
+                  var ib$1 = ib;
+                  var accu$1 = accu;
+                  return Curry._1(Scanf.bscanf(ib$1, /* Format */[
+                                  /* Char_literal */Block.__(12, [
+                                      /* " " */32,
+                                      /* Int */Block.__(4, [
+                                          /* Int_i */3,
+                                          /* No_padding */0,
+                                          /* No_precision */0,
+                                          /* Char_literal */Block.__(12, [
+                                              /* " " */32,
+                                              /* End_of_format */0
+                                            ])
+                                        ])
+                                    ]),
+                                  " %i "
+                                ]), (function (i) {
+                                var ib$2 = ib$1;
+                                var accu$2 = /* :: */[
+                                  i,
+                                  accu$1
+                                ];
+                                return Curry._1(Scanf.bscanf(ib$2, /* Format */[
+                                                /* Scan_char_set */Block.__(20, [
+                                                    /* Some */[1],
+                                                    "\0\0\0\0\0\0\0\b\0\0\0 \0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
+                                                    /* End_of_format */0
+                                                  ]),
+                                                "%1[];]"
+                                              ]), (function (param) {
+                                              switch (param) {
+                                                case ";" : 
+                                                    return scan_rest$1(ib$2, accu$2);
+                                                case "]" : 
+                                                    return accu$2;
+                                                default:
+                                                  var s = Printf.sprintf(/* Format */[
+                                                        /* String_literal */Block.__(11, [
+                                                            "scan_int_list",
+                                                            /* End_of_format */0
+                                                          ]),
+                                                        "scan_int_list"
+                                                      ]);
+                                                  throw [
+                                                        Caml_builtin_exceptions.failure,
+                                                        s
+                                                      ];
+                                              }
+                                            }));
+                              }));
+                }
+              }));
 }
 
 function scan_int_list$4(ib) {
@@ -1950,17 +1950,17 @@ test("File \"tscanf_test.ml\", line 506, characters 5-12", test22(/* () */0));
 
 function scan_elems$5(ib, scan_elem, accu) {
   try {
-    return Curry._2(scan_elem, ib, function (i, s) {
-                var accu$1 = /* :: */[
-                  i,
-                  accu
-                ];
-                if (s === "") {
-                  return accu$1;
-                } else {
-                  return scan_elems$5(ib, scan_elem, accu$1);
-                }
-              });
+    return Curry._2(scan_elem, ib, (function (i, s) {
+                  var accu$1 = /* :: */[
+                    i,
+                    accu
+                  ];
+                  if (s === "") {
+                    return accu$1;
+                  } else {
+                    return scan_elems$5(ib, scan_elem, accu$1);
+                  }
+                }));
   }
   catch (raw_exn){
     var exn = Js_exn.internalToOCamlException(raw_exn);
@@ -2184,19 +2184,19 @@ function test28() {
 test("File \"tscanf_test.ml\", line 609, characters 5-12", test28(/* () */0));
 
 function scan_elems$6(ib, scan_elem, accu) {
-  return Curry._3(scan_elem, ib, function (i, s) {
-              var accu$1 = /* :: */[
-                i,
-                accu
-              ];
-              if (s === "") {
-                return accu$1;
-              } else {
-                return scan_elems$6(ib, scan_elem, accu$1);
-              }
-            }, function (_, _$1) {
-              return accu;
-            });
+  return Curry._3(scan_elem, ib, (function (i, s) {
+                var accu$1 = /* :: */[
+                  i,
+                  accu
+                ];
+                if (s === "") {
+                  return accu$1;
+                } else {
+                  return scan_elems$6(ib, scan_elem, accu$1);
+                }
+              }), (function (_, _$1) {
+                return accu;
+              }));
 }
 
 function scan_list$1(scan_elem, ib) {
@@ -2339,33 +2339,33 @@ function scan_elem(fmt, ib, f, ek) {
 }
 
 function scan_elems$7(ib, scan_elem, accu) {
-  return Curry._3(scan_elem, ib, function (i) {
-              var accu$1 = /* :: */[
-                i,
-                accu
-              ];
-              return Curry._1(Scanf.kscanf(ib, function (_, _$1) {
-                              return accu$1;
-                            }, /* Format */[
-                              /* Char_literal */Block.__(12, [
-                                  /* " " */32,
-                                  /* Scan_char_set */Block.__(20, [
-                                      /* Some */[1],
-                                      "\0\0\0\0\0\0\0\b\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
-                                      /* End_of_format */0
-                                    ])
-                                ]),
-                              " %1[;]"
-                            ]), function (s) {
-                          if (s === "") {
-                            return accu$1;
-                          } else {
-                            return scan_elems$7(ib, scan_elem, accu$1);
-                          }
-                        });
-            }, function (_, _$1) {
-              return accu;
-            });
+  return Curry._3(scan_elem, ib, (function (i) {
+                var accu$1 = /* :: */[
+                  i,
+                  accu
+                ];
+                return Curry._1(Scanf.kscanf(ib, (function (_, _$1) {
+                                  return accu$1;
+                                }), /* Format */[
+                                /* Char_literal */Block.__(12, [
+                                    /* " " */32,
+                                    /* Scan_char_set */Block.__(20, [
+                                        /* Some */[1],
+                                        "\0\0\0\0\0\0\0\b\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
+                                        /* End_of_format */0
+                                      ])
+                                  ]),
+                                " %1[;]"
+                              ]), (function (s) {
+                              if (s === "") {
+                                return accu$1;
+                              } else {
+                                return scan_elems$7(ib, scan_elem, accu$1);
+                              }
+                            }));
+              }), (function (_, _$1) {
+                return accu;
+              }));
 }
 
 function scan_list$2(scan_elem, ib) {
@@ -2502,34 +2502,34 @@ function test32() {
 test("File \"tscanf_test.ml\", line 728, characters 5-12", test32(/* () */0));
 
 function scan_elems$8(ib, scan_elem_fmt, accu) {
-  return Curry._1(Scanf.kscanf(ib, function (_, _$1) {
-                  return accu;
-                }, scan_elem_fmt), function (i) {
-              var accu$1 = /* :: */[
-                i,
-                accu
-              ];
-              return Curry._1(Scanf.bscanf(ib, /* Format */[
-                              /* Char_literal */Block.__(12, [
-                                  /* " " */32,
-                                  /* Scan_char_set */Block.__(20, [
-                                      /* Some */[1],
-                                      "\0\0\0\0\0\0\0\b\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
-                                      /* Char_literal */Block.__(12, [
-                                          /* " " */32,
-                                          /* End_of_format */0
-                                        ])
-                                    ])
-                                ]),
-                              " %1[;] "
-                            ]), function (param) {
-                          if (param === "") {
-                            return accu$1;
-                          } else {
-                            return scan_elems$8(ib, scan_elem_fmt, accu$1);
-                          }
-                        });
-            });
+  return Curry._1(Scanf.kscanf(ib, (function (_, _$1) {
+                    return accu;
+                  }), scan_elem_fmt), (function (i) {
+                var accu$1 = /* :: */[
+                  i,
+                  accu
+                ];
+                return Curry._1(Scanf.bscanf(ib, /* Format */[
+                                /* Char_literal */Block.__(12, [
+                                    /* " " */32,
+                                    /* Scan_char_set */Block.__(20, [
+                                        /* Some */[1],
+                                        "\0\0\0\0\0\0\0\b\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
+                                        /* Char_literal */Block.__(12, [
+                                            /* " " */32,
+                                            /* End_of_format */0
+                                          ])
+                                      ])
+                                  ]),
+                                " %1[;] "
+                              ]), (function (param) {
+                              if (param === "") {
+                                return accu$1;
+                              } else {
+                                return scan_elems$8(ib, scan_elem_fmt, accu$1);
+                              }
+                            }));
+              }));
 }
 
 function scan_list$3(scan_elem_fmt, ib) {
@@ -2652,41 +2652,41 @@ function test34() {
 test("File \"tscanf_test.ml\", line 787, characters 5-12", test34(/* () */0));
 
 function scan_elems$9(scan_elem, accu, ib) {
-  return Curry._2(Scanf.kscanf(ib, function (_, _$1) {
-                  return accu;
-                }, /* Format */[
+  return Curry._2(Scanf.kscanf(ib, (function (_, _$1) {
+                    return accu;
+                  }), /* Format */[
                   /* Reader */Block.__(19, [/* End_of_format */0]),
                   "%r"
-                ]), function (ib) {
-              return Curry._2(scan_elem, ib, function (elem) {
-                          var accu$1 = /* :: */[
-                            elem,
-                            accu
-                          ];
-                          return Curry._1(Scanf.bscanf(ib, /* Format */[
-                                          /* Char_literal */Block.__(12, [
-                                              /* " " */32,
-                                              /* Scan_char_set */Block.__(20, [
-                                                  /* Some */[1],
-                                                  "\0\0\0\0\0\0\0\b\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
-                                                  /* Char_literal */Block.__(12, [
-                                                      /* " " */32,
-                                                      /* End_of_format */0
+                ]), (function (ib) {
+                return Curry._2(scan_elem, ib, (function (elem) {
+                              var accu$1 = /* :: */[
+                                elem,
+                                accu
+                              ];
+                              return Curry._1(Scanf.bscanf(ib, /* Format */[
+                                              /* Char_literal */Block.__(12, [
+                                                  /* " " */32,
+                                                  /* Scan_char_set */Block.__(20, [
+                                                      /* Some */[1],
+                                                      "\0\0\0\0\0\0\0\b\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
+                                                      /* Char_literal */Block.__(12, [
+                                                          /* " " */32,
+                                                          /* End_of_format */0
+                                                        ])
                                                     ])
-                                                ])
-                                            ]),
-                                          " %1[;] "
-                                        ]), function (param) {
-                                      if (param === "") {
-                                        return accu$1;
-                                      } else {
-                                        return scan_elems$9(scan_elem, accu$1, ib);
-                                      }
-                                    });
-                        });
-            }, function (l) {
-              return l;
-            });
+                                                ]),
+                                              " %1[;] "
+                                            ]), (function (param) {
+                                            if (param === "") {
+                                              return accu$1;
+                                            } else {
+                                              return scan_elems$9(scan_elem, accu$1, ib);
+                                            }
+                                          }));
+                            }));
+              }), (function (l) {
+                return l;
+              }));
 }
 
 function scan_list$4(scan_elem, ib) {
@@ -2721,53 +2721,53 @@ function scan_float(ib) {
 }
 
 function scan_int_list$8(param) {
-  return scan_list$4(function (ib) {
-              return Scanf.bscanf(ib, /* Format */[
-                          /* Int */Block.__(4, [
-                              /* Int_i */3,
-                              /* No_padding */0,
-                              /* No_precision */0,
-                              /* End_of_format */0
-                            ]),
-                          "%i"
-                        ]);
-            }, param);
+  return scan_list$4((function (ib) {
+                return Scanf.bscanf(ib, /* Format */[
+                            /* Int */Block.__(4, [
+                                /* Int_i */3,
+                                /* No_padding */0,
+                                /* No_precision */0,
+                                /* End_of_format */0
+                              ]),
+                            "%i"
+                          ]);
+              }), param);
 }
 
 function scan_string_list$2(param) {
-  return scan_list$4(function (ib) {
-              return Scanf.bscanf(ib, /* Format */[
-                          /* Caml_string */Block.__(3, [
-                              /* No_padding */0,
-                              /* End_of_format */0
-                            ]),
-                          "%S"
-                        ]);
-            }, param);
+  return scan_list$4((function (ib) {
+                return Scanf.bscanf(ib, /* Format */[
+                            /* Caml_string */Block.__(3, [
+                                /* No_padding */0,
+                                /* End_of_format */0
+                              ]),
+                            "%S"
+                          ]);
+              }), param);
 }
 
 function scan_bool_list(param) {
-  return scan_list$4(function (ib) {
-              return Scanf.bscanf(ib, /* Format */[
-                          /* Bool */Block.__(9, [/* End_of_format */0]),
-                          "%B"
-                        ]);
-            }, param);
+  return scan_list$4((function (ib) {
+                return Scanf.bscanf(ib, /* Format */[
+                            /* Bool */Block.__(9, [/* End_of_format */0]),
+                            "%B"
+                          ]);
+              }), param);
 }
 
 function scan_char_list(param) {
-  return scan_list$4(function (ib) {
-              return Scanf.bscanf(ib, /* Format */[
-                          /* Caml_char */Block.__(1, [/* End_of_format */0]),
-                          "%C"
-                        ]);
-            }, param);
+  return scan_list$4((function (ib) {
+                return Scanf.bscanf(ib, /* Format */[
+                            /* Caml_char */Block.__(1, [/* End_of_format */0]),
+                            "%C"
+                          ]);
+              }), param);
 }
 
 function scan_float_list_list(param) {
-  return scan_list$4(function (ib, k) {
-              return Curry._1(k, scan_list$4(scan_float, ib));
-            }, param);
+  return scan_list$4((function (ib, k) {
+                return Curry._1(k, scan_list$4(scan_float, ib));
+              }), param);
 }
 
 function test340() {
@@ -2799,15 +2799,15 @@ function test340() {
 }
 
 function scan_list_list(scan_elems, ib) {
-  return scan_list$4(function (ib, k) {
-              return Curry._1(k, Curry._1(scan_elems, ib));
-            }, ib);
+  return scan_list$4((function (ib, k) {
+                return Curry._1(k, Curry._1(scan_elems, ib));
+              }), ib);
 }
 
 function scan_float_item(ib, k) {
-  return Curry._1(k, Curry._1(scan_float(ib), function (x) {
-                  return x;
-                }));
+  return Curry._1(k, Curry._1(scan_float(ib), (function (x) {
+                    return x;
+                  })));
 }
 
 function scan_float_list(ib, k) {
@@ -2825,17 +2825,17 @@ function test35() {
                   /* End_of_format */0
                 ]),
               "%N"
-            ]), function (x) {
-          return x;
-        }) === 0 && Curry._1(Scanf.sscanf("456", /* Format */[
+            ]), (function (x) {
+            return x;
+          })) === 0 && Curry._1(Scanf.sscanf("456", /* Format */[
               /* Scan_get_counter */Block.__(21, [
                   /* Token_counter */2,
                   /* End_of_format */0
                 ]),
               "%N"
-            ]), function (x) {
-          return x;
-        }) === 0 && Caml_obj.caml_equal(Curry._1(Scanf.sscanf("456", /* Format */[
+            ]), (function (x) {
+            return x;
+          })) === 0 && Caml_obj.caml_equal(Curry._1(Scanf.sscanf("456", /* Format */[
                   /* Int */Block.__(4, [
                       /* Int_d */0,
                       /* No_padding */0,
@@ -2846,12 +2846,12 @@ function test35() {
                         ])
                     ]),
                   "%d%N"
-                ]), function (x, y) {
-              return /* tuple */[
-                      x,
-                      y
-                    ];
-            }), /* tuple */[
+                ]), (function (x, y) {
+                return /* tuple */[
+                        x,
+                        y
+                      ];
+              })), /* tuple */[
           456,
           1
         ])) {
@@ -2867,13 +2867,13 @@ function test35() {
                               ])
                           ]),
                         "%N%s%N"
-                      ]), function (x, s, y) {
-                    return /* tuple */[
-                            x,
-                            s,
-                            y
-                          ];
-                  }), /* tuple */[
+                      ]), (function (x, s, y) {
+                      return /* tuple */[
+                              x,
+                              s,
+                              y
+                            ];
+                    })), /* tuple */[
                 0,
                 "",
                 1
@@ -2886,9 +2886,9 @@ function test35() {
 test("File \"tscanf_test.ml\", line 940, characters 5-12", test340(/* () */0) && test35(/* () */0));
 
 function read_elems(read_elem, accu, ib) {
-  return Curry._2(Scanf.kscanf(ib, function (_, _$1) {
-                  return accu;
-                }, /* Format */[
+  return Curry._2(Scanf.kscanf(ib, (function (_, _$1) {
+                    return accu;
+                  }), /* Format */[
                   /* Reader */Block.__(19, [/* Char_literal */Block.__(12, [
                           /* " " */32,
                           /* Scan_char_set */Block.__(20, [
@@ -2901,18 +2901,18 @@ function read_elems(read_elem, accu, ib) {
                             ])
                         ])]),
                   "%r %1[;] "
-                ]), Curry._1(read_elem, function (elem) {
-                  return /* :: */[
-                          elem,
-                          accu
-                        ];
-                }), function (accu, s) {
-              if (s === "") {
-                return accu;
-              } else {
-                return read_elems(read_elem, accu, ib);
-              }
-            });
+                ]), Curry._1(read_elem, (function (elem) {
+                    return /* :: */[
+                            elem,
+                            accu
+                          ];
+                  })), (function (accu, s) {
+                if (s === "") {
+                  return accu;
+                } else {
+                  return read_elems(read_elem, accu, ib);
+                }
+              }));
 }
 
 function read_list(read_elem, ib) {
@@ -2925,9 +2925,9 @@ function read_list(read_elem, ib) {
                             ])])
                     ]),
                   "[ %r ]"
-                ]), function (param) {
-              return read_elems(read_elem, /* [] */0, param);
-            }, List.rev);
+                ]), (function (param) {
+                return read_elems(read_elem, /* [] */0, param);
+              }), List.rev);
 }
 
 function make_read_elem(fmt, f, ib) {
@@ -2935,11 +2935,11 @@ function make_read_elem(fmt, f, ib) {
 }
 
 function scan_List(fmt) {
-  return function (param) {
-    return read_list(function (param, param$1) {
-                return Curry._1(Scanf.bscanf(param$1, fmt), param);
-              }, param);
-  };
+  return (function (param) {
+      return read_list((function (param, param$1) {
+                    return Curry._1(Scanf.bscanf(param$1, fmt), param);
+                  }), param);
+    });
 }
 
 function test36() {
@@ -2949,17 +2949,17 @@ function test36() {
                   /* End_of_format */0
                 ]),
               "%n"
-            ]), function (x) {
-          return x;
-        }) === 0 && Curry._1(Scanf.sscanf("456", /* Format */[
+            ]), (function (x) {
+            return x;
+          })) === 0 && Curry._1(Scanf.sscanf("456", /* Format */[
               /* Scan_get_counter */Block.__(21, [
                   /* Char_counter */1,
                   /* End_of_format */0
                 ]),
               "%n"
-            ]), function (x) {
-          return x;
-        }) === 0 && Caml_obj.caml_equal(Curry._1(Scanf.sscanf("456", /* Format */[
+            ]), (function (x) {
+            return x;
+          })) === 0 && Caml_obj.caml_equal(Curry._1(Scanf.sscanf("456", /* Format */[
                   /* Int */Block.__(4, [
                       /* Int_d */0,
                       /* No_padding */0,
@@ -2970,12 +2970,12 @@ function test36() {
                         ])
                     ]),
                   "%d%n"
-                ]), function (x, y) {
-              return /* tuple */[
-                      x,
-                      y
-                    ];
-            }), /* tuple */[
+                ]), (function (x, y) {
+                return /* tuple */[
+                        x,
+                        y
+                      ];
+              })), /* tuple */[
           456,
           3
         ])) {
@@ -2991,13 +2991,13 @@ function test36() {
                               ])
                           ]),
                         "%n%s%n"
-                      ]), function (x, s, y) {
-                    return /* tuple */[
-                            x,
-                            s,
-                            y
-                          ];
-                  }), /* tuple */[
+                      ]), (function (x, s, y) {
+                      return /* tuple */[
+                              x,
+                              s,
+                              y
+                            ];
+                    })), /* tuple */[
                 0,
                 "",
                 0
@@ -3016,15 +3016,15 @@ function test37() {
             ]), /* true */1) && Curry._2(Scanf.sscanf("", /* Format */[
               /* End_of_format */0,
               ""
-            ]), function (x) {
-          return x;
-        }, 1) === 1) {
+            ]), (function (x) {
+            return x;
+          }), 1) === 1) {
     return +(Curry._2(Scanf.sscanf("123", /* Format */[
                       /* End_of_format */0,
                       ""
-                    ]), function (x) {
-                  return x;
-                }, 1) === 1);
+                    ]), (function (x) {
+                    return x;
+                  }), 1) === 1);
   } else {
     return /* false */0;
   }
@@ -3117,13 +3117,13 @@ function test40() {
                         ])
                     ]),
                   "%[^ab]%s%!"
-                ]), function (s1, s2) {
-              if (s1 === "c") {
-                return +(s2 === "ba");
-              } else {
-                return /* false */0;
-              }
-            });
+                ]), (function (s1, s2) {
+                if (s1 === "c") {
+                  return +(s2 === "ba");
+                } else {
+                  return /* false */0;
+                }
+              }));
 }
 
 test("File \"tscanf_test.ml\", line 1046, characters 5-12", test40(/* () */0));
@@ -3141,13 +3141,13 @@ function test41() {
                         ])
                     ]),
                   "%[^abc]%[cba]%!"
-                ]), function (s1, s2) {
-              if (s1 === "") {
-                return +(s2 === "cba");
-              } else {
-                return /* false */0;
-              }
-            });
+                ]), (function (s1, s2) {
+                if (s1 === "") {
+                  return +(s2 === "cba");
+                } else {
+                  return /* false */0;
+                }
+              }));
 }
 
 test("File \"tscanf_test.ml\", line 1055, characters 5-12", test41(/* () */0));
@@ -3169,13 +3169,13 @@ function test42() {
                     ])
                 ]),
               "%[^abc]%[abc]%s%!"
-            ]), function (s1, s2, s3) {
-          if (s1 === "def" && s2 === "cbaa") {
-            return +(s3 === "ghi");
-          } else {
-            return /* false */0;
-          }
-        })) {
+            ]), (function (s1, s2, s3) {
+            if (s1 === "def" && s2 === "cbaa") {
+              return +(s3 === "ghi");
+            } else {
+              return /* false */0;
+            }
+          }))) {
     var ib$1 = Curry._1(Scanf.Scanning[/* from_string */6], s);
     return Curry._1(Scanf.bscanf(ib$1, /* Format */[
                     /* String */Block.__(2, [
@@ -3186,9 +3186,9 @@ function test42() {
                           ])
                       ]),
                     "%s@\t"
-                  ]), function (s) {
-                return +(s === "defcbaaghi");
-              });
+                  ]), (function (s) {
+                  return +(s === "defcbaaghi");
+                }));
   } else {
     return /* false */0;
   }
@@ -3207,9 +3207,9 @@ function match_000() {
                       /* Flush */Block.__(10, [/* End_of_format */0])
                     ]),
                   "%i%!"
-                ]), function (i) {
-              return i;
-            });
+                ]), (function (i) {
+                return i;
+              }));
 }
 
 function match_001() {
@@ -3221,9 +3221,9 @@ function match_001() {
                           /* End_of_format */0
                         ])]),
                   "%!%i"
-                ]), function (i) {
-              return i;
-            });
+                ]), (function (i) {
+                return i;
+              }));
 }
 
 var test44 = match_001;
@@ -3251,13 +3251,13 @@ function test45() {
                         ])
                     ]),
                   "%[0-9].%[0-9]%s%!"
-                ]), function (s1, s2, s3) {
-              if (s1 === "12" && s2 === "2") {
-                return +(s3 === "");
-              } else {
-                return /* false */0;
-              }
-            });
+                ]), (function (s1, s2, s3) {
+                if (s1 === "12" && s2 === "2") {
+                  return +(s3 === "");
+                } else {
+                  return /* false */0;
+                }
+              }));
 }
 
 test("File \"tscanf_test.ml\", line 1090, characters 5-12", test45(/* () */0));
@@ -3390,21 +3390,21 @@ function test48() {
                         ])
                     ]),
                   "%i %{%d%}%s %!"
-                ]), function (i, f, s) {
-              if (i === 12 && Caml_obj.caml_equal(f, /* Format */[
-                      /* Int */Block.__(4, [
-                          /* Int_i */3,
-                          /* No_padding */0,
-                          /* No_precision */0,
-                          /* End_of_format */0
-                        ]),
-                      "%i"
-                    ])) {
-                return +(s === "89");
-              } else {
-                return /* false */0;
-              }
-            })) {
+                ]), (function (i, f, s) {
+                if (i === 12 && Caml_obj.caml_equal(f, /* Format */[
+                        /* Int */Block.__(4, [
+                            /* Int_i */3,
+                            /* No_padding */0,
+                            /* No_precision */0,
+                            /* End_of_format */0
+                          ]),
+                        "%i"
+                      ])) {
+                  return +(s === "89");
+                } else {
+                  return /* false */0;
+                }
+              }))) {
         var k = function (s) {
           return Curry._1(Scanf.sscanf(s, /* Format */[
                           /* Format_subst */Block.__(14, [
@@ -3413,9 +3413,9 @@ function test48() {
                               /* End_of_format */0
                             ]),
                           "%(%f%)"
-                        ]), function (_, i) {
-                      return i;
-                    });
+                        ]), (function (_, i) {
+                        return i;
+                      }));
         };
         if (k("\" : %1f\": 987654321") === 9.0) {
           if (k("\" : %2f\": 987654321") === 98.0) {
@@ -3432,9 +3432,9 @@ function test48() {
                                         ])
                                     ]),
                                   "Read integers with %(%i%)"
-                                ]), function (_, i) {
-                              return i;
-                            });
+                                ]), (function (_, i) {
+                                return i;
+                              }));
                 };
                 if (h("Read integers with \"%1d\"987654321") === 9) {
                   if (h("Read integers with \"%2d\"987654321") === 98) {
@@ -3451,12 +3451,12 @@ function test48() {
                                                 ])
                                             ]),
                                           "with %(%i %s%)"
-                                        ]), function (_, amount, currency) {
-                                      return /* tuple */[
-                                              amount,
-                                              currency
-                                            ];
-                                    });
+                                        ]), (function (_, amount, currency) {
+                                        return /* tuple */[
+                                                amount,
+                                                currency
+                                              ];
+                                      }));
                         };
                         if (Caml_obj.caml_equal(i("with \" : %d %s\" :        21 euros"), /* tuple */[
                                 21,
@@ -3485,12 +3485,12 @@ function test48() {
                                                         ])
                                                     ]),
                                                   "with %(%i %_s %s%)"
-                                                ]), function (_, amount, currency) {
-                                              return /* tuple */[
-                                                      amount,
-                                                      currency
-                                                    ];
-                                            });
+                                                ]), (function (_, amount, currency) {
+                                                return /* tuple */[
+                                                        amount,
+                                                        currency
+                                                      ];
+                                              }));
                                 };
                                 if (Caml_obj.caml_equal(j("with \" : %1d %_s %s\" : 987654321 euros"), /* tuple */[
                                         9,
@@ -3566,9 +3566,9 @@ function test49() {
                   /* End_of_format */0
                 ]),
               "%[\\]"
-            ]), function (s) {
-          return +(s === "");
-        }) && Curry._1(Scanf.sscanf("as", /* Format */[
+            ]), (function (s) {
+            return +(s === "");
+          })) && Curry._1(Scanf.sscanf("as", /* Format */[
               /* Scan_char_set */Block.__(20, [
                   /* None */0,
                   "\0\0\0\0\0\0\0\0\0\0\0\x10\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
@@ -3578,9 +3578,9 @@ function test49() {
                     ])
                 ]),
               "%[\\]%s"
-            ]), function (s, t) {
-          return s === "" ? +(t === "as") : /* false */0;
-        }) && Curry._1(Scanf.sscanf("as", /* Format */[
+            ]), (function (s, t) {
+            return s === "" ? +(t === "as") : /* false */0;
+          })) && Curry._1(Scanf.sscanf("as", /* Format */[
               /* Scan_char_set */Block.__(20, [
                   /* None */0,
                   "\0\0\0\0\0\0\0\0\0\0\0\x10\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
@@ -3590,27 +3590,27 @@ function test49() {
                     ])
                 ]),
               "%[\\]%s%!"
-            ]), function (s, t) {
-          return s === "" ? +(t === "as") : /* false */0;
-        }) && Curry._1(Scanf.sscanf("as", /* Format */[
+            ]), (function (s, t) {
+            return s === "" ? +(t === "as") : /* false */0;
+          })) && Curry._1(Scanf.sscanf("as", /* Format */[
               /* Scan_char_set */Block.__(20, [
                   /* None */0,
                   "\0\0\0\0\0@\0\0\0\0\0\0\x02\0\0\x04\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
                   /* End_of_format */0
                 ]),
               "%[a..z]"
-            ]), function (s) {
-          return +(s === "a");
-        }) && Curry._1(Scanf.sscanf("as", /* Format */[
+            ]), (function (s) {
+            return +(s === "a");
+          })) && Curry._1(Scanf.sscanf("as", /* Format */[
               /* Scan_char_set */Block.__(20, [
                   /* None */0,
                   "\0\0\0\0\0\0\0\0\0\0\0\0\xfe\xff\xff\x07\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
                   /* End_of_format */0
                 ]),
               "%[a-z]"
-            ]), function (s) {
-          return +(s === "as");
-        }) && Curry._1(Scanf.sscanf("as", /* Format */[
+            ]), (function (s) {
+            return +(s === "as");
+          })) && Curry._1(Scanf.sscanf("as", /* Format */[
               /* Scan_char_set */Block.__(20, [
                   /* None */0,
                   "\0\0\0\0\0@\0\0\0\0\0\0\x02\0\0\x04\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
@@ -3620,9 +3620,9 @@ function test49() {
                     ])
                 ]),
               "%[a..z]%s"
-            ]), function (s, t) {
-          return s === "a" ? +(t === "s") : /* false */0;
-        }) && Curry._1(Scanf.sscanf("as", /* Format */[
+            ]), (function (s, t) {
+            return s === "a" ? +(t === "s") : /* false */0;
+          })) && Curry._1(Scanf.sscanf("as", /* Format */[
               /* Scan_char_set */Block.__(20, [
                   /* None */0,
                   "\0\0\0\0\0\0\0\0\0\0\0\0\xfe\xff\xff\x07\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
@@ -3632,18 +3632,18 @@ function test49() {
                     ])
                 ]),
               "%[a-z]%s"
-            ]), function (s, t) {
-          return s === "as" ? +(t === "") : /* false */0;
-        }) && Curry._1(Scanf.sscanf("-as", /* Format */[
+            ]), (function (s, t) {
+            return s === "as" ? +(t === "") : /* false */0;
+          })) && Curry._1(Scanf.sscanf("-as", /* Format */[
               /* Scan_char_set */Block.__(20, [
                   /* None */0,
                   "\0\0\0\0\0 \0\0\0\0\0\0\xfe\xff\xff\x07\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
                   /* End_of_format */0
                 ]),
               "%[-a-z]"
-            ]), function (s) {
-          return +(s === "-as");
-        }) && Curry._1(Scanf.sscanf("-as", /* Format */[
+            ]), (function (s) {
+            return +(s === "-as");
+          })) && Curry._1(Scanf.sscanf("-as", /* Format */[
               /* Scan_char_set */Block.__(20, [
                   /* None */0,
                   "\0\0\0\0\0 \0\0\0\0\0\0\xfe\xff\xff\x07\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
@@ -3653,9 +3653,9 @@ function test49() {
                     ])
                 ]),
               "%[-a-z]@s"
-            ]), function (s) {
-          return +(s === "-a");
-        }) && Curry._1(Scanf.sscanf("-as", /* Format */[
+            ]), (function (s) {
+            return +(s === "-a");
+          })) && Curry._1(Scanf.sscanf("-as", /* Format */[
               /* Char_literal */Block.__(12, [
                   /* "-" */45,
                   /* Scan_char_set */Block.__(20, [
@@ -3668,9 +3668,9 @@ function test49() {
                     ])
                 ]),
               "-%[a]@s"
-            ]), function (s) {
-          return +(s === "a");
-        }) && Curry._1(Scanf.sscanf("-asb", /* Format */[
+            ]), (function (s) {
+            return +(s === "a");
+          })) && Curry._1(Scanf.sscanf("-asb", /* Format */[
               /* Char_literal */Block.__(12, [
                   /* "-" */45,
                   /* Scan_char_set */Block.__(20, [
@@ -3686,9 +3686,9 @@ function test49() {
                     ])
                 ]),
               "-%[a]@sb%!"
-            ]), function (s) {
-          return +(s === "a");
-        })) {
+            ]), (function (s) {
+            return +(s === "a");
+          }))) {
     return Curry._1(Scanf.sscanf("-asb", /* Format */[
                     /* Char_literal */Block.__(12, [
                         /* "-" */45,
@@ -3705,13 +3705,13 @@ function test49() {
                           ])
                       ]),
                     "-%[a]@s%s"
-                  ]), function (s, t) {
-                if (s === "a") {
-                  return +(t === "b");
-                } else {
-                  return /* false */0;
-                }
-              });
+                  ]), (function (s, t) {
+                  if (s === "a") {
+                    return +(t === "b");
+                  } else {
+                    return /* false */0;
+                  }
+                }));
   } else {
     return /* false */0;
   }
@@ -3759,22 +3759,22 @@ function reader(ib, ob) {
                           ])
                       ]),
                     "%[^\n]\n"
-                  ]), function (s) {
-                if (s === "stop") {
-                  send_string(ob, "stop");
-                  return writer(ib, ob);
-                } else {
-                  var l = s.length;
-                  count[0] = l + count[0] | 0;
-                  if (count[0] >= 100) {
+                  ]), (function (s) {
+                  if (s === "stop") {
                     send_string(ob, "stop");
-                    send_string(ob, "" + count[0]);
+                    return writer(ib, ob);
                   } else {
-                    send_string(ob, "" + l);
+                    var l = s.length;
+                    count[0] = l + count[0] | 0;
+                    if (count[0] >= 100) {
+                      send_string(ob, "stop");
+                      send_string(ob, "" + count[0]);
+                    } else {
+                      send_string(ob, "" + l);
+                    }
+                    return writer(ib, ob);
                   }
-                  return writer(ib, ob);
-                }
-              });
+                }));
   }
 }
 
@@ -3788,36 +3788,36 @@ function writer(ib, ob) {
                         ])
                     ]),
                   "%s\n"
-                ]), function (s) {
-              switch (s) {
-                case "start" : 
-                    send_string(ob, "Hello World!");
+                ]), (function (s) {
+                switch (s) {
+                  case "start" : 
+                      send_string(ob, "Hello World!");
+                      return reader(ib, ob);
+                  case "stop" : 
+                      return Curry._1(Scanf.bscanf(ib, /* Format */[
+                                      /* Int */Block.__(4, [
+                                          /* Int_i */3,
+                                          /* No_padding */0,
+                                          /* No_precision */0,
+                                          /* End_of_format */0
+                                        ]),
+                                      "%i"
+                                    ]), (function (i) {
+                                    return i;
+                                  }));
+                  default:
+                    var i = Caml_format.caml_int_of_string(s);
+                    send_string(ob, "" + i);
                     return reader(ib, ob);
-                case "stop" : 
-                    return Curry._1(Scanf.bscanf(ib, /* Format */[
-                                    /* Int */Block.__(4, [
-                                        /* Int_i */3,
-                                        /* No_padding */0,
-                                        /* No_precision */0,
-                                        /* End_of_format */0
-                                      ]),
-                                    "%i"
-                                  ]), function (i) {
-                                return i;
-                              });
-                default:
-                  var i = Caml_format.caml_int_of_string(s);
-                  send_string(ob, "" + i);
-                  return reader(ib, ob);
-              }
-            });
+                }
+              }));
 }
 
 function go() {
   var ob = Buffer.create(17);
-  var ib = Curry._1(Scanf.Scanning[/* from_function */7], function (param) {
-        return next_char(ob, param);
-      });
+  var ib = Curry._1(Scanf.Scanning[/* from_function */7], (function (param) {
+          return next_char(ob, param);
+        }));
   return reader(ib, ob);
 }
 
@@ -3855,9 +3855,9 @@ function test51() {
                     ])
                 ]),
               "%s%s\n"
-            ]), function (s1, s2) {
-          return s1 === "Hello" ? +(s2 === "") : /* false */0;
-        }) && Curry._1(Scanf.sscanf("Hello\nWorld", /* Format */[
+            ]), (function (s1, s2) {
+            return s1 === "Hello" ? +(s2 === "") : /* false */0;
+          })) && Curry._1(Scanf.sscanf("Hello\nWorld", /* Format */[
               /* String */Block.__(2, [
                   /* No_padding */0,
                   /* Char_literal */Block.__(12, [
@@ -3869,9 +3869,9 @@ function test51() {
                     ])
                 ]),
               "%s\n%s%!"
-            ]), function (s1, s2) {
-          return s1 === "Hello" ? +(s2 === "World") : /* false */0;
-        }) && Curry._1(Scanf.sscanf("Hello\nWorld!", /* Format */[
+            ]), (function (s1, s2) {
+            return s1 === "Hello" ? +(s2 === "World") : /* false */0;
+          })) && Curry._1(Scanf.sscanf("Hello\nWorld!", /* Format */[
               /* String */Block.__(2, [
                   /* No_padding */0,
                   /* Char_literal */Block.__(12, [
@@ -3883,9 +3883,9 @@ function test51() {
                     ])
                 ]),
               "%s\n%s"
-            ]), function (s1, s2) {
-          return s1 === "Hello" ? +(s2 === "World!") : /* false */0;
-        }) && Curry._1(Scanf.sscanf("Hello\n", /* Format */[
+            ]), (function (s1, s2) {
+            return s1 === "Hello" ? +(s2 === "World!") : /* false */0;
+          })) && Curry._1(Scanf.sscanf("Hello\n", /* Format */[
               /* String */Block.__(2, [
                   /* No_padding */0,
                   /* Formatting_lit */Block.__(17, [
@@ -3897,9 +3897,9 @@ function test51() {
                     ])
                 ]),
               "%s@\n%s"
-            ]), function (s1, s2) {
-          return s1 === "Hello" ? +(s2 === "") : /* false */0;
-        })) {
+            ]), (function (s1, s2) {
+            return s1 === "Hello" ? +(s2 === "") : /* false */0;
+          }))) {
     return Curry._1(Scanf.sscanf("Hello \n", /* Format */[
                     /* String */Block.__(2, [
                         /* No_padding */0,
@@ -3912,13 +3912,13 @@ function test51() {
                           ])
                       ]),
                     "%s@\n%s"
-                  ]), function (s1, s2) {
-                if (s1 === "Hello ") {
-                  return +(s2 === "");
-                } else {
-                  return /* false */0;
-                }
-              });
+                  ]), (function (s1, s2) {
+                  if (s1 === "Hello ") {
+                    return +(s2 === "");
+                  } else {
+                    return /* false */0;
+                  }
+                }));
   } else {
     return /* false */0;
   }
@@ -3957,9 +3957,9 @@ function test52() {
                     ])
                 ]),
               "%s%s@\n"
-            ]), function (s1, s2) {
-          return s1 === "Hello" ? +(s2 === "") : /* false */0;
-        }) && Curry._1(Scanf.sscanf("Hello\nWorld", /* Format */[
+            ]), (function (s1, s2) {
+            return s1 === "Hello" ? +(s2 === "") : /* false */0;
+          })) && Curry._1(Scanf.sscanf("Hello\nWorld", /* Format */[
               /* String */Block.__(2, [
                   /* No_padding */0,
                   /* Formatting_lit */Block.__(17, [
@@ -3971,9 +3971,9 @@ function test52() {
                     ])
                 ]),
               "%s@\n%s%!"
-            ]), function (s1, s2) {
-          return s1 === "Hello" ? +(s2 === "World") : /* false */0;
-        }) && Curry._1(Scanf.sscanf("Hello\nWorld!", /* Format */[
+            ]), (function (s1, s2) {
+            return s1 === "Hello" ? +(s2 === "World") : /* false */0;
+          })) && Curry._1(Scanf.sscanf("Hello\nWorld!", /* Format */[
               /* String */Block.__(2, [
                   /* No_padding */0,
                   /* Formatting_lit */Block.__(17, [
@@ -3988,9 +3988,9 @@ function test52() {
                     ])
                 ]),
               "%s@\n%s@\n"
-            ]), function (s1, s2) {
-          return s1 === "Hello" ? +(s2 === "World!") : /* false */0;
-        }) && Curry._1(Scanf.sscanf("Hello\n", /* Format */[
+            ]), (function (s1, s2) {
+            return s1 === "Hello" ? +(s2 === "World!") : /* false */0;
+          })) && Curry._1(Scanf.sscanf("Hello\n", /* Format */[
               /* String */Block.__(2, [
                   /* No_padding */0,
                   /* Formatting_lit */Block.__(17, [
@@ -4002,9 +4002,9 @@ function test52() {
                     ])
                 ]),
               "%s@\n%s"
-            ]), function (s1, s2) {
-          return s1 === "Hello" ? +(s2 === "") : /* false */0;
-        }) && Curry._1(Scanf.sscanf("Hello \n", /* Format */[
+            ]), (function (s1, s2) {
+            return s1 === "Hello" ? +(s2 === "") : /* false */0;
+          })) && Curry._1(Scanf.sscanf("Hello \n", /* Format */[
               /* String */Block.__(2, [
                   /* No_padding */0,
                   /* String */Block.__(2, [
@@ -4016,9 +4016,9 @@ function test52() {
                     ])
                 ]),
               "%s%s@\n"
-            ]), function (s1, s2) {
-          return s1 === "Hello" ? +(s2 === " ") : /* false */0;
-        }) && Curry._1(Scanf.sscanf("Hello \n", /* Format */[
+            ]), (function (s1, s2) {
+            return s1 === "Hello" ? +(s2 === " ") : /* false */0;
+          })) && Curry._1(Scanf.sscanf("Hello \n", /* Format */[
               /* String */Block.__(2, [
                   /* No_padding */0,
                   /* String */Block.__(2, [
@@ -4036,9 +4036,9 @@ function test52() {
                     ])
                 ]),
               "%s%s%_1[ ]\n"
-            ]), function (s1, s2) {
-          return s1 === "Hello" ? +(s2 === "") : /* false */0;
-        }) && Curry._1(Scanf.sscanf("Hello \n", /* Format */[
+            ]), (function (s1, s2) {
+            return s1 === "Hello" ? +(s2 === "") : /* false */0;
+          })) && Curry._1(Scanf.sscanf("Hello \n", /* Format */[
               /* String */Block.__(2, [
                   /* No_padding */0,
                   /* Ignored_param */Block.__(23, [
@@ -4056,9 +4056,9 @@ function test52() {
                     ])
                 ]),
               "%s%_1[ ]%s\n"
-            ]), function (s1, s2) {
-          return s1 === "Hello" ? +(s2 === "") : /* false */0;
-        }) && Curry._1(Scanf.sscanf("Hello\nWorld", /* Format */[
+            ]), (function (s1, s2) {
+            return s1 === "Hello" ? +(s2 === "") : /* false */0;
+          })) && Curry._1(Scanf.sscanf("Hello\nWorld", /* Format */[
               /* String */Block.__(2, [
                   /* No_padding */0,
                   /* Char_literal */Block.__(12, [
@@ -4070,9 +4070,9 @@ function test52() {
                     ])
                 ]),
               "%s\n%s%!"
-            ]), function (s1, s2) {
-          return s1 === "Hello" ? +(s2 === "World") : /* false */0;
-        }) && Curry._1(Scanf.sscanf("Hello\nWorld!", /* Format */[
+            ]), (function (s1, s2) {
+            return s1 === "Hello" ? +(s2 === "World") : /* false */0;
+          })) && Curry._1(Scanf.sscanf("Hello\nWorld!", /* Format */[
               /* String */Block.__(2, [
                   /* No_padding */0,
                   /* Char_literal */Block.__(12, [
@@ -4084,9 +4084,9 @@ function test52() {
                     ])
                 ]),
               "%s\n%s%!"
-            ]), function (s1, s2) {
-          return s1 === "Hello" ? +(s2 === "World!") : /* false */0;
-        }) && Curry._1(Scanf.sscanf("Hello\nWorld!", /* Format */[
+            ]), (function (s1, s2) {
+            return s1 === "Hello" ? +(s2 === "World!") : /* false */0;
+          })) && Curry._1(Scanf.sscanf("Hello\nWorld!", /* Format */[
               /* String */Block.__(2, [
                   /* No_padding */0,
                   /* Char_literal */Block.__(12, [
@@ -4101,9 +4101,9 @@ function test52() {
                     ])
                 ]),
               "%s\n%s@!%!"
-            ]), function (s1, s2) {
-          return s1 === "Hello" ? +(s2 === "World") : /* false */0;
-        }) && Curry._1(Scanf.sscanf("Hello{foo}", /* Format */[
+            ]), (function (s1, s2) {
+            return s1 === "Hello" ? +(s2 === "World") : /* false */0;
+          })) && Curry._1(Scanf.sscanf("Hello{foo}", /* Format */[
               /* String */Block.__(2, [
                   /* No_padding */0,
                   /* Formatting_gen */Block.__(18, [
@@ -4118,9 +4118,9 @@ function test52() {
                     ])
                 ]),
               "%s@{%s"
-            ]), function (s1, s2) {
-          return s1 === "Hello" ? +(s2 === "foo}") : /* false */0;
-        })) {
+            ]), (function (s1, s2) {
+            return s1 === "Hello" ? +(s2 === "foo}") : /* false */0;
+          }))) {
     return Curry._1(Scanf.sscanf("Hello[foo]", /* Format */[
                     /* String */Block.__(2, [
                         /* No_padding */0,
@@ -4136,13 +4136,13 @@ function test52() {
                           ])
                       ]),
                     "%s@[%s"
-                  ]), function (s1, s2) {
-                if (s1 === "Hello") {
-                  return +(s2 === "foo]");
-                } else {
-                  return /* false */0;
-                }
-              });
+                  ]), (function (s1, s2) {
+                  if (s1 === "Hello") {
+                    return +(s2 === "foo]");
+                  } else {
+                    return /* false */0;
+                  }
+                }));
   } else {
     return /* false */0;
   }
@@ -4167,9 +4167,9 @@ function test53() {
                   /* End_of_format */0
                 ]),
               "%nd"
-            ]), function (i) {
-          return +(i - 1 === 123);
-        }) && Curry._1(Scanf.sscanf("123", /* Format */[
+            ]), (function (i) {
+            return +(i - 1 === 123);
+          })) && Curry._1(Scanf.sscanf("123", /* Format */[
               /* Int32 */Block.__(5, [
                   /* Int_d */0,
                   /* No_padding */0,
@@ -4185,9 +4185,9 @@ function test53() {
                   /* End_of_format */0
                 ]),
               "%ld"
-            ]), function (i) {
-          return +((i + 1 | 0) === 125);
-        }) && Caml_int64.eq(Curry._1(Scanf.sscanf("123", /* Format */[
+            ]), (function (i) {
+            return +((i + 1 | 0) === 125);
+          })) && Caml_int64.eq(Curry._1(Scanf.sscanf("123", /* Format */[
                   /* Int64 */Block.__(7, [
                       /* Int_d */0,
                       /* No_padding */0,
@@ -4207,15 +4207,15 @@ function test53() {
                         /* End_of_format */0
                       ]),
                     "%Ld"
-                  ]), function (i) {
-                return Caml_int64.eq(Caml_int64.sub(i, /* int64 */[
-                                /* hi */0,
-                                /* lo */1
-                              ]), /* int64 */[
-                            /* hi */0,
-                            /* lo */123
-                          ]);
-              });
+                  ]), (function (i) {
+                  return Caml_int64.eq(Caml_int64.sub(i, /* int64 */[
+                                  /* hi */0,
+                                  /* lo */1
+                                ]), /* int64 */[
+                              /* hi */0,
+                              /* lo */123
+                            ]);
+                }));
   } else {
     return /* false */0;
   }
@@ -4236,12 +4236,12 @@ function test56() {
                           ])
                       ]),
                     "%d%n"
-                  ]), function (i, n) {
-                return /* tuple */[
-                        i,
-                        n
-                      ];
-              });
+                  ]), (function (i, n) {
+                  return /* tuple */[
+                          i,
+                          n
+                        ];
+                }));
   };
   if (Caml_obj.caml_equal(g("99"), /* tuple */[
           99,
@@ -4445,21 +4445,21 @@ function test57() {
                           ])
                       ]),
                     "%i %{%d%}%s %!"
-                  ]), function (i, f, s) {
-                if (i === 12 && Caml_obj.caml_equal(f, /* Format */[
-                        /* Int */Block.__(4, [
-                            /* Int_i */3,
-                            /* No_padding */0,
-                            /* No_precision */0,
-                            /* End_of_format */0
-                          ]),
-                        "%i"
-                      ])) {
-                  return +(s === "89");
-                } else {
-                  return /* false */0;
-                }
-              });
+                  ]), (function (i, f, s) {
+                  if (i === 12 && Caml_obj.caml_equal(f, /* Format */[
+                          /* Int */Block.__(4, [
+                              /* Int_i */3,
+                              /* No_padding */0,
+                              /* No_precision */0,
+                              /* End_of_format */0
+                            ]),
+                          "%i"
+                        ])) {
+                    return +(s === "89");
+                  } else {
+                    return /* false */0;
+                  }
+                }));
   } else {
     return /* false */0;
   }
@@ -4539,9 +4539,9 @@ function test60() {
                               /* End_of_format */0
                             ])])])]),
               "%0c%0c%c%n"
-            ]), function (c1, c2, c3, n) {
-          return c1 === /* "a" */97 && c2 === /* "a" */97 && c3 === /* "a" */97 ? +(n === 1) : /* false */0;
-        }) && Curry._1(Scanf.sscanf("abc", /* Format */[
+            ]), (function (c1, c2, c3, n) {
+            return c1 === /* "a" */97 && c2 === /* "a" */97 && c3 === /* "a" */97 ? +(n === 1) : /* false */0;
+          })) && Curry._1(Scanf.sscanf("abc", /* Format */[
               /* String */Block.__(2, [
                   /* Lit_padding */Block.__(0, [
                       /* Right */1,
@@ -4553,9 +4553,9 @@ function test60() {
                     ])
                 ]),
               "%0s%s"
-            ]), function (s1, s2) {
-          return s1 === "" ? +(s2 === "abc") : /* false */0;
-        })) {
+            ]), (function (s1, s2) {
+            return s1 === "" ? +(s2 === "abc") : /* false */0;
+          }))) {
     return Curry._1(Scanf.sscanf("abc", /* Format */[
                     /* String */Block.__(2, [
                         /* Lit_padding */Block.__(0, [
@@ -4568,13 +4568,13 @@ function test60() {
                           ])
                       ]),
                     "%1s%s"
-                  ]), function (s1, s2) {
-                if (s1 === "a") {
-                  return +(s2 === "bc");
-                } else {
-                  return /* false */0;
-                }
-              });
+                  ]), (function (s1, s2) {
+                  if (s1 === "a") {
+                    return +(s2 === "bc");
+                  } else {
+                    return /* false */0;
+                  }
+                }));
   } else {
     return /* false */0;
   }

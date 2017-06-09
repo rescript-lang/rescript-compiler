@@ -667,9 +667,9 @@ function for_all_opt(p, _param) {
 }
 
 function fold(f, l, init) {
-  return List.fold_left(function (_, i) {
-              return Curry._2(f, i, init);
-            }, init, l);
+  return List.fold_left((function (_, i) {
+                return Curry._2(f, i, init);
+              }), init, l);
 }
 
 function rev_map_acc(acc, f, l) {
@@ -806,9 +806,9 @@ function split_map(f, xs) {
 function reduce_from_right(fn, lst) {
   var match = List.rev(lst);
   if (match) {
-    return List.fold_left(function (x, y) {
-                return Curry._2(fn, y, x);
-              }, match[0], match[1]);
+    return List.fold_left((function (x, y) {
+                  return Curry._2(fn, y, x);
+                }), match[0], match[1]);
   } else {
     throw [
           Caml_builtin_exceptions.invalid_argument,

@@ -25,35 +25,35 @@ var inch = [Pervasives.stdin];
 function bufferize(f) {
   var buf = [/* None */0];
   return /* tuple */[
-          function () {
-            var match = buf[0];
-            if (match) {
-              buf[0] = /* None */0;
-              return match[0];
-            } else {
-              return Curry._1(f, /* () */0);
-            }
-          },
-          function (x) {
-            if (buf[0] !== /* None */0) {
-              throw [
-                    Caml_builtin_exceptions.assert_failure,
-                    [
-                      "qcc.ml",
-                      17,
-                      4
-                    ]
-                  ];
-            }
-            buf[0] = /* Some */[x];
-            return /* () */0;
-          }
+          (function () {
+              var match = buf[0];
+              if (match) {
+                buf[0] = /* None */0;
+                return match[0];
+              } else {
+                return Curry._1(f, /* () */0);
+              }
+            }),
+          (function (x) {
+              if (buf[0] !== /* None */0) {
+                throw [
+                      Caml_builtin_exceptions.assert_failure,
+                      [
+                        "qcc.ml",
+                        17,
+                        4
+                      ]
+                    ];
+              }
+              buf[0] = /* Some */[x];
+              return /* () */0;
+            })
         ];
 }
 
-var match = bufferize(function () {
-      return Caml_io.caml_ml_input_char(inch[0]);
-    });
+var match = bufferize((function () {
+        return Caml_io.caml_ml_input_char(inch[0]);
+      }));
 
 var ungetch = match[1];
 
@@ -1614,14 +1614,14 @@ function elfgen(outf) {
   out(3845);
   var off = 232 + gpos[0] | 0;
   var itr = function (f) {
-    return Curry._1(symitr, function (i, s) {
-                var g = Caml_array.caml_array_get(globs, i);
-                if (g[/* va */1] < 0 && g[/* loc */0] !== 0) {
-                  return Curry._3(f, s, s.length, g[/* loc */0]);
-                } else {
-                  return 0;
-                }
-              });
+    return Curry._1(symitr, (function (i, s) {
+                  var g = Caml_array.caml_array_get(globs, i);
+                  if (g[/* va */1] < 0 && g[/* loc */0] !== 0) {
+                    return Curry._3(f, s, s.length, g[/* loc */0]);
+                  } else {
+                    return 0;
+                  }
+                }));
   };
   var va = function (x) {
     return (x + off | 0) + 4194304 | 0;
@@ -1641,45 +1641,45 @@ function elfgen(outf) {
   opos[0] = opos[0] + 1 | 0;
   $$String.blit("/lib64/ld-linux-x86-64.so.2\0libc.so.6", 0, obuf, opos[0], 37);
   opos[0] = (opos[0] + 37 | 0) + 1 | 0;
-  itr(function (s, sl, _) {
-        $$String.blit(s, 0, obuf, opos[0], sl);
-        opos[0] = (opos[0] + sl | 0) + 1 | 0;
-        return /* () */0;
-      });
+  itr((function (s, sl, _) {
+          $$String.blit(s, 0, obuf, opos[0], sl);
+          opos[0] = (opos[0] + sl | 0) + 1 | 0;
+          return /* () */0;
+        }));
   opos[0] = opos[0] + 7 & -8;
   var symtab = opos[0];
   var n = [39];
   opos[0] = opos[0] + 24 | 0;
-  itr(function (_, sl, _$1) {
-        le(32, n[0]);
-        le(32, 16);
-        le(64, 0);
-        le(64, 0);
-        n[0] = (n[0] + sl | 0) + 1 | 0;
-        return /* () */0;
-      });
+  itr((function (_, sl, _$1) {
+          le(32, n[0]);
+          le(32, 16);
+          le(64, 0);
+          le(64, 0);
+          n[0] = (n[0] + sl | 0) + 1 | 0;
+          return /* () */0;
+        }));
   var rel = opos[0];
   var n$1 = [1];
-  itr(function (_, _$1, l) {
-        var genrel = function (_l) {
-          while(true) {
-            var l = _l;
-            if (l !== 0) {
-              le(64, va(l));
-              le(64, 1 + (n$1[0] << 32) | 0);
-              le(64, 0);
-              _l = get32(l);
-              continue ;
-              
-            } else {
-              return 0;
-            }
+  itr((function (_, _$1, l) {
+          var genrel = function (_l) {
+            while(true) {
+              var l = _l;
+              if (l !== 0) {
+                le(64, va(l));
+                le(64, 1 + (n$1[0] << 32) | 0);
+                le(64, 0);
+                _l = get32(l);
+                continue ;
+                
+              } else {
+                return 0;
+              }
+            };
           };
-        };
-        genrel(l);
-        n$1[0] = n$1[0] + 1 | 0;
-        return /* () */0;
-      });
+          genrel(l);
+          n$1[0] = n$1[0] + 1 | 0;
+          return /* () */0;
+        }));
   var hash = opos[0];
   var n$2 = ((rel - symtab | 0) / 24 | 0) - 1 | 0;
   le(32, 1);
@@ -1690,9 +1690,9 @@ function elfgen(outf) {
   }
   le(32, 0);
   var dyn = opos[0];
-  List.iter(function (param) {
-        return le(64, param);
-      }, /* :: */[
+  List.iter((function (param) {
+          return le(64, param);
+        }), /* :: */[
         1,
         /* :: */[
           29,
