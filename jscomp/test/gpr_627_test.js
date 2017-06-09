@@ -14,12 +14,12 @@ function eq(loc, param) {
   suites[0] = /* :: */[
     /* tuple */[
       loc + (" id " + test_id[0]),
-      function () {
-        return /* Eq */Block.__(0, [
-                  x,
-                  y
-                ]);
-      }
+      (function () {
+          return /* Eq */Block.__(0, [
+                    x,
+                    y
+                  ]);
+        })
     ],
     suites[0]
   ];
@@ -27,26 +27,26 @@ function eq(loc, param) {
 }
 
 var u = {
-  say: function (x, y) {
-    return x + y | 0;
-  }
+  say: (function (x, y) {
+      return x + y | 0;
+    })
 };
 
 var v = {
-  hi: function (x, y) {
-    var self = this ;
-    var u = {
-      x: x
-    };
-    return self.say(u.x) + y + x;
-  },
-  say: function (x) {
-    var self = this ;
-    return x * self.x();
-  },
-  x: function () {
-    return 3;
-  }
+  hi: (function (x, y) {
+      var self = this ;
+      var u = {
+        x: x
+      };
+      return self.say(u.x) + y + x;
+    }),
+  say: (function (x) {
+      var self = this ;
+      return x * self.x();
+    }),
+  x: (function () {
+      return 3;
+    })
 };
 
 var p_001 = u.say(1, 2);

@@ -5,12 +5,12 @@ var Curry      = require("../../lib/js/curry.js");
 var Lexing     = require("../../lib/js/lexing.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 
-var l = Sys.is_js ? function (prim) {
-    console.log(prim);
-    return /* () */0;
-  } : function (param) {
-    return Pervasives.output_string(Pervasives.stdout, param);
-  };
+var l = Sys.is_js ? (function (prim) {
+      console.log(prim);
+      return /* () */0;
+    }) : (function (param) {
+      return Pervasives.output_string(Pervasives.stdout, param);
+    });
 
 var __ocaml_lex_tables = /* record */[
   /* lex_base */"\0\0\xf6\xff\xf7\xff\xf8\xff\xf9\xff\xfa\xff\xfb\xff\xfc\xff:\0\x85\0\xff\xff",

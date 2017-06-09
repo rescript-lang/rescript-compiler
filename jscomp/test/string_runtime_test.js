@@ -8,69 +8,69 @@ var Caml_string = require("../../lib/js/caml_string.js");
 
 var suites_000 = /* tuple */[
   "string_of_char_array",
-  function () {
-    return /* Eq */Block.__(0, [
-              Caml_string.caml_string_of_char_array(/* int array */[
-                    /* "a" */97,
-                    /* "b" */98,
-                    /* "c" */99
-                  ]),
-              "abc"
-            ]);
-  }
+  (function () {
+      return /* Eq */Block.__(0, [
+                Caml_string.caml_string_of_char_array(/* int array */[
+                      /* "a" */97,
+                      /* "b" */98,
+                      /* "c" */99
+                    ]),
+                "abc"
+              ]);
+    })
 ];
 
 var suites_001 = /* :: */[
   /* tuple */[
     "caml_is_printable",
-    function () {
-      return /* Eq */Block.__(0, [
-                Caml_string.caml_is_printable(/* "a" */97),
-                /* true */1
-              ]);
-    }
+    (function () {
+        return /* Eq */Block.__(0, [
+                  Caml_string.caml_is_printable(/* "a" */97),
+                  /* true */1
+                ]);
+      })
   ],
   /* :: */[
     /* tuple */[
       "caml_string_of_bytes",
-      function () {
-        var match = List.split(List.map(function (x) {
-                  var len = x;
-                  var b = new Array(1000);
-                  Caml_string.caml_fill_string(b, 0, len, /* "c" */99);
-                  return /* tuple */[
-                          Caml_string.bytes_to_string(b),
-                          Caml_string.bytes_to_string(Bytes.init(len, function () {
-                                    return /* "c" */99;
-                                  }))
-                        ];
-                }, /* :: */[
-                  1000,
-                  /* :: */[
-                    1024,
+      (function () {
+          var match = List.split(List.map((function (x) {
+                      var len = x;
+                      var b = new Array(1000);
+                      Caml_string.caml_fill_string(b, 0, len, /* "c" */99);
+                      return /* tuple */[
+                              Caml_string.bytes_to_string(b),
+                              Caml_string.bytes_to_string(Bytes.init(len, (function () {
+                                          return /* "c" */99;
+                                        })))
+                            ];
+                    }), /* :: */[
+                    1000,
                     /* :: */[
-                      1025,
+                      1024,
                       /* :: */[
-                        4095,
+                        1025,
                         /* :: */[
-                          4096,
+                          4095,
                           /* :: */[
-                            5000,
+                            4096,
                             /* :: */[
-                              10000,
-                              /* [] */0
+                              5000,
+                              /* :: */[
+                                10000,
+                                /* [] */0
+                              ]
                             ]
                           ]
                         ]
                       ]
                     ]
-                  ]
-                ]));
-        return /* Eq */Block.__(0, [
-                  match[0],
-                  match[1]
-                ]);
-      }
+                  ]));
+          return /* Eq */Block.__(0, [
+                    match[0],
+                    match[1]
+                  ]);
+        })
     ],
     /* [] */0
   ]

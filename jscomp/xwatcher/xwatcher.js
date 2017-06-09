@@ -27,35 +27,35 @@ function onChange(eventType, fileName) {
         eventType,
         fileName
       ]);
-  return Xwatcher_util.build(bsb, events, lock, function () {
-              return idle(/* () */0);
-            });
+  return Xwatcher_util.build(bsb, events, lock, (function () {
+                return idle(/* () */0);
+              }));
 }
 
 function idle() {
   var watchFiles = Xwatcher_util.getWatchFiles(sourceDirs);
-  Js_vector.filterInPlace(function (param) {
-        var dir = param[/* dir */0];
-        if (dir === bsconfig || Js_vector.memByRef(dir, watchFiles)) {
-          return /* true */1;
-        } else {
-          console.log(" " + (String(dir) + " is no longer watched"));
-          param[/* watcher */1].close();
-          return /* false */0;
-        }
-      }, watchers);
-  watchFiles.forEach(function (dir) {
-        if (watchers.some(function (param) {
-                return +(param[/* dir */0] === dir);
-              })) {
-          return 0;
-        } else {
-          console.log("watching dir " + (String(dir) + " now "));
-          var x = Xwatcher_util.makeWatcher(dir, onChange);
-          watchers.push(x);
-          return /* () */0;
-        }
-      });
+  Js_vector.filterInPlace((function (param) {
+          var dir = param[/* dir */0];
+          if (dir === bsconfig || Js_vector.memByRef(dir, watchFiles)) {
+            return /* true */1;
+          } else {
+            console.log(" " + (String(dir) + " is no longer watched"));
+            param[/* watcher */1].close();
+            return /* false */0;
+          }
+        }), watchers);
+  watchFiles.forEach((function (dir) {
+          if (watchers.some((function (param) {
+                    return +(param[/* dir */0] === dir);
+                  }))) {
+            return 0;
+          } else {
+            console.log("watching dir " + (String(dir) + " now "));
+            var x = Xwatcher_util.makeWatcher(dir, onChange);
+            watchers.push(x);
+            return /* () */0;
+          }
+        }));
   return /* () */0;
 }
 
@@ -65,9 +65,9 @@ var x = Xwatcher_util.makeWatcher(bsconfig, onChange);
 
 watchers.push(x);
 
-Xwatcher_util.build(bsb, events, lock, function () {
-      return idle(/* () */0);
-    });
+Xwatcher_util.build(bsb, events, lock, (function () {
+        return idle(/* () */0);
+      }));
 
 export {
   

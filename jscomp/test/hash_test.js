@@ -13,15 +13,15 @@ var suites = [/* [] */0];
 var test_id = [0];
 
 function eq(f) {
-  return function (param, param$1) {
-    return Mt_global.collect_eq(test_id, suites, f, param, param$1);
-  };
+  return (function (param, param$1) {
+      return Mt_global.collect_eq(test_id, suites, f, param, param$1);
+    });
 }
 
-var test_strings = $$Array.init(32, function (i) {
-      var c = Char.chr(i);
-      return Caml_string.bytes_to_string(Bytes.make(i, c));
-    });
+var test_strings = $$Array.init(32, (function (i) {
+        var c = Char.chr(i);
+        return Caml_string.bytes_to_string(Bytes.make(i, c));
+      }));
 
 var test_strings_hash_results = /* array */[
   0,

@@ -8,10 +8,10 @@ var Caml_array = require("../../lib/js/caml_array.js");
 
 function to_array(q) {
   var v = Caml_array.caml_make_vect(q[/* length */0], 0);
-  Queue.fold(function (i, e) {
-        Caml_array.caml_array_set(v, i, e);
-        return i + 1 | 0;
-      }, 0, q);
+  Queue.fold((function (i, e) {
+          Caml_array.caml_array_set(v, i, e);
+          return i + 1 | 0;
+        }), 0, q);
   return v;
 }
 
@@ -20,26 +20,26 @@ function queue_1(x) {
     /* length */0,
     /* tail : None */0
   ];
-  $$Array.iter(function (x) {
-        return Queue.add(x, q);
-      }, x);
+  $$Array.iter((function (x) {
+          return Queue.add(x, q);
+        }), x);
   return to_array(q);
 }
 
 var suites_000 = /* tuple */[
   "simple push",
-  function () {
-    var x = /* int array */[
-      3,
-      4,
-      5,
-      2
-    ];
-    return /* Eq */Block.__(0, [
-              x,
-              queue_1(x)
-            ]);
-  }
+  (function () {
+      var x = /* int array */[
+        3,
+        4,
+        5,
+        2
+      ];
+      return /* Eq */Block.__(0, [
+                x,
+                queue_1(x)
+              ]);
+    })
 ];
 
 var suites = /* :: */[

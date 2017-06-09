@@ -56,61 +56,61 @@ function classify(chr) {
 }
 
 function utf8_decode(strm) {
-  return Stream.slazy(function () {
-              var match = Stream.peek(strm);
-              if (match) {
-                Stream.junk(strm);
-                var match$1 = classify(match[0]);
-                if (typeof match$1 === "number") {
-                  throw [
-                        Stream.$$Error,
-                        "Invalid byte"
-                      ];
-                } else {
-                  switch (match$1.tag | 0) {
-                    case 0 : 
-                        return Stream.icons(match$1[0], utf8_decode(strm));
-                    case 1 : 
-                        throw [
-                              Stream.$$Error,
-                              "Unexpected continuation byte"
-                            ];
-                    case 2 : 
-                        var follow = function (strm, _n, _c) {
-                          while(true) {
-                            var c = _c;
-                            var n = _n;
-                            if (n) {
-                              var match = classify(Stream.next(strm));
-                              if (typeof match === "number") {
-                                throw [
-                                      Stream.$$Error,
-                                      "Continuation byte expected"
-                                    ];
-                              } else if (match.tag === 1) {
-                                _c = (c << 6) | match[0] & 63;
-                                _n = n - 1 | 0;
-                                continue ;
-                                
+  return Stream.slazy((function () {
+                var match = Stream.peek(strm);
+                if (match) {
+                  Stream.junk(strm);
+                  var match$1 = classify(match[0]);
+                  if (typeof match$1 === "number") {
+                    throw [
+                          Stream.$$Error,
+                          "Invalid byte"
+                        ];
+                  } else {
+                    switch (match$1.tag | 0) {
+                      case 0 : 
+                          return Stream.icons(match$1[0], utf8_decode(strm));
+                      case 1 : 
+                          throw [
+                                Stream.$$Error,
+                                "Unexpected continuation byte"
+                              ];
+                      case 2 : 
+                          var follow = function (strm, _n, _c) {
+                            while(true) {
+                              var c = _c;
+                              var n = _n;
+                              if (n) {
+                                var match = classify(Stream.next(strm));
+                                if (typeof match === "number") {
+                                  throw [
+                                        Stream.$$Error,
+                                        "Continuation byte expected"
+                                      ];
+                                } else if (match.tag === 1) {
+                                  _c = (c << 6) | match[0] & 63;
+                                  _n = n - 1 | 0;
+                                  continue ;
+                                  
+                                } else {
+                                  throw [
+                                        Stream.$$Error,
+                                        "Continuation byte expected"
+                                      ];
+                                }
                               } else {
-                                throw [
-                                      Stream.$$Error,
-                                      "Continuation byte expected"
-                                    ];
+                                return c;
                               }
-                            } else {
-                              return c;
-                            }
+                            };
                           };
-                        };
-                        return Stream.icons(follow(strm, match$1[0], match$1[1]), utf8_decode(strm));
-                    
+                          return Stream.icons(follow(strm, match$1[0], match$1[1]), utf8_decode(strm));
+                      
+                    }
                   }
+                } else {
+                  return Stream.sempty;
                 }
-              } else {
-                return Stream.sempty;
-              }
-            });
+              }));
 }
 
 function decode(bytes, offset) {
@@ -212,12 +212,12 @@ function eq(loc, param) {
   suites[0] = /* :: */[
     /* tuple */[
       loc + (" id " + test_id[0]),
-      function () {
-        return /* Eq */Block.__(0, [
-                  x,
-                  y
-                ]);
-      }
+      (function () {
+          return /* Eq */Block.__(0, [
+                    x,
+                    y
+                  ]);
+        })
     ],
     suites[0]
   ];
@@ -240,9 +240,9 @@ var codes = List.rev(v[0]);
 
 eq("File \"utf8_decode_test.ml\", line 125, characters 5-12", /* tuple */[
       /* true */1,
-      eq_list(function (x, y) {
-            return +(x === y);
-          }, codes, /* :: */[
+      eq_list((function (x, y) {
+              return +(x === y);
+            }), codes, /* :: */[
             20320,
             /* :: */[
               22909,

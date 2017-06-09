@@ -14,12 +14,12 @@ function eq(loc, x, y) {
   suites[0] = /* :: */[
     /* tuple */[
       loc + (" id " + test_id[0]),
-      function () {
-        return /* Eq */Block.__(0, [
-                  x,
-                  y
-                ]);
-      }
+      (function () {
+          return /* Eq */Block.__(0, [
+                    x,
+                    y
+                  ]);
+        })
     ],
     suites[0]
   ];
@@ -31,13 +31,13 @@ console.log(/* int array */[
             2,
             3,
             4
-          ].filter(function (x) {
-              return +(x > 2);
-            }).map(function (x, i) {
-            return x + i | 0;
-          }).reduce(function (x, y) {
-          return x + y | 0;
-        }, 0));
+          ].filter((function (x) {
+                return +(x > 2);
+              })).map((function (x, i) {
+              return x + i | 0;
+            })).reduce((function (x, y) {
+            return x + y | 0;
+          }), 0));
 
 function id(x) {
   return eq("File \"bs_array_test.ml\", line 21, characters 5-12", Js_vector.toList(Js_vector.ofList(x)), x);
@@ -58,9 +58,9 @@ eq("File \"bs_array_test.ml\", line 25, characters 5-12", Js_vector.ofList(/* ::
       3
     ]);
 
-eq("File \"bs_array_test.ml\", line 26, characters 6-13", Js_vector.map(function (x) {
-          return x + 1 | 0;
-        }, /* int array */[
+eq("File \"bs_array_test.ml\", line 26, characters 6-13", Js_vector.map((function (x) {
+            return x + 1 | 0;
+          }), /* int array */[
           1,
           2,
           3
@@ -78,24 +78,24 @@ eq("File \"bs_array_test.ml\", line 29, characters 5-12", Caml_array.caml_make_v
       3
     ]);
 
-var a = Js_vector.init(5, function (i) {
-      return i + 1 | 0;
-    });
+var a = Js_vector.init(5, (function (i) {
+        return i + 1 | 0;
+      }));
 
-eq("File \"bs_array_test.ml\", line 31, characters 5-12", (Js_vector.filterInPlace(function (j) {
-            return +(j % 2 === 0);
-          }, a), a), /* int array */[
+eq("File \"bs_array_test.ml\", line 31, characters 5-12", (Js_vector.filterInPlace((function (j) {
+              return +(j % 2 === 0);
+            }), a), a), /* int array */[
       2,
       4
     ]);
 
-var a$1 = Js_vector.init(5, function (i) {
-      return i + 1 | 0;
-    });
+var a$1 = Js_vector.init(5, (function (i) {
+        return i + 1 | 0;
+      }));
 
-eq("File \"bs_array_test.ml\", line 38, characters 5-12", (Js_vector.filterInPlace(function (j) {
-            return +(j % 2 !== 0);
-          }, a$1), a$1), /* int array */[
+eq("File \"bs_array_test.ml\", line 38, characters 5-12", (Js_vector.filterInPlace((function (j) {
+              return +(j % 2 !== 0);
+            }), a$1), a$1), /* int array */[
       1,
       3,
       5
@@ -145,9 +145,9 @@ id(/* :: */[
       ]
     ]);
 
-id(Js_vector.toList(Js_vector.init(100, function (i) {
-              return i;
-            })));
+id(Js_vector.toList(Js_vector.init(100, (function (i) {
+                return i;
+              }))));
 
 Mt.from_pair_suites("File \"bs_array_test.ml\", line 55, characters 23-30", suites[0]);
 

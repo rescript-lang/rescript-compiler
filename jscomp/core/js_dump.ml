@@ -230,7 +230,7 @@ let pp_string f  (* ?(utf=false)*) s =
         P.string f (Array.unsafe_get array_conv (c land 0xf))
       | '\"' -> P.string f "\\\"" (* quote*)
       | _ ->
-          P.string f (Array.unsafe_get array_str1 (Char.code c))
+        P.string f (Array.unsafe_get array_str1 (Char.code c))
     done
   in
   P.string f "\"";
@@ -339,13 +339,13 @@ type name =
 *)
 let rec
 
-  try_optimize_curry cxt f len function_ = 
+  try_optimize_curry cxt f len function_id = 
   begin           
     P.string f Js_config.curry;
     P.string f L.dot;
     P.string f "__";
     P.string f (Printf.sprintf "%d" len);
-    P.paren_group f 1 (fun _ -> expression 1 cxt f function_  )             
+    P.paren_group f 1 (fun _ -> expression 1 cxt f function_id  )             
   end              
 
 and  pp_function method_
@@ -355,21 +355,25 @@ and  pp_function method_
   | [ {statement_desc =
          Return {return_value = 
                    {expression_desc = 
-                      Call(({expression_desc = Var v ; _} as function_), 
+                      Call(({expression_desc = Var v ; _} as function_id), 
                            ls , 
                            {arity = ( Full | NA as arity(* see #234*)); 
                             (* TODO: need a case to justify it*)
                             call_info = 
                               (Call_builtin_runtime | Call_ml )})}}}],
     ((_, false) | (No_name, true))  
-    when
+    when 
+      (* match such case: 
+         {[ function(x,y){ return u(x,y) } ]}
+         it can be optimized in to either [u] or [Curry.__n(u)]
+      *)
       not method_ && 
-      Ext_list.for_all2_no_exn (fun a b -> 
-          match b.J.expression_desc with 
+      Ext_list.for_all2_no_exn (fun a (b : J.expression) -> 
+          match b.expression_desc with 
           | Var (Id i) -> Ident.same a i 
           | _ -> false) l ls ->
     let optimize  len p cxt f v =
-      if p then try_optimize_curry cxt f len function_      
+      if p then try_optimize_curry cxt f len function_id      
       else
         vident cxt f v
     in
@@ -389,9 +393,10 @@ and  pp_function method_
         if return then 
           begin 
             P.string f L.return ;
-            P.space f;
+            P.space f
           end;
         optimize len (arity = NA && len <=8) cxt f v 
+
     end
   | _, _  -> 
 
@@ -452,7 +457,7 @@ and  pp_function method_
         ignore @@ P.brace_vgroup f 1 (fun _ -> statement_list false cxt f b );
       end
     in
-    let lexical = Js_fun_env.get_lexical_scope env in
+    let lexical : Ident_set.t = Js_fun_env.get_lexical_scope env in
     let enclose  lexical  return = 
       let handle lexical = 
         if  Ident_set.is_empty lexical  
@@ -466,10 +471,12 @@ and  pp_function method_
 
             begin match name with 
               | No_name -> 
-                P.string f L.function_;
-                P.space f ;
-                param_body ();
-                (* semi f ; *)
+                (* see # 1692, add a paren for annoymous function for safety  *)
+                P.paren_group f 1 begin fun _ -> 
+                  P.string f L.function_;
+                  P.space f ;
+                  param_body ()
+                end
               | Name_non_top x  -> 
                 P.string f L.var ;
                 P.space f ; 
@@ -1734,7 +1741,7 @@ let imports  cxt f (modules : (Ident.t * string) list ) =
       (cxt, [], 0)  modules in
   P.force_newline f ;    
   Ext_list.rev_iter (fun (s,file) ->
-      
+
       P.string f L.import;
       P.space f ;
       P.string f L.star ;

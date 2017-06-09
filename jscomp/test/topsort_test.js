@@ -61,16 +61,16 @@ var graph = /* :: */[
 ];
 
 function nexts(x, g) {
-  return List.fold_left(function (acc, param) {
-              if (param[0] === x) {
-                return /* :: */[
-                        param[1],
-                        acc
-                      ];
-              } else {
-                return acc;
-              }
-            }, /* [] */0, g);
+  return List.fold_left((function (acc, param) {
+                if (param[0] === x) {
+                  return /* :: */[
+                          param[1],
+                          acc
+                        ];
+                } else {
+                  return acc;
+                }
+              }), /* [] */0, g);
 }
 
 function dfs1(_nodes, graph, _visited) {
@@ -281,14 +281,14 @@ function dfs3(nodes, graph) {
         node,
         visited[0]
       ];
-      return List.iter(function (x) {
-                  return aux(x, graph);
-                }, nexts(node, graph));
+      return List.iter((function (x) {
+                    return aux(x, graph);
+                  }), nexts(node, graph));
     }
   };
-  List.iter(function (node) {
-        return aux(node, graph);
-      }, nodes);
+  List.iter((function (node) {
+          return aux(node, graph);
+        }), nodes);
   return List.rev(visited[0]);
 }
 
@@ -415,9 +415,9 @@ function unsafe_topsort(graph) {
       return /* () */0;
     }
   };
-  List.iter(function (param) {
-        return sort_node(param[0]);
-      }, graph);
+  List.iter((function (param) {
+          return sort_node(param[0]);
+        }), graph);
   return visited[0];
 }
 
@@ -1300,9 +1300,9 @@ function pathsort(graph) {
     }
   };
   var sort_nodes = function (path, nodes) {
-    return List.iter(function (node) {
-                return sort_node(path, node);
-              }, nodes);
+    return List.iter((function (node) {
+                  return sort_node(path, node);
+                }), nodes);
   };
   var sort_node = function (path, node) {
     if (List.mem(node, visited[0])) {
@@ -1316,9 +1316,9 @@ function pathsort(graph) {
       return /* () */0;
     }
   };
-  List.iter(function (param) {
-        return sort_node(empty_path, param[0]);
-      }, graph);
+  List.iter((function (param) {
+          return sort_node(empty_path, param[0]);
+        }), graph);
   return visited[0];
 }
 

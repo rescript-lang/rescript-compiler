@@ -952,52 +952,52 @@ function update_player(player, keys, context) {
   var prev_jumping = player[/* jumping */4];
   var prev_dir = player[/* dir */6];
   var prev_vx = Math.abs(player[/* vel */2][/* x */0]);
-  List.iter(function (param) {
-        var player$1 = player;
-        var controls = param;
-        var lr_acc = player$1[/* vel */2][/* x */0] * 0.2;
-        switch (controls) {
-          case 0 : 
-              if (player$1[/* crouch */10]) {
-                return 0;
-              } else {
-                if (player$1[/* vel */2][/* x */0] > -player$1[/* params */0][/* speed */1]) {
-                  player$1[/* vel */2][/* x */0] = player$1[/* vel */2][/* x */0] - (0.4 - lr_acc);
+  List.iter((function (param) {
+          var player$1 = player;
+          var controls = param;
+          var lr_acc = player$1[/* vel */2][/* x */0] * 0.2;
+          switch (controls) {
+            case 0 : 
+                if (player$1[/* crouch */10]) {
+                  return 0;
+                } else {
+                  if (player$1[/* vel */2][/* x */0] > -player$1[/* params */0][/* speed */1]) {
+                    player$1[/* vel */2][/* x */0] = player$1[/* vel */2][/* x */0] - (0.4 - lr_acc);
+                  }
+                  player$1[/* dir */6] = /* Left */0;
+                  return /* () */0;
                 }
-                player$1[/* dir */6] = /* Left */0;
-                return /* () */0;
-              }
-              break;
-          case 1 : 
-              if (player$1[/* crouch */10]) {
-                return 0;
-              } else {
-                if (player$1[/* vel */2][/* x */0] < player$1[/* params */0][/* speed */1]) {
-                  player$1[/* vel */2][/* x */0] = player$1[/* vel */2][/* x */0] + (0.4 + lr_acc);
+                break;
+            case 1 : 
+                if (player$1[/* crouch */10]) {
+                  return 0;
+                } else {
+                  if (player$1[/* vel */2][/* x */0] < player$1[/* params */0][/* speed */1]) {
+                    player$1[/* vel */2][/* x */0] = player$1[/* vel */2][/* x */0] + (0.4 + lr_acc);
+                  }
+                  player$1[/* dir */6] = /* Right */1;
+                  return /* () */0;
                 }
-                player$1[/* dir */6] = /* Right */1;
-                return /* () */0;
-              }
-              break;
-          case 2 : 
-              if (!player$1[/* jumping */4] && player$1[/* grounded */5]) {
-                player$1[/* jumping */4] = /* true */1;
-                player$1[/* grounded */5] = /* false */0;
-                player$1[/* vel */2][/* y */1] = Pervasives.max(player$1[/* vel */2][/* y */1] - (5.7 + Math.abs(player$1[/* vel */2][/* x */0]) * 0.25), -6);
-                return /* () */0;
-              } else {
-                return 0;
-              }
-          case 3 : 
-              if (!player$1[/* jumping */4] && player$1[/* grounded */5]) {
-                player$1[/* crouch */10] = /* true */1;
-                return /* () */0;
-              } else {
-                return 0;
-              }
-          
-        }
-      }, keys);
+                break;
+            case 2 : 
+                if (!player$1[/* jumping */4] && player$1[/* grounded */5]) {
+                  player$1[/* jumping */4] = /* true */1;
+                  player$1[/* grounded */5] = /* false */0;
+                  player$1[/* vel */2][/* y */1] = Pervasives.max(player$1[/* vel */2][/* y */1] - (5.7 + Math.abs(player$1[/* vel */2][/* x */0]) * 0.25), -6);
+                  return /* () */0;
+                } else {
+                  return 0;
+                }
+            case 3 : 
+                if (!player$1[/* jumping */4] && player$1[/* grounded */5]) {
+                  player$1[/* crouch */10] = /* true */1;
+                  return /* () */0;
+                } else {
+                  return 0;
+                }
+            
+          }
+        }), keys);
   var v = player[/* vel */2][/* x */0] * 0.9;
   var vel_damped = Math.abs(v) < 0.1 ? 0 : v;
   player[/* vel */2][/* x */0] = vel_damped;
@@ -2039,13 +2039,13 @@ function process_collision(dir, c1, c2, state) {
 
 function broad_phase(collid, all_collids, state) {
   var obj = collid[2];
-  return List.filter(function () {
-                if (in_viewport(state[/* vpt */2], obj[/* pos */1]) || is_player(collid)) {
-                  return /* true */1;
-                } else {
-                  return out_of_viewport_below(state[/* vpt */2], obj[/* pos */1][/* y */1]);
-                }
-              })(all_collids);
+  return List.filter((function () {
+                  if (in_viewport(state[/* vpt */2], obj[/* pos */1]) || is_player(collid)) {
+                    return /* true */1;
+                  } else {
+                    return out_of_viewport_below(state[/* vpt */2], obj[/* pos */1][/* y */1]);
+                  }
+                }))(all_collids);
 }
 
 function check_collisions(collid, all_collids, state) {
@@ -2174,16 +2174,16 @@ function translate_keys() {
     ctrls_000,
     ctrls_001
   ];
-  return List.fold_left(function (a, x) {
-              if (x[0]) {
-                return /* :: */[
-                        x[1],
-                        a
-                      ];
-              } else {
-                return a;
-              }
-            }, /* [] */0, ctrls);
+  return List.fold_left((function (a, x) {
+                if (x[0]) {
+                  return /* :: */[
+                          x[1],
+                          a
+                        ];
+                } else {
+                  return a;
+                }
+              }), /* [] */0, ctrls);
 }
 
 function run_update_collid(state, collid, all_collids) {
@@ -2261,35 +2261,35 @@ function update_loop(canvas, param, map_dim) {
       } else {
         var newrecord = state.slice();
         newrecord[/* vpt */2] = update(state[/* vpt */2], player$1[2][/* pos */1]);
-        List.iter(function (obj) {
-              run_update_collid(newrecord, obj, objs);
-              return /* () */0;
-            }, objs);
-        List.iter(function (part) {
-              var state = newrecord;
-              var part$1 = part;
-              $$process(part$1);
-              var x = part$1[/* pos */2][/* x */0] - state[/* vpt */2][/* pos */0][/* x */0];
-              var y = part$1[/* pos */2][/* y */1] - state[/* vpt */2][/* pos */0][/* y */1];
-              render(part$1[/* params */0][/* sprite */0], /* tuple */[
-                    x,
-                    y
-                  ]);
-              if (part$1[/* kill */5]) {
-                return 0;
-              } else {
-                particles[0] = /* :: */[
-                  part$1,
-                  particles[0]
-                ];
+        List.iter((function (obj) {
+                run_update_collid(newrecord, obj, objs);
                 return /* () */0;
-              }
-            }, parts);
+              }), objs);
+        List.iter((function (part) {
+                var state = newrecord;
+                var part$1 = part;
+                $$process(part$1);
+                var x = part$1[/* pos */2][/* x */0] - state[/* vpt */2][/* pos */0][/* x */0];
+                var y = part$1[/* pos */2][/* y */1] - state[/* vpt */2][/* pos */0][/* y */1];
+                render(part$1[/* params */0][/* sprite */0], /* tuple */[
+                      x,
+                      y
+                    ]);
+                if (part$1[/* kill */5]) {
+                  return 0;
+                } else {
+                  particles[0] = /* :: */[
+                    part$1,
+                    particles[0]
+                  ];
+                  return /* () */0;
+                }
+              }), parts);
         fps(canvas, fps$1);
         hud(canvas, newrecord[/* score */4], newrecord[/* coins */5]);
-        requestAnimationFrame(function (t) {
-              return update_helper(t, newrecord, player$1, collid_objs[0], particles[0]);
-            });
+        requestAnimationFrame((function (t) {
+                return update_helper(t, newrecord, player$1, collid_objs[0], particles[0]);
+              }));
         return /* () */0;
       }
     }
@@ -3339,16 +3339,16 @@ function inc_counter() {
 }
 
 function preload() {
-  return List.map(function (img_src) {
-              var img_src$1 = "sprites/" + img_src;
-              var img = document.createElement("img");
-              img.src = img_src$1;
-              img.addEventListener("load", function () {
-                    inc_counter(/* () */0);
-                    return true;
-                  }, true);
-              return /* () */0;
-            }, /* :: */[
+  return List.map((function (img_src) {
+                var img_src$1 = "sprites/" + img_src;
+                var img = document.createElement("img");
+                img.src = img_src$1;
+                img.addEventListener("load", (function () {
+                        inc_counter(/* () */0);
+                        return true;
+                      }), true);
+                return /* () */0;
+              }), /* :: */[
               "blocks.png",
               /* :: */[
                 "items.png",
@@ -3363,10 +3363,10 @@ function preload() {
             ]);
 }
 
-window.onload = function () {
-  preload(/* () */0);
-  return true;
-};
+window.onload = (function () {
+    preload(/* () */0);
+    return true;
+  });
 
 var Main = /* module */[
   /* Html */0,

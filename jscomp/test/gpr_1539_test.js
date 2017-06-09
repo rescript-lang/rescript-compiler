@@ -8,9 +8,9 @@ var Point = Caml_module.init_mod([
       6
     ], [[0]]);
 
-Caml_module.update_mod([[0]], Point, /* module */[function (prim, prim$1) {
-        return prim.add(prim$1);
-      }]);
+Caml_module.update_mod([[0]], Point, /* module */[(function (prim, prim$1) {
+          return prim.add(prim$1);
+        })]);
 
 var CRS = /* () */0;
 

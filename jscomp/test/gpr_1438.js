@@ -40,9 +40,9 @@ function actionKey(key, a, b, c, d, e) {
     }
   }
   if (exit === 1) {
-    return function () {
-      return /* () */0;
-    };
+    return (function () {
+        return /* () */0;
+      });
   }
   
 }

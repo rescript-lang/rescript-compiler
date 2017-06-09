@@ -100,20 +100,20 @@ function string_of_rank(param) {
 }
 
 function find_ticker_by_name(all_tickers, ticker) {
-  return List.find(function (param) {
-              return +(param[/* ticker_name */2] === ticker);
-            }, all_tickers);
+  return List.find((function (param) {
+                return +(param[/* ticker_name */2] === ticker);
+              }), all_tickers);
 }
 
 function print_all_composite(all_tickers) {
-  return List.iter(function (param) {
-              if (param[/* type_ */3]) {
-                console.log(param[/* ticker_name */2]);
-                return /* () */0;
-              } else {
-                return /* () */0;
-              }
-            }, all_tickers);
+  return List.iter((function (param) {
+                if (param[/* type_ */3]) {
+                  console.log(param[/* ticker_name */2]);
+                  return /* () */0;
+                } else {
+                  return /* () */0;
+                }
+              }), all_tickers);
 }
 
 function height(param) {
@@ -796,125 +796,125 @@ var Ticker_map = [
 ];
 
 function compute_update_sequences(all_tickers) {
-  List.fold_left(function (counter, ticker) {
-        var loop = function (counter, ticker) {
-          var rank = ticker[/* rank */1];
-          if (typeof rank === "number") {
-            if (rank !== 0) {
-              return counter;
+  List.fold_left((function (counter, ticker) {
+          var loop = function (counter, ticker) {
+            var rank = ticker[/* rank */1];
+            if (typeof rank === "number") {
+              if (rank !== 0) {
+                return counter;
+              } else {
+                ticker[/* rank */1] = /* Visited */1;
+                var match = ticker[/* type_ */3];
+                if (match) {
+                  var match$1 = match[0];
+                  var counter$1 = loop(counter, match$1[/* lhs */2]);
+                  var counter$2 = loop(counter$1, match$1[/* rhs */1]);
+                  var counter$3 = counter$2 + 1 | 0;
+                  ticker[/* rank */1] = /* Ranked */[counter$3];
+                  return counter$3;
+                } else {
+                  var counter$4 = counter + 1 | 0;
+                  ticker[/* rank */1] = /* Ranked */[counter$4];
+                  return counter$4;
+                }
+              }
             } else {
-              ticker[/* rank */1] = /* Visited */1;
-              var match = ticker[/* type_ */3];
-              if (match) {
-                var match$1 = match[0];
-                var counter$1 = loop(counter, match$1[/* lhs */2]);
-                var counter$2 = loop(counter$1, match$1[/* rhs */1]);
-                var counter$3 = counter$2 + 1 | 0;
-                ticker[/* rank */1] = /* Ranked */[counter$3];
-                return counter$3;
-              } else {
-                var counter$4 = counter + 1 | 0;
-                ticker[/* rank */1] = /* Ranked */[counter$4];
-                return counter$4;
-              }
+              return counter;
             }
-          } else {
-            return counter;
-          }
-        };
-        return loop(counter, ticker);
-      }, 0, all_tickers);
-  var map = List.fold_left(function (map, ticker) {
-        if (ticker[/* type_ */3]) {
-          var loop = function (_up, _map, _ticker) {
-            while(true) {
-              var ticker = _ticker;
-              var map = _map;
-              var up = _up;
-              var type_ = ticker[/* type_ */3];
-              var ticker_name = ticker[/* ticker_name */2];
-              if (type_) {
-                var match = type_[0];
-                var map$1 = loop(/* :: */[
-                      ticker,
-                      up
-                    ], map, match[/* lhs */2]);
-                _ticker = match[/* rhs */1];
-                _map = map$1;
-                _up = /* :: */[
-                  ticker,
-                  up
-                ];
-                continue ;
-                
-              } else {
-                var l = find(ticker_name, map);
-                return add(ticker_name, Pervasives.$at(up, l), map);
-              }
-            };
           };
-          return loop(/* [] */0, map, ticker);
-        } else {
-          return add(ticker[/* ticker_name */2], /* :: */[
-                      ticker,
-                      /* [] */0
-                    ], map);
-        }
-      }, /* Empty */0, List.rev(all_tickers));
-  return fold(function (k, l, map) {
-              var l$1 = List.sort_uniq(function (param, param$1) {
-                    var lhs = param[/* rank */1];
-                    var rhs = param$1[/* rank */1];
-                    if (typeof lhs === "number") {
-                      throw [
-                            Caml_builtin_exceptions.failure,
-                            "All nodes should be ranked"
-                          ];
-                    } else if (typeof rhs === "number") {
-                      throw [
-                            Caml_builtin_exceptions.failure,
-                            "All nodes should be ranked"
-                          ];
-                    } else {
-                      return Caml_obj.caml_int_compare(lhs[0], rhs[0]);
-                    }
-                  }, l);
-              return add(k, l$1, map);
-            }, map, map);
+          return loop(counter, ticker);
+        }), 0, all_tickers);
+  var map = List.fold_left((function (map, ticker) {
+          if (ticker[/* type_ */3]) {
+            var loop = function (_up, _map, _ticker) {
+              while(true) {
+                var ticker = _ticker;
+                var map = _map;
+                var up = _up;
+                var type_ = ticker[/* type_ */3];
+                var ticker_name = ticker[/* ticker_name */2];
+                if (type_) {
+                  var match = type_[0];
+                  var map$1 = loop(/* :: */[
+                        ticker,
+                        up
+                      ], map, match[/* lhs */2]);
+                  _ticker = match[/* rhs */1];
+                  _map = map$1;
+                  _up = /* :: */[
+                    ticker,
+                    up
+                  ];
+                  continue ;
+                  
+                } else {
+                  var l = find(ticker_name, map);
+                  return add(ticker_name, Pervasives.$at(up, l), map);
+                }
+              };
+            };
+            return loop(/* [] */0, map, ticker);
+          } else {
+            return add(ticker[/* ticker_name */2], /* :: */[
+                        ticker,
+                        /* [] */0
+                      ], map);
+          }
+        }), /* Empty */0, List.rev(all_tickers));
+  return fold((function (k, l, map) {
+                var l$1 = List.sort_uniq((function (param, param$1) {
+                        var lhs = param[/* rank */1];
+                        var rhs = param$1[/* rank */1];
+                        if (typeof lhs === "number") {
+                          throw [
+                                Caml_builtin_exceptions.failure,
+                                "All nodes should be ranked"
+                              ];
+                        } else if (typeof rhs === "number") {
+                          throw [
+                                Caml_builtin_exceptions.failure,
+                                "All nodes should be ranked"
+                              ];
+                        } else {
+                          return Caml_obj.caml_int_compare(lhs[0], rhs[0]);
+                        }
+                      }), l);
+                return add(k, l$1, map);
+              }), map, map);
 }
 
 function process_quote(ticker_map, new_ticker, new_value) {
   var update_sequence = find(new_ticker, ticker_map);
-  return List.iter(function (ticker) {
-              var match = ticker[/* type_ */3];
-              if (match) {
-                var match$1 = match[0];
-                var match$2 = match$1[/* lhs */2][/* value */0];
-                var match$3 = match$1[/* rhs */1][/* value */0];
-                var value;
-                if (match$2) {
-                  if (match$3) {
-                    var y = match$3[0];
-                    var x = match$2[0];
-                    value = match$1[/* op */0] !== 0 ? /* Some */[x - y] : /* Some */[x + y];
+  return List.iter((function (ticker) {
+                var match = ticker[/* type_ */3];
+                if (match) {
+                  var match$1 = match[0];
+                  var match$2 = match$1[/* lhs */2][/* value */0];
+                  var match$3 = match$1[/* rhs */1][/* value */0];
+                  var value;
+                  if (match$2) {
+                    if (match$3) {
+                      var y = match$3[0];
+                      var x = match$2[0];
+                      value = match$1[/* op */0] !== 0 ? /* Some */[x - y] : /* Some */[x + y];
+                    } else {
+                      value = /* None */0;
+                    }
                   } else {
                     value = /* None */0;
                   }
+                  ticker[/* value */0] = value;
+                  return /* () */0;
+                } else if (ticker[/* ticker_name */2] === new_ticker) {
+                  ticker[/* value */0] = /* Some */[new_value];
+                  return /* () */0;
                 } else {
-                  value = /* None */0;
+                  throw [
+                        Caml_builtin_exceptions.failure,
+                        "Only single Market ticker should be udpated upon a new quote"
+                      ];
                 }
-                ticker[/* value */0] = value;
-                return /* () */0;
-              } else if (ticker[/* ticker_name */2] === new_ticker) {
-                ticker[/* value */0] = /* Some */[new_value];
-                return /* () */0;
-              } else {
-                throw [
-                      Caml_builtin_exceptions.failure,
-                      "Only single Market ticker should be udpated upon a new quote"
-                    ];
-              }
-            }, update_sequence);
+              }), update_sequence);
 }
 
 function process_input_line(ticker_map, all_tickers, line) {

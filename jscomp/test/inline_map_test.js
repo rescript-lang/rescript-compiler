@@ -135,9 +135,9 @@ function find(x, _param) {
   };
 }
 
-var m = List.fold_left(function (acc, param) {
-      return add(param[0], param[1], acc);
-    }, /* Empty */0, /* :: */[
+var m = List.fold_left((function (acc, param) {
+        return add(param[0], param[1], acc);
+      }), /* Empty */0, /* :: */[
       /* tuple */[
         10,
         /* "a" */97
@@ -166,12 +166,12 @@ var m = List.fold_left(function (acc, param) {
 Mt.from_pair_suites("inline_map_test.ml", /* :: */[
       /* tuple */[
         "find",
-        function () {
-          return /* Eq */Block.__(0, [
-                    find(10, m),
-                    /* "a" */97
-                  ]);
-        }
+        (function () {
+            return /* Eq */Block.__(0, [
+                      find(10, m),
+                      /* "a" */97
+                    ]);
+          })
       ],
       /* [] */0
     ]);

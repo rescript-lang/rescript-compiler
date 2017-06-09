@@ -13,9 +13,9 @@ function h00(x) {
 }
 
 function h1(x) {
-  return function (param) {
-    return x(param);
-  };
+  return (function (param) {
+      return x(param);
+    });
 }
 
 function h10(x) {
@@ -23,9 +23,9 @@ function h10(x) {
 }
 
 function h30(x) {
-  return function (param) {
-    return x(3, 3, param);
-  };
+  return (function (param) {
+      return x(3, 3, param);
+    });
 }
 
 function h33(x) {
@@ -37,9 +37,9 @@ function h34(x) {
 }
 
 function ocaml_run(param, param$1) {
-  return function (x, y, z) {
-            return (x + y | 0) + z | 0;
-          }(1, param, param$1);
+  return (function (x, y, z) {
+              return (x + y | 0) + z | 0;
+            })(1, param, param$1);
 }
 
 function a0() {
@@ -48,9 +48,9 @@ function a0() {
 }
 
 function a1() {
-  return function (x) {
-    return x;
-  };
+  return (function (x) {
+      return x;
+    });
 }
 
 function a2(x, y) {
@@ -63,9 +63,9 @@ function a3(x, y, z) {
 
 function a4(x, y, z, param) {
   var u = (Caml_int32.imul(x, x) + Caml_int32.imul(y, y) | 0) + Caml_int32.imul(z, z) | 0;
-  return function (d) {
-            return u + d | 0;
-          }(param);
+  return (function (d) {
+              return u + d | 0;
+            })(param);
 }
 
 function a44(x, y, z, d) {
@@ -74,21 +74,21 @@ function a44(x, y, z, d) {
 }
 
 function b44() {
-  return function (x, y, z, d) {
-    return /* tuple */[
-            x,
-            y,
-            z,
-            d
-          ];
-  };
+  return (function (x, y, z, d) {
+      return /* tuple */[
+              x,
+              y,
+              z,
+              d
+            ];
+    });
 }
 
 function xx() {
-  return function () {
-    console.log(3);
-    return /* () */0;
-  };
+  return (function () {
+      console.log(3);
+      return /* () */0;
+    });
 }
 
 var test_as = List.map;

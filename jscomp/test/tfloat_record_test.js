@@ -45,10 +45,10 @@ var b = Float_array.small_float_array(12);
 var c = Float_array.longer_float_array(34);
 
 function print_array(a) {
-  $$Array.iter(function (f) {
-        print_float(f);
-        return print_newline(/* () */0);
-      }, a);
+  $$Array.iter((function (f) {
+          print_float(f);
+          return print_newline(/* () */0);
+        }), a);
   return print_newline(/* () */0);
 }
 

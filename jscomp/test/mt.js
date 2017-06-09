@@ -34,12 +34,12 @@ function is_mocha() {
 function from_suites(name, suite) {
   var match = $$Array.to_list(Process.argv);
   if (match && is_mocha(/* () */0)) {
-    describe(name, function () {
-          return List.iter(function (param) {
-                      it(param[0], param[1]);
-                      return /* () */0;
-                    }, suite);
-        });
+    describe(name, (function () {
+            return List.iter((function (param) {
+                          it(param[0], param[1]);
+                          return /* () */0;
+                        }), suite);
+          }));
     return /* () */0;
   } else {
     return /* () */0;
@@ -55,59 +55,59 @@ function from_pair_suites(name, suites) {
   var match = $$Array.to_list(Process.argv);
   if (match) {
     if (is_mocha(/* () */0)) {
-      describe(name, function () {
-            return List.iter(function (param) {
-                        var code = param[1];
-                        it(param[0], function () {
-                              var match = Curry._1(code, /* () */0);
-                              switch (match.tag | 0) {
-                                case 0 : 
-                                    Assert.deepEqual(match[0], match[1]);
-                                    return /* () */0;
-                                case 1 : 
-                                    Assert.notDeepEqual(match[0], match[1]);
-                                    return /* () */0;
-                                case 2 : 
-                                    Assert.strictEqual(match[0], match[1]);
-                                    return /* () */0;
-                                case 3 : 
-                                    Assert.notStrictEqual(match[0], match[1]);
-                                    return /* () */0;
-                                case 4 : 
-                                    var b = match[0];
-                                    Assert.ok(b ? true : false);
-                                    return /* () */0;
-                                case 5 : 
-                                    var b$1 = match[1];
-                                    var a = match[0];
-                                    if (close_enough(/* None */0, a, b$1)) {
-                                      return 0;
-                                    } else {
-                                      Assert.deepEqual(a, b$1);
-                                      return /* () */0;
+      describe(name, (function () {
+              return List.iter((function (param) {
+                            var code = param[1];
+                            it(param[0], (function () {
+                                    var match = Curry._1(code, /* () */0);
+                                    switch (match.tag | 0) {
+                                      case 0 : 
+                                          Assert.deepEqual(match[0], match[1]);
+                                          return /* () */0;
+                                      case 1 : 
+                                          Assert.notDeepEqual(match[0], match[1]);
+                                          return /* () */0;
+                                      case 2 : 
+                                          Assert.strictEqual(match[0], match[1]);
+                                          return /* () */0;
+                                      case 3 : 
+                                          Assert.notStrictEqual(match[0], match[1]);
+                                          return /* () */0;
+                                      case 4 : 
+                                          var b = match[0];
+                                          Assert.ok(b ? true : false);
+                                          return /* () */0;
+                                      case 5 : 
+                                          var b$1 = match[1];
+                                          var a = match[0];
+                                          if (close_enough(/* None */0, a, b$1)) {
+                                            return 0;
+                                          } else {
+                                            Assert.deepEqual(a, b$1);
+                                            return /* () */0;
+                                          }
+                                      case 6 : 
+                                          var b$2 = match[2];
+                                          var a$1 = match[1];
+                                          if (close_enough(/* Some */[match[0]], a$1, b$2)) {
+                                            return 0;
+                                          } else {
+                                            Assert.deepEqual(a$1, b$2);
+                                            return /* () */0;
+                                          }
+                                      case 7 : 
+                                          Assert.throws(match[0]);
+                                          return /* () */0;
+                                      case 8 : 
+                                          return assert_fail("failed");
+                                      case 9 : 
+                                          return assert_fail(match[0]);
+                                      
                                     }
-                                case 6 : 
-                                    var b$2 = match[2];
-                                    var a$1 = match[1];
-                                    if (close_enough(/* Some */[match[0]], a$1, b$2)) {
-                                      return 0;
-                                    } else {
-                                      Assert.deepEqual(a$1, b$2);
-                                      return /* () */0;
-                                    }
-                                case 7 : 
-                                    Assert.throws(match[0]);
-                                    return /* () */0;
-                                case 8 : 
-                                    return assert_fail("failed");
-                                case 9 : 
-                                    return assert_fail(match[0]);
-                                
-                              }
-                            });
-                        return /* () */0;
-                      }, suites);
-          });
+                                  }));
+                            return /* () */0;
+                          }), suites);
+            }));
       return /* () */0;
     } else {
       var name$1 = name;
@@ -116,79 +116,79 @@ function from_pair_suites(name, suites) {
             name$1,
             "testing"
           ]);
-      return List.iter(function (param) {
-                  var name = param[0];
-                  var match = Curry._1(param[1], /* () */0);
-                  switch (match.tag | 0) {
-                    case 0 : 
-                        console.log(/* tuple */[
-                              name,
-                              match[0],
-                              "eq?",
-                              match[1]
-                            ]);
-                        return /* () */0;
-                    case 1 : 
-                        console.log(/* tuple */[
-                              name,
-                              match[0],
-                              "neq?",
-                              match[1]
-                            ]);
-                        return /* () */0;
-                    case 2 : 
-                        console.log(/* tuple */[
-                              name,
-                              match[0],
-                              "strict_eq?",
-                              match[1]
-                            ]);
-                        return /* () */0;
-                    case 3 : 
-                        console.log(/* tuple */[
-                              name,
-                              match[0],
-                              "strict_neq?",
-                              match[1]
-                            ]);
-                        return /* () */0;
-                    case 4 : 
-                        console.log(/* tuple */[
-                              name,
-                              match[0],
-                              "ok?"
-                            ]);
-                        return /* () */0;
-                    case 5 : 
-                        console.log(/* tuple */[
-                              name,
-                              match[0],
-                              "~",
-                              match[1]
-                            ]);
-                        return /* () */0;
-                    case 6 : 
-                        console.log(/* tuple */[
-                              name,
-                              match[1],
-                              "~",
-                              match[2],
-                              " (",
-                              match[0],
-                              ")"
-                            ]);
-                        return /* () */0;
-                    case 7 : 
-                        return /* () */0;
-                    case 8 : 
-                        console.log("failed");
-                        return /* () */0;
-                    case 9 : 
-                        console.log("failed: " + match[0]);
-                        return /* () */0;
-                    
-                  }
-                }, suites$1);
+      return List.iter((function (param) {
+                    var name = param[0];
+                    var match = Curry._1(param[1], /* () */0);
+                    switch (match.tag | 0) {
+                      case 0 : 
+                          console.log(/* tuple */[
+                                name,
+                                match[0],
+                                "eq?",
+                                match[1]
+                              ]);
+                          return /* () */0;
+                      case 1 : 
+                          console.log(/* tuple */[
+                                name,
+                                match[0],
+                                "neq?",
+                                match[1]
+                              ]);
+                          return /* () */0;
+                      case 2 : 
+                          console.log(/* tuple */[
+                                name,
+                                match[0],
+                                "strict_eq?",
+                                match[1]
+                              ]);
+                          return /* () */0;
+                      case 3 : 
+                          console.log(/* tuple */[
+                                name,
+                                match[0],
+                                "strict_neq?",
+                                match[1]
+                              ]);
+                          return /* () */0;
+                      case 4 : 
+                          console.log(/* tuple */[
+                                name,
+                                match[0],
+                                "ok?"
+                              ]);
+                          return /* () */0;
+                      case 5 : 
+                          console.log(/* tuple */[
+                                name,
+                                match[0],
+                                "~",
+                                match[1]
+                              ]);
+                          return /* () */0;
+                      case 6 : 
+                          console.log(/* tuple */[
+                                name,
+                                match[1],
+                                "~",
+                                match[2],
+                                " (",
+                                match[0],
+                                ")"
+                              ]);
+                          return /* () */0;
+                      case 7 : 
+                          return /* () */0;
+                      case 8 : 
+                          console.log("failed");
+                          return /* () */0;
+                      case 9 : 
+                          console.log("failed: " + match[0]);
+                          return /* () */0;
+                      
+                    }
+                  }), suites$1);
     }
   } else {
     return /* () */0;

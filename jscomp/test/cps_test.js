@@ -27,17 +27,17 @@ function test() {
       }
     };
   };
-  f(10, function () {
-        return /* () */0;
-      });
+  f(10, (function () {
+          return /* () */0;
+        }));
   return v[0];
 }
 
 function test_closure() {
   var v = [0];
-  var arr = Caml_array.caml_make_vect(6, function (x) {
-        return x;
-      });
+  var arr = Caml_array.caml_make_vect(6, (function (x) {
+          return x;
+        }));
   for(var i = 0; i <= 5; ++i){
     Caml_array.caml_array_set(arr, i, (function(i){
         return function () {
@@ -45,18 +45,18 @@ function test_closure() {
         }
         }(i)));
   }
-  $$Array.iter(function (i) {
-        v[0] = v[0] + Curry._1(i, 0) | 0;
-        return /* () */0;
-      }, arr);
+  $$Array.iter((function (i) {
+          v[0] = v[0] + Curry._1(i, 0) | 0;
+          return /* () */0;
+        }), arr);
   return v[0];
 }
 
 function test_closure2() {
   var v = [0];
-  var arr = Caml_array.caml_make_vect(6, function (x) {
-        return x;
-      });
+  var arr = Caml_array.caml_make_vect(6, (function (x) {
+          return x;
+        }));
   for(var i = 0; i <= 5; ++i){
     var j = i + i | 0;
     Caml_array.caml_array_set(arr, i, (function(j){
@@ -65,42 +65,42 @@ function test_closure2() {
         }
         }(j)));
   }
-  $$Array.iter(function (i) {
-        v[0] = v[0] + Curry._1(i, 0) | 0;
-        return /* () */0;
-      }, arr);
+  $$Array.iter((function (i) {
+          v[0] = v[0] + Curry._1(i, 0) | 0;
+          return /* () */0;
+        }), arr);
   return v[0];
 }
 
 Mt.from_pair_suites("cps_test.ml", /* :: */[
       /* tuple */[
         "cps_test_sum",
-        function () {
-          return /* Eq */Block.__(0, [
-                    55,
-                    test(/* () */0)
-                  ]);
-        }
+        (function () {
+            return /* Eq */Block.__(0, [
+                      55,
+                      test(/* () */0)
+                    ]);
+          })
       ],
       /* :: */[
         /* tuple */[
           "cps_test_closure",
-          function () {
-            return /* Eq */Block.__(0, [
-                      15,
-                      test_closure(/* () */0)
-                    ]);
-          }
+          (function () {
+              return /* Eq */Block.__(0, [
+                        15,
+                        test_closure(/* () */0)
+                      ]);
+            })
         ],
         /* :: */[
           /* tuple */[
             "cps_test_closure2",
-            function () {
-              return /* Eq */Block.__(0, [
-                        30,
-                        test_closure2(/* () */0)
-                      ]);
-            }
+            (function () {
+                return /* Eq */Block.__(0, [
+                          30,
+                          test_closure2(/* () */0)
+                        ]);
+              })
           ],
           /* [] */0
         ]

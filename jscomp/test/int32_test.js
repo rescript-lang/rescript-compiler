@@ -18,9 +18,9 @@ function f(x) {
         ];
 }
 
-var shift_right_logical_tests_000 = $$Array.map(function (x) {
-      return (-1 >>> x) | 0;
-    }, Ext_array.range(0, 31));
+var shift_right_logical_tests_000 = $$Array.map((function (x) {
+        return (-1 >>> x) | 0;
+      }), Ext_array.range(0, 31));
 
 var shift_right_logical_tests_001 = /* array */[
   -1,
@@ -62,9 +62,9 @@ var shift_right_logical_tests = /* tuple */[
   shift_right_logical_tests_001
 ];
 
-var shift_right_tests_000 = $$Array.map(function (x) {
-      return (Int32.min_int >> x);
-    }, Ext_array.range(0, 31));
+var shift_right_tests_000 = $$Array.map((function (x) {
+        return (Int32.min_int >> x);
+      }), Ext_array.range(0, 31));
 
 var shift_right_tests_001 = /* array */[
   -2147483648,
@@ -106,9 +106,9 @@ var shift_right_tests = /* tuple */[
   shift_right_tests_001
 ];
 
-var shift_left_tests_000 = $$Array.map(function (x) {
-      return (1 << x);
-    }, Ext_array.range(0, 31));
+var shift_left_tests_000 = $$Array.map((function (x) {
+        return (1 << x);
+      }), Ext_array.range(0, 31));
 
 var shift_left_tests_001 = /* array */[
   1,
@@ -155,89 +155,89 @@ var $star$tilde = Caml_int32.imul;
 Mt.from_pair_suites("int32_test.ml", Pervasives.$at(/* :: */[
           /* tuple */[
             "File \"int32_test.ml\", line 32, characters 2-9",
-            function () {
-              return /* Eq */Block.__(0, [
-                        1,
-                        1
-                      ]);
-            }
+            (function () {
+                return /* Eq */Block.__(0, [
+                          1,
+                          1
+                        ]);
+              })
           ],
           /* :: */[
             /* tuple */[
               "File \"int32_test.ml\", line 33, characters 2-9",
-              function () {
-                return /* Eq */Block.__(0, [
-                          -2147483647,
-                          -2147483647
-                        ]);
-              }
+              (function () {
+                  return /* Eq */Block.__(0, [
+                            -2147483647,
+                            -2147483647
+                          ]);
+                })
             ],
             /* [] */0
           ]
-        ], Pervasives.$at($$Array.to_list(Ext_array.map2i(function (i, a, b) {
-                      return /* tuple */[
-                              Curry._1(Format.asprintf(/* Format */[
-                                        /* String_literal */Block.__(11, [
-                                            "shift_right_logical_cases ",
-                                            /* Int */Block.__(4, [
-                                                /* Int_d */0,
-                                                /* No_padding */0,
-                                                /* No_precision */0,
-                                                /* End_of_format */0
-                                              ])
-                                          ]),
-                                        "shift_right_logical_cases %d"
-                                      ]), i),
-                              function () {
-                                return /* Eq */Block.__(0, [
-                                          a,
-                                          b
-                                        ]);
-                              }
-                            ];
-                    }, shift_right_logical_tests_000, shift_right_logical_tests_001)), Pervasives.$at($$Array.to_list(Ext_array.map2i(function (i, a, b) {
-                          return /* tuple */[
-                                  Curry._1(Format.asprintf(/* Format */[
-                                            /* String_literal */Block.__(11, [
-                                                "shift_right_cases ",
-                                                /* Int */Block.__(4, [
-                                                    /* Int_d */0,
-                                                    /* No_padding */0,
-                                                    /* No_precision */0,
-                                                    /* End_of_format */0
-                                                  ])
-                                              ]),
-                                            "shift_right_cases %d"
-                                          ]), i),
-                                  function () {
+        ], Pervasives.$at($$Array.to_list(Ext_array.map2i((function (i, a, b) {
+                        return /* tuple */[
+                                Curry._1(Format.asprintf(/* Format */[
+                                          /* String_literal */Block.__(11, [
+                                              "shift_right_logical_cases ",
+                                              /* Int */Block.__(4, [
+                                                  /* Int_d */0,
+                                                  /* No_padding */0,
+                                                  /* No_precision */0,
+                                                  /* End_of_format */0
+                                                ])
+                                            ]),
+                                          "shift_right_logical_cases %d"
+                                        ]), i),
+                                (function () {
                                     return /* Eq */Block.__(0, [
                                               a,
                                               b
                                             ]);
-                                  }
-                                ];
-                        }, shift_right_tests_000, shift_right_tests_001)), $$Array.to_list(Ext_array.map2i(function (i, a, b) {
-                          return /* tuple */[
-                                  Curry._1(Format.asprintf(/* Format */[
-                                            /* String_literal */Block.__(11, [
-                                                "shift_left_cases ",
-                                                /* Int */Block.__(4, [
-                                                    /* Int_d */0,
-                                                    /* No_padding */0,
-                                                    /* No_precision */0,
-                                                    /* End_of_format */0
-                                                  ])
-                                              ]),
-                                            "shift_left_cases %d"
-                                          ]), i),
-                                  function () {
-                                    return /* Eq */Block.__(0, [
-                                              a,
-                                              b
-                                            ]);
-                                  }
-                                ];
-                        }, shift_left_tests_000, shift_left_tests_001))))));
+                                  })
+                              ];
+                      }), shift_right_logical_tests_000, shift_right_logical_tests_001)), Pervasives.$at($$Array.to_list(Ext_array.map2i((function (i, a, b) {
+                            return /* tuple */[
+                                    Curry._1(Format.asprintf(/* Format */[
+                                              /* String_literal */Block.__(11, [
+                                                  "shift_right_cases ",
+                                                  /* Int */Block.__(4, [
+                                                      /* Int_d */0,
+                                                      /* No_padding */0,
+                                                      /* No_precision */0,
+                                                      /* End_of_format */0
+                                                    ])
+                                                ]),
+                                              "shift_right_cases %d"
+                                            ]), i),
+                                    (function () {
+                                        return /* Eq */Block.__(0, [
+                                                  a,
+                                                  b
+                                                ]);
+                                      })
+                                  ];
+                          }), shift_right_tests_000, shift_right_tests_001)), $$Array.to_list(Ext_array.map2i((function (i, a, b) {
+                            return /* tuple */[
+                                    Curry._1(Format.asprintf(/* Format */[
+                                              /* String_literal */Block.__(11, [
+                                                  "shift_left_cases ",
+                                                  /* Int */Block.__(4, [
+                                                      /* Int_d */0,
+                                                      /* No_padding */0,
+                                                      /* No_precision */0,
+                                                      /* End_of_format */0
+                                                    ])
+                                                ]),
+                                              "shift_left_cases %d"
+                                            ]), i),
+                                    (function () {
+                                        return /* Eq */Block.__(0, [
+                                                  a,
+                                                  b
+                                                ]);
+                                      })
+                                  ];
+                          }), shift_left_tests_000, shift_left_tests_001))))));
 
 var test_div = 30;
 
