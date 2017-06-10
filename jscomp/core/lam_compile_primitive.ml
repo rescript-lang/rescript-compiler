@@ -36,9 +36,9 @@ module E = Js_exp_make
 *)
 let decorate_side_effect ({st; should_return;_} : Lam_compile_defs.cxt) e : E.t = 
   match st, should_return with 
-  | _, True _ 
+  | _, ReturnTrue _ 
   | (Assign _ | Declare _ | NeedValue), _  -> E.seq e E.unit
-  | EffectCall, False -> e 
+  | EffectCall, ReturnFalse -> e 
 (* NeedValue should return a meaningful expression*)
 
 let translate  loc

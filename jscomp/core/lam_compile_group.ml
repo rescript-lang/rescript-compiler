@@ -151,7 +151,7 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.meta)
     (* can not apply again, it's wrong USE it with care*)
     (* ([Js_stmt_make.comment (Gen_of_env.query_type id  env )], None)  ++ *)
     Lam_compile.compile_let  kind { st = Declare (kind, id);
-                                    should_return = False;
+                                    should_return = ReturnFalse;
                                     jmp_table = Lam_compile_defs.empty_handler_map;
                                     meta
                                   } id  lam
@@ -159,14 +159,14 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.meta)
   | Recursive id_lams, _   -> 
     Lam_compile.compile_recursive_lets 
       { st = EffectCall ;
-        should_return = False; 
+        should_return = ReturnFalse; 
         jmp_table = Lam_compile_defs.empty_handler_map;
         meta
       } 
       id_lams
   | Nop lam, _ -> (* TODO: Side effect callls, log and see statistics *)
     Lam_compile.compile_lambda {st = EffectCall;
-                                should_return = False;
+                                should_return = ReturnFalse;
                                 jmp_table = Lam_compile_defs.empty_handler_map;
                                 meta
                                } lam

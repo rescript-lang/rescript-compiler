@@ -62,17 +62,17 @@ let handle_name_tail
     (should_return : Lam_compile_defs.return_type)
     lam (exp : J.expression) : t =
   begin match name, should_return with 
-  | EffectCall, False -> 
+  | EffectCall, ReturnFalse -> 
       if Lam_analysis.no_side_effects lam 
       then dummy
       else {block = []; value  = Some exp ; finished = False}
-  | EffectCall, True _ ->
+  | EffectCall, ReturnTrue _ ->
       make [S.return  exp] ~finished:True
-  | Declare (kind, n), False -> 
+  | Declare (kind, n), ReturnFalse -> 
       make [ S.define ~kind n  exp]
-  | Assign n ,False -> 
+  | Assign n ,ReturnFalse -> 
       make [S.assign n exp ]
-  | (Declare _ | Assign _ ), True _ -> 
+  | (Declare _ | Assign _ ), ReturnTrue _ -> 
       make [S.unknown_lambda lam] ~finished:True
   | NeedValue, _ -> {block = []; value = Some exp; finished = False }
   end
@@ -82,12 +82,12 @@ let handle_block_return
     (should_return : Lam_compile_defs.return_type)
     (lam : Lam.t) (block : J.block) exp : t = 
   match st, should_return with 
-  | Declare (kind,n), False -> 
+  | Declare (kind,n), ReturnFalse -> 
     make (block @ [ S.define ~kind  n exp])
-  | Assign n, False -> make (block @ [S.assign n exp])
-  | (Declare _ | Assign _), True _ -> make [S.unknown_lambda lam] ~finished:True
-  | EffectCall, False -> make block ~value:exp
-  | EffectCall, True _ -> make (block @ [S.return exp]) ~finished:True
+  | Assign n, ReturnFalse -> make (block @ [S.assign n exp])
+  | (Declare _ | Assign _), ReturnTrue _ -> make [S.unknown_lambda lam] ~finished:True
+  | EffectCall, ReturnFalse -> make block ~value:exp
+  | EffectCall, ReturnTrue _ -> make (block @ [S.return exp]) ~finished:True
   | NeedValue, _ ->  make block ~value:exp
 
 let statement_of_opt_expr (x : J.expression option) : J.statement =

@@ -55,8 +55,8 @@ type return_label = {
 }
 
 type return_type = 
-  | False 
-  | True of return_label option 
+  | ReturnFalse 
+  | ReturnTrue of return_label option 
    (* have a mutable field to notifiy it's actually triggered *)
    (* anonoymous function does not have identifier *)
 
