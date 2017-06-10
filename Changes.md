@@ -11,6 +11,7 @@ Fixes:
 - #1654, `bsb -init` fails if package or current dir has space (parent dir can have spaces)
 - #1678, bs.get{null;undefined}  in object type
 - #1692, fix invalid js syntax output
+- #1701, fix tailcall handling interaction with  exception handler
 Features:
 - #1648, exposed `bsc` in the npm environment
 - #1647, speical handling `bsb -init .` to reuse current directory
