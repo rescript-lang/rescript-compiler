@@ -7,26 +7,21 @@ var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js")
 
 var Foo = Caml_exceptions.create("Gpr_1701_test.Foo");
 
-function test(_n) {
-  while(true) {
-    var n = _n;
-    if (n) {
-      try {
-        _n = n - 1 | 0;
-        continue ;
-        
-      }
-      catch (exn){
-        if (exn === Foo) {
-          return /* () */0;
-        } else {
-          throw exn;
-        }
-      }
-    } else {
-      throw Foo;
+function test(n) {
+  if (n) {
+    try {
+      return test(n - 1 | 0);
     }
-  };
+    catch (exn){
+      if (exn === Foo) {
+        return /* () */0;
+      } else {
+        throw exn;
+      }
+    }
+  } else {
+    throw Foo;
+  }
 }
 
 test(100);
@@ -88,8 +83,29 @@ function read_lines2(inc) {
   };
 }
 
+function read_lines3(inc) {
+  var loop = function (acc) {
+    try {
+      var l = Pervasives.input_line(inc);
+      return loop(/* :: */[
+                  l,
+                  acc
+                ]);
+    }
+    catch (exn){
+      if (exn === Caml_builtin_exceptions.end_of_file) {
+        return List.rev(acc);
+      } else {
+        throw exn;
+      }
+    }
+  };
+  return loop(/* [] */0);
+}
+
 exports.Foo         = Foo;
 exports.test        = test;
 exports.read_lines  = read_lines;
 exports.read_lines2 = read_lines2;
+exports.read_lines3 = read_lines3;
 /*  Not a pure module */

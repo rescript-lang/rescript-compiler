@@ -57,6 +57,12 @@ type return_label = {
 type return_type = 
   | ReturnFalse 
   | ReturnTrue of return_label option 
+    (* Note [return] does indicate it is a tail position in most cases
+      however, in an exception handler, return may not be in tail position
+      to fix #1701 we play a trick that (ReturnTrue None) 
+      would never trigger tailcall, however, it preserves [return] 
+      semantics
+    *)
    (* have a mutable field to notifiy it's actually triggered *)
    (* anonoymous function does not have identifier *)
 

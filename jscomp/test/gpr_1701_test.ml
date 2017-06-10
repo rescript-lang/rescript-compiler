@@ -31,3 +31,12 @@ let read_lines2 inc =
      | exception End_of_file -> List.rev acc
    in
    loop []   
+
+let read_lines3 inc =
+   let rec loop acc =
+     try
+       let l = input_line inc in
+       loop (l :: acc)
+     with End_of_file -> List.rev acc
+   in
+   loop []   

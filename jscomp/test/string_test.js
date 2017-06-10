@@ -64,21 +64,14 @@ function gg(x) {
 }
 
 function rev_split_by_char(c, s) {
-  var _i = 0;
-  var _l = /* [] */0;
-  while(true) {
-    var l = _l;
-    var i = _i;
+  var loop = function (i, l) {
     try {
       var i$prime = $$String.index_from(s, i, c);
       var s$prime = $$String.sub(s, i, i$prime - i | 0);
-      _l = s$prime === "" ? l : /* :: */[
-          s$prime,
-          l
-        ];
-      _i = i$prime + 1 | 0;
-      continue ;
-      
+      return loop(i$prime + 1 | 0, s$prime === "" ? l : /* :: */[
+                    s$prime,
+                    l
+                  ]);
     }
     catch (exn){
       if (exn === Caml_builtin_exceptions.not_found) {
@@ -91,6 +84,7 @@ function rev_split_by_char(c, s) {
       }
     }
   };
+  return loop(0, /* [] */0);
 }
 
 function xsplit(delim, s) {

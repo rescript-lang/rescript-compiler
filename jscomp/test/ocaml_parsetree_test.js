@@ -11852,20 +11852,10 @@ function skip_phrase(lexbuf) {
   while(true) {
     try {
       var match = token$1(lexbuf);
-      if (typeof match === "number") {
-        if (match !== 25) {
-          if (match !== 83) {
-            continue ;
-            
-          } else {
-            return /* () */0;
-          }
-        } else {
-          return /* () */0;
-        }
+      if (typeof match === "number" && !(match !== 25 && match !== 83)) {
+        return /* () */0;
       } else {
-        continue ;
-        
+        return skip_phrase(lexbuf);
       }
     }
     catch (raw_exn){

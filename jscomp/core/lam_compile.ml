@@ -1485,7 +1485,10 @@ and
         (* should_return is passed down *)
         (* #1701 *)
         [ S.try_ 
-            (Js_output.to_block (compile_lambda {cxt with st = st} lam))
+            (Js_output.to_block (compile_lambda 
+            (match should_return with 
+            | ReturnTrue (Some _ ) -> {cxt with st = st; should_return = ReturnTrue None}
+            | ReturnTrue None | ReturnFalse -> {cxt with st = st}) lam))
             ~with_:(id, 
                     Js_output.to_block @@ 
                     compile_lambda {cxt with st = st} catch )

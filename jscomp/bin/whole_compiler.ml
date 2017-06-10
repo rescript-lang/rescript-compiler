@@ -87275,6 +87275,12 @@ type return_label = {
 type return_type = 
   | ReturnFalse 
   | ReturnTrue of return_label option 
+    (* Note [return] does indicate it is a tail position in most cases
+      however, in an exception handler, return may not be in tail position
+      to fix #1701 we play a trick that (ReturnTrue None) 
+      would never trigger tailcall, however, it preserves [return] 
+      semantics
+    *)
    (* have a mutable field to notifiy it's actually triggered *)
    (* anonoymous function does not have identifier *)
 
@@ -97223,7 +97229,10 @@ and
         (* should_return is passed down *)
         (* #1701 *)
         [ S.try_ 
-            (Js_output.to_block (compile_lambda {cxt with st = st} lam))
+            (Js_output.to_block (compile_lambda 
+            (match should_return with 
+            | ReturnTrue (Some _ ) -> {cxt with st = st; should_return = ReturnTrue None}
+            | ReturnTrue None | ReturnFalse -> {cxt with st = st}) lam))
             ~with_:(id, 
                     Js_output.to_block @@ 
                     compile_lambda {cxt with st = st} catch )
