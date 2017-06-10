@@ -67,8 +67,8 @@ type return_label = {
 }
 
 type return_type = 
-  | False 
-  | True of return_label option (* anonoymous function does not have identifier *)
+  | ReturnFalse 
+  | ReturnTrue of return_label option (* anonoymous function does not have identifier *)
 
 (* delegate to the callee to generate expression 
       Invariant: [output] should return a trailing expression
