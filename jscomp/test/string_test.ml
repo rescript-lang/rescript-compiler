@@ -71,7 +71,9 @@ let string_of_chars  x = String.concat "" @@ List.map string_of_char  x
       Eq ("\\\"\\\"", String.escaped {|""|}));
   "rev_split_by_char", (fun _ -> 
       Eq ([""; "bbbb"; "bbbb"], rev_split_by_char 'a' "bbbbabbbba"));
-
+  __LOC__, (fun _ ->
+    Eq(["aaaa"], rev_split_by_char ',' "aaaa")
+  )    ;
   "xsplit", (fun _ -> Eq(["a";"b";"c"], xsplit ~delim:'.' "a.b.c") );
   "split_empty", (fun _ -> Eq([], Ext_string.split "" '_') );
   "split_empty2", (fun _ -> 
