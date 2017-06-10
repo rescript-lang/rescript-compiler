@@ -24,9 +24,10 @@
     }
   },
   "bin" : {
-      "bsb" : "bin/bsb",
-      "bsc": "bin/bsc"
-   },
+      "bsb": "bin/bsb",
+      "bsc": "bin/bsc",
+      "bsrefmt": "bin/refmt"
+  },
   "scripts": {
     "test": "mocha './jscomp/test/**/*test.js' ",
     "wtest": "mocha './jscomp/test/**/*test.js'  -R spec -w",
