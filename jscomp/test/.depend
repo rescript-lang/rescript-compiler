@@ -227,6 +227,7 @@ gpr_1600_test.cmj : ../runtime/js.cmj ../stdlib/array.cmj
 gpr_1658_test.cmj : mt.cmj ../runtime/js.cmj
 gpr_1667_test.cmj : mt.cmj
 gpr_1692_test.cmj :
+gpr_1698_test.cmj : ../runtime/js.cmj
 gpr_1701_test.cmj : ../stdlib/list.cmj
 gpr_405_test.cmj : ../stdlib/hashtbl.cmj gpr_405_test.cmi
 gpr_441.cmj :

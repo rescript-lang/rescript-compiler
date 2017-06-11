@@ -42,7 +42,7 @@ let method_cache_id = ref 1 (*TODO: move to js runtime for re-entrant *)
 let rec flat_catches acc (x : Lam.t)
   : (int * Lam.t * Ident.t  list ) list * Lam.t = 
   match x with 
-  | Lstaticcatch( Lstaticcatch(l, (code,bindings), handler), (code1, bindings1),handler1) 
+  (*| Lstaticcatch( Lstaticcatch(l, (code,bindings), handler), (code1, bindings1),handler1) 
     when 
       not @@ Lam_exit_code.has_exit_code 
         (fun exit -> exit = code1 || List.exists (fun (c, _, _) -> c = exit ) acc ) handler
@@ -51,8 +51,14 @@ let rec flat_catches acc (x : Lam.t)
        it is okay to merge
     *)
     flat_catches ( (code, handler,bindings) :: (code1,handler1,bindings1)  :: acc)  l
-  | Lstaticcatch(l, (code, bindings), handler) ->
-    (code,handler,bindings)::acc, l
+  *)
+  | Lstaticcatch(l, (code, bindings), handler) 
+    when 
+    acc = [] ||
+    (not @@ Lam_exit_code.has_exit_code 
+      (fun exit -> List.exists (fun (c,_,_) -> c = exit) acc) handler)
+    -> (* #1698 should not crush exit code here without checking *)
+    flat_catches ((code,handler,bindings)::acc) l
   (* flat_catches ((code,handler,bindings)::acc) l  *)
   | _ -> acc, x
 

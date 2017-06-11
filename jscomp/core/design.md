@@ -423,3 +423,7 @@ of the compiler preserves its soundness
 for `create_js_module`, we first create a mapping to make it a proper
 module name, (also cached in a hashtbl). Note it is not a Js id, which
 fails `Ext_ident.is_js`
+
+## compilation
+
+### static catches
