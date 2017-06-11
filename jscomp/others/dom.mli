@@ -153,3 +153,6 @@ type svgPoint
 
 (* special *)
 type eventPointerId
+
+
+module Storage = Dom_storage
