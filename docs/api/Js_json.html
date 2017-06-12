@@ -14,6 +14,7 @@
 <li><a href="Bs_dyn.html">Bs_dyn</a></li>
 <li><a href="Bs_dyn_lib.html">Bs_dyn_lib</a></li>
 <li><a href="Dom.html">Dom</a></li>
+<li><a href="Dom_storage.html">Dom_storage</a></li>
 <li><a href="Js.html">Js</a></li>
 <li><a href="Js_array.html">Js_array</a></li>
 <li><a href="Js_boolean.html">Js_boolean</a></li>
@@ -134,10 +135,69 @@
                     </div>
 
                   
+<div class="type-declaration">
+<pre><code><span id="TYPEtagged_t"><span class="keyword">type</span> <code class="type"></code>tagged_t</span> = </code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTtagged_t.JSONFalse"><span class="constructor">JSONFalse</span></span></code></td>
 
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTtagged_t.JSONTrue"><span class="constructor">JSONTrue</span></span></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTtagged_t.JSONNull"><span class="constructor">JSONNull</span></span></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTtagged_t.JSONString"><span class="constructor">JSONString</span></span></td><td><span class="keyword">of</span></td><td><code class="type">string</code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTtagged_t.JSONNumber"><span class="constructor">JSONNumber</span></span></td><td><span class="keyword">of</span></td><td><code class="type">float</code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTtagged_t.JSONObject"><span class="constructor">JSONObject</span></span></td><td><span class="keyword">of</span></td><td><code class="type"><a href="Js_json.html#TYPEt">t</a> <a href="Js_dict.html#TYPEt">Js_dict.t</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTtagged_t.JSONArray"><span class="constructor">JSONArray</span></span></td><td><span class="keyword">of</span></td><td><code class="type"><a href="Js_json.html#TYPEt">t</a> array</code></code></td>
+
+</tr></table>
+
+</div>
+
+
+<pre><span id="VALclassify"><span class="keyword">val</span> classify</span> : <code class="type"><a href="Js_json.html#TYPEt">t</a> -> <a href="Js_json.html#TYPEtagged_t">tagged_t</a></code></pre>
 <pre><span id="VALreifyType"><span class="keyword">val</span> reifyType</span> : <code class="type"><a href="Js_json.html#TYPEt">t</a> -> 'b <a href="Js_json.html#TYPEkind">kind</a> * 'b</code></pre><div class="info ">
                     <div class="not-examples">
-                    <code class="code">reifyType v</code> returns both type and underlying value<br>
+                    <div class="warning">
+                              <span class="label">Deprecated.</span>
+                              Use <a href="Js_json.html#VALclassify"><code class="code">Js_json.classify</code></a> instead
+                              </div>
+                            <code class="code">reifyType v</code> returns both type and underlying value<br>
  
                     </div>
                     
@@ -394,18 +454,6 @@ Js.log @@ Js.Json.stringify (Js.Json.object_ dict)
 Js.log @@ Js.Json.stringify [| "foo"; "bar" |]
 </code></pre>  </pre>
                     </div>
-                    </div>
-
-                  
-<pre><span id="VALreify_type"><span class="keyword">val</span> reify_type</span> : <code class="type">'a -> 'b <a href="Js_json.html#TYPEkind">kind</a> * 'b</code></pre><div class="info ">
-                    <div class="not-examples">
-                    <div class="warning">
-                              <span class="label">Deprecated.</span>
-                              Please use <a href="Js_json.html#VALreifyType"><code class="code">Js_json.reifyType</code></a> instead
-                              </div>
-                             
-                    </div>
-                    
                     </div>
 
                   </body></html>
