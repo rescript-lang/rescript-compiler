@@ -12,12 +12,15 @@ Fixes:
 - #1678, bs.get{null;undefined}  in object type
 - #1692, fix invalid js syntax output
 - #1701, fix tailcall handling interaction with  exception handler
+- #1666, fix misue of GADT api
+
 Features:
 - #1648, exposed `bsc` in the npm environment
 - #1647, speical handling `bsb -init .` to reuse current directory
 - #1667, fix an optimizaiton bug 
 - #1698, fix exit code incorrectly aggregated issue
-- #1666, fix misue of GADT api, add Js.Json.classify and Js.Types.classify
+- #1666, add Js.Json.classify and Js.Types.classify
+- #1705, add dom storage api
 
 # 1.7.4(May 24, 2017):
 
