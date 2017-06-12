@@ -16,6 +16,7 @@ Features:
 - #1648, exposed `bsc` in the npm environment
 - #1647, speical handling `bsb -init .` to reuse current directory
 - #1667, fix an optimizaiton bug 
+- #1698, fix exit code incorrectly aggregated issue
 
 # 1.7.4(May 24, 2017):
 
