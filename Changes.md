@@ -17,6 +17,7 @@ Features:
 - #1647, speical handling `bsb -init .` to reuse current directory
 - #1667, fix an optimizaiton bug 
 - #1698, fix exit code incorrectly aggregated issue
+- #1666, fix misue of GADT api, add Js.Json.classify and Js.Types.classify
 
 # 1.7.4(May 24, 2017):
 
