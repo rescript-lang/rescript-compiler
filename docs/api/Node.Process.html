@@ -14,6 +14,7 @@
 <li><a href="Bs_dyn.html">Bs_dyn</a></li>
 <li><a href="Bs_dyn_lib.html">Bs_dyn_lib</a></li>
 <li><a href="Dom.html">Dom</a></li>
+<li><a href="Dom_storage.html">Dom_storage</a></li>
 <li><a href="Js.html">Js</a></li>
 <li><a href="Js_array.html">Js_array</a></li>
 <li><a href="Js_boolean.html">Js_boolean</a></li>
@@ -59,7 +60,7 @@
 
 <pre><span class="keyword">module</span> Process: <code class="type"><a href="Node_process.html">Node_process</a></code></pre><hr width="100%">
 <div class="type-declaration">
-<pre><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> = <code class="type">< abort : (unit -> unit [@bs.meth]); arch : string; argv : string array;<br>         chdir : (string -> unit [@bs.meth]); cwd : (unit -> string [@bs.meth]);<br>         disconnect : (unit -> unit [@bs.meth]); env : string <a href="Js_dict.html#TYPEt">Js_dict.t</a>;<br>         platform : string ><br>       <a href="Js.html#TYPEt">Js.t</a></code> </pre>
+<pre><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> = <code class="type">< abort : ([ `Arity_0 ], unit) Js.Internal.meth; arch : string;<br>         argv : string array;<br>         chdir : ([ `Arity_1 of string ], unit) Js.Internal.meth;<br>         cwd : ([ `Arity_0 ], string) Js.Internal.meth;<br>         disconnect : ([ `Arity_0 ], unit) Js.Internal.meth; env : string <a href="Js_dict.html#TYPEt">Js_dict.t</a>;<br>         platform : string ><br>       <a href="Js.html#TYPEt">Js.t</a></code> </pre>
 </div>
 
 

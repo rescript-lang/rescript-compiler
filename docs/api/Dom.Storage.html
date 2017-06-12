@@ -7,8 +7,8 @@
                  <script src="../api_static//script.js"></script>
                  <script>hljs.initHighlightingOnLoad();</script> 
                  <meta charset="utf8">
-                 <link rel="previous" href="Node_fs.html"><link rel="next" href="Node_path.html">
-                 <title> Node_module </title></head> 
+                 
+                 <title> Dom.Storage </title></head> 
                <body>
 <nav class="module-index"><ul><li><a href="Bs.html">Bs</a></li>
 <li><a href="Bs_dyn.html">Bs_dyn</a></li>
@@ -52,20 +52,21 @@
 <li><a href="Node_module.html">Node_module</a></li>
 <li><a href="Node_path.html">Node_path</a></li>
 <li><a href="Node_process.html">Node_process</a></li></ul></nav>
-<div class="navbar"><a class="pre" href="Node_fs.html" title="Node_fs">Previous</a>
-&nbsp;<a class="up" href="index.html" title="Index">Up</a>
-&nbsp;<a class="post" href="Node_path.html" title="Node_path">Next</a>
+<div class="navbar">&nbsp;<a class="up" href="Dom.html" title="Dom">Up</a>
+&nbsp;</div>
+<h1>Module <a href="type_Dom.Storage.html">Dom.Storage</a></h1>
+
+<pre><span class="keyword">module</span> Storage: <code class="type"><a href="Dom_storage.html">Dom_storage</a></code></pre><hr width="100%">
+<div class="type-declaration">
+<pre><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> </pre>
 </div>
-<h1>Module <a href="type_Node_module.html">Node_module</a></h1>
 
-<pre><span class="keyword">module</span> Node_module: <code class="code">sig</code> <a href="Node_module.html">..</a> <code class="code">end</code></pre><div class="info module top">
-                    <div class="not-examples">
-                    Node Module API<br>
- 
-                    </div>
-                    
-                    </div>
 
-                  <hr width="100%">
-
-<pre><span id="VALmodule_"><span class="keyword">val</span> module_</span> : <code class="type">< __cache : <a href="Node.html#TYPEnode_module">Node.node_module</a> <a href="Js_dict.html#TYPEt">Js_dict.t</a> > <a href="Js.html#TYPEt">Js.t</a></code></pre></body></html>
+<pre><span id="VALgetItem"><span class="keyword">val</span> getItem</span> : <code class="type">string -> <a href="Dom_storage.html#TYPEt">t</a> -> string option</code></pre>
+<pre><span id="VALsetItem"><span class="keyword">val</span> setItem</span> : <code class="type">string -> string -> <a href="Dom_storage.html#TYPEt">t</a> -> unit</code></pre>
+<pre><span id="VALremoveItem"><span class="keyword">val</span> removeItem</span> : <code class="type">string -> <a href="Dom_storage.html#TYPEt">t</a> -> unit</code></pre>
+<pre><span id="VALclear"><span class="keyword">val</span> clear</span> : <code class="type"><a href="Dom_storage.html#TYPEt">t</a> -> unit</code></pre>
+<pre><span id="VALkey"><span class="keyword">val</span> key</span> : <code class="type">int -> <a href="Dom_storage.html#TYPEt">t</a> -> string option</code></pre>
+<pre><span id="VALlength"><span class="keyword">val</span> length</span> : <code class="type"><a href="Dom_storage.html#TYPEt">t</a> -> int</code></pre>
+<pre><span id="VALlocalStorage"><span class="keyword">val</span> localStorage</span> : <code class="type"><a href="Dom_storage.html#TYPEt">t</a></code></pre>
+<pre><span id="VALsessionStorage"><span class="keyword">val</span> sessionStorage</span> : <code class="type"><a href="Dom_storage.html#TYPEt">t</a></code></pre></body></html>
