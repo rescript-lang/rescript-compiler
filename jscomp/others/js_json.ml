@@ -34,23 +34,48 @@ type _ kind =
   | Boolean : Js.boolean kind
   | Null : Js_types.null_val kind
 
-let reifyType (type a) (x : 'a) : (a kind * a ) = 
+let reifyType (type a) (x : t) : (a kind * a ) = 
   (if Js.typeof x = "string" then 
-    Obj.magic String else
-  if Js.typeof x = "number" then 
-    Obj.magic Number  else 
-  if Js.typeof x = "boolean" then
-    (* which one is faster, save [Js.typeof] or not *)
-    Obj.magic Boolean else
-  if (Obj.magic x) == Js.null then
-    (* providing a universal function *)
-    Obj.magic Null else 
-  if Js_array.isArray x  then 
-    Obj.magic Array 
-  else 
-    Obj.magic Object ), Obj.magic x
+     Obj.magic String else
+   if Js.typeof x = "number" then 
+     Obj.magic Number  else 
+   if Js.typeof x = "boolean" then
+     (* which one is faster, save [Js.typeof] or not *)
+     Obj.magic Boolean else
+   if (Obj.magic x) == Js.null then
+     (* providing a universal function *)
+     Obj.magic Null else 
+   if Js_array.isArray x  then 
+     Obj.magic Array 
+   else 
+     Obj.magic Object ), Obj.magic x
 
 let reify_type = reifyType 
+
+type tagged_t = 
+  | JSONFalse
+  | JSONTrue
+  | JSONNull
+  | JSONString of string 
+  | JSONNumber of float 
+  | JSONObject of t Js_dict.t   
+  | JSONArray of t array 
+
+let classify  (x : t) : tagged_t =
+  let ty = Js.typeof x in  
+  if ty = "string" then 
+    JSONString (Obj.magic x)
+  else if ty = "number" then 
+    JSONNumber (Obj.magic x )
+  else if ty = "boolean" then
+    if (Obj.magic x) == Js.true_ then JSONTrue
+    else JSONFalse 
+  else if (Obj.magic x) == Js.null then
+    JSONNull 
+  else if Js_array.isArray x  then 
+    JSONArray (Obj.magic x)
+  else 
+    JSONObject (Obj.magic x)
 
 
 let test (type a) (x : 'a) (v : a kind) : bool =
@@ -94,11 +119,14 @@ let decodeNull json =
   then Some Js.null
   else None 
 
-external parse : string -> t = "JSON.parse" [@@bs.val]
+external parse : string -> t = "parse" 
+  [@@bs.val][@@bs.scope "JSON"]
 
-external parseExn : string -> t = "JSON.parse" [@@bs.val]
+external parseExn : string -> t = "parse" 
+  [@@bs.val] [@@bs.scope "JSON"]
 
-external stringifyAny : 'a -> string option = "JSON.stringify" [@@bs.val] [@@bs.return undefined_to_opt]
+external stringifyAny : 'a -> string option = 
+"stringify" [@@bs.val] [@@bs.return undefined_to_opt] [@@bs.scope "JSON"]
 (* TODO: more docs when parse error happens or stringify non-stringfy value *)
 
 external null : t = "" [@@bs.val]
@@ -114,4 +142,5 @@ external stringArray : string array -> t = "%identity"
 external numberArray : float array -> t = "%identity"
 external booleanArray : Js.boolean array -> t = "%identity"
 external objectArray : t Js_dict.t array -> t = "%identity"
-external stringify: t -> string = "JSON.stringify" [@@bs.val]
+external stringify: t -> string = "stringify" 
+  [@@bs.val] [@@bs.scope "JSON"]

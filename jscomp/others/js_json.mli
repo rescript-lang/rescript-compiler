@@ -41,10 +41,25 @@ type _ kind =
   | Boolean : Js.boolean kind
   | Null : Js_types.null_val kind
 
+type tagged_t = 
+  | JSONFalse
+  | JSONTrue
+  | JSONNull
+  | JSONString of string 
+  | JSONNumber of float 
+  | JSONObject of t Js_dict.t   
+  | JSONArray of t array 
+
+
 (** {2 Accessor} *)
 
+val classify : t -> tagged_t 
+
 val reifyType : t -> 'b kind * 'b 
-(** [reifyType v] returns both type and underlying value *) 
+[@@deprecated "Please use classify"]
+(** [reifyType v] returns both type and underlying value 
+    @deprecated Use {!classify} instead
+*) 
 
 val test : 'a  -> 'b kind -> bool
 (** [test v kind] returns true if [v] is of [kind] *)
@@ -118,10 +133,10 @@ external objectArray : t Js_dict.t array -> t = "%identity"
 
 (** {2 String conversion} *)
 
-external parse : string -> t = "JSON.parse" [@@bs.val]
+external parse : string -> t = "parse" [@@bs.val] [@@bs.scope "JSON"]
 [@@ocaml.deprecated "Use Js.Json.parseExn instead"]
 
-external parseExn : string -> t = "JSON.parse" [@@bs.val]
+external parseExn : string -> t = "parse" [@@bs.val] [@@bs.scope "JSON"]
 (** [parse s] parses the string [s] into a JSON data structure
 
 {b Returns} a JSON data structure
@@ -175,7 +190,8 @@ let _ =
 @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse> MDN
 *)
 
-external stringify: t -> string = "JSON.stringify" [@@bs.val]
+external stringify: t -> string = "stringify" 
+  [@@bs.val] [@@bs.scope "JSON"]
 (** [stringify json] formats the JSON data structure as a string
 
 {b Returns} the string representation of a given JSON data structure
@@ -195,7 +211,8 @@ Js.log \@\@ Js.Json.stringify (Js.Json.object_ dict)
 @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify> MDN
 *)
 
-external stringifyAny : 'a -> string option = "JSON.stringify" [@@bs.val] [@@bs.return undefined_to_opt]
+external stringifyAny : 'a -> string option = "stringify" 
+  [@@bs.val] [@@bs.return undefined_to_opt] [@@bs.scope "JSON"]
 (** [stringifyAny value] formats any [value] into a JSON string
 
 @example {[
@@ -207,8 +224,4 @@ Js.log \@\@ Js.Json.stringify [| "foo"; "bar" |]
 *)
 
 
-(**
-@deprecated Please use {! reifyType} instead
-*) 
-val reify_type : 'a -> 'b kind * 'b 
-[@@ocaml.deprecated "Please use `reifyType`"]
+
