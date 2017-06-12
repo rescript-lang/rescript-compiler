@@ -29149,9 +29149,10 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
       var kind;
       var rem;
       var exit$3 = 0;
+      var exit$4 = 0;
       if (typeof d1 === "number") {
         if (d1) {
-          exit$3 = 5;
+          exit$4 = 5;
         } else if (typeof d2 === "number") {
           if (d2 !== 0) {
             throw [
@@ -29163,13 +29164,13 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
         } else {
           switch (d2.tag | 0) {
             case 3 : 
-                exit$3 = 5;
+                exit$4 = 5;
                 break;
             case 5 : 
                 f = d2[0];
                 kind = d2[1];
                 rem = d2[3];
-                exit$2 = 4;
+                exit$2 = 3;
                 break;
             default:
               throw [
@@ -29213,7 +29214,7 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
                       }
                       break;
                   case 3 : 
-                      exit$3 = 5;
+                      exit$4 = 5;
                       break;
                   default:
                     throw [
@@ -29235,7 +29236,7 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
                       unify_list(env, d1[0], d2[0]);
                       break;
                   case 3 : 
-                      exit$3 = 5;
+                      exit$4 = 5;
                       break;
                   default:
                     throw [
@@ -29247,9 +29248,9 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
               break;
           case 3 : 
               var p1 = d1[0];
-              var exit$4 = 0;
+              var exit$5 = 0;
               if (typeof d2 === "number") {
-                exit$4 = 6;
+                exit$5 = 6;
               } else if (d2.tag === 3) {
                 var tl2 = d2[1];
                 var tl1 = d1[1];
@@ -29316,27 +29317,27 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
                     }
                   }
                 } else {
-                  exit$4 = 6;
+                  exit$5 = 6;
                 }
               } else {
-                exit$4 = 6;
+                exit$5 = 6;
               }
-              if (exit$4 === 6) {
+              if (exit$5 === 6) {
                 switch (p1.tag | 0) {
                   case 0 : 
                       if (d1[1]) {
-                        exit$3 = 5;
+                        exit$4 = 5;
                       } else {
                         var p = p1[0];
-                        var exit$5 = 0;
+                        var exit$6 = 0;
                         if (typeof d2 === "number") {
-                          exit$5 = 7;
+                          exit$6 = 7;
                         } else if (d2.tag === 3) {
                           var path$prime = d2[0];
                           switch (path$prime.tag | 0) {
                             case 0 : 
                                 if (d2[1]) {
-                                  exit$5 = 7;
+                                  exit$6 = 7;
                                 } else if (is_newtype(env[0], p1) && is_newtype(env[0], path$prime) && generate_equations[0]) {
                                   var match$3 = Caml_obj.caml_greaterthan(find_newtype_level(env[0], p1), find_newtype_level(env[0], path$prime)) ? /* tuple */[
                                       p,
@@ -29347,24 +29348,24 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
                                     ];
                                   add_gadt_equation(env, match$3[0], match$3[1]);
                                 } else {
-                                  exit$5 = 7;
+                                  exit$6 = 7;
                                 }
                                 break;
                             case 1 : 
                             case 2 : 
-                                exit$5 = 7;
+                                exit$6 = 7;
                                 break;
                             
                           }
                         } else {
-                          exit$5 = 7;
+                          exit$6 = 7;
                         }
-                        if (exit$5 === 7) {
+                        if (exit$6 === 7) {
                           if (is_newtype(env[0], p1) && generate_equations[0]) {
                             reify(env, t2$prime);
                             add_gadt_equation(env, p, t2$prime);
                           } else {
-                            exit$3 = 5;
+                            exit$4 = 5;
                           }
                         }
                         
@@ -29372,7 +29373,7 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
                       break;
                   case 1 : 
                   case 2 : 
-                      exit$3 = 5;
+                      exit$4 = 5;
                       break;
                   
                 }
@@ -29388,7 +29389,7 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
               } else {
                 switch (d2.tag | 0) {
                   case 3 : 
-                      exit$3 = 5;
+                      exit$4 = 5;
                       break;
                   case 4 : 
                       unify_fields(env, d1[0], d2[0]);
@@ -29447,10 +29448,10 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
                   f = d1[0];
                   kind = d1[1];
                   rem = d1[3];
-                  exit$2 = 4;
+                  exit$2 = 3;
                 }
               } else if (d2.tag === 3) {
-                exit$3 = 5;
+                exit$4 = 5;
               } else {
                 throw [
                       Unify,
@@ -29468,7 +29469,7 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
               } else {
                 switch (d2.tag | 0) {
                   case 3 : 
-                      exit$3 = 5;
+                      exit$4 = 5;
                       break;
                   case 8 : 
                       var row2 = d2[0];
@@ -29506,9 +29507,9 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
           case 10 : 
               var tl1$1 = d1[1];
               var t1$1 = d1[0];
-              var exit$6 = 0;
+              var exit$7 = 0;
               if (tl1$1) {
-                exit$6 = 6;
+                exit$7 = 6;
               } else if (typeof d2 === "number") {
                 throw [
                       Unify,
@@ -29517,11 +29518,11 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
               } else {
                 switch (d2.tag | 0) {
                   case 3 : 
-                      exit$3 = 5;
+                      exit$4 = 5;
                       break;
                   case 10 : 
                       if (d2[1]) {
-                        exit$6 = 6;
+                        exit$7 = 6;
                       } else {
                         unify(env, t1$1, d2[0]);
                       }
@@ -29533,7 +29534,7 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
                         ];
                 }
               }
-              if (exit$6 === 6) {
+              if (exit$7 === 6) {
                 if (typeof d2 === "number") {
                   throw [
                         Unify,
@@ -29542,7 +29543,7 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
                 } else {
                   switch (d2.tag | 0) {
                     case 3 : 
-                        exit$3 = 5;
+                        exit$4 = 5;
                         break;
                     case 10 : 
                         enter_poly(env[0], univar_pairs, t1$1, tl1$1, d2[0], d2[1], (function (param, param$1) {
@@ -29568,7 +29569,7 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
               } else {
                 switch (d2.tag | 0) {
                   case 3 : 
-                      exit$3 = 5;
+                      exit$4 = 5;
                       break;
                   case 11 : 
                       var tl2$1 = d2[2];
@@ -29602,18 +29603,18 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
               }
               break;
           default:
-            exit$3 = 5;
+            exit$4 = 5;
         }
       }
-      if (exit$3 === 5) {
+      if (exit$4 === 5) {
         if (typeof d2 === "number") {
-          exit$2 = 2;
+          exit$3 = 4;
         } else if (d2.tag === 3) {
           var path = d2[0];
           switch (path.tag | 0) {
             case 0 : 
                 if (d2[1] || !(is_newtype(env[0], path) && generate_equations[0])) {
-                  exit$2 = 3;
+                  exit$2 = 2;
                 } else {
                   reify(env, t1$prime);
                   add_gadt_equation(env, path[0], t1$prime);
@@ -29621,31 +29622,31 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
                 break;
             case 1 : 
             case 2 : 
-                exit$2 = 3;
+                exit$2 = 2;
                 break;
             
           }
         } else {
+          exit$3 = 4;
+        }
+      }
+      if (exit$3 === 4) {
+        if (typeof d1 === "number") {
+          throw [
+                Unify,
+                /* [] */0
+              ];
+        } else if (d1.tag === 3) {
           exit$2 = 2;
+        } else {
+          throw [
+                Unify,
+                /* [] */0
+              ];
         }
       }
       switch (exit$2) {
         case 2 : 
-            if (typeof d1 === "number") {
-              throw [
-                    Unify,
-                    /* [] */0
-                  ];
-            } else if (d1.tag === 3) {
-              exit$2 = 3;
-            } else {
-              throw [
-                    Unify,
-                    /* [] */0
-                  ];
-            }
-            break;
-        case 3 : 
             if (umode[0] === /* Pattern */1) {
               reify(env, t1$prime);
               reify(env, t2$prime);
@@ -29660,7 +29661,7 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
                   ];
             }
             break;
-        case 4 : 
+        case 3 : 
             var match$8 = field_kind_repr(kind);
             if (typeof match$8 === "number") {
               throw [
@@ -33693,23 +33694,24 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
           var exit$1 = 0;
           var exit$2 = 0;
           var exit$3 = 0;
+          var exit$4 = 0;
           if (typeof match === "number") {
-            exit$3 = 6;
+            exit$4 = 6;
           } else {
             switch (match.tag | 0) {
               case 0 : 
-                  exit = 3;
+                  exit = 2;
                   break;
               case 1 : 
                   var u1 = match[2];
                   var t1$2 = match[1];
                   var l1 = match[0];
                   if (typeof match$1 === "number") {
-                    exit = 2;
+                    exit = 1;
                   } else {
                     switch (match$1.tag | 0) {
                       case 0 : 
-                          exit$3 = 6;
+                          exit$4 = 6;
                           break;
                       case 1 : 
                           var u2 = match$1[2];
@@ -33736,24 +33738,24 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                             continue ;
                             
                           } else {
-                            exit = 2;
+                            exit = 1;
                           }
                           break;
                       case 3 : 
-                          exit$1 = 4;
+                          exit$2 = 4;
                           break;
                       default:
-                        exit = 2;
+                        exit = 1;
                     }
                   }
                   break;
               case 2 : 
                   if (typeof match$1 === "number") {
-                    exit = 2;
+                    exit = 1;
                   } else {
                     switch (match$1.tag | 0) {
                       case 0 : 
-                          exit$3 = 6;
+                          exit$4 = 6;
                           break;
                       case 2 : 
                           var env$1 = env;
@@ -33776,48 +33778,48 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                                     }
                                     }(env$1,trace$1)), cstrs$2, tl1, tl2);
                       case 3 : 
-                          exit$1 = 4;
+                          exit$2 = 4;
                           break;
                       default:
-                        exit = 2;
+                        exit = 1;
                     }
                   }
                   break;
               case 3 : 
                   if (match[1]) {
-                    exit$3 = 6;
+                    exit$4 = 6;
                   } else if (typeof match$1 === "number") {
-                    exit$2 = 5;
+                    exit$3 = 5;
                   } else {
                     switch (match$1.tag | 0) {
                       case 0 : 
-                          exit$3 = 6;
+                          exit$4 = 6;
                           break;
                       case 3 : 
                           if (match$1[1]) {
-                            exit$2 = 5;
+                            exit$3 = 5;
                           } else if (same(match[0], match$1[0])) {
                             return cstrs;
                           } else {
-                            exit$2 = 5;
+                            exit$3 = 5;
                           }
                           break;
                       default:
-                        exit$2 = 5;
+                        exit$3 = 5;
                     }
                   }
                   break;
               case 4 : 
                   var f1 = match[0];
                   if (typeof match$1 === "number") {
-                    exit = 2;
+                    exit = 1;
                   } else {
                     switch (match$1.tag | 0) {
                       case 0 : 
-                          exit$3 = 6;
+                          exit$4 = 6;
                           break;
                       case 3 : 
-                          exit$1 = 4;
+                          exit$2 = 4;
                           break;
                       case 4 : 
                           var f2 = match$1[0];
@@ -33885,20 +33887,20 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                                       }(env$2,trace$2)), cstrs$5, match$4[0]);
                           }
                       default:
-                        exit = 2;
+                        exit = 1;
                     }
                   }
                   break;
               case 8 : 
                   if (typeof match$1 === "number") {
-                    exit = 2;
+                    exit = 1;
                   } else {
                     switch (match$1.tag | 0) {
                       case 0 : 
-                          exit$3 = 6;
+                          exit$4 = 6;
                           break;
                       case 3 : 
-                          exit$1 = 4;
+                          exit$2 = 4;
                           break;
                       case 8 : 
                           try {
@@ -33916,21 +33918,21 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                             var more2 = repr(row2$1[/* row_more */1]);
                             var match$6 = more1[/* desc */0];
                             var match$7 = more2[/* desc */0];
-                            var exit$4 = 0;
+                            var exit$5 = 0;
                             if (typeof match$6 === "number") {
                               if (match$6) {
                                 throw Pervasives.Exit;
                               } else {
-                                exit$4 = 1;
+                                exit$5 = 1;
                               }
                             } else {
                               switch (match$6.tag | 0) {
                                 case 0 : 
-                                    exit$4 = 1;
+                                    exit$5 = 1;
                                     break;
                                 case 3 : 
                                     if (typeof match$7 === "number") {
-                                      exit$4 = 1;
+                                      exit$5 = 1;
                                     } else if (match$7.tag === 3) {
                                       if (same(match$6[0], match$7[0])) {
                                         return subtype_rec(env$3, /* :: */[
@@ -33941,10 +33943,10 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                                                     trace$3
                                                   ], more1, more2, cstrs$6);
                                       } else {
-                                        exit$4 = 1;
+                                        exit$5 = 1;
                                       }
                                     } else {
-                                      exit$4 = 1;
+                                      exit$5 = 1;
                                     }
                                     break;
                                 case 9 : 
@@ -34072,25 +34074,25 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                                   throw Pervasives.Exit;
                               }
                             }
-                            if (exit$4 === 1) {
-                              var exit$5 = 0;
+                            if (exit$5 === 1) {
+                              var exit$6 = 0;
                               if (typeof match$7 === "number") {
                                 if (match$7) {
                                   throw Pervasives.Exit;
                                 } else {
-                                  exit$5 = 2;
+                                  exit$6 = 2;
                                 }
                               } else {
                                 switch (match$7.tag | 0) {
                                   case 0 : 
                                   case 3 : 
-                                      exit$5 = 2;
+                                      exit$6 = 2;
                                       break;
                                   default:
                                     throw Pervasives.Exit;
                                 }
                               }
-                              if (exit$5 === 2) {
+                              if (exit$6 === 2) {
                                 if (row1$1[/* row_closed */3] && r1 === /* [] */0) {
                                   return List.fold_left((function(env$3,trace$3){
                                             return function (cstrs, param) {
@@ -34195,29 +34197,29 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                           }
                           break;
                       default:
-                        exit = 2;
+                        exit = 1;
                     }
                   }
                   break;
               case 10 : 
                   var tl1$1 = match[1];
                   var u1$1 = match[0];
-                  var exit$6 = 0;
+                  var exit$7 = 0;
                   if (tl1$1) {
-                    exit$6 = 7;
+                    exit$7 = 7;
                   } else if (typeof match$1 === "number") {
-                    exit = 2;
+                    exit = 1;
                   } else {
                     switch (match$1.tag | 0) {
                       case 0 : 
-                          exit$3 = 6;
+                          exit$4 = 6;
                           break;
                       case 3 : 
-                          exit$1 = 4;
+                          exit$2 = 4;
                           break;
                       case 10 : 
                           if (match$1[1]) {
-                            exit$6 = 7;
+                            exit$7 = 7;
                           } else {
                             _t2 = match$1[0];
                             _t1 = u1$1;
@@ -34226,19 +34228,19 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                           }
                           break;
                       default:
-                        exit = 2;
+                        exit = 1;
                     }
                   }
-                  if (exit$6 === 7) {
+                  if (exit$7 === 7) {
                     if (typeof match$1 === "number") {
-                      exit = 2;
+                      exit = 1;
                     } else {
                       switch (match$1.tag | 0) {
                         case 0 : 
-                            exit$3 = 6;
+                            exit$4 = 6;
                             break;
                         case 3 : 
-                            exit$1 = 4;
+                            exit$2 = 4;
                             break;
                         case 10 : 
                             var tl2$1 = match$1[1];
@@ -34276,7 +34278,7 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                             }
                             break;
                         default:
-                          exit = 2;
+                          exit = 1;
                       }
                     }
                   }
@@ -34286,14 +34288,14 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                   var nl1 = match[1];
                   var p1 = match[0];
                   if (typeof match$1 === "number") {
-                    exit = 2;
+                    exit = 1;
                   } else {
                     switch (match$1.tag | 0) {
                       case 0 : 
-                          exit$3 = 6;
+                          exit$4 = 6;
                           break;
                       case 3 : 
-                          exit$1 = 4;
+                          exit$2 = 4;
                           break;
                       case 11 : 
                           var tl2$2 = match$1[2];
@@ -34358,24 +34360,24 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                           }
                           break;
                       default:
-                        exit = 2;
+                        exit = 1;
                     }
                   }
                   break;
               default:
-                exit$3 = 6;
+                exit$4 = 6;
             }
           }
-          if (exit$3 === 6) {
+          if (exit$4 === 6) {
             if (typeof match$1 === "number" || match$1.tag) {
-              exit$2 = 5;
+              exit$3 = 5;
             } else {
-              exit = 3;
+              exit = 2;
             }
           }
-          if (exit$2 === 5) {
+          if (exit$3 === 5) {
             if (typeof match === "number") {
-              exit$1 = 4;
+              exit$2 = 4;
             } else if (match.tag === 3) {
               if (generic_abbrev(env, match[0]) && safe_abbrev(env, t1$1)) {
                 _t2 = t2$1;
@@ -34383,15 +34385,15 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                 continue ;
                 
               } else {
-                exit$1 = 4;
+                exit$2 = 4;
               }
             } else {
-              exit$1 = 4;
+              exit$2 = 4;
             }
           }
-          if (exit$1 === 4) {
+          if (exit$2 === 4) {
             if (typeof match$1 === "number") {
-              exit = 1;
+              exit$1 = 3;
             } else if (match$1.tag === 3) {
               if (generic_abbrev(env, match$1[0]) && safe_abbrev(env, t2$1)) {
                 _t2 = expand_abbrev(env)(t2$1);
@@ -34399,109 +34401,109 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                 continue ;
                 
               } else {
-                exit = 1;
+                exit$1 = 3;
               }
+            } else {
+              exit$1 = 3;
+            }
+          }
+          if (exit$1 === 3) {
+            if (typeof match === "number") {
+              exit = 1;
+            } else if (match.tag === 3) {
+              var p1$1 = match[0];
+              var exit$8 = 0;
+              if (typeof match$1 === "number") {
+                exit$8 = 4;
+              } else if (match$1.tag === 3) {
+                if (same(p1$1, match$1[0])) {
+                  try {
+                    var decl = find_type_full(p1$1, env)[0];
+                    return List.fold_left2((function(trace){
+                              return function (cstrs, v, param) {
+                                var t2 = param[1];
+                                var t1 = param[0];
+                                var match = Curry._1(Types_003[/* get_upper */10], v);
+                                var cn = match[1];
+                                if (match[0]) {
+                                  if (cn) {
+                                    return /* :: */[
+                                            /* tuple */[
+                                              trace,
+                                              newty2(t1[/* level */1], /* Ttuple */Block.__(2, [/* :: */[
+                                                        t1,
+                                                        /* [] */0
+                                                      ]])),
+                                              newty2(t2[/* level */1], /* Ttuple */Block.__(2, [/* :: */[
+                                                        t2,
+                                                        /* [] */0
+                                                      ]])),
+                                              univar_pairs[0]
+                                            ],
+                                            cstrs
+                                          ];
+                                  } else {
+                                    return subtype_rec(env, /* :: */[
+                                                /* tuple */[
+                                                  t1,
+                                                  t2
+                                                ],
+                                                trace
+                                              ], t1, t2, cstrs);
+                                  }
+                                } else if (cn) {
+                                  return subtype_rec(env, /* :: */[
+                                              /* tuple */[
+                                                t2,
+                                                t1
+                                              ],
+                                              trace
+                                            ], t2, t1, cstrs);
+                                } else {
+                                  return cstrs;
+                                }
+                              }
+                              }(trace)), cstrs, decl[/* type_variance */5], List.combine(match[1], match$1[1]));
+                  }
+                  catch (exn$5){
+                    if (exn$5 === Caml_builtin_exceptions.not_found) {
+                      return /* :: */[
+                              /* tuple */[
+                                trace,
+                                t1$1,
+                                t2$1,
+                                univar_pairs[0]
+                              ],
+                              cstrs
+                            ];
+                    } else {
+                      throw exn$5;
+                    }
+                  }
+                } else {
+                  exit$8 = 4;
+                }
+              } else {
+                exit$8 = 4;
+              }
+              if (exit$8 === 4) {
+                if (generic_private_abbrev(env, p1$1)) {
+                  _t2 = t2$1;
+                  _t1 = expand_abbrev_opt(env, t1$1);
+                  continue ;
+                  
+                } else {
+                  exit = 1;
+                }
+              }
+              
             } else {
               exit = 1;
             }
           }
           switch (exit) {
             case 1 : 
-                if (typeof match === "number") {
-                  exit = 2;
-                } else if (match.tag === 3) {
-                  var p1$1 = match[0];
-                  var exit$7 = 0;
-                  if (typeof match$1 === "number") {
-                    exit$7 = 4;
-                  } else if (match$1.tag === 3) {
-                    if (same(p1$1, match$1[0])) {
-                      try {
-                        var decl = find_type_full(p1$1, env)[0];
-                        return List.fold_left2((function(trace){
-                                  return function (cstrs, v, param) {
-                                    var t2 = param[1];
-                                    var t1 = param[0];
-                                    var match = Curry._1(Types_003[/* get_upper */10], v);
-                                    var cn = match[1];
-                                    if (match[0]) {
-                                      if (cn) {
-                                        return /* :: */[
-                                                /* tuple */[
-                                                  trace,
-                                                  newty2(t1[/* level */1], /* Ttuple */Block.__(2, [/* :: */[
-                                                            t1,
-                                                            /* [] */0
-                                                          ]])),
-                                                  newty2(t2[/* level */1], /* Ttuple */Block.__(2, [/* :: */[
-                                                            t2,
-                                                            /* [] */0
-                                                          ]])),
-                                                  univar_pairs[0]
-                                                ],
-                                                cstrs
-                                              ];
-                                      } else {
-                                        return subtype_rec(env, /* :: */[
-                                                    /* tuple */[
-                                                      t1,
-                                                      t2
-                                                    ],
-                                                    trace
-                                                  ], t1, t2, cstrs);
-                                      }
-                                    } else if (cn) {
-                                      return subtype_rec(env, /* :: */[
-                                                  /* tuple */[
-                                                    t2,
-                                                    t1
-                                                  ],
-                                                  trace
-                                                ], t2, t1, cstrs);
-                                    } else {
-                                      return cstrs;
-                                    }
-                                  }
-                                  }(trace)), cstrs, decl[/* type_variance */5], List.combine(match[1], match$1[1]));
-                      }
-                      catch (exn$5){
-                        if (exn$5 === Caml_builtin_exceptions.not_found) {
-                          return /* :: */[
-                                  /* tuple */[
-                                    trace,
-                                    t1$1,
-                                    t2$1,
-                                    univar_pairs[0]
-                                  ],
-                                  cstrs
-                                ];
-                        } else {
-                          throw exn$5;
-                        }
-                      }
-                    } else {
-                      exit$7 = 4;
-                    }
-                  } else {
-                    exit$7 = 4;
-                  }
-                  if (exit$7 === 4) {
-                    if (generic_private_abbrev(env, p1$1)) {
-                      _t2 = t2$1;
-                      _t1 = expand_abbrev_opt(env, t1$1);
-                      continue ;
-                      
-                    } else {
-                      exit = 2;
-                    }
-                  }
-                  
-                } else {
-                  exit = 2;
-                }
-                break;
             case 2 : 
-            case 3 : 
                 return /* :: */[
                         /* tuple */[
                           trace,
@@ -42468,38 +42470,40 @@ function explanation(unif, mis, ppf) {
     var match$1 = t3[/* desc */0];
     var match$2 = t4[/* desc */0];
     var exit = 0;
-    var lab;
     var exit$1 = 0;
+    var lab;
     var exit$2 = 0;
+    var exit$3 = 0;
+    var exit$4 = 0;
     if (typeof match$1 === "number") {
       if (match$1) {
-        exit$2 = 9;
+        exit$4 = 9;
       } else if (typeof match$2 === "number") {
-        exit = 7;
+        exit = 2;
       } else {
         switch (match$2.tag | 0) {
           case 0 : 
-              exit$2 = 9;
+              exit$4 = 9;
               break;
           case 3 : 
-              exit = 6;
-              break;
-          case 5 : 
               exit = 1;
               break;
+          case 5 : 
+              exit$2 = 7;
+              break;
           default:
-            exit = 7;
+            exit = 2;
         }
       }
     } else {
       switch (match$1.tag | 0) {
         case 0 : 
             if (typeof match$2 === "number") {
-              exit = 4;
+              exit$1 = 5;
             } else {
               switch (match$2.tag | 0) {
                 case 2 : 
-                    exit = match$2[0] ? 4 : 2;
+                    exit$1 = match$2[0] ? 5 : 3;
                     break;
                 case 3 : 
                     var p = match$2[0];
@@ -42545,39 +42549,39 @@ function explanation(unif, mis, ppf) {
                                       "@,@[The type constructor@;<1 2>%a@ would escape its scope@]"
                                     ]), path, p);
                     } else {
-                      exit = 4;
+                      exit$1 = 5;
                     }
                     break;
                 case 9 : 
-                    exit = 3;
+                    exit$1 = 4;
                     break;
                 default:
-                  exit = 4;
+                  exit$1 = 5;
               }
             }
             break;
         case 2 : 
             if (match$1[0]) {
-              exit$2 = 9;
+              exit$4 = 9;
             } else if (typeof match$2 === "number") {
-              exit = 7;
+              exit = 2;
             } else {
               switch (match$2.tag | 0) {
                 case 0 : 
-                    exit = 2;
+                    exit$1 = 3;
                     break;
                 case 5 : 
-                    exit = 1;
+                    exit$2 = 7;
                     break;
                 default:
-                  exit = 7;
+                  exit = 2;
               }
             }
             break;
         case 3 : 
             var p$1 = match$1[0];
             if (typeof match$2 === "number") {
-              exit = match$2 ? 7 : 6;
+              exit = match$2 ? 2 : 1;
             } else {
               switch (match$2.tag | 0) {
                 case 0 : 
@@ -42623,27 +42627,27 @@ function explanation(unif, mis, ppf) {
                                       "@,@[The type constructor@;<1 2>%a@ would escape its scope@]"
                                     ]), path, p$1);
                     } else {
-                      exit$2 = 9;
+                      exit$4 = 9;
                     }
                     break;
                 case 5 : 
-                    exit = 1;
+                    exit$2 = 7;
                     break;
                 default:
-                  exit = 7;
+                  exit = 2;
               }
             }
             break;
         case 8 : 
             if (typeof match$2 === "number") {
-              exit = 7;
+              exit = 2;
             } else {
               switch (match$2.tag | 0) {
                 case 0 : 
-                    exit$2 = 9;
+                    exit$4 = 9;
                     break;
                 case 5 : 
-                    exit = 1;
+                    exit$2 = 7;
                     break;
                 case 8 : 
                     var row1 = row_repr_aux(/* [] */0, match$1[0]);
@@ -42652,10 +42656,10 @@ function explanation(unif, mis, ppf) {
                     var match$4 = row1[/* row_closed */3];
                     var match$5 = row2[/* row_fields */0];
                     var match$6 = row2[/* row_closed */3];
-                    var exit$3 = 0;
+                    var exit$5 = 0;
                     if (match$3) {
                       if (match$3[1]) {
-                        exit$3 = 10;
+                        exit$5 = 10;
                       } else if (match$4 !== 0) {
                         if (match$5) {
                           if (match$5[1]) {
@@ -42690,15 +42694,15 @@ function explanation(unif, mis, ppf) {
                             return /* () */0;
                           }
                         } else {
-                          exit$3 = 10;
+                          exit$5 = 10;
                         }
                       } else {
-                        exit$3 = 10;
+                        exit$5 = 10;
                       }
                     } else if (match$4 !== 0) {
-                      var exit$4 = 0;
+                      var exit$6 = 0;
                       if (match$5) {
-                        exit$4 = 11;
+                        exit$6 = 11;
                       } else if (match$6 !== 0) {
                         return Format.fprintf(ppf$1, /* Format */[
                                     /* Formatting_lit */Block.__(17, [
@@ -42715,9 +42719,9 @@ function explanation(unif, mis, ppf) {
                                     "@,These two variant types have no intersection"
                                   ]);
                       } else {
-                        exit$4 = 11;
+                        exit$6 = 11;
                       }
-                      if (exit$4 === 11) {
+                      if (exit$6 === 11) {
                         return Curry._2(Format.fprintf(ppf$1, /* Format */[
                                         /* Formatting_lit */Block.__(17, [
                                             /* Break */Block.__(0, [
@@ -42763,9 +42767,9 @@ function explanation(unif, mis, ppf) {
                       }
                       
                     } else {
-                      exit$3 = 10;
+                      exit$5 = 10;
                     }
-                    if (exit$3 === 10) {
+                    if (exit$5 === 10) {
                       if (match$5 || match$6 === 0) {
                         return /* () */0;
                       } else {
@@ -42815,59 +42819,59 @@ function explanation(unif, mis, ppf) {
                     }
                     break;
                 default:
-                  exit = 7;
+                  exit = 2;
               }
             }
             break;
         case 9 : 
             if (typeof match$2 === "number") {
-              exit = 7;
+              exit = 2;
             } else {
               switch (match$2.tag | 0) {
                 case 0 : 
-                    exit = 3;
+                    exit$1 = 4;
                     break;
                 case 5 : 
-                    exit = 1;
+                    exit$2 = 7;
                     break;
                 default:
-                  exit = 7;
+                  exit = 2;
               }
             }
             break;
         default:
-          exit$2 = 9;
+          exit$4 = 9;
       }
     }
-    if (exit$2 === 9) {
+    if (exit$4 === 9) {
       if (typeof match$2 === "number" || match$2.tag) {
-        exit$1 = 8;
+        exit$3 = 8;
       } else {
-        exit = 4;
+        exit$1 = 5;
       }
     }
-    if (exit$1 === 8) {
+    if (exit$3 === 8) {
       if (typeof match$1 === "number") {
-        exit = 1;
+        exit$2 = 7;
       } else if (match$1.tag === 5) {
         lab = match$1[0];
-        exit = 5;
+        exit$1 = 6;
       } else {
-        exit = 1;
+        exit$2 = 7;
       }
     }
-    switch (exit) {
-      case 1 : 
-          if (typeof match$2 === "number") {
-            exit = 7;
-          } else if (match$2.tag === 5) {
-            lab = match$2[0];
-            exit = 5;
-          } else {
-            exit = 7;
-          }
-          break;
-      case 2 : 
+    if (exit$2 === 7) {
+      if (typeof match$2 === "number") {
+        exit = 2;
+      } else if (match$2.tag === 5) {
+        lab = match$2[0];
+        exit$1 = 6;
+      } else {
+        exit = 2;
+      }
+    }
+    switch (exit$1) {
+      case 3 : 
           return Format.fprintf(ppf$1, /* Format */[
                       /* Formatting_lit */Block.__(17, [
                           /* Break */Block.__(0, [
@@ -42882,7 +42886,7 @@ function explanation(unif, mis, ppf) {
                         ]),
                       "@,Self type cannot escape its class"
                     ]);
-      case 3 : 
+      case 4 : 
           return Curry._2(Format.fprintf(ppf$1, /* Format */[
                           /* Formatting_lit */Block.__(17, [
                               /* Break */Block.__(0, [
@@ -42900,7 +42904,7 @@ function explanation(unif, mis, ppf) {
                             ]),
                           "@,The universal variable %a would escape its scope"
                         ]), type_expr$1, is_Tunivar(t3) ? t3 : t4);
-      case 4 : 
+      case 5 : 
           var match$7 = is_Tvar(t3) ? /* tuple */[
               t3,
               t4
@@ -42988,7 +42992,7 @@ function explanation(unif, mis, ppf) {
                             "@,@[<hov>This instance of %a is ambiguous:@ %s@]"
                           ]), type_expr$1, t$prime, "it would escape the scope of its equation");
           }
-      case 5 : 
+      case 6 : 
           if (lab === dummy_method) {
             return Format.fprintf(ppf$1, /* Format */[
                         /* Formatting_lit */Block.__(17, [
@@ -43005,10 +43009,13 @@ function explanation(unif, mis, ppf) {
                         "@,Self type cannot be unified with a closed object type"
                       ]);
           } else {
-            exit = 7;
+            exit = 2;
           }
           break;
-      case 6 : 
+      
+    }
+    switch (exit) {
+      case 1 : 
           return Curry._1(Format.fprintf(ppf$1, /* Format */[
                           /* Formatting_lit */Block.__(17, [
                               /* Break */Block.__(0, [
@@ -43038,34 +43045,34 @@ function explanation(unif, mis, ppf) {
                             ]),
                           "@,@[The %s object type has an abstract row, it cannot be closed@]"
                         ]), t4[/* desc */0] ? "second" : "first");
-      case 7 : 
-          var exit$5 = 0;
+      case 2 : 
+          var exit$7 = 0;
           if (typeof match$1 === "number") {
             if (match$1) {
               return /* () */0;
             } else {
-              exit$5 = 8;
+              exit$7 = 3;
             }
           } else {
             switch (match$1.tag | 0) {
               case 3 : 
-                  exit$5 = 8;
+                  exit$7 = 3;
                   break;
               case 5 : 
                   var l = match$1[0];
                   var match$8 = match$1[3][/* desc */0];
-                  var exit$6 = 0;
+                  var exit$8 = 0;
                   if (typeof match$8 === "number") {
                     if (typeof match$2 === "number") {
                       if (match$2) {
                         return /* () */0;
                       } else {
-                        exit$6 = 9;
+                        exit$8 = 4;
                       }
                     } else {
                       switch (match$2.tag | 0) {
                         case 3 : 
-                            exit$6 = 9;
+                            exit$8 = 4;
                             break;
                         case 5 : 
                             var match$9 = match$2[3][/* desc */0];
@@ -43098,22 +43105,22 @@ function explanation(unif, mis, ppf) {
                       }
                     }
                   } else {
-                    exit$6 = 9;
+                    exit$8 = 4;
                   }
-                  if (exit$6 === 9) {
-                    var exit$7 = 0;
+                  if (exit$8 === 4) {
+                    var exit$9 = 0;
                     if (typeof match$2 === "number") {
                       if (match$2) {
                         return /* () */0;
                       } else {
-                        exit$7 = 10;
+                        exit$9 = 5;
                       }
                     } else if (match$2.tag === 3) {
-                      exit$7 = 10;
+                      exit$9 = 5;
                     } else {
                       return /* () */0;
                     }
-                    if (exit$7 === 10) {
+                    if (exit$9 === 5) {
                       return Curry._1(Format.fprintf(ppf$1, /* Format */[
                                       /* Formatting_lit */Block.__(17, [
                                           /* Break */Block.__(0, [
@@ -43148,7 +43155,7 @@ function explanation(unif, mis, ppf) {
                 return /* () */0;
             }
           }
-          if (exit$5 === 8) {
+          if (exit$7 === 3) {
             if (typeof match$2 === "number" || match$2.tag !== 5) {
               return /* () */0;
             } else {
