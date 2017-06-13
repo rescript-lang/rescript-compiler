@@ -6834,7 +6834,7 @@ let get_otherlibs_dependencies dependency_graph file_extension =
            - Ben May 4th 2017
      **)
     (* |> String_set.add ("threads" ^ file_extension) *)
-    |> String_set.add ("dynlink" ^ file_extension)
+    (* |> String_set.add ("dynlink" ^ file_extension) *)
     (* |> String_set.add ("graphics" ^ file_extension) *)
   in
   String_set.fold (fun v acc -> v :: acc) set_of_otherlib_deps []
