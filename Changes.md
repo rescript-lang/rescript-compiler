@@ -1,7 +1,7 @@
 
-
-
 # Next
+
+# 1.7.5
 
 Fixes:
 - #1676, `bsb -w` will always build regardless of filetype when fs.watch doesn't send a filename
@@ -21,6 +21,8 @@ Features:
 - #1698, fix exit code incorrectly aggregated issue
 - #1666, add Js.Json.classify and Js.Types.classify
 - #1705, add dom storage api
+- #1672, sync up with new reason
+- #1696, provide reason-react template
 
 # 1.7.4(May 24, 2017):
 
