@@ -10617,6 +10617,16 @@ let merlin_b = "\nB "
 
 
 let merlin_flg = "\nFLG "
+let bs_flg_prefix = "-bs-"
+
+
+let bsc_flg_to_merlin_ocamlc_flg bsc_flags  =
+  merlin_flg ^ 
+      String.concat Ext_string.single_space 
+        (List.filter (fun x -> not (Ext_string.starts_with x bs_flg_prefix )) @@ 
+        Literals.dash_nostdlib::bsc_flags) 
+
+
 let merlin_file_gen ~cwd
     built_in_ppx
     ({bs_file_groups = res_files ; 
@@ -10666,10 +10676,7 @@ let merlin_file_gen ~cwd
        Buffer.add_string buffer (merlin_b ^ path)                      
     );
 
-    let bsc_string_flag = 
-      merlin_flg ^ 
-      String.concat Ext_string.single_space 
-        (Literals.dash_nostdlib::bsc_flags)  in 
+    let bsc_string_flag = bsc_flg_to_merlin_ocamlc_flg bsc_flags in 
     Buffer.add_string buffer bsc_string_flag ;
 
     bs_dependencies 
