@@ -1,14 +1,14 @@
-[BuckleScript](http://bloomberg.github.io/bucklescript/): A JavaScript backend for [OCaml](https://ocaml.org/) focused on smooth integration and clean generated code.
+[BuckleScript](http://bucklescript.github.io/bucklescript/): A JavaScript backend for [OCaml](https://ocaml.org/) focused on smooth integration and clean generated code.
 
 [![NPM](https://nodei.co/npm/bs-platform.png?compact=true)](https://nodei.co/npm/bs-platform/)
 
-[![Build Status](https://travis-ci.org/bloomberg/bucklescript.svg?branch=master)](https://travis-ci.org/bloomberg/bucklescript)
-[![Coverage Status](https://coveralls.io/repos/github/bloomberg/bucklescript/badge.svg?branch=master)](https://coveralls.io/github/bloomberg/bucklescript?branch=master)
-[![Try Online](https://img.shields.io/badge/try_it-online!-yellow.svg?style=flat-square)](https://bloomberg.github.io/bucklescript/js-demo)
+[![Build Status](https://travis-ci.org/bucklescript/bucklescript.svg?branch=master)](https://travis-ci.org/bucklescript/bucklescript)
+[![Coverage Status](https://coveralls.io/repos/github/bucklescript/bucklescript/badge.svg?branch=master)](https://coveralls.io/github/bucklescript/bucklescript?branch=master)
+[![Try Online](https://img.shields.io/badge/try_it-online!-yellow.svg?style=flat-square)](https://bucklescript.github.io/bucklescript/js-demo)
 
 ## Try BuckleScript
 
-You can try BuckleScript directly [in your browser](http://bloomberg.github.io/bucklescript/js-demo/). Write OCaml in the left panel and
+You can try BuckleScript directly [in your browser](http://bucklescript.github.io/bucklescript/js-demo/). Write OCaml in the left panel and
 watch as it instantly compiles to JavaScript shown in the right panel.
 
 
@@ -30,11 +30,11 @@ from the git repository places them in `./bin`.
 
 ## Documentation
 
-See http://bloomberg.github.io/bucklescript/Manual.html for detailed documentation on BuckleScript. If you'd
-like to contribute content [see here](https://github.com/bloomberg/bucklescript/blob/master/site/docsource)
+See http://bucklescript.github.io/bucklescript/Manual.html for detailed documentation on BuckleScript. If you'd
+like to contribute content [see here](https://github.com/bucklescript/bucklescript/blob/master/site/docsource)
 for the documentation source.
 
-See http://bloomberg.github.io/bucklescript/api/ for Libraries shipped with BuckleScript.
+See http://bucklescript.github.io/bucklescript/api/ for Libraries shipped with BuckleScript.
 
 ## How BuckleScript Works
 
@@ -54,7 +54,7 @@ alongside the rich cross-platform JavaScript ecosystem.
 ## BuckleScript Examples
 
 Basic examples of using BuckleScript are provided below. More extensive examples are available at
-https://github.com/bloomberg/bucklescript-addons.
+https://github.com/bucklescript/bucklescript-addons.
 
 #### An HTTP Server
 
@@ -175,7 +175,7 @@ test();
 ## Getting Help and Providing Feedback
 
 If you need help or have a question, comment, or suggestion, please feel free to [open an
-issue](https://github.com/bloomberg/bucklescript/issues).
+issue](https://github.com/bucklescript/bucklescript/issues).
 
 ## Acknowledgements
 
