@@ -1,5 +1,5 @@
 
-Since Bucklescrip started to gain more and more users, after this release,
+Since Bucklescript started to gain more and more users, after this release,
 we decided to move it into a dedicated organization to help
 its future growth. 
 
