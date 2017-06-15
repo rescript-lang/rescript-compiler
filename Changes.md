@@ -1,5 +1,8 @@
 
 # Next
+Fixes:
+
+- #1573, don't include `-bs` flags in `.merlin`
 
 # 1.7.5
 
