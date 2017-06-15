@@ -1,0 +1,27 @@
+
+Since Bucklescript has grown and developed its own community, it is moving to its own GitHub organization. This will allow the community to continue to grow and to set the future direction of the project.
+
+At the same time, we are truly thankful for the support of Bloomberg who allowed this amazing project to happen!
+
+A detailed list of changes are listed as below:
+
+# Fixes:
+- #1676, `bsb -w` will always build regardless of filetype when fs.watch doesn't send a filename
+- #1655, fix #1653 Js.Promise.all[n] interfaces
+- #1658, fix typeof = "null" issue
+- #1656, bs.get/set/get_index/set_index respects bs.ignore
+- #1654, `bsb -init` fails if package or current dir has space (parent dir can have spaces)
+- #1678, bs.get{null;undefined}  in object type
+- #1692, fix invalid js syntax output
+- #1701, fix tailcall handling interaction with  exception handler
+- #1666, fix misue of GADT api
+
+# Features:
+- #1648, exposed `bsc` in the npm environment
+- #1647, speical handling `bsb -init .` to reuse current directory
+- #1667, fix an optimizaiton bug 
+- #1698, fix exit code incorrectly aggregated issue
+- #1666, add Js.Json.classify and Js.Types.classify
+- #1705, add dom storage api
+- #1672, sync up with new reason
+- #1696, provide reason-react template
