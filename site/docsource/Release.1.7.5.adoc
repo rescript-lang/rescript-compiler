@@ -1,10 +1,7 @@
 
-Since Bucklescript started to gain more and more users, after this release,
-we decided to move it into a dedicated organization to help
-its future growth. 
+Since Bucklescript has grown and developed its own community, it is moving to its own GitHub organization. This will allow the community to continue to grow and to set the future direction of the project.
 
-At the same time, we are truly thankful to the support of Bloomberg to
-make this amazing project happen.
+At the same time, we are truly thankful for the support of Bloomberg who allowed this amazing project to happen!
 
 A detailed list of changes are listed as below:
 
