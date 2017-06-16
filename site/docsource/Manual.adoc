@@ -45,7 +45,7 @@ in the {BuckleScript-playground}[browser].
 [NOTE]
 
 ====
-Documentation under https://bucklescript.github.io/bucklescript/Manual.html[_bloomberg.github.io_] match the https://github.com/bloomberg/bucklescript[master branch].
+Documentation under https://bucklescript.github.io/bucklescript/Manual.html[_bucklescript.github.io_] match the https://github.com/bloomberg/bucklescript[master branch].
 
 If you find errors or omissions in this document, please don't
 hesitate to submit an issue, sources are https://github.com/bloomberg/bucklescript/tree/master/site/docsource[here].
