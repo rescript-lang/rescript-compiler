@@ -3,6 +3,7 @@
 Fixes:
 
 - #1573, don't include `-bs` flags in `.merlin`
+- #1716, fix wrong optimization of recursive values
 
 # 1.7.5
 
