@@ -95984,7 +95984,7 @@ and  compile_let flag (cxt : Lam_compile_defs.cxt) id (arg : Lam.t) : Js_output.
        here we share env 
 
 *)
-and compile_recursive_let
+and compile_recursive_let ~all_bindings
     (cxt : Lam_compile_defs.cxt)
     (id : Ident.t)
     (arg : Lam.t)   : Js_output.t * Ident.t list = 
@@ -96041,16 +96041,24 @@ and compile_recursive_let
           E.ocaml_fun params (Js_output.to_block output )
       ), [] 
   | Lprim {primitive = Pmakeblock (0, _, _) ; args =  ls}
-    when List.for_all (function  | Lam.Lvar _  -> true | _ -> false) ls 
+    when List.for_all (fun (x : Lam.t) -> 
+      match x with 
+      | Lvar pid -> 
+        Ident.same pid id  || 
+        (not @@ List.exists (fun (other,_) -> Ident.same other pid ) all_bindings)
+      | _ -> false) ls 
     ->
     (* capture cases like for {!Queue}
        {[let rec cell = { content = x; next = cell} ]}
+       #1716: be careful not to optimize such cases:
+       {[ let rec a = { b} and b = { a} ]} they are indeed captured 
+       and need to be declared first 
     *)
     Js_output.of_block (
       S.define ~kind:Variable id (E.arr Mutable []) :: 
-      (List.mapi (fun i x -> 
+      (List.mapi (fun i (x : Lam.t) -> 
            match x with  
-           | Lam.Lvar lid
+           | Lvar lid
              -> S.exp 
                   (Js_arr.set_array (E.var id) (E.int (Int32.of_int i)) (E.var lid))
            | _ -> assert false
@@ -96107,9 +96115,10 @@ and compile_recursive_let
     compile_lambda {cxt with st = Declare (Alias ,id); should_return = ReturnFalse } arg, []
 
 and compile_recursive_lets_aux cxt id_args : Js_output.t = 
+  (* #1716 *)
   let output_code, ids  = List.fold_right
       (fun (ident,arg) (acc, ids) -> 
-         let code, declare_ids  = compile_recursive_let cxt ident arg in
+         let code, declare_ids  = compile_recursive_let ~all_bindings:id_args cxt ident arg in
          (code ++ acc, declare_ids @ ids )
       )  id_args (Js_output.dummy, [])
   in
