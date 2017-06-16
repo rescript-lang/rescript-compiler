@@ -189,7 +189,7 @@ and parsing_source ({no_dev; dir_index ; cwd} as cxt ) (x : Ext_json_types.t )
         | Some x -> Bsb_exception.failwith_config x "dir expected to be a string"
         | None -> 
         Bsb_exception.failwith_config x
-          {|required field %s  missing, please checkout the schema http://bloomberg.github.io/bucklescript/docson/#build-schema.json |} "dir"
+          {|required field %s  missing, please checkout the schema http://bucklescript.github.io/bucklescript/docson/#build-schema.json |} "dir"
       in
 
       parsing_source_dir_map {cxt with dir_index = current_dir_index; cwd=dir} map
