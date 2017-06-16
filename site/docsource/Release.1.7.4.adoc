@@ -11,8 +11,8 @@ Main highlights:
 npm install -g bs-platform && bsb -init hello && cd hello && npm run build
 -----------
 
-http://bloomberg.github.io/bucklescript/Manual.html#_using_existing_templates_since_1_7_4
+http://bucklescript.github.io/bucklescript/Manual.html#_using_existing_templates_since_1_7_4
 
 
-2. Adding several modules to Js namespace, including Option, Result, List and Vector. 
+2. Adding several modules to Js namespace, including Option, Result, List and Vector.
 Note it is still work in progress, but these libraries are optimized for both performance and size, they can provide an even smaller code size than current case

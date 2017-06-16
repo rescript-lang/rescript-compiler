@@ -2,12 +2,12 @@
 
 # Features
 
-1. FFI: Unicode literal support http://bloomberg.github.io/bucklescript/Manual.html#_unicode_support_since_1_5_1
+1. FFI: Unicode literal support http://bucklescript.github.io/bucklescript/Manual.html#_unicode_support_since_1_5_1
 
-2. FFI: Return value checking http://bloomberg.github.io/bucklescript/Manual.html#_return_value_checking_since_1_5_1
+2. FFI: Return value checking http://bucklescript.github.io/bucklescript/Manual.html#_return_value_checking_since_1_5_1
 
 3. FFI: Detect global variable existence
-http://bloomberg.github.io/bucklescript/Manual.html#_detect_global_varialbe_existence_code_bs_external_code_since_1_5_1
+http://bucklescript.github.io/bucklescript/Manual.html#_detect_global_varialbe_existence_code_bs_external_code_since_1_5_1
 
 # Minor breaking changes
 

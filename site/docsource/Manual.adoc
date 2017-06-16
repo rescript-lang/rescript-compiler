@@ -10,7 +10,7 @@ v1.7.0
 :OCaml: https://ocaml.org/
 :Reason: https://github.com/facebook/Reason
 :BuckleScript: https://github.com/bloomberg/bucklescript
-:BuckleScript-playground: http://bloomberg.github.io/bucklescript/js-demo/
+:BuckleScript-playground: http://bucklescript.github.io/bucklescript/js-demo/
 :closure: https://developers.google.com/closure/compiler/
 :transpile-list: https://github.com/jashkenas/coffeescript/wiki/list-of-languages-that-compile-to-js
 :name-mangling: https://en.wikipedia.org/wiki/Name_mangling
@@ -45,13 +45,13 @@ in the {BuckleScript-playground}[browser].
 [NOTE]
 
 ====
-Documentation under https://bloomberg.github.io/bucklescript/Manual.html[_bloomberg.github.io_] match the https://github.com/bloomberg/bucklescript[master branch].
+Documentation under https://bucklescript.github.io/bucklescript/Manual.html[_bucklescript.github.io_] match the https://github.com/bloomberg/bucklescript[master branch].
 
 If you find errors or omissions in this document, please don't
 hesitate to submit an issue, sources are https://github.com/bloomberg/bucklescript/tree/master/site/docsource[here].
 ====
 
-// .PDF version is http://bloomberg.github.io/bucklescript/Manual.pdf[available].
+// .PDF version is http://bucklescript.github.io/bucklescript/Manual.pdf[available].
 // They are also distributed (`docs/Manual.html`, `docs/Manual.pdf`) together with your <<Installation>> (with the exact version).
 
 
@@ -95,7 +95,7 @@ include::./Differences-from-js_of_ocaml.adoc[]
 == Library API documentation
 
 There is a small library that comes with `bs-platform`, its documentation is
-http://bloomberg.github.io/bucklescript/api/[here].
+http://bucklescript.github.io/bucklescript/api/[here].
 
 
 [appendix]

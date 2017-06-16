@@ -18,7 +18,7 @@ December 6, 2016
 ### Why OCaml
 
 - Save this slide for OCaml audience ^_^
- 
+
 ---
 
 ### Why JS
@@ -40,11 +40,11 @@ December 6, 2016
 - It grows fast (the most starred open source project by Bloomberg),
   already used by external users in production (Collaborations with
   Facebook Reason team)
-    
-<blockquote style= 'background: #f9f9f9; ';>    
+
+<blockquote style= 'background: #f9f9f9; ';>
     I'm on the Facebook Reason team, and we're using BuckleScript to compile OCaml into the best compiler output I've ever seen. People didn't recognize that my React components were generated, not hand-written.
-</blockquote>    
-   
+</blockquote>
+
 
 ===
 
@@ -69,20 +69,20 @@ Advantages of Js_of_ocaml:
 ## A brief overview of compiler pipeline
 
 
-[Compiler pipelines](http://bloomberg.github.io/bucklescript/Manual.html#_high_level_compiler_workflow)
+[Compiler pipelines](http://bucklescript.github.io/bucklescript/Manual.html#_high_level_compiler_workflow)
 
 ===
 
 ## What does it look like?
 
-[Example:  balanced tree](http://bloomberg.github.io/bucklescript/js-demo/#Balanced_tree)
+[Example:  balanced tree](http://bucklescript.github.io/bucklescript/js-demo/#Balanced_tree)
 
 
 ---
 
-## Balanced tree with 2 million keys insertion and deletion 
+## Balanced tree with 2 million keys insertion and deletion
 
-Execution Time (node v7.2.0, BuckleScript + Google Closure, jsoo minify): 
+Execution Time (node v7.2.0, BuckleScript + Google Closure, jsoo minify):
 
 - OCAMLOPT (-g): 0.837s
 - BuckleScript: 2.219s
@@ -91,7 +91,7 @@ Execution Time (node v7.2.0, BuckleScript + Google Closure, jsoo minify):
 - Using Facebook ImmutableJS lib: 13.520s
 
 JS output size:
-- BuckleScript: 542 bytes 
+- BuckleScript: 542 bytes
 - JSOO: 3836 bytes
 
 
@@ -104,7 +104,7 @@ JS output size:
 - Basic data types are closely matched (Array -> Array, Tuple -> Array, etc)
 - BuckleScript can also emit `.d.ts` files for TypeScript compiler (*experimental*)
 - [Publish and consume npm packages out of box](https://www.npmjs.com/package/bs-platform)
-- [Call OCaml library from JS side](http://bloomberg.github.io/bucklescript/js-demo/#Use_OCaml_Standard_Library)
+- [Call OCaml library from JS side](http://bucklescript.github.io/bucklescript/js-demo/#Use_OCaml_Standard_Library)
 
 ===
 
@@ -136,15 +136,15 @@ Typescript binding:
 
 ```ocaml
 type readline
-type line_callback = string -> unit [@bs] 
+type line_callback = string -> unit [@bs]
 (*  [bs] annotation to mark it as uncurried callback  *)
 type close_callback = unit -> unit [@bs]
-external on : readline -> 
+external on : readline ->
    ([ `line of line_callback
-    | `close of close_callback] 
-     [@bs.string]) ->  unit = "" [@@bs.send] 
+    | `close of close_callback]
+     [@bs.string]) ->  unit = "" [@@bs.send]
 
-let register readline = 
+let register readline =
   on readline (`line begin fun s -> prerr_endline s end);
   on readline (`close begin fun () -> prerr_endline "finished" end);
   print_endline "done"
@@ -152,7 +152,7 @@ let register readline =
 
 ---
 
-## FFI examples 
+## FFI examples
 
 - In BuckleScript, `##` is used as method dispatch
 
@@ -172,18 +172,18 @@ let b = f [%obj {height = 3 ; width  = 32; unused = 3 }] (* compiles *)
 ```ocaml
 let port = 3000
 let hostname = "127.0.0.1"
-let create_server http  = 
-  let server = http##createServer begin fun [@bs] req  resp  -> 
+let create_server http  =
+  let server = http##createServer begin fun [@bs] req  resp  ->
       resp##statusCode #= 200;
       resp##setHeader "Content-Type" "text/plain";
       resp##end_ "Hello world\n"
     end
   in
-  server##listen port hostname  begin fun [@bs] () -> 
+  server##listen port hostname  begin fun [@bs] () ->
     Js.log ("Server running at http://"^ hostname ^ ":" ^ Pervasives.string_of_int port ^ "/")
-  end 
+  end
 
-let () = 
+let () =
   create_server Http_types.http
 ```
 ---
@@ -193,20 +193,20 @@ let () =
 - `http_types`
 
 ```ocaml
-type req 
-class type _resp = object 
+type req
+class type _resp = object
   method statusCode : int [@@bs.set]
-  method setHeader : string -> string -> unit 
-  method end_ : string -> unit 
+  method setHeader : string -> string -> unit
+  method end_ : string -> unit
 end [@bs]
-class type _server = object 
-  method listen : int -> string -> (unit -> unit [@bs]) -> unit 
+class type _server = object
+  method listen : int -> string -> (unit -> unit [@bs]) -> unit
 end [@bs]
-type server = _server Js.t 
-class type _http  = object 
+type server = _server Js.t
+class type _http  = object
   method createServer : (req  ->  resp  -> unit [@bs] ) ->  server
 end [@bs]
-type http = _http Js.t 
+type http = _http Js.t
 external http : http  = ""  [@@bs.module]
 ```
 
@@ -241,7 +241,7 @@ create_server(Http);
 
 ## Easy to set up
 
-Installation 
+Installation
 ```
 npm install bs-platform
 ```
@@ -258,12 +258,12 @@ Create a JSON file to describe the build spec:
     ]
 }
 
-``` 
+```
 
-Build and run 
+Build and run
 
 ```
-bsb -w 
+bsb -w
 ```
 
 
@@ -273,26 +273,26 @@ bsb -w
 
 
 
-[Semantics diverge](http://bloomberg.github.io/bucklescript/Manual.html#_semantics_difference_from_other_backends)
+[Semantics diverge](http://bucklescript.github.io/bucklescript/Manual.html#_semantics_difference_from_other_backends)
 
 
 ===
 
-## Data representation 
+## Data representation
 
-[OCaml data representation in JS](http://bloomberg.github.io/bucklescript/Manual.html#_runtime_representation)
+[OCaml data representation in JS](http://bucklescript.github.io/bucklescript/Manual.html#_runtime_representation)
 
 ===
 
-## Wishes from OCaml compiler upstream 
+## Wishes from OCaml compiler upstream
 
 - Tell the difference between block and array in lambda layer
-  - OCaml Array has to be JS array for better FFI 
+  - OCaml Array has to be JS array for better FFI
   - More efficient data layout, useful for jsoo too
 
 ---
 
-## Wishes from OCaml compiler upstream 
+## Wishes from OCaml compiler upstream
 - Native uncurried calling convention support
   - Essential for FFI in callbacks
   - BuckleScript attributes is leaky in error message, can not be Polymorpphic
