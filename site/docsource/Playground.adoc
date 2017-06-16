@@ -1,8 +1,8 @@
-There are two Playgrounds, one for 
-https:////bloomberg.github.io/bucklescript/js-demo[vanilla OCaml], 
-the other for 
-https:////bloomberg.github.io/bucklescript/reason-demo[Facebook Reason]
+There are two Playgrounds, one for
+https:////bucklescript.github.io/bucklescript/js-demo[vanilla OCaml],
+the other for
+https:////bucklescript.github.io/bucklescript/reason-demo[Facebook Reason]
 
 Note that the playgrounds are only for demos and might not be the
-latest. 
+latest.
 You should always use the command line as your production tool.

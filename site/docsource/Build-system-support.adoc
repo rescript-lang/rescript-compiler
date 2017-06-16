@@ -26,7 +26,7 @@ It is designed for a fast feedback loop (typically 100ms feedback loop) and work
 // ======
 
 `bsb` can be running in any subdirectory. It is a schema based build tool and the schema is
-http://bloomberg.github.io/bucklescript/docson/#build-schema.json[available]. It is strongly recommended to **check out the http://bloomberg.github.io/bucklescript/docson/#build-schema.json[schema]**
+http://bucklescript.github.io/bucklescript/docson/#build-schema.json[available]. It is strongly recommended to **check out the http://bucklescript.github.io/bucklescript/docson/#build-schema.json[schema]**
 after you finish reading the tutorials below.
 
 If your editor supports JSON schema validation and auto-completion like https://code.visualstudio.com/docs/languages/json[VSCode],
@@ -281,7 +281,7 @@ Rerun the command
 bsb -clean-world -make-world
 ----------
 
-You will get both `commonjs` and `amdjs` support. In the end, we suggest you http://bloomberg.github.io/bucklescript/docson/#build-schema.json[check out the schema] and enjoy the build!
+You will get both `commonjs` and `amdjs` support. In the end, we suggest you http://bucklescript.github.io/bucklescript/docson/#build-schema.json[check out the schema] and enjoy the build!
 
 
 

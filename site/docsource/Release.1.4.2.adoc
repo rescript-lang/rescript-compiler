@@ -6,14 +6,14 @@ BuckleScript 1.4.2 release comes with quite a few enhancement.
 Most notable features:
 
 1. The build system is ready to handle multiple npm packages, and its module system can be
-overriden by the end user. For example, if the library A(end user) depends library B and library C, 
-we only need tell the build system that A needs goog module system, then B, C will be built using 
-goog module system too. 
+overriden by the end user. For example, if the library A(end user) depends library B and library C,
+we only need tell the build system that A needs goog module system, then B, C will be built using
+goog module system too.
 
 There are quite lots of enhancements to the build system, we strongly recommend users to re-read
-the documentation http://bloomberg.github.io/bucklescript/Manual.html#_build_system_support
+the documentation http://bucklescript.github.io/bucklescript/Manual.html#_build_system_support
 
-2. FFI add a new feature: http://bloomberg.github.io/bucklescript/Manual.html#_fixed_arguments
+2. FFI add a new feature: http://bucklescript.github.io/bucklescript/Manual.html#_fixed_arguments
 
 3. FFI can handle `bs.obj` and `bs.string` combination:
    https://github.com/bloomberg/bucklescript/issues/1072
