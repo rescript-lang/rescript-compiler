@@ -14,7 +14,7 @@
     <section class="page-header">
       <h1 class="project-name">BuckleScript: write JS faster, safer and smaller</h1>
       <h2 class="project-tagline"></h2>
-      <a href="https://github.com/bloomberg/bucklescript" class="btn">View on GitHub</a>
+      <a href="https://github.com/bucklescript/bucklescript" class="btn">View on GitHub</a>
       <a href="./Manual.html" class="btn">Manual</a>
       <a href="./js-demo/index.html" class="btn">Try it </a>
       <a href="./blog/index.html" class="btn"> Blogs</a>
@@ -50,7 +50,7 @@ npm install -g bs-platform
 #### Enjoy!
 ++++
       <footer class="site-footer">
-        <span class="site-footer-owner"><a href="https://github.com/bloomberg/bucklescript">BuckleScript</a> is open-sourced by <a href="https://github.com/bloomberg">Bloomberg L.P </a>.</span>
+        <span class="site-footer-owner"><a href="https://github.com/bucklescript/bucklescript">BuckleScript</a> is open-sourced by <a href="https://github.com/bucklescript">Bloomberg L.P </a>.</span>
 
       </footer>
 

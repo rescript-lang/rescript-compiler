@@ -59,7 +59,7 @@ See http://bucklescript.github.io/bucklescript/Manual.html#__code_bs_open_code_t
 
 #### ES6 support in Safari
 
-See https://github.com/bloomberg/bucklescript/issues/1465[fix es6 support in browser]
+See https://github.com/bucklescript/bucklescript/issues/1465[fix es6 support in browser]
 
 #### `bs-dev-dependencies` support  in the build system
 
@@ -71,4 +71,4 @@ See http://bucklescript.github.io/bucklescript/Manual.html#_fixed_arguments_with
 
 ### Bug fixes, performance improvement, and stress tests
 
-Notable bug fixes https://github.com/bloomberg/bucklescript/issues/1549[#1549], https://github.com/bloomberg/bucklescript/issues/1539[#1539], https://github.com/bloomberg/bucklescript/issues/1520[#1520]
+Notable bug fixes https://github.com/bucklescript/bucklescript/issues/1549[#1549], https://github.com/bucklescript/bucklescript/issues/1539[#1539], https://github.com/bucklescript/bucklescript/issues/1520[#1520]

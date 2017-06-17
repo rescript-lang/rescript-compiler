@@ -3,10 +3,10 @@ name: "bspack"
 version: "1.0.0"
 maintainer: "Hongbo Zhang <bobzhang1988@gmail.com>"
 authors: "Hongbo Zhang <bobzhang1988@gmail.com>"
-homepage: "https://github.com/bloomberg/bucklescript#readme"
-bug-reports: "https://github.com/bloomberg/bucklescript/issues"
+homepage: "https://github.com/bucklescript/bucklescript#readme"
+bug-reports: "https://github.com/bucklescript/bucklescript/issues"
 license: "SEE LICENSE IN LICENSE"
-dev-repo: "git+https://github.com/bloomberg/bucklescript.git"
+dev-repo: "git+https://github.com/bucklescript/bucklescript.git"
 build: [
   [make "bspack.exe"]
 ]

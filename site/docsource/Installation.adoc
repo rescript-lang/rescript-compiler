@@ -68,7 +68,7 @@ Note that using this approach, the user can also install other OCaml tools easil
 .Instructions:
 [source,sh]
 -----
-git clone https://github.com/bloomberg/bucklescript
+git clone https://github.com/bucklescript/bucklescript
 cd bucklescript
 npm install
 -----
@@ -89,7 +89,7 @@ easily be done.
 
 [source,sh]
 --------------------------------------------------------
-git clone --recursive https://github.com/bloomberg/bucklescript
+git clone --recursive https://github.com/bucklescript/bucklescript
 cd bucklescript/ocaml
 ./configure -prefix `pwd` # put your preferred directory
 make world.opt

@@ -17,7 +17,7 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //  Copyright (c) 2015 Bloomberg LP. All rights reserved. 
-// Hongbo Zhang (hzhang295@bloomberg.net)              
+// Hongbo Zhang (hzhang295@bucklescript.net)              
 "use strict";
 define(["require", "exports", './caml_exceptions'], function (require, exports, caml_exceptions_1) {
     //Provides: caml_current_dir

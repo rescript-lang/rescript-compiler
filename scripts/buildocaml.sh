@@ -23,7 +23,7 @@ else
         then
             cd $OCAML && git reset --hard && git pull --depth 1 && cd -
         else
-            git clone -b master --depth 1 https://github.com/bloomberg/ocaml $OCAML
+            git clone -b master --depth 1 https://github.com/bucklescript/ocaml $OCAML
         fi
     fi
 fi

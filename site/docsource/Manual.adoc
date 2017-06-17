@@ -1,4 +1,4 @@
-# https://github.com/bloomberg/bucklescript[BuckleScript] User Manual
+# https://github.com/bucklescript/bucklescript[BuckleScript] User Manual
 Hongbo Zhang
 v1.7.0
 :toc: left
@@ -6,16 +6,16 @@ v1.7.0
 :source-highlighter: pygments
 :page-layout: docs
 // Refs
-:uri-ad-org-issues: https://github.com/bloomberg/bucklescript/issues
+:uri-ad-org-issues: https://github.com/bucklescript/bucklescript/issues
 :OCaml: https://ocaml.org/
 :Reason: https://github.com/facebook/Reason
-:BuckleScript: https://github.com/bloomberg/bucklescript
+:BuckleScript: https://github.com/bucklescript/bucklescript
 :BuckleScript-playground: http://bucklescript.github.io/bucklescript/js-demo/
 :closure: https://developers.google.com/closure/compiler/
 :transpile-list: https://github.com/jashkenas/coffeescript/wiki/list-of-languages-that-compile-to-js
 :name-mangling: https://en.wikipedia.org/wiki/Name_mangling
 :npm: https://www.npmjs.com
-:issues: https://github.com/bloomberg/bucklescript/issues
+:issues: https://github.com/bucklescript/bucklescript/issues
 :sectanchors:
 :sectlinks:
 
@@ -45,10 +45,10 @@ in the {BuckleScript-playground}[browser].
 [NOTE]
 
 ====
-Documentation under https://bucklescript.github.io/bucklescript/Manual.html[_bucklescript.github.io_] match the https://github.com/bloomberg/bucklescript[master branch].
+Documentation under https://bucklescript.github.io/bucklescript/Manual.html[_bucklescript.github.io_] match the https://github.com/bucklescript/bucklescript[master branch].
 
 If you find errors or omissions in this document, please don't
-hesitate to submit an issue, sources are https://github.com/bloomberg/bucklescript/tree/master/site/docsource[here].
+hesitate to submit an issue, sources are https://github.com/bucklescript/bucklescript/tree/master/site/docsource[here].
 ====
 
 // .PDF version is http://bucklescript.github.io/bucklescript/Manual.pdf[available].

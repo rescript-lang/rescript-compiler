@@ -16,7 +16,7 @@ the documentation http://bucklescript.github.io/bucklescript/Manual.html#_build_
 2. FFI add a new feature: http://bucklescript.github.io/bucklescript/Manual.html#_fixed_arguments
 
 3. FFI can handle `bs.obj` and `bs.string` combination:
-   https://github.com/bloomberg/bucklescript/issues/1072
+   https://github.com/bucklescript/bucklescript/issues/1072
 
 
 

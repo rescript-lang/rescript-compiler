@@ -10,4 +10,4 @@ https://bucklescript.github.io/bucklescript/reason-demo[Facebook Reason]
 You should always use the command line as your production tool.
 =======
 
-There is a stand alone example https://github.com/bloomberg/bucklescript-addons/blob/master/examples/reason-demo/package.json[here].
+There is a stand alone example https://github.com/bucklescript/bucklescript-addons/blob/master/examples/reason-demo/package.json[here].
