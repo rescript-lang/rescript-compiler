@@ -96800,7 +96800,7 @@ and
             let () = Ext_log.dwarn __LOC__ "\n@[[TIME:]Lifthenelse: %f@]@."  (Sys.time () *. 1000.) in      
 #end                 
 *)
-                Js_output.make [S.return  (E.econd e  out1 out2)] ~finished:True                         
+                Js_output.make (b @ [S.return  (E.econd e  out1 out2)]) ~finished:True                         
               |   _, _, _  ->
                 (*              
 #if BS_DEBUG then 
