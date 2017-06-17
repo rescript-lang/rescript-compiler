@@ -2,7 +2,7 @@
 
 [![NPM](https://nodei.co/npm/bs-platform.png?compact=true)](https://nodei.co/npm/bs-platform/)
 
-[![Build Status](https://travis-ci.org/bucklescript/bucklescript.svg?branch=master)](https://travis-ci.org/bucklescript/bucklescript)
+[![Build Status](https://travis-ci.org/BuckleScript/bucklescript.svg?branch=master)](https://travis-ci.org/bucklescript/bucklescript)
 [![Coverage Status](https://coveralls.io/repos/github/bucklescript/bucklescript/badge.svg?branch=master)](https://coveralls.io/github/bucklescript/bucklescript?branch=master)
 [![Try Online](https://img.shields.io/badge/try_it-online!-yellow.svg?style=flat-square)](https://bucklescript.github.io/bucklescript/js-demo)
 
