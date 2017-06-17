@@ -1703,7 +1703,7 @@ NOTE: `Js.Re.t` can be accessed and manipulated using the functions available in
 
 Below is a simple example for the https://mochajs.org/[mocha] library. For
 more examples, please visit
-https://github.com/bloomberg/bucklescript-addons
+https://github.com/bucklescript/bucklescript-addons
 
 
 #### A simple example: binding to mocha unit test library

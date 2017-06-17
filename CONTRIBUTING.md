@@ -4,8 +4,8 @@ If you'd like to help us improve and extend BuckleScript, then we welcome your
 contributions!
 
 Below you will find some basic steps required to be able to contribute to the project. If
-you have any questions about this process or any other aspect of contributing to a Bloomberg open
-source project, feel free to send an email to open-tech@bloomberg.net and we'll get your questions
+you have any questions about this process or any other aspect of contributing to a bucklescript open
+source project, feel free to send an email to bobzhang1988@gmail.com and we'll get your questions
 answered as quickly as we can.
 
 

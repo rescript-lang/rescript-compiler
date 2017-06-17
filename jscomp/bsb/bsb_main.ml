@@ -214,7 +214,7 @@ let bsb_main_flags : (string * Arg.spec * string) list=
     "-init", Arg.String (fun  x -> Bsb_init.init_sample_project ~cwd ~theme:!current_theme x ),
     " Init sample project to get started. Note (`bsb -init sample` will create a sample project while `bsb -init .` will resuse current directory)";
     "-theme", Arg.String (fun s -> current_theme := s),
-    " The theme for project initialization, default is basic(https://github.com/bloomberg/bucklescript/tree/master/jscomp/bsb/templates)";
+    " The theme for project initialization, default is basic(https://github.com/bucklescript/bucklescript/tree/master/jscomp/bsb/templates)";
     "-themes", Arg.Unit Bsb_init.list_themes,
     " List all available themes"
   ]

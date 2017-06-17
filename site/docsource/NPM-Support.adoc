@@ -64,4 +64,4 @@ bsc.exe -I path/to/ocaml/package1/installed -I path/to/ocaml/package2/installed 
 
 ### Examples
 
-Please visit https://github.com/bloomberg/bucklescript-addons for more examples.
+Please visit https://github.com/bucklescript/bucklescript-addons for more examples.

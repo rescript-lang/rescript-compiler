@@ -1,6 +1,6 @@
 
 
-Full changes: https://github.com/bloomberg/bucklescript/blob/master/Changes.md#bucklescript-174may-24-2017
+Full changes: https://github.com/bucklescript/bucklescript/blob/master/Changes.md#bucklescript-174may-24-2017
 
 Main highlights:
 

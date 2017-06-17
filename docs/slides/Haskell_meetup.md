@@ -11,7 +11,7 @@ July 27, 2016
 
 ---
 
-# What's [BuckleScript](https://github.com/bloomberg/bucklescript)
+# What's [BuckleScript](https://github.com/bucklescript/bucklescript)
 
 - Readable JavaScript backend for OCaml
 - *module to module* compiler
@@ -297,7 +297,7 @@ let f (x : widget )  = (x :> title)
 
 # Demo: A stand alone HTTP server
 
-https://github.com/bloomberg/bucklescript-addons/tree/master/examples/node-http-server
+https://github.com/bucklescript/bucklescript-addons/tree/master/examples/node-http-server
 
 
 ---
