@@ -85,9 +85,14 @@ external to_bool : boolean -> bool = "#boolean_to_bool"
 (** convert Js boolean to OCaml bool *)
 external typeof : 'a -> string = "#typeof"
 (** [typeof x] will be compiled as [typeof x] in JS *)
-external log : 'a -> unit = "console.log" [@@bs.val]
-external log2 : 'a -> 'b -> unit = "console.log" [@@bs.val]
-external log3 : 'a -> 'b -> 'c -> unit = "console.log" [@@bs.val]
+external log : 'a -> unit = "log" 
+[@@bs.val] [@@bs.scope "console"]
+external log2 : 'a -> 'b -> unit = "log" 
+[@@bs.val] [@@bs.scope "console"]
+external log3 : 'a -> 'b -> 'c -> unit = "log" 
+[@@bs.val] [@@bs.scope "console"]
+external log4 : 'a -> 'b -> 'c -> 'd -> unit = "log" 
+[@@bs.val] [@@bs.scope "console"]
 (** A convenience function to log *)
 
 (** {4 operators }*)
