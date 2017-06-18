@@ -25466,14 +25466,15 @@ let jsxMapper () =
     let (children, argsWithLabels) =
       extractChildrenForDOMElements ~loc ~removeLastPositionUnit:true callArguments in
     let argIsKeyRef = function
-      | (Labelled ("key" | "ref") , _) -> true
+      | (Labelled ("key" | "ref"), _) | (Optional ("key" | "ref"), _) -> true
       | _ -> false in
     let (argsKeyRef, argsForMake) = List.partition argIsKeyRef argsWithLabels in
     let childrenExpr =
-      Exp.array (
+      Exp.array ~loc (
         listToArray children |> List.map (fun a -> mapper.expr mapper a)
       ) in
-    let args = argsForMake @ [ (Nolabel, childrenExpr) ] in
+    let recursivelyTransformedArgsForMake = argsForMake |> List.map (fun (label, expression) -> (label, mapper.expr mapper expression)) in
+    let args = recursivelyTransformedArgsForMake @ [ (Nolabel, childrenExpr) ] in
     let wrapWithReasonReactElement e = (* ReasonReact.element ::key ::ref (...) *)
       Exp.apply
         ~loc

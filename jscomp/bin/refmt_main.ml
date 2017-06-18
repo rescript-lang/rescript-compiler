@@ -2705,9 +2705,9 @@ module Package
 = struct
 #1 "package.ml"
 
-let version = "2.0.0"
-let git_version = "84e87c458bc04c92771480641118d95650c08d2a"
-let git_short_version = "84e87c4"
+let version = "1.13.6"
+let git_version = "3cacdcbeec6493573d96db05af29bc47273ff60d"
+let git_short_version = "3cacdcb"
 
 end
 module Ast_404
@@ -35058,8 +35058,7 @@ class printer  ()= object(self:'self)
             ~postSpace:true
             ~sep:";"
             (List.map self#signature_item (List.filter self#shouldDisplaySigItem s))
-      (* Not sure what this is about. *)
-      | Pmty_extension _ -> assert false
+      | Pmty_extension (s, e) -> self#payload "%" s e
       | _ -> makeList ~break:IfNeed ~wrap:("(", ")") [self#module_type x]
 
   method module_type x =
@@ -35068,7 +35067,7 @@ class printer  ()= object(self:'self)
       | Pmty_functor (_, None, mt2) -> (atom "()")::(functorTypeArgs mt2)
       | Pmty_functor (s, Some mt1, mt2) ->
           if s.txt = "_" then
-            (self#module_type mt1)::(functorTypeArgs mt2)
+            (self#non_arrowed_module_type mt1)::(functorTypeArgs mt2)
           else
             let cur =
               makeList ~wrap:("(",")") [
@@ -75781,7 +75780,7 @@ let message =
     | 2680 ->
         "<SYNTAX ERROR>\n"
     | 2676 ->
-        "This is a reserved keyword. Consider using a different one. For BuckleScript, add an underscore at the end (http://bloomberg.github.io/bucklescript/Manual.html#_object_label_translation_convention).\n"
+        "This is a reserved keyword. Consider using a different one. For BuckleScript, add an underscore at the end (http://bucklescript.github.io/bucklescript/Manual.html#_object_label_translation_convention).\n"
     | 2683 ->
         "<SYNTAX ERROR>\n"
     | 2374 ->
