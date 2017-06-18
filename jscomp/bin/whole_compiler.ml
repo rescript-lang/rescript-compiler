@@ -92140,229 +92140,6 @@ let translate_arg_cst (cst : Ast_arg.cst) =
    | Arg_js_false -> E.js_bool false 
 
 end
-module Js_of_lam_exception : sig 
-#1 "js_of_lam_exception.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-  
-val get_builtin_by_name : string -> J.expression
-
-
-val caml_set_oo_id : J.expression list -> J.expression
-val make : J.expression  -> J.expression
-(* val make_extension : J.expression  -> J.expression *)
-
-end = struct
-#1 "js_of_lam_exception.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-(** An pattern match on {!caml_set_oo_id args}
-    Note that in the trunk, it is immutable by default now 
- *)
-module E = Js_exp_make 
-
-
-(* Sync up with [caml_set_oo_id] 
-   Note if we inline {!Caml_exceptions.create}, 
-   it seems can be useful for optimizations in theory, 
-   in practice, it never happen, since the pattern match 
-   never dig into it internally, so maybe {!Obj.set_tag} 
-   is not necessary at all
-*)
-let make exception_str  : J.expression = 
-  E.runtime_call Js_config.exceptions Literals.create [exception_str]
-
-(* let make_extension exception_str  : J.expression =  *)
-(*   E.runtime_call Js_config.exceptions "makeExtension" [exception_str] *)
-
-
-let get_builtin_by_name name = 
-  E.runtime_ref Js_config.builtin_exceptions (String.lowercase name)
-
-
-(* let match_exception_def (args : J.expression list) =  *)
-(*   match args with    *)
-(*   | [{ expression_desc  =  *)
-(*                Caml_block ( *)
-(*                  [ exception_str;  *)
-(*                    {expression_desc = J.Number (Int { i = 0l; _}); _} *)
-(*                  ], *)
-(*                  mutable_flag,  *)
-(*                  {expression_desc = J.Number (Int {i = object_tag; _}); _}, _ ); *)
-(*               _} ] ->  *)
-(*     if object_tag = 248l (\* Obj.object_tag *\) then *)
-(*       Some ( exception_str, mutable_flag)     *)
-(*     else *)
-(*       None *)
-(*   | _ -> None *)
-
-let caml_set_oo_id args = 
-      (**
-         If we can guarantee this code path is never hit, we can do 
-         a better job for encoding of exception and extension?
-      *)
-      E.runtime_call Js_config.exceptions "caml_set_oo_id" args 
-    (* begin match match_exception_def args with  *)
-    (* | Some ( exception_str, mutable_flag) *)
-    (*   ->  *)
-    (*   make_exception exception_str  *)
-    (* | _ -> *)
-
-    (* end *)
-
-end
-module Js_of_lam_float_record : sig 
-#1 "js_of_lam_float_record.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-(** Compile a special representation in OCaml when all fields are of type [float] 
-    check the invariant in {!Js_of_lam_array.make_array}
-*)
-
-val set_double_field : 
-  Lambda.set_field_dbg_info -> 
-  J.expression -> J.jsint -> 
-  J.expression -> J.expression
-
-val get_double_feild : 
-  Lambda.field_dbg_info -> 
-  J.expression -> J.jsint -> J.expression
-
-end = struct
-#1 "js_of_lam_float_record.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-module E = Js_exp_make 
-
-let get_double_feild field_info e i = 
-  match field_info with 
-  | Lambda.Fld_na -> 
-    E.index e i 
-  | Lambda.Fld_record s 
-  | Lambda.Fld_module s 
-    -> E.index ~comment:s e i
-
-
-let set_double_field field_info e  i e0 = 
-  let v = 
-    match field_info with 
-    | Lambda.Fld_set_na 
-      -> 
-      E.index e i 
-    | Fld_record_set s -> 
-      E.index ~comment:s e i in 
-  E.assign v  e0
-
-
-end
 module Js_of_lam_option : sig 
 #1 "js_of_lam_option.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -93106,12 +92883,13 @@ module E = Js_exp_make
 *)
   
 let assemble_args_obj (labels : Ast_arg.kind list) (args : J.expression list) = 
-  let rec aux (labels : Ast_arg.kind list) args = 
+  let rec aux (labels : Ast_arg.kind list) args 
+    : (Js_op.property_name * E.t ) list  * _ = 
     match labels, args with 
     | [] , [] as empty_pair -> empty_pair
     | {arg_label = Label (label, Some cst )} :: labels  , args -> 
       let accs, eff = aux labels args in 
-      (Js_op.Key label, Lam_compile_const.translate_arg_cst cst )::accs, eff 
+      (Key label, Lam_compile_const.translate_arg_cst cst )::accs, eff 
     | {arg_label = Empty (Some _) } :: rest  , args -> assert false 
     | {arg_label = Empty None }::labels, arg::args 
       ->  
@@ -93125,7 +92903,7 @@ let assemble_args_obj (labels : Ast_arg.kind list) (args : J.expression list) =
       begin match acc with 
         | [ ] -> assert false
         | x::xs -> 
-          (Js_op.Key label, E.fuse_to_seq x xs ) :: accs , new_eff @ eff 
+          (Key label, E.fuse_to_seq x xs ) :: accs , new_eff @ eff 
       end (* evaluation order is undefined *)
 
     | ({arg_label = Optional label } as arg_kind)::labels, arg::args 
@@ -93139,7 +92917,7 @@ let assemble_args_obj (labels : Ast_arg.kind list) (args : J.expression list) =
           begin match acc with 
             | [] -> assert false 
             | x::xs -> 
-              (Js_op.Key label, E.fuse_to_seq x xs)::accs , 
+              (Key label, E.fuse_to_seq x xs)::accs , 
               new_eff @ eff 
           end 
       end
@@ -93153,6 +92931,229 @@ let assemble_args_obj (labels : Ast_arg.kind list) (args : J.expression list) =
   | [] -> 
     E.obj map 
   | x::xs -> E.seq (E.fuse_to_seq x xs) (E.obj map)
+
+
+end
+module Js_of_lam_exception : sig 
+#1 "js_of_lam_exception.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+  
+val get_builtin_by_name : string -> J.expression
+
+
+val caml_set_oo_id : J.expression list -> J.expression
+val make : J.expression  -> J.expression
+(* val make_extension : J.expression  -> J.expression *)
+
+end = struct
+#1 "js_of_lam_exception.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+(** An pattern match on {!caml_set_oo_id args}
+    Note that in the trunk, it is immutable by default now 
+ *)
+module E = Js_exp_make 
+
+
+(* Sync up with [caml_set_oo_id] 
+   Note if we inline {!Caml_exceptions.create}, 
+   it seems can be useful for optimizations in theory, 
+   in practice, it never happen, since the pattern match 
+   never dig into it internally, so maybe {!Obj.set_tag} 
+   is not necessary at all
+*)
+let make exception_str  : J.expression = 
+  E.runtime_call Js_config.exceptions Literals.create [exception_str]
+
+(* let make_extension exception_str  : J.expression =  *)
+(*   E.runtime_call Js_config.exceptions "makeExtension" [exception_str] *)
+
+
+let get_builtin_by_name name = 
+  E.runtime_ref Js_config.builtin_exceptions (String.lowercase name)
+
+
+(* let match_exception_def (args : J.expression list) =  *)
+(*   match args with    *)
+(*   | [{ expression_desc  =  *)
+(*                Caml_block ( *)
+(*                  [ exception_str;  *)
+(*                    {expression_desc = J.Number (Int { i = 0l; _}); _} *)
+(*                  ], *)
+(*                  mutable_flag,  *)
+(*                  {expression_desc = J.Number (Int {i = object_tag; _}); _}, _ ); *)
+(*               _} ] ->  *)
+(*     if object_tag = 248l (\* Obj.object_tag *\) then *)
+(*       Some ( exception_str, mutable_flag)     *)
+(*     else *)
+(*       None *)
+(*   | _ -> None *)
+
+let caml_set_oo_id args = 
+      (**
+         If we can guarantee this code path is never hit, we can do 
+         a better job for encoding of exception and extension?
+      *)
+      E.runtime_call Js_config.exceptions "caml_set_oo_id" args 
+    (* begin match match_exception_def args with  *)
+    (* | Some ( exception_str, mutable_flag) *)
+    (*   ->  *)
+    (*   make_exception exception_str  *)
+    (* | _ -> *)
+
+    (* end *)
+
+end
+module Js_of_lam_float_record : sig 
+#1 "js_of_lam_float_record.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+(** Compile a special representation in OCaml when all fields are of type [float] 
+    check the invariant in {!Js_of_lam_array.make_array}
+*)
+
+val set_double_field : 
+  Lambda.set_field_dbg_info -> 
+  J.expression -> J.jsint -> 
+  J.expression -> J.expression
+
+val get_double_feild : 
+  Lambda.field_dbg_info -> 
+  J.expression -> J.jsint -> J.expression
+
+end = struct
+#1 "js_of_lam_float_record.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+module E = Js_exp_make 
+
+let get_double_feild field_info e i = 
+  match field_info with 
+  | Lambda.Fld_na -> 
+    E.index e i 
+  | Lambda.Fld_record s 
+  | Lambda.Fld_module s 
+    -> E.index ~comment:s e i
+
+
+let set_double_field field_info e  i e0 = 
+  let v = 
+    match field_info with 
+    | Lambda.Fld_set_na 
+      -> 
+      E.index e i 
+    | Fld_record_set s -> 
+      E.index ~comment:s e i in 
+  E.assign v  e0
 
 
 end
@@ -94834,7 +94835,8 @@ let translate  loc
   (* Test if the argument is a block or an immediate integer *)
   | Pjs_object_create labels
     -> 
-    Lam_compile_external_obj.assemble_args_obj labels args 
+    assert false 
+    (*Lam_compile_external_obj.assemble_args_obj labels args *)
   | Pjs_call (_, arg_types, ffi) -> 
     Lam_compile_external_call.translate_ffi 
       loc ffi cxt arg_types args 
@@ -96628,6 +96630,20 @@ and
       *)
       let exp = Lam_compile_global.get_exp (i,env,true) in 
       Js_output.handle_block_return st should_return lam [] exp 
+    | Lprim{ primitive = Pjs_object_create labels ; args ; loc}
+      ->   
+       let args_block, args_expr =
+        Ext_list.split_map (fun (x : Lam.t) ->
+            match compile_lambda {cxt with st = NeedValue; should_return = ReturnFalse} x 
+            with 
+            | {block = a; value = Some b} -> a,b
+            | _ -> assert false ) args
+      in
+      let args_code  = List.concat args_block in
+      let exp  =  
+        Lam_compile_external_obj.assemble_args_obj labels args_expr
+      in
+      Js_output.handle_block_return st should_return lam args_code exp  
 
     | Lprim{primitive = prim; args =  args_lambda; loc} -> 
       let args_block, args_expr =

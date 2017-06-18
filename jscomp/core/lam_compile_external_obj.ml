@@ -40,12 +40,13 @@ module E = Js_exp_make
 *)
   
 let assemble_args_obj (labels : Ast_arg.kind list) (args : J.expression list) = 
-  let rec aux (labels : Ast_arg.kind list) args = 
+  let rec aux (labels : Ast_arg.kind list) args 
+    : (Js_op.property_name * E.t ) list  * _ = 
     match labels, args with 
     | [] , [] as empty_pair -> empty_pair
     | {arg_label = Label (label, Some cst )} :: labels  , args -> 
       let accs, eff = aux labels args in 
-      (Js_op.Key label, Lam_compile_const.translate_arg_cst cst )::accs, eff 
+      (Key label, Lam_compile_const.translate_arg_cst cst )::accs, eff 
     | {arg_label = Empty (Some _) } :: rest  , args -> assert false 
     | {arg_label = Empty None }::labels, arg::args 
       ->  
@@ -59,7 +60,7 @@ let assemble_args_obj (labels : Ast_arg.kind list) (args : J.expression list) =
       begin match acc with 
         | [ ] -> assert false
         | x::xs -> 
-          (Js_op.Key label, E.fuse_to_seq x xs ) :: accs , new_eff @ eff 
+          (Key label, E.fuse_to_seq x xs ) :: accs , new_eff @ eff 
       end (* evaluation order is undefined *)
 
     | ({arg_label = Optional label } as arg_kind)::labels, arg::args 
@@ -73,7 +74,7 @@ let assemble_args_obj (labels : Ast_arg.kind list) (args : J.expression list) =
           begin match acc with 
             | [] -> assert false 
             | x::xs -> 
-              (Js_op.Key label, E.fuse_to_seq x xs)::accs , 
+              (Key label, E.fuse_to_seq x xs)::accs , 
               new_eff @ eff 
           end 
       end

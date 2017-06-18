@@ -671,7 +671,8 @@ let translate  loc
   (* Test if the argument is a block or an immediate integer *)
   | Pjs_object_create labels
     -> 
-    Lam_compile_external_obj.assemble_args_obj labels args 
+    assert false 
+    (*Lam_compile_external_obj.assemble_args_obj labels args *)
   | Pjs_call (_, arg_types, ffi) -> 
     Lam_compile_external_call.translate_ffi 
       loc ffi cxt arg_types args 
