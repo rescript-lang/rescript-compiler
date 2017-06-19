@@ -5,6 +5,8 @@ Fixes:
 - #1573, don't include `-bs` flags in `.merlin`
 - #1716, fix wrong optimization of recursive values
 - #1728, bad inlining
+- #1409, make sure when optional is None, bs.obj will not introduce such label
+- #1737, same as #1409
 
 # 1.7.5
 
