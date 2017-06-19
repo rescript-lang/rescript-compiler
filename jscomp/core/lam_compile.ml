@@ -884,6 +884,20 @@ and
       *)
       let exp = Lam_compile_global.get_exp (i,env,true) in 
       Js_output.handle_block_return st should_return lam [] exp 
+    | Lprim{ primitive = Pjs_object_create labels ; args ; loc}
+      ->   
+       let args_block, args_expr =
+        Ext_list.split_map (fun (x : Lam.t) ->
+            match compile_lambda {cxt with st = NeedValue; should_return = ReturnFalse} x 
+            with 
+            | {block = a; value = Some b} -> a,b
+            | _ -> assert false ) args
+      in
+      let args_code  = List.concat args_block in
+      let block, exp  =  
+        Lam_compile_external_obj.assemble_args_obj labels args_expr
+      in
+      Js_output.handle_block_return st should_return lam (args_code @ block) exp  
 
     | Lprim{primitive = prim; args =  args_lambda; loc} -> 
       let args_block, args_expr =
@@ -894,7 +908,7 @@ and
             | _ -> assert false ) args_lambda 
 
       in
-      let args_code  = List.concat args_block in
+      let args_code  : J.block = List.concat args_block in
       let exp  =  (* TODO: all can be done in [compile_primitive] *)
         Lam_compile_primitive.translate loc cxt  prim args_expr in
       Js_output.handle_block_return st should_return lam args_code exp  

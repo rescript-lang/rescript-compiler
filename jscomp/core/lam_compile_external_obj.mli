@@ -40,4 +40,9 @@
 val assemble_args_obj :
   Ast_arg.kind list -> 
   J.expression list -> 
-  J.expression 
+  J.block * J.expression 
+(* It returns a block in cases we need set the property dynamically: we need
+  create a place holder assignment first and then set it accordingly
+*)
+
+
