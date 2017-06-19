@@ -539,8 +539,9 @@ core/lam_compile_external_call.cmx : core/lam_compile_env.cmx \
     ext/ext_ident.cmx syntax/ast_ffi_types.cmx syntax/ast_arg.cmx \
     core/lam_compile_external_call.cmi
 core/lam_compile_external_obj.cmx : core/lam_compile_external_call.cmx \
-    core/lam_compile_const.cmx core/js_op.cmx core/js_exp_make.cmx \
-    core/js_analyzer.cmx core/j.cmx syntax/ast_arg.cmx \
+    core/lam_compile_const.cmx core/js_stmt_make.cmx core/js_op.cmx \
+    core/js_exp_make.cmx core/js_ast_util.cmx core/js_analyzer.cmx core/j.cmx \
+    ext/ext_list.cmx ext/ext_ident.cmx syntax/ast_arg.cmx \
     core/lam_compile_external_obj.cmi
 core/lam_compile_primitive.cmx : core/lam_util.cmx \
     core/lam_dispatch_primitive.cmx core/lam_compile_external_call.cmx \
