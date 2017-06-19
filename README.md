@@ -24,6 +24,7 @@ For [example](https://github.com/bsansouci/BetterErrors/tree/bsb-support):
 You can see the full bsconfig schema at [head](http://bucklescript.github.io/bucklescript/docson/#build-schema.json).
 
 ## How to run
+
 All binaries installed through npm are installed in the same folder `node_modules/.bin` so to run from the command-line you can run `./node_modules/.bin/bsb -make-world -w` (or add an [npm script](https://docs.npmjs.com/misc/scripts)).
 
 The `-make-world` flag builds all of the dependencies.
@@ -31,4 +32,5 @@ The `-make-world` flag builds all of the dependencies.
 The `-w` enabled the watch mode which will rebuild on any source file change.
 
 ## Already using JS bsb
+
 If you're already using `bsb` in your project all you need to do is update the dependency in your `package.json` to `"bs-platform": "bsansouci/bucklescript"` , run `npm i` again and add the `entries` field to your `bsconfig.json`.
