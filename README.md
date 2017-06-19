@@ -1,10 +1,10 @@
 [BuckleScript](http://bucklescript.github.io/bucklescript/): A JavaScript backend for [OCaml](https://ocaml.org/) focused on smooth integration and clean generated code.
 
-# Fork
+# bsb-native
 
-This fork is an exploration of making [bsb](http://bucklescript.github.io/bucklescript/Manual.html#_bucklescript_build_system_code_bsb_code) build to native/bytecode.
+[This fork/branch](https://github.com/bsansouci/bucklescript/tree/simple-native-compilation) is an exploration of making [bsb](http://bucklescript.github.io/bucklescript/Manual.html#_bucklescript_build_system_code_bsb_code) build to native/bytecode. 
 
-[This fork/branch](https://github.com/bsansouci/bucklescript/tree/simple-native-compilation) is capable of building to native with a simple `bsconfig.json`. 
+[It](https://github.com/bsansouci/bucklescript/tree/simple-native-compilation) is capable of building to native with a simple `bsconfig.json`. 
 
 ## How to
 
