@@ -29,6 +29,12 @@ let print_if ppf flag printer arg =
 
 
 let after_parsing_sig ppf sourcefile outputprefix ast  =
+  if !Js_config.simple_binary_ast then
+      Binary_ast.write_ast_simple
+        Mli
+        ~fname:sourcefile
+        ~output:(outputprefix ^ Literals.suffix_mliast_simple)
+        ast ;
   if !Js_config.binary_ast then
       Binary_ast.write_ast
         Mli
@@ -36,12 +42,6 @@ let after_parsing_sig ppf sourcefile outputprefix ast  =
         ~output:(outputprefix ^ Literals.suffix_mliast)
         (* to support relocate to another directory *)
         ast;
-  if !Js_config.simple_binary_ast then
-      Binary_ast.write_ast_simple
-        Mli
-        ~fname:sourcefile
-        ~output:(outputprefix ^ Literals.suffix_mliast_simple)
-        ast ;
   if !Js_config.syntax_only then () else 
     begin 
       if not @@ !Js_config.no_warn_unused_bs_attribute then 
@@ -83,13 +83,13 @@ let interface_mliast ppf sourcefile outputprefix  =
   |> after_parsing_sig ppf sourcefile outputprefix 
   
 let after_parsing_impl ppf sourcefile outputprefix ast =
-  if !Js_config.binary_ast then 
-      Binary_ast.write_ast ~fname:sourcefile 
-        Ml ~output:(outputprefix ^ Literals.suffix_mlast)
-        ast ;
   if !Js_config.simple_binary_ast then
     Binary_ast.write_ast_simple ~fname:sourcefile 
         Ml ~output:(outputprefix ^ Literals.suffix_mlast_simple) 
+        ast ;
+  if !Js_config.binary_ast then 
+      Binary_ast.write_ast ~fname:sourcefile 
+        Ml ~output:(outputprefix ^ Literals.suffix_mlast)
         ast ;
   if !Js_config.syntax_only then () else 
     begin
