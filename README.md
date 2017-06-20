@@ -10,12 +10,12 @@ Bsb-native is like [bsb](http://bucklescript.github.io/bucklescript/Manual.html#
 For [example](https://github.com/bsansouci/BetterErrors/tree/bsb-support):
 ```json
 {
-  "name" : "NameOfLibrary",
-  "sources" : "src",
-  "entries": [{
-    "kind": "bytecode",
-    "main": "Index"
-  }]
+  "name" : "NameOfLibrary",
+  "sources" : "src",
+  "entries": [{
+    "kind": "bytecode",
+    "main": "Index"
+  }]
 }
 ```
 
