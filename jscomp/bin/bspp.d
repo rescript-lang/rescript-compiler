@@ -1,7 +1,6 @@
 bin/bspp.ml : ../ocaml/utils/misc.ml
 bin/bspp.ml : ../ocaml/utils/misc.mli
 bin/bspp.ml : bspp/parser.ml
-bin/bspp.ml : ../ocaml/parsing/lexer.ml
 bin/bspp.ml : ../ocaml/utils/clflags.ml
 bin/bspp.ml : ../ocaml/parsing/lexer.mli
 bin/bspp.ml : ../ocaml/utils/clflags.mli

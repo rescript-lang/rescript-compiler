@@ -194,7 +194,7 @@ let regenerate_ninja
           ~no_dev
           cwd in 
       begin 
-        Bsb_config_parse.merlin_file_gen ~cwd
+        Bsb_merlin_gen.merlin_file_gen ~cwd
           (bsc_dir // bsppx_exe) config;
         let external_deps_for_linking_and_clibs = match external_deps_for_linking_and_clibs with 
         | None -> 
@@ -521,7 +521,7 @@ let () =
             | _ -> ()
           end;
           (* [-make-world] should never be combined with [-package-specs] *)
-          let external_deps_for_linking_and_clibs = if make_world.set then 
+          let external_deps_for_linking_and_clibs = if !make_world then 
             Some (make_world_deps ~root_project_dir:cwd None)
           else None in
           let _ = regenerate_ninja 
