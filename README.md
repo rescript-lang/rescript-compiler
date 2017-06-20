@@ -1,14 +1,12 @@
-[BuckleScript](http://bucklescript.github.io/bucklescript/): A JavaScript backend for [OCaml](https://ocaml.org/) focused on smooth integration and clean generated code.
-
 # bsb-native
 
-[This fork/branch](https://github.com/bsansouci/bucklescript/tree/simple-native-compilation) is an exploration of making [bsb](http://bucklescript.github.io/bucklescript/Manual.html#_bucklescript_build_system_code_bsb_code) build to native/bytecode. 
+_This is an experimental project. It has no intention of replacing bsb but merely augmenting it._
 
-[It](https://github.com/bsansouci/bucklescript/tree/simple-native-compilation) is capable of building to native with a simple `bsconfig.json`. 
+A fork of [bsb](http://bucklescript.github.io/bucklescript/Manual.html#_bucklescript_build_system_code_bsb_code) to allow it to build applications to js (bsc), native (ocamlopt) or bytecode (ocamlc). 
 
-## How to
+## How to install
 
-1) Add `"bs-platform": "bsansouci/bucklescript#simple-native-compilation"` as a dependency in your package.json
+1) Add `"bs-platform": "bsansouci/bucklescript"` as a dependency in your `package.json`
 2) Add a `bsconfig.json` like you would for [bsb](http://bucklescript.github.io/bucklescript/Manual.html#_bucklescript_build_system_code_bsb_code)
 
 For [example](https://github.com/bsansouci/BetterErrors/tree/bsb-support):
@@ -23,7 +21,14 @@ For [example](https://github.com/bsansouci/BetterErrors/tree/bsb-support):
 }
 ```
 
-You can see the full schema merged at [head](http://bucklescript.github.io/bucklescript/docson/#build-schema.json).
+You can see the full bsconfig schema at [head](http://bucklescript.github.io/bucklescript/docson/#build-schema.json).
 
-## Already using BSB
-If you're already using `bsb` for your purposes all you need to do is update the dependency in your `package.json`, run `npm i` again and add the `entries` field to your `bsconfig.json`.
+## How to run
+All binaries installed through npm are installed in the same folder `node_modules/.bin` so to run from the command-line you can run `./node_modules/.bin/bsb -make-world -w` (or add an [npm script](https://docs.npmjs.com/misc/scripts)).
+
+The `-make-world` flag builds all of the dependencies.
+
+The `-w` enabled the watch mode which will rebuild on any source file change.
+
+## Already using JS bsb
+If you're already using `bsb` in your project all you need to do is update the dependency in your `package.json` to `"bs-platform": "bsansouci/bucklescript"` , run `npm i` again and add the `entries` field to your `bsconfig.json`.
