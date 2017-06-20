@@ -82,3 +82,7 @@ type package_context = {
 }
 
 val walk_all_deps : string -> (package_context -> unit) -> unit
+
+val get_ocaml_dir: string -> string
+
+val get_ocaml_lib_dir : string -> string

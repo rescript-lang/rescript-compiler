@@ -28,4 +28,4 @@ else
     fi
 fi
 
-cd $OCAML &&  ./configure -prefix "$(dirname "$PWD")"  -no-ocamldoc -no-ocamlbuild -no-shared-libs -no-curses -no-graph -no-pthread -no-debugger  && make -j9 world.opt && make install  && cd ..
+cd $OCAML && ./configure -prefix "$(dirname "$PWD")"  -no-ocamldoc -no-ocamlbuild -no-shared-libs -no-curses -no-graph -no-pthread -no-debugger  && make -j9 world.opt && make install && make -C stdlib install && mkdir -p "$(dirname `pwd`)"/lib/ocaml/caml && cp otherlibs/systhreads/threads.h "$(dirname `pwd`)"/lib/ocaml/caml/threads.h && make -C otherlibs/systhreads && cd ..

@@ -106,6 +106,11 @@ let buckle_script_flags =
     " Generate binary .mli_ast and ml_ast"
   )
   ::
+  (
+    "-bs-simple-binary-ast", Arg.Set Js_config.simple_binary_ast,
+    " Generate binary .mliast_simple and mlast_simple"
+  )
+  ::
   ("-bs-syntax-only", 
    Arg.Set Js_config.syntax_only,
    " only check syntax"

@@ -24,10 +24,11 @@
 
 type pack_t = PackBytecode | PackNative
 
-let pack pack_byte_or_native ~batch_files ~includes =
-  let suffix_object_files, suffix_library_files, compiler = begin match pack_byte_or_native with
-  | PackBytecode -> Literals.suffix_cmo, Literals.suffix_cma , "ocamlc.opt"
-  | PackNative   -> Literals.suffix_cmx, Literals.suffix_cmxa, "ocamlopt.opt"
+let pack pack_byte_or_native ~batch_files ~includes ~cwd =
+  let ocaml_dir = Bsb_build_util.get_ocaml_dir cwd in
+  let suffix_object_files, suffix_library_files, compiler, custom_flag = begin match pack_byte_or_native with
+  | PackBytecode -> Literals.suffix_cmo, Literals.suffix_cma , Ext_filename.combine ocaml_dir "ocamlc.opt", true
+  | PackNative   -> Literals.suffix_cmx, Literals.suffix_cmxa, Ext_filename.combine ocaml_dir "ocamlopt.opt", false
   end in
   let module_to_filepath = List.fold_left
     (fun m v ->
@@ -50,18 +51,15 @@ let pack pack_byte_or_native ~batch_files ~includes =
       (fun k _ acc -> String_set.add k acc)
       dependency_graph String_set.empty in
   let sorted_tasks = Bsb_helper_dep_graph.sort_files_by_dependencies ~domain dependency_graph in
-  let list_of_object_files = Queue.fold
+  let all_object_files = List.rev (Queue.fold
     (fun acc v -> match String_map.find_opt v module_to_filepath with
       | Some file -> (file ^ suffix_object_files) :: acc
       | None -> failwith @@ "build.ninja is missing the file '" ^ v ^ "' that was used in the project. Try force-regenerating but this shouldn't happen."
       )
     []
-    sorted_tasks in
-  (* This list will be reversed so we append the otherlibs object files at the end, and they'll end at the beginning. *)
-  if list_of_object_files <> [] then
+    sorted_tasks) in
+  if all_object_files <> [] then
     let includes = List.fold_left (fun acc dir -> "-I" :: dir :: acc) [] includes in
-    let otherlibs = Bsb_helper_dep_graph.get_otherlibs_dependencies dependency_graph suffix_library_files in
-    let all_object_files = List.rev (list_of_object_files @ otherlibs) in
     Unix.execvp
       compiler
         (Array.of_list (compiler :: "-a" :: "-o" :: (Literals.library_file ^ suffix_library_files) :: includes @ all_object_files))

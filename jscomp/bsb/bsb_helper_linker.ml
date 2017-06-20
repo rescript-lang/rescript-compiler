@@ -24,10 +24,11 @@
 
 type link_t = LinkBytecode of string | LinkNative of string
 
-let link link_byte_or_native ~main_module ~batch_files ~includes =
-  let suffix_object_files, suffix_library_files, compiler, output_file = begin match link_byte_or_native with
-  | LinkBytecode output_file -> Literals.suffix_cmo, Literals.suffix_cma , "ocamlc.opt"  , output_file
-  | LinkNative output_file   -> Literals.suffix_cmx, Literals.suffix_cmxa, "ocamlopt.opt", output_file
+let link link_byte_or_native ~main_module ~batch_files ~clibs ~includes ~cwd =
+  let ocaml_dir = Bsb_build_util.get_ocaml_dir cwd in
+  let suffix_object_files, suffix_library_files, compiler, add_custom, output_file = begin match link_byte_or_native with
+  | LinkBytecode output_file -> Literals.suffix_cmo, Literals.suffix_cma , Ext_filename.combine ocaml_dir "ocamlc.opt"  , true, output_file
+  | LinkNative output_file   -> Literals.suffix_cmx, Literals.suffix_cmxa, Ext_filename.combine ocaml_dir "ocamlopt.opt", false, output_file
   end in
   (* Map used to track the path to the files as the dependency_graph that we're going to read from the mlast file only contains module names *)
   let module_to_filepath = List.fold_left
@@ -61,9 +62,15 @@ let link link_byte_or_native ~main_module ~batch_files ~includes =
       [] includes in
     (* This list will be reversed so we append the otherlibs object files at the end, and they'll end at the beginning. *)
     let otherlibs = Bsb_helper_dep_graph.get_otherlibs_dependencies dependency_graph suffix_library_files in
-    let all_object_files = List.rev (list_of_object_files @ otherlibs) in
+    let clibs = if add_custom && clibs <> [] then
+      "-custom" :: clibs
+    else
+      clibs
+    in
+    let all_object_files = otherlibs @ clibs @ library_files @ List.rev (list_of_object_files) in
+    let list_of_args = compiler :: "-o" :: output_file :: all_object_files in
     Unix.execvp
       compiler
-      (Array.of_list (compiler :: "-o" :: output_file :: library_files @ all_object_files))
+      (Array.of_list (list_of_args))
   end else
     failwith @@ "No " ^ suffix_object_files ^ " to link. Hint: is the main module in the entries array right?"

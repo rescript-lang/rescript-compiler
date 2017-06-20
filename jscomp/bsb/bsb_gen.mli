@@ -26,6 +26,10 @@
   generate ninja file based on [cwd] and [bsc_dir]
 *)
 val output_ninja :
+  external_deps_for_linking_and_clibs: (string list) * (string list) ->
   cwd:string ->
   bsc_dir:string ->  
+  ocaml_dir:string ->
+  root_project_dir:string ->
+  ?root_project_entry: Bsb_config_types.entries_t ->
   Bsb_config_types.t -> unit 

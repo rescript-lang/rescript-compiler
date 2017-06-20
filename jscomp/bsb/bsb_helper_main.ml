@@ -35,6 +35,9 @@ let add_include =
   fun dir ->
     includes := (normalize (Sys.getcwd ()) dir) :: !includes
 
+let clibs = ref []
+let add_clib file = clibs := file :: !clibs 
+
 let batch_files = ref []
 let collect_file name =
   batch_files := name :: !batch_files
@@ -51,6 +54,8 @@ let link link_byte_or_native =
       ~main_module:main_module
       ~includes:!includes
       ~batch_files:!batch_files
+      ~clibs:(List.rev !clibs)
+      ~cwd:(Sys.getcwd ())
   end
 
 let anonymous filename =
@@ -114,6 +119,7 @@ let () =
         Bsb_helper_packer.PackNative
         ~includes:!includes
         ~batch_files:!batch_files
+        ~cwd:(Sys.getcwd ())
     )),
     " pack native files (cmx) into a library file (cmxa)";
 
@@ -122,6 +128,10 @@ let () =
         Bsb_helper_packer.PackBytecode
         ~includes:!includes
         ~batch_files:!batch_files
+        ~cwd:(Sys.getcwd ())
     )),
     " pack bytecode files (cmo) into a library file (cma)";
+
+    "-add-clib", (Arg.String add_clib),
+    " adds a .a library file to be linked into the final executable"
     ] anonymous usage

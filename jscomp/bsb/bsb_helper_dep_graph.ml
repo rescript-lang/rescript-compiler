@@ -93,21 +93,17 @@ let simple_collect_from_main ?alias_map ast_table main_module =
   result
 
 let get_otherlibs_dependencies dependency_graph file_extension =
-  let addIfPresentInSet v moduleName fileName acc = 
-    if String_set.mem moduleName v then
-      String_set.add (fileName ^ file_extension) acc 
-    else
-      acc
+  let set_of_otherlib_deps = String_set.empty
+    |> String_set.add ("unix" ^ file_extension)
+    |> String_set.add ("bigarray" ^ file_extension)
+    |> String_set.add ("str" ^ file_extension)
+    |> String_set.add ("nums" ^ file_extension)
+    (** We need to add -thread when adding threads. Not sure why.
+        Will do this later.
+           - Ben May 4th 2017
+     **)
+    (* |> String_set.add ("threads" ^ file_extension) *)
+    (* |> String_set.add ("dynlink" ^ file_extension) *)
+    (* |> String_set.add ("graphics" ^ file_extension) *)
   in
-  let set_of_otherlib_deps = String_map.fold (fun k v acc ->
-    let addIfPresent = addIfPresentInSet v in
-    acc
-      |> addIfPresent "Unix"     "unix"
-      |> addIfPresent "Bigarray" "bigarray"
-      |> addIfPresent "Str"      "str"
-      |> addIfPresent "Num"      "nums"
-      |> addIfPresent "Threads"  "threads"
-      |> addIfPresent "Dynlink"  "dynlink"
-      |> addIfPresent "Graphics" "graphics"
-  ) dependency_graph String_set.empty in
   String_set.fold (fun v acc -> v :: acc) set_of_otherlib_deps []

@@ -29,7 +29,6 @@ module String_set = Ast_extract.String_set
 
 
 
-
 let read_ast (type t ) (kind : t  Ast_extract.kind) fn : t  =
   let magic =
     match kind with 
@@ -77,3 +76,13 @@ let write_ast (type t) ~(fname : string) ~output (kind : t Ast_extract.kind) ( p
   output_value oc pt;
   close_out oc 
 
+let write_ast_simple (type t) ~(fname : string) ~output (kind : t Ast_extract.kind) ( pt : t) : unit =
+  let magic =
+    match kind with
+    | Ast_extract.Ml -> Config.ast_impl_magic_number
+    | Ast_extract.Mli -> Config.ast_intf_magic_number in
+  let oc = open_out_bin output in
+  output_string oc magic;
+  output_value oc fname;
+  output_value oc pt;
+  close_out oc;

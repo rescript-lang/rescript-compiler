@@ -35,11 +35,14 @@ type entries_t = JsTarget of string | NativeTarget of string | BytecodeTarget of
 
 type reason_react_jsx = string option 
 
+type compilation_kind_t = Js | Bytecode | Native
+
 type t = 
   {
     package_name : string ; 
     ocamllex : string ; 
     external_includes : string list ; 
+    warnings : string ;
     bsc_flags : string list ;
     ppx_flags : string list ;
     bs_dependencies : dependencies;
@@ -59,4 +62,7 @@ type t =
     generate_merlin : bool ; 
     reason_react_jsx : reason_react_jsx ; (* whether apply PPX transform or not*)
     entries : entries_t list ;
+    static_libraries: string list;
+    build_script: string option;
+    allowed_build_kinds: compilation_kind_t list;
   }

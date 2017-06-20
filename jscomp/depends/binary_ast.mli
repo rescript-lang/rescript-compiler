@@ -25,8 +25,6 @@
 
 val read_ast : 'a Ast_extract.kind -> string -> 'a 
 
-
-
 (**
    Check out {!Depends_post_process} for set decoding
    The [.ml] file can be recognized as an ast directly, the format
@@ -43,4 +41,4 @@ val read_ast : 'a Ast_extract.kind -> string -> 'a
    redirect the standard input to fan
  *)
 val write_ast : fname:string -> output:string -> 'a Ast_extract.kind -> 'a -> unit
-
+val write_ast_simple : fname:string -> output:string -> 'a Ast_extract.kind -> 'a -> unit
