@@ -112,11 +112,13 @@ let assemble_args_obj (labels : Ast_arg.kind list)  (args : J.expression list)
         *)
         begin match Js_ast_util.named_expression arg with 
         | None ->
-          [S.if_ arg [S.exp (E.assign (E.dot var_v label) arg) ] ] 
+          [S.if_ arg [S.exp (E.assign (E.dot var_v label) 
+            (E.index arg 0l) ) ] ] 
         | Some (st,id) ->
           let var_id = E.var id in         
           st ::  
-            [S.if_ var_id [S.exp (E.assign (E.dot var_v label) var_id) ]]
+            [S.if_ var_id [S.exp (E.assign (E.dot var_v label) 
+              (E.index var_id 0l)) ]]
         end 
       |  _ -> assert false    
       )

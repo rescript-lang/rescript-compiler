@@ -27,6 +27,8 @@ let make ?foo:(foo: int option) =
 let a_ = make ()
 let b_ = make ~foo:42 ()  
 
+;; eq __LOC__ (b_##foo) (Js.Undefined.return "42" )
+
 ;; Js.log (Js.Obj.keys a_)
 ;; Js.log4 a b a_ b_
 

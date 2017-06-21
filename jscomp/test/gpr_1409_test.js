@@ -47,7 +47,7 @@ function make(foo) {
   return (function () {
       var $js = { };
       if (partial_arg) {
-        $js.foo = partial_arg;
+        $js.foo = partial_arg[0];
       }
       return $js;
     });
@@ -57,11 +57,13 @@ var a_ = make(/* None */0)(/* () */0);
 
 var b_ = make(/* Some */[42])(/* () */0);
 
+eq("File \"gpr_1409_test.ml\", line 30, characters 6-13", b_.foo, "42");
+
 console.log(Object.keys(a_));
 
 console.log(a, b, a_, b_);
 
-eq("File \"gpr_1409_test.ml\", line 34, characters 6-13", Object.keys(a_).length, 0);
+eq("File \"gpr_1409_test.ml\", line 36, characters 6-13", Object.keys(a_).length, 0);
 
 var test2 = {
   hi: 2
@@ -73,10 +75,10 @@ function test3(_open, xx__hi) {
     hi: 2
   };
   if (_open) {
-    $js.open = _open;
+    $js.open = _open[0];
   }
   if (xx__hi) {
-    $js.xx = xx__hi;
+    $js.xx = xx__hi[0];
   }
   return $js;
 }
@@ -88,7 +90,7 @@ function test4(_open, xx__hi) {
     hi: 2
   };
   if (xx__hi) {
-    $js.xx = xx__hi;
+    $js.xx = xx__hi[0];
   }
   return $js;
 }
@@ -130,12 +132,12 @@ function keys(xs, ys) {
   return String_set.equal(String_set.of_list(xs), String_set.of_list($$Array.to_list(ys)));
 }
 
-eq("File \"gpr_1409_test.ml\", line 67, characters 6-13", keys(/* :: */[
+eq("File \"gpr_1409_test.ml\", line 69, characters 6-13", keys(/* :: */[
           "hi",
           /* [] */0
         ], Object.keys(test3(/* None */0, /* None */0))), /* true */1);
 
-eq("File \"gpr_1409_test.ml\", line 69, characters 6-13", keys(/* :: */[
+eq("File \"gpr_1409_test.ml\", line 71, characters 6-13", keys(/* :: */[
           "hi",
           /* :: */[
             "open",
@@ -143,7 +145,7 @@ eq("File \"gpr_1409_test.ml\", line 69, characters 6-13", keys(/* :: */[
           ]
         ], Object.keys(test3(/* Some */[2], /* None */0))), /* true */1);
 
-eq("File \"gpr_1409_test.ml\", line 71, characters 6-13", keys(/* :: */[
+eq("File \"gpr_1409_test.ml\", line 73, characters 6-13", keys(/* :: */[
           "hi",
           /* :: */[
             "open",
