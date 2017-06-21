@@ -8,7 +8,7 @@ function v(displayName, _) {
     hi: "ghos"
   };
   if (displayName) {
-    $js.displayName = displayName;
+    $js.displayName = displayName[0];
   }
   return $js;
 }
