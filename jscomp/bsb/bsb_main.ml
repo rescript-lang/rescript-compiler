@@ -40,6 +40,8 @@ let node_lit = "node"
 let current_theme = ref "basic"
 let set_theme s = current_theme := s 
 
+let generate_theme_with_path = ref None
+
 let watch_exit () =
   print_endline "\nStart Watching now ";
   let bsb_watcher =
@@ -203,7 +205,7 @@ let bsb_main_flags : (string * Arg.spec * string) list=
     "-w", Arg.Set watch_mode,
     " Watch mode" ;     
     regen, Arg.Set force_regenerate,
-    " (internal)Always regenerate build.ninja no matter bsconfig.json is changed or not (for debugging purpose)"
+    " (internal) Always regenerate build.ninja no matter bsconfig.json is changed or not (for debugging purpose)"
     ;
     "-clean-world", Arg.Unit clean_bs_deps,
     " Clean all bs dependencies";
@@ -211,9 +213,9 @@ let bsb_main_flags : (string * Arg.spec * string) list=
     " Clean only current project";
     "-make-world", Arg.Unit set_make_world,
     " Build all dependencies and itself ";
-    "-init", Arg.String (fun  x -> Bsb_init.init_sample_project ~cwd ~theme:!current_theme x ),
+    "-init", Arg.String (fun path -> generate_theme_with_path := Some path),
     " Init sample project to get started. Note (`bsb -init sample` will create a sample project while `bsb -init .` will resuse current directory)";
-    "-theme", Arg.String (fun s -> current_theme := s),
+    "-theme", Arg.String set_theme,
     " The theme for project initialization, default is basic(https://github.com/bucklescript/bucklescript/tree/master/jscomp/bsb/templates)";
     "-themes", Arg.Unit Bsb_init.list_themes,
     " List all available themes"
@@ -228,7 +230,7 @@ let print_string_args (args : string array) =
   print_newline ()
 
 
-(* Note that [keepdepfile] only makes sense when combined with [deps] for optimizatoin
+(* Note that [keepdepfile] only makes sense when combined with [deps] for optimization
    It has to be the last command of [bsb]
 *)
 let exec_command_install_then_exit  command =
@@ -236,6 +238,7 @@ let exec_command_install_then_exit  command =
   print_endline command ;
   exit (Sys.command command ) 
 
+(* Execute the underlying ninja build call, then exit (as opposed to keep watching) *)
 let ninja_command_exit  vendor_ninja ninja_args  =
   let ninja_args_len = Array.length ninja_args in
   if ninja_args_len = 0 then
@@ -337,7 +340,7 @@ let () =
   let bsc_dir = Bsb_build_util.get_bsc_dir cwd in
   let vendor_ninja = bsc_dir // "ninja.exe" in  
   match Sys.argv with 
-  | [| _ |] ->  (* specialize this path [ninja] which is used in wathcer  *)
+  | [| _ |] ->  (* specialize this path [ninja] which is used in watcher *)
     begin
       let _config_opt =  
         regenerate_ninja ~override_package_specs:None ~no_dev:false 
@@ -354,36 +357,40 @@ let () =
         ->
         begin
           Arg.parse bsb_main_flags handle_anonymous_arg usage;
-          (* [-make-world] should never be combined with [-package-specs] *)
-          let make_world = !make_world in 
-          begin match make_world, !force_regenerate with
-            | false, false -> 
-              if !watch_mode then begin
-                watch_exit ()
-                (* ninja is not triggered in this case
-                   There are several cases we wish ninja will not be triggered.
-                   [bsb -clean-world]
-                   [bsb -regen ]
-                *)
-              end 
-            | make_world, force_regenerate ->
-              (* don't regenerate files when we only run [bsb -clean-world] *)
-              let config_opt = regenerate_ninja ~generate_watch_metadata:true ~override_package_specs:None ~no_dev:false ~forced:force_regenerate cwd bsc_dir  in
-              if make_world then begin
-                make_world_deps config_opt
-              end;
-              if !watch_mode then begin
-                watch_exit ()
-                (* ninja is not triggered in this case
-                   There are several cases we wish ninja will not be triggered.
-                   [bsb -clean-world]
-                   [bsb -regen ]
-                *)
-              end else if make_world then begin
-                ninja_command_exit  vendor_ninja [||] 
-              end
-          end;
 
+          (* first, check whether we're in boilerplate generation mode, aka -init foo -theme bar *)
+          match !generate_theme_with_path with
+          | Some path -> Bsb_init.init_sample_project ~cwd ~theme:!current_theme path
+          | None -> 
+            (* [-make-world] should never be combined with [-package-specs] *)
+            let make_world = !make_world in 
+            begin match make_world, !force_regenerate with
+              | false, false -> 
+                if !watch_mode then begin
+                  watch_exit ()
+                  (* ninja is not triggered in this case
+                     There are several cases we wish ninja will not be triggered.
+                     [bsb -clean-world]
+                     [bsb -regen ]
+                  *)
+                end 
+              | make_world, force_regenerate ->
+                (* don't regenerate files when we only run [bsb -clean-world] *)
+                let config_opt = regenerate_ninja ~generate_watch_metadata:true ~override_package_specs:None ~no_dev:false ~forced:force_regenerate cwd bsc_dir  in
+                if make_world then begin
+                  make_world_deps config_opt
+                end;
+                if !watch_mode then begin
+                  watch_exit ()
+                  (* ninja is not triggered in this case
+                     There are several cases we wish ninja will not be triggered.
+                     [bsb -clean-world]
+                     [bsb -regen ]
+                  *)
+                end else if make_world then begin
+                  ninja_command_exit  vendor_ninja [||] 
+                end
+            end;
         end
       | `Split (bsb_args,ninja_args)
         -> (* -make-world all dependencies fall into this category *)
