@@ -23,8 +23,8 @@ Fixes:
 
 Features:
 - #1648, exposed `bsc` in the npm environment
-- #1647, speical handling `bsb -init .` to reuse current directory
-- #1667, fix an optimizaiton bug 
+- #1647, special handling `bsb -init .` to reuse current directory
+- #1667, fix an optimization bug
 - #1698, fix exit code incorrectly aggregated issue
 - #1666, add Js.Json.classify and Js.Types.classify
 - #1705, add dom storage api
