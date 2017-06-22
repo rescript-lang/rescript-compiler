@@ -3741,6 +3741,41 @@ function send_int(ob, i) {
   return send_string(ob, "" + i);
 }
 
+function writer(ib, ob) {
+  return Curry._1(Scanf.bscanf(ib, /* Format */[
+                  /* String */Block.__(2, [
+                      /* No_padding */0,
+                      /* Char_literal */Block.__(12, [
+                          /* "\n" */10,
+                          /* End_of_format */0
+                        ])
+                    ]),
+                  "%s\n"
+                ]), (function (s) {
+                switch (s) {
+                  case "start" : 
+                      send_string(ob, "Hello World!");
+                      return reader(ib, ob);
+                  case "stop" : 
+                      return Curry._1(Scanf.bscanf(ib, /* Format */[
+                                      /* Int */Block.__(4, [
+                                          /* Int_i */3,
+                                          /* No_padding */0,
+                                          /* No_precision */0,
+                                          /* End_of_format */0
+                                        ]),
+                                      "%i"
+                                    ]), (function (i) {
+                                    return i;
+                                  }));
+                  default:
+                    var i = Caml_format.caml_int_of_string(s);
+                    send_string(ob, "" + i);
+                    return reader(ib, ob);
+                }
+              }));
+}
+
 var count = [0];
 
 function reader(ib, ob) {
@@ -3776,41 +3811,6 @@ function reader(ib, ob) {
                   }
                 }));
   }
-}
-
-function writer(ib, ob) {
-  return Curry._1(Scanf.bscanf(ib, /* Format */[
-                  /* String */Block.__(2, [
-                      /* No_padding */0,
-                      /* Char_literal */Block.__(12, [
-                          /* "\n" */10,
-                          /* End_of_format */0
-                        ])
-                    ]),
-                  "%s\n"
-                ]), (function (s) {
-                switch (s) {
-                  case "start" : 
-                      send_string(ob, "Hello World!");
-                      return reader(ib, ob);
-                  case "stop" : 
-                      return Curry._1(Scanf.bscanf(ib, /* Format */[
-                                      /* Int */Block.__(4, [
-                                          /* Int_i */3,
-                                          /* No_padding */0,
-                                          /* No_precision */0,
-                                          /* End_of_format */0
-                                        ]),
-                                      "%i"
-                                    ]), (function (i) {
-                                    return i;
-                                  }));
-                  default:
-                    var i = Caml_format.caml_int_of_string(s);
-                    send_string(ob, "" + i);
-                    return reader(ib, ob);
-                }
-              }));
 }
 
 function go() {

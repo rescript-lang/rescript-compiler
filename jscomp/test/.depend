@@ -425,6 +425,7 @@ random_test.cmj : ../stdlib/random.cmj ../stdlib/printf.cmj mt_global.cmj \
     mt.cmj ../stdlib/int64.cmj ../stdlib/array.cmj
 rebind_module.cmj :
 rebind_module_test.cmj : rebind_module.cmj
+rec_fun_test.cmj : mt.cmj
 rec_module_test.cmj : ../stdlib/set.cmj ../stdlib/pervasives.cmj mt.cmj
 rec_value_test.cmj : mt.cmj ../stdlib/list.cmj ../stdlib/lazy.cmj \
     ../runtime/js.cmj

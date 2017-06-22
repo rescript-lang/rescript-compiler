@@ -68658,14 +68658,31 @@ let preprocess_deps (groups : bindings) : _ * Ident.t array * Int_vec.t array   
     ) ;
   domain, int_mapping , node_vec
 
+
+let is_function_bind (_, (x : t)) = 
+  match x with 
+  | Lfunction _ -> true 
+  | _ -> false 
+
+let sort_single_binding_group (group : bindings) = 
+  if List.for_all is_function_bind group then group
+  else 
+    List.sort (fun (_,lama) (_,lamb) -> 
+      match lama,lamb with 
+      | Lfunction _, Lfunction _ ->  0 
+      | Lfunction _ , _ -> -1 
+      | _, Lfunction _ -> 1 
+      | _,_ -> 0
+    ) group
+
 (** TODO: even for a singleton recursive function, tell whehter it is recursive or not ? *)
 let scc_bindings (groups : bindings) : bindings list = 
   match groups with 
-  | [ _ ] -> [ groups ]
+  | [ _ ] -> [ sort_single_binding_group groups ]
   | _ -> 
     let domain, int_mapping, node_vec = preprocess_deps groups in 
-    let clusters = Ext_scc.graph node_vec in 
-    if Int_vec_vec.length clusters <= 1 then [ groups]
+    let clusters : Int_vec_vec.t = Ext_scc.graph node_vec in 
+    if Int_vec_vec.length clusters <= 1 then [ sort_single_binding_group groups]
     else 
       Int_vec_vec.fold_right (fun  (v : Int_vec.t) acc ->
           let bindings =
@@ -68674,14 +68691,7 @@ let scc_bindings (groups : bindings) : bindings list =
                 let lam  = Ordered_hash_map_local_ident.find_value domain  id in  
                 (id,lam)
               ) v  in 
-          match bindings with 
-          | [ id,(Lfunction _ as lam) ] ->
-            let base_key = Ordered_hash_map_local_ident.rank domain id in    
-            if Int_vec_util.mem base_key node_vec.(base_key) then       
-              bindings :: acc 
-            else  [(id, lam)] :: acc    
-          | _ ->  
-            bindings :: acc 
+            sort_single_binding_group bindings :: acc 
         )  clusters []
 (* single binding, it does not make sense to do scc,
    we can eliminate {[ let rec f x = x + x  ]}, but it happens rarely in real world 

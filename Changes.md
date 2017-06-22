@@ -7,6 +7,7 @@ Fixes:
 - #1728, bad inlining
 - #1409, make sure when optional is None, bs.obj will not introduce such label
 - #1737, same as #1409
+- #1746, a corner case when mixing recursive value and functions, should make markup.ml work
 
 # 1.7.5
 

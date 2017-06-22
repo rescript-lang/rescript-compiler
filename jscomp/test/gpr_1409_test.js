@@ -102,11 +102,11 @@ function test5(f, x) {
   };
   var tmp = Curry._1(f, x);
   if (tmp) {
-    $js.open = tmp;
+    $js.open = tmp[0];
   }
   var tmp$1 = Curry._1(f, x);
   if (tmp$1) {
-    $js.xx = tmp$1;
+    $js.xx = tmp$1[0];
   }
   return $js;
 }
@@ -119,11 +119,11 @@ function test6(f, _) {
   };
   var tmp = (x[0] = x[0] + 1 | 0, /* Some */[x[0]]);
   if (tmp) {
-    $js.open = tmp;
+    $js.open = tmp[0];
   }
   var tmp$1 = f(x);
   if (tmp$1) {
-    $js.xx = tmp$1;
+    $js.xx = tmp$1[0];
   }
   return $js;
 }
