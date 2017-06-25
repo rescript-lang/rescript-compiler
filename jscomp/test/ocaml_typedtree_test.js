@@ -66496,9 +66496,9 @@ function check_well_founded(env, loc, path, to_check, ty) {
     var ty$1 = repr(ty);
     if (mem$3(ty$1, exp_nodes)) {
       var match = ty0[/* desc */0];
-      var $js$2;
-      $js$2 = typeof match === "number" || match.tag !== 3 ? /* false */0 : same(match[0], path);
-      if ($js$2) {
+      var $js;
+      $js = typeof match === "number" || match.tag !== 3 ? /* false */0 : same(match[0], path);
+      if ($js) {
         throw [
               $$Error$8,
               loc,
@@ -66565,6 +66565,20 @@ function check_well_founded(env, loc, path, to_check, ty) {
       catch (raw_exn){
         var exn$1 = Js_exn.internalToOCamlException(raw_exn);
         if (exn$1 === Cannot_expand) {
+          var match$3 = ty$1[/* desc */0];
+          var $js$1;
+          if (typeof match$3 === "number") {
+            $js$1 = /* false */0;
+          } else {
+            switch (match$3.tag | 0) {
+              case 4 : 
+              case 8 : 
+                  $js$1 = /* true */1;
+                  break;
+              default:
+                $js$1 = /* false */0;
+            }
+          }
           var nodes = recursive_types[0] && is_contractive(env, ty$1) || $js$1 ? /* Empty */0 : exp_nodes$1;
           return iter_type_expr((function (param) {
                         return check(ty0, nodes, param);
