@@ -96767,8 +96767,8 @@ and
               | {block = []; value =  Some out1},
                 {block = []; value =  Some out2} ->  
                 (* Invariant: should_return is false*)
-                Js_output.make [
-                  S.define ~kind id (E.econd e out1 out2) ]
+                Js_output.make @@ (b @ [
+                  S.define ~kind id (E.econd e out1 out2) ])
               | _, _ -> 
                 Js_output.make 
                   ( b @ [

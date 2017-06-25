@@ -1,3 +1,5 @@
+Before a bug report, please confirm if it is reproducible in master, we fix bugs quickly, so it may already be fixed in master.
+
 ## Checklist
 
   * [x] Does your title concisely summarize the problem?
