@@ -26,7 +26,7 @@
   "bin" : {
       "bsb": "bin/bsb",
       "bsc": "bin/bsc",
-      "bsrefmt": "bin/refmt"
+      "bsrefmt": "bin/bsrefmt"
   },
   "scripts": {
     "test": "mocha './jscomp/test/**/*test.js' ",
