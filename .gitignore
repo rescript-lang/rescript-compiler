@@ -20,6 +20,8 @@ _build
 *.annot
 *.mj
 *.bak
+*.swp
+*.swo
 
 *.jsx
 *.lambda
