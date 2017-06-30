@@ -1320,6 +1320,12 @@ val find_and_split :
 val exists : ('a -> bool) -> 'a array -> bool 
 
 val is_empty : 'a array -> bool 
+
+val for_all2_no_exn : 
+  ('a -> 'b -> bool) -> 
+  'a array ->
+  'b array -> 
+  bool
 end = struct
 #1 "ext_array.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -1508,6 +1514,21 @@ let exists p a =
 
 let is_empty arr =
   Array.length arr = 0
+
+
+let rec unsafe_loop index len p xs ys  = 
+  if index >= len then true
+  else 
+    p 
+      (Array.unsafe_get xs index)
+      (Array.unsafe_get ys index) &&
+      unsafe_loop (succ index) len p xs ys 
+   
+let for_all2_no_exn p xs ys = 
+  let len_xs = Array.length xs in 
+  let len_ys = Array.length ys in 
+  len_xs = len_ys &&    
+  unsafe_loop 0 len_xs p xs ys
 end
 module Ext_bytes : sig 
 #1 "ext_bytes.mli"
@@ -1733,6 +1754,15 @@ type check_result =
 val is_valid_source_name :
    string -> check_result
 
+(* TODO handle cases like 
+   '@angular/core'
+   its directory structure is like 
+   {[
+     @angualar
+     |-------- core
+   ]}
+*)
+val is_valid_npm_package_name : string -> bool 
 val no_char : string -> char -> int -> int -> bool 
 
 
@@ -2101,6 +2131,27 @@ let is_valid_module_file (s : string) =
          | _ -> false )
   | _ -> false 
 
+
+(* https://docs.npmjs.com/files/package.json 
+  Some rules:
+  The name must be less than or equal to 214 characters. This includes the scope for scoped packages.
+  The name can't start with a dot or an underscore.
+  New packages must not have uppercase letters in the name.
+  The name ends up being part of a URL, an argument on the command line, and a folder name. Therefore, the name can't contain any non-URL-safe characters.
+*)
+let is_valid_npm_package_name (s : string) = 
+  let len = String.length s in 
+  len <= 214 && (* magic number forced by npm *)
+  len > 0 &&
+  match String.unsafe_get s 0 with 
+  | 'a' .. 'z' | '@' -> 
+    unsafe_for_all_range s ~start:1 ~finish:(len - 1)
+      (fun x -> 
+         match x with 
+         |  'a'..'z' | '0'..'9' | '_' | '-' -> true
+         | _ -> false )
+  | _ -> false 
+
 type check_result = 
   | Good 
   | Invalid_module_name 
@@ -2312,6 +2363,34 @@ let suites =
         [|1;2;3;4;5;6|] []
         =~ [2;4;6]
     end;
+
+    __LOC__ >:: begin fun _ -> 
+    OUnit.assert_bool __LOC__ 
+        (Ext_array.for_all2_no_exn
+        (=)
+        [|1;2;3|]
+        [|1;2;3|]
+        )
+    end;
+    __LOC__ >:: begin fun _ -> 
+    OUnit.assert_bool __LOC__
+    (Ext_array.for_all2_no_exn
+    (=) [||] [||]
+    );
+    OUnit.assert_bool __LOC__
+    (not @@ Ext_array.for_all2_no_exn
+    (=) [||] [|1|]
+    )
+    end
+    ;
+    __LOC__ >:: begin fun _ -> 
+    OUnit.assert_bool __LOC__
+    (not (Ext_array.for_all2_no_exn
+        (=)
+        [|1;2;3|]
+        [|1;2;33|]
+        ))
+    end
     ]
 end
 module Ounit_tests_util
@@ -3856,7 +3935,7 @@ val unused_attribute : string
 val dash_nostdlib : string
 
 val reactjs_jsx_ppx_exe : string 
-
+val reactjs_jsx_ppx_2_exe : string 
 val unescaped_j_delimiter : string 
 val escaped_j_delimiter : string 
 
@@ -3984,7 +4063,7 @@ let unused_attribute = "Unused attribute "
 let dash_nostdlib = "-nostdlib"
 
 let reactjs_jsx_ppx_exe  = "reactjs_jsx_ppx.exe"
-
+let reactjs_jsx_ppx_2_exe = "reactjs_jsx_ppx_2.exe"
 let unescaped_j_delimiter = "j"
 let unescaped_js_delimiter = "js"
 let escaped_j_delimiter =  "*j" (* not user level syntax allowed *)
@@ -8472,7 +8551,7 @@ type json_str =
   { str : string ; loc : loc}
 
 type json_flo  =
-  { str : string ; loc : loc}
+  { flo : string ; loc : loc}
 type json_array =
   { content : t array ; 
     loc_start : loc ; 
@@ -8631,9 +8710,32 @@ val query : path -> Ext_json_types.t ->  status
 
 val loc_of : Ext_json_types.t -> Ext_position.t
 
+val equal : Ext_json_types.t -> Ext_json_types.t -> bool 
 end = struct
 #1 "ext_json.ml"
-
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 type callback = 
   [
@@ -8649,7 +8751,7 @@ type callback =
   | `Id of (Ext_json_types.t -> unit )
   ]
 
-  
+
 type path = string list 
 
 type status = 
@@ -8659,26 +8761,26 @@ type status =
 
 let test   ?(fail=(fun () -> ())) key 
     (cb : callback) (m  : Ext_json_types.t String_map.t)
-     =
-     begin match String_map.find_exn key m, cb with 
-       | exception Not_found  ->
-        begin match cb with `Not_found f ->  f ()
-        | _ -> fail ()
-        end      
-       | True _, `Bool cb -> cb true
-       | False _, `Bool cb  -> cb false 
-       | Flo {str = s} , `Flo cb  -> cb s 
-       | Obj {map = b} , `Obj cb -> cb b 
-       | Arr {content}, `Arr cb -> cb content 
-       | Arr {content; loc_start ; loc_end}, `Arr_loc cb -> 
-         cb content  loc_start loc_end 
-       | Null _, `Null cb  -> cb ()
-       | Str {str = s }, `Str cb  -> cb s 
-       | Str {str = s ; loc }, `Str_loc cb -> cb s loc 
-       |  any  , `Id  cb -> cb any
-       | _, _ -> fail () 
-     end;
-     m
+  =
+  begin match String_map.find_exn key m, cb with 
+    | exception Not_found  ->
+      begin match cb with `Not_found f ->  f ()
+                        | _ -> fail ()
+      end      
+    | True _, `Bool cb -> cb true
+    | False _, `Bool cb  -> cb false 
+    | Flo {flo = s} , `Flo cb  -> cb s 
+    | Obj {map = b} , `Obj cb -> cb b 
+    | Arr {content}, `Arr cb -> cb content 
+    | Arr {content; loc_start ; loc_end}, `Arr_loc cb -> 
+      cb content  loc_start loc_end 
+    | Null _, `Null cb  -> cb ()
+    | Str {str = s }, `Str cb  -> cb s 
+    | Str {str = s ; loc }, `Str_loc cb -> cb s loc 
+    |  any  , `Id  cb -> cb any
+    | _, _ -> fail () 
+  end;
+  m
 let query path (json : Ext_json_types.t ) =
   let rec aux acc paths json =
     match path with 
@@ -8702,7 +8804,53 @@ let loc_of (x : Ext_json_types.t) =
   | Arr p -> p.loc_start
   | Obj p -> p.loc
   | Flo p -> p.loc
- 
+
+
+let rec equal 
+    (x : Ext_json_types.t)
+    (y : Ext_json_types.t) = 
+  match x with 
+  | Null _ -> (* [%p? Null _ ] *)
+    begin match y with
+      | Null _ -> true
+      | _ -> false end
+  | Str {str } -> 
+    begin match y with 
+      | Str {str = str2} -> str = str2
+      | _ -> false end
+  | Flo {flo} 
+    ->
+    begin match y with
+      |  Flo {flo = flo2} -> 
+        flo = flo2 
+      | _ -> false
+    end
+  | True _ -> 
+    begin match y with 
+      | True _ -> true 
+      | _ -> false 
+    end
+  | False _ -> 
+    begin match y with 
+      | False _ -> true 
+      | _ -> false 
+    end     
+  | Arr {content} 
+    -> 
+    begin match y with 
+      | Arr {content = content2}
+        ->
+        Ext_array.for_all2_no_exn equal content content2
+      | _ -> false 
+    end
+
+  | Obj {map} -> 
+    begin match y with 
+      | Obj { map = map2} -> 
+        String_map.equal equal map map2
+      | _ -> false 
+    end 
+
 
 end
 module Ext_json_parse : sig 
@@ -9356,7 +9504,7 @@ let rec parse_json lexbuf =
     | True -> True lexbuf.lex_start_p
     | False -> False lexbuf.lex_start_p
     | Null -> Null lexbuf.lex_start_p
-    | Number s ->  Flo {str = s; loc = lexbuf.lex_start_p}  
+    | Number s ->  Flo {flo = s; loc = lexbuf.lex_start_p}  
     | String s -> Str { str = s; loc =    lexbuf.lex_start_p}
     | Lbracket -> parse_array  lexbuf.lex_start_p lexbuf.lex_curr_p [] lexbuf
     | Lbrace -> parse_map lexbuf.lex_start_p String_map.empty lexbuf
@@ -9442,22 +9590,426 @@ let parse_json_from_file s =
 # 694 "ext/ext_json_parse.ml"
 
 end
+module Ext_json_write : sig 
+#1 "ext_json_write.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+val to_string : Ext_json_types.t -> string 
+
+
+val to_channel : out_channel -> Ext_json_types.t -> unit
+end = struct
+#1 "ext_json_write.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+(** poor man's serialization *)
+
+let quot x = 
+    "\"" ^ String.escaped x ^ "\""
+
+let rec encode_aux (x : Ext_json_types.t ) 
+    (buf : Buffer.t) : unit =  
+  let a str = Buffer.add_string buf str in 
+  match x with 
+  | Null _ -> a "null"
+  | Str {str = s }  -> a (quot s)
+  | Flo {flo = s} -> 
+    a s (* 
+    since our parsing keep the original float representation, we just dump it as is, there is no cases like [nan] *)
+  | Arr  {content} -> 
+    begin match content with 
+      | [||] -> a "[]"
+      | _ -> 
+        a "[ ";
+        encode_aux
+          (Array.unsafe_get content 0)
+          buf ; 
+        for i = 1 to Array.length content - 1 do 
+          a " , ";
+          encode_aux 
+            (Array.unsafe_get content i)
+            buf
+        done;    
+        a " ]"
+    end
+  | True _ -> a "true"
+  | False _ -> a "false"
+  | Obj {map} -> 
+    if String_map.is_empty map then 
+      a "{}"
+    else 
+      begin  
+        (*prerr_endline "WEIRD";
+        prerr_endline (string_of_int @@ String_map.cardinal map );   *)
+        a "{ ";
+        let _ : int =  String_map.fold (fun  k v i -> 
+            if i <> 0 then begin
+              a " , " 
+            end; 
+            a (quot k);
+            a " : ";
+            encode_aux v buf ;
+            i + 1 
+          ) map 0 in 
+          a " }"
+      end
+
+
+let to_string (x : Ext_json_types.t) = 
+    let buf = Buffer.create 1024 in 
+    encode_aux x buf ;
+    Buffer.contents buf 
+
+let to_channel (oc : out_channel) x  = 
+    let buf = Buffer.create 1024 in 
+    encode_aux x buf ;
+    Buffer.output_buffer oc buf 
+
+end
+module Ext_pervasives : sig 
+#1 "ext_pervasives.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(** Extension to standard library [Pervavives] module, safe to open 
+  *)
+
+external reraise: exn -> 'a = "%reraise"
+
+val finally : 'a -> ('a -> 'c) -> ('a -> 'b) -> 'b
+
+val with_file_as_chan : string -> (out_channel -> 'a) -> 'a
+
+val with_file_as_pp : string -> (Format.formatter -> 'a) -> 'a
+
+val is_pos_pow : Int32.t -> int
+
+val failwithf : loc:string -> ('a, unit, string, 'b) format4 -> 'a
+
+val invalid_argf : ('a, unit, string, 'b) format4 -> 'a
+
+val bad_argf : ('a, unit, string, 'b) format4 -> 'a
+
+
+
+val dump : 'a -> string 
+val pp_any : Format.formatter -> 'a -> unit 
+external id : 'a -> 'a = "%identity"
+
+(** Copied from {!Btype.hash_variant}:
+    need sync up and add test case
+ *)
+val hash_variant : string -> int
+
+end = struct
+#1 "ext_pervasives.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+external reraise: exn -> 'a = "%reraise"
+
+let finally v action f   = 
+  match f v with
+  | exception e -> 
+      action v ;
+      reraise e 
+  | e ->  action v ; e 
+
+let with_file_as_chan filename f = 
+  finally (open_out_bin filename) close_out f 
+
+let with_file_as_pp filename f = 
+  finally (open_out_bin filename) close_out
+    (fun chan -> 
+      let fmt = Format.formatter_of_out_channel chan in
+      let v = f  fmt in
+      Format.pp_print_flush fmt ();
+      v
+    ) 
+
+
+let  is_pos_pow n = 
+  let module M = struct exception E end in 
+  let rec aux c (n : Int32.t) = 
+    if n <= 0l then -2 
+    else if n = 1l then c 
+    else if Int32.logand n 1l =  0l then   
+      aux (c + 1) (Int32.shift_right n 1 )
+    else raise M.E in 
+  try aux 0 n  with M.E -> -1
+
+let failwithf ~loc fmt = Format.ksprintf (fun s -> failwith (loc ^ s))
+    fmt
+    
+let invalid_argf fmt = Format.ksprintf invalid_arg fmt
+
+let bad_argf fmt = Format.ksprintf (fun x -> raise (Arg.Bad x ) ) fmt
+
+
+let rec dump r =
+  if Obj.is_int r then
+    string_of_int (Obj.magic r : int)
+  else (* Block. *)
+    let rec get_fields acc = function
+      | 0 -> acc
+      | n -> let n = n-1 in get_fields (Obj.field r n :: acc) n
+    in
+    let rec is_list r =
+      if Obj.is_int r then
+        r = Obj.repr 0 (* [] *)
+      else
+        let s = Obj.size r and t = Obj.tag r in
+        t = 0 && s = 2 && is_list (Obj.field r 1) (* h :: t *)
+    in
+    let rec get_list r =
+      if Obj.is_int r then
+        []
+      else
+        let h = Obj.field r 0 and t = get_list (Obj.field r 1) in
+        h :: t
+    in
+    let opaque name =
+      (* XXX In future, print the address of value 'r'.  Not possible
+       * in pure OCaml at the moment.  *)
+      "<" ^ name ^ ">"
+    in
+    let s = Obj.size r and t = Obj.tag r in
+    (* From the tag, determine the type of block. *)
+    match t with
+    | _ when is_list r ->
+      let fields = get_list r in
+      "[" ^ String.concat "; " (List.map dump fields) ^ "]"
+    | 0 ->
+      let fields = get_fields [] s in
+      "(" ^ String.concat ", " (List.map dump fields) ^ ")"
+    | x when x = Obj.lazy_tag ->
+      (* Note that [lazy_tag .. forward_tag] are < no_scan_tag.  Not
+         * clear if very large constructed values could have the same
+         * tag. XXX *)
+      opaque "lazy"
+    | x when x = Obj.closure_tag ->
+      opaque "closure"
+    | x when x = Obj.object_tag ->
+      let fields = get_fields [] s in
+      let _clasz, id, slots =
+        match fields with
+        | h::h'::t -> h, h', t
+        | _ -> assert false
+      in
+      (* No information on decoding the class (first field).  So just print
+         * out the ID and the slots. *)
+      "Object #" ^ dump id ^ " (" ^ String.concat ", " (List.map dump slots) ^ ")"
+    | x when x = Obj.infix_tag ->
+      opaque "infix"
+    | x when x = Obj.forward_tag ->
+      opaque "forward"
+    | x when x < Obj.no_scan_tag ->
+      let fields = get_fields [] s in
+      "Tag" ^ string_of_int t ^
+      " (" ^ String.concat ", " (List.map dump fields) ^ ")"
+    | x when x = Obj.string_tag ->
+      "\"" ^ String.escaped (Obj.magic r : string) ^ "\""
+    | x when x = Obj.double_tag ->
+      string_of_float (Obj.magic r : float)
+    | x when x = Obj.abstract_tag ->
+      opaque "abstract"
+    | x when x = Obj.custom_tag ->
+      opaque "custom"
+    | x when x = Obj.custom_tag ->
+      opaque "final"
+    | x when x = Obj.double_array_tag ->
+      "[|"^
+      String.concat ";"
+        (Array.to_list (Array.map string_of_float (Obj.magic r : float array))) ^
+      "|]"
+    | _ ->
+      opaque (Printf.sprintf "unknown: tag %d size %d" t s)
+
+let dump v = dump (Obj.repr v)
+
+let pp_any fmt v = 
+  Format.fprintf fmt "@[%s@]"
+  (dump v )
+external id : 'a -> 'a = "%identity"
+
+
+let hash_variant s =
+  let accu = ref 0 in
+  for i = 0 to String.length s - 1 do
+    accu := 223 * !accu + Char.code s.[i]
+  done;
+  (* reduce to 31 bits *)
+  accu := !accu land (1 lsl 31 - 1);
+  (* make it signed for 64 bits architectures *)
+  if !accu > 0x3FFFFFFF then !accu - (1 lsl 31) else !accu
+
+
+end
 module Ounit_json_tests
 = struct
 #1 "ounit_json_tests.ml"
 
 let ((>::),
-    (>:::)) = OUnit.((>::),(>:::))
+     (>:::)) = OUnit.((>::),(>:::))
 
 open Ext_json_parse
 let (|?)  m (key, cb) =
-    m  |> Ext_json.test key cb 
+  m  |> Ext_json.test key cb 
 
+let id_parsing_serializing x = 
+  let normal_s = 
+    Ext_json_write.to_string ( Ext_json_parse.parse_json_from_string x  )
+  in 
+  let normal_ss = 
+    Ext_json_write.to_string 
+      (Ext_json_parse.parse_json_from_string normal_s) 
+  in 
+  if normal_s <> normal_ss then 
+    begin 
+      prerr_endline "ERROR";
+      prerr_endline normal_s ;
+      prerr_endline normal_ss ;
+    end;
+  OUnit.assert_equal ~cmp:(fun (x:string) y -> x = y) normal_s normal_ss
+
+let id_parsing_x2 x = 
+  let stru = Ext_json_parse.parse_json_from_string x in 
+  let normal_s = Ext_json_write.to_string stru in 
+  let normal_ss = (Ext_json_parse.parse_json_from_string normal_s) in 
+  if Ext_json.equal stru normal_ss then 
+    true
+  else begin 
+    prerr_endline "ERROR";
+    prerr_endline normal_s;
+    Format.fprintf Format.err_formatter 
+    "%a@.%a@." Ext_pervasives.pp_any stru Ext_pervasives.pp_any normal_ss; 
+    
+    prerr_endline (Ext_json_write.to_string normal_ss);
+    false
+  end  
+
+let test_data = 
+  [{|
+      {}
+      |};
+   {| [] |};
+   {| [1,2,3]|};
+   {| ["x", "y", 1,2,3 ]|};
+   {| { "x" :  3, "y" : "x", "z" : [1,2,3, "x"] }|};
+   {| {"x " : true , "y" : false , "z\"" : 1} |}
+  ] 
 exception Parse_error 
 let suites = 
   __FILE__ 
   >:::
   [
+
+    __LOC__ >:: begin fun _ -> 
+      List.iter id_parsing_serializing test_data
+    end;
+
+    __LOC__ >:: begin fun _ -> 
+      List.iteri (fun i x -> OUnit.assert_bool (__LOC__ ^ string_of_int i ) (id_parsing_x2 x)) test_data
+    end;
     "empty_json" >:: begin fun _ -> 
       let v =parse_json_from_string "{}" in
       match v with 
@@ -9476,7 +10028,7 @@ let suites =
       (OUnit.assert_raises Parse_error @@ fun _ -> 
        try parse_json_from_string {| [,]|} with _ -> raise Parse_error);
       OUnit.assert_raises Parse_error @@ fun _ -> 
-        try parse_json_from_string {| {,}|} with _ -> raise Parse_error
+      try parse_json_from_string {| {,}|} with _ -> raise Parse_error
     end;
     "two trails" >:: begin fun _ -> 
       (OUnit.assert_raises Parse_error @@ fun _ -> 
@@ -9509,7 +10061,7 @@ let suites =
       let v1 = parse_json_from_string {| [ 1, 3 ]|} in
       let test (v : Ext_json_types.t) = 
         match v with 
-        | Arr { content = [| Flo {str = "1"} ; Flo { str = "3"} |] } -> ()
+        | Arr { content = [| Flo {flo = "1"} ; Flo { flo = "3"} |] } -> ()
         | _ -> OUnit.assert_failure "trailing comma array" in 
       test v ;
       test v1
@@ -10529,239 +11081,6 @@ let suites =
       
     end
   ]
-
-end
-module Ext_pervasives : sig 
-#1 "ext_pervasives.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(** Extension to standard library [Pervavives] module, safe to open 
-  *)
-
-external reraise: exn -> 'a = "%reraise"
-
-val finally : 'a -> ('a -> 'c) -> ('a -> 'b) -> 'b
-
-val with_file_as_chan : string -> (out_channel -> 'a) -> 'a
-
-val with_file_as_pp : string -> (Format.formatter -> 'a) -> 'a
-
-val is_pos_pow : Int32.t -> int
-
-val failwithf : loc:string -> ('a, unit, string, 'b) format4 -> 'a
-
-val invalid_argf : ('a, unit, string, 'b) format4 -> 'a
-
-val bad_argf : ('a, unit, string, 'b) format4 -> 'a
-
-
-
-val dump : 'a -> string 
-val pp_any : Format.formatter -> 'a -> unit 
-external id : 'a -> 'a = "%identity"
-
-(** Copied from {!Btype.hash_variant}:
-    need sync up and add test case
- *)
-val hash_variant : string -> int
-
-end = struct
-#1 "ext_pervasives.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-external reraise: exn -> 'a = "%reraise"
-
-let finally v action f   = 
-  match f v with
-  | exception e -> 
-      action v ;
-      reraise e 
-  | e ->  action v ; e 
-
-let with_file_as_chan filename f = 
-  finally (open_out_bin filename) close_out f 
-
-let with_file_as_pp filename f = 
-  finally (open_out_bin filename) close_out
-    (fun chan -> 
-      let fmt = Format.formatter_of_out_channel chan in
-      let v = f  fmt in
-      Format.pp_print_flush fmt ();
-      v
-    ) 
-
-
-let  is_pos_pow n = 
-  let module M = struct exception E end in 
-  let rec aux c (n : Int32.t) = 
-    if n <= 0l then -2 
-    else if n = 1l then c 
-    else if Int32.logand n 1l =  0l then   
-      aux (c + 1) (Int32.shift_right n 1 )
-    else raise M.E in 
-  try aux 0 n  with M.E -> -1
-
-let failwithf ~loc fmt = Format.ksprintf (fun s -> failwith (loc ^ s))
-    fmt
-    
-let invalid_argf fmt = Format.ksprintf invalid_arg fmt
-
-let bad_argf fmt = Format.ksprintf (fun x -> raise (Arg.Bad x ) ) fmt
-
-
-let rec dump r =
-  if Obj.is_int r then
-    string_of_int (Obj.magic r : int)
-  else (* Block. *)
-    let rec get_fields acc = function
-      | 0 -> acc
-      | n -> let n = n-1 in get_fields (Obj.field r n :: acc) n
-    in
-    let rec is_list r =
-      if Obj.is_int r then
-        r = Obj.repr 0 (* [] *)
-      else
-        let s = Obj.size r and t = Obj.tag r in
-        t = 0 && s = 2 && is_list (Obj.field r 1) (* h :: t *)
-    in
-    let rec get_list r =
-      if Obj.is_int r then
-        []
-      else
-        let h = Obj.field r 0 and t = get_list (Obj.field r 1) in
-        h :: t
-    in
-    let opaque name =
-      (* XXX In future, print the address of value 'r'.  Not possible
-       * in pure OCaml at the moment.  *)
-      "<" ^ name ^ ">"
-    in
-    let s = Obj.size r and t = Obj.tag r in
-    (* From the tag, determine the type of block. *)
-    match t with
-    | _ when is_list r ->
-      let fields = get_list r in
-      "[" ^ String.concat "; " (List.map dump fields) ^ "]"
-    | 0 ->
-      let fields = get_fields [] s in
-      "(" ^ String.concat ", " (List.map dump fields) ^ ")"
-    | x when x = Obj.lazy_tag ->
-      (* Note that [lazy_tag .. forward_tag] are < no_scan_tag.  Not
-         * clear if very large constructed values could have the same
-         * tag. XXX *)
-      opaque "lazy"
-    | x when x = Obj.closure_tag ->
-      opaque "closure"
-    | x when x = Obj.object_tag ->
-      let fields = get_fields [] s in
-      let _clasz, id, slots =
-        match fields with
-        | h::h'::t -> h, h', t
-        | _ -> assert false
-      in
-      (* No information on decoding the class (first field).  So just print
-         * out the ID and the slots. *)
-      "Object #" ^ dump id ^ " (" ^ String.concat ", " (List.map dump slots) ^ ")"
-    | x when x = Obj.infix_tag ->
-      opaque "infix"
-    | x when x = Obj.forward_tag ->
-      opaque "forward"
-    | x when x < Obj.no_scan_tag ->
-      let fields = get_fields [] s in
-      "Tag" ^ string_of_int t ^
-      " (" ^ String.concat ", " (List.map dump fields) ^ ")"
-    | x when x = Obj.string_tag ->
-      "\"" ^ String.escaped (Obj.magic r : string) ^ "\""
-    | x when x = Obj.double_tag ->
-      string_of_float (Obj.magic r : float)
-    | x when x = Obj.abstract_tag ->
-      opaque "abstract"
-    | x when x = Obj.custom_tag ->
-      opaque "custom"
-    | x when x = Obj.custom_tag ->
-      opaque "final"
-    | x when x = Obj.double_array_tag ->
-      "[|"^
-      String.concat ";"
-        (Array.to_list (Array.map string_of_float (Obj.magic r : float array))) ^
-      "|]"
-    | _ ->
-      opaque (Printf.sprintf "unknown: tag %d size %d" t s)
-
-let dump v = dump (Obj.repr v)
-
-let pp_any fmt v = 
-  Format.fprintf fmt "@[%s@]"
-  (dump v )
-external id : 'a -> 'a = "%identity"
-
-
-let hash_variant s =
-  let accu = ref 0 in
-  for i = 0 to String.length s - 1 do
-    accu := 223 * !accu + Char.code s.[i]
-  done;
-  (* reduce to 31 bits *)
-  accu := !accu land (1 lsl 31 - 1);
-  (* make it signed for 64 bits architectures *)
-  if !accu > 0x3FFFFFFF then !accu - (1 lsl 31) else !accu
-
 
 end
 module Ext_filename : sig 
@@ -13178,6 +13497,17 @@ let suites =
          ".#hello.ml"; ".#hello.rei"; "a-.ml"; "a-b.ml"; "-a-.ml"
         ; "-.ml"
         ]
+    end;
+    __LOC__ >:: begin fun _ -> 
+      OUnit.assert_bool __LOC__ @@
+      List.for_all Ext_string.is_valid_npm_package_name
+      ["x"; "@angualr"; "test"; "hi-x"; "hi-"]
+      ;
+      OUnit.assert_bool __LOC__ @@
+      List.for_all 
+      (fun x -> not (Ext_string.is_valid_npm_package_name x))
+      ["x "; "x'"; "Test"; "hI"]
+      ;
     end;
     __LOC__ >:: begin fun _ -> 
       Ext_string.find ~sub:"hello" "xx hello xx" =~ 3 ;

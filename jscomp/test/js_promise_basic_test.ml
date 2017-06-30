@@ -1,3 +1,10 @@
+let suites :  Mt.pair_suites ref  = ref []
+let test_id = ref 0
+let eq loc x y = 
+  incr test_id ; 
+  suites := 
+    (loc ^" id " ^ (string_of_int !test_id), (fun _ -> Mt.Eq(x,y))) :: !suites
+
 
 
 open Js_promise
@@ -152,4 +159,21 @@ let () =
   ignore @@ allRejectTest ();
   ignore @@ raceTest ();
   ignore @@ createPromiseRejectTest ();
-  ignore @@ createPromiseFulfillTest ();
+  ignore @@ createPromiseFulfillTest ()
+
+(** TODO: async tests?
+*)
+let () = 
+    (Js.Promise.all2 (Js.Promise.resolve 2, Js.Promise.resolve 3))
+    |> Js.Promise.then_ (fun (a,b) -> 
+    eq __LOC__ (a,b) (2,3); 
+    
+    Js.Promise.resolve ()
+    )
+    |> ignore
+
+
+;; Js.log (List.length !suites)     
+     
+;; Js.log "hey"
+;; Mt.from_pair_suites __FILE__ !suites;

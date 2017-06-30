@@ -12,12 +12,12 @@ function eq(loc, x, y) {
   suites[0] = /* :: */[
     /* tuple */[
       loc + (" id " + test_id[0]),
-      function () {
-        return /* Eq */Block.__(0, [
-                  x,
-                  y
-                ]);
-      }
+      (function () {
+          return /* Eq */Block.__(0, [
+                    x,
+                    y
+                  ]);
+        })
     ],
     suites[0]
   ];
@@ -29,9 +29,9 @@ eq("File \"ffi_array_test.ml\", line 12, characters 5-12", /* int array */[
         2,
         3,
         4
-      ].map(function (x) {
-          return x + 1 | 0;
-        }), /* int array */[
+      ].map((function (x) {
+            return x + 1 | 0;
+          })), /* int array */[
       2,
       3,
       4,

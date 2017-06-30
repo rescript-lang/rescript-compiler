@@ -7,97 +7,97 @@ var Ext_string = require("./ext_string.js");
 
 var suites_000 = /* tuple */[
   "split",
-  function () {
-    return /* Eq */Block.__(0, [
-              Ext_string.split(/* Some */[/* true */1], "hihi", /* "i" */105),
-              /* :: */[
-                "h",
+  (function () {
+      return /* Eq */Block.__(0, [
+                Ext_string.split(/* Some */[/* true */1], "hihi", /* "i" */105),
                 /* :: */[
                   "h",
                   /* :: */[
-                    "",
-                    /* [] */0
+                    "h",
+                    /* :: */[
+                      "",
+                      /* [] */0
+                    ]
                   ]
                 ]
-              ]
-            ]);
-  }
+              ]);
+    })
 ];
 
 var suites_001 = /* :: */[
   /* tuple */[
     "split_non_empty",
-    function () {
-      return /* Eq */Block.__(0, [
-                Ext_string.split(/* None */0, "hihi", /* "i" */105),
-                /* :: */[
-                  "h",
+    (function () {
+        return /* Eq */Block.__(0, [
+                  Ext_string.split(/* None */0, "hihi", /* "i" */105),
                   /* :: */[
                     "h",
-                    /* [] */0
+                    /* :: */[
+                      "h",
+                      /* [] */0
+                    ]
                   ]
-                ]
-              ]);
-    }
+                ]);
+      })
   ],
   /* :: */[
     /* tuple */[
       "split_empty",
-      function () {
-        return /* Eq */Block.__(0, [
-                  Ext_string.split(/* Some */[/* true */1], "", /* "i" */105),
-                  /* [] */0
-                ]);
-      }
+      (function () {
+          return /* Eq */Block.__(0, [
+                    Ext_string.split(/* Some */[/* true */1], "", /* "i" */105),
+                    /* [] */0
+                  ]);
+        })
     ],
     /* :: */[
       /* tuple */[
         "split_normal",
-        function () {
-          return /* Eq */Block.__(0, [
-                    Ext_string.split(/* Some */[/* true */1], "h i i", /* " " */32),
-                    /* :: */[
-                      "h",
-                      /* :: */[
-                        "i",
-                        /* :: */[
-                          "i",
-                          /* [] */0
-                        ]
-                      ]
-                    ]
-                  ]);
-        }
-      ],
-      /* :: */[
-        /* tuple */[
-          "split_by",
-          function () {
+        (function () {
             return /* Eq */Block.__(0, [
-                      List.filter(function (s) {
-                              return +(s !== "");
-                            })(Ext_string.split_by(/* None */0, function (x) {
-                                if (x === /* " " */32) {
-                                  return /* true */1;
-                                } else {
-                                  return +(x === /* "\t" */9);
-                                }
-                              }, "h hgso hgso \t hi")),
+                      Ext_string.split(/* Some */[/* true */1], "h i i", /* " " */32),
                       /* :: */[
                         "h",
                         /* :: */[
-                          "hgso",
+                          "i",
                           /* :: */[
-                            "hgso",
-                            /* :: */[
-                              "hi",
-                              /* [] */0
-                            ]
+                            "i",
+                            /* [] */0
                           ]
                         ]
                       ]
                     ]);
-          }
+          })
+      ],
+      /* :: */[
+        /* tuple */[
+          "split_by",
+          (function () {
+              return /* Eq */Block.__(0, [
+                        List.filter((function (s) {
+                                  return +(s !== "");
+                                }))(Ext_string.split_by(/* None */0, (function (x) {
+                                    if (x === /* " " */32) {
+                                      return /* true */1;
+                                    } else {
+                                      return +(x === /* "\t" */9);
+                                    }
+                                  }), "h hgso hgso \t hi")),
+                        /* :: */[
+                          "h",
+                          /* :: */[
+                            "hgso",
+                            /* :: */[
+                              "hgso",
+                              /* :: */[
+                                "hi",
+                                /* [] */0
+                              ]
+                            ]
+                          ]
+                        ]
+                      ]);
+            })
         ],
         /* [] */0
       ]

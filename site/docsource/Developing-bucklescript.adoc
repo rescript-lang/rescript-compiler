@@ -10,7 +10,7 @@ Building BuckleScript from Source
 1. Recursively clone the BuckleScript repository
 ++++++++++++++++++++++++++++++++++++++++++++++++
 
-`sh   git clone https://github.com/bloomberg/bucklescript.git --recursive`
+`sh   git clone https://github.com/bucklescript/bucklescript.git --recursive`
 
 [[build-the-patched-ocaml-toolchain]]
 2. Build the patched OCaml toolchain

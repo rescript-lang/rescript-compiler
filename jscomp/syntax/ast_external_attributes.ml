@@ -602,7 +602,9 @@ let handle_attributes
               arg_type 
             } :: arg_type_specs,
             new_arg_types,
-            i + 1)
+            if arg_type = Ignore then i 
+            else i + 1
+            )
         ) arg_types_ty 
         (match st with
          | {val_send_pipe = Some obj; _ } ->      
@@ -675,7 +677,8 @@ let handle_attributes
           Location.raise_errorf ~loc "[@@bs.get_index] expect external names to be empty string";
         if arg_type_specs_length = 2 then 
           Js_get_index {js_get_index_scopes = scopes}
-        else Location.raise_errorf ~loc "Ill defined attribute [@@bs.get_index] (arity of 2)"
+        else Location.raise_errorf ~loc 
+        "Ill defined attribute [@@bs.get_index] (arity expected 2 : while %d)" arg_type_specs_length
 
       | {get_index = true; _}
 

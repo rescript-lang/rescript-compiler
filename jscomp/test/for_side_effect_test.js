@@ -22,12 +22,12 @@ function test2() {
 
 var suites_000 = /* tuple */[
   "for_order",
-  function () {
-    return /* Eq */Block.__(0, [
-              10,
-              test2(/* () */0)
-            ]);
-  }
+  (function () {
+      return /* Eq */Block.__(0, [
+                10,
+                test2(/* () */0)
+              ]);
+    })
 ];
 
 var suites = /* :: */[

@@ -71,11 +71,13 @@ bin/all_ounit_tests.ml : ext/resize_array.mli
 bin/all_ounit_tests.ml : ounit/oUnitLogger.ml
 bin/all_ounit_tests.ml : ext/ext_json_parse.ml
 bin/all_ounit_tests.ml : ext/ext_json_types.ml
+bin/all_ounit_tests.ml : ext/ext_json_write.ml
 bin/all_ounit_tests.ml : ext/ext_pervasives.ml
 bin/all_ounit_tests.ml : ext/hash_set_poly.mli
 bin/all_ounit_tests.ml : ext/string_hashtbl.ml
 bin/all_ounit_tests.ml : ounit/oUnitChooser.ml
 bin/all_ounit_tests.ml : ext/ext_json_parse.mli
+bin/all_ounit_tests.ml : ext/ext_json_write.mli
 bin/all_ounit_tests.ml : ext/ext_pervasives.mli
 bin/all_ounit_tests.ml : ext/string_hash_set.ml
 bin/all_ounit_tests.ml : ext/string_hashtbl.mli

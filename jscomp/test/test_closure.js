@@ -8,9 +8,9 @@ var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js")
 var v = [0];
 
 function f() {
-  var arr = Caml_array.caml_make_vect(10, function () {
-        return /* () */0;
-      });
+  var arr = Caml_array.caml_make_vect(10, (function () {
+          return /* () */0;
+        }));
   for(var i = 0; i <= 9; ++i){
     Caml_array.caml_array_set(arr, i, (function(i){
         return function () {
@@ -24,9 +24,9 @@ function f() {
 
 var u = f(/* () */0);
 
-$$Array.iter(function (x) {
-      return Curry._1(x, /* () */0);
-    }, u);
+$$Array.iter((function (x) {
+        return Curry._1(x, /* () */0);
+      }), u);
 
 if (v[0] !== 45) {
   throw [

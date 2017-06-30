@@ -34,44 +34,44 @@ function to_int(x) {
 
 var suites_000 = /* tuple */[
   "test_int",
-  function () {
-    return /* Eq */Block.__(0, [
-              3,
-              to_int([
-                    Int,
-                    3,
-                    0
-                  ])
-            ]);
-  }
+  (function () {
+      return /* Eq */Block.__(0, [
+                3,
+                to_int([
+                      Int,
+                      3,
+                      0
+                    ])
+              ]);
+    })
 ];
 
 var suites_001 = /* :: */[
   /* tuple */[
     "test_int2",
-    function () {
-      return /* Eq */Block.__(0, [
-                0,
-                to_int([
-                      Int$1,
-                      3,
-                      0
-                    ])
-              ]);
-    }
+    (function () {
+        return /* Eq */Block.__(0, [
+                  0,
+                  to_int([
+                        Int$1,
+                        3,
+                        0
+                      ])
+                ]);
+      })
   ],
   /* :: */[
     /* tuple */[
       "test_string",
-      function () {
-        return /* Eq */Block.__(0, [
-                  -1,
-                  to_int([
-                        Str,
-                        "x"
-                      ])
-                ]);
-      }
+      (function () {
+          return /* Eq */Block.__(0, [
+                    -1,
+                    to_int([
+                          Str,
+                          "x"
+                        ])
+                  ]);
+        })
     ],
     /* [] */0
   ]

@@ -1,7 +1,7 @@
 #### First class uncurried calling convention
 
 As a functional language, the vanilla OCaml only provides curried calling convention,
-BuckleScript employs fairly http://bloomberg.github.io/bucklescript/js-demo/#Curry_Optimization[advanced optimizations] for curried calling convention, however, the most efficient code is efficient code not relying on optimizations.
+BuckleScript employs fairly http://bucklescript.github.io/bucklescript/js-demo/#Curry_Optimization[advanced optimizations] for curried calling convention, however, the most efficient code is efficient code not relying on optimizations.
 
 Since this release, we provide first class uncurried calling convention, _all toolchains provided by BuckleScript_ can understand uncurried calling convention
 
@@ -36,39 +36,39 @@ function f (g,x){ //  <1>
 }
 -----------
 <1> `f` is optimized and flattened
-<2> `g` works like uncurried function 
+<2> `g` works like uncurried function
 
 #### API documentation
 
-Now `ocamldoc` can  understand `[@bs]` natively(instead of printing a desugared output), we provide an http://bloomberg.github.io/bucklescript/api/[API documentation] for the library shipped with BuckleScript, we plan to ship the documentation generator in next release.
+Now `ocamldoc` can  understand `[@bs]` natively(instead of printing a desugared output), we provide an http://bucklescript.github.io/bucklescript/api/[API documentation] for the library shipped with BuckleScript, we plan to ship the documentation generator in next release.
 
 #### More bindings including `Js.Promise.t`
 
 #### Unicode string and interpolation support
 
-See http://bloomberg.github.io/bucklescript/Manual.html#_unicode_support_with_string_interpolation_since_1_7_0[String interpolation]
+See http://bucklescript.github.io/bucklescript/Manual.html#_unicode_support_with_string_interpolation_since_1_7_0[String interpolation]
 
 #### Catch exceptions raised on JS side
 
-See http://bloomberg.github.io/bucklescript/Manual.html#_exception_handling_between_ocaml_and_js_since_1_7_0[Catch exception]
+See http://bucklescript.github.io/bucklescript/Manual.html#_exception_handling_between_ocaml_and_js_since_1_7_0[Catch exception]
 
-#### Mixed data source 
+#### Mixed data source
 
-See http://bloomberg.github.io/bucklescript/Manual.html#__code_bs_open_code_type_safe_external_data_source_handling_since_1_7_0[`bs.open`]
+See http://bucklescript.github.io/bucklescript/Manual.html#__code_bs_open_code_type_safe_external_data_source_handling_since_1_7_0[`bs.open`]
 
 
 #### ES6 support in Safari
 
-See https://github.com/bloomberg/bucklescript/issues/1465[fix es6 support in browser]
+See https://github.com/bucklescript/bucklescript/issues/1465[fix es6 support in browser]
 
 #### `bs-dev-dependencies` support  in the build system
 
-See http://bloomberg.github.io/bucklescript/docson/#build-schema.json[build schema]
+See http://bucklescript.github.io/bucklescript/docson/#build-schema.json[build schema]
 
 ### `bs.as` accept json literal support
 
-See http://bloomberg.github.io/bucklescript/Manual.html#_fixed_arguments_with_arbitrary_json_literal_since_1_7_0[json payload]
+See http://bucklescript.github.io/bucklescript/Manual.html#_fixed_arguments_with_arbitrary_json_literal_since_1_7_0[json payload]
 
 ### Bug fixes, performance improvement, and stress tests
 
-Notable bug fixes https://github.com/bloomberg/bucklescript/issues/1549[#1549], https://github.com/bloomberg/bucklescript/issues/1539[#1539], https://github.com/bloomberg/bucklescript/issues/1520[#1520]
+Notable bug fixes https://github.com/bucklescript/bucklescript/issues/1549[#1549], https://github.com/bucklescript/bucklescript/issues/1539[#1539], https://github.com/bucklescript/bucklescript/issues/1520[#1520]

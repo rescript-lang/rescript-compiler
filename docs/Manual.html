@@ -485,7 +485,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="article toc2 toc-left">
 <div id="header">
-<h1><a href="https://github.com/bloomberg/bucklescript">BuckleScript</a> User Manual</h1>
+<h1><a href="https://github.com/bucklescript/bucklescript">BuckleScript</a> User Manual</h1>
 <div class="details">
 <span id="author" class="author">Hongbo Zhang</span><br>
 <span id="revnumber">version 1.7.0</span>
@@ -747,7 +747,7 @@ debug: false // Set debug to true if you want to inspect the dropdown
 <p>BuckleScript is a backend for the <a href="https://ocaml.org/">OCaml</a> compiler which emits
 JavaScript. It works with both vanilla OCaml and <a href="https://github.com/facebook/Reason">Reason</a>, the
 whole compiler is compiled into JS (and ASM) so that you can play with it
-in the <a href="http://bloomberg.github.io/bucklescript/js-demo/">browser</a>.</p>
+in the <a href="http://bucklescript.github.io/bucklescript/js-demo/">browser</a>.</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -757,11 +757,11 @@ in the <a href="http://bloomberg.github.io/bucklescript/js-demo/">browser</a>.</
 </td>
 <td class="content">
 <div class="paragraph">
-<p>Documents under <a href="https://github.com/bloomberg/bucklescript/Manual.html"><em>bloomberg.github.io</em></a> match the <a href="https://github.com/bloomberg/bucklescript">master branch</a>.</p>
+<p>Documentation under <a href="https://bucklescript.github.io/bucklescript/Manual.html"><em>bucklescript.github.io</em></a> match the <a href="https://github.com/bucklescript/bucklescript">master branch</a>.</p>
 </div>
 <div class="paragraph">
 <p>If you find errors or omissions in this document, please don&#8217;t
-hesitate to submit an issue, sources are <a href="https://github.com/bloomberg/bucklescript/tree/master/site/docsource">here</a>.</p>
+hesitate to submit an issue, sources are <a href="https://github.com/bucklescript/bucklescript/tree/master/site/docsource">here</a>.</p>
 </div>
 </td>
 </tr>
@@ -864,7 +864,7 @@ offline <a href="https://github.com/jashkenas/coffeescript/wiki/list-of-language
   <a href="https://www.haskell.org/">Haskell</a>),
   BuckleScript shares the same property and compiles even faster
   since it saves the link time. See the speeds at work in the
-  <a href="http://bloomberg.github.io/bucklescript/js-demo/">playground</a>, the native backend is one
+  <a href="http://bucklescript.github.io/bucklescript/js-demo/">playground</a>, the native backend is one
   order faster than the JS backend.</p>
 </dd>
 <dt class="hdlist1">Un-readable JS Code and hard to integrate with existing JS libraries</dt>
@@ -988,7 +988,7 @@ npm install bs-platform</code></pre>
 <div class="listingblock">
 <div class="title">Instructions:</div>
 <div class="content">
-<pre class="pygments highlight"><code data-lang="sh">git clone https://github.com/bloomberg/bucklescript
+<pre class="pygments highlight"><code data-lang="sh">git clone https://github.com/bucklescript/bucklescript
 <span class="tok-nb">cd </span>bucklescript
 npm install</code></pre>
 </div>
@@ -1011,7 +1011,7 @@ easily be done.</p>
 <div class="listingblock">
 <div class="title">Build OCaml compiler</div>
 <div class="content">
-<pre class="pygments highlight"><code data-lang="sh">git clone --recursive https://github.com/bloomberg/bucklescript
+<pre class="pygments highlight"><code data-lang="sh">git clone --recursive https://github.com/bucklescript/bucklescript
 <span class="tok-nb">cd </span>bucklescript/ocaml
 ./configure -prefix <span class="tok-sb">`</span><span class="tok-nb">pwd</span><span class="tok-sb">`</span> <span class="tok-c"># put your preferred directory</span>
 make world.opt
@@ -1032,7 +1032,8 @@ the previous section.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="sh">make world</code></pre>
+<pre class="pygments highlight"><code data-lang="sh"><span class="tok-nb">cd</span> ../jscomp
+make world</code></pre>
 </div>
 </div>
 <hr>
@@ -1102,7 +1103,7 @@ then you can edit <code>src/demo.ml</code> and see it compiled on the fly, and c
 a <code>Problems</code> panel which has a much nicer UI.</p>
 </div>
 <div class="paragraph">
-<p>Currently there are not too many  project templates, you can contribute more project templates here <a href="https://github.com/bloomberg/bucklescript/tree/master/jscomp/bsb/templates">here</a>,</p>
+<p>Currently there are not too many  project templates, you can contribute more project templates here <a href="https://github.com/bucklescript/bucklescript/tree/master/jscomp/bsb/templates">here</a>,</p>
 </div>
 </div>
 <div class="sect2">
@@ -1203,7 +1204,7 @@ as below:</p>
 <div class="title">Tip</div>
 </td>
 <td class="content">
-The working code is available <a href="https://github.com/bloomberg/bucklescript-addons/tree/master/examples/hello">here</a>:
+The working code is available <a href="https://github.com/bucklescript/bucklescript-addons/tree/master/examples/hello">here</a>:
 </td>
 </tr>
 </table>
@@ -1390,7 +1391,7 @@ pretty straightforward:</p>
 <div class="sect2">
 <h3 id="_examples"><a class="anchor" href="#_examples"></a>Examples</h3>
 <div class="paragraph">
-<p>Please visit <a href="https://github.com/bloomberg/bucklescript-addons" class="bare">https://github.com/bloomberg/bucklescript-addons</a> for more examples.</p>
+<p>Please visit <a href="https://github.com/bucklescript/bucklescript-addons" class="bare">https://github.com/bucklescript/bucklescript-addons</a> for more examples.</p>
 </div>
 </div>
 </div>
@@ -3538,7 +3539,7 @@ get the job done.</p>
 <div class="sect3">
 <h4 id="_detect_global_variable_existence_code_bs_external_code_since_1_5_1"><a class="anchor" href="#_detect_global_variable_existence_code_bs_external_code_since_1_5_1"></a>Detect global variable existence <code>bs.external</code> (@since 1.5.1)</h4>
 <div class="paragraph">
-<p>Before we dive into embedding arbitrary JS code, a quite common use case of embedding untyped JS code is detect a global variable (feature detection), Bucklescript provides a relatively type safe approach for such use case: <code>bs.external</code> (or <code>extenral</code>),
+<p>Before we dive into embedding arbitrary JS code, a quite common use case of embedding untyped JS code is detect a global variable (feature detection), Bucklescript provides a relatively type safe approach for such use case: <code>bs.external</code> (or <code>external</code>),
  <code>[%bs.external a_single_identifier]</code> is a value of <code>_ option</code> type, see examples below</p>
 </div>
 <div class="listingblock">
@@ -3546,7 +3547,7 @@ get the job done.</p>
 <pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">let</span> <span class="tok-n">test</span> <span class="tok-bp">()</span> <span class="tok-o">=</span>
   <span class="tok-k">match</span> <span class="tok-o">[%</span><span class="tok-k">external</span> <span class="tok-o">__</span><span class="tok-n">DEV__</span><span class="tok-o">]</span> <span class="tok-k">with</span>
   <span class="tok-o">|</span> <span class="tok-nc">Some</span> <span class="tok-o">_</span> <span class="tok-o">-&gt;</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">log</span> <span class="tok-s2">&quot;dev mode&quot;</span>
-  <span class="tok-o">|</span> <span class="tok-nc">None</span> <span class="tok-o">-&gt;</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">log</span> <span class="tok-s2">&quot;producton mode&quot;</span></code></pre>
+  <span class="tok-o">|</span> <span class="tok-nc">None</span> <span class="tok-o">-&gt;</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">log</span> <span class="tok-s2">&quot;production mode&quot;</span></code></pre>
 </div>
 </div>
 <div class="listingblock">
@@ -3559,7 +3560,7 @@ get the job done.</p>
     <span class="tok-k">return</span> <span class="tok-cm">/* () */</span><span class="tok-mi">0</span><span class="tok-p">;</span>
   <span class="tok-p">}</span>
   <span class="tok-k">else</span> <span class="tok-p">{</span>
-    <span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span><span class="tok-p">(</span><span class="tok-s2">&quot;producton mode&quot;</span><span class="tok-p">);</span>
+    <span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span><span class="tok-p">(</span><span class="tok-s2">&quot;production mode&quot;</span><span class="tok-p">);</span>
     <span class="tok-k">return</span> <span class="tok-cm">/* () */</span><span class="tok-mi">0</span><span class="tok-p">;</span>
   <span class="tok-p">}</span>
 <span class="tok-p">}</span></code></pre>
@@ -3728,7 +3729,7 @@ below:</p>
 <div class="paragraph">
 <p>Below is a simple example for the <a href="https://mochajs.org/">mocha</a> library. For
 more examples, please visit
-<a href="https://github.com/bloomberg/bucklescript-addons" class="bare">https://github.com/bloomberg/bucklescript-addons</a></p>
+<a href="https://github.com/bucklescript/bucklescript-addons" class="bare">https://github.com/bucklescript/bucklescript-addons</a></p>
 </div>
 <div class="sect3">
 <h4 id="_a_simple_example_binding_to_mocha_unit_test_library"><a class="anchor" href="#_a_simple_example_binding_to_mocha_unit_test_library"></a>A simple example: binding to mocha unit test library</h4>
@@ -3858,14 +3859,14 @@ more examples, please visit
 <div class="sectionbody">
 <div class="paragraph">
 <p>There are some cases, the data-source could either come from JS land or OCaml land, it is very hard to give precise type information.
-For example, for an extenral promise whose creation could come from JS API, its failed value caused by <code>Promise.reject</code> could be in any shape.</p>
+For example, for an external promise whose creation could come from JS API, its failed value caused by <code>Promise.reject</code> could be in any shape.</p>
 </div>
 <div class="paragraph">
 <p>BuckleScript provides a solution to filter out OCaml structured exception data from the mixed data source,
-it preserves the type safety while allow uesrs to deal with mixed source.</p>
+it preserves the type safety while allow users to deal with mixed source.</p>
 </div>
 <div class="paragraph">
-<p>It makes use of OCaml&#8217;s extensible variant, so that uers can pack mix value of type <code>exn</code> with JS data-source</p>
+<p>It makes use of OCaml&#8217;s extensible variant, so that users can pack mix value of type <code>exn</code> with JS data-source</p>
 </div>
 <div class="listingblock">
 <div class="title">Example</div>
@@ -3912,7 +3913,7 @@ it preserves the type safety while allow uesrs to deal with mixed source.</p>
 <h2 id="_js_module"><a class="anchor" href="#_js_module"></a>Js module</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p><a href="https://bloomberg.github.io/bucklescript/api/Js.html">API reference</a></p>
+<p><a href="https://bucklescript.github.io/bucklescript/api/Js.html">API reference</a></p>
 </div>
 <div class="paragraph">
 <p>Js module is shipped with BuckleScript, both the namespace <code>Js</code> and <code>Node</code> are preserved.</p>
@@ -3928,7 +3929,7 @@ we&#8217;d like it to be, so in order to actually use them we need to lift the t
 want to use them with. For this purpose BuckleScript defines the type <code>'a Js.null</code>,
 <code>'a Js.undefined' and &#8217;a Js.null_undefined</code> (for values that can be both
 <code>null</code>, <code>undefined</code> and <code>'a</code>). As well as the corresponding modules <code>Js.Null</code>,
-<code>Js.Undefined</code> and <code>Js.Null_undefined</code> for working with these tpyes.</p>
+<code>Js.Undefined</code> and <code>Js.Null_undefined</code> for working with these types.</p>
 </div>
 <div class="paragraph">
 <p>Here&#8217;s an example showing <code>Js.Null</code> used directly:</p>
@@ -3977,31 +3978,31 @@ for coercing to and from <code>bool</code>: <code>Js.to_bool</code> and <code>Js
 <div class="ulist">
 <ul>
 <li>
-<p><a href="https://bloomberg.github.io/bucklescript/api/Js.Null.html">Js.Null</a></p>
+<p><a href="https://bucklescript.github.io/bucklescript/api/Js.Null.html">Js.Null</a></p>
 </li>
 <li>
-<p><a href="https://bloomberg.github.io/bucklescript/api/Js.Undefined.html">Js.Undefined</a></p>
+<p><a href="https://bucklescript.github.io/bucklescript/api/Js.Undefined.html">Js.Undefined</a></p>
 </li>
 <li>
-<p><a href="https://bloomberg.github.io/bucklescript/api/Js.Null_undefined.html">Js.Null_undefined</a></p>
+<p><a href="https://bucklescript.github.io/bucklescript/api/Js.Null_undefined.html">Js.Null_undefined</a></p>
 </li>
 <li>
-<p><a href="https://bloomberg.github.io/bucklescript/api/Js.Array.html">Js.Array</a></p>
+<p><a href="https://bucklescript.github.io/bucklescript/api/Js.Array.html">Js.Array</a></p>
 </li>
 <li>
-<p><a href="https://bloomberg.github.io/bucklescript/api/Js.Date.html">Js.Date</a></p>
+<p><a href="https://bucklescript.github.io/bucklescript/api/Js.Date.html">Js.Date</a></p>
 </li>
 <li>
-<p><a href="https://bloomberg.github.io/bucklescript/api/Js.Math.html">Js.Math</a></p>
+<p><a href="https://bucklescript.github.io/bucklescript/api/Js.Math.html">Js.Math</a></p>
 </li>
 <li>
-<p><a href="https://bloomberg.github.io/bucklescript/api/Js.Re.html">Js.Re</a></p>
+<p><a href="https://bucklescript.github.io/bucklescript/api/Js.Re.html">Js.Re</a></p>
 </li>
 <li>
-<p><a href="https://bloomberg.github.io/bucklescript/api/Js.String.html">Js.String</a></p>
+<p><a href="https://bucklescript.github.io/bucklescript/api/Js.String.html">Js.String</a></p>
 </li>
 <li>
-<p><a href="https://bloomberg.github.io/bucklescript/api/Js.Typed_array.html">Js.Typed_array</a></p>
+<p><a href="https://bucklescript.github.io/bucklescript/api/Js.Typed_array.html">Js.Typed_array</a></p>
 </li>
 </ul>
 </div>
@@ -4014,13 +4015,13 @@ for coercing to and from <code>bool</code>: <code>Js.to_bool</code> and <code>Js
 <div class="ulist">
 <ul>
 <li>
-<p><a href="https://bloomberg.github.io/bucklescript/api/Js.Boolean.html">Js.Boolean</a></p>
+<p><a href="https://bucklescript.github.io/bucklescript/api/Js.Boolean.html">Js.Boolean</a></p>
 </li>
 <li>
-<p><a href="https://bloomberg.github.io/bucklescript/api/Js.Dict.html">Js.Dict</a></p>
+<p><a href="https://bucklescript.github.io/bucklescript/api/Js.Dict.html">Js.Dict</a></p>
 </li>
 <li>
-<p><a href="https://bloomberg.github.io/bucklescript/api/Js.Obj.html">Js.Obj</a></p>
+<p><a href="https://bucklescript.github.io/bucklescript/api/Js.Obj.html">Js.Obj</a></p>
 </li>
 </ul>
 </div>
@@ -4033,28 +4034,28 @@ for coercing to and from <code>bool</code>: <code>Js.to_bool</code> and <code>Js
 <div class="ulist">
 <ul>
 <li>
-<p><a href="https://bloomberg.github.io/bucklescript/api/Js_float.html">Js_float</a></p>
+<p><a href="https://bucklescript.github.io/bucklescript/api/Js_float.html">Js_float</a></p>
 </li>
 <li>
-<p><a href="https://bloomberg.github.io/bucklescript/api/Js_int.html">Js_int</a></p>
+<p><a href="https://bucklescript.github.io/bucklescript/api/Js_int.html">Js_int</a></p>
 </li>
 <li>
-<p><a href="https://bloomberg.github.io/bucklescript/api/Js_int64.html">Js_int64</a></p>
+<p><a href="https://bucklescript.github.io/bucklescript/api/Js_int64.html">Js_int64</a></p>
 </li>
 <li>
-<p><a href="https://bloomberg.github.io/bucklescript/api/Js_json.html">Js.Json</a></p>
+<p><a href="https://bucklescript.github.io/bucklescript/api/Js_json.html">Js.Json</a></p>
 </li>
 <li>
-<p><a href="https://bloomberg.github.io/bucklescript/api/Js_nativeint.html">Js_nativeint</a></p>
+<p><a href="https://bucklescript.github.io/bucklescript/api/Js_nativeint.html">Js_nativeint</a></p>
 </li>
 <li>
-<p><a href="https://bloomberg.github.io/bucklescript/api/Js_primitive.html">Js_primitive</a></p>
+<p><a href="https://bucklescript.github.io/bucklescript/api/Js_primitive.html">Js_primitive</a></p>
 </li>
 <li>
-<p><a href="https://bloomberg.github.io/bucklescript/api/Js_types.html">Js.Types</a></p>
+<p><a href="https://bucklescript.github.io/bucklescript/api/Js_types.html">Js.Types</a></p>
 </li>
 <li>
-<p><a href="https://bloomberg.github.io/bucklescript/api/Js_unsafe.html">Js_unsafe</a></p>
+<p><a href="https://bucklescript.github.io/bucklescript/api/Js_unsafe.html">Js_unsafe</a></p>
 </li>
 </ul>
 </div>
@@ -4065,29 +4066,29 @@ for coercing to and from <code>bool</code>: <code>Js.to_bool</code> and <code>Js
 <h2 id="_node_module"><a class="anchor" href="#_node_module"></a>Node module</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p><a href="https://bloomberg.github.io/bucklescript/api/Node.html">Node</a></p>
+<p><a href="https://bucklescript.github.io/bucklescript/api/Node.html">Node</a></p>
 </div>
 <div class="sect2">
 <h3 id="_submodules"><a class="anchor" href="#_submodules"></a>Submodules</h3>
 <div class="ulist">
 <ul>
 <li>
-<p><a href="https://bloomberg.github.io/bucklescript/api/Node_buffer.html">Node.Buffer</a></p>
+<p><a href="https://bucklescript.github.io/bucklescript/api/Node_buffer.html">Node.Buffer</a></p>
 </li>
 <li>
-<p><a href="https://bloomberg.github.io/bucklescript/api/Node_child_process.html">Node.Child_process</a></p>
+<p><a href="https://bucklescript.github.io/bucklescript/api/Node_child_process.html">Node.Child_process</a></p>
 </li>
 <li>
-<p><a href="https://bloomberg.github.io/bucklescript/api/Node_fs.html">Node.Fs</a></p>
+<p><a href="https://bucklescript.github.io/bucklescript/api/Node_fs.html">Node.Fs</a></p>
 </li>
 <li>
-<p><a href="https://bloomberg.github.io/bucklescript/api/Node_module.html">Node.Module</a></p>
+<p><a href="https://bucklescript.github.io/bucklescript/api/Node_module.html">Node.Module</a></p>
 </li>
 <li>
-<p><a href="https://bloomberg.github.io/bucklescript/api/Node_path.html">Node.Path</a></p>
+<p><a href="https://bucklescript.github.io/bucklescript/api/Node_path.html">Node.Path</a></p>
 </li>
 <li>
-<p><a href="https://bloomberg.github.io/bucklescript/api/Node_process.html">Node.Process</a></p>
+<p><a href="https://bucklescript.github.io/bucklescript/api/Node_process.html">Node.Process</a></p>
 </li>
 </ul>
 </div>
@@ -4559,7 +4560,7 @@ BIG_ENDIAN <span class="tok-nb">false</span></code></pre>
 <p>For BuckleScript users, nothing needs to be done (it is baked in the language level).
 For non BuckleScript users, we provide an external pre-processor, so it will work with other OCaml
 compilers too.
-Note that the <a href="https://github.com/bloomberg/bucklescript/blob/master/jscomp/bin/bspp.ml">bspp.ml</a> is a stand alone file,
+Note that the <a href="https://github.com/bucklescript/bucklescript/blob/master/jscomp/bin/bspp.ml">bspp.ml</a> is a stand alone file,
 so that it even works without compilation.</p>
 </div>
 <div class="listingblock">
@@ -4628,12 +4629,12 @@ inlining, arity inference and other information.</p>
 <div class="sect2">
 <h3 id="_bucklescript_build_system_code_bsb_code"><a class="anchor" href="#_bucklescript_build_system_code_bsb_code"></a>BuckleScript build system: <code>bsb</code></h3>
 <div class="paragraph">
-<p>BuckleScript proivdes a native build tool on top of Google&#8217;s <a href="https://github.com/ninja-build/ninja/releases">ninja-build</a>.
+<p>BuckleScript provides a native build tool on top of Google&#8217;s <a href="https://github.com/ninja-build/ninja/releases">ninja-build</a>.
 It is designed for a fast feedback loop (typically 100ms feedback loop) and works cross platform.</p>
 </div>
 <div class="paragraph">
 <p><code>bsb</code> can be running in any subdirectory. It is a schema based build tool and the schema is
-<a href="http://bloomberg.github.io/bucklescript/docson/#build-schema.json">available</a>. It is strongly recommended to <strong>check out the <a href="http://bloomberg.github.io/bucklescript/docson/#build-schema.json">schema</a></strong>
+<a href="http://bucklescript.github.io/bucklescript/docson/#build-schema.json">available</a>. It is strongly recommended to <strong>check out the <a href="http://bucklescript.github.io/bucklescript/docson/#build-schema.json">schema</a></strong>
 after you finish reading the tutorials below.</p>
 </div>
 <div class="paragraph">
@@ -4980,7 +4981,7 @@ npm install bs-platform <b class="conum">(2)</b>
 </div>
 </div>
 <div class="paragraph">
-<p>You will get both <code>commonjs</code> and <code>amdjs</code> support. In the end, we suggest you <a href="http://bloomberg.github.io/bucklescript/docson/#build-schema.json">check out the schema</a> and enjoy the build!</p>
+<p>You will get both <code>commonjs</code> and <code>amdjs</code> support. In the end, we suggest you <a href="http://bucklescript.github.io/bucklescript/docson/#build-schema.json">check out the schema</a> and enjoy the build!</p>
 </div>
 </div>
 <div class="sect2">
@@ -5094,7 +5095,7 @@ make depend <b class="conum">(2)</b></code></pre>
 <ol>
 <li>
 <p><em>How does IO work in the browser?</em></p>
-<p>In general, it is very hard to simulate IO in the browser, we recommend users write bindings to NodeJS directly for server side, or use <code>Js.log</code> in client side, see disucssions in <a href="https://github.com/bloomberg/bucklescript/issues/748">#748</a></p>
+<p>In general, it is very hard to simulate IO in the browser, we recommend users write bindings to NodeJS directly for server side, or use <code>Js.log</code> in client side, see discussions in <a href="https://github.com/bucklescript/bucklescript/issues/748">#748</a></p>
 </li>
 <li>
 <p><em>The compiler does not build?</em></p>
@@ -5200,7 +5201,7 @@ functions mentioned above, the code will fail at runtime.</p>
 </div>
 </div>
 <div class="paragraph">
-<p>The issue here isn&#8217;t that the function is polymorphic. You can use (and probably have used) polymorphic uncurried functions without any problem as inline callbacks. But you can&#8217;t export them. The issue here is the combination of using the uncurried calling convention, polymorphism and exporting (by default). It&#8217;s an unfortunate limitation partly due to how OCaml&#8217;s type system incorporates side-effects, and partly due to how BuckleScript handles uncurrying. The simplest solution is in most cases to just not export it, by adding an interface to the module. Alternatively, if you really, really need to export it, you can do so in its curried form, and then wrap it in an uncurried lanbda at the call site. E.g.:</p>
+<p>The issue here isn&#8217;t that the function is polymorphic. You can use (and probably have used) polymorphic uncurried functions without any problem as inline callbacks. But you can&#8217;t export them. The issue here is the combination of using the uncurried calling convention, polymorphism and exporting (by default). It&#8217;s an unfortunate limitation partly due to how OCaml&#8217;s type system incorporates side-effects, and partly due to how BuckleScript handles uncurrying. The simplest solution is in most cases to just not export it, by adding an interface to the module. Alternatively, if you really, really need to export it, you can do so in its curried form, and then wrap it in an uncurried lambda at the call site. E.g.:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -5702,7 +5703,7 @@ We are working to provide a ppx extension as below:</p>
 <div class="sectionbody">
 <div class="paragraph">
 <p>You can play with Reason using the playground
-<a href="https:////bloomberg.github.io/bucklescript/reason-demo">Facebook Reason</a></p>
+<a href="https://bucklescript.github.io/bucklescript/reason-demo">Facebook Reason</a></p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -5720,7 +5721,7 @@ We are working to provide a ppx extension as below:</p>
 </table>
 </div>
 <div class="paragraph">
-<p>There is a stand alone example <a href="https://github.com/bloomberg/bucklescript-addons/blob/master/examples/reason-demo/package.json">here</a>.</p>
+<p>There is a stand alone example <a href="https://github.com/bucklescript/bucklescript-addons/blob/master/examples/reason-demo/package.json">here</a>.</p>
 </div>
 </div>
 </div>
@@ -5902,13 +5903,15 @@ the compiler you modified.</p>
 <div class="sect2">
 <h3 id="_contributing_to_the_documentation"><a class="anchor" href="#_contributing_to_the_documentation"></a>Contributing to the documentation</h3>
 <div class="paragraph">
-<p>You&#8217;ll need <a href="http://asciidoctor.org/">Asciidoctor</a> installed. Modify the section you want in <code>site/docsource/</code>, then run <code>site/docsource/build.sh</code>.</p>
+<p>You&#8217;ll need <a href="http://asciidoctor.org/">Asciidoctor</a> installed and on your <code>PATH</code>.
+Go into <code>site/docsource/</code>, modify the section you want, and run <code>build.sh</code>.
+You can check the <code>build.compile</code> file for debug output.</p>
 </div>
 </div>
 <div class="sect2">
 <h3 id="_contributing_to_the_api_reference"><a class="anchor" href="#_contributing_to_the_api_reference"></a>Contributing to the API reference</h3>
 <div class="paragraph">
-<p>The API reference is generated from doc comments in the source code. Here&#8217;s a good example: <a href="https://github.com/bloomberg/bucklescript/blob/master/jscomp/others/js_re.mli#L146-L161" class="bare">https://github.com/bloomberg/bucklescript/blob/master/jscomp/others/js_re.mli#L146-L161</a></p>
+<p>The API reference is generated from doc comments in the source code. Here&#8217;s a good example: <a href="https://github.com/bucklescript/bucklescript/blob/master/jscomp/others/js_re.mli#L146-L161" class="bare">https://github.com/bucklescript/bucklescript/blob/master/jscomp/others/js_re.mli#L146-L161</a></p>
 </div>
 <div class="paragraph">
 <p>Some tips and guidelines:</p>
@@ -5985,11 +5988,11 @@ refer readers to some of the original informal
 <div class="ulist">
 <ul>
 <li>
-<p>Js_of_ocaml takes lowlevel bytecode from OCaml compiler, BuckleScript
-takes the highlevel rawlambda representation from OCaml compiler</p>
+<p>Js_of_ocaml takes low-level bytecode from OCaml compiler, BuckleScript
+takes the high-level rawlambda representation from OCaml compiler</p>
 </li>
 <li>
-<p>Js_of_ocaml focuses more on existing OCaml eco-system(opam) while
+<p>Js_of_ocaml focuses more on existing OCaml ecosystem(opam) while
 BuckleScript&#8217;s major goal is to target npm</p>
 </li>
 <li>
@@ -6009,8 +6012,8 @@ Array while js_of_ocaml requires its index 0 to be of value 0.</p>
 <h2 id="_library_api_documentation"><a class="anchor" href="#_library_api_documentation"></a>Appendix A: Library API documentation</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>There is a small Library comes with <code>bs-platform</code>, its documentation is
-<a href="http://bloomberg.github.io/bucklescript/api/">available</a>.</p>
+<p>There is a small library that comes with <code>bs-platform</code>, its documentation is
+<a href="http://bucklescript.github.io/bucklescript/api/">here</a>.</p>
 </div>
 </div>
 </div>
@@ -6043,17 +6046,17 @@ Array while js_of_ocaml requires its index 0 to be of value 0.</p>
 <div class="ulist">
 <ul>
 <li>
-<p>add <code>-bs-assume-no-mli</code>, <code>-bs-no-implicit-include</code> <a href="https://github.com/bloomberg/bucklescript/issues/861">#861</a>
+<p>add <code>-bs-assume-no-mli</code>, <code>-bs-no-implicit-include</code> <a href="https://github.com/bucklescript/bucklescript/issues/861">#861</a>
 it&#8217;s for deterministic build</p>
 </li>
 <li>
-<p>add <code>-bs-D</code> <code>-bs-list-conditionals</code> flags <a href="https://github.com/bloomberg/bucklescript/issues/851">#851</a></p>
+<p>add <code>-bs-D</code> <code>-bs-list-conditionals</code> flags <a href="https://github.com/bucklescript/bucklescript/issues/851">#851</a></p>
 </li>
 <li>
 <p>add <code>-bs-syntax-only</code></p>
 </li>
 <li>
-<p>add <code>-bs-binary-ast</code> <a href="https://github.com/bloomberg/bucklescript/issues/854">#854</a></p>
+<p>add <code>-bs-binary-ast</code> <a href="https://github.com/bucklescript/bucklescript/issues/854">#854</a></p>
 </li>
 </ul>
 </div>
@@ -6070,7 +6073,7 @@ it&#8217;s for deterministic build</p>
 <div class="ulist">
 <ul>
 <li>
-<p>Bug fix with opam issues <a href="https://github.com/bloomberg/bucklescript/issues/831">#831</a></p>
+<p>Bug fix with opam issues <a href="https://github.com/bucklescript/bucklescript/issues/831">#831</a></p>
 </li>
 </ul>
 </div>
@@ -6097,21 +6100,21 @@ it&#8217;s for deterministic build</p>
 <div class="ulist">
 <ul>
 <li>
-<p>Add bsdep.exe <a href="https://github.com/bloomberg/bucklescript/issues/822">#822</a></p>
+<p>Add bsdep.exe <a href="https://github.com/bucklescript/bucklescript/issues/822">#822</a></p>
 </li>
 <li>
-<p>Conditional compilation support <a href="https://github.com/bloomberg/bucklescript/issues/820">#820</a></p>
+<p>Conditional compilation support <a href="https://github.com/bucklescript/bucklescript/issues/820">#820</a></p>
 </li>
 <li>
-<p>Relax syntactic restrictions for all extension point <a href="https://github.com/bloomberg/bucklescript/issues/793">#793</a>
+<p>Relax syntactic restrictions for all extension point <a href="https://github.com/bucklescript/bucklescript/issues/793">#793</a>
 so that <code>bs.obj</code>, <code>obj</code>, <code>bs.raw</code>, <code>raw</code>, etc will both work.
 Note that all attributes will still be qualified</p>
 </li>
 <li>
-<p>Suport bs.splice in bs.new <a href="https://github.com/bloomberg/bucklescript/issues/793">#793</a></p>
+<p>Suport bs.splice in bs.new <a href="https://github.com/bucklescript/bucklescript/issues/793">#793</a></p>
 </li>
 <li>
-<p>Complete `bs.splice ` support and documentation <a href="https://github.com/bloomberg/bucklescript/issues/798">#798</a></p>
+<p>Complete `bs.splice ` support and documentation <a href="https://github.com/bucklescript/bucklescript/issues/798">#798</a></p>
 </li>
 </ul>
 </div>
@@ -6128,7 +6131,7 @@ Note that all attributes will still be qualified</p>
 <div class="ulist">
 <ul>
 <li>
-<p>Add an option <code>-bs-no-warn-unused-bs-attribute</code> <a href="https://github.com/bloomberg/bucklescript/issues/787">#787</a></p>
+<p>Add an option <code>-bs-no-warn-unused-bs-attribute</code> <a href="https://github.com/bucklescript/bucklescript/issues/787">#787</a></p>
 </li>
 </ul>
 </div>
@@ -6173,7 +6176,7 @@ Note that all attributes will still be qualified</p>
 <div class="ulist">
 <ul>
 <li>
-<p>Fix Bytes.blit when src==dst <a href="https://github.com/bloomberg/bucklescript/issues/743">#743</a></p>
+<p>Fix Bytes.blit when src==dst <a href="https://github.com/bucklescript/bucklescript/issues/743">#743</a></p>
 </li>
 </ul>
 </div>
@@ -6183,11 +6186,11 @@ Note that all attributes will still be qualified</p>
 <div class="ulist">
 <ul>
 <li>
-<p>Add an option <code>-bs-no-warn-ffi-type</code> <a href="https://github.com/bloomberg/bucklescript/issues/783">#783</a>
+<p>Add an option <code>-bs-no-warn-ffi-type</code> <a href="https://github.com/bucklescript/bucklescript/issues/783">#783</a>
 By default, <code>bsc.exe</code> will warn when it detect some ocaml datatype is passed from/to external FFi</p>
 </li>
 <li>
-<p>Add an option <code>-bs-eval</code> <a href="https://github.com/bloomberg/bucklescript/issues/784">784</a></p>
+<p>Add an option <code>-bs-eval</code> <a href="https://github.com/bucklescript/bucklescript/issues/784">784</a></p>
 </li>
 </ul>
 </div>
@@ -6205,11 +6208,11 @@ By default, <code>bsc.exe</code> will warn when it detect some ocaml datatype is
 <ul>
 <li>
 <p>support fields and mutable fields in JS object creation
-and private method <a href="https://github.com/bloomberg/bucklescript/issues/694">#694</a></p>
+and private method <a href="https://github.com/bucklescript/bucklescript/issues/694">#694</a></p>
 </li>
 <li>
 <p>Introduce phantom arguments (<code>bs.ignore</code>) for ad-hoc
-polymorphism <a href="https://github.com/bloomberg/bucklescript/issues/686">#686</a></p>
+polymorphism <a href="https://github.com/bucklescript/bucklescript/issues/686">#686</a></p>
 </li>
 </ul>
 </div>
@@ -6219,7 +6222,7 @@ polymorphism <a href="https://github.com/bloomberg/bucklescript/issues/686">#686
 <div class="ulist">
 <ul>
 <li>
-<p>Enforce <code>#=</code> always return unit <a href="https://github.com/bloomberg/bucklescript/issues/718">#718</a> for better error messages</p>
+<p>Enforce <code>#=</code> always return unit <a href="https://github.com/bucklescript/bucklescript/issues/718">#718</a> for better error messages</p>
 </li>
 </ul>
 </div>

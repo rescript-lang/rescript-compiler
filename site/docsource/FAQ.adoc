@@ -4,7 +4,7 @@
 
 
 How does IO work in the browser?::
-  In general, it is very hard to simulate IO in the browser, we recommend users write bindings to NodeJS directly for server side, or use `Js.log` in client side, see disucssions in {issues}/748[#748]
+  In general, it is very hard to simulate IO in the browser, we recommend users write bindings to NodeJS directly for server side, or use `Js.log` in client side, see discussions in {issues}/748[#748]
 
 The compiler does not build?::
   In production mode, the compiler is a single file in
@@ -70,7 +70,7 @@ Error: The type of this expression, ([ `Arity_1 of '_a ], '_a) Js.fn,
        contains type variables that cannot be generalized
 --------
 
-The issue here isn't that the function is polymorphic. You can use (and probably have used) polymorphic uncurried functions without any problem as inline callbacks. But you can't export them. The issue here is the combination of using the uncurried calling convention, polymorphism and exporting (by default). It's an unfortunate limitation partly due to how OCaml's type system incorporates side-effects, and partly due to how BuckleScript handles uncurrying. The simplest solution is in most cases to just not export it, by adding an interface to the module. Alternatively, if you really, really need to export it, you can do so in its curried form, and then wrap it in an uncurried lanbda at the call site. E.g.:
+The issue here isn't that the function is polymorphic. You can use (and probably have used) polymorphic uncurried functions without any problem as inline callbacks. But you can't export them. The issue here is the combination of using the uncurried calling convention, polymorphism and exporting (by default). It's an unfortunate limitation partly due to how OCaml's type system incorporates side-effects, and partly due to how BuckleScript handles uncurrying. The simplest solution is in most cases to just not export it, by adding an interface to the module. Alternatively, if you really, really need to export it, you can do so in its curried form, and then wrap it in an uncurried lambda at the call site. E.g.:
 
 [source]
 --------

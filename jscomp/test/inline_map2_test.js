@@ -1374,9 +1374,9 @@ var IntMap = /* module */[
   /* choose */min_binding
 ];
 
-var m = List.fold_left(function (acc, param) {
-      return add(param[0], param[1], acc);
-    }, /* Empty */0, /* :: */[
+var m = List.fold_left((function (acc, param) {
+        return add(param[0], param[1], acc);
+      }), /* Empty */0, /* :: */[
       /* tuple */[
         10,
         /* "a" */97
@@ -2107,9 +2107,9 @@ var SMap = /* module */[
   /* choose */min_binding$1
 ];
 
-var s = List.fold_left(function (acc, param) {
-      return add$1(param[0], param[1], acc);
-    }, /* Empty */0, /* :: */[
+var s = List.fold_left((function (acc, param) {
+        return add$1(param[0], param[1], acc);
+      }), /* Empty */0, /* :: */[
       /* tuple */[
         "10",
         /* "a" */97
@@ -2138,22 +2138,22 @@ var s = List.fold_left(function (acc, param) {
 Mt.from_pair_suites("inline_map2_test.ml", /* :: */[
       /* tuple */[
         "assertion1",
-        function () {
-          return /* Eq */Block.__(0, [
-                    find(10, m),
-                    /* "a" */97
-                  ]);
-        }
+        (function () {
+            return /* Eq */Block.__(0, [
+                      find(10, m),
+                      /* "a" */97
+                    ]);
+          })
       ],
       /* :: */[
         /* tuple */[
           "assertion2",
-          function () {
-            return /* Eq */Block.__(0, [
-                      find$1("10", s),
-                      /* "a" */97
-                    ]);
-          }
+          (function () {
+              return /* Eq */Block.__(0, [
+                        find$1("10", s),
+                        /* "a" */97
+                      ]);
+            })
         ],
         /* [] */0
       ]

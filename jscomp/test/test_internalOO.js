@@ -2167,9 +2167,9 @@ function get_method_label(table, name) {
 }
 
 function get_method_labels(table, names) {
-  return $$Array.map(function (param) {
-              return get_method_label(table, param);
-            }, names);
+  return $$Array.map((function (param) {
+                return get_method_label(table, param);
+              }), names);
 }
 
 function set_method(table, label, element) {
@@ -2213,12 +2213,12 @@ function narrow(table, vars, virt_meths, concr_meths) {
   var vars$1 = to_list(vars);
   var virt_meths$1 = to_list(virt_meths);
   var concr_meths$1 = to_list(concr_meths);
-  var virt_meth_labs = List.map(function (param) {
-        return get_method_label(table, param);
-      }, virt_meths$1);
-  var concr_meth_labs = List.map(function (param) {
-        return get_method_label(table, param);
-      }, concr_meths$1);
+  var virt_meth_labs = List.map((function (param) {
+          return get_method_label(table, param);
+        }), virt_meths$1);
+  var concr_meth_labs = List.map((function (param) {
+          return get_method_label(table, param);
+        }), concr_meths$1);
   table[/* previous_states */4] = /* :: */[
     /* tuple */[
       table[/* methods_by_name */2],
@@ -2230,48 +2230,48 @@ function narrow(table, vars, virt_meths, concr_meths) {
     ],
     table[/* previous_states */4]
   ];
-  table[/* vars */6] = fold(function (lab, info, tvars) {
-        if (List.mem(lab, vars$1)) {
-          return add(lab, info, tvars);
-        } else {
-          return tvars;
-        }
-      }, table[/* vars */6], /* Empty */0);
+  table[/* vars */6] = fold((function (lab, info, tvars) {
+          if (List.mem(lab, vars$1)) {
+            return add(lab, info, tvars);
+          } else {
+            return tvars;
+          }
+        }), table[/* vars */6], /* Empty */0);
   var by_name = [/* Empty */0];
   var by_label = [/* Empty */0];
-  List.iter2(function (met, label) {
-        by_name[0] = add$1(met, label, by_name[0]);
-        var $js;
-        try {
-          $js = find$2(label, table[/* methods_by_label */3]);
-        }
-        catch (exn){
-          if (exn === Caml_builtin_exceptions.not_found) {
-            $js = /* true */1;
-          } else {
-            throw exn;
+  List.iter2((function (met, label) {
+          by_name[0] = add$1(met, label, by_name[0]);
+          var $js;
+          try {
+            $js = find$2(label, table[/* methods_by_label */3]);
           }
-        }
-        by_label[0] = add$2(label, $js, by_label[0]);
-        return /* () */0;
-      }, concr_meths$1, concr_meth_labs);
-  List.iter2(function (met, label) {
-        by_name[0] = add$1(met, label, by_name[0]);
-        by_label[0] = add$2(label, /* false */0, by_label[0]);
-        return /* () */0;
-      }, virt_meths$1, virt_meth_labs);
+          catch (exn){
+            if (exn === Caml_builtin_exceptions.not_found) {
+              $js = /* true */1;
+            } else {
+              throw exn;
+            }
+          }
+          by_label[0] = add$2(label, $js, by_label[0]);
+          return /* () */0;
+        }), concr_meths$1, concr_meth_labs);
+  List.iter2((function (met, label) {
+          by_name[0] = add$1(met, label, by_name[0]);
+          by_label[0] = add$2(label, /* false */0, by_label[0]);
+          return /* () */0;
+        }), virt_meths$1, virt_meth_labs);
   table[/* methods_by_name */2] = by_name[0];
   table[/* methods_by_label */3] = by_label[0];
-  table[/* hidden_meths */5] = List.fold_right(function (met, hm) {
-        if (List.mem(met[0], virt_meth_labs)) {
-          return hm;
-        } else {
-          return /* :: */[
-                  met,
-                  hm
-                ];
-        }
-      }, table[/* hidden_meths */5], /* [] */0);
+  table[/* hidden_meths */5] = List.fold_right((function (met, hm) {
+          if (List.mem(met[0], virt_meth_labs)) {
+            return hm;
+          } else {
+            return /* :: */[
+                    met,
+                    hm
+                  ];
+          }
+        }), table[/* hidden_meths */5], /* [] */0);
   return /* () */0;
 }
 
@@ -2279,21 +2279,21 @@ function widen(table) {
   var match = List.hd(table[/* previous_states */4]);
   var virt_meths = match[4];
   table[/* previous_states */4] = List.tl(table[/* previous_states */4]);
-  table[/* vars */6] = List.fold_left(function (s, v) {
-        return add(v, find(v, table[/* vars */6]), s);
-      }, match[3], match[5]);
+  table[/* vars */6] = List.fold_left((function (s, v) {
+          return add(v, find(v, table[/* vars */6]), s);
+        }), match[3], match[5]);
   table[/* methods_by_name */2] = match[0];
   table[/* methods_by_label */3] = match[1];
-  table[/* hidden_meths */5] = List.fold_right(function (met, hm) {
-        if (List.mem(met[0], virt_meths)) {
-          return hm;
-        } else {
-          return /* :: */[
-                  met,
-                  hm
-                ];
-        }
-      }, table[/* hidden_meths */5], match[2]);
+  table[/* hidden_meths */5] = List.fold_right((function (met, hm) {
+          if (List.mem(met[0], virt_meths)) {
+            return hm;
+          } else {
+            return /* :: */[
+                    met,
+                    hm
+                  ];
+          }
+        }), table[/* hidden_meths */5], match[2]);
   return /* () */0;
 }
 
@@ -2363,9 +2363,9 @@ function get_variable(table, name) {
 }
 
 function get_variables(table, names) {
-  return $$Array.map(function (param) {
-              return get_variable(table, param);
-            }, names);
+  return $$Array.map((function (param) {
+                return get_variable(table, param);
+              }), names);
 }
 
 function add_initializer(table, f) {
@@ -2380,12 +2380,12 @@ function create_table(public_methods) {
   if (public_methods) {
     var tags = $$Array.map(public_method_label, public_methods);
     var table = new_table(tags);
-    $$Array.iteri(function (i, met) {
-          var lab = (i << 1) + 2 | 0;
-          table[/* methods_by_name */2] = add$1(met, lab, table[/* methods_by_name */2]);
-          table[/* methods_by_label */3] = add$2(lab, /* true */1, table[/* methods_by_label */3]);
-          return /* () */0;
-        }, public_methods);
+    $$Array.iteri((function (i, met) {
+            var lab = (i << 1) + 2 | 0;
+            table[/* methods_by_name */2] = add$1(met, lab, table[/* methods_by_name */2]);
+            table[/* methods_by_label */3] = add$2(lab, /* true */1, table[/* methods_by_label */3]);
+            return /* () */0;
+          }), public_methods);
     return table;
   } else {
     return new_table(/* array */[]);
@@ -2406,13 +2406,13 @@ function inherits(cla, vals, virt_meths, concr_meths, param, top) {
   return Caml_array.caml_array_concat(/* :: */[
               /* array */[init],
               /* :: */[
-                $$Array.map(function (param) {
-                      return get_variable(cla, param);
-                    }, to_array(vals)),
+                $$Array.map((function (param) {
+                        return get_variable(cla, param);
+                      }), to_array(vals)),
                 /* :: */[
-                  $$Array.map(function (nm) {
-                        return get_method(cla, get_method_label(cla, nm));
-                      }, to_array(concr_meths)),
+                  $$Array.map((function (nm) {
+                          return get_method(cla, get_method_label(cla, nm));
+                        }), to_array(concr_meths)),
                   /* [] */0
                 ]
               ]
@@ -2576,151 +2576,151 @@ function lookup_tables(root, keys) {
 }
 
 function get_const(x) {
-  return function () {
-    return x;
-  };
+  return (function () {
+      return x;
+    });
 }
 
 function get_var(n) {
-  return function (obj) {
-    return obj[n];
-  };
+  return (function (obj) {
+      return obj[n];
+    });
 }
 
 function get_env(e, n) {
-  return function (obj) {
-    return obj[e][n];
-  };
+  return (function (obj) {
+      return obj[e][n];
+    });
 }
 
 function get_meth(n) {
-  return function (obj) {
-    return Curry._1(obj[0][n], obj);
-  };
+  return (function (obj) {
+      return Curry._1(obj[0][n], obj);
+    });
 }
 
 function set_var(n) {
-  return function (obj, x) {
-    obj[n] = x;
-    return /* () */0;
-  };
+  return (function (obj, x) {
+      obj[n] = x;
+      return /* () */0;
+    });
 }
 
 function app_const(f, x) {
-  return function () {
-    return Curry._1(f, x);
-  };
+  return (function () {
+      return Curry._1(f, x);
+    });
 }
 
 function app_var(f, n) {
-  return function (obj) {
-    return Curry._1(f, obj[n]);
-  };
+  return (function (obj) {
+      return Curry._1(f, obj[n]);
+    });
 }
 
 function app_env(f, e, n) {
-  return function (obj) {
-    return Curry._1(f, obj[e][n]);
-  };
+  return (function (obj) {
+      return Curry._1(f, obj[e][n]);
+    });
 }
 
 function app_meth(f, n) {
-  return function (obj) {
-    return Curry._1(f, Curry._1(obj[0][n], obj));
-  };
+  return (function (obj) {
+      return Curry._1(f, Curry._1(obj[0][n], obj));
+    });
 }
 
 function app_const_const(f, x, y) {
-  return function () {
-    return Curry._2(f, x, y);
-  };
+  return (function () {
+      return Curry._2(f, x, y);
+    });
 }
 
 function app_const_var(f, x, n) {
-  return function (obj) {
-    return Curry._2(f, x, obj[n]);
-  };
+  return (function (obj) {
+      return Curry._2(f, x, obj[n]);
+    });
 }
 
 function app_const_meth(f, x, n) {
-  return function (obj) {
-    return Curry._2(f, x, Curry._1(obj[0][n], obj));
-  };
+  return (function (obj) {
+      return Curry._2(f, x, Curry._1(obj[0][n], obj));
+    });
 }
 
 function app_var_const(f, n, x) {
-  return function (obj) {
-    return Curry._2(f, obj[n], x);
-  };
+  return (function (obj) {
+      return Curry._2(f, obj[n], x);
+    });
 }
 
 function app_meth_const(f, n, x) {
-  return function (obj) {
-    return Curry._2(f, Curry._1(obj[0][n], obj), x);
-  };
+  return (function (obj) {
+      return Curry._2(f, Curry._1(obj[0][n], obj), x);
+    });
 }
 
 function app_const_env(f, x, e, n) {
-  return function (obj) {
-    return Curry._2(f, x, obj[e][n]);
-  };
+  return (function (obj) {
+      return Curry._2(f, x, obj[e][n]);
+    });
 }
 
 function app_env_const(f, e, n, x) {
-  return function (obj) {
-    return Curry._2(f, obj[e][n], x);
-  };
+  return (function (obj) {
+      return Curry._2(f, obj[e][n], x);
+    });
 }
 
 function meth_app_const(n, x) {
-  return function (obj) {
-    return Curry._2(obj[0][n], obj, x);
-  };
+  return (function (obj) {
+      return Curry._2(obj[0][n], obj, x);
+    });
 }
 
 function meth_app_var(n, m) {
-  return function (obj) {
-    return Curry._2(obj[0][n], obj, obj[m]);
-  };
+  return (function (obj) {
+      return Curry._2(obj[0][n], obj, obj[m]);
+    });
 }
 
 function meth_app_env(n, e, m) {
-  return function (obj) {
-    return Curry._2(obj[0][n], obj, obj[e][m]);
-  };
+  return (function (obj) {
+      return Curry._2(obj[0][n], obj, obj[e][m]);
+    });
 }
 
 function meth_app_meth(n, m) {
-  return function (obj) {
-    return Curry._2(obj[0][n], obj, Curry._1(obj[0][m], obj));
-  };
+  return (function (obj) {
+      return Curry._2(obj[0][n], obj, Curry._1(obj[0][m], obj));
+    });
 }
 
 function send_const(m, x, _) {
-  return function () {
-    return Curry._1(Curry._3(Caml_oo.caml_get_public_method, x, m, 1), x);
-  };
+  return (function () {
+      return Curry._1(Curry._3(Caml_oo.caml_get_public_method, x, m, 1), x);
+    });
 }
 
 function send_var(m, n, _) {
-  return function (obj) {
-    var tmp = obj[n];
-    return Curry._1(Curry._3(Caml_oo.caml_get_public_method, tmp, m, 2), tmp);
-  };
+  return (function (obj) {
+      var tmp = obj[n];
+      return Curry._1(Curry._3(Caml_oo.caml_get_public_method, tmp, m, 2), tmp);
+    });
 }
 
 function send_env(m, e, n, _) {
-  return function (obj) {
-    var tmp = obj[e][n];
-    return Curry._1(Curry._3(Caml_oo.caml_get_public_method, tmp, m, 3), tmp);
-  };
+  return (function (obj) {
+      var tmp = obj[e][n];
+      return Curry._1(Curry._3(Caml_oo.caml_get_public_method, tmp, m, 3), tmp);
+    });
 }
 
 function send_meth(m, n, _) {
-  return function (obj) {
-    var tmp = Curry._1(obj[0][n], obj);
-    return Curry._1(Curry._3(Caml_oo.caml_get_public_method, tmp, m, 4), tmp);
-  };
+  return (function (obj) {
+      var tmp = Curry._1(obj[0][n], obj);
+      return Curry._1(Curry._3(Caml_oo.caml_get_public_method, tmp, m, 4), tmp);
+    });
 }
 
 function new_cache(table) {
@@ -2740,14 +2740,14 @@ function method_impl(table, i, arr) {
     switch (clo) {
       case 0 : 
           var x = next(/* () */0);
-          return function () {
-            return x;
-          };
+          return (function () {
+              return x;
+            });
       case 1 : 
           var n = next(/* () */0);
-          return function (obj) {
-            return obj[n];
-          };
+          return (function (obj) {
+              return obj[n];
+            });
       case 2 : 
           var e = next(/* () */0);
           var n$1 = next(/* () */0);
@@ -2756,22 +2756,22 @@ function method_impl(table, i, arr) {
           return get_meth(next(/* () */0));
       case 4 : 
           var n$2 = next(/* () */0);
-          return function (obj, x) {
-            obj[n$2] = x;
-            return /* () */0;
-          };
+          return (function (obj, x) {
+              obj[n$2] = x;
+              return /* () */0;
+            });
       case 5 : 
           var f = next(/* () */0);
           var x$1 = next(/* () */0);
-          return function () {
-            return Curry._1(f, x$1);
-          };
+          return (function () {
+              return Curry._1(f, x$1);
+            });
       case 6 : 
           var f$1 = next(/* () */0);
           var n$3 = next(/* () */0);
-          return function (obj) {
-            return Curry._1(f$1, obj[n$3]);
-          };
+          return (function (obj) {
+              return Curry._1(f$1, obj[n$3]);
+            });
       case 7 : 
           var f$2 = next(/* () */0);
           var e$1 = next(/* () */0);
@@ -2785,9 +2785,9 @@ function method_impl(table, i, arr) {
           var f$4 = next(/* () */0);
           var x$2 = next(/* () */0);
           var y = next(/* () */0);
-          return function () {
-            return Curry._2(f$4, x$2, y);
-          };
+          return (function () {
+              return Curry._2(f$4, x$2, y);
+            });
       case 10 : 
           var f$5 = next(/* () */0);
           var x$3 = next(/* () */0);

@@ -62,6 +62,17 @@ let suites =
         ]
     end;
     __LOC__ >:: begin fun _ -> 
+      OUnit.assert_bool __LOC__ @@
+      List.for_all Ext_string.is_valid_npm_package_name
+      ["x"; "@angualr"; "test"; "hi-x"; "hi-"]
+      ;
+      OUnit.assert_bool __LOC__ @@
+      List.for_all 
+      (fun x -> not (Ext_string.is_valid_npm_package_name x))
+      ["x "; "x'"; "Test"; "hI"]
+      ;
+    end;
+    __LOC__ >:: begin fun _ -> 
       Ext_string.find ~sub:"hello" "xx hello xx" =~ 3 ;
       Ext_string.rfind ~sub:"hello" "xx hello xx" =~ 3 ;
       Ext_string.find ~sub:"hello" "xx hello hello xx" =~ 3 ;

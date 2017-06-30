@@ -52,12 +52,12 @@ function translate(lexbuf) {
 
 var suites_000 = /* tuple */[
   "translate",
-  function () {
-    return /* Eq */Block.__(0, [
-              __ocaml_lex_translate_rec(Lexing.from_string("-- current_directory --"), 0),
-              "-- . --"
-            ]);
-  }
+  (function () {
+      return /* Eq */Block.__(0, [
+                __ocaml_lex_translate_rec(Lexing.from_string("-- current_directory --"), 0),
+                "-- . --"
+              ]);
+    })
 ];
 
 var suites = /* :: */[

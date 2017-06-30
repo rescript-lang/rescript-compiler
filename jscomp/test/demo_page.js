@@ -40,11 +40,11 @@ function f(param) {
 }
 
 ReactDom.render(React.createClass({
-          render: function () {
-            return React.DOM.div({
-                        alt: "pic"
-                      }, React.DOM.h1(undefined, "hello react"), React.DOM.h2(undefined, "type safe!"));
-          }
+          render: (function () {
+              return React.DOM.div({
+                          alt: "pic"
+                        }, React.DOM.h1(undefined, "hello react"), React.DOM.h2(undefined, "type safe!"));
+            })
         }), document.getElementById("hi"));
 
 exports.fib        = fib;

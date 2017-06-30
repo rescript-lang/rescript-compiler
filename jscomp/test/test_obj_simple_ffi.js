@@ -2,12 +2,15 @@
 
 
 function v(displayName, _) {
-  return {
-          displayName: displayName ? displayName[0] : undefined,
-          test: 3,
-          config: 3,
-          hi: "ghos"
-        };
+  var $js = {
+    test: 3,
+    config: 3,
+    hi: "ghos"
+  };
+  if (displayName) {
+    $js.displayName = displayName[0];
+  }
+  return $js;
 }
 
 var v2 = {

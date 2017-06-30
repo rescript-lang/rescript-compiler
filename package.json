@@ -24,8 +24,10 @@
     }
   },
   "bin" : {
-      "bsb" : "bin/bsb"
-   },
+      "bsb": "bin/bsb",
+      "bsc": "bin/bsc",
+      "bsrefmt": "bin/refmt"
+  },
   "scripts": {
     "test": "mocha './jscomp/test/**/*test.js' ",
     "wtest": "mocha './jscomp/test/**/*test.js'  -R spec -w",
@@ -35,11 +37,11 @@
     "postinstall": "node scripts/install.js"
   },
   "name": "bs-platform",
-  "version": "1.7.4",
+  "version": "1.8.0",
   "description": "bucklescript compiler, ocaml standard libary by bucklescript and its required runtime support",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bloomberg/bucklescript.git"
+    "url": "git+https://github.com/bucklescript/bucklescript.git"
   },
   "keywords": [
     "ocaml",
@@ -58,7 +60,7 @@
   ],
   "license": "SEE LICENSE IN LICENSE",
   "bugs": {
-    "url": "https://github.com/bloomberg/bucklescript/issues"
+    "url": "https://github.com/bucklescript/bucklescript/issues"
   },
-  "homepage": "https://github.com/bloomberg/bucklescript#readme"
+  "homepage": "https://github.com/bucklescript/bucklescript#readme"
 }

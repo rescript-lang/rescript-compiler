@@ -156,8 +156,19 @@ OTHERS := literals a test_ari test_export2 test_internalOO test_obj_simple_ffi t
 	bs_qualified\
 	mario_game\
 	gpr_1600_test\
-	js_list_test
-
+	js_list_test\
+	js_option_test\
+	gpr_1658_test\
+	gpr_1667_test\
+	gpr_1692_test\
+	gpr_1701_test\
+	gpr_1698_test\
+	gpr_1717_test\
+	gpr_1716_test\
+	gpr_1728_test\
+	gpr_1409_test\
+	rec_fun_test\
+	gpr_1749_test
 # bs_uncurry_test
 # needs Lam to get rid of Uncurry arity first
 

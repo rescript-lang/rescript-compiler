@@ -24,13 +24,13 @@ function assert_(loc, v) {
 
 function to_list(s) {
   var l = [/* [] */0];
-  List.iter(function (x) {
-        l[0] = /* :: */[
-          x,
-          l[0]
-        ];
-        return /* () */0;
-      }, s[/* c */0]);
+  List.iter((function (x) {
+          l[0] = /* :: */[
+            x,
+            l[0]
+          ];
+          return /* () */0;
+        }), s[/* c */0]);
   return l[0];
 }
 
@@ -324,11 +324,11 @@ for(var i$6 = 10; i$6 >= 1; --i$6){
 
 var i$7 = [1];
 
-List.iter(function (j) {
-      assert_("File \"stack_comp_test.ml\", line 112, characters 27-34", +(i$7[0] === j));
-      i$7[0] = i$7[0] + 1 | 0;
-      return /* () */0;
-    }, s$5[/* c */0]);
+List.iter((function (j) {
+        assert_("File \"stack_comp_test.ml\", line 112, characters 27-34", +(i$7[0] === j));
+        i$7[0] = i$7[0] + 1 | 0;
+        return /* () */0;
+      }), s$5[/* c */0]);
 
 var s1$1 = /* record */[/* c : [] */0];
 

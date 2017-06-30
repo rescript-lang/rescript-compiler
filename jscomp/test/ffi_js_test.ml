@@ -68,4 +68,57 @@ let vvv z = z |> ff_pipe ()
 let vvvv z = z |> ff_pipe2 
 let create_prim () =  [%obj{ x' = 3 ; x'' = 3; x'''' = 2}]
 
+type t 
+external setGADT : t -> ('a kind [@bs.ignore]) -> 'a ->  unit = "" [@@bs.set]
+external setGADT2 :
+ t -> 
+ ('a kind [@bs.ignore]) ->
+ ('b kind [@bs.ignore]) -> 
+ ('a * 'b) ->  unit = "" [@@bs.set]
+
+external getGADT : t -> ('a kind [@bs.ignore]) -> 'a  = "" [@@bs.get]
+
+external getGADT2 :
+ t -> ('a kind [@bs.ignore]) -> 
+ ('b kind [@bs.ignore])
+  -> ('a * 'b)  = "" [@@bs.get]
+
+external getGADTI2 :
+ t -> ('a kind [@bs.ignore]) -> 
+ ('b kind [@bs.ignore]) -> int 
+  -> ('a * 'b)  = "" [@@bs.get_index]
+
+external getGADTI3 :
+ t -> ('a kind [@bs.ignore]) -> 
+ ('b kind [@bs.ignore]) -> (_ [@bs.as 3]) 
+  -> ('a * 'b)  = "" [@@bs.get_index]
+
+external setGADTI2 :
+ t -> ('a kind [@bs.ignore]) -> 
+ ('b kind [@bs.ignore]) -> int 
+  -> ('a * 'b) -> unit  = "" [@@bs.set_index]
+
+external setGADTI3 :
+ t -> ('a kind [@bs.ignore]) -> 
+ ('b kind [@bs.ignore]) -> (_ [@bs.as 3] )
+  -> ('a * 'b) -> unit  = "" [@@bs.set_index]
+
+let ffff x = 
+  begin 
+  setGADT x Int 3;
+  setGADT2 x Int Str (3,"3");
+  setGADT2 x Str Int ("3",3);
+  (match getGADTI3 x Int Str with 
+  | (cc,dd) -> Js.log (cc,dd));
+  Js.log @@ getGADT x Int ;
+  (match
+     getGADT2 x Int Str  with 
+   |((a : int) ,(b:string)) ->   
+    Js.log2 a b);
+   (match getGADTI2 x Int Str 0  with 
+   | (a : int), (b:string) -> 
+    Js.log2 a b);
+  (setGADTI2 x Int Str 0 (1,"x")) ;
+  setGADTI3 x Int Str (3,"x") 
+  end
 let () = Mt.from_pair_suites __FILE__ !suites

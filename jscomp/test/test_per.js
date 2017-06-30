@@ -492,10 +492,10 @@ var exit_function = [flush_all];
 
 function at_exit(f) {
   var g = exit_function[0];
-  exit_function[0] = function () {
-    Curry._1(f, /* () */0);
-    return Curry._1(g, /* () */0);
-  };
+  exit_function[0] = (function () {
+      Curry._1(f, /* () */0);
+      return Curry._1(g, /* () */0);
+    });
   return /* () */0;
 }
 

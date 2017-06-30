@@ -38,4 +38,5 @@ bs_dyn_lib.cmi : bs_dyn.cmi
 js_boolean.cmi :
 js_dict.cmi :
 js_cast.cmi :
-dom.cmi :
+dom.cmi : dom_storage.cmi
+dom_storage.cmi :

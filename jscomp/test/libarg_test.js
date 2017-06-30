@@ -13,13 +13,13 @@ var current = [0];
 var accum = [/* [] */0];
 
 function record(fmt) {
-  return Printf.kprintf(function (s) {
-              accum[0] = /* :: */[
-                s,
-                accum[0]
-              ];
-              return /* () */0;
-            }, fmt);
+  return Printf.kprintf((function (s) {
+                accum[0] = /* :: */[
+                  s,
+                  accum[0]
+                ];
+                return /* () */0;
+              }), fmt);
 }
 
 function f_unit() {
@@ -454,11 +454,11 @@ test(args1);
 
 var suites_000 = /* tuple */[
   "should raise",
-  function () {
-    return /* ThrowAny */Block.__(7, [function () {
-                return test(args2);
-              }]);
-  }
+  (function () {
+      return /* ThrowAny */Block.__(7, [(function () {
+                    return test(args2);
+                  })]);
+    })
 ];
 
 var suites = /* :: */[

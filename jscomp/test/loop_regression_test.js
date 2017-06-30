@@ -21,12 +21,12 @@ function f() {
 
 var suites_000 = /* tuple */[
   "sum",
-  function () {
-    return /* Eq */Block.__(0, [
-              55,
-              f(/* () */0)
-            ]);
-  }
+  (function () {
+      return /* Eq */Block.__(0, [
+                55,
+                f(/* () */0)
+              ]);
+    })
 ];
 
 var suites = /* :: */[

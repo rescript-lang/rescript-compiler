@@ -41,19 +41,19 @@ function generic_basename(is_dir_sep, current_dir_name, name) {
 }
 
 function basename(param) {
-  return generic_basename(function (s, i) {
-              return +(Caml_string.get(s, i) === /* "/" */47);
-            }, Filename.current_dir_name, param);
+  return generic_basename((function (s, i) {
+                return +(Caml_string.get(s, i) === /* "/" */47);
+              }), Filename.current_dir_name, param);
 }
 
 var suites_000 = /* tuple */[
   "basename",
-  function () {
-    return /* Eq */Block.__(0, [
-              basename("b/c/a.b"),
-              "a.b"
-            ]);
-  }
+  (function () {
+      return /* Eq */Block.__(0, [
+                basename("b/c/a.b"),
+                "a.b"
+              ]);
+    })
 ];
 
 var suites = /* :: */[

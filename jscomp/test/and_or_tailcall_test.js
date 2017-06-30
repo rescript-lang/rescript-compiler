@@ -35,23 +35,23 @@ function or_f(b, _, _n) {
 
 var suites_000 = /* tuple */[
   "and_tail",
-  function () {
-    return /* Eq */Block.__(0, [
-              /* false */0,
-              f(/* true */1, 1, 0)
-            ]);
-  }
+  (function () {
+      return /* Eq */Block.__(0, [
+                /* false */0,
+                f(/* true */1, 1, 0)
+              ]);
+    })
 ];
 
 var suites_001 = /* :: */[
   /* tuple */[
     "or_tail",
-    function () {
-      return /* Eq */Block.__(0, [
-                /* false */0,
-                or_f(/* false */0, 1, 0)
-              ]);
-    }
+    (function () {
+        return /* Eq */Block.__(0, [
+                  /* false */0,
+                  or_f(/* false */0, 1, 0)
+                ]);
+      })
   ],
   /* [] */0
 ];

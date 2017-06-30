@@ -1,7 +1,7 @@
 
 class: center, middle
 
-#  OCaml <3 Javascript 
+#  OCaml <3 Javascript
 
 <img src="images/Slide3.PNG" title="OCamlscript" alt="Drawing" style="width: 550px;"/>
 
@@ -11,7 +11,7 @@ July 27, 2016
 
 ---
 
-# What's [BuckleScript](https://github.com/bloomberg/bucklescript)
+# What's [BuckleScript](https://github.com/bucklescript/bucklescript)
 
 - Readable JavaScript backend for OCaml
 - *module to module* compiler
@@ -44,8 +44,8 @@ July 27, 2016
   - *Expressive* and *efficient* FFI
   - Small size (small runtime: *linked only when needed like int64 support*)
   - Module to module separate compilation, support various module systems: Google module/ AMDJS and CommonJS
-  
-  
+
+
 ---
 
 # R & B ( Reason & BuckleScript)
@@ -57,7 +57,7 @@ July 27, 2016
 
 - It provides a Javascript like syntax and toolchain for editing, building, and sharing code
 
-- [It works with BuckleScript nicely](http://bloomberg.github.io/bucklescript/reason-demo/)
+- [It works with BuckleScript nicely](http://bucklescript.github.io/bucklescript/reason-demo/)
 
 ---
 
@@ -122,31 +122,31 @@ Runtime performance of identical functionality:
 
 | Technology   |  Time(ms) | Code Size  |
 |--------------|----------| -----------|
-| OCaml with Javascript Backend   |1186ms (Google Closure bundler: simple mode) |   1 KB | 
+| OCaml with Javascript Backend   |1186ms (Google Closure bundler: simple mode) |   1 KB |
 | Handwritten  Javascript  |3415ms |  55.3 KBytes|
 
 ---
 
-# Finishes before others warm up 
+# Finishes before others warm up
 
 - A truly fast compiler (cold startup)
 
   <img src="images/compile-time.PNG" title="OCamlscript" alt="Drawing" style="width: 450px;"/>
-- A micro benchmark vs TypeScript 
+- A micro benchmark vs TypeScript
    - one file defines 500 fib functions
    - one file calls those 500 fib functions
    ```
              BS: 0m0.063s
              TS: 0m1.427s
    ```
-- Even worse for whole program compilation transpilers 
+- Even worse for whole program compilation transpilers
 
 ---
 
 # Beyond performance:
 
 >  Expressive and efficient FFI is the major design goal
-  
+
 ---
 
 # FFI part one (Call OCaml from Javascript for free)
@@ -157,7 +157,7 @@ Runtime performance of identical functionality:
 
 - [Publish and consume npm packages out of box](https://www.npmjs.com/package/bs-platform)
 - [OCaml standard library consumed by Javascript developers](http://caml.inria.fr/pub/docs/manual-ocaml/stdlib.html)
-- [Demo](https://tonicdev.com/npm/bs-platform)  
+- [Demo](https://tonicdev.com/npm/bs-platform)
 ```ocaml
 var Array = require("bs-platform/lib/js/array")
 var String = require("bs-platform/lib/js/string")
@@ -178,7 +178,7 @@ JavaScript Libraries.
   - Label and optional arguments (model JSON configuration)
 
 ```
-external val_name : types_to_js_object_or_function 
+external val_name : types_to_js_object_or_function
 ```
 - *external* function type declarations
 - *external* object signature
@@ -231,7 +231,7 @@ let v =
 
 ---
 
-# FFI highlights: String and int literal type 
+# FFI highlights: String and int literal type
 
 
 ```ocaml
@@ -256,12 +256,12 @@ interface readline {
 
 ```ocaml
 type readline
-external on : readline -> 
+external on : readline ->
   ([ `line of string -> unit  (* can be customized [@bs.as "another_name"]*)
-   | `close of unit -> unit ] 
-     [@bs.string]) ->  unit = "" [@@bs.send] 
+   | `close of unit -> unit ]
+     [@bs.string]) ->  unit = "" [@@bs.send]
 
-let register readline = 
+let register readline =
   on readline (`line begin fun s -> prerr_endline s end);
   on readline (`close begin fun () -> prerr_endline "finished" end);
   print_endline "done"
@@ -297,20 +297,20 @@ let f (x : widget )  = (x :> title)
 
 # Demo: A stand alone HTTP server
 
-https://github.com/bloomberg/bucklescript-addons/tree/master/examples/node-http-server
+https://github.com/bucklescript/bucklescript-addons/tree/master/examples/node-http-server
 
 
 ---
 
-# Optimizations 
+# Optimizations
 
 - Code motion, Purity analysis, Cross module inliner, Constant folding/propogation, Strength reduction, escape analysis etc
 - Examples: optimized curry calling convention
 
   ```ocaml
   let f x y z = x + y + z
-  let a = f 1 2 3 
-  let b = f 1 2 
+  let a = f 1 2 3
+  let b = f 1 2
   ```
   `Compilation used in PureScript`
 
@@ -351,7 +351,7 @@ https://github.com/bloomberg/bucklescript-addons/tree/master/examples/node-http-
      - Semantics mismatch
    - All great features of Haskell
    - Large size, unreadable code, slow compile
-   
+
 ---
 
 # Future work

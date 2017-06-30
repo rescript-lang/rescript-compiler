@@ -14,6 +14,7 @@
 <li><a href="Bs_dyn.html">Bs_dyn</a></li>
 <li><a href="Bs_dyn_lib.html">Bs_dyn_lib</a></li>
 <li><a href="Dom.html">Dom</a></li>
+<li><a href="Dom_storage.html">Dom_storage</a></li>
 <li><a href="Js.html">Js</a></li>
 <li><a href="Js_array.html">Js_array</a></li>
 <li><a href="Js_boolean.html">Js_boolean</a></li>
@@ -25,6 +26,7 @@
 <li><a href="Js_global.html">Js_global</a></li>
 <li><a href="Js_int.html">Js_int</a></li>
 <li><a href="Js_int64.html">Js_int64</a></li>
+<li><a href="Js_internal.html">Js_internal</a></li>
 <li><a href="Js_json.html">Js_json</a></li>
 <li><a href="Js_list.html">Js_list</a></li>
 <li><a href="Js_math.html">Js_math</a></li>
@@ -66,7 +68,7 @@
 
 <pre><span id="VALconfig"><span class="keyword">val</span> config</span> : <code class="type">?persistent:<a href="Js.html#TYPEboolean">Js.boolean</a> -><br>       ?recursive:<a href="Js.html#TYPEboolean">Js.boolean</a> -><br>       ?encoding:<a href="Js_string.html#TYPEt">Js_string.t</a> -> unit -> <a href="Node_fs.Watch.html#TYPEconfig">config</a></code></pre>
 <pre><span id="VALwatch"><span class="keyword">val</span> watch</span> : <code class="type">string -> ?config:<a href="Node_fs.Watch.html#TYPEconfig">config</a> -> unit -> <a href="Node_fs.Watch.html#TYPEt">t</a></code></pre>
-<pre><span id="VALon"><span class="keyword">val</span> on</span> : <code class="type">[ `change of (string -> <a href="Node.html#TYPEstring_buffer">Node.string_buffer</a> -> unit [@bs])<br>       | `error of (unit -> unit [@bs]) ] -> <a href="Node_fs.Watch.html#TYPEt">t</a> -> <a href="Node_fs.Watch.html#TYPEt">t</a></code></pre><div class="info ">
+<pre><span id="VALon"><span class="keyword">val</span> on</span> : <code class="type">[ `change of<br>           ([ `Arity_2 of string * <a href="Node.html#TYPEstring_buffer">Node.string_buffer</a> ], unit) Js.Internal.fn<br>       | `error of ([ `Arity_0 ], unit) Js.Internal.fn ] -><br>       <a href="Node_fs.Watch.html#TYPEt">t</a> -> <a href="Node_fs.Watch.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
                     there is no need to accept listener, since we return a <code class="code">watcher</code> 
       back it can register event listener there .

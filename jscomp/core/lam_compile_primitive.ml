@@ -36,9 +36,9 @@ module E = Js_exp_make
 *)
 let decorate_side_effect ({st; should_return;_} : Lam_compile_defs.cxt) e : E.t = 
   match st, should_return with 
-  | _, True _ 
+  | _, ReturnTrue _ 
   | (Assign _ | Declare _ | NeedValue), _  -> E.seq e E.unit
-  | EffectCall, False -> e 
+  | EffectCall, ReturnFalse -> e 
 (* NeedValue should return a meaningful expression*)
 
 let translate  loc
@@ -671,7 +671,8 @@ let translate  loc
   (* Test if the argument is a block or an immediate integer *)
   | Pjs_object_create labels
     -> 
-    Lam_compile_external_obj.assemble_args_obj labels args 
+    assert false 
+    (*Lam_compile_external_obj.assemble_args_obj labels args *)
   | Pjs_call (_, arg_types, ffi) -> 
     Lam_compile_external_call.translate_ffi 
       loc ffi cxt arg_types args 

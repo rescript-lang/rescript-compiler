@@ -80,11 +80,6 @@ let parse_entries (field : Ext_json_types.t array) =
   field
 
 let sourcedirs_meta = ".sourcedirs"
-let merlin = ".merlin"
-let merlin_header = "####{BSB GENERATED: NO EDIT"
-let merlin_trailer = "####BSB GENERATED: NO EDIT}"
-let merlin_trailer_length = String.length merlin_trailer
-
 
 let package_specs_from_bsconfig () = 
   let json = Ext_json_parse.parse_json_from_file Literals.bsconfig_json in
@@ -101,134 +96,6 @@ let package_specs_from_bsconfig () =
   end
 
 
-
-(** [new_content] should start end finish with newline *)
-let revise_merlin merlin new_content =
-  if Sys.file_exists merlin then
-    let merlin_chan = open_in_bin merlin in
-    let size = in_channel_length merlin_chan in
-    let s = really_input_string merlin_chan size in
-    let () =  close_in merlin_chan in
-
-    let header =  Ext_string.find s ~sub:merlin_header  in
-    let tail = Ext_string.find s ~sub:merlin_trailer in
-    if header < 0  && tail < 0 then (* locked region not added yet *)
-      let ochan = open_out_bin merlin in
-      output_string ochan s ;
-      output_string ochan "\n";
-      output_string ochan merlin_header;
-      Buffer.output_buffer ochan new_content;
-      output_string ochan merlin_trailer ;
-      output_string ochan "\n";
-      close_out ochan
-    else if header >=0 && tail >= 0  then
-      (* there is one, hit it everytime,
-         should be fixed point
-      *)
-      let ochan = open_out_bin merlin in
-      output_string ochan (String.sub s 0 header) ;
-      output_string ochan merlin_header;
-      Buffer.output_buffer ochan new_content;
-      output_string ochan merlin_trailer ;
-      output_string ochan (Ext_string.tail_from s (tail +  merlin_trailer_length));
-      close_out ochan
-    else failwith ("the .merlin is corrupted, locked region by bsb is not consistent ")
-  else
-    let ochan = open_out_bin merlin in
-    output_string ochan merlin_header ;
-    Buffer.output_buffer ochan new_content;
-    output_string ochan merlin_trailer ;
-    output_string ochan "\n";
-    close_out ochan
-
-(* ATTENTION: order matters here, need resolve global properties before
-   merlin generation
-*)
-let merlin_flg_ppx = "\nFLG -ppx " 
-let merlin_s = "\nS "
-let merlin_b = "\nB "
-
-
-let merlin_flg = "\nFLG "
-let merlin_file_gen ~cwd
-    (built_in_ppx, reactjs_jsx_ppx)
-    ({bs_file_groups = res_files ; 
-      generate_merlin;
-      ppx_flags;
-      bs_dependencies;
-      bs_dev_dependencies;
-      bsc_flags; 
-      built_in_dependency;
-      external_includes; 
-      reason_react_jsx ; 
-     } : Bsb_config_types.t)
-  =
-  if generate_merlin then begin     
-    let buffer = Buffer.create 1024 in
-    ppx_flags
-    |> List.iter (fun x ->
-        Buffer.add_string buffer (merlin_flg_ppx ^ x )
-      );
-    if reason_react_jsx then   
-      begin 
-        Buffer.add_string buffer (merlin_flg_ppx ^ reactjs_jsx_ppx)
-      end;
-    Buffer.add_string buffer (merlin_flg_ppx  ^ built_in_ppx);
-    (*
-    (match external_includes with 
-    | [] -> ()
-    | _ -> 
-
-      Buffer.add_string buffer (merlin_flg ^ Bsb_build_util.flag_concat "-I" external_includes
-      ));
-    *)
-    external_includes 
-    |> List.iter (fun path -> 
-        Buffer.add_string buffer merlin_s ;
-        Buffer.add_string buffer path ;
-        Buffer.add_string buffer merlin_b;
-        Buffer.add_string buffer path ;
-      );      
-    (match built_in_dependency with
-     | None -> ()
-     | Some package -> 
-       let path = package.package_install_path in 
-       Buffer.add_string buffer (merlin_s ^ path );
-       Buffer.add_string buffer (merlin_b ^ path)                      
-    );
-
-    let bsc_string_flag = 
-      merlin_flg ^ 
-      String.concat Ext_string.single_space 
-        (Literals.dash_nostdlib::bsc_flags)  in 
-    Buffer.add_string buffer bsc_string_flag ;
-
-    bs_dependencies 
-    |> List.iter (fun package ->
-        let path = package.Bsb_config_types.package_install_path in
-        Buffer.add_string buffer merlin_s ;
-        Buffer.add_string buffer path ;
-        Buffer.add_string buffer merlin_b;
-        Buffer.add_string buffer path ;
-      );
-    bs_dev_dependencies (**TODO: shall we generate .merlin for dev packages ?*)
-    |> List.iter (fun package ->
-        let path = package.Bsb_config_types.package_install_path in
-        Buffer.add_string buffer merlin_s ;
-        Buffer.add_string buffer path ;
-        Buffer.add_string buffer merlin_b;
-        Buffer.add_string buffer path ;
-      );
-
-    res_files |> List.iter (fun (x : Bsb_build_ui.file_group) -> 
-        Buffer.add_string buffer merlin_s;
-        Buffer.add_string buffer x.dir ;
-        Buffer.add_string buffer merlin_b;
-        Buffer.add_string buffer (Bsb_config.lib_bs//x.dir) ;
-      ) ;
-    Buffer.add_string buffer "\n";
-    revise_merlin (cwd // merlin) buffer 
-  end
 
 
 
@@ -259,7 +126,7 @@ let interpret_json
 
   : Bsb_config_types.t =
   
-  let reason_react_jsx = ref false in 
+  let reason_react_jsx = ref None in 
   let config_json = (cwd // Literals.bsconfig_json) in
   let ocamllex = ref Bsb_default.ocamllex in 
   let refmt = ref None in
@@ -303,9 +170,27 @@ let interpret_json
     ) ;
     map
     |? (Bsb_build_schemas.reason, `Obj begin fun m -> 
-        m |? (Bsb_build_schemas.react_jsx, 
-              `Bool (fun b -> reason_react_jsx := b))
-        |> ignore 
+      match String_map.find_opt Bsb_build_schemas.react_jsx m with 
+      
+      | Some (False _)
+      | None -> ()
+      | Some (Flo{loc; flo}) -> 
+        begin match flo with 
+        | "1" -> 
+        reason_react_jsx := 
+            Some (Filename.quote (Filename.concat bsc_dir Literals.reactjs_jsx_ppx_exe) )
+        | "2" -> 
+          reason_react_jsx := 
+            Some (Filename.quote 
+              (Filename.concat bsc_dir Literals.reactjs_jsx_ppx_2_exe) )
+        | _ -> Bsb_exception.failf ~loc "Unsupported jsx version %s" flo
+        end
+      | Some (True _) -> 
+        reason_react_jsx := 
+            Some (Filename.quote (Filename.concat bsc_dir Literals.reactjs_jsx_ppx_exe) 
+            )
+      | Some x -> Bsb_exception.failf ~loc:(Ext_json.loc_of x) 
+      "Unexpected input for jsx"
       end)
     |? (Bsb_build_schemas.generate_merlin, `Bool (fun b ->
         generate_merlin := b

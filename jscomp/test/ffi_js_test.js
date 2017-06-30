@@ -25,12 +25,12 @@ function eq(loc, param) {
   suites[0] = /* :: */[
     /* tuple */[
       loc + (" id " + test_id[0]),
-      function () {
-        return /* Eq */Block.__(0, [
-                  x,
-                  y
-                ]);
-      }
+      (function () {
+          return /* Eq */Block.__(0, [
+                    x,
+                    y
+                  ]);
+        })
     ],
     suites[0]
   ];
@@ -80,10 +80,10 @@ var same_type = /* tuple */[
 ];
 
 var v_obj = {
-  hi: function () {
-    console.log("hei");
-    return /* () */0;
-  }
+  hi: (function () {
+      console.log("hei");
+      return /* () */0;
+    })
 };
 
 eq("File \"ffi_js_test.ml\", line 44, characters 5-12", /* tuple */[
@@ -142,6 +142,37 @@ function create_prim() {
         };
 }
 
+function ffff(x) {
+  x.setGADT = 3;
+  x.setGADT2 = /* tuple */[
+    3,
+    "3"
+  ];
+  x.setGADT2 = /* tuple */[
+    "3",
+    3
+  ];
+  var match = x[3];
+  console.log(/* tuple */[
+        match[0],
+        match[1]
+      ]);
+  console.log(x.getGADT);
+  var match$1 = x.getGADT2;
+  console.log(match$1[0], match$1[1]);
+  var match$2 = x[0];
+  console.log(match$2[0], match$2[1]);
+  x[0] = /* tuple */[
+    1,
+    "x"
+  ];
+  x[3] = /* tuple */[
+    3,
+    "x"
+  ];
+  return /* () */0;
+}
+
 Mt.from_pair_suites("ffi_js_test.ml", suites[0]);
 
 exports.keys               = keys;
@@ -159,4 +190,5 @@ exports.v                  = v;
 exports.vvv                = vvv;
 exports.vvvv               = vvvv;
 exports.create_prim        = create_prim;
+exports.ffff               = ffff;
 /* keys Not a pure module */

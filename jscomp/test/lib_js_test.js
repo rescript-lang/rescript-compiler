@@ -18,12 +18,12 @@ console.log("hey");
 
 var suites_000 = /* tuple */[
   "anything_to_string",
-  function () {
-    return /* Eq */Block.__(0, [
-              "3",
-              String(3)
-            ]);
-  }
+  (function () {
+      return /* Eq */Block.__(0, [
+                "3",
+                String(3)
+              ]);
+    })
 ];
 
 var suites = /* :: */[

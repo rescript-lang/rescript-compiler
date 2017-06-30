@@ -11,21 +11,21 @@ var v2 = {
   v: 2
 };
 
-process.on("exit", function (exit_code) {
-      return "" + exit_code;
-    });
+process.on("exit", (function (exit_code) {
+        return "" + exit_code;
+      }));
 
-process.on(1, function () {
-      return /* () */0;
-    });
+process.on(1, (function () {
+        return /* () */0;
+      }));
 
-process.on(function (i) {
-      return "" + i;
-    }, "exit");
+process.on((function (i) {
+        return "" + i;
+      }), "exit");
 
-process.on(function (i) {
-      return "" + i;
-    }, 1);
+process.on((function (i) {
+        return "" + i;
+      }), 1);
 
 xx(3, 3, "xxx", "a", "b");
 
@@ -46,16 +46,16 @@ function f(x) {
   return /* () */0;
 }
 
-process.on("exit", function (exit_code) {
-      console.log("error code: " + exit_code);
-      return /* () */0;
-    });
+process.on("exit", (function (exit_code) {
+        console.log("error code: " + exit_code);
+        return /* () */0;
+      }));
 
 function register(p) {
-  p.on("exit", function (i) {
-        console.log(i);
-        return /* () */0;
-      });
+  p.on("exit", (function (i) {
+          console.log(i);
+          return /* () */0;
+        }));
   return /* () */0;
 }
 

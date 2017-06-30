@@ -225,7 +225,7 @@ $('#share').click(function (e) {
     .done(function (response) {
       state.button('reset');
       $('#shareModal').modal('show');
-      var url = 'https://bloomberg.github.io/bucklescript/js-demo/?gist=' + response.id;
+      var url = 'https://bucklescript.github.io/bucklescript/js-demo/?gist=' + response.id;
       $('#shareModalBody').html('<a href=' + '"' + url + '"' + 'target="_blank"' + '>' + url + '</a>');
     })
     .error(function (err) {

@@ -12,41 +12,41 @@ function f(H) {
   var tbl = Curry._1(H[/* create */0], 17);
   Curry._3(H[/* add */4], tbl, 1, /* "1" */49);
   Curry._3(H[/* add */4], tbl, 2, /* "2" */50);
-  return List.sort(function (param, param$1) {
-              return Caml_obj.caml_int_compare(param[0], param$1[0]);
-            }, Curry._3(H[/* fold */11], function (k, v, acc) {
-                  return /* :: */[
-                          /* tuple */[
-                            k,
-                            v
-                          ],
-                          acc
-                        ];
-                }, tbl, /* [] */0));
+  return List.sort((function (param, param$1) {
+                return Caml_obj.caml_int_compare(param[0], param$1[0]);
+              }), Curry._3(H[/* fold */11], (function (k, v, acc) {
+                    return /* :: */[
+                            /* tuple */[
+                              k,
+                              v
+                            ],
+                            acc
+                          ];
+                  }), tbl, /* [] */0));
 }
 
 function g(H) {
-  return function (count) {
-    var tbl = Curry._1(H[/* create */0], 17);
-    for(var i = 0; i <= count; ++i){
-      Curry._3(H[/* replace */8], tbl, (i << 1), "" + i);
-    }
-    for(var i$1 = 0; i$1 <= count; ++i$1){
-      Curry._3(H[/* replace */8], tbl, (i$1 << 1), "" + i$1);
-    }
-    var v = Curry._3(H[/* fold */11], function (k, v, acc) {
-          return /* :: */[
-                  /* tuple */[
-                    k,
-                    v
-                  ],
-                  acc
-                ];
-        }, tbl, /* [] */0);
-    return $$Array.of_list(List.sort(function (param, param$1) {
-                    return Caml_obj.caml_int_compare(param[0], param$1[0]);
-                  }, v));
-  };
+  return (function (count) {
+      var tbl = Curry._1(H[/* create */0], 17);
+      for(var i = 0; i <= count; ++i){
+        Curry._3(H[/* replace */8], tbl, (i << 1), "" + i);
+      }
+      for(var i$1 = 0; i$1 <= count; ++i$1){
+        Curry._3(H[/* replace */8], tbl, (i$1 << 1), "" + i$1);
+      }
+      var v = Curry._3(H[/* fold */11], (function (k, v, acc) {
+              return /* :: */[
+                      /* tuple */[
+                        k,
+                        v
+                      ],
+                      acc
+                    ];
+            }), tbl, /* [] */0);
+      return $$Array.of_list(List.sort((function (param, param$1) {
+                        return Caml_obj.caml_int_compare(param[0], param$1[0]);
+                      }), v));
+    });
 }
 
 var hash = Hashtbl.hash;
@@ -62,40 +62,40 @@ var Int_hash = Hashtbl.Make(/* module */[
 
 var suites_000 = /* tuple */[
   "simple",
-  function () {
-    return /* Eq */Block.__(0, [
-              /* :: */[
-                /* tuple */[
-                  1,
-                  /* "1" */49
-                ],
+  (function () {
+      return /* Eq */Block.__(0, [
                 /* :: */[
                   /* tuple */[
-                    2,
-                    /* "2" */50
+                    1,
+                    /* "1" */49
                   ],
-                  /* [] */0
-                ]
-              ],
-              f(Int_hash)
-            ]);
-  }
+                  /* :: */[
+                    /* tuple */[
+                      2,
+                      /* "2" */50
+                    ],
+                    /* [] */0
+                  ]
+                ],
+                f(Int_hash)
+              ]);
+    })
 ];
 
 var suites_001 = /* :: */[
   /* tuple */[
     "more_iterations",
-    function () {
-      return /* Eq */Block.__(0, [
-                $$Array.init(1001, function (i) {
-                      return /* tuple */[
-                              (i << 1),
-                              "" + i
-                            ];
-                    }),
-                g(Int_hash)(1000)
-              ]);
-    }
+    (function () {
+        return /* Eq */Block.__(0, [
+                  $$Array.init(1001, (function (i) {
+                          return /* tuple */[
+                                  (i << 1),
+                                  "" + i
+                                ];
+                        })),
+                  g(Int_hash)(1000)
+                ]);
+      })
   ],
   /* [] */0
 ];

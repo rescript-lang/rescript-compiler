@@ -244,6 +244,15 @@ type check_result =
 val is_valid_source_name :
    string -> check_result
 
+(* TODO handle cases like 
+   '@angular/core'
+   its directory structure is like 
+   {[
+     @angualar
+     |-------- core
+   ]}
+*)
+val is_valid_npm_package_name : string -> bool 
 val no_char : string -> char -> int -> int -> bool 
 
 
@@ -609,6 +618,27 @@ let is_valid_module_file (s : string) =
       (fun x -> 
          match x with 
          | 'A'..'Z' | 'a'..'z' | '0'..'9' | '_' | '\'' -> true
+         | _ -> false )
+  | _ -> false 
+
+
+(* https://docs.npmjs.com/files/package.json 
+  Some rules:
+  The name must be less than or equal to 214 characters. This includes the scope for scoped packages.
+  The name can't start with a dot or an underscore.
+  New packages must not have uppercase letters in the name.
+  The name ends up being part of a URL, an argument on the command line, and a folder name. Therefore, the name can't contain any non-URL-safe characters.
+*)
+let is_valid_npm_package_name (s : string) = 
+  let len = String.length s in 
+  len <= 214 && (* magic number forced by npm *)
+  len > 0 &&
+  match String.unsafe_get s 0 with 
+  | 'a' .. 'z' | '@' -> 
+    unsafe_for_all_range s ~start:1 ~finish:(len - 1)
+      (fun x -> 
+         match x with 
+         |  'a'..'z' | '0'..'9' | '_' | '-' -> true
          | _ -> false )
   | _ -> false 
 
@@ -3117,7 +3147,7 @@ val unused_attribute : string
 val dash_nostdlib : string
 
 val reactjs_jsx_ppx_exe : string 
-
+val reactjs_jsx_ppx_2_exe : string 
 val unescaped_j_delimiter : string 
 val escaped_j_delimiter : string 
 
@@ -3245,7 +3275,7 @@ let unused_attribute = "Unused attribute "
 let dash_nostdlib = "-nostdlib"
 
 let reactjs_jsx_ppx_exe  = "reactjs_jsx_ppx.exe"
-
+let reactjs_jsx_ppx_2_exe = "reactjs_jsx_ppx_2.exe"
 let unescaped_j_delimiter = "j"
 let unescaped_js_delimiter = "js"
 let escaped_j_delimiter =  "*j" (* not user level syntax allowed *)

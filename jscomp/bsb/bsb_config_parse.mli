@@ -26,9 +26,6 @@ val package_specs_from_bsconfig :
     unit -> Bsb_config.package_specs
 
 
-val merlin_file_gen : 
-  cwd:string -> 
-  (string * string) -> Bsb_config_types.t -> unit    
 
 
 val interpret_json : 

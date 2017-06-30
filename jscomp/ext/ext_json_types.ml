@@ -27,7 +27,7 @@ type json_str =
   { str : string ; loc : loc}
 
 type json_flo  =
-  { str : string ; loc : loc}
+  { flo : string ; loc : loc}
 type json_array =
   { content : t array ; 
     loc_start : loc ; 

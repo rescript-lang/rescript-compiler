@@ -14,6 +14,7 @@
 <li><a href="Bs_dyn.html">Bs_dyn</a></li>
 <li><a href="Bs_dyn_lib.html">Bs_dyn_lib</a></li>
 <li><a href="Dom.html">Dom</a></li>
+<li><a href="Dom_storage.html">Dom_storage</a></li>
 <li><a href="Js.html">Js</a></li>
 <li><a href="Js_array.html">Js_array</a></li>
 <li><a href="Js_boolean.html">Js_boolean</a></li>
@@ -25,6 +26,7 @@
 <li><a href="Js_global.html">Js_global</a></li>
 <li><a href="Js_int.html">Js_int</a></li>
 <li><a href="Js_int64.html">Js_int64</a></li>
+<li><a href="Js_internal.html">Js_internal</a></li>
 <li><a href="Js_json.html">Js_json</a></li>
 <li><a href="Js_list.html">Js_list</a></li>
 <li><a href="Js_math.html">Js_math</a></li>
@@ -196,4 +198,73 @@
                     </div>
                     </div>
 
-                  </body></html>
+                  <div class="type-declaration">
+<pre><code><span id="TYPEtagged_t"><span class="keyword">type</span> <code class="type"></code>tagged_t</span> = </code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTtagged_t.JSFalse"><span class="constructor">JSFalse</span></span></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTtagged_t.JSTrue"><span class="constructor">JSTrue</span></span></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTtagged_t.JSNull"><span class="constructor">JSNull</span></span></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTtagged_t.JSUndefined"><span class="constructor">JSUndefined</span></span></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTtagged_t.JSNumber"><span class="constructor">JSNumber</span></span></td><td><span class="keyword">of</span></td><td><code class="type">float</code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTtagged_t.JSString"><span class="constructor">JSString</span></span></td><td><span class="keyword">of</span></td><td><code class="type">string</code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTtagged_t.JSFunction"><span class="constructor">JSFunction</span></span></td><td><span class="keyword">of</span></td><td><code class="type"><a href="Js_types.html#TYPEfunction_val">function_val</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTtagged_t.JSObject"><span class="constructor">JSObject</span></span></td><td><span class="keyword">of</span></td><td><code class="type"><a href="Js_types.html#TYPEobj_val">obj_val</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTtagged_t.JSSymbol"><span class="constructor">JSSymbol</span></span></td><td><span class="keyword">of</span></td><td><code class="type"><a href="Js_types.html#TYPEsymbol">symbol</a></code></code></td>
+
+</tr></table>
+
+</div>
+
+
+<pre><span id="VALclassify"><span class="keyword">val</span> classify</span> : <code class="type">'a -> <a href="Js_types.html#TYPEtagged_t">tagged_t</a></code></pre></body></html>

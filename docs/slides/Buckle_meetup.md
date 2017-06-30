@@ -1,7 +1,7 @@
 
 class: center, middle
 
-#  OCaml <3 Javascript 
+#  OCaml <3 Javascript
 
 <img src="images/Slide3.PNG" title="OCamlscript" alt="Drawing" style="width: 550px;"/>
 
@@ -38,7 +38,7 @@ May 19, 2016
 
 - For OCaml developers (Today's topic)
 
-  - Seamless integration with existing JS ecosystem 
+  - Seamless integration with existing JS ecosystem
 
 ---
 
@@ -102,14 +102,14 @@ Runtime performance of identical functionality:
 
 | Technology   |  Time(s) | Code Size  |
 |--------------|----------| -----------|
-| OCaml with Javascript Backend   |1186ms (Google Closure bundler: simple mode) |   1 KB | 
+| OCaml with Javascript Backend   |1186ms (Google Closure bundler: simple mode) |   1 KB |
 | Handwritten Facebook Javascript  |3415ms |  55.3 KBytes|
 
 ---
 
 
 # BuckleScript, Javascript/Typescript interaction
- 		 
+
 1. Call BuckleScript from Javascript code (no extra work to do)
 
 2. Call BuckleScript from Typescript: BuckleScript emits `.d.ts` files
@@ -145,16 +145,16 @@ var v = Array.prototype.map.call(
 (** [Http_lib.ml] *)
 let port = 3000
 let hostname = "127.0.0.1"
-let create_server  http = 
-  let server = http##createServer (fun %uncurry  (req,  resp)  -> 
+let create_server  http =
+  let server = http##createServer (fun %uncurry  (req,  resp)  ->
       resp##statusCode__set 200; (* setter always ends with [__end] *)
       resp##setHeader("Content-Type", "text/plain");
       resp##end__ "Hello world\n" (* end is a key word in OCaml *)
     )
   in
-  server##listen(port, hostname,  fun %uncurry () -> 
+  server##listen(port, hostname,  fun %uncurry () ->
       Js.log ("Server running at http://"^ hostname ^ ":" ^ string_of_int port ^ "/")
-    ) 
+    )
 
 ```
 
@@ -180,13 +180,13 @@ function create_server(http) {
 ```ocaml
 (** Bindings for NodeJS [Http_binding.ml] *)
 
-type req 
+type req
 
 type resp = <
    statusCode__set : int -> unit [@uncurry] ;
    setHeader : string * string -> unit [@uncurry] ;
    end__ : string ->  unit [@uncurry]
-> Js.t 
+> Js.t
 
 type server =  <
    listen : int * string *  (unit -> unit [@uncurry]) -> unit [@uncurry];
@@ -196,7 +196,7 @@ type server =  <
 
 type http = <
    createServer : (req  * resp  -> unit [@uncurry] ) ->  server [@uncurry]
-> Js.t 
+> Js.t
 
 
 external http : http  = "http"  [@@bs.val_of_module ]
@@ -225,7 +225,7 @@ Http_lib.create_server(http);
 
 ---
 
-# How can it be possible? (What's the magic?) 
+# How can it be possible? (What's the magic?)
 
 1. OCaml is like a *formal* Javascript
 
@@ -281,14 +281,14 @@ Leverage the (high-level, strongly typed) OCaml language tool-chain to generate 
         | elimination of modules and classes
         v
      Lambda ------------------------(our work)----------+
-      /   \                                              \  
+      /   \                                              \
      /     \ closure conversion, inlining, uncurrying,    \
-    v       \  data representation strategy                \ 
+    v       \  data representation strategy                \
  Bytecode    \                                              |
     |         +-----+                                       |
     |              Cmm                                      IR
     |ocamlrun       |                                       |
-    |               | code generation                       | code generation 
+    |               | code generation                       | code generation
     |               | assembly & linking                    |
     v               v                                       v
  Interpreted    Compiled                                 Javacript(and meta data for optimizations)
@@ -298,7 +298,7 @@ Leverage the (high-level, strongly typed) OCaml language tool-chain to generate 
 
 # Comparison with  Typescript
 
-* Readable output code, great editor 
+* Readable output code, great editor
 
 * Compile time slow
 
@@ -306,19 +306,19 @@ Leverage the (high-level, strongly typed) OCaml language tool-chain to generate 
 
   Two files: one file define 500 fib functions,
   one file call those 500 fib functions
-  
+
    ```
              BS: 0m0.063s
              TS: 0m1.427s
    ```
   BuckleScript will be even faster in the future with flambda enabled.
-  
+
 * Unsound type system, limited type inference (all arguments have to be annotated)
 * Only Javascript backend
 * No code optimizations
 
 
-# [Comparison with  Js_of_ocaml](https://bloomberg.github.io/bucklescript/Differences-from-js_of_ocaml.html)
+# [Comparison with  Js_of_ocaml](https://bucklescript.github.io/bucklescript/Differences-from-js_of_ocaml.html)
 
 ---
 

@@ -14,21 +14,21 @@ var id = [0];
 var suites = [/* [] */0];
 
 function eq(f) {
-  return function (param, param$1) {
-    return Mt_global.collect_eq(id, suites, f, param, param$1);
-  };
+  return (function (param, param$1) {
+      return Mt_global.collect_eq(id, suites, f, param, param$1);
+    });
 }
 
 function neq(f) {
-  return function (param, param$1) {
-    return Mt_global.collect_neq(id, suites, f, param, param$1);
-  };
+  return (function (param, param$1) {
+      return Mt_global.collect_neq(id, suites, f, param, param$1);
+    });
 }
 
 function approx(f) {
-  return function (param, param$1) {
-    return Mt_global.collect_approx(id, suites, f, param, param$1);
-  };
+  return (function (param, param$1) {
+      return Mt_global.collect_approx(id, suites, f, param, param$1);
+    });
 }
 
 Random.self_init(/* () */0);

@@ -71,6 +71,12 @@ function watch_build(watch_files) {
  * @param {string} fileName 
  */
 function validEvent(eventType,fileName){
+    // Return true if filename is nil, filename is only provided on Linux, macOS, Windows, and AIX.
+    // On other systems, we just have to assume that any change is valid.
+    // This could cause problems if source builds (generating js files in the same directory) are supported. 
+    if (!fileName)
+        return true;
+
     return  !(fileName === '.merlin' ||  fileName.endsWith('.js'))
 }
 /**

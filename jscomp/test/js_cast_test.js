@@ -21,12 +21,12 @@ function add_test(loc, test) {
 }
 
 function eq(loc, x, y) {
-  return add_test(loc, function () {
-              return /* Eq */Block.__(0, [
-                        x,
-                        y
-                      ]);
-            });
+  return add_test(loc, (function () {
+                return /* Eq */Block.__(0, [
+                          x,
+                          y
+                        ]);
+              }));
 }
 
 eq("File \"js_cast_test.ml\", line 13, characters 12-19", /* true */1, 1);

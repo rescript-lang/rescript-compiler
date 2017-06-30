@@ -14,6 +14,7 @@
 <li><a href="Bs_dyn.html">Bs_dyn</a></li>
 <li><a href="Bs_dyn_lib.html">Bs_dyn_lib</a></li>
 <li><a href="Dom.html">Dom</a></li>
+<li><a href="Dom_storage.html">Dom_storage</a></li>
 <li><a href="Js.html">Js</a></li>
 <li><a href="Js_array.html">Js_array</a></li>
 <li><a href="Js_boolean.html">Js_boolean</a></li>
@@ -25,6 +26,7 @@
 <li><a href="Js_global.html">Js_global</a></li>
 <li><a href="Js_int.html">Js_int</a></li>
 <li><a href="Js_int64.html">Js_int64</a></li>
+<li><a href="Js_internal.html">Js_internal</a></li>
 <li><a href="Js_json.html">Js_json</a></li>
 <li><a href="Js_list.html">Js_list</a></li>
 <li><a href="Js_math.html">Js_math</a></li>
@@ -74,15 +76,15 @@
 </div>
 
 
-<pre><span id="VALmake"><span class="keyword">val</span> make</span> : <code class="type">(resolve:('a -> unit [@bs]) -> reject:(exn -> unit [@bs]) -> unit) -><br>       'a <a href="Js_promise.html#TYPEt">t</a></code></pre>
+<pre><span id="VALmake"><span class="keyword">val</span> make</span> : <code class="type">(resolve:([ `Arity_1 of 'a ], unit) Js.Internal.fn -><br>        reject:([ `Arity_1 of exn ], unit) Js.Internal.fn -> unit) -><br>       'a <a href="Js_promise.html#TYPEt">t</a></code></pre>
 <pre><span id="VALresolve"><span class="keyword">val</span> resolve</span> : <code class="type">'a -> 'a <a href="Js_promise.html#TYPEt">t</a></code></pre>
 <pre><span id="VALreject"><span class="keyword">val</span> reject</span> : <code class="type">exn -> 'a <a href="Js_promise.html#TYPEt">t</a></code></pre>
 <pre><span id="VALall"><span class="keyword">val</span> all</span> : <code class="type">'a <a href="Js_promise.html#TYPEt">t</a> array -> 'a array <a href="Js_promise.html#TYPEt">t</a></code></pre>
-<pre><span id="VALall2"><span class="keyword">val</span> all2</span> : <code class="type">'a0 <a href="Js_promise.html#TYPEt">t</a> -> 'a1 <a href="Js_promise.html#TYPEt">t</a> -> ('a0 * 'a1) <a href="Js_promise.html#TYPEt">t</a></code></pre>
-<pre><span id="VALall3"><span class="keyword">val</span> all3</span> : <code class="type">'a0 <a href="Js_promise.html#TYPEt">t</a> -><br>       'a1 <a href="Js_promise.html#TYPEt">t</a> -> 'a2 <a href="Js_promise.html#TYPEt">t</a> -> ('a0 * 'a1 * 'a2) <a href="Js_promise.html#TYPEt">t</a></code></pre>
-<pre><span id="VALall4"><span class="keyword">val</span> all4</span> : <code class="type">'a0 <a href="Js_promise.html#TYPEt">t</a> -><br>       'a1 <a href="Js_promise.html#TYPEt">t</a> -><br>       'a2 <a href="Js_promise.html#TYPEt">t</a> -> 'a3 <a href="Js_promise.html#TYPEt">t</a> -> ('a0 * 'a1 * 'a2 * 'a3) <a href="Js_promise.html#TYPEt">t</a></code></pre>
-<pre><span id="VALall5"><span class="keyword">val</span> all5</span> : <code class="type">'a0 <a href="Js_promise.html#TYPEt">t</a> -><br>       'a1 <a href="Js_promise.html#TYPEt">t</a> -><br>       'a2 <a href="Js_promise.html#TYPEt">t</a> -><br>       'a3 <a href="Js_promise.html#TYPEt">t</a> -><br>       'a4 <a href="Js_promise.html#TYPEt">t</a> -> ('a0 * 'a1 * 'a2 * 'a3 * 'a4) <a href="Js_promise.html#TYPEt">t</a></code></pre>
-<pre><span id="VALall6"><span class="keyword">val</span> all6</span> : <code class="type">'a0 <a href="Js_promise.html#TYPEt">t</a> -><br>       'a1 <a href="Js_promise.html#TYPEt">t</a> -><br>       'a2 <a href="Js_promise.html#TYPEt">t</a> -><br>       'a3 <a href="Js_promise.html#TYPEt">t</a> -><br>       'a4 <a href="Js_promise.html#TYPEt">t</a> -><br>       'a5 <a href="Js_promise.html#TYPEt">t</a> -> ('a0 * 'a1 * 'a2 * 'a3 * 'a4 * 'a5) <a href="Js_promise.html#TYPEt">t</a></code></pre>
+<pre><span id="VALall2"><span class="keyword">val</span> all2</span> : <code class="type">'a0 <a href="Js_promise.html#TYPEt">t</a> * 'a1 <a href="Js_promise.html#TYPEt">t</a> -> ('a0 * 'a1) <a href="Js_promise.html#TYPEt">t</a></code></pre>
+<pre><span id="VALall3"><span class="keyword">val</span> all3</span> : <code class="type">'a0 <a href="Js_promise.html#TYPEt">t</a> * 'a1 <a href="Js_promise.html#TYPEt">t</a> * 'a2 <a href="Js_promise.html#TYPEt">t</a> -><br>       ('a0 * 'a1 * 'a2) <a href="Js_promise.html#TYPEt">t</a></code></pre>
+<pre><span id="VALall4"><span class="keyword">val</span> all4</span> : <code class="type">'a0 <a href="Js_promise.html#TYPEt">t</a> * 'a1 <a href="Js_promise.html#TYPEt">t</a> * 'a2 <a href="Js_promise.html#TYPEt">t</a> * 'a3 <a href="Js_promise.html#TYPEt">t</a> -><br>       ('a0 * 'a1 * 'a2 * 'a3) <a href="Js_promise.html#TYPEt">t</a></code></pre>
+<pre><span id="VALall5"><span class="keyword">val</span> all5</span> : <code class="type">'a0 <a href="Js_promise.html#TYPEt">t</a> * 'a1 <a href="Js_promise.html#TYPEt">t</a> * 'a2 <a href="Js_promise.html#TYPEt">t</a> * 'a3 <a href="Js_promise.html#TYPEt">t</a> *<br>       'a4 <a href="Js_promise.html#TYPEt">t</a> -> ('a0 * 'a1 * 'a2 * 'a3 * 'a4) <a href="Js_promise.html#TYPEt">t</a></code></pre>
+<pre><span id="VALall6"><span class="keyword">val</span> all6</span> : <code class="type">'a0 <a href="Js_promise.html#TYPEt">t</a> * 'a1 <a href="Js_promise.html#TYPEt">t</a> * 'a2 <a href="Js_promise.html#TYPEt">t</a> * 'a3 <a href="Js_promise.html#TYPEt">t</a> *<br>       'a4 <a href="Js_promise.html#TYPEt">t</a> * 'a5 <a href="Js_promise.html#TYPEt">t</a> -><br>       ('a0 * 'a1 * 'a2 * 'a3 * 'a4 * 'a5) <a href="Js_promise.html#TYPEt">t</a></code></pre>
 <pre><span id="VALrace"><span class="keyword">val</span> race</span> : <code class="type">'a <a href="Js_promise.html#TYPEt">t</a> array -> 'a <a href="Js_promise.html#TYPEt">t</a></code></pre>
 <pre><span id="VALthen_"><span class="keyword">val</span> then_</span> : <code class="type">('a -> 'b <a href="Js_promise.html#TYPEt">t</a>) -> 'a <a href="Js_promise.html#TYPEt">t</a> -> 'b <a href="Js_promise.html#TYPEt">t</a></code></pre>
 <pre><span id="VALcatch"><span class="keyword">val</span> catch</span> : <code class="type">(<a href="Js_promise.html#TYPEerror">error</a> -> 'a <a href="Js_promise.html#TYPEt">t</a>) -> 'a <a href="Js_promise.html#TYPEt">t</a> -> 'a <a href="Js_promise.html#TYPEt">t</a></code></pre></body></html>

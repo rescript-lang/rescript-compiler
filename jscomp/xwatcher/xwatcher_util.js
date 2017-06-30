@@ -6,9 +6,9 @@ import * as Child_process from "child_process";
 
 function getWatchFiles(file) {
   if (Fs.existsSync(file)) {
-    return Fs.readFileSync(file, "utf8").split("\n").filter(function (x) {
-                return +(x.trim().length !== 0);
-              });
+    return Fs.readFileSync(file, "utf8").split("\n").filter((function (x) {
+                  return +(x.trim().length !== 0);
+                }));
   } else {
     return /* array */[];
   }
@@ -35,26 +35,26 @@ function findFile(_prev, _cwd, f) {
 function makeEventObj() {
   return {
           events: /* array */[],
-          empty: function () {
-            var self = this ;
-            var a = self.events;
-            a.splice(0);
-            return /* () */0;
-          },
-          push: function (a) {
-            var self = this ;
-            var xs = self.events;
-            xs.push(a);
-            return /* () */0;
-          },
-          needRebuild: function () {
-            var self = this ;
-            return +(self.events.length !== 0);
-          },
-          currentEvents: function () {
-            var self = this ;
-            return self.events;
-          }
+          empty: (function () {
+              var self = this ;
+              var a = self.events;
+              a.splice(0);
+              return /* () */0;
+            }),
+          push: (function (a) {
+              var self = this ;
+              var xs = self.events;
+              xs.push(a);
+              return /* () */0;
+            }),
+          needRebuild: (function () {
+              var self = this ;
+              return +(self.events.length !== 0);
+            }),
+          currentEvents: (function () {
+              var self = this ;
+              return self.events;
+            })
         };
 }
 
@@ -63,19 +63,19 @@ makeEventObj(/* () */0);
 function makeLock() {
   return {
           isBuilding: /* false */0,
-          acquire: function () {
-            var self = this ;
-            if (self.isBuilding) {
-              return /* false */0;
-            } else {
-              self.isBuilding = /* true */1;
-              return /* true */1;
-            }
-          },
-          release: function () {
-            var self = this ;
-            return self.isBuilding = /* false */0;
-          }
+          acquire: (function () {
+              var self = this ;
+              if (self.isBuilding) {
+                return /* false */0;
+              } else {
+                self.isBuilding = /* true */1;
+                return /* true */1;
+              }
+            }),
+          release: (function () {
+              var self = this ;
+              return self.isBuilding = /* false */0;
+            })
         };
 }
 
@@ -85,15 +85,15 @@ function build(cmd, $$event, lock, idle) {
     var events = $$event.currentEvents();
     console.log("Rebuilding since " + (String(events) + " "));
     $$event.empty();
-    Child_process.spawn(cmd, ( [ ]), ( { "stdio" : "inherit" })).on("exit", function () {
-          console.log(">>>> Finish compiling");
-          lock.release();
-          if ($$event.needRebuild()) {
-            return build(cmd, $$event, lock, idle);
-          } else {
-            return idle();
-          }
-        });
+    Child_process.spawn(cmd, ( [ ]), ( { "stdio" : "inherit" })).on("exit", (function () {
+            console.log(">>>> Finish compiling");
+            lock.release();
+            if ($$event.needRebuild()) {
+              return build(cmd, $$event, lock, idle);
+            } else {
+              return idle();
+            }
+          }));
     return /* () */0;
   } else {
     return 0;
@@ -106,15 +106,15 @@ function buildWithShell(cmd, $$event, lock, idle) {
     var events = $$event.currentEvents();
     console.log("Rebuilding since " + (String(events) + " "));
     $$event.empty();
-    Child_process.spawn(cmd, ( [ ]), ( { "stdio" : "inherit", "shell" : true })).on("exit", function () {
-          console.log(">>>> Finish compiling");
-          lock.release();
-          if ($$event.needRebuild()) {
-            return build(cmd, $$event, lock, idle);
-          } else {
-            return idle();
-          }
-        });
+    Child_process.spawn(cmd, ( [ ]), ( { "stdio" : "inherit", "shell" : true })).on("exit", (function () {
+            console.log(">>>> Finish compiling");
+            lock.release();
+            if ($$event.needRebuild()) {
+              return build(cmd, $$event, lock, idle);
+            } else {
+              return idle();
+            }
+          }));
     return /* () */0;
   } else {
     return 0;

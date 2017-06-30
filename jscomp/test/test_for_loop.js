@@ -21,9 +21,9 @@ function for_2(x) {
 
 function for_3(x) {
   var v = [0];
-  var arr = $$Array.map(function (_, _$1) {
-        return /* () */0;
-      }, x);
+  var arr = $$Array.map((function (_, _$1) {
+          return /* () */0;
+        }), x);
   for(var i = 0 ,i_finish = x.length; i <= i_finish; ++i){
     var j = (i << 1);
     Caml_array.caml_array_set(arr, i, (function(j){
@@ -33,17 +33,17 @@ function for_3(x) {
         }
         }(j)));
   }
-  $$Array.iter(function (x) {
-        return Curry._1(x, /* () */0);
-      }, arr);
+  $$Array.iter((function (x) {
+          return Curry._1(x, /* () */0);
+        }), arr);
   return v[0];
 }
 
 function for_4(x) {
   var v = [0];
-  var arr = $$Array.map(function (_, _$1) {
-        return /* () */0;
-      }, x);
+  var arr = $$Array.map((function (_, _$1) {
+          return /* () */0;
+        }), x);
   for(var i = 0 ,i_finish = x.length; i <= i_finish; ++i){
     var j = (i << 1);
     var k = (j << 1);
@@ -54,17 +54,17 @@ function for_4(x) {
         }
         }(k)));
   }
-  $$Array.iter(function (x) {
-        return Curry._1(x, /* () */0);
-      }, arr);
+  $$Array.iter((function (x) {
+          return Curry._1(x, /* () */0);
+        }), arr);
   return v[0];
 }
 
 function for_5(x, u) {
   var v = [0];
-  var arr = $$Array.map(function (_, _$1) {
-        return /* () */0;
-      }, x);
+  var arr = $$Array.map((function (_, _$1) {
+          return /* () */0;
+        }), x);
   for(var i = 0 ,i_finish = x.length; i <= i_finish; ++i){
     var k = Caml_int32.imul((u << 1), u);
     Caml_array.caml_array_set(arr, i, (function(k){
@@ -74,17 +74,17 @@ function for_5(x, u) {
         }
         }(k)));
   }
-  $$Array.iter(function (x) {
-        return Curry._1(x, /* () */0);
-      }, arr);
+  $$Array.iter((function (x) {
+          return Curry._1(x, /* () */0);
+        }), arr);
   return v[0];
 }
 
 function for_6(x, u) {
   var v = [0];
-  var arr = $$Array.map(function (_, _$1) {
-        return /* () */0;
-      }, x);
+  var arr = $$Array.map((function (_, _$1) {
+          return /* () */0;
+        }), x);
   var v4 = [0];
   var v5 = [0];
   v4[0] = v4[0] + 1 | 0;
@@ -105,9 +105,9 @@ function for_6(x, u) {
     }
     }(v2));
   }
-  $$Array.iter(function (x) {
-        return Curry._1(x, /* () */0);
-      }, arr);
+  $$Array.iter((function (x) {
+          return Curry._1(x, /* () */0);
+        }), arr);
   return v[0];
 }
 

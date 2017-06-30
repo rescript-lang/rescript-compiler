@@ -7,10 +7,10 @@ Besides a number of minor bug fixes and perf improvement, most notable changes
 this also makes Reason for the first time available to Windows users.
 
 # FFI added `bs.uncurry` which will automatically uncurry the callback so the user land API is clearer
-see http://bloomberg.github.io/bucklescript/Manual.html#__bs_uncurry_for_implicit_uncurried_callback_since_1_5_0
+see http://bucklescript.github.io/bucklescript/Manual.html#__bs_uncurry_for_implicit_uncurried_callback_since_1_5_0
 
 
-# Improve object label translation to cause less surprise, this might case minor backward compatibility http://bloomberg.github.io/bucklescript/Manual.html#_object_label_translation_convention
+# Improve object label translation to cause less surprise, this might case minor backward compatibility http://bucklescript.github.io/bucklescript/Manual.html#_object_label_translation_convention
 
 
 

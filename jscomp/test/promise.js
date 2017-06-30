@@ -8,11 +8,11 @@ function f(p) {
 
 var p = new SysBluebird.Promise();
 
-p.then(function (x) {
-        return x + 3 | 0;
-      }).catch(function (reason) {
-      return reason;
-    });
+p.then((function (x) {
+          return x + 3 | 0;
+        })).catch((function (reason) {
+        return reason;
+      }));
 
 var u = {
   then: 3,

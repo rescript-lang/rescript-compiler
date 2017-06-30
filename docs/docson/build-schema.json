@@ -18,6 +18,20 @@
                 "$ref": "#/definitions/module-format"
             }
         },
+        "react-jsx-version" : {
+            "title" : "jsx-version",
+            "oneOf" : [
+                {
+                    "type" : "boolean",
+                    "description" : "backward compatible mode, true means on with the default to be version 1 (the default value is subject to change)"
+                },
+                {
+                    "type" : "number",
+                    "description": "jsx version number, current recommend version number is 2"
+                }
+            ]
+        }
+        ,
         "ppx-specs": {
             "type": "array",
             "items": {
@@ -235,7 +249,7 @@
             "type": "object",
             "properties": {
                 "react-jsx": {
-                    "type": "boolean",
+                    "$ref": "#/definitions/react-jsx-version",
                     "description": "Whether to apply the [Reason-React](https://github.com/reasonml/reason-react)-specific JSX PPX transformation."
                 }
             }
@@ -247,7 +261,7 @@
                     "items": {
                         "type": "string"
                     },
-                    "description": "Default: `[\"-no-alias-deps\", \"-w\", \"-40+6+7+27+32..39+44+45\"]`. [Here](https://github.com/bloomberg/bucklescript/blob/0db762aea73fc9f28ebd08e9eb92f1e072f44c2d/jscomp/bsb/bsb_default.ml#L26) are the meanings of the warning flags"
+                    "description": "Default: `[\"-no-alias-deps\", \"-w\", \"-40+6+7+27+32..39+44+45\"]`. [Here](https://github.com/bucklescript/bucklescript/blob/0db762aea73fc9f28ebd08e9eb92f1e072f44c2d/jscomp/bsb/bsb_default.ml#L26) are the meanings of the warning flags"
                 },
                 {
                     "type": "object",

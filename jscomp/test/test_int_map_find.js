@@ -115,9 +115,9 @@ function add(x, data, param) {
   }
 }
 
-List.fold_left(function (acc, param) {
-      return add(param[0], param[1], acc);
-    }, /* Empty */0, /* :: */[
+List.fold_left((function (acc, param) {
+        return add(param[0], param[1], acc);
+      }), /* Empty */0, /* :: */[
       /* tuple */[
         10,
         /* "a" */97

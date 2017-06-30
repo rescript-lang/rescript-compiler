@@ -39,12 +39,12 @@ function with_file_as_chan(filename, f) {
 }
 
 function with_file_as_pp(filename, f) {
-  return $$finally(Pervasives.open_out_bin(filename), Pervasives.close_out, function (chan) {
-              var fmt = Format.formatter_of_out_channel(chan);
-              var v = Curry._1(f, fmt);
-              Format.pp_print_flush(fmt, /* () */0);
-              return v;
-            });
+  return $$finally(Pervasives.open_out_bin(filename), Pervasives.close_out, (function (chan) {
+                var fmt = Format.formatter_of_out_channel(chan);
+                var v = Curry._1(f, fmt);
+                Format.pp_print_flush(fmt, /* () */0);
+                return v;
+              }));
 }
 
 function is_pos_pow(n) {
@@ -79,13 +79,13 @@ function is_pos_pow(n) {
 }
 
 function failwithf(loc, fmt) {
-  return Format.ksprintf(function (s) {
-              var s$1 = loc + s;
-              throw [
-                    Caml_builtin_exceptions.failure,
-                    s$1
-                  ];
-            }, fmt);
+  return Format.ksprintf((function (s) {
+                var s$1 = loc + s;
+                throw [
+                      Caml_builtin_exceptions.failure,
+                      s$1
+                    ];
+              }), fmt);
 }
 
 function invalid_argf(fmt) {
@@ -93,12 +93,12 @@ function invalid_argf(fmt) {
 }
 
 function bad_argf(fmt) {
-  return Format.ksprintf(function (x) {
-              throw [
-                    Arg.Bad,
-                    x
-                  ];
-            }, fmt);
+  return Format.ksprintf((function (x) {
+                throw [
+                      Arg.Bad,
+                      x
+                    ];
+              }), fmt);
 }
 
 function dump(r) {

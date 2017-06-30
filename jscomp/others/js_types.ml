@@ -47,22 +47,54 @@ type _ t =
 
 let reify_type (type a) (x : 'a) :  (a t * a ) =  
   if Js.typeof x = "undefined" then 
-    (Obj.magic Undefined, Obj.magic x) else
-  if Js.typeof x = "null" then 
-    (Obj.magic Null, Obj.magic x) else 
-  if Js.typeof x = "number" then 
-    (Obj.magic Number, Obj.magic x ) else 
-  if Js.typeof x = "string" then 
-    (Obj.magic String, Obj.magic x) else 
-  if Js.typeof x = "boolean" then 
-    (Obj.magic Boolean, Obj.magic x) else 
-  if Js.typeof x = "function" then 
-    (Obj.magic Function, Obj.magic x) else 
-  if Js.typeof x = "object" then 
+    (Obj.magic Undefined, Obj.magic x)
+  else if x == (Obj.magic Js_null.empty)  then 
+    (Obj.magic Null, Obj.magic x) 
+  else if Js.typeof x = "number" then 
+    (Obj.magic Number, Obj.magic x ) 
+  else if Js.typeof x = "string" then 
+    (Obj.magic String, Obj.magic x) 
+  else if Js.typeof x = "boolean" then 
+    (Obj.magic Boolean, Obj.magic x) 
+  else if Js.typeof x = "function" then 
+    (Obj.magic Function, Obj.magic x) 
+  else if Js.typeof x = "object" then 
     (Obj.magic Object, Obj.magic x) 
-  else 
-    (Obj.magic Symbol, Obj.magic x) 
+  else  (Obj.magic Symbol, Obj.magic x) 
   (* TODO: may change according to engines ?*)
+
+type tagged_t = 
+  | JSFalse
+  | JSTrue
+  | JSNull 
+  | JSUndefined     
+  | JSNumber of float 
+  | JSString of string
+  | JSFunction of function_val
+  | JSObject of obj_val
+  | JSSymbol of symbol 
+
+let classify (x : 'a) : tagged_t = 
+  let ty = Js.typeof x in  
+  if ty = "undefined" then 
+    JSUndefined else
+  if x == (Obj.magic Js_null.empty)  then 
+    JSNull else 
+  if ty = "number" then 
+    JSNumber (Obj.magic x ) else 
+  if ty = "string" then 
+    JSString (Obj.magic x) else 
+  if ty = "boolean" then 
+    if (Obj.magic x) ==  Js.true_ then JSTrue 
+    else JSFalse else 
+  if ty = "function" then 
+    JSFunction (Obj.magic x) else 
+  if ty = "object" then 
+    JSObject (Obj.magic x) 
+  else 
+    JSSymbol (Obj.magic x) 
+  
+
 let test (type a) (x : 'a) (v : a t) : bool =
   match v with 
   | Number 
@@ -76,7 +108,7 @@ let test (type a) (x : 'a) (v : a t) : bool =
     Js.typeof x = "undefined" 
   | Null 
     -> 
-    Js.typeof x = "Js.null"
+    x == (Obj.magic Js_null.empty)
   | String
     -> 
     Js.typeof x = "string" 
