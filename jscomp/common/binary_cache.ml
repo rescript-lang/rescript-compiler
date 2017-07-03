@@ -37,7 +37,7 @@ type module_info =
   {
     mli : mli_kind ; 
     ml : ml_kind ; 
-    mll : string option ;
+    (*mll : string option ;*)
   }
 
 
@@ -52,7 +52,7 @@ let module_info_magic_number = "BSBUILD20161019"
 let dir_of_module_info (x : module_info)
   = 
   match x with 
-  | { mli; ml; mll} -> 
+  | { mli; ml;  } -> 
     begin match mli with 
     | Mli s | Rei s -> 
       Filename.dirname s 
@@ -60,11 +60,11 @@ let dir_of_module_info (x : module_info)
       begin match ml with 
       | Ml s | Re s -> 
         Filename.dirname s 
-      | Ml_empty -> 
-        begin match mll with 
+      | Ml_empty -> Ext_string.empty
+        (*begin match mll with 
         | None -> ""
         | Some s -> Filename.dirname s 
-        end 
+        end *)
       end
     end
 
@@ -86,7 +86,7 @@ let read_build_cache bsbuild : t =
 let bsbuild_cache = ".bsbuild"
 
 
-let empty_module_info = {mli = Mli_empty ; mll = None ; ml = Ml_empty}
+let empty_module_info = {mli = Mli_empty ;  ml = Ml_empty}
 
 let adjust_module_info x suffix name =
   match suffix with 
@@ -94,7 +94,6 @@ let adjust_module_info x suffix name =
   | ".re" -> {x with ml = Re name}
   | ".mli" ->  {x with mli = Mli name}
   | ".rei" -> { x with mli = Rei name}
-  | ".mll" -> {x with mll = Some name}
   | _ -> failwith ("don't know what to do with " ^ name)
 
 let map_update ?dir (map : file_group_rouces)  name : file_group_rouces  = 

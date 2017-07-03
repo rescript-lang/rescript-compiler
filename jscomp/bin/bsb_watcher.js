@@ -113,7 +113,11 @@ function build() {
  */
 function on_change(event, reason) {    
     if(validEvent(event,reason)){
+<<<<<<< 864d25584eb7e9f72c074a3ff0b277c48750e4bf
         console.log("Event", event,reason);
+=======
+        console.log("Event", event, reason);
+>>>>>>> wip
         reasons_to_rebuild.push([event, reason])
         if(needRebuild()){
             build()
