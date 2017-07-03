@@ -1,4 +1,5 @@
 //@ts-check
+
 var fs = require('fs')
 var child_process = require('child_process')
 var path = require('path')
@@ -36,7 +37,7 @@ function acquireBuild(){
         return true
     }
 }
-var sourcedirs = path.join('lib', 'bs', '.sourcedirs')
+var sourcedirs = path.join('lib', 'bs', ".sourcedirs.json")
 function watch_build(watch_files) {
     // close and remove all unused watchers
     watchers = watchers.filter(function(watcher){
@@ -112,7 +113,7 @@ function build() {
  */
 function on_change(event, reason) {    
     if(validEvent(event,reason)){
-        console.log("Event", event);
+        console.log("Event", event,reason);
         reasons_to_rebuild.push([event, reason])
         if(needRebuild()){
             build()
@@ -122,7 +123,7 @@ function on_change(event, reason) {
 }
 function getWatchFiles(file) {
     if (fs.existsSync(file)){
-        return fs.readFileSync(file, 'utf8').split('\n').filter(function(x){return x})
+        return JSON.parse(fs.readFileSync(file, 'utf8'))
     } else {
         return []
     }
@@ -130,7 +131,7 @@ function getWatchFiles(file) {
 }
 
 
-// Initialization
-
+// Initialization, watch `bsconfig.json`
 watchers.push({watcher : fs.watch(bsconfig,on_change) , dir : bsconfig});
+
 build();

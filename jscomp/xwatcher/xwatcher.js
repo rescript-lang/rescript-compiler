@@ -7,7 +7,7 @@ import * as Js_primitive  from "../../lib/es6/js_primitive.js";
 import * as Node_process  from "../../lib/es6/node_process.js";
 import * as Xwatcher_util from "./xwatcher_util.js";
 
-var sourceDirs = Path.join("lib", "bs", ".sourcedirs");
+var sourceDirs = Path.join("lib", "bs", ".sourcedirs.json");
 
 var lock = Xwatcher_util.makeLock(/* () */0);
 

@@ -25,7 +25,7 @@
 
 let (//) = Ext_filename.combine
 
-let sourcedirs_meta = ".sourcedirs"
+let sourcedirs_meta = ".sourcedirs.json"
 
 let generate_sourcedirs_meta cwd (res : Bsb_build_ui.t) = 
   let ochan = open_out_bin (cwd // Bsb_config.lib_bs // sourcedirs_meta) in

@@ -4,7 +4,7 @@ open Xwatcher_util
 
 (** start customized for bsb-watcher *)
 
-let sourceDirs = Node.Path.join [|"lib"; "bs"; ".sourcedirs"|]
+let sourceDirs = Node.Path.join [|"lib"; "bs"; ".sourcedirs.json"|]
 
 let lock = Xwatcher_util.makeLock ()
 let events = Xwatcher_util.makeEventObj ()
