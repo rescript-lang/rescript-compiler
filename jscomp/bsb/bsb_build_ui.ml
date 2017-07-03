@@ -56,7 +56,7 @@ type  file_group =
     public : public ;
     dir_index : dir_index ;
     generators : build_generator list ; 
-    (** output of [generators] should be added to [sources],
+    (* output of [generators] should be added to [sources],
       if it is [.ml,.mli,.re,.rei]
     *)
   } 

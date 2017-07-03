@@ -7582,7 +7582,7 @@ type  file_group =
     public : public ;
     dir_index : dir_index ;
     generators : build_generator list ; 
-    (** output of [generators] should be added to [sources],
+    (* output of [generators] should be added to [sources],
       if it is [.ml,.mli,.re,.rei]
     *)
   } 
@@ -8409,6 +8409,7 @@ val str : string -> t
 val flo : string -> t 
 val arr : t array -> t 
 val obj : t String_map.t -> t 
+val kvs : (string * t) list -> t 
 val equal : t -> t -> bool 
 val to_string : t -> string 
 
@@ -8463,7 +8464,9 @@ let str s  = Str s
 let flo s = Flo s 
 let arr s = Arr s 
 let obj s = Obj s 
-
+let kvs s = 
+  Obj (String_map.of_list s)
+  
 let rec equal 
     (x : t)
     (y : t) = 
@@ -8638,10 +8641,16 @@ let generate_sourcedirs_meta cwd (res : Bsb_build_ui.t) =
   let ochan = open_out_bin (cwd // Bsb_config.lib_bs // sourcedirs_meta) in
   let v = 
     Ext_json_noloc.(
+      kvs [
+        "dirs" ,
       arr (Ext_array.of_list_map ( fun (x : Bsb_build_ui.file_group) -> 
       str x.dir 
-      ) res.files )
-    
+      ) res.files ) ;
+      "generated" ,
+      arr @@ Array.of_list @@ List.fold_left (fun acc (x : Bsb_build_ui.file_group) -> 
+      Ext_list.flat_map_acc (fun x -> List.map str x.Bsb_build_ui.output) acc  x.generators 
+      )  [] res.files 
+      ]
      ) in 
   Ext_json_noloc.to_channel ochan v ;
   close_out ochan

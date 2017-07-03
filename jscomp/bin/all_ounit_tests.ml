@@ -8890,6 +8890,7 @@ val str : string -> t
 val flo : string -> t 
 val arr : t array -> t 
 val obj : t String_map.t -> t 
+val kvs : (string * t) list -> t 
 val equal : t -> t -> bool 
 val to_string : t -> string 
 
@@ -8944,7 +8945,9 @@ let str s  = Str s
 let flo s = Flo s 
 let arr s = Arr s 
 let obj s = Obj s 
-
+let kvs s = 
+  Obj (String_map.of_list s)
+  
 let rec equal 
     (x : t)
     (y : t) = 
