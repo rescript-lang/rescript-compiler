@@ -33,7 +33,12 @@ All  output (not just js in case we support native build)
 
 It's hard to bake it in built rules, since it is flag dependent, if you have `-bin-annot` 
 then you would like to install `cmt` too, however, it might be or not be there 
- 
+
+# meta-data files 
+
+- .bsbuild
+- .bsdeps
+- .sourcedirs
 # post-build
 
 Here we have `js` generated, we can do either post-build or

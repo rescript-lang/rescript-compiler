@@ -72,13 +72,16 @@ bin/bsb.ml : bsb/bsb_exception.mli
 bin/bsb.ml : bsb/bsb_merlin_gen.ml
 bin/bsb.ml : bsb/bsb_templates.mli
 bin/bsb.ml : common/bs_version.mli
+bin/bsb.ml : ext/ext_json_noloc.ml
 bin/bsb.ml : ext/ext_json_parse.ml
 bin/bsb.ml : ext/ext_json_types.ml
 bin/bsb.ml : ext/ext_pervasives.ml
 bin/bsb.ml : ext/string_hashtbl.ml
 bin/bsb.ml : bsb/bsb_build_util.mli
 bin/bsb.ml : bsb/bsb_merlin_gen.mli
+bin/bsb.ml : bsb/bsb_watcher_gen.ml
 bin/bsb.ml : common/binary_cache.ml
+bin/bsb.ml : ext/ext_json_noloc.mli
 bin/bsb.ml : ext/ext_json_parse.mli
 bin/bsb.ml : ext/ext_pervasives.mli
 bin/bsb.ml : ext/string_hash_set.ml
@@ -86,6 +89,7 @@ bin/bsb.ml : ext/string_hashtbl.mli
 bin/bsb.ml : stubs/bs_hash_stubs.ml
 bin/bsb.ml : bsb/bsb_config_parse.ml
 bin/bsb.ml : bsb/bsb_config_types.ml
+bin/bsb.ml : bsb/bsb_watcher_gen.mli
 bin/bsb.ml : common/binary_cache.mli
 bin/bsb.ml : ext/string_hash_set.mli
 bin/bsb.ml : bsb/bsb_build_schemas.ml

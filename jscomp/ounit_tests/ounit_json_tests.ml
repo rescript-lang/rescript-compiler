@@ -6,13 +6,28 @@ open Ext_json_parse
 let (|?)  m (key, cb) =
   m  |> Ext_json.test key cb 
 
+let rec strip (x : Ext_json_types.t) : Ext_json_noloc.t = 
+  let open Ext_json_noloc in 
+  match x with 
+  | True _ -> true_
+  | False _ -> false_
+  | Null _ -> null
+  | Flo {flo = s} -> flo s 
+  | Str {str = s} -> str s 
+  | Arr {content } -> arr (Array.map strip content)
+  | Obj {map} -> 
+    obj (String_map.map strip map)
+
 let id_parsing_serializing x = 
   let normal_s = 
-    Ext_json_write.to_string ( Ext_json_parse.parse_json_from_string x  )
+    Ext_json_noloc.to_string 
+      @@ strip 
+      @@ Ext_json_parse.parse_json_from_string x  
   in 
   let normal_ss = 
-    Ext_json_write.to_string 
-      (Ext_json_parse.parse_json_from_string normal_s) 
+    Ext_json_noloc.to_string 
+    @@ strip 
+    @@ Ext_json_parse.parse_json_from_string normal_s
   in 
   if normal_s <> normal_ss then 
     begin 
@@ -23,10 +38,10 @@ let id_parsing_serializing x =
   OUnit.assert_equal ~cmp:(fun (x:string) y -> x = y) normal_s normal_ss
 
 let id_parsing_x2 x = 
-  let stru = Ext_json_parse.parse_json_from_string x in 
-  let normal_s = Ext_json_write.to_string stru in 
-  let normal_ss = (Ext_json_parse.parse_json_from_string normal_s) in 
-  if Ext_json.equal stru normal_ss then 
+  let stru = Ext_json_parse.parse_json_from_string x |> strip in 
+  let normal_s = Ext_json_noloc.to_string stru in 
+  let normal_ss = strip (Ext_json_parse.parse_json_from_string normal_s) in 
+  if Ext_json_noloc.equal stru normal_ss then 
     true
   else begin 
     prerr_endline "ERROR";
@@ -34,7 +49,7 @@ let id_parsing_x2 x =
     Format.fprintf Format.err_formatter 
     "%a@.%a@." Ext_pervasives.pp_any stru Ext_pervasives.pp_any normal_ss; 
     
-    prerr_endline (Ext_json_write.to_string normal_ss);
+    prerr_endline (Ext_json_noloc.to_string normal_ss);
     false
   end  
 

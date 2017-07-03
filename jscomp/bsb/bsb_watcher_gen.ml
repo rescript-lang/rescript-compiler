@@ -1,4 +1,4 @@
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+(* Copyright (C) 2017- Authors of BuckleScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -23,7 +23,18 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-(*val to_string : Ext_json_types.t -> string 
+let (//) = Ext_filename.combine
 
+let sourcedirs_meta = ".sourcedirs"
 
-val to_channel : out_channel -> Ext_json_types.t -> unit*)
+let generate_sourcedirs_meta cwd (res : Bsb_build_ui.t) = 
+  let ochan = open_out_bin (cwd // Bsb_config.lib_bs // sourcedirs_meta) in
+  let v = 
+    Ext_json_noloc.(
+      arr (Ext_array.of_list_map ( fun (x : Bsb_build_ui.file_group) -> 
+      str x.dir 
+      ) res.files )
+    
+     ) in 
+  Ext_json_noloc.to_channel ochan v ;
+  close_out ochan

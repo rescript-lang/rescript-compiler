@@ -74,6 +74,8 @@ ext/ext_pp_scope.cmx : ext/string_map.cmx ext/int_map.cmx ext/ident_set.cmx \
 ext/ext_io.cmx : ext/ext_pervasives.cmx ext/ext_io.cmi
 ext/ext_sexp.cmx : ext/ext_sexp.cmi
 ext/ext_json_types.cmx : ext/string_map.cmx
+ext/ext_json_noloc.cmx : ext/string_map.cmx ext/ext_array.cmx \
+    ext/ext_json_noloc.cmi
 ext/ext_json_parse.cmx : ext/string_map.cmx ext/ext_position.cmx \
     ext/ext_json_types.cmx ext/ext_array.cmx ext/ext_json_parse.cmi
 ext/ext_json_write.cmx : ext/string_map.cmx ext/ext_json_types.cmx \
@@ -139,8 +141,9 @@ ext/ext_topsort.cmi : ext/vec_gen.cmx ext/set_int.cmi ext/int_vec.cmi
 ext/ext_pp_scope.cmi : ext/ident_set.cmi
 ext/ext_io.cmi :
 ext/ext_sexp.cmi :
+ext/ext_json_noloc.cmi : ext/string_map.cmi
 ext/ext_json_parse.cmi : ext/ext_json_types.cmx
-ext/ext_json_write.cmi : ext/ext_json_types.cmx
+ext/ext_json_write.cmi :
 ext/ext_json.cmi : ext/string_map.cmi ext/ext_position.cmi \
     ext/ext_json_types.cmx
 ext/ident_hash_set.cmi : ext/hash_set_gen.cmx
@@ -659,8 +662,8 @@ ounit_tests/ounit_scc_tests.cmx : ext/string_hashtbl.cmx ounit/oUnit.cmx \
     ext/int_vec_vec.cmx ext/int_vec.cmx ext/ext_string.cmx ext/ext_scc.cmx
 ounit_tests/ounit_hashtbl_tests.cmx : ext/string_hashtbl.cmx ounit/oUnit.cmx
 ounit_tests/ounit_json_tests.cmx : ext/string_map.cmx ounit/oUnit.cmx \
-    ext/ext_pervasives.cmx ext/ext_json_write.cmx ext/ext_json_types.cmx \
-    ext/ext_json_parse.cmx ext/ext_json.cmx
+    ext/ext_pervasives.cmx ext/ext_json_types.cmx ext/ext_json_parse.cmx \
+    ext/ext_json_noloc.cmx ext/ext_json.cmx
 ounit_tests/ounit_map_tests.cmx : ounit/oUnit.cmx ext/int_map.cmx
 ounit_tests/ounit_ordered_hash_set_tests.cmx : \
     ext/ordered_hash_set_string.cmx ounit/oUnit.cmx ext/ext_util.cmx \
@@ -724,10 +727,11 @@ bsb/bsb_config.cmx : ext/string_set.cmx ext/literals.cmx ext/ext_string.cmx \
 bsb/bsb_config_parse.cmx : ext/string_set.cmx ext/string_map.cmx \
     ext/string_hash_set.cmx ext/literals.cmx ext/ext_json_types.cmx \
     ext/ext_json_parse.cmx ext/ext_json.cmx ext/ext_filename.cmx \
-    ext/ext_file_pp.cmx ext/ext_array.cmx bsb/bsb_pkg.cmx \
-    bsb/bsb_exception.cmx bsb/bsb_default.cmx bsb/bsb_config_types.cmx \
-    bsb/bsb_config.cmx bsb/bsb_build_util.cmx bsb/bsb_build_ui.cmx \
-    bsb/bsb_build_schemas.cmx common/bs_version.cmx bsb/bsb_config_parse.cmi
+    ext/ext_file_pp.cmx ext/ext_array.cmx bsb/bsb_watcher_gen.cmx \
+    bsb/bsb_pkg.cmx bsb/bsb_exception.cmx bsb/bsb_default.cmx \
+    bsb/bsb_config_types.cmx bsb/bsb_config.cmx bsb/bsb_build_util.cmx \
+    bsb/bsb_build_ui.cmx bsb/bsb_build_schemas.cmx common/bs_version.cmx \
+    bsb/bsb_config_parse.cmi
 bsb/bsb_config_types.cmx : ext/string_hash_set.cmx bsb/bsb_config.cmx \
     bsb/bsb_build_ui.cmx
 bsb/bsb_default.cmx : ext/string_set.cmx ext/literals.cmx \
@@ -778,6 +782,9 @@ bsb/bsb_regex.cmx : bsb/bsb_regex.cmi
 bsb/bsb_rule.cmx : ext/string_set.cmx ext/ext_sys.cmx bsb/bsb_rule.cmi
 bsb/bsb_templates.cmx : bsb/oCamlRes.cmx bsb/bsb_templates.cmi
 bsb/bsb_unix.cmx : ext/ext_sys.cmx ext/ext_string.cmx bsb/bsb_unix.cmi
+bsb/bsb_watcher_gen.cmx : ext/ext_json_noloc.cmx ext/ext_filename.cmx \
+    ext/ext_array.cmx bsb/bsb_config.cmx bsb/bsb_build_ui.cmx \
+    bsb/bsb_watcher_gen.cmi
 bsb/oCamlRes.cmx :
 bsb/bsb_build_ui.cmi : ext/string_set.cmi ext/ext_json_types.cmx \
     ext/ext_file_pp.cmi common/binary_cache.cmi
@@ -805,6 +812,7 @@ bsb/bsb_regex.cmi :
 bsb/bsb_rule.cmi :
 bsb/bsb_templates.cmi : bsb/oCamlRes.cmx
 bsb/bsb_unix.cmi :
+bsb/bsb_watcher_gen.cmi : bsb/bsb_build_ui.cmi
 jscmj_main.cmx : common/js_config.cmx core/js_cmj_format.cmx \
     ext/ext_string.cmx ext/ext_pp.cmx ext/ext_pervasives.cmx \
     ext/ext_array.cmx jscmj_main.cmi
