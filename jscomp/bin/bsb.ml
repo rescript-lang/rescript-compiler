@@ -8340,6 +8340,279 @@ let package_specs = String_set.singleton Literals.commonjs
 let main_entries = [Bsb_config_types.JsTarget "Index"]
 
 end
+module Ext_json_noloc : sig 
+#1 "ext_json_noloc.mli"
+(* Copyright (C) 2017- Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type t 
+
+val true_  : t 
+val false_ : t 
+val null : t 
+val str : string -> t 
+val flo : string -> t 
+val arr : t array -> t 
+val obj : t String_map.t -> t 
+val equal : t -> t -> bool 
+val to_string : t -> string 
+
+
+val to_channel : out_channel -> t -> unit
+end = struct
+#1 "ext_json_noloc.ml"
+(* Copyright (C) 2017- Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type t = 
+  | True 
+  | False 
+  | Null 
+  | Flo of string 
+  | Str of string
+  | Arr of t array 
+  | Obj of t String_map.t
+
+
+(** poor man's serialization *)
+
+let quot x = 
+    "\"" ^ String.escaped x ^ "\""
+
+let true_ = True
+let false_ = False
+let null = Null 
+let str s  = Str s 
+let flo s = Flo s 
+let arr s = Arr s 
+let obj s = Obj s 
+
+let rec equal 
+    (x : t)
+    (y : t) = 
+  match x with 
+  | Null  -> (* [%p? Null _ ] *)
+    begin match y with
+      | Null  -> true
+      | _ -> false end
+  | Str str  -> 
+    begin match y with 
+      | Str str2 -> str = str2
+      | _ -> false end
+  | Flo flo 
+    ->
+    begin match y with
+      |  Flo flo2 -> 
+        flo = flo2 
+      | _ -> false
+    end
+  | True  -> 
+    begin match y with 
+      | True  -> true 
+      | _ -> false 
+    end
+  | False  -> 
+    begin match y with 
+      | False  -> true 
+      | _ -> false 
+    end     
+  | Arr content 
+    -> 
+    begin match y with 
+      | Arr content2
+        ->
+        Ext_array.for_all2_no_exn equal content content2
+      | _ -> false 
+    end
+
+  | Obj map -> 
+    begin match y with 
+      | Obj map2 -> 
+        String_map.equal equal map map2
+      | _ -> false 
+    end 
+
+let rec encode_aux (x : t ) 
+    (buf : Buffer.t) : unit =  
+  let a str = Buffer.add_string buf str in 
+  match x with 
+  | Null  -> a "null"
+  | Str s   -> a (quot s)
+  | Flo  s -> 
+    a s (* 
+    since our parsing keep the original float representation, we just dump it as is, there is no cases like [nan] *)
+  | Arr  content -> 
+    begin match content with 
+      | [||] -> a "[]"
+      | _ -> 
+        a "[ ";
+        encode_aux
+          (Array.unsafe_get content 0)
+          buf ; 
+        for i = 1 to Array.length content - 1 do 
+          a " , ";
+          encode_aux 
+            (Array.unsafe_get content i)
+            buf
+        done;    
+        a " ]"
+    end
+  | True  -> a "true"
+  | False  -> a "false"
+  | Obj map -> 
+    if String_map.is_empty map then 
+      a "{}"
+    else 
+      begin  
+        (*prerr_endline "WEIRD";
+        prerr_endline (string_of_int @@ String_map.cardinal map );   *)
+        a "{ ";
+        let _ : int =  String_map.fold (fun  k v i -> 
+            if i <> 0 then begin
+              a " , " 
+            end; 
+            a (quot k);
+            a " : ";
+            encode_aux v buf ;
+            i + 1 
+          ) map 0 in 
+          a " }"
+      end
+
+
+let to_string x  = 
+    let buf = Buffer.create 1024 in 
+    encode_aux x buf ;
+    Buffer.contents buf 
+
+let to_channel (oc : out_channel) x  = 
+    let buf = Buffer.create 1024 in 
+    encode_aux x buf ;
+    Buffer.output_buffer oc buf   
+end
+module Bsb_watcher_gen : sig 
+#1 "bsb_watcher_gen.mli"
+(* Copyright (C) 2017- Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+(** This module try to generate some meta data so that
+  everytime [bsconfig.json] is reload, we can re-read
+  such meta data changes in the watcher.
+  
+  Another way of doing it is processing [bsconfig.json] 
+  directly in [watcher] but that would 
+  mean the duplication of logic in [bsb] and [bsb_watcher]
+*)
+val generate_sourcedirs_meta : 
+  string -> Bsb_build_ui.t -> unit 
+end = struct
+#1 "bsb_watcher_gen.ml"
+(* Copyright (C) 2017- Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+let (//) = Ext_filename.combine
+
+let sourcedirs_meta = ".sourcedirs.json"
+
+let generate_sourcedirs_meta cwd (res : Bsb_build_ui.t) = 
+  let ochan = open_out_bin (cwd // Bsb_config.lib_bs // sourcedirs_meta) in
+  let v = 
+    Ext_json_noloc.(
+      arr (Ext_array.of_list_map ( fun (x : Bsb_build_ui.file_group) -> 
+      str x.dir 
+      ) res.files )
+    
+     ) in 
+  Ext_json_noloc.to_channel ochan v ;
+  close_out ochan
+end
 module Bsb_config_parse : sig 
 #1 "bsb_config_parse.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -8468,7 +8741,7 @@ let parse_entries (field : Ext_json_types.t array) =
     | _ -> failwith "Unrecognized object inside array 'entries' field.") 
   field
 
-let sourcedirs_meta = ".sourcedirs"
+
 
 let package_specs_from_bsconfig () = 
   let json = Ext_json_parse.parse_json_from_file Literals.bsconfig_json in
@@ -8491,17 +8764,6 @@ let package_specs_from_bsconfig () =
 (*TODO: it is a little mess that [cwd] and [project dir] are shared*)
 
 
-
-
-
-let generate_sourcedirs_meta cwd (res : Bsb_build_ui.t) = 
-  let ochan = open_out_bin (cwd // Bsb_config.lib_bs // sourcedirs_meta) in
-  res.files |> List.iter
-    (fun (x : Bsb_build_ui.file_group) ->
-       output_string ochan x.dir; (* to [.sourcedirs] *)
-       output_string ochan "\n" ;
-    ) ;
-  close_out ochan
 
 
 (** ATT: make sure such function is re-entrant. 
@@ -8626,7 +8888,7 @@ let interpret_json
         let res = Bsb_build_ui.parsing_sources {no_dev; dir_index =
             Bsb_build_ui.lib_dir_index; cwd = Filename.current_dir_name; root = cwd}  x in 
         if generate_watch_metadata then
-          generate_sourcedirs_meta cwd res ;     
+          Bsb_watcher_gen.generate_sourcedirs_meta cwd res ;     
         begin match List.sort Ext_file_pp.interval_compare  res.intervals with
           | [] -> ()
           | queue ->
@@ -11276,10 +11538,16 @@ let clean_bs_deps () =
 let clean_self () = clean_bs_garbage cwd
 
 
-(** Regenerate ninja file and return None if we dont need regenerate
-    otherwise return some info
+(** Regenerate ninja file if necessary   
+    return None if we dont need regenerate
+    otherwise return Some info
 *)
-let regenerate_ninja ~no_dev ~override_package_specs ~generate_watch_metadata cwd bsc_dir ~forced =
+let regenerate_ninja 
+    ~no_dev 
+    ~override_package_specs
+    ~generate_watch_metadata 
+    ~forced cwd bsc_dir
+  : _ option =
   let output_deps = cwd // Bsb_config.lib_bs // bsdeps in
   let reason : Bsb_dep_infos.check_result =
     Bsb_dep_infos.check ~cwd  forced output_deps in
@@ -11288,7 +11556,7 @@ let regenerate_ninja ~no_dev ~override_package_specs ~generate_watch_metadata cw
       "@{<info>BSB check@} build spec : %a @." Bsb_dep_infos.pp_check_result reason in 
   begin match reason  with 
     | Good ->
-      None  (* Fast path *)
+      None  (* Fast path, no need regenerate ninja *)
     | Bsb_forced 
     | Bsb_bsc_version_mismatch 
     | Bsb_file_not_exist 
@@ -11467,7 +11735,7 @@ let () =
   let bsc_dir = Bsb_build_util.get_bsc_dir cwd in
   let vendor_ninja = bsc_dir // "ninja.exe" in  
   match Sys.argv with 
-  | [| _ |] ->  (* specialize this path [ninja] which is used in watcher *)
+  | [| _ |] ->  (* specialize this path [bsb.exe] which is used in watcher *)
     begin
       let _config_opt =  
         regenerate_ninja ~override_package_specs:None ~no_dev:false 

@@ -79,7 +79,7 @@ let parse_entries (field : Ext_json_types.t array) =
     | _ -> failwith "Unrecognized object inside array 'entries' field.") 
   field
 
-let sourcedirs_meta = ".sourcedirs"
+
 
 let package_specs_from_bsconfig () = 
   let json = Ext_json_parse.parse_json_from_file Literals.bsconfig_json in
@@ -102,17 +102,6 @@ let package_specs_from_bsconfig () =
 (*TODO: it is a little mess that [cwd] and [project dir] are shared*)
 
 
-
-
-
-let generate_sourcedirs_meta cwd (res : Bsb_build_ui.t) = 
-  let ochan = open_out_bin (cwd // Bsb_config.lib_bs // sourcedirs_meta) in
-  res.files |> List.iter
-    (fun (x : Bsb_build_ui.file_group) ->
-       output_string ochan x.dir; (* to [.sourcedirs] *)
-       output_string ochan "\n" ;
-    ) ;
-  close_out ochan
 
 
 (** ATT: make sure such function is re-entrant. 
@@ -237,7 +226,7 @@ let interpret_json
         let res = Bsb_build_ui.parsing_sources {no_dev; dir_index =
             Bsb_build_ui.lib_dir_index; cwd = Filename.current_dir_name; root = cwd}  x in 
         if generate_watch_metadata then
-          generate_sourcedirs_meta cwd res ;     
+          Bsb_watcher_gen.generate_sourcedirs_meta cwd res ;     
         begin match List.sort Ext_file_pp.interval_compare  res.intervals with
           | [] -> ()
           | queue ->

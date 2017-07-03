@@ -149,10 +149,16 @@ let clean_bs_deps () =
 let clean_self () = clean_bs_garbage cwd
 
 
-(** Regenerate ninja file and return None if we dont need regenerate
-    otherwise return some info
+(** Regenerate ninja file if necessary   
+    return None if we dont need regenerate
+    otherwise return Some info
 *)
-let regenerate_ninja ~no_dev ~override_package_specs ~generate_watch_metadata cwd bsc_dir ~forced =
+let regenerate_ninja 
+    ~no_dev 
+    ~override_package_specs
+    ~generate_watch_metadata 
+    ~forced cwd bsc_dir
+  : _ option =
   let output_deps = cwd // Bsb_config.lib_bs // bsdeps in
   let reason : Bsb_dep_infos.check_result =
     Bsb_dep_infos.check ~cwd  forced output_deps in
@@ -161,7 +167,7 @@ let regenerate_ninja ~no_dev ~override_package_specs ~generate_watch_metadata cw
       "@{<info>BSB check@} build spec : %a @." Bsb_dep_infos.pp_check_result reason in 
   begin match reason  with 
     | Good ->
-      None  (* Fast path *)
+      None  (* Fast path, no need regenerate ninja *)
     | Bsb_forced 
     | Bsb_bsc_version_mismatch 
     | Bsb_file_not_exist 
@@ -340,7 +346,7 @@ let () =
   let bsc_dir = Bsb_build_util.get_bsc_dir cwd in
   let vendor_ninja = bsc_dir // "ninja.exe" in  
   match Sys.argv with 
-  | [| _ |] ->  (* specialize this path [ninja] which is used in watcher *)
+  | [| _ |] ->  (* specialize this path [bsb.exe] which is used in watcher *)
     begin
       let _config_opt =  
         regenerate_ninja ~override_package_specs:None ~no_dev:false 

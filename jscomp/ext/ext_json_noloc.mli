@@ -1,4 +1,4 @@
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+(* Copyright (C) 2017- Authors of BuckleScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -23,7 +23,17 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-(*val to_string : Ext_json_types.t -> string 
+type t 
+
+val true_  : t 
+val false_ : t 
+val null : t 
+val str : string -> t 
+val flo : string -> t 
+val arr : t array -> t 
+val obj : t String_map.t -> t 
+val equal : t -> t -> bool 
+val to_string : t -> string 
 
 
-val to_channel : out_channel -> Ext_json_types.t -> unit*)
+val to_channel : out_channel -> t -> unit

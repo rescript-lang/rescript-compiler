@@ -206,6 +206,7 @@ EXT_SRCS = ext_util\
 	ext_io\
 	ext_sexp\
 	ext_json_types\
+	ext_json_noloc\
 	ext_json_parse\
 	ext_json_write\
 	ext_json\
@@ -296,6 +297,7 @@ BSB_SRCS= bsb_config \
 	bsb_build_ui \
 	bsb_default\
 	bsb_dep_infos\
+	bsb_watcher_gen\
 	bsb_merlin_gen\
 	bsb_gen\
 	bsb_file\

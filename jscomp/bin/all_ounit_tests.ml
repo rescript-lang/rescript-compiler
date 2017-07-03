@@ -8853,6 +8853,200 @@ let rec equal
 
 
 end
+module Ext_json_noloc : sig 
+#1 "ext_json_noloc.mli"
+(* Copyright (C) 2017- Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type t 
+
+val true_  : t 
+val false_ : t 
+val null : t 
+val str : string -> t 
+val flo : string -> t 
+val arr : t array -> t 
+val obj : t String_map.t -> t 
+val equal : t -> t -> bool 
+val to_string : t -> string 
+
+
+val to_channel : out_channel -> t -> unit
+end = struct
+#1 "ext_json_noloc.ml"
+(* Copyright (C) 2017- Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type t = 
+  | True 
+  | False 
+  | Null 
+  | Flo of string 
+  | Str of string
+  | Arr of t array 
+  | Obj of t String_map.t
+
+
+(** poor man's serialization *)
+
+let quot x = 
+    "\"" ^ String.escaped x ^ "\""
+
+let true_ = True
+let false_ = False
+let null = Null 
+let str s  = Str s 
+let flo s = Flo s 
+let arr s = Arr s 
+let obj s = Obj s 
+
+let rec equal 
+    (x : t)
+    (y : t) = 
+  match x with 
+  | Null  -> (* [%p? Null _ ] *)
+    begin match y with
+      | Null  -> true
+      | _ -> false end
+  | Str str  -> 
+    begin match y with 
+      | Str str2 -> str = str2
+      | _ -> false end
+  | Flo flo 
+    ->
+    begin match y with
+      |  Flo flo2 -> 
+        flo = flo2 
+      | _ -> false
+    end
+  | True  -> 
+    begin match y with 
+      | True  -> true 
+      | _ -> false 
+    end
+  | False  -> 
+    begin match y with 
+      | False  -> true 
+      | _ -> false 
+    end     
+  | Arr content 
+    -> 
+    begin match y with 
+      | Arr content2
+        ->
+        Ext_array.for_all2_no_exn equal content content2
+      | _ -> false 
+    end
+
+  | Obj map -> 
+    begin match y with 
+      | Obj map2 -> 
+        String_map.equal equal map map2
+      | _ -> false 
+    end 
+
+let rec encode_aux (x : t ) 
+    (buf : Buffer.t) : unit =  
+  let a str = Buffer.add_string buf str in 
+  match x with 
+  | Null  -> a "null"
+  | Str s   -> a (quot s)
+  | Flo  s -> 
+    a s (* 
+    since our parsing keep the original float representation, we just dump it as is, there is no cases like [nan] *)
+  | Arr  content -> 
+    begin match content with 
+      | [||] -> a "[]"
+      | _ -> 
+        a "[ ";
+        encode_aux
+          (Array.unsafe_get content 0)
+          buf ; 
+        for i = 1 to Array.length content - 1 do 
+          a " , ";
+          encode_aux 
+            (Array.unsafe_get content i)
+            buf
+        done;    
+        a " ]"
+    end
+  | True  -> a "true"
+  | False  -> a "false"
+  | Obj map -> 
+    if String_map.is_empty map then 
+      a "{}"
+    else 
+      begin  
+        (*prerr_endline "WEIRD";
+        prerr_endline (string_of_int @@ String_map.cardinal map );   *)
+        a "{ ";
+        let _ : int =  String_map.fold (fun  k v i -> 
+            if i <> 0 then begin
+              a " , " 
+            end; 
+            a (quot k);
+            a " : ";
+            encode_aux v buf ;
+            i + 1 
+          ) map 0 in 
+          a " }"
+      end
+
+
+let to_string x  = 
+    let buf = Buffer.create 1024 in 
+    encode_aux x buf ;
+    Buffer.contents buf 
+
+let to_channel (oc : out_channel) x  = 
+    let buf = Buffer.create 1024 in 
+    encode_aux x buf ;
+    Buffer.output_buffer oc buf   
+end
 module Ext_json_parse : sig 
 #1 "ext_json_parse.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -9590,127 +9784,6 @@ let parse_json_from_file s =
 # 694 "ext/ext_json_parse.ml"
 
 end
-module Ext_json_write : sig 
-#1 "ext_json_write.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-val to_string : Ext_json_types.t -> string 
-
-
-val to_channel : out_channel -> Ext_json_types.t -> unit
-end = struct
-#1 "ext_json_write.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-(** poor man's serialization *)
-
-let quot x = 
-    "\"" ^ String.escaped x ^ "\""
-
-let rec encode_aux (x : Ext_json_types.t ) 
-    (buf : Buffer.t) : unit =  
-  let a str = Buffer.add_string buf str in 
-  match x with 
-  | Null _ -> a "null"
-  | Str {str = s }  -> a (quot s)
-  | Flo {flo = s} -> 
-    a s (* 
-    since our parsing keep the original float representation, we just dump it as is, there is no cases like [nan] *)
-  | Arr  {content} -> 
-    begin match content with 
-      | [||] -> a "[]"
-      | _ -> 
-        a "[ ";
-        encode_aux
-          (Array.unsafe_get content 0)
-          buf ; 
-        for i = 1 to Array.length content - 1 do 
-          a " , ";
-          encode_aux 
-            (Array.unsafe_get content i)
-            buf
-        done;    
-        a " ]"
-    end
-  | True _ -> a "true"
-  | False _ -> a "false"
-  | Obj {map} -> 
-    if String_map.is_empty map then 
-      a "{}"
-    else 
-      begin  
-        (*prerr_endline "WEIRD";
-        prerr_endline (string_of_int @@ String_map.cardinal map );   *)
-        a "{ ";
-        let _ : int =  String_map.fold (fun  k v i -> 
-            if i <> 0 then begin
-              a " , " 
-            end; 
-            a (quot k);
-            a " : ";
-            encode_aux v buf ;
-            i + 1 
-          ) map 0 in 
-          a " }"
-      end
-
-
-let to_string (x : Ext_json_types.t) = 
-    let buf = Buffer.create 1024 in 
-    encode_aux x buf ;
-    Buffer.contents buf 
-
-let to_channel (oc : out_channel) x  = 
-    let buf = Buffer.create 1024 in 
-    encode_aux x buf ;
-    Buffer.output_buffer oc buf 
-
-end
 module Ext_pervasives : sig 
 #1 "ext_pervasives.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -9955,13 +10028,28 @@ open Ext_json_parse
 let (|?)  m (key, cb) =
   m  |> Ext_json.test key cb 
 
+let rec strip (x : Ext_json_types.t) : Ext_json_noloc.t = 
+  let open Ext_json_noloc in 
+  match x with 
+  | True _ -> true_
+  | False _ -> false_
+  | Null _ -> null
+  | Flo {flo = s} -> flo s 
+  | Str {str = s} -> str s 
+  | Arr {content } -> arr (Array.map strip content)
+  | Obj {map} -> 
+    obj (String_map.map strip map)
+
 let id_parsing_serializing x = 
   let normal_s = 
-    Ext_json_write.to_string ( Ext_json_parse.parse_json_from_string x  )
+    Ext_json_noloc.to_string 
+      @@ strip 
+      @@ Ext_json_parse.parse_json_from_string x  
   in 
   let normal_ss = 
-    Ext_json_write.to_string 
-      (Ext_json_parse.parse_json_from_string normal_s) 
+    Ext_json_noloc.to_string 
+    @@ strip 
+    @@ Ext_json_parse.parse_json_from_string normal_s
   in 
   if normal_s <> normal_ss then 
     begin 
@@ -9972,10 +10060,10 @@ let id_parsing_serializing x =
   OUnit.assert_equal ~cmp:(fun (x:string) y -> x = y) normal_s normal_ss
 
 let id_parsing_x2 x = 
-  let stru = Ext_json_parse.parse_json_from_string x in 
-  let normal_s = Ext_json_write.to_string stru in 
-  let normal_ss = (Ext_json_parse.parse_json_from_string normal_s) in 
-  if Ext_json.equal stru normal_ss then 
+  let stru = Ext_json_parse.parse_json_from_string x |> strip in 
+  let normal_s = Ext_json_noloc.to_string stru in 
+  let normal_ss = strip (Ext_json_parse.parse_json_from_string normal_s) in 
+  if Ext_json_noloc.equal stru normal_ss then 
     true
   else begin 
     prerr_endline "ERROR";
@@ -9983,7 +10071,7 @@ let id_parsing_x2 x =
     Format.fprintf Format.err_formatter 
     "%a@.%a@." Ext_pervasives.pp_any stru Ext_pervasives.pp_any normal_ss; 
     
-    prerr_endline (Ext_json_write.to_string normal_ss);
+    prerr_endline (Ext_json_noloc.to_string normal_ss);
     false
   end  
 
