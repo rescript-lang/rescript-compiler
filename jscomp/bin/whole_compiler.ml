@@ -96815,7 +96815,8 @@ and
                 begin
                   match Js_exp_make.extract_non_pure out1 ,
                         Js_exp_make.extract_non_pure out2 with
-                  | None, None -> Js_output.make b
+                  | None, None -> Js_output.make (b @ [ S.exp e]) 
+                    (* FIX #1762 *)
                   | Some out1, Some out2 -> 
                     Js_output.make b  ~value:(E.econd e  out1 out2)
                   | Some out1, None -> 
