@@ -2,7 +2,7 @@ let component = ReasonReact.statelessComponent "PageReason";
 
 let make ::message ::extraGreeting=? _children => {
   ...component,
-  render: fun () _self => {
+  render: fun _self => {
     let greeting =
       switch extraGreeting {
       | None => "How are you?"
