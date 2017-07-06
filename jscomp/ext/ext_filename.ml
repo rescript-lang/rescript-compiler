@@ -398,6 +398,7 @@ let normalize_absolute_path x =
       idxs
   in
   ans' |> fst |> Bytes.unsafe_to_string
+  |> fun x -> if String.length x = 0 then Filename.dir_sep else x
 
 let get_extension x =
   let pos = Ext_string.rindex_neg x '.' in
