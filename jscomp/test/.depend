@@ -236,7 +236,7 @@ gpr_1717_test.cmj :
 gpr_1728_test.cmj : mt.cmj
 gpr_1749_test.cmj : mt.cmj
 gpr_1759_test.cmj :
-gpr_1760_test.cmj :
+gpr_1760_test.cmj : mt.cmj ../stdlib/int64.cmj ../stdlib/int32.cmj
 gpr_1762_test.cmj : mt.cmj
 gpr_405_test.cmj : ../stdlib/hashtbl.cmj gpr_405_test.cmi
 gpr_441.cmj :

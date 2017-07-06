@@ -25,7 +25,14 @@
 
 
 
-
+(**used in effect analysis, it is sound but not-complete *)
+let not_zero_constant ( x : Lam.constant) =  
+  match x with 
+  | Const_int i  -> i <> 0
+  | Const_int32 i  -> i <> 0l
+  | Const_int64 i  -> i <> 0L
+  | Const_nativeint i -> i <> 0n
+  | _ -> false 
 
 let rec no_side_effects (lam : Lam.t) : bool = 
   match lam with 
@@ -67,6 +74,15 @@ let rec no_side_effects (lam : Lam.t) : bool =
            *)
           | _ , _-> false
         end 
+      | Pmodint
+      | Pdivint 
+      | Pdivbint _
+      | Pmodbint _ 
+        -> begin match args with 
+          | [_ ; Lconst cst ] -> not_zero_constant cst 
+          | _ -> false 
+        end
+      
       | Pcreate_extension _
       (* | Pcreate_exception _ *)
       | Pjs_boolean_to_bool
@@ -90,14 +106,16 @@ let rec no_side_effects (lam : Lam.t) : bool =
       (* Boolean operations *)
       | Psequand | Psequor | Pnot
       (* Integer operations *)
-      | Pnegint | Paddint | Psubint | Pmulint | Pdivint | Pmodint
+      | Pnegint | Paddint | Psubint | Pmulint 
+     
       | Pandint | Porint | Pxorint
       | Plslint | Plsrint | Pasrint
       | Pintcomp _ 
       (* Float operations *)
       | Pintoffloat | Pfloatofint
       | Pnegfloat | Pabsfloat
-      | Paddfloat | Psubfloat | Pmulfloat | Pdivfloat
+      | Paddfloat | Psubfloat | Pmulfloat 
+      | Pdivfloat
       | Pfloatcomp _ 
       | Pjscomp _
       (* String operations *)
@@ -122,8 +140,6 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Paddbint _
       | Psubbint _
       | Pmulbint _
-      | Pdivbint _
-      | Pmodbint _
       | Pandbint _
       | Porbint _
       | Pxorbint _

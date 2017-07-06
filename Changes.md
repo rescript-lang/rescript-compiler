@@ -1,6 +1,7 @@
 # 1.8.1
 Fixes:
-- #1762
+- #1762, discard effectful unused code
+- #1760, div by zero effect analysis
 
 # 1.8.0
 Fixes:
