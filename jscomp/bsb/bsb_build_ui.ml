@@ -56,7 +56,7 @@ type  file_group =
     public : public ;
     dir_index : dir_index ;
     generators : build_generator list ; 
-    (** output of [generators] should be added to [sources],
+    (* output of [generators] should be added to [sources],
       if it is [.ml,.mli,.re,.rei]
     *)
   } 
@@ -111,7 +111,8 @@ type parsing_cxt = {
   no_dev : bool ;
   dir_index : dir_index ; 
   cwd : string ;
-  root : string
+  root : string;
+  cut_generators : bool
 }
 
 let  handle_list_files acc
@@ -157,6 +158,29 @@ let (++) (u : t)  (v : t)  =
       globbed_dirs = u.globbed_dirs @ v.globbed_dirs ; 
     }
 
+let get_input_output loc_start (content : Ext_json_types.t array) : string list * string list = 
+  let error () = 
+    Bsb_exception.failf ~loc:loc_start {| invalid edge format, expect  ["output" , ":", "input" ]|}
+  in  
+  match Ext_array.find_and_split content 
+          (fun x () -> match x with Str { str =":"} -> true | _ -> false )
+          () with 
+  | `No_split -> error ()
+  | `Split (  output, input) -> 
+    Ext_array.to_list_map (fun (x : Ext_json_types.t) -> 
+        match x with
+        | Str {str = ":"} -> 
+          error ()
+        | Str {str } ->           
+          Some str 
+        | _ -> None) output ,
+    Ext_array.to_list_map (fun (x : Ext_json_types.t) -> 
+        match x with
+        | Str {str = ":"} -> 
+          error () 
+        | Str {str} -> 
+            Some str (* More rigirous error checking: It would trigger a ninja syntax error *)
+        | _ -> None) input
 
 (** [dir_index] can be inherited  *)
 let rec 
@@ -196,7 +220,7 @@ and parsing_source ({no_dev; dir_index ; cwd} as cxt ) (x : Ext_json_types.t )
   | _ -> empty 
 
 and parsing_source_dir_map 
-    ({ cwd =  dir} as cxt )
+    ({ cwd =  dir; no_dev; cut_generators } as cxt )
     (x : Ext_json_types.t String_map.t)
     (* { dir : xx, files : ... } [dir] is already extracted *)
   = 
@@ -206,36 +230,43 @@ and parsing_source_dir_map
   let cur_update_queue = ref [] in 
   let cur_globbed_dirs = ref [] in 
   let generators : build_generator list ref  = ref [] in
-  (* begin match String_map.find_opt Bsb_build_schemas.generators x with  *)
-  (* | Some (Arr { content }) ->  *)
-  (*   (\* TODO: need check is dev build or not *\) *)
-  (*   content |> Array.iter (fun (x : Ext_json_types.t) -> *)
-  (*     match x with  *)
-  (*     | Obj { map = generator; loc} ->  *)
-  (*       begin match String_map.find_opt Bsb_build_schemas.input generator, *)
-  (*         String_map.find_opt Bsb_build_schemas.output generator,  *)
-  (*         String_map.find_opt Bsb_build_schemas.cmd generator *)
-  (*        with  *)
-  (*        | Some (Str{str = input}), Some (Str {str = output}), Some (Str {str = cmd})->   *)
-  (*         generators := {input ; output ; cmd } :: !generators; *)
-  (*         (\** Now adding source files, it may be re-added again later when scanning files *)
-  (*          *\) *)
-  (*          begin match Ext_string.is_valid_source_name output with *)
-  (*          | Good -> *)
-  (*            cur_sources := Binary_cache.map_update ~dir !cur_sources output *)
-  (*          | Invalid_module_name ->  *)
-  (*             () *)
-  (*             (\*Format.fprintf Format.err_formatter warning_unused_file output dir *\) *)
-  (*          | Suffix_mismatch -> () *)
-  (*          end *)
-  (*        | _ ->  *)
-  (*         Bsb_exception.failf ~loc "Invalid generator format" *)
-  (*        end *)
-  (*     | _ -> () *)
-  (*      ) *)
-  (* | Some _ | None -> () *)
-  (* end *)
-  (* ; *)
+  begin match String_map.find_opt Bsb_build_schemas.generators x with
+  | Some (Arr { content ; loc_start}) ->
+    (* Need check is dev build or not *)
+    content 
+    |> Array.iter (fun (x : Ext_json_types.t) ->
+      match x with
+      | Obj { map = generator; loc} ->
+        begin match String_map.find_opt Bsb_build_schemas.name generator,
+          String_map.find_opt Bsb_build_schemas.edge generator
+         with
+         | Some (Str{str = command}), Some (Arr {content })->
+
+           let output, input = get_input_output loc_start content in 
+           if not cut_generators && not no_dev then begin 
+             generators := {input ; output ; command } :: !generators
+           end;
+          (* ATTENTION: Now adding source files, it may be re-added again later when scanning files (not explicit files input)
+           *)
+           output |> List.iter begin fun  output -> 
+             begin match Ext_string.is_valid_source_name output with
+               | Good ->
+                 cur_sources := Binary_cache.map_update ~dir !cur_sources output
+               | Invalid_module_name ->
+                 ()
+               (*Format.fprintf Format.err_formatter warning_unused_file output dir *)
+               | Suffix_mismatch -> ()
+             end
+           end
+         | _ ->
+          Bsb_exception.failf ~loc "Invalid generator format"
+         end
+      | _ -> Bsb_exception.failf ~loc:(Ext_json.loc_of x) "Invalid generator format"
+       )
+  | Some x  -> Bsb_exception.failf ~loc:(Ext_json.loc_of x ) "Invalid generators format"
+  | None -> ()
+  end
+  ;
   begin match String_map.find_opt Bsb_build_schemas.files x with 
     | Some (Arr {loc_start;loc_end; content = [||] }) -> (* [ ] *) 
       let tasks, files =  handle_list_files !cur_sources cxt  loc_start loc_end in

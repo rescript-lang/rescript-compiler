@@ -2164,7 +2164,8 @@ let is_valid_source_name name : check_result =
   match check_any_suffix_case_then_chop name [
       ".ml"; 
       ".re";
-      ".mli"; ".mll"; ".rei"
+      ".mli"; 
+      ".rei"
     ] with 
   | None -> Suffix_mismatch
   | Some x -> 
@@ -8889,6 +8890,7 @@ val str : string -> t
 val flo : string -> t 
 val arr : t array -> t 
 val obj : t String_map.t -> t 
+val kvs : (string * t) list -> t 
 val equal : t -> t -> bool 
 val to_string : t -> string 
 
@@ -8943,7 +8945,9 @@ let str s  = Str s
 let flo s = Flo s 
 let arr s = Arr s 
 let obj s = Obj s 
-
+let kvs s = 
+  Obj (String_map.of_list s)
+  
 let rec equal 
     (x : t)
     (y : t) = 
@@ -13575,7 +13579,7 @@ let suites =
     __LOC__ >:: begin fun _ -> 
       OUnit.assert_bool __LOC__ @@
       List.for_all (fun x -> Ext_string.is_valid_source_name x = Good)
-        ["x.ml"; "x.mli"; "x.re"; "x.rei"; "x.mll"; 
+        ["x.ml"; "x.mli"; "x.re"; "x.rei"; 
          "A_x.ml"; "ab.ml"; "a_.ml"; "a__.ml";
          "ax.ml"];
       OUnit.assert_bool __LOC__ @@ not @@

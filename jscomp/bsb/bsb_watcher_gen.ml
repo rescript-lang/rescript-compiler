@@ -31,10 +31,16 @@ let generate_sourcedirs_meta cwd (res : Bsb_build_ui.t) =
   let ochan = open_out_bin (cwd // Bsb_config.lib_bs // sourcedirs_meta) in
   let v = 
     Ext_json_noloc.(
+      kvs [
+        "dirs" ,
       arr (Ext_array.of_list_map ( fun (x : Bsb_build_ui.file_group) -> 
       str x.dir 
-      ) res.files )
-    
+      ) res.files ) ;
+      "generated" ,
+      arr @@ Array.of_list @@ List.fold_left (fun acc (x : Bsb_build_ui.file_group) -> 
+      Ext_list.flat_map_acc (fun x -> List.map str x.Bsb_build_ui.output) acc  x.generators 
+      )  [] res.files 
+      ]
      ) in 
   Ext_json_noloc.to_channel ochan v ;
   close_out ochan

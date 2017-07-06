@@ -37,8 +37,12 @@ function acquireBuild(){
         return true
     }
 }
-var sourcedirs = path.join('lib', 'bs', ".sourcedirs.json")
-function watch_build(watch_files) {
+var sourcedirs = path.join('lib', 'bs', '.sourcedirs.json')
+var watch_generated  = []
+
+function watch_build(watch_config) {
+    var watch_files = watch_config.dirs 
+    watch_generated = watch_config.generated
     // close and remove all unused watchers
     watchers = watchers.filter(function(watcher){
         if(watcher.dir === bsconfig){
@@ -78,7 +82,10 @@ function validEvent(eventType,fileName){
     if (!fileName)
         return true;
 
-    return  !(fileName === '.merlin' ||  fileName.endsWith('.js'))
+    return  !(fileName === '.merlin' ||  
+        fileName.endsWith('.js') ||
+        watch_generated.indexOf(fileName) >= 0
+    )
 }
 /**
  * @return {boolean}
@@ -125,13 +132,13 @@ function getWatchFiles(file) {
     if (fs.existsSync(file)){
         return JSON.parse(fs.readFileSync(file, 'utf8'))
     } else {
-        return []
+        return { dirs : [], generated : []}
     }
 
 }
 
 
-// Initialization, watch `bsconfig.json`
-watchers.push({watcher : fs.watch(bsconfig,on_change) , dir : bsconfig});
+// Initialization
 
+watchers.push({watcher : fs.watch(bsconfig,on_change) , dir : bsconfig});
 build();

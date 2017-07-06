@@ -59,4 +59,6 @@ type t =
     generate_merlin : bool ; 
     reason_react_jsx : reason_react_jsx ; (* whether apply PPX transform or not*)
     entries : entries_t list ;
+    generators : string String_map.t ; 
+    cut_generators : bool; (* note when used as a dev mode, we will always ignore it *)
   }

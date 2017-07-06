@@ -45,7 +45,9 @@ let str s  = Str s
 let flo s = Flo s 
 let arr s = Arr s 
 let obj s = Obj s 
-
+let kvs s = 
+  Obj (String_map.of_list s)
+  
 let rec equal 
     (x : t)
     (y : t) = 

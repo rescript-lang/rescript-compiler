@@ -569,11 +569,8 @@ function is_valid_source_name(name) {
           /* :: */[
             ".mli",
             /* :: */[
-              ".mll",
-              /* :: */[
-                ".rei",
-                /* [] */0
-              ]
+              ".rei",
+              /* [] */0
             ]
           ]
         ]
