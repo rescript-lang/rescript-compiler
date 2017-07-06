@@ -28,4 +28,5 @@
 val output_ninja :
   cwd:string ->
   bsc_dir:string ->  
+  no_dev:bool ->
   Bsb_config_types.t -> unit 

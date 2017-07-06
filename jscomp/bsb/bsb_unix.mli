@@ -26,7 +26,8 @@ type command =
   { 
     cmd : string ;
     cwd : string ; 
-    args : string array 
+    args : string array;
+    env : string array;
   }  
 
 
