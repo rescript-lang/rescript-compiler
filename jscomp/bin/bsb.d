@@ -60,6 +60,7 @@ bin/bsb.ml : ext/hash_set_gen.ml
 bin/bsb.ml : ext/resize_array.ml
 bin/bsb.ml : bsb/bsb_build_ui.mli
 bin/bsb.ml : bsb/bsb_dep_infos.ml
+bin/bsb.ml : bsb/bsb_dir_index.ml
 bin/bsb.ml : bsb/bsb_exception.ml
 bin/bsb.ml : bsb/bsb_templates.ml
 bin/bsb.ml : common/bs_version.ml
@@ -68,6 +69,7 @@ bin/bsb.ml : ext/ext_position.mli
 bin/bsb.ml : ext/resize_array.mli
 bin/bsb.ml : bsb/bsb_build_util.ml
 bin/bsb.ml : bsb/bsb_dep_infos.mli
+bin/bsb.ml : bsb/bsb_dir_index.mli
 bin/bsb.ml : bsb/bsb_exception.mli
 bin/bsb.ml : bsb/bsb_merlin_gen.ml
 bin/bsb.ml : bsb/bsb_templates.mli

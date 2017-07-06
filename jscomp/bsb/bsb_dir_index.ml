@@ -22,55 +22,19 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type t = int 
 
-let files = "files"
-let version = "version"
-let name = "name"
-(* let ocaml_config = "ocaml-config" *)
-let bsdep = "bsdep"
-let ppx_flags = "ppx-flags"
+(** 
+   0 : lib 
+   1 : dev 1 
+   2 : dev 2 
+*)  
 
-let bsc = "bsc"
-let refmt = "refmt"
-let refmt_flags = "refmt-flags"
-let bs_external_includes = "bs-external-includes"
-let bs_lib_dir = "bs-lib-dir"
-let bs_dependencies = "bs-dependencies"
-let bs_dev_dependencies = "bs-dev-dependencies"
-let bs_copy_or_symlink = "bs-copy-or-symlink"
-let sources = "sources"
-let dir = "dir"
-let files = "files"
-let subdirs = "subdirs"
-let ocamllex = "ocamllex"
-let bsc_flags = "bsc-flags"
-let excludes = "excludes"
-let slow_re = "slow-re"
-let resources = "resources"
-let public = "public"
-let js_post_build = "js-post-build"
-let cmd = "cmd"
-let ninja = "ninja"
-let package_specs = "package-specs"
+let lib_dir_index = 0
 
-let generate_merlin = "generate-merlin"
+let is_lib_dir x = x = lib_dir_index
 
-let type_ = "type"
-let dev = "dev"
-
-let export_all = "all"
-let export_none = "none"
-
-let bsb_dir_group = "bsb_dir_group"
-let bsc_lib_includes = "bsc_lib_includes"
-let use_stdlib = "use-stdlib"
-let reason = "reason"
-let react_jsx = "react-jsx"
-
-let entries = "entries"
-let kind = "kind"
-let main = "main"
-let cut_generators = "cut-generators"
-let generators = "generators"
-let command = "command"
-let edge = "edge"
+let get_dev_index, get_current_number_of_dev_groups =
+  let dir_index = ref 0 in 
+  ((fun () -> incr dir_index ; !dir_index),
+   (fun () -> !dir_index ))

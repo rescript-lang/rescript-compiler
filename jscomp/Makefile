@@ -287,6 +287,7 @@ OTHER_CORE_SRCS= bsppx_main bspack_main jsoo_main  bspp_main js_cmi_datasets \
 OTHER_CORE_CMXS= $(addprefix core/, $(addsuffix .cmx, $(OTHER_CORE_SRCS)))
 BSB_SRCS= bsb_config \
 	bsb_exception\
+	bsb_dir_index\
 	bsb_pkg \
 	bsb_build_schemas \
 	bsb_build_util \

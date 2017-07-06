@@ -1,6 +1,31 @@
 module Bsb_build_schemas
 = struct
 #1 "bsb_build_schemas.ml"
+(* Copyright (C) 2017 Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
 let files = "files"
 let version = "version"
 let name = "name"
@@ -6608,6 +6633,86 @@ let map_update ?dir (map : file_group_rouces)  name : file_group_rouces  =
     map
 
 end
+module Bsb_dir_index : sig 
+#1 "bsb_dir_index.mli"
+(* Copyright (C) 2017 Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type t = int
+
+val lib_dir_index : t 
+
+val is_lib_dir : t -> bool 
+
+val get_dev_index : unit -> t 
+
+val get_current_number_of_dev_groups : unit -> int 
+end = struct
+#1 "bsb_dir_index.ml"
+(* Copyright (C) 2017 Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type t = int 
+
+(** 
+   0 : lib 
+   1 : dev 1 
+   2 : dev 2 
+*)  
+
+let lib_dir_index = 0
+
+let is_lib_dir x = x = lib_dir_index
+
+let get_dev_index, get_current_number_of_dev_groups =
+  let dir_index = ref 0 in 
+  ((fun () -> incr dir_index ; !dir_index),
+   (fun () -> !dir_index ))
+
+end
 module Ext_file_pp : sig 
 #1 "ext_file_pp.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -7471,7 +7576,7 @@ type public =
   | Export_set of String_set.t 
   | Export_none
     
-type dir_index = int 
+
 
 type build_generator = 
   { input : string list ;
@@ -7483,7 +7588,7 @@ type  file_group =
     sources : Binary_cache.file_group_rouces ; 
     resources : string list ; (* relative path *)
     public : public;
-    dir_index : dir_index; 
+    dir_index : Bsb_dir_index.t; 
     generators : build_generator list;
   } 
 
@@ -7496,13 +7601,13 @@ type t =
 
   }
 
-val lib_dir_index : dir_index 
 
-val get_current_number_of_dev_groups : unit -> int 
+
+
 
 type parsing_cxt = {
   no_dev : bool ;
-  dir_index : dir_index ; 
+  dir_index : Bsb_dir_index.t ; 
   cwd : string ;
   root : string ;
   cut_generators : bool
@@ -7557,30 +7662,18 @@ type public =
   | Export_set of String_set.t 
   | Export_none
 
-type dir_index = int 
-let lib_dir_index = 0
-
-let get_dev_index, get_current_number_of_dev_groups =
-  let dir_index = ref 0 in 
-  ((fun () -> incr dir_index ; !dir_index),
-   (fun _ -> !dir_index ))
-
 
 type build_generator = 
   { input : string list ;
     output : string list;
     command : string}
-(** 
-   0 : lib 
-   1 : dev 1 
-   2 : dev 2 
-*)  
+
 type  file_group = 
   { dir : string ;
     sources : Binary_cache.file_group_rouces; 
     resources : string list ;
     public : public ;
-    dir_index : dir_index ;
+    dir_index : Bsb_dir_index.t  ;
     generators : build_generator list ; 
     (* output of [generators] should be added to [sources],
       if it is [.ml,.mli,.re,.rei]
@@ -7635,7 +7728,7 @@ let warning_unused_file : _ format = "@{<warning>IGNORED@}: file %s under %s is 
 
 type parsing_cxt = {
   no_dev : bool ;
-  dir_index : dir_index ; 
+  dir_index : Bsb_dir_index.t ; 
   cwd : string ;
   root : string;
   cut_generators : bool
@@ -7711,7 +7804,7 @@ let get_input_output loc_start (content : Ext_json_types.t array) : string list 
 (** [dir_index] can be inherited  *)
 let rec 
   parsing_simple_dir ({no_dev; dir_index;  cwd} as cxt ) dir =
-  if no_dev && dir_index <> lib_dir_index then empty 
+  if no_dev && not (Bsb_dir_index.is_lib_dir dir_index)  then empty 
   else parsing_source_dir_map 
     {cxt with
      cwd = cwd // Ext_filename.simple_convert_node_path_to_os_path dir
@@ -7726,10 +7819,10 @@ and parsing_source ({no_dev; dir_index ; cwd} as cxt ) (x : Ext_json_types.t )
   | Obj {map} ->
     let current_dir_index = 
       match String_map.find_opt Bsb_build_schemas.type_ map with 
-      | Some (Str {str="dev"}) -> get_dev_index ()
+      | Some (Str {str="dev"}) -> Bsb_dir_index.get_dev_index ()
       | Some _ -> Bsb_exception.failwith_config x {|type field expect "dev" literal |}
       | None -> dir_index in 
-    if no_dev && current_dir_index <> lib_dir_index then empty 
+    if no_dev && not (Bsb_dir_index.is_lib_dir current_dir_index) then empty 
     else 
       let dir = 
         match String_map.find_opt Bsb_build_schemas.dir map with 
@@ -8945,7 +9038,7 @@ let interpret_json
         let res = Bsb_build_ui.parsing_sources 
             {no_dev; 
              dir_index =
-               Bsb_build_ui.lib_dir_index; cwd = Filename.current_dir_name; 
+               Bsb_dir_index.lib_dir_index; cwd = Filename.current_dir_name; 
              root = cwd; cut_generators = !cut_generators}  x in 
         if generate_watch_metadata then
           Bsb_watcher_gen.generate_sourcedirs_meta cwd res ;     
@@ -10097,7 +10190,7 @@ let output_ninja
           external_includes
     in 
     let  static_resources =
-      let number_of_dev_groups = Bsb_build_ui.get_current_number_of_dev_groups () in
+      let number_of_dev_groups = Bsb_dir_index.get_current_number_of_dev_groups () in
       if number_of_dev_groups = 0 then
         let bs_groups, source_dirs,static_resources  =
           List.fold_left (fun (acc, dirs,acc_resources) ({Bsb_build_ui.sources ; dir; resources }) ->

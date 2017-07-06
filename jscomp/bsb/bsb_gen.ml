@@ -126,7 +126,7 @@ let output_ninja
           external_includes
     in 
     let  static_resources =
-      let number_of_dev_groups = Bsb_build_ui.get_current_number_of_dev_groups () in
+      let number_of_dev_groups = Bsb_dir_index.get_current_number_of_dev_groups () in
       if number_of_dev_groups = 0 then
         let bs_groups, source_dirs,static_resources  =
           List.fold_left (fun (acc, dirs,acc_resources) ({Bsb_build_ui.sources ; dir; resources }) ->

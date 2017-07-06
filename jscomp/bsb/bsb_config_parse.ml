@@ -241,7 +241,7 @@ let interpret_json
         let res = Bsb_build_ui.parsing_sources 
             {no_dev; 
              dir_index =
-               Bsb_build_ui.lib_dir_index; cwd = Filename.current_dir_name; 
+               Bsb_dir_index.lib_dir_index; cwd = Filename.current_dir_name; 
              root = cwd; cut_generators = !cut_generators}  x in 
         if generate_watch_metadata then
           Bsb_watcher_gen.generate_sourcedirs_meta cwd res ;     

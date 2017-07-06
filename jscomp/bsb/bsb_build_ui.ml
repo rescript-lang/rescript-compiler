@@ -31,30 +31,18 @@ type public =
   | Export_set of String_set.t 
   | Export_none
 
-type dir_index = int 
-let lib_dir_index = 0
-
-let get_dev_index, get_current_number_of_dev_groups =
-  let dir_index = ref 0 in 
-  ((fun () -> incr dir_index ; !dir_index),
-   (fun _ -> !dir_index ))
-
 
 type build_generator = 
   { input : string list ;
     output : string list;
     command : string}
-(** 
-   0 : lib 
-   1 : dev 1 
-   2 : dev 2 
-*)  
+
 type  file_group = 
   { dir : string ;
     sources : Binary_cache.file_group_rouces; 
     resources : string list ;
     public : public ;
-    dir_index : dir_index ;
+    dir_index : Bsb_dir_index.t  ;
     generators : build_generator list ; 
     (* output of [generators] should be added to [sources],
       if it is [.ml,.mli,.re,.rei]
@@ -109,7 +97,7 @@ let warning_unused_file : _ format = "@{<warning>IGNORED@}: file %s under %s is 
 
 type parsing_cxt = {
   no_dev : bool ;
-  dir_index : dir_index ; 
+  dir_index : Bsb_dir_index.t ; 
   cwd : string ;
   root : string;
   cut_generators : bool
@@ -185,7 +173,7 @@ let get_input_output loc_start (content : Ext_json_types.t array) : string list 
 (** [dir_index] can be inherited  *)
 let rec 
   parsing_simple_dir ({no_dev; dir_index;  cwd} as cxt ) dir =
-  if no_dev && dir_index <> lib_dir_index then empty 
+  if no_dev && not (Bsb_dir_index.is_lib_dir dir_index)  then empty 
   else parsing_source_dir_map 
     {cxt with
      cwd = cwd // Ext_filename.simple_convert_node_path_to_os_path dir
@@ -200,10 +188,10 @@ and parsing_source ({no_dev; dir_index ; cwd} as cxt ) (x : Ext_json_types.t )
   | Obj {map} ->
     let current_dir_index = 
       match String_map.find_opt Bsb_build_schemas.type_ map with 
-      | Some (Str {str="dev"}) -> get_dev_index ()
+      | Some (Str {str="dev"}) -> Bsb_dir_index.get_dev_index ()
       | Some _ -> Bsb_exception.failwith_config x {|type field expect "dev" literal |}
       | None -> dir_index in 
-    if no_dev && current_dir_index <> lib_dir_index then empty 
+    if no_dev && not (Bsb_dir_index.is_lib_dir current_dir_index) then empty 
     else 
       let dir = 
         match String_map.find_opt Bsb_build_schemas.dir map with 
