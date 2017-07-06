@@ -1,0 +1,27 @@
+{
+  "name": "${bsb:name}",
+  "version": "${bsb:proj-version}",
+  "sources": [
+    {
+      "dir": "src",
+      "generators": [
+        {
+          "name": "cpp",
+          "edge": [
+            "test.ml", ":", "test.cpp.ml"
+          ]
+        }
+      ]
+    }
+    
+  ],
+  "generators": [
+    {
+      "name" : "cpp",
+      "command": "gcc -x c -P -traditional-cpp -C -E $in -o $out"
+    }
+  ],
+  "bs-dependencies" : [
+      // add your bs-dependencies here 
+  ]
+}
