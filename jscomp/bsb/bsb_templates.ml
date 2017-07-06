@@ -294,13 +294,13 @@ let root = OCamlRes.Res.([
           "let component = ReasonReact.statefulComponent \"Greeting\";\n\
            \n\
            let make ::name _children => {\n\
-          \  let click _event state _self => ReasonReact.Update (state + 1);\n\
+          \  let click _event {ReasonReact.state} => ReasonReact.Update (state + 1);\n\
           \  {\n\
           \    ...component,\n\
           \    initialState: fun () => 0,\n\
-          \    render: fun state self => {\n\
+          \    render: fun {state, update} => {\n\
           \      let greeting = {j|Hello $name, You've clicked the button $state times(s)!|j};\n\
-          \      <button onClick=(self.update click)> (ReasonReact.stringToElement greeting) </button>\n\
+          \      <button onClick=(update click)> (ReasonReact.stringToElement greeting) </button>\n\
           \    }\n\
           \  }\n\
            };\n\
@@ -333,7 +333,7 @@ let root = OCamlRes.Res.([
            \n\
            let make ::message ::extraGreeting=? _children => {\n\
           \  ...component,\n\
-          \  render: fun () _self => {\n\
+          \  render: fun _self => {\n\
           \    let greeting =\n\
           \      switch extraGreeting {\n\
           \      | None => \"How are you?\"\n\
@@ -452,7 +452,7 @@ let root = OCamlRes.Res.([
       \  \"dependencies\": {\n\
       \    \"react\": \"^15.4.2\",\n\
       \    \"react-dom\": \"^15.4.2\",\n\
-      \    \"reason-react\": \">=0.1.4\"\n\
+      \    \"reason-react\": \">=0.2.1\"\n\
       \  },\n\
       \  \"devDependencies\": {\n\
       \    \"bs-platform\": \"^${bsb:bs-version}\",\n\
