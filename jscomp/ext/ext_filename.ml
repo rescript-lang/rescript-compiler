@@ -322,7 +322,7 @@ let split_aux_idx x =
   in
   h [] 0
 
-(*TODO: could be highly optimized later
+(* TODO: could be highly optimized later
   {[
     normalize_absolute_path "/gsho/./..";;
 
@@ -340,21 +340,21 @@ let split_aux_idx x =
 
     normalize_absolute_path "/a";;
 
-    normalize_absolute_path "C:\gsho\.\..";;
+    normalize_absolute_path "C:/gsho/./..";;
 
-    normalize_absolute_path "d:\a\b\..\c..\d\e\f";;
+    normalize_absolute_path "d:/a/b/../c../d/e/f";;
 
-    normalize_absolute_path "e:\gsho\.\..";;
+    normalize_absolute_path "e:/gsho/./..";;
 
-    normalize_absolute_path "b:\gsho\.\..\..";;
+    normalize_absolute_path "b:/gsho/./../..";;
 
-    normalize_absolute_path "a:\a\b\c\d";;
+    normalize_absolute_path "a:/a/b/c/d";;
 
-    normalize_absolute_path "f:\a\b\c\d\";;
+    normalize_absolute_path "f:/a/b/c/d/";;
 
-    normalize_absolute_path "g:\a\";;
+    normalize_absolute_path "g:/a/";;
 
-    normalize_absolute_path "h:\a";;
+    normalize_absolute_path "h:/a";;
   ]}
 *)
 (** See tests in {!Ounit_path_tests} *)
