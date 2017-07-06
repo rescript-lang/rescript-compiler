@@ -6669,6 +6669,9 @@ val is_lib_dir : t -> bool
 val get_dev_index : unit -> t 
 
 val get_current_number_of_dev_groups : unit -> int 
+
+(**TODO: Need reset when generating each ninja file to provide stronger guarantee *)
+val reset : unit -> unit
 end = struct
 #1 "bsb_dir_index.ml"
 (* Copyright (C) 2017 Authors of BuckleScript
@@ -6707,11 +6710,15 @@ let lib_dir_index = 0
 
 let is_lib_dir x = x = lib_dir_index
 
-let get_dev_index, get_current_number_of_dev_groups =
-  let dir_index = ref 0 in 
-  ((fun () -> incr dir_index ; !dir_index),
-   (fun () -> !dir_index ))
+let dir_index = ref 0 
 
+let get_dev_index ( ) = 
+  incr dir_index ; !dir_index
+
+let get_current_number_of_dev_groups =
+   (fun () -> !dir_index )
+
+let reset () = dir_index := 0
 end
 module Ext_file_pp : sig 
 #1 "ext_file_pp.mli"

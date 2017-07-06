@@ -32,3 +32,6 @@ val is_lib_dir : t -> bool
 val get_dev_index : unit -> t 
 
 val get_current_number_of_dev_groups : unit -> int 
+
+(**TODO: Need reset when generating each ninja file to provide stronger guarantee *)
+val reset : unit -> unit
