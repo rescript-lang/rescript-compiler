@@ -307,20 +307,21 @@ let rel_normalized_absolute_path from to_ =
  *)
 let split_aux_idx x =
   let l = String.length x in
-  let ds = Filename.dir_sep.[0] in (*dir_sep as char*)
+  let rarr = l / 2 |> Resize_array.make in
   let rec ctr i =
-    if i = l || x.[i] = ds then i - 1
+    if i = l || x.[i] = os_path_separator_char then i - 1
     else ctr (i+1)
   in
   let rec h accum sidx =
     if sidx = l then accum
     else
-      if x.[sidx] = ds then h accum (sidx+1)
+      if x.[sidx] = os_path_separator_char then h accum (sidx+1)
       else
         let eidx = ctr (sidx+1) in
-        h (accum@[(sidx, eidx)]) (eidx+1)
+        h (Resize_array.push (sidx, eidx) accum) (eidx+1)
   in
-  h [] 0
+  h rarr 0
+  |> Resize_array.to_list
 
 (* TODO: could be highly optimized later
   {[
@@ -360,9 +361,8 @@ let split_aux_idx x =
 (** See tests in {!Ounit_path_tests} *)
 let normalize_absolute_path x =
   let d = '.' in
-  let ds = Filename.dir_sep.[0] in
   let root, rem =
-    let fst_sep = (String.index x ds) in
+    let fst_sep = (String.index x os_path_separator_char) in
     String.sub x 0 (fst_sep),
     String.sub x (fst_sep+1) (String.length x - (fst_sep+1))
   in
