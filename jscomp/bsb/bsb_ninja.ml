@@ -24,6 +24,11 @@
 
 
 module Rules = Bsb_rule 
+
+type override = 
+  | Append of string 
+  | Overwrite of string 
+
 let output_build
     ?(order_only_deps=[])
     ?(implicit_deps=[])
@@ -80,8 +85,8 @@ let output_build
           output_string oc k ;
           output_string oc " = ";
           match v with
-          | `Overwrite s -> output_string oc s ; output_string oc "\n"
-          | `Append s ->
+          | Overwrite s -> output_string oc s ; output_string oc "\n"
+          | Append s ->
             output_string oc "$" ;
             output_string oc k;
             output_string oc Ext_string.single_space;
@@ -153,6 +158,7 @@ let (++) (us : info) (vs : info) =
 *)
 (* let files_to_install = String_hash_set.create 96 *)
 
+
 let install_file (file : string) files_to_install =
   String_hash_set.add  files_to_install (Ext_filename.chop_extension_if_any file )
 
@@ -188,19 +194,19 @@ let handle_file_group oc ~custom_rules
       (* let output_mlideps = output_file_sans_extension ^ Literals.suffix_mlideps in  *)
       let shadows =
         ( "bs_package_flags",
-          `Append
+          Append
             (String_set.fold (fun s acc ->
                  Ext_string.inter2 acc (Bsb_config.package_flag ~format:s (Filename.dirname output_cmi))
 
                ) package_specs Ext_string.empty)
         ) ::
-        (if group.dir_index = 0 then [] else
+        (if Bsb_dir_index.is_lib_dir group.dir_index  then [] else
            [
-             "bs_package_includes", `Append "$bs_package_dev_includes"
+             "bs_package_includes", Append "$bs_package_dev_includes"
              ;
              ("bsc_extra_includes",
-              `Overwrite
-                ("${" ^ Bsb_build_util.string_of_bsb_dev_include group.dir_index ^ "}")
+              Overwrite
+                ("${" ^ Bsb_dir_index.string_of_bsb_dev_include group.dir_index  ^ "}")
              )
            ]
         )
@@ -233,8 +239,9 @@ let handle_file_group oc ~custom_rules
               ~output:output_mlastd
               ~input:output_mlast
               ~rule:Rules.build_bin_deps
-              ?shadows:(if group.dir_index = 0 then None
-                else Some [Bsb_build_schemas.bsb_dir_group, `Overwrite (string_of_int group.dir_index)])
+              ?shadows:(if Bsb_dir_index.is_lib_dir group.dir_index then None
+                else Some [Bsb_build_schemas.bsb_dir_group,
+                   Overwrite (string_of_int (group.dir_index :> int)) ])
             ;
             let rule_name , cm_outputs, deps =
               if module_info.mli = Mli_empty then
@@ -247,7 +254,7 @@ let handle_file_group oc ~custom_rules
               | None -> shadows
               | Some cmd ->
                 ("postbuild",
-                 `Overwrite ("&& " ^ cmd ^ Ext_string.single_space ^ String.concat Ext_string.single_space output_js)) :: shadows
+                 Overwrite ("&& " ^ cmd ^ Ext_string.single_space ^ String.concat Ext_string.single_space output_js)) :: shadows
             in
             output_build oc
               ~output:output_cmj
@@ -276,8 +283,9 @@ let handle_file_group oc ~custom_rules
             ~output:output_mliastd
             ~input:output_mliast
             ~rule:Rules.build_bin_deps
-            ?shadows:(if group.dir_index = 0 then None
-                      else Some [Bsb_build_schemas.bsb_dir_group, `Overwrite (string_of_int group.dir_index)])
+            ?shadows:(if Bsb_dir_index.is_lib_dir group.dir_index  then None
+                      else Some [Bsb_build_schemas.bsb_dir_group, 
+                        Overwrite (string_of_int (group.dir_index :> int ))])
           ;
           output_build oc
             ~shadows

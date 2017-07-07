@@ -27,7 +27,7 @@ type public =
   | Export_set of String_set.t 
   | Export_none
     
-type dir_index = int 
+
 
 type build_generator = 
   { input : string list ;
@@ -39,7 +39,7 @@ type  file_group =
     sources : Binary_cache.file_group_rouces ; 
     resources : string list ; (* relative path *)
     public : public;
-    dir_index : dir_index; 
+    dir_index : Bsb_dir_index.t; 
     generators : build_generator list;
   } 
 
@@ -52,13 +52,13 @@ type t =
 
   }
 
-val lib_dir_index : dir_index 
 
-val get_current_number_of_dev_groups : unit -> int 
+
+
 
 type parsing_cxt = {
   no_dev : bool ;
-  dir_index : dir_index ; 
+  dir_index : Bsb_dir_index.t ; 
   cwd : string ;
   root : string ;
   cut_generators : bool

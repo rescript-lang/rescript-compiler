@@ -126,7 +126,7 @@ let output_ninja
           external_includes
     in 
     let  static_resources =
-      let number_of_dev_groups = Bsb_build_ui.get_current_number_of_dev_groups () in
+      let number_of_dev_groups = Bsb_dir_index.get_current_number_of_dev_groups () in
       if number_of_dev_groups = 0 then
         let bs_groups, source_dirs,static_resources  =
           List.fold_left (fun (acc, dirs,acc_resources) ({Bsb_build_ui.sources ; dir; resources }) ->
@@ -140,21 +140,23 @@ let output_ninja
       else
         let bs_groups = Array.init  (number_of_dev_groups + 1 ) (fun i -> String_map.empty) in
         let source_dirs = Array.init (number_of_dev_groups + 1 ) (fun i -> []) in
+        
         let static_resources =
           List.fold_left (fun acc_resources  ({Bsb_build_ui.sources; dir; resources; dir_index})  ->
+              let dir_index = (dir_index :> int) in 
               bs_groups.(dir_index) <- merge_module_info_map bs_groups.(dir_index) sources ;
               source_dirs.(dir_index) <- dir :: source_dirs.(dir_index);
               (List.map (fun x -> dir//x) resources) @ resources
             ) [] bs_file_groups in
         (* Make sure [sources] does not have files in [lib] we have to check later *)
-        let lib = bs_groups.(0) in
+        let lib = bs_groups.((Bsb_dir_index.lib_dir_index :> int)) in
         Bsb_ninja.output_kv
           Bsb_build_schemas.bsc_lib_includes (Bsb_build_util.flag_concat dash_i @@
            (all_includes source_dirs.(0))) oc ;
         for i = 1 to number_of_dev_groups  do
           let c = bs_groups.(i) in
           String_map.iter (fun k _ -> if String_map.mem k lib then failwith ("conflict files found:" ^ k)) c ;
-          Bsb_ninja.output_kv (Bsb_build_util.string_of_bsb_dev_include i)
+          Bsb_ninja.output_kv (Bsb_dir_index.(string_of_bsb_dev_include (of_int i)))
             (Bsb_build_util.flag_concat "-I" @@ source_dirs.(i)) oc
         done  ;
         Binary_cache.write_build_cache (cwd // Bsb_config.lib_bs // Binary_cache.bsbuild_cache) bs_groups ;

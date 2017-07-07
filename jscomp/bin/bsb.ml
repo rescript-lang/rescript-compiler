@@ -1,6 +1,31 @@
 module Bsb_build_schemas
 = struct
 #1 "bsb_build_schemas.ml"
+(* Copyright (C) 2017 Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
 let files = "files"
 let version = "version"
 let name = "name"
@@ -6167,7 +6192,6 @@ val get_list_string :
     Ext_json_types.t array -> 
     string list
 
-val string_of_bsb_dev_include : int -> string 
 
 val resolve_bsb_magic_file : cwd:string -> desc:string -> string -> string
 
@@ -6317,18 +6341,6 @@ let get_list_string_acc s acc =
 
 let get_list_string s = get_list_string_acc s []   
 
-let bsc_group_1_includes = "bsc_group_1_includes"
-let bsc_group_2_includes = "bsc_group_2_includes"
-let bsc_group_3_includes = "bsc_group_3_includes"
-let bsc_group_4_includes = "bsc_group_4_includes"
-let string_of_bsb_dev_include i = 
-  match i with 
-  | 1 -> bsc_group_1_includes 
-  | 2 -> bsc_group_2_includes
-  | 3 -> bsc_group_3_includes
-  | 4 -> bsc_group_4_includes
-  | _ -> 
-    "bsc_group_" ^ string_of_int i ^ "_includes"
 
 (* Key is the path *)
 let (|?)  m (key, cb) =
@@ -6607,6 +6619,126 @@ let map_update ?dir (map : file_group_rouces)  name : file_group_rouces  =
     (fun v -> (adjust_module_info v suffix (prefix name )))
     map
 
+end
+module Bsb_dir_index : sig 
+#1 "bsb_dir_index.mli"
+(* Copyright (C) 2017 Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type t = private int
+
+val lib_dir_index : t 
+
+val is_lib_dir : t -> bool 
+
+val get_dev_index : unit -> t 
+
+val of_int : int -> t 
+
+val get_current_number_of_dev_groups : unit -> int 
+
+
+val string_of_bsb_dev_include : t -> string 
+
+(** TODO: Need reset
+   when generating each ninja file to provide stronger guarantee. 
+   Here we get a weak guarantee because only dev group is 
+  inside the toplevel project
+   *)
+val reset : unit -> unit
+end = struct
+#1 "bsb_dir_index.ml"
+(* Copyright (C) 2017 Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type t = int 
+
+(** 
+   0 : lib 
+   1 : dev 1 
+   2 : dev 2 
+*)  
+external of_int : int -> t = "%identity"
+let lib_dir_index = 0
+
+let is_lib_dir x = x = lib_dir_index
+
+let dir_index = ref 0 
+
+let get_dev_index ( ) = 
+  incr dir_index ; !dir_index
+
+let get_current_number_of_dev_groups =
+   (fun () -> !dir_index )
+
+
+(** bsb generate pre-defined variables [bsc_group_i_includes]
+  for each rule, there is variable [bsc_extra_excludes]
+  [bsc_extra_includes] are for app test etc
+  it will be like
+  {[
+    bsc_extra_includes = ${bsc_group_1_includes}
+  ]}
+  where [bsc_group_1_includes] will be pre-calcuated
+*)
+let bsc_group_1_includes = "bsc_group_1_includes"
+let bsc_group_2_includes = "bsc_group_2_includes"
+let bsc_group_3_includes = "bsc_group_3_includes"
+let bsc_group_4_includes = "bsc_group_4_includes"
+let string_of_bsb_dev_include i = 
+  match i with 
+  | 1 -> bsc_group_1_includes 
+  | 2 -> bsc_group_2_includes
+  | 3 -> bsc_group_3_includes
+  | 4 -> bsc_group_4_includes
+  | _ -> 
+    "bsc_group_" ^ string_of_int i ^ "_includes"
+
+
+let reset () = dir_index := 0
 end
 module Ext_file_pp : sig 
 #1 "ext_file_pp.mli"
@@ -7471,7 +7603,7 @@ type public =
   | Export_set of String_set.t 
   | Export_none
     
-type dir_index = int 
+
 
 type build_generator = 
   { input : string list ;
@@ -7483,7 +7615,7 @@ type  file_group =
     sources : Binary_cache.file_group_rouces ; 
     resources : string list ; (* relative path *)
     public : public;
-    dir_index : dir_index; 
+    dir_index : Bsb_dir_index.t; 
     generators : build_generator list;
   } 
 
@@ -7496,13 +7628,13 @@ type t =
 
   }
 
-val lib_dir_index : dir_index 
 
-val get_current_number_of_dev_groups : unit -> int 
+
+
 
 type parsing_cxt = {
   no_dev : bool ;
-  dir_index : dir_index ; 
+  dir_index : Bsb_dir_index.t ; 
   cwd : string ;
   root : string ;
   cut_generators : bool
@@ -7557,30 +7689,18 @@ type public =
   | Export_set of String_set.t 
   | Export_none
 
-type dir_index = int 
-let lib_dir_index = 0
-
-let get_dev_index, get_current_number_of_dev_groups =
-  let dir_index = ref 0 in 
-  ((fun () -> incr dir_index ; !dir_index),
-   (fun _ -> !dir_index ))
-
 
 type build_generator = 
   { input : string list ;
     output : string list;
     command : string}
-(** 
-   0 : lib 
-   1 : dev 1 
-   2 : dev 2 
-*)  
+
 type  file_group = 
   { dir : string ;
     sources : Binary_cache.file_group_rouces; 
     resources : string list ;
     public : public ;
-    dir_index : dir_index ;
+    dir_index : Bsb_dir_index.t  ;
     generators : build_generator list ; 
     (* output of [generators] should be added to [sources],
       if it is [.ml,.mli,.re,.rei]
@@ -7635,7 +7755,7 @@ let warning_unused_file : _ format = "@{<warning>IGNORED@}: file %s under %s is 
 
 type parsing_cxt = {
   no_dev : bool ;
-  dir_index : dir_index ; 
+  dir_index : Bsb_dir_index.t ; 
   cwd : string ;
   root : string;
   cut_generators : bool
@@ -7711,7 +7831,7 @@ let get_input_output loc_start (content : Ext_json_types.t array) : string list 
 (** [dir_index] can be inherited  *)
 let rec 
   parsing_simple_dir ({no_dev; dir_index;  cwd} as cxt ) dir =
-  if no_dev && dir_index <> lib_dir_index then empty 
+  if no_dev && not (Bsb_dir_index.is_lib_dir dir_index)  then empty 
   else parsing_source_dir_map 
     {cxt with
      cwd = cwd // Ext_filename.simple_convert_node_path_to_os_path dir
@@ -7726,10 +7846,10 @@ and parsing_source ({no_dev; dir_index ; cwd} as cxt ) (x : Ext_json_types.t )
   | Obj {map} ->
     let current_dir_index = 
       match String_map.find_opt Bsb_build_schemas.type_ map with 
-      | Some (Str {str="dev"}) -> get_dev_index ()
+      | Some (Str {str="dev"}) -> Bsb_dir_index.get_dev_index ()
       | Some _ -> Bsb_exception.failwith_config x {|type field expect "dev" literal |}
       | None -> dir_index in 
-    if no_dev && current_dir_index <> lib_dir_index then empty 
+    if no_dev && not (Bsb_dir_index.is_lib_dir current_dir_index) then empty 
     else 
       let dir = 
         match String_map.find_opt Bsb_build_schemas.dir map with 
@@ -8945,7 +9065,7 @@ let interpret_json
         let res = Bsb_build_ui.parsing_sources 
             {no_dev; 
              dir_index =
-               Bsb_build_ui.lib_dir_index; cwd = Filename.current_dir_name; 
+               Bsb_dir_index.lib_dir_index; cwd = Filename.current_dir_name; 
              root = cwd; cut_generators = !cut_generators}  x in 
         if generate_watch_metadata then
           Bsb_watcher_gen.generate_sourcedirs_meta cwd res ;     
@@ -9453,14 +9573,7 @@ let build_ml_from_mll =
 (* below are rules not local any more *)
 (**************************************)
 
-(* [bsc_lib_includes] are fixed for libs
-   [bsc_extra_includes] are for app test etc
-   it wil be
-   {[
-     bsc_extra_includes = ${bsc_group_1_includes}
-   ]}
-   where [bsc_group_1_includes] will be pre-calcuated
-*)
+(* [bsc_lib_includes] are fixed for libs *)
 let build_cmj_js =
   define
     ~command:"${bsc} ${bs_package_flags} -bs-assume-has-mli -bs-no-builtin-ppx-ml -bs-no-implicit-include  \
@@ -9538,6 +9651,9 @@ module Bsb_ninja : sig
 
 
 
+type override = 
+  | Append of string 
+  | Overwrite of string 
 
 (** output should always be marked explicitly,
    otherwise the build system can not figure out clearly
@@ -9549,7 +9665,7 @@ val output_build :
   ?outputs:string list ->
   ?implicit_outputs: string list ->  
   ?inputs:string list ->
-  ?shadows:(string * [`Append of string | `Overwrite of string ]) list ->
+  ?shadows:(string * override) list ->
   ?restat:unit ->
   output:string ->
   input:string ->
@@ -9610,6 +9726,11 @@ end = struct
 
 
 module Rules = Bsb_rule 
+
+type override = 
+  | Append of string 
+  | Overwrite of string 
+
 let output_build
     ?(order_only_deps=[])
     ?(implicit_deps=[])
@@ -9666,8 +9787,8 @@ let output_build
           output_string oc k ;
           output_string oc " = ";
           match v with
-          | `Overwrite s -> output_string oc s ; output_string oc "\n"
-          | `Append s ->
+          | Overwrite s -> output_string oc s ; output_string oc "\n"
+          | Append s ->
             output_string oc "$" ;
             output_string oc k;
             output_string oc Ext_string.single_space;
@@ -9739,6 +9860,7 @@ let (++) (us : info) (vs : info) =
 *)
 (* let files_to_install = String_hash_set.create 96 *)
 
+
 let install_file (file : string) files_to_install =
   String_hash_set.add  files_to_install (Ext_filename.chop_extension_if_any file )
 
@@ -9774,19 +9896,19 @@ let handle_file_group oc ~custom_rules
       (* let output_mlideps = output_file_sans_extension ^ Literals.suffix_mlideps in  *)
       let shadows =
         ( "bs_package_flags",
-          `Append
+          Append
             (String_set.fold (fun s acc ->
                  Ext_string.inter2 acc (Bsb_config.package_flag ~format:s (Filename.dirname output_cmi))
 
                ) package_specs Ext_string.empty)
         ) ::
-        (if group.dir_index = 0 then [] else
+        (if Bsb_dir_index.is_lib_dir group.dir_index  then [] else
            [
-             "bs_package_includes", `Append "$bs_package_dev_includes"
+             "bs_package_includes", Append "$bs_package_dev_includes"
              ;
              ("bsc_extra_includes",
-              `Overwrite
-                ("${" ^ Bsb_build_util.string_of_bsb_dev_include group.dir_index ^ "}")
+              Overwrite
+                ("${" ^ Bsb_dir_index.string_of_bsb_dev_include group.dir_index  ^ "}")
              )
            ]
         )
@@ -9819,8 +9941,9 @@ let handle_file_group oc ~custom_rules
               ~output:output_mlastd
               ~input:output_mlast
               ~rule:Rules.build_bin_deps
-              ?shadows:(if group.dir_index = 0 then None
-                else Some [Bsb_build_schemas.bsb_dir_group, `Overwrite (string_of_int group.dir_index)])
+              ?shadows:(if Bsb_dir_index.is_lib_dir group.dir_index then None
+                else Some [Bsb_build_schemas.bsb_dir_group,
+                   Overwrite (string_of_int (group.dir_index :> int)) ])
             ;
             let rule_name , cm_outputs, deps =
               if module_info.mli = Mli_empty then
@@ -9833,7 +9956,7 @@ let handle_file_group oc ~custom_rules
               | None -> shadows
               | Some cmd ->
                 ("postbuild",
-                 `Overwrite ("&& " ^ cmd ^ Ext_string.single_space ^ String.concat Ext_string.single_space output_js)) :: shadows
+                 Overwrite ("&& " ^ cmd ^ Ext_string.single_space ^ String.concat Ext_string.single_space output_js)) :: shadows
             in
             output_build oc
               ~output:output_cmj
@@ -9862,8 +9985,9 @@ let handle_file_group oc ~custom_rules
             ~output:output_mliastd
             ~input:output_mliast
             ~rule:Rules.build_bin_deps
-            ?shadows:(if group.dir_index = 0 then None
-                      else Some [Bsb_build_schemas.bsb_dir_group, `Overwrite (string_of_int group.dir_index)])
+            ?shadows:(if Bsb_dir_index.is_lib_dir group.dir_index  then None
+                      else Some [Bsb_build_schemas.bsb_dir_group, 
+                        Overwrite (string_of_int (group.dir_index :> int ))])
           ;
           output_build oc
             ~shadows
@@ -10097,7 +10221,7 @@ let output_ninja
           external_includes
     in 
     let  static_resources =
-      let number_of_dev_groups = Bsb_build_ui.get_current_number_of_dev_groups () in
+      let number_of_dev_groups = Bsb_dir_index.get_current_number_of_dev_groups () in
       if number_of_dev_groups = 0 then
         let bs_groups, source_dirs,static_resources  =
           List.fold_left (fun (acc, dirs,acc_resources) ({Bsb_build_ui.sources ; dir; resources }) ->
@@ -10111,21 +10235,23 @@ let output_ninja
       else
         let bs_groups = Array.init  (number_of_dev_groups + 1 ) (fun i -> String_map.empty) in
         let source_dirs = Array.init (number_of_dev_groups + 1 ) (fun i -> []) in
+        
         let static_resources =
           List.fold_left (fun acc_resources  ({Bsb_build_ui.sources; dir; resources; dir_index})  ->
+              let dir_index = (dir_index :> int) in 
               bs_groups.(dir_index) <- merge_module_info_map bs_groups.(dir_index) sources ;
               source_dirs.(dir_index) <- dir :: source_dirs.(dir_index);
               (List.map (fun x -> dir//x) resources) @ resources
             ) [] bs_file_groups in
         (* Make sure [sources] does not have files in [lib] we have to check later *)
-        let lib = bs_groups.(0) in
+        let lib = bs_groups.((Bsb_dir_index.lib_dir_index :> int)) in
         Bsb_ninja.output_kv
           Bsb_build_schemas.bsc_lib_includes (Bsb_build_util.flag_concat dash_i @@
            (all_includes source_dirs.(0))) oc ;
         for i = 1 to number_of_dev_groups  do
           let c = bs_groups.(i) in
           String_map.iter (fun k _ -> if String_map.mem k lib then failwith ("conflict files found:" ^ k)) c ;
-          Bsb_ninja.output_kv (Bsb_build_util.string_of_bsb_dev_include i)
+          Bsb_ninja.output_kv (Bsb_dir_index.(string_of_bsb_dev_include (of_int i)))
             (Bsb_build_util.flag_concat "-I" @@ source_dirs.(i)) oc
         done  ;
         Binary_cache.write_build_cache (cwd // Bsb_config.lib_bs // Binary_cache.bsbuild_cache) bs_groups ;

@@ -141,14 +141,7 @@ let build_ml_from_mll =
 (* below are rules not local any more *)
 (**************************************)
 
-(* [bsc_lib_includes] are fixed for libs
-   [bsc_extra_includes] are for app test etc
-   it wil be
-   {[
-     bsc_extra_includes = ${bsc_group_1_includes}
-   ]}
-   where [bsc_group_1_includes] will be pre-calcuated
-*)
+(* [bsc_lib_includes] are fixed for libs *)
 let build_cmj_js =
   define
     ~command:"${bsc} ${bs_package_flags} -bs-assume-has-mli -bs-no-builtin-ppx-ml -bs-no-implicit-include  \
