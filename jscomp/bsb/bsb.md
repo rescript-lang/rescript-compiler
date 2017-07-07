@@ -10,7 +10,7 @@ two directories ha
 
 # generate ninja from file groups
 
-`Bsb_build_ui.file_group list`
+`Bsb_parse_sources.file_group list`
 one directory, one kind --
 when we merge we will have two `dirs`
 

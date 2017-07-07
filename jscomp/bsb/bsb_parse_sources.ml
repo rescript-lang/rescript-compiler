@@ -66,36 +66,10 @@ let (//) = Ext_filename.combine
 let (|?)  m (key, cb) =
   m  |> Ext_json.test key cb 
 
-let get_list_string  =  Bsb_build_util.get_list_string
-
-
-
-let print_arrays file_array oc offset  =
-  let indent = String.make offset ' ' in 
-  let p_str s = 
-    output_string oc indent ; 
-    output_string oc s ;
-    output_string oc "\n"
-  in
-  let len = String_vec.length file_array in 
-  match len with 
-  | 0
-    -> output_string oc "[ ]\n"
-  | 1 
-    -> output_string oc ("[ \"" ^ String_vec.get file_array 0  ^ "\" ]\n")
-  | _ (* first::(_::_ as rest) *)
-    -> 
-    output_string oc "[ \n";
-    String_vec.iter_range ~from:0 ~to_:(len - 2 ) 
-      (fun s -> p_str @@ "\"" ^ s ^ "\",") file_array;
-    p_str @@ "\"" ^ (String_vec.last file_array) ^ "\"";
-
-    p_str "]" 
-
 
 let warning_unused_file : _ format = "@{<warning>IGNORED@}: file %s under %s is ignored due to that it is not a valid module name@."
 
-type parsing_cxt = {
+type cxt = {
   no_dev : bool ;
   dir_index : Bsb_dir_index.t ; 
   cwd : string ;
@@ -104,7 +78,7 @@ type parsing_cxt = {
 }
 
 let  handle_list_files acc
-  ({ cwd = dir ; root} : parsing_cxt)  
+  ({ cwd = dir ; root} : cxt)  
     loc_start loc_end : Ext_file_pp.interval list * _ =    
   (** detect files to be populated later  *)
   let files_array = readdir root dir  in 
@@ -123,8 +97,9 @@ let  handle_list_files acc
           acc 
         | Suffix_mismatch -> acc 
       ) acc files_array in 
-  [{Ext_file_pp.loc_start ;
-    loc_end; action = (`print (print_arrays dyn_file_array))}],
+  [ Ext_file_pp.patch_action dyn_file_array 
+    loc_start loc_end
+    ],
   files
 
 
@@ -272,7 +247,7 @@ and parsing_source_dir_map
       let excludes = 
         match String_map.find_opt Bsb_build_schemas.excludes m with 
         | None -> []   
-        | Some (Arr {content = arr}) -> get_list_string arr 
+        | Some (Arr {content = arr}) -> Bsb_build_util.get_list_string arr 
         | Some x -> Bsb_exception.failwith_config x  "excludes expect array "in 
       let slow_re = String_map.find_opt Bsb_build_schemas.slow_re m in 
       let predicate = 
@@ -315,7 +290,7 @@ and parsing_source_dir_map
   x   
   |?  (Bsb_build_schemas.resources ,
        `Arr (fun s  ->
-           resources := get_list_string s 
+           resources := Bsb_build_util.get_list_string s 
          ))
   |? (Bsb_build_schemas.public, `Str_loc (fun s loc -> 
         if s = Bsb_build_schemas.export_all then public := Export_all else 
@@ -323,7 +298,7 @@ and parsing_source_dir_map
           Bsb_exception.failf ~loc "invalid str for %s "  s 
       ))
     |? (Bsb_build_schemas.public, `Arr (fun s -> 
-        public := Export_set (String_set.of_list (get_list_string s ) )
+        public := Export_set (String_set.of_list (Bsb_build_util.get_list_string s ) )
       ) )
     |> ignore ;
     let cur_file = 
@@ -337,7 +312,7 @@ and parsing_source_dir_map
     let children, children_update_queue, children_globbed_dirs = 
       match String_map.find_opt Bsb_build_schemas.subdirs x with 
       | Some s -> 
-        let res  = parsing_sources cxt s in 
+        let res  = parse_sources cxt s in 
         res.files ,
         res.intervals,
         res.globbed_dirs
@@ -358,7 +333,7 @@ and  parsing_arr_sources cxt (file_groups : Ext_json_types.t array)  =
       parsing_source cxt x ++ origin 
     ) empty  file_groups 
 
-and  parsing_sources ( cxt : parsing_cxt) (sources : Ext_json_types.t )  = 
+and  parse_sources ( cxt : cxt) (sources : Ext_json_types.t )  = 
   match sources with   
   | Arr file_groups -> 
     parsing_arr_sources cxt file_groups.content

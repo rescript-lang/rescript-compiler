@@ -156,7 +156,7 @@ let merlin_file_gen ~cwd
         Buffer.add_string buffer path ;
       );
 
-    res_files |> List.iter (fun (x : Bsb_build_ui.file_group) -> 
+    res_files |> List.iter (fun (x : Bsb_parse_sources.file_group) -> 
         Buffer.add_string buffer merlin_s;
         Buffer.add_string buffer x.dir ;
         Buffer.add_string buffer merlin_b;

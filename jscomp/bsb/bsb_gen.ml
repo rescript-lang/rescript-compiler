@@ -129,7 +129,7 @@ let output_ninja
       let number_of_dev_groups = Bsb_dir_index.get_current_number_of_dev_groups () in
       if number_of_dev_groups = 0 then
         let bs_groups, source_dirs,static_resources  =
-          List.fold_left (fun (acc, dirs,acc_resources) ({Bsb_build_ui.sources ; dir; resources }) ->
+          List.fold_left (fun (acc, dirs,acc_resources) ({Bsb_parse_sources.sources ; dir; resources }) ->
               merge_module_info_map  acc  sources ,  dir::dirs , (List.map (fun x -> dir // x ) resources) @ acc_resources
             ) (String_map.empty,[],[]) bs_file_groups in
         Binary_cache.write_build_cache (cwd // Bsb_config.lib_bs // Binary_cache.bsbuild_cache) [|bs_groups|] ;
@@ -142,7 +142,7 @@ let output_ninja
         let source_dirs = Array.init (number_of_dev_groups + 1 ) (fun i -> []) in
         
         let static_resources =
-          List.fold_left (fun acc_resources  ({Bsb_build_ui.sources; dir; resources; dir_index})  ->
+          List.fold_left (fun acc_resources  ({Bsb_parse_sources.sources; dir; resources; dir_index})  ->
               let dir_index = (dir_index :> int) in 
               bs_groups.(dir_index) <- merge_module_info_map bs_groups.(dir_index) sources ;
               source_dirs.(dir_index) <- dir :: source_dirs.(dir_index);

@@ -35,9 +35,11 @@ type build_generator =
     command : string}
 
 type  file_group = 
-  { dir : string ; (* currently relative path expected for ninja file generation *)
+  { dir : string ; 
+    (* currently relative path expected for ninja file generation *)
     sources : Binary_cache.file_group_rouces ; 
-    resources : string list ; (* relative path *)
+    resources : string list ; 
+    (* relative path *)
     public : public;
     dir_index : Bsb_dir_index.t; 
     generators : build_generator list;
@@ -46,7 +48,8 @@ type  file_group =
 
 
 type t = 
-  { files :  file_group list ; (* flattened list of directories *)
+  { files :  file_group list ;
+   (* flattened list of directories *)
     intervals :  Ext_file_pp.interval list ;
     globbed_dirs : string list ; 
 
@@ -56,7 +59,7 @@ type t =
 
 
 
-type parsing_cxt = {
+type cxt = {
   no_dev : bool ;
   dir_index : Bsb_dir_index.t ; 
   cwd : string ;
@@ -68,12 +71,12 @@ type parsing_cxt = {
 (** entry is to the 
     [sources] in the schema
 
-    [parsing_sources cxt json]
+    [parse_sources cxt json]
     given a root, return an object which is
     all relative paths, this function will do the IO
 *)
-val parsing_sources : 
-  parsing_cxt ->
+val parse_sources : 
+  cxt ->
   Ext_json_types.t  ->
   t 
   

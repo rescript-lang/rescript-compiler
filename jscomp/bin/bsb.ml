@@ -6740,153 +6740,6 @@ let string_of_bsb_dev_include i =
 
 let reset () = dir_index := 0
 end
-module Ext_file_pp : sig 
-#1 "ext_file_pp.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type action = 
-  [
-    `skip
-  | `print of (Pervasives.out_channel -> int -> unit)
-  ]
-
-
-type interval = {
-  loc_start : Lexing.position ; 
-  loc_end : Lexing.position ; 
-  action : action 
-}
-
-val process_wholes : 
-  interval list ->
-  int -> ?line_directive:string -> in_channel -> out_channel -> unit
-
-val cpp_process_file : 
-  string -> (Lexing.position * Lexing.position) list -> out_channel -> unit
-
-
-(** Assume that there is no overlapp *)
-val interval_compare : 
-  interval -> interval -> int
-
-end = struct
-#1 "ext_file_pp.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type action = 
-  [
-    `skip
-  | `print of (out_channel -> int -> unit)
-  ]
-
-
-type interval = {
-  loc_start : Lexing.position ; 
-  loc_end : Lexing.position ; 
-  action : action 
-}
-
-let interval_compare x y = 
-  Pervasives.compare (x.loc_start.pos_cnum : int) y.loc_start.pos_cnum
-
-let process_wholes 
-    (whole_intervals : interval list ) 
-    file_size
-    ?line_directive ic oc 
-  = 
-  let buf = Buffer.create 4096 in 
-  let rec aux (cur, line, offset)  wholes = 
-    seek_in ic cur ;
-    begin match line_directive with 
-      | Some fname -> 
-        output_string oc "# ";
-        output_string oc  (string_of_int line);
-        output_string oc " \"";
-        output_string oc fname; (* TOOD escape ? *)
-        output_string oc "\"\n";
-      | None -> ()
-    end;
-    if offset <> 0 then 
-      begin 
-        output_string oc (String.make offset ' ')
-      end; 
-    let print next = 
-      Buffer.add_channel buf ic (next - cur) ;
-      Buffer.output_buffer oc buf ; 
-      Buffer.clear buf 
-    in 
-    match wholes with 
-    | [] -> print file_size
-    | {
-      loc_start = 
-        {Lexing.pos_cnum = start   };
-      loc_end  = {Lexing.pos_cnum = stop; pos_bol ; pos_lnum} ;
-      action 
-    } :: xs  -> 
-      print start ;
-      let offset = stop - pos_bol in
-      begin match action with 
-      | `skip -> ()
-      | `print f -> f oc offset 
-      end;
-      aux (stop, pos_lnum, offset) xs 
-  in 
-    aux (0, 1, 0) whole_intervals
-
-
-let cpp_process_file fname whole_intervals oc = 
-  let ic = open_in_bin fname in
-  let file_size = in_channel_length ic in 
-  process_wholes ~line_directive:fname 
-    (List.map (fun (x,y) -> {loc_start = x ; loc_end = y; action = `skip}) whole_intervals)
-    file_size   ic oc ;
-  close_in ic 
-
-end
 module Vec_gen
 = struct
 #1 "vec_gen.ml"
@@ -7572,6 +7425,233 @@ end = struct
 
 include Resize_array.Make(struct type t = string let null = "" end)
 end
+module Bsb_log : sig 
+#1 "bsb_log.mli"
+(* Copyright (C) 2017 Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+(** Used in populate empty `files` field 
+  [print_arrays files oc offset]
+*)
+val print_arrays : String_vec.t -> out_channel -> int -> unit 
+end = struct
+#1 "bsb_log.ml"
+(* Copyright (C) 2017- Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+let print_arrays file_array oc offset  =
+  let indent = String.make offset ' ' in 
+  let p_str s = 
+    output_string oc indent ; 
+    output_string oc s ;
+    output_string oc "\n"
+  in
+  let len = String_vec.length file_array in 
+  match len with 
+  | 0
+    -> output_string oc "[ ]\n"
+  | 1 
+    -> output_string oc ("[ \"" ^ String_vec.get file_array 0  ^ "\" ]\n")
+  | _ (* first::(_::_ as rest) *)
+    -> 
+    output_string oc "[ \n";
+    String_vec.iter_range ~from:0 ~to_:(len - 2 ) 
+      (fun s -> p_str @@ "\"" ^ s ^ "\",") file_array;
+    p_str @@ "\"" ^ (String_vec.last file_array) ^ "\"";
+
+    p_str "]" 
+end
+module Ext_file_pp : sig 
+#1 "ext_file_pp.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type action = 
+  [
+    `skip
+  | `print of (Pervasives.out_channel -> int -> unit)
+  ]
+
+
+type interval = {
+  loc_start : Lexing.position ; 
+  loc_end : Lexing.position ; 
+  action : action 
+}
+
+val process_wholes : 
+  interval list ->
+  int -> ?line_directive:string -> in_channel -> out_channel -> unit
+
+val cpp_process_file : 
+  string -> (Lexing.position * Lexing.position) list -> out_channel -> unit
+
+
+(** Assume that there is no overlapp *)
+val interval_compare : 
+  interval -> interval -> int
+
+end = struct
+#1 "ext_file_pp.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type action = 
+  [
+    `skip
+  | `print of (out_channel -> int -> unit)
+  ]
+
+
+type interval = {
+  loc_start : Lexing.position ; 
+  loc_end : Lexing.position ; 
+  action : action 
+}
+
+let interval_compare x y = 
+  Pervasives.compare (x.loc_start.pos_cnum : int) y.loc_start.pos_cnum
+
+let process_wholes 
+    (whole_intervals : interval list ) 
+    file_size
+    ?line_directive ic oc 
+  = 
+  let buf = Buffer.create 4096 in 
+  let rec aux (cur, line, offset)  wholes = 
+    seek_in ic cur ;
+    begin match line_directive with 
+      | Some fname -> 
+        output_string oc "# ";
+        output_string oc  (string_of_int line);
+        output_string oc " \"";
+        output_string oc fname; (* TOOD escape ? *)
+        output_string oc "\"\n";
+      | None -> ()
+    end;
+    if offset <> 0 then 
+      begin 
+        output_string oc (String.make offset ' ')
+      end; 
+    let print next = 
+      Buffer.add_channel buf ic (next - cur) ;
+      Buffer.output_buffer oc buf ; 
+      Buffer.clear buf 
+    in 
+    match wholes with 
+    | [] -> print file_size
+    | {
+      loc_start = 
+        {Lexing.pos_cnum = start   };
+      loc_end  = {Lexing.pos_cnum = stop; pos_bol ; pos_lnum} ;
+      action 
+    } :: xs  -> 
+      print start ;
+      let offset = stop - pos_bol in
+      begin match action with 
+      | `skip -> ()
+      | `print f -> f oc offset 
+      end;
+      aux (stop, pos_lnum, offset) xs 
+  in 
+    aux (0, 1, 0) whole_intervals
+
+
+let cpp_process_file fname whole_intervals oc = 
+  let ic = open_in_bin fname in
+  let file_size = in_channel_length ic in 
+  process_wholes ~line_directive:fname 
+    (List.map (fun (x,y) -> {loc_start = x ; loc_end = y; action = `skip}) whole_intervals)
+    file_size   ic oc ;
+  close_in ic 
+
+end
 module Bsb_build_ui : sig 
 #1 "bsb_build_ui.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -7611,9 +7691,11 @@ type build_generator =
     command : string}
 
 type  file_group = 
-  { dir : string ; (* currently relative path expected for ninja file generation *)
+  { dir : string ; 
+    (* currently relative path expected for ninja file generation *)
     sources : Binary_cache.file_group_rouces ; 
-    resources : string list ; (* relative path *)
+    resources : string list ; 
+    (* relative path *)
     public : public;
     dir_index : Bsb_dir_index.t; 
     generators : build_generator list;
@@ -7622,7 +7704,8 @@ type  file_group =
 
 
 type t = 
-  { files :  file_group list ; (* flattened list of directories *)
+  { files :  file_group list ;
+   (* flattened list of directories *)
     intervals :  Ext_file_pp.interval list ;
     globbed_dirs : string list ; 
 
@@ -7632,7 +7715,7 @@ type t =
 
 
 
-type parsing_cxt = {
+type cxt = {
   no_dev : bool ;
   dir_index : Bsb_dir_index.t ; 
   cwd : string ;
@@ -7644,12 +7727,12 @@ type parsing_cxt = {
 (** entry is to the 
     [sources] in the schema
 
-    [parsing_sources cxt json]
+    [parse_sources cxt json]
     given a root, return an object which is
     all relative paths, this function will do the IO
 *)
-val parsing_sources : 
-  parsing_cxt ->
+val parse_sources : 
+  cxt ->
   Ext_json_types.t  ->
   t 
   
@@ -7724,36 +7807,10 @@ let (//) = Ext_filename.combine
 let (|?)  m (key, cb) =
   m  |> Ext_json.test key cb 
 
-let get_list_string  =  Bsb_build_util.get_list_string
-
-
-
-let print_arrays file_array oc offset  =
-  let indent = String.make offset ' ' in 
-  let p_str s = 
-    output_string oc indent ; 
-    output_string oc s ;
-    output_string oc "\n"
-  in
-  let len = String_vec.length file_array in 
-  match len with 
-  | 0
-    -> output_string oc "[ ]\n"
-  | 1 
-    -> output_string oc ("[ \"" ^ String_vec.get file_array 0  ^ "\" ]\n")
-  | _ (* first::(_::_ as rest) *)
-    -> 
-    output_string oc "[ \n";
-    String_vec.iter_range ~from:0 ~to_:(len - 2 ) 
-      (fun s -> p_str @@ "\"" ^ s ^ "\",") file_array;
-    p_str @@ "\"" ^ (String_vec.last file_array) ^ "\"";
-
-    p_str "]" 
-
 
 let warning_unused_file : _ format = "@{<warning>IGNORED@}: file %s under %s is ignored due to that it is not a valid module name@."
 
-type parsing_cxt = {
+type cxt = {
   no_dev : bool ;
   dir_index : Bsb_dir_index.t ; 
   cwd : string ;
@@ -7762,7 +7819,7 @@ type parsing_cxt = {
 }
 
 let  handle_list_files acc
-  ({ cwd = dir ; root} : parsing_cxt)  
+  ({ cwd = dir ; root} : cxt)  
     loc_start loc_end : Ext_file_pp.interval list * _ =    
   (** detect files to be populated later  *)
   let files_array = readdir root dir  in 
@@ -7782,7 +7839,7 @@ let  handle_list_files acc
         | Suffix_mismatch -> acc 
       ) acc files_array in 
   [{Ext_file_pp.loc_start ;
-    loc_end; action = (`print (print_arrays dyn_file_array))}],
+    loc_end; action = (`print (Bsb_log.print_arrays dyn_file_array))}],
   files
 
 
@@ -7930,7 +7987,7 @@ and parsing_source_dir_map
       let excludes = 
         match String_map.find_opt Bsb_build_schemas.excludes m with 
         | None -> []   
-        | Some (Arr {content = arr}) -> get_list_string arr 
+        | Some (Arr {content = arr}) -> Bsb_build_util.get_list_string arr 
         | Some x -> Bsb_exception.failwith_config x  "excludes expect array "in 
       let slow_re = String_map.find_opt Bsb_build_schemas.slow_re m in 
       let predicate = 
@@ -7973,7 +8030,7 @@ and parsing_source_dir_map
   x   
   |?  (Bsb_build_schemas.resources ,
        `Arr (fun s  ->
-           resources := get_list_string s 
+           resources := Bsb_build_util.get_list_string s 
          ))
   |? (Bsb_build_schemas.public, `Str_loc (fun s loc -> 
         if s = Bsb_build_schemas.export_all then public := Export_all else 
@@ -7981,7 +8038,7 @@ and parsing_source_dir_map
           Bsb_exception.failf ~loc "invalid str for %s "  s 
       ))
     |? (Bsb_build_schemas.public, `Arr (fun s -> 
-        public := Export_set (String_set.of_list (get_list_string s ) )
+        public := Export_set (String_set.of_list (Bsb_build_util.get_list_string s ) )
       ) )
     |> ignore ;
     let cur_file = 
@@ -7995,7 +8052,7 @@ and parsing_source_dir_map
     let children, children_update_queue, children_globbed_dirs = 
       match String_map.find_opt Bsb_build_schemas.subdirs x with 
       | Some s -> 
-        let res  = parsing_sources cxt s in 
+        let res  = parse_sources cxt s in 
         res.files ,
         res.intervals,
         res.globbed_dirs
@@ -8016,7 +8073,7 @@ and  parsing_arr_sources cxt (file_groups : Ext_json_types.t array)  =
       parsing_source cxt x ++ origin 
     ) empty  file_groups 
 
-and  parsing_sources ( cxt : parsing_cxt) (sources : Ext_json_types.t )  = 
+and  parse_sources ( cxt : cxt) (sources : Ext_json_types.t )  = 
   match sources with   
   | Arr file_groups -> 
     parsing_arr_sources cxt file_groups.content
@@ -9062,7 +9119,7 @@ let interpret_json
     |> ignore ;
     begin match String_map.find_opt Bsb_build_schemas.sources map with 
       | Some x -> 
-        let res = Bsb_build_ui.parsing_sources 
+        let res = Bsb_build_ui.parse_sources 
             {no_dev; 
              dir_index =
                Bsb_dir_index.lib_dir_index; cwd = Filename.current_dir_name; 
