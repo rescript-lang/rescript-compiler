@@ -38,10 +38,12 @@ val process_wholes :
   interval list ->
   int -> ?line_directive:string -> in_channel -> out_channel -> unit
 
-val cpp_process_file : 
-  string -> (Lexing.position * Lexing.position) list -> out_channel -> unit
-
-
 (** Assume that there is no overlapp *)
 val interval_compare : 
   interval -> interval -> int
+
+(*
+val cpp_process_file : 
+  string -> (Lexing.position * Lexing.position) list -> out_channel -> unit*)
+
+

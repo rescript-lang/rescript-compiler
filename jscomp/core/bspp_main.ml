@@ -1,6 +1,6 @@
 
 
-let buffer_intervals (intervals : (int * int) list) buf ic oc =
+(*let buffer_intervals (intervals : (int * int) list) buf ic oc =
   intervals
   |> List.iter
     (fun (start, stop) -> 
@@ -12,7 +12,7 @@ let buffer_intervals (intervals : (int * int) list) buf ic oc =
            Buffer.output_buffer oc buf ; 
            Buffer.clear buf;
          end
-    )
+    )*)
   
 
 let preprocess fn oc = 
@@ -23,8 +23,11 @@ let preprocess fn oc =
   Lexer.init ();
   lexbuf
   |> Lexer.filter_directive_from_lexbuf  
+  (* Get a list of segments
+    TODO: output line directive
+   *)
   |> List.iter
-    (fun (start, stop) -> 
+    (fun (start, stop) ->       
        let len = stop - start in 
        if len <> 0 then 
          begin

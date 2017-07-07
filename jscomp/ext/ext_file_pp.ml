@@ -82,10 +82,12 @@ let process_wholes
     aux (0, 1, 0) whole_intervals
 
 
-let cpp_process_file fname whole_intervals oc = 
+(*let cpp_process_file fname 
+  (whole_intervals : (Lexing.position * Lexing.position) list)
+  oc = 
   let ic = open_in_bin fname in
   let file_size = in_channel_length ic in 
   process_wholes ~line_directive:fname 
     (List.map (fun (x,y) -> {loc_start = x ; loc_end = y; action = Skip}) whole_intervals)
     file_size   ic oc ;
-  close_in ic 
+  close_in ic *)
