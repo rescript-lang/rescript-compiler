@@ -22,16 +22,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type action = 
-  | Skip
-  | Print of (Pervasives.out_channel -> int -> unit)
 
 
 
 type interval = {
   loc_start : Lexing.position ; 
   loc_end : Lexing.position ; 
-  action : action 
+  action : out_channel -> int -> unit 
 }
 
 val process_wholes : 
@@ -42,6 +39,11 @@ val process_wholes :
 val interval_compare : 
   interval -> interval -> int
 
+val patch_action:
+  String_vec.t -> 
+  Lexing.position -> 
+  Lexing.position -> 
+  interval
 (*
 val cpp_process_file : 
   string -> (Lexing.position * Lexing.position) list -> out_channel -> unit*)

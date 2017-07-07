@@ -16,7 +16,7 @@ ext/int_vec_vec.cmx : ext/resize_array.cmx ext/int_vec.cmx \
 ext/set_gen.cmx :
 ext/map_gen.cmx :
 ext/map_make.cmx : ext/map_gen.cmx ext/map_make.cmi
-ext/ext_file_pp.cmx : ext/ext_file_pp.cmi
+ext/ext_file_pp.cmx : ext/string_vec.cmx ext/ext_file_pp.cmi
 ext/ext_format.cmx : ext/ext_format.cmi
 ext/hashtbl_gen.cmx : ext/ext_util.cmx
 ext/ext_string.cmx : ext/ext_bytes.cmx ext/ext_string.cmi
@@ -103,7 +103,7 @@ ext/int_vec.cmi : ext/vec_gen.cmx
 ext/int_vec_util.cmi : ext/int_vec.cmi
 ext/int_vec_vec.cmi : ext/vec_gen.cmx ext/int_vec.cmi
 ext/map_make.cmi : ext/map_gen.cmx
-ext/ext_file_pp.cmi :
+ext/ext_file_pp.cmi : ext/string_vec.cmi
 ext/ext_format.cmi :
 ext/ext_string.cmi :
 ext/ext_color.cmi :
@@ -757,7 +757,7 @@ bsb/bsb_helper_packer.cmx : ext/string_set.cmx ext/string_map.cmx \
 bsb/bsb_init.cmx : ext/string_hashtbl.cmx bsb/oCamlRes.cmx \
     ext/ext_string.cmx ext/ext_io.cmx bsb/bsb_templates.cmx bsb/bsb_regex.cmx \
     common/bs_version.cmx bsb/bsb_init.cmi
-bsb/bsb_log.cmx : ext/string_vec.cmx bsb/bsb_log.cmi
+bsb/bsb_log.cmx : bsb/bsb_log.cmi
 bsb/bsb_main.cmx : ext/string_hash_set.cmx ext/literals.cmx ext/ext_sys.cmx \
     ext/ext_string.cmx ext/ext_filename.cmx ext/ext_color.cmx \
     ext/ext_array.cmx bsb/bsb_unix.cmx bsb/bsb_merlin_gen.cmx \
@@ -776,9 +776,9 @@ bsb/bsb_os_dependent.cmx :
 bsb/bsb_parse_sources.cmx : ext/string_vec.cmx ext/string_set.cmx \
     ext/string_map.cmx ext/ext_string.cmx ext/ext_json_types.cmx \
     ext/ext_json.cmx ext/ext_filename.cmx ext/ext_file_pp.cmx \
-    ext/ext_array.cmx bsb/bsb_log.cmx bsb/bsb_exception.cmx \
-    bsb/bsb_dir_index.cmx bsb/bsb_build_util.cmx bsb/bsb_build_schemas.cmx \
-    common/binary_cache.cmx bsb/bsb_parse_sources.cmi
+    ext/ext_array.cmx bsb/bsb_exception.cmx bsb/bsb_dir_index.cmx \
+    bsb/bsb_build_util.cmx bsb/bsb_build_schemas.cmx common/binary_cache.cmx \
+    bsb/bsb_parse_sources.cmi
 bsb/bsb_pkg.cmx : ext/string_hashtbl.cmx ext/literals.cmx \
     bsb/bsb_exception.cmx bsb/bsb_pkg.cmi
 bsb/bsb_regex.cmx : bsb/bsb_regex.cmi
@@ -806,7 +806,7 @@ bsb/bsb_helper_linker.cmi :
 bsb/bsb_helper_main.cmi :
 bsb/bsb_helper_packer.cmi :
 bsb/bsb_init.cmi :
-bsb/bsb_log.cmi : ext/string_vec.cmi
+bsb/bsb_log.cmi :
 bsb/bsb_main.cmi :
 bsb/bsb_merlin_gen.cmi : bsb/bsb_config_types.cmx
 bsb/bsb_ninja.cmi : ext/string_map.cmi ext/string_hash_set.cmi \

@@ -23,8 +23,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 type action = 
-  | Skip
-  | Print of (out_channel -> int -> unit)
+  (out_channel -> int -> unit)
+
   
 
 
@@ -37,6 +37,15 @@ type interval = {
 let interval_compare x y = 
   Pervasives.compare (x.loc_start.pos_cnum : int) y.loc_start.pos_cnum
 
+(*
+  It tries to copy io stream from [ic] into [oc]
+  except it will skip those wholes, for each 
+  whole a callback can be attached
+  When come across a whole, 
+  it will print 
+  - line directive (based on previous info)
+  - all content before
+*)
 let process_wholes 
     (whole_intervals : interval list ) 
     file_size
@@ -71,17 +80,46 @@ let process_wholes
       loc_end  = {Lexing.pos_cnum = stop; pos_bol ; pos_lnum} ;
       action 
     } :: xs  -> 
-      print start ;
       let offset = stop - pos_bol in
-      begin match action with 
-      | Skip -> ()
-      | Print f -> f oc offset 
-      end;
+      print start ;
+      action oc offset ;
       aux (stop, pos_lnum, offset) xs 
   in 
     aux (0, 1, 0) whole_intervals
 
 
+let print_arrays file_array oc offset  =
+  let indent = String.make offset ' ' in 
+  let p_str s = 
+    output_string oc indent ; 
+    output_string oc s ;
+    output_string oc "\n"
+  in
+  let len = String_vec.length file_array in 
+  match len with 
+  | 0
+    -> output_string oc "[ ]\n"
+  | 1 
+    -> output_string oc ("[ \"" ^ String_vec.get file_array 0  ^ "\" ]\n")
+  | _ (* first::(_::_ as rest) *)
+    -> 
+    output_string oc "[ \n";
+    String_vec.iter_range ~from:0 ~to_:(len - 2 ) 
+      (fun s -> p_str @@ "\"" ^ s ^ "\",") file_array;
+    p_str @@ "\"" ^ (String_vec.last file_array) ^ "\"";
+
+    p_str "]"
+
+let patch_action file_array 
+  loc_start loc_end  =
+  {loc_start ; loc_end ; 
+  action = print_arrays file_array 
+  }   
+
+
+(* TODO: in the future, support [bspp.exe]
+  with line directive as well
+ *)
 (*let cpp_process_file fname 
   (whole_intervals : (Lexing.position * Lexing.position) list)
   oc = 

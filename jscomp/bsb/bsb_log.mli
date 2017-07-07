@@ -24,7 +24,3 @@
 
 
 
-(** Used in populate empty `files` field 
-  [print_arrays files oc offset]
-*)
-val print_arrays : String_vec.t -> out_channel -> int -> unit 

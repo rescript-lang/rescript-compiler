@@ -97,10 +97,9 @@ let  handle_list_files acc
           acc 
         | Suffix_mismatch -> acc 
       ) acc files_array in 
-  [{Ext_file_pp.loc_start ;
-    loc_end; 
-    action = 
-    (Print (Bsb_log.print_arrays dyn_file_array))}],
+  [ Ext_file_pp.patch_action dyn_file_array 
+    loc_start loc_end
+    ],
   files
 
 
