@@ -302,12 +302,19 @@ let rel_normalized_absolute_path from to_ =
           Ext_string.parent_dir_lit xs in
     go paths1 paths2
 
+module IntInt_array =
+  Resize_array.Make(
+    struct
+      type t = int * int
+      let null = (-1, -1)
+    end)
+
 (**
   Instead of splitting a string, returns a list of indices where directory names start
  *)
 let split_aux_idx x =
   let l = String.length x in
-  let rarr = l / 2 |> Resize_array.make in
+  let rarr = l / 2 |> IntInt_array.make in
   let rec ctr i =
     if i = l || x.[i] = os_path_separator_char then i - 1
     else ctr (i+1)
@@ -318,10 +325,10 @@ let split_aux_idx x =
       if x.[sidx] = os_path_separator_char then h accum (sidx+1)
       else
         let eidx = ctr (sidx+1) in
-        h (Resize_array.push (sidx, eidx) accum) (eidx+1)
+        h (IntInt_array.push (sidx, eidx) accum) (eidx+1)
   in
   h rarr 0
-  |> Resize_array.to_list
+  |> IntInt_array.to_list
 
 (* TODO: could be highly optimized later
   {[
