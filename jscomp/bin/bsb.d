@@ -1,5 +1,6 @@
 bin/bsb.ml : ext/ext_io.ml
 bin/bsb.ml : bsb/bsb_gen.ml
+bin/bsb.ml : bsb/bsb_log.ml
 bin/bsb.ml : bsb/bsb_pkg.ml
 bin/bsb.ml : ext/ext_io.mli
 bin/bsb.ml : ext/ext_sys.ml
@@ -9,6 +10,7 @@ bin/bsb.ml : ext/vec_gen.ml
 bin/bsb.ml : bsb/bsb_file.ml
 bin/bsb.ml : bsb/bsb_gen.mli
 bin/bsb.ml : bsb/bsb_init.ml
+bin/bsb.ml : bsb/bsb_log.mli
 bin/bsb.ml : bsb/bsb_main.ml
 bin/bsb.ml : bsb/bsb_pkg.mli
 bin/bsb.ml : bsb/bsb_rule.ml

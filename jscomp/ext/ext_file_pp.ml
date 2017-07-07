@@ -23,10 +23,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 type action = 
-  [
-    `skip
-  | `print of (out_channel -> int -> unit)
-  ]
+  | Skip
+  | Print of (out_channel -> int -> unit)
+  
 
 
 type interval = {
@@ -75,8 +74,8 @@ let process_wholes
       print start ;
       let offset = stop - pos_bol in
       begin match action with 
-      | `skip -> ()
-      | `print f -> f oc offset 
+      | Skip -> ()
+      | Print f -> f oc offset 
       end;
       aux (stop, pos_lnum, offset) xs 
   in 
@@ -87,6 +86,6 @@ let cpp_process_file fname whole_intervals oc =
   let ic = open_in_bin fname in
   let file_size = in_channel_length ic in 
   process_wholes ~line_directive:fname 
-    (List.map (fun (x,y) -> {loc_start = x ; loc_end = y; action = `skip}) whole_intervals)
+    (List.map (fun (x,y) -> {loc_start = x ; loc_end = y; action = Skip}) whole_intervals)
     file_size   ic oc ;
   close_in ic 

@@ -54,7 +54,7 @@ type t =
     js_post_build_cmd : string option;
     package_specs : Bsb_config.package_specs ; 
     globbed_dirs : string list;
-    bs_file_groups : Bsb_build_ui.file_group list ;
+    bs_file_groups : Bsb_parse_sources.file_group list ;
     files_to_install : String_hash_set.t ;
     generate_merlin : bool ; 
     reason_react_jsx : reason_react_jsx ; (* whether apply PPX transform or not*)

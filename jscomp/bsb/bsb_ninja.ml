@@ -164,7 +164,7 @@ let install_file (file : string) files_to_install =
 
 let handle_file_group oc ~custom_rules 
     ~package_specs ~js_post_build_cmd  
-    (files_to_install : String_hash_set.t) acc (group: Bsb_build_ui.file_group) : info =
+    (files_to_install : String_hash_set.t) acc (group: Bsb_parse_sources.file_group) : info =
   let handle_module_info  oc  module_name
       ( module_info : Binary_cache.module_info)
       info  =
@@ -320,7 +320,7 @@ let handle_file_group oc ~custom_rules
   let map_to_source_dir = 
     (fun x -> Bsb_config.proj_rel (group.dir //x )) in
   group.generators
-  |> List.iter (fun  ({output; input; command}  : Bsb_build_ui.build_generator)-> 
+  |> List.iter (fun  ({output; input; command}  : Bsb_parse_sources.build_generator)-> 
       begin match String_map.find_opt command custom_rules with 
       | None -> Ext_pervasives.failwithf ~loc:__LOC__ "custom rule %s used but  not defined" command
       | Some rule -> 
@@ -351,5 +351,5 @@ let handle_file_group oc ~custom_rules
 let handle_file_groups
  oc ~package_specs ~js_post_build_cmd
   ~files_to_install ~custom_rules
-  (file_groups  :  Bsb_build_ui.file_group list) st =
+  (file_groups  :  Bsb_parse_sources.file_group list) st =
   List.fold_left (handle_file_group oc ~package_specs ~custom_rules ~js_post_build_cmd files_to_install ) st  file_groups

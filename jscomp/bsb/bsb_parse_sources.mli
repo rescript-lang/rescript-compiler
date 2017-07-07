@@ -22,52 +22,61 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type public = 
+  | Export_all 
+  | Export_set of String_set.t 
+  | Export_none
+    
+
+
+type build_generator = 
+  { input : string list ;
+    output : string list;
+    command : string}
+
+type  file_group = 
+  { dir : string ; 
+    (* currently relative path expected for ninja file generation *)
+    sources : Binary_cache.file_group_rouces ; 
+    resources : string list ; 
+    (* relative path *)
+    public : public;
+    dir_index : Bsb_dir_index.t; 
+    generators : build_generator list;
+  } 
 
 
 
-type override = 
-  | Append of string 
-  | Overwrite of string 
+type t = 
+  { files :  file_group list ;
+   (* flattened list of directories *)
+    intervals :  Ext_file_pp.interval list ;
+    globbed_dirs : string list ; 
 
-(** output should always be marked explicitly,
-   otherwise the build system can not figure out clearly
-   however, for the command we don't need pass `-o`
-*)
-val output_build :
-  ?order_only_deps:string list ->
-  ?implicit_deps:string list ->
-  ?outputs:string list ->
-  ?implicit_outputs: string list ->  
-  ?inputs:string list ->
-  ?shadows:(string * override) list ->
-  ?restat:unit ->
-  output:string ->
-  input:string ->
-  rule:Bsb_rule.t -> out_channel -> unit
+  }
 
 
-val phony  :
-  ?order_only_deps:string list ->
-  inputs:string list -> output:string -> out_channel -> unit
 
-val output_kv : string ->  string -> out_channel -> unit 
-val output_kvs : (string * string) array -> out_channel -> unit
 
-type info = {
-  all_config_deps : string list  ;
-  (*all_installs :  string list *)
+
+type cxt = {
+  no_dev : bool ;
+  dir_index : Bsb_dir_index.t ; 
+  cwd : string ;
+  root : string ;
+  cut_generators : bool
 }
 
-val zero : info 
 
+(** entry is to the 
+    [sources] in the schema
 
-val handle_file_groups : out_channel ->
-  package_specs:Bsb_config.package_specs ->  
-  js_post_build_cmd:string option -> 
-  files_to_install:String_hash_set.t ->  
-  custom_rules:Bsb_rule.t String_map.t -> 
-  Bsb_parse_sources.file_group list ->
-  info -> info
-
-(** TODO: need clean up when running across projects process *)
-(* val files_to_install : String_hash_set.t  *)
+    [parse_sources cxt json]
+    given a root, return an object which is
+    all relative paths, this function will do the IO
+*)
+val parse_sources : 
+  cxt ->
+  Ext_json_types.t  ->
+  t 
+  

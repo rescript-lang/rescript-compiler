@@ -1,4 +1,4 @@
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+(* Copyright (C) 2017 Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -22,58 +22,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type public = 
-  | Export_all 
-  | Export_set of String_set.t 
-  | Export_none
-    
 
 
-type build_generator = 
-  { input : string list ;
-    output : string list;
-    command : string}
-
-type  file_group = 
-  { dir : string ; (* currently relative path expected for ninja file generation *)
-    sources : Binary_cache.file_group_rouces ; 
-    resources : string list ; (* relative path *)
-    public : public;
-    dir_index : Bsb_dir_index.t; 
-    generators : build_generator list;
-  } 
-
-
-
-type t = 
-  { files :  file_group list ; (* flattened list of directories *)
-    intervals :  Ext_file_pp.interval list ;
-    globbed_dirs : string list ; 
-
-  }
-
-
-
-
-
-type parsing_cxt = {
-  no_dev : bool ;
-  dir_index : Bsb_dir_index.t ; 
-  cwd : string ;
-  root : string ;
-  cut_generators : bool
-}
-
-
-(** entry is to the 
-    [sources] in the schema
-
-    [parsing_sources cxt json]
-    given a root, return an object which is
-    all relative paths, this function will do the IO
+(** Used in populate empty `files` field 
+  [print_arrays files oc offset]
 *)
-val parsing_sources : 
-  parsing_cxt ->
-  Ext_json_types.t  ->
-  t 
-  
+val print_arrays : String_vec.t -> out_channel -> int -> unit 

@@ -288,6 +288,7 @@ OTHER_CORE_CMXS= $(addprefix core/, $(addsuffix .cmx, $(OTHER_CORE_SRCS)))
 BSB_SRCS= bsb_config \
 	bsb_exception\
 	bsb_dir_index\
+	bsb_log\
 	bsb_pkg \
 	bsb_build_schemas \
 	bsb_build_util \
@@ -295,7 +296,7 @@ BSB_SRCS= bsb_config \
 	bsb_helper_extract\
 	bsb_rule\
 	bsb_ninja \
-	bsb_build_ui \
+	bsb_parse_sources\
 	bsb_default\
 	bsb_dep_infos\
 	bsb_watcher_gen\

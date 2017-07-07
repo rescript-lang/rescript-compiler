@@ -23,10 +23,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 type action = 
-  [
-    `skip
-  | `print of (Pervasives.out_channel -> int -> unit)
-  ]
+  | Skip
+  | Print of (Pervasives.out_channel -> int -> unit)
+
 
 
 type interval = {

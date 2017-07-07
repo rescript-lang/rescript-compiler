@@ -1,5 +1,5 @@
 (* Copyright (C) 2017- Authors of BuckleScript
- *
+ * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,30 +17,29 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+let print_arrays file_array oc offset  =
+  let indent = String.make offset ' ' in 
+  let p_str s = 
+    output_string oc indent ; 
+    output_string oc s ;
+    output_string oc "\n"
+  in
+  let len = String_vec.length file_array in 
+  match len with 
+  | 0
+    -> output_string oc "[ ]\n"
+  | 1 
+    -> output_string oc ("[ \"" ^ String_vec.get file_array 0  ^ "\" ]\n")
+  | _ (* first::(_::_ as rest) *)
+    -> 
+    output_string oc "[ \n";
+    String_vec.iter_range ~from:0 ~to_:(len - 2 ) 
+      (fun s -> p_str @@ "\"" ^ s ^ "\",") file_array;
+    p_str @@ "\"" ^ (String_vec.last file_array) ^ "\"";
 
-let (//) = Ext_filename.combine
-
-let sourcedirs_meta = ".sourcedirs.json"
-
-let generate_sourcedirs_meta cwd (res : Bsb_parse_sources.t) = 
-  let ochan = open_out_bin (cwd // Bsb_config.lib_bs // sourcedirs_meta) in
-  let v = 
-    Ext_json_noloc.(
-      kvs [
-        "dirs" ,
-      arr (Ext_array.of_list_map ( fun (x : Bsb_parse_sources.file_group) -> 
-      str x.dir 
-      ) res.files ) ;
-      "generated" ,
-      arr @@ Array.of_list @@ List.fold_left (fun acc (x : Bsb_parse_sources.file_group) -> 
-      Ext_list.flat_map_acc (fun x -> List.map str x.Bsb_parse_sources.output) acc  x.generators 
-      )  [] res.files 
-      ]
-     ) in 
-  Ext_json_noloc.to_channel ochan v ;
-  close_out ochan
+    p_str "]" 

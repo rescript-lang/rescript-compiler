@@ -238,7 +238,7 @@ let interpret_json
     |> ignore ;
     begin match String_map.find_opt Bsb_build_schemas.sources map with 
       | Some x -> 
-        let res = Bsb_build_ui.parsing_sources 
+        let res = Bsb_parse_sources.parse_sources 
             {no_dev; 
              dir_index =
                Bsb_dir_index.lib_dir_index; cwd = Filename.current_dir_name; 
