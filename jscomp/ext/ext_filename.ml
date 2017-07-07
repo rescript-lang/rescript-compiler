@@ -302,8 +302,9 @@ let rel_normalized_absolute_path from to_ =
           Ext_string.parent_dir_lit xs in
     go paths1 paths2
 
+open Resize_array
 module IntInt_array =
-  Resize_array.Make(
+  Resize_array.Make (
     struct
       type t = int * int
       let null = (-1, -1)
