@@ -72,7 +72,6 @@ val get_list_string :
     Ext_json_types.t array -> 
     string list
 
-val string_of_bsb_dev_include : int -> string 
 
 val resolve_bsb_magic_file : cwd:string -> desc:string -> string -> string
 

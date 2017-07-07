@@ -6192,7 +6192,6 @@ val get_list_string :
     Ext_json_types.t array -> 
     string list
 
-val string_of_bsb_dev_include : int -> string 
 
 val resolve_bsb_magic_file : cwd:string -> desc:string -> string -> string
 
@@ -6342,18 +6341,6 @@ let get_list_string_acc s acc =
 
 let get_list_string s = get_list_string_acc s []   
 
-let bsc_group_1_includes = "bsc_group_1_includes"
-let bsc_group_2_includes = "bsc_group_2_includes"
-let bsc_group_3_includes = "bsc_group_3_includes"
-let bsc_group_4_includes = "bsc_group_4_includes"
-let string_of_bsb_dev_include i = 
-  match i with 
-  | 1 -> bsc_group_1_includes 
-  | 2 -> bsc_group_2_includes
-  | 3 -> bsc_group_3_includes
-  | 4 -> bsc_group_4_includes
-  | _ -> 
-    "bsc_group_" ^ string_of_int i ^ "_includes"
 
 (* Key is the path *)
 let (|?)  m (key, cb) =
@@ -6660,7 +6647,7 @@ module Bsb_dir_index : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-type t = int
+type t = private int
 
 val lib_dir_index : t 
 
@@ -6668,9 +6655,18 @@ val is_lib_dir : t -> bool
 
 val get_dev_index : unit -> t 
 
+val of_int : int -> t 
+
 val get_current_number_of_dev_groups : unit -> int 
 
-(**TODO: Need reset when generating each ninja file to provide stronger guarantee *)
+
+val string_of_bsb_dev_include : t -> string 
+
+(** TODO: Need reset
+   when generating each ninja file to provide stronger guarantee. 
+   Here we get a weak guarantee because only dev group is 
+  inside the toplevel project
+   *)
 val reset : unit -> unit
 end = struct
 #1 "bsb_dir_index.ml"
@@ -6705,7 +6701,7 @@ type t = int
    1 : dev 1 
    2 : dev 2 
 *)  
-
+external of_int : int -> t = "%identity"
 let lib_dir_index = 0
 
 let is_lib_dir x = x = lib_dir_index
@@ -6717,6 +6713,21 @@ let get_dev_index ( ) =
 
 let get_current_number_of_dev_groups =
    (fun () -> !dir_index )
+
+
+let bsc_group_1_includes = "bsc_group_1_includes"
+let bsc_group_2_includes = "bsc_group_2_includes"
+let bsc_group_3_includes = "bsc_group_3_includes"
+let bsc_group_4_includes = "bsc_group_4_includes"
+let string_of_bsb_dev_include i = 
+  match i with 
+  | 1 -> bsc_group_1_includes 
+  | 2 -> bsc_group_2_includes
+  | 3 -> bsc_group_3_includes
+  | 4 -> bsc_group_4_includes
+  | _ -> 
+    "bsc_group_" ^ string_of_int i ^ "_includes"
+
 
 let reset () = dir_index := 0
 end
@@ -9880,13 +9891,13 @@ let handle_file_group oc ~custom_rules
 
                ) package_specs Ext_string.empty)
         ) ::
-        (if group.dir_index = 0 then [] else
+        (if Bsb_dir_index.is_lib_dir group.dir_index  then [] else
            [
              "bs_package_includes", `Append "$bs_package_dev_includes"
              ;
              ("bsc_extra_includes",
               `Overwrite
-                ("${" ^ Bsb_build_util.string_of_bsb_dev_include group.dir_index ^ "}")
+                ("${" ^ Bsb_dir_index.string_of_bsb_dev_include group.dir_index  ^ "}")
              )
            ]
         )
@@ -9919,8 +9930,9 @@ let handle_file_group oc ~custom_rules
               ~output:output_mlastd
               ~input:output_mlast
               ~rule:Rules.build_bin_deps
-              ?shadows:(if group.dir_index = 0 then None
-                else Some [Bsb_build_schemas.bsb_dir_group, `Overwrite (string_of_int group.dir_index)])
+              ?shadows:(if Bsb_dir_index.is_lib_dir group.dir_index then None
+                else Some [Bsb_build_schemas.bsb_dir_group,
+                   `Overwrite (string_of_int (group.dir_index :> int)) ])
             ;
             let rule_name , cm_outputs, deps =
               if module_info.mli = Mli_empty then
@@ -9962,8 +9974,9 @@ let handle_file_group oc ~custom_rules
             ~output:output_mliastd
             ~input:output_mliast
             ~rule:Rules.build_bin_deps
-            ?shadows:(if group.dir_index = 0 then None
-                      else Some [Bsb_build_schemas.bsb_dir_group, `Overwrite (string_of_int group.dir_index)])
+            ?shadows:(if Bsb_dir_index.is_lib_dir group.dir_index  then None
+                      else Some [Bsb_build_schemas.bsb_dir_group, 
+                        `Overwrite (string_of_int (group.dir_index :> int ))])
           ;
           output_build oc
             ~shadows
@@ -10211,21 +10224,23 @@ let output_ninja
       else
         let bs_groups = Array.init  (number_of_dev_groups + 1 ) (fun i -> String_map.empty) in
         let source_dirs = Array.init (number_of_dev_groups + 1 ) (fun i -> []) in
+        
         let static_resources =
           List.fold_left (fun acc_resources  ({Bsb_build_ui.sources; dir; resources; dir_index})  ->
+              let dir_index = (dir_index :> int) in 
               bs_groups.(dir_index) <- merge_module_info_map bs_groups.(dir_index) sources ;
               source_dirs.(dir_index) <- dir :: source_dirs.(dir_index);
               (List.map (fun x -> dir//x) resources) @ resources
             ) [] bs_file_groups in
         (* Make sure [sources] does not have files in [lib] we have to check later *)
-        let lib = bs_groups.(0) in
+        let lib = bs_groups.((Bsb_dir_index.lib_dir_index :> int)) in
         Bsb_ninja.output_kv
           Bsb_build_schemas.bsc_lib_includes (Bsb_build_util.flag_concat dash_i @@
            (all_includes source_dirs.(0))) oc ;
         for i = 1 to number_of_dev_groups  do
           let c = bs_groups.(i) in
           String_map.iter (fun k _ -> if String_map.mem k lib then failwith ("conflict files found:" ^ k)) c ;
-          Bsb_ninja.output_kv (Bsb_build_util.string_of_bsb_dev_include i)
+          Bsb_ninja.output_kv (Bsb_dir_index.(string_of_bsb_dev_include (of_int i)))
             (Bsb_build_util.flag_concat "-I" @@ source_dirs.(i)) oc
         done  ;
         Binary_cache.write_build_cache (cwd // Bsb_config.lib_bs // Binary_cache.bsbuild_cache) bs_groups ;

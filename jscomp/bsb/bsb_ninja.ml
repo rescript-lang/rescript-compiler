@@ -194,13 +194,13 @@ let handle_file_group oc ~custom_rules
 
                ) package_specs Ext_string.empty)
         ) ::
-        (if group.dir_index = 0 then [] else
+        (if Bsb_dir_index.is_lib_dir group.dir_index  then [] else
            [
              "bs_package_includes", `Append "$bs_package_dev_includes"
              ;
              ("bsc_extra_includes",
               `Overwrite
-                ("${" ^ Bsb_build_util.string_of_bsb_dev_include group.dir_index ^ "}")
+                ("${" ^ Bsb_dir_index.string_of_bsb_dev_include group.dir_index  ^ "}")
              )
            ]
         )
@@ -233,8 +233,9 @@ let handle_file_group oc ~custom_rules
               ~output:output_mlastd
               ~input:output_mlast
               ~rule:Rules.build_bin_deps
-              ?shadows:(if group.dir_index = 0 then None
-                else Some [Bsb_build_schemas.bsb_dir_group, `Overwrite (string_of_int group.dir_index)])
+              ?shadows:(if Bsb_dir_index.is_lib_dir group.dir_index then None
+                else Some [Bsb_build_schemas.bsb_dir_group,
+                   `Overwrite (string_of_int (group.dir_index :> int)) ])
             ;
             let rule_name , cm_outputs, deps =
               if module_info.mli = Mli_empty then
@@ -276,8 +277,9 @@ let handle_file_group oc ~custom_rules
             ~output:output_mliastd
             ~input:output_mliast
             ~rule:Rules.build_bin_deps
-            ?shadows:(if group.dir_index = 0 then None
-                      else Some [Bsb_build_schemas.bsb_dir_group, `Overwrite (string_of_int group.dir_index)])
+            ?shadows:(if Bsb_dir_index.is_lib_dir group.dir_index  then None
+                      else Some [Bsb_build_schemas.bsb_dir_group, 
+                        `Overwrite (string_of_int (group.dir_index :> int ))])
           ;
           output_build oc
             ~shadows

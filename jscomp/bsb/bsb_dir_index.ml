@@ -29,7 +29,7 @@ type t = int
    1 : dev 1 
    2 : dev 2 
 *)  
-
+external of_int : int -> t = "%identity"
 let lib_dir_index = 0
 
 let is_lib_dir x = x = lib_dir_index
@@ -41,5 +41,20 @@ let get_dev_index ( ) =
 
 let get_current_number_of_dev_groups =
    (fun () -> !dir_index )
+
+
+let bsc_group_1_includes = "bsc_group_1_includes"
+let bsc_group_2_includes = "bsc_group_2_includes"
+let bsc_group_3_includes = "bsc_group_3_includes"
+let bsc_group_4_includes = "bsc_group_4_includes"
+let string_of_bsb_dev_include i = 
+  match i with 
+  | 1 -> bsc_group_1_includes 
+  | 2 -> bsc_group_2_includes
+  | 3 -> bsc_group_3_includes
+  | 4 -> bsc_group_4_includes
+  | _ -> 
+    "bsc_group_" ^ string_of_int i ^ "_includes"
+
 
 let reset () = dir_index := 0
