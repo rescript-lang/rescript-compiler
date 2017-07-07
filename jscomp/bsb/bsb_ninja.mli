@@ -25,6 +25,9 @@
 
 
 
+type override = 
+  | Append of string 
+  | Overwrite of string 
 
 (** output should always be marked explicitly,
    otherwise the build system can not figure out clearly
@@ -36,7 +39,7 @@ val output_build :
   ?outputs:string list ->
   ?implicit_outputs: string list ->  
   ?inputs:string list ->
-  ?shadows:(string * [`Append of string | `Overwrite of string ]) list ->
+  ?shadows:(string * override) list ->
   ?restat:unit ->
   output:string ->
   input:string ->

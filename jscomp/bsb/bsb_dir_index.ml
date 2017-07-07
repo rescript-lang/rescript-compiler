@@ -43,6 +43,15 @@ let get_current_number_of_dev_groups =
    (fun () -> !dir_index )
 
 
+(** bsb generate pre-defined variables [bsc_group_i_includes]
+  for each rule, there is variable [bsc_extra_excludes]
+  [bsc_extra_includes] are for app test etc
+  it will be like
+  {[
+    bsc_extra_includes = ${bsc_group_1_includes}
+  ]}
+  where [bsc_group_1_includes] will be pre-calcuated
+*)
 let bsc_group_1_includes = "bsc_group_1_includes"
 let bsc_group_2_includes = "bsc_group_2_includes"
 let bsc_group_3_includes = "bsc_group_3_includes"
