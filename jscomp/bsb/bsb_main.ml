@@ -160,12 +160,14 @@ let regenerate_ninja
     ~forced cwd bsc_dir
   : _ option =
   let output_deps = cwd // Bsb_config.lib_bs // bsdeps in
-  let reason : Bsb_dep_infos.check_result =
-    Bsb_dep_infos.check ~cwd  forced output_deps in
+  let check_result  =
+    Bsb_bsdeps.check 
+      ~cwd  
+      ~forced ~file:output_deps in
   let () = 
     Format.fprintf Format.std_formatter  
-      "@{<info>BSB check@} build spec : %a @." Bsb_dep_infos.pp_check_result reason in 
-  begin match reason  with 
+      "@{<info>BSB check@} build spec : %a @." Bsb_bsdeps.pp_check_result check_result in 
+  begin match check_result  with 
     | Good ->
       None  (* Fast path, no need regenerate ninja *)
     | Bsb_forced 
@@ -173,7 +175,7 @@ let regenerate_ninja
     | Bsb_file_not_exist 
     | Bsb_source_directory_changed  
     | Other _ -> 
-      if reason = Bsb_bsc_version_mismatch then begin 
+      if check_result = Bsb_bsc_version_mismatch then begin 
         print_endline "Also clean current repo due to we have detected a different compiler";
         clean_self (); 
       end ; 
@@ -192,11 +194,12 @@ let regenerate_ninja
         Literals.bsconfig_json :: config.globbed_dirs
         |> List.map
           (fun x ->
-             { Bsb_dep_infos.dir_or_file = x ;
+             { Bsb_bsdeps.dir_or_file = x ;
                stamp = (Unix.stat (cwd // x)).st_mtime
              }
           )
-        |> (fun x -> Bsb_dep_infos.store ~cwd output_deps (Array.of_list x));
+        |> (fun x -> 
+          Bsb_bsdeps.store ~cwd ~file:output_deps (Array.of_list x));
         Some config 
       end 
   end

@@ -22,14 +22,19 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+(**
+  This module is used to check when [build.ninja] will 
+  be regenerated. Everytime [bsb] run [regenerate_ninja], 
+  bsb will try to [check] if it is needed, 
+  if needed, we will regenerate ninja file and store the 
+  meta data again
+*)
+
 
 type dep_info = {
   dir_or_file : string ;
   stamp : float 
 }
-
-
-
 (** 
    The data structure we decided to whether regenerate [build.ninja] 
    or not. Note that if we don't record absolute path, 
@@ -52,8 +57,14 @@ type check_result =
   | Other of string
 
 val pp_check_result : Format.formatter -> check_result -> unit
-val store : cwd:string -> string -> dep_info array -> unit
+
+(** [store ~cwd name deps]
+  serialize data (should be [.bsdeps])
+ *)
+val store : cwd:string -> file:string -> dep_info array -> unit
 
 
 (** check if [build.ninja] should be regenerated *)
-val check : cwd:string ->  bool -> string -> check_result
+val check :
+  cwd:string ->  
+  forced:bool -> file:string -> check_result

@@ -298,7 +298,7 @@ BSB_SRCS= bsb_config \
 	bsb_ninja \
 	bsb_parse_sources\
 	bsb_default\
-	bsb_dep_infos\
+	bsb_bsdeps\
 	bsb_watcher_gen\
 	bsb_merlin_gen\
 	bsb_gen\
