@@ -98,7 +98,7 @@ let read (fname : string) cont =
     Even forced, we still need walk through a little
     bit in case we found a different version of compiler
 *)
-let check ~cwd forced file =
+let check ~cwd ~forced ~file =
   read file  begin  function  {
     file_stamps = xs; source_directory; bsb_version = old_version;
     bsc_version
@@ -120,7 +120,7 @@ let check ~cwd forced file =
         end
   end
 
-let store ~cwd name file_stamps =
+let store ~cwd ~file:name file_stamps =
   write name
     { file_stamps ;
       source_directory = cwd ;
