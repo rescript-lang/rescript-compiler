@@ -190,7 +190,7 @@ let regenerate_ninja
       begin 
         Bsb_merlin_gen.merlin_file_gen ~cwd
           (bsc_dir // bsppx_exe) config;
-        Bsb_gen.output_ninja ~cwd ~bsc_dir config ; 
+        Bsb_ninja_gen.output_ninja ~cwd ~bsc_dir config ; 
         Literals.bsconfig_json :: config.globbed_dirs
         |> List.map
           (fun x ->

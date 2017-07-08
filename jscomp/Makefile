@@ -295,13 +295,13 @@ BSB_SRCS= bsb_config \
 	bsb_helper_linker\
 	bsb_helper_extract\
 	bsb_rule\
-	bsb_ninja \
+	bsb_ninja_util \
 	bsb_parse_sources\
 	bsb_default\
 	bsb_bsdeps\
 	bsb_watcher_gen\
 	bsb_merlin_gen\
-	bsb_gen\
+	bsb_ninja_gen\
 	bsb_file\
 	bsb_config_types\
 	bsb_config_parse\
