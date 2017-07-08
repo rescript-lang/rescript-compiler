@@ -25,9 +25,6 @@
 
 
 
-let bsppx_exe = "bsppx.exe"
-let bsdeps = ".bsdeps"
-
 let (//) = Ext_filename.combine
 
 let force_regenerate = ref false
@@ -108,61 +105,6 @@ let set_make_world () = make_world := true
 ;; Bsb_log.setup ()
 
 
-
-(** Regenerate ninja file if necessary   
-    return None if we dont need regenerate
-    otherwise return Some info
-*)
-let regenerate_ninja 
-    ~no_dev 
-    ~override_package_specs
-    ~generate_watch_metadata 
-    ~forced cwd bsc_dir
-  : _ option =
-  let output_deps = cwd // Bsb_config.lib_bs // bsdeps in
-  let check_result  =
-    Bsb_bsdeps.check 
-      ~cwd  
-      ~forced ~file:output_deps in
-  let () = 
-    Format.fprintf Format.std_formatter  
-      "@{<info>BSB check@} build spec : %a @." Bsb_bsdeps.pp_check_result check_result in 
-  begin match check_result  with 
-    | Good ->
-      None  (* Fast path, no need regenerate ninja *)
-    | Bsb_forced 
-    | Bsb_bsc_version_mismatch 
-    | Bsb_file_not_exist 
-    | Bsb_source_directory_changed  
-    | Other _ -> 
-      if check_result = Bsb_bsc_version_mismatch then begin 
-        print_endline "Also clean current repo due to we have detected a different compiler";
-        Bsb_clean.clean_self cwd; 
-      end ; 
-      Bsb_build_util.mkp (cwd // Bsb_config.lib_bs); 
-      let config = 
-        Bsb_config_parse.interpret_json 
-          ~override_package_specs
-          ~bsc_dir
-          ~generate_watch_metadata
-          ~no_dev
-          cwd in 
-      begin 
-        Bsb_merlin_gen.merlin_file_gen ~cwd
-          (bsc_dir // bsppx_exe) config;
-        Bsb_ninja_gen.output_ninja ~cwd ~bsc_dir config ; 
-        Literals.bsconfig_json :: config.globbed_dirs
-        |> List.map
-          (fun x ->
-             { Bsb_bsdeps.dir_or_file = x ;
-               stamp = (Unix.stat (cwd // x)).st_mtime
-             }
-          )
-        |> (fun x -> 
-          Bsb_bsdeps.store ~cwd ~file:output_deps (Array.of_list x));
-        Some config 
-      end 
-  end
 
 let bsb_main_flags : (string * Arg.spec * string) list=
   [
@@ -264,7 +206,7 @@ let build_bs_deps deps =
     (fun {top; cwd} ->
        if not top then
          begin 
-           let config_opt = regenerate_ninja ~no_dev:true
+           let config_opt = Bsb_ninja_regen.regenerate_ninja ~no_dev:true
                ~generate_watch_metadata:false
                ~override_package_specs:(Some deps) 
                ~forced:true
@@ -305,7 +247,7 @@ let () =
   | [| _ |] ->  (* specialize this path [bsb.exe] which is used in watcher *)
     begin
       let _config_opt =  
-        regenerate_ninja ~override_package_specs:None ~no_dev:false 
+        Bsb_ninja_regen.regenerate_ninja ~override_package_specs:None ~no_dev:false 
           ~generate_watch_metadata:true
           ~forced:false 
           cwd bsc_dir 
@@ -338,7 +280,7 @@ let () =
                 end 
               | make_world, force_regenerate ->
                 (* don't regenerate files when we only run [bsb -clean-world] *)
-                let config_opt = regenerate_ninja ~generate_watch_metadata:true ~override_package_specs:None ~no_dev:false ~forced:force_regenerate cwd bsc_dir  in
+                let config_opt = Bsb_ninja_regen.regenerate_ninja ~generate_watch_metadata:true ~override_package_specs:None ~no_dev:false ~forced:force_regenerate cwd bsc_dir  in
                 if make_world then begin
                   make_world_deps config_opt
                 end;
@@ -358,7 +300,7 @@ let () =
         -> (* -make-world all dependencies fall into this category *)
         begin
           Arg.parse_argv bsb_args bsb_main_flags handle_anonymous_arg usage ;
-          let config_opt = regenerate_ninja ~generate_watch_metadata:true ~override_package_specs:None ~no_dev:false cwd bsc_dir ~forced:!force_regenerate in
+          let config_opt = Bsb_ninja_regen.regenerate_ninja ~generate_watch_metadata:true ~override_package_specs:None ~no_dev:false cwd bsc_dir ~forced:!force_regenerate in
           (* [-make-world] should never be combined with [-package-specs] *)
           if !make_world then
             make_world_deps config_opt ;
