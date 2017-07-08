@@ -755,12 +755,10 @@ bsb/bsb_init.cmx : ext/string_hashtbl.cmx bsb/oCamlRes.cmx \
     ext/ext_string.cmx ext/ext_io.cmx bsb/bsb_templates.cmx bsb/bsb_regex.cmx \
     common/bs_version.cmx bsb/bsb_init.cmi
 bsb/bsb_log.cmx : ext/ext_string.cmx ext/ext_color.cmx bsb/bsb_log.cmi
-bsb/bsb_main.cmx : ext/string_hash_set.cmx ext/literals.cmx ext/ext_sys.cmx \
-    ext/ext_string.cmx ext/ext_filename.cmx ext/ext_array.cmx \
-    bsb/bsb_unix.cmx bsb/bsb_ninja_regen.cmx bsb/bsb_log.cmx bsb/bsb_init.cmx \
-    bsb/bsb_file.cmx bsb/bsb_config_types.cmx bsb/bsb_config_parse.cmx \
-    bsb/bsb_config.cmx bsb/bsb_clean.cmx bsb/bsb_build_util.cmx \
-    bsb/bsb_main.cmi
+bsb/bsb_main.cmx : ext/ext_sys.cmx ext/ext_string.cmx ext/ext_filename.cmx \
+    ext/ext_array.cmx bsb/bsb_world.cmx bsb/bsb_ninja_regen.cmx \
+    bsb/bsb_log.cmx bsb/bsb_init.cmx bsb/bsb_config.cmx bsb/bsb_clean.cmx \
+    bsb/bsb_build_util.cmx bsb/bsb_main.cmi
 bsb/bsb_merlin_gen.cmx : ext/literals.cmx ext/ext_string.cmx \
     ext/ext_filename.cmx bsb/bsb_parse_sources.cmx bsb/bsb_config_types.cmx \
     bsb/bsb_config.cmx bsb/bsb_merlin_gen.cmi
@@ -795,6 +793,10 @@ bsb/bsb_unix.cmx : ext/ext_sys.cmx ext/ext_string.cmx bsb/bsb_unix.cmi
 bsb/bsb_watcher_gen.cmx : ext/ext_list.cmx ext/ext_json_noloc.cmx \
     ext/ext_filename.cmx ext/ext_array.cmx bsb/bsb_parse_sources.cmx \
     bsb/bsb_config.cmx bsb/bsb_watcher_gen.cmi
+bsb/bsb_world.cmx : ext/string_hash_set.cmx ext/literals.cmx \
+    ext/ext_filename.cmx bsb/bsb_unix.cmx bsb/bsb_ninja_regen.cmx \
+    bsb/bsb_file.cmx bsb/bsb_config_types.cmx bsb/bsb_config_parse.cmx \
+    bsb/bsb_config.cmx bsb/bsb_build_util.cmx bsb/bsb_world.cmi
 bsb/oCamlRes.cmx :
 bsb/bsb_bsdeps.cmi :
 bsb/bsb_build_util.cmi : ext/ext_json_types.cmx
@@ -827,6 +829,7 @@ bsb/bsb_rule.cmi : ext/string_map.cmi
 bsb/bsb_templates.cmi : bsb/oCamlRes.cmx
 bsb/bsb_unix.cmi :
 bsb/bsb_watcher_gen.cmi : bsb/bsb_parse_sources.cmi
+bsb/bsb_world.cmi : bsb/bsb_config_types.cmx
 jscmj_main.cmx : common/js_config.cmx core/js_cmj_format.cmx \
     ext/ext_string.cmx ext/ext_pp.cmx ext/ext_pervasives.cmx \
     ext/ext_array.cmx jscmj_main.cmi

@@ -57,43 +57,6 @@ let separator = "--"
 
 
 
-
-let install_targets cwd (config : Bsb_config_types.t option) =
-  (** TODO: create the animation effect *)
-  let install ~destdir file = 
-    if Bsb_file.install_if_exists ~destdir file  then 
-      begin 
-        ()
-        (*Format.pp_print_string Format.std_formatter "=> "; 
-        Format.pp_print_string Format.std_formatter destdir;
-        Format.pp_print_string Format.std_formatter "<= ";
-        Format.pp_print_string Format.std_formatter file ;
-        Format.pp_print_string Format.std_formatter "\r"; 
-        Format.pp_print_flush Format.std_formatter ();*)
-      end
-  in
-  match config with 
-  | None -> ()
-  | Some {files_to_install} -> 
-    let destdir = cwd // Bsb_config.lib_ocaml in (* lib is already there after building, so just mkdir [lib/ocaml] *)
-    if not @@ Sys.file_exists destdir then begin Unix.mkdir destdir 0o777  end;
-    begin
-      Format.fprintf Format.std_formatter "@{<info>Installing started@}@.";
-      (*Format.pp_print_flush Format.std_formatter ();*)
-      String_hash_set.iter (fun x ->
-          install ~destdir (cwd // x ^  Literals.suffix_ml) ;
-          install ~destdir (cwd // x ^  Literals.suffix_re) ;
-          install ~destdir (cwd // x ^ Literals.suffix_mli) ;
-          install ~destdir (cwd // x ^  Literals.suffix_rei) ;
-          install ~destdir (cwd // Bsb_config.lib_bs//x ^ Literals.suffix_cmi) ;
-          install ~destdir (cwd // Bsb_config.lib_bs//x ^ Literals.suffix_cmj) ;
-          install ~destdir (cwd // Bsb_config.lib_bs//x ^ Literals.suffix_cmt) ;
-          install ~destdir (cwd // Bsb_config.lib_bs//x ^ Literals.suffix_cmti) ;
-        ) files_to_install;
-      Format.fprintf Format.std_formatter "@{<info>Installing finished@} @.";
-    end
-
-
 let watch_mode = ref false
 
 
@@ -102,7 +65,7 @@ let make_world = ref false
 let set_make_world () = make_world := true
 
 
-;; Bsb_log.setup ()
+
 
 
 
@@ -198,49 +161,11 @@ let handle_anonymous_arg arg =
   raise (Arg.Bad ("Unknown arg \"" ^ arg ^ "\""))
 
 
-let build_bs_deps deps =
 
-  let bsc_dir = Bsb_build_util.get_bsc_dir cwd in
-  let vendor_ninja = bsc_dir // "ninja.exe" in
-  Bsb_build_util.walk_all_deps  cwd
-    (fun {top; cwd} ->
-       if not top then
-         begin 
-           let config_opt = Bsb_ninja_regen.regenerate_ninja ~no_dev:true
-               ~generate_watch_metadata:false
-               ~override_package_specs:(Some deps) 
-               ~forced:true
-               cwd bsc_dir  in (* set true to force regenrate ninja file so we have [config_opt]*)
-           Bsb_unix.run_command_execv
-             {cmd = vendor_ninja;
-              cwd = cwd // Bsb_config.lib_bs;
-              args  = [|vendor_ninja|]
-             };
-           (* When ninja is not regenerated, ninja will still do the build, 
-              still need reinstall check
-              Note that we can check if ninja print "no work to do", 
-              then don't need reinstall more
-           *)
-           install_targets cwd config_opt;
-         end
-    )
-
-
-let make_world_deps (config : Bsb_config_types.t option) =
-  print_endline "\nMaking the dependency world!";
-  let deps =
-    match config with
-    | None ->
-      (* When this running bsb does not read bsconfig.json,
-         we will read such json file to know which [package-specs]
-         it wants
-      *)
-      Bsb_config_parse.package_specs_from_bsconfig ()
-    | Some {package_specs} -> package_specs in
-  build_bs_deps deps
 
 (* see discussion #929, if we catch the exception, we don't have stacktrace... *)
 let () =
+  let () =  Bsb_log.setup () in 
   let bsc_dir = Bsb_build_util.get_bsc_dir cwd in
   let vendor_ninja = bsc_dir // "ninja.exe" in  
   match Sys.argv with 
@@ -282,7 +207,7 @@ let () =
                 (* don't regenerate files when we only run [bsb -clean-world] *)
                 let config_opt = Bsb_ninja_regen.regenerate_ninja ~generate_watch_metadata:true ~override_package_specs:None ~no_dev:false ~forced:force_regenerate cwd bsc_dir  in
                 if make_world then begin
-                  make_world_deps config_opt
+                  Bsb_world.make_world_deps cwd config_opt
                 end;
                 if !watch_mode then begin
                   watch_exit ()
@@ -303,7 +228,7 @@ let () =
           let config_opt = Bsb_ninja_regen.regenerate_ninja ~generate_watch_metadata:true ~override_package_specs:None ~no_dev:false cwd bsc_dir ~forced:!force_regenerate in
           (* [-make-world] should never be combined with [-package-specs] *)
           if !make_world then
-            make_world_deps config_opt ;
+            Bsb_world.make_world_deps cwd config_opt ;
           if !watch_mode then watch_exit ()
           else ninja_command_exit  vendor_ninja ninja_args 
         end
