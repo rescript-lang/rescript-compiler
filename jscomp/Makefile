@@ -307,6 +307,7 @@ BSB_SRCS= bsb_config \
 	bsb_config_parse\
 	bsb_unix\
 	bsb_regex\
+	bsb_clean\
 	oCamlRes\
 	bsb_templates\
 	bsb_init

@@ -105,48 +105,8 @@ let make_world = ref false
 let set_make_world () = make_world := true
 
 
+;; Bsb_log.setup ()
 
-
-let color_enabled = ref (Unix.isatty Unix.stdin)
-let set_color ppf =
-  Format.pp_set_formatter_tag_functions ppf 
-    ({ (Format.pp_get_formatter_tag_functions ppf () ) with
-       mark_open_tag = (fun s ->  if !color_enabled then  Ext_color.ansi_of_tag s else Ext_string.empty) ;
-       mark_close_tag = (fun _ ->  if !color_enabled then Ext_color.reset_lit else Ext_string.empty);
-     })
-
-let () = 
-  begin 
-    Format.pp_set_mark_tags Format.std_formatter true ;
-    Format.pp_set_mark_tags Format.err_formatter true;
-    Format.pp_set_mark_tags Format.str_formatter true;
-    set_color Format.std_formatter ; 
-    set_color Format.err_formatter;
-    set_color Format.str_formatter
-  end
-
-
-
-let clean_bs_garbage cwd =
-  Format.fprintf Format.std_formatter "@{<info>Cleaning:@} in %s@." cwd ; 
-  let aux x =
-    let x = (cwd // x)  in
-    if Sys.file_exists x then
-      Bsb_unix.remove_dir_recursive x  in
-  try
-    List.iter aux Bsb_config.all_lib_artifacts
-  with
-    e ->
-    Format.fprintf Format.err_formatter "@{<warning>Failed@} to clean due to %s" (Printexc.to_string e)
-
-
-let clean_bs_deps () =
-  Bsb_build_util.walk_all_deps  cwd  (fun { cwd} ->
-      (* whether top or not always do the cleaning *)
-      clean_bs_garbage cwd
-    )
-
-let clean_self () = clean_bs_garbage cwd
 
 
 (** Regenerate ninja file if necessary   
@@ -177,7 +137,7 @@ let regenerate_ninja
     | Other _ -> 
       if check_result = Bsb_bsc_version_mismatch then begin 
         print_endline "Also clean current repo due to we have detected a different compiler";
-        clean_self (); 
+        Bsb_clean.clean_self cwd; 
       end ; 
       Bsb_build_util.mkp (cwd // Bsb_config.lib_bs); 
       let config = 
@@ -206,19 +166,19 @@ let regenerate_ninja
 
 let bsb_main_flags : (string * Arg.spec * string) list=
   [
-    "-color", Arg.Set color_enabled,
+    "-color", Arg.Set Bsb_log.color_enabled,
     " forced color output"
     ;
-    "-no-color", Arg.Clear color_enabled,
+    "-no-color", Arg.Clear Bsb_log.color_enabled,
     " forced no color output";
     "-w", Arg.Set watch_mode,
     " Watch mode" ;     
     regen, Arg.Set force_regenerate,
     " (internal) Always regenerate build.ninja no matter bsconfig.json is changed or not (for debugging purpose)"
     ;
-    "-clean-world", Arg.Unit clean_bs_deps,
+    "-clean-world", Arg.Unit (fun _ -> Bsb_clean.clean_bs_deps cwd),
     " Clean all bs dependencies";
-    "-clean", Arg.Unit clean_self,
+    "-clean", Arg.Unit (fun _ -> Bsb_clean.clean_self cwd),
     " Clean only current project";
     "-make-world", Arg.Unit set_make_world,
     " Build all dependencies and itself ";
@@ -230,13 +190,6 @@ let bsb_main_flags : (string * Arg.spec * string) list=
     " List all available themes"
   ]
 
-
-let print_string_args (args : string array) =
-  for i  = 0 to Array.length args - 1 do
-    print_string (Array.unsafe_get args i) ;
-    print_string Ext_string.single_space;
-  done ;
-  print_newline ()
 
 
 (* Note that [keepdepfile] only makes sense when combined with [deps] for optimization
@@ -257,7 +210,7 @@ let ninja_command_exit  vendor_ninja ninja_args  =
         (Filename.quote vendor_ninja) "-C" Bsb_config.lib_bs
     else 
       let args = [|"ninja.exe"; "-C"; Bsb_config.lib_bs |] in
-      print_string_args args ;
+      Bsb_log.print_string_args args ;
       Unix.execvp vendor_ninja args
   else
     let fixed_args_length = 3 in
@@ -279,7 +232,7 @@ let ninja_command_exit  vendor_ninja ninja_args  =
                        | 1 -> "-C"
                        | 2 -> Bsb_config.lib_bs
                        | _ -> Array.unsafe_get ninja_args (i - fixed_args_length) )) in
-      print_string_args args ;
+      Bsb_log.print_string_args args ;
       Unix.execvp vendor_ninja args
 
 

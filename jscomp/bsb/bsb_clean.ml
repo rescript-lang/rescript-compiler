@@ -1,4 +1,4 @@
-(* Copyright (C) 2017- Authors of BuckleScript
+(* Copyright (C) 2017 Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -22,30 +22,26 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-let color_enabled = ref (Unix.isatty Unix.stdin)
-let set_color ppf =
-  Format.pp_set_formatter_tag_functions ppf 
-    ({ (Format.pp_get_formatter_tag_functions ppf () ) with
-       mark_open_tag = (fun s ->  if !color_enabled then  Ext_color.ansi_of_tag s else Ext_string.empty) ;
-       mark_close_tag = (fun _ ->  if !color_enabled then Ext_color.reset_lit else Ext_string.empty);
-     })
+
+let (//) = Ext_filename.combine
+
+let clean_bs_garbage cwd =
+  Format.fprintf Format.std_formatter "@{<info>Cleaning:@} in %s@." cwd ; 
+  let aux x =
+    let x = (cwd // x)  in
+    if Sys.file_exists x then
+      Bsb_unix.remove_dir_recursive x  in
+  try
+    List.iter aux Bsb_config.all_lib_artifacts
+  with
+    e ->
+    Format.fprintf Format.err_formatter "@{<warning>Failed@} to clean due to %s" (Printexc.to_string e)
 
 
-let setup () = 
-  begin 
-    Format.pp_set_mark_tags Format.std_formatter true ;
-    Format.pp_set_mark_tags Format.err_formatter true;
-    Format.pp_set_mark_tags Format.str_formatter true;
-    set_color Format.std_formatter ; 
-    set_color Format.err_formatter;
-    set_color Format.str_formatter
-  end
+let clean_bs_deps cwd =
+  Bsb_build_util.walk_all_deps  cwd  (fun { cwd} ->
+      (* whether top or not always do the cleaning *)
+      clean_bs_garbage cwd
+    )
 
-
-
-let print_string_args (args : string array) =
-  for i  = 0 to Array.length args - 1 do
-    print_string (Array.unsafe_get args i) ;
-    print_string Ext_string.single_space;
-  done ;
-  print_newline ()
+let clean_self cwd = clean_bs_garbage cwd
