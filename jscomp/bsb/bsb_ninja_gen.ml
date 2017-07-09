@@ -96,7 +96,7 @@ let output_ninja
         | Some  s -> 
           "-ppx " ^ s         
       in 
-      Bsb_ninja.output_kvs
+      Bsb_ninja_util.output_kvs
         [|
           "src_root_dir", cwd (* TODO: need check its integrity -- allow relocate or not? *);
           "bsc", bsc ;
@@ -133,7 +133,7 @@ let output_ninja
               merge_module_info_map  acc  sources ,  dir::dirs , (List.map (fun x -> dir // x ) resources) @ acc_resources
             ) (String_map.empty,[],[]) bs_file_groups in
         Binary_cache.write_build_cache (cwd // Bsb_config.lib_bs // Binary_cache.bsbuild_cache) [|bs_groups|] ;
-        Bsb_ninja.output_kv
+        Bsb_ninja_util.output_kv
           Bsb_build_schemas.bsc_lib_includes (Bsb_build_util.flag_concat dash_i @@ 
           (all_includes source_dirs  ))  oc ;
         static_resources
@@ -150,28 +150,28 @@ let output_ninja
             ) [] bs_file_groups in
         (* Make sure [sources] does not have files in [lib] we have to check later *)
         let lib = bs_groups.((Bsb_dir_index.lib_dir_index :> int)) in
-        Bsb_ninja.output_kv
+        Bsb_ninja_util.output_kv
           Bsb_build_schemas.bsc_lib_includes (Bsb_build_util.flag_concat dash_i @@
            (all_includes source_dirs.(0))) oc ;
         for i = 1 to number_of_dev_groups  do
           let c = bs_groups.(i) in
           String_map.iter (fun k _ -> if String_map.mem k lib then failwith ("conflict files found:" ^ k)) c ;
-          Bsb_ninja.output_kv (Bsb_dir_index.(string_of_bsb_dev_include (of_int i)))
+          Bsb_ninja_util.output_kv (Bsb_dir_index.(string_of_bsb_dev_include (of_int i)))
             (Bsb_build_util.flag_concat "-I" @@ source_dirs.(i)) oc
         done  ;
         Binary_cache.write_build_cache (cwd // Bsb_config.lib_bs // Binary_cache.bsbuild_cache) bs_groups ;
         static_resources;
     in
     let all_info =
-      Bsb_ninja.handle_file_groups oc       
+      Bsb_ninja_util.handle_file_groups oc       
         ~custom_rules
-        ~js_post_build_cmd  ~package_specs ~files_to_install bs_file_groups Bsb_ninja.zero  in
+        ~js_post_build_cmd  ~package_specs ~files_to_install bs_file_groups Bsb_ninja_util.zero  in
     let () =
-      List.iter (fun x -> Bsb_ninja.output_build oc
+      List.iter (fun x -> Bsb_ninja_util.output_build oc
                     ~output:x
                     ~input:(Bsb_config.proj_rel x)
                     ~rule:Bsb_rule.copy_resources) static_resources in
-    Bsb_ninja.phony oc ~order_only_deps:(static_resources @ all_info.all_config_deps)
+    Bsb_ninja_util.phony oc ~order_only_deps:(static_resources @ all_info.all_config_deps)
       ~inputs:[]
       ~output:Literals.build_ninja ;
     close_out oc;

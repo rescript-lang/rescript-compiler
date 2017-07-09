@@ -55,7 +55,7 @@ val output_kvs : (string * string) array -> out_channel -> unit
 
 type info = {
   all_config_deps : string list  ;
-  (*all_installs :  string list *)
+
 }
 
 val zero : info 
@@ -69,5 +69,3 @@ val handle_file_groups : out_channel ->
   Bsb_parse_sources.file_group list ->
   info -> info
 
-(** TODO: need clean up when running across projects process *)
-(* val files_to_install : String_hash_set.t  *)
