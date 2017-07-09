@@ -4,6 +4,7 @@
 #load "ext.cma";;
 #directory "./ext";;
 #directory "./stubs";;
+#directory "./bsb";;
 
 let bench ?(times=10_000_000) f = 
     let start = Sys.time () in 
