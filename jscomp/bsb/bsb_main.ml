@@ -24,56 +24,26 @@
 
 
 
-
-let (//) = Ext_filename.combine
-
-let force_regenerate = ref false
-let exec = ref false
-
 let cwd = Sys.getcwd ()
 
+let (//) = Ext_filename.combine
+let force_regenerate = ref false
+let exec = ref false
 let node_lit = "node"
-
 let current_theme = ref "basic"
 let set_theme s = current_theme := s 
-
 let generate_theme_with_path = ref None
-
-let watch_exit () =
-  print_endline "\nStart Watching now ";
-  let bsb_watcher =
-    Bsb_build_util.get_bsc_dir cwd // "bsb_watcher.js" in
-  if Ext_sys.is_windows_or_cygwin then
-    exit (Sys.command (Ext_string.concat3 node_lit Ext_string.single_space (Filename.quote bsb_watcher)))
-  else
-    Unix.execvp node_lit
-      [| node_lit ;
-         bsb_watcher
-      |]
-
-
 let regen = "-regen"
 let separator = "--"
-
-
-
 let watch_mode = ref false
-
-
 let make_world = ref false 
-
 let set_make_world () = make_world := true
-
-
-
-
 
 
 let bsb_main_flags : (string * Arg.spec * string) list=
   [
     "-color", Arg.Set Bsb_log.color_enabled,
-    " forced color output"
-    ;
+    " forced color output";
     "-no-color", Arg.Clear Bsb_log.color_enabled,
     " forced no color output";
     "-w", Arg.Set watch_mode,
@@ -96,50 +66,35 @@ let bsb_main_flags : (string * Arg.spec * string) list=
   ]
 
 
+(*Note that [keepdepfile] only makes sense when combined with [deps] for optimization*)
 
-(* Note that [keepdepfile] only makes sense when combined with [deps] for optimization
-   It has to be the last command of [bsb]
-*)
-let exec_command_install_then_exit  command =
+(**  Invariant: it has to be the last command of [bsb] *)
+let exec_command_then_exit  command =
   Format.fprintf Format.std_formatter "@{<info>CMD:@} %s@." command;
-  print_endline command ;
   exit (Sys.command command ) 
 
 (* Execute the underlying ninja build call, then exit (as opposed to keep watching) *)
 let ninja_command_exit  vendor_ninja ninja_args  =
   let ninja_args_len = Array.length ninja_args in
-  if ninja_args_len = 0 then
-    if Ext_sys.is_windows_or_cygwin then
-      exec_command_install_then_exit
-      @@ Ext_string.inter3
-        (Filename.quote vendor_ninja) "-C" Bsb_config.lib_bs
-    else 
-      let args = [|"ninja.exe"; "-C"; Bsb_config.lib_bs |] in
-      Bsb_log.print_string_args args ;
-      Unix.execvp vendor_ninja args
+  if Ext_sys.is_windows_or_cygwin then
+    let path_ninja = Filename.quote vendor_ninja in 
+    exec_command_then_exit @@ 
+    (if ninja_args_len = 0 then      
+       Ext_string.inter3
+         path_ninja "-C" Bsb_config.lib_bs
+     else   
+       let args = 
+         Array.append 
+           [| path_ninja ; "-C"; Bsb_config.lib_bs|]
+           ninja_args in 
+       Ext_string.concat_array Ext_string.single_space args)
   else
-    let fixed_args_length = 3 in
-    if 
-      Ext_sys.is_windows_or_cygwin then
-      let args = (Array.init (fixed_args_length + ninja_args_len)
-                    (fun i -> match i with
-                       | 0 -> (Filename.quote vendor_ninja)
-                       | 1 -> "-C"
-                       | 2 -> Bsb_config.lib_bs
-                       | _ -> Array.unsafe_get ninja_args (i - fixed_args_length) )) in
-      exec_command_install_then_exit
-      @@ Ext_string.concat_array Ext_string.single_space args
-    else 
-
-      let args = (Array.init (fixed_args_length + ninja_args_len)
-                    (fun i -> match i with
-                       | 0 -> "ninja.exe"
-                       | 1 -> "-C"
-                       | 2 -> Bsb_config.lib_bs
-                       | _ -> Array.unsafe_get ninja_args (i - fixed_args_length) )) in
-      Bsb_log.print_string_args args ;
-      Unix.execvp vendor_ninja args
-
+    let ninja_common_args = [|"ninja.exe"; "-C"; Bsb_config.lib_bs |] in 
+    let args = 
+      if ninja_args_len = 0 then ninja_common_args else 
+        Array.append ninja_common_args ninja_args in 
+    Bsb_log.print_string_args args ;      
+    Unix.execvp vendor_ninja args      
 
 
 
@@ -161,6 +116,17 @@ let handle_anonymous_arg arg =
   raise (Arg.Bad ("Unknown arg \"" ^ arg ^ "\""))
 
 
+let watch_exit () =
+  print_endline "\nStart Watching now ";
+  let bsb_watcher =
+    Bsb_build_util.get_bsc_dir cwd // "bsb_watcher.js" in
+  if Ext_sys.is_windows_or_cygwin then
+    exit (Sys.command (Ext_string.concat3 node_lit Ext_string.single_space (Filename.quote bsb_watcher)))
+  else
+    Unix.execvp node_lit
+      [| node_lit ;
+         bsb_watcher
+      |]
 
 
 (* see discussion #929, if we catch the exception, we don't have stacktrace... *)
@@ -186,7 +152,6 @@ let () =
         ->
         begin
           Arg.parse bsb_main_flags handle_anonymous_arg usage;
-
           (* first, check whether we're in boilerplate generation mode, aka -init foo -theme bar *)
           match !generate_theme_with_path with
           | Some path -> Bsb_init.init_sample_project ~cwd ~theme:!current_theme path
@@ -195,16 +160,15 @@ let () =
             let make_world = !make_world in 
             begin match make_world, !force_regenerate with
               | false, false -> 
+                (* [regenerate_ninja] is not triggered in this case
+                   There are several cases we wish ninja will not be triggered.
+                   [bsb -clean-world]
+                   [bsb -regen ]
+                *)
                 if !watch_mode then begin
                   watch_exit ()
-                  (* ninja is not triggered in this case
-                     There are several cases we wish ninja will not be triggered.
-                     [bsb -clean-world]
-                     [bsb -regen ]
-                  *)
                 end 
               | make_world, force_regenerate ->
-                (* don't regenerate files when we only run [bsb -clean-world] *)
                 let config_opt = Bsb_ninja_regen.regenerate_ninja ~generate_watch_metadata:true ~override_package_specs:None ~no_dev:false ~forced:force_regenerate cwd bsc_dir  in
                 if make_world then begin
                   Bsb_world.make_world_deps cwd config_opt
