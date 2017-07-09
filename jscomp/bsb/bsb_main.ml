@@ -25,7 +25,8 @@
 
 
 let cwd = Sys.getcwd ()
-
+let bsc_dir = Bsb_build_util.get_bsc_dir cwd 
+let () =  Bsb_log.setup () 
 let (//) = Ext_filename.combine
 let force_regenerate = ref false
 let exec = ref false
@@ -38,6 +39,7 @@ let separator = "--"
 let watch_mode = ref false
 let make_world = ref false 
 let set_make_world () = make_world := true
+
 
 
 let bsb_main_flags : (string * Arg.spec * string) list=
@@ -61,6 +63,8 @@ let bsb_main_flags : (string * Arg.spec * string) list=
     " Init sample project to get started. Note (`bsb -init sample` will create a sample project while `bsb -init .` will resuse current directory)";
     "-theme", Arg.String set_theme,
     " The theme for project initialization, default is basic(https://github.com/bucklescript/bucklescript/tree/master/jscomp/bsb/templates)";
+    "-query", Arg.String (fun s -> Bsb_query.query ~cwd ~bsc_dir s ),
+    " (internal)Query metadata about the build";
     "-themes", Arg.Unit Bsb_init.list_themes,
     " List all available themes"
   ]
@@ -131,8 +135,7 @@ let watch_exit () =
 
 (* see discussion #929, if we catch the exception, we don't have stacktrace... *)
 let () =
-  let () =  Bsb_log.setup () in 
-  let bsc_dir = Bsb_build_util.get_bsc_dir cwd in
+  
   let vendor_ninja = bsc_dir // "ninja.exe" in  
   match Sys.argv with 
   | [| _ |] ->  (* specialize this path [bsb.exe] which is used in watcher *)
