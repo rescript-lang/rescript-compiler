@@ -315,6 +315,7 @@ BSB_SRCS= bsb_config \
 	bsb_init
 
 BSB_CMXS=$(addprefix bsb/, $(addsuffix .cmx, $(BSB_SRCS)))
+BSB_CMOS=$(addprefix bsb/, $(addsuffix .cmo, $(BSB_SRCS)))
 MAIN_SRCS= jsgen_main jscmj_main bsb/bsb_main bsb/bsb_helper_main
 MAIN_CMXS=$(addsuffix .cmx, $(MAIN_SRCS))
 
@@ -334,7 +335,9 @@ core.cmxa:$(CORE_CMXS)
 	ocamlopt.opt -a $^ -o $@
 bsb.cmxa:$(BSB_CMXS)
 	ocamlopt.opt -a $^ -o $@
-
+bsb.cma:$(BSB_CMOS)
+	ocamlc.opt -a $^ -o $@
+	
 check:  $(EXT_CMXS) $(COMMON_CMXS) $(SYNTAX_CMXS) $(DEPENDS_CMXS) $(CORE_CMXS) $(BSB_CMXS) $(OTHER_CORE_CMXS) $(MAIN_CMXS) $(OUNIT_CMXS) $(OUNIT_TESTS_CMXS)
 
 bin/bsb.exe: bs_hash.cmxa ext.cmxa common.cmxa  bsb.cmxa bsb/bsb_main.cmx
@@ -592,7 +595,7 @@ docs: ../odoc_gen/generator.cmxs
 	node ../scripts/doc_gen.js
 # ocamldoc.opt -nostdlib -I stdlib -g ../odoc_gen/generator.cmxs -charset utf-8 -css-style ../../odoc_gen/style.css -sort -ppx bin/bsppx.exe -I others -I runtime -d ../docs/api $(DOCS_SOURCES)
 
-top: bs_hash.cma ext.cma
+top: bs_hash.cma ext.cma bsb.cma
 repl: top
 	rlwrap ocaml	
 .PHONY: release   releasebuild libs snapshotml force-snapshotml toplevel
