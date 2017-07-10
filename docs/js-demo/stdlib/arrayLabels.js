@@ -1,5 +1,5 @@
 'use strict';
-define(["exports", "./array"],
+define(["exports", "./array.js"],
   function(exports, $$Array){
     'use strict';
     var init = $$Array.init;

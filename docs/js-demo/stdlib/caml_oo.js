@@ -1,6 +1,6 @@
 'use strict';
-define(["exports", "./caml_builtin_exceptions", "./caml_array"],
-  function(exports, Caml_builtin_exceptions, Caml_array){
+define(["exports", "./caml_array.js", "./caml_builtin_exceptions.js"],
+  function(exports, Caml_array, Caml_builtin_exceptions){
     'use strict';
     var caml_methods_cache = Caml_array.caml_make_vect(1000, 0);
     
@@ -9,8 +9,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_array"],
       var offs = caml_methods_cache[cacheid];
       if (meths[offs] === tag) {
         return meths[offs - 1 | 0];
-      }
-      else {
+      } else {
         var aux = function (_i) {
           while(true) {
             var i = _i;
@@ -19,16 +18,14 @@ define(["exports", "./caml_builtin_exceptions", "./caml_array"],
                     Caml_builtin_exceptions.assert_failure,
                     [
                       "caml_oo.ml",
-                      54,
+                      59,
                       20
                     ]
                   ];
-            }
-            else if (meths[i] === tag) {
+            } else if (meths[i] === tag) {
               caml_methods_cache[cacheid] = i;
               return i;
-            }
-            else {
+            } else {
               _i = i - 2 | 0;
               continue ;
               

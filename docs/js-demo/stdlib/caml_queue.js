@@ -21,8 +21,7 @@ define(["exports"],
         tail[/* next */1] = cell;
         q[/* tail */1] = cell;
         return /* () */0;
-      }
-      else {
+      } else {
         var cell$1 = [];
         cell$1[0] = x;
         cell$1[1] = cell$1;
@@ -38,8 +37,7 @@ define(["exports"],
       var head = tail[/* next */1];
       if (head === tail) {
         q[/* tail */1] = /* None */0;
-      }
-      else {
+      } else {
         tail[/* next */1] = head[/* next */1];
       }
       return head[/* content */0];

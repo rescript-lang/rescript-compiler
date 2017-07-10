@@ -1,6 +1,6 @@
 'use strict';
-define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./caml_exceptions", "./caml_format", "./caml_int32", "./block", "./curry", "./printf", "./caml_bytes", "./camlinternalFormatBasics", "./buffer", "./string", "./caml_string", "./list", "./camlinternalFormat"],
-  function(exports, Caml_builtin_exceptions, Bytes, Pervasives, Caml_exceptions, Caml_format, Caml_int32, Block, Curry, Printf, Caml_bytes, CamlinternalFormatBasics, Buffer, $$String, Caml_string, List, CamlinternalFormat){
+define(["exports", "./list.js", "./block.js", "./bytes.js", "./curry.js", "./buffer.js", "./js_exn.js", "./printf.js", "./string.js", "./caml_bytes.js", "./caml_int32.js", "./pervasives.js", "./caml_format.js", "./caml_string.js", "./caml_exceptions.js", "./camlinternalFormat.js", "./caml_missing_polyfill.js", "./caml_builtin_exceptions.js", "./camlinternalFormatBasics.js"],
+  function(exports, List, Block, Bytes, Curry, Buffer, Js_exn, Printf, $$String, Caml_bytes, Caml_int32, Pervasives, Caml_format, Caml_string, Caml_exceptions, CamlinternalFormat, Caml_missing_polyfill, Caml_builtin_exceptions, CamlinternalFormatBasics){
     'use strict';
     function next_char(ib) {
       try {
@@ -19,8 +19,7 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
           ib[/* current_char_is_valid */2] = /* false */0;
           ib[/* eof */0] = /* true */1;
           return /* "\000" */0;
-        }
-        else {
+        } else {
           throw exn;
         }
       }
@@ -29,8 +28,7 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
     function peek_char(ib) {
       if (ib[/* current_char_is_valid */2]) {
         return ib[/* current_char */1];
-      }
-      else {
+      } else {
         return next_char(ib);
       }
     }
@@ -57,15 +55,12 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
       if (typeof match === "number") {
         if (match) {
           return "unnamed function";
-        }
-        else {
+        } else {
           return "unnamed character string";
         }
-      }
-      else if (match.tag) {
+      } else if (match.tag) {
         return "unnamed pervasives input channel";
-      }
-      else {
+      } else {
         return match[0];
       }
     }
@@ -73,8 +68,7 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
     function char_count(ib) {
       if (ib[/* current_char_is_valid */2]) {
         return ib[/* char_count */3] - 1 | 0;
-      }
-      else {
+      } else {
         return ib[/* char_count */3];
       }
     }
@@ -118,8 +112,7 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
       var next = function () {
         if (i[0] >= len) {
           throw Caml_builtin_exceptions.end_of_file;
-        }
-        else {
+        } else {
           var c = Caml_string.get(s, i[0]);
           i[0] = i[0] + 1 | 0;
           return c;
@@ -135,9 +128,7 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
     var file_buffer_size = [1024];
     
     function scan_close_at_end() {
-      (function () {
-            throw "caml_ml_close_channel not implemented by bucklescript yet\n";
-          }());
+      Caml_missing_polyfill.not_implemented("caml_ml_close_channel not implemented by bucklescript yet\n");
       throw Caml_builtin_exceptions.end_of_file;
     }
     
@@ -156,17 +147,14 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
           var c = Caml_bytes.get(buf, i[0]);
           i[0] = i[0] + 1 | 0;
           return c;
-        }
-        else if (eof[0]) {
+        } else if (eof[0]) {
           throw Caml_builtin_exceptions.end_of_file;
-        }
-        else {
+        } else {
           lim[0] = Pervasives.input(ic, buf, 0, len);
           if (lim[0]) {
             i[0] = 1;
             return Caml_bytes.get(buf, 0);
-          }
-          else {
+          } else {
             eof[0] = /* true */1;
             return Curry._1(scan_close_ic, ic);
           }
@@ -183,8 +171,7 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
     function open_in(fname) {
       if (fname === "-") {
         return stdin;
-      }
-      else {
+      } else {
         var ic = Pervasives.open_in(fname);
         return from_ic(scan_close_at_end, /* From_file */Block.__(0, [
                       fname,
@@ -196,8 +183,7 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
     function open_in_bin(fname) {
       if (fname === "-") {
         return stdin;
-      }
-      else {
+      } else {
         var ic = Pervasives.open_in_bin(fname);
         return from_ic(scan_close_at_end, /* From_file */Block.__(0, [
                       fname,
@@ -223,8 +209,7 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
             memo[0]
           ];
           return ib;
-        }
-        else {
+        } else {
           throw exn;
         }
       }
@@ -238,16 +223,10 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
       var match = ib[/* input_name */8];
       if (typeof match === "number") {
         return /* () */0;
-      }
-      else if (match.tag) {
-        return function () {
-                  throw "caml_ml_close_channel not implemented by bucklescript yet\n";
-                }();
-      }
-      else {
-        return function () {
-                  throw "caml_ml_close_channel not implemented by bucklescript yet\n";
-                }();
+      } else if (match.tag) {
+        return Caml_missing_polyfill.not_implemented("caml_ml_close_channel not implemented by bucklescript yet\n");
+      } else {
+        return Caml_missing_polyfill.not_implemented("caml_ml_close_channel not implemented by bucklescript yet\n");
       }
     }
     
@@ -309,50 +288,42 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
             var c$1 = peek_char(ib$1);
             if (ib$1[/* eof */0]) {
               return 0;
-            }
-            else {
+            } else {
               var switcher = c$1 - 9 | 0;
               if (switcher > 4 || switcher < 0) {
                 if (switcher !== 23) {
                   return /* () */0;
-                }
-                else {
+                } else {
                   ib$1[/* current_char_is_valid */2] = /* false */0;
                   continue ;
                   
                 }
-              }
-              else if (switcher === 3 || switcher === 2) {
+              } else if (switcher === 3 || switcher === 2) {
                 return /* () */0;
-              }
-              else {
+              } else {
                 ib$1[/* current_char_is_valid */2] = /* false */0;
                 continue ;
                 
               }
             }
           };
-        }
-        else {
+        } else {
           var ci = checked_peek_char(ib);
           if (ci === c) {
             ib[/* current_char_is_valid */2] = /* false */0;
             return /* () */0;
-          }
-          else if (ci !== 13) {
+          } else if (ci !== 13) {
             var s = character_mismatch_err(c, ci);
             throw [
                   Scan_failure,
                   s
                 ];
-          }
-          else if (c === /* "\n" */10) {
+          } else if (c === /* "\n" */10) {
             ib[/* current_char_is_valid */2] = /* false */0;
             _c = /* "\n" */10;
             continue ;
             
-          }
-          else {
+          } else {
             var s$1 = character_mismatch_err(c, ci);
             throw [
                   Scan_failure,
@@ -398,8 +369,7 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
       var switcher = conv - 88 | 0;
       if (switcher > 32 || switcher < 0) {
         exit = 1;
-      }
-      else {
+      } else {
         switch (switcher) {
           case 10 : 
               tok = "0b" + token(ib);
@@ -460,8 +430,7 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
       var l = tok.length;
       if (l === 0 || Caml_string.get(tok, 0) !== /* "+" */43) {
         return tok;
-      }
-      else {
+      } else {
         return $$String.sub(tok, 1, l - 1 | 0);
       }
     }
@@ -477,29 +446,24 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
           var c = peek_char(ib);
           if (ib[/* eof */0]) {
             return width;
-          }
-          else if (c >= 58) {
+          } else if (c >= 58) {
             if (c !== 95) {
               return width;
-            }
-            else {
+            } else {
               var width$1 = ignore_char(width, ib);
               _width = width$1;
               continue ;
               
             }
-          }
-          else if (c >= 48) {
+          } else if (c >= 48) {
             var width$2 = store_char(width, ib, c);
             _width = width$2;
             continue ;
             
-          }
-          else {
+          } else {
             return width;
           }
-        }
-        else {
+        } else {
           return width;
         }
       };
@@ -523,13 +487,11 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
                 Scan_failure,
                 s
               ];
-        }
-        else {
+        } else {
           var width$1 = store_char(width, ib, c);
           return scan_decimal_digits(width$1, ib);
         }
-      }
-      else {
+      } else {
         return bad_token_length("decimal digits");
       }
     }
@@ -545,27 +507,22 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
               var c$1 = peek_char(ib);
               if (ib[/* eof */0]) {
                 return width$1;
-              }
-              else if (Curry._1(digitp, c$1)) {
+              } else if (Curry._1(digitp, c$1)) {
                 _width = store_char(width$1, ib, c$1);
                 continue ;
                 
-              }
-              else if (c$1 !== 95) {
+              } else if (c$1 !== 95) {
                 return width$1;
-              }
-              else {
+              } else {
                 _width = ignore_char(width$1, ib);
                 continue ;
                 
               }
-            }
-            else {
+            } else {
               return width$1;
             }
           };
-        }
-        else {
+        } else {
           var s = Curry._2(Printf.sprintf(/* Format */[
                     /* String_literal */Block.__(11, [
                         "character ",
@@ -587,8 +544,7 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
                 s
               ];
         }
-      }
-      else {
+      } else {
         return bad_token_length("digits");
       }
     }
@@ -596,8 +552,7 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
     function is_binary_digit(param) {
       if (param === 49 || param === 48) {
         return /* true */1;
-      }
-      else {
+      } else {
         return /* false */0;
       }
     }
@@ -609,8 +564,7 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
     function is_octal_digit(param) {
       if (param > 55 || param < 48) {
         return /* false */0;
-      }
-      else {
+      } else {
         return /* true */1;
       }
     }
@@ -624,15 +578,12 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
       if (switcher > 22 || switcher < 0) {
         if (switcher > 54 || switcher < 49) {
           return /* false */0;
-        }
-        else {
+        } else {
           return /* true */1;
         }
-      }
-      else if (switcher > 16 || switcher < 10) {
+      } else if (switcher > 16 || switcher < 10) {
         return /* true */1;
-      }
-      else {
+      } else {
         return /* false */0;
       }
     }
@@ -643,19 +594,10 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
     
     function scan_sign(width, ib) {
       var c = checked_peek_char(ib);
-      var switcher = c - 43 | 0;
-      if (switcher > 2 || switcher < 0) {
+      if (c !== 43 && c !== 45) {
         return width;
-      }
-      else {
-        switch (switcher) {
-          case 1 : 
-              return width;
-          case 0 : 
-          case 2 : 
-              return store_char(width, ib, c);
-          
-        }
+      } else {
+        return store_char(width, ib, c);
       }
     }
     
@@ -669,8 +611,7 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
       var switcher = conv - 88 | 0;
       if (switcher > 32 || switcher < 0) {
         exit = 1;
-      }
-      else {
+      } else {
         switch (switcher) {
           case 10 : 
               return scan_binary_int(width, ib);
@@ -685,40 +626,32 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
               var c = checked_peek_char(ib$2);
               if (c !== 48) {
                 return scan_decimal_digits_plus(width$3, ib$2);
-              }
-              else {
+              } else {
                 var width$4 = store_char(width$3, ib$2, c);
                 if (width$4) {
                   var c$1 = peek_char(ib$2);
                   if (ib$2[/* eof */0]) {
                     return width$4;
-                  }
-                  else if (c$1 >= 99) {
+                  } else if (c$1 >= 99) {
                     if (c$1 !== 111) {
                       if (c$1 !== 120) {
                         return scan_decimal_digits(width$4, ib$2);
-                      }
-                      else {
+                      } else {
                         return scan_hexadecimal_int(store_char(width$4, ib$2, c$1), ib$2);
                       }
-                    }
-                    else {
+                    } else {
                       return scan_octal_int(store_char(width$4, ib$2, c$1), ib$2);
                     }
-                  }
-                  else if (c$1 !== 88) {
+                  } else if (c$1 !== 88) {
                     if (c$1 >= 98) {
                       return scan_binary_int(store_char(width$4, ib$2, c$1), ib$2);
-                    }
-                    else {
+                    } else {
                       return scan_decimal_digits(width$4, ib$2);
                     }
-                  }
-                  else {
+                  } else {
                     return scan_hexadecimal_int(store_char(width$4, ib$2, c$1), ib$2);
                   }
-                }
-                else {
+                } else {
                   return width$4;
                 }
               }
@@ -778,12 +711,10 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
         var c = peek_char(ib);
         if (ib[/* eof */0] || c > 57 || c < 48) {
           return width;
-        }
-        else {
+        } else {
           return scan_decimal_digits(store_char(width, ib, c), ib);
         }
-      }
-      else {
+      } else {
         return width;
       }
     }
@@ -793,12 +724,10 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
         var c = peek_char(ib);
         if (ib[/* eof */0] || c !== 69 && c !== 101) {
           return width;
-        }
-        else {
+        } else {
           return scan_optionally_signed_decimal_int(store_char(width, ib, c), ib);
         }
-      }
-      else {
+      } else {
         return width;
       }
     }
@@ -817,14 +746,12 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
                   width$1,
                   precision
                 ];
-        }
-        else if (c !== 46) {
+        } else if (c !== 46) {
           return /* tuple */[
                   scan_exp_part(width$1, ib),
                   precision
                 ];
-        }
-        else {
+        } else {
           var width$2 = store_char(width$1, ib, c);
           var precision$1 = Pervasives.min(width$2, precision);
           var width$3 = width$2 - (precision$1 - scan_frac_part(precision$1, ib) | 0) | 0;
@@ -833,8 +760,7 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
                   precision$1
                 ];
         }
-      }
-      else {
+      } else {
         return /* tuple */[
                 width$1,
                 precision
@@ -851,8 +777,7 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
                 Scan_failure,
                 "no dot or exponent part found in float token"
               ];
-        }
-        else {
+        } else {
           var switcher = c - 69 | 0;
           if (switcher > 32 || switcher < 0) {
             if (switcher !== -23) {
@@ -860,26 +785,22 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
                     Scan_failure,
                     "no dot or exponent part found in float token"
                   ];
-            }
-            else {
+            } else {
               var width$2 = store_char(width$1, ib, c);
               var precision$1 = Pervasives.min(width$2, precision);
               var width$3 = width$2 - (precision$1 - scan_frac_part(precision$1, ib) | 0) | 0;
               return scan_exp_part(width$3, ib);
             }
-          }
-          else if (switcher > 31 || switcher < 1) {
+          } else if (switcher > 31 || switcher < 1) {
             return scan_exp_part(width$1, ib);
-          }
-          else {
+          } else {
             throw [
                   Scan_failure,
                   "no dot or exponent part found in float token"
                 ];
           }
         }
-      }
-      else {
+      } else {
         throw [
               Scan_failure,
               "no dot or exponent part found in float token"
@@ -895,41 +816,34 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
           var c = peek_char(ib);
           if (ib[/* eof */0]) {
             return width$1;
-          }
-          else if (stp) {
+          } else if (stp) {
             if (c === stp[0]) {
               ib[/* current_char_is_valid */2] = /* false */0;
               return width$1;
-            }
-            else {
+            } else {
               _width = store_char(width$1, ib, c);
               continue ;
               
             }
-          }
-          else {
+          } else {
             var switcher = c - 9 | 0;
             if (switcher > 4 || switcher < 0) {
               if (switcher !== 23) {
                 _width = store_char(width$1, ib, c);
                 continue ;
                 
-              }
-              else {
+              } else {
                 return width$1;
               }
-            }
-            else if (switcher === 3 || switcher === 2) {
+            } else if (switcher === 3 || switcher === 2) {
               _width = store_char(width$1, ib, c);
               continue ;
               
-            }
-            else {
+            } else {
               return width$1;
             }
           }
-        }
-        else {
+        } else {
           return width$1;
         }
       };
@@ -943,8 +857,7 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
       if (c >= 110) {
         if (c >= 117) {
           return c;
-        }
-        else {
+        } else {
           switch (c - 110 | 0) {
             case 0 : 
                 return /* "\n" */10;
@@ -960,11 +873,9 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
             
           }
         }
-      }
-      else if (c !== 98) {
+      } else if (c !== 98) {
         return c;
-      }
-      else {
+      } else {
         return /* "\b" */8;
       }
     }
@@ -983,8 +894,7 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
               Scan_failure,
               s
             ];
-      }
-      else {
+      } else {
         return Pervasives.char_of_int(c);
       }
     }
@@ -992,11 +902,9 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
     function hexadecimal_value_of_char(c) {
       if (c >= /* "a" */97) {
         return c - 87 | 0;
-      }
-      else if (c >= /* "A" */65) {
+      } else if (c >= /* "A" */65) {
         return c - 55 | 0;
-      }
-      else {
+      } else {
         return c - /* "0" */48 | 0;
       }
     }
@@ -1015,8 +923,7 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
               Scan_failure,
               s
             ];
-      }
-      else {
+      } else {
         return Pervasives.char_of_int(c);
       }
     }
@@ -1043,12 +950,10 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
                 Scan_failure,
                 s
               ];
-        }
-        else {
+        } else {
           return c;
         }
-      }
-      else {
+      } else {
         return bad_token_length(message);
       }
     }
@@ -1061,8 +966,7 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
           var switcher = c - 92 | 0;
           if (switcher > 28 || switcher < 0) {
             return bad_input_escape(c);
-          }
-          else {
+          } else {
             switch (switcher) {
               case 0 : 
               case 6 : 
@@ -1102,15 +1006,12 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
                     if (switcher > 22 || switcher < 0) {
                       if (switcher > 54 || switcher < 49) {
                         return bad_input_escape(c);
-                      }
-                      else {
+                      } else {
                         return c;
                       }
-                    }
-                    else if (switcher > 16 || switcher < 10) {
+                    } else if (switcher > 16 || switcher < 10) {
                       return c;
-                    }
-                    else {
+                    } else {
                       return bad_input_escape(c);
                     }
                   };
@@ -1120,34 +1021,28 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
               
             }
           }
-        }
-        else if (c >= 48) {
+        } else if (c >= 48) {
           var get_digit$1 = function () {
             var c = next_char(ib);
             if (c > 57 || c < 48) {
               return bad_input_escape(c);
-            }
-            else {
+            } else {
               return c;
             }
           };
           var c1$1 = get_digit$1(/* () */0);
           var c2$1 = get_digit$1(/* () */0);
           return store_char(width - 2 | 0, ib, char_for_decimal_code(c, c1$1, c2$1));
-        }
-        else {
+        } else {
           return bad_input_escape(c);
         }
-      }
-      else if (c !== 34) {
+      } else if (c !== 34) {
         if (c >= 39) {
           exit = 1;
-        }
-        else {
+        } else {
           return bad_input_escape(c);
         }
-      }
-      else {
+      } else {
         exit = 1;
       }
       if (exit === 1) {
@@ -1165,8 +1060,7 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
                 Scan_failure,
                 s
               ];
-        }
-        else {
+        } else {
           return ignore_char(width, ib);
         }
       };
@@ -1178,14 +1072,12 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
               Scan_failure,
               s
             ];
-      }
-      else {
+      } else {
         var width$2 = ignore_char(width$1, ib);
         var c$1 = check_next_char("a Char", width$2, ib);
         if (c$1 !== 92) {
           return find_stop(store_char(width$2, ib, c$1));
-        }
-        else {
+        } else {
           return find_stop(scan_backslash_char(ignore_char(width$2, ib), ib));
         }
       }
@@ -1201,31 +1093,26 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
               _width = store_char(width, ib, c);
               continue ;
               
-            }
-            else {
+            } else {
               var width$1 = ignore_char(width, ib);
               var match = check_next_char("a String", width$1, ib);
               if (match !== 10) {
                 if (match !== 13) {
                   return find_stop(scan_backslash_char(width$1, ib));
-                }
-                else {
+                } else {
                   var width$2 = ignore_char(width$1, ib);
                   var match$1 = check_next_char("a String", width$2, ib);
                   if (match$1 !== 10) {
                     return find_stop(store_char(width$2, ib, /* "\r" */13));
-                  }
-                  else {
+                  } else {
                     return skip_spaces(ignore_char(width$2, ib));
                   }
                 }
-              }
-              else {
+              } else {
                 return skip_spaces(ignore_char(width$1, ib));
               }
             }
-          }
-          else {
+          } else {
             return ignore_char(width, ib);
           }
         };
@@ -1236,8 +1123,7 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
           var match = check_next_char("a String", width, ib);
           if (match !== 32) {
             return find_stop(width);
-          }
-          else {
+          } else {
             _width = ignore_char(width, ib);
             continue ;
             
@@ -1252,8 +1138,7 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
               Scan_failure,
               s
             ];
-      }
-      else {
+      } else {
         return find_stop(ignore_char(width$1, ib));
       }
     }
@@ -1277,12 +1162,10 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
                 Scan_failure,
                 s
               ];
-        }
-        else {
+        } else {
           m = 4;
         }
-      }
-      else {
+      } else {
         m = 5;
       }
       return scan_string(/* None */0, m, ib);
@@ -1298,8 +1181,7 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
             _i = i - 1 | 0;
             continue ;
             
-          }
-          else {
+          } else {
             return 0;
           }
         };
@@ -1309,14 +1191,12 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
         scan_chars(width, c);
         if (ib[/* eof */0]) {
           return 0;
-        }
-        else {
+        } else {
           var ci = peek_char(ib);
           if (c === ci) {
             ib[/* current_char_is_valid */2] = /* false */0;
             return /* () */0;
-          }
-          else {
+          } else {
             var s = character_mismatch_err(c, ci);
             throw [
                   Scan_failure,
@@ -1324,8 +1204,7 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
                 ];
           }
         }
-      }
-      else {
+      } else {
         return scan_chars(width, -1);
       }
     }
@@ -1336,12 +1215,10 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
       if (x[0] === Scan_failure) {
         s = x[1];
         exit = 1;
-      }
-      else if (x[0] === Caml_builtin_exceptions.failure) {
+      } else if (x[0] === Caml_builtin_exceptions.failure) {
         s = x[1];
         exit = 1;
-      }
-      else {
+      } else {
         throw x;
       }
       if (exit === 1) {
@@ -1387,8 +1264,7 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
     function width_of_pad_opt(pad_opt) {
       if (pad_opt) {
         return pad_opt[0];
-      }
-      else {
+      } else {
         return Pervasives.max_int;
       }
     }
@@ -1399,8 +1275,7 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
                 /* "%" */37,
                 ""
               ];
-      }
-      else {
+      } else {
         var str = CamlinternalFormat.string_of_formatting_lit(fmting);
         var stp = Caml_string.get(str, 1);
         var sub_str = $$String.sub(str, 2, str.length - 2 | 0);
@@ -1415,9 +1290,14 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
       while(true) {
         var fmt = _fmt;
         if (typeof fmt === "number") {
-          return Curry._1(k, /* Nil */0);
-        }
-        else {
+          if (fmt) {
+            _fmt = fmt[0];
+            continue ;
+            
+          } else {
+            return Curry._1(k, /* Nil */0);
+          }
+        } else {
           switch (fmt.tag | 0) {
             case 4 : 
             case 5 : 
@@ -1429,19 +1309,9 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
                 case 14 : 
                 return take_fmtty_format_readers(k, CamlinternalFormatBasics.erase_rel(CamlinternalFormat.symm(fmt[1])), fmt[2]);
             case 18 : 
-                var match = fmt[0];
-                if (match.tag) {
-                  _fmt = CamlinternalFormatBasics.concat_fmt(match[0][0], fmt[1]);
-                  continue ;
-                  
-                }
-                else {
-                  _fmt = CamlinternalFormatBasics.concat_fmt(match[0][0], fmt[1]);
-                  continue ;
-                  
-                }
-                break;
-            case 19 : 
+                _fmt = CamlinternalFormatBasics.concat_fmt(fmt[0][0][0], fmt[1]);
+                continue ;
+                case 19 : 
                 var fmt_rest = fmt[0];
                 return (function(fmt_rest){
                 return function (reader) {
@@ -1462,65 +1332,40 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
             case 21 : 
                 _fmt = fmt[1];
                 continue ;
-                case 0 : 
-            case 1 : 
-            case 9 : 
-            case 10 : 
-            case 15 : 
-            case 16 : 
-            case 22 : 
-                _fmt = fmt[0];
-                continue ;
                 case 23 : 
                 var k$1 = k;
                 var ign = fmt[0];
                 var fmt$1 = fmt[1];
                 if (typeof ign === "number") {
-                  switch (ign) {
-                    case 3 : 
-                        return (function(k$1,fmt$1){
-                        return function (reader) {
-                          var new_k = function (readers_rest) {
-                            return Curry._1(k$1, /* Cons */[
-                                        reader,
-                                        readers_rest
-                                      ]);
-                          };
-                          return take_format_readers(new_k, fmt$1);
-                        }
-                        }(k$1,fmt$1));
-                    case 0 : 
-                    case 1 : 
-                    case 2 : 
-                    case 4 : 
-                        return take_format_readers(k$1, fmt$1);
-                    
+                  if (ign === 3) {
+                    return (function(k$1,fmt$1){
+                    return function (reader) {
+                      var new_k = function (readers_rest) {
+                        return Curry._1(k$1, /* Cons */[
+                                    reader,
+                                    readers_rest
+                                  ]);
+                      };
+                      return take_format_readers(new_k, fmt$1);
+                    }
+                    }(k$1,fmt$1));
+                  } else {
+                    return take_format_readers(k$1, fmt$1);
                   }
-                }
-                else {
-                  switch (ign.tag | 0) {
-                    case 8 : 
-                        return take_fmtty_format_readers(k$1, ign[1], fmt$1);
-                    case 0 : 
-                    case 1 : 
-                    case 2 : 
-                    case 3 : 
-                    case 4 : 
-                    case 5 : 
-                    case 6 : 
-                    case 7 : 
-                    case 9 : 
-                    case 10 : 
-                        return take_format_readers(k$1, fmt$1);
-                    
-                  }
+                } else if (ign.tag === 8) {
+                  return take_fmtty_format_readers(k$1, ign[1], fmt$1);
+                } else {
+                  return take_format_readers(k$1, fmt$1);
                 }
             case 13 : 
             case 20 : 
             case 24 : 
                 _fmt = fmt[2];
                 continue ;
-                
+                default:
+              _fmt = fmt[0];
+              continue ;
+              
           }
         }
       };
@@ -1530,9 +1375,14 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
       while(true) {
         var fmtty = _fmtty;
         if (typeof fmtty === "number") {
-          return take_format_readers(k, fmt);
-        }
-        else {
+          if (fmtty) {
+            _fmtty = fmtty[0];
+            continue ;
+            
+          } else {
+            return take_format_readers(k, fmt);
+          }
+        } else {
           switch (fmtty.tag | 0) {
             case 8 : 
                 _fmtty = fmtty[1];
@@ -1540,19 +1390,6 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
                 case 9 : 
                 var ty = CamlinternalFormat.trans(CamlinternalFormat.symm(fmtty[0]), fmtty[1]);
                 _fmtty = CamlinternalFormatBasics.concat_fmtty(ty, fmtty[2]);
-                continue ;
-                case 0 : 
-            case 1 : 
-            case 2 : 
-            case 3 : 
-            case 4 : 
-            case 5 : 
-            case 6 : 
-            case 7 : 
-            case 10 : 
-            case 11 : 
-            case 12 : 
-                _fmtty = fmtty[0];
                 continue ;
                 case 13 : 
                 var fmt_rest = fmtty[0];
@@ -1580,7 +1417,10 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
                   return take_fmtty_format_readers(new_k, fmt_rest$1, fmt);
                 }
                 }(fmt_rest$1));
-            
+            default:
+              _fmtty = fmtty[0];
+              continue ;
+              
           }
         }
       };
@@ -1591,8 +1431,7 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
         var fmt = _fmt;
         if (typeof fmt === "number") {
           return /* Nil */0;
-        }
-        else {
+        } else {
           switch (fmt.tag | 0) {
             case 0 : 
                 scan_char(0, ib);
@@ -1614,14 +1453,13 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
                 var exit = 0;
                 if (typeof rest === "number") {
                   exit = 1;
-                }
-                else {
+                } else {
                   switch (rest.tag | 0) {
                     case 17 : 
                         var match = stopper_of_formatting_lit(rest[0]);
                         var stp = match[0];
                         var scan = (function(stp){
-                        return function (width, _, ib) {
+                        return function scan(width, _, ib) {
                           return scan_string(/* Some */[stp], width, ib);
                         }
                         }(stp));
@@ -1639,8 +1477,7 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
                             return scan_string(/* Some */[/* "[" */91], width, ib);
                           };
                           return pad_prec_scanf(ib, CamlinternalFormatBasics.concat_fmt(match$1[0][0], rest[1]), readers, pad, /* No_precision */0, scan$1, token);
-                        }
-                        else {
+                        } else {
                           var scan$2 = function (width, _, ib) {
                             return scan_string(/* Some */[/* "{" */123], width, ib);
                           };
@@ -1666,7 +1503,7 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
             case 4 : 
                 var c$2 = CamlinternalFormat.char_of_iconv(fmt[0]);
                 var scan$5 = (function(c$2){
-                return function (width, _, ib) {
+                return function scan$5(width, _, ib) {
                   return scan_int_conv(c$2, width, ib);
                 }
                 }(c$2));
@@ -1678,7 +1515,7 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
             case 5 : 
                 var c$3 = CamlinternalFormat.char_of_iconv(fmt[0]);
                 var scan$6 = (function(c$3){
-                return function (width, _, ib) {
+                return function scan$6(width, _, ib) {
                   return scan_int_conv(c$3, width, ib);
                 }
                 }(c$3));
@@ -1690,7 +1527,7 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
             case 6 : 
                 var c$4 = CamlinternalFormat.char_of_iconv(fmt[0]);
                 var scan$7 = (function(c$4){
-                return function (width, _, ib) {
+                return function scan$7(width, _, ib) {
                   return scan_int_conv(c$4, width, ib);
                 }
                 }(c$4));
@@ -1702,7 +1539,7 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
             case 7 : 
                 var c$5 = CamlinternalFormat.char_of_iconv(fmt[0]);
                 var scan$8 = (function(c$5){
-                return function (width, _, ib) {
+                return function scan$8(width, _, ib) {
                   return scan_int_conv(c$5, width, ib);
                 }
                 }(c$5));
@@ -1714,8 +1551,7 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
             case 8 : 
                 if (fmt[0] >= 15) {
                   return pad_prec_scanf(ib, fmt[3], readers, fmt[1], fmt[2], scan_caml_float, token_float);
-                }
-                else {
+                } else {
                   return pad_prec_scanf(ib, fmt[3], readers, fmt[1], fmt[2], scan_float, token_float);
                 }
             case 9 : 
@@ -1730,8 +1566,7 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
                   _fmt = fmt[0];
                   continue ;
                   
-                }
-                else {
+                } else {
                   throw [
                         Scan_failure,
                         "end of input not found"
@@ -1756,14 +1591,14 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
                 try {
                   fmt$1 = CamlinternalFormat.format_of_string_fmtty(s, fmt[1]);
                 }
-                catch (exn){
+                catch (raw_exn){
+                  var exn = Js_exn.internalToOCamlException(raw_exn);
                   if (exn[0] === Caml_builtin_exceptions.failure) {
                     throw [
                           Scan_failure,
                           exn[1]
                         ];
-                  }
-                  else {
+                  } else {
                     throw exn;
                   }
                 }
@@ -1784,14 +1619,14 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
                     CamlinternalFormat.type_format(match$4[0], CamlinternalFormatBasics.erase_rel(CamlinternalFormat.symm(fmtty)))
                   ];
                 }
-                catch (exn$1){
+                catch (raw_exn$1){
+                  var exn$1 = Js_exn.internalToOCamlException(raw_exn$1);
                   if (exn$1[0] === Caml_builtin_exceptions.failure) {
                     throw [
                           Scan_failure,
                           exn$1[1]
                         ];
-                  }
-                  else {
+                  } else {
                     throw exn$1;
                   }
                 }
@@ -1805,12 +1640,12 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
             case 15 : 
                 throw [
                       Caml_builtin_exceptions.invalid_argument,
-                      'scanf: bad conversion "%a"'
+                      "scanf: bad conversion \"%a\""
                     ];
             case 16 : 
                 throw [
                       Caml_builtin_exceptions.invalid_argument,
-                      'scanf: bad conversion "%t"'
+                      "scanf: bad conversion \"%t\""
                     ];
             case 17 : 
                 var s$2 = CamlinternalFormat.string_of_formatting_lit(fmt[0]);
@@ -1828,8 +1663,7 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
                   _fmt = CamlinternalFormatBasics.concat_fmt(match$5[0][0], fmt[1]);
                   continue ;
                   
-                }
-                else {
+                } else {
                   check_char(ib, /* "{" */123);
                   _fmt = CamlinternalFormatBasics.concat_fmt(match$5[0][0], fmt[1]);
                   continue ;
@@ -1849,8 +1683,7 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
                 var exit$1 = 0;
                 if (typeof rest$1 === "number") {
                   exit$1 = 1;
-                }
-                else if (rest$1.tag === 17) {
+                } else if (rest$1.tag === 17) {
                   var match$6 = stopper_of_formatting_lit(rest$1[0]);
                   var width = width_of_pad_opt(width_opt);
                   scan_chars_in_char_set(char_set, /* Some */[match$6[0]], width, ib);
@@ -1865,8 +1698,7 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
                           s$3,
                           make_scanf(ib, str_rest$1, readers)
                         ];
-                }
-                else {
+                } else {
                   exit$1 = 1;
                 }
                 if (exit$1 === 1) {
@@ -1896,8 +1728,7 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
                 var match$8 = make_scanf(ib, match$7[0], readers);
                 if (match$8) {
                   return match$8[1];
-                }
-                else {
+                } else {
                   throw [
                         Caml_builtin_exceptions.assert_failure,
                         [
@@ -1911,7 +1742,7 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
             case 24 : 
                 throw [
                       Caml_builtin_exceptions.invalid_argument,
-                      'scanf: bad conversion "%?" (custom converter)'
+                      "scanf: bad conversion \"%?\" (custom converter)"
                     ];
             
           }
@@ -1925,10 +1756,9 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
           if (prec !== 0) {
             throw [
                   Caml_builtin_exceptions.invalid_argument,
-                  'scanf: bad conversion "%*"'
+                  "scanf: bad conversion \"%*\""
                 ];
-          }
-          else {
+          } else {
             Curry._3(scan, Pervasives.max_int, Pervasives.max_int, ib);
             var x = Curry._1(token, ib);
             return /* Cons */[
@@ -1936,8 +1766,7 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
                     make_scanf(ib, fmt, readers)
                   ];
           }
-        }
-        else {
+        } else {
           Curry._3(scan, Pervasives.max_int, prec[0], ib);
           var x$1 = Curry._1(token, ib);
           return /* Cons */[
@@ -1945,23 +1774,20 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
                   make_scanf(ib, fmt, readers)
                 ];
         }
-      }
-      else if (pad.tag) {
+      } else if (pad.tag) {
         throw [
               Caml_builtin_exceptions.invalid_argument,
-              'scanf: bad conversion "%*"'
+              "scanf: bad conversion \"%*\""
             ];
-      }
-      else if (pad[0] !== 0) {
+      } else if (pad[0] !== 0) {
         var w = pad[1];
         if (typeof prec === "number") {
           if (prec !== 0) {
             throw [
                   Caml_builtin_exceptions.invalid_argument,
-                  'scanf: bad conversion "%*"'
+                  "scanf: bad conversion \"%*\""
                 ];
-          }
-          else {
+          } else {
             Curry._3(scan, w, Pervasives.max_int, ib);
             var x$2 = Curry._1(token, ib);
             return /* Cons */[
@@ -1969,8 +1795,7 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
                     make_scanf(ib, fmt, readers)
                   ];
           }
-        }
-        else {
+        } else {
           Curry._3(scan, w, prec[0], ib);
           var x$3 = Curry._1(token, ib);
           return /* Cons */[
@@ -1978,11 +1803,10 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
                   make_scanf(ib, fmt, readers)
                 ];
         }
-      }
-      else {
+      } else {
         throw [
               Caml_builtin_exceptions.invalid_argument,
-              'scanf: bad conversion "%-"'
+              "scanf: bad conversion \"%-\""
             ];
       }
     }
@@ -1996,31 +1820,27 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
         try {
           match = /* Args */Block.__(0, [make_scanf(ib, fmt, readers)]);
         }
-        catch (exc){
+        catch (raw_exc){
+          var exc = Js_exn.internalToOCamlException(raw_exc);
           if (exc[0] === Scan_failure) {
             match = /* Exc */Block.__(1, [exc]);
-          }
-          else if (exc[0] === Caml_builtin_exceptions.failure) {
+          } else if (exc[0] === Caml_builtin_exceptions.failure) {
             match = /* Exc */Block.__(1, [exc]);
-          }
-          else if (exc === Caml_builtin_exceptions.end_of_file) {
+          } else if (exc === Caml_builtin_exceptions.end_of_file) {
             match = /* Exc */Block.__(1, [exc]);
-          }
-          else if (exc[0] === Caml_builtin_exceptions.invalid_argument) {
-            var s = exc[1] + (' in format "' + ($$String.escaped(str) + '"'));
+          } else if (exc[0] === Caml_builtin_exceptions.invalid_argument) {
+            var s = exc[1] + (" in format \"" + ($$String.escaped(str) + "\""));
             throw [
                   Caml_builtin_exceptions.invalid_argument,
                   s
                 ];
-          }
-          else {
+          } else {
             throw exc;
           }
         }
         if (match.tag) {
           return Curry._2(ef, ib, match[0]);
-        }
-        else {
+        } else {
           var _f = f;
           var _args = match[0];
           while(true) {
@@ -2031,8 +1851,7 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
               _f = Curry._1(f$1, args[0]);
               continue ;
               
-            }
-            else {
+            } else {
               return f$1;
             }
           };
@@ -2072,14 +1891,14 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
       try {
         $js = CamlinternalFormat.format_of_string_format(str, format);
       }
-      catch (exn){
+      catch (raw_exn){
+        var exn = Js_exn.internalToOCamlException(raw_exn);
         if (exn[0] === Caml_builtin_exceptions.failure) {
           throw [
                 Scan_failure,
                 exn[1]
               ];
-        }
-        else {
+        } else {
           throw exn;
         }
       }
@@ -2106,21 +1925,21 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
     }
     
     function format_from_string(s, fmt) {
-      return sscanf_format(string_to_String(s), fmt, function (x) {
-                  return x;
-                });
+      return sscanf_format(string_to_String(s), fmt, (function (x) {
+                    return x;
+                  }));
     }
     
     function unescaped(s) {
-      return Curry._1(sscanf('"' + (s + '"'), /* Format */[
+      return Curry._1(sscanf("\"" + (s + "\""), /* Format */[
                       /* Caml_string */Block.__(3, [
                           /* No_padding */0,
                           /* Flush */Block.__(10, [/* End_of_format */0])
                         ]),
                       "%S%!"
-                    ]), function (x) {
-                  return x;
-                });
+                    ]), (function (x) {
+                    return x;
+                  }));
     }
     
     var Scanning = [

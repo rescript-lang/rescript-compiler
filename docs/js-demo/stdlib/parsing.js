@@ -1,6 +1,6 @@
 'use strict';
-define(["exports", "./caml_obj", "./caml_parser", "./caml_exceptions", "./lexing", "./curry", "./caml_array", "./array"],
-  function(exports, Caml_obj, Caml_parser, Caml_exceptions, Lexing, Curry, Caml_array, $$Array){
+define(["exports", "./array.js", "./curry.js", "./js_exn.js", "./lexing.js", "./caml_obj.js", "./caml_array.js", "./caml_parser.js", "./caml_exceptions.js"],
+  function(exports, $$Array, Curry, Js_exn, Lexing, Caml_obj, Caml_array, Caml_parser, Caml_exceptions){
     'use strict';
     var YYexit = Caml_exceptions.create("Parsing.YYexit");
     
@@ -50,9 +50,9 @@ define(["exports", "./caml_obj", "./caml_parser", "./caml_exceptions", "./lexing
       return /* () */0;
     }
     
-    var current_lookahead_fun = [function () {
-        return /* false */0;
-      }];
+    var current_lookahead_fun = [(function () {
+          return /* false */0;
+        })];
     
     function yyparse(tables, start, lexer, lexbuf) {
       var init_asp = env[/* asp */10];
@@ -97,7 +97,7 @@ define(["exports", "./caml_obj", "./caml_parser", "./caml_exceptions", "./lexing
                 try {
                   match$1 = /* tuple */[
                     /* Semantic_action_computed */4,
-                    Curry._1(tables[/* actions */0][env[/* rule_number */12]], env)
+                    Curry._1(Caml_array.caml_array_get(tables[/* actions */0], env[/* rule_number */12]), env)
                   ];
                 }
                 catch (exn){
@@ -106,8 +106,7 @@ define(["exports", "./caml_obj", "./caml_parser", "./caml_exceptions", "./lexing
                       /* Error_detected */5,
                       /* () */0
                     ];
-                  }
-                  else {
+                  } else {
                     throw exn;
                   }
                 }
@@ -123,7 +122,8 @@ define(["exports", "./caml_obj", "./caml_parser", "./caml_exceptions", "./lexing
           }
         };
       }
-      catch (exn$1){
+      catch (raw_exn){
+        var exn$1 = Js_exn.internalToOCamlException(raw_exn);
         var curr_char = env[/* curr_char */6];
         env[/* asp */10] = init_asp;
         env[/* sp */13] = init_sp;
@@ -134,23 +134,21 @@ define(["exports", "./caml_obj", "./caml_parser", "./caml_exceptions", "./lexing
         env[/* errflag */15] = init_errflag;
         if (exn$1[0] === YYexit) {
           return exn$1[1];
-        }
-        else {
-          current_lookahead_fun[0] = function (tok) {
-            if (tok.length !== undefined) {
-              return +(tables[/* transl_block */2][tok.tag | 0] === curr_char);
-            }
-            else {
-              return +(tables[/* transl_const */1][tok] === curr_char);
-            }
-          };
+        } else {
+          current_lookahead_fun[0] = (function (tok) {
+              if (tok.length !== undefined) {
+                return +(Caml_array.caml_array_get(tables[/* transl_block */2], tok.tag | 0) === curr_char);
+              } else {
+                return +(Caml_array.caml_array_get(tables[/* transl_const */1], tok) === curr_char);
+              }
+            });
           throw exn$1;
         }
       }
     }
     
     function peek_val(env, n) {
-      return env[/* v_stack */1][env[/* asp */10] - n | 0];
+      return Caml_array.caml_array_get(env[/* v_stack */1], env[/* asp */10] - n | 0);
     }
     
     function symbol_start_pos() {
@@ -158,15 +156,13 @@ define(["exports", "./caml_obj", "./caml_parser", "./caml_exceptions", "./lexing
       while(true) {
         var i = _i;
         if (i <= 0) {
-          return env[/* symb_end_stack */3][env[/* asp */10]];
-        }
-        else {
-          var st = env[/* symb_start_stack */2][(env[/* asp */10] - i | 0) + 1 | 0];
-          var en = env[/* symb_end_stack */3][(env[/* asp */10] - i | 0) + 1 | 0];
+          return Caml_array.caml_array_get(env[/* symb_end_stack */3], env[/* asp */10]);
+        } else {
+          var st = Caml_array.caml_array_get(env[/* symb_start_stack */2], (env[/* asp */10] - i | 0) + 1 | 0);
+          var en = Caml_array.caml_array_get(env[/* symb_end_stack */3], (env[/* asp */10] - i | 0) + 1 | 0);
           if (Caml_obj.caml_notequal(st, en)) {
             return st;
-          }
-          else {
+          } else {
             _i = i - 1 | 0;
             continue ;
             
@@ -176,15 +172,15 @@ define(["exports", "./caml_obj", "./caml_parser", "./caml_exceptions", "./lexing
     }
     
     function symbol_end_pos() {
-      return env[/* symb_end_stack */3][env[/* asp */10]];
+      return Caml_array.caml_array_get(env[/* symb_end_stack */3], env[/* asp */10]);
     }
     
     function rhs_start_pos(n) {
-      return env[/* symb_start_stack */2][env[/* asp */10] - (env[/* rule_len */11] - n | 0) | 0];
+      return Caml_array.caml_array_get(env[/* symb_start_stack */2], env[/* asp */10] - (env[/* rule_len */11] - n | 0) | 0);
     }
     
     function rhs_end_pos(n) {
-      return env[/* symb_end_stack */3][env[/* asp */10] - (env[/* rule_len */11] - n | 0) | 0];
+      return Caml_array.caml_array_get(env[/* symb_end_stack */3], env[/* asp */10] - (env[/* rule_len */11] - n | 0) | 0);
     }
     
     function symbol_start() {
@@ -211,7 +207,7 @@ define(["exports", "./caml_obj", "./caml_parser", "./caml_exceptions", "./lexing
       return /* () */0;
     }
     
-    var set_trace = Caml_parser.caml_set_parser_trace
+    var set_trace = Caml_parser.caml_set_parser_trace;
     
     exports.symbol_start         = symbol_start;
     exports.symbol_end           = symbol_end;

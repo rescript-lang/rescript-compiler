@@ -1,6 +1,6 @@
 'use strict';
-define(["exports", "./caml_int64", "./caml_builtin_exceptions", "./caml_int32", "./curry", "./caml_utils", "./caml_string"],
-  function(exports, Caml_int64, Caml_builtin_exceptions, Caml_int32, Curry, Caml_utils, Caml_string){
+define(["exports", "./curry.js", "./caml_int32.js", "./caml_int64.js", "./caml_utils.js", "./caml_builtin_exceptions.js"],
+  function(exports, Curry, Caml_int32, Caml_int64, Caml_utils, Caml_builtin_exceptions){
     'use strict';
     function caml_failwith(s) {
       throw [
@@ -14,22 +14,17 @@ define(["exports", "./caml_int64", "./caml_builtin_exceptions", "./caml_int32", 
         if (c >= 97) {
           if (c >= 123) {
             return -1;
-          }
-          else {
+          } else {
             return c - 87 | 0;
           }
-        }
-        else if (c >= 91) {
+        } else if (c >= 91) {
           return -1;
-        }
-        else {
+        } else {
           return c - 55 | 0;
         }
-      }
-      else if (c > 57 || c < 48) {
+      } else if (c > 57 || c < 48) {
         return -1;
-      }
-      else {
+      } else {
         return c - /* "0" */48 | 0;
       }
     }
@@ -67,31 +62,26 @@ define(["exports", "./caml_int64", "./caml_builtin_exceptions", "./caml_int32", 
                 i = i + 2 | 0;
               }
               
-            }
-            else {
+            } else {
               base = /* Oct */0;
               i = i + 2 | 0;
             }
-          }
-          else {
+          } else {
             base = /* Bin */3;
             i = i + 2 | 0;
           }
-        }
-        else if (match$1 !== 66) {
+        } else if (match$1 !== 66) {
           if (match$1 !== 79) {
             if (match$1 >= 88) {
               base = /* Hex */1;
               i = i + 2 | 0;
             }
             
-          }
-          else {
+          } else {
             base = /* Oct */0;
             i = i + 2 | 0;
           }
-        }
-        else {
+        } else {
           base = /* Bin */3;
           i = i + 2 | 0;
         }
@@ -123,31 +113,27 @@ define(["exports", "./caml_int64", "./caml_builtin_exceptions", "./caml_int32", 
           var acc = _acc;
           if (k === len) {
             return acc;
-          }
-          else {
+          } else {
             var a = s.charCodeAt(k);
             if (a === /* "_" */95) {
               _k = k + 1 | 0;
               continue ;
               
-            }
-            else {
+            } else {
               var v = parse_digit(a);
               if (v < 0 || v >= base) {
                 throw [
                       Caml_builtin_exceptions.failure,
                       "int_of_string"
                     ];
-              }
-              else {
+              } else {
                 var acc$1 = base * acc + v;
                 if (acc$1 > threshold) {
                   throw [
                         Caml_builtin_exceptions.failure,
                         "int_of_string"
                       ];
-                }
-                else {
+                } else {
                   _k = k + 1 | 0;
                   _acc = acc$1;
                   continue ;
@@ -221,51 +207,38 @@ define(["exports", "./caml_int64", "./caml_builtin_exceptions", "./caml_int32", 
           var acc = _acc;
           if (k === len) {
             return acc;
-          }
-          else {
+          } else {
             var a = s.charCodeAt(k);
             if (a === /* "_" */95) {
               _k = k + 1 | 0;
               continue ;
               
-            }
-            else {
+            } else {
               var v = Caml_int64.of_int32(parse_digit(a));
               if (Caml_int64.lt(v, /* int64 */[
                       /* hi */0,
                       /* lo */0
-                    ]) || Caml_int64.ge(v, base)) {
+                    ]) || Caml_int64.ge(v, base) || Caml_int64.gt(acc, threshold)) {
                 throw [
                       Caml_builtin_exceptions.failure,
                       "int64_of_string"
                     ];
-              }
-              else {
+              } else {
                 var acc$1 = Caml_int64.add(Caml_int64.mul(base, acc), v);
-                if (Caml_int64.gt(acc$1, threshold)) {
-                  throw [
-                        Caml_builtin_exceptions.failure,
-                        "int64_of_string"
-                      ];
-                }
-                else {
-                  _k = k + 1 | 0;
-                  _acc = acc$1;
-                  continue ;
-                  
-                }
+                _k = k + 1 | 0;
+                _acc = acc$1;
+                continue ;
+                
               }
             }
           }
         };
       };
       var res = Caml_int64.mul(sign, aux(d, i + 1 | 0));
-      var or_res_000 = /* hi */res[0] | /* hi */0;
-      var or_res_001 = /* lo */(res[1] >>> 0);
-      var or_res = /* int64 */[
-        or_res_000,
-        or_res_001
-      ];
+      var or_res = Caml_int64.or_(res, /* int64 */[
+            /* hi */0,
+            /* lo */0
+          ]);
       if (Caml_int64.eq(base, /* int64 */[
               /* hi */0,
               /* lo */10
@@ -293,8 +266,7 @@ define(["exports", "./caml_int64", "./caml_builtin_exceptions", "./caml_int32", 
     function lowercase(c) {
       if (c >= /* "A" */65 && c <= /* "Z" */90 || c >= /* "\192" */192 && c <= /* "\214" */214 || c >= /* "\216" */216 && c <= /* "\222" */222) {
         return c + 32 | 0;
-      }
-      else {
+      } else {
         return c;
       }
     }
@@ -325,16 +297,14 @@ define(["exports", "./caml_int64", "./caml_builtin_exceptions", "./caml_int32", 
         var i = _i;
         if (i >= len) {
           return f;
-        }
-        else {
+        } else {
           var c = fmt.charCodeAt(i);
           var exit = 0;
           if (c >= 69) {
             if (c >= 88) {
               if (c >= 121) {
                 exit = 1;
-              }
-              else {
+              } else {
                 switch (c - 88 | 0) {
                   case 0 : 
                       f[/* base */4] = /* Hex */1;
@@ -391,11 +361,9 @@ define(["exports", "./caml_int64", "./caml_builtin_exceptions", "./caml_int32", 
                       
                 }
               }
-            }
-            else if (c >= 72) {
+            } else if (c >= 72) {
               exit = 1;
-            }
-            else {
+            } else {
               f[/* signedconv */5] = /* true */1;
               f[/* uppercase */7] = /* true */1;
               f[/* conv */10] = String.fromCharCode(lowercase(c));
@@ -403,13 +371,11 @@ define(["exports", "./caml_int64", "./caml_builtin_exceptions", "./caml_int32", 
               continue ;
               
             }
-          }
-          else {
+          } else {
             var switcher = c - 32 | 0;
             if (switcher > 25 || switcher < 0) {
               exit = 1;
-            }
-            else {
+            } else {
               switch (switcher) {
                 case 3 : 
                     f[/* alternate */3] = /* true */1;
@@ -527,8 +493,7 @@ define(["exports", "./caml_int64", "./caml_builtin_exceptions", "./caml_int32", 
             len = len + 2 | 0;
           }
           
-        }
-        else {
+        } else {
           len = len + 1 | 0;
         }
       }
@@ -541,8 +506,7 @@ define(["exports", "./caml_int64", "./caml_builtin_exceptions", "./caml_int32", 
       if (signedconv) {
         if (sign < 0) {
           buffer = buffer + "-";
-        }
-        else if (signstyle !== "-") {
+        } else if (signstyle !== "-") {
           buffer = buffer + signstyle;
         }
         
@@ -569,9 +533,8 @@ define(["exports", "./caml_int64", "./caml_builtin_exceptions", "./caml_int32", 
     
     function caml_format_int(fmt, i) {
       if (fmt === "%d") {
-        return "" + i;
-      }
-      else {
+        return String(i);
+      } else {
         var f = parse_format(fmt);
         var f$1 = f;
         var i$1 = i;
@@ -617,7 +580,7 @@ define(["exports", "./caml_int64", "./caml_builtin_exceptions", "./caml_int32", 
                     /* lo */0
                   ], match$1[0]);
               var modulus = match$1[1];
-              s = Caml_string.js_string_of_char(cvtbl.charCodeAt(modulus[1] | 0)) + s;
+              s = String.fromCharCode(cvtbl.charCodeAt(modulus[1] | 0)) + s;
               while(Caml_int64.neq(quotient, /* int64 */[
                       /* hi */0,
                       /* lo */0
@@ -625,14 +588,13 @@ define(["exports", "./caml_int64", "./caml_builtin_exceptions", "./caml_int32", 
                 var match$2 = Caml_int64.div_mod(quotient, wbase);
                 quotient = match$2[0];
                 modulus = match$2[1];
-                s = Caml_string.js_string_of_char(cvtbl.charCodeAt(modulus[1] | 0)) + s;
+                s = String.fromCharCode(cvtbl.charCodeAt(modulus[1] | 0)) + s;
               };
-            }
-            else {
+            } else {
               var match$3 = Caml_int64.div_mod(x$1, wbase);
               var quotient$1 = match$3[0];
               var modulus$1 = match$3[1];
-              s = Caml_string.js_string_of_char(cvtbl.charCodeAt(modulus$1[1] | 0)) + s;
+              s = String.fromCharCode(cvtbl.charCodeAt(modulus$1[1] | 0)) + s;
               while(Caml_int64.neq(quotient$1, /* int64 */[
                       /* hi */0,
                       /* lo */0
@@ -640,7 +602,7 @@ define(["exports", "./caml_int64", "./caml_builtin_exceptions", "./caml_int32", 
                 var match$4 = Caml_int64.div_mod(quotient$1, wbase);
                 quotient$1 = match$4[0];
                 modulus$1 = match$4[1];
-                s = Caml_string.js_string_of_char(cvtbl.charCodeAt(modulus$1[1] | 0)) + s;
+                s = String.fromCharCode(cvtbl.charCodeAt(modulus$1[1] | 0)) + s;
               };
             }
             break;
@@ -668,7 +630,7 @@ define(["exports", "./caml_int64", "./caml_builtin_exceptions", "./caml_int32", 
                         /* lo */3435973836
                       ], match$5[0]), match$6[0]);
               var modulus$2 = match$6[1];
-              s = Caml_string.js_string_of_char(cvtbl$1.charCodeAt(modulus$2[1] | 0)) + s;
+              s = String.fromCharCode(cvtbl$1.charCodeAt(modulus$2[1] | 0)) + s;
               while(Caml_int64.neq(quotient$2, /* int64 */[
                       /* hi */0,
                       /* lo */0
@@ -676,14 +638,13 @@ define(["exports", "./caml_int64", "./caml_builtin_exceptions", "./caml_int32", 
                 var match$7 = Caml_int64.div_mod(quotient$2, wbase$1);
                 quotient$2 = match$7[0];
                 modulus$2 = match$7[1];
-                s = Caml_string.js_string_of_char(cvtbl$1.charCodeAt(modulus$2[1] | 0)) + s;
+                s = String.fromCharCode(cvtbl$1.charCodeAt(modulus$2[1] | 0)) + s;
               };
-            }
-            else {
+            } else {
               var match$8 = Caml_int64.div_mod(x$1, wbase$1);
               var quotient$3 = match$8[0];
               var modulus$3 = match$8[1];
-              s = Caml_string.js_string_of_char(cvtbl$1.charCodeAt(modulus$3[1] | 0)) + s;
+              s = String.fromCharCode(cvtbl$1.charCodeAt(modulus$3[1] | 0)) + s;
               while(Caml_int64.neq(quotient$3, /* int64 */[
                       /* hi */0,
                       /* lo */0
@@ -691,7 +652,7 @@ define(["exports", "./caml_int64", "./caml_builtin_exceptions", "./caml_int32", 
                 var match$9 = Caml_int64.div_mod(quotient$3, wbase$1);
                 quotient$3 = match$9[0];
                 modulus$3 = match$9[1];
-                s = Caml_string.js_string_of_char(cvtbl$1.charCodeAt(modulus$3[1] | 0)) + s;
+                s = String.fromCharCode(cvtbl$1.charCodeAt(modulus$3[1] | 0)) + s;
               };
             }
             break;
@@ -716,8 +677,7 @@ define(["exports", "./caml_int64", "./caml_builtin_exceptions", "./caml_int32", 
       if (isNaN(x$1)) {
         s = "nan";
         f[/* filter */2] = " ";
-      }
-      else if (isFinite(x$1)) {
+      } else if (isFinite(x$1)) {
         var match = f[/* conv */10];
         switch (match) {
           case "e" : 
@@ -734,8 +694,8 @@ define(["exports", "./caml_int64", "./caml_builtin_exceptions", "./caml_int32", 
               var prec$1 = prec !== 0 ? prec : 1;
               s = x$1.toExponential(prec$1 - 1 | 0);
               var j = s.indexOf("e");
-              var exp = +s.slice(j + 1 | 0);
-              if (exp < -4 || x$1 >= 1e21 || x$1.toFixed(0).length > prec$1) {
+              var exp = Number(s.slice(j + 1 | 0)) | 0;
+              if (exp < -4 || x$1 >= 1e21 || x$1.toFixed().length > prec$1) {
                 var i$1 = j - 1 | 0;
                 while(s[i$1] === "0") {
                   i$1 = i$1 - 1 | 0;
@@ -749,18 +709,16 @@ define(["exports", "./caml_int64", "./caml_builtin_exceptions", "./caml_int32", 
                   s = s.slice(0, i$2 - 1 | 0) + ("0" + s.slice(i$2 - 1 | 0));
                 }
                 
-              }
-              else {
+              } else {
                 var p = prec$1;
                 if (exp < 0) {
                   p = p - (exp + 1 | 0) | 0;
                   s = x$1.toFixed(p);
-                }
-                else {
-                  while(function () {
-                        s = x$1.toFixed(p);
-                        return +(s.length > (prec$1 + 1 | 0));
-                      }()) {
+                } else {
+                  while((function () {
+                          s = x$1.toFixed(p);
+                          return +(s.length > (prec$1 + 1 | 0));
+                        })()) {
                     p = p - 1 | 0;
                   };
                 }
@@ -780,8 +738,7 @@ define(["exports", "./caml_int64", "./caml_builtin_exceptions", "./caml_int32", 
           default:
             
         }
-      }
-      else {
+      } else {
         s = "inf";
         f[/* filter */2] = " ";
       }

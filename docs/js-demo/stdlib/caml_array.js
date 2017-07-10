@@ -1,6 +1,6 @@
 'use strict';
-define(["exports"],
-  function(exports){
+define(["exports", "./caml_builtin_exceptions.js"],
+  function(exports, Caml_builtin_exceptions){
     'use strict';
     function caml_array_sub(x, offset, len) {
       var result = new Array(len);
@@ -23,8 +23,7 @@ define(["exports"],
           _acc = l[0].length + acc | 0;
           continue ;
           
-        }
-        else {
+        } else {
           return acc;
         }
       };
@@ -48,8 +47,7 @@ define(["exports"],
           _i = k;
           continue ;
           
-        }
-        else {
+        } else {
           return /* () */0;
         }
       };
@@ -60,6 +58,29 @@ define(["exports"],
       var result = new Array(v);
       fill(result, 0, l);
       return result;
+    }
+    
+    function caml_array_set(xs, index, newval) {
+      if (index < 0 || index >= xs.length) {
+        throw [
+              Caml_builtin_exceptions.invalid_argument,
+              "index out of bounds"
+            ];
+      } else {
+        xs[index] = newval;
+        return /* () */0;
+      }
+    }
+    
+    function caml_array_get(xs, index) {
+      if (index < 0 || index >= xs.length) {
+        throw [
+              Caml_builtin_exceptions.invalid_argument,
+              "index out of bounds"
+            ];
+      } else {
+        return xs[index];
+      }
     }
     
     function caml_make_vect(len, init) {
@@ -76,8 +97,7 @@ define(["exports"],
           a2[j + i2 | 0] = a1[j + i1 | 0];
         }
         return /* () */0;
-      }
-      else {
+      } else {
         for(var j$1 = len - 1 | 0; j$1 >= 0; --j$1){
           a2[j$1 + i2 | 0] = a1[j$1 + i1 | 0];
         }
@@ -89,6 +109,8 @@ define(["exports"],
     exports.caml_array_concat = caml_array_concat;
     exports.caml_make_vect    = caml_make_vect;
     exports.caml_array_blit   = caml_array_blit;
+    exports.caml_array_get    = caml_array_get;
+    exports.caml_array_set    = caml_array_set;
     
   })
 /* No side effect */

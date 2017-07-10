@@ -1,5 +1,5 @@
 'use strict';
-define(["exports", "./caml_builtin_exceptions"],
+define(["exports", "./caml_builtin_exceptions.js"],
   function(exports, Caml_builtin_exceptions){
     'use strict';
     function fail() {

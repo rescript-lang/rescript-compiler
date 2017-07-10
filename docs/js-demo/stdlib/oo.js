@@ -1,5 +1,5 @@
 'use strict';
-define(["exports", "./camlinternalOO"],
+define(["exports", "./camlinternalOO.js"],
   function(exports, CamlinternalOO){
     'use strict';
     var copy = CamlinternalOO.copy;

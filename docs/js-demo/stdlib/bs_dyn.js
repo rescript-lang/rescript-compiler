@@ -1,6 +1,6 @@
 'use strict';
-define(["exports", "./block", "./caml_array", "./array"],
-  function(exports, Block, Caml_array, $$Array){
+define(["exports", "./array.js", "./block.js", "./caml_array.js"],
+  function(exports, $$Array, Block, Caml_array){
     'use strict';
     function int32_to_value(x) {
       return /* Int32 */Block.__(0, [x]);
@@ -42,22 +42,21 @@ define(["exports", "./block", "./caml_array", "./array"],
           r[i] = f(a[i]);
         }
         return r;
-      }
-      else {
+      } else {
         return /* array */[];
       }
     }
     
     function array_to_value(k) {
-      return function (x) {
-        return /* Array */Block.__(10, [array_map(k, x)]);
-      };
+      return (function (x) {
+          return /* Array */Block.__(10, [array_map(k, x)]);
+        });
     }
     
     function list_to_value(k) {
-      return function (x) {
-        return /* Array */Block.__(10, [array_map(k, $$Array.of_list(x))]);
-      };
+      return (function (x) {
+          return /* Array */Block.__(10, [array_map(k, $$Array.of_list(x))]);
+        });
     }
     
     function record_to_value(labels, v) {
@@ -76,69 +75,68 @@ define(["exports", "./block", "./caml_array", "./array"],
     }
     
     function tuple_2_to_value(k0, k1) {
-      return function (param) {
-        return /* Tuple */Block.__(9, [/* array */[
-                    k0(param[0]),
-                    k1(param[1])
-                  ]]);
-      };
+      return (function (param) {
+          return /* Tuple */Block.__(9, [/* array */[
+                      k0(param[0]),
+                      k1(param[1])
+                    ]]);
+        });
     }
     
     function tuple_3_to_value(k0, k1, k2) {
-      return function (param) {
-        return /* Tuple */Block.__(9, [/* array */[
-                    k0(param[0]),
-                    k1(param[1]),
-                    k2(param[2])
-                  ]]);
-      };
+      return (function (param) {
+          return /* Tuple */Block.__(9, [/* array */[
+                      k0(param[0]),
+                      k1(param[1]),
+                      k2(param[2])
+                    ]]);
+        });
     }
     
     function tuple_4_to_value(k0, k1, k2, k3) {
-      return function (param) {
-        return /* Tuple */Block.__(9, [/* array */[
-                    k0(param[0]),
-                    k1(param[1]),
-                    k2(param[2]),
-                    k3(param[3])
-                  ]]);
-      };
+      return (function (param) {
+          return /* Tuple */Block.__(9, [/* array */[
+                      k0(param[0]),
+                      k1(param[1]),
+                      k2(param[2]),
+                      k3(param[3])
+                    ]]);
+        });
     }
     
     function tuple_5_to_value(k0, k1, k2, k3, k4) {
-      return function (param) {
-        return /* Tuple */Block.__(9, [/* array */[
-                    k0(param[0]),
-                    k1(param[1]),
-                    k2(param[2]),
-                    k3(param[3]),
-                    k4(param[4])
-                  ]]);
-      };
+      return (function (param) {
+          return /* Tuple */Block.__(9, [/* array */[
+                      k0(param[0]),
+                      k1(param[1]),
+                      k2(param[2]),
+                      k3(param[3]),
+                      k4(param[4])
+                    ]]);
+        });
     }
     
     function tuple_6_to_value(k0, k1, k2, k3, k4, k5) {
-      return function (param) {
-        return /* Tuple */Block.__(9, [/* array */[
-                    k0(param[0]),
-                    k1(param[1]),
-                    k2(param[2]),
-                    k3(param[3]),
-                    k4(param[4]),
-                    k5(param[5])
-                  ]]);
-      };
+      return (function (param) {
+          return /* Tuple */Block.__(9, [/* array */[
+                      k0(param[0]),
+                      k1(param[1]),
+                      k2(param[2]),
+                      k3(param[3]),
+                      k4(param[4]),
+                      k5(param[5])
+                    ]]);
+        });
     }
     
     function option_to_value(k) {
-      return function (x) {
-        if (x) {
-          return /* OptionSome */Block.__(8, [k(x[0])]);
-        }
-        else {
-          return /* OptionNone */0;
-        }
-      };
+      return (function (x) {
+          if (x) {
+            return /* OptionSome */Block.__(8, [k(x[0])]);
+          } else {
+            return /* OptionNone */0;
+          }
+        });
     }
     
     function shape_of_record(labels) {
@@ -174,4 +172,4 @@ define(["exports", "./block", "./caml_array", "./array"],
     exports.shape_of_record    = shape_of_record;
     
   })
-/* int32_to_value Not a pure module */
+/* No side effect */

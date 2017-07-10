@@ -1,6 +1,6 @@
 'use strict';
-define(["exports", "./caml_builtin_exceptions", "./caml_string"],
-  function(exports, Caml_builtin_exceptions, Caml_string){
+define(["exports", "./caml_string.js", "./caml_missing_polyfill.js", "./caml_builtin_exceptions.js"],
+  function(exports, Caml_string, Caml_missing_polyfill, Caml_builtin_exceptions){
     'use strict';
     function to_buffer(buff, ofs, len, _, _$1) {
       if (ofs < 0 || len < 0 || ofs > (buff.length - len | 0)) {
@@ -8,11 +8,8 @@ define(["exports", "./caml_builtin_exceptions", "./caml_string"],
               Caml_builtin_exceptions.invalid_argument,
               "Marshal.to_buffer: substring out of bounds"
             ];
-      }
-      else {
-        return function () {
-                  throw "caml_output_value_to_buffer not implemented by bucklescript yet\n";
-                }();
+      } else {
+        return Caml_missing_polyfill.not_implemented("caml_output_value_to_buffer not implemented by bucklescript yet\n");
       }
     }
     
@@ -22,11 +19,8 @@ define(["exports", "./caml_builtin_exceptions", "./caml_string"],
               Caml_builtin_exceptions.invalid_argument,
               "Marshal.data_size"
             ];
-      }
-      else {
-        return function () {
-                  throw "caml_marshal_data_size not implemented by bucklescript yet\n";
-                }();
+      } else {
+        return Caml_missing_polyfill.not_implemented("caml_marshal_data_size not implemented by bucklescript yet\n");
       }
     }
     
@@ -40,21 +34,15 @@ define(["exports", "./caml_builtin_exceptions", "./caml_string"],
               Caml_builtin_exceptions.invalid_argument,
               "Marshal.from_bytes"
             ];
-      }
-      else {
-        var len = function () {
-            throw "caml_marshal_data_size not implemented by bucklescript yet\n";
-          }();
+      } else {
+        var len = Caml_missing_polyfill.not_implemented("caml_marshal_data_size not implemented by bucklescript yet\n");
         if (ofs > (buff.length - (20 + len | 0) | 0)) {
           throw [
                 Caml_builtin_exceptions.invalid_argument,
                 "Marshal.from_bytes"
               ];
-        }
-        else {
-          return function () {
-                    throw "caml_input_value_from_string not implemented by bucklescript yet\n";
-                  }();
+        } else {
+          return Caml_missing_polyfill.not_implemented("caml_input_value_from_string not implemented by bucklescript yet\n");
         }
       }
     }
@@ -64,15 +52,11 @@ define(["exports", "./caml_builtin_exceptions", "./caml_string"],
     }
     
     function to_channel(_, _$1, _$2) {
-      return function () {
-                throw "caml_output_value not implemented by bucklescript yet\n";
-              }();
+      return Caml_missing_polyfill.not_implemented("caml_output_value not implemented by bucklescript yet\n");
     }
     
     function from_channel() {
-      return function () {
-                throw "caml_input_value not implemented by bucklescript yet\n";
-              }();
+      return Caml_missing_polyfill.not_implemented("caml_input_value not implemented by bucklescript yet\n");
     }
     
     var header_size = 20;

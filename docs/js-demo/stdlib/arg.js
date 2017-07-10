@@ -1,6 +1,6 @@
 'use strict';
-define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./bytes", "./caml_exceptions", "./pervasives", "./caml_format", "./block", "./sys", "./curry", "./printf", "./buffer", "./string", "./list", "./caml_string"],
-  function(exports, Caml_obj, Caml_builtin_exceptions, Bytes, Caml_exceptions, Pervasives, Caml_format, Block, Sys, Curry, Printf, Buffer, $$String, List, Caml_string){
+define(["exports", "./sys.js", "./list.js", "./block.js", "./bytes.js", "./curry.js", "./buffer.js", "./js_exn.js", "./printf.js", "./string.js", "./caml_obj.js", "./caml_array.js", "./pervasives.js", "./caml_format.js", "./caml_string.js", "./caml_exceptions.js", "./caml_builtin_exceptions.js"],
+  function(exports, Sys, List, Block, Bytes, Curry, Buffer, Js_exn, Printf, $$String, Caml_obj, Caml_array, Pervasives, Caml_format, Caml_string, Caml_exceptions, Caml_builtin_exceptions){
     'use strict';
     var Bad = Caml_exceptions.create("Arg.Bad");
     
@@ -15,14 +15,12 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./bytes", "./caml
           var match = l[0];
           if (Caml_obj.caml_equal(match[0], x)) {
             return match[1];
-          }
-          else {
+          } else {
             _l = l[1];
             continue ;
             
           }
-        }
-        else {
+        } else {
           throw Caml_builtin_exceptions.not_found;
         }
       };
@@ -30,11 +28,10 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./bytes", "./caml
     
     function make_symlist(prefix, sep, suffix, l) {
       if (l) {
-        return List.fold_left(function (x, y) {
-                    return x + (sep + y);
-                  }, prefix + l[0], l[1]) + suffix;
-      }
-      else {
+        return List.fold_left((function (x, y) {
+                      return x + (sep + y);
+                    }), prefix + l[0], l[1]) + suffix;
+      } else {
         return "<none>";
       }
     }
@@ -62,8 +59,7 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./bytes", "./caml
             ],
             /* [] */0
           ];
-        }
-        else {
+        } else {
           throw exn;
         }
       }
@@ -82,8 +78,7 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./bytes", "./caml
             ],
             /* [] */0
           ];
-        }
-        else {
+        } else {
           throw exn$1;
         }
       }
@@ -101,63 +96,61 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./bytes", "./caml
                   ]),
                 "%s\n"
               ]), errmsg);
-      return List.iter(function (param) {
-                  var buf$1 = buf;
-                  var param$1 = param;
-                  var doc = param$1[2];
-                  var spec = param$1[1];
-                  var key = param$1[0];
-                  if (doc.length) {
-                    if (spec.tag === 11) {
-                      return Curry._3(Printf.bprintf(buf$1, /* Format */[
-                                      /* String_literal */Block.__(11, [
-                                          "  ",
-                                          /* String */Block.__(2, [
-                                              /* No_padding */0,
-                                              /* Char_literal */Block.__(12, [
-                                                  /* " " */32,
-                                                  /* String */Block.__(2, [
-                                                      /* No_padding */0,
-                                                      /* String */Block.__(2, [
-                                                          /* No_padding */0,
-                                                          /* Char_literal */Block.__(12, [
-                                                              /* "\n" */10,
-                                                              /* End_of_format */0
-                                                            ])
-                                                        ])
-                                                    ])
-                                                ])
-                                            ])
-                                        ]),
-                                      "  %s %s%s\n"
-                                    ]), key, make_symlist("{", "|", "}", spec[0]), doc);
+      return List.iter((function (param) {
+                    var buf$1 = buf;
+                    var param$1 = param;
+                    var doc = param$1[2];
+                    if (doc.length) {
+                      var spec = param$1[1];
+                      var key = param$1[0];
+                      if (spec.tag === 11) {
+                        return Curry._3(Printf.bprintf(buf$1, /* Format */[
+                                        /* String_literal */Block.__(11, [
+                                            "  ",
+                                            /* String */Block.__(2, [
+                                                /* No_padding */0,
+                                                /* Char_literal */Block.__(12, [
+                                                    /* " " */32,
+                                                    /* String */Block.__(2, [
+                                                        /* No_padding */0,
+                                                        /* String */Block.__(2, [
+                                                            /* No_padding */0,
+                                                            /* Char_literal */Block.__(12, [
+                                                                /* "\n" */10,
+                                                                /* End_of_format */0
+                                                              ])
+                                                          ])
+                                                      ])
+                                                  ])
+                                              ])
+                                          ]),
+                                        "  %s %s%s\n"
+                                      ]), key, make_symlist("{", "|", "}", spec[0]), doc);
+                      } else {
+                        return Curry._2(Printf.bprintf(buf$1, /* Format */[
+                                        /* String_literal */Block.__(11, [
+                                            "  ",
+                                            /* String */Block.__(2, [
+                                                /* No_padding */0,
+                                                /* Char_literal */Block.__(12, [
+                                                    /* " " */32,
+                                                    /* String */Block.__(2, [
+                                                        /* No_padding */0,
+                                                        /* Char_literal */Block.__(12, [
+                                                            /* "\n" */10,
+                                                            /* End_of_format */0
+                                                          ])
+                                                      ])
+                                                  ])
+                                              ])
+                                          ]),
+                                        "  %s %s\n"
+                                      ]), key, doc);
+                      }
+                    } else {
+                      return 0;
                     }
-                    else {
-                      return Curry._2(Printf.bprintf(buf$1, /* Format */[
-                                      /* String_literal */Block.__(11, [
-                                          "  ",
-                                          /* String */Block.__(2, [
-                                              /* No_padding */0,
-                                              /* Char_literal */Block.__(12, [
-                                                  /* " " */32,
-                                                  /* String */Block.__(2, [
-                                                      /* No_padding */0,
-                                                      /* Char_literal */Block.__(12, [
-                                                          /* "\n" */10,
-                                                          /* End_of_format */0
-                                                        ])
-                                                    ])
-                                                ])
-                                            ])
-                                        ]),
-                                      "  %s %s\n"
-                                    ]), key, doc);
-                    }
-                  }
-                  else {
-                    return 0;
-                  }
-                }, add_help(speclist));
+                  }), add_help(speclist));
     }
     
     function usage_string(speclist, errmsg) {
@@ -184,7 +177,7 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./bytes", "./caml
       var b = Buffer.create(200);
       var initpos = current$1[0];
       var stop = function (error) {
-        var progname = initpos < l ? argv[initpos] : "(?)";
+        var progname = initpos < l ? Caml_array.caml_array_get(argv, initpos) : "(?)";
         switch (error.tag | 0) {
           case 0 : 
               var s = error[0];
@@ -285,8 +278,7 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./bytes", "./caml
                 Help,
                 Buffer.contents(b)
               ];
-        }
-        else {
+        } else {
           throw [
                 Bad,
                 Buffer.contents(b)
@@ -295,7 +287,7 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./bytes", "./caml
       };
       current$1[0] = current$1[0] + 1 | 0;
       while(current$1[0] < l) {
-        var s = argv[current$1[0]];
+        var s = Caml_array.caml_array_get(argv, current$1[0]);
         if (s.length >= 1 && Caml_string.get(s, 0) === /* "-" */45) {
           var action;
           try {
@@ -304,24 +296,24 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./bytes", "./caml
           catch (exn){
             if (exn === Caml_builtin_exceptions.not_found) {
               action = stop(/* Unknown */Block.__(0, [s]));
-            }
-            else {
+            } else {
               throw exn;
             }
           }
           try {
             var treat_action = (function(s){
-            return function (param) {
+            return function treat_action(param) {
               switch (param.tag | 0) {
                 case 0 : 
                     return Curry._1(param[0], /* () */0);
                 case 1 : 
                     if ((current$1[0] + 1 | 0) < l) {
-                      var arg = argv[current$1[0] + 1 | 0];
+                      var arg = Caml_array.caml_array_get(argv, current$1[0] + 1 | 0);
                       try {
                         Curry._1(param[0], Pervasives.bool_of_string(arg));
                       }
-                      catch (exn){
+                      catch (raw_exn){
+                        var exn = Js_exn.internalToOCamlException(raw_exn);
                         if (exn[0] === Caml_builtin_exceptions.invalid_argument) {
                           if (exn[1] === "bool_of_string") {
                             throw [
@@ -332,18 +324,16 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./bytes", "./caml
                                       "a boolean"
                                     ])
                                 ];
-                          }
-                          else {
+                          } else {
                             throw exn;
                           }
-                        }
-                        else {
+                        } else {
                           throw exn;
                         }
                       }
-                      return current$1[0] = current$1[0] + 1 | 0;
-                    }
-                    else {
+                      current$1[0] = current$1[0] + 1 | 0;
+                      return /* () */0;
+                    } else {
                       throw [
                             Stop,
                             /* Missing */Block.__(2, [s])
@@ -358,10 +348,10 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./bytes", "./caml
                     return /* () */0;
                 case 4 : 
                     if ((current$1[0] + 1 | 0) < l) {
-                      Curry._1(param[0], argv[current$1[0] + 1 | 0]);
-                      return current$1[0] = current$1[0] + 1 | 0;
-                    }
-                    else {
+                      Curry._1(param[0], Caml_array.caml_array_get(argv, current$1[0] + 1 | 0));
+                      current$1[0] = current$1[0] + 1 | 0;
+                      return /* () */0;
+                    } else {
                       throw [
                             Stop,
                             /* Missing */Block.__(2, [s])
@@ -370,10 +360,10 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./bytes", "./caml
                     break;
                 case 5 : 
                     if ((current$1[0] + 1 | 0) < l) {
-                      param[0][0] = argv[current$1[0] + 1 | 0];
-                      return current$1[0] = current$1[0] + 1 | 0;
-                    }
-                    else {
+                      param[0][0] = Caml_array.caml_array_get(argv, current$1[0] + 1 | 0);
+                      current$1[0] = current$1[0] + 1 | 0;
+                      return /* () */0;
+                    } else {
                       throw [
                             Stop,
                             /* Missing */Block.__(2, [s])
@@ -382,11 +372,12 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./bytes", "./caml
                     break;
                 case 6 : 
                     if ((current$1[0] + 1 | 0) < l) {
-                      var arg$1 = argv[current$1[0] + 1 | 0];
+                      var arg$1 = Caml_array.caml_array_get(argv, current$1[0] + 1 | 0);
                       try {
                         Curry._1(param[0], Caml_format.caml_int_of_string(arg$1));
                       }
-                      catch (exn$1){
+                      catch (raw_exn$1){
+                        var exn$1 = Js_exn.internalToOCamlException(raw_exn$1);
                         if (exn$1[0] === Caml_builtin_exceptions.failure) {
                           if (exn$1[1] === "int_of_string") {
                             throw [
@@ -397,18 +388,16 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./bytes", "./caml
                                       "an integer"
                                     ])
                                 ];
-                          }
-                          else {
+                          } else {
                             throw exn$1;
                           }
-                        }
-                        else {
+                        } else {
                           throw exn$1;
                         }
                       }
-                      return current$1[0] = current$1[0] + 1 | 0;
-                    }
-                    else {
+                      current$1[0] = current$1[0] + 1 | 0;
+                      return /* () */0;
+                    } else {
                       throw [
                             Stop,
                             /* Missing */Block.__(2, [s])
@@ -417,11 +406,12 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./bytes", "./caml
                     break;
                 case 7 : 
                     if ((current$1[0] + 1 | 0) < l) {
-                      var arg$2 = argv[current$1[0] + 1 | 0];
+                      var arg$2 = Caml_array.caml_array_get(argv, current$1[0] + 1 | 0);
                       try {
                         param[0][0] = Caml_format.caml_int_of_string(arg$2);
                       }
-                      catch (exn$2){
+                      catch (raw_exn$2){
+                        var exn$2 = Js_exn.internalToOCamlException(raw_exn$2);
                         if (exn$2[0] === Caml_builtin_exceptions.failure) {
                           if (exn$2[1] === "int_of_string") {
                             throw [
@@ -432,18 +422,16 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./bytes", "./caml
                                       "an integer"
                                     ])
                                 ];
-                          }
-                          else {
+                          } else {
                             throw exn$2;
                           }
-                        }
-                        else {
+                        } else {
                           throw exn$2;
                         }
                       }
-                      return current$1[0] = current$1[0] + 1 | 0;
-                    }
-                    else {
+                      current$1[0] = current$1[0] + 1 | 0;
+                      return /* () */0;
+                    } else {
                       throw [
                             Stop,
                             /* Missing */Block.__(2, [s])
@@ -452,11 +440,12 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./bytes", "./caml
                     break;
                 case 8 : 
                     if ((current$1[0] + 1 | 0) < l) {
-                      var arg$3 = argv[current$1[0] + 1 | 0];
+                      var arg$3 = Caml_array.caml_array_get(argv, current$1[0] + 1 | 0);
                       try {
                         Curry._1(param[0], Caml_format.caml_float_of_string(arg$3));
                       }
-                      catch (exn$3){
+                      catch (raw_exn$3){
+                        var exn$3 = Js_exn.internalToOCamlException(raw_exn$3);
                         if (exn$3[0] === Caml_builtin_exceptions.failure) {
                           if (exn$3[1] === "float_of_string") {
                             throw [
@@ -467,18 +456,16 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./bytes", "./caml
                                       "a float"
                                     ])
                                 ];
-                          }
-                          else {
+                          } else {
                             throw exn$3;
                           }
-                        }
-                        else {
+                        } else {
                           throw exn$3;
                         }
                       }
-                      return current$1[0] = current$1[0] + 1 | 0;
-                    }
-                    else {
+                      current$1[0] = current$1[0] + 1 | 0;
+                      return /* () */0;
+                    } else {
                       throw [
                             Stop,
                             /* Missing */Block.__(2, [s])
@@ -487,11 +474,12 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./bytes", "./caml
                     break;
                 case 9 : 
                     if ((current$1[0] + 1 | 0) < l) {
-                      var arg$4 = argv[current$1[0] + 1 | 0];
+                      var arg$4 = Caml_array.caml_array_get(argv, current$1[0] + 1 | 0);
                       try {
                         param[0][0] = Caml_format.caml_float_of_string(arg$4);
                       }
-                      catch (exn$4){
+                      catch (raw_exn$4){
+                        var exn$4 = Js_exn.internalToOCamlException(raw_exn$4);
                         if (exn$4[0] === Caml_builtin_exceptions.failure) {
                           if (exn$4[1] === "float_of_string") {
                             throw [
@@ -502,18 +490,16 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./bytes", "./caml
                                       "a float"
                                     ])
                                 ];
-                          }
-                          else {
+                          } else {
                             throw exn$4;
                           }
-                        }
-                        else {
+                        } else {
                           throw exn$4;
                         }
                       }
-                      return current$1[0] = current$1[0] + 1 | 0;
-                    }
-                    else {
+                      current$1[0] = current$1[0] + 1 | 0;
+                      return /* () */0;
+                    } else {
                       throw [
                             Stop,
                             /* Missing */Block.__(2, [s])
@@ -523,14 +509,14 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./bytes", "./caml
                 case 10 : 
                     return List.iter(treat_action, param[0]);
                 case 11 : 
-                    var symb = param[0];
                     if ((current$1[0] + 1 | 0) < l) {
-                      var arg$5 = argv[current$1[0] + 1 | 0];
+                      var symb = param[0];
+                      var arg$5 = Caml_array.caml_array_get(argv, current$1[0] + 1 | 0);
                       if (List.mem(arg$5, symb)) {
-                        Curry._1(param[1], argv[current$1[0] + 1 | 0]);
-                        return current$1[0] = current$1[0] + 1 | 0;
-                      }
-                      else {
+                        Curry._1(param[1], Caml_array.caml_array_get(argv, current$1[0] + 1 | 0));
+                        current$1[0] = current$1[0] + 1 | 0;
+                        return /* () */0;
+                      } else {
                         throw [
                               Stop,
                               /* Wrong */Block.__(1, [
@@ -540,8 +526,7 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./bytes", "./caml
                                 ])
                             ];
                       }
-                    }
-                    else {
+                    } else {
                       throw [
                             Stop,
                             /* Missing */Block.__(2, [s])
@@ -551,7 +536,7 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./bytes", "./caml
                 case 12 : 
                     var f = param[0];
                     while(current$1[0] < (l - 1 | 0)) {
-                      Curry._1(f, argv[current$1[0] + 1 | 0]);
+                      Curry._1(f, Caml_array.caml_array_get(argv, current$1[0] + 1 | 0));
                       current$1[0] = current$1[0] + 1 | 0;
                     };
                     return /* () */0;
@@ -561,28 +546,26 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./bytes", "./caml
             }(s));
             treat_action(action);
           }
-          catch (exn$1){
+          catch (raw_exn){
+            var exn$1 = Js_exn.internalToOCamlException(raw_exn);
             if (exn$1[0] === Bad) {
               stop(/* Message */Block.__(3, [exn$1[1]]));
-            }
-            else if (exn$1[0] === Stop) {
+            } else if (exn$1[0] === Stop) {
               stop(exn$1[1]);
-            }
-            else {
+            } else {
               throw exn$1;
             }
           }
           current$1[0] = current$1[0] + 1 | 0;
-        }
-        else {
+        } else {
           try {
             Curry._1(anonfun, s);
           }
-          catch (exn$2){
+          catch (raw_exn$1){
+            var exn$2 = Js_exn.internalToOCamlException(raw_exn$1);
             if (exn$2[0] === Bad) {
               stop(/* Message */Block.__(3, [exn$2[1]]));
-            }
-            else {
+            } else {
               throw exn$2;
             }
           }
@@ -601,7 +584,8 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./bytes", "./caml
       try {
         return parse_argv(/* None */0, Sys.argv, l, f, msg);
       }
-      catch (exn){
+      catch (raw_exn){
+        var exn = Js_exn.internalToOCamlException(raw_exn);
         if (exn[0] === Bad) {
           Curry._1(Printf.eprintf(/* Format */[
                     /* String */Block.__(2, [
@@ -611,8 +595,7 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./bytes", "./caml
                     "%s"
                   ]), exn[1]);
           return Pervasives.exit(2);
-        }
-        else if (exn[0] === Help) {
+        } else if (exn[0] === Help) {
           Curry._1(Printf.printf(/* Format */[
                     /* String */Block.__(2, [
                         /* No_padding */0,
@@ -621,8 +604,7 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./bytes", "./caml
                     "%s"
                   ]), exn[1]);
           return Pervasives.exit(0);
-        }
-        else {
+        } else {
           throw exn;
         }
       }
@@ -632,7 +614,8 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./bytes", "./caml
       try {
         return parse_argv_dynamic(/* None */0, Sys.argv, l, f, msg);
       }
-      catch (exn){
+      catch (raw_exn){
+        var exn = Js_exn.internalToOCamlException(raw_exn);
         if (exn[0] === Bad) {
           Curry._1(Printf.eprintf(/* Format */[
                     /* String */Block.__(2, [
@@ -642,8 +625,7 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./bytes", "./caml
                     "%s"
                   ]), exn[1]);
           return Pervasives.exit(2);
-        }
-        else if (exn[0] === Help) {
+        } else if (exn[0] === Help) {
           Curry._1(Printf.printf(/* Format */[
                     /* String */Block.__(2, [
                         /* No_padding */0,
@@ -652,8 +634,7 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./bytes", "./caml
                     "%s"
                   ]), exn[1]);
           return Pervasives.exit(0);
-        }
-        else {
+        } else {
           throw exn;
         }
       }
@@ -667,13 +648,11 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./bytes", "./caml
           var n = _n;
           if (n >= len) {
             return len;
-          }
-          else if (Caml_string.get(s, n) === /* " " */32) {
+          } else if (Caml_string.get(s, n) === /* " " */32) {
             _n = n + 1 | 0;
             continue ;
             
-          }
-          else {
+          } else {
             return n;
           }
         };
@@ -681,8 +660,7 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./bytes", "./caml
       catch (exn){
         if (exn === Caml_builtin_exceptions.not_found) {
           return len;
-        }
-        else {
+        } else {
           throw exn;
         }
       }
@@ -692,8 +670,7 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./bytes", "./caml
       var kwd = param[0];
       if (param[1].tag === 11) {
         return Pervasives.max(cur, kwd.length);
-      }
-      else {
+      } else {
         return Pervasives.max(cur, kwd.length + second_word(param[2]) | 0);
       }
     }
@@ -703,49 +680,46 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./bytes", "./caml
       var completed = add_help(speclist);
       var len = List.fold_left(max_arg_len, 0, completed);
       var len$1 = Pervasives.min(len, limit);
-      return List.map(function (param) {
-                  var len$2 = len$1;
-                  var ksd = param;
-                  var spec = ksd[1];
-                  var kwd = ksd[0];
-                  if (ksd[2] === "") {
-                    return ksd;
-                  }
-                  else if (spec.tag === 11) {
-                    var msg = ksd[2];
-                    var cutcol = second_word(msg);
-                    var n = Pervasives.max(0, len$2 - cutcol | 0) + 3 | 0;
-                    var spaces = Caml_string.bytes_to_string(Bytes.make(n, /* " " */32));
-                    return /* tuple */[
-                            kwd,
-                            spec,
-                            "\n" + (spaces + msg)
-                          ];
-                  }
-                  else {
-                    var msg$1 = ksd[2];
-                    var cutcol$1 = second_word(msg$1);
-                    var kwd_len = kwd.length;
-                    var diff = (len$2 - kwd_len | 0) - cutcol$1 | 0;
-                    if (diff <= 0) {
+      return List.map((function (param) {
+                    var len$2 = len$1;
+                    var ksd = param;
+                    var spec = ksd[1];
+                    var kwd = ksd[0];
+                    if (ksd[2] === "") {
+                      return ksd;
+                    } else if (spec.tag === 11) {
+                      var msg = ksd[2];
+                      var cutcol = second_word(msg);
+                      var n = Pervasives.max(0, len$2 - cutcol | 0) + 3 | 0;
+                      var spaces = Caml_string.bytes_to_string(Bytes.make(n, /* " " */32));
                       return /* tuple */[
                               kwd,
                               spec,
-                              msg$1
+                              "\n" + (spaces + msg)
                             ];
+                    } else {
+                      var msg$1 = ksd[2];
+                      var cutcol$1 = second_word(msg$1);
+                      var kwd_len = kwd.length;
+                      var diff = (len$2 - kwd_len | 0) - cutcol$1 | 0;
+                      if (diff <= 0) {
+                        return /* tuple */[
+                                kwd,
+                                spec,
+                                msg$1
+                              ];
+                      } else {
+                        var spaces$1 = Caml_string.bytes_to_string(Bytes.make(diff, /* " " */32));
+                        var prefix = $$String.sub(msg$1, 0, cutcol$1);
+                        var suffix = $$String.sub(msg$1, cutcol$1, msg$1.length - cutcol$1 | 0);
+                        return /* tuple */[
+                                kwd,
+                                spec,
+                                prefix + (spaces$1 + suffix)
+                              ];
+                      }
                     }
-                    else {
-                      var spaces$1 = Caml_string.bytes_to_string(Bytes.make(diff, /* " " */32));
-                      var prefix = $$String.sub(msg$1, 0, cutcol$1);
-                      var suffix = $$String.sub(msg$1, cutcol$1, msg$1.length - cutcol$1 | 0);
-                      return /* tuple */[
-                              kwd,
-                              spec,
-                              prefix + (spaces$1 + suffix)
-                            ];
-                    }
-                  }
-                }, completed);
+                  }), completed);
     }
     
     exports.parse              = parse;

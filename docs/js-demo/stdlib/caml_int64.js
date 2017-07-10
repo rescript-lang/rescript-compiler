@@ -1,6 +1,6 @@
 'use strict';
-define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./caml_int32", "./caml_utils"],
-  function(exports, Caml_builtin_exceptions, Caml_obj, Caml_int32, Caml_utils){
+define(["exports", "./caml_obj.js", "./caml_int32.js", "./caml_utils.js", "./caml_builtin_exceptions.js"],
+  function(exports, Caml_obj, Caml_int32, Caml_utils, Caml_builtin_exceptions){
     'use strict';
     var min_int = /* record */[
       /* hi */-2147483648,
@@ -55,8 +55,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./caml_int32", ".
     function eq(x, y) {
       if (x[/* hi */0] === y[/* hi */0]) {
         return +(x[/* lo */1] === y[/* lo */1]);
-      }
-      else {
+      } else {
         return /* false */0;
       }
     }
@@ -64,8 +63,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./caml_int32", ".
     function neg(x) {
       if (eq(x, min_int)) {
         return min_int;
-      }
-      else {
+      } else {
         return add(not(x), one);
       }
     }
@@ -75,30 +73,28 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./caml_int32", ".
     }
     
     function lsl_(x, numBits) {
-      var lo = x[/* lo */1];
       if (numBits) {
+        var lo = x[/* lo */1];
         if (numBits >= 32) {
           return /* record */[
                   /* hi */(lo << (numBits - 32 | 0)),
                   /* lo */0
                 ];
-        }
-        else {
+        } else {
           var hi = (lo >>> (32 - numBits | 0)) | (x[/* hi */0] << numBits);
           return /* record */[
                   /* hi */hi,
                   /* lo */((lo << numBits) >>> 0)
                 ];
         }
-      }
-      else {
+      } else {
         return x;
       }
     }
     
     function lsr_(x, numBits) {
-      var hi = x[/* hi */0];
       if (numBits) {
+        var hi = x[/* hi */0];
         var offset = numBits - 32 | 0;
         if (offset) {
           if (offset > 0) {
@@ -107,31 +103,28 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./caml_int32", ".
                     /* hi */0,
                     /* lo */(lo >>> 0)
                   ];
-          }
-          else {
+          } else {
             var hi$1 = (hi >>> numBits);
-            var lo$1 = (hi << -offset) | (x[/* lo */1] >>> numBits);
+            var lo$1 = (hi << (-offset | 0)) | (x[/* lo */1] >>> numBits);
             return /* record */[
                     /* hi */hi$1,
                     /* lo */(lo$1 >>> 0)
                   ];
           }
-        }
-        else {
+        } else {
           return /* record */[
                   /* hi */0,
                   /* lo */(hi >>> 0)
                 ];
         }
-      }
-      else {
+      } else {
         return x;
       }
     }
     
     function asr_(x, numBits) {
-      var hi = x[/* hi */0];
       if (numBits) {
+        var hi = x[/* hi */0];
         if (numBits < 32) {
           var hi$1 = (hi >> numBits);
           var lo = (hi << (32 - numBits | 0)) | (x[/* lo */1] >>> numBits);
@@ -139,16 +132,14 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./caml_int32", ".
                   /* hi */hi$1,
                   /* lo */(lo >>> 0)
                 ];
-        }
-        else {
+        } else {
           var lo$1 = (hi >> (numBits - 32 | 0));
           return /* record */[
                   /* hi */hi >= 0 ? 0 : -1,
                   /* lo */(lo$1 >>> 0)
                 ];
         }
-      }
-      else {
+      } else {
         return x;
       }
     }
@@ -156,8 +147,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./caml_int32", ".
     function is_zero(param) {
       if (param[/* hi */0] !== 0 || param[/* lo */1] !== 0) {
         return /* false */0;
-      }
-      else {
+      } else {
         return /* true */1;
       }
     }
@@ -174,32 +164,26 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./caml_int32", ".
         var exit$3 = 0;
         if (this_hi !== 0) {
           exit$3 = 4;
-        }
-        else if ($$this[/* lo */1] !== 0) {
+        } else if ($$this[/* lo */1] !== 0) {
           exit$3 = 4;
-        }
-        else {
+        } else {
           return zero;
         }
         if (exit$3 === 4) {
           if (other[/* hi */0] !== 0) {
             exit$2 = 3;
-          }
-          else if (other[/* lo */1] !== 0) {
+          } else if (other[/* lo */1] !== 0) {
             exit$2 = 3;
-          }
-          else {
+          } else {
             return zero;
           }
         }
         if (exit$2 === 3) {
           if (this_hi !== -2147483648) {
             exit$1 = 2;
-          }
-          else if ($$this[/* lo */1] !== 0) {
+          } else if ($$this[/* lo */1] !== 0) {
             exit$1 = 2;
-          }
-          else {
+          } else {
             lo = other[/* lo */1];
             exit = 1;
           }
@@ -210,11 +194,9 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./caml_int32", ".
           var exit$4 = 0;
           if (other_hi !== -2147483648) {
             exit$4 = 3;
-          }
-          else if (other[/* lo */1] !== 0) {
+          } else if (other[/* lo */1] !== 0) {
             exit$4 = 3;
-          }
-          else {
+          } else {
             lo = lo$1;
             exit = 1;
           }
@@ -226,15 +208,12 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./caml_int32", ".
                 _this = neg($$this);
                 continue ;
                 
-              }
-              else {
+              } else {
                 return neg(mul(neg($$this), other));
               }
-            }
-            else if (other_hi < 0) {
+            } else if (other_hi < 0) {
               return neg(mul($$this, neg(other)));
-            }
-            else {
+            } else {
               var a48 = (this_hi >>> 16);
               var a32 = this_hi & 65535;
               var a16 = (lo$1 >>> 16);
@@ -271,8 +250,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./caml_int32", ".
         if (exit === 1) {
           if ((lo & 1) === 0) {
             return zero;
-          }
-          else {
+          } else {
             return min_int;
           }
         }
@@ -289,46 +267,63 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./caml_int32", ".
             ];
     }
     
+    function xor(param, param$1) {
+      return /* record */[
+              /* hi */param[/* hi */0] ^ param$1[/* hi */0],
+              /* lo */((param[/* lo */1] ^ param$1[/* lo */1]) >>> 0)
+            ];
+    }
+    
+    function or_(param, param$1) {
+      return /* record */[
+              /* hi */param[/* hi */0] | param$1[/* hi */0],
+              /* lo */((param[/* lo */1] | param$1[/* lo */1]) >>> 0)
+            ];
+    }
+    
+    function and_(param, param$1) {
+      return /* record */[
+              /* hi */param[/* hi */0] & param$1[/* hi */0],
+              /* lo */((param[/* lo */1] & param$1[/* lo */1]) >>> 0)
+            ];
+    }
+    
     function ge(param, param$1) {
       var other_hi = param$1[/* hi */0];
       var hi = param[/* hi */0];
       if (hi > other_hi) {
         return /* true */1;
-      }
-      else if (hi < other_hi) {
+      } else if (hi < other_hi) {
         return /* false */0;
-      }
-      else {
+      } else {
         return +(param[/* lo */1] >= param$1[/* lo */1]);
       }
     }
     
     function neq(x, y) {
-      return !eq(x, y);
+      return 1 - eq(x, y);
     }
     
     function lt(x, y) {
-      return !ge(x, y);
+      return 1 - ge(x, y);
     }
     
     function gt(x, y) {
       if (x[/* hi */0] > y[/* hi */0]) {
         return /* true */1;
-      }
-      else if (x[/* hi */0] < y[/* hi */0]) {
+      } else if (x[/* hi */0] < y[/* hi */0]) {
         return /* false */0;
-      }
-      else {
+      } else {
         return +(x[/* lo */1] > y[/* lo */1]);
       }
     }
     
     function le(x, y) {
-      return !gt(x, y);
+      return 1 - gt(x, y);
     }
     
     function to_float(param) {
-      return param[/* hi */0] * 4294967296 + param[/* lo */1];
+      return param[/* hi */0] * (0x100000000) + param[/* lo */1];
     }
     
     var two_ptr_32_dbl = Math.pow(2, 32);
@@ -340,17 +335,13 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./caml_int32", ".
     function of_float(x) {
       if (isNaN(x) || !isFinite(x)) {
         return zero;
-      }
-      else if (x <= neg_two_ptr_63) {
+      } else if (x <= neg_two_ptr_63) {
         return min_int;
-      }
-      else if (x + 1 >= two_ptr_63_dbl) {
+      } else if (x + 1 >= two_ptr_63_dbl) {
         return max_int;
-      }
-      else if (x < 0) {
+      } else if (x < 0) {
         return neg(of_float(-x));
-      }
-      else {
+      } else {
         var hi = x / two_ptr_32_dbl | 0;
         var lo = x % two_ptr_32_dbl | 0;
         return /* record */[
@@ -369,49 +360,38 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./caml_int32", ".
         var exit$1 = 0;
         if (other[/* hi */0] !== 0) {
           exit$1 = 2;
-        }
-        else if (other[/* lo */1] !== 0) {
+        } else if (other[/* lo */1] !== 0) {
           exit$1 = 2;
-        }
-        else {
+        } else {
           throw Caml_builtin_exceptions.division_by_zero;
         }
         if (exit$1 === 2) {
           if (self_hi !== -2147483648) {
             if (self_hi !== 0) {
               exit = 1;
-            }
-            else if (self[/* lo */1] !== 0) {
+            } else if (self[/* lo */1] !== 0) {
               exit = 1;
-            }
-            else {
+            } else {
               return zero;
             }
-          }
-          else if (self[/* lo */1] !== 0) {
+          } else if (self[/* lo */1] !== 0) {
             exit = 1;
-          }
-          else if (eq(other, one) || eq(other, neg_one)) {
+          } else if (eq(other, one) || eq(other, neg_one)) {
             return self;
-          }
-          else if (eq(other, min_int)) {
+          } else if (eq(other, min_int)) {
             return one;
-          }
-          else {
+          } else {
             var other_hi = other[/* hi */0];
             var half_this = asr_(self, 1);
             var approx = lsl_(div(half_this, other), 1);
             var exit$2 = 0;
             if (approx[/* hi */0] !== 0) {
               exit$2 = 3;
-            }
-            else if (approx[/* lo */1] !== 0) {
+            } else if (approx[/* lo */1] !== 0) {
               exit$2 = 3;
-            }
-            else if (other_hi < 0) {
+            } else if (other_hi < 0) {
               return one;
-            }
-            else {
+            } else {
               return neg(one);
             }
             if (exit$2 === 3) {
@@ -427,11 +407,9 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./caml_int32", ".
           var exit$3 = 0;
           if (other_hi$1 !== -2147483648) {
             exit$3 = 2;
-          }
-          else if (other[/* lo */1] !== 0) {
+          } else if (other[/* lo */1] !== 0) {
             exit$3 = 2;
-          }
-          else {
+          } else {
             return zero;
           }
           if (exit$3 === 2) {
@@ -441,15 +419,12 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./caml_int32", ".
                 _self = neg(self);
                 continue ;
                 
-              }
-              else {
+              } else {
                 return neg(div(neg(self), other));
               }
-            }
-            else if (other_hi$1 < 0) {
+            } else if (other_hi$1 < 0) {
               return neg(div(self, neg(other)));
-            }
-            else {
+            } else {
               var res = zero;
               var rem$1 = self;
               while(ge(rem$1, other)) {
@@ -496,8 +471,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./caml_int32", ".
       var v = Caml_obj.caml_nativeint_compare(self[/* hi */0], other[/* hi */0]);
       if (v) {
         return v;
-      }
-      else {
+      } else {
         return Caml_obj.caml_nativeint_compare(self[/* lo */1], other[/* lo */1]);
       }
     }
@@ -522,11 +496,9 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./caml_int32", ".
       var exit = 0;
       if (match !== 0) {
         exit = 1;
-      }
-      else if (match$1 !== 0) {
+      } else if (match$1 !== 0) {
         exit = 1;
-      }
-      else {
+      } else {
         return "0";
       }
       if (exit === 1) {
@@ -536,16 +508,13 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./caml_int32", ".
             var pad = 8 - lo.length | 0;
             if (pad <= 0) {
               return aux(x[/* hi */0]) + lo;
-            }
-            else {
+            } else {
               return aux(x[/* hi */0]) + (Caml_utils.repeat(pad, "0") + lo);
             }
-          }
-          else {
+          } else {
             return aux(x[/* lo */1]);
           }
-        }
-        else {
+        } else {
           return aux(x[/* hi */0]) + "00000000";
         }
       }
@@ -568,13 +537,12 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./caml_int32", ".
     }
     
     function bits_of_float(x) {
-      var to_nat = function (x) {
-        return x;
-      };
       var u = new Float64Array(/* float array */[x]);
       var int32 = new Int32Array(u.buffer);
-      var hi = to_nat(int32[1]);
-      var lo = to_nat(int32[0]);
+      var x$1 = int32[1];
+      var hi = x$1;
+      var x$2 = int32[0];
+      var lo = x$2;
       return /* record */[
               /* hi */hi,
               /* lo */(lo >>> 0)
@@ -605,6 +573,9 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./caml_int32", ".
     exports.asr_          = asr_;
     exports.is_zero       = is_zero;
     exports.mul           = mul;
+    exports.xor           = xor;
+    exports.or_           = or_;
+    exports.and_          = and_;
     exports.swap          = swap;
     exports.ge            = ge;
     exports.eq            = eq;

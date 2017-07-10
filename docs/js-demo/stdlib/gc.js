@@ -1,6 +1,6 @@
 'use strict';
-define(["exports", "./block", "./caml_gc", "./sys", "./curry", "./printf"],
-  function(exports, Block, Caml_gc, Sys, Curry, Printf){
+define(["exports", "./sys.js", "./block.js", "./curry.js", "./printf.js", "./caml_gc.js"],
+  function(exports, Sys, Block, Curry, Printf, Caml_gc){
     'use strict';
     function print_stat(c) {
       var st = Caml_gc.caml_gc_stat(/* () */0);
@@ -240,8 +240,7 @@ define(["exports", "./block", "./caml_gc", "./sys", "./curry", "./printf"],
       if (arec[/* active */0][0]) {
         Caml_gc.caml_final_register(call_alarm, arec);
         return Curry._1(arec[/* f */1], /* () */0);
-      }
-      else {
+      } else {
         return 0;
       }
     }
@@ -261,9 +260,9 @@ define(["exports", "./block", "./caml_gc", "./sys", "./curry", "./printf"],
       return /* () */0;
     }
     
-    var finalise = Caml_gc.caml_final_register
+    var finalise = Caml_gc.caml_final_register;
     
-    var finalise_release = Caml_gc.caml_final_release
+    var finalise_release = Caml_gc.caml_final_release;
     
     exports.print_stat       = print_stat;
     exports.allocated_bytes  = allocated_bytes;

@@ -1,6 +1,6 @@
 'use strict';
-define(["exports", "./caml_builtin_exceptions", "./pervasives", "./char", "./caml_md5", "./string", "./caml_string"],
-  function(exports, Caml_builtin_exceptions, Pervasives, Char, Caml_md5, $$String, Caml_string){
+define(["exports", "./char.js", "./string.js", "./caml_md5.js", "./pervasives.js", "./caml_string.js", "./caml_missing_polyfill.js", "./caml_builtin_exceptions.js"],
+  function(exports, Char, $$String, Caml_md5, Pervasives, Caml_string, Caml_missing_polyfill, Caml_builtin_exceptions){
     'use strict';
     function string(str) {
       return Caml_md5.caml_md5_string(str, 0, str.length);
@@ -16,8 +16,7 @@ define(["exports", "./caml_builtin_exceptions", "./pervasives", "./char", "./cam
               Caml_builtin_exceptions.invalid_argument,
               "Digest.substring"
             ];
-      }
-      else {
+      } else {
         return Caml_md5.caml_md5_string(str, ofs, len);
       }
     }
@@ -31,27 +30,21 @@ define(["exports", "./caml_builtin_exceptions", "./pervasives", "./char", "./cam
       var exit = 0;
       var d;
       try {
-        d = function () {
-            throw "caml_md5_chan not implemented by bucklescript yet\n";
-          }();
+        d = Caml_missing_polyfill.not_implemented("caml_md5_chan not implemented by bucklescript yet\n");
         exit = 1;
       }
       catch (e){
-        (function () {
-              throw "caml_ml_close_channel not implemented by bucklescript yet\n";
-            }());
+        Caml_missing_polyfill.not_implemented("caml_ml_close_channel not implemented by bucklescript yet\n");
         throw e;
       }
       if (exit === 1) {
-        (function () {
-              throw "caml_ml_close_channel not implemented by bucklescript yet\n";
-            }());
+        Caml_missing_polyfill.not_implemented("caml_ml_close_channel not implemented by bucklescript yet\n");
         return d;
       }
       
     }
     
-    var output = Pervasives.output_string
+    var output = Pervasives.output_string;
     
     function input(chan) {
       return Pervasives.really_input_string(chan, 16);
@@ -88,28 +81,23 @@ define(["exports", "./caml_builtin_exceptions", "./pervasives", "./char", "./cam
                     Caml_builtin_exceptions.invalid_argument,
                     "Digest.from_hex"
                   ];
-            }
-            else {
+            } else {
               return (c - /* "a" */97 | 0) + 10 | 0;
             }
-          }
-          else if (c >= 71) {
+          } else if (c >= 71) {
             throw [
                   Caml_builtin_exceptions.invalid_argument,
                   "Digest.from_hex"
                 ];
-          }
-          else {
+          } else {
             return (c - /* "A" */65 | 0) + 10 | 0;
           }
-        }
-        else if (c > 57 || c < 48) {
+        } else if (c > 57 || c < 48) {
           throw [
                 Caml_builtin_exceptions.invalid_argument,
                 "Digest.from_hex"
               ];
-        }
-        else {
+        } else {
           return c - /* "0" */48 | 0;
         }
       };

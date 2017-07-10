@@ -1,5 +1,5 @@
 'use strict';
-define(["exports", "./obj"],
+define(["exports", "./obj.js"],
   function(exports, Obj){
     'use strict';
     function register(_, _$1) {

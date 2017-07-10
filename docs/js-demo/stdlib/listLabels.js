@@ -1,5 +1,5 @@
 'use strict';
-define(["exports", "./list"],
+define(["exports", "./list.js"],
   function(exports, List){
     'use strict';
     var length = List.length;

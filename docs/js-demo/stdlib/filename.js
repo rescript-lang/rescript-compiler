@@ -1,35 +1,30 @@
 'use strict';
-define(["exports", "./caml_builtin_exceptions", "./camlinternalLazy", "./caml_sys", "./pervasives", "./block", "./curry", "./printf", "./buffer", "./string", "./caml_string", "./random"],
-  function(exports, Caml_builtin_exceptions, CamlinternalLazy, Caml_sys, Pervasives, Block, Curry, Printf, Buffer, $$String, Caml_string, Random){
+define(["exports", "./block.js", "./curry.js", "./buffer.js", "./js_exn.js", "./printf.js", "./random.js", "./string.js", "./caml_sys.js", "./pervasives.js", "./caml_string.js", "./camlinternalLazy.js", "./caml_missing_polyfill.js", "./caml_builtin_exceptions.js"],
+  function(exports, Block, Curry, Buffer, Js_exn, Printf, Random, $$String, Caml_sys, Pervasives, Caml_string, CamlinternalLazy, Caml_missing_polyfill, Caml_builtin_exceptions){
     'use strict';
     function generic_basename(is_dir_sep, current_dir_name, name) {
       if (name === "") {
         return current_dir_name;
-      }
-      else {
+      } else {
         var _n = name.length - 1 | 0;
         while(true) {
           var n = _n;
           if (n < 0) {
             return $$String.sub(name, 0, 1);
-          }
-          else if (Curry._2(is_dir_sep, name, n)) {
+          } else if (Curry._2(is_dir_sep, name, n)) {
             _n = n - 1 | 0;
             continue ;
             
-          }
-          else {
+          } else {
             var _n$1 = n;
             var p = n + 1 | 0;
             while(true) {
               var n$1 = _n$1;
               if (n$1 < 0) {
                 return $$String.sub(name, 0, p);
-              }
-              else if (Curry._2(is_dir_sep, name, n$1)) {
+              } else if (Curry._2(is_dir_sep, name, n$1)) {
                 return $$String.sub(name, n$1 + 1 | 0, (p - n$1 | 0) - 1 | 0);
-              }
-              else {
+              } else {
                 _n$1 = n$1 - 1 | 0;
                 continue ;
                 
@@ -43,44 +38,37 @@ define(["exports", "./caml_builtin_exceptions", "./camlinternalLazy", "./caml_sy
     function generic_dirname(is_dir_sep, current_dir_name, name) {
       if (name === "") {
         return current_dir_name;
-      }
-      else {
+      } else {
         var _n = name.length - 1 | 0;
         while(true) {
           var n = _n;
           if (n < 0) {
             return $$String.sub(name, 0, 1);
-          }
-          else if (Curry._2(is_dir_sep, name, n)) {
+          } else if (Curry._2(is_dir_sep, name, n)) {
             _n = n - 1 | 0;
             continue ;
             
-          }
-          else {
+          } else {
             var _n$1 = n;
             while(true) {
               var n$1 = _n$1;
               if (n$1 < 0) {
                 return current_dir_name;
-              }
-              else if (Curry._2(is_dir_sep, name, n$1)) {
+              } else if (Curry._2(is_dir_sep, name, n$1)) {
                 var _n$2 = n$1;
                 while(true) {
                   var n$2 = _n$2;
                   if (n$2 < 0) {
                     return $$String.sub(name, 0, 1);
-                  }
-                  else if (Curry._2(is_dir_sep, name, n$2)) {
+                  } else if (Curry._2(is_dir_sep, name, n$2)) {
                     _n$2 = n$2 - 1 | 0;
                     continue ;
                     
-                  }
-                  else {
+                  } else {
                     return $$String.sub(name, 0, n$2 + 1 | 0);
                   }
                 };
-              }
-              else {
+              } else {
                 _n$1 = n$1 - 1 | 0;
                 continue ;
                 
@@ -100,8 +88,7 @@ define(["exports", "./caml_builtin_exceptions", "./camlinternalLazy", "./caml_sy
     function is_relative(n) {
       if (n.length < 1) {
         return /* true */1;
-      }
-      else {
+      } else {
         return +(Caml_string.get(n, 0) !== /* "/" */47);
       }
     }
@@ -110,12 +97,10 @@ define(["exports", "./caml_builtin_exceptions", "./camlinternalLazy", "./caml_sy
       if (is_relative(n) && (n.length < 2 || $$String.sub(n, 0, 2) !== "./")) {
         if (n.length < 3) {
           return /* true */1;
-        }
-        else {
+        } else {
           return +($$String.sub(n, 0, 3) !== "../");
         }
-      }
-      else {
+      } else {
         return /* false */0;
       }
     }
@@ -123,8 +108,7 @@ define(["exports", "./caml_builtin_exceptions", "./camlinternalLazy", "./caml_sy
     function check_suffix(name, suff) {
       if (name.length >= suff.length) {
         return +($$String.sub(name, name.length - suff.length | 0, suff.length) === suff);
-      }
-      else {
+      } else {
         return /* false */0;
       }
     }
@@ -147,8 +131,7 @@ define(["exports", "./caml_builtin_exceptions", "./camlinternalLazy", "./caml_sy
       for(var i = 0 ,i_finish = l - 1 | 0; i <= i_finish; ++i){
         if (Caml_string.get(s, i) === /* "'" */39) {
           Buffer.add_string(b, quotequote);
-        }
-        else {
+        } else {
           Buffer.add_char(b, Caml_string.get(s, i));
         }
       }
@@ -183,8 +166,7 @@ define(["exports", "./caml_builtin_exceptions", "./camlinternalLazy", "./caml_sy
       var l = dirname.length;
       if (l === 0 || Curry._2(is_dir_sep$1, dirname, l - 1 | 0)) {
         return dirname + filename;
-      }
-      else {
+      } else {
         return dirname + (dir_sep + filename);
       }
     }
@@ -196,8 +178,7 @@ define(["exports", "./caml_builtin_exceptions", "./camlinternalLazy", "./caml_sy
               Caml_builtin_exceptions.invalid_argument,
               "Filename.chop_suffix"
             ];
-      }
-      else {
+      } else {
         return $$String.sub(name, 0, n);
       }
     }
@@ -211,11 +192,9 @@ define(["exports", "./caml_builtin_exceptions", "./camlinternalLazy", "./caml_sy
                 Caml_builtin_exceptions.invalid_argument,
                 "Filename.chop_extension"
               ];
-        }
-        else if (Caml_string.get(name, i) === /* "." */46) {
+        } else if (Caml_string.get(name, i) === /* "." */46) {
           return $$String.sub(name, 0, i);
-        }
-        else {
+        } else {
           _i = i - 1 | 0;
           continue ;
           
@@ -223,9 +202,9 @@ define(["exports", "./caml_builtin_exceptions", "./camlinternalLazy", "./caml_sy
       };
     }
     
-    var prng = Block.__(246, [function () {
-          return Curry._1(Random.State[/* make_self_init */1], /* () */0);
-        }]);
+    var prng = Block.__(246, [(function () {
+            return Curry._1(Random.State[/* make_self_init */1], /* () */0);
+          })]);
     
     function temp_file_name(temp_dir, prefix, suffix) {
       var tag = prng.tag | 0;
@@ -270,23 +249,20 @@ define(["exports", "./caml_builtin_exceptions", "./camlinternalLazy", "./caml_sy
         var counter = _counter;
         var name = temp_file_name(temp_dir, prefix, suffix);
         try {
-          (function () {
-                throw "caml_sys_close not implemented by bucklescript yet\n";
-              }());
+          Caml_missing_polyfill.not_implemented("caml_sys_close not implemented by bucklescript yet\n");
           return name;
         }
-        catch (e){
+        catch (raw_e){
+          var e = Js_exn.internalToOCamlException(raw_e);
           if (e[0] === Caml_builtin_exceptions.sys_error) {
             if (counter >= 1000) {
               throw e;
-            }
-            else {
+            } else {
               _counter = counter + 1 | 0;
               continue ;
               
             }
-          }
-          else {
+          } else {
             throw e;
           }
         }
@@ -318,18 +294,17 @@ define(["exports", "./caml_builtin_exceptions", "./camlinternalLazy", "./caml_sy
                       ], 384, name)
                 ];
         }
-        catch (e){
+        catch (raw_e){
+          var e = Js_exn.internalToOCamlException(raw_e);
           if (e[0] === Caml_builtin_exceptions.sys_error) {
             if (counter >= 1000) {
               throw e;
-            }
-            else {
+            } else {
               _counter = counter + 1 | 0;
               continue ;
               
             }
-          }
-          else {
+          } else {
             throw e;
           }
         }

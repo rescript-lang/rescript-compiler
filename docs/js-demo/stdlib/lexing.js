@@ -1,6 +1,6 @@
 'use strict';
-define(["exports", "./bytes", "./caml_builtin_exceptions", "./pervasives", "./caml_lexer", "./sys", "./curry", "./caml_bytes", "./caml_string"],
-  function(exports, Bytes, Caml_builtin_exceptions, Pervasives, Caml_lexer, Sys, Curry, Caml_bytes, Caml_string){
+define(["exports", "./sys.js", "./bytes.js", "./curry.js", "./caml_array.js", "./caml_bytes.js", "./caml_lexer.js", "./pervasives.js", "./caml_string.js", "./caml_builtin_exceptions.js"],
+  function(exports, Sys, Bytes, Curry, Caml_array, Caml_bytes, Caml_lexer, Pervasives, Caml_string, Caml_builtin_exceptions){
     'use strict';
     function engine(tbl, state, buf) {
       var result = Caml_lexer.caml_lex_engine(tbl, state, buf);
@@ -42,47 +42,46 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./pervasives", "./ca
     function from_function(f) {
       var partial_arg = new Array(512);
       return /* record */[
-              /* refill_buff */function (param) {
-                var read_fun = f;
-                var aux_buffer = partial_arg;
-                var lexbuf = param;
-                var read = Curry._2(read_fun, aux_buffer, aux_buffer.length);
-                var n = read > 0 ? read : (lexbuf[/* lex_eof_reached */8] = /* true */1, 0);
-                if ((lexbuf[/* lex_buffer_len */2] + n | 0) > lexbuf[/* lex_buffer */1].length) {
-                  if (((lexbuf[/* lex_buffer_len */2] - lexbuf[/* lex_start_pos */4] | 0) + n | 0) <= lexbuf[/* lex_buffer */1].length) {
-                    Bytes.blit(lexbuf[/* lex_buffer */1], lexbuf[/* lex_start_pos */4], lexbuf[/* lex_buffer */1], 0, lexbuf[/* lex_buffer_len */2] - lexbuf[/* lex_start_pos */4] | 0);
-                  }
-                  else {
-                    var newlen = Pervasives.min((lexbuf[/* lex_buffer */1].length << 1), Sys.max_string_length);
-                    if (((lexbuf[/* lex_buffer_len */2] - lexbuf[/* lex_start_pos */4] | 0) + n | 0) > newlen) {
-                      throw [
-                            Caml_builtin_exceptions.failure,
-                            "Lexing.lex_refill: cannot grow buffer"
-                          ];
+              /* refill_buff */(function (param) {
+                  var read_fun = f;
+                  var aux_buffer = partial_arg;
+                  var lexbuf = param;
+                  var read = Curry._2(read_fun, aux_buffer, aux_buffer.length);
+                  var n = read > 0 ? read : (lexbuf[/* lex_eof_reached */8] = /* true */1, 0);
+                  if ((lexbuf[/* lex_buffer_len */2] + n | 0) > lexbuf[/* lex_buffer */1].length) {
+                    if (((lexbuf[/* lex_buffer_len */2] - lexbuf[/* lex_start_pos */4] | 0) + n | 0) <= lexbuf[/* lex_buffer */1].length) {
+                      Bytes.blit(lexbuf[/* lex_buffer */1], lexbuf[/* lex_start_pos */4], lexbuf[/* lex_buffer */1], 0, lexbuf[/* lex_buffer_len */2] - lexbuf[/* lex_start_pos */4] | 0);
+                    } else {
+                      var newlen = Pervasives.min((lexbuf[/* lex_buffer */1].length << 1), Sys.max_string_length);
+                      if (((lexbuf[/* lex_buffer_len */2] - lexbuf[/* lex_start_pos */4] | 0) + n | 0) > newlen) {
+                        throw [
+                              Caml_builtin_exceptions.failure,
+                              "Lexing.lex_refill: cannot grow buffer"
+                            ];
+                      }
+                      var newbuf = Caml_string.caml_create_string(newlen);
+                      Bytes.blit(lexbuf[/* lex_buffer */1], lexbuf[/* lex_start_pos */4], newbuf, 0, lexbuf[/* lex_buffer_len */2] - lexbuf[/* lex_start_pos */4] | 0);
+                      lexbuf[/* lex_buffer */1] = newbuf;
                     }
-                    var newbuf = Caml_string.caml_create_string(newlen);
-                    Bytes.blit(lexbuf[/* lex_buffer */1], lexbuf[/* lex_start_pos */4], newbuf, 0, lexbuf[/* lex_buffer_len */2] - lexbuf[/* lex_start_pos */4] | 0);
-                    lexbuf[/* lex_buffer */1] = newbuf;
-                  }
-                  var s = lexbuf[/* lex_start_pos */4];
-                  lexbuf[/* lex_abs_pos */3] = lexbuf[/* lex_abs_pos */3] + s | 0;
-                  lexbuf[/* lex_curr_pos */5] = lexbuf[/* lex_curr_pos */5] - s | 0;
-                  lexbuf[/* lex_start_pos */4] = 0;
-                  lexbuf[/* lex_last_pos */6] = lexbuf[/* lex_last_pos */6] - s | 0;
-                  lexbuf[/* lex_buffer_len */2] = lexbuf[/* lex_buffer_len */2] - s | 0;
-                  var t = lexbuf[/* lex_mem */9];
-                  for(var i = 0 ,i_finish = t.length - 1 | 0; i <= i_finish; ++i){
-                    var v = t[i];
-                    if (v >= 0) {
-                      t[i] = v - s | 0;
+                    var s = lexbuf[/* lex_start_pos */4];
+                    lexbuf[/* lex_abs_pos */3] = lexbuf[/* lex_abs_pos */3] + s | 0;
+                    lexbuf[/* lex_curr_pos */5] = lexbuf[/* lex_curr_pos */5] - s | 0;
+                    lexbuf[/* lex_start_pos */4] = 0;
+                    lexbuf[/* lex_last_pos */6] = lexbuf[/* lex_last_pos */6] - s | 0;
+                    lexbuf[/* lex_buffer_len */2] = lexbuf[/* lex_buffer_len */2] - s | 0;
+                    var t = lexbuf[/* lex_mem */9];
+                    for(var i = 0 ,i_finish = t.length - 1 | 0; i <= i_finish; ++i){
+                      var v = Caml_array.caml_array_get(t, i);
+                      if (v >= 0) {
+                        Caml_array.caml_array_set(t, i, v - s | 0);
+                      }
+                      
                     }
-                    
                   }
-                }
-                Bytes.blit(aux_buffer, 0, lexbuf[/* lex_buffer */1], lexbuf[/* lex_buffer_len */2], n);
-                lexbuf[/* lex_buffer_len */2] = lexbuf[/* lex_buffer_len */2] + n | 0;
-                return /* () */0;
-              },
+                  Bytes.blit(aux_buffer, 0, lexbuf[/* lex_buffer */1], lexbuf[/* lex_buffer_len */2], n);
+                  lexbuf[/* lex_buffer_len */2] = lexbuf[/* lex_buffer_len */2] + n | 0;
+                  return /* () */0;
+                }),
               /* lex_buffer */new Array(1024),
               /* lex_buffer_len */0,
               /* lex_abs_pos */0,
@@ -98,17 +97,17 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./pervasives", "./ca
     }
     
     function from_channel(ic) {
-      return from_function(function (buf, n) {
-                  return Pervasives.input(ic, buf, 0, n);
-                });
+      return from_function((function (buf, n) {
+                    return Pervasives.input(ic, buf, 0, n);
+                  }));
     }
     
     function from_string(s) {
       return /* record */[
-              /* refill_buff */function (lexbuf) {
-                lexbuf[/* lex_eof_reached */8] = /* true */1;
-                return /* () */0;
-              },
+              /* refill_buff */(function (lexbuf) {
+                  lexbuf[/* lex_eof_reached */8] = /* true */1;
+                  return /* () */0;
+                }),
               /* lex_buffer */Bytes.of_string(s),
               /* lex_buffer_len */s.length,
               /* lex_abs_pos */0,
@@ -137,8 +136,7 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./pervasives", "./ca
       if (i1 >= 0) {
         var len = i2 - i1 | 0;
         return /* Some */[Bytes.sub_string(lexbuf[/* lex_buffer */1], i1, len)];
-      }
-      else {
+      } else {
         return /* None */0;
       }
     }
@@ -150,8 +148,7 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./pervasives", "./ca
     function sub_lexeme_char_opt(lexbuf, i) {
       if (i >= 0) {
         return /* Some */[Caml_bytes.get(lexbuf[/* lex_buffer */1], i)];
-      }
-      else {
+      } else {
         return /* None */0;
       }
     }

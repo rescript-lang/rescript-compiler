@@ -1,12 +1,11 @@
 'use strict';
-define(["exports", "./caml_builtin_exceptions"],
+define(["exports", "./caml_builtin_exceptions.js"],
   function(exports, Caml_builtin_exceptions){
     'use strict';
     function div(x, y) {
       if (y === 0) {
         throw Caml_builtin_exceptions.division_by_zero;
-      }
-      else {
+      } else {
         return x / y | 0;
       }
     }
@@ -14,8 +13,7 @@ define(["exports", "./caml_builtin_exceptions"],
     function mod_(x, y) {
       if (y === 0) {
         throw Caml_builtin_exceptions.division_by_zero;
-      }
-      else {
+      } else {
         return x % y;
       }
     }

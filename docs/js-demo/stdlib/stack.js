@@ -1,6 +1,6 @@
 'use strict';
-define(["exports", "./caml_exceptions", "./list"],
-  function(exports, Caml_exceptions, List){
+define(["exports", "./list.js", "./caml_exceptions.js"],
+  function(exports, List, Caml_exceptions){
     'use strict';
     var Empty = Caml_exceptions.create("Stack.Empty");
     
@@ -30,8 +30,7 @@ define(["exports", "./caml_exceptions", "./list"],
       if (match) {
         s[/* c */0] = match[1];
         return match[0];
-      }
-      else {
+      } else {
         throw Empty;
       }
     }
@@ -40,8 +39,7 @@ define(["exports", "./caml_exceptions", "./list"],
       var match = s[/* c */0];
       if (match) {
         return match[0];
-      }
-      else {
+      } else {
         throw Empty;
       }
     }

@@ -1,6 +1,6 @@
 'use strict';
-define(["exports", "./bytes", "./caml_builtin_exceptions", "./hashtbl", "./stream", "./caml_format", "./caml_int32", "./block", "./char", "./caml_string", "./list"],
-  function(exports, Bytes, Caml_builtin_exceptions, Hashtbl, Stream, Caml_format, Caml_int32, Block, Char, Caml_string, List){
+define(["exports", "./char.js", "./list.js", "./block.js", "./bytes.js", "./stream.js", "./hashtbl.js", "./caml_int32.js", "./caml_format.js", "./caml_string.js", "./caml_builtin_exceptions.js"],
+  function(exports, Char, List, Block, Bytes, Stream, Hashtbl, Caml_int32, Caml_format, Caml_string, Caml_builtin_exceptions){
     'use strict';
     var initial_buffer = new Array(32);
     
@@ -21,7 +21,8 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./hashtbl", "./strea
         buffer[0] = newbuffer;
       }
       buffer[0][bufpos[0]] = c;
-      return bufpos[0] = bufpos[0] + 1 | 0;
+      bufpos[0] = bufpos[0] + 1 | 0;
+      return /* () */0;
     }
     
     function get_string() {
@@ -32,9 +33,9 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./hashtbl", "./strea
     
     function make_lexer(keywords) {
       var kwd_table = Hashtbl.create(/* None */0, 17);
-      List.iter(function (s) {
-            return Hashtbl.add(kwd_table, s, /* Kwd */Block.__(0, [s]));
-          }, keywords);
+      List.iter((function (s) {
+              return Hashtbl.add(kwd_table, s, /* Kwd */Block.__(0, [s]));
+            }), keywords);
       var ident_or_keyword = function (id) {
         try {
           return Hashtbl.find(kwd_table, id);
@@ -42,8 +43,7 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./hashtbl", "./strea
         catch (exn){
           if (exn === Caml_builtin_exceptions.not_found) {
             return /* Ident */Block.__(1, [id]);
-          }
-          else {
+          } else {
             throw exn;
           }
         }
@@ -59,8 +59,7 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./hashtbl", "./strea
                   Stream.$$Error,
                   "Illegal character " + s
                 ];
-          }
-          else {
+          } else {
             throw exn;
           }
         }
@@ -76,8 +75,7 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./hashtbl", "./strea
               if (switcher > 57 || switcher < 0) {
                 if (switcher >= 58) {
                   exit = 1;
-                }
-                else {
+                } else {
                   switch (switcher + 65 | 0) {
                     case 9 : 
                     case 10 : 
@@ -103,8 +101,7 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./hashtbl", "./strea
                                   Stream.$$Error,
                                   ""
                                 ];
-                          }
-                          else {
+                          } else {
                             throw exn;
                           }
                         }
@@ -115,13 +112,11 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./hashtbl", "./strea
                                   Stream.$$Error,
                                   ""
                                 ];
-                          }
-                          else {
+                          } else {
                             Stream.junk(strm__);
                             return /* Some */[/* Char */Block.__(5, [c$1])];
                           }
-                        }
-                        else {
+                        } else {
                           throw [
                                 Stream.$$Error,
                                 ""
@@ -135,14 +130,12 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./hashtbl", "./strea
                         if (match$2) {
                           if (match$2[0] !== 42) {
                             return /* Some */[keyword_or_error(/* "(" */40)];
-                          }
-                          else {
+                          } else {
                             Stream.junk(strm__$1);
                             comment(strm__$1);
                             return next_token(strm__$1);
                           }
-                        }
-                        else {
+                        } else {
                           return /* Some */[keyword_or_error(/* "(" */40)];
                         }
                     case 45 : 
@@ -155,16 +148,14 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./hashtbl", "./strea
                             reset_buffer(/* () */0);
                             store(/* "-" */45);
                             return ident2(strm__$2);
-                          }
-                          else {
+                          } else {
                             Stream.junk(strm__$2);
                             reset_buffer(/* () */0);
                             store(/* "-" */45);
                             store(c$2);
                             return number(strm__$2);
                           }
-                        }
-                        else {
+                        } else {
                           reset_buffer(/* () */0);
                           store(/* "-" */45);
                           return ident2(strm__$2);
@@ -233,13 +224,11 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./hashtbl", "./strea
                     
                   }
                 }
-              }
-              else {
+              } else {
                 var switcher$1 = switcher - 26 | 0;
                 if (switcher$1 > 5 || switcher$1 < 0) {
                   exit = 2;
-                }
-                else {
+                } else {
                   switch (switcher$1) {
                     case 1 : 
                     case 3 : 
@@ -257,8 +246,7 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./hashtbl", "./strea
                   }
                 }
               }
-            }
-            else {
+            } else {
               exit = c >= 127 ? (
                   c >= 192 ? 2 : 1
                 ) : (
@@ -284,30 +272,23 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./hashtbl", "./strea
                         if (switcher$2 > 27 || switcher$2 < 0) {
                           if (switcher$2 >= 97) {
                             exit$1 = 1;
-                          }
-                          else {
+                          } else {
                             return /* Some */[ident_or_keyword(get_string(/* () */0))];
                           }
-                        }
-                        else if (switcher$2 !== 1) {
+                        } else if (switcher$2 !== 1) {
                           exit$1 = 1;
-                        }
-                        else {
+                        } else {
                           return /* Some */[ident_or_keyword(get_string(/* () */0))];
                         }
-                      }
-                      else if (c$3 >= 48) {
+                      } else if (c$3 >= 48) {
                         if (c$3 > 64 || c$3 < 58) {
                           exit$1 = 1;
-                        }
-                        else {
+                        } else {
                           return /* Some */[ident_or_keyword(get_string(/* () */0))];
                         }
-                      }
-                      else if (c$3 !== 39) {
+                      } else if (c$3 !== 39) {
                         return /* Some */[ident_or_keyword(get_string(/* () */0))];
-                      }
-                      else {
+                      } else {
                         exit$1 = 1;
                       }
                       if (exit$1 === 1) {
@@ -317,8 +298,7 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./hashtbl", "./strea
                         
                       }
                       
-                    }
-                    else {
+                    } else {
                       return /* Some */[ident_or_keyword(get_string(/* () */0))];
                     }
                   };
@@ -334,8 +314,7 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./hashtbl", "./strea
                   return number(strm__);
               
             }
-          }
-          else {
+          } else {
             return /* None */0;
           }
         };
@@ -351,27 +330,21 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./hashtbl", "./strea
               if (switcher > 30 || switcher < 0) {
                 if (switcher >= 32) {
                   return /* Some */[ident_or_keyword(get_string(/* () */0))];
-                }
-                else {
+                } else {
                   exit = 1;
                 }
-              }
-              else if (switcher !== 29) {
+              } else if (switcher !== 29) {
                 return /* Some */[ident_or_keyword(get_string(/* () */0))];
-              }
-              else {
+              } else {
                 exit = 1;
               }
-            }
-            else if (c >= 65) {
+            } else if (c >= 65) {
               if (c !== 92) {
                 return /* Some */[ident_or_keyword(get_string(/* () */0))];
-              }
-              else {
+              } else {
                 exit = 1;
               }
-            }
-            else if (c >= 33) {
+            } else if (c >= 33) {
               switch (c - 33 | 0) {
                 case 1 : 
                 case 6 : 
@@ -410,8 +383,7 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./hashtbl", "./strea
                     break;
                 
               }
-            }
-            else {
+            } else {
               return /* Some */[ident_or_keyword(get_string(/* () */0))];
             }
             if (exit === 1) {
@@ -421,8 +393,7 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./hashtbl", "./strea
               
             }
             
-          }
-          else {
+          } else {
             return /* Some */[ident_or_keyword(get_string(/* () */0))];
           }
         };
@@ -437,31 +408,26 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./hashtbl", "./strea
               if (c !== 69) {
                 if (c !== 101) {
                   exit = 1;
-                }
-                else {
+                } else {
                   Stream.junk(strm__);
                   store(/* "E" */69);
                   return exponent_part(strm__);
                 }
-              }
-              else {
+              } else {
                 Stream.junk(strm__);
                 store(/* "E" */69);
                 return exponent_part(strm__);
               }
-            }
-            else if (c !== 46) {
+            } else if (c !== 46) {
               if (c >= 48) {
                 Stream.junk(strm__);
                 store(c);
                 continue ;
                 
-              }
-              else {
+              } else {
                 exit = 1;
               }
-            }
-            else {
+            } else {
               Stream.junk(strm__);
               store(/* "." */46);
               var strm__$1 = strm__;
@@ -474,24 +440,20 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./hashtbl", "./strea
                   if (switcher > 32 || switcher < 0) {
                     if ((switcher + 21 >>> 0) > 9) {
                       exit$1 = 1;
-                    }
-                    else {
+                    } else {
                       Stream.junk(strm__$1);
                       store(c$1);
                       continue ;
                       
                     }
-                  }
-                  else if (switcher > 31 || switcher < 1) {
+                  } else if (switcher > 31 || switcher < 1) {
                     Stream.junk(strm__$1);
                     store(/* "E" */69);
                     return exponent_part(strm__$1);
-                  }
-                  else {
+                  } else {
                     exit$1 = 1;
                   }
-                }
-                else {
+                } else {
                   exit$1 = 1;
                 }
                 if (exit$1 === 1) {
@@ -500,8 +462,7 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./hashtbl", "./strea
                 
               };
             }
-          }
-          else {
+          } else {
             exit = 1;
           }
           if (exit === 1) {
@@ -517,20 +478,17 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./hashtbl", "./strea
           if (c !== 43) {
             if (c !== 45) {
               return end_exponent_part(strm__);
-            }
-            else {
+            } else {
               Stream.junk(strm__);
               store(c);
               return end_exponent_part(strm__);
             }
-          }
-          else {
+          } else {
             Stream.junk(strm__);
             store(c);
             return end_exponent_part(strm__);
           }
-        }
-        else {
+        } else {
           return end_exponent_part(strm__);
         }
       };
@@ -541,15 +499,13 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./hashtbl", "./strea
             var c = match[0];
             if (c > 57 || c < 48) {
               return /* Some */[/* Float */Block.__(3, [Caml_format.caml_float_of_string(get_string(/* () */0))])];
-            }
-            else {
+            } else {
               Stream.junk(strm__);
               store(c);
               continue ;
               
             }
-          }
-          else {
+          } else {
             return /* Some */[/* Float */Block.__(3, [Caml_format.caml_float_of_string(get_string(/* () */0))])];
           }
         };
@@ -565,8 +521,7 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./hashtbl", "./strea
                 store(c);
                 continue ;
                 
-              }
-              else {
+              } else {
                 Stream.junk(strm__);
                 var c$1;
                 try {
@@ -578,8 +533,7 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./hashtbl", "./strea
                           Stream.$$Error,
                           ""
                         ];
-                  }
-                  else {
+                  } else {
                     throw exn;
                   }
                 }
@@ -587,13 +541,11 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./hashtbl", "./strea
                 continue ;
                 
               }
-            }
-            else {
+            } else {
               Stream.junk(strm__);
               return get_string(/* () */0);
             }
-          }
-          else {
+          } else {
             throw Stream.Failure;
           }
         };
@@ -605,8 +557,7 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./hashtbl", "./strea
           if (c !== 92) {
             Stream.junk(strm__);
             return c;
-          }
-          else {
+          } else {
             Stream.junk(strm__);
             try {
               return $$escape(strm__);
@@ -617,14 +568,12 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./hashtbl", "./strea
                       Stream.$$Error,
                       ""
                     ];
-              }
-              else {
+              } else {
                 throw exn;
               }
             }
           }
-        }
-        else {
+        } else {
           throw Stream.Failure;
         }
       };
@@ -637,8 +586,7 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./hashtbl", "./strea
             if (switcher > 6 || switcher < 0) {
               Stream.junk(strm__);
               return c1;
-            }
-            else {
+            } else {
               switch (switcher) {
                 case 0 : 
                     Stream.junk(strm__);
@@ -658,8 +606,7 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./hashtbl", "./strea
                 
               }
             }
-          }
-          else if (c1 >= 48) {
+          } else if (c1 >= 48) {
             Stream.junk(strm__);
             var match$1 = Stream.peek(strm__);
             if (match$1) {
@@ -669,8 +616,7 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./hashtbl", "./strea
                       Stream.$$Error,
                       ""
                     ];
-              }
-              else {
+              } else {
                 Stream.junk(strm__);
                 var match$2 = Stream.peek(strm__);
                 if (match$2) {
@@ -680,33 +626,28 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./hashtbl", "./strea
                           Stream.$$Error,
                           ""
                         ];
-                  }
-                  else {
+                  } else {
                     Stream.junk(strm__);
                     return Char.chr((Caml_int32.imul(c1 - 48 | 0, 100) + Caml_int32.imul(c2 - 48 | 0, 10) | 0) + (c3 - 48 | 0) | 0);
                   }
-                }
-                else {
+                } else {
                   throw [
                         Stream.$$Error,
                         ""
                       ];
                 }
               }
-            }
-            else {
+            } else {
               throw [
                     Stream.$$Error,
                     ""
                   ];
             }
-          }
-          else {
+          } else {
             Stream.junk(strm__);
             return c1;
           }
-        }
-        else {
+        } else {
           throw Stream.Failure;
         }
       };
@@ -719,8 +660,7 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./hashtbl", "./strea
               Stream.junk(strm__);
               continue ;
               
-            }
-            else {
+            } else {
               switch (switcher) {
                 case 0 : 
                     Stream.junk(strm__);
@@ -730,14 +670,12 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./hashtbl", "./strea
                       if (match$1[0] !== 42) {
                         Stream.junk(strm__$1);
                         return comment(strm__$1);
-                      }
-                      else {
+                      } else {
                         Stream.junk(strm__$1);
                         comment(strm__$1);
                         return comment(strm__$1);
                       }
-                    }
-                    else {
+                    } else {
                       throw Stream.Failure;
                     }
                 case 1 : 
@@ -754,36 +692,32 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./hashtbl", "./strea
                           if (c !== 42) {
                             Stream.junk(strm__$2);
                             return comment(strm__$2);
-                          }
-                          else {
+                          } else {
                             Stream.junk(strm__$2);
                             continue ;
                             
                           }
-                        }
-                        else {
+                        } else {
                           Stream.junk(strm__$2);
                           return /* () */0;
                         }
-                      }
-                      else {
+                      } else {
                         throw Stream.Failure;
                       }
                     };
                 
               }
             }
-          }
-          else {
+          } else {
             throw Stream.Failure;
           }
         };
       };
-      return function (input) {
-        return Stream.from(function () {
-                    return next_token(input);
-                  });
-      };
+      return (function (input) {
+          return Stream.from((function () {
+                        return next_token(input);
+                      }));
+        });
     }
     
     exports.make_lexer = make_lexer;

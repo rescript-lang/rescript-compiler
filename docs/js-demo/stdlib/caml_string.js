@@ -1,8 +1,8 @@
 'use strict';
-define(["exports", "./caml_builtin_exceptions"],
+define(["exports", "./caml_builtin_exceptions.js"],
   function(exports, Caml_builtin_exceptions){
     'use strict';
-    function js_string_of_char(prim) {
+    function string_of_char(prim) {
       return String.fromCharCode(prim);
     }
     
@@ -12,8 +12,7 @@ define(["exports", "./caml_builtin_exceptions"],
               Caml_builtin_exceptions.invalid_argument,
               "index out of bounds"
             ];
-      }
-      else {
+      } else {
         return s.charCodeAt(i);
       }
     }
@@ -24,8 +23,7 @@ define(["exports", "./caml_builtin_exceptions"],
               Caml_builtin_exceptions.invalid_argument,
               "String.create"
             ];
-      }
-      else {
+      } else {
         return new Array(len);
       }
     }
@@ -33,11 +31,9 @@ define(["exports", "./caml_builtin_exceptions"],
     function caml_string_compare(s1, s2) {
       if (s1 === s2) {
         return 0;
-      }
-      else if (s1 < s2) {
+      } else if (s1 < s2) {
         return -1;
-      }
-      else {
+      } else {
         return 1;
       }
     }
@@ -48,8 +44,7 @@ define(["exports", "./caml_builtin_exceptions"],
           s[k] = c;
         }
         return /* () */0;
-      }
-      else {
+      } else {
         return 0;
       }
     }
@@ -62,8 +57,7 @@ define(["exports", "./caml_builtin_exceptions"],
             s2[i2 + i | 0] = s1.charCodeAt(i1 + i | 0);
           }
           return /* () */0;
-        }
-        else {
+        } else {
           for(var i$1 = 0 ,i_finish$1 = off1 - 1 | 0; i$1 <= i_finish$1; ++i$1){
             s2[i2 + i$1 | 0] = s1.charCodeAt(i1 + i$1 | 0);
           }
@@ -72,8 +66,7 @@ define(["exports", "./caml_builtin_exceptions"],
           }
           return /* () */0;
         }
-      }
-      else {
+      } else {
         return 0;
       }
     }
@@ -93,8 +86,7 @@ define(["exports", "./caml_builtin_exceptions"],
               s1$1[i2$1 + j | 0] = s1$1[i1$1 + j | 0];
             }
             return /* () */0;
-          }
-          else if (i1$1 > i2$1) {
+          } else if (i1$1 > i2$1) {
             var range_a$1 = (s1$1.length - i1$1 | 0) - 1 | 0;
             var range_b$1 = len$1 - 1 | 0;
             var range$1 = range_a$1 > range_b$1 ? range_b$1 : range_a$1;
@@ -102,20 +94,17 @@ define(["exports", "./caml_builtin_exceptions"],
               s1$1[i2$1 + k | 0] = s1$1[i1$1 + k | 0];
             }
             return /* () */0;
-          }
-          else {
+          } else {
             return 0;
           }
-        }
-        else {
+        } else {
           var off1 = s1.length - i1 | 0;
           if (len <= off1) {
             for(var i = 0 ,i_finish = len - 1 | 0; i <= i_finish; ++i){
               s2[i2 + i | 0] = s1[i1 + i | 0];
             }
             return /* () */0;
-          }
-          else {
+          } else {
             for(var i$1 = 0 ,i_finish$1 = off1 - 1 | 0; i$1 <= i_finish$1; ++i$1){
               s2[i2 + i$1 | 0] = s1[i1 + i$1 | 0];
             }
@@ -125,8 +114,7 @@ define(["exports", "./caml_builtin_exceptions"],
             return /* () */0;
           }
         }
-      }
-      else {
+      } else {
         return 0;
       }
     }
@@ -148,8 +136,7 @@ define(["exports", "./caml_builtin_exceptions"],
       var s_len = len;
       if (i === 0 && len <= 4096 && len === bytes.length) {
         return String.fromCharCode.apply(null,bytes);
-      }
-      else {
+      } else {
         var offset = 0;
         while(s_len > 0) {
           var next = s_len < 1024 ? s_len : 1024;
@@ -175,8 +162,7 @@ define(["exports", "./caml_builtin_exceptions"],
     function caml_is_printable(c) {
       if (c > 31) {
         return +(c < 127);
-      }
-      else {
+      } else {
         return /* false */0;
       }
     }
@@ -195,8 +181,7 @@ define(["exports", "./caml_builtin_exceptions"],
               Caml_builtin_exceptions.invalid_argument,
               "index out of bounds"
             ];
-      }
-      else {
+      } else {
         return s.charCodeAt(i);
       }
     }
@@ -213,7 +198,7 @@ define(["exports", "./caml_builtin_exceptions"],
     exports.caml_blit_bytes           = caml_blit_bytes;
     exports.caml_string_get16         = caml_string_get16;
     exports.caml_string_get32         = caml_string_get32;
-    exports.js_string_of_char         = js_string_of_char;
+    exports.string_of_char            = string_of_char;
     exports.get                       = get;
     
   })

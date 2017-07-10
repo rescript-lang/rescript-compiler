@@ -1,16 +1,12 @@
 'use strict';
-define(["exports", "./caml_builtin_exceptions", "./caml_array"],
-  function(exports, Caml_builtin_exceptions, Caml_array){
+define(["exports", "./caml_array.js", "./caml_missing_polyfill.js", "./caml_builtin_exceptions.js"],
+  function(exports, Caml_array, Caml_missing_polyfill, Caml_builtin_exceptions){
     'use strict';
     function dims() {
-      var n = function () {
-          throw "caml_ba_num_dims not implemented by bucklescript yet\n";
-        }();
+      var n = Caml_missing_polyfill.not_implemented("caml_ba_num_dims not implemented by bucklescript yet\n");
       var d = Caml_array.caml_make_vect(n, 0);
       for(var i = 0 ,i_finish = n - 1 | 0; i <= i_finish; ++i){
-        d[i] = function () {
-            throw "caml_ba_dim not implemented by bucklescript yet\n";
-          }();
+        Caml_array.caml_array_set(d, i, Caml_missing_polyfill.not_implemented("caml_ba_dim not implemented by bucklescript yet\n"));
       }
       return d;
     }
@@ -20,9 +16,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_array"],
           /* hi */0,
           /* lo */0
         ];
-      return function () {
-                throw "caml_ba_map_file_bytecode not implemented by bucklescript yet\n";
-              }();
+      return Caml_missing_polyfill.not_implemented("caml_ba_map_file_bytecode not implemented by bucklescript yet\n");
     }
     
     var Genarray = /* module */[
@@ -31,18 +25,14 @@ define(["exports", "./caml_builtin_exceptions", "./caml_array"],
     ];
     
     function create(_, _$1, _$2) {
-      return function () {
-                throw "caml_ba_create not implemented by bucklescript yet\n";
-              }();
+      return Caml_missing_polyfill.not_implemented("caml_ba_create not implemented by bucklescript yet\n");
     }
     
     function of_array(kind, layout, data) {
       var ba = create(kind, layout, data.length);
       layout !== 0 ? 1 : 0;
       for(var i = 0 ,i_finish = data.length - 1 | 0; i <= i_finish; ++i){
-        (function () {
-              throw "caml_ba_set_1 not implemented by bucklescript yet\n";
-            }());
+        Caml_missing_polyfill.not_implemented("caml_ba_set_1 not implemented by bucklescript yet\n");
       }
       return ba;
     }
@@ -58,30 +48,24 @@ define(["exports", "./caml_builtin_exceptions", "./caml_array"],
     ];
     
     function create$1(_, _$1, _$2, _$3) {
-      return function () {
-                throw "caml_ba_create not implemented by bucklescript yet\n";
-              }();
+      return Caml_missing_polyfill.not_implemented("caml_ba_create not implemented by bucklescript yet\n");
     }
     
     function slice_left(_, _$1) {
-      return function () {
-                throw "caml_ba_slice not implemented by bucklescript yet\n";
-              }();
+      return Caml_missing_polyfill.not_implemented("caml_ba_slice not implemented by bucklescript yet\n");
     }
     
     function slice_right(_, _$1) {
-      return function () {
-                throw "caml_ba_slice not implemented by bucklescript yet\n";
-              }();
+      return Caml_missing_polyfill.not_implemented("caml_ba_slice not implemented by bucklescript yet\n");
     }
     
     function of_array$1(kind, layout, data) {
       var dim1 = data.length;
-      var dim2 = dim1 ? data[0].length : 0;
+      var dim2 = dim1 ? Caml_array.caml_array_get(data, 0).length : 0;
       var ba = create$1(kind, layout, dim1, dim2);
       layout !== 0 ? 1 : 0;
       for(var i = 0 ,i_finish = dim1 - 1 | 0; i <= i_finish; ++i){
-        var row = data[i];
+        var row = Caml_array.caml_array_get(data, i);
         if (row.length !== dim2) {
           throw [
                 Caml_builtin_exceptions.invalid_argument,
@@ -89,9 +73,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_array"],
               ];
         }
         for(var j = 0 ,j_finish = dim2 - 1 | 0; j <= j_finish; ++j){
-          (function () {
-                throw "caml_ba_set_2 not implemented by bucklescript yet\n";
-              }());
+          Caml_missing_polyfill.not_implemented("caml_ba_set_2 not implemented by bucklescript yet\n");
         }
       }
       return ba;
@@ -113,43 +95,33 @@ define(["exports", "./caml_builtin_exceptions", "./caml_array"],
     ];
     
     function create$2(_, _$1, _$2, _$3, _$4) {
-      return function () {
-                throw "caml_ba_create not implemented by bucklescript yet\n";
-              }();
+      return Caml_missing_polyfill.not_implemented("caml_ba_create not implemented by bucklescript yet\n");
     }
     
     function slice_left_1(_, _$1, _$2) {
-      return function () {
-                throw "caml_ba_slice not implemented by bucklescript yet\n";
-              }();
+      return Caml_missing_polyfill.not_implemented("caml_ba_slice not implemented by bucklescript yet\n");
     }
     
     function slice_right_1(_, _$1, _$2) {
-      return function () {
-                throw "caml_ba_slice not implemented by bucklescript yet\n";
-              }();
+      return Caml_missing_polyfill.not_implemented("caml_ba_slice not implemented by bucklescript yet\n");
     }
     
     function slice_left_2(_, _$1) {
-      return function () {
-                throw "caml_ba_slice not implemented by bucklescript yet\n";
-              }();
+      return Caml_missing_polyfill.not_implemented("caml_ba_slice not implemented by bucklescript yet\n");
     }
     
     function slice_right_2(_, _$1) {
-      return function () {
-                throw "caml_ba_slice not implemented by bucklescript yet\n";
-              }();
+      return Caml_missing_polyfill.not_implemented("caml_ba_slice not implemented by bucklescript yet\n");
     }
     
     function of_array$2(kind, layout, data) {
       var dim1 = data.length;
-      var dim2 = dim1 ? data[0].length : 0;
-      var dim3 = dim2 ? data[0][0].length : 0;
+      var dim2 = dim1 ? Caml_array.caml_array_get(data, 0).length : 0;
+      var dim3 = dim2 ? Caml_array.caml_array_get(Caml_array.caml_array_get(data, 0), 0).length : 0;
       var ba = create$2(kind, layout, dim1, dim2, dim3);
       layout !== 0 ? 1 : 0;
       for(var i = 0 ,i_finish = dim1 - 1 | 0; i <= i_finish; ++i){
-        var row = data[i];
+        var row = Caml_array.caml_array_get(data, i);
         if (row.length !== dim2) {
           throw [
                 Caml_builtin_exceptions.invalid_argument,
@@ -157,7 +129,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_array"],
               ];
         }
         for(var j = 0 ,j_finish = dim2 - 1 | 0; j <= j_finish; ++j){
-          var col = row[j];
+          var col = Caml_array.caml_array_get(row, j);
           if (col.length !== dim3) {
             throw [
                   Caml_builtin_exceptions.invalid_argument,
@@ -165,9 +137,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_array"],
                 ];
           }
           for(var k = 0 ,k_finish = dim3 - 1 | 0; k <= k_finish; ++k){
-            (function () {
-                  throw "caml_ba_set_3 not implemented by bucklescript yet\n";
-                }());
+            Caml_missing_polyfill.not_implemented("caml_ba_set_3 not implemented by bucklescript yet\n");
           }
         }
       }
@@ -193,12 +163,9 @@ define(["exports", "./caml_builtin_exceptions", "./caml_array"],
     ];
     
     function array1_of_genarray(a) {
-      if (function () {
-            throw "caml_ba_num_dims not implemented by bucklescript yet\n";
-          }() === 1) {
+      if (Caml_missing_polyfill.not_implemented("caml_ba_num_dims not implemented by bucklescript yet\n") === 1) {
         return a;
-      }
-      else {
+      } else {
         throw [
               Caml_builtin_exceptions.invalid_argument,
               "Bigarray.array1_of_genarray"
@@ -207,12 +174,9 @@ define(["exports", "./caml_builtin_exceptions", "./caml_array"],
     }
     
     function array2_of_genarray(a) {
-      if (function () {
-            throw "caml_ba_num_dims not implemented by bucklescript yet\n";
-          }() === 2) {
+      if (Caml_missing_polyfill.not_implemented("caml_ba_num_dims not implemented by bucklescript yet\n") === 2) {
         return a;
-      }
-      else {
+      } else {
         throw [
               Caml_builtin_exceptions.invalid_argument,
               "Bigarray.array2_of_genarray"
@@ -221,12 +185,9 @@ define(["exports", "./caml_builtin_exceptions", "./caml_array"],
     }
     
     function array3_of_genarray(a) {
-      if (function () {
-            throw "caml_ba_num_dims not implemented by bucklescript yet\n";
-          }() === 3) {
+      if (Caml_missing_polyfill.not_implemented("caml_ba_num_dims not implemented by bucklescript yet\n") === 3) {
         return a;
-      }
-      else {
+      } else {
         throw [
               Caml_builtin_exceptions.invalid_argument,
               "Bigarray.array3_of_genarray"
@@ -235,21 +196,15 @@ define(["exports", "./caml_builtin_exceptions", "./caml_array"],
     }
     
     function reshape_1(_, _$1) {
-      return function () {
-                throw "caml_ba_reshape not implemented by bucklescript yet\n";
-              }();
+      return Caml_missing_polyfill.not_implemented("caml_ba_reshape not implemented by bucklescript yet\n");
     }
     
     function reshape_2(_, _$1, _$2) {
-      return function () {
-                throw "caml_ba_reshape not implemented by bucklescript yet\n";
-              }();
+      return Caml_missing_polyfill.not_implemented("caml_ba_reshape not implemented by bucklescript yet\n");
     }
     
     function reshape_3(_, _$1, _$2, _$3) {
-      return function () {
-                throw "caml_ba_reshape not implemented by bucklescript yet\n";
-              }();
+      return Caml_missing_polyfill.not_implemented("caml_ba_reshape not implemented by bucklescript yet\n");
     }
     
     var float32 = /* Float32 */0;
@@ -283,9 +238,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_array"],
     var fortran_layout = /* Fortran_layout */1;
     
     function reshape(_, _$1) {
-      return function () {
-                throw "caml_ba_reshape not implemented by bucklescript yet\n";
-              }();
+      return Caml_missing_polyfill.not_implemented("caml_ba_reshape not implemented by bucklescript yet\n");
     }
     
     exports.float32            = float32;

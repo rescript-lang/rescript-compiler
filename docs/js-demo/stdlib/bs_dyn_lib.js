@@ -1,6 +1,6 @@
 'use strict';
-define(["exports", "./pervasives", "./caml_format", "./char", "./array", "./buffer"],
-  function(exports, Pervasives, Caml_format, Char, $$Array, Buffer){
+define(["exports", "./char.js", "./array.js", "./buffer.js", "./caml_array.js", "./pervasives.js", "./caml_format.js"],
+  function(exports, Char, $$Array, Buffer, Caml_array, Pervasives, Caml_format){
     'use strict';
     function to_string(v) {
       var construct_string = function (b, _v, _tab_level) {
@@ -15,8 +15,7 @@ define(["exports", "./pervasives", "./caml_format", "./char", "./array", "./buff
           };
           if (typeof v === "number") {
             return add(tab_level, "None\n");
-          }
-          else {
+          } else {
             switch (v.tag | 0) {
               case 0 : 
                   add(tab_level, Caml_format.caml_int32_format("%d", v[0]));
@@ -38,9 +37,9 @@ define(["exports", "./pervasives", "./caml_format", "./char", "./array", "./buff
                   add(0, Char.escaped(v[0]));
                   return add(0, "'");
               case 7 : 
-                  add(tab_level, '"');
+                  add(tab_level, "\"");
                   add(0, v[0]);
-                  return add(0, '"');
+                  return add(0, "\"");
               case 8 : 
                   add(tab_level, "Some");
                   _tab_level = 0;
@@ -83,24 +82,23 @@ define(["exports", "./pervasives", "./caml_format", "./char", "./array", "./buff
                       return function (i, item) {
                         add(tab_level + 2 | 0, item);
                         add(0, " =\n");
-                        construct_string(b, values[i], tab_level + 2 | 0);
+                        construct_string(b, Caml_array.caml_array_get(values, i), tab_level + 2 | 0);
                         return add(0, ";\n");
                       }
                       }(tab_level,values)), v[0]);
                   return add(tab_level, "}");
               case 13 : 
                   var values$1 = v[2];
-                  add(tab_level, v[0][/* constructors */0][v[1]]);
+                  add(tab_level, Caml_array.caml_array_get(v[0][/* constructors */0], v[1]));
                   if (values$1.length !== 0) {
                     add(tab_level, "(\n");
                     $$Array.iteri((function(tab_level,values$1){
                         return function (i, _) {
-                          return construct_string(b, values$1[i], tab_level + 2 | 0);
+                          return construct_string(b, Caml_array.caml_array_get(values$1, i), tab_level + 2 | 0);
                         }
                         }(tab_level,values$1)), values$1);
                     return add(tab_level, ")");
-                  }
-                  else {
+                  } else {
                     return 0;
                   }
               

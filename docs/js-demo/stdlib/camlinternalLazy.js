@@ -1,6 +1,6 @@
 'use strict';
-define(["exports", "./obj", "./caml_exceptions", "./curry"],
-  function(exports, Obj, Caml_exceptions, Curry){
+define(["exports", "./obj.js", "./curry.js", "./caml_exceptions.js"],
+  function(exports, Obj, Curry, Caml_exceptions){
     'use strict';
     var Undefined = Caml_exceptions.create("CamlinternalLazy.Undefined");
     
@@ -18,9 +18,9 @@ define(["exports", "./obj", "./caml_exceptions", "./curry"],
         return result;
       }
       catch (e){
-        blk[0] = function () {
-          throw e;
-        };
+        blk[0] = (function () {
+            throw e;
+          });
         throw e;
       }
     }
@@ -38,11 +38,9 @@ define(["exports", "./obj", "./caml_exceptions", "./curry"],
       var t = lzv.tag | 0;
       if (t === Obj.forward_tag) {
         return lzv[0];
-      }
-      else if (t !== Obj.lazy_tag) {
+      } else if (t !== Obj.lazy_tag) {
         return lzv;
-      }
-      else {
+      } else {
         return force_lazy_block(lzv);
       }
     }
@@ -51,11 +49,9 @@ define(["exports", "./obj", "./caml_exceptions", "./curry"],
       var t = lzv.tag | 0;
       if (t === Obj.forward_tag) {
         return lzv[0];
-      }
-      else if (t !== Obj.lazy_tag) {
+      } else if (t !== Obj.lazy_tag) {
         return lzv;
-      }
-      else {
+      } else {
         return force_val_lazy_block(lzv);
       }
     }

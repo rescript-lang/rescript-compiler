@@ -1,6 +1,6 @@
 'use strict';
-define(["exports", "./caml_builtin_exceptions", "./curry"],
-  function(exports, Caml_builtin_exceptions, Curry){
+define(["exports", "./curry.js", "./caml_builtin_exceptions.js"],
+  function(exports, Curry, Caml_builtin_exceptions){
     'use strict';
     function $caret(prim, prim$1) {
       return prim + prim$1;
@@ -10,35 +10,32 @@ define(["exports", "./caml_builtin_exceptions", "./curry"],
     
     var stdout = /* record */[
       /* buffer */"",
-      /* output */function (_, s) {
-        var v = s.length - 1 | 0;
-        if (( (typeof process !== "undefined") && process.stdout && process.stdout.write)) {
-          return ( process.stdout.write )(s);
-        }
-        else if (s[v] === "\n") {
-          console.log(s.slice(0, v));
-          return /* () */0;
-        }
-        else {
-          console.log(s);
-          return /* () */0;
-        }
-      }
+      /* output */(function (_, s) {
+          var v = s.length - 1 | 0;
+          if (( (typeof process !== "undefined") && process.stdout && process.stdout.write)) {
+            return ( process.stdout.write )(s);
+          } else if (s[v] === "\n") {
+            console.log(s.slice(0, v));
+            return /* () */0;
+          } else {
+            console.log(s);
+            return /* () */0;
+          }
+        })
     ];
     
     var stderr = /* record */[
       /* buffer */"",
-      /* output */function (_, s) {
-        var v = s.length - 1 | 0;
-        if (s[v] === "\n") {
-          console.log(s.slice(0, v));
-          return /* () */0;
-        }
-        else {
-          console.log(s);
-          return /* () */0;
-        }
-      }
+      /* output */(function (_, s) {
+          var v = s.length - 1 | 0;
+          if (s[v] === "\n") {
+            console.log(s.slice(0, v));
+            return /* () */0;
+          } else {
+            console.log(s);
+            return /* () */0;
+          }
+        })
     ];
     
     function caml_ml_open_descriptor_in() {
@@ -60,8 +57,7 @@ define(["exports", "./caml_builtin_exceptions", "./curry"],
         Curry._2(oc[/* output */1], oc, oc[/* buffer */0]);
         oc[/* buffer */0] = "";
         return /* () */0;
-      }
-      else {
+      } else {
         return 0;
       }
     }
@@ -75,14 +71,12 @@ define(["exports", "./caml_builtin_exceptions", "./curry"],
       var str$1 = offset === 0 && len === str.length ? str : str.slice(offset, len);
       if (( (typeof process !== "undefined") && process.stdout && process.stdout.write ) && oc === stdout) {
         return ( process.stdout.write )(str$1);
-      }
-      else {
+      } else {
         var id = str$1.lastIndexOf("\n");
         if (id < 0) {
           oc[/* buffer */0] = oc[/* buffer */0] + str$1;
           return /* () */0;
-        }
-        else {
+        } else {
           oc[/* buffer */0] = oc[/* buffer */0] + str$1.slice(0, id + 1 | 0);
           caml_ml_flush(oc);
           oc[/* buffer */0] = oc[/* buffer */0] + str$1.slice(id + 1 | 0);
