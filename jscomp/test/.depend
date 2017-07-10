@@ -270,6 +270,8 @@ inline_map_test.cmj : mt.cmj ../stdlib/list.cmj inline_map_test.cmi
 inline_regression_test.cmj : ../stdlib/string.cmj mt.cmj \
     ../stdlib/filename.cmj
 inline_string_test.cmj : ../runtime/js.cmj
+inner_call.cmj : ../runtime/js.cmj inner_define.cmj
+inner_define.cmj :
 inner_unused.cmj : ../stdlib/set.cmj ../runtime/js.cmj
 installation_test.cmj : ../others/node.cmj mt.cmj ../runtime/js.cmj \
     app_root_finder.cmj
