@@ -172,7 +172,9 @@ OTHERS := literals a test_ari test_export2 test_internalOO test_obj_simple_ffi t
 	ocaml_re_test\
 	gpr_1762_test\
 	gpr_1760_test\
-	gpr_1759_test
+	gpr_1759_test\
+	inner_define\
+	inner_call
 
 # bs_uncurry_test
 # needs Lam to get rid of Uncurry arity first
