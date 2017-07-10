@@ -62,6 +62,30 @@ define(["exports"],
       -11
     ];
     
+    out_of_memory.tag = 248;
+    
+    sys_error.tag = 248;
+    
+    failure.tag = 248;
+    
+    invalid_argument.tag = 248;
+    
+    end_of_file.tag = 248;
+    
+    division_by_zero.tag = 248;
+    
+    not_found.tag = 248;
+    
+    match_failure.tag = 248;
+    
+    stack_overflow.tag = 248;
+    
+    sys_blocked_io.tag = 248;
+    
+    assert_failure.tag = 248;
+    
+    undefined_recursive_module.tag = 248;
+    
     exports.out_of_memory              = out_of_memory;
     exports.sys_error                  = sys_error;
     exports.failure                    = failure;
@@ -76,4 +100,4 @@ define(["exports"],
     exports.undefined_recursive_module = undefined_recursive_module;
     
   })
-/* No side effect */
+/*  Not a pure module */

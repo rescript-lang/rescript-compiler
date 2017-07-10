@@ -1,5 +1,5 @@
 'use strict';
-define(["exports", "./caml_int64", "./caml_format"],
+define(["exports", "./caml_int64.js", "./caml_format.js"],
   function(exports, Caml_int64, Caml_format){
     'use strict';
     function succ(n) {
@@ -22,24 +22,23 @@ define(["exports", "./caml_int64", "./caml_format"],
               /* lo */0
             ])) {
         return n;
-      }
-      else {
+      } else {
         return Caml_int64.neg(n);
       }
     }
     
     function lognot(n) {
-      return /* int64 */[
-              /* hi */n[0] ^ /* hi */-1,
-              /* lo */((n[1] ^ /* lo */4294967295) >>> 0)
-            ];
+      return Caml_int64.xor(n, /* int64 */[
+                  /* hi */-1,
+                  /* lo */4294967295
+                ]);
     }
     
     function to_string(n) {
       return Caml_format.caml_int64_format("%d", n);
     }
     
-    var compare = Caml_int64.compare
+    var compare = Caml_int64.compare;
     
     var zero = /* int64 */[
       /* hi */0,

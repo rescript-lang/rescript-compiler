@@ -1,6 +1,6 @@
 'use strict';
-define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./caml_io", "./caml_exceptions", "./caml_format", "./curry", "./camlinternalFormatBasics", "./caml_string"],
-  function(exports, Caml_builtin_exceptions, Caml_obj, Caml_io, Caml_exceptions, Caml_format, Curry, CamlinternalFormatBasics, Caml_string){
+define(["exports", "./curry.js", "./caml_io.js", "./caml_obj.js", "./caml_sys.js", "./caml_format.js", "./caml_string.js", "./caml_exceptions.js", "./caml_missing_polyfill.js", "./caml_builtin_exceptions.js", "./camlinternalFormatBasics.js"],
+  function(exports, Curry, Caml_io, Caml_obj, Caml_sys, Caml_format, Caml_string, Caml_exceptions, Caml_missing_polyfill, Caml_builtin_exceptions, CamlinternalFormatBasics){
     'use strict';
     function failwith(s) {
       throw [
@@ -21,8 +21,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./caml_io", "./ca
     function min(x, y) {
       if (Caml_obj.caml_lessequal(x, y)) {
         return x;
-      }
-      else {
+      } else {
         return y;
       }
     }
@@ -30,8 +29,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./caml_io", "./ca
     function max(x, y) {
       if (Caml_obj.caml_greaterequal(x, y)) {
         return x;
-      }
-      else {
+      } else {
         return y;
       }
     }
@@ -39,9 +37,8 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./caml_io", "./ca
     function abs(x) {
       if (x >= 0) {
         return x;
-      }
-      else {
-        return -x;
+      } else {
+        return -x | 0;
       }
     }
     
@@ -61,8 +58,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./caml_io", "./ca
               Caml_builtin_exceptions.invalid_argument,
               "char_of_int"
             ];
-      }
-      else {
+      } else {
         return n;
       }
     }
@@ -70,8 +66,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./caml_io", "./ca
     function string_of_bool(b) {
       if (b) {
         return "true";
-      }
-      else {
+      } else {
         return "false";
       }
     }
@@ -101,23 +96,19 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./caml_io", "./ca
         var i = _i;
         if (i >= l) {
           return $caret(s, ".");
-        }
-        else {
+        } else {
           var match = Caml_string.get(s, i);
           if (match >= 48) {
             if (match >= 58) {
               return s;
-            }
-            else {
+            } else {
               _i = i + 1 | 0;
               continue ;
               
             }
-          }
-          else if (match !== 45) {
+          } else if (match !== 45) {
             return s;
-          }
-          else {
+          } else {
             _i = i + 1 | 0;
             continue ;
             
@@ -136,8 +127,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./caml_io", "./ca
                 l1[0],
                 $at(l1[1], l2)
               ];
-      }
-      else {
+      } else {
         return l2;
       }
     }
@@ -149,9 +139,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./caml_io", "./ca
     var stderr = Caml_io.stderr;
     
     function open_out_gen(_, _$1, _$2) {
-      return Caml_io.caml_ml_open_descriptor_out(function () {
-                    throw "caml_sys_open not implemented by bucklescript yet\n";
-                  }());
+      return Caml_io.caml_ml_open_descriptor_out(Caml_missing_polyfill.not_implemented("caml_sys_open not implemented by bucklescript yet\n"));
     }
     
     function open_out(name) {
@@ -200,8 +188,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./caml_io", "./ca
           _param = param[1];
           continue ;
           
-        }
-        else {
+        } else {
           return /* () */0;
         }
       };
@@ -221,8 +208,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./caml_io", "./ca
               Caml_builtin_exceptions.invalid_argument,
               "output"
             ];
-      }
-      else {
+      } else {
         return Caml_io.caml_ml_output(oc, s, ofs, len);
       }
     }
@@ -233,23 +219,18 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./caml_io", "./ca
               Caml_builtin_exceptions.invalid_argument,
               "output_substring"
             ];
-      }
-      else {
+      } else {
         return Caml_io.caml_ml_output(oc, s, ofs, len);
       }
     }
     
     function output_value(_, _$1) {
-      return function () {
-                throw "caml_output_value not implemented by bucklescript yet\n";
-              }();
+      return Caml_missing_polyfill.not_implemented("caml_output_value not implemented by bucklescript yet\n");
     }
     
     function close_out(oc) {
       Caml_io.caml_ml_flush(oc);
-      return function () {
-                throw "caml_ml_close_channel not implemented by bucklescript yet\n";
-              }();
+      return Caml_missing_polyfill.not_implemented("caml_ml_close_channel not implemented by bucklescript yet\n");
     }
     
     function close_out_noerr(oc) {
@@ -260,9 +241,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./caml_io", "./ca
         
       }
       try {
-        return function () {
-                  throw "caml_ml_close_channel not implemented by bucklescript yet\n";
-                }();
+        return Caml_missing_polyfill.not_implemented("caml_ml_close_channel not implemented by bucklescript yet\n");
       }
       catch (exn$1){
         return /* () */0;
@@ -270,9 +249,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./caml_io", "./ca
     }
     
     function open_in_gen(_, _$1, _$2) {
-      return Caml_io.caml_ml_open_descriptor_in(function () {
-                    throw "caml_sys_open not implemented by bucklescript yet\n";
-                  }());
+      return Caml_io.caml_ml_open_descriptor_in(Caml_missing_polyfill.not_implemented("caml_sys_open not implemented by bucklescript yet\n"));
     }
     
     function open_in(name) {
@@ -301,11 +278,8 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./caml_io", "./ca
               Caml_builtin_exceptions.invalid_argument,
               "input"
             ];
-      }
-      else {
-        return function () {
-                  throw "caml_ml_input not implemented by bucklescript yet\n";
-                }();
+      } else {
+        return Caml_missing_polyfill.not_implemented("caml_ml_input not implemented by bucklescript yet\n");
       }
     }
     
@@ -315,18 +289,14 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./caml_io", "./ca
         var ofs = _ofs;
         if (len <= 0) {
           return /* () */0;
-        }
-        else {
-          var r = function () {
-              throw "caml_ml_input not implemented by bucklescript yet\n";
-            }();
+        } else {
+          var r = Caml_missing_polyfill.not_implemented("caml_ml_input not implemented by bucklescript yet\n");
           if (r) {
             _len = len - r | 0;
             _ofs = ofs + r | 0;
             continue ;
             
-          }
-          else {
+          } else {
             throw Caml_builtin_exceptions.end_of_file;
           }
         }
@@ -339,8 +309,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./caml_io", "./ca
               Caml_builtin_exceptions.invalid_argument,
               "really_input"
             ];
-      }
-      else {
+      } else {
         return unsafe_really_input(ic, s, ofs, len);
       }
     }
@@ -364,8 +333,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./caml_io", "./ca
             _pos = pos - len | 0;
             continue ;
             
-          }
-          else {
+          } else {
             return buf;
           }
         };
@@ -374,15 +342,11 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./caml_io", "./ca
         while(true) {
           var len = _len;
           var accu = _accu;
-          var n = function () {
-              throw "caml_ml_input_scan_line not implemented by bucklescript yet\n";
-            }();
+          var n = Caml_missing_polyfill.not_implemented("caml_ml_input_scan_line not implemented by bucklescript yet\n");
           if (n) {
             if (n > 0) {
               var res = Caml_string.caml_create_string(n - 1 | 0);
-              (function () {
-                    throw "caml_ml_input not implemented by bucklescript yet\n";
-                  }());
+              Caml_missing_polyfill.not_implemented("caml_ml_input not implemented by bucklescript yet\n");
               Caml_io.caml_ml_input_char(chan);
               if (accu) {
                 var len$1 = (len + n | 0) - 1 | 0;
@@ -390,16 +354,12 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./caml_io", "./ca
                             res,
                             accu
                           ]);
-              }
-              else {
+              } else {
                 return res;
               }
-            }
-            else {
-              var beg = Caml_string.caml_create_string(-n);
-              (function () {
-                    throw "caml_ml_input not implemented by bucklescript yet\n";
-                  }());
+            } else {
+              var beg = Caml_string.caml_create_string(-n | 0);
+              Caml_missing_polyfill.not_implemented("caml_ml_input not implemented by bucklescript yet\n");
               _len = len - n | 0;
               _accu = /* :: */[
                 beg,
@@ -408,11 +368,9 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./caml_io", "./ca
               continue ;
               
             }
-          }
-          else if (accu) {
+          } else if (accu) {
             return build_result(Caml_string.caml_create_string(len), len, accu);
-          }
-          else {
+          } else {
             throw Caml_builtin_exceptions.end_of_file;
           }
         };
@@ -422,9 +380,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./caml_io", "./ca
     
     function close_in_noerr() {
       try {
-        return function () {
-                  throw "caml_ml_close_channel not implemented by bucklescript yet\n";
-                }();
+        return Caml_missing_polyfill.not_implemented("caml_ml_close_channel not implemented by bucklescript yet\n");
       }
       catch (exn){
         return /* () */0;
@@ -519,10 +475,10 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./caml_io", "./ca
     
     function at_exit(f) {
       var g = exit_function[0];
-      exit_function[0] = function () {
-        Curry._1(f, /* () */0);
-        return Curry._1(g, /* () */0);
-      };
+      exit_function[0] = (function () {
+          Curry._1(f, /* () */0);
+          return Curry._1(g, /* () */0);
+        });
       return /* () */0;
     }
     
@@ -530,11 +486,9 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./caml_io", "./ca
       return Curry._1(exit_function[0], /* () */0);
     }
     
-    function exit() {
+    function exit(retcode) {
       do_at_exit(/* () */0);
-      return function () {
-                throw "caml_sys_exit not implemented by bucklescript yet\n";
-              }();
+      return Caml_sys.caml_sys_exit(retcode);
     }
     
     var max_int = 2147483647;
@@ -551,122 +505,86 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./caml_io", "./ca
     
     var epsilon_float = 2.220446049250313e-16;
     
-    var flush = Caml_io.caml_ml_flush
+    var flush = Caml_io.caml_ml_flush;
     
-    var output_char = Caml_io.caml_ml_output_char
+    var output_char = Caml_io.caml_ml_output_char;
     
-    var output_byte = Caml_io.caml_ml_output_char
+    var output_byte = Caml_io.caml_ml_output_char;
     
     function output_binary_int(_, _$1) {
-      return function () {
-                throw "caml_ml_output_int not implemented by bucklescript yet\n";
-              }();
+      return Caml_missing_polyfill.not_implemented("caml_ml_output_int not implemented by bucklescript yet\n");
     }
     
     function seek_out(_, _$1) {
-      return function () {
-                throw "caml_ml_seek_out not implemented by bucklescript yet\n";
-              }();
+      return Caml_missing_polyfill.not_implemented("caml_ml_seek_out not implemented by bucklescript yet\n");
     }
     
     function pos_out() {
-      return function () {
-                throw "caml_ml_pos_out not implemented by bucklescript yet\n";
-              }();
+      return Caml_missing_polyfill.not_implemented("caml_ml_pos_out not implemented by bucklescript yet\n");
     }
     
     function out_channel_length() {
-      return function () {
-                throw "caml_ml_channel_size not implemented by bucklescript yet\n";
-              }();
+      return Caml_missing_polyfill.not_implemented("caml_ml_channel_size not implemented by bucklescript yet\n");
     }
     
     function set_binary_mode_out(_, _$1) {
-      return function () {
-                throw "caml_ml_set_binary_mode not implemented by bucklescript yet\n";
-              }();
+      return Caml_missing_polyfill.not_implemented("caml_ml_set_binary_mode not implemented by bucklescript yet\n");
     }
     
-    var input_char = Caml_io.caml_ml_input_char
+    var input_char = Caml_io.caml_ml_input_char;
     
-    var input_byte = Caml_io.caml_ml_input_char
+    var input_byte = Caml_io.caml_ml_input_char;
     
     function input_binary_int() {
-      return function () {
-                throw "caml_ml_input_int not implemented by bucklescript yet\n";
-              }();
+      return Caml_missing_polyfill.not_implemented("caml_ml_input_int not implemented by bucklescript yet\n");
     }
     
     function input_value() {
-      return function () {
-                throw "caml_input_value not implemented by bucklescript yet\n";
-              }();
+      return Caml_missing_polyfill.not_implemented("caml_input_value not implemented by bucklescript yet\n");
     }
     
     function seek_in(_, _$1) {
-      return function () {
-                throw "caml_ml_seek_in not implemented by bucklescript yet\n";
-              }();
+      return Caml_missing_polyfill.not_implemented("caml_ml_seek_in not implemented by bucklescript yet\n");
     }
     
     function pos_in() {
-      return function () {
-                throw "caml_ml_pos_in not implemented by bucklescript yet\n";
-              }();
+      return Caml_missing_polyfill.not_implemented("caml_ml_pos_in not implemented by bucklescript yet\n");
     }
     
     function in_channel_length() {
-      return function () {
-                throw "caml_ml_channel_size not implemented by bucklescript yet\n";
-              }();
+      return Caml_missing_polyfill.not_implemented("caml_ml_channel_size not implemented by bucklescript yet\n");
     }
     
     function close_in() {
-      return function () {
-                throw "caml_ml_close_channel not implemented by bucklescript yet\n";
-              }();
+      return Caml_missing_polyfill.not_implemented("caml_ml_close_channel not implemented by bucklescript yet\n");
     }
     
     function set_binary_mode_in(_, _$1) {
-      return function () {
-                throw "caml_ml_set_binary_mode not implemented by bucklescript yet\n";
-              }();
+      return Caml_missing_polyfill.not_implemented("caml_ml_set_binary_mode not implemented by bucklescript yet\n");
     }
     
     function LargeFile_000(_, _$1) {
-      return function () {
-                throw "caml_ml_seek_out_64 not implemented by bucklescript yet\n";
-              }();
+      return Caml_missing_polyfill.not_implemented("caml_ml_seek_out_64 not implemented by bucklescript yet\n");
     }
     
     function LargeFile_001() {
-      return function () {
-                throw "caml_ml_pos_out_64 not implemented by bucklescript yet\n";
-              }();
+      return Caml_missing_polyfill.not_implemented("caml_ml_pos_out_64 not implemented by bucklescript yet\n");
     }
     
     function LargeFile_002() {
-      return function () {
-                throw "caml_ml_channel_size_64 not implemented by bucklescript yet\n";
-              }();
+      return Caml_missing_polyfill.not_implemented("caml_ml_channel_size_64 not implemented by bucklescript yet\n");
     }
     
     function LargeFile_003(_, _$1) {
-      return function () {
-                throw "caml_ml_seek_in_64 not implemented by bucklescript yet\n";
-              }();
+      return Caml_missing_polyfill.not_implemented("caml_ml_seek_in_64 not implemented by bucklescript yet\n");
     }
     
     function LargeFile_004() {
-      return function () {
-                throw "caml_ml_pos_in_64 not implemented by bucklescript yet\n";
-              }();
+      return Caml_missing_polyfill.not_implemented("caml_ml_pos_in_64 not implemented by bucklescript yet\n");
     }
     
     function LargeFile_005() {
-      return function () {
-                throw "caml_ml_channel_size_64 not implemented by bucklescript yet\n";
-              }();
+      return Caml_missing_polyfill.not_implemented("caml_ml_channel_size_64 not implemented by bucklescript yet\n");
     }
     
     var LargeFile = [

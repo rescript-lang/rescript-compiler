@@ -1,6 +1,6 @@
 'use strict';
-define(["exports", "./caml_obj", "./obj", "./camlinternalLazy", "./block"],
-  function(exports, Caml_obj, Obj, CamlinternalLazy, Block){
+define(["exports", "./obj.js", "./block.js", "./caml_obj.js", "./camlinternalLazy.js"],
+  function(exports, Obj, Block, Caml_obj, CamlinternalLazy){
     'use strict';
     function from_fun(f) {
       var x = Block.__(Obj.lazy_tag, [0]);
@@ -12,8 +12,7 @@ define(["exports", "./caml_obj", "./obj", "./camlinternalLazy", "./block"],
       var t = v.tag | 0;
       if (t === Obj.forward_tag || t === Obj.lazy_tag || t === Obj.double_tag) {
         return Caml_obj.caml_lazy_make_forward(v);
-      }
-      else {
+      } else {
         return v;
       }
     }

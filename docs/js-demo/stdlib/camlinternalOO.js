@@ -1,6 +1,6 @@
 'use strict';
-define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./obj", "./caml_exceptions", "./caml_oo", "./caml_int32", "./sys", "./curry", "./caml_array", "./array", "./caml_string", "./list"],
-  function(exports, Caml_obj, Caml_builtin_exceptions, Obj, Caml_exceptions, Caml_oo, Caml_int32, Sys, Curry, Caml_array, $$Array, Caml_string, List){
+define(["exports", "./obj.js", "./sys.js", "./list.js", "./array.js", "./curry.js", "./caml_oo.js", "./caml_obj.js", "./caml_array.js", "./caml_int32.js", "./caml_string.js", "./caml_exceptions.js", "./caml_builtin_exceptions.js"],
+  function(exports, Obj, Sys, List, $$Array, Curry, Caml_oo, Caml_obj, Caml_array, Caml_int32, Caml_string, Caml_exceptions, Caml_builtin_exceptions){
     'use strict';
     function copy(o) {
       return Caml_exceptions.caml_set_oo_id(Caml_obj.caml_obj_dup(o));
@@ -22,8 +22,7 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./obj", "./caml_e
       accu = accu & 2147483647;
       if (accu > 1073741823) {
         return accu - -2147483648 | 0;
-      }
-      else {
+      } else {
         return accu;
       }
     }
@@ -31,8 +30,7 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./obj", "./caml_e
     function height(param) {
       if (param) {
         return param[4];
-      }
-      else {
+      } else {
         return 0;
       }
     }
@@ -60,25 +58,21 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./obj", "./caml_e
           var ll = l[0];
           if (height(ll) >= height(lr)) {
             return create(ll, lv, ld, create(lr, x, d, r));
-          }
-          else if (lr) {
+          } else if (lr) {
             return create(create(ll, lv, ld, lr[0]), lr[1], lr[2], create(lr[3], x, d, r));
-          }
-          else {
+          } else {
             throw [
                   Caml_builtin_exceptions.invalid_argument,
                   "Map.bal"
                 ];
           }
-        }
-        else {
+        } else {
           throw [
                 Caml_builtin_exceptions.invalid_argument,
                 "Map.bal"
               ];
         }
-      }
-      else if (hr > (hl + 2 | 0)) {
+      } else if (hr > (hl + 2 | 0)) {
         if (r) {
           var rr = r[3];
           var rd = r[2];
@@ -86,25 +80,21 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./obj", "./caml_e
           var rl = r[0];
           if (height(rr) >= height(rl)) {
             return create(create(l, x, d, rl), rv, rd, rr);
-          }
-          else if (rl) {
+          } else if (rl) {
             return create(create(l, x, d, rl[0]), rl[1], rl[2], create(rl[3], rv, rd, rr));
-          }
-          else {
+          } else {
             throw [
                   Caml_builtin_exceptions.invalid_argument,
                   "Map.bal"
                 ];
           }
-        }
-        else {
+        } else {
           throw [
                 Caml_builtin_exceptions.invalid_argument,
                 "Map.bal"
               ];
         }
-      }
-      else {
+      } else {
         return /* Node */[
                 l,
                 x,
@@ -125,12 +115,10 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./obj", "./caml_e
         if (c) {
           if (c < 0) {
             return bal(add(x, data, l), v, d, r);
-          }
-          else {
+          } else {
             return bal(l, v, d, add(x, data, r));
           }
-        }
-        else {
+        } else {
           return /* Node */[
                   l,
                   x,
@@ -139,8 +127,7 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./obj", "./caml_e
                   param[4]
                 ];
         }
-      }
-      else {
+      } else {
         return /* Node */[
                 /* Empty */0,
                 x,
@@ -160,12 +147,10 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./obj", "./caml_e
             _param = c < 0 ? param[0] : param[3];
             continue ;
             
-          }
-          else {
+          } else {
             return param[2];
           }
-        }
-        else {
+        } else {
           throw Caml_builtin_exceptions.not_found;
         }
       };
@@ -180,8 +165,7 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./obj", "./caml_e
           _m = m[3];
           continue ;
           
-        }
-        else {
+        } else {
           return accu;
         }
       };
@@ -190,8 +174,7 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./obj", "./caml_e
     function height$1(param) {
       if (param) {
         return param[4];
-      }
-      else {
+      } else {
         return 0;
       }
     }
@@ -219,25 +202,21 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./obj", "./caml_e
           var ll = l[0];
           if (height$1(ll) >= height$1(lr)) {
             return create$1(ll, lv, ld, create$1(lr, x, d, r));
-          }
-          else if (lr) {
+          } else if (lr) {
             return create$1(create$1(ll, lv, ld, lr[0]), lr[1], lr[2], create$1(lr[3], x, d, r));
-          }
-          else {
+          } else {
             throw [
                   Caml_builtin_exceptions.invalid_argument,
                   "Map.bal"
                 ];
           }
-        }
-        else {
+        } else {
           throw [
                 Caml_builtin_exceptions.invalid_argument,
                 "Map.bal"
               ];
         }
-      }
-      else if (hr > (hl + 2 | 0)) {
+      } else if (hr > (hl + 2 | 0)) {
         if (r) {
           var rr = r[3];
           var rd = r[2];
@@ -245,25 +224,21 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./obj", "./caml_e
           var rl = r[0];
           if (height$1(rr) >= height$1(rl)) {
             return create$1(create$1(l, x, d, rl), rv, rd, rr);
-          }
-          else if (rl) {
+          } else if (rl) {
             return create$1(create$1(l, x, d, rl[0]), rl[1], rl[2], create$1(rl[3], rv, rd, rr));
-          }
-          else {
+          } else {
             throw [
                   Caml_builtin_exceptions.invalid_argument,
                   "Map.bal"
                 ];
           }
-        }
-        else {
+        } else {
           throw [
                 Caml_builtin_exceptions.invalid_argument,
                 "Map.bal"
               ];
         }
-      }
-      else {
+      } else {
         return /* Node */[
                 l,
                 x,
@@ -284,12 +259,10 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./obj", "./caml_e
         if (c) {
           if (c < 0) {
             return bal$1(add$1(x, data, l), v, d, r);
-          }
-          else {
+          } else {
             return bal$1(l, v, d, add$1(x, data, r));
           }
-        }
-        else {
+        } else {
           return /* Node */[
                   l,
                   x,
@@ -298,8 +271,7 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./obj", "./caml_e
                   param[4]
                 ];
         }
-      }
-      else {
+      } else {
         return /* Node */[
                 /* Empty */0,
                 x,
@@ -313,8 +285,7 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./obj", "./caml_e
     function height$2(param) {
       if (param) {
         return param[4];
-      }
-      else {
+      } else {
         return 0;
       }
     }
@@ -342,25 +313,21 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./obj", "./caml_e
           var ll = l[0];
           if (height$2(ll) >= height$2(lr)) {
             return create$2(ll, lv, ld, create$2(lr, x, d, r));
-          }
-          else if (lr) {
+          } else if (lr) {
             return create$2(create$2(ll, lv, ld, lr[0]), lr[1], lr[2], create$2(lr[3], x, d, r));
-          }
-          else {
+          } else {
             throw [
                   Caml_builtin_exceptions.invalid_argument,
                   "Map.bal"
                 ];
           }
-        }
-        else {
+        } else {
           throw [
                 Caml_builtin_exceptions.invalid_argument,
                 "Map.bal"
               ];
         }
-      }
-      else if (hr > (hl + 2 | 0)) {
+      } else if (hr > (hl + 2 | 0)) {
         if (r) {
           var rr = r[3];
           var rd = r[2];
@@ -368,25 +335,21 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./obj", "./caml_e
           var rl = r[0];
           if (height$2(rr) >= height$2(rl)) {
             return create$2(create$2(l, x, d, rl), rv, rd, rr);
-          }
-          else if (rl) {
+          } else if (rl) {
             return create$2(create$2(l, x, d, rl[0]), rl[1], rl[2], create$2(rl[3], rv, rd, rr));
-          }
-          else {
+          } else {
             throw [
                   Caml_builtin_exceptions.invalid_argument,
                   "Map.bal"
                 ];
           }
-        }
-        else {
+        } else {
           throw [
                 Caml_builtin_exceptions.invalid_argument,
                 "Map.bal"
               ];
         }
-      }
-      else {
+      } else {
         return /* Node */[
                 l,
                 x,
@@ -407,12 +370,10 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./obj", "./caml_e
         if (c) {
           if (c < 0) {
             return bal$2(add$2(x, data, l), v, d, r);
-          }
-          else {
+          } else {
             return bal$2(l, v, d, add$2(x, data, r));
           }
-        }
-        else {
+        } else {
           return /* Node */[
                   l,
                   x,
@@ -421,8 +382,7 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./obj", "./caml_e
                   param[4]
                 ];
         }
-      }
-      else {
+      } else {
         return /* Node */[
                 /* Empty */0,
                 x,
@@ -442,12 +402,10 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./obj", "./caml_e
             _param = c < 0 ? param[0] : param[3];
             continue ;
             
-          }
-          else {
+          } else {
             return param[2];
           }
-        }
-        else {
+        } else {
           throw Caml_builtin_exceptions.not_found;
         }
       };
@@ -471,8 +429,7 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./obj", "./caml_e
     function fit_size(n) {
       if (n <= 2) {
         return n;
-      }
-      else {
+      } else {
         return (fit_size((n + 1 | 0) / 2 | 0) << 1);
       }
     }
@@ -481,10 +438,10 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./obj", "./caml_e
       table_count[0] = table_count[0] + 1 | 0;
       var len = pub_labels.length;
       var methods = Caml_array.caml_make_vect((len << 1) + 2 | 0, dummy_met);
-      methods[0] = len;
-      methods[1] = (Caml_int32.imul(fit_size(len), Sys.word_size) / 8 | 0) - 1 | 0;
+      Caml_array.caml_array_set(methods, 0, len);
+      Caml_array.caml_array_set(methods, 1, (Caml_int32.imul(fit_size(len), Sys.word_size) / 8 | 0) - 1 | 0);
       for(var i = 0 ,i_finish = len - 1 | 0; i <= i_finish; ++i){
-        methods[(i << 1) + 3 | 0] = pub_labels[i];
+        Caml_array.caml_array_set(methods, (i << 1) + 3 | 0, Caml_array.caml_array_get(pub_labels, i));
       }
       return /* record */[
               /* size */2,
@@ -505,8 +462,7 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./obj", "./caml_e
         $$Array.blit(array[/* methods */1], 0, new_buck, 0, old_size);
         array[/* methods */1] = new_buck;
         return /* () */0;
-      }
-      else {
+      } else {
         return 0;
       }
     }
@@ -533,12 +489,10 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./obj", "./caml_e
               _param = c < 0 ? param[0] : param[3];
               continue ;
               
-            }
-            else {
+            } else {
               return param[2];
             }
-          }
-          else {
+          } else {
             throw Caml_builtin_exceptions.not_found;
           }
         };
@@ -549,17 +503,16 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./obj", "./caml_e
           table[/* methods_by_name */2] = add$1(name, label, table[/* methods_by_name */2]);
           table[/* methods_by_label */3] = add$2(label, /* true */1, table[/* methods_by_label */3]);
           return label;
-        }
-        else {
+        } else {
           throw exn;
         }
       }
     }
     
     function get_method_labels(table, names) {
-      return $$Array.map(function (param) {
-                  return get_method_label(table, param);
-                }, names);
+      return $$Array.map((function (param) {
+                    return get_method_label(table, param);
+                  }), names);
     }
     
     function set_method(table, label, element) {
@@ -569,10 +522,8 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./obj", "./caml_e
         var label$1 = label;
         var element$1 = element;
         resize(array, label$1 + 1 | 0);
-        array[/* methods */1][label$1] = element$1;
-        return /* () */0;
-      }
-      else {
+        return Caml_array.caml_array_set(array[/* methods */1], label$1, element$1);
+      } else {
         table[/* hidden_meths */5] = /* :: */[
           /* tuple */[
             label,
@@ -590,9 +541,8 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./obj", "./caml_e
       }
       catch (exn){
         if (exn === Caml_builtin_exceptions.not_found) {
-          return table[/* methods */1][label];
-        }
-        else {
+          return Caml_array.caml_array_get(table[/* methods */1], label);
+        } else {
           throw exn;
         }
       }
@@ -601,8 +551,7 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./obj", "./caml_e
     function to_list(arr) {
       if (arr) {
         return $$Array.to_list(arr);
-      }
-      else {
+      } else {
         return /* [] */0;
       }
     }
@@ -611,12 +560,12 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./obj", "./caml_e
       var vars$1 = to_list(vars);
       var virt_meths$1 = to_list(virt_meths);
       var concr_meths$1 = to_list(concr_meths);
-      var virt_meth_labs = List.map(function (param) {
-            return get_method_label(table, param);
-          }, virt_meths$1);
-      var concr_meth_labs = List.map(function (param) {
-            return get_method_label(table, param);
-          }, concr_meths$1);
+      var virt_meth_labs = List.map((function (param) {
+              return get_method_label(table, param);
+            }), virt_meths$1);
+      var concr_meth_labs = List.map((function (param) {
+              return get_method_label(table, param);
+            }), concr_meths$1);
       table[/* previous_states */4] = /* :: */[
         /* tuple */[
           table[/* methods_by_name */2],
@@ -628,51 +577,48 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./obj", "./caml_e
         ],
         table[/* previous_states */4]
       ];
-      table[/* vars */6] = fold(function (lab, info, tvars) {
-            if (List.mem(lab, vars$1)) {
-              return add(lab, info, tvars);
-            }
-            else {
-              return tvars;
-            }
-          }, table[/* vars */6], /* Empty */0);
+      table[/* vars */6] = fold((function (lab, info, tvars) {
+              if (List.mem(lab, vars$1)) {
+                return add(lab, info, tvars);
+              } else {
+                return tvars;
+              }
+            }), table[/* vars */6], /* Empty */0);
       var by_name = [/* Empty */0];
       var by_label = [/* Empty */0];
-      List.iter2(function (met, label) {
-            by_name[0] = add$1(met, label, by_name[0]);
-            var $js;
-            try {
-              $js = find$1(label, table[/* methods_by_label */3]);
-            }
-            catch (exn){
-              if (exn === Caml_builtin_exceptions.not_found) {
-                $js = /* true */1;
+      List.iter2((function (met, label) {
+              by_name[0] = add$1(met, label, by_name[0]);
+              var $js;
+              try {
+                $js = find$1(label, table[/* methods_by_label */3]);
               }
-              else {
-                throw exn;
+              catch (exn){
+                if (exn === Caml_builtin_exceptions.not_found) {
+                  $js = /* true */1;
+                } else {
+                  throw exn;
+                }
               }
-            }
-            by_label[0] = add$2(label, $js, by_label[0]);
-            return /* () */0;
-          }, concr_meths$1, concr_meth_labs);
-      List.iter2(function (met, label) {
-            by_name[0] = add$1(met, label, by_name[0]);
-            by_label[0] = add$2(label, /* false */0, by_label[0]);
-            return /* () */0;
-          }, virt_meths$1, virt_meth_labs);
+              by_label[0] = add$2(label, $js, by_label[0]);
+              return /* () */0;
+            }), concr_meths$1, concr_meth_labs);
+      List.iter2((function (met, label) {
+              by_name[0] = add$1(met, label, by_name[0]);
+              by_label[0] = add$2(label, /* false */0, by_label[0]);
+              return /* () */0;
+            }), virt_meths$1, virt_meth_labs);
       table[/* methods_by_name */2] = by_name[0];
       table[/* methods_by_label */3] = by_label[0];
-      table[/* hidden_meths */5] = List.fold_right(function (met, hm) {
-            if (List.mem(met[0], virt_meth_labs)) {
-              return hm;
-            }
-            else {
-              return /* :: */[
-                      met,
-                      hm
-                    ];
-            }
-          }, table[/* hidden_meths */5], /* [] */0);
+      table[/* hidden_meths */5] = List.fold_right((function (met, hm) {
+              if (List.mem(met[0], virt_meth_labs)) {
+                return hm;
+              } else {
+                return /* :: */[
+                        met,
+                        hm
+                      ];
+              }
+            }), table[/* hidden_meths */5], /* [] */0);
       return /* () */0;
     }
     
@@ -680,22 +626,21 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./obj", "./caml_e
       var match = List.hd(table[/* previous_states */4]);
       var virt_meths = match[4];
       table[/* previous_states */4] = List.tl(table[/* previous_states */4]);
-      table[/* vars */6] = List.fold_left(function (s, v) {
-            return add(v, find(v, table[/* vars */6]), s);
-          }, match[3], match[5]);
+      table[/* vars */6] = List.fold_left((function (s, v) {
+              return add(v, find(v, table[/* vars */6]), s);
+            }), match[3], match[5]);
       table[/* methods_by_name */2] = match[0];
       table[/* methods_by_label */3] = match[1];
-      table[/* hidden_meths */5] = List.fold_right(function (met, hm) {
-            if (List.mem(met[0], virt_meths)) {
-              return hm;
-            }
-            else {
-              return /* :: */[
-                      met,
-                      hm
-                    ];
-            }
-          }, table[/* hidden_meths */5], match[2]);
+      table[/* hidden_meths */5] = List.fold_right((function (met, hm) {
+              if (List.mem(met[0], virt_meths)) {
+                return hm;
+              } else {
+                return /* :: */[
+                        met,
+                        hm
+                      ];
+              }
+            }), table[/* hidden_meths */5], match[2]);
       return /* () */0;
     }
     
@@ -716,8 +661,7 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./obj", "./caml_e
             table[/* vars */6] = add(name, index, table[/* vars */6]);
           }
           return index;
-        }
-        else {
+        } else {
           throw exn;
         }
       }
@@ -726,8 +670,7 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./obj", "./caml_e
     function to_array(arr) {
       if (Caml_obj.caml_equal(arr, 0)) {
         return /* array */[];
-      }
-      else {
+      } else {
         return arr;
       }
     }
@@ -738,10 +681,10 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./obj", "./caml_e
       var nvals = vals.length;
       var res = Caml_array.caml_make_vect(nmeths + nvals | 0, 0);
       for(var i = 0 ,i_finish = nmeths - 1 | 0; i <= i_finish; ++i){
-        res[i] = get_method_label(table, meths$1[i]);
+        Caml_array.caml_array_set(res, i, get_method_label(table, Caml_array.caml_array_get(meths$1, i)));
       }
       for(var i$1 = 0 ,i_finish$1 = nvals - 1 | 0; i$1 <= i_finish$1; ++i$1){
-        res[i$1 + nmeths | 0] = new_variable(table, vals[i$1]);
+        Caml_array.caml_array_set(res, i$1 + nmeths | 0, new_variable(table, Caml_array.caml_array_get(vals, i$1)));
       }
       return res;
     }
@@ -760,17 +703,16 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./obj", "./caml_e
                   50
                 ]
               ];
-        }
-        else {
+        } else {
           throw exn;
         }
       }
     }
     
     function get_variables(table, names) {
-      return $$Array.map(function (param) {
-                  return get_variable(table, param);
-                }, names);
+      return $$Array.map((function (param) {
+                    return get_variable(table, param);
+                  }), names);
     }
     
     function add_initializer(table, f) {
@@ -785,15 +727,14 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./obj", "./caml_e
       if (public_methods) {
         var tags = $$Array.map(public_method_label, public_methods);
         var table = new_table(tags);
-        $$Array.iteri(function (i, met) {
-              var lab = (i << 1) + 2 | 0;
-              table[/* methods_by_name */2] = add$1(met, lab, table[/* methods_by_name */2]);
-              table[/* methods_by_label */3] = add$2(lab, /* true */1, table[/* methods_by_label */3]);
-              return /* () */0;
-            }, public_methods);
+        $$Array.iteri((function (i, met) {
+                var lab = (i << 1) + 2 | 0;
+                table[/* methods_by_name */2] = add$1(met, lab, table[/* methods_by_name */2]);
+                table[/* methods_by_label */3] = add$2(lab, /* true */1, table[/* methods_by_label */3]);
+                return /* () */0;
+              }), public_methods);
         return table;
-      }
-      else {
+      } else {
         return new_table(/* array */[]);
       }
     }
@@ -801,7 +742,7 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./obj", "./caml_e
     function init_class(table) {
       inst_var_count[0] = (inst_var_count[0] + table[/* size */0] | 0) - 1 | 0;
       table[/* initializers */7] = List.rev(table[/* initializers */7]);
-      return resize(table, 3 + ((table[/* methods */1][1] << 4) / Sys.word_size | 0) | 0);
+      return resize(table, 3 + ((Caml_array.caml_array_get(table[/* methods */1], 1) << 4) / Sys.word_size | 0) | 0);
     }
     
     function inherits(cla, vals, virt_meths, concr_meths, param, top) {
@@ -812,13 +753,13 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./obj", "./caml_e
       return Caml_array.caml_array_concat(/* :: */[
                   /* array */[init],
                   /* :: */[
-                    $$Array.map(function (param) {
-                          return get_variable(cla, param);
-                        }, to_array(vals)),
+                    $$Array.map((function (param) {
+                            return get_variable(cla, param);
+                          }), to_array(vals)),
                     /* :: */[
-                      $$Array.map(function (nm) {
-                            return get_method(cla, get_method_label(cla, nm));
-                          }, to_array(concr_meths)),
+                      $$Array.map((function (nm) {
+                              return get_method(cla, get_method_label(cla, nm));
+                            }), to_array(concr_meths)),
                       /* [] */0
                     ]
                   ]
@@ -873,8 +814,7 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./obj", "./caml_e
     function create_object_opt(obj_0, table) {
       if (obj_0) {
         return obj_0;
-      }
-      else {
+      } else {
         var obj = {
           length: table[/* size */0],
           tag: Obj.object_tag
@@ -892,8 +832,7 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./obj", "./caml_e
           _param = param[1];
           continue ;
           
-        }
-        else {
+        } else {
           return /* () */0;
         }
       };
@@ -903,8 +842,7 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./obj", "./caml_e
       var inits = table[/* initializers */7];
       if (inits !== /* [] */0) {
         return iter_f(obj, inits);
-      }
-      else {
+      } else {
         return 0;
       }
     }
@@ -912,8 +850,7 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./obj", "./caml_e
     function run_initializers_opt(obj_0, obj, table) {
       if (obj_0) {
         return obj;
-      }
-      else {
+      } else {
         var inits = table[/* initializers */7];
         if (inits !== /* [] */0) {
           iter_f(obj, inits);
@@ -925,8 +862,7 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./obj", "./caml_e
     function create_object_and_run_initializers(obj_0, table) {
       if (obj_0) {
         return obj_0;
-      }
-      else {
+      } else {
         var obj = create_object(table);
         run_initializers(obj, table);
         return obj;
@@ -942,7 +878,7 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./obj", "./caml_e
       var r = res;
       for(var i = 0; i <= n; ++i){
         r = /* Cons */[
-          keys[i],
+          Caml_array.caml_array_get(keys, i),
           r,
           /* Empty */0
         ];
@@ -954,21 +890,18 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./obj", "./caml_e
     function lookup_keys(i, keys, tables) {
       if (i < 0) {
         return tables;
-      }
-      else {
-        var key = keys[i];
+      } else {
+        var key = Caml_array.caml_array_get(keys, i);
         var _tables = tables;
         while(true) {
           var tables$1 = _tables;
           if (tables$1[/* key */0] === key) {
             return lookup_keys(i - 1 | 0, keys, tables$1[/* data */1]);
-          }
-          else if (tables$1[/* next */2] !== /* Empty */0) {
+          } else if (tables$1[/* next */2] !== /* Empty */0) {
             _tables = tables$1[/* next */2];
             continue ;
             
-          }
-          else {
+          } else {
             var next = /* Cons */[
               key,
               /* Empty */0,
@@ -984,68 +917,67 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./obj", "./caml_e
     function lookup_tables(root, keys) {
       if (root[/* data */1] !== /* Empty */0) {
         return lookup_keys(keys.length - 1 | 0, keys, root[/* data */1]);
-      }
-      else {
+      } else {
         return build_path(keys.length - 1 | 0, keys, root);
       }
     }
     
     function new_cache(table) {
       var n = new_method(table);
-      var n$1 = n % 2 === 0 || n > (2 + ((table[/* methods */1][1] << 4) / Sys.word_size | 0) | 0) ? n : new_method(table);
-      table[/* methods */1][n$1] = 0;
+      var n$1 = n % 2 === 0 || n > (2 + ((Caml_array.caml_array_get(table[/* methods */1], 1) << 4) / Sys.word_size | 0) | 0) ? n : new_method(table);
+      Caml_array.caml_array_set(table[/* methods */1], n$1, 0);
       return n$1;
     }
     
     function method_impl(table, i, arr) {
       var next = function () {
         i[0] = i[0] + 1 | 0;
-        return arr[i[0]];
+        return Caml_array.caml_array_get(arr, i[0]);
       };
       var clo = next(/* () */0);
       if (typeof clo === "number") {
         switch (clo) {
           case 0 : 
               var x = next(/* () */0);
-              return function () {
-                return x;
-              };
+              return (function () {
+                  return x;
+                });
           case 1 : 
               var n = next(/* () */0);
-              return function (obj) {
-                return obj[n];
-              };
+              return (function (obj) {
+                  return obj[n];
+                });
           case 2 : 
               var e = next(/* () */0);
               var n$1 = next(/* () */0);
               var e$1 = e;
               var n$2 = n$1;
-              return function (obj) {
-                return obj[e$1][n$2];
-              };
+              return (function (obj) {
+                  return obj[e$1][n$2];
+                });
           case 3 : 
               var n$3 = next(/* () */0);
-              return function (obj) {
-                return Curry._1(obj[0][n$3], obj);
-              };
+              return (function (obj) {
+                  return Curry._1(obj[0][n$3], obj);
+                });
           case 4 : 
               var n$4 = next(/* () */0);
-              return function (obj, x) {
-                obj[n$4] = x;
-                return /* () */0;
-              };
+              return (function (obj, x) {
+                  obj[n$4] = x;
+                  return /* () */0;
+                });
           case 5 : 
               var f = next(/* () */0);
               var x$1 = next(/* () */0);
-              return function () {
-                return Curry._1(f, x$1);
-              };
+              return (function () {
+                  return Curry._1(f, x$1);
+                });
           case 6 : 
               var f$1 = next(/* () */0);
               var n$5 = next(/* () */0);
-              return function (obj) {
-                return Curry._1(f$1, obj[n$5]);
-              };
+              return (function (obj) {
+                  return Curry._1(f$1, obj[n$5]);
+                });
           case 7 : 
               var f$2 = next(/* () */0);
               var e$2 = next(/* () */0);
@@ -1053,24 +985,24 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./obj", "./caml_e
               var f$3 = f$2;
               var e$3 = e$2;
               var n$7 = n$6;
-              return function (obj) {
-                return Curry._1(f$3, obj[e$3][n$7]);
-              };
+              return (function (obj) {
+                  return Curry._1(f$3, obj[e$3][n$7]);
+                });
           case 8 : 
               var f$4 = next(/* () */0);
               var n$8 = next(/* () */0);
               var f$5 = f$4;
               var n$9 = n$8;
-              return function (obj) {
-                return Curry._1(f$5, Curry._1(obj[0][n$9], obj));
-              };
+              return (function (obj) {
+                  return Curry._1(f$5, Curry._1(obj[0][n$9], obj));
+                });
           case 9 : 
               var f$6 = next(/* () */0);
               var x$2 = next(/* () */0);
               var y = next(/* () */0);
-              return function () {
-                return Curry._2(f$6, x$2, y);
-              };
+              return (function () {
+                  return Curry._2(f$6, x$2, y);
+                });
           case 10 : 
               var f$7 = next(/* () */0);
               var x$3 = next(/* () */0);
@@ -1078,9 +1010,9 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./obj", "./caml_e
               var f$8 = f$7;
               var x$4 = x$3;
               var n$11 = n$10;
-              return function (obj) {
-                return Curry._2(f$8, x$4, obj[n$11]);
-              };
+              return (function (obj) {
+                  return Curry._2(f$8, x$4, obj[n$11]);
+                });
           case 11 : 
               var f$9 = next(/* () */0);
               var x$5 = next(/* () */0);
@@ -1090,9 +1022,9 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./obj", "./caml_e
               var x$6 = x$5;
               var e$5 = e$4;
               var n$13 = n$12;
-              return function (obj) {
-                return Curry._2(f$10, x$6, obj[e$5][n$13]);
-              };
+              return (function (obj) {
+                  return Curry._2(f$10, x$6, obj[e$5][n$13]);
+                });
           case 12 : 
               var f$11 = next(/* () */0);
               var x$7 = next(/* () */0);
@@ -1100,9 +1032,9 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./obj", "./caml_e
               var f$12 = f$11;
               var x$8 = x$7;
               var n$15 = n$14;
-              return function (obj) {
-                return Curry._2(f$12, x$8, Curry._1(obj[0][n$15], obj));
-              };
+              return (function (obj) {
+                  return Curry._2(f$12, x$8, Curry._1(obj[0][n$15], obj));
+                });
           case 13 : 
               var f$13 = next(/* () */0);
               var n$16 = next(/* () */0);
@@ -1110,9 +1042,9 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./obj", "./caml_e
               var f$14 = f$13;
               var n$17 = n$16;
               var x$10 = x$9;
-              return function (obj) {
-                return Curry._2(f$14, obj[n$17], x$10);
-              };
+              return (function (obj) {
+                  return Curry._2(f$14, obj[n$17], x$10);
+                });
           case 14 : 
               var f$15 = next(/* () */0);
               var e$6 = next(/* () */0);
@@ -1122,9 +1054,9 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./obj", "./caml_e
               var e$7 = e$6;
               var n$19 = n$18;
               var x$12 = x$11;
-              return function (obj) {
-                return Curry._2(f$16, obj[e$7][n$19], x$12);
-              };
+              return (function (obj) {
+                  return Curry._2(f$16, obj[e$7][n$19], x$12);
+                });
           case 15 : 
               var f$17 = next(/* () */0);
               var n$20 = next(/* () */0);
@@ -1132,25 +1064,25 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./obj", "./caml_e
               var f$18 = f$17;
               var n$21 = n$20;
               var x$14 = x$13;
-              return function (obj) {
-                return Curry._2(f$18, Curry._1(obj[0][n$21], obj), x$14);
-              };
+              return (function (obj) {
+                  return Curry._2(f$18, Curry._1(obj[0][n$21], obj), x$14);
+                });
           case 16 : 
               var n$22 = next(/* () */0);
               var x$15 = next(/* () */0);
               var n$23 = n$22;
               var x$16 = x$15;
-              return function (obj) {
-                return Curry._2(obj[0][n$23], obj, x$16);
-              };
+              return (function (obj) {
+                  return Curry._2(obj[0][n$23], obj, x$16);
+                });
           case 17 : 
               var n$24 = next(/* () */0);
               var m = next(/* () */0);
               var n$25 = n$24;
               var m$1 = m;
-              return function (obj) {
-                return Curry._2(obj[0][n$25], obj, obj[m$1]);
-              };
+              return (function (obj) {
+                  return Curry._2(obj[0][n$25], obj, obj[m$1]);
+                });
           case 18 : 
               var n$26 = next(/* () */0);
               var e$8 = next(/* () */0);
@@ -1158,36 +1090,36 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./obj", "./caml_e
               var n$27 = n$26;
               var e$9 = e$8;
               var m$3 = m$2;
-              return function (obj) {
-                return Curry._2(obj[0][n$27], obj, obj[e$9][m$3]);
-              };
+              return (function (obj) {
+                  return Curry._2(obj[0][n$27], obj, obj[e$9][m$3]);
+                });
           case 19 : 
               var n$28 = next(/* () */0);
               var m$4 = next(/* () */0);
               var n$29 = n$28;
               var m$5 = m$4;
-              return function (obj) {
-                return Curry._2(obj[0][n$29], obj, Curry._1(obj[0][m$5], obj));
-              };
+              return (function (obj) {
+                  return Curry._2(obj[0][n$29], obj, Curry._1(obj[0][m$5], obj));
+                });
           case 20 : 
               var m$6 = next(/* () */0);
               var x$17 = next(/* () */0);
               var m$7 = m$6;
               var x$18 = x$17;
               new_cache(table);
-              return function () {
-                return Curry._1(Curry._3(Caml_oo.caml_get_public_method, x$18, m$7, 1), x$18);
-              };
+              return (function () {
+                  return Curry._1(Curry._3(Caml_oo.caml_get_public_method, x$18, m$7, 1), x$18);
+                });
           case 21 : 
               var m$8 = next(/* () */0);
               var n$30 = next(/* () */0);
               var m$9 = m$8;
               var n$31 = n$30;
               new_cache(table);
-              return function (obj) {
-                var tmp = obj[n$31];
-                return Curry._1(Curry._3(Caml_oo.caml_get_public_method, tmp, m$9, 2), tmp);
-              };
+              return (function (obj) {
+                  var tmp = obj[n$31];
+                  return Curry._1(Curry._3(Caml_oo.caml_get_public_method, tmp, m$9, 2), tmp);
+                });
           case 22 : 
               var m$10 = next(/* () */0);
               var e$10 = next(/* () */0);
@@ -1196,24 +1128,23 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./obj", "./caml_e
               var e$11 = e$10;
               var n$33 = n$32;
               new_cache(table);
-              return function (obj) {
-                var tmp = obj[e$11][n$33];
-                return Curry._1(Curry._3(Caml_oo.caml_get_public_method, tmp, m$11, 3), tmp);
-              };
+              return (function (obj) {
+                  var tmp = obj[e$11][n$33];
+                  return Curry._1(Curry._3(Caml_oo.caml_get_public_method, tmp, m$11, 3), tmp);
+                });
           case 23 : 
               var m$12 = next(/* () */0);
               var n$34 = next(/* () */0);
               var m$13 = m$12;
               var n$35 = n$34;
               new_cache(table);
-              return function (obj) {
-                var tmp = Curry._1(obj[0][n$35], obj);
-                return Curry._1(Curry._3(Caml_oo.caml_get_public_method, tmp, m$13, 4), tmp);
-              };
+              return (function (obj) {
+                  var tmp = Curry._1(obj[0][n$35], obj);
+                  return Curry._1(Curry._3(Caml_oo.caml_get_public_method, tmp, m$13, 4), tmp);
+                });
           
         }
-      }
-      else {
+      } else {
         return clo;
       }
     }
@@ -1222,7 +1153,7 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./obj", "./caml_e
       var len = methods.length;
       var i = [0];
       while(i[0] < len) {
-        var label = methods[i[0]];
+        var label = Caml_array.caml_array_get(methods, i[0]);
         var clo = method_impl(table, i, methods);
         set_method(table, label, clo);
         i[0] = i[0] + 1 | 0;

@@ -1,6 +1,6 @@
 'use strict';
-define(["exports", "./map", "./hashtbl", "./set"],
-  function(exports, $$Map, Hashtbl, $$Set){
+define(["exports", "./map.js", "./set.js", "./hashtbl.js"],
+  function(exports, $$Map, $$Set, Hashtbl){
     'use strict';
     var Hashtbl$1 = /* Hashtbl */[
       Hashtbl.create,

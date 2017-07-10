@@ -1,3 +1,7 @@
+//Provides: caml_terminfo_setup
+function caml_terminfo_setup () { return 1; } // Bad_term
+
+//Provides: caml_is_js
 function caml_is_js(unit){
     return 1;
 }

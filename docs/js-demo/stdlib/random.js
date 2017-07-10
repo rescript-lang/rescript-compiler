@@ -1,6 +1,6 @@
 'use strict';
-define(["exports", "./caml_int64", "./caml_builtin_exceptions", "./caml_sys", "./pervasives", "./nativeint", "./int32", "./digest", "./curry", "./int64", "./caml_array", "./array", "./caml_string"],
-  function(exports, Caml_int64, Caml_builtin_exceptions, Caml_sys, Pervasives, Nativeint, Int32, Digest, Curry, Int64, Caml_array, $$Array, Caml_string){
+define(["exports", "./array.js", "./curry.js", "./int32.js", "./int64.js", "./digest.js", "./caml_sys.js", "./nativeint.js", "./caml_array.js", "./caml_int64.js", "./pervasives.js", "./caml_string.js", "./caml_builtin_exceptions.js"],
+  function(exports, $$Array, Curry, Int32, Int64, Digest, Caml_sys, Nativeint, Caml_array, Caml_int64, Pervasives, Caml_string, Caml_builtin_exceptions){
     'use strict';
     function assign(st1, st2) {
       $$Array.blit(st2[/* st */0], 0, st1[/* st */0], 0, 55);
@@ -18,14 +18,14 @@ define(["exports", "./caml_int64", "./caml_builtin_exceptions", "./caml_sys", ".
       var seed$1 = seed.length ? seed : /* int array */[0];
       var l = seed$1.length;
       for(var i = 0; i <= 54; ++i){
-        s[/* st */0][i] = i;
+        Caml_array.caml_array_set(s[/* st */0], i, i);
       }
       var accu = "x";
       for(var i$1 = 0 ,i_finish = 54 + Pervasives.max(55, l) | 0; i$1 <= i_finish; ++i$1){
         var j = i$1 % 55;
         var k = i$1 % l;
-        accu = combine(accu, seed$1[k]);
-        s[/* st */0][j] = (s[/* st */0][j] ^ extract(accu)) & 1073741823;
+        accu = combine(accu, Caml_array.caml_array_get(seed$1, k));
+        Caml_array.caml_array_set(s[/* st */0], j, (Caml_array.caml_array_get(s[/* st */0], j) ^ extract(accu)) & 1073741823);
       }
       s[/* idx */1] = 0;
       return /* () */0;
@@ -55,10 +55,10 @@ define(["exports", "./caml_int64", "./caml_builtin_exceptions", "./caml_sys", ".
     
     function bits(s) {
       s[/* idx */1] = (s[/* idx */1] + 1 | 0) % 55;
-      var curval = s[/* st */0][s[/* idx */1]];
-      var newval = s[/* st */0][(s[/* idx */1] + 24 | 0) % 55] + (curval ^ (curval >>> 25) & 31) | 0;
+      var curval = Caml_array.caml_array_get(s[/* st */0], s[/* idx */1]);
+      var newval = Caml_array.caml_array_get(s[/* st */0], (s[/* idx */1] + 24 | 0) % 55) + (curval ^ (curval >>> 25) & 31) | 0;
       var newval30 = newval & 1073741823;
-      s[/* st */0][s[/* idx */1]] = newval30;
+      Caml_array.caml_array_set(s[/* st */0], s[/* idx */1], newval30);
       return newval30;
     }
     
@@ -68,8 +68,7 @@ define(["exports", "./caml_int64", "./caml_builtin_exceptions", "./caml_sys", ".
               Caml_builtin_exceptions.invalid_argument,
               "Random.int"
             ];
-      }
-      else {
+      } else {
         var s$1 = s;
         var n = bound;
         while(true) {
@@ -78,8 +77,7 @@ define(["exports", "./caml_int64", "./caml_builtin_exceptions", "./caml_sys", ".
           if ((r - v | 0) > ((1073741823 - n | 0) + 1 | 0)) {
             continue ;
             
-          }
-          else {
+          } else {
             return v;
           }
         };
@@ -92,8 +90,7 @@ define(["exports", "./caml_int64", "./caml_builtin_exceptions", "./caml_sys", ".
               Caml_builtin_exceptions.invalid_argument,
               "Random.int32"
             ];
-      }
-      else {
+      } else {
         var s$1 = s;
         var n = bound;
         while(true) {
@@ -104,8 +101,7 @@ define(["exports", "./caml_int64", "./caml_builtin_exceptions", "./caml_sys", ".
           if ((r - v | 0) > ((Int32.max_int - n | 0) + 1 | 0)) {
             continue ;
             
-          }
-          else {
+          } else {
             return v;
           }
         };
@@ -121,20 +117,17 @@ define(["exports", "./caml_int64", "./caml_builtin_exceptions", "./caml_sys", ".
               Caml_builtin_exceptions.invalid_argument,
               "Random.int64"
             ];
-      }
-      else {
+      } else {
         var s$1 = s;
         var n = bound;
         while(true) {
           var b1 = Caml_int64.of_int32(bits(s$1));
           var b2 = Caml_int64.lsl_(Caml_int64.of_int32(bits(s$1)), 30);
           var b3 = Caml_int64.lsl_(Caml_int64.of_int32(bits(s$1) & 7), 60);
-          var r_000 = /* hi */b1[0] | /* hi */b2[0] | b3[0];
-          var r_001 = /* lo */((b1[1] | b2[1] | b3[1]) >>> 0);
-          var r = /* int64 */[
-            r_000,
-            r_001
-          ];
+          var r = Caml_int64.or_(b1, /* int64 */[
+                /* hi */b2[0] | b3[0],
+                /* lo */((b2[1] | b3[1]) >>> 0)
+              ]);
           var v = Caml_int64.mod_(r, n);
           if (Caml_int64.gt(Caml_int64.sub(r, v), Caml_int64.add(Caml_int64.sub(Int64.max_int, n), /* int64 */[
                       /* hi */0,
@@ -142,17 +135,16 @@ define(["exports", "./caml_int64", "./caml_builtin_exceptions", "./caml_sys", ".
                     ]))) {
             continue ;
             
-          }
-          else {
+          } else {
             return v;
           }
         };
       }
     }
     
-    var nativeint = Nativeint.size === 32 ? int32 : function (s, bound) {
-        return int64(s, Caml_int64.of_int32(bound))[1] | 0;
-      };
+    var nativeint = Nativeint.size === 32 ? int32 : (function (s, bound) {
+          return int64(s, Caml_int64.of_int32(bound))[1] | 0;
+        });
     
     function rawfloat(s) {
       var r1 = bits(s);

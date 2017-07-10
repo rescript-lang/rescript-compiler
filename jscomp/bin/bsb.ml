@@ -561,8 +561,9 @@ val replace_backward_slash : string -> string
 
 val empty : string 
 
-external compare : string -> string -> int = "caml_string_length_based_compare" "noalloc";;
 
+external compare : string -> string -> int = "caml_string_length_based_compare" "noalloc";;
+  
 val single_space : string
 
 val concat3 : string -> string -> string -> string 
@@ -997,7 +998,9 @@ let replace_backward_slash (x : string)=
 
 let empty = ""
 
+    
 external compare : string -> string -> int = "caml_string_length_based_compare" "noalloc";;
+
 
 let single_space = " "
 let single_colon = ":"
@@ -4114,6 +4117,8 @@ end
 module Bs_hash_stubs
 = struct
 #1 "bs_hash_stubs.ml"
+
+
 external hash_string :  string -> int = "caml_bs_hash_string" "noalloc";;
 
 external hash_string_int :  string -> int  -> int = "caml_bs_hash_string_and_int" "noalloc";;
@@ -4132,6 +4137,8 @@ external string_length_based_compare : string -> string -> int  = "caml_string_l
 external    
     int_unsafe_blit : 
     int array -> int -> int array -> int -> int -> unit = "caml_int_array_blit" "noalloc";;
+    
+
 end
 module Ext_util : sig 
 #1 "ext_util.mli"
@@ -6440,6 +6447,1597 @@ let walk_all_deps dir cb =
   walk_all_deps_aux visited [] true dir cb 
 
 end
+module Bsb_unix : sig 
+#1 "bsb_unix.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type command = 
+  { 
+    cmd : string ;
+    cwd : string ; 
+    args : string array 
+  }  
+
+
+(** run commands  in parallel, 
+    TODO: error handling
+*)
+(* val run_commands : command list -> unit  *)
+
+val run_command_execv :   command -> unit 
+
+(* val run_command_execvp : command -> unit *)
+
+(* val remove_dirs_recursive : string ->  string array -> unit *)
+
+val remove_dir_recursive : string -> unit 
+end = struct
+#1 "bsb_unix.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+type command = 
+  { 
+    cmd : string ;
+    cwd : string ; 
+    args : string array 
+  }  
+
+
+let log cmd = 
+    Format.fprintf Format.std_formatter "@{<info>Entering@} %s @." cmd.cwd ;  
+    Format.fprintf Format.std_formatter "@{<info>Cmd:@} " ; 
+    for i = 0 to Array.length cmd.args - 1 do
+      Format.print_string cmd.args.(i);
+      Format.print_string Ext_string.single_space
+    done;
+    Format.print_newline ()
+let fail cmd =
+  Format.fprintf Format.err_formatter "@{<error>Failure:@} %s \n Location: %s@." cmd.cmd cmd.cwd
+let run_command_execv_unix  cmd =
+  match Unix.fork () with 
+  | 0 -> 
+    log cmd;
+    Unix.chdir cmd.cwd;
+    Unix.execv cmd.cmd cmd.args 
+  | pid -> 
+    match Unix.waitpid [] pid  with 
+    | pid, process_status ->       
+      match process_status with 
+      | Unix.WEXITED eid ->
+        if eid <> 0 then 
+          begin 
+            fail cmd;
+            exit eid    
+          end;
+      | Unix.WSIGNALED _ | Unix.WSTOPPED _ -> 
+        begin 
+          Format.fprintf Format.err_formatter "@{<error>Interrupted:@} %s@." cmd.cmd;
+          exit 2 
+        end        
+
+
+(** TODO: the args are not quoted, here 
+  we are calling a very limited set of `bsb` commands, so that 
+  we are safe
+*)
+let run_command_execv_win (cmd : command) =
+  let old_cwd = Unix.getcwd () in 
+  log cmd;
+  Unix.chdir cmd.cwd;
+  let eid =
+    Sys.command 
+      (String.concat Ext_string.single_space 
+                           ( Filename.quote cmd.cmd ::( List.tl  @@ Array.to_list cmd.args))) in 
+  if eid <> 0 then 
+    begin 
+      fail cmd;
+      exit eid    
+    end
+  else  begin 
+    print_endline ("* Leaving " ^ cmd.cwd ^ " into " ^ old_cwd );
+    Unix.chdir old_cwd
+  end
+
+
+let run_command_execv = 
+    if Ext_sys.is_windows_or_cygwin then 
+      run_command_execv_win
+    else run_command_execv_unix  
+(** it assume you have permissions, so always catch it to fail 
+    gracefully
+*)
+
+let rec remove_dir_recursive dir = 
+  if Sys.is_directory dir then 
+    begin 
+      let files = Sys.readdir dir in 
+      for i = 0 to Array.length files - 1 do 
+        remove_dir_recursive (Filename.concat dir (Array.unsafe_get files i))
+      done ;
+      Unix.rmdir dir 
+    end
+  else Sys.remove dir 
+
+end
+module Bsb_clean : sig 
+#1 "bsb_clean.mli"
+(* Copyright (C) 2017 Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+val clean_bs_deps : string -> unit 
+
+val clean_self : string -> unit 
+end = struct
+#1 "bsb_clean.ml"
+(* Copyright (C) 2017 Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+let (//) = Ext_filename.combine
+
+let clean_bs_garbage cwd =
+  Format.fprintf Format.std_formatter "@{<info>Cleaning:@} in %s@." cwd ; 
+  let aux x =
+    let x = (cwd // x)  in
+    if Sys.file_exists x then
+      Bsb_unix.remove_dir_recursive x  in
+  try
+    List.iter aux Bsb_config.all_lib_artifacts
+  with
+    e ->
+    Format.fprintf Format.err_formatter "@{<warning>Failed@} to clean due to %s" (Printexc.to_string e)
+
+
+let clean_bs_deps cwd =
+  Bsb_build_util.walk_all_deps  cwd  (fun { cwd} ->
+      (* whether top or not always do the cleaning *)
+      clean_bs_garbage cwd
+    )
+
+let clean_self cwd = clean_bs_garbage cwd
+end
+module Bsb_regex : sig 
+#1 "bsb_regex.mli"
+
+
+
+val global_substitute:
+ string ->
+  (string -> string list -> string)
+  -> string -> string
+end = struct
+#1 "bsb_regex.ml"
+let string_after s n = String.sub s n (String.length s - n)
+
+
+
+(* There seems to be a bug in {!Str.global_substitute} 
+{[
+Str.global_substitute (Str.regexp "\\${bsb:\\([-a-zA-Z0-9]+\\)}") (fun x -> (x^":found")) {|   ${bsb:hello-world}  ${bsb:x} ${x}|}  ;;
+- : bytes =
+"      ${bsb:hello-world}  ${bsb:x} ${x}:found     ${bsb:hello-world}  ${bsb:x} ${x}:found ${x}"
+]}
+*)
+
+let global_substitute expr repl_fun text =
+  let text_len = String.length text in 
+  let expr = Str.regexp expr in  
+  let rec replace accu start last_was_empty =
+    let startpos = if last_was_empty then start + 1 else start in
+    if startpos > text_len then
+      string_after text start :: accu
+    else
+      match Str.search_forward expr text startpos with
+      | exception Not_found -> 
+        string_after text start :: accu
+      |  pos ->
+        let end_pos = Str.match_end() in
+        let matched = (Str.matched_string text) in 
+        let  groups = 
+            let rec aux n  acc = 
+                match Str.matched_group n text with 
+                | exception (Not_found | Invalid_argument _ ) 
+                    -> acc 
+                | v -> aux (succ n) (v::acc) in 
+             aux 1 []  in 
+        let repl_text = repl_fun matched groups  in
+        replace (repl_text :: String.sub text start (pos-start) :: accu)
+          end_pos (end_pos = pos)
+  in
+  String.concat "" (List.rev (replace [] 0 false))
+
+end
+module OCamlRes
+= struct
+#1 "oCamlRes.ml"
+
+
+module Res = struct
+    type  node = 
+        | Dir of string *  node list 
+        | File of string *  string
+
+end    
+
+
+
+end
+module Bsb_templates : sig 
+#1 "bsb_templates.mli"
+
+
+val root : OCamlRes.Res.node list 
+end = struct
+#1 "bsb_templates.ml"
+(* This file has been generated by ocp-ocamlres *)
+let root = OCamlRes.Res.([
+  Dir ("basic", [
+    Dir ("src", [
+      File ("demo.ml",
+        "\n\
+         \n\
+         let () = Js.log \"Hello, BuckleScript\"")]) ;
+    File ("README.md",
+      "\n\
+       \n\
+       # Build\n\
+       ```\n\
+       npm run build\n\
+       ```\n\
+       \n\
+       # Watch\n\
+       \n\
+       ```\n\
+       npm run watch\n\
+       ```\n\
+       \n\
+       \n\
+       # Editor\n\
+       If you use `vscode`, Press `Windows + Shift + B` it will build automatically") ;
+    File ("package.json",
+      "{\n\
+      \  \"name\": \"${bsb:name}\",\n\
+      \  \"version\": \"${bsb:proj-version}\",\n\
+      \  \"scripts\": {\n\
+      \    \"clean\": \"bsb -clean-world\",\n\
+      \    \"build\": \"bsb -make-world\",\n\
+      \    \"watch\": \"bsb -make-world -w\"\n\
+      \  },\n\
+      \  \"keywords\": [\n\
+      \    \"BuckleScript\"\n\
+      \  ],\n\
+      \  \"license\": \"MIT\",\n\
+      \  \"devDependencies\": {\n\
+      \    \"bs-platform\": \"${bsb:bs-version}\"\n\
+      \  }\n\
+       }") ;
+    File ("bsconfig.json",
+      "{\n\
+      \  \"name\": \"${bsb:name}\",\n\
+      \  \"version\": \"${bsb:proj-version}\",\n\
+      \  \"sources\": [\n\
+      \    \"src\"\n\
+      \  ],\n\
+      \  \"bs-dependencies\" : [\n\
+      \      // add your bs-dependencies here \n\
+      \  ]\n\
+       }") ;
+    Dir (".vscode", [
+      File ("tasks.json",
+        "{\n\
+        \    \"version\": \"${bsb:proj-version}\",\n\
+        \    \"command\": \"npm\",\n\
+        \    \"options\": {\n\
+        \        \"cwd\": \"${workspaceRoot}\"\n\
+        \    },\n\
+        \    \"isShellCommand\": true,\n\
+        \    \"args\": [\n\
+        \        \"run\",\n\
+        \        \"watch\"\n\
+        \    ],\n\
+        \    \"showOutput\": \"always\",\n\
+        \    \"isBackground\": true,\n\
+        \    \"problemMatcher\": {\n\
+        \        \"fileLocation\": \"absolute\",\n\
+        \        \"owner\": \"ocaml\",\n\
+        \        \"watching\": {\n\
+        \            \"activeOnStart\": false,\n\
+        \            \"beginsPattern\": \">>>> Start compiling\",\n\
+        \            \"endsPattern\": \">>>> Finish compiling\"\n\
+        \        },\n\
+        \        \"pattern\": [\n\
+        \            {\n\
+        \                \"regexp\": \"^File \\\"(.*)\\\", line (\\\\d+)(?:, characters (\\\\d+)-(\\\\d+))?:$\",\n\
+        \                \"file\": 1,\n\
+        \                \"line\": 2,\n\
+        \                \"column\": 3,\n\
+        \                \"endColumn\": 4\n\
+        \            },\n\
+        \            {\n\
+        \                \"regexp\": \"^(?:(?:Parse\\\\s+)?(Warning|[Ee]rror)(?:\\\\s+\\\\d+)?:)?\\\\s+(.*)$\",\n\
+        \                \"severity\": 1,\n\
+        \                \"message\": 2,\n\
+        \                \"loop\": true\n\
+        \            }\n\
+        \        ]\n\
+        \    }\n\
+         }")]) ;
+    File (".gitignore",
+      "*.exe\n\
+       *.obj\n\
+       *.out\n\
+       *.compile\n\
+       *.native\n\
+       *.byte\n\
+       *.cmo\n\
+       *.annot\n\
+       *.cmi\n\
+       *.cmx\n\
+       *.cmt\n\
+       *.cmti\n\
+       *.cma\n\
+       *.a\n\
+       *.cmxa\n\
+       *.obj\n\
+       *~\n\
+       *.annot\n\
+       *.cmj\n\
+       *.bak\n\
+       lib/bs\n\
+       *.mlast\n\
+       *.mliast\n\
+       .vscode\n\
+       .merlin")]) ;
+  Dir ("basic-reason", [
+    File ("tasks.json",
+      "{\n\
+      \    \"version\": \"${bsb:proj-version}\",\n\
+      \    \"command\": \"npm\",\n\
+      \    \"options\": {\n\
+      \        \"cwd\": \"${workspaceRoot}\"\n\
+      \    },\n\
+      \    \"isShellCommand\": true,\n\
+      \    \"args\": [\n\
+      \        \"run\",\n\
+      \        \"watch\"\n\
+      \    ],\n\
+      \    \"showOutput\": \"always\",\n\
+      \    \"isBackground\": true,\n\
+      \    \"problemMatcher\": {\n\
+      \        \"fileLocation\": \"absolute\",\n\
+      \        \"owner\": \"ocaml\",\n\
+      \        \"watching\": {\n\
+      \            \"activeOnStart\": false,\n\
+      \            \"beginsPattern\": \">>>> Start compiling\",\n\
+      \            \"endsPattern\": \">>>> Finish compiling\"\n\
+      \        },\n\
+      \        \"pattern\": [\n\
+      \            {\n\
+      \                \"regexp\": \"^File \\\"(.*)\\\", line (\\\\d+)(?:, characters (\\\\d+)-(\\\\d+))?:$\",\n\
+      \                \"file\": 1,\n\
+      \                \"line\": 2,\n\
+      \                \"column\": 3,\n\
+      \                \"endColumn\": 4\n\
+      \            },\n\
+      \            {\n\
+      \                \"regexp\": \"^(?:(?:Parse\\\\s+)?(Warning|[Ee]rror)(?:\\\\s+\\\\d+)?:)?\\\\s+(.*)$\",\n\
+      \                \"severity\": 1,\n\
+      \                \"message\": 2,\n\
+      \                \"loop\": true\n\
+      \            }\n\
+      \        ]\n\
+      \    }\n\
+       }") ;
+    Dir ("src", [
+      File ("demo.re",
+        "Js.log \"Hello, BuckleScript and Reason!\";\n\
+         ")]) ;
+    File ("README.md",
+      "# Basic Reason Template\n\
+       \n\
+       Hello! This project allows you to quickly get started with Reason and BuckleScript. If you wanted a more sophisticated version, try the `react` template (`bsb -theme react -init .`).\n\
+       \n\
+       # Build\n\
+       ```\n\
+       npm run build\n\
+       ```\n\
+       \n\
+       # Build + Watch\n\
+       \n\
+       ```\n\
+       npm run watch\n\
+       ```\n\
+       \n\
+       \n\
+       # Editor\n\
+       If you use `vscode`, Press `Windows + Shift + B` it will build automatically\n\
+       ") ;
+    File ("package.json",
+      "{\n\
+      \  \"name\": \"${bsb:name}\",\n\
+      \  \"version\": \"${bsb:proj-version}\",\n\
+      \  \"scripts\": {\n\
+      \    \"clean\": \"bsb -clean-world\",\n\
+      \    \"build\": \"bsb -make-world\",\n\
+      \    \"watch\": \"bsb -make-world -w\"\n\
+      \  },\n\
+      \  \"keywords\": [\n\
+      \    \"BuckleScript\"\n\
+      \  ],\n\
+      \  \"license\": \"MIT\",\n\
+      \  \"devDependencies\": {\n\
+      \    \"bs-platform\": \"${bsb:bs-version}\"\n\
+      \  }\n\
+       }") ;
+    File ("bsconfig.json",
+      "// This is the configuration file used by BuckleScript's build system bsb. Its documentation lives here: http://bucklescript.github.io/bucklescript/docson/#build-schema.json\n\
+       // BuckleScript comes with its own parser for bsconfig.json, which is normal JSON, with the extra support of comments and trailing commas.\n\
+       {\n\
+      \  \"name\": \"${bsb:name}\",\n\
+      \  \"version\": \"${bsb:proj-version}\",\n\
+      \  \"sources\": [\n\
+      \    \"src\"\n\
+      \  ],\n\
+      \  \"bs-dependencies\" : [\n\
+      \      // add your dependencies here. You'd usually install them normally through `npm install my-dependency`. If my-dependency has a bsconfig.json too, then everything will work seamlessly.\n\
+      \  ]\n\
+       }\n\
+       ") ;
+    File (".gitignore",
+      "*.exe\n\
+       *.obj\n\
+       *.out\n\
+       *.compile\n\
+       *.native\n\
+       *.byte\n\
+       *.cmo\n\
+       *.annot\n\
+       *.cmi\n\
+       *.cmx\n\
+       *.cmt\n\
+       *.cmti\n\
+       *.cma\n\
+       *.a\n\
+       *.cmxa\n\
+       *.obj\n\
+       *~\n\
+       *.annot\n\
+       *.cmj\n\
+       *.bak\n\
+       lib/bs\n\
+       *.mlast\n\
+       *.mliast\n\
+       .vscode\n\
+       .merlin")]) ;
+  Dir ("generator", [
+    Dir ("src", [
+      File ("test.cpp.ml",
+        "\n\
+         \n\
+         #define FS_VAL(name,ty) external name : ty = \"\" [@@bs.module \"fs\"]\n\
+         \n\
+         \n\
+         FS_VAL(readdirSync, string -> string array)\n\
+         \n\
+         ") ;
+      File ("demo.ml",
+        "\n\
+         \n\
+         let () = Js.log \"Hello, BuckleScript\"")]) ;
+    File ("README.md",
+      "\n\
+       \n\
+       # Build\n\
+       ```\n\
+       npm run build\n\
+       ```\n\
+       \n\
+       # Watch\n\
+       \n\
+       ```\n\
+       npm run watch\n\
+       ```\n\
+       \n\
+       \n\
+       # Editor\n\
+       If you use `vscode`, Press `Windows + Shift + B` it will build automatically") ;
+    File ("package.json",
+      "{\n\
+      \  \"name\": \"${bsb:name}\",\n\
+      \  \"version\": \"${bsb:proj-version}\",\n\
+      \  \"scripts\": {\n\
+      \    \"clean\": \"bsb -clean-world\",\n\
+      \    \"build\": \"bsb -make-world\",\n\
+      \    \"watch\": \"bsb -make-world -w\"\n\
+      \  },\n\
+      \  \"keywords\": [\n\
+      \    \"BuckleScript\"\n\
+      \  ],\n\
+      \  \"license\": \"MIT\",\n\
+      \  \"devDependencies\": {\n\
+      \    \"bs-platform\": \"${bsb:bs-version}\"\n\
+      \  }\n\
+       }") ;
+    File ("bsconfig.json",
+      "{\n\
+      \  \"name\": \"${bsb:name}\",\n\
+      \  \"version\": \"${bsb:proj-version}\",\n\
+      \  \"sources\": [\n\
+      \    {\n\
+      \      \"dir\": \"src\",\n\
+      \      \"generators\": [\n\
+      \        {\n\
+      \          \"name\": \"cpp\",\n\
+      \          \"edge\": [\n\
+      \            \"test.ml\", \":\", \"test.cpp.ml\"\n\
+      \          ]\n\
+      \        }\n\
+      \      ]\n\
+      \    }\n\
+      \    \n\
+      \  ],\n\
+      \  \"generators\": [\n\
+      \    {\n\
+      \      \"name\" : \"cpp\",\n\
+      \      \"command\": \"gcc -x c -P -traditional-cpp -C -E $in -o $out\"\n\
+      \    }\n\
+      \  ],\n\
+      \  \"bs-dependencies\" : [\n\
+      \      // add your bs-dependencies here \n\
+      \  ]\n\
+       }") ;
+    File (".gitignore",
+      "*.exe\n\
+       *.obj\n\
+       *.out\n\
+       *.compile\n\
+       *.native\n\
+       *.byte\n\
+       *.cmo\n\
+       *.annot\n\
+       *.cmi\n\
+       *.cmx\n\
+       *.cmt\n\
+       *.cmti\n\
+       *.cma\n\
+       *.a\n\
+       *.cmxa\n\
+       *.obj\n\
+       *~\n\
+       *.annot\n\
+       *.cmj\n\
+       *.bak\n\
+       lib/bs\n\
+       *.mlast\n\
+       *.mliast\n\
+       .vscode\n\
+       .merlin")]) ;
+  Dir ("minimal", [
+    Dir ("src", [ File ("main.ml", "")]) ;
+    File ("README.md",
+      "\n\
+      \  # ${bsb:name}") ;
+    File ("package.json",
+      "{\n\
+      \  \"name\": \"${bsb:name}\",\n\
+      \  \"version\": \"${bsb:proj-version}\",\n\
+      \  \"scripts\": {\n\
+      \    \"clean\": \"bsb -clean-world\",\n\
+      \    \"build\": \"bsb -make-world\",\n\
+      \    \"start\": \"bsb -make-world -w\"\n\
+      \  },\n\
+      \  \"keywords\": [\n\
+      \    \"BuckleScript\"\n\
+      \  ],\n\
+      \  \"license\": \"MIT\",\n\
+      \  \"devDependencies\": {\n\
+      \    \"bs-platform\": \"^${bsb:bs-version}\"\n\
+      \  }\n\
+       }") ;
+    File ("bsconfig.json",
+      "{\n\
+      \  \"name\": \"${bsb:name}\",\n\
+      \  \"sources\": [\"src\"]\n\
+       }") ;
+    File (".gitignore",
+      "lib\n\
+       node_modules\n\
+       .merlin\n\
+       npm-debug.log")]) ;
+  Dir ("react", [
+    File ("webpack.config.js",
+      "const path = require('path');\n\
+       \n\
+       module.exports = {\n\
+      \  entry: {\n\
+      \    simple: './lib/js/src/simple/simpleRoot.js',\n\
+      \    interop: './src/interop/interopRoot.js',\n\
+      \  },\n\
+      \  output: {\n\
+      \    path: path.join(__dirname, \"bundledOutputs\"),\n\
+      \    filename: '[name].js',\n\
+      \  },\n\
+       };\n\
+       ") ;
+    Dir ("src", [
+      Dir ("simple", [
+        File ("simpleRoot.re",
+          "ReactDOMRe.renderToElementWithId <Page name=\"Lil' Reason\" /> \"index\";\n\
+           ") ;
+        File ("page.re",
+          "let component = ReasonReact.statefulComponent \"Greeting\";\n\
+           \n\
+           let make ::name _children => {\n\
+          \  let click _event {ReasonReact.state} => ReasonReact.Update (state + 1);\n\
+          \  {\n\
+          \    ...component,\n\
+          \    initialState: fun () => 0,\n\
+          \    render: fun {state, update} => {\n\
+          \      let greeting = {j|Hello $name, You've clicked the button $state times(s)!|j};\n\
+          \      <button onClick=(update click)> (ReasonReact.stringToElement greeting) </button>\n\
+          \    }\n\
+          \  }\n\
+           };\n\
+           ") ;
+        File ("index.html",
+          "<!DOCTYPE html>\n\
+           <html lang=\"en\">\n\
+           <head>\n\
+          \  <meta charset=\"UTF-8\">\n\
+          \  <title>Pure Reason Example</title>\n\
+           </head>\n\
+           <body>\n\
+          \  <div id=\"index\"></div>\n\
+          \  <script src=\"../../bundledOutputs/simple.js\"></script>\n\
+           </body>\n\
+           </html>\n\
+           ")]) ;
+      Dir ("interop", [
+        File ("README.md",
+          "## Interoperate with Existing ReactJS Components\n\
+           \n\
+           This subdirectory demonstrate the ReasonReact <-> ReactJS interop APIs.\n\
+           \n\
+           The entry point, `interopRoot.js`, illustrates ReactJS requiring a ReasonReact component, `PageReason`.\n\
+           \n\
+           `PageReason` itself illustrates ReasonReact requiring a ReactJS component, `myBanner.js`, through the Reason file `myBannerRe.re`.\n\
+           ") ;
+        File ("pageReason.re",
+          "let component = ReasonReact.statelessComponent \"PageReason\";\n\
+           \n\
+           let make ::message ::extraGreeting=? _children => {\n\
+          \  ...component,\n\
+          \  render: fun _self => {\n\
+          \    let greeting =\n\
+          \      switch extraGreeting {\n\
+          \      | None => \"How are you?\"\n\
+          \      | Some g => g\n\
+          \      };\n\
+          \    <div> <MyBannerRe show=true message=(message ^ \" \" ^ greeting) /> </div>\n\
+          \  }\n\
+           };\n\
+           \n\
+           let comp =\n\
+          \  ReasonReact.wrapReasonForJs\n\
+          \    ::component\n\
+          \    (\n\
+          \      fun jsProps =>\n\
+          \        make\n\
+          \          message::jsProps##message\n\
+          \          extraGreeting::?(Js.Null_undefined.to_opt jsProps##extraGreeting)\n\
+          \          [||]\n\
+          \    );\n\
+           ") ;
+        File ("myBannerRe.re",
+          "/* Typing the myBanner.js component's output as a `reactClass`. */\n\
+           /* Note that this file's JS output is located at reason-react-example/lib/js/src/interop/myBannerRe.js; we're specifying the relative path to myBanner.js in the string below */\n\
+           external myBanner : ReasonReact.reactClass = \"../../../../src/interop/myBanner\" [@@bs.module];\n\
+           \n\
+           let make ::show ::message children =>\n\
+          \  ReasonReact.wrapJsForReason\n\
+          \    reactClass::myBanner\n\
+          \    props::{\n\
+          \      \"show\": Js.Boolean.to_js_boolean show, /* ^ don't forget to convert an OCaml bool into a JS boolean! */\n\
+          \      \"message\": message /* OCaml string maps to JS string, no conversion needed here */\n\
+          \    }\n\
+          \    children;\n\
+           ") ;
+        File ("myBanner.js",
+          "var ReactDOM = require('react-dom');\n\
+           var React = require('react');\n\
+           \n\
+           var App = React.createClass({\n\
+          \  render: function() {\n\
+          \    if (this.props.show) {\n\
+          \      return React.createElement('div', null,\n\
+          \        this.props.message\n\
+          \      );\n\
+          \    } else {\n\
+          \      return null;\n\
+          \    }\n\
+          \  }\n\
+           });\n\
+           \n\
+           module.exports = App;\n\
+           ") ;
+        File ("interopRoot.js",
+          "var ReactDOM = require('react-dom');\n\
+           var React = require('react');\n\
+           \n\
+           // Import a ReasonReact component! `comp` is the exposed, underlying ReactJS class\n\
+           var PageReason = require('../../lib/js/src/interop/pageReason').comp;\n\
+           \n\
+           var App = React.createClass({\n\
+          \  render: function() {\n\
+          \    return React.createElement('div', null,\n\
+          \      React.createElement(PageReason, {message: 'Hello!'})\n\
+          \    );\n\
+          \    // didn't feel like dragging in Babel. Here's the equivalent JSX:\n\
+          \    // <div><PageReason message=\"Hello!\"></div>\n\
+          \  }\n\
+           });\n\
+           \n\
+           ReactDOM.render(React.createElement(App), document.getElementById('index'));\n\
+           ") ;
+        File ("index.html",
+          "<!DOCTYPE html>\n\
+           <html lang=\"en\">\n\
+           <head>\n\
+          \  <meta charset=\"UTF-8\">\n\
+          \  <title>Pure Reason Example</title>\n\
+           </head>\n\
+           <body>\n\
+          \  <div id=\"index\"></div>\n\
+          \  <script src=\"../../bundledOutputs/interop.js\"></script>\n\
+           </body>\n\
+           </html>\n\
+           ")])]) ;
+    File ("README.md",
+      "This is a repo with examples usages of [ReasonReact](https://github.com/reasonml/reason-react).\n\
+       Have something you don't understand? Join us on [Discord](https://discord.gg/reasonml)!\n\
+       \n\
+       Run this project:\n\
+       \n\
+       ```\n\
+       npm install\n\
+       npm start\n\
+       # in another tab\n\
+       npm run build\n\
+       ```\n\
+       \n\
+       After you see the webpack compilation succeed (the `npm run build` step), open up the nested html files in `src/*` (**no server needed!**). Then modify whichever file in `src` and refresh the page to see the changes.\n\
+       ") ;
+    File ("package.json",
+      "{\n\
+      \  \"name\": \"${bsb:name}\",\n\
+      \  \"private\": true,\n\
+      \  \"version\": \"${bsb:proj-version}\",\n\
+      \  \"description\": \"\",\n\
+      \  \"main\": \"index.js\",\n\
+      \  \"scripts\": {\n\
+      \    \"test\": \"echo \\\"Error: no test specified\\\" && exit 1\",\n\
+      \    \"start\": \"bsb -make-world -w\",\n\
+      \    \"build\": \"webpack -w\",\n\
+      \    \"clean\": \"bsb -clean-world\"\n\
+      \  },\n\
+      \  \"keywords\": [],\n\
+      \  \"author\": \"\",\n\
+      \  \"license\": \"ISC\",\n\
+      \  \"dependencies\": {\n\
+      \    \"react\": \"^15.4.2\",\n\
+      \    \"react-dom\": \"^15.4.2\",\n\
+      \    \"reason-react\": \">=0.2.1\"\n\
+      \  },\n\
+      \  \"devDependencies\": {\n\
+      \    \"bs-platform\": \"^${bsb:bs-version}\",\n\
+      \    \"webpack\": \"^1.14.0\"\n\
+      \  }\n\
+       }\n\
+       ") ;
+    File ("bsconfig.json",
+      "/* This is the BuckleScript configuration file. Note that this is a comment;\n\
+      \  BuckleScript comes with a JSON parser that supports comments and trailing\n\
+      \  comma. If this screws with your editor highlighting, please tell us by filing\n\
+      \  an issue! */\n\
+       {\n\
+      \  \"name\" : \"${bsb:name}\",\n\
+      \  \"reason\" : {\"react-jsx\" : 2},\n\
+      \  \"bs-dependencies\": [\"reason-react\"],\n\
+      \  \"sources\": [\n\
+      \    {\n\
+      \      \"dir\": \"src\",\n\
+      \      \"subdirs\": [\"interop\", \"simple\"],\n\
+      \    }\n\
+      \  ],\n\
+       }\n\
+       ") ;
+    File (".gitignore",
+      "lib\n\
+       node_modules\n\
+       .merlin\n\
+       npm-debug.log")])
+])
+
+end
+module Ext_io : sig 
+#1 "ext_io.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+val load_file : string -> string
+
+val rev_lines_of_file : string -> string list
+
+val write_file : string -> string -> unit
+
+end = struct
+#1 "ext_io.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+(** on 32 bit , there are 16M limitation *)
+let load_file f =
+  Ext_pervasives.finally (open_in_bin f) close_in begin fun ic ->   
+    let n = in_channel_length ic in
+    let s = Bytes.create n in
+    really_input ic s 0 n;
+    Bytes.unsafe_to_string s
+  end
+
+
+let rev_lines_of_file file = 
+  Ext_pervasives.finally (open_in_bin file) close_in begin fun chan -> 
+    let rec loop acc = 
+      match input_line chan with
+      | line -> loop (line :: acc)
+      | exception End_of_file -> close_in chan ; acc in
+    loop []
+  end
+
+let write_file f content = 
+  Ext_pervasives.finally (open_out_bin f) close_out begin fun oc ->   
+    output_string oc content
+  end
+
+end
+module Bsb_init : sig 
+#1 "bsb_init.mli"
+
+
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+val init_sample_project : cwd:string -> theme:string ->  string -> unit 
+
+val list_themes : unit -> unit 
+end = struct
+#1 "bsb_init.ml"
+
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+let replace s env : string = 
+  Bsb_regex.global_substitute "\\${bsb:\\([-a-zA-Z0-9]+\\)}" 
+    (fun (_s : string) templates -> 
+       match templates with 
+       | key::_ -> 
+         String_hashtbl.find_exn  env key
+       | _ -> assert false 
+    ) s
+
+let (//) = Filename.concat 
+let npm_link = "npm link bs-platform"
+
+(*let no_such_directory dir = 
+    match Sys.is_directory dir with 
+    | true -> false 
+    | false -> true 
+    |*)
+
+let enter_dir cwd x action = 
+  Unix.chdir x ; 
+  match action () with 
+  | exception e -> Unix.chdir cwd ; raise e 
+  | v -> v 
+
+
+let rec process_theme_aux env cwd (x : OCamlRes.Res.node) = 
+  match x with 
+  | File (name,content)  -> 
+    Ext_io.write_file (cwd // name) (replace content env)
+  | Dir (current, nodes) -> 
+    Unix.mkdir (cwd//current) 0o777;
+    List.iter (fun x -> process_theme_aux env (cwd//current) x ) nodes
+
+let list_themes () =
+  Format.fprintf Format.std_formatter "Available themes: @.";
+  Bsb_templates.root 
+  |>
+  List.iter (fun (x : OCamlRes.Res.node)  ->
+      match  x with 
+      | Dir (x, _) -> 
+        Format.fprintf Format.std_formatter "%s@." x 
+
+      | _ -> ()
+    ) 
+
+(* @raise [Not_found] *)  
+let process_themes env theme proj_dir (themes : OCamlRes.Res.node list ) = 
+  match List.find (fun (x : OCamlRes.Res.node) -> 
+      match  x with 
+      | Dir (dir, _) -> dir = theme
+      | File _ -> false 
+    ) themes  with 
+  | exception Not_found -> 
+    list_themes ();
+    raise (Arg.Bad( "theme " ^ theme ^ " not found")  )
+  | Dir(_theme, nodes ) -> 
+    List.iter (fun node -> process_theme_aux env proj_dir node ) nodes
+  | _ -> assert false  
+
+(** TODO: run npm link *)
+let init_sample_project ~cwd ~theme name = 
+  let env = String_hashtbl.create 0 in 
+  List.iter (fun (k,v) -> String_hashtbl.add env k v  ) [  
+    "proj-version", "0.1.0";
+    "bs-version", Bs_version.version;
+    "bsb" , Filename.current_dir_name // "node_modules" // ".bin" // "bsb"
+  ];
+  let action = fun _ -> 
+    process_themes env  theme Filename.current_dir_name Bsb_templates.root;         
+    Format.fprintf Format.std_formatter "Running %s in %s @." npm_link (cwd//name);
+    let exit_code = Sys.command npm_link in 
+    if exit_code <> 0 then 
+      begin
+        prerr_endline ("failed to run : " ^ npm_link);
+        exit exit_code
+      end
+  in   
+  begin match name with 
+    | "." -> 
+      let name = Filename.basename cwd in
+      if Ext_string.is_valid_npm_package_name name then 
+        begin 
+          String_hashtbl.add env "name" name;
+          action ()
+        end
+      else 
+        begin
+          Format.fprintf Format.err_formatter 
+            "@{<error>Invalid package name@} %S @."
+            name ;
+          exit 2    
+        end
+
+    | _ -> 
+      if Ext_string.is_valid_npm_package_name name 
+      then begin 
+        Format.fprintf Format.std_formatter "Making directory %s@." name;  
+        if Sys.file_exists name then 
+          begin 
+            Format.fprintf Format.err_formatter "%s already existed@." name ;
+            exit 2
+          end 
+        else
+          begin              
+            Unix.mkdir name 0o777;     
+            String_hashtbl.add env "name" name;
+            enter_dir cwd name action
+          end
+      end else begin 
+        Format.fprintf Format.err_formatter 
+          "@{<error>Invalid package name@} %S @."
+          name ;
+        exit 2                        
+      end 
+  end
+
+
+
+
+
+end
+module Ext_color : sig 
+#1 "ext_color.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+(** Input is the tag for example `@{<warning>@}` return escape code *)
+val ansi_of_tag : string -> string 
+
+val reset_lit : string
+
+end = struct
+#1 "ext_color.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+type color 
+  = Black
+  | Red
+  | Green
+  | Yellow
+  | Blue
+  | Magenta
+  | Cyan
+  | White
+
+type style 
+  = FG of color 
+  | BG of color 
+  | Bold
+
+
+let ansi_of_color = function
+  | Black -> "0"
+  | Red -> "1"
+  | Green -> "2"
+  | Yellow -> "3"
+  | Blue -> "4"
+  | Magenta -> "5"
+  | Cyan -> "6"
+  | White -> "7"
+
+let code_of_style = function
+  | FG Black -> "30"
+  | FG Red -> "31"
+  | FG Green -> "32"
+  | FG Yellow -> "33"
+  | FG Blue -> "34"
+  | FG Magenta -> "35"
+  | FG Cyan -> "36"
+  | FG White -> "37"
+  
+  | BG Black -> "40"
+  | BG Red -> "41"
+  | BG Green -> "42"
+  | BG Yellow -> "43"
+  | BG Blue -> "44"
+  | BG Magenta -> "45"
+  | BG Cyan -> "46"
+  | BG White -> "47"
+
+  | Bold -> "1"
+
+
+
+(** TODO: add more styles later *)
+let style_of_tag s = match s with
+  | "error" -> [Bold; FG Red]
+  | "warning" -> [Bold; FG Magenta]
+  | "info" -> [Bold; FG Yellow]
+  | _ -> []
+
+let ansi_of_tag s = 
+  let l = style_of_tag s in
+  let s =  String.concat ";" (List.map code_of_style l) in
+  "\x1b[" ^ s ^ "m"
+
+
+
+let reset_lit = "\x1b[0m" 
+
+
+
+
+
+end
+module Bsb_log : sig 
+#1 "bsb_log.mli"
+(* Copyright (C) 2017 Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+val color_enabled : bool ref 
+
+val setup : unit -> unit 
+
+val print_string_args : string array -> unit
+end = struct
+#1 "bsb_log.ml"
+(* Copyright (C) 2017- Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+let color_enabled = ref (Unix.isatty Unix.stdin)
+let set_color ppf =
+  Format.pp_set_formatter_tag_functions ppf 
+    ({ (Format.pp_get_formatter_tag_functions ppf () ) with
+       mark_open_tag = (fun s ->  if !color_enabled then  Ext_color.ansi_of_tag s else Ext_string.empty) ;
+       mark_close_tag = (fun _ ->  if !color_enabled then Ext_color.reset_lit else Ext_string.empty);
+     })
+
+
+let setup () = 
+  begin 
+    Format.pp_set_mark_tags Format.std_formatter true ;
+    Format.pp_set_mark_tags Format.err_formatter true;
+    Format.pp_set_mark_tags Format.str_formatter true;
+    set_color Format.std_formatter ; 
+    set_color Format.err_formatter;
+    set_color Format.str_formatter
+  end
+
+
+
+let print_string_args (args : string array) =
+  for i  = 0 to Array.length args - 1 do
+    print_string (Array.unsafe_get args i) ;
+    print_string Ext_string.single_space;
+  done ;
+  print_newline ()
+
+end
+module Bsb_bsdeps : sig 
+#1 "bsb_bsdeps.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+(**
+  This module is used to check when [build.ninja] will 
+  be regenerated. Everytime [bsb] run [regenerate_ninja], 
+  bsb will try to [check] if it is needed, 
+  if needed, we will regenerate ninja file and store the 
+  meta data again
+*)
+
+
+type dep_info = {
+  dir_or_file : string ;
+  stamp : float 
+}
+(** 
+   The data structure we decided to whether regenerate [build.ninja] 
+   or not. Note that if we don't record absolute path, 
+
+   ninja will not notice  its build spec changed, it will not trigger 
+   rebuild behavior, is this a desired behavior not?
+
+   It may not, since there is some subtlies here (__FILE__ or __dirname)
+*)
+
+
+
+
+type check_result = 
+  | Good
+  | Bsb_file_not_exist (** We assume that it is a clean repo *)  
+  | Bsb_source_directory_changed
+  | Bsb_bsc_version_mismatch  
+  | Bsb_forced
+  | Other of string
+
+val pp_check_result : Format.formatter -> check_result -> unit
+
+(** [store ~cwd name deps]
+  serialize data (should be [.bsdeps])
+ *)
+val store : cwd:string -> file:string -> dep_info array -> unit
+
+
+(** check if [build.ninja] should be regenerated *)
+val check :
+  cwd:string ->  
+  forced:bool -> file:string -> check_result
+
+end = struct
+#1 "bsb_bsdeps.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type dep_info = {
+  dir_or_file : string ;
+  stamp : float
+}
+
+type t =
+  { file_stamps : dep_info array ;
+    source_directory :  string ;
+    bsb_version : string;
+    bsc_version : string;
+  }
+
+
+let magic_number = "BS_DEP_INFOS_20170209"
+let bsb_version = "20170209+dev"
+(* TODO: for such small data structure, maybe text format is better *)
+
+let write (fname : string)  (x : t) =
+  let oc = open_out_bin fname in
+  output_string oc magic_number ;
+  output_value oc x ;
+  close_out oc
+
+
+
+
+
+type check_result =
+  | Good
+  | Bsb_file_not_exist (** We assume that it is a clean repo *)
+  | Bsb_source_directory_changed
+  | Bsb_bsc_version_mismatch
+  | Bsb_forced
+  | Other of string
+
+let pp_check_result fmt (check_resoult : check_result) =
+  Format.pp_print_string fmt (match check_resoult with
+  | Good -> "OK"
+  | Bsb_file_not_exist -> "Dependencies information missing"
+  | Bsb_source_directory_changed ->
+    "Bsb source directory changed"
+  | Bsb_bsc_version_mismatch ->
+    "Bsc or bsb version mismatch"
+  | Bsb_forced ->
+    "Bsb forced rebuild"
+  | Other s -> s)
+
+let rec check_aux cwd xs i finish =
+  if i = finish then Good
+  else
+    let k = Array.unsafe_get  xs i  in
+    let current_file = k.dir_or_file in
+    let stat = Unix.stat  (Filename.concat cwd  current_file) in
+    if stat.st_mtime <= k.stamp then
+      check_aux cwd xs (i + 1 ) finish
+    else Other current_file
+
+
+let read (fname : string) cont =
+  match open_in_bin fname with   (* Windows binary mode*)
+  | ic ->
+    let buffer = really_input_string ic (String.length magic_number) in
+    if (buffer <> magic_number) then Bsb_bsc_version_mismatch
+    else
+      let res : t = input_value ic  in
+      close_in ic ;
+      cont res
+  | exception _ -> Bsb_file_not_exist
+
+
+(** check time stamp for all files
+    TODO: those checks system call can be saved later
+    Return a reason
+    Even forced, we still need walk through a little
+    bit in case we found a different version of compiler
+*)
+let check ~cwd ~forced ~file =
+  read file  begin  function  {
+    file_stamps = xs; source_directory; bsb_version = old_version;
+    bsc_version
+  } ->
+    if old_version <> bsb_version then Bsb_bsc_version_mismatch else
+    if cwd <> source_directory then Bsb_source_directory_changed else
+    if bsc_version <> Bs_version.version then Bsb_bsc_version_mismatch else
+    if forced then Bsb_forced (* No need walk through *)
+    else
+      try
+        check_aux cwd xs  0 (Array.length xs)
+      with e ->
+        begin
+          Format.fprintf
+            Format.std_formatter
+            "@{<info>Stat miss %s@}@."
+            (Printexc.to_string e);
+          Bsb_file_not_exist
+        end
+  end
+
+let store ~cwd ~file:name file_stamps =
+  write name
+    { file_stamps ;
+      source_directory = cwd ;
+      bsb_version ;
+      bsc_version = Bs_version.version }
+
+end
 module Binary_cache : sig 
 #1 "binary_cache.mli"
 
@@ -7425,86 +9023,6 @@ end = struct
 
 include Resize_array.Make(struct type t = string let null = "" end)
 end
-module Bsb_log : sig 
-#1 "bsb_log.mli"
-(* Copyright (C) 2017 Authors of BuckleScript
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-(** Used in populate empty `files` field 
-  [print_arrays files oc offset]
-*)
-val print_arrays : String_vec.t -> out_channel -> int -> unit 
-end = struct
-#1 "bsb_log.ml"
-(* Copyright (C) 2017- Authors of BuckleScript
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-let print_arrays file_array oc offset  =
-  let indent = String.make offset ' ' in 
-  let p_str s = 
-    output_string oc indent ; 
-    output_string oc s ;
-    output_string oc "\n"
-  in
-  let len = String_vec.length file_array in 
-  match len with 
-  | 0
-    -> output_string oc "[ ]\n"
-  | 1 
-    -> output_string oc ("[ \"" ^ String_vec.get file_array 0  ^ "\" ]\n")
-  | _ (* first::(_::_ as rest) *)
-    -> 
-    output_string oc "[ \n";
-    String_vec.iter_range ~from:0 ~to_:(len - 2 ) 
-      (fun s -> p_str @@ "\"" ^ s ^ "\",") file_array;
-    p_str @@ "\"" ^ (String_vec.last file_array) ^ "\"";
-
-    p_str "]" 
-end
 module Ext_file_pp : sig 
 #1 "ext_file_pp.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -7531,30 +9049,33 @@ module Ext_file_pp : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type action = 
-  [
-    `skip
-  | `print of (Pervasives.out_channel -> int -> unit)
-  ]
+
 
 
 type interval = {
   loc_start : Lexing.position ; 
   loc_end : Lexing.position ; 
-  action : action 
+  action : out_channel -> int -> unit 
 }
 
 val process_wholes : 
   interval list ->
   int -> ?line_directive:string -> in_channel -> out_channel -> unit
 
-val cpp_process_file : 
-  string -> (Lexing.position * Lexing.position) list -> out_channel -> unit
-
-
 (** Assume that there is no overlapp *)
 val interval_compare : 
   interval -> interval -> int
+
+val patch_action:
+  String_vec.t -> 
+  Lexing.position -> 
+  Lexing.position -> 
+  interval
+(*
+val cpp_process_file : 
+  string -> (Lexing.position * Lexing.position) list -> out_channel -> unit*)
+
+
 
 end = struct
 #1 "ext_file_pp.ml"
@@ -7583,10 +9104,9 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 type action = 
-  [
-    `skip
-  | `print of (out_channel -> int -> unit)
-  ]
+  (out_channel -> int -> unit)
+
+  
 
 
 type interval = {
@@ -7598,6 +9118,15 @@ type interval = {
 let interval_compare x y = 
   Pervasives.compare (x.loc_start.pos_cnum : int) y.loc_start.pos_cnum
 
+(*
+  It tries to copy io stream from [ic] into [oc]
+  except it will skip those wholes, for each 
+  whole a callback can be attached
+  When come across a whole, 
+  it will print 
+  - line directive (based on previous info)
+  - all content before
+*)
 let process_wholes 
     (whole_intervals : interval list ) 
     file_size
@@ -7632,28 +9161,59 @@ let process_wholes
       loc_end  = {Lexing.pos_cnum = stop; pos_bol ; pos_lnum} ;
       action 
     } :: xs  -> 
-      print start ;
       let offset = stop - pos_bol in
-      begin match action with 
-      | `skip -> ()
-      | `print f -> f oc offset 
-      end;
+      print start ;
+      action oc offset ;
       aux (stop, pos_lnum, offset) xs 
   in 
     aux (0, 1, 0) whole_intervals
 
 
-let cpp_process_file fname whole_intervals oc = 
+let print_arrays file_array oc offset  =
+  let indent = String.make offset ' ' in 
+  let p_str s = 
+    output_string oc indent ; 
+    output_string oc s ;
+    output_string oc "\n"
+  in
+  let len = String_vec.length file_array in 
+  match len with 
+  | 0
+    -> output_string oc "[ ]\n"
+  | 1 
+    -> output_string oc ("[ \"" ^ String_vec.get file_array 0  ^ "\" ]\n")
+  | _ (* first::(_::_ as rest) *)
+    -> 
+    output_string oc "[ \n";
+    String_vec.iter_range ~from:0 ~to_:(len - 2 ) 
+      (fun s -> p_str @@ "\"" ^ s ^ "\",") file_array;
+    p_str @@ "\"" ^ (String_vec.last file_array) ^ "\"";
+
+    p_str "]"
+
+let patch_action file_array 
+  loc_start loc_end  =
+  {loc_start ; loc_end ; 
+  action = print_arrays file_array 
+  }   
+
+
+(* TODO: in the future, support [bspp.exe]
+  with line directive as well
+ *)
+(*let cpp_process_file fname 
+  (whole_intervals : (Lexing.position * Lexing.position) list)
+  oc = 
   let ic = open_in_bin fname in
   let file_size = in_channel_length ic in 
   process_wholes ~line_directive:fname 
-    (List.map (fun (x,y) -> {loc_start = x ; loc_end = y; action = `skip}) whole_intervals)
+    (List.map (fun (x,y) -> {loc_start = x ; loc_end = y; action = Skip}) whole_intervals)
     file_size   ic oc ;
-  close_in ic 
+  close_in ic *)
 
 end
-module Bsb_build_ui : sig 
-#1 "bsb_build_ui.mli"
+module Bsb_parse_sources : sig 
+#1 "bsb_parse_sources.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -7738,7 +9298,7 @@ val parse_sources :
   
 
 end = struct
-#1 "bsb_build_ui.ml"
+#1 "bsb_parse_sources.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -7838,8 +9398,9 @@ let  handle_list_files acc
           acc 
         | Suffix_mismatch -> acc 
       ) acc files_array in 
-  [{Ext_file_pp.loc_start ;
-    loc_end; action = (`print (Bsb_log.print_arrays dyn_file_array))}],
+  [ Ext_file_pp.patch_action dyn_file_array 
+    loc_start loc_end
+    ],
   files
 
 
@@ -8437,7 +9998,7 @@ type t =
     js_post_build_cmd : string option;
     package_specs : Bsb_config.package_specs ; 
     globbed_dirs : string list;
-    bs_file_groups : Bsb_build_ui.file_group list ;
+    bs_file_groups : Bsb_parse_sources.file_group list ;
     files_to_install : String_hash_set.t ;
     generate_merlin : bool ; 
     reason_react_jsx : reason_react_jsx ; (* whether apply PPX transform or not*)
@@ -8782,7 +10343,7 @@ module Bsb_watcher_gen : sig
   mean the duplication of logic in [bsb] and [bsb_watcher]
 *)
 val generate_sourcedirs_meta : 
-  string -> Bsb_build_ui.t -> unit 
+  string -> Bsb_parse_sources.t -> unit 
 end = struct
 #1 "bsb_watcher_gen.ml"
 (* Copyright (C) 2017- Authors of BuckleScript
@@ -8814,18 +10375,18 @@ let (//) = Ext_filename.combine
 
 let sourcedirs_meta = ".sourcedirs.json"
 
-let generate_sourcedirs_meta cwd (res : Bsb_build_ui.t) = 
+let generate_sourcedirs_meta cwd (res : Bsb_parse_sources.t) = 
   let ochan = open_out_bin (cwd // Bsb_config.lib_bs // sourcedirs_meta) in
   let v = 
     Ext_json_noloc.(
       kvs [
         "dirs" ,
-      arr (Ext_array.of_list_map ( fun (x : Bsb_build_ui.file_group) -> 
+      arr (Ext_array.of_list_map ( fun (x : Bsb_parse_sources.file_group) -> 
       str x.dir 
       ) res.files ) ;
       "generated" ,
-      arr @@ Array.of_list @@ List.fold_left (fun acc (x : Bsb_build_ui.file_group) -> 
-      Ext_list.flat_map_acc (fun x -> List.map str x.Bsb_build_ui.output) acc  x.generators 
+      arr @@ Array.of_list @@ List.fold_left (fun acc (x : Bsb_parse_sources.file_group) -> 
+      Ext_list.flat_map_acc (fun x -> List.map str x.Bsb_parse_sources.output) acc  x.generators 
       )  [] res.files 
       ]
      ) in 
@@ -9119,7 +10680,7 @@ let interpret_json
     |> ignore ;
     begin match String_map.find_opt Bsb_build_schemas.sources map with 
       | Some x -> 
-        let res = Bsb_build_ui.parse_sources 
+        let res = Bsb_parse_sources.parse_sources 
             {no_dev; 
              dir_index =
                Bsb_dir_index.lib_dir_index; cwd = Filename.current_dir_name; 
@@ -9176,8 +10737,8 @@ let interpret_json
   | _ -> failwith "bsconfig.json expect a json object {}"
 
 end
-module Bsb_dep_infos : sig 
-#1 "bsb_dep_infos.mli"
+module Bsb_merlin_gen : sig 
+#1 "bsb_merlin_gen.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -9203,43 +10764,12 @@ module Bsb_dep_infos : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-type dep_info = {
-  dir_or_file : string ;
-  stamp : float 
-}
 
 
-
-(** 
-   The data structure we decided to whether regenerate [build.ninja] 
-   or not. Note that if we don't record absolute path, 
-
-   ninja will not notice  its build spec changed, it will not trigger 
-   rebuild behavior, is this a desired behavior not?
-
-   It may not, since there is some subtlies here (__FILE__ or __dirname)
-*)
-
-
-
-
-type check_result = 
-  | Good
-  | Bsb_file_not_exist (** We assume that it is a clean repo *)  
-  | Bsb_source_directory_changed
-  | Bsb_bsc_version_mismatch  
-  | Bsb_forced
-  | Other of string
-
-val pp_check_result : Format.formatter -> check_result -> unit
-val store : cwd:string -> string -> dep_info array -> unit
-
-
-(** check if [build.ninja] should be regenerated *)
-val check : cwd:string ->  bool -> string -> check_result
-
+val merlin_file_gen : 
+    cwd:string -> string  -> Bsb_config_types.t ->  unit 
 end = struct
-#1 "bsb_dep_infos.ml"
+#1 "bsb_merlin_gen.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -9264,168 +10794,151 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type dep_info = {
-  dir_or_file : string ;
-  stamp : float
-}
 
-type t =
-  { file_stamps : dep_info array ;
-    source_directory :  string ;
-    bsb_version : string;
-    bsc_version : string;
-  }
+let merlin = ".merlin"
+let merlin_header = "####{BSB GENERATED: NO EDIT"
+let merlin_trailer = "####BSB GENERATED: NO EDIT}"
+let merlin_trailer_length = String.length merlin_trailer
+let (//) = Ext_filename.combine
 
+(** [new_content] should start end finish with newline *)
+let revise_merlin merlin new_content =
+  if Sys.file_exists merlin then
+    let merlin_chan = open_in_bin merlin in
+    let size = in_channel_length merlin_chan in
+    let s = really_input_string merlin_chan size in
+    let () =  close_in merlin_chan in
 
-let magic_number = "BS_DEP_INFOS_20170209"
-let bsb_version = "20170209+dev"
-(* TODO: for such small data structure, maybe text format is better *)
-
-let write (fname : string)  (x : t) =
-  let oc = open_out_bin fname in
-  output_string oc magic_number ;
-  output_value oc x ;
-  close_out oc
-
-
-
-
-
-type check_result =
-  | Good
-  | Bsb_file_not_exist (** We assume that it is a clean repo *)
-  | Bsb_source_directory_changed
-  | Bsb_bsc_version_mismatch
-  | Bsb_forced
-  | Other of string
-
-let pp_check_result fmt (check_resoult : check_result) =
-  Format.pp_print_string fmt (match check_resoult with
-  | Good -> "OK"
-  | Bsb_file_not_exist -> "Dependencies information missing"
-  | Bsb_source_directory_changed ->
-    "Bsb source directory changed"
-  | Bsb_bsc_version_mismatch ->
-    "Bsc or bsb version mismatch"
-  | Bsb_forced ->
-    "Bsb forced rebuild"
-  | Other s -> s)
-
-let rec check_aux cwd xs i finish =
-  if i = finish then Good
+    let header =  Ext_string.find s ~sub:merlin_header  in
+    let tail = Ext_string.find s ~sub:merlin_trailer in
+    if header < 0  && tail < 0 then (* locked region not added yet *)
+      let ochan = open_out_bin merlin in
+      output_string ochan s ;
+      output_string ochan "\n";
+      output_string ochan merlin_header;
+      Buffer.output_buffer ochan new_content;
+      output_string ochan merlin_trailer ;
+      output_string ochan "\n";
+      close_out ochan
+    else if header >=0 && tail >= 0  then
+      (* there is one, hit it everytime,
+         should be fixed point
+      *)
+      let ochan = open_out_bin merlin in
+      output_string ochan (String.sub s 0 header) ;
+      output_string ochan merlin_header;
+      Buffer.output_buffer ochan new_content;
+      output_string ochan merlin_trailer ;
+      output_string ochan (Ext_string.tail_from s (tail +  merlin_trailer_length));
+      close_out ochan
+    else failwith ("the .merlin is corrupted, locked region by bsb is not consistent ")
   else
-    let k = Array.unsafe_get  xs i  in
-    let current_file = k.dir_or_file in
-    let stat = Unix.stat  (Filename.concat cwd  current_file) in
-    if stat.st_mtime <= k.stamp then
-      check_aux cwd xs (i + 1 ) finish
-    else Other current_file
+    let ochan = open_out_bin merlin in
+    output_string ochan merlin_header ;
+    Buffer.output_buffer ochan new_content;
+    output_string ochan merlin_trailer ;
+    output_string ochan "\n";
+    close_out ochan
 
-
-let read (fname : string) cont =
-  match open_in_bin fname with   (* Windows binary mode*)
-  | ic ->
-    let buffer = really_input_string ic (String.length magic_number) in
-    if (buffer <> magic_number) then Bsb_bsc_version_mismatch
-    else
-      let res : t = input_value ic  in
-      close_in ic ;
-      cont res
-  | exception _ -> Bsb_file_not_exist
-
-
-(** check time stamp for all files
-    TODO: those checks system call can be saved later
-    Return a reason
-    Even forced, we still need walk through a little
-    bit in case we found a different version of compiler
+(* ATTENTION: order matters here, need resolve global properties before
+   merlin generation
 *)
-let check ~cwd forced file =
-  read file  begin  function  {
-    file_stamps = xs; source_directory; bsb_version = old_version;
-    bsc_version
-  } ->
-    if old_version <> bsb_version then Bsb_bsc_version_mismatch else
-    if cwd <> source_directory then Bsb_source_directory_changed else
-    if bsc_version <> Bs_version.version then Bsb_bsc_version_mismatch else
-    if forced then Bsb_forced (* No need walk through *)
-    else
-      try
-        check_aux cwd xs  0 (Array.length xs)
-      with e ->
-        begin
-          Format.fprintf
-            Format.std_formatter
-            "@{<info>Stat miss %s@}@."
-            (Printexc.to_string e);
-          Bsb_file_not_exist
-        end
+let merlin_flg_ppx = "\nFLG -ppx " 
+let merlin_s = "\nS "
+let merlin_b = "\nB "
+
+
+let merlin_flg = "\nFLG "
+let bs_flg_prefix = "-bs-"
+
+
+let bsc_flg_to_merlin_ocamlc_flg bsc_flags  =
+  merlin_flg ^ 
+      String.concat Ext_string.single_space 
+        (List.filter (fun x -> not (Ext_string.starts_with x bs_flg_prefix )) @@ 
+        Literals.dash_nostdlib::bsc_flags) 
+
+
+let merlin_file_gen ~cwd
+    built_in_ppx
+    ({bs_file_groups = res_files ; 
+      generate_merlin;
+      ppx_flags;
+      bs_dependencies;
+      bs_dev_dependencies;
+      bsc_flags; 
+      built_in_dependency;
+      external_includes; 
+      reason_react_jsx ; 
+     } : Bsb_config_types.t)
+  =
+  if generate_merlin then begin     
+    let buffer = Buffer.create 1024 in
+    ppx_flags
+    |> List.iter (fun x ->
+        Buffer.add_string buffer (merlin_flg_ppx ^ x )
+      );
+    (match reason_react_jsx with
+    | Some s -> 
+      begin 
+        Buffer.add_string buffer (merlin_flg_ppx ^ s)
+      end
+    | None -> ());
+    Buffer.add_string buffer (merlin_flg_ppx  ^ built_in_ppx);
+    (*
+    (match external_includes with 
+    | [] -> ()
+    | _ -> 
+
+      Buffer.add_string buffer (merlin_flg ^ Bsb_build_util.flag_concat "-I" external_includes
+      ));
+    *)
+    external_includes 
+    |> List.iter (fun path -> 
+        Buffer.add_string buffer merlin_s ;
+        Buffer.add_string buffer path ;
+        Buffer.add_string buffer merlin_b;
+        Buffer.add_string buffer path ;
+      );      
+    (match built_in_dependency with
+     | None -> ()
+     | Some package -> 
+       let path = package.package_install_path in 
+       Buffer.add_string buffer (merlin_s ^ path );
+       Buffer.add_string buffer (merlin_b ^ path)                      
+    );
+
+    let bsc_string_flag = bsc_flg_to_merlin_ocamlc_flg bsc_flags in 
+    Buffer.add_string buffer bsc_string_flag ;
+
+    bs_dependencies 
+    |> List.iter (fun package ->
+        let path = package.Bsb_config_types.package_install_path in
+        Buffer.add_string buffer merlin_s ;
+        Buffer.add_string buffer path ;
+        Buffer.add_string buffer merlin_b;
+        Buffer.add_string buffer path ;
+      );
+    bs_dev_dependencies (**TODO: shall we generate .merlin for dev packages ?*)
+    |> List.iter (fun package ->
+        let path = package.Bsb_config_types.package_install_path in
+        Buffer.add_string buffer merlin_s ;
+        Buffer.add_string buffer path ;
+        Buffer.add_string buffer merlin_b;
+        Buffer.add_string buffer path ;
+      );
+
+    res_files |> List.iter (fun (x : Bsb_parse_sources.file_group) -> 
+        Buffer.add_string buffer merlin_s;
+        Buffer.add_string buffer x.dir ;
+        Buffer.add_string buffer merlin_b;
+        Buffer.add_string buffer (Bsb_config.lib_bs//x.dir) ;
+      ) ;
+    Buffer.add_string buffer "\n";
+    revise_merlin (cwd // merlin) buffer 
   end
 
-let store ~cwd name file_stamps =
-  write name
-    { file_stamps ;
-      source_directory = cwd ;
-      bsb_version ;
-      bsc_version = Bs_version.version }
 
-end
-module Bsb_file : sig 
-#1 "bsb_file.mli"
-
-
-
-(** return [true] if copied *)
-val install_if_exists : destdir:string -> string -> bool
-
-
-end = struct
-#1 "bsb_file.ml"
-
-
-open Unix
-
-let set_infos filename infos =
-  Unix.utimes filename infos.st_atime infos.st_mtime;
-  Unix.chmod filename infos.st_perm
-  (** it is not necessary to call [chown] since it is within the same user 
-    and {!Unix.chown} is not implemented under Windows
-   *)
-  (*
-  try
-    Unix.chown filename infos.st_uid infos.st_gid
-  with Unix_error(EPERM,_,_) -> ()
-*)
-
-let buffer_size = 8192;;
-let buffer = Bytes.create buffer_size;;
-
-let file_copy input_name output_name =
-  let fd_in = openfile input_name [O_RDONLY] 0 in
-  let fd_out = openfile output_name [O_WRONLY; O_CREAT; O_TRUNC] 0o666 in
-  let rec copy_loop () =
-    match read fd_in buffer 0 buffer_size with
-    |  0 -> ()
-    | r -> ignore (write fd_out buffer 0 r); copy_loop ()
-  in
-  copy_loop ();
-  close fd_in;
-  close fd_out;;
-
-
-let copy_with_permission input_name output_name =
-    file_copy input_name output_name ;
-    set_infos output_name (Unix.lstat input_name)  
-
-let install_if_exists ~destdir input_name = 
-    if Sys.file_exists input_name then 
-      let output_name = (Filename.concat destdir (Filename.basename input_name)) in
-      match Unix.stat output_name , Unix.stat input_name with
-      | {st_mtime = output_stamp}, {st_mtime = input_stamp} when input_stamp <= output_stamp 
-        -> false
-      | _ -> copy_with_permission input_name output_name; true 
-      | exception _ -> copy_with_permission input_name output_name; true
-    else false
 
 end
 module Bsb_rule : sig 
@@ -9679,8 +11192,8 @@ let reset (custom_rules : string String_map.t) =
 
 
 end
-module Bsb_ninja : sig 
-#1 "bsb_ninja.mli"
+module Bsb_ninja_util : sig 
+#1 "bsb_ninja_util.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -9738,7 +11251,7 @@ val output_kvs : (string * string) array -> out_channel -> unit
 
 type info = {
   all_config_deps : string list  ;
-  (*all_installs :  string list *)
+
 }
 
 val zero : info 
@@ -9749,14 +11262,12 @@ val handle_file_groups : out_channel ->
   js_post_build_cmd:string option -> 
   files_to_install:String_hash_set.t ->  
   custom_rules:Bsb_rule.t String_map.t -> 
-  Bsb_build_ui.file_group list ->
+  Bsb_parse_sources.file_group list ->
   info -> info
 
-(** TODO: need clean up when running across projects process *)
-(* val files_to_install : String_hash_set.t  *)
 
 end = struct
-#1 "bsb_ninja.ml"
+#1 "bsb_ninja_util.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -9923,7 +11434,7 @@ let install_file (file : string) files_to_install =
 
 let handle_file_group oc ~custom_rules 
     ~package_specs ~js_post_build_cmd  
-    (files_to_install : String_hash_set.t) acc (group: Bsb_build_ui.file_group) : info =
+    (files_to_install : String_hash_set.t) acc (group: Bsb_parse_sources.file_group) : info =
   let handle_module_info  oc  module_name
       ( module_info : Binary_cache.module_info)
       info  =
@@ -10079,7 +11590,7 @@ let handle_file_group oc ~custom_rules
   let map_to_source_dir = 
     (fun x -> Bsb_config.proj_rel (group.dir //x )) in
   group.generators
-  |> List.iter (fun  ({output; input; command}  : Bsb_build_ui.build_generator)-> 
+  |> List.iter (fun  ({output; input; command}  : Bsb_parse_sources.build_generator)-> 
       begin match String_map.find_opt command custom_rules with 
       | None -> Ext_pervasives.failwithf ~loc:__LOC__ "custom rule %s used but  not defined" command
       | Some rule -> 
@@ -10110,12 +11621,12 @@ let handle_file_group oc ~custom_rules
 let handle_file_groups
  oc ~package_specs ~js_post_build_cmd
   ~files_to_install ~custom_rules
-  (file_groups  :  Bsb_build_ui.file_group list) st =
+  (file_groups  :  Bsb_parse_sources.file_group list) st =
   List.fold_left (handle_file_group oc ~package_specs ~custom_rules ~js_post_build_cmd files_to_install ) st  file_groups
 
 end
-module Bsb_gen : sig 
-#1 "bsb_gen.mli"
+module Bsb_ninja_gen : sig 
+#1 "bsb_ninja_gen.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -10149,7 +11660,7 @@ val output_ninja :
   Bsb_config_types.t -> unit 
 
 end = struct
-#1 "bsb_gen.ml"
+#1 "bsb_ninja_gen.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -10248,7 +11759,7 @@ let output_ninja
         | Some  s -> 
           "-ppx " ^ s         
       in 
-      Bsb_ninja.output_kvs
+      Bsb_ninja_util.output_kvs
         [|
           "src_root_dir", cwd (* TODO: need check its integrity -- allow relocate or not? *);
           "bsc", bsc ;
@@ -10281,11 +11792,11 @@ let output_ninja
       let number_of_dev_groups = Bsb_dir_index.get_current_number_of_dev_groups () in
       if number_of_dev_groups = 0 then
         let bs_groups, source_dirs,static_resources  =
-          List.fold_left (fun (acc, dirs,acc_resources) ({Bsb_build_ui.sources ; dir; resources }) ->
+          List.fold_left (fun (acc, dirs,acc_resources) ({Bsb_parse_sources.sources ; dir; resources }) ->
               merge_module_info_map  acc  sources ,  dir::dirs , (List.map (fun x -> dir // x ) resources) @ acc_resources
             ) (String_map.empty,[],[]) bs_file_groups in
         Binary_cache.write_build_cache (cwd // Bsb_config.lib_bs // Binary_cache.bsbuild_cache) [|bs_groups|] ;
-        Bsb_ninja.output_kv
+        Bsb_ninja_util.output_kv
           Bsb_build_schemas.bsc_lib_includes (Bsb_build_util.flag_concat dash_i @@ 
           (all_includes source_dirs  ))  oc ;
         static_resources
@@ -10294,7 +11805,7 @@ let output_ninja
         let source_dirs = Array.init (number_of_dev_groups + 1 ) (fun i -> []) in
         
         let static_resources =
-          List.fold_left (fun acc_resources  ({Bsb_build_ui.sources; dir; resources; dir_index})  ->
+          List.fold_left (fun acc_resources  ({Bsb_parse_sources.sources; dir; resources; dir_index})  ->
               let dir_index = (dir_index :> int) in 
               bs_groups.(dir_index) <- merge_module_info_map bs_groups.(dir_index) sources ;
               source_dirs.(dir_index) <- dir :: source_dirs.(dir_index);
@@ -10302,786 +11813,76 @@ let output_ninja
             ) [] bs_file_groups in
         (* Make sure [sources] does not have files in [lib] we have to check later *)
         let lib = bs_groups.((Bsb_dir_index.lib_dir_index :> int)) in
-        Bsb_ninja.output_kv
+        Bsb_ninja_util.output_kv
           Bsb_build_schemas.bsc_lib_includes (Bsb_build_util.flag_concat dash_i @@
            (all_includes source_dirs.(0))) oc ;
         for i = 1 to number_of_dev_groups  do
           let c = bs_groups.(i) in
           String_map.iter (fun k _ -> if String_map.mem k lib then failwith ("conflict files found:" ^ k)) c ;
-          Bsb_ninja.output_kv (Bsb_dir_index.(string_of_bsb_dev_include (of_int i)))
+          Bsb_ninja_util.output_kv (Bsb_dir_index.(string_of_bsb_dev_include (of_int i)))
             (Bsb_build_util.flag_concat "-I" @@ source_dirs.(i)) oc
         done  ;
         Binary_cache.write_build_cache (cwd // Bsb_config.lib_bs // Binary_cache.bsbuild_cache) bs_groups ;
         static_resources;
     in
     let all_info =
-      Bsb_ninja.handle_file_groups oc       
+      Bsb_ninja_util.handle_file_groups oc       
         ~custom_rules
-        ~js_post_build_cmd  ~package_specs ~files_to_install bs_file_groups Bsb_ninja.zero  in
+        ~js_post_build_cmd  ~package_specs ~files_to_install bs_file_groups Bsb_ninja_util.zero  in
     let () =
-      List.iter (fun x -> Bsb_ninja.output_build oc
+      List.iter (fun x -> Bsb_ninja_util.output_build oc
                     ~output:x
                     ~input:(Bsb_config.proj_rel x)
                     ~rule:Bsb_rule.copy_resources) static_resources in
-    Bsb_ninja.phony oc ~order_only_deps:(static_resources @ all_info.all_config_deps)
+    Bsb_ninja_util.phony oc ~order_only_deps:(static_resources @ all_info.all_config_deps)
       ~inputs:[]
       ~output:Literals.build_ninja ;
     close_out oc;
   end
 
 end
-module Bsb_regex : sig 
-#1 "bsb_regex.mli"
+module Bsb_ninja_regen : sig 
+#1 "bsb_ninja_regen.mli"
+(* Copyright (C) 2017 Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
 
-val global_substitute:
- string ->
-  (string -> string list -> string)
-  -> string -> string
-end = struct
-#1 "bsb_regex.ml"
-let string_after s n = String.sub s n (String.length s - n)
 
-
-
-(* There seems to be a bug in {!Str.global_substitute} 
-{[
-Str.global_substitute (Str.regexp "\\${bsb:\\([-a-zA-Z0-9]+\\)}") (fun x -> (x^":found")) {|   ${bsb:hello-world}  ${bsb:x} ${x}|}  ;;
-- : bytes =
-"      ${bsb:hello-world}  ${bsb:x} ${x}:found     ${bsb:hello-world}  ${bsb:x} ${x}:found ${x}"
-]}
+(** Regenerate ninja file by need based on [.bsdeps]
+    return None if we dont need regenerate
+    otherwise return Some info
 *)
-
-let global_substitute expr repl_fun text =
-  let text_len = String.length text in 
-  let expr = Str.regexp expr in  
-  let rec replace accu start last_was_empty =
-    let startpos = if last_was_empty then start + 1 else start in
-    if startpos > text_len then
-      string_after text start :: accu
-    else
-      match Str.search_forward expr text startpos with
-      | exception Not_found -> 
-        string_after text start :: accu
-      |  pos ->
-        let end_pos = Str.match_end() in
-        let matched = (Str.matched_string text) in 
-        let  groups = 
-            let rec aux n  acc = 
-                match Str.matched_group n text with 
-                | exception (Not_found | Invalid_argument _ ) 
-                    -> acc 
-                | v -> aux (succ n) (v::acc) in 
-             aux 1 []  in 
-        let repl_text = repl_fun matched groups  in
-        replace (repl_text :: String.sub text start (pos-start) :: accu)
-          end_pos (end_pos = pos)
-  in
-  String.concat "" (List.rev (replace [] 0 false))
-
-end
-module OCamlRes
-= struct
-#1 "oCamlRes.ml"
-
-
-module Res = struct
-    type  node = 
-        | Dir of string *  node list 
-        | File of string *  string
-
-end    
-
-
-
-end
-module Bsb_templates : sig 
-#1 "bsb_templates.mli"
-
-
-val root : OCamlRes.Res.node list 
+val regenerate_ninja :
+  no_dev:bool ->
+  override_package_specs:Bsb_config.package_specs option ->
+  generate_watch_metadata: bool -> 
+  forced: bool -> string -> string -> 
+  Bsb_config_types.t option 
 end = struct
-#1 "bsb_templates.ml"
-(* This file has been generated by ocp-ocamlres *)
-let root = OCamlRes.Res.([
-  Dir ("basic", [
-    Dir ("src", [
-      File ("demo.ml",
-        "\n\
-         \n\
-         let () = Js.log \"Hello, BuckleScript\"")]) ;
-    File ("README.md",
-      "\n\
-       \n\
-       # Build\n\
-       ```\n\
-       npm run build\n\
-       ```\n\
-       \n\
-       # Watch\n\
-       \n\
-       ```\n\
-       npm run watch\n\
-       ```\n\
-       \n\
-       \n\
-       # Editor\n\
-       If you use `vscode`, Press `Windows + Shift + B` it will build automatically") ;
-    File ("package.json",
-      "{\n\
-      \  \"name\": \"${bsb:name}\",\n\
-      \  \"version\": \"${bsb:proj-version}\",\n\
-      \  \"scripts\": {\n\
-      \    \"clean\": \"bsb -clean-world\",\n\
-      \    \"build\": \"bsb -make-world\",\n\
-      \    \"watch\": \"bsb -make-world -w\"\n\
-      \  },\n\
-      \  \"keywords\": [\n\
-      \    \"BuckleScript\"\n\
-      \  ],\n\
-      \  \"license\": \"MIT\",\n\
-      \  \"devDependencies\": {\n\
-      \    \"bs-platform\": \"${bsb:bs-version}\"\n\
-      \  }\n\
-       }") ;
-    File ("bsconfig.json",
-      "{\n\
-      \  \"name\": \"${bsb:name}\",\n\
-      \  \"version\": \"${bsb:proj-version}\",\n\
-      \  \"sources\": [\n\
-      \    \"src\"\n\
-      \  ],\n\
-      \  \"bs-dependencies\" : [\n\
-      \      // add your bs-dependencies here \n\
-      \  ]\n\
-       }") ;
-    Dir (".vscode", [
-      File ("tasks.json",
-        "{\n\
-        \    \"version\": \"${bsb:proj-version}\",\n\
-        \    \"command\": \"npm\",\n\
-        \    \"options\": {\n\
-        \        \"cwd\": \"${workspaceRoot}\"\n\
-        \    },\n\
-        \    \"isShellCommand\": true,\n\
-        \    \"args\": [\n\
-        \        \"run\",\n\
-        \        \"watch\"\n\
-        \    ],\n\
-        \    \"showOutput\": \"always\",\n\
-        \    \"isBackground\": true,\n\
-        \    \"problemMatcher\": {\n\
-        \        \"fileLocation\": \"absolute\",\n\
-        \        \"owner\": \"ocaml\",\n\
-        \        \"watching\": {\n\
-        \            \"activeOnStart\": false,\n\
-        \            \"beginsPattern\": \">>>> Start compiling\",\n\
-        \            \"endsPattern\": \">>>> Finish compiling\"\n\
-        \        },\n\
-        \        \"pattern\": [\n\
-        \            {\n\
-        \                \"regexp\": \"^File \\\"(.*)\\\", line (\\\\d+)(?:, characters (\\\\d+)-(\\\\d+))?:$\",\n\
-        \                \"file\": 1,\n\
-        \                \"line\": 2,\n\
-        \                \"column\": 3,\n\
-        \                \"endColumn\": 4\n\
-        \            },\n\
-        \            {\n\
-        \                \"regexp\": \"^(?:(?:Parse\\\\s+)?(Warning|[Ee]rror)(?:\\\\s+\\\\d+)?:)?\\\\s+(.*)$\",\n\
-        \                \"severity\": 1,\n\
-        \                \"message\": 2,\n\
-        \                \"loop\": true\n\
-        \            }\n\
-        \        ]\n\
-        \    }\n\
-         }")]) ;
-    File (".gitignore",
-      "*.exe\n\
-       *.obj\n\
-       *.out\n\
-       *.compile\n\
-       *.native\n\
-       *.byte\n\
-       *.cmo\n\
-       *.annot\n\
-       *.cmi\n\
-       *.cmx\n\
-       *.cmt\n\
-       *.cmti\n\
-       *.cma\n\
-       *.a\n\
-       *.cmxa\n\
-       *.obj\n\
-       *~\n\
-       *.annot\n\
-       *.cmj\n\
-       *.bak\n\
-       lib/bs\n\
-       *.mlast\n\
-       *.mliast\n\
-       .vscode\n\
-       .merlin")]) ;
-  Dir ("basic-reason", [
-    File ("tasks.json",
-      "{\n\
-      \    \"version\": \"${bsb:proj-version}\",\n\
-      \    \"command\": \"npm\",\n\
-      \    \"options\": {\n\
-      \        \"cwd\": \"${workspaceRoot}\"\n\
-      \    },\n\
-      \    \"isShellCommand\": true,\n\
-      \    \"args\": [\n\
-      \        \"run\",\n\
-      \        \"watch\"\n\
-      \    ],\n\
-      \    \"showOutput\": \"always\",\n\
-      \    \"isBackground\": true,\n\
-      \    \"problemMatcher\": {\n\
-      \        \"fileLocation\": \"absolute\",\n\
-      \        \"owner\": \"ocaml\",\n\
-      \        \"watching\": {\n\
-      \            \"activeOnStart\": false,\n\
-      \            \"beginsPattern\": \">>>> Start compiling\",\n\
-      \            \"endsPattern\": \">>>> Finish compiling\"\n\
-      \        },\n\
-      \        \"pattern\": [\n\
-      \            {\n\
-      \                \"regexp\": \"^File \\\"(.*)\\\", line (\\\\d+)(?:, characters (\\\\d+)-(\\\\d+))?:$\",\n\
-      \                \"file\": 1,\n\
-      \                \"line\": 2,\n\
-      \                \"column\": 3,\n\
-      \                \"endColumn\": 4\n\
-      \            },\n\
-      \            {\n\
-      \                \"regexp\": \"^(?:(?:Parse\\\\s+)?(Warning|[Ee]rror)(?:\\\\s+\\\\d+)?:)?\\\\s+(.*)$\",\n\
-      \                \"severity\": 1,\n\
-      \                \"message\": 2,\n\
-      \                \"loop\": true\n\
-      \            }\n\
-      \        ]\n\
-      \    }\n\
-       }") ;
-    Dir ("src", [
-      File ("demo.re",
-        "Js.log \"Hello, BuckleScript and Reason!\";\n\
-         ")]) ;
-    File ("README.md",
-      "# Basic Reason Template\n\
-       \n\
-       Hello! This project allows you to quickly get started with Reason and BuckleScript. If you wanted a more sophisticated version, try the `react` template (`bsb -theme react -init .`).\n\
-       \n\
-       # Build\n\
-       ```\n\
-       npm run build\n\
-       ```\n\
-       \n\
-       # Build + Watch\n\
-       \n\
-       ```\n\
-       npm run watch\n\
-       ```\n\
-       \n\
-       \n\
-       # Editor\n\
-       If you use `vscode`, Press `Windows + Shift + B` it will build automatically\n\
-       ") ;
-    File ("package.json",
-      "{\n\
-      \  \"name\": \"${bsb:name}\",\n\
-      \  \"version\": \"${bsb:proj-version}\",\n\
-      \  \"scripts\": {\n\
-      \    \"clean\": \"bsb -clean-world\",\n\
-      \    \"build\": \"bsb -make-world\",\n\
-      \    \"watch\": \"bsb -make-world -w\"\n\
-      \  },\n\
-      \  \"keywords\": [\n\
-      \    \"BuckleScript\"\n\
-      \  ],\n\
-      \  \"license\": \"MIT\",\n\
-      \  \"devDependencies\": {\n\
-      \    \"bs-platform\": \"${bsb:bs-version}\"\n\
-      \  }\n\
-       }") ;
-    File ("bsconfig.json",
-      "// This is the configuration file used by BuckleScript's build system bsb. Its documentation lives here: http://bucklescript.github.io/bucklescript/docson/#build-schema.json\n\
-       // BuckleScript comes with its own parser for bsconfig.json, which is normal JSON, with the extra support of comments and trailing commas.\n\
-       {\n\
-      \  \"name\": \"${bsb:name}\",\n\
-      \  \"version\": \"${bsb:proj-version}\",\n\
-      \  \"sources\": [\n\
-      \    \"src\"\n\
-      \  ],\n\
-      \  \"bs-dependencies\" : [\n\
-      \      // add your dependencies here. You'd usually install them normally through `npm install my-dependency`. If my-dependency has a bsconfig.json too, then everything will work seamlessly.\n\
-      \  ]\n\
-       }\n\
-       ") ;
-    File (".gitignore",
-      "*.exe\n\
-       *.obj\n\
-       *.out\n\
-       *.compile\n\
-       *.native\n\
-       *.byte\n\
-       *.cmo\n\
-       *.annot\n\
-       *.cmi\n\
-       *.cmx\n\
-       *.cmt\n\
-       *.cmti\n\
-       *.cma\n\
-       *.a\n\
-       *.cmxa\n\
-       *.obj\n\
-       *~\n\
-       *.annot\n\
-       *.cmj\n\
-       *.bak\n\
-       lib/bs\n\
-       *.mlast\n\
-       *.mliast\n\
-       .vscode\n\
-       .merlin")]) ;
-  Dir ("generator", [
-    Dir ("src", [
-      File ("test.cpp.ml",
-        "\n\
-         \n\
-         #define FS_VAL(name,ty) external name : ty = \"\" [@@bs.module \"fs\"]\n\
-         \n\
-         \n\
-         FS_VAL(readdirSync, string -> string array)\n\
-         \n\
-         ") ;
-      File ("demo.ml",
-        "\n\
-         \n\
-         let () = Js.log \"Hello, BuckleScript\"")]) ;
-    File ("README.md",
-      "\n\
-       \n\
-       # Build\n\
-       ```\n\
-       npm run build\n\
-       ```\n\
-       \n\
-       # Watch\n\
-       \n\
-       ```\n\
-       npm run watch\n\
-       ```\n\
-       \n\
-       \n\
-       # Editor\n\
-       If you use `vscode`, Press `Windows + Shift + B` it will build automatically") ;
-    File ("package.json",
-      "{\n\
-      \  \"name\": \"${bsb:name}\",\n\
-      \  \"version\": \"${bsb:proj-version}\",\n\
-      \  \"scripts\": {\n\
-      \    \"clean\": \"bsb -clean-world\",\n\
-      \    \"build\": \"bsb -make-world\",\n\
-      \    \"watch\": \"bsb -make-world -w\"\n\
-      \  },\n\
-      \  \"keywords\": [\n\
-      \    \"BuckleScript\"\n\
-      \  ],\n\
-      \  \"license\": \"MIT\",\n\
-      \  \"devDependencies\": {\n\
-      \    \"bs-platform\": \"${bsb:bs-version}\"\n\
-      \  }\n\
-       }") ;
-    File ("bsconfig.json",
-      "{\n\
-      \  \"name\": \"${bsb:name}\",\n\
-      \  \"version\": \"${bsb:proj-version}\",\n\
-      \  \"sources\": [\n\
-      \    {\n\
-      \      \"dir\": \"src\",\n\
-      \      \"generators\": [\n\
-      \        {\n\
-      \          \"name\": \"cpp\",\n\
-      \          \"edge\": [\n\
-      \            \"test.ml\", \":\", \"test.cpp.ml\"\n\
-      \          ]\n\
-      \        }\n\
-      \      ]\n\
-      \    }\n\
-      \    \n\
-      \  ],\n\
-      \  \"generators\": [\n\
-      \    {\n\
-      \      \"name\" : \"cpp\",\n\
-      \      \"command\": \"gcc -x c -P -traditional-cpp -C -E $in -o $out\"\n\
-      \    }\n\
-      \  ],\n\
-      \  \"bs-dependencies\" : [\n\
-      \      // add your bs-dependencies here \n\
-      \  ]\n\
-       }") ;
-    File (".gitignore",
-      "*.exe\n\
-       *.obj\n\
-       *.out\n\
-       *.compile\n\
-       *.native\n\
-       *.byte\n\
-       *.cmo\n\
-       *.annot\n\
-       *.cmi\n\
-       *.cmx\n\
-       *.cmt\n\
-       *.cmti\n\
-       *.cma\n\
-       *.a\n\
-       *.cmxa\n\
-       *.obj\n\
-       *~\n\
-       *.annot\n\
-       *.cmj\n\
-       *.bak\n\
-       lib/bs\n\
-       *.mlast\n\
-       *.mliast\n\
-       .vscode\n\
-       .merlin")]) ;
-  Dir ("minimal", [
-    Dir ("src", [ File ("main.ml", "")]) ;
-    File ("README.md",
-      "\n\
-      \  # ${bsb:name}") ;
-    File ("package.json",
-      "{\n\
-      \  \"name\": \"${bsb:name}\",\n\
-      \  \"version\": \"${bsb:proj-version}\",\n\
-      \  \"scripts\": {\n\
-      \    \"clean\": \"bsb -clean-world\",\n\
-      \    \"build\": \"bsb -make-world\",\n\
-      \    \"start\": \"bsb -make-world -w\"\n\
-      \  },\n\
-      \  \"keywords\": [\n\
-      \    \"BuckleScript\"\n\
-      \  ],\n\
-      \  \"license\": \"MIT\",\n\
-      \  \"devDependencies\": {\n\
-      \    \"bs-platform\": \"^${bsb:bs-version}\"\n\
-      \  }\n\
-       }") ;
-    File ("bsconfig.json",
-      "{\n\
-      \  \"name\": \"${bsb:name}\",\n\
-      \  \"sources\": [\"src\"]\n\
-       }") ;
-    File (".gitignore",
-      "lib\n\
-       node_modules\n\
-       .merlin\n\
-       npm-debug.log")]) ;
-  Dir ("react", [
-    File ("webpack.config.js",
-      "const path = require('path');\n\
-       \n\
-       module.exports = {\n\
-      \  entry: {\n\
-      \    simple: './lib/js/src/simple/simpleRoot.js',\n\
-      \    interop: './src/interop/interopRoot.js',\n\
-      \  },\n\
-      \  output: {\n\
-      \    path: path.join(__dirname, \"bundledOutputs\"),\n\
-      \    filename: '[name].js',\n\
-      \  },\n\
-       };\n\
-       ") ;
-    Dir ("src", [
-      Dir ("simple", [
-        File ("simpleRoot.re",
-          "ReactDOMRe.renderToElementWithId <Page name=\"Lil' Reason\" /> \"index\";\n\
-           ") ;
-        File ("page.re",
-          "let component = ReasonReact.statefulComponent \"Greeting\";\n\
-           \n\
-           let make ::name _children => {\n\
-          \  let click _event {ReasonReact.state} => ReasonReact.Update (state + 1);\n\
-          \  {\n\
-          \    ...component,\n\
-          \    initialState: fun () => 0,\n\
-          \    render: fun {state, update} => {\n\
-          \      let greeting = {j|Hello $name, You've clicked the button $state times(s)!|j};\n\
-          \      <button onClick=(update click)> (ReasonReact.stringToElement greeting) </button>\n\
-          \    }\n\
-          \  }\n\
-           };\n\
-           ") ;
-        File ("index.html",
-          "<!DOCTYPE html>\n\
-           <html lang=\"en\">\n\
-           <head>\n\
-          \  <meta charset=\"UTF-8\">\n\
-          \  <title>Pure Reason Example</title>\n\
-           </head>\n\
-           <body>\n\
-          \  <div id=\"index\"></div>\n\
-          \  <script src=\"../../bundledOutputs/simple.js\"></script>\n\
-           </body>\n\
-           </html>\n\
-           ")]) ;
-      Dir ("interop", [
-        File ("README.md",
-          "## Interoperate with Existing ReactJS Components\n\
-           \n\
-           This subdirectory demonstrate the ReasonReact <-> ReactJS interop APIs.\n\
-           \n\
-           The entry point, `interopRoot.js`, illustrates ReactJS requiring a ReasonReact component, `PageReason`.\n\
-           \n\
-           `PageReason` itself illustrates ReasonReact requiring a ReactJS component, `myBanner.js`, through the Reason file `myBannerRe.re`.\n\
-           ") ;
-        File ("pageReason.re",
-          "let component = ReasonReact.statelessComponent \"PageReason\";\n\
-           \n\
-           let make ::message ::extraGreeting=? _children => {\n\
-          \  ...component,\n\
-          \  render: fun _self => {\n\
-          \    let greeting =\n\
-          \      switch extraGreeting {\n\
-          \      | None => \"How are you?\"\n\
-          \      | Some g => g\n\
-          \      };\n\
-          \    <div> <MyBannerRe show=true message=(message ^ \" \" ^ greeting) /> </div>\n\
-          \  }\n\
-           };\n\
-           \n\
-           let comp =\n\
-          \  ReasonReact.wrapReasonForJs\n\
-          \    ::component\n\
-          \    (\n\
-          \      fun jsProps =>\n\
-          \        make\n\
-          \          message::jsProps##message\n\
-          \          extraGreeting::?(Js.Null_undefined.to_opt jsProps##extraGreeting)\n\
-          \          [||]\n\
-          \    );\n\
-           ") ;
-        File ("myBannerRe.re",
-          "/* Typing the myBanner.js component's output as a `reactClass`. */\n\
-           /* Note that this file's JS output is located at reason-react-example/lib/js/src/interop/myBannerRe.js; we're specifying the relative path to myBanner.js in the string below */\n\
-           external myBanner : ReasonReact.reactClass = \"../../../../src/interop/myBanner\" [@@bs.module];\n\
-           \n\
-           let make ::show ::message children =>\n\
-          \  ReasonReact.wrapJsForReason\n\
-          \    reactClass::myBanner\n\
-          \    props::{\n\
-          \      \"show\": Js.Boolean.to_js_boolean show, /* ^ don't forget to convert an OCaml bool into a JS boolean! */\n\
-          \      \"message\": message /* OCaml string maps to JS string, no conversion needed here */\n\
-          \    }\n\
-          \    children;\n\
-           ") ;
-        File ("myBanner.js",
-          "var ReactDOM = require('react-dom');\n\
-           var React = require('react');\n\
-           \n\
-           var App = React.createClass({\n\
-          \  render: function() {\n\
-          \    if (this.props.show) {\n\
-          \      return React.createElement('div', null,\n\
-          \        this.props.message\n\
-          \      );\n\
-          \    } else {\n\
-          \      return null;\n\
-          \    }\n\
-          \  }\n\
-           });\n\
-           \n\
-           module.exports = App;\n\
-           ") ;
-        File ("interopRoot.js",
-          "var ReactDOM = require('react-dom');\n\
-           var React = require('react');\n\
-           \n\
-           // Import a ReasonReact component! `comp` is the exposed, underlying ReactJS class\n\
-           var PageReason = require('../../lib/js/src/interop/pageReason').comp;\n\
-           \n\
-           var App = React.createClass({\n\
-          \  render: function() {\n\
-          \    return React.createElement('div', null,\n\
-          \      React.createElement(PageReason, {message: 'Hello!'})\n\
-          \    );\n\
-          \    // didn't feel like dragging in Babel. Here's the equivalent JSX:\n\
-          \    // <div><PageReason message=\"Hello!\"></div>\n\
-          \  }\n\
-           });\n\
-           \n\
-           ReactDOM.render(React.createElement(App), document.getElementById('index'));\n\
-           ") ;
-        File ("index.html",
-          "<!DOCTYPE html>\n\
-           <html lang=\"en\">\n\
-           <head>\n\
-          \  <meta charset=\"UTF-8\">\n\
-          \  <title>Pure Reason Example</title>\n\
-           </head>\n\
-           <body>\n\
-          \  <div id=\"index\"></div>\n\
-          \  <script src=\"../../bundledOutputs/interop.js\"></script>\n\
-           </body>\n\
-           </html>\n\
-           ")])]) ;
-    File ("README.md",
-      "This is a repo with examples usages of [ReasonReact](https://github.com/reasonml/reason-react).\n\
-       Have something you don't understand? Join us on [Discord](https://discord.gg/reasonml)!\n\
-       \n\
-       Run this project:\n\
-       \n\
-       ```\n\
-       npm install\n\
-       npm start\n\
-       # in another tab\n\
-       npm run build\n\
-       ```\n\
-       \n\
-       After you see the webpack compilation succeed (the `npm run build` step), open up the nested html files in `src/*` (**no server needed!**). Then modify whichever file in `src` and refresh the page to see the changes.\n\
-       ") ;
-    File ("package.json",
-      "{\n\
-      \  \"name\": \"${bsb:name}\",\n\
-      \  \"private\": true,\n\
-      \  \"version\": \"${bsb:proj-version}\",\n\
-      \  \"description\": \"\",\n\
-      \  \"main\": \"index.js\",\n\
-      \  \"scripts\": {\n\
-      \    \"test\": \"echo \\\"Error: no test specified\\\" && exit 1\",\n\
-      \    \"start\": \"bsb -make-world -w\",\n\
-      \    \"build\": \"webpack -w\",\n\
-      \    \"clean\": \"bsb -clean-world\"\n\
-      \  },\n\
-      \  \"keywords\": [],\n\
-      \  \"author\": \"\",\n\
-      \  \"license\": \"ISC\",\n\
-      \  \"dependencies\": {\n\
-      \    \"react\": \"^15.4.2\",\n\
-      \    \"react-dom\": \"^15.4.2\",\n\
-      \    \"reason-react\": \">=0.2.1\"\n\
-      \  },\n\
-      \  \"devDependencies\": {\n\
-      \    \"bs-platform\": \"^${bsb:bs-version}\",\n\
-      \    \"webpack\": \"^1.14.0\"\n\
-      \  }\n\
-       }\n\
-       ") ;
-    File ("bsconfig.json",
-      "/* This is the BuckleScript configuration file. Note that this is a comment;\n\
-      \  BuckleScript comes with a JSON parser that supports comments and trailing\n\
-      \  comma. If this screws with your editor highlighting, please tell us by filing\n\
-      \  an issue! */\n\
-       {\n\
-      \  \"name\" : \"${bsb:name}\",\n\
-      \  \"reason\" : {\"react-jsx\" : 2},\n\
-      \  \"bs-dependencies\": [\"reason-react\"],\n\
-      \  \"sources\": [\n\
-      \    {\n\
-      \      \"dir\": \"src\",\n\
-      \      \"subdirs\": [\"interop\", \"simple\"],\n\
-      \    }\n\
-      \  ],\n\
-       }\n\
-       ") ;
-    File (".gitignore",
-      "lib\n\
-       node_modules\n\
-       .merlin\n\
-       npm-debug.log")])
-])
-
-end
-module Ext_io : sig 
-#1 "ext_io.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-val load_file : string -> string
-
-val rev_lines_of_file : string -> string list
-
-val write_file : string -> string -> unit
-
-end = struct
-#1 "ext_io.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-(** on 32 bit , there are 16M limitation *)
-let load_file f =
-  Ext_pervasives.finally (open_in_bin f) close_in begin fun ic ->   
-    let n = in_channel_length ic in
-    let s = Bytes.create n in
-    really_input ic s 0 n;
-    Bytes.unsafe_to_string s
-  end
-
-
-let rev_lines_of_file file = 
-  Ext_pervasives.finally (open_in_bin file) close_in begin fun chan -> 
-    let rec loop acc = 
-      match input_line chan with
-      | line -> loop (line :: acc)
-      | exception End_of_file -> close_in chan ; acc in
-    loop []
-  end
-
-let write_file f content = 
-  Ext_pervasives.finally (open_out_bin f) close_out begin fun oc ->   
-    output_string oc content
-  end
-
-end
-module Bsb_init : sig 
-#1 "bsb_init.mli"
-
-
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+#1 "bsb_ninja_regen.ml"
+(* Copyright (C) 2017 Authors of BuckleScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -11105,661 +11906,130 @@ module Bsb_init : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+let bsdeps = ".bsdeps"
 
-val init_sample_project : cwd:string -> theme:string ->  string -> unit 
+let bsppx_exe = "bsppx.exe"
 
-val list_themes : unit -> unit 
-end = struct
-#1 "bsb_init.ml"
+let (//) = Ext_filename.combine
 
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-let replace s env : string = 
-  Bsb_regex.global_substitute "\\${bsb:\\([-a-zA-Z0-9]+\\)}" 
-    (fun (_s : string) templates -> 
-       match templates with 
-       | key::_ -> 
-         String_hashtbl.find_exn  env key
-       | _ -> assert false 
-    ) s
-
-let (//) = Filename.concat 
-let npm_link = "npm link bs-platform"
-
-(*let no_such_directory dir = 
-    match Sys.is_directory dir with 
-    | true -> false 
-    | false -> true 
-    |*)
-
-let enter_dir cwd x action = 
-  Unix.chdir x ; 
-  match action () with 
-  | exception e -> Unix.chdir cwd ; raise e 
-  | v -> v 
-
-
-let rec process_theme_aux env cwd (x : OCamlRes.Res.node) = 
-  match x with 
-  | File (name,content)  -> 
-    Ext_io.write_file (cwd // name) (replace content env)
-  | Dir (current, nodes) -> 
-    Unix.mkdir (cwd//current) 0o777;
-    List.iter (fun x -> process_theme_aux env (cwd//current) x ) nodes
-
-let list_themes () =
-  Format.fprintf Format.std_formatter "Available themes: @.";
-  Bsb_templates.root 
-  |>
-  List.iter (fun (x : OCamlRes.Res.node)  ->
-      match  x with 
-      | Dir (x, _) -> 
-        Format.fprintf Format.std_formatter "%s@." x 
-
-      | _ -> ()
-    ) 
-
-(* @raise [Not_found] *)  
-let process_themes env theme proj_dir (themes : OCamlRes.Res.node list ) = 
-  match List.find (fun (x : OCamlRes.Res.node) -> 
-      match  x with 
-      | Dir (dir, _) -> dir = theme
-      | File _ -> false 
-    ) themes  with 
-  | exception Not_found -> 
-    list_themes ();
-    raise (Arg.Bad( "theme " ^ theme ^ " not found")  )
-  | Dir(_theme, nodes ) -> 
-    List.iter (fun node -> process_theme_aux env proj_dir node ) nodes
-  | _ -> assert false  
-
-(** TODO: run npm link *)
-let init_sample_project ~cwd ~theme name = 
-  let env = String_hashtbl.create 0 in 
-  List.iter (fun (k,v) -> String_hashtbl.add env k v  ) [  
-    "proj-version", "0.1.0";
-    "bs-version", Bs_version.version;
-    "bsb" , Filename.current_dir_name // "node_modules" // ".bin" // "bsb"
-  ];
-  let action = fun _ -> 
-    process_themes env  theme Filename.current_dir_name Bsb_templates.root;         
-    Format.fprintf Format.std_formatter "Running %s in %s @." npm_link (cwd//name);
-    let exit_code = Sys.command npm_link in 
-    if exit_code <> 0 then 
-      begin
-        prerr_endline ("failed to run : " ^ npm_link);
-        exit exit_code
-      end
-  in   
-  begin match name with 
-    | "." -> 
-      let name = Filename.basename cwd in
-      if Ext_string.is_valid_npm_package_name name then 
-        begin 
-          String_hashtbl.add env "name" name;
-          action ()
-        end
-      else 
-        begin
-          Format.fprintf Format.err_formatter 
-            "@{<error>Invalid package name@} %S @."
-            name ;
-          exit 2    
-        end
-
-    | _ -> 
-      if Ext_string.is_valid_npm_package_name name 
-      then begin 
-        Format.fprintf Format.std_formatter "Making directory %s@." name;  
-        if Sys.file_exists name then 
-          begin 
-            Format.fprintf Format.err_formatter "%s already existed@." name ;
-            exit 2
-          end 
-        else
-          begin              
-            Unix.mkdir name 0o777;     
-            String_hashtbl.add env "name" name;
-            enter_dir cwd name action
-          end
-      end else begin 
-        Format.fprintf Format.err_formatter 
-          "@{<error>Invalid package name@} %S @."
-          name ;
-        exit 2                        
+(** Regenerate ninja file by need based on [.bsdeps]
+    return None if we dont need regenerate
+    otherwise return Some info
+*)
+let regenerate_ninja 
+    ~no_dev 
+    ~override_package_specs
+    ~generate_watch_metadata 
+    ~forced cwd bsc_dir
+  : _ option =
+  let output_deps = cwd // Bsb_config.lib_bs // bsdeps in
+  let check_result  =
+    Bsb_bsdeps.check 
+      ~cwd  
+      ~forced ~file:output_deps in
+  let () = 
+    Format.fprintf Format.std_formatter  
+      "@{<info>BSB check@} build spec : %a @." Bsb_bsdeps.pp_check_result check_result in 
+  begin match check_result  with 
+    | Good ->
+      None  (* Fast path, no need regenerate ninja *)
+    | Bsb_forced 
+    | Bsb_bsc_version_mismatch 
+    | Bsb_file_not_exist 
+    | Bsb_source_directory_changed  
+    | Other _ -> 
+      if check_result = Bsb_bsc_version_mismatch then begin 
+        print_endline "Also clean current repo due to we have detected a different compiler";
+        Bsb_clean.clean_self cwd; 
+      end ; 
+      Bsb_build_util.mkp (cwd // Bsb_config.lib_bs); 
+      let config = 
+        Bsb_config_parse.interpret_json 
+          ~override_package_specs
+          ~bsc_dir
+          ~generate_watch_metadata
+          ~no_dev
+          cwd in 
+      begin 
+        Bsb_merlin_gen.merlin_file_gen ~cwd
+          (bsc_dir // bsppx_exe) config;
+        Bsb_ninja_gen.output_ninja ~cwd ~bsc_dir config ; 
+        Literals.bsconfig_json :: config.globbed_dirs
+        |> List.map
+          (fun x ->
+             { Bsb_bsdeps.dir_or_file = x ;
+               stamp = (Unix.stat (cwd // x)).st_mtime
+             }
+          )
+        |> (fun x -> 
+          Bsb_bsdeps.store ~cwd ~file:output_deps (Array.of_list x));
+        Some config 
       end 
   end
 
 
-
-
-
 end
-module Bsb_merlin_gen : sig 
-#1 "bsb_merlin_gen.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+module Bsb_file : sig 
+#1 "bsb_file.mli"
 
 
 
+(** return [true] if copied *)
+val install_if_exists : destdir:string -> string -> bool
 
-val merlin_file_gen : 
-    cwd:string -> string  -> Bsb_config_types.t ->  unit 
-end = struct
-#1 "bsb_merlin_gen.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-let merlin = ".merlin"
-let merlin_header = "####{BSB GENERATED: NO EDIT"
-let merlin_trailer = "####BSB GENERATED: NO EDIT}"
-let merlin_trailer_length = String.length merlin_trailer
-let (//) = Ext_filename.combine
-
-(** [new_content] should start end finish with newline *)
-let revise_merlin merlin new_content =
-  if Sys.file_exists merlin then
-    let merlin_chan = open_in_bin merlin in
-    let size = in_channel_length merlin_chan in
-    let s = really_input_string merlin_chan size in
-    let () =  close_in merlin_chan in
-
-    let header =  Ext_string.find s ~sub:merlin_header  in
-    let tail = Ext_string.find s ~sub:merlin_trailer in
-    if header < 0  && tail < 0 then (* locked region not added yet *)
-      let ochan = open_out_bin merlin in
-      output_string ochan s ;
-      output_string ochan "\n";
-      output_string ochan merlin_header;
-      Buffer.output_buffer ochan new_content;
-      output_string ochan merlin_trailer ;
-      output_string ochan "\n";
-      close_out ochan
-    else if header >=0 && tail >= 0  then
-      (* there is one, hit it everytime,
-         should be fixed point
-      *)
-      let ochan = open_out_bin merlin in
-      output_string ochan (String.sub s 0 header) ;
-      output_string ochan merlin_header;
-      Buffer.output_buffer ochan new_content;
-      output_string ochan merlin_trailer ;
-      output_string ochan (Ext_string.tail_from s (tail +  merlin_trailer_length));
-      close_out ochan
-    else failwith ("the .merlin is corrupted, locked region by bsb is not consistent ")
-  else
-    let ochan = open_out_bin merlin in
-    output_string ochan merlin_header ;
-    Buffer.output_buffer ochan new_content;
-    output_string ochan merlin_trailer ;
-    output_string ochan "\n";
-    close_out ochan
-
-(* ATTENTION: order matters here, need resolve global properties before
-   merlin generation
-*)
-let merlin_flg_ppx = "\nFLG -ppx " 
-let merlin_s = "\nS "
-let merlin_b = "\nB "
-
-
-let merlin_flg = "\nFLG "
-let bs_flg_prefix = "-bs-"
-
-
-let bsc_flg_to_merlin_ocamlc_flg bsc_flags  =
-  merlin_flg ^ 
-      String.concat Ext_string.single_space 
-        (List.filter (fun x -> not (Ext_string.starts_with x bs_flg_prefix )) @@ 
-        Literals.dash_nostdlib::bsc_flags) 
-
-
-let merlin_file_gen ~cwd
-    built_in_ppx
-    ({bs_file_groups = res_files ; 
-      generate_merlin;
-      ppx_flags;
-      bs_dependencies;
-      bs_dev_dependencies;
-      bsc_flags; 
-      built_in_dependency;
-      external_includes; 
-      reason_react_jsx ; 
-     } : Bsb_config_types.t)
-  =
-  if generate_merlin then begin     
-    let buffer = Buffer.create 1024 in
-    ppx_flags
-    |> List.iter (fun x ->
-        Buffer.add_string buffer (merlin_flg_ppx ^ x )
-      );
-    (match reason_react_jsx with
-    | Some s -> 
-      begin 
-        Buffer.add_string buffer (merlin_flg_ppx ^ s)
-      end
-    | None -> ());
-    Buffer.add_string buffer (merlin_flg_ppx  ^ built_in_ppx);
-    (*
-    (match external_includes with 
-    | [] -> ()
-    | _ -> 
-
-      Buffer.add_string buffer (merlin_flg ^ Bsb_build_util.flag_concat "-I" external_includes
-      ));
-    *)
-    external_includes 
-    |> List.iter (fun path -> 
-        Buffer.add_string buffer merlin_s ;
-        Buffer.add_string buffer path ;
-        Buffer.add_string buffer merlin_b;
-        Buffer.add_string buffer path ;
-      );      
-    (match built_in_dependency with
-     | None -> ()
-     | Some package -> 
-       let path = package.package_install_path in 
-       Buffer.add_string buffer (merlin_s ^ path );
-       Buffer.add_string buffer (merlin_b ^ path)                      
-    );
-
-    let bsc_string_flag = bsc_flg_to_merlin_ocamlc_flg bsc_flags in 
-    Buffer.add_string buffer bsc_string_flag ;
-
-    bs_dependencies 
-    |> List.iter (fun package ->
-        let path = package.Bsb_config_types.package_install_path in
-        Buffer.add_string buffer merlin_s ;
-        Buffer.add_string buffer path ;
-        Buffer.add_string buffer merlin_b;
-        Buffer.add_string buffer path ;
-      );
-    bs_dev_dependencies (**TODO: shall we generate .merlin for dev packages ?*)
-    |> List.iter (fun package ->
-        let path = package.Bsb_config_types.package_install_path in
-        Buffer.add_string buffer merlin_s ;
-        Buffer.add_string buffer path ;
-        Buffer.add_string buffer merlin_b;
-        Buffer.add_string buffer path ;
-      );
-
-    res_files |> List.iter (fun (x : Bsb_build_ui.file_group) -> 
-        Buffer.add_string buffer merlin_s;
-        Buffer.add_string buffer x.dir ;
-        Buffer.add_string buffer merlin_b;
-        Buffer.add_string buffer (Bsb_config.lib_bs//x.dir) ;
-      ) ;
-    Buffer.add_string buffer "\n";
-    revise_merlin (cwd // merlin) buffer 
-  end
-
-
-
-end
-module Bsb_unix : sig 
-#1 "bsb_unix.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type command = 
-  { 
-    cmd : string ;
-    cwd : string ; 
-    args : string array 
-  }  
-
-
-(** run commands  in parallel, 
-    TODO: error handling
-*)
-(* val run_commands : command list -> unit  *)
-
-val run_command_execv :   command -> unit 
-
-(* val run_command_execvp : command -> unit *)
-
-(* val remove_dirs_recursive : string ->  string array -> unit *)
-
-val remove_dir_recursive : string -> unit 
-end = struct
-#1 "bsb_unix.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-type command = 
-  { 
-    cmd : string ;
-    cwd : string ; 
-    args : string array 
-  }  
-
-
-let log cmd = 
-    Format.fprintf Format.std_formatter "@{<info>Entering@} %s @." cmd.cwd ;  
-    Format.fprintf Format.std_formatter "@{<info>Cmd:@} " ; 
-    for i = 0 to Array.length cmd.args - 1 do
-      Format.print_string cmd.args.(i);
-      Format.print_string Ext_string.single_space
-    done;
-    Format.print_newline ()
-let fail cmd =
-  Format.fprintf Format.err_formatter "@{<error>Failure:@} %s \n Location: %s@." cmd.cmd cmd.cwd
-let run_command_execv_unix  cmd =
-  match Unix.fork () with 
-  | 0 -> 
-    log cmd;
-    Unix.chdir cmd.cwd;
-    Unix.execv cmd.cmd cmd.args 
-  | pid -> 
-    match Unix.waitpid [] pid  with 
-    | pid, process_status ->       
-      match process_status with 
-      | Unix.WEXITED eid ->
-        if eid <> 0 then 
-          begin 
-            fail cmd;
-            exit eid    
-          end;
-      | Unix.WSIGNALED _ | Unix.WSTOPPED _ -> 
-        begin 
-          Format.fprintf Format.err_formatter "@{<error>Interrupted:@} %s@." cmd.cmd;
-          exit 2 
-        end        
-
-
-(** TODO: the args are not quoted, here 
-  we are calling a very limited set of `bsb` commands, so that 
-  we are safe
-*)
-let run_command_execv_win (cmd : command) =
-  let old_cwd = Unix.getcwd () in 
-  log cmd;
-  Unix.chdir cmd.cwd;
-  let eid =
-    Sys.command 
-      (String.concat Ext_string.single_space 
-                           ( Filename.quote cmd.cmd ::( List.tl  @@ Array.to_list cmd.args))) in 
-  if eid <> 0 then 
-    begin 
-      fail cmd;
-      exit eid    
-    end
-  else  begin 
-    print_endline ("* Leaving " ^ cmd.cwd ^ " into " ^ old_cwd );
-    Unix.chdir old_cwd
-  end
-
-
-let run_command_execv = 
-    if Ext_sys.is_windows_or_cygwin then 
-      run_command_execv_win
-    else run_command_execv_unix  
-(** it assume you have permissions, so always catch it to fail 
-    gracefully
-*)
-
-let rec remove_dir_recursive dir = 
-  if Sys.is_directory dir then 
-    begin 
-      let files = Sys.readdir dir in 
-      for i = 0 to Array.length files - 1 do 
-        remove_dir_recursive (Filename.concat dir (Array.unsafe_get files i))
-      done ;
-      Unix.rmdir dir 
-    end
-  else Sys.remove dir 
-
-end
-module Ext_color : sig 
-#1 "ext_color.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-(** Input is the tag for example `@{<warning>@}` return escape code *)
-val ansi_of_tag : string -> string 
-
-val reset_lit : string
 
 end = struct
-#1 "ext_color.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+#1 "bsb_file.ml"
 
 
+open Unix
+
+let set_infos filename infos =
+  Unix.utimes filename infos.st_atime infos.st_mtime;
+  Unix.chmod filename infos.st_perm
+  (** it is not necessary to call [chown] since it is within the same user 
+    and {!Unix.chown} is not implemented under Windows
+   *)
+  (*
+  try
+    Unix.chown filename infos.st_uid infos.st_gid
+  with Unix_error(EPERM,_,_) -> ()
+*)
+
+let buffer_size = 8192;;
+let buffer = Bytes.create buffer_size;;
+
+let file_copy input_name output_name =
+  let fd_in = openfile input_name [O_RDONLY] 0 in
+  let fd_out = openfile output_name [O_WRONLY; O_CREAT; O_TRUNC] 0o666 in
+  let rec copy_loop () =
+    match read fd_in buffer 0 buffer_size with
+    |  0 -> ()
+    | r -> ignore (write fd_out buffer 0 r); copy_loop ()
+  in
+  copy_loop ();
+  close fd_in;
+  close fd_out;;
 
 
-type color 
-  = Black
-  | Red
-  | Green
-  | Yellow
-  | Blue
-  | Magenta
-  | Cyan
-  | White
+let copy_with_permission input_name output_name =
+    file_copy input_name output_name ;
+    set_infos output_name (Unix.lstat input_name)  
 
-type style 
-  = FG of color 
-  | BG of color 
-  | Bold
-
-
-let ansi_of_color = function
-  | Black -> "0"
-  | Red -> "1"
-  | Green -> "2"
-  | Yellow -> "3"
-  | Blue -> "4"
-  | Magenta -> "5"
-  | Cyan -> "6"
-  | White -> "7"
-
-let code_of_style = function
-  | FG Black -> "30"
-  | FG Red -> "31"
-  | FG Green -> "32"
-  | FG Yellow -> "33"
-  | FG Blue -> "34"
-  | FG Magenta -> "35"
-  | FG Cyan -> "36"
-  | FG White -> "37"
-  
-  | BG Black -> "40"
-  | BG Red -> "41"
-  | BG Green -> "42"
-  | BG Yellow -> "43"
-  | BG Blue -> "44"
-  | BG Magenta -> "45"
-  | BG Cyan -> "46"
-  | BG White -> "47"
-
-  | Bold -> "1"
-
-
-
-(** TODO: add more styles later *)
-let style_of_tag s = match s with
-  | "error" -> [Bold; FG Red]
-  | "warning" -> [Bold; FG Magenta]
-  | "info" -> [Bold; FG Yellow]
-  | _ -> []
-
-let ansi_of_tag s = 
-  let l = style_of_tag s in
-  let s =  String.concat ";" (List.map code_of_style l) in
-  "\x1b[" ^ s ^ "m"
-
-
-
-let reset_lit = "\x1b[0m" 
-
-
-
-
+let install_if_exists ~destdir input_name = 
+    if Sys.file_exists input_name then 
+      let output_name = (Filename.concat destdir (Filename.basename input_name)) in
+      match Unix.stat output_name , Unix.stat input_name with
+      | {st_mtime = output_stamp}, {st_mtime = input_stamp} when input_stamp <= output_stamp 
+        -> false
+      | _ -> copy_with_permission input_name output_name; true 
+      | exception _ -> copy_with_permission input_name output_name; true
+    else false
 
 end
-module Bsb_main : sig 
-#1 "bsb_main.mli"
-(* *)
-
-end = struct
-#1 "bsb_main.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+module Bsb_world : sig 
+#1 "bsb_world.mli"
+(* Copyright (C) 2017- Authors of BuckleScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -11784,43 +12054,43 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
+(*val install_targets:
+  string ->
+  Bsb_config_types.t option ->
+  unit*)
 
+val make_world_deps:
+  string ->
+  Bsb_config_types.t option ->
+  unit  
+end = struct
+#1 "bsb_world.ml"
+(* Copyright (C) 2017- Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-let bsppx_exe = "bsppx.exe"
-let bsdeps = ".bsdeps"
 
 let (//) = Ext_filename.combine
-
-let force_regenerate = ref false
-let exec = ref false
-
-let cwd = Sys.getcwd ()
-
-let node_lit = "node"
-
-let current_theme = ref "basic"
-let set_theme s = current_theme := s 
-
-let generate_theme_with_path = ref None
-
-let watch_exit () =
-  print_endline "\nStart Watching now ";
-  let bsb_watcher =
-    Bsb_build_util.get_bsc_dir cwd // "bsb_watcher.js" in
-  if Ext_sys.is_windows_or_cygwin then
-    exit (Sys.command (Ext_string.concat3 node_lit Ext_string.single_space (Filename.quote bsb_watcher)))
-  else
-    Unix.execvp node_lit
-      [| node_lit ;
-         bsb_watcher
-      |]
-
-
-let regen = "-regen"
-let separator = "--"
-
-
-
 
 let install_targets cwd (config : Bsb_config_types.t option) =
   (** TODO: create the animation effect *)
@@ -11858,125 +12128,110 @@ let install_targets cwd (config : Bsb_config_types.t option) =
     end
 
 
+
+let build_bs_deps cwd deps =
+
+  let bsc_dir = Bsb_build_util.get_bsc_dir cwd in
+  let vendor_ninja = bsc_dir // "ninja.exe" in
+  Bsb_build_util.walk_all_deps  cwd
+    (fun {top; cwd} ->
+       if not top then
+         begin 
+           let config_opt = Bsb_ninja_regen.regenerate_ninja ~no_dev:true
+               ~generate_watch_metadata:false
+               ~override_package_specs:(Some deps) 
+               ~forced:true
+               cwd bsc_dir  in (* set true to force regenrate ninja file so we have [config_opt]*)
+           Bsb_unix.run_command_execv
+             {cmd = vendor_ninja;
+              cwd = cwd // Bsb_config.lib_bs;
+              args  = [|vendor_ninja|]
+             };
+           (* When ninja is not regenerated, ninja will still do the build, 
+              still need reinstall check
+              Note that we can check if ninja print "no work to do", 
+              then don't need reinstall more
+           *)
+            install_targets cwd config_opt;
+         end
+    )
+
+
+let make_world_deps cwd (config : Bsb_config_types.t option) =
+  print_endline "\nMaking the dependency world!";
+  let deps =
+    match config with
+    | None ->
+      (* When this running bsb does not read bsconfig.json,
+         we will read such json file to know which [package-specs]
+         it wants
+      *)
+      Bsb_config_parse.package_specs_from_bsconfig ()
+    | Some {package_specs} -> package_specs in
+  build_bs_deps cwd deps
+end
+module Bsb_main : sig 
+#1 "bsb_main.mli"
+(* *)
+
+end = struct
+#1 "bsb_main.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+let cwd = Sys.getcwd ()
+
+let (//) = Ext_filename.combine
+let force_regenerate = ref false
+let exec = ref false
+let node_lit = "node"
+let current_theme = ref "basic"
+let set_theme s = current_theme := s 
+let generate_theme_with_path = ref None
+let regen = "-regen"
+let separator = "--"
 let watch_mode = ref false
-
-
 let make_world = ref false 
-
 let set_make_world () = make_world := true
 
 
-
-
-let color_enabled = ref (Unix.isatty Unix.stdin)
-let set_color ppf =
-  Format.pp_set_formatter_tag_functions ppf 
-    ({ (Format.pp_get_formatter_tag_functions ppf () ) with
-       mark_open_tag = (fun s ->  if !color_enabled then  Ext_color.ansi_of_tag s else Ext_string.empty) ;
-       mark_close_tag = (fun _ ->  if !color_enabled then Ext_color.reset_lit else Ext_string.empty);
-     })
-
-let () = 
-  begin 
-    Format.pp_set_mark_tags Format.std_formatter true ;
-    Format.pp_set_mark_tags Format.err_formatter true;
-    Format.pp_set_mark_tags Format.str_formatter true;
-    set_color Format.std_formatter ; 
-    set_color Format.err_formatter;
-    set_color Format.str_formatter
-  end
-
-
-
-let clean_bs_garbage cwd =
-  Format.fprintf Format.std_formatter "@{<info>Cleaning:@} in %s@." cwd ; 
-  let aux x =
-    let x = (cwd // x)  in
-    if Sys.file_exists x then
-      Bsb_unix.remove_dir_recursive x  in
-  try
-    List.iter aux Bsb_config.all_lib_artifacts
-  with
-    e ->
-    Format.fprintf Format.err_formatter "@{<warning>Failed@} to clean due to %s" (Printexc.to_string e)
-
-
-let clean_bs_deps () =
-  Bsb_build_util.walk_all_deps  cwd  (fun { cwd} ->
-      (* whether top or not always do the cleaning *)
-      clean_bs_garbage cwd
-    )
-
-let clean_self () = clean_bs_garbage cwd
-
-
-(** Regenerate ninja file if necessary   
-    return None if we dont need regenerate
-    otherwise return Some info
-*)
-let regenerate_ninja 
-    ~no_dev 
-    ~override_package_specs
-    ~generate_watch_metadata 
-    ~forced cwd bsc_dir
-  : _ option =
-  let output_deps = cwd // Bsb_config.lib_bs // bsdeps in
-  let reason : Bsb_dep_infos.check_result =
-    Bsb_dep_infos.check ~cwd  forced output_deps in
-  let () = 
-    Format.fprintf Format.std_formatter  
-      "@{<info>BSB check@} build spec : %a @." Bsb_dep_infos.pp_check_result reason in 
-  begin match reason  with 
-    | Good ->
-      None  (* Fast path, no need regenerate ninja *)
-    | Bsb_forced 
-    | Bsb_bsc_version_mismatch 
-    | Bsb_file_not_exist 
-    | Bsb_source_directory_changed  
-    | Other _ -> 
-      if reason = Bsb_bsc_version_mismatch then begin 
-        print_endline "Also clean current repo due to we have detected a different compiler";
-        clean_self (); 
-      end ; 
-      Bsb_build_util.mkp (cwd // Bsb_config.lib_bs); 
-      let config = 
-        Bsb_config_parse.interpret_json 
-          ~override_package_specs
-          ~bsc_dir
-          ~generate_watch_metadata
-          ~no_dev
-          cwd in 
-      begin 
-        Bsb_merlin_gen.merlin_file_gen ~cwd
-          (bsc_dir // bsppx_exe) config;
-        Bsb_gen.output_ninja ~cwd ~bsc_dir config ; 
-        Literals.bsconfig_json :: config.globbed_dirs
-        |> List.map
-          (fun x ->
-             { Bsb_dep_infos.dir_or_file = x ;
-               stamp = (Unix.stat (cwd // x)).st_mtime
-             }
-          )
-        |> (fun x -> Bsb_dep_infos.store ~cwd output_deps (Array.of_list x));
-        Some config 
-      end 
-  end
-
 let bsb_main_flags : (string * Arg.spec * string) list=
   [
-    "-color", Arg.Set color_enabled,
-    " forced color output"
-    ;
-    "-no-color", Arg.Clear color_enabled,
+    "-color", Arg.Set Bsb_log.color_enabled,
+    " forced color output";
+    "-no-color", Arg.Clear Bsb_log.color_enabled,
     " forced no color output";
     "-w", Arg.Set watch_mode,
     " Watch mode" ;     
     regen, Arg.Set force_regenerate,
     " (internal) Always regenerate build.ninja no matter bsconfig.json is changed or not (for debugging purpose)"
     ;
-    "-clean-world", Arg.Unit clean_bs_deps,
+    "-clean-world", Arg.Unit (fun _ -> Bsb_clean.clean_bs_deps cwd),
     " Clean all bs dependencies";
-    "-clean", Arg.Unit clean_self,
+    "-clean", Arg.Unit (fun _ -> Bsb_clean.clean_self cwd),
     " Clean only current project";
     "-make-world", Arg.Unit set_make_world,
     " Build all dependencies and itself ";
@@ -11989,57 +12244,35 @@ let bsb_main_flags : (string * Arg.spec * string) list=
   ]
 
 
-let print_string_args (args : string array) =
-  for i  = 0 to Array.length args - 1 do
-    print_string (Array.unsafe_get args i) ;
-    print_string Ext_string.single_space;
-  done ;
-  print_newline ()
+(*Note that [keepdepfile] only makes sense when combined with [deps] for optimization*)
 
-
-(* Note that [keepdepfile] only makes sense when combined with [deps] for optimization
-   It has to be the last command of [bsb]
-*)
-let exec_command_install_then_exit  command =
+(**  Invariant: it has to be the last command of [bsb] *)
+let exec_command_then_exit  command =
   Format.fprintf Format.std_formatter "@{<info>CMD:@} %s@." command;
-  print_endline command ;
   exit (Sys.command command ) 
 
 (* Execute the underlying ninja build call, then exit (as opposed to keep watching) *)
 let ninja_command_exit  vendor_ninja ninja_args  =
   let ninja_args_len = Array.length ninja_args in
-  if ninja_args_len = 0 then
-    if Ext_sys.is_windows_or_cygwin then
-      exec_command_install_then_exit
-      @@ Ext_string.inter3
-        (Filename.quote vendor_ninja) "-C" Bsb_config.lib_bs
-    else 
-      let args = [|"ninja.exe"; "-C"; Bsb_config.lib_bs |] in
-      print_string_args args ;
-      Unix.execvp vendor_ninja args
+  if Ext_sys.is_windows_or_cygwin then
+    let path_ninja = Filename.quote vendor_ninja in 
+    exec_command_then_exit @@ 
+    (if ninja_args_len = 0 then      
+       Ext_string.inter3
+         path_ninja "-C" Bsb_config.lib_bs
+     else   
+       let args = 
+         Array.append 
+           [| path_ninja ; "-C"; Bsb_config.lib_bs|]
+           ninja_args in 
+       Ext_string.concat_array Ext_string.single_space args)
   else
-    let fixed_args_length = 3 in
-    if 
-      Ext_sys.is_windows_or_cygwin then
-      let args = (Array.init (fixed_args_length + ninja_args_len)
-                    (fun i -> match i with
-                       | 0 -> (Filename.quote vendor_ninja)
-                       | 1 -> "-C"
-                       | 2 -> Bsb_config.lib_bs
-                       | _ -> Array.unsafe_get ninja_args (i - fixed_args_length) )) in
-      exec_command_install_then_exit
-      @@ Ext_string.concat_array Ext_string.single_space args
-    else 
-
-      let args = (Array.init (fixed_args_length + ninja_args_len)
-                    (fun i -> match i with
-                       | 0 -> "ninja.exe"
-                       | 1 -> "-C"
-                       | 2 -> Bsb_config.lib_bs
-                       | _ -> Array.unsafe_get ninja_args (i - fixed_args_length) )) in
-      print_string_args args ;
-      Unix.execvp vendor_ninja args
-
+    let ninja_common_args = [|"ninja.exe"; "-C"; Bsb_config.lib_bs |] in 
+    let args = 
+      if ninja_args_len = 0 then ninja_common_args else 
+        Array.append ninja_common_args ninja_args in 
+    Bsb_log.print_string_args args ;      
+    Unix.execvp vendor_ninja args      
 
 
 
@@ -12061,56 +12294,29 @@ let handle_anonymous_arg arg =
   raise (Arg.Bad ("Unknown arg \"" ^ arg ^ "\""))
 
 
-let build_bs_deps deps =
+let watch_exit () =
+  print_endline "\nStart Watching now ";
+  let bsb_watcher =
+    Bsb_build_util.get_bsc_dir cwd // "bsb_watcher.js" in
+  if Ext_sys.is_windows_or_cygwin then
+    exit (Sys.command (Ext_string.concat3 node_lit Ext_string.single_space (Filename.quote bsb_watcher)))
+  else
+    Unix.execvp node_lit
+      [| node_lit ;
+         bsb_watcher
+      |]
 
-  let bsc_dir = Bsb_build_util.get_bsc_dir cwd in
-  let vendor_ninja = bsc_dir // "ninja.exe" in
-  Bsb_build_util.walk_all_deps  cwd
-    (fun {top; cwd} ->
-       if not top then
-         begin 
-           let config_opt = regenerate_ninja ~no_dev:true
-               ~generate_watch_metadata:false
-               ~override_package_specs:(Some deps) 
-               ~forced:true
-               cwd bsc_dir  in (* set true to force regenrate ninja file so we have [config_opt]*)
-           Bsb_unix.run_command_execv
-             {cmd = vendor_ninja;
-              cwd = cwd // Bsb_config.lib_bs;
-              args  = [|vendor_ninja|]
-             };
-           (* When ninja is not regenerated, ninja will still do the build, 
-              still need reinstall check
-              Note that we can check if ninja print "no work to do", 
-              then don't need reinstall more
-           *)
-           install_targets cwd config_opt;
-         end
-    )
-
-
-let make_world_deps (config : Bsb_config_types.t option) =
-  print_endline "\nMaking the dependency world!";
-  let deps =
-    match config with
-    | None ->
-      (* When this running bsb does not read bsconfig.json,
-         we will read such json file to know which [package-specs]
-         it wants
-      *)
-      Bsb_config_parse.package_specs_from_bsconfig ()
-    | Some {package_specs} -> package_specs in
-  build_bs_deps deps
 
 (* see discussion #929, if we catch the exception, we don't have stacktrace... *)
 let () =
+  let () =  Bsb_log.setup () in 
   let bsc_dir = Bsb_build_util.get_bsc_dir cwd in
   let vendor_ninja = bsc_dir // "ninja.exe" in  
   match Sys.argv with 
   | [| _ |] ->  (* specialize this path [bsb.exe] which is used in watcher *)
     begin
       let _config_opt =  
-        regenerate_ninja ~override_package_specs:None ~no_dev:false 
+        Bsb_ninja_regen.regenerate_ninja ~override_package_specs:None ~no_dev:false 
           ~generate_watch_metadata:true
           ~forced:false 
           cwd bsc_dir 
@@ -12124,7 +12330,6 @@ let () =
         ->
         begin
           Arg.parse bsb_main_flags handle_anonymous_arg usage;
-
           (* first, check whether we're in boilerplate generation mode, aka -init foo -theme bar *)
           match !generate_theme_with_path with
           | Some path -> Bsb_init.init_sample_project ~cwd ~theme:!current_theme path
@@ -12133,19 +12338,18 @@ let () =
             let make_world = !make_world in 
             begin match make_world, !force_regenerate with
               | false, false -> 
+                (* [regenerate_ninja] is not triggered in this case
+                   There are several cases we wish ninja will not be triggered.
+                   [bsb -clean-world]
+                   [bsb -regen ]
+                *)
                 if !watch_mode then begin
                   watch_exit ()
-                  (* ninja is not triggered in this case
-                     There are several cases we wish ninja will not be triggered.
-                     [bsb -clean-world]
-                     [bsb -regen ]
-                  *)
                 end 
               | make_world, force_regenerate ->
-                (* don't regenerate files when we only run [bsb -clean-world] *)
-                let config_opt = regenerate_ninja ~generate_watch_metadata:true ~override_package_specs:None ~no_dev:false ~forced:force_regenerate cwd bsc_dir  in
+                let config_opt = Bsb_ninja_regen.regenerate_ninja ~generate_watch_metadata:true ~override_package_specs:None ~no_dev:false ~forced:force_regenerate cwd bsc_dir  in
                 if make_world then begin
-                  make_world_deps config_opt
+                  Bsb_world.make_world_deps cwd config_opt
                 end;
                 if !watch_mode then begin
                   watch_exit ()
@@ -12163,10 +12367,10 @@ let () =
         -> (* -make-world all dependencies fall into this category *)
         begin
           Arg.parse_argv bsb_args bsb_main_flags handle_anonymous_arg usage ;
-          let config_opt = regenerate_ninja ~generate_watch_metadata:true ~override_package_specs:None ~no_dev:false cwd bsc_dir ~forced:!force_regenerate in
+          let config_opt = Bsb_ninja_regen.regenerate_ninja ~generate_watch_metadata:true ~override_package_specs:None ~no_dev:false cwd bsc_dir ~forced:!force_regenerate in
           (* [-make-world] should never be combined with [-package-specs] *)
           if !make_world then
-            make_world_deps config_opt ;
+            Bsb_world.make_world_deps cwd config_opt ;
           if !watch_mode then watch_exit ()
           else ninja_command_exit  vendor_ninja ninja_args 
         end

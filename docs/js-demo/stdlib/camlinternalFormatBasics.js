@@ -1,12 +1,11 @@
 'use strict';
-define(["exports", "./block"],
+define(["exports", "./block.js"],
   function(exports, Block){
     'use strict';
     function erase_rel(param) {
       if (typeof param === "number") {
         return /* End_of_fmtty */0;
-      }
-      else {
+      } else {
         switch (param.tag | 0) {
           case 0 : 
               return /* Char_ty */Block.__(0, [erase_rel(param[0])]);
@@ -54,8 +53,7 @@ define(["exports", "./block"],
     function concat_fmtty(fmtty1, fmtty2) {
       if (typeof fmtty1 === "number") {
         return fmtty2;
-      }
-      else {
+      } else {
         switch (fmtty1.tag | 0) {
           case 0 : 
               return /* Char_ty */Block.__(0, [concat_fmtty(fmtty1[0], fmtty2)]);
@@ -102,8 +100,7 @@ define(["exports", "./block"],
     function concat_fmt(fmt1, fmt2) {
       if (typeof fmt1 === "number") {
         return fmt2;
-      }
-      else {
+      } else {
         switch (fmt1.tag | 0) {
           case 0 : 
               return /* Char */Block.__(0, [concat_fmt(fmt1[0], fmt2)]);

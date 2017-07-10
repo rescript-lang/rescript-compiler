@@ -1,6 +1,6 @@
 'use strict';
-define(["exports", "./caml_builtin_exceptions", "./caml_obj"],
-  function(exports, Caml_builtin_exceptions, Caml_obj){
+define(["exports", "./caml_obj.js", "./caml_builtin_exceptions.js"],
+  function(exports, Caml_obj, Caml_builtin_exceptions){
     'use strict';
     function init_mod(loc, shape) {
       var undef_module = function () {
@@ -26,12 +26,10 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj"],
                 return /* () */0;
             
           }
-        }
-        else if (shape.tag) {
+        } else if (shape.tag) {
           struct_[idx] = shape[0];
           return /* () */0;
-        }
-        else {
+        } else {
           var comps = shape[0];
           var v = /* array */[];
           struct_[idx] = v;
@@ -59,11 +57,9 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj"],
                 return Caml_obj.caml_update_dummy(o, n);
             
           }
-        }
-        else if (shape.tag) {
+        } else if (shape.tag) {
           return /* () */0;
-        }
-        else {
+        } else {
           var comps = shape[0];
           for(var i$1 = 0 ,i_finish = comps.length - 1 | 0; i$1 <= i_finish; ++i$1){
             aux(comps[i$1], o[i$1], n[i$1], o, i$1);
@@ -76,22 +72,20 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj"],
               Caml_builtin_exceptions.assert_failure,
               [
                 "caml_module.ml",
-                80,
+                82,
                 10
               ]
             ];
-      }
-      else if (shape.tag) {
+      } else if (shape.tag) {
         throw [
               Caml_builtin_exceptions.assert_failure,
               [
                 "caml_module.ml",
-                80,
+                82,
                 10
               ]
             ];
-      }
-      else {
+      } else {
         var comps = shape[0];
         for(var i = 0 ,i_finish = comps.length - 1 | 0; i <= i_finish; ++i){
           aux(comps[i], o[i], n[i], o, i);

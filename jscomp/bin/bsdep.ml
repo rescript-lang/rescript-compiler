@@ -23295,8 +23295,9 @@ val replace_backward_slash : string -> string
 
 val empty : string 
 
-external compare : string -> string -> int = "caml_string_length_based_compare" "noalloc";;
 
+external compare : string -> string -> int = "caml_string_length_based_compare" "noalloc";;
+  
 val single_space : string
 
 val concat3 : string -> string -> string -> string 
@@ -23731,7 +23732,9 @@ let replace_backward_slash (x : string)=
 
 let empty = ""
 
+    
 external compare : string -> string -> int = "caml_string_length_based_compare" "noalloc";;
+
 
 let single_space = " "
 let single_colon = ":"
@@ -30585,6 +30588,8 @@ end
 module Bs_hash_stubs
 = struct
 #1 "bs_hash_stubs.ml"
+
+
 external hash_string :  string -> int = "caml_bs_hash_string" "noalloc";;
 
 external hash_string_int :  string -> int  -> int = "caml_bs_hash_string_and_int" "noalloc";;
@@ -30603,6 +30608,8 @@ external string_length_based_compare : string -> string -> int  = "caml_string_l
 external    
     int_unsafe_blit : 
     int array -> int -> int array -> int -> int -> unit = "caml_int_array_blit" "noalloc";;
+    
+
 end
 module Ext_util : sig 
 #1 "ext_util.mli"

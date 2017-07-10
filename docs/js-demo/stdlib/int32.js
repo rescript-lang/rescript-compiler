@@ -1,5 +1,5 @@
 'use strict';
-define(["exports", "./caml_obj", "./caml_format"],
+define(["exports", "./caml_obj.js", "./caml_format.js"],
   function(exports, Caml_obj, Caml_format){
     'use strict';
     function succ(n) {
@@ -13,8 +13,7 @@ define(["exports", "./caml_obj", "./caml_format"],
     function abs(n) {
       if (n >= 0) {
         return n;
-      }
-      else {
+      } else {
         return -n | 0;
       }
     }
@@ -27,7 +26,7 @@ define(["exports", "./caml_obj", "./caml_format"],
       return Caml_format.caml_int32_format("%d", n);
     }
     
-    var compare = Caml_obj.caml_int32_compare
+    var compare = Caml_obj.caml_int32_compare;
     
     var zero = 0;
     

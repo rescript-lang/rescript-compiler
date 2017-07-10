@@ -1,6 +1,6 @@
 'use strict';
-define(["exports", "./bytes", "./caml_int32", "./caml_string", "./list"],
-  function(exports, Bytes, Caml_int32, Caml_string, List){
+define(["exports", "./list.js", "./bytes.js", "./caml_int32.js", "./caml_string.js"],
+  function(exports, List, Bytes, Caml_int32, Caml_string){
     'use strict';
     function make(n, c) {
       return Caml_string.bytes_to_string(Bytes.make(n, c));
@@ -23,24 +23,23 @@ define(["exports", "./bytes", "./caml_int32", "./caml_string", "./list"],
         var hd = l[0];
         var num = [0];
         var len = [0];
-        List.iter(function (s) {
-              num[0] = num[0] + 1 | 0;
-              len[0] = len[0] + s.length | 0;
-              return /* () */0;
-            }, l);
+        List.iter((function (s) {
+                num[0] = num[0] + 1 | 0;
+                len[0] = len[0] + s.length | 0;
+                return /* () */0;
+              }), l);
         var r = Caml_string.caml_create_string(len[0] + Caml_int32.imul(sep.length, num[0] - 1 | 0) | 0);
         Caml_string.caml_blit_string(hd, 0, r, 0, hd.length);
         var pos = [hd.length];
-        List.iter(function (s) {
-              Caml_string.caml_blit_string(sep, 0, r, pos[0], sep.length);
-              pos[0] = pos[0] + sep.length | 0;
-              Caml_string.caml_blit_string(s, 0, r, pos[0], s.length);
-              pos[0] = pos[0] + s.length | 0;
-              return /* () */0;
-            }, l[1]);
+        List.iter((function (s) {
+                Caml_string.caml_blit_string(sep, 0, r, pos[0], sep.length);
+                pos[0] = pos[0] + sep.length | 0;
+                Caml_string.caml_blit_string(s, 0, r, pos[0], s.length);
+                pos[0] = pos[0] + s.length | 0;
+                return /* () */0;
+              }), l[1]);
         return Caml_string.bytes_to_string(r);
-      }
-      else {
+      } else {
         return "";
       }
     }
@@ -66,15 +65,12 @@ define(["exports", "./bytes", "./caml_int32", "./caml_string", "./list"],
       if (switcher > 4 || switcher < 0) {
         if (switcher !== 23) {
           return /* false */0;
-        }
-        else {
+        } else {
           return /* true */1;
         }
-      }
-      else if (switcher !== 2) {
+      } else if (switcher !== 2) {
         return /* true */1;
-      }
-      else {
+      } else {
         return /* false */0;
       }
     }
@@ -82,8 +78,7 @@ define(["exports", "./bytes", "./caml_int32", "./caml_string", "./list"],
     function trim(s) {
       if (s === "" || !(is_space(s.charCodeAt(0)) || is_space(s.charCodeAt(s.length - 1 | 0)))) {
         return s;
-      }
-      else {
+      } else {
         return Caml_string.bytes_to_string(Bytes.trim(Caml_string.bytes_of_string(s)));
       }
     }
@@ -94,31 +89,26 @@ define(["exports", "./bytes", "./caml_int32", "./caml_string", "./list"],
           var i = _i;
           if (i >= s.length) {
             return /* false */0;
-          }
-          else {
+          } else {
             var match = s.charCodeAt(i);
             if (match >= 32) {
               var switcher = match - 34 | 0;
               if (switcher > 58 || switcher < 0) {
                 if (switcher >= 93) {
                   return /* true */1;
-                }
-                else {
+                } else {
                   _i = i + 1 | 0;
                   continue ;
                   
                 }
-              }
-              else if (switcher > 57 || switcher < 1) {
+              } else if (switcher > 57 || switcher < 1) {
                 return /* true */1;
-              }
-              else {
+              } else {
                 _i = i + 1 | 0;
                 continue ;
                 
               }
-            }
-            else {
+            } else {
               return /* true */1;
             }
           }
@@ -126,8 +116,7 @@ define(["exports", "./bytes", "./caml_int32", "./caml_string", "./list"],
       };
       if (needs_escape(0)) {
         return Caml_string.bytes_to_string(Bytes.escaped(Caml_string.bytes_of_string(s)));
-      }
-      else {
+      } else {
         return s;
       }
     }
@@ -176,7 +165,7 @@ define(["exports", "./bytes", "./caml_int32", "./caml_string", "./list"],
       return Caml_string.bytes_to_string(Bytes.uncapitalize(Caml_string.bytes_of_string(s)));
     }
     
-    var compare = Caml_string.caml_string_compare
+    var compare = Caml_string.caml_string_compare;
     
     var fill = Bytes.fill;
     

@@ -1,6 +1,6 @@
 'use strict';
-define(["exports", "./caml_builtin_exceptions", "./camlinternalLazy", "./caml_exceptions", "./pervasives", "./block", "./curry", "./caml_bytes", "./list", "./caml_string"],
-  function(exports, Caml_builtin_exceptions, CamlinternalLazy, Caml_exceptions, Pervasives, Block, Curry, Caml_bytes, List, Caml_string){
+define(["exports", "./list.js", "./block.js", "./curry.js", "./caml_bytes.js", "./pervasives.js", "./caml_string.js", "./caml_exceptions.js", "./camlinternalLazy.js", "./caml_builtin_exceptions.js"],
+  function(exports, List, Block, Curry, Caml_bytes, Pervasives, Caml_string, Caml_exceptions, CamlinternalLazy, Caml_builtin_exceptions){
     'use strict';
     var Failure = Caml_exceptions.create("Stream.Failure");
     
@@ -17,8 +17,7 @@ define(["exports", "./caml_builtin_exceptions", "./camlinternalLazy", "./caml_ex
         var d = _d;
         if (typeof d === "number") {
           return d;
-        }
-        else {
+        } else {
           switch (d.tag | 0) {
             case 0 : 
                 return d;
@@ -35,14 +34,12 @@ define(["exports", "./caml_builtin_exceptions", "./camlinternalLazy", "./caml_ex
                             12
                           ]
                         ];
-                  }
-                  else {
+                  } else {
                     _d = d2;
                     continue ;
                     
                   }
-                }
-                else if (match.tag) {
+                } else if (match.tag) {
                   throw [
                         Caml_builtin_exceptions.assert_failure,
                         [
@@ -51,8 +48,7 @@ define(["exports", "./caml_builtin_exceptions", "./camlinternalLazy", "./caml_ex
                           12
                         ]
                       ];
-                }
-                else {
+                } else {
                   return /* Scons */Block.__(0, [
                             match[0],
                             /* Sapp */Block.__(1, [
@@ -80,20 +76,17 @@ define(["exports", "./caml_builtin_exceptions", "./camlinternalLazy", "./caml_ex
                               match$2[0],
                               d
                             ]);
-                  }
-                  else {
+                  } else {
                     return /* Sempty */0;
                   }
-                }
-                else {
+                } else {
                   var match$3 = Curry._1(g[/* func */1], count);
                   if (match$3) {
                     return /* Scons */Block.__(0, [
                               match$3[0],
                               d
                             ]);
-                  }
-                  else {
+                  } else {
                     g[/* curr */0] = /* Some */[/* None */0];
                     return /* Sempty */0;
                   }
@@ -111,8 +104,7 @@ define(["exports", "./caml_builtin_exceptions", "./camlinternalLazy", "./caml_ex
                             r,
                             d
                           ]);
-                }
-                else {
+                } else {
                   return /* Sempty */0;
                 }
                 break;
@@ -127,8 +119,7 @@ define(["exports", "./caml_builtin_exceptions", "./camlinternalLazy", "./caml_ex
         var match = s[/* data */1];
         if (typeof match === "number") {
           return /* None */0;
-        }
-        else {
+        } else {
           switch (match.tag | 0) {
             case 0 : 
                 return /* Some */[match[0]];
@@ -144,12 +135,10 @@ define(["exports", "./caml_builtin_exceptions", "./camlinternalLazy", "./caml_ex
                             12
                           ]
                         ];
-                  }
-                  else {
+                  } else {
                     return /* None */0;
                   }
-                }
-                else if (d.tag) {
+                } else if (d.tag) {
                   throw [
                         Caml_builtin_exceptions.assert_failure,
                         [
@@ -158,8 +147,7 @@ define(["exports", "./caml_builtin_exceptions", "./camlinternalLazy", "./caml_ex
                           12
                         ]
                       ];
-                }
-                else {
+                } else {
                   s[1] = d;
                   return /* Some */[d[0]];
                 }
@@ -176,8 +164,7 @@ define(["exports", "./caml_builtin_exceptions", "./camlinternalLazy", "./caml_ex
                 var match$1 = g[/* curr */0];
                 if (match$1) {
                   return match$1[0];
-                }
-                else {
+                } else {
                   var x = Curry._1(g[/* func */1], s[/* count */0]);
                   g[/* curr */0] = /* Some */[x];
                   return x;
@@ -190,8 +177,7 @@ define(["exports", "./caml_builtin_exceptions", "./camlinternalLazy", "./caml_ex
                 }
                 if (b[/* len */2]) {
                   return /* Some */[b[/* buff */1][b[/* ind */3]]];
-                }
-                else {
+                } else {
                   s[1] = /* Sempty */0;
                   return /* None */0;
                 }
@@ -207,8 +193,7 @@ define(["exports", "./caml_builtin_exceptions", "./camlinternalLazy", "./caml_ex
         var exit = 0;
         if (typeof match === "number") {
           exit = 1;
-        }
-        else {
+        } else {
           switch (match.tag | 0) {
             case 0 : 
                 s[0] = s[/* count */0] + 1 | 0;
@@ -221,8 +206,7 @@ define(["exports", "./caml_builtin_exceptions", "./camlinternalLazy", "./caml_ex
                   s[0] = s[/* count */0] + 1 | 0;
                   g[/* curr */0] = /* None */0;
                   return /* () */0;
-                }
-                else {
+                } else {
                   exit = 1;
                 }
                 break;
@@ -240,8 +224,7 @@ define(["exports", "./caml_builtin_exceptions", "./camlinternalLazy", "./caml_ex
           if (match$2) {
             continue ;
             
-          }
-          else {
+          } else {
             return /* () */0;
           }
         }
@@ -256,8 +239,7 @@ define(["exports", "./caml_builtin_exceptions", "./camlinternalLazy", "./caml_ex
                 s[/* data */1],
                 0
               ];
-      }
-      else {
+      } else {
         var match = peek(s);
         if (match) {
           var a = match[0];
@@ -274,8 +256,7 @@ define(["exports", "./caml_builtin_exceptions", "./camlinternalLazy", "./caml_ex
                     ]),
                   match$1[2] + 1 | 0
                 ];
-        }
-        else {
+        } else {
           return /* tuple */[
                   /* [] */0,
                   s[/* data */1],
@@ -297,8 +278,7 @@ define(["exports", "./caml_builtin_exceptions", "./camlinternalLazy", "./caml_ex
       if (match) {
         junk(s);
         return match[0];
-      }
-      else {
+      } else {
         throw Failure;
       }
     }
@@ -307,8 +287,7 @@ define(["exports", "./caml_builtin_exceptions", "./camlinternalLazy", "./caml_ex
       var match = peek(s);
       if (match) {
         throw Failure;
-      }
-      else {
+      } else {
         return /* () */0;
       }
     }
@@ -323,8 +302,7 @@ define(["exports", "./caml_builtin_exceptions", "./camlinternalLazy", "./caml_ex
           _param = /* () */0;
           continue ;
           
-        }
-        else {
+        } else {
           return /* () */0;
         }
       };
@@ -343,41 +321,39 @@ define(["exports", "./caml_builtin_exceptions", "./camlinternalLazy", "./caml_ex
     function of_list(l) {
       return /* record */[
               /* count */0,
-              /* data */List.fold_right(function (x, l) {
-                    return /* Scons */Block.__(0, [
-                              x,
-                              l
-                            ]);
-                  }, l, /* Sempty */0)
+              /* data */List.fold_right((function (x, l) {
+                      return /* Scons */Block.__(0, [
+                                x,
+                                l
+                              ]);
+                    }), l, /* Sempty */0)
             ];
     }
     
     function of_string(s) {
       var count = [0];
-      return from(function () {
-                  var c = count[0];
-                  if (c < s.length) {
-                    count[0] = count[0] + 1 | 0;
-                    return /* Some */[Caml_string.get(s, c)];
-                  }
-                  else {
-                    return /* None */0;
-                  }
-                });
+      return from((function () {
+                    var c = count[0];
+                    if (c < s.length) {
+                      count[0] = count[0] + 1 | 0;
+                      return /* Some */[Caml_string.get(s, c)];
+                    } else {
+                      return /* None */0;
+                    }
+                  }));
     }
     
     function of_bytes(s) {
       var count = [0];
-      return from(function () {
-                  var c = count[0];
-                  if (c < s.length) {
-                    count[0] = count[0] + 1 | 0;
-                    return /* Some */[Caml_bytes.get(s, c)];
-                  }
-                  else {
-                    return /* None */0;
-                  }
-                });
+      return from((function () {
+                    var c = count[0];
+                    if (c < s.length) {
+                      count[0] = count[0] + 1 | 0;
+                      return /* Some */[Caml_bytes.get(s, c)];
+                    } else {
+                      return /* None */0;
+                    }
+                  }));
     }
     
     function of_channel(ic) {
@@ -425,62 +401,52 @@ define(["exports", "./caml_builtin_exceptions", "./camlinternalLazy", "./caml_ex
     function lapp(f, s) {
       return /* record */[
               /* count */0,
-              /* data : Slazy */Block.__(2, [Block.__(246, [function () {
-                        return /* Sapp */Block.__(1, [
-                                  Curry._1(f, /* () */0)[/* data */1],
-                                  s[/* data */1]
-                                ]);
-                      }])])
+              /* data : Slazy */Block.__(2, [Block.__(246, [(function () {
+                          return /* Sapp */Block.__(1, [
+                                    Curry._1(f, /* () */0)[/* data */1],
+                                    s[/* data */1]
+                                  ]);
+                        })])])
             ];
     }
     
     function lcons(f, s) {
       return /* record */[
               /* count */0,
-              /* data : Slazy */Block.__(2, [Block.__(246, [function () {
-                        return /* Scons */Block.__(0, [
-                                  Curry._1(f, /* () */0),
-                                  s[/* data */1]
-                                ]);
-                      }])])
+              /* data : Slazy */Block.__(2, [Block.__(246, [(function () {
+                          return /* Scons */Block.__(0, [
+                                    Curry._1(f, /* () */0),
+                                    s[/* data */1]
+                                  ]);
+                        })])])
             ];
     }
     
     function lsing(f) {
       return /* record */[
               /* count */0,
-              /* data : Slazy */Block.__(2, [Block.__(246, [function () {
-                        return /* Scons */Block.__(0, [
-                                  Curry._1(f, /* () */0),
-                                  /* Sempty */0
-                                ]);
-                      }])])
+              /* data : Slazy */Block.__(2, [Block.__(246, [(function () {
+                          return /* Scons */Block.__(0, [
+                                    Curry._1(f, /* () */0),
+                                    /* Sempty */0
+                                  ]);
+                        })])])
             ];
     }
     
     function slazy(f) {
       return /* record */[
               /* count */0,
-              /* data : Slazy */Block.__(2, [Block.__(246, [function () {
-                        return Curry._1(f, /* () */0)[/* data */1];
-                      }])])
+              /* data : Slazy */Block.__(2, [Block.__(246, [(function () {
+                          return Curry._1(f, /* () */0)[/* data */1];
+                        })])])
             ];
-    }
-    
-    function dump(f, s) {
-      Pervasives.print_string("{count = ");
-      Pervasives.print_int(s[/* count */0]);
-      Pervasives.print_string("; data = ");
-      dump_data(f, s[/* data */1]);
-      Pervasives.print_string("}");
-      return Pervasives.print_newline(/* () */0);
     }
     
     function dump_data(f, param) {
       if (typeof param === "number") {
         return Pervasives.print_string("Sempty");
-      }
-      else {
+      } else {
         switch (param.tag | 0) {
           case 0 : 
               Pervasives.print_string("Scons (");
@@ -503,6 +469,15 @@ define(["exports", "./caml_builtin_exceptions", "./camlinternalLazy", "./caml_ex
           
         }
       }
+    }
+    
+    function dump(f, s) {
+      Pervasives.print_string("{count = ");
+      Pervasives.print_int(s[/* count */0]);
+      Pervasives.print_string("; data = ");
+      dump_data(f, s[/* data */1]);
+      Pervasives.print_string("}");
+      return Pervasives.print_newline(/* () */0);
     }
     
     function count(prim) {

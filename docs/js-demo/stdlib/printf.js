@@ -1,43 +1,43 @@
 'use strict';
-define(["exports", "./pervasives", "./curry", "./buffer", "./camlinternalFormat"],
-  function(exports, Pervasives, Curry, Buffer, CamlinternalFormat){
+define(["exports", "./curry.js", "./buffer.js", "./pervasives.js", "./camlinternalFormat.js"],
+  function(exports, Curry, Buffer, Pervasives, CamlinternalFormat){
     'use strict';
     function kfprintf(k, o, param) {
-      return CamlinternalFormat.make_printf(function (o, acc) {
-                  CamlinternalFormat.output_acc(o, acc);
-                  return Curry._1(k, o);
-                }, o, /* End_of_acc */0, param[0]);
+      return CamlinternalFormat.make_printf((function (o, acc) {
+                    CamlinternalFormat.output_acc(o, acc);
+                    return Curry._1(k, o);
+                  }), o, /* End_of_acc */0, param[0]);
     }
     
     function kbprintf(k, b, param) {
-      return CamlinternalFormat.make_printf(function (b, acc) {
-                  CamlinternalFormat.bufput_acc(b, acc);
-                  return Curry._1(k, b);
-                }, b, /* End_of_acc */0, param[0]);
+      return CamlinternalFormat.make_printf((function (b, acc) {
+                    CamlinternalFormat.bufput_acc(b, acc);
+                    return Curry._1(k, b);
+                  }), b, /* End_of_acc */0, param[0]);
     }
     
     function ikfprintf(k, oc, param) {
-      return CamlinternalFormat.make_printf(function (oc, _) {
-                  return Curry._1(k, oc);
-                }, oc, /* End_of_acc */0, param[0]);
+      return CamlinternalFormat.make_printf((function (oc, _) {
+                    return Curry._1(k, oc);
+                  }), oc, /* End_of_acc */0, param[0]);
     }
     
     function fprintf(oc, fmt) {
-      return kfprintf(function () {
-                  return /* () */0;
-                }, oc, fmt);
+      return kfprintf((function () {
+                    return /* () */0;
+                  }), oc, fmt);
     }
     
     function bprintf(b, fmt) {
-      return kbprintf(function () {
-                  return /* () */0;
-                }, b, fmt);
+      return kbprintf((function () {
+                    return /* () */0;
+                  }), b, fmt);
     }
     
     function ifprintf(oc, fmt) {
-      return ikfprintf(function () {
-                  return /* () */0;
-                }, oc, fmt);
+      return ikfprintf((function () {
+                    return /* () */0;
+                  }), oc, fmt);
     }
     
     function printf(fmt) {
@@ -58,9 +58,9 @@ define(["exports", "./pervasives", "./curry", "./buffer", "./camlinternalFormat"
     }
     
     function sprintf(fmt) {
-      return ksprintf(function (s) {
-                  return s;
-                }, fmt);
+      return ksprintf((function (s) {
+                    return s;
+                  }), fmt);
     }
     
     var kprintf = ksprintf;

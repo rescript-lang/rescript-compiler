@@ -25,9 +25,25 @@ define(["exports"],
       return v;
     }
     
-    exports.caml_set_oo_id = caml_set_oo_id;
-    exports.get_id         = get_id;
-    exports.create         = create;
+    function isCamlExceptionOrOpenVariant(e) {
+      if (e === undefined) {
+        return /* false */0;
+      } else if (e.tag === 248) {
+        return /* true */1;
+      } else {
+        var slot = e[0];
+        if (slot !== undefined) {
+          return +(slot.tag === 248);
+        } else {
+          return /* false */0;
+        }
+      }
+    }
+    
+    exports.caml_set_oo_id               = caml_set_oo_id;
+    exports.get_id                       = get_id;
+    exports.create                       = create;
+    exports.isCamlExceptionOrOpenVariant = isCamlExceptionOrOpenVariant;
     
   })
 /* No side effect */

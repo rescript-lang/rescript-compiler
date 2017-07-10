@@ -17,18 +17,14 @@ define(["exports"],
       if (isFinite(x)) {
         if (Math.abs(x) >= 2.2250738585072014e-308) {
           return /* FP_normal */0;
-        }
-        else if (x !== 0) {
+        } else if (x !== 0) {
           return /* FP_subnormal */1;
-        }
-        else {
+        } else {
           return /* FP_zero */2;
         }
-      }
-      else if (isNaN(x)) {
+      } else if (isNaN(x)) {
         return /* FP_nan */4;
-      }
-      else {
+      } else {
         return /* FP_infinite */3;
       }
     }
@@ -44,21 +40,18 @@ define(["exports"],
                   -f,
                   -i
                 ];
-        }
-        else {
+        } else {
           return /* tuple */[
                   f,
                   i
                 ];
         }
-      }
-      else if (isNaN(x)) {
+      } else if (isNaN(x)) {
         return /* tuple */[
                 NaN,
                 NaN
               ];
-      }
-      else {
+      } else {
         return /* tuple */[
                 1 / x,
                 x
@@ -66,51 +59,61 @@ define(["exports"],
       }
     }
     
-    var caml_ldexp_float = ( function (x,exp) {
-    exp |= 0;
-    if (exp > 1023) {
-        exp -= 1023;
-        x *= Math.pow(2, 1023);
-        if (exp > 1023) {  // in case x is subnormal
-            exp -= 1023;
-            x *= Math.pow(2, 1023);
+    function caml_ldexp_float(x, exp) {
+      var match_000 = [x];
+      var match_001 = [exp];
+      var exp$prime = match_001;
+      var x$prime = match_000;
+      if (exp$prime[0] > 1023) {
+        exp$prime[0] -= 1023;
+        x$prime[0] = x$prime[0] * Math.pow(2, 1023);
+        if (exp$prime[0] > 1023) {
+          exp$prime[0] -= 1023;
+          x$prime[0] = x$prime[0] * Math.pow(2, 1023);
         }
+        
+      } else if (exp$prime[0] < -1023) {
+        exp$prime[0] += 1023;
+        x$prime[0] = x$prime[0] * Math.pow(2, -1023);
+      }
+      return x$prime[0] * Math.pow(2, exp$prime[0]);
     }
-    if (exp < -1023) {
-        exp += 1023;
-        x *= Math.pow(2, -1023);
-    }
-    x *= Math.pow(2, exp);
-    return x;
-}
-);
     
-    var caml_frexp_float = (function (x) {
-    if ((x == 0) || !isFinite(x)) return [ x, 0];
-    var neg = x < 0;
-    if (neg) x = - x;
-    var exp = Math.floor(Math.LOG2E*Math.log(x)) + 1;
-    x *= Math.pow(2,-exp);
-    if (x < 0.5) { x *= 2; exp -= 1; }
-    if (neg) x = - x;
-    return [x, exp];
-}
-);
+    function caml_frexp_float(x) {
+      if (x === 0 || !isFinite(x)) {
+        return /* tuple */[
+                x,
+                0
+              ];
+      } else {
+        var neg = +(x < 0);
+        var x$prime = Math.abs(x);
+        var exp = Math.floor(Math.LOG2E * Math.log(x$prime)) + 1;
+        x$prime = x$prime * Math.pow(2, -exp);
+        if (x$prime < 0.5) {
+          x$prime = x$prime * 2;
+          exp -= 1;
+        }
+        if (neg) {
+          x$prime = -x$prime;
+        }
+        return /* tuple */[
+                x$prime,
+                exp | 0
+              ];
+      }
+    }
     
     function caml_float_compare(x, y) {
       if (x === y) {
         return 0;
-      }
-      else if (x < y) {
+      } else if (x < y) {
         return -1;
-      }
-      else if (x > y || x === x) {
+      } else if (x > y || x === x) {
         return 1;
-      }
-      else if (y === y) {
+      } else if (y === y) {
         return -1;
-      }
-      else {
+      } else {
         return 0;
       }
     }
@@ -120,8 +123,7 @@ define(["exports"],
       var y$1 = y === 0 ? 1 / y : y;
       if (y$1 < 0) {
         return -x$1;
-      }
-      else {
+      } else {
         return x$1;
       }
     }
@@ -131,25 +133,28 @@ define(["exports"],
       var z = y - 1;
       if (Math.abs(x) > 1) {
         return z;
-      }
-      else if (z === 0) {
+      } else if (z === 0) {
         return x;
-      }
-      else {
+      } else {
         return x * z / Math.log(y);
       }
     }
     
-    var caml_hypot_float = ( function (x, y) {
-    var x0 = Math.abs(x), y0 = Math.abs(y);
-    var a = Math.max(x0, y0), b = Math.min(x0,y0) / (a?a:1);
-    return a * Math.sqrt(1 + b*b);
-}
-);
+    function caml_hypot_float(x, y) {
+      var match_000 = Math.abs(x);
+      var match_001 = Math.abs(y);
+      var y0 = match_001;
+      var x0 = match_000;
+      var a = Math.max(x0, y0);
+      var b = Math.min(x0, y0) / (
+        a !== 0 ? a : 1
+      );
+      return a * Math.sqrt(1 + b * b);
+    }
     
-    var caml_log10_float = ( function  (x) { 
-   return Math.LOG10E * Math.log(x); }
-);
+    function caml_log10_float(x) {
+      return Math.LOG10E * Math.log(x);
+    }
     
     exports.caml_int32_float_of_bits = caml_int32_float_of_bits;
     exports.caml_int32_bits_of_float = caml_int32_bits_of_float;
@@ -164,4 +169,4 @@ define(["exports"],
     exports.caml_log10_float         = caml_log10_float;
     
   })
-/* caml_ldexp_float Not a pure module */
+/* No side effect */

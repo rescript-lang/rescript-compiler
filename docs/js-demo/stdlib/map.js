@@ -1,13 +1,12 @@
 'use strict';
-define(["exports", "./caml_builtin_exceptions", "./curry"],
-  function(exports, Caml_builtin_exceptions, Curry){
+define(["exports", "./curry.js", "./caml_builtin_exceptions.js"],
+  function(exports, Curry, Caml_builtin_exceptions){
     'use strict';
     function Make(funarg) {
       var height = function (param) {
         if (param) {
           return param[4];
-        }
-        else {
+        } else {
           return 0;
         }
       };
@@ -42,25 +41,21 @@ define(["exports", "./caml_builtin_exceptions", "./curry"],
             var ll = l[0];
             if (height(ll) >= height(lr)) {
               return create(ll, lv, ld, create(lr, x, d, r));
-            }
-            else if (lr) {
+            } else if (lr) {
               return create(create(ll, lv, ld, lr[0]), lr[1], lr[2], create(lr[3], x, d, r));
-            }
-            else {
+            } else {
               throw [
                     Caml_builtin_exceptions.invalid_argument,
                     "Map.bal"
                   ];
             }
-          }
-          else {
+          } else {
             throw [
                   Caml_builtin_exceptions.invalid_argument,
                   "Map.bal"
                 ];
           }
-        }
-        else if (hr > (hl + 2 | 0)) {
+        } else if (hr > (hl + 2 | 0)) {
           if (r) {
             var rr = r[3];
             var rd = r[2];
@@ -68,25 +63,21 @@ define(["exports", "./caml_builtin_exceptions", "./curry"],
             var rl = r[0];
             if (height(rr) >= height(rl)) {
               return create(create(l, x, d, rl), rv, rd, rr);
-            }
-            else if (rl) {
+            } else if (rl) {
               return create(create(l, x, d, rl[0]), rl[1], rl[2], create(rl[3], rv, rd, rr));
-            }
-            else {
+            } else {
               throw [
                     Caml_builtin_exceptions.invalid_argument,
                     "Map.bal"
                   ];
             }
-          }
-          else {
+          } else {
             throw [
                   Caml_builtin_exceptions.invalid_argument,
                   "Map.bal"
                 ];
           }
-        }
-        else {
+        } else {
           return /* Node */[
                   l,
                   x,
@@ -99,8 +90,7 @@ define(["exports", "./caml_builtin_exceptions", "./curry"],
       var is_empty = function (param) {
         if (param) {
           return /* false */0;
-        }
-        else {
+        } else {
           return /* true */1;
         }
       };
@@ -114,12 +104,10 @@ define(["exports", "./caml_builtin_exceptions", "./curry"],
           if (c) {
             if (c < 0) {
               return bal(add(x, data, l), v, d, r);
-            }
-            else {
+            } else {
               return bal(l, v, d, add(x, data, r));
             }
-          }
-          else {
+          } else {
             return /* Node */[
                     l,
                     x,
@@ -128,8 +116,7 @@ define(["exports", "./caml_builtin_exceptions", "./curry"],
                     param[4]
                   ];
           }
-        }
-        else {
+        } else {
           return /* Node */[
                   /* Empty */0,
                   x,
@@ -148,12 +135,10 @@ define(["exports", "./caml_builtin_exceptions", "./curry"],
               _param = c < 0 ? param[0] : param[3];
               continue ;
               
-            }
-            else {
+            } else {
               return param[2];
             }
-          }
-          else {
+          } else {
             throw Caml_builtin_exceptions.not_found;
           }
         };
@@ -167,12 +152,10 @@ define(["exports", "./caml_builtin_exceptions", "./curry"],
               _param = c < 0 ? param[0] : param[3];
               continue ;
               
-            }
-            else {
+            } else {
               return /* true */1;
             }
-          }
-          else {
+          } else {
             return /* false */0;
           }
         };
@@ -186,15 +169,13 @@ define(["exports", "./caml_builtin_exceptions", "./curry"],
               _param = l;
               continue ;
               
-            }
-            else {
+            } else {
               return /* tuple */[
                       param[1],
                       param[2]
                     ];
             }
-          }
-          else {
+          } else {
             throw Caml_builtin_exceptions.not_found;
           }
         };
@@ -208,15 +189,13 @@ define(["exports", "./caml_builtin_exceptions", "./curry"],
               _param = r;
               continue ;
               
-            }
-            else {
+            } else {
               return /* tuple */[
                       param[1],
                       param[2]
                     ];
             }
-          }
-          else {
+          } else {
             throw Caml_builtin_exceptions.not_found;
           }
         };
@@ -226,12 +205,10 @@ define(["exports", "./caml_builtin_exceptions", "./curry"],
           var l = param[0];
           if (l) {
             return bal(remove_min_binding(l), param[1], param[2], param[3]);
-          }
-          else {
+          } else {
             return param[3];
           }
-        }
-        else {
+        } else {
           throw [
                 Caml_builtin_exceptions.invalid_argument,
                 "Map.remove_min_elt"
@@ -248,29 +225,24 @@ define(["exports", "./caml_builtin_exceptions", "./curry"],
           if (c) {
             if (c < 0) {
               return bal(remove(x, l), v, d, r);
-            }
-            else {
+            } else {
               return bal(l, v, d, remove(x, r));
             }
-          }
-          else {
+          } else {
             var t1 = l;
             var t2 = r;
             if (t1) {
               if (t2) {
                 var match = min_binding(t2);
                 return bal(t1, match[0], match[1], remove_min_binding(t2));
-              }
-              else {
+              } else {
                 return t1;
               }
-            }
-            else {
+            } else {
               return t2;
             }
           }
-        }
-        else {
+        } else {
           return /* Empty */0;
         }
       };
@@ -283,8 +255,7 @@ define(["exports", "./caml_builtin_exceptions", "./curry"],
             _param = param[3];
             continue ;
             
-          }
-          else {
+          } else {
             return /* () */0;
           }
         };
@@ -301,8 +272,7 @@ define(["exports", "./caml_builtin_exceptions", "./curry"],
                   r$prime,
                   param[4]
                 ];
-        }
-        else {
+        } else {
           return /* Empty */0;
         }
       };
@@ -319,8 +289,7 @@ define(["exports", "./caml_builtin_exceptions", "./curry"],
                   r$prime,
                   param[4]
                 ];
-        }
-        else {
+        } else {
           return /* Empty */0;
         }
       };
@@ -333,8 +302,7 @@ define(["exports", "./caml_builtin_exceptions", "./curry"],
             _m = m[3];
             continue ;
             
-          }
-          else {
+          } else {
             return accu;
           }
         };
@@ -348,16 +316,13 @@ define(["exports", "./caml_builtin_exceptions", "./curry"],
                 _param = param[3];
                 continue ;
                 
-              }
-              else {
+              } else {
                 return /* false */0;
               }
-            }
-            else {
+            } else {
               return /* false */0;
             }
-          }
-          else {
+          } else {
             return /* true */1;
           }
         };
@@ -368,17 +333,14 @@ define(["exports", "./caml_builtin_exceptions", "./curry"],
           if (param) {
             if (Curry._2(p, param[1], param[2])) {
               return /* true */1;
-            }
-            else if (exists(p, param[0])) {
+            } else if (exists(p, param[0])) {
               return /* true */1;
-            }
-            else {
+            } else {
               _param = param[3];
               continue ;
               
             }
-          }
-          else {
+          } else {
             return /* false */0;
           }
         };
@@ -386,16 +348,14 @@ define(["exports", "./caml_builtin_exceptions", "./curry"],
       var add_min_binding = function (k, v, param) {
         if (param) {
           return bal(add_min_binding(k, v, param[0]), param[1], param[2], param[3]);
-        }
-        else {
+        } else {
           return singleton(k, v);
         }
       };
       var add_max_binding = function (k, v, param) {
         if (param) {
           return bal(param[0], param[1], param[2], add_max_binding(k, v, param[3]));
-        }
-        else {
+        } else {
           return singleton(k, v);
         }
       };
@@ -406,19 +366,15 @@ define(["exports", "./caml_builtin_exceptions", "./curry"],
             var lh = l[4];
             if (lh > (rh + 2 | 0)) {
               return bal(l[0], l[1], l[2], join(l[3], v, d, r));
-            }
-            else if (rh > (lh + 2 | 0)) {
+            } else if (rh > (lh + 2 | 0)) {
               return bal(join(l, v, d, r[0]), r[1], r[2], r[3]);
-            }
-            else {
+            } else {
               return create(l, v, d, r);
             }
-          }
-          else {
+          } else {
             return add_max_binding(v, d, l);
           }
-        }
-        else {
+        } else {
           return add_min_binding(v, d, r);
         }
       };
@@ -427,20 +383,17 @@ define(["exports", "./caml_builtin_exceptions", "./curry"],
           if (t2) {
             var match = min_binding(t2);
             return join(t1, match[0], match[1], remove_min_binding(t2));
-          }
-          else {
+          } else {
             return t1;
           }
-        }
-        else {
+        } else {
           return t2;
         }
       };
       var concat_or_join = function (t1, v, d, t2) {
         if (d) {
           return join(t1, v, d[0], t2);
-        }
-        else {
+        } else {
           return concat(t1, t2);
         }
       };
@@ -459,8 +412,7 @@ define(["exports", "./caml_builtin_exceptions", "./curry"],
                       match[1],
                       join(match[2], v, d, r)
                     ];
-            }
-            else {
+            } else {
               var match$1 = split(x, r);
               return /* tuple */[
                       join(l, v, d, match$1[0]),
@@ -468,16 +420,14 @@ define(["exports", "./caml_builtin_exceptions", "./curry"],
                       match$1[2]
                     ];
             }
-          }
-          else {
+          } else {
             return /* tuple */[
                     l,
                     /* Some */[d],
                     r
                   ];
           }
-        }
-        else {
+        } else {
           return /* tuple */[
                   /* Empty */0,
                   /* None */0,
@@ -492,15 +442,12 @@ define(["exports", "./caml_builtin_exceptions", "./curry"],
           if (s1[4] >= height(s2)) {
             var match = split(v1, s2);
             return concat_or_join(merge(f, s1[0], match[0]), v1, Curry._3(f, v1, /* Some */[s1[2]], match[1]), merge(f, s1[3], match[2]));
-          }
-          else {
+          } else {
             exit = 1;
           }
-        }
-        else if (s2) {
+        } else if (s2) {
           exit = 1;
-        }
-        else {
+        } else {
           return /* Empty */0;
         }
         if (exit === 1) {
@@ -508,8 +455,7 @@ define(["exports", "./caml_builtin_exceptions", "./curry"],
             var v2 = s2[1];
             var match$1 = split(v2, s1);
             return concat_or_join(merge(f, match$1[0], s2[0]), v2, Curry._3(f, v2, match$1[1], /* Some */[s2[2]]), merge(f, match$1[2], s2[3]));
-          }
-          else {
+          } else {
             throw [
                   Caml_builtin_exceptions.assert_failure,
                   [
@@ -531,12 +477,10 @@ define(["exports", "./caml_builtin_exceptions", "./curry"],
           var r$prime = filter(p, param[3]);
           if (pvd) {
             return join(l$prime, v, d, r$prime);
-          }
-          else {
+          } else {
             return concat(l$prime, r$prime);
           }
-        }
-        else {
+        } else {
           return /* Empty */0;
         }
       };
@@ -556,15 +500,13 @@ define(["exports", "./caml_builtin_exceptions", "./curry"],
                     join(lt, v, d, rt),
                     concat(lf, rf)
                   ];
-          }
-          else {
+          } else {
             return /* tuple */[
                     concat(lt, rt),
                     join(lf, v, d, rf)
                   ];
           }
-        }
-        else {
+        } else {
           return /* tuple */[
                   /* Empty */0,
                   /* Empty */0
@@ -585,8 +527,7 @@ define(["exports", "./caml_builtin_exceptions", "./curry"],
             _m = m[0];
             continue ;
             
-          }
-          else {
+          } else {
             return e;
           }
         };
@@ -602,28 +543,23 @@ define(["exports", "./caml_builtin_exceptions", "./curry"],
               var c = Curry._2(funarg[/* compare */0], e1[0], e2[0]);
               if (c !== 0) {
                 return c;
-              }
-              else {
+              } else {
                 var c$1 = Curry._2(cmp, e1[1], e2[1]);
                 if (c$1 !== 0) {
                   return c$1;
-                }
-                else {
+                } else {
                   _e2 = cons_enum(e2[2], e2[3]);
                   _e1 = cons_enum(e1[2], e1[3]);
                   continue ;
                   
                 }
               }
-            }
-            else {
+            } else {
               return 1;
             }
-          }
-          else if (e2) {
+          } else if (e2) {
             return -1;
-          }
-          else {
+          } else {
             return 0;
           }
         };
@@ -638,25 +574,20 @@ define(["exports", "./caml_builtin_exceptions", "./curry"],
             if (e2) {
               if (Curry._2(funarg[/* compare */0], e1[0], e2[0])) {
                 return /* false */0;
-              }
-              else if (Curry._2(cmp, e1[1], e2[1])) {
+              } else if (Curry._2(cmp, e1[1], e2[1])) {
                 _e2 = cons_enum(e2[2], e2[3]);
                 _e1 = cons_enum(e1[2], e1[3]);
                 continue ;
                 
-              }
-              else {
+              } else {
                 return /* false */0;
               }
-            }
-            else {
+            } else {
               return /* false */0;
             }
-          }
-          else if (e2) {
+          } else if (e2) {
             return /* false */0;
-          }
-          else {
+          } else {
             return /* true */1;
           }
         };
@@ -664,8 +595,7 @@ define(["exports", "./caml_builtin_exceptions", "./curry"],
       var cardinal = function (param) {
         if (param) {
           return (cardinal(param[0]) + 1 | 0) + cardinal(param[3]) | 0;
-        }
-        else {
+        } else {
           return 0;
         }
       };
@@ -684,8 +614,7 @@ define(["exports", "./caml_builtin_exceptions", "./curry"],
             ];
             continue ;
             
-          }
-          else {
+          } else {
             return accu;
           }
         };

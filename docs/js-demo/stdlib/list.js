@@ -1,6 +1,6 @@
 'use strict';
-define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", "./curry"],
-  function(exports, Caml_builtin_exceptions, Caml_obj, Pervasives, Curry){
+define(["exports", "./curry.js", "./caml_obj.js", "./pervasives.js", "./caml_builtin_exceptions.js"],
+  function(exports, Curry, Caml_obj, Pervasives, Caml_builtin_exceptions){
     'use strict';
     function length(l) {
       var _len = 0;
@@ -13,8 +13,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
           _len = len + 1 | 0;
           continue ;
           
-        }
-        else {
+        } else {
           return len;
         }
       };
@@ -23,8 +22,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
     function hd(param) {
       if (param) {
         return param[0];
-      }
-      else {
+      } else {
         throw [
               Caml_builtin_exceptions.failure,
               "hd"
@@ -35,8 +33,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
     function tl(param) {
       if (param) {
         return param[1];
-      }
-      else {
+      } else {
         throw [
               Caml_builtin_exceptions.failure,
               "tl"
@@ -50,8 +47,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
               Caml_builtin_exceptions.invalid_argument,
               "List.nth"
             ];
-      }
-      else {
+      } else {
         var _l = l;
         var _n = n;
         while(true) {
@@ -63,12 +59,10 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
               _l = l$1[1];
               continue ;
               
-            }
-            else {
+            } else {
               return l$1[0];
             }
-          }
-          else {
+          } else {
             throw [
                   Caml_builtin_exceptions.failure,
                   "nth"
@@ -90,8 +84,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
           _l1 = l1[1];
           continue ;
           
-        }
-        else {
+        } else {
           return l2;
         }
       };
@@ -104,8 +97,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
     function flatten(param) {
       if (param) {
         return Pervasives.$at(param[0], flatten(param[1]));
-      }
-      else {
+      } else {
         return /* [] */0;
       }
     }
@@ -117,8 +109,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
                 r,
                 map(f, param[1])
               ];
-      }
-      else {
+      } else {
         return /* [] */0;
       }
     }
@@ -130,8 +121,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
                 r,
                 mapi(i + 1 | 0, f, param[1])
               ];
-      }
-      else {
+      } else {
         return /* [] */0;
       }
     }
@@ -154,8 +144,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
           ];
           continue ;
           
-        }
-        else {
+        } else {
           return accu;
         }
       };
@@ -169,8 +158,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
           _param = param[1];
           continue ;
           
-        }
-        else {
+        } else {
           return /* () */0;
         }
       };
@@ -189,8 +177,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
           _i = i + 1 | 0;
           continue ;
           
-        }
-        else {
+        } else {
           return /* () */0;
         }
       };
@@ -205,8 +192,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
           _accu = Curry._2(f, accu, l[0]);
           continue ;
           
-        }
-        else {
+        } else {
           return accu;
         }
       };
@@ -215,8 +201,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
     function fold_right(f, l, accu) {
       if (l) {
         return Curry._2(f, l[0], fold_right(f, l[1], accu));
-      }
-      else {
+      } else {
         return accu;
       }
     }
@@ -229,21 +214,18 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
                   r,
                   map2(f, l1[1], l2[1])
                 ];
-        }
-        else {
+        } else {
           throw [
                 Caml_builtin_exceptions.invalid_argument,
                 "List.map2"
               ];
         }
-      }
-      else if (l2) {
+      } else if (l2) {
         throw [
               Caml_builtin_exceptions.invalid_argument,
               "List.map2"
             ];
-      }
-      else {
+      } else {
         return /* [] */0;
       }
     }
@@ -266,21 +248,18 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
             ];
             continue ;
             
-          }
-          else {
+          } else {
             throw [
                   Caml_builtin_exceptions.invalid_argument,
                   "List.rev_map2"
                 ];
           }
-        }
-        else if (l2$1) {
+        } else if (l2$1) {
           throw [
                 Caml_builtin_exceptions.invalid_argument,
                 "List.rev_map2"
               ];
-        }
-        else {
+        } else {
           return accu;
         }
       };
@@ -297,21 +276,18 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
             _l1 = l1[1];
             continue ;
             
-          }
-          else {
+          } else {
             throw [
                   Caml_builtin_exceptions.invalid_argument,
                   "List.iter2"
                 ];
           }
-        }
-        else if (l2) {
+        } else if (l2) {
           throw [
                 Caml_builtin_exceptions.invalid_argument,
                 "List.iter2"
               ];
-        }
-        else {
+        } else {
           return /* () */0;
         }
       };
@@ -329,21 +305,18 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
             _accu = Curry._3(f, accu, l1[0], l2[0]);
             continue ;
             
-          }
-          else {
+          } else {
             throw [
                   Caml_builtin_exceptions.invalid_argument,
                   "List.fold_left2"
                 ];
           }
-        }
-        else if (l2) {
+        } else if (l2) {
           throw [
                 Caml_builtin_exceptions.invalid_argument,
                 "List.fold_left2"
               ];
-        }
-        else {
+        } else {
           return accu;
         }
       };
@@ -353,21 +326,18 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
       if (l1) {
         if (l2) {
           return Curry._3(f, l1[0], l2[0], fold_right2(f, l1[1], l2[1], accu));
-        }
-        else {
+        } else {
           throw [
                 Caml_builtin_exceptions.invalid_argument,
                 "List.fold_right2"
               ];
         }
-      }
-      else if (l2) {
+      } else if (l2) {
         throw [
               Caml_builtin_exceptions.invalid_argument,
               "List.fold_right2"
             ];
-      }
-      else {
+      } else {
         return accu;
       }
     }
@@ -380,12 +350,10 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
             _param = param[1];
             continue ;
             
-          }
-          else {
+          } else {
             return /* false */0;
           }
-        }
-        else {
+        } else {
           return /* true */1;
         }
       };
@@ -397,14 +365,12 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
         if (param) {
           if (Curry._1(p, param[0])) {
             return /* true */1;
-          }
-          else {
+          } else {
             _param = param[1];
             continue ;
             
           }
-        }
-        else {
+        } else {
           return /* false */0;
         }
       };
@@ -421,25 +387,21 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
               _l1 = l1[1];
               continue ;
               
-            }
-            else {
+            } else {
               return /* false */0;
             }
-          }
-          else {
+          } else {
             throw [
                   Caml_builtin_exceptions.invalid_argument,
                   "List.for_all2"
                 ];
           }
-        }
-        else if (l2) {
+        } else if (l2) {
           throw [
                 Caml_builtin_exceptions.invalid_argument,
                 "List.for_all2"
               ];
-        }
-        else {
+        } else {
           return /* true */1;
         }
       };
@@ -453,28 +415,24 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
           if (l2) {
             if (Curry._2(p, l1[0], l2[0])) {
               return /* true */1;
-            }
-            else {
+            } else {
               _l2 = l2[1];
               _l1 = l1[1];
               continue ;
               
             }
-          }
-          else {
+          } else {
             throw [
                   Caml_builtin_exceptions.invalid_argument,
                   "List.exists2"
                 ];
           }
-        }
-        else if (l2) {
+        } else if (l2) {
           throw [
                 Caml_builtin_exceptions.invalid_argument,
                 "List.exists2"
               ];
-        }
-        else {
+        } else {
           return /* false */0;
         }
       };
@@ -488,12 +446,10 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
             _param = param[1];
             continue ;
             
-          }
-          else {
+          } else {
             return /* true */1;
           }
-        }
-        else {
+        } else {
           return /* false */0;
         }
       };
@@ -505,14 +461,12 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
         if (param) {
           if (param[0] === x) {
             return /* true */1;
-          }
-          else {
+          } else {
             _param = param[1];
             continue ;
             
           }
-        }
-        else {
+        } else {
           return /* false */0;
         }
       };
@@ -527,12 +481,10 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
             _param = param[1];
             continue ;
             
-          }
-          else {
+          } else {
             return match[1];
           }
-        }
-        else {
+        } else {
           throw Caml_builtin_exceptions.not_found;
         }
       };
@@ -545,14 +497,12 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
           var match = param[0];
           if (match[0] === x) {
             return match[1];
-          }
-          else {
+          } else {
             _param = param[1];
             continue ;
             
           }
-        }
-        else {
+        } else {
           throw Caml_builtin_exceptions.not_found;
         }
       };
@@ -566,12 +516,10 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
             _param = param[1];
             continue ;
             
-          }
-          else {
+          } else {
             return /* true */1;
           }
-        }
-        else {
+        } else {
           return /* false */0;
         }
       };
@@ -583,14 +531,12 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
         if (param) {
           if (param[0][0] === x) {
             return /* true */1;
-          }
-          else {
+          } else {
             _param = param[1];
             continue ;
             
           }
-        }
-        else {
+        } else {
           return /* false */0;
         }
       };
@@ -605,12 +551,10 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
                   pair,
                   remove_assoc(x, l)
                 ];
-        }
-        else {
+        } else {
           return l;
         }
-      }
-      else {
+      } else {
         return /* [] */0;
       }
     }
@@ -621,15 +565,13 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
         var pair = param[0];
         if (pair[0] === x) {
           return l;
-        }
-        else {
+        } else {
           return /* :: */[
                   pair,
                   remove_assq(x, l)
                 ];
         }
-      }
-      else {
+      } else {
         return /* [] */0;
       }
     }
@@ -641,49 +583,45 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
           var x = param[0];
           if (Curry._1(p, x)) {
             return x;
-          }
-          else {
+          } else {
             _param = param[1];
             continue ;
             
           }
-        }
-        else {
+        } else {
           throw Caml_builtin_exceptions.not_found;
         }
       };
     }
     
     function find_all(p) {
-      return function (param) {
-        var _accu = /* [] */0;
-        var _param = param;
-        while(true) {
-          var param$1 = _param;
-          var accu = _accu;
-          if (param$1) {
-            var l = param$1[1];
-            var x = param$1[0];
-            if (Curry._1(p, x)) {
-              _param = l;
-              _accu = /* :: */[
-                x,
-                accu
-              ];
-              continue ;
-              
+      return (function (param) {
+          var _accu = /* [] */0;
+          var _param = param;
+          while(true) {
+            var param$1 = _param;
+            var accu = _accu;
+            if (param$1) {
+              var l = param$1[1];
+              var x = param$1[0];
+              if (Curry._1(p, x)) {
+                _param = l;
+                _accu = /* :: */[
+                  x,
+                  accu
+                ];
+                continue ;
+                
+              } else {
+                _param = l;
+                continue ;
+                
+              }
+            } else {
+              return rev_append(accu, /* [] */0);
             }
-            else {
-              _param = l;
-              continue ;
-              
-            }
-          }
-          else {
-            return rev_append(accu, /* [] */0);
-          }
-        };
-      };
+          };
+        });
     }
     
     function partition(p, l) {
@@ -705,8 +643,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
             ];
             continue ;
             
-          }
-          else {
+          } else {
             _param = l$1;
             _no = /* :: */[
               x,
@@ -715,8 +652,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
             continue ;
             
           }
-        }
-        else {
+        } else {
           return /* tuple */[
                   rev_append(yes, /* [] */0),
                   rev_append(no, /* [] */0)
@@ -739,8 +675,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
                   match$1[1]
                 ]
               ];
-      }
-      else {
+      } else {
         return /* tuple */[
                 /* [] */0,
                 /* [] */0
@@ -758,21 +693,18 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
                   ],
                   combine(l1[1], l2[1])
                 ];
-        }
-        else {
+        } else {
           throw [
                 Caml_builtin_exceptions.invalid_argument,
                 "List.combine"
               ];
         }
-      }
-      else if (l2) {
+      } else if (l2) {
         throw [
               Caml_builtin_exceptions.invalid_argument,
               "List.combine"
             ];
-      }
-      else {
+      } else {
         return /* [] */0;
       }
     }
@@ -787,19 +719,16 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
                     h1,
                     merge(cmp, l1[1], l2)
                   ];
-          }
-          else {
+          } else {
             return /* :: */[
                     h2,
                     merge(cmp, l1, l2[1])
                   ];
           }
-        }
-        else {
+        } else {
           return l1;
         }
-      }
-      else {
+      } else {
         return l2;
       }
     }
@@ -814,8 +743,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
             _k = k - 1 | 0;
             continue ;
             
-          }
-          else {
+          } else {
             throw [
                   Caml_builtin_exceptions.assert_failure,
                   [
@@ -825,8 +753,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
                   ]
                 ];
           }
-        }
-        else {
+        } else {
           return l;
         }
       };
@@ -838,8 +765,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
         if (n !== 2) {
           if (n !== 3) {
             exit = 1;
-          }
-          else if (l) {
+          } else if (l) {
             var match = l[1];
             if (match) {
               var match$1 = match[1];
@@ -859,8 +785,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
                               ]
                             ]
                           ];
-                  }
-                  else if (Curry._2(cmp, x1, x3) <= 0) {
+                  } else if (Curry._2(cmp, x1, x3) <= 0) {
                     return /* :: */[
                             x1,
                             /* :: */[
@@ -871,8 +796,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
                               ]
                             ]
                           ];
-                  }
-                  else {
+                  } else {
                     return /* :: */[
                             x3,
                             /* :: */[
@@ -884,8 +808,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
                             ]
                           ];
                   }
-                }
-                else if (Curry._2(cmp, x1, x3) <= 0) {
+                } else if (Curry._2(cmp, x1, x3) <= 0) {
                   return /* :: */[
                           x2,
                           /* :: */[
@@ -896,8 +819,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
                             ]
                           ]
                         ];
-                }
-                else if (Curry._2(cmp, x2, x3) <= 0) {
+                } else if (Curry._2(cmp, x2, x3) <= 0) {
                   return /* :: */[
                           x2,
                           /* :: */[
@@ -908,8 +830,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
                             ]
                           ]
                         ];
-                }
-                else {
+                } else {
                   return /* :: */[
                           x3,
                           /* :: */[
@@ -921,20 +842,16 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
                           ]
                         ];
                 }
-              }
-              else {
+              } else {
                 exit = 1;
               }
-            }
-            else {
+            } else {
               exit = 1;
             }
-          }
-          else {
+          } else {
             exit = 1;
           }
-        }
-        else if (l) {
+        } else if (l) {
           var match$2 = l[1];
           if (match$2) {
             var x2$1 = match$2[0];
@@ -947,8 +864,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
                         /* [] */0
                       ]
                     ];
-            }
-            else {
+            } else {
               return /* :: */[
                       x2$1,
                       /* :: */[
@@ -957,12 +873,10 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
                       ]
                     ];
             }
-          }
-          else {
+          } else {
             exit = 1;
           }
-        }
-        else {
+        } else {
           exit = 1;
         }
         if (exit === 1) {
@@ -990,8 +904,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
                   _l1 = l1[1];
                   continue ;
                   
-                }
-                else {
+                } else {
                   _accu = /* :: */[
                     h2,
                     accu
@@ -1000,12 +913,10 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
                   continue ;
                   
                 }
-              }
-              else {
+              } else {
                 return rev_append(l1, accu);
               }
-            }
-            else {
+            } else {
               return rev_append(l2$1, accu);
             }
           };
@@ -1017,8 +928,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
         if (n !== 2) {
           if (n !== 3) {
             exit = 1;
-          }
-          else if (l) {
+          } else if (l) {
             var match = l[1];
             if (match) {
               var match$1 = match[1];
@@ -1038,8 +948,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
                               ]
                             ]
                           ];
-                  }
-                  else if (Curry._2(cmp, x1, x3) > 0) {
+                  } else if (Curry._2(cmp, x1, x3) > 0) {
                     return /* :: */[
                             x1,
                             /* :: */[
@@ -1050,8 +959,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
                               ]
                             ]
                           ];
-                  }
-                  else {
+                  } else {
                     return /* :: */[
                             x3,
                             /* :: */[
@@ -1063,8 +971,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
                             ]
                           ];
                   }
-                }
-                else if (Curry._2(cmp, x1, x3) > 0) {
+                } else if (Curry._2(cmp, x1, x3) > 0) {
                   return /* :: */[
                           x2,
                           /* :: */[
@@ -1075,8 +982,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
                             ]
                           ]
                         ];
-                }
-                else if (Curry._2(cmp, x2, x3) > 0) {
+                } else if (Curry._2(cmp, x2, x3) > 0) {
                   return /* :: */[
                           x2,
                           /* :: */[
@@ -1087,8 +993,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
                             ]
                           ]
                         ];
-                }
-                else {
+                } else {
                   return /* :: */[
                           x3,
                           /* :: */[
@@ -1100,20 +1005,16 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
                           ]
                         ];
                 }
-              }
-              else {
+              } else {
                 exit = 1;
               }
-            }
-            else {
+            } else {
               exit = 1;
             }
-          }
-          else {
+          } else {
             exit = 1;
           }
-        }
-        else if (l) {
+        } else if (l) {
           var match$2 = l[1];
           if (match$2) {
             var x2$1 = match$2[0];
@@ -1126,8 +1027,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
                         /* [] */0
                       ]
                     ];
-            }
-            else {
+            } else {
               return /* :: */[
                       x2$1,
                       /* :: */[
@@ -1136,12 +1036,10 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
                       ]
                     ];
             }
-          }
-          else {
+          } else {
             exit = 1;
           }
-        }
-        else {
+        } else {
           exit = 1;
         }
         if (exit === 1) {
@@ -1169,8 +1067,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
                   _l1 = l1[1];
                   continue ;
                   
-                }
-                else {
+                } else {
                   _accu = /* :: */[
                     h2,
                     accu
@@ -1179,12 +1076,10 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
                   continue ;
                   
                 }
-              }
-              else {
+              } else {
                 return rev_append(l1, accu);
               }
-            }
-            else {
+            } else {
               return rev_append(l2$1, accu);
             }
           };
@@ -1194,8 +1089,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
       var len = length(l);
       if (len < 2) {
         return l;
-      }
-      else {
+      } else {
         return sort(len, l);
       }
     }
@@ -1206,8 +1100,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
         if (n !== 2) {
           if (n !== 3) {
             exit = 1;
-          }
-          else if (l) {
+          } else if (l) {
             var match = l[1];
             if (match) {
               var match$1 = match[1];
@@ -1231,8 +1124,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
                                   ]
                                 ]
                               ];
-                      }
-                      else {
+                      } else {
                         var c$2 = Curry._2(cmp, x1, x3);
                         if (c$2) {
                           if (c$2 < 0) {
@@ -1246,8 +1138,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
                                       ]
                                     ]
                                   ];
-                          }
-                          else {
+                          } else {
                             return /* :: */[
                                     x3,
                                     /* :: */[
@@ -1259,8 +1150,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
                                     ]
                                   ];
                           }
-                        }
-                        else {
+                        } else {
                           return /* :: */[
                                   x1,
                                   /* :: */[
@@ -1270,8 +1160,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
                                 ];
                         }
                       }
-                    }
-                    else {
+                    } else {
                       return /* :: */[
                               x1,
                               /* :: */[
@@ -1280,8 +1169,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
                               ]
                             ];
                     }
-                  }
-                  else {
+                  } else {
                     var c$3 = Curry._2(cmp, x1, x3);
                     if (c$3) {
                       if (c$3 < 0) {
@@ -1295,8 +1183,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
                                   ]
                                 ]
                               ];
-                      }
-                      else {
+                      } else {
                         var c$4 = Curry._2(cmp, x2, x3);
                         if (c$4) {
                           if (c$4 < 0) {
@@ -1310,8 +1197,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
                                       ]
                                     ]
                                   ];
-                          }
-                          else {
+                          } else {
                             return /* :: */[
                                     x3,
                                     /* :: */[
@@ -1323,8 +1209,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
                                     ]
                                   ];
                           }
-                        }
-                        else {
+                        } else {
                           return /* :: */[
                                   x2,
                                   /* :: */[
@@ -1334,8 +1219,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
                                 ];
                         }
                       }
-                    }
-                    else {
+                    } else {
                       return /* :: */[
                               x2,
                               /* :: */[
@@ -1345,8 +1229,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
                             ];
                     }
                   }
-                }
-                else {
+                } else {
                   var c$5 = Curry._2(cmp, x2, x3);
                   if (c$5) {
                     if (c$5 < 0) {
@@ -1357,8 +1240,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
                                 /* [] */0
                               ]
                             ];
-                    }
-                    else {
+                    } else {
                       return /* :: */[
                               x3,
                               /* :: */[
@@ -1367,28 +1249,23 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
                               ]
                             ];
                     }
-                  }
-                  else {
+                  } else {
                     return /* :: */[
                             x2,
                             /* [] */0
                           ];
                   }
                 }
-              }
-              else {
+              } else {
                 exit = 1;
               }
-            }
-            else {
+            } else {
               exit = 1;
             }
-          }
-          else {
+          } else {
             exit = 1;
           }
-        }
-        else if (l) {
+        } else if (l) {
           var match$2 = l[1];
           if (match$2) {
             var x2$1 = match$2[0];
@@ -1403,8 +1280,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
                           /* [] */0
                         ]
                       ];
-              }
-              else {
+              } else {
                 return /* :: */[
                         x2$1,
                         /* :: */[
@@ -1413,19 +1289,16 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
                         ]
                       ];
               }
-            }
-            else {
+            } else {
               return /* :: */[
                       x1$1,
                       /* [] */0
                     ];
             }
-          }
-          else {
+          } else {
             exit = 1;
           }
-        }
-        else {
+        } else {
           exit = 1;
         }
         if (exit === 1) {
@@ -1457,8 +1330,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
                     _l1 = t1;
                     continue ;
                     
-                  }
-                  else {
+                  } else {
                     _accu = /* :: */[
                       h2,
                       accu
@@ -1467,8 +1339,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
                     continue ;
                     
                   }
-                }
-                else {
+                } else {
                   _accu = /* :: */[
                     h1,
                     accu
@@ -1478,12 +1349,10 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
                   continue ;
                   
                 }
-              }
-              else {
+              } else {
                 return rev_append(l1, accu);
               }
-            }
-            else {
+            } else {
               return rev_append(l2$1, accu);
             }
           };
@@ -1495,8 +1364,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
         if (n !== 2) {
           if (n !== 3) {
             exit = 1;
-          }
-          else if (l) {
+          } else if (l) {
             var match = l[1];
             if (match) {
               var match$1 = match[1];
@@ -1520,8 +1388,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
                                   ]
                                 ]
                               ];
-                      }
-                      else {
+                      } else {
                         var c$2 = Curry._2(cmp, x1, x3);
                         if (c$2) {
                           if (c$2 > 0) {
@@ -1535,8 +1402,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
                                       ]
                                     ]
                                   ];
-                          }
-                          else {
+                          } else {
                             return /* :: */[
                                     x3,
                                     /* :: */[
@@ -1548,8 +1414,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
                                     ]
                                   ];
                           }
-                        }
-                        else {
+                        } else {
                           return /* :: */[
                                   x1,
                                   /* :: */[
@@ -1559,8 +1424,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
                                 ];
                         }
                       }
-                    }
-                    else {
+                    } else {
                       return /* :: */[
                               x1,
                               /* :: */[
@@ -1569,8 +1433,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
                               ]
                             ];
                     }
-                  }
-                  else {
+                  } else {
                     var c$3 = Curry._2(cmp, x1, x3);
                     if (c$3) {
                       if (c$3 > 0) {
@@ -1584,8 +1447,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
                                   ]
                                 ]
                               ];
-                      }
-                      else {
+                      } else {
                         var c$4 = Curry._2(cmp, x2, x3);
                         if (c$4) {
                           if (c$4 > 0) {
@@ -1599,8 +1461,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
                                       ]
                                     ]
                                   ];
-                          }
-                          else {
+                          } else {
                             return /* :: */[
                                     x3,
                                     /* :: */[
@@ -1612,8 +1473,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
                                     ]
                                   ];
                           }
-                        }
-                        else {
+                        } else {
                           return /* :: */[
                                   x2,
                                   /* :: */[
@@ -1623,8 +1483,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
                                 ];
                         }
                       }
-                    }
-                    else {
+                    } else {
                       return /* :: */[
                               x2,
                               /* :: */[
@@ -1634,8 +1493,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
                             ];
                     }
                   }
-                }
-                else {
+                } else {
                   var c$5 = Curry._2(cmp, x2, x3);
                   if (c$5) {
                     if (c$5 > 0) {
@@ -1646,8 +1504,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
                                 /* [] */0
                               ]
                             ];
-                    }
-                    else {
+                    } else {
                       return /* :: */[
                               x3,
                               /* :: */[
@@ -1656,28 +1513,23 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
                               ]
                             ];
                     }
-                  }
-                  else {
+                  } else {
                     return /* :: */[
                             x2,
                             /* [] */0
                           ];
                   }
                 }
-              }
-              else {
+              } else {
                 exit = 1;
               }
-            }
-            else {
+            } else {
               exit = 1;
             }
-          }
-          else {
+          } else {
             exit = 1;
           }
-        }
-        else if (l) {
+        } else if (l) {
           var match$2 = l[1];
           if (match$2) {
             var x2$1 = match$2[0];
@@ -1692,8 +1544,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
                           /* [] */0
                         ]
                       ];
-              }
-              else {
+              } else {
                 return /* :: */[
                         x2$1,
                         /* :: */[
@@ -1702,19 +1553,16 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
                         ]
                       ];
               }
-            }
-            else {
+            } else {
               return /* :: */[
                       x1$1,
                       /* [] */0
                     ];
             }
-          }
-          else {
+          } else {
             exit = 1;
           }
-        }
-        else {
+        } else {
           exit = 1;
         }
         if (exit === 1) {
@@ -1746,8 +1594,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
                     _l1 = t1;
                     continue ;
                     
-                  }
-                  else {
+                  } else {
                     _accu = /* :: */[
                       h2,
                       accu
@@ -1756,8 +1603,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
                     continue ;
                     
                   }
-                }
-                else {
+                } else {
                   _accu = /* :: */[
                     h1,
                     accu
@@ -1767,12 +1613,10 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
                   continue ;
                   
                 }
-              }
-              else {
+              } else {
                 return rev_append(l1, accu);
               }
-            }
-            else {
+            } else {
               return rev_append(l2$1, accu);
             }
           };
@@ -1782,8 +1626,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
       var len = length(l);
       if (len < 2) {
         return l;
-      }
-      else {
+      } else {
         return sort(len, l);
       }
     }

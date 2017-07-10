@@ -1,16 +1,16 @@
 'use strict';
-define(["exports", "./caml_builtin_exceptions", "./caml_io", "./obj", "./pervasives", "./caml_backtrace", "./block", "./curry", "./printf", "./array", "./buffer"],
-  function(exports, Caml_builtin_exceptions, Caml_io, Obj, Pervasives, Caml_backtrace, Block, Curry, Printf, $$Array, Buffer){
+define(["exports", "./obj.js", "./array.js", "./block.js", "./curry.js", "./buffer.js", "./js_exn.js", "./printf.js", "./caml_io.js", "./caml_array.js", "./pervasives.js", "./caml_backtrace.js", "./caml_builtin_exceptions.js"],
+  function(exports, Obj, $$Array, Block, Curry, Buffer, Js_exn, Printf, Caml_io, Caml_array, Pervasives, Caml_backtrace, Caml_builtin_exceptions){
     'use strict';
     var printers = [/* [] */0];
     
     var locfmt = /* Format */[
       /* String_literal */Block.__(11, [
-          'File "',
+          "File \"",
           /* String */Block.__(2, [
               /* No_padding */0,
               /* String_literal */Block.__(11, [
-                  '", line ',
+                  "\", line ",
                   /* Int */Block.__(4, [
                       /* Int_d */0,
                       /* No_padding */0,
@@ -42,7 +42,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_io", "./obj", "./pervasi
                 ])
             ])
         ]),
-      'File "%s", line %d, characters %d-%d: %s'
+      "File \"%s\", line %d, characters %d-%d: %s"
     ];
     
     function field(x, i) {
@@ -57,8 +57,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_io", "./obj", "./pervasi
                           ]),
                         "%d"
                       ]), f);
-      }
-      else if ((f.tag | 0) === Obj.string_tag) {
+      } else if ((f.tag | 0) === Obj.string_tag) {
         return Curry._1(Printf.sprintf(/* Format */[
                         /* Caml_string */Block.__(3, [
                             /* No_padding */0,
@@ -66,11 +65,9 @@ define(["exports", "./caml_builtin_exceptions", "./caml_io", "./obj", "./pervasi
                           ]),
                         "%S"
                       ]), f);
-      }
-      else if ((f.tag | 0) === Obj.double_tag) {
+      } else if ((f.tag | 0) === Obj.double_tag) {
         return Pervasives.string_of_float(f);
-      }
-      else {
+      } else {
         return "_";
       }
     }
@@ -78,8 +75,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_io", "./obj", "./pervasi
     function other_fields(x, i) {
       if (i >= x.length) {
         return "";
-      }
-      else {
+      } else {
         return Curry._2(Printf.sprintf(/* Format */[
                         /* String_literal */Block.__(11, [
                             ", ",
@@ -115,8 +111,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_io", "./obj", "./pervasi
                           ]),
                         "(%s%s)"
                       ]), field(x, 1), other_fields(x, 2));
-      }
-      else {
+      } else {
         switch (n) {
           case 0 : 
           case 1 : 
@@ -154,38 +149,30 @@ define(["exports", "./caml_builtin_exceptions", "./caml_io", "./obj", "./pervasi
           }
           if (match) {
             return match[0];
-          }
-          else {
+          } else {
             _param = param[1];
             continue ;
             
           }
-        }
-        else if (x === Caml_builtin_exceptions.out_of_memory) {
+        } else if (x === Caml_builtin_exceptions.out_of_memory) {
           return "Out of memory";
-        }
-        else if (x === Caml_builtin_exceptions.stack_overflow) {
+        } else if (x === Caml_builtin_exceptions.stack_overflow) {
           return "Stack overflow";
-        }
-        else if (x[0] === Caml_builtin_exceptions.match_failure) {
+        } else if (x[0] === Caml_builtin_exceptions.match_failure) {
           var match$1 = x[1];
           var $$char = match$1[2];
           return Curry._5(Printf.sprintf(locfmt), match$1[0], match$1[1], $$char, $$char + 5 | 0, "Pattern matching failed");
-        }
-        else if (x[0] === Caml_builtin_exceptions.assert_failure) {
+        } else if (x[0] === Caml_builtin_exceptions.assert_failure) {
           var match$2 = x[1];
           var $$char$1 = match$2[2];
           return Curry._5(Printf.sprintf(locfmt), match$2[0], match$2[1], $$char$1, $$char$1 + 6 | 0, "Assertion failed");
-        }
-        else if (x[0] === Caml_builtin_exceptions.undefined_recursive_module) {
+        } else if (x[0] === Caml_builtin_exceptions.undefined_recursive_module) {
           var match$3 = x[1];
           var $$char$2 = match$3[2];
           return Curry._5(Printf.sprintf(locfmt), match$3[0], match$3[1], $$char$2, $$char$2 + 6 | 0, "Undefined recursive module");
-        }
-        else if ((x.tag | 0) !== 0) {
+        } else if ((x.tag | 0) !== 0) {
           return x[0];
-        }
-        else {
+        } else {
           var constructor = x[0][0];
           return constructor + fields(x);
         }
@@ -196,7 +183,8 @@ define(["exports", "./caml_builtin_exceptions", "./caml_io", "./obj", "./pervasi
       try {
         return Curry._1(fct, arg);
       }
-      catch (x){
+      catch (raw_x){
+        var x = Js_exn.internalToOCamlException(raw_x);
         Curry._1(Printf.eprintf(/* Format */[
                   /* String_literal */Block.__(11, [
                       "Uncaught exception: ",
@@ -219,7 +207,8 @@ define(["exports", "./caml_builtin_exceptions", "./caml_io", "./obj", "./pervasi
       try {
         return Curry._1(fct, arg);
       }
-      catch (x){
+      catch (raw_x){
+        var x = Js_exn.internalToOCamlException(raw_x);
         Caml_io.caml_ml_flush(Pervasives.stdout);
         Curry._1(Printf.eprintf(/* Format */[
                   /* String_literal */Block.__(11, [
@@ -242,11 +231,11 @@ define(["exports", "./caml_builtin_exceptions", "./caml_io", "./obj", "./pervasi
       try {
         return /* Some */[$$Array.map(Caml_backtrace.caml_convert_raw_backtrace_slot, rbckt)];
       }
-      catch (exn){
+      catch (raw_exn){
+        var exn = Js_exn.internalToOCamlException(raw_exn);
         if (exn[0] === Caml_builtin_exceptions.failure) {
           return /* None */0;
-        }
-        else {
+        } else {
           throw exn;
         }
       }
@@ -257,23 +246,19 @@ define(["exports", "./caml_builtin_exceptions", "./caml_io", "./obj", "./pervasi
         if (is_raise) {
           if (pos) {
             return "Re-raised at";
-          }
-          else {
+          } else {
             return "Raised at";
           }
-        }
-        else if (pos) {
+        } else if (pos) {
           return "Called from";
-        }
-        else {
+        } else {
           return "Raised by primitive operation at";
         }
       };
       if (slot.tag) {
         if (slot[0] !== 0) {
           return /* None */0;
-        }
-        else {
+        } else {
           return /* Some */[Curry._1(Printf.sprintf(/* Format */[
                             /* String */Block.__(2, [
                                 /* No_padding */0,
@@ -285,17 +270,16 @@ define(["exports", "./caml_builtin_exceptions", "./caml_io", "./obj", "./pervasi
                             "%s unknown location"
                           ]), info(/* false */0))];
         }
-      }
-      else {
+      } else {
         return /* Some */[Curry._5(Printf.sprintf(/* Format */[
                           /* String */Block.__(2, [
                               /* No_padding */0,
                               /* String_literal */Block.__(11, [
-                                  ' file "',
+                                  " file \"",
                                   /* String */Block.__(2, [
                                       /* No_padding */0,
                                       /* String_literal */Block.__(11, [
-                                          '", line ',
+                                          "\", line ",
                                           /* Int */Block.__(4, [
                                               /* Int_d */0,
                                               /* No_padding */0,
@@ -322,7 +306,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_io", "./obj", "./pervasi
                                     ])
                                 ])
                             ]),
-                          '%s file "%s", line %d, characters %d-%d'
+                          "%s file \"%s\", line %d, characters %d-%d"
                         ]), info(slot[0]), slot[1], slot[2], slot[3], slot[4])];
       }
     }
@@ -333,7 +317,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_io", "./obj", "./pervasi
       if (backtrace) {
         var a = backtrace[0];
         for(var i = 0 ,i_finish = a.length - 1 | 0; i <= i_finish; ++i){
-          var match = format_backtrace_slot(i, a[i]);
+          var match = format_backtrace_slot(i, Caml_array.caml_array_get(a, i));
           if (match) {
             Curry._1(Printf.fprintf(outchan$1, /* Format */[
                       /* String */Block.__(2, [
@@ -349,8 +333,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_io", "./obj", "./pervasi
           
         }
         return /* () */0;
-      }
-      else {
+      } else {
         return Printf.fprintf(outchan$1, /* Format */[
                     /* String_literal */Block.__(11, [
                         "(Program not linked with -g, cannot print stack backtrace)\n",
@@ -370,7 +353,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_io", "./obj", "./pervasi
         var a = backtrace[0];
         var b = Buffer.create(1024);
         for(var i = 0 ,i_finish = a.length - 1 | 0; i <= i_finish; ++i){
-          var match = format_backtrace_slot(i, a[i]);
+          var match = format_backtrace_slot(i, Caml_array.caml_array_get(a, i));
           if (match) {
             Curry._1(Printf.bprintf(b, /* Format */[
                       /* String */Block.__(2, [
@@ -386,8 +369,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_io", "./obj", "./pervasi
           
         }
         return Buffer.contents(b);
-      }
-      else {
+      } else {
         return "(Program not linked with -g, cannot print stack backtrace)\n";
       }
     }
@@ -403,8 +385,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_io", "./obj", "./pervasi
     function backtrace_slot_location(param) {
       if (param.tag) {
         return /* None */0;
-      }
-      else {
+      } else {
         return /* Some */[/* record */[
                   /* filename */param[1],
                   /* line_number */param[2],
@@ -421,8 +402,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_io", "./obj", "./pervasi
         var usable_slot = function (param) {
           if (param.tag) {
             return /* false */0;
-          }
-          else {
+          } else {
             return /* true */1;
           }
         };
@@ -430,28 +410,24 @@ define(["exports", "./caml_builtin_exceptions", "./caml_io", "./obj", "./pervasi
           while(true) {
             var i = _i;
             if (i !== -1) {
-              if (usable_slot(backtrace[i])) {
+              if (usable_slot(Caml_array.caml_array_get(backtrace, i))) {
                 return /* true */1;
-              }
-              else {
+              } else {
                 _i = i - 1 | 0;
                 continue ;
                 
               }
-            }
-            else {
+            } else {
               return /* false */0;
             }
           };
         };
         if (exists_usable(backtrace.length - 1 | 0)) {
           return /* Some */[backtrace];
-        }
-        else {
+        } else {
           return /* None */0;
         }
-      }
-      else {
+      } else {
         return /* None */0;
       }
     }
@@ -460,9 +436,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_io", "./obj", "./pervasi
       return bckt.length;
     }
     
-    function get_raw_backtrace_slot(bckt, i) {
-      return bckt[i];
-    }
+    var get_raw_backtrace_slot = Caml_array.caml_array_get;
     
     function get_backtrace() {
       return backtrace_to_string(convert_raw_backtrace(/* () */0));
@@ -479,8 +453,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_io", "./obj", "./pervasi
     function exn_slot(x) {
       if (x.tag) {
         return x;
-      }
-      else {
+      } else {
         return x[0];
       }
     }
@@ -524,7 +497,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_io", "./obj", "./pervasi
       format_backtrace_slot
     ];
     
-    var convert_raw_backtrace_slot = Caml_backtrace.caml_convert_raw_backtrace_slot
+    var convert_raw_backtrace_slot = Caml_backtrace.caml_convert_raw_backtrace_slot;
     
     exports.to_string                      = to_string;
     exports.print                          = print;

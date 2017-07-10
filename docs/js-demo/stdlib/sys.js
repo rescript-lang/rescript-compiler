@@ -1,10 +1,10 @@
 'use strict';
-define(["exports", "./caml_exceptions"],
-  function(exports, Caml_exceptions){
+define(["exports", "./caml_sys.js", "./caml_exceptions.js"],
+  function(exports, Caml_sys, Caml_exceptions){
     'use strict';
     var is_js = /* true */1;
     
-    var match_001 = /* array */[];
+    var match = Caml_sys.caml_sys_get_argv(/* () */0);
     
     var big_endian = /* false */0;
     
@@ -30,9 +30,9 @@ define(["exports", "./caml_exceptions"],
       return /* () */0;
     }
     
-    var argv = match_001;
+    var argv = match[1];
     
-    var executable_name = "cmd";
+    var executable_name = match[0];
     
     var os_type = "Unix";
     

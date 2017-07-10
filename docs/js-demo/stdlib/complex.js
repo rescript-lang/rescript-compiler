@@ -50,8 +50,7 @@ define(["exports"],
                 (x[/* re */0] + r * x[/* im */1]) / d,
                 (x[/* im */1] - r * x[/* re */0]) / d
               ];
-      }
-      else {
+      } else {
         var r$1 = y[/* re */0] / y[/* im */1];
         var d$1 = y[/* im */1] + r$1 * y[/* re */0];
         return /* float array */[
@@ -74,15 +73,12 @@ define(["exports"],
       var i = Math.abs(x[/* im */1]);
       if (r === 0.0) {
         return i;
-      }
-      else if (i === 0.0) {
+      } else if (i === 0.0) {
         return r;
-      }
-      else if (r >= i) {
+      } else if (r >= i) {
         var q = i / r;
         return r * Math.sqrt(1.0 + q * q);
-      }
-      else {
+      } else {
         var q$1 = r / i;
         return i * Math.sqrt(1.0 + q$1 * q$1);
       }
@@ -105,16 +101,14 @@ define(["exports"],
                 0.0,
                 0.0
               ];
-      }
-      else {
+      } else {
         var r = Math.abs(x[/* re */0]);
         var i = Math.abs(x[/* im */1]);
         var w;
         if (r >= i) {
           var q = i / r;
           w = Math.sqrt(r) * Math.sqrt(0.5 * (1.0 + Math.sqrt(1.0 + q * q)));
-        }
-        else {
+        } else {
           var q$1 = r / i;
           w = Math.sqrt(i) * Math.sqrt(0.5 * (q$1 + Math.sqrt(1.0 + q$1 * q$1)));
         }
@@ -123,8 +117,7 @@ define(["exports"],
                   w,
                   0.5 * x[/* im */1] / w
                 ];
-        }
-        else {
+        } else {
           return /* float array */[
                   0.5 * i / w,
                   x[/* im */1] >= 0.0 ? w : -w

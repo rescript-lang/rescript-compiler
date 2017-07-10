@@ -1,6 +1,6 @@
 'use strict';
-define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", "./caml_int32", "./char", "./curry", "./caml_string", "./list"],
-  function(exports, Caml_builtin_exceptions, Caml_obj, Pervasives, Caml_int32, Char, Curry, Caml_string, List){
+define(["exports", "./char.js", "./list.js", "./curry.js", "./caml_obj.js", "./caml_int32.js", "./pervasives.js", "./caml_string.js", "./caml_builtin_exceptions.js"],
+  function(exports, Char, List, Curry, Caml_obj, Caml_int32, Pervasives, Caml_string, Caml_builtin_exceptions){
     'use strict';
     function make(n, c) {
       var s = Caml_string.caml_create_string(n);
@@ -39,8 +39,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
               Caml_builtin_exceptions.invalid_argument,
               "String.sub / Bytes.sub"
             ];
-      }
-      else {
+      } else {
         var r = Caml_string.caml_create_string(len);
         Caml_string.caml_blit_bytes(s, ofs, r, 0, len);
         return r;
@@ -55,7 +54,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
       var len = (s.length + left | 0) + right | 0;
       var r = Caml_string.caml_create_string(len);
       var match = left < 0 ? /* tuple */[
-          -left,
+          -left | 0,
           0
         ] : /* tuple */[
           0,
@@ -76,8 +75,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
               Caml_builtin_exceptions.invalid_argument,
               "String.fill / Bytes.fill"
             ];
-      }
-      else {
+      } else {
         return Caml_string.caml_fill_string(s, ofs, len, c);
       }
     }
@@ -88,8 +86,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
               Caml_builtin_exceptions.invalid_argument,
               "Bytes.blit"
             ];
-      }
-      else {
+      } else {
         return Caml_string.caml_blit_bytes(s1, ofs1, s2, ofs2, len);
       }
     }
@@ -100,8 +97,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
               Caml_builtin_exceptions.invalid_argument,
               "String.blit / Bytes.blit_string"
             ];
-      }
-      else {
+      } else {
         return Caml_string.caml_blit_string(s1, ofs1, s2, ofs2, len);
       }
     }
@@ -125,24 +121,23 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
         var hd = l[0];
         var num = [0];
         var len = [0];
-        List.iter(function (s) {
-              num[0] = num[0] + 1 | 0;
-              len[0] = len[0] + s.length | 0;
-              return /* () */0;
-            }, l);
+        List.iter((function (s) {
+                num[0] = num[0] + 1 | 0;
+                len[0] = len[0] + s.length | 0;
+                return /* () */0;
+              }), l);
         var r = Caml_string.caml_create_string(len[0] + Caml_int32.imul(sep.length, num[0] - 1 | 0) | 0);
         Caml_string.caml_blit_bytes(hd, 0, r, 0, hd.length);
         var pos = [hd.length];
-        List.iter(function (s) {
-              Caml_string.caml_blit_bytes(sep, 0, r, pos[0], sep.length);
-              pos[0] = pos[0] + sep.length | 0;
-              Caml_string.caml_blit_bytes(s, 0, r, pos[0], s.length);
-              pos[0] = pos[0] + s.length | 0;
-              return /* () */0;
-            }, l[1]);
+        List.iter((function (s) {
+                Caml_string.caml_blit_bytes(sep, 0, r, pos[0], sep.length);
+                pos[0] = pos[0] + sep.length | 0;
+                Caml_string.caml_blit_bytes(s, 0, r, pos[0], s.length);
+                pos[0] = pos[0] + s.length | 0;
+                return /* () */0;
+              }), l[1]);
         return r;
-      }
-      else {
+      } else {
         return empty;
       }
     }
@@ -156,15 +151,12 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
       if (switcher > 4 || switcher < 0) {
         if (switcher !== 23) {
           return /* false */0;
-        }
-        else {
+        } else {
           return /* true */1;
         }
-      }
-      else if (switcher !== 2) {
+      } else if (switcher !== 2) {
         return /* true */1;
-      }
-      else {
+      } else {
         return /* false */0;
       }
     }
@@ -181,8 +173,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
       };
       if (j >= i) {
         return sub(s, i, (j - i | 0) + 1 | 0);
-      }
-      else {
+      } else {
         return empty;
       }
     }
@@ -199,8 +190,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
             ) : (
               switcher > 57 || switcher < 1 ? 2 : 1
             );
-        }
-        else {
+        } else {
           $js = match >= 11 ? (
               match !== 13 ? 4 : 2
             ) : (
@@ -211,8 +201,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
       }
       if (n === s.length) {
         return copy(s);
-      }
-      else {
+      } else {
         var s$prime = Caml_string.caml_create_string(n);
         n = 0;
         for(var i$1 = 0 ,i_finish$1 = s.length - 1 | 0; i$1 <= i_finish$1; ++i$1){
@@ -222,27 +211,21 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
             if (c !== 92) {
               if (c >= 127) {
                 exit = 1;
-              }
-              else {
+              } else {
                 s$prime[n] = c;
               }
-            }
-            else {
+            } else {
               exit = 2;
             }
-          }
-          else if (c >= 32) {
+          } else if (c >= 32) {
             if (c >= 34) {
               exit = 2;
-            }
-            else {
+            } else {
               s$prime[n] = c;
             }
-          }
-          else if (c >= 14) {
+          } else if (c >= 14) {
             exit = 1;
-          }
-          else {
+          } else {
             switch (c) {
               case 8 : 
                   s$prime[n] = /* "\\" */92;
@@ -310,8 +293,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
           r[i] = Curry._1(f, s[i]);
         }
         return r;
-      }
-      else {
+      } else {
         return s;
       }
     }
@@ -324,8 +306,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
           r[i] = Curry._2(f, i, s[i]);
         }
         return r;
-      }
-      else {
+      } else {
         return s;
       }
     }
@@ -343,8 +324,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
         var r = copy(s);
         r[0] = Curry._1(f, s[0]);
         return r;
-      }
-      else {
+      } else {
         return s;
       }
     }
@@ -362,11 +342,9 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
         var i = _i;
         if (i >= lim) {
           throw Caml_builtin_exceptions.not_found;
-        }
-        else if (s[i] === c) {
+        } else if (s[i] === c) {
           return i;
-        }
-        else {
+        } else {
           _i = i + 1 | 0;
           continue ;
           
@@ -385,8 +363,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
               Caml_builtin_exceptions.invalid_argument,
               "String.index_from / Bytes.index_from"
             ];
-      }
-      else {
+      } else {
         return index_rec(s, l, i, c);
       }
     }
@@ -396,11 +373,9 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
         var i = _i;
         if (i < 0) {
           throw Caml_builtin_exceptions.not_found;
-        }
-        else if (s[i] === c) {
+        } else if (s[i] === c) {
           return i;
-        }
-        else {
+        } else {
           _i = i - 1 | 0;
           continue ;
           
@@ -418,8 +393,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
               Caml_builtin_exceptions.invalid_argument,
               "String.rindex_from / Bytes.rindex_from"
             ];
-      }
-      else {
+      } else {
         return rindex_rec(s, i, c);
       }
     }
@@ -431,8 +405,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
               Caml_builtin_exceptions.invalid_argument,
               "String.contains_from / Bytes.contains_from"
             ];
-      }
-      else {
+      } else {
         try {
           index_rec(s, l, i, c);
           return /* true */1;
@@ -440,8 +413,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
         catch (exn){
           if (exn === Caml_builtin_exceptions.not_found) {
             return /* false */0;
-          }
-          else {
+          } else {
             throw exn;
           }
         }
@@ -458,8 +430,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
               Caml_builtin_exceptions.invalid_argument,
               "String.rcontains_from / Bytes.rcontains_from"
             ];
-      }
-      else {
+      } else {
         try {
           rindex_rec(s, i, c);
           return /* true */1;
@@ -467,19 +438,18 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", ".
         catch (exn){
           if (exn === Caml_builtin_exceptions.not_found) {
             return /* false */0;
-          }
-          else {
+          } else {
             throw exn;
           }
         }
       }
     }
     
-    var compare = Caml_obj.caml_compare
+    var compare = Caml_obj.caml_compare;
     
-    var unsafe_to_string = Caml_string.bytes_to_string
+    var unsafe_to_string = Caml_string.bytes_to_string;
     
-    var unsafe_of_string = Caml_string.bytes_of_string
+    var unsafe_of_string = Caml_string.bytes_of_string;
     
     exports.make             = make;
     exports.init             = init;

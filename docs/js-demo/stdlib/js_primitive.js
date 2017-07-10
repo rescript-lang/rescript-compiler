@@ -2,20 +2,34 @@
 define(["exports"],
   function(exports){
     'use strict';
-    function js_is_nil_undef(x) {
+    function is_nil_undef(x) {
       if (x === null) {
         return /* true */1;
-      }
-      else {
+      } else {
         return +(x === undefined);
       }
     }
     
-    function js_from_nullable_def(x) {
+    function null_undefined_to_opt(x) {
       if (x === null || x === undefined) {
         return /* None */0;
+      } else {
+        return /* Some */[x];
       }
-      else {
+    }
+    
+    function undefined_to_opt(x) {
+      if (x === undefined) {
+        return /* None */0;
+      } else {
+        return /* Some */[x];
+      }
+    }
+    
+    function null_to_opt(x) {
+      if (x === null) {
+        return /* None */0;
+      } else {
         return /* Some */[x];
       }
     }
@@ -23,15 +37,16 @@ define(["exports"],
     function option_get(x) {
       if (x) {
         return x[0];
-      }
-      else {
+      } else {
         return undefined;
       }
     }
     
-    exports.js_is_nil_undef      = js_is_nil_undef;
-    exports.js_from_nullable_def = js_from_nullable_def;
-    exports.option_get           = option_get;
+    exports.is_nil_undef          = is_nil_undef;
+    exports.null_undefined_to_opt = null_undefined_to_opt;
+    exports.undefined_to_opt      = undefined_to_opt;
+    exports.null_to_opt           = null_to_opt;
+    exports.option_get            = option_get;
     
   })
 /* No side effect */

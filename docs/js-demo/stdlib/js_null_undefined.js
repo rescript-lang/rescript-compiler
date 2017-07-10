@@ -1,17 +1,34 @@
 'use strict';
-define(["exports", "./js_primitive"],
+define(["exports", "./js_primitive.js"],
   function(exports, Js_primitive){
     'use strict';
     function bind(x, f) {
-      if (Js_primitive.js_is_nil_undef(x)) {
-        return undefined;
-      }
-      else {
+      if (Js_primitive.is_nil_undef(x)) {
+        return x;
+      } else {
         return f(x);
       }
     }
     
-    exports.bind = bind;
+    function iter(x, f) {
+      if (Js_primitive.is_nil_undef(x)) {
+        return /* () */0;
+      } else {
+        return f(x);
+      }
+    }
+    
+    function from_opt(x) {
+      if (x) {
+        return x[0];
+      } else {
+        return undefined;
+      }
+    }
+    
+    exports.bind     = bind;
+    exports.iter     = iter;
+    exports.from_opt = from_opt;
     
   })
 /* No side effect */

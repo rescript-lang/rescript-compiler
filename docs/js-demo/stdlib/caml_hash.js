@@ -1,6 +1,6 @@
 'use strict';
-define(["exports", "./caml_builtin_exceptions", "./caml_int32", "./caml_queue"],
-  function(exports, Caml_builtin_exceptions, Caml_int32, Caml_queue){
+define(["exports", "./caml_int32.js", "./caml_queue.js", "./caml_builtin_exceptions.js"],
+  function(exports, Caml_int32, Caml_queue, Caml_builtin_exceptions){
     'use strict';
     function rotl32(x, n) {
       return (x << n) | (x >>> (32 - n | 0));
@@ -50,12 +50,10 @@ define(["exports", "./caml_builtin_exceptions", "./caml_int32", "./caml_queue"],
         var u = obj | 0;
         hash = mix(hash, (u + u | 0) + 1 | 0);
         return final_mix(hash);
-      }
-      else if (typeof obj === "string") {
+      } else if (typeof obj === "string") {
         hash = caml_hash_mix_string(hash, obj);
         return final_mix(hash);
-      }
-      else {
+      } else {
         var queue = /* record */[
           /* length */0,
           /* tail : None */0
@@ -69,32 +67,28 @@ define(["exports", "./caml_builtin_exceptions", "./caml_int32", "./caml_queue"],
             var u$1 = obj$1 | 0;
             hash = mix(hash, (u$1 + u$1 | 0) + 1 | 0);
             num = num - 1 | 0;
-          }
-          else if (typeof obj$1 === "string") {
+          } else if (typeof obj$1 === "string") {
             hash = caml_hash_mix_string(hash, obj$1);
             num = num - 1 | 0;
-          }
-          else if (typeof obj$1 !== "boolean") {
+          } else if (typeof obj$1 !== "boolean") {
             if (typeof obj$1 !== "undefined") {
               if (typeof obj$1 === "symbol") {
                 throw [
                       Caml_builtin_exceptions.assert_failure,
                       [
                         "caml_hash.ml",
-                        134,
+                        135,
                         8
                       ]
                     ];
-              }
-              else if (typeof obj$1 !== "function") {
+              } else if (typeof obj$1 !== "function") {
                 var size = obj$1.length;
                 if (size !== undefined) {
                   var obj_tag = obj$1.tag | 0;
                   var tag = (size << 10) | obj_tag;
                   if (tag === 248) {
                     hash = mix(hash, obj$1[1]);
-                  }
-                  else {
+                  } else {
                     hash = mix(hash, tag);
                     var v = size - 1 | 0;
                     var block = v < num ? v : num;

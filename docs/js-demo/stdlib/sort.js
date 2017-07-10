@@ -1,30 +1,27 @@
 'use strict';
-define(["exports", "./caml_builtin_exceptions", "./curry"],
-  function(exports, Caml_builtin_exceptions, Curry){
+define(["exports", "./curry.js", "./caml_builtin_exceptions.js"],
+  function(exports, Curry, Caml_builtin_exceptions){
     'use strict';
     function merge(order, l1, l2) {
       if (l1) {
-        var h1 = l1[0];
         if (l2) {
           var h2 = l2[0];
+          var h1 = l1[0];
           if (Curry._2(order, h1, h2)) {
             return /* :: */[
                     h1,
                     merge(order, l1[1], l2)
                   ];
-          }
-          else {
+          } else {
             return /* :: */[
                     h2,
                     merge(order, l1, l2[1])
                   ];
           }
-        }
-        else {
+        } else {
           return l1;
         }
-      }
-      else {
+      } else {
         return l2;
       }
     }
@@ -52,8 +49,7 @@ define(["exports", "./caml_builtin_exceptions", "./curry"],
                       ],
                     initlist(match[1])
                   ];
-          }
-          else {
+          } else {
             return /* :: */[
                     /* :: */[
                       e,
@@ -62,8 +58,7 @@ define(["exports", "./caml_builtin_exceptions", "./curry"],
                     /* [] */0
                   ];
           }
-        }
-        else {
+        } else {
           return /* [] */0;
         }
       };
@@ -75,12 +70,10 @@ define(["exports", "./caml_builtin_exceptions", "./curry"],
                     merge(order, x[0], match[0]),
                     merge2(match[1])
                   ];
-          }
-          else {
+          } else {
             return x;
           }
-        }
-        else {
+        } else {
           return x;
         }
       };
@@ -92,12 +85,10 @@ define(["exports", "./caml_builtin_exceptions", "./curry"],
             _llist = merge2(llist);
             continue ;
             
-          }
-          else {
+          } else {
             return llist[0];
           }
-        }
-        else {
+        } else {
           return /* [] */0;
         }
       };
@@ -154,15 +145,13 @@ define(["exports", "./caml_builtin_exceptions", "./curry"],
               _lo = i;
               continue ;
               
-            }
-            else {
+            } else {
               qsort(i, hi);
               _hi = j;
               continue ;
               
             }
-          }
-          else {
+          } else {
             return 0;
           }
         };

@@ -1,5 +1,5 @@
 'use strict';
-define(["exports", "./string"],
+define(["exports", "./string.js"],
   function(exports, $$String){
     'use strict';
     var make = $$String.make;

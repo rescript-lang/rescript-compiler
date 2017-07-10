@@ -8,8 +8,7 @@ define(["exports"],
                 /* String */0,
                 x
               ];
-      }
-      else {
+      } else {
         return /* tuple */[
                 /* Buffer */1,
                 x

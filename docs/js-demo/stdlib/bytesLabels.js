@@ -1,5 +1,5 @@
 'use strict';
-define(["exports", "./bytes"],
+define(["exports", "./bytes.js"],
   function(exports, Bytes){
     'use strict';
     var make = Bytes.make;

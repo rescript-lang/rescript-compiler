@@ -1,5 +1,5 @@
 'use strict';
-define(["exports", "./unix"],
+define(["exports", "./unix.js"],
   function(exports, Unix){
     'use strict';
     var Unix_error = Unix.Unix_error;

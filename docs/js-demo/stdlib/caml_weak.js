@@ -1,6 +1,6 @@
 'use strict';
-define(["exports", "./caml_obj", "./caml_array"],
-  function(exports, Caml_obj, Caml_array){
+define(["exports", "./caml_obj.js", "./caml_array.js", "./js_primitive.js"],
+  function(exports, Caml_obj, Caml_array, Js_primitive){
     'use strict';
     function caml_weak_create(n) {
       return new Array(n);
@@ -10,34 +10,26 @@ define(["exports", "./caml_obj", "./caml_array"],
       if (v) {
         xs[i] = v[0];
         return /* () */0;
-      }
-      else {
+      } else {
         return /* () */0;
       }
     }
     
     function caml_weak_get(xs, i) {
-      v = xs[i];
-      if (v === undefined) {
-        return /* None */0;
-      }
-      else {
-        return [v];
-      }
+      return Js_primitive.undefined_to_opt(xs[i]);
     }
     
     function caml_weak_get_copy(xs, i) {
       var match = xs[i];
       if (match !== undefined) {
         return /* Some */[Caml_obj.caml_obj_dup(match)];
-      }
-      else {
+      } else {
         return /* None */0;
       }
     }
     
     function caml_weak_check(xs, i) {
-      return xs[i] !== undefined;
+      return +(xs[i] !== undefined);
     }
     
     var caml_weak_blit = Caml_array.caml_array_blit;

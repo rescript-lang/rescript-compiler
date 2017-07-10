@@ -1,6 +1,6 @@
 'use strict';
-define(["exports", "./caml_obj", "./caml_exceptions", "./curry"],
-  function(exports, Caml_obj, Caml_exceptions, Curry){
+define(["exports", "./curry.js", "./caml_obj.js", "./caml_exceptions.js"],
+  function(exports, Curry, Caml_obj, Caml_exceptions){
     'use strict';
     var Empty = Caml_exceptions.create("Queue.Empty");
     
@@ -29,8 +29,7 @@ define(["exports", "./caml_obj", "./caml_exceptions", "./curry"],
         tail[/* next */1] = cell;
         q[/* tail */1] = cell;
         return /* () */0;
-      }
-      else {
+      } else {
         var cell$1 = [];
         cell$1[0] = x;
         cell$1[1] = cell$1;
@@ -43,8 +42,7 @@ define(["exports", "./caml_obj", "./caml_exceptions", "./curry"],
     function peek(q) {
       if (q[/* length */0]) {
         return q[/* tail */1][/* next */1][/* content */0];
-      }
-      else {
+      } else {
         throw Empty;
       }
     }
@@ -58,8 +56,7 @@ define(["exports", "./caml_obj", "./caml_exceptions", "./curry"],
       var head = tail[/* next */1];
       if (head === tail) {
         q[/* tail */1] = /* None */0;
-      }
-      else {
+      } else {
         tail[/* next */1] = head[/* next */1];
       }
       return head[/* content */0];
@@ -68,7 +65,7 @@ define(["exports", "./caml_obj", "./caml_exceptions", "./curry"],
     function copy(q) {
       if (q[/* length */0]) {
         var tail = q[/* tail */1];
-        var tail$prime = { };
+        var tail$prime = [];
         Caml_obj.caml_update_dummy(tail$prime, /* record */[
               /* content */tail[/* content */0],
               /* next */tail$prime
@@ -87,8 +84,7 @@ define(["exports", "./caml_obj", "./caml_exceptions", "./curry"],
               _prev = res;
               continue ;
               
-            }
-            else {
+            } else {
               return 0;
             }
           };
@@ -98,8 +94,7 @@ define(["exports", "./caml_obj", "./caml_exceptions", "./curry"],
                 /* length */q[/* length */0],
                 /* tail */tail$prime
               ];
-      }
-      else {
+      } else {
         return /* record */[
                 /* length */0,
                 /* tail : None */0
@@ -126,13 +121,11 @@ define(["exports", "./caml_obj", "./caml_exceptions", "./curry"],
             _cell = cell[/* next */1];
             continue ;
             
-          }
-          else {
+          } else {
             return 0;
           }
         };
-      }
-      else {
+      } else {
         return 0;
       }
     }
@@ -148,16 +141,14 @@ define(["exports", "./caml_obj", "./caml_exceptions", "./curry"],
           var accu$2 = Curry._2(f, accu$1, cell[/* content */0]);
           if (cell === tail) {
             return accu$2;
-          }
-          else {
+          } else {
             _cell = cell[/* next */1];
             _accu = accu$2;
             continue ;
             
           }
         };
-      }
-      else {
+      } else {
         return accu;
       }
     }
@@ -177,8 +168,7 @@ define(["exports", "./caml_obj", "./caml_exceptions", "./curry"],
         q2[/* length */0] = q2[/* length */0] + length1 | 0;
         q2[/* tail */1] = tail1;
         return /* () */0;
-      }
-      else {
+      } else {
         return 0;
       }
     }

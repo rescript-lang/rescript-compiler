@@ -1,20 +1,13 @@
 'use strict';
-define(["exports", "./caml_builtin_exceptions", "./marshal"],
-  function(exports, Caml_builtin_exceptions, Marshal){
+define(["exports", "./marshal.js", "./caml_array.js", "./caml_missing_polyfill.js", "./caml_builtin_exceptions.js"],
+  function(exports, Marshal, Caml_array, Caml_missing_polyfill, Caml_builtin_exceptions){
     'use strict';
-    function double_field(x, i) {
-      return x[i];
-    }
+    var double_field = Caml_array.caml_array_get;
     
-    function set_double_field(x, i, v) {
-      x[i] = v;
-      return /* () */0;
-    }
+    var set_double_field = Caml_array.caml_array_set;
     
     function marshal() {
-      return function () {
-                throw "caml_output_value_to_string not implemented by bucklescript yet\n";
-              }();
+      return Caml_missing_polyfill.not_implemented("caml_output_value_to_string not implemented by bucklescript yet\n");
     }
     
     function unmarshal(str, pos) {
@@ -29,14 +22,12 @@ define(["exports", "./caml_builtin_exceptions", "./marshal"],
       var name;
       if (slot.length !== undefined && slot.tag === 248) {
         name = slot[0];
-      }
-      else {
+      } else {
         throw Caml_builtin_exceptions.not_found;
       }
       if (name.tag === 252) {
         return slot;
-      }
-      else {
+      } else {
         throw Caml_builtin_exceptions.not_found;
       }
     }
@@ -52,8 +43,7 @@ define(["exports", "./caml_builtin_exceptions", "./marshal"],
                 Caml_builtin_exceptions.invalid_argument,
                 "Obj.extension_name"
               ];
-        }
-        else {
+        } else {
           throw exn;
         }
       }
@@ -70,8 +60,7 @@ define(["exports", "./caml_builtin_exceptions", "./marshal"],
                 Caml_builtin_exceptions.invalid_argument,
                 "Obj.extension_id"
               ];
-        }
-        else {
+        } else {
           throw exn;
         }
       }
@@ -87,8 +76,7 @@ define(["exports", "./caml_builtin_exceptions", "./marshal"],
                 Caml_builtin_exceptions.invalid_argument,
                 "Obj.extension_slot"
               ];
-        }
-        else {
+        } else {
           throw exn;
         }
       }

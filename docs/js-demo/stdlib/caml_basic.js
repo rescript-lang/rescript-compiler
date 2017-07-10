@@ -9,8 +9,7 @@ define(["exports"],
     function is_none(x) {
       if (x) {
         return false;
-      }
-      else {
+      } else {
         return true;
       }
     }
@@ -18,8 +17,7 @@ define(["exports"],
     function to_def(x) {
       if (x) {
         return x[0];
-      }
-      else {
+      } else {
         return undefined;
       }
     }
@@ -34,8 +32,7 @@ define(["exports"],
     function is_list_empty(x) {
       if (x) {
         return false;
-      }
-      else {
+      } else {
         return true;
       }
     }

@@ -1,6 +1,6 @@
 'use strict';
-define(["exports", "./caml_builtin_exceptions", "./caml_string"],
-  function(exports, Caml_builtin_exceptions, Caml_string){
+define(["exports", "./caml_string.js", "./caml_builtin_exceptions.js"],
+  function(exports, Caml_string, Caml_builtin_exceptions){
     'use strict';
     function chr(n) {
       if (n < 0 || n > 255) {
@@ -8,8 +8,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_string"],
               Caml_builtin_exceptions.invalid_argument,
               "Char.chr"
             ];
-      }
-      else {
+      } else {
         return n;
       }
     }
@@ -19,23 +18,18 @@ define(["exports", "./caml_builtin_exceptions", "./caml_string"],
       if (c >= 40) {
         if (c !== 92) {
           exit = c >= 127 ? 1 : 2;
-        }
-        else {
+        } else {
           return "\\\\";
         }
-      }
-      else if (c >= 32) {
+      } else if (c >= 32) {
         if (c >= 39) {
           return "\\'";
-        }
-        else {
+        } else {
           exit = 2;
         }
-      }
-      else if (c >= 14) {
+      } else if (c >= 14) {
         exit = 1;
-      }
-      else {
+      } else {
         switch (c) {
           case 8 : 
               return "\\b";
@@ -79,8 +73,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_string"],
     function lowercase(c) {
       if (c >= /* "A" */65 && c <= /* "Z" */90 || c >= /* "\192" */192 && c <= /* "\214" */214 || c >= /* "\216" */216 && c <= /* "\222" */222) {
         return c + 32 | 0;
-      }
-      else {
+      } else {
         return c;
       }
     }
@@ -88,8 +81,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_string"],
     function uppercase(c) {
       if (c >= /* "a" */97 && c <= /* "z" */122 || c >= /* "\224" */224 && c <= /* "\246" */246 || c >= /* "\248" */248 && c <= /* "\254" */254) {
         return c - 32 | 0;
-      }
-      else {
+      } else {
         return c;
       }
     }
