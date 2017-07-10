@@ -53,7 +53,7 @@
 *)
 
 type cmj_value = {
-  arity : Lam.function_arities ;
+  arity : Lam_arity.t ;
   closed_lambda : Lam.t option ; 
   (* Either constant or closed functor *)
 }

@@ -43,73 +43,15 @@
     in the  beginning, when we do alpha conversion, we can instrument the table 
  *)
 
-type function_arities = Lam.function_arities
+type function_arities = Lam_arity.t
 
 type alias_tbl =  Ident.t Ident_hashtbl.t
 
-type function_kind = 
-  | Functor 
-  | Function
-  | NA
 
-type rec_flag = 
-  | Rec 
-  | Non_rec
 
-type function_id = {
-  kind : function_kind ; 
-  mutable arity : function_arities ;
-  lambda  : Lam.t ;
-  rec_flag : rec_flag
-}
+type ident_tbl = Lam_id_kind.t Ident_hashtbl.t 
 
-type element = 
-  | NA 
-  | SimpleForm of Lam.t
 
-type boxed_nullable
-  = 
-  | Undefined 
-  | Null 
-  | Null_undefined
-  | Normal 
-
-type kind = 
-  | ImmutableBlock of element array * boxed_nullable
-  | MutableBlock of element array 
-  | Constant of Lam.constant
-  | Module of Ident.t
-        (** Global module, local module is treated as an array
-         *)
-  | Function of function_id (** True then functor *)
-  | Exception 
-  | Parameter
-      (** For this case, it can help us determine whether it should be inlined or not *)
-  | NA 
-  (* | Boxed_nullable of Ident.t  *)
-    (** 
-       {[ let v/2 =  Pnull_to_opt u]} 
-
-       {[ let v/2 = Pnull_to_opt exp]}
-       can be translated into 
-       {[
-         let v/1 = exp in 
-         let v/2 =a Pnull_to_opt exp 
-       ]}
-       so that [Pfield v/2 0] will be replaced by [v/1], 
-       [Lif(v/1)] will be translated into [Lif (v/2 === undefined )]
-    *)
-type ident_tbl = kind Ident_hashtbl.t 
-
-type state = 
-  | Live (** Globals are always live *)
-  | Dead  (** removed after elimination *)
-  | NA
-
-type ident_info = {
-  kind : kind ; 
-  state : state
-}
 
 type meta = {
   env : Env.t;

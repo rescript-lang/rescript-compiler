@@ -31,53 +31,12 @@
 
 let pp = Format.fprintf
 
-let pp_arities (fmt : Format.formatter) (x : Lam.function_arities) = 
-  match x with 
-  | NA -> pp fmt "?"
-  | Determin (b,ls,tail) -> 
-    begin 
-      pp fmt "@[";
-      (if not b 
-       then 
-         pp fmt "~");
-      pp fmt "[";
-      Format.pp_print_list ~pp_sep:(fun fmt () -> pp fmt ",")
-        (fun fmt  (x,_) -> Format.pp_print_int fmt x)
-        fmt ls ;
-      if tail 
-      then pp fmt "@ *";
-      pp fmt "]@]";
-    end
-
-let pp_arities_tbl 
-    (fmt : Format.formatter) 
-    (arities_tbl : (Ident.t, Lam.function_arities ref) Hashtbl.t) = 
-  Hashtbl.fold (fun (i:Ident.t) (v : Lam.function_arities ref) _ -> 
-      pp Format.err_formatter "@[%s -> %a@]@."i.name pp_arities !v ) arities_tbl ()
 
 let pp_alias_tbl fmt (tbl : Lam_stats.alias_tbl) = 
   Ident_hashtbl.iter (fun k v -> pp fmt "@[%a -> %a@]@." Ident.print k Ident.print v)
     tbl
 
 
-let pp_kind fmt (kind : Lam_stats.kind) = 
-  match kind with 
-  | ImmutableBlock (arr,_) -> 
-    pp fmt "Imm(%d)" (Array.length arr)
-  | MutableBlock (arr) ->     
-    pp fmt "Mutable(%d)" (Array.length arr)
-  | Constant _  ->
-    pp fmt "Constant"
-  | Module id -> 
-    pp fmt "%s/%d" id.name id.stamp 
-  | Function _ -> 
-    pp fmt "function"
-  | Exception ->
-    pp fmt "Exception" 
-  | Parameter -> 
-    pp fmt "Parameter"  
-  | NA -> 
-    pp fmt "NA"
 
 let pp_ident_tbl fmt (ident_tbl : Lam_stats.ident_tbl) = 
   Ident_hashtbl.iter (fun k v -> pp fmt "@[%a -> %a@]@." 
@@ -86,7 +45,7 @@ let pp_ident_tbl fmt (ident_tbl : Lam_stats.ident_tbl) =
       
 let merge 
     ((n : int ), params as y)
-    (x : Lam.function_arities) : Lam.function_arities = 
+    (x : Lam_arity.t) : Lam_arity.t = 
   match x with 
   | NA -> Determin(false, [y], false)
   | Determin (b,xs,tail) -> Determin (b, y :: xs, tail)
@@ -99,7 +58,7 @@ let merge
 let rec get_arity 
     (meta : Lam_stats.meta) 
     (lam : Lam.t) : 
-  Lam.function_arities = 
+  Lam_arity.t = 
   match lam with 
   | Lconst _ -> Determin (true,[], false)
   | Lvar v -> 
@@ -113,7 +72,7 @@ let rec get_arity
       | None ->
         (* Format.fprintf Format.err_formatter *)
         (*   "@[%s %a is not function/functor@]@." meta.filename Ident.print v ; *)
-        (NA : Lam.function_arities)
+        (NA : Lam_arity.t)
 
     end
   | Llet(_,_,_, l ) -> get_arity meta l 
@@ -159,7 +118,7 @@ let rec get_arity
         let rec take (xs : _ list) arg_length = 
           match xs with 
           | (x,y) :: xs ->
-            if arg_length = x then Lam.Determin (b, xs, tail) 
+            if arg_length = x then Lam_arity.Determin (b, xs, tail) 
             else if arg_length > x then
               take xs (arg_length - x)
             else Determin (b, 
@@ -216,7 +175,7 @@ and all_lambdas meta (xs : Lam.t list) =
   | y :: ys -> 
     let arity =  get_arity meta y in 
     List.fold_left (fun exist (v : Lam.t) -> 
-        match (exist : Lam.function_arities) with 
+        match (exist : Lam_arity.t) with 
         | NA -> NA 
         | Determin (b, xs, tail) -> 
           begin 

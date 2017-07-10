@@ -1,4 +1,4 @@
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+(* Copyright (C) Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -23,37 +23,39 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-
-
-
-
-
-
-(** Types defined for lambda analysis *)
-
-type alias_tbl =  Ident.t Ident_hashtbl.t
-
-(** Keep track of which identifiers are aliased
-  *)
-
-
-
-type ident_tbl = Lam_id_kind.t Ident_hashtbl.t 
-
-
-
-type meta = {
-  env : Env.t;
-  filename : string ;
-  export_idents : Ident_set.t ;
-  exports : Ident.t list ;
-  alias_tbl : alias_tbl; 
-  exit_codes : Int_hash_set.t;
-
-  ident_tbl : ident_tbl;
-  (** we don't need count arities for all identifiers, for identifiers
-      for sure it's not a function, there is no need to count them
+type t = 
+  | Determin of bool * (int * Ident.t list option) list  * bool
+    (**
+      when the first argument is true, it is for sure 
+      the last one means it can take any params later, 
+      for an exception: it is (Determin (true,[], true))
+      1. approximation sound but not complete 
+      
    *)
+  | NA 
 
+let pp = Format.fprintf
 
-}
+let print (fmt : Format.formatter) (x : t) = 
+  match x with 
+  | NA -> pp fmt "?"
+  | Determin (b,ls,tail) -> 
+    begin 
+      pp fmt "@[";
+      (if not b 
+       then 
+         pp fmt "~");
+      pp fmt "[";
+      Format.pp_print_list ~pp_sep:(fun fmt () -> pp fmt ",")
+        (fun fmt  (x,_) -> Format.pp_print_int fmt x)
+        fmt ls ;
+      if tail 
+      then pp fmt "@ *";
+      pp fmt "]@]";
+    end
+  
+  let print_arities_tbl 
+    (fmt : Format.formatter) 
+    (arities_tbl : (Ident.t, t ref) Hashtbl.t) = 
+  Hashtbl.fold (fun (i:Ident.t) (v : t ref) _ -> 
+      pp Format.err_formatter "@[%s -> %a@]@."i.name print !v ) arities_tbl ()

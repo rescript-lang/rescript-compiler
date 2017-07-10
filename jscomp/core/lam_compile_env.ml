@@ -67,7 +67,7 @@ type ident_info = {
   id : Ident.t;
   name : string;
   signatures : Types.signature;
-  arity : Lam.function_arities; 
+  arity : Lam_arity.t; 
   closed_lambda : Lam.t option 
 }
 

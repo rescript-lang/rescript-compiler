@@ -33,7 +33,7 @@ val string_of_lambda : Lam.t -> string
 
 val string_of_primitive : Lam.primitive -> string
 
-val kind_of_lambda_block : Lam_stats.boxed_nullable -> Lam.t list -> Lam_stats.kind
+val kind_of_lambda_block : Lam_id_kind.boxed_nullable -> Lam.t list -> Lam_id_kind.t
 
 val field_flatten_get : 
   (unit -> Lam.t) -> Ident.t -> int -> Lam_stats.ident_tbl -> Lam.t
@@ -43,7 +43,7 @@ val field_flatten_get :
 
 
 val alias_ident_or_global : Lam_stats.meta ->
-  Ident.t -> Ident.t -> Lam_stats.kind -> Lam.let_kind -> unit 
+  Ident.t -> Ident.t -> Lam_id_kind.t -> Lam.let_kind -> unit 
 
 
 val refine_let : 

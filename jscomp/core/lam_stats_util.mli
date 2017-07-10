@@ -33,11 +33,11 @@
 
 val pp_alias_tbl : Format.formatter -> Lam_stats.alias_tbl  -> unit
 
-val pp_arities : Format.formatter -> Lam.function_arities -> unit
 
-val get_arity : Lam_stats.meta -> Lam.t -> Lam.function_arities
+
+val get_arity : Lam_stats.meta -> Lam.t -> Lam_arity.t
 
 val pp_ident_tbl : Format.formatter -> Lam_stats.ident_tbl -> unit  
-(* val dump_exports_arities : Lam_stats.meta -> unit *)
+
 
 

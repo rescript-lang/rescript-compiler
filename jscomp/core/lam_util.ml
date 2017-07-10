@@ -184,7 +184,7 @@ let refine_let
     Lam.let_ Strict param arg  l *)
 
 let alias_ident_or_global (meta : Lam_stats.meta) (k:Ident.t) (v:Ident.t) 
-    (v_kind : Lam_stats.kind) (let_kind : Lam.let_kind) =
+    (v_kind : Lam_id_kind.t) (let_kind : Lam.let_kind) =
   (** treat rec as Strict, k is assigned to v 
       {[ let k = v ]}
   *)
@@ -241,7 +241,7 @@ let alias_ident_or_global (meta : Lam_stats.meta) (k:Ident.t) (v:Ident.t)
        mutable fields are explicit, since wen can not inline an mutable block access
 *)
 
-let element_of_lambda (lam : Lam.t) : Lam_stats.element = 
+let element_of_lambda (lam : Lam.t) : Lam_id_kind.element = 
   match lam with 
   | Lvar _ 
   | Lconst _ 
@@ -251,12 +251,12 @@ let element_of_lambda (lam : Lam.t) : Lam_stats.element =
   (* | Lfunction _  *)
   | _ -> NA 
 
-let kind_of_lambda_block kind (xs : Lam.t list) : Lam_stats.kind = 
-  Lam_stats.ImmutableBlock( Ext_array.of_list_map (fun x -> 
+let kind_of_lambda_block kind (xs : Lam.t list) : Lam_id_kind.t = 
+  ImmutableBlock( Ext_array.of_list_map (fun x -> 
   element_of_lambda x ) xs , kind)
 
 let field_flatten_get
-   lam v i (tbl : Lam_stats.kind Ident_hashtbl.t) : Lam.t =
+   lam v i (tbl : Lam_id_kind.t Ident_hashtbl.t) : Lam.t =
   match Ident_hashtbl.find_opt tbl v  with 
   | Some (Module g) -> 
     Lam.prim ~primitive:(Pfield (i, Lambda.Fld_na)) 
