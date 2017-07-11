@@ -81,5 +81,10 @@ let pp_ident_tbl fmt (ident_tbl : ident_tbl) =
     ident_tbl
 
 let print fmt (v : t) = 
-    pp fmt "@[Alias table:@ %a@]" pp_alias_tbl v.alias_tbl ;    
-    pp fmt "@[Ident table:@ %a@]" pp_ident_tbl v.ident_tbl 
+    pp fmt "@[Alias table:@ @[%a@]@]" pp_alias_tbl v.alias_tbl ;    
+    pp fmt "@[Ident table:@ @[%a@]@]" pp_ident_tbl v.ident_tbl ;
+    pp fmt "@[exports:@ @[%a@]@]"
+        (Format.pp_print_list 
+            ~pp_sep:(fun fmt () -> pp fmt "@ ;")             
+            Ident.print
+        ) v.exports
