@@ -97740,7 +97740,7 @@ let pp_alias_tbl fmt (tbl : Lam_stats.alias_tbl) =
 
 let pp_ident_tbl fmt (ident_tbl : Lam_stats.ident_tbl) = 
   Ident_hashtbl.iter (fun k v -> pp fmt "@[%a -> %a@]@." 
-    Ident.print k pp_kind v)
+    Ident.print k Lam_id_kind.print v)
     ident_tbl
       
 let merge 
