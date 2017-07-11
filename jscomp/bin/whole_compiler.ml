@@ -97575,9 +97575,15 @@ module Lam_stats_util : sig
 (** Utilities for lambda analysis *)
 
 
+val arity_of_var : 
+  Lam_stats.t -> 
+  Ident.t -> 
+  Lam_arity.t
 
-
-val get_arity : Lam_stats.t -> Lam.t -> Lam_arity.t
+val get_arity :
+  Lam_stats.t -> 
+  Lam.t ->
+  Lam_arity.t
 
 
 
@@ -97618,18 +97624,8 @@ let merge
   | NA -> Determin(false, [y], false)
   | Determin (b,xs,tail) -> Determin (b, y :: xs, tail)
 
-(* we need record all aliases -- since not all aliases are eliminated, 
-   mostly are toplevel bindings
-   We will keep iterating such environment
-   If not found, we will return [NA]
-*)
-let rec get_arity 
-    (meta : Lam_stats.t) 
-    (lam : Lam.t) : 
-  Lam_arity.t = 
-  match lam with 
-  | Lconst _ -> Determin (true,[], false)
-  | Lvar v -> 
+
+let arity_of_var (meta : Lam_stats.t) (v : Ident.t)  =
     (** for functional parameter, if it is a high order function,
         if it's not from function parameter, we should warn
     *)
@@ -97643,6 +97639,19 @@ let rec get_arity
         (NA : Lam_arity.t)
 
     end
+
+(* we need record all aliases -- since not all aliases are eliminated, 
+   mostly are toplevel bindings
+   We will keep iterating such environment
+   If not found, we will return [NA]
+*)
+let rec get_arity 
+    (meta : Lam_stats.t) 
+    (lam : Lam.t) : 
+  Lam_arity.t = 
+  match lam with 
+  | Lconst _ -> Determin (true,[], false)
+  | Lvar v -> arity_of_var meta v 
   | Llet(_,_,_, l ) -> get_arity meta l 
 
   (*   begin match Parsetree_util.has_arity prim_attributes with *)
@@ -100248,15 +100257,15 @@ and dump_arity fmt (arity : Lam_arity.t) =
 let values_of_export meta export_map = 
   List.fold_left
     (fun   acc (x : Ident.t)  ->
-       let arity =  Lam_stats_util.get_arity meta (Lam.var x) in
-       match Ident_map.find_opt x export_map with 
-       | Some lambda  -> 
-         if Lam_analysis.safe_to_inline lambda
-         (* when inlning a non function, we have to be very careful,
-            only truly immutable values can be inlined
-         *)
-         then
-           let closed_lambda = 
+       let arity =  Lam_stats_util.arity_of_var meta x in
+       let closed_lambda = 
+         match Ident_map.find_opt x export_map with 
+         | Some lambda  -> 
+           if Lam_analysis.safe_to_inline lambda
+           (* when inlning a non function, we have to be very careful,
+              only truly immutable values can be inlined
+           *)
+           then
              if Lam_inline_util.should_be_functor x.name lambda (* can also be submodule *)
              then
                if Lam_closure.is_closed lambda (* TODO: seriealize more*)
@@ -100269,9 +100278,7 @@ let values_of_export meta export_map =
                   2. [lambda_exports] is not precise
                *)
                let free_variables =
-                 Lam_closure.free_variables Ident_set.empty
-                 (* meta.export_idents *)  Ident_map.empty 
-                   lambda in
+                 Lam_closure.free_variables Ident_set.empty Ident_map.empty lambda in
                if  lam_size < Lam_analysis.small_inline_size  && 
                    Ident_map.is_empty free_variables
                then 
@@ -100279,35 +100286,27 @@ let values_of_export meta export_map =
                    Ext_log.dwarn __LOC__ "%s recorded for inlining @." x.name ;
                    Some lambda
                  end
-               else 
-                 begin
-                   (* Ext_log.dwarn __LOC__ "%s : %d : {%s} not inlined @."  *)
-                   (*   x.name lam_size   *)
-                   (*   (String.concat ", " @@  *)
-                   (*    List.map (fun x -> x.Ident.name) @@ Ident_map.keys free_variables) ; *)
-                   None 
-                 end
-           in 
-           String_map.add x.name  Js_cmj_format.{arity ; closed_lambda } acc 
-         else
-           String_map.add x.name  Js_cmj_format.{arity ; closed_lambda = None } acc 
-       | None
-         -> String_map.add x.name  Js_cmj_format.{arity ; closed_lambda = None} acc  
+               else None
+           else
+             None
+         | None
+           -> None  in 
+       String_map.add x.name  Js_cmj_format.{arity ; closed_lambda } acc          
     )
     String_map.empty
     meta.exports 
 
 let get_effect (meta : Lam_stats.t) maybe_pure external_ids = 
-   match maybe_pure with
-    | None ->  
-      Ext_option.bind ( Ext_list.for_all_ret 
-                          (fun (id : Lam_module_ident.t) -> 
-                             Lam_compile_env.query_and_add_if_not_exist id 
-                               (Has_env meta.env )
-                               ~not_found:(fun _ -> false ) ~found:(fun i -> 
-                                   i.pure)
-                          ) external_ids) (fun x -> Lam_module_ident.name x)
-    | Some _ -> maybe_pure
+  match maybe_pure with
+  | None ->  
+    Ext_option.bind ( Ext_list.for_all_ret 
+                        (fun (id : Lam_module_ident.t) -> 
+                           Lam_compile_env.query_and_add_if_not_exist id 
+                             (Has_env meta.env )
+                             ~not_found:(fun _ -> false ) ~found:(fun i -> 
+                                 i.pure)
+                        ) external_ids) (fun x -> Lam_module_ident.name x)
+  | Some _ -> maybe_pure
 
 let rec dump meta fmt ids = 
   (* TODO: also use {[Ext_pp]} module instead *)

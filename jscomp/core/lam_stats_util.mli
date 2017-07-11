@@ -32,9 +32,15 @@
 (** Utilities for lambda analysis *)
 
 
+val arity_of_var : 
+  Lam_stats.t -> 
+  Ident.t -> 
+  Lam_arity.t
 
-
-val get_arity : Lam_stats.t -> Lam.t -> Lam_arity.t
+val get_arity :
+  Lam_stats.t -> 
+  Lam.t ->
+  Lam_arity.t
 
 
 
