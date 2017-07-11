@@ -253,11 +253,7 @@ let compile  ~filename output_prefix env _sigs
 #if BS_DEBUG then    
     |> (fun lam -> 
        let () = 
-        Ext_log.dwarn __LOC__
-        "[@Alias_table:@ %a@]@." Lam_stats_util.pp_alias_tbl meta.alias_tbl;
-        Ext_log.dwarn __LOC__
-        "[@Ident_table:@ %a@]@." Lam_stats_util.pp_ident_tbl meta.ident_tbl;
-        in 
+        Ext_log.dwarn __LOC__ "%a@." Lam_stats.print meta in 
       Lam.check (Js_config.get_current_file ()) lam
     ) 
 #end    

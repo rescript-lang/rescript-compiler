@@ -22,26 +22,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-
-
-let pp = Format.fprintf
-
-
-let pp_alias_tbl fmt (tbl : Lam_stats.alias_tbl) = 
-  Ident_hashtbl.iter (fun k v -> pp fmt "@[%a -> %a@]@." Ident.print k Ident.print v)
-    tbl
-
-
-
-let pp_ident_tbl fmt (ident_tbl : Lam_stats.ident_tbl) = 
-  Ident_hashtbl.iter (fun k v -> pp fmt "@[%a -> %a@]@." 
-    Ident.print k Lam_id_kind.print v)
-    ident_tbl
       
 let merge 
     ((n : int ), params as y)

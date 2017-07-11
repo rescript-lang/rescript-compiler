@@ -74053,6 +74053,8 @@ type t = {
 
 }
 
+
+val print : Format.formatter -> t -> unit 
 end = struct
 #1 "lam_stats.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -74114,7 +74116,7 @@ type t = {
   env : Env.t;
   filename : string ;
   export_idents : Ident_set.t ;
-  exports : Ident.t list ;
+  exports : Ident.t list ; (*It is kept since order matters? *)
 
   alias_tbl : alias_tbl; 
   ident_tbl : ident_tbl;
@@ -74124,7 +74126,22 @@ type t = {
   
 }
 
+let pp = Format.fprintf
 
+let pp_alias_tbl fmt (tbl : alias_tbl) = 
+  Ident_hashtbl.iter (fun k v -> pp fmt "@[%a -> %a@]@." Ident.print k Ident.print v)
+    tbl
+
+
+
+let pp_ident_tbl fmt (ident_tbl : ident_tbl) = 
+  Ident_hashtbl.iter (fun k v -> pp fmt "@[%a -> %a@]@." 
+    Ident.print k Lam_id_kind.print v)
+    ident_tbl
+
+let print fmt (v : t) = 
+    pp fmt "@[Alias table:@ %a@]" pp_alias_tbl v.alias_tbl ;    
+    pp fmt "@[Ident table:@ %a@]" pp_ident_tbl v.ident_tbl 
 end
 module Lam_util : sig 
 #1 "lam_util.mli"
@@ -97557,13 +97574,12 @@ module Lam_stats_util : sig
 
 (** Utilities for lambda analysis *)
 
-val pp_alias_tbl : Format.formatter -> Lam_stats.alias_tbl  -> unit
 
 
 
 val get_arity : Lam_stats.t -> Lam.t -> Lam_arity.t
 
-val pp_ident_tbl : Format.formatter -> Lam_stats.ident_tbl -> unit  
+
 
 
 
@@ -97594,26 +97610,6 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-
-
-let pp = Format.fprintf
-
-
-let pp_alias_tbl fmt (tbl : Lam_stats.alias_tbl) = 
-  Ident_hashtbl.iter (fun k v -> pp fmt "@[%a -> %a@]@." Ident.print k Ident.print v)
-    tbl
-
-
-
-let pp_ident_tbl fmt (ident_tbl : Lam_stats.ident_tbl) = 
-  Ident_hashtbl.iter (fun k v -> pp fmt "@[%a -> %a@]@." 
-    Ident.print k Lam_id_kind.print v)
-    ident_tbl
       
 let merge 
     ((n : int ), params as y)

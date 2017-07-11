@@ -57,7 +57,7 @@ type t = {
   env : Env.t;
   filename : string ;
   export_idents : Ident_set.t ;
-  exports : Ident.t list ;
+  exports : Ident.t list ; (*It is kept since order matters? *)
 
   alias_tbl : alias_tbl; 
   ident_tbl : ident_tbl;
@@ -67,3 +67,19 @@ type t = {
   
 }
 
+let pp = Format.fprintf
+
+let pp_alias_tbl fmt (tbl : alias_tbl) = 
+  Ident_hashtbl.iter (fun k v -> pp fmt "@[%a -> %a@]@." Ident.print k Ident.print v)
+    tbl
+
+
+
+let pp_ident_tbl fmt (ident_tbl : ident_tbl) = 
+  Ident_hashtbl.iter (fun k v -> pp fmt "@[%a -> %a@]@." 
+    Ident.print k Lam_id_kind.print v)
+    ident_tbl
+
+let print fmt (v : t) = 
+    pp fmt "@[Alias table:@ %a@]" pp_alias_tbl v.alias_tbl ;    
+    pp fmt "@[Ident table:@ %a@]" pp_ident_tbl v.ident_tbl 
