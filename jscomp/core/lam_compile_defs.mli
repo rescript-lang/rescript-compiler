@@ -80,7 +80,7 @@ type cxt = {
   st : st ;
   should_return : return_type;
   jmp_table : value  HandlerMap.t ;
-  meta : Lam_stats.meta ;
+  meta : Lam_stats.t ;
 }
 
 val empty_handler_map : value HandlerMap.t 

@@ -33,7 +33,7 @@ let pp_cmj fmt ({ values ; effect; } :Js_cmj_format.t) =
   p fmt "@[%a@]@."
   (fun fmt m -> 
     m |> String_map.iter (fun k (v : Js_cmj_format.cmj_value) -> 
-      p fmt "@[%s@ %a@]@." k Lam_stats_util.pp_arities v.arity
+      p fmt "@[%s@ %a@]@." k Lam_arity.print v.arity
     )) values
 
 

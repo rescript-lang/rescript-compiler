@@ -77,10 +77,10 @@
  *)
 
 (** Modify existing [meta] *)
-val collect_helper : Lam_stats.meta -> Lam.t -> unit
+val collect_helper : Lam_stats.t -> Lam.t -> unit
 
 (** return a new [meta] *)
 val count_alias_globals : 
-    Env.t -> string -> Ident.t list -> Ident_set.t -> Lam.t -> Lam_stats.meta
+    Env.t -> string -> Ident.t list -> Ident_set.t -> Lam.t -> Lam_stats.t
 
 

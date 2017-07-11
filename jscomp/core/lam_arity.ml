@@ -1,4 +1,4 @@
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+(* Copyright (C) Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -23,21 +23,39 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
+type t = 
+  | Determin of bool * (int * Ident.t list option) list  * bool
+    (**
+      when the first argument is true, it is for sure 
+      the last one means it can take any params later, 
+      for an exception: it is (Determin (true,[], true))
+      1. approximation sound but not complete 
+      
+   *)
+  | NA 
 
+let pp = Format.fprintf
 
-
-
-
-
-(** Utilities for lambda analysis *)
-
-val pp_alias_tbl : Format.formatter -> Lam_stats.alias_tbl  -> unit
-
-
-
-val get_arity : Lam_stats.t -> Lam.t -> Lam_arity.t
-
-val pp_ident_tbl : Format.formatter -> Lam_stats.ident_tbl -> unit  
-
-
-
+let print (fmt : Format.formatter) (x : t) = 
+  match x with 
+  | NA -> pp fmt "?"
+  | Determin (b,ls,tail) -> 
+    begin 
+      pp fmt "@[";
+      (if not b 
+       then 
+         pp fmt "~");
+      pp fmt "[";
+      Format.pp_print_list ~pp_sep:(fun fmt () -> pp fmt ",")
+        (fun fmt  (x,_) -> Format.pp_print_int fmt x)
+        fmt ls ;
+      if tail 
+      then pp fmt "@ *";
+      pp fmt "]@]";
+    end
+  
+  let print_arities_tbl 
+    (fmt : Format.formatter) 
+    (arities_tbl : (Ident.t, t ref) Hashtbl.t) = 
+  Hashtbl.fold (fun (i:Ident.t) (v : t ref) _ -> 
+      pp Format.err_formatter "@[%s -> %a@]@."i.name print !v ) arities_tbl ()

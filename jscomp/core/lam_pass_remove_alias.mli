@@ -43,7 +43,7 @@
 *)
 
 val simplify_alias : 
-  Lam_stats.meta -> 
+  Lam_stats.t -> 
   Lam.t ->
   Lam.t
 

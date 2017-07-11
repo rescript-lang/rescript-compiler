@@ -191,7 +191,7 @@ and get_exp_with_args (cxt : Lam_compile_defs.cxt)  lam args_lambda
              E.seq (E.dump Error args) E.unit
            | _ -> 
              let rec aux (acc : J.expression)
-                 (arity : Lam.function_arities) args (len : int)  =
+                 (arity : Lam_arity.t) args (len : int)  =
                match arity, len with
                | _, 0 -> 
                  acc (** All arguments consumed so far *)

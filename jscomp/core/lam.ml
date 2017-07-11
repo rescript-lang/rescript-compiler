@@ -41,10 +41,6 @@ type function_kind
    (* | Tupled *)
 
 
-type function_arities = 
-  | Determin of bool * (int * Ident.t list option) list  * bool
-  | NA 
-
 type let_kind = Lambda.let_kind
     = Strict
     | Alias

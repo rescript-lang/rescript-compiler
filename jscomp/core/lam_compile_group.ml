@@ -36,7 +36,7 @@ open Js_output.Ops
 
 exception Not_a_module
 
-let compile_group ({filename = file_name; env;} as meta : Lam_stats.meta) 
+let compile_group ({filename = file_name; env;} as meta : Lam_stats.t) 
     (x : Lam_group.t) : Js_output.t  = 
   match x, file_name with 
   (* 

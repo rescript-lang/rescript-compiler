@@ -99,6 +99,7 @@ bin/whole_compiler.ml : common/ext_log.ml
 bin/whole_compiler.ml : core/js_number.ml
 bin/whole_compiler.ml : core/js_output.ml
 bin/whole_compiler.ml : core/js_shake.mli
+bin/whole_compiler.ml : core/lam_arity.ml
 bin/whole_compiler.ml : core/lam_group.ml
 bin/whole_compiler.ml : core/lam_print.ml
 bin/whole_compiler.ml : core/lam_stats.ml
@@ -138,6 +139,7 @@ bin/whole_compiler.ml : core/js_fun_env.ml
 bin/whole_compiler.ml : core/js_number.mli
 bin/whole_compiler.ml : core/js_op_util.ml
 bin/whole_compiler.ml : core/js_output.mli
+bin/whole_compiler.ml : core/lam_arity.mli
 bin/whole_compiler.ml : core/lam_group.mli
 bin/whole_compiler.ml : core/lam_print.mli
 bin/whole_compiler.ml : core/lam_stats.mli
@@ -180,6 +182,7 @@ bin/whole_compiler.ml : core/js_fun_env.mli
 bin/whole_compiler.ml : core/js_op_util.mli
 bin/whole_compiler.ml : core/lam_closure.ml
 bin/whole_compiler.ml : core/lam_compile.ml
+bin/whole_compiler.ml : core/lam_id_kind.ml
 bin/whole_compiler.ml : core/ocaml_parse.ml
 bin/whole_compiler.ml : ext/ext_filename.ml
 bin/whole_compiler.ml : ext/ext_js_regex.ml
@@ -222,6 +225,7 @@ bin/whole_compiler.ml : core/lam_analysis.ml
 bin/whole_compiler.ml : core/lam_closure.mli
 bin/whole_compiler.ml : core/lam_coercion.ml
 bin/whole_compiler.ml : core/lam_compile.mli
+bin/whole_compiler.ml : core/lam_id_kind.mli
 bin/whole_compiler.ml : core/ocaml_parse.mli
 bin/whole_compiler.ml : ext/ext_filename.mli
 bin/whole_compiler.ml : ext/ext_js_regex.mli

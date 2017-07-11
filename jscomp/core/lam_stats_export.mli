@@ -28,7 +28,7 @@
 
 
 val export_to_cmj : 
-  Lam_stats.meta ->
+  Lam_stats.t ->
   Js_cmj_format.effect ->
   Lam_module_ident.t list ->
   Lam.t Ident_map.t -> Js_cmj_format.t

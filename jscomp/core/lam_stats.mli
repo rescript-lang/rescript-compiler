@@ -36,65 +36,13 @@ type alias_tbl =  Ident.t Ident_hashtbl.t
 (** Keep track of which identifiers are aliased
   *)
 
-type state = 
-  | Live (** Globals are always live *)
-  | Dead  (** removed after elimination *)
-  | NA
-
-type function_kind = 
-  | Functor 
-  | Function
-  | NA
-
-type rec_flag = 
-  | Rec 
-  | Non_rec
-
-type function_id = {
-  kind : function_kind ; 
-  mutable arity : Lam.function_arities;
-  lambda  : Lam.t ;
-  (* TODO: This may contain some closure environment,
-     check how it will interact with dead code elimination
-  *)
-  rec_flag : rec_flag
-}
-
-type element = 
-  | NA 
-  | SimpleForm of Lam.t 
-
-type boxed_nullable
-  = 
-  | Undefined 
-  | Null 
-  | Null_undefined
-  | Normal 
-
-type kind = 
-  | ImmutableBlock of element array * boxed_nullable
-  | MutableBlock of element array
-  | Constant of Lam.constant
-  | Module of Ident.t
-        (** TODO: static module vs first class module *)
-  | Function of function_id 
-  | Exception 
-  | Parameter
-      (** For this case, it can help us determine whether it should be inlined or not *)
-
-  | NA (** Not such information is associated with an identifier, it is immutable, 
-           if you only associate a property to an identifier 
-           we should consider [Lassign]
-        *)
-type ident_tbl = kind Ident_hashtbl.t 
 
 
-type ident_info = {
-  kind : kind ; 
-  state : state
-}
+type ident_tbl = Lam_id_kind.t Ident_hashtbl.t 
 
-type meta = {
+
+
+type t = {
   env : Env.t;
   filename : string ;
   export_idents : Ident_set.t ;
