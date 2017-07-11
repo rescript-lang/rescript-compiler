@@ -22481,7 +22481,6 @@ val is_same_file : unit -> bool
 val tool_name : string
 
 
-val better_errors : bool ref
 val sort_imports : bool ref 
 val dump_js : bool ref
 val syntax_only  : bool ref
@@ -22722,7 +22721,6 @@ let no_any_assert = ref false
 let set_no_any_assert () = no_any_assert := true
 let get_no_any_assert () = !no_any_assert
 
-let better_errors = ref false
 let sort_imports = ref true
 let dump_js = ref false
 
@@ -111427,6 +111425,668 @@ let ocaml_options =
 
 
 end
+module Super_errors
+= struct
+#1 "super_errors.ml"
+open Misc
+open Asttypes
+open Parsetree
+open Types
+open Typedtree
+open Btype
+open Ctype
+
+open Format
+open Printtyp
+
+(* taken from https://github.com/ocaml/ocaml/blob/4.02/typing/typecore.ml#L3769 *)
+let typecore_report_error env ppf = function
+  | Typecore.Polymorphic_label lid ->
+      fprintf ppf "@[The record field %a is polymorphic.@ %s@]"
+        longident lid "You cannot instantiate it in a pattern."
+  | Constructor_arity_mismatch(lid, expected, provided) ->
+      (* modified *)
+      fprintf ppf
+       "@[This variant constructor, %a, expects %i %s; here, we've %sfound %i.@]"
+       longident lid expected (if expected == 1 then "argument" else "arguments") (if provided < expected then "only " else "") provided
+  | Label_mismatch(lid, trace) ->
+      report_unification_error ppf env trace
+        (function ppf ->
+           fprintf ppf "The record field %a@ belongs to the type"
+                   longident lid)
+        (function ppf ->
+           fprintf ppf "but is mixed here with fields of type")
+  | Pattern_type_clash trace ->
+      report_unification_error ppf env trace
+        (function ppf ->
+          fprintf ppf "This pattern matches values of type")
+        (function ppf ->
+          fprintf ppf "but a pattern was expected which matches values of type")
+  | Or_pattern_type_clash (id, trace) ->
+      report_unification_error ppf env trace
+        (function ppf ->
+          fprintf ppf "The variable %s on the left-hand side of this or-pattern has type" (Ident.name id))
+        (function ppf ->
+          fprintf ppf "but on the right-hand side it has type")
+  | Multiply_bound_variable name ->
+      fprintf ppf "Variable %s is bound several times in this matching" name
+  | Orpat_vars id ->
+      fprintf ppf "Variable %s must occur on both sides of this | pattern"
+        (Ident.name id)
+  | Expr_type_clash trace ->
+      report_unification_error ppf env trace
+        (function ppf ->
+           fprintf ppf "this beeeeeautiful expression has type")
+        (function ppf ->
+           fprintf ppf "but an expression was expected of type")
+  | Apply_non_function typ ->
+      (* modified *)
+      reset_and_mark_loops typ;
+      begin match (repr typ).desc with
+        Tarrow (_, _inputType, returnType, _) ->
+          let rec countNumberOfArgs count {desc} = match desc with
+          | Tarrow (_, _inputType, returnType, _) -> countNumberOfArgs (count + 1) returnType
+          | _ -> count
+          in
+          let countNumberOfArgs = countNumberOfArgs 1 in
+          let acceptsCount = countNumberOfArgs returnType in
+          fprintf ppf "@[<v>@[<2>This function has type@ %a@]"
+            type_expr typ;
+          fprintf ppf "@ @[It only accepts %i %s; here, it's called with more.@ %s@]@]"
+                      acceptsCount (if acceptsCount == 1 then "argument" else "arguments") "Maybe you forgot a semicolon?"
+      | _ ->
+          fprintf ppf "@[<v>@[<2>This expression has type@ %a@]@ %s@]"
+            type_expr typ
+            "It seems to have been called like a function? Maybe you forgot a semicolon somewhere?"
+      end
+  | Apply_wrong_label (l, ty) ->
+      let print_label ppf = function
+        | "" -> fprintf ppf "without label"
+        | l ->
+            fprintf ppf "with label %s" (prefixed_label_name l)
+      in
+      reset_and_mark_loops ty;
+      fprintf ppf
+        "@[<v>@[<2>The function applied to this argument has type@ %a@]@.\
+          This argument cannot be applied %a@]"
+        type_expr ty print_label l
+  | Label_multiply_defined s ->
+      fprintf ppf "The record field label %s is defined several times" s
+  | Label_missing labels ->
+      let print_labels ppf =
+        List.iter (fun lbl -> fprintf ppf "@ %s" (Ident.name lbl)) in
+      fprintf ppf "@[<hov>Some record fields are undefined:%a@]"
+        print_labels labels
+  | Label_not_mutable lid ->
+      fprintf ppf "The record field %a is not mutable" longident lid
+  | Wrong_name (eorp, ty, kind, p, lid) as foo ->
+      (* forwarded *)
+      Typecore.report_error env ppf foo
+      (* reset_and_mark_loops ty;
+      fprintf ppf "@[@[<2>%s type@ %a@]@ "
+        eorp type_expr ty;
+      fprintf ppf "The %s %a does not belong to type %a@]"
+        (if kind = "record" then "field" else "constructor")
+        longident lid (*kind*) path p;
+      if kind = "record" then Label.spellcheck ppf env p lid
+                         else Constructor.spellcheck ppf env p lid *)
+  | Name_type_mismatch (kind, lid, tp, tpl) ->
+      let name = if kind = "record" then "field" else "constructor" in
+      report_ambiguous_type_error ppf env tp tpl
+        (function ppf ->
+           fprintf ppf "The %s %a@ belongs to the %s type"
+             name longident lid kind)
+        (function ppf ->
+           fprintf ppf "The %s %a@ belongs to one of the following %s types:"
+             name longident lid kind)
+        (function ppf ->
+           fprintf ppf "but a %s was expected belonging to the %s type"
+             name kind)
+  | Invalid_format msg ->
+      fprintf ppf "%s" msg
+  | Undefined_method (ty, me) ->
+      reset_and_mark_loops ty;
+      fprintf ppf
+        "@[<v>@[This expression has type@;<1 2>%a@]@,\
+         It has no method %s@]" type_expr ty me
+  | Undefined_inherited_method me ->
+      fprintf ppf "This expression has no method %s" me
+  | Virtual_class cl ->
+      fprintf ppf "Cannot instantiate the virtual class %a"
+        longident cl
+  | Unbound_instance_variable v ->
+      fprintf ppf "Unbound instance variable %s" v
+  | Instance_variable_not_mutable (b, v) ->
+      if b then
+        fprintf ppf "The instance variable %s is not mutable" v
+      else
+        fprintf ppf "The value %s is not an instance variable" v
+  | Not_subtype(tr1, tr2) ->
+      report_subtyping_error ppf env tr1 "is not a subtype of" tr2
+  | Outside_class ->
+      fprintf ppf "This object duplication occurs outside a method definition"
+  | Value_multiply_overridden v ->
+      fprintf ppf "The instance variable %s is overridden several times" v
+  | Coercion_failure (ty, ty', trace, b) ->
+      report_unification_error ppf env trace
+        (function ppf ->
+           let ty, ty' = prepare_expansion (ty, ty') in
+           fprintf ppf
+             "This expression cannot be coerced to type@;<1 2>%a;@ it has type"
+           (type_expansion ty) ty')
+        (function ppf ->
+           fprintf ppf "but is here used with type");
+      if b then
+        fprintf ppf ".@.@[<hov>%s@ %s@]"
+          "This simple coercion was not fully general."
+          "Consider using a double coercion."
+  | Too_many_arguments (in_function, ty) ->
+      reset_and_mark_loops ty;
+      if in_function then begin
+        fprintf ppf "This function expects too many arguments,@ ";
+        fprintf ppf "it should have type@ %a"
+          type_expr ty
+      end else begin
+        fprintf ppf "This expression should not be a function,@ ";
+        fprintf ppf "the expected type is@ %a"
+          type_expr ty
+      end
+  | Abstract_wrong_label (l, ty) ->
+      let label_mark = function
+        | "" -> "but its first argument is not labelled"
+        |  l -> sprintf "but its first argument is labelled %s"
+          (prefixed_label_name l) in
+      reset_and_mark_loops ty;
+      fprintf ppf "@[<v>@[<2>This function should have type@ %a@]@,%s@]"
+      type_expr ty (label_mark l)
+  | Scoping_let_module(id, ty) ->
+      reset_and_mark_loops ty;
+      fprintf ppf
+       "This `let module' expression has type@ %a@ " type_expr ty;
+      fprintf ppf
+       "In this type, the locally bound module name %s escapes its scope" id
+  | Masked_instance_variable lid ->
+      fprintf ppf
+        "The instance variable %a@ \
+         cannot be accessed from the definition of another instance variable"
+        longident lid
+  | Private_type ty ->
+      fprintf ppf "Cannot create values of the private type %a" type_expr ty
+  | Private_label (lid, ty) ->
+      fprintf ppf "Cannot assign field %a of the private type %a"
+        longident lid type_expr ty
+  | Not_a_variant_type lid ->
+      fprintf ppf "The type %a@ is not a variant type" longident lid
+  | Incoherent_label_order ->
+      fprintf ppf "This function is applied to arguments@ ";
+      fprintf ppf "in an order different from other calls.@ ";
+      fprintf ppf "This is only allowed when the real type is known."
+  | Less_general (kind, trace) ->
+      report_unification_error ppf env trace
+        (fun ppf -> fprintf ppf "This %s has type" kind)
+        (fun ppf -> fprintf ppf "which is less general than")
+  | Modules_not_allowed ->
+      fprintf ppf "Modules are not allowed in this pattern."
+  | Cannot_infer_signature ->
+      fprintf ppf
+        "The signature for this packaged module couldn't be inferred."
+  | Not_a_packed_module ty ->
+      fprintf ppf
+        "This expression is packed module, but the expected type is@ %a"
+        type_expr ty
+  | Recursive_local_constraint trace ->
+      report_unification_error ppf env trace
+        (function ppf ->
+           fprintf ppf "Recursive local constraint when unifying")
+        (function ppf ->
+           fprintf ppf "with")
+  | Unexpected_existential ->
+      fprintf ppf
+        "Unexpected existential"
+  | Unqualified_gadt_pattern (tpath, name) ->
+      fprintf ppf "@[The GADT constructor %s of type %a@ %s.@]"
+        name path tpath
+        "must be qualified in this pattern"
+  | Invalid_interval ->
+      fprintf ppf "@[Only character intervals are supported in patterns.@]"
+  | Invalid_for_loop_index ->
+      fprintf ppf
+        "@[Invalid for-loop index: only variables and _ are allowed.@]"
+  | No_value_clauses ->
+      fprintf ppf
+        "None of the patterns in this 'match' expression match values."
+  | Exception_pattern_below_toplevel ->
+      fprintf ppf
+        "@[Exception patterns must be at the top level of a match case.@]"
+
+let typecore_report_error env ppf err =
+  wrap_printing_env env (fun () -> typecore_report_error env ppf err)
+
+(* another error reporter, this time coming from https://github.com/ocaml/ocaml/blob/4.02/typing/typetexp.ml#L911 *)
+let spellcheck ppf fold env lid =
+  let cutoff =
+    match String.length (Longident.last lid) with
+      | 1 | 2 -> 0
+      | 3 | 4 -> 1
+      | 5 | 6 -> 2
+      | _ -> 3
+  in
+  let compare target head acc =
+    let (best_choice, best_dist) = acc in
+    match Misc.edit_distance target head cutoff with
+      | None -> (best_choice, best_dist)
+      | Some dist ->
+        let choice =
+          if dist < best_dist then [head]
+          else if dist = best_dist then head :: best_choice
+          else best_choice in
+        (choice, min dist best_dist)
+  in
+  let init = ([], max_int) in
+  let handle (choice, _dist) =
+    match List.rev choice with
+      | [] -> ()
+      | last :: rev_rest ->
+        fprintf ppf "@\nHint: Did you mean %s%s%s?"
+          (String.concat ", " (List.rev rev_rest))
+          (if rev_rest = [] then "" else " or ")
+          last
+  in
+  (* flush now to get the error report early, in the (unheard of) case
+     where the linear search would take a bit of time; in the worst
+     case, the user has seen the error, she can interrupt the process
+     before the spell-checking terminates. *)
+  fprintf ppf "@?";
+  match lid with
+    | Longident.Lapply _ -> ()
+    | Longident.Lident s ->
+      handle (fold (compare s) None env init)
+    | Longident.Ldot (r, s) ->
+      handle (fold (compare s) (Some r) env init)
+
+let spellcheck ppf fold =
+  spellcheck ppf (fun f -> fold (fun s _ _ x -> f s x))
+
+let typetexp_report_error env ppf = function
+  | Typetexp.Unbound_type_variable name ->
+    fprintf ppf "Unbound type parameter %s@." name
+  | Unbound_type_constructor lid ->
+    (* modified *)
+    fprintf ppf "The parameter `%a` for this type constructor can't be found." longident lid;
+    spellcheck ppf Env.fold_types env lid;
+  | Unbound_type_constructor_2 p ->
+    fprintf ppf "The type constructor@ %a@ is not yet completely defined"
+      path p
+  | Type_arity_mismatch(lid, expected, provided) ->
+    fprintf ppf
+      "@[The type constructor %a@ expects %i argument(s),@ \
+        but is here applied to %i argument(s)@]"
+      longident lid expected provided
+  | Bound_type_variable name ->
+    fprintf ppf "Already bound type parameter '%s" name
+  | Recursive_type ->
+    fprintf ppf "This type is recursive"
+  | Unbound_row_variable lid ->
+      (* we don't use "spellcheck" here: this error is not raised
+         anywhere so it's unclear how it should be handled *)
+      fprintf ppf "Unbound row variable in #%a" longident lid
+  | Type_mismatch trace ->
+      Printtyp.report_unification_error ppf Env.empty trace
+        (function ppf ->
+           fprintf ppf "This type")
+        (function ppf ->
+           fprintf ppf "should be an instance of type")
+  | Alias_type_mismatch trace ->
+      Printtyp.report_unification_error ppf Env.empty trace
+        (function ppf ->
+           fprintf ppf "This alias is bound to type")
+        (function ppf ->
+           fprintf ppf "but is used as an instance of type")
+  | Present_has_conjunction l ->
+      fprintf ppf "The present constructor %s has a conjunctive type" l
+  | Present_has_no_type l ->
+      fprintf ppf "The present constructor %s has no type" l
+  | Constructor_mismatch (ty, ty') ->
+      wrap_printing_env env (fun ()  ->
+        Printtyp.reset_and_mark_loops_list [ty; ty'];
+        fprintf ppf "@[<hov>%s %a@ %s@ %a@]"
+          "This variant type contains a constructor"
+          Printtyp.type_expr ty
+          "which should be"
+          Printtyp.type_expr ty')
+  | Not_a_variant ty ->
+      Printtyp.reset_and_mark_loops ty;
+      fprintf ppf "@[The type %a@ is not a polymorphic variant type@]"
+        Printtyp.type_expr ty
+  | Variant_tags (lab1, lab2) ->
+      fprintf ppf
+        "@[Variant tags `%s@ and `%s have the same hash value.@ %s@]"
+        lab1 lab2 "Change one of them."
+  | Invalid_variable_name name ->
+      fprintf ppf "The type variable name %s is not allowed in programs" name
+  | Cannot_quantify (name, v) ->
+      fprintf ppf
+        "@[<hov>The universal type variable '%s cannot be generalized:@ %s.@]"
+        name
+        (if Btype.is_Tvar v then "it escapes its scope" else
+         if Btype.is_Tunivar v then "it is already bound to another variable"
+         else "it is not a variable")
+  | Multiple_constraints_on_type s ->
+      fprintf ppf "Multiple constraints for type %a" longident s
+  | Repeated_method_label s ->
+      fprintf ppf "@[This is the second method `%s' of this object type.@ %s@]"
+        s "Multiple occurences are not allowed."
+  | Unbound_value lid ->
+      fprintf ppf "Unbound value %a" longident lid;
+      spellcheck ppf Env.fold_values env lid;
+  | Unbound_module lid ->
+      fprintf ppf "Unbound module %a" longident lid;
+      spellcheck ppf Env.fold_modules env lid;
+  | Unbound_constructor lid ->
+      fprintf ppf "Unbound constructor %a" longident lid;
+      Typetexp.spellcheck_simple ppf Env.fold_constructors (fun d -> d.cstr_name)
+        env lid;
+  | Unbound_label lid ->
+      fprintf ppf "Unbound record field %a" longident lid;
+      Typetexp.spellcheck_simple ppf Env.fold_labels (fun d -> d.lbl_name) env lid;
+  | Unbound_class lid ->
+      fprintf ppf "Unbound class %a" longident lid;
+      spellcheck ppf Env.fold_classs env lid;
+  | Unbound_modtype lid ->
+      fprintf ppf "Unbound module type %a" longident lid;
+      spellcheck ppf Env.fold_modtypes env lid;
+  | Unbound_cltype lid ->
+      fprintf ppf "Unbound class type %a" longident lid;
+      spellcheck ppf Env.fold_cltypes env lid;
+  | Ill_typed_functor_application lid ->
+      fprintf ppf "Ill-typed functor application %a" longident lid
+  | Illegal_reference_to_recursive_module ->
+      fprintf ppf "Illegal recursive module reference"
+  | Access_functor_as_structure lid ->
+      fprintf ppf "The module %a is a functor, not a structure" longident lid
+
+(* taken from https://github.com/ocaml/ocaml/blob/4.02/parsing/location.ml#L337 *)
+(* we override the default reporter with this one *)
+let rec better_error_reporter ppf ({Location.loc; msg; sub; if_highlight} as err) =
+  let highlighted =
+    if if_highlight <> "" then
+      let rec collect_locs locs {Location.loc; sub; if_highlight; _} =
+        List.fold_left collect_locs (loc :: locs) sub
+      in
+      let locs = collect_locs [] err in
+      Location.highlight_locations ppf locs
+    else
+      false
+  in
+  if highlighted then
+    Format.pp_print_string ppf if_highlight
+  else begin
+    Format.fprintf ppf "%a%a %s" Location.print loc Location.print_error_prefix () (msg ^ "\n");
+    List.iter (Format.fprintf ppf "@\n@[<2>%a@]" better_error_reporter) sub
+  end
+
+ let setup () =
+  Location.error_reporter := better_error_reporter;
+  Location.register_error_of_exn
+    (function
+      | Typecore.Error (loc, env, err) ->
+        Some (Location.error_of_printer loc (typecore_report_error env) err)
+      | Typecore.Error_forward err ->
+        Some err
+      | _ ->
+        None
+    );
+  Location.register_error_of_exn
+    (function
+      | Typetexp.Error (loc, env, err) ->
+        Some (Location.error_of_printer loc (typetexp_report_error env) err)
+      (* typetexp doesn't expose Error_forward  *)
+      (* | Error_forward err ->
+        Some err *)
+      | _ ->
+        None
+    ) 
+
+end
+module Super_warnings
+= struct
+#1 "super_warnings.ml"
+(* this is lifted https://github.com/ocaml/ocaml/blob/4.02/utils/warnings.ml *)
+
+let warning_prefix = "Warning"
+
+let warning_message = Warnings.(function
+  | Comment_start -> "this is the start of a comment."
+  | Comment_not_end -> "this is not the end of a comment."
+  | Deprecated s -> "deprecated: " ^ s
+  | Fragile_match "" ->
+      "this pattern-matching is fragile."
+  | Fragile_match s ->
+      "this pattern-matching is fragile.\n\
+       It will remain exhaustive when constructors are added to type " ^ s ^ "."
+  | Partial_application ->
+      "this function application is partial,\n\
+       maybe some arguments are missing."
+  | Labels_omitted ->
+      "labels were omitted in the application of this function."
+  | Method_override [lab] ->
+      "the method " ^ lab ^ " is overridden."
+  | Method_override (cname :: slist) ->
+      String.concat " "
+        ("the following methods are overridden by the class"
+         :: cname  :: ":\n " :: slist)
+  | Method_override [] -> assert false
+  | Partial_match "" ->
+      (* modified *)
+      "You forgot to handle a possible value here, though we don't have more information on the value."
+  | Partial_match s ->
+      (* modified *)
+      "You forgot to handle a possible value here, for example: \n" ^ s
+  | Non_closed_record_pattern s ->
+      "the following labels are not bound in this record pattern:\n" ^ s ^
+      "\nEither bind these labels explicitly or add '; _' to the pattern."
+  | Statement_type ->
+      "this expression should have type unit."
+  | Unused_match -> "this match case is unused."
+  | Unused_pat   -> "this sub-pattern is unused."
+  | Instance_variable_override [lab] ->
+      "the instance variable " ^ lab ^ " is overridden.\n" ^
+      "The behaviour changed in ocaml 3.10 (previous behaviour was hiding.)"
+  | Instance_variable_override (cname :: slist) ->
+      String.concat " "
+        ("the following instance variables are overridden by the class"
+         :: cname  :: ":\n " :: slist) ^
+      "\nThe behaviour changed in ocaml 3.10 (previous behaviour was hiding.)"
+  | Instance_variable_override [] -> assert false
+  | Illegal_backslash -> "illegal backslash escape in string."
+  | Implicit_public_methods l ->
+      "the following private methods were made public implicitly:\n "
+      ^ String.concat " " l ^ "."
+  | Unerasable_optional_argument ->
+      (* modified *)
+      (* TODO: better formatting *)
+      String.concat "\n\n"
+        ["This is an optional argument at the final position of the function; omitting it while calling the function might be confused with currying. For example:";
+        "  let myTitle = displayTitle \"hello!\";";
+        "if `displayTitle` accepts an optional argument at the final position, it'd be unclear whether `myTitle` is a curried function or the final result.";
+        "Here's the language's rule: an optional argument is erased as soon as the 1st positional (i.e. neither labeled nor optional) argument defined after it is passed in.";
+        "To solve this, you'd conventionally add an extra () argument at the end of the function declaration."]
+  | Undeclared_virtual_method m -> "the virtual method "^m^" is not declared."
+  | Not_principal s -> s^" is not principal."
+  | Without_principality s -> s^" without principality."
+  | Unused_argument -> "this argument will not be used by the function."
+  | Nonreturning_statement ->
+      "this statement never returns (or has an unsound type.)"
+  | Preprocessor s -> s
+  | Useless_record_with ->
+      "all the fields are explicitly listed in this record:\n\
+       the 'with' clause is useless."
+  | Bad_module_name (modname) ->
+      (* modified *)
+      "This file's name is potentially invalid. The build systems conventionally turn a file name into a module name by upper-casing the first letter. " ^ modname ^ " isn't a valid module name.\n" ^
+      "Note: some build systems might e.g. turn kebab-case into CamelCase module, which is why this isn't a hard error."
+  | All_clauses_guarded ->
+      "bad style, all clauses in this pattern-matching are guarded."
+  | Unused_var v | Unused_var_strict v -> "unused variable " ^ v ^ "."
+  | Wildcard_arg_to_constant_constr ->
+     "wildcard pattern given as argument to a constant constructor"
+  | Eol_in_string ->
+     "unescaped end-of-line in a string constant (non-portable code)"
+  | Duplicate_definitions (kind, cname, tc1, tc2) ->
+      Printf.sprintf "the %s %s is defined in both types %s and %s."
+        kind cname tc1 tc2
+  | Multiple_definition(modname, file1, file2) ->
+      Printf.sprintf
+        "files %s and %s both define a module named %s"
+        file1 file2 modname
+  | Unused_value_declaration v -> "unused value " ^ v ^ "."
+  | Unused_open s -> "unused open " ^ s ^ "."
+  | Unused_type_declaration s -> "unused type " ^ s ^ "."
+  | Unused_for_index s -> "unused for-loop index " ^ s ^ "."
+  | Unused_ancestor s -> "unused ancestor variable " ^ s ^ "."
+  | Unused_constructor (s, false, false) -> "unused constructor " ^ s ^ "."
+  | Unused_constructor (s, true, _) ->
+      "constructor " ^ s ^
+      " is never used to build values.\n\
+        (However, this constructor appears in patterns.)"
+  | Unused_constructor (s, false, true) ->
+      "constructor " ^ s ^
+      " is never used to build values.\n\
+        Its type is exported as a private type."
+  | Unused_extension (s, false, false) ->
+      "unused extension constructor " ^ s ^ "."
+  | Unused_extension (s, true, _) ->
+      "extension constructor " ^ s ^
+      " is never used to build values.\n\
+        (However, this constructor appears in patterns.)"
+  | Unused_extension (s, false, true) ->
+      "extension constructor " ^ s ^
+      " is never used to build values.\n\
+        It is exported or rebound as a private extension."
+  | Unused_rec_flag ->
+      "unused rec flag."
+  | Name_out_of_scope (ty, [nm], false) ->
+      nm ^ " was selected from type " ^ ty ^
+      ".\nIt is not visible in the current scope, and will not \n\
+       be selected if the type becomes unknown."
+  | Name_out_of_scope (_, _, false) -> assert false
+  | Name_out_of_scope (ty, slist, true) ->
+      "this record of type "^ ty ^" contains fields that are \n\
+       not visible in the current scope: "
+      ^ String.concat " " slist ^ ".\n\
+       They will not be selected if the type becomes unknown."
+  | Ambiguous_name ([s], tl, false) ->
+      s ^ " belongs to several types: " ^ String.concat " " tl ^
+      "\nThe first one was selected. Please disambiguate if this is wrong."
+  | Ambiguous_name (_, _, false) -> assert false
+  | Ambiguous_name (slist, tl, true) ->
+      "these field labels belong to several types: " ^
+      String.concat " " tl ^
+      "\nThe first one was selected. Please disambiguate if this is wrong."
+  | Disambiguated_name s ->
+      "this use of " ^ s ^ " required disambiguation."
+  | Nonoptional_label s ->
+      "the label " ^ s ^ " is not optional."
+  | Open_shadow_identifier (kind, s) ->
+      Printf.sprintf
+        "this open statement shadows the %s identifier %s (which is later used)"
+        kind s
+  | Open_shadow_label_constructor (kind, s) ->
+      Printf.sprintf
+        "this open statement shadows the %s %s (which is later used)"
+        kind s
+  | Bad_env_variable (var, s) ->
+      Printf.sprintf "illegal environment variable %s : %s" var s
+  | Attribute_payload (a, s) ->
+      Printf.sprintf "illegal payload for attribute '%s'.\n%s" a s
+  | Eliminated_optional_arguments sl ->
+      Printf.sprintf "implicit elimination of optional argument%s %s"
+        (if List.length sl = 1 then "" else "s")
+        (String.concat ", " sl)
+  | No_cmi_file s ->
+      "no cmi file was found in path for module " ^ s
+  | Bad_docstring unattached ->
+      if unattached then "unattached documentation comment (ignored)"
+      else "ambiguous documentation comment"
+);;
+
+let warning_number = Warnings.(function
+  | Comment_start -> 1
+  | Comment_not_end -> 2
+  | Deprecated _ -> 3
+  | Fragile_match _ -> 4
+  | Partial_application -> 5
+  | Labels_omitted -> 6
+  | Method_override _ -> 7
+  | Partial_match _ -> 8
+  | Non_closed_record_pattern _ -> 9
+  | Statement_type -> 10
+  | Unused_match -> 11
+  | Unused_pat -> 12
+  | Instance_variable_override _ -> 13
+  | Illegal_backslash -> 14
+  | Implicit_public_methods _ -> 15
+  | Unerasable_optional_argument -> 16
+  | Undeclared_virtual_method _ -> 17
+  | Not_principal _ -> 18
+  | Without_principality _ -> 19
+  | Unused_argument -> 20
+  | Nonreturning_statement -> 21
+  | Preprocessor _ -> 22
+  | Useless_record_with -> 23
+  | Bad_module_name _ -> 24
+  | All_clauses_guarded -> 25
+  | Unused_var _ -> 26
+  | Unused_var_strict _ -> 27
+  | Wildcard_arg_to_constant_constr -> 28
+  | Eol_in_string -> 29
+  | Duplicate_definitions _ -> 30
+  | Multiple_definition _ -> 31
+  | Unused_value_declaration _ -> 32
+  | Unused_open _ -> 33
+  | Unused_type_declaration _ -> 34
+  | Unused_for_index _ -> 35
+  | Unused_ancestor _ -> 36
+  | Unused_constructor _ -> 37
+  | Unused_extension _ -> 38
+  | Unused_rec_flag -> 39
+  | Name_out_of_scope _ -> 40
+  | Ambiguous_name _ -> 41
+  | Disambiguated_name _ -> 42
+  | Nonoptional_label _ -> 43
+  | Open_shadow_identifier _ -> 44
+  | Open_shadow_label_constructor _ -> 45
+  | Bad_env_variable _ -> 46
+  | Attribute_payload _ -> 47
+  | Eliminated_optional_arguments _ -> 48
+  | No_cmi_file _ -> 49
+  | Bad_docstring _ -> 50
+);;
+
+(* helper extracted from https://github.com/ocaml/ocaml/blob/4.02/utils/warnings.ml#L396 *)
+let print ppf w =
+  let msg = warning_message  w in
+  let num = warning_number w in
+  (* Format.fprintf ppf "%d: %s" num ("Oops:\n" ^ msg ^ "\n----------"); *)
+  Format.fprintf ppf "%d: %s" num msg;
+  Format.pp_print_flush ppf ()
+  (*if (!current).error.(num) then incr nerrors*)
+;;
+
+(* extracted from https://github.com/ocaml/ocaml/blob/4.02/parsing/location.ml#L280 *)
+(* we'll replace the default printer with this one *)
+let super_warning_printer loc ppf w =
+  if Warnings.is_active w then begin
+    Misc.Color.setup !Clflags.color;
+    Location.print ppf loc;
+    Format.fprintf ppf "@{<warning>%s@} %a@." warning_prefix print w
+  end
+;;
+
+let setup () =       
+  Location.warning_printer := super_warning_printer;
+
+end
 module Js_main : sig 
 #1 "js_main.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -111475,7 +112135,7 @@ let process_implementation_file ppf name =
   Js_implementation.implementation ppf name (Compenv.output_prefix name)
 
 
-let process_file ppf name =
+let process_file ppf name = 
   match Ocaml_parse.check_suffix  name with 
   | `Ml, opref ->
     Js_implementation.implementation ppf name opref 
@@ -111491,13 +112151,21 @@ let usage = "Usage: bsc <options> <files>\nOptions are:"
 
 let ppf = Format.err_formatter
 
+type compilation_mode = 
+| Nothing
+| Anon
+| Impl
+| Intf
+
+let asd = ref Nothing
+
 (* Error messages to standard error formatter *)
 let anonymous filename =
-  Compenv.readenv ppf Before_compile; process_file ppf filename;;
+  Compenv.readenv ppf Before_compile; asd := Anon; process_file ppf filename;;
 let impl filename =
-  Compenv.readenv ppf Before_compile; process_implementation_file ppf filename;;
+  Compenv.readenv ppf Before_compile; asd := Impl; process_implementation_file ppf filename;;
 let intf filename =
-  Compenv.readenv ppf Before_compile; process_interface_file ppf filename;;
+  Compenv.readenv ppf Before_compile; asd := Intf; process_interface_file ppf filename;;
 
 let batch_files  = ref []
 let script_dirs = ref []
@@ -111542,9 +112210,21 @@ let define_variable s =
 
   
 let buckle_script_flags =
+  ("-bs-better-errors",
+    Arg.Unit (fun _ -> 
+      (* needs to be set here instead of, say, setting a
+        Js_config.better_errors flag; otherwise, when `anonymous` runs, we
+        don't have time to set the custom printer before it starts outputting
+        warnings *)
+      Super_warnings.setup ();
+      Super_errors.setup ()
+    ),
+   " Better error message combined with other tools "
+  )
+  :: 
   ("-bs-no-implicit-include", Arg.Set Clflags.no_implicit_current_dir
   , " Don't include current dir implicitly")
-  :: 
+  ::
   ("-bs-assume-has-mli", Arg.Unit (fun _ -> Clflags.assume_no_mli := Clflags.Mli_exists), 
     " (internal) Assume mli always exist ")
   ::
@@ -111596,10 +112276,6 @@ let buckle_script_flags =
     " No sort (see -bs-sort-imports)"
   )
   ::
-  ("-bs-better-errors",
-   Arg.Set Js_config.better_errors,
-   " Better error message combined with other tools "
-  )::
   ("-bs-package-name", 
    Arg.String Js_config.set_package_name, 
    " set package name, useful when you want to produce npm packages")
@@ -111674,11 +112350,8 @@ let buckle_script_flags =
   :: Ocaml_options.mk__ anonymous
   :: Ocaml_options.ocaml_options
 
-
-
-
 let _ = 
-  (* Default configuraiton: sync up with 
+  (* Default configuration: sync up with 
     {!Jsoo_main}  *)
   Clflags.unsafe_string := false;
   Clflags.debug := true;
@@ -111688,6 +112361,7 @@ let _ =
   try
     Compenv.readenv ppf Before_args;
     Arg.parse buckle_script_flags anonymous usage;
+
     let main_file = !main_file in
     let eval_string = !eval_string in
     let task : Ocaml_batch_compile.task = 
@@ -111699,14 +112373,9 @@ let _ =
     exit (Ocaml_batch_compile.batch_compile ppf 
             (if !Clflags.no_implicit_current_dir then !script_dirs else 
                Filename.current_dir_name::!script_dirs) !batch_files task) 
-  with x ->
-    if not @@ !Js_config.better_errors then
-      begin (* plain error messge reporting*)
-        Location.report_exception ppf x;
-        exit 2
-      end
-    else
-      (** Fancy error message reporting*)
+  with x -> 
+    begin
+      Location.report_exception ppf x;
       exit 2
-
+    end
 end

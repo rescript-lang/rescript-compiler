@@ -402,6 +402,7 @@ bin/whole_compiler.ml : syntax/bs_ast_invariant.mli
 bin/whole_compiler.ml : core/js_of_lam_exception.mli
 bin/whole_compiler.ml : core/lam_beta_reduce_util.ml
 bin/whole_compiler.ml : core/ocaml_batch_compile.mli
+bin/whole_compiler.ml : super_errors/super_errors.ml
 bin/whole_compiler.ml : core/lam_beta_reduce_util.mli
 bin/whole_compiler.ml : core/lam_compile_primitive.ml
 bin/whole_compiler.ml : core/lam_pass_deep_flatten.ml
@@ -413,6 +414,7 @@ bin/whole_compiler.ml : core/lam_dispatch_primitive.ml
 bin/whole_compiler.ml : core/lam_pass_deep_flatten.mli
 bin/whole_compiler.ml : core/lam_pass_eliminate_ref.ml
 bin/whole_compiler.ml : core/lam_pass_remove_alias.mli
+bin/whole_compiler.ml : super_errors/super_warnings.ml
 bin/whole_compiler.ml : syntax/ast_derive_projector.ml
 bin/whole_compiler.ml : core/bs_conditional_initial.mli
 bin/whole_compiler.ml : core/js_of_lam_float_record.mli

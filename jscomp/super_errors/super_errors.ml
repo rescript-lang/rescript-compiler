@@ -1,0 +1,419 @@
+open Misc
+open Asttypes
+open Parsetree
+open Types
+open Typedtree
+open Btype
+open Ctype
+
+open Format
+open Printtyp
+
+(* taken from https://github.com/ocaml/ocaml/blob/4.02/typing/typecore.ml#L3769 *)
+let typecore_report_error env ppf = function
+  | Typecore.Polymorphic_label lid ->
+      fprintf ppf "@[The record field %a is polymorphic.@ %s@]"
+        longident lid "You cannot instantiate it in a pattern."
+  | Constructor_arity_mismatch(lid, expected, provided) ->
+      (* modified *)
+      fprintf ppf
+       "@[This variant constructor, %a, expects %i %s; here, we've %sfound %i.@]"
+       longident lid expected (if expected == 1 then "argument" else "arguments") (if provided < expected then "only " else "") provided
+  | Label_mismatch(lid, trace) ->
+      report_unification_error ppf env trace
+        (function ppf ->
+           fprintf ppf "The record field %a@ belongs to the type"
+                   longident lid)
+        (function ppf ->
+           fprintf ppf "but is mixed here with fields of type")
+  | Pattern_type_clash trace ->
+      report_unification_error ppf env trace
+        (function ppf ->
+          fprintf ppf "This pattern matches values of type")
+        (function ppf ->
+          fprintf ppf "but a pattern was expected which matches values of type")
+  | Or_pattern_type_clash (id, trace) ->
+      report_unification_error ppf env trace
+        (function ppf ->
+          fprintf ppf "The variable %s on the left-hand side of this or-pattern has type" (Ident.name id))
+        (function ppf ->
+          fprintf ppf "but on the right-hand side it has type")
+  | Multiply_bound_variable name ->
+      fprintf ppf "Variable %s is bound several times in this matching" name
+  | Orpat_vars id ->
+      fprintf ppf "Variable %s must occur on both sides of this | pattern"
+        (Ident.name id)
+  | Expr_type_clash trace ->
+      report_unification_error ppf env trace
+        (function ppf ->
+           fprintf ppf "this beeeeeautiful expression has type")
+        (function ppf ->
+           fprintf ppf "but an expression was expected of type")
+  | Apply_non_function typ ->
+      (* modified *)
+      reset_and_mark_loops typ;
+      begin match (repr typ).desc with
+        Tarrow (_, _inputType, returnType, _) ->
+          let rec countNumberOfArgs count {desc} = match desc with
+          | Tarrow (_, _inputType, returnType, _) -> countNumberOfArgs (count + 1) returnType
+          | _ -> count
+          in
+          let countNumberOfArgs = countNumberOfArgs 1 in
+          let acceptsCount = countNumberOfArgs returnType in
+          fprintf ppf "@[<v>@[<2>This function has type@ %a@]"
+            type_expr typ;
+          fprintf ppf "@ @[It only accepts %i %s; here, it's called with more.@ %s@]@]"
+                      acceptsCount (if acceptsCount == 1 then "argument" else "arguments") "Maybe you forgot a semicolon?"
+      | _ ->
+          fprintf ppf "@[<v>@[<2>This expression has type@ %a@]@ %s@]"
+            type_expr typ
+            "It seems to have been called like a function? Maybe you forgot a semicolon somewhere?"
+      end
+  | Apply_wrong_label (l, ty) ->
+      let print_label ppf = function
+        | "" -> fprintf ppf "without label"
+        | l ->
+            fprintf ppf "with label %s" (prefixed_label_name l)
+      in
+      reset_and_mark_loops ty;
+      fprintf ppf
+        "@[<v>@[<2>The function applied to this argument has type@ %a@]@.\
+          This argument cannot be applied %a@]"
+        type_expr ty print_label l
+  | Label_multiply_defined s ->
+      fprintf ppf "The record field label %s is defined several times" s
+  | Label_missing labels ->
+      let print_labels ppf =
+        List.iter (fun lbl -> fprintf ppf "@ %s" (Ident.name lbl)) in
+      fprintf ppf "@[<hov>Some record fields are undefined:%a@]"
+        print_labels labels
+  | Label_not_mutable lid ->
+      fprintf ppf "The record field %a is not mutable" longident lid
+  | Wrong_name (eorp, ty, kind, p, lid) as foo ->
+      (* forwarded *)
+      Typecore.report_error env ppf foo
+      (* reset_and_mark_loops ty;
+      fprintf ppf "@[@[<2>%s type@ %a@]@ "
+        eorp type_expr ty;
+      fprintf ppf "The %s %a does not belong to type %a@]"
+        (if kind = "record" then "field" else "constructor")
+        longident lid (*kind*) path p;
+      if kind = "record" then Label.spellcheck ppf env p lid
+                         else Constructor.spellcheck ppf env p lid *)
+  | Name_type_mismatch (kind, lid, tp, tpl) ->
+      let name = if kind = "record" then "field" else "constructor" in
+      report_ambiguous_type_error ppf env tp tpl
+        (function ppf ->
+           fprintf ppf "The %s %a@ belongs to the %s type"
+             name longident lid kind)
+        (function ppf ->
+           fprintf ppf "The %s %a@ belongs to one of the following %s types:"
+             name longident lid kind)
+        (function ppf ->
+           fprintf ppf "but a %s was expected belonging to the %s type"
+             name kind)
+  | Invalid_format msg ->
+      fprintf ppf "%s" msg
+  | Undefined_method (ty, me) ->
+      reset_and_mark_loops ty;
+      fprintf ppf
+        "@[<v>@[This expression has type@;<1 2>%a@]@,\
+         It has no method %s@]" type_expr ty me
+  | Undefined_inherited_method me ->
+      fprintf ppf "This expression has no method %s" me
+  | Virtual_class cl ->
+      fprintf ppf "Cannot instantiate the virtual class %a"
+        longident cl
+  | Unbound_instance_variable v ->
+      fprintf ppf "Unbound instance variable %s" v
+  | Instance_variable_not_mutable (b, v) ->
+      if b then
+        fprintf ppf "The instance variable %s is not mutable" v
+      else
+        fprintf ppf "The value %s is not an instance variable" v
+  | Not_subtype(tr1, tr2) ->
+      report_subtyping_error ppf env tr1 "is not a subtype of" tr2
+  | Outside_class ->
+      fprintf ppf "This object duplication occurs outside a method definition"
+  | Value_multiply_overridden v ->
+      fprintf ppf "The instance variable %s is overridden several times" v
+  | Coercion_failure (ty, ty', trace, b) ->
+      report_unification_error ppf env trace
+        (function ppf ->
+           let ty, ty' = prepare_expansion (ty, ty') in
+           fprintf ppf
+             "This expression cannot be coerced to type@;<1 2>%a;@ it has type"
+           (type_expansion ty) ty')
+        (function ppf ->
+           fprintf ppf "but is here used with type");
+      if b then
+        fprintf ppf ".@.@[<hov>%s@ %s@]"
+          "This simple coercion was not fully general."
+          "Consider using a double coercion."
+  | Too_many_arguments (in_function, ty) ->
+      reset_and_mark_loops ty;
+      if in_function then begin
+        fprintf ppf "This function expects too many arguments,@ ";
+        fprintf ppf "it should have type@ %a"
+          type_expr ty
+      end else begin
+        fprintf ppf "This expression should not be a function,@ ";
+        fprintf ppf "the expected type is@ %a"
+          type_expr ty
+      end
+  | Abstract_wrong_label (l, ty) ->
+      let label_mark = function
+        | "" -> "but its first argument is not labelled"
+        |  l -> sprintf "but its first argument is labelled %s"
+          (prefixed_label_name l) in
+      reset_and_mark_loops ty;
+      fprintf ppf "@[<v>@[<2>This function should have type@ %a@]@,%s@]"
+      type_expr ty (label_mark l)
+  | Scoping_let_module(id, ty) ->
+      reset_and_mark_loops ty;
+      fprintf ppf
+       "This `let module' expression has type@ %a@ " type_expr ty;
+      fprintf ppf
+       "In this type, the locally bound module name %s escapes its scope" id
+  | Masked_instance_variable lid ->
+      fprintf ppf
+        "The instance variable %a@ \
+         cannot be accessed from the definition of another instance variable"
+        longident lid
+  | Private_type ty ->
+      fprintf ppf "Cannot create values of the private type %a" type_expr ty
+  | Private_label (lid, ty) ->
+      fprintf ppf "Cannot assign field %a of the private type %a"
+        longident lid type_expr ty
+  | Not_a_variant_type lid ->
+      fprintf ppf "The type %a@ is not a variant type" longident lid
+  | Incoherent_label_order ->
+      fprintf ppf "This function is applied to arguments@ ";
+      fprintf ppf "in an order different from other calls.@ ";
+      fprintf ppf "This is only allowed when the real type is known."
+  | Less_general (kind, trace) ->
+      report_unification_error ppf env trace
+        (fun ppf -> fprintf ppf "This %s has type" kind)
+        (fun ppf -> fprintf ppf "which is less general than")
+  | Modules_not_allowed ->
+      fprintf ppf "Modules are not allowed in this pattern."
+  | Cannot_infer_signature ->
+      fprintf ppf
+        "The signature for this packaged module couldn't be inferred."
+  | Not_a_packed_module ty ->
+      fprintf ppf
+        "This expression is packed module, but the expected type is@ %a"
+        type_expr ty
+  | Recursive_local_constraint trace ->
+      report_unification_error ppf env trace
+        (function ppf ->
+           fprintf ppf "Recursive local constraint when unifying")
+        (function ppf ->
+           fprintf ppf "with")
+  | Unexpected_existential ->
+      fprintf ppf
+        "Unexpected existential"
+  | Unqualified_gadt_pattern (tpath, name) ->
+      fprintf ppf "@[The GADT constructor %s of type %a@ %s.@]"
+        name path tpath
+        "must be qualified in this pattern"
+  | Invalid_interval ->
+      fprintf ppf "@[Only character intervals are supported in patterns.@]"
+  | Invalid_for_loop_index ->
+      fprintf ppf
+        "@[Invalid for-loop index: only variables and _ are allowed.@]"
+  | No_value_clauses ->
+      fprintf ppf
+        "None of the patterns in this 'match' expression match values."
+  | Exception_pattern_below_toplevel ->
+      fprintf ppf
+        "@[Exception patterns must be at the top level of a match case.@]"
+
+let typecore_report_error env ppf err =
+  wrap_printing_env env (fun () -> typecore_report_error env ppf err)
+
+(* another error reporter, this time coming from https://github.com/ocaml/ocaml/blob/4.02/typing/typetexp.ml#L911 *)
+let spellcheck ppf fold env lid =
+  let cutoff =
+    match String.length (Longident.last lid) with
+      | 1 | 2 -> 0
+      | 3 | 4 -> 1
+      | 5 | 6 -> 2
+      | _ -> 3
+  in
+  let compare target head acc =
+    let (best_choice, best_dist) = acc in
+    match Misc.edit_distance target head cutoff with
+      | None -> (best_choice, best_dist)
+      | Some dist ->
+        let choice =
+          if dist < best_dist then [head]
+          else if dist = best_dist then head :: best_choice
+          else best_choice in
+        (choice, min dist best_dist)
+  in
+  let init = ([], max_int) in
+  let handle (choice, _dist) =
+    match List.rev choice with
+      | [] -> ()
+      | last :: rev_rest ->
+        fprintf ppf "@\nHint: Did you mean %s%s%s?"
+          (String.concat ", " (List.rev rev_rest))
+          (if rev_rest = [] then "" else " or ")
+          last
+  in
+  (* flush now to get the error report early, in the (unheard of) case
+     where the linear search would take a bit of time; in the worst
+     case, the user has seen the error, she can interrupt the process
+     before the spell-checking terminates. *)
+  fprintf ppf "@?";
+  match lid with
+    | Longident.Lapply _ -> ()
+    | Longident.Lident s ->
+      handle (fold (compare s) None env init)
+    | Longident.Ldot (r, s) ->
+      handle (fold (compare s) (Some r) env init)
+
+let spellcheck ppf fold =
+  spellcheck ppf (fun f -> fold (fun s _ _ x -> f s x))
+
+let typetexp_report_error env ppf = function
+  | Typetexp.Unbound_type_variable name ->
+    fprintf ppf "Unbound type parameter %s@." name
+  | Unbound_type_constructor lid ->
+    (* modified *)
+    fprintf ppf "The parameter `%a` for this type constructor can't be found." longident lid;
+    spellcheck ppf Env.fold_types env lid;
+  | Unbound_type_constructor_2 p ->
+    fprintf ppf "The type constructor@ %a@ is not yet completely defined"
+      path p
+  | Type_arity_mismatch(lid, expected, provided) ->
+    fprintf ppf
+      "@[The type constructor %a@ expects %i argument(s),@ \
+        but is here applied to %i argument(s)@]"
+      longident lid expected provided
+  | Bound_type_variable name ->
+    fprintf ppf "Already bound type parameter '%s" name
+  | Recursive_type ->
+    fprintf ppf "This type is recursive"
+  | Unbound_row_variable lid ->
+      (* we don't use "spellcheck" here: this error is not raised
+         anywhere so it's unclear how it should be handled *)
+      fprintf ppf "Unbound row variable in #%a" longident lid
+  | Type_mismatch trace ->
+      Printtyp.report_unification_error ppf Env.empty trace
+        (function ppf ->
+           fprintf ppf "This type")
+        (function ppf ->
+           fprintf ppf "should be an instance of type")
+  | Alias_type_mismatch trace ->
+      Printtyp.report_unification_error ppf Env.empty trace
+        (function ppf ->
+           fprintf ppf "This alias is bound to type")
+        (function ppf ->
+           fprintf ppf "but is used as an instance of type")
+  | Present_has_conjunction l ->
+      fprintf ppf "The present constructor %s has a conjunctive type" l
+  | Present_has_no_type l ->
+      fprintf ppf "The present constructor %s has no type" l
+  | Constructor_mismatch (ty, ty') ->
+      wrap_printing_env env (fun ()  ->
+        Printtyp.reset_and_mark_loops_list [ty; ty'];
+        fprintf ppf "@[<hov>%s %a@ %s@ %a@]"
+          "This variant type contains a constructor"
+          Printtyp.type_expr ty
+          "which should be"
+          Printtyp.type_expr ty')
+  | Not_a_variant ty ->
+      Printtyp.reset_and_mark_loops ty;
+      fprintf ppf "@[The type %a@ is not a polymorphic variant type@]"
+        Printtyp.type_expr ty
+  | Variant_tags (lab1, lab2) ->
+      fprintf ppf
+        "@[Variant tags `%s@ and `%s have the same hash value.@ %s@]"
+        lab1 lab2 "Change one of them."
+  | Invalid_variable_name name ->
+      fprintf ppf "The type variable name %s is not allowed in programs" name
+  | Cannot_quantify (name, v) ->
+      fprintf ppf
+        "@[<hov>The universal type variable '%s cannot be generalized:@ %s.@]"
+        name
+        (if Btype.is_Tvar v then "it escapes its scope" else
+         if Btype.is_Tunivar v then "it is already bound to another variable"
+         else "it is not a variable")
+  | Multiple_constraints_on_type s ->
+      fprintf ppf "Multiple constraints for type %a" longident s
+  | Repeated_method_label s ->
+      fprintf ppf "@[This is the second method `%s' of this object type.@ %s@]"
+        s "Multiple occurences are not allowed."
+  | Unbound_value lid ->
+      fprintf ppf "Unbound value %a" longident lid;
+      spellcheck ppf Env.fold_values env lid;
+  | Unbound_module lid ->
+      fprintf ppf "Unbound module %a" longident lid;
+      spellcheck ppf Env.fold_modules env lid;
+  | Unbound_constructor lid ->
+      fprintf ppf "Unbound constructor %a" longident lid;
+      Typetexp.spellcheck_simple ppf Env.fold_constructors (fun d -> d.cstr_name)
+        env lid;
+  | Unbound_label lid ->
+      fprintf ppf "Unbound record field %a" longident lid;
+      Typetexp.spellcheck_simple ppf Env.fold_labels (fun d -> d.lbl_name) env lid;
+  | Unbound_class lid ->
+      fprintf ppf "Unbound class %a" longident lid;
+      spellcheck ppf Env.fold_classs env lid;
+  | Unbound_modtype lid ->
+      fprintf ppf "Unbound module type %a" longident lid;
+      spellcheck ppf Env.fold_modtypes env lid;
+  | Unbound_cltype lid ->
+      fprintf ppf "Unbound class type %a" longident lid;
+      spellcheck ppf Env.fold_cltypes env lid;
+  | Ill_typed_functor_application lid ->
+      fprintf ppf "Ill-typed functor application %a" longident lid
+  | Illegal_reference_to_recursive_module ->
+      fprintf ppf "Illegal recursive module reference"
+  | Access_functor_as_structure lid ->
+      fprintf ppf "The module %a is a functor, not a structure" longident lid
+
+(* taken from https://github.com/ocaml/ocaml/blob/4.02/parsing/location.ml#L337 *)
+(* we override the default reporter with this one *)
+let rec better_error_reporter ppf ({Location.loc; msg; sub; if_highlight} as err) =
+  let highlighted =
+    if if_highlight <> "" then
+      let rec collect_locs locs {Location.loc; sub; if_highlight; _} =
+        List.fold_left collect_locs (loc :: locs) sub
+      in
+      let locs = collect_locs [] err in
+      Location.highlight_locations ppf locs
+    else
+      false
+  in
+  if highlighted then
+    Format.pp_print_string ppf if_highlight
+  else begin
+    Format.fprintf ppf "%a%a %s" Location.print loc Location.print_error_prefix () (msg ^ "\n");
+    List.iter (Format.fprintf ppf "@\n@[<2>%a@]" better_error_reporter) sub
+  end
+
+(* This will be called in js_main. This is how you'd override the default error printer from the compiler & register new error_of_exn handlers *)
+let setup () =
+  Location.error_reporter := better_error_reporter;
+  Location.register_error_of_exn
+    (function
+      | Typecore.Error (loc, env, err) ->
+        Some (Location.error_of_printer loc (typecore_report_error env) err)
+      | Typecore.Error_forward err ->
+        Some err
+      | _ ->
+        None
+    );
+  Location.register_error_of_exn
+    (function
+      | Typetexp.Error (loc, env, err) ->
+        Some (Location.error_of_printer loc (typetexp_report_error env) err)
+      (* typetexp doesn't expose Error_forward  *)
+      (* | Error_forward err ->
+        Some err *)
+      | _ ->
+        None
+    ) 

@@ -67,7 +67,7 @@ let (|?)  m (key, cb) =
   m  |> Ext_json.test key cb 
 
 
-let warning_unused_file : _ format = "@{<warning>IGNORED@}: file %s under %s is ignored due to that it is not a valid module name@."
+let warning_unused_file : _ format = "@{<warning>IGNORED@}: file %s under %s is ignored because it can't be turned into a valid module name. The build system transforms a file name into a module name by upper-casing the first letter@."
 
 type cxt = {
   no_dev : bool ;

@@ -17,7 +17,7 @@ let process_implementation_file ppf name =
   Js_implementation.implementation ppf name (Compenv.output_prefix name)
 
 
-let process_file ppf name =
+let process_file ppf name = 
   match Ocaml_parse.check_suffix  name with 
   | `Ml, opref ->
     Js_implementation.implementation ppf name opref 
@@ -84,9 +84,21 @@ let define_variable s =
 
   
 let buckle_script_flags =
+  ("-bs-super-errors",
+    Arg.Unit (fun _ -> 
+      (* needs to be set here instead of, say, setting a
+        Js_config.better_errors flag; otherwise, when `anonymous` runs, we
+        don't have time to set the custom printer before it starts outputting
+        warnings *)
+      Super_warnings.setup ();
+      Super_errors.setup ()
+    ),
+   " Better error message combined with other tools "
+  )
+  :: 
   ("-bs-no-implicit-include", Arg.Set Clflags.no_implicit_current_dir
   , " Don't include current dir implicitly")
-  :: 
+  ::
   ("-bs-assume-has-mli", Arg.Unit (fun _ -> Clflags.assume_no_mli := Clflags.Mli_exists), 
     " (internal) Assume mli always exist ")
   ::
@@ -138,10 +150,6 @@ let buckle_script_flags =
     " No sort (see -bs-sort-imports)"
   )
   ::
-  ("-bs-better-errors",
-   Arg.Set Js_config.better_errors,
-   " Better error message combined with other tools "
-  )::
   ("-bs-package-name", 
    Arg.String Js_config.set_package_name, 
    " set package name, useful when you want to produce npm packages")
@@ -216,11 +224,8 @@ let buckle_script_flags =
   :: Ocaml_options.mk__ anonymous
   :: Ocaml_options.ocaml_options
 
-
-
-
 let _ = 
-  (* Default configuraiton: sync up with 
+  (* Default configuration: sync up with 
     {!Jsoo_main}  *)
   Clflags.unsafe_string := false;
   Clflags.debug := true;
@@ -241,12 +246,8 @@ let _ =
     exit (Ocaml_batch_compile.batch_compile ppf 
             (if !Clflags.no_implicit_current_dir then !script_dirs else 
                Filename.current_dir_name::!script_dirs) !batch_files task) 
-  with x ->
-    if not @@ !Js_config.better_errors then
-      begin (* plain error messge reporting*)
-        Location.report_exception ppf x;
-        exit 2
-      end
-    else
-      (** Fancy error message reporting*)
+  with x -> 
+    begin
+      Location.report_exception ppf x;
       exit 2
+    end

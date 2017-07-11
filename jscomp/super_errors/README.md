@@ -1,0 +1,1 @@
+Hello! This is the subdirectory for the new, newcomer-friendly OCaml/Reason warning & error report system. Most of the logic are lifted from the compiler. Feel free to submit new ones or tweak existing messages in `super_errors` and `super_warnings`! The files have comments in them that tells you how they work.
