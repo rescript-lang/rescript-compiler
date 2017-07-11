@@ -30,7 +30,7 @@
 
 
 
-let annotate (meta : Lam_stats.meta)
+let annotate (meta : Lam_stats.t)
     rec_flag    
     (k:Ident.t) (v : Lam_arity.t) lambda = 
   (* Ext_log.dwarn  __LOC__ "%s/%d" k.name k.stamp;     *)
@@ -57,7 +57,7 @@ let annotate (meta : Lam_stats.meta)
     function definition,
     alias propgation - and toplevel identifiers, this needs to be exported
  *)
-let collect_helper  (meta : Lam_stats.meta) (lam : Lam.t)  = 
+let collect_helper  (meta : Lam_stats.t) (lam : Lam.t)  = 
   let rec collect_bind rec_flag
       (kind : Lam.let_kind) 
       (ident : Ident.t)
@@ -181,8 +181,8 @@ let count_alias_globals
     filename
     export_idents
     export_sets 
-    (lam : Lam.t) : Lam_stats.meta =
-  let meta : Lam_stats.meta = 
+    (lam : Lam.t) : Lam_stats.t =
+  let meta : Lam_stats.t = 
     {alias_tbl = Ident_hashtbl.create 31 ; 
      ident_tbl = Ident_hashtbl.create 31;
      exit_codes = Int_hash_set.create 31 ;

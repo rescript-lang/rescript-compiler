@@ -39,7 +39,7 @@ let string_of_primitive = Format.asprintf "%a" Lam_print.primitive
 
 
 (*
-let add_required_modules ( x : Ident.t list) (meta : Lam_stats.meta) = 
+let add_required_modules ( x : Ident.t list) (meta : Lam_stats.t) = 
   let meta_require_modules = meta.required_modules in
   List.iter (fun x -> add meta_require_modules (Lam_module_ident.of_ml x)) x 
 *)
@@ -183,7 +183,7 @@ let refine_let
   (* | None , _, _ -> 
     Lam.let_ Strict param arg  l *)
 
-let alias_ident_or_global (meta : Lam_stats.meta) (k:Ident.t) (v:Ident.t) 
+let alias_ident_or_global (meta : Lam_stats.t) (k:Ident.t) (v:Ident.t) 
     (v_kind : Lam_id_kind.t) (let_kind : Lam.let_kind) =
   (** treat rec as Strict, k is assigned to v 
       {[ let k = v ]}

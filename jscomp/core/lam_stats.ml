@@ -43,7 +43,7 @@
     in the  beginning, when we do alpha conversion, we can instrument the table 
  *)
 
-type function_arities = Lam_arity.t
+
 
 type alias_tbl =  Ident.t Ident_hashtbl.t
 
@@ -53,7 +53,7 @@ type ident_tbl = Lam_id_kind.t Ident_hashtbl.t
 
 
 
-type meta = {
+type t = {
   env : Env.t;
   filename : string ;
   export_idents : Ident_set.t ;

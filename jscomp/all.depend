@@ -405,9 +405,8 @@ core/j.cmx : core/js_op.cmx core/js_fun_env.cmx core/js_closure.cmx \
     core/js_call_info.cmx ext/ident_set.cmx
 core/lam_compile_util.cmx : core/js_op.cmx core/lam_compile_util.cmi
 core/lam_id_kind.cmx : core/lam_arity.cmx core/lam.cmx core/lam_id_kind.cmi
-core/lam_stats.cmx : core/lam_id_kind.cmx core/lam_arity.cmx \
-    ext/int_hash_set.cmx ext/ident_set.cmx ext/ident_hashtbl.cmx \
-    core/lam_stats.cmi
+core/lam_stats.cmx : core/lam_id_kind.cmx ext/int_hash_set.cmx \
+    ext/ident_set.cmx ext/ident_hashtbl.cmx core/lam_stats.cmi
 core/config_util.cmx : core/js_cmj_format.cmx depends/bs_exception.cmx \
     core/config_util.cmi
 core/lam_compile_defs.cmx : core/lam_stats.cmx core/lam.cmx core/j.cmx \

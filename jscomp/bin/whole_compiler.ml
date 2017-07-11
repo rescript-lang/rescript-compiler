@@ -74163,7 +74163,7 @@ type ident_tbl = Lam_id_kind.t Ident_hashtbl.t
 
 
 
-type meta = {
+type t = {
   env : Env.t;
   filename : string ;
   export_idents : Ident_set.t ;
@@ -74226,7 +74226,7 @@ end = struct
     in the  beginning, when we do alpha conversion, we can instrument the table 
  *)
 
-type function_arities = Lam_arity.t
+
 
 type alias_tbl =  Ident.t Ident_hashtbl.t
 
@@ -74236,7 +74236,7 @@ type ident_tbl = Lam_id_kind.t Ident_hashtbl.t
 
 
 
-type meta = {
+type t = {
   env : Env.t;
   filename : string ;
   export_idents : Ident_set.t ;
@@ -74300,7 +74300,7 @@ val field_flatten_get :
 
 
 
-val alias_ident_or_global : Lam_stats.meta ->
+val alias_ident_or_global : Lam_stats.t ->
   Ident.t -> Ident.t -> Lam_id_kind.t -> Lam.let_kind -> unit 
 
 
@@ -74380,7 +74380,7 @@ let string_of_primitive = Format.asprintf "%a" Lam_print.primitive
 
 
 (*
-let add_required_modules ( x : Ident.t list) (meta : Lam_stats.meta) = 
+let add_required_modules ( x : Ident.t list) (meta : Lam_stats.t) = 
   let meta_require_modules = meta.required_modules in
   List.iter (fun x -> add meta_require_modules (Lam_module_ident.of_ml x)) x 
 *)
@@ -74524,7 +74524,7 @@ let refine_let
   (* | None , _, _ -> 
     Lam.let_ Strict param arg  l *)
 
-let alias_ident_or_global (meta : Lam_stats.meta) (k:Ident.t) (v:Ident.t) 
+let alias_ident_or_global (meta : Lam_stats.t) (k:Ident.t) (v:Ident.t) 
     (v_kind : Lam_id_kind.t) (let_kind : Lam.let_kind) =
   (** treat rec as Strict, k is assigned to v 
       {[ let k = v ]}
@@ -87411,7 +87411,7 @@ type cxt = {
   st : st ;
   should_return : return_type;
   jmp_table : value  HandlerMap.t ;
-  meta : Lam_stats.meta ;
+  meta : Lam_stats.t ;
 }
 
 val empty_handler_map : value HandlerMap.t 
@@ -87503,7 +87503,7 @@ type cxt = {
   st : st ;
   should_return : return_type;
   jmp_table : value  HandlerMap.t ;
-  meta : Lam_stats.meta ;
+  meta : Lam_stats.t ;
   (* include_alias :  *)
   (*   (\** It's correct to add more, we can do this in lambda optimization pass *)
   (*    *\) *)
@@ -91414,7 +91414,7 @@ val beta_reduce : Ident.t list -> Lam.t -> Lam.t list -> Lam.t
  *)
 
 val propogate_beta_reduce : 
-  Lam_stats.meta -> 
+  Lam_stats.t -> 
   Ident.t list -> 
   Lam.t -> 
   Lam.t list -> 
@@ -91443,7 +91443,7 @@ val propogate_beta_reduce :
    ]}
 *)
 val propogate_beta_reduce_with_map : 
-  Lam_stats.meta ->
+  Lam_stats.t ->
   Lam_closure.stats Ident_map.t ->
   Ident.t list ->
   Lam.t -> Lam.t list -> Lam.t
@@ -91506,7 +91506,7 @@ end = struct
    we can bound [x] to [100] in a single step     
  *)
 let propogate_beta_reduce 
-    (meta : Lam_stats.meta) params body args =
+    (meta : Lam_stats.t) params body args =
   match Lam_beta_reduce_util.simple_beta_reduce params body  args with 
   | Some x -> x 
   | None -> 
@@ -91549,7 +91549,7 @@ let propogate_beta_reduce
      rest_bindings new_body
 
 let propogate_beta_reduce_with_map  
-    (meta : Lam_stats.meta) (map : Lam_closure.stats Ident_map.t ) params body args =
+    (meta : Lam_stats.t) (map : Lam_closure.stats Ident_map.t ) params body args =
   match Lam_beta_reduce_util.simple_beta_reduce params body args with
   | Some x -> x
   | None ->
@@ -97689,7 +97689,7 @@ val pp_alias_tbl : Format.formatter -> Lam_stats.alias_tbl  -> unit
 
 
 
-val get_arity : Lam_stats.meta -> Lam.t -> Lam_arity.t
+val get_arity : Lam_stats.t -> Lam.t -> Lam_arity.t
 
 val pp_ident_tbl : Format.formatter -> Lam_stats.ident_tbl -> unit  
 
@@ -97756,7 +97756,7 @@ let merge
    If not found, we will return [NA]
 *)
 let rec get_arity 
-    (meta : Lam_stats.meta) 
+    (meta : Lam_stats.t) 
     (lam : Lam.t) : 
   Lam_arity.t = 
   match lam with 
@@ -97898,7 +97898,7 @@ and all_lambdas meta (xs : Lam.t list) =
   | _ -> assert false 
 
 (*
-let dump_exports_arities (meta : Lam_stats.meta ) = 
+let dump_exports_arities (meta : Lam_stats.t ) = 
   let fmt = 
     if meta.filename != "" then 
       let cmj_file = Ext_filename.chop_extension meta.filename ^ Js_config.cmj_ext in
@@ -97951,7 +97951,7 @@ module Lam_pass_alpha_conversion : sig
 
 (** alpha conversion based on arity *)
 
-val alpha_conversion : Lam_stats.meta -> Lam.t  -> Lam.t
+val alpha_conversion : Lam_stats.t -> Lam.t  -> Lam.t
 
 end = struct
 #1 "lam_pass_alpha_conversion.ml"
@@ -97986,7 +97986,7 @@ end = struct
 
 
 
-let alpha_conversion (meta : Lam_stats.meta) (lam : Lam.t) : Lam.t = 
+let alpha_conversion (meta : Lam_stats.t) (lam : Lam.t) : Lam.t = 
   let rec simpl  (lam : Lam.t) = 
     match lam with 
     | Lconst _ -> lam
@@ -98182,11 +98182,11 @@ module Lam_pass_collect : sig
  *)
 
 (** Modify existing [meta] *)
-val collect_helper : Lam_stats.meta -> Lam.t -> unit
+val collect_helper : Lam_stats.t -> Lam.t -> unit
 
 (** return a new [meta] *)
 val count_alias_globals : 
-    Env.t -> string -> Ident.t list -> Ident_set.t -> Lam.t -> Lam_stats.meta
+    Env.t -> string -> Ident.t list -> Ident_set.t -> Lam.t -> Lam_stats.t
 
 
 
@@ -98224,7 +98224,7 @@ end = struct
 
 
 
-let annotate (meta : Lam_stats.meta)
+let annotate (meta : Lam_stats.t)
     rec_flag    
     (k:Ident.t) (v : Lam_arity.t) lambda = 
   (* Ext_log.dwarn  __LOC__ "%s/%d" k.name k.stamp;     *)
@@ -98251,7 +98251,7 @@ let annotate (meta : Lam_stats.meta)
     function definition,
     alias propgation - and toplevel identifiers, this needs to be exported
  *)
-let collect_helper  (meta : Lam_stats.meta) (lam : Lam.t)  = 
+let collect_helper  (meta : Lam_stats.t) (lam : Lam.t)  = 
   let rec collect_bind rec_flag
       (kind : Lam.let_kind) 
       (ident : Ident.t)
@@ -98375,8 +98375,8 @@ let count_alias_globals
     filename
     export_idents
     export_sets 
-    (lam : Lam.t) : Lam_stats.meta =
-  let meta : Lam_stats.meta = 
+    (lam : Lam.t) : Lam_stats.t =
+  let meta : Lam_stats.t = 
     {alias_tbl = Ident_hashtbl.create 31 ; 
      ident_tbl = Ident_hashtbl.create 31;
      exit_codes = Int_hash_set.create 31 ;
@@ -99887,7 +99887,7 @@ module Lam_pass_remove_alias : sig
 *)
 
 val simplify_alias : 
-  Lam_stats.meta -> 
+  Lam_stats.t -> 
   Lam.t ->
   Lam.t
 
@@ -99927,7 +99927,7 @@ end = struct
 
 
 let simplify_alias 
-    (meta : Lam_stats.meta)
+    (meta : Lam_stats.t)
     (lam : Lam.t) 
   :  Lam.t  = 
 
@@ -100314,7 +100314,7 @@ module Lam_stats_export : sig
 
 
 val export_to_cmj : 
-  Lam_stats.meta ->
+  Lam_stats.t ->
   Js_cmj_format.effect ->
   Lam_module_ident.t list ->
   Lam.t Ident_map.t -> Js_cmj_format.t
@@ -100430,7 +100430,7 @@ let values_of_export meta export_map =
     String_map.empty
     meta.exports 
 
-let get_effect (meta : Lam_stats.meta) maybe_pure external_ids = 
+let get_effect (meta : Lam_stats.t) maybe_pure external_ids = 
    match maybe_pure with
     | None ->  
       Ext_option.bind ( Ext_list.for_all_ret 
@@ -100463,7 +100463,7 @@ let rec dump meta fmt ids =
    TODO: check that we don't do this in browser environment
 *)
 let export_to_cmj 
-    (meta : Lam_stats.meta ) 
+    (meta : Lam_stats.t ) 
     maybe_pure
     external_ids 
     export_map
@@ -100578,7 +100578,7 @@ open Js_output.Ops
 
 exception Not_a_module
 
-let compile_group ({filename = file_name; env;} as meta : Lam_stats.meta) 
+let compile_group ({filename = file_name; env;} as meta : Lam_stats.t) 
     (x : Lam_group.t) : Js_output.t  = 
   match x, file_name with 
   (* 

@@ -48,7 +48,7 @@ val beta_reduce : Ident.t list -> Lam.t -> Lam.t list -> Lam.t
  *)
 
 val propogate_beta_reduce : 
-  Lam_stats.meta -> 
+  Lam_stats.t -> 
   Ident.t list -> 
   Lam.t -> 
   Lam.t list -> 
@@ -77,7 +77,7 @@ val propogate_beta_reduce :
    ]}
 *)
 val propogate_beta_reduce_with_map : 
-  Lam_stats.meta ->
+  Lam_stats.t ->
   Lam_closure.stats Ident_map.t ->
   Ident.t list ->
   Lam.t -> Lam.t list -> Lam.t

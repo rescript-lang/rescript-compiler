@@ -30,7 +30,7 @@
 
 
 let simplify_alias 
-    (meta : Lam_stats.meta)
+    (meta : Lam_stats.t)
     (lam : Lam.t) 
   :  Lam.t  = 
 

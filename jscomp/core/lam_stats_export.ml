@@ -106,7 +106,7 @@ let values_of_export meta export_map =
     String_map.empty
     meta.exports 
 
-let get_effect (meta : Lam_stats.meta) maybe_pure external_ids = 
+let get_effect (meta : Lam_stats.t) maybe_pure external_ids = 
    match maybe_pure with
     | None ->  
       Ext_option.bind ( Ext_list.for_all_ret 
@@ -139,7 +139,7 @@ let rec dump meta fmt ids =
    TODO: check that we don't do this in browser environment
 *)
 let export_to_cmj 
-    (meta : Lam_stats.meta ) 
+    (meta : Lam_stats.t ) 
     maybe_pure
     external_ids 
     export_map

@@ -56,7 +56,7 @@ let merge
    If not found, we will return [NA]
 *)
 let rec get_arity 
-    (meta : Lam_stats.meta) 
+    (meta : Lam_stats.t) 
     (lam : Lam.t) : 
   Lam_arity.t = 
   match lam with 
@@ -198,7 +198,7 @@ and all_lambdas meta (xs : Lam.t list) =
   | _ -> assert false 
 
 (*
-let dump_exports_arities (meta : Lam_stats.meta ) = 
+let dump_exports_arities (meta : Lam_stats.t ) = 
   let fmt = 
     if meta.filename != "" then 
       let cmj_file = Ext_filename.chop_extension meta.filename ^ Js_config.cmj_ext in

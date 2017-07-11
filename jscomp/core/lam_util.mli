@@ -42,7 +42,7 @@ val field_flatten_get :
 
 
 
-val alias_ident_or_global : Lam_stats.meta ->
+val alias_ident_or_global : Lam_stats.t ->
   Ident.t -> Ident.t -> Lam_id_kind.t -> Lam.let_kind -> unit 
 
 

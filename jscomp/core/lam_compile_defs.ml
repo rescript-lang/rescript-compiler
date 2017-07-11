@@ -78,7 +78,7 @@ type cxt = {
   st : st ;
   should_return : return_type;
   jmp_table : value  HandlerMap.t ;
-  meta : Lam_stats.meta ;
+  meta : Lam_stats.t ;
   (* include_alias :  *)
   (*   (\** It's correct to add more, we can do this in lambda optimization pass *)
   (*    *\) *)
