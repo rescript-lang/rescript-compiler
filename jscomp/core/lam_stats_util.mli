@@ -31,13 +31,18 @@
 
 (** Utilities for lambda analysis *)
 
-val pp_alias_tbl : Format.formatter -> Lam_stats.alias_tbl  -> unit
+
+val arity_of_var : 
+  Lam_stats.t -> 
+  Ident.t -> 
+  Lam_arity.t
+
+val get_arity :
+  Lam_stats.t -> 
+  Lam.t ->
+  Lam_arity.t
 
 
-
-val get_arity : Lam_stats.t -> Lam.t -> Lam_arity.t
-
-val pp_ident_tbl : Format.formatter -> Lam_stats.ident_tbl -> unit  
 
 
 

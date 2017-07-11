@@ -73991,132 +73991,6 @@ let seriaize env (filename : string) (lam : Lam.t) : unit =
   end
 
 end
-module Int_hash_set : sig 
-#1 "int_hash_set.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-include Hash_set_gen.S with type key = int
-
-end = struct
-#1 "int_hash_set.ml"
-# 1 "ext/hash_set.cppo.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-# 25
-type key = int
-let key_index (h :  _ Hash_set_gen.t ) (key : key) =
-  (Bs_hash_stubs.hash_int  key) land (Array.length h.data - 1)
-let eq_key = Ext_int.equal 
-type  t = key  Hash_set_gen.t 
-
-
-# 62
-let create = Hash_set_gen.create
-let clear = Hash_set_gen.clear
-let reset = Hash_set_gen.reset
-let copy = Hash_set_gen.copy
-let iter = Hash_set_gen.iter
-let fold = Hash_set_gen.fold
-let length = Hash_set_gen.length
-let stats = Hash_set_gen.stats
-let elements = Hash_set_gen.elements
-
-
-
-let remove (h : _ Hash_set_gen.t) key =  
-  let i = key_index h key in
-  let h_data = h.data in
-  let old_h_size = h.size in 
-  let new_bucket = Hash_set_gen.remove_bucket eq_key key h (Array.unsafe_get h_data i) in
-  if old_h_size <> h.size then  
-    Array.unsafe_set h_data i new_bucket
-
-
-
-let add (h : _ Hash_set_gen.t) key =
-  let i = key_index h key  in 
-  let h_data = h.data in 
-  let old_bucket = (Array.unsafe_get h_data i) in
-  if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
-    begin 
-      Array.unsafe_set h_data i (key :: old_bucket);
-      h.size <- h.size + 1 ;
-      if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h
-    end
-
-let of_array arr = 
-  let len = Array.length arr in 
-  let tbl = create len in 
-  for i = 0 to len - 1  do
-    add tbl (Array.unsafe_get arr i);
-  done ;
-  tbl 
-  
-    
-let check_add (h : _ Hash_set_gen.t) key =
-  let i = key_index h key  in 
-  let h_data = h.data in  
-  let old_bucket = (Array.unsafe_get h_data i) in
-  if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
-    begin 
-      Array.unsafe_set h_data i  (key :: old_bucket);
-      h.size <- h.size + 1 ;
-      if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h;
-      true 
-    end
-  else false 
-
-
-let mem (h :  _ Hash_set_gen.t) key =
-  Hash_set_gen.small_bucket_mem eq_key key (Array.unsafe_get h.data (key_index h key)) 
-
-  
-
-end
 module Lam_stats : sig 
 #1 "lam_stats.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -74169,7 +74043,7 @@ type t = {
   export_idents : Ident_set.t ;
   exports : Ident.t list ;
   alias_tbl : alias_tbl; 
-  exit_codes : Int_hash_set.t;
+  
 
   ident_tbl : ident_tbl;
   (** we don't need count arities for all identifiers, for identifiers
@@ -74179,6 +74053,8 @@ type t = {
 
 }
 
+
+val print : Format.formatter -> t -> unit 
 end = struct
 #1 "lam_stats.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -74240,11 +74116,9 @@ type t = {
   env : Env.t;
   filename : string ;
   export_idents : Ident_set.t ;
-  exports : Ident.t list ;
+  exports : Ident.t list ; (*It is kept since order matters? *)
 
   alias_tbl : alias_tbl; 
-  exit_codes :  Int_hash_set.t;
-
   ident_tbl : ident_tbl;
   (** we don't need count arities for all identifiers, for identifiers
       for sure it's not a function, there is no need to count them
@@ -74252,7 +74126,22 @@ type t = {
   
 }
 
+let pp = Format.fprintf
 
+let pp_alias_tbl fmt (tbl : alias_tbl) = 
+  Ident_hashtbl.iter (fun k v -> pp fmt "@[%a -> %a@]@." Ident.print k Ident.print v)
+    tbl
+
+
+
+let pp_ident_tbl fmt (ident_tbl : ident_tbl) = 
+  Ident_hashtbl.iter (fun k v -> pp fmt "@[%a -> %a@]@." 
+    Ident.print k Lam_id_kind.print v)
+    ident_tbl
+
+let print fmt (v : t) = 
+    pp fmt "@[Alias table:@ %a@]" pp_alias_tbl v.alias_tbl ;    
+    pp fmt "@[Ident table:@ %a@]" pp_ident_tbl v.ident_tbl 
 end
 module Lam_util : sig 
 #1 "lam_util.mli"
@@ -97685,13 +97574,18 @@ module Lam_stats_util : sig
 
 (** Utilities for lambda analysis *)
 
-val pp_alias_tbl : Format.formatter -> Lam_stats.alias_tbl  -> unit
+
+val arity_of_var : 
+  Lam_stats.t -> 
+  Ident.t -> 
+  Lam_arity.t
+
+val get_arity :
+  Lam_stats.t -> 
+  Lam.t ->
+  Lam_arity.t
 
 
-
-val get_arity : Lam_stats.t -> Lam.t -> Lam_arity.t
-
-val pp_ident_tbl : Format.formatter -> Lam_stats.ident_tbl -> unit  
 
 
 
@@ -97722,26 +97616,6 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-
-
-let pp = Format.fprintf
-
-
-let pp_alias_tbl fmt (tbl : Lam_stats.alias_tbl) = 
-  Ident_hashtbl.iter (fun k v -> pp fmt "@[%a -> %a@]@." Ident.print k Ident.print v)
-    tbl
-
-
-
-let pp_ident_tbl fmt (ident_tbl : Lam_stats.ident_tbl) = 
-  Ident_hashtbl.iter (fun k v -> pp fmt "@[%a -> %a@]@." 
-    Ident.print k Lam_id_kind.print v)
-    ident_tbl
       
 let merge 
     ((n : int ), params as y)
@@ -97750,18 +97624,8 @@ let merge
   | NA -> Determin(false, [y], false)
   | Determin (b,xs,tail) -> Determin (b, y :: xs, tail)
 
-(* we need record all aliases -- since not all aliases are eliminated, 
-   mostly are toplevel bindings
-   We will keep iterating such environment
-   If not found, we will return [NA]
-*)
-let rec get_arity 
-    (meta : Lam_stats.t) 
-    (lam : Lam.t) : 
-  Lam_arity.t = 
-  match lam with 
-  | Lconst _ -> Determin (true,[], false)
-  | Lvar v -> 
+
+let arity_of_var (meta : Lam_stats.t) (v : Ident.t)  =
     (** for functional parameter, if it is a high order function,
         if it's not from function parameter, we should warn
     *)
@@ -97775,6 +97639,19 @@ let rec get_arity
         (NA : Lam_arity.t)
 
     end
+
+(* we need record all aliases -- since not all aliases are eliminated, 
+   mostly are toplevel bindings
+   We will keep iterating such environment
+   If not found, we will return [NA]
+*)
+let rec get_arity 
+    (meta : Lam_stats.t) 
+    (lam : Lam.t) : 
+  Lam_arity.t = 
+  match lam with 
+  | Lconst _ -> Determin (true,[], false)
+  | Lvar v -> arity_of_var meta v 
   | Llet(_,_,_, l ) -> get_arity meta l 
 
   (*   begin match Parsetree_util.has_arity prim_attributes with *)
@@ -98353,8 +98230,7 @@ let collect_helper  (meta : Lam_stats.t) (lam : Lam.t)  =
         | None -> ()
         end
     | Lstaticraise (code,ls) -> 
-        Int_hash_set.add meta.exit_codes code;
-        List.iter collect  ls
+          List.iter collect  ls
     | Lstaticcatch(l1, (_,_), l2) -> collect  l1; collect  l2
     | Ltrywith(l1, _, l2) -> collect  l1; collect  l2
     | Lifthenelse(l1, l2, l3) -> collect  l1; collect  l2; collect  l3
@@ -98379,7 +98255,7 @@ let count_alias_globals
   let meta : Lam_stats.t = 
     {alias_tbl = Ident_hashtbl.create 31 ; 
      ident_tbl = Ident_hashtbl.create 31;
-     exit_codes = Int_hash_set.create 31 ;
+     
      exports =  export_idents;
      filename;
      env;
@@ -100381,15 +100257,15 @@ and dump_arity fmt (arity : Lam_arity.t) =
 let values_of_export meta export_map = 
   List.fold_left
     (fun   acc (x : Ident.t)  ->
-       let arity =  Lam_stats_util.get_arity meta (Lam.var x) in
-       match Ident_map.find_opt x export_map with 
-       | Some lambda  -> 
-         if Lam_analysis.safe_to_inline lambda
-         (* when inlning a non function, we have to be very careful,
-            only truly immutable values can be inlined
-         *)
-         then
-           let closed_lambda = 
+       let arity =  Lam_stats_util.arity_of_var meta x in
+       let closed_lambda = 
+         match Ident_map.find_opt x export_map with 
+         | Some lambda  -> 
+           if Lam_analysis.safe_to_inline lambda
+           (* when inlning a non function, we have to be very careful,
+              only truly immutable values can be inlined
+           *)
+           then
              if Lam_inline_util.should_be_functor x.name lambda (* can also be submodule *)
              then
                if Lam_closure.is_closed lambda (* TODO: seriealize more*)
@@ -100402,9 +100278,7 @@ let values_of_export meta export_map =
                   2. [lambda_exports] is not precise
                *)
                let free_variables =
-                 Lam_closure.free_variables Ident_set.empty
-                 (* meta.export_idents *)  Ident_map.empty 
-                   lambda in
+                 Lam_closure.free_variables Ident_set.empty Ident_map.empty lambda in
                if  lam_size < Lam_analysis.small_inline_size  && 
                    Ident_map.is_empty free_variables
                then 
@@ -100412,35 +100286,27 @@ let values_of_export meta export_map =
                    Ext_log.dwarn __LOC__ "%s recorded for inlining @." x.name ;
                    Some lambda
                  end
-               else 
-                 begin
-                   (* Ext_log.dwarn __LOC__ "%s : %d : {%s} not inlined @."  *)
-                   (*   x.name lam_size   *)
-                   (*   (String.concat ", " @@  *)
-                   (*    List.map (fun x -> x.Ident.name) @@ Ident_map.keys free_variables) ; *)
-                   None 
-                 end
-           in 
-           String_map.add x.name  Js_cmj_format.{arity ; closed_lambda } acc 
-         else
-           String_map.add x.name  Js_cmj_format.{arity ; closed_lambda = None } acc 
-       | None
-         -> String_map.add x.name  Js_cmj_format.{arity ; closed_lambda = None} acc  
+               else None
+           else
+             None
+         | None
+           -> None  in 
+       String_map.add x.name  Js_cmj_format.{arity ; closed_lambda } acc          
     )
     String_map.empty
     meta.exports 
 
 let get_effect (meta : Lam_stats.t) maybe_pure external_ids = 
-   match maybe_pure with
-    | None ->  
-      Ext_option.bind ( Ext_list.for_all_ret 
-                          (fun (id : Lam_module_ident.t) -> 
-                             Lam_compile_env.query_and_add_if_not_exist id 
-                               (Has_env meta.env )
-                               ~not_found:(fun _ -> false ) ~found:(fun i -> 
-                                   i.pure)
-                          ) external_ids) (fun x -> Lam_module_ident.name x)
-    | Some _ -> maybe_pure
+  match maybe_pure with
+  | None ->  
+    Ext_option.bind ( Ext_list.for_all_ret 
+                        (fun (id : Lam_module_ident.t) -> 
+                           Lam_compile_env.query_and_add_if_not_exist id 
+                             (Has_env meta.env )
+                             ~not_found:(fun _ -> false ) ~found:(fun i -> 
+                                 i.pure)
+                        ) external_ids) (fun x -> Lam_module_ident.name x)
+  | Some _ -> maybe_pure
 
 let rec dump meta fmt ids = 
   (* TODO: also use {[Ext_pp]} module instead *)

@@ -190,7 +190,6 @@ bin/whole_compiler.ml : ext/ext_position.ml
 bin/whole_compiler.ml : ext/ext_pp_scope.ml
 bin/whole_compiler.ml : ext/hash_set_gen.ml
 bin/whole_compiler.ml : ext/hashtbl_make.ml
-bin/whole_compiler.ml : ext/int_hash_set.ml
 bin/whole_compiler.ml : ext/int_hashtbl.mli
 bin/whole_compiler.ml : ext/int_vec_util.ml
 bin/whole_compiler.ml : ext/int_vec_vec.mli
@@ -233,7 +232,6 @@ bin/whole_compiler.ml : ext/ext_position.mli
 bin/whole_compiler.ml : ext/ext_pp_scope.mli
 bin/whole_compiler.ml : ext/hashtbl_make.mli
 bin/whole_compiler.ml : ext/ident_hashtbl.ml
-bin/whole_compiler.ml : ext/int_hash_set.mli
 bin/whole_compiler.ml : ext/int_vec_util.mli
 bin/whole_compiler.ml : ext/resize_array.mli
 bin/whole_compiler.ml : syntax/ast_derive.ml

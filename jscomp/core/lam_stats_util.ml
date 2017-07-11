@@ -22,26 +22,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-
-
-let pp = Format.fprintf
-
-
-let pp_alias_tbl fmt (tbl : Lam_stats.alias_tbl) = 
-  Ident_hashtbl.iter (fun k v -> pp fmt "@[%a -> %a@]@." Ident.print k Ident.print v)
-    tbl
-
-
-
-let pp_ident_tbl fmt (ident_tbl : Lam_stats.ident_tbl) = 
-  Ident_hashtbl.iter (fun k v -> pp fmt "@[%a -> %a@]@." 
-    Ident.print k Lam_id_kind.print v)
-    ident_tbl
       
 let merge 
     ((n : int ), params as y)
@@ -50,18 +30,8 @@ let merge
   | NA -> Determin(false, [y], false)
   | Determin (b,xs,tail) -> Determin (b, y :: xs, tail)
 
-(* we need record all aliases -- since not all aliases are eliminated, 
-   mostly are toplevel bindings
-   We will keep iterating such environment
-   If not found, we will return [NA]
-*)
-let rec get_arity 
-    (meta : Lam_stats.t) 
-    (lam : Lam.t) : 
-  Lam_arity.t = 
-  match lam with 
-  | Lconst _ -> Determin (true,[], false)
-  | Lvar v -> 
+
+let arity_of_var (meta : Lam_stats.t) (v : Ident.t)  =
     (** for functional parameter, if it is a high order function,
         if it's not from function parameter, we should warn
     *)
@@ -75,6 +45,19 @@ let rec get_arity
         (NA : Lam_arity.t)
 
     end
+
+(* we need record all aliases -- since not all aliases are eliminated, 
+   mostly are toplevel bindings
+   We will keep iterating such environment
+   If not found, we will return [NA]
+*)
+let rec get_arity 
+    (meta : Lam_stats.t) 
+    (lam : Lam.t) : 
+  Lam_arity.t = 
+  match lam with 
+  | Lconst _ -> Determin (true,[], false)
+  | Lvar v -> arity_of_var meta v 
   | Llet(_,_,_, l ) -> get_arity meta l 
 
   (*   begin match Parsetree_util.has_arity prim_attributes with *)
