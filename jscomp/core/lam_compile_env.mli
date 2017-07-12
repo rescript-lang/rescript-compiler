@@ -47,7 +47,7 @@ type ident_info = {
   id : Ident.t;
   name : string;
   signatures : Types.signature;
-  arity : Lam_arity.t;
+  arity : Js_cmj_format.arity;
   closed_lambda : Lam.t option 
 }
 
