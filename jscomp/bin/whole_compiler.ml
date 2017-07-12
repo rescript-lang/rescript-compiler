@@ -69304,8 +69304,12 @@ module Js_cmj_format : sig
     ]}
 *)
 
+type arity = 
+  | Single of Lam_arity.t
+  | Submodule of Lam_arity.t array
+
 type cmj_value = {
-  arity : Lam_arity.t ;
+  arity : arity ; 
   closed_lambda : Lam.t option ; 
   (* Either constant or closed functor *)
 }
@@ -69321,6 +69325,7 @@ type t = {
   npm_package_path : Js_config.packages_info;
 }
 
+val single_na : arity
 val pure_dummy : t
 val no_pure_dummy : t
 
@@ -69361,11 +69366,13 @@ end = struct
 
 
 
-
+type arity = 
+  | Single of Lam_arity.t
+  | Submodule of Lam_arity.t array
 
 (* TODO: add a magic number *)
 type cmj_value = {
-  arity : Lam_arity.t ;
+  arity : arity ;
   closed_lambda : Lam.t option ; 
   (** Either constant or closed functor *)
 }
@@ -69373,7 +69380,7 @@ type cmj_value = {
 type effect = string option
 
 
-
+let single_na = Single NA
 (** we don't force people to use package *)
 
 type t = {
@@ -69382,7 +69389,7 @@ type t = {
   npm_package_path : Js_config.packages_info ;
 }
 
-let cmj_magic_number =  "BUCKLE20160510"
+let cmj_magic_number =  "BUCKLE20170711"
 let cmj_magic_number_length = 
   String.length cmj_magic_number
 
@@ -83628,7 +83635,7 @@ type ident_info = {
   id : Ident.t;
   name : string;
   signatures : Types.signature;
-  arity : Lam_arity.t;
+  arity : Js_cmj_format.arity;
   closed_lambda : Lam.t option 
 }
 
@@ -83760,7 +83767,7 @@ type ident_info = {
   id : Ident.t;
   name : string;
   signatures : Types.signature;
-  arity : Lam_arity.t; 
+  arity : Js_cmj_format.arity; 
   closed_lambda : Lam.t option 
 }
 
@@ -83851,8 +83858,8 @@ let find_and_add_if_not_exist (id, pos) env ~not_found ~found =
         let name =  (Type_util.get_name signature pos ) in
         let arity, closed_lambda =        
           begin match String_map.find_opt name cmj_table.values with
-            | Some {arity; closed_lambda} -> arity, closed_lambda
-            | None -> NA, None 
+            | Some {arity ; closed_lambda} -> arity, closed_lambda
+            | None -> Js_cmj_format.single_na, None 
           end in
         found {id; 
                name ;
@@ -83870,7 +83877,7 @@ let find_and_add_if_not_exist (id, pos) env ~not_found ~found =
         match  String_map.find_opt name values with
         | Some {arity; closed_lambda;_} -> 
           arity, closed_lambda 
-        | None -> (NA, None)
+        | None -> Js_cmj_format.single_na, None
       ) in
       found { id;
               name; 
@@ -96049,26 +96056,24 @@ let rec
    @param env typing environment
    @param args arguments 
 *)
-
-and get_exp_with_args (cxt : Lam_compile_defs.cxt)  lam args_lambda
-    (id : Ident.t) (pos : int) env : Js_output.t = 
-  Lam_compile_env.find_and_add_if_not_exist (id,pos) env ~not_found:(fun id -> 
-      (** This can not happen since this id should be already consulted by type checker 
+(** This can not happen since this id should be already consulted by type checker 
           Worst case 
           {[
             E.index m (pos + 1)
           ]}
           shift by one (due to module encoding)
-      *)
-      (* Js_output.handle_block_return cxt.st cxt.should_return lam args_code @@  *)
-      (* E.str ~pure:false  (Printf.sprintf "Err %s %d %d" *)
-      (*                       id.name *)
-      (*                       id.flags *)
-      (*                       pos *)
-      (*                    ) *)
+*)
+(* Js_output.handle_block_return cxt.st cxt.should_return lam args_code @@  *)
+(* E.str ~pure:false  (Printf.sprintf "Err %s %d %d" *)
+(*                       id.name *)
+(*                       id.flags *)
+(*                       pos *)
+(*                    ) *)
+and get_exp_with_args (cxt : Lam_compile_defs.cxt)  lam args_lambda
+    (id : Ident.t) (pos : int) env : Js_output.t = 
+  Lam_compile_env.find_and_add_if_not_exist (id,pos) env ~not_found:(fun id -> 
       assert false 
     )
-
     ~found:(fun {id; name;arity; closed_lambda ; _} -> 
         let args_code, args = 
           List.fold_right 
@@ -96139,7 +96144,9 @@ and get_exp_with_args (cxt : Lam_compile_defs.cxt)  lam args_lambda
                | NA, _ ->
                  E.call ~info:Js_call_info.dummy acc args
              in
-             aux (E.ml_var_dot id name) arity args (List.length args ))
+             aux (E.ml_var_dot id name) 
+             (match arity with Single x -> x | Submodule _ -> NA)
+            args (List.length args ))
       )
 
 and  compile_let flag (cxt : Lam_compile_defs.cxt) id (arg : Lam.t) : Js_output.t =
@@ -97698,7 +97705,19 @@ let rec get_arity
            args =  [ Lglobal_module id  ]; _} ->
     Lam_compile_env.find_and_add_if_not_exist (id, n) meta.env
       ~not_found:(fun _ -> assert false)
-      ~found:(fun x -> x.arity )
+      ~found:(fun x -> match x.arity with Single x -> x | Submodule _ -> NA )
+  | Lprim {primitive = Pfield (m,_); 
+           args =  [ Lprim{primitive = Pfield(n,_); 
+            args = [ Lglobal_module id]}  ]
+           ; _} ->
+    Lam_compile_env.find_and_add_if_not_exist (id, n) meta.env
+      ~not_found:(fun _ -> assert false)
+      ~found:(fun x -> match x.arity with 
+      | Submodule subs -> subs.(m)
+      | Single _ -> NA
+       )
+
+      
   | Lprim {primitive = Pfield _; _} -> NA (** TODO *)
   | Lprim {primitive = Praise ;  _} -> Determin(true,[], true)
   | Lprim {primitive = Pccall _; _} -> Determin(false, [], false)
@@ -98096,8 +98115,8 @@ module Lam_pass_collect : sig
 val collect_helper : Lam_stats.t -> Lam.t -> unit
 
 (** return a new [meta] *)
-val count_alias_globals : 
-    Env.t -> string -> Ident.t list -> Ident_set.t -> Lam.t -> Lam_stats.t
+ val count_alias_globals : 
+    Env.t -> string -> Ident.t list -> Ident_set.t -> Lam.t -> Lam_stats.t 
 
 
 
@@ -100291,7 +100310,7 @@ and dump_arity fmt (arity : Lam_arity.t) =
 let values_of_export meta export_map = 
   List.fold_left
     (fun   acc (x : Ident.t)  ->
-       let arity =  Lam_stats_util.arity_of_var meta x in
+       let arity : Js_cmj_format.arity = Single (Lam_stats_util.arity_of_var meta x) in
        let closed_lambda = 
          match Ident_map.find_opt x export_map with 
          | Some lambda  -> 
