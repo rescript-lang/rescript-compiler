@@ -89918,11 +89918,11 @@ type t = {
   groups : Lam_group.t list ; 
 }   
 
+
 val coerce_and_group_big_lambda : 
-    Ident.t list -> 
-    Ident_set.t -> 
+    Lam_stats.t ->
     Lam.t -> 
-    t 
+    t * Lam_stats.t
 end = struct
 #1 "lam_coercion.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -90004,16 +90004,18 @@ type t = {
   export_list : Ident.t list ;
   export_set : Ident_set.t;
   export_map : Lam.t Ident_map.t ;
-  (** not used in code generation, mostly used for store some information in cmj files
-  *)   
-  groups : Lam_group.t list ; (* all code to be compiled later = original code + rebound coercions *)
+  (** not used in code generation, mostly used 
+      for store some information in cmj files *)   
+  groups : Lam_group.t list ; 
+  (* all code to be compiled later = original code + rebound coercions *)
 }               
 
 
-let handle_exports 
-    (original_exports : Ident.t list)
-    (original_export_set : Ident_set.t)
+let handle_exports (meta : Lam_stats.t)
     (lambda_exports : Lam.t list)  (reverse_input : Lam_group.t list) =
+   
+  let (original_exports : Ident.t list) = meta.exports in 
+  let (original_export_set : Ident_set.t) = meta.export_idents in   
   let len = List.length original_exports in   
   let tbl = String_hash_set.create len in 
   let ({export_list ; export_set  ;  groups = coercion_groups } as result)  = 
@@ -90049,16 +90051,18 @@ let handle_exports
               Bug manifested: when querying arity info about N, it returns an array 
               of size 4 instead of 2
               *)
+            (* let newid = Ident.rename original_export_id in    *)
+            let newid = original_export_id in 
             { acc with 
-              export_list = original_export_id :: acc.export_list;
-              export_map = Ident_map.add original_export_id lam acc.export_map;              
-              groups = Single(Strict, original_export_id, lam) :: acc.groups
-            });
+              export_list = newid :: acc.export_list;
+              export_map = Ident_map.add newid lam acc.export_map;              
+              groups = Single(Strict, newid, lam) :: acc.groups
+            })
       )
       original_exports 
       lambda_exports 
       {export_list = []; export_set = original_export_set; export_map = Ident_map.empty; groups = []}
-      (* (init original_export_set) *)
+
   in
 
   let (export_map, coerced_input) = 
@@ -90077,7 +90081,7 @@ let handle_exports
     - also for function compilation, flattening should be done first
     - [compile_group] and [compile] become mutually recursive function
 *)
-
+;;
 let rec flatten 
     (acc :  Lam_group.t list ) 
     (lam : Lam.t) :  Lam.t *  Lam_group.t list = 
@@ -90103,13 +90107,19 @@ let rec flatten
     Lam_stats.t is not valid
 *)    
 let coerce_and_group_big_lambda 
-    old_exports 
-    old_export_sets
+    (meta : Lam_stats.t) 
     lam = 
+  (* let old_exports  = meta.exports in 
+  let old_export_sets   = meta.export_idents in  *)
   match flatten [] lam with 
   | Lprim {primitive = Pmakeblock _;  args = lambda_exports }, reverse_input 
     -> 
-    handle_exports old_exports old_export_sets lambda_exports reverse_input 
+    let coerced_input = 
+      handle_exports (*old_exports old_export_sets*) 
+      meta lambda_exports reverse_input  in 
+    coerced_input, 
+      {meta with export_idents = coerced_input.export_set ; 
+        exports = coerced_input.export_list}
   | _ -> assert false
 
 
@@ -100634,7 +100644,32 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.t)
 
 ;;
 
-
+ (** Also need analyze its depenency is pure or not *)
+let no_side_effects (rest : Lam_group.t list) : string option = 
+    Ext_list.for_all_opt (fun (x : Lam_group.t) -> 
+        match x with 
+        | Single(kind,id,body) -> 
+          begin 
+            match kind with 
+            | Strict | Variable -> 
+              if not @@ Lam_analysis.no_side_effects body 
+              then Some  (Printf.sprintf "%s" id.name)
+              else None
+            | _ -> None
+          end
+        | Recursive bindings -> 
+          Ext_list.for_all_opt (fun (id,lam) -> 
+              if not @@ Lam_analysis.no_side_effects lam 
+              then Some (Printf.sprintf "%s" id.Ident.name )
+              else None
+            ) bindings
+        | Nop lam -> 
+          if not @@ Lam_analysis.no_side_effects lam 
+          then 
+            (*  (Lam_util.string_of_lambda lam) *)
+            Some ""
+          else None (* TODO :*))
+      rest
 
 
 
@@ -100707,49 +100742,15 @@ let compile  ~filename output_prefix env _sigs
     
   in
 
-  let ({Lam_coercion.groups = rest } as coerced_input ) = 
-    Lam_coercion.coerce_and_group_big_lambda  
-      meta.exports
-      meta.Lam_stats.export_idents lam 
+  let ({Lam_coercion.groups = groups } as coerced_input , meta) = 
+    Lam_coercion.coerce_and_group_big_lambda  meta lam
   in 
-  let meta = { meta with 
-               export_idents = coerced_input.export_set ;
-               exports = coerced_input.export_list 
-             } in 
-  (* TODO: turn in on debug mode later*)
+
   
-  (** Also need analyze its depenency is pure or not *)
-  let no_side_effects rest = 
-    Ext_list.for_all_opt (fun (x : Lam_group.t) -> 
-        match x with 
-        | Single(kind,id,body) -> 
-          begin 
-            match kind with 
-            | Strict | Variable -> 
-              if not @@ Lam_analysis.no_side_effects body 
-              then Some  (Printf.sprintf "%s" id.name)
-              else None
-            | _ -> None
-          end
-        | Recursive bindings -> 
-          Ext_list.for_all_opt (fun (id,lam) -> 
-              if not @@ Lam_analysis.no_side_effects lam 
-              then Some (Printf.sprintf "%s" id.Ident.name )
-              else None
-            ) bindings
-        | Nop lam -> 
-          if not @@ Lam_analysis.no_side_effects lam 
-          then 
-            (*  (Lam_util.string_of_lambda lam) *)
-            Some ""
-          else None (* TODO :*))
-      rest
-  in
-  let maybe_pure = no_side_effects rest
-  in
+  let maybe_pure = no_side_effects groups in
   
   let body  = 
-    rest
+    groups
     |> List.map (fun group -> compile_group meta group)
     |> Js_output.concat
     |> Js_output.to_block
