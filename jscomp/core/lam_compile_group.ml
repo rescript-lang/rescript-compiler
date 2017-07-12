@@ -253,7 +253,7 @@ let compile  ~filename output_prefix env _sigs
 #if BS_DEBUG then    
     |> (fun lam -> 
        let () = 
-        Ext_log.dwarn __LOC__ "%a@." Lam_stats.print meta in 
+        Ext_log.dwarn __LOC__ "Before coercion: %a@." Lam_stats.print meta in 
       Lam.check (Js_config.get_current_file ()) lam
     ) 
 #end    
@@ -269,8 +269,9 @@ let compile  ~filename output_prefix env _sigs
                exports = coerced_input.export_list 
              } in 
   (* TODO: turn in on debug mode later*)
+#if BS_DEBUG then   
   let () =
-
+    Ext_log.dwarn __LOC__ "After coercion: %a@." Lam_stats.print meta ;
     if Js_config.is_same_file () then
       let f =
         Ext_filename.chop_extension ~loc:__LOC__ filename ^ ".lambda" in
@@ -279,6 +280,7 @@ let compile  ~filename output_prefix env _sigs
           (Lam_group.pp_group env) fmt (coerced_input.groups) 
       end;
   in
+#end  
   (** Also need analyze its depenency is pure or not *)
   let no_side_effects rest = 
     Ext_list.for_all_opt (fun (x : Lam_group.t) -> 

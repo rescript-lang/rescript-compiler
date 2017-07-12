@@ -74140,8 +74140,13 @@ let pp_ident_tbl fmt (ident_tbl : ident_tbl) =
     ident_tbl
 
 let print fmt (v : t) = 
-    pp fmt "@[Alias table:@ %a@]" pp_alias_tbl v.alias_tbl ;    
-    pp fmt "@[Ident table:@ %a@]" pp_ident_tbl v.ident_tbl 
+    pp fmt "@[Alias table:@ @[%a@]@]" pp_alias_tbl v.alias_tbl ;    
+    pp fmt "@[Ident table:@ @[%a@]@]" pp_ident_tbl v.ident_tbl ;
+    pp fmt "@[exports:@ @[%a@]@]"
+        (Format.pp_print_list 
+            ~pp_sep:(fun fmt () -> pp fmt "@ ;")             
+            Ident.print
+        ) v.exports
 end
 module Lam_util : sig 
 #1 "lam_util.mli"
@@ -89944,12 +89949,17 @@ end = struct
 (*
   Invariant: The last one is always [exports]
   Compile definitions
-           Compile exports
-           Assume Pmakeblock(_,_),
-           lambda_exports are pure
-           compile each binding with a return value
-           This might be wrong in toplevel
-           TODO: add this check as early as possible in the beginning
+  Compile exports
+  Assume Pmakeblock(_,_),
+  lambda_exports are pure
+  compile each binding with a return value
+
+  Such invariant  might be wrong in toplevel (since it is all bindings)
+
+  We should add this check as early as possible
+*)
+
+(*           
 - {[ Ident.same id eid]} is more  correct, 
         however, it will introduce a coercion, which is not necessary, 
         as long as its name is the same, we want to avoid 
@@ -89986,16 +89996,13 @@ end = struct
 type t = {
   export_list : Ident.t list ;
   export_set : Ident_set.t;
-  export_map : Lam.t Ident_map.t ; 
-  groups : Lam_group.t list ; 
+  export_map : Lam.t Ident_map.t ;
+  (** not used in code generation, mostly used for store some information in cmj files
+  *)   
+  groups : Lam_group.t list ; (* all code to be compiled later = original code + rebound coercions *)
 }               
 
-let init  export_set = 
-  { export_list = [];
-    export_set ;
-    export_map = Ident_map.empty ;
-    groups = []
-  }
+
 let handle_exports 
     (original_exports : Ident.t list)
     (original_export_set : Ident_set.t)
@@ -90004,28 +90011,47 @@ let handle_exports
   let tbl = String_hash_set.create len in 
   let ({export_list ; export_set  ;  groups = coercion_groups } as result)  = 
     List.fold_right2 
-      (fun  (original_export_id : Ident.t) lam (acc : t)  ->
-          let original_name = original_export_id.name in 
+      (fun  (original_export_id : Ident.t) (lam : Lam.t) (acc : t)  ->
+         let original_name = original_export_id.name in 
          if not @@ String_hash_set.check_add tbl original_name then 
            Bs_exception.error (Bs_duplicate_exports original_name);
-         (match (lam : Lam.t) with 
+         (match lam  with 
           | Lvar id 
             when Ident.name id = original_name -> 
             { acc with 
               export_list = id :: acc.export_list ; 
               export_set = 
-                (Ident_set.add id (Ident_set.remove original_export_id acc.export_set))
-               }
+                if id.stamp = original_export_id.stamp then acc.export_set 
+                else (Ident_set.add id (Ident_set.remove original_export_id acc.export_set))
+            }
           | _ -> 
-            (* Invariant: [eid] can not be bound before *)
+            (*
+              Example:
+              {[
+              let N = [a0,a1,a2,a3]
+              in [[ N[0], N[2]]]
+              
+              ]}
+              After optimization
+              {[
+                [ [ a0, a2] ] 
+              ]}
+              Here [N] is elminated while N is still exported identifier
+              Invariant: [eid] can not be bound before 
+              FIX: this invariant is not guaranteed. 
+              Bug manifested: when querying arity info about N, it returns an array 
+              of size 4 instead of 2
+              *)
             { acc with 
               export_list = original_export_id :: acc.export_list;
               export_map = Ident_map.add original_export_id lam acc.export_map;              
               groups = Single(Strict, original_export_id, lam) :: acc.groups
             });
       )
-      original_exports lambda_exports 
-      (init original_export_set)
+      original_exports 
+      lambda_exports 
+      {export_list = []; export_set = original_export_set; export_map = Ident_map.empty; groups = []}
+      (* (init original_export_set) *)
   in
 
   let (export_map, coerced_input) = 
@@ -90034,6 +90060,9 @@ let handle_exports
          (match (x : Lam_group.t)  with 
           | Single (_,id,lam) when Ident_set.mem id export_set 
             -> Ident_map.add id lam export_map
+              (** relies on the Invariant that [eoid] can not be bound before
+                  FIX: such invariant may not hold
+              *)
           | _ -> export_map), x :: acc ) (result.export_map, result.groups) reverse_input in
   { result with export_map ; groups = Lam_dce.remove export_list coerced_input }
 
@@ -90061,12 +90090,17 @@ let rec flatten
   | x ->  
     x, acc
 
+(** Invarinat to hold:
+    [export_map] is sound, for every rebinded export id, its key is indeed in 
+    [export_map] since we know its old bindings are no longer valid, i.e 
+    Lam_stats.t is not valid
+*)    
 let coerce_and_group_big_lambda 
     old_exports 
     old_export_sets
     lam = 
   match flatten [] lam with 
-  | Lam.Lprim {primitive = Pmakeblock _;  args = lambda_exports }, reverse_input 
+  | Lprim {primitive = Pmakeblock _;  args = lambda_exports }, reverse_input 
     -> 
     handle_exports old_exports old_export_sets lambda_exports reverse_input 
   | _ -> assert false
@@ -100664,16 +100698,7 @@ let compile  ~filename output_prefix env _sigs
                exports = coerced_input.export_list 
              } in 
   (* TODO: turn in on debug mode later*)
-  let () =
-
-    if Js_config.is_same_file () then
-      let f =
-        Ext_filename.chop_extension ~loc:__LOC__ filename ^ ".lambda" in
-      Ext_pervasives.with_file_as_pp f begin fun fmt ->
-        Format.pp_print_list ~pp_sep:Format.pp_print_newline
-          (Lam_group.pp_group env) fmt (coerced_input.groups) 
-      end;
-  in
+  
   (** Also need analyze its depenency is pure or not *)
   let no_side_effects rest = 
     Ext_list.for_all_opt (fun (x : Lam_group.t) -> 
