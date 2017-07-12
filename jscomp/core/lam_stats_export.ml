@@ -57,7 +57,7 @@ and dump_arity fmt (arity : Lam_arity.t) =
 let values_of_export meta export_map = 
   List.fold_left
     (fun   acc (x : Ident.t)  ->
-       let arity =  Lam_stats_util.arity_of_var meta x in
+       let arity : Js_cmj_format.arity = Single (Lam_stats_util.arity_of_var meta x) in
        let closed_lambda = 
          match Ident_map.find_opt x export_map with 
          | Some lambda  -> 

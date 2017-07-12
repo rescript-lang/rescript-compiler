@@ -33,7 +33,15 @@ let pp_cmj fmt ({ values ; effect; } :Js_cmj_format.t) =
   p fmt "@[%a@]@."
   (fun fmt m -> 
     m |> String_map.iter (fun k (v : Js_cmj_format.cmj_value) -> 
-      p fmt "@[%s@ %a@]@." k Lam_arity.print v.arity
+    match v.arity with 
+    | Single arity ->
+      p fmt "@[%s:@ @[%a@]@]@." k Lam_arity.print arity
+    | Submodule xs -> 
+      p fmt "@[<h 1>@[%s:@ @[<hov 2>%a@]@]@]" k 
+        (fun fmt xs ->
+        Array.iter (fun arity -> p fmt "@[%a@]@ ;" Lam_arity.print arity ) 
+        xs) xs 
+
     )) values
 
 

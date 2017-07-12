@@ -67,7 +67,7 @@ type ident_info = {
   id : Ident.t;
   name : string;
   signatures : Types.signature;
-  arity : Lam_arity.t; 
+  arity : Js_cmj_format.arity; 
   closed_lambda : Lam.t option 
 }
 
@@ -158,8 +158,8 @@ let find_and_add_if_not_exist (id, pos) env ~not_found ~found =
         let name =  (Type_util.get_name signature pos ) in
         let arity, closed_lambda =        
           begin match String_map.find_opt name cmj_table.values with
-            | Some {arity; closed_lambda} -> arity, closed_lambda
-            | None -> NA, None 
+            | Some {arity ; closed_lambda} -> arity, closed_lambda
+            | None -> Js_cmj_format.single_na, None 
           end in
         found {id; 
                name ;
@@ -177,7 +177,7 @@ let find_and_add_if_not_exist (id, pos) env ~not_found ~found =
         match  String_map.find_opt name values with
         | Some {arity; closed_lambda;_} -> 
           arity, closed_lambda 
-        | None -> (NA, None)
+        | None -> Js_cmj_format.single_na, None
       ) in
       found { id;
               name; 

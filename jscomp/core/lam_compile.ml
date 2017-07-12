@@ -133,26 +133,24 @@ let rec
    @param env typing environment
    @param args arguments 
 *)
-
-and get_exp_with_args (cxt : Lam_compile_defs.cxt)  lam args_lambda
-    (id : Ident.t) (pos : int) env : Js_output.t = 
-  Lam_compile_env.find_and_add_if_not_exist (id,pos) env ~not_found:(fun id -> 
-      (** This can not happen since this id should be already consulted by type checker 
+(** This can not happen since this id should be already consulted by type checker 
           Worst case 
           {[
             E.index m (pos + 1)
           ]}
           shift by one (due to module encoding)
-      *)
-      (* Js_output.handle_block_return cxt.st cxt.should_return lam args_code @@  *)
-      (* E.str ~pure:false  (Printf.sprintf "Err %s %d %d" *)
-      (*                       id.name *)
-      (*                       id.flags *)
-      (*                       pos *)
-      (*                    ) *)
+*)
+(* Js_output.handle_block_return cxt.st cxt.should_return lam args_code @@  *)
+(* E.str ~pure:false  (Printf.sprintf "Err %s %d %d" *)
+(*                       id.name *)
+(*                       id.flags *)
+(*                       pos *)
+(*                    ) *)
+and get_exp_with_args (cxt : Lam_compile_defs.cxt)  lam args_lambda
+    (id : Ident.t) (pos : int) env : Js_output.t = 
+  Lam_compile_env.find_and_add_if_not_exist (id,pos) env ~not_found:(fun id -> 
       assert false 
     )
-
     ~found:(fun {id; name;arity; closed_lambda ; _} -> 
         let args_code, args = 
           List.fold_right 
@@ -223,7 +221,9 @@ and get_exp_with_args (cxt : Lam_compile_defs.cxt)  lam args_lambda
                | NA, _ ->
                  E.call ~info:Js_call_info.dummy acc args
              in
-             aux (E.ml_var_dot id name) arity args (List.length args ))
+             aux (E.ml_var_dot id name) 
+             (match arity with Single x -> x | Submodule _ -> NA)
+            args (List.length args ))
       )
 
 and  compile_let flag (cxt : Lam_compile_defs.cxt) id (arg : Lam.t) : Js_output.t =

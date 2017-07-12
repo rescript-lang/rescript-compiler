@@ -27,11 +27,13 @@
 
 
 
-
+type arity = 
+  | Single of Lam_arity.t
+  | Submodule of Lam_arity.t array
 
 (* TODO: add a magic number *)
 type cmj_value = {
-  arity : Lam_arity.t ;
+  arity : arity ;
   closed_lambda : Lam.t option ; 
   (** Either constant or closed functor *)
 }
@@ -39,7 +41,7 @@ type cmj_value = {
 type effect = string option
 
 
-
+let single_na = Single NA
 (** we don't force people to use package *)
 
 type t = {
@@ -48,7 +50,7 @@ type t = {
   npm_package_path : Js_config.packages_info ;
 }
 
-let cmj_magic_number =  "BUCKLE20160510"
+let cmj_magic_number =  "BUCKLE20170711"
 let cmj_magic_number_length = 
   String.length cmj_magic_number
 
