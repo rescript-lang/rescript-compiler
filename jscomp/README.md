@@ -108,10 +108,32 @@ make js_map.ml js_fold.ml
 ```sh
 cd ./runtime; make all
 ```
+
 ### Build the stdlib
 
 ```sh
 cd ./stdlib; make all
+```
+
+# Rebuilding the browser-based playground
+
+## Get `js_of_ocaml` from the normal switch
+
+```
+opam switch 4.02.3
+eval `opam config env`
+opam install js_of_ocaml.2.8.4
+which js_of_ocaml # symlink this into your $PATH, maybe /usr/local/bin or something
+```
+
+## Do everything else from the bucklescript switch
+
+```
+opam switch 4.02.3+buckle-master
+eval `opam config env`
+opam install camlp4 ocp-ocamlres
+(cd ocaml && make world)
+(cd jscomp && ./js.sh)
 ```
 
 # Sub directories
