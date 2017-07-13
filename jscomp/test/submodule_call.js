@@ -3,7 +3,7 @@
 var Curry     = require("../../lib/js/curry.js");
 var Submodule = require("./submodule.js");
 
-var a0 = Curry._2(Submodule.A0[/* a0 */0], 1, 2);
+var a0 = Submodule.A0[/* a0 */0](1, 2);
 
 var a1 = Curry._2(Submodule.A0[/* A1 */1][/* a1 */0], 1, 2);
 

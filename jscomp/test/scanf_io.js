@@ -58,10 +58,10 @@ function write_tscanf_data_file(fname, lines) {
 }
 
 function get_lines(fname) {
-  var ib = Curry._1(Scanf.Scanning[/* from_file */4], fname);
+  var ib = Scanf.Scanning[/* from_file */4](fname);
   var l = [/* [] */0];
   try {
-    while(!Curry._1(Scanf.Scanning[/* end_of_input */9], ib)) {
+    while(!Scanf.Scanning[/* end_of_input */9](ib)) {
       Curry._1(Scanf.bscanf(ib, /* Format */[
                 /* Char_literal */Block.__(12, [
                     /* " " */32,
@@ -177,7 +177,7 @@ function add_digest_ib(ob, ib) {
 }
 
 function digest_file(fname) {
-  var ib = Curry._1(Scanf.Scanning[/* from_file */4], fname);
+  var ib = Scanf.Scanning[/* from_file */4](fname);
   var ob = Buffer.create(42);
   add_digest_ib(ob, ib);
   return Buffer.contents(ob);
@@ -192,7 +192,7 @@ function test55() {
   create_tscanf_data(ob, tscanf_data_file_lines);
   var s = Buffer.contents(ob);
   ob[/* position */1] = 0;
-  var ib = Curry._1(Scanf.Scanning[/* from_string */6], s);
+  var ib = Scanf.Scanning[/* from_string */6](s);
   add_digest_ib(ob, ib);
   var tscanf_data_file_lines_digest = Buffer.contents(ob);
   return +(digest_file(tscanf_data_file) === tscanf_data_file_lines_digest);

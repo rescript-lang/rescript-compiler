@@ -30,7 +30,7 @@
 let pp = Format.fprintf 
 (* we should exclude meaninglist names and do the convert as well *)
 
-let meaningless_names  = ["*opt*"; "param";]
+(* let meaningless_names  = ["*opt*"; "param";] *)
 
 let rec dump_ident fmt (id : Ident.t) (arity : Lam_arity.t)  = 
   pp fmt  "@[<2>export var %s:@ %a@ ;@]" (Ext_ident.convert true id.name ) dump_arity arity
@@ -53,11 +53,37 @@ and dump_arity fmt (arity : Lam_arity.t) =
              (Ext_ident.convert true  @@ Ident.name ident))
       ) args 
 
+let single_na = Js_cmj_format.single_na
 
-let values_of_export meta export_map = 
+let values_of_export 
+  (meta : Lam_stats.t) 
+  (export_map  : Lam.t Ident_map.t)
+  = 
   List.fold_left
     (fun   acc (x : Ident.t)  ->
-       let arity : Js_cmj_format.arity = Single (Lam_stats_util.arity_of_var meta x) in
+
+       let arity : Js_cmj_format.arity =
+         match Ident_hashtbl.find_opt meta.ident_tbl x with 
+         | Some (FunctionId {arity ; _}) -> Single arity 
+         | Some (ImmutableBlock(elems,_)) ->  
+           Submodule(elems |> Array.map (fun (x : Lam_id_kind.element) -> 
+               match x with 
+               | NA -> Lam_arity.NA
+               | SimpleForm lam -> Lam_stats_util.get_arity  meta lam)
+             )
+         | Some _ 
+         | None ->
+          begin match Ident_map.find_opt x export_map with 
+          | Some (Lprim {primitive = Pmakeblock (_,_, Immutable); args }) ->
+            Submodule (args |> Ext_array.of_list_map (fun lam -> 
+            Lam_stats_util.get_arity meta lam
+            ))
+          | Some _
+          | None -> single_na
+          end
+         
+         (*Single (Lam_stats_util.arity_of_var meta x) *)
+       in
        let closed_lambda = 
          match Ident_map.find_opt x export_map with 
          | Some lambda  -> 
@@ -91,7 +117,7 @@ let values_of_export meta export_map =
              None
          | None
            -> None  in 
-       String_map.add x.name  Js_cmj_format.{arity ; closed_lambda } acc          
+       String_map.add x.name  Js_cmj_format.({arity ; closed_lambda }) acc          
     )
     String_map.empty
     meta.exports 
@@ -133,7 +159,6 @@ let export_to_cmj
     maybe_pure
     external_ids 
     export_map
-
   : Js_cmj_format.t = 
   let values =  values_of_export meta export_map in
   let () =
