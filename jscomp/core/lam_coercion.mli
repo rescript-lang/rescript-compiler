@@ -30,8 +30,8 @@ type t = {
   groups : Lam_group.t list ; 
 }   
 
+
 val coerce_and_group_big_lambda : 
-    Ident.t list -> 
-    Ident_set.t -> 
+    Lam_stats.t ->
     Lam.t -> 
-    t 
+    t * Lam_stats.t

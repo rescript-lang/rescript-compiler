@@ -77,16 +77,18 @@ type t = {
   export_list : Ident.t list ;
   export_set : Ident_set.t;
   export_map : Lam.t Ident_map.t ;
-  (** not used in code generation, mostly used for store some information in cmj files
-  *)   
-  groups : Lam_group.t list ; (* all code to be compiled later = original code + rebound coercions *)
+  (** not used in code generation, mostly used 
+      for store some information in cmj files *)   
+  groups : Lam_group.t list ; 
+  (* all code to be compiled later = original code + rebound coercions *)
 }               
 
 
-let handle_exports 
-    (original_exports : Ident.t list)
-    (original_export_set : Ident_set.t)
+let handle_exports (meta : Lam_stats.t)
     (lambda_exports : Lam.t list)  (reverse_input : Lam_group.t list) =
+   
+  let (original_exports : Ident.t list) = meta.exports in 
+  let (original_export_set : Ident_set.t) = meta.export_idents in   
   let len = List.length original_exports in   
   let tbl = String_hash_set.create len in 
   let ({export_list ; export_set  ;  groups = coercion_groups } as result)  = 
@@ -96,14 +98,24 @@ let handle_exports
          if not @@ String_hash_set.check_add tbl original_name then 
            Bs_exception.error (Bs_duplicate_exports original_name);
          (match lam  with 
-          | Lvar id 
-            when Ident.name id = original_name -> 
+          | Lvar id ->
+            if 
+             Ident.name id = original_name then
             { acc with 
               export_list = id :: acc.export_list ; 
               export_set = 
                 if id.stamp = original_export_id.stamp then acc.export_set 
                 else (Ident_set.add id (Ident_set.remove original_export_id acc.export_set))
             }
+            else
+             let newid = Ident.rename original_export_id in 
+             let kind : Lam.let_kind = Alias in 
+             Lam_util.alias_ident_or_global meta newid id NA kind;
+              { acc with 
+              export_list = newid :: acc.export_list;
+              export_map = Ident_map.add newid lam acc.export_map;              
+              groups = Single(kind, newid, lam) :: acc.groups
+              }
           | _ -> 
             (*
               Example:
@@ -122,16 +134,27 @@ let handle_exports
               Bug manifested: when querying arity info about N, it returns an array 
               of size 4 instead of 2
               *)
+             let newid = Ident.rename original_export_id in    
+             (match Lam_stats_util.get_arity meta lam with 
+             | NA
+             | Determin(_,[],_) ->
+              ()  
+             | Determin _ as v  ->
+              Ident_hashtbl.add meta.ident_tbl newid 
+                (FunctionId{
+                 arity = v; lambda = lam;
+                   rec_flag = Non_rec }))
+            ;
             { acc with 
-              export_list = original_export_id :: acc.export_list;
-              export_map = Ident_map.add original_export_id lam acc.export_map;              
-              groups = Single(Strict, original_export_id, lam) :: acc.groups
-            });
+              export_list = newid :: acc.export_list;
+              export_map = Ident_map.add newid lam acc.export_map;              
+              groups = Single(Strict, newid, lam) :: acc.groups
+            })
       )
       original_exports 
       lambda_exports 
       {export_list = []; export_set = original_export_set; export_map = Ident_map.empty; groups = []}
-      (* (init original_export_set) *)
+
   in
 
   let (export_map, coerced_input) = 
@@ -150,7 +173,7 @@ let handle_exports
     - also for function compilation, flattening should be done first
     - [compile_group] and [compile] become mutually recursive function
 *)
-
+;;
 let rec flatten 
     (acc :  Lam_group.t list ) 
     (lam : Lam.t) :  Lam.t *  Lam_group.t list = 
@@ -176,12 +199,16 @@ let rec flatten
     Lam_stats.t is not valid
 *)    
 let coerce_and_group_big_lambda 
-    old_exports 
-    old_export_sets
+    (meta : Lam_stats.t) 
     lam = 
   match flatten [] lam with 
   | Lprim {primitive = Pmakeblock _;  args = lambda_exports }, reverse_input 
     -> 
-    handle_exports old_exports old_export_sets lambda_exports reverse_input 
+    let coerced_input = 
+      handle_exports
+      meta lambda_exports reverse_input  in 
+    coerced_input, 
+      {meta with export_idents = coerced_input.export_set ; 
+        exports = coerced_input.export_list}
   | _ -> assert false
 

@@ -182,7 +182,7 @@ let simplify_alias
       let normal () = Lam.apply ( simpl fn) (List.map simpl args) loc status in
       begin 
         match Ident_hashtbl.find_opt meta.ident_tbl v with
-        | Some (Function {lambda = Lfunction {params; body} as _m;
+        | Some (FunctionId {lambda = Lfunction {params; body} as _m;
                     rec_flag;                     
                     _ })
           -> 

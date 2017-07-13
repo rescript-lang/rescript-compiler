@@ -26,10 +26,6 @@
   *)
 
 
-type function_kind = 
-  | Functor 
-  | Function
-  | NA
 
 type rec_flag = 
   | Rec 
@@ -37,7 +33,7 @@ type rec_flag =
 
 
 type function_id = {
-  kind : function_kind ; 
+
   mutable arity : Lam_arity.t;
   lambda  : Lam.t ;
   (* TODO: This may contain some closure environment,
@@ -63,7 +59,7 @@ type t =
   | Constant of Lam.constant
   | Module of Ident.t
         (** TODO: static module vs first class module *)
-  | Function of function_id 
+  | FunctionId of function_id 
   | Exception 
   | Parameter
       (** For this case, it can help us determine whether it should be inlined or not *)
@@ -85,8 +81,8 @@ let print fmt (kind : t) =
     pp fmt "Constant"
   | Module id -> 
     pp fmt "%s/%d" id.name id.stamp 
-  | Function _ -> 
-    pp fmt "function"
+  | FunctionId _ -> 
+    pp fmt "FunctionID"
   | Exception ->
     pp fmt "Exception" 
   | Parameter -> 

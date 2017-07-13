@@ -37,7 +37,7 @@ let arity_of_var (meta : Lam_stats.t) (v : Ident.t)  =
     *)
     begin 
       match Ident_hashtbl.find_opt meta.ident_tbl v with 
-      | Some (Function {arity;_}) -> arity
+      | Some (FunctionId {arity;_}) -> arity
       | Some _
       | None ->
         (* Format.fprintf Format.err_formatter *)

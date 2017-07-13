@@ -173,7 +173,32 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.t)
 
 ;;
 
-
+ (** Also need analyze its depenency is pure or not *)
+let no_side_effects (rest : Lam_group.t list) : string option = 
+    Ext_list.for_all_opt (fun (x : Lam_group.t) -> 
+        match x with 
+        | Single(kind,id,body) -> 
+          begin 
+            match kind with 
+            | Strict | Variable -> 
+              if not @@ Lam_analysis.no_side_effects body 
+              then Some  (Printf.sprintf "%s" id.name)
+              else None
+            | _ -> None
+          end
+        | Recursive bindings -> 
+          Ext_list.for_all_opt (fun (id,lam) -> 
+              if not @@ Lam_analysis.no_side_effects lam 
+              then Some (Printf.sprintf "%s" id.Ident.name )
+              else None
+            ) bindings
+        | Nop lam -> 
+          if not @@ Lam_analysis.no_side_effects lam 
+          then 
+            (*  (Lam_util.string_of_lambda lam) *)
+            Some ""
+          else None (* TODO :*))
+      rest
 
 
 
@@ -259,16 +284,10 @@ let compile  ~filename output_prefix env _sigs
 #end    
   in
 
-  let ({Lam_coercion.groups = rest } as coerced_input ) = 
-    Lam_coercion.coerce_and_group_big_lambda  
-      meta.exports
-      meta.Lam_stats.export_idents lam 
+  let ({Lam_coercion.groups = groups } as coerced_input , meta) = 
+    Lam_coercion.coerce_and_group_big_lambda  meta lam
   in 
-  let meta = { meta with 
-               export_idents = coerced_input.export_set ;
-               exports = coerced_input.export_list 
-             } in 
-  (* TODO: turn in on debug mode later*)
+
 #if BS_DEBUG then   
   let () =
     Ext_log.dwarn __LOC__ "After coercion: %a@." Lam_stats.print meta ;
@@ -281,40 +300,12 @@ let compile  ~filename output_prefix env _sigs
       end;
   in
 #end  
-  (** Also need analyze its depenency is pure or not *)
-  let no_side_effects rest = 
-    Ext_list.for_all_opt (fun (x : Lam_group.t) -> 
-        match x with 
-        | Single(kind,id,body) -> 
-          begin 
-            match kind with 
-            | Strict | Variable -> 
-              if not @@ Lam_analysis.no_side_effects body 
-              then Some  (Printf.sprintf "%s" id.name)
-              else None
-            | _ -> None
-          end
-        | Recursive bindings -> 
-          Ext_list.for_all_opt (fun (id,lam) -> 
-              if not @@ Lam_analysis.no_side_effects lam 
-              then Some (Printf.sprintf "%s" id.Ident.name )
-              else None
-            ) bindings
-        | Nop lam -> 
-          if not @@ Lam_analysis.no_side_effects lam 
-          then 
-            (*  (Lam_util.string_of_lambda lam) *)
-            Some ""
-          else None (* TODO :*))
-      rest
-  in
-  let maybe_pure = no_side_effects rest
-  in
+  let maybe_pure = no_side_effects groups in
 #if BS_DEBUG then 
   let () = Ext_log.dwarn __LOC__ "\n@[[TIME:]Pre-compile: %f@]@."  (Sys.time () *. 1000.) in      
 #end  
   let body  = 
-    rest
+    groups
     |> List.map (fun group -> compile_group meta group)
     |> Js_output.concat
     |> Js_output.to_block
