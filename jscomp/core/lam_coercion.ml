@@ -98,14 +98,24 @@ let handle_exports (meta : Lam_stats.t)
          if not @@ String_hash_set.check_add tbl original_name then 
            Bs_exception.error (Bs_duplicate_exports original_name);
          (match lam  with 
-          | Lvar id 
-            when Ident.name id = original_name -> 
+          | Lvar id ->
+            if 
+             Ident.name id = original_name then
             { acc with 
               export_list = id :: acc.export_list ; 
               export_set = 
                 if id.stamp = original_export_id.stamp then acc.export_set 
                 else (Ident_set.add id (Ident_set.remove original_export_id acc.export_set))
             }
+            else
+             let newid = Ident.rename original_export_id in 
+             let kind : Lam.let_kind = Alias in 
+             Lam_util.alias_ident_or_global meta newid id NA kind;
+              { acc with 
+              export_list = newid :: acc.export_list;
+              export_map = Ident_map.add newid lam acc.export_map;              
+              groups = Single(kind, newid, lam) :: acc.groups
+              }
           | _ -> 
             (*
               Example:
@@ -124,8 +134,17 @@ let handle_exports (meta : Lam_stats.t)
               Bug manifested: when querying arity info about N, it returns an array 
               of size 4 instead of 2
               *)
-            (* let newid = Ident.rename original_export_id in    *)
-            let newid = original_export_id in 
+             let newid = Ident.rename original_export_id in    
+             (match Lam_stats_util.get_arity meta lam with 
+             | NA
+             | Determin(_,[],_) ->
+              ()  
+             | Determin _ as v  ->
+              Ident_hashtbl.add meta.ident_tbl newid 
+                (FunctionId{
+                 arity = v; lambda = lam;
+                   rec_flag = Non_rec }))
+            ;
             { acc with 
               export_list = newid :: acc.export_list;
               export_map = Ident_map.add newid lam acc.export_map;              
@@ -182,13 +201,11 @@ let rec flatten
 let coerce_and_group_big_lambda 
     (meta : Lam_stats.t) 
     lam = 
-  (* let old_exports  = meta.exports in 
-  let old_export_sets   = meta.export_idents in  *)
   match flatten [] lam with 
   | Lprim {primitive = Pmakeblock _;  args = lambda_exports }, reverse_input 
     -> 
     let coerced_input = 
-      handle_exports (*old_exports old_export_sets*) 
+      handle_exports
       meta lambda_exports reverse_input  in 
     coerced_input, 
       {meta with export_idents = coerced_input.export_set ; 

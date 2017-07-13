@@ -73218,19 +73218,11 @@ module Lam_id_kind : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-
-
-type function_kind = 
-  | Functor 
-  | Function
-  | NA
-
 type rec_flag = 
   | Rec 
   | Non_rec
 
 type function_id = {
-  kind : function_kind ; 
   mutable arity : Lam_arity.t;
   lambda  : Lam.t ;
   (* TODO: This may contain some closure environment,
@@ -73256,7 +73248,7 @@ type t =
   | Constant of Lam.constant
   | Module of Ident.t
         (** TODO: static module vs first class module *)
-  | Function of function_id 
+  | FunctionId of function_id 
   | Exception 
   | Parameter
       (** For this case, it can help us determine whether it should be inlined or not *)
@@ -73311,10 +73303,6 @@ end = struct
   *)
 
 
-type function_kind = 
-  | Functor 
-  | Function
-  | NA
 
 type rec_flag = 
   | Rec 
@@ -73322,7 +73310,7 @@ type rec_flag =
 
 
 type function_id = {
-  kind : function_kind ; 
+
   mutable arity : Lam_arity.t;
   lambda  : Lam.t ;
   (* TODO: This may contain some closure environment,
@@ -73348,7 +73336,7 @@ type t =
   | Constant of Lam.constant
   | Module of Ident.t
         (** TODO: static module vs first class module *)
-  | Function of function_id 
+  | FunctionId of function_id 
   | Exception 
   | Parameter
       (** For this case, it can help us determine whether it should be inlined or not *)
@@ -73370,8 +73358,8 @@ let print fmt (kind : t) =
     pp fmt "Constant"
   | Module id -> 
     pp fmt "%s/%d" id.name id.stamp 
-  | Function _ -> 
-    pp fmt "function"
+  | FunctionId _ -> 
+    pp fmt "FunctionID"
   | Exception ->
     pp fmt "Exception" 
   | Parameter -> 
@@ -89884,6 +89872,272 @@ let remove export_idents (rest : Lam_group.t list) : Lam_group.t list  =
   
 
 end
+module Lam_stats_util : sig 
+#1 "lam_stats_util.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(** Utilities for lambda analysis *)
+
+
+val arity_of_var : 
+  Lam_stats.t -> 
+  Ident.t -> 
+  Lam_arity.t
+
+val get_arity :
+  Lam_stats.t -> 
+  Lam.t ->
+  Lam_arity.t
+
+
+
+
+
+
+end = struct
+#1 "lam_stats_util.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+      
+let merge 
+    ((n : int ), params as y)
+    (x : Lam_arity.t) : Lam_arity.t = 
+  match x with 
+  | NA -> Determin(false, [y], false)
+  | Determin (b,xs,tail) -> Determin (b, y :: xs, tail)
+
+
+let arity_of_var (meta : Lam_stats.t) (v : Ident.t)  =
+    (** for functional parameter, if it is a high order function,
+        if it's not from function parameter, we should warn
+    *)
+    begin 
+      match Ident_hashtbl.find_opt meta.ident_tbl v with 
+      | Some (FunctionId {arity;_}) -> arity
+      | Some _
+      | None ->
+        (* Format.fprintf Format.err_formatter *)
+        (*   "@[%s %a is not function/functor@]@." meta.filename Ident.print v ; *)
+        (NA : Lam_arity.t)
+
+    end
+
+(* we need record all aliases -- since not all aliases are eliminated, 
+   mostly are toplevel bindings
+   We will keep iterating such environment
+   If not found, we will return [NA]
+*)
+let rec get_arity 
+    (meta : Lam_stats.t) 
+    (lam : Lam.t) : 
+  Lam_arity.t = 
+  match lam with 
+  | Lconst _ -> Determin (true,[], false)
+  | Lvar v -> arity_of_var meta v 
+  | Llet(_,_,_, l ) -> get_arity meta l 
+
+  (*   begin match Parsetree_util.has_arity prim_attributes with *)
+  (*     | Some arity ->  *)
+  (*       (\* Ext_log.dwarn __LOC__ "arity %d" arity; *\) *)
+  (*       Determin(false, [arity, None], false) *)
+  (*     | None -> NA *)
+  (*   end *)
+  | Lprim {primitive = Pfield (n,_); 
+           args =  [ Lglobal_module id  ]; _} ->
+    Lam_compile_env.find_and_add_if_not_exist (id, n) meta.env
+      ~not_found:(fun _ -> assert false)
+      ~found:(fun x -> match x.arity with Single x -> x | Submodule _ -> NA )
+  | Lprim {primitive = Pfield (m,_); 
+           args =  [ Lprim{primitive = Pfield(n,_); 
+            args = [ Lglobal_module id]}  ]
+           ; _} ->
+    Lam_compile_env.find_and_add_if_not_exist (id, n) meta.env
+      ~not_found:(fun _ -> assert false)
+      ~found:(fun x -> match x.arity with 
+      | Submodule subs -> subs.(m)
+      | Single _ -> NA
+       )
+
+      
+  | Lprim {primitive = Pfield _; _} -> NA (** TODO *)
+  | Lprim {primitive = Praise ;  _} -> Determin(true,[], true)
+  | Lprim {primitive = Pccall _; _} -> Determin(false, [], false)
+  | Lglobal_module _ (* TODO: fix me never going to happen assert false  *)
+  | Lprim _  -> Determin(true,[] ,false)
+  (* shall we handle primitive in a direct way, 
+      since we know all the information
+      Invariant: all primitive application is fully applied, 
+      since this information  is already available
+
+      -- Check external c functions ?
+      -- it's not true for primitives 
+      like caml_set_oo_id  or  Lprim (Pmakeblock , [])
+
+      it seems true that primitive is always fully applied, however,
+      it can return a function
+  *)
+  | Lletrec(_, body) ->
+    get_arity meta body
+  (* | Lapply(Lprim( p, _), _args, _info) -> *)
+  (*     Determin(true, [], false) (\** Invariant : primtive application is always complete.. *\) *)
+
+  | Lapply{fn = app;  args; _ } -> (* detect functor application *)
+    let fn = get_arity meta app in 
+    begin match fn with 
+      | NA -> NA 
+      | Determin (b, xs, tail ) -> 
+        let rec take (xs : _ list) arg_length = 
+          match xs with 
+          | (x,y) :: xs ->
+            if arg_length = x then Lam_arity.Determin (b, xs, tail) 
+            else if arg_length > x then
+              take xs (arg_length - x)
+            else Determin (b, 
+                           ((x -  arg_length ), 
+                            (match y with
+                            | Some y -> Some (Ext_list.drop arg_length y) 
+                            | None -> None)) :: xs ,
+                           tail)
+          | [] -> 
+            if tail then Determin(b, [], tail)
+            else if not b then 
+              NA
+            else NA
+            (* Actually, you can not have truly deministic arities
+               for example [fun x -> x ]
+            *)
+              (* Ext_pervasives.failwithf ~loc:__LOC__ "%s %s" *)
+              (*   (Format.asprintf "%a" pp_arities fn)  *)
+              (*   (Lam_util.string_of_lambda lam) *)
+        in
+        take xs (List.length args) 
+    end
+  | Lfunction {arity; function_kind; params; body = l} -> 
+    merge (arity, Some params)  (get_arity meta l)
+  | Lswitch(l, {sw_failaction; 
+                sw_consts; 
+                sw_blocks;
+                sw_numblocks = _;
+                sw_numconsts = _;
+               }) -> 
+    all_lambdas meta (
+      let rest = (sw_consts |> List.map snd) @ (sw_blocks |> List.map snd ) in
+      match sw_failaction with None -> rest | Some x -> x::rest )
+  | Lstringswitch(l, sw, d) -> 
+    begin match d with 
+      | None -> all_lambdas meta (List.map snd  sw )
+      | Some v -> all_lambdas meta (v:: List.map snd  sw)
+    end
+  | Lstaticraise _ -> NA (* since it will not be in tail position *)
+  | Lstaticcatch(_, _, handler) -> get_arity meta handler
+  | Ltrywith(l1, _, l2) -> 
+    all_lambdas meta [l1;l2]
+  | Lifthenelse(l1, l2, l3) ->
+    all_lambdas meta [l2;l3]
+  | Lsequence(_, l2) -> get_arity meta l2 
+  | Lsend(u, m, o, ll, v) -> NA
+  | Lifused(v, l) -> NA 
+  | Lwhile _ 
+  | Lfor _  
+  | Lassign _ -> Determin(true,[], false)
+
+and all_lambdas meta (xs : Lam.t list) = 
+  match xs with 
+  | y :: ys -> 
+    let arity =  get_arity meta y in 
+    List.fold_left (fun exist (v : Lam.t) -> 
+        match (exist : Lam_arity.t) with 
+        | NA -> NA 
+        | Determin (b, xs, tail) -> 
+          begin 
+            match get_arity meta v with 
+            | NA -> NA 
+            | Determin (u,ys,tail2) -> 
+              let rec aux (b,acc) xs ys = 
+                match xs,ys with
+                | [], [] -> (b, List.rev acc, tail && tail2) 
+                | [], y::ys when tail  -> 
+                  aux (b,y::acc) [] ys 
+                | x::xs, [] when tail2 -> 
+                  aux (b,x::acc) [] xs
+                | x::xs, y::ys when x = y -> aux (b, (y :: acc)) xs ys 
+                | _, _  -> (false, List.rev acc, false) in 
+              let (b,acc, tail3)  = aux ( u &&b, []) xs ys in 
+              Determin (b,acc, tail3)
+          end
+      ) arity ys 
+  | _ -> assert false 
+
+(*
+let dump_exports_arities (meta : Lam_stats.t ) = 
+  let fmt = 
+    if meta.filename != "" then 
+      let cmj_file = Ext_filename.chop_extension meta.filename ^ Js_config.cmj_ext in
+      let out = open_out cmj_file in   
+      Format.formatter_of_out_channel out
+    else 
+      Format.err_formatter in 
+  begin 
+    List.iter (fun (i : Ident.t) ->  
+      pp fmt "@[%s: %s -> %a@]@." meta.filename i.name 
+        pp_arities  (get_arity meta (Lvar i))
+              ) meta.exports
+  end
+*)
+
+
+end
 module Lam_coercion : sig 
 #1 "lam_coercion.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -90025,14 +90279,24 @@ let handle_exports (meta : Lam_stats.t)
          if not @@ String_hash_set.check_add tbl original_name then 
            Bs_exception.error (Bs_duplicate_exports original_name);
          (match lam  with 
-          | Lvar id 
-            when Ident.name id = original_name -> 
+          | Lvar id ->
+            if 
+             Ident.name id = original_name then
             { acc with 
               export_list = id :: acc.export_list ; 
               export_set = 
                 if id.stamp = original_export_id.stamp then acc.export_set 
                 else (Ident_set.add id (Ident_set.remove original_export_id acc.export_set))
             }
+            else
+             let newid = Ident.rename original_export_id in 
+             let kind : Lam.let_kind = Alias in 
+             Lam_util.alias_ident_or_global meta newid id NA kind;
+              { acc with 
+              export_list = newid :: acc.export_list;
+              export_map = Ident_map.add newid lam acc.export_map;              
+              groups = Single(kind, newid, lam) :: acc.groups
+              }
           | _ -> 
             (*
               Example:
@@ -90051,8 +90315,17 @@ let handle_exports (meta : Lam_stats.t)
               Bug manifested: when querying arity info about N, it returns an array 
               of size 4 instead of 2
               *)
-            (* let newid = Ident.rename original_export_id in    *)
-            let newid = original_export_id in 
+             let newid = Ident.rename original_export_id in    
+             (match Lam_stats_util.get_arity meta lam with 
+             | NA
+             | Determin(_,[],_) ->
+              ()  
+             | Determin _ as v  ->
+              Ident_hashtbl.add meta.ident_tbl newid 
+                (FunctionId{
+                 arity = v; lambda = lam;
+                   rec_flag = Non_rec }))
+            ;
             { acc with 
               export_list = newid :: acc.export_list;
               export_map = Ident_map.add newid lam acc.export_map;              
@@ -90109,13 +90382,11 @@ let rec flatten
 let coerce_and_group_big_lambda 
     (meta : Lam_stats.t) 
     lam = 
-  (* let old_exports  = meta.exports in 
-  let old_export_sets   = meta.export_idents in  *)
   match flatten [] lam with 
   | Lprim {primitive = Pmakeblock _;  args = lambda_exports }, reverse_input 
     -> 
     let coerced_input = 
-      handle_exports (*old_exports old_export_sets*) 
+      handle_exports
       meta lambda_exports reverse_input  in 
     coerced_input, 
       {meta with export_idents = coerced_input.export_set ; 
@@ -97590,272 +97861,6 @@ and
   end
 
 end
-module Lam_stats_util : sig 
-#1 "lam_stats_util.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(** Utilities for lambda analysis *)
-
-
-val arity_of_var : 
-  Lam_stats.t -> 
-  Ident.t -> 
-  Lam_arity.t
-
-val get_arity :
-  Lam_stats.t -> 
-  Lam.t ->
-  Lam_arity.t
-
-
-
-
-
-
-end = struct
-#1 "lam_stats_util.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-      
-let merge 
-    ((n : int ), params as y)
-    (x : Lam_arity.t) : Lam_arity.t = 
-  match x with 
-  | NA -> Determin(false, [y], false)
-  | Determin (b,xs,tail) -> Determin (b, y :: xs, tail)
-
-
-let arity_of_var (meta : Lam_stats.t) (v : Ident.t)  =
-    (** for functional parameter, if it is a high order function,
-        if it's not from function parameter, we should warn
-    *)
-    begin 
-      match Ident_hashtbl.find_opt meta.ident_tbl v with 
-      | Some (Function {arity;_}) -> arity
-      | Some _
-      | None ->
-        (* Format.fprintf Format.err_formatter *)
-        (*   "@[%s %a is not function/functor@]@." meta.filename Ident.print v ; *)
-        (NA : Lam_arity.t)
-
-    end
-
-(* we need record all aliases -- since not all aliases are eliminated, 
-   mostly are toplevel bindings
-   We will keep iterating such environment
-   If not found, we will return [NA]
-*)
-let rec get_arity 
-    (meta : Lam_stats.t) 
-    (lam : Lam.t) : 
-  Lam_arity.t = 
-  match lam with 
-  | Lconst _ -> Determin (true,[], false)
-  | Lvar v -> arity_of_var meta v 
-  | Llet(_,_,_, l ) -> get_arity meta l 
-
-  (*   begin match Parsetree_util.has_arity prim_attributes with *)
-  (*     | Some arity ->  *)
-  (*       (\* Ext_log.dwarn __LOC__ "arity %d" arity; *\) *)
-  (*       Determin(false, [arity, None], false) *)
-  (*     | None -> NA *)
-  (*   end *)
-  | Lprim {primitive = Pfield (n,_); 
-           args =  [ Lglobal_module id  ]; _} ->
-    Lam_compile_env.find_and_add_if_not_exist (id, n) meta.env
-      ~not_found:(fun _ -> assert false)
-      ~found:(fun x -> match x.arity with Single x -> x | Submodule _ -> NA )
-  | Lprim {primitive = Pfield (m,_); 
-           args =  [ Lprim{primitive = Pfield(n,_); 
-            args = [ Lglobal_module id]}  ]
-           ; _} ->
-    Lam_compile_env.find_and_add_if_not_exist (id, n) meta.env
-      ~not_found:(fun _ -> assert false)
-      ~found:(fun x -> match x.arity with 
-      | Submodule subs -> subs.(m)
-      | Single _ -> NA
-       )
-
-      
-  | Lprim {primitive = Pfield _; _} -> NA (** TODO *)
-  | Lprim {primitive = Praise ;  _} -> Determin(true,[], true)
-  | Lprim {primitive = Pccall _; _} -> Determin(false, [], false)
-  | Lglobal_module _ (* TODO: fix me never going to happen assert false  *)
-  | Lprim _  -> Determin(true,[] ,false)
-  (* shall we handle primitive in a direct way, 
-      since we know all the information
-      Invariant: all primitive application is fully applied, 
-      since this information  is already available
-
-      -- Check external c functions ?
-      -- it's not true for primitives 
-      like caml_set_oo_id  or  Lprim (Pmakeblock , [])
-
-      it seems true that primitive is always fully applied, however,
-      it can return a function
-  *)
-  | Lletrec(_, body) ->
-    get_arity meta body
-  (* | Lapply(Lprim( p, _), _args, _info) -> *)
-  (*     Determin(true, [], false) (\** Invariant : primtive application is always complete.. *\) *)
-
-  | Lapply{fn = app;  args; _ } -> (* detect functor application *)
-    let fn = get_arity meta app in 
-    begin match fn with 
-      | NA -> NA 
-      | Determin (b, xs, tail ) -> 
-        let rec take (xs : _ list) arg_length = 
-          match xs with 
-          | (x,y) :: xs ->
-            if arg_length = x then Lam_arity.Determin (b, xs, tail) 
-            else if arg_length > x then
-              take xs (arg_length - x)
-            else Determin (b, 
-                           ((x -  arg_length ), 
-                            (match y with
-                            | Some y -> Some (Ext_list.drop arg_length y) 
-                            | None -> None)) :: xs ,
-                           tail)
-          | [] -> 
-            if tail then Determin(b, [], tail)
-            else if not b then 
-              NA
-            else NA
-            (* Actually, you can not have truly deministic arities
-               for example [fun x -> x ]
-            *)
-              (* Ext_pervasives.failwithf ~loc:__LOC__ "%s %s" *)
-              (*   (Format.asprintf "%a" pp_arities fn)  *)
-              (*   (Lam_util.string_of_lambda lam) *)
-        in
-        take xs (List.length args) 
-    end
-  | Lfunction {arity; function_kind; params; body = l} -> 
-    merge (arity, Some params)  (get_arity meta l)
-  | Lswitch(l, {sw_failaction; 
-                sw_consts; 
-                sw_blocks;
-                sw_numblocks = _;
-                sw_numconsts = _;
-               }) -> 
-    all_lambdas meta (
-      let rest = (sw_consts |> List.map snd) @ (sw_blocks |> List.map snd ) in
-      match sw_failaction with None -> rest | Some x -> x::rest )
-  | Lstringswitch(l, sw, d) -> 
-    begin match d with 
-      | None -> all_lambdas meta (List.map snd  sw )
-      | Some v -> all_lambdas meta (v:: List.map snd  sw)
-    end
-  | Lstaticraise _ -> NA (* since it will not be in tail position *)
-  | Lstaticcatch(_, _, handler) -> get_arity meta handler
-  | Ltrywith(l1, _, l2) -> 
-    all_lambdas meta [l1;l2]
-  | Lifthenelse(l1, l2, l3) ->
-    all_lambdas meta [l2;l3]
-  | Lsequence(_, l2) -> get_arity meta l2 
-  | Lsend(u, m, o, ll, v) -> NA
-  | Lifused(v, l) -> NA 
-  | Lwhile _ 
-  | Lfor _  
-  | Lassign _ -> Determin(true,[], false)
-
-and all_lambdas meta (xs : Lam.t list) = 
-  match xs with 
-  | y :: ys -> 
-    let arity =  get_arity meta y in 
-    List.fold_left (fun exist (v : Lam.t) -> 
-        match (exist : Lam_arity.t) with 
-        | NA -> NA 
-        | Determin (b, xs, tail) -> 
-          begin 
-            match get_arity meta v with 
-            | NA -> NA 
-            | Determin (u,ys,tail2) -> 
-              let rec aux (b,acc) xs ys = 
-                match xs,ys with
-                | [], [] -> (b, List.rev acc, tail && tail2) 
-                | [], y::ys when tail  -> 
-                  aux (b,y::acc) [] ys 
-                | x::xs, [] when tail2 -> 
-                  aux (b,x::acc) [] xs
-                | x::xs, y::ys when x = y -> aux (b, (y :: acc)) xs ys 
-                | _, _  -> (false, List.rev acc, false) in 
-              let (b,acc, tail3)  = aux ( u &&b, []) xs ys in 
-              Determin (b,acc, tail3)
-          end
-      ) arity ys 
-  | _ -> assert false 
-
-(*
-let dump_exports_arities (meta : Lam_stats.t ) = 
-  let fmt = 
-    if meta.filename != "" then 
-      let cmj_file = Ext_filename.chop_extension meta.filename ^ Js_config.cmj_ext in
-      let out = open_out cmj_file in   
-      Format.formatter_of_out_channel out
-    else 
-      Format.err_formatter in 
-  begin 
-    List.iter (fun (i : Ident.t) ->  
-      pp fmt "@[%s: %s -> %a@]@." meta.filename i.name 
-        pp_arities  (get_arity meta (Lvar i))
-              ) meta.exports
-  end
-*)
-
-
-end
 module Lam_pass_alpha_conversion : sig 
 #1 "lam_pass_alpha_conversion.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -98169,9 +98174,11 @@ let annotate (meta : Lam_stats.t)
     (k:Ident.t) (v : Lam_arity.t) lambda = 
   (* Ext_log.dwarn  __LOC__ "%s/%d" k.name k.stamp;     *)
   match Ident_hashtbl.find_opt  meta.ident_tbl k  with 
-  | None -> 
-      Ident_hashtbl.add meta.ident_tbl k (Function {kind = NA; arity = v; lambda; rec_flag})
-  |  Some (Function old)  ->  
+  | None -> (** FIXME: need do a sanity check of arity is NA or Determin(_,[],_) *)
+      Ident_hashtbl.add meta.ident_tbl k 
+        (FunctionId {
+            arity = v; lambda; rec_flag})
+  |  Some (FunctionId old)  ->  
       (** Check, it is shared across ident_tbl, 
           Only [Lassign] will break such invariant,
           how about guarantee that [Lassign] only check the local ref 
@@ -98181,7 +98188,7 @@ let annotate (meta : Lam_stats.t)
          might not be the same due to refinement
          assert (old.arity = v) 
        *)
-      old.arity <- v
+        old.arity <- v  (* due to we keep refining arity analysis after each round*)
       
 
   | _ -> assert false (* TODO -- avoid exception *)
@@ -98241,12 +98248,7 @@ let collect_helper  (meta : Lam_stats.t) (lam : Lam.t)  =
 
       List.iter (fun p -> Ident_hashtbl.add meta.ident_tbl p Parameter ) params;
       let arity = Lam_stats_util.get_arity meta lam in       
-      (* Ext_log.dwarn __LOC__ "%s/%d : %a : %a function collected"  *)
-      (*   ident.name ident.stamp  *)
-      (*   Printlambda.lambda lam *)
-      (*   Lam_arity.print arity *)
-      (* ; *)
-      annotate meta rec_flag ident  arity lam;
+      annotate meta rec_flag ident  arity lam; 
       collect l
     | x -> 
         collect x ;
@@ -100018,7 +100020,7 @@ let simplify_alias
       let normal () = Lam.apply ( simpl fn) (List.map simpl args) loc status in
       begin 
         match Ident_hashtbl.find_opt meta.ident_tbl v with
-        | Some (Function {lambda = Lfunction {params; body} as _m;
+        | Some (FunctionId {lambda = Lfunction {params; body} as _m;
                     rec_flag;                     
                     _ })
           -> 

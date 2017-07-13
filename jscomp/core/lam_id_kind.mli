@@ -23,19 +23,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-
-
-type function_kind = 
-  | Functor 
-  | Function
-  | NA
-
 type rec_flag = 
   | Rec 
   | Non_rec
 
 type function_id = {
-  kind : function_kind ; 
   mutable arity : Lam_arity.t;
   lambda  : Lam.t ;
   (* TODO: This may contain some closure environment,
@@ -61,7 +53,7 @@ type t =
   | Constant of Lam.constant
   | Module of Ident.t
         (** TODO: static module vs first class module *)
-  | Function of function_id 
+  | FunctionId of function_id 
   | Exception 
   | Parameter
       (** For this case, it can help us determine whether it should be inlined or not *)

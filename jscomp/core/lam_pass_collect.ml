@@ -35,9 +35,11 @@ let annotate (meta : Lam_stats.t)
     (k:Ident.t) (v : Lam_arity.t) lambda = 
   (* Ext_log.dwarn  __LOC__ "%s/%d" k.name k.stamp;     *)
   match Ident_hashtbl.find_opt  meta.ident_tbl k  with 
-  | None -> 
-      Ident_hashtbl.add meta.ident_tbl k (Function {kind = NA; arity = v; lambda; rec_flag})
-  |  Some (Function old)  ->  
+  | None -> (** FIXME: need do a sanity check of arity is NA or Determin(_,[],_) *)
+      Ident_hashtbl.add meta.ident_tbl k 
+        (FunctionId {
+            arity = v; lambda; rec_flag})
+  |  Some (FunctionId old)  ->  
       (** Check, it is shared across ident_tbl, 
           Only [Lassign] will break such invariant,
           how about guarantee that [Lassign] only check the local ref 
@@ -47,7 +49,7 @@ let annotate (meta : Lam_stats.t)
          might not be the same due to refinement
          assert (old.arity = v) 
        *)
-      old.arity <- v
+        old.arity <- v  (* due to we keep refining arity analysis after each round*)
       
 
   | _ -> assert false (* TODO -- avoid exception *)
@@ -107,12 +109,7 @@ let collect_helper  (meta : Lam_stats.t) (lam : Lam.t)  =
 
       List.iter (fun p -> Ident_hashtbl.add meta.ident_tbl p Parameter ) params;
       let arity = Lam_stats_util.get_arity meta lam in       
-      (* Ext_log.dwarn __LOC__ "%s/%d : %a : %a function collected"  *)
-      (*   ident.name ident.stamp  *)
-      (*   Printlambda.lambda lam *)
-      (*   Lam_arity.print arity *)
-      (* ; *)
-      annotate meta rec_flag ident  arity lam;
+      annotate meta rec_flag ident  arity lam; 
       collect l
     | x -> 
         collect x ;
