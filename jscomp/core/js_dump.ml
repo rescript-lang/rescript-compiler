@@ -155,7 +155,7 @@ let str_of_ident (cxt : Ext_pp_scope.t) (id : Ident.t)   =
        [Printf.sprintf "%s$%d" name id.stamp] which is 
        not relevant to the context       
     *)    
-    let name = Ext_ident.convert true id.name in
+    let name = Ext_ident.convert id.name in
     let i,new_cxt = Ext_pp_scope.add_ident  id cxt in
     (* Attention: 
        $$Array.length, due to the fact that global module is 
@@ -609,7 +609,7 @@ and vident cxt f  (v : J.vident) =
     | Qualified (id, (Ml | Runtime),  Some name) ->
       let cxt = ident cxt f id in
       P.string f L.dot;
-      P.string f (Ext_ident.convert true name);
+      P.string f (Ext_ident.convert  name);
       cxt
     | Qualified (id, External _, Some name) ->
       let cxt = ident cxt f id in
@@ -1649,15 +1649,20 @@ and block cxt f b =
   (* This one is for '{' *)
   P.brace_vgroup f 1 (fun _ -> statement_list false cxt   f b )
 
+let default_export = "default"
 
 (** Exports printer *)
 (** Print exports in Google module format, CommonJS format *)
 let exports cxt f (idents : Ident.t list) = 
   let outer_cxt, reversed_list, margin = 
     List.fold_left (fun (cxt, acc, len ) (id : Ident.t) -> 
-        let s = Ext_ident.convert true id.name in        
+        let id_name = id.name in 
+        let s = Ext_ident.convert id_name in        
         let str,cxt  = str_of_ident cxt id in         
-        cxt, ( (s,str) :: acc ) , max len (String.length s)   )
+        cxt, ( 
+          if id_name = default_export then 
+            (default_export, str) :: (s,str)::acc 
+          else (s,str) :: acc ) , max len (String.length s)   )
       (cxt, [], 0)  idents in    
   P.newline f ;
   Ext_list.rev_iter (fun (s,export) -> 
@@ -1678,9 +1683,14 @@ let exports cxt f (idents : Ident.t list) =
 let es6_export cxt f (idents : Ident.t list) = 
   let outer_cxt, reversed_list, margin = 
     List.fold_left (fun (cxt, acc, len ) (id : Ident.t) -> 
-        let s = Ext_ident.convert true id.name in        
+        let id_name = id.name in 
+        let s = Ext_ident.convert id_name in        
         let str,cxt  = str_of_ident cxt id in         
-        cxt, ( (s,str) :: acc ) , max len (String.length s)   )
+        cxt, ( 
+          if id_name = default_export then 
+            (default_export,str)::(s,str)::acc
+          else 
+          (s,str) :: acc ) , max len (String.length s)   )
       (cxt, [], 0)  idents in    
   P.newline f ;
   P.string f L.export ; 

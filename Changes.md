@@ -1,3 +1,16 @@
+# 19.2
+- Features
+- #1798 make `default` the same semantics as Es6 exports
+- #1785 upgrade playground
+- #1758 generator support 
+
+- Optimizations
+- #1796, #1793 improve submodule arity inference 
+
+- Internal
+- add a tool cmjdump.exe
+
+
 # 1.8.1
 Fixes:
 - #1762, discard effectful unused code

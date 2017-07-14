@@ -174,7 +174,8 @@ OTHERS := literals a test_ari test_export2 test_internalOO test_obj_simple_ffi t
 	gpr_1760_test\
 	gpr_1759_test\
 	inner_define\
-	inner_call
+	inner_call\
+	default_export_test
 
 # bs_uncurry_test
 # needs Lam to get rid of Uncurry arity first
