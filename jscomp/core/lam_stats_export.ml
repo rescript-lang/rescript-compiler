@@ -33,7 +33,7 @@ let pp = Format.fprintf
 (* let meaningless_names  = ["*opt*"; "param";] *)
 
 let rec dump_ident fmt (id : Ident.t) (arity : Lam_arity.t)  = 
-  pp fmt  "@[<2>export var %s:@ %a@ ;@]" (Ext_ident.convert true id.name ) dump_arity arity
+  pp fmt  "@[<2>export var %s:@ %a@ ;@]" (Ext_ident.convert id.name ) dump_arity arity
 
 and dump_arity fmt (arity : Lam_arity.t) = 
   match arity with 
@@ -50,7 +50,7 @@ and dump_arity fmt (arity : Lam_arity.t) =
              Format.pp_print_space fmt ();
            )
          (fun fmt ident -> pp fmt "@[%s@ :@ any@]" 
-             (Ext_ident.convert true  @@ Ident.name ident))
+             (Ext_ident.convert  @@ Ident.name ident))
       ) args 
 
 let single_na = Js_cmj_format.single_na

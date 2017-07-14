@@ -62195,9 +62195,9 @@ val make_unused : unit -> Ident.t
 val is_unused_ident : Ident.t -> bool 
 
 (**
-   if name is not converted, the reference should be equal
+   Invariant: if name is not converted, the reference should be equal
 *)
-val convert : bool -> string -> string
+val convert : string -> string
 val property_no_need_convert : string -> bool 
 
 val undefined : Ident.t 
@@ -62422,18 +62422,8 @@ let reserved_map =
 
 
 
-
-(* TODO:
-    check name conflicts with javascript conventions
-    {[
-    Ext_ident.convert "^";;
-    - : string = "$caret"
-    ]}
- *)
-let convert keyword (name : string) = 
-   if keyword && String_hash_set.mem reserved_map name  then "$$" ^ name 
-   else 
-     let module E = struct exception Not_normal_letter of int end in
+let name_mangle name = 
+  let module E = struct exception Not_normal_letter of int end in
      let len = String.length name  in
      try
        for i  = 0 to len - 1 do 
@@ -62469,8 +62459,24 @@ let convert keyword (name : string) =
           | _ -> Buffer.add_string buffer "$unknown"
         done; Buffer.contents buffer)
 
+
+(* TODO:
+    check name conflicts with javascript conventions
+    {[
+    Ext_ident.convert "^";;
+    - : string = "$caret"
+    ]}
+  [convert name] if [name] is a js keyword,add "$$"
+  otherwise do the name mangling to make sure ocaml identifier it is 
+  a valid js identifier
+ *)
+let convert (name : string) = 
+   if  String_hash_set.mem reserved_map name  then "$$" ^ name 
+   else name_mangle name 
+
+(** keyword could be used in property *)
 let property_no_need_convert s = 
-  s == convert false s 
+  s == name_mangle s 
 
 (* It is currently made a persistent ident to avoid fresh ids 
     which would result in different signature files
@@ -85274,7 +85280,7 @@ let str_of_ident (cxt : Ext_pp_scope.t) (id : Ident.t)   =
        [Printf.sprintf "%s$%d" name id.stamp] which is 
        not relevant to the context       
     *)    
-    let name = Ext_ident.convert true id.name in
+    let name = Ext_ident.convert id.name in
     let i,new_cxt = Ext_pp_scope.add_ident  id cxt in
     (* Attention: 
        $$Array.length, due to the fact that global module is 
@@ -85728,7 +85734,7 @@ and vident cxt f  (v : J.vident) =
     | Qualified (id, (Ml | Runtime),  Some name) ->
       let cxt = ident cxt f id in
       P.string f L.dot;
-      P.string f (Ext_ident.convert true name);
+      P.string f (Ext_ident.convert  name);
       cxt
     | Qualified (id, External _, Some name) ->
       let cxt = ident cxt f id in
@@ -86768,15 +86774,20 @@ and block cxt f b =
   (* This one is for '{' *)
   P.brace_vgroup f 1 (fun _ -> statement_list false cxt   f b )
 
+let default_export = "default"
 
 (** Exports printer *)
 (** Print exports in Google module format, CommonJS format *)
 let exports cxt f (idents : Ident.t list) = 
   let outer_cxt, reversed_list, margin = 
     List.fold_left (fun (cxt, acc, len ) (id : Ident.t) -> 
-        let s = Ext_ident.convert true id.name in        
+        let id_name = id.name in 
+        let s = Ext_ident.convert id_name in        
         let str,cxt  = str_of_ident cxt id in         
-        cxt, ( (s,str) :: acc ) , max len (String.length s)   )
+        cxt, ( 
+          if id_name = default_export then 
+            (default_export, str) :: (s,str)::acc 
+          else (s,str) :: acc ) , max len (String.length s)   )
       (cxt, [], 0)  idents in    
   P.newline f ;
   Ext_list.rev_iter (fun (s,export) -> 
@@ -86797,9 +86808,14 @@ let exports cxt f (idents : Ident.t list) =
 let es6_export cxt f (idents : Ident.t list) = 
   let outer_cxt, reversed_list, margin = 
     List.fold_left (fun (cxt, acc, len ) (id : Ident.t) -> 
-        let s = Ext_ident.convert true id.name in        
+        let id_name = id.name in 
+        let s = Ext_ident.convert id_name in        
         let str,cxt  = str_of_ident cxt id in         
-        cxt, ( (s,str) :: acc ) , max len (String.length s)   )
+        cxt, ( 
+          if id_name = default_export then 
+            (default_export,str)::(s,str)::acc
+          else 
+          (s,str) :: acc ) , max len (String.length s)   )
       (cxt, [], 0)  idents in    
   P.newline f ;
   P.string f L.export ; 
@@ -100299,7 +100315,7 @@ let pp = Format.fprintf
 (* let meaningless_names  = ["*opt*"; "param";] *)
 
 let rec dump_ident fmt (id : Ident.t) (arity : Lam_arity.t)  = 
-  pp fmt  "@[<2>export var %s:@ %a@ ;@]" (Ext_ident.convert true id.name ) dump_arity arity
+  pp fmt  "@[<2>export var %s:@ %a@ ;@]" (Ext_ident.convert id.name ) dump_arity arity
 
 and dump_arity fmt (arity : Lam_arity.t) = 
   match arity with 
@@ -100316,7 +100332,7 @@ and dump_arity fmt (arity : Lam_arity.t) =
              Format.pp_print_space fmt ();
            )
          (fun fmt ident -> pp fmt "@[%s@ :@ any@]" 
-             (Ext_ident.convert true  @@ Ident.name ident))
+             (Ext_ident.convert  @@ Ident.name ident))
       ) args 
 
 let single_na = Js_cmj_format.single_na

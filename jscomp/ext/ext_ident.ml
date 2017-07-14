@@ -210,18 +210,8 @@ let reserved_map =
 
 
 
-
-(* TODO:
-    check name conflicts with javascript conventions
-    {[
-    Ext_ident.convert "^";;
-    - : string = "$caret"
-    ]}
- *)
-let convert keyword (name : string) = 
-   if keyword && String_hash_set.mem reserved_map name  then "$$" ^ name 
-   else 
-     let module E = struct exception Not_normal_letter of int end in
+let name_mangle name = 
+  let module E = struct exception Not_normal_letter of int end in
      let len = String.length name  in
      try
        for i  = 0 to len - 1 do 
@@ -257,8 +247,24 @@ let convert keyword (name : string) =
           | _ -> Buffer.add_string buffer "$unknown"
         done; Buffer.contents buffer)
 
+
+(* TODO:
+    check name conflicts with javascript conventions
+    {[
+    Ext_ident.convert "^";;
+    - : string = "$caret"
+    ]}
+  [convert name] if [name] is a js keyword,add "$$"
+  otherwise do the name mangling to make sure ocaml identifier it is 
+  a valid js identifier
+ *)
+let convert (name : string) = 
+   if  String_hash_set.mem reserved_map name  then "$$" ^ name 
+   else name_mangle name 
+
+(** keyword could be used in property *)
 let property_no_need_convert s = 
-  s == convert false s 
+  s == name_mangle s 
 
 (* It is currently made a persistent ident to avoid fresh ids 
     which would result in different signature files
