@@ -39,6 +39,7 @@ type error
   | Invalid_underscore_type_in_external
   | Invalid_bs_string_type 
   | Invalid_bs_int_type 
+  | Invalid_bs_unwrap_type
   | Conflict_ffi_attribute of string
   | Not_supported_in_bs_deriving
   | Canot_infer_arity_by_syntax
@@ -109,6 +110,10 @@ let pp_error fmt err =
   | Invalid_bs_int_type 
     -> 
     "Not a valid  type for [@bs.int]"
+  | Invalid_bs_unwrap_type
+    ->
+    "Not a valid type for [@bs.unwrap]. Type must be an inline variant (closed), and\n\
+     each constructor must have an argument."
   | Conflict_ffi_attribute str
     ->
     "Conflicting FFI attributes found: " ^ str

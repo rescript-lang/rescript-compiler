@@ -62,7 +62,7 @@ let get_arg_type ~nolabel optional
 
     end 
   else (* ([`a|`b] [@bs.string]) *)
-    match Ast_attributes.process_bs_string_int_uncurry ptyp.ptyp_attributes, ptyp.ptyp_desc with 
+    match Ast_attributes.process_bs_string_int_unwrap_uncurry ptyp.ptyp_attributes, ptyp.ptyp_desc with
     | (`String, ptyp_attributes),  Ptyp_variant ( row_fields, Closed, None)
       -> 
       let case, result, row_fields  = 
@@ -128,8 +128,35 @@ let get_arg_type ~nolabel optional
        ptyp_desc = Ptyp_variant(List.rev rev_row_fields, Closed, None );
        ptyp_attributes
       }
-
     | (`Int, _), _ -> Bs_syntaxerr.err ptyp.ptyp_loc Invalid_bs_int_type
+    | (`Unwrap, ptyp_attributes), (Ptyp_variant (row_fields, Closed, _) as ptyp_desc) ->
+      let validity =
+        (List.fold_left
+          begin fun st row ->
+            match st, row with
+            | (`No_fields | `Some_fields),
+              Parsetree.Rtag (label, attrs, false, ([ _ ]))
+              ->
+              `Some_fields
+            | _ ->
+              `Invalid_field
+          end
+          `No_fields
+          row_fields
+        ) in
+      (match validity with
+       | `Some_fields ->
+         Unwrap,
+         {ptyp with
+          ptyp_desc;
+          ptyp_attributes
+         }
+       | `No_fields
+       | `Invalid_field ->
+         Bs_syntaxerr.err ptyp.ptyp_loc Invalid_bs_unwrap_type
+      )
+    | (`Unwrap, _), _ ->
+      Bs_syntaxerr.err ptyp.ptyp_loc Invalid_bs_unwrap_type
     | (`Uncurry opt_arity, ptyp_attributes), ptyp_desc -> 
       let real_arity =  Ast_core_type.get_uncurry_arity ptyp in 
       (begin match opt_arity, real_arity with 
@@ -494,6 +521,9 @@ let handle_attributes
                        ->  
                        Location.raise_errorf ~loc 
                          "bs.obj label %s does not support such arg type" name
+                     | Unwrap ->
+                       Location.raise_errorf ~loc
+                         "bs.obj label %s does not support [@bs.unwrap] arguments" name
                    end
                  | Optional name -> 
                    let arg_type, new_ty_extract = get_arg_type ~nolabel:false true ty in 
@@ -529,6 +559,9 @@ let handle_attributes
                        ->  
                        Location.raise_errorf ~loc
                          "bs.obj label %s does not support such arg type" name                        
+                     | Unwrap ->
+                       Location.raise_errorf ~loc
+                         "bs.obj label %s does not support [@bs.unwrap] arguments" name
                    end
                in     
                (

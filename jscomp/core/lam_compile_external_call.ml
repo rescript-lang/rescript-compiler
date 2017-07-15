@@ -110,6 +110,8 @@ let ocaml_to_js_eff
     Js_of_lam_variant.eval_as_event arg dispatches,[]
   | Int dispatches -> 
     [Js_of_lam_variant.eval_as_int arg dispatches],[]
+  | Unwrap ->
+    [Js_of_lam_variant.eval_as_unwrap arg],[]
   | Nothing  | Array ->  [arg], []
 
 

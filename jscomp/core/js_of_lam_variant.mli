@@ -25,3 +25,4 @@
 val eval : J.expression -> (int * string) list -> J.expression
 val eval_as_event : J.expression -> (int * string) list -> J.expression list 
 val eval_as_int : J.expression -> (int * int) list -> J.expression
+val eval_as_unwrap : J.expression -> J.expression
