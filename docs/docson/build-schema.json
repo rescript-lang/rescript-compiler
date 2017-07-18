@@ -323,7 +323,7 @@
         },
         "reason": {
             "$ref": "#/definitions/reason-specs",
-            "description": "BuckleScript comes with [Reason](http://facebook.github.io/reason/) by default. Specific configurations here."
+            "description": "BuckleScript comes with [Reason](http://reasonml.github.io/) by default. Specific configurations here."
         },
         "bsc-flags": {
             "$ref": "#/definitions/bsc-flags",
