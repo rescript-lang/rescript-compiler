@@ -29,9 +29,9 @@ console.log(arg_pair[1]);
 
 console.log(/* () */0);
 
-console.log(undefined);
+console.log(1, undefined);
 
-console.log("hi");
+console.log(1, "hi");
 
 console.log("foo");
 

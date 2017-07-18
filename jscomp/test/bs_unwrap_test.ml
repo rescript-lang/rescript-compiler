@@ -27,22 +27,21 @@ external log2 :
 let _ = log2 (`Unit ())
 
 external log3 :
-  ?arg:(
-    [ `String of string
-    ] [@bs.unwrap]
-  )
+  req:([ `String of string
+       | `Int of int
+       ] [@bs.unwrap])
+  -> ?opt:([ `String of string
+           ] [@bs.unwrap])
   -> unit
   -> unit = "console.log" [@@bs.val]
 
-let _ = log3 ()
-let _ = log3 ~arg:(`String "hi") ()
+let _ = log3 ~req:(`Int 1) ()
+let _ = log3 ~req:(`Int 1) ~opt:(`String "hi") ()
 
 external log4 :
-  (
-    [ `String of string
-    | `Options of < foo : int > Js.t
-    ] [@bs.unwrap]
-  )
+  ([ `String of string
+   | `Options of [%bs.obj: < foo : int > ]
+   ] [@bs.unwrap])
   -> unit = "console.log" [@@bs.val]
 
 let _ = log4 (`String "foo")
