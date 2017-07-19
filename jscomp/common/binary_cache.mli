@@ -45,6 +45,9 @@ type t =
 
 val dir_of_module_info : module_info -> string
 
+
+val basename_of_module_info : module_info -> string 
+
 val write_build_cache : string -> t -> unit
 
 val read_build_cache : string -> t

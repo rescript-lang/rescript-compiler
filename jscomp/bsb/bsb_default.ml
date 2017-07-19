@@ -52,7 +52,7 @@ let bsc_flags =
 
   ]
 
-let ocamllex = "ocamllex.opt"  
+
 
 let refmt_flags = ["--print"; "binary"]
 

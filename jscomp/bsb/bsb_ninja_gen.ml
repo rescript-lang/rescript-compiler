@@ -52,7 +52,6 @@ let output_ninja
     ~bsc_dir           
     ({
       package_name;
-      ocamllex;
       external_includes;
       bsc_flags ; 
       ppx_flags;
@@ -79,9 +78,8 @@ let output_ninja
   let oc = open_out_bin (cwd // Bsb_config.lib_bs // Literals.build_ninja) in
   begin
     let () =
-      output_string oc "bs_package_flags = ";
-      output_string oc ("-bs-package-name "  ^ package_name);
-      output_string oc "\n";
+      
+      let bs_package_flags = "-bs-package-name "  ^ package_name in 
       let bsc_flags = 
         Ext_string.inter2  Literals.dash_nostdlib @@
         match built_in_dependency with 
@@ -98,18 +96,18 @@ let output_ninja
       in 
       Bsb_ninja_util.output_kvs
         [|
-          "src_root_dir", cwd (* TODO: need check its integrity -- allow relocate or not? *);
-          "bsc", bsc ;
-          "bsdep", bsdep;
-          "ocamllex", ocamllex;
-          "bsc_flags", bsc_flags ;
-          "ppx_flags", ppx_flags;
-          "bs_package_includes", (Bsb_build_util.flag_concat dash_i @@ List.map (fun x -> x.Bsb_config_types.package_install_path) bs_dependencies);
-          "bs_package_dev_includes", (Bsb_build_util.flag_concat dash_i @@ List.map (fun x -> x.Bsb_config_types.package_install_path) bs_dev_dependencies);  
-          "refmt", (match refmt with None -> bsc_dir // refmt_exe | Some x -> x) ;
-          "reason_react_jsx", reason_react_jsx_flag
+          Bsb_ninja_global_vars.bs_package_flags, bs_package_flags ; 
+          Bsb_ninja_global_vars.src_root_dir, cwd (* TODO: need check its integrity -- allow relocate or not? *);
+          Bsb_ninja_global_vars.bsc, bsc ;
+          Bsb_ninja_global_vars.bsdep, bsdep;
+          Bsb_ninja_global_vars.bsc_flags, bsc_flags ;
+          Bsb_ninja_global_vars.ppx_flags, ppx_flags;
+          Bsb_ninja_global_vars.bs_package_includes, (Bsb_build_util.flag_concat dash_i @@ List.map (fun x -> x.Bsb_config_types.package_install_path) bs_dependencies);
+          Bsb_ninja_global_vars.bs_package_dev_includes, (Bsb_build_util.flag_concat dash_i @@ List.map (fun x -> x.Bsb_config_types.package_install_path) bs_dev_dependencies);  
+          Bsb_ninja_global_vars.refmt, (match refmt with None -> bsc_dir // refmt_exe | Some x -> x) ;
+          Bsb_ninja_global_vars.reason_react_jsx, reason_react_jsx_flag
              ; (* make it configurable in the future *)
-          "refmt_flags", refmt_flags;
+          Bsb_ninja_global_vars.refmt_flags, refmt_flags;
           Bsb_build_schemas.bsb_dir_group, "0"  (*TODO: avoid name conflict in the future *)
         |] oc ;
     in
@@ -163,9 +161,10 @@ let output_ninja
         static_resources;
     in
     let all_info =
-      Bsb_ninja_util.handle_file_groups oc       
+      Bsb_ninja_file_groups.handle_file_groups oc       
         ~custom_rules
-        ~js_post_build_cmd  ~package_specs ~files_to_install bs_file_groups Bsb_ninja_util.zero  in
+        ~js_post_build_cmd  ~package_specs ~files_to_install bs_file_groups 
+        Bsb_ninja_file_groups.zero  in
     let () =
       List.iter (fun x -> Bsb_ninja_util.output_build oc
                     ~output:x

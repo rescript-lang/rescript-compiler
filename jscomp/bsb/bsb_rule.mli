@@ -33,9 +33,7 @@ val build_ast_and_deps : t
 val build_ast_and_deps_from_reason_impl : t 
 val build_ast_and_deps_from_reason_intf : t 
 val build_bin_deps : t 
-val reload : t 
 val copy_resources : t
-val build_ml_from_mll : t 
 val build_cmj_js : t
 val build_cmj_cmi_js : t 
 val build_cmi : t

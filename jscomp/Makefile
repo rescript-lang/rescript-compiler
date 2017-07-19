@@ -296,12 +296,14 @@ BSB_SRCS= bsb_config \
 	bsb_dir_index\
 	bsb_log\
 	bsb_pkg \
-	bsb_build_schemas \
+	bsb_build_schemas\
+	bsb_ninja_global_vars\
 	bsb_build_util \
 	bsb_helper_linker\
 	bsb_helper_extract\
 	bsb_rule\
 	bsb_ninja_util \
+	bsb_ninja_file_groups\
 	bsb_parse_sources\
 	bsb_default\
 	bsb_bsdeps\

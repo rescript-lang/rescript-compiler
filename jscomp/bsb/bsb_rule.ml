@@ -26,6 +26,9 @@
 
 let rule_id = ref 0
 let rule_names = ref String_set.empty
+(** To make it re-entrant across multiple ninja files, 
+    We must reset [rule_id]
+*)
 let ask_name name =
   let current_id = !rule_id in
   let () = incr rule_id in
@@ -42,7 +45,13 @@ let ask_name name =
       rule_names := String_set.add new_name  !rule_names ;
       new_name
     end
-type t = { mutable used : bool; rule_name : string  ; name : out_channel -> string }
+
+type t = { 
+  mutable used : bool; 
+  rule_name : string; 
+  name : out_channel -> string 
+}
+
 let get_name (x : t) oc = x.name oc
 let print_rule oc ~description ?restat ?depfile ~command   name  =
   output_string oc "rule "; output_string oc name ; output_string oc "\n";
@@ -59,6 +68,8 @@ let print_rule oc ~description ?restat ?depfile ~command   name  =
   end;
 
   output_string oc "  description = " ; output_string oc description; output_string oc "\n"
+
+
 
 
 (** allocate an unique name for such rule*)
@@ -84,8 +95,6 @@ let define
 
 
 
-
-
 let build_ast_and_deps =
   define
     ~command:"${bsc}  ${pp_flags} ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast ${in}"
@@ -97,9 +106,6 @@ let build_ast_and_deps_from_reason_impl =
     "build_ast_and_deps_from_reason_impl"
 
 let build_ast_and_deps_from_reason_intf =
-  (* we have to do this way,
-     because it need to be ppxed by bucklescript
-  *)
   define
     ~command:"${bsc} -pp \"${refmt} ${refmt_flags}\" ${reason_react_jsx} ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -intf ${in}"
     "build_ast_and_deps_from_reason_intf"
@@ -110,10 +116,6 @@ let build_bin_deps =
     ~command:"${bsdep} -g ${bsb_dir_group} -MD ${in}"
     "build_deps"
 
-let reload =
-  define
-    ~command:"${bsbuild} -init"
-    "reload"
 let copy_resources =
   let name = "copy_resource" in
   if Ext_sys.is_windows_or_cygwin then
@@ -133,10 +135,7 @@ let copy_resources =
    2. system dependent - has to be run on client's machine
 *)
 
-let build_ml_from_mll =
-  define
-    ~command:"${ocamllex} -o ${out} ${in}"
-    "build_ml_from_mll"
+
 (**************************************)
 (* below are rules not local any more *)
 (**************************************)
@@ -177,9 +176,8 @@ let reset (custom_rules : string String_map.t) =
     build_ast_and_deps_from_reason_impl.used <- false ;  
     build_ast_and_deps_from_reason_intf.used <- false ;
     build_bin_deps.used <- false;
-    reload.used <- false; 
     copy_resources.used <- false ;
-    build_ml_from_mll.used <- false ; 
+
     build_cmj_js.used <- false;
     build_cmj_cmi_js.used <- false ;
     build_cmi.used <- false ;

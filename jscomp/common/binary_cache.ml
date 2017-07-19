@@ -37,7 +37,6 @@ type module_info =
   {
     mli : mli_kind ; 
     ml : ml_kind ; 
-    (*mll : string option ;*)
   }
 
 
@@ -61,13 +60,23 @@ let dir_of_module_info (x : module_info)
       | Ml s | Re s -> 
         Filename.dirname s 
       | Ml_empty -> Ext_string.empty
-        (*begin match mll with 
-        | None -> ""
-        | Some s -> Filename.dirname s 
-        end *)
       end
     end
 
+let basename_of_module_info (x : module_info) =
+  match x with 
+  | { mli; ml;  } -> 
+    begin match mli with 
+    | Mli s | Rei s -> 
+      Ext_filename.chop_extension s 
+    | Mli_empty -> 
+      begin match ml with 
+      | Ml s | Re s -> 
+        Ext_filename.chop_extension s 
+      | Ml_empty -> assert false
+      end
+    end
+  
 let write_build_cache bsbuild (bs_files : t)  = 
   let oc = open_out_bin bsbuild in 
   output_string oc module_info_magic_number ;
@@ -96,7 +105,8 @@ let adjust_module_info x suffix name =
   | ".rei" -> { x with mli = Rei name}
   | _ -> failwith ("don't know what to do with " ^ name)
 
-let map_update ?dir (map : file_group_rouces)  name : file_group_rouces  = 
+let map_update ?dir (map : file_group_rouces)  
+  name : file_group_rouces  = 
   let prefix   = 
     match dir with
     | None -> fun x ->  x
