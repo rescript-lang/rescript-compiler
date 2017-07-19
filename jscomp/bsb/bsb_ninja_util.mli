@@ -29,6 +29,7 @@ type override =
   | Append of string 
   | Overwrite of string 
 
+type shadow = { key : string ; op : override }
 (** output should always be marked explicitly,
    otherwise the build system can not figure out clearly
    however, for the command we don't need pass `-o`
@@ -39,7 +40,7 @@ val output_build :
   ?outputs:string list ->
   ?implicit_outputs: string list ->  
   ?inputs:string list ->
-  ?shadows:(string * override) list ->
+  ?shadows:shadow list ->
   ?restat:unit ->
   output:string ->
   input:string ->
@@ -52,20 +53,4 @@ val phony  :
 
 val output_kv : string ->  string -> out_channel -> unit 
 val output_kvs : (string * string) array -> out_channel -> unit
-
-type info = {
-  all_config_deps : string list  ;
-
-}
-
-val zero : info 
-
-
-val handle_file_groups : out_channel ->
-  package_specs:Bsb_config.package_specs ->  
-  js_post_build_cmd:string option -> 
-  files_to_install:String_hash_set.t ->  
-  custom_rules:Bsb_rule.t String_map.t -> 
-  Bsb_parse_sources.file_group list ->
-  info -> info
 

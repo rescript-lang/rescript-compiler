@@ -1,5 +1,5 @@
 (* Copyright (C) 2017 Authors of BuckleScript
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,59 +17,24 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-let files = "files"
-let version = "version"
-let name = "name"
-(* let ocaml_config = "ocaml-config" *)
-let bsdep = "bsdep"
-let ppx_flags = "ppx-flags"
+ type info = {
+  all_config_deps : string list  ;
 
-let bsc = "bsc"
-let refmt = "refmt"
-let refmt_flags = "refmt-flags"
-let bs_external_includes = "bs-external-includes"
-let bs_lib_dir = "bs-lib-dir"
-let bs_dependencies = "bs-dependencies"
-let bs_dev_dependencies = "bs-dev-dependencies"
-let bs_copy_or_symlink = "bs-copy-or-symlink"
-let sources = "sources"
-let dir = "dir"
-let files = "files"
-let subdirs = "subdirs"
-let bsc_flags = "bsc-flags"
-let excludes = "excludes"
-let slow_re = "slow-re"
-let resources = "resources"
-let public = "public"
-let js_post_build = "js-post-build"
-let cmd = "cmd"
-let ninja = "ninja"
-let package_specs = "package-specs"
+}
 
-let generate_merlin = "generate-merlin"
+val zero : info
 
-let type_ = "type"
-let dev = "dev"
 
-let export_all = "all"
-let export_none = "none"
-
-let bsb_dir_group = "bsb_dir_group"
-let bsc_lib_includes = "bsc_lib_includes"
-let use_stdlib = "use-stdlib"
-let reason = "reason"
-let react_jsx = "react-jsx"
-
-let entries = "entries"
-let kind = "kind"
-let main = "main"
-let cut_generators = "cut-generators"
-let generators = "generators"
-let command = "command"
-let edge = "edge"
+val handle_file_groups : out_channel ->
+  package_specs:Bsb_config.package_specs ->  
+  js_post_build_cmd:string option -> 
+  files_to_install:String_hash_set.t ->  
+  custom_rules:Bsb_rule.t String_map.t -> 
+  Bsb_parse_sources.file_group list ->
+  info -> info

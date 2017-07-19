@@ -48,6 +48,7 @@ let install_targets cwd (config : Bsb_config_types.t option) =
       Format.fprintf Format.std_formatter "@{<info>Installing started@}@.";
       (*Format.pp_print_flush Format.std_formatter ();*)
       String_hash_set.iter (fun x ->
+          (* Format.fprintf Format.std_formatter "@{<info>%s@} Installed @." x;  *)
           install ~destdir (cwd // x ^  Literals.suffix_ml) ;
           install ~destdir (cwd // x ^  Literals.suffix_re) ;
           install ~destdir (cwd // x ^ Literals.suffix_mli) ;

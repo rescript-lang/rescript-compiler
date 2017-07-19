@@ -117,7 +117,6 @@ let interpret_json
   
   let reason_react_jsx = ref None in 
   let config_json = (cwd // Literals.bsconfig_json) in
-  let ocamllex = ref Bsb_default.ocamllex in 
   let refmt = ref None in
   let refmt_flags = ref Bsb_default.refmt_flags in
   let package_name = ref None in 
@@ -196,8 +195,6 @@ let interpret_json
           )
         |> ignore
       end)
-    |? (Bsb_build_schemas.ocamllex, `Str (fun s -> 
-        ocamllex := Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.ocamllex s ))
 
     |? (Bsb_build_schemas.bs_dependencies, `Arr (fun s -> bs_dependencies := Bsb_build_util.get_list_string s |> List.map (resolve_package cwd)))
     |? (Bsb_build_schemas.bs_dev_dependencies,
@@ -267,8 +264,6 @@ let interpret_json
              | None ->
                failwith "Error: Package name is required. Please specify a `name` in `bsconfig.json`"
             );
-
-          ocamllex = !ocamllex ; 
           external_includes = !bs_external_includes;
           bsc_flags = !bsc_flags ;
           ppx_flags = !ppx_flags ;
