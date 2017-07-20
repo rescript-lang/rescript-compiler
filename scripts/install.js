@@ -57,20 +57,22 @@ function test_ninja_compatible(binary_path) {
 };
 
 console.log('Prepare ninja binary ')
-if(is_windows){
-    fs.rename(path.join(ninja_vendor_dir,'ninja.win'),ninja_bin_output)
-} else if(os_type==='Darwin'){
-    fs.renameSync(path.join(ninja_vendor_dir,'ninja.darwin'),ninja_bin_output)
-} else if (os_type === 'Linux' && os_arch === 'x64'){
-    var binary = path.join(ninja_vendor_dir,'ninja.linux64');
-    if (test_ninja_compatible(binary)) {
-        fs.renameSync(binary, ninja_bin_output)
+if (!test_ninja_compatible(ninja_bin_output)) {
+    if(is_windows){
+        fs.rename(path.join(ninja_vendor_dir,'ninja.win'),ninja_bin_output)
+    } else if(os_type==='Darwin'){
+        fs.renameSync(path.join(ninja_vendor_dir,'ninja.darwin'),ninja_bin_output)
+    } else if (os_type === 'Linux' && os_arch === 'x64'){
+        var binary = path.join(ninja_vendor_dir,'ninja.linux64');
+        if (test_ninja_compatible(binary)) {
+            fs.renameSync(binary, ninja_bin_output)
+        } else {
+            console.log('On linux, but the ninja linux binary is incompatible.');
+            build_ninja()
+        }
     } else {
-        console.log('On linux, but the ninja linux binary is incompatible.');
         build_ninja()
     }
-} else {
-    build_ninja()
 }
 console.log('ninja binary is ready: ', ninja_bin_output)
 
