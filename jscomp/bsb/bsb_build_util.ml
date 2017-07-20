@@ -35,13 +35,12 @@ let (//) = Ext_filename.combine
 
 
 
-let convert_and_resolve_path = 
-  if Sys.unix then Bsb_config.proj_rel  
-  else 
+let convert_and_resolve_path =
+  if Sys.unix then (//)
+  else fun cwd path ->
   if Ext_sys.is_windows_or_cygwin then 
-    fun (p:string) -> 
-      let p = Ext_string.replace_slash_backward p in
-      Bsb_config.proj_rel p 
+    let p = Ext_string.replace_slash_backward path in
+      cwd // p
   else failwith ("Unknown OS :" ^ Sys.os_type)
 (* we only need convert the path in the beginning *)
 
@@ -81,7 +80,7 @@ let resolve_bsb_magic_file ~cwd ~desc p =
 
   else
     (* relative path [./x/y]*)
-    convert_and_resolve_path p
+    convert_and_resolve_path cwd p
 
 
 

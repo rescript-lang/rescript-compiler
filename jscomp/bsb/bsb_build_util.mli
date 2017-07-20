@@ -36,8 +36,9 @@ val flag_concat : string -> string list -> string
     First, it will convert unix path to windows backward on windows platform.
     Then if it is absolute path, it will do thing
     Else if it is relative path, it will be rebased on project's root directory 
+
+val convert_and_resolve_path : string -> string -> string
 *)
-val convert_and_resolve_path : string -> string
 
 (**
    The difference between [convert_path] is that if the file is [ocamlc.opt] 
