@@ -27,6 +27,28 @@
 
 
 
+let variant_can_bs_unwrap_fields row_fields =
+  let validity = (List.fold_left
+     begin fun st row ->
+       match st, row with
+       | (* we've seen no fields or only valid fields so far *)
+         (`No_fields | `Valid_fields),
+         (* and this field has one constructor arg that we can unwrap to *)
+         Parsetree.Rtag (label, attrs, false, ([ _ ]))
+         ->
+         `Valid_fields
+       | (* otherwise, this field or a previous field was invalid *)
+         _ ->
+         `Invalid_field
+     end
+     `No_fields
+     row_fields
+  )
+  in
+  match validity with
+  | `Valid_fields -> true
+  | `No_fields
+  | `Invalid_field -> false
 
 (** Given the type of argument, process its [bs.] attribute and new type,
     The new type is currently used to reconstruct the external type 
@@ -129,32 +151,10 @@ let get_arg_type ~nolabel optional
        ptyp_attributes
       }
     | (`Int, _), _ -> Bs_syntaxerr.err ptyp.ptyp_loc Invalid_bs_int_type
-    | (`Unwrap, ptyp_attributes), (Ptyp_variant (row_fields, Closed, _) as ptyp_desc) ->
-      let validity =
-        (List.fold_left
-          begin fun st row ->
-            match st, row with
-            | (`No_fields | `Some_fields),
-              Parsetree.Rtag (label, attrs, false, ([ _ ]))
-              ->
-              `Some_fields
-            | _ ->
-              `Invalid_field
-          end
-          `No_fields
-          row_fields
-        ) in
-      (match validity with
-       | `Some_fields ->
-         Unwrap,
-         {ptyp with
-          ptyp_desc;
-          ptyp_attributes
-         }
-       | `No_fields
-       | `Invalid_field ->
-         Bs_syntaxerr.err ptyp.ptyp_loc Invalid_bs_unwrap_type
-      )
+    | (`Unwrap, ptyp_attributes), (Ptyp_variant (row_fields, Closed, _) as ptyp_desc)
+      when variant_can_bs_unwrap_fields row_fields
+      ->
+      Unwrap, {ptyp with ptyp_desc; ptyp_attributes}
     | (`Unwrap, _), _ ->
       Bs_syntaxerr.err ptyp.ptyp_loc Invalid_bs_unwrap_type
     | (`Uncurry opt_arity, ptyp_attributes), ptyp_desc -> 
