@@ -27,7 +27,21 @@
 
 type override = 
   | Append of string 
+    (* Append s 
+      s
+    *)
+  | AppendVar of string 
+    (* AppendVar s 
+      $s
+    *)
   | Overwrite of string 
+  
+  | OverwriteVar of string 
+    (*
+      OverwriteVar s 
+      $s
+    *)
+
 type shadow = 
   { key : string ; op : override }
 
@@ -87,12 +101,25 @@ let output_build
           output_string oc k ;
           output_string oc " = ";
           match v with
-          | Overwrite s -> output_string oc s ; output_string oc "\n"
+          | Overwrite s -> 
+            output_string oc s ; 
+            output_string oc "\n"
+          | OverwriteVar s ->
+            output_string oc "$";
+            output_string oc s ; 
+            output_string oc "\n"
           | Append s ->
             output_string oc "$" ;
             output_string oc k;
             output_string oc Ext_string.single_space;
             output_string oc s ; output_string oc "\n"
+          | AppendVar s ->   
+            output_string oc "$" ;
+            output_string oc k;
+            output_string oc Ext_string.single_space;
+            output_string oc "$";
+            output_string oc s ; 
+            output_string oc "\n"
         ) xs
   end;
   begin match restat with

@@ -11273,7 +11273,12 @@ module Bsb_ninja_util : sig
 
 type override = 
   | Append of string 
+  
+  | AppendVar of string
+  
   | Overwrite of string 
+  
+  | OverwriteVar of string 
 
 type shadow = { key : string ; op : override }
 (** output should always be marked explicitly,
@@ -11332,11 +11337,25 @@ end = struct
 
 type override = 
   | Append of string 
+    (* Append s 
+      s
+    *)
+  | AppendVar of string 
+    (* AppendVar s 
+      $s
+    *)
   | Overwrite of string 
+  
+  | OverwriteVar of string 
+    (*
+      OverwriteVar s 
+      $s
+    *)
+
 type shadow = 
   { key : string ; op : override }
 
-  let output_build
+let output_build
     ?(order_only_deps=[])
     ?(implicit_deps=[])
     ?(outputs=[])
@@ -11392,12 +11411,25 @@ type shadow =
           output_string oc k ;
           output_string oc " = ";
           match v with
-          | Overwrite s -> output_string oc s ; output_string oc "\n"
+          | Overwrite s -> 
+            output_string oc s ; 
+            output_string oc "\n"
+          | OverwriteVar s ->
+            output_string oc "$";
+            output_string oc s ; 
+            output_string oc "\n"
           | Append s ->
             output_string oc "$" ;
             output_string oc k;
             output_string oc Ext_string.single_space;
             output_string oc s ; output_string oc "\n"
+          | AppendVar s ->   
+            output_string oc "$" ;
+            output_string oc k;
+            output_string oc Ext_string.single_space;
+            output_string oc "$";
+            output_string oc s ; 
+            output_string oc "\n"
         ) xs
   end;
   begin match restat with
@@ -11564,14 +11596,12 @@ let make_common_shadows package_specs dirname dir_index
   } ::
   (if Bsb_dir_index.is_lib_dir dir_index  then [] else
      [{
-       key = "bs_package_includes"; 
-       op = Append "$bs_package_dev_includes"
+       key = Bsb_ninja_global_vars.bs_package_includes; 
+       op = AppendVar Bsb_ninja_global_vars.bs_package_dev_includes 
      }
       ;
       { key = "bsc_extra_includes";
-        op = Overwrite
-            ("${" ^ Bsb_dir_index.string_of_bsb_dev_include dir_index  ^ "}")
-
+        op = OverwriteVar (Bsb_dir_index.string_of_bsb_dev_include dir_index)
       }
      ]
   )   
