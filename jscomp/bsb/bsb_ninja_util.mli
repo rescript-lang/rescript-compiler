@@ -27,7 +27,12 @@
 
 type override = 
   | Append of string 
+  
+  | AppendVar of string
+  
   | Overwrite of string 
+  
+  | OverwriteVar of string 
 
 type shadow = { key : string ; op : override }
 (** output should always be marked explicitly,
