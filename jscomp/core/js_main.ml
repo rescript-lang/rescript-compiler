@@ -90,8 +90,10 @@ let buckle_script_flags =
         Js_config.better_errors flag; otherwise, when `anonymous` runs, we
         don't have time to set the custom printer before it starts outputting
         warnings *)
+      Super_location.setup ();
       Super_warnings.setup ();
-      Super_errors.setup ()
+      Super_typetexp.setup ();
+      Super_typecore.setup ();
     ),
    " Better error message combined with other tools "
   )

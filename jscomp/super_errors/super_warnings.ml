@@ -231,5 +231,4 @@ let super_warning_printer loc ppf w =
 ;;
 
 (* This will be called in js_main. This is how you'd override the default warning printer from the compiler *)
-let setup () =       
-  Location.warning_printer := super_warning_printer;
+let setup () = Location.warning_printer := super_warning_printer
