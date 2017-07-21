@@ -30,8 +30,10 @@ function loadGist (gist) {
     if(gist){
         contentFromResponse(gist)
     }
-    
-    $.
+}    
+
+
+$.
     ajax(
     {url : "examples/examples.json",
         dataType : "json",
@@ -50,7 +52,7 @@ function loadGist (gist) {
         console.log(arguments)
     })
 
-}
+
 
 // var gist = '1ce559ca46157b9dc15649450bea46fa';
 var clientGist = queryGist();
