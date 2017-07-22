@@ -5,7 +5,11 @@
 - #1758 generator support 
 
 - Optimizations
-- #1796, #1793 improve submodule arity inference 
+- #1796, #1793 improve submodule arity inference
+- #1810 don't rebuild ninja if binary already exists in bin folder
+
+- Fixes
+- #1811 add relative ppx paths to .merlin correctly
 
 - Internal
 - add a tool cmjdump.exe
