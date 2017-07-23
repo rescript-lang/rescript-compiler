@@ -33,7 +33,7 @@ var build_util = require('./build_util')
 var vendor_ninja_version = '1.7.2'
 
 var ninja_bin_output = path.join(root_dir,'bin','ninja.exe')
-var ninja_vendor_dir = path.join(root_dir,'ninja-build')
+var ninja_vendor_dir = path.join(root_dir,'vendor', 'ninja-build')
 
 function build_ninja(){
     console.log('No prebuilt Ninja, building Ninja now')
@@ -51,30 +51,51 @@ function test_ninja_compatible(binary_path) {
             stdio: ['pipe', 'pipe', 'ignore'] // execSync outputs to stdout even if we catch the error. Silent it here
         }).trim();
     } catch (e) {
+        console.log('ninja not compatible?', String(e))
         return false;
     }
     return version === vendor_ninja_version;
 };
 
-console.log('Prepare ninja binary ')
-if (!test_ninja_compatible(ninja_bin_output)) {
-    if(is_windows){
-        fs.rename(path.join(ninja_vendor_dir,'ninja.win'),ninja_bin_output)
-    } else if(os_type==='Darwin'){
-        fs.renameSync(path.join(ninja_vendor_dir,'ninja.darwin'),ninja_bin_output)
-    } else if (os_type === 'Linux' && os_arch === 'x64'){
-        var binary = path.join(ninja_vendor_dir,'ninja.linux64');
-        if (test_ninja_compatible(binary)) {
-            fs.renameSync(binary, ninja_bin_output)
-        } else {
-            console.log('On linux, but the ninja linux binary is incompatible.');
-            build_ninja()
-        }
-    } else {
-        build_ninja()
-    }
+
+var ninja_os_path 
+if(is_windows){
+    ninja_os_path = path.join(ninja_vendor_dir,'ninja.win')
+} else if(os_type === 'Darwin'){
+    ninja_os_path = path.join(ninja_vendor_dir,'ninja.darwin')
+} else if (os_type === 'Linux' ){
+    ninja_os_path = path.join(ninja_vendor_dir,'ninja.linux64')
 }
-console.log('ninja binary is ready: ', ninja_bin_output)
+if (fs.existsSync(ninja_bin_output) && test_ninja_compatible (ninja_bin_output)){
+    console.log("ninja binary is already cached: ", ninja_bin_output)
+} else if(fs.existsSync(ninja_os_path)) {
+    fs.renameSync(ninja_os_path,ninja_bin_output)
+    if(test_ninja_compatible(ninja_bin_output)){
+        console.log("ninja binary is copied from pre-distribution")
+    } else {
+        console.log("Building ninja")
+        build_ninja()
+        console.log('ninja binary is ready: ', ninja_bin_output)
+    }    
+}
+// if (!test_ninja_compatible(ninja_bin_output)) {
+//     if(is_windows){
+//         fs.rename(path.join(ninja_vendor_dir,'ninja.win'),ninja_bin_output)
+//     } else if(os_type==='Darwin'){
+//         fs.renameSync(path.join(ninja_vendor_dir,'ninja.darwin'),ninja_bin_output)
+//     } else if (os_type === 'Linux' && os_arch === 'x64'){
+//         var binary = path.join(ninja_vendor_dir,'ninja.linux64');
+//         if (test_ninja_compatible(binary)) {
+//             fs.renameSync(binary, ninja_bin_output)
+//         } else {
+//             console.log('On linux, but the ninja linux binary is incompatible.');
+//             build_ninja()
+//         }
+//     } else {
+//         build_ninja()
+//     }
+// }
+
 
 function non_windows_npm_release() {
     var make = is_bsd ? 'gmake' : 'make';
@@ -85,7 +106,7 @@ function non_windows_npm_release() {
 
     } catch (e) {
         child_process.execSync(path.join(__dirname, 'buildocaml.sh')) // TODO: sh -c ? this will be wrong if we have white space in the path
-        process.env.PATH = path.join(__dirname, '..', 'bin') + path.delimiter + process.env.PATH
+        process.env.PATH = path.join(__dirname, '..', 'vendor','ocaml','bin') + path.delimiter + process.env.PATH
         console.log('configure again with local ocaml installed')
         if (process.env.BS_TRAVIS_CI) {
             child_process.execSync(make + " travis-world-test", working_config)

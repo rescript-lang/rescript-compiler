@@ -64,7 +64,7 @@ ocaml_src
 odoc_gen/*.cmxs
 
 # for npm publish
-!bin/bsc.exe
+bin/bsc.exe
 !bin/bsppx
 !bin/bspack
 !/bin/bsb
