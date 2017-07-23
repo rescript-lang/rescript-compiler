@@ -5,7 +5,7 @@ var Fs                      = require("fs");
 var Path                    = require("path");
 var Process                 = require("process");
 var Child_process           = require("child_process");
-var Caml_builtin_exceptions = require("../lib/js/caml_builtin_exceptions");
+var Caml_builtin_exceptions = require("../lib/js/caml_builtin_exceptions.js");
 
 var delete_env_var = (
   function(process, key) { delete process.env[key] }
@@ -159,11 +159,7 @@ if (match$1) {
     Process.exit(2);
   }
 } else {
-  if (is_windows) {
-    console.error("Configuration Failure : Cannot find config_map");
-  } else {
-    console.error("Not Windows 32 Bit System");
-  }
+  console.log("System-installed OCaml compiler version not found\nBuilding and installing local compiler");
   Process.exit(2);
 }
 

@@ -153,10 +153,7 @@ let () =
         config_map is_windows
     else Process.exit 2
   | None ->
-    ((if is_windows then
-        prerr_endline "Configuration Failure : Cannot find config_map"
-      else
-        prerr_endline "Not Windows 32 Bit System");
+    (Js.log("System-installed OCaml compiler version not found\nBuilding and installing local compiler");
      Process.exit 2)
 
 
