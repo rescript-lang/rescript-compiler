@@ -57,25 +57,45 @@ function test_ninja_compatible(binary_path) {
     return version === vendor_ninja_version;
 };
 
-console.log('Prepare ninja binary ')
-if (!test_ninja_compatible(ninja_bin_output)) {
-    if(is_windows){
-        fs.rename(path.join(ninja_vendor_dir,'ninja.win'),ninja_bin_output)
-    } else if(os_type==='Darwin'){
-        fs.renameSync(path.join(ninja_vendor_dir,'ninja.darwin'),ninja_bin_output)
-    } else if (os_type === 'Linux' && os_arch === 'x64'){
-        var binary = path.join(ninja_vendor_dir,'ninja.linux64');
-        if (test_ninja_compatible(binary)) {
-            fs.renameSync(binary, ninja_bin_output)
-        } else {
-            console.log('On linux, but the ninja linux binary is incompatible.');
-            build_ninja()
-        }
-    } else {
-        build_ninja()
-    }
+
+var ninja_os_path 
+if(is_windows){
+    ninja_os_path = path.join(ninja_vendor_dir,'ninja.win')
+} else if(os_type === 'Darwin'){
+    ninja_os_path = path.join(ninja_vendor_dir,'ninja.darwin')
+} else if (os_type === 'Linux' ){
+    ninja_os_path = path.join(ninja_vendor_dir,'ninja.linux64')
 }
-console.log('ninja binary is ready: ', ninja_bin_output)
+if (fs.existsSync(ninja_bin_output) && test_ninja_compatible (ninja_bin_output)){
+    console.log("ninja binary is already cached: ", ninja_bin_output)
+} else if(fs.existsSync(ninja_os_path)) {
+    fs.renameSync(ninja_os_path,ninja_bin_output)
+    if(test_ninja_compatible(ninja_bin_output)){
+        console.log("ninja binary is copied from pre-distribution")
+    } else {
+        console.log("Building ninja")
+        build_ninja()
+        console.log('ninja binary is ready: ', ninja_bin_output)
+    }    
+}
+// if (!test_ninja_compatible(ninja_bin_output)) {
+//     if(is_windows){
+//         fs.rename(path.join(ninja_vendor_dir,'ninja.win'),ninja_bin_output)
+//     } else if(os_type==='Darwin'){
+//         fs.renameSync(path.join(ninja_vendor_dir,'ninja.darwin'),ninja_bin_output)
+//     } else if (os_type === 'Linux' && os_arch === 'x64'){
+//         var binary = path.join(ninja_vendor_dir,'ninja.linux64');
+//         if (test_ninja_compatible(binary)) {
+//             fs.renameSync(binary, ninja_bin_output)
+//         } else {
+//             console.log('On linux, but the ninja linux binary is incompatible.');
+//             build_ninja()
+//         }
+//     } else {
+//         build_ninja()
+//     }
+// }
+
 
 function non_windows_npm_release() {
     var make = is_bsd ? 'gmake' : 'make';
