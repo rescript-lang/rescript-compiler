@@ -33,7 +33,7 @@ var build_util = require('./build_util')
 var vendor_ninja_version = '1.7.2'
 
 var ninja_bin_output = path.join(root_dir,'bin','ninja.exe')
-var ninja_vendor_dir = path.join(root_dir,'ninja-build')
+var ninja_vendor_dir = path.join(root_dir,'vendor', 'ninja-build')
 
 function build_ninja(){
     console.log('No prebuilt Ninja, building Ninja now')
@@ -51,6 +51,7 @@ function test_ninja_compatible(binary_path) {
             stdio: ['pipe', 'pipe', 'ignore'] // execSync outputs to stdout even if we catch the error. Silent it here
         }).trim();
     } catch (e) {
+        console.log('ninja not compatible?', String(e))
         return false;
     }
     return version === vendor_ninja_version;
@@ -85,7 +86,7 @@ function non_windows_npm_release() {
 
     } catch (e) {
         child_process.execSync(path.join(__dirname, 'buildocaml.sh')) // TODO: sh -c ? this will be wrong if we have white space in the path
-        process.env.PATH = path.join(__dirname, '..', 'bin') + path.delimiter + process.env.PATH
+        process.env.PATH = path.join(__dirname, '..', 'vendor','ocaml','bin') + path.delimiter + process.env.PATH
         console.log('configure again with local ocaml installed')
         if (process.env.BS_TRAVIS_CI) {
             child_process.execSync(make + " travis-world-test", working_config)
