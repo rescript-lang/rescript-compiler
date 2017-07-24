@@ -28,7 +28,7 @@ var jscomp_bin = path.join(jscomp, 'bin')
 var working_dir = process.cwd()
 console.log("Working dir", working_dir)
 var working_config = { cwd: jscomp, stdio: [0, 1, 2] }
-var clean = require('./clean.js')
+// var clean = require('./clean.js')
 var build_util = require('./build_util')
 var vendor_ninja_version = '1.7.2'
 
@@ -92,7 +92,7 @@ function non_windows_npm_release() {
         process.env.PATH = path.join(__dirname, '..', 'vendor','ocaml','bin') + path.delimiter + process.env.PATH
         console.log('configure again with local ocaml installed')
         child_process.execSync(make + " world", working_config)
-        clean.clean()
+        // clean.clean()
     }
 
     console.log("Installing")
@@ -118,7 +118,7 @@ if (is_windows) {
         // Make it more fault tolerant
         // =1 can still be okay (only ninja.win in this case)
         child_process.execFileSync(path.join(__dirname, 'win_build.bat'), working_config)
-        clean.clean()
+        // clean.clean()
         console.log("Installing")
         build_util.install()
     } else {

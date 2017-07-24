@@ -33,7 +33,7 @@ func andThen(a, b command) command {
 // Output ...
 type Output struct {
 	name string
-	log  string
+	// log  string
 	err  error
 }
 
@@ -47,9 +47,11 @@ func runCommands(commands commands) {
 			defer v.Done()
 			fmt.Println("Running", f.name)
 			out, err := f.task()
+			fmt.Println(out)
 			if err != nil {
-				output <- Output{name: f.name, log: out, err: err}
+				output <- Output{name: f.name, err: err}
 			}
+			
 			fmt.Println("Finished", f.name)
 		}(com)
 	}
@@ -62,7 +64,7 @@ func runCommands(commands commands) {
 	for x := range output {
 		failed++
 		fmt.Println("Failed command", x.name, x.err)
-		fmt.Println(x.log)
+
 	}
 	if failed == 0 {
 		fmt.Println("All commands successufl")
@@ -164,11 +166,16 @@ func main() {
 		// ),
 		// makeCommand("make", "-C", filepath.Join("jscomp","test")),
 	})
-	
+
+	bsbDir, _ := cmd("bsb", "-where").CombinedOutput ()
+	fmt.Println("BSBDIR:", string(bsbDir))
+	bsb, _ := cmd("ls", "-al", filepath.Dir( string (bsbDir))).CombinedOutput()
+	fmt.Println("BSB isntallation:", string(bsb ))
 	// wg.Add(2)
 	// runMoCha(&wg)
 	// go installGlobal(&wg)
 	// wg.Wait()
+	
 	var wg sync.WaitGroup
 	for _, theme := range []string{"basic", "basic-reason", "generator", "minimal"} {
 		fmt.Println("Test theme", theme)
