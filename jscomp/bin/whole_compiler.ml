@@ -71945,10 +71945,6 @@ let public_method_call meth_name obj label cache args =
 let set_tag ?comment e tag : t = 
   seq {expression_desc = Caml_block_set_tag (e,tag); comment } unit 
 
-let set_length ?comment e tag : t = 
-  seq {expression_desc = Caml_block_set_length (e,tag); comment } unit 
-let obj_length ?comment e : t = 
-  {expression_desc = Length (e, Caml_block); comment }
 
 (* Note that [lsr] or [bor] are js semantics *)
 let rec int32_bor ?comment (e1 : J.expression) (e2 : J.expression) : J.expression = 
@@ -72003,6 +71999,10 @@ let uint32 ?comment n : J.expression =
 let string_comp cmp ?comment  e0 e1 = 
   bool_of_boolean @@ bin ?comment cmp e0 e1
 
+let set_length ?comment e tag : t = 
+  seq {expression_desc = Caml_block_set_length (e,tag); comment } unit 
+let obj_length ?comment e : t = 
+  to_int32 {expression_desc = Length (e, Caml_block); comment }
 
 let rec int_comp (cmp : Lambda.comparison) ?comment  (e0 : t) (e1 : t) = 
   match cmp, e0.expression_desc, e1.expression_desc with
