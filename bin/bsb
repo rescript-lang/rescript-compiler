@@ -13,6 +13,7 @@ var delegate_args = process.argv.slice(2)
 try {
     child_process.execFileSync(bsb_exe, delegate_args, { stdio: 'inherit' })
 } catch (e) {
+    console.log(String(e))
     console.error('Error happened when running command', bsb_exe, 'with args', delegate_args)
     process.exit(2)
 }

@@ -78,23 +78,6 @@ if (fs.existsSync(ninja_bin_output) && test_ninja_compatible (ninja_bin_output))
         console.log('ninja binary is ready: ', ninja_bin_output)
     }    
 }
-// if (!test_ninja_compatible(ninja_bin_output)) {
-//     if(is_windows){
-//         fs.rename(path.join(ninja_vendor_dir,'ninja.win'),ninja_bin_output)
-//     } else if(os_type==='Darwin'){
-//         fs.renameSync(path.join(ninja_vendor_dir,'ninja.darwin'),ninja_bin_output)
-//     } else if (os_type === 'Linux' && os_arch === 'x64'){
-//         var binary = path.join(ninja_vendor_dir,'ninja.linux64');
-//         if (test_ninja_compatible(binary)) {
-//             fs.renameSync(binary, ninja_bin_output)
-//         } else {
-//             console.log('On linux, but the ninja linux binary is incompatible.');
-//             build_ninja()
-//         }
-//     } else {
-//         build_ninja()
-//     }
-// }
 
 
 function non_windows_npm_release() {
@@ -108,12 +91,7 @@ function non_windows_npm_release() {
         child_process.execSync(path.join(__dirname, 'buildocaml.sh')) // TODO: sh -c ? this will be wrong if we have white space in the path
         process.env.PATH = path.join(__dirname, '..', 'vendor','ocaml','bin') + path.delimiter + process.env.PATH
         console.log('configure again with local ocaml installed')
-        if (process.env.BS_TRAVIS_CI) {
-            child_process.execSync(make + " travis-world-test", working_config)
-        } else {
-            child_process.execSync(make + " world", working_config)
-        }
-
+        child_process.execSync(make + " world", working_config)
         clean.clean()
     }
 

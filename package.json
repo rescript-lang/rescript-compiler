@@ -29,7 +29,7 @@
       "bsrefmt": "bin/bsrefmt"
   },
   "scripts": {
-    "test": "mocha './jscomp/test/**/*test.js' ",
+    "test": "go run test.go",
     "wtest": "mocha './jscomp/test/**/*test.js'  -R spec -w",
     "cover": "istanbul cover --report html ./node_modules/.bin/_mocha --   ./jscomp/test/**/*test.js && open coverage/index.html",
     "coverage": "istanbul cover ./node_modules/.bin/_mocha --report lcovonly --  './jscomp/test/*test.js' -R spec",
