@@ -649,6 +649,7 @@ super_errors/super_warnings.cmx :
 super_errors/super_typecore.cmx :
 super_errors/super_typetexp.cmx :
 super_errors/super_location.cmx :
+super_errors/super_main.cmx :
 ounit_tests/ounit_cmd_util.cmi :
 ounit_tests/ounit_tests_main.cmi :
 ounit_tests/ounit_tests_util.cmx :

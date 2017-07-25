@@ -322,7 +322,7 @@ BSB_SRCS= bsb_config \
 	oCamlRes\
 	bsb_templates\
 	bsb_init
-SUPER_ERRORS_SRCS=super_warnings super_typecore super_typetexp super_location
+SUPER_ERRORS_SRCS=super_warnings super_typecore super_typetexp super_location super_main
 
 BSB_CMXS=$(addprefix bsb/, $(addsuffix .cmx, $(BSB_SRCS)))
 BSB_CMOS=$(addprefix bsb/, $(addsuffix .cmo, $(BSB_SRCS)))
@@ -357,7 +357,7 @@ bin/bsb.exe: bs_hash.cmxa ext.cmxa common.cmxa  bsb.cmxa bsb/bsb_main.cmx
 # bin/bsc:  ext.cmxa common.cmxa  depends.cmxa syntax.cmxa core.cmxa
 # 	$(NATIVE) -g -linkall -I +compiler-libs ocamlcommon.cmxa $^ -o $@
 
-bin/bsc.exe: bs_hash.cmxa ext.cmxa common.cmxa syntax.cmxa depends.cmxa core.cmxa core/js_main.cmx super_errors/super_warnings.cmx super_errors/super_typetexp.cmx super_errors/super_typecore.cmx super_errors/super_location.cmx
+bin/bsc.exe: bs_hash.cmxa ext.cmxa common.cmxa syntax.cmxa depends.cmxa core.cmxa core/js_main.cmx super_errors/super_warnings.cmx super_errors/super_typetexp.cmx super_errors/super_typecore.cmx super_errors/super_location.cmx super_errors/super_main.cmx
 	@echo "Linking"
 	$(NATIVE) -g -linkall -I +compiler-libs ocamlcommon.cmxa $^ -o $@
 

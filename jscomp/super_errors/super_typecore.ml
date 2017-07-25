@@ -10,6 +10,7 @@ open Format
 open Printtyp
 
 (* taken from https://github.com/ocaml/ocaml/blob/4.02/typing/typecore.ml#L3769 *)
+(* modified branches are commented *)
 let report_error env ppf = function
   | Typecore.Polymorphic_label lid ->
       fprintf ppf "@[The record field %a is polymorphic.@ %s@]"
@@ -229,10 +230,11 @@ let report_error env ppf = function
       fprintf ppf
         "@[Exception patterns must be at the top level of a match case.@]"
 
+(* https://github.com/ocaml/ocaml/blob/4.02/typing/typecore.ml#L3979 *)
 let report_error env ppf err =
   wrap_printing_env env (fun () -> report_error env ppf err)
 
-(* This will be called in js_main. This is how you'd override the default error printer from the compiler & register new error_of_exn handlers *)
+(* This will be called in super_main. This is how you'd override the default error printer from the compiler & register new error_of_exn handlers *)
 let setup () =
   Location.register_error_of_exn
     (function

@@ -9,7 +9,7 @@ open Ctype
 open Format
 open Printtyp
 
-(* another error reporter, this time coming from https://github.com/ocaml/ocaml/blob/4.02/typing/typetexp.ml#L911 *)
+(* this function is staying exactly the same. We copy paste it here because typetexp.mli doesn't expose it *)
 let spellcheck ppf fold env lid =
   let cutoff =
     match String.length (Longident.last lid) with
@@ -54,6 +54,8 @@ let spellcheck ppf fold env lid =
 let spellcheck ppf fold =
   spellcheck ppf (fun f -> fold (fun s _ _ x -> f s x))
 
+(* taken from https://github.com/ocaml/ocaml/blob/4.02/typing/typetexp.ml#L911 *)
+(* modified branches are commented *)
 let report_error env ppf = function
   | Typetexp.Unbound_type_variable name ->
     fprintf ppf "Unbound type parameter %s@." name
@@ -152,7 +154,7 @@ let report_error env ppf = function
   | Access_functor_as_structure lid ->
       fprintf ppf "The module %a is a functor, not a structure" longident lid
 
-(* This will be called in js_main. This is how you'd override the default error printer from the compiler & register new error_of_exn handlers *)
+(* This will be called in super_main. This is how you'd override the default error printer from the compiler & register new error_of_exn handlers *)
 let setup () =
   Location.register_error_of_exn
     (function
@@ -163,4 +165,4 @@ let setup () =
         Some err *)
       | _ ->
         None
-    ) 
+    )

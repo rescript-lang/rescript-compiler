@@ -1,8 +1,6 @@
 (* this is lifted https://github.com/ocaml/ocaml/blob/4.02/utils/warnings.ml *)
-
-let warning_prefix = "Warning"
-
-let warning_message = Warnings.(function
+(* modified branches are commented *)
+let message = Warnings.(function
   | Comment_start -> "this is the start of a comment."
   | Comment_not_end -> "this is not the end of a comment."
   | Deprecated s -> "deprecated: " ^ s
@@ -157,7 +155,8 @@ let warning_message = Warnings.(function
       else "ambiguous documentation comment"
 );;
 
-let warning_number = Warnings.(function
+(* This is lifted as-is from `warnings.ml`. We've only copy-pasted here because warnings.mli doesn't expose this function *)
+let number = Warnings.(function
   | Comment_start -> 1
   | Comment_not_end -> 2
   | Deprecated _ -> 3
@@ -211,24 +210,13 @@ let warning_number = Warnings.(function
 );;
 
 (* helper extracted from https://github.com/ocaml/ocaml/blob/4.02/utils/warnings.ml#L396 *)
+(* the only difference is the 2 first `let`s, where we use our own `message`
+  and `number` functions, and the last line commented out because we don't use
+  it (not sure what it's for, actually) *)
 let print ppf w =
-  let msg = warning_message  w in
-  let num = warning_number w in
-  (* Format.fprintf ppf "%d: %s" num ("Oops:\n" ^ msg ^ "\n----------"); *)
+  let msg = message w in
+  let num = number w in
   Format.fprintf ppf "%d: %s" num msg;
   Format.pp_print_flush ppf ()
   (*if (!current).error.(num) then incr nerrors*)
 ;;
-
-(* extracted from https://github.com/ocaml/ocaml/blob/4.02/parsing/location.ml#L280 *)
-(* we'll replace the default printer with this one *)
-let super_warning_printer loc ppf w =
-  if Warnings.is_active w then begin
-    Misc.Color.setup !Clflags.color;
-    Location.print ppf loc;
-    Format.fprintf ppf "@{<warning>%s@} %a@." warning_prefix print w
-  end
-;;
-
-(* This will be called in js_main. This is how you'd override the default warning printer from the compiler *)
-let setup () = Location.warning_printer := super_warning_printer
