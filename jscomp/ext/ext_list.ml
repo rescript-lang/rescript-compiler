@@ -417,3 +417,11 @@ let rec assoc_by_int def (k : int) lst =
   modulo [1;2;3] [1;2;3] => [1;2;3] Some []
  *)
 
+
+let nth_opt l n =
+  if n < 0 then None else
+  let rec nth_aux l n =
+    match l with
+    | [] -> None
+    | a::l -> if n = 0 then Some a else nth_aux l (n-1)
+  in nth_aux l n

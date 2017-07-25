@@ -23603,6 +23603,9 @@ val assoc_by_string :
 
 val assoc_by_int : 
   'a  option -> int -> (int * 'a) list -> 'a   
+
+
+val nth_opt : 'a list -> int -> 'a option  
 end = struct
 #1 "ext_list.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -24025,6 +24028,13 @@ let rec assoc_by_int def (k : int) lst =
  *)
 
 
+let nth_opt l n =
+  if n < 0 then None else
+  let rec nth_aux l n =
+    match l with
+    | [] -> None
+    | a::l -> if n = 0 then Some a else nth_aux l (n-1)
+  in nth_aux l n
 end
 module Bs_hash_stubs
 = struct
@@ -74186,6 +74196,28 @@ val string_of_primitive : Lam.primitive -> string
 
 val kind_of_lambda_block : Lam_id_kind.boxed_nullable -> Lam.t list -> Lam_id_kind.t
 
+
+(** [field_flattern_get cb v i tbl]
+    try to remove the indirection of [v.(i)], if not 
+    call [cb ()].
+    Note due to different control flow, a constant block
+    may result in out-of bound access.
+    {[
+      (let
+  (myShape/1011 =a [0: 10]
+    area/1012 =
+      (switch* myShape/1011
+       case tag 0:
+        (let (r/1013 =a (field 0 myShape/1011))
+          ( *. (float_of_int ( * r/1013 r/1013)) 3.14))
+       case tag 1:
+        (let
+          (h/1015 =a (field 1 myShape/1011) w/1014 =a (field 0 myShape/1011))
+          (float_of_int ( * w/1014 h/1015)))))
+  (makeblock 0 myShape/1011 area/1012))
+    ]}
+    Here [(field 1 myShape]) is out of bounds
+*)
 val field_flatten_get : 
   (unit -> Lam.t) -> Ident.t -> int -> Lam_stats.ident_tbl -> Lam.t
 
@@ -74499,9 +74531,13 @@ let field_flatten_get
     begin match arr.(i) with 
       | NA -> lam ()
       | SimpleForm l -> l
+      | exception _ -> lam ()
     end
   | Some (Constant (Const_block (_,_,ls))) -> 
-    Lam.const (List.nth  ls i)
+    begin match Ext_list.nth_opt ls i with 
+    | None -> lam  ()
+    | Some x -> Lam.const x
+    end
   | Some _
   | None -> lam ()
 

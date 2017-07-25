@@ -265,9 +265,13 @@ let field_flatten_get
     begin match arr.(i) with 
       | NA -> lam ()
       | SimpleForm l -> l
+      | exception _ -> lam ()
     end
   | Some (Constant (Const_block (_,_,ls))) -> 
-    Lam.const (List.nth  ls i)
+    begin match Ext_list.nth_opt ls i with 
+    | None -> lam  ()
+    | Some x -> Lam.const x
+    end
   | Some _
   | None -> lam ()
 

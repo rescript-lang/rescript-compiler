@@ -452,8 +452,8 @@ core/lam_compile_const.cmx : core/lam_compile_util.cmx core/lam.cmx \
 core/lam_inner.cmx : core/lam.cmx core/lam_inner.cmi
 core/lam_util.cmx : core/lam_stats.cmx core/lam_print.cmx \
     core/lam_id_kind.cmx core/lam_analysis.cmx core/lam.cmx ext/ident_set.cmx \
-    ext/ident_map.cmx ext/ident_hashtbl.cmx ext/ext_array.cmx \
-    core/lam_util.cmi
+    ext/ident_map.cmx ext/ident_hashtbl.cmx ext/ext_list.cmx \
+    ext/ext_array.cmx core/lam_util.cmi
 core/lam_eta_conversion.cmx : ext/literals.cmx core/lam.cmx ext/ext_list.cmx \
     ext/ext_ident.cmx core/lam_eta_conversion.cmi
 core/lam_group.cmx : core/lam_print.cmx core/lam.cmx core/lam_group.cmi

@@ -4726,6 +4726,9 @@ val assoc_by_string :
 
 val assoc_by_int : 
   'a  option -> int -> (int * 'a) list -> 'a   
+
+
+val nth_opt : 'a list -> int -> 'a option  
 end = struct
 #1 "ext_list.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -5148,6 +5151,13 @@ let rec assoc_by_int def (k : int) lst =
  *)
 
 
+let nth_opt l n =
+  if n < 0 then None else
+  let rec nth_aux l n =
+    match l with
+    | [] -> None
+    | a::l -> if n = 0 then Some a else nth_aux l (n-1)
+  in nth_aux l n
 end
 module Ext_sys : sig 
 #1 "ext_sys.mli"
