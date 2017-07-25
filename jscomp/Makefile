@@ -18,7 +18,7 @@ COMPFLAGS=-g -w +6-40-30-23 -warn-error +a-40-30-23 -absname
 
 print-%  : ; @echo $* = $($*)
 
-INCLUDES= -I +compiler-libs -I stubs -I ext -I common -I syntax -I depends -I core -I bsb -I ounit -I ounit_tests
+INCLUDES= -I +compiler-libs -I stubs -I ext -I common -I syntax -I depends -I core -I bsb -I ounit -I ounit_tests -I super_errors
 
 .mli.cmi:
 	$(NATIVE) $(INCLUDES) $(COMPFLAGS) -c $<
@@ -326,9 +326,10 @@ SUPER_ERRORS_SRCS=super_warnings super_typecore super_typetexp super_location su
 
 BSB_CMXS=$(addprefix bsb/, $(addsuffix .cmx, $(BSB_SRCS)))
 BSB_CMOS=$(addprefix bsb/, $(addsuffix .cmo, $(BSB_SRCS)))
+SUPER_ERRORS_CMXS=$(addprefix super_errors/, $(addsuffix .cmx, $(SUPER_ERRORS_SRCS)))
 MAIN_SRCS= jsgen_main jscmj_main bsb/bsb_main bsb/bsb_helper_main
 MAIN_CMXS=$(addsuffix .cmx, $(MAIN_SRCS))
-SUPER_ERRORS_CMXS=$(addsuffix .cmx, $(SUPER_ERRORS_SRCS))
+
 
 ounit.cmxa: $(OUNIT_CMXS)
 	ocamlopt.opt -a $^ -o $@
@@ -348,6 +349,10 @@ bsb.cmxa:$(BSB_CMXS)
 	ocamlopt.opt -a $^ -o $@
 bsb.cma:$(BSB_CMOS)
 	ocamlc.opt -a $^ -o $@
+super.cmxa:$(SUPER_ERRORS_CMXS)	
+	ocamlopt.opt -a $^ -o $@
+super.cma:$(SUPER_ERRORS_CMOS)	
+	ocamlc.opt -a $^ -o $@
 	
 check: $(EXT_CMXS) $(COMMON_CMXS) $(SYNTAX_CMXS) $(DEPENDS_CMXS) $(CORE_CMXS) $(BSB_CMXS) $(OTHER_CORE_CMXS) $(MAIN_CMXS) $(SUPER_ERRORS_CMXS) $(OUNIT_CMXS) $(OUNIT_TESTS_CMXS)
 
@@ -357,7 +362,7 @@ bin/bsb.exe: bs_hash.cmxa ext.cmxa common.cmxa  bsb.cmxa bsb/bsb_main.cmx
 # bin/bsc:  ext.cmxa common.cmxa  depends.cmxa syntax.cmxa core.cmxa
 # 	$(NATIVE) -g -linkall -I +compiler-libs ocamlcommon.cmxa $^ -o $@
 
-bin/bsc.exe: bs_hash.cmxa ext.cmxa common.cmxa syntax.cmxa depends.cmxa core.cmxa core/js_main.cmx super_errors/super_warnings.cmx super_errors/super_typetexp.cmx super_errors/super_typecore.cmx super_errors/super_location.cmx super_errors/super_main.cmx
+bin/bsc.exe: bs_hash.cmxa ext.cmxa common.cmxa syntax.cmxa depends.cmxa core.cmxa super.cmxa core/js_main.cmx 
 	@echo "Linking"
 	$(NATIVE) -g -linkall -I +compiler-libs ocamlcommon.cmxa $^ -o $@
 

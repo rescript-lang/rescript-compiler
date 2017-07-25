@@ -3,6 +3,7 @@
 - #1798 make `default` the same semantics as Es6 exports
 - #1785 upgrade playground
 - #1758 generator support 
+- #1826 add `bsb -where` support so that bsb.exe can be located and cached in a more robust way
 
 - Optimizations
 - #1796, #1793 improve submodule arity inference
