@@ -1,4 +1,4 @@
-# 19.2
+# 1.8.2
 - Features
 - #1798 make `default` the same semantics as Es6 exports
 - #1785 upgrade playground
@@ -10,6 +10,7 @@
 
 - Fixes
 - #1811 add relative ppx paths to .merlin correctly
+- #1822, fix an optimization bug
 
 - Internal
 - add a tool cmjdump.exe
