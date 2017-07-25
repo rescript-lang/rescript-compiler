@@ -66,7 +66,9 @@ let bsb_main_flags : (string * Arg.spec * string) list=
     "-query", Arg.String (fun s -> Bsb_query.query ~cwd ~bsc_dir s ),
     " (internal)Query metadata about the build";
     "-themes", Arg.Unit Bsb_init.list_themes,
-    " List all available themes"
+    " List all available themes";
+    "-where", Arg.Unit (fun _ -> print_endline Sys.executable_name),
+    " Show where bsb.exe is located"
   ]
 
 

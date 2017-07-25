@@ -28,7 +28,7 @@ var jscomp_bin = path.join(jscomp, 'bin')
 var working_dir = process.cwd()
 console.log("Working dir", working_dir)
 var working_config = { cwd: jscomp, stdio: [0, 1, 2] }
-var clean = require('./clean.js')
+// var clean = require('./clean.js')
 var build_util = require('./build_util')
 var vendor_ninja_version = '1.7.2'
 
@@ -78,23 +78,6 @@ if (fs.existsSync(ninja_bin_output) && test_ninja_compatible (ninja_bin_output))
         console.log('ninja binary is ready: ', ninja_bin_output)
     }    
 }
-// if (!test_ninja_compatible(ninja_bin_output)) {
-//     if(is_windows){
-//         fs.rename(path.join(ninja_vendor_dir,'ninja.win'),ninja_bin_output)
-//     } else if(os_type==='Darwin'){
-//         fs.renameSync(path.join(ninja_vendor_dir,'ninja.darwin'),ninja_bin_output)
-//     } else if (os_type === 'Linux' && os_arch === 'x64'){
-//         var binary = path.join(ninja_vendor_dir,'ninja.linux64');
-//         if (test_ninja_compatible(binary)) {
-//             fs.renameSync(binary, ninja_bin_output)
-//         } else {
-//             console.log('On linux, but the ninja linux binary is incompatible.');
-//             build_ninja()
-//         }
-//     } else {
-//         build_ninja()
-//     }
-// }
 
 
 function non_windows_npm_release() {
@@ -108,13 +91,8 @@ function non_windows_npm_release() {
         child_process.execSync(path.join(__dirname, 'buildocaml.sh')) // TODO: sh -c ? this will be wrong if we have white space in the path
         process.env.PATH = path.join(__dirname, '..', 'vendor','ocaml','bin') + path.delimiter + process.env.PATH
         console.log('configure again with local ocaml installed')
-        if (process.env.BS_TRAVIS_CI) {
-            child_process.execSync(make + " travis-world-test", working_config)
-        } else {
-            child_process.execSync(make + " world", working_config)
-        }
-
-        clean.clean()
+        child_process.execSync(make + " world", working_config)
+        // clean.clean()
     }
 
     console.log("Installing")
@@ -140,7 +118,7 @@ if (is_windows) {
         // Make it more fault tolerant
         // =1 can still be okay (only ninja.win in this case)
         child_process.execFileSync(path.join(__dirname, 'win_build.bat'), working_config)
-        clean.clean()
+        // clean.clean()
         console.log("Installing")
         build_util.install()
     } else {
