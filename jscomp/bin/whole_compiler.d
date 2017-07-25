@@ -389,6 +389,7 @@ bin/whole_compiler.ml : core/lam_pass_lets_dce.mli
 bin/whole_compiler.ml : core/ocaml_stdlib_slots.ml
 bin/whole_compiler.ml : core/type_int_to_string.ml
 bin/whole_compiler.ml : ext/hash_set_ident_mask.ml
+bin/whole_compiler.ml : super_errors/super_main.ml
 bin/whole_compiler.ml : syntax/ast_utf8_string.mli
 bin/whole_compiler.ml : syntax/bs_ast_invariant.ml
 bin/whole_compiler.ml : syntax/bs_ast_iterator.mli
@@ -413,6 +414,10 @@ bin/whole_compiler.ml : core/lam_dispatch_primitive.ml
 bin/whole_compiler.ml : core/lam_pass_deep_flatten.mli
 bin/whole_compiler.ml : core/lam_pass_eliminate_ref.ml
 bin/whole_compiler.ml : core/lam_pass_remove_alias.mli
+bin/whole_compiler.ml : super_errors/super_location.ml
+bin/whole_compiler.ml : super_errors/super_typecore.ml
+bin/whole_compiler.ml : super_errors/super_typetexp.ml
+bin/whole_compiler.ml : super_errors/super_warnings.ml
 bin/whole_compiler.ml : syntax/ast_derive_projector.ml
 bin/whole_compiler.ml : core/bs_conditional_initial.mli
 bin/whole_compiler.ml : core/js_of_lam_float_record.mli

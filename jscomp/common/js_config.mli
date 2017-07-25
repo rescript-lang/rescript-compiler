@@ -164,7 +164,6 @@ val is_same_file : unit -> bool
 val tool_name : string
 
 
-val better_errors : bool ref
 val sort_imports : bool ref 
 val dump_js : bool ref
 val syntax_only  : bool ref

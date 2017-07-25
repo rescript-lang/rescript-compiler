@@ -322,11 +322,13 @@ BSB_SRCS= bsb_config \
 	oCamlRes\
 	bsb_templates\
 	bsb_init
+SUPER_ERRORS_SRCS=super_warnings super_typecore super_typetexp super_location super_main
 
 BSB_CMXS=$(addprefix bsb/, $(addsuffix .cmx, $(BSB_SRCS)))
 BSB_CMOS=$(addprefix bsb/, $(addsuffix .cmo, $(BSB_SRCS)))
 MAIN_SRCS= jsgen_main jscmj_main bsb/bsb_main bsb/bsb_helper_main
 MAIN_CMXS=$(addsuffix .cmx, $(MAIN_SRCS))
+SUPER_ERRORS_CMXS=$(addsuffix .cmx, $(SUPER_ERRORS_SRCS))
 
 ounit.cmxa: $(OUNIT_CMXS)
 	ocamlopt.opt -a $^ -o $@
@@ -347,7 +349,7 @@ bsb.cmxa:$(BSB_CMXS)
 bsb.cma:$(BSB_CMOS)
 	ocamlc.opt -a $^ -o $@
 	
-check:  $(EXT_CMXS) $(COMMON_CMXS) $(SYNTAX_CMXS) $(DEPENDS_CMXS) $(CORE_CMXS) $(BSB_CMXS) $(OTHER_CORE_CMXS) $(MAIN_CMXS) $(OUNIT_CMXS) $(OUNIT_TESTS_CMXS)
+check: $(EXT_CMXS) $(COMMON_CMXS) $(SYNTAX_CMXS) $(DEPENDS_CMXS) $(CORE_CMXS) $(BSB_CMXS) $(OTHER_CORE_CMXS) $(MAIN_CMXS) $(SUPER_ERRORS_CMXS) $(OUNIT_CMXS) $(OUNIT_TESTS_CMXS)
 
 bin/bsb.exe: bs_hash.cmxa ext.cmxa common.cmxa  bsb.cmxa bsb/bsb_main.cmx
 	$(NATIVE) -g  unix.cmxa str.cmxa $^ -o $@
@@ -355,7 +357,7 @@ bin/bsb.exe: bs_hash.cmxa ext.cmxa common.cmxa  bsb.cmxa bsb/bsb_main.cmx
 # bin/bsc:  ext.cmxa common.cmxa  depends.cmxa syntax.cmxa core.cmxa
 # 	$(NATIVE) -g -linkall -I +compiler-libs ocamlcommon.cmxa $^ -o $@
 
-bin/bsc.exe: bs_hash.cmxa ext.cmxa common.cmxa syntax.cmxa depends.cmxa core.cmxa core/js_main.cmx
+bin/bsc.exe: bs_hash.cmxa ext.cmxa common.cmxa syntax.cmxa depends.cmxa core.cmxa core/js_main.cmx super_errors/super_warnings.cmx super_errors/super_typetexp.cmx super_errors/super_typecore.cmx super_errors/super_location.cmx super_errors/super_main.cmx
 	@echo "Linking"
 	$(NATIVE) -g -linkall -I +compiler-libs ocamlcommon.cmxa $^ -o $@
 
@@ -392,6 +394,7 @@ depend:
 	$(addprefix core/, $(addsuffix .ml, $(OTHER_CORE_SRCS))) \
 	$(addprefix ounit/, $(addsuffix .mli, $(OUNIT_SRCS))) \
 	$(addprefix ounit/, $(addsuffix .ml, $(OUNIT_SRCS))) \
+	$(addprefix super_errors/, $(addsuffix .ml, $(SUPER_ERRORS_SRCS))) \
 	$(addprefix ounit_tests/, $(addsuffix .mli, $(OUNIT_TESTS_SRCS))) \
 	$(addprefix ounit_tests/, $(addsuffix .ml, $(OUNIT_TESTS_SRCS))) \
 	bsb/*.ml bsb/*.mli *.ml *.mli > all.depend
@@ -458,7 +461,7 @@ bin/bsppx.ml:./bin/bspack.exe
 	$< -U BS_DEBUG -bs-MD  -module-alias Config=ConfigDummy -I bin -I ../ocaml/utils/ -I ../ocaml/parsing/ -I stubs -I common -I ext -I syntax -I core -bs-main Bsppx_main -o $@
 
 bin/whole_compiler.ml:./bin/bspack.exe
-	$< -U BS_DEBUG -bs-MD -prelude-str 'module Config = Config_whole_compiler' -bs-exclude-I config -o $@ -bs-main Js_main -I ../ocaml/utils/ -I ../ocaml/parsing/ -I ../ocaml/typing/ -I ../ocaml/bytecomp/ -I ../ocaml/driver/ -I stubs -I ext -I syntax -I depends -I common -I core
+	$< -U BS_DEBUG -bs-MD -prelude-str 'module Config = Config_whole_compiler' -bs-exclude-I config -o $@ -bs-main Js_main -I ../ocaml/utils/ -I ../ocaml/parsing/ -I ../ocaml/typing/ -I ../ocaml/bytecomp/ -I ../ocaml/driver/ -I stubs -I ext -I syntax -I depends -I common -I core -I super_errors
 
 bin/bsdep.ml:./bin/bspack.exe
 	$< -D BS_OCAMLDEP=true  -U BS_DEBUG -bs-MD  -module-alias Config=ConfigDummy -I bin  -I ../ocaml/utils/ -I ../ocaml/parsing/ -I ../ocaml/driver -I ../ocaml/tools -I common -I ext -I syntax -I depends -I core -I stubs -bs-main Ocamldep -o $@

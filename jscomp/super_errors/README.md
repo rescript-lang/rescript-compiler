@@ -1,0 +1,3 @@
+Hello! This is the subdirectory for the new, newcomer-friendly OCaml/Reason warning & error report system. Most of the logic are lifted from the compiler (https://github.com/ocaml/ocaml/tree/4.02). The convention here is to have a `super_foo` for each corresponding compiler's file `foo`. So, for example, `warnings.ml` becomes `super_warnings.ml`. The exception is `super_main`, the entry point.
+
+Feel free to submit new ones or tweak existing messages in these files! They also have more precise comments in them that tells you how they work.
