@@ -383,7 +383,7 @@ the compiler will emit an error message.
 ======
 
 
-### Special types on external declarations: bs.string, bs.int, bs.ignore, bs.as
+### Special types on external declarations: `bs.string`, `bs.int`, `bs.ignore`, `bs.as`, `bs.unwrap`
 
 #### Using polymorphic variant to model enums and string types
 There are several patterns heavily used in existing JavaScript codebases, for example,
@@ -463,14 +463,59 @@ function register(rl) {
 }
 ----------
 
+#### Using polymorphic variant to model arguments of multiple possible types (@since master)
+
+Sometimes a JavaScript function will accept an argument that could have different types depending upon how it's used.
+
+[source,js]
+----
+function padLeft(string, padding) {
+  if (typeof padding === "number") {
+    return Array(padding + 1).join(" ") + value;
+  }
+  if (typeof padding === "string") {
+    return padding + value;
+  }
+  throw new Error(`Expected string or number, got '${padding}'.`);
+}
+----
+
+You can model such a function in BuckleScript using `[@bs.unwrap]`.
+
+[source,ocaml]
+----
+external padLeft :
+  string
+  -> ([ `String of string
+      | `Int of int
+      ] [@bs.unwrap])
+  -> string
+  = "" [@@bs.val]
+----
+
+Polymorphic variants with `[@bs.unwrap]` will "unwrap" the variant at the call site so that the JavaScript function is called with the underlying value.
+
+[source,ocaml]
+----
+let _ = padLeft "Hello World" (`Int 4)
+let _ = padLeft "Hello World" (`String "bs: ")
+----
+
+Output:
+[source,js]
+----
+padLeft("Hello World", 4);
+padLeft("Hello World", "bs: ");
+----
+
 [WARNING]
 =========
-- These annotations will only have effect in `external` declarations.
+- These `[@bs.string]`, `[@bs.int]`, and `[@bs.unwrap]` annotations will only have effect in `external` declarations.
 - The runtime encoding of using polymorphic variant is internal to the compiler.
 - With these annotations mentioned above, BuckleScript will automatically
   transform the internal encoding to the designated encoding for FFI.
   BuckleScript will try to do such conversion at compile time if it can, otherwise, it
- will do such conversion in the runtime, but it should be always correct.
+  will do such conversion in the runtime, but it should be always correct.
 =========
 
 #### Phantom Arguments and ad-hoc polymorphism
@@ -522,7 +567,12 @@ let add2 k x y =
   add_dyn k (string_of_kind k) x y
 -------------
 
-### Fixed Arguments
+[NOTE]
+====
+Using a GADT as a `[@bs.ignore]` argument as described to achieve a single polymorphic argument can now also be accomplished with `[@bs.unwrap]` above. The GADT + `[@bs.ignore]` approach is slightly more flexible and is always guaranteed to have no runtime overhead, where `[@bs.unwrap]` could incur slight runtime overhead in some cases but could be a more intuitive API for end users.
+====
+
+#### Fixed Arguments
 
 Contrary to the Phantom arguments, `_[@bs.as]` is introduced to attach the const
 data.
@@ -590,7 +640,7 @@ var config = {
 };
 -----------
 
-### Fixed Arguments with arbitrary JSON literal (@since 1.7.0)
+#### Fixed Arguments with arbitrary JSON literal (@since 1.7.0)
 
 So the payload can be more flexiblie with JSON literal support
 
