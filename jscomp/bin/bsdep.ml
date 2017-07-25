@@ -26010,7 +26010,6 @@ val is_same_file : unit -> bool
 val tool_name : string
 
 
-val better_errors : bool ref
 val sort_imports : bool ref 
 val dump_js : bool ref
 val syntax_only  : bool ref
@@ -26251,7 +26250,6 @@ let no_any_assert = ref false
 let set_no_any_assert () = no_any_assert := true
 let get_no_any_assert () = !no_any_assert
 
-let better_errors = ref false
 let sort_imports = ref true
 let dump_js = ref false
 
