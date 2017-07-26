@@ -40,6 +40,7 @@ function build_ninja(){
     var build_ninja_command = "tar -xf  ninja-1.7.2.tar.gz  && cd  ninja-1.7.2  && ./configure.py --bootstrap "
     child_process.execSync(build_ninja_command,{cwd:ninja_vendor_dir})
     fs.renameSync(path.join(ninja_vendor_dir, 'ninja-1.7.2','ninja'), ninja_bin_output)
+    console.log('ninja binary is ready: ', ninja_bin_output)
 }
 
 // sanity check to make sure the binary actually runs. Used for Linux. Too many variants
@@ -73,10 +74,10 @@ if (fs.existsSync(ninja_bin_output) && test_ninja_compatible (ninja_bin_output))
     if(test_ninja_compatible(ninja_bin_output)){
         console.log("ninja binary is copied from pre-distribution")
     } else {
-        console.log("Building ninja")
         build_ninja()
-        console.log('ninja binary is ready: ', ninja_bin_output)
     }    
+} else {
+    build_ninja()
 }
 
 
