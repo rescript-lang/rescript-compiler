@@ -53898,9 +53898,9 @@ val make_unused : unit -> Ident.t
 val is_unused_ident : Ident.t -> bool 
 
 (**
-   if name is not converted, the reference should be equal
+   Invariant: if name is not converted, the reference should be equal
 *)
-val convert : bool -> string -> string
+val convert : string -> string
 val property_no_need_convert : string -> bool 
 
 val undefined : Ident.t 
@@ -54125,18 +54125,8 @@ let reserved_map =
 
 
 
-
-(* TODO:
-    check name conflicts with javascript conventions
-    {[
-    Ext_ident.convert "^";;
-    - : string = "$caret"
-    ]}
- *)
-let convert keyword (name : string) = 
-   if keyword && String_hash_set.mem reserved_map name  then "$$" ^ name 
-   else 
-     let module E = struct exception Not_normal_letter of int end in
+let name_mangle name = 
+  let module E = struct exception Not_normal_letter of int end in
      let len = String.length name  in
      try
        for i  = 0 to len - 1 do 
@@ -54172,8 +54162,24 @@ let convert keyword (name : string) =
           | _ -> Buffer.add_string buffer "$unknown"
         done; Buffer.contents buffer)
 
+
+(* TODO:
+    check name conflicts with javascript conventions
+    {[
+    Ext_ident.convert "^";;
+    - : string = "$caret"
+    ]}
+  [convert name] if [name] is a js keyword,add "$$"
+  otherwise do the name mangling to make sure ocaml identifier it is 
+  a valid js identifier
+ *)
+let convert (name : string) = 
+   if  String_hash_set.mem reserved_map name  then "$$" ^ name 
+   else name_mangle name 
+
+(** keyword could be used in property *)
 let property_no_need_convert s = 
-  s == convert false s 
+  s == name_mangle s 
 
 (* It is currently made a persistent ident to avoid fresh ids 
     which would result in different signature files
@@ -54354,6 +54360,9 @@ val assoc_by_string :
 
 val assoc_by_int : 
   'a  option -> int -> (int * 'a) list -> 'a   
+
+
+val nth_opt : 'a list -> int -> 'a option  
 end = struct
 #1 "ext_list.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -54776,6 +54785,13 @@ let rec assoc_by_int def (k : int) lst =
  *)
 
 
+let nth_opt l n =
+  if n < 0 then None else
+  let rec nth_aux l n =
+    match l with
+    | [] -> None
+    | a::l -> if n = 0 then Some a else nth_aux l (n-1)
+  in nth_aux l n
 end
 module Set_gen
 = struct
@@ -59354,7 +59370,6 @@ val is_same_file : unit -> bool
 val tool_name : string
 
 
-val better_errors : bool ref
 val sort_imports : bool ref 
 val dump_js : bool ref
 val syntax_only  : bool ref
@@ -59595,7 +59610,6 @@ let no_any_assert = ref false
 let set_no_any_assert () = no_any_assert := true
 let get_no_any_assert () = !no_any_assert
 
-let better_errors = ref false
 let sort_imports = ref true
 let dump_js = ref false
 
@@ -61993,10 +62007,6 @@ let public_method_call meth_name obj label cache args =
 let set_tag ?comment e tag : t = 
   seq {expression_desc = Caml_block_set_tag (e,tag); comment } unit 
 
-let set_length ?comment e tag : t = 
-  seq {expression_desc = Caml_block_set_length (e,tag); comment } unit 
-let obj_length ?comment e : t = 
-  {expression_desc = Length (e, Caml_block); comment }
 
 (* Note that [lsr] or [bor] are js semantics *)
 let rec int32_bor ?comment (e1 : J.expression) (e2 : J.expression) : J.expression = 
@@ -62051,6 +62061,10 @@ let uint32 ?comment n : J.expression =
 let string_comp cmp ?comment  e0 e1 = 
   bool_of_boolean @@ bin ?comment cmp e0 e1
 
+let set_length ?comment e tag : t = 
+  seq {expression_desc = Caml_block_set_length (e,tag); comment } unit 
+let obj_length ?comment e : t = 
+  to_int32 {expression_desc = Length (e, Caml_block); comment }
 
 let rec int_comp (cmp : Lambda.comparison) ?comment  (e0 : t) (e1 : t) = 
   match cmp, e0.expression_desc, e1.expression_desc with
@@ -67234,17 +67248,6 @@ type function_kind
    = Curried
    (* | Tupled *)
 
-
-type function_arities = 
-  | Determin of bool * (int * Ident.t list option) list  * bool
-  (** when the first argument is true, it is for sure 
-
-      approximation sound but not complete 
-      the last one means it can take any params later, 
-      for an exception: it is (Determin (true,[], true))
-   *)
-  | NA 
-
 type constant = 
   | Const_int of int
   | Const_char of char
@@ -67587,10 +67590,6 @@ type function_kind
    = Curried 
    (* | Tupled *)
 
-
-type function_arities = 
-  | Determin of bool * (int * Ident.t list option) list  * bool
-  | NA 
 
 type let_kind = Lambda.let_kind
     = Strict
@@ -70467,6 +70466,292 @@ let safe_to_inline (lam : Lam.t) =
   | _ -> false
 
 end
+module Lam_arity : sig 
+#1 "lam_arity.mli"
+(* Copyright (C) Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type t = 
+  | Determin of bool * (int * Ident.t list option) list  * bool
+    (**
+      when the first argument is true, it is for sure 
+      the last one means it can take any params later, 
+      for an exception: it is (Determin (true,[], true))
+      1. approximation sound but not complete 
+      
+   *)
+  | NA 
+
+val print : Format.formatter -> t -> unit   
+
+val print_arities_tbl : 
+  Format.formatter -> 
+  (Ident.t, t ref) Hashtbl.t -> 
+  unit 
+
+end = struct
+#1 "lam_arity.ml"
+(* Copyright (C) Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type t = 
+  | Determin of bool * (int * Ident.t list option) list  * bool
+    (**
+      when the first argument is true, it is for sure 
+      the last one means it can take any params later, 
+      for an exception: it is (Determin (true,[], true))
+      1. approximation sound but not complete 
+      
+   *)
+  | NA 
+
+let pp = Format.fprintf
+
+let print (fmt : Format.formatter) (x : t) = 
+  match x with 
+  | NA -> pp fmt "?"
+  | Determin (b,ls,tail) -> 
+    begin 
+      pp fmt "@[";
+      (if not b 
+       then 
+         pp fmt "~");
+      pp fmt "[";
+      Format.pp_print_list ~pp_sep:(fun fmt () -> pp fmt ",")
+        (fun fmt  (x,_) -> Format.pp_print_int fmt x)
+        fmt ls ;
+      if tail 
+      then pp fmt "@ *";
+      pp fmt "]@]";
+    end
+  
+  let print_arities_tbl 
+    (fmt : Format.formatter) 
+    (arities_tbl : (Ident.t, t ref) Hashtbl.t) = 
+  Hashtbl.fold (fun (i:Ident.t) (v : t ref) _ -> 
+      pp Format.err_formatter "@[%s -> %a@]@."i.name print !v ) arities_tbl ()
+
+end
+module Lam_id_kind : sig 
+#1 "lam_id_kind.mli"
+(* Copyright (C) Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type rec_flag = 
+  | Rec 
+  | Non_rec
+
+type function_id = {
+  mutable arity : Lam_arity.t;
+  lambda  : Lam.t ;
+  (* TODO: This may contain some closure environment,
+     check how it will interact with dead code elimination
+  *)
+  rec_flag : rec_flag
+}
+
+type element = 
+  | NA 
+  | SimpleForm of Lam.t 
+
+type boxed_nullable
+  = 
+  | Undefined 
+  | Null 
+  | Null_undefined
+  | Normal 
+
+type t = 
+  | ImmutableBlock of element array * boxed_nullable
+  | MutableBlock of element array
+  | Constant of Lam.constant
+  | Module of Ident.t
+        (** TODO: static module vs first class module *)
+  | FunctionId of function_id 
+  | Exception 
+  | Parameter
+      (** For this case, it can help us determine whether it should be inlined or not *)
+
+  | NA (** Not such information is associated with an identifier, it is immutable, 
+           if you only associate a property to an identifier 
+           we should consider [Lassign]
+        *)
+(** 
+       {[ let v/2 =  Pnull_to_opt u]} 
+
+       {[ let v/2 = Pnull_to_opt exp]}
+       can be translated into 
+       {[
+         let v/1 = exp in 
+         let v/2 =a Pnull_to_opt exp 
+       ]}
+       so that [Pfield v/2 0] will be replaced by [v/1], 
+       [Lif(v/1)] will be translated into [Lif (v/2 === undefined )]
+*)        
+
+
+
+val print : Format.formatter -> t -> unit
+end = struct
+#1 "lam_id_kind.ml"
+(* Copyright (C) Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+(** Keep track of which identifiers are aliased
+  *)
+
+
+
+type rec_flag = 
+  | Rec 
+  | Non_rec
+
+
+type function_id = {
+
+  mutable arity : Lam_arity.t;
+  lambda  : Lam.t ;
+  (* TODO: This may contain some closure environment,
+     check how it will interact with dead code elimination
+  *)
+  rec_flag : rec_flag
+}
+
+type element = 
+  | NA 
+  | SimpleForm of Lam.t 
+
+type boxed_nullable
+  = 
+  | Undefined 
+  | Null 
+  | Null_undefined
+  | Normal 
+
+type t = 
+  | ImmutableBlock of element array * boxed_nullable
+  | MutableBlock of element array
+  | Constant of Lam.constant
+  | Module of Ident.t
+        (** TODO: static module vs first class module *)
+  | FunctionId of function_id 
+  | Exception 
+  | Parameter
+      (** For this case, it can help us determine whether it should be inlined or not *)
+
+  | NA (** Not such information is associated with an identifier, it is immutable, 
+           if you only associate a property to an identifier 
+           we should consider [Lassign]
+        *)
+
+let pp = Format.fprintf 
+
+let print fmt (kind : t) = 
+  match kind with 
+  | ImmutableBlock (arr,_) -> 
+    pp fmt "Imm(%d)" (Array.length arr)
+  | MutableBlock (arr) ->     
+    pp fmt "Mutable(%d)" (Array.length arr)
+  | Constant _  ->
+    pp fmt "Constant"
+  | Module id -> 
+    pp fmt "%s/%d" id.name id.stamp 
+  | FunctionId _ -> 
+    pp fmt "FunctionID"
+  | Exception ->
+    pp fmt "Exception" 
+  | Parameter -> 
+    pp fmt "Parameter"  
+  | NA -> 
+    pp fmt "NA"       
+end
 module Lam_print : sig 
 #1 "lam_print.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -71086,132 +71371,6 @@ let seriaize env (filename : string) (lam : Lam.t) : unit =
   end
 
 end
-module Int_hash_set : sig 
-#1 "int_hash_set.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-include Hash_set_gen.S with type key = int
-
-end = struct
-#1 "int_hash_set.ml"
-# 1 "ext/hash_set.cppo.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-# 25
-type key = int
-let key_index (h :  _ Hash_set_gen.t ) (key : key) =
-  (Bs_hash_stubs.hash_int  key) land (Array.length h.data - 1)
-let eq_key = Ext_int.equal 
-type  t = key  Hash_set_gen.t 
-
-
-# 62
-let create = Hash_set_gen.create
-let clear = Hash_set_gen.clear
-let reset = Hash_set_gen.reset
-let copy = Hash_set_gen.copy
-let iter = Hash_set_gen.iter
-let fold = Hash_set_gen.fold
-let length = Hash_set_gen.length
-let stats = Hash_set_gen.stats
-let elements = Hash_set_gen.elements
-
-
-
-let remove (h : _ Hash_set_gen.t) key =  
-  let i = key_index h key in
-  let h_data = h.data in
-  let old_h_size = h.size in 
-  let new_bucket = Hash_set_gen.remove_bucket eq_key key h (Array.unsafe_get h_data i) in
-  if old_h_size <> h.size then  
-    Array.unsafe_set h_data i new_bucket
-
-
-
-let add (h : _ Hash_set_gen.t) key =
-  let i = key_index h key  in 
-  let h_data = h.data in 
-  let old_bucket = (Array.unsafe_get h_data i) in
-  if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
-    begin 
-      Array.unsafe_set h_data i (key :: old_bucket);
-      h.size <- h.size + 1 ;
-      if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h
-    end
-
-let of_array arr = 
-  let len = Array.length arr in 
-  let tbl = create len in 
-  for i = 0 to len - 1  do
-    add tbl (Array.unsafe_get arr i);
-  done ;
-  tbl 
-  
-    
-let check_add (h : _ Hash_set_gen.t) key =
-  let i = key_index h key  in 
-  let h_data = h.data in  
-  let old_bucket = (Array.unsafe_get h_data i) in
-  if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
-    begin 
-      Array.unsafe_set h_data i  (key :: old_bucket);
-      h.size <- h.size + 1 ;
-      if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h;
-      true 
-    end
-  else false 
-
-
-let mem (h :  _ Hash_set_gen.t) key =
-  Hash_set_gen.small_bucket_mem eq_key key (Array.unsafe_get h.data (key_index h key)) 
-
-  
-
-end
 module Lam_stats : sig 
 #1 "lam_stats.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -71252,71 +71411,19 @@ type alias_tbl =  Ident.t Ident_hashtbl.t
 (** Keep track of which identifiers are aliased
   *)
 
-type state = 
-  | Live (** Globals are always live *)
-  | Dead  (** removed after elimination *)
-  | NA
-
-type function_kind = 
-  | Functor 
-  | Function
-  | NA
-
-type rec_flag = 
-  | Rec 
-  | Non_rec
-
-type function_id = {
-  kind : function_kind ; 
-  mutable arity : Lam.function_arities;
-  lambda  : Lam.t ;
-  (* TODO: This may contain some closure environment,
-     check how it will interact with dead code elimination
-  *)
-  rec_flag : rec_flag
-}
-
-type element = 
-  | NA 
-  | SimpleForm of Lam.t 
-
-type boxed_nullable
-  = 
-  | Undefined 
-  | Null 
-  | Null_undefined
-  | Normal 
-
-type kind = 
-  | ImmutableBlock of element array * boxed_nullable
-  | MutableBlock of element array
-  | Constant of Lam.constant
-  | Module of Ident.t
-        (** TODO: static module vs first class module *)
-  | Function of function_id 
-  | Exception 
-  | Parameter
-      (** For this case, it can help us determine whether it should be inlined or not *)
-
-  | NA (** Not such information is associated with an identifier, it is immutable, 
-           if you only associate a property to an identifier 
-           we should consider [Lassign]
-        *)
-type ident_tbl = kind Ident_hashtbl.t 
 
 
-type ident_info = {
-  kind : kind ; 
-  state : state
-}
+type ident_tbl = Lam_id_kind.t Ident_hashtbl.t 
 
-type meta = {
+
+
+type t = {
   env : Env.t;
   filename : string ;
   export_idents : Ident_set.t ;
   exports : Ident.t list ;
   alias_tbl : alias_tbl; 
-  exit_codes : Int_hash_set.t;
+  
 
   ident_tbl : ident_tbl;
   (** we don't need count arities for all identifiers, for identifiers
@@ -71326,6 +71433,8 @@ type meta = {
 
 }
 
+
+val print : Format.formatter -> t -> unit 
 end = struct
 #1 "lam_stats.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -71373,83 +71482,23 @@ end = struct
     in the  beginning, when we do alpha conversion, we can instrument the table 
  *)
 
-type function_arities = Lam.function_arities
+
 
 type alias_tbl =  Ident.t Ident_hashtbl.t
 
-type function_kind = 
-  | Functor 
-  | Function
-  | NA
 
-type rec_flag = 
-  | Rec 
-  | Non_rec
 
-type function_id = {
-  kind : function_kind ; 
-  mutable arity : function_arities ;
-  lambda  : Lam.t ;
-  rec_flag : rec_flag
-}
+type ident_tbl = Lam_id_kind.t Ident_hashtbl.t 
 
-type element = 
-  | NA 
-  | SimpleForm of Lam.t
 
-type boxed_nullable
-  = 
-  | Undefined 
-  | Null 
-  | Null_undefined
-  | Normal 
 
-type kind = 
-  | ImmutableBlock of element array * boxed_nullable
-  | MutableBlock of element array 
-  | Constant of Lam.constant
-  | Module of Ident.t
-        (** Global module, local module is treated as an array
-         *)
-  | Function of function_id (** True then functor *)
-  | Exception 
-  | Parameter
-      (** For this case, it can help us determine whether it should be inlined or not *)
-  | NA 
-  (* | Boxed_nullable of Ident.t  *)
-    (** 
-       {[ let v/2 =  Pnull_to_opt u]} 
-
-       {[ let v/2 = Pnull_to_opt exp]}
-       can be translated into 
-       {[
-         let v/1 = exp in 
-         let v/2 =a Pnull_to_opt exp 
-       ]}
-       so that [Pfield v/2 0] will be replaced by [v/1], 
-       [Lif(v/1)] will be translated into [Lif (v/2 === undefined )]
-    *)
-type ident_tbl = kind Ident_hashtbl.t 
-
-type state = 
-  | Live (** Globals are always live *)
-  | Dead  (** removed after elimination *)
-  | NA
-
-type ident_info = {
-  kind : kind ; 
-  state : state
-}
-
-type meta = {
+type t = {
   env : Env.t;
   filename : string ;
   export_idents : Ident_set.t ;
-  exports : Ident.t list ;
+  exports : Ident.t list ; (*It is kept since order matters? *)
 
   alias_tbl : alias_tbl; 
-  exit_codes :  Int_hash_set.t;
-
   ident_tbl : ident_tbl;
   (** we don't need count arities for all identifiers, for identifiers
       for sure it's not a function, there is no need to count them
@@ -71457,7 +71506,27 @@ type meta = {
   
 }
 
+let pp = Format.fprintf
 
+let pp_alias_tbl fmt (tbl : alias_tbl) = 
+  Ident_hashtbl.iter (fun k v -> pp fmt "@[%a -> %a@]@." Ident.print k Ident.print v)
+    tbl
+
+
+
+let pp_ident_tbl fmt (ident_tbl : ident_tbl) = 
+  Ident_hashtbl.iter (fun k v -> pp fmt "@[%a -> %a@]@." 
+    Ident.print k Lam_id_kind.print v)
+    ident_tbl
+
+let print fmt (v : t) = 
+    pp fmt "@[Alias table:@ @[%a@]@]" pp_alias_tbl v.alias_tbl ;    
+    pp fmt "@[Ident table:@ @[%a@]@]" pp_ident_tbl v.ident_tbl ;
+    pp fmt "@[exports:@ @[%a@]@]"
+        (Format.pp_print_list 
+            ~pp_sep:(fun fmt () -> pp fmt "@ ;")             
+            Ident.print
+        ) v.exports
 end
 module Lam_util : sig 
 #1 "lam_util.mli"
@@ -71496,8 +71565,30 @@ val string_of_lambda : Lam.t -> string
 
 val string_of_primitive : Lam.primitive -> string
 
-val kind_of_lambda_block : Lam_stats.boxed_nullable -> Lam.t list -> Lam_stats.kind
+val kind_of_lambda_block : Lam_id_kind.boxed_nullable -> Lam.t list -> Lam_id_kind.t
 
+
+(** [field_flattern_get cb v i tbl]
+    try to remove the indirection of [v.(i)], if not 
+    call [cb ()].
+    Note due to different control flow, a constant block
+    may result in out-of bound access.
+    {[
+      (let
+  (myShape/1011 =a [0: 10]
+    area/1012 =
+      (switch* myShape/1011
+       case tag 0:
+        (let (r/1013 =a (field 0 myShape/1011))
+          ( *. (float_of_int ( * r/1013 r/1013)) 3.14))
+       case tag 1:
+        (let
+          (h/1015 =a (field 1 myShape/1011) w/1014 =a (field 0 myShape/1011))
+          (float_of_int ( * w/1014 h/1015)))))
+  (makeblock 0 myShape/1011 area/1012))
+    ]}
+    Here [(field 1 myShape]) is out of bounds
+*)
 val field_flatten_get : 
   (unit -> Lam.t) -> Ident.t -> int -> Lam_stats.ident_tbl -> Lam.t
 
@@ -71505,8 +71596,8 @@ val field_flatten_get :
 
 
 
-val alias_ident_or_global : Lam_stats.meta ->
-  Ident.t -> Ident.t -> Lam_stats.kind -> Lam.let_kind -> unit 
+val alias_ident_or_global : Lam_stats.t ->
+  Ident.t -> Ident.t -> Lam_id_kind.t -> Lam.let_kind -> unit 
 
 
 val refine_let : 
@@ -71585,7 +71676,7 @@ let string_of_primitive = Format.asprintf "%a" Lam_print.primitive
 
 
 (*
-let add_required_modules ( x : Ident.t list) (meta : Lam_stats.meta) = 
+let add_required_modules ( x : Ident.t list) (meta : Lam_stats.t) = 
   let meta_require_modules = meta.required_modules in
   List.iter (fun x -> add meta_require_modules (Lam_module_ident.of_ml x)) x 
 *)
@@ -71729,8 +71820,8 @@ let refine_let
   (* | None , _, _ -> 
     Lam.let_ Strict param arg  l *)
 
-let alias_ident_or_global (meta : Lam_stats.meta) (k:Ident.t) (v:Ident.t) 
-    (v_kind : Lam_stats.kind) (let_kind : Lam.let_kind) =
+let alias_ident_or_global (meta : Lam_stats.t) (k:Ident.t) (v:Ident.t) 
+    (v_kind : Lam_id_kind.t) (let_kind : Lam.let_kind) =
   (** treat rec as Strict, k is assigned to v 
       {[ let k = v ]}
   *)
@@ -71787,7 +71878,7 @@ let alias_ident_or_global (meta : Lam_stats.meta) (k:Ident.t) (v:Ident.t)
        mutable fields are explicit, since wen can not inline an mutable block access
 *)
 
-let element_of_lambda (lam : Lam.t) : Lam_stats.element = 
+let element_of_lambda (lam : Lam.t) : Lam_id_kind.element = 
   match lam with 
   | Lvar _ 
   | Lconst _ 
@@ -71797,12 +71888,12 @@ let element_of_lambda (lam : Lam.t) : Lam_stats.element =
   (* | Lfunction _  *)
   | _ -> NA 
 
-let kind_of_lambda_block kind (xs : Lam.t list) : Lam_stats.kind = 
-  Lam_stats.ImmutableBlock( Ext_array.of_list_map (fun x -> 
+let kind_of_lambda_block kind (xs : Lam.t list) : Lam_id_kind.t = 
+  ImmutableBlock( Ext_array.of_list_map (fun x -> 
   element_of_lambda x ) xs , kind)
 
 let field_flatten_get
-   lam v i (tbl : Lam_stats.kind Ident_hashtbl.t) : Lam.t =
+   lam v i (tbl : Lam_id_kind.t Ident_hashtbl.t) : Lam.t =
   match Ident_hashtbl.find_opt tbl v  with 
   | Some (Module g) -> 
     Lam.prim ~primitive:(Pfield (i, Lambda.Fld_na)) 
@@ -71811,9 +71902,13 @@ let field_flatten_get
     begin match arr.(i) with 
       | NA -> lam ()
       | SimpleForm l -> l
+      | exception _ -> lam ()
     end
   | Some (Constant (Const_block (_,_,ls))) -> 
-    Lam.const (List.nth  ls i)
+    begin match Ext_list.nth_opt ls i with 
+    | None -> lam  ()
+    | Some x -> Lam.const x
+    end
   | Some _
   | None -> lam ()
 
@@ -72729,7 +72824,7 @@ let str_of_ident (cxt : Ext_pp_scope.t) (id : Ident.t)   =
        [Printf.sprintf "%s$%d" name id.stamp] which is 
        not relevant to the context       
     *)    
-    let name = Ext_ident.convert true id.name in
+    let name = Ext_ident.convert id.name in
     let i,new_cxt = Ext_pp_scope.add_ident  id cxt in
     (* Attention: 
        $$Array.length, due to the fact that global module is 
@@ -73183,7 +73278,7 @@ and vident cxt f  (v : J.vident) =
     | Qualified (id, (Ml | Runtime),  Some name) ->
       let cxt = ident cxt f id in
       P.string f L.dot;
-      P.string f (Ext_ident.convert true name);
+      P.string f (Ext_ident.convert  name);
       cxt
     | Qualified (id, External _, Some name) ->
       let cxt = ident cxt f id in
@@ -74223,15 +74318,20 @@ and block cxt f b =
   (* This one is for '{' *)
   P.brace_vgroup f 1 (fun _ -> statement_list false cxt   f b )
 
+let default_export = "default"
 
 (** Exports printer *)
 (** Print exports in Google module format, CommonJS format *)
 let exports cxt f (idents : Ident.t list) = 
   let outer_cxt, reversed_list, margin = 
     List.fold_left (fun (cxt, acc, len ) (id : Ident.t) -> 
-        let s = Ext_ident.convert true id.name in        
+        let id_name = id.name in 
+        let s = Ext_ident.convert id_name in        
         let str,cxt  = str_of_ident cxt id in         
-        cxt, ( (s,str) :: acc ) , max len (String.length s)   )
+        cxt, ( 
+          if id_name = default_export then 
+            (default_export, str) :: (s,str)::acc 
+          else (s,str) :: acc ) , max len (String.length s)   )
       (cxt, [], 0)  idents in    
   P.newline f ;
   Ext_list.rev_iter (fun (s,export) -> 
@@ -74252,9 +74352,14 @@ let exports cxt f (idents : Ident.t list) =
 let es6_export cxt f (idents : Ident.t list) = 
   let outer_cxt, reversed_list, margin = 
     List.fold_left (fun (cxt, acc, len ) (id : Ident.t) -> 
-        let s = Ext_ident.convert true id.name in        
+        let id_name = id.name in 
+        let s = Ext_ident.convert id_name in        
         let str,cxt  = str_of_ident cxt id in         
-        cxt, ( (s,str) :: acc ) , max len (String.length s)   )
+        cxt, ( 
+          if id_name = default_export then 
+            (default_export,str)::(s,str)::acc
+          else 
+          (s,str) :: acc ) , max len (String.length s)   )
       (cxt, [], 0)  idents in    
   P.newline f ;
   P.string f L.export ; 
@@ -74571,8 +74676,12 @@ module Js_cmj_format : sig
     ]}
 *)
 
+type arity = 
+  | Single of Lam_arity.t
+  | Submodule of Lam_arity.t array
+
 type cmj_value = {
-  arity : Lam.function_arities ;
+  arity : arity ; 
   closed_lambda : Lam.t option ; 
   (* Either constant or closed functor *)
 }
@@ -74588,6 +74697,7 @@ type t = {
   npm_package_path : Js_config.packages_info;
 }
 
+val single_na : arity
 val pure_dummy : t
 val no_pure_dummy : t
 
@@ -74628,11 +74738,13 @@ end = struct
 
 
 
-
+type arity = 
+  | Single of Lam_arity.t
+  | Submodule of Lam_arity.t array
 
 (* TODO: add a magic number *)
 type cmj_value = {
-  arity : Lam.function_arities ;
+  arity : arity ;
   closed_lambda : Lam.t option ; 
   (** Either constant or closed functor *)
 }
@@ -74640,7 +74752,7 @@ type cmj_value = {
 type effect = string option
 
 
-
+let single_na = Single NA
 (** we don't force people to use package *)
 
 type t = {
@@ -74649,7 +74761,7 @@ type t = {
   npm_package_path : Js_config.packages_info ;
 }
 
-let cmj_magic_number =  "BUCKLE20160510"
+let cmj_magic_number =  "BUCKLE20170711"
 let cmj_magic_number_length = 
   String.length cmj_magic_number
 
@@ -83541,7 +83653,7 @@ type ident_info = {
   id : Ident.t;
   name : string;
   signatures : Types.signature;
-  arity : Lam.function_arities; 
+  arity : Js_cmj_format.arity;
   closed_lambda : Lam.t option 
 }
 
@@ -83673,7 +83785,7 @@ type ident_info = {
   id : Ident.t;
   name : string;
   signatures : Types.signature;
-  arity : Lam.function_arities; 
+  arity : Js_cmj_format.arity; 
   closed_lambda : Lam.t option 
 }
 
@@ -83764,8 +83876,8 @@ let find_and_add_if_not_exist (id, pos) env ~not_found ~found =
         let name =  (Type_util.get_name signature pos ) in
         let arity, closed_lambda =        
           begin match String_map.find_opt name cmj_table.values with
-            | Some {arity; closed_lambda} -> arity, closed_lambda
-            | None -> NA, None 
+            | Some {arity ; closed_lambda} -> arity, closed_lambda
+            | None -> Js_cmj_format.single_na, None 
           end in
         found {id; 
                name ;
@@ -83783,7 +83895,7 @@ let find_and_add_if_not_exist (id, pos) env ~not_found ~found =
         match  String_map.find_opt name values with
         | Some {arity; closed_lambda;_} -> 
           arity, closed_lambda 
-        | None -> (NA, None)
+        | None -> Js_cmj_format.single_na, None
       ) in
       found { id;
               name; 
@@ -84156,7 +84268,7 @@ type cxt = {
   st : st ;
   should_return : return_type;
   jmp_table : value  HandlerMap.t ;
-  meta : Lam_stats.meta ;
+  meta : Lam_stats.t ;
 }
 
 val empty_handler_map : value HandlerMap.t 
@@ -84248,7 +84360,7 @@ type cxt = {
   st : st ;
   should_return : return_type;
   jmp_table : value  HandlerMap.t ;
-  meta : Lam_stats.meta ;
+  meta : Lam_stats.t ;
   (* include_alias :  *)
   (*   (\** It's correct to add more, we can do this in lambda optimization pass *)
   (*    *\) *)
@@ -86863,6 +86975,272 @@ let remove export_idents (rest : Lam_group.t list) : Lam_group.t list  =
   
 
 end
+module Lam_stats_util : sig 
+#1 "lam_stats_util.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(** Utilities for lambda analysis *)
+
+
+val arity_of_var : 
+  Lam_stats.t -> 
+  Ident.t -> 
+  Lam_arity.t
+
+val get_arity :
+  Lam_stats.t -> 
+  Lam.t ->
+  Lam_arity.t
+
+
+
+
+
+
+end = struct
+#1 "lam_stats_util.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+      
+let merge 
+    ((n : int ), params as y)
+    (x : Lam_arity.t) : Lam_arity.t = 
+  match x with 
+  | NA -> Determin(false, [y], false)
+  | Determin (b,xs,tail) -> Determin (b, y :: xs, tail)
+
+
+let arity_of_var (meta : Lam_stats.t) (v : Ident.t)  =
+    (** for functional parameter, if it is a high order function,
+        if it's not from function parameter, we should warn
+    *)
+    begin 
+      match Ident_hashtbl.find_opt meta.ident_tbl v with 
+      | Some (FunctionId {arity;_}) -> arity
+      | Some _
+      | None ->
+        (* Format.fprintf Format.err_formatter *)
+        (*   "@[%s %a is not function/functor@]@." meta.filename Ident.print v ; *)
+        (NA : Lam_arity.t)
+
+    end
+
+(* we need record all aliases -- since not all aliases are eliminated, 
+   mostly are toplevel bindings
+   We will keep iterating such environment
+   If not found, we will return [NA]
+*)
+let rec get_arity 
+    (meta : Lam_stats.t) 
+    (lam : Lam.t) : 
+  Lam_arity.t = 
+  match lam with 
+  | Lconst _ -> Determin (true,[], false)
+  | Lvar v -> arity_of_var meta v 
+  | Llet(_,_,_, l ) -> get_arity meta l 
+
+  (*   begin match Parsetree_util.has_arity prim_attributes with *)
+  (*     | Some arity ->  *)
+  (*       (\* Ext_log.dwarn __LOC__ "arity %d" arity; *\) *)
+  (*       Determin(false, [arity, None], false) *)
+  (*     | None -> NA *)
+  (*   end *)
+  | Lprim {primitive = Pfield (n,_); 
+           args =  [ Lglobal_module id  ]; _} ->
+    Lam_compile_env.find_and_add_if_not_exist (id, n) meta.env
+      ~not_found:(fun _ -> assert false)
+      ~found:(fun x -> match x.arity with Single x -> x | Submodule _ -> NA )
+  | Lprim {primitive = Pfield (m,_); 
+           args =  [ Lprim{primitive = Pfield(n,_); 
+            args = [ Lglobal_module id]}  ]
+           ; _} ->
+    Lam_compile_env.find_and_add_if_not_exist (id, n) meta.env
+      ~not_found:(fun _ -> assert false)
+      ~found:(fun x -> match x.arity with 
+      | Submodule subs -> subs.(m)
+      | Single _ -> NA
+       )
+
+      
+  | Lprim {primitive = Pfield _; _} -> NA (** TODO *)
+  | Lprim {primitive = Praise ;  _} -> Determin(true,[], true)
+  | Lprim {primitive = Pccall _; _} -> Determin(false, [], false)
+  | Lglobal_module _ (* TODO: fix me never going to happen assert false  *)
+  | Lprim _  -> Determin(true,[] ,false)
+  (* shall we handle primitive in a direct way, 
+      since we know all the information
+      Invariant: all primitive application is fully applied, 
+      since this information  is already available
+
+      -- Check external c functions ?
+      -- it's not true for primitives 
+      like caml_set_oo_id  or  Lprim (Pmakeblock , [])
+
+      it seems true that primitive is always fully applied, however,
+      it can return a function
+  *)
+  | Lletrec(_, body) ->
+    get_arity meta body
+  (* | Lapply(Lprim( p, _), _args, _info) -> *)
+  (*     Determin(true, [], false) (\** Invariant : primtive application is always complete.. *\) *)
+
+  | Lapply{fn = app;  args; _ } -> (* detect functor application *)
+    let fn = get_arity meta app in 
+    begin match fn with 
+      | NA -> NA 
+      | Determin (b, xs, tail ) -> 
+        let rec take (xs : _ list) arg_length = 
+          match xs with 
+          | (x,y) :: xs ->
+            if arg_length = x then Lam_arity.Determin (b, xs, tail) 
+            else if arg_length > x then
+              take xs (arg_length - x)
+            else Determin (b, 
+                           ((x -  arg_length ), 
+                            (match y with
+                            | Some y -> Some (Ext_list.drop arg_length y) 
+                            | None -> None)) :: xs ,
+                           tail)
+          | [] -> 
+            if tail then Determin(b, [], tail)
+            else if not b then 
+              NA
+            else NA
+            (* Actually, you can not have truly deministic arities
+               for example [fun x -> x ]
+            *)
+              (* Ext_pervasives.failwithf ~loc:__LOC__ "%s %s" *)
+              (*   (Format.asprintf "%a" pp_arities fn)  *)
+              (*   (Lam_util.string_of_lambda lam) *)
+        in
+        take xs (List.length args) 
+    end
+  | Lfunction {arity; function_kind; params; body = l} -> 
+    merge (arity, Some params)  (get_arity meta l)
+  | Lswitch(l, {sw_failaction; 
+                sw_consts; 
+                sw_blocks;
+                sw_numblocks = _;
+                sw_numconsts = _;
+               }) -> 
+    all_lambdas meta (
+      let rest = (sw_consts |> List.map snd) @ (sw_blocks |> List.map snd ) in
+      match sw_failaction with None -> rest | Some x -> x::rest )
+  | Lstringswitch(l, sw, d) -> 
+    begin match d with 
+      | None -> all_lambdas meta (List.map snd  sw )
+      | Some v -> all_lambdas meta (v:: List.map snd  sw)
+    end
+  | Lstaticraise _ -> NA (* since it will not be in tail position *)
+  | Lstaticcatch(_, _, handler) -> get_arity meta handler
+  | Ltrywith(l1, _, l2) -> 
+    all_lambdas meta [l1;l2]
+  | Lifthenelse(l1, l2, l3) ->
+    all_lambdas meta [l2;l3]
+  | Lsequence(_, l2) -> get_arity meta l2 
+  | Lsend(u, m, o, ll, v) -> NA
+  | Lifused(v, l) -> NA 
+  | Lwhile _ 
+  | Lfor _  
+  | Lassign _ -> Determin(true,[], false)
+
+and all_lambdas meta (xs : Lam.t list) = 
+  match xs with 
+  | y :: ys -> 
+    let arity =  get_arity meta y in 
+    List.fold_left (fun exist (v : Lam.t) -> 
+        match (exist : Lam_arity.t) with 
+        | NA -> NA 
+        | Determin (b, xs, tail) -> 
+          begin 
+            match get_arity meta v with 
+            | NA -> NA 
+            | Determin (u,ys,tail2) -> 
+              let rec aux (b,acc) xs ys = 
+                match xs,ys with
+                | [], [] -> (b, List.rev acc, tail && tail2) 
+                | [], y::ys when tail  -> 
+                  aux (b,y::acc) [] ys 
+                | x::xs, [] when tail2 -> 
+                  aux (b,x::acc) [] xs
+                | x::xs, y::ys when x = y -> aux (b, (y :: acc)) xs ys 
+                | _, _  -> (false, List.rev acc, false) in 
+              let (b,acc, tail3)  = aux ( u &&b, []) xs ys in 
+              Determin (b,acc, tail3)
+          end
+      ) arity ys 
+  | _ -> assert false 
+
+(*
+let dump_exports_arities (meta : Lam_stats.t ) = 
+  let fmt = 
+    if meta.filename != "" then 
+      let cmj_file = Ext_filename.chop_extension meta.filename ^ Js_config.cmj_ext in
+      let out = open_out cmj_file in   
+      Format.formatter_of_out_channel out
+    else 
+      Format.err_formatter in 
+  begin 
+    List.iter (fun (i : Ident.t) ->  
+      pp fmt "@[%s: %s -> %a@]@." meta.filename i.name 
+        pp_arities  (get_arity meta (Lvar i))
+              ) meta.exports
+  end
+*)
+
+
+end
 module Lam_coercion : sig 
 #1 "lam_coercion.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -86897,11 +87275,11 @@ type t = {
   groups : Lam_group.t list ; 
 }   
 
+
 val coerce_and_group_big_lambda : 
-    Ident.t list -> 
-    Ident_set.t -> 
+    Lam_stats.t ->
     Lam.t -> 
-    t 
+    t * Lam_stats.t
 end = struct
 #1 "lam_coercion.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -86935,12 +87313,17 @@ end = struct
 (*
   Invariant: The last one is always [exports]
   Compile definitions
-           Compile exports
-           Assume Pmakeblock(_,_),
-           lambda_exports are pure
-           compile each binding with a return value
-           This might be wrong in toplevel
-           TODO: add this check as early as possible in the beginning
+  Compile exports
+  Assume Pmakeblock(_,_),
+  lambda_exports are pure
+  compile each binding with a return value
+
+  Such invariant  might be wrong in toplevel (since it is all bindings)
+
+  We should add this check as early as possible
+*)
+
+(*           
 - {[ Ident.same id eid]} is more  correct, 
         however, it will introduce a coercion, which is not necessary, 
         as long as its name is the same, we want to avoid 
@@ -86977,46 +87360,85 @@ end = struct
 type t = {
   export_list : Ident.t list ;
   export_set : Ident_set.t;
-  export_map : Lam.t Ident_map.t ; 
+  export_map : Lam.t Ident_map.t ;
+  (** not used in code generation, mostly used 
+      for store some information in cmj files *)   
   groups : Lam_group.t list ; 
+  (* all code to be compiled later = original code + rebound coercions *)
 }               
 
-let init  export_set = 
-  { export_list = [];
-    export_set ;
-    export_map = Ident_map.empty ;
-    groups = []
-  }
-let handle_exports 
-    (original_exports : Ident.t list)
-    (original_export_set : Ident_set.t)
+
+let handle_exports (meta : Lam_stats.t)
     (lambda_exports : Lam.t list)  (reverse_input : Lam_group.t list) =
+   
+  let (original_exports : Ident.t list) = meta.exports in 
+  let (original_export_set : Ident_set.t) = meta.export_idents in   
   let len = List.length original_exports in   
   let tbl = String_hash_set.create len in 
   let ({export_list ; export_set  ;  groups = coercion_groups } as result)  = 
     List.fold_right2 
-      (fun  (original_export_id : Ident.t) lam (acc : t)  ->
-          let original_name = original_export_id.name in 
+      (fun  (original_export_id : Ident.t) (lam : Lam.t) (acc : t)  ->
+         let original_name = original_export_id.name in 
          if not @@ String_hash_set.check_add tbl original_name then 
            Bs_exception.error (Bs_duplicate_exports original_name);
-         (match (lam : Lam.t) with 
-          | Lvar id 
-            when Ident.name id = original_name -> 
+         (match lam  with 
+          | Lvar id ->
+            if 
+             Ident.name id = original_name then
             { acc with 
               export_list = id :: acc.export_list ; 
               export_set = 
-                (Ident_set.add id (Ident_set.remove original_export_id acc.export_set))
-               }
+                if id.stamp = original_export_id.stamp then acc.export_set 
+                else (Ident_set.add id (Ident_set.remove original_export_id acc.export_set))
+            }
+            else
+             let newid = Ident.rename original_export_id in 
+             let kind : Lam.let_kind = Alias in 
+             Lam_util.alias_ident_or_global meta newid id NA kind;
+              { acc with 
+              export_list = newid :: acc.export_list;
+              export_map = Ident_map.add newid lam acc.export_map;              
+              groups = Single(kind, newid, lam) :: acc.groups
+              }
           | _ -> 
-            (* Invariant: [eid] can not be bound before *)
+            (*
+              Example:
+              {[
+              let N = [a0,a1,a2,a3]
+              in [[ N[0], N[2]]]
+              
+              ]}
+              After optimization
+              {[
+                [ [ a0, a2] ] 
+              ]}
+              Here [N] is elminated while N is still exported identifier
+              Invariant: [eid] can not be bound before 
+              FIX: this invariant is not guaranteed. 
+              Bug manifested: when querying arity info about N, it returns an array 
+              of size 4 instead of 2
+              *)
+             let newid = Ident.rename original_export_id in    
+             (match Lam_stats_util.get_arity meta lam with 
+             | NA
+             | Determin(_,[],_) ->
+              ()  
+             | Determin _ as v  ->
+              Ident_hashtbl.add meta.ident_tbl newid 
+                (FunctionId{
+                 arity = v; lambda = lam;
+                   rec_flag = Non_rec }))
+            ;
             { acc with 
-              export_list = original_export_id :: acc.export_list;
-              export_map = Ident_map.add original_export_id lam acc.export_map;              
-              groups = Single(Strict, original_export_id, lam) :: acc.groups
-            });
+              export_list = newid :: acc.export_list;
+              export_map = Ident_map.add newid lam acc.export_map;              
+              groups = Single(Strict, newid, lam) :: acc.groups
+            })
       )
-      original_exports lambda_exports 
-      (init original_export_set)
+      original_exports 
+      lambda_exports 
+      {export_list = []; export_set = original_export_set; export_map = Ident_map.empty; groups = []}
+
   in
 
   let (export_map, coerced_input) = 
@@ -87025,6 +87447,9 @@ let handle_exports
          (match (x : Lam_group.t)  with 
           | Single (_,id,lam) when Ident_set.mem id export_set 
             -> Ident_map.add id lam export_map
+              (** relies on the Invariant that [eoid] can not be bound before
+                  FIX: such invariant may not hold
+              *)
           | _ -> export_map), x :: acc ) (result.export_map, result.groups) reverse_input in
   { result with export_map ; groups = Lam_dce.remove export_list coerced_input }
 
@@ -87032,7 +87457,7 @@ let handle_exports
     - also for function compilation, flattening should be done first
     - [compile_group] and [compile] become mutually recursive function
 *)
-
+;;
 let rec flatten 
     (acc :  Lam_group.t list ) 
     (lam : Lam.t) :  Lam.t *  Lam_group.t list = 
@@ -87052,14 +87477,23 @@ let rec flatten
   | x ->  
     x, acc
 
+(** Invarinat to hold:
+    [export_map] is sound, for every rebinded export id, its key is indeed in 
+    [export_map] since we know its old bindings are no longer valid, i.e 
+    Lam_stats.t is not valid
+*)    
 let coerce_and_group_big_lambda 
-    old_exports 
-    old_export_sets
+    (meta : Lam_stats.t) 
     lam = 
   match flatten [] lam with 
-  | Lam.Lprim {primitive = Pmakeblock _;  args = lambda_exports }, reverse_input 
+  | Lprim {primitive = Pmakeblock _;  args = lambda_exports }, reverse_input 
     -> 
-    handle_exports old_exports old_export_sets lambda_exports reverse_input 
+    let coerced_input = 
+      handle_exports
+      meta lambda_exports reverse_input  in 
+    coerced_input, 
+      {meta with export_idents = coerced_input.export_set ; 
+        exports = coerced_input.export_list}
   | _ -> assert false
 
 
@@ -88294,7 +88728,7 @@ val beta_reduce : Ident.t list -> Lam.t -> Lam.t list -> Lam.t
  *)
 
 val propogate_beta_reduce : 
-  Lam_stats.meta -> 
+  Lam_stats.t -> 
   Ident.t list -> 
   Lam.t -> 
   Lam.t list -> 
@@ -88323,7 +88757,7 @@ val propogate_beta_reduce :
    ]}
 *)
 val propogate_beta_reduce_with_map : 
-  Lam_stats.meta ->
+  Lam_stats.t ->
   Lam_closure.stats Ident_map.t ->
   Ident.t list ->
   Lam.t -> Lam.t list -> Lam.t
@@ -88386,7 +88820,7 @@ end = struct
    we can bound [x] to [100] in a single step     
  *)
 let propogate_beta_reduce 
-    (meta : Lam_stats.meta) params body args =
+    (meta : Lam_stats.t) params body args =
   match Lam_beta_reduce_util.simple_beta_reduce params body  args with 
   | Some x -> x 
   | None -> 
@@ -88429,7 +88863,7 @@ let propogate_beta_reduce
      rest_bindings new_body
 
 let propogate_beta_reduce_with_map  
-    (meta : Lam_stats.meta) (map : Lam_closure.stats Ident_map.t ) params body args =
+    (meta : Lam_stats.t) (map : Lam_closure.stats Ident_map.t ) params body args =
   match Lam_beta_reduce_util.simple_beta_reduce params body args with
   | Some x -> x
   | None ->
@@ -93006,26 +93440,24 @@ let rec
    @param env typing environment
    @param args arguments 
 *)
-
-and get_exp_with_args (cxt : Lam_compile_defs.cxt)  lam args_lambda
-    (id : Ident.t) (pos : int) env : Js_output.t = 
-  Lam_compile_env.find_and_add_if_not_exist (id,pos) env ~not_found:(fun id -> 
-      (** This can not happen since this id should be already consulted by type checker 
+(** This can not happen since this id should be already consulted by type checker 
           Worst case 
           {[
             E.index m (pos + 1)
           ]}
           shift by one (due to module encoding)
-      *)
-      (* Js_output.handle_block_return cxt.st cxt.should_return lam args_code @@  *)
-      (* E.str ~pure:false  (Printf.sprintf "Err %s %d %d" *)
-      (*                       id.name *)
-      (*                       id.flags *)
-      (*                       pos *)
-      (*                    ) *)
+*)
+(* Js_output.handle_block_return cxt.st cxt.should_return lam args_code @@  *)
+(* E.str ~pure:false  (Printf.sprintf "Err %s %d %d" *)
+(*                       id.name *)
+(*                       id.flags *)
+(*                       pos *)
+(*                    ) *)
+and get_exp_with_args (cxt : Lam_compile_defs.cxt)  lam args_lambda
+    (id : Ident.t) (pos : int) env : Js_output.t = 
+  Lam_compile_env.find_and_add_if_not_exist (id,pos) env ~not_found:(fun id -> 
       assert false 
     )
-
     ~found:(fun {id; name;arity; closed_lambda ; _} -> 
         let args_code, args = 
           List.fold_right 
@@ -93064,7 +93496,7 @@ and get_exp_with_args (cxt : Lam_compile_defs.cxt)  lam args_lambda
              E.seq (E.dump Error args) E.unit
            | _ -> 
              let rec aux (acc : J.expression)
-                 (arity : Lam.function_arities) args (len : int)  =
+                 (arity : Lam_arity.t) args (len : int)  =
                match arity, len with
                | _, 0 -> 
                  acc (** All arguments consumed so far *)
@@ -93096,7 +93528,9 @@ and get_exp_with_args (cxt : Lam_compile_defs.cxt)  lam args_lambda
                | NA, _ ->
                  E.call ~info:Js_call_info.dummy acc args
              in
-             aux (E.ml_var_dot id name) arity args (List.length args ))
+             aux (E.ml_var_dot id name) 
+             (match arity with Single x -> x | Submodule _ -> NA)
+            args (List.length args ))
       )
 
 and  compile_let flag (cxt : Lam_compile_defs.cxt) id (arg : Lam.t) : Js_output.t =
@@ -94530,313 +94964,6 @@ and
   end
 
 end
-module Lam_stats_util : sig 
-#1 "lam_stats_util.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(** Utilities for lambda analysis *)
-
-val pp_alias_tbl : Format.formatter -> Lam_stats.alias_tbl  -> unit
-
-val pp_arities : Format.formatter -> Lam.function_arities -> unit
-
-val get_arity : Lam_stats.meta -> Lam.t -> Lam.function_arities
-
-val pp_ident_tbl : Format.formatter -> Lam_stats.ident_tbl -> unit  
-(* val dump_exports_arities : Lam_stats.meta -> unit *)
-
-
-
-end = struct
-#1 "lam_stats_util.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-let pp = Format.fprintf
-
-let pp_arities (fmt : Format.formatter) (x : Lam.function_arities) = 
-  match x with 
-  | NA -> pp fmt "?"
-  | Determin (b,ls,tail) -> 
-    begin 
-      pp fmt "@[";
-      (if not b 
-       then 
-         pp fmt "~");
-      pp fmt "[";
-      Format.pp_print_list ~pp_sep:(fun fmt () -> pp fmt ",")
-        (fun fmt  (x,_) -> Format.pp_print_int fmt x)
-        fmt ls ;
-      if tail 
-      then pp fmt "@ *";
-      pp fmt "]@]";
-    end
-
-let pp_arities_tbl 
-    (fmt : Format.formatter) 
-    (arities_tbl : (Ident.t, Lam.function_arities ref) Hashtbl.t) = 
-  Hashtbl.fold (fun (i:Ident.t) (v : Lam.function_arities ref) _ -> 
-      pp Format.err_formatter "@[%s -> %a@]@."i.name pp_arities !v ) arities_tbl ()
-
-let pp_alias_tbl fmt (tbl : Lam_stats.alias_tbl) = 
-  Ident_hashtbl.iter (fun k v -> pp fmt "@[%a -> %a@]@." Ident.print k Ident.print v)
-    tbl
-
-
-let pp_kind fmt (kind : Lam_stats.kind) = 
-  match kind with 
-  | ImmutableBlock (arr,_) -> 
-    pp fmt "Imm(%d)" (Array.length arr)
-  | MutableBlock (arr) ->     
-    pp fmt "Mutable(%d)" (Array.length arr)
-  | Constant _  ->
-    pp fmt "Constant"
-  | Module id -> 
-    pp fmt "%s/%d" id.name id.stamp 
-  | Function _ -> 
-    pp fmt "function"
-  | Exception ->
-    pp fmt "Exception" 
-  | Parameter -> 
-    pp fmt "Parameter"  
-  | NA -> 
-    pp fmt "NA"
-
-let pp_ident_tbl fmt (ident_tbl : Lam_stats.ident_tbl) = 
-  Ident_hashtbl.iter (fun k v -> pp fmt "@[%a -> %a@]@." 
-    Ident.print k pp_kind v)
-    ident_tbl
-      
-let merge 
-    ((n : int ), params as y)
-    (x : Lam.function_arities) : Lam.function_arities = 
-  match x with 
-  | NA -> Determin(false, [y], false)
-  | Determin (b,xs,tail) -> Determin (b, y :: xs, tail)
-
-(* we need record all aliases -- since not all aliases are eliminated, 
-   mostly are toplevel bindings
-   We will keep iterating such environment
-   If not found, we will return [NA]
-*)
-let rec get_arity 
-    (meta : Lam_stats.meta) 
-    (lam : Lam.t) : 
-  Lam.function_arities = 
-  match lam with 
-  | Lconst _ -> Determin (true,[], false)
-  | Lvar v -> 
-    (** for functional parameter, if it is a high order function,
-        if it's not from function parameter, we should warn
-    *)
-    begin 
-      match Ident_hashtbl.find_opt meta.ident_tbl v with 
-      | Some (Function {arity;_}) -> arity
-      | Some _
-      | None ->
-        (* Format.fprintf Format.err_formatter *)
-        (*   "@[%s %a is not function/functor@]@." meta.filename Ident.print v ; *)
-        (NA : Lam.function_arities)
-
-    end
-  | Llet(_,_,_, l ) -> get_arity meta l 
-
-  (*   begin match Parsetree_util.has_arity prim_attributes with *)
-  (*     | Some arity ->  *)
-  (*       (\* Ext_log.dwarn __LOC__ "arity %d" arity; *\) *)
-  (*       Determin(false, [arity, None], false) *)
-  (*     | None -> NA *)
-  (*   end *)
-  | Lprim {primitive = Pfield (n,_); 
-           args =  [ Lglobal_module id  ]; _} ->
-    Lam_compile_env.find_and_add_if_not_exist (id, n) meta.env
-      ~not_found:(fun _ -> assert false)
-      ~found:(fun x -> x.arity )
-  | Lprim {primitive = Pfield _; _} -> NA (** TODO *)
-  | Lprim {primitive = Praise ;  _} -> Determin(true,[], true)
-  | Lprim {primitive = Pccall _; _} -> Determin(false, [], false)
-  | Lglobal_module _ (* TODO: fix me never going to happen assert false  *)
-  | Lprim _  -> Determin(true,[] ,false)
-  (* shall we handle primitive in a direct way, 
-      since we know all the information
-      Invariant: all primitive application is fully applied, 
-      since this information  is already available
-
-      -- Check external c functions ?
-      -- it's not true for primitives 
-      like caml_set_oo_id  or  Lprim (Pmakeblock , [])
-
-      it seems true that primitive is always fully applied, however,
-      it can return a function
-  *)
-  | Lletrec(_, body) ->
-    get_arity meta body
-  (* | Lapply(Lprim( p, _), _args, _info) -> *)
-  (*     Determin(true, [], false) (\** Invariant : primtive application is always complete.. *\) *)
-
-  | Lapply{fn = app;  args; _ } -> (* detect functor application *)
-    let fn = get_arity meta app in 
-    begin match fn with 
-      | NA -> NA 
-      | Determin (b, xs, tail ) -> 
-        let rec take (xs : _ list) arg_length = 
-          match xs with 
-          | (x,y) :: xs ->
-            if arg_length = x then Lam.Determin (b, xs, tail) 
-            else if arg_length > x then
-              take xs (arg_length - x)
-            else Determin (b, 
-                           ((x -  arg_length ), 
-                            (match y with
-                            | Some y -> Some (Ext_list.drop arg_length y) 
-                            | None -> None)) :: xs ,
-                           tail)
-          | [] -> 
-            if tail then Determin(b, [], tail)
-            else if not b then 
-              NA
-            else NA
-            (* Actually, you can not have truly deministic arities
-               for example [fun x -> x ]
-            *)
-              (* Ext_pervasives.failwithf ~loc:__LOC__ "%s %s" *)
-              (*   (Format.asprintf "%a" pp_arities fn)  *)
-              (*   (Lam_util.string_of_lambda lam) *)
-        in
-        take xs (List.length args) 
-    end
-  | Lfunction {arity; function_kind; params; body = l} -> 
-    merge (arity, Some params)  (get_arity meta l)
-  | Lswitch(l, {sw_failaction; 
-                sw_consts; 
-                sw_blocks;
-                sw_numblocks = _;
-                sw_numconsts = _;
-               }) -> 
-    all_lambdas meta (
-      let rest = (sw_consts |> List.map snd) @ (sw_blocks |> List.map snd ) in
-      match sw_failaction with None -> rest | Some x -> x::rest )
-  | Lstringswitch(l, sw, d) -> 
-    begin match d with 
-      | None -> all_lambdas meta (List.map snd  sw )
-      | Some v -> all_lambdas meta (v:: List.map snd  sw)
-    end
-  | Lstaticraise _ -> NA (* since it will not be in tail position *)
-  | Lstaticcatch(_, _, handler) -> get_arity meta handler
-  | Ltrywith(l1, _, l2) -> 
-    all_lambdas meta [l1;l2]
-  | Lifthenelse(l1, l2, l3) ->
-    all_lambdas meta [l2;l3]
-  | Lsequence(_, l2) -> get_arity meta l2 
-  | Lsend(u, m, o, ll, v) -> NA
-  | Lifused(v, l) -> NA 
-  | Lwhile _ 
-  | Lfor _  
-  | Lassign _ -> Determin(true,[], false)
-
-and all_lambdas meta (xs : Lam.t list) = 
-  match xs with 
-  | y :: ys -> 
-    let arity =  get_arity meta y in 
-    List.fold_left (fun exist (v : Lam.t) -> 
-        match (exist : Lam.function_arities) with 
-        | NA -> NA 
-        | Determin (b, xs, tail) -> 
-          begin 
-            match get_arity meta v with 
-            | NA -> NA 
-            | Determin (u,ys,tail2) -> 
-              let rec aux (b,acc) xs ys = 
-                match xs,ys with
-                | [], [] -> (b, List.rev acc, tail && tail2) 
-                | [], y::ys when tail  -> 
-                  aux (b,y::acc) [] ys 
-                | x::xs, [] when tail2 -> 
-                  aux (b,x::acc) [] xs
-                | x::xs, y::ys when x = y -> aux (b, (y :: acc)) xs ys 
-                | _, _  -> (false, List.rev acc, false) in 
-              let (b,acc, tail3)  = aux ( u &&b, []) xs ys in 
-              Determin (b,acc, tail3)
-          end
-      ) arity ys 
-  | _ -> assert false 
-
-(*
-let dump_exports_arities (meta : Lam_stats.meta ) = 
-  let fmt = 
-    if meta.filename != "" then 
-      let cmj_file = Ext_filename.chop_extension meta.filename ^ Js_config.cmj_ext in
-      let out = open_out cmj_file in   
-      Format.formatter_of_out_channel out
-    else 
-      Format.err_formatter in 
-  begin 
-    List.iter (fun (i : Ident.t) ->  
-      pp fmt "@[%s: %s -> %a@]@." meta.filename i.name 
-        pp_arities  (get_arity meta (Lvar i))
-              ) meta.exports
-  end
-*)
-
-
-end
 module Lam_pass_alpha_conversion : sig 
 #1 "lam_pass_alpha_conversion.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -94872,7 +94999,7 @@ module Lam_pass_alpha_conversion : sig
 
 (** alpha conversion based on arity *)
 
-val alpha_conversion : Lam_stats.meta -> Lam.t  -> Lam.t
+val alpha_conversion : Lam_stats.t -> Lam.t  -> Lam.t
 
 end = struct
 #1 "lam_pass_alpha_conversion.ml"
@@ -94907,7 +95034,7 @@ end = struct
 
 
 
-let alpha_conversion (meta : Lam_stats.meta) (lam : Lam.t) : Lam.t = 
+let alpha_conversion (meta : Lam_stats.t) (lam : Lam.t) : Lam.t = 
   let rec simpl  (lam : Lam.t) = 
     match lam with 
     | Lconst _ -> lam
@@ -95103,11 +95230,11 @@ module Lam_pass_collect : sig
  *)
 
 (** Modify existing [meta] *)
-val collect_helper : Lam_stats.meta -> Lam.t -> unit
+val collect_helper : Lam_stats.t -> Lam.t -> unit
 
 (** return a new [meta] *)
-val count_alias_globals : 
-    Env.t -> string -> Ident.t list -> Ident_set.t -> Lam.t -> Lam_stats.meta
+ val count_alias_globals : 
+    Env.t -> string -> Ident.t list -> Ident_set.t -> Lam.t -> Lam_stats.t 
 
 
 
@@ -95145,14 +95272,16 @@ end = struct
 
 
 
-let annotate (meta : Lam_stats.meta)
+let annotate (meta : Lam_stats.t)
     rec_flag    
-    (k:Ident.t) (v : Lam.function_arities) lambda = 
+    (k:Ident.t) (v : Lam_arity.t) lambda = 
   (* Ext_log.dwarn  __LOC__ "%s/%d" k.name k.stamp;     *)
   match Ident_hashtbl.find_opt  meta.ident_tbl k  with 
-  | None -> 
-      Ident_hashtbl.add meta.ident_tbl k (Function {kind = NA; arity = v; lambda; rec_flag})
-  |  Some (Function old)  ->  
+  | None -> (** FIXME: need do a sanity check of arity is NA or Determin(_,[],_) *)
+      Ident_hashtbl.add meta.ident_tbl k 
+        (FunctionId {
+            arity = v; lambda; rec_flag})
+  |  Some (FunctionId old)  ->  
       (** Check, it is shared across ident_tbl, 
           Only [Lassign] will break such invariant,
           how about guarantee that [Lassign] only check the local ref 
@@ -95162,7 +95291,7 @@ let annotate (meta : Lam_stats.meta)
          might not be the same due to refinement
          assert (old.arity = v) 
        *)
-      old.arity <- v
+        old.arity <- v  (* due to we keep refining arity analysis after each round*)
       
 
   | _ -> assert false (* TODO -- avoid exception *)
@@ -95172,7 +95301,7 @@ let annotate (meta : Lam_stats.meta)
     function definition,
     alias propgation - and toplevel identifiers, this needs to be exported
  *)
-let collect_helper  (meta : Lam_stats.meta) (lam : Lam.t)  = 
+let collect_helper  (meta : Lam_stats.t) (lam : Lam.t)  = 
   let rec collect_bind rec_flag
       (kind : Lam.let_kind) 
       (ident : Ident.t)
@@ -95222,12 +95351,7 @@ let collect_helper  (meta : Lam_stats.meta) (lam : Lam.t)  =
 
       List.iter (fun p -> Ident_hashtbl.add meta.ident_tbl p Parameter ) params;
       let arity = Lam_stats_util.get_arity meta lam in       
-      (* Ext_log.dwarn __LOC__ "%s/%d : %a : %a function collected"  *)
-      (*   ident.name ident.stamp  *)
-      (*   Printlambda.lambda lam *)
-      (*   Lam_stats_util.pp_arities arity *)
-      (* ; *)
-      annotate meta rec_flag ident  arity lam;
+      annotate meta rec_flag ident  arity lam; 
       collect l
     | x -> 
         collect x ;
@@ -95274,8 +95398,7 @@ let collect_helper  (meta : Lam_stats.meta) (lam : Lam.t)  =
         | None -> ()
         end
     | Lstaticraise (code,ls) -> 
-        Int_hash_set.add meta.exit_codes code;
-        List.iter collect  ls
+          List.iter collect  ls
     | Lstaticcatch(l1, (_,_), l2) -> collect  l1; collect  l2
     | Ltrywith(l1, _, l2) -> collect  l1; collect  l2
     | Lifthenelse(l1, l2, l3) -> collect  l1; collect  l2; collect  l3
@@ -95296,11 +95419,11 @@ let count_alias_globals
     filename
     export_idents
     export_sets 
-    (lam : Lam.t) : Lam_stats.meta =
-  let meta : Lam_stats.meta = 
+    (lam : Lam.t) : Lam_stats.t =
+  let meta : Lam_stats.t = 
     {alias_tbl = Ident_hashtbl.create 31 ; 
      ident_tbl = Ident_hashtbl.create 31;
-     exit_codes = Int_hash_set.create 31 ;
+     
      exports =  export_idents;
      filename;
      env;
@@ -96808,7 +96931,7 @@ module Lam_pass_remove_alias : sig
 *)
 
 val simplify_alias : 
-  Lam_stats.meta -> 
+  Lam_stats.t -> 
   Lam.t ->
   Lam.t
 
@@ -96848,7 +96971,7 @@ end = struct
 
 
 let simplify_alias 
-    (meta : Lam_stats.meta)
+    (meta : Lam_stats.t)
     (lam : Lam.t) 
   :  Lam.t  = 
 
@@ -97000,7 +97123,7 @@ let simplify_alias
       let normal () = Lam.apply ( simpl fn) (List.map simpl args) loc status in
       begin 
         match Ident_hashtbl.find_opt meta.ident_tbl v with
-        | Some (Function {lambda = Lfunction {params; body} as _m;
+        | Some (FunctionId {lambda = Lfunction {params; body} as _m;
                     rec_flag;                     
                     _ })
           -> 
@@ -97235,10 +97358,11 @@ module Lam_stats_export : sig
 
 
 val export_to_cmj : 
-  Lam_stats.meta ->
+  Lam_stats.t ->
   Js_cmj_format.effect ->
   Lam_module_ident.t list ->
-  Lam.t Ident_map.t -> Js_cmj_format.t
+  Lam.t Ident_map.t ->
+  Js_cmj_format.t
 
 
 end = struct
@@ -97275,19 +97399,19 @@ end = struct
 let pp = Format.fprintf 
 (* we should exclude meaninglist names and do the convert as well *)
 
-let meaningless_names  = ["*opt*"; "param";]
+(* let meaningless_names  = ["*opt*"; "param";] *)
 
-let rec dump_ident fmt (id : Ident.t) (arity : Lam.function_arities)  = 
-  pp fmt  "@[<2>export var %s:@ %a@ ;@]" (Ext_ident.convert true id.name ) dump_arity arity
+let rec dump_ident fmt (id : Ident.t) (arity : Lam_arity.t)  = 
+  pp fmt  "@[<2>export var %s:@ %a@ ;@]" (Ext_ident.convert id.name ) dump_arity arity
 
-and dump_arity fmt (arity : Lam.function_arities) = 
+and dump_arity fmt (arity : Lam_arity.t) = 
   match arity with 
   | NA -> pp fmt "any"
   | Determin (_, [], _) -> pp fmt "any"
   | Determin (_, (n,args)::xs, _) -> 
     let args = match args with 
-    | Some args -> args 
-    | None -> Ext_list.init n (fun _ -> Ident.create "param") in
+      | Some args -> args 
+      | None -> Ext_list.init n (fun _ -> Ident.create "param") in
     pp fmt "@[(%a)@ =>@ any@]" 
       (Format.pp_print_list  
          ~pp_sep:(fun fmt _ -> 
@@ -97295,9 +97419,98 @@ and dump_arity fmt (arity : Lam.function_arities) =
              Format.pp_print_space fmt ();
            )
          (fun fmt ident -> pp fmt "@[%s@ :@ any@]" 
-             (Ext_ident.convert true  @@ Ident.name ident))
+             (Ext_ident.convert  @@ Ident.name ident))
       ) args 
 
+let single_na = Js_cmj_format.single_na
+
+let values_of_export 
+  (meta : Lam_stats.t) 
+  (export_map  : Lam.t Ident_map.t)
+  = 
+  List.fold_left
+    (fun   acc (x : Ident.t)  ->
+
+       let arity : Js_cmj_format.arity =
+         match Ident_hashtbl.find_opt meta.ident_tbl x with 
+         | Some (FunctionId {arity ; _}) -> Single arity 
+         | Some (ImmutableBlock(elems,_)) ->  
+           Submodule(elems |> Array.map (fun (x : Lam_id_kind.element) -> 
+               match x with 
+               | NA -> Lam_arity.NA
+               | SimpleForm lam -> Lam_stats_util.get_arity  meta lam)
+             )
+         | Some _ 
+         | None ->
+          begin match Ident_map.find_opt x export_map with 
+          | Some (Lprim {primitive = Pmakeblock (_,_, Immutable); args }) ->
+            Submodule (args |> Ext_array.of_list_map (fun lam -> 
+            Lam_stats_util.get_arity meta lam
+            ))
+          | Some _
+          | None -> single_na
+          end
+         
+         (*Single (Lam_stats_util.arity_of_var meta x) *)
+       in
+       let closed_lambda = 
+         match Ident_map.find_opt x export_map with 
+         | Some lambda  -> 
+           if Lam_analysis.safe_to_inline lambda
+           (* when inlning a non function, we have to be very careful,
+              only truly immutable values can be inlined
+           *)
+           then
+             if Lam_inline_util.should_be_functor x.name lambda (* can also be submodule *)
+             then
+               if Lam_closure.is_closed lambda (* TODO: seriealize more*)
+               then Some lambda
+               else None
+             else 
+               let lam_size = Lam_analysis.size lambda in
+               (* TODO:
+                  1. global need re-assocate when do the beta reduction 
+                  2. [lambda_exports] is not precise
+               *)
+               let free_variables =
+                 Lam_closure.free_variables Ident_set.empty Ident_map.empty lambda in
+               if  lam_size < Lam_analysis.small_inline_size  && 
+                   Ident_map.is_empty free_variables
+               then 
+                 begin
+                   Ext_log.dwarn __LOC__ "%s recorded for inlining @." x.name ;
+                   Some lambda
+                 end
+               else None
+           else
+             None
+         | None
+           -> None  in 
+       String_map.add x.name  Js_cmj_format.({arity ; closed_lambda }) acc          
+    )
+    String_map.empty
+    meta.exports 
+
+let get_effect (meta : Lam_stats.t) maybe_pure external_ids = 
+  match maybe_pure with
+  | None ->  
+    Ext_option.bind ( Ext_list.for_all_ret 
+                        (fun (id : Lam_module_ident.t) -> 
+                           Lam_compile_env.query_and_add_if_not_exist id 
+                             (Has_env meta.env )
+                             ~not_found:(fun _ -> false ) ~found:(fun i -> 
+                                 i.pure)
+                        ) external_ids) (fun x -> Lam_module_ident.name x)
+  | Some _ -> maybe_pure
+
+let rec dump meta fmt ids = 
+  (* TODO: also use {[Ext_pp]} module instead *)
+  match ids with 
+  | [] -> ()
+  | x::xs -> 
+    dump_ident fmt x (Lam_stats_util.get_arity meta (Lam.var x)) ; 
+    Format.pp_print_space fmt ();
+    dump meta fmt xs
 
 (* Note that 
    [lambda_exports] is 
@@ -97311,97 +97524,19 @@ and dump_arity fmt (arity : Lam.function_arities) =
    TODO: check that we don't do this in browser environment
 *)
 let export_to_cmj 
-    (meta : Lam_stats.meta ) 
+    (meta : Lam_stats.t ) 
     maybe_pure
     external_ids 
     export_map
-
   : Js_cmj_format.t = 
-  let values = 
-
-    List.fold_left
-      (fun   acc (x : Ident.t)  ->
-         let arity =  Lam_stats_util.get_arity meta (Lam.var x) in
-         match Ident_map.find_opt x export_map with 
-         | Some lambda  -> 
-           if Lam_analysis.safe_to_inline lambda
-           (* when inlning a non function, we have to be very careful,
-              only truly immutable values can be inlined
-           *)
-           then
-             let closed_lambda = 
-               if Lam_inline_util.should_be_functor x.name lambda (* can also be submodule *)
-               then
-                 if Lam_closure.is_closed lambda (* TODO: seriealize more*)
-                 then Some lambda
-                 else None
-               else 
-                 let lam_size = Lam_analysis.size lambda in
-                 (* TODO:
-                    1. global need re-assocate when do the beta reduction 
-                    2. [lambda_exports] is not precise
-                 *)
-                 let free_variables =
-                   Lam_closure.free_variables Ident_set.empty
-                   (* meta.export_idents *)  Ident_map.empty 
-                     lambda in
-                 if  lam_size < Lam_analysis.small_inline_size  && 
-                     Ident_map.is_empty free_variables
-                 then 
-                   begin
-                     Ext_log.dwarn __LOC__ "%s recorded for inlining @." x.name ;
-                     Some lambda
-                   end
-                 else 
-                   begin
-                     (* Ext_log.dwarn __LOC__ "%s : %d : {%s} not inlined @."  *)
-                     (*   x.name lam_size   *)
-                     (*   (String.concat ", " @@  *)
-                     (*    List.map (fun x -> x.Ident.name) @@ Ident_map.keys free_variables) ; *)
-                     None 
-                   end
-             in 
-             String_map.add x.name  Js_cmj_format.{arity ; closed_lambda } acc 
-           else
-             String_map.add x.name  Js_cmj_format.{arity ; closed_lambda = None } acc 
-         | None
-           -> String_map.add x.name  Js_cmj_format.{arity ; closed_lambda = None} acc  
-      )
-      String_map.empty
-      meta.exports 
-
-
-  in
-
-  let rec dump fmt ids = 
-    (* TODO: also use {[Ext_pp]} module instead *)
-    match ids with 
-    | [] -> ()
-    | x::xs -> 
-      dump_ident fmt x (Lam_stats_util.get_arity meta (Lam.var x)) ; 
-      Format.pp_print_space fmt ();
-      dump fmt xs in
-
+  let values =  values_of_export meta export_map in
   let () =
     if !Js_config.default_gen_tds && not ( Ext_string.is_empty meta.filename) then
       Ext_pervasives.with_file_as_pp
         (Ext_filename.chop_extension ~loc:__LOC__ meta.filename ^ ".d.ts")
       @@ fun fmt ->
-        pp fmt "@[<v>%a@]@." dump meta.exports
-  in
-  let effect = 
-    match maybe_pure with
-    | None ->  
-      Ext_option.bind ( Ext_list.for_all_ret 
-                          (fun (id : Lam_module_ident.t) -> 
-                             Lam_compile_env.query_and_add_if_not_exist id 
-                               (Has_env meta.env )
-                               ~not_found:(fun _ -> false ) ~found:(fun i -> 
-                                   i.pure)
-                          ) external_ids) (fun x -> Lam_module_ident.name x)
-    | Some _ -> maybe_pure
-
-  in
+      pp fmt "@[<v>%a@]@." (dump meta) meta.exports in
+  let effect = get_effect meta maybe_pure external_ids in
   {values; 
    effect ; 
    npm_package_path = Js_config.get_packages_info ();
@@ -97503,7 +97638,7 @@ open Js_output.Ops
 
 exception Not_a_module
 
-let compile_group ({filename = file_name; env;} as meta : Lam_stats.meta) 
+let compile_group ({filename = file_name; env;} as meta : Lam_stats.t) 
     (x : Lam_group.t) : Js_output.t  = 
   match x, file_name with 
   (* 
@@ -97640,7 +97775,32 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.meta)
 
 ;;
 
-
+ (** Also need analyze its depenency is pure or not *)
+let no_side_effects (rest : Lam_group.t list) : string option = 
+    Ext_list.for_all_opt (fun (x : Lam_group.t) -> 
+        match x with 
+        | Single(kind,id,body) -> 
+          begin 
+            match kind with 
+            | Strict | Variable -> 
+              if not @@ Lam_analysis.no_side_effects body 
+              then Some  (Printf.sprintf "%s" id.name)
+              else None
+            | _ -> None
+          end
+        | Recursive bindings -> 
+          Ext_list.for_all_opt (fun (id,lam) -> 
+              if not @@ Lam_analysis.no_side_effects lam 
+              then Some (Printf.sprintf "%s" id.Ident.name )
+              else None
+            ) bindings
+        | Nop lam -> 
+          if not @@ Lam_analysis.no_side_effects lam 
+          then 
+            (*  (Lam_util.string_of_lambda lam) *)
+            Some ""
+          else None (* TODO :*))
+      rest
 
 
 
@@ -97713,58 +97873,15 @@ let compile  ~filename output_prefix env _sigs
     
   in
 
-  let ({Lam_coercion.groups = rest } as coerced_input ) = 
-    Lam_coercion.coerce_and_group_big_lambda  
-      meta.exports
-      meta.Lam_stats.export_idents lam 
+  let ({Lam_coercion.groups = groups } as coerced_input , meta) = 
+    Lam_coercion.coerce_and_group_big_lambda  meta lam
   in 
-  let meta = { meta with 
-               export_idents = coerced_input.export_set ;
-               exports = coerced_input.export_list 
-             } in 
-  (* TODO: turn in on debug mode later*)
-  let () =
 
-    if Js_config.is_same_file () then
-      let f =
-        Ext_filename.chop_extension ~loc:__LOC__ filename ^ ".lambda" in
-      Ext_pervasives.with_file_as_pp f begin fun fmt ->
-        Format.pp_print_list ~pp_sep:Format.pp_print_newline
-          (Lam_group.pp_group env) fmt (coerced_input.groups) 
-      end;
-  in
-  (** Also need analyze its depenency is pure or not *)
-  let no_side_effects rest = 
-    Ext_list.for_all_opt (fun (x : Lam_group.t) -> 
-        match x with 
-        | Single(kind,id,body) -> 
-          begin 
-            match kind with 
-            | Strict | Variable -> 
-              if not @@ Lam_analysis.no_side_effects body 
-              then Some  (Printf.sprintf "%s" id.name)
-              else None
-            | _ -> None
-          end
-        | Recursive bindings -> 
-          Ext_list.for_all_opt (fun (id,lam) -> 
-              if not @@ Lam_analysis.no_side_effects lam 
-              then Some (Printf.sprintf "%s" id.Ident.name )
-              else None
-            ) bindings
-        | Nop lam -> 
-          if not @@ Lam_analysis.no_side_effects lam 
-          then 
-            (*  (Lam_util.string_of_lambda lam) *)
-            Some ""
-          else None (* TODO :*))
-      rest
-  in
-  let maybe_pure = no_side_effects rest
-  in
+  
+  let maybe_pure = no_side_effects groups in
   
   let body  = 
-    rest
+    groups
     |> List.map (fun group -> compile_group meta group)
     |> Js_output.concat
     |> Js_output.to_block

@@ -91,6 +91,7 @@ bin/js_compiler.ml : core/js_number.ml
 bin/js_compiler.ml : core/js_output.ml
 bin/js_compiler.ml : core/js_shake.mli
 bin/js_compiler.ml : core/jsoo_main.ml
+bin/js_compiler.ml : core/lam_arity.ml
 bin/js_compiler.ml : core/lam_group.ml
 bin/js_compiler.ml : core/lam_print.ml
 bin/js_compiler.ml : core/lam_stats.ml
@@ -129,6 +130,7 @@ bin/js_compiler.ml : core/js_number.mli
 bin/js_compiler.ml : core/js_op_util.ml
 bin/js_compiler.ml : core/js_output.mli
 bin/js_compiler.ml : core/jsoo_main.mli
+bin/js_compiler.ml : core/lam_arity.mli
 bin/js_compiler.ml : core/lam_group.mli
 bin/js_compiler.ml : core/lam_print.mli
 bin/js_compiler.ml : core/lam_stats.mli
@@ -169,13 +171,13 @@ bin/js_compiler.ml : core/js_fun_env.mli
 bin/js_compiler.ml : core/js_op_util.mli
 bin/js_compiler.ml : core/lam_closure.ml
 bin/js_compiler.ml : core/lam_compile.ml
+bin/js_compiler.ml : core/lam_id_kind.ml
 bin/js_compiler.ml : ext/ext_filename.ml
 bin/js_compiler.ml : ext/ext_js_regex.ml
 bin/js_compiler.ml : ext/ext_position.ml
 bin/js_compiler.ml : ext/ext_pp_scope.ml
 bin/js_compiler.ml : ext/hash_set_gen.ml
 bin/js_compiler.ml : ext/hashtbl_make.ml
-bin/js_compiler.ml : ext/int_hash_set.ml
 bin/js_compiler.ml : ext/int_hashtbl.mli
 bin/js_compiler.ml : ext/int_vec_util.ml
 bin/js_compiler.ml : ext/int_vec_vec.mli
@@ -207,13 +209,13 @@ bin/js_compiler.ml : core/lam_analysis.ml
 bin/js_compiler.ml : core/lam_closure.mli
 bin/js_compiler.ml : core/lam_coercion.ml
 bin/js_compiler.ml : core/lam_compile.mli
+bin/js_compiler.ml : core/lam_id_kind.mli
 bin/js_compiler.ml : ext/ext_filename.mli
 bin/js_compiler.ml : ext/ext_js_regex.mli
 bin/js_compiler.ml : ext/ext_position.mli
 bin/js_compiler.ml : ext/ext_pp_scope.mli
 bin/js_compiler.ml : ext/hashtbl_make.mli
 bin/js_compiler.ml : ext/ident_hashtbl.ml
-bin/js_compiler.ml : ext/int_hash_set.mli
 bin/js_compiler.ml : ext/int_vec_util.mli
 bin/js_compiler.ml : ext/resize_array.mli
 bin/js_compiler.ml : syntax/ast_derive.ml
