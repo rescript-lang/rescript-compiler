@@ -28,7 +28,7 @@ var jscomp_bin = path.join(jscomp, 'bin')
 var working_dir = process.cwd()
 console.log("Working dir", working_dir)
 var working_config = { cwd: jscomp, stdio: [0, 1, 2] }
-var clean = require('./clean.js')
+
 var build_util = require('./build_util')
 var vendor_ninja_version = '1.7.2'
 
