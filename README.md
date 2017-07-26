@@ -3,11 +3,11 @@
 [![NPM](https://nodei.co/npm/bs-platform.png?compact=true)](https://nodei.co/npm/bs-platform/)
 
 [![Build Status](https://travis-ci.org/BuckleScript/bucklescript.svg?branch=master)](https://travis-ci.org/bucklescript/bucklescript)
-[![Try Online](https://img.shields.io/badge/try_it-online!-yellow.svg?style=flat-square)](https://bucklescript.github.io/bucklescript/js-demo)
+[![Try Online](https://img.shields.io/badge/try_it-online!-yellow.svg?style=flat-square)](https://bucklescript.github.io/bucklescript-playground/js-demo)
 
 ## Try BuckleScript
 
-You can try BuckleScript directly [in your browser](http://bucklescript.github.io/bucklescript/js-demo/). Write OCaml in the left panel and
+You can try BuckleScript directly [in your browser](http://bucklescript.github.io/bucklescript-playground/js-demo/). Write OCaml in the left panel and
 watch as it instantly compiles to JavaScript shown in the right panel.
 
 
