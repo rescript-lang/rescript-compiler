@@ -16,7 +16,7 @@
       <h2 class="project-tagline"></h2>
       <a href="https://github.com/bucklescript/bucklescript" class="btn">View on GitHub</a>
       <a href="./Manual.html" class="btn">Manual</a>
-      <a href="./js-demo/index.html" class="btn">Try it </a>
+      <a href="../bucklescript-playground/index.html" class="btn">Try it </a>
       <a href="./blog/index.html" class="btn"> Blogs</a>
     </section>
 
@@ -28,7 +28,7 @@ BuckleScript is a backend for http://ocaml.org/[OCaml] which emits readable, mod
 #### Developer experience
 
 BuckleScript probably has the _fastest_ JavaScript compiler.The compiler is compiled to both native code and JavaScript,
-users can try the compiler in the https://bucklescript.github.io/bucklescript/js-demo[browser] and imagine how fast it would be for native backend.
+users can try the compiler in the https://bucklescript.github.io/bucklescript-playground/js-demo[browser] and imagine how fast it would be for native backend.
 
 #### Integration with existing JavaScript libraries
 

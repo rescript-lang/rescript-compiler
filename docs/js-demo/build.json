@@ -1,8 +1,0 @@
-[
-    "trigger", ".", {
-        "name": "build",
-        "expression": ["pcre", "\\.(js|html|css|ml)$"],
-        "command": ["./build.sh"],
-        "append_files" : true
-    }
-]

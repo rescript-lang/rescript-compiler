@@ -353,7 +353,7 @@ super.cmxa:$(SUPER_ERRORS_CMXS)
 	ocamlopt.opt -a $^ -o $@
 super.cma:$(SUPER_ERRORS_CMOS)	
 	ocamlc.opt -a $^ -o $@
-	
+
 check: $(EXT_CMXS) $(COMMON_CMXS) $(SYNTAX_CMXS) $(DEPENDS_CMXS) $(CORE_CMXS) $(BSB_CMXS) $(OTHER_CORE_CMXS) $(MAIN_CMXS) $(SUPER_ERRORS_CMXS) $(OUNIT_CMXS) $(OUNIT_TESTS_CMXS)
 
 bin/bsb.exe: bs_hash.cmxa ext.cmxa common.cmxa  bsb.cmxa bsb/bsb_main.cmx
@@ -369,7 +369,7 @@ bin/bsc.exe: bs_hash.cmxa ext.cmxa common.cmxa syntax.cmxa depends.cmxa core.cmx
 bin/cmjdump.exe: bs_hash.cmxa ext.cmxa common.cmxa syntax.cmxa depends.cmxa core.cmxa core/cmjdump_main.cmx
 	@echo "Linking"
 	$(NATIVE) -g -linkall -I +compiler-libs ocamlcommon.cmxa $^ -o $@
-	
+
 bin/jscmj.exe:bs_hash.cmxa ext.cmxa common.cmxa syntax.cmxa depends.cmxa core.cmxa  jscmj_main.cmx
 	@echo "Linking js_pack.exe"
 	$(NATIVE) -g -linkall -I +compiler-libs ocamlcommon.cmxa $^ -o $@
@@ -382,7 +382,7 @@ bin/jsgen.exe:bs_hash.cmxa ext.cmxa jsgen_main.cmx
 
 
 depend:
-	$(CAMLDEP) -absname -native -I stubs -I ext -I common -I syntax -I depends -I core -I ounit -I ounit_tests -I bsb \
+	$(CAMLDEP) -absname -native -I stubs -I ext -I common -I syntax -I depends -I core -I ounit -I ounit_tests -I bsb -I super_errors \
 	$(addprefix stubs/, $(addsuffix .ml, $(STUB_SRCS))) \
 	$(addprefix stubs/, $(addsuffix .mli, $(STUB_SRCS))) \
 	$(addprefix ext/, $(addsuffix .ml, $(EXT_SRCS))) \
@@ -400,6 +400,7 @@ depend:
 	$(addprefix ounit/, $(addsuffix .mli, $(OUNIT_SRCS))) \
 	$(addprefix ounit/, $(addsuffix .ml, $(OUNIT_SRCS))) \
 	$(addprefix super_errors/, $(addsuffix .ml, $(SUPER_ERRORS_SRCS))) \
+	$(addprefix super_errors/, $(addsuffix .mli, $(SUPER_ERRORS_SRCS))) \
 	$(addprefix ounit_tests/, $(addsuffix .mli, $(OUNIT_TESTS_SRCS))) \
 	$(addprefix ounit_tests/, $(addsuffix .ml, $(OUNIT_TESTS_SRCS))) \
 	bsb/*.ml bsb/*.mli *.ml *.mli > all.depend
@@ -456,7 +457,7 @@ SNAPSHOT_DEPS=$(SNAPSHOT_SRCS:.ml=.d)
 themes:
 	cd bsb && ./pack-templates.sh
 snapshotml:./bin/bspack.exe $(SNAPSHOT_SRCS)
-	
+
 force-snapshotml:
 	rm -f $(SNAPSHOT_DEPS) $(SNAPSHOT_SRCS)
 	make snapshotml
