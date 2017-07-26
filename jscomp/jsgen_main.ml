@@ -30,7 +30,7 @@ let get_files dir =
         (fun  x -> 
           if Ext_string.ends_with x Literals.suffix_js && x <> "unix.js" &&
              x <> "bigarray.js" && x <> "std_exit.js" &&
-             x <> "unixLabels.js"
+             x <> "unixLabels.js" && x <> "node_process.js"
           then 
             Some ( "./stdlib/" ^ Filename.chop_extension (Filename.basename x))
           else None )
