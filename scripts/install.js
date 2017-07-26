@@ -97,7 +97,7 @@ function non_windows_npm_release() {
             child_process.execSync(make + " world", working_config)
         }
 
-        clean.clean()
+        // clean.clean()
     }
 
     console.log("Installing")
@@ -123,7 +123,7 @@ if (is_windows) {
         // Make it more fault tolerant
         // =1 can still be okay (only ninja.win in this case)
         child_process.execFileSync(path.join(__dirname, 'win_build.bat'), working_config)
-        clean.clean()
+        // clean.clean()
         console.log("Installing")
         build_util.install()
     } else {
