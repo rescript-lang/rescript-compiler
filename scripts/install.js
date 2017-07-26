@@ -28,7 +28,7 @@ var jscomp_bin = path.join(jscomp, 'bin')
 var working_dir = process.cwd()
 console.log("Working dir", working_dir)
 var working_config = { cwd: jscomp, stdio: [0, 1, 2] }
-var clean = require('./clean.js')
+
 var build_util = require('./build_util')
 var vendor_ninja_version = '1.7.2'
 
@@ -40,6 +40,7 @@ function build_ninja(){
     var build_ninja_command = "tar -xf  ninja-1.7.2.tar.gz  && cd  ninja-1.7.2  && ./configure.py --bootstrap "
     child_process.execSync(build_ninja_command,{cwd:ninja_vendor_dir})
     fs.renameSync(path.join(ninja_vendor_dir, 'ninja-1.7.2','ninja'), ninja_bin_output)
+    console.log('ninja binary is ready: ', ninja_bin_output)
 }
 
 // sanity check to make sure the binary actually runs. Used for Linux. Too many variants
@@ -73,10 +74,10 @@ if (fs.existsSync(ninja_bin_output) && test_ninja_compatible (ninja_bin_output))
     if(test_ninja_compatible(ninja_bin_output)){
         console.log("ninja binary is copied from pre-distribution")
     } else {
-        console.log("Building ninja")
         build_ninja()
-        console.log('ninja binary is ready: ', ninja_bin_output)
     }    
+} else {
+    build_ninja()
 }
 
 
@@ -97,7 +98,7 @@ function non_windows_npm_release() {
             child_process.execSync(make + " world", working_config)
         }
 
-        clean.clean()
+        // clean.clean()
     }
 
     console.log("Installing")
@@ -123,7 +124,7 @@ if (is_windows) {
         // Make it more fault tolerant
         // =1 can still be okay (only ninja.win in this case)
         child_process.execFileSync(path.join(__dirname, 'win_build.bat'), working_config)
-        clean.clean()
+        // clean.clean()
         console.log("Installing")
         build_util.install()
     } else {

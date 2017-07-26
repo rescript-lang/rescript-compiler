@@ -69,6 +69,12 @@ bin/bsc.exe
 !bin/bspack
 !/bin/bsb
 !/bin/bsc
+
+!/bin/ninja.exe
+# This is intentional
+# so that `npm install && npm intall -g .`
+# the second install would use the cached ninja.exe (instead of being ignored)
+#
 !bin/bsrefmt
 !ocaml.tar.gz
 
