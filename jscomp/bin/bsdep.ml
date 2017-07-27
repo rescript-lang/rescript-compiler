@@ -24716,6 +24716,7 @@ type error
   | Invalid_underscore_type_in_external
   | Invalid_bs_string_type 
   | Invalid_bs_int_type 
+  | Invalid_bs_unwrap_type
   | Conflict_ffi_attribute of string
   | Not_supported_in_bs_deriving
   | Canot_infer_arity_by_syntax
@@ -24776,6 +24777,7 @@ type error
   | Invalid_underscore_type_in_external
   | Invalid_bs_string_type 
   | Invalid_bs_int_type 
+  | Invalid_bs_unwrap_type
   | Conflict_ffi_attribute of string
   | Not_supported_in_bs_deriving
   | Canot_infer_arity_by_syntax
@@ -24846,6 +24848,10 @@ let pp_error fmt err =
   | Invalid_bs_int_type 
     -> 
     "Not a valid  type for [@bs.int]"
+  | Invalid_bs_unwrap_type
+    ->
+    "Not a valid type for [@bs.unwrap]. Type must be an inline variant (closed), and\n\
+     each constructor must have an argument."
   | Conflict_ffi_attribute str
     ->
     "Conflicting FFI attributes found: " ^ str
@@ -26483,8 +26489,8 @@ type derive_attr = {
   explict_nonrec : bool;
   bs_deriving : [`Has_deriving of Ast_payload.action list | `Nothing ]
 }
-val process_bs_string_int_uncurry : 
-  t -> [`Nothing | `String | `Int | `Ignore | `Uncurry of int option ]  * t 
+val process_bs_string_int_unwrap_uncurry :
+  t -> [`Nothing | `String | `Int | `Ignore | `Unwrap | `Uncurry of int option ]  * t
 
 val process_bs_string_as :
   t -> string option * t 
@@ -26671,7 +26677,7 @@ let process_derive_type attrs =
 
 
 
-let process_bs_string_int_uncurry attrs = 
+let process_bs_string_int_unwrap_uncurry attrs =
   List.fold_left 
     (fun (st,attrs)
       (({txt ; loc}, (payload : _ ) ) as attr : attr)  ->
@@ -26682,7 +26688,8 @@ let process_bs_string_int_uncurry attrs =
         ->  `Int, attrs
       | "bs.ignore", (`Nothing | `Ignore)
         -> `Ignore, attrs
-      
+      | "bs.unwrap", (`Nothing | `Unwrap)
+        -> `Unwrap, attrs
       | "bs.uncurry", `Nothing
         ->
           `Uncurry (Ast_payload.is_single_int payload), attrs 
@@ -26692,6 +26699,7 @@ let process_bs_string_int_uncurry attrs =
       | "bs.int", _
       | "bs.string", _
       | "bs.ignore", _
+      | "bs.unwrap", _
         -> 
         Bs_syntaxerr.err loc Conflict_attributes
       | _ , _ -> st, (attr :: attrs )
@@ -30004,6 +30012,7 @@ type ty =
   | Extern_unit
   | Nothing
   | Ignore
+  | Unwrap
 
 type kind = 
   {
@@ -30074,6 +30083,7 @@ type ty =
   | Extern_unit
   | Nothing
   | Ignore
+  | Unwrap
 
 type kind = 
   {
@@ -31257,6 +31267,28 @@ end = struct
 
 
 
+let variant_can_bs_unwrap_fields row_fields =
+  let validity = (List.fold_left
+     begin fun st row ->
+       match st, row with
+       | (* we've seen no fields or only valid fields so far *)
+         (`No_fields | `Valid_fields),
+         (* and this field has one constructor arg that we can unwrap to *)
+         Parsetree.Rtag (label, attrs, false, ([ _ ]))
+         ->
+         `Valid_fields
+       | (* otherwise, this field or a previous field was invalid *)
+         _ ->
+         `Invalid_field
+     end
+     `No_fields
+     row_fields
+  )
+  in
+  match validity with
+  | `Valid_fields -> true
+  | `No_fields
+  | `Invalid_field -> false
 
 (** Given the type of argument, process its [bs.] attribute and new type,
     The new type is currently used to reconstruct the external type 
@@ -31292,7 +31324,7 @@ let get_arg_type ~nolabel optional
 
     end 
   else (* ([`a|`b] [@bs.string]) *)
-    match Ast_attributes.process_bs_string_int_uncurry ptyp.ptyp_attributes, ptyp.ptyp_desc with 
+    match Ast_attributes.process_bs_string_int_unwrap_uncurry ptyp.ptyp_attributes, ptyp.ptyp_desc with
     | (`String, ptyp_attributes),  Ptyp_variant ( row_fields, Closed, None)
       -> 
       let case, result, row_fields  = 
@@ -31358,8 +31390,13 @@ let get_arg_type ~nolabel optional
        ptyp_desc = Ptyp_variant(List.rev rev_row_fields, Closed, None );
        ptyp_attributes
       }
-
     | (`Int, _), _ -> Bs_syntaxerr.err ptyp.ptyp_loc Invalid_bs_int_type
+    | (`Unwrap, ptyp_attributes), (Ptyp_variant (row_fields, Closed, _) as ptyp_desc)
+      when variant_can_bs_unwrap_fields row_fields
+      ->
+      Unwrap, {ptyp with ptyp_desc; ptyp_attributes}
+    | (`Unwrap, _), _ ->
+      Bs_syntaxerr.err ptyp.ptyp_loc Invalid_bs_unwrap_type
     | (`Uncurry opt_arity, ptyp_attributes), ptyp_desc -> 
       let real_arity =  Ast_core_type.get_uncurry_arity ptyp in 
       (begin match opt_arity, real_arity with 
@@ -31724,6 +31761,9 @@ let handle_attributes
                        ->  
                        Location.raise_errorf ~loc 
                          "bs.obj label %s does not support such arg type" name
+                     | Unwrap ->
+                       Location.raise_errorf ~loc
+                         "bs.obj label %s does not support [@bs.unwrap] arguments" name
                    end
                  | Optional name -> 
                    let arg_type, new_ty_extract = get_arg_type ~nolabel:false true ty in 
@@ -31759,6 +31799,9 @@ let handle_attributes
                        ->  
                        Location.raise_errorf ~loc
                          "bs.obj label %s does not support such arg type" name                        
+                     | Unwrap ->
+                       Location.raise_errorf ~loc
+                         "bs.obj label %s does not support [@bs.unwrap] arguments" name
                    end
                in     
                (

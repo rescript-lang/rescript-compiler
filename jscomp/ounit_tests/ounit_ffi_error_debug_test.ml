@@ -45,8 +45,34 @@ let output = bsc_eval {|
         |} in
         OUnit.assert_bool __LOC__
             (Ext_string.contain_substring output.stderr "hi_should_error")        
-        end
+        end;
 
-        
+        __LOC__ >:: begin fun _ ->
+          (**
+             Each [@bs.unwrap] variant constructor requires an argument
+          *)
+          let output =
+            bsc_eval {|
+              external err :
+              ?hi_should_error:([`a of int | `b] [@bs.unwrap]) -> unit -> unit = "" [@@bs.val]
+            |}
+          in
+          OUnit.assert_bool __LOC__
+            (Ext_string.contain_substring output.stderr "bs.unwrap")
+        end;
+
+        __LOC__ >:: begin fun _ ->
+          (**
+             [@bs.unwrap] args are not supported in [@@bs.obj] functions
+          *)
+          let output =
+            bsc_eval {|
+              external err :
+              ?hi_should_error:([`a of int] [@bs.unwrap]) -> unit -> _ = "" [@@bs.obj]
+            |}
+          in
+          OUnit.assert_bool __LOC__
+            (Ext_string.contain_substring output.stderr "hi_should_error")
+        end
 
     ]
