@@ -86,11 +86,8 @@ let eval_as_int (arg : J.expression) (dispatches : (int * int) list ) : E.t  =
               }) dispatches))]
 
 let eval_as_unwrap (arg : J.expression) : E.t =
-  if arg == E.undefined then
-    E.undefined
-  else
-    match arg.expression_desc with
-    | Caml_block ([{expression_desc = Number _}; cb], _, _, _) ->
-      cb
-    | _ ->
-      E.index (arg) 1l
+  match arg.expression_desc with
+  | Caml_block ([{expression_desc = Number _}; cb], _, _, _) ->
+    cb
+  | _ ->
+    E.index (arg) 1l
