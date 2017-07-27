@@ -47,7 +47,7 @@ function build_ninja(){
 function test_ninja_compatible(binary_path) {
     var version;
     try {
-        version = child_process.execSync(binary_path + ' --version', {
+        version = child_process.execSync(JSON.stringify(binary_path) + ' --version', {
             encoding: 'utf-8',
             stdio: ['pipe', 'pipe', 'ignore'] // execSync outputs to stdout even if we catch the error. Silent it here
         }).trim();
