@@ -2,7 +2,7 @@
 - Features
 - #1798 make `default` the same semantics as Es6 exports
 - #1785 upgrade playground
-- #1758 generator support 
+- #1758 [generator support](https://bucklescript.github.io/bucklescript/Manual.html#_customize_rules_generators_support_since_1_7_4)
 - #1826 add `bsb -where` support so that bsb.exe can be located and cached in a more robust way
 
 - Optimizations
