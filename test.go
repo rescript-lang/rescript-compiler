@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 	"sync"
+	"time"
 )
 
 type command struct {
@@ -177,16 +178,17 @@ func main() {
 
 	ginstall := cmd("npm", "i", "-g", ".")
 	fmt.Println("install bucklescript globally")
+	start :=time.Now()
 	error = ginstall.Run()
 	if error != nil {
 		log.Fatalf("install failed")
 	} else {
-		fmt.Println("install finished")
+		
+		fmt.Println("install finished takes", time.Since(start))
 	}
 	bsbDir, _ := cmd("bsb", "-where").CombinedOutput ()
 	fmt.Println("BSBDIR:", string(bsbDir))
-	bsb, _ := cmd("ls", "-al", filepath.Dir( string (bsbDir))).CombinedOutput()
-	fmt.Println("BSB isntallation:", string(bsb ))
+	
 
 	
 	var wg sync.WaitGroup
