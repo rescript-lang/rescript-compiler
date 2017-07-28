@@ -12,7 +12,11 @@ CAMLP4OF=camlp4of
 CAMLDEP=ocamldep.opt$(EXE)
 COMPFLAGS=-g -w +6-40-30-23 -warn-error +a-40-30-23 -absname
 # COMPFLAGS+= -S
-
+OCAML_SRC_UTILS=../vendor/ocaml/utils
+OCAML_SRC_PARSING=../vendor/ocaml/parsing
+OCAML_SRC_TYPING=../vendor/ocaml/typing
+OCAML_SRC_BYTECOMP=../vendor/ocaml/bytecomp
+OCAML_SRC_DRIVER=../vendor/ocaml/driver
 
 .SUFFIXES: .mli .ml .cmi .cmx .mll .c .o .cmo
 
@@ -464,13 +468,13 @@ force-snapshotml:
 
 
 bin/bsppx.ml:./bin/bspack.exe
-	$< -U BS_DEBUG -bs-MD  -module-alias Config=ConfigDummy -I bin -I ../ocaml/utils/ -I ../ocaml/parsing/ -I stubs -I common -I ext -I syntax -I core -bs-main Bsppx_main -o $@
+	$< -U BS_DEBUG -bs-MD  -module-alias Config=ConfigDummy -I bin -I $(OCAML_SRC_UTILS) -I $(OCAML_SRC_PARSING) -I stubs -I common -I ext -I syntax -I core -bs-main Bsppx_main -o $@
 
 bin/whole_compiler.ml:./bin/bspack.exe
-	$< -U BS_DEBUG -bs-MD -prelude-str 'module Config = Config_whole_compiler' -bs-exclude-I config -o $@ -bs-main Js_main -I ../ocaml/utils/ -I ../ocaml/parsing/ -I ../ocaml/typing/ -I ../ocaml/bytecomp/ -I ../ocaml/driver/ -I stubs -I ext -I syntax -I depends -I common -I core -I super_errors
+	$< -U BS_DEBUG -bs-MD -prelude-str 'module Config = Config_whole_compiler' -bs-exclude-I config -o $@ -bs-main Js_main -I $(OCAML_SRC_UTILS) -I $(OCAML_SRC_PARSING) -I $(OCAML_SRC_TYPING) -I $(OCAML_SRC_BYTECOMP) -I $(OCAML_SRC_DRIVER)/ -I stubs -I ext -I syntax -I depends -I common -I core -I super_errors
 
 bin/bsdep.ml:./bin/bspack.exe
-	$< -D BS_OCAMLDEP=true  -U BS_DEBUG -bs-MD  -module-alias Config=ConfigDummy -I bin  -I ../ocaml/utils/ -I ../ocaml/parsing/ -I ../ocaml/driver -I ../ocaml/tools -I common -I ext -I syntax -I depends -I core -I stubs -bs-main Ocamldep -o $@
+	$< -D BS_OCAMLDEP=true  -U BS_DEBUG -bs-MD  -module-alias Config=ConfigDummy -I bin  -I $(OCAML_SRC_UTILS) -I $(OCAML_SRC_PARSING) -I $(OCAML_SRC_DRIVER) -I ../ocaml/tools -I common -I ext -I syntax -I depends -I core -I stubs -bs-main Ocamldep -o $@
 
 bin/bsb_helper.ml:./bin/bspack.exe
 	 $< -bs-MD -U BS_DEBUG   -I stubs -I common -I ext -I syntax -I depends -I bsb  -bs-main Bsb_helper_main -o $@
@@ -479,10 +483,10 @@ bin/bsb.ml:./bin/bspack.exe
 	 $< -bs-MD -U BS_DEBUG -I stubs -I common -I ext -I syntax -I depends -I bsb -I ext  -bs-main Bsb_main -o $@
 
 bin/bspp.ml:./bin/bspack.exe
-	  $< -D BS_MIN_LEX_DEPS=true -U BS_DEBUG -bs-MD -module-alias Config=ConfigDummy   -I ../ocaml/utils/ -I ../ocaml/parsing?parser  -I bin -I common -I ext -I syntax -I depends -I bspp -I core -bs-main Bspp_main -o $@
+	  $< -D BS_MIN_LEX_DEPS=true -U BS_DEBUG -bs-MD -module-alias Config=ConfigDummy   -I $(OCAML_SRC_UTILS) -I $(OCAML_SRC_PARSING)?parser  -I bin -I common -I ext -I syntax -I depends -I bspp -I core -bs-main Bspp_main -o $@
 
 bin/js_compiler.ml:./bin/bspack.exe
-	 ./bin/bspack.exe -D BS_COMPILER_IN_BROWSER=true -U BS_DEBUG -bs-MD  -prelude-str 'module Config = Config_whole_compiler' -bs-exclude-I config -o $@ -bs-main Jsoo_main -I ../ocaml/utils/ -I ../ocaml/parsing/ -I ../ocaml/typing/ -I ../ocaml/bytecomp/ -I ../ocaml/driver/ -I stubs -I ext -I syntax -I depends -I common -I core
+	 ./bin/bspack.exe -D BS_COMPILER_IN_BROWSER=true -U BS_DEBUG -bs-MD  -prelude-str 'module Config = Config_whole_compiler' -bs-exclude-I config -o $@ -bs-main Jsoo_main -I $(OCAML_SRC_UTILS) -I $(OCAML_SRC_PARSING) -I $(OCAML_SRC_TYPING) -I $(OCAML_SRC_BYTECOMP) -I $(OCAML_SRC_DRIVER) -I stubs -I ext -I syntax -I depends -I common -I core
 
 bin/all_ounit_tests.ml:./bin/bspack.exe
 	$< -bs-MD    -I ounit -I ounit_tests  -I stubs -I bsb -I common -I ext -I syntax -I depends -I bspp -I core -bs-main Ounit_tests_main -o $@
@@ -518,10 +522,10 @@ bin/js_compiler.byte:bin/js_compiler.mli bin/js_compiler.ml
 
 bootbspack:
 	@echo "Bootstrap bspack.exe"
-	./bin/bspack.exe -bs-MD -module-alias Config=ConfigDummy -I bin -I ../ocaml/parsing/ -I ../ocaml/utils/ -I stubs -I ext -I common -I depends -I core -bs-main Bspack_main -o bin/bspack.ml
+	./bin/bspack.exe -bs-MD -module-alias Config=ConfigDummy -I bin -I $(OCAML_SRC_PARSING) -I $(OCAML_SRC_UTILS) -I stubs -I ext -I common -I depends -I core -bs-main Bspack_main -o bin/bspack.ml
 	$(NATIVE) ./stubs/ext_basic_hash_stubs.c -w -40  unix.cmxa  -I bin  bin/bspack.mli bin/bspack.ml -o bin/bspack.exe
 	@echo "Using the bootstrapped bspack.exe to genreate new bspack.ml: `date`"
-	./bin/bspack.exe -bs-MD  -module-alias Config=ConfigDummy -I bin -I ../ocaml/parsing/ -I ../ocaml/utils/ -I stubs -I ext -I common -I depends -I core -bs-main Bspack_main -o bin/bspack.ml
+	./bin/bspack.exe -bs-MD  -module-alias Config=ConfigDummy -I bin -I $(OCAML_SRC_PARSING) -I $(OCAML_SRC_UTILS) -I stubs -I ext -I common -I depends -I core -bs-main Bspack_main -o bin/bspack.ml
 	@echo "Bootstrap seems finished, please check diffs in bspack.exe"
 	@echo "Rebuilding bspack.exe"
 	make -C bin -B bspack.exe
