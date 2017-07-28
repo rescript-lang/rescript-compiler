@@ -104,7 +104,9 @@ bin/bsb.ml : common/binary_cache.mli
 bin/bsb.ml : ext/string_hash_set.mli
 bin/bsb.ml : bsb/bsb_build_schemas.ml
 bin/bsb.ml : bsb/bsb_config_parse.mli
+bin/bsb.ml : bsb/bsb_package_specs.ml
 bin/bsb.ml : bsb/bsb_parse_sources.ml
+bin/bsb.ml : bsb/bsb_package_specs.mli
 bin/bsb.ml : bsb/bsb_parse_sources.mli
 bin/bsb.ml : bsb/bsb_ninja_file_groups.ml
 bin/bsb.ml : bsb/bsb_ninja_global_vars.ml

@@ -23,12 +23,16 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-val common_js_prefix : string -> string
-val amd_js_prefix : string -> string 
-val goog_prefix : string -> string 
 val ocaml_bin_install_prefix : string -> string
 val proj_rel : string -> string
+
+val lib_js : string 
+val lib_amd : string 
 val lib_bs : string
+val lib_goog : string 
+val lib_es6 : string 
+val lib_es6_global : string 
+val lib_amd_global : string 
 val lib_ocaml : string
 val all_lib_artifacts : string list 
 (* we need generate path relative to [lib/bs] directory in the opposite direction *)
@@ -36,16 +40,4 @@ val rev_lib_bs_prefix : string -> string
 
 
 (** default not install, only when -make-world, its dependencies will be installed  *)
-
-
-val supported_format : string -> bool
-
-val package_flag : format:string -> string -> string 
-
-val package_output : format:string -> string -> string 
-
-type package_specs = String_set.t
-
-val cmd_package_specs : package_specs option ref 
-
 

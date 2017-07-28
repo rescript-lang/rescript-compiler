@@ -295,14 +295,15 @@ CORE_CMXS=$(addprefix core/, $(addsuffix .cmx, $(CORE_SRCS)))
 OTHER_CORE_SRCS= bsppx_main bspack_main jsoo_main  bspp_main js_cmi_datasets \
 		 js_main cmjdump_main
 OTHER_CORE_CMXS= $(addprefix core/, $(addsuffix .cmx, $(OTHER_CORE_SRCS)))
-BSB_SRCS= bsb_config \
+BSB_SRCS= bsb_config\
 	bsb_exception\
 	bsb_dir_index\
 	bsb_log\
 	bsb_pkg \
 	bsb_build_schemas\
 	bsb_ninja_global_vars\
-	bsb_build_util \
+	bsb_build_util\
+	bsb_package_specs\
 	bsb_helper_linker\
 	bsb_helper_extract\
 	bsb_rule\
