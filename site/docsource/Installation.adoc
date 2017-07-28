@@ -89,8 +89,8 @@ easily be done.
 
 [source,sh]
 --------------------------------------------------------
-git clone --recursive https://github.com/bucklescript/bucklescript
-cd bucklescript/ocaml
+git clone https://github.com/bucklescript/bucklescript
+cd bucklescript/vendor/ocaml
 ./configure -prefix `pwd` # put your preferred directory
 make world.opt
 make install
@@ -110,7 +110,7 @@ the previous section.
 
 [source,sh]
 -----------
-cd ../jscomp
+cd ../../jscomp
 make world
 -----------
 
