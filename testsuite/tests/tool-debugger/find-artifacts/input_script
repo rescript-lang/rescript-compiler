@@ -1,0 +1,5 @@
+break @ Foo 10
+run
+print x
+print y
+quit

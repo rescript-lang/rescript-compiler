@@ -1,0 +1,25 @@
+--- camlpdf-0.5.orig/makefile	2010-03-08 17:30:19.000000000 +0100
++++ camlpdf-0.5/makefile	2013-05-30 17:07:12.000000000 +0200
+@@ -42,7 +42,7 @@
+ 
+ CLIBS = z
+ 
+-CFLAGS = -m32
++#CFLAGS = -m32
+ 
+ #Uncomment for debug build
+ #OCAMLNCFLAGS = -g
+@@ -56,6 +56,13 @@
+ #Remove native-code-library if you don't have native compilers
+ all : byte-code-library native-code-library
+ 
++LIBDIR="`ocamlc -where`"/camlpdf
++.PHONY: install
++install :
++	mkdir -p ${LIBDIR}
++	cp *.mli *.cm[ia] *.cmxa *.a *.so ${LIBDIR}/
++	cp introduction_to_camlpdf.pdf ${LIBDIR}/
++
+ # Predefined generic makefile
+ -include OCamlMakefile
+ 

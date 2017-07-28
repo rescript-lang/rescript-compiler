@@ -1,0 +1,1008 @@
+Index: boot/ocamlc
+===================================================================
+Cannot display: file marked as a binary type.
+svn:mime-type = application/octet-stream
+Index: boot/ocamldep
+===================================================================
+Cannot display: file marked as a binary type.
+svn:mime-type = application/octet-stream
+Index: boot/ocamllex
+===================================================================
+Cannot display: file marked as a binary type.
+svn:mime-type = application/octet-stream
+Index: camlp4/Camlp4/Struct/Camlp4Ast2OCamlAst.ml
+===================================================================
+--- camlp4/Camlp4/Struct/Camlp4Ast2OCamlAst.ml	(revision 14301)
++++ camlp4/Camlp4/Struct/Camlp4Ast2OCamlAst.ml	(working copy)
+@@ -979,7 +979,7 @@
+     [ <:module_type@loc<>> -> error loc "abstract/nil module type not allowed here"
+     | <:module_type@loc< $id:i$ >> -> mkmty loc (Pmty_ident (long_uident i))
+     | <:module_type@loc< functor ($n$ : $nt$) -> $mt$ >> ->
+-        mkmty loc (Pmty_functor (with_loc n loc) (module_type nt) (module_type mt))
++        mkmty loc (Pmty_functor (with_loc n loc) (Some (module_type nt)) (module_type mt))
+     | <:module_type@loc< '$_$ >> -> error loc "module type variable not allowed here"
+     | <:module_type@loc< sig $sl$ end >> ->
+         mkmty loc (Pmty_signature (sig_item sl []))
+@@ -1051,7 +1051,7 @@
+     | <:module_expr@loc< $me1$ $me2$ >> ->
+         mkmod loc (Pmod_apply (module_expr me1) (module_expr me2))
+     | <:module_expr@loc< functor ($n$ : $mt$) -> $me$ >> ->
+-        mkmod loc (Pmod_functor (with_loc n loc) (module_type mt) (module_expr me))
++        mkmod loc (Pmod_functor (with_loc n loc) (Some (module_type mt)) (module_expr me))
+     | <:module_expr@loc< struct $sl$ end >> ->
+         mkmod loc (Pmod_structure (str_item sl []))
+     | <:module_expr@loc< ($me$ : $mt$) >> ->
+Index: camlp4/Camlp4Top/Rprint.ml
+===================================================================
+--- camlp4/Camlp4Top/Rprint.ml	(revision 14301)
++++ camlp4/Camlp4Top/Rprint.ml	(working copy)
+@@ -362,7 +362,10 @@
+   | Omty_signature sg ->
+       fprintf ppf "@[<hv 2>sig@ %a@;<1 -2>end@]"
+         Toploop.print_out_signature.val sg
+-  | Omty_functor name mty_arg mty_res ->
++  | Omty_functor _ None mty_res ->
++      fprintf ppf "@[<2>functor@ () ->@ %a@]"
++        print_out_module_type mty_res
++  | Omty_functor name (Some mty_arg) mty_res ->
+       fprintf ppf "@[<2>functor@ (%s : %a) ->@ %a@]" name
+         print_out_module_type mty_arg print_out_module_type mty_res
+   | Omty_abstract -> () ]
+Index: camlp4/boot/Camlp4.ml
+===================================================================
+--- camlp4/boot/Camlp4.ml	(revision 14301)
++++ camlp4/boot/Camlp4.ml	(working copy)
+@@ -15633,7 +15633,7 @@
+               | Ast.MtId (loc, i) -> mkmty loc (Pmty_ident (long_uident i))
+               | Ast.MtFun (loc, n, nt, mt) ->
+                   mkmty loc
+-                    (Pmty_functor ((with_loc n loc), (module_type nt),
++                    (Pmty_functor ((with_loc n loc), Some (module_type nt),
+                        (module_type mt)))
+               | Ast.MtQuo (loc, _) ->
+                   error loc "module type variable not allowed here"
+@@ -15775,7 +15775,7 @@
+                     (Pmod_apply ((module_expr me1), (module_expr me2)))
+               | Ast.MeFun (loc, n, mt, me) ->
+                   mkmod loc
+-                    (Pmod_functor ((with_loc n loc), (module_type mt),
++                    (Pmod_functor ((with_loc n loc), Some (module_type mt),
+                        (module_expr me)))
+               | Ast.MeStr (loc, sl) ->
+                   mkmod loc (Pmod_structure (str_item sl []))
+Index: ocamldoc/odoc_ast.ml
+===================================================================
+--- ocamldoc/odoc_ast.ml	(revision 14301)
++++ ocamldoc/odoc_ast.ml	(working copy)
+@@ -1606,18 +1606,25 @@
+ 
+       | (Parsetree.Pmod_functor (_, pmodule_type, p_module_expr2),
+          Typedtree.Tmod_functor (ident, _, mtyp, tt_module_expr2)) ->
+-           let loc_start = pmodule_type.Parsetree.pmty_loc.Location.loc_start.Lexing.pos_cnum in
+-           let loc_end = pmodule_type.Parsetree.pmty_loc.Location.loc_end.Lexing.pos_cnum in
++           let loc = match pmodule_type with None -> Location.none
++                     | Some pmty -> pmty.Parsetree.pmty_loc in
++           let loc_start = loc.Location.loc_start.Lexing.pos_cnum in
++           let loc_end = loc.Location.loc_end.Lexing.pos_cnum in
+            let mp_type_code = get_string_of_file loc_start loc_end in
+            print_DEBUG (Printf.sprintf "mp_type_code=%s" mp_type_code);
+            let mp_name = Name.from_ident ident in
+-           let mp_kind = Sig.analyse_module_type_kind env
+-               current_module_name pmodule_type mtyp.mty_type
++           let mp_kind =
++             match pmodule_type, mtyp with
++               Some pmty, Some mty ->
++                 Sig.analyse_module_type_kind env current_module_name pmty
++                   mty.mty_type
++             | _ -> Module_type_struct []
+            in
+            let param =
+              {
+                mp_name = mp_name ;
+-               mp_type = Odoc_env.subst_module_type env mtyp.mty_type ;
++               mp_type = Misc.may_map
++                (fun m -> Odoc_env.subst_module_type env m.mty_type) mtyp ;
+                mp_type_code = mp_type_code ;
+                mp_kind = mp_kind ;
+              }
+Index: ocamldoc/odoc_env.ml
+===================================================================
+--- ocamldoc/odoc_env.ml	(revision 14301)
++++ ocamldoc/odoc_env.ml	(working copy)
+@@ -223,7 +223,7 @@
+     | Types.Mty_signature _ ->
+         t
+     | Types.Mty_functor (id, mt1, mt2) ->
+-        Types.Mty_functor (id, iter mt1, iter mt2)
++        Types.Mty_functor (id, Misc.may_map iter mt1, iter mt2)
+   in
+   iter t
+ 
+Index: ocamldoc/odoc_html.ml
+===================================================================
+--- ocamldoc/odoc_html.ml	(revision 14301)
++++ ocamldoc/odoc_html.ml	(working copy)
+@@ -1384,7 +1384,8 @@
+ 
+     (** Print html code to display the type of a module parameter.. *)
+     method html_of_module_parameter_type b m_name p =
+-      self#html_of_module_type b m_name ~code: p.mp_type_code p.mp_type
++      match p.mp_type with None -> bs b "<code>()</code>"
++      | Some mty -> self#html_of_module_type b m_name ~code: p.mp_type_code mty
+ 
+     (** Generate a file containing the module type in the given file name. *)
+     method output_module_type in_title file mtyp =
+Index: ocamldoc/odoc_info.mli
+===================================================================
+--- ocamldoc/odoc_info.mli	(revision 14301)
++++ ocamldoc/odoc_info.mli	(working copy)
+@@ -434,7 +434,7 @@
+ 
+     and module_parameter = Odoc_module.module_parameter = {
+         mp_name : string ; (** the name *)
+-        mp_type : Types.module_type ; (** the type *)
++        mp_type : Types.module_type option ; (** the type *)
+         mp_type_code : string ; (** the original code *)
+         mp_kind : module_type_kind ; (** the way the parameter was built *)
+       }
+Index: ocamldoc/odoc_man.ml
+===================================================================
+--- ocamldoc/odoc_man.ml	(revision 14301)
++++ ocamldoc/odoc_man.ml	(working copy)
+@@ -612,7 +612,7 @@
+             (fun (p, desc_opt) ->
+               bs b ".sp\n";
+               bs b ("\""^p.mp_name^"\"\n");
+-              self#man_of_module_type b m_name p.mp_type;
++              Misc.may (self#man_of_module_type b m_name) p.mp_type;
+               bs b "\n";
+               (
+                match desc_opt with
+Index: ocamldoc/odoc_module.ml
+===================================================================
+--- ocamldoc/odoc_module.ml	(revision 14301)
++++ ocamldoc/odoc_module.ml	(working copy)
+@@ -46,7 +46,7 @@
+ 
+ and module_parameter = {
+     mp_name : string ; (** the name *)
+-    mp_type : Types.module_type ; (** the type *)
++    mp_type : Types.module_type option ; (** the type *)
+     mp_type_code : string ; (** the original code *)
+     mp_kind : module_type_kind ; (** the way the parameter was built *)
+   }
+Index: ocamldoc/odoc_print.ml
+===================================================================
+--- ocamldoc/odoc_print.ml	(revision 14301)
++++ ocamldoc/odoc_print.ml	(working copy)
+@@ -62,7 +62,7 @@
+          | Some s -> raise (Use_code s)
+         )
+     | Types.Mty_functor (id, mt1, mt2) ->
+-        Types.Mty_functor (id, iter mt1, iter mt2)
++        Types.Mty_functor (id, Misc.may_map iter mt1, iter mt2)
+   in
+   iter t
+ 
+Index: ocamldoc/odoc_sig.ml
+===================================================================
+--- ocamldoc/odoc_sig.ml	(revision 14301)
++++ ocamldoc/odoc_sig.ml	(working copy)
+@@ -1082,19 +1082,26 @@
+ 
+       | Parsetree.Pmty_functor (_, pmodule_type2, module_type2) ->
+           (
+-           let loc_start = pmodule_type2.Parsetree.pmty_loc.Location.loc_start.Lexing.pos_cnum in
+-           let loc_end = pmodule_type2.Parsetree.pmty_loc.Location.loc_end.Lexing.pos_cnum in
++           let loc = match pmodule_type2 with None -> Location.none
++                     | Some pmty -> pmty.Parsetree.pmty_loc in
++           let loc_start = loc.Location.loc_start.Lexing.pos_cnum in
++           let loc_end = loc.Location.loc_end.Lexing.pos_cnum in
+            let mp_type_code = get_string_of_file loc_start loc_end in
+            print_DEBUG (Printf.sprintf "mp_type_code=%s" mp_type_code);
+            match sig_module_type with
+              Types.Mty_functor (ident, param_module_type, body_module_type) ->
+-               let mp_kind = analyse_module_type_kind env
+-                   current_module_name pmodule_type2 param_module_type
++               let mp_kind =
++                 match pmodule_type2, param_module_type with
++                   Some pmty, Some mty ->
++                     analyse_module_type_kind env current_module_name pmty mty
++                 | _ -> Module_type_struct []
+                in
+                let param =
+                  {
+                    mp_name = Name.from_ident ident ;
+-                   mp_type = Odoc_env.subst_module_type env param_module_type ;
++                   mp_type =
++                    Misc.may_map (Odoc_env.subst_module_type env)
++                      param_module_type;
+                    mp_type_code = mp_type_code ;
+                    mp_kind = mp_kind ;
+                  }
+@@ -1161,17 +1168,23 @@
+           (
+            match sig_module_type with
+              Types.Mty_functor (ident, param_module_type, body_module_type) ->
+-               let loc_start = pmodule_type2.Parsetree.pmty_loc.Location.loc_start.Lexing.pos_cnum in
+-               let loc_end = pmodule_type2.Parsetree.pmty_loc.Location.loc_end.Lexing.pos_cnum in
++               let loc = match pmodule_type2 with None -> Location.none
++                     | Some pmty -> pmty.Parsetree.pmty_loc in
++               let loc_start = loc.Location.loc_start.Lexing.pos_cnum in
++               let loc_end = loc.Location.loc_end.Lexing.pos_cnum in
+                let mp_type_code = get_string_of_file loc_start loc_end in
+                print_DEBUG (Printf.sprintf "mp_type_code=%s" mp_type_code);
+-               let mp_kind = analyse_module_type_kind env
+-                   current_module_name pmodule_type2 param_module_type
++               let mp_kind =
++                 match pmodule_type2, param_module_type with
++                   Some pmty, Some mty ->
++                     analyse_module_type_kind env current_module_name pmty mty
++                 | _ -> Module_type_struct []
+                in
+                let param =
+                  {
+                    mp_name = Name.from_ident ident ;
+-                   mp_type = Odoc_env.subst_module_type env param_module_type ;
++                   mp_type = Misc.may_map
++                    (Odoc_env.subst_module_type env) param_module_type ;
+                    mp_type_code = mp_type_code ;
+                    mp_kind = mp_kind ;
+                  }
+Index: ocamldoc/odoc_to_text.ml
+===================================================================
+--- ocamldoc/odoc_to_text.ml	(revision 14301)
++++ ocamldoc/odoc_to_text.ml	(working copy)
+@@ -428,8 +428,11 @@
+             List
+               (List.map
+                  (fun (p, desc_opt) ->
+-                   [Code (p.mp_name^" : ")] @
+-                   (self#text_of_module_type p.mp_type) @
++                   begin match p.mp_type with None -> [Raw ""]
++                   | Some mty ->
++                       [Code (p.mp_name^" : ")] @
++                       (self#text_of_module_type mty)
++                   end @
+                    (match desc_opt with
+                      None -> []
+                    | Some t -> (Raw " ") :: t)
+Index: parsing/ast_helper.mli
+===================================================================
+--- parsing/ast_helper.mli	(revision 14301)
++++ parsing/ast_helper.mli	(working copy)
+@@ -145,7 +145,8 @@
+ 
+     val ident: ?loc:loc -> ?attrs:attrs -> lid -> module_type
+     val signature: ?loc:loc -> ?attrs:attrs -> signature -> module_type
+-    val functor_: ?loc:loc -> ?attrs:attrs -> str -> module_type -> module_type -> module_type
++    val functor_: ?loc:loc -> ?attrs:attrs ->
++      str -> module_type option -> module_type -> module_type
+     val with_: ?loc:loc -> ?attrs:attrs -> module_type -> with_constraint list -> module_type
+     val typeof_: ?loc:loc -> ?attrs:attrs -> module_expr -> module_type
+     val extension: ?loc:loc -> ?attrs:attrs -> extension -> module_type
+@@ -159,7 +160,8 @@
+ 
+     val ident: ?loc:loc -> ?attrs:attrs -> lid -> module_expr
+     val structure: ?loc:loc -> ?attrs:attrs -> structure -> module_expr
+-    val functor_: ?loc:loc -> ?attrs:attrs -> str -> module_type -> module_expr -> module_expr
++    val functor_: ?loc:loc -> ?attrs:attrs ->
++      str -> module_type option -> module_expr -> module_expr
+     val apply: ?loc:loc -> ?attrs:attrs -> module_expr -> module_expr -> module_expr
+     val constraint_: ?loc:loc -> ?attrs:attrs -> module_expr -> module_type -> module_expr
+     val unpack: ?loc:loc -> ?attrs:attrs -> expression -> module_expr
+Index: parsing/ast_mapper.ml
+===================================================================
+--- parsing/ast_mapper.ml	(revision 14301)
++++ parsing/ast_mapper.ml	(working copy)
+@@ -161,7 +161,8 @@
+     | Pmty_ident s -> ident ~loc ~attrs (map_loc sub s)
+     | Pmty_signature sg -> signature ~loc ~attrs (sub.signature sub sg)
+     | Pmty_functor (s, mt1, mt2) ->
+-        functor_ ~loc ~attrs (map_loc sub s) (sub.module_type sub mt1)
++        functor_ ~loc ~attrs (map_loc sub s)
++          (Misc.may_map (sub.module_type sub) mt1)
+           (sub.module_type sub mt2)
+     | Pmty_with (mt, l) ->
+         with_ ~loc ~attrs (sub.module_type sub mt)
+@@ -213,7 +214,8 @@
+     | Pmod_ident x -> ident ~loc ~attrs (map_loc sub x)
+     | Pmod_structure str -> structure ~loc ~attrs (sub.structure sub str)
+     | Pmod_functor (arg, arg_ty, body) ->
+-        functor_ ~loc ~attrs (map_loc sub arg) (sub.module_type sub arg_ty)
++        functor_ ~loc ~attrs (map_loc sub arg)
++          (Misc.may_map (sub.module_type sub) arg_ty)
+           (sub.module_expr sub body)
+     | Pmod_apply (m1, m2) ->
+         apply ~loc ~attrs (sub.module_expr sub m1) (sub.module_expr sub m2)
+Index: parsing/parser.mly
+===================================================================
+--- parsing/parser.mly	(revision 14301)
++++ parsing/parser.mly	(working copy)
+@@ -541,9 +541,13 @@
+   | STRUCT structure error
+       { unclosed "struct" 1 "end" 3 }
+   | FUNCTOR LPAREN UIDENT COLON module_type RPAREN MINUSGREATER module_expr
+-      { mkmod(Pmod_functor(mkrhs $3 3, $5, $8)) }
++      { mkmod(Pmod_functor(mkrhs $3 3, Some $5, $8)) }
++  | FUNCTOR LPAREN RPAREN MINUSGREATER module_expr
++      { mkmod(Pmod_functor(mkrhs "()" 3, None, $5)) }
+   | module_expr LPAREN module_expr RPAREN
+       { mkmod(Pmod_apply($1, $3)) }
++  | module_expr LPAREN RPAREN
++      { mkmod(Pmod_apply($1, mkmod (Pmod_structure []))) }
+   | module_expr LPAREN module_expr error
+       { unclosed "(" 2 ")" 4 }
+   | LPAREN module_expr COLON module_type RPAREN
+@@ -640,7 +644,9 @@
+   | COLON module_type EQUAL module_expr
+       { mkmod(Pmod_constraint($4, $2)) }
+   | LPAREN UIDENT COLON module_type RPAREN module_binding_body
+-      { mkmod(Pmod_functor(mkrhs $2 2, $4, $6)) }
++      { mkmod(Pmod_functor(mkrhs $2 2, Some $4, $6)) }
++  | LPAREN RPAREN module_binding_body
++      { mkmod(Pmod_functor(mkrhs "()" 1, None, $3)) }
+ ;
+ module_bindings:
+     module_binding                        { [$1] }
+@@ -662,7 +668,10 @@
+       { unclosed "sig" 1 "end" 3 }
+   | FUNCTOR LPAREN UIDENT COLON module_type RPAREN MINUSGREATER module_type
+       %prec below_WITH
+-      { mkmty(Pmty_functor(mkrhs $3 3, $5, $8)) }
++      { mkmty(Pmty_functor(mkrhs $3 3, Some $5, $8)) }
++  | FUNCTOR LPAREN RPAREN MINUSGREATER module_type
++      %prec below_WITH
++      { mkmty(Pmty_functor(mkrhs "()" 2, None, $5)) }
+   | module_type WITH with_constraints
+       { mkmty(Pmty_with($1, List.rev $3)) }
+   | MODULE TYPE OF module_expr %prec below_LBRACKETAT
+@@ -724,7 +733,9 @@
+     COLON module_type
+       { $2 }
+   | LPAREN UIDENT COLON module_type RPAREN module_declaration
+-      { mkmty(Pmty_functor(mkrhs $2 2, $4, $6)) }
++      { mkmty(Pmty_functor(mkrhs $2 2, Some $4, $6)) }
++  | LPAREN RPAREN module_declaration
++      { mkmty(Pmty_functor(mkrhs "()" 1, None, $3)) }
+ ;
+ module_rec_declarations:
+     module_rec_declaration                              { [$1] }
+Index: parsing/parsetree.mli
+===================================================================
+--- parsing/parsetree.mli	(revision 14301)
++++ parsing/parsetree.mli	(working copy)
+@@ -543,7 +543,7 @@
+         (* S *)
+   | Pmty_signature of signature
+         (* sig ... end *)
+-  | Pmty_functor of string loc * module_type * module_type
++  | Pmty_functor of string loc * module_type option * module_type
+         (* functor(X : MT1) -> MT2 *)
+   | Pmty_with of module_type * with_constraint list
+         (* MT with ... *)
+@@ -637,7 +637,7 @@
+         (* X *)
+   | Pmod_structure of structure
+         (* struct ... end *)
+-  | Pmod_functor of string loc * module_type * module_expr
++  | Pmod_functor of string loc * module_type option * module_expr
+         (* functor(X : MT1) -> ME *)
+   | Pmod_apply of module_expr * module_expr
+         (* ME1(ME2) *)
+Index: parsing/pprintast.ml
+===================================================================
+--- parsing/pprintast.ml	(revision 14301)
++++ parsing/pprintast.ml	(working copy)
+@@ -834,7 +834,9 @@
+     | Pmty_signature (s) ->
+         pp f "@[<hv0>@[<hv2>sig@ %a@]@ end@]" (* "@[<hov>sig@ %a@ end@]" *)
+           (self#list self#signature_item  ) s (* FIXME wrong indentation*)
+-    | Pmty_functor (s, mt1, mt2) ->
++    | Pmty_functor (_, None, mt2) ->
++        pp f "@[<hov2>functor () ->@ %a@]" self#module_type mt2 
++    | Pmty_functor (s, Some mt1, mt2) ->
+         pp f "@[<hov2>functor@ (%s@ :@ %a)@ ->@ %a@]" s.txt
+           self#module_type mt1  self#module_type mt2
+     | Pmty_with (mt, l) ->
+@@ -940,7 +942,9 @@
+           self#module_type mt
+     | Pmod_ident (li) ->
+         pp f "%a" self#longident_loc li;
+-    | Pmod_functor (s, mt, me) ->
++    | Pmod_functor (_, None, me) ->
++        pp f "functor ()@;->@;%a" self#module_expr me
++    | Pmod_functor (s, Some mt, me) ->
+         pp f "functor@ (%s@ :@ %a)@;->@;%a"
+           s.txt  self#module_type mt  self#module_expr me
+     | Pmod_apply (me1, me2) ->
+@@ -1025,7 +1029,8 @@
+     | Pstr_module x ->
+         let rec module_helper me = match me.pmod_desc with
+         | Pmod_functor(s,mt,me) ->
+-            pp f "(%s:%a)"  s.txt  self#module_type mt ;
++            if mt = None then pp f "()"
++            else Misc.may (pp f "(%s:%a)" s.txt self#module_type) mt;
+             module_helper me
+         | _ -> me in
+         pp f "@[<hov2>module %s%a@]"
+Index: parsing/printast.ml
+===================================================================
+--- parsing/printast.ml	(revision 14301)
++++ parsing/printast.ml	(working copy)
+@@ -576,7 +576,7 @@
+       signature i ppf s;
+   | Pmty_functor (s, mt1, mt2) ->
+       line i ppf "Pmty_functor %a\n" fmt_string_loc s;
+-      module_type i ppf mt1;
++      Misc.may (module_type i ppf) mt1;
+       module_type i ppf mt2;
+   | Pmty_with (mt, l) ->
+       line i ppf "Pmty_with\n";
+@@ -670,7 +670,7 @@
+       structure i ppf s;
+   | Pmod_functor (s, mt, me) ->
+       line i ppf "Pmod_functor %a\n" fmt_string_loc s;
+-      module_type i ppf mt;
++      Misc.may (module_type i ppf) mt;
+       module_expr i ppf me;
+   | Pmod_apply (me1, me2) ->
+       line i ppf "Pmod_apply\n";
+Index: tools/depend.ml
+===================================================================
+--- tools/depend.ml	(revision 14301)
++++ tools/depend.ml	(working copy)
+@@ -201,7 +201,8 @@
+     Pmty_ident l -> add bv l
+   | Pmty_signature s -> add_signature bv s
+   | Pmty_functor(id, mty1, mty2) ->
+-      add_modtype bv mty1; add_modtype (StringSet.add id.txt bv) mty2
++      Misc.may (add_modtype bv) mty1;
++      add_modtype (StringSet.add id.txt bv) mty2
+   | Pmty_with(mty, cstrl) ->
+       add_modtype bv mty;
+       List.iter
+@@ -258,7 +259,7 @@
+     Pmod_ident l -> addmodule bv l
+   | Pmod_structure s -> ignore (add_structure bv s)
+   | Pmod_functor(id, mty, modl) ->
+-      add_modtype bv mty;
++      Misc.may (add_modtype bv) mty;
+       add_module (StringSet.add id.txt bv) modl
+   | Pmod_apply(mod1, mod2) ->
+       add_module bv mod1; add_module bv mod2
+Index: tools/tast_iter.ml
+===================================================================
+--- tools/tast_iter.ml	(revision 14301)
++++ tools/tast_iter.ml	(working copy)
+@@ -193,7 +193,7 @@
+   | Tmty_ident (_path, _) -> ()
+   | Tmty_signature sg -> sub # signature sg
+   | Tmty_functor (_id, _, mtype1, mtype2) ->
+-      sub # module_type mtype1; sub # module_type mtype2
++      Misc.may (sub # module_type) mtype1; sub # module_type mtype2
+   | Tmty_with (mtype, list) ->
+       sub # module_type mtype;
+       List.iter (fun (_, _, withc) -> sub # with_constraint withc) list
+@@ -212,7 +212,7 @@
+   | Tmod_ident (_p, _) -> ()
+   | Tmod_structure st -> sub # structure st
+   | Tmod_functor (_id, _, mtype, mexpr) ->
+-      sub # module_type mtype;
++      Misc.may (sub # module_type) mtype;
+       sub # module_expr mexpr
+   | Tmod_apply (mexp1, mexp2, _) ->
+       sub # module_expr mexp1;
+Index: tools/untypeast.ml
+===================================================================
+--- tools/untypeast.ml	(revision 14301)
++++ tools/untypeast.ml	(working copy)
+@@ -376,7 +376,7 @@
+       Tmty_ident (_path, lid) -> Pmty_ident (lid)
+     | Tmty_signature sg -> Pmty_signature (untype_signature sg)
+     | Tmty_functor (_id, name, mtype1, mtype2) ->
+-        Pmty_functor (name, untype_module_type mtype1,
++        Pmty_functor (name, Misc.may_map untype_module_type mtype1,
+           untype_module_type mtype2)
+     | Tmty_with (mtype, list) ->
+         Pmty_with (untype_module_type mtype,
+@@ -405,7 +405,7 @@
+           Tmod_ident (_p, lid) -> Pmod_ident (lid)
+         | Tmod_structure st -> Pmod_structure (untype_structure st)
+         | Tmod_functor (_id, name, mtype, mexpr) ->
+-            Pmod_functor (name, untype_module_type mtype,
++            Pmod_functor (name, Misc.may_map untype_module_type mtype,
+               untype_module_expr mexpr)
+         | Tmod_apply (mexp1, mexp2, _) ->
+             Pmod_apply (untype_module_expr mexp1, untype_module_expr mexp2)
+Index: typing/btype.ml
+===================================================================
+--- typing/btype.ml	(revision 14301)
++++ typing/btype.ml	(working copy)
+@@ -56,6 +56,9 @@
+ let is_Tunivar = function {desc=Tunivar _} -> true | _ -> false
+ 
+ let dummy_method = "*dummy method*"
++let default_mty = function
++    Some mty -> mty
++  | None -> Mty_signature []
+ 
+ (**** Representative of a type ****)
+ 
+Index: typing/btype.mli
+===================================================================
+--- typing/btype.mli	(revision 14301)
++++ typing/btype.mli	(working copy)
+@@ -39,9 +39,12 @@
+         (* Return a fresh marked generic variable *)
+ *)
+ 
++(**** Types ****)
++
+ val is_Tvar: type_expr -> bool
+ val is_Tunivar: type_expr -> bool
+ val dummy_method: label
++val default_mty: module_type option -> module_type
+ 
+ val repr: type_expr -> type_expr
+         (* Return the canonical representative of a type. *)
+Index: typing/env.ml
+===================================================================
+--- typing/env.ml	(revision 14301)
++++ typing/env.ml	(working copy)
+@@ -201,7 +201,7 @@
+ 
+ and functor_components = {
+   fcomp_param: Ident.t;                 (* Formal parameter *)
+-  fcomp_arg: module_type;               (* Argument signature *)
++  fcomp_arg: module_type option;        (* Argument signature *)
+   fcomp_res: module_type;               (* Result signature *)
+   fcomp_env: t;     (* Environment in which the result signature makes sense *)
+   fcomp_subst: Subst.t;  (* Prefixing substitution for the result signature *)
+@@ -522,7 +522,7 @@
+       let (p2, {md_type=mty2}) = lookup_module l2 env in
+       begin match EnvLazy.force !components_of_module_maker' desc1 with
+         Functor_comps f ->
+-          !check_modtype_inclusion env mty2 p2 f.fcomp_arg;
++          Misc.may (!check_modtype_inclusion env mty2 p2) f.fcomp_arg;
+           (Papply(p1, p2), !components_of_functor_appl' f p1 p2)
+       | Structure_comps c ->
+           raise Not_found
+@@ -562,7 +562,7 @@
+       let p = Papply(p1, p2) in
+       begin match EnvLazy.force !components_of_module_maker' desc1 with
+         Functor_comps f ->
+-          !check_modtype_inclusion env mty2 p2 f.fcomp_arg;
++          Misc.may (!check_modtype_inclusion env mty2 p2) f.fcomp_arg;
+           let mty =
+             Subst.modtype (Subst.add_module f.fcomp_param p2 f.fcomp_subst)
+               f.fcomp_res in
+@@ -1120,7 +1120,7 @@
+           fcomp_param = param;
+           (* fcomp_arg must be prefixed eagerly, because it is interpreted
+              in the outer environment, not in env *)
+-          fcomp_arg = Subst.modtype sub ty_arg;
++          fcomp_arg = may_map (Subst.modtype sub) ty_arg;
+           (* fcomp_res is prefixed lazily, because it is interpreted in env *)
+           fcomp_res = ty_res;
+           fcomp_env = env;
+Index: typing/includemod.ml
+===================================================================
+--- typing/includemod.ml	(revision 14301)
++++ typing/includemod.ml	(working copy)
+@@ -168,7 +168,13 @@
+       try_modtypes2 env cxt mty1 (Subst.modtype subst mty2)
+   | (Mty_signature sig1, Mty_signature sig2) ->
+       signatures env cxt subst sig1 sig2
+-  | (Mty_functor(param1, arg1, res1), Mty_functor(param2, arg2, res2)) ->
++  | (Mty_functor(param1, None, res1), Mty_functor(param2, None, res2)) ->
++      begin match modtypes env (Body param1::cxt) subst res1 res2 with
++        Tcoerce_none -> Tcoerce_none
++      | cc -> Tcoerce_functor (Tcoerce_none, cc)
++      end
++  | (Mty_functor(param1, Some arg1, res1),
++     Mty_functor(param2, Some arg2, res2)) ->
+       let arg2' = Subst.modtype subst arg2 in
+       let cc_arg = modtypes env (Arg param1::cxt) Subst.identity arg2' arg1 in
+       let cc_res =
+Index: typing/mtype.ml
+===================================================================
+--- typing/mtype.ml	(revision 14301)
++++ typing/mtype.ml	(working copy)
+@@ -34,7 +34,8 @@
+   match scrape env mty with
+     Mty_signature sg ->
+       Mty_signature(strengthen_sig env sg p)
+-  | Mty_functor(param, arg, res) when !Clflags.applicative_functors ->
++  | Mty_functor(param, arg, res)
++    when !Clflags.applicative_functors && Ident.name param <> "*" ->
+       Mty_functor(param, arg, strengthen env res (Papply(p, Pident param)))
+   | mty ->
+       mty
+@@ -105,8 +106,9 @@
+     | Mty_functor(param, arg, res) ->
+         let var_inv =
+           match va with Co -> Contra | Contra -> Co | Strict -> Strict in
+-        Mty_functor(param, nondep_mty env var_inv arg,
+-                     nondep_mty (Env.add_module param arg env) va res)
++        Mty_functor(param, Misc.may_map (nondep_mty env var_inv) arg,
++                    nondep_mty
++                      (Env.add_module param (Btype.default_mty arg) env) va res)
+ 
+   and nondep_sig env va = function
+     [] -> []
+@@ -228,3 +230,34 @@
+       no_code_needed_sig env rem
+   | (Sig_exception _ | Sig_class _) :: rem ->
+       false
++
++
++(* Check whether a module type may return types *)
++
++let rec contains_type env = function
++    Mty_ident path ->
++      (try Misc.may (contains_type env) (Env.find_modtype path env).mtd_type
++       with Not_found -> raise Exit)
++  | Mty_signature sg ->
++      contains_type_sig env sg
++  | Mty_functor (_, _, body) ->
++      contains_type env body
++
++and contains_type_sig env = List.iter (contains_type_item env)
++
++and contains_type_item env = function
++    Sig_type (_,({type_manifest = None} |
++                 {type_kind = Type_abstract; type_private = Private}),_)
++  | Sig_modtype _ ->
++      raise Exit
++  | Sig_module (_, {md_type = mty}, _) ->
++      contains_type env mty
++  | Sig_value _
++  | Sig_type _
++  | Sig_exception _
++  | Sig_class _
++  | Sig_class_type _ ->
++      ()
++
++let contains_type env mty =
++  try contains_type env mty; false with Exit -> true
+Index: typing/mtype.mli
+===================================================================
+--- typing/mtype.mli	(revision 14301)
++++ typing/mtype.mli	(working copy)
+@@ -36,3 +36,4 @@
+ val enrich_modtype: Env.t -> Path.t -> module_type -> module_type
+ val enrich_typedecl: Env.t -> Path.t -> type_declaration -> type_declaration
+ val type_paths: Env.t -> Path.t -> module_type -> Path.t list
++val contains_type: Env.t -> module_type -> bool
+Index: typing/oprint.ml
+===================================================================
+--- typing/oprint.ml	(revision 14301)
++++ typing/oprint.ml	(working copy)
+@@ -344,7 +344,9 @@
+ let rec print_out_module_type ppf =
+   function
+     Omty_abstract -> ()
+-  | Omty_functor (name, mty_arg, mty_res) ->
++  | Omty_functor (_, None, mty_res) ->
++      fprintf ppf "@[<2>functor@ () ->@ %a@]" print_out_module_type mty_res
++  | Omty_functor (name, Some mty_arg, mty_res) ->
+       fprintf ppf "@[<2>functor@ (%s : %a) ->@ %a@]" name
+         print_out_module_type mty_arg print_out_module_type mty_res
+   | Omty_ident id -> fprintf ppf "%a" print_ident id
+Index: typing/outcometree.mli
+===================================================================
+--- typing/outcometree.mli	(revision 14301)
++++ typing/outcometree.mli	(working copy)
+@@ -75,7 +75,7 @@
+ 
+ type out_module_type =
+   | Omty_abstract
+-  | Omty_functor of string * out_module_type * out_module_type
++  | Omty_functor of string * out_module_type option * out_module_type
+   | Omty_ident of out_ident
+   | Omty_signature of out_sig_item list
+ and out_sig_item =
+Index: typing/printtyp.ml
+===================================================================
+--- typing/printtyp.ml	(revision 14301)
++++ typing/printtyp.ml	(working copy)
+@@ -1116,9 +1116,12 @@
+   | Mty_signature sg ->
+       Omty_signature (tree_of_signature sg)
+   | Mty_functor(param, ty_arg, ty_res) ->
+-      Omty_functor
+-        (Ident.name param, tree_of_modtype ty_arg,
+-         wrap_env (Env.add_module param ty_arg) tree_of_modtype ty_res)
++      let res =
++        match ty_arg with None -> tree_of_modtype ty_res
++        | Some mty ->
++            wrap_env (Env.add_module param mty) tree_of_modtype ty_res
++      in
++      Omty_functor (Ident.name param, may_map tree_of_modtype ty_arg, res)
+ 
+ and tree_of_signature sg =
+   wrap_env (fun env -> env) (tree_of_signature_rec !printing_env) sg
+Index: typing/printtyped.ml
+===================================================================
+--- typing/printtyped.ml	(revision 14301)
++++ typing/printtyped.ml	(working copy)
+@@ -562,7 +562,7 @@
+       signature i ppf s;
+   | Tmty_functor (s, _, mt1, mt2) ->
+       line i ppf "Pmty_functor \"%a\"\n" fmt_ident s;
+-      module_type i ppf mt1;
++      Misc.may (module_type i ppf) mt1;
+       module_type i ppf mt2;
+   | Tmty_with (mt, l) ->
+       line i ppf "Pmty_with\n";
+@@ -651,7 +651,7 @@
+       structure i ppf s;
+   | Tmod_functor (s, _, mt, me) ->
+       line i ppf "Pmod_functor \"%a\"\n" fmt_ident s;
+-      module_type i ppf mt;
++      Misc.may (module_type i ppf) mt;
+       module_expr i ppf me;
+   | Tmod_apply (me1, me2, _) ->
+       line i ppf "Pmod_apply\n";
+Index: typing/subst.ml
+===================================================================
+--- typing/subst.ml	(revision 14301)
++++ typing/subst.ml	(working copy)
+@@ -327,8 +327,8 @@
+       Mty_signature(signature s sg)
+   | Mty_functor(id, arg, res) ->
+       let id' = Ident.rename id in
+-      Mty_functor(id', modtype s arg,
+-                        modtype (add_module id (Pident id') s) res)
++      Mty_functor(id', may_map (modtype s) arg,
++                       modtype (add_module id (Pident id') s) res)
+ 
+ and signature s sg =
+   (* Components of signature may be mutually recursive (e.g. type declarations
+Index: typing/typedtree.ml
+===================================================================
+--- typing/typedtree.ml	(revision 14301)
++++ typing/typedtree.ml	(working copy)
+@@ -187,7 +187,7 @@
+ and module_expr_desc =
+     Tmod_ident of Path.t * Longident.t loc
+   | Tmod_structure of structure
+-  | Tmod_functor of Ident.t * string loc * module_type * module_expr
++  | Tmod_functor of Ident.t * string loc * module_type option * module_expr
+   | Tmod_apply of module_expr * module_expr * module_coercion
+   | Tmod_constraint of
+       module_expr * Types.module_type * module_type_constraint * module_coercion
+@@ -253,7 +253,7 @@
+ and module_type_desc =
+     Tmty_ident of Path.t * Longident.t loc
+   | Tmty_signature of signature
+-  | Tmty_functor of Ident.t * string loc * module_type * module_type
++  | Tmty_functor of Ident.t * string loc * module_type option * module_type
+   | Tmty_with of module_type * (Path.t * Longident.t loc * with_constraint) list
+   | Tmty_typeof of module_expr
+ 
+Index: typing/typedtree.mli
+===================================================================
+--- typing/typedtree.mli	(revision 14301)
++++ typing/typedtree.mli	(working copy)
+@@ -186,7 +186,7 @@
+ and module_expr_desc =
+     Tmod_ident of Path.t * Longident.t loc
+   | Tmod_structure of structure
+-  | Tmod_functor of Ident.t * string loc * module_type * module_expr
++  | Tmod_functor of Ident.t * string loc * module_type option * module_expr
+   | Tmod_apply of module_expr * module_expr * module_coercion
+   | Tmod_constraint of
+       module_expr * Types.module_type * module_type_constraint * module_coercion
+@@ -252,7 +252,7 @@
+ and module_type_desc =
+     Tmty_ident of Path.t * Longident.t loc
+   | Tmty_signature of signature
+-  | Tmty_functor of Ident.t * string loc * module_type * module_type
++  | Tmty_functor of Ident.t * string loc * module_type option * module_type
+   | Tmty_with of module_type * (Path.t * Longident.t loc * with_constraint) list
+   | Tmty_typeof of module_expr
+ 
+Index: typing/typedtreeIter.ml
+===================================================================
+--- typing/typedtreeIter.ml	(revision 14301)
++++ typing/typedtreeIter.ml	(working copy)
+@@ -383,7 +383,7 @@
+           Tmty_ident (path, _) -> ()
+         | Tmty_signature sg -> iter_signature sg
+         | Tmty_functor (id, _, mtype1, mtype2) ->
+-            iter_module_type mtype1; iter_module_type mtype2
++            Misc.may iter_module_type mtype1; iter_module_type mtype2
+         | Tmty_with (mtype, list) ->
+             iter_module_type mtype;
+             List.iter (fun (path, _, withc) ->
+@@ -412,7 +412,7 @@
+           Tmod_ident (p, _) -> ()
+         | Tmod_structure st -> iter_structure st
+         | Tmod_functor (id, _, mtype, mexpr) ->
+-            iter_module_type mtype;
++            Misc.may iter_module_type mtype;
+             iter_module_expr mexpr
+         | Tmod_apply (mexp1, mexp2, _) ->
+             iter_module_expr mexp1;
+Index: typing/typedtreeMap.ml
+===================================================================
+--- typing/typedtreeMap.ml	(revision 14301)
++++ typing/typedtreeMap.ml	(working copy)
+@@ -426,7 +426,7 @@
+           Tmty_ident (path, lid) -> mty.mty_desc
+         | Tmty_signature sg -> Tmty_signature (map_signature sg)
+         | Tmty_functor (id, name, mtype1, mtype2) ->
+-          Tmty_functor (id, name, map_module_type mtype1,
++          Tmty_functor (id, name, Misc.may_map map_module_type mtype1,
+                         map_module_type mtype2)
+         | Tmty_with (mtype, list) ->
+           Tmty_with (map_module_type mtype,
+@@ -456,7 +456,7 @@
+           Tmod_ident (p, lid) -> mexpr.mod_desc
+         | Tmod_structure st -> Tmod_structure (map_structure st)
+         | Tmod_functor (id, name, mtype, mexpr) ->
+-          Tmod_functor (id, name, map_module_type mtype,
++          Tmod_functor (id, name, Misc.may_map map_module_type mtype,
+                         map_module_expr mexpr)
+         | Tmod_apply (mexp1, mexp2, coercion) ->
+           Tmod_apply (map_module_expr mexp1, map_module_expr mexp2, coercion)
+Index: typing/typemod.ml
+===================================================================
+--- typing/typemod.ml	(revision 14301)
++++ typing/typemod.ml	(working copy)
+@@ -39,6 +39,7 @@
+   | Scoping_pack of Longident.t * type_expr
+   | Extension of string
+   | Recursive_module_require_explicit_type
++  | Apply_generative
+ 
+ exception Error of Location.t * Env.t * error
+ 
+@@ -299,8 +300,9 @@
+   | Pmty_signature ssg ->
+       Mty_signature(approx_sig env ssg)
+   | Pmty_functor(param, sarg, sres) ->
+-      let arg = approx_modtype env sarg in
+-      let (id, newenv) = Env.enter_module param.txt arg env in
++      let arg = may_map (approx_modtype env) sarg in
++      let (id, newenv) =
++        Env.enter_module param.txt (Btype.default_mty arg) env in
+       let res = approx_modtype newenv sres in
+       Mty_functor(id, arg, res)
+   | Pmty_with(sbody, constraints) ->
+@@ -472,11 +474,13 @@
+       mkmty (Tmty_signature sg) (Mty_signature sg.sig_type) env loc
+         smty.pmty_attributes
+   | Pmty_functor(param, sarg, sres) ->
+-      let arg = transl_modtype env sarg in
+-      let (id, newenv) = Env.enter_module param.txt arg.mty_type env in
++      let arg = Misc.may_map (transl_modtype env) sarg in
++      let ty_arg = Misc.may_map (fun m -> m.mty_type) arg in
++      let (id, newenv) =
++        Env.enter_module param.txt (Btype.default_mty ty_arg) env in
+       let res = transl_modtype newenv sres in
+       mkmty (Tmty_functor (id, param, arg, res))
+-      (Mty_functor(id, arg.mty_type, res.mty_type)) env loc
++      (Mty_functor(id, ty_arg, res.mty_type)) env loc
+         smty.pmty_attributes
+   | Pmty_with(sbody, constraints) ->
+       let body = transl_modtype env sbody in
+@@ -949,11 +953,14 @@
+            mod_attributes = smod.pmod_attributes;
+            mod_loc = smod.pmod_loc }
+   | Pmod_functor(name, smty, sbody) ->
+-      let mty = transl_modtype env smty in
+-      let (id, newenv) = Env.enter_module name.txt mty.mty_type env in
+-      let body = type_module sttn true None newenv sbody in
++      let mty = may_map (transl_modtype env) smty in
++      let ty_arg = may_map (fun m -> m.mty_type) mty in
++      let (id, newenv), funct_body =
++        match ty_arg with None -> (Ident.create "*", env), false
++        | Some mty -> Env.enter_module name.txt mty env, true in
++      let body = type_module sttn funct_body None newenv sbody in
+       rm { mod_desc = Tmod_functor(id, name, mty, body);
+-           mod_type = Mty_functor(id, mty.mty_type, body.mod_type);
++           mod_type = Mty_functor(id, ty_arg, body.mod_type);
+            mod_env = env;
+            mod_attributes = smod.pmod_attributes;
+            mod_loc = smod.pmod_loc }
+@@ -964,6 +971,14 @@
+         type_module (sttn && path <> None) funct_body None env sfunct in
+       begin match Mtype.scrape env funct.mod_type with
+         Mty_functor(param, mty_param, mty_res) as mty_functor ->
++          let generative, mty_param =
++            (mty_param = None, Btype.default_mty mty_param) in
++          if generative then begin
++            if sarg.pmod_desc <> Pmod_structure [] then
++              raise (Error (sfunct.pmod_loc, env, Apply_generative));
++            if funct_body && Mtype.contains_type env funct.mod_type then
++              raise (Error (smod.pmod_loc, env, Not_allowed_in_functor_body));
++          end;
+           let coercion =
+             try
+               Includemod.modtypes env arg.mod_type mty_param
+@@ -975,6 +990,7 @@
+                 Subst.modtype (Subst.add_module param path Subst.identity)
+                               mty_res
+             | None ->
++                if generative then mty_res else
+                 try
+                   Mtype.nondep_supertype
+                     (Env.add_module param arg.mod_type env) param mty_res
+@@ -999,8 +1015,6 @@
+          }
+ 
+   | Pmod_unpack sexp ->
+-      if funct_body then
+-        raise (Error (smod.pmod_loc, env, Not_allowed_in_functor_body));
+       if !Clflags.principal then Ctype.begin_def ();
+       let exp = Typecore.type_exp env sexp in
+       if !Clflags.principal then begin
+@@ -1025,6 +1039,8 @@
+         | _ ->
+             raise (Error(smod.pmod_loc, env, Not_a_packed_module exp.exp_type))
+       in
++      if funct_body && Mtype.contains_type env mty then
++        raise (Error (smod.pmod_loc, env, Not_allowed_in_functor_body));
+       rm { mod_desc = Tmod_unpack(exp, mty);
+            mod_type = mty;
+            mod_env = env;
+@@ -1549,7 +1565,8 @@
+         Location.print_filename intf_name
+   | Not_allowed_in_functor_body ->
+       fprintf ppf
+-        "This kind of expression is not allowed within the body of a functor."
++        "@[This expression creates fresh types.@ %s@]"
++        "It is not allowed inside applicative functors."
+   | With_need_typeconstr ->
+       fprintf ppf
+         "Only type constructors with identical parameters can be substituted."
+@@ -1570,6 +1587,8 @@
+       fprintf ppf "Uninterpreted extension '%s'." s
+   | Recursive_module_require_explicit_type ->
+       fprintf ppf "Recursive modules require an explicit module type."
++  | Apply_generative ->
++      fprintf ppf "This is a generative functor. It can only be applied to ()"
+ 
+ let report_error env ppf err =
+   Printtyp.wrap_printing_env env (fun () -> report_error ppf err)
+Index: typing/typemod.mli
+===================================================================
+--- typing/typemod.mli	(revision 14301)
++++ typing/typemod.mli	(working copy)
+@@ -60,6 +60,7 @@
+   | Scoping_pack of Longident.t * type_expr
+   | Extension of string
+   | Recursive_module_require_explicit_type
++  | Apply_generative
+ 
+ exception Error of Location.t * Env.t * error
+ 
+Index: typing/types.ml
+===================================================================
+--- typing/types.ml	(revision 14301)
++++ typing/types.ml	(working copy)
+@@ -264,7 +264,7 @@
+ type module_type =
+     Mty_ident of Path.t
+   | Mty_signature of signature
+-  | Mty_functor of Ident.t * module_type * module_type
++  | Mty_functor of Ident.t * module_type option * module_type
+ 
+ and signature = signature_item list
+ 
+Index: typing/types.mli
+===================================================================
+--- typing/types.mli	(revision 14301)
++++ typing/types.mli	(working copy)
+@@ -251,7 +251,7 @@
+ type module_type =
+     Mty_ident of Path.t
+   | Mty_signature of signature
+-  | Mty_functor of Ident.t * module_type * module_type
++  | Mty_functor of Ident.t * module_type option * module_type
+ 
+ and signature = signature_item list
+ 

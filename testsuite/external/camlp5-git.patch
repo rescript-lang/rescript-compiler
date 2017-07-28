@@ -1,0 +1,12 @@
+diff --git a/Makefile b/Makefile
+index 13622f7..b33a042 100644
+--- camlp5-git/Makefile.orig
++++ camlp5-git/Makefile
+@@ -54,6 +54,7 @@ depend:
+ 	cd ocaml_stuff; $(MAKE) depend; cd ..
+ 	for i in $(DIRS) compile; do (cd $$i; $(MAKE) depend; cd ..); done
+ 
++.PHONY: install
+ install:
+ 	rm -rf "$(DESTDIR)$(LIBDIR)/$(CAMLP5N)"
+ 	for i in $(DIRS) compile; do \

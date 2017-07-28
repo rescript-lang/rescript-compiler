@@ -1,0 +1,152 @@
+#!/bin/sh
+
+#######################################################################
+#                                                                     #
+#                                OCaml                                #
+#                                                                     #
+#          Damien Doligez, projet Gallium, INRIA Rocquencourt         #
+#                                                                     #
+#  Copyright 2011 Institut National de Recherche en Informatique et   #
+#  en Automatique.  All rights reserved.  This file is distributed    #
+#  under the terms of the Q Public License version 1.0.               #
+#                                                                     #
+#######################################################################
+
+(
+case $# in
+  0) find . -type f -print;;
+  *) echo $1;;
+esac
+) | \
+while read f; do
+awk -f - "$f" <<\EOF
+
+function checkline (x) {
+  return ( $0 ~ ("^.{0,4}" x) );
+}
+
+function hrule () {
+  return (checkline("[*#]{69}"));
+}
+
+function blank () {
+  return (checkline(" {69}"));
+}
+
+function ocaml () {
+  return (checkline(" {32}OCaml {32}") \
+       || checkline(" {35}OCaml {32}") \
+       || checkline("                             ocamlbuild                              ") \
+       || checkline("                             OCamldoc                                ") \
+  );
+}
+
+function any () {
+  return (checkline(".{69}"));
+}
+
+function copy1 () {
+  return (checkline("  Copyright +[-0-9]+ +Institut +National +de +Recherche +en +Informatique +et   "));
+}
+
+function copy2 () {
+  return (checkline("  en Automatique"));
+}
+
+function err () {
+  printf ("File \"%s\", line %d:\n", FILENAME, FNR);
+  printf ("  Error: line %d of header is wrong.\n", FNR + offset);
+  print $0;
+}
+
+function add_ignore_re (x) {
+    ignore_re[++ignore_re_index] = x;
+}
+
+function add_exception (x) {
+    exception[++exception_index] = x;
+}
+
+FNR == 1 {
+  offset = 0;
+  add_ignore_re("/\\.svn/");
+  add_ignore_re("/\\.depend(\\.nt)?$");
+  add_ignore_re("/\\.ignore$");
+  add_ignore_re("\\.gif$");
+  add_ignore_re("/[A-Z]*$");
+  add_ignore_re("/README\\.[^/]*$");
+  add_ignore_re("/Changes$");
+  add_ignore_re("\\.mlpack$");
+  add_ignore_re("\\.mllib$");
+  add_ignore_re("\\.mltop$");
+  add_ignore_re("\\.clib$");
+  add_ignore_re("\\.odocl$");
+  add_ignore_re("\\.itarget$");
+  add_ignore_re("^\\./boot/");
+  add_ignore_re("^\\./camlp4/test/");
+  add_ignore_re("^\\./camlp4/unmaintained/");
+  add_ignore_re("^\\./config/gnu/");
+  add_ignore_re("^\\./experimental/");
+  add_ignore_re("^\\./ocamlbuild/examples/");
+  add_ignore_re("^\\./ocamlbuild/test/");
+  add_ignore_re("^\\./testsuite/");
+  for (i in ignore_re){
+      if (FILENAME ~ ignore_re[i]) { nextfile; }
+  }
+  add_exception("./asmrun/m68k.S");                     # obsolete
+  add_exception("./build/camlp4-bootstrap-recipe.txt");
+  add_exception("./build/new-build-system");
+  add_exception("./ocamlbuild/ChangeLog");
+  add_exception("./ocamlbuild/manual/myocamlbuild.ml"); # TeX input file ?
+  add_exception("./ocamlbuild/manual/trace.out");       # TeX input file
+  add_exception("./ocamldoc/Changes.txt");
+  add_exception("./ocamldoc/ocamldoc.sty");             # public domain
+  add_exception("./tools/objinfo_helper.c");            # non-INRIA
+  add_exception("./tools/magic");                       # public domain ?
+  add_exception("./Upgrading");
+  add_exception("./win32caml/inriares.h");              # generated
+  add_exception("./win32caml/ocaml.rc");                # generated
+  add_exception("./win32caml/resource.h");              # generated
+  for (i in exception){
+      if (FILENAME == exception[i]) { nextfile; }
+  }
+}
+
+# 1 [!hrule]     #!
+# 2 [!hrule]     empty
+# 3 hrule
+# 4 [blank]
+# 5 ocaml        title
+# 6 blank
+# 7 any          author
+# 8 [!blank]     author
+# 9 [!blank]     author
+#10 blank
+#11 copy1        copyright
+#12 copy2        copyright
+#13 any          copyright
+#14 [!blank]     copyright
+#15 [!blank]     copyright
+#16 blank
+#17 hrule
+
+FNR + offset == 1 && hrule() { ++offset; }
+FNR + offset == 2 && hrule() { ++offset; }
+FNR + offset == 3 && ! hrule() { err(); nextfile; }
+FNR + offset == 4 && ! blank() { ++offset; }
+FNR + offset == 5 && ! ocaml() { err(); nextfile; }
+FNR + offset == 6 && ! blank() { err(); nextfile; }
+FNR + offset == 7 && ! any() { err(); nextfile; }
+FNR + offset == 8 && blank() { ++offset; }
+FNR + offset == 9 && blank() { ++offset; }
+FNR + offset ==10 && ! blank() { err(); nextfile; }
+FNR + offset ==11 && ! copy1() { err(); nextfile; }
+FNR + offset ==12 && ! copy2() { err(); nextfile; }
+FNR + offset ==13 && ! any() { err(); nextfile; }
+FNR + offset ==14 && blank() { ++offset; }
+FNR + offset ==15 && blank() { ++offset; }
+FNR + offset ==16 && ! blank() { err(); nextfile; }
+FNR + offset ==17 && ! hrule() { err(); nextfile; }
+
+EOF
+done

@@ -1,0 +1,66 @@
+bng.dobj: bng.c bng.h ../../byterun/config.h ../../config/m.h \
+  ../../config/s.h ../../byterun/compatibility.h bng_ppc.c bng_digit.c
+bng_alpha.dobj: bng_alpha.c
+bng_amd64.dobj: bng_amd64.c
+bng_digit.dobj: bng_digit.c
+bng_ia32.dobj: bng_ia32.c
+bng_mips.dobj: bng_mips.c
+bng_ppc.dobj: bng_ppc.c
+bng_sparc.dobj: bng_sparc.c
+nat_stubs.dobj: nat_stubs.c ../../byterun/alloc.h \
+  ../../byterun/compatibility.h ../../byterun/misc.h \
+  ../../byterun/config.h ../../config/m.h ../../config/s.h \
+  ../../byterun/mlvalues.h ../../byterun/custom.h ../../byterun/intext.h \
+  ../../byterun/io.h ../../byterun/fix_code.h ../../byterun/fail.h \
+  ../../byterun/memory.h ../../byterun/gc.h ../../byterun/major_gc.h \
+  ../../byterun/freelist.h ../../byterun/minor_gc.h bng.h nat.h
+big_int.cmi: nat.cmi
+num.cmi: ratio.cmi nat.cmi big_int.cmi
+ratio.cmi: nat.cmi big_int.cmi
+arith_flags.cmo: arith_flags.cmi
+arith_flags.cmx: arith_flags.cmi
+arith_status.cmo: arith_flags.cmi arith_status.cmi
+arith_status.cmx: arith_flags.cmx arith_status.cmi
+big_int.cmo: nat.cmi int_misc.cmi big_int.cmi
+big_int.cmx: nat.cmx int_misc.cmx big_int.cmi
+int_misc.cmo: int_misc.cmi
+int_misc.cmx: int_misc.cmi
+nat.cmo: int_misc.cmi nat.cmi
+nat.cmx: int_misc.cmx nat.cmi
+num.cmo: ratio.cmi nat.cmi int_misc.cmi big_int.cmi arith_flags.cmi num.cmi
+num.cmx: ratio.cmx nat.cmx int_misc.cmx big_int.cmx arith_flags.cmx num.cmi
+ratio.cmo: nat.cmi int_misc.cmi big_int.cmi arith_flags.cmi ratio.cmi
+ratio.cmx: nat.cmx int_misc.cmx big_int.cmx arith_flags.cmx ratio.cmi
+bng.sobj: bng.c bng.h ../../byterun/config.h ../../config/m.h \
+  ../../config/s.h ../../byterun/compatibility.h bng_ppc.c bng_digit.c
+bng_alpha.sobj: bng_alpha.c
+bng_amd64.sobj: bng_amd64.c
+bng_digit.sobj: bng_digit.c
+bng_ia32.sobj: bng_ia32.c
+bng_mips.sobj: bng_mips.c
+bng_ppc.sobj: bng_ppc.c
+bng_sparc.sobj: bng_sparc.c
+nat_stubs.sobj: nat_stubs.c ../../byterun/alloc.h \
+  ../../byterun/compatibility.h ../../byterun/misc.h \
+  ../../byterun/config.h ../../config/m.h ../../config/s.h \
+  ../../byterun/mlvalues.h ../../byterun/custom.h ../../byterun/intext.h \
+  ../../byterun/io.h ../../byterun/fix_code.h ../../byterun/fail.h \
+  ../../byterun/memory.h ../../byterun/gc.h ../../byterun/major_gc.h \
+  ../../byterun/freelist.h ../../byterun/minor_gc.h bng.h nat.h
+big_int.cmi: nat.cmi
+num.cmi: ratio.cmi nat.cmi big_int.cmi
+ratio.cmi: nat.cmi big_int.cmi
+arith_flags.cmo: arith_flags.cmi
+arith_flags.cmx: arith_flags.cmi
+arith_status.cmo: arith_flags.cmi arith_status.cmi
+arith_status.cmx: arith_flags.cmx arith_status.cmi
+big_int.cmo: nat.cmi int_misc.cmi big_int.cmi
+big_int.cmx: nat.cmx int_misc.cmx big_int.cmi
+int_misc.cmo: int_misc.cmi
+int_misc.cmx: int_misc.cmi
+nat.cmo: int_misc.cmi nat.cmi
+nat.cmx: int_misc.cmx nat.cmi
+num.cmo: ratio.cmi nat.cmi int_misc.cmi big_int.cmi arith_flags.cmi num.cmi
+num.cmx: ratio.cmx nat.cmx int_misc.cmx big_int.cmx arith_flags.cmx num.cmi
+ratio.cmo: nat.cmi int_misc.cmi big_int.cmi arith_flags.cmi ratio.cmi
+ratio.cmx: nat.cmx int_misc.cmx big_int.cmx arith_flags.cmx ratio.cmi

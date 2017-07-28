@@ -1,0 +1,228 @@
+#!/bin/sh
+
+#########################################################################
+#                                                                       #
+#                                 OCaml                                 #
+#                                                                       #
+#           Damien Doligez, projet Gallium, INRIA Rocquencourt          #
+#                                                                       #
+#   Copyright 2012 Institut National de Recherche en Informatique et    #
+#   en Automatique.  All rights reserved.  This file is distributed     #
+#   under the terms of the Q Public License version 1.0.                #
+#                                                                       #
+#########################################################################
+
+# check-typo - Check typographic conventions on OCaml sources.
+
+# This program will check files for the following rules:
+
+# - absence of TAB characters (tab)
+# - absence of non-ASCII characters (non-ascii)
+# - absence of non-printing ASCII characters (non-printing)
+# - absence of white space at end of line (white-at-eol)
+# - absence of empty lines at end of file (white-at-eof)
+# - presence of a LF character at the end of the file (missing-lf)
+# - maximum line length of 80 characters (long-line)
+# - presence of a copyright header (missing-header)
+# - absence of a leftover "$Id" string (svn-keyword)
+
+# Exceptions are handled with a SVN property: "ocaml:typo".
+# Its value for a given file is a comma-separated list of rule names,
+# which lists the rules that should be disabled for this file.
+# The rule names are the ones shown above in parentheses.
+
+# Built-in exceptions:
+# - Any binary file (i.e. with svn:mime-type = application/octet-stream)
+#   is automatically exempt from all the rules.
+# - Any file whose name matches one of the following patterns is
+#   automatically exempt from all rules
+#     *.reference
+#     */reference
+#     */.depend*
+# - Any file whose name begins with "Makefile" is automatically exempt
+#   from the "tabs" rule.
+# - Any file whose name matches one of the following patterns is
+#   automatically exempt from the "missing-header" rule.
+#     */.ignore
+#     *.mlpack
+#     *.mllib
+#     *.mltop
+#     *.odocl
+#     *.clib
+
+# ASCII characters are bytes from 0 to 127.  Any other byte is
+# flagged as a non-ASCII character.
+
+# For the purpose of this tool, printing ASCII characters are:
+# - the non-white printable ASCII characters (33 to 126)
+# - TAB (09)
+# - LF (10)
+# - SPC (32)
+# Anything else is flagged as a non-printing ASCII character.
+
+# This program will recursively explore the files and directories given
+# on the command line (or by default the current directory), and check
+# every file therein for compliance to the rules.
+
+# Directories named .svn and _build (and their contents) are always ignored.
+# This program ignores any file that is not under svn control, unless
+# explicitly given on the command line.
+
+# If a directory has the SVN property "ocaml:typo" set to "prune",
+# then it and its contents are ignored.
+
+# You can ignore a rule by giving the option -<rule> on the command
+# line (before any file names).
+
+# Special case for recursive call from the find command (see IGNORE_DIRS).
+case "$1" in
+  --check-prune)
+    case `svn propget ocaml:typo "$2" 2>/dev/null` in
+      prune) echo "INFO: pruned directory $2 (ocaml:typo=prune)" >&2; exit 0;;
+      *) exit 3;;
+    esac;;
+esac
+
+usage () {
+  echo "usage: check-typo {-<rule>} [--] {<file-or-dir>}" >&2
+  exit 2
+}
+
+userrules=''
+
+while : ; do
+  case "$1" in
+    -help|--help) usage;;
+    -*) userrules="${1#-},$userrules"; shift;;
+    --) shift; break;;
+    *) break;;
+  esac
+done
+
+IGNORE_DIRS="
+  -name .svn -prune -o
+  -name _build -prune -o
+  -type d -exec $0 --check-prune {} ; -prune -o
+"
+
+( case $# in
+    0) find . $IGNORE_DIRS -type f -print;;
+    *) for i in "$@"; do find "$i" $IGNORE_DIRS -type f -print; done;;
+  esac
+) | (
+  while read f; do
+    case `svn status "$f" 2>&1` in
+      '?'*) is_svn=false;;
+      I*) is_svn=false;;
+      svn:*"is not a working copy") is_svn=false;;
+      *) is_svn=true;;
+    esac
+    case "$*" in
+      *$f*) is_cmd_line=true;;
+      *) is_cmd_line=false;;
+    esac
+    if $is_svn || $is_cmd_line; then :; else continue; fi
+    svnrules=''
+    if $is_svn; then
+      case `svn propget svn:mime-type "$f"` in
+        application/octet-stream) continue;;
+      esac
+      svnrules=`svn propget ocaml:typo "$f"`
+    fi
+    rules="$userrules"
+    case "$f" in
+      Makefile*|*/Makefile*) rules="tab,$rules";;
+    esac
+    h(){ rules="missing-header,$rules"; }
+    case "$f" in
+      */.ignore) h;;
+      *.mlpack|*.mllib|*.mltop|*.odocl|*.itarget|*.clib) h;;
+      *.reference|*/reference|*/.depend*) continue;;
+    esac
+
+    (cat "$f"; echo) \
+    | awk -v rules="$rules" -v svnrules="$svnrules" -v file="$f" \
+      '
+        function err(name, msg) {
+          ++ counts[name];
+          if (("," rules svnrules ",") !~ ("[, ]" name "[, ]") \
+              && counts[name] <= 10){
+            printf ("%s:%d.%d:", file, NR, RSTART + RLENGTH);
+            printf (" [%s] %s\n", name, msg);
+            if (counts[name] == 10){
+              printf ("WARNING: too many [%s] in this file.", name);
+              printf ("  Others will not be reported.\n");
+            }
+          }
+        }
+
+        match($0, /\t/) {
+          err("tab", "TAB character(s)");
+        }
+
+        match($0, /[\200-\377]/) {
+          err("non-ascii", "non-ASCII character(s)");
+        }
+
+        match($0, /[^\t\200-\377 -~]/) {
+          err("non-printing", "non-printing ASCII character(s)");
+        }
+
+        match($0, /[ \t]+$/) {
+          err("white-at-eol", "whitespace at end of line");
+        }
+
+        match($0, /\$Id(: .*)?\$/) {
+          err("svn-keyword", "SVN keyword marker");
+        }
+
+        length($0) > 80 {
+          RSTART = 81;
+          RLENGTH = 0;
+          err("long-line", "line is over 80 characters");
+        }
+
+        3 <= NR && NR <= 5 \
+        && (/ OCaml / || / ocamlbuild / || / OCamldoc /) {
+          header_ocaml = NR;
+        }
+
+        header_ocaml && header_ocaml + 4 <= NR && NR <= header_ocaml + 6 \
+        && / Copyright / {
+          header_copyright = 1;
+        }
+
+        {
+          prev_line = last_line;
+          last_line = $0;
+        }
+
+        END {
+          if (match(last_line, /.+/)){
+            err("missing-lf", "missing linefeed at EOF");
+            prev_line = last_line;
+            ++ NR;
+            empty_file = 0;
+          }else{
+            empty_file = NR == 1;
+          }
+          if (!empty_file && match(prev_line, /^$/)){
+            err("white-at-eof", "empty line(s) at EOF");
+          }
+          NR = 1;
+          RSTART = 1;
+          RLENGTH = 0;
+          if (!(header_ocaml && header_copyright)){
+            err("missing-header", "missing copyright header");
+          }
+          split(svnrules, r, "[, ]");
+          for (i in r){
+            name = r[i];
+            if (name != "" && !counts[name]){
+              err("unused-prop", sprintf("unused [%s] in ocaml:typo", name));
+            }
+          }
+        }
+      '
+  done
+)

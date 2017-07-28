@@ -1,0 +1,10 @@
+--- camlp5-6.10.orig/ocaml_stuff/4.01.0/utils/warnings.mli	2013-06-19 04:17:42.000000000 +0200
++++ camlp5-6.10/ocaml_stuff/4.01.0/utils/warnings.mli	2013-08-13 16:14:47.000000000 +0200
+@@ -58,6 +58,7 @@
+   | Nonoptional_label of string             (* 43 *)
+   | Open_shadow_identifier of string * string (* 44 *)
+   | Open_shadow_label_constructor of string * string (* 45 *)
++  | Bad_env_variable of string * string
+ ;;
+ 
+ val parse_options : bool -> string -> unit;;

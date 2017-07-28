@@ -1,0 +1,11 @@
+--- menhir-20120123/Makefile.arch.orig	2012-09-28 19:03:09.673811200 +0200
++++ menhir-20120123/Makefile.arch	2012-09-28 19:07:38.680344000 +0200
+@@ -1,7 +1,7 @@
+ # If ocaml reports that Sys.os_type is Unix, we assume Unix, otherwise
+ # we assume Windows.
+ 
+-ifeq "$(shell rm -f ./o.ml && echo print_endline Sys.os_type > ./o.ml && ocaml ./o.ml && rm -f ./o.ml)" "Unix"
++ifneq "$(shell rm -f ./o.ml && echo print_endline Sys.os_type > ./o.ml && ocaml ./o.ml && rm -f ./o.ml)" "Win32"
+ MENHIREXE    := menhir
+ OBJ          := o
+ else

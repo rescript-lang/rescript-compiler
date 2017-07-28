@@ -1,0 +1,6 @@
+
+(ocd) Loading program... done.
+Breakpoint: 1
+10   <|b|>print x;
+x: Blah.blah = Foo
+y: Blah.blah = Bar "hi"

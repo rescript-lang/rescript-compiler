@@ -1,0 +1,11 @@
+--- ocaml-bitstring-2.0.3/Makefile.in.orig	2013-04-04 17:42:45.000000000 +0200
++++ ocaml-bitstring-2.0.3/Makefile.in	2013-04-04 17:43:06.000000000 +0200
+@@ -123,7 +123,7 @@
+ 
+ byteswap.h: byteswap.in.h
+ 	{ echo '/* DO NOT EDIT! GENERATED AUTOMATICALLY! */'; \
+-	  cat $(srcdir)/byteswap.in.h; \
++	  cat byteswap.in.h; \
+ 	} > $@-t
+ 	mv -f $@-t $@
+ 

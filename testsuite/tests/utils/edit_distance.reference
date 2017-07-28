@@ -1,0 +1,38 @@
+[01] (edit_distance "a" "a" 1), expected Some 0
+OK
+[02] (edit_distance "a" "a" 0), expected Some 0
+OK
+[03] (edit_distance "a" "b" 1), expected Some 1
+OK
+[04] (edit_distance "a" "b" 0), expected None
+OK
+[05] (edit_distance "add" "adad" 3), expected Some 1
+OK
+[06] (edit_distance "delete" "delte" 3), expected Some 1
+OK
+[07] (edit_distance "subst" "sabst" 3), expected Some 1
+OK
+[08] (edit_distance "swap" "sawp" 3), expected Some 1
+OK
+[09] (edit_distance "abbb" "bbba" 3), expected Some 2
+OK
+[10] (edit_distance "abbb" "bbba" 1), expected None
+OK
+[11] (edit_distance "xyzwabc" "mnpqrabc" 10), expected Some 5
+OK
+[12] (edit_distance "abcxyzw" "abcmnpqr" 10), expected Some 5
+OK
+[13] (edit_distance "a" "a" max_int), expected Some 0
+OK
+[14] (edit_distance "a" "b" max_int), expected Some 1
+OK
+[15] (edit_distance "abc" "ade" max_int), expected Some 2
+OK
+[16] (edit_distance "" "" 3), expected Some 0
+OK
+[17] (edit_distance "" "abc" 3), expected Some 3
+OK
+[18] (edit_distance "abcd" "" 3), expected None
+OK
+
+All tests succeeded.

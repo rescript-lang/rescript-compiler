@@ -1,0 +1,8 @@
+
+#                 module B :
+  sig type (_, _) t = Eq : ('a, 'a) t val f : 'a -> 'b -> ('a, 'b) t end
+#         Characters 65-67:
+    | Eq -> 5
+      ^^
+Error: The GADT constructor Eq of type B.t must be qualified in this pattern.
+# 

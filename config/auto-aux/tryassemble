@@ -1,0 +1,31 @@
+#!/bin/sh
+
+#########################################################################
+#                                                                       #
+#                                 OCaml                                 #
+#                                                                       #
+#            Xavier Leroy, projet Cristal, INRIA Rocquencourt           #
+#                                                                       #
+#   Copyright 2012 Institut National de Recherche en Informatique et    #
+#   en Automatique.  All rights reserved.  This file is distributed     #
+#   under the terms of the GNU Library General Public License, with     #
+#   the special exception on linking described in file ../../LICENSE.   #
+#                                                                       #
+#########################################################################
+
+if test "$verbose" = yes; then
+echo "tryassemble: $aspp -o tst $*" >&2
+$aspp -o tst $* || exit 100
+else
+$aspp -o tst $* 2> /dev/null || exit 100
+fi
+
+# test as also (if differs)
+if test "$aspp" != "$as"; then
+if test "$verbose" = yes; then
+echo "tryassemble: $as -o tst $*" >&2
+$as -o tst $* || exit 100
+else
+$as -o tst $* 2> /dev/null || exit 100
+fi
+fi

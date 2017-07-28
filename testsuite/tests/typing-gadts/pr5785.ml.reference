@@ -1,0 +1,15 @@
+
+#                   Characters 137-194:
+  ...........................................function
+      | One, One -> "two"
+      | Two, Two -> "four"
+Warning 8: this pattern-matching is not exhaustive.
+Here is an example of a value that is not matched:
+(Two, One)
+module Add :
+  functor (T : sig type two end) ->
+    sig
+      type _ t = One : [ `One ] t | Two : T.two t
+      val add : 'a t * 'a t -> string
+    end
+# 

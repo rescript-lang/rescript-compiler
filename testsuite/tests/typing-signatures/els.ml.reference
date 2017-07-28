@@ -1,0 +1,95 @@
+
+# *             module type VALUE = sig type value type state type usert end
+#           module type CORE0 =
+  sig
+    module V : VALUE
+    val setglobal : V.state -> string -> V.value -> unit
+  end
+#           module type CORE =
+  sig
+    module V : VALUE
+    val setglobal : V.state -> string -> V.value -> unit
+    val apply : V.value -> V.state -> V.value list -> V.value
+  end
+#             module type AST =
+  sig
+    module Value : VALUE
+    type chunk
+    type program
+    val get_value : chunk -> Value.value
+  end
+#                   module type EVALUATOR =
+  sig
+    module Value : VALUE
+    module Ast :
+      sig type chunk type program val get_value : chunk -> Value.value end
+    type state = Value.state
+    type value = Value.value
+    exception Error of string
+    val compile : Ast.program -> string
+    val setglobal : Value.state -> string -> Value.value -> unit
+  end
+#         module type PARSER = sig type chunk val parse : string -> chunk end
+#             module type INTERP =
+  sig
+    module Value : VALUE
+    module Ast :
+      sig type chunk type program val get_value : chunk -> Value.value end
+    type state = Value.state
+    type value = Value.value
+    exception Error of string
+    val compile : Ast.program -> string
+    val setglobal : Value.state -> string -> Value.value -> unit
+    module Parser :
+      sig type chunk = Ast.chunk val parse : string -> chunk end
+    val dostring : state -> string -> value list
+    val mk : unit -> state
+  end
+#           module type USERTYPE =
+  sig type t val eq : t -> t -> bool val to_string : t -> string end
+#           module type TYPEVIEW =
+  sig type combined type t val map : (combined -> t) * (t -> combined) end
+#           module type COMBINED_COMMON =
+  sig
+    module T : sig type t end
+    module TV1 : sig type t val map : (T.t -> t) * (t -> T.t) end
+    module TV2 : sig type t val map : (T.t -> t) * (t -> T.t) end
+  end
+#         module type COMBINED_TYPE =
+  sig
+    module T : USERTYPE
+    module TV1 : sig type t val map : (T.t -> t) * (t -> T.t) end
+    module TV2 : sig type t val map : (T.t -> t) * (t -> T.t) end
+  end
+#         module type BARECODE = sig type state val init : state -> unit end
+#           module USERCODE :
+  functor (X : TYPEVIEW) ->
+    sig
+      module type F =
+        functor
+          (C : sig
+                 module V :
+                   sig type value type state type usert = X.combined end
+                 val setglobal : V.state -> string -> V.value -> unit
+                 val apply : V.value -> V.state -> V.value list -> V.value
+               end) ->
+          sig val init : C.V.state -> unit end
+    end
+#   module Weapon : sig type t end
+#             module type WEAPON_LIB =
+  sig
+    type t = Weapon.t
+    module T :
+      sig type t = t val eq : t -> t -> bool val to_string : t -> string end
+    module Make :
+      functor
+        (TV : sig
+                type combined
+                type t = t
+                val map : (combined -> t) * (t -> combined)
+              end) ->
+        USERCODE(TV).F
+  end
+#   module type X = functor (X : CORE) -> BARECODE
+# module type X = functor (_ : CORE) -> BARECODE
+# 

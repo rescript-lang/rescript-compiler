@@ -1,0 +1,27 @@
+
+# module type S = sig type u type t end
+# module type S' = sig type t = int type u = bool end
+#   *   val f : (module S with type t = int and type u = bool) -> (module S') = <fun>
+# val g : (module S with type t = int and type u = bool) -> (module S') = <fun>
+#     module type S2 = sig type u type t type w end
+# val g2 : (module S2 with type t = int and type u = bool) -> (module S') =
+  <fun>
+# val h : (module S2 with type t = 'a) -> (module S with type t = 'a) = <fun>
+#   Characters 63-64:
+    (x : (module S'));; (* fail *)
+     ^
+Error: This expression has type
+         (module S2 with type t = int and type u = bool)
+       but an expression was expected of type (module S')
+#   Characters 46-47:
+    (x : (module S with type t = 'a));; (* fail *)
+     ^
+Error: This expression has type (module S2 with type t = 'a)
+       but an expression was expected of type (module S with type t = 'a)
+#     module type S3 = sig type u type t val x : int end
+#   Characters 13-78:
+    (x : (module S3 with type t = 'a and type u = 'b) :> (module S'));; (* fail *)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error: Type (module S3 with type t = int and type u = bool)
+       is not a subtype of (module S') 
+# 

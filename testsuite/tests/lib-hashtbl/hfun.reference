@@ -1,0 +1,27 @@
+-- Strings:
+""		00000000
+"Hello world"	364b8272
+-- Integers:
+0		07be548a
+-1		3653e015
+42		1792870b
+2^30-1		23c392d0
+-2^30		0c66fde3
+-- Floats:
++0.0		0f478b8c
+-0.0		0f478b8c
++infty		23ea56fb
+-infty		059f7872
+NaN		3228858d
+NaN#2		3228858d
+NaN#3		3228858d
+-- Native integers:
+0		3f19274a
+-1		3653e015
+42		3e33aef8
+2^30-1		3711bf46
+-2^30		2e71f39c
+-- Lists:
+[0..10]		0ade0fc9
+[0..12]		0ade0fc9
+[10..0]		0cd6259d

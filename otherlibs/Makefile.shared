@@ -1,0 +1,94 @@
+#########################################################################
+#                                                                       #
+#                                 OCaml                                 #
+#                                                                       #
+#            Xavier Leroy, projet Cristal, INRIA Rocquencourt           #
+#                                                                       #
+#   Copyright 1999 Institut National de Recherche en Informatique et    #
+#   en Automatique.  All rights reserved.  This file is distributed     #
+#   under the terms of the GNU Library General Public License, with     #
+#   the special exception on linking described in file ../../LICENSE.   #
+#                                                                       #
+#########################################################################
+
+# Common Makefile for otherlibs
+
+ROOTDIR=../..
+include $(ROOTDIR)/config/Makefile
+CAMLRUN ?= $(ROOTDIR)/boot/ocamlrun
+CAMLYACC ?= $(ROOTDIR)/boot/ocamlyacc
+
+# Compilation options
+CC=$(BYTECC)
+COMPFLAGS=-w +33..39 -warn-error A -bin-annot -g -safe-string $(EXTRACAMLFLAGS)
+MKLIB=$(CAMLRUN) $(ROOTDIR)/tools/ocamlmklib
+
+# Variables to be defined by individual libraries:
+#LIBNAME=
+#CLIBNAME=
+#CMIFILES=
+#CAMLOBJS=
+#COBJS=
+#EXTRACFLAGS=
+#EXTRACAMLFLAGS=
+#LINKOPTS=
+#LDOPTS=
+#HEADERS=
+
+CMIFILES ?= $(CAMLOBJS:.cmo=.cmi)
+CAMLOBJS_NAT ?= $(CAMLOBJS:.cmo=.cmx)
+CLIBNAME ?= $(LIBNAME)
+
+all: lib$(CLIBNAME).$(A) $(LIBNAME).cma $(CMIFILES)
+
+allopt: lib$(CLIBNAME).$(A) $(LIBNAME).cmxa $(LIBNAME).$(CMXS) $(CMIFILES)
+
+$(LIBNAME).cma: $(CAMLOBJS)
+	$(MKLIB) -o $(LIBNAME) -oc $(CLIBNAME) -ocamlc '$(CAMLC)' -linkall \
+	         $(CAMLOBJS) $(LINKOPTS)
+
+$(LIBNAME).cmxa: $(CAMLOBJS_NAT)
+	$(MKLIB) -o $(LIBNAME) -oc $(CLIBNAME) -ocamlopt '$(CAMLOPT)' -linkall \
+	         $(CAMLOBJS_NAT) $(LINKOPTS)
+
+$(LIBNAME).cmxs: $(LIBNAME).cmxa lib$(CLIBNAME).$(A)
+	$(CAMLOPT) -shared -o $(LIBNAME).cmxs -I . $(LIBNAME).cmxa
+
+lib$(CLIBNAME).$(A): $(COBJS)
+	$(MKLIB) -oc $(CLIBNAME) $(COBJS) $(LDOPTS)
+
+INSTALL_LIBDIR=$(DESTDIR)$(LIBDIR)
+INSTALL_STUBLIBDIR=$(DESTDIR)$(STUBLIBDIR)
+
+install::
+	if test -f dll$(CLIBNAME)$(EXT_DLL); then \
+	  cp dll$(CLIBNAME)$(EXT_DLL) $(INSTALL_STUBLIBDIR)/; fi
+	cp lib$(CLIBNAME).$(A) $(INSTALL_LIBDIR)/
+	cd $(INSTALL_LIBDIR); $(RANLIB) lib$(CLIBNAME).$(A)
+	cp $(LIBNAME).cma $(CMIFILES) $(CMIFILES:.cmi=.mli) $(INSTALL_LIBDIR)/
+	if test -n "$(HEADERS)"; then cp $(HEADERS) $(INSTALL_LIBDIR)/caml/; fi
+
+installopt:
+	cp $(CAMLOBJS_NAT) $(LIBNAME).cmxa $(LIBNAME).$(A) $(INSTALL_LIBDIR)/
+	cd $(INSTALL_LIBDIR); $(RANLIB) $(LIBNAME).a
+	if test -f $(LIBNAME).cmxs; then cp $(LIBNAME).cmxs $(INSTALL_LIBDIR)/; fi
+
+partialclean:
+	rm -f *.cm*
+
+clean:: partialclean
+	rm -f *.dll *.so *.a *.lib *.o *.obj
+
+.SUFFIXES: .ml .mli .cmi .cmo .cmx .$(O)
+
+.mli.cmi:
+	$(CAMLC) -c $(COMPFLAGS) $<
+
+.ml.cmo:
+	$(CAMLC) -c $(COMPFLAGS) $<
+
+.ml.cmx:
+	$(CAMLOPT) -c $(COMPFLAGS) $<
+
+.c.$(O):
+	$(BYTECC) $(BYTECCCOMPOPTS) $(CFLAGS) -c $<

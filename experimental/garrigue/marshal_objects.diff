@@ -1,0 +1,800 @@
+? bytecomp/alpha_eq.ml
+Index: bytecomp/lambda.ml
+===================================================================
+RCS file: /net/yquem/devel/caml/repository/csl/bytecomp/lambda.ml,v
+retrieving revision 1.44
+diff -u -r1.44 lambda.ml
+--- bytecomp/lambda.ml	25 Aug 2005 15:35:16 -0000	1.44
++++ bytecomp/lambda.ml	2 Feb 2006 05:08:56 -0000
+@@ -287,9 +287,10 @@
+     let compare = compare
+   end)
+ 
+-let free_ids get l =
++let free_ids get used l =
+   let fv = ref IdentSet.empty in
+   let rec free l =
++    let old = !fv in
+     iter free l;
+     fv := List.fold_right IdentSet.add (get l) !fv;
+     match l with
+@@ -307,17 +308,20 @@
+         fv := IdentSet.remove v !fv
+     | Lassign(id, e) ->
+         fv := IdentSet.add id !fv
++    | Lifused(id, e) ->
++        if used && not (IdentSet.mem id old) then fv := IdentSet.remove id !fv
+     | Lvar _ | Lconst _ | Lapply _
+     | Lprim _ | Lswitch _ | Lstaticraise _
+     | Lifthenelse _ | Lsequence _ | Lwhile _
+-    | Lsend _ | Levent _ | Lifused _ -> ()
++    | Lsend _ | Levent _ -> ()
+   in free l; !fv
+ 
+-let free_variables l =
+-  free_ids (function Lvar id -> [id] | _ -> []) l
++let free_variables ?(ifused=false) l =
++  free_ids (function Lvar id -> [id] | _ -> []) ifused l
+ 
+ let free_methods l =
+-  free_ids (function Lsend(Self, Lvar meth, obj, _) -> [meth] | _ -> []) l
++  free_ids (function Lsend(Self, Lvar meth, obj, _) -> [meth] | _ -> [])
++    false l
+ 
+ (* Check if an action has a "when" guard *)
+ let raise_count = ref 0
+Index: bytecomp/lambda.mli
+===================================================================
+RCS file: /net/yquem/devel/caml/repository/csl/bytecomp/lambda.mli,v
+retrieving revision 1.42
+diff -u -r1.42 lambda.mli
+--- bytecomp/lambda.mli	25 Aug 2005 15:35:16 -0000	1.42
++++ bytecomp/lambda.mli	2 Feb 2006 05:08:56 -0000
+@@ -177,7 +177,7 @@
+ 
+ val iter: (lambda -> unit) -> lambda -> unit
+ module IdentSet: Set.S with type elt = Ident.t
+-val free_variables: lambda -> IdentSet.t
++val free_variables: ?ifused:bool -> lambda -> IdentSet.t
+ val free_methods: lambda -> IdentSet.t
+ 
+ val transl_path: Path.t -> lambda
+Index: bytecomp/translclass.ml
+===================================================================
+RCS file: /net/yquem/devel/caml/repository/csl/bytecomp/translclass.ml,v
+retrieving revision 1.38
+diff -u -r1.38 translclass.ml
+--- bytecomp/translclass.ml	13 Aug 2005 20:59:37 -0000	1.38
++++ bytecomp/translclass.ml	2 Feb 2006 05:08:56 -0000
+@@ -46,6 +46,10 @@
+ 
+ let lfield v i = Lprim(Pfield i, [Lvar v])
+ 
++let ltuple l = Lprim(Pmakeblock(0,Immutable), l)
++
++let lprim name args = Lapply(oo_prim name, args)
++
+ let transl_label l = share (Const_immstring l)
+ 
+ let rec transl_meth_list lst =
+@@ -68,8 +72,8 @@
+                                                     Lvar offset])])]))
+ 
+ let transl_val tbl create name =
+-  Lapply (oo_prim (if create then "new_variable" else "get_variable"),
+-          [Lvar tbl; transl_label name])
++  lprim (if create then "new_variable" else "get_variable")
++    [Lvar tbl; transl_label name]
+ 
+ let transl_vals tbl create vals rem =
+   List.fold_right
+@@ -82,7 +86,7 @@
+     (fun (nm, id) rem ->
+        try
+          (nm, id,
+-          Lapply(oo_prim "get_method", [Lvar tbl; Lvar (Meths.find nm meths)]))
++          lprim "get_method" [Lvar tbl; Lvar (Meths.find nm meths)])
+          :: rem
+        with Not_found -> rem)
+     inh_meths []
+@@ -97,17 +101,15 @@
+   let (inh_init, obj_init, has_init) = init obj' in
+   if obj_init = lambda_unit then
+     (inh_init,
+-     Lapply (oo_prim (if has_init then "create_object_and_run_initializers"
+-                      else"create_object_opt"),
+-             [obj; Lvar cl]))
++     lprim (if has_init then "create_object_and_run_initializers"
++            else"create_object_opt")
++       [obj; Lvar cl])
+   else begin
+    (inh_init,
+-    Llet(Strict, obj',
+-            Lapply (oo_prim "create_object_opt", [obj; Lvar cl]),
++    Llet(Strict, obj', lprim "create_object_opt" [obj; Lvar cl],
+          Lsequence(obj_init,
+                    if not has_init then Lvar obj' else
+-                   Lapply (oo_prim "run_initializers_opt",
+-			   [obj; Lvar obj'; Lvar cl]))))
++                   lprim "run_initializers_opt" [obj; Lvar obj'; Lvar cl])))
+   end
+ 
+ let rec build_object_init cl_table obj params inh_init obj_init cl =
+@@ -203,14 +205,13 @@
+ 
+ 
+ let bind_method tbl lab id cl_init =
+-  Llet(StrictOpt, id, Lapply (oo_prim "get_method_label",
+-                              [Lvar tbl; transl_label lab]),
++  Llet(StrictOpt, id, lprim "get_method_label" [Lvar tbl; transl_label lab],
+        cl_init)
+ 
+-let bind_methods tbl meths vals cl_init =
+-  let methl = Meths.fold (fun lab id tl -> (lab,id) :: tl) meths [] in
++let bind_methods tbl methl vals cl_init =
+   let len = List.length methl and nvals = List.length vals in
+-  if len < 2 && nvals = 0 then Meths.fold (bind_method tbl) meths cl_init else
++  if len < 2 && nvals = 0 then
++    List.fold_right (fun (n,i) -> bind_method tbl n i) methl cl_init else
+   if len = 0 && nvals < 2 then transl_vals tbl true vals cl_init else
+   let ids = Ident.create "ids" in
+   let i = ref len in
+@@ -229,21 +230,19 @@
+ 	       vals' cl_init)
+   in
+   Llet(StrictOpt, ids,
+-       Lapply (oo_prim getter,
+-               [Lvar tbl; transl_meth_list (List.map fst methl)] @ names),
++       lprim getter
++         ([Lvar tbl; transl_meth_list (List.map fst methl)] @ names),
+        List.fold_right
+-         (fun (lab,id) lam -> decr i; Llet(StrictOpt, id, lfield ids !i, lam))
++         (fun (lab,id) lam -> decr i; Llet(Alias, id, lfield ids !i, lam))
+          methl cl_init)
+ 
+ let output_methods tbl methods lam =
+   match methods with
+     [] -> lam
+   | [lab; code] ->
+-      lsequence (Lapply(oo_prim "set_method", [Lvar tbl; lab; code])) lam
++      lsequence (lprim "set_method" [Lvar tbl; lab; code]) lam
+   | _ ->
+-      lsequence (Lapply(oo_prim "set_methods",
+-                        [Lvar tbl; Lprim(Pmakeblock(0,Immutable), methods)]))
+-        lam
++      lsequence (lprim "set_methods" [Lvar tbl; ltuple methods]) lam
+ 
+ let rec ignore_cstrs cl =
+   match cl.cl_desc with
+@@ -266,7 +265,8 @@
+            Llet (Strict, obj_init, 
+                  Lapply(Lprim(Pfield 1, [lpath]), Lvar cla ::
+ 			if top then [Lprim(Pfield 3, [lpath])] else []),
+-                 bind_super cla super cl_init))
++                 bind_super cla super cl_init),
++           [], [])
+       | _ ->
+           assert false
+       end
+@@ -278,10 +278,11 @@
+             match field with
+               Cf_inher (cl, vals, meths) ->
+                 let cl_init = output_methods cla methods cl_init in
+-                let inh_init, cl_init =
++                let (inh_init, cl_init, meths', vals') =
+                   build_class_init cla false
+                     (vals, meths_super cla str.cl_meths meths)
+                     inh_init cl_init msubst top cl in
++                let cl_init = bind_methods cla meths' vals' cl_init in
+                 (inh_init, cl_init, [], values)
+             | Cf_val (name, id, exp) ->
+                 (inh_init, cl_init, methods, (name, id)::values)
+@@ -304,29 +305,37 @@
+                 (inh_init, cl_init, methods, vals @ values)
+             | Cf_init exp ->
+                 (inh_init,
+-                 Lsequence(Lapply (oo_prim "add_initializer",
+-                                   Lvar cla :: msubst false (transl_exp exp)),
++                 Lsequence(lprim "add_initializer"
++                             (Lvar cla :: msubst false (transl_exp exp)),
+                            cl_init),
+                  methods, values))
+           str.cl_field
+           (inh_init, cl_init, [], [])
+       in
+       let cl_init = output_methods cla methods cl_init in
+-      (inh_init, bind_methods cla str.cl_meths values cl_init)
++      (* inh_init, bind_methods cla str.cl_meths values cl_init *)
++      let methods =  Meths.fold (fun n i l -> (n,i)::l) str.cl_meths [] in
++      (inh_init, cl_init, methods, values)
+   | Tclass_fun (pat, vals, cl, _) ->
+-      let (inh_init, cl_init) =
++      let (inh_init, cl_init, methods, values) =
+         build_class_init cla cstr super inh_init cl_init msubst top cl
+       in
++      let fv = free_variables ~ifused:true cl_init in
++      let vals = List.filter (fun (id,_) -> IdentSet.mem id fv) vals in
+       let vals = List.map (function (id, _) -> (Ident.name id, id)) vals in
+-      (inh_init, transl_vals cla true vals cl_init)
++      (* inh_init, transl_vals cla true vals cl_init *)
++      (inh_init, cl_init, methods, vals @ values)
+   | Tclass_apply (cl, exprs) ->
+       build_class_init cla cstr super inh_init cl_init msubst top cl
+   | Tclass_let (rec_flag, defs, vals, cl) ->
+-      let (inh_init, cl_init) =
++      let (inh_init, cl_init, methods, values) =
+         build_class_init cla cstr super inh_init cl_init msubst top cl
+       in
++      let fv = free_variables ~ifused:true cl_init in
++      let vals = List.filter (fun (id,_) -> IdentSet.mem id fv) vals in
+       let vals = List.map (function (id, _) -> (Ident.name id, id)) vals in
+-      (inh_init, transl_vals cla true vals cl_init)
++      (* inh_init, transl_vals cla true vals cl_init *)
++      (inh_init, cl_init, methods, vals @ values)
+   | Tclass_constraint (cl, vals, meths, concr_meths) ->
+       let virt_meths =
+         List.filter (fun lab -> not (Concr.mem lab concr_meths)) meths in
+@@ -358,23 +367,34 @@
+               cl_init valids in
+           (inh_init,
+            Llet (Strict, inh, 
+-		 Lapply(oo_prim "inherits", narrow_args @
+-			[lpath; Lconst(Const_pointer(if top then 1 else 0))]),
++		 lprim "inherits"
++                   (narrow_args @
++                    [lpath; Lconst(Const_pointer(if top then 1 else 0))]),
+                  Llet(StrictOpt, obj_init, lfield inh 0,
+                  Llet(Alias, inh_vals, lfield inh 1,
+-                 Llet(Alias, inh_meths, lfield inh 2, cl_init)))))
++                 Llet(Alias, inh_meths, lfield inh 2, cl_init)))),
++          [], [])
+       | _ ->
+ 	  let core cl_init =
+             build_class_init cla true super inh_init cl_init msubst top cl
+ 	  in
+ 	  if cstr then core cl_init else
+-          let (inh_init, cl_init) =
+-            core (Lsequence (Lapply (oo_prim "widen", [Lvar cla]), cl_init))
++          let (inh_init, cl_init, methods, values) =
++            core (Lsequence (lprim "widen" [Lvar cla], cl_init))
+           in
+-          (inh_init,
+-           Lsequence(Lapply (oo_prim "narrow", narrow_args), cl_init))
++          let cl_init = bind_methods cla methods values cl_init in
++          (inh_init, Lsequence(lprim "narrow" narrow_args, cl_init), [], [])
+       end
+ 
++let build_class_init cla env inh_init obj_init msubst top cl =
++  let inh_init = List.rev inh_init in
++  let (inh_init, cl_init, methods, values) =
++    build_class_init cla true ([],[]) inh_init obj_init msubst top cl in
++  assert (inh_init = []);
++  if IdentSet.mem env (free_variables ~ifused:true cl_init)
++  then bind_methods cla methods (("", env) :: values) cl_init
++  else Llet(Alias, env, lambda_unit, bind_methods cla methods values cl_init)
++
+ let rec build_class_lets cl =
+   match cl.cl_desc with
+     Tclass_let (rec_flag, defs, vals, cl) ->
+@@ -459,16 +479,16 @@
+     Strict, new_init, lfunction [obj_init] obj_init',
+     Llet(
+     Alias, cla, transl_path path,
+-    Lprim(Pmakeblock(0, Immutable),
+-          [Lapply(Lvar new_init, [lfield cla 0]);
+-           lfunction [table]
+-             (Llet(Strict, env_init,
+-                   Lapply(lfield cla 1, [Lvar table]),
+-                   lfunction [envs]
+-                     (Lapply(Lvar new_init,
+-                             [Lapply(Lvar env_init, [Lvar envs])]))));
+-           lfield cla 2;
+-           lfield cla 3])))
++    ltuple
++      [Lapply(Lvar new_init, [lfield cla 0]);
++       lfunction [table]
++         (Llet(Strict, env_init,
++               Lapply(lfield cla 1, [Lvar table]),
++               lfunction [envs]
++                 (Lapply(Lvar new_init,
++                         [Lapply(Lvar env_init, [Lvar envs])]))));
++       lfield cla 2;
++       lfield cla 3]))
+   with Exit ->
+     lambda_unit
+ 
+@@ -541,7 +561,7 @@
+   open CamlinternalOO
+   let builtin_meths arr self env env2 body =
+     let builtin, args = builtin_meths self env env2 body in
+-    if not arr then [Lapply(oo_prim builtin, args)] else
++    if not arr then [lprim builtin args] else
+     let tag = match builtin with
+       "get_const" -> GetConst
+     | "get_var"   -> GetVar
+@@ -599,7 +619,8 @@
+ 
+   (* Prepare for heavy environment handling *)
+   let tables = Ident.create (Ident.name cl_id ^ "_tables") in
+-  let (top_env, req) = oo_add_class tables in
++  let table_init = ref None in
++  let (top_env, req) = oo_add_class tables table_init in
+   let top = not req in
+   let cl_env, llets = build_class_lets cl in
+   let new_ids = if top then [] else Env.diff top_env cl_env in
+@@ -633,6 +654,7 @@
+         begin try
+           (* Doesn't seem to improve size for bytecode *)
+           (* if not !Clflags.native_code then raise Not_found; *)
++          if !Clflags.debug then raise Not_found;
+           builtin_meths arr [self] env env2 (lfunction args body')
+         with Not_found ->
+           [lfunction (self :: args)
+@@ -665,15 +687,8 @@
+     build_object_init_0 cla [] cl copy_env subst_env top ids in
+   if not (Translcore.check_recursive_lambda ids obj_init) then
+     raise(Error(cl.cl_loc, Illegal_class_expr));
+-  let inh_init' = List.rev inh_init in
+-  let (inh_init', cl_init) =
+-    build_class_init cla true ([],[]) inh_init' obj_init msubst top cl
+-  in
+-  assert (inh_init' = []);
+-  let table = Ident.create "table"
+-  and class_init = Ident.create (Ident.name cl_id ^ "_init")
+-  and env_init = Ident.create "env_init"
+-  and obj_init = Ident.create "obj_init" in
++  let cl_init = build_class_init cla env2 inh_init obj_init msubst top cl in
++  let obj_init = Ident.create "obj_init" in
+   let pub_meths =
+     List.sort
+       (fun s s' -> compare (Btype.hash_variant s) (Btype.hash_variant s'))
+@@ -685,42 +700,44 @@
+       let name' = List.assoc tag rev_map in
+       if name' <> name then raise(Error(cl.cl_loc, Tags(name, name'))))
+     tags pub_meths;
++  let pos = cl.cl_loc.Location.loc_end in
++  let filepos = [transl_label pos.Lexing.pos_fname;
++                 Lconst(Const_base(Const_int pos.Lexing.pos_cnum))] in
+   let ltable table lam =
+-    Llet(Strict, table,
+-         Lapply (oo_prim "create_table", [transl_meth_list pub_meths]), lam)
++    Llet(Strict, table, lprim "create_table" [transl_meth_list pub_meths], lam)
+   and ldirect obj_init =
+     Llet(Strict, obj_init, cl_init,
+-         Lsequence(Lapply (oo_prim "init_class", [Lvar cla]),
++         Lsequence(lprim "init_class_shared" (Lvar cla :: filepos),
+                    Lapply(Lvar obj_init, [lambda_unit])))
+   in
+   (* Simplest case: an object defined at toplevel (ids=[]) *)
+   if top && ids = [] then llets (ltable cla (ldirect obj_init)) else
+ 
++  let table = Ident.create "table"
++  and class_init = Ident.create (Ident.name cl_id ^ "_init")
++  and env_init = Ident.create (Ident.name cl_id ^ "_env_init") in
++  let cl_init_fun = Lfunction(Curried, [cla], cl_init) in
+   let concrete =
+     ids = [] ||
+     Typeclass.virtual_methods (Ctype.signature_of_class_type cl.cl_type) = []
+-  and lclass lam =
+-    let cl_init = llets (Lfunction(Curried, [cla], cl_init)) in
++  and lclass cl_init lam =
+     Llet(Strict, class_init, cl_init, lam (free_variables cl_init))
+   and lbody fv =
+     if List.for_all (fun id -> not (IdentSet.mem id fv)) ids then
+-      Lapply (oo_prim "make_class",[transl_meth_list pub_meths;
+-				    Lvar class_init])
++      lprim "make_class"
++        (transl_meth_list pub_meths :: Lvar class_init :: filepos)
+     else
+       ltable table (
+       Llet(
+       Strict, env_init, Lapply(Lvar class_init, [Lvar table]),
+-      Lsequence(
+-      Lapply (oo_prim "init_class", [Lvar table]),
+-      Lprim(Pmakeblock(0, Immutable),
+-	    [Lapply(Lvar env_init, [lambda_unit]);
+-	     Lvar class_init; Lvar env_init; lambda_unit]))))
++      Lsequence(lprim "init_class_shared" (Lvar table :: filepos),
++                ltuple [Lapply(Lvar env_init, [lambda_unit]);
++	                Lvar class_init; Lvar env_init; lambda_unit])))
+   and lbody_virt lenvs =
+-    Lprim(Pmakeblock(0, Immutable),
+-          [lambda_unit; Lfunction(Curried,[cla], cl_init); lambda_unit; lenvs])
++    ltuple [lambda_unit; cl_init_fun; lambda_unit; lenvs]
+   in
+   (* Still easy: a class defined at toplevel *)
+-  if top && concrete then lclass lbody else
++  if top && concrete then lclass (llets cl_init_fun) lbody else
+   if top then llets (lbody_virt lambda_unit) else
+ 
+   (* Now for the hard stuff: prepare for table cacheing *)
+@@ -733,23 +750,16 @@
+   let lenv =
+     let menv =
+       if !new_ids_meths = [] then lambda_unit else
+-      Lprim(Pmakeblock(0, Immutable),
+-            List.map (fun id -> Lvar id) !new_ids_meths) in
++      ltuple (List.map (fun id -> Lvar id) !new_ids_meths) in
+     if !new_ids_init = [] then menv else
+-    Lprim(Pmakeblock(0, Immutable),
+-          menv :: List.map (fun id -> Lvar id) !new_ids_init)
++    ltuple (menv :: List.map (fun id -> Lvar id) !new_ids_init)
+   and linh_envs =
+     List.map (fun (_, p) -> Lprim(Pfield 3, [transl_path p]))
+       (List.rev inh_init)
+   in
+   let make_envs lam =
+     Llet(StrictOpt, envs,
+-         (if linh_envs = [] then lenv else
+-         Lprim(Pmakeblock(0, Immutable), lenv :: linh_envs)),
+-         lam)
+-  and def_ids cla lam =
+-    Llet(StrictOpt, env2,
+-         Lapply (oo_prim "new_variable", [Lvar cla; transl_label ""]),
++         (if linh_envs = [] then lenv else ltuple (lenv :: linh_envs)),
+          lam)
+   in
+   let inh_paths =
+@@ -757,46 +767,53 @@
+       (fun (_,path) -> List.mem (Path.head path) new_ids) inh_init in
+   let inh_keys =
+     List.map (fun (_,p) -> Lprim(Pfield 1, [transl_path p])) inh_paths in
+-  let lclass lam =
+-    Llet(Strict, class_init,
+-         Lfunction(Curried, [cla], def_ids cla cl_init), lam)
++  let lclass_init lam =
++    Llet(Strict, class_init, cl_init_fun, lam)
+   and lcache lam =
+     if inh_keys = [] then Llet(Alias, cached, Lvar tables, lam) else
+-    Llet(Strict, cached,
+-         Lapply(oo_prim "lookup_tables",
+-                [Lvar tables; Lprim(Pmakeblock(0, Immutable), inh_keys)]),
++    Llet(Strict, cached, lprim "lookup_tables" [Lvar tables; ltuple inh_keys],
+          lam)
+   and lset cached i lam =
+     Lprim(Psetfield(i, true), [Lvar cached; lam])
+   in
+-  let ldirect () =
+-    ltable cla
+-      (Llet(Strict, env_init, def_ids cla cl_init,
+-            Lsequence(Lapply (oo_prim "init_class", [Lvar cla]),
+-                      lset cached 0 (Lvar env_init))))
+-  and lclass_virt () =
+-    lset cached 0 (Lfunction(Curried, [cla], def_ids cla cl_init))
++  let ldirect prim pos =
++    ltable cla (
++    Llet(Strict, env_init, cl_init,
++         Lsequence(lprim prim (Lvar cla :: pos), Lvar env_init)))
++  and lclass_concrete cached =
++    ltuple [Lapply (lfield cached 0, [lenvs]);
++            lfield cached 1; lfield cached 0; lenvs]
+   in
++
+   llets (
+-  lcache (
+-  Lsequence(
+-  Lifthenelse(lfield cached 0, lambda_unit,
+-              if ids = [] then ldirect () else
+-              if not concrete then lclass_virt () else
+-              lclass (
+-              Lapply (oo_prim "make_class_store",
+-                      [transl_meth_list pub_meths;
+-                       Lvar class_init; Lvar cached]))),
+   make_envs (
+-  if ids = [] then Lapply(lfield cached 0, [lenvs]) else
+-  Lprim(Pmakeblock(0, Immutable),
+-        if concrete then
+-          [Lapply(lfield cached 0, [lenvs]);
+-           lfield cached 1;
+-           lfield cached 0;
+-           lenvs]
+-        else [lambda_unit; lfield cached 0; lambda_unit; lenvs]
+-       )))))
++  if inh_paths = [] && concrete then
++    if ids = [] then begin
++      table_init := Some (ldirect "init_class_shared" filepos);
++      Lapply (Lvar tables, [lenvs])
++    end else begin
++      let init =
++        lclass cl_init_fun (fun _ ->
++          lprim "make_class_env"
++            (transl_meth_list pub_meths :: Lvar class_init :: filepos))
++      in table_init := Some init;
++      lclass_concrete tables
++    end
++  else begin
++    lcache (
++    Lsequence(
++    Lifthenelse(lfield cached 0, lambda_unit,
++                if ids = [] then lset cached 0 (ldirect "init_class" []) else
++                if not concrete then lset cached 0 cl_init_fun else
++                lclass_init (
++                lprim "make_class_store"
++                  [transl_meth_list pub_meths; Lvar class_init; Lvar cached])),
++    llets (
++    make_envs (
++    if ids = [] then Lapply(lfield cached 0, [lenvs]) else
++    if concrete then lclass_concrete cached else
++    ltuple [lambda_unit; lfield cached 0; lambda_unit; lenvs]))))
++  end))
+ 
+ (* Wrapper for class compilation *)
+ 
+Index: bytecomp/translobj.ml
+===================================================================
+RCS file: /net/yquem/devel/caml/repository/csl/bytecomp/translobj.ml,v
+retrieving revision 1.9
+diff -u -r1.9 translobj.ml
+--- bytecomp/translobj.ml	26 May 2004 11:10:51 -0000	1.9
++++ bytecomp/translobj.ml	2 Feb 2006 05:08:56 -0000
+@@ -88,7 +88,6 @@
+ 
+ (* Insert labels *)
+ 
+-let string s = Lconst (Const_base (Const_string s))
+ let int n = Lconst (Const_base (Const_int n))
+ 
+ let prim_makearray =
+@@ -124,8 +123,8 @@
+ let top_env = ref Env.empty
+ let classes = ref []
+ 
+-let oo_add_class id =
+-  classes := id :: !classes;
++let oo_add_class id init =
++  classes := (id, init) :: !classes;
+   (!top_env, !cache_required)
+ 
+ let oo_wrap env req f x =
+@@ -141,10 +140,12 @@
+     let lambda = f x in
+     let lambda =
+       List.fold_left
+-        (fun lambda id ->
++        (fun lambda (id, init) ->
+           Llet(StrictOpt, id,
+-               Lprim(Pmakeblock(0, Mutable),
+-                     [lambda_unit; lambda_unit; lambda_unit]),
++               (match !init with
++                 Some lam -> lam
++               | None -> Lprim(Pmakeblock(0, Mutable),
++                               [lambda_unit; lambda_unit; lambda_unit])),
+                lambda))
+         lambda !classes
+     in
+Index: bytecomp/translobj.mli
+===================================================================
+RCS file: /net/yquem/devel/caml/repository/csl/bytecomp/translobj.mli,v
+retrieving revision 1.6
+diff -u -r1.6 translobj.mli
+--- bytecomp/translobj.mli	26 May 2004 11:10:51 -0000	1.6
++++ bytecomp/translobj.mli	2 Feb 2006 05:08:56 -0000
+@@ -25,4 +25,4 @@
+     Ident.t -> int -> ('a -> lambda) -> 'a -> int * lambda
+ 
+ val oo_wrap: Env.t -> bool -> ('a -> lambda) -> 'a -> lambda
+-val oo_add_class: Ident.t -> Env.t * bool
++val oo_add_class: Ident.t -> Lambda.lambda option ref -> Env.t * bool
+Index: byterun/compare.h
+===================================================================
+RCS file: /net/yquem/devel/caml/repository/csl/byterun/compare.h,v
+retrieving revision 1.2
+diff -u -r1.2 compare.h
+--- byterun/compare.h	31 Dec 2003 14:20:35 -0000	1.2
++++ byterun/compare.h	2 Feb 2006 05:08:56 -0000
+@@ -17,5 +17,6 @@
+ #define CAML_COMPARE_H
+ 
+ CAMLextern int caml_compare_unordered;
++CAMLextern value caml_compare(value, value);
+ 
+ #endif /* CAML_COMPARE_H */
+Index: byterun/extern.c
+===================================================================
+RCS file: /net/yquem/devel/caml/repository/csl/byterun/extern.c,v
+retrieving revision 1.59
+diff -u -r1.59 extern.c
+--- byterun/extern.c	4 Jan 2006 16:55:49 -0000	1.59
++++ byterun/extern.c	2 Feb 2006 05:08:56 -0000
+@@ -411,6 +411,22 @@
+       extern_record_location(v);
+       break;
+     }
++    case Object_tag: {
++      value field0;
++      mlsize_t i;
++      i = Wosize_val(Field(v, 0)) - 1;
++      field0 = Field(Field(v, 0),i);
++      if (Wosize_val(field0) > 0) {
++        writecode32(CODE_OBJECT, Wosize_hd (hd));
++        extern_record_location(v);
++        extern_rec(field0);
++        for (i = 1; i < sz - 1; i++) extern_rec(Field(v, i));
++        v = Field(v, i);
++        goto tailcall;
++      }
++      if (!extern_closures)
++        extern_invalid_argument("output_value: dynamic class");
++    } /* may fall through */
+     default: {
+       value field0;
+       mlsize_t i;
+Index: byterun/intern.c
+===================================================================
+RCS file: /net/yquem/devel/caml/repository/csl/byterun/intern.c,v
+retrieving revision 1.60
+diff -u -r1.60 intern.c
+--- byterun/intern.c	22 Sep 2005 14:21:50 -0000	1.60
++++ byterun/intern.c	2 Feb 2006 05:08:56 -0000
+@@ -28,6 +28,8 @@
+ #include "mlvalues.h"
+ #include "misc.h"
+ #include "reverse.h"
++#include "callback.h"
++#include "compare.h"
+ 
+ static unsigned char * intern_src;
+ /* Reading pointer in block holding input data. */
+@@ -98,6 +100,25 @@
+ #define readblock(dest,len) \
+   (memmove((dest), intern_src, (len)), intern_src += (len))
+ 
++static value get_method_table (value key)
++{
++  static value *classes = NULL;
++  value current;
++  if (classes == NULL) {
++    classes = caml_named_value("caml_oo_classes");
++    if (classes == NULL) return 0;
++    caml_register_global_root(classes);
++  }
++  for (current = Field(*classes, 0); Is_block(current);
++       current = Field(current, 1))
++  {
++    value head = Field(current, 0);
++    if (caml_compare(key, Field(head, 0)) == Val_int(0))
++      return Field(head, 1);
++  }
++  return 0;
++}
++
+ static void intern_cleanup(void)
+ {
+   if (intern_input_malloced) caml_stat_free(intern_input);
+@@ -315,6 +336,24 @@
+         Custom_ops_val(v) = ops;
+         intern_dest += 1 + size;
+         break;
++      case CODE_OBJECT:
++        size = read32u();
++        v = Val_hp(intern_dest);
++        *dest = v;
++        if (intern_obj_table != NULL) intern_obj_table[obj_counter++] = v;
++        dest = (value *) (intern_dest + 1);
++        *intern_dest = Make_header(size, Object_tag, intern_color);
++        intern_dest += 1 + size;
++        intern_rec(dest);
++        *dest = get_method_table(*dest);
++        if (*dest == 0) {
++          intern_cleanup();
++          caml_failwith("input_value: unknown class");
++        }
++        for(size--, dest++; size > 1; size--, dest++)
++          intern_rec(dest);
++        goto tailcall;
++        
+       default:
+         intern_cleanup();
+         caml_failwith("input_value: ill-formed message");
+Index: byterun/intext.h
+===================================================================
+RCS file: /net/yquem/devel/caml/repository/csl/byterun/intext.h,v
+retrieving revision 1.32
+diff -u -r1.32 intext.h
+--- byterun/intext.h	22 Sep 2005 14:21:50 -0000	1.32
++++ byterun/intext.h	2 Feb 2006 05:08:56 -0000
+@@ -56,6 +56,7 @@
+ #define CODE_CODEPOINTER 0x10
+ #define CODE_INFIXPOINTER 0x11
+ #define CODE_CUSTOM 0x12
++#define CODE_OBJECT 0x14
+ 
+ #if ARCH_FLOAT_ENDIANNESS == 0x76543210
+ #define CODE_DOUBLE_NATIVE CODE_DOUBLE_BIG
+Index: stdlib/camlinternalOO.ml
+===================================================================
+RCS file: /net/yquem/devel/caml/repository/csl/stdlib/camlinternalOO.ml,v
+retrieving revision 1.14
+diff -u -r1.14 camlinternalOO.ml
+--- stdlib/camlinternalOO.ml	25 Oct 2005 18:34:07 -0000	1.14
++++ stdlib/camlinternalOO.ml	2 Feb 2006 05:08:56 -0000
+@@ -305,10 +305,38 @@
+     public_methods;
+   table
+ 
++(*
++let create_table_variables pub_meths priv_meths vars =
++  let tbl = create_table pub_meths in
++  let pub_meths = to_array pub_meths
++  and priv_meths = to_array priv_meths
++  and vars = to_array vars in
++  let len = 2 + Array.length pub_meths + Array.length priv_meths in
++  let res = Array.create len tbl in
++  let mv = new_methods_variables tbl pub_meths vars in
++  Array.blit mv 0 res 1;
++  res
++*)
++
+ let init_class table =
+   inst_var_count := !inst_var_count + table.size - 1;
+   table.initializers <- List.rev table.initializers;
+-  resize table (3 + magic table.methods.(1) * 16 / Sys.word_size)
++  let len = 3 + magic table.methods.(1) * 16 / Sys.word_size in
++  (* keep 1 more for extra info *)
++  let len = if len > Array.length table.methods then len else len+1 in
++  resize table len
++
++let classes = ref []
++let () = Callback.register "caml_oo_classes" classes
++
++let init_class_shared table (file : string) (pos : int) =
++  init_class table;
++  let rec unique_pos pos =
++    if List.mem_assoc (file, pos) !classes then unique_pos (pos + 0x100000)
++    else pos in
++  let pos = unique_pos pos in
++  table.methods.(Array.length table.methods - 1) <- Obj.magic (file, pos);
++  classes := ((file, pos), table.methods) :: !classes
+ 
+ let inherits cla vals virt_meths concr_meths (_, super, _, env) top =
+   narrow cla vals virt_meths concr_meths;
+@@ -319,12 +347,18 @@
+    Array.map (fun nm -> get_method cla (get_method_label cla nm))
+      (to_array concr_meths))
+ 
+-let make_class pub_meths class_init =
++let make_class pub_meths class_init file pos =
+   let table = create_table pub_meths in
+   let env_init = class_init table in
+-  init_class table;
++  init_class_shared table file pos;
+   (env_init (Obj.repr 0), class_init, env_init, Obj.repr 0)
+ 
++let make_class_env pub_meths class_init file pos =
++  let table = create_table pub_meths in
++  let env_init = class_init table in
++  init_class_shared table file pos;
++  (env_init, class_init)
++
+ type init_table = { mutable env_init: t; mutable class_init: table -> t }
+ 
+ let make_class_store pub_meths class_init init_table =
+Index: stdlib/camlinternalOO.mli
+===================================================================
+RCS file: /net/yquem/devel/caml/repository/csl/stdlib/camlinternalOO.mli,v
+retrieving revision 1.9
+diff -u -r1.9 camlinternalOO.mli
+--- stdlib/camlinternalOO.mli	25 Oct 2005 18:34:07 -0000	1.9
++++ stdlib/camlinternalOO.mli	2 Feb 2006 05:08:56 -0000
+@@ -43,14 +43,20 @@
+ val add_initializer : table -> (obj -> unit) -> unit
+ val dummy_table : table
+ val create_table : string array -> table
++(* val create_table_variables :
++    string array -> string array -> string array -> table *)
+ val init_class : table -> unit
++val init_class_shared : table -> string -> int -> unit
+ val inherits :
+     table -> string array -> string array -> string array ->
+     (t * (table -> obj -> Obj.t) * t * obj) -> bool ->
+     (Obj.t * int array * closure array)
+ val make_class :
+-    string array -> (table -> Obj.t -> t) ->
++    string array -> (table -> Obj.t -> t) -> string -> int ->
+     (t * (table -> Obj.t -> t) * (Obj.t -> t) * Obj.t)
++val make_class_env :
++    string array -> (table -> Obj.t -> t) -> string -> int ->
++    (Obj.t -> t) * (table -> Obj.t -> t)
+ type init_table
+ val make_class_store :
+     string array -> (table -> t) -> init_table -> unit

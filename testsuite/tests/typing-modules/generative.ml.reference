@@ -1,0 +1,44 @@
+
+#       module type S = sig val x : int end
+# val v : (module S) = <module>
+# module F : functor () -> S
+# module G : functor (X : sig  end) -> S
+# module H : functor (X : sig  end) -> S
+#     module type S = sig type t val x : t end
+# val v : (module S) = <module>
+# module F : functor () -> S
+# Characters 29-33:
+  module G (X : sig end) : S = F ();; (* fail *)
+                               ^^^^
+Error: This expression creates fresh types.
+       It is not allowed inside applicative functors.
+# module H : functor () -> S
+#     module U : sig  end
+# module M : S
+# Characters 11-12:
+  module M = F(U);; (* fail *)
+             ^
+Error: This is a generative functor. It can only be applied to ()
+#     module F1 : functor (X : sig  end) -> sig  end
+# Characters 36-38:
+  module F2 : functor () -> sig end = F1;; (* fail *)
+                                      ^^
+Error: Signature mismatch:
+       Modules do not match:
+         functor (X : sig  end) -> sig  end
+       is not included in
+         functor () -> sig  end
+# module F3 : functor () -> sig  end
+# Characters 47-49:
+  module F4 : functor (X : sig end) -> sig end = F3;; (* fail *)
+                                                 ^^
+Error: Signature mismatch:
+       Modules do not match:
+         functor () -> sig  end
+       is not included in
+         functor (X : sig  end) -> sig  end
+#     module X : functor (X : sig  end) (Y : sig  end) (Z : sig  end) -> sig  end
+#   module Y : functor (X : sig  end) (Y : sig  end) (Z : sig  end) -> sig  end
+# module Z : functor (_ : sig  end) (_ : sig  end) (_ : sig  end) -> sig  end
+#   module GZ : functor (X : sig  end) () (Z : sig  end) -> sig  end
+# 

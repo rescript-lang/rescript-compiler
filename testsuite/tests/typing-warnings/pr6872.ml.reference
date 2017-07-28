@@ -1,0 +1,30 @@
+
+# exception A
+# type a = A
+#   Characters 1-2:
+  A;;
+  ^
+Warning 41: A belongs to several types: a exn
+The first one was selected. Please disambiguate if this is wrong.
+- : a = A
+# Characters 6-7:
+  raise A;;
+        ^
+Warning 42: this use of A required disambiguation.
+Exception: A.
+# - : a -> unit = <fun>
+# Characters 26-27:
+  function Not_found -> 1 | A -> 2 | _ -> 3;;
+                            ^
+Warning 42: this use of A required disambiguation.
+- : exn -> int = <fun>
+# Characters 10-11:
+  try raise A with A -> 2;;
+            ^
+Warning 42: this use of A required disambiguation.
+Characters 17-18:
+  try raise A with A -> 2;;
+                   ^
+Warning 42: this use of A required disambiguation.
+- : int = 2
+#   

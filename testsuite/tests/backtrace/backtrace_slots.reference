@@ -1,0 +1,27 @@
+a
+No exception
+b
+Uncaught exception Backtrace_slots.Error("b")
+Raised at file "backtrace_slots.ml", line 47, characters 21-32
+Called from file "backtrace_slots.ml", line 47, characters 42-53
+Called from file "backtrace_slots.ml", line 47, characters 42-53
+Called from file "backtrace_slots.ml", line 47, characters 42-53
+Called from file "backtrace_slots.ml", line 47, characters 42-53
+Called from file "backtrace_slots.ml", line 47, characters 42-53
+Called from file "backtrace_slots.ml", line 51, characters 4-11
+Re-raised at file "backtrace_slots.ml", line 53, characters 68-71
+Called from file "backtrace_slots.ml", line 58, characters 11-23
+Uncaught exception Backtrace_slots.Error("c")
+Raised at file "backtrace_slots.ml", line 54, characters 26-37
+Called from file "backtrace_slots.ml", line 58, characters 11-23
+Uncaught exception Backtrace_slots.Error("d")
+Raised at file "backtrace_slots.ml", line 47, characters 21-32
+Called from file "backtrace_slots.ml", line 47, characters 42-53
+Called from file "backtrace_slots.ml", line 47, characters 42-53
+Called from file "backtrace_slots.ml", line 47, characters 42-53
+Called from file "backtrace_slots.ml", line 47, characters 42-53
+Called from file "backtrace_slots.ml", line 47, characters 42-53
+Called from file "backtrace_slots.ml", line 51, characters 4-11
+Called from file "backtrace_slots.ml", line 58, characters 11-23
+Uncaught exception Invalid_argument("index out of bounds")
+Raised by primitive operation at file "backtrace_slots.ml", line 58, characters 14-22

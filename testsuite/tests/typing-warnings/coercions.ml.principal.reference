@@ -1,0 +1,15 @@
+
+#     Characters 76-79:
+  fun b -> if b then format_of_string "x" else "y";;
+                                               ^^^
+Warning 18: this coercion to format6 is not principal.
+- : bool -> ('a, 'b, 'c, 'd, 'd, 'a) format6 = <fun>
+# Characters 28-48:
+  fun b -> if b then "x" else format_of_string "y";;
+                              ^^^^^^^^^^^^^^^^^^^^
+Error: This expression has type
+         ('a, 'b, 'c, 'd, 'd, 'a) format6 =
+           ('a, 'b, 'c, 'd, 'd, 'a) CamlinternalFormatBasics.format6
+       but an expression was expected of type string
+# - : bool -> ('a, 'b, 'a) format = <fun>
+# 

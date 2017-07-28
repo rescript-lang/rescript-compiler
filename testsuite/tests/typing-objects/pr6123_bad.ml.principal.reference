@@ -1,0 +1,8 @@
+
+#                                             Characters 253-257:
+        let args = List.map (fun ty -> new argument(self, ty)) args_ty in
+                                                    ^^^^
+Error: This expression has type < arguments : 'b; .. > as 'a
+       but an expression was expected of type 'a
+       Self type cannot escape its class
+# 

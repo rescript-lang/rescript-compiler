@@ -1,0 +1,20 @@
+--- core-109.37.00.orig/lib/core_unix.ml	2013-08-06 21:52:16.000000000 +0200
++++ core-109.37.00/lib/core_unix.ml	2013-08-13 15:25:11.000000000 +0200
+@@ -890,6 +890,7 @@
+ | O_SYNC
+ | O_RSYNC
+ | O_SHARE_DELETE
++| O_CLOEXEC
+ with sexp
+ 
+ type file_perm = int with of_sexp
+--- core-109.37.00.orig/lib/core_unix.mli	2013-08-06 21:52:16.000000000 +0200
++++ core-109.37.00/lib/core_unix.mli	2013-08-13 15:25:32.000000000 +0200
+@@ -305,6 +305,7 @@
+     | O_SYNC          (** Writes complete as `Synchronised I/O file integrity completion' *)
+     | O_RSYNC         (** Reads complete as writes (depending on O_SYNC/O_DSYNC) *)
+     | O_SHARE_DELETE  (** Windows only: allow the file to be deleted while still open *)
++    | O_CLOEXEC
+ with sexp
+ 
+ (** The type of file access rights. *)

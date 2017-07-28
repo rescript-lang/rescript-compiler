@@ -1,0 +1,29 @@
+
+#                           Characters 240-248:
+           let f (Refl : (a T.t, b T.t) eq) = (x :> b)
+                                              ^^^^^^^^
+Error: Type a is not a subtype of b 
+#                         Characters 31-67:
+  type (_, +_) eq = Refl : ('a, 'a) eq
+  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error: In this GADT definition, the variance of some parameter
+       cannot be checked
+#                     Characters 115-175:
+  .......................................function
+    | BoolLit, false -> false
+    | IntLit , 6 -> false
+Warning 8: this pattern-matching is not exhaustive.
+Here is an example of a value that is not matched:
+(IntLit, 0)
+type _ t = IntLit : int t | BoolLit : bool t
+val check : 's t * 's -> bool = <fun>
+#             Characters 91-180:
+  .............................................function
+    | {fst = BoolLit; snd = false} -> false
+    | {fst = IntLit ; snd =  6} -> false
+Warning 8: this pattern-matching is not exhaustive.
+Here is an example of a value that is not matched:
+{fst=IntLit; snd=0}
+type ('a, 'b) pair = { fst : 'a; snd : 'b; }
+val check : ('s t, 's) pair -> bool = <fun>
+# 

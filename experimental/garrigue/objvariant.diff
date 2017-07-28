@@ -1,0 +1,354 @@
+? objvariants-3.09.1.diffs
+? objvariants.diffs
+Index: btype.ml
+===================================================================
+RCS file: /net/yquem/devel/caml/repository/csl/typing/btype.ml,v
+retrieving revision 1.37.4.1
+diff -u -r1.37.4.1 btype.ml
+--- btype.ml	5 Dec 2005 13:18:42 -0000	1.37.4.1
++++ btype.ml	16 Jan 2006 02:23:14 -0000
+@@ -177,7 +177,8 @@
+     Tvariant row -> iter_row f row
+   | Tvar | Tunivar | Tsubst _ | Tconstr _ ->
+       Misc.may (fun (_,l) -> List.iter f l) row.row_name;
+-      List.iter f row.row_bound
++      List.iter f row.row_bound;
++      List.iter (fun (s,k,t) -> f t) row.row_object
+   | _ -> assert false
+ 
+ let iter_type_expr f ty =
+@@ -224,7 +225,9 @@
+     | Some (path, tl) -> Some (path, List.map f tl) in
+   { row_fields = fields; row_more = more;
+     row_bound = !bound; row_fixed = row.row_fixed && fixed;
+-    row_closed = row.row_closed; row_name = name; }
++    row_closed = row.row_closed; row_name = name;
++    row_object = List.map (fun (s,k,t) -> (s,k,f t)) row.row_object;
++  }
+ 
+ let rec copy_kind = function
+     Fvar{contents = Some k} -> copy_kind k
+Index: ctype.ml
+===================================================================
+RCS file: /net/yquem/devel/caml/repository/csl/typing/ctype.ml,v
+retrieving revision 1.197.2.6
+diff -u -r1.197.2.6 ctype.ml
+--- ctype.ml	15 Dec 2005 02:28:38 -0000	1.197.2.6
++++ ctype.ml	16 Jan 2006 02:23:15 -0000
+@@ -1421,7 +1421,7 @@
+   newgenty
+     (Tvariant
+        {row_fields = fields; row_closed = closed; row_more = newvar();
+-        row_bound = []; row_fixed = false; row_name = None })
++        row_bound = []; row_fixed = false; row_name = None; row_object=[]})
+ 
+ (**** Unification ****)
+ 
+@@ -1724,8 +1724,11 @@
+     else None
+   in
+   let bound = row1.row_bound @ row2.row_bound in
++  let opairs, _, miss2 = associate_fields row1.row_object row2.row_object in
++  let row_object = row1.row_object @ miss2 in
+   let row0 = {row_fields = []; row_more = more; row_bound = bound;
+-              row_closed = closed; row_fixed = fixed; row_name = name} in
++              row_closed = closed; row_fixed = fixed; row_name = name;
++              row_object = row_object } in
+   let set_more row rest =
+     let rest =
+       if closed then
+@@ -1758,6 +1761,18 @@
+           raise (Unify ((mkvariant [l,f1] true,
+                          mkvariant [l,f2] true) :: trace)))
+       pairs;
++    List.iter (fun (s,_,ty1,_,ty2) -> unify env ty1 ty2) opairs;
++    if row_object <> [] then begin
++      List.iter
++        (fun (l,f) ->
++          match row_field_repr f with
++            Rpresent (Some ty) ->
++              let fi = build_fields generic_level row_object (newgenvar()) in
++              unify env (newgenty (Tobject (fi, ref None))) ty
++          | Rpresent None -> raise (Unify [])
++          | _ -> ())
++        (row_repr row1).row_fields
++    end;
+   with exn ->
+     log_type rm1; rm1.desc <- md1; log_type rm2; rm2.desc <- md2; raise exn
+   end
+@@ -2789,7 +2804,8 @@
+       let row =
+         { row_fields = List.map fst fields; row_more = newvar();
+           row_bound = !bound; row_closed = posi; row_fixed = false;
+-          row_name = if c > Unchanged then None else row.row_name }
++          row_name = if c > Unchanged then None else row.row_name;
++          row_object = [] }
+       in
+       (newty (Tvariant row), Changed)
+   | Tobject (t1, _) ->
+Index: oprint.ml
+===================================================================
+RCS file: /net/yquem/devel/caml/repository/csl/typing/oprint.ml,v
+retrieving revision 1.22
+diff -u -r1.22 oprint.ml
+--- oprint.ml	23 Mar 2005 03:08:37 -0000	1.22
++++ oprint.ml	16 Jan 2006 02:23:15 -0000
+@@ -185,7 +185,7 @@
+       fprintf ppf "@[<2>< %a >@]" (print_fields rest) fields
+   | Otyp_stuff s -> fprintf ppf "%s" s
+   | Otyp_var (ng, s) -> fprintf ppf "'%s%s" (if ng then "_" else "") s
+-  | Otyp_variant (non_gen, row_fields, closed, tags) ->
++  | Otyp_variant (non_gen, row_fields, closed, tags, obj) ->
+       let print_present ppf =
+         function
+           None | Some [] -> ()
+@@ -198,12 +198,17 @@
+               ppf fields
+         | Ovar_name (id, tyl) ->
+             fprintf ppf "@[%a%a@]" print_typargs tyl print_ident id
++      and print_object ppf obj =
++        if obj <> [] then
++          fprintf ppf "@ as @[<2>< %a >@]" (print_fields (Some false)) obj
+       in
+-      fprintf ppf "%s[%s@[<hv>@[<hv>%a@]%a ]@]" (if non_gen then "_" else "")
++      fprintf ppf "%s[%s@[<hv>@[<hv>%a@]%a%a ]@]"
++        (if non_gen then "_" else "")
+         (if closed then if tags = None then " " else "< "
+          else if tags = None then "> " else "? ")
+         print_fields row_fields
+         print_present tags
++        print_object obj
+   | Otyp_alias _ | Otyp_poly _ | Otyp_arrow _ | Otyp_tuple _ as ty ->
+       fprintf ppf "@[<1>(%a)@]" print_out_type ty
+   | Otyp_abstract | Otyp_sum _ | Otyp_record _ | Otyp_manifest (_, _) -> ()
+Index: outcometree.mli
+===================================================================
+RCS file: /net/yquem/devel/caml/repository/csl/typing/outcometree.mli,v
+retrieving revision 1.14
+diff -u -r1.14 outcometree.mli
+--- outcometree.mli	23 Mar 2005 03:08:37 -0000	1.14
++++ outcometree.mli	16 Jan 2006 02:23:15 -0000
+@@ -59,6 +59,7 @@
+   | Otyp_var of bool * string
+   | Otyp_variant of
+       bool * out_variant * bool * (string list) option
++      * (string * out_type) list
+   | Otyp_poly of string list * out_type
+ and out_variant =
+   | Ovar_fields of (string * bool * out_type list) list
+Index: printtyp.ml
+===================================================================
+RCS file: /net/yquem/devel/caml/repository/csl/typing/printtyp.ml,v
+retrieving revision 1.139.2.2
+diff -u -r1.139.2.2 printtyp.ml
+--- printtyp.ml	7 Dec 2005 23:37:27 -0000	1.139.2.2
++++ printtyp.ml	16 Jan 2006 02:23:15 -0000
+@@ -244,7 +244,10 @@
+             visited_objects := px :: !visited_objects;
+           match row.row_name with
+           | Some(p, tyl) when namable_row row ->
+-              List.iter (mark_loops_rec visited) tyl
++              List.iter (mark_loops_rec visited) tyl;
++              if not (static_row row) then
++                List.iter (fun (s,k,t) -> mark_loops_rec visited t)
++                  row.row_object
+           | _ ->
+               iter_row (mark_loops_rec visited) {row with row_bound = []}
+          end
+@@ -343,25 +346,27 @@
+                | _ -> false)
+             fields in
+         let all_present = List.length present = List.length fields in
++        let static = row.row_closed && all_present in
++        let obj =
++          if static then [] else
++          List.map (fun (s,k,t) -> (s, tree_of_typexp sch t)) row.row_object
++        in
++        let tags = if all_present then None else Some (List.map fst present) in
+         begin match row.row_name with
+         | Some(p, tyl) when namable_row row ->
+             let id = tree_of_path p in
+             let args = tree_of_typlist sch tyl in
+-            if row.row_closed && all_present then
++            if static then
+               Otyp_constr (id, args)
+             else
+               let non_gen = is_non_gen sch px in
+-              let tags =
+-                if all_present then None else Some (List.map fst present) in
+               Otyp_variant (non_gen, Ovar_name(tree_of_path p, args),
+-                            row.row_closed, tags)
++                            row.row_closed, tags, obj)
+         | _ ->
+-            let non_gen =
+-              not (row.row_closed && all_present) && is_non_gen sch px in
++            let non_gen = not static && is_non_gen sch px in
+             let fields = List.map (tree_of_row_field sch) fields in
+-            let tags =
+-              if all_present then None else Some (List.map fst present) in
+-            Otyp_variant (non_gen, Ovar_fields fields, row.row_closed, tags)
++            Otyp_variant (non_gen, Ovar_fields fields, row.row_closed,
++                          tags, obj)
+         end
+     | Tobject (fi, nm) ->
+         tree_of_typobject sch fi nm
+Index: typecore.ml
+===================================================================
+RCS file: /net/yquem/devel/caml/repository/csl/typing/typecore.ml,v
+retrieving revision 1.176.2.2
+diff -u -r1.176.2.2 typecore.ml
+--- typecore.ml	11 Dec 2005 09:56:33 -0000	1.176.2.2
++++ typecore.ml	16 Jan 2006 02:23:15 -0000
+@@ -170,7 +170,8 @@
+       (* Force check of well-formedness *)
+       unify_pat pat.pat_env pat
+         (newty(Tvariant{row_fields=[]; row_more=newvar(); row_closed=false;
+-                        row_bound=[]; row_fixed=false; row_name=None}));
++                        row_bound=[]; row_fixed=false; row_name=None;
++                        row_object=[]}));
+   | _ -> ()
+ 
+ let rec iter_pattern f p =
+@@ -251,7 +252,7 @@
+       let ty = may_map (build_as_type env) p' in
+       newty (Tvariant{row_fields=[l, Rpresent ty]; row_more=newvar();
+                       row_bound=[]; row_name=None;
+-                      row_fixed=false; row_closed=false})
++                      row_fixed=false; row_closed=false; row_object=[]})
+   | Tpat_record lpl ->
+       let lbl = fst(List.hd lpl) in
+       if lbl.lbl_private = Private then p.pat_type else
+@@ -318,7 +319,8 @@
+       ([],[]) fields in
+   let row =
+     { row_fields = List.rev fields; row_more = newvar(); row_bound = !bound;
+-      row_closed = false; row_fixed = false; row_name = Some (path, tyl) }
++      row_closed = false; row_fixed = false; row_name = Some (path, tyl);
++      row_object = [] }
+   in
+   let ty = newty (Tvariant row) in
+   let gloc = {loc with Location.loc_ghost=true} in
+@@ -428,7 +430,8 @@
+                   row_closed = false;
+                   row_more = newvar ();
+                   row_fixed = false;
+-                  row_name = None } in
++                  row_name = None;
++                  row_object = [] } in
+       rp {
+         pat_desc = Tpat_variant(l, arg, row);
+         pat_loc = sp.ppat_loc;
+@@ -976,7 +979,8 @@
+                                   row_bound = [];
+                                   row_closed = false;
+                                   row_fixed = false;
+-                                  row_name = None});
++                                  row_name = None;
++                                  row_object = []});
+         exp_env = env }
+   | Pexp_record(lid_sexp_list, opt_sexp) ->
+       let ty = newvar() in
+@@ -1261,8 +1265,30 @@
+                   assert false
+               end
+           | _ ->
+-              (Texp_send(obj, Tmeth_name met),
+-               filter_method env met Public obj.exp_type)
++              let obj, met_ty =
++                match expand_head env obj.exp_type with
++                  {desc = Tvariant _} ->
++                    let exp_ty = newvar () in
++                    let met_ty = filter_method env met Public exp_ty in
++                    let row =
++                      {row_fields=[]; row_more=newvar();
++                       row_bound=[]; row_closed=false;
++                       row_fixed=false; row_name=None;
++                       row_object=[met, Fpresent, met_ty]} in
++                    unify_exp env obj (newty (Tvariant row));
++                    let prim = Primitive.parse_declaration 1 ["%field1"] in
++                    let ty = newty(Tarrow("", obj.exp_type, exp_ty, Cok)) in
++                    let vd = {val_type = ty; val_kind = Val_prim prim} in
++                    let esnd =
++                      {exp_desc=Texp_ident(Path.Pident(Ident.create"snd"), vd);
++                       exp_loc = Location.none; exp_type = ty; exp_env = env}
++                    in
++                    ({obj with exp_type = exp_ty;
++                      exp_desc = Texp_apply(esnd,[Some obj, Required])},
++                     met_ty)
++                | _ -> (obj, filter_method env met Public obj.exp_type)
++              in
++              (Texp_send(obj, Tmeth_name met), met_ty)
+         in
+         if !Clflags.principal then begin
+           end_def ();
+Index: types.ml
+===================================================================
+RCS file: /net/yquem/devel/caml/repository/csl/typing/types.ml,v
+retrieving revision 1.25
+diff -u -r1.25 types.ml
+--- types.ml	9 Dec 2004 12:40:53 -0000	1.25
++++ types.ml	16 Jan 2006 02:23:15 -0000
+@@ -44,7 +44,9 @@
+       row_bound: type_expr list;
+       row_closed: bool;
+       row_fixed: bool;
+-      row_name: (Path.t * type_expr list) option }
++      row_name: (Path.t * type_expr list) option;
++      row_object: (string * field_kind * type_expr) list;
++    }
+ 
+ and row_field =
+     Rpresent of type_expr option
+Index: types.mli
+===================================================================
+RCS file: /net/yquem/devel/caml/repository/csl/typing/types.mli,v
+retrieving revision 1.25
+diff -u -r1.25 types.mli
+--- types.mli	9 Dec 2004 12:40:53 -0000	1.25
++++ types.mli	16 Jan 2006 02:23:15 -0000
+@@ -43,7 +43,9 @@
+       row_bound: type_expr list;
+       row_closed: bool;
+       row_fixed: bool;
+-      row_name: (Path.t * type_expr list) option }
++      row_name: (Path.t * type_expr list) option;
++      row_object: (string * field_kind * type_expr) list;
++    }
+ 
+ and row_field =
+     Rpresent of type_expr option
+Index: typetexp.ml
+===================================================================
+RCS file: /net/yquem/devel/caml/repository/csl/typing/typetexp.ml,v
+retrieving revision 1.54
+diff -u -r1.54 typetexp.ml
+--- typetexp.ml	22 Jul 2005 06:42:36 -0000	1.54
++++ typetexp.ml	16 Jan 2006 02:23:15 -0000
+@@ -215,7 +215,8 @@
+           in
+           let row = { row_closed = true; row_fields = fields;
+                       row_bound = !bound; row_name = Some (path, args);
+-                      row_fixed = false; row_more = newvar () } in
++                      row_fixed = false; row_more = newvar ();
++                      row_object = [] } in
+           let static = Btype.static_row row in
+           let row =
+             if static then row else
+@@ -262,7 +263,7 @@
+       let mkfield l f =
+         newty (Tvariant {row_fields=[l,f]; row_more=newvar();
+                          row_bound=[]; row_closed=true;
+-                         row_fixed=false; row_name=None}) in
++                         row_fixed=false; row_name=None; row_object=[]}) in
+       let add_typed_field loc l f fields =
+         try
+           let f' = List.assoc l fields in
+@@ -345,7 +346,7 @@
+       let row =
+         { row_fields = List.rev fields; row_more = newvar ();
+           row_bound = !bound; row_closed = closed;
+-          row_fixed = false; row_name = !name } in
++          row_fixed = false; row_name = !name; row_object = [] } in
+       let static = Btype.static_row row in
+       let row =
+         if static then row else

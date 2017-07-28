@@ -1,0 +1,110 @@
+#########################################################################
+#                                                                       #
+#                                 OCaml                                 #
+#                                                                       #
+#            Xavier Leroy, projet Cristal, INRIA Rocquencourt           #
+#                                                                       #
+#   Copyright 1999 Institut National de Recherche en Informatique et    #
+#   en Automatique.  All rights reserved.  This file is distributed     #
+#   under the terms of the GNU Library General Public License, with     #
+#   the special exception on linking described in file ../LICENSE.      #
+#                                                                       #
+#########################################################################
+
+include ../config/Makefile
+CAMLRUN ?= ../boot/ocamlrun
+CAMLYACC ?= ../boot/ocamlyacc
+TARGET_BINDIR ?= $(BINDIR)
+
+COMPILER=../ocamlc
+CAMLC=$(CAMLRUN) $(COMPILER)
+COMPFLAGS=-strict-sequence -w +33..39 -g -warn-error A -bin-annot -nostdlib \
+          -safe-string
+OPTCOMPILER=../ocamlopt
+CAMLOPT=$(CAMLRUN) $(OPTCOMPILER)
+CAMLDEP=$(CAMLRUN) ../tools/ocamldep
+
+OBJS=camlinternalFormatBasics.cmo pervasives.cmo $(OTHERS)
+OTHERS=array.cmo list.cmo char.cmo bytes.cmo string.cmo sys.cmo \
+  sort.cmo marshal.cmo obj.cmo \
+  int32.cmo int64.cmo nativeint.cmo \
+  lexing.cmo parsing.cmo \
+  set.cmo map.cmo stack.cmo queue.cmo \
+  camlinternalLazy.cmo lazy.cmo stream.cmo \
+  buffer.cmo camlinternalFormat.cmo printf.cmo \
+  arg.cmo printexc.cmo gc.cmo \
+  digest.cmo random.cmo hashtbl.cmo format.cmo scanf.cmo callback.cmo \
+  camlinternalOO.cmo oo.cmo camlinternalMod.cmo \
+  genlex.cmo weak.cmo \
+  filename.cmo complex.cmo \
+  arrayLabels.cmo listLabels.cmo bytesLabels.cmo \
+  stringLabels.cmo moreLabels.cmo stdLabels.cmo
+
+all: stdlib.cma std_exit.cmo camlheader target_camlheader camlheader_ur
+
+INSTALL_LIBDIR=$(DESTDIR)$(LIBDIR)
+
+install: install-$(RUNTIMED)
+	cp stdlib.cma std_exit.cmo *.cmi *.mli *.ml camlheader_ur \
+	  $(INSTALL_LIBDIR)
+	cp target_camlheader $(INSTALL_LIBDIR)/camlheader
+
+install-noruntimed:
+.PHONY: install-noruntimed
+
+install-runtimed: target_camlheaderd
+	cp target_camlheaderd $(INSTALL_LIBDIR)/camlheaderd
+.PHONY: install-runtimed
+
+stdlib.cma: $(OBJS)
+	$(CAMLC) -a -o stdlib.cma $(OBJS)
+
+stdlib.cmxa: $(OBJS:.cmo=.cmx)
+	$(CAMLOPT) -a -o stdlib.cmxa $(OBJS:.cmo=.cmx)
+
+sys.ml: sys.mlp ../VERSION
+	sed -e "s|%%VERSION%%|`sed -e 1q ../VERSION`|" sys.mlp >sys.ml
+
+clean::
+	rm -f sys.ml
+
+clean::
+	rm -f camlheader target_camlheader camlheader_ur target_camlheaderd
+
+.SUFFIXES: .mli .ml .cmi .cmo .cmx .p.cmx
+
+.mli.cmi:
+	$(CAMLC) $(COMPFLAGS) `./Compflags $@` -c $<
+
+.ml.cmo:
+	$(CAMLC) $(COMPFLAGS) `./Compflags $@` -c $<
+
+.ml.cmx:
+	$(CAMLOPT) $(COMPFLAGS) `./Compflags $@` -c $<
+
+.ml.p.cmx:
+	$(CAMLOPT) $(COMPFLAGS) `./Compflags $@` -p -c -o $*.p.cmx $<
+
+# Dependencies on the compiler
+$(OBJS) std_exit.cmo: $(COMPILER)
+$(OBJS:.cmo=.cmi) std_exit.cmi: $(COMPILER)
+$(OBJS:.cmo=.cmx) std_exit.cmx: $(OPTCOMPILER)
+$(OBJS:.cmo=.p.cmx) std_exit.p.cmx: $(OPTCOMPILER)
+
+# Dependencies on Pervasives (not tracked by ocamldep)
+$(OTHERS) std_exit.cmo: pervasives.cmi
+$(OTHERS:.cmo=.cmi) std_exit.cmi: pervasives.cmi
+$(OBJS:.cmo=.cmx) std_exit.cmx: pervasives.cmi
+$(OBJS:.cmo=.p.cmx) std_exit.p.cmx: pervasives.cmi
+$(OTHERS:.cmo=.cmx) std_exit.cmx: pervasives.cmx
+$(OTHERS:.cmo=.p.cmx) std_exit.p.cmx: pervasives.cmx
+
+clean::
+	rm -f *.cm* *.$(O) *.$(A)
+	rm -f *~
+
+include .depend
+
+depend:
+	$(CAMLDEP) *.mli *.ml > .depend
+	$(CAMLDEP) *.ml | sed -e 's/\.cmx/.p.cmx/g' >>.depend
