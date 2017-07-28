@@ -1,0 +1,13 @@
+Loading plug1.cma
+This is stub1!
+ABCDEF
+Loading plug2.cma
+This is stub2, calling stub1:
+This is stub1!
+Ok!
+This is Plug2.f
+Result is: 2
+This is Plug1.f
+Result is: 1
+This is Main.f
+Result is: 0

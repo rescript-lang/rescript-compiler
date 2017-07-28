@@ -1,0 +1,4 @@
+language: c
+script: bash -ex .travis-ci.sh
+env:
+   - XARCH=i386

@@ -1,0 +1,177 @@
+#########################################################################
+#                                                                       #
+#                                 OCaml                                 #
+#                                                                       #
+#            Xavier Leroy, projet Cristal, INRIA Rocquencourt           #
+#                                                                       #
+#   Copyright 1999 Institut National de Recherche en Informatique et    #
+#   en Automatique.  All rights reserved.  This file is distributed     #
+#   under the terms of the GNU Library General Public License, with     #
+#   the special exception on linking described in file ../LICENSE.      #
+#                                                                       #
+#########################################################################
+
+# Configuration for Windows, Mingw compiler
+
+######### General configuration
+
+PREFIX=C:/ocamlmgw
+
+### Remove this to disable compiling ocamldebug
+WITH_DEBUGGER=ocamldebugger
+
+### Remove this to disable compiling ocamlbuild
+WITH_OCAMLBUILD=ocamlbuild
+
+### Remove this to disable compiling ocamldoc
+WITH_OCAMLDOC=ocamldoc
+
+### Where to install the binaries
+BINDIR=$(PREFIX)/bin
+
+### Where to install the standard library
+LIBDIR=$(PREFIX)/lib
+
+### Where to install the stub DLLs
+STUBLIBDIR=$(LIBDIR)/stublibs
+
+### Where to install the info files
+DISTRIB=$(PREFIX)
+
+### Where to install the man pages
+MANDIR=$(PREFIX)/man
+
+########## Toolchain and OS dependencies
+
+TOOLCHAIN=mingw
+
+### Toolchain prefix
+TARGET=i686-w64-mingw32
+HOST=i686-w64-mingw32
+
+TOOLPREF=$(TARGET)-
+
+CCOMPTYPE=cc
+O=o
+A=a
+S=s
+SO=s.o
+EXE=.exe
+EXT_DLL=.dll
+EXT_OBJ=.$(O)
+EXT_LIB=.$(A)
+EXT_ASM=.$(S)
+MANEXT=1
+SHARPBANGSCRIPTS=false
+PTHREAD_LINK=
+X11_INCLUDES=
+X11_LINK=
+BYTECCRPATH=
+SUPPORTS_SHARED_LIBRARIES=true
+SHAREDCCCOMPOPTS=-O
+MKSHAREDLIBRPATH=
+NATIVECCPROFOPTS=
+NATIVECCRPATH=
+ASM=$(TOOLPREF)as
+ASPP=$(TOOLPREF)gcc -c
+ASPPPROFFLAGS=
+PROFILING=noprof
+DYNLINKOPTS=
+CC_PROFILE=
+SYSTHREAD_SUPPORT=true
+EXTRALIBS=
+NATDYNLINK=true
+CMXS=cmxs
+RUNTIMED=noruntimed
+ASM_CFI_SUPPORTED=false
+UNIXLIB=win32unix
+GRAPHLIB=win32graph
+
+########## Configuration for the bytecode compiler
+
+### Which C compiler to use for the bytecode interpreter.
+BYTECC=$(TOOLPREF)gcc
+
+### Additional compile-time options for $(BYTECC).  (For static linking.)
+BYTECCCOMPOPTS=-O -mms-bitfields -Wall -Wno-unused
+
+### Additional link-time options for $(BYTECC).  (For static linking.)
+BYTECCLINKOPTS=
+
+### Additional compile-time options for $(BYTECC).  (For building a DLL.)
+DLLCCCOMPOPTS=-O -mms-bitfields -Wall -Wno-unused -DCAML_DLL
+
+### Libraries needed
+BYTECCLIBS=-lws2_32
+NATIVECCLIBS=-lws2_32
+
+### How to invoke the C preprocessor
+CPP=$(BYTECC) -E
+
+### Flexlink
+FLEXLINK=flexlink -chain mingw -stack 16777216 -link -static-libgcc
+FLEXDIR:=$(shell $(FLEXLINK) -where)
+IFLEXDIR=-I"$(FLEXDIR)"
+MKDLL=$(FLEXLINK)
+MKEXE=$(FLEXLINK) -exe
+MKMAINDLL=$(FLEXLINK) -maindll
+
+### How to build a static library
+MKLIB=rm -f $(1); $(TOOLPREF)ar rc $(1) $(2); $(RANLIB) $(1)
+#ml let mklib out files opts = Printf.sprintf "rm -f %s && %sar rcs %s %s %s" out toolpref opts out files;;
+
+### Canonicalize the name of a system library
+SYSLIB=-l$(1)
+#ml let syslib x = "-l"^x;;
+
+### The ranlib command
+RANLIB=$(TOOLPREF)ranlib
+RANLIBCMD=$(TOOLPREF)ranlib
+
+### The ar command
+ARCMD=$(TOOLPREF)ar
+
+############# Configuration for the native-code compiler
+
+### Name of architecture for the native-code compiler
+ARCH=i386
+
+### Name of architecture model for the native-code compiler.
+MODEL=default
+
+### Name of operating system family for the native-code compiler.
+SYSTEM=mingw
+
+### Which C compiler to use for the native-code compiler.
+NATIVECC=$(BYTECC)
+
+### Additional compile-time options for $(NATIVECC).
+NATIVECCCOMPOPTS=-O -mms-bitfields -Wall -Wno-unused
+
+### Additional link-time options for $(NATIVECC)
+NATIVECCLINKOPTS=
+
+### Build partially-linked object file
+PACKLD=$(TOOLPREF)ld -r $(NATIVECCLINKOPTS) -o # must have a space after '-o'
+
+############# Configuration for the contributed libraries
+
+OTHERLIBRARIES=win32unix str num win32graph dynlink bigarray systhreads
+
+### Name of the target architecture for the "num" library
+BNG_ARCH=ia32
+BNG_ASM_LEVEL=1
+
+############# Aliases for common commands
+
+MAKEREC=$(MAKE) -f Makefile.nt
+MAKECMD=$(MAKE)
+
+############# for the testsuite makefiles
+#ml let topdir = "" and wintopdir = "";;
+OTOPDIR=$(WINTOPDIR)
+CTOPDIR=$(TOPDIR)
+CYGPATH=cygpath -m
+DIFF=diff -q --strip-trailing-cr
+CANKILL=false
+SET_LD_PATH=PATH="$(PATH):$(LD_PATH)"

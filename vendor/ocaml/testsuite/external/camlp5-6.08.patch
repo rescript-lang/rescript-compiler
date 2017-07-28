@@ -1,0 +1,1127 @@
+--- camlp5-6.06/ocaml_stuff/4.01.0/utils/warnings.mli.orig	2013-02-18 15:14:16.000000000 +0100
++++ camlp5-6.06/ocaml_stuff/4.01.0/utils/warnings.mli	2013-02-18 15:14:31.000000000 +0100
+@@ -54,6 +54,10 @@
+   | Unused_constructor of string * bool * bool  (* 37 *)
+   | Unused_exception of string * bool       (* 38 *)
+   | Unused_rec_flag                         (* 39 *)
++  | Name_out_of_scope of string list * bool (* 40 *)
++  | Ambiguous_name of string list * string list * bool    (* 41 *)
++  | Disambiguated_name of string            (* 42 *)
++  | Nonoptional_label of string             (* 43 *)
+ ;;
+ 
+ val parse_options : bool -> string -> unit;;
+diff -N -r -u camlp5-6.06.orig/ocaml_stuff/4.00.2/parsing/.cvsignore camlp5-6.06/ocaml_stuff/4.00.2/parsing/.cvsignore
+--- camlp5-6.06.orig/ocaml_stuff/4.00.2/parsing/.cvsignore	1970-01-01 01:00:00.000000000 +0100
++++ camlp5-6.06/ocaml_stuff/4.00.2/parsing/.cvsignore	2013-03-06 14:44:56.000000000 +0100
+@@ -0,0 +1 @@
++*.cm[oi]
+diff -N -r -u camlp5-6.06.orig/ocaml_stuff/4.00.2/parsing/.depend camlp5-6.06/ocaml_stuff/4.00.2/parsing/.depend
+--- camlp5-6.06.orig/ocaml_stuff/4.00.2/parsing/.depend	1970-01-01 01:00:00.000000000 +0100
++++ camlp5-6.06/ocaml_stuff/4.00.2/parsing/.depend	2013-03-06 14:44:56.000000000 +0100
+@@ -0,0 +1,4 @@
++asttypes.cmi : location.cmi
++location.cmi : ../utils/warnings.cmi
++longident.cmi :
++parsetree.cmi : longident.cmi location.cmi asttypes.cmi
+diff -N -r -u camlp5-6.06.orig/ocaml_stuff/4.00.2/parsing/Makefile camlp5-6.06/ocaml_stuff/4.00.2/parsing/Makefile
+--- camlp5-6.06.orig/ocaml_stuff/4.00.2/parsing/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ camlp5-6.06/ocaml_stuff/4.00.2/parsing/Makefile	2013-03-06 14:44:56.000000000 +0100
+@@ -0,0 +1,19 @@
++# Id
++
++FILES=asttypes.cmi location.cmi longident.cmi parsetree.cmi
++INCL=-I ../utils
++
++all: $(FILES)
++
++clean:
++	rm -f *.cmi
++
++depend:
++	ocamldep $(INCL) *.ml* | sed -e 's/  *$$//' > .depend
++
++.SUFFIXES: .mli .cmi
++
++.mli.cmi:
++	$(OCAMLN)c $(INCL) -c $<
++
++include .depend
+diff -N -r -u camlp5-6.06.orig/ocaml_stuff/4.00.2/parsing/asttypes.mli camlp5-6.06/ocaml_stuff/4.00.2/parsing/asttypes.mli
+--- camlp5-6.06.orig/ocaml_stuff/4.00.2/parsing/asttypes.mli	1970-01-01 01:00:00.000000000 +0100
++++ camlp5-6.06/ocaml_stuff/4.00.2/parsing/asttypes.mli	2013-03-06 14:44:56.000000000 +0100
+@@ -0,0 +1,45 @@
++(***********************************************************************)
++(*                                                                     *)
++(*                                OCaml                                *)
++(*                                                                     *)
++(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
++(*                                                                     *)
++(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
++(*  en Automatique.  All rights reserved.  This file is distributed    *)
++(*  under the terms of the Q Public License version 1.0.               *)
++(*                                                                     *)
++(***********************************************************************)
++
++(* Id *)
++
++(* Auxiliary a.s.t. types used by parsetree and typedtree. *)
++
++type constant =
++    Const_int of int
++  | Const_char of char
++  | Const_string of string
++  | Const_float of string
++  | Const_int32 of int32
++  | Const_int64 of int64
++  | Const_nativeint of nativeint
++
++type rec_flag = Nonrecursive | Recursive | Default
++
++type direction_flag = Upto | Downto
++
++type private_flag = Private | Public
++
++type mutable_flag = Immutable | Mutable
++
++type virtual_flag = Virtual | Concrete
++
++type override_flag = Override | Fresh
++
++type closed_flag = Closed | Open
++
++type label = string
++
++type 'a loc = 'a Location.loc = {
++  txt : 'a;
++  loc : Location.t;
++}
+diff -N -r -u camlp5-6.06.orig/ocaml_stuff/4.00.2/parsing/location.mli camlp5-6.06/ocaml_stuff/4.00.2/parsing/location.mli
+--- camlp5-6.06.orig/ocaml_stuff/4.00.2/parsing/location.mli	1970-01-01 01:00:00.000000000 +0100
++++ camlp5-6.06/ocaml_stuff/4.00.2/parsing/location.mli	2013-03-06 14:44:56.000000000 +0100
+@@ -0,0 +1,80 @@
++(***********************************************************************)
++(*                                                                     *)
++(*                                OCaml                                *)
++(*                                                                     *)
++(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
++(*                                                                     *)
++(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
++(*  en Automatique.  All rights reserved.  This file is distributed    *)
++(*  under the terms of the Q Public License version 1.0.               *)
++(*                                                                     *)
++(***********************************************************************)
++
++(* Id *)
++
++(* Source code locations (ranges of positions), used in parsetree. *)
++
++open Format
++
++type t = {
++  loc_start: Lexing.position;
++  loc_end: Lexing.position;
++  loc_ghost: bool;
++}
++
++(* Note on the use of Lexing.position in this module.
++   If [pos_fname = ""], then use [!input_name] instead.
++   If [pos_lnum = -1], then [pos_bol = 0]. Use [pos_cnum] and
++     re-parse the file to get the line and character numbers.
++   Else all fields are correct.
++*)
++
++val none : t
++(** An arbitrary value of type [t]; describes an empty ghost range. *)
++val in_file : string -> t;;
++(** Return an empty ghost range located in a given file. *)
++val init : Lexing.lexbuf -> string -> unit
++(** Set the file name and line number of the [lexbuf] to be the start
++    of the named file. *)
++val curr : Lexing.lexbuf -> t
++(** Get the location of the current token from the [lexbuf]. *)
++
++val symbol_rloc: unit -> t
++val symbol_gloc: unit -> t
++
++(** [rhs_loc n] returns the location of the symbol at position [n], starting
++  at 1, in the current parser rule. *)
++val rhs_loc: int -> t
++
++val input_name: string ref
++val input_lexbuf: Lexing.lexbuf option ref
++
++val get_pos_info: Lexing.position -> string * int * int (* file, line, char *)
++val print_loc: formatter -> t -> unit
++val print_error: formatter -> t -> unit
++val print_error_cur_file: formatter -> unit
++val print_warning: t -> formatter -> Warnings.t -> unit
++val prerr_warning: t -> Warnings.t -> unit
++val echo_eof: unit -> unit
++val reset: unit -> unit
++
++val highlight_locations: formatter -> t -> t -> bool
++
++type 'a loc = {
++  txt : 'a;
++  loc : t;
++}
++
++val mknoloc : 'a -> 'a loc
++val mkloc : 'a -> t -> 'a loc
++
++val print: formatter -> t -> unit
++val print_filename: formatter -> string -> unit
++
++val show_filename: string -> string
++    (** In -absname mode, return the absolute path for this filename.
++        Otherwise, returns the filename unchanged. *)
++
++
++val absname: bool ref
++
+diff -N -r -u camlp5-6.06.orig/ocaml_stuff/4.00.2/parsing/longident.mli camlp5-6.06/ocaml_stuff/4.00.2/parsing/longident.mli
+--- camlp5-6.06.orig/ocaml_stuff/4.00.2/parsing/longident.mli	1970-01-01 01:00:00.000000000 +0100
++++ camlp5-6.06/ocaml_stuff/4.00.2/parsing/longident.mli	2013-03-06 14:44:56.000000000 +0100
+@@ -0,0 +1,24 @@
++(***********************************************************************)
++(*                                                                     *)
++(*                                OCaml                                *)
++(*                                                                     *)
++(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
++(*                                                                     *)
++(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
++(*  en Automatique.  All rights reserved.  This file is distributed    *)
++(*  under the terms of the Q Public License version 1.0.               *)
++(*                                                                     *)
++(***********************************************************************)
++
++(* Id *)
++
++(* Long identifiers, used in parsetree. *)
++
++type t =
++    Lident of string
++  | Ldot of t * string
++  | Lapply of t * t
++
++val flatten: t -> string list
++val last: t -> string
++val parse: string -> t
+diff -N -r -u camlp5-6.06.orig/ocaml_stuff/4.00.2/parsing/parsetree.mli camlp5-6.06/ocaml_stuff/4.00.2/parsing/parsetree.mli
+--- camlp5-6.06.orig/ocaml_stuff/4.00.2/parsing/parsetree.mli	1970-01-01 01:00:00.000000000 +0100
++++ camlp5-6.06/ocaml_stuff/4.00.2/parsing/parsetree.mli	2013-03-06 14:44:56.000000000 +0100
+@@ -0,0 +1,307 @@
++(***********************************************************************)
++(*                                                                     *)
++(*                                OCaml                                *)
++(*                                                                     *)
++(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
++(*                                                                     *)
++(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
++(*  en Automatique.  All rights reserved.  This file is distributed    *)
++(*  under the terms of the Q Public License version 1.0.               *)
++(*                                                                     *)
++(***********************************************************************)
++
++(* Id *)
++
++(* Abstract syntax tree produced by parsing *)
++
++open Asttypes
++
++(* Type expressions for the core language *)
++
++type core_type =
++  { ptyp_desc: core_type_desc;
++    ptyp_loc: Location.t }
++
++and core_type_desc =
++    Ptyp_any
++  | Ptyp_var of string
++  | Ptyp_arrow of label * core_type * core_type
++  | Ptyp_tuple of core_type list
++  | Ptyp_constr of Longident.t loc * core_type list
++  | Ptyp_object of core_field_type list
++  | Ptyp_class of Longident.t loc * core_type list * label list
++  | Ptyp_alias of core_type * string
++  | Ptyp_variant of row_field list * bool * label list option
++  | Ptyp_poly of string list * core_type
++  | Ptyp_package of package_type
++
++
++and package_type = Longident.t loc * (Longident.t loc * core_type) list
++
++and core_field_type =
++  { pfield_desc: core_field_desc;
++    pfield_loc: Location.t }
++
++and core_field_desc =
++    Pfield of string * core_type
++  | Pfield_var
++
++and row_field =
++    Rtag of label * bool * core_type list
++  | Rinherit of core_type
++
++(* Type expressions for the class language *)
++
++type 'a class_infos =
++  { pci_virt: virtual_flag;
++    pci_params: string loc list * Location.t;
++    pci_name: string loc;
++    pci_expr: 'a;
++    pci_variance: (bool * bool) list;
++    pci_loc: Location.t }
++
++(* Value expressions for the core language *)
++
++type pattern =
++  { ppat_desc: pattern_desc;
++    ppat_loc: Location.t }
++
++and pattern_desc =
++    Ppat_any
++  | Ppat_var of string loc
++  | Ppat_alias of pattern * string loc
++  | Ppat_constant of constant
++  | Ppat_tuple of pattern list
++  | Ppat_construct of Longident.t loc * pattern option * bool
++  | Ppat_variant of label * pattern option
++  | Ppat_record of (Longident.t loc * pattern) list * closed_flag
++  | Ppat_array of pattern list
++  | Ppat_or of pattern * pattern
++  | Ppat_constraint of pattern * core_type
++  | Ppat_type of Longident.t loc
++  | Ppat_lazy of pattern
++  | Ppat_unpack of string loc
++
++type expression =
++  { pexp_desc: expression_desc;
++    pexp_loc: Location.t }
++
++and expression_desc =
++    Pexp_ident of Longident.t loc
++  | Pexp_constant of constant
++  | Pexp_let of rec_flag * (pattern * expression) list * expression
++  | Pexp_function of label * expression option * (pattern * expression) list
++  | Pexp_apply of expression * (label * expression) list
++  | Pexp_match of expression * (pattern * expression) list
++  | Pexp_try of expression * (pattern * expression) list
++  | Pexp_tuple of expression list
++  | Pexp_construct of Longident.t loc * expression option * bool
++  | Pexp_variant of label * expression option
++  | Pexp_record of (Longident.t loc * expression) list * expression option
++  | Pexp_field of expression * Longident.t loc
++  | Pexp_setfield of expression * Longident.t loc * expression
++  | Pexp_array of expression list
++  | Pexp_ifthenelse of expression * expression * expression option
++  | Pexp_sequence of expression * expression
++  | Pexp_while of expression * expression
++  | Pexp_for of string loc *  expression * expression * direction_flag * expression
++  | Pexp_constraint of expression * core_type option * core_type option
++  | Pexp_when of expression * expression
++  | Pexp_send of expression * string
++  | Pexp_new of Longident.t loc
++  | Pexp_setinstvar of string loc * expression
++  | Pexp_override of (string loc * expression) list
++  | Pexp_letmodule of string loc * module_expr * expression
++  | Pexp_assert of expression
++  | Pexp_assertfalse
++  | Pexp_lazy of expression
++  | Pexp_poly of expression * core_type option
++  | Pexp_object of class_structure
++  | Pexp_newtype of string * expression
++  | Pexp_pack of module_expr
++  | Pexp_open of Longident.t loc * expression
++
++(* Value descriptions *)
++
++and value_description =
++  { pval_type: core_type;
++    pval_prim: string list;
++    pval_loc : Location.t
++    }
++
++(* Type declarations *)
++
++and type_declaration =
++  { ptype_params: string loc option list;
++    ptype_cstrs: (core_type * core_type * Location.t) list;
++    ptype_kind: type_kind;
++    ptype_private: private_flag;
++    ptype_manifest: core_type option;
++    ptype_variance: (bool * bool) list;
++    ptype_loc: Location.t }
++
++and type_kind =
++    Ptype_abstract
++  | Ptype_variant of
++      (string loc * core_type list * core_type option * Location.t) list
++  | Ptype_record of
++      (string loc * mutable_flag * core_type * Location.t) list
++
++and exception_declaration = core_type list
++
++(* Type expressions for the class language *)
++
++and class_type =
++  { pcty_desc: class_type_desc;
++    pcty_loc: Location.t }
++
++and class_type_desc =
++    Pcty_constr of Longident.t loc * core_type list
++  | Pcty_signature of class_signature
++  | Pcty_fun of label * core_type * class_type
++
++and class_signature = {
++    pcsig_self : core_type;
++    pcsig_fields : class_type_field list;
++    pcsig_loc : Location.t;
++  }
++
++and class_type_field = {
++    pctf_desc : class_type_field_desc;
++    pctf_loc : Location.t;
++  }
++
++and class_type_field_desc =
++    Pctf_inher of class_type
++  | Pctf_val of (string * mutable_flag * virtual_flag * core_type)
++  | Pctf_virt  of (string * private_flag * core_type)
++  | Pctf_meth  of (string * private_flag * core_type)
++  | Pctf_cstr  of (core_type * core_type)
++
++and class_description = class_type class_infos
++
++and class_type_declaration = class_type class_infos
++
++(* Value expressions for the class language *)
++
++and class_expr =
++  { pcl_desc: class_expr_desc;
++    pcl_loc: Location.t }
++
++and class_expr_desc =
++    Pcl_constr of Longident.t loc * core_type list
++  | Pcl_structure of class_structure
++  | Pcl_fun of label * expression option * pattern * class_expr
++  | Pcl_apply of class_expr * (label * expression) list
++  | Pcl_let of rec_flag * (pattern * expression) list * class_expr
++  | Pcl_constraint of class_expr * class_type
++
++and class_structure = {
++    pcstr_pat : pattern;
++    pcstr_fields :  class_field list;
++  }
++
++and class_field = {
++    pcf_desc : class_field_desc;
++    pcf_loc : Location.t;
++  }
++
++and class_field_desc =
++    Pcf_inher of override_flag * class_expr * string option
++  | Pcf_valvirt of (string loc * mutable_flag * core_type)
++  | Pcf_val of (string loc * mutable_flag * override_flag * expression)
++  | Pcf_virt  of (string loc * private_flag * core_type)
++  | Pcf_meth of (string loc * private_flag *override_flag * expression)
++  | Pcf_constr  of (core_type * core_type)
++  | Pcf_init  of expression
++
++and class_declaration = class_expr class_infos
++
++(* Type expressions for the module language *)
++
++and module_type =
++  { pmty_desc: module_type_desc;
++    pmty_loc: Location.t }
++
++and module_type_desc =
++    Pmty_ident of Longident.t loc
++  | Pmty_signature of signature
++  | Pmty_functor of string loc * module_type * module_type
++  | Pmty_with of module_type * (Longident.t loc * with_constraint) list
++  | Pmty_typeof of module_expr
++
++and signature = signature_item list
++
++and signature_item =
++  { psig_desc: signature_item_desc;
++    psig_loc: Location.t }
++
++and signature_item_desc =
++    Psig_value of string loc * value_description
++  | Psig_type of (string loc * type_declaration) list
++  | Psig_exception of string loc * exception_declaration
++  | Psig_module of string loc * module_type
++  | Psig_recmodule of (string loc * module_type) list
++  | Psig_modtype of string loc * modtype_declaration
++  | Psig_open of Longident.t loc
++  | Psig_include of module_type
++  | Psig_class of class_description list
++  | Psig_class_type of class_type_declaration list
++
++and modtype_declaration =
++    Pmodtype_abstract
++  | Pmodtype_manifest of module_type
++
++and with_constraint =
++    Pwith_type of type_declaration
++  | Pwith_module of Longident.t loc
++  | Pwith_typesubst of type_declaration
++  | Pwith_modsubst of Longident.t loc
++
++(* Value expressions for the module language *)
++
++and module_expr =
++  { pmod_desc: module_expr_desc;
++    pmod_loc: Location.t }
++
++and module_expr_desc =
++    Pmod_ident of Longident.t loc
++  | Pmod_structure of structure
++  | Pmod_functor of string loc * module_type * module_expr
++  | Pmod_apply of module_expr * module_expr
++  | Pmod_constraint of module_expr * module_type
++  | Pmod_unpack of expression
++
++and structure = structure_item list
++
++and structure_item =
++  { pstr_desc: structure_item_desc;
++    pstr_loc: Location.t }
++
++and structure_item_desc =
++    Pstr_eval of expression
++  | Pstr_value of rec_flag * (pattern * expression) list
++  | Pstr_primitive of string loc * value_description
++  | Pstr_type of (string loc * type_declaration) list
++  | Pstr_exception of string loc * exception_declaration
++  | Pstr_exn_rebind of string loc * Longident.t loc
++  | Pstr_module of string loc * module_expr
++  | Pstr_recmodule of (string loc * module_type * module_expr) list
++  | Pstr_modtype of string loc * module_type
++  | Pstr_open of Longident.t loc
++  | Pstr_class of class_declaration list
++  | Pstr_class_type of class_type_declaration list
++  | Pstr_include of module_expr
++
++(* Toplevel phrases *)
++
++type toplevel_phrase =
++    Ptop_def of structure
++  | Ptop_dir of string * directive_argument
++
++and directive_argument =
++    Pdir_none
++  | Pdir_string of string
++  | Pdir_int of int
++  | Pdir_ident of Longident.t
++  | Pdir_bool of bool
+diff -N -r -u camlp5-6.06.orig/ocaml_stuff/4.00.2/utils/.cvsignore camlp5-6.06/ocaml_stuff/4.00.2/utils/.cvsignore
+--- camlp5-6.06.orig/ocaml_stuff/4.00.2/utils/.cvsignore	1970-01-01 01:00:00.000000000 +0100
++++ camlp5-6.06/ocaml_stuff/4.00.2/utils/.cvsignore	2013-03-06 14:44:56.000000000 +0100
+@@ -0,0 +1 @@
++*.cm[oix]
+diff -N -r -u camlp5-6.06.orig/ocaml_stuff/4.00.2/utils/.depend camlp5-6.06/ocaml_stuff/4.00.2/utils/.depend
+--- camlp5-6.06.orig/ocaml_stuff/4.00.2/utils/.depend	1970-01-01 01:00:00.000000000 +0100
++++ camlp5-6.06/ocaml_stuff/4.00.2/utils/.depend	2013-03-06 14:44:56.000000000 +0100
+@@ -0,0 +1,2 @@
++pconfig.cmo: pconfig.cmi
++pconfig.cmx: pconfig.cmi
+diff -N -r -u camlp5-6.06.orig/ocaml_stuff/4.00.2/utils/Makefile camlp5-6.06/ocaml_stuff/4.00.2/utils/Makefile
+--- camlp5-6.06.orig/ocaml_stuff/4.00.2/utils/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ camlp5-6.06/ocaml_stuff/4.00.2/utils/Makefile	2013-03-06 14:44:56.000000000 +0100
+@@ -0,0 +1,27 @@
++# Id
++
++FILES=warnings.cmi pconfig.cmo
++INCL=
++
++all: $(FILES)
++
++opt: pconfig.cmx
++
++clean:
++	rm -f *.cm[oix] *.o
++
++depend:
++	ocamldep $(INCL) *.ml* | sed -e 's/  *$$//' > .depend
++
++.SUFFIXES: .mli .cmi .ml .cmo .cmx
++
++.mli.cmi:
++	$(OCAMLN)c $(INCL) -c $<
++
++.ml.cmo:
++	$(OCAMLN)c $(INCL) -c $<
++
++.ml.cmx:
++	$(OCAMLN)opt $(INCL) -c $<
++
++include .depend
+diff -N -r -u camlp5-6.06.orig/ocaml_stuff/4.00.2/utils/pconfig.ml camlp5-6.06/ocaml_stuff/4.00.2/utils/pconfig.ml
+--- camlp5-6.06.orig/ocaml_stuff/4.00.2/utils/pconfig.ml	1970-01-01 01:00:00.000000000 +0100
++++ camlp5-6.06/ocaml_stuff/4.00.2/utils/pconfig.ml	2013-03-06 14:44:56.000000000 +0100
+@@ -0,0 +1,4 @@
++let ocaml_version = "4.00.2"
++let ocaml_name = "ocaml"
++let ast_impl_magic_number = "Caml1999M015"
++let ast_intf_magic_number = "Caml1999N014"
+diff -N -r -u camlp5-6.06.orig/ocaml_stuff/4.00.2/utils/pconfig.mli camlp5-6.06/ocaml_stuff/4.00.2/utils/pconfig.mli
+--- camlp5-6.06.orig/ocaml_stuff/4.00.2/utils/pconfig.mli	1970-01-01 01:00:00.000000000 +0100
++++ camlp5-6.06/ocaml_stuff/4.00.2/utils/pconfig.mli	2013-03-06 14:44:56.000000000 +0100
+@@ -0,0 +1,4 @@
++val ocaml_version : string
++val ocaml_name : string
++val ast_impl_magic_number : string
++val ast_intf_magic_number : string
+diff -N -r -u camlp5-6.06.orig/ocaml_stuff/4.00.2/utils/warnings.mli camlp5-6.06/ocaml_stuff/4.00.2/utils/warnings.mli
+--- camlp5-6.06.orig/ocaml_stuff/4.00.2/utils/warnings.mli	1970-01-01 01:00:00.000000000 +0100
++++ camlp5-6.06/ocaml_stuff/4.00.2/utils/warnings.mli	2013-03-06 14:44:56.000000000 +0100
+@@ -0,0 +1,75 @@
++(***********************************************************************)
++(*                                                                     *)
++(*                                OCaml                                *)
++(*                                                                     *)
++(*            Pierre Weis && Damien Doligez, INRIA Rocquencourt        *)
++(*                                                                     *)
++(*  Copyright 1998 Institut National de Recherche en Informatique et   *)
++(*  en Automatique.  All rights reserved.  This file is distributed    *)
++(*  under the terms of the Q Public License version 1.0.               *)
++(*                                                                     *)
++(***********************************************************************)
++
++(* Id *)
++
++open Format
++
++type t =
++  | Comment_start                           (*  1 *)
++  | Comment_not_end                         (*  2 *)
++  | Deprecated                              (*  3 *)
++  | Fragile_match of string                 (*  4 *)
++  | Partial_application                     (*  5 *)
++  | Labels_omitted                          (*  6 *)
++  | Method_override of string list          (*  7 *)
++  | Partial_match of string                 (*  8 *)
++  | Non_closed_record_pattern of string     (*  9 *)
++  | Statement_type                          (* 10 *)
++  | Unused_match                            (* 11 *)
++  | Unused_pat                              (* 12 *)
++  | Instance_variable_override of string list (* 13 *)
++  | Illegal_backslash                       (* 14 *)
++  | Implicit_public_methods of string list  (* 15 *)
++  | Unerasable_optional_argument            (* 16 *)
++  | Undeclared_virtual_method of string     (* 17 *)
++  | Not_principal of string                 (* 18 *)
++  | Without_principality of string          (* 19 *)
++  | Unused_argument                         (* 20 *)
++  | Nonreturning_statement                  (* 21 *)
++  | Camlp4 of string                        (* 22 *)
++  | Useless_record_with                     (* 23 *)
++  | Bad_module_name of string               (* 24 *)
++  | All_clauses_guarded                     (* 25 *)
++  | Unused_var of string                    (* 26 *)
++  | Unused_var_strict of string             (* 27 *)
++  | Wildcard_arg_to_constant_constr         (* 28 *)
++  | Eol_in_string                           (* 29 *)
++  | Duplicate_definitions of string * string * string * string (*30 *)
++  | Multiple_definition of string * string * string (* 31 *)
++  | Unused_value_declaration of string      (* 32 *)
++  | Unused_open of string                   (* 33 *)
++  | Unused_type_declaration of string       (* 34 *)
++  | Unused_for_index of string              (* 35 *)
++  | Unused_ancestor of string               (* 36 *)
++  | Unused_constructor of string * bool * bool  (* 37 *)
++  | Unused_exception of string * bool       (* 38 *)
++  | Unused_rec_flag                         (* 39 *)
++;;
++
++val parse_options : bool -> string -> unit;;
++
++val is_active : t -> bool;;
++val is_error : t -> bool;;
++
++val defaults_w : string;;
++val defaults_warn_error : string;;
++
++val print : formatter -> t -> int;;
++  (* returns the number of newlines in the printed string *)
++
++
++exception Errors of int;;
++
++val check_fatal : unit -> unit;;
++
++val help_warnings: unit -> unit
+diff -r -u -N camlp5-6.06.orig/ocaml_src/lib/versdep/4.00.2.ml camlp5-6.06/ocaml_src/lib/versdep/4.00.2.ml
+--- camlp5-6.06.orig/ocaml_src/lib/versdep/4.00.2.ml	1970-01-01 01:00:00.000000000 +0100
++++ camlp5-6.06/ocaml_src/lib/versdep/4.00.2.ml	2012-07-31 16:52:22.000000000 +0200
+@@ -0,0 +1,465 @@
++(* camlp5r pa_macro.cmo *)
++(* File generated by program: edit only if it does not compile. *)
++(* Copyright (c) INRIA 2007-2012 *)
++
++open Parsetree;;
++open Longident;;
++open Asttypes;;
++
++type ('a, 'b) choice =
++    Left of 'a
++  | Right of 'b
++;;
++
++let sys_ocaml_version = Sys.ocaml_version;;
++
++let ocaml_location (fname, lnum, bolp, lnuml, bolpl, bp, ep) =
++  let loc_at n lnum bolp =
++    {Lexing.pos_fname = if lnum = -1 then "" else fname;
++     Lexing.pos_lnum = lnum; Lexing.pos_bol = bolp; Lexing.pos_cnum = n}
++  in
++  {Location.loc_start = loc_at bp lnum bolp;
++   Location.loc_end = loc_at ep lnuml bolpl;
++   Location.loc_ghost = bp = 0 && ep = 0}
++;;
++
++let loc_none =
++  let loc =
++    {Lexing.pos_fname = "_none_"; Lexing.pos_lnum = 1; Lexing.pos_bol = 0;
++     Lexing.pos_cnum = -1}
++  in
++  {Location.loc_start = loc; Location.loc_end = loc;
++   Location.loc_ghost = true}
++;;
++
++let mkloc loc txt = {Location.txt = txt; Location.loc = loc};;
++let mknoloc txt = mkloc loc_none txt;;
++
++let ocaml_id_or_li_of_string_list loc sl =
++  let mkli s =
++    let rec loop f =
++      function
++        i :: il -> loop (fun s -> Ldot (f i, s)) il
++      | [] -> f s
++    in
++    loop (fun s -> Lident s)
++  in
++  match List.rev sl with
++    [] -> None
++  | s :: sl -> Some (mkli s (List.rev sl))
++;;
++
++let list_map_check f l =
++  let rec loop rev_l =
++    function
++      x :: l ->
++        begin match f x with
++          Some s -> loop (s :: rev_l) l
++        | None -> None
++        end
++    | [] -> Some (List.rev rev_l)
++  in
++  loop [] l
++;;
++
++let ocaml_value_description t p =
++  {pval_type = t; pval_prim = p; pval_loc = t.ptyp_loc}
++;;
++
++let ocaml_class_type_field loc ctfd = {pctf_desc = ctfd; pctf_loc = loc};;
++
++let ocaml_class_field loc cfd = {pcf_desc = cfd; pcf_loc = loc};;
++
++let ocaml_type_declaration params cl tk pf tm loc variance =
++  match list_map_check (fun s_opt -> s_opt) params with
++    Some params ->
++      let params = List.map (fun os -> Some (mknoloc os)) params in
++      Right
++        {ptype_params = params; ptype_cstrs = cl; ptype_kind = tk;
++         ptype_private = pf; ptype_manifest = tm; ptype_loc = loc;
++         ptype_variance = variance}
++  | None -> Left "no '_' type param in this ocaml version"
++;;
++
++let ocaml_class_type = Some (fun d loc -> {pcty_desc = d; pcty_loc = loc});;
++
++let ocaml_class_expr = Some (fun d loc -> {pcl_desc = d; pcl_loc = loc});;
++
++let ocaml_class_structure p cil = {pcstr_pat = p; pcstr_fields = cil};;
++
++let ocaml_pmty_ident loc li = Pmty_ident (mkloc loc li);;
++
++let ocaml_pmty_functor sloc s mt1 mt2 =
++  Pmty_functor (mkloc sloc s, mt1, mt2)
++;;
++
++let ocaml_pmty_typeof = Some (fun me -> Pmty_typeof me);;
++
++let ocaml_pmty_with mt lcl =
++  let lcl = List.map (fun (s, c) -> mknoloc s, c) lcl in Pmty_with (mt, lcl)
++;;
++
++let ocaml_ptype_abstract = Ptype_abstract;;
++
++let ocaml_ptype_record ltl priv =
++  Ptype_record
++    (List.map (fun (s, mf, ct, loc) -> mkloc loc s, mf, ct, loc) ltl)
++;;
++
++let ocaml_ptype_variant ctl priv =
++  try
++    let ctl =
++      List.map
++        (fun (c, tl, rto, loc) ->
++           if rto <> None then raise Exit else mknoloc c, tl, None, loc)
++        ctl
++    in
++    Some (Ptype_variant ctl)
++  with Exit -> None
++;;
++
++let ocaml_ptyp_arrow lab t1 t2 = Ptyp_arrow (lab, t1, t2);;
++
++let ocaml_ptyp_class li tl ll = Ptyp_class (mknoloc li, tl, ll);;
++
++let ocaml_ptyp_constr li tl = Ptyp_constr (mknoloc li, tl);;
++
++let ocaml_ptyp_package = Some (fun pt -> Ptyp_package pt);;
++
++let ocaml_ptyp_poly = Some (fun cl t -> Ptyp_poly (cl, t));;
++
++let ocaml_ptyp_variant catl clos sl_opt =
++  let catl =
++    List.map
++      (function
++         Left (c, a, tl) -> Rtag (c, a, tl)
++       | Right t -> Rinherit t)
++      catl
++  in
++  Some (Ptyp_variant (catl, clos, sl_opt))
++;;
++
++let ocaml_package_type li ltl =
++  mknoloc li, List.map (fun (li, t) -> mkloc t.ptyp_loc li, t) ltl
++;;
++
++let ocaml_const_int32 = Some (fun s -> Const_int32 (Int32.of_string s));;
++
++let ocaml_const_int64 = Some (fun s -> Const_int64 (Int64.of_string s));;
++
++let ocaml_const_nativeint =
++  Some (fun s -> Const_nativeint (Nativeint.of_string s))
++;;
++
++let ocaml_pexp_apply f lel = Pexp_apply (f, lel);;
++
++let ocaml_pexp_assertfalse fname loc = Pexp_assertfalse;;
++
++let ocaml_pexp_assert fname loc e = Pexp_assert e;;
++
++let ocaml_pexp_construct li po chk_arity =
++  Pexp_construct (mknoloc li, po, chk_arity)
++;;
++
++let ocaml_pexp_field e li = Pexp_field (e, mknoloc li);;
++
++let ocaml_pexp_for i e1 e2 df e = Pexp_for (mknoloc i, e1, e2, df, e);;
++
++let ocaml_pexp_function lab eo pel = Pexp_function (lab, eo, pel);;
++
++let ocaml_pexp_lazy = Some (fun e -> Pexp_lazy e);;
++
++let ocaml_pexp_ident li = Pexp_ident (mknoloc li);;
++
++let ocaml_pexp_letmodule =
++  Some (fun i me e -> Pexp_letmodule (mknoloc i, me, e))
++;;
++
++let ocaml_pexp_new loc li = Pexp_new (mkloc loc li);;
++
++let ocaml_pexp_newtype = Some (fun s e -> Pexp_newtype (s, e));;
++
++let ocaml_pexp_object = Some (fun cs -> Pexp_object cs);;
++
++let ocaml_pexp_open = Some (fun li e -> Pexp_open (mknoloc li, e));;
++
++let ocaml_pexp_override sel =
++  let sel = List.map (fun (s, e) -> mknoloc s, e) sel in Pexp_override sel
++;;
++
++let ocaml_pexp_pack : ('a -> 'b -> 'c, 'd) choice option =
++  Some (Right ((fun me -> Pexp_pack me), (fun pt -> Ptyp_package pt)))
++;;
++
++let ocaml_pexp_poly = Some (fun e t -> Pexp_poly (e, t));;
++
++let ocaml_pexp_record lel eo =
++  let lel = List.map (fun (li, loc, e) -> mkloc loc li, e) lel in
++  Pexp_record (lel, eo)
++;;
++
++let ocaml_pexp_setinstvar s e = Pexp_setinstvar (mknoloc s, e);;
++
++let ocaml_pexp_variant =
++  let pexp_variant_pat =
++    function
++      Pexp_variant (lab, eo) -> Some (lab, eo)
++    | _ -> None
++  in
++  let pexp_variant (lab, eo) = Pexp_variant (lab, eo) in
++  Some (pexp_variant_pat, pexp_variant)
++;;
++
++let ocaml_ppat_alias p i iloc = Ppat_alias (p, mkloc iloc i);;
++
++let ocaml_ppat_array = Some (fun pl -> Ppat_array pl);;
++
++let ocaml_ppat_construct li li_loc po chk_arity =
++  Ppat_construct (mkloc li_loc li, po, chk_arity)
++;;
++
++let ocaml_ppat_construct_args =
++  function
++    Ppat_construct (li, po, chk_arity) -> Some (li.txt, li.loc, po, chk_arity)
++  | _ -> None
++;;
++
++let ocaml_ppat_lazy = Some (fun p -> Ppat_lazy p);;
++
++let ocaml_ppat_record lpl is_closed =
++  let lpl = List.map (fun (li, loc, p) -> mkloc loc li, p) lpl in
++  Ppat_record (lpl, (if is_closed then Closed else Open))
++;;
++
++let ocaml_ppat_type = Some (fun loc li -> Ppat_type (mkloc loc li));;
++
++let ocaml_ppat_unpack =
++  Some ((fun loc s -> Ppat_unpack (mkloc loc s)), (fun pt -> Ptyp_package pt))
++;;
++
++let ocaml_ppat_var loc s = Ppat_var (mkloc loc s);;
++
++let ocaml_ppat_variant =
++  let ppat_variant_pat =
++    function
++      Ppat_variant (lab, po) -> Some (lab, po)
++    | _ -> None
++  in
++  let ppat_variant (lab, po) = Ppat_variant (lab, po) in
++  Some (ppat_variant_pat, ppat_variant)
++;;
++
++let ocaml_psig_class_type = Some (fun ctl -> Psig_class_type ctl);;
++
++let ocaml_psig_exception s ed = Psig_exception (mknoloc s, ed);;
++
++let ocaml_psig_module s mt = Psig_module (mknoloc s, mt);;
++
++let ocaml_psig_modtype s mtd = Psig_modtype (mknoloc s, mtd);;
++
++let ocaml_psig_open li = Psig_open (mknoloc li);;
++
++let ocaml_psig_recmodule =
++  let f ntl =
++    let ntl = List.map (fun (s, mt) -> mknoloc s, mt) ntl in
++    Psig_recmodule ntl
++  in
++  Some f
++;;
++
++let ocaml_psig_type stl =
++  let stl = List.map (fun (s, t) -> mknoloc s, t) stl in Psig_type stl
++;;
++
++let ocaml_psig_value s vd = Psig_value (mknoloc s, vd);;
++
++let ocaml_pstr_class_type = Some (fun ctl -> Pstr_class_type ctl);;
++
++let ocaml_pstr_exception s ed = Pstr_exception (mknoloc s, ed);;
++
++let ocaml_pstr_exn_rebind =
++  Some (fun s li -> Pstr_exn_rebind (mknoloc s, mknoloc li))
++;;
++
++let ocaml_pstr_include = Some (fun me -> Pstr_include me);;
++
++let ocaml_pstr_modtype s mt = Pstr_modtype (mknoloc s, mt);;
++
++let ocaml_pstr_module s me = Pstr_module (mknoloc s, me);;
++
++let ocaml_pstr_open li = Pstr_open (mknoloc li);;
++
++let ocaml_pstr_primitive s vd = Pstr_primitive (mknoloc s, vd);;
++
++let ocaml_pstr_recmodule =
++  let f nel =
++    Pstr_recmodule (List.map (fun (s, mt, me) -> mknoloc s, mt, me) nel)
++  in
++  Some f
++;;
++
++let ocaml_pstr_type stl =
++  let stl = List.map (fun (s, t) -> mknoloc s, t) stl in Pstr_type stl
++;;
++
++let ocaml_class_infos =
++  Some
++    (fun virt (sl, sloc) name expr loc variance ->
++       let params = List.map (fun s -> mkloc loc s) sl, sloc in
++       {pci_virt = virt; pci_params = params; pci_name = mkloc loc name;
++        pci_expr = expr; pci_loc = loc; pci_variance = variance})
++;;
++
++let ocaml_pmod_ident li = Pmod_ident (mknoloc li);;
++
++let ocaml_pmod_functor s mt me = Pmod_functor (mknoloc s, mt, me);;
++
++let ocaml_pmod_unpack : ('a -> 'b -> 'c, 'd) choice option =
++  Some (Right ((fun e -> Pmod_unpack e), (fun pt -> Ptyp_package pt)))
++;;
++
++let ocaml_pcf_cstr = Some (fun (t1, t2, loc) -> Pcf_constr (t1, t2));;
++
++let ocaml_pcf_inher ce pb = Pcf_inher (Fresh, ce, pb);;
++
++let ocaml_pcf_init = Some (fun e -> Pcf_init e);;
++
++let ocaml_pcf_meth (s, pf, ovf, e, loc) =
++  let pf = if pf then Private else Public in
++  let ovf = if ovf then Override else Fresh in
++  Pcf_meth (mkloc loc s, pf, ovf, e)
++;;
++
++let ocaml_pcf_val (s, mf, ovf, e, loc) =
++  let mf = if mf then Mutable else Immutable in
++  let ovf = if ovf then Override else Fresh in
++  Pcf_val (mkloc loc s, mf, ovf, e)
++;;
++
++let ocaml_pcf_valvirt =
++  let ocaml_pcf (s, mf, t, loc) =
++    let mf = if mf then Mutable else Immutable in
++    Pcf_valvirt (mkloc loc s, mf, t)
++  in
++  Some ocaml_pcf
++;;
++
++let ocaml_pcf_virt (s, pf, t, loc) = Pcf_virt (mkloc loc s, pf, t);;
++
++let ocaml_pcl_apply = Some (fun ce lel -> Pcl_apply (ce, lel));;
++
++let ocaml_pcl_constr = Some (fun li ctl -> Pcl_constr (mknoloc li, ctl));;
++
++let ocaml_pcl_constraint = Some (fun ce ct -> Pcl_constraint (ce, ct));;
++
++let ocaml_pcl_fun = Some (fun lab ceo p ce -> Pcl_fun (lab, ceo, p, ce));;
++
++let ocaml_pcl_let = Some (fun rf pel ce -> Pcl_let (rf, pel, ce));;
++
++let ocaml_pcl_structure = Some (fun cs -> Pcl_structure cs);;
++
++let ocaml_pctf_cstr = Some (fun (t1, t2, loc) -> Pctf_cstr (t1, t2));;
++
++let ocaml_pctf_meth (s, pf, t, loc) = Pctf_meth (s, pf, t);;
++
++let ocaml_pctf_val (s, mf, t, loc) = Pctf_val (s, mf, Concrete, t);;
++
++let ocaml_pctf_virt (s, pf, t, loc) = Pctf_virt (s, pf, t);;
++
++let ocaml_pcty_constr = Some (fun li ltl -> Pcty_constr (mknoloc li, ltl));;
++
++let ocaml_pcty_fun = Some (fun lab t ct -> Pcty_fun (lab, t, ct));;
++
++let ocaml_pcty_signature =
++  let f (t, ctfl) =
++    let cs = {pcsig_self = t; pcsig_fields = ctfl; pcsig_loc = t.ptyp_loc} in
++    Pcty_signature cs
++  in
++  Some f
++;;
++
++let ocaml_pdir_bool = Some (fun b -> Pdir_bool b);;
++
++let ocaml_pwith_modsubst =
++  Some (fun loc me -> Pwith_modsubst (mkloc loc me))
++;;
++
++let ocaml_pwith_module loc me = Pwith_module (mkloc loc me);;
++
++let ocaml_pwith_typesubst = Some (fun td -> Pwith_typesubst td);;
++
++let module_prefix_can_be_in_first_record_label_only = true;;
++
++let split_or_patterns_with_bindings = false;;
++
++let has_records_with_with = true;;
++
++(* *)
++
++let jocaml_pstr_def : (_ -> _) option = None;;
++
++let jocaml_pexp_def : (_ -> _ -> _) option = None;;
++
++let jocaml_pexp_par : (_ -> _ -> _) option = None;;
++
++let jocaml_pexp_reply : (_ -> _ -> _ -> _) option = None;;
++
++let jocaml_pexp_spawn : (_ -> _) option = None;;
++
++let arg_rest =
++  function
++    Arg.Rest r -> Some r
++  | _ -> None
++;;
++
++let arg_set_string =
++  function
++    Arg.Set_string r -> Some r
++  | _ -> None
++;;
++
++let arg_set_int =
++  function
++    Arg.Set_int r -> Some r
++  | _ -> None
++;;
++
++let arg_set_float =
++  function
++    Arg.Set_float r -> Some r
++  | _ -> None
++;;
++
++let arg_symbol =
++  function
++    Arg.Symbol (s, f) -> Some (s, f)
++  | _ -> None
++;;
++
++let arg_tuple =
++  function
++    Arg.Tuple t -> Some t
++  | _ -> None
++;;
++
++let arg_bool =
++  function
++    Arg.Bool f -> Some f
++  | _ -> None
++;;
++
++let char_escaped = Char.escaped;;
++
++let hashtbl_mem = Hashtbl.mem;;
++
++let list_rev_append = List.rev_append;;
++
++let list_rev_map = List.rev_map;;
++
++let list_sort = List.sort;;
++
++let pervasives_set_binary_mode_out = Pervasives.set_binary_mode_out;;
++
++let printf_ksprintf = Printf.ksprintf;;
++
++let string_contains = String.contains;;

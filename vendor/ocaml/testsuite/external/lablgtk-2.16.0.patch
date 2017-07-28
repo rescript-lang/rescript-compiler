@@ -1,0 +1,22 @@
+--- lablgtk-2.16.0.orig/src/gMenu.ml	2012-08-23 12:37:48.000000000 +0200
++++ lablgtk-2.16.0/src/gMenu.ml	2013-02-18 20:12:27.000000000 +0100
+@@ -87,7 +87,7 @@
+ 
+ class menu_item_skel = [menu_item] pre_menu_item_skel
+ 
+-let pack_item self ~packing ~show =
++let pack_item self ?packing ?show =
+   may packing ~f:(fun f -> (f (self :> menu_item) : unit));
+   if show <> Some false then self#misc#show ();
+   self
+--- lablgtk-2.16.0.orig/src/gFile.ml	2012-08-23 12:37:48.000000000 +0200
++++ lablgtk-2.16.0/src/gFile.ml	2013-02-18 20:13:37.000000000 +0100
+@@ -179,7 +179,7 @@
+ 	 FileChooser.P.file_system_backend backend
+ 	 [ Gobject.param FileChooser.P.action action ]) in
+   let o = new chooser_widget w in
+-  GObj.pack_return o ?packing ?show
++  GObj.pack_return o ~packing ~show
+ 
+ class chooser_button_signals obj = object
+   inherit GContainer.container_signals_impl obj

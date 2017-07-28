@@ -1,0 +1,11 @@
+# Here are some definitions that can be added to the /usr/share/magic
+# database so that the file(1) command recognizes OCaml compiled files.
+# Contributed by Sven Luther.
+0       string  Caml1999        OCaml
+>8      string  X               bytecode executable
+>8      string  I               interface data (.cmi)
+>8      string  O               bytecode object data (.cmo)
+>8      string  A               bytecode library data (.cma)
+>8      string  Y               native object data (.cmx)
+>8      string  Z               native library data (.cmxa)
+>9      string  >\0             (Version %3.3s).

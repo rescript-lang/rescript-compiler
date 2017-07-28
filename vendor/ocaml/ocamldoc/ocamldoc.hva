@@ -1,0 +1,31 @@
+%(***********************************************************************)
+%(*                                                                     *)
+%(*                             OCamldoc                                *)
+%(*                                                                     *)
+%(*            Maxence Guesdon, projet Cristal, INRIA Rocquencourt      *)
+%(*                                                                     *)
+%(*  Copyright 2001 Institut National de Recherche en Informatique et   *)
+%(*  en Automatique.  All rights reserved.  This file is distributed    *)
+%(*  under the terms of the Q Public License version 1.0.               *)
+%(*                                                                     *)
+%(***********************************************************************)
+
+\usepackage{alltt}
+\newenvironment{ocamldoccode}{\begin{alltt}}{\end{alltt}}
+\newenvironment{ocamldocdescription}{\begin{quote}}{\end{quote}}
+\newenvironment{ocamldoccomment}{\begin{quote}}{\end{quote}}
+\newcommand\textbar{|}
+\newcommand\textbackslash{\begin{rawhtml}\\end{rawhtml}}
+\newcommand\textasciicircum{\^{}}
+\newcommand\sharp{#}
+
+\let\ocamldocvspace\vspace
+\newenvironment{ocamldocindent}{\list{}{}\item\relax}{\endlist}
+\newenvironment{ocamldocsigend}
+     {\noindent\quad\texttt{sig}\ocamldocindent}
+     {\endocamldocindent\vskip -\lastskip
+      \noindent\quad\texttt{end}\medskip}
+\newenvironment{ocamldocobjectend}
+     {\noindent\quad\texttt{object}\ocamldocindent}
+     {\endocamldocindent\vskip -\lastskip
+      \noindent\quad\texttt{end}\medskip}

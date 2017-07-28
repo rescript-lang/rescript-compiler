@@ -1,0 +1,23 @@
+
+#                   type 'a visit_action
+type insert
+type 'a local_visit_action
+type ('a, 'result, 'visit_action) context =
+    Local : ('a, 'a * insert, 'a local_visit_action) context
+  | Global : ('a, 'a, 'a visit_action) context
+#           Characters 133-139:
+    | Global -> fun _ -> raise Exit
+      ^^^^^^
+Error: This pattern matches values of type (ex#1, ex#1, visit_action) context
+       but a pattern was expected which matches values of type
+         (ex#0, ex#0 * insert, visit_action) context
+       Type ex#1 is not compatible with type ex#0 
+#           Characters 141-147:
+    | Global -> fun _ -> raise Exit
+      ^^^^^^
+Error: This pattern matches values of type (ex#3, ex#3, visit_action) context
+       but a pattern was expected which matches values of type
+         (ex#2, ex#2 * insert, visit_action) context
+       Type ex#3 is not compatible with type ex#2 
+#           val vexpr : (unit, 'a, 'b) context -> unit -> 'b = <fun>
+# 

@@ -1,0 +1,86 @@
+profiling.cmi :
+tast_iter.cmi : ../typing/typedtree.cmi ../parsing/asttypes.cmi
+untypeast.cmi : ../typing/typedtree.cmi ../typing/path.cmi \
+    ../parsing/parsetree.cmi ../parsing/longident.cmi
+addlabels.cmo : ../parsing/parsetree.cmi ../parsing/parse.cmi \
+    ../parsing/longident.cmi ../parsing/location.cmi ../parsing/asttypes.cmi
+addlabels.cmx : ../parsing/parsetree.cmi ../parsing/parse.cmx \
+    ../parsing/longident.cmx ../parsing/location.cmx ../parsing/asttypes.cmi
+cmt2annot.cmo : untypeast.cmi ../typing/types.cmi ../typing/typedtree.cmi \
+    tast_iter.cmi ../typing/stypes.cmi ../parsing/pprintast.cmi \
+    ../typing/path.cmi ../typing/oprint.cmi ../parsing/location.cmi \
+    ../typing/ident.cmi ../typing/envaux.cmi ../typing/env.cmi \
+    ../utils/config.cmi ../typing/cmt_format.cmi ../parsing/asttypes.cmi \
+    ../typing/annot.cmi
+cmt2annot.cmx : untypeast.cmx ../typing/types.cmx ../typing/typedtree.cmx \
+    tast_iter.cmx ../typing/stypes.cmx ../parsing/pprintast.cmx \
+    ../typing/path.cmx ../typing/oprint.cmx ../parsing/location.cmx \
+    ../typing/ident.cmx ../typing/envaux.cmx ../typing/env.cmx \
+    ../utils/config.cmx ../typing/cmt_format.cmx ../parsing/asttypes.cmi \
+    ../typing/annot.cmi
+cvt_emit.cmo :
+cvt_emit.cmx :
+dumpobj.cmo : ../utils/tbl.cmi opnames.cmo ../bytecomp/opcodes.cmo \
+    ../parsing/location.cmi ../bytecomp/lambda.cmi ../bytecomp/instruct.cmi \
+    ../typing/ident.cmi ../utils/config.cmi ../bytecomp/cmo_format.cmi \
+    ../bytecomp/bytesections.cmi ../parsing/asttypes.cmi
+dumpobj.cmx : ../utils/tbl.cmx opnames.cmx ../bytecomp/opcodes.cmx \
+    ../parsing/location.cmx ../bytecomp/lambda.cmx ../bytecomp/instruct.cmx \
+    ../typing/ident.cmx ../utils/config.cmx ../bytecomp/cmo_format.cmi \
+    ../bytecomp/bytesections.cmx ../parsing/asttypes.cmi
+eqparsetree.cmo : ../parsing/parsetree.cmi ../parsing/longident.cmi \
+    ../parsing/location.cmi ../parsing/asttypes.cmi
+eqparsetree.cmx : ../parsing/parsetree.cmi ../parsing/longident.cmx \
+    ../parsing/location.cmx ../parsing/asttypes.cmi
+objinfo.cmo : ../asmcomp/printclambda.cmi ../utils/misc.cmi \
+    ../utils/config.cmi ../asmcomp/cmx_format.cmi ../typing/cmt_format.cmi \
+    ../bytecomp/cmo_format.cmi ../typing/cmi_format.cmi \
+    ../bytecomp/bytesections.cmi
+objinfo.cmx : ../asmcomp/printclambda.cmx ../utils/misc.cmx \
+    ../utils/config.cmx ../asmcomp/cmx_format.cmi ../typing/cmt_format.cmx \
+    ../bytecomp/cmo_format.cmi ../typing/cmi_format.cmx \
+    ../bytecomp/bytesections.cmx
+ocaml299to3.cmo :
+ocaml299to3.cmx :
+ocamlcp.cmo : ../driver/main_args.cmi
+ocamlcp.cmx : ../driver/main_args.cmx
+ocamldep.cmo : ../driver/pparse.cmi ../parsing/parsetree.cmi \
+    ../parsing/parse.cmi ../utils/misc.cmi ../parsing/longident.cmi \
+    ../parsing/location.cmi ../parsing/depend.cmi ../utils/config.cmi \
+    ../driver/compenv.cmi ../utils/clflags.cmi
+ocamldep.cmx : ../driver/pparse.cmx ../parsing/parsetree.cmi \
+    ../parsing/parse.cmx ../utils/misc.cmx ../parsing/longident.cmx \
+    ../parsing/location.cmx ../parsing/depend.cmx ../utils/config.cmx \
+    ../driver/compenv.cmx ../utils/clflags.cmx
+ocamlmklib.cmo : ocamlmklibconfig.cmo
+ocamlmklib.cmx : ocamlmklibconfig.cmx
+ocamlmklibconfig.cmo :
+ocamlmklibconfig.cmx :
+ocamlmktop.cmo : ../utils/ccomp.cmi
+ocamlmktop.cmx : ../utils/ccomp.cmx
+ocamloptp.cmo : ../driver/main_args.cmi
+ocamloptp.cmx : ../driver/main_args.cmx
+ocamlprof.cmo : ../utils/warnings.cmi ../parsing/parsetree.cmi \
+    ../parsing/parse.cmi ../parsing/location.cmi
+ocamlprof.cmx : ../utils/warnings.cmx ../parsing/parsetree.cmi \
+    ../parsing/parse.cmx ../parsing/location.cmx
+opnames.cmo :
+opnames.cmx :
+primreq.cmo : ../utils/config.cmi ../bytecomp/cmo_format.cmi
+primreq.cmx : ../utils/config.cmx ../bytecomp/cmo_format.cmi
+profiling.cmo : profiling.cmi
+profiling.cmx : profiling.cmi
+read_cmt.cmo : ../typing/cmt_format.cmi cmt2annot.cmo ../utils/clflags.cmi
+read_cmt.cmx : ../typing/cmt_format.cmx cmt2annot.cmx ../utils/clflags.cmx
+scrapelabels.cmo :
+scrapelabels.cmx :
+tast_iter.cmo : ../typing/typedtree.cmi ../utils/misc.cmi tast_iter.cmi
+tast_iter.cmx : ../typing/typedtree.cmx ../utils/misc.cmx tast_iter.cmi
+untypeast.cmo : ../typing/typedtree.cmi ../typing/path.cmi \
+    ../parsing/parsetree.cmi ../utils/misc.cmi ../parsing/longident.cmi \
+    ../typing/ident.cmi ../parsing/asttypes.cmi ../parsing/ast_helper.cmi \
+    untypeast.cmi
+untypeast.cmx : ../typing/typedtree.cmx ../typing/path.cmx \
+    ../parsing/parsetree.cmi ../utils/misc.cmx ../parsing/longident.cmx \
+    ../typing/ident.cmx ../parsing/asttypes.cmi ../parsing/ast_helper.cmx \
+    untypeast.cmi

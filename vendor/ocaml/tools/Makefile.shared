@@ -1,0 +1,339 @@
+#########################################################################
+#                                                                       #
+#                                 OCaml                                 #
+#                                                                       #
+#            Xavier Leroy, projet Cristal, INRIA Rocquencourt           #
+#                                                                       #
+#   Copyright 1999 Institut National de Recherche en Informatique et    #
+#   en Automatique.  All rights reserved.  This file is distributed     #
+#   under the terms of the Q Public License version 1.0.                #
+#                                                                       #
+#########################################################################
+
+include ../config/Makefile
+CAMLRUN ?= ../boot/ocamlrun
+CAMLYACC ?= ../boot/ocamlyacc
+
+CAMLC=$(CAMLRUN) ../boot/ocamlc -nostdlib -I ../boot
+CAMLOPT=$(CAMLRUN) ../ocamlopt -nostdlib -I ../stdlib
+CAMLLEX=$(CAMLRUN) ../boot/ocamllex
+INCLUDES=-I ../utils -I ../parsing -I ../typing -I ../bytecomp -I ../asmcomp \
+	 -I ../driver -I ../toplevel
+COMPFLAGS= -strict-sequence -w +27+32..39 -warn-error A -safe-string $(INCLUDES)
+LINKFLAGS=$(INCLUDES)
+
+all: ocamldep ocamlprof ocamlcp ocamloptp ocamlmktop ocamlmklib dumpobj \
+     objinfo read_cmt
+
+all: tast_iter.cmo
+
+# scrapelabels addlabels
+
+.PHONY: all
+
+opt.opt: ocamldep.opt read_cmt.opt
+.PHONY: opt.opt
+
+# The dependency generator
+
+CAMLDEP_OBJ= ocamldep.cmo
+CAMLDEP_IMPORTS=misc.cmo config.cmo clflags.cmo terminfo.cmo \
+  warnings.cmo location.cmo longident.cmo docstrings.cmo \
+  syntaxerr.cmo ast_helper.cmo parser.cmo lexer.cmo parse.cmo \
+  ccomp.cmo ast_mapper.cmo pparse.cmo compenv.cmo depend.cmo
+
+ocamldep:  $(CAMLDEP_OBJ)
+	$(CAMLC) $(LINKFLAGS) -compat-32 -o ocamldep $(CAMLDEP_IMPORTS) $(CAMLDEP_OBJ)
+
+ocamldep.opt:  $(CAMLDEP_OBJ:.cmo=.cmx)
+	$(CAMLOPT) $(LINKFLAGS) -o ocamldep.opt $(CAMLDEP_IMPORTS:.cmo=.cmx) \
+	           $(CAMLDEP_OBJ:.cmo=.cmx)
+
+# ocamldep is precious: sometimes we are stuck in the middle of a
+# bootstrap and we need to remake the dependencies
+clean::
+	if test -f ocamldep; then mv -f ocamldep ocamldep.bak; else :; fi
+	rm -f ocamldep.opt
+
+
+INSTALL_BINDIR=$(DESTDIR)$(BINDIR)
+INSTALL_LIBDIR=$(DESTDIR)$(LIBDIR)
+
+install::
+	cp ocamldep $(INSTALL_BINDIR)/ocamldep$(EXE)
+	if test -f ocamldep.opt; \
+	  then cp ocamldep.opt $(INSTALL_BINDIR)/ocamldep.opt$(EXE); else :; fi
+
+# The profiler
+
+CSLPROF=ocamlprof.cmo
+CSLPROF_IMPORTS=misc.cmo config.cmo clflags.cmo terminfo.cmo \
+  warnings.cmo location.cmo longident.cmo docstrings.cmo \
+  syntaxerr.cmo ast_helper.cmo parser.cmo lexer.cmo parse.cmo
+
+ocamlprof: $(CSLPROF) profiling.cmo
+	$(CAMLC) $(LINKFLAGS) -o ocamlprof $(CSLPROF_IMPORTS) $(CSLPROF)
+
+ocamlcp: ocamlcp.cmo
+	$(CAMLC) $(LINKFLAGS) -o ocamlcp warnings.cmo main_args.cmo ocamlcp.cmo
+
+ocamloptp: ocamloptp.cmo
+	$(CAMLC) $(LINKFLAGS) -o ocamloptp warnings.cmo main_args.cmo \
+	         ocamloptp.cmo
+
+opt:: profiling.cmx
+
+install::
+	cp ocamlprof $(INSTALL_BINDIR)/ocamlprof$(EXE)
+	cp ocamlcp $(INSTALL_BINDIR)/ocamlcp$(EXE)
+	cp ocamloptp $(INSTALL_BINDIR)/ocamloptp$(EXE)
+	cp profiling.cmi profiling.cmo $(INSTALL_LIBDIR)
+
+installopt::
+	cp profiling.cmx profiling.$(O) $(INSTALL_LIBDIR)
+
+clean::
+	rm -f ocamlprof ocamlcp ocamloptp
+
+
+# To help building mixed-mode libraries (OCaml + C)
+
+ocamlmklib: ocamlmklibconfig.cmo ocamlmklib.cmo
+	$(CAMLC) $(LINKFLAGS) -o ocamlmklib ocamlmklibconfig.cmo ocamlmklib.cmo
+
+install::
+	cp ocamlmklib $(INSTALL_BINDIR)/ocamlmklib$(EXE)
+
+clean::
+	rm -f ocamlmklib
+
+ocamlmklibconfig.ml: ../config/Makefile
+	(echo 'let bindir = "$(BINDIR)"'; \
+         echo 'let ext_lib = "$(EXT_LIB)"'; \
+         echo 'let ext_dll = "$(EXT_DLL)"'; \
+         echo 'let supports_shared_libraries = $(SUPPORTS_SHARED_LIBRARIES)';\
+         echo 'let mkdll = "$(MKDLL)"'; \
+         echo 'let byteccrpath = "$(BYTECCRPATH)"'; \
+         echo 'let nativeccrpath = "$(NATIVECCRPATH)"'; \
+         echo 'let mksharedlibrpath = "$(MKSHAREDLIBRPATH)"'; \
+         echo 'let toolpref = "$(TOOLPREF)"'; \
+         sed -n -e 's/^#ml //p' ../config/Makefile) \
+        > ocamlmklibconfig.ml
+
+beforedepend:: ocamlmklibconfig.ml
+
+clean::
+	rm -f ocamlmklibconfig.ml
+
+# Converter olabl/ocaml 2.99 to ocaml 3
+
+OCAML299TO3= lexer299.cmo ocaml299to3.cmo
+LIBRARY3= misc.cmo warnings.cmo location.cmo
+
+ocaml299to3: $(OCAML299TO3)
+	$(CAMLC) $(LINKFLAGS) -o ocaml299to3 $(LIBRARY3) $(OCAML299TO3)
+
+lexer299.ml: lexer299.mll
+	$(CAMLLEX) lexer299.mll
+
+#install::
+#	cp ocaml299to3 $(INSTALL_BINDIR)/ocaml299to3$(EXE)
+
+clean::
+	rm -f ocaml299to3 lexer299.ml
+
+# Label remover for interface files (upgrade 3.02 to 3.03)
+
+SCRAPELABELS= lexer301.cmo scrapelabels.cmo
+
+scrapelabels: $(SCRAPELABELS)
+	$(CAMLC) $(LINKFLAGS) -o scrapelabels $(LIBRARY3) $(SCRAPELABELS)
+
+lexer301.ml: lexer301.mll
+	$(CAMLLEX) lexer301.mll
+
+#install::
+#	cp scrapelabels $(INSTALL_LIBDIR)
+
+clean::
+	rm -f scrapelabels lexer301.ml
+
+# Insert labels following an interface file (upgrade 3.02 to 3.03)
+
+ADDLABELS_IMPORTS=misc.cmo config.cmo clflags.cmo terminfo.cmo \
+  warnings.cmo location.cmo longident.cmo docstrings.cmo \
+  syntaxerr.cmo ast_helper.cmo parser.cmo lexer.cmo parse.cmo
+
+addlabels: addlabels.cmo
+	$(CAMLC) $(LINKFLAGS) -w sl -o addlabels \
+		$(ADDLABELS_IMPORTS) addlabels.cmo
+
+#install::
+#	cp addlabels $(INSTALL_LIBDIR)
+
+clean::
+	rm -f addlabels
+
+# The preprocessor for asm generators
+
+CVT_EMIT=cvt_emit.cmo
+
+cvt_emit: $(CVT_EMIT)
+	$(CAMLC) $(LINKFLAGS) -o cvt_emit $(CVT_EMIT)
+
+# cvt_emit is precious: sometimes we are stuck in the middle of a
+# bootstrap and we need to remake the dependencies
+clean::
+	if test -f cvt_emit; then mv -f cvt_emit cvt_emit.bak; else :; fi
+
+cvt_emit.ml: cvt_emit.mll
+	$(CAMLLEX) cvt_emit.mll
+
+clean::
+	rm -f cvt_emit.ml
+
+beforedepend:: cvt_emit.ml
+
+
+# Reading cmt files
+
+READ_CMT= \
+          ../utils/misc.cmo \
+          ../utils/warnings.cmo \
+          ../utils/tbl.cmo \
+          ../utils/consistbl.cmo \
+          ../utils/config.cmo \
+          ../utils/clflags.cmo \
+          ../parsing/location.cmo \
+          ../parsing/longident.cmo \
+          ../parsing/docstrings.cmo \
+          ../parsing/lexer.cmo \
+          ../parsing/pprintast.cmo \
+          ../parsing/ast_helper.cmo \
+          ../parsing/ast_mapper.cmo \
+          ../typing/ident.cmo \
+          ../typing/path.cmo \
+          ../typing/types.cmo \
+          ../typing/typedtree.cmo \
+          ../typing/btype.cmo \
+          ../typing/subst.cmo \
+          ../typing/predef.cmo \
+          ../typing/datarepr.cmo \
+          ../typing/cmi_format.cmo \
+          ../typing/env.cmo \
+          ../typing/ctype.cmo \
+          ../typing/oprint.cmo \
+          ../typing/primitive.cmo \
+          ../typing/printtyp.cmo \
+          ../typing/mtype.cmo \
+          ../typing/envaux.cmo \
+          ../typing/typedtreeMap.cmo \
+          ../typing/typedtreeIter.cmo \
+          ../typing/cmt_format.cmo \
+          ../typing/stypes.cmo \
+          \
+          untypeast.cmo \
+          tast_iter.cmo \
+          cmt2annot.cmo read_cmt.cmo
+
+read_cmt: $(READ_CMT)
+	$(CAMLC) $(LINKFLAGS) -o read_cmt $(READ_CMT)
+
+read_cmt.opt: $(READ_CMT:.cmo=.cmx)
+	$(CAMLOPT) $(LINKFLAGS) -o read_cmt.opt $(READ_CMT:.cmo=.cmx)
+
+clean::
+	rm -f read_cmt read_cmt.opt
+
+beforedepend::
+
+# The bytecode disassembler
+
+DUMPOBJ=opnames.cmo dumpobj.cmo
+
+dumpobj: $(DUMPOBJ)
+	$(CAMLC) $(LINKFLAGS) -o dumpobj \
+	         misc.cmo tbl.cmo config.cmo ident.cmo \
+	         opcodes.cmo bytesections.cmo $(DUMPOBJ)
+
+clean::
+	rm -f dumpobj
+
+opnames.ml: ../byterun/caml/instruct.h
+	unset LC_ALL || : ; \
+	unset LC_CTYPE || : ; \
+	unset LC_COLLATE LANG || : ; \
+	sed -e '/\/\*/d' \
+	    -e '/^#/d' \
+	    -e 's/enum \(.*\) {/let names_of_\1 = [|/' \
+	    -e 's/.*};$$/ |]/' \
+	    -e 's/\([A-Z][A-Z_0-9a-z]*\)/"\1"/g' \
+	    -e 's/,/;/g' \
+	../byterun/caml/instruct.h > opnames.ml
+
+clean::
+	rm -f opnames.ml
+
+beforedepend:: opnames.ml
+
+# Display info on compiled files
+
+ifeq "$(CCOMPTYPE)" "msvc"
+CCOUT = -Fe
+else
+EMPTY =
+CCOUT = -o $(EMPTY)
+endif
+
+objinfo_helper$(EXE): objinfo_helper.c ../config/s.h
+	$(BYTECC) $(CCOUT)objinfo_helper$(EXE) $(BYTECCCOMPOPTS) \
+          objinfo_helper.c $(LIBBFD_LINK)
+
+OBJINFO=../compilerlibs/ocamlcommon.cma \
+        ../compilerlibs/ocamlbytecomp.cma \
+        ../asmcomp/printclambda.cmo \
+        objinfo.cmo
+
+objinfo: objinfo_helper$(EXE) $(OBJINFO)
+	$(CAMLC) -o objinfo $(OBJINFO)
+
+install::
+	cp objinfo $(INSTALL_BINDIR)/ocamlobjinfo$(EXE)
+	cp objinfo_helper$(EXE) $(INSTALL_LIBDIR)/objinfo_helper$(EXE)
+
+clean::
+	rm -f objinfo objinfo_helper$(EXE)
+
+# Scan object files for required primitives
+
+PRIMREQ=primreq.cmo
+
+primreq: $(PRIMREQ)
+	$(CAMLC) $(LINKFLAGS) -o primreq config.cmo $(PRIMREQ)
+
+clean::
+	rm -f primreq
+
+# Common stuff
+
+.SUFFIXES:
+.SUFFIXES: .ml .cmo .mli .cmi .cmx
+
+.ml.cmo:
+	$(CAMLC) -c $(COMPFLAGS) $<
+
+.mli.cmi:
+	$(CAMLC) -c $(COMPFLAGS) $<
+
+.ml.cmx:
+	$(CAMLOPT) $(COMPFLAGS) -c $<
+
+clean::
+	rm -f *.cmo *.cmi *.cma *.dll *.so *.lib *.a
+
+depend: beforedepend
+	$(CAMLRUN) ./ocamldep $(INCLUDES) *.mli *.ml > .depend
+
+.PHONY: clean install beforedepend depend
+
+include .depend

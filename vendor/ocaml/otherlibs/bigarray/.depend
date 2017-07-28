@@ -1,0 +1,26 @@
+bigarray_stubs.o: bigarray_stubs.c ../../byterun/caml/alloc.h \
+ ../../byterun/caml/misc.h ../../byterun/caml/config.h \
+ ../../byterun/caml/../../config/m.h ../../byterun/caml/../../config/s.h \
+ ../../byterun/caml/mlvalues.h bigarray.h ../../byterun/caml/config.h \
+ ../../byterun/caml/mlvalues.h ../../byterun/caml/custom.h \
+ ../../byterun/caml/fail.h ../../byterun/caml/intext.h \
+ ../../byterun/caml/io.h ../../byterun/caml/hash.h \
+ ../../byterun/caml/memory.h ../../byterun/caml/gc.h \
+ ../../byterun/caml/major_gc.h ../../byterun/caml/freelist.h \
+ ../../byterun/caml/minor_gc.h ../../byterun/caml/address_class.h
+mmap_unix.o: mmap_unix.c bigarray.h ../../byterun/caml/config.h \
+ ../../byterun/caml/../../config/m.h ../../byterun/caml/../../config/s.h \
+ ../../byterun/caml/mlvalues.h ../../byterun/caml/config.h \
+ ../../byterun/caml/misc.h ../../byterun/caml/custom.h \
+ ../../byterun/caml/mlvalues.h ../../byterun/caml/fail.h \
+ ../../byterun/caml/io.h ../../byterun/caml/sys.h \
+ ../../byterun/caml/signals.h
+mmap_win32.o: mmap_win32.c bigarray.h ../../byterun/caml/config.h \
+ ../../byterun/caml/../../config/m.h ../../byterun/caml/../../config/s.h \
+ ../../byterun/caml/mlvalues.h ../../byterun/caml/config.h \
+ ../../byterun/caml/misc.h ../../byterun/caml/alloc.h \
+ ../../byterun/caml/mlvalues.h ../../byterun/caml/custom.h \
+ ../../byterun/caml/fail.h ../../byterun/caml/sys.h ../unix/unixsupport.h
+bigarray.cmi :
+bigarray.cmo : bigarray.cmi
+bigarray.cmx : bigarray.cmi

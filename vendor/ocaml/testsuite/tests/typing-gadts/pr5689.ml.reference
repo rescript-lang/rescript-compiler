@@ -1,0 +1,27 @@
+
+#               type inkind = [ `Link | `Nonlink ]
+type _ inline_t =
+    Text : string -> [< inkind > `Nonlink ] inline_t
+  | Bold : 'a inline_t list -> 'a inline_t
+  | Link : string -> [< inkind > `Link ] inline_t
+  | Mref : string *
+      [ `Nonlink ] inline_t list -> [< inkind > `Link ] inline_t
+#                 val uppercase : 'a inline_t list -> 'a inline_t list = <fun>
+#             type ast_t =
+    Ast_Text of string
+  | Ast_Bold of ast_t list
+  | Ast_Link of string
+  | Ast_Mref of string * ast_t list
+#                         val inlineseq_from_astseq : ast_t list -> inkind inline_t list = <fun>
+#           type _ linkp = Nonlink : [ `Nonlink ] linkp | Maylink : inkind linkp
+#                           val inlineseq_from_astseq : ast_t list -> inkind inline_t list = <fun>
+#       type _ linkp2 = Kind : 'a linkp -> ([< inkind ] as 'a) linkp2
+#                         Characters 184-192:
+      | (Kind _, Ast_Text txt)    -> Text txt
+                                     ^^^^^^^^
+Error: This expression has type ([< inkind > `Nonlink ] as 'a) inline_t
+       but an expression was expected of type a inline_t
+       Type 'a = [< `Link | `Nonlink > `Nonlink ] is not compatible with type
+         a = [< `Link | `Nonlink ] 
+       Types for tag `Nonlink are incompatible
+# 

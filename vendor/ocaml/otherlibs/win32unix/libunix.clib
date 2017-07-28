@@ -1,0 +1,17 @@
+# Files in this directory
+accept.o bind.o channels.o close.o
+close_on.o connect.o createprocess.o dup.o dup2.o errmsg.o
+getpeername.o getpid.o getsockname.o gettimeofday.o
+link.o listen.o lockf.o lseek.o nonblock.o
+mkdir.o open.o pipe.o read.o rename.o
+select.o sendrecv.o
+shutdown.o sleep.o socket.o sockopt.o startup.o stat.o
+system.o unixsupport.o windir.o winwait.o write.o
+winlist.o winworker.o windbug.o
+
+# Files from the ../unix directory
+access.o addrofstr.o chdir.o chmod.o cst2constr.o
+cstringv.o envir.o execv.o execve.o execvp.o
+exit.o getcwd.o gethost.o gethostname.o getproto.o
+getserv.o gmtime.o putenv.o rmdir.o
+socketaddr.o strofaddr.o time.o unlink.o utimes.o

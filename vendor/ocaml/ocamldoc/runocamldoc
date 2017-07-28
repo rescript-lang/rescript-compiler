@@ -1,0 +1,23 @@
+#!/bin/sh
+
+#######################################################################
+#                                                                     #
+#                                OCaml                                #
+#                                                                     #
+#            Xavier Leroy, projet Cristal, INRIA Rocquencourt         #
+#                                                                     #
+#  Copyright 2002 Institut National de Recherche en Informatique et   #
+#  en Automatique.  All rights reserved.  This file is distributed    #
+#  under the terms of the Q Public License version 1.0.               #
+#                                                                     #
+#######################################################################
+
+case "$1" in
+  true) shift
+        exec ../boot/ocamlrun  -I ../otherlibs/unix -I ../otherlibs/str \
+             ./ocamldoc "$@"
+        ;;
+     *) shift
+        exec ./ocamldoc "$@"
+        ;;
+esac

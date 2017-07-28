@@ -1,0 +1,93 @@
+Index: typing/ctype.ml
+===================================================================
+RCS file: /net/yquem/devel/caml/repository/csl/typing/ctype.ml,v
+retrieving revision 1.201
+diff -u -r1.201 ctype.ml
+--- typing/ctype.ml	5 Apr 2006 02:28:13 -0000	1.201
++++ typing/ctype.ml	17 May 2006 23:48:22 -0000
+@@ -490,6 +490,31 @@
+     unmark_class_signature sign;
+     Some reason
+ 
++(* Variant for checking principality *)
++
++let rec free_nodes_rec ty =
++  let ty = repr ty in
++  if ty.level >= lowest_level then begin
++    if ty.level <= !current_level then raise Exit;
++    ty.level <- pivot_level - ty.level;
++    begin match ty.desc with
++      Tvar ->
++        raise Exit
++    | Tobject (ty, _) ->
++        free_nodes_rec ty
++    | Tfield (_, _, ty1, ty2) ->
++        free_nodes_rec ty1; free_nodes_rec ty2
++    | Tvariant row ->
++        let row = row_repr row in
++        iter_row free_nodes_rec {row with row_bound = []};
++        if not (static_row row) then free_nodes_rec row.row_more
++    | _    ->
++        iter_type_expr free_nodes_rec ty
++    end;
++  end
++
++let has_free_nodes ty =
++  try free_nodes_rec ty; false with Exit -> true
+ 
+                             (**********************)
+                             (*  Type duplication  *)
+Index: typing/ctype.mli
+===================================================================
+RCS file: /net/yquem/devel/caml/repository/csl/typing/ctype.mli,v
+retrieving revision 1.54
+diff -u -r1.54 ctype.mli
+--- typing/ctype.mli	5 Apr 2006 02:28:13 -0000	1.54
++++ typing/ctype.mli	17 May 2006 23:48:22 -0000
+@@ -228,6 +228,9 @@
+ val closed_class:
+         type_expr list -> class_signature -> closed_class_failure option
+         (* Check whether all type variables are bound *)
++val has_free_nodes: type_expr -> bool
++        (* Check whether there are free type variables, or nodes with
++           level lower or equal to !current_level *)
+ 
+ val unalias: type_expr -> type_expr
+ val signature_of_class_type: class_type -> class_signature
+Index: typing/typecore.ml
+===================================================================
+RCS file: /net/yquem/devel/caml/repository/csl/typing/typecore.ml,v
+retrieving revision 1.181
+diff -u -r1.181 typecore.ml
+--- typing/typecore.ml	16 Apr 2006 23:28:22 -0000	1.181
++++ typing/typecore.ml	17 May 2006 23:48:22 -0000
+@@ -1183,12 +1183,29 @@
+             let (ty', force) =
+               Typetexp.transl_simple_type_delayed env sty'
+             in
++            if !Clflags.principal then begin_def ();
+             let arg = type_exp env sarg in
++            let has_fv =
++              if !Clflags.principal then begin
++                end_def ();
++                let b = has_free_nodes arg.exp_type in
++                Ctype.unify env arg.exp_type (newvar ());
++                b
++              end else
++                free_variables arg.exp_type <> []
++            in
+             begin match arg.exp_desc, !self_coercion, (repr ty').desc with
+               Texp_ident(_, {val_kind=Val_self _}), (path,r) :: _,
+               Tconstr(path',_,_) when Path.same path path' ->
+                 r := sexp.pexp_loc :: !r;
+                 force ()
++            | _ when not has_fv ->
++                begin try
++                  let force' = subtype env arg.exp_type ty' in
++                  force (); force' ()
++                with Subtype (tr1, tr2) ->
++                  raise(Error(sexp.pexp_loc, Not_subtype(tr1, tr2)))
++                end
+             | _ ->
+                 let ty, b = enlarge_type env ty' in
+                 force ();

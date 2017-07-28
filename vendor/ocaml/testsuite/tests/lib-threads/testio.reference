@@ -1,0 +1,24 @@
+256-byte chunks, 256-byte chunks
+passed
+4096-byte chunks, 4096-byte chunks
+passed
+65536-byte chunks, 65536-byte chunks
+passed
+256-byte chunks, 4096-byte chunks
+passed
+4096-byte chunks, 256-byte chunks
+passed
+4096-byte chunks, 65536-byte chunks
+passed
+263-byte chunks, 4011-byte chunks
+passed
+613-byte chunks, 1027-byte chunks
+passed
+0...8192 byte chunks
+passed
+line per line, short lines
+passed
+line per line, short and long lines
+passed
+truncated line
+passed

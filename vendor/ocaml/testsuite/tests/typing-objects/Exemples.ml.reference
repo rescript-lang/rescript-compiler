@@ -1,0 +1,360 @@
+
+#           class point :
+  int ->
+  object val mutable x : int method get_x : int method move : int -> unit end
+#   val p : point = <obj>
+#   - : int = 7
+# - : unit = ()
+# - : int = 10
+#   val q : point = <obj>
+#   - : int * int = (10, 17)
+#           class color_point :
+  int ->
+  string ->
+  object
+    val c : string
+    val mutable x : int
+    method color : string
+    method get_x : int
+    method move : int -> unit
+  end
+#   val p' : color_point = <obj>
+#   - : int * string = (5, "red")
+#   val l : point list = [<obj>; <obj>]
+#   val get_x : < get_x : 'a; .. > -> 'a = <fun>
+# val set_x : < set_x : 'a; .. > -> 'a = <fun>
+# - : int list = [10; 5]
+#           Characters 1-96:
+  class ref x_init = object
+    val mutable x = x_init
+    method get = x
+    method set y = x <- y
+  end..
+Error: Some type variables are unbound in this type:
+         class ref :
+           'a ->
+           object
+             val mutable x : 'a
+             method get : 'a
+             method set : 'a -> unit
+           end
+       The method get has type 'a where 'a is unbound
+#           class ref :
+  int ->
+  object val mutable x : int method get : int method set : int -> unit end
+#           class ['a] ref :
+  'a -> object val mutable x : 'a method get : 'a method set : 'a -> unit end
+#   - : int = 2
+#             class ['a] circle :
+  'a ->
+  object
+    constraint 'a = < move : int -> unit; .. >
+    val mutable center : 'a
+    method center : 'a
+    method move : int -> unit
+    method set_center : 'a -> unit
+  end
+#               class ['a] circle :
+  'a ->
+  object
+    constraint 'a = #point
+    val mutable center : 'a
+    method center : 'a
+    method move : int -> unit
+    method set_center : 'a -> unit
+  end
+#   val c : point circle = <obj>
+val c' : color_point circle = <obj>
+#           class ['a] color_circle :
+  'a ->
+  object
+    constraint 'a = #color_point
+    val mutable center : 'a
+    method center : 'a
+    method color : string
+    method move : int -> unit
+    method set_center : 'a -> unit
+  end
+#   Characters 28-29:
+  let c'' = new color_circle p;;
+                             ^
+Error: This expression has type point but an expression was expected of type
+         #color_point
+       The first object type has no method color
+# val c'' : color_point color_circle = <obj>
+#   - : color_point circle = <obj>
+# Characters 0-21:
+  (c'' :> point circle);;                 (* Echec *)
+  ^^^^^^^^^^^^^^^^^^^^^
+Error: Type
+         color_point color_circle =
+           < center : color_point; color : string; move : int -> unit;
+             set_center : color_point -> unit >
+       is not a subtype of
+         point circle =
+           < center : point; move : int -> unit; set_center : point -> unit > 
+       Type point is not a subtype of color_point 
+# Characters 9-55:
+  fun x -> (x : color_point color_circle :> point circle);;
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error: Type
+         color_point color_circle =
+           < center : color_point; color : string; move : int -> unit;
+             set_center : color_point -> unit >
+       is not a subtype of
+         point circle =
+           < center : point; move : int -> unit; set_center : point -> unit > 
+       Type point is not a subtype of color_point 
+#         class printable_point :
+  int ->
+  object
+    val mutable x : int
+    method get_x : int
+    method move : int -> unit
+    method print : unit
+  end
+#   val p : printable_point = <obj>
+# 7- : unit = ()
+#                     Characters 85-102:
+    inherit printable_point y as super
+            ^^^^^^^^^^^^^^^^^
+Warning 13: the following instance variables are overridden by the class printable_point :
+  x
+The behaviour changed in ocaml 3.10 (previous behaviour was hiding.)
+class printable_color_point :
+  int ->
+  string ->
+  object
+    val c : string
+    val mutable x : int
+    method color : string
+    method get_x : int
+    method move : int -> unit
+    method print : unit
+  end
+#   val p' : printable_color_point = <obj>
+# (7, red)- : unit = ()
+#           class functional_point :
+  int ->
+  object ('a) val x : int method get_x : int method move : int -> 'a end
+#   val p : functional_point = <obj>
+#   - : int = 7
+# - : int = 10
+# - : int = 7
+#   - : #functional_point -> functional_point = <fun>
+#                                                                       class virtual ['a] lst :
+  unit ->
+  object
+    method virtual hd : 'a
+    method iter : ('a -> unit) -> unit
+    method map : ('a -> 'a) -> 'a lst
+    method virtual null : bool
+    method print : ('a -> unit) -> unit
+    method virtual tl : 'a lst
+  end
+and ['a] nil :
+  unit ->
+  object
+    method hd : 'a
+    method iter : ('a -> unit) -> unit
+    method map : ('a -> 'a) -> 'a lst
+    method null : bool
+    method print : ('a -> unit) -> unit
+    method tl : 'a lst
+  end
+and ['a] cons :
+  'a ->
+  'a lst ->
+  object
+    val h : 'a
+    val t : 'a lst
+    method hd : 'a
+    method iter : ('a -> unit) -> unit
+    method map : ('a -> 'a) -> 'a lst
+    method null : bool
+    method print : ('a -> unit) -> unit
+    method tl : 'a lst
+  end
+#   val l1 : int lst = <obj>
+#   (3::10::[])- : unit = ()
+#   val l2 : int lst = <obj>
+# (4::11::[])- : unit = ()
+#       val map_list : ('a -> 'b) -> 'a lst -> 'b lst = <fun>
+#   val p1 : printable_color_point lst = <obj>
+# ((3, red)::(10, red)::[])- : unit = ()
+#           class virtual comparable :
+  unit -> object ('a) method virtual cmp : 'a -> int end
+#             class int_comparable :
+  int -> object ('a) val x : int method cmp : 'a -> int method x : int end
+#           class int_comparable2 :
+  int ->
+  object ('a)
+    val x : int
+    val mutable x' : int
+    method cmp : 'a -> int
+    method set_x : int -> unit
+    method x : int
+  end
+#                         class ['a] sorted_list :
+  unit ->
+  object
+    constraint 'a = #comparable
+    val mutable l : 'a list
+    method add : 'a -> unit
+    method hd : 'a
+  end
+#   val l : _#comparable sorted_list = <obj>
+# val c : int_comparable = <obj>
+# - : unit = ()
+#   val c2 : int_comparable2 = <obj>
+# Characters 6-28:
+  l#add (c2 :> int_comparable);;      (* Echec : 'a comp2 n'est un sous-type *)
+        ^^^^^^^^^^^^^^^^^^^^^^
+Error: Type
+         int_comparable2 =
+           < cmp : int_comparable2 -> int; set_x : int -> unit; x : int >
+       is not a subtype of
+         int_comparable = < cmp : int_comparable -> int; x : int > 
+       Type int_comparable = < cmp : int_comparable -> int; x : int >
+       is not a subtype of
+         int_comparable2 =
+           < cmp : int_comparable2 -> int; set_x : int -> unit; x : int > 
+# - : unit = ()
+#             class int_comparable3 :
+  int ->
+  object
+    val mutable x : int
+    method cmp : int_comparable -> int
+    method setx : int -> unit
+    method x : int
+  end
+#   val c3 : int_comparable3 = <obj>
+# - : unit = ()
+# Characters 25-27:
+  (new sorted_list ())#add c3;;   (* Error; strange message with -principal *)
+                           ^^
+Error: This expression has type
+         int_comparable3 =
+           < cmp : int_comparable -> int; setx : int -> unit; x : int >
+       but an expression was expected of type
+         #comparable as 'a = < cmp : 'a -> int; .. >
+       Type int_comparable = < cmp : int_comparable -> int; x : int >
+       is not compatible with type
+         int_comparable3 =
+           < cmp : int_comparable -> int; setx : int -> unit; x : int > 
+       The first object type has no method setx
+#   val sort : (#comparable as 'a) list -> 'a list = <fun>
+#     Characters 13-66:
+    List.map (fun c -> print_int c#x; print_string " ") l;
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Warning 10: this expression should have type unit.
+val pr : < x : int; .. > list -> unit = <fun>
+#   val l : int_comparable list = [<obj>; <obj>; <obj>]
+# 5 2 4 
+- : unit = ()
+# 2 4 5 
+- : unit = ()
+# val l : int_comparable2 list = [<obj>; <obj>]
+# 2 0 
+- : unit = ()
+# 0 2 
+- : unit = ()
+#     val min : (#comparable as 'a) -> 'a -> 'a = <fun>
+#   - : int = 7
+# - : int = 3
+#                                 class ['a] link :
+  'a ->
+  object ('b)
+    val mutable next : 'b option
+    val mutable x : 'a
+    method append : 'b option -> unit
+    method next : 'b option
+    method set_next : 'b option -> unit
+    method set_x : 'a -> unit
+    method x : 'a
+  end
+#                   class ['a] double_link :
+  'a ->
+  object ('b)
+    val mutable next : 'b option
+    val mutable prev : 'b option
+    val mutable x : 'a
+    method append : 'b option -> unit
+    method next : 'b option
+    method prev : 'b option
+    method set_next : 'b option -> unit
+    method set_prev : 'b option -> unit
+    method set_x : 'a -> unit
+    method x : 'a
+  end
+#           val fold_right : ('a -> 'b -> 'b) -> 'a #link option -> 'b -> 'b = <fun>
+#                                       class calculator :
+  unit ->
+  object ('a)
+    val mutable acc : float
+    val mutable arg : float
+    val mutable equals : 'a -> float
+    method acc : float
+    method add : 'a
+    method arg : float
+    method enter : float -> 'a
+    method equals : float
+    method sub : 'a
+  end
+#   - : float = 5.
+# - : float = 1.5
+# - : float = 15.
+#                       class calculator :
+  unit ->
+  object ('a)
+    val mutable acc : float
+    val mutable arg : float
+    val mutable equals : 'a -> float
+    method acc : float
+    method add : 'a
+    method arg : float
+    method enter : float -> 'a
+    method equals : float
+    method sub : 'a
+  end
+#   - : float = 5.
+# - : float = 1.5
+# - : float = 15.
+#                                 class calculator :
+  float ->
+  float ->
+  object
+    val acc : float
+    val arg : float
+    method add : calculator
+    method enter : float -> calculator
+    method equals : float
+    method sub : calculator
+  end
+and calculator_add :
+  float ->
+  float ->
+  object
+    val acc : float
+    val arg : float
+    method add : calculator
+    method enter : float -> calculator
+    method equals : float
+    method sub : calculator
+  end
+and calculator_sub :
+  float ->
+  float ->
+  object
+    val acc : float
+    val arg : float
+    method add : calculator
+    method enter : float -> calculator
+    method equals : float
+    method sub : calculator
+  end
+#   val calculator : calculator = <obj>
+#   - : float = 5.
+# - : float = 1.5
+# - : float = 15.
+# 

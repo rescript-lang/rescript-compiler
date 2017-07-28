@@ -1,0 +1,27 @@
+
+#                   type 'a visit_action
+type insert
+type 'a local_visit_action
+type ('a, 'result, 'visit_action) context =
+    Local : ('a, 'a * insert, 'a local_visit_action) context
+  | Global : ('a, 'a, 'a visit_action) context
+#           Characters 11-162:
+  ..........(type visit_action) : (_, _, visit_action) context -> _ -> visit_action =
+    function
+    | Local -> fun _ -> raise Exit
+    | Global -> fun _ -> raise Exit
+Error: This expression has type (ex#0, ex#0 * insert, 'a) context -> 'b -> 'a
+       but an expression was expected of type
+         (ex#0, ex#0 * insert, 'a) context -> 'b -> 'a
+       The type constructor ex#0 would escape its scope
+#           Characters 11-170:
+  ..........(type visit_action) : ('a, 'result, visit_action) context -> 'a -> visit_action =
+    function
+    | Local -> fun _ -> raise Exit
+    | Global -> fun _ -> raise Exit
+Error: This expression has type (a#0, a#0 * insert, 'a) context -> a#0 -> 'a
+       but an expression was expected of type
+         (a#0, a#0 * insert, 'a) context -> a#0 -> 'a
+       The type constructor a#0 would escape its scope
+#           val vexpr : (unit, 'a, 'b) context -> unit -> 'b = <fun>
+# 

@@ -1,0 +1,22 @@
+--- lablgtkextras-1.1.orig/checkocaml.ml	2012-04-13 16:51:37.000000000 +0200
++++ lablgtkextras-1.1/checkocaml.ml	2012-05-25 16:23:36.000000000 +0200
+@@ -885,7 +885,7 @@
+ let _ = !print "\n### checking required tools and libraries ###\n"
+ 
+ let () = check_ocamlfind_package conf "config-file";;
+-let () = check_ocamlfind_package conf "lablgtk2.sourceview2";;
++let () = check_ocamlfind_package conf "lablgtk2";;
+ let () = check_ocamlfind_package conf ~min_version: [1;1] "xmlm";;
+ 
+ let _ = !print "\n###\n"
+--- lablgtkextras-1.1.orig/src/Makefile	2012-04-13 16:51:37.000000000 +0200
++++ lablgtkextras-1.1/src/Makefile	2012-05-25 16:27:58.000000000 +0200
+@@ -26,7 +26,7 @@
+ 
+ include ../master.Makefile
+ 
+-PACKAGES=config-file,lablgtk2.sourceview2,xmlm
++PACKAGES=config-file,lablgtk2,xmlm
+ OF_FLAGS= -package $(PACKAGES)
+ 
+ COMPFLAGS=-annot -g -warn-error A

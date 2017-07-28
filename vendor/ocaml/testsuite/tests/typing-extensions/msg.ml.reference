@@ -1,0 +1,23 @@
+
+#                                                                                                                                                                                                                             module Msg :
+  sig
+    type 'a tag
+    type result = Result : 'a tag * 'a -> result
+    val write : 'a tag -> 'a -> unit
+    val read : unit -> result
+    type 'a tag += Int : int tag
+    module type Desc =
+      sig
+        type t
+        val label : string
+        val write : t -> string
+        val read : string -> t
+      end
+    module Define : functor (D : Desc) -> sig type 'a tag += C : D.t tag end
+  end
+#   val write_int : int -> unit = <fun>
+#             module StrM : sig type 'a Msg.tag += C : string Msg.tag end
+#   type 'a Msg.tag += String : string Msg.tag
+#   val write_string : string -> unit = <fun>
+#             val read_one : unit -> unit = <fun>
+# 

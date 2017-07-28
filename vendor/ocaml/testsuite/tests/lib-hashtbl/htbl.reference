@@ -1,0 +1,24 @@
+-- Random integers, large range
+Insertion: passed
+Insertion: passed
+Removal: passed
+-- Random integers, narrow range
+Insertion: passed
+Insertion: passed
+Removal: passed
+-- Strings, generic interface
+Insertion: passed
+Insertion: passed
+Removal: passed
+-- Strings, functorial interface
+Insertion: passed
+Insertion: passed
+Removal: passed
+-- Pairs of strings
+Insertion: passed
+Insertion: passed
+Removal: passed
+-- Lists of strings
+Insertion: passed
+Insertion: passed
+Removal: passed

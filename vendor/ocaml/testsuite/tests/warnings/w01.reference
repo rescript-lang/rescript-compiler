@@ -1,0 +1,15 @@
+File "w01.ml", line 15, characters 12-14:
+Warning 2: this is not the end of a comment.
+File "w01.ml", line 21, characters 0-3:
+Warning 5: this function application is partial,
+maybe some arguments are missing.
+File "w01.ml", line 31, characters 4-5:
+Warning 8: this pattern-matching is not exhaustive.
+Here is an example of a value that is not matched:
+0
+File "w01.ml", line 36, characters 0-1:
+Warning 10: this expression should have type unit.
+File "w01.ml", line 20, characters 8-9:
+Warning 27: unused variable y.
+File "w01.ml", line 43, characters 2-3:
+Warning 11: this match case is unused.

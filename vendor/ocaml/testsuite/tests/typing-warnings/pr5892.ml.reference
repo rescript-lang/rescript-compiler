@@ -1,0 +1,12 @@
+
+# # type _ choice =
+    Left : CamlinternalOO.label choice
+  | Right : CamlinternalOO.tag choice
+# Characters 31-52:
+  let f : label choice -> bool = function Left -> true;; (* warn *)
+                                 ^^^^^^^^^^^^^^^^^^^^^
+Warning 8: this pattern-matching is not exhaustive.
+Here is an example of a value that is not matched:
+Right
+val f : CamlinternalOO.label choice -> bool = <fun>
+# 

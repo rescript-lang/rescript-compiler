@@ -1,0 +1,7 @@
+
+#     Characters 137-138:
+   fun C k -> k (fun x -> x);;
+                          ^
+Error: This expression has type ex#0 but an expression was expected of type
+         ex#1 = (ex#2 -> ex#1) -> ex#1
+# 
