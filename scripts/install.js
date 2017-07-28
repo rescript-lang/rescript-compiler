@@ -20,8 +20,8 @@ var os = require('os')
 var os_type = os.type()
 var os_arch = os.arch()
 var is_windows = !(os_type.indexOf('Windows') < 0)
-var is_bsd =  !(os_type.indexOf('BSD') < 0)
-var root_dir = path.join(__dirname,'..')
+var is_bsd = !(os_type.indexOf('BSD') < 0)
+var root_dir = path.join(__dirname, '..')
 var jscomp = path.join(root_dir, 'jscomp')
 var jscomp_bin = path.join(jscomp, 'bin')
 
@@ -32,14 +32,14 @@ var working_config = { cwd: jscomp, stdio: [0, 1, 2] }
 var build_util = require('./build_util')
 var vendor_ninja_version = '1.7.2'
 
-var ninja_bin_output = path.join(root_dir,'bin','ninja.exe')
-var ninja_vendor_dir = path.join(root_dir,'vendor', 'ninja-build')
+var ninja_bin_output = path.join(root_dir, 'bin', 'ninja.exe')
+var ninja_vendor_dir = path.join(root_dir, 'vendor', 'ninja-build')
 
-function build_ninja(){
+function build_ninja() {
     console.log('No prebuilt Ninja, building Ninja now')
     var build_ninja_command = "tar -xf  ninja-1.7.2.tar.gz  && cd  ninja-1.7.2  && ./configure.py --bootstrap "
-    child_process.execSync(build_ninja_command,{cwd:ninja_vendor_dir})
-    fs.renameSync(path.join(ninja_vendor_dir, 'ninja-1.7.2','ninja'), ninja_bin_output)
+    child_process.execSync(build_ninja_command, { cwd: ninja_vendor_dir })
+    fs.renameSync(path.join(ninja_vendor_dir, 'ninja-1.7.2', 'ninja'), ninja_bin_output)
     console.log('ninja binary is ready: ', ninja_bin_output)
 }
 
@@ -59,48 +59,43 @@ function test_ninja_compatible(binary_path) {
 };
 
 
-var ninja_os_path 
-if(is_windows){
-    ninja_os_path = path.join(ninja_vendor_dir,'ninja.win')
-} else if(os_type === 'Darwin'){
-    ninja_os_path = path.join(ninja_vendor_dir,'ninja.darwin')
-} else if (os_type === 'Linux' ){
-    ninja_os_path = path.join(ninja_vendor_dir,'ninja.linux64')
+var ninja_os_path
+if (is_windows) {
+    ninja_os_path = path.join(ninja_vendor_dir, 'ninja.win')
+} else if (os_type === 'Darwin') {
+    ninja_os_path = path.join(ninja_vendor_dir, 'ninja.darwin')
+} else if (os_type === 'Linux') {
+    ninja_os_path = path.join(ninja_vendor_dir, 'ninja.linux64')
 }
-if (fs.existsSync(ninja_bin_output) && test_ninja_compatible (ninja_bin_output)){
+if (fs.existsSync(ninja_bin_output) && test_ninja_compatible(ninja_bin_output)) {
     console.log("ninja binary is already cached: ", ninja_bin_output)
-} else if(fs.existsSync(ninja_os_path)) {
-    fs.renameSync(ninja_os_path,ninja_bin_output)
-    if(test_ninja_compatible(ninja_bin_output)){
+} else if (fs.existsSync(ninja_os_path)) {
+    fs.renameSync(ninja_os_path, ninja_bin_output)
+    if (test_ninja_compatible(ninja_bin_output)) {
         console.log("ninja binary is copied from pre-distribution")
     } else {
         build_ninja()
-    }    
+    }
 } else {
     build_ninja()
 }
 
+process.env.PATH = path.join(__dirname, '..', 'vendor', 'ocaml', 'bin') + path.delimiter + process.env.PATH
+var make = is_bsd ? 'gmake' : 'make';
 
 function non_windows_npm_release() {
-    var make = is_bsd ? 'gmake' : 'make';
+
     try {
         child_process.execSync('node ../scripts/config_compiler.js', working_config)
-        console.log("Build the compiler and runtime .. ")
-        child_process.execSync(make + " world", working_config)
-
     } catch (e) {
+        console.log('Build a local version of OCaml compiler, it may take a couple of minutes')
         child_process.execSync(path.join(__dirname, 'buildocaml.sh')) // TODO: sh -c ? this will be wrong if we have white space in the path
-        process.env.PATH = path.join(__dirname, '..', 'vendor','ocaml','bin') + path.delimiter + process.env.PATH
         console.log('configure again with local ocaml installed')
-        if (process.env.BS_TRAVIS_CI) {
-            child_process.execSync(make + " travis-world-test", working_config)
-        } else {
-            child_process.execSync(make + " world", working_config)
-        }
-
-        // clean.clean()
+        child_process.execSync('node ../scripts/config_compiler.js', working_config)
+        console.log("config finished")
     }
-
+    console.log("Build the compiler and runtime .. ")
+    child_process.execSync(make + " world", working_config)
     console.log("Installing")
     child_process.execSync(make + ' VERBOSE=true install', working_config)
 

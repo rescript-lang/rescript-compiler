@@ -153,7 +153,7 @@ let () =
         config_map is_windows
     else Process.exit 2
   | None ->
-    (Js.log("System-installed OCaml compiler version not found\nBuilding and installing local compiler");
+    (Js.log("System-installed OCaml compiler version not found");
      Process.exit 2)
 
 

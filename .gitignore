@@ -54,7 +54,8 @@ boot
 coverage
 *.g.js
 ppx_tools/
-ocaml/
+vendor/ocaml/stdlib/target_camlheader
+vendor/ocaml/stdlib/target_camlheaderd
 reason/
 man/
 lib/ocaml
