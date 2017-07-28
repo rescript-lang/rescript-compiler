@@ -17,7 +17,7 @@ OCAML_SRC_PARSING=../vendor/ocaml/parsing
 OCAML_SRC_TYPING=../vendor/ocaml/typing
 OCAML_SRC_BYTECOMP=../vendor/ocaml/bytecomp
 OCAML_SRC_DRIVER=../vendor/ocaml/driver
-
+OCAML_SRC_TOOLS=../vendor/ocaml/tools
 .SUFFIXES: .mli .ml .cmi .cmx .mll .c .o .cmo
 
 print-%  : ; @echo $* = $($*)
@@ -474,7 +474,7 @@ bin/whole_compiler.ml:./bin/bspack.exe
 	$< -U BS_DEBUG -bs-MD -prelude-str 'module Config = Config_whole_compiler' -bs-exclude-I config -o $@ -bs-main Js_main -I $(OCAML_SRC_UTILS) -I $(OCAML_SRC_PARSING) -I $(OCAML_SRC_TYPING) -I $(OCAML_SRC_BYTECOMP) -I $(OCAML_SRC_DRIVER)/ -I stubs -I ext -I syntax -I depends -I common -I core -I super_errors
 
 bin/bsdep.ml:./bin/bspack.exe
-	$< -D BS_OCAMLDEP=true  -U BS_DEBUG -bs-MD  -module-alias Config=ConfigDummy -I bin  -I $(OCAML_SRC_UTILS) -I $(OCAML_SRC_PARSING) -I $(OCAML_SRC_DRIVER) -I ../ocaml/tools -I common -I ext -I syntax -I depends -I core -I stubs -bs-main Ocamldep -o $@
+	$< -D BS_OCAMLDEP=true  -U BS_DEBUG -bs-MD  -module-alias Config=ConfigDummy -I bin  -I $(OCAML_SRC_UTILS) -I $(OCAML_SRC_PARSING) -I $(OCAML_SRC_DRIVER) -I $(OCAML_SRC_TOOLS) -I common -I ext -I syntax -I depends -I core -I stubs -bs-main Ocamldep -o $@
 
 bin/bsb_helper.ml:./bin/bspack.exe
 	 $< -bs-MD -U BS_DEBUG   -I stubs -I common -I ext -I syntax -I depends -I bsb  -bs-main Bsb_helper_main -o $@
