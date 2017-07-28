@@ -96,7 +96,7 @@ type file_kind =
 
 let handle_module_info 
     (group : Bsb_parse_sources.file_group)
-    (package_specs : Bsb_package_specs.package_specs) 
+    (package_specs : Bsb_package_specs.t) 
     js_post_build_cmd
     oc  module_name 
     ( module_info : Binary_cache.module_info)

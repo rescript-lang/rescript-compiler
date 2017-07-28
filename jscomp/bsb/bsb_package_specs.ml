@@ -22,16 +22,16 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-open Bsb_config 
+
 let (//) = Ext_filename.combine 
 
-let common_js_prefix p  =  lib_js  // p
-let amd_js_prefix p = lib_amd // p 
-let goog_prefix p = lib_goog // p  
-let es6_prefix p = lib_es6 // p 
-let es6_global_prefix p =  lib_es6_global // p
-let amdjs_global_prefix p = lib_amd_global // p 
-type package_specs = String_set.t
+let common_js_prefix p  =  Bsb_config.lib_js  // p
+let amd_js_prefix p = Bsb_config.lib_amd // p 
+let goog_prefix p = Bsb_config.lib_goog // p  
+let es6_prefix p = Bsb_config.lib_es6 // p 
+let es6_global_prefix p =  Bsb_config.lib_es6_global // p
+let amdjs_global_prefix p = Bsb_config.lib_amd_global // p 
+type t = String_set.t
 
 let supported_format x = 
   x = Literals.amdjs ||
@@ -65,7 +65,7 @@ let package_flag ~format dir =
           amdjs_global_prefix dir 
         else goog_prefix dir))
 
-let package_flag_of_package_specs (package_specs : package_specs) 
+let package_flag_of_package_specs (package_specs : t) 
   (dirname : string ) = 
     (String_set.fold (fun format acc ->
              Ext_string.inter2 acc (package_flag ~format dirname )
@@ -88,7 +88,7 @@ let package_output ~format output=
       amdjs_global_prefix
     else goog_prefix
   in
-  (proj_rel @@ prefix output )
+  (Bsb_config.proj_rel @@ prefix output )
 
 (**
     [get_list_of_output_js specs "src/hi/hello"]

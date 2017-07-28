@@ -23,13 +23,13 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 val package_specs_from_bsconfig : 
-    unit -> Bsb_package_specs.package_specs
+    unit -> Bsb_package_specs.t
 
 
 
 
 val interpret_json : 
-    override_package_specs:Bsb_package_specs.package_specs option -> 
+    override_package_specs:Bsb_package_specs.t option -> 
     bsc_dir:string -> 
     generate_watch_metadata:bool -> 
     no_dev:bool -> 

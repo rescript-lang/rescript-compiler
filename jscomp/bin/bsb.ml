@@ -7981,30 +7981,45 @@ let invariant t =
 end
 module Bsb_package_specs : sig 
 #1 "bsb_package_specs.mli"
+(* Copyright (C) 2017 Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type t
 
 val supported_format : string -> bool
 
-(* val package_flag : format:string -> string -> string  *)
-
-(* val package_output : format:string -> string -> string  *)
-
-
-type package_specs
-   (* = String_set.t *)
-
-val default_package_specs : package_specs 
-
-(* val cmd_package_specs : package_specs option ref  *)
+val default_package_specs : t
 
 val get_list_of_output_js : 
-  package_specs -> string -> string list
+  t -> string -> string list
 
 
 val package_flag_of_package_specs : 
-  package_specs -> string -> string
+  t -> string -> string
 
 val get_package_specs_from_array : 
-  Ext_json_types.t array -> package_specs  
+  Ext_json_types.t array -> t
 end = struct
 #1 "bsb_package_specs.ml"
 (* Copyright (C) 2017 Authors of BuckleScript
@@ -8031,16 +8046,16 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-open Bsb_config 
+
 let (//) = Ext_filename.combine 
 
-let common_js_prefix p  =  lib_js  // p
-let amd_js_prefix p = lib_amd // p 
-let goog_prefix p = lib_goog // p  
-let es6_prefix p = lib_es6 // p 
-let es6_global_prefix p =  lib_es6_global // p
-let amdjs_global_prefix p = lib_amd_global // p 
-type package_specs = String_set.t
+let common_js_prefix p  =  Bsb_config.lib_js  // p
+let amd_js_prefix p = Bsb_config.lib_amd // p 
+let goog_prefix p = Bsb_config.lib_goog // p  
+let es6_prefix p = Bsb_config.lib_es6 // p 
+let es6_global_prefix p =  Bsb_config.lib_es6_global // p
+let amdjs_global_prefix p = Bsb_config.lib_amd_global // p 
+type t = String_set.t
 
 let supported_format x = 
   x = Literals.amdjs ||
@@ -8074,7 +8089,7 @@ let package_flag ~format dir =
           amdjs_global_prefix dir 
         else goog_prefix dir))
 
-let package_flag_of_package_specs (package_specs : package_specs) 
+let package_flag_of_package_specs (package_specs : t) 
   (dirname : string ) = 
     (String_set.fold (fun format acc ->
              Ext_string.inter2 acc (package_flag ~format dirname )
@@ -8097,7 +8112,7 @@ let package_output ~format output=
       amdjs_global_prefix
     else goog_prefix
   in
-  (proj_rel @@ prefix output )
+  (Bsb_config.proj_rel @@ prefix output )
 
 (**
     [get_list_of_output_js specs "src/hi/hello"]
@@ -10093,7 +10108,7 @@ type t =
     refmt : string option;
     refmt_flags : string list;
     js_post_build_cmd : string option;
-    package_specs : Bsb_package_specs.package_specs ; 
+    package_specs : Bsb_package_specs.t ; 
     globbed_dirs : string list;
     bs_file_groups : Bsb_parse_sources.file_group list ;
     files_to_install : String_hash_set.t ;
@@ -10515,13 +10530,13 @@ module Bsb_config_parse : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 val package_specs_from_bsconfig : 
-    unit -> Bsb_package_specs.package_specs
+    unit -> Bsb_package_specs.t
 
 
 
 
 val interpret_json : 
-    override_package_specs:Bsb_package_specs.package_specs option -> 
+    override_package_specs:Bsb_package_specs.t option -> 
     bsc_dir:string -> 
     generate_watch_metadata:bool -> 
     no_dev:bool -> 
@@ -11583,7 +11598,7 @@ val zero : info
 
 
 val handle_file_groups : out_channel ->
-  package_specs:Bsb_package_specs.package_specs ->  
+  package_specs:Bsb_package_specs.t ->  
   js_post_build_cmd:string option -> 
   files_to_install:String_hash_set.t ->  
   custom_rules:Bsb_rule.t String_map.t -> 
@@ -11689,7 +11704,7 @@ type file_kind =
 
 let handle_module_info 
     (group : Bsb_parse_sources.file_group)
-    (package_specs : Bsb_package_specs.package_specs) 
+    (package_specs : Bsb_package_specs.t) 
     js_post_build_cmd
     oc  module_name 
     ( module_info : Binary_cache.module_info)
@@ -12082,7 +12097,7 @@ module Bsb_ninja_regen : sig
 *)
 val regenerate_ninja :
   no_dev:bool ->
-  override_package_specs:Bsb_package_specs.package_specs option ->
+  override_package_specs:Bsb_package_specs.t option ->
   generate_watch_metadata: bool -> 
   forced: bool -> string -> string -> 
   Bsb_config_types.t option 
