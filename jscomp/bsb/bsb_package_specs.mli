@@ -1,5 +1,5 @@
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
+(* Copyright (C) 2017 Authors of BuckleScript
+ * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,26 +17,23 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-val package_specs_from_bsconfig : 
-    unit -> Bsb_package_specs.t
+type t
+
+val supported_format : string -> bool
+
+val default_package_specs : t
+
+val get_list_of_output_js : 
+  t -> string -> string list
 
 
+val package_flag_of_package_specs : 
+  t -> string -> string
 
-
-val interpret_json : 
-    override_package_specs:Bsb_package_specs.t option -> 
-    bsc_dir:string -> 
-    generate_watch_metadata:bool -> 
-    no_dev:bool -> 
-    string -> 
-    Bsb_config_types.t
-
-
-
-
-
+val get_package_specs_from_array : 
+  Ext_json_types.t array -> t

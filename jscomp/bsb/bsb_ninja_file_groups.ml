@@ -71,11 +71,10 @@ let make_common_shadows package_specs dirname dir_index
   =
   { key = Bsb_ninja_global_vars.bs_package_flags;
     op = 
-      Bsb_ninja_util.Append
-        (String_set.fold (fun s acc ->
-             Ext_string.inter2 acc (Bsb_config.package_flag ~format:s dirname )
-
-           ) package_specs Ext_string.empty)
+      Append
+        (Bsb_package_specs.package_flag_of_package_specs
+          package_specs dirname
+        )
   } ::
   (if Bsb_dir_index.is_lib_dir dir_index  then [] else
      [{
@@ -97,7 +96,8 @@ type file_kind =
 
 let handle_module_info 
     (group : Bsb_parse_sources.file_group)
-    package_specs js_post_build_cmd
+    (package_specs : Bsb_package_specs.t) 
+    js_post_build_cmd
     oc  module_name 
     ( module_info : Binary_cache.module_info)
     info  =
@@ -113,11 +113,7 @@ let handle_module_info
     let output_cmi = output_file_sans_extension ^ Literals.suffix_cmi in
     let output_cmj =  output_file_sans_extension ^ Literals.suffix_cmj in
     let output_js =
-      String_set.fold (fun s acc ->
-          Bsb_config.package_output ~format:s (Ext_filename.output_js_basename output_file_sans_extension)
-          :: acc
-        ) package_specs []
-    in
+        Bsb_package_specs.get_list_of_output_js package_specs output_file_sans_extension in 
     let common_shadows = 
       make_common_shadows package_specs
         (Filename.dirname output_cmi)

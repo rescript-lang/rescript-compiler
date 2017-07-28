@@ -34,18 +34,6 @@ let resolve_package cwd  package_name =
   }
 
 
-let get_package_specs_from_array arr =  
-  arr
-  |> get_list_string
-  |> List.fold_left (fun acc x ->
-      let v =
-        if Bsb_config.supported_format x    then String_set.add x acc
-        else
-          failwith ("Unkonwn package spec" ^ x) in
-      v
-    ) String_set.empty 
-
-
 (* Key is the path *)
 let (|?)  m (key, cb) =
   m  |> Ext_json.test key cb
@@ -88,9 +76,10 @@ let package_specs_from_bsconfig () =
       begin 
         match String_map.find_opt Bsb_build_schemas.package_specs map with 
         | Some (Arr s ) -> 
-          get_package_specs_from_array s.content
+          Bsb_package_specs.get_package_specs_from_array s.content
         | Some _
-        | None -> Bsb_default.package_specs
+        | None -> 
+          Bsb_package_specs.default_package_specs
       end
     | _ -> assert false
   end
@@ -131,7 +120,7 @@ let interpret_json
   let built_in_package = ref None in
   let generate_merlin = ref true in 
   let generators = ref String_map.empty in 
-  let package_specs = ref (String_set.singleton Literals.commonjs) in 
+  let package_specs = ref Bsb_package_specs.default_package_specs in 
   (* When we plan to add more deps here,
      Make sure check it is consistent that for nested deps, we have a 
      quck check by just re-parsing deps 
@@ -186,7 +175,8 @@ let interpret_json
       ))
     |? (Bsb_build_schemas.name, `Str (fun s -> package_name := Some s))
     |? (Bsb_build_schemas.package_specs, 
-        `Arr (fun s -> package_specs := get_package_specs_from_array  s ))
+        `Arr (fun s -> package_specs := 
+          Bsb_package_specs.get_package_specs_from_array  s ))
     |? (Bsb_build_schemas.js_post_build, `Obj begin fun m ->
         m |? (Bsb_build_schemas.cmd , `Str (fun s -> 
             js_post_build_cmd := Some (Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.js_post_build s)

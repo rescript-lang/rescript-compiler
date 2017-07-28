@@ -32,7 +32,7 @@ val zero : info
 
 
 val handle_file_groups : out_channel ->
-  package_specs:Bsb_config.package_specs ->  
+  package_specs:Bsb_package_specs.t ->  
   js_post_build_cmd:string option -> 
   files_to_install:String_hash_set.t ->  
   custom_rules:Bsb_rule.t String_map.t -> 
