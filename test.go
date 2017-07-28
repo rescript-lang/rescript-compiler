@@ -167,34 +167,36 @@ func main() {
 	// 	// makeCommand("make", "-C", filepath.Join("jscomp","test")),
 	// })
 
-	cmd:=cmd ("make", "-C", "jscomp","travis-world-test")
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	error:= cmd.Run()
-	if error!= nil {
-		
+	make:=cmd ("make", "-C", "jscomp","travis-world-test")
+	make.Stdout = os.Stdout
+	make.Stderr = os.Stderr
+	error:= make.Run()
+	if error!= nil {		
 		os.Exit(2)
 	}
 
-	
-	// bsbDir, _ := cmd("bsb", "-where").CombinedOutput ()
-	// fmt.Println("BSBDIR:", string(bsbDir))
-	// bsb, _ := cmd("ls", "-al", filepath.Dir( string (bsbDir))).CombinedOutput()
-	// fmt.Println("BSB isntallation:", string(bsb ))
+	ginstall := cmd("npm", "i", "-g", ".")
+	fmt.Println("install bucklescript globally")
+	error = ginstall.Run()
+	if error != nil {
+		log.Fatalf("install failed")
+	} else {
+		fmt.Println("install finished")
+	}
+	bsbDir, _ := cmd("bsb", "-where").CombinedOutput ()
+	fmt.Println("BSBDIR:", string(bsbDir))
+	bsb, _ := cmd("ls", "-al", filepath.Dir( string (bsbDir))).CombinedOutput()
+	fmt.Println("BSB isntallation:", string(bsb ))
 
-	// wg.Add(2)
-	// runMoCha(&wg)
-	// go installGlobal(&wg)
-	// wg.Wait()
 	
-	// var wg sync.WaitGroup
-	// for _, theme := range []string{"basic", "basic-reason", "generator", "minimal"} {
-	// 	fmt.Println("Test theme", theme)
-	// 	wg.Add(1)
-	// 	go (func(theme string) {
-	// 		defer wg.Done()
-	// 		testTheme(theme)
-	// 	})(theme)
-	// }
-	// wg.Wait()
+	var wg sync.WaitGroup
+	for _, theme := range []string{"basic", "basic-reason", "generator", "minimal"} {
+		fmt.Println("Test theme", theme)
+		wg.Add(1)
+		go (func(theme string) {
+			defer wg.Done()
+			testTheme(theme)
+		})(theme)
+	}
+	wg.Wait()
 }
