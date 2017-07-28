@@ -1,0 +1,268 @@
+.\"***********************************************************************)
+.\"*                                                                     *)
+.\"*                             ocamlbuild                              *)
+.\"*                                                                     *)
+.\"*  Nicolas Pouillard, Berke Durak, projet Gallium, INRIA Rocquencourt *)
+.\"*                                                                     *)
+.\"*  Copyright 2007 Institut National de Recherche en Informatique et   *)
+.\"*  en Automatique.  All rights reserved.  This file is distributed    *)
+.\"*  under the terms of the Q Public License version 1.0.               *)
+.\"*                                                                     *)
+.\"***********************************************************************)
+.\"
+.TH OCAMLBUILD 1
+
+.SH NAME
+ocamlbuild \- The OCaml project compilation tool
+
+
+.SH SYNOPSIS
+.B ocamlbuild
+[
+.B \-Is \ dir1,...
+]
+[
+.BI \-libs \ lib1,...
+]
+[
+.BI \-lflags \ flag1,...
+]
+[
+.BI \-pp \ flags
+]
+[
+.BI \-tags \ tag1,...
+]
+[
+.B \-j \ parallel-jobs
+]
+.I target.native
+[
+.B \-\- arg1 arg2 ...
+]
+
+.I (same options)
+
+.SH DESCRIPTION
+
+.BR ocamlbuild (1)
+orchestrates the compilation process of your OCaml project.  It is similar
+in function to
+.BR make (1)
+except that it is tailor-made to automatically compile most OCaml projects
+with very little user input.
+
+.BR ocamlbuild
+should be invoked in the root of a clean project tree (e.g., with no leftover
+compilation files).  Given one or more targets to compile, it scans the required
+subdirectories to gather information about the various files present, running
+tools such as
+.BR ocamldep (1)
+to extract dependency information, and gathering optional files that fine-tune
+its behaviour.
+Target names are very significant.
+
+.SH TARGET NAMES
+.BR ocamlbuild
+uses a set of target naming conventions to select the kind of objects to
+produce.  Target names are of the form
+.BR base.extension
+where
+.BR base
+is usually the name of the underlying OCaml module and
+.BR extension
+denotes the kind of object to produce from that file -- a byte code executable,
+a native executable, documentation...
+Of course extensions such as
+.BR .cmo,
+.BR .cma,
+.BR .cmi...
+map to their usual counterparts.  Here is a list of the most important
+.BR ocamlbuild \&-specific
+extensions:
+
+.TP 2i
+.B .native
+Native code executable
+
+.TP 2i
+.B .byte
+Byte code executable
+
+.TP 2i
+.B .inferred.mli
+Interface inferred with
+.BR ocamlc -i
+
+.TP 2i
+.B .docdir/index.html
+HTML documentation generated with
+.BR ocamldoc
+
+.PP
+
+.SH OPTIONS
+
+The following command-line options are recognized by
+.BR ocamlbuild (1).
+
+.TP
+\fB\-version\fR
+Display the version
+.TP
+\fB\-quiet\fR
+Make as quiet as possible
+.TP
+\fB\-verbose\fR <level>
+Set the verbose level
+.TP
+\fB\-documentation\fR
+Show rules and flags
+.TP
+\fB\-log\fR <file>
+Set log file
+.TP
+\fB\-no\-log\fR
+No log file
+.TP
+\fB\-clean\fR
+Remove build directory and other files, then exit
+.TP
+\fB\-I\fR <path>
+Add to include directories
+.TP
+\fB\-Is\fR <path,...>
+(same as above, but accepts a comma\-separated list)
+.TP
+\fB\-X\fR <path>
+Directory to ignore
+.TP
+\fB\-Xs\fR <path,...>
+(idem)
+.TP
+\fB\-lib\fR <flag>
+Link to this ocaml library
+.TP
+\fB\-libs\fR <flag,...>
+(idem)
+.TP
+\fB\-lflag\fR <flag>
+Add to ocamlc link flags
+.TP
+\fB\-lflags\fR <flag,...>
+(idem)
+.TP
+\fB\-cflag\fR <flag>
+Add to ocamlc compile flags
+.TP
+\fB\-cflags\fR <flag,...>
+(idem)
+.TP
+\fB\-yaccflag\fR <flag>
+Add to ocamlyacc flags
+.TP
+\fB\-yaccflags\fR <flag,...>
+(idem)
+.TP
+\fB\-lexflag\fR <flag>
+Add to ocamllex flags
+.TP
+\fB\-lexflags\fR <flag,...>
+(idem)
+.TP
+\fB\-ppflag\fR <flag>
+Add to ocaml preprocessing flags
+.TP
+\fB\-pp\fR <flag,...>
+(idem)
+.TP
+\fB\-tag\fR <tag>
+Add to default tags
+.TP
+\fB\-tags\fR <tag,...>
+(idem)
+.TP
+\fB\-ignore\fR <module,...>
+Don't try to build these modules
+.TP
+\fB\-no\-links\fR
+Don't make links of produced final targets
+.TP
+\fB\-no\-skip\fR
+Don't skip modules that are requested by ocamldep but cannot be built
+.TP
+\fB\-no\-hygiene\fR
+Don't apply sanity\-check rules
+.TP
+\fB\-no\-plugin\fR
+Don't build myocamlbuild.ml
+.TP
+\fB\-no\-stdlib\fR
+Don't ignore stdlib modules
+.TP
+\fB\-just\-plugin\fR
+Just build myocamlbuild.ml
+.TP
+\fB\-byte\-plugin\fR
+Don't use a native plugin but bytecode
+.TP
+\fB\-no-sanitize\fR
+Do not enforce sanity\-check rules
+.TP
+\fB\-nothing\-should\-be\-rebuilt\fR
+Fail if something needs to be rebuilt
+.TP
+\fB\-classic\-display\fR
+Display executed commands the old\-fashioned way
+.TP
+\fB\-j\fR <N>
+Allow N jobs at once (0 for unlimited)
+.TP
+\fB\-build\-dir\fR <path>
+Set build directory
+.TP
+\fB\-install\-dir\fR <path>
+Set the install directory
+.TP
+\fB\-where\fR
+Display the install directory
+.TP
+\fB\-ocamlc\fR <command>
+Set the OCaml bytecode compiler
+.TP
+\fB\-ocamlopt\fR <command>
+Set the OCaml native compiler
+.TP
+\fB\-ocamldep\fR <command>
+Set the OCaml dependency tool
+.TP
+\fB\-ocamldoc\fR <command>
+Set the OCaml documentation generator
+.TP
+\fB\-ocamlyacc\fR <command>
+Set the ocamlyacc tool
+.TP
+\fB\-ocamllex\fR <command>
+Set the ocamllex tool
+.TP
+\fB\-ocamlrun\fR <command>
+Set the ocamlrun tool
+.TP
+\fB\-\-\fR
+Stop argument processing, remaining arguments are given to the user program
+.TP
+\fB\-help\fR
+Display the list of options
+.TP
+\fB\-\-help\fR
+Display the list of options
+.PP
+
+.SH SEE ALSO
+The
+.BR ocamlbuild
+manual,
+.BR ocaml (1),
+.BR make (1).
+.br
+.I The OCaml user's manual, chapter "Batch compilation".

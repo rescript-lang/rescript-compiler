@@ -1,0 +1,11 @@
+--- camlimages-4.0.1.orig/OMakefile	2011-06-22 20:04:32.000000000 +0200
++++ camlimages-4.0.1/OMakefile	2013-02-19 15:35:38.000000000 +0100
+@@ -138,7 +138,7 @@
+     SUPPORTED_FORMATS+=jpeg
+     export
+ 
+-  HAVE_TIFF = $(Check_header_library tiff, tiff.h, TIFFOpen)
++  HAVE_TIFF = false # $(Check_header_library tiff, tiff.h, TIFFOpen)
+   SUPPORT_TIFF = $(and $(HAVE_Z) $(HAVE_JPEG) $(HAVE_TIFF))
+   LDFLAGS_tiff=
+   if $(SUPPORT_TIFF)

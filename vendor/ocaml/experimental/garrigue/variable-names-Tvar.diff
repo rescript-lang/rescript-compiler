@@ -1,0 +1,1656 @@
+Index: VERSION
+===================================================================
+--- VERSION	(リビジョン 11207)
++++ VERSION	(作業コピー)
+@@ -1,4 +1,4 @@
+-3.13.0+dev6 (2011-07-29)
++3.13.0+dev7 (2011-09-22)
+ 
+ # The version string is the first line of this file.
+ # It must be in the format described in stdlib/sys.mli
+Index: typing/typemod.ml
+===================================================================
+--- typing/typemod.ml	(リビジョン 11207)
++++ typing/typemod.ml	(作業コピー)
+@@ -764,7 +764,7 @@
+               Location.prerr_warning smod.pmod_loc
+                 (Warnings.Not_principal "this module unpacking");
+             modtype_of_package env smod.pmod_loc p nl tl
+-        | {desc = Tvar} ->
++        | {desc = Tvar _} ->
+             raise (Typecore.Error
+                      (smod.pmod_loc, Typecore.Cannot_infer_signature))
+         | _ ->
+Index: typing/typetexp.ml
+===================================================================
+--- typing/typetexp.ml	(リビジョン 11207)
++++ typing/typetexp.ml	(作業コピー)
+@@ -150,7 +150,7 @@
+     if strict then raise Already_bound;
+     v
+   with Not_found ->
+-    let v = new_global_var() in
++    let v = new_global_var ~name () in
+     type_variables := Tbl.add name v !type_variables;
+     v
+ 
+@@ -165,8 +165,8 @@
+     Tpoly _ -> ty
+   | _ -> Ctype.newty (Tpoly (ty, []))
+ 
+-let new_pre_univar () =
+-  let v = newvar () in pre_univars := v :: !pre_univars; v
++let new_pre_univar ?name () =
++  let v = newvar ?name () in pre_univars := v :: !pre_univars; v
+ 
+ let rec swap_list = function
+     x :: y :: l -> y :: x :: swap_list l
+@@ -190,7 +190,8 @@
+         instance (fst(Tbl.find name !used_variables))
+       with Not_found ->
+         let v =
+-          if policy = Univars then new_pre_univar () else newvar () in
++          if policy = Univars then new_pre_univar ~name () else newvar ~name ()
++        in
+         used_variables := Tbl.add name (v, styp.ptyp_loc) !used_variables;
+         v
+       end
+@@ -333,7 +334,14 @@
+             end_def ();
+             generalize_structure t;
+           end;
+-          instance t
++          let t = instance t in
++          let px = Btype.proxy t in
++          begin match px.desc with
++          | Tvar None -> Btype.log_type px; px.desc <- Tvar (Some alias)
++          | Tunivar None -> Btype.log_type px; px.desc <- Tunivar (Some alias)
++          | _ -> ()
++          end;
++          t
+       end
+   | Ptyp_variant(fields, closed, present) ->
+       let name = ref None in
+@@ -388,7 +396,7 @@
+               {desc=Tvariant row}, _ when Btype.static_row row ->
+                 let row = Btype.row_repr row in
+                 row.row_fields
+-            | {desc=Tvar}, Some(p, _) ->
++            | {desc=Tvar _}, Some(p, _) ->
+                 raise(Error(sty.ptyp_loc, Unbound_type_constructor_2 p))
+             | _ ->
+                 raise(Error(sty.ptyp_loc, Not_a_variant ty))
+@@ -431,7 +439,7 @@
+       newty (Tvariant row)
+   | Ptyp_poly(vars, st) ->
+       begin_def();
+-      let new_univars = List.map (fun name -> name, newvar()) vars in
++      let new_univars = List.map (fun name -> name, newvar ~name ()) vars in
+       let old_univars = !univars in
+       univars := new_univars @ !univars;
+       let ty = transl_type env policy st in
+@@ -443,10 +451,12 @@
+           (fun tyl (name, ty1) ->
+             let v = Btype.proxy ty1 in
+             if deep_occur v ty then begin
+-              if v.level <> Btype.generic_level || v.desc <> Tvar then
+-                raise (Error (styp.ptyp_loc, Cannot_quantify (name, v)));
+-              v.desc <- Tunivar;
+-              v :: tyl
++              match v.desc with
++                Tvar name when v.level = Btype.generic_level ->
++                  v.desc <- Tunivar name;
++                  v :: tyl
++              | _ ->
++                raise (Error (styp.ptyp_loc, Cannot_quantify (name, v)))
+             end else tyl)
+           [] new_univars
+       in
+@@ -483,7 +493,7 @@
+     match ty.desc with
+     | Tvariant row ->
+         let row = Btype.row_repr row in
+-        if (Btype.row_more row).desc = Tunivar then
++        if Btype.is_Tunivar (Btype.row_more row) then
+           ty.desc <- Tvariant
+               {row with row_fixed=true;
+                row_fields = List.map
+@@ -512,7 +522,7 @@
+       then try
+         r := (loc, v,  Tbl.find name !type_variables) :: !r
+       with Not_found ->
+-        if fixed && (repr ty).desc = Tvar then
++        if fixed && Btype.is_Tvar (repr ty) then
+           raise(Error(loc, Unbound_type_variable ("'"^name)));
+         let v2 = new_global_var () in
+         r := (loc, v, v2) :: !r;
+@@ -552,8 +562,10 @@
+     List.fold_left
+       (fun acc v ->
+         let v = repr v in
+-        if v.level <> Btype.generic_level || v.desc <> Tvar then acc
+-        else (v.desc <- Tunivar ; v :: acc))
++        match v.desc with
++          Tvar name when v.level = Btype.generic_level ->
++            v.desc <- Tunivar name; v :: acc
++        | _ -> acc)
+       [] !pre_univars
+   in
+   make_fixed_univars typ;
+@@ -635,8 +647,8 @@
+       fprintf ppf "The type variable name %s is not allowed in programs" name
+   | Cannot_quantify (name, v) ->
+       fprintf ppf "This type scheme cannot quantify '%s :@ %s." name
+-        (if v.desc = Tvar then "it escapes this scope" else
+-         if v.desc = Tunivar then "it is aliased to another variable"
++        (if Btype.is_Tvar v then "it escapes this scope" else
++         if Btype.is_Tunivar v then "it is aliased to another variable"
+          else "it is not a variable")
+   | Multiple_constraints_on_type s ->
+       fprintf ppf "Multiple constraints for type %s" s
+Index: typing/btype.ml
+===================================================================
+--- typing/btype.ml	(リビジョン 11207)
++++ typing/btype.ml	(作業コピー)
+@@ -35,9 +35,9 @@
+ let new_id = ref (-1)
+ 
+ let newty2 level desc  =
+-  incr new_id; { desc = desc; level = level; id = !new_id }
++  incr new_id; { desc; level; id = !new_id }
+ let newgenty desc      = newty2 generic_level desc
+-let newgenvar ()       = newgenty Tvar
++let newgenvar ?name () = newgenty (Tvar name)
+ (*
+ let newmarkedvar level =
+   incr new_id; { desc = Tvar; level = pivot_level - level; id = !new_id }
+@@ -46,6 +46,11 @@
+   { desc = Tvar; level = pivot_level - generic_level; id = !new_id }
+ *)
+ 
++(**** Check some types ****)
++
++let is_Tvar = function {desc=Tvar _} -> true | _ -> false
++let is_Tunivar = function {desc=Tunivar _} -> true | _ -> false
++
+ (**** Representative of a type ****)
+ 
+ let rec field_kind_repr =
+@@ -139,7 +144,7 @@
+       let rec proxy_obj ty =
+         match ty.desc with
+           Tfield (_, _, _, ty) | Tlink ty -> proxy_obj ty
+-        | Tvar | Tunivar | Tconstr _ -> ty
++        | Tvar _ | Tunivar _ | Tconstr _ -> ty
+         | Tnil -> ty0
+         | _ -> assert false
+       in proxy_obj ty
+@@ -180,13 +185,13 @@
+     row.row_fields;
+   match (repr row.row_more).desc with
+     Tvariant row -> iter_row f row
+-  | Tvar | Tunivar | Tsubst _ | Tconstr _ ->
++  | Tvar _ | Tunivar _ | Tsubst _ | Tconstr _ ->
+       Misc.may (fun (_,l) -> List.iter f l) row.row_name
+   | _ -> assert false
+ 
+ let iter_type_expr f ty =
+   match ty.desc with
+-    Tvar                -> ()
++    Tvar _              -> ()
+   | Tarrow (_, ty1, ty2, _) -> f ty1; f ty2
+   | Ttuple l            -> List.iter f l
+   | Tconstr (_, l, _)   -> List.iter f l
+@@ -198,7 +203,7 @@
+   | Tnil                -> ()
+   | Tlink ty            -> f ty
+   | Tsubst ty           -> f ty
+-  | Tunivar             -> ()
++  | Tunivar _           -> ()
+   | Tpoly (ty, tyl)     -> f ty; List.iter f tyl
+   | Tpackage (_, _, l)  -> List.iter f l
+ 
+@@ -239,13 +244,13 @@
+    encoding during substitution *)
+ let rec norm_univar ty =
+   match ty.desc with
+-    Tunivar | Tsubst _ -> ty
++    Tunivar _ | Tsubst _ -> ty
+   | Tlink ty           -> norm_univar ty
+   | Ttuple (ty :: _)   -> norm_univar ty
+   | _                  -> assert false
+ 
+ let rec copy_type_desc f = function
+-    Tvar                -> Tvar
++    Tvar _              -> Tvar None (* forget the name *)
+   | Tarrow (p, ty1, ty2, c)-> Tarrow (p, f ty1, f ty2, copy_commu c)
+   | Ttuple l            -> Ttuple (List.map f l)
+   | Tconstr (p, l, _)   -> Tconstr (p, List.map f l, ref Mnil)
+@@ -258,7 +263,7 @@
+   | Tnil                -> Tnil
+   | Tlink ty            -> copy_type_desc f ty.desc
+   | Tsubst ty           -> assert false
+-  | Tunivar             -> Tunivar
++  | Tunivar _ as ty     -> ty (* keep the name *)
+   | Tpoly (ty, tyl)     ->
+       let tyl = List.map (fun x -> norm_univar (f x)) tyl in
+       Tpoly (f ty, tyl)
+@@ -447,7 +452,7 @@
+   | Cuniv of type_expr option ref * type_expr option
+ 
+ let undo_change = function
+-    Ctype  (ty, desc)  -> ty.desc <- desc
++    Ctype  (ty, desc) -> ty.desc <- desc
+   | Clevel (ty, level) -> ty.level <- level
+   | Cname  (r, v) -> r := v
+   | Crow   (r, v) -> r := v
+@@ -474,7 +479,22 @@
+ 
+ let log_type ty =
+   if ty.id <= !last_snapshot then log_change (Ctype (ty, ty.desc))
+-let link_type ty ty' = log_type ty; ty.desc <- Tlink ty'
++let link_type ty ty' =
++  log_type ty;
++  let desc = ty.desc in
++  ty.desc <- Tlink ty';
++  (* Name is a user-supplied name for this unification variable (obtained
++   * through a type annotation for instance). *)
++  match desc, ty'.desc with
++    Tvar name, Tvar name' ->
++      begin match name, name' with
++      | Some _, None ->  log_type ty'; ty'.desc <- Tvar name
++      | None, Some _ ->  ()
++      | Some _, Some _ ->
++          if ty.level < ty'.level then (log_type ty'; ty'.desc <- Tvar name)
++      | None, None   ->  ()
++      end
++  | _ -> ()
+   (* ; assert (check_memorized_abbrevs ()) *)
+   (*  ; check_expans [] ty' *)
+ let set_level ty level =
+Index: typing/typecore.ml
+===================================================================
+--- typing/typecore.ml	(リビジョン 11207)
++++ typing/typecore.ml	(作業コピー)
+@@ -633,7 +633,7 @@
+           List.iter generalize vars;
+           let instantiated tv  = 
+             let tv = expand_head !env tv in
+-            tv.desc <> Tvar || tv.level <> generic_level in
++            not (is_Tvar tv) || tv.level <> generic_level in
+           if List.exists instantiated vars then
+             raise (Error(loc, Polymorphic_label (lid_of_label label)))
+         end;
+@@ -1126,7 +1126,7 @@
+     Tarrow (l, _, ty_res, _) ->
+       list_labels_aux env (ty::visited) (l::ls) ty_res
+   | _ ->
+-      List.rev ls, ty.desc = Tvar
++      List.rev ls, is_Tvar ty
+ 
+ let list_labels env ty = list_labels_aux env [] [] ty
+ 
+@@ -1142,9 +1142,10 @@
+       (fun t ->
+         let t = repr t in
+         generalize t;
+-        if t.desc = Tvar && t.level = generic_level then
+-          (log_type t; t.desc <- Tunivar; true)
+-        else false)
++        match t.desc with
++          Tvar name when t.level = generic_level ->
++            log_type t; t.desc <- Tunivar name; true
++        | _ -> false)
+       vars in
+   if List.length vars = List.length vars' then () else
+   let ty = newgenty (Tpoly(repr exp.exp_type, vars'))
+@@ -1158,7 +1159,7 @@
+   match (expand_head env exp.exp_type).desc with
+   | Tarrow _ ->
+       Location.prerr_warning exp.exp_loc Warnings.Partial_application
+-  | Tvar -> ()
++  | Tvar _ -> ()
+   | Tconstr (p, _, _) when Path.same p Predef.path_unit -> ()
+   | _ ->
+       if statement then
+@@ -1742,7 +1743,7 @@
+               let (id, typ) =
+                 filter_self_method env met Private meths privty
+               in
+-              if (repr typ).desc = Tvar then
++              if is_Tvar (repr typ) then
+                 Location.prerr_warning loc
+                   (Warnings.Undeclared_virtual_method met);
+               (Texp_send(obj, Tmeth_val id), typ)
+@@ -1797,7 +1798,7 @@
+                 Location.prerr_warning loc
+                   (Warnings.Not_principal "this use of a polymorphic method");
+               snd (instance_poly false tl ty)
+-          | {desc = Tvar} as ty ->
++          | {desc = Tvar _} as ty ->
+               let ty' = newvar () in
+               unify env (instance ty) (newty(Tpoly(ty',[])));
+               (* if not !Clflags.nolabels then
+@@ -1979,7 +1980,7 @@
+             end_def ();
+             check_univars env false "method" exp ty_expected vars;
+             re { exp with exp_type = instance ty }
+-        | Tvar ->
++        | Tvar _ ->
+             let exp = type_exp env sbody in
+             let exp = {exp with exp_type = newty (Tpoly (exp.exp_type, []))} in
+             unify_exp env exp ty;
+@@ -2038,7 +2039,7 @@
+               Location.prerr_warning loc
+                 (Warnings.Not_principal "this module packing");
+             (p, nl, tl)
+-        | {desc = Tvar} ->
++        | {desc = Tvar _} ->
+             raise (Error (loc, Cannot_infer_signature))
+         | _ ->
+             raise (Error (loc, Not_a_packed_module ty_expected))
+@@ -2128,7 +2129,7 @@
+               ty_fun
+         | Tarrow (l,_,ty_res',_) when l = "" || !Clflags.classic ->
+             args, ty_fun, no_labels ty_res'
+-        | Tvar ->  args, ty_fun, false
++        | Tvar _ ->  args, ty_fun, false
+         |  _ -> [], texp.exp_type, false
+       in
+       let args, ty_fun', simple_res = make_args [] texp.exp_type in
+@@ -2192,7 +2193,7 @@
+         let (ty1, ty2) =
+           let ty_fun = expand_head env ty_fun in
+           match ty_fun.desc with
+-            Tvar ->
++            Tvar _ ->
+               let t1 = newvar () and t2 = newvar () in
+               let not_identity = function
+                   Texp_ident(_,{val_kind=Val_prim
+@@ -2335,7 +2336,7 @@
+       begin match (expand_head env exp.exp_type).desc with
+       | Tarrow _ ->
+           Location.prerr_warning exp.exp_loc Warnings.Partial_application
+-      | Tvar ->
++      | Tvar _ ->
+           add_delayed_check (fun () -> check_application_result env false exp)
+       | _ -> ()
+       end;
+@@ -2404,9 +2405,9 @@
+   | Tarrow _ ->
+       Location.prerr_warning loc Warnings.Partial_application
+   | Tconstr (p, _, _) when Path.same p Predef.path_unit -> ()
+-  | Tvar when ty.level > tv.level ->
++  | Tvar _ when ty.level > tv.level ->
+       Location.prerr_warning loc Warnings.Nonreturning_statement
+-  | Tvar ->
++  | Tvar _ ->
+       add_delayed_check (fun () -> check_application_result env true exp)
+   | _ ->
+       Location.prerr_warning loc Warnings.Statement_type
+Index: typing/btype.mli
+===================================================================
+--- typing/btype.mli	(リビジョン 11207)
++++ typing/btype.mli	(作業コピー)
+@@ -23,7 +23,7 @@
+         (* Create a type *)
+ val newgenty: type_desc -> type_expr
+         (* Create a generic type *)
+-val newgenvar: unit -> type_expr
++val newgenvar: ?name:string -> unit -> type_expr
+         (* Return a fresh generic variable *)
+ 
+ (* Use Tsubst instead
+@@ -33,6 +33,9 @@
+         (* Return a fresh marked generic variable *)
+ *)
+ 
++val is_Tvar: type_expr -> bool
++val is_Tunivar: type_expr -> bool
++
+ val repr: type_expr -> type_expr
+         (* Return the canonical representative of a type. *)
+ 
+Index: typing/ctype.mli
+===================================================================
+--- typing/ctype.mli	(リビジョン 11207)
++++ typing/ctype.mli	(作業コピー)
+@@ -41,9 +41,10 @@
+         (* This pair of functions is only used in Typetexp *)
+ 
+ val newty: type_desc -> type_expr
+-val newvar: unit -> type_expr
++val newvar: ?name:string -> unit -> type_expr
++val newvar2: ?name:string -> int -> type_expr
+         (* Return a fresh variable *)
+-val new_global_var: unit -> type_expr
++val new_global_var: ?name:string -> unit -> type_expr
+         (* Return a fresh variable, bound at toplevel
+            (as type variables ['a] in type constraints). *)
+ val newobj: type_expr -> type_expr
+Index: typing/datarepr.ml
+===================================================================
+--- typing/datarepr.ml	(リビジョン 11207)
++++ typing/datarepr.ml	(作業コピー)
+@@ -28,7 +28,7 @@
+     if ty.level >= lowest_level then begin
+       ty.level <- pivot_level - ty.level;
+       match ty.desc with
+-      | Tvar ->
++      | Tvar _ ->
+           ret := TypeSet.add ty !ret
+       | Tvariant row ->
+           let row = row_repr row in
+Index: typing/typeclass.ml
+===================================================================
+--- typing/typeclass.ml	(リビジョン 11207)
++++ typing/typeclass.ml	(作業コピー)
+@@ -532,7 +532,7 @@
+                 (Typetexp.transl_simple_type val_env false sty) ty
+           end;
+           begin match (Ctype.repr ty).desc with
+-            Tvar ->
++            Tvar _ ->
+               let ty' = Ctype.newvar () in
+               Ctype.unify val_env (Ctype.newty (Tpoly (ty', []))) ty;
+               Ctype.unify val_env (type_approx val_env sbody) ty'
+Index: typing/typedecl.ml
+===================================================================
+--- typing/typedecl.ml	(リビジョン 11207)
++++ typing/typedecl.ml	(作業コピー)
+@@ -111,7 +111,7 @@
+     | _ ->
+         raise (Error (loc, Bad_fixed_type "is not an object or variant"))
+   in
+-  if rv.desc <> Tvar then
++  if not (Btype.is_Tvar rv) then
+     raise (Error (loc, Bad_fixed_type "has no row variable"));
+   rv.desc <- Tconstr (p, decl.type_params, ref Mnil)
+ 
+@@ -503,7 +503,7 @@
+           compute_same row.row_more
+       | Tpoly (ty, _) ->
+           compute_same ty
+-      | Tvar | Tnil | Tlink _ | Tunivar -> ()
++      | Tvar _ | Tnil | Tlink _ | Tunivar _ -> ()
+       | Tpackage (_, _, tyl) ->
+           List.iter (compute_variance_rec true true true) tyl
+     end
+@@ -546,7 +546,7 @@
+   in
+   List.iter2
+     (fun (ty, co, cn, ct) (c, n) ->
+-      if ty.desc <> Tvar then begin
++      if not (Btype.is_Tvar ty) then begin
+         co := c; cn := n; ct := n;
+         compute_variance env tvl2 c n n ty
+       end)
+@@ -571,7 +571,7 @@
+ 
+ let rec anonymous env ty =
+   match (Ctype.expand_head env ty).desc with
+-  | Tvar -> false
++  | Tvar _ -> false
+   | Tobject (fi, _) ->
+       let _, rv = Ctype.flatten_fields fi in anonymous env rv
+   | Tvariant row ->
+Index: typing/types.mli
+===================================================================
+--- typing/types.mli	(リビジョン 11207)
++++ typing/types.mli	(作業コピー)
+@@ -24,7 +24,7 @@
+     mutable id: int }
+ 
+ and type_desc =
+-    Tvar
++    Tvar of string option
+   | Tarrow of label * type_expr * type_expr * commutable
+   | Ttuple of type_expr list
+   | Tconstr of Path.t * type_expr list * abbrev_memo ref
+@@ -34,7 +34,7 @@
+   | Tlink of type_expr
+   | Tsubst of type_expr         (* for copying *)
+   | Tvariant of row_desc
+-  | Tunivar
++  | Tunivar of string option
+   | Tpoly of type_expr * type_expr list
+   | Tpackage of Path.t * string list * type_expr list
+ 
+Index: typing/ctype.ml
+===================================================================
+--- typing/ctype.ml	(リビジョン 11207)
++++ typing/ctype.ml	(作業コピー)
+@@ -153,9 +153,9 @@
+ let newty desc         = newty2 !current_level desc
+ let new_global_ty desc = newty2 !global_level desc
+ 
+-let newvar ()          = newty2 !current_level Tvar
+-let newvar2 level      = newty2 level Tvar
+-let new_global_var ()  = newty2 !global_level Tvar
++let newvar ?name ()         = newty2 !current_level (Tvar name)
++let newvar2 ?name level     = newty2 level (Tvar name)
++let new_global_var ?name () = newty2 !global_level (Tvar name)
+ 
+ let newobj fields      = newty (Tobject (fields, ref None))
+ 
+@@ -297,14 +297,12 @@
+ 
+ let opened_object ty =
+   match (object_row ty).desc with
+-  | Tvar               -> true
+-  | Tunivar            -> true
+-  | Tconstr _          -> true
+-  | _                  -> false
++  | Tvar _  | Tunivar _ | Tconstr _ -> true
++  | _                               -> false
+ 
+ let concrete_object ty =
+   match (object_row ty).desc with
+-  | Tvar               -> false
++  | Tvar _             -> false
+   | _                  -> true
+ 
+ (**** Close an object ****)
+@@ -313,7 +311,7 @@
+   let rec close ty =
+     let ty = repr ty in
+     match ty.desc with
+-      Tvar ->
++      Tvar _ ->
+         link_type ty (newty2 ty.level Tnil)
+     | Tfield(_, _, _, ty') -> close ty'
+     | _                    -> assert false
+@@ -329,7 +327,7 @@
+     let ty = repr ty in
+     match ty.desc with
+       Tfield (_, _, _, ty) -> find ty
+-    | Tvar                 -> ty
++    | Tvar _               -> ty
+     | _                    -> assert false
+   in
+   match (repr ty).desc with
+@@ -434,7 +432,7 @@
+     let level = ty.level in
+     ty.level <- pivot_level - level;
+     match ty.desc with
+-      Tvar when level <> generic_level ->
++      Tvar _ when level <> generic_level ->
+         raise Non_closed
+     | Tfield(_, kind, t1, t2) ->
+         if field_kind_repr kind = Fpresent then
+@@ -468,7 +466,7 @@
+   if ty.level >= lowest_level then begin
+     ty.level <- pivot_level - ty.level;
+     begin match ty.desc, !really_closed with
+-      Tvar, _ ->
++      Tvar _, _ ->
+         free_variables := (ty, real) :: !free_variables
+     | Tconstr (path, tl, _), Some env ->
+         begin try
+@@ -639,7 +637,7 @@
+ let rec generalize_structure var_level ty =
+   let ty = repr ty in
+   if ty.level <> generic_level then begin
+-    if ty.desc = Tvar && ty.level > var_level then
++    if is_Tvar ty && ty.level > var_level then
+       set_level ty var_level
+     else if ty.level > !current_level then begin
+       set_level ty generic_level;
+@@ -858,7 +856,7 @@
+           TypeHash.add node_univars inv.inv_type (ref(TypeSet.singleton univ));
+           List.iter (add_univar univ) inv.inv_parents
+   in
+-  TypeHash.iter (fun ty inv -> if ty.desc = Tunivar then add_univar ty inv)
++  TypeHash.iter (fun ty inv -> if is_Tunivar ty then add_univar ty inv)
+     inverted;
+   fun ty ->
+     try !(TypeHash.find node_univars ty) with Not_found -> TypeSet.empty
+@@ -913,7 +911,7 @@
+             if keep then ty.level else !current_level
+           else generic_level
+     in
+-    if forget <> generic_level then newty2 forget Tvar else
++    if forget <> generic_level then newty2 forget (Tvar None) else
+     let desc = ty.desc in
+     save_desc ty desc;
+     let t = newvar() in          (* Stub *)
+@@ -959,7 +957,7 @@
+                 | Tconstr _ ->
+                     if keep then save_desc more more.desc;
+                     copy more
+-                | Tvar | Tunivar ->
++                | Tvar _ | Tunivar _ ->
+                     save_desc more more.desc;
+                     if keep then more else newty more.desc
+                 |  _ -> assert false
+@@ -1117,7 +1115,7 @@
+     t
+   else try
+     let t, bound_t = List.assq ty visited in
+-    let dl = if ty.desc = Tunivar then [] else diff_list bound bound_t in
++    let dl = if is_Tunivar ty then [] else diff_list bound bound_t in
+     if dl <> [] && conflicts univars dl then raise Not_found;
+     t
+   with Not_found -> begin
+@@ -1134,14 +1132,14 @@
+           let row = row_repr row0 in
+           let more = repr row.row_more in
+           (* We shall really check the level on the row variable *)
+-          let keep = more.desc = Tvar && more.level <> generic_level in
++          let keep = is_Tvar more && more.level <> generic_level in
+           let more' = copy_rec more in
+-          let fixed' = fixed && (repr more').desc = Tvar in
++          let fixed' = fixed && is_Tvar (repr more') in
+           let row = copy_row copy_rec fixed' row keep more' in
+           Tvariant row
+       | Tpoly (t1, tl) ->
+           let tl = List.map repr tl in
+-          let tl' = List.map (fun t -> newty Tunivar) tl in
++          let tl' = List.map (fun t -> newty t.desc) tl in
+           let bound = tl @ bound in
+           let visited =
+             List.map2 (fun ty t -> ty,(t,bound)) tl tl' @ visited in
+@@ -1395,7 +1393,7 @@
+ let rec full_expand env ty =
+   let ty = repr (expand_head env ty) in
+   match ty.desc with
+-    Tobject (fi, {contents = Some (_, v::_)}) when (repr v).desc = Tvar ->
++    Tobject (fi, {contents = Some (_, v::_)}) when is_Tvar (repr v) ->
+       newty2 ty.level (Tobject (fi, ref None))
+   | _ ->
+       ty
+@@ -1570,8 +1568,8 @@
+         true
+     then
+       match ty.desc with
+-        Tunivar ->
+-          if not (TypeSet.mem ty bound) then raise (Unify [ty, newgenvar()])
++        Tunivar _ ->
++          if not (TypeSet.mem ty bound) then raise (Unify [ty, newgenvar ()])
+       | Tpoly (ty, tyl) ->
+           let bound = List.fold_right TypeSet.add (List.map repr tyl) bound in
+           occur_rec bound  ty
+@@ -1620,7 +1618,7 @@
+         Tpoly (t, tl) ->
+           if List.exists (fun t -> TypeSet.mem (repr t) family) tl then ()
+           else occur t
+-      | Tunivar ->
++      | Tunivar _ ->
+           if TypeSet.mem t family then raise Occur
+       | Tconstr (_, [], _) -> ()
+       | Tconstr (p, tl, _) ->
+@@ -1784,7 +1782,7 @@
+               t
+           end;
+         iter_type_expr (iterator visited) ty
+-    | Tvar -> 
++    | Tvar _ -> 
+         let t = create_fresh_constr ty.level false in
+         link_type ty t
+     | _ ->
+@@ -1862,8 +1860,8 @@
+   let t2 = repr t2 in
+   if t1 == t2 then () else
+     match (t1.desc, t2.desc) with
+-      | (Tvar, _)  
+-      | (_, Tvar)  ->
++      | (Tvar _, _)  
++      | (_, Tvar _)  ->
+         fatal_error "types should not include variables"
+       | (Tconstr (p1, [], _), Tconstr (p2, [], _)) when Path.same p1 p2 ->
+         ()
+@@ -1877,7 +1875,7 @@
+           with Not_found ->
+               TypePairs.add type_pairs (t1', t2') ();
+               match (t1'.desc, t2'.desc) with
+-                  (Tvar, Tvar) ->
++                  (Tvar _, Tvar _) ->
+                     fatal_error "types should not include variables"
+                 | (Tarrow (l1, t1, u1, _), Tarrow (l2, t2, u2, _)) when l1 = l2
+                   || !Clflags.classic && not (is_optional l1 || is_optional l2) ->
+@@ -1903,7 +1901,7 @@
+                 | (Tpoly (t1, tl1), Tpoly (t2, tl2)) ->
+                   enter_poly env univar_pairs t1 tl1 t2 tl2
+                     (mcomp type_pairs subst env)
+-                | (Tunivar, Tunivar) ->
++                | (Tunivar _, Tunivar _) ->
+                   unify_univar t1' t2' !univar_pairs
+                 | (_, _) ->
+                   raise (Unify [])
+@@ -2048,21 +2046,21 @@
+   try
+     type_changed := true;
+     match (t1.desc, t2.desc) with
+-      (Tvar, Tconstr _) when deep_occur t1 t2 ->
++      (Tvar _, Tconstr _) when deep_occur t1 t2 ->
+         unify2 env t1 t2
+-    | (Tconstr _, Tvar) when deep_occur t2 t1 ->
++    | (Tconstr _, Tvar _) when deep_occur t2 t1 ->
+         unify2 env t1 t2
+-    | (Tvar, _) ->
++    | (Tvar _, _) ->
+         occur !env t1 t2; 
+         occur_univar !env t2;
+         link_type t1 t2;
+         update_level !env t1.level t2
+-    | (_, Tvar) ->
++    | (_, Tvar _) ->
+         occur !env t2 t1; 
+         occur_univar !env t1;
+         link_type t2 t1;
+         update_level !env t2.level t1
+-    | (Tunivar, Tunivar) ->
++    | (Tunivar _, Tunivar _) ->
+         unify_univar t1 t2 !univar_pairs;
+         update_level !env t1.level t2;
+         link_type t1 t2
+@@ -2104,7 +2102,7 @@
+   (* Assumes either [t1 == t1'] or [t2 != t2'] *)
+   let d1 = t1'.desc and d2 = t2'.desc in
+   match (d1, d2) with (* handle univars specially *)
+-    (Tunivar, Tunivar) ->
++    (Tunivar _, Tunivar _) ->
+       unify_univar t1' t2' !univar_pairs;
+       update_level !env t1'.level t2';
+       link_type t1' t2'
+@@ -2127,12 +2125,12 @@
+     | Old -> f () (* old_link was already called *)
+   in
+   match d1, d2 with
+-  | Tvar,_ ->
++  | Tvar _, _ ->
+       occur !env t1 t2';
+       occur_univar !env t2;
+       update_level !env t1'.level t2;
+       link_type t1' t2;      
+-  | _, Tvar ->
++  | _, Tvar _ ->
+       occur !env t2 t1';
+       occur_univar !env t1;
+       update_level !env t2'.level t1;
+@@ -2149,8 +2147,8 @@
+           add_type_equality t1' t2' end;
+       try
+         begin match (d1, d2) with
+-        | (Tvar, _) 
+-        | (_, Tvar) ->
++        | (Tvar _, _) 
++        | (_, Tvar _) ->
+             (* cases taken care of *)
+             assert false
+         | (Tarrow (l1, t1, u1, c1), Tarrow (l2, t2, u2, c2)) when l1 = l2
+@@ -2214,8 +2212,9 @@
+             (* Type [t2'] may have been instantiated by [unify_fields] *)
+             (* XXX One should do some kind of unification... *)
+             begin match (repr t2').desc with
+-              Tobject (_, {contents = Some (_, va::_)})
+-              when let va = repr va in List.mem va.desc [Tvar; Tunivar; Tnil] ->
++              Tobject (_, {contents = Some (_, va::_)}) when
++	      (match (repr va).desc with
++		Tvar _|Tunivar _|Tnil -> true | _ -> false) ->
+                 ()
+             | Tobject (_, nm2) ->
+                 set_name nm2 !nm1
+@@ -2290,16 +2289,32 @@
+     raise (Unify []);
+   List.iter2 (unify env) tl1 tl2
+ 
++(* Build a fresh row variable for unification *)
++and make_rowvar level use1 rest1 use2 rest2  =
++  let set_name ty name =
++    match ty.desc with
++      Tvar None -> log_type ty; ty.desc <- Tvar name
++    | _ -> ()
++  in
++  let name =
++    match rest1.desc, rest2.desc with
++      Tvar (Some _ as name1), Tvar (Some _ as name2) ->
++        if rest1.level <= rest2.level then name1 else name2
++    | Tvar (Some _ as name), _ ->
++        if use2 then set_name rest2 name; name
++    | _, Tvar (Some _ as name) ->
++        if use1 then set_name rest2 name; name
++    | _ -> None
++  in
++  if use1 then rest1 else
++  if use2 then rest2 else newvar2 ?name level
++
+ and unify_fields env ty1 ty2 =          (* Optimization *)
+   let (fields1, rest1) = flatten_fields ty1
+   and (fields2, rest2) = flatten_fields ty2 in
+   let (pairs, miss1, miss2) = associate_fields fields1 fields2 in
+   let l1 = (repr ty1).level and l2 = (repr ty2).level in
+-  let va =
+-    if miss1 = [] then rest2
+-    else if miss2 = [] then rest1
+-    else newty2 (min l1 l2) Tvar
+-  in
++  let va = make_rowvar (min l1 l2) (miss2=[]) rest1 (miss1=[]) rest2 in
+   let d1 = rest1.desc and d2 = rest2.desc in
+   try
+     unify env (build_fields l1 miss1 va) rest2;
+@@ -2390,7 +2405,7 @@
+     let rm = row_more row in
+     if row.row_fixed then
+       if row0.row_more == rm then () else
+-      if rm.desc = Tvar then link_type rm row0.row_more else
++      if is_Tvar rm then link_type rm row0.row_more else
+       unify env rm row0.row_more
+     else
+       let ty = newty2 generic_level (Tvariant {row0 with row_fields = rest}) in
+@@ -2489,7 +2504,7 @@
+   let t1 = repr t1 and t2 = repr t2 in
+   if t1 == t2 then () else
+   match t1.desc with
+-    Tvar ->
++    Tvar _ ->
+       begin try
+         occur env t1 t2;
+         update_level env t1.level t2;
+@@ -2527,7 +2542,7 @@
+ let rec filter_arrow env t l =
+   let t = expand_head_unif env t in
+   match t.desc with
+-    Tvar ->
++    Tvar _ ->
+       let lv = t.level in
+       let t1 = newvar2 lv and t2 = newvar2 lv in
+       let t' = newty2 lv (Tarrow (l, t1, t2, Cok)) in
+@@ -2543,7 +2558,7 @@
+ let rec filter_method_field env name priv ty =
+   let ty = repr ty in
+   match ty.desc with
+-    Tvar ->
++    Tvar _ ->
+       let level = ty.level in
+       let ty1 = newvar2 level and ty2 = newvar2 level in
+       let ty' = newty2 level (Tfield (name,
+@@ -2570,7 +2585,7 @@
+ let rec filter_method env name priv ty =
+   let ty = expand_head_unif env ty in
+   match ty.desc with
+-    Tvar ->
++    Tvar _ ->
+       let ty1 = newvar () in
+       let ty' = newobj ty1 in
+       update_level env ty.level ty';
+@@ -2606,7 +2621,7 @@
+   let rec occur ty =
+     let ty = repr ty in
+     if ty.level > level then begin
+-      if ty.desc = Tvar && ty.level >= generic_level - 1 then raise Occur;
++      if is_Tvar ty && ty.level >= generic_level - 1 then raise Occur;
+       ty.level <- pivot_level - ty.level;
+       match ty.desc with
+         Tvariant row when static_row row ->
+@@ -2636,7 +2651,7 @@
+ 
+   try
+     match (t1.desc, t2.desc) with
+-      (Tvar, _) when may_instantiate inst_nongen t1 ->
++      (Tvar _, _) when may_instantiate inst_nongen t1 ->
+         moregen_occur env t1.level t2;
+         occur env t1 t2;
+         link_type t1 t2
+@@ -2653,7 +2668,7 @@
+         with Not_found ->
+           TypePairs.add type_pairs (t1', t2') ();
+           match (t1'.desc, t2'.desc) with
+-            (Tvar, _) when may_instantiate inst_nongen t1' ->
++            (Tvar _, _) when may_instantiate inst_nongen t1' ->
+               moregen_occur env t1'.level t2;
+               link_type t1' t2
+           | (Tarrow (l1, t1, u1, _), Tarrow (l2, t2, u2, _)) when l1 = l2
+@@ -2684,7 +2699,7 @@
+           | (Tpoly (t1, tl1), Tpoly (t2, tl2)) ->
+               enter_poly env univar_pairs t1 tl1 t2 tl2
+                 (moregen inst_nongen type_pairs env)
+-          | (Tunivar, Tunivar) ->
++          | (Tunivar _, Tunivar _) ->
+               unify_univar t1' t2' !univar_pairs
+           | (_, _) ->
+               raise (Unify [])
+@@ -2725,7 +2740,7 @@
+   let row1 = row_repr row1 and row2 = row_repr row2 in
+   let rm1 = repr row1.row_more and rm2 = repr row2.row_more in
+   if rm1 == rm2 then () else
+-  let may_inst = rm1.desc = Tvar && may_instantiate inst_nongen rm1 in
++  let may_inst = is_Tvar rm1 && may_instantiate inst_nongen rm1 in
+   let r1, r2, pairs = merge_row_fields row1.row_fields row2.row_fields in
+   let r1, r2 =
+     if row2.row_closed then
+@@ -2735,9 +2750,9 @@
+   if r1 <> [] || row1.row_closed && (not row2.row_closed || r2 <> [])
+   then raise (Unify []);
+   begin match rm1.desc, rm2.desc with
+-    Tunivar, Tunivar ->
++    Tunivar _, Tunivar _ ->
+       unify_univar rm1 rm2 !univar_pairs
+-  | Tunivar, _ | _, Tunivar ->
++  | Tunivar _, _ | _, Tunivar _ ->
+       raise (Unify [])
+   | _ when static_row row1 -> ()
+   | _ when may_inst ->
+@@ -2828,13 +2843,13 @@
+   if ty.level >= lowest_level then begin
+     ty.level <- pivot_level - ty.level;
+     match ty.desc with
+-    | Tvar ->
++    | Tvar _ ->
+         if not (List.memq ty !vars) then vars := ty :: !vars
+     | Tvariant row ->
+         let row = row_repr row in
+         let more = repr row.row_more in
+-        if more.desc = Tvar && not row.row_fixed then begin
+-          let more' = newty2 more.level Tvar in
++        if is_Tvar more && not row.row_fixed then begin
++          let more' = newty2 more.level more.desc in
+           let row' = {row with row_fixed=true; row_fields=[]; row_more=more'}
+           in link_type more (newty2 ty.level (Tvariant row'))
+         end;
+@@ -2857,7 +2872,7 @@
+     (fun ty ->
+       let ty = expand_head env ty in
+       if List.memq ty !tyl then false else
+-      (tyl := ty :: !tyl; ty.desc = Tvar))
++      (tyl := ty :: !tyl; is_Tvar ty))
+     vars
+ 
+ let matches env ty ty' =
+@@ -2901,7 +2916,7 @@
+ 
+   try
+     match (t1.desc, t2.desc) with
+-      (Tvar, Tvar) when rename ->
++      (Tvar _, Tvar _) when rename ->
+         begin try
+           normalize_subst subst;
+           if List.assq t1 !subst != t2 then raise (Unify [])
+@@ -2922,7 +2937,7 @@
+         with Not_found ->
+           TypePairs.add type_pairs (t1', t2') ();
+           match (t1'.desc, t2'.desc) with
+-            (Tvar, Tvar) when rename ->
++            (Tvar _, Tvar _) when rename ->
+               begin try
+                 normalize_subst subst;
+                 if List.assq t1' !subst != t2' then raise (Unify [])
+@@ -2956,7 +2971,7 @@
+           | (Tpoly (t1, tl1), Tpoly (t2, tl2)) ->
+               enter_poly env univar_pairs t1 tl1 t2 tl2
+                 (eqtype rename type_pairs subst env)
+-          | (Tunivar, Tunivar) ->
++          | (Tunivar _, Tunivar _) ->
+               unify_univar t1' t2' !univar_pairs
+           | (_, _) ->
+               raise (Unify [])
+@@ -3405,7 +3420,7 @@
+ let rec build_subtype env visited loops posi level t =
+   let t = repr t in
+   match t.desc with
+-    Tvar ->
++    Tvar _ ->
+       if posi then
+         try
+           let t' = List.assq t loops in
+@@ -3454,13 +3469,13 @@
+              as this occurence might break the occur check.
+              XXX not clear whether this correct anyway... *)
+           if List.exists (deep_occur ty) tl1 then raise Not_found;
+-          ty.desc <- Tvar;
++          ty.desc <- Tvar None;
+           let t'' = newvar () in
+           let loops = (ty, t'') :: loops in
+           (* May discard [visited] as level is going down *)
+           let (ty1', c) =
+             build_subtype env [t'] loops posi (pred_enlarge level') ty1 in
+-          assert (t''.desc = Tvar);
++          assert (is_Tvar t'');
+           let nm =
+             if c > Equiv || deep_occur ty ty1' then None else Some(p,tl1) in
+           t''.desc <- Tobject (ty1', ref nm);
+@@ -3559,7 +3574,7 @@
+       let (t1', c) = build_subtype env visited loops posi level t1 in
+       if c > Unchanged then (newty (Tpoly(t1', tl)), c)
+       else (t, Unchanged)
+-  | Tunivar | Tpackage _ ->
++  | Tunivar _ | Tpackage _ ->
+       (t, Unchanged)
+ 
+ let enlarge_type env ty =
+@@ -3623,7 +3638,7 @@
+   with Not_found ->
+     TypePairs.add subtypes (t1, t2) ();
+     match (t1.desc, t2.desc) with
+-      (Tvar, _) | (_, Tvar) ->
++      (Tvar _, _) | (_, Tvar _) ->
+         (trace, t1, t2, !univar_pairs)::cstrs
+     | (Tarrow(l1, t1, u1, _), Tarrow(l2, t2, u2, _)) when l1 = l2
+       || !Clflags.classic && not (is_optional l1 || is_optional l2) ->
+@@ -3659,7 +3674,7 @@
+     | (Tconstr(p1, tl1, _), _) when private_abbrev env p1 ->
+         subtype_rec env trace (expand_abbrev_opt env t1) t2 cstrs
+     | (Tobject (f1, _), Tobject (f2, _))
+-      when (object_row f1).desc = Tvar && (object_row f2).desc = Tvar ->
++      when is_Tvar (object_row f1) && is_Tvar (object_row f2) ->
+         (* Same row variable implies same object. *)
+         (trace, t1, t2, !univar_pairs)::cstrs
+     | (Tobject (f1, _), Tobject (f2, _)) ->
+@@ -3731,7 +3746,7 @@
+   match more1.desc, more2.desc with
+     Tconstr(p1,_,_), Tconstr(p2,_,_) when Path.same p1 p2 ->
+       subtype_rec env ((more1,more2)::trace) more1 more2 cstrs
+-  | (Tvar|Tconstr _), (Tvar|Tconstr _)
++  | (Tvar _|Tconstr _), (Tvar _|Tconstr _)
+     when row1.row_closed && r1 = [] ->
+       List.fold_left
+         (fun cstrs (_,f1,f2) ->
+@@ -3745,7 +3760,7 @@
+           | Rabsent, _ -> cstrs
+           | _ -> raise Exit)
+         cstrs pairs
+-  | Tunivar, Tunivar
++  | Tunivar _, Tunivar _
+     when row1.row_closed = row2.row_closed && r1 = [] && r2 = [] ->
+       let cstrs =
+         subtype_rec env ((more1,more2)::trace) more1 more2 cstrs in
+@@ -3789,19 +3804,19 @@
+   match ty.desc with
+     Tfield (s, k, t1, t2) ->
+       newty2 ty.level (Tfield (s, k, t1, unalias_object t2))
+-  | Tvar | Tnil ->
++  | Tvar _ | Tnil ->
+       newty2 ty.level ty.desc
+-  | Tunivar ->
++  | Tunivar _ ->
+       ty
+   | Tconstr _ ->
+-      newty2 ty.level Tvar
++      newvar2 ty.level
+   | _ ->
+       assert false
+ 
+ let unalias ty =
+   let ty = repr ty in
+   match ty.desc with
+-    Tvar | Tunivar ->
++    Tvar _ | Tunivar _ ->
+       ty
+   | Tvariant row ->
+       let row = row_repr row in
+@@ -3875,7 +3890,7 @@
+               set_name nm None
+             else let v' = repr v in
+             begin match v'.desc with
+-            | Tvar|Tunivar ->
++            | Tvar _ | Tunivar _ ->
+                 if v' != v then set_name nm (Some (n, v' :: l))
+             | Tnil ->
+                 log_type ty; ty.desc <- Tconstr (n, l, ref Mnil)
+@@ -3917,7 +3932,7 @@
+ 
+ let rec nondep_type_rec env id ty =
+   match ty.desc with
+-    Tvar | Tunivar -> ty
++    Tvar _ | Tunivar _ -> ty
+   | Tlink ty -> nondep_type_rec env id ty
+   | _ -> try TypeHash.find nondep_hash ty
+   with Not_found ->
+@@ -3987,7 +4002,7 @@
+ 
+ let unroll_abbrev id tl ty =
+   let ty = repr ty and path = Path.Pident id in
+-  if (ty.desc = Tvar) || (List.exists (deep_occur ty) tl)
++  if is_Tvar ty || (List.exists (deep_occur ty) tl)
+   || is_object_type path then
+     ty
+   else
+Index: typing/printtyp.ml
+===================================================================
+--- typing/printtyp.ml	(リビジョン 11207)
++++ typing/printtyp.ml	(作業コピー)
+@@ -109,6 +109,10 @@
+   | Mcons (priv, p, t1, t2, rem) -> p :: list_of_memo rem
+   | Mlink rem -> list_of_memo !rem
+ 
++let print_name ppf = function
++    None -> fprintf ppf "None"
++  | Some name -> fprintf ppf "\"%s\"" name
++
+ let visited = ref []
+ let rec raw_type ppf ty =
+   let ty = safe_repr [] ty in
+@@ -119,7 +123,7 @@
+   end
+ and raw_type_list tl = raw_list raw_type tl
+ and raw_type_desc ppf = function
+-    Tvar -> fprintf ppf "Tvar"
++    Tvar name -> fprintf ppf "Tvar %a" print_name name
+   | Tarrow(l,t1,t2,c) ->
+       fprintf ppf "@[<hov1>Tarrow(%s,@,%a,@,%a,@,%s)@]"
+         l raw_type t1 raw_type t2
+@@ -143,7 +147,7 @@
+   | Tnil -> fprintf ppf "Tnil"
+   | Tlink t -> fprintf ppf "@[<1>Tlink@,%a@]" raw_type t
+   | Tsubst t -> fprintf ppf "@[<1>Tsubst@,%a@]" raw_type t
+-  | Tunivar -> fprintf ppf "Tunivar"
++  | Tunivar name -> fprintf ppf "Tunivar %a" print_name name
+   | Tpoly (t, tl) ->
+       fprintf ppf "@[<hov1>Tpoly(@,%a,@,%a)@]"
+         raw_type t
+@@ -189,28 +193,61 @@
+ 
+ let names = ref ([] : (type_expr * string) list)
+ let name_counter = ref 0
++let named_vars = ref ([] : string list)
+ 
+-let reset_names () = names := []; name_counter := 0
++let reset_names () = names := []; name_counter := 0; named_vars := []
++let add_named_var ty =
++  match ty.desc with
++    Tvar (Some name) | Tunivar (Some name) ->
++      if List.mem name !named_vars then () else
++      named_vars := name :: !named_vars
++  | _ -> ()
+ 
+-let new_name () =
++let rec new_name () =
+   let name =
+     if !name_counter < 26
+     then String.make 1 (Char.chr(97 + !name_counter))
+     else String.make 1 (Char.chr(97 + !name_counter mod 26)) ^
+            string_of_int(!name_counter / 26) in
+   incr name_counter;
+-  name
++  if List.mem name !named_vars
++  || List.exists (fun (_, name') -> name = name') !names
++  then new_name ()
++  else name
+ 
+ let name_of_type t =
++  (* We've already been through repr at this stage, so t is our representative
++     of the union-find class. *)
+   try List.assq t !names with Not_found ->
+-    let name = new_name () in
++    let name =
++      match t.desc with
++        Tvar (Some name) | Tunivar (Some name) ->
++          (* Some part of the type we've already printed has assigned another
++           * unification variable to that name. We want to keep the name, so try
++           * adding a number until we find a name that's not taken. *)
++          let current_name = ref name in
++          let i = ref 0 in
++          while List.exists (fun (_, name') -> !current_name = name') !names do
++            current_name := name ^ (string_of_int !i);
++            i := !i + 1;
++          done;
++          !current_name
++      | _ ->
++          (* No name available, create a new one *)
++          new_name ()
++    in
+     names := (t, name) :: !names;
+     name
+ 
+ let check_name_of_type t = ignore(name_of_type t)
+ 
++let remove_names tyl =
++  let tyl = List.map repr tyl in
++  names := List.filter (fun (ty,_) -> not (List.memq ty tyl)) !names
++
++
+ let non_gen_mark sch ty =
+-  if sch && ty.desc = Tvar && ty.level <> generic_level then "_" else ""
++  if sch && is_Tvar ty && ty.level <> generic_level then "_" else ""
+ 
+ let print_name_of_type sch ppf t =
+   fprintf ppf "'%s%s" (non_gen_mark sch t) (name_of_type t)
+@@ -225,9 +262,13 @@
+ let is_aliased ty = List.memq (proxy ty) !aliased
+ let add_alias ty =
+   let px = proxy ty in
+-  if not (is_aliased px) then aliased := px :: !aliased
++  if not (is_aliased px) then begin
++    aliased := px :: !aliased;
++    add_named_var px
++  end
++
+ let aliasable ty =
+-  match ty.desc with Tvar | Tunivar | Tpoly _ -> false | _ -> true
++  match ty.desc with Tvar _ | Tunivar _ | Tpoly _ -> false | _ -> true
+ 
+ let namable_row row =
+   row.row_name <> None &&
+@@ -245,7 +286,7 @@
+   if List.memq px visited && aliasable ty then add_alias px else
+     let visited = px :: visited in
+     match ty.desc with
+-    | Tvar -> ()
++    | Tvar _ -> add_named_var ty
+     | Tarrow(_, ty1, ty2, _) ->
+         mark_loops_rec visited ty1; mark_loops_rec visited ty2
+     | Ttuple tyl -> List.iter (mark_loops_rec visited) tyl
+@@ -290,7 +331,7 @@
+     | Tpoly (ty, tyl) ->
+         List.iter (fun t -> add_alias t) tyl;
+         mark_loops_rec visited ty
+-    | Tunivar -> ()
++    | Tunivar _ -> add_named_var ty
+ 
+ let mark_loops ty =
+   normalize_type Env.empty ty;
+@@ -322,7 +363,7 @@
+ 
+   let pr_typ () =
+     match ty.desc with
+-    | Tvar ->
++    | Tvar _ ->
+         Otyp_var (is_non_gen sch ty, name_of_type ty)
+     | Tarrow(l, ty1, ty2, _) ->
+         let pr_arrow l ty1 ty2 =
+@@ -387,16 +428,22 @@
+     | Tpoly (ty, []) ->
+         tree_of_typexp sch ty
+     | Tpoly (ty, tyl) ->
++        (*let print_names () =
++          List.iter (fun (_, name) -> prerr_string (name ^ " ")) !names;
++          prerr_string "; " in *)
+         let tyl = List.map repr tyl in
+-        (* let tyl = List.filter is_aliased tyl in *)
+         if tyl = [] then tree_of_typexp sch ty else begin
+           let old_delayed = !delayed in
++          (* Make the names delayed, so that the real type is
++             printed once when used as proxy *)
+           List.iter add_delayed tyl;
+           let tl = List.map name_of_type tyl in
+           let tr = Otyp_poly (tl, tree_of_typexp sch ty) in
++          (* Forget names when we leave scope *)
++          remove_names tyl;
+           delayed := old_delayed; tr
+         end
+-    | Tunivar ->
++    | Tunivar _ ->
+         Otyp_var (false, name_of_type ty)
+     | Tpackage (p, n, tyl) ->
+         Otyp_module (Path.name p, n, tree_of_typlist sch tyl)
+@@ -446,13 +493,13 @@
+   end
+ 
+ and is_non_gen sch ty =
+-    sch && ty.desc = Tvar && ty.level <> generic_level
++    sch && is_Tvar ty && ty.level <> generic_level
+ 
+ and tree_of_typfields sch rest = function
+   | [] ->
+       let rest =
+         match rest.desc with
+-        | Tvar | Tunivar -> Some (is_non_gen sch rest)
++        | Tvar _ | Tunivar _ -> Some (is_non_gen sch rest)
+         | Tconstr _ -> Some false
+         | Tnil -> None
+         | _ -> fatal_error "typfields (1)"
+@@ -564,7 +611,7 @@
+     let vari =
+       List.map2
+         (fun ty (co,cn,ct) ->
+-          if abstr || (repr ty).desc <> Tvar then (co,cn) else (true,true))
++          if abstr || not (is_Tvar (repr ty)) then (co,cn) else (true,true))
+         decl.type_params decl.type_variance
+     in
+     (Ident.name id,
+@@ -645,16 +692,18 @@
+ 
+ let method_type (_, kind, ty) =
+   match field_kind_repr kind, repr ty with
+-    Fpresent, {desc=Tpoly(ty, _)} -> ty
+-  | _       , ty                  -> ty
++    Fpresent, {desc=Tpoly(ty, tyl)} -> (ty, tyl)
++  | _       , ty                    -> (ty, [])
+ 
+ let tree_of_metho sch concrete csil (lab, kind, ty) =
+   if lab <> dummy_method then begin
+     let kind = field_kind_repr kind in
+     let priv = kind <> Fpresent in
+     let virt = not (Concr.mem lab concrete) in
+-    let ty = method_type (lab, kind, ty) in
+-    Ocsg_method (lab, priv, virt, tree_of_typexp sch ty) :: csil
++    let (ty, tyl) = method_type (lab, kind, ty) in
++    let tty = tree_of_typexp sch ty in
++    remove_names tyl;
++    Ocsg_method (lab, priv, virt, tty) :: csil
+   end
+   else csil
+ 
+@@ -662,7 +711,7 @@
+   | Tcty_constr (p, tyl, cty) ->
+       let sty = Ctype.self_type cty in
+       if List.memq (proxy sty) !visited_objects
+-      || List.exists (fun ty -> (repr ty).desc <> Tvar) params
++      || not (List.for_all is_Tvar params)
+       || List.exists (deep_occur sty) tyl
+       then prepare_class_type params cty
+       else List.iter mark_loops tyl
+@@ -675,7 +724,7 @@
+       let (fields, _) =
+         Ctype.flatten_fields (Ctype.object_fields sign.cty_self)
+       in
+-      List.iter (fun met -> mark_loops (method_type met)) fields;
++      List.iter (fun met -> mark_loops (fst (method_type met))) fields;
+       Vars.iter (fun _ (_, _, ty) -> mark_loops ty) sign.cty_vars
+   | Tcty_fun (_, ty, cty) ->
+       mark_loops ty;
+@@ -686,7 +735,7 @@
+   | Tcty_constr (p', tyl, cty) ->
+       let sty = Ctype.self_type cty in
+       if List.memq (proxy sty) !visited_objects
+-      || List.exists (fun ty -> (repr ty).desc <> Tvar) params
++      || not (List.for_all is_Tvar params)
+       then
+         tree_of_class_type sch params cty
+       else
+@@ -743,7 +792,7 @@
+   (match tree_of_typexp true param with
+     Otyp_var (_, s) -> s
+   | _ -> "?"),
+-  if (repr param).desc = Tvar then (true, true) else variance
++  if is_Tvar (repr param) then (true, true) else variance
+ 
+ let tree_of_class_params params =
+   let tyl = tree_of_typlist true params in
+@@ -890,7 +939,7 @@
+   | {desc = Tvariant row} as t when (row_repr row).row_name <> None ->
+       newty2 t.level
+         (Tvariant {(row_repr row) with row_name = None;
+-                   row_more = newty2 (row_more row).level Tvar})
++                   row_more = newvar2 (row_more row).level})
+   | _ -> t
+ 
+ let prepare_expansion (t, t') =
+@@ -913,9 +962,9 @@
+ let has_explanation unif t3 t4 =
+   match t3.desc, t4.desc with
+     Tfield _, _ | _, Tfield _
+-  | Tunivar, Tvar | Tvar, Tunivar
++  | Tunivar _, Tvar _ | Tvar _, Tunivar _
+   | Tvariant _, Tvariant _ -> true
+-  | Tconstr (p, _, _), Tvar | Tvar, Tconstr (p, _, _) ->
++  | Tconstr (p, _, _), Tvar _ | Tvar _, Tconstr (p, _, _) ->
+       unif && min t3.level t4.level < Path.binding_time p
+   | _ -> false
+ 
+@@ -931,21 +980,21 @@
+ 
+ let explanation unif t3 t4 ppf =
+   match t3.desc, t4.desc with
+-  | Tfield _, Tvar | Tvar, Tfield _ ->
++  | Tfield _, Tvar _ | Tvar _, Tfield _ ->
+       fprintf ppf "@,Self type cannot escape its class"
+-  | Tconstr (p, tl, _), Tvar
++  | Tconstr (p, tl, _), Tvar _
+     when unif && (tl = [] || t4.level < Path.binding_time p) ->
+       fprintf ppf
+         "@,@[The type constructor@;<1 2>%a@ would escape its scope@]"
+         path p
+-  | Tvar, Tconstr (p, tl, _)
++  | Tvar _, Tconstr (p, tl, _)
+     when unif && (tl = [] || t3.level < Path.binding_time p) ->
+       fprintf ppf
+         "@,@[The type constructor@;<1 2>%a@ would escape its scope@]"
+         path p
+-  | Tvar, Tunivar | Tunivar, Tvar ->
++  | Tvar _, Tunivar _ | Tunivar _, Tvar _ ->
+       fprintf ppf "@,The universal variable %a would escape its scope"
+-        type_expr (if t3.desc = Tunivar then t3 else t4)
++        type_expr (if is_Tunivar t3 then t3 else t4)
+   | Tfield (lab, _, _, _), _
+   | _, Tfield (lab, _, _, _) when lab = dummy_method ->
+       fprintf ppf
+Index: typing/includecore.ml
+===================================================================
+--- typing/includecore.ml	(リビジョン 11207)
++++ typing/includecore.ml	(作業コピー)
+@@ -61,7 +61,7 @@
+     Tvariant row1, Tvariant row2 when is_absrow env (Btype.row_more row2) ->
+       let row1 = Btype.row_repr row1 and row2 = Btype.row_repr row2 in
+       Ctype.equal env true (ty1::params1) (row2.row_more::params2) &&
+-      (match row1.row_more with {desc=Tvar|Tconstr _} -> true | _ -> false) &&
++      (match row1.row_more with {desc=Tvar _|Tconstr _} -> true | _ -> false) &&
+       let r1, r2, pairs =
+         Ctype.merge_row_fields row1.row_fields row2.row_fields in
+       (not row2.row_closed ||
+@@ -91,7 +91,7 @@
+       let (fields2,rest2) = Ctype.flatten_fields fi2 in
+       Ctype.equal env true (ty1::params1) (rest2::params2) &&
+       let (fields1,rest1) = Ctype.flatten_fields fi1 in
+-      (match rest1 with {desc=Tnil|Tvar|Tconstr _} -> true | _ -> false) &&
++      (match rest1 with {desc=Tnil|Tvar _|Tconstr _} -> true | _ -> false) &&
+       let pairs, miss1, miss2 = Ctype.associate_fields fields1 fields2 in
+       miss2 = [] &&
+       let tl1, tl2 =
+@@ -251,7 +251,7 @@
+ let encode_val (mut, ty) rem =
+   begin match mut with
+     Asttypes.Mutable   -> Predef.type_unit
+-  | Asttypes.Immutable -> Btype.newgenty Tvar
++  | Asttypes.Immutable -> Btype.newgenvar ()
+   end
+   ::ty::rem
+ 
+Index: typing/subst.ml
+===================================================================
+--- typing/subst.ml	(リビジョン 11207)
++++ typing/subst.ml	(作業コピー)
+@@ -71,16 +71,19 @@
+ let reset_for_saving () = new_id := -1
+ 
+ let newpersty desc =
+-  decr new_id; { desc = desc; level = generic_level; id = !new_id }
++  decr new_id;
++  { desc = desc; level = generic_level; id = !new_id }
+ 
+ (* Similar to [Ctype.nondep_type_rec]. *)
+ let rec typexp s ty =
+   let ty = repr ty in
+   match ty.desc with
+-    Tvar | Tunivar ->
++    Tvar _ | Tunivar _ ->
+       if s.for_saving || ty.id < 0 then
++        let desc = match ty.desc with (* Tvar _ -> Tvar None *) | d -> d in
+         let ty' =
+-          if s.for_saving then newpersty ty.desc else newty2 ty.level ty.desc
++          if s.for_saving then newpersty desc
++          else newty2 ty.level desc
+         in
+         save_desc ty ty.desc; ty.desc <- Tsubst ty'; ty'
+       else ty
+@@ -94,7 +97,7 @@
+     let desc = ty.desc in
+     save_desc ty desc;
+     (* Make a stub *)
+-    let ty' = if s.for_saving then newpersty Tvar else newgenvar () in
++    let ty' = if s.for_saving then newpersty (Tvar None) else newgenvar () in
+     ty.desc <- Tsubst ty';
+     ty'.desc <-
+       begin match desc with
+@@ -127,10 +130,10 @@
+                 match more.desc with
+                   Tsubst ty -> ty
+                 | Tconstr _ -> typexp s more
+-                | Tunivar | Tvar ->
++                | Tunivar _ | Tvar _ ->
+                     save_desc more more.desc;
+                     if s.for_saving then newpersty more.desc else
+-                    if dup && more.desc <> Tunivar then newgenvar () else more
++                    if dup && is_Tvar more then newgenty more.desc else more
+                 | _ -> assert false
+               in
+               (* Register new type first for recursion *)
+Index: typing/types.ml
+===================================================================
+--- typing/types.ml	(リビジョン 11207)
++++ typing/types.ml	(作業コピー)
+@@ -25,7 +25,7 @@
+     mutable id: int }
+ 
+ and type_desc =
+-    Tvar
++    Tvar of string option
+   | Tarrow of label * type_expr * type_expr * commutable
+   | Ttuple of type_expr list
+   | Tconstr of Path.t * type_expr list * abbrev_memo ref
+@@ -35,7 +35,7 @@
+   | Tlink of type_expr
+   | Tsubst of type_expr         (* for copying *)
+   | Tvariant of row_desc
+-  | Tunivar
++  | Tunivar of string option
+   | Tpoly of type_expr * type_expr list
+   | Tpackage of Path.t * string list * type_expr list
+ 
+Index: ocamldoc/odoc_str.ml
+===================================================================
+--- ocamldoc/odoc_str.ml	(リビジョン 11207)
++++ ocamldoc/odoc_str.ml	(作業コピー)
+@@ -31,7 +31,7 @@
+   | Types.Tlink t2 | Types.Tsubst t2 -> is_arrow_type t2
+   | Types.Ttuple _
+   | Types.Tconstr _
+-  | Types.Tvar | Types.Tunivar | Types.Tobject _ | Types.Tpoly _
++  | Types.Tvar _ | Types.Tunivar _ | Types.Tobject _ | Types.Tpoly _
+   | Types.Tfield _ | Types.Tnil | Types.Tvariant _ | Types.Tpackage _ -> false
+ 
+ let raw_string_of_type_list sep type_list =
+@@ -43,7 +43,7 @@
+     | Types.Tlink t2 | Types.Tsubst t2 -> need_parent t2
+     | Types.Tconstr _ ->
+         false
+-    | Types.Tvar | Types.Tunivar | Types.Tobject _ | Types.Tpoly _
++    | Types.Tvar _ | Types.Tunivar _ | Types.Tobject _ | Types.Tpoly _
+     | Types.Tfield _ | Types.Tnil | Types.Tvariant _ | Types.Tpackage _ -> false
+   in
+   let print_one_type variance t =
+Index: ocamldoc/odoc_value.ml
+===================================================================
+--- ocamldoc/odoc_value.ml	(リビジョン 11207)
++++ ocamldoc/odoc_value.ml	(作業コピー)
+@@ -77,13 +77,13 @@
+     | Types.Tsubst texp ->
+         iter texp
+     | Types.Tpoly (texp, _) -> iter texp
+-    | Types.Tvar
++    | Types.Tvar _
+     | Types.Ttuple _
+     | Types.Tconstr _
+     | Types.Tobject _
+     | Types.Tfield _
+     | Types.Tnil
+-    | Types.Tunivar
++    | Types.Tunivar _
+     | Types.Tpackage _
+     | Types.Tvariant _ ->
+         []
+Index: ocamldoc/odoc_misc.ml
+===================================================================
+--- ocamldoc/odoc_misc.ml	(リビジョン 11207)
++++ ocamldoc/odoc_misc.ml	(作業コピー)
+@@ -478,8 +478,8 @@
+     match t with
+     | Types.Tconstr(path, [ty], _) when Path.same path Predef.path_option -> ty.Types.desc
+     | Types.Tconstr _
+-    | Types.Tvar
+-    | Types.Tunivar
++    | Types.Tvar _
++    | Types.Tunivar _
+     | Types.Tpoly _
+     | Types.Tarrow _
+     | Types.Ttuple _
+Index: bytecomp/typeopt.ml
+===================================================================
+--- bytecomp/typeopt.ml	(リビジョン 11207)
++++ bytecomp/typeopt.ml	(作業コピー)
+@@ -50,7 +50,7 @@
+ 
+ let array_element_kind env ty =
+   match scrape env ty with
+-  | Tvar | Tunivar ->
++  | Tvar _ | Tunivar _ ->
+       Pgenarray
+   | Tconstr(p, args, abbrev) ->
+       if Path.same p Predef.path_int || Path.same p Predef.path_char then
+Index: bytecomp/translcore.ml
+===================================================================
+--- bytecomp/translcore.ml	(リビジョン 11207)
++++ bytecomp/translcore.ml	(作業コピー)
+@@ -780,12 +780,13 @@
+           begin match e.exp_type.desc with
+           (* the following may represent a float/forward/lazy: need a
+              forward_tag *)
+-          | Tvar | Tlink _ | Tsubst _ | Tunivar
++          | Tvar _ | Tlink _ | Tsubst _ | Tunivar _
+           | Tpoly(_,_) | Tfield(_,_,_,_) ->
+               Lprim(Pmakeblock(Obj.forward_tag, Immutable), [transl_exp e])
+           (* the following cannot be represented as float/forward/lazy:
+              optimize *)
+-          | Tarrow(_,_,_,_) | Ttuple _ | Tpackage _ | Tobject(_,_) | Tnil | Tvariant _
++          | Tarrow(_,_,_,_) | Ttuple _ | Tpackage _ | Tobject(_,_) | Tnil
++          | Tvariant _
+               -> transl_exp e
+           (* optimize predefined types (excepted float) *)
+           | Tconstr(_,_,_) ->
+Index: testsuite/tests/lib-hashtbl/htbl.ml
+===================================================================
+--- testsuite/tests/lib-hashtbl/htbl.ml	(リビジョン 11207)
++++ testsuite/tests/lib-hashtbl/htbl.ml	(作業コピー)
+@@ -76,7 +76,7 @@
+   struct
+     type key = M.key
+     type 'a t = (key, 'a) Hashtbl.t
+-    let create = Hashtbl.create
++    let create s = Hashtbl.create s
+     let clear = Hashtbl.clear
+     let copy = Hashtbl.copy
+     let add = Hashtbl.add
+Index: toplevel/genprintval.ml
+===================================================================
+--- toplevel/genprintval.ml	(リビジョン 11207)
++++ toplevel/genprintval.ml	(作業コピー)
+@@ -180,7 +180,7 @@
+           find_printer env ty obj
+         with Not_found ->
+           match (Ctype.repr ty).desc with
+-          | Tvar ->
++          | Tvar _ | Tunivar _ ->
+               Oval_stuff "<poly>"
+           | Tarrow(_, ty1, ty2, _) ->
+               Oval_stuff "<fun>"
+@@ -327,8 +327,6 @@
+               fatal_error "Printval.outval_of_value"
+           | Tpoly (ty, _) ->
+               tree_of_val (depth - 1) obj ty
+-          | Tunivar ->
+-              Oval_stuff "<poly>"
+           | Tpackage _ ->
+               Oval_stuff "<module>"
+         end
+Index: otherlibs/labltk/browser/searchid.ml
+===================================================================
+--- otherlibs/labltk/browser/searchid.ml	(リビジョン 11207)
++++ otherlibs/labltk/browser/searchid.ml	(作業コピー)
+@@ -101,7 +101,7 @@
+ 
+ let rec equal ~prefix t1 t2 =
+   match (repr t1).desc, (repr t2).desc with
+-    Tvar, Tvar -> true
++    Tvar _, Tvar _ -> true
+   | Tvariant row1, Tvariant row2 ->
+       let row1 = row_repr row1 and row2 = row_repr row2 in
+       let fields1 = filter_row_fields false row1.row_fields
+@@ -144,7 +144,7 @@
+ 
+ let rec included ~prefix t1 t2 =
+   match (repr t1).desc, (repr t2).desc with
+-    Tvar, _ -> true
++    Tvar _, _ -> true
+   | Tvariant row1, Tvariant row2 ->
+       let row1 = row_repr row1 and row2 = row_repr row2 in
+       let fields1 = filter_row_fields false row1.row_fields

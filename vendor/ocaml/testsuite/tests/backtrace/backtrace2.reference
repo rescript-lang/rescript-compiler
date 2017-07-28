@@ -1,0 +1,27 @@
+a
+No exception
+b
+Uncaught exception Backtrace2.Error("b")
+Raised at file "backtrace2.ml", line 18, characters 21-32
+Called from file "backtrace2.ml", line 18, characters 42-53
+Called from file "backtrace2.ml", line 18, characters 42-53
+Called from file "backtrace2.ml", line 18, characters 42-53
+Called from file "backtrace2.ml", line 18, characters 42-53
+Called from file "backtrace2.ml", line 18, characters 42-53
+Called from file "backtrace2.ml", line 22, characters 4-11
+Re-raised at file "backtrace2.ml", line 24, characters 68-71
+Called from file "backtrace2.ml", line 29, characters 11-23
+Uncaught exception Backtrace2.Error("c")
+Raised at file "backtrace2.ml", line 25, characters 26-37
+Called from file "backtrace2.ml", line 29, characters 11-23
+Uncaught exception Backtrace2.Error("d")
+Raised at file "backtrace2.ml", line 18, characters 21-32
+Called from file "backtrace2.ml", line 18, characters 42-53
+Called from file "backtrace2.ml", line 18, characters 42-53
+Called from file "backtrace2.ml", line 18, characters 42-53
+Called from file "backtrace2.ml", line 18, characters 42-53
+Called from file "backtrace2.ml", line 18, characters 42-53
+Called from file "backtrace2.ml", line 22, characters 4-11
+Called from file "backtrace2.ml", line 29, characters 11-23
+Uncaught exception Invalid_argument("index out of bounds")
+Raised by primitive operation at file "backtrace2.ml", line 29, characters 14-22

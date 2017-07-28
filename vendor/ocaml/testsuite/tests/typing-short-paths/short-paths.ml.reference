@@ -1,0 +1,85 @@
+
+#                               module Core :
+  sig
+    module Int :
+      sig
+        module T :
+          sig
+            type t = int
+            val compare : 'a -> 'a -> t
+            val ( + ) : t -> t -> t
+          end
+        type t = int
+        val compare : 'a -> 'a -> t
+        val ( + ) : t -> t -> t
+        module Map :
+          sig
+            type key = t
+            type 'a t = 'a Map.Make(T).t
+            val empty : 'a t
+            val is_empty : 'a t -> bool
+            val mem : key -> 'a t -> bool
+            val add : key -> 'a -> 'a t -> 'a t
+            val singleton : key -> 'a -> 'a t
+            val remove : key -> 'a t -> 'a t
+            val merge :
+              (key -> 'a option -> 'b option -> 'c option) ->
+              'a t -> 'b t -> 'c t
+            val compare : ('a -> 'a -> key) -> 'a t -> 'a t -> key
+            val equal : ('a -> 'a -> bool) -> 'a t -> 'a t -> bool
+            val iter : (key -> 'a -> unit) -> 'a t -> unit
+            val fold : (key -> 'a -> 'b -> 'b) -> 'a t -> 'b -> 'b
+            val for_all : (key -> 'a -> bool) -> 'a t -> bool
+            val exists : (key -> 'a -> bool) -> 'a t -> bool
+            val filter : (key -> 'a -> bool) -> 'a t -> 'a t
+            val partition : (key -> 'a -> bool) -> 'a t -> 'a t * 'a t
+            val cardinal : 'a t -> key
+            val bindings : 'a t -> (key * 'a) list
+            val min_binding : 'a t -> key * 'a
+            val max_binding : 'a t -> key * 'a
+            val choose : 'a t -> key * 'a
+            val split : key -> 'a t -> 'a t * 'a option * 'a t
+            val find : key -> 'a t -> 'a
+            val map : ('a -> 'b) -> 'a t -> 'b t
+            val mapi : (key -> 'a -> 'b) -> 'a t -> 'b t
+          end
+      end
+    module Std : sig module Int = Int end
+  end
+#     #   val x : 'a Int.Map.t = <abstr>
+# Characters 8-9:
+  let y = x + x ;;
+          ^
+Error: This expression has type 'a Int.Map.t
+       but an expression was expected of type int
+#           module M : sig type t = A type u = C end
+module N : sig type t = B end
+# - : M.t = A
+# - : N.t = B
+# - : u = C
+#   type t = M.t = A
+type u = M.u = C
+# - : u = C
+#     module L : sig type v = V end
+# - : v = V
+#   module L : sig type v = V end
+# - : v = V
+#     type t1 = A
+# module M1 : sig type u = v and v = t1 end
+# module N1 : sig type u = v and v = t1 end
+# type t1 = B
+# module N2 : sig type u = v and v = N1.v end
+#       module type PR6566 = sig type t = bytes end
+# module PR6566 : sig type t = int end
+# Characters 26-32:
+  module PR6566' : PR6566 = PR6566;;
+                            ^^^^^^
+Error: Signature mismatch:
+       Modules do not match: sig type t = int end is not included in PR6566
+       Type declarations do not match:
+         type t = int
+       is not included in
+         type t = bytes
+#   module A : sig module B : sig type t = T end end
+# module M2 : sig type u = A.B.t type foo = int type v = u end
+# 

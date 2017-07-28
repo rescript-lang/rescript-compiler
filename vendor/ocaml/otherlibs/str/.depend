@@ -1,0 +1,11 @@
+strstubs.o: strstubs.c ../../byterun/caml/mlvalues.h \
+ ../../byterun/caml/compatibility.h ../../byterun/caml/config.h \
+ ../../byterun/caml/../../config/m.h ../../byterun/caml/../../config/s.h \
+ ../../byterun/caml/misc.h ../../byterun/caml/alloc.h \
+ ../../byterun/caml/mlvalues.h ../../byterun/caml/memory.h \
+ ../../byterun/caml/gc.h ../../byterun/caml/major_gc.h \
+ ../../byterun/caml/freelist.h ../../byterun/caml/minor_gc.h \
+ ../../byterun/caml/address_class.h ../../byterun/caml/fail.h
+str.cmi :
+str.cmo : str.cmi
+str.cmx : str.cmi

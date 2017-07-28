@@ -1,0 +1,18 @@
+
+#     type _ nat = Zero : [ `Zero ] nat | Succ : 'a nat -> [ `Succ of 'a ] nat
+# type 'a pre_nat = [ `Succ of 'a | `Zero ]
+#   type aux =
+    Aux :
+      [ `Succ of [< [< [< [ `Zero ] pre_nat ] pre_nat ] pre_nat ] ] nat -> 
+      aux
+#               Characters 19-157:
+  ..match x with
+    | Succ Zero -> "1"
+    | Succ (Succ Zero) -> "2"
+    | Succ (Succ (Succ Zero)) -> "3"
+    | Succ (Succ (Succ (Succ Zero))) -> "4"
+Warning 8: this pattern-matching is not exhaustive.
+Here is an example of a value that is not matched:
+Succ (Succ (Succ (Succ (Succ _))))
+val f : aux -> string = <fun>
+# 

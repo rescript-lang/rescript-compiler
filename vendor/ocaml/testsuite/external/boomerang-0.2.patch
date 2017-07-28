@@ -1,0 +1,11 @@
+--- boomerang-0.2/OMakefile.orig	2010-06-07 15:01:55.000000000 +0200
++++ boomerang-0.2/OMakefile	2010-06-07 15:02:08.000000000 +0200
+@@ -126,7 +126,7 @@
+ ##############################################################################
+ # Include sub-directories
+ 
+-SUBDIRS = common src lenses examples doc
++SUBDIRS = common src lenses examples #doc
+ 
+ .SUBDIRS: $(SUBDIRS)
+ 

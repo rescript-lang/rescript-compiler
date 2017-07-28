@@ -1,0 +1,3621 @@
+2007-03-22  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Allow to receive the build function in {custom,file}_rule.
+
+	* rule.ml,
+	* rule.mli,
+	* signatures.mli: Ditto.
+	* ocaml_specific.ml: Update.
+
+	* command.ml,
+	* command.mli: Add a function to get string and tags.
+
+	* ocamldep.ml,
+	* ocamldep.mli: Make tag based dependencies.
+
+	* ocaml_compiler.ml: Do the pack as one command to be sure running the
+	remove.
+
+	* test/test8/myocamlbuild.ml,
+	* test/good-output: Update.
+
+2007-03-21  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Fix the previous fix.
+
+	* ocaml_compiler.ml: Remove the empty file.
+	* test/good-output: Update.
+
+2007-03-21  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	[native pack] use touch instead of mv and cmp.
+
+	* ocaml_compiler.ml: This version is will force ocamlopt to do the
+	right thing.
+	* test/good-output: Update.
+
+2007-03-20  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Two bugs, two fixes.
+
+	* ocaml_tools.ml: Add pp flags to interface inference.
+	* ocaml_specific.ml: Add a rule for packing with a cmi that already
+	exists.
+	* test/good-output: Update.
+	* Makefile: Change the default location.
+
+2007-03-13  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Fix a bug in expand_module.
+
+	* ocaml_utils.ml: Handle correctly pathnames instead of just basenames.
+
+2007-03-13  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Use sys_file_exists instead of Sys.file_exists.
+
+	* my_unix.ml: Since Sys.file_exists don't treat well captial letters.
+	* my_std.ml: Fix a bug.
+	* pathname.ml: Here is a an exception to the previous rule so, put a
+	comment.
+
+2007-03-11  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Fix the List.union order.
+
+	* my_std.ml: Fix and improve List.union.
+	* pathname.ml: Use it and fix merge_include_dirs.
+	* test/good-output: Update since the union order was wrong.
+
+2007-03-11  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Re fix menhir and include dirs.
+
+	* ocaml_tools.ml: Specifiy ocamlc and -I with --ocamlc.
+
+2007-03-11  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Fix a bug: Add include directories to menhir.
+
+	* ocaml_tools.ml: Ditto.
+	* my_std.ml,
+	* signatures.mli: Specification typo.
+
+2007-03-07  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Handle specially archives files during an import.
+
+	* shell.ml: Ditto.
+
+2007-03-07  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Use cp -p in copy_rule, and fix some typos in the manual.
+
+	* manual/manual.tex: Typos.
+	* rule.ml,
+	* rule.mli: Add cp_p and use it for copy_rule.
+
+2007-03-05  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Relaxe executor on exception condition.
+
+	Patch from Berke.
+	* executor.ml: Ignore Not_found and exceptional conditions.
+	* TODO: Add an entry (needs to better understand POSIX).
+
+2007-03-04  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Split where in bindir and libdir.
+
+	* ocamlbuild_where.mli: Ditto.
+	* ocaml_specific.ml: Update.
+	* options.ml: Use bindir.
+	* plugin.ml: Update.
+	* start.sh: Update.
+
+2007-03-04  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Virtual solvers for ocaml tools.
+
+	* options.ml: Setup virtual command solver for commands like ocamlc,
+	ocamlopt... This allow to have full pathname but let also failback to
+	classic search path.
+	* ocaml_compiler.ml: Add a tag to differentiate dependencies at link
+	time.
+	* ocamlbuild-presentation.rslide: Add an item as suggested by a friend.
+
+2007-03-02  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Same thing for the second link function.
+
+	* ocaml_compiler.ml: Ignore stdlib.
+
+2007-03-02  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Move the stdlib hack.
+
+	* ocaml_compiler.ml: Should works better.
+
+2007-03-02  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Little fix about library linking.
+
+	* ocaml_utils.ml: Avoid linking twice in some cases.
+	* ocaml_compiler.ml: Handle specially the OCaml stdlib.
+
+2007-03-01  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Remove a rec.
+
+	* glob.ml: Parse is not rec.
+
+2007-03-01  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	true: traverse and FAQ.
+
+	* main.ml: Move the inital config upper to be loaded before the others
+	and hygiene.
+	* FAQ: New.
+
+2007-02-28  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Improve the glob dir handling.
+
+	* glob.ml: Extend the ast instead of parsing an extended string.
+
+2007-02-28  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Ensure that the whole boolean expression is only valid in the directory.
+
+	* glob.ml: Ditto.
+
+2007-02-28  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Put -g on link only for programs.
+
+	* ocaml_specific.ml: Ditto.
+
+2007-02-26  Berke Durak  <berke.durak@inria.fr>
+
+	Added disclaimer to default rules table.
+
+	* manual/manual.tex: .
+
+2007-02-26  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Add the -documentation option.
+
+	* main.ml: Implement it.
+	* flags.ml,
+	* flags.mli: Add get_flags.
+	* man/ocamlbuild.1: Update.
+	* signatures.mli,
+	* options.ml: Add show_documention.
+	* rule.ml,
+	* rule.mli: Add pretty_print.
+
+2007-02-26  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Add the -dont-catch-errors option.
+
+	* main.ml: Implement it.
+	* options.ml: Parse it.
+	* signatures.mli: Declare it.
+	* _tags: Use debug.
+
+2007-02-26  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Deal with the camlp4 library name.
+
+	* ocaml_specific.ml: Introduce use_old_camlp4 for the old one.
+
+2007-02-26  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Minor `ocaml_lib' improvments.
+
+	* signatures.mli: Declare and doc it.
+	* ocamlbuild_plugin.ml: Export it.
+	* ocaml_specific.ml,
+	* ocaml_specific.mli: Add some dirs to std libs.
+	Move the ocaml_lib implem to ...
+	* ocaml_utils.mli,
+	* ocaml_utils.ml: ... here. Improve it by adding the ~tag_name option.
+	* ocaml_compiler.ml: The hash now contains the tag.
+	* _tags: *.top use unix too.
+
+2007-02-22  Berke Durak  <berke.durak@inria.fr>
+
+	Should use Log.eprintf for show_tags.
+
+	* main.ml: .
+
+2007-02-22  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	( & ), sanitize.sh, and the manual...
+
+	* signatures.mli: Add ( & ).
+
+	* hygiene.ml: Also clean the sanitize.sh script itself.
+	* my_std.ml: Add ( & ).
+	* manual/manual.tex: Some fixes and a section that I wrote but that's
+	needs reflexion about what solution we want to support.
+
+2007-02-22  Berke Durak  <berke.durak@inria.fr>
+
+	Implemented fixes suggested  by Commissar Leroy.
+
+	* fda.ml: .
+	* hygiene.ml: .
+	* hygiene.mli: .
+	* man/ocamlbuild.1: .
+	* manual/manual.tex: .
+	* ocaml_specific.ml: .
+	* options.ml: .
+	* signatures.mli: .
+
+2007-02-20  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Add -show-tags.
+
+	* hygiene.ml: Rewrap the error message.
+	* main.ml: Do the show_tags job. Move one hook.
+	* ocaml_specific.ml: Add -g also in native code.
+	* options.ml,
+	* signatures.mli: Add the -show-tags option.
+	* tags.ml: Fix print.
+	* TODO: Add a done entry.
+
+2007-02-16  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Relaxing plural options to spaces.
+
+	* lexers.mli,
+	* lexers.mll: Add comma_or_blank_sep_strings.
+	* options.ml: Use it.
+
+2007-02-16  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Add a plugin example.
+
+	* manual/myocamlbuild.ml: New.
+
+2007-02-16  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Typos.
+
+	* ocamlbuild-presentation.rslide: .
+	* manual/trace.out: .
+
+2007-02-16  Berke Durak  <berke.durak@inria.fr>
+
+	Fixed a few typos and sentences.
+
+	* ocamlbuild-presentation.rslide: .
+
+2007-02-15  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Little changes...
+
+	* ocamlbuild-presentation.rslide: .
+
+2007-02-15  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Slides almost done...
+
+	* manual/trace.out: New. Of course you needed it.
+	* ocamlbuild-presentation.rslide: Ditto.
+
+2007-02-15  Berke Durak  <berke.durak@inria.fr>
+
+	Improving slides.
+
+	* ocamlbuild-presentation.rslide: .
+
+2007-02-15  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Slides...
+
+	* ocamlbuild-presentation.rslide: .
+
+2007-02-15  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Working on slides...
+
+	* ocamlbuild-presentation.rslide: .
+
+2007-02-15  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	More slides...
+
+	* ocamlbuild-presentation.rslide: .
+
+2007-02-12  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Keep include dirs uniq.
+
+	* ocaml_compiler.ml: Ditto.
+
+2007-02-12  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Keep include dirs uniq.
+
+	* ocaml_compiler.ml: Ditto.
+
+2007-02-12  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Add ocamlmktop support.
+
+	* ocamlbuild.mltop: New.
+	* main.ml: Handle .top as binaries.
+	* ocaml_compiler.ml,
+	* ocaml_specific.ml,
+	* ocaml_compiler.mli: Add mktop functions and rules.
+	* options.ml,
+	* signatures.mli: Add an ocamlmktop option.
+
+2007-02-09  Berke Durak  <berke.durak@inria.fr>
+
+	Was attempting to link with threads.cmxa in byte mode.
+
+	* ocaml_specific.ml: .
+
+2007-02-09  Berke Durak  <berke.durak@inria.fr>
+
+	Talking of sterilize.sh.
+
+	* manual/manual.tex: .
+
+2007-02-09  Berke Durak  <berke.durak@inria.fr>
+
+	Rewrote some parts, filled the abstract, moved rantings to the appendix.
+
+	* manual/manual.tex: .
+	* .vcs: .
+
+2007-02-08  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Add manual/manual.hva.
+
+	* manual/manual.hva: New.
+
+2007-02-08  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Changes done with Luc.
+
+	* manual/manual.tex: .
+	* manual/Makefile: .
+
+2007-02-08  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Fix a bug found by Luc in hevea.
+
+	* ocaml_utils.ml,
+	* ocaml_utils.mli: Change keep_this_module into module_importance to
+	have a finer grain.
+	* ocaml_compiler.ml: Update to importance.
+	* ocamldep.ml,
+	* ocamldep.mli: We now try to also build stdlib modules but don't fail
+	if they don't exists.
+	* test/test5/stack.ml: New.
+	* test/test5/a.ml: A test case (from hevea).
+	* test/good-output: Update.
+
+2007-02-08  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Ocamldoc, extension:* tag ...
+
+	* ocaml_tools.mli,
+	* ocaml_tools.ml: The ocamldoc support now takes into account two modes
+	*d and -o.
+	* ocaml_specific.ml: Two more rules and many flags for some of the
+	standard behaviors.
+	* signatures.mli: Some comments.
+	* tools.ml: Add the extension:* tag.
+	* TODO: Update.
+
+2007-02-08  Berke Durak  <berke.durak@inria.fr>
+
+	Hygiene generates sterilize.sh.
+
+	* fda.ml: .
+	* fda.mli: .
+	* hygiene.ml: .
+	* hygiene.mli: .
+	* main.ml: .
+	* options.ml: .
+	* signatures.mli: .
+
+2007-02-07  Berke Durak  <berke.durak@inria.fr>
+
+	Updated section on ocamldoc.
+
+	* manual/manual.tex: .
+
+2007-02-07  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Some minor manual and slides changes.
+
+	* ocamlbuild-presentation.rslide,
+	* manual/manual.tex: Ditto.
+
+2007-02-07  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Make links for the documentation.
+
+	* main.ml: Handle doc.
+	* test/good-output: Update.
+
+2007-02-07  Berke Durak  <berke.durak@inria.fr>
+
+	Added manual section for ocamldoc.
+
+	* manual/manual.tex: .
+	* manual/Makefile: .
+
+2007-02-07  Berke Durak  <berke.durak@inria.fr>
+
+	Fixed truncated display problem.
+
+	* executor.ml: .
+	* .vcs: .
+
+2007-02-07  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Fix the bootstrap.
+
+	* start.sh: Swap lines.
+	* Makefile: -verbose.
+
+2007-02-07  Berke Durak  <berke.durak@inria.fr>
+
+	TODO + Executor.
+
+	* manual/manual.tex: .
+	* TODO: .
+
+2007-02-06  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Make -a more static, to avoid some complications.
+
+	* ocaml_utils.ml,
+	* ocaml_compiler.ml,
+	* ocaml_compiler.ml,
+	* ocaml_specific.ml: Ditto.
+
+2007-02-06  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	A fix.
+
+	* ocaml_compiler.ml: Don't use these refs too early.
+	* ocamlbuild-presentation.rslide: .
+
+2007-02-05  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Plugin signature.
+
+	Somewhat a big patch, but that's just moving things around.
+
+	* signatures.mli: Add TAGS, OUTCOME, MISC, OPTIONS, ARCH and PLUGIN.
+	* ocamlbuild_plugin.mli: New.
+	* ocamlbuild_plugin.ml: Conform to the sig.
+
+	* command.ml,
+	* command.mli: Add a tags type.
+	* main.ml: Quit early if no targets.
+	* my_std.ml,
+	* my_std.mli: More things are in signatures.
+	* resource.ml,
+	* resource.mli: Remove the type t that was an Pathname.t alias.
+	* options.ml,
+	* options.mli: Add ext_lib, ext_obj, ext_dll.
+	* ocaml_compiler.ml: Update.
+	* ocaml_tools.ml: Update to Outcome.
+	* ocaml_specific.ml: Update.
+	* ocaml_utils.mli: Remove *ext_*.
+	* ocaml_arch.mli: Now in signatures.
+	* pathname.ml: Add readdir.
+	* slurp.ml: open Outcome.
+	* rule.ml,
+	* rule.mli,
+	* solver.ml,
+	* solver.mli: Update to Resource.t and Outcome.t.
+	* tags.mli: Now in Signatures.
+	* test/good-output: Update.
+	* test/test8/test.sh,
+	* test/test3/test.sh,
+	* test/test4/test.sh,
+	* test/test5/test.sh,
+	* test/test6/test.sh,
+	* test/test7/test.sh,
+	* test/test2/test.sh: Update to -verbose 0.
+
+2007-02-05  Berke Durak  <berke.durak@inria.fr>
+
+	Continuing doc.
+
+	* manual/manual.tex: .
+	* .: .
+
+2007-02-05  Berke Durak  <berke.durak@inria.fr>
+
+	Described display line.
+
+	* manual/manual.tex: .
+
+2007-02-05  Berke Durak  <berke.durak@inria.fr>
+
+	Renamed -debug as -verbose.  Authorized spaces etc. in flags.  Continuing documentation.
+
+	* lexers.mll: .
+	* manual/manual.tex: .
+	* options.ml: .
+
+2007-02-05  Berke Durak  <berke.durak@inria.fr>
+
+	Added man page.
+
+	* main.ml: .
+	* man: New.
+	* man/ocamlbuild.1: New.
+	* manual/manual.tex: .
+	* TODO: .
+
+2007-02-05  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Update start.sh.
+
+	* start.sh: Update.
+
+2007-02-05  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Typo s/Orignal/Original/g.
+
+2007-02-05  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Make signatures and std_signatures mliS.
+
+	* signatures.ml: Remove.
+	* std_signatures.ml: Remove.
+	* signatures.mli: New.
+	* std_signatures.mli: New.
+	* Makefile: Update.
+	* lexers.mll: Allow any prefix: for tags.
+
+2007-02-04  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	The beginning of a presentation.
+
+	* ocamlbuild-presentation.rslide: New.
+
+2007-02-04  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Also add who is the original author of the file.
+
+	* ocamlbuild.ml,
+	* ocamlbuild_plugin.ml,
+	* ocamlbuildlight.ml,
+	* ocamlbuild_where.mli,
+	* ocamlbuild.mli,
+	* ocamlbuildlight.mli,
+	* bool.ml,
+	* bool.mli,
+	* configuration.ml,
+	* configuration.mli,
+	* command.ml,
+	* command.mli,
+	* display.ml,
+	* discard_printf.ml,
+	* display.mli,
+	* discard_printf.mli,
+	* executor.ml,
+	* executor.mli,
+	* flags.ml,
+	* fda.ml,
+	* flags.mli,
+	* fda.mli,
+	* glob.ml,
+	* glob_ast.ml,
+	* glob_ast.mli,
+	* glob.mli,
+	* glob_lexer.mli,
+	* glob_lexer.mll,
+	* hygiene.ml,
+	* hooks.ml,
+	* hygiene.mli,
+	* hooks.mli,
+	* log.ml,
+	* lexers.mli,
+	* log.mli,
+	* lexers.mll,
+	* my_unix_with_unix.ml,
+	* main.ml,
+	* my_unix.ml,
+	* my_std.ml,
+	* my_unix_with_unix.mli,
+	* my_std.mli,
+	* my_unix.mli,
+	* main.mli,
+	* ocaml_utils.ml,
+	* ocaml_tools.ml,
+	* ocaml_arch.ml,
+	* ocaml_specific.ml,
+	* ocaml_compiler.ml,
+	* ocaml_dependencies.ml,
+	* ocaml_utils.mli,
+	* ocaml_specific.mli,
+	* ocaml_dependencies.mli,
+	* ocaml_tools.mli,
+	* ocaml_arch.mli,
+	* ocaml_compiler.mli,
+	* options.ml,
+	* options.mli,
+	* ocamldep.ml,
+	* ocamldep.mli,
+	* plugin.ml,
+	* ppcache.ml,
+	* pathname.ml,
+	* ppcache.mli,
+	* plugin.mli,
+	* pathname.mli,
+	* resource.ml,
+	* resource.mli,
+	* rule.ml,
+	* rule.mli,
+	* report.ml,
+	* report.mli,
+	* signatures.ml,
+	* slurp.ml,
+	* std_signatures.ml,
+	* solver.ml,
+	* shell.ml,
+	* shell.mli,
+	* slurp.mli,
+	* solver.mli,
+	* tags.ml,
+	* tools.ml,
+	* tags.mli,
+	* tools.mli: Ditto.
+
+2007-02-04  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Add the header license.
+
+	* ocamlbuildlight.ml,
+	* ocamlbuild.ml,
+	* ocamlbuild_plugin.ml,
+	* ocamlbuild_where.mli,
+	* ocamlbuild.mli,
+	* ocamlbuildlight.mli,
+	* bool.ml,
+	* bool.mli,
+	* configuration.ml,
+	* configuration.mli,
+	* command.ml,
+	* command.mli,
+	* discard_printf.ml,
+	* display.ml,
+	* display.mli,
+	* discard_printf.mli,
+	* executor.ml,
+	* executor.mli,
+	* fda.ml,
+	* flags.ml,
+	* flags.mli,
+	* fda.mli,
+	* glob.ml,
+	* glob_ast.ml,
+	* glob.mli,
+	* glob_ast.mli,
+	* glob_lexer.mli,
+	* glob_lexer.mll,
+	* hygiene.ml,
+	* hooks.ml,
+	* hygiene.mli,
+	* hooks.mli,
+	* log.ml,
+	* lexers.mli,
+	* log.mli,
+	* lexers.mll,
+	* my_unix.ml,
+	* main.ml,
+	* my_std.ml,
+	* my_unix_with_unix.ml,
+	* misc/opentracer.ml,
+	* my_std.mli,
+	* main.mli,
+	* my_unix.mli,
+	* my_unix_with_unix.mli,
+	* ocaml_arch.ml,
+	* ocaml_compiler.ml,
+	* ocaml_specific.ml,
+	* ocaml_tools.ml,
+	* ocaml_utils.ml,
+	* ocaml_dependencies.ml,
+	* ocaml_utils.mli,
+	* ocaml_tools.mli,
+	* ocaml_dependencies.mli,
+	* ocaml_compiler.mli,
+	* ocaml_specific.mli,
+	* ocaml_arch.mli,
+	* options.ml,
+	* options.mli,
+	* ocamldep.ml,
+	* ocamldep.mli,
+	* plugin.ml,
+	* pathname.ml,
+	* ppcache.ml,
+	* plugin.mli,
+	* ppcache.mli,
+	* pathname.mli,
+	* resource.ml,
+	* resource.mli,
+	* rule.ml,
+	* rule.mli,
+	* report.ml,
+	* report.mli,
+	* slurp.ml,
+	* std_signatures.ml,
+	* signatures.ml,
+	* solver.ml,
+	* shell.ml,
+	* shell.mli,
+	* slurp.mli,
+	* solver.mli,
+	* tools.ml,
+	* tags.ml,
+	* tags.mli,
+	* tools.mli: Ditto.
+
+2007-02-03  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Fix a bug in copy_file.
+
+	* my_std.ml: Also use the binary mode for the output channel.
+
+2007-02-03  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Add nopervasives, and nolabels.
+
+	* ocaml_specific.ml: Ditto.
+
+2007-02-03  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Windows cannot use executor.
+
+	* shell.ml: As in command.ml use executor only in non-windows and
+	non-degraded mode.
+	* rule.ml: Update two error messages.
+
+2007-02-02  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Some minor things for the ocaml myocamlbuild for instance.
+
+	* configuration.ml,
+	* configuration.mli: Add has_tag.
+	* my_std.ml,
+	* my_std.mli: Add getenv and copy_chan.
+	* ocaml_utils.ml,
+	* ocaml_utils.mli: Move some commands to rule.
+	* ocaml_specific.ml: Improve the menhir switching.
+	* options.ml,
+	* options.mli: Add -use-menhir and -menhir options.
+	* rule.ml,
+	* rule.mli: Add copy_rule and move some commands from ocaml_utils.
+	* signatures.ml: .
+
+2007-02-01  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Move main sigs in signatures.ml and std_signatures.ml.
+
+	* ocamlbuild_pack.mlpack: .
+	* ocamlbuildlib.mllib: .
+	* ocamlbuildlightlib.mllib: .
+	* ocamlbuild.odocl: .
+	* command.mli: .
+	* glob.mli: .
+	* log.mli: .
+	* my_unix_with_unix.ml: .
+	* my_std.ml: .
+	* my_std.mli: .
+	* ocaml_specific.ml: .
+	* pathname.mli: .
+	* std_signatures.ml: New.
+	* signatures.ml: New.
+	* start.sh: .
+	* tags.ml: .
+	* tags.mli: .
+	* test/test5/_tags: .
+	* Makefile: .
+	* _tags: .
+
+2007-02-01  Berke Durak  <berke.durak@inria.fr>
+
+	Shell.run doesn't use execute_many in degraded mode.
+
+	* shell.ml: .
+
+2007-02-01  Berke Durak  <berke.durak@inria.fr>
+
+	cp, rm -rf and mv-like commands use Executor to better play with display.
+
+	* display.ml: .
+	* my_unix.ml: .
+	* main.ml: .
+	* my_std.ml: .
+	* my_unix.mli: .
+	* shell.ml: .
+	* shell.mli: .
+	* start.sh: .
+	* _tags: .
+
+2007-02-01  Berke Durak  <berke.durak@inria.fr>
+
+	Systematizing exit codes.
+
+	* executor.ml: .
+	* main.ml: .
+
+2007-02-01  Berke Durak  <berke.durak@inria.fr>
+
+	Added automatic file: tag, changed flag syntax.
+
+	* lexers.mli: .
+	* lexers.mll: .
+	* main.ml: .
+	* ocamldep.ml: .
+	* ocamldep.mli: .
+	* tools.ml: .
+
+2007-01-31  Berke Durak  <berke.durak@inria.fr>
+
+	Cleans up links to the _build directory.
+
+	* main.ml: .
+	* options.ml: .
+	* options.mli: .
+	* pathname.ml: .
+	* pathname.mli: .
+
+2007-01-31  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Restore the link to binary targets functionality.
+
+	* main.ml: Make it separate from target running.
+
+2007-01-31  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Add an hygiene hook pair.
+
+	* ocamlbuild_plugin.ml,
+	* hooks.ml,
+	* hooks.mli,
+	* main.ml: Ditto.
+
+2007-01-31  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	The Killer feature about a fine grained dependency injection control.
+
+	* rule.ml,
+	* rule.mli: Add build_deps_of_tags and call it automatically before
+	* ocaml_compiler.ml,
+	* ocaml_compiler.mli: Rework tags, to have them when callinng
+	build_deps_of_tags.
+	executing a command.
+	* ocaml_specific.ml,
+	* ocaml_specific.mli: Move the exception Exit_build_error to main and
+	remove the old dep function.
+	* ocamlbuild_plugin.ml: Export some new functions.
+	* test/test7/myocamlbuild.ml: Add a dep declaration.
+	* test/test7/cool_plugin.ml: New.
+	* test/test7/_tags: New.
+	* test/good-output: Update.
+	* flags.ml,
+	* command.ml,
+	* command.mli: Rename flags_of_tags as tag_handler.
+	* main.ml: Update error handling.
+	* TODO: Done.
+
+2007-01-30  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Fix and improve the new link/deps system.
+
+	* ocaml_dependencies.ml,
+	* ocaml_dependencies.mli: Some fixes and improvements.
+	* pathname.ml,
+	* pathname.mli: Add check_extension.
+	* ocaml_compiler.ml,
+	* ocaml_compiler.mli: Add support for hidden_packages and update.
+
+2007-01-30  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Reverse the last 2 patches, since there is fact no name clash.
+
+2007-01-30  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Shell -> Oshell second part.
+
+	* ocamlbuild.odocl: Ditto.
+	* test/good-output: Update.
+
+2007-01-30  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Rename the Shell module as Oshell to avoid a name clash with labltk.
+
+	* shell.ml: Remove.
+	* shell.mli: Remove.
+	* oshell.ml: New.
+	* oshell.mli: New.
+	* ocamlbuild_pack.mlpack,
+	* command.ml,
+	* display.ml,
+	* main.ml,
+	* options.ml,
+	* ppcache.ml,
+	* pathname.ml,
+	* plugin.ml,
+	* resource.ml,
+	* start.sh: Update.
+
+2007-01-30  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Fix 2 bugs.
+
+	* test/test9/testglob.ml: More tests.
+	* glob_lexer.mll: Fix "/**".
+	* _tags: Restore my warnings.
+	* executor.ml: Use the unused variable.
+
+2007-01-30  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Improve dprintf and update.
+
+	* log.ml, log.mli: dprintf now wraps the message between "@[<2>" and "@]@.".
+	* command.ml,
+	* display.ml,
+	* fda.ml,
+	* main.ml,
+	* ocaml_dependencies.ml,
+	* ocaml_compiler.ml,
+	* ocaml_utils.ml,
+	* ocamldep.ml,
+	* pathname.ml,
+	* resource.ml,
+	* rule.ml,
+	* solver.ml: Update the dprintf usage.
+
+2007-01-30  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Add the new dependency linking system (plz test it !).
+
+	* ocamlbuild_pack.mlpack: Add a brand new module.
+	* ocaml_dependencies.ml: New.
+	* ocaml_dependencies.mli: New.
+	* ocaml_compiler.ml,
+	* ocaml_compiler.mli: Use this new module.
+	* resource.ml,
+	* resource.mli: Export a folding function on dependencies.
+	* TODO: Add something to do.
+	* start.sh: .
+	* main.ml: Update.
+
+2007-01-29  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Executor exit codes.
+
+	* executor.ml: Use the standard exit.
+	* main.ml: Some exit codes are reserved for Executor.
+
+2007-01-29  Berke Durak  <berke.durak@inria.fr>
+
+	Executor returns finer-grained results.
+
+	* executor.ml: .
+	* manual/manual.tex: .
+
+2007-01-29  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Toward a working command execute feature :).
+
+	* executor.ml,
+	* executor.mli: FIXME.
+	* command.ml,
+	* command.mli: Update to the new signature and merge the degraded mode
+	to avoid duplication.
+	* my_unix.ml,
+	* my_unix.mli,
+	* ocaml_utils.ml,
+	* ocamldep.ml,
+	* plugin.ml,
+	* resource.ml,
+	* rule.ml,
+	* solver.ml,
+	* test/good-output: Update.
+
+2007-01-29  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Revert almost all of the 2 last patches.
+
+	* command.ml: .
+	* command.mli: .
+	* executor.ml: .
+	* executor.mli: .
+	* my_unix.ml: .
+	* my_unix.mli: .
+	* ocaml_utils.ml: .
+	* ocaml_specific.ml: .
+	* ocamldep.ml: .
+	* plugin.ml: .
+	* resource.ml: .
+	* rule.ml: .
+	* solver.ml: .
+
+2007-01-29  Berke Durak  <berke.durak@inria.fr>
+
+	Fixing before/after thunks.
+
+	* command.ml: .
+	* command.mli: .
+	* ocaml_utils.ml: .
+	* ocamldep.ml: .
+	* plugin.ml: .
+	* resource.ml: .
+	* rule.ml: .
+	* solver.ml: .
+	* TODO: .
+
+2007-01-29  Berke Durak  <berke.durak@inria.fr>
+
+	Adding before and after handlers to Executor.
+
+	* command.ml: .
+	* executor.ml: .
+	* executor.mli: .
+	* my_unix.ml: .
+	* my_unix.mli: .
+	* manual/manual.tex: .
+
+2007-01-29  Berke Durak  <berke.durak@inria.fr>
+
+	Fixed multi-dir globbing.
+
+	* glob_lexer.mll: .
+	* manual/manual.tex: .
+
+2007-01-29  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Add Rule.custom_rule and cleanup the ocamldep meta rule.
+
+	* ocamldep.ml,
+	* ocamldep.mli: Make it a meta rule (or a rule generator).
+	* rule.ml,
+	* rule.mli: Add custom_rule.
+	* ocaml_specific.ml: Update to Ocamldep.
+	* test/good-output: Minor update.
+
+2007-01-29  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	MakefileS...
+
+	* manual/Makefile: More things to remove (sometimes).
+	* Makefile: Use $(BUILDDIR) instead of _build.
+
+2007-01-26  Berke Durak  <berke.durak@inria.fr>
+
+	Documenting glob expressions.
+
+	* glob_lexer.mll: Added negative character classes.
+	* manual/manual.tex: .
+
+2007-01-26  Berke Durak  <berke.durak@inria.fr>
+
+	Started documenting glob syntax.
+
+	* manual/manual.tex: .
+
+2007-01-25  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	One other include dir fix.
+
+	* main.ml: Ditto.
+	* test/test9/testglob.ml: Add a failing test (request for feature).
+	* test/good-output: Update.
+
+2007-01-25  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Include dirs and Backtrace.
+
+	* main.ml: Fix -I, and restore the backtrace.
+	* report.ml,
+	* report.mli: Fix the backtrace and rename analyze to
+	print_backtrace_analyze.
+
+2007-01-25  Berke Durak  <berke.durak@inria.fr>
+
+	Added cross-directory globbing.
+
+	* glob_ast.ml: .
+	* glob.ml: .
+	* glob_ast.mli: .
+	* glob_lexer.mll: .
+	* test/test9/testglob.ml: .
+
+2007-01-25  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Inlcude dirs trought tags.
+
+	* main.ml: Ditto.
+	* my_unix_with_unix.ml: Imrpove stat errors.
+	* my_std.ml,
+	* my_std.mli: .
+	* pathname.ml: bmla.
+	* slurp.ml,
+	* slurp.mli: Add force, fix bugs.
+
+2007-01-25  Berke Durak  <berke.durak@inria.fr>
+
+	Fixed double display of error status.
+
+	* command.ml: .
+	* display.ml: .
+	* display.mli: .
+	* log.ml: .
+	* log.mli: .
+	* main.ml: .
+	* my_std.ml: .
+	* my_std.mli: .
+	* plugin.ml: .
+
+2007-01-25  Berke Durak  <berke.durak@inria.fr>
+
+	Stupid bug.
+
+	* log.ml: .
+	* main.ml: .
+	* options.ml: .
+
+2007-01-25  Berke Durak  <berke.durak@inria.fr>
+
+	Fixed interface, handling of -- with no argument.
+
+	* ocamlbuild_plugin.mli: Remove.
+	* manual/manual.tex: .
+	* options.ml: .
+
+2007-01-25  Berke Durak  <berke.durak@inria.fr>
+
+	Updated start.sh.
+
+	* start.sh: .
+
+2007-01-25  Berke Durak  <berke.durak@inria.fr>
+
+	Added .mlis.
+
+	* ocamlbuild_plugin.mli: New.
+	* fda.mli: New.
+	* main.ml: .
+	* ocaml_specific.ml: .
+	* plugin.ml: .
+	* plugin.mli: New.
+
+2007-01-25  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Cut down ocaml_specific in pieces.
+
+	* ocaml_specific.ml,
+	* ocaml_specific.mli: Split.
+	* ocamlbuild_plugin.ml: Update.
+	* ocamlbuild_pack.mlpack: Add new modules.
+	* my_std.ml,
+	* my_std.mli: Add good_outcome.
+	* ocaml_utils.ml: New.
+	* ocaml_tools.ml: New.
+	* ocaml_compiler.ml: New.
+	* ocaml_utils.mli: New.
+	* ocaml_compiler.mli: New.
+	* ocaml_tools.mli: New.
+	* ocamldep.ml: New.
+	* ocamldep.mli: New.
+	* start.sh: Update.
+	* TODO: Move things done.
+
+2007-01-25  Berke Durak  <berke.durak@inria.fr>
+
+	Fixer return codes and error message flushing issues.
+
+	* display.ml: .
+	* log.ml: .
+	* log.mli: .
+	* main.ml: .
+	* report.ml: .
+	* report.mli: .
+
+2007-01-25  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Add a warning.
+
+	* ocaml_specific.ml: In -debug 1 mode there is a now a warning when
+	ocamlbuild skip a seliently a module, supposing that's an error of
+	ocamldep.
+
+2007-01-24  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	More hooks.
+
+	* ocamlbuild_plugin.ml,
+	* hooks.ml,
+	* hooks.mli,
+	* main.ml: Add {Before,After}_rules.
+
+2007-01-24  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Call these hooks.
+
+	* main.ml: Call these hooks.
+
+2007-01-24  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Add a first version of dispatch.
+
+	* ocamlbuild_plugin.ml: Export dispatch and the hooks type.
+	* ocamlbuild_pack.mlpack: Add Hooks.
+	* hooks.ml: New.
+	* hooks.mli: New.
+	* ocaml_specific.mli: New line.
+
+2007-01-24  Berke Durak  <berke.durak@inria.fr>
+
+	Mini slurp bug.
+
+	* slurp.ml: .
+	* TODO: .
+
+2007-01-24  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Fix few more things.
+
+	* ocamlbuildlight.ml: .
+	* ocamlbuild_version.ml: Remove.
+	* ocamlbuild.ml: .
+	* ocamlbuild_pack.mlpack: .
+	* main.ml: .
+	* ocaml_specific.ml: .
+	* ocaml_specific.mli: .
+	* start.sh: .
+	* test/test2/toto.ml: .
+	* test/good-output: .
+
+2007-01-24  Berke Durak  <berke.durak@inria.fr>
+
+	Read directories before files in Slurp.
+
+	* slurp.ml: .
+	* TODO: .
+
+2007-01-24  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Fix some bugs.
+
+	* ocamlbuild_version.ml: Remove.
+	* ocamlbuild.ml,
+	* ocamlbuildlight.ml: Main is now in the pack.
+	* ocamlbuild_pack.mlpack: more things.
+	* ocaml_specific.ml: One fix and one comment.
+	* start.sh: Update.
+
+2007-01-24  Berke Durak  <berke.durak@inria.fr>
+
+	Splitting ocaml_specific into multiple files.
+
+	* ocamlbuildlight.ml: .
+	* ocamlbuild.ml: .
+	* ocamlbuild_version.ml: New.
+	* ocamlbuild.mli: .
+	* ocamlbuildlight.mli: .
+	* ocamlbuild_pack.mlpack: .
+	* command.ml: .
+	* fda.ml: New.
+	* hygiene.ml: .
+	* main.ml: New.
+	* my_std.ml: .
+	* my_std.mli: .
+	* main.mli: New.
+	* manual/manual.tex: .
+	* ocaml_specific.ml: .
+	* ocaml_specific.mli: .
+	* options.ml: .
+	* options.mli: .
+	* plugin.ml: New.
+	* rule.ml: .
+	* report.ml: .
+	* tools.ml: New.
+	* tools.mli: New.
+	* TODO: .
+	* _tags: .
+
+2007-01-24  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Minor changes.
+
+	* manual/manual.tex: Typo s/the the/the/g.
+	* ocaml_specific.ml,
+	* ocaml_specific.mli: Add some function to deal with linking of a
+	module list. Add a better lib declaration function.
+	* TODO: Update.
+
+2007-01-17  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	A new pathname operator and a bug fix.
+
+	* pathname.ml,
+	* pathname.mli: add the ( -.- ) operator to add an extension to a
+	pathname.
+	* ocaml_specific.ml: Use that new operator.
+	* resource.ml: Fix a bug.
+
+2007-01-17  Berke Durak  <berke.durak@inria.fr>
+
+	More examples.
+
+	* examples/example3/epoch.ml: .
+	* examples/example3/make.sh: New.
+	* manual/manual.tex: .
+	* TODO: .
+
+2007-01-17  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Infered mli's, and bug fixes.
+
+	* my_unix.ml: Fix a bug.
+	* my_std.mli: Doc.
+	* manual/manual.tex: Use \verb.
+	* ocaml_arch.ml: Don't always overide the forpack_flags_of_pathname
+	function reference.
+	* ocaml_arch.mli: Remove the reference.
+	* ocaml_specific.ml: Update for forpack and add infered mli's.
+	* pathname.ml,
+	* pathname.mli: Add is_directory.
+
+2007-01-17  Berke Durak  <berke.durak@inria.fr>
+
+	More examples.
+
+	* examples/example3/epoch.ml: New.
+	* examples/example2/hello.ml: .
+	* examples/example2/greet.ml: New.
+	* examples/example3: New.
+	* examples/example2: New.
+	* manual/manual.tex: .
+	* TODO: .
+
+2007-01-17  Berke Durak  <berke.durak@inria.fr>
+
+	Started examples.
+
+	* examples/example1/hello.ml: New.
+	* examples/example1: New.
+	* examples: New.
+	* manual/manual.tex: .
+	* .vcs: .
+	* TODO: .
+
+2007-01-17  Berke Durak  <berke.durak@inria.fr>
+
+	Wrote limitations and features.
+
+	* manual/manual.tex: .
+
+2007-01-17  Berke Durak  <berke.durak@inria.fr>
+
+	Wrote motivations.
+
+	* manual/manual.tex: .
+	* _tags: .
+
+2007-01-17  Berke Durak  <berke.durak@inria.fr>
+
+	Started manual.
+
+	* manual/Makefile: New.
+	* manual/manual.tex: New.
+	* manual: New.
+
+2007-01-17  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Bugs, menhir, path variables.
+
+	* display.ml: Fix a bug.
+	* glob.mli: Fix a typo.
+	* lexers.mli,
+	* lexers.mll: Extend ocamldep_output lexer and meta_path lexer.
+	* my_std.ml,
+	* my_std.mli: Add memo and String.rev.
+	* ocaml_specific.ml,
+	* ocaml_specific.mli: Better rules for C lib linking and menhir rules.
+	* resource.ml,
+	* resource.mli: Handle naively some multiple variables.
+	* rule.ml,
+	* rule.mli: Update.
+	* start.sh: Update.
+
+2007-01-11  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Integrate dprintf to the display.
+
+	* display.ml,
+	* display.mli: Add dprintf and log_level.
+	* log.ml,
+	* log.mli: Add dprintf and level.
+	* debug.ml: Remove.
+	* debug.mli: Remove.
+	* options.ml: Update.
+	* command.ml, ocaml_specific.ml, my_std.ml,
+	* pathname.ml, ppcache.ml, resource.ml,
+	* rule.ml, report.ml, slurp.ml, solver.ml,
+	* configuration.ml, tags.ml: Update to Log.
+	* ocamlbuild.odocl: Add Log, remove Debug.
+	* ocamlbuild_pack.mlpack: Remove Debug.
+	* bool.ml: Remove the debug dependency.
+
+2007-01-10  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Execute and windows...
+
+	* command.ml: Test windows here.
+	* my_unix_with_unix.ml: Revert a little.
+
+2007-01-10  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Don't use executor on windows.
+
+	* my_unix_with_unix.ml: Since at least set_nonblock does not works on
+	windows.
+
+2007-01-10  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Add the -no-log option and fix a log bug.
+
+	* log.mli,
+	* log.ml: Log is now a lazy to have the good setup order.
+	* options.ml: Add the -no-log option.
+
+2007-01-10  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Fix a bug with quoting of the nil string.
+
+	* shell.ml: Quote the nil string.
+
+2007-01-09  Berke Durak  <berke.durak@inria.fr>
+
+	Documented the interface of the glob module.
+
+	* glob.mli: .
+
+2007-01-09  Berke Durak  <berke.durak@inria.fr>
+
+	Continuing to document interfaces.
+
+	* bool.mli: .
+	* debug.mli: .
+	* discard_printf.mli: .
+	* executor.mli: .
+	* hygiene.mli: .
+	* my_std.mli: .
+	* slurp.mli: .
+	* Makefile: .
+
+2007-01-09  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Fix a bug with directory links to build dir.
+
+	* ocaml_specific.ml,
+	* options.ml,
+	* options.mli: Keep the Slurp.entry instead of a set.
+	* pathname.ml: Clean the entry instead of the set, that more precise.
+	* Makefile: Add doc phonny rules.
+
+2007-01-09  Berke Durak  <berke.durak@inria.fr>
+
+	Doc for Configuration.
+
+	* ocamlbuild_plugin.ml: .
+	* bool.mli: .
+	* configuration.ml: .
+	* configuration.mli: .
+	* command.mli: .
+	* doc: New.
+	* glob.ml: .
+	* ocaml_specific.ml: .
+	* Makefile: .
+
+2007-01-09  Berke Durak  <berke.durak@inria.fr>
+
+	Started documentation.
+
+	* bool.mli: .
+	* command.ml: .
+	* command.mli: .
+
+2007-01-09  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Export the doc.
+
+	* Makefile: Use a link.
+	* _tags: Don't spend times in that dir.
+
+2007-01-09  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Put the log file in the source dir and not when building plugin.
+
+	* log.ml,
+	* log.mli: Use an optional.
+	* options.ml: Update.
+	* pathname.mli: Export in_source_dir.
+	* .vcs: Add _log.
+
+2007-01-09  Berke Durak  <berke.durak@inria.fr>
+
+	Added doc target.
+
+	* report.ml: .
+	* Makefile: .
+	* TODO: .
+
+2007-01-09  Berke Durak  <berke.durak@inria.fr>
+
+	Writes tags to log file.
+
+	* display.ml: .
+
+2007-01-09  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Add the Log module.
+
+	* ocamlbuild_pack.mlpack: Add Log.
+	* command.ml,
+	* command.mli: Use Log.
+	* log.ml: New.
+	* log.mli: New.
+	* options.ml: Use Log.
+	* start.sh: Update.
+
+2007-01-09  Berke Durak  <berke.durak@inria.fr>
+
+	Added -log option.
+
+	* command.ml: .
+	* command.mli: .
+	* display.ml: .
+	* display.mli: .
+	* executor.mli: .
+	* options.ml: .
+	* _tags: .
+
+2007-01-09  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Make usable the ocamldoc support.
+
+	* ocaml_specific.ml: Add rules for ocamldoc.
+	* ocamlbuild.odocl: New.
+	* test/test3/proj.odocl: New.
+	* test/good-output: Update.
+	* test/test3/test.sh: Add a odoc test.
+
+2007-01-09  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Some cleanups.
+
+	* ocamlbuild_plugin.ml: Add tag_file that simule one simple line in the
+	_tags file.
+	* ocaml_specific.ml,
+	* ocaml_specific.mli: Add ln_s, touch, chmod.
+	* pathname.ml,
+	* pathname.mli: Remove map_extension*, split_extension* and compiled
+	files hack skipping.
+	* rule.ml: Improve logging.
+	* solver.ml: Use another level.
+
+2007-01-07  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Fix a bug with debug rules.
+
+	* ocaml_specific.ml: Move %.cmi from prods to deps.
+	* test/good-output: Update.
+
+2007-01-07  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Add debugging rules.
+	To get a ocamlbuild with debugging info you can
+	call `make debug' that will produce ocamlbuild.d.byte
+	and x.d.cmo files.
+
+	* ocaml_specific.ml,
+	* ocaml_specific.mli: Add debugging rules, reorder warnings flag to
+	have 'A' and 'a' before others.
+	* Makefile: Add the debug target.
+	* _tags: Cleanup (remove the debug tag that was set by default).
+
+2007-01-07  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Add profiling support directly in rules.
+	This means that you can now request for building a target such as
+	my_main.p.native or my_lib.p.cmxa, that will create %.p.cmx
+	intermediate files that do not interfer with non-profiling ones.
+
+	* ocaml_specific.ml,
+	* ocaml_specific.mli: Add rules and functions for native link and
+	comilation in profiling mode.
+	* Makefile: Add a profile target (require a fixed ocamlopt w.r.t pack).
+	* _tags: Take care also of .p.cmx files.
+	* glob.ml: IS.print is equivalent to print_is.
+	* my_std.ml: Fix a bug.
+
+2007-01-07  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Add some functions...
+
+	* glob.ml: Extract is_suffix and is_prefix.
+	* my_std.ml,
+	* my_std.mli: Add String.{is_suffix,is_prefix,first_chars,last_chars}
+	and List.union.
+	* pathname.ml,
+	* pathname.mli: Add get_extensions, remove_extensions,
+	update_extensions, map_extensions that treat all extensions instead of
+	just the last.
+	* tags.ml,
+	* tags.mli: Add +++ and --- that treat optional tags.
+
+2007-01-06  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Change the default display in degraded mode.
+
+	* command.ml: Ditto.
+
+2007-01-06  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Cleanup Makefile options.
+
+	* Makefile: Ditto.
+
+2007-01-06  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Add a simple opened files tracer.
+
+	* misc/opentracer.ml: New.
+	Just support ktrace for now. A strace one will be appreciated the
+	interface to follow is quite simple anyway.
+	* misc: New.
+
+2007-01-06  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Handle better commands without Px atom.
+
+	* command.ml: Display the whole command if no Px is found.
+	* display.mli: No longer export these strings.
+
+2007-01-06  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Handle myocamlbuild_config.mli.
+
+	* ocaml_specific.ml: Add support for an interface to the config.
+
+2007-01-06  Berke Durak  <berke.durak@inria.fr>
+
+	Improved language of explanations in Report.
+
+	* report.ml: .
+
+2007-01-06  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Factor and fix the plugin building.
+
+	* ocamlbuildlight.mli: New.
+	* executor.ml: Call cleanup, add a fixme.
+	* ocaml_specific.ml: Factor and fix plugin stuffs.
+	* start.sh: Update.
+	* Makefile: Update.
+	* TODO: Update.
+	* _tags: No longer do favors to some modules.
+
+2007-01-05  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Fix plugins.
+
+	* ocamlbuildlib.mllib: Add missing modules.
+	* ocamlbuildlightlib.mllib: New.
+	* Makefile: Update.
+
+2007-01-05  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Change the my_unix system.
+
+	* ocamlbuildlight.ml: Just call the main.
+	* ocamlbuild.ml: Setup my_unix_with_unix.
+	* ocamlbuildlib.mllib: Remove executor and exit_codes for the lib.
+	* ocamlbuild_pack.mlpack: Remove my_std and my_unix.
+	* exit_codes.ml: Remove. Put them directly in executor.
+	* executor.ml: Add exitcodes.
+	* my_unix.ml: New. Default implem.
+	* my_unix_with_unix.ml: Extend the default implem.
+	* my_unix_without_unix.ml: Remove.
+	* my_unix.mli: Add the implem type and val.
+	* my_unix_with_unix.mli: New.
+	* ocaml_specific.ml,
+	* pathname.ml,
+	* slurp.ml,
+	* Makefile,
+	* command.ml,
+	* _tags: Update.
+
+2007-01-05  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Don't use executor for the myocamlbuild call.
+
+	* ocaml_specific.ml: Use sys_command directly.
+
+2007-01-05  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Fix a stupid bug.
+
+	* command.ml: That cause to have reversed sequences.
+
+2007-01-05  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Some libs and ocamldoc changes.
+
+	* ocaml_specific.ml,
+	* ocaml_specific.mli: Improve ocaml_lib_flag, add fews libs.
+	Fix ocamldoc support update tags, and use Px only once.
+
+2007-01-05  Berke Durak  <berke.durak@inria.fr>
+
+	Started ocamldoc support.
+
+	* ocaml_specific.ml: .
+	* options.ml: .
+	* options.mli: .
+
+2007-01-05  Berke Durak  <berke.durak@inria.fr>
+
+	Pretend option didn't work.
+
+	* command.ml: .
+
+2007-01-05  Berke Durak  <berke.durak@inria.fr>
+
+	TODO + typo.
+
+	* options.ml: .
+	* TODO: .
+
+2007-01-05  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Really call executor all time.
+
+	* command.ml,
+	* command.mli: Remove normalization.
+	And execute_many, it's now execute that do all the job.
+	In degraded mode it's execute_degraded.
+	* my_unix_without_unix.ml: Update.
+	* ocaml_specific.ml,
+	* resource.ml,
+	* rule.ml,
+	* solver.ml: Update to Command.execute type.
+
+2007-01-05  Berke Durak  <berke.durak@inria.fr>
+
+	Isatty detection logic.
+
+	* command.ml: .
+	* executor.ml: .
+	* my_unix_with_unix.ml: .
+	* my_unix_without_unix.ml: .
+	* my_unix.mli: .
+
+2007-01-05  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Always call executor.
+
+	* command.ml: Unless in degraded mode.
+
+2007-01-05  Berke Durak  <berke.durak@inria.fr>
+
+	Removed debugging output, added period argument for ticker.
+
+	* display.ml: .
+	* executor.ml: .
+	* executor.mli: .
+	* my_unix.mli: .
+
+2007-01-05  Berke Durak  <berke.durak@inria.fr>
+
+	Somewhat slow but executor seems to work.
+
+	* executor.ml: .
+
+2007-01-05  Berke Durak  <berke.durak@inria.fr>
+
+	Added an Exit_codes module.  Fixing Executor...
+
+	* ocamlbuild.ml: .
+	* ocamlbuildlib.mllib: .
+	* executor.ml: .
+	* exit_codes.ml: New.
+	* solver.ml: .
+
+2007-01-05  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Fix the max_jobs argument passing.
+
+	* command.ml: Use an optional argument.
+
+2007-01-05  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Subway changes...
+
+	* my_unix_without_unix.ml,
+	* my_unix_with_unix.ml,
+	* my_unix.mli,
+	* command.ml: Call the new execute_many.
+	* executor.ml,
+	* executor.mli: Handle command sequences.
+
+2007-01-04  Berke Durak  <berke.durak@inria.fr>
+
+	Added Display.update.
+
+	* display.ml: .
+	* display.mli: .
+	* executor.ml: .
+
+2007-01-04  Berke Durak  <berke.durak@inria.fr>
+
+	Added display function, indentation, language.
+
+	* display.ml: .
+	* display.mli: .
+	* hygiene.ml: .
+
+2007-01-04  Berke Durak  <berke.durak@inria.fr>
+
+	Fixing interface of Executor.
+
+	* executor.ml: .
+	* executor.mli: .
+	* my_unix_with_unix.ml: .
+
+2007-01-04  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Add attributes to entries. Add the -byte-plugin option.
+
+	* slurp.ml,
+	* slurp.mli: Add an attribute field, add map, rename fold_pathnames to
+	fold and filter_on_names to filter.
+	* hygiene.ml,
+	* hygiene.mli: Perform hygiene only on entries with a true attribute.
+	* options.ml,
+	* options.mli: Add the native_plugin reference and the -byte-plugin
+	option.
+	* ocaml_specific.ml,
+	* ocaml_specific.mli: Exclude files tagged not_hygienic or precious
+	from hygiene.
+
+2007-01-04  Berke Durak  <berke.durak@inria.fr>
+
+	Fixed pack issues.
+
+	* ocamlbuild.ml: .
+	* executor.ml: .
+	* executor.mli: New.
+	* _tags: .
+
+2007-01-04  Berke Durak  <berke.durak@inria.fr>
+
+	Started executor module.
+
+	* executor.ml: New.
+	* hygiene.ml: .
+	* my_unix_with_unix.ml: .
+
+2007-01-04  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Add virtual commands.
+
+	* command.ml,
+	* command.mli: Add the V constructor for virtual commands that
+	will query a virtual command solver to use the best implementation
+	of that virtual command.
+
+2007-01-04  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Mainly, prepare for parallel display.
+
+	* ocamlbuild_plugin.ml: Export file_rule.
+	* command.ml,
+	* command.mli: Some cleanup and preparation.
+	* lexers.mll: Remove the dirty hack.
+	* my_std.ml,
+	* my_std.mli: Move search_in_path to Command and add ( @:= ).
+	* my_unix_with_unix.ml,
+	* my_unix_without_unix.ml,
+	* my_unix.mli: Change the execute_many_using_fork type.
+	* ocaml_specific.ml: Use the nopervasives tag for
+	pervasives dependencies.
+	* start.sh: Update.
+	* test/test8/myocamlbuild.ml: Update.
+	* test/good-output: Update.
+	* Makefile: Update.
+
+2007-01-03  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	I don't like microbes.
+
+	* hygiene.ml: Reverse the bool.
+
+2007-01-03  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Fix the stat problem.
+
+	* ocaml_specific.ml: Use the filtered entry for source_dir_path_set.
+
+2007-01-03  Berke Durak  <berke.durak@inria.fr>
+
+	Hygiene filters cleaned out microbes.
+
+	* hygiene.ml: .
+	* hygiene.mli: .
+	* ocaml_specific.ml: .
+	* ocaml_specific.mli: .
+	* slurp.ml: .
+	* slurp.mli: .
+
+2007-01-03  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Filename concat cleanup.
+
+	* my_std.ml,
+	* my_std.mli: Add filename_concat.
+	* glob.ml,
+	* hygiene.ml,
+	* lexers.mll,
+	* pathname.ml,
+	* resource.ml,
+	* report.ml,
+	* solver.ml,
+	* slurp.ml,
+	* solver.mli:
+	Use filename_concat.
+	* flags.ml: FIXME.
+
+2007-01-03  Berke Durak  <berke.durak@inria.fr>
+
+	Revert to old.
+
+	* slurp.ml: .
+
+2007-01-03  Berke Durak  <berke.durak@inria.fr>
+
+	Debugging tags for myocamlbuild.ml.
+
+	* ocaml_specific.ml: .
+	* slurp.ml: .
+
+2007-01-02  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Another atempt to fix the slurp bug and lazy.
+
+	* slurp.ml: Ditto.
+
+2007-01-02  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Fix slurp w.r.t lazyness: keep the cwd.
+
+	* slurp.ml: Ditto.
+
+2007-01-02  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	My_unix, slurp in degraded mode, _tags in subdirs, fix the bug with -j...
+
+	* ocamlbuild_version.mli: Remove.
+	* ocamlbuild_where.mli: New.
+	* display.mli: New.
+	* shell.ml: New.
+	* shell.mli: New.
+	* glob.ml,
+	* glob.mli,
+	* configuration.ml,
+	* lexers.mli,
+	* lexers.mll,
+	* configuration.mli: Honor _tags files in subdirs.
+	* my_unix_with_unix.ml,
+	* command.ml,
+	* command.mli,
+	* resource.ml,
+	* resource.mli,
+	* solver.ml: Fix the bug with the -j option.
+	* slurp.ml,
+	* slurp.mli: New degraded mode using the find command.
+	Use lazy values to avoid computing useless directories.
+	* options.ml,
+	* options.mli: Update -version and -where.
+	* pathname.ml,
+	* pathname.mli: Remove the init section.
+	* rule.ml,
+	* rule.mli: Add file_rule useful for rules that don't run a command but
+	just write a file.
+	* ocaml_specific.ml: Fix some plugin bugs. Remove -I to ocamldep.
+	Handle msvc .obj,.lib instead of .o,.a.
+	* my_unix_without_unix.ml: Make works link stuffs running the readlink
+	command.
+	* display.ml,
+	* hygiene.ml,
+	* my_std.ml,
+	* my_unix.mli,
+	* my_std.mli,
+	* start.sh,
+	* test/test5/test.sh,
+	* test/good-output,
+	* test/test6/test.sh,
+	* test/test7/test.sh,
+	* test/test4/test.sh,
+	* test/test8/test.sh,
+	* test/test3/test.sh,
+	* test/test2/test.sh,
+	* Makefile,
+	* _tags,
+	* ocamlbuild_pack.mlpack: Update.
+
+2007-01-02  Berke Durak  <berke.durak@inria.fr>
+
+	Fixed ticker.
+
+	* display.ml: .
+
+2006-12-21  Berke Durak  <berke.durak@inria.fr>
+
+	Cosmetic.
+
+	* command.ml: .
+	* display.ml: .
+
+2006-12-21  Berke Durak  <berke.durak@inria.fr>
+
+	Computing display length.
+
+	* display.ml: .
+
+2006-12-21  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Add -classic-display.
+
+	* command.ml,
+	* command.mli: Provide a way to use the classic display.
+	* options.ml: Add the -classic-display option.
+	* Makefile: Remove ppcache form the default.
+
+2006-12-21  Berke Durak  <berke.durak@inria.fr>
+
+	Finish display only once ; display number of jobs cached.
+
+	* command.ml: .
+	* display.ml: .
+
+2006-12-21  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Oops fix a bug.
+
+	* command.ml: Add begin .. end.
+
+2006-12-21  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Some display fixes.
+
+	* command.ml: Select the display mode and remove the assert false.
+	* display.ml: Change the print function to have a more compact one.
+	* start.sh: Update.
+
+2006-12-21  Berke Durak  <berke.durak@inria.fr>
+
+	Error support in Display.finish.
+
+	* display.ml: .
+
+2006-12-21  Berke Durak  <berke.durak@inria.fr>
+
+	Support for cache.
+
+	* display.ml: .
+
+2006-12-21  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Integrate display mode.
+
+	* ocamlbuild_pack.mlpack: Add display.
+	* command.mli: Add Px to indicate to highligth this pathname.
+	* command.ml: Support Px and call Display.
+	* display.ml: Fix minor bugs.
+	* ocaml_specific.ml: Declare some Px, and quiet ocamlyacc, ocamllex.
+	* options.ml: Add quiet to default tags.
+	* ppcache.ml: Detect more accuratly ocamlrun.
+	* pathname.ml: Improve concat.
+	* _tags: No profile.
+
+2006-12-21  Berke Durak  <berke.durak@inria.fr>
+
+	Added pretend.
+
+	* display.ml: .
+
+2006-12-21  Berke Durak  <berke.durak@inria.fr>
+
+	Added ticker.
+
+	* display.ml: .
+
+2006-12-21  Berke Durak  <berke.durak@inria.fr>
+
+	Display module.
+
+	* display.ml: .
+	* my_unix_with_unix.ml: .
+	* my_unix_without_unix.ml: .
+	* my_unix.mli: .
+	* test/test10/test.sh: New.
+	* test/test10: New.
+	* test/test10/dbdi: New.
+
+2006-12-21  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Use a better init order, and fix a Filename.concat usage.
+
+	* ocaml_specific.ml: The plugin should act before any initialization.
+	* ocaml_arch.ml: Use Pathname.(/).
+
+2006-12-21  Berke Durak  <berke.durak@inria.fr>
+
+	Started user-friendly display module.
+
+	* display.ml: New.
+
+2006-12-21  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Fix init order.
+
+	* ocaml_specific.ml: Config must be available for plugin building.
+
+2006-12-21  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Some fixes.
+
+	* command.ml: Quote if needed.
+	* my_std.mli: Comment String.contains_string.
+	* resource.ml: Remove a useless separator.
+	* test/good-output: Update.
+
+2006-12-21  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Plugin config file and profile mode.
+
+	* ocaml_specific.ml: Fix a bug due to the lazyness of &&.
+	* ocaml_specific.mli: Move some functions.
+
+2006-12-21  Berke Durak  <berke.durak@inria.fr>
+
+	Now compiles patterns for fast matching.  Removed regexp support.
+
+	* glob_ast.ml: .
+	* glob.ml: .
+	* glob_lexer.mli: .
+	* glob_ast.mli: .
+	* glob_lexer.mll: .
+	* test/test9/testglob.ml: .
+	* test/test9/dbgl: New.
+
+2006-12-20  Berke Durak  <berke.durak@inria.fr>
+
+	Pattern matching seems to start to work.
+
+	* glob.ml: .
+
+2006-12-20  Berke Durak  <berke.durak@inria.fr>
+
+	Started faster pattern matching code.
+
+	* ocaml_specific.ml: .
+	* _tags: .
+
+2006-12-20  Berke Durak  <berke.durak@inria.fr>
+
+	myocamlbuild is rebuilt only as needed.
+
+	* hygiene.ml: .
+	* ocaml_specific.ml: .
+	* pathname.ml: .
+	* pathname.mli: .
+	* resource.ml: .
+
+2006-12-20  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Some changes mainly for windows support.
+
+	* command.ml,
+	* command.mli: Add the Quote constructor to help quoting building in
+	commands.
+	* my_unix_with_unix.ml,
+	* my_unix_without_unix.ml,
+	* glob.ml: Commented reslash mode.
+	* my_std.ml,
+	* my_std.mli: Some new functions.
+	* my_unix.mli: Export sys_command.
+	* ocaml_specific.ml,
+	* ocaml_specific.mli: Update and windows support.
+	* options.ml,
+	* options.mli: Remove the ocamlmklib option.
+	* ppcache.ml: Fix a bug.
+	* pathname.ml: Add more dirseps. Use a custom Filename.concat (for now).
+	* resource.ml,
+	* rule.ml,
+	* Makefile,
+	* _tags: Update.
+
+2006-12-15  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Update start order.
+
+	* start.sh: Ditto.
+
+2006-12-11  Berke Durak  <berke.durak@inria.fr>
+
+	Added -custom, fixed paths for installation.
+
+	* ocaml_specific.ml: .
+	* Makefile: .
+
+2006-12-11  Berke Durak  <berke.durak@inria.fr>
+
+	Typo.
+
+	* report.ml: .
+
+2006-12-08  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Add a basic ocamlmklib support.
+
+	* ocaml_specific.ml,
+	* ocaml_specific.mli: Use ocamlmklib to make libraries if enabled.
+	* options.ml,
+	* options.mli: Add -ocamlmklib and -use-ocamlmklib.
+
+2006-12-08  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Export more references of options.
+
+	* command.ml,
+	* command.mli: Add ?quiet to execute.
+	* ocaml_specific.ml,
+	* ocaml_specific.mli: Update to options.
+	* options.ml,
+	* options.mli: Move ocamlc, ocamlopt... to references on command specs.
+	* solver.ml: Update.
+	* Makefile: Use _ocamldistr to avoid hygiene.
+	* .vcs: Use _ocamldistr.
+
+2006-12-08  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	OCaml distrib stuffs.
+
+	* command.ml,
+	* command.mli: Add a normalization callback.
+	* ocaml_specific.ml,
+	* ocaml_specific.mli: Add a more complete interface.
+	* options.ml,
+	* options.mli: Add nostdlib.
+	* pathname.ml: Add mkdir -p to import in build.
+	* rule.ml,
+	* rule.mli: Call normalization of commands for digest.
+	* report.ml: Add ignore.
+	* start.sh: Add report.ml*.
+	* Makefile: Add distrib exportation (make a link).
+	* .vcs: Unmask ocamldistrib link.
+
+2006-12-07  Berke Durak  <berke.durak@inria.fr>
+
+	Added TODO item.
+
+	* .vcs: .
+	* TODO: .
+
+2006-12-07  Berke Durak  <berke.durak@inria.fr>
+
+	Added TODO file.
+
+	* TODO: New.
+
+2006-12-07  Berke Durak  <berke.durak@inria.fr>
+
+	Very rudimentary report analysis.
+
+	* report.ml: .
+	* _tags: .
+
+2006-12-07  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Update tests to run ocamlbuild correctly.
+
+	* test/test2/test.sh,
+	* test/test3/test.sh,
+	* test/test4/test.sh,
+	* test/test5/test.sh,
+	* test/test6/test.sh,
+	* test/test7/test.sh,
+	* test/test8/test.sh,
+	* test/test9/test.sh: Ditto.
+	* test/good-output: Update.
+
+2006-12-07  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Make test9 independant.
+
+	* test/test9/test.sh: Ditto.
+
+2006-12-07  Berke Durak  <berke.durak@inria.fr>
+
+	Rewrote globbing engine, adding {,} ; moved reporting functions to Report.
+
+	* ocamlbuild_pack.mlpack: .
+	* command.ml: .
+	* glob_ast.ml: .
+	* glob.ml: .
+	* glob_ast.mli: .
+	* glob_lexer.mll: .
+	* ocaml_specific.ml: .
+	* report.ml: New.
+	* report.mli: New.
+	* solver.ml: .
+	* solver.mli: .
+	* start.sh: .
+	* test/test9/testglob.ml: .
+	* test/test9/test.sh: .
+	* test/test3/test.sh: .
+	* _tags: .
+
+2006-12-07  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Degraded mode...
+
+	* ocamlbuildlight.ml: New.
+	* ocamlbuild_pack.mlpack: Include new modules.
+	* bool.ml: Fake dependency.
+	* configuration.ml: Adapt to the glob parser.
+	* command.ml: Export the fork usage.
+	* glob.ml: Use Str through My_unix.
+	* glob_lexer.mli: New.
+	* glob_lexer.mll: Add slashs to valid character patterns.
+	* lexers.mli,
+	* lexers.mll: Use the glob parser.
+	* my_std.ml: Use My_unix.
+	* my_unix_with_unix.ml: New.
+	* my_unix_without_unix.ml: New.
+	* my_unix.mli: New.
+	* my_std.mli: Add search_in_path and change lazy force to ( !* ).
+	* ocaml_specific.ml: Some updates.
+	* options.ml,
+	* options.mli: Add -ocamlrun.
+	* pathname.ml: Adapt to an optional slurp.
+	* ppcache.ml: Use search_in_path of my_std.
+	* resource.ml: Update to ( !* ).
+	* solver.ml: Export Unix errors reporting.
+	* slurp.ml,
+	* slurp.mli: Use My_unix.
+	* start.sh: Update.
+	* test/test9/testglob.ml: Test a constant.
+	* test/test5/_tags,
+	* test/test3/_tags,
+	* test/test4/_tags: Don't use regexp.
+	* test/good-output: Add test9.
+	* test/test9/test.sh: Remove the parent usage.
+	* Makefile: Add the light mode.
+	* .vcs: Update.
+	* _tags: Update.
+
+2006-12-06  Berke Durak  <berke.durak@inria.fr>
+
+	Extra tests for globbing.
+
+	* test/test9/testglob.ml: .
+
+2006-12-06  Berke Durak  <berke.durak@inria.fr>
+
+	First draft of pattern matching.
+
+	* glob_ast.ml: .
+	* glob.ml: .
+	* glob_ast.mli: .
+	* glob_lexer.mll: .
+
+2006-12-06  Berke Durak  <berke.durak@inria.fr>
+
+	More hard-wired but common cases for globbing.
+
+	* glob.ml: .
+	* test/test9/testglob.ml: .
+
+2006-12-06  Berke Durak  <berke.durak@inria.fr>
+
+	Hidden interface in globber.
+
+	* glob.mli: .
+	* test/test9/testglob.ml: .
+
+2006-12-06  Berke Durak  <berke.durak@inria.fr>
+
+	Basic globbing works.
+
+	* glob.ml: .
+	* glob.mli: .
+	* test/test9/testglob.ml: .
+
+2006-12-06  Berke Durak  <berke.durak@inria.fr>
+
+	Improved interface.
+
+	* glob.ml: .
+	* glob_ast.ml: New.
+	* glob_ast.mli: New.
+	* glob.mli: New.
+	* glob_lexer.mll: .
+	* test/test9/testglob.ml: .
+	* _tags: .
+
+2006-12-06  Berke Durak  <berke.durak@inria.fr>
+
+	Added test9.
+
+	* test/test9/testglob.ml: New.
+	* test/test9/parent: New.
+	* test/runtest.sh: .
+	* test/test9: New.
+	* test/test9/test.sh: New.
+
+2006-12-06  Berke Durak  <berke.durak@inria.fr>
+
+	Parser seems to work.
+
+	* glob.ml: .
+	* glob_lexer.mll: .
+
+2006-12-06  Berke Durak  <berke.durak@inria.fr>
+
+	Removed eof_char.
+
+	* glob.ml: .
+	* glob_lexer.mll: .
+
+2006-12-06  Berke Durak  <berke.durak@inria.fr>
+
+	Interface seems to be OK.
+
+	* glob.ml: .
+	* glob_lexer.mll: .
+
+2006-12-06  Berke Durak  <berke.durak@inria.fr>
+
+	Adding files for the globbing module.
+
+	* bool.ml: New.
+	* bool.mli: New.
+	* glob.ml: New.
+	* glob_lexer.mll: New.
+	* _tags: .
+
+2006-12-06  Berke Durak  <berke.durak@inria.fr>
+
+	Replaced numeric escapes.
+
+	* lexers.mll: .
+
+2006-12-05  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Remove most of the Str usage by using ocamllex.
+
+	* ocamlbuild_pack.mlpack: Remove Re, add Lexers.
+	* configuration.ml: Use Lexers.
+	* command.ml: Don't use Re.
+	* lexers.mli: New.
+	* lexers.mll: New.
+	* my_std.ml,
+	* my_std.mli: Add String.before and String.after.
+	* ocaml_specific.ml,
+	* ocaml_specific.mli: Use Lexers but also provide tags for warnings.
+	* resource.ml,
+	* rule.ml,
+	* options.ml,
+	* ppcache.ml,
+	* pathname.ml: Use Lexers.
+	* re.ml: Remove.
+	* re.mli: Remove.
+	* start.sh: Update.
+	* Makefile: Igonre _build... and gives -ml to ocamllex.
+	* _tags: Warnings for lexers.
+
+2006-12-05  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Use Sys instead of Unix for readdir.
+
+	* my_std.ml,
+	* my_std.mli: Supress a Unix usage.
+
+2006-12-05  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Add an option to disable the link creation.
+
+	* ocaml_specific.ml: Honor this option.
+	* options.ml: Declare it.
+	* options.mli: Define it.
+
+2006-12-05  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Don't import compiled files...
+
+	* pathname.ml: For the OCaml compilation itself I need to exclude some
+	dirs that contains compiled files but I want to use some of them with
+	ocamlbuild.
+
+2006-12-05  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Support flags for ocamlyacc and ocamllex.
+
+	* ocaml_specific.ml,
+	* options.ml,
+	* options.mli: Add these options.
+
+2006-12-04  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Two fixes (hygiene and libraries)...
+
+	* hygiene.ml: Exit 0 if sterilize removes some files (since source
+	files are cached in a rather persistent data structure I prefer let the
+	user start on a fresh setup).
+	* ocaml_specific.ml: Use the dirname if there is no directory named by
+	removing the extension.
+
+2006-12-04  Berke Durak  <berke.durak@inria.fr>
+
+	Small bug in hygiene.
+
+	* hygiene.ml: .
+
+2006-12-04  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Add postition specifications to rules.
+
+	* rule.ml,
+	* rule.mli: Add a way to specifie where to put a new rule
+	(top,bottom,before another,after another).
+	* flags.ml: Reorder.
+	* my_std.ml,
+	* my_std.mli: Add mv, fix an error handling.
+	* ocaml_specific.ml: Better error message for circular dependencies.
+	* ppcache.ml: Handle errors better.
+
+2006-11-29  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Add a working multiple job support.
+
+	* command.ml,
+	* command.mli: Add different versions of execute_many including a
+	version that use forks.
+	* options.ml,
+	* options.mli: Restore the -j option.
+	* solver.ml: Call Command.execute_many.
+	* test/runtest.sh: Pass $@ to sub tests.
+	* test/good-output: Update.
+
+2006-11-28  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Fix the link order.
+
+	* start.sh: Fix the link order.
+
+2006-11-28  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	One step toward multiple jobs: Add the support for suspended building.
+
+	* resource.ml,
+	* resource.mli: Add the notion of suspended building.
+	This represent a resource that is fully ready for evaluation, it's just
+	a command and a function to apply after.
+	* rule.ml: Do not really execute rules that can be safely suspended.
+	* solver.ml: Play with suspended rules to collect as many as possible
+	to get closer to a pararllel execution.
+
+2006-11-27  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Fix the makefile.
+
+	* Makefile: Fix deps.
+
+2006-11-27  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Activates more warnings, and prepare the -j feature.
+
+	* hygiene.ml: Consolidates fragile patterns.
+	* my_std.ml: Likewise.
+	* ocaml_specific.ml: Mainly update to the new builder prototype.
+	* pathname.ml,
+	* pathname.mli: Kick a useless parameter.
+	* resource.ml: Remove dead code and update.
+	* rule.ml,
+	* rule.mli: The bulider now takes a list of resource lists, it will
+	try to make in parallel the first level of commands.
+	* solver.ml: Update to builder without parallelism.
+	* test/good-output: Update.
+	* Makefile: Warnings are now set to -w A -warn-error A.
+
+2006-11-26  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Fix packages... again.
+
+	* ocaml_specific.ml: Ditto.
+
+2006-11-26  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Fix packages.
+
+	* ocaml_specific.ml: Try to handle better packages during link.
+	* Makefile: Add the try_bootstrap rule.
+
+2006-11-26  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Add -tag, -tags to options.
+
+	* ocaml_specific.ml: Append default tags from options.
+	* options.ml,
+	* options.mli: Add -tag and -tags.
+	* tags.mli: Indent.
+
+2006-11-26  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Fix a bug and update tests.
+
+	* resource.ml: Use Hashtbl.replace of course instead of Hashtbl.add to
+	avoid a nasty bug.
+	* test/test7/test.sh,
+	* test/test8/test.sh,
+	* test/test2/test.sh,
+	* test/test6/test.sh,
+	* test/test4/test.sh,
+	* test/test5/test.sh,
+	* test/test3/test.sh: Extract program options to be sure that
+	the -nothing-should-be-rebuilt option is before the -- one.
+	* test/good-output: Update.
+
+2006-11-26  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Use a hashtbl for digests.
+
+	* resource.ml: Ditto.
+	* ocaml_specific.ml: Remove dead code.
+
+2006-11-26  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Use lists instead of sets for rule deps & prods.
+
+	* ocaml_specific.ml: Move the mli dep first.
+	* resource.ml,
+	* resource.mli: No more provide digest_resources but digest_resource.
+	* rule.ml,
+	* rule.mli: Use list instead of sets for deps and prods, since they are
+	not heavily updated and the order matter.
+	* solver.ml: Adapt.
+	* test/good-output: Yeah!
+
+2006-11-26  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	One more fix for libraries.
+
+	* ocaml_specific.ml: Improve the link_exception handling.
+	* test/good-output: Update.
+
+2006-11-25  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Fix the library linking.
+
+	* ocaml_specific.ml: The test7 is specially made to check that feature.
+
+2006-11-25  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Remove list_set.
+
+	* ocamlbuild_pack.mlpack: Remove list_set
+	* list_set.ml: Remove.
+	* list_set.mli: Remove.
+	* start.sh: Remove list_set.
+	* test/good-output: Regen.
+
+2006-11-25  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Fix the C rule when dirname = '.'.
+
+	* ocaml_specific.ml: Don't move the output when it's useless.
+
+2006-11-25  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Ignore ocamlbuild_version.ml.
+
+2006-11-25  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	New transitive closure.
+
+	* ocamlbuild_version.ml: Remove.
+	* my_std.ml,
+	* my_std.mli: Add a debug mode for digests and run_and_read.
+	* ocaml_specific.ml: New transitive closure.
+	* pathname.ml,
+	* pathname.mli: Export also parent_dir_name and fix same_contents.
+	* resource.ml,
+	* resource.mli: Add dependencies.
+	* rule.ml: Adapt.
+	* test/good-output: Regen.
+	* Makefile: Improve install.
+	* .vcs: Ignore other _build dirs.
+
+2006-11-20  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Rule definition shortcut and C files.
+
+	* rule.ml,
+	* rule.mli: Allow to pass ~prod and ~dep when there is just one file.
+	* ocaml_specific.ml: Add a rule for C files and use the previous
+	shortcut.
+
+2006-11-18  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	No more extend Format.
+
+	* command.ml,
+	* my_std.ml,
+	* my_std.mli: Put directly ksbprintf and sbprintf in My_std.
+
+2006-11-18  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Clean up and consistent use of Pathname instead of Filename.
+
+	* command.ml,
+	* my_std.ml,
+	* my_std.mli,
+	* ocaml_specific.ml,
+	* pathname.ml,
+	* ppcache.ml,
+	* pathname.mli,
+	* resource.ml: That's it.
+
+2006-11-18  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Restore List_set.
+
+	* ocamlbuild_pack.mlpack,
+	* list_set.ml,
+	* list_set.mli,
+	* resource.ml,
+	* start.sh: Ditto.
+
+2006-11-18  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Remove List_set and List_map.
+
+	* ocamlbuild_pack.mlpack: No more in the pack.
+	* list_set.ml: Remove.
+	* list_map.ml: Remove.
+	* list_map.mli: Remove.
+	* list_set.mli: Remove.
+	* resource.ml: Use a Set.
+	* start.sh: Adapt.
+
+2006-11-18  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Huge speed up, worth updating.
+
+	* resource.ml,
+	* resource.mli: Use a hash instead of map, remove the percent type.
+	* rule.ml,
+	* rule.mli: Remove the function for rule names. Use an exception to
+	choose matching rules.
+
+2006-11-18  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Speedup rule calling.
+
+	* rule.ml,
+	* rule.mli: No more call the code rule twice to compute the digest.
+	* ocaml_specific.ml,
+	* ocaml_specific.mli: Adapt to Rule.
+	* test/test8/myocamlbuild.ml: Use the exception.
+	* test/good-output: Update.
+	* boot: Update svn:ignore.
+
+2006-11-16  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Remove phony resources and include dependencies.
+
+	* ocaml_specific.ml,
+	* options.ml,
+	* options.mli,
+	* pathname.ml,
+	* pathname.mli,
+	* resource.ml,
+	* resource.mli,
+	* rule.ml,
+	* rule.mli,
+	* solver.ml,
+	* test/test8/myocamlbuild.ml: Simplify a lot the code.
+
+2006-11-16  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Some improvements...
+
+	* ocamlbuild.ml: .
+	* ocamlbuild_version.ml: New.
+	* ocamlbuild_plugin.ml: New.
+	* ocamlbuild_version.mli: New.
+	* ocamlbuildlib.mllib: .
+	* ocamlbuild.sh: Remove.
+	* ocamlbuild_pack.mlpack: New.
+	* boot: .
+	* ocaml_specific.ml: .
+	* ocaml_specific.mli: .
+	* options.ml: .
+	* options.mli: .
+	* rule.ml: .
+	* rule.mli: .
+	* start.sh: .
+	* test/test8/a.ml: New.
+	* test/test7/a2.ml: .
+	* test/test7/a3.ml: New.
+	* test/test8/myocamlbuild.ml: New.
+	* test/test7/myocamlbuild.ml: New.
+	* test/test8: New.
+	* test/test8/test.sh: New.
+	* test/runtest.sh: .
+	* test/test7/test.sh: .
+	* test/good-output: .
+	* Makefile: .
+	* _tags: .
+
+2006-11-15  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Add support for libraries.
+
+	* ocamlbuildlib.ml: Remove.
+	* ocamlbuildlib.mllib: New.
+	* ocaml_specific.ml: Rules and actions for libraries.
+	* rule.ml: Improve explanations.
+	* start.sh: Don't make ocamlbuildlib.
+	* test/test7/a.mli: New.
+	* test/runtest.sh: Add test7.
+	* test/test7/test.sh: Add reverts for a.ml.
+	* test/good-output: Update.
+	* Makefile: Remove junk lines.
+
+2006-11-14  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Add a tests for libraries.
+
+	* test/test7/e.ml: New.
+	* test/test7/d.ml: New.
+	* test/test7/a.ml: New.
+	* test/test7/b.ml: New.
+	* test/test7/a2.ml: New.
+	* test/test7/c.ml: New.
+	* test/test7/test.sh: New.
+	* test/test7/ablib.mllib: New.
+	* test/test7: New.
+
+2006-11-14  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Simplify dependency rules.
+
+	* ocaml_specific.ml: No more use bytelinkdeps...
+	* rule.ml,
+	* rule.mli: Add a dyndeps set.
+	* ocamlbuild.sh,
+	* pathname.ml,
+	* Makefile: Update.
+
+2006-11-14  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Update tests...
+
+	* test/test2/vivi3.ml: .
+	* test/good-output: .
+
+2006-11-10  Berke Durak  <berke.durak@inria.fr>
+
+	Added -sterilize option.
+
+	* hygiene.ml: ditto
+	* hygiene.mli: ditto
+	* ocaml_specific.ml: ditto
+	* options.ml: ditto
+	* options.mli: ditto
+
+2006-11-10  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	View the context dir in first.
+
+	* pathname.ml: Ditto.
+
+2006-11-10  Berke Durak  <berke.durak@inria.fr>
+
+	Added thread and profile tags.
+
+	* ocaml_specific.ml: ditto.
+
+2006-11-10  Berke Durak  <berke.durak@inria.fr>
+
+	Added law for leftover dependency files.
+
+	* ocaml_specific.ml: ditto.
+
+2006-11-10  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Reverse the ignore_auto default value.
+
+	* options.ml: Add -no-skip, remove -ignore-auto, add -Is and -Xs.
+	* test/test2/test.sh,
+	* test/test5/test.sh,
+	* test/test6/test.sh,
+	* test/test4/test.sh,
+	* test/test3/test.sh,
+	* Makefile: Revert flags.
+
+2006-11-10  Berke Durak  <berke.durak@inria.fr>
+
+	Added install target to Makefile.
+
+	* Makefile: .
+
+2006-11-10  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Deal with for-pack flags...
+
+	* ocaml_arch.ml: Define a hook.
+	* ocaml_arch.mli: Declare it.
+	* ocaml_specific.ml: Use it.
+	* test/test6: Ignore main.byte.
+
+2006-11-09  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Fix start.sh and remove dead code.
+
+	* ocaml_specific.ml: Remove dead code about ignore_auto.
+	* start.sh: Swap two modules.
+	* test/test6/main.byte: Remove.
+
+2006-11-09  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Pack now works great...
+
+	* ocamlbuild.sh: Use ocamlopt.
+	* command.ml: Reset filesys cache.
+	* my_std.ml,
+	* my_std.mli: Add a filesys cache for
+	case sensitive file_exists and digest over files.
+	* ocaml_specific.ml: Work on link and packs.
+	* ppcache.ml: Exit 2 is for unix.
+	* pathname.ml,
+	* resource.ml,
+	* rule.ml,
+	* rule.mli,
+	* slurp.ml,
+	* solver.ml,
+	* solver.mli,
+	* test/test5: Update.
+
+2006-11-07  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Too lazy to fill this up :).
+
+	* ocamlbuild.sh,
+	* configuration.ml,
+	* command.ml,
+	* debug.ml,
+	* debug.mli,
+	* my_std.ml,
+	* my_std.mli,
+	* ocaml_specific.ml,
+	* ocaml_specific.mli,
+	* options.ml,
+	* options.mli,
+	* pathname.ml,
+	* ppcache.ml,ew.
+	* ppcache.mli,ew.
+	* pathname.mli,
+	* resource.ml,
+	* resource.mli,
+	* rule.ml,
+	* rule.mli,
+	* slurp.ml,
+	* solver.ml,
+	* solver.mli,
+	* slurp.mli,
+	* start.sh,
+	* tags.ml,
+	* test/test5/test.sh,
+	* test/test4/test.sh,
+	* test/test3/test.sh,
+	* test/good-output,
+	* test/test2/test.sh,
+	* test/test6/test.sh,
+	* Makefile,
+	* _tags: This too.
+
+2006-11-04  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Some pack,dirs stuffs.
+
+	* ocamlbuild.ml,
+	* ocamlbuildlib.ml,ew.
+	* ocamlbuild.sh,ew.
+	* configuration.ml,
+	* my_std.ml,
+	* my_std.mli,
+	* ocaml_arch.ml,ew.
+	* ocaml_specific.ml,
+	* ocaml_specific.mli,
+	* ocaml_arch.mli,ew.
+	* options.ml,
+	* options.mli,
+	* pathname.ml,
+	* pathname.mli,
+	* resource.ml,
+	* resource.mli,
+	* rule.ml,
+	* solver.ml,
+	* test/good-output,
+	* Makefile,
+	* _tags: That's it.
+
+2006-10-31  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Remove the dirty thing about cmi's.
+
+	* ocaml_specific.ml,
+	* ocaml_specific.mli: Moves of files are no more needed.
+	* test/good-output: Update.
+
+2006-10-31  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Some renaming and cleanup...
+
+	* ocamlbuild.ml,
+	* configuration.ml,
+	* configuration.mli,
+	* list_set.ml,
+	* ocaml_specific.ml,
+	* resource.ml,
+	* test/good-output,
+	* test/test6/test.sh: Do that.
+
+2006-10-31  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Use the nothing-should-be-rebuilt for tests and update the output.
+
+	* test/test2,
+	* test/test2/test.sh,
+	* test/test3/test.sh,
+	* test/test4/test.sh,
+	* test/test5/test.sh,
+	* test/test6/test.sh,
+	* test/good-output: Do that.
+
+2006-10-31  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Add a mode usefull for tests.
+
+	* options.ml, options.mli, rule.ml:
+	This new mode fails when something needs to be rebuilt.
+
+2006-10-31  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Improve the ocaml rule set.
+
+	* ocaml_specific.ml: Yipee!
+
+2006-10-31  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Add scripts to run tests.
+
+	* test/test2/vivi1.ml: New.
+	* test/test2/vivi2.ml: New.
+	* test/test2/vivi3.ml: New.
+	* test/test2/vivi.ml: .
+	* test/test4/test.sh: New.
+	* test/test5/test.sh: New.
+	* test/test2/test.sh: New.
+	* test/test6/test.sh: .
+	* test/good-output: New.
+	* test/test3/test.sh: New.
+	* test/runtest.sh: New.
+
+2006-10-31  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Restore some recursivity for includes.
+
+	* resource.ml,
+	* resource.mli: Remove the digest field.
+	* rule.ml: .
+	* test/test6/test.sh: .
+
+2006-10-30  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Remove the arbitrary deep dependencies.
+
+	* ocaml_specific.ml,
+	* ocaml_specific.mli: No more implicit transitives deps.
+	* resource.ml,
+	* resource.mli: Remove as many things as possible.
+	* rule.ml,
+	* rule.mli,
+	* solver.ml: Simplify.
+	* command.ml: Fix newlines and flush.
+
+2006-10-30  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Separated preprocessing, total order over rules...
+
+	* ocamlbuild.ml,
+	* my_std.ml,
+	* my_std.mli,
+	* ocaml_specific.ml,
+	* ocaml_specific.mli,
+	* options.ml,
+	* options.mli,
+	* pathname.ml,
+	* pathname.mli,
+	* resource.ml,
+	* resource.mli,
+	* rule.ml,
+	* rule.mli,
+	* solver.ml,
+	* test/test2/tutu.ml,
+	* tags.ml,
+	* test/test2/tyty.mli,ew.
+	* test/test6/test.sh,
+	* test/test6,
+	* test/test5/_tags,
+	* test/test5: Update.
+
+2006-10-27  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Add options: -ocamlc,-ocamlopt,-ocamldep,-ocamlyacc,-ocamllex.
+
+	* options.ml,
+	* options.mli: Declare them.
+	* ocaml_specific.ml: Use them.
+
+2006-10-27  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Fix start.sh.
+
+	* start.sh: Fix the output.
+
+2006-10-27  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Regen start.sh.
+
+	* start.sh: Regen.
+
+2006-10-27  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Use the list based implems and fix many bugs.
+
+	* ocamlbuild.ml: Rename some dependency files.
+	* boot: Ignore boot/ocamlbuild.byte.save.* files.
+	* command.ml: Fix command printing.
+	* my_std.ml,
+	* my_std.mli: Add List.equal, use the cp command in Shell.cp.
+	* ocaml_specific.ml,
+	* ocaml_specific.mli: Many things.
+	* pathname.ml, pathname.mli: Make compare obselete prefer equal.
+	* resource.ml, resource.mli: Add print_cache and use list based
+	sets and maps.
+	* Makefile: Add the bootstrap rule.
+
+2006-10-27  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Add a test for fine-grained dependencies.
+
+	* test/test6/main.ml: New.
+	* test/test6/d.ml: New.
+	* test/test6/b.ml: New.
+	* test/test6/a.ml: New.
+	* test/test6/main.mli: New.
+	* test/test6/a.mli: New.
+	* test/test6/d.mli: New.
+	* test/test6/b.mli: New.
+	* test/test6/b.mli.v2: New.
+	* test/test6/main.byte: New.
+	* test/test6/d.mli.v1: New.
+	* test/test6/test.sh: New.
+	* test/test6/d.mli.v2: New.
+	* test/test6/b.mli.v1: New.
+	* test/test6: New.
+
+2006-10-26  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Dummy implementations for set and map using lists.
+	The main advantage is to only rely on the equal function that is simpler
+	to maintain correct in an imperative setting.
+
+	* list_map.ml: New.
+	* list_set.ml: New.
+	* list_map.mli: New.
+	* list_set.mli: New.
+
+2006-10-24  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Fixes and improvment.
+
+	* ocamlbuild.ml,
+	* my_std.ml,
+	* my_std.mli,
+	* ocaml_specific.ml,
+	* ocaml_specific.mli,
+	* pathname.ml,
+	* resource.ml,
+	* rule.ml,
+	* rule.mli,
+	* solver.ml,
+	* solver.mli: The previous version was somwhat unstable.
+
+2006-10-24  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Many things...
+
+	* ocamlbuild.ml,
+	* command.ml,
+	* command.mli,
+	* ocaml_specific.ml,
+	* ocaml_specific.mli,
+	* options.ml,
+	* options.mli,
+	* resource.ml,
+	* resource.mli,
+	* rule.ml,
+	* rule.mli,
+	* solver.ml,
+	* solver.mli:
+	Simplify the whole solver by removing the value type.
+	Rule code now returns a resource set, that is injected as dependencies.
+	So rule code always returns unit. But can raise exceptions.
+	Add -ignore, and -ignore-auto options to workaround ocamldep
+	approximations without igonring errors.
+	* Makefile: Add backup and restore targets.
+
+2006-10-23  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Compute digests of dependencies recursively.
+
+	* ocamlbuild.ml,
+	* ocaml_specific.ml,
+	* options.ml,
+	* options.mli,
+	* resource.ml,
+	* resource.mli,
+	* rule.ml: Ditto.
+
+2006-10-23  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	One step toward a parallelisable system.
+
+	* boot,
+	* command.ml,
+	* ocaml_specific.ml,
+	* ocaml_specific.mli,
+	* options.ml,
+	* options.mli,
+	* rule.ml,
+	* rule.mli,
+	* solver.ml: Update.
+	* value.ml: Remove.
+	* value.mli: Remove.
+
+2006-10-20  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Add vcs config file to setup a good default setup.
+
+	* .vcs: New.
+
+2006-10-20  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Simplify the bootstrap by introducing a shell script.
+
+	* boot/ocamlbuild.byte: Remove. Useless in distribution mode
+	but will be created, the first time. So the devel is not
+	disturbed.
+	* start.sh: New.
+	* Makefile: Remove the old one to use start.sh.
+
+2006-10-20  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Take command line in account for the digest computation.
+
+	* command.ml,
+	* command.mli,
+	* debug.ml,
+	* ocaml_specific.ml,
+	* ocaml_specific.mli,
+	* resource.ml,
+	* resource.mli,
+	* rule.ml,
+	* rule.mli,
+	* solver.ml,
+	* value.ml,
+	* value.mli: Update.
+
+2006-10-19  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	New pathname representation.
+
+	* pathname.ml, pathname.mli: This new representation should
+	avoids "fix" problems.
+
+2006-10-17  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Change the cache implem -> now really fast at link time.
+
+	* ocamlbuild.ml,
+	* boot/ocamlbuild.byte,
+	* my_std.ml,
+	* ocaml_specific.ml,
+	* pathname.ml,
+	* resource.ml,
+	* resource.mli,
+	* solver.ml: By replacing various sets by a map of records and
+	remember that something has not changed, or cannot be built;
+	there is a real speedup. In particular to detect that the link is
+	not necessary to do.
+
+2006-10-17  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Add a basic support for a digest based cache verification.
+
+	* resource.ml, resource.mli: Add have_digest and store_digest.
+	* rule.ml: Use these digests but don't include the command for
+	now.
+	* test/test2/vivi.ml, test/test2/tata.mli: Dummy updates.
+
+2006-10-16  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Split in many files.
+
+	* ocamlbuild.ml: Splitted.
+	* boot/ocamlbuild.byte: Updated.
+	* configuration.ml: New.
+	* configuration.mli: New.
+	* command.ml: New.
+	* command.mli: New.
+	* debug.ml: New.
+	* debug.mli: New.
+	* flags.ml: New.
+	* flags.mli: New.
+	* my_std.ml: New.
+	* my_std.mli: New.
+	* ocaml_specific.ml: New.
+	* ocaml_specific.mli: New.
+	* options.ml: New.
+	* options.mli: New.
+	* pathname.ml: New.
+	* pathname.mli: New.
+	* re.ml: New.
+	* re.mli: New.
+	* resource.ml: New.
+	* resource.mli: New.
+	* rule.ml: New.
+	* rule.mli: New.
+	* solver.ml: New.
+	* solver.mli: New.
+	* test/test5/d.ml: New.
+	* tags.ml: New.
+	* test/test5/b.ml: New.
+	* test/test5/a.ml: New.
+	* tags.mli: New.
+	* test/test5/a.mli: New.
+	* test/test5/c.mlpack: New.
+	* test/test5/_tags: New.
+	* test/test5: New.
+	* value.ml: New.
+	* value.mli: New.
+	* Makefile: .
+
+2006-10-16  Berke Durak  <berke.durak@inria.fr>
+
+	Various useful changes.
+
+	* ocamlbuild.ml: Hygiene to true.
+	* slurp.ml: Remove debugging
+	* Makefile: Clean annot and object files.
+
+2006-10-15  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Bootstrap it ;).
+
+	* ocamlbuild.ml: Add support for -g, -dtypes, and -rectypes in
+	four lines.
+	* _tags: New. Specify how to build ocamlbuild itself.
+	* boot: New.
+	* boot/ocamlbuild.byte: New. A bytecode version needed to
+	bootstrap
+	* Makefile: By default make it a wrapper over ocamlbuild in boot.
+
+2006-10-15  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Little fix...
+
+	* ocamlbuild.ml: Don't assoc over pathnames since the default
+	compare is wrong and slow use the string repr.
+
+2006-10-15  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Allow to control flags, and libraries by tags.
+
+	* ocamlbuild.ml: In the _tags file you can add or remove flags
+	using a colon flag_name:flag_value.
+	* test/test2/vivi.ml,
+	* test/test3/f.ml,
+	* test/test4/b/bb.ml: Dummy updates.
+	* test/test3/_tags: New.
+	* test/test4/_tags: New.
+
+2006-10-15  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Add a tag based flag system.
+
+	* test/test2/vivi.ml: An example.
+	* test/test2/_tags: New.
+	* ocamlbuild.ml: Now a command can request for flags by giving a
+	set of tags these tags include file specific tags this allow to
+	tweak flags by just providing a _tags file.
+
+2006-10-15  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Add -lib,-libs options remove -P.
+
+	* ocamlbuild.ml: -P Is useless due to the fact that we now
+	have the same directory structure in the _build directory.
+	Add -lib,-libs that allows one to specify -lib unix without
+	its extension in order to request for native and byte
+	compilations.
+
+2006-10-15  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Multi directories now works ;).
+
+	* ocamlbuild.ml: Solve the whole problem by improving the
+	Pathname module. Pathnames are now symbolic values that
+	can include variable names. These variable names represent
+	still ambiguous pathnames /a/b/(c|d as x1)/e.ml but variables
+	can be shared, so discovering that /a/b/(c|d as x1)/e.ml is in
+	fact /a/b/c/e.ml will make /a/b/(c|d as x1)/e.cmo automatically
+	take this value /a/b/c/e.cmo cause it shares the x1 variable.
+
+2006-10-13  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	I prefer capitalized names.
+
+	* AUTHORS
+
+2006-10-13  Berke Durak  <berke.durak@inria.fr>
+
+	Added an AUTHORS file.
+
+	* AUTHORS: New.
+
+2006-10-13  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Add the vcs dir.
+
+	* vcs: New.
+	* vcs/ocamlbuild.rb: New.
+
+2006-10-13  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	* ocamlbuild.ml: Restore dependencies.
+
+2006-10-13  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Fix the makefile.
+
+	* Makefile, discard_printf.ml: Ditto.
+
+2006-10-13  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Improve the directory handling.
+
+	* ocamlbuild.ml: Ditto, but there is still a problem with native.
+	* Makefile: Update.
+
+2006-10-11  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Fix native dependencies.
+
+	* ocamlbuild.ml: By default due to inlining the cmx dependencies
+	are needed to build a cmx.
+	* Makefile: Add native support.
+
+2006-10-11  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Use phony for linkdeps.
+
+	* ocamlbuild.ml: Ditto.
+
+2006-10-11  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Fix exit on multiple targets.
+
+	* ocamlbuild.ml: Ditto.
+
+2006-10-11  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	More flags -lflags,-lflag...
+
+	* ocamlbuild.ml: Add plrual form options for those that use
+	comma separated lists.
+
+2006-10-11  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Use phony resources for .cmo.linkdeps.
+
+	* ocamlbuild.ml: Also restore the command running if "--"
+	is specified
+
+2006-10-11  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Remove Include_string_list resources, add Phony resources.
+
+	* ocamlbuild.ml: Also fix some rules.
+
+2006-10-11  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Shift debug levels.
+
+	* ocamlbuild.ml: Add -quiet.
+
+2006-10-11  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Use str more intensively.
+
+	* ocamlbuild.ml: Also clean up useless functions.
+
+2006-10-11  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Fix link dependencies.
+
+	* ocamlbuild.ml: Force to consider recursivly Include_ tagged
+	resources for their full contents. Alas it takes more time to
+	know if we need to recompute the link.
+	* test/test2/vivi.ml: Update.
+
+2006-10-10  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Support multiple directories, it can compile the OCaml compiler :).
+
+	* ocamlbuild.ml: Add directory handling but also start
+	the tags config files handling.
+	* Makefile: Use str.cma.
+
+2006-10-08  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	Add library support.
+
+	* ocamlbuild.ml: Deduce basic set of tags form the target
+	extension.
+
+2006-10-08  Nicolas Pouillard  <nicolas.pouillard@gmail.com>
+
+	More customisable flags, and cycle detection.
+
+	* ocamlbuild.ml: Add some flags -lflag, -ppflag, -cflag, --.
+	Also add a detection mechanism for dependencies.
+	* discard_printf.ml, Makefile: Update.

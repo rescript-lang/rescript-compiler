@@ -1,0 +1,47 @@
+diff -u -r ocsigen-bundle-2.2.2.orig/pkg/Makefile.lwt ocsigen-bundle-2.2.2/pkg/Makefile.lwt
+--- ocsigen-bundle-2.2.2.orig/pkg/Makefile.lwt	2011-12-20 16:13:24.000000000 +0100
++++ ocsigen-bundle-2.2.2/pkg/Makefile.lwt	2011-12-29 00:34:27.000000000 +0100
+@@ -70,7 +70,7 @@
+ 
+ ${METAS}/META.lwt: ${LWT_DIR}/src/core/META
+ 	echo "directory = \"${srcdir}/${LWT_DIR}/_build/src/core\"" > $@
+-	sed -e 's%^package "\([^\"]*\)" (%package "\1" (\n directory = "../\1"%g' \
++	sed -e 's%^package "\([^\"]*\)" (%package "\1" ( directory = "../\1"%g' \
+ 	    -e 's%../syntax%../../syntax%' \
+ 	  $< >> $@
+ 
+diff -u -r ocsigen-bundle-2.2.2.orig/pkg/Makefile.ocsimore ocsigen-bundle-2.2.2/pkg/Makefile.ocsimore
+--- ocsigen-bundle-2.2.2.orig/pkg/Makefile.ocsimore	2011-12-20 16:13:24.000000000 +0100
++++ ocsigen-bundle-2.2.2/pkg/Makefile.ocsimore	2011-12-29 00:34:51.000000000 +0100
+@@ -37,8 +37,8 @@
+ 
+ ${METAS}/META.ocsimore: ${OCSIMORE_DIR}/src/core/META
+ 	echo "directory = \"${srcdir}/${OCSIMORE_DIR}/_build/src/core\"" > $@
+-	sed -e 's%^package "\([^\"]*\(user\|wiki\|site\|forum\)\)" (%package "\1" (\n directory = "../\2"%g' \
+-	    -e 's%^package "site_client" (%package "site_client" (\n directory = "../site/client"%g' \
++	sed -e 's%^package "\([^\"]*\(user\|wiki\|site\|forum\)\)" (%package "\1" ( directory = "../\2"%g' \
++	    -e 's%^package "site_client" (%package "site_client" ( directory = "../site/client"%g' \
+ 	  $< >> $@
+ 
+ 
+diff -u -r ocsigen-bundle-2.2.2.orig/pkg/Makefile.tyxml ocsigen-bundle-2.2.2/pkg/Makefile.tyxml
+--- ocsigen-bundle-2.2.2.orig/pkg/Makefile.js_of_ocaml	2011-12-20 16:13:24.000000000 +0100
++++ ocsigen-bundle-2.2.2/pkg/Makefile.js_of_ocaml	2011-12-29 01:47:00.000000000 +0100
+@@ -47,5 +47,5 @@
+ 
+ ${METAS}/META.js_of_ocaml: ${JS_OF_OCAML_DIR}/lib/META
+ 	echo "directory = \"${srcdir}/${JS_OF_OCAML_DIR}/lib\"" > $@
+-	sed -e 's%package "syntax" (%package "syntax" (\n directory = "syntax"%g' \
++	sed -e 's%package "syntax" (%package "syntax" ( directory = "syntax"%g' \
+ 	  $< >> $@
+--- ocsigen-bundle-2.2.2/configure.orig	2012-05-25 18:33:10.000000000 +0200
++++ ocsigen-bundle-2.2.2/configure	2012-05-25 18:33:24.000000000 +0200
+@@ -11051,7 +11051,7 @@
+ 
+ 
+ 
+-build_projects="deriving-ocsigen lwt js_of_ocaml tyxml ocsigenserver eliom"
++build_projects="deriving-ocsigen js_of_ocaml tyxml ocsigenserver"
+ if  test $enable_ocsimore = yes ; then :
+    build_projects+=" ocsimore"
+ fi

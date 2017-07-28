@@ -1,0 +1,213 @@
+--- core-suite-108.00.01.orig/sexplib-108.00.01/top/install_printers.ml	2012-05-14 20:53:09.000000000 +0200
++++ core-suite-108.00.01/sexplib-108.00.01/top/install_printers.ml	2012-07-12 17:33:45.000000000 +0200
+@@ -3,8 +3,11 @@
+ let eval_string
+       ?(print_outcome = false) ?(err_formatter = Format.err_formatter) str =
+   let lexbuf = Lexing.from_string str in
++assert false
++(*
+   let phrase = !Toploop.parse_toplevel_phrase lexbuf in
+   Toploop.execute_phrase print_outcome err_formatter phrase
++*)
+ 
+ let rec install_printers = function
+   | [] -> true
+--- core-suite-108.00.01.orig/core-108.00.01/lib/core_unix.mli	2012-05-25 23:10:12.000000000 +0200
++++ core-suite-108.00.01/core-108.00.01/lib/core_unix.mli	2012-07-12 17:39:29.000000000 +0200
+@@ -296,6 +296,7 @@
+     | O_DSYNC      (** Writes complete as `Synchronised I/O data integrity completion' *)
+     | O_SYNC       (** Writes complete as `Synchronised I/O file integrity completion' *)
+     | O_RSYNC      (** Reads complete as writes (depending on O_SYNC/O_DSYNC) *)
++    | O_SHARE_DELETE
+ with sexp
+ 
+ (** The type of file access rights. *)
+--- core-suite-108.00.01.orig/core-108.00.01/lib/core_unix.ml	2012-05-25 23:10:12.000000000 +0200
++++ core-suite-108.00.01/core-108.00.01/lib/core_unix.ml	2012-07-12 17:44:04.000000000 +0200
+@@ -804,6 +804,7 @@
+ | O_DSYNC
+ | O_SYNC
+ | O_RSYNC
++| O_SHARE_DELETE
+ with sexp
+ 
+ type file_perm = int with of_sexp
+--- core-suite-108.00.01.orig/core-108.00.01/top/install_printers.ml	2012-05-17 16:50:03.000000000 +0200
++++ core-suite-108.00.01/core-108.00.01/top/install_printers.ml	2012-07-12 17:48:36.000000000 +0200
+@@ -5,8 +5,11 @@
+ let eval_string
+       ?(print_outcome = false) ?(err_formatter = Format.err_formatter) str =
+   let lexbuf = Lexing.from_string str in
++assert false
++(*
+   let phrase = !Toploop.parse_toplevel_phrase lexbuf in
+   Toploop.execute_phrase print_outcome err_formatter phrase
++*)
+ 
+ let rec install_printers = function
+   | [] -> true
+--- core-suite-108.00.01.orig/async-108.00.01/myocamlbuild.ml	2012-05-26 00:48:10.000000000 +0200
++++ core-suite-108.00.01/async-108.00.01/myocamlbuild.ml	2012-07-12 17:59:01.000000000 +0200
+@@ -630,7 +630,7 @@
+       List.concat (List.map f flags)
+     in
+     flag ["compile"; "c"] (S cflags);
+-    flag ["compile"; "ocaml"] (S [A "-w"; A "@Aemr-28"; A "-strict-sequence" ])
++    flag ["compile"; "ocaml"] (S [A "-w"; A "Aemr-28"; A "-strict-sequence" ])
+ ;;
+ 
+ let dispatch = function
+--- core-suite-108.00.01.orig/async_core-108.00.01/myocamlbuild.ml	2012-05-26 00:48:09.000000000 +0200
++++ core-suite-108.00.01/async_core-108.00.01/myocamlbuild.ml	2012-07-12 17:58:57.000000000 +0200
+@@ -630,7 +630,7 @@
+       List.concat (List.map f flags)
+     in
+     flag ["compile"; "c"] (S cflags);
+-    flag ["compile"; "ocaml"] (S [A "-w"; A "@Aemr-28"; A "-strict-sequence" ])
++    flag ["compile"; "ocaml"] (S [A "-w"; A "Aemr-28"; A "-strict-sequence" ])
+ ;;
+ 
+ let dispatch = function
+--- core-suite-108.00.01.orig/async_extra-108.00.01/myocamlbuild.ml	2012-05-26 00:48:09.000000000 +0200
++++ core-suite-108.00.01/async_extra-108.00.01/myocamlbuild.ml	2012-07-12 17:58:53.000000000 +0200
+@@ -630,7 +630,7 @@
+       List.concat (List.map f flags)
+     in
+     flag ["compile"; "c"] (S cflags);
+-    flag ["compile"; "ocaml"] (S [A "-w"; A "@Aemr-28"; A "-strict-sequence" ])
++    flag ["compile"; "ocaml"] (S [A "-w"; A "Aemr-28"; A "-strict-sequence" ])
+ ;;
+ 
+ let dispatch = function
+--- core-suite-108.00.01.orig/async_unix-108.00.01/myocamlbuild.ml	2012-05-26 00:48:09.000000000 +0200
++++ core-suite-108.00.01/async_unix-108.00.01/myocamlbuild.ml	2012-07-12 17:58:48.000000000 +0200
+@@ -630,7 +630,7 @@
+       List.concat (List.map f flags)
+     in
+     flag ["compile"; "c"] (S cflags);
+-    flag ["compile"; "ocaml"] (S [A "-w"; A "@Aemr-28"; A "-strict-sequence" ])
++    flag ["compile"; "ocaml"] (S [A "-w"; A "Aemr-28"; A "-strict-sequence" ])
+ ;;
+ 
+ let dispatch = function
+--- core-suite-108.00.01.orig/bin_prot-108.00.01/myocamlbuild.ml	2012-05-26 00:48:07.000000000 +0200
++++ core-suite-108.00.01/bin_prot-108.00.01/myocamlbuild.ml	2012-07-12 17:15:41.000000000 +0200
+@@ -636,7 +636,7 @@
+       List.concat (List.map f flags)
+     in
+     flag ["compile"; "c"] (S cflags);
+-    flag ["compile"; "ocaml"] (S [A "-w"; A "@Aemr-28"; A "-strict-sequence" ])
++    flag ["compile"; "ocaml"] (S [A "-w"; A "Aemr-28"; A "-strict-sequence" ])
+ ;;
+ 
+ (* We probably will want to set this up in the `configure` script at some
+--- core-suite-108.00.01.orig/comparelib-108.00.01/myocamlbuild.ml	2012-05-26 00:48:06.000000000 +0200
++++ core-suite-108.00.01/comparelib-108.00.01/myocamlbuild.ml	2012-07-12 17:58:40.000000000 +0200
+@@ -631,7 +631,7 @@
+       List.concat (List.map f flags)
+     in
+     flag ["compile"; "c"] (S cflags);
+-    flag ["compile"; "ocaml"] (S [A "-w"; A "@Aemr-28"; A "-strict-sequence" ])
++    flag ["compile"; "ocaml"] (S [A "-w"; A "Aemr-28"; A "-strict-sequence" ])
+ ;;
+ 
+ let dispatch = function
+--- core-suite-108.00.01.orig/core-108.00.01/myocamlbuild.ml	2012-05-26 00:48:08.000000000 +0200
++++ core-suite-108.00.01/core-108.00.01/myocamlbuild.ml	2012-07-12 17:35:18.000000000 +0200
+@@ -643,7 +643,7 @@
+       List.concat (List.map f flags)
+     in
+     flag ["compile"; "c"] (S cflags);
+-    flag ["compile"; "ocaml"] (S [A "-w"; A "@Aemr-28"; A "-strict-sequence" ])
++    flag ["compile"; "ocaml"] (S [A "-w"; A "Aemr-28"; A "-strict-sequence" ])
+ ;;
+ 
+ let dispatch = function
+--- core-suite-108.00.01.orig/core_extended-108.00.01/myocamlbuild.ml	2012-05-26 00:48:09.000000000 +0200
++++ core-suite-108.00.01/core_extended-108.00.01/myocamlbuild.ml	2012-07-12 17:51:57.000000000 +0200
+@@ -645,7 +645,7 @@
+       List.concat (List.map f flags)
+     in
+     flag ["compile"; "c"] (S cflags);
+-    flag ["compile"; "ocaml"] (S [A "-w"; A "@Aemr-28"; A "-strict-sequence" ])
++    flag ["compile"; "ocaml"] (S [A "-w"; A "Aemr-28"; A "-strict-sequence" ])
+ ;;
+ 
+ let dispatch = function
+--- core-suite-108.00.01.orig/fieldslib-108.00.01/myocamlbuild.ml	2012-05-26 00:48:06.000000000 +0200
++++ core-suite-108.00.01/fieldslib-108.00.01/myocamlbuild.ml	2012-07-12 17:07:50.000000000 +0200
+@@ -631,7 +631,7 @@
+       List.concat (List.map f flags)
+     in
+     flag ["compile"; "c"] (S cflags);
+-    flag ["compile"; "ocaml"] (S [A "-w"; A "@Aemr-28"; A "-strict-sequence" ])
++    flag ["compile"; "ocaml"] (S [A "-w"; A "Aemr-28"; A "-strict-sequence" ])
+ ;;
+ 
+ let dispatch = function
+--- core-suite-108.00.01.orig/pa_ounit-108.00.01/myocamlbuild.ml	2012-05-26 00:48:06.000000000 +0200
++++ core-suite-108.00.01/pa_ounit-108.00.01/myocamlbuild.ml	2012-07-12 17:13:58.000000000 +0200
+@@ -630,7 +630,7 @@
+       List.concat (List.map f flags)
+     in
+     flag ["compile"; "c"] (S cflags);
+-    flag ["compile"; "ocaml"] (S [A "-w"; A "@Aemr-28"; A "-strict-sequence" ])
++    flag ["compile"; "ocaml"] (S [A "-w"; A "Aemr-28"; A "-strict-sequence" ])
+ ;;
+ 
+ let dispatch = function
+--- core-suite-108.00.01.orig/pipebang-108.00.01/myocamlbuild.ml	2012-05-26 00:48:06.000000000 +0200
++++ core-suite-108.00.01/pipebang-108.00.01/myocamlbuild.ml	2012-07-12 17:58:22.000000000 +0200
+@@ -630,7 +630,7 @@
+       List.concat (List.map f flags)
+     in
+     flag ["compile"; "c"] (S cflags);
+-    flag ["compile"; "ocaml"] (S [A "-w"; A "@Aemr-28"; A "-strict-sequence" ])
++    flag ["compile"; "ocaml"] (S [A "-w"; A "Aemr-28"; A "-strict-sequence" ])
+ ;;
+ 
+ let dispatch = function
+--- core-suite-108.00.01.orig/sexplib-108.00.01/myocamlbuild.ml	2012-05-26 00:48:07.000000000 +0200
++++ core-suite-108.00.01/sexplib-108.00.01/myocamlbuild.ml	2012-07-12 17:24:42.000000000 +0200
+@@ -635,7 +635,7 @@
+       List.concat (List.map f flags)
+     in
+     flag ["compile"; "c"] (S cflags);
+-    flag ["compile"; "ocaml"] (S [A "-w"; A "@Aemr-28"; A "-strict-sequence" ])
++    flag ["compile"; "ocaml"] (S [A "-w"; A "Aemr-28"; A "-strict-sequence"])
+ ;;
+ 
+ Ocamlbuild_plugin.dispatch
+--- core-suite-108.00.01.orig/type_conv-108.00.01/myocamlbuild.ml	2012-05-26 00:48:05.000000000 +0200
++++ core-suite-108.00.01/type_conv-108.00.01/myocamlbuild.ml	2012-07-12 17:05:31.000000000 +0200
+@@ -630,7 +630,7 @@
+       List.concat (List.map f flags)
+     in
+     flag ["compile"; "c"] (S cflags);
+-    flag ["compile"; "ocaml"] (S [A "-w"; A "@Aemr-28"; A "-strict-sequence" ])
++    flag ["compile"; "ocaml"] (S [A "-w"; A "Aemr-28"; A "-strict-sequence" ])
+ ;;
+ 
+ let dispatch = function
+--- core-suite-108.00.01.orig/typehashlib-108.00.01/myocamlbuild.ml	2012-05-26 00:48:06.000000000 +0200
++++ core-suite-108.00.01/typehashlib-108.00.01/myocamlbuild.ml	2012-07-12 17:58:06.000000000 +0200
+@@ -631,7 +631,7 @@
+       List.concat (List.map f flags)
+     in
+     flag ["compile"; "c"] (S cflags);
+-    flag ["compile"; "ocaml"] (S [A "-w"; A "@Aemr-28"; A "-strict-sequence" ])
++    flag ["compile"; "ocaml"] (S [A "-w"; A "Aemr-28"; A "-strict-sequence" ])
+ ;;
+ 
+ let dispatch = function
+--- core-suite-108.00.01.orig/variantslib-108.00.01/myocamlbuild.ml	2012-05-26 00:48:06.000000000 +0200
++++ core-suite-108.00.01/variantslib-108.00.01/myocamlbuild.ml	2012-07-12 17:11:51.000000000 +0200
+@@ -631,7 +631,7 @@
+       List.concat (List.map f flags)
+     in
+     flag ["compile"; "c"] (S cflags);
+-    flag ["compile"; "ocaml"] (S [A "-w"; A "@Aemr-28"; A "-strict-sequence" ])
++    flag ["compile"; "ocaml"] (S [A "-w"; A "Aemr-28"; A "-strict-sequence" ])
+ ;;
+ 
+ let dispatch = function

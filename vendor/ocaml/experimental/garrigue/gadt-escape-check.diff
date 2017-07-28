@@ -1,0 +1,519 @@
+Index: typing/env.ml
+===================================================================
+--- typing/env.ml	(revision 11214)
++++ typing/env.ml	(working copy)
+@@ -20,6 +20,7 @@
+ open Longident
+ open Path
+ open Types
++open Btype
+ 
+ 
+ type error =
+@@ -56,7 +57,7 @@
+   cltypes: (Path.t * cltype_declaration) Ident.tbl;
+   summary: summary;
+   local_constraints: bool;
+-  level_map: (int * int) list;
++  gadt_instances: (int * TypeSet.t ref) list;
+ }
+ 
+ and module_components = module_components_repr Lazy.t
+@@ -96,7 +97,7 @@
+   modules = Ident.empty; modtypes = Ident.empty;
+   components = Ident.empty; classes = Ident.empty;
+   cltypes = Ident.empty; 
+-  summary = Env_empty; local_constraints = false; level_map = [] }
++  summary = Env_empty; local_constraints = false; gadt_instances = [] }
+ 
+ let diff_keys is_local tbl1 tbl2 =
+   let keys2 = Ident.keys tbl2 in
+@@ -286,13 +287,14 @@
+   (* the level is changed when updating newtype definitions *)
+   if !Clflags.principal then begin
+     match level, decl.type_newtype_level with
+-      Some level, Some def_level when level < def_level -> raise Not_found
++      Some level, Some (_, exp_level) when level < exp_level -> raise Not_found
+     | _ -> ()
+   end;
+   match decl.type_manifest with
+   | Some body when decl.type_private = Public
+               || decl.type_kind <> Type_abstract
+-              || Btype.has_constr_row body -> (decl.type_params, body)
++              || Btype.has_constr_row body ->
++                  (decl.type_params, body, may_map snd decl.type_newtype_level)
+   (* The manifest type of Private abstract data types without
+      private row are still considered unknown to the type system.
+      Hence, this case is caught by the following clause that also handles
+@@ -308,7 +310,7 @@
+   match decl.type_manifest with
+   (* The manifest type of Private abstract data types can still get
+      an approximation using their manifest type. *)
+-  | Some body -> (decl.type_params, body)
++  | Some body -> (decl.type_params, body, may_map snd decl.type_newtype_level)
+   | _ -> raise Not_found
+ 
+ let find_modtype_expansion path env =
+@@ -453,32 +455,42 @@
+ and lookup_cltype =
+   lookup (fun env -> env.cltypes) (fun sc -> sc.comp_cltypes)
+ 
+-(* Level handling *)
++(* GADT instance tracking *)
+ 
+-(* The level map is a list of pairs describing separate segments (lv,lv'),
+-   lv < lv', organized in decreasing order.
+-   The definition level is obtained by mapping a level in a segment to the
+-   high limit of this segment.
+-   The definition level of a newtype should be greater or equal to
+-   the highest level of the newtypes in its manifest type.
+- *)
++let add_gadt_instance_level lv env =
++  {env with
++   gadt_instances = (lv, ref TypeSet.empty) :: env.gadt_instances}
+ 
+-let rec map_level lv = function
+-  | [] -> lv
+-  | (lv1, lv2) :: rem ->
+-      if lv > lv2 then lv else
+-      if lv >= lv1 then lv2 else map_level lv rem
++let is_Tlink = function {desc = Tlink _} -> true | _ -> false
+ 
+-let map_newtype_level env lv = map_level lv env.level_map
++let gadt_instance_level env t =
++  let rec find_instance = function
++      [] -> None
++    | (lv, r) :: rem ->
++        if TypeSet.exists is_Tlink !r then
++          r := TypeSet.fold (fun ty -> TypeSet.add (repr ty)) !r TypeSet.empty;
++        if TypeSet.mem t !r then Some lv else find_instance rem
++  in find_instance env.gadt_instances
+ 
+-(* precondition: lv < lv' *)
+-let rec add_level lv lv' = function
+-  | [] -> [lv, lv']
+-  | (lv1, lv2) :: rem as l ->
+-      if lv2 < lv then (lv, lv') :: l else
+-      if lv' < lv1 then (lv1, lv2) :: add_level lv lv' rem
+-      else add_level (max lv lv1) (min lv' lv2) rem      
++let add_gadt_instances env lv tl =
++  let r =
++    try List.assoc lv env.gadt_instances with Not_found -> assert false in
++  r := List.fold_right TypeSet.add tl !r
+ 
++(* Only use this after expand_head! *)
++let add_gadt_instance_chain env lv t =
++  let r =
++    try List.assoc lv env.gadt_instances with Not_found -> assert false in
++  let rec add_instance t =
++    let t = repr t in
++    if not (TypeSet.mem t !r) then begin
++      r := TypeSet.add t !r;
++      match t.desc with
++        Tconstr (p, _, memo) ->
++          may add_instance (find_expans Private p !memo)
++      | _ -> ()
++    end
++  in add_instance t
+ 
+ (* Expand manifest module type names at the top of the given module type *)
+ 
+@@ -497,7 +509,7 @@
+ let constructors_of_type ty_path decl =
+   let handle_variants cstrs = 
+     Datarepr.constructor_descrs
+-      (Btype.newgenty (Tconstr(ty_path, decl.type_params, ref Mnil)))
++      (newgenty (Tconstr(ty_path, decl.type_params, ref Mnil)))
+       cstrs decl.type_private
+   in
+   match decl.type_kind with
+@@ -510,7 +522,7 @@
+   match decl.type_kind with
+     Type_record(labels, rep) ->
+       Datarepr.label_descrs
+-        (Btype.newgenty (Tconstr(ty_path, decl.type_params, ref Mnil)))
++        (newgenty (Tconstr(ty_path, decl.type_params, ref Mnil)))
+         labels rep decl.type_private
+   | Type_variant _ | Type_abstract -> []
+ 
+@@ -773,14 +785,13 @@
+ and add_cltype id ty env =
+   store_cltype id (Pident id) ty env
+ 
+-let add_local_constraint id info mlv env =
++let add_local_constraint id info elv env =
+   match info with
+-    {type_manifest = Some ty; type_newtype_level = Some lv} ->
+-      (* use the newtype level for this definition, lv is the old one *)
+-      let env = add_type id {info with type_newtype_level = Some mlv} env in
+-      let level_map =
+-        if lv < mlv then add_level lv mlv env.level_map else env.level_map in
+-      { env with local_constraints = true; level_map = level_map }
++    {type_manifest = Some ty; type_newtype_level = Some (lv, _)} ->
++      (* elv is the expansion level, lv is the definition level *)
++      let env =
++        add_type id {info with type_newtype_level = Some (lv, elv)} env in
++      { env with local_constraints = true }
+   | _ -> assert false
+ 
+ (* Insertion of bindings by name *)
+Index: typing/typecore.ml
+===================================================================
+--- typing/typecore.ml	(revision 11214)
++++ typing/typecore.ml	(working copy)
+@@ -1989,6 +1989,7 @@
+       end
+   | Pexp_newtype(name, sbody) ->
+       (* Create a fake abstract type declaration for name. *)
++      let level = get_current_level () in
+       let decl = {
+         type_params = [];
+         type_arity = 0;
+@@ -1996,7 +1997,7 @@
+         type_private = Public;
+         type_manifest = None;
+         type_variance = [];
+-        type_newtype_level = Some (get_current_level ());
++        type_newtype_level = Some (level, level);
+       }
+       in
+       let ty = newvar () in
+@@ -2421,6 +2422,7 @@
+   begin_def ();
+   Ident.set_current_time (get_current_level ()); 
+   let lev = Ident.current_time () in
++  let env = Env.add_gadt_instance_level lev env in
+   Ctype.init_def (lev+1000);
+   if !Clflags.principal then begin_def (); (* propagation of the argument *)
+   let ty_arg' = newvar () in
+Index: typing/typedecl.ml
+===================================================================
+--- typing/typedecl.ml	(revision 11214)
++++ typing/typedecl.ml	(working copy)
+@@ -404,7 +404,7 @@
+           else if to_check path' && not (List.mem path' prev_exp) then begin
+             try
+               (* Attempt expansion *)
+-              let (params0, body0) = Env.find_type_expansion path' env in
++              let (params0, body0, _) = Env.find_type_expansion path' env in
+               let (params, body) =
+                 Ctype.instance_parameterized_type params0 body0 in
+               begin
+Index: typing/types.mli
+===================================================================
+--- typing/types.mli	(revision 11214)
++++ typing/types.mli	(working copy)
+@@ -144,9 +144,9 @@
+     type_manifest: type_expr option;
+     type_variance: (bool * bool * bool) list;
+     (* covariant, contravariant, weakly contravariant *)
+-    type_newtype_level: int option }
++    type_newtype_level: (int * int) option }
++    (* definition level * expansion level *)
+ 
+-
+ and type_kind =
+     Type_abstract
+   | Type_record of
+Index: typing/ctype.ml
+===================================================================
+--- typing/ctype.ml	(revision 11214)
++++ typing/ctype.ml	(working copy)
+@@ -470,7 +470,7 @@
+         free_variables := (ty, real) :: !free_variables
+     | Tconstr (path, tl, _), Some env ->
+         begin try
+-          let (_, body) = Env.find_type_expansion path env in
++          let (_, body, _) = Env.find_type_expansion path env in
+           if (repr body).level <> generic_level then
+             free_variables := (ty, real) :: !free_variables
+         with Not_found -> ()
+@@ -687,7 +687,7 @@
+   try
+     match (Env.find_type p env).type_newtype_level with
+       | None -> Path.binding_time p
+-      | Some x -> x
++      | Some (x, _) -> x
+   with 
+     | _ -> 
+       (* no newtypes in predef *)
+@@ -696,9 +696,13 @@
+ let rec update_level env level ty =
+   let ty = repr ty in
+   if ty.level > level then begin
++    if !Clflags.principal && Env.has_local_constraints env then begin
++      match Env.gadt_instance_level env ty with
++        Some lv -> if level < lv then raise (Unify [(ty, newvar2 level)])
++      | None -> ()
++    end;
+     match ty.desc with
+-      Tconstr(p, tl, abbrev)
+-      when level < Env.map_newtype_level env (get_level env p) ->
++      Tconstr(p, tl, abbrev) when level < get_level env p ->
+         (* Try first to replace an abbreviation by its expansion. *)
+         begin try
+           (* if is_newtype env p then raise Cannot_expand; *)
+@@ -1025,7 +1029,7 @@
+   | Some (env, newtype_lev) ->
+       let existentials = List.map copy cstr.cstr_existentials in
+       let process existential = 
+-        let decl = new_declaration (Some newtype_lev) None in
++        let decl = new_declaration (Some (newtype_lev, newtype_lev)) None in
+         let (id, new_env) =
+           Env.enter_type (get_new_abstract_name ()) decl !env in
+         env := new_env;
+@@ -1271,7 +1275,7 @@
+             end;
+           ty
+       | None ->
+-          let (params, body) =
++          let (params, body, lv) =
+             try find_type_expansion level path env with Not_found ->
+               raise Cannot_expand
+           in
+@@ -1284,6 +1288,15 @@
+               ty.desc <- Tvariant { row with row_name = Some (path, args) }
+           | _ -> ()
+           end;
++          (* For gadts, remember type as non exportable *)
++          if !Clflags.principal then begin
++            match lv with
++              Some lv -> Env.add_gadt_instances env lv [ty; ty']
++            | None ->
++                match Env.gadt_instance_level env ty with
++                  Some lv -> Env.add_gadt_instances env lv [ty']
++                | None -> ()
++          end;
+           ty'
+       end
+   | _ ->
+@@ -1306,15 +1319,7 @@
+ let try_expand_once env ty =
+   let ty = repr ty in
+   match ty.desc with
+-    Tconstr (p, _, _) ->
+-      let ty' = repr (expand_abbrev env ty) in
+-      if !Clflags.principal then begin
+-        match (Env.find_type p env).type_newtype_level with
+-          Some lv when ty.level < Env.map_newtype_level env lv  ->
+-            link_type ty ty'
+-        | _ -> ()
+-      end;
+-      ty'
++    Tconstr (p, _, _) -> repr (expand_abbrev env ty)
+   | _ -> raise Cannot_expand
+ 
+ let _ = forward_try_expand_once := try_expand_once
+@@ -1324,11 +1329,16 @@
+    May raise Unify, if a recursion was hidden in the type. *)
+ let rec try_expand_head env ty =
+   let ty' = try_expand_once env ty in
+-  begin try
+-    try_expand_head env ty'
+-  with Cannot_expand ->
+-    ty'
+-  end
++  let ty'' =
++    try try_expand_head env ty'
++    with Cannot_expand -> ty'
++  in
++  if !Clflags.principal then begin
++    match Env.gadt_instance_level env ty'' with
++      None    -> ()
++    | Some lv -> Env.add_gadt_instance_chain env lv ty
++  end;
++  ty''
+ 
+ (* Expand once the head of a type *)
+ let expand_head_once env ty =
+@@ -1405,7 +1415,7 @@
+ *)
+ let generic_abbrev env path =
+   try
+-    let (_, body) = Env.find_type_expansion path env in
++    let (_, body, _) = Env.find_type_expansion path env in
+     (repr body).level = generic_level
+   with
+     Not_found ->
+@@ -1742,7 +1752,7 @@
+ let reify env t =
+   let newtype_level = get_newtype_level () in
+   let create_fresh_constr lev row = 
+-      let decl = new_declaration (Some (newtype_level)) None in
++      let decl = new_declaration (Some (newtype_level, newtype_level)) None in
+       let name = 
+         let name = get_new_abstract_name () in 
+         if row then name ^ "#row" else name
+@@ -2065,7 +2075,7 @@
+         update_level !env t1.level t2;
+         link_type t1 t2
+     | (Tconstr (p1, [], a1), Tconstr (p2, [], a2))
+-          when Path.same p1 p2 && actual_mode !env = Old
++          when Path.same p1 p2 (* && actual_mode !env = Old *)
+             (* This optimization assumes that t1 does not expand to t2
+                (and conversely), so we fall back to the general case
+                when any of the types has a cached expansion. *)
+@@ -2091,6 +2101,15 @@
+   if unify_eq !env t1' t2' then () else
+ 
+   let t1 = repr t1 and t2 = repr t2 in
++  if !Clflags.principal then begin
++    match Env.gadt_instance_level !env t1',Env.gadt_instance_level !env t2' with
++      Some lv1, Some lv2 ->
++        if lv1 > lv2 then Env.add_gadt_instance_chain !env lv1 t2 else
++        if lv2 > lv2 then Env.add_gadt_instance_chain !env lv2 t1
++    | Some lv1, None -> Env.add_gadt_instance_chain !env lv1 t2
++    | None, Some lv2 -> Env.add_gadt_instance_chain !env lv2 t1
++    | None, None     -> ()
++  end;
+   if unify_eq !env t1 t1' || not (unify_eq !env t2 t2') then
+     unify3 env t1 t1' t2 t2'
+   else
+Index: typing/env.mli
+===================================================================
+--- typing/env.mli	(revision 11214)
++++ typing/env.mli	(working copy)
+@@ -33,14 +33,19 @@
+ val find_cltype: Path.t -> t -> cltype_declaration
+ 
+ val find_type_expansion:
+-    ?use_local:bool -> ?level:int -> Path.t -> t -> type_expr list * type_expr
+-val find_type_expansion_opt: Path.t -> t -> type_expr list * type_expr
++    ?use_local:bool -> ?level:int -> Path.t -> t ->
++    type_expr list * type_expr * int option
++val find_type_expansion_opt:
++    Path.t -> t -> type_expr list * type_expr * int option
+ (* Find the manifest type information associated to a type for the sake
+    of the compiler's type-based optimisations. *)
+ val find_modtype_expansion: Path.t -> t -> Types.module_type
+ 
+ val has_local_constraints: t -> bool
+-val map_newtype_level: t -> int -> int
++val add_gadt_instance_level: int -> t -> t
++val gadt_instance_level: t -> type_expr -> int option
++val add_gadt_instances: t -> int -> type_expr list -> unit
++val add_gadt_instance_chain: t -> int -> type_expr -> unit
+ 
+ (* Lookup by long identifiers *)
+ 
+Index: typing/types.ml
+===================================================================
+--- typing/types.ml	(revision 11214)
++++ typing/types.ml	(working copy)
+@@ -146,8 +146,8 @@
+     type_private: private_flag;
+     type_manifest: type_expr option;
+     type_variance: (bool * bool * bool) list;
+-    type_newtype_level: int option }
+             (* covariant, contravariant, weakly contravariant *)
++    type_newtype_level: (int * int) option }
+ 
+ and type_kind =
+     Type_abstract
+Index: testsuite/tests/typing-gadts/test.ml
+===================================================================
+--- testsuite/tests/typing-gadts/test.ml	(revision 11214)
++++ testsuite/tests/typing-gadts/test.ml	(working copy)
+@@ -159,17 +159,21 @@
+ 
+ let ky x y = ignore (x = y); x ;;
+ 
++let test : type a. a t -> a =
++  function Int -> ky (1 : a) 1
++;;
++
+ let test : type a. a t -> a = fun x ->
+-  let r = match x with Int -> ky (1 : a) 1
++  let r = match x with Int -> ky (1 : a) 1  (* fails *)
+   in r
+ ;;
+ let test : type a. a t -> a = fun x ->
+-  let r = match x with Int -> ky 1 (1 : a)
++  let r = match x with Int -> ky 1 (1 : a)  (* fails *)
+   in r
+ ;;
+ let test : type a. a t -> a = fun x ->
+-  let r = match x with Int -> (1 : a)
+-  in r (* fails too *)
++  let r = match x with Int -> (1 : a)       (* ok! *)
++  in r
+ ;;
+ let test : type a. a t -> a = fun x ->
+   let r : a = match x with Int -> 1
+@@ -178,7 +182,7 @@
+ let test2 : type a. a t -> a option = fun x ->
+   let r = ref None in
+   begin match x with Int -> r := Some (1 : a) end;
+-  !r (* normalized to int option *)
++  !r (* ok *)
+ ;;
+ let test2 : type a. a t -> a option = fun x ->
+   let r : a option ref = ref None in
+@@ -190,19 +194,19 @@
+   let u = ref None in
+   begin match x with Int -> r := Some 1; u := !r end;
+   !u
+-;; (* fail *)
++;; (* ok (u non-ambiguous) *)
+ let test2 : type a. a t -> a option = fun x ->
+   let r : a option ref = ref None in
+   let u = ref None in
+   begin match x with Int -> u := Some 1; r := !u end;
+   !u
+-;; (* fail *)
++;; (* fails because u : (int | a) option ref *)
+ let test2 : type a. a t -> a option = fun x ->
+   let u = ref None in
+   let r : a option ref = ref None in
+   begin match x with Int -> r := Some 1; u := !r end;
+   !u
+-;; (* fail *)
++;; (* ok *)
+ let test2 : type a. a t -> a option = fun x ->
+   let u = ref None in
+   let a =
+@@ -210,32 +214,32 @@
+     begin match x with Int -> r := Some 1; u := !r end;
+     !u
+   in a
+-;; (* fail *)
++;; (* ok *)
+ 
+ (* Effect of external consraints *)
+ 
+ let f (type a) (x : a t) y =
+   ignore (y : a);
+-  let r = match x with Int -> (y : a) in (* fails *)
++  let r = match x with Int -> (y : a) in (* ok *)
+   r
+ ;;
+ let f (type a) (x : a t) y =
+   let r = match x with Int -> (y : a) in
+-  ignore (y : a); (* fails *)
++  ignore (y : a); (* ok *)
+   r
+ ;;
+ let f (type a) (x : a t) y =
+   ignore (y : a);
+-  let r = match x with Int -> y in
++  let r = match x with Int -> y in (* ok *)
+   r
+ ;;
+ let f (type a) (x : a t) y =
+   let r = match x with Int -> y in
+-  ignore (y : a);
++  ignore (y : a); (* ok *)
+   r
+ ;;
+ let f (type a) (x : a t) (y : a) =
+-  match x with Int -> y (* should return an int! *)
++  match x with Int -> y (* returns 'a *)
+ ;;
+ 
+ (* Pattern matching *)
+@@ -307,4 +311,4 @@
+   | {left=TE TC; right=D [|1.0|]} -> 14
+   | {left=TA; right=D 0} -> -1
+   | {left=TA; right=D z} -> z
+-;; (* warn *)
++;; (* ok *)

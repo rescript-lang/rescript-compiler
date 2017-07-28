@@ -1,0 +1,312 @@
+66 states, 44 actions.
+
+open Syntax
+open Grammar
+open Scan_aux
+
+let rec action_43 lexbuf = (
+ comment lexbuf )
+and action_42 lexbuf = (
+ raise(Lexical_error "unterminated comment") )
+and action_41 lexbuf = (
+ reset_string_buffer();
+      string lexbuf;
+      reset_string_buffer();
+      comment lexbuf )
+and action_40 lexbuf = (
+ decr comment_depth;
+      if !comment_depth = 0 then () else comment lexbuf )
+and action_39 lexbuf = (
+ incr comment_depth; comment lexbuf )
+and action_38 lexbuf = (
+ raise(Lexical_error "bad character constant") )
+and action_37 lexbuf = (
+ char_for_decimal_code lexbuf 1 )
+and action_36 lexbuf = (
+ char_for_backslash (Lexing.lexeme_char lexbuf 1) )
+and action_35 lexbuf = (
+ Lexing.lexeme_char lexbuf 0 )
+and action_34 lexbuf = (
+ store_string_char(Lexing.lexeme_char lexbuf 0);
+      string lexbuf )
+and action_33 lexbuf = (
+ raise(Lexical_error "unterminated string") )
+and action_32 lexbuf = (
+ store_string_char(char_for_decimal_code lexbuf 1);
+      string lexbuf )
+and action_31 lexbuf = (
+ store_string_char(char_for_backslash(Lexing.lexeme_char lexbuf 1));
+      string lexbuf )
+and action_30 lexbuf = (
+ string lexbuf )
+and action_29 lexbuf = (
+ () )
+and action_28 lexbuf = (
+ action lexbuf )
+and action_27 lexbuf = (
+ raise (Lexical_error "unterminated action") )
+and action_26 lexbuf = (
+ comment_depth := 1;
+      comment lexbuf;
+      action lexbuf )
+and action_25 lexbuf = (
+ let _ = char lexbuf in action lexbuf )
+and action_24 lexbuf = (
+ reset_string_buffer();
+      string lexbuf;
+      reset_string_buffer();
+      action lexbuf )
+and action_23 lexbuf = (
+ decr brace_depth;
+      if !brace_depth = 0 then Lexing.lexeme_start lexbuf else action lexbuf )
+and action_22 lexbuf = (
+ incr brace_depth;
+      action lexbuf )
+and action_21 lexbuf = (
+ raise(Lexical_error("illegal character " ^ Lexing.lexeme lexbuf)) )
+and action_20 lexbuf = (
+ raise(Lexical_error "unterminated lexer definition") )
+and action_19 lexbuf = (
+ Tdash )
+and action_18 lexbuf = (
+ Tcaret )
+and action_17 lexbuf = (
+ Trparen )
+and action_16 lexbuf = (
+ Tlparen )
+and action_15 lexbuf = (
+ Tplus )
+and action_14 lexbuf = (
+ Tmaybe )
+and action_13 lexbuf = (
+ Tstar )
+and action_12 lexbuf = (
+ Trbracket )
+and action_11 lexbuf = (
+ Tlbracket )
+and action_10 lexbuf = (
+ Teof )
+and action_9 lexbuf = (
+ Tunderscore )
+and action_8 lexbuf = (
+ Tor )
+and action_7 lexbuf = (
+ Tend )
+and action_6 lexbuf = (
+ Tequal )
+and action_5 lexbuf = (
+ let n1 = Lexing.lexeme_end lexbuf in
+        brace_depth := 1;
+        let n2 = action lexbuf in
+          Taction(Location(n1, n2)) )
+and action_4 lexbuf = (
+ Tchar(char lexbuf) )
+and action_3 lexbuf = (
+ reset_string_buffer();
+      string lexbuf;
+      Tstring(get_stored_string()) )
+and action_2 lexbuf = (
+ match Lexing.lexeme lexbuf with
+        "rule" -> Trule
+      | "parse" -> Tparse
+      | "and" -> Tand
+      | "eof" -> Teof
+      | s -> Tident s )
+and action_1 lexbuf = (
+ comment_depth := 1;
+      comment lexbuf;
+      main lexbuf )
+and action_0 lexbuf = (
+ main lexbuf )
+and state_0 lexbuf =
+  match lexing.next_char lexbuf with
+    'z'|'y'|'x'|'w'|'v'|'u'|'t'|'s'|'r'|'q'|'p'|'o'|'n'|'m'|'l'|'k'|'j'|'i'|'h'|'g'|'f'|'d'|'c'|'b'|'a'|'Z'|'Y'|'X'|'W'|'V'|'U'|'T'|'S'|'R'|'Q'|'P'|'O'|'N'|'M'|'L'|'K'|'J'|'I'|'H'|'G'|'F'|'E'|'D'|'C'|'B'|'A' -> state_51 lexbuf
+ |  ' '|'\013'|'\n'|'\t' -> state_40 lexbuf
+ |  '|' -> action_8 lexbuf
+ |  '{' -> action_5 lexbuf
+ |  'e' -> state_56 lexbuf
+ |  '_' -> state_55 lexbuf
+ |  '^' -> action_18 lexbuf
+ |  ']' -> action_12 lexbuf
+ |  '[' -> action_11 lexbuf
+ |  '?' -> action_14 lexbuf
+ |  '=' -> action_6 lexbuf
+ |  ';' -> state_48 lexbuf
+ |  '-' -> action_19 lexbuf
+ |  '+' -> action_15 lexbuf
+ |  '*' -> action_13 lexbuf
+ |  ')' -> action_17 lexbuf
+ |  '(' -> state_43 lexbuf
+ |  '\'' -> action_4 lexbuf
+ |  '"' -> action_3 lexbuf
+ |  '\000' -> action_20 lexbuf
+ |  _ -> action_21 lexbuf
+and state_1 lexbuf =
+  match lexing.next_char lexbuf with
+    '}' -> action_23 lexbuf
+ |  '{' -> action_22 lexbuf
+ |  '(' -> state_34 lexbuf
+ |  '\'' -> action_25 lexbuf
+ |  '"' -> action_24 lexbuf
+ |  '\000' -> action_27 lexbuf
+ |  _ -> action_28 lexbuf
+and state_2 lexbuf =
+  match lexing.next_char lexbuf with
+    '\\' -> state_24 lexbuf
+ |  '"' -> action_29 lexbuf
+ |  '\000' -> action_33 lexbuf
+ |  _ -> action_34 lexbuf
+and state_3 lexbuf =
+  match lexing.next_char lexbuf with
+    '\\' -> state_13 lexbuf
+ |  '\000' -> lexing.backtrack lexbuf
+ |  _ -> state_12 lexbuf
+and state_4 lexbuf =
+  match lexing.next_char lexbuf with
+    '*' -> state_9 lexbuf
+ |  '(' -> state_8 lexbuf
+ |  '"' -> action_41 lexbuf
+ |  '\000' -> action_42 lexbuf
+ |  _ -> action_43 lexbuf
+and state_8 lexbuf =
+  Lexing.set_backtrack lexbuf action_43;
+  match lexing.next_char lexbuf with
+    '*' -> action_39 lexbuf
+ |  _ -> lexing.backtrack lexbuf
+and state_9 lexbuf =
+  Lexing.set_backtrack lexbuf action_43;
+  match lexing.next_char lexbuf with
+    ')' -> action_40 lexbuf
+ |  _ -> lexing.backtrack lexbuf
+and state_12 lexbuf =
+  Lexing.set_backtrack lexbuf action_38;
+  match lexing.next_char lexbuf with
+    '\'' -> action_35 lexbuf
+ |  _ -> lexing.backtrack lexbuf
+and state_13 lexbuf =
+  Lexing.set_backtrack lexbuf action_38;
+  match lexing.next_char lexbuf with
+    '9'|'8'|'7'|'6'|'5'|'4'|'3'|'2'|'1'|'0' -> state_15 lexbuf
+ |  't'|'r'|'n'|'b'|'\\'|'\'' -> state_14 lexbuf
+ |  _ -> lexing.backtrack lexbuf
+and state_14 lexbuf =
+  match lexing.next_char lexbuf with
+    '\'' -> action_36 lexbuf
+ |  _ -> lexing.backtrack lexbuf
+and state_15 lexbuf =
+  match lexing.next_char lexbuf with
+    '9'|'8'|'7'|'6'|'5'|'4'|'3'|'2'|'1'|'0' -> state_16 lexbuf
+ |  _ -> lexing.backtrack lexbuf
+and state_16 lexbuf =
+  match lexing.next_char lexbuf with
+    '9'|'8'|'7'|'6'|'5'|'4'|'3'|'2'|'1'|'0' -> state_17 lexbuf
+ |  _ -> lexing.backtrack lexbuf
+and state_17 lexbuf =
+  match lexing.next_char lexbuf with
+    '\'' -> action_37 lexbuf
+ |  _ -> lexing.backtrack lexbuf
+and state_24 lexbuf =
+  Lexing.set_backtrack lexbuf action_34;
+  match lexing.next_char lexbuf with
+    '9'|'8'|'7'|'6'|'5'|'4'|'3'|'2'|'1'|'0' -> state_27 lexbuf
+ |  't'|'r'|'n'|'b'|'\\'|'"' -> action_31 lexbuf
+ |  ' '|'\026'|'\013'|'\012'|'\n'|'\t' -> state_25 lexbuf
+ |  _ -> lexing.backtrack lexbuf
+and state_25 lexbuf =
+  Lexing.set_backtrack lexbuf action_30;
+  match lexing.next_char lexbuf with
+    ' '|'\026'|'\013'|'\012'|'\n'|'\t' -> state_25 lexbuf
+ |  _ -> lexing.backtrack lexbuf
+and state_27 lexbuf =
+  match lexing.next_char lexbuf with
+    '9'|'8'|'7'|'6'|'5'|'4'|'3'|'2'|'1'|'0' -> state_28 lexbuf
+ |  _ -> lexing.backtrack lexbuf
+and state_28 lexbuf =
+  match lexing.next_char lexbuf with
+    '9'|'8'|'7'|'6'|'5'|'4'|'3'|'2'|'1'|'0' -> action_32 lexbuf
+ |  _ -> lexing.backtrack lexbuf
+and state_34 lexbuf =
+  Lexing.set_backtrack lexbuf action_28;
+  match lexing.next_char lexbuf with
+    '*' -> action_26 lexbuf
+ |  _ -> lexing.backtrack lexbuf
+and state_40 lexbuf =
+  Lexing.set_backtrack lexbuf action_0;
+  match lexing.next_char lexbuf with
+    ' '|'\013'|'\n'|'\t' -> state_65 lexbuf
+ |  _ -> lexing.backtrack lexbuf
+and state_43 lexbuf =
+  Lexing.set_backtrack lexbuf action_16;
+  match lexing.next_char lexbuf with
+    '*' -> action_1 lexbuf
+ |  _ -> lexing.backtrack lexbuf
+and state_48 lexbuf =
+  Lexing.set_backtrack lexbuf action_21;
+  match lexing.next_char lexbuf with
+    ';' -> action_7 lexbuf
+ |  _ -> lexing.backtrack lexbuf
+and state_51 lexbuf =
+  Lexing.set_backtrack lexbuf action_2;
+  match lexing.next_char lexbuf with
+    'z'|'y'|'x'|'w'|'v'|'u'|'t'|'s'|'r'|'q'|'p'|'o'|'n'|'m'|'l'|'k'|'j'|'i'|'h'|'g'|'f'|'e'|'d'|'c'|'b'|'a'|'Z'|'Y'|'X'|'W'|'V'|'U'|'T'|'S'|'R'|'Q'|'P'|'O'|'N'|'M'|'L'|'K'|'J'|'I'|'H'|'G'|'F'|'E'|'D'|'C'|'B'|'A'|'9'|'8'|'7'|'6'|'5'|'4'|'3'|'2'|'1'|'0'|'\'' -> state_59 lexbuf
+ |  '_' -> state_60 lexbuf
+ |  _ -> lexing.backtrack lexbuf
+and state_55 lexbuf =
+  Lexing.set_backtrack lexbuf action_9;
+  match lexing.next_char lexbuf with
+    'z'|'y'|'x'|'w'|'v'|'u'|'t'|'s'|'r'|'q'|'p'|'o'|'n'|'m'|'l'|'k'|'j'|'i'|'h'|'g'|'f'|'e'|'d'|'c'|'b'|'a'|'Z'|'Y'|'X'|'W'|'V'|'U'|'T'|'S'|'R'|'Q'|'P'|'O'|'N'|'M'|'L'|'K'|'J'|'I'|'H'|'G'|'F'|'E'|'D'|'C'|'B'|'A'|'9'|'8'|'7'|'6'|'5'|'4'|'3'|'2'|'1'|'0'|'\'' -> state_59 lexbuf
+ |  _ -> lexing.backtrack lexbuf
+and state_56 lexbuf =
+  Lexing.set_backtrack lexbuf action_2;
+  match lexing.next_char lexbuf with
+    'z'|'y'|'x'|'w'|'v'|'u'|'t'|'s'|'r'|'q'|'p'|'n'|'m'|'l'|'k'|'j'|'i'|'h'|'g'|'f'|'e'|'d'|'c'|'b'|'a'|'Z'|'Y'|'X'|'W'|'V'|'U'|'T'|'S'|'R'|'Q'|'P'|'O'|'N'|'M'|'L'|'K'|'J'|'I'|'H'|'G'|'F'|'E'|'D'|'C'|'B'|'A'|'9'|'8'|'7'|'6'|'5'|'4'|'3'|'2'|'1'|'0'|'\'' -> state_59 lexbuf
+ |  'o' -> state_61 lexbuf
+ |  '_' -> state_60 lexbuf
+ |  _ -> lexing.backtrack lexbuf
+and state_59 lexbuf =
+  Lexing.set_backtrack lexbuf action_2;
+  match lexing.next_char lexbuf with
+    'z'|'y'|'x'|'w'|'v'|'u'|'t'|'s'|'r'|'q'|'p'|'o'|'n'|'m'|'l'|'k'|'j'|'i'|'h'|'g'|'f'|'e'|'d'|'c'|'b'|'a'|'Z'|'Y'|'X'|'W'|'V'|'U'|'T'|'S'|'R'|'Q'|'P'|'O'|'N'|'M'|'L'|'K'|'J'|'I'|'H'|'G'|'F'|'E'|'D'|'C'|'B'|'A'|'9'|'8'|'7'|'6'|'5'|'4'|'3'|'2'|'1'|'0'|'\'' -> state_59 lexbuf
+ |  '_' -> state_60 lexbuf
+ |  _ -> lexing.backtrack lexbuf
+and state_60 lexbuf =
+  match lexing.next_char lexbuf with
+    'z'|'y'|'x'|'w'|'v'|'u'|'t'|'s'|'r'|'q'|'p'|'o'|'n'|'m'|'l'|'k'|'j'|'i'|'h'|'g'|'f'|'e'|'d'|'c'|'b'|'a'|'Z'|'Y'|'X'|'W'|'V'|'U'|'T'|'S'|'R'|'Q'|'P'|'O'|'N'|'M'|'L'|'K'|'J'|'I'|'H'|'G'|'F'|'E'|'D'|'C'|'B'|'A'|'9'|'8'|'7'|'6'|'5'|'4'|'3'|'2'|'1'|'0'|'\'' -> state_59 lexbuf
+ |  _ -> lexing.backtrack lexbuf
+and state_61 lexbuf =
+  Lexing.set_backtrack lexbuf action_2;
+  match lexing.next_char lexbuf with
+    'z'|'y'|'x'|'w'|'v'|'u'|'t'|'s'|'r'|'q'|'p'|'o'|'n'|'m'|'l'|'k'|'j'|'i'|'h'|'g'|'e'|'d'|'c'|'b'|'a'|'Z'|'Y'|'X'|'W'|'V'|'U'|'T'|'S'|'R'|'Q'|'P'|'O'|'N'|'M'|'L'|'K'|'J'|'I'|'H'|'G'|'F'|'E'|'D'|'C'|'B'|'A'|'9'|'8'|'7'|'6'|'5'|'4'|'3'|'2'|'1'|'0'|'\'' -> state_59 lexbuf
+ |  'f' -> state_62 lexbuf
+ |  '_' -> state_60 lexbuf
+ |  _ -> lexing.backtrack lexbuf
+and state_62 lexbuf =
+  Lexing.set_backtrack lexbuf action_2;
+  match lexing.next_char lexbuf with
+    'z'|'y'|'x'|'w'|'v'|'u'|'t'|'s'|'r'|'q'|'p'|'o'|'n'|'m'|'l'|'k'|'j'|'i'|'h'|'g'|'f'|'e'|'d'|'c'|'b'|'a'|'Z'|'Y'|'X'|'W'|'V'|'U'|'T'|'S'|'R'|'Q'|'P'|'O'|'N'|'M'|'L'|'K'|'J'|'I'|'H'|'G'|'F'|'E'|'D'|'C'|'B'|'A'|'9'|'8'|'7'|'6'|'5'|'4'|'3'|'2'|'1'|'0'|'\'' -> state_59 lexbuf
+ |  '_' -> state_60 lexbuf
+ |  _ -> lexing.backtrack lexbuf
+and state_65 lexbuf =
+  Lexing.set_backtrack lexbuf action_0;
+  match lexing.next_char lexbuf with
+    ' '|'\013'|'\n'|'\t' -> state_65 lexbuf
+ |  _ -> lexing.backtrack lexbuf
+and main lexbuf =
+  Lexing.init lexbuf;
+  state_0 lexbuf
+
+and action lexbuf =
+  Lexing.init lexbuf;
+  state_1 lexbuf
+
+and string lexbuf =
+  Lexing.init lexbuf;
+  state_2 lexbuf
+
+and char lexbuf =
+  Lexing.init lexbuf;
+  state_3 lexbuf
+
+and comment lexbuf =
+  Lexing.init lexbuf;
+  state_4 lexbuf

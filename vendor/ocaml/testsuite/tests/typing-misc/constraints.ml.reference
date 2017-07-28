@@ -1,0 +1,34 @@
+
+# Characters 12-32:
+  type 'a t = [`A of 'a t t] as 'a;; (* fails *)
+              ^^^^^^^^^^^^^^^^^^^^
+Error: Constraints are not satisfied in this type.
+       Type
+       [ `A of 'a ] t t as 'a
+       should be an instance of
+       ([ `A of 'b t t ] as 'b) t
+#   Characters 1-27:
+  type 'a t = [`A of 'a t t];; (* fails *)
+  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error: In the definition of t, type 'a t t should be 'a t
+#   type 'a t = [ `A of 'a t t ] constraint 'a = 'a t
+#   type 'a t = [ `A of 'a t ] constraint 'a = 'a t
+#   type 'a t = 'a constraint 'a = [ `A of 'a ]
+#   Characters 43-52:
+  type 'a v = [`A of u v] constraint 'a = t and t = u and u = t;; (* fails *)
+                                            ^^^^^^^^^
+Error: The type abbreviation t is cyclic
+#   type 'a t = 'a
+# Characters 11-21:
+  let f (x : 'a t as 'a) = ();; (* fails *)
+             ^^^^^^^^^^
+Error: This alias is bound to type 'a t = 'a
+       but is used as an instance of type 'a
+       The type variable 'a occurs inside 'a
+#   val f : 'a t -> 'a -> bool = <fun>
+#               Characters 80-122:
+    and 'o abs constraint 'o = 'o is_an_object
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error: The definition of abs contains a cycle:
+       'a is_an_object as 'a
+# 

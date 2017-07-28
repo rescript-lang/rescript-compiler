@@ -1,0 +1,30 @@
+Loading plugin.so
+Registering module Plugin
+COUCOU
+Loading plugin2.so
+Registering module Plugin2
+1
+2
+6
+1
+XXX
+Loading plugin_thread.so
+Registering module Plugin_thread
+Thread
+Thread
+Thread
+Thread
+Thread
+Thread
+Thread
+Thread
+Thread
+Thread
+Thread
+Thread
+Thread
+Thread
+Thread
+Callback from plugin2
+Callback from plugin
+Callback from main

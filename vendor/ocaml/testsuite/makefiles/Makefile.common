@@ -1,0 +1,133 @@
+#########################################################################
+#                                                                       #
+#                                 OCaml                                 #
+#                                                                       #
+#                 Xavier Clerc, SED, INRIA Rocquencourt                 #
+#                                                                       #
+#   Copyright 2010 Institut National de Recherche en Informatique et    #
+#   en Automatique.  All rights reserved.  This file is distributed     #
+#   under the terms of the Q Public License version 1.0.                #
+#                                                                       #
+#########################################################################
+
+TOPDIR=$(BASEDIR)/..
+WINTOPDIR=`cygpath -m "$(TOPDIR)"`
+
+# TOPDIR is the root directory of the OCaml sources, in Unix syntax.
+# WINTOPDIR is the same directory, in Windows syntax.
+
+OTOPDIR=$(TOPDIR)
+CTOPDIR=$(TOPDIR)
+CYGPATH=echo
+DIFF=diff -q
+CANKILL=true
+SORT=sort
+SET_LD_PATH=CAML_LD_LIBRARY_PATH="$(LD_PATH)"
+
+# The variables above may be overridden by .../config/Makefile
+# OTOPDIR is either TOPDIR or WINTOPDIR, whichever is appropriate for
+#   arguments given to the OCaml compiler.
+# CTOPDIR is either TOPDIR or WINTOPDIR, whichever is appropriate for
+#   arguments given to the C and Fortran compilers.
+# CYGPATH is the command that translates unix-style file names into
+#   whichever syntax is appropriate for arguments of OCaml programs.
+# DIFF is a "diff -q" command that ignores trailing CRs under Windows.
+# CANKILL is true if a script launched by Make can kill an OCaml process,
+#   and false for the mingw and MSVC ports.
+# SORT is the Unix "sort" command. Usually a simple command, but may be an
+#   absolute name if the Windows "sort" command is in the PATH.
+# SET_LD_PATH is a command prefix that sets the path for dynamic libraries
+#   (CAML_LD_LIBRARY_PATH for Unix, PATH for Windows) using the LD_PATH shell
+#   variable. Note that for Windows we add Unix-syntax directory names in
+#   PATH, and Cygwin will translate it to Windows syntax.
+
+include $(TOPDIR)/config/Makefile
+
+OCAMLRUN=$(TOPDIR)/boot/ocamlrun$(EXE)
+
+OCFLAGS=-nostdlib -I $(OTOPDIR)/stdlib $(COMPFLAGS)
+OCOPTFLAGS=
+
+ifeq ($(SUPPORTS_SHARED_LIBRARIES),false)
+  CUSTOM = -custom
+else
+  CUSTOM =
+endif
+
+OCAML=$(OCAMLRUN) $(OTOPDIR)/ocaml $(OCFLAGS) \
+      -init $(OTOPDIR)/testsuite/lib/empty
+OCAMLC=$(OCAMLRUN) $(OTOPDIR)/ocamlc $(CUSTOM) $(OCFLAGS)
+OCAMLOPT=$(OCAMLRUN) $(OTOPDIR)/ocamlopt $(OCFLAGS)
+OCAMLDOC=$(OCAMLRUN) $(OTOPDIR)/ocamldoc/ocamldoc
+OCAMLLEX=$(OCAMLRUN) $(OTOPDIR)/lex/ocamllex
+OCAMLMKLIB=$(OCAMLRUN) $(OTOPDIR)/tools/ocamlmklib \
+		       -ocamlc "$(OTOPDIR)/boot/ocamlrun$(EXE) \
+		                $(OTOPDIR)/ocamlc $(OCFLAGS)" \
+		       -ocamlopt "$(OTOPDIR)/boot/ocamlrun$(EXE) \
+		                  $(OTOPDIR)/ocamlopt $(OCFLAGS)"
+OCAMLYACC=$(TOPDIR)/yacc/ocamlyacc$(EXE)
+OCAMLBUILD=$(TOPDIR)/_build/ocamlbuild/ocamlbuild.native
+DUMPOBJ=$(OCAMLRUN) $(OTOPDIR)/tool/dumpobj
+BYTECODE_ONLY=[ "$(ARCH)" = "none" -o "$(ASM)" = "none" ]
+
+#FORTRAN_COMPILER=
+#FORTRAN_LIBRARY=
+
+UNIXLIBVAR=`case "$(OTHERLIBRARIES)" in *win32unix*) echo win32;; esac`
+
+defaultpromote:
+	@for file in *.reference; do \
+	  cp `basename $$file reference`result $$file; \
+	done
+
+defaultclean:
+	@rm -f *.cmo *.cmi *.cmx *.cma *.cmxa *.cmxs *.$(O) *.$(SO) *.$(A)
+	@for dsym in *.dSYM; do \
+	  if [ -d $$dsym ]; then \
+	    rm -fr $$dsym; \
+	  fi \
+	done
+
+.SUFFIXES:
+.SUFFIXES: .mli .ml .mly .mll .cmi .cmo .cmx .cmm .cmxa .s .S .o .so .c .f
+
+.mli.cmi:
+	@$(OCAMLC) -c $(ADD_COMPFLAGS) $<
+
+.ml.cmi:
+	@$(OCAMLC) -c $(ADD_COMPFLAGS) $<
+
+.ml.cmo:
+	@if [ -f $<i ]; then $(OCAMLC) -c $(ADD_COMPFLAGS) $<i; fi
+	@$(OCAMLC) -c $(ADD_COMPFLAGS) $<
+
+.ml.cmx:
+	@$(OCAMLOPT) -c $(ADD_COMPFLAGS) $<
+
+.cmx.so:
+	@$(OCAMLOPT) -o $@ -shared $(ADD_COMPFLAGS) $<
+
+.cmxa.so:
+	@$(OCAMLOPT) -o $@ -shared -linkall $(ADD_COMPFLAGS) $<
+
+.mly.ml:
+	@$(OCAMLYACC) -q $< 2> /dev/null
+
+.mll.ml:
+	@$(OCAMLLEX) -q $< > /dev/null
+
+.cmm.o:
+	@$(OCAMLRUN) ./codegen $*.cmm > $*.s
+	@$(ASM) -o $*.o $*.s
+
+.S.o:
+	@$(ASPP) $(ASPPFLAGS) -DSYS_$(SYSTEM) -o $*.o $*.S
+
+.s.o:
+	@$(ASPP) $(ASPPFLAGS) -DSYS_$(SYSTEM) -o $*.o $*.s
+
+.c.o:
+	@$(CC) -c -I$(CTOPDIR)/byterun $*.c -o $*.$(O)
+
+.f.o:
+	@$(FORTRAN_COMPILER) -c -I$(CTOPDIR)/byterun $*.f -o $*.$(O)

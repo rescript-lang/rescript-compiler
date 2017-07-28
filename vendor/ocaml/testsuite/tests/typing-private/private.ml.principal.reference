@@ -1,0 +1,125 @@
+
+#         module Foobar : sig type t = private int end
+#   module F0 : sig type t = private int end
+#   Characters 21-22:
+  let f (x : F0.t) = (x : Foobar.t);; (* fails *)
+                      ^
+Error: This expression has type F0.t but an expression was expected of type
+         Foobar.t
+#   module F = Foobar
+#   val f : F.t -> Foobar.t = <fun>
+#   module M : sig type t = < m : int > end
+# module M1 : sig type t = private < m : int; .. > end
+# module M2 : sig type t = private < m : int; .. > end
+# Characters 19-20:
+  fun (x : M1.t) -> (x : M2.t);; (* fails *)
+                     ^
+Error: This expression has type M1.t but an expression was expected of type
+         M2.t
+#   module M3 : sig type t = private M1.t end
+# - : M3.t -> M1.t = <fun>
+# - : M3.t -> M.t = <fun>
+# Characters 44-46:
+  module M4 : sig type t = private M3.t end = M2;; (* fails *)
+                                              ^^
+Error: Signature mismatch:
+       Modules do not match:
+         sig type t = M2.t end
+       is not included in
+         sig type t = private M3.t end
+       Type declarations do not match:
+         type t = M2.t
+       is not included in
+         type t = private M3.t
+# Characters 44-45:
+  module M4 : sig type t = private M3.t end = M;; (* fails *)
+                                              ^
+Error: Signature mismatch:
+       Modules do not match:
+         sig type t = < m : int > end
+       is not included in
+         sig type t = private M3.t end
+       Type declarations do not match:
+         type t = < m : int >
+       is not included in
+         type t = private M3.t
+# Characters 44-46:
+  module M4 : sig type t = private M3.t end = M1;; (* might be ok *)
+                                              ^^
+Error: Signature mismatch:
+       Modules do not match:
+         sig type t = M1.t end
+       is not included in
+         sig type t = private M3.t end
+       Type declarations do not match:
+         type t = M1.t
+       is not included in
+         type t = private M3.t
+# module M5 : sig type t = private M1.t end
+# Characters 53-55:
+  module M6 : sig type t = private < n:int; .. > end = M1;; (* fails *)
+                                                       ^^
+Error: Signature mismatch:
+       Modules do not match:
+         sig type t = M1.t end
+       is not included in
+         sig type t = private < n : int; .. > end
+       Type declarations do not match:
+         type t = M1.t
+       is not included in
+         type t = private < n : int; .. >
+#     Characters 69-118:
+    struct type t = int let f (x : int) = (x : t) end;; (* must fail *)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error: Signature mismatch:
+       Modules do not match:
+         sig type t = int val f : int -> t end
+       is not included in
+         sig type t = private Foobar.t val f : int -> t end
+       Type declarations do not match:
+         type t = int
+       is not included in
+         type t = private Foobar.t
+#               module M : sig type t = private T of int val mk : int -> t end
+#               module M1 : sig type t = M.t val mk : int -> t end
+#             module M2 : sig type t = M.t val mk : int -> t end
+#         module M3 : sig type t = M.t val mk : int -> t end
+#         Characters 21-44:
+      type t = M.t = T of int
+      ^^^^^^^^^^^^^^^^^^^^^^^
+Error: This variant or record definition does not match that of type M.t
+       A private type would be revealed.
+#           module M5 : sig type t = M.t = private T of int val mk : int -> t end
+#         module M6 : sig type t = private T of int val mk : int -> t end
+#                   module M' :
+  sig type t_priv = private T of int type t = t_priv val mk : int -> t end
+#         module M3' : sig type t = M'.t val mk : int -> t end
+#     module M : sig type 'a t = private T of 'a end
+#     module M1 : sig type 'a t = 'a M.t = private T of 'a end
+#       module Test : sig type t = private A end
+module Test2 : sig type t = Test.t = private A end
+# val f : Test.t -> Test2.t = <fun>
+# val f : Test2.t -> unit = <fun>
+# Characters 8-15:
+  let a = Test2.A;; (* fail *)
+          ^^^^^^^
+Error: Cannot create values of the private type Test2.t
+# *   Characters 148-171:
+  module Test2 : module type of Test with type t = private Test.t = Test;;
+                                          ^^^^^^^^^^^^^^^^^^^^^^^
+Warning 3: deprecated: spurious use of private
+module Test2 : sig type t = Test.t = private A end
+#     type t = private < x : int; .. >
+# type t = private < x : int; .. >
+# type t = private < x : int >
+# type t = private < x : int >
+# Characters -1--1:
+  type 'a t = private < x : int; .. > as 'a;;
+  
+Error: Type declarations do not match:
+         type 'a t = private 'a constraint 'a = < x : int; .. >
+       is not included in
+         type 'a t
+       Their constraints differ.
+# type 'a t = private 'a constraint 'a = < x : int; .. >
+# 

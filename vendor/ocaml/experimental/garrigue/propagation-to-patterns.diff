@@ -1,0 +1,212 @@
+Index: Changes
+===================================================================
+--- Changes	(revision 13157)
++++ Changes	(working copy)
+@@ -1,6 +1,11 @@
+ Next version
+ ------------
+ 
++Type system:
++- Propagate type information towards pattern-matching, even in the presence
++  of polymorphic variants (discarding only information about possibly-present
++  constructors)
++
+ Compilers:
+ - PR#5861: raise an error when multiple private keywords are used in type declarations
+ - PR#5634: parsetree rewriter (-ppx flag)
+Index: typing/typecore.ml
+===================================================================
+--- typing/typecore.ml	(revision 13157)
++++ typing/typecore.ml	(working copy)
+@@ -326,7 +326,7 @@
+         | _ -> assert false
+       in
+       begin match row_field tag row with
+-      | Rabsent -> assert false
++      | Rabsent -> () (* assert false *)
+       | Reither (true, [], _, e) when not row.row_closed ->
+           set_row_field e (Rpresent None)
+       | Reither (false, ty::tl, _, e) when not row.row_closed ->
+@@ -1657,6 +1657,28 @@
+     sexp unpacks
+ 
+ (* Helpers for type_cases *)
++
++let contains_variant_either ty =
++  let rec loop ty = 
++    let ty = repr ty in
++    if ty.level >= lowest_level then begin
++      mark_type_node ty;
++      match ty.desc with
++        Tvariant row ->
++          let row = row_repr row in
++          if not row.row_fixed then
++            List.iter
++              (fun (_,f) ->
++                match row_field_repr f with Reither _ -> raise Exit | _ -> ())
++              row.row_fields;
++          iter_row loop row
++      | _ ->
++          iter_type_expr loop ty
++    end
++  in
++  try loop ty; unmark_type ty; false
++  with Exit -> unmark_type ty; true
++
+ let iter_ppat f p =
+   match p.ppat_desc with
+   | Ppat_any | Ppat_var _ | Ppat_constant _
+@@ -1690,6 +1712,24 @@
+   in
+   try loop p; false with Exit -> true
+ 
++let check_absent_variant env =
++  iter_pattern
++    (function {pat_desc = Tpat_variant (s, arg, row)} as pat ->
++      let row = row_repr !row in
++      if List.exists (fun (s',fi) -> s = s' && row_field_repr fi <> Rabsent)
++          row.row_fields
++      then () else
++      let ty_arg =
++        match arg with None -> [] | Some p -> [correct_levels p.pat_type] in
++      let row' = {row_fields = [s, Reither(arg=None,ty_arg,true,ref None)];
++                  row_more = newvar (); row_bound = ();
++                  row_closed = false; row_fixed = false; row_name = None} in
++      (* Should fail *)
++      unify_pat env {pat with pat_type = newty (Tvariant row')}
++                    (correct_levels pat.pat_type)
++      | _ -> ())
++      
++
+ let dummy_expr = {pexp_desc = Pexp_tuple []; pexp_loc = Location.none}
+ 
+ (* Duplicate types of values in the environment *)
+@@ -3037,16 +3077,20 @@
+ 
+ and type_cases ?in_function env ty_arg ty_res partial_flag loc caselist =
+   (* ty_arg is _fully_ generalized *)
+-  let dont_propagate, has_gadts =
+-    let patterns = List.map fst caselist in
+-    List.exists contains_polymorphic_variant patterns,
+-    List.exists (contains_gadt env) patterns in
++  let patterns = List.map fst caselist in
++  let erase_either =
++    List.exists contains_polymorphic_variant patterns
++    && contains_variant_either ty_arg
++  and has_gadts = List.exists (contains_gadt env) patterns in
+ (*  prerr_endline ( if has_gadts then "contains gadt" else "no gadt"); *)
+-  let ty_arg, ty_res, env =
++  let ty_arg =
++    if (has_gadts || erase_either) && not !Clflags.principal
++    then correct_levels ty_arg else ty_arg
++  and ty_res, env =
+     if has_gadts && not !Clflags.principal then
+-      correct_levels ty_arg, correct_levels ty_res,
+-      duplicate_ident_types loc caselist env
+-    else ty_arg, ty_res, env in
++      correct_levels ty_res, duplicate_ident_types loc caselist env
++    else ty_res, env
++  in
+   let lev, env =
+     if has_gadts then begin
+       (* raise level for existentials *)
+@@ -3072,10 +3116,10 @@
+         let scope = Some (Annot.Idef loc) in
+         let (pat, ext_env, force, unpacks) =
+           let partial =
+-            if !Clflags.principal then Some false else None in
+-          let ty_arg =
+-            if dont_propagate then newvar () else instance ?partial env ty_arg
+-          in type_pattern ~lev env spat scope ty_arg
++            if !Clflags.principal || erase_either
++            then Some false else None in
++          let ty_arg = instance ?partial env ty_arg in
++          type_pattern ~lev env spat scope ty_arg
+         in
+         pattern_force := force @ !pattern_force;
+         let pat =
+@@ -3134,7 +3178,11 @@
+     else
+       Partial
+   in
+-  add_delayed_check (fun () -> Parmatch.check_unused env cases);
++  add_delayed_check
++    (fun () ->
++      List.iter (fun (pat, (env, _)) -> check_absent_variant env pat)
++        pat_env_list;
++      Parmatch.check_unused env cases);
+   if has_gadts then begin
+     end_def ();
+     (* Ensure that existential types do not escape *)
+Index: typing/ctype.ml
+===================================================================
+--- typing/ctype.ml	(revision 13157)
++++ typing/ctype.ml	(working copy)
+@@ -981,6 +981,25 @@
+                     if keep then more else newty more.desc
+                 |  _ -> assert false
+               in
++              (* Open row if partial for pattern and contains Reither *)
++              let more', row =
++                match partial with
++                  Some (free_univars, false) when row.row_closed
++                  && not row.row_fixed && TypeSet.is_empty (free_univars ty) ->
++                    let not_reither (_, f) =
++                      match row_field_repr f with
++                        Reither _ -> false
++                      | _ -> true
++                    in
++                    if List.for_all not_reither row.row_fields
++                    then (more', row) else
++                    (newty2 (if keep then more.level else !current_level)
++                       (Tvar None),
++                     {row_fields = List.filter not_reither row.row_fields;
++                      row_more = more; row_bound = ();
++                      row_closed = false; row_fixed = false; row_name = None})
++                | _ -> (more', row)
++              in
+               (* Register new type first for recursion *)
+               more.desc <- Tsubst(newgenty(Ttuple[more';t]));
+               (* Return a new copy *)
+Index: testsuite/tests/typing-gadts/test.ml.reference
+===================================================================
+--- testsuite/tests/typing-gadts/test.ml.reference	(revision 13157)
++++ testsuite/tests/typing-gadts/test.ml.reference	(working copy)
+@@ -62,11 +62,11 @@
+              ^^^^^^^^
+ Error: This pattern matches values of type int t
+        but a pattern was expected which matches values of type s t
+-#                         Characters 224-237:
+-          | `A, BoolLit _ -> ()
+-            ^^^^^^^^^^^^^
+-Error: This pattern matches values of type ([? `A ] as 'a) * bool t
+-       but a pattern was expected which matches values of type 'a * int t
++#                         module Polymorphic_variants :
++  sig
++    type _ t = IntLit : int -> int t | BoolLit : bool -> bool t
++    val eval : [ `A ] * 's t -> unit
++  end
+ #                                 module Propagation :
+   sig
+     type _ t = IntLit : int -> int t | BoolLit : bool -> bool t
+Index: testsuite/tests/typing-gadts/test.ml.principal.reference
+===================================================================
+--- testsuite/tests/typing-gadts/test.ml.principal.reference	(revision 13157)
++++ testsuite/tests/typing-gadts/test.ml.principal.reference	(working copy)
+@@ -62,11 +62,11 @@
+              ^^^^^^^^
+ Error: This pattern matches values of type int t
+        but a pattern was expected which matches values of type s t
+-#                         Characters 224-237:
+-          | `A, BoolLit _ -> ()
+-            ^^^^^^^^^^^^^
+-Error: This pattern matches values of type ([? `A ] as 'a) * bool t
+-       but a pattern was expected which matches values of type 'a * int t
++#                         module Polymorphic_variants :
++  sig
++    type _ t = IntLit : int -> int t | BoolLit : bool -> bool t
++    val eval : [ `A ] * 's t -> unit
++  end
+ #                                 Characters 299-300:
+       | BoolLit b -> b
+                      ^

@@ -1,0 +1,290 @@
+
+#         module M1 :
+  sig type t = { x : int; y : int; } type u = { x : bool; y : bool; } end
+#                 Characters 49-50:
+    let f1 (r:t) = r.x (* ok *)
+                     ^
+Warning 42: this use of x required disambiguation.
+Characters 89-90:
+    let f2 r = ignore (r:t); r.x (* non principal *)
+                               ^
+Warning 42: this use of x required disambiguation.
+Characters 148-149:
+      match r with {x; y} -> y + y (* ok *)
+                    ^
+Warning 42: this use of x required disambiguation.
+Characters 151-152:
+      match r with {x; y} -> y + y (* ok *)
+                       ^
+Warning 42: this use of y required disambiguation.
+Characters 148-149:
+      match r with {x; y} -> y + y (* ok *)
+                    ^
+Warning 27: unused variable x.
+module OK :
+  sig val f1 : M1.t -> int val f2 : M1.t -> int val f3 : M1.t -> int end
+#         Characters 55-61:
+    let f r = match r with {x; y} -> y + y
+                           ^^^^^^
+Warning 41: these field labels belong to several types: M1.u M1.t
+The first one was selected. Please disambiguate if this is wrong.
+Characters 65-66:
+    let f r = match r with {x; y} -> y + y
+                                     ^
+Error: This expression has type bool but an expression was expected of type
+         int
+#               Characters 86-87:
+         {x; y} -> y + y
+          ^
+Warning 42: this use of x required disambiguation.
+Characters 89-90:
+         {x; y} -> y + y
+             ^
+Warning 42: this use of y required disambiguation.
+Characters 86-87:
+         {x; y} -> y + y
+          ^
+Warning 27: unused variable x.
+module F2 : sig val f : M1.t -> int end
+#           module M : sig type t = { x : int; } type u = { x : bool; } end
+# Characters 18-21:
+  let f (r:M.t) = r.M.x;; (* ok *)
+                    ^^^
+Warning 42: this use of x required disambiguation.
+val f : M.t -> int = <fun>
+# Characters 18-19:
+  let f (r:M.t) = r.x;; (* warning *)
+                    ^
+Warning 40: x was selected from type M.t.
+It is not visible in the current scope, and will not 
+be selected if the type becomes unknown.
+Characters 18-19:
+  let f (r:M.t) = r.x;; (* warning *)
+                    ^
+Warning 42: this use of x required disambiguation.
+val f : M.t -> int = <fun>
+# Characters 8-9:
+  let f ({x}:M.t) = x;; (* warning *)
+          ^
+Warning 42: this use of x required disambiguation.
+Characters 7-10:
+  let f ({x}:M.t) = x;; (* warning *)
+         ^^^
+Warning 40: this record of type M.t contains fields that are 
+not visible in the current scope: x.
+They will not be selected if the type becomes unknown.
+val f : M.t -> int = <fun>
+#       module M : sig type t = { x : int; y : int; } end
+#     module N : sig type u = { x : bool; y : bool; } end
+#         Characters 57-58:
+    let f (r:M.t) = r.x
+                      ^
+Warning 42: this use of x required disambiguation.
+Characters 30-36:
+    open N
+    ^^^^^^
+Warning 33: unused open N.
+module OK : sig val f : M.t -> int end
+#           module M :
+  sig
+    type t = { x : int; }
+    module N : sig type s = t = { x : int; } end
+    type u = { x : bool; }
+  end
+#       module OK : sig val f : M.t -> int end
+#           module M :
+  sig
+    type u = { x : bool; y : int; z : char; }
+    type t = { x : int; y : bool; }
+  end
+#       Characters 37-38:
+    let f {x;z} = x,z
+           ^
+Warning 42: this use of x required disambiguation.
+Characters 36-41:
+    let f {x;z} = x,z
+          ^^^^^
+Warning 9: the following labels are not bound in this record pattern:
+y
+Either bind these labels explicitly or add '; _' to the pattern.
+module OK : sig val f : M.u -> bool * char end
+#       Characters 38-52:
+    let r = {x=true;z='z'}
+            ^^^^^^^^^^^^^^
+Error: Some record fields are undefined: y
+#           Characters 90-91:
+    let r = {x=3; y=true}
+             ^
+Warning 42: this use of x required disambiguation.
+Characters 95-96:
+    let r = {x=3; y=true}
+                  ^
+Warning 42: this use of y required disambiguation.
+module OK :
+  sig
+    type u = { x : int; y : bool; }
+    type t = { x : bool; y : int; z : char; }
+    val r : u
+  end
+#               Characters 111-112:
+    let b : bar = {x=3; y=4}
+                        ^
+Error: This record expression is expected to have type bar
+       The field y does not belong to type bar
+#   module M : sig type foo = { x : int; y : int; } end
+# module N : sig type bar = { x : int; y : int; } end
+# Characters 19-22:
+  let r = { M.x = 3; N.y = 4; };; (* error: different definitions *)
+                     ^^^
+Error: The record field N.y belongs to the type N.bar
+       but is mixed here with fields of type M.foo
+#     module MN :
+  sig
+    type foo = M.foo = { x : int; y : int; }
+    type bar = N.bar = { x : int; y : int; }
+  end
+module NM :
+  sig
+    type bar = N.bar = { x : int; y : int; }
+    type foo = M.foo = { x : int; y : int; }
+  end
+# Characters 8-28:
+  let r = {MN.x = 3; NM.y = 4};; (* error: type would change with order *)
+          ^^^^^^^^^^^^^^^^^^^^
+Warning 41: x belongs to several types: MN.bar MN.foo
+The first one was selected. Please disambiguate if this is wrong.
+Characters 8-28:
+  let r = {MN.x = 3; NM.y = 4};; (* error: type would change with order *)
+          ^^^^^^^^^^^^^^^^^^^^
+Warning 41: y belongs to several types: NM.foo NM.bar
+The first one was selected. Please disambiguate if this is wrong.
+Characters 19-23:
+  let r = {MN.x = 3; NM.y = 4};; (* error: type would change with order *)
+                     ^^^^
+Error: The record field NM.y belongs to the type NM.foo = M.foo
+       but is mixed here with fields of type MN.bar = N.bar
+#             module M :
+  sig
+    type foo = { x : int; y : int; }
+    type bar = { x : int; y : int; z : int; }
+  end
+#       Characters 65-66:
+    let f r = ignore (r: foo); {r with x = 2; z = 3}
+                                       ^
+Warning 42: this use of x required disambiguation.
+Characters 72-73:
+    let f r = ignore (r: foo); {r with x = 2; z = 3}
+                                              ^
+Error: This record expression is expected to have type M.foo
+       The field z does not belong to type M.foo
+#       module M :
+  sig
+    type foo = M.foo = { x : int; y : int; }
+    type bar = M.bar = { x : int; y : int; z : int; }
+    type other = { a : int; b : int; }
+  end
+#       Characters 66-67:
+    let f r = ignore (r: foo); { r with x = 3; a = 4 }
+                                        ^
+Warning 42: this use of x required disambiguation.
+Characters 73-74:
+    let f r = ignore (r: foo); { r with x = 3; a = 4 }
+                                               ^
+Error: This record expression is expected to have type M.foo
+       The field a does not belong to type M.foo
+#         Characters 39-40:
+    let r = {x=1; y=2}
+             ^
+Warning 42: this use of x required disambiguation.
+Characters 44-45:
+    let r = {x=1; y=2}
+                  ^
+Warning 42: this use of y required disambiguation.
+Characters 67-68:
+    let r: other = {x=1; y=2}
+                    ^
+Error: This record expression is expected to have type M.other
+       The field x does not belong to type M.other
+#     module A : sig type t = { x : int; } end
+module B : sig type t = { x : int; } end
+# Characters 20-23:
+  let f (r : B.t) = r.A.x;; (* fail *)
+                      ^^^
+Error: The field A.x belongs to the record type A.t
+       but a field was expected belonging to the record type B.t
+#             Characters 88-91:
+    let a : t = {x=1;yyz=2}
+                     ^^^
+Error: This record expression is expected to have type t
+       The field yyz does not belong to type t
+Hint: Did you mean yyy?
+#             type t = A
+type s = A
+class f : t -> object  end
+# Characters 12-13:
+  class g = f A;; (* ok *)
+              ^
+Warning 42: this use of A required disambiguation.
+class g : f
+#   class f : 'a -> 'a -> object  end
+# Characters 13-14:
+  class g = f (A : t) A;; (* warn with -principal *)
+               ^
+Warning 42: this use of A required disambiguation.
+Characters 20-21:
+  class g = f (A : t) A;; (* warn with -principal *)
+                      ^
+Warning 42: this use of A required disambiguation.
+class g : f
+#                       Characters 199-200:
+    let y : t = {x = 0}
+                 ^
+Warning 42: this use of x required disambiguation.
+Characters 114-120:
+    open M  (* this open is unused, it isn't reported as shadowing 'x' *)
+    ^^^^^^
+Warning 33: unused open M.
+module Shadow1 :
+  sig
+    type t = { x : int; }
+    module M : sig type s = { x : string; } end
+    val y : t
+  end
+#               Characters 97-103:
+    open M  (* this open shadows label 'x' *)
+    ^^^^^^
+Warning 45: this open statement shadows the label x (which is later used)
+Characters 149-157:
+    let y = {x = ""}
+            ^^^^^^^^
+Warning 41: these field labels belong to several types: M.s t
+The first one was selected. Please disambiguate if this is wrong.
+module Shadow2 :
+  sig
+    type t = { x : int; }
+    module M : sig type s = { x : string; } end
+    val y : M.s
+  end
+#                 Characters 167-170:
+    let f (u : u) = match u with `Key {loc} -> loc
+                                       ^^^
+Warning 42: this use of loc required disambiguation.
+module P6235 :
+  sig
+    type t = { loc : string; }
+    type v = { loc : string; x : int; }
+    type u = [ `Key of t ]
+    val f : u -> string
+  end
+#                     Characters 220-223:
+      |`Key {loc} -> loc
+             ^^^
+Warning 42: this use of loc required disambiguation.
+module P6235' :
+  sig
+    type t = { loc : string; }
+    type v = { loc : string; x : int; }
+    type u = [ `Key of t ]
+    val f : u -> string
+  end
+# 
