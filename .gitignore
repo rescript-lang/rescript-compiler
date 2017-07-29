@@ -60,7 +60,7 @@ reason/
 man/
 lib/ocaml
 bin/*
-ocaml_src
+
 *.exe
 odoc_gen/*.cmxs
 
@@ -77,7 +77,7 @@ bin/bsc.exe
 # the second install would use the cached ninja.exe (instead of being ignored)
 #
 !bin/bsrefmt
-!ocaml.tar.gz
+
 
 #ninja
 .ninja_log

@@ -1012,8 +1012,8 @@ easily be done.</p>
 <div class="listingblock">
 <div class="title">Build OCaml compiler</div>
 <div class="content">
-<pre class="pygments highlight"><code data-lang="sh">git clone --recursive https://github.com/bucklescript/bucklescript
-<span class="tok-nb">cd </span>bucklescript/ocaml
+<pre class="pygments highlight"><code data-lang="sh">git clone https://github.com/bucklescript/bucklescript
+<span class="tok-nb">cd </span>bucklescript/vendor/ocaml
 ./configure -prefix <span class="tok-sb">`</span><span class="tok-nb">pwd</span><span class="tok-sb">`</span> <span class="tok-c"># put your preferred directory</span>
 make world.opt
 make install</code></pre>
@@ -1033,7 +1033,7 @@ the previous section.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="sh"><span class="tok-nb">cd</span> ../jscomp
+<pre class="pygments highlight"><code data-lang="sh"><span class="tok-nb">cd</span> ../../jscomp
 make world</code></pre>
 </div>
 </div>
