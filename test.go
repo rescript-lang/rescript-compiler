@@ -192,7 +192,7 @@ func main() {
 
 	
 	var wg sync.WaitGroup
-	for _, theme := range []string{"basic", "basic-reason", "generator", "minimal"} {
+	for _, theme := range []string{"basic", "basic-reason", "generator", "minimal","node"} {
 		fmt.Println("Test theme", theme)
 		wg.Add(1)
 		go (func(theme string) {
