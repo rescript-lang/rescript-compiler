@@ -75,9 +75,8 @@ let package_specs_from_bsconfig () =
     | Obj {map} ->
       begin 
         match String_map.find_opt Bsb_build_schemas.package_specs map with 
-        | Some (Arr s ) -> 
-          Bsb_package_specs.from_array s.content
-        | Some _
+        | Some x ->
+          Bsb_package_specs.from_json x
         | None -> 
           Bsb_package_specs.default_package_specs
       end
@@ -120,7 +119,7 @@ let interpret_json
   let built_in_package = ref None in
   let generate_merlin = ref true in 
   let generators = ref String_map.empty in 
-  let package_specs = ref Bsb_package_specs.default_package_specs in 
+
   (* When we plan to add more deps here,
      Make sure check it is consistent that for nested deps, we have a 
      quck check by just re-parsing deps 
@@ -146,6 +145,12 @@ let interpret_json
      | Some _ ->
        built_in_package := Some (resolve_package cwd Bs_version.package_name);
     ) ;
+    let package_specs =     
+      match String_map.find_opt Bsb_build_schemas.package_specs map with 
+      | Some x ->
+        Bsb_package_specs.from_json x 
+      | None ->  Bsb_package_specs.default_package_specs 
+    in
     map
     |? (Bsb_build_schemas.reason, `Obj begin fun m -> 
       match String_map.find_opt Bsb_build_schemas.react_jsx m with 
@@ -174,9 +179,6 @@ let interpret_json
         generate_merlin := b
       ))
     |? (Bsb_build_schemas.name, `Str (fun s -> package_name := Some s))
-    |? (Bsb_build_schemas.package_specs, 
-        `Arr (fun s -> package_specs := 
-          Bsb_package_specs.from_array  s ))
     |? (Bsb_build_schemas.js_post_build, `Obj begin fun m ->
         m |? (Bsb_build_schemas.cmd , `Str (fun s -> 
             js_post_build_cmd := Some (Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.js_post_build s)
@@ -263,8 +265,9 @@ let interpret_json
           refmt_flags = !refmt_flags ;
           js_post_build_cmd =  !js_post_build_cmd ;
           package_specs = 
-            (match override_package_specs with None ->  !package_specs
-                                             | Some x -> x );
+            (match override_package_specs with 
+            | None ->  package_specs
+            | Some x -> x );
           globbed_dirs = res.globbed_dirs; 
           bs_file_groups = res.files; 
           files_to_install = String_hash_set.create 96;

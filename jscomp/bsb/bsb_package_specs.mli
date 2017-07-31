@@ -27,9 +27,8 @@ type t
 
 val default_package_specs : t
 
-val from_array : 
-  Ext_json_types.t array -> t
-
+val from_json:
+  Ext_json_types.t -> t 
 
 val get_list_of_output_js : 
   t -> string -> string list

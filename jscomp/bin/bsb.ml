@@ -7368,9 +7368,8 @@ type t
 
 val default_package_specs : t
 
-val from_array : 
-  Ext_json_types.t array -> t
-
+val from_json:
+  Ext_json_types.t -> t 
 
 val get_list_of_output_js : 
   t -> string -> string list
@@ -7440,47 +7439,58 @@ let supported_format x =
   x = Literals.amdjs_global
 
 
-let from_array (arr : Ext_json_types.t array) : Spec_set.t =  
+let rec from_array (arr : Ext_json_types.t array) : Spec_set.t =  
   let spec = ref Spec_set.empty in 
   let has_in_source = ref false in  
   arr
   |> Array.iter (fun (x : Ext_json_types.t) ->
-      match x with 
-      | Str {str = format; loc } -> 
-        if supported_format format then 
-          spec := Spec_set.add {format ; in_source = false } !spec 
-        else 
-          Bsb_exception.failf ~loc "Unkonwn package spec %s"  format
-      | Obj {map; loc} -> 
-        begin match String_map.find_exn "module" map with 
-          | Str {str = format} -> 
-            let in_source = (
-              match String_map.find_opt "in-source" map with 
-              | Some (True _) -> true 
-              | Some _
-              | None -> false 
-            ) in 
-            (if not !has_in_source then 
-               has_in_source := true 
-             else Bsb_exception.failf ~loc 
-                 "package-spec has two module format configured in-source" );
-            if supported_format format then 
-              spec := Spec_set.add {format ; in_source  } !spec 
-            else 
-              Bsb_exception.failf ~loc "Unkonwn package spec %s"  format
 
-          | _ ->  
-            Bsb_exception.failf ~loc 
-              "package-spec object expect module field to be string"
-          | exception _ -> 
-            Bsb_exception.failf ~loc 
-              "package-spec object expect module field to be string"
-        end
-      | _ -> Bsb_exception.failf ~loc:(Ext_json.loc_of x) 
-               "package-specs expect either string or an object"
+      let result = from_json_single x has_in_source in 
+      
+      spec := Spec_set.add result !spec
     );
   !spec 
 
+  (* TODO: FIXME: better API without mutating *)
+and from_json_single (x : Ext_json_types.t) has_in_source : spec = 
+  match x with 
+  | Str {str = format; loc } -> 
+    if supported_format format then 
+      {format ; in_source = false } 
+    else 
+      Bsb_exception.failf ~loc "Unkonwn package spec %s"  format
+  | Obj {map; loc} -> 
+    begin match String_map.find_exn "module" map with 
+      | Str {str = format} -> 
+        let in_source = (
+          match String_map.find_opt "in-source" map with 
+          | Some (True _) -> true 
+          | Some _
+          | None -> false 
+        ) in 
+        (if not !has_in_source then 
+           has_in_source := true 
+         else Bsb_exception.failf ~loc 
+             "package-spec has two module format configured in-source" );
+        if supported_format format then 
+          {format ; in_source  } 
+        else 
+          Bsb_exception.failf ~loc "Unkonwn package spec %s"  format
+
+      | _ ->  
+        Bsb_exception.failf ~loc 
+          "package-spec object expect module field to be string"
+      | exception _ -> 
+        Bsb_exception.failf ~loc 
+          "package-spec object expect module field to be string"
+    end
+  | _ -> Bsb_exception.failf ~loc:(Ext_json.loc_of x) 
+           "package-specs expect either string or an object"
+
+let  from_json (x : Ext_json_types.t) : Spec_set.t = 
+  match x with 
+  | Arr {content ; _} -> from_array content 
+  | _ -> Spec_set.singleton (from_json_single x (ref false) )
 
 
 let bs_package_output = "-bs-package-output"
@@ -10766,9 +10776,8 @@ let package_specs_from_bsconfig () =
     | Obj {map} ->
       begin 
         match String_map.find_opt Bsb_build_schemas.package_specs map with 
-        | Some (Arr s ) -> 
-          Bsb_package_specs.from_array s.content
-        | Some _
+        | Some x ->
+          Bsb_package_specs.from_json x
         | None -> 
           Bsb_package_specs.default_package_specs
       end
@@ -10811,7 +10820,7 @@ let interpret_json
   let built_in_package = ref None in
   let generate_merlin = ref true in 
   let generators = ref String_map.empty in 
-  let package_specs = ref Bsb_package_specs.default_package_specs in 
+
   (* When we plan to add more deps here,
      Make sure check it is consistent that for nested deps, we have a 
      quck check by just re-parsing deps 
@@ -10837,6 +10846,12 @@ let interpret_json
      | Some _ ->
        built_in_package := Some (resolve_package cwd Bs_version.package_name);
     ) ;
+    let package_specs =     
+      match String_map.find_opt Bsb_build_schemas.package_specs map with 
+      | Some x ->
+        Bsb_package_specs.from_json x 
+      | None ->  Bsb_package_specs.default_package_specs 
+    in
     map
     |? (Bsb_build_schemas.reason, `Obj begin fun m -> 
       match String_map.find_opt Bsb_build_schemas.react_jsx m with 
@@ -10865,9 +10880,6 @@ let interpret_json
         generate_merlin := b
       ))
     |? (Bsb_build_schemas.name, `Str (fun s -> package_name := Some s))
-    |? (Bsb_build_schemas.package_specs, 
-        `Arr (fun s -> package_specs := 
-          Bsb_package_specs.from_array  s ))
     |? (Bsb_build_schemas.js_post_build, `Obj begin fun m ->
         m |? (Bsb_build_schemas.cmd , `Str (fun s -> 
             js_post_build_cmd := Some (Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.js_post_build s)
@@ -10954,8 +10966,9 @@ let interpret_json
           refmt_flags = !refmt_flags ;
           js_post_build_cmd =  !js_post_build_cmd ;
           package_specs = 
-            (match override_package_specs with None ->  !package_specs
-                                             | Some x -> x );
+            (match override_package_specs with 
+            | None ->  package_specs
+            | Some x -> x );
           globbed_dirs = res.globbed_dirs; 
           bs_file_groups = res.files; 
           files_to_install = String_hash_set.create 96;

@@ -12,21 +12,23 @@
             ],
             "description": "amdjs-global and es6-global will generate relative `require` paths instead of relying on NodeJS' module resolution"
         },
-        "module-format-object" : { 
-            "type" : "object",
-            "properties" : {
-                "module" : {
-                    "$ref" : "#/definitions/module-format"
+        "module-format-object": {
+            "type": "object",
+            "properties": {
+                "module": {
+                    "$ref": "#/definitions/module-format"
                 },
-                "in-source" : {
-                    "type" : "boolean",
+                "in-source": {
+                    "type": "boolean",
                     "description": "default is false"
                 }
             },
-            "required" : ["module"]
-        }, 
-        "package-spec" : {
-            "oneOf" : [
+            "required": [
+                "module"
+            ]
+        },
+        "package-spec": {
+            "oneOf": [
                 {
                     "$ref": "#/definitions/module-format"
                 },
@@ -36,25 +38,31 @@
             ]
         },
         "package-specs": {
-            "type": "array",
-            "items": {
-                "$ref": "#/definitions/package-spec"
-            }
-        },
-        "react-jsx-version" : {
-            "title" : "jsx-version",
-            "oneOf" : [
+            "oneOf": [
                 {
-                    "type" : "boolean",
-                    "description" : "backward compatible mode, true means on with the default to be version 1 (the default value is subject to change)"
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/package-spec"
+                    }
                 },
                 {
-                    "type" : "number",
+                    "$ref": "#/definitions/package-spec"
+                }
+            ]
+        },
+        "react-jsx-version": {
+            "title": "jsx-version",
+            "oneOf": [
+                {
+                    "type": "boolean",
+                    "description": "backward compatible mode, true means on with the default to be version 1 (the default value is subject to change)"
+                },
+                {
+                    "type": "number",
                     "description": "jsx version number, current recommend version number is 2"
                 }
             ]
-        }
-        ,
+        },
         "ppx-specs": {
             "type": "array",
             "items": {
@@ -289,8 +297,7 @@
                 {
                     "type": "object",
                     "properties": {
-                        "kind" :
-                        {
+                        "kind": {
                             "enum": [
                                 "reset",
                                 "prefix",
@@ -340,7 +347,7 @@
             },
             "description": "(WIP) Pre defined rules"
         },
-        "cut-generators" : {
+        "cut-generators": {
             "type": "boolean",
             "description": "Ignore generators, cut the dependency on generator tools"
         },
