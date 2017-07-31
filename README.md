@@ -3,7 +3,7 @@
 [![NPM](https://nodei.co/npm/bs-platform.png?compact=true)](https://nodei.co/npm/bs-platform/)
 
 [![Build Status](https://travis-ci.org/BuckleScript/bucklescript.svg?branch=master)](https://travis-ci.org/bucklescript/bucklescript)
-[![Try Online](https://img.shields.io/badge/try_it-online!-yellow.svg?style=flat-square)](https://bucklescript.github.io/bucklescript-playground/js-demo)
+[![Try Online](https://img.shields.io/badge/try_it-online!-yellow.svg?style=flat-square)](https://bucklescript.github.io/bucklescript-playground)
 
 ## Try BuckleScript
 
