@@ -7,7 +7,7 @@
 
 ## Try BuckleScript
 
-You can try BuckleScript directly [in your browser](http://bucklescript.github.io/bucklescript-playground/js-demo/). Write OCaml in the left panel and
+You can try BuckleScript directly [in your browser](http://bucklescript.github.io/bucklescript-playground). Write OCaml in the left panel and
 watch as it instantly compiles to JavaScript shown in the right panel.
 
 
