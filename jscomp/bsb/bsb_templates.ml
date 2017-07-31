@@ -373,6 +373,89 @@ let root = OCamlRes.Res.([
        node_modules\n\
        .merlin\n\
        npm-debug.log")]) ;
+  Dir ("node", [
+    Dir ("src", [
+      File ("demo.ml",
+        "\n\
+         \n\
+         let () = Js.log \"Hello, BuckleScript\"")]) ;
+    File ("README.md",
+      "\n\
+       \n\
+       # Build\n\
+       ```\n\
+       npm run build\n\
+       ```\n\
+       \n\
+       # Watch\n\
+       \n\
+       ```\n\
+       npm run watch\n\
+       ```\n\
+       \n\
+       \n\
+       # Editor\n\
+       If you use `vscode`, Press `Windows + Shift + B` it will build automatically") ;
+    File ("package.json",
+      "{\n\
+      \  \"name\": \"${bsb:name}\",\n\
+      \  \"version\": \"${bsb:proj-version}\",\n\
+      \  \"scripts\": {\n\
+      \    \"clean\": \"bsb -clean-world\",\n\
+      \    \"build\": \"bsb -make-world\",\n\
+      \    \"watch\": \"bsb -make-world -w\"\n\
+      \  },\n\
+      \  \"keywords\": [\n\
+      \    \"BuckleScript\"\n\
+      \  ],\n\
+      \  \"license\": \"MIT\",\n\
+      \  \"devDependencies\": {\n\
+      \    \"bs-platform\": \"${bsb:bs-version}\"\n\
+      \  }\n\
+       }") ;
+    File ("bsconfig.json",
+      "{\n\
+      \  \"name\": \"${bsb:name}\",\n\
+      \  \"version\": \"${bsb:proj-version}\",\n\
+      \  \"sources\": [\n\
+      \    \"src\"\n\
+      \  ],\n\
+      \  \"package-specs\": [\n\
+      \    {\n\
+      \      \"module\": \"commonjs\",\n\
+      \      \"in-source\": true\n\
+      \    }\n\
+      \  ],\n\
+      \  \"bs-dependencies\" : [\n\
+      \      // add your bs-dependencies here \n\
+      \  ]\n\
+       }") ;
+    File (".gitignore",
+      "*.exe\n\
+       *.obj\n\
+       *.out\n\
+       *.compile\n\
+       *.native\n\
+       *.byte\n\
+       *.cmo\n\
+       *.annot\n\
+       *.cmi\n\
+       *.cmx\n\
+       *.cmt\n\
+       *.cmti\n\
+       *.cma\n\
+       *.a\n\
+       *.cmxa\n\
+       *.obj\n\
+       *~\n\
+       *.annot\n\
+       *.cmj\n\
+       *.bak\n\
+       lib/bs\n\
+       *.mlast\n\
+       *.mliast\n\
+       .vscode\n\
+       .merlin")]) ;
   Dir ("react", [
     File ("webpack.config.js",
       "const path = require('path');\n\

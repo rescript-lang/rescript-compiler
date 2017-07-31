@@ -1,3 +1,7 @@
+# 1.8.3
+- Features
+- #1839, #1653, allow in-source build in package-specs , allow single pacakge-spec element in package-specs
+
 # 1.8.2
 - Features
 - #1798 make `default` the same semantics as Es6 exports
