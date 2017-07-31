@@ -76,7 +76,7 @@ let package_specs_from_bsconfig () =
       begin 
         match String_map.find_opt Bsb_build_schemas.package_specs map with 
         | Some (Arr s ) -> 
-          Bsb_package_specs.get_package_specs_from_array s.content
+          Bsb_package_specs.from_array s.content
         | Some _
         | None -> 
           Bsb_package_specs.default_package_specs
@@ -176,7 +176,7 @@ let interpret_json
     |? (Bsb_build_schemas.name, `Str (fun s -> package_name := Some s))
     |? (Bsb_build_schemas.package_specs, 
         `Arr (fun s -> package_specs := 
-          Bsb_package_specs.get_package_specs_from_array  s ))
+          Bsb_package_specs.from_array  s ))
     |? (Bsb_build_schemas.js_post_build, `Obj begin fun m ->
         m |? (Bsb_build_schemas.cmd , `Str (fun s -> 
             js_post_build_cmd := Some (Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.js_post_build s)

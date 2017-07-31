@@ -1,0 +1,16 @@
+{
+  "name": "${bsb:name}",
+  "version": "${bsb:proj-version}",
+  "sources": [
+    "src"
+  ],
+  "package-specs": [
+    {
+      "module": "commonjs",
+      "in-source": true
+    }
+  ],
+  "bs-dependencies" : [
+      // add your bs-dependencies here 
+  ]
+}

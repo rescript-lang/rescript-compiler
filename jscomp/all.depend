@@ -798,9 +798,10 @@ bsb/bsb_ninja_regen.cmx : ext/literals.cmx ext/ext_filename.cmx \
 bsb/bsb_ninja_util.cmx : ext/ext_string.cmx bsb/bsb_rule.cmx \
     bsb/bsb_ninja_util.cmi
 bsb/bsb_os_dependent.cmx :
-bsb/bsb_package_specs.cmx : ext/string_set.cmx ext/literals.cmx \
-    ext/ext_string.cmx ext/ext_filename.cmx bsb/bsb_config.cmx \
-    bsb/bsb_build_util.cmx bsb/bsb_package_specs.cmi
+bsb/bsb_package_specs.cmx : ext/string_map.cmx ext/literals.cmx \
+    ext/ext_string.cmx ext/ext_json_types.cmx ext/ext_json.cmx \
+    ext/ext_filename.cmx bsb/bsb_exception.cmx bsb/bsb_config.cmx \
+    bsb/bsb_package_specs.cmi
 bsb/bsb_parse_sources.cmx : ext/string_vec.cmx ext/string_set.cmx \
     ext/string_map.cmx ext/ext_string.cmx ext/ext_json_types.cmx \
     ext/ext_json.cmx ext/ext_filename.cmx ext/ext_file_pp.cmx \

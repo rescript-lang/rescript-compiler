@@ -12,10 +12,33 @@
             ],
             "description": "amdjs-global and es6-global will generate relative `require` paths instead of relying on NodeJS' module resolution"
         },
+        "module-format-object" : { 
+            "type" : "object",
+            "properties" : {
+                "module" : {
+                    "$ref" : "#/definitions/module-format"
+                },
+                "in-source" : {
+                    "type" : "boolean",
+                    "description": "default is false"
+                }
+            },
+            "required" : ["module"]
+        }, 
+        "package-spec" : {
+            "oneOf" : [
+                {
+                    "$ref": "#/definitions/module-format"
+                },
+                {
+                    "$ref": "#/definitions/module-format-object"
+                }
+            ]
+        },
         "package-specs": {
             "type": "array",
             "items": {
-                "$ref": "#/definitions/module-format"
+                "$ref": "#/definitions/package-spec"
             }
         },
         "react-jsx-version" : {

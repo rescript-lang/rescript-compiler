@@ -27,7 +27,7 @@ type t
 
 val default_package_specs : t
 
-val get_package_specs_from_array : 
+val from_array : 
   Ext_json_types.t array -> t
 
 
