@@ -24,16 +24,19 @@
 
 type t
 
-val supported_format : string -> bool
 
 val default_package_specs : t
+
+val get_package_specs_from_array : 
+  Ext_json_types.t array -> t
+
 
 val get_list_of_output_js : 
   t -> string -> string list
 
-
+(**
+  Sample output: {[ -bs-package-output commonjs:lib/js/jscomp/test]}
+*)
 val package_flag_of_package_specs : 
   t -> string -> string
 
-val get_package_specs_from_array : 
-  Ext_json_types.t array -> t

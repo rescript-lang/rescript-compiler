@@ -8007,19 +8007,23 @@ module Bsb_package_specs : sig
 
 type t
 
-val supported_format : string -> bool
 
 val default_package_specs : t
+
+val get_package_specs_from_array : 
+  Ext_json_types.t array -> t
+
 
 val get_list_of_output_js : 
   t -> string -> string list
 
-
+(**
+  Sample output: {[ -bs-package-output commonjs:lib/js/jscomp/test]}
+*)
 val package_flag_of_package_specs : 
   t -> string -> string
 
-val get_package_specs_from_array : 
-  Ext_json_types.t array -> t
+
 end = struct
 #1 "bsb_package_specs.ml"
 (* Copyright (C) 2017 Authors of BuckleScript
@@ -8066,6 +8070,18 @@ let supported_format x =
   x = Literals.amdjs_global
 
 
+let get_package_specs_from_array arr =  
+  arr
+  |> Bsb_build_util.get_list_string
+  |> List.fold_left (fun acc x ->
+      let v =
+        if supported_format x    then String_set.add x acc
+        else
+          failwith ("Unkonwn package spec" ^ x) in
+      v
+    ) String_set.empty 
+
+    
 let bs_package_output = "-bs-package-output"
 
 (** Assume input is valid 
@@ -8127,16 +8143,6 @@ let get_list_of_output_js
         ) package_specs []
 
 
-let get_package_specs_from_array arr =  
-  arr
-  |> Bsb_build_util.get_list_string
-  |> List.fold_left (fun acc x ->
-      let v =
-        if supported_format x    then String_set.add x acc
-        else
-          failwith ("Unkonwn package spec" ^ x) in
-      v
-    ) String_set.empty 
 end
 module Binary_cache : sig 
 #1 "binary_cache.mli"
