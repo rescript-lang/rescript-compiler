@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -35,7 +36,7 @@ func andThen(a, b command) command {
 type Output struct {
 	name string
 	// log  string
-	err  error
+	err error
 }
 
 func runCommands(commands commands) {
@@ -52,7 +53,7 @@ func runCommands(commands commands) {
 			if err != nil {
 				output <- Output{name: f.name, err: err}
 			}
-			
+
 			fmt.Println("Finished", f.name)
 		}(com)
 	}
@@ -151,48 +152,42 @@ func init() {
 }
 
 func main() {
-
+	noInstallGlobal := flag.Bool("no-install-global", false, "don't install global")
+	noOunitTest := flag.Bool("no-ounit", false, "don't do ounit test")
+	
+	flag.Parse()
 	// Avoid rebuilding OCaml again
 	output, _ := cmd("which", "ocaml").CombinedOutput()
 	fmt.Println("OCaml:", string(output))
-
-	// runCommands([]command{
-	// 	andThen(commandString(`make -C jscomp/test all`),
-	// 		commandString(`mocha jscomp/test/**/*test.js`),
-	// 	),
-	// 	// commandString(`ls *.json`),
-	// 	// andThen(
-	// 	commandString(`make -C jscomp travis-world-test`),
-	// 	commandString(`npm install -g .`),
-	// 	// ),
-	// 	// makeCommand("make", "-C", filepath.Join("jscomp","test")),
-	// })
-
-	make:=cmd ("make", "-C", "jscomp","travis-world-test")
+	if !*noOunitTest {
+		cmd("make", "-C", "jscomp", "test")
+	}
+	make := cmd("make", "-C", "jscomp", "travis-world-test")
 	make.Stdout = os.Stdout
 	make.Stderr = os.Stderr
-	error:= make.Run()
-	if error!= nil {		
+	error := make.Run()
+	if error != nil {
 		os.Exit(2)
 	}
 
-	ginstall := cmd("npm", "i", "-g", ".")
-	fmt.Println("install bucklescript globally")
-	start :=time.Now()
-	error = ginstall.Run()
-	if error != nil {
-		log.Fatalf("install failed")
-	} else {
-		
-		fmt.Println("install finished takes", time.Since(start))
-	}
-	bsbDir, _ := cmd("bsb", "-where").CombinedOutput ()
-	fmt.Println("BSBDIR:", string(bsbDir))
 	
+	if !*noInstallGlobal {
+		ginstall := cmd("npm", "i", "-g", ".")
+		fmt.Println("install bucklescript globally")
+		start := time.Now()
+		error = ginstall.Run()
+		if error != nil {
+			log.Fatalf("install failed")
+		} else {
 
-	
+			fmt.Println("install finished takes", time.Since(start))
+		}
+	}
+	bsbDir, _ := cmd("bsb", "-where").CombinedOutput()
+	fmt.Println("BSBDIR:", string(bsbDir))
+
 	var wg sync.WaitGroup
-	for _, theme := range []string{"basic", "basic-reason", "generator", "minimal","node"} {
+	for _, theme := range []string{"basic", "basic-reason", "generator", "minimal", "node"} {
 		fmt.Println("Test theme", theme)
 		wg.Add(1)
 		go (func(theme string) {
