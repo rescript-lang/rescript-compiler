@@ -7,9 +7,11 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"sync"
 	"time"
+	"io/ioutil"
 )
 
 type command struct {
@@ -144,7 +146,6 @@ func installGlobal(wg *sync.WaitGroup) {
 }
 
 var cmd = exec.Command
-	
 
 // Avoid rebuilding OCaml again
 func init() {
@@ -152,30 +153,50 @@ func init() {
 	os.Setenv("PATH",
 		vendorOCamlPath+string(os.PathListSeparator)+os.Getenv("PATH"))
 }
-func testBsb() {
-	c := cmd("bsb", "-regen")
-	c.Dir = filepath.Join("jscomp", "build_tests", "in_source")
-	out, err := c.CombinedOutput()
-	outS := string(out)
-	if !strings.Contains( outS, "two module formats") {
-		fmt.Println(outS)
-		fmt.Println(err)
-		os.Exit(2)
-	} else {
-		fmt.Println("Output matches")
+func fatalError(err error){
+	if err!= nil {
+		panic (err)
 	}
-	
 }
+func bsbInDir(dir string) {
+	
+	destDir := filepath.Join("jscomp", "build_tests", dir)
+	pattern, err := ioutil.ReadFile(filepath.Join(destDir,"output.ref"))	
+	fatalError(err)	
+	argsB, err := ioutil.ReadFile(filepath.Join(destDir,"input.sh"))
+	fatalError(err)
+	args := strings.Fields(strings.TrimSpace(string(argsB)))
+	
+	patternS := string(pattern)
+	c := cmd(args[0], args[1:]...)
+	c.Dir = destDir
+	out, err := c.CombinedOutput()
+
+	if matched, err := regexp.Match(patternS, out); err == nil {
+		if matched {
+			fmt.Printf("Output matches %q in %s\n", patternS, dir)
+			return
+		}
+		fmt.Println("Failure to match", pattern)
+
+	}
+
+	outS := string(out)
+	fmt.Println(outS)
+	fmt.Println(err)
+	os.Exit(2)
+
+}
+
 func main() {
 	noInstallGlobal := flag.Bool("no-install-global", false, "don't install global")
 	noOunitTest := flag.Bool("no-ounit", false, "don't do ounit test")
 	noMochaTest := flag.Bool("no-mocha", false, "don't run mocha")
 	noThemeTest := flag.Bool("no-theme", false, "no bsb theme test")
+
 	// disableAll := flag.Bool("disable-all", false, "disable all tets")
 	flag.Parse()
-	
-	
-	
+
 	output, _ := cmd("which", "ocaml").CombinedOutput()
 	fmt.Println("OCaml:", string(output))
 	if !*noOunitTest {
@@ -220,5 +241,5 @@ func main() {
 		wg.Wait()
 	}
 
-	testBsb()
+	bsbInDir("in_source")
 }
