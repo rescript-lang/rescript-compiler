@@ -69,14 +69,22 @@ let rec from_array (arr : Ext_json_types.t array) : Spec_set.t =
   arr
   |> Array.iter (fun (x : Ext_json_types.t) ->
 
-      let result = from_json_single x has_in_source in
-
+      let result = from_json_single x  in
+      if result.in_source then 
+        (
+          if not !has_in_source then
+            has_in_source:= true
+          else 
+            Bsb_exception.failf 
+              ~loc:(Ext_json.loc_of x) 
+              "package-specs: we've detected two module formats that are both configured to be in-source." 
+        );
       spec := Spec_set.add result !spec
     );
   !spec
 
-  (* TODO: FIXME: better API without mutating *)
-and from_json_single (x : Ext_json_types.t) has_in_source : spec =
+(* TODO: FIXME: better API without mutating *)
+and from_json_single (x : Ext_json_types.t) : spec =
   match x with
   | Str {str = format; loc } ->
     if supported_format format then
@@ -86,17 +94,12 @@ and from_json_single (x : Ext_json_types.t) has_in_source : spec =
   | Obj {map; loc} ->
     begin match String_map.find_exn "module" map with
       | Str {str = format} ->
-        let in_source = (
+        let in_source = 
           match String_map.find_opt "in-source" map with
           | Some (True _) -> true
           | Some _
           | None -> false
-        ) in
-        (match (in_source, !has_in_source) with
-        | (true, true) -> Bsb_exception.failf ~loc "package-specs: we've detected two module formats that are both configured to be in-source." 
-        | (true, false) -> has_in_source := true
-        | _ -> ()
-        );
+        in
         if supported_format format then
           {format ; in_source  }
         else
@@ -112,12 +115,12 @@ and from_json_single (x : Ext_json_types.t) has_in_source : spec =
           "package-specs: when the configuration is an object, the `module` field is mandatory."
     end
   | _ -> Bsb_exception.failf ~loc:(Ext_json.loc_of x)
-            "package-specs: we expect either a string or an object."
+           "package-specs: we expect either a string or an object."
 
 let  from_json (x : Ext_json_types.t) : Spec_set.t =
   match x with
   | Arr {content ; _} -> from_array content
-  | _ -> Spec_set.singleton (from_json_single x (ref false) )
+  | _ -> Spec_set.singleton (from_json_single x )
 
 
 let bs_package_output = "-bs-package-output"
@@ -154,7 +157,7 @@ let package_flag_of_package_specs (package_specs : t)
 
 let default_package_specs = 
   Spec_set.singleton 
-    { format = Literals.commonjs ; in_source = true}
+    { format = Literals.commonjs ; in_source = false }
 (** js output for each package *)
 let package_output ({format; in_source } : spec) output=
 

@@ -4168,7 +4168,7 @@ let perform command args =
        End_of_file -> (* 26 *) ()) ; 
     (try 
        while true do 
-         (* 167 *) Buffer.add_string err_buf (input_line err_in_chan );
+         (* 168 *) Buffer.add_string err_buf (input_line err_in_chan );
          Buffer.add_char err_buf '\n'
        done;
      with
@@ -6409,9 +6409,9 @@ val make_unused : unit -> Ident.t
 val is_unused_ident : Ident.t -> bool 
 
 (**
-   if name is not converted, the reference should be equal
+   Invariant: if name is not converted, the reference should be equal
 *)
-val convert : bool -> string -> string
+val convert : string -> string
 val property_no_need_convert : string -> bool 
 
 val undefined : Ident.t 
@@ -6636,18 +6636,8 @@ let reserved_map =
 
 
 
-
-(* TODO:
-    check name conflicts with javascript conventions
-    {[
-    Ext_ident.convert "^";;
-    - : string = "$caret"
-    ]}
- *)
-let convert keyword (name : string) = 
-   (* 0 *) if keyword && String_hash_set.mem reserved_map name  then (* 0 *) "$$" ^ name 
-   else 
-     (* 0 *) let module E = struct exception Not_normal_letter of int end in
+let name_mangle name = 
+  (* 0 *) let module E = struct exception Not_normal_letter of int end in
      let len = String.length name  in
      try
        for i  = 0 to len - 1 do 
@@ -6683,8 +6673,24 @@ let convert keyword (name : string) =
           | _ -> (* 0 *) Buffer.add_string buffer "$unknown"
         done; Buffer.contents buffer)
 
+
+(* TODO:
+    check name conflicts with javascript conventions
+    {[
+    Ext_ident.convert "^";;
+    - : string = "$caret"
+    ]}
+  [convert name] if [name] is a js keyword,add "$$"
+  otherwise do the name mangling to make sure ocaml identifier it is 
+  a valid js identifier
+ *)
+let convert (name : string) = 
+   (* 0 *) if  String_hash_set.mem reserved_map name  then (* 0 *) "$$" ^ name 
+   else (* 0 *) name_mangle name 
+
+(** keyword could be used in property *)
 let property_no_need_convert s = 
-  (* 0 *) s == convert false s 
+  (* 0 *) s == name_mangle s 
 
 (* It is currently made a persistent ident to avoid fresh ids 
     which would result in different signature files
@@ -8650,8 +8656,8 @@ type t = Lexing.position = {
 }
 
 
-let print fmt (pos : t) = 
-  (* 0 *) Format.fprintf fmt "(%d,%d)" pos.pos_lnum (pos.pos_cnum - pos.pos_bol)
+let print fmt (pos : t) =
+  (* 0 *) Format.fprintf fmt "(line %d, column %d)" pos.pos_lnum (pos.pos_cnum - pos.pos_bol)
 
 
 
@@ -10316,6 +10322,9 @@ val assoc_by_string :
 
 val assoc_by_int : 
   'a  option -> int -> (int * 'a) list -> 'a   
+
+
+val nth_opt : 'a list -> int -> 'a option  
 end = struct
 #1 "ext_list.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -10738,6 +10747,13 @@ let rec assoc_by_int def (k : int) lst =
  *)
 
 
+let nth_opt l n =
+  (* 0 *) if n < 0 then (* 0 *) None else
+  (* 0 *) let rec nth_aux l n =
+    (* 0 *) match l with
+    | [] -> (* 0 *) None
+    | a::l -> (* 0 *) if n = 0 then (* 0 *) Some a else (* 0 *) nth_aux l (n-1)
+  in nth_aux l n
 end
 module Ounit_list_test
 = struct
