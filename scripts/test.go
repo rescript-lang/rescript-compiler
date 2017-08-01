@@ -144,38 +144,58 @@ func installGlobal(wg *sync.WaitGroup) {
 }
 
 var cmd = exec.Command
+	
 
+// Avoid rebuilding OCaml again
 func init() {
 	vendorOCamlPath, _ := filepath.Abs(filepath.Join(".", "vendor", "ocaml", "bin"))
 	os.Setenv("PATH",
 		vendorOCamlPath+string(os.PathListSeparator)+os.Getenv("PATH"))
 }
-
+func testBsb() {
+	c := cmd("bsb", "-regen")
+	c.Dir = filepath.Join("jscomp", "build_tests", "in_source")
+	out, err := c.CombinedOutput()
+	outS := string(out)
+	if !strings.Contains( outS, "two module formats") {
+		fmt.Println(outS)
+		fmt.Println(err)
+		os.Exit(2)
+	} else {
+		fmt.Println("Output matches")
+	}
+	
+}
 func main() {
 	noInstallGlobal := flag.Bool("no-install-global", false, "don't install global")
 	noOunitTest := flag.Bool("no-ounit", false, "don't do ounit test")
-	
+	noMochaTest := flag.Bool("no-mocha", false, "don't run mocha")
+	noThemeTest := flag.Bool("no-theme", false, "no bsb theme test")
+	// disableAll := flag.Bool("disable-all", false, "disable all tets")
 	flag.Parse()
-	// Avoid rebuilding OCaml again
+	
+	
+	
 	output, _ := cmd("which", "ocaml").CombinedOutput()
 	fmt.Println("OCaml:", string(output))
 	if !*noOunitTest {
 		cmd("make", "-C", "jscomp", "test")
 	}
-	make := cmd("make", "-C", "jscomp", "travis-world-test")
-	make.Stdout = os.Stdout
-	make.Stderr = os.Stderr
-	error := make.Run()
-	if error != nil {
-		os.Exit(2)
+	if !*noMochaTest {
+		make := cmd("make", "-C", "jscomp", "travis-world-test")
+		make.Stdout = os.Stdout
+		make.Stderr = os.Stderr
+		error := make.Run()
+		if error != nil {
+			os.Exit(2)
+		}
 	}
 
-	
 	if !*noInstallGlobal {
 		ginstall := cmd("npm", "i", "-g", ".")
 		fmt.Println("install bucklescript globally")
 		start := time.Now()
-		error = ginstall.Run()
+		error := ginstall.Run()
 		if error != nil {
 			log.Fatalf("install failed")
 		} else {
@@ -185,15 +205,18 @@ func main() {
 	}
 	bsbDir, _ := cmd("bsb", "-where").CombinedOutput()
 	fmt.Println("BSBDIR:", string(bsbDir))
-
-	var wg sync.WaitGroup
-	for _, theme := range []string{"basic", "basic-reason", "generator", "minimal", "node"} {
-		fmt.Println("Test theme", theme)
-		wg.Add(1)
-		go (func(theme string) {
-			defer wg.Done()
-			testTheme(theme)
-		})(theme)
+	if !*noThemeTest {
+		var wg sync.WaitGroup
+		for _, theme := range []string{"basic", "basic-reason", "generator", "minimal", "node"} {
+			fmt.Println("Test theme", theme)
+			wg.Add(1)
+			go (func(theme string) {
+				defer wg.Done()
+				testTheme(theme)
+			})(theme)
+		}
+		wg.Wait()
 	}
-	wg.Wait()
+
+	testBsb()
 }
