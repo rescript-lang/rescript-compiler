@@ -29206,8 +29206,8 @@ type t = Lexing.position = {
 }
 
 
-let print fmt (pos : t) = 
-  Format.fprintf fmt "(%d,%d)" pos.pos_lnum (pos.pos_cnum - pos.pos_bol)
+let print fmt (pos : t) =
+  Format.fprintf fmt "(line %d, column %d)" pos.pos_lnum (pos.pos_cnum - pos.pos_bol)
 
 
 
