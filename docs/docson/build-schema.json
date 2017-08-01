@@ -10,7 +10,7 @@
                 "es6",
                 "es6-global"
             ],
-            "description": "amdjs-global and es6-global will generate relative `require` paths instead of relying on NodeJS' module resolution"
+            "description": "amdjs-global and es6-global generate relative `require` paths instead of relying on NodeJS' module resolution. Default: commonjs."
         },
         "module-format-object": {
             "type": "object",
@@ -20,7 +20,7 @@
                 },
                 "in-source": {
                     "type": "boolean",
-                    "description": "default is false"
+                    "description": "Default: true if package-specs is present, false otherwise."
                 }
             },
             "required": [
