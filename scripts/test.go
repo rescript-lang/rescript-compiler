@@ -195,6 +195,8 @@ func main() {
 		ginstall := cmd("npm", "i", "-g", ".")
 		fmt.Println("install bucklescript globally")
 		start := time.Now()
+		ginstall.Stdout = os.Stdout
+		ginstall.Stderr = os.Stderr
 		error := ginstall.Run()
 		if error != nil {
 			log.Fatalf("install failed")
