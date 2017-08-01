@@ -463,7 +463,7 @@ function register(rl) {
 }
 ----------
 
-#### Using polymorphic variant to model arguments of multiple possible types (@since master)
+#### Using polymorphic variant to model arguments of multiple possible types (@since 1.8.3)
 
 Sometimes a JavaScript function will accept an argument that could have different types depending upon how it's used.
 

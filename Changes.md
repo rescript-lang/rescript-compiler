@@ -1,6 +1,7 @@
 # 1.8.3
-- Features
+Features
 - #1839, #1653, allow in-source build in package-specs , allow single pacakge-spec element in package-specs
+- #1802 introduce [@bs.unwrap] for polymorphic variant as external argument
 
 # 1.8.2
 - Features
