@@ -53,58 +53,70 @@ let supported_format x =
   x = Literals.es6_global ||
   x = Literals.amdjs_global
 
+let bad_module_format_message_exn ~loc format =
+  Bsb_exception.failf ~loc "package-specs: `%s` isn't a valid output module format. It has to be one of: %s, %s, %s, %s, %s or %s"
+    format
+    Literals.amdjs
+    Literals.commonjs
+    Literals.goog
+    Literals.es6
+    Literals.es6_global
+    Literals.amdjs_global
 
-let rec from_array (arr : Ext_json_types.t array) : Spec_set.t =  
-  let spec = ref Spec_set.empty in 
-  let has_in_source = ref false in  
+let rec from_array (arr : Ext_json_types.t array) : Spec_set.t =
+  let spec = ref Spec_set.empty in
+  let has_in_source = ref false in
   arr
   |> Array.iter (fun (x : Ext_json_types.t) ->
 
-      let result = from_json_single x has_in_source in 
-      
+      let result = from_json_single x has_in_source in
+
       spec := Spec_set.add result !spec
     );
-  !spec 
+  !spec
 
   (* TODO: FIXME: better API without mutating *)
-and from_json_single (x : Ext_json_types.t) has_in_source : spec = 
-  match x with 
-  | Str {str = format; loc } -> 
-    if supported_format format then 
-      {format ; in_source = false } 
-    else 
-      Bsb_exception.failf ~loc "Unkonwn package spec %s"  format
-  | Obj {map; loc} -> 
-    begin match String_map.find_exn "module" map with 
-      | Str {str = format} -> 
+and from_json_single (x : Ext_json_types.t) has_in_source : spec =
+  match x with
+  | Str {str = format; loc } ->
+    if supported_format format then
+      {format ; in_source = false }
+    else
+      (bad_module_format_message_exn ~loc format)
+  | Obj {map; loc} ->
+    begin match String_map.find_exn "module" map with
+      | Str {str = format} ->
         let in_source = (
-          match String_map.find_opt "in-source" map with 
-          | Some (True _) -> true 
+          match String_map.find_opt "in-source" map with
+          | Some (True _) -> true
           | Some _
-          | None -> false 
-        ) in 
-        (if not !has_in_source then 
-           has_in_source := true 
-         else Bsb_exception.failf ~loc 
-             "package-spec has two module format configured in-source" );
-        if supported_format format then 
-          {format ; in_source  } 
-        else 
-          Bsb_exception.failf ~loc "Unkonwn package spec %s"  format
-
-      | _ ->  
-        Bsb_exception.failf ~loc 
-          "package-spec object expect module field to be string"
-      | exception _ -> 
-        Bsb_exception.failf ~loc 
-          "package-spec object expect module field to be string"
+          | None -> false
+        ) in
+        (match (in_source, !has_in_source) with
+        | (true, true) -> Bsb_exception.failf ~loc "package-specs: we've detected two module formats that are both configured to be in-source." 
+        | (true, false) -> has_in_source := true
+        | _ -> ()
+        );
+        if supported_format format then
+          {format ; in_source  }
+        else
+          bad_module_format_message_exn ~loc format
+      | Arr _ ->
+        Bsb_exception.failf ~loc
+          "package-specs: when the configuration is an object, `module` field should be a string, not an array. If you want to pass multiple module specs, try turning package-specs into an array of objects (or strings) instead."
+      | _ ->
+        Bsb_exception.failf ~loc
+          "package-specs: the `module` field of the configuration object should be a string."
+      | exception _ ->
+        Bsb_exception.failf ~loc
+          "package-specs: when the configuration is an object, the `module` field is mandatory."
     end
-  | _ -> Bsb_exception.failf ~loc:(Ext_json.loc_of x) 
-           "package-specs expect either string or an object"
+  | _ -> Bsb_exception.failf ~loc:(Ext_json.loc_of x)
+            "package-specs: we expect either a string or an object."
 
-let  from_json (x : Ext_json_types.t) : Spec_set.t = 
-  match x with 
-  | Arr {content ; _} -> from_array content 
+let  from_json (x : Ext_json_types.t) : Spec_set.t =
+  match x with
+  | Arr {content ; _} -> from_array content
   | _ -> Spec_set.singleton (from_json_single x (ref false) )
 
 

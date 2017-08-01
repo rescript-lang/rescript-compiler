@@ -55,14 +55,14 @@ let () =
 
 
 let failf ?loc fmt =
-    let prefix = 
-        match loc with 
-        | None -> "Error <bsconfig.json> "
-        | Some x  -> 
-            Format.asprintf "Error <bsconfig.json: %a> " Ext_position.print x  in 
-    Format.ksprintf (fun s -> failwith (prefix ^ s)) fmt 
+    let prefix =
+        match loc with
+        | None -> "bsconfig.json"
+        | Some x  ->
+            Format.asprintf "bsconfig.json %a: " Ext_position.print x  in
+    Format.ksprintf (fun s -> failwith (prefix ^ s)) fmt
 
 let expect_an_array_fmt : _ format = "%s expect an array"
 let failwith_config config fmt =
   let loc = Ext_json.loc_of config in
-  failf ~loc fmt 
+  failf ~loc fmt
