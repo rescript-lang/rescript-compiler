@@ -30,7 +30,7 @@ $(addsuffix .cmj, $(OTHERS)): caml_builtin_exceptions.cmj  block.cmj js.cmj js_u
 $(addsuffix .cmj, $(OTHERS)) caml_builtin_exceptions.cmj  block.cmj js.cmj js_unsafe.cmj : js_internal.cmi 
 ## since we use ppx
 $(addsuffix .cmi, $(OTHERS)): js.cmi js_unsafe.cmj js_unsafe.cmi js.cmj
-$(addsuffix .cmi, $(OTHERS)) js.cmi js_unsafe.cmj js_unsafe.cmi js.cmj : js_internal.cmi
+$(addsuffix .cmi, $(OTHERS)) js.cmi js_unsafe.cmj js_unsafe.cmi js.cmj js_internal.cmj : js_internal.cmi
 
 
 RUNTIME := $(addsuffix .cmj, $(SOURCE_LIST)) $(addsuffix .cmi, $(SOURCE_LIST))
