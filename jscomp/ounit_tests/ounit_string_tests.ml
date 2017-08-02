@@ -294,5 +294,18 @@ let suites =
            "0 a1 2 3 d  e"
         );        
   
+    end;
+
+    __LOC__ >:: begin fun _ ->
+      Ext_string.module_name_of_package_name "bs-json"
+      =~ "BsJson"
+    end;
+    __LOC__ >:: begin fun _ ->
+      Ext_string.module_name_of_package_name
+      "reason-react"
+      =~ "ReasonReact";
+      Ext_string.module_name_of_package_name
+      "reason"
+      =~ "Reason"
     end
   ]

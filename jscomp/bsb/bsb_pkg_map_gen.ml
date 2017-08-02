@@ -1,6 +1,5 @@
-
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+(* Copyright (C) 2017 Authors of BuckleScript
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,48 +17,30 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-module String_set = Ast_extract.String_set
+let (//) = Ext_filename.combine
 
 
+let output ~cwd namespace 
+    (file_groups : Bsb_parse_sources.file_group list)
+  = 
+  (* FIXME : *)
+  let fname = namespace ^ ".ml" in 
+  let oc = open_out_bin 
+      (cwd // Bsb_config.lib_bs// fname ) in 
+  let modules =     
+    List.fold_left 
+    (fun acc (x : Bsb_parse_sources.file_group) ->
+        String_map.keys x.sources @acc 
+     ) [] file_groups in 
+  let structures = 
+    Bsb_pkg_create.make_structure namespace modules in 
 
-
-
-
-let read_ast (type t ) (kind : t  Ml_binary.kind) fn : t  =
-  let ic = open_in_bin fn in
-  try
-    let dep_size = input_binary_int ic in 
-    seek_in  ic (pos_in ic + dep_size) ; 
-    let ast = Ml_binary.read_ast kind ic in 
-    close_in ic;
-    ast
-  with exn ->
-    close_in ic;
-    raise exn
-
-
-(*
-   Reasons that we don't [output_value] the set:
-   1. for performance , easy skipping and calcuate the length 
-   2. cut dependency, otherwise its type is {!Ast_extract.String_set.t}
-*)      
-let write_ast (type t) ~(fname : string) ~output (kind : t Ml_binary.kind) ( pt : t) : unit =
-  let oc = open_out_bin output in 
-
-  let output_set = Ast_extract.read_parse_and_extract kind pt in
-  let buf = Buffer.create 64 in
-  let number = String_set.cardinal output_set in 
-  Buffer.add_string buf (string_of_int number) ;
-  Buffer.add_char buf '\t';
-  String_set.iter (fun s -> Buffer.add_string buf s ; Buffer.add_char buf '\t') output_set ;
-  let buf_contents = Buffer.contents buf in 
-  output_binary_int oc (String.length buf_contents);
-  output_string oc buf_contents; 
-  Ml_binary.write_ast kind fname pt oc;
+  Ml_binary.write_ast Ml_binary.Ml fname
+    structures 
+    oc ;
   close_out oc 
-

@@ -26,9 +26,7 @@ type module_name = private string
 
 module String_set = Depend.StringSet
 
-type _ kind =
-  | Ml : Parsetree.structure kind
-  | Mli : Parsetree.signature kind
+type 'a kind = 'a Ml_binary.kind 
 
 let read_parse_and_extract (type t) (k : t kind) (ast : t) : String_set.t =
   Depend.free_structure_names := String_set.empty;
@@ -38,8 +36,8 @@ let read_parse_and_extract (type t) (k : t kind) (ast : t) : String_set.t =
        Depend.open_module bound_vars (Longident.Lident modname))
     (!Clflags.open_modules);
   (match k with
-   | Ml  -> Depend.add_implementation bound_vars ast
-   | Mli  -> Depend.add_signature bound_vars ast  ); 
+   | Ml_binary.Ml  -> Depend.add_implementation bound_vars ast
+   | Ml_binary.Mli  -> Depend.add_signature bound_vars ast  ); 
   !Depend.free_structure_names
 
 
