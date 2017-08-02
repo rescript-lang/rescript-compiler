@@ -39,6 +39,7 @@ type style
   = FG of color 
   | BG of color 
   | Bold
+  | Dim
 
 
 let ansi_of_color = function
@@ -71,6 +72,7 @@ let code_of_style = function
   | BG White -> "47"
 
   | Bold -> "1"
+  | Dim -> "2"
 
 
 
@@ -81,7 +83,7 @@ let style_of_tag s = match s with
   | "info" -> [Bold; FG Yellow]
   | _ -> []
 
-let ansi_of_tag s = 
+let ansi_of_tag ?(style_of_tag=style_of_tag) s = 
   let l = style_of_tag s in
   let s =  String.concat ";" (List.map code_of_style l) in
   "\x1b[" ^ s ^ "m"

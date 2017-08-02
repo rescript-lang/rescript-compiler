@@ -1,5 +1,6 @@
+let fprintf = Format.fprintf
 (* this is lifted https://github.com/ocaml/ocaml/blob/4.02/utils/warnings.ml *)
-(* modified branches are commented *)
+(* actual modified message branches are commented *)
 let message = Warnings.(function
   | Comment_start -> "this is the start of a comment."
   | Comment_not_end -> "this is not the end of a comment."
@@ -215,8 +216,7 @@ let number = Warnings.(function
   it (not sure what it's for, actually) *)
 let print ppf w =
   let msg = message w in
-  let num = number w in
-  Format.fprintf ppf "%d: %s" num msg;
+  Format.fprintf ppf "%s" msg;
   Format.pp_print_flush ppf ()
   (*if (!current).error.(num) then incr nerrors*)
 ;;

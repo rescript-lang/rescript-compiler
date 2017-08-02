@@ -22,8 +22,23 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type color 
+  = Black
+  | Red
+  | Green
+  | Yellow
+  | Blue
+  | Magenta
+  | Cyan
+  | White
+
+type style 
+  = FG of color 
+  | BG of color 
+  | Bold
+  | Dim
 
 (** Input is the tag for example `@{<warning>@}` return escape code *)
-val ansi_of_tag : string -> string 
+val ansi_of_tag : ?style_of_tag:(string -> style list) -> string -> string 
 
 val reset_lit : string
