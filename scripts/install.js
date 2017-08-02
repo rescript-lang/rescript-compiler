@@ -39,7 +39,7 @@ var ninja_build_dir = path.join(root_dir, 'vendor', 'ninja-build')
 function build_ninja() {
     console.log('No prebuilt Ninja, building Ninja now')
     var build_ninja_command = "./configure.py --bootstrap"
-    child_process.execSync(build_ninja_command, { cwd: ninja_source_dir })
+    child_process.execSync(build_ninja_command, { cwd: ninja_source_dir , stdio:[0,1,2]})
     fs.renameSync(path.join(ninja_source_dir, 'ninja'), ninja_bin_output)
     console.log('ninja binary is ready: ', ninja_bin_output)
 }
@@ -56,7 +56,7 @@ function test_ninja_compatible(binary_path) {
         console.log('ninja not compatible?', String(e))
         return false;
     }
-    return version === vendor_ninja_version;
+    return  version === vendor_ninja_version;
 };
 
 
