@@ -23,7 +23,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-val read_ast : 'a Ast_extract.kind -> string -> 'a 
+val read_ast : 'a Ml_binary.kind -> string -> 'a 
 
 
 
@@ -42,5 +42,5 @@ val read_ast : 'a Ast_extract.kind -> string -> 'a
    Use case cat - | fan -printer -impl -
    redirect the standard input to fan
  *)
-val write_ast : fname:string -> output:string -> 'a Ast_extract.kind -> 'a -> unit
+val write_ast : fname:string -> output:string -> 'a Ml_binary.kind -> 'a -> unit
 

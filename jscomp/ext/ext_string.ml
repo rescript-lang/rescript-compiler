@@ -352,6 +352,32 @@ let is_valid_npm_package_name (s : string) =
          | _ -> false )
   | _ -> false 
 
+let module_name_of_package_name (s : string) : string = 
+  let len = String.length s in 
+  let buf = Buffer.create len in 
+  let add capital ch = 
+    Buffer.add_char buf 
+      (if capital then 
+        (Char.uppercase ch)
+      else ch) in    
+  let rec aux capital off len =     
+      if off >= len then ()
+      else 
+        let ch = String.unsafe_get s off in
+        match ch with 
+        | 'a' .. 'z' 
+        | 'A' .. 'Z' 
+        | '0' .. '9'
+          ->
+          add capital ch ; 
+          aux false (off + 1) len 
+        | '-' -> 
+          aux true (off + 1) len 
+        | _ -> aux capital (off+1) len
+         in 
+   aux true 0 len ;
+   Buffer.contents buf 
+
 type check_result = 
   | Good 
   | Invalid_module_name 

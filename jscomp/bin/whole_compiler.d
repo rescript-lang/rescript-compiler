@@ -99,6 +99,7 @@ bin/whole_compiler.ml : syntax/ast_pat.mli
 bin/whole_compiler.ml : syntax/ast_util.ml
 bin/whole_compiler.ml : ../vendor/ocaml/utils/tbl.ml
 bin/whole_compiler.ml : common/js_config.ml
+bin/whole_compiler.ml : common/ml_binary.ml
 bin/whole_compiler.ml : core/config_util.ml
 bin/whole_compiler.ml : core/js_analyzer.ml
 bin/whole_compiler.ml : core/js_ast_util.ml
@@ -128,6 +129,7 @@ bin/whole_compiler.ml : ../vendor/ocaml/utils/misc.ml
 bin/whole_compiler.ml : ../vendor/ocaml/utils/tbl.mli
 bin/whole_compiler.ml : common/bs_version.ml
 bin/whole_compiler.ml : common/js_config.mli
+bin/whole_compiler.ml : common/ml_binary.mli
 bin/whole_compiler.ml : core/config_util.mli
 bin/whole_compiler.ml : core/js_analyzer.mli
 bin/whole_compiler.ml : core/js_ast_util.mli

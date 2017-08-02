@@ -1,5 +1,5 @@
 
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+(* Copyright (C) 2017- Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -23,43 +23,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-module String_set = Ast_extract.String_set
 
+ val make_structure : 
+  string ->
+  string list ->
+  Parsetree.structure
 
-
-
-
-
-let read_ast (type t ) (kind : t  Ml_binary.kind) fn : t  =
-  let ic = open_in_bin fn in
-  try
-    let dep_size = input_binary_int ic in 
-    seek_in  ic (pos_in ic + dep_size) ; 
-    let ast = Ml_binary.read_ast kind ic in 
-    close_in ic;
-    ast
-  with exn ->
-    close_in ic;
-    raise exn
-
-
-(*
-   Reasons that we don't [output_value] the set:
-   1. for performance , easy skipping and calcuate the length 
-   2. cut dependency, otherwise its type is {!Ast_extract.String_set.t}
-*)      
-let write_ast (type t) ~(fname : string) ~output (kind : t Ml_binary.kind) ( pt : t) : unit =
-  let oc = open_out_bin output in 
-
-  let output_set = Ast_extract.read_parse_and_extract kind pt in
-  let buf = Buffer.create 64 in
-  let number = String_set.cardinal output_set in 
-  Buffer.add_string buf (string_of_int number) ;
-  Buffer.add_char buf '\t';
-  String_set.iter (fun s -> Buffer.add_string buf s ; Buffer.add_char buf '\t') output_set ;
-  let buf_contents = Buffer.contents buf in 
-  output_binary_int oc (String.length buf_contents);
-  output_string oc buf_contents; 
-  Ml_binary.write_ast kind fname pt oc;
-  close_out oc 
-
+val make_signature : 
+  string -> 
+  string list ->
+  Parsetree.signature  

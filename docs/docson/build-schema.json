@@ -328,6 +328,10 @@
             "type": "string",
             "description": "Package name"
         },
+        "namespace" : {
+            "type" : "boolean",
+            "description": "(WIP)whether use namespace or not, the name of namespace is automatically converted from name"
+        },
         "sources": {
             "$ref": "#/definitions/sources",
             "description": "Source code location"

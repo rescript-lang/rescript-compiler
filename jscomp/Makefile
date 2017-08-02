@@ -222,7 +222,14 @@ EXT_SRCS = ext_util\
 
 EXT_CMXS=$(addprefix ext/, $(addsuffix .cmx, $(EXT_SRCS)))
 EXT_CMOS=$(addprefix ext/, $(addsuffix .cmo, $(EXT_SRCS)))
-COMMON_SRCS= bs_version js_config  ext_log bs_loc  bs_warnings  lam_methname  binary_cache
+COMMON_SRCS= bs_version \
+	js_config  \
+	ext_log \
+	bs_loc  \
+	bs_warnings  \
+	lam_methname  \
+	binary_cache \
+	ml_binary
 COMMON_CMXS= $(addprefix common/, $(addsuffix .cmx, $(COMMON_SRCS)))
 SYNTAX_SRCS= \
 	bs_syntaxerr\
@@ -304,6 +311,8 @@ BSB_SRCS= bsb_config\
 	bsb_ninja_global_vars\
 	bsb_build_util\
 	bsb_package_specs\
+	bsb_pkg_create\
+	bsb_pkg_map_gen\
 	bsb_helper_linker\
 	bsb_helper_extract\
 	bsb_rule\
@@ -362,7 +371,7 @@ super.cma:$(SUPER_ERRORS_CMOS)
 check: $(EXT_CMXS) $(COMMON_CMXS) $(SYNTAX_CMXS) $(DEPENDS_CMXS) $(CORE_CMXS) $(BSB_CMXS) $(OTHER_CORE_CMXS) $(MAIN_CMXS) $(SUPER_ERRORS_CMXS) $(OUNIT_CMXS) $(OUNIT_TESTS_CMXS)
 
 bin/bsb.exe: bs_hash.cmxa ext.cmxa common.cmxa  bsb.cmxa bsb/bsb_main.cmx
-	$(NATIVE) -g  unix.cmxa str.cmxa $^ -o $@
+	$(NATIVE) -I +compiler-libs -g  ocamlcommon.cmxa unix.cmxa str.cmxa $^ -o $@
 
 # bin/bsc:  ext.cmxa common.cmxa  depends.cmxa syntax.cmxa core.cmxa
 # 	$(NATIVE) -g -linkall -I +compiler-libs ocamlcommon.cmxa $^ -o $@
@@ -481,7 +490,7 @@ bin/bsb_helper.ml:./bin/bspack.exe
 	 $< -bs-MD -U BS_DEBUG   -I stubs -I common -I ext -I syntax -I depends -I bsb  -bs-main Bsb_helper_main -o $@
 
 bin/bsb.ml:./bin/bspack.exe
-	 $< -bs-MD -U BS_DEBUG -I stubs -I common -I ext -I syntax -I depends -I bsb -I ext  -bs-main Bsb_main -o $@
+	 $<  -D BS_MIN_LEX_DEPS=true -bs-MD -U BS_DEBUG -I $(OCAML_SRC_UTILS) -I $(OCAML_SRC_PARSING) -I stubs -I common -I ext -I syntax -I depends -I bsb -I ext  -bs-main Bsb_main -o $@
 
 bin/bspp.ml:./bin/bspack.exe
 	  $< -D BS_MIN_LEX_DEPS=true -U BS_DEBUG -bs-MD -module-alias Config=ConfigDummy   -I $(OCAML_SRC_UTILS) -I $(OCAML_SRC_PARSING)?parser  -I bin -I common -I ext -I syntax -I depends -I bspp -I core -bs-main Bspp_main -o $@

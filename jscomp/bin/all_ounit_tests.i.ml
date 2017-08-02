@@ -711,7 +711,7 @@ let assert_string str =
   (* 0 *) if not (str = "") then (* 0 *) assert_failure str
 
 let assert_equal ?(cmp = ( = )) ?printer ?pp_diff ?msg expected actual =
-  (* 2001548 *) let get_error_string () =
+  (* 2001551 *) let get_error_string () =
     (* 0 *) let res =
       buff_format_printf
         (fun fmt ->
@@ -1763,6 +1763,10 @@ val is_valid_source_name :
    ]}
 *)
 val is_valid_npm_package_name : string -> bool 
+
+val module_name_of_package_name : string -> string
+
+
 val no_char : string -> char -> int -> int -> bool 
 
 
@@ -2152,6 +2156,32 @@ let is_valid_npm_package_name (s : string) =
          |  'a'..'z' | '0'..'9' | '_' | '-' -> (* 15 *) true
          | _ -> (* 3 *) false )
   | _ -> (* 1 *) false 
+
+let module_name_of_package_name (s : string) : string = 
+  (* 3 *) let len = String.length s in 
+  let buf = Buffer.create len in 
+  let add capital ch = 
+    (* 23 *) Buffer.add_char buf 
+      (if capital then 
+        (* 5 *) (Char.uppercase ch)
+      else (* 18 *) ch) in    
+  let rec aux capital off len =     
+      (* 28 *) if off >= len then (* 3 *) ()
+      else 
+        (* 25 *) let ch = String.unsafe_get s off in
+        match ch with 
+        | 'a' .. 'z' 
+        | 'A' .. 'Z' 
+        | '0' .. '9'
+          ->
+          (* 23 *) add capital ch ; 
+          aux false (off + 1) len 
+        | '-' -> 
+          (* 2 *) aux true (off + 1) len 
+        | _ -> (* 0 *) aux capital (off+1) len
+         in 
+   aux true 0 len ;
+   Buffer.contents buf 
 
 type check_result = 
   | Good 
@@ -13874,6 +13904,19 @@ let suites =
            "0 a1 2 3 d  e"
         );        
   
+    end;
+
+    __LOC__ >:: begin fun _ ->
+      (* 1 *) Ext_string.module_name_of_package_name "bs-json"
+      =~ "BsJson"
+    end;
+    __LOC__ >:: begin fun _ ->
+      (* 1 *) Ext_string.module_name_of_package_name
+      "reason-react"
+      =~ "ReasonReact";
+      Ext_string.module_name_of_package_name
+      "reason"
+      =~ "Reason"
     end
   ]
 
