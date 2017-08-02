@@ -544,9 +544,9 @@ core/lam_beta_reduce.cmx : core/lam_util.cmx core/lam_stats.cmx \
 core/lam_compile_external_call.cmx : core/lam_compile_env.cmx \
     core/lam_compile_defs.cmx core/lam_compile_const.cmx \
     core/js_of_lam_variant.cmx core/js_of_lam_option.cmx core/js_exp_make.cmx \
-    core/js_arr.cmx core/js_analyzer.cmx core/j.cmx ext/ext_list.cmx \
-    ext/ext_ident.cmx syntax/ast_ffi_types.cmx syntax/ast_arg.cmx \
-    core/lam_compile_external_call.cmi
+    common/js_config.cmx core/js_arr.cmx core/js_analyzer.cmx core/j.cmx \
+    ext/ext_list.cmx ext/ext_ident.cmx syntax/ast_ffi_types.cmx \
+    syntax/ast_arg.cmx core/lam_compile_external_call.cmi
 core/lam_compile_external_obj.cmx : core/lam_compile_external_call.cmx \
     core/lam_compile_const.cmx core/js_stmt_make.cmx core/js_op.cmx \
     core/js_exp_make.cmx core/js_ast_util.cmx core/js_analyzer.cmx core/j.cmx \

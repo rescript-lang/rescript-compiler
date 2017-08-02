@@ -85,6 +85,7 @@ bs_qualified.cmj : ../runtime/js.cmj
 bs_rest_test.cmj :
 bs_splice_partial.cmj : ../runtime/js.cmj
 bs_string_test.cmj : mt.cmj ../runtime/js.cmj
+bs_unwrap_test.cmj : ../runtime/js.cmj
 buffer_test.cmj : ../stdlib/string.cmj mt.cmj ../stdlib/bytes.cmj \
     ../stdlib/buffer.cmj
 bytes_split_gpr_743_test.cmj : mt.cmj ../runtime/js.cmj ../stdlib/bytes.cmj
