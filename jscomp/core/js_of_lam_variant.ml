@@ -84,3 +84,10 @@ let eval_as_int (arg : J.expression) (dispatches : (int * int) list ) : E.t  =
                body = [S.return (E.int (Int32.of_int  r))],
                       false (* FIXME: if true, still print break*)
               }) dispatches))]
+
+let eval_as_unwrap (arg : J.expression) : E.t =
+  match arg.expression_desc with
+  | Caml_block ([{expression_desc = Number _}; cb], _, _, _) ->
+    cb
+  | _ ->
+    E.index (arg) 1l

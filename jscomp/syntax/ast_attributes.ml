@@ -156,7 +156,7 @@ let process_derive_type attrs =
 
 
 
-let process_bs_string_int_uncurry attrs = 
+let process_bs_string_int_unwrap_uncurry attrs =
   List.fold_left 
     (fun (st,attrs)
       (({txt ; loc}, (payload : _ ) ) as attr : attr)  ->
@@ -167,7 +167,8 @@ let process_bs_string_int_uncurry attrs =
         ->  `Int, attrs
       | "bs.ignore", (`Nothing | `Ignore)
         -> `Ignore, attrs
-      
+      | "bs.unwrap", (`Nothing | `Unwrap)
+        -> `Unwrap, attrs
       | "bs.uncurry", `Nothing
         ->
           `Uncurry (Ast_payload.is_single_int payload), attrs 
@@ -177,6 +178,7 @@ let process_bs_string_int_uncurry attrs =
       | "bs.int", _
       | "bs.string", _
       | "bs.ignore", _
+      | "bs.unwrap", _
         -> 
         Bs_syntaxerr.err loc Conflict_attributes
       | _ , _ -> st, (attr :: attrs )

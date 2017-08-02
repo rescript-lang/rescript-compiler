@@ -27,9 +27,12 @@
 
 
 
+type option_unwrap_time =
+  | Static_unwrapped
+  | Runtime_maybe_unwrapped
 
-val get_default_undefined : J.expression -> J.expression
+val get_default_undefined : ?map:(option_unwrap_time -> J.expression -> J.expression) -> J.expression -> J.expression
 
-val none : J.expression 
+val none : J.expression
 
 val some : J.expression -> J.expression

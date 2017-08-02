@@ -49,6 +49,7 @@ type ty =
   | Extern_unit
   | Nothing
   | Ignore
+  | Unwrap
 
 type kind = 
   {

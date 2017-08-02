@@ -79,12 +79,12 @@ let handle_external_opt
 *)
 let ocaml_to_js_eff 
     ({ Ast_arg.arg_label;  arg_type })
-    (arg : J.expression) 
+    (raw_arg : J.expression)
   : E.t list * E.t list  =
   let arg =
     match arg_label with
-    | Optional label -> Js_of_lam_option.get_default_undefined arg 
-    | Label (_, None) | Empty None -> arg 
+    | Optional label -> Js_of_lam_option.get_default_undefined raw_arg
+    | Label (_, None) | Empty None -> raw_arg
     | Label (_, Some _) 
     | Empty ( Some _)
       -> assert false in 
@@ -110,6 +110,32 @@ let ocaml_to_js_eff
     Js_of_lam_variant.eval_as_event arg dispatches,[]
   | Int dispatches -> 
     [Js_of_lam_variant.eval_as_int arg dispatches],[]
+  | Unwrap ->
+    let single_arg =
+      match arg_label with
+      | Optional label ->
+        (**
+           If this is an optional arg (like `?arg`), we have to potentially do
+           2 levels of unwrapping:
+           - if ocaml arg is `None`, let js arg be `undefined` (no unwrapping)
+           - if ocaml arg is `Some x`, unwrap the arg to get the `x`, then
+             unwrap the `x` itself
+        *)
+        Js_of_lam_option.get_default_undefined
+          ~map:(fun opt_unwrapping exp ->
+              match opt_unwrapping with
+              | Static_unwrapped ->
+                (* If we can unwrap the option statically, do `arg[1]` *)
+                E.index exp 1l
+              | Runtime_maybe_unwrapped ->
+                (* If we can't, do Js_primitive.option_get_unwrap(arg) *)
+                E.runtime_call Js_config.js_primitive "option_get_unwrap" [raw_arg]
+            )
+          raw_arg
+      | _ ->
+        Js_of_lam_variant.eval_as_unwrap raw_arg
+    in
+    [single_arg],[]
   | Nothing  | Array ->  [arg], []
 
 

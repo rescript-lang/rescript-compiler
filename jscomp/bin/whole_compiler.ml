@@ -26067,6 +26067,7 @@ type error
   | Invalid_underscore_type_in_external
   | Invalid_bs_string_type 
   | Invalid_bs_int_type 
+  | Invalid_bs_unwrap_type
   | Conflict_ffi_attribute of string
   | Not_supported_in_bs_deriving
   | Canot_infer_arity_by_syntax
@@ -26127,6 +26128,7 @@ type error
   | Invalid_underscore_type_in_external
   | Invalid_bs_string_type 
   | Invalid_bs_int_type 
+  | Invalid_bs_unwrap_type
   | Conflict_ffi_attribute of string
   | Not_supported_in_bs_deriving
   | Canot_infer_arity_by_syntax
@@ -26197,6 +26199,10 @@ let pp_error fmt err =
   | Invalid_bs_int_type 
     -> 
     "Not a valid  type for [@bs.int]"
+  | Invalid_bs_unwrap_type
+    ->
+    "Not a valid type for [@bs.unwrap]. Type must be an inline variant (closed), and\n\
+     each constructor must have an argument."
   | Conflict_ffi_attribute str
     ->
     "Conflicting FFI attributes found: " ^ str
@@ -60007,6 +60013,7 @@ type ty =
   | Extern_unit
   | Nothing
   | Ignore
+  | Unwrap
 
 type kind = 
   {
@@ -60077,6 +60084,7 @@ type ty =
   | Extern_unit
   | Nothing
   | Ignore
+  | Unwrap
 
 type kind = 
   {
@@ -92639,10 +92647,13 @@ module Js_of_lam_option : sig
 
 
 
+type option_unwrap_time =
+  | Static_unwrapped
+  | Runtime_maybe_unwrapped
 
-val get_default_undefined : J.expression -> J.expression
+val get_default_undefined : ?map:(option_unwrap_time -> J.expression -> J.expression) -> J.expression -> J.expression
 
-val none : J.expression 
+val none : J.expression
 
 val some : J.expression -> J.expression
 
@@ -92678,7 +92689,11 @@ end = struct
 
 
 module E = Js_exp_make 
- 
+
+type option_unwrap_time =
+  | Static_unwrapped
+  | Runtime_maybe_unwrapped
+
 (**
   Invrariant: 
   - optional encoding
@@ -92694,16 +92709,20 @@ module E = Js_exp_make
   {!Js_ast_util.named_expression} does not help 
    since we need an expression here, it might be a statement
 *)
-let get_default_undefined (arg : J.expression) : J.expression = 
-  match arg.expression_desc with 
+let get_default_undefined
+    ?(map=((fun _ x -> x) : option_unwrap_time -> J.expression -> J.expression))
+    (arg : J.expression)
+    : J.expression =
+  match arg.expression_desc with
   | Number _ -> E.undefined
-  | Array ([x],_) 
-  | Caml_block([x],_,_,_) -> x (* invariant: option encoding *)
-  | _ -> 
-    if Js_analyzer.is_simple_no_side_effect_expression arg then 
-      E.econd arg (E.index arg 0l) E.undefined
-    else E.runtime_call Js_config.js_primitive "option_get" [arg]
-  
+  | Array ([x],_)
+  | Caml_block([x],_,_,_) -> (map Static_unwrapped x) (* invariant: option encoding *)
+  | _ ->
+    if Js_analyzer.is_simple_no_side_effect_expression arg then
+      E.econd arg (map Static_unwrapped (E.index arg 0l)) E.undefined
+    else
+      map Runtime_maybe_unwrapped (E.runtime_call Js_config.js_primitive "option_get" [arg])
+
 (** Another way: 
     {[
       | Var _  ->
@@ -92756,6 +92775,7 @@ module Js_of_lam_variant : sig
 val eval : J.expression -> (int * string) list -> J.expression
 val eval_as_event : J.expression -> (int * string) list -> J.expression list 
 val eval_as_int : J.expression -> (int * int) list -> J.expression
+val eval_as_unwrap : J.expression -> J.expression
 
 end = struct
 #1 "js_of_lam_variant.ml"
@@ -92845,6 +92865,13 @@ let eval_as_int (arg : J.expression) (dispatches : (int * int) list ) : E.t  =
                body = [S.return (E.int (Int32.of_int  r))],
                       false (* FIXME: if true, still print break*)
               }) dispatches))]
+
+let eval_as_unwrap (arg : J.expression) : E.t =
+  match arg.expression_desc with
+  | Caml_block ([{expression_desc = Number _}; cb], _, _, _) ->
+    cb
+  | _ ->
+    E.index (arg) 1l
 
 end
 module Lam_compile_external_call : sig 
@@ -92984,12 +93011,12 @@ let handle_external_opt
 *)
 let ocaml_to_js_eff 
     ({ Ast_arg.arg_label;  arg_type })
-    (arg : J.expression) 
+    (raw_arg : J.expression)
   : E.t list * E.t list  =
   let arg =
     match arg_label with
-    | Optional label -> Js_of_lam_option.get_default_undefined arg 
-    | Label (_, None) | Empty None -> arg 
+    | Optional label -> Js_of_lam_option.get_default_undefined raw_arg
+    | Label (_, None) | Empty None -> raw_arg
     | Label (_, Some _) 
     | Empty ( Some _)
       -> assert false in 
@@ -93015,6 +93042,32 @@ let ocaml_to_js_eff
     Js_of_lam_variant.eval_as_event arg dispatches,[]
   | Int dispatches -> 
     [Js_of_lam_variant.eval_as_int arg dispatches],[]
+  | Unwrap ->
+    let single_arg =
+      match arg_label with
+      | Optional label ->
+        (**
+           If this is an optional arg (like `?arg`), we have to potentially do
+           2 levels of unwrapping:
+           - if ocaml arg is `None`, let js arg be `undefined` (no unwrapping)
+           - if ocaml arg is `Some x`, unwrap the arg to get the `x`, then
+             unwrap the `x` itself
+        *)
+        Js_of_lam_option.get_default_undefined
+          ~map:(fun opt_unwrapping exp ->
+              match opt_unwrapping with
+              | Static_unwrapped ->
+                (* If we can unwrap the option statically, do `arg[1]` *)
+                E.index exp 1l
+              | Runtime_maybe_unwrapped ->
+                (* If we can't, do Js_primitive.option_get_unwrap(arg) *)
+                E.runtime_call Js_config.js_primitive "option_get_unwrap" [raw_arg]
+            )
+          raw_arg
+      | _ ->
+        Js_of_lam_variant.eval_as_unwrap raw_arg
+    in
+    [single_arg],[]
   | Nothing  | Array ->  [arg], []
 
 
@@ -102020,8 +102073,8 @@ type derive_attr = {
   explict_nonrec : bool;
   bs_deriving : [`Has_deriving of Ast_payload.action list | `Nothing ]
 }
-val process_bs_string_int_uncurry : 
-  t -> [`Nothing | `String | `Int | `Ignore | `Uncurry of int option ]  * t 
+val process_bs_string_int_unwrap_uncurry :
+  t -> [`Nothing | `String | `Int | `Ignore | `Unwrap | `Uncurry of int option ]  * t
 
 val process_bs_string_as :
   t -> string option * t 
@@ -102208,7 +102261,7 @@ let process_derive_type attrs =
 
 
 
-let process_bs_string_int_uncurry attrs = 
+let process_bs_string_int_unwrap_uncurry attrs =
   List.fold_left 
     (fun (st,attrs)
       (({txt ; loc}, (payload : _ ) ) as attr : attr)  ->
@@ -102219,7 +102272,8 @@ let process_bs_string_int_uncurry attrs =
         ->  `Int, attrs
       | "bs.ignore", (`Nothing | `Ignore)
         -> `Ignore, attrs
-      
+      | "bs.unwrap", (`Nothing | `Unwrap)
+        -> `Unwrap, attrs
       | "bs.uncurry", `Nothing
         ->
           `Uncurry (Ast_payload.is_single_int payload), attrs 
@@ -102229,6 +102283,7 @@ let process_bs_string_int_uncurry attrs =
       | "bs.int", _
       | "bs.string", _
       | "bs.ignore", _
+      | "bs.unwrap", _
         -> 
         Bs_syntaxerr.err loc Conflict_attributes
       | _ , _ -> st, (attr :: attrs )
@@ -103312,6 +103367,28 @@ end = struct
 
 
 
+let variant_can_bs_unwrap_fields row_fields =
+  let validity = (List.fold_left
+     begin fun st row ->
+       match st, row with
+       | (* we've seen no fields or only valid fields so far *)
+         (`No_fields | `Valid_fields),
+         (* and this field has one constructor arg that we can unwrap to *)
+         Parsetree.Rtag (label, attrs, false, ([ _ ]))
+         ->
+         `Valid_fields
+       | (* otherwise, this field or a previous field was invalid *)
+         _ ->
+         `Invalid_field
+     end
+     `No_fields
+     row_fields
+  )
+  in
+  match validity with
+  | `Valid_fields -> true
+  | `No_fields
+  | `Invalid_field -> false
 
 (** Given the type of argument, process its [bs.] attribute and new type,
     The new type is currently used to reconstruct the external type 
@@ -103347,7 +103424,7 @@ let get_arg_type ~nolabel optional
 
     end 
   else (* ([`a|`b] [@bs.string]) *)
-    match Ast_attributes.process_bs_string_int_uncurry ptyp.ptyp_attributes, ptyp.ptyp_desc with 
+    match Ast_attributes.process_bs_string_int_unwrap_uncurry ptyp.ptyp_attributes, ptyp.ptyp_desc with
     | (`String, ptyp_attributes),  Ptyp_variant ( row_fields, Closed, None)
       -> 
       let case, result, row_fields  = 
@@ -103413,8 +103490,13 @@ let get_arg_type ~nolabel optional
        ptyp_desc = Ptyp_variant(List.rev rev_row_fields, Closed, None );
        ptyp_attributes
       }
-
     | (`Int, _), _ -> Bs_syntaxerr.err ptyp.ptyp_loc Invalid_bs_int_type
+    | (`Unwrap, ptyp_attributes), (Ptyp_variant (row_fields, Closed, _) as ptyp_desc)
+      when variant_can_bs_unwrap_fields row_fields
+      ->
+      Unwrap, {ptyp with ptyp_desc; ptyp_attributes}
+    | (`Unwrap, _), _ ->
+      Bs_syntaxerr.err ptyp.ptyp_loc Invalid_bs_unwrap_type
     | (`Uncurry opt_arity, ptyp_attributes), ptyp_desc -> 
       let real_arity =  Ast_core_type.get_uncurry_arity ptyp in 
       (begin match opt_arity, real_arity with 
@@ -103779,6 +103861,9 @@ let handle_attributes
                        ->  
                        Location.raise_errorf ~loc 
                          "bs.obj label %s does not support such arg type" name
+                     | Unwrap ->
+                       Location.raise_errorf ~loc
+                         "bs.obj label %s does not support [@bs.unwrap] arguments" name
                    end
                  | Optional name -> 
                    let arg_type, new_ty_extract = get_arg_type ~nolabel:false true ty in 
@@ -103814,6 +103899,9 @@ let handle_attributes
                        ->  
                        Location.raise_errorf ~loc
                          "bs.obj label %s does not support such arg type" name                        
+                     | Unwrap ->
+                       Location.raise_errorf ~loc
+                         "bs.obj label %s does not support [@bs.unwrap] arguments" name
                    end
                in     
                (
