@@ -20785,6 +20785,10 @@ val is_valid_source_name :
    ]}
 *)
 val is_valid_npm_package_name : string -> bool 
+
+val module_name_of_package_name : string -> string
+
+
 val no_char : string -> char -> int -> int -> bool 
 
 
@@ -21174,6 +21178,32 @@ let is_valid_npm_package_name (s : string) =
          |  'a'..'z' | '0'..'9' | '_' | '-' -> true
          | _ -> false )
   | _ -> false 
+
+let module_name_of_package_name (s : string) : string = 
+  let len = String.length s in 
+  let buf = Buffer.create len in 
+  let add capital ch = 
+    Buffer.add_char buf 
+      (if capital then 
+        (Char.uppercase ch)
+      else ch) in    
+  let rec aux capital off len =     
+      if off >= len then ()
+      else 
+        let ch = String.unsafe_get s off in
+        match ch with 
+        | 'a' .. 'z' 
+        | 'A' .. 'Z' 
+        | '0' .. '9'
+          ->
+          add capital ch ; 
+          aux false (off + 1) len 
+        | '-' -> 
+          aux true (off + 1) len 
+        | _ -> aux capital (off+1) len
+         in 
+   aux true 0 len ;
+   Buffer.contents buf 
 
 type check_result = 
   | Good 
@@ -24036,6 +24066,97 @@ let nth_opt l n =
     | a::l -> if n = 0 then Some a else nth_aux l (n-1)
   in nth_aux l n
 end
+module Ml_binary : sig 
+#1 "ml_binary.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+type _ kind = 
+  | Ml : Parsetree.structure kind 
+  | Mli : Parsetree.signature kind
+
+
+val read_ast : 'a kind -> in_channel -> 'a 
+
+val write_ast :
+   'a kind -> string -> 'a -> out_channel -> unit
+end = struct
+#1 "ml_binary.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type _ kind = 
+  | Ml : Parsetree.structure kind 
+  | Mli : Parsetree.signature kind
+
+(** [read_ast kind ic] assume [ic] channel is 
+    in the right position *)
+let read_ast (type t ) (kind : t  kind) ic : t  =
+  let magic =
+    match kind with 
+    | Ml -> Config.ast_impl_magic_number
+    | Mli -> Config.ast_intf_magic_number in 
+  let buffer = really_input_string ic (String.length magic) in
+  assert(buffer = magic); (* already checked by apply_rewriter *)
+  Location.input_name := input_value ic;
+  input_value ic 
+
+let write_ast (type t) (kind : t kind) 
+    (fname : string)
+    (pt : t) oc = 
+  let magic = 
+    match kind with 
+    | Ml -> Config.ast_impl_magic_number
+    | Mli -> Config.ast_intf_magic_number in
+  output_string oc magic ;
+  output_value oc fname;
+  output_value oc pt
+end
 module Bs_hash_stubs
 = struct
 #1 "bs_hash_stubs.ml"
@@ -25131,10 +25252,6 @@ module Ast_extract : sig
 
 
 
-type _ kind =
-  | Ml : Parsetree.structure kind
-  | Mli : Parsetree.signature kind
-
 
 
 
@@ -25142,7 +25259,7 @@ type _ kind =
 
 module String_set = Depend.StringSet
 
-val read_parse_and_extract : 'a kind -> 'a -> String_set.t
+val read_parse_and_extract : 'a Ml_binary.kind -> 'a -> String_set.t
 
 type ('a,'b) t 
 
@@ -25244,9 +25361,7 @@ type module_name = private string
 
 module String_set = Depend.StringSet
 
-type _ kind =
-  | Ml : Parsetree.structure kind
-  | Mli : Parsetree.signature kind
+type 'a kind = 'a Ml_binary.kind 
 
 let read_parse_and_extract (type t) (k : t kind) (ast : t) : String_set.t =
   Depend.free_structure_names := String_set.empty;
@@ -25256,8 +25371,8 @@ let read_parse_and_extract (type t) (k : t kind) (ast : t) : String_set.t =
        Depend.open_module bound_vars (Longident.Lident modname))
     (!Clflags.open_modules);
   (match k with
-   | Ml  -> Depend.add_implementation bound_vars ast
-   | Mli  -> Depend.add_signature bound_vars ast  ); 
+   | Ml_binary.Ml  -> Depend.add_implementation bound_vars ast
+   | Ml_binary.Mli  -> Depend.add_signature bound_vars ast  ); 
   !Depend.free_structure_names
 
 
@@ -25584,7 +25699,7 @@ module Binary_ast : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-val read_ast : 'a Ast_extract.kind -> string -> 'a 
+val read_ast : 'a Ml_binary.kind -> string -> 'a 
 
 
 
@@ -25603,7 +25718,7 @@ val read_ast : 'a Ast_extract.kind -> string -> 'a
    Use case cat - | fan -printer -impl -
    redirect the standard input to fan
  *)
-val write_ast : fname:string -> output:string -> 'a Ast_extract.kind -> 'a -> unit
+val write_ast : fname:string -> output:string -> 'a Ml_binary.kind -> 'a -> unit
 
 
 end = struct
@@ -25640,19 +25755,12 @@ module String_set = Ast_extract.String_set
 
 
 
-let read_ast (type t ) (kind : t  Ast_extract.kind) fn : t  =
-  let magic =
-    match kind with 
-    | Ast_extract.Ml -> Config.ast_impl_magic_number
-    | Ast_extract.Mli -> Config.ast_intf_magic_number in 
+let read_ast (type t ) (kind : t  Ml_binary.kind) fn : t  =
   let ic = open_in_bin fn in
   try
     let dep_size = input_binary_int ic in 
     seek_in  ic (pos_in ic + dep_size) ; 
-    let buffer = really_input_string ic (String.length magic) in
-    assert(buffer = magic); (* already checked by apply_rewriter *)
-    Location.input_name := input_value ic;
-    let ast = input_value ic in
+    let ast = Ml_binary.read_ast kind ic in 
     close_in ic;
     ast
   with exn ->
@@ -25665,11 +25773,7 @@ let read_ast (type t ) (kind : t  Ast_extract.kind) fn : t  =
    1. for performance , easy skipping and calcuate the length 
    2. cut dependency, otherwise its type is {!Ast_extract.String_set.t}
 *)      
-let write_ast (type t) ~(fname : string) ~output (kind : t Ast_extract.kind) ( pt : t) : unit =
-  let magic = 
-    match kind with 
-    | Ast_extract.Ml -> Config.ast_impl_magic_number
-    | Ast_extract.Mli -> Config.ast_intf_magic_number in
+let write_ast (type t) ~(fname : string) ~output (kind : t Ml_binary.kind) ( pt : t) : unit =
   let oc = open_out_bin output in 
 
   let output_set = Ast_extract.read_parse_and_extract kind pt in
@@ -25681,10 +25785,7 @@ let write_ast (type t) ~(fname : string) ~output (kind : t Ast_extract.kind) ( p
   let buf_contents = Buffer.contents buf in 
   output_binary_int oc (String.length buf_contents);
   output_string oc buf_contents; 
-
-  output_string oc magic ;
-  output_value oc fname;
-  output_value oc pt;
+  Ml_binary.write_ast kind fname pt oc;
   close_out oc 
 
 

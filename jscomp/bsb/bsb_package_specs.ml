@@ -95,7 +95,7 @@ and from_json_single (x : Ext_json_types.t) : spec =
     begin match String_map.find_exn "module" map with
       | Str {str = format} ->
         let in_source = 
-          match String_map.find_opt "in-source" map with
+          match String_map.find_opt Bsb_build_schemas.in_source map with
           | Some (True _) -> true
           | Some _
           | None -> false
