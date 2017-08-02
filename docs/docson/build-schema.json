@@ -20,7 +20,7 @@
                 },
                 "in-source": {
                     "type": "boolean",
-                    "description": "Default: true if package-specs is present, false otherwise."
+                    "description": "Default: false."
                 }
             },
             "required": [
