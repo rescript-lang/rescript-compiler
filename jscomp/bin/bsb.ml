@@ -5697,16 +5697,10 @@ type command =
   }  
 
 
-(** run commands  in parallel, 
-    TODO: error handling
-*)
-(* val run_commands : command list -> unit  *)
+
 
 val run_command_execv :   command -> unit 
 
-(* val run_command_execvp : command -> unit *)
-
-(* val remove_dirs_recursive : string ->  string array -> unit *)
 
 val remove_dir_recursive : string -> unit 
 end = struct
@@ -5849,9 +5843,9 @@ module Bsb_clean : sig
 
 
 
-val clean_bs_deps : string -> unit 
+val clean_bs_deps : string -> string -> unit 
 
-val clean_self : string -> unit 
+val clean_self : string -> string -> unit 
 end = struct
 #1 "bsb_clean.ml"
 (* Copyright (C) 2017 Authors of BuckleScript
@@ -5881,26 +5875,37 @@ end = struct
 
 let (//) = Ext_filename.combine
 
-let clean_bs_garbage cwd =
-  Format.fprintf Format.std_formatter "@{<info>Cleaning:@} in %s@." cwd ; 
+
+let ninja_clean bsc_dir proj_dir = 
+  try 
+    let cmd = bsc_dir // "ninja.exe" in 
+    let cwd =  proj_dir // Bsb_config.lib_bs in 
+    if Sys.file_exists cwd then 
+      Bsb_unix.run_command_execv { cmd ; args = [|cmd; "-t"; "clean"|] ; cwd  };
+  with  e -> 
+    Format.fprintf Format.err_formatter "@{<info>ninja clean failed : %s @." (Printexc.to_string e)
+
+let clean_bs_garbage bsc_dir proj_dir =
+  Format.fprintf Format.std_formatter "@{<info>Cleaning:@} in %s@." proj_dir ; 
   let aux x =
-    let x = (cwd // x)  in
+    let x = (proj_dir // x)  in
     if Sys.file_exists x then
       Bsb_unix.remove_dir_recursive x  in
-  try
-    List.iter aux Bsb_config.all_lib_artifacts
+  try  
+    ninja_clean bsc_dir proj_dir ; 
+    List.iter aux Bsb_config.all_lib_artifacts;    
   with
     e ->
     Format.fprintf Format.err_formatter "@{<warning>Failed@} to clean due to %s" (Printexc.to_string e)
 
 
-let clean_bs_deps cwd =
-  Bsb_build_util.walk_all_deps  cwd  (fun { cwd} ->
+let clean_bs_deps bsc_dir proj_dir =
+  Bsb_build_util.walk_all_deps  proj_dir  (fun { cwd} ->
       (* whether top or not always do the cleaning *)
-      clean_bs_garbage cwd
+      clean_bs_garbage bsc_dir cwd
     )
 
-let clean_self cwd = clean_bs_garbage cwd
+let clean_self bsc_dir proj_dir = clean_bs_garbage bsc_dir proj_dir
 end
 module Bsb_regex : sig 
 #1 "bsb_regex.mli"
@@ -12328,7 +12333,7 @@ let regenerate_ninja
     | Other _ -> 
       if check_result = Bsb_bsc_version_mismatch then begin 
         print_endline "Also clean current repo due to we have detected a different compiler";
-        Bsb_clean.clean_self cwd; 
+        Bsb_clean.clean_self bsc_dir cwd; 
       end ; 
       Bsb_build_util.mkp (cwd // Bsb_config.lib_bs); 
       let config = 
@@ -12721,9 +12726,11 @@ let bsb_main_flags : (string * Arg.spec * string) list=
     regen, Arg.Set force_regenerate,
     " (internal) Always regenerate build.ninja no matter bsconfig.json is changed or not (for debugging purpose)"
     ;
-    "-clean-world", Arg.Unit (fun _ -> Bsb_clean.clean_bs_deps cwd),
+    "-clean-world", Arg.Unit (fun _ -> 
+      Bsb_clean.clean_bs_deps bsc_dir cwd),
     " Clean all bs dependencies";
-    "-clean", Arg.Unit (fun _ -> Bsb_clean.clean_self cwd),
+    "-clean", Arg.Unit (fun _ -> 
+      Bsb_clean.clean_self bsc_dir cwd),
     " Clean only current project";
     "-make-world", Arg.Unit set_make_world,
     " Build all dependencies and itself ";
