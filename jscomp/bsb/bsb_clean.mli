@@ -24,6 +24,6 @@
 
 
 
-val clean_bs_deps : string -> unit 
+val clean_bs_deps : string -> string -> unit 
 
-val clean_self : string -> unit 
+val clean_self : string -> string -> unit 

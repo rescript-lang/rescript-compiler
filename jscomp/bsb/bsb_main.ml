@@ -53,9 +53,11 @@ let bsb_main_flags : (string * Arg.spec * string) list=
     regen, Arg.Set force_regenerate,
     " (internal) Always regenerate build.ninja no matter bsconfig.json is changed or not (for debugging purpose)"
     ;
-    "-clean-world", Arg.Unit (fun _ -> Bsb_clean.clean_bs_deps cwd),
+    "-clean-world", Arg.Unit (fun _ -> 
+      Bsb_clean.clean_bs_deps bsc_dir cwd),
     " Clean all bs dependencies";
-    "-clean", Arg.Unit (fun _ -> Bsb_clean.clean_self cwd),
+    "-clean", Arg.Unit (fun _ -> 
+      Bsb_clean.clean_self bsc_dir cwd),
     " Clean only current project";
     "-make-world", Arg.Unit set_make_world,
     " Build all dependencies and itself ";
