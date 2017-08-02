@@ -33,13 +33,14 @@ var build_util = require('./build_util')
 var vendor_ninja_version = '1.7.2'
 
 var ninja_bin_output = path.join(root_dir, 'bin', 'ninja.exe')
-var ninja_vendor_dir = path.join(root_dir, 'vendor', 'ninja-build')
+var ninja_source_dir = path.join(root_dir,'vendor','ninja')
+var ninja_build_dir = path.join(root_dir, 'vendor', 'ninja-build')
 
 function build_ninja() {
     console.log('No prebuilt Ninja, building Ninja now')
-    var build_ninja_command = "tar -xf  ninja-1.7.2.tar.gz  && cd  ninja-1.7.2  && ./configure.py --bootstrap "
-    child_process.execSync(build_ninja_command, { cwd: ninja_vendor_dir })
-    fs.renameSync(path.join(ninja_vendor_dir, 'ninja-1.7.2', 'ninja'), ninja_bin_output)
+    var build_ninja_command = "./configure.py --bootstrap"
+    child_process.execSync(build_ninja_command, { cwd: ninja_source_dir , stdio:[0,1,2]})
+    fs.renameSync(path.join(ninja_source_dir, 'ninja'), ninja_bin_output)
     console.log('ninja binary is ready: ', ninja_bin_output)
 }
 
@@ -55,17 +56,17 @@ function test_ninja_compatible(binary_path) {
         console.log('ninja not compatible?', String(e))
         return false;
     }
-    return version === vendor_ninja_version;
+    return  version === vendor_ninja_version;
 };
 
 
 var ninja_os_path
 if (is_windows) {
-    ninja_os_path = path.join(ninja_vendor_dir, 'ninja.win')
+    ninja_os_path = path.join(ninja_build_dir, 'ninja.win')
 } else if (os_type === 'Darwin') {
-    ninja_os_path = path.join(ninja_vendor_dir, 'ninja.darwin')
+    ninja_os_path = path.join(ninja_build_dir, 'ninja.darwin')
 } else if (os_type === 'Linux') {
-    ninja_os_path = path.join(ninja_vendor_dir, 'ninja.linux64')
+    ninja_os_path = path.join(ninja_build_dir, 'ninja.linux64')
 }
 if (fs.existsSync(ninja_bin_output) && test_ninja_compatible(ninja_bin_output)) {
     console.log("ninja binary is already cached: ", ninja_bin_output)
