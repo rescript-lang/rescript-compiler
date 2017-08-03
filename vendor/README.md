@@ -11,7 +11,8 @@ git remote add ocaml https://github.com/bucklescript/ocaml/
 
 Add it:
 
-git subtree add --prefix vendor/ocaml ocaml master
+git subtree add --prefix vendor/ocaml ocaml master --squash
+git subtree add --prefix vendor/ninja ninja v1.7.2 --squash
 
 git subtree pull --prefix vendor/ocaml ocaml master
 
