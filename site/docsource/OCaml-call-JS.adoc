@@ -1126,7 +1126,7 @@ are treated as properties.
 So the type `rect` is the same as below:
 [source,ocaml]
 --------------
-type rect = < height : int ; wdith : int ; draw : unit -> unit [@bs.meth] > Js.t
+type rect = < height : int ; width : int ; draw : unit -> unit [@bs.meth] > Js.t
 --------------
 
 
