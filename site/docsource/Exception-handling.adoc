@@ -1,6 +1,6 @@
 ## Exception handling between OCaml and JS (@since 1.7.0)
 
-In Js world, exception could be any data, while OCaml exception is structured data format and supports pattern match, catch OCaml exception on JS side is no-op.
+In JS world, exception could be any data, while OCaml exception is structured data format and supports pattern match, catch OCaml exception on JS side is no-op.
 
 ### Catch JS exception
 
@@ -50,7 +50,7 @@ val typeError : string -> 'a
 val uriError : string -> 'a
 --------------
 
-Please consult module `Js.Error` for more details
+Please consult module https://bucklescript.github.io/bucklescript/api/Js.Exn.html[`Js.Exn`] for more details
 
 
 ## `bs.open`: Type safe external data-source handling (@@since 1.7.0)
@@ -61,7 +61,7 @@ For example, for an external promise whose creation could come from JS API, its 
 BuckleScript provides a solution to filter out OCaml structured exception data from the mixed data source,
 it preserves the type safety while allow users to deal with mixed source.
 
-It makes use of OCaml's extensible variant, so that users can pack mix value of type `exn` with JS data-source
+It makes use of OCaml's extensible variant, so that users can mix values of type `exn` with JS data-source
 
 .Example
 [source,ocaml]
@@ -73,7 +73,7 @@ let handleData = function [@bs.open]
 
 val handleData : 'a -> int option // <1>
 --------------
-<1> For any input source, as long as it matches the exception pattern (nested pattern match supported), the matched value is returned, otherwise return None.
+<1> For any input source, as long as it matches the exception pattern (nested pattern match supported), the matched value is returned, otherwise return `None`.
 
 
 ### Use cases
@@ -82,14 +82,14 @@ Take promise for example:
 
 [source,ocaml]
 --------------
-let v = Promise.reject Not_found
-let handlePromiseFaiure = function [@bs.open]
-   | Not_found -> Js.log "Not found"; (Promise.resolve ())
+let v = Js.Promise.reject Not_found
+let handlePromiseFailure = function [@bs.open]
+   | Not_found -> Js.log "Not found"; (Js.Promise.resolve ())
 
 let () =
    v
-   |> Promise.catch (fun error ->
-        match handlePromiseFaiure error with
+   |> Js.Promise.catch (fun error ->
+        match handlePromiseFailure error with
         | Some x -> x
         | None -> raise UnhandledPromise
     )
