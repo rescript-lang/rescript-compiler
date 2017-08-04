@@ -51,28 +51,28 @@ let dir_of_module_info (x : module_info)
   match x with 
   | { mli; ml;  } -> 
     begin match mli with 
-    | Mli_source s | Rei_source s -> 
-      Filename.dirname s 
-    | Mli_empty -> 
-      begin match ml with 
-      | Ml_source s | Re_source s -> 
+      | Mli_source s | Rei_source s -> 
         Filename.dirname s 
-      | Ml_empty -> Ext_string.empty
-      end
+      | Mli_empty -> 
+        begin match ml with 
+          | Ml_source s | Re_source s -> 
+            Filename.dirname s 
+          | Ml_empty -> Ext_string.empty
+        end
     end
 
 let filename_sans_suffix_of_module_info (x : module_info) =
   match x with 
   | { mli; ml;  } -> 
     begin match mli with 
-    | Mli_source s | Rei_source s -> 
-      (* Ext_filename.chop_extension *) s 
-    | Mli_empty -> 
-      begin match ml with 
-      | Ml_source s | Re_source s -> 
+      | Mli_source s | Rei_source s -> 
         (* Ext_filename.chop_extension *) s 
-      | Ml_empty -> assert false
-      end
+      | Mli_empty -> 
+        begin match ml with 
+          | Ml_source s | Re_source s -> 
+            (* Ext_filename.chop_extension *) s 
+          | Ml_empty -> assert false
+        end
     end
 
 let bsbuild_cache = ".bsbuild"    
@@ -96,23 +96,33 @@ let read_build_cache ~dir  : t array =
 
 let empty_module_info = {mli = Mli_empty ;  ml = Ml_empty}
 
-(** TODO: check adjust_module_info whether it is reliable *)
-let adjust_module_info x suffix name =
+
+let adjust_module_info x suffix name_sans_extension =
   match suffix with 
-  | ".ml" -> {x with ml = Ml_source (Ext_filename.chop_extension name)}
-  | ".re" -> {x with ml = Re_source (Ext_filename.chop_extension name)}
-  | ".mli" ->  {x with mli = Mli_source (Ext_filename.chop_extension name) }
-  | ".rei" -> { x with mli = Rei_source (Ext_filename.chop_extension name) }
-  | _ -> failwith ("don't know what to do with " ^ name)
+  | ".ml" -> {x with ml = Ml_source  name_sans_extension}
+  | ".re" -> {x with ml = Re_source  name_sans_extension}
+  | ".mli" ->  {x with mli = Mli_source name_sans_extension }
+  | ".rei" -> { x with mli = Rei_source name_sans_extension }
+  | _ -> 
+    Ext_pervasives.failwithf ~loc:__LOC__ 
+      "don't know what to do with %s%s" 
+       name_sans_extension suffix
 
 let map_update ~dir (map : t)  
-  name : t  = 
-  let prefix   = 
-     Ext_filename.combine dir  in
-  let module_name = Ext_filename.module_name_of_file_if_any name in 
-  let suffix = Ext_filename.get_extension name in 
+    file_name : t  = 
+  
+  let module_name = Ext_filename.module_name_of_file_if_any file_name in 
+  let suffix = Ext_filename.get_extension file_name in 
+  let file_name_sans_extension = 
+      Ext_filename.chop_extension (Filename.concat dir file_name) in 
   String_map.adjust 
     module_name 
-    (fun _ -> (adjust_module_info empty_module_info suffix (prefix name )))
-    (fun v -> (adjust_module_info v suffix (prefix name )))
+    (fun _ -> 
+       adjust_module_info 
+         empty_module_info 
+         suffix 
+         file_name_sans_extension )
+    (fun v -> 
+       adjust_module_info v suffix file_name_sans_extension
+    )
     map

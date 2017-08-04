@@ -725,7 +725,7 @@ ounit_tests/ounit_tests_main.cmx : ext/resize_array.cmx \
     ounit/oUnit.cmx ounit_tests/ounit_tests_main.cmi
 bsb/bsb_bsdeps.cmx : common/bs_version.cmx bsb/bsb_bsdeps.cmi
 bsb/bsb_build_cache.cmx : ext/string_map.cmx ext/ext_string.cmx \
-    ext/ext_filename.cmx bsb/bsb_build_cache.cmi
+    ext/ext_pervasives.cmx ext/ext_filename.cmx bsb/bsb_build_cache.cmi
 bsb/bsb_build_schemas.cmx :
 bsb/bsb_build_util.cmx : ext/string_map.cmx ext/string_hashtbl.cmx \
     ext/literals.cmx ext/ext_sys.cmx ext/ext_string.cmx ext/ext_list.cmx \
