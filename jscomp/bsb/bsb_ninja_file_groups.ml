@@ -99,7 +99,7 @@ let handle_module_info
     (package_specs : Bsb_package_specs.t) 
     js_post_build_cmd
     oc  module_name 
-    ( module_info : Binary_cache.module_info)
+    ( module_info : Bsb_build_cache.module_info)
     info  =
   let emit_build (kind : file_kind)  file_input : info =
 
@@ -223,7 +223,7 @@ let handle_file_group oc ~custom_rules
         | Export_none -> false
         | Export_set set ->  String_set.mem module_name set in
       if installable then 
-        String_hash_set.add files_to_install (Binary_cache.basename_of_module_info module_info);
+        String_hash_set.add files_to_install (Bsb_build_cache.basename_of_module_info module_info);
       handle_module_info group 
         package_specs js_post_build_cmd 
         oc module_name module_info acc

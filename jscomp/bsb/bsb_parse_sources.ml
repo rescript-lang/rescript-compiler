@@ -39,7 +39,7 @@ type build_generator =
 
 type  file_group = 
   { dir : string ;
-    sources : Binary_cache.t; 
+    sources : Bsb_build_cache.t; 
     resources : string list ;
     public : public ;
     dir_index : Bsb_dir_index.t  ;
@@ -87,7 +87,7 @@ let  handle_list_files acc
     Array.fold_left (fun acc name -> 
         match Ext_string.is_valid_source_name name with 
         | Good ->   begin 
-            let new_acc = Binary_cache.map_update ~dir acc name  in 
+            let new_acc = Bsb_build_cache.map_update ~dir acc name  in 
             String_vec.push name dyn_file_array ;
             new_acc 
           end 
@@ -187,7 +187,7 @@ and parsing_source_dir_map
     (x : Ext_json_types.t String_map.t)
     (* { dir : xx, files : ... } [dir] is already extracted *)
   = 
-  let cur_sources : Binary_cache.module_info String_map.t ref = ref String_map.empty in
+  let cur_sources : Bsb_build_cache.module_info String_map.t ref = ref String_map.empty in
   let resources = ref [] in 
   let public = ref Export_all in (* TODO: move to {!Bsb_default} later*)
   let cur_update_queue = ref [] in 
@@ -214,7 +214,7 @@ and parsing_source_dir_map
            output |> List.iter begin fun  output -> 
              begin match Ext_string.is_valid_source_name output with
                | Good ->
-                 cur_sources := Binary_cache.map_update ~dir !cur_sources output
+                 cur_sources := Bsb_build_cache.map_update ~dir !cur_sources output
                | Invalid_module_name ->
                  ()
                (*Format.fprintf Format.err_formatter warning_unused_file output dir *)
@@ -240,7 +240,7 @@ and parsing_source_dir_map
         Array.fold_left (fun acc (s : Ext_json_types.t) ->
             match s with 
             | Str {str = s} -> 
-              Binary_cache.map_update ~dir acc s
+              Bsb_build_cache.map_update ~dir acc s
             | _ -> acc
           ) !cur_sources s    
     | Some (Obj {map = m; loc} ) -> (* { excludes : [], slow_re : "" }*)
@@ -263,7 +263,7 @@ and parsing_source_dir_map
       let file_array = readdir cxt.root dir in 
       cur_sources := Array.fold_left (fun acc name -> 
           if predicate name then 
-            Binary_cache.map_update  ~dir acc name 
+            Bsb_build_cache.map_update  ~dir acc name 
           else acc
         ) !cur_sources file_array;
       cur_globbed_dirs := [dir]              
@@ -274,7 +274,7 @@ and parsing_source_dir_map
         Array.fold_left (fun acc name -> 
             match Ext_string.is_valid_source_name name with 
             | Good -> 
-              Binary_cache.map_update  ~dir acc name 
+              Bsb_build_cache.map_update  ~dir acc name 
             | Invalid_module_name ->
               Format.fprintf Format.err_formatter
                 warning_unused_file

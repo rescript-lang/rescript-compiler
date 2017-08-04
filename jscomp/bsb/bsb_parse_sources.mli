@@ -37,7 +37,7 @@ type build_generator =
 type  file_group = 
   { dir : string ; 
     (* currently relative path expected for ninja file generation *)
-    sources : Binary_cache.t ; 
+    sources : Bsb_build_cache.t ; 
     resources : string list ; 
     (* relative path *)
     public : public;

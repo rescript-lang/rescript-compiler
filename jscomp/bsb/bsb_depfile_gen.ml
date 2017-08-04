@@ -59,7 +59,7 @@ type kind = Js | Bytecode | Native
 *)
 let aux_impl set input_file lhs_suffix rhs_suffix 
     (index : Bsb_dir_index.t)
-    (data : Binary_cache.t array) : string = 
+    (data : Bsb_build_cache.t array) : string = 
   let dependent_file = input_file ^ lhs_suffix ^ dep_lit in
   let (files, len) = 
     Array.fold_left
@@ -100,7 +100,7 @@ let aux_intf
     set
     input_file 
     (index : Bsb_dir_index.t)
-    (data : Binary_cache.t array) =     
+    (data : Bsb_build_cache.t array) =     
   let dependent_file = input_file ^ Literals.suffix_cmi ^ dep_lit in
   let (files, len) = 
     Array.fold_left
@@ -136,7 +136,7 @@ let make
     (fn : string)
     (index : Bsb_dir_index.t) : unit = 
   let data  =
-    Binary_cache.read_build_cache 
+    Bsb_build_cache.read_build_cache 
       ~dir:Filename.current_dir_name
   in 
   let set = read_deps fn in 
