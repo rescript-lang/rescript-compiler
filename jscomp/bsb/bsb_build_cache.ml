@@ -66,11 +66,11 @@ let filename_sans_suffix_of_module_info (x : module_info) =
   | { mli; ml;  } -> 
     begin match mli with 
       | Mli_source s | Rei_source s -> 
-        (* Ext_filename.chop_extension *) s 
+         s 
       | Mli_empty -> 
         begin match ml with 
           | Ml_source s | Re_source s -> 
-            (* Ext_filename.chop_extension *) s 
+             s 
           | Ml_empty -> assert false
         end
     end
