@@ -53,7 +53,6 @@ type compilation_kind_t = Js | Bytecode | Native
 
 (* TODO: Don't touch the .d file if nothing changed *)
 let handle_bin_depfile 
-    oprefix
     ~compilation_kind
     (fn : string)
     index : unit = 
@@ -61,11 +60,10 @@ let handle_bin_depfile
     | Js       -> Literals.suffix_cmj, Literals.suffix_cmj
     | Bytecode -> Literals.suffix_cmi, Literals.suffix_cmo
     | Native   -> Literals.suffix_cmi, Literals.suffix_cmx in
-  let op_concat s = match oprefix with None -> s | Some v -> v // s in 
   let data : Binary_cache.t  =
     Binary_cache.read_build_cache 
       ~dir:(
-        match oprefix with 
+        match None with 
         | None -> Filename.current_dir_name
         | Some v -> v ) in 
   let set = read_deps fn in 
@@ -78,10 +76,10 @@ let handle_bin_depfile
            match String_map.find_opt k data.(0) with
            | Some {ml = Ml s | Re s  }  
              -> 
-             let new_file = op_concat @@ Filename.chop_extension s ^ suffix_inteface  
+             let new_file =  Filename.chop_extension s ^ suffix_inteface  
              in (new_file :: acc , len + String.length new_file + length_space)
            | Some {mli = Mli s | Rei s } -> 
-             let new_file =  op_concat @@   Filename.chop_extension s ^ Literals.suffix_cmi in
+             let new_file =  Filename.chop_extension s ^ Literals.suffix_cmi in
              (new_file :: acc , len + String.length new_file + length_space)
            | Some _ -> assert false
            | None  -> 
@@ -90,10 +88,10 @@ let handle_bin_depfile
                begin match String_map.find_opt k data.(index) with 
                  | Some {ml = Ml s | Re s  }
                    -> 
-                   let new_file = op_concat @@ Filename.chop_extension s ^ suffix_inteface  
+                   let new_file =  Filename.chop_extension s ^ suffix_inteface  
                    in (new_file :: acc , len + String.length new_file + length_space)
                  | Some {mli = Mli s | Rei s } -> 
-                   let new_file =  op_concat @@   Filename.chop_extension s ^ Literals.suffix_cmi in
+                   let new_file =  Filename.chop_extension s ^ Literals.suffix_cmi in
                    (new_file :: acc , len + String.length new_file + length_space)
                  | Some _ -> assert false
                  | None -> 
@@ -117,7 +115,7 @@ let handle_bin_depfile
                match String_map.find_opt k data.(0) with 
                | Some ({ ml = Ml f | Re f  }
                       | { mli = Mli f | Rei f }) -> 
-                 let new_file = (op_concat @@ Filename.chop_extension f ^ Literals.suffix_cmi) in
+                 let new_file = Filename.chop_extension f ^ Literals.suffix_cmi in
                  (new_file :: acc , len + String.length new_file + length_space)
                | Some _ -> assert false
                | None -> 
@@ -126,7 +124,7 @@ let handle_bin_depfile
                    begin  match String_map.find_opt k data.(index) with 
                      | Some ({ ml = Ml f | Re f  }
                             | { mli = Mli f | Rei f }) -> 
-                       let new_file = (op_concat @@ Filename.chop_extension f ^ Literals.suffix_cmi) in
+                       let new_file = Filename.chop_extension f ^ Literals.suffix_cmi in
                        (new_file :: acc , len + String.length new_file + length_space)
                      | Some _ -> assert false
                      | None -> v

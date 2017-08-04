@@ -25,4 +25,6 @@
 type compilation_kind_t = Js | Bytecode | Native
 
 val handle_bin_depfile : 
-  string option -> compilation_kind:compilation_kind_t -> string -> int ->  unit
+  (* string option -> *)
+  compilation_kind:compilation_kind_t ->
+  string -> int ->  unit

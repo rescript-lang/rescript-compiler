@@ -4238,7 +4238,9 @@ module Depends_post_process : sig
 type compilation_kind_t = Js | Bytecode | Native
 
 val handle_bin_depfile : 
-  string option -> compilation_kind:compilation_kind_t -> string -> int ->  unit
+  (* string option -> *)
+  compilation_kind:compilation_kind_t ->
+  string -> int ->  unit
 
 end = struct
 #1 "depends_post_process.ml"
@@ -4297,7 +4299,6 @@ type compilation_kind_t = Js | Bytecode | Native
 
 (* TODO: Don't touch the .d file if nothing changed *)
 let handle_bin_depfile 
-    oprefix
     ~compilation_kind
     (fn : string)
     index : unit = 
@@ -4305,11 +4306,10 @@ let handle_bin_depfile
     | Js       -> Literals.suffix_cmj, Literals.suffix_cmj
     | Bytecode -> Literals.suffix_cmi, Literals.suffix_cmo
     | Native   -> Literals.suffix_cmi, Literals.suffix_cmx in
-  let op_concat s = match oprefix with None -> s | Some v -> v // s in 
   let data : Binary_cache.t  =
     Binary_cache.read_build_cache 
       ~dir:(
-        match oprefix with 
+        match None with 
         | None -> Filename.current_dir_name
         | Some v -> v ) in 
   let set = read_deps fn in 
@@ -4322,10 +4322,10 @@ let handle_bin_depfile
            match String_map.find_opt k data.(0) with
            | Some {ml = Ml s | Re s  }  
              -> 
-             let new_file = op_concat @@ Filename.chop_extension s ^ suffix_inteface  
+             let new_file =  Filename.chop_extension s ^ suffix_inteface  
              in (new_file :: acc , len + String.length new_file + length_space)
            | Some {mli = Mli s | Rei s } -> 
-             let new_file =  op_concat @@   Filename.chop_extension s ^ Literals.suffix_cmi in
+             let new_file =  Filename.chop_extension s ^ Literals.suffix_cmi in
              (new_file :: acc , len + String.length new_file + length_space)
            | Some _ -> assert false
            | None  -> 
@@ -4334,10 +4334,10 @@ let handle_bin_depfile
                begin match String_map.find_opt k data.(index) with 
                  | Some {ml = Ml s | Re s  }
                    -> 
-                   let new_file = op_concat @@ Filename.chop_extension s ^ suffix_inteface  
+                   let new_file =  Filename.chop_extension s ^ suffix_inteface  
                    in (new_file :: acc , len + String.length new_file + length_space)
                  | Some {mli = Mli s | Rei s } -> 
-                   let new_file =  op_concat @@   Filename.chop_extension s ^ Literals.suffix_cmi in
+                   let new_file =  Filename.chop_extension s ^ Literals.suffix_cmi in
                    (new_file :: acc , len + String.length new_file + length_space)
                  | Some _ -> assert false
                  | None -> 
@@ -4361,7 +4361,7 @@ let handle_bin_depfile
                match String_map.find_opt k data.(0) with 
                | Some ({ ml = Ml f | Re f  }
                       | { mli = Mli f | Rei f }) -> 
-                 let new_file = (op_concat @@ Filename.chop_extension f ^ Literals.suffix_cmi) in
+                 let new_file = Filename.chop_extension f ^ Literals.suffix_cmi in
                  (new_file :: acc , len + String.length new_file + length_space)
                | Some _ -> assert false
                | None -> 
@@ -4370,7 +4370,7 @@ let handle_bin_depfile
                    begin  match String_map.find_opt k data.(index) with 
                      | Some ({ ml = Ml f | Re f  }
                             | { mli = Mli f | Rei f }) -> 
-                       let new_file = (op_concat @@ Filename.chop_extension f ^ Literals.suffix_cmi) in
+                       let new_file = Filename.chop_extension f ^ Literals.suffix_cmi in
                        (new_file :: acc , len + String.length new_file + length_space)
                      | Some _ -> assert false
                      | None -> v
@@ -4444,7 +4444,7 @@ end = struct
 let main_module = ref None
 
 let set_main_module modulename =
-    main_module := Some modulename
+  main_module := Some modulename
 
 let includes :  _ list ref = ref []
 
@@ -4458,70 +4458,79 @@ let batch_files = ref []
 let collect_file name =
   batch_files := name :: !batch_files
 
-let output_prefix = ref None
+(* let output_prefix = ref None *)
 let dev_group = ref 0
 
 let link link_byte_or_native = 
   begin match !main_module with
-  | None -> failwith "Linking needs a main module. Please add -main-module MyMainModule to the invocation."
-  | Some main_module ->
-    Bsb_helper_linker.link 
-      link_byte_or_native
-      ~main_module:main_module
-      ~includes:!includes
-      ~batch_files:!batch_files
+    | None -> failwith "Linking needs a main module. Please add -main-module MyMainModule to the invocation."
+    | Some main_module ->
+      Bsb_helper_linker.link 
+        link_byte_or_native
+        ~main_module:main_module
+        ~includes:!includes
+        ~batch_files:!batch_files
   end
 
 let anonymous filename =
   collect_file filename
 let usage = "Usage: bsb_helper.exe [options] \nOptions are:"
 let () =
-    Arg.parse [
-    "-oprefix", Arg.String (fun x -> output_prefix := Some x),
-    " Set output prefix for -bs-MD (internal use)";
+  Arg.parse [
     "-g", Arg.Int (fun i -> dev_group := i ),
     " Set the dev group (default to be 0)"
     ;
-    "-MD", Arg.String (fun x -> Depends_post_process.handle_bin_depfile ~compilation_kind:Js !output_prefix x !dev_group ),
+    "-MD", Arg.String (
+      fun x -> 
+        Depends_post_process.handle_bin_depfile 
+          ~compilation_kind:Js 
+          x !dev_group ),
     " (internal)Generate dep file for ninja format(from .ml[i]deps)";
-    "-MD-bytecode", Arg.String (fun x -> Depends_post_process.handle_bin_depfile ~compilation_kind:Bytecode !output_prefix x !dev_group ),
+    "-MD-bytecode", Arg.String (
+      fun x -> 
+        Depends_post_process.handle_bin_depfile 
+          ~compilation_kind:Bytecode 
+          x !dev_group ),
     " (internal)Generate dep file for ninja format(from .ml[i]deps)";
-    "-MD-native", Arg.String (fun x -> Depends_post_process.handle_bin_depfile ~compilation_kind:Native !output_prefix x !dev_group ),
+    "-MD-native", Arg.String (fun x -> 
+        Depends_post_process.handle_bin_depfile 
+          ~compilation_kind:Native 
+           x !dev_group ),
     " (internal)Generate dep file for ninja format(from .ml[i]deps)";
 
     (**
-      The args below are used for packing/linking.
+       The args below are used for packing/linking.
 
-      This makes bsb_helper act as an ocaml linker where we automatically figure
-      out the dependencies graph to do a topological sort before calling 
-      ocamlc/ocamlopt.
-     *)
+       This makes bsb_helper act as an ocaml linker where we automatically figure
+       out the dependencies graph to do a topological sort before calling 
+       ocamlc/ocamlopt.
+    *)
     "-bs-main", (Arg.String set_main_module),
     " set the main entry module. Only used in conjunction with -link-bytecode and -link-native";
-    
+
     (* This is a way to add a directory to the search path. This is used for the 
        compiler to look for cmi files. It's also used to look for a file called `lib.cma` to 
        link with the current executable.
-       
+
        For example if called like so
-          
+
           bsb_helper -I theExtLib myMainFile.cmo -link-bytecode
-       
+
        Then we'll go look for `theExtLib/lib.cma` to link with the final exec.
-     *)
+    *)
     "-I",  (Arg.String add_include),
     " add dir to search path for the linker and packer";
-    
+
     (* Both linking and packing arguments must come _after_ all of the other args and files have been listed.
        For example:
-       
+
           bsb_helper -main-module MyModule myFile.cmo myOtherFile.cmo -link-bytecode 
-       
+
        In the following example, the file called `myIgnoredFile.cmo` is not linked nor is `myLibFolder/lib.cma`
-       
+
           bsb_helper -main-module MyModule myFile.cmo myOtherFile.cmo -link-bytecode -I myLibFolder myIgnoredFile.cmo
-          
-     *)
+
+    *)
     "-link-bytecode", (Arg.String (fun x -> link (Bsb_helper_linker.LinkBytecode x))),
     " link bytecode files into an executable";
 
@@ -4529,20 +4538,20 @@ let () =
     " link native files into an executable";
 
     "-pack-native-library", (Arg.Unit (fun () -> 
-      Bsb_helper_packer.pack
-        Bsb_helper_packer.PackNative
-        ~includes:!includes
-        ~batch_files:!batch_files
-    )),
+        Bsb_helper_packer.pack
+          Bsb_helper_packer.PackNative
+          ~includes:!includes
+          ~batch_files:!batch_files
+      )),
     " pack native files (cmx) into a library file (cmxa)";
 
     "-pack-bytecode-library", (Arg.Unit (fun () -> 
-      Bsb_helper_packer.pack
-        Bsb_helper_packer.PackBytecode
-        ~includes:!includes
-        ~batch_files:!batch_files
-    )),
+        Bsb_helper_packer.pack
+          Bsb_helper_packer.PackBytecode
+          ~includes:!includes
+          ~batch_files:!batch_files
+      )),
     " pack bytecode files (cmo) into a library file (cma)";
-    ] anonymous usage
+  ] anonymous usage
 
 end
