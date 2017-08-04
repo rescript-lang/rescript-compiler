@@ -4067,11 +4067,11 @@ val dir_of_module_info : module_info -> string
 
 val basename_of_module_info : module_info -> string 
 
-val write_build_cache : string -> t -> unit
+val write_build_cache : dir:string -> t -> unit
 
-val read_build_cache : string -> t
+val read_build_cache : dir:string -> t
 
-val bsbuild_cache : string
+
 
 
 
@@ -4164,15 +4164,17 @@ let basename_of_module_info (x : module_info) =
       | Ml_empty -> assert false
       end
     end
-  
-let write_build_cache bsbuild (bs_files : t)  = 
-  let oc = open_out_bin bsbuild in 
+
+let bsbuild_cache = ".bsbuild"    
+
+let write_build_cache ~dir (bs_files : t)  = 
+  let oc = open_out_bin (Filename.concat dir bsbuild_cache) in 
   output_string oc module_info_magic_number ;
   output_value oc bs_files ;
   close_out oc 
 
-let read_build_cache bsbuild : t = 
-  let ic = open_in_bin bsbuild in 
+let read_build_cache ~dir  : t = 
+  let ic = open_in_bin (Filename.concat dir bsbuild_cache) in 
   let buffer = really_input_string ic (String.length module_info_magic_number) in
   assert(buffer = module_info_magic_number); 
   let data : t = input_value ic in 
@@ -4180,7 +4182,6 @@ let read_build_cache bsbuild : t =
   data 
 
 
-let bsbuild_cache = ".bsbuild"
 
 
 let empty_module_info = {mli = Mli_empty ;  ml = Ml_empty}
@@ -4296,17 +4297,21 @@ type compilation_kind_t = Js | Bytecode | Native
 
 (* TODO: Don't touch the .d file if nothing changed *)
 let handle_bin_depfile 
-  oprefix
-  ~compilation_kind
-  (fn : string)
-  index : unit = 
+    oprefix
+    ~compilation_kind
+    (fn : string)
+    index : unit = 
   let suffix_inteface, suffix_cmjxo = match compilation_kind with
-  | Js       -> Literals.suffix_cmj, Literals.suffix_cmj
-  | Bytecode -> Literals.suffix_cmi, Literals.suffix_cmo
-  | Native   -> Literals.suffix_cmi, Literals.suffix_cmx in
+    | Js       -> Literals.suffix_cmj, Literals.suffix_cmj
+    | Bytecode -> Literals.suffix_cmi, Literals.suffix_cmo
+    | Native   -> Literals.suffix_cmi, Literals.suffix_cmx in
   let op_concat s = match oprefix with None -> s | Some v -> v // s in 
   let data : Binary_cache.t  =
-    Binary_cache.read_build_cache (op_concat  Binary_cache.bsbuild_cache) in 
+    Binary_cache.read_build_cache 
+      ~dir:(
+        match oprefix with 
+        | None -> Filename.current_dir_name
+        | Some v -> v ) in 
   let set = read_deps fn in 
   match Ext_string.ends_with_then_chop fn Literals.suffix_mlast with 
   | Some  input_file -> 

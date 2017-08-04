@@ -130,7 +130,8 @@ let output_ninja
           List.fold_left (fun (acc, dirs,acc_resources) ({Bsb_parse_sources.sources ; dir; resources }) ->
               merge_module_info_map  acc  sources ,  dir::dirs , (List.map (fun x -> dir // x ) resources) @ acc_resources
             ) (String_map.empty,[],[]) bs_file_groups in
-        Binary_cache.write_build_cache (cwd // Bsb_config.lib_bs // Binary_cache.bsbuild_cache) [|bs_groups|] ;
+        Binary_cache.write_build_cache 
+        ~dir:(cwd // Bsb_config.lib_bs) [|bs_groups|] ;
         Bsb_ninja_util.output_kv
           Bsb_build_schemas.bsc_lib_includes (Bsb_build_util.flag_concat dash_i @@ 
           (all_includes source_dirs  ))  oc ;
@@ -157,7 +158,8 @@ let output_ninja
           Bsb_ninja_util.output_kv (Bsb_dir_index.(string_of_bsb_dev_include (of_int i)))
             (Bsb_build_util.flag_concat "-I" @@ source_dirs.(i)) oc
         done  ;
-        Binary_cache.write_build_cache (cwd // Bsb_config.lib_bs // Binary_cache.bsbuild_cache) bs_groups ;
+        Binary_cache.write_build_cache 
+        ~dir:(cwd // Bsb_config.lib_bs) bs_groups ;
         static_resources;
     in
     let all_info =

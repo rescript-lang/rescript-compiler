@@ -48,11 +48,11 @@ val dir_of_module_info : module_info -> string
 
 val basename_of_module_info : module_info -> string 
 
-val write_build_cache : string -> t -> unit
+val write_build_cache : dir:string -> t -> unit
 
-val read_build_cache : string -> t
+val read_build_cache : dir:string -> t
 
-val bsbuild_cache : string
+
 
 
 
