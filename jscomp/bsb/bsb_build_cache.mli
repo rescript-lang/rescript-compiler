@@ -58,7 +58,7 @@ type t = module_info String_map.t
 val dir_of_module_info : module_info -> string
 
 
-val basename_of_module_info : module_info -> string 
+val filename_sans_suffix_of_module_info : module_info -> string 
 
 val write_build_cache : dir:string -> t array -> unit
 

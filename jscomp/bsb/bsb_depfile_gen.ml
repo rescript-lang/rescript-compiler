@@ -65,24 +65,24 @@ let aux_impl set input_file lhs_suffix rhs_suffix
     Array.fold_left
       (fun ((acc, len) as v) k  -> 
          match String_map.find_opt k data.(0) with
-         | Some {ml = Ml_source s | Re_source s  }  
+         | Some {ml = Ml_source source | Re_source source  }  
            -> 
-           let new_file =  Filename.chop_extension s ^ rhs_suffix  
+           let new_file =  source ^ rhs_suffix  
            in (new_file :: acc , len + String.length new_file + length_space)
-         | Some {mli = Mli_source s | Rei_source s } -> 
-           let new_file =  Filename.chop_extension s ^ Literals.suffix_cmi in
+         | Some {mli = Mli_source source | Rei_source source } -> 
+           let new_file =  source ^ Literals.suffix_cmi in
            (new_file :: acc , len + String.length new_file + length_space)
          | Some _ -> assert false
          | None  -> 
            if Bsb_dir_index.is_lib_dir index  then v 
            else 
              begin match String_map.find_opt k data.((index  :> int)) with 
-               | Some {ml = Ml_source s | Re_source s  }
+               | Some {ml = Ml_source source | Re_source source  }
                  -> 
-                 let new_file =  Filename.chop_extension s ^ rhs_suffix  
+                 let new_file =  source ^ rhs_suffix  
                  in (new_file :: acc , len + String.length new_file + length_space)
-               | Some {mli = Mli_source s | Rei_source s } -> 
-                 let new_file =  Filename.chop_extension s ^ Literals.suffix_cmi in
+               | Some {mli = Mli_source source | Rei_source source } -> 
+                 let new_file =   source ^ Literals.suffix_cmi in
                  (new_file :: acc , len + String.length new_file + length_space)
                | Some _ -> assert false
                | None -> 
@@ -106,18 +106,18 @@ let aux_intf
     Array.fold_left
       (fun ((acc, len) as v) k ->
          match String_map.find_opt k data.(0) with 
-         | Some ({ ml = Ml_source f | Re_source f  }
-                | { mli = Mli_source f | Rei_source f }) -> 
-           let new_file = Filename.chop_extension f ^ Literals.suffix_cmi in
+         | Some ({ ml = Ml_source source | Re_source source  }
+                | { mli = Mli_source source | Rei_source source }) -> 
+           let new_file =  source ^ Literals.suffix_cmi in
            (new_file :: acc , len + String.length new_file + length_space)
          | Some _ -> assert false
          | None -> 
            if Bsb_dir_index.is_lib_dir index  then v 
            else 
              begin  match String_map.find_opt k data.((index :> int)) with 
-               | Some ({ ml = Ml_source f | Re_source f  }
-                      | { mli = Mli_source f | Rei_source f }) -> 
-                 let new_file = Filename.chop_extension f ^ Literals.suffix_cmi in
+               | Some ({ ml = Ml_source source | Re_source source  }
+                      | { mli = Mli_source source | Rei_source source }) -> 
+                 let new_file = source ^ Literals.suffix_cmi in
                  (new_file :: acc , len + String.length new_file + length_space)
                | Some _ -> assert false
                | None -> v

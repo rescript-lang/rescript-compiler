@@ -61,16 +61,16 @@ let dir_of_module_info (x : module_info)
       end
     end
 
-let basename_of_module_info (x : module_info) =
+let filename_sans_suffix_of_module_info (x : module_info) =
   match x with 
   | { mli; ml;  } -> 
     begin match mli with 
     | Mli_source s | Rei_source s -> 
-      Ext_filename.chop_extension s 
+      (* Ext_filename.chop_extension *) s 
     | Mli_empty -> 
       begin match ml with 
       | Ml_source s | Re_source s -> 
-        Ext_filename.chop_extension s 
+        (* Ext_filename.chop_extension *) s 
       | Ml_empty -> assert false
       end
     end
@@ -96,12 +96,13 @@ let read_build_cache ~dir  : t array =
 
 let empty_module_info = {mli = Mli_empty ;  ml = Ml_empty}
 
+(** TODO: check adjust_module_info whether it is reliable *)
 let adjust_module_info x suffix name =
   match suffix with 
-  | ".ml" -> {x with ml = Ml_source name}
-  | ".re" -> {x with ml = Re_source name}
-  | ".mli" ->  {x with mli = Mli_source name}
-  | ".rei" -> { x with mli = Rei_source name}
+  | ".ml" -> {x with ml = Ml_source (Ext_filename.chop_extension name)}
+  | ".re" -> {x with ml = Re_source (Ext_filename.chop_extension name)}
+  | ".mli" ->  {x with mli = Mli_source (Ext_filename.chop_extension name) }
+  | ".rei" -> { x with mli = Rei_source (Ext_filename.chop_extension name) }
   | _ -> failwith ("don't know what to do with " ^ name)
 
 let map_update ~dir (map : t)  

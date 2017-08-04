@@ -101,19 +101,18 @@ let handle_module_info
     oc  module_name 
     ( module_info : Bsb_build_cache.module_info)
     info  =
-  let emit_build (kind : file_kind)  file_input : info =
-
-    let filename_sans_extension = Filename.chop_extension file_input in
+  let emit_build (kind : file_kind)  
+    filename_sans_extension
+    file_input : info =
     let input = Bsb_config.proj_rel file_input in
-    let output_file_sans_extension = filename_sans_extension in
-    let output_mlast = output_file_sans_extension  ^ Literals.suffix_mlast in
-    let output_mlastd = output_file_sans_extension ^ Literals.suffix_mlastd in
-    let output_mliast = output_file_sans_extension ^ Literals.suffix_mliast in
-    let output_mliastd = output_file_sans_extension ^ Literals.suffix_mliastd in
-    let output_cmi = output_file_sans_extension ^ Literals.suffix_cmi in
-    let output_cmj =  output_file_sans_extension ^ Literals.suffix_cmj in
+    let output_mlast = filename_sans_extension  ^ Literals.suffix_mlast in
+    let output_mlastd = filename_sans_extension ^ Literals.suffix_mlastd in
+    let output_mliast = filename_sans_extension ^ Literals.suffix_mliast in
+    let output_mliastd = filename_sans_extension ^ Literals.suffix_mliastd in
+    let output_cmi = filename_sans_extension ^ Literals.suffix_cmi in
+    let output_cmj =  filename_sans_extension ^ Literals.suffix_cmj in
     let output_js =
-        Bsb_package_specs.get_list_of_output_js package_specs output_file_sans_extension in 
+        Bsb_package_specs.get_list_of_output_js package_specs filename_sans_extension in 
     let common_shadows = 
       make_common_shadows package_specs
         (Filename.dirname output_cmi)
@@ -197,15 +196,17 @@ let handle_module_info
     end
   in
   begin match module_info.ml with
-    | Ml_source input -> emit_build Ml input
-    | Re_source input -> emit_build Re input
+    | Ml_source input ->
+       emit_build Ml input (input ^ Literals.suffix_ml)
+    | Re_source input -> 
+      emit_build Re input (input ^ Literals.suffix_re)
     | Ml_empty -> zero
   end ++
   begin match module_info.mli with
     | Mli_source mli_file  ->
-      emit_build Mli mli_file
+      emit_build Mli mli_file (mli_file ^ Literals.suffix_mli)
     | Rei_source rei_file ->
-      emit_build Rei rei_file
+      emit_build Rei rei_file (rei_file ^ Literals.suffix_rei)
     | Mli_empty -> zero
   end ++
   info
@@ -223,7 +224,7 @@ let handle_file_group oc ~custom_rules
         | Export_none -> false
         | Export_set set ->  String_set.mem module_name set in
       if installable then 
-        String_hash_set.add files_to_install (Bsb_build_cache.basename_of_module_info module_info);
+        String_hash_set.add files_to_install (Bsb_build_cache.filename_sans_suffix_of_module_info module_info);
       handle_module_info group 
         package_specs js_post_build_cmd 
         oc module_name module_info acc
