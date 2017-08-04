@@ -10,7 +10,7 @@ v1.7.0
 :OCaml: https://ocaml.org/
 :Reason: https://github.com/facebook/Reason
 :BuckleScript: https://github.com/bucklescript/bucklescript
-:BuckleScript-playground: http://bucklescript.github.io/bucklescript-playground/js-demo/
+:BuckleScript-playground: https://bucklescript.github.io/bucklescript-playground/
 :closure: https://developers.google.com/closure/compiler/
 :transpile-list: https://github.com/jashkenas/coffeescript/wiki/list-of-languages-that-compile-to-js
 :name-mangling: https://en.wikipedia.org/wiki/Name_mangling
