@@ -197,14 +197,14 @@ let handle_module_info
     end
   in
   begin match module_info.ml with
-    | Ml input -> emit_build Ml input
-    | Re input -> emit_build Re input
+    | Ml_source input -> emit_build Ml input
+    | Re_source input -> emit_build Re input
     | Ml_empty -> zero
   end ++
   begin match module_info.mli with
-    | Mli mli_file  ->
+    | Mli_source mli_file  ->
       emit_build Mli mli_file
-    | Rei rei_file ->
+    | Rei_source rei_file ->
       emit_build Rei rei_file
     | Mli_empty -> zero
   end ++

@@ -30,12 +30,12 @@
   [bsb_helper.exe]
 *) 
 type ml_kind =
-  | Ml of string 
-  | Re of string 
+  | Ml_source of string  (* No extension stored *)
+  | Re_source of string 
   | Ml_empty
 type mli_kind = 
-  | Mli of string 
-  | Rei of string
+  | Mli_source of string 
+  | Rei_source of string
   | Mli_empty
 
 type module_info = 
