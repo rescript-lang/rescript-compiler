@@ -1,5 +1,5 @@
 There are two Playgrounds, one for
-https:////bucklescript.github.io/bucklescript-playground/js-demo[vanilla OCaml],
+https:////bucklescript.github.io/bucklescript-playground[vanilla OCaml],
 the other for
 https:////bucklescript.github.io/bucklescript/reason-demo[Facebook Reason]
 
