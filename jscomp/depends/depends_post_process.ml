@@ -53,17 +53,21 @@ type compilation_kind_t = Js | Bytecode | Native
 
 (* TODO: Don't touch the .d file if nothing changed *)
 let handle_bin_depfile 
-  oprefix
-  ~compilation_kind
-  (fn : string)
-  index : unit = 
+    oprefix
+    ~compilation_kind
+    (fn : string)
+    index : unit = 
   let suffix_inteface, suffix_cmjxo = match compilation_kind with
-  | Js       -> Literals.suffix_cmj, Literals.suffix_cmj
-  | Bytecode -> Literals.suffix_cmi, Literals.suffix_cmo
-  | Native   -> Literals.suffix_cmi, Literals.suffix_cmx in
+    | Js       -> Literals.suffix_cmj, Literals.suffix_cmj
+    | Bytecode -> Literals.suffix_cmi, Literals.suffix_cmo
+    | Native   -> Literals.suffix_cmi, Literals.suffix_cmx in
   let op_concat s = match oprefix with None -> s | Some v -> v // s in 
   let data : Binary_cache.t  =
-    Binary_cache.read_build_cache (op_concat  Binary_cache.bsbuild_cache) in 
+    Binary_cache.read_build_cache 
+      ~dir:(
+        match oprefix with 
+        | None -> Filename.current_dir_name
+        | Some v -> v ) in 
   let set = read_deps fn in 
   match Ext_string.ends_with_then_chop fn Literals.suffix_mlast with 
   | Some  input_file -> 

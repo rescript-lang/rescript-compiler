@@ -7691,11 +7691,11 @@ val dir_of_module_info : module_info -> string
 
 val basename_of_module_info : module_info -> string 
 
-val write_build_cache : string -> t -> unit
+val write_build_cache : dir:string -> t -> unit
 
-val read_build_cache : string -> t
+val read_build_cache : dir:string -> t
 
-val bsbuild_cache : string
+
 
 
 
@@ -7788,15 +7788,17 @@ let basename_of_module_info (x : module_info) =
       | Ml_empty -> assert false
       end
     end
-  
-let write_build_cache bsbuild (bs_files : t)  = 
-  let oc = open_out_bin bsbuild in 
+
+let bsbuild_cache = ".bsbuild"    
+
+let write_build_cache ~dir (bs_files : t)  = 
+  let oc = open_out_bin (Filename.concat dir bsbuild_cache) in 
   output_string oc module_info_magic_number ;
   output_value oc bs_files ;
   close_out oc 
 
-let read_build_cache bsbuild : t = 
-  let ic = open_in_bin bsbuild in 
+let read_build_cache ~dir  : t = 
+  let ic = open_in_bin (Filename.concat dir bsbuild_cache) in 
   let buffer = really_input_string ic (String.length module_info_magic_number) in
   assert(buffer = module_info_magic_number); 
   let data : t = input_value ic in 
@@ -7804,7 +7806,6 @@ let read_build_cache bsbuild : t =
   data 
 
 
-let bsbuild_cache = ".bsbuild"
 
 
 let empty_module_info = {mli = Mli_empty ;  ml = Ml_empty}
@@ -12255,7 +12256,8 @@ let output_ninja
           List.fold_left (fun (acc, dirs,acc_resources) ({Bsb_parse_sources.sources ; dir; resources }) ->
               merge_module_info_map  acc  sources ,  dir::dirs , (List.map (fun x -> dir // x ) resources) @ acc_resources
             ) (String_map.empty,[],[]) bs_file_groups in
-        Binary_cache.write_build_cache (cwd // Bsb_config.lib_bs // Binary_cache.bsbuild_cache) [|bs_groups|] ;
+        Binary_cache.write_build_cache 
+        ~dir:(cwd // Bsb_config.lib_bs) [|bs_groups|] ;
         Bsb_ninja_util.output_kv
           Bsb_build_schemas.bsc_lib_includes (Bsb_build_util.flag_concat dash_i @@ 
           (all_includes source_dirs  ))  oc ;
@@ -12282,7 +12284,8 @@ let output_ninja
           Bsb_ninja_util.output_kv (Bsb_dir_index.(string_of_bsb_dev_include (of_int i)))
             (Bsb_build_util.flag_concat "-I" @@ source_dirs.(i)) oc
         done  ;
-        Binary_cache.write_build_cache (cwd // Bsb_config.lib_bs // Binary_cache.bsbuild_cache) bs_groups ;
+        Binary_cache.write_build_cache 
+        ~dir:(cwd // Bsb_config.lib_bs) bs_groups ;
         static_resources;
     in
     let all_info =

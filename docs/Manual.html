@@ -2939,7 +2939,7 @@ are treated as properties.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">type</span> <span class="tok-n">rect</span> <span class="tok-o">=</span> <span class="tok-o">&lt;</span> <span class="tok-n">height</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">;</span> <span class="tok-n">wdith</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">;</span> <span class="tok-n">draw</span> <span class="tok-o">:</span> <span class="tok-kt">unit</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">unit</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">meth</span><span class="tok-o">]</span> <span class="tok-o">&gt;</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">t</span></code></pre>
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">type</span> <span class="tok-n">rect</span> <span class="tok-o">=</span> <span class="tok-o">&lt;</span> <span class="tok-n">height</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">;</span> <span class="tok-n">width</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">;</span> <span class="tok-n">draw</span> <span class="tok-o">:</span> <span class="tok-kt">unit</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">unit</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">meth</span><span class="tok-o">]</span> <span class="tok-o">&gt;</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">t</span></code></pre>
 </div>
 </div>
 </div>
@@ -3861,7 +3861,7 @@ more examples, please visit
 <h2 id="_exception_handling_between_ocaml_and_js_since_1_7_0"><a class="anchor" href="#_exception_handling_between_ocaml_and_js_since_1_7_0"></a>Exception handling between OCaml and JS (@since 1.7.0)</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>In Js world, exception could be any data, while OCaml exception is structured data format and supports pattern match, catch OCaml exception on JS side is no-op.</p>
+<p>In JS world, exception could be any data, while OCaml exception is structured data format and supports pattern match, catch OCaml exception on JS side is no-op.</p>
 </div>
 <div class="sect2">
 <h3 id="_catch_js_exception"><a class="anchor" href="#_catch_js_exception"></a>Catch JS exception</h3>
@@ -3916,7 +3916,7 @@ more examples, please visit
 </div>
 </div>
 <div class="paragraph">
-<p>Please consult module <code>Js.Error</code> for more details</p>
+<p>Please consult module <a href="https://bucklescript.github.io/bucklescript/api/Js.Exn.html"><code>Js.Exn</code></a> for more details</p>
 </div>
 </div>
 </div>
@@ -3933,7 +3933,7 @@ For example, for an external promise whose creation could come from JS API, its 
 it preserves the type safety while allow users to deal with mixed source.</p>
 </div>
 <div class="paragraph">
-<p>It makes use of OCaml&#8217;s extensible variant, so that users can pack mix value of type <code>exn</code> with JS data-source</p>
+<p>It makes use of OCaml&#8217;s extensible variant, so that users can mix values of type <code>exn</code> with JS data-source</p>
 </div>
 <div class="listingblock">
 <div class="title">Example</div>
@@ -3949,7 +3949,7 @@ it preserves the type safety while allow users to deal with mixed source.</p>
 <div class="colist arabic">
 <ol>
 <li>
-<p>For any input source, as long as it matches the exception pattern (nested pattern match supported), the matched value is returned, otherwise return None.</p>
+<p>For any input source, as long as it matches the exception pattern (nested pattern match supported), the matched value is returned, otherwise return <code>None</code>.</p>
 </li>
 </ol>
 </div>
@@ -3960,14 +3960,14 @@ it preserves the type safety while allow users to deal with mixed source.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">let</span> <span class="tok-n">v</span> <span class="tok-o">=</span> <span class="tok-nn">Promise</span><span class="tok-p">.</span><span class="tok-n">reject</span> <span class="tok-nc">Not_found</span>
-<span class="tok-k">let</span> <span class="tok-n">handlePromiseFaiure</span> <span class="tok-o">=</span> <span class="tok-k">function</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-k">open</span><span class="tok-o">]</span>
-   <span class="tok-o">|</span> <span class="tok-nc">Not_found</span> <span class="tok-o">-&gt;</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">log</span> <span class="tok-s2">&quot;Not found&quot;</span><span class="tok-o">;</span> <span class="tok-o">(</span><span class="tok-nn">Promise</span><span class="tok-p">.</span><span class="tok-n">resolve</span> <span class="tok-bp">()</span><span class="tok-o">)</span>
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">let</span> <span class="tok-n">v</span> <span class="tok-o">=</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-nn">Promise</span><span class="tok-p">.</span><span class="tok-n">reject</span> <span class="tok-nc">Not_found</span>
+<span class="tok-k">let</span> <span class="tok-n">handlePromiseFailure</span> <span class="tok-o">=</span> <span class="tok-k">function</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-k">open</span><span class="tok-o">]</span>
+   <span class="tok-o">|</span> <span class="tok-nc">Not_found</span> <span class="tok-o">-&gt;</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">log</span> <span class="tok-s2">&quot;Not found&quot;</span><span class="tok-o">;</span> <span class="tok-o">(</span><span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-nn">Promise</span><span class="tok-p">.</span><span class="tok-n">resolve</span> <span class="tok-bp">()</span><span class="tok-o">)</span>
 
 <span class="tok-k">let</span> <span class="tok-bp">()</span> <span class="tok-o">=</span>
    <span class="tok-n">v</span>
-   <span class="tok-o">|&gt;</span> <span class="tok-nn">Promise</span><span class="tok-p">.</span><span class="tok-n">catch</span> <span class="tok-o">(</span><span class="tok-k">fun</span> <span class="tok-n">error</span> <span class="tok-o">-&gt;</span>
-        <span class="tok-k">match</span> <span class="tok-n">handlePromiseFaiure</span> <span class="tok-n">error</span> <span class="tok-k">with</span>
+   <span class="tok-o">|&gt;</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-nn">Promise</span><span class="tok-p">.</span><span class="tok-n">catch</span> <span class="tok-o">(</span><span class="tok-k">fun</span> <span class="tok-n">error</span> <span class="tok-o">-&gt;</span>
+        <span class="tok-k">match</span> <span class="tok-n">handlePromiseFailure</span> <span class="tok-n">error</span> <span class="tok-k">with</span>
         <span class="tok-o">|</span> <span class="tok-nc">Some</span> <span class="tok-n">x</span> <span class="tok-o">-&gt;</span> <span class="tok-n">x</span>
         <span class="tok-o">|</span> <span class="tok-nc">None</span> <span class="tok-o">-&gt;</span> <span class="tok-k">raise</span> <span class="tok-nc">UnhandledPromise</span>
     <span class="tok-o">)</span></code></pre>
