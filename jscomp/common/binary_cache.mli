@@ -23,6 +23,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+
+(** Store a file called [.bsbuild] that can be communicated 
+  between [bsb.exe] and [bsb_helper.exe]. 
+  [bsb.exe] stores such data which would be retrieved by 
+  [bsb_helper.exe]
+*) 
 type ml_kind =
   | Ml of string 
   | Re of string 
@@ -38,19 +44,25 @@ type module_info =
     ml : ml_kind ; 
   }
 
-type file_group_rouces = module_info String_map.t 
+type t = module_info String_map.t 
 
-type t =
-  module_info String_map.t array
+(** store  the meta data indexed by {!Bsb_dir_index}
+  {[
+    0 --> lib group
+    1 --> dev 1 group
+    .
+    
+  ]}
+*)
 
 val dir_of_module_info : module_info -> string
 
 
 val basename_of_module_info : module_info -> string 
 
-val write_build_cache : dir:string -> t -> unit
+val write_build_cache : dir:string -> t array -> unit
 
-val read_build_cache : dir:string -> t
+val read_build_cache : dir:string -> t array
 
 
 
@@ -63,4 +75,4 @@ val read_build_cache : dir:string -> t
   In the future, we may emit a warning 
 *)
 val map_update : 
-  ?dir:string -> file_group_rouces ->  string -> file_group_rouces
+  dir:string -> t ->  string -> t

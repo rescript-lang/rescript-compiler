@@ -256,14 +256,10 @@ syntax/ast_external_attributes.cmi : common/bs_loc.cmi \
 syntax/ast_util.cmi : syntax/ast_payload.cmi
 syntax/ppx_entry.cmi :
 syntax/bs_ast_invariant.cmi : syntax/bs_ast_iterator.cmi
-depends/depends_post_process.cmi :
 depends/bs_exception.cmi :
 depends/ast_extract.cmi : ext/string_map.cmi ext/string_hashtbl.cmi \
     common/ml_binary.cmi
 depends/binary_ast.cmi : common/ml_binary.cmi
-depends/depends_post_process.cmx : ext/string_map.cmx ext/literals.cmx \
-    ext/ext_string.cmx ext/ext_pervasives.cmx common/binary_cache.cmx \
-    depends/depends_post_process.cmi
 depends/bs_exception.cmx : depends/bs_exception.cmi
 depends/ast_extract.cmx : ext/string_map.cmx ext/string_hashtbl.cmx \
     common/ml_binary.cmx common/js_config.cmx ext/ext_string.cmx \
@@ -751,6 +747,9 @@ bsb/bsb_config_parse.cmx : ext/string_map.cmx ext/string_hash_set.cmx \
 bsb/bsb_config_types.cmx : ext/string_map.cmx ext/string_hash_set.cmx \
     bsb/bsb_parse_sources.cmx bsb/bsb_package_specs.cmx
 bsb/bsb_default.cmx : bsb/bsb_config_types.cmx bsb/bsb_default.cmi
+bsb/bsb_depfile_gen.cmx : ext/string_map.cmx ext/literals.cmx \
+    ext/ext_string.cmx ext/ext_pervasives.cmx bsb/bsb_dir_index.cmx \
+    common/binary_cache.cmx bsb/bsb_depfile_gen.cmi
 bsb/bsb_dir_index.cmx : bsb/bsb_dir_index.cmi
 bsb/bsb_exception.cmx : ext/ext_string.cmx ext/ext_position.cmx \
     ext/ext_json.cmx common/bs_version.cmx bsb/bsb_exception.cmi
@@ -762,9 +761,9 @@ bsb/bsb_helper_extract.cmx : ext/string_set.cmx ext/ext_string.cmx \
 bsb/bsb_helper_linker.cmx : ext/string_map.cmx ext/literals.cmx \
     ext/ext_filename.cmx bsb/bsb_helper_extract.cmx \
     bsb/bsb_helper_dep_graph.cmx bsb/bsb_helper_linker.cmi
-bsb/bsb_helper_main.cmx : ext/ext_filename.cmx \
-    depends/depends_post_process.cmx bsb/bsb_helper_packer.cmx \
-    bsb/bsb_helper_linker.cmx bsb/bsb_helper_main.cmi
+bsb/bsb_helper_main.cmx : ext/ext_filename.cmx bsb/bsb_helper_packer.cmx \
+    bsb/bsb_helper_linker.cmx bsb/bsb_dir_index.cmx bsb/bsb_depfile_gen.cmx \
+    bsb/bsb_helper_main.cmi
 bsb/bsb_helper_packer.cmx : ext/string_set.cmx ext/string_map.cmx \
     ext/literals.cmx ext/ext_filename.cmx bsb/bsb_helper_extract.cmx \
     bsb/bsb_helper_dep_graph.cmx bsb/bsb_helper_packer.cmi
@@ -842,6 +841,7 @@ bsb/bsb_config.cmi :
 bsb/bsb_config_parse.cmi : bsb/bsb_package_specs.cmi \
     bsb/bsb_config_types.cmx
 bsb/bsb_default.cmi : bsb/bsb_config_types.cmx
+bsb/bsb_depfile_gen.cmi : bsb/bsb_dir_index.cmi
 bsb/bsb_dir_index.cmi :
 bsb/bsb_exception.cmi : ext/ext_position.cmi ext/ext_json_types.cmx
 bsb/bsb_file.cmi :

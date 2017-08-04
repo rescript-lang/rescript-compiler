@@ -39,7 +39,7 @@ type build_generator =
 
 type  file_group = 
   { dir : string ;
-    sources : Binary_cache.file_group_rouces; 
+    sources : Binary_cache.t; 
     resources : string list ;
     public : public ;
     dir_index : Bsb_dir_index.t  ;

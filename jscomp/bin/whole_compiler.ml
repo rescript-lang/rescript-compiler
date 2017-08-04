@@ -25704,7 +25704,7 @@ val read_ast : 'a Ml_binary.kind -> string -> 'a
 
 
 (**
-   Check out {!Depends_post_process} for set decoding
+   Check out {!Bsb_depfile_gen} for set decoding
    The [.ml] file can be recognized as an ast directly, the format
    is
    {
