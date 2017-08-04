@@ -63,20 +63,20 @@ let () =
     ;
     "-MD", Arg.String (
       fun x -> 
-        Depends_post_process.handle_bin_depfile 
-          ~compilation_kind:Js 
-          x !dev_group ),
+        Bsb_depfile_gen.make
+          Js 
+          x (Bsb_dir_index.of_int !dev_group )),
     " (internal)Generate dep file for ninja format(from .ml[i]deps)";
     "-MD-bytecode", Arg.String (
       fun x -> 
-        Depends_post_process.handle_bin_depfile 
-          ~compilation_kind:Bytecode 
-          x !dev_group ),
+        Bsb_depfile_gen.make
+          Bytecode 
+          x (Bsb_dir_index.of_int !dev_group )),
     " (internal)Generate dep file for ninja format(from .ml[i]deps)";
     "-MD-native", Arg.String (fun x -> 
-        Depends_post_process.handle_bin_depfile 
-          ~compilation_kind:Native 
-           x !dev_group ),
+        Bsb_depfile_gen.make
+          Native 
+           x (Bsb_dir_index.of_int !dev_group )),
     " (internal)Generate dep file for ninja format(from .ml[i]deps)";
 
     (**

@@ -4302,7 +4302,8 @@ let handle_bin_depfile
     ~compilation_kind
     (fn : string)
     index : unit = 
-  let suffix_inteface, suffix_cmjxo = match compilation_kind with
+  let suffix_inteface, suffix_cmjxo =
+    match compilation_kind with
     | Js       -> Literals.suffix_cmj, Literals.suffix_cmj
     | Bytecode -> Literals.suffix_cmi, Literals.suffix_cmo
     | Native   -> Literals.suffix_cmi, Literals.suffix_cmx in
@@ -4315,7 +4316,7 @@ let handle_bin_depfile
   let set = read_deps fn in 
   match Ext_string.ends_with_then_chop fn Literals.suffix_mlast with 
   | Some  input_file -> 
-    let dependent_file = (input_file ^ suffix_cmjxo) ^ dep_lit in
+    let dependent_file = input_file ^ suffix_cmjxo ^ dep_lit in
     let (files, len) = 
       Array.fold_left
         (fun ((acc, len) as v) k  -> 

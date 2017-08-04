@@ -7666,6 +7666,12 @@ module Binary_cache : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+
+(** Store a file called [.bsbuild] that can be communicated 
+  between [bsb.exe] and [bsb_helper.exe]. 
+  [bsb.exe] stores such data which would be retrieved by 
+  [bsb_helper.exe]
+*) 
 type ml_kind =
   | Ml of string 
   | Re of string 
@@ -7681,19 +7687,25 @@ type module_info =
     ml : ml_kind ; 
   }
 
-type file_group_rouces = module_info String_map.t 
+type t = module_info String_map.t 
 
-type t =
-  module_info String_map.t array
+(** store  the meta data indexed by {!Bsb_dir_index}
+  {[
+    0 --> lib group
+    1 --> dev 1 group
+    .
+    
+  ]}
+*)
 
 val dir_of_module_info : module_info -> string
 
 
 val basename_of_module_info : module_info -> string 
 
-val write_build_cache : dir:string -> t -> unit
+val write_build_cache : dir:string -> t array -> unit
 
-val read_build_cache : dir:string -> t
+val read_build_cache : dir:string -> t array
 
 
 
@@ -7706,7 +7718,7 @@ val read_build_cache : dir:string -> t
   In the future, we may emit a warning 
 *)
 val map_update : 
-  ?dir:string -> file_group_rouces ->  string -> file_group_rouces
+  dir:string -> t ->  string -> t
 
 end = struct
 #1 "binary_cache.ml"
@@ -7752,10 +7764,8 @@ type module_info =
   }
 
 
-type file_group_rouces = module_info String_map.t 
+type t = module_info String_map.t 
 
-type t = 
-      module_info String_map.t array
 (** indexed by the group *)
 
 let module_info_magic_number = "BSBUILD20161019"
@@ -7791,17 +7801,17 @@ let basename_of_module_info (x : module_info) =
 
 let bsbuild_cache = ".bsbuild"    
 
-let write_build_cache ~dir (bs_files : t)  = 
+let write_build_cache ~dir (bs_files : t array)  = 
   let oc = open_out_bin (Filename.concat dir bsbuild_cache) in 
   output_string oc module_info_magic_number ;
   output_value oc bs_files ;
   close_out oc 
 
-let read_build_cache ~dir  : t = 
+let read_build_cache ~dir  : t array = 
   let ic = open_in_bin (Filename.concat dir bsbuild_cache) in 
   let buffer = really_input_string ic (String.length module_info_magic_number) in
   assert(buffer = module_info_magic_number); 
-  let data : t = input_value ic in 
+  let data : t array = input_value ic in 
   close_in ic ;
   data 
 
@@ -7818,12 +7828,10 @@ let adjust_module_info x suffix name =
   | ".rei" -> { x with mli = Rei name}
   | _ -> failwith ("don't know what to do with " ^ name)
 
-let map_update ?dir (map : file_group_rouces)  
-  name : file_group_rouces  = 
+let map_update ~dir (map : t)  
+  name : t  = 
   let prefix   = 
-    match dir with
-    | None -> fun x ->  x
-    | Some v -> fun x ->  Ext_filename.combine v x in
+     Ext_filename.combine dir  in
   let module_name = Ext_filename.module_name_of_file_if_any name in 
   let suffix = Ext_filename.get_extension name in 
   String_map.adjust 
@@ -9593,7 +9601,7 @@ type build_generator =
 type  file_group = 
   { dir : string ; 
     (* currently relative path expected for ninja file generation *)
-    sources : Binary_cache.file_group_rouces ; 
+    sources : Binary_cache.t ; 
     resources : string list ; 
     (* relative path *)
     public : public;
@@ -9680,7 +9688,7 @@ type build_generator =
 
 type  file_group = 
   { dir : string ;
-    sources : Binary_cache.file_group_rouces; 
+    sources : Binary_cache.t; 
     resources : string list ;
     public : public ;
     dir_index : Bsb_dir_index.t  ;

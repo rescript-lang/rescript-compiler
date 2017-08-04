@@ -256,7 +256,7 @@ SYNTAX_SRCS= \
 	bs_ast_invariant
 # not a good name ast_util	 
 SYNTAX_CMXS=$(addprefix syntax/, $(addsuffix .cmx, $(SYNTAX_SRCS)))
-DEPENDS_SRCS= depends_post_process bs_exception ast_extract binary_ast  
+DEPENDS_SRCS=  bs_exception ast_extract binary_ast  
 DEPENDS_CMXS=$(addprefix depends/, $(addsuffix .cmx, $(DEPENDS_SRCS)))
 CORE_SRCS= type_int_to_string type_util  ocaml_stdlib_slots bs_conditional_initial ocaml_options ocaml_parse\
 	js_op\
@@ -306,6 +306,7 @@ BSB_SRCS= bsb_config\
 	bsb_exception\
 	bsb_dir_index\
 	bsb_log\
+	bsb_depfile_gen\
 	bsb_pkg \
 	bsb_build_schemas\
 	bsb_ninja_global_vars\
