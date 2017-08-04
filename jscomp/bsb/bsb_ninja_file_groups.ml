@@ -73,7 +73,7 @@ let make_common_shadows package_specs dirname dir_index
     op = 
       Append
         (Bsb_package_specs.package_flag_of_package_specs
-          package_specs dirname
+           package_specs dirname
         )
   } ::
   (if Bsb_dir_index.is_lib_dir dir_index  then [] else
@@ -101,112 +101,115 @@ let handle_module_info
     oc  module_name 
     ( module_info : Bsb_build_cache.module_info)
     info  =
-  let emit_build (kind : file_kind)  
-    filename_sans_extension
-    file_input : info =
+  let emit_impl_build (kind : file_kind)  
+      filename_sans_extension
+    : info =    
+    let file_input = 
+      if kind = Ml then filename_sans_extension ^ Literals.suffix_ml  
+      else filename_sans_extension ^ Literals.suffix_re in 
     let input = Bsb_config.proj_rel file_input in
     let output_mlast = filename_sans_extension  ^ Literals.suffix_mlast in
     let output_mlastd = filename_sans_extension ^ Literals.suffix_mlastd in
-    let output_mliast = filename_sans_extension ^ Literals.suffix_mliast in
-    let output_mliastd = filename_sans_extension ^ Literals.suffix_mliastd in
     let output_cmi = filename_sans_extension ^ Literals.suffix_cmi in
     let output_cmj =  filename_sans_extension ^ Literals.suffix_cmj in
     let output_js =
-        Bsb_package_specs.get_list_of_output_js package_specs filename_sans_extension in 
+      Bsb_package_specs.get_list_of_output_js package_specs filename_sans_extension in 
     let common_shadows = 
       make_common_shadows package_specs
         (Filename.dirname output_cmi)
         group.dir_index in
-    begin match kind with
-      | Ml
-      | Re ->
-        let input, rule  =
-          if kind = Re then
-            input, Bsb_rule.build_ast_and_deps_from_reason_impl
-          else
-            input, Bsb_rule.build_ast_and_deps
-        in
-        begin
-          Bsb_ninja_util.output_build oc
-            ~output:output_mlast
-            ~input
-            ~rule;
-          Bsb_ninja_util.output_build
-            oc
-            ~output:output_mlastd
-            ~input:output_mlast
-            ~rule:Bsb_rule.build_bin_deps
-            ?shadows:(if Bsb_dir_index.is_lib_dir group.dir_index then None
-                      else Some [{Bsb_ninja_util.key = Bsb_build_schemas.bsb_dir_group ; 
-                                  op = 
-                                    Overwrite (string_of_int (group.dir_index :> int)) }])
-          ;
-          let rule_name , cm_outputs, deps =
-            if module_info.mli = Mli_empty then
-              Bsb_rule.build_cmj_cmi_js, [output_cmi], []
-            else  Bsb_rule.build_cmj_js, []  , [output_cmi]
+    begin
+      Bsb_ninja_util.output_build oc
+        ~output:output_mlast
+        ~input
+        ~rule:( if kind = Re then
+                  Bsb_rule.build_ast_and_deps_from_reason_impl
+                else
+                  Bsb_rule.build_ast_and_deps);
+      Bsb_ninja_util.output_build
+        oc
+        ~output:output_mlastd
+        ~input:output_mlast
+        ~rule:Bsb_rule.build_bin_deps
+        ?shadows:(if Bsb_dir_index.is_lib_dir group.dir_index then None
+                  else Some [{Bsb_ninja_util.key = Bsb_build_schemas.bsb_dir_group ; 
+                              op = 
+                                Overwrite (string_of_int (group.dir_index :> int)) }])
+      ;
+      let rule_name , cm_outputs, deps =
+        if module_info.mli = Mli_empty then
+          Bsb_rule.build_cmj_cmi_js, [output_cmi], []
+        else  Bsb_rule.build_cmj_js, []  , [output_cmi]
 
-          in
-          let shadows =
-            match js_post_build_cmd with
-            | None -> common_shadows
-            | Some cmd ->
-              {key = "postbuild";
-               op = Overwrite ("&& " ^ cmd ^ Ext_string.single_space ^ String.concat Ext_string.single_space output_js)} 
-              :: common_shadows
-          in
-          Bsb_ninja_util.output_build oc
-            ~output:output_cmj
-            ~shadows
-            ~outputs:  (output_js @ cm_outputs)
-            ~input:output_mlast
-            ~implicit_deps:deps
-            ~rule:rule_name ;
-          {all_config_deps = [output_mlastd] }
+      in
+      let shadows =
+        match js_post_build_cmd with
+        | None -> common_shadows
+        | Some cmd ->
+          {key = "postbuild";
+           op = Overwrite ("&& " ^ cmd ^ Ext_string.single_space ^ String.concat Ext_string.single_space output_js)} 
+          :: common_shadows
+      in
+      Bsb_ninja_util.output_build oc
+        ~output:output_cmj
+        ~shadows
+        ~outputs:  (output_js @ cm_outputs)
+        ~input:output_mlast
+        ~implicit_deps:deps
+        ~rule:rule_name ;
+      {all_config_deps = [output_mlastd] }
+    end in 
+  let emit_intf_build (kind : file_kind)  
+      filename_sans_extension
+    : info =
+    let file_input = 
+      if kind = Mli then filename_sans_extension ^ Literals.suffix_mli
+      else filename_sans_extension ^ Literals.suffix_rei in 
+    let input = Bsb_config.proj_rel file_input in
+    let output_mliast = filename_sans_extension ^ Literals.suffix_mliast in
+    let output_mliastd = filename_sans_extension ^ Literals.suffix_mliastd in
+    let output_cmi = filename_sans_extension ^ Literals.suffix_cmi in
+    let common_shadows = 
+      make_common_shadows package_specs
+        (Filename.dirname output_cmi)
+        group.dir_index in
+    Bsb_ninja_util.output_build oc
+      ~output:output_mliast
+      ~input
+      ~rule:(if kind = Mli then Bsb_rule.build_ast_and_deps
+             else Bsb_rule.build_ast_and_deps_from_reason_intf );
+    Bsb_ninja_util.output_build oc
+      ~output:output_mliastd
+      ~input:output_mliast
+      ~rule:Bsb_rule.build_bin_deps
+      ?shadows:(if Bsb_dir_index.is_lib_dir group.dir_index  then None
+                else Some [{
+                    key = Bsb_build_schemas.bsb_dir_group; 
+                    op = 
+                      Overwrite (string_of_int (group.dir_index :> int )) }])
+    ;
+    Bsb_ninja_util.output_build oc
+      ~shadows:common_shadows
+      ~output:output_cmi
+      ~input:output_mliast
+      ~rule:Bsb_rule.build_cmi;
+    {
+      all_config_deps = [output_mliastd];
+    }    
+  in  
 
-        end
-      | Mli
-      | Rei ->
-        let rule =
-          if kind = Mli then Bsb_rule.build_ast_and_deps
-          else Bsb_rule.build_ast_and_deps_from_reason_intf  in
-        Bsb_ninja_util.output_build oc
-          ~output:output_mliast
-          ~input
-          ~rule;
-        Bsb_ninja_util.output_build oc
-          ~output:output_mliastd
-          ~input:output_mliast
-          ~rule:Bsb_rule.build_bin_deps
-          ?shadows:(if Bsb_dir_index.is_lib_dir group.dir_index  then None
-                    else Some [{
-                        key = Bsb_build_schemas.bsb_dir_group; 
-                        op = 
-                          Overwrite (string_of_int (group.dir_index :> int )) }])
-        ;
-        Bsb_ninja_util.output_build oc
-          ~shadows:common_shadows
-          ~output:output_cmi
-          ~input:output_mliast
-          ~rule:Bsb_rule.build_cmi;
-        {
-          all_config_deps = [output_mliastd];
-        }
-
-    end
-  in
   begin match module_info.ml with
     | Ml_source input ->
-       emit_build Ml input (input ^ Literals.suffix_ml)
+      emit_impl_build Ml input 
     | Re_source input -> 
-      emit_build Re input (input ^ Literals.suffix_re)
+      emit_impl_build Re input 
     | Ml_empty -> zero
   end ++
   begin match module_info.mli with
     | Mli_source mli_file  ->
-      emit_build Mli mli_file (mli_file ^ Literals.suffix_mli)
+      emit_intf_build Mli mli_file 
     | Rei_source rei_file ->
-      emit_build Rei rei_file (rei_file ^ Literals.suffix_rei)
+      emit_intf_build Rei rei_file 
     | Mli_empty -> zero
   end ++
   info
@@ -236,5 +239,5 @@ let handle_file_groups
     ~files_to_install ~custom_rules
     (file_groups  :  Bsb_parse_sources.file_group list) st =
   List.fold_left 
-  (handle_file_group oc ~package_specs ~custom_rules ~js_post_build_cmd files_to_install ) 
-  st  file_groups
+    (handle_file_group oc ~package_specs ~custom_rules ~js_post_build_cmd files_to_install ) 
+    st  file_groups
