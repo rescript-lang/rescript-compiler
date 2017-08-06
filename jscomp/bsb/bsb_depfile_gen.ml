@@ -59,30 +59,30 @@ type kind = Js | Bytecode | Native
 *)
 let aux_impl set input_file lhs_suffix rhs_suffix 
     (index : Bsb_dir_index.t)
-    (data : Binary_cache.t array) : string = 
+    (data : Bsb_build_cache.t array) : string = 
   let dependent_file = input_file ^ lhs_suffix ^ dep_lit in
   let (files, len) = 
     Array.fold_left
       (fun ((acc, len) as v) k  -> 
          match String_map.find_opt k data.(0) with
-         | Some {ml = Ml s | Re s  }  
+         | Some {ml = Ml_source (source,_) }  
            -> 
-           let new_file =  Filename.chop_extension s ^ rhs_suffix  
+           let new_file =  source ^ rhs_suffix  
            in (new_file :: acc , len + String.length new_file + length_space)
-         | Some {mli = Mli s | Rei s } -> 
-           let new_file =  Filename.chop_extension s ^ Literals.suffix_cmi in
+         | Some {mli = Mli_source (source,_)  } -> 
+           let new_file =  source ^ Literals.suffix_cmi in
            (new_file :: acc , len + String.length new_file + length_space)
          | Some _ -> assert false
          | None  -> 
            if Bsb_dir_index.is_lib_dir index  then v 
            else 
              begin match String_map.find_opt k data.((index  :> int)) with 
-               | Some {ml = Ml s | Re s  }
+               | Some {ml = Ml_source (source,_) }
                  -> 
-                 let new_file =  Filename.chop_extension s ^ rhs_suffix  
+                 let new_file =  source ^ rhs_suffix  
                  in (new_file :: acc , len + String.length new_file + length_space)
-               | Some {mli = Mli s | Rei s } -> 
-                 let new_file =  Filename.chop_extension s ^ Literals.suffix_cmi in
+               | Some {mli = Mli_source (source,_) } -> 
+                 let new_file =   source ^ Literals.suffix_cmi in
                  (new_file :: acc , len + String.length new_file + length_space)
                | Some _ -> assert false
                | None -> 
@@ -100,24 +100,24 @@ let aux_intf
     set
     input_file 
     (index : Bsb_dir_index.t)
-    (data : Binary_cache.t array) =     
+    (data : Bsb_build_cache.t array) =     
   let dependent_file = input_file ^ Literals.suffix_cmi ^ dep_lit in
   let (files, len) = 
     Array.fold_left
       (fun ((acc, len) as v) k ->
          match String_map.find_opt k data.(0) with 
-         | Some ({ ml = Ml f | Re f  }
-                | { mli = Mli f | Rei f }) -> 
-           let new_file = Filename.chop_extension f ^ Literals.suffix_cmi in
+         | Some ({ ml = Ml_source (source,_)  }
+                | { mli = Mli_source (source,_) }) -> 
+           let new_file =  source ^ Literals.suffix_cmi in
            (new_file :: acc , len + String.length new_file + length_space)
          | Some _ -> assert false
          | None -> 
            if Bsb_dir_index.is_lib_dir index  then v 
            else 
              begin  match String_map.find_opt k data.((index :> int)) with 
-               | Some ({ ml = Ml f | Re f  }
-                      | { mli = Mli f | Rei f }) -> 
-                 let new_file = Filename.chop_extension f ^ Literals.suffix_cmi in
+               | Some ({ ml = Ml_source (source,_)  }
+                      | { mli = Mli_source (source,_)  }) -> 
+                 let new_file = source ^ Literals.suffix_cmi in
                  (new_file :: acc , len + String.length new_file + length_space)
                | Some _ -> assert false
                | None -> v
@@ -136,7 +136,7 @@ let make
     (fn : string)
     (index : Bsb_dir_index.t) : unit = 
   let data  =
-    Binary_cache.read_build_cache 
+    Bsb_build_cache.read_build_cache 
       ~dir:Filename.current_dir_name
   in 
   let set = read_deps fn in 

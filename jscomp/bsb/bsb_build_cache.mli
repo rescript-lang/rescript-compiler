@@ -30,12 +30,15 @@
   [bsb_helper.exe]
 *) 
 type ml_kind =
-  | Ml of string 
-  | Re of string 
+  | Ml_source of string * bool 
+     (* No extension stored
+      Ml_source(name,is_re)
+      [is_re] default to false
+      *)
+  
   | Ml_empty
 type mli_kind = 
-  | Mli of string 
-  | Rei of string
+  | Mli_source of string  * bool
   | Mli_empty
 
 type module_info = 
@@ -58,7 +61,7 @@ type t = module_info String_map.t
 val dir_of_module_info : module_info -> string
 
 
-val basename_of_module_info : module_info -> string 
+val filename_sans_suffix_of_module_info : module_info -> string 
 
 val write_build_cache : dir:string -> t array -> unit
 

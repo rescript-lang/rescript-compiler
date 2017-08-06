@@ -228,7 +228,6 @@ COMMON_SRCS= bs_version \
 	bs_loc  \
 	bs_warnings  \
 	lam_methname  \
-	binary_cache \
 	ml_binary
 COMMON_CMXS= $(addprefix common/, $(addsuffix .cmx, $(COMMON_SRCS)))
 SYNTAX_SRCS= \
@@ -303,6 +302,7 @@ OTHER_CORE_SRCS= bsppx_main bspack_main jsoo_main  bspp_main js_cmi_datasets \
 		 js_main cmjdump_main
 OTHER_CORE_CMXS= $(addprefix core/, $(addsuffix .cmx, $(OTHER_CORE_SRCS)))
 BSB_SRCS= bsb_config\
+	bsb_build_cache\
 	bsb_exception\
 	bsb_dir_index\
 	bsb_log\
