@@ -42,7 +42,7 @@ type t = module_info String_map.t
 
 (** indexed by the group *)
 
-let module_info_magic_number = "BSBUILD20161019"
+let module_info_magic_number = "BSBUILD20170802"
 
 let dir_of_module_info (x : module_info)
   = 
