@@ -30,7 +30,7 @@ let leading_space_count str =
   being handled programmatically (or humanly for that matter. If you're an
   ocaml contributor reading this: who the heck reads the character count
   starting from the first erroring character?) *)
-(* range coordinates all 1-indexed, like for editors. Otherwise this code's
+(* Range coordinates all 1-indexed, like for editors. Otherwise this code
   would have way too many off-by-one errors *)
 let print_file ~range:((start_line, start_char), (end_line, end_char)) ~lines ppf () =
   (* show 2 lines before & after the erroring lines *)
