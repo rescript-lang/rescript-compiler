@@ -25,12 +25,10 @@
 
 
 type ml_kind =
-  | Ml_source of string 
-  | Re_source of string 
+  | Ml_source of string  * bool (*  Ml_source(name, is_re) default to false  *)
   | Ml_empty
 type mli_kind = 
-  | Mli_source of string 
-  | Rei_source of string
+  | Mli_source of string * bool   
   | Mli_empty
 
 type module_info = 
@@ -51,11 +49,11 @@ let dir_of_module_info (x : module_info)
   match x with 
   | { mli; ml;  } -> 
     begin match mli with 
-      | Mli_source s | Rei_source s -> 
+      | Mli_source (s,_) -> 
         Filename.dirname s 
       | Mli_empty -> 
         begin match ml with 
-          | Ml_source s | Re_source s -> 
+          | Ml_source (s,_) -> 
             Filename.dirname s 
           | Ml_empty -> Ext_string.empty
         end
@@ -65,11 +63,11 @@ let filename_sans_suffix_of_module_info (x : module_info) =
   match x with 
   | { mli; ml;  } -> 
     begin match mli with 
-      | Mli_source s | Rei_source s -> 
+      | Mli_source (s,_) -> 
          s 
       | Mli_empty -> 
         begin match ml with 
-          | Ml_source s | Re_source s -> 
+          | Ml_source (s,_)  -> 
              s 
           | Ml_empty -> assert false
         end
@@ -99,10 +97,10 @@ let empty_module_info = {mli = Mli_empty ;  ml = Ml_empty}
 
 let adjust_module_info x suffix name_sans_extension =
   match suffix with 
-  | ".ml" -> {x with ml = Ml_source  name_sans_extension}
-  | ".re" -> {x with ml = Re_source  name_sans_extension}
-  | ".mli" ->  {x with mli = Mli_source name_sans_extension }
-  | ".rei" -> { x with mli = Rei_source name_sans_extension }
+  | ".ml" -> {x with ml = Ml_source  (name_sans_extension, false)}
+  | ".re" -> {x with ml = Ml_source  (name_sans_extension, true)}
+  | ".mli" ->  {x with mli = Mli_source (name_sans_extension,false) }
+  | ".rei" -> { x with mli = Mli_source (name_sans_extension,true) }
   | _ -> 
     Ext_pervasives.failwithf ~loc:__LOC__ 
       "don't know what to do with %s%s" 

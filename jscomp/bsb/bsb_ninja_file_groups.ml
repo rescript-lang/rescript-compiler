@@ -93,14 +93,15 @@ let emit_impl_build
     (package_specs : Bsb_package_specs.t)
     (group_dir_index : Bsb_dir_index.t) 
     oc 
-    (no_intf_file : bool) 
+    ~no_intf_file:(no_intf_file : bool) 
     js_post_build_cmd
-    (kind : [`Ml | `Re ])  
+    ~is_re
     filename_sans_extension
   : info =    
   let file_input = 
-    if kind = `Ml then filename_sans_extension ^ Literals.suffix_ml  
-    else filename_sans_extension ^ Literals.suffix_re in 
+    if is_re then filename_sans_extension ^ Literals.suffix_re 
+    else filename_sans_extension ^ Literals.suffix_ml  
+  in 
   let input = Bsb_config.proj_rel file_input in
   let output_mlast = filename_sans_extension  ^ Literals.suffix_mlast in
   let output_mlastd = filename_sans_extension ^ Literals.suffix_mlastd in
@@ -116,7 +117,7 @@ let emit_impl_build
     Bsb_ninja_util.output_build oc
       ~output:output_mlast
       ~input
-      ~rule:( if kind = `Re then
+      ~rule:( if is_re then 
                 Bsb_rule.build_ast_and_deps_from_reason_impl
               else
                 Bsb_rule.build_ast_and_deps);
@@ -131,7 +132,7 @@ let emit_impl_build
                               Overwrite (string_of_int (group_dir_index :> int)) }])
     ;
     let rule_name , cm_outputs, deps =
-       if no_intf_file then 
+      if no_intf_file then 
         Bsb_rule.build_cmj_cmi_js, [output_cmi], []
       else  Bsb_rule.build_cmj_js, []  , [output_cmi]
 
@@ -159,12 +160,13 @@ let emit_intf_build
     (package_specs : Bsb_package_specs.t)
     (group_dir_index : Bsb_dir_index.t)
     oc
-    (kind : [`Mli | `Rei])  
+    ~is_re
     filename_sans_extension
   : info =
   let file_input = 
-    if kind = `Mli then filename_sans_extension ^ Literals.suffix_mli
-    else filename_sans_extension ^ Literals.suffix_rei in 
+    if is_re then filename_sans_extension ^ Literals.suffix_rei 
+    else filename_sans_extension ^ Literals.suffix_mli
+  in 
   let input = Bsb_config.proj_rel file_input in
   let output_mliast = filename_sans_extension ^ Literals.suffix_mliast in
   let output_mliastd = filename_sans_extension ^ Literals.suffix_mliastd in
@@ -176,8 +178,8 @@ let emit_intf_build
   Bsb_ninja_util.output_build oc
     ~output:output_mliast
     ~input
-    ~rule:(if kind = `Mli then Bsb_rule.build_ast_and_deps
-           else Bsb_rule.build_ast_and_deps_from_reason_intf );
+    ~rule:(if is_re then Bsb_rule.build_ast_and_deps_from_reason_intf
+           else Bsb_rule.build_ast_and_deps);
   Bsb_ninja_util.output_build oc
     ~output:output_mliastd
     ~input:output_mliast
@@ -199,52 +201,46 @@ let emit_intf_build
 
 
 let handle_module_info 
-    (group : Bsb_parse_sources.file_group)
+    (group_dir_index : Bsb_dir_index.t)
     (package_specs : Bsb_package_specs.t) 
     js_post_build_cmd
     oc  module_name 
     ( module_info : Bsb_build_cache.module_info)
-    info  =
-
-  begin match module_info.ml with
-    | Ml_source input ->
-      emit_impl_build 
-        package_specs
-        group.dir_index
-        oc 
-        (module_info.mli = Mli_empty)
-        js_post_build_cmd      
-        `Ml 
-        input 
-    | Re_source input -> 
-      emit_impl_build 
-        package_specs
-        group.dir_index
-        oc 
-        (module_info.mli = Mli_empty)
-        js_post_build_cmd      
-        `Re 
-        input 
-    | Ml_empty -> zero
-  end ++
-  begin match module_info.mli with
-    | Mli_source mli_file  ->
-      emit_intf_build 
-        package_specs
-        group.dir_index
-        oc         
-        `Mli 
-        mli_file 
-    | Rei_source rei_file ->
-      emit_intf_build 
-        package_specs
-        group.dir_index
-        oc         
-        `Mli 
-        rei_file 
-    | Mli_empty -> zero
-  end ++
-  info
+  : info =
+  match module_info.ml, module_info.mli with
+  | Ml_source (input_impl,impl_is_re), 
+    Mli_source(input_intf, intf_is_re) ->
+    emit_impl_build 
+      package_specs
+      group_dir_index
+      oc 
+      ~no_intf_file:false
+      ~is_re:impl_is_re
+      js_post_build_cmd      
+      input_impl  ++ 
+    emit_intf_build 
+      package_specs
+      group_dir_index
+      oc         
+      ~is_re:intf_is_re
+      input_intf 
+  | Ml_source(input,is_re), Mli_empty ->
+    emit_impl_build 
+      package_specs
+      group_dir_index
+      oc 
+      ~no_intf_file:true
+      js_post_build_cmd      
+      ~is_re
+      input 
+  | Ml_empty, Mli_source(input,is_re) ->    
+    emit_intf_build 
+      package_specs
+      group_dir_index
+      oc         
+      ~is_re
+      input 
+  | Ml_empty, Mli_empty -> zero
 
 
 let handle_file_group oc ~custom_rules 
@@ -260,9 +256,9 @@ let handle_file_group oc ~custom_rules
         | Export_set set ->  String_set.mem module_name set in
       if installable then 
         String_hash_set.add files_to_install (Bsb_build_cache.filename_sans_suffix_of_module_info module_info);
-      handle_module_info group 
-        package_specs js_post_build_cmd 
-        oc module_name module_info acc
+      (handle_module_info group.dir_index 
+         package_specs js_post_build_cmd 
+         oc module_name module_info) ++  acc
     ) group.sources  acc 
 
 
