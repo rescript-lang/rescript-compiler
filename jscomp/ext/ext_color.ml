@@ -81,9 +81,11 @@ let style_of_tag s = match s with
   | "error" -> [Bold; FG Red]
   | "warning" -> [Bold; FG Magenta]
   | "info" -> [Bold; FG Yellow]
+  | "dim" -> [Dim]
+  | "filename" -> [FG Cyan]
   | _ -> []
 
-let ansi_of_tag ?(style_of_tag=style_of_tag) s = 
+let ansi_of_tag s = 
   let l = style_of_tag s in
   let s =  String.concat ";" (List.map code_of_style l) in
   "\x1b[" ^ s ^ "m"

@@ -45,25 +45,30 @@ let print_loc ppf loc =
   end
 ;;
 
-let print intro ppf loc =
+let print ~is_warning intro ppf loc =
   setup_colors ();
   (* TODO: handle locations such as _none_ and "" *)
   if loc.loc_start.pos_fname = "//toplevel//"
   && highlight_locations ppf [loc] then ()
   else
-    fprintf ppf "@[@{<intro>%s@}@]@," intro;   
+    if is_warning then 
+      fprintf ppf "@[@{<info>%s@}@]@," intro
+    else begin
+      fprintf ppf "@[@{<error>%s@}@]@," intro
+    end;
     fprintf ppf "@[%a@]@,@," print_loc loc;
     let (file, start_line, start_char) = Location.get_pos_info loc.loc_start in
     let (_, end_line, end_char) = Location.get_pos_info loc.loc_end in
     (* things to special-case: startchar & endchar2 both -1  *)
     if start_char == -1 || end_char == -1 then
       (* happens sometimes. Syntax error for example *)
-      fprintf ppf "This is likely a syntax error. The more relevant message should be just above!@ If it's not, please file an issue here:@ github.com/facebook/reason/issues@,"
+      fprintf ppf "Is there an error before this one? If so, it's likely a syntax error. The more relevant message should be just above!@ If it's not, please file an issue here:@ github.com/facebook/reason/issues@,"
     else begin
       try 
         let lines = file_lines file in
         fprintf ppf "%a"
           (Super_misc.print_file
+          ~is_warning
           ~lines
           ~range:(
             (start_line, start_char + 1), (* make everything 1-index based. See justifications in Super_mic.print_file *)
@@ -79,14 +84,6 @@ let print intro ppf loc =
 (* taken from https://github.com/ocaml/ocaml/blob/4.02/parsing/location.ml#L337 *)
 (* This is the error report entry point. We'll replace the default reporter with this one. *)
 let rec super_error_reporter ppf ({Location.loc; msg; sub; if_highlight} as err) =
-  Super_misc.colorize_tagged_string ppf (function
-  | "intro" -> [Bold; FG Red]
-  | "filename" -> [FG Cyan]
-  | "affected_line_number" -> [Bold; FG Red]
-  | "affected_line_content" -> [FG Red]
-  | "separator" -> [Dim]
-  | _ -> []
-  );
   let highlighted =
     if if_highlight <> "" then
       let rec collect_locs locs {Location.loc; sub; if_highlight; _} =
@@ -100,8 +97,9 @@ let rec super_error_reporter ppf ({Location.loc; msg; sub; if_highlight} as err)
   if highlighted then
     Format.pp_print_string ppf if_highlight
   else begin
+    Super_misc.setup_colors ppf;
     (* open a vertical box. Everything in our message is indented 2 spaces *)
-    Format.fprintf ppf "@[<v 2>@,%a@,%s@,@]" (print "We've found a bug for you!") loc msg;
+    Format.fprintf ppf "@[<v 2>@,%a@,%s@,@]" (print ~is_warning:false "We've found a bug for you!") loc msg;
     List.iter (Format.fprintf ppf "@,@[%a@]" super_error_reporter) sub;
     (* no need to flush here; location's report_exception (which uses this ultimately) flushes *)
   end
@@ -110,18 +108,11 @@ let rec super_error_reporter ppf ({Location.loc; msg; sub; if_highlight} as err)
 (* This is the warning report entry point. We'll replace the default printer with this one *)
 let super_warning_printer loc ppf w =
   if Warnings.is_active w then begin
-    Super_misc.colorize_tagged_string ppf (function
-    | "intro" -> [Bold; FG Yellow]
-    | "filename" -> [FG Cyan]
-    | "affected_line_number" -> [Bold; FG Yellow]
-    | "affected_line_content" -> [FG Yellow]
-    | "separator" -> [Dim]
-    | _ -> []
-    );
+    Super_misc.setup_colors ppf;
     Misc.Color.setup !Clflags.color;
     (* open a vertical box. Everything in our message is indented 2 spaces *)
     Format.fprintf ppf "@[<v 2>@,%a@,%a@,@]" 
-      (print ("Warning number " ^ (Super_warnings.number w |> string_of_int))) 
+      (print ~is_warning:true ("Warning number " ^ (Super_warnings.number w |> string_of_int))) 
       loc 
       Super_warnings.print 
       w

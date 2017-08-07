@@ -48,9 +48,9 @@ let report_error env ppf = function
       (* modified *)
       report_unification_error ppf env trace
         (function ppf ->
-           fprintf ppf "@{<Expr_type_clash.this>This is:@}")
+           fprintf ppf "@{<error>This is:@}")
         (function ppf ->
-           fprintf ppf "@{<Expr_type_clash.wanted>but somewhere wanted:@}")
+           fprintf ppf "@{<info>but somewhere wanted:@}")
   | Apply_non_function typ ->
       (* modified *)
       reset_and_mark_loops typ;
@@ -233,11 +233,7 @@ let report_error env ppf = function
 
 (* https://github.com/ocaml/ocaml/blob/4.02/typing/typecore.ml#L3979 *)
 let report_error env ppf err =
-  Super_misc.colorize_tagged_string ppf (function
-  | "Expr_type_clash.this" -> [Bold; FG Red]
-  | "Expr_type_clash.wanted" -> [Bold; FG Yellow]
-  | _ -> []
-  );
+  Super_misc.setup_colors ppf;
   wrap_printing_env env (fun () -> report_error env ppf err)
 
 (* This will be called in super_main. This is how you'd override the default error printer from the compiler & register new error_of_exn handlers *)

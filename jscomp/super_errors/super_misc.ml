@@ -32,7 +32,7 @@ let leading_space_count str =
   starting from the first erroring character?) *)
 (* Range coordinates all 1-indexed, like for editors. Otherwise this code
   would have way too many off-by-one errors *)
-let print_file ~range:((start_line, start_char), (end_line, end_char)) ~lines ppf () =
+let print_file ~is_warning ~range:((start_line, start_char), (end_line, end_char)) ~lines ppf () =
   (* show 2 lines before & after the erroring lines *)
   let first_shown_line = max 1 (start_line - 2) in
   let last_shown_line = min (Array.length lines) (end_line + 2) in
@@ -62,6 +62,11 @@ let print_file ~range:((start_line, start_char), (end_line, end_char)) ~lines pp
   (* btw, these are unicode chars. They're not of length 1. Careful; we need to
     explicitly tell Format to treat them as length 1 below *)
   let separator = if columns_to_cut = 0 then "│" else "┆" in
+  (* coloring *)
+  let (highlighted_line_number, highlighted_content): (string -> string -> unit, Format.formatter, unit) format * (unit, Format.formatter, unit) format = 
+    if is_warning then ("@{<info>%s@}@{<dim> @<1>%s @}", "@{<info>")
+    else ("@{<error>%s@}@{<dim> @<1>%s @}", "@{<error>")
+  in
 
   fprintf ppf "@[<v 0>";
   (* inclusive *)
@@ -77,10 +82,10 @@ let print_file ~range:((start_line, start_char), (end_line, end_char)) ~lines pp
     (* this is where you insrt the vertical separator. Mark them as legnth 1 as explained above *)
     if i < start_line || i > end_line then begin
       (* normal, non-highlighted line *)
-      fprintf ppf "%s@{<separator> @<1>%s @}" padded_line_number separator
+      fprintf ppf "%s@{<dim> @<1>%s @}" padded_line_number separator
     end else begin
-      (* highlighted row *)
-      fprintf ppf "@{<affected_line_number>%s@}@{<separator> @<1>%s @}" padded_line_number separator
+      (* highlighted  *)
+      fprintf ppf highlighted_line_number padded_line_number separator
     end;
 
     fprintf ppf "@]"; (* h *)
@@ -89,7 +94,7 @@ let print_file ~range:((start_line, start_char), (end_line, end_char)) ~lines pp
 
     let current_line_strictly_between_start_and_end_line = i > start_line && i < end_line in
 
-    if current_line_strictly_between_start_and_end_line then fprintf ppf "@{<affected_line_content>";
+    if current_line_strictly_between_start_and_end_line then fprintf ppf highlighted_content;
 
     let current_line_cut_length = String.length current_line_cut in
     (* inclusive. To be consistent with using 1-indexed indices and count and i, j will be 1-indexed too *)
@@ -98,11 +103,11 @@ let print_file ~range:((start_line, start_char), (end_line, end_char)) ~lines pp
       if current_line_strictly_between_start_and_end_line then
         fprintf ppf "%c@," current_char
       else if i = start_line then begin
-        if j == (start_char - columns_to_cut) then fprintf ppf "@{<affected_line_content>";
+        if j == (start_char - columns_to_cut) then fprintf ppf highlighted_content;
         fprintf ppf "%c@," current_char;
         if j == (end_char - columns_to_cut) then fprintf ppf "@}"
       end else if i = end_line then begin
-        if j == 1 then fprintf ppf "@{<affected_line_content>";
+        if j == 1 then fprintf ppf highlighted_content;
         fprintf ppf "%c@," current_char;
         if j == (end_char - columns_to_cut) then fprintf ppf "@}"
       end else
@@ -120,11 +125,9 @@ let print_file ~range:((start_line, start_char), (end_line, end_char)) ~lines pp
   done;
   fprintf ppf "@]" (* v *)
 
-(* This allows you to, just like css, define which tag gets colored in which
-  way. See usage in e.g. Super_location.super_error_reporter *)
-let colorize_tagged_string ppf f =
+let setup_colors ppf =
   Format.pp_set_formatter_tag_functions ppf
     ({ (Format.pp_get_formatter_tag_functions ppf () ) with
-      mark_open_tag = Ext_color.ansi_of_tag ~style_of_tag:f;
+      mark_open_tag = Ext_color.ansi_of_tag;
       mark_close_tag = (fun _ -> Ext_color.reset_lit);
     })

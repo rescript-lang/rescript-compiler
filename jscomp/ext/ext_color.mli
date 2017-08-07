@@ -39,6 +39,6 @@ type style
   | Dim
 
 (** Input is the tag for example `@{<warning>@}` return escape code *)
-val ansi_of_tag : ?style_of_tag:(string -> style list) -> string -> string 
+val ansi_of_tag : string -> string 
 
 val reset_lit : string
