@@ -27,4 +27,7 @@ type kind = Js | Bytecode | Native
 val make: 
   kind ->
   string -> 
-  Bsb_dir_index.t ->  unit
+  Bsb_dir_index.t ->  
+  string option ->
+  unit
+

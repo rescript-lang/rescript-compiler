@@ -7639,8 +7639,8 @@ let get_list_of_output_js
 
 
 end
-module Binary_cache : sig 
-#1 "binary_cache.mli"
+module Bsb_build_cache : sig 
+#1 "bsb_build_cache.mli"
 
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
@@ -7673,12 +7673,15 @@ module Binary_cache : sig
   [bsb_helper.exe]
 *) 
 type ml_kind =
-  | Ml of string 
-  | Re of string 
+  | Ml_source of string * bool 
+     (* No extension stored
+      Ml_source(name,is_re)
+      [is_re] default to false
+      *)
+  
   | Ml_empty
 type mli_kind = 
-  | Mli of string 
-  | Rei of string
+  | Mli_source of string  * bool
   | Mli_empty
 
 type module_info = 
@@ -7701,7 +7704,7 @@ type t = module_info String_map.t
 val dir_of_module_info : module_info -> string
 
 
-val basename_of_module_info : module_info -> string 
+val filename_sans_suffix_of_module_info : module_info -> string 
 
 val write_build_cache : dir:string -> t array -> unit
 
@@ -7721,7 +7724,7 @@ val map_update :
   dir:string -> t ->  string -> t
 
 end = struct
-#1 "binary_cache.ml"
+#1 "bsb_build_cache.ml"
 
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
@@ -7749,12 +7752,10 @@ end = struct
 
 
 type ml_kind =
-  | Ml of string 
-  | Re of string 
+  | Ml_source of string  * bool (*  Ml_source(name, is_re) default to false  *)
   | Ml_empty
 type mli_kind = 
-  | Mli of string 
-  | Rei of string
+  | Mli_source of string * bool   
   | Mli_empty
 
 type module_info = 
@@ -7768,35 +7769,35 @@ type t = module_info String_map.t
 
 (** indexed by the group *)
 
-let module_info_magic_number = "BSBUILD20161019"
+let module_info_magic_number = "BSBUILD20170802"
 
 let dir_of_module_info (x : module_info)
   = 
   match x with 
   | { mli; ml;  } -> 
     begin match mli with 
-    | Mli s | Rei s -> 
-      Filename.dirname s 
-    | Mli_empty -> 
-      begin match ml with 
-      | Ml s | Re s -> 
+      | Mli_source (s,_) -> 
         Filename.dirname s 
-      | Ml_empty -> Ext_string.empty
-      end
+      | Mli_empty -> 
+        begin match ml with 
+          | Ml_source (s,_) -> 
+            Filename.dirname s 
+          | Ml_empty -> Ext_string.empty
+        end
     end
 
-let basename_of_module_info (x : module_info) =
+let filename_sans_suffix_of_module_info (x : module_info) =
   match x with 
   | { mli; ml;  } -> 
     begin match mli with 
-    | Mli s | Rei s -> 
-      Ext_filename.chop_extension s 
-    | Mli_empty -> 
-      begin match ml with 
-      | Ml s | Re s -> 
-        Ext_filename.chop_extension s 
-      | Ml_empty -> assert false
-      end
+      | Mli_source (s,_) -> 
+         s 
+      | Mli_empty -> 
+        begin match ml with 
+          | Ml_source (s,_)  -> 
+             s 
+          | Ml_empty -> assert false
+        end
     end
 
 let bsbuild_cache = ".bsbuild"    
@@ -7820,24 +7821,35 @@ let read_build_cache ~dir  : t array =
 
 let empty_module_info = {mli = Mli_empty ;  ml = Ml_empty}
 
-let adjust_module_info x suffix name =
+
+let adjust_module_info x suffix name_sans_extension =
   match suffix with 
-  | ".ml" -> {x with ml = Ml name}
-  | ".re" -> {x with ml = Re name}
-  | ".mli" ->  {x with mli = Mli name}
-  | ".rei" -> { x with mli = Rei name}
-  | _ -> failwith ("don't know what to do with " ^ name)
+  | ".ml" -> {x with ml = Ml_source  (name_sans_extension, false)}
+  | ".re" -> {x with ml = Ml_source  (name_sans_extension, true)}
+  | ".mli" ->  {x with mli = Mli_source (name_sans_extension,false) }
+  | ".rei" -> { x with mli = Mli_source (name_sans_extension,true) }
+  | _ -> 
+    Ext_pervasives.failwithf ~loc:__LOC__ 
+      "don't know what to do with %s%s" 
+       name_sans_extension suffix
 
 let map_update ~dir (map : t)  
-  name : t  = 
-  let prefix   = 
-     Ext_filename.combine dir  in
-  let module_name = Ext_filename.module_name_of_file_if_any name in 
-  let suffix = Ext_filename.get_extension name in 
+    file_name : t  = 
+  
+  let module_name = Ext_filename.module_name_of_file_if_any file_name in 
+  let suffix = Ext_filename.get_extension file_name in 
+  let file_name_sans_extension = 
+      Ext_filename.chop_extension (Filename.concat dir file_name) in 
   String_map.adjust 
     module_name 
-    (fun _ -> (adjust_module_info empty_module_info suffix (prefix name )))
-    (fun v -> (adjust_module_info v suffix (prefix name )))
+    (fun _ -> 
+       adjust_module_info 
+         empty_module_info 
+         suffix 
+         file_name_sans_extension )
+    (fun v -> 
+       adjust_module_info v suffix file_name_sans_extension
+    )
     map
 
 end
@@ -9601,7 +9613,7 @@ type build_generator =
 type  file_group = 
   { dir : string ; 
     (* currently relative path expected for ninja file generation *)
-    sources : Binary_cache.t ; 
+    sources : Bsb_build_cache.t ; 
     resources : string list ; 
     (* relative path *)
     public : public;
@@ -9688,7 +9700,7 @@ type build_generator =
 
 type  file_group = 
   { dir : string ;
-    sources : Binary_cache.t; 
+    sources : Bsb_build_cache.t; 
     resources : string list ;
     public : public ;
     dir_index : Bsb_dir_index.t  ;
@@ -9736,7 +9748,7 @@ let  handle_list_files acc
     Array.fold_left (fun acc name -> 
         match Ext_string.is_valid_source_name name with 
         | Good ->   begin 
-            let new_acc = Binary_cache.map_update ~dir acc name  in 
+            let new_acc = Bsb_build_cache.map_update ~dir acc name  in 
             String_vec.push name dyn_file_array ;
             new_acc 
           end 
@@ -9836,7 +9848,7 @@ and parsing_source_dir_map
     (x : Ext_json_types.t String_map.t)
     (* { dir : xx, files : ... } [dir] is already extracted *)
   = 
-  let cur_sources : Binary_cache.module_info String_map.t ref = ref String_map.empty in
+  let cur_sources : Bsb_build_cache.module_info String_map.t ref = ref String_map.empty in
   let resources = ref [] in 
   let public = ref Export_all in (* TODO: move to {!Bsb_default} later*)
   let cur_update_queue = ref [] in 
@@ -9863,7 +9875,7 @@ and parsing_source_dir_map
            output |> List.iter begin fun  output -> 
              begin match Ext_string.is_valid_source_name output with
                | Good ->
-                 cur_sources := Binary_cache.map_update ~dir !cur_sources output
+                 cur_sources := Bsb_build_cache.map_update ~dir !cur_sources output
                | Invalid_module_name ->
                  ()
                (*Format.fprintf Format.err_formatter warning_unused_file output dir *)
@@ -9889,7 +9901,7 @@ and parsing_source_dir_map
         Array.fold_left (fun acc (s : Ext_json_types.t) ->
             match s with 
             | Str {str = s} -> 
-              Binary_cache.map_update ~dir acc s
+              Bsb_build_cache.map_update ~dir acc s
             | _ -> acc
           ) !cur_sources s    
     | Some (Obj {map = m; loc} ) -> (* { excludes : [], slow_re : "" }*)
@@ -9912,7 +9924,7 @@ and parsing_source_dir_map
       let file_array = readdir cxt.root dir in 
       cur_sources := Array.fold_left (fun acc name -> 
           if predicate name then 
-            Binary_cache.map_update  ~dir acc name 
+            Bsb_build_cache.map_update  ~dir acc name 
           else acc
         ) !cur_sources file_array;
       cur_globbed_dirs := [dir]              
@@ -9923,7 +9935,7 @@ and parsing_source_dir_map
         Array.fold_left (fun acc name -> 
             match Ext_string.is_valid_source_name name with 
             | Good -> 
-              Binary_cache.map_update  ~dir acc name 
+              Bsb_build_cache.map_update  ~dir acc name 
             | Invalid_module_name ->
               Format.fprintf Format.err_formatter
                 warning_unused_file
@@ -11334,6 +11346,12 @@ let refmt = "refmt"
 let reason_react_jsx = "reason_react_jsx"
 
 let refmt_flags = "refmt_flags"
+
+let postbuild = "postbuild"
+
+let namespace = "namespace" 
+
+let package_sep = "-"
 end
 module Bsb_rule : sig 
 #1 "bsb_rule.mli"
@@ -11507,7 +11525,7 @@ let build_ast_and_deps_from_reason_intf =
 
 let build_bin_deps =
   define
-    ~command:"${bsdep} -g ${bsb_dir_group} -MD ${in}"
+    ~command:"${bsdep} ${namespace} -g ${bsb_dir_group} -MD ${in}"
     "build_deps"
 
 let copy_resources =
@@ -11538,7 +11556,7 @@ let copy_resources =
 let build_cmj_js =
   define
     ~command:"${bsc} ${bs_package_flags} -bs-assume-has-mli -bs-no-builtin-ppx-ml -bs-no-implicit-include  \
-              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${bsc_flags} -o ${in} -c  ${in} ${postbuild}"
+              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${bsc_flags} -o ${in} -c  ${in} $postbuild"
 
     ~depfile:"${in}.d"
     "build_cmj_only"
@@ -11546,7 +11564,7 @@ let build_cmj_js =
 let build_cmj_cmi_js =
   define
     ~command:"${bsc} ${bs_package_flags} -bs-assume-no-mli -bs-no-builtin-ppx-ml -bs-no-implicit-include \
-              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${bsc_flags} -o ${in} -c  ${in} ${postbuild}"
+              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${bsc_flags} -o ${in} -c  ${in} $postbuild"
     ~depfile:"${in}.d"
     "build_cmj_cmi" (* the compiler should never consult [.cmi] when [.mli] does not exist *)
 let build_cmi =
@@ -11930,7 +11948,7 @@ let make_common_shadows package_specs dirname dir_index
     op = 
       Append
         (Bsb_package_specs.package_flag_of_package_specs
-          package_specs dirname
+           package_specs dirname
         )
   } ::
   (if Bsb_dir_index.is_lib_dir dir_index  then [] else
@@ -11945,127 +11963,157 @@ let make_common_shadows package_specs dirname dir_index
      ]
   )   
 
-type file_kind = 
-  | Ml  
-  | Re 
-  | Mli 
-  | Rei  
+
+let emit_impl_build
+    (package_specs : Bsb_package_specs.t)
+    (group_dir_index : Bsb_dir_index.t) 
+    oc 
+    ~no_intf_file:(no_intf_file : bool) 
+    js_post_build_cmd
+    ~is_re
+    filename_sans_extension
+  : info =    
+  let input = 
+    Bsb_config.proj_rel 
+      (if is_re then filename_sans_extension ^ Literals.suffix_re 
+       else filename_sans_extension ^ Literals.suffix_ml  ) in
+  let output_mlast = filename_sans_extension  ^ Literals.suffix_mlast in
+  let output_mlastd = filename_sans_extension ^ Literals.suffix_mlastd in
+  let file_cmi = filename_sans_extension ^ Literals.suffix_cmi in
+  let output_cmj =  filename_sans_extension ^ Literals.suffix_cmj in
+  let output_js =
+    Bsb_package_specs.get_list_of_output_js package_specs filename_sans_extension in 
+  let common_shadows = 
+    make_common_shadows package_specs
+      (Filename.dirname file_cmi)
+      group_dir_index in
+  begin
+    Bsb_ninja_util.output_build oc
+      ~output:output_mlast
+      ~input
+      ~rule:( if is_re then 
+                Bsb_rule.build_ast_and_deps_from_reason_impl
+              else
+                Bsb_rule.build_ast_and_deps);
+    Bsb_ninja_util.output_build
+      oc
+      ~output:output_mlastd
+      ~input:output_mlast
+      ~rule:Bsb_rule.build_bin_deps
+      ?shadows:(if Bsb_dir_index.is_lib_dir group_dir_index then None
+                else Some [{Bsb_ninja_util.key = Bsb_build_schemas.bsb_dir_group ; 
+                            op = 
+                              Overwrite (string_of_int (group_dir_index :> int)) }])
+    ;
+    let shadows =
+      match js_post_build_cmd with
+      | None -> common_shadows
+      | Some cmd ->
+        {key = Bsb_ninja_global_vars.postbuild;
+         op = Overwrite ("&& " ^ cmd ^ Ext_string.single_space ^ String.concat Ext_string.single_space output_js)} 
+        :: common_shadows
+    in
+    let rule , cm_outputs, deps =
+      if no_intf_file then 
+        Bsb_rule.build_cmj_cmi_js, [file_cmi], []
+      else  Bsb_rule.build_cmj_js, []  , [file_cmi]
+    in
+    Bsb_ninja_util.output_build oc
+      ~output:output_cmj
+      ~shadows
+      ~outputs:  (output_js @ cm_outputs)
+      ~input:output_mlast
+      ~implicit_deps:deps
+      ~rule;
+    {all_config_deps = [output_mlastd] }
+  end 
+
+
+let emit_intf_build 
+    (package_specs : Bsb_package_specs.t)
+    (group_dir_index : Bsb_dir_index.t)
+    oc
+    ~is_re
+    filename_sans_extension
+  : info =
+  
+  let input = 
+    Bsb_config.proj_rel 
+      (if is_re then filename_sans_extension ^ Literals.suffix_rei 
+       else filename_sans_extension ^ Literals.suffix_mli) in
+  let output_mliast = filename_sans_extension ^ Literals.suffix_mliast in
+  let output_mliastd = filename_sans_extension ^ Literals.suffix_mliastd in
+  let output_cmi = filename_sans_extension ^ Literals.suffix_cmi in
+  let common_shadows = 
+    make_common_shadows package_specs
+      (Filename.dirname output_cmi)
+      group_dir_index in
+  Bsb_ninja_util.output_build oc
+    ~output:output_mliast
+    ~input
+    ~rule:(if is_re then Bsb_rule.build_ast_and_deps_from_reason_intf
+           else Bsb_rule.build_ast_and_deps);
+  Bsb_ninja_util.output_build oc
+    ~output:output_mliastd
+    ~input:output_mliast
+    ~rule:Bsb_rule.build_bin_deps
+    ?shadows:(if Bsb_dir_index.is_lib_dir group_dir_index  then None
+              else Some [{
+                  key = Bsb_build_schemas.bsb_dir_group; 
+                  op = 
+                    Overwrite (string_of_int (group_dir_index :> int )) }])
+  ;
+  Bsb_ninja_util.output_build oc
+    ~shadows:common_shadows
+    ~output:output_cmi
+    ~input:output_mliast
+    ~rule:Bsb_rule.build_cmi;
+  {
+    all_config_deps = [output_mliastd];
+  }    
+
 
 let handle_module_info 
-    (group : Bsb_parse_sources.file_group)
+    (group_dir_index : Bsb_dir_index.t)
     (package_specs : Bsb_package_specs.t) 
     js_post_build_cmd
     oc  module_name 
-    ( module_info : Binary_cache.module_info)
-    info  =
-  let emit_build (kind : file_kind)  file_input : info =
-
-    let filename_sans_extension = Filename.chop_extension file_input in
-    let input = Bsb_config.proj_rel file_input in
-    let output_file_sans_extension = filename_sans_extension in
-    let output_mlast = output_file_sans_extension  ^ Literals.suffix_mlast in
-    let output_mlastd = output_file_sans_extension ^ Literals.suffix_mlastd in
-    let output_mliast = output_file_sans_extension ^ Literals.suffix_mliast in
-    let output_mliastd = output_file_sans_extension ^ Literals.suffix_mliastd in
-    let output_cmi = output_file_sans_extension ^ Literals.suffix_cmi in
-    let output_cmj =  output_file_sans_extension ^ Literals.suffix_cmj in
-    let output_js =
-        Bsb_package_specs.get_list_of_output_js package_specs output_file_sans_extension in 
-    let common_shadows = 
-      make_common_shadows package_specs
-        (Filename.dirname output_cmi)
-        group.dir_index in
-    begin match kind with
-      | Ml
-      | Re ->
-        let input, rule  =
-          if kind = Re then
-            input, Bsb_rule.build_ast_and_deps_from_reason_impl
-          else
-            input, Bsb_rule.build_ast_and_deps
-        in
-        begin
-          Bsb_ninja_util.output_build oc
-            ~output:output_mlast
-            ~input
-            ~rule;
-          Bsb_ninja_util.output_build
-            oc
-            ~output:output_mlastd
-            ~input:output_mlast
-            ~rule:Bsb_rule.build_bin_deps
-            ?shadows:(if Bsb_dir_index.is_lib_dir group.dir_index then None
-                      else Some [{Bsb_ninja_util.key = Bsb_build_schemas.bsb_dir_group ; 
-                                  op = 
-                                    Overwrite (string_of_int (group.dir_index :> int)) }])
-          ;
-          let rule_name , cm_outputs, deps =
-            if module_info.mli = Mli_empty then
-              Bsb_rule.build_cmj_cmi_js, [output_cmi], []
-            else  Bsb_rule.build_cmj_js, []  , [output_cmi]
-
-          in
-          let shadows =
-            match js_post_build_cmd with
-            | None -> common_shadows
-            | Some cmd ->
-              {key = "postbuild";
-               op = Overwrite ("&& " ^ cmd ^ Ext_string.single_space ^ String.concat Ext_string.single_space output_js)} 
-              :: common_shadows
-          in
-          Bsb_ninja_util.output_build oc
-            ~output:output_cmj
-            ~shadows
-            ~outputs:  (output_js @ cm_outputs)
-            ~input:output_mlast
-            ~implicit_deps:deps
-            ~rule:rule_name ;
-          {all_config_deps = [output_mlastd] }
-
-        end
-      | Mli
-      | Rei ->
-        let rule =
-          if kind = Mli then Bsb_rule.build_ast_and_deps
-          else Bsb_rule.build_ast_and_deps_from_reason_intf  in
-        Bsb_ninja_util.output_build oc
-          ~output:output_mliast
-          ~input
-          ~rule;
-        Bsb_ninja_util.output_build oc
-          ~output:output_mliastd
-          ~input:output_mliast
-          ~rule:Bsb_rule.build_bin_deps
-          ?shadows:(if Bsb_dir_index.is_lib_dir group.dir_index  then None
-                    else Some [{
-                        key = Bsb_build_schemas.bsb_dir_group; 
-                        op = 
-                          Overwrite (string_of_int (group.dir_index :> int )) }])
-        ;
-        Bsb_ninja_util.output_build oc
-          ~shadows:common_shadows
-          ~output:output_cmi
-          ~input:output_mliast
-          ~rule:Bsb_rule.build_cmi;
-        {
-          all_config_deps = [output_mliastd];
-        }
-
-    end
-  in
-  begin match module_info.ml with
-    | Ml input -> emit_build Ml input
-    | Re input -> emit_build Re input
-    | Ml_empty -> zero
-  end ++
-  begin match module_info.mli with
-    | Mli mli_file  ->
-      emit_build Mli mli_file
-    | Rei rei_file ->
-      emit_build Rei rei_file
-    | Mli_empty -> zero
-  end ++
-  info
+    ( module_info : Bsb_build_cache.module_info)
+  : info =
+  match module_info.ml, module_info.mli with
+  | Ml_source (input_impl,impl_is_re), 
+    Mli_source(input_intf, intf_is_re) ->
+    emit_impl_build 
+      package_specs
+      group_dir_index
+      oc 
+      ~no_intf_file:false
+      ~is_re:impl_is_re
+      js_post_build_cmd      
+      input_impl  ++ 
+    emit_intf_build 
+      package_specs
+      group_dir_index
+      oc         
+      ~is_re:intf_is_re
+      input_intf 
+  | Ml_source(input,is_re), Mli_empty ->
+    emit_impl_build 
+      package_specs
+      group_dir_index
+      oc 
+      ~no_intf_file:true
+      js_post_build_cmd      
+      ~is_re
+      input 
+  | Ml_empty, Mli_source(input,is_re) ->    
+    emit_intf_build 
+      package_specs
+      group_dir_index
+      oc         
+      ~is_re
+      input 
+  | Ml_empty, Mli_empty -> zero
 
 
 let handle_file_group oc ~custom_rules 
@@ -12080,10 +12128,10 @@ let handle_file_group oc ~custom_rules
         | Export_none -> false
         | Export_set set ->  String_set.mem module_name set in
       if installable then 
-        String_hash_set.add files_to_install (Binary_cache.basename_of_module_info module_info);
-      handle_module_info group 
-        package_specs js_post_build_cmd 
-        oc module_name module_info acc
+        String_hash_set.add files_to_install (Bsb_build_cache.filename_sans_suffix_of_module_info module_info);
+      (handle_module_info group.dir_index 
+         package_specs js_post_build_cmd 
+         oc module_name module_info) ++  acc
     ) group.sources  acc 
 
 
@@ -12092,8 +12140,8 @@ let handle_file_groups
     ~files_to_install ~custom_rules
     (file_groups  :  Bsb_parse_sources.file_group list) st =
   List.fold_left 
-  (handle_file_group oc ~package_specs ~custom_rules ~js_post_build_cmd files_to_install ) 
-  st  file_groups
+    (handle_file_group oc ~package_specs ~custom_rules ~js_post_build_cmd files_to_install ) 
+    st  file_groups
 
 end
 module Bsb_ninja_gen : sig 
@@ -12169,7 +12217,7 @@ let merge_module_info_map acc sources =
         assert false
       | Some a, Some b  ->
         failwith ("Conflict files found: " ^ modname ^ " in "
-                  ^ Binary_cache.dir_of_module_info a ^ " and " ^ Binary_cache.dir_of_module_info b
+                  ^ Bsb_build_cache.dir_of_module_info a ^ " and " ^ Bsb_build_cache.dir_of_module_info b
                   ^ ". File names need to be unique in a project.")
       | Some v, None  -> Some v
       | None, Some v ->  Some v
@@ -12200,6 +12248,7 @@ let output_ninja
       built_in_dependency;
       reason_react_jsx;
       generators ;
+      namespace ; 
     } : Bsb_config_types.t)
   =
   let custom_rules = Bsb_rule.reset generators in 
@@ -12226,8 +12275,15 @@ let output_ninja
         match reason_react_jsx with 
         | None -> Ext_string.empty          
         | Some  s -> 
-          "-ppx " ^ s         
+          Ext_string.inter2 "-ppx" s 
       in 
+      let namespace_flag = 
+        match namespace with
+        | None -> Ext_string.empty
+        | Some s -> 
+          Ext_string.inter2 "-ns" s 
+          
+      in  
       Bsb_ninja_util.output_kvs
         [|
           Bsb_ninja_global_vars.bs_package_flags, bs_package_flags ; 
@@ -12242,6 +12298,7 @@ let output_ninja
           Bsb_ninja_global_vars.reason_react_jsx, reason_react_jsx_flag
              ; (* make it configurable in the future *)
           Bsb_ninja_global_vars.refmt_flags, refmt_flags;
+          Bsb_ninja_global_vars.namespace , namespace_flag ; 
           Bsb_build_schemas.bsb_dir_group, "0"  (*TODO: avoid name conflict in the future *)
         |] oc ;
     in
@@ -12264,7 +12321,7 @@ let output_ninja
           List.fold_left (fun (acc, dirs,acc_resources) ({Bsb_parse_sources.sources ; dir; resources }) ->
               merge_module_info_map  acc  sources ,  dir::dirs , (List.map (fun x -> dir // x ) resources) @ acc_resources
             ) (String_map.empty,[],[]) bs_file_groups in
-        Binary_cache.write_build_cache 
+        Bsb_build_cache.write_build_cache 
         ~dir:(cwd // Bsb_config.lib_bs) [|bs_groups|] ;
         Bsb_ninja_util.output_kv
           Bsb_build_schemas.bsc_lib_includes (Bsb_build_util.flag_concat dash_i @@ 
@@ -12292,7 +12349,7 @@ let output_ninja
           Bsb_ninja_util.output_kv (Bsb_dir_index.(string_of_bsb_dev_include (of_int i)))
             (Bsb_build_util.flag_concat "-I" @@ source_dirs.(i)) oc
         done  ;
-        Binary_cache.write_build_cache 
+        Bsb_build_cache.write_build_cache 
         ~dir:(cwd // Bsb_config.lib_bs) bs_groups ;
         static_resources;
     in
@@ -17181,8 +17238,16 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-let package_sep = "-"
-
+let package_sep = Bsb_ninja_global_vars.package_sep
+(**
+  {[
+    module List = XX__List    
+  ]}
+  vs
+  {[
+    module List = List__XX
+  ]}
+*)
 open Ast_helper
 let loc = Location.none
 (* module pkg_name = pkg_name-cunit *)

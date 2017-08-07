@@ -44,3 +44,9 @@ let refmt = "refmt"
 let reason_react_jsx = "reason_react_jsx"
 
 let refmt_flags = "refmt_flags"
+
+let postbuild = "postbuild"
+
+let namespace = "namespace" 
+
+let package_sep = "-"

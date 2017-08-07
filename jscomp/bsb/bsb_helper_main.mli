@@ -21,3 +21,15 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+ (** Used to generate .d file, for example 
+  {[
+    bsb_helper.exe -g 0 -MD  src/hi/hello.ml
+  ]}
+  It will read the cache file and generate the corresponding
+     [.d] file. This [.d] file will be used as attribute [depfile]
+  whether we use namespace or not, the filename of [.mlast], [.d] 
+  should be kept the same, we only need change the name of [.cm*]
+  and the contents of filename in [.d]
+ *)

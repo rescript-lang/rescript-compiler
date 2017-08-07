@@ -66,6 +66,7 @@ let output_ninja
       built_in_dependency;
       reason_react_jsx;
       generators ;
+      namespace ; 
     } : Bsb_config_types.t)
   =
   let custom_rules = Bsb_rule.reset generators in 
@@ -92,8 +93,15 @@ let output_ninja
         match reason_react_jsx with 
         | None -> Ext_string.empty          
         | Some  s -> 
-          "-ppx " ^ s         
+          Ext_string.inter2 "-ppx" s 
       in 
+      let namespace_flag = 
+        match namespace with
+        | None -> Ext_string.empty
+        | Some s -> 
+          Ext_string.inter2 "-ns" s 
+          
+      in  
       Bsb_ninja_util.output_kvs
         [|
           Bsb_ninja_global_vars.bs_package_flags, bs_package_flags ; 
@@ -108,6 +116,7 @@ let output_ninja
           Bsb_ninja_global_vars.reason_react_jsx, reason_react_jsx_flag
              ; (* make it configurable in the future *)
           Bsb_ninja_global_vars.refmt_flags, refmt_flags;
+          Bsb_ninja_global_vars.namespace , namespace_flag ; 
           Bsb_build_schemas.bsb_dir_group, "0"  (*TODO: avoid name conflict in the future *)
         |] oc ;
     in

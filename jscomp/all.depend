@@ -747,8 +747,8 @@ bsb/bsb_config_types.cmx : ext/string_map.cmx ext/string_hash_set.cmx \
     bsb/bsb_parse_sources.cmx bsb/bsb_package_specs.cmx
 bsb/bsb_default.cmx : bsb/bsb_config_types.cmx bsb/bsb_default.cmi
 bsb/bsb_depfile_gen.cmx : ext/string_map.cmx ext/literals.cmx \
-    ext/ext_string.cmx ext/ext_pervasives.cmx bsb/bsb_dir_index.cmx \
-    bsb/bsb_build_cache.cmx bsb/bsb_depfile_gen.cmi
+    ext/ext_string.cmx ext/ext_pervasives.cmx bsb/bsb_ninja_global_vars.cmx \
+    bsb/bsb_dir_index.cmx bsb/bsb_build_cache.cmx bsb/bsb_depfile_gen.cmi
 bsb/bsb_dir_index.cmx : bsb/bsb_dir_index.cmi
 bsb/bsb_exception.cmx : ext/ext_string.cmx ext/ext_position.cmx \
     ext/ext_json.cmx common/bs_version.cmx bsb/bsb_exception.cmi
@@ -813,7 +813,8 @@ bsb/bsb_parse_sources.cmx : ext/string_vec.cmx ext/string_set.cmx \
 bsb/bsb_pkg.cmx : ext/string_hashtbl.cmx ext/literals.cmx \
     bsb/bsb_exception.cmx bsb/bsb_pkg.cmi
 bsb/bsb_pkg_cmi_create.cmx :
-bsb/bsb_pkg_create.cmx : bsb/bsb_pkg_create.cmi
+bsb/bsb_pkg_create.cmx : bsb/bsb_ninja_global_vars.cmx \
+    bsb/bsb_pkg_create.cmi
 bsb/bsb_pkg_map_gen.cmx : ext/string_map.cmx common/ml_binary.cmx \
     ext/ext_filename.cmx bsb/bsb_pkg_create.cmx bsb/bsb_parse_sources.cmx \
     bsb/bsb_config.cmx bsb/bsb_pkg_map_gen.cmi
