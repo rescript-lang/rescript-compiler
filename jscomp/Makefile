@@ -299,22 +299,26 @@ CORE_SRCS= type_int_to_string type_util  ocaml_stdlib_slots bs_conditional_initi
 CORE_CMXS=$(addprefix core/, $(addsuffix .cmx, $(CORE_SRCS)))
 
 OTHER_CORE_SRCS= bsppx_main bspack_main jsoo_main  bspp_main js_cmi_datasets \
-		 js_main cmjdump_main
+		 js_main cmjdump_main astdump_main
+
 OTHER_CORE_CMXS= $(addprefix core/, $(addsuffix .cmx, $(OTHER_CORE_SRCS)))
 BSB_SRCS= bsb_config\
 	bsb_build_cache\
 	bsb_exception\
 	bsb_dir_index\
 	bsb_log\
-	bsb_depfile_gen\
-	bsb_pkg \
-	bsb_build_schemas\
 	bsb_ninja_global_vars\
+	bsb_depfile_gen\
+	bsb_pkg\
+	bsb_build_schemas\
 	bsb_build_util\
 	bsb_package_specs\
 	bsb_pkg_create\
 	bsb_pkg_map_gen\
+	bsb_helper_extract\
+	bsb_helper_dep_graph\
 	bsb_helper_linker\
+	bsb_helper_packer\
 	bsb_helper_extract\
 	bsb_rule\
 	bsb_ninja_util \
@@ -374,6 +378,9 @@ check: $(EXT_CMXS) $(COMMON_CMXS) $(SYNTAX_CMXS) $(DEPENDS_CMXS) $(CORE_CMXS) $(
 bin/bsb.exe: bs_hash.cmxa ext.cmxa common.cmxa  bsb.cmxa bsb/bsb_main.cmx
 	$(NATIVE) -I +compiler-libs -g  ocamlcommon.cmxa unix.cmxa str.cmxa $^ -o $@
 
+bin/bsb_helper.exe: bs_hash.cmxa ext.cmxa common.cmxa  bsb.cmxa bsb/bsb_helper_main.cmx
+	$(NATIVE) -I +compiler-libs -g  ocamlcommon.cmxa unix.cmxa str.cmxa $^ -o $@
+
 # bin/bsc:  ext.cmxa common.cmxa  depends.cmxa syntax.cmxa core.cmxa
 # 	$(NATIVE) -g -linkall -I +compiler-libs ocamlcommon.cmxa $^ -o $@
 
@@ -384,6 +391,10 @@ bin/bsc.exe: bs_hash.cmxa ext.cmxa common.cmxa syntax.cmxa depends.cmxa core.cmx
 bin/cmjdump.exe: bs_hash.cmxa ext.cmxa common.cmxa syntax.cmxa depends.cmxa core.cmxa core/cmjdump_main.cmx
 	@echo "Linking"
 	$(NATIVE) -g -linkall -I +compiler-libs ocamlcommon.cmxa $^ -o $@
+
+bin/astdump.exe: bs_hash.cmxa ext.cmxa common.cmxa syntax.cmxa depends.cmxa bsb.cmxa core/astdump_main.cmx
+	@echo "Linking"
+	$(NATIVE) -g -linkall -I +compiler-libs ocamlcommon.cmxa unix.cmxa str.cmxa  $^ -o $@
 
 bin/jscmj.exe:bs_hash.cmxa ext.cmxa common.cmxa syntax.cmxa depends.cmxa core.cmxa  jscmj_main.cmx
 	@echo "Linking js_pack.exe"

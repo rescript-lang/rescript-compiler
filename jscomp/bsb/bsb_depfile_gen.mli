@@ -24,7 +24,14 @@
 
 type kind = Js | Bytecode | Native
 
+
+val deps_of_channel : in_channel -> string array
+
+
 val make: 
   kind ->
   string -> 
-  Bsb_dir_index.t ->  unit
+  Bsb_dir_index.t ->  
+  string option ->
+  unit
+

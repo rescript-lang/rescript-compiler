@@ -98,29 +98,28 @@ let emit_impl_build
     ~is_re
     filename_sans_extension
   : info =    
-  let file_input = 
-    if is_re then filename_sans_extension ^ Literals.suffix_re 
-    else filename_sans_extension ^ Literals.suffix_ml  
-  in 
-  let input = Bsb_config.proj_rel file_input in
+  let input = 
+    Bsb_config.proj_rel 
+      (if is_re then filename_sans_extension ^ Literals.suffix_re 
+       else filename_sans_extension ^ Literals.suffix_ml  ) in
   let output_mlast = filename_sans_extension  ^ Literals.suffix_mlast in
   let output_mlastd = filename_sans_extension ^ Literals.suffix_mlastd in
-  let output_cmi = filename_sans_extension ^ Literals.suffix_cmi in
+  let file_cmi = filename_sans_extension ^ Literals.suffix_cmi in
   let output_cmj =  filename_sans_extension ^ Literals.suffix_cmj in
   let output_js =
     Bsb_package_specs.get_list_of_output_js package_specs filename_sans_extension in 
   let common_shadows = 
     make_common_shadows package_specs
-      (Filename.dirname output_cmi)
+      (Filename.dirname file_cmi)
       group_dir_index in
   begin
     Bsb_ninja_util.output_build oc
       ~output:output_mlast
       ~input
       ~rule:( if is_re then 
-                Bsb_rule.build_ast_and_deps_from_reason_impl
+                Bsb_rule.build_ast_and_module_sets_from_re
               else
-                Bsb_rule.build_ast_and_deps);
+                Bsb_rule.build_ast_and_module_sets);
     Bsb_ninja_util.output_build
       oc
       ~output:output_mlastd
@@ -131,19 +130,18 @@ let emit_impl_build
                             op = 
                               Overwrite (string_of_int (group_dir_index :> int)) }])
     ;
-    let rule_name , cm_outputs, deps =
-      if no_intf_file then 
-        Bsb_rule.build_cmj_cmi_js, [output_cmi], []
-      else  Bsb_rule.build_cmj_js, []  , [output_cmi]
-
-    in
     let shadows =
       match js_post_build_cmd with
       | None -> common_shadows
       | Some cmd ->
-        {key = "postbuild";
+        {key = Bsb_ninja_global_vars.postbuild;
          op = Overwrite ("&& " ^ cmd ^ Ext_string.single_space ^ String.concat Ext_string.single_space output_js)} 
         :: common_shadows
+    in
+    let rule , cm_outputs, deps =
+      if no_intf_file then 
+        Bsb_rule.build_cmj_cmi_js, [file_cmi], []
+      else  Bsb_rule.build_cmj_js, []  , [file_cmi]
     in
     Bsb_ninja_util.output_build oc
       ~output:output_cmj
@@ -151,7 +149,7 @@ let emit_impl_build
       ~outputs:  (output_js @ cm_outputs)
       ~input:output_mlast
       ~implicit_deps:deps
-      ~rule:rule_name ;
+      ~rule;
     {all_config_deps = [output_mlastd] }
   end 
 
@@ -163,11 +161,11 @@ let emit_intf_build
     ~is_re
     filename_sans_extension
   : info =
-  let file_input = 
-    if is_re then filename_sans_extension ^ Literals.suffix_rei 
-    else filename_sans_extension ^ Literals.suffix_mli
-  in 
-  let input = Bsb_config.proj_rel file_input in
+  
+  let input = 
+    Bsb_config.proj_rel 
+      (if is_re then filename_sans_extension ^ Literals.suffix_rei 
+       else filename_sans_extension ^ Literals.suffix_mli) in
   let output_mliast = filename_sans_extension ^ Literals.suffix_mliast in
   let output_mliastd = filename_sans_extension ^ Literals.suffix_mliastd in
   let output_cmi = filename_sans_extension ^ Literals.suffix_cmi in
@@ -178,8 +176,8 @@ let emit_intf_build
   Bsb_ninja_util.output_build oc
     ~output:output_mliast
     ~input
-    ~rule:(if is_re then Bsb_rule.build_ast_and_deps_from_reason_intf
-           else Bsb_rule.build_ast_and_deps);
+    ~rule:(if is_re then Bsb_rule.build_ast_and_module_sets_from_rei
+           else Bsb_rule.build_ast_and_module_sets);
   Bsb_ninja_util.output_build oc
     ~output:output_mliastd
     ~input:output_mliast

@@ -41,7 +41,7 @@ let collect_file name =
 
 (* let output_prefix = ref None *)
 let dev_group = ref 0
-
+let namespace = ref None
 let link link_byte_or_native = 
   begin match !main_module with
     | None -> failwith "Linking needs a main module. Please add -main-module MyMainModule to the invocation."
@@ -65,18 +65,24 @@ let () =
       fun x -> 
         Bsb_depfile_gen.make
           Js 
-          x (Bsb_dir_index.of_int !dev_group )),
+          x (Bsb_dir_index.of_int !dev_group )
+          !namespace
+          ),
     " (internal)Generate dep file for ninja format(from .ml[i]deps)";
+    "-ns", Arg.String (fun s -> namespace := Some s),
+    " Set namespace";
     "-MD-bytecode", Arg.String (
       fun x -> 
         Bsb_depfile_gen.make
           Bytecode 
-          x (Bsb_dir_index.of_int !dev_group )),
+          x (Bsb_dir_index.of_int !dev_group ) !namespace),          
     " (internal)Generate dep file for ninja format(from .ml[i]deps)";
     "-MD-native", Arg.String (fun x -> 
         Bsb_depfile_gen.make
           Native 
-           x (Bsb_dir_index.of_int !dev_group )),
+           x (Bsb_dir_index.of_int !dev_group )
+           !namespace
+           ),
     " (internal)Generate dep file for ninja format(from .ml[i]deps)";
 
     (**

@@ -22,8 +22,16 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-let package_sep = "-"
-
+let package_sep = Bsb_ninja_global_vars.package_sep
+(**
+  {[
+    module List = XX__List    
+  ]}
+  vs
+  {[
+    module List = List__XX
+  ]}
+*)
 open Ast_helper
 let loc = Location.none
 (* module pkg_name = pkg_name-cunit *)

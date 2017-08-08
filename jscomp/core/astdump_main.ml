@@ -22,31 +22,35 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+let p = Format.fprintf 
 
- 
-let bs_package_flags = "bs_package_flags"
+let () = 
+  match Sys.argv with 
+  | [|_; file|]
+    -> 
+    let ic = open_in_bin file in 
 
-let bsc = "bsc" 
+    let arrs = 
+      Bsb_depfile_gen.deps_of_channel ic 
+    in
+    p Format.std_formatter "@[Dependent modules: @[%a@]@]@."
+      (Format.pp_print_list ~pp_sep:(fun fmt () ->
+           p fmt "@ ;"
+         ) Format.pp_print_string) 
+      (Array.to_list arrs);
+    p Format.std_formatter "@.==============================@.";
+    if Filename.check_suffix file ".mlast" then 
+      begin
+        Pprintast.structure Format.std_formatter
+          (Ml_binary.read_ast Ml_binary.Ml ic );
+        close_in ic 
+      end
+    else if Filename.check_suffix file ".mliast" then 
+      begin
+        Pprintast.signature Format.std_formatter
+          (Ml_binary.read_ast Ml_binary.Mli ic);
+        close_in ic
+      end
+    else assert false
 
-let src_root_dir = "src_root_dir"
-let bsdep = "bsdep"
-
-let bsc_flags = "bsc_flags"
-
-let ppx_flags = "ppx_flags"
-
-let bs_package_includes = "bs_package_includes"
-
-let bs_package_dev_includes = "bs_package_dev_includes"
-
-let refmt = "refmt"
-
-let reason_react_jsx = "reason_react_jsx"
-
-let refmt_flags = "refmt_flags"
-
-let postbuild = "postbuild"
-
-let namespace = "namespace" 
-
-let package_sep = "-"
+  | _ -> failwith "expect one argument"

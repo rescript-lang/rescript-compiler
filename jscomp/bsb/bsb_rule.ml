@@ -94,26 +94,28 @@ let define
   } in self
 
 
-
-let build_ast_and_deps =
+(** FIXME: We don't need set [-o ${out}] when building ast 
+    since the default is already good -- it does not*)
+let build_ast_and_module_sets =
   define
     ~command:"${bsc}  ${pp_flags} ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast ${in}"
-    "build_ast_and_deps"
+    "build_ast_and_module_sets"
 
-let build_ast_and_deps_from_reason_impl =
+
+let build_ast_and_module_sets_from_re =
   define
     ~command:"${bsc} -pp \"${refmt} ${refmt_flags}\" ${reason_react_jsx}  ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -impl ${in}"
-    "build_ast_and_deps_from_reason_impl"
+    "build_ast_and_module_sets_from_re"
 
-let build_ast_and_deps_from_reason_intf =
+let build_ast_and_module_sets_from_rei =
   define
     ~command:"${bsc} -pp \"${refmt} ${refmt_flags}\" ${reason_react_jsx} ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -intf ${in}"
-    "build_ast_and_deps_from_reason_intf"
+    "build_ast_and_module_sets_from_rei"
 
 
 let build_bin_deps =
   define
-    ~command:"${bsdep} -g ${bsb_dir_group} -MD ${in}"
+    ~command:"${bsdep} ${namespace} -g ${bsb_dir_group} -MD ${in}"
     "build_deps"
 
 let copy_resources =
@@ -144,7 +146,7 @@ let copy_resources =
 let build_cmj_js =
   define
     ~command:"${bsc} ${bs_package_flags} -bs-assume-has-mli -bs-no-builtin-ppx-ml -bs-no-implicit-include  \
-              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${bsc_flags} -o ${in} -c  ${in} ${postbuild}"
+              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${bsc_flags} -o ${in} -c  ${in} $postbuild"
 
     ~depfile:"${in}.d"
     "build_cmj_only"
@@ -152,7 +154,7 @@ let build_cmj_js =
 let build_cmj_cmi_js =
   define
     ~command:"${bsc} ${bs_package_flags} -bs-assume-no-mli -bs-no-builtin-ppx-ml -bs-no-implicit-include \
-              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${bsc_flags} -o ${in} -c  ${in} ${postbuild}"
+              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${bsc_flags} -o ${in} -c  ${in} $postbuild"
     ~depfile:"${in}.d"
     "build_cmj_cmi" (* the compiler should never consult [.cmi] when [.mli] does not exist *)
 let build_cmi =
@@ -172,9 +174,9 @@ let reset (custom_rules : string String_map.t) =
     rule_id := built_in_rule_id;
     rule_names := built_in_rule_names;
 
-    build_ast_and_deps.used <- false ;
-    build_ast_and_deps_from_reason_impl.used <- false ;  
-    build_ast_and_deps_from_reason_intf.used <- false ;
+    build_ast_and_module_sets.used <- false ;
+    build_ast_and_module_sets_from_re.used <- false ;  
+    build_ast_and_module_sets_from_rei.used <- false ;
     build_bin_deps.used <- false;
     copy_resources.used <- false ;
 
