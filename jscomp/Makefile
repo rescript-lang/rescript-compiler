@@ -54,7 +54,7 @@ ext/int_vec.ml: ext/vec.cppo.ml
 ext/resize_array.ml: ext/vec.cppo.ml
 	cppo -D TYPE_FUNCTOR $< -o $@
 ext/string_set.ml : ext/set.cppo.ml
-	cppo -D TYPE_STRING $< -o $@	
+	cppo -D TYPE_STRING $< -o $@
 ext/set_int.ml : ext/set.cppo.ml
 	cppo -D TYPE_INT $< -o $@
 ext/ident_set.ml : ext/set.cppo.ml
@@ -89,16 +89,16 @@ ext/ordered_hash_set_ident.ml:ext/ordered_hash_set.cppo.ml
 	cppo -D TYPE_IDENT $< -o $@
 
 ext/string_hashtbl.ml: ext/hashtbl.cppo.ml
-	cppo -D TYPE_STRING $< -o $@	
+	cppo -D TYPE_STRING $< -o $@
 ext/int_hashtbl.ml: ext/hashtbl.cppo.ml
 	cppo -D TYPE_INT $< -o $@
-ext/ident_hashtbl.ml: ext/hashtbl.cppo.ml	
+ext/ident_hashtbl.ml: ext/hashtbl.cppo.ml
 	cppo -D TYPE_IDENT $< -o $@
 ext/hashtbl_make.ml: ext/hashtbl.cppo.ml
 	cppo -D TYPE_FUNCTOR $< -o $@
-## Stubs 
+## Stubs
 .c.o:
-	$(NATIVE) -ccopt -O2 -ccopt -o -ccopt $@ -c $< 
+	$(NATIVE) -ccopt -O2 -ccopt -o -ccopt $@ -c $<
 
 STUBS_OBJS=stubs/ext_basic_hash_stubs.o
 
@@ -253,9 +253,9 @@ SYNTAX_SRCS= \
 	ast_util\
 	ppx_entry\
 	bs_ast_invariant
-# not a good name ast_util	 
+# not a good name ast_util
 SYNTAX_CMXS=$(addprefix syntax/, $(addsuffix .cmx, $(SYNTAX_SRCS)))
-DEPENDS_SRCS=  bs_exception ast_extract binary_ast  
+DEPENDS_SRCS= bs_exception ast_extract binary_ast 
 DEPENDS_CMXS=$(addprefix depends/, $(addsuffix .cmx, $(DEPENDS_SRCS)))
 CORE_SRCS= type_int_to_string type_util  ocaml_stdlib_slots bs_conditional_initial ocaml_options ocaml_parse\
 	js_op\
@@ -337,7 +337,7 @@ BSB_SRCS= bsb_config\
 	oCamlRes\
 	bsb_templates\
 	bsb_init
-SUPER_ERRORS_SRCS=super_warnings super_typecore super_typetexp super_location super_main
+SUPER_ERRORS_SRCS=super_misc super_warnings super_typecore super_typetexp super_location super_main
 
 BSB_CMXS=$(addprefix bsb/, $(addsuffix .cmx, $(BSB_SRCS)))
 BSB_CMOS=$(addprefix bsb/, $(addsuffix .cmo, $(BSB_SRCS)))
@@ -364,9 +364,9 @@ bsb.cmxa:$(BSB_CMXS)
 	ocamlopt.opt -a $^ -o $@
 bsb.cma:$(BSB_CMOS)
 	ocamlc.opt -a $^ -o $@
-super.cmxa:$(SUPER_ERRORS_CMXS)	
+super.cmxa:$(SUPER_ERRORS_CMXS)
 	ocamlopt.opt -a $^ -o $@
-super.cma:$(SUPER_ERRORS_CMOS)	
+super.cma:$(SUPER_ERRORS_CMOS)
 	ocamlc.opt -a $^ -o $@
 
 check: $(EXT_CMXS) $(COMMON_CMXS) $(SYNTAX_CMXS) $(DEPENDS_CMXS) $(CORE_CMXS) $(BSB_CMXS) $(OTHER_CORE_CMXS) $(MAIN_CMXS) $(SUPER_ERRORS_CMXS) $(OUNIT_CMXS) $(OUNIT_TESTS_CMXS)
@@ -377,7 +377,7 @@ bin/bsb.exe: bs_hash.cmxa ext.cmxa common.cmxa  bsb.cmxa bsb/bsb_main.cmx
 # bin/bsc:  ext.cmxa common.cmxa  depends.cmxa syntax.cmxa core.cmxa
 # 	$(NATIVE) -g -linkall -I +compiler-libs ocamlcommon.cmxa $^ -o $@
 
-bin/bsc.exe: bs_hash.cmxa ext.cmxa common.cmxa syntax.cmxa depends.cmxa core.cmxa super.cmxa core/js_main.cmx 
+bin/bsc.exe: bs_hash.cmxa ext.cmxa common.cmxa syntax.cmxa depends.cmxa core.cmxa super.cmxa core/js_main.cmx
 	@echo "Linking"
 	$(NATIVE) -g -linkall -I +compiler-libs ocamlcommon.cmxa $^ -o $@
 
@@ -464,7 +464,7 @@ SNAPSHOT_DEPS=$(SNAPSHOT_SRCS:.ml=.d)
 # Actually we can not make it correct by including..
 # if we force it, then the initial build will fail
 # if we don't force it, then if we remove bin/bsb.d
-# The build will never be re-triggered -- ninja seems to have special support for this semantics 
+# The build will never be re-triggered -- ninja seems to have special support for this semantics
 # if we move files around, it will cause file failure
 # Note the currently snapshot mode means if we don't
 # generate ml files it will not be included
@@ -591,9 +591,9 @@ travis-world-test:
 DEST=../lib/ocaml
 DEST_BIN=../bin
 
-# TODO: sync up with 
-# scripts/build_uitil.js 
-# function install 
+# TODO: sync up with
+# scripts/build_uitil.js
+# function install
 # scripts/build_util.install
 install:
 	@echo "copy exe"
@@ -623,7 +623,7 @@ clean:
 DOCS_SOURCES+=$(shell ls runtime/*.ml*)
 DOCS_SOURCES+=$(shell ls others/*.ml*)
 
-# 
+#
 ../odoc_gen/generator.cmxs : ../odoc_gen/generator.mli ../odoc_gen/generator.ml
 	ocamlopt.opt -I +compiler-libs -I +ocamldoc -shared -I ../odoc_gen  -o $@ $^
 
@@ -634,5 +634,5 @@ docs: ../odoc_gen/generator.cmxs
 
 top: bs_hash.cma ext.cma bsb.cma
 repl: top
-	rlwrap ocaml	
+	rlwrap ocaml
 .PHONY: release   releasebuild libs snapshotml force-snapshotml toplevel

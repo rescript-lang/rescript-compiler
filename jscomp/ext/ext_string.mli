@@ -111,7 +111,7 @@ val is_valid_source_name :
    '@angular/core'
    its directory structure is like 
    {[
-     @angualar
+     @angular
      |-------- core
    ]}
 *)

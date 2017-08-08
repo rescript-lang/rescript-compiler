@@ -9,8 +9,80 @@ open Ctype
 open Format
 open Printtyp
 
+open Location
+
+let file_lines filePath =
+  (* open_in_bin works on windows, as opposed to open_in, afaik? *)
+  let chan = open_in_bin filePath in
+  let lines = ref [] in
+  try
+    while true do
+      lines := (input_line chan) :: !lines
+     done;
+     (* leave this here to make things type. The loop will definitly raise *)
+     [||]
+  with
+  | End_of_file -> begin
+      close_in chan; 
+      List.rev (!lines) |> Array.of_list
+    end
+
+let setup_colors () =
+  Misc.Color.setup !Clflags.color
+
+let print_filename ppf file =
+  Format.fprintf ppf "%s" (Location.show_filename file)
+
+let print_loc ppf loc =
+  setup_colors ();
+  let (file, _, _) = Location.get_pos_info loc.loc_start in
+  if file = "//toplevel//" then begin
+    if highlight_locations ppf [loc] then () else
+      fprintf ppf "Characters %i-%i"
+              loc.loc_start.pos_cnum loc.loc_end.pos_cnum
+  end else begin
+    fprintf ppf "@{<filename>%a@}" print_filename file;
+  end
+;;
+
+let print ~is_warning intro ppf loc =
+  setup_colors ();
+  (* TODO: handle locations such as _none_ and "" *)
+  if loc.loc_start.pos_fname = "//toplevel//"
+  && highlight_locations ppf [loc] then ()
+  else
+    if is_warning then 
+      fprintf ppf "@[@{<info>%s@}@]@," intro
+    else begin
+      fprintf ppf "@[@{<error>%s@}@]@," intro
+    end;
+    fprintf ppf "@[%a@]@,@," print_loc loc;
+    let (file, start_line, start_char) = Location.get_pos_info loc.loc_start in
+    let (_, end_line, end_char) = Location.get_pos_info loc.loc_end in
+    (* things to special-case: startchar & endchar2 both -1  *)
+    if start_char == -1 || end_char == -1 then
+      (* happens sometimes. Syntax error for example *)
+      fprintf ppf "Is there an error before this one? If so, it's likely a syntax error. The more relevant message should be just above!@ If it's not, please file an issue here:@ github.com/facebook/reason/issues@,"
+    else begin
+      try 
+        let lines = file_lines file in
+        fprintf ppf "%a"
+          (Super_misc.print_file
+          ~is_warning
+          ~lines
+          ~range:(
+            (start_line, start_char + 1), (* make everything 1-index based. See justifications in Super_mic.print_file *)
+            (end_line, end_char)
+          ))
+          ()
+      with
+      (* this shouldn't happen, but gracefully fall back to the default reporter just in case *)
+      | Sys_error _ -> Location.print ppf loc
+    end
+;;
+
 (* taken from https://github.com/ocaml/ocaml/blob/4.02/parsing/location.ml#L337 *)
-(* we override the default reporter with this one. Everything is the same as of the 4.02, except the part commented below *)
+(* This is the error report entry point. We'll replace the default reporter with this one. *)
 let rec super_error_reporter ppf ({Location.loc; msg; sub; if_highlight} as err) =
   let highlighted =
     if if_highlight <> "" then
@@ -25,21 +97,25 @@ let rec super_error_reporter ppf ({Location.loc; msg; sub; if_highlight} as err)
   if highlighted then
     Format.pp_print_string ppf if_highlight
   else begin
-    Format.fprintf ppf "%a%a %s" Location.print loc Location.print_error_prefix () (msg ^ "\n");
-    (* this `super_error_reporter` part is the part that's different from default_error_reporter. In the future, we might customize the formatting a bit more too. *)
-    List.iter (Format.fprintf ppf "@\n@[<2>%a@]" super_error_reporter) sub
+    Super_misc.setup_colors ppf;
+    (* open a vertical box. Everything in our message is indented 2 spaces *)
+    Format.fprintf ppf "@[<v 2>@,%a@,%s@,@]" (print ~is_warning:false "We've found a bug for you!") loc msg;
+    List.iter (Format.fprintf ppf "@,@[%a@]" super_error_reporter) sub;
+    (* no need to flush here; location's report_exception (which uses this ultimately) flushes *)
   end
 
-let warning_prefix = "Warning"
-
 (* extracted from https://github.com/ocaml/ocaml/blob/4.02/parsing/location.ml#L280 *)
-(* this is the same code except we use Super_warnings.print instead of Warnings.print  *)
-(* we'll replace the default printer with this one *)
+(* This is the warning report entry point. We'll replace the default printer with this one *)
 let super_warning_printer loc ppf w =
   if Warnings.is_active w then begin
+    Super_misc.setup_colors ppf;
     Misc.Color.setup !Clflags.color;
-    Location.print ppf loc;
-    Format.fprintf ppf "@{<warning>%s@} %a@." warning_prefix Super_warnings.print w
+    (* open a vertical box. Everything in our message is indented 2 spaces *)
+    Format.fprintf ppf "@[<v 2>@,%a@,%a@,@]" 
+      (print ~is_warning:true ("Warning number " ^ (Super_warnings.number w |> string_of_int))) 
+      loc 
+      Super_warnings.print 
+      w
   end
 ;;
 
