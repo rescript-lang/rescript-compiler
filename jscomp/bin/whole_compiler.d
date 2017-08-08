@@ -43,6 +43,7 @@ bin/whole_compiler.ml : core/lam_util.ml
 bin/whole_compiler.ml : ext/ext_array.ml
 bin/whole_compiler.ml : ext/ext_bytes.ml
 bin/whole_compiler.ml : ext/ext_char.mli
+bin/whole_compiler.ml : ext/ext_color.ml
 bin/whole_compiler.ml : ext/ext_ident.ml
 bin/whole_compiler.ml : ext/ext_list.mli
 bin/whole_compiler.ml : ext/ext_utf8.mli
@@ -64,6 +65,7 @@ bin/whole_compiler.ml : core/lam_util.mli
 bin/whole_compiler.ml : core/type_util.ml
 bin/whole_compiler.ml : ext/ext_array.mli
 bin/whole_compiler.ml : ext/ext_bytes.mli
+bin/whole_compiler.ml : ext/ext_color.mli
 bin/whole_compiler.ml : ext/ext_format.ml
 bin/whole_compiler.ml : ext/ext_ident.mli
 bin/whole_compiler.ml : ext/ext_option.ml
@@ -345,6 +347,7 @@ bin/whole_compiler.ml : core/ocaml_stdlib_slots.ml
 bin/whole_compiler.ml : core/type_int_to_string.ml
 bin/whole_compiler.ml : ext/hash_set_ident_mask.ml
 bin/whole_compiler.ml : super_errors/super_main.ml
+bin/whole_compiler.ml : super_errors/super_misc.ml
 bin/whole_compiler.ml : syntax/ast_utf8_string.mli
 bin/whole_compiler.ml : syntax/bs_ast_invariant.ml
 bin/whole_compiler.ml : syntax/bs_ast_iterator.mli
@@ -369,6 +372,7 @@ bin/whole_compiler.ml : core/lam_eta_conversion.mli
 bin/whole_compiler.ml : core/ocaml_batch_compile.ml
 bin/whole_compiler.ml : ext/hash_set_ident_mask.mli
 bin/whole_compiler.ml : ext/ordered_hash_map_gen.ml
+bin/whole_compiler.ml : super_errors/super_misc.mli
 bin/whole_compiler.ml : syntax/bs_ast_invariant.mli
 bin/whole_compiler.ml : ../vendor/ocaml/bytecomp/matching.mli
 bin/whole_compiler.ml : ../vendor/ocaml/bytecomp/translmod.ml

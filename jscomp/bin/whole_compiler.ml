@@ -20780,7 +20780,7 @@ val is_valid_source_name :
    '@angular/core'
    its directory structure is like 
    {[
-     @angualar
+     @angular
      |-------- core
    ]}
 *)
@@ -111650,11 +111650,307 @@ let ocaml_options =
 
 
 end
+module Ext_color : sig 
+#1 "ext_color.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type color 
+  = Black
+  | Red
+  | Green
+  | Yellow
+  | Blue
+  | Magenta
+  | Cyan
+  | White
+
+type style 
+  = FG of color 
+  | BG of color 
+  | Bold
+  | Dim
+
+(** Input is the tag for example `@{<warning>@}` return escape code *)
+val ansi_of_tag : string -> string 
+
+val reset_lit : string
+
+end = struct
+#1 "ext_color.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+type color 
+  = Black
+  | Red
+  | Green
+  | Yellow
+  | Blue
+  | Magenta
+  | Cyan
+  | White
+
+type style 
+  = FG of color 
+  | BG of color 
+  | Bold
+  | Dim
+
+
+let ansi_of_color = function
+  | Black -> "0"
+  | Red -> "1"
+  | Green -> "2"
+  | Yellow -> "3"
+  | Blue -> "4"
+  | Magenta -> "5"
+  | Cyan -> "6"
+  | White -> "7"
+
+let code_of_style = function
+  | FG Black -> "30"
+  | FG Red -> "31"
+  | FG Green -> "32"
+  | FG Yellow -> "33"
+  | FG Blue -> "34"
+  | FG Magenta -> "35"
+  | FG Cyan -> "36"
+  | FG White -> "37"
+  
+  | BG Black -> "40"
+  | BG Red -> "41"
+  | BG Green -> "42"
+  | BG Yellow -> "43"
+  | BG Blue -> "44"
+  | BG Magenta -> "45"
+  | BG Cyan -> "46"
+  | BG White -> "47"
+
+  | Bold -> "1"
+  | Dim -> "2"
+
+
+
+(** TODO: add more styles later *)
+let style_of_tag s = match s with
+  | "error" -> [Bold; FG Red]
+  | "warning" -> [Bold; FG Magenta]
+  | "info" -> [Bold; FG Yellow]
+  | "dim" -> [Dim]
+  | "filename" -> [FG Cyan]
+  | _ -> []
+
+let ansi_of_tag s = 
+  let l = style_of_tag s in
+  let s =  String.concat ";" (List.map code_of_style l) in
+  "\x1b[" ^ s ^ "m"
+
+
+
+let reset_lit = "\x1b[0m" 
+
+
+
+
+
+end
+module Super_misc : sig 
+#1 "super_misc.mli"
+(** Range coordinates all 1-indexed, like for editors. Otherwise this code
+  would have way too many off-by-one errors *)
+val print_file: is_warning:bool -> range:(int * int) * (int * int) -> lines:string array -> Format.formatter -> unit -> unit
+
+val setup_colors: Format.formatter -> unit
+
+end = struct
+#1 "super_misc.ml"
+(* This file has nothing to do with misc.ml in ocaml's source. Just thought it'd be an appropriate parallel to call it so *)
+
+let fprintf = Format.fprintf
+
+let string_slice ~start str =
+  let last = String.length str in
+  if last <= start then "" else String.sub str start (last - start)
+
+let sp = Printf.sprintf
+
+let number_of_digits n =
+  let digits = ref 1 in
+  let nn = ref n in
+  while ((!nn) / 10) > 0 do (nn := ((!nn) / 10); digits := ((!digits) + 1))
+    done;
+  !digits
+
+let pad ?(ch=' ') content n =
+  (String.make (n - (String.length content)) ch) ^ content
+
+let leading_space_count str =
+  let rec _leading_space_count str str_length current_index =
+    if current_index == str_length then current_index
+    else if (str.[current_index]) <> ' ' then current_index 
+    else _leading_space_count str str_length (current_index + 1)
+  in
+  _leading_space_count str (String.length str) 0
+
+(* ocaml's reported line/col numbering is horrible and super error-prone when
+  being handled programmatically (or humanly for that matter. If you're an
+  ocaml contributor reading this: who the heck reads the character count
+  starting from the first erroring character?) *)
+(* Range coordinates all 1-indexed, like for editors. Otherwise this code
+  would have way too many off-by-one errors *)
+let print_file ~is_warning ~range:((start_line, start_char), (end_line, end_char)) ~lines ppf () =
+  (* show 2 lines before & after the erroring lines *)
+  let first_shown_line = max 1 (start_line - 2) in
+  let last_shown_line = min (Array.length lines) (end_line + 2) in
+  let max_line_number_number_of_digits = number_of_digits last_shown_line in
+  (* sometimes the code's very indented, and we'd end up displaying quite a
+    few columsn of leading whitespace; left-trim these. The general spirit is
+    to center the erroring spot. In this case, almost literally *)
+  (* to achieve this, go through the shown lines and check the minimum number of leading whitespaces *)
+  let columns_to_cut = ref None in
+  for i = first_shown_line to last_shown_line do
+    let current_line = lines.(i - 1) in
+    (* disregard lines that are empty or are nothing but whitespace *)
+    if String.length (String.trim current_line) == 0 then ()
+    else
+      let current_line_leading_space_count = leading_space_count current_line in
+      match !columns_to_cut with
+      | None ->
+        columns_to_cut := Some current_line_leading_space_count
+      | Some n when n > current_line_leading_space_count ->
+        columns_to_cut := Some current_line_leading_space_count
+      | Some n -> ()
+  done;
+  let columns_to_cut = match !columns_to_cut with
+  | None -> 0
+  | Some n -> n
+  in
+  (* btw, these are unicode chars. They're not of length 1. Careful; we need to
+    explicitly tell Format to treat them as length 1 below *)
+  let separator = if columns_to_cut = 0 then "│" else "┆" in
+  (* coloring *)
+  let (highlighted_line_number, highlighted_content): (string -> string -> unit, Format.formatter, unit) format * (unit, Format.formatter, unit) format = 
+    if is_warning then ("@{<info>%s@}@{<dim> @<1>%s @}", "@{<info>")
+    else ("@{<error>%s@}@{<dim> @<1>%s @}", "@{<error>")
+  in
+
+  fprintf ppf "@[<v 0>";
+  (* inclusive *)
+  for i = first_shown_line to last_shown_line do
+    let current_line = lines.(i - 1) in
+    let current_line_cut = current_line |> string_slice ~start:columns_to_cut in
+    let padded_line_number = pad (string_of_int i) max_line_number_number_of_digits in
+
+    fprintf ppf "@[<h 0>";
+
+    fprintf ppf "@[<h 0>";
+
+    (* this is where you insrt the vertical separator. Mark them as legnth 1 as explained above *)
+    if i < start_line || i > end_line then begin
+      (* normal, non-highlighted line *)
+      fprintf ppf "%s@{<dim> @<1>%s @}" padded_line_number separator
+    end else begin
+      (* highlighted  *)
+      fprintf ppf highlighted_line_number padded_line_number separator
+    end;
+
+    fprintf ppf "@]"; (* h *)
+
+    fprintf ppf "@[<hov 0>";
+
+    let current_line_strictly_between_start_and_end_line = i > start_line && i < end_line in
+
+    if current_line_strictly_between_start_and_end_line then fprintf ppf highlighted_content;
+
+    let current_line_cut_length = String.length current_line_cut in
+    (* inclusive. To be consistent with using 1-indexed indices and count and i, j will be 1-indexed too *)
+    for j = 1 to current_line_cut_length do begin
+      let current_char = current_line_cut.[j - 1] in
+      if current_line_strictly_between_start_and_end_line then
+        fprintf ppf "%c@," current_char
+      else if i = start_line then begin
+        if j == (start_char - columns_to_cut) then fprintf ppf highlighted_content;
+        fprintf ppf "%c@," current_char;
+        if j == (end_char - columns_to_cut) then fprintf ppf "@}"
+      end else if i = end_line then begin
+        if j == 1 then fprintf ppf highlighted_content;
+        fprintf ppf "%c@," current_char;
+        if j == (end_char - columns_to_cut) then fprintf ppf "@}"
+      end else
+        (* normal, non-highlighted line *)
+        fprintf ppf "%c@," current_char
+    end
+    done;
+
+    if current_line_strictly_between_start_and_end_line then fprintf ppf "@}";
+
+    fprintf ppf "@]"; (* hov *)
+
+    fprintf ppf "@]@," (* h *)
+
+  done;
+  fprintf ppf "@]" (* v *)
+
+let setup_colors ppf =
+  Format.pp_set_formatter_tag_functions ppf
+    ({ (Format.pp_get_formatter_tag_functions ppf () ) with
+      mark_open_tag = Ext_color.ansi_of_tag;
+      mark_close_tag = (fun _ -> Ext_color.reset_lit);
+    })
+
+end
 module Super_warnings
 = struct
 #1 "super_warnings.ml"
+let fprintf = Format.fprintf
 (* this is lifted https://github.com/ocaml/ocaml/blob/4.02/utils/warnings.ml *)
-(* modified branches are commented *)
+(* actual modified message branches are commented *)
 let message = Warnings.(function
   | Comment_start -> "this is the start of a comment."
   | Comment_not_end -> "this is not the end of a comment."
@@ -111870,8 +112166,7 @@ let number = Warnings.(function
   it (not sure what it's for, actually) *)
 let print ppf w =
   let msg = message w in
-  let num = number w in
-  Format.fprintf ppf "%d: %s" num msg;
+  Format.fprintf ppf "%s" msg;
   Format.pp_print_flush ppf ()
   (*if (!current).error.(num) then incr nerrors*)
 ;;
@@ -111891,8 +112186,80 @@ open Ctype
 open Format
 open Printtyp
 
+open Location
+
+let file_lines filePath =
+  (* open_in_bin works on windows, as opposed to open_in, afaik? *)
+  let chan = open_in_bin filePath in
+  let lines = ref [] in
+  try
+    while true do
+      lines := (input_line chan) :: !lines
+     done;
+     (* leave this here to make things type. The loop will definitly raise *)
+     [||]
+  with
+  | End_of_file -> begin
+      close_in chan; 
+      List.rev (!lines) |> Array.of_list
+    end
+
+let setup_colors () =
+  Misc.Color.setup !Clflags.color
+
+let print_filename ppf file =
+  Format.fprintf ppf "%s" (Location.show_filename file)
+
+let print_loc ppf loc =
+  setup_colors ();
+  let (file, _, _) = Location.get_pos_info loc.loc_start in
+  if file = "//toplevel//" then begin
+    if highlight_locations ppf [loc] then () else
+      fprintf ppf "Characters %i-%i"
+              loc.loc_start.pos_cnum loc.loc_end.pos_cnum
+  end else begin
+    fprintf ppf "@{<filename>%a@}" print_filename file;
+  end
+;;
+
+let print ~is_warning intro ppf loc =
+  setup_colors ();
+  (* TODO: handle locations such as _none_ and "" *)
+  if loc.loc_start.pos_fname = "//toplevel//"
+  && highlight_locations ppf [loc] then ()
+  else
+    if is_warning then 
+      fprintf ppf "@[@{<info>%s@}@]@," intro
+    else begin
+      fprintf ppf "@[@{<error>%s@}@]@," intro
+    end;
+    fprintf ppf "@[%a@]@,@," print_loc loc;
+    let (file, start_line, start_char) = Location.get_pos_info loc.loc_start in
+    let (_, end_line, end_char) = Location.get_pos_info loc.loc_end in
+    (* things to special-case: startchar & endchar2 both -1  *)
+    if start_char == -1 || end_char == -1 then
+      (* happens sometimes. Syntax error for example *)
+      fprintf ppf "Is there an error before this one? If so, it's likely a syntax error. The more relevant message should be just above!@ If it's not, please file an issue here:@ github.com/facebook/reason/issues@,"
+    else begin
+      try 
+        let lines = file_lines file in
+        fprintf ppf "%a"
+          (Super_misc.print_file
+          ~is_warning
+          ~lines
+          ~range:(
+            (start_line, start_char + 1), (* make everything 1-index based. See justifications in Super_mic.print_file *)
+            (end_line, end_char)
+          ))
+          ()
+      with
+      (* this shouldn't happen, but gracefully fall back to the default reporter just in case *)
+      | Sys_error _ -> Location.print ppf loc
+    end
+;;
+
 (* taken from https://github.com/ocaml/ocaml/blob/4.02/parsing/location.ml#L337 *)
-(* we override the default reporter with this one. Everything is the same as of the 4.02, except the part commented below *)
+(* This is the error report entry point. We'll replace the default reporter with this one. *)
 let rec super_error_reporter ppf ({Location.loc; msg; sub; if_highlight} as err) =
   let highlighted =
     if if_highlight <> "" then
@@ -111907,21 +112274,25 @@ let rec super_error_reporter ppf ({Location.loc; msg; sub; if_highlight} as err)
   if highlighted then
     Format.pp_print_string ppf if_highlight
   else begin
-    Format.fprintf ppf "%a%a %s" Location.print loc Location.print_error_prefix () (msg ^ "\n");
-    (* this `super_error_reporter` part is the part that's different from default_error_reporter. In the future, we might customize the formatting a bit more too. *)
-    List.iter (Format.fprintf ppf "@\n@[<2>%a@]" super_error_reporter) sub
+    Super_misc.setup_colors ppf;
+    (* open a vertical box. Everything in our message is indented 2 spaces *)
+    Format.fprintf ppf "@[<v 2>@,%a@,%s@,@]" (print ~is_warning:false "We've found a bug for you!") loc msg;
+    List.iter (Format.fprintf ppf "@,@[%a@]" super_error_reporter) sub;
+    (* no need to flush here; location's report_exception (which uses this ultimately) flushes *)
   end
 
-let warning_prefix = "Warning"
-
 (* extracted from https://github.com/ocaml/ocaml/blob/4.02/parsing/location.ml#L280 *)
-(* this is the same code except we use Super_warnings.print instead of Warnings.print  *)
-(* we'll replace the default printer with this one *)
+(* This is the warning report entry point. We'll replace the default printer with this one *)
 let super_warning_printer loc ppf w =
   if Warnings.is_active w then begin
+    Super_misc.setup_colors ppf;
     Misc.Color.setup !Clflags.color;
-    Location.print ppf loc;
-    Format.fprintf ppf "@{<warning>%s@} %a@." warning_prefix Super_warnings.print w
+    (* open a vertical box. Everything in our message is indented 2 spaces *)
+    Format.fprintf ppf "@[<v 2>@,%a@,%a@,@]" 
+      (print ~is_warning:true ("Warning number " ^ (Super_warnings.number w |> string_of_int))) 
+      loc 
+      Super_warnings.print 
+      w
   end
 ;;
 
@@ -111981,11 +112352,12 @@ let report_error env ppf = function
       fprintf ppf "Variable %s must occur on both sides of this | pattern"
         (Ident.name id)
   | Expr_type_clash trace ->
+      (* modified *)
       report_unification_error ppf env trace
         (function ppf ->
-           fprintf ppf "this beeeeeautiful expression has type")
+           fprintf ppf "@{<error>This is:@}")
         (function ppf ->
-           fprintf ppf "but an expression was expected of type")
+           fprintf ppf "@{<info>but somewhere wanted:@}")
   | Apply_non_function typ ->
       (* modified *)
       reset_and_mark_loops typ;
@@ -112168,6 +112540,7 @@ let report_error env ppf = function
 
 (* https://github.com/ocaml/ocaml/blob/4.02/typing/typecore.ml#L3979 *)
 let report_error env ppf err =
+  Super_misc.setup_colors ppf;
   wrap_printing_env env (fun () -> report_error env ppf err)
 
 (* This will be called in super_main. This is how you'd override the default error printer from the compiler & register new error_of_exn handlers *)
