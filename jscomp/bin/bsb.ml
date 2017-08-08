@@ -6459,12 +6459,12 @@ let root = OCamlRes.Res.([
       \  \"sources\": [\n\
       \    \"src\"\n\
       \  ],\n\
-      \  \"package-specs\": [\n\
+      \  \"package-specs\":\n\
       \    {\n\
       \      \"module\": \"commonjs\",\n\
       \      \"in-source\": true\n\
       \    }\n\
-      \  ],\n\
+      \  ,\n\
       \  \"bs-dependencies\" : [\n\
       \      // add your bs-dependencies here \n\
       \  ]\n\
@@ -6668,7 +6668,8 @@ let root = OCamlRes.Res.([
       \  \"scripts\": {\n\
       \    \"test\": \"echo \\\"Error: no test specified\\\" && exit 1\",\n\
       \    \"start\": \"bsb -make-world -w\",\n\
-      \    \"build\": \"webpack -w\",\n\
+      \    \"build\": \"bsb -make-world\" ,\n\
+      \    \"webpack\": \"webpack -w\",\n\
       \    \"clean\": \"bsb -clean-world\"\n\
       \  },\n\
       \  \"keywords\": [],\n\
@@ -6697,9 +6698,9 @@ let root = OCamlRes.Res.([
       \  \"sources\": [\n\
       \    {\n\
       \      \"dir\": \"src\",\n\
-      \      \"subdirs\": [\"interop\", \"simple\"],\n\
+      \      \"subdirs\": [\"interop\", \"simple\"]\n\
       \    }\n\
-      \  ],\n\
+      \  ]\n\
        }\n\
        ") ;
     File (".gitignore",
@@ -11525,14 +11526,14 @@ let define
   } in self
 
 
-(** We don't need set [-o $out] when building ast 
-    since the default is already good *)
+(** FIXME: We don't need set [-o ${out}] when building ast 
+    since the default is already good -- it does not*)
 let build_ast_and_module_sets =
   define
-    ~command:"${bsc}  ${pp_flags} ${ppx_flags} ${bsc_flags} -c -bs-syntax-only -bs-binary-ast ${in}"
+    ~command:"${bsc}  ${pp_flags} ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast ${in}"
     "build_ast_and_module_sets"
 
-(** TODO: [-o $out] should not be needed here either *)    
+
 let build_ast_and_module_sets_from_re =
   define
     ~command:"${bsc} -pp \"${refmt} ${refmt_flags}\" ${reason_react_jsx}  ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -impl ${in}"

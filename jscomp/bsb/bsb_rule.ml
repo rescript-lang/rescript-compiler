@@ -94,14 +94,14 @@ let define
   } in self
 
 
-(** We don't need set [-o $out] when building ast 
-    since the default is already good *)
+(** FIXME: We don't need set [-o ${out}] when building ast 
+    since the default is already good -- it does not*)
 let build_ast_and_module_sets =
   define
-    ~command:"${bsc}  ${pp_flags} ${ppx_flags} ${bsc_flags} -c -bs-syntax-only -bs-binary-ast ${in}"
+    ~command:"${bsc}  ${pp_flags} ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast ${in}"
     "build_ast_and_module_sets"
 
-(** TODO: [-o $out] should not be needed here either *)    
+
 let build_ast_and_module_sets_from_re =
   define
     ~command:"${bsc} -pp \"${refmt} ${refmt_flags}\" ${reason_react_jsx}  ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -impl ${in}"

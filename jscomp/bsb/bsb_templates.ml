@@ -420,12 +420,12 @@ let root = OCamlRes.Res.([
       \  \"sources\": [\n\
       \    \"src\"\n\
       \  ],\n\
-      \  \"package-specs\": [\n\
+      \  \"package-specs\":\n\
       \    {\n\
       \      \"module\": \"commonjs\",\n\
       \      \"in-source\": true\n\
       \    }\n\
-      \  ],\n\
+      \  ,\n\
       \  \"bs-dependencies\" : [\n\
       \      // add your bs-dependencies here \n\
       \  ]\n\
@@ -629,7 +629,8 @@ let root = OCamlRes.Res.([
       \  \"scripts\": {\n\
       \    \"test\": \"echo \\\"Error: no test specified\\\" && exit 1\",\n\
       \    \"start\": \"bsb -make-world -w\",\n\
-      \    \"build\": \"webpack -w\",\n\
+      \    \"build\": \"bsb -make-world\" ,\n\
+      \    \"webpack\": \"webpack -w\",\n\
       \    \"clean\": \"bsb -clean-world\"\n\
       \  },\n\
       \  \"keywords\": [],\n\
@@ -658,9 +659,9 @@ let root = OCamlRes.Res.([
       \  \"sources\": [\n\
       \    {\n\
       \      \"dir\": \"src\",\n\
-      \      \"subdirs\": [\"interop\", \"simple\"],\n\
+      \      \"subdirs\": [\"interop\", \"simple\"]\n\
       \    }\n\
-      \  ],\n\
+      \  ]\n\
        }\n\
        ") ;
     File (".gitignore",

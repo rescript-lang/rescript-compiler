@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
@@ -11,7 +12,6 @@ import (
 	"strings"
 	"sync"
 	"time"
-	"io/ioutil"
 )
 
 type command struct {
@@ -94,9 +94,9 @@ func commandString(name string) command {
 	return makeCommand(name, xs[0], xs[1:]...)
 
 }
-func checkError(err error) {
+func checkError( err error, theme ... string) {
 	if err != nil {
-		log.Fatalf("Error: %s", err.Error())
+		log.Fatalf("Error:%v\n====\n%s\n====\n", theme,err.Error())
 	}
 }
 
@@ -107,15 +107,16 @@ func testTheme(theme string) {
 	output, err := cmd.CombinedOutput()
 
 	fmt.Println(string(output))
-	checkError(err)
+	checkError(err, theme)
 
-	fmt.Println("Started to build ")
+	fmt.Println("Started to build ", theme)
 	cmd2 := exec.Command("npm", "run", "build")
 	cmd2.Dir = theme
 	output2, err := cmd2.CombinedOutput()
 	fmt.Println(string(output2))
-	checkError(err)
+	checkError(err, theme)
 	os.RemoveAll(theme)
+	fmt.Println("Finish building",theme)
 }
 
 func runMoCha(wg *sync.WaitGroup) {
@@ -153,20 +154,20 @@ func init() {
 	os.Setenv("PATH",
 		vendorOCamlPath+string(os.PathListSeparator)+os.Getenv("PATH"))
 }
-func fatalError(err error){
-	if err!= nil {
-		panic (err)
+func fatalError(err error) {
+	if err != nil {
+		panic(err)
 	}
 }
 func bsbInDir(dir string) {
-	
+
 	destDir := filepath.Join("jscomp", "build_tests", dir)
-	pattern, err := ioutil.ReadFile(filepath.Join(destDir,"output.ref"))	
-	fatalError(err)	
-	argsB, err := ioutil.ReadFile(filepath.Join(destDir,"input.sh"))
+	pattern, err := ioutil.ReadFile(filepath.Join(destDir, "output.ref"))
+	fatalError(err)
+	argsB, err := ioutil.ReadFile(filepath.Join(destDir, "input.sh"))
 	fatalError(err)
 	args := strings.Fields(strings.TrimSpace(string(argsB)))
-	
+
 	patternS := string(pattern)
 	c := cmd(args[0], args[1:]...)
 	c.Dir = destDir
@@ -193,7 +194,7 @@ func main() {
 	noOunitTest := flag.Bool("no-ounit", false, "don't do ounit test")
 	noMochaTest := flag.Bool("no-mocha", false, "don't run mocha")
 	noThemeTest := flag.Bool("no-theme", false, "no bsb theme test")
-
+	noBsbTest := flag.Bool("no-bsb", false, "no bsb test")
 	// disableAll := flag.Bool("disable-all", false, "disable all tets")
 	flag.Parse()
 
@@ -240,6 +241,7 @@ func main() {
 		}
 		wg.Wait()
 	}
-
-	bsbInDir("in_source")
+	if !*noBsbTest {
+		bsbInDir("in_source")
+	}
 }
