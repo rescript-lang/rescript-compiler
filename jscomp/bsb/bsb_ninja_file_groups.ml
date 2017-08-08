@@ -117,9 +117,9 @@ let emit_impl_build
       ~output:output_mlast
       ~input
       ~rule:( if is_re then 
-                Bsb_rule.build_ast_and_deps_from_reason_impl
+                Bsb_rule.build_ast_and_module_sets_from_re
               else
-                Bsb_rule.build_ast_and_deps);
+                Bsb_rule.build_ast_and_module_sets);
     Bsb_ninja_util.output_build
       oc
       ~output:output_mlastd
@@ -176,8 +176,8 @@ let emit_intf_build
   Bsb_ninja_util.output_build oc
     ~output:output_mliast
     ~input
-    ~rule:(if is_re then Bsb_rule.build_ast_and_deps_from_reason_intf
-           else Bsb_rule.build_ast_and_deps);
+    ~rule:(if is_re then Bsb_rule.build_ast_and_module_sets_from_rei
+           else Bsb_rule.build_ast_and_module_sets);
   Bsb_ninja_util.output_build oc
     ~output:output_mliastd
     ~input:output_mliast

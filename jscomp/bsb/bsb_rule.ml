@@ -94,21 +94,23 @@ let define
   } in self
 
 
-
-let build_ast_and_deps =
+(** We don't need set [-o $out] when building ast 
+    since the default is already good *)
+let build_ast_and_module_sets =
   define
-    ~command:"${bsc}  ${pp_flags} ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast ${in}"
-    "build_ast_and_deps"
+    ~command:"${bsc}  ${pp_flags} ${ppx_flags} ${bsc_flags} -c -bs-syntax-only -bs-binary-ast ${in}"
+    "build_ast_and_module_sets"
 
-let build_ast_and_deps_from_reason_impl =
+(** TODO: [-o $out] should not be needed here either *)    
+let build_ast_and_module_sets_from_re =
   define
     ~command:"${bsc} -pp \"${refmt} ${refmt_flags}\" ${reason_react_jsx}  ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -impl ${in}"
-    "build_ast_and_deps_from_reason_impl"
+    "build_ast_and_module_sets_from_re"
 
-let build_ast_and_deps_from_reason_intf =
+let build_ast_and_module_sets_from_rei =
   define
     ~command:"${bsc} -pp \"${refmt} ${refmt_flags}\" ${reason_react_jsx} ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -intf ${in}"
-    "build_ast_and_deps_from_reason_intf"
+    "build_ast_and_module_sets_from_rei"
 
 
 let build_bin_deps =
@@ -172,9 +174,9 @@ let reset (custom_rules : string String_map.t) =
     rule_id := built_in_rule_id;
     rule_names := built_in_rule_names;
 
-    build_ast_and_deps.used <- false ;
-    build_ast_and_deps_from_reason_impl.used <- false ;  
-    build_ast_and_deps_from_reason_intf.used <- false ;
+    build_ast_and_module_sets.used <- false ;
+    build_ast_and_module_sets_from_re.used <- false ;  
+    build_ast_and_module_sets_from_rei.used <- false ;
     build_bin_deps.used <- false;
     copy_resources.used <- false ;
 

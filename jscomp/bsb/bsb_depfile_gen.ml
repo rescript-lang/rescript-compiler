@@ -159,9 +159,8 @@ let make
       match compilation_kind with
       | Js       -> Literals.suffix_cmj, Literals.suffix_cmj
       | Bytecode -> Literals.suffix_cmi, Literals.suffix_cmo
-      | Native   -> Literals.suffix_cmx, Literals.suffix_cmx in
-    let output = input_file ^ Literals.suffix_mlastd in                
-    Ext_pervasives.with_file_as_chan output  
+      | Native   -> Literals.suffix_cmx, Literals.suffix_cmx in    
+    Ext_pervasives.with_file_as_chan (input_file ^ Literals.suffix_mlastd )
       (fun oc -> 
          oc_impl 
            set 
@@ -173,18 +172,13 @@ let make
            namespace
            oc
       )
-
   | None -> 
     begin match Ext_string.ends_with_then_chop fn Literals.suffix_mliast with 
       | Some input_file -> 
-        (* let deps = aux_intf set input_file index data in  *)
-        let output = input_file ^ Literals.suffix_mliastd in 
-        Ext_pervasives.with_file_as_chan output  
+        Ext_pervasives.with_file_as_chan (input_file ^ Literals.suffix_mliastd)
           (fun oc -> 
              oc_intf set input_file index data namespace oc 
           )
-
-      (* (fun v -> output_string v deps) *)
       | None -> 
         raise (Arg.Bad ("don't know what to do with  " ^ fn))
     end
