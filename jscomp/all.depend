@@ -638,6 +638,7 @@ core/js_main.cmx : super_errors/super_main.cmx core/ocaml_parse.cmx \
     core/bs_conditional_initial.cmx core/js_main.cmi
 core/cmjdump_main.cmx : ext/string_map.cmx core/lam_arity.cmx \
     core/js_cmj_format.cmx
+core/astdump_main.cmx : common/ml_binary.cmx bsb/bsb_depfile_gen.cmx
 ounit/oUnit.cmi :
 ounit/oUnitDiff.cmi :
 ounit/oUnit.cmx : ounit/oUnitUtils.cmx ounit/oUnitTypes.cmx \
@@ -647,12 +648,15 @@ ounit/oUnitLogger.cmx : ounit/oUnitUtils.cmx ounit/oUnitTypes.cmx
 ounit/oUnitTypes.cmx :
 ounit/oUnitUtils.cmx : ounit/oUnitTypes.cmx
 ounit/oUnitChooser.cmx : ounit/oUnitTypes.cmx
+super_errors/super_misc.cmx : ext/ext_color.cmx super_errors/super_misc.cmi
 super_errors/super_warnings.cmx :
-super_errors/super_typecore.cmx :
+super_errors/super_typecore.cmx : super_errors/super_misc.cmx
 super_errors/super_typetexp.cmx :
-super_errors/super_location.cmx : super_errors/super_warnings.cmx
+super_errors/super_location.cmx : super_errors/super_warnings.cmx \
+    super_errors/super_misc.cmx
 super_errors/super_main.cmx : super_errors/super_typetexp.cmx \
     super_errors/super_typecore.cmx super_errors/super_location.cmx
+super_errors/super_misc.cmi :
 ounit_tests/ounit_cmd_util.cmi :
 ounit_tests/ounit_tests_main.cmi :
 ounit_tests/ounit_tests_util.cmx :

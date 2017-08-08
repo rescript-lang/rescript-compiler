@@ -1,4 +1,4 @@
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+(* Copyright (C) 2017 Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -22,16 +22,35 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type kind = Js | Bytecode | Native
+let p = Format.fprintf 
 
+let () = 
+  match Sys.argv with 
+  | [|_; file|]
+    -> 
+    let ic = open_in_bin file in 
 
-val deps_of_channel : in_channel -> string array
+    let arrs = 
+      Bsb_depfile_gen.deps_of_channel ic 
+    in
+    p Format.std_formatter "@[Dependent modules: @[%a@]@]@."
+      (Format.pp_print_list ~pp_sep:(fun fmt () ->
+           p fmt "@ ;"
+         ) Format.pp_print_string) 
+      (Array.to_list arrs);
+    p Format.std_formatter "@.==============================@.";
+    if Filename.check_suffix file ".mlast" then 
+      begin
+        Pprintast.structure Format.std_formatter
+          (Ml_binary.read_ast Ml_binary.Ml ic );
+        close_in ic 
+      end
+    else if Filename.check_suffix file ".mliast" then 
+      begin
+        Pprintast.signature Format.std_formatter
+          (Ml_binary.read_ast Ml_binary.Mli ic);
+        close_in ic
+      end
+    else assert false
 
-
-val make: 
-  kind ->
-  string -> 
-  Bsb_dir_index.t ->  
-  string option ->
-  unit
-
+  | _ -> failwith "expect one argument"

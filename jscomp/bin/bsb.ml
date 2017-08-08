@@ -653,7 +653,7 @@ val is_valid_source_name :
    '@angular/core'
    its directory structure is like 
    {[
-     @angualar
+     @angular
      |-------- core
    ]}
 *)
@@ -7003,6 +7003,21 @@ module Ext_color : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type color 
+  = Black
+  | Red
+  | Green
+  | Yellow
+  | Blue
+  | Magenta
+  | Cyan
+  | White
+
+type style 
+  = FG of color 
+  | BG of color 
+  | Bold
+  | Dim
 
 (** Input is the tag for example `@{<warning>@}` return escape code *)
 val ansi_of_tag : string -> string 
@@ -7052,6 +7067,7 @@ type style
   = FG of color 
   | BG of color 
   | Bold
+  | Dim
 
 
 let ansi_of_color = function
@@ -7084,6 +7100,7 @@ let code_of_style = function
   | BG White -> "47"
 
   | Bold -> "1"
+  | Dim -> "2"
 
 
 
@@ -7092,6 +7109,8 @@ let style_of_tag s = match s with
   | "error" -> [Bold; FG Red]
   | "warning" -> [Bold; FG Magenta]
   | "info" -> [Bold; FG Yellow]
+  | "dim" -> [Dim]
+  | "filename" -> [FG Cyan]
   | _ -> []
 
 let ansi_of_tag s = 
@@ -11386,9 +11405,9 @@ type t
 
 val get_name : t  -> out_channel -> string
 
-val build_ast_and_deps : t
-val build_ast_and_deps_from_reason_impl : t 
-val build_ast_and_deps_from_reason_intf : t 
+val build_ast_and_module_sets : t
+val build_ast_and_module_sets_from_re : t 
+val build_ast_and_module_sets_from_rei : t 
 val build_bin_deps : t 
 val copy_resources : t
 val build_cmj_js : t
@@ -11506,21 +11525,23 @@ let define
   } in self
 
 
-
-let build_ast_and_deps =
+(** We don't need set [-o $out] when building ast 
+    since the default is already good *)
+let build_ast_and_module_sets =
   define
-    ~command:"${bsc}  ${pp_flags} ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast ${in}"
-    "build_ast_and_deps"
+    ~command:"${bsc}  ${pp_flags} ${ppx_flags} ${bsc_flags} -c -bs-syntax-only -bs-binary-ast ${in}"
+    "build_ast_and_module_sets"
 
-let build_ast_and_deps_from_reason_impl =
+(** TODO: [-o $out] should not be needed here either *)    
+let build_ast_and_module_sets_from_re =
   define
     ~command:"${bsc} -pp \"${refmt} ${refmt_flags}\" ${reason_react_jsx}  ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -impl ${in}"
-    "build_ast_and_deps_from_reason_impl"
+    "build_ast_and_module_sets_from_re"
 
-let build_ast_and_deps_from_reason_intf =
+let build_ast_and_module_sets_from_rei =
   define
     ~command:"${bsc} -pp \"${refmt} ${refmt_flags}\" ${reason_react_jsx} ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -intf ${in}"
-    "build_ast_and_deps_from_reason_intf"
+    "build_ast_and_module_sets_from_rei"
 
 
 let build_bin_deps =
@@ -11584,9 +11605,9 @@ let reset (custom_rules : string String_map.t) =
     rule_id := built_in_rule_id;
     rule_names := built_in_rule_names;
 
-    build_ast_and_deps.used <- false ;
-    build_ast_and_deps_from_reason_impl.used <- false ;  
-    build_ast_and_deps_from_reason_intf.used <- false ;
+    build_ast_and_module_sets.used <- false ;
+    build_ast_and_module_sets_from_re.used <- false ;  
+    build_ast_and_module_sets_from_rei.used <- false ;
     build_bin_deps.used <- false;
     copy_resources.used <- false ;
 
@@ -11992,9 +12013,9 @@ let emit_impl_build
       ~output:output_mlast
       ~input
       ~rule:( if is_re then 
-                Bsb_rule.build_ast_and_deps_from_reason_impl
+                Bsb_rule.build_ast_and_module_sets_from_re
               else
-                Bsb_rule.build_ast_and_deps);
+                Bsb_rule.build_ast_and_module_sets);
     Bsb_ninja_util.output_build
       oc
       ~output:output_mlastd
@@ -12051,8 +12072,8 @@ let emit_intf_build
   Bsb_ninja_util.output_build oc
     ~output:output_mliast
     ~input
-    ~rule:(if is_re then Bsb_rule.build_ast_and_deps_from_reason_intf
-           else Bsb_rule.build_ast_and_deps);
+    ~rule:(if is_re then Bsb_rule.build_ast_and_module_sets_from_rei
+           else Bsb_rule.build_ast_and_module_sets);
   Bsb_ninja_util.output_build oc
     ~output:output_mliastd
     ~input:output_mliast

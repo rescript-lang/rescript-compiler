@@ -26,14 +26,10 @@
 let (//) = Filename.concat
 let dep_lit = " :"
 
-(** Please refer to {!Binary_ast} for encoding format, we move it here 
-    mostly for cutting the dependency so that [bsb_helper.exe] is lean
-*)
-let read_deps fn = 
-  let ic = open_in_bin fn in 
+
+let deps_of_channel ic : string array = 
   let size = input_binary_int ic in 
   let s = really_input_string ic size in 
-  close_in ic;
   let first_tab  = String.index s '\t' in 
   let return_arr = Array.make (int_of_string (String.sub s 0 first_tab)) "" in 
   let rec aux s ith offset = 
@@ -47,6 +43,16 @@ let read_deps fn =
 
   return_arr 
 
+(** Please refer to {!Binary_ast} for encoding format, we move it here 
+    mostly for cutting the dependency so that [bsb_helper.exe] is lean
+*)
+let read_deps fn = 
+  let ic = open_in_bin fn in 
+  let v = deps_of_channel ic in 
+  close_in ic;
+  v
+
+
 type kind = Js | Bytecode | Native
 
 let output_file oc source namespace = 
@@ -54,7 +60,8 @@ let output_file oc source namespace =
   match namespace with 
   | None -> ()
   | Some x ->
-    output_string oc Bsb_ninja_global_vars.package_sep ; 
+    output_string oc 
+      Bsb_ninja_global_vars.package_sep ; 
     output_string oc x 
 
 (** for bucklescript artifacts 

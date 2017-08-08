@@ -459,7 +459,7 @@ val is_valid_source_name :
    '@angular/core'
    its directory structure is like 
    {[
-     @angualar
+     @angular
      |-------- core
    ]}
 *)
@@ -2781,6 +2781,10 @@ module Bsb_depfile_gen : sig
 
 type kind = Js | Bytecode | Native
 
+
+val deps_of_channel : in_channel -> string array
+
+
 val make: 
   kind ->
   string -> 
@@ -2819,14 +2823,10 @@ end = struct
 let (//) = Filename.concat
 let dep_lit = " :"
 
-(** Please refer to {!Binary_ast} for encoding format, we move it here 
-    mostly for cutting the dependency so that [bsb_helper.exe] is lean
-*)
-let read_deps fn = 
-  let ic = open_in_bin fn in 
+
+let deps_of_channel ic : string array = 
   let size = input_binary_int ic in 
   let s = really_input_string ic size in 
-  close_in ic;
   let first_tab  = String.index s '\t' in 
   let return_arr = Array.make (int_of_string (String.sub s 0 first_tab)) "" in 
   let rec aux s ith offset = 
@@ -2840,6 +2840,16 @@ let read_deps fn =
 
   return_arr 
 
+(** Please refer to {!Binary_ast} for encoding format, we move it here 
+    mostly for cutting the dependency so that [bsb_helper.exe] is lean
+*)
+let read_deps fn = 
+  let ic = open_in_bin fn in 
+  let v = deps_of_channel ic in 
+  close_in ic;
+  v
+
+
 type kind = Js | Bytecode | Native
 
 let output_file oc source namespace = 
@@ -2847,7 +2857,8 @@ let output_file oc source namespace =
   match namespace with 
   | None -> ()
   | Some x ->
-    output_string oc Bsb_ninja_global_vars.package_sep ; 
+    output_string oc 
+      Bsb_ninja_global_vars.package_sep ; 
     output_string oc x 
 
 (** for bucklescript artifacts 
@@ -2952,9 +2963,8 @@ let make
       match compilation_kind with
       | Js       -> Literals.suffix_cmj, Literals.suffix_cmj
       | Bytecode -> Literals.suffix_cmi, Literals.suffix_cmo
-      | Native   -> Literals.suffix_cmx, Literals.suffix_cmx in
-    let output = input_file ^ Literals.suffix_mlastd in                
-    Ext_pervasives.with_file_as_chan output  
+      | Native   -> Literals.suffix_cmx, Literals.suffix_cmx in    
+    Ext_pervasives.with_file_as_chan (input_file ^ Literals.suffix_mlastd )
       (fun oc -> 
          oc_impl 
            set 
@@ -2966,18 +2976,13 @@ let make
            namespace
            oc
       )
-
   | None -> 
     begin match Ext_string.ends_with_then_chop fn Literals.suffix_mliast with 
       | Some input_file -> 
-        (* let deps = aux_intf set input_file index data in  *)
-        let output = input_file ^ Literals.suffix_mliastd in 
-        Ext_pervasives.with_file_as_chan output  
+        Ext_pervasives.with_file_as_chan (input_file ^ Literals.suffix_mliastd)
           (fun oc -> 
              oc_intf set input_file index data namespace oc 
           )
-
-      (* (fun v -> output_string v deps) *)
       | None -> 
         raise (Arg.Bad ("don't know what to do with  " ^ fn))
     end
