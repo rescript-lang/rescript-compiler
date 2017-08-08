@@ -94,9 +94,9 @@ func commandString(name string) command {
 	return makeCommand(name, xs[0], xs[1:]...)
 
 }
-func checkError( err error, theme ... string) {
+func checkError(err error, theme ...string) {
 	if err != nil {
-		log.Fatalf("Error:%v\n====\n%s\n====\n", theme,err.Error())
+		log.Fatalf("Error:%v\n====\n%s\n====\n", theme, err.Error())
 	}
 }
 
@@ -109,14 +109,22 @@ func testTheme(theme string) {
 	fmt.Println(string(output))
 	checkError(err, theme)
 
+	fmt.Println("Start to install", theme)
+	cmd = exec.Command("npm", "install")
+	cmd.Dir = theme
+	output, err = cmd.CombinedOutput()
+	fmt.Println(string(output))
+	checkError(err, theme)
+
 	fmt.Println("Started to build ", theme)
 	cmd2 := exec.Command("npm", "run", "build")
 	cmd2.Dir = theme
 	output2, err := cmd2.CombinedOutput()
 	fmt.Println(string(output2))
 	checkError(err, theme)
+
 	os.RemoveAll(theme)
-	fmt.Println("Finish building",theme)
+	fmt.Println("Finish building", theme)
 }
 
 func runMoCha(wg *sync.WaitGroup) {
@@ -231,7 +239,14 @@ func main() {
 	fmt.Println("BSBDIR:", string(bsbDir))
 	if !*noThemeTest {
 		var wg sync.WaitGroup
-		for _, theme := range []string{"basic", "basic-reason", "generator", "minimal", "node"} {
+		for _, theme := range []string{
+			"basic",
+			"basic-reason",
+			"generator",
+			"minimal",
+			"node",
+			"react",
+		} {
 			fmt.Println("Test theme", theme)
 			wg.Add(1)
 			go (func(theme string) {
