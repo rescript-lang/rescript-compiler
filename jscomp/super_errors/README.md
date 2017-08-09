@@ -21,9 +21,9 @@ make install
 # Build BuckleScript itself
 cd ../../jscomp
 make world
-# copy over the standard library artifacts
+# copy over the standard library artifacts. BuckleScript precompiles these and when using bsb, it'll go straight fetch the artifacts without recompiling the stdlib per project
 cd ..
-Making lib/ocaml
+make lib/ocaml
 ```
 
 (This is basically the instructions [here](https://bucklescript.github.io/bucklescript/Manual.html#_minimal_dependencies)
