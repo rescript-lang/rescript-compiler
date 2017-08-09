@@ -109,6 +109,9 @@ external log3 : 'a -> 'b -> 'c -> unit = "log"
 external log4 : 'a -> 'b -> 'c -> 'd -> unit = "log" 
 [@@bs.val] [@@bs.scope "console"]
 (** A convenience function to log everything *)
+external logMany : 'a array -> unit = "log"
+[@@bs.val] [@@bs.scope "console"] [@@bs.splice]
+(** A convenience function to log more than 4 arguments *)
 
 (** {4 operators }*)
 
