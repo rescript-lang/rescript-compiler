@@ -146,7 +146,7 @@ let copy_resources =
 let build_cmj_js =
   define
     ~command:"${bsc} ${bs_package_flags} -bs-assume-has-mli -bs-no-builtin-ppx-ml -bs-no-implicit-include  \
-              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${bsc_flags} -o ${in} -c  ${in} $postbuild"
+              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${open_package} ${bsc_flags} -o ${out} -c  ${in} $postbuild"
 
     ~depfile:"${in}.d"
     "build_cmj_only"
@@ -154,16 +154,20 @@ let build_cmj_js =
 let build_cmj_cmi_js =
   define
     ~command:"${bsc} ${bs_package_flags} -bs-assume-no-mli -bs-no-builtin-ppx-ml -bs-no-implicit-include \
-              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${bsc_flags} -o ${in} -c  ${in} $postbuild"
+              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${open_package} ${bsc_flags} -o ${out} -c  ${in} $postbuild"
     ~depfile:"${in}.d"
     "build_cmj_cmi" (* the compiler should never consult [.cmi] when [.mli] does not exist *)
 let build_cmi =
   define
     ~command:"${bsc} ${bs_package_flags} -bs-no-builtin-ppx-mli -bs-no-implicit-include \
-              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${bsc_flags} -o ${out} -c  ${in}"
+              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${open_package} ${bsc_flags} -o ${out} -c  ${in}"
     ~depfile:"${in}.d"
     "build_cmi" (* the compiler should always consult [.cmi], current the vanilla ocaml compiler only consult [.cmi] when [.mli] found*)
 
+let build_package = 
+  define
+    ~command:"${bsc} -w -49 -no-alias-deps -c ${in}"
+    "build_package"
 
 (* a snapshot of rule_names environment*)
 let built_in_rule_names = !rule_names 
@@ -183,6 +187,8 @@ let reset (custom_rules : string String_map.t) =
     build_cmj_js.used <- false;
     build_cmj_cmi_js.used <- false ;
     build_cmi.used <- false ;
+    build_package.used <- false;
+    
     String_map.mapi (fun name command -> 
         define ~command name
       ) custom_rules

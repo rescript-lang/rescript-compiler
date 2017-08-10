@@ -25,7 +25,8 @@
 (** 
   generate ninja file based on [cwd] and [bsc_dir]
 *)
-val output_ninja :
-  cwd:string ->
+val 
+  output_ninja_and_namespace_map :
+  cwd:string ->  
   bsc_dir:string ->  
   Bsb_config_types.t -> unit 

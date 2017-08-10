@@ -25,20 +25,16 @@
 let (//) = Ext_filename.combine
 
 type info =
-  { all_config_deps : string list  ; (* Figure out [.d] files *)
-  }
+  string list   
+  (* Figure out a list of files 
+    to be built before building cm*
+  *)
+
 
 let zero : info =
-  { all_config_deps = [] ;
-  }
+  [] 
 
-let (++) (us : info) (vs : info) =
-  if us == zero then vs else
-  if vs == zero then us
-  else
-    {
-      all_config_deps  = us.all_config_deps @ vs.all_config_deps;
-    }
+
 
 
 
@@ -96,6 +92,7 @@ let emit_impl_build
     ~no_intf_file:(no_intf_file : bool) 
     js_post_build_cmd
     ~is_re
+    namespace
     filename_sans_extension
   : info =    
   let input = 
@@ -104,10 +101,16 @@ let emit_impl_build
        else filename_sans_extension ^ Literals.suffix_ml  ) in
   let output_mlast = filename_sans_extension  ^ Literals.suffix_mlast in
   let output_mlastd = filename_sans_extension ^ Literals.suffix_mlastd in
-  let file_cmi = filename_sans_extension ^ Literals.suffix_cmi in
-  let output_cmj =  filename_sans_extension ^ Literals.suffix_cmj in
+  let output_filename_sans_extension = 
+    (match namespace with 
+    | None -> 
+    filename_sans_extension 
+    | Some ns -> filename_sans_extension ^ Bsb_ninja_global_vars.package_sep ^ ns
+    ) in 
+  let file_cmi =  output_filename_sans_extension ^ Literals.suffix_cmi in
+  let output_cmj =  output_filename_sans_extension ^ Literals.suffix_cmj in
   let output_js =
-    Bsb_package_specs.get_list_of_output_js package_specs filename_sans_extension in 
+    Bsb_package_specs.get_list_of_output_js package_specs output_filename_sans_extension in 
   let common_shadows = 
     make_common_shadows package_specs
       (Filename.dirname file_cmi)
@@ -146,11 +149,11 @@ let emit_impl_build
     Bsb_ninja_util.output_build oc
       ~output:output_cmj
       ~shadows
-      ~outputs:  (output_js @ cm_outputs)
+      ~implicit_outputs:  (output_js @ cm_outputs)
       ~input:output_mlast
       ~implicit_deps:deps
       ~rule;
-    {all_config_deps = [output_mlastd] }
+    [output_mlastd] 
   end 
 
 
@@ -159,16 +162,23 @@ let emit_intf_build
     (group_dir_index : Bsb_dir_index.t)
     oc
     ~is_re
+    namespace
     filename_sans_extension
   : info =
-  
+
   let input = 
     Bsb_config.proj_rel 
       (if is_re then filename_sans_extension ^ Literals.suffix_rei 
        else filename_sans_extension ^ Literals.suffix_mli) in
   let output_mliast = filename_sans_extension ^ Literals.suffix_mliast in
   let output_mliastd = filename_sans_extension ^ Literals.suffix_mliastd in
-  let output_cmi = filename_sans_extension ^ Literals.suffix_cmi in
+  let output_filename_sans_extension = 
+      (match namespace with 
+    | None -> 
+    filename_sans_extension 
+    | Some ns -> filename_sans_extension ^ Bsb_ninja_global_vars.package_sep ^ ns
+    ) in 
+  let output_cmi = output_filename_sans_extension ^ Literals.suffix_cmi in
   let common_shadows = 
     make_common_shadows package_specs
       (Filename.dirname output_cmi)
@@ -193,9 +203,8 @@ let emit_intf_build
     ~output:output_cmi
     ~input:output_mliast
     ~rule:Bsb_rule.build_cmi;
-  {
-    all_config_deps = [output_mliastd];
-  }    
+  [output_mliastd]
+
 
 
 let handle_module_info 
@@ -204,6 +213,7 @@ let handle_module_info
     js_post_build_cmd
     oc  module_name 
     ( module_info : Bsb_build_cache.module_info)
+    namespace
   : info =
   match module_info.ml, module_info.mli with
   | Ml_source (input_impl,impl_is_re), 
@@ -215,12 +225,14 @@ let handle_module_info
       ~no_intf_file:false
       ~is_re:impl_is_re
       js_post_build_cmd      
-      input_impl  ++ 
+      namespace
+      input_impl  @ 
     emit_intf_build 
       package_specs
       group_dir_index
       oc         
       ~is_re:intf_is_re
+      namespace
       input_intf 
   | Ml_source(input,is_re), Mli_empty ->
     emit_impl_build 
@@ -230,6 +242,7 @@ let handle_module_info
       ~no_intf_file:true
       js_post_build_cmd      
       ~is_re
+      namespace
       input 
   | Ml_empty, Mli_source(input,is_re) ->    
     emit_intf_build 
@@ -237,13 +250,21 @@ let handle_module_info
       group_dir_index
       oc         
       ~is_re
+      namespace
       input 
   | Ml_empty, Mli_empty -> zero
 
 
-let handle_file_group oc ~custom_rules 
-    ~package_specs ~js_post_build_cmd  
-    (files_to_install : String_hash_set.t) acc (group: Bsb_parse_sources.file_group) : info =
+let handle_file_group 
+    oc 
+    ~custom_rules 
+    ~package_specs 
+    ~js_post_build_cmd  
+    (files_to_install : String_hash_set.t) 
+    (namespace  : string option)
+    acc 
+    (group: Bsb_parse_sources.file_group ) 
+    : info =
 
   handle_generators oc group custom_rules ;
   String_map.fold (fun  module_name module_info  acc ->
@@ -256,14 +277,23 @@ let handle_file_group oc ~custom_rules
         String_hash_set.add files_to_install (Bsb_build_cache.filename_sans_suffix_of_module_info module_info);
       (handle_module_info group.dir_index 
          package_specs js_post_build_cmd 
-         oc module_name module_info) ++  acc
+         oc 
+         module_name 
+         module_info
+         namespace
+         ) @  acc
     ) group.sources  acc 
 
 
 let handle_file_groups
     oc ~package_specs ~js_post_build_cmd
     ~files_to_install ~custom_rules
-    (file_groups  :  Bsb_parse_sources.file_group list) st =
+    (file_groups  :  Bsb_parse_sources.file_group list)
+    namespace (st : info) : info  =
   List.fold_left 
-    (handle_file_group oc ~package_specs ~custom_rules ~js_post_build_cmd files_to_install ) 
+    (handle_file_group 
+      oc ~package_specs ~custom_rules ~js_post_build_cmd
+      files_to_install 
+      namespace
+      ) 
     st  file_groups

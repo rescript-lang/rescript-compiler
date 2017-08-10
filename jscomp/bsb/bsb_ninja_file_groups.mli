@@ -23,18 +23,18 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
- type info = {
-  all_config_deps : string list  ;
+type info =  string list  
 
-}
 
 val zero : info
 
 
-val handle_file_groups : out_channel ->
+val handle_file_groups :
+  out_channel ->
   package_specs:Bsb_package_specs.t ->  
   js_post_build_cmd:string option -> 
   files_to_install:String_hash_set.t ->  
-  custom_rules:Bsb_rule.t String_map.t -> 
+  custom_rules:Bsb_rule.t String_map.t ->
   Bsb_parse_sources.file_group list ->
+  string option -> 
   info -> info

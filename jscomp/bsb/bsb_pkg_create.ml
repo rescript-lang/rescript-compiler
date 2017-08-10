@@ -38,12 +38,14 @@ let loc = Location.none
 let make_structure_item pkg_name cunit : Parsetree.structure_item =
   Str.module_ 
     (Mb.mk {txt = cunit; loc }
-       (Mod.ident {txt = Lident (pkg_name ^ package_sep ^ cunit) ; loc}))
+       (Mod.ident 
+        {txt = Lident (cunit ^ package_sep ^ pkg_name) ; loc}))
 
 let make_signature_item pkg_name cunit : Parsetree.signature_item = 
   Sig.module_
     (Md.mk {txt = cunit; loc}
-       (Mty.alias {txt = Lident (pkg_name ^ package_sep ^ cunit); loc})
+       (Mty.alias 
+        {txt = Lident (  cunit ^  package_sep ^ pkg_name); loc})
     )        
 
 let make_structure pkg_name cunits : Parsetree.structure =     

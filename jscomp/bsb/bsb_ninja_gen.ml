@@ -47,7 +47,7 @@ let dash_i = "-I"
 let refmt_exe = "refmt.exe"
 let dash_ppx = "-ppx"
 
-let output_ninja
+let output_ninja_and_namespace_map
     ~cwd 
     ~bsc_dir           
     ({
@@ -95,13 +95,15 @@ let output_ninja
         | Some  s -> 
           Ext_string.inter2 "-ppx" s 
       in 
-      let namespace_flag = 
+      let open_package_flag, namespace_flag = 
         match namespace with
-        | None -> Ext_string.empty
+        | None -> Ext_string.empty, Ext_string.empty
         | Some s -> 
+          Ext_string.inter2 "-open" s ,
           Ext_string.inter2 "-ns" s 
-          
+
       in  
+
       Bsb_ninja_util.output_kvs
         [|
           Bsb_ninja_global_vars.bs_package_flags, bs_package_flags ; 
@@ -114,24 +116,27 @@ let output_ninja
           Bsb_ninja_global_vars.bs_package_dev_includes, (Bsb_build_util.flag_concat dash_i @@ List.map (fun x -> x.Bsb_config_types.package_install_path) bs_dev_dependencies);  
           Bsb_ninja_global_vars.refmt, (match refmt with None -> bsc_dir // refmt_exe | Some x -> x) ;
           Bsb_ninja_global_vars.reason_react_jsx, reason_react_jsx_flag
-             ; (* make it configurable in the future *)
+          ; (* make it configurable in the future *)
           Bsb_ninja_global_vars.refmt_flags, refmt_flags;
           Bsb_ninja_global_vars.namespace , namespace_flag ; 
+          Bsb_ninja_global_vars.open_package, open_package_flag;
           Bsb_build_schemas.bsb_dir_group, "0"  (*TODO: avoid name conflict in the future *)
         |] oc ;
     in
     let all_includes acc  = 
-        match external_includes with 
-        | [] -> acc 
-        | _ ->  
-          (* for external includes, if it is absolute path, leave it as is 
-            for relative path './xx', we need '../.././x' since we are in 
-            [lib/bs], [build] is different from merlin though
-          *)
-          Ext_list.map_acc acc 
+      match external_includes with 
+      | [] -> acc 
+      | _ ->  
+        (* for external includes, if it is absolute path, leave it as is 
+           for relative path './xx', we need '../.././x' since we are in 
+           [lib/bs], [build] is different from merlin though
+        *)
+        Ext_list.map_acc acc 
           (fun x -> if Filename.is_relative x then Bsb_config.rev_lib_bs_prefix  x else x) 
           external_includes
     in 
+
+
     let  static_resources =
       let number_of_dev_groups = Bsb_dir_index.get_current_number_of_dev_groups () in
       if number_of_dev_groups = 0 then
@@ -140,15 +145,15 @@ let output_ninja
               merge_module_info_map  acc  sources ,  dir::dirs , (List.map (fun x -> dir // x ) resources) @ acc_resources
             ) (String_map.empty,[],[]) bs_file_groups in
         Bsb_build_cache.write_build_cache 
-        ~dir:(cwd // Bsb_config.lib_bs) [|bs_groups|] ;
+          ~dir:(cwd // Bsb_config.lib_bs) [|bs_groups|] ;
         Bsb_ninja_util.output_kv
           Bsb_build_schemas.bsc_lib_includes (Bsb_build_util.flag_concat dash_i @@ 
-          (all_includes source_dirs  ))  oc ;
+                                              (all_includes source_dirs  ))  oc ;
         static_resources
       else
         let bs_groups = Array.init  (number_of_dev_groups + 1 ) (fun i -> String_map.empty) in
         let source_dirs = Array.init (number_of_dev_groups + 1 ) (fun i -> []) in
-        
+
         let static_resources =
           List.fold_left (fun acc_resources  ({Bsb_parse_sources.sources; dir; resources; dir_index})  ->
               let dir_index = (dir_index :> int) in 
@@ -160,7 +165,7 @@ let output_ninja
         let lib = bs_groups.((Bsb_dir_index.lib_dir_index :> int)) in
         Bsb_ninja_util.output_kv
           Bsb_build_schemas.bsc_lib_includes (Bsb_build_util.flag_concat dash_i @@
-           (all_includes source_dirs.(0))) oc ;
+                                              (all_includes source_dirs.(0))) oc ;
         for i = 1 to number_of_dev_groups  do
           let c = bs_groups.(i) in
           String_map.iter (fun k _ -> if String_map.mem k lib then failwith ("conflict files found:" ^ k)) c ;
@@ -168,20 +173,45 @@ let output_ninja
             (Bsb_build_util.flag_concat "-I" @@ source_dirs.(i)) oc
         done  ;
         Bsb_build_cache.write_build_cache 
-        ~dir:(cwd // Bsb_config.lib_bs) bs_groups ;
+          ~dir:(cwd // Bsb_config.lib_bs) bs_groups ;
         static_resources;
     in
-    let all_info =
+    let all_info =      
       Bsb_ninja_file_groups.handle_file_groups oc       
         ~custom_rules
-        ~js_post_build_cmd  ~package_specs ~files_to_install bs_file_groups 
-        Bsb_ninja_file_groups.zero  in
+        ~js_post_build_cmd  ~package_specs ~files_to_install
+        bs_file_groups 
+        namespace
+        Bsb_ninja_file_groups.zero 
+    in
+    let all_info =
+      match namespace with 
+      | None -> all_info
+      | Some ns -> 
+        let dir = 
+          Bsb_parse_sources.find_first_lib_dir bs_file_groups in  
+        let namespace_dir =     
+          cwd // Bsb_config.lib_bs // dir in
+        Bsb_build_util.mkp namespace_dir ;   
+        Bsb_pkg_map_gen.output ~dir:namespace_dir ns
+          bs_file_groups
+        ; 
+        Bsb_ninja_util.output_build oc 
+          (* This is what is actually needed 
+             We may fix that issue when compiling a package 
+             ns.ml explicitly does not need that package
+          *)
+          ~output:( (dir // (ns ^ Literals.suffix_cmi)))
+          ~input:( (dir // (ns ^ Literals.suffix_ml)))
+          ~rule:(Bsb_rule.build_package);
+        (dir // ns ^ Literals.suffix_cmi) :: all_info
+    in
     let () =
       List.iter (fun x -> Bsb_ninja_util.output_build oc
                     ~output:x
                     ~input:(Bsb_config.proj_rel x)
                     ~rule:Bsb_rule.copy_resources) static_resources in
-    Bsb_ninja_util.phony oc ~order_only_deps:(static_resources @ all_info.all_config_deps)
+    Bsb_ninja_util.phony oc ~order_only_deps:(static_resources @ all_info)
       ~inputs:[]
       ~output:Literals.build_ninja ;
     close_out oc;
