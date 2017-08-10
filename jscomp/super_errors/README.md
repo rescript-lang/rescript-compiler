@@ -12,23 +12,25 @@ Assuming you're at the root of this repo:
 # Use the correct opam switch for working on BuckleScript
 opam update
 opam switch 4.02.3+buckle-master
+opam switch reinstall 4.02.3+buckle-master # do this if you get errors related to `ast_utf8_string.ml`
+opam install camlp4
 eval `opam config env`
+
 # build BuckleScript's forked OCaml
 cd vendor/ocaml
 ./configure -prefix `pwd`
 make world.opt
 make install
+
 # Build BuckleScript itself
 cd ../../jscomp
 make world
-# copy over the standard library artifacts. BuckleScript precompiles these and when using bsb, it'll go straight fetch the artifacts without recompiling the stdlib per project
-cd ..
-make lib/ocaml
+
+# install this local bs globally
+npm -g install .
 ```
 
-(This is basically the instructions [here](https://bucklescript.github.io/bucklescript/Manual.html#_minimal_dependencies)
-
-And then set up a dummy project somewhere else, like this:
+Now, for testing super_errors on a dummy project. Go somewhere else and do this:
 
 ```
 bsb -init foo -theme basic-reason
@@ -36,32 +38,10 @@ cd foo
 npm run build
 ```
 
-Then hack into lib/bs/build.ninja (the underlying ninja build file bsb generates and uses) and change the 3 following lines:
+And whenever you modify a file in super_errors, run this inside `jscomp/`:
 
 ```
-bsc = ...
-bsdep = ...
-bsc_flags = ...
+make bin/bsc.exe && ./install-bsc.sh
 ```
 
-to:
-
-```
-bsc = /path/to/your/cloned/bucklescript/jscomp/bin/bsc.exe
-bsdep = /path/to/your/cloned/bucklescript/jscomp/bin/bsb_helper.exe
-bsc_flags = -nostdlib -I '/path/to/your/cloned/bucklescript/lib/ocaml' -bs-super-errors -no-alias-deps -color always -w -40+6+7+27+32..39+44+45
-```
-
-Now, whenever you make a modification to super_errors, do the following in BuckleScript's `jscomp/` folder:
-
-```
-make bin/whole_compiler.ml && make -C bin bsc.exe
-```
-
-Then switch to the root of the dummy project and do:
-
-```
-./node_modules/bs-platform/bin/ninja.exe -C lib/bs
-```
-
-And you should see your changes!
+This will substitute the global `bsc.exe` you just installed with the newly built one. Then run `npm build again` in the dummy project and see the changes! The iteration cycle for testing these should be around 2 seconds =).
