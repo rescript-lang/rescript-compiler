@@ -37,7 +37,7 @@ val copy_resources : t
 val build_cmj_js : t
 val build_cmj_cmi_js : t 
 val build_cmi : t
-
+val build_package : t 
 
 (** rules are generally composed of built-in rules and customized rules, there are two design choices:
     1. respect custom rules with the same name, then we need adjust our built-in 

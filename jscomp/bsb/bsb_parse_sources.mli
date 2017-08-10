@@ -67,7 +67,9 @@ type cxt = {
   cut_generators : bool
 }
 
-
+val find_first_lib_dir 
+  : file_group list -> string
+  
 (** entry is to the 
     [sources] in the schema
 

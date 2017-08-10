@@ -68,16 +68,9 @@ let regenerate_ninja
           cwd in 
       begin 
         Bsb_merlin_gen.merlin_file_gen ~cwd
-          (bsc_dir // bsppx_exe) config;
-        (match config.namespace with 
-        | None -> ()
-        | Some namespace -> 
-          (* generate a map file
-            TODO: adapt ninja rules
-          *)
-          Bsb_pkg_map_gen.output ~cwd namespace config.bs_file_groups
-        );
-        Bsb_ninja_gen.output_ninja ~cwd ~bsc_dir config ; 
+          (bsc_dir // bsppx_exe) config;       
+        Bsb_ninja_gen.output_ninja_and_namespace_map 
+          ~cwd ~bsc_dir config ; 
         Literals.bsconfig_json :: config.globbed_dirs
         |> List.map
           (fun x ->

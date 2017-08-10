@@ -2750,6 +2750,7 @@ let refmt_flags = "refmt_flags"
 let postbuild = "postbuild"
 
 let namespace = "namespace" 
+let open_package = "open_package"
 
 let package_sep = "-"
 end
@@ -2857,6 +2858,7 @@ let output_file oc source namespace =
   match namespace with 
   | None -> ()
   | Some x ->
+
     output_string oc 
       Bsb_ninja_global_vars.package_sep ; 
     output_string oc x 
@@ -2877,6 +2879,13 @@ let oc_impl set input_file lhs_suffix rhs_suffix
   output_file oc input_file namespace ; 
   output_string oc lhs_suffix; 
   output_string oc dep_lit ; 
+  (* (match namespace with 
+   | None -> ()
+   | Some x ->
+     output_string oc Ext_string.single_space;
+     output_string oc x;
+     output_string oc rhs_suffix;
+  ); *)
   for i = 0 to Array.length set - 1 do
     let k = Array.unsafe_get set i in 
     match String_map.find_opt k data.(0) with
@@ -2884,11 +2893,11 @@ let oc_impl set input_file lhs_suffix rhs_suffix
       -> 
       output_string oc Ext_string.single_space ;  
       output_file oc source namespace;
-      output_string oc rhs_suffix 
+      output_string oc rhs_suffix  
     | Some {mli = Mli_source (source,_)  } -> 
       output_string oc Ext_string.single_space ;  
       output_file oc source namespace;
-      output_string oc Literals.suffix_cmi 
+      output_string oc Literals.suffix_cmi  
     | Some {mli= Mli_empty; ml = Ml_empty} -> assert false
     | None  -> 
       if Bsb_dir_index.is_lib_dir index  then () 
@@ -2898,11 +2907,11 @@ let oc_impl set input_file lhs_suffix rhs_suffix
             -> 
             output_string oc Ext_string.single_space ;  
             output_file oc source namespace;
-            output_string oc rhs_suffix
+            output_string oc rhs_suffix 
           | Some {mli = Mli_source (source,_) } -> 
             output_string oc Ext_string.single_space ;  
             output_file oc source namespace;
-            output_string oc Literals.suffix_cmi 
+            output_string oc Literals.suffix_cmi  
           | Some {mli = Mli_empty; ml = Ml_empty} -> assert false
           | None -> ()
         end
@@ -2923,6 +2932,13 @@ let oc_intf
   output_file oc input_file namespace ; 
   output_string oc Literals.suffix_cmi ; 
   output_string oc dep_lit;
+  (* (match namespace with 
+   | None -> ()
+   | Some x ->
+     output_string oc Ext_string.single_space;
+     output_string oc x;
+     output_string oc Literals.suffix_cmi;
+  ); *)
   for i = 0 to Array.length set - 1 do               
     let k = Array.unsafe_get set i in 
     match String_map.find_opt k data.(0) with 

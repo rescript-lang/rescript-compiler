@@ -25,13 +25,15 @@
 let (//) = Ext_filename.combine
 
 
-let output ~cwd namespace 
+
+
+
+
+let output ~dir namespace 
     (file_groups : Bsb_parse_sources.file_group list)
   = 
-  (* FIXME : *)
-  let fname = namespace ^ ".ml" in 
-  let oc = open_out_bin 
-      (cwd // Bsb_config.lib_bs// fname ) in 
+  let fname = namespace ^ Literals.suffix_ml in 
+  let oc = open_out_bin (dir// fname ) in 
   let modules =     
     List.fold_left 
     (fun acc (x : Bsb_parse_sources.file_group) ->
