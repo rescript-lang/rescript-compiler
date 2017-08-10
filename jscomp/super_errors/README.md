@@ -35,8 +35,6 @@ Now, for testing super_errors on a dummy project. Go somewhere else and do this:
 ```
 bsb -init foo -theme basic-reason
 cd foo
-
-## add `"bsc-flags": ["-bs-super-errors"]` to bsconfig.json
 npm run build
 ```
 
