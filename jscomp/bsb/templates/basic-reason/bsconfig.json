@@ -3,6 +3,7 @@
 {
   "name": "${bsb:name}",
   "version": "${bsb:proj-version}",
+  "bsc-flags": ["-bs-super-errors"],
   "sources": [
     "src"
   ],
