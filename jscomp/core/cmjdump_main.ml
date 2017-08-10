@@ -24,25 +24,30 @@
 
 let p = Format.fprintf 
 
-let pp_cmj fmt ({ values ; effect; } :Js_cmj_format.t) = 
+let pp_cmj fmt 
+    ({ values ; effect; npm_package_path } :Js_cmj_format.t) = 
+  p fmt "@[package info: %a@]@."  
+    Js_config.dump_packages_info
+    npm_package_path
+    ;
   p fmt "@[effect: %a@]@."
-  (fun fmt o ->
-  match o with None -> ()
-  | Some s -> p fmt "None pure due to %s" s 
-   ) effect ;
-  p fmt "@[%a@]@."
-  (fun fmt m -> 
-    m |> String_map.iter (fun k (v : Js_cmj_format.cmj_value) -> 
-    match v.arity with 
-    | Single arity ->
-      p fmt "@[%s:@ @[%a@]@]@." k Lam_arity.print arity
-    | Submodule xs -> 
-      p fmt "@[<h 1>@[%s:@ @[<hov 2>%a@]@]@]" k 
-        (fun fmt xs ->
-        Array.iter (fun arity -> p fmt "@[%a@]@ ;" Lam_arity.print arity ) 
-        xs) xs 
+    (fun fmt o ->
+       match o with None -> ()
+                  | Some s -> p fmt "None pure due to %s" s 
+    ) effect ;
+  p fmt "@[arities: @[%a@]@]@."
+    (fun fmt m -> 
+       m |> String_map.iter (fun k (v : Js_cmj_format.cmj_value) -> 
+           match v.arity with 
+           | Single arity ->
+             p fmt "@[%s:@ @[%a@]@]@." k Lam_arity.print arity
+           | Submodule xs -> 
+             p fmt "@[<h 1>@[%s:@ @[<hov 2>%a@]@]@]" k 
+               (fun fmt xs ->
+                  Array.iter (fun arity -> p fmt "@[%a@]@ ;" Lam_arity.print arity ) 
+                    xs) xs 
 
-    )) values
+         )) values
 
 
 

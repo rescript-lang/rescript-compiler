@@ -25921,7 +25921,8 @@ type packages_info =
   | Empty 
   | NonBrowser of (package_name * package_info  list)
 
-
+val dump_packages_info : 
+  Format.formatter -> packages_info -> unit
 
 val cmj_ext : string 
 
@@ -26099,7 +26100,35 @@ type packages_info =
   | NonBrowser of (package_name * package_info  list)
 (** we don't force people to use package *)
 
+let dump_package_info 
+  (fmt : Format.formatter)
+  ((ms, name) : package_info)
+  = 
+  Format.fprintf
+  fmt 
+  "@[%s:@ %s@]"
+  (match ms with 
+  | NodeJS -> "NodeJS"
+  | AmdJS -> "AmdJS"
+  | Goog -> "Goog"
+  | Es6 -> "Es6"
+  | Es6_global -> "Es6_global"
+  | AmdJS_global -> "AmdJS_globl"
+  ) name 
 
+  
+let dump_packages_info 
+  (fmt : Format.formatter) 
+  (p : packages_info) = 
+  match p with 
+  | Empty -> Format.pp_print_string fmt  "<Empty>"
+  | NonBrowser (name, ls) ->
+    Format.fprintf fmt "@[%s;@ @[%a@]@]"
+      name
+      (Format.pp_print_list
+        ~pp_sep:(fun fmt () -> Format.pp_print_space fmt ())
+       dump_package_info 
+      ) ls
 
 let cmj_ext = ".cmj"
 

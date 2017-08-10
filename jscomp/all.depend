@@ -637,7 +637,7 @@ core/js_main.cmx : super_errors/super_main.cmx core/ocaml_parse.cmx \
     core/js_implementation.cmx common/js_config.cmx ext/ext_string.cmx \
     core/bs_conditional_initial.cmx core/js_main.cmi
 core/cmjdump_main.cmx : ext/string_map.cmx core/lam_arity.cmx \
-    core/js_cmj_format.cmx
+    common/js_config.cmx core/js_cmj_format.cmx
 core/astdump_main.cmx : common/ml_binary.cmx bsb/bsb_depfile_gen.cmx
 ounit/oUnit.cmi :
 ounit/oUnitDiff.cmi :

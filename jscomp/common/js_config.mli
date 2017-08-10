@@ -39,7 +39,8 @@ type packages_info =
   | Empty 
   | NonBrowser of (package_name * package_info  list)
 
-
+val dump_packages_info : 
+  Format.formatter -> packages_info -> unit
 
 val cmj_ext : string 
 
