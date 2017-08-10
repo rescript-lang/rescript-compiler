@@ -335,6 +335,7 @@ bin/whole_compiler.ml : ../vendor/ocaml/typing/typedecl.mli
 bin/whole_compiler.ml : ../vendor/ocaml/typing/typedtree.ml
 bin/whole_compiler.ml : ../vendor/ocaml/typing/typetexp.mli
 bin/whole_compiler.ml : ../vendor/ocaml/utils/consistbl.mli
+bin/whole_compiler.ml : common/js_packages_info.ml
 bin/whole_compiler.ml : core/js_implementation.mli
 bin/whole_compiler.ml : core/js_of_lam_variant.mli
 bin/whole_compiler.ml : core/js_program_loader.mli
@@ -366,6 +367,7 @@ bin/whole_compiler.ml : ../vendor/ocaml/typing/primitive.mli
 bin/whole_compiler.ml : ../vendor/ocaml/typing/printtyped.ml
 bin/whole_compiler.ml : ../vendor/ocaml/typing/typeclass.mli
 bin/whole_compiler.ml : ../vendor/ocaml/typing/typedtree.mli
+bin/whole_compiler.ml : common/js_packages_info.mli
 bin/whole_compiler.ml : core/js_of_lam_exception.ml
 bin/whole_compiler.ml : core/lam_compile_global.mli
 bin/whole_compiler.ml : core/lam_eta_conversion.mli

@@ -23,63 +23,14 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-type path = string
-
-type module_system =
-  | NodeJS 
-  | AmdJS 
-  | Goog
-  | Es6
-  | Es6_global (* ignore node_modules, just calcluating relative path *)
-  | AmdJS_global (* see ^ *)
-
-type package_info =
- ( module_system * string )
-
-type package_name  = string
-type packages_info =
-  | Empty (* No set *)
-  | NonBrowser of (package_name * package_info  list)
-(** we don't force people to use package *)
-
-let dump_package_info 
-  (fmt : Format.formatter)
-  ((ms, name) : package_info)
-  = 
-  Format.fprintf
-  fmt 
-  "@[%s:@ %s@]"
-  (match ms with 
-  | NodeJS -> "NodeJS"
-  | AmdJS -> "AmdJS"
-  | Goog -> "Goog"
-  | Es6 -> "Es6"
-  | Es6_global -> "Es6_global"
-  | AmdJS_global -> "AmdJS_globl"
-  ) name 
-
-  
-let dump_packages_info 
-  (fmt : Format.formatter) 
-  (p : packages_info) = 
-  match p with 
-  | Empty -> Format.pp_print_string fmt  "<Empty>"
-  | NonBrowser (name, ls) ->
-    Format.fprintf fmt "@[%s;@ @[%a@]@]"
-      name
-      (Format.pp_print_list
-        ~pp_sep:(fun fmt () -> Format.pp_print_space fmt ())
-       dump_package_info 
-      ) ls
-
-let cmj_ext = ".cmj"
 
 
 
 (*let get_ext () = !ext*)
 
 
-let packages_info : packages_info ref = ref Empty
+let packages_info : Js_packages_info.t ref = 
+  ref (Js_packages_info.Empty)
 
 
 let get_package_name () =
@@ -87,7 +38,7 @@ let get_package_name () =
   | Empty  -> None
   | NonBrowser(n,_) -> Some n
 
-let no_version_header = ref false
+
 
 let set_package_name name =
   match !packages_info with
@@ -96,7 +47,7 @@ let set_package_name name =
     Ext_pervasives.bad_argf "duplicated flag for -bs-package-name"
 
 
-let set_npm_package_path s =
+let add_npm_package_path s =
   match !packages_info  with
   | Empty ->
     Ext_pervasives.bad_argf "please set package name first using -bs-package-name ";
@@ -104,14 +55,9 @@ let set_npm_package_path s =
     let env, path =
       match Ext_string.split ~keep_empty:false s ':' with
       | [ package_name; path]  ->
-        (match package_name with
-         | "commonjs" -> NodeJS
-         | "amdjs" -> AmdJS
-         | "goog" -> Goog
-         | "es6" -> Es6
-         | "es6-global" -> Es6_global
-         | "amdjs-global" -> AmdJS_global
-         | _ ->
+        (match Js_packages_info.module_system_of_string package_name with
+         | Some x -> x
+         | None ->
            Ext_pervasives.bad_argf "invalid module system %s" package_name), path
       | [path] ->
         NodeJS, path
@@ -119,10 +65,10 @@ let set_npm_package_path s =
         Ext_pervasives.bad_argf "invalid npm package path: %s" s
     in
     packages_info := NonBrowser (name,  ((env,path) :: envs))
-   (** Browser is not set via command line only for internal use *)
+(** Browser is not set via command line only for internal use *)
 
 
-
+let no_version_header = ref false
 
 let cross_module_inline = ref false
 
@@ -142,30 +88,20 @@ let get_packages_info () = !packages_info
 type info_query =
   | Empty
   | Package_script of string
-  | Found of package_name * string
+  | Found of Js_packages_info.package_name * string
   | NotFound 
 
-(* ocamlopt could not optimize such simple case..*)
-let compatible exist query =
-  match query with 
-  | NodeJS -> exist = NodeJS 
-  | AmdJS -> exist = AmdJS
-  | Goog -> exist = Goog
-  | Es6  -> exist = Es6
-  | Es6_global  
-    -> exist = Es6_global || exist = Es6
-  | AmdJS_global 
-    -> exist = AmdJS_global || exist = AmdJS
-   (* As a dependency Leaf Node, it is the same either [global] or [not] *)
 
-let query_package_infos (package_infos : packages_info) module_system =
+let query_package_infos 
+    (package_infos : Js_packages_info.t) module_system =
   match package_infos with
   | Empty -> Empty
   | NonBrowser (name, []) -> Package_script name
   | NonBrowser (name, paths) ->
-    begin match List.find (fun (k, _) -> compatible k  module_system) paths with
-      | (_, x) -> Found (name, x)
-      | exception _ -> NotFound
+    begin match List.find (fun (k, _) -> 
+        Js_packages_info.compatible k  module_system) paths with
+    | (_, x) -> Found (name, x)
+    | exception _ -> NotFound
     end
 
 let get_current_package_name_and_path   module_system =
@@ -184,7 +120,7 @@ let get_output_dir ~pkg_dir module_system filename =
     else
       Filename.dirname filename
   | NonBrowser (_,  modules) ->
-    begin match List.find (fun (k,_) -> compatible k  module_system) modules with
+    begin match List.find (fun (k,_) -> Js_packages_info.compatible k  module_system) modules with
       | (_, _path) -> pkg_dir // _path
       |  exception _ -> assert false
     end
