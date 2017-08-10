@@ -22,7 +22,7 @@ make install
 cd ../../jscomp
 make world
 # install this local bs globally
-npm install .
+npm -g install .
 ```
 
 (This is basically the instructions [here](https://bucklescript.github.io/bucklescript/Manual.html#_minimal_dependencies)
