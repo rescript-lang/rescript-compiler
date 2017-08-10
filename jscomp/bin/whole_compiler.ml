@@ -22544,7 +22544,7 @@ val get_output_dir :
 
 
 (** used by command line option *)
-val set_npm_package_path : string -> unit 
+val add_npm_package_path : string -> unit 
 val get_packages_info :
    unit -> Js_packages_info.t
 
@@ -22712,7 +22712,7 @@ let set_package_name name =
     Ext_pervasives.bad_argf "duplicated flag for -bs-package-name"
 
 
-let set_npm_package_path s =
+let add_npm_package_path s =
   match !packages_info  with
   | Empty ->
     Ext_pervasives.bad_argf "please set package name first using -bs-package-name ";
@@ -113036,7 +113036,7 @@ let buckle_script_flags =
   )
   ::
   ("-bs-package-output", 
-   Arg.String Js_config.set_npm_package_path, 
+   Arg.String Js_config.add_npm_package_path, 
    " set npm-output-path: [opt_module]:path, for example: 'lib/cjs', 'amdjs:lib/amdjs', 'es6:lib/es6' and 'goog:lib/gjs'")
   ::
   
