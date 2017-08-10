@@ -92,10 +92,12 @@ bin/bsppx.ml : syntax/ast_derive_dyn.mli
 bin/bsppx.ml : syntax/ast_derive_util.ml
 bin/bsppx.ml : syntax/ast_utf8_string.ml
 bin/bsppx.ml : ../vendor/ocaml/parsing/location.ml
+bin/bsppx.ml : common/js_packages_info.ml
 bin/bsppx.ml : syntax/ast_utf8_string.mli
 bin/bsppx.ml : ../vendor/ocaml/parsing/asttypes.mli
 bin/bsppx.ml : ../vendor/ocaml/parsing/location.mli
 bin/bsppx.ml : ../vendor/ocaml/parsing/longident.ml
+bin/bsppx.ml : common/js_packages_info.mli
 bin/bsppx.ml : ../vendor/ocaml/parsing/ast_helper.ml
 bin/bsppx.ml : ../vendor/ocaml/parsing/ast_mapper.ml
 bin/bsppx.ml : ../vendor/ocaml/parsing/docstrings.ml

@@ -47,10 +47,10 @@ let single_na = Single NA
 type t = {
   values : cmj_value String_map.t;
   effect : effect;
-  npm_package_path : Js_config.packages_info ;
+  npm_package_path : Js_packages_info.t ;
 }
 
-let cmj_magic_number =  "BUCKLE20170711"
+let cmj_magic_number =  "BUCKLE20170811"
 let cmj_magic_number_length = 
   String.length cmj_magic_number
 

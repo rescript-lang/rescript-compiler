@@ -222,7 +222,8 @@ EXT_SRCS = ext_util\
 
 EXT_CMXS=$(addprefix ext/, $(addsuffix .cmx, $(EXT_SRCS)))
 EXT_CMOS=$(addprefix ext/, $(addsuffix .cmo, $(EXT_SRCS)))
-COMMON_SRCS= bs_version \
+COMMON_SRCS= bs_version\
+	js_packages_info\
 	js_config  \
 	ext_log \
 	bs_loc  \

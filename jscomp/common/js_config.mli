@@ -23,51 +23,30 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-type module_system = 
-  | NodeJS 
-  | AmdJS
-  | Goog  (* This will be serliazed *)
-  | Es6
-  | Es6_global
-  | AmdJS_global
-
-type package_info = 
- (module_system * string )
-
-type package_name  = string
-type packages_info =
-  | Empty 
-  | NonBrowser of (package_name * package_info  list)
-
-
-
-val cmj_ext : string 
-
-
-(* val is_browser : unit -> bool  *)
-(* val set_browser : unit -> unit *)
-
 
 (*val get_ext : unit -> string*)
 
 (** depends on [package_infos], used in {!Js_program_loader} *)
-val get_output_dir : pkg_dir:string -> module_system -> string -> string
+val get_output_dir : 
+  pkg_dir:string -> 
+  Js_packages_info.module_system -> string -> string
 
 
 (** used by command line option *)
-val set_npm_package_path : string -> unit 
-val get_packages_info : unit -> packages_info
+val add_npm_package_path : string -> unit 
+val get_packages_info :
+   unit -> Js_packages_info.t
 
 type info_query = 
   | Empty 
   | Package_script of string
-  | Found of package_name * string
+  | Found of Js_packages_info.package_name * string
   | NotFound 
   
 
 val query_package_infos : 
-  packages_info ->
-  module_system ->
+  Js_packages_info.t ->
+  Js_packages_info.module_system ->
   info_query
 
 
@@ -81,10 +60,10 @@ val no_version_header : bool ref
 *)
 
 val get_current_package_name_and_path : 
-  module_system -> info_query
+  Js_packages_info.module_system -> info_query
 
 
-val set_package_name : string -> unit 
+val set_package_name : string -> unit  
 val get_package_name : unit -> string option
 
 (** corss module inline option *)

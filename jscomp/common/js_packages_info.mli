@@ -1,5 +1,5 @@
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+(* Copyright (C) 2017 Authors of BuckleScript
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,39 +17,39 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
+type module_system = 
+  | NodeJS 
+  | AmdJS
+  | Goog  (* This will be serliazed *)
+  | Es6
+  | Es6_global
+  | AmdJS_global
+
+type package_info = 
+  (module_system * string )
+
+val compatible : 
+  module_system -> 
+  module_system -> 
+  bool 
+
+val module_system_of_string :
+  string -> 
+  module_system option 
+  
+type package_name  = string
 
 
+type t =
+  | Empty 
+  | NonBrowser of (package_name * package_info  list)
 
+val dump_packages_info : 
+  Format.formatter -> t -> unit
 
-
-
-
-
-
-(** A type for qualified identifiers in Lambda IR 
- *)
-
-type t = Js_op.module_id = private { id : Ident.t ; kind : Js_op.kind }
-
-type system = Js_packages_info.module_system  
-
-val id : t -> Ident.t 
-
-val name : t -> string
-
-val mk : J.kind -> Ident.t -> t
-
-val of_ml : Ident.t -> t
-
-val of_external : Ident.t -> string -> t
-
-val of_runtime : Ident.t -> t 
-
-module Hash : Hashtbl_gen.S with type key = t
-module Hash_set : Hash_set_gen.S with type key = t

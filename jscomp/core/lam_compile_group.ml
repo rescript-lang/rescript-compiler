@@ -358,7 +358,7 @@ let compile  ~filename output_prefix env _sigs
       in
       (if not @@ !Clflags.dont_write_files then
          Js_cmj_format.to_file 
-           (output_prefix ^ Js_config.cmj_ext) v);
+           (output_prefix ^ Literals.suffix_cmj) v);
       Js_program_loader.decorate_deps external_module_ids v.effect js
     )
 ;;

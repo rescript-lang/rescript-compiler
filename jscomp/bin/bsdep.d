@@ -106,11 +106,13 @@ bin/bsdep.ml : syntax/ast_derive_dyn.mli
 bin/bsdep.ml : syntax/ast_derive_util.ml
 bin/bsdep.ml : syntax/ast_utf8_string.ml
 bin/bsdep.ml : ../vendor/ocaml/parsing/location.ml
+bin/bsdep.ml : common/js_packages_info.ml
 bin/bsdep.ml : syntax/ast_utf8_string.mli
 bin/bsdep.ml : ../vendor/ocaml/parsing/asttypes.mli
 bin/bsdep.ml : ../vendor/ocaml/parsing/location.mli
 bin/bsdep.ml : ../vendor/ocaml/parsing/longident.ml
 bin/bsdep.ml : ../vendor/ocaml/parsing/syntaxerr.ml
+bin/bsdep.ml : common/js_packages_info.mli
 bin/bsdep.ml : ../vendor/ocaml/parsing/ast_helper.ml
 bin/bsdep.ml : ../vendor/ocaml/parsing/ast_mapper.ml
 bin/bsdep.ml : ../vendor/ocaml/parsing/docstrings.ml
