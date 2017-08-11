@@ -1882,7 +1882,7 @@ let es6_program  ~output_prefix fmt f (  x : J.deps_program) =
 
 let pp_deps_program
     ~output_prefix
-    (kind : Lam_module_ident.system )
+    (kind : Js_packages_info.module_system )
     (program  : J.deps_program) (f : Ext_pp.t) = 
   begin
     if not !Js_config.no_version_header then 

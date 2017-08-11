@@ -69,7 +69,7 @@ module S = Js_stmt_make
 let (//) = Filename.concat 
 
 let string_of_module_id ~output_prefix
-    (module_system : Lam_module_ident.system)
+    (module_system : Js_packages_info.module_system)
     (x : Lam_module_ident.t) : string =
 #if BS_COMPILER_IN_BROWSER then   
     match x.kind with
@@ -84,38 +84,44 @@ let string_of_module_id ~output_prefix
       | Ml  -> 
         let id = x.id in
         let js_file = Ext_filename.output_js_basename id.name in 
+        let current_package_info = Js_config.get_packages_info () in 
         let rebase different_package package_dir dep =
           let current_unit_dir =
-            `Dir (Js_config.get_output_dir ~pkg_dir:package_dir module_system output_prefix) in
+            `Dir (Js_packages_info.get_output_dir 
+                  ~pkg_dir:package_dir module_system 
+                  output_prefix 
+                  current_package_info
+                  ) in
           Ext_filename.node_relative_path  different_package current_unit_dir dep 
         in 
         let cmj_path, dependency_pkg_info = 
           Lam_compile_env.get_package_path_from_cmj module_system x 
         in
         let current_pkg_info = 
-          Js_config.get_current_package_name_and_path module_system  
+            Js_packages_info.query_package_infos current_package_info
+            module_system  
         in
         begin match module_system,  dependency_pkg_info, current_pkg_info with
-          | _, NotFound , _ 
+          | _, Package_not_found , _ 
             -> 
             Bs_exception.error (Missing_ml_dependency x.id.name)
           (*TODO: log which module info is not done
           *)
-          | Goog, (Empty | Package_script _), _ 
+          | Goog, (Package_empty | Package_script _), _ 
             -> 
             Bs_exception.error (Dependency_script_module_dependent_not js_file)
           | (AmdJS | NodeJS | Es6 | Es6_global | AmdJS_global),
-            ( Empty | Package_script _) ,
-            Found _  -> 
+            ( Package_empty | Package_script _) ,
+            Package_found _  -> 
             Bs_exception.error (Dependency_script_module_dependent_not js_file)
-          | Goog , Found (package_name, x), _  -> 
+          | Goog , Package_found (package_name, x), _  -> 
             package_name  ^ "." ^  String.uncapitalize id.name
           | (AmdJS | NodeJS| Es6 | Es6_global|AmdJS_global),
-           (Empty | Package_script _ | Found _ ), NotFound -> assert false
+           (Package_empty | Package_script _ | Package_found _ ), Package_not_found -> assert false
 
           | (AmdJS | NodeJS | Es6 | Es6_global|AmdJS_global), 
-            Found(package_name, x),
-            Found(current_package, path) -> 
+            Package_found(package_name, x),
+            Package_found(current_package, path) -> 
             if  current_package = package_name then 
               let package_dir = Lazy.force Ext_filename.package_dir in
               rebase false package_dir (`File (package_dir // x // js_file)) 
@@ -133,13 +139,17 @@ let string_of_module_id ~output_prefix
                 
                 begin 
                   Ext_filename.rel_normalized_absolute_path              
-                    (Js_config.get_output_dir ~pkg_dir:(Lazy.force Ext_filename.package_dir)
-                       module_system output_prefix)
+                    (Js_packages_info.get_output_dir 
+                      ~pkg_dir:(Lazy.force Ext_filename.package_dir)
+                       module_system 
+                       output_prefix
+                       (Js_config.get_packages_info()) 
+                       )
                     ((Filename.dirname 
                         (Filename.dirname (Filename.dirname cmj_path))) // x // js_file)              
                 end
               end
-          | (AmdJS | NodeJS | Es6 | AmdJS_global | Es6_global), Found(package_name, x), 
+          | (AmdJS | NodeJS | Es6 | AmdJS_global | Es6_global), Package_found(package_name, x), 
             Package_script(current_package)
             ->    
             if current_package = package_name then 
@@ -149,11 +159,11 @@ let string_of_module_id ~output_prefix
             else 
               package_name // x // js_file
           | (AmdJS | NodeJS | Es6 | AmdJS_global | Es6_global), 
-            Found(package_name, x), Empty 
+            Package_found(package_name, x), Package_empty 
             ->    package_name // x // js_file
           |  (AmdJS | NodeJS | Es6 | AmdJS_global | Es6_global), 
-             (Empty | Package_script _) , 
-             (Empty  | Package_script _)
+             (Package_empty | Package_script _) , 
+             (Package_empty  | Package_script _)
             -> 
             begin match Config_util.find_opt js_file with 
               | Some file -> 

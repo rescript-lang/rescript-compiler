@@ -28,11 +28,11 @@
 
 val pp_deps_program :
   output_prefix:string ->
-  Lam_module_ident.system -> J.deps_program -> Ext_pp.t -> unit
+  Js_packages_info.module_system -> J.deps_program -> Ext_pp.t -> unit
 
 val dump_deps_program :
   output_prefix:string ->
-  Lam_module_ident.system  -> J.deps_program -> out_channel -> unit
+  Js_packages_info.module_system  -> J.deps_program -> out_channel -> unit
 
 (** 2 functions Only used for debugging *)
 val string_of_block : J.block -> string

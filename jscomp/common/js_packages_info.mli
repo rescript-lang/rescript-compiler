@@ -53,3 +53,21 @@ type t =
 val dump_packages_info : 
   Format.formatter -> t -> unit
 
+
+
+type info_query =
+  | Package_empty
+  | Package_script of string
+  | Package_found of package_name * string
+  | Package_not_found   
+
+val query_package_infos : 
+  t -> module_system -> info_query   
+
+
+val get_output_dir:
+  pkg_dir:string -> 
+  module_system -> 
+  string -> 
+  t -> 
+  string   

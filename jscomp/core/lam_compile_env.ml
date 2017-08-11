@@ -91,12 +91,12 @@ let reset () =
 (* This is for a js exeternal module, we can change it when printing
    for example
    {[
-   var React$1 = require('react');
-   React$1.render(..)
+     var React$1 = require('react');
+     React$1.render(..)
    ]}
 
    Given a name, if duplicated, they should  have the same id
- *)
+*)
 
 let create_js_module (hint_name : string) : Ident.t = 
   let hint_name = 
@@ -282,11 +282,17 @@ let is_pure_module id  =
 
 
 
-let get_package_path_from_cmj module_system ( id : Lam_module_ident.t) = 
+let get_package_path_from_cmj 
+    module_system ( id : Lam_module_ident.t) 
+  : path * Js_packages_info.info_query = 
   query_and_add_if_not_exist id No_env
-    ~not_found:(fun _ -> Ext_string.empty, Js_config.NotFound) 
+    ~not_found:(fun _ ->
+        Ext_string.empty, 
+        Js_packages_info.Package_not_found) 
     ~found:(fun (cmj_path,x) -> 
-      cmj_path, Js_config.query_package_infos x.npm_package_path module_system)
+        cmj_path, 
+        Js_packages_info.query_package_infos 
+          x.npm_package_path module_system)
 
 
 
@@ -303,8 +309,8 @@ let get_required_modules
   Lam_module_ident.Hash.iter (fun (id : module_id)  _  ->
       if not @@ is_pure_module id 
       then add  hard_dependencies id) cached_tbl ;
- Lam_module_ident.Hash_set.iter (fun (id  : module_id)  -> 
+  Lam_module_ident.Hash_set.iter (fun (id  : module_id)  -> 
       (if not @@ is_pure_module  id 
-      then add hard_dependencies id : unit)
+       then add hard_dependencies id : unit)
     ) extras;
   Lam_module_ident.Hash_set.elements hard_dependencies

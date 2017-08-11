@@ -69,7 +69,6 @@ type effect = string option
 type t = {
   values : cmj_value String_map.t;
   effect : effect;
-  (* goog_package : string option; *)
   npm_package_path : Js_packages_info.t;
 }
 
