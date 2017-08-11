@@ -53,7 +53,7 @@ let translate  loc
     -> 
     Js_of_lam_exception.make (E.str s)
   | Pwrap_exn -> 
-    E.runtime_call Js_config.exn "internalToOCamlException" args 
+    E.runtime_call Js_runtime_modules.exn "internalToOCamlException" args 
   | Lam.Praw_js_code_exp s -> 
     E.raw_js_code Exp s  
   | Lam.Praw_js_code_stmt s -> 
@@ -78,7 +78,7 @@ let translate  loc
           | Var _ -> 
             E.econd (E.is_nil e) Js_of_lam_option.none (Js_of_lam_option.some e)
           | _ ->
-            E.runtime_call Js_config.js_primitive
+            E.runtime_call Js_runtime_modules.js_primitive
             "null_to_opt" args 
             (* GPR #974
                let id = Ext_ident.create "v" in
@@ -96,7 +96,7 @@ let translate  loc
         | Var _ -> 
           E.econd (E.is_undef e) Js_of_lam_option.none (Js_of_lam_option.some e)
         | _ -> 
-          E.runtime_call Js_config.js_primitive  
+          E.runtime_call Js_runtime_modules.js_primitive  
           "undefined_to_opt" args 
         (* # GPR 974
           let id = Ext_ident.create "v" in
@@ -142,7 +142,7 @@ let translate  loc
           Js_of_lam_option.none 
           (Js_of_lam_option.some e)
       | _ ->*)
-       E.runtime_call Js_config.js_primitive        
+       E.runtime_call Js_runtime_modules.js_primitive        
       "null_undefined_to_opt" args 
       (*end*)
     (* | _ -> assert false  *)
@@ -158,7 +158,7 @@ let translate  loc
     | _ -> assert false 
     end
   | Pis_null_undefined -> 
-      E.runtime_call Js_config.js_primitive
+      E.runtime_call Js_runtime_modules.js_primitive
         "is_nil_undef" args 
   | Pjs_boolean_to_bool -> 
     begin match args with 
@@ -187,9 +187,9 @@ let translate  loc
       | _ -> assert false          
     end          
   | Pinit_mod -> 
-    E.runtime_call Js_config.module_ "init_mod" args
+    E.runtime_call Js_runtime_modules.module_ "init_mod" args
   | Pupdate_mod ->
-    E.runtime_call Js_config.module_ "update_mod" args
+    E.runtime_call Js_runtime_modules.module_ "update_mod" args
   | Pmakeblock(tag, tag_info, mutable_flag ) ->  (* RUNTIME *)
     Js_of_lam_block.make_block 
       (Js_op_util.of_lam_mutable_flag mutable_flag) 
@@ -586,7 +586,7 @@ let translate  loc
       | [e ; e1] ->
         if !Clflags.fast then
           Js_of_lam_string.ref_byte e e1
-        else E.runtime_call Js_config.bytes "get" args            
+        else E.runtime_call Js_runtime_modules.bytes "get" args            
       | _ -> assert false         
     end
   (* For bytes and string, they both return [int] in ocaml 
@@ -606,7 +606,7 @@ let translate  loc
         if !Clflags.fast then
           Js_of_lam_string.ref_string e e1             
         else       
-          E.runtime_call Js_config.string "get" args          
+          E.runtime_call Js_runtime_modules.string "get" args          
       | _ -> assert false
     end
   (** only when Lapply -> expand = true*)
@@ -766,17 +766,17 @@ let translate  loc
   (*   ("caml_ba_dim_" ^ string_of_int i) args        *)
   | Pbswap16 
     -> 
-    E.runtime_call Js_config.int32 "caml_bswap16" args
+    E.runtime_call Js_runtime_modules.int32 "caml_bswap16" args
   | Pbbswap Lambda.Pnativeint
   | Pbbswap Lambda.Pint32
     -> 
-    E.runtime_call Js_config.int32 "caml_int32_bswap" args
+    E.runtime_call Js_runtime_modules.int32 "caml_int32_bswap" args
   | Pbbswap Lambda.Pint64
     -> Js_long.swap args 
   | Pstring_load_16 unsafe
-    -> E.runtime_call Js_config.string "caml_string_get16" args
+    -> E.runtime_call Js_runtime_modules.string "caml_string_get16" args
   | Pstring_load_32 unsafe
-    -> E.runtime_call Js_config.string "caml_string_get32" args
+    -> E.runtime_call Js_runtime_modules.string "caml_string_get32" args
   | Pstring_load_64 unsafe
     -> Js_long.get64 args
 

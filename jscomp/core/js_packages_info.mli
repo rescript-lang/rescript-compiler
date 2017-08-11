@@ -71,3 +71,8 @@ val get_output_dir:
   string -> 
   t -> 
   string   
+
+
+(** used by command line option *)
+val add_npm_package_path : 
+  string -> t -> t  

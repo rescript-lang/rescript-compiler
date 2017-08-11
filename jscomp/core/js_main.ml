@@ -45,7 +45,7 @@ let batch_files  = ref []
 let script_dirs = ref []
 let main_file  = ref ""
 let eval_string = ref ""
-    
+        
 let collect_file name = 
   batch_files := name :: !batch_files
 let add_bs_dir v = 
@@ -150,7 +150,7 @@ let buckle_script_flags =
   )
   ::
   ("-bs-package-name", 
-   Arg.String Js_config.set_package_name, 
+   Arg.String Js_packages_state.set_package_name, 
    " set package name, useful when you want to produce npm packages")
   :: 
   ("-bs-no-version-header", 
@@ -159,7 +159,8 @@ let buckle_script_flags =
   )
   ::
   ("-bs-package-output", 
-   Arg.String Js_config.add_npm_package_path, 
+   Arg.String 
+    Js_packages_state.update_npm_package_path, 
    " set npm-output-path: [opt_module]:path, for example: 'lib/cjs', 'amdjs:lib/amdjs', 'es6:lib/es6' and 'goog:lib/gjs'")
   ::
   

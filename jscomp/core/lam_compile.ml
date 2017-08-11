@@ -338,7 +338,7 @@ and compile_recursive_let ~all_bindings
           (
             b  @ 
             [S.exp
-               (E.runtime_call Js_config.obj_runtime "caml_update_dummy" 
+               (E.runtime_call Js_runtime_modules.obj_runtime "caml_update_dummy" 
                   [ E.var id;  v])]),
         [id]
       (* S.define ~kind:Variable id (E.arr Mutable [])::  *)
@@ -1627,7 +1627,7 @@ and
           | Cached | Public None
             (* TODO: check -- 1. js object propagate 2. js object create  *)
             -> 
-            let get = E.runtime_ref  Js_config.oo "caml_get_public_method" in
+            let get = E.runtime_ref  Js_runtime_modules.oo "caml_get_public_method" in
             let cache = !method_cache_id in
             let () = incr method_cache_id  in
             cont3 obj' (fun obj' -> 

@@ -60,7 +60,7 @@ let get_default_undefined
     if Js_analyzer.is_simple_no_side_effect_expression arg then
       E.econd arg (map Static_unwrapped (E.index arg 0l)) E.undefined
     else
-      map Runtime_maybe_unwrapped (E.runtime_call Js_config.js_primitive "option_get" [arg])
+      map Runtime_maybe_unwrapped (E.runtime_call Js_runtime_modules.js_primitive "option_get" [arg])
 
 (** Another way: 
     {[

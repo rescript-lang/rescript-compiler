@@ -21367,6 +21367,767 @@ let parent_dir_lit = ".."
 let current_dir_lit = "."
 
 end
+module Js_config : sig 
+#1 "js_config.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+(* val get_packages_info :
+   unit -> Js_packages_info.t *)
+
+
+(** set/get header *)
+val no_version_header : bool ref 
+
+
+(** return [package_name] and [path] 
+    when in script mode: 
+*)
+
+(* val get_current_package_name_and_path : 
+  Js_packages_info.module_system -> 
+  Js_packages_info.info_query *)
+
+
+(* val set_package_name : string -> unit  
+val get_package_name : unit -> string option *)
+
+(** corss module inline option *)
+val cross_module_inline : bool ref
+val set_cross_module_inline : bool -> unit
+val get_cross_module_inline : unit -> bool
+  
+(** diagnose option *)
+val diagnose : bool ref 
+val get_diagnose : unit -> bool 
+val set_diagnose : bool -> unit 
+
+
+(** generate tds option *)
+val default_gen_tds : bool ref
+
+(** options for builtion ppx *)
+val no_builtin_ppx_ml : bool ref 
+val no_builtin_ppx_mli : bool ref 
+val no_warn_ffi_type : bool ref 
+val no_warn_unused_bs_attribute : bool ref 
+val no_error_unused_bs_attribute : bool ref 
+(** check-div-by-zero option *)
+val check_div_by_zero : bool ref 
+val get_check_div_by_zero : unit -> bool 
+
+(* It will imply [-noassert] be set too, note from the implmentation point of view, 
+   in the lambda layer, it is impossible to tell whehther it is [assert (3 <> 2)] or 
+   [if (3<>2) then assert false]
+ *)
+val no_any_assert : bool ref 
+val set_no_any_assert : unit -> unit
+val get_no_any_assert : unit -> bool 
+
+
+
+(** Debugging utilies *)
+val set_current_file : string -> unit 
+val get_current_file : unit -> string
+val get_module_name : unit -> string
+
+val iset_debug_file : string -> unit
+val set_debug_file : string -> unit
+val get_debug_file : unit -> string
+
+val is_same_file : unit -> bool 
+
+val tool_name : string
+
+
+val sort_imports : bool ref 
+val dump_js : bool ref
+val syntax_only  : bool ref
+val binary_ast : bool ref
+
+
+
+end = struct
+#1 "js_config.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+(* let add_npm_package_path s =
+  match !packages_info  with
+  | Empty ->
+    Ext_pervasives.bad_argf "please set package name first using -bs-package-name ";
+  | NonBrowser(name,  envs) ->
+    let env, path =
+      match Ext_string.split ~keep_empty:false s ':' with
+      | [ package_name; path]  ->
+        (match Js_packages_info.module_system_of_string package_name with
+         | Some x -> x
+         | None ->
+           Ext_pervasives.bad_argf "invalid module system %s" package_name), path
+      | [path] ->
+        NodeJS, path
+      | _ ->
+        Ext_pervasives.bad_argf "invalid npm package path: %s" s
+    in
+    packages_info := NonBrowser (name,  ((env,path) :: envs)) *)
+(** Browser is not set via command line only for internal use *)
+
+
+let no_version_header = ref false
+
+let cross_module_inline = ref false
+
+let get_cross_module_inline () = !cross_module_inline
+let set_cross_module_inline b =
+  cross_module_inline := b
+
+
+let diagnose = ref false
+let get_diagnose () = !diagnose
+let set_diagnose b = diagnose := b
+
+let (//) = Filename.concat
+
+(* let get_packages_info () = !packages_info *)
+
+let default_gen_tds = ref false
+let no_builtin_ppx_ml = ref false
+let no_builtin_ppx_mli = ref false
+let no_warn_ffi_type = ref false
+
+(** TODO: will flip the option when it is ready *)
+let no_warn_unused_bs_attribute = ref false
+let no_error_unused_bs_attribute = ref false 
+
+let current_file = ref ""
+let debug_file = ref ""
+
+let set_current_file f  = current_file := f
+let get_current_file () = !current_file
+let get_module_name () =
+  Filename.chop_extension
+    (Filename.basename (String.uncapitalize !current_file))
+
+let iset_debug_file _ = ()
+let set_debug_file  f = debug_file := f
+let get_debug_file  () = !debug_file
+
+
+let is_same_file () =
+  !debug_file <> "" &&  !debug_file = !current_file
+
+let tool_name = "BuckleScript"
+
+let check_div_by_zero = ref true
+let get_check_div_by_zero () = !check_div_by_zero
+
+let no_any_assert = ref false
+
+let set_no_any_assert () = no_any_assert := true
+let get_no_any_assert () = !no_any_assert
+
+let sort_imports = ref true
+let dump_js = ref false
+
+
+
+let syntax_only = ref false
+let binary_ast = ref false
+
+
+end
+module Bs_exception : sig 
+#1 "bs_exception.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type error =
+  | Cmj_not_found of string
+  | Js_not_found of string
+  | Bs_cyclic_depends of string  list
+  | Bs_duplicated_module of string * string
+  | Bs_duplicate_exports of string (* gpr_974 *)
+  | Bs_package_not_found of string                                                        
+  | Bs_main_not_exist of string 
+  | Bs_invalid_path of string
+  | Missing_ml_dependency of string 
+  | Dependency_script_module_dependent_not  of string
+(*
+TODO: In the futrue, we should refine dependency [bsb] 
+should not rely on such exception, it should have its own exception handling
+*)
+
+(* exception Error of error *)
+
+(* val report_error : Format.formatter -> error -> unit *)
+
+val error : error -> 'a 
+
+end = struct
+#1 "bs_exception.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type error =
+  | Cmj_not_found of string
+  | Js_not_found of string 
+  | Bs_cyclic_depends of string  list
+  | Bs_duplicated_module of string * string
+  | Bs_duplicate_exports of string (* gpr_974 *)
+  | Bs_package_not_found of string                            
+  | Bs_main_not_exist of string 
+  | Bs_invalid_path of string
+  | Missing_ml_dependency of string 
+  | Dependency_script_module_dependent_not  of string 
+  (** TODO: we need add location handling *)    
+exception Error of error
+
+let error err = raise (Error err)
+
+let report_error ppf = function
+  | Dependency_script_module_dependent_not s
+    -> 
+    Format.fprintf ppf 
+      "%s is compiled in script mode while its dependent is not"
+      s
+  | Missing_ml_dependency s -> 
+    Format.fprintf ppf "Missing dependency %s in search path" s 
+  | Cmj_not_found s ->
+    Format.fprintf ppf "%s not found, cmj format is generated by BuckleScript" s
+  | Js_not_found s -> 
+    Format.fprintf ppf "%s not found, needed in script mode " s
+  | Bs_cyclic_depends  str
+    ->
+    Format.fprintf ppf "Cyclic depends : @[%a@]"
+      (Format.pp_print_list ~pp_sep:Format.pp_print_space
+         Format.pp_print_string)
+      str
+  | Bs_duplicate_exports str -> 
+    Format.fprintf ppf "%s are exported as twice" str 
+  | Bs_duplicated_module (a,b)
+    ->
+    Format.fprintf ppf "The build system does not support two files with same names yet %s, %s" a b
+  | Bs_main_not_exist main
+    ->
+    Format.fprintf ppf "File %s not found " main
+
+  | Bs_package_not_found package
+    ->
+    Format.fprintf ppf "Package %s not found or %s/lib/ocaml does not exist or please set npm_config_prefix correctly"
+      package package
+  | Bs_invalid_path path
+    ->  Format.pp_print_string ppf ("Invalid path: " ^ path )
+
+
+let () =
+  Location.register_error_of_exn
+    (function
+      | Error err
+        -> Some (Location.error_of_printer_file report_error err)
+      | _ -> None
+    )
+
+end
+module Depend : sig 
+#1 "depend.mli"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 1999 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the Q Public License version 1.0.               *)
+(*                                                                     *)
+(***********************************************************************)
+
+(** Module dependencies. *)
+
+module StringSet : Set.S with type elt = string
+
+val free_structure_names : StringSet.t ref
+
+val open_module : StringSet.t -> Longident.t -> unit
+
+val add_use_file : StringSet.t -> Parsetree.toplevel_phrase list -> unit
+
+val add_signature : StringSet.t -> Parsetree.signature -> unit
+
+val add_implementation : StringSet.t -> Parsetree.structure -> unit
+
+end = struct
+#1 "depend.ml"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 1999 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the Q Public License version 1.0.               *)
+(*                                                                     *)
+(***********************************************************************)
+
+open Asttypes
+open Location
+open Longident
+open Parsetree
+
+module StringSet = Set.Make(struct type t = string let compare = compare end)
+
+(* Collect free module identifiers in the a.s.t. *)
+
+let free_structure_names = ref StringSet.empty
+
+let rec add_path bv = function
+  | Lident s ->
+      if not (StringSet.mem s bv)
+      then free_structure_names := StringSet.add s !free_structure_names
+  | Ldot(l, _s) -> add_path bv l
+  | Lapply(l1, l2) -> add_path bv l1; add_path bv l2
+
+let open_module bv lid = add_path bv lid
+
+let add bv lid =
+  match lid.txt with
+    Ldot(l, _s) -> add_path bv l
+  | _ -> ()
+
+let addmodule bv lid = add_path bv lid.txt
+
+let rec add_type bv ty =
+  match ty.ptyp_desc with
+    Ptyp_any -> ()
+  | Ptyp_var _ -> ()
+  | Ptyp_arrow(_, t1, t2) -> add_type bv t1; add_type bv t2
+  | Ptyp_tuple tl -> List.iter (add_type bv) tl
+  | Ptyp_constr(c, tl) -> add bv c; List.iter (add_type bv) tl
+  | Ptyp_object (fl, _) -> List.iter (fun (_, _, t) -> add_type bv t) fl
+  | Ptyp_class(c, tl) -> add bv c; List.iter (add_type bv) tl
+  | Ptyp_alias(t, _) -> add_type bv t
+  | Ptyp_variant(fl, _, _) ->
+      List.iter
+        (function Rtag(_,_,_,stl) -> List.iter (add_type bv) stl
+          | Rinherit sty -> add_type bv sty)
+        fl
+  | Ptyp_poly(_, t) -> add_type bv t
+  | Ptyp_package pt -> add_package_type bv pt
+  | Ptyp_extension _ -> ()
+
+and add_package_type bv (lid, l) =
+  add bv lid;
+  List.iter (add_type bv) (List.map (fun (_, e) -> e) l)
+
+let add_opt add_fn bv = function
+    None -> ()
+  | Some x -> add_fn bv x
+
+let add_constructor_decl bv pcd =
+  List.iter (add_type bv) pcd.pcd_args; Misc.may (add_type bv) pcd.pcd_res
+
+let add_type_declaration bv td =
+  List.iter
+    (fun (ty1, ty2, _) -> add_type bv ty1; add_type bv ty2)
+    td.ptype_cstrs;
+  add_opt add_type bv td.ptype_manifest;
+  let add_tkind = function
+    Ptype_abstract -> ()
+  | Ptype_variant cstrs ->
+      List.iter (add_constructor_decl bv) cstrs
+  | Ptype_record lbls ->
+      List.iter (fun pld -> add_type bv pld.pld_type) lbls
+  | Ptype_open -> () in
+  add_tkind td.ptype_kind
+
+let add_extension_constructor bv ext =
+  match ext.pext_kind with
+      Pext_decl(args, rty) ->
+        List.iter (add_type bv) args; Misc.may (add_type bv) rty
+    | Pext_rebind lid -> add bv lid
+
+let add_type_extension bv te =
+  add bv te.ptyext_path;
+  List.iter (add_extension_constructor bv) te.ptyext_constructors
+
+let rec add_class_type bv cty =
+  match cty.pcty_desc with
+    Pcty_constr(l, tyl) ->
+      add bv l; List.iter (add_type bv) tyl
+  | Pcty_signature { pcsig_self = ty; pcsig_fields = fieldl } ->
+      add_type bv ty;
+      List.iter (add_class_type_field bv) fieldl
+  | Pcty_arrow(_, ty1, cty2) ->
+      add_type bv ty1; add_class_type bv cty2
+  | Pcty_extension _ -> ()
+
+and add_class_type_field bv pctf =
+  match pctf.pctf_desc with
+    Pctf_inherit cty -> add_class_type bv cty
+  | Pctf_val(_, _, _, ty) -> add_type bv ty
+  | Pctf_method(_, _, _, ty) -> add_type bv ty
+  | Pctf_constraint(ty1, ty2) -> add_type bv ty1; add_type bv ty2
+  | Pctf_attribute _ -> ()
+  | Pctf_extension _ -> ()
+
+let add_class_description bv infos =
+  add_class_type bv infos.pci_expr
+
+let add_class_type_declaration = add_class_description
+
+let pattern_bv = ref StringSet.empty
+
+let rec add_pattern bv pat =
+  match pat.ppat_desc with
+    Ppat_any -> ()
+  | Ppat_var _ -> ()
+  | Ppat_alias(p, _) -> add_pattern bv p
+  | Ppat_interval _
+  | Ppat_constant _ -> ()
+  | Ppat_tuple pl -> List.iter (add_pattern bv) pl
+  | Ppat_construct(c, op) -> add bv c; add_opt add_pattern bv op
+  | Ppat_record(pl, _) ->
+      List.iter (fun (lbl, p) -> add bv lbl; add_pattern bv p) pl
+  | Ppat_array pl -> List.iter (add_pattern bv) pl
+  | Ppat_or(p1, p2) -> add_pattern bv p1; add_pattern bv p2
+  | Ppat_constraint(p, ty) -> add_pattern bv p; add_type bv ty
+  | Ppat_variant(_, op) -> add_opt add_pattern bv op
+  | Ppat_type li -> add bv li
+  | Ppat_lazy p -> add_pattern bv p
+  | Ppat_unpack id -> pattern_bv := StringSet.add id.txt !pattern_bv
+  | Ppat_exception p -> add_pattern bv p
+  | Ppat_extension _ -> ()
+
+let add_pattern bv pat =
+  pattern_bv := bv;
+  add_pattern bv pat;
+  !pattern_bv
+
+let rec add_expr bv exp =
+  match exp.pexp_desc with
+    Pexp_ident l -> add bv l
+  | Pexp_constant _ -> ()
+  | Pexp_let(rf, pel, e) ->
+      let bv = add_bindings rf bv pel in add_expr bv e
+  | Pexp_fun (_, opte, p, e) ->
+      add_opt add_expr bv opte; add_expr (add_pattern bv p) e
+  | Pexp_function pel ->
+      add_cases bv pel
+  | Pexp_apply(e, el) ->
+      add_expr bv e; List.iter (fun (_,e) -> add_expr bv e) el
+  | Pexp_match(e, pel) -> add_expr bv e; add_cases bv pel
+  | Pexp_try(e, pel) -> add_expr bv e; add_cases bv pel
+  | Pexp_tuple el -> List.iter (add_expr bv) el
+  | Pexp_construct(c, opte) -> add bv c; add_opt add_expr bv opte
+  | Pexp_variant(_, opte) -> add_opt add_expr bv opte
+  | Pexp_record(lblel, opte) ->
+      List.iter (fun (lbl, e) -> add bv lbl; add_expr bv e) lblel;
+      add_opt add_expr bv opte
+  | Pexp_field(e, fld) -> add_expr bv e; add bv fld
+  | Pexp_setfield(e1, fld, e2) -> add_expr bv e1; add bv fld; add_expr bv e2
+  | Pexp_array el -> List.iter (add_expr bv) el
+  | Pexp_ifthenelse(e1, e2, opte3) ->
+      add_expr bv e1; add_expr bv e2; add_opt add_expr bv opte3
+  | Pexp_sequence(e1, e2) -> add_expr bv e1; add_expr bv e2
+  | Pexp_while(e1, e2) -> add_expr bv e1; add_expr bv e2
+  | Pexp_for( _, e1, e2, _, e3) ->
+      add_expr bv e1; add_expr bv e2; add_expr bv e3
+  | Pexp_coerce(e1, oty2, ty3) ->
+      add_expr bv e1;
+      add_opt add_type bv oty2;
+      add_type bv ty3
+  | Pexp_constraint(e1, ty2) ->
+      add_expr bv e1;
+      add_type bv ty2
+  | Pexp_send(e, _m) -> add_expr bv e
+  | Pexp_new li -> add bv li
+  | Pexp_setinstvar(_v, e) -> add_expr bv e
+  | Pexp_override sel -> List.iter (fun (_s, e) -> add_expr bv e) sel
+  | Pexp_letmodule(id, m, e) ->
+      add_module bv m; add_expr (StringSet.add id.txt bv) e
+  | Pexp_assert (e) -> add_expr bv e
+  | Pexp_lazy (e) -> add_expr bv e
+  | Pexp_poly (e, t) -> add_expr bv e; add_opt add_type bv t
+  | Pexp_object { pcstr_self = pat; pcstr_fields = fieldl } ->
+      let bv = add_pattern bv pat in List.iter (add_class_field bv) fieldl
+  | Pexp_newtype (_, e) -> add_expr bv e
+  | Pexp_pack m -> add_module bv m
+  | Pexp_open (_ovf, m, e) -> open_module bv m.txt; add_expr bv e
+  | Pexp_extension _ -> ()
+
+and add_cases bv cases =
+  List.iter (add_case bv) cases
+
+and add_case bv {pc_lhs; pc_guard; pc_rhs} =
+  let bv = add_pattern bv pc_lhs in
+  add_opt add_expr bv pc_guard;
+  add_expr bv pc_rhs
+
+and add_bindings recf bv pel =
+  let bv' = List.fold_left (fun bv x -> add_pattern bv x.pvb_pat) bv pel in
+  let bv = if recf = Recursive then bv' else bv in
+  List.iter (fun x -> add_expr bv x.pvb_expr) pel;
+  bv'
+
+and add_modtype bv mty =
+  match mty.pmty_desc with
+    Pmty_ident l -> add bv l
+  | Pmty_alias l -> addmodule bv l
+  | Pmty_signature s -> add_signature bv s
+  | Pmty_functor(id, mty1, mty2) ->
+      Misc.may (add_modtype bv) mty1;
+      add_modtype (StringSet.add id.txt bv) mty2
+  | Pmty_with(mty, cstrl) ->
+      add_modtype bv mty;
+      List.iter
+        (function
+          | Pwith_type (_, td) -> add_type_declaration bv td
+          | Pwith_module (_, lid) -> addmodule bv lid
+          | Pwith_typesubst td -> add_type_declaration bv td
+          | Pwith_modsubst (_, lid) -> addmodule bv lid
+        )
+        cstrl
+  | Pmty_typeof m -> add_module bv m
+  | Pmty_extension _ -> ()
+
+and add_signature bv = function
+    [] -> ()
+  | item :: rem -> add_signature (add_sig_item bv item) rem
+
+and add_sig_item bv item =
+  match item.psig_desc with
+    Psig_value vd ->
+      add_type bv vd.pval_type; bv
+  | Psig_type dcls ->
+      List.iter (add_type_declaration bv) dcls; bv
+  | Psig_typext te ->
+      add_type_extension bv te; bv
+  | Psig_exception pext ->
+      add_extension_constructor bv pext; bv
+  | Psig_module pmd ->
+      add_modtype bv pmd.pmd_type; StringSet.add pmd.pmd_name.txt bv
+  | Psig_recmodule decls ->
+      let bv' =
+        List.fold_right StringSet.add
+                        (List.map (fun pmd -> pmd.pmd_name.txt) decls) bv
+      in
+      List.iter (fun pmd -> add_modtype bv' pmd.pmd_type) decls;
+      bv'
+  | Psig_modtype x ->
+      begin match x.pmtd_type with
+        None -> ()
+      | Some mty -> add_modtype bv mty
+      end;
+      bv
+  | Psig_open od ->
+      open_module bv od.popen_lid.txt; bv
+  | Psig_include incl ->
+      add_modtype bv incl.pincl_mod; bv
+  | Psig_class cdl ->
+      List.iter (add_class_description bv) cdl; bv
+  | Psig_class_type cdtl ->
+      List.iter (add_class_type_declaration bv) cdtl; bv
+  | Psig_attribute _ | Psig_extension _ ->
+      bv
+
+and add_module bv modl =
+  match modl.pmod_desc with
+    Pmod_ident l -> addmodule bv l
+  | Pmod_structure s -> ignore (add_structure bv s)
+  | Pmod_functor(id, mty, modl) ->
+      Misc.may (add_modtype bv) mty;
+      add_module (StringSet.add id.txt bv) modl
+  | Pmod_apply(mod1, mod2) ->
+      add_module bv mod1; add_module bv mod2
+  | Pmod_constraint(modl, mty) ->
+      add_module bv modl; add_modtype bv mty
+  | Pmod_unpack(e) ->
+      add_expr bv e
+  | Pmod_extension _ ->
+      ()
+
+and add_structure bv item_list =
+  List.fold_left add_struct_item bv item_list
+
+and add_struct_item bv item =
+  match item.pstr_desc with
+    Pstr_eval (e, _attrs) ->
+      add_expr bv e; bv
+  | Pstr_value(rf, pel) ->
+      let bv = add_bindings rf bv pel in bv
+  | Pstr_primitive vd ->
+      add_type bv vd.pval_type; bv
+  | Pstr_type dcls ->
+      List.iter (add_type_declaration bv) dcls; bv
+  | Pstr_typext te ->
+      add_type_extension bv te;
+      bv
+  | Pstr_exception pext ->
+      add_extension_constructor bv pext; bv
+  | Pstr_module x ->
+      add_module bv x.pmb_expr; StringSet.add x.pmb_name.txt bv
+  | Pstr_recmodule bindings ->
+      let bv' =
+        List.fold_right StringSet.add
+          (List.map (fun x -> x.pmb_name.txt) bindings) bv in
+      List.iter
+        (fun x -> add_module bv' x.pmb_expr)
+        bindings;
+      bv'
+  | Pstr_modtype x ->
+      begin match x.pmtd_type with
+        None -> ()
+      | Some mty -> add_modtype bv mty
+      end;
+      bv
+  | Pstr_open od ->
+      open_module bv od.popen_lid.txt; bv
+  | Pstr_class cdl ->
+      List.iter (add_class_declaration bv) cdl; bv
+  | Pstr_class_type cdtl ->
+      List.iter (add_class_type_declaration bv) cdtl; bv
+  | Pstr_include incl ->
+      add_module bv incl.pincl_mod; bv
+  | Pstr_attribute _ | Pstr_extension _ ->
+      bv
+
+and add_use_file bv top_phrs =
+  ignore (List.fold_left add_top_phrase bv top_phrs)
+
+and add_implementation bv l =
+  ignore (add_structure bv l)
+
+and add_top_phrase bv = function
+  | Ptop_def str -> add_structure bv str
+  | Ptop_dir (_, _) -> bv
+
+and add_class_expr bv ce =
+  match ce.pcl_desc with
+    Pcl_constr(l, tyl) ->
+      add bv l; List.iter (add_type bv) tyl
+  | Pcl_structure { pcstr_self = pat; pcstr_fields = fieldl } ->
+      let bv = add_pattern bv pat in List.iter (add_class_field bv) fieldl
+  | Pcl_fun(_, opte, pat, ce) ->
+      add_opt add_expr bv opte;
+      let bv = add_pattern bv pat in add_class_expr bv ce
+  | Pcl_apply(ce, exprl) ->
+      add_class_expr bv ce; List.iter (fun (_,e) -> add_expr bv e) exprl
+  | Pcl_let(rf, pel, ce) ->
+      let bv = add_bindings rf bv pel in add_class_expr bv ce
+  | Pcl_constraint(ce, ct) ->
+      add_class_expr bv ce; add_class_type bv ct
+  | Pcl_extension _ -> ()
+
+and add_class_field bv pcf =
+  match pcf.pcf_desc with
+    Pcf_inherit(_, ce, _) -> add_class_expr bv ce
+  | Pcf_val(_, _, Cfk_concrete (_, e))
+  | Pcf_method(_, _, Cfk_concrete (_, e)) -> add_expr bv e
+  | Pcf_val(_, _, Cfk_virtual ty)
+  | Pcf_method(_, _, Cfk_virtual ty) -> add_type bv ty
+  | Pcf_constraint(ty1, ty2) -> add_type bv ty1; add_type bv ty2
+  | Pcf_initializer e -> add_expr bv e
+  | Pcf_attribute _ | Pcf_extension _ -> ()
+
+and add_class_declaration bv decl =
+  add_class_expr bv decl.pci_expr
+
+end
 module Ext_pervasives : sig 
 #1 "ext_pervasives.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -22342,1067 +23103,6 @@ let simple_convert_node_path_to_os_path =
 
 let output_js_basename s = 
   String.uncapitalize s ^ Literals.suffix_js
-end
-module Js_packages_info : sig 
-#1 "js_packages_info.mli"
-(* Copyright (C) 2017 Authors of BuckleScript
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-type module_system = 
-  | NodeJS 
-  | AmdJS
-  | Goog  (* This will be serliazed *)
-  | Es6
-  | Es6_global
-  | AmdJS_global
-
-type package_info = 
-  (module_system * string )
-
-val compatible : 
-  module_system -> 
-  module_system -> 
-  bool 
-
-val module_system_of_string :
-  string -> 
-  module_system option 
-  
-type package_name  = string
-
-
-type t =
-  | Empty 
-  | NonBrowser of (package_name * package_info  list)
-
-val dump_packages_info : 
-  Format.formatter -> t -> unit
-
-
-
-type info_query =
-  | Package_empty
-  | Package_script of string
-  | Package_found of package_name * string
-  | Package_not_found   
-
-val query_package_infos : 
-  t -> module_system -> info_query   
-
-
-val get_output_dir:
-  pkg_dir:string -> 
-  module_system -> 
-  string -> 
-  t -> 
-  string   
-end = struct
-#1 "js_packages_info.ml"
-(* Copyright (C) 2017 Authors of BuckleScript
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-type path = string
-
-type module_system =
-  | NodeJS 
-  | AmdJS 
-  | Goog
-  | Es6
-  | Es6_global (* ignore node_modules, just calcluating relative path *)
-  | AmdJS_global (* see ^ *)
-
-(* ocamlopt could not optimize such simple case..*)
-let compatible (exist : module_system) 
-    (query : module_system) =
-  match query with 
-  | NodeJS -> exist = NodeJS 
-  | AmdJS -> exist = AmdJS
-  | Goog -> exist = Goog
-  | Es6  -> exist = Es6
-  | Es6_global  
-    -> exist = Es6_global || exist = Es6
-  | AmdJS_global 
-    -> exist = AmdJS_global || exist = AmdJS
-(* As a dependency Leaf Node, it is the same either [global] or [not] *)
-
-
-type package_info =
-  ( module_system * string )
-
-type package_name  = string
-type t =
-  | Empty (* No set *)
-  | NonBrowser of (package_name * package_info  list)
-  (* we don't want force people to use package *) 
-
-
-let string_of_module_system (ms : module_system) = 
-  (match ms with 
-   | NodeJS -> "NodeJS"
-   | AmdJS -> "AmdJS"
-   | Goog -> "Goog"
-   | Es6 -> "Es6"
-   | Es6_global -> "Es6_global"
-   | AmdJS_global -> "AmdJS_globl"
-  )
-
-let module_system_of_string package_name : module_system option = 
-  match package_name with
-  | "commonjs" -> Some NodeJS
-  | "amdjs" -> Some AmdJS
-  | "goog" -> Some Goog
-  | "es6" -> Some Es6
-  | "es6-global" -> Some Es6_global
-  | "amdjs-global" -> Some AmdJS_global 
-  | _ -> None 
-  
-let dump_package_info 
-    (fmt : Format.formatter)
-    ((ms, name) : package_info)
-  = 
-  Format.fprintf
-    fmt 
-    "@[%s:@ %s@]"
-    (string_of_module_system ms)
-    name 
-
-
-let dump_packages_info 
-    (fmt : Format.formatter) 
-    (p : t) = 
-  match p with 
-  | Empty -> Format.pp_print_string fmt  "<Empty>"
-  | NonBrowser (name, ls) ->
-    Format.fprintf fmt "@[%s;@ @[%a@]@]"
-      name
-      (Format.pp_print_list
-         ~pp_sep:(fun fmt () -> Format.pp_print_space fmt ())
-         dump_package_info 
-      ) ls
-      
-type info_query =
-  | Package_empty
-  | Package_script of string
-  | Package_found of package_name * string
-  | Package_not_found 
-
-  
-
-let query_package_infos 
-    (package_infos : t) module_system : info_query =
-  match package_infos with
-  | Empty -> Package_empty
-  | NonBrowser (name, []) -> Package_script name
-  | NonBrowser (name, paths) ->
-    begin match List.find (fun (k, _) -> 
-        compatible k  module_system) paths with
-    | (_, x) -> Package_found (name, x)
-    | exception _ -> Package_not_found
-    end
-  
-
-(* for a single pass compilation, [output_dir]
-   can be cached
-*)
-let get_output_dir ~pkg_dir module_system output_prefix 
-  packages_info =
-  match packages_info with
-  | Empty | NonBrowser (_, [])->
-    if Filename.is_relative output_prefix then
-      Filename.concat (Lazy.force Ext_filename.cwd )
-      (Filename.dirname output_prefix)
-    else
-      Filename.dirname output_prefix
-  | NonBrowser (_,  modules) ->
-    begin match List.find (fun (k,_) -> 
-      compatible k  module_system) modules with
-      | (_, path) -> Filename.concat pkg_dir  path
-      |  exception _ -> assert false
-    end
-
-    
-end
-module Js_config : sig 
-#1 "js_config.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-(** used by command line option *)
-val add_npm_package_path : string -> unit 
-val get_packages_info :
-   unit -> Js_packages_info.t
-
-
-(** set/get header *)
-val no_version_header : bool ref 
-
-
-(** return [package_name] and [path] 
-    when in script mode: 
-*)
-
-(* val get_current_package_name_and_path : 
-  Js_packages_info.module_system -> 
-  Js_packages_info.info_query *)
-
-
-val set_package_name : string -> unit  
-val get_package_name : unit -> string option
-
-(** corss module inline option *)
-val cross_module_inline : bool ref
-val set_cross_module_inline : bool -> unit
-val get_cross_module_inline : unit -> bool
-  
-(** diagnose option *)
-val diagnose : bool ref 
-val get_diagnose : unit -> bool 
-val set_diagnose : bool -> unit 
-
-
-(** generate tds option *)
-val default_gen_tds : bool ref
-
-(** options for builtion ppx *)
-val no_builtin_ppx_ml : bool ref 
-val no_builtin_ppx_mli : bool ref 
-val no_warn_ffi_type : bool ref 
-val no_warn_unused_bs_attribute : bool ref 
-val no_error_unused_bs_attribute : bool ref 
-(** check-div-by-zero option *)
-val check_div_by_zero : bool ref 
-val get_check_div_by_zero : unit -> bool 
-
-(* It will imply [-noassert] be set too, note from the implmentation point of view, 
-   in the lambda layer, it is impossible to tell whehther it is [assert (3 <> 2)] or 
-   [if (3<>2) then assert false]
- *)
-val no_any_assert : bool ref 
-val set_no_any_assert : unit -> unit
-val get_no_any_assert : unit -> bool 
-
-
-val block : string
-val int32 : string
-val gc : string 
-val backtrace : string
-
-val builtin_exceptions : string
-val exceptions : string
-val io : string
-val oo : string
-val sys : string
-val lexer : string 
-val parser : string
-val obj_runtime : string
-val array : string
-val format : string
-val string : string
-val bytes : string  
-val float : string 
-val curry : string 
-val caml_oo_curry : string 
-(* val bigarray : string *)
-(* val unix : string *)
-val int64 : string
-val md5 : string
-val hash : string
-val weak : string
-val js_primitive : string
-val module_ : string
-val missing_polyfill : string
-val exn : string
-(** Debugging utilies *)
-val set_current_file : string -> unit 
-val get_current_file : unit -> string
-val get_module_name : unit -> string
-
-val iset_debug_file : string -> unit
-val set_debug_file : string -> unit
-val get_debug_file : unit -> string
-
-val is_same_file : unit -> bool 
-
-val tool_name : string
-
-
-val sort_imports : bool ref 
-val dump_js : bool ref
-val syntax_only  : bool ref
-val binary_ast : bool ref
-
-
-
-end = struct
-#1 "js_config.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-(*let get_ext () = !ext*)
-
-
-let packages_info  = 
-  ref (Empty : Js_packages_info.t )
-
-
-let get_package_name () =
-  match !packages_info with
-  | Empty  -> None
-  | NonBrowser(n,_) -> Some n
-
-
-
-let set_package_name name =
-  match !packages_info with
-  | Empty -> packages_info := NonBrowser(name,  [])
-  |  _ ->
-    Ext_pervasives.bad_argf "duplicated flag for -bs-package-name"
-
-
-let add_npm_package_path s =
-  match !packages_info  with
-  | Empty ->
-    Ext_pervasives.bad_argf "please set package name first using -bs-package-name ";
-  | NonBrowser(name,  envs) ->
-    let env, path =
-      match Ext_string.split ~keep_empty:false s ':' with
-      | [ package_name; path]  ->
-        (match Js_packages_info.module_system_of_string package_name with
-         | Some x -> x
-         | None ->
-           Ext_pervasives.bad_argf "invalid module system %s" package_name), path
-      | [path] ->
-        NodeJS, path
-      | _ ->
-        Ext_pervasives.bad_argf "invalid npm package path: %s" s
-    in
-    packages_info := NonBrowser (name,  ((env,path) :: envs))
-(** Browser is not set via command line only for internal use *)
-
-
-let no_version_header = ref false
-
-let cross_module_inline = ref false
-
-let get_cross_module_inline () = !cross_module_inline
-let set_cross_module_inline b =
-  cross_module_inline := b
-
-
-let diagnose = ref false
-let get_diagnose () = !diagnose
-let set_diagnose b = diagnose := b
-
-let (//) = Filename.concat
-
-let get_packages_info () = !packages_info
-
-let default_gen_tds = ref false
-let no_builtin_ppx_ml = ref false
-let no_builtin_ppx_mli = ref false
-let no_warn_ffi_type = ref false
-
-(** TODO: will flip the option when it is ready *)
-let no_warn_unused_bs_attribute = ref false
-let no_error_unused_bs_attribute = ref false 
-
-let builtin_exceptions = "Caml_builtin_exceptions"
-let exceptions = "Caml_exceptions"
-let io = "Caml_io"
-let sys = "Caml_sys"
-let lexer = "Caml_lexer"
-let parser = "Caml_parser"
-let obj_runtime = "Caml_obj"
-let array = "Caml_array"
-let format = "Caml_format"
-let string = "Caml_string"
-let bytes = "Caml_bytes"
-let float = "Caml_float"
-let hash = "Caml_hash"
-let oo = "Caml_oo"
-let curry = "Curry"
-let caml_oo_curry = "Caml_oo_curry"
-let int64 = "Caml_int64"
-let md5 = "Caml_md5"
-let weak = "Caml_weak"
-let backtrace = "Caml_backtrace"
-let gc = "Caml_gc"
-let int32 = "Caml_int32"
-let block = "Block"
-let js_primitive = "Js_primitive"
-let module_ = "Caml_module"
-let missing_polyfill = "Caml_missing_polyfill"
-let exn = "Js_exn"
-
-let current_file = ref ""
-let debug_file = ref ""
-
-let set_current_file f  = current_file := f
-let get_current_file () = !current_file
-let get_module_name () =
-  Filename.chop_extension
-    (Filename.basename (String.uncapitalize !current_file))
-
-let iset_debug_file _ = ()
-let set_debug_file  f = debug_file := f
-let get_debug_file  () = !debug_file
-
-
-let is_same_file () =
-  !debug_file <> "" &&  !debug_file = !current_file
-
-let tool_name = "BuckleScript"
-
-let check_div_by_zero = ref true
-let get_check_div_by_zero () = !check_div_by_zero
-
-let no_any_assert = ref false
-
-let set_no_any_assert () = no_any_assert := true
-let get_no_any_assert () = !no_any_assert
-
-let sort_imports = ref true
-let dump_js = ref false
-
-
-
-let syntax_only = ref false
-let binary_ast = ref false
-
-
-end
-module Bs_exception : sig 
-#1 "bs_exception.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type error =
-  | Cmj_not_found of string
-  | Js_not_found of string
-  | Bs_cyclic_depends of string  list
-  | Bs_duplicated_module of string * string
-  | Bs_duplicate_exports of string (* gpr_974 *)
-  | Bs_package_not_found of string                                                        
-  | Bs_main_not_exist of string 
-  | Bs_invalid_path of string
-  | Missing_ml_dependency of string 
-  | Dependency_script_module_dependent_not  of string
-(*
-TODO: In the futrue, we should refine dependency [bsb] 
-should not rely on such exception, it should have its own exception handling
-*)
-
-(* exception Error of error *)
-
-(* val report_error : Format.formatter -> error -> unit *)
-
-val error : error -> 'a 
-
-end = struct
-#1 "bs_exception.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-type error =
-  | Cmj_not_found of string
-  | Js_not_found of string 
-  | Bs_cyclic_depends of string  list
-  | Bs_duplicated_module of string * string
-  | Bs_duplicate_exports of string (* gpr_974 *)
-  | Bs_package_not_found of string                            
-  | Bs_main_not_exist of string 
-  | Bs_invalid_path of string
-  | Missing_ml_dependency of string 
-  | Dependency_script_module_dependent_not  of string 
-  (** TODO: we need add location handling *)    
-exception Error of error
-
-let error err = raise (Error err)
-
-let report_error ppf = function
-  | Dependency_script_module_dependent_not s
-    -> 
-    Format.fprintf ppf 
-      "%s is compiled in script mode while its dependent is not"
-      s
-  | Missing_ml_dependency s -> 
-    Format.fprintf ppf "Missing dependency %s in search path" s 
-  | Cmj_not_found s ->
-    Format.fprintf ppf "%s not found, cmj format is generated by BuckleScript" s
-  | Js_not_found s -> 
-    Format.fprintf ppf "%s not found, needed in script mode " s
-  | Bs_cyclic_depends  str
-    ->
-    Format.fprintf ppf "Cyclic depends : @[%a@]"
-      (Format.pp_print_list ~pp_sep:Format.pp_print_space
-         Format.pp_print_string)
-      str
-  | Bs_duplicate_exports str -> 
-    Format.fprintf ppf "%s are exported as twice" str 
-  | Bs_duplicated_module (a,b)
-    ->
-    Format.fprintf ppf "The build system does not support two files with same names yet %s, %s" a b
-  | Bs_main_not_exist main
-    ->
-    Format.fprintf ppf "File %s not found " main
-
-  | Bs_package_not_found package
-    ->
-    Format.fprintf ppf "Package %s not found or %s/lib/ocaml does not exist or please set npm_config_prefix correctly"
-      package package
-  | Bs_invalid_path path
-    ->  Format.pp_print_string ppf ("Invalid path: " ^ path )
-
-
-let () =
-  Location.register_error_of_exn
-    (function
-      | Error err
-        -> Some (Location.error_of_printer_file report_error err)
-      | _ -> None
-    )
-
-end
-module Depend : sig 
-#1 "depend.mli"
-(***********************************************************************)
-(*                                                                     *)
-(*                                OCaml                                *)
-(*                                                                     *)
-(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
-(*                                                                     *)
-(*  Copyright 1999 Institut National de Recherche en Informatique et   *)
-(*  en Automatique.  All rights reserved.  This file is distributed    *)
-(*  under the terms of the Q Public License version 1.0.               *)
-(*                                                                     *)
-(***********************************************************************)
-
-(** Module dependencies. *)
-
-module StringSet : Set.S with type elt = string
-
-val free_structure_names : StringSet.t ref
-
-val open_module : StringSet.t -> Longident.t -> unit
-
-val add_use_file : StringSet.t -> Parsetree.toplevel_phrase list -> unit
-
-val add_signature : StringSet.t -> Parsetree.signature -> unit
-
-val add_implementation : StringSet.t -> Parsetree.structure -> unit
-
-end = struct
-#1 "depend.ml"
-(***********************************************************************)
-(*                                                                     *)
-(*                                OCaml                                *)
-(*                                                                     *)
-(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
-(*                                                                     *)
-(*  Copyright 1999 Institut National de Recherche en Informatique et   *)
-(*  en Automatique.  All rights reserved.  This file is distributed    *)
-(*  under the terms of the Q Public License version 1.0.               *)
-(*                                                                     *)
-(***********************************************************************)
-
-open Asttypes
-open Location
-open Longident
-open Parsetree
-
-module StringSet = Set.Make(struct type t = string let compare = compare end)
-
-(* Collect free module identifiers in the a.s.t. *)
-
-let free_structure_names = ref StringSet.empty
-
-let rec add_path bv = function
-  | Lident s ->
-      if not (StringSet.mem s bv)
-      then free_structure_names := StringSet.add s !free_structure_names
-  | Ldot(l, _s) -> add_path bv l
-  | Lapply(l1, l2) -> add_path bv l1; add_path bv l2
-
-let open_module bv lid = add_path bv lid
-
-let add bv lid =
-  match lid.txt with
-    Ldot(l, _s) -> add_path bv l
-  | _ -> ()
-
-let addmodule bv lid = add_path bv lid.txt
-
-let rec add_type bv ty =
-  match ty.ptyp_desc with
-    Ptyp_any -> ()
-  | Ptyp_var _ -> ()
-  | Ptyp_arrow(_, t1, t2) -> add_type bv t1; add_type bv t2
-  | Ptyp_tuple tl -> List.iter (add_type bv) tl
-  | Ptyp_constr(c, tl) -> add bv c; List.iter (add_type bv) tl
-  | Ptyp_object (fl, _) -> List.iter (fun (_, _, t) -> add_type bv t) fl
-  | Ptyp_class(c, tl) -> add bv c; List.iter (add_type bv) tl
-  | Ptyp_alias(t, _) -> add_type bv t
-  | Ptyp_variant(fl, _, _) ->
-      List.iter
-        (function Rtag(_,_,_,stl) -> List.iter (add_type bv) stl
-          | Rinherit sty -> add_type bv sty)
-        fl
-  | Ptyp_poly(_, t) -> add_type bv t
-  | Ptyp_package pt -> add_package_type bv pt
-  | Ptyp_extension _ -> ()
-
-and add_package_type bv (lid, l) =
-  add bv lid;
-  List.iter (add_type bv) (List.map (fun (_, e) -> e) l)
-
-let add_opt add_fn bv = function
-    None -> ()
-  | Some x -> add_fn bv x
-
-let add_constructor_decl bv pcd =
-  List.iter (add_type bv) pcd.pcd_args; Misc.may (add_type bv) pcd.pcd_res
-
-let add_type_declaration bv td =
-  List.iter
-    (fun (ty1, ty2, _) -> add_type bv ty1; add_type bv ty2)
-    td.ptype_cstrs;
-  add_opt add_type bv td.ptype_manifest;
-  let add_tkind = function
-    Ptype_abstract -> ()
-  | Ptype_variant cstrs ->
-      List.iter (add_constructor_decl bv) cstrs
-  | Ptype_record lbls ->
-      List.iter (fun pld -> add_type bv pld.pld_type) lbls
-  | Ptype_open -> () in
-  add_tkind td.ptype_kind
-
-let add_extension_constructor bv ext =
-  match ext.pext_kind with
-      Pext_decl(args, rty) ->
-        List.iter (add_type bv) args; Misc.may (add_type bv) rty
-    | Pext_rebind lid -> add bv lid
-
-let add_type_extension bv te =
-  add bv te.ptyext_path;
-  List.iter (add_extension_constructor bv) te.ptyext_constructors
-
-let rec add_class_type bv cty =
-  match cty.pcty_desc with
-    Pcty_constr(l, tyl) ->
-      add bv l; List.iter (add_type bv) tyl
-  | Pcty_signature { pcsig_self = ty; pcsig_fields = fieldl } ->
-      add_type bv ty;
-      List.iter (add_class_type_field bv) fieldl
-  | Pcty_arrow(_, ty1, cty2) ->
-      add_type bv ty1; add_class_type bv cty2
-  | Pcty_extension _ -> ()
-
-and add_class_type_field bv pctf =
-  match pctf.pctf_desc with
-    Pctf_inherit cty -> add_class_type bv cty
-  | Pctf_val(_, _, _, ty) -> add_type bv ty
-  | Pctf_method(_, _, _, ty) -> add_type bv ty
-  | Pctf_constraint(ty1, ty2) -> add_type bv ty1; add_type bv ty2
-  | Pctf_attribute _ -> ()
-  | Pctf_extension _ -> ()
-
-let add_class_description bv infos =
-  add_class_type bv infos.pci_expr
-
-let add_class_type_declaration = add_class_description
-
-let pattern_bv = ref StringSet.empty
-
-let rec add_pattern bv pat =
-  match pat.ppat_desc with
-    Ppat_any -> ()
-  | Ppat_var _ -> ()
-  | Ppat_alias(p, _) -> add_pattern bv p
-  | Ppat_interval _
-  | Ppat_constant _ -> ()
-  | Ppat_tuple pl -> List.iter (add_pattern bv) pl
-  | Ppat_construct(c, op) -> add bv c; add_opt add_pattern bv op
-  | Ppat_record(pl, _) ->
-      List.iter (fun (lbl, p) -> add bv lbl; add_pattern bv p) pl
-  | Ppat_array pl -> List.iter (add_pattern bv) pl
-  | Ppat_or(p1, p2) -> add_pattern bv p1; add_pattern bv p2
-  | Ppat_constraint(p, ty) -> add_pattern bv p; add_type bv ty
-  | Ppat_variant(_, op) -> add_opt add_pattern bv op
-  | Ppat_type li -> add bv li
-  | Ppat_lazy p -> add_pattern bv p
-  | Ppat_unpack id -> pattern_bv := StringSet.add id.txt !pattern_bv
-  | Ppat_exception p -> add_pattern bv p
-  | Ppat_extension _ -> ()
-
-let add_pattern bv pat =
-  pattern_bv := bv;
-  add_pattern bv pat;
-  !pattern_bv
-
-let rec add_expr bv exp =
-  match exp.pexp_desc with
-    Pexp_ident l -> add bv l
-  | Pexp_constant _ -> ()
-  | Pexp_let(rf, pel, e) ->
-      let bv = add_bindings rf bv pel in add_expr bv e
-  | Pexp_fun (_, opte, p, e) ->
-      add_opt add_expr bv opte; add_expr (add_pattern bv p) e
-  | Pexp_function pel ->
-      add_cases bv pel
-  | Pexp_apply(e, el) ->
-      add_expr bv e; List.iter (fun (_,e) -> add_expr bv e) el
-  | Pexp_match(e, pel) -> add_expr bv e; add_cases bv pel
-  | Pexp_try(e, pel) -> add_expr bv e; add_cases bv pel
-  | Pexp_tuple el -> List.iter (add_expr bv) el
-  | Pexp_construct(c, opte) -> add bv c; add_opt add_expr bv opte
-  | Pexp_variant(_, opte) -> add_opt add_expr bv opte
-  | Pexp_record(lblel, opte) ->
-      List.iter (fun (lbl, e) -> add bv lbl; add_expr bv e) lblel;
-      add_opt add_expr bv opte
-  | Pexp_field(e, fld) -> add_expr bv e; add bv fld
-  | Pexp_setfield(e1, fld, e2) -> add_expr bv e1; add bv fld; add_expr bv e2
-  | Pexp_array el -> List.iter (add_expr bv) el
-  | Pexp_ifthenelse(e1, e2, opte3) ->
-      add_expr bv e1; add_expr bv e2; add_opt add_expr bv opte3
-  | Pexp_sequence(e1, e2) -> add_expr bv e1; add_expr bv e2
-  | Pexp_while(e1, e2) -> add_expr bv e1; add_expr bv e2
-  | Pexp_for( _, e1, e2, _, e3) ->
-      add_expr bv e1; add_expr bv e2; add_expr bv e3
-  | Pexp_coerce(e1, oty2, ty3) ->
-      add_expr bv e1;
-      add_opt add_type bv oty2;
-      add_type bv ty3
-  | Pexp_constraint(e1, ty2) ->
-      add_expr bv e1;
-      add_type bv ty2
-  | Pexp_send(e, _m) -> add_expr bv e
-  | Pexp_new li -> add bv li
-  | Pexp_setinstvar(_v, e) -> add_expr bv e
-  | Pexp_override sel -> List.iter (fun (_s, e) -> add_expr bv e) sel
-  | Pexp_letmodule(id, m, e) ->
-      add_module bv m; add_expr (StringSet.add id.txt bv) e
-  | Pexp_assert (e) -> add_expr bv e
-  | Pexp_lazy (e) -> add_expr bv e
-  | Pexp_poly (e, t) -> add_expr bv e; add_opt add_type bv t
-  | Pexp_object { pcstr_self = pat; pcstr_fields = fieldl } ->
-      let bv = add_pattern bv pat in List.iter (add_class_field bv) fieldl
-  | Pexp_newtype (_, e) -> add_expr bv e
-  | Pexp_pack m -> add_module bv m
-  | Pexp_open (_ovf, m, e) -> open_module bv m.txt; add_expr bv e
-  | Pexp_extension _ -> ()
-
-and add_cases bv cases =
-  List.iter (add_case bv) cases
-
-and add_case bv {pc_lhs; pc_guard; pc_rhs} =
-  let bv = add_pattern bv pc_lhs in
-  add_opt add_expr bv pc_guard;
-  add_expr bv pc_rhs
-
-and add_bindings recf bv pel =
-  let bv' = List.fold_left (fun bv x -> add_pattern bv x.pvb_pat) bv pel in
-  let bv = if recf = Recursive then bv' else bv in
-  List.iter (fun x -> add_expr bv x.pvb_expr) pel;
-  bv'
-
-and add_modtype bv mty =
-  match mty.pmty_desc with
-    Pmty_ident l -> add bv l
-  | Pmty_alias l -> addmodule bv l
-  | Pmty_signature s -> add_signature bv s
-  | Pmty_functor(id, mty1, mty2) ->
-      Misc.may (add_modtype bv) mty1;
-      add_modtype (StringSet.add id.txt bv) mty2
-  | Pmty_with(mty, cstrl) ->
-      add_modtype bv mty;
-      List.iter
-        (function
-          | Pwith_type (_, td) -> add_type_declaration bv td
-          | Pwith_module (_, lid) -> addmodule bv lid
-          | Pwith_typesubst td -> add_type_declaration bv td
-          | Pwith_modsubst (_, lid) -> addmodule bv lid
-        )
-        cstrl
-  | Pmty_typeof m -> add_module bv m
-  | Pmty_extension _ -> ()
-
-and add_signature bv = function
-    [] -> ()
-  | item :: rem -> add_signature (add_sig_item bv item) rem
-
-and add_sig_item bv item =
-  match item.psig_desc with
-    Psig_value vd ->
-      add_type bv vd.pval_type; bv
-  | Psig_type dcls ->
-      List.iter (add_type_declaration bv) dcls; bv
-  | Psig_typext te ->
-      add_type_extension bv te; bv
-  | Psig_exception pext ->
-      add_extension_constructor bv pext; bv
-  | Psig_module pmd ->
-      add_modtype bv pmd.pmd_type; StringSet.add pmd.pmd_name.txt bv
-  | Psig_recmodule decls ->
-      let bv' =
-        List.fold_right StringSet.add
-                        (List.map (fun pmd -> pmd.pmd_name.txt) decls) bv
-      in
-      List.iter (fun pmd -> add_modtype bv' pmd.pmd_type) decls;
-      bv'
-  | Psig_modtype x ->
-      begin match x.pmtd_type with
-        None -> ()
-      | Some mty -> add_modtype bv mty
-      end;
-      bv
-  | Psig_open od ->
-      open_module bv od.popen_lid.txt; bv
-  | Psig_include incl ->
-      add_modtype bv incl.pincl_mod; bv
-  | Psig_class cdl ->
-      List.iter (add_class_description bv) cdl; bv
-  | Psig_class_type cdtl ->
-      List.iter (add_class_type_declaration bv) cdtl; bv
-  | Psig_attribute _ | Psig_extension _ ->
-      bv
-
-and add_module bv modl =
-  match modl.pmod_desc with
-    Pmod_ident l -> addmodule bv l
-  | Pmod_structure s -> ignore (add_structure bv s)
-  | Pmod_functor(id, mty, modl) ->
-      Misc.may (add_modtype bv) mty;
-      add_module (StringSet.add id.txt bv) modl
-  | Pmod_apply(mod1, mod2) ->
-      add_module bv mod1; add_module bv mod2
-  | Pmod_constraint(modl, mty) ->
-      add_module bv modl; add_modtype bv mty
-  | Pmod_unpack(e) ->
-      add_expr bv e
-  | Pmod_extension _ ->
-      ()
-
-and add_structure bv item_list =
-  List.fold_left add_struct_item bv item_list
-
-and add_struct_item bv item =
-  match item.pstr_desc with
-    Pstr_eval (e, _attrs) ->
-      add_expr bv e; bv
-  | Pstr_value(rf, pel) ->
-      let bv = add_bindings rf bv pel in bv
-  | Pstr_primitive vd ->
-      add_type bv vd.pval_type; bv
-  | Pstr_type dcls ->
-      List.iter (add_type_declaration bv) dcls; bv
-  | Pstr_typext te ->
-      add_type_extension bv te;
-      bv
-  | Pstr_exception pext ->
-      add_extension_constructor bv pext; bv
-  | Pstr_module x ->
-      add_module bv x.pmb_expr; StringSet.add x.pmb_name.txt bv
-  | Pstr_recmodule bindings ->
-      let bv' =
-        List.fold_right StringSet.add
-          (List.map (fun x -> x.pmb_name.txt) bindings) bv in
-      List.iter
-        (fun x -> add_module bv' x.pmb_expr)
-        bindings;
-      bv'
-  | Pstr_modtype x ->
-      begin match x.pmtd_type with
-        None -> ()
-      | Some mty -> add_modtype bv mty
-      end;
-      bv
-  | Pstr_open od ->
-      open_module bv od.popen_lid.txt; bv
-  | Pstr_class cdl ->
-      List.iter (add_class_declaration bv) cdl; bv
-  | Pstr_class_type cdtl ->
-      List.iter (add_class_type_declaration bv) cdtl; bv
-  | Pstr_include incl ->
-      add_module bv incl.pincl_mod; bv
-  | Pstr_attribute _ | Pstr_extension _ ->
-      bv
-
-and add_use_file bv top_phrs =
-  ignore (List.fold_left add_top_phrase bv top_phrs)
-
-and add_implementation bv l =
-  ignore (add_structure bv l)
-
-and add_top_phrase bv = function
-  | Ptop_def str -> add_structure bv str
-  | Ptop_dir (_, _) -> bv
-
-and add_class_expr bv ce =
-  match ce.pcl_desc with
-    Pcl_constr(l, tyl) ->
-      add bv l; List.iter (add_type bv) tyl
-  | Pcl_structure { pcstr_self = pat; pcstr_fields = fieldl } ->
-      let bv = add_pattern bv pat in List.iter (add_class_field bv) fieldl
-  | Pcl_fun(_, opte, pat, ce) ->
-      add_opt add_expr bv opte;
-      let bv = add_pattern bv pat in add_class_expr bv ce
-  | Pcl_apply(ce, exprl) ->
-      add_class_expr bv ce; List.iter (fun (_,e) -> add_expr bv e) exprl
-  | Pcl_let(rf, pel, ce) ->
-      let bv = add_bindings rf bv pel in add_class_expr bv ce
-  | Pcl_constraint(ce, ct) ->
-      add_class_expr bv ce; add_class_type bv ct
-  | Pcl_extension _ -> ()
-
-and add_class_field bv pcf =
-  match pcf.pcf_desc with
-    Pcf_inherit(_, ce, _) -> add_class_expr bv ce
-  | Pcf_val(_, _, Cfk_concrete (_, e))
-  | Pcf_method(_, _, Cfk_concrete (_, e)) -> add_expr bv e
-  | Pcf_val(_, _, Cfk_virtual ty)
-  | Pcf_method(_, _, Cfk_virtual ty) -> add_type bv ty
-  | Pcf_constraint(ty1, ty2) -> add_type bv ty1; add_type bv ty2
-  | Pcf_initializer e -> add_expr bv e
-  | Pcf_attribute _ | Pcf_extension _ -> ()
-
-and add_class_declaration bv decl =
-  add_class_expr bv decl.pci_expr
-
 end
 module Ext_format : sig 
 #1 "ext_format.mli"
@@ -59012,6 +58712,254 @@ let iinfo b str f  =
 
 
 end
+module Js_packages_info : sig 
+#1 "js_packages_info.mli"
+(* Copyright (C) 2017 Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type module_system = 
+  | NodeJS 
+  | AmdJS
+  | Goog  (* This will be serliazed *)
+  | Es6
+  | Es6_global
+  | AmdJS_global
+
+type package_info = 
+  (module_system * string )
+
+val compatible : 
+  module_system -> 
+  module_system -> 
+  bool 
+
+val module_system_of_string :
+  string -> 
+  module_system option 
+  
+type package_name  = string
+
+
+type t =
+  | Empty 
+  | NonBrowser of (package_name * package_info  list)
+
+val dump_packages_info : 
+  Format.formatter -> t -> unit
+
+
+
+type info_query =
+  | Package_empty
+  | Package_script of string
+  | Package_found of package_name * string
+  | Package_not_found   
+
+val query_package_infos : 
+  t -> module_system -> info_query   
+
+
+val get_output_dir:
+  pkg_dir:string -> 
+  module_system -> 
+  string -> 
+  t -> 
+  string   
+
+
+(** used by command line option *)
+val add_npm_package_path : 
+  string -> t -> t  
+end = struct
+#1 "js_packages_info.ml"
+(* Copyright (C) 2017 Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type path = string
+
+type module_system =
+  | NodeJS 
+  | AmdJS 
+  | Goog
+  | Es6
+  | Es6_global (* ignore node_modules, just calcluating relative path *)
+  | AmdJS_global (* see ^ *)
+
+(* ocamlopt could not optimize such simple case..*)
+let compatible (exist : module_system) 
+    (query : module_system) =
+  match query with 
+  | NodeJS -> exist = NodeJS 
+  | AmdJS -> exist = AmdJS
+  | Goog -> exist = Goog
+  | Es6  -> exist = Es6
+  | Es6_global  
+    -> exist = Es6_global || exist = Es6
+  | AmdJS_global 
+    -> exist = AmdJS_global || exist = AmdJS
+(* As a dependency Leaf Node, it is the same either [global] or [not] *)
+
+
+type package_info =
+  ( module_system * string )
+
+type package_name  = string
+type t =
+  | Empty (* No set *)
+  | NonBrowser of (package_name * package_info  list)
+  (* we don't want force people to use package *) 
+
+
+let string_of_module_system (ms : module_system) = 
+  (match ms with 
+   | NodeJS -> "NodeJS"
+   | AmdJS -> "AmdJS"
+   | Goog -> "Goog"
+   | Es6 -> "Es6"
+   | Es6_global -> "Es6_global"
+   | AmdJS_global -> "AmdJS_globl"
+  )
+
+let module_system_of_string package_name : module_system option = 
+  match package_name with
+  | "commonjs" -> Some NodeJS
+  | "amdjs" -> Some AmdJS
+  | "goog" -> Some Goog
+  | "es6" -> Some Es6
+  | "es6-global" -> Some Es6_global
+  | "amdjs-global" -> Some AmdJS_global 
+  | _ -> None 
+
+let dump_package_info 
+    (fmt : Format.formatter)
+    ((ms, name) : package_info)
+  = 
+  Format.fprintf
+    fmt 
+    "@[%s:@ %s@]"
+    (string_of_module_system ms)
+    name 
+
+
+let dump_packages_info 
+    (fmt : Format.formatter) 
+    (p : t) = 
+  match p with 
+  | Empty -> Format.pp_print_string fmt  "<Empty>"
+  | NonBrowser (name, ls) ->
+    Format.fprintf fmt "@[%s;@ @[%a@]@]"
+      name
+      (Format.pp_print_list
+         ~pp_sep:(fun fmt () -> Format.pp_print_space fmt ())
+         dump_package_info 
+      ) ls
+
+type info_query =
+  | Package_empty
+  | Package_script of string
+  | Package_found of package_name * string
+  | Package_not_found 
+
+
+
+let query_package_infos 
+    (package_infos : t) module_system : info_query =
+  match package_infos with
+  | Empty -> Package_empty
+  | NonBrowser (name, []) -> Package_script name
+  | NonBrowser (name, paths) ->
+    begin match List.find (fun (k, _) -> 
+        compatible k  module_system) paths with
+    | (_, x) -> Package_found (name, x)
+    | exception _ -> Package_not_found
+    end
+
+
+(* for a single pass compilation, [output_dir]
+   can be cached
+*)
+let get_output_dir ~pkg_dir module_system output_prefix 
+    packages_info =
+  match packages_info with
+  | Empty | NonBrowser (_, [])->
+    if Filename.is_relative output_prefix then
+      Filename.concat (Lazy.force Ext_filename.cwd )
+        (Filename.dirname output_prefix)
+    else
+      Filename.dirname output_prefix
+  | NonBrowser (_,  modules) ->
+    begin match List.find (fun (k,_) -> 
+        compatible k  module_system) modules with
+    | (_, path) -> Filename.concat pkg_dir  path
+    |  exception _ -> assert false
+    end
+
+
+let add_npm_package_path s (packages_info : t)  : t =
+  match packages_info  with
+  | Empty ->
+    Ext_pervasives.bad_argf "please set package name first using -bs-package-name ";
+  | NonBrowser(name,  envs) ->
+    let env, path =
+      match Ext_string.split ~keep_empty:false s ':' with
+      | [ package_name; path]  ->
+        (match module_system_of_string package_name with
+         | Some x -> x
+         | None ->
+           Ext_pervasives.bad_argf "invalid module system %s" package_name), path
+      | [path] ->
+        NodeJS, path
+      | _ ->
+        Ext_pervasives.bad_argf "invalid npm package path: %s" s
+    in
+    NonBrowser (name,  ((env,path) :: envs))    
+
+
+end
 module Ext_array : sig 
 #1 "ext_array.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -70812,6 +70760,61 @@ let of_lam_mutable_flag (x : Asttypes.mutable_flag)  : Js_op.mutable_flag =
   | Mutable -> Mutable
 
 end
+module Js_runtime_modules
+= struct
+#1 "js_runtime_modules.ml"
+(* Copyright (C) 2017 Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+let builtin_exceptions = "Caml_builtin_exceptions"
+let exceptions = "Caml_exceptions"
+let io = "Caml_io"
+let sys = "Caml_sys"
+let lexer = "Caml_lexer"
+let parser = "Caml_parser"
+let obj_runtime = "Caml_obj"
+let array = "Caml_array"
+let format = "Caml_format"
+let string = "Caml_string"
+let bytes = "Caml_bytes"
+let float = "Caml_float"
+let hash = "Caml_hash"
+let oo = "Caml_oo"
+let curry = "Curry"
+let caml_oo_curry = "Caml_oo_curry"
+let int64 = "Caml_int64"
+let md5 = "Caml_md5"
+let weak = "Caml_weak"
+let backtrace = "Caml_backtrace"
+let gc = "Caml_gc"
+let int32 = "Caml_int32"
+let block = "Block"
+let js_primitive = "Js_primitive"
+let module_ = "Caml_module"
+let missing_polyfill = "Caml_missing_polyfill"
+let exn = "Js_exn"
+end
 module Lam_compile_util : sig 
 #1 "lam_compile_util.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -72118,11 +72121,11 @@ let public_method_call meth_name obj label cache args =
   let len = List.length args in 
   (* econd (int_equal (tag obj ) obj_int_tag_literal) *)
   if len <= 7 then          
-    runtime_call Js_config.caml_oo_curry 
+    runtime_call Js_runtime_modules.caml_oo_curry 
       ("js" ^ string_of_int (len + 1) )
       (label:: ( int cache) :: obj::args)
   else 
-    runtime_call Js_config.caml_oo_curry "js"
+    runtime_call Js_runtime_modules.caml_oo_curry "js"
       [label; 
        int cache;
        obj ;  
@@ -72401,7 +72404,7 @@ let int32_div ~checked ?comment
     end
   | _, _ -> 
     if checked  then 
-      runtime_call Js_config.int32 "div" [e1; e2]
+      runtime_call Js_runtime_modules.int32 "div" [e1; e2]
     else to_int32 (float_div ?comment e1 e2)
 
 
@@ -72415,7 +72418,7 @@ let int32_mod ~checked ?comment e1 (e2 : t) : J.expression =
 
   | _ -> 
     if checked then 
-      runtime_call Js_config.int32 "mod_" [e1;e2]
+      runtime_call Js_runtime_modules.int32 "mod_" [e1;e2]
     else 
       { comment ; 
         expression_desc = Bin (Mod, e1,e2)
@@ -72456,9 +72459,9 @@ let int32_mul ?comment
     if i >= 0 then 
       int32_lsl e (small_int i)
     else 
-      runtime_call ?comment Js_config.int32 Literals.imul [e1;e2]
+      runtime_call ?comment Js_runtime_modules.int32 Literals.imul [e1;e2]
   | _ -> 
-    runtime_call ?comment Js_config.int32 Literals.imul [e1;e2]
+    runtime_call ?comment Js_runtime_modules.int32 Literals.imul [e1;e2]
 
 let unchecked_int32_mul ?comment e1 e2 : J.expression = 
   { comment ; 
@@ -72530,7 +72533,7 @@ let is_undef ?comment x = triple_equal ?comment x undefined
 
 let not_implemented ?comment (s : string) : t =  
   runtime_call
-    Js_config.missing_polyfill
+    Js_runtime_modules.missing_polyfill
     "not_implemented" 
     [str (s ^ " not implemented by bucklescript yet\n")]
 
@@ -84998,6 +85001,91 @@ let caml_float_literal_to_js_string v =
 
 
 end
+module Js_packages_state : sig 
+#1 "js_packages_state.mli"
+(* Copyright (C) 2017 Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+val get_package_name : 
+  unit -> string option
+
+val set_package_name : 
+  string -> unit 
+
+val get_packages_info : 
+  unit -> Js_packages_info.t 
+
+val update_npm_package_path : 
+  string -> unit   
+end = struct
+#1 "js_packages_state.ml"
+(* Copyright (C) 2017 Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+let packages_info  = 
+  ref (Empty : Js_packages_info.t )
+
+let get_package_name () =
+  match !packages_info with
+  | Empty  -> None
+  | NonBrowser(n,_) -> Some n
+
+let set_package_name name =
+  match !packages_info with
+  | Empty -> packages_info := NonBrowser(name,  [])
+  |  _ ->
+    Ext_pervasives.bad_argf "duplicated flag for -bs-package-name"
+
+
+let update_npm_package_path s  = 
+  packages_info := Js_packages_info.add_npm_package_path s !packages_info
+
+let get_packages_info () = !packages_info  
+end
 module Ext_sys : sig 
 #1 "ext_sys.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -85201,7 +85289,7 @@ let string_of_module_id ~output_prefix
       | Ml  -> 
         let id = x.id in
         let js_file = Ext_filename.output_js_basename id.name in 
-        let current_package_info = Js_config.get_packages_info () in 
+        let current_package_info = Js_packages_state.get_packages_info () in 
         let rebase different_package package_dir dep =
           let current_unit_dir =
             `Dir (Js_packages_info.get_output_dir 
@@ -85260,7 +85348,7 @@ let string_of_module_id ~output_prefix
                       ~pkg_dir:(Lazy.force Ext_filename.package_dir)
                        module_system 
                        output_prefix
-                       (Js_config.get_packages_info()) 
+                       (Js_packages_state.get_packages_info()) 
                        )
                     ((Filename.dirname 
                         (Filename.dirname (Filename.dirname cmj_path))) // x // js_file)              
@@ -85726,7 +85814,7 @@ let rec
 
   try_optimize_curry cxt f len function_id = 
   begin           
-    P.string f Js_config.curry;
+    P.string f Js_runtime_modules.curry;
     P.string f L.dot;
     P.string f "__";
     P.string f (Printf.sprintf "%d" len);
@@ -86047,7 +86135,7 @@ and
 
           | _ , _ -> 
             (* ipp_comment f (Some "!") *)
-            P.string f  Js_config.curry; 
+            P.string f  Js_runtime_modules.curry; 
             P.string f L.dot;
             let len = List.length el in
             if 1 <= len && len <= 8 then  
@@ -87287,7 +87375,7 @@ let pp_deps_program
         | Goog  -> 
           let goog_package = 
             let v = Js_config.get_module_name () in
-            match Js_config.get_package_name () with 
+            match Js_packages_state.get_package_name () with 
             | None 
               -> v 
             | Some x -> x ^ "." ^ v 
@@ -87451,7 +87539,7 @@ class count_hard_dependencies =
         (* see [Js_exp_make.runtime_var_dot] *)
         -> 
         add_lam_module_ident hard_dependencies 
-          (Lam_module_ident.of_runtime (Ext_ident.create_js Js_config.curry));
+          (Lam_module_ident.of_runtime (Ext_ident.create_js Js_runtime_modules.curry));
         super#expression x             
       | {expression_desc = Caml_block(_,_, tag, tag_info); _}
         -> 
@@ -87464,7 +87552,7 @@ class count_hard_dependencies =
           | _, _
             -> 
             add_lam_module_ident hard_dependencies 
-              (Lam_module_ident.of_runtime (Ext_ident.create_js Js_config.block));
+              (Lam_module_ident.of_runtime (Ext_ident.create_js Js_runtime_modules.block));
         end;
         super#expression x 
       | _ -> super#expression x
@@ -92206,7 +92294,7 @@ module E = Js_exp_make
 type int64_call = J.expression list -> J.expression  
 
 let int64_call (fn : string) args  = 
-  E.runtime_call Js_config.int64 fn args 
+  E.runtime_call Js_runtime_modules.int64 fn args 
 
 
 (* TODO: make layout easier to change later *)
@@ -92255,7 +92343,7 @@ let of_int32 (args : J.expression list) =
   | _ -> int64_call  "of_int32" args
 
 let comp (cmp : Lambda.comparison) args = 
-  E.runtime_call  Js_config.int64
+  E.runtime_call  Js_runtime_modules.int64
     (match cmp with 
      | Ceq -> "eq"
      | Cneq -> "neq"
@@ -92620,10 +92708,10 @@ module A = struct
  *)
 
   let bytes_to_string e = 
-    E.runtime_call Js_config.string "bytes_to_string" [e]
+    E.runtime_call Js_runtime_modules.string "bytes_to_string" [e]
 
   let bytes_of_string s =
-    E.runtime_call Js_config.string "bytes_of_string" [s]
+    E.runtime_call Js_runtime_modules.string "bytes_of_string" [s]
 end
 
 (* We use module B for string compilation, once the upstream can make changes to the 
@@ -92673,10 +92761,10 @@ module B = struct
  *)
 
   let bytes_to_string e = 
-    E.runtime_call Js_config.string "bytes_to_string" [e]
+    E.runtime_call Js_runtime_modules.string "bytes_to_string" [e]
 
   let bytes_of_string s =
-    E.runtime_call Js_config.string "bytes_of_string" [s]
+    E.runtime_call Js_runtime_modules.string "bytes_of_string" [s]
 end
 
 (* include A *)
@@ -92939,7 +93027,7 @@ let get_default_undefined
     if Js_analyzer.is_simple_no_side_effect_expression arg then
       E.econd arg (map Static_unwrapped (E.index arg 0l)) E.undefined
     else
-      map Runtime_maybe_unwrapped (E.runtime_call Js_config.js_primitive "option_get" [arg])
+      map Runtime_maybe_unwrapped (E.runtime_call Js_runtime_modules.js_primitive "option_get" [arg])
 
 (** Another way: 
     {[
@@ -93279,7 +93367,7 @@ let ocaml_to_js_eff
                 E.index exp 1l
               | Runtime_maybe_unwrapped ->
                 (* If we can't, do Js_primitive.option_get_unwrap(arg) *)
-                E.runtime_call Js_config.js_primitive "option_get_unwrap" [raw_arg]
+                E.runtime_call Js_runtime_modules.js_primitive "option_get_unwrap" [raw_arg]
             )
           raw_arg
       | _ ->
@@ -93797,14 +93885,14 @@ module E = Js_exp_make
    is not necessary at all
 *)
 let make exception_str  : J.expression = 
-  E.runtime_call Js_config.exceptions Literals.create [exception_str]
+  E.runtime_call Js_runtime_modules.exceptions Literals.create [exception_str]
 
 (* let make_extension exception_str  : J.expression =  *)
 (*   E.runtime_call Js_config.exceptions "makeExtension" [exception_str] *)
 
 
 let get_builtin_by_name name = 
-  E.runtime_ref Js_config.builtin_exceptions (String.lowercase name)
+  E.runtime_ref Js_runtime_modules.builtin_exceptions (String.lowercase name)
 
 
 (* let match_exception_def (args : J.expression list) =  *)
@@ -93828,7 +93916,7 @@ let caml_set_oo_id args =
          If we can guarantee this code path is never hit, we can do 
          a better job for encoding of exception and extension?
       *)
-      E.runtime_call Js_config.exceptions "caml_set_oo_id" args 
+      E.runtime_call Js_runtime_modules.exceptions "caml_set_oo_id" args 
     (* begin match match_exception_def args with  *)
     (* | Some ( exception_str, mutable_flag) *)
     (*   ->  *)
@@ -94122,7 +94210,7 @@ let translate (prim_name : string)
   | "caml_gc_compaction"
   | "caml_final_register"
   | "caml_final_release"
-    ->  call Js_config.gc
+    ->  call Js_runtime_modules.gc
   | "caml_abs_float" -> 
     E.math "abs" args 
   | "caml_acos_float" -> 
@@ -94209,7 +94297,7 @@ let translate (prim_name : string)
     end
 
   | "caml_array_get" -> 
-    call Js_config.array
+    call Js_runtime_modules.array
   | "caml_array_get_addr"
   | "caml_array_get_float"
   | "caml_array_unsafe_get"
@@ -94219,7 +94307,7 @@ let translate (prim_name : string)
     | _ -> assert false
     end
   | "caml_array_set" ->
-    call Js_config.array
+    call Js_runtime_modules.array
   | "caml_array_set_addr"
   | "caml_array_set_float"
   | "caml_array_unsafe_set"
@@ -94380,7 +94468,7 @@ let translate (prim_name : string)
   | "caml_hypot_float"
 
     ->
-    call Js_config.float
+    call Js_runtime_modules.float
   | "caml_fmod_float" 
     (* float module like js number module *)      
     ->      
@@ -94446,7 +94534,7 @@ let translate (prim_name : string)
       E.uninitialized_array v 
     (* TODO: inline and spits out a warning when i is negative *)
     | _ -> 
-      call Js_config.string 
+      call Js_runtime_modules.string 
     end
 
   | "caml_string_get"
@@ -94460,7 +94548,7 @@ let translate (prim_name : string)
   | "caml_blit_string" 
   | "caml_blit_bytes"
     -> 
-    call Js_config.string
+    call Js_runtime_modules.string
 
   | "caml_register_named_value" -> 
     (**
@@ -94538,15 +94626,15 @@ let translate (prim_name : string)
   | "caml_sys_exit"
   (* | "caml_sys_file_exists" *)
     -> 
-    call Js_config.sys
+    call Js_runtime_modules.sys
   | "caml_lex_engine"
   | "caml_new_lex_engine"
     -> 
-    call Js_config.lexer 
+    call Js_runtime_modules.lexer 
   | "caml_parse_engine"
   | "caml_set_parser_trace" 
     -> 
-    call Js_config.parser 
+    call Js_runtime_modules.parser 
 
   | "caml_array_sub"
   | "caml_array_concat"
@@ -94555,7 +94643,7 @@ let translate (prim_name : string)
 
   | "caml_array_blit"
   | "caml_make_vect" -> 
-    call Js_config.array
+    call Js_runtime_modules.array
   | "caml_ml_flush"
   | "caml_ml_out_channels_list"
   | "caml_ml_open_descriptor_in" 
@@ -94564,7 +94652,7 @@ let translate (prim_name : string)
   | "caml_ml_output" 
   | "caml_ml_input_char"
     -> 
-    call Js_config.io
+    call Js_runtime_modules.io
   | "caml_update_dummy"
   | "caml_obj_dup" -> 
     (** Note currently is an Array copy function, this is tightly coupled with 
@@ -94576,7 +94664,7 @@ let translate (prim_name : string)
       match args with 
       | [ a ] when Js_analyzer.is_constant a ->  a 
       | _ -> 
-        call Js_config.obj_runtime 
+        call Js_runtime_modules.obj_runtime 
     end
   | "caml_obj_block" -> 
     (** TODO: Optimize  for [CamlinternalOO] input 
@@ -94609,14 +94697,14 @@ let translate (prim_name : string)
   | "caml_int64_format"
   | "caml_int64_of_string"
     -> 
-    call Js_config.format 
+    call Js_runtime_modules.format 
   | "caml_format_int" -> 
     begin match args with 
     | [ {expression_desc = Str (_, "%d"); _}; v] 
       ->
       E.int_to_string v 
     | _ -> 
-      call Js_config.format
+      call Js_runtime_modules.format
     end
     (*   "caml_alloc_dummy"; *)
     (* TODO:   "caml_alloc_dummy_float"; *)
@@ -94642,7 +94730,7 @@ let translate (prim_name : string)
   | "caml_lessthan"
 
     -> 
-    call Js_config.obj_runtime
+    call Js_runtime_modules.obj_runtime
   | "caml_obj_set_tag" 
     -> begin match args with 
       | [a;b]  -> E.set_tag a b 
@@ -94821,15 +94909,15 @@ let translate (prim_name : string)
     (* call  Js_config.bigarray *)
   (* End of bigarray support *)
   | "caml_convert_raw_backtrace_slot"
-    -> call  Js_config.backtrace
+    -> call  Js_runtime_modules.backtrace
 
   | "caml_bswap16"
   | "caml_int32_bswap"
   | "caml_nativeint_bswap" 
-    -> call Js_config.int32
+    -> call Js_runtime_modules.int32
   | "caml_get_public_method"
     ->
-    call Js_config.oo
+    call Js_runtime_modules.oo
   (** TODO: Primitives not implemented yet ...*)
   | "caml_install_signal_handler"
     -> 
@@ -94839,16 +94927,16 @@ let translate (prim_name : string)
     | _ -> assert false
     end
   | "caml_md5_string"
-    -> call Js_config.md5
+    -> call Js_runtime_modules.md5
   | "caml_hash"
-    -> call Js_config.hash 
+    -> call Js_runtime_modules.hash 
   | "caml_weak_set"
   | "caml_weak_create"
   | "caml_weak_get"
   | "caml_weak_check"
   | "caml_weak_blit"
   | "caml_weak_get_copy"
-    -> call Js_config.weak
+    -> call Js_runtime_modules.weak
 
   | "caml_output_value_to_buffer"
   | "caml_marshal_data_size"
@@ -94996,7 +95084,7 @@ let translate  loc
     -> 
     Js_of_lam_exception.make (E.str s)
   | Pwrap_exn -> 
-    E.runtime_call Js_config.exn "internalToOCamlException" args 
+    E.runtime_call Js_runtime_modules.exn "internalToOCamlException" args 
   | Lam.Praw_js_code_exp s -> 
     E.raw_js_code Exp s  
   | Lam.Praw_js_code_stmt s -> 
@@ -95021,7 +95109,7 @@ let translate  loc
           | Var _ -> 
             E.econd (E.is_nil e) Js_of_lam_option.none (Js_of_lam_option.some e)
           | _ ->
-            E.runtime_call Js_config.js_primitive
+            E.runtime_call Js_runtime_modules.js_primitive
             "null_to_opt" args 
             (* GPR #974
                let id = Ext_ident.create "v" in
@@ -95039,7 +95127,7 @@ let translate  loc
         | Var _ -> 
           E.econd (E.is_undef e) Js_of_lam_option.none (Js_of_lam_option.some e)
         | _ -> 
-          E.runtime_call Js_config.js_primitive  
+          E.runtime_call Js_runtime_modules.js_primitive  
           "undefined_to_opt" args 
         (* # GPR 974
           let id = Ext_ident.create "v" in
@@ -95085,7 +95173,7 @@ let translate  loc
           Js_of_lam_option.none 
           (Js_of_lam_option.some e)
       | _ ->*)
-       E.runtime_call Js_config.js_primitive        
+       E.runtime_call Js_runtime_modules.js_primitive        
       "null_undefined_to_opt" args 
       (*end*)
     (* | _ -> assert false  *)
@@ -95101,7 +95189,7 @@ let translate  loc
     | _ -> assert false 
     end
   | Pis_null_undefined -> 
-      E.runtime_call Js_config.js_primitive
+      E.runtime_call Js_runtime_modules.js_primitive
         "is_nil_undef" args 
   | Pjs_boolean_to_bool -> 
     begin match args with 
@@ -95130,9 +95218,9 @@ let translate  loc
       | _ -> assert false          
     end          
   | Pinit_mod -> 
-    E.runtime_call Js_config.module_ "init_mod" args
+    E.runtime_call Js_runtime_modules.module_ "init_mod" args
   | Pupdate_mod ->
-    E.runtime_call Js_config.module_ "update_mod" args
+    E.runtime_call Js_runtime_modules.module_ "update_mod" args
   | Pmakeblock(tag, tag_info, mutable_flag ) ->  (* RUNTIME *)
     Js_of_lam_block.make_block 
       (Js_op_util.of_lam_mutable_flag mutable_flag) 
@@ -95529,7 +95617,7 @@ let translate  loc
       | [e ; e1] ->
         if !Clflags.fast then
           Js_of_lam_string.ref_byte e e1
-        else E.runtime_call Js_config.bytes "get" args            
+        else E.runtime_call Js_runtime_modules.bytes "get" args            
       | _ -> assert false         
     end
   (* For bytes and string, they both return [int] in ocaml 
@@ -95549,7 +95637,7 @@ let translate  loc
         if !Clflags.fast then
           Js_of_lam_string.ref_string e e1             
         else       
-          E.runtime_call Js_config.string "get" args          
+          E.runtime_call Js_runtime_modules.string "get" args          
       | _ -> assert false
     end
   (** only when Lapply -> expand = true*)
@@ -95709,17 +95797,17 @@ let translate  loc
   (*   ("caml_ba_dim_" ^ string_of_int i) args        *)
   | Pbswap16 
     -> 
-    E.runtime_call Js_config.int32 "caml_bswap16" args
+    E.runtime_call Js_runtime_modules.int32 "caml_bswap16" args
   | Pbbswap Lambda.Pnativeint
   | Pbbswap Lambda.Pint32
     -> 
-    E.runtime_call Js_config.int32 "caml_int32_bswap" args
+    E.runtime_call Js_runtime_modules.int32 "caml_int32_bswap" args
   | Pbbswap Lambda.Pint64
     -> Js_long.swap args 
   | Pstring_load_16 unsafe
-    -> E.runtime_call Js_config.string "caml_string_get16" args
+    -> E.runtime_call Js_runtime_modules.string "caml_string_get16" args
   | Pstring_load_32 unsafe
-    -> E.runtime_call Js_config.string "caml_string_get32" args
+    -> E.runtime_call Js_runtime_modules.string "caml_string_get32" args
   | Pstring_load_64 unsafe
     -> Js_long.get64 args
 
@@ -96863,7 +96951,7 @@ and compile_recursive_let ~all_bindings
           (
             b  @ 
             [S.exp
-               (E.runtime_call Js_config.obj_runtime "caml_update_dummy" 
+               (E.runtime_call Js_runtime_modules.obj_runtime "caml_update_dummy" 
                   [ E.var id;  v])]),
         [id]
       (* S.define ~kind:Variable id (E.arr Mutable [])::  *)
@@ -98152,7 +98240,7 @@ and
           | Cached | Public None
             (* TODO: check -- 1. js object propagate 2. js object create  *)
             -> 
-            let get = E.runtime_ref  Js_config.oo "caml_get_public_method" in
+            let get = E.runtime_ref  Js_runtime_modules.oo "caml_get_public_method" in
             let cache = !method_cache_id in
             let () = incr method_cache_id  in
             cont3 obj' (fun obj' -> 
@@ -100757,7 +100845,7 @@ let export_to_cmj
   let effect = get_effect meta maybe_pure external_ids in
   {values; 
    effect ; 
-   npm_package_path = Js_config.get_packages_info ();
+   npm_package_path = Js_packages_state.get_packages_info ();
   }
 
 
@@ -100870,7 +100958,7 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.t)
   | Single(_, ({name="stdout"|"stderr"|"stdin";_} as id),_ ),
     "pervasives.ml" -> 
     Js_output.of_stmt @@ S.alias_variable id
-      ~exp:(E.runtime_ref  Js_config.io id.name)
+      ~exp:(E.runtime_ref  Js_runtime_modules.io id.name)
   (* 
          we delegate [stdout, stderr, and stdin] into [caml_io] module, 
          the motivation is to help dead code eliminatiion, it's helpful 
@@ -101175,7 +101263,7 @@ let lambda_as_module
          (* filename *) (* see #757  *)
       ) in
     (* Not re-entrant *)
-    match Js_config.get_packages_info () with 
+    match Js_packages_state.get_packages_info () with 
     | Empty 
     | NonBrowser (_, []) -> 
       (* script mode *)
@@ -112932,7 +113020,7 @@ let batch_files  = ref []
 let script_dirs = ref []
 let main_file  = ref ""
 let eval_string = ref ""
-    
+        
 let collect_file name = 
   batch_files := name :: !batch_files
 let add_bs_dir v = 
@@ -113037,7 +113125,7 @@ let buckle_script_flags =
   )
   ::
   ("-bs-package-name", 
-   Arg.String Js_config.set_package_name, 
+   Arg.String Js_packages_state.set_package_name, 
    " set package name, useful when you want to produce npm packages")
   :: 
   ("-bs-no-version-header", 
@@ -113046,7 +113134,8 @@ let buckle_script_flags =
   )
   ::
   ("-bs-package-output", 
-   Arg.String Js_config.add_npm_package_path, 
+   Arg.String 
+    Js_packages_state.update_npm_package_path, 
    " set npm-output-path: [opt_module]:path, for example: 'lib/cjs', 'amdjs:lib/amdjs', 'es6:lib/es6' and 'goog:lib/gjs'")
   ::
   

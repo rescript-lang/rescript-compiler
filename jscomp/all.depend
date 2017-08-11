@@ -152,10 +152,7 @@ ext/ident_hashtbl.cmi : ext/hashtbl_gen.cmx
 ext/int_hashtbl.cmi : ext/hashtbl_gen.cmx
 ext/ext_filename.cmi :
 common/bs_version.cmx : common/bs_version.cmi
-common/js_packages_info.cmx : ext/ext_filename.cmx \
-    common/js_packages_info.cmi
-common/js_config.cmx : common/js_packages_info.cmx ext/ext_string.cmx \
-    ext/ext_pervasives.cmx common/js_config.cmi
+common/js_config.cmx : common/js_config.cmi
 common/ext_log.cmx : common/js_config.cmx common/ext_log.cmi
 common/bs_loc.cmx : common/bs_loc.cmi
 common/bs_warnings.cmx : ext/literals.cmx common/js_config.cmx \
@@ -164,8 +161,7 @@ common/lam_methname.cmx : ext/string_hash_set.cmx ext/ext_string.cmx \
     common/lam_methname.cmi
 common/ml_binary.cmx : common/ml_binary.cmi
 common/bs_version.cmi :
-common/js_packages_info.cmi :
-common/js_config.cmi : common/js_packages_info.cmi
+common/js_config.cmi :
 common/ext_log.cmi :
 common/bs_loc.cmi :
 common/bs_warnings.cmi :
@@ -267,6 +263,8 @@ depends/ast_extract.cmx : ext/string_map.cmx ext/string_hashtbl.cmx \
     depends/bs_exception.cmx depends/ast_extract.cmi
 depends/binary_ast.cmx : common/ml_binary.cmx depends/ast_extract.cmx \
     depends/binary_ast.cmi
+core/js_packages_info.cmi :
+core/js_packages_state.cmi : core/js_packages_info.cmi
 core/type_util.cmi :
 core/bs_conditional_initial.cmi :
 core/ocaml_options.cmi :
@@ -282,7 +280,7 @@ core/lam_inline_util.cmi : core/lam.cmi
 core/lam_analysis.cmi : core/lam.cmi
 core/lam_closure.cmi : core/lam.cmi ext/ident_set.cmi ext/ident_map.cmi
 core/js_cmj_format.cmi : ext/string_map.cmi core/lam_arity.cmi core/lam.cmi \
-    common/js_packages_info.cmi
+    core/js_packages_info.cmi
 core/js_fun_env.cmi : ext/ident_set.cmi
 core/js_call_info.cmi :
 core/js_closure.cmi : ext/ident_set.cmi
@@ -328,7 +326,7 @@ core/js_pass_flatten_and_mark_dead.cmi : core/j.cmx
 core/js_ast_util.cmi : core/j.cmx
 core/lam_dce.cmi : core/lam_group.cmi
 core/lam_compile_env.cmi : core/lam_module_ident.cmi core/lam.cmi \
-    common/js_packages_info.cmi core/js_cmj_format.cmi
+    core/js_packages_info.cmi core/js_cmj_format.cmi
 core/lam_stats_util.cmi : core/lam_stats.cmi core/lam_arity.cmi core/lam.cmi
 core/lam_stats_export.cmi : core/lam_stats.cmi core/lam_module_ident.cmi \
     core/lam.cmi core/js_cmj_format.cmi ext/ident_map.cmi
@@ -336,8 +334,8 @@ core/lam_pass_alpha_conversion.cmi : core/lam_stats.cmi core/lam.cmi
 core/lam_pass_collect.cmi : core/lam_stats.cmi core/lam.cmi \
     ext/ident_set.cmi
 core/js_program_loader.cmi : core/lam_module_ident.cmi \
-    common/js_packages_info.cmi core/j.cmx
-core/js_dump.cmi : common/js_packages_info.cmi core/j.cmx ext/ext_pp.cmi
+    core/js_packages_info.cmi core/j.cmx
+core/js_dump.cmi : core/js_packages_info.cmi core/j.cmx ext/ext_pp.cmi
 core/js_pass_debug.cmi : core/j.cmx
 core/js_of_lam_option.cmi : core/j.cmx
 core/js_output.cmi : core/lam_compile_defs.cmi core/lam.cmi core/j.cmx
@@ -364,6 +362,11 @@ core/lam_coercion.cmi : core/lam_stats.cmi core/lam_group.cmi core/lam.cmi \
 core/lam_compile_group.cmi : core/j.cmx
 core/js_implementation.cmi :
 core/ocaml_batch_compile.cmi :
+core/js_runtime_modules.cmx :
+core/js_packages_info.cmx : ext/ext_string.cmx ext/ext_pervasives.cmx \
+    ext/ext_filename.cmx core/js_packages_info.cmi
+core/js_packages_state.cmx : core/js_packages_info.cmx \
+    ext/ext_pervasives.cmx core/js_packages_state.cmi
 core/type_int_to_string.cmx :
 core/type_util.cmx : core/type_int_to_string.cmx common/ext_log.cmx \
     core/type_util.cmi
@@ -393,7 +396,7 @@ core/lam_analysis.cmx : core/lam.cmx ext/ext_list.cmx core/lam_analysis.cmi
 core/lam_closure.cmx : core/lam_analysis.cmx core/lam.cmx ext/ident_set.cmx \
     ext/ident_map.cmx core/lam_closure.cmi
 core/js_cmj_format.cmx : ext/string_map.cmx core/lam_arity.cmx core/lam.cmx \
-    common/js_packages_info.cmx ext/ext_string.cmx ext/ext_pervasives.cmx \
+    core/js_packages_info.cmx ext/ext_string.cmx ext/ext_pervasives.cmx \
     core/js_cmj_format.cmi
 core/js_fun_env.cmx : ext/ident_set.cmx ext/ext_list.cmx core/js_fun_env.cmi
 core/js_call_info.cmx : core/js_call_info.cmi
@@ -414,9 +417,9 @@ core/lam_compile_defs.cmx : core/lam_stats.cmx core/lam.cmx core/j.cmx \
     ext/ident_map.cmx core/lam_compile_defs.cmi
 core/js_map.cmx : core/j.cmx
 core/js_fold.cmx : core/j.cmx
-core/js_fold_basic.cmx : core/lam_module_ident.cmx core/js_fold.cmx \
-    common/js_config.cmx core/j.cmx ext/ident_set.cmx ext/ext_ident.cmx \
-    core/js_fold_basic.cmi
+core/js_fold_basic.cmx : core/lam_module_ident.cmx \
+    core/js_runtime_modules.cmx core/js_fold.cmx core/j.cmx ext/ident_set.cmx \
+    ext/ext_ident.cmx core/js_fold_basic.cmi
 core/js_pass_scope.cmx : core/js_fun_env.cmx core/js_fold.cmx \
     core/js_closure.cmx ext/ident_set.cmx common/ext_log.cmx \
     core/js_pass_scope.cmi
@@ -426,19 +429,19 @@ core/js_analyzer.cmx : core/js_fun_env.cmx core/js_fold.cmx core/j.cmx \
 core/js_shake.cmx : core/js_analyzer.cmx core/j.cmx ext/ident_set.cmx \
     ext/ext_string.cmx common/ext_log.cmx core/js_shake.cmi
 core/js_exp_make.cmx : ext/literals.cmx core/lam_compile_util.cmx \
-    core/js_op_util.cmx core/js_fun_env.cmx common/js_config.cmx \
+    core/js_runtime_modules.cmx core/js_op_util.cmx core/js_fun_env.cmx \
     core/js_call_info.cmx core/js_analyzer.cmx core/j.cmx ext/ext_string.cmx \
     ext/ext_pervasives.cmx ext/ext_ident.cmx core/js_exp_make.cmi
-core/js_long.cmx : core/js_exp_make.cmx common/js_config.cmx \
+core/js_long.cmx : core/js_runtime_modules.cmx core/js_exp_make.cmx \
     core/js_analyzer.cmx core/j.cmx core/js_long.cmi
-core/js_of_lam_exception.cmx : ext/literals.cmx core/js_exp_make.cmx \
-    common/js_config.cmx core/j.cmx core/js_of_lam_exception.cmi
+core/js_of_lam_exception.cmx : ext/literals.cmx core/js_runtime_modules.cmx \
+    core/js_exp_make.cmx core/j.cmx core/js_of_lam_exception.cmi
 core/js_of_lam_module.cmx : core/js_exp_make.cmx core/j.cmx \
     core/js_of_lam_module.cmi
 core/js_of_lam_array.cmx : core/js_exp_make.cmx core/js_of_lam_array.cmi
 core/js_of_lam_block.cmx : core/js_of_lam_array.cmx core/js_exp_make.cmx \
     core/js_of_lam_block.cmi
-core/js_of_lam_string.cmx : core/js_exp_make.cmx common/js_config.cmx \
+core/js_of_lam_string.cmx : core/js_runtime_modules.cmx core/js_exp_make.cmx \
     core/j.cmx ext/ext_string.cmx core/js_of_lam_string.cmi
 core/js_of_lam_tuple.cmx : core/js_exp_make.cmx core/j.cmx \
     core/js_of_lam_tuple.cmi
@@ -487,7 +490,7 @@ core/lam_dce.cmx : core/lam_group.cmx core/lam_analysis.cmx core/lam.cmx \
 core/lam_group_pass.cmx : core/lam.cmx
 core/lam_compile_env.cmx : core/type_util.cmx ext/string_map.cmx \
     ext/literals.cmx core/lam_module_ident.cmx core/lam.cmx \
-    core/js_stmt_make.cmx common/js_packages_info.cmx core/js_exp_make.cmx \
+    core/js_stmt_make.cmx core/js_packages_info.cmx core/js_exp_make.cmx \
     common/js_config.cmx core/js_cmj_format.cmx ext/ext_string.cmx \
     core/config_util.cmx core/lam_compile_env.cmi
 core/lam_stats_util.cmx : core/lam_stats.cmx core/lam_compile_env.cmx \
@@ -497,11 +500,11 @@ core/lam_stats_export.cmx : ext/string_map.cmx core/lam_stats_util.cmx \
     core/lam_stats.cmx core/lam_module_ident.cmx core/lam_inline_util.cmx \
     core/lam_id_kind.cmx core/lam_compile_env.cmx core/lam_closure.cmx \
     core/lam_arity.cmx core/lam_analysis.cmx core/lam.cmx \
-    common/js_config.cmx core/js_cmj_format.cmx ext/ident_set.cmx \
-    ext/ident_map.cmx ext/ident_hashtbl.cmx ext/ext_string.cmx \
-    ext/ext_pervasives.cmx ext/ext_option.cmx common/ext_log.cmx \
-    ext/ext_list.cmx ext/ext_ident.cmx ext/ext_filename.cmx ext/ext_array.cmx \
-    core/lam_stats_export.cmi
+    core/js_packages_state.cmx common/js_config.cmx core/js_cmj_format.cmx \
+    ext/ident_set.cmx ext/ident_map.cmx ext/ident_hashtbl.cmx \
+    ext/ext_string.cmx ext/ext_pervasives.cmx ext/ext_option.cmx \
+    common/ext_log.cmx ext/ext_list.cmx ext/ext_ident.cmx \
+    ext/ext_filename.cmx ext/ext_array.cmx core/lam_stats_export.cmi
 core/lam_pass_alpha_conversion.cmx : core/lam_stats_util.cmx \
     core/lam_stats.cmx core/lam_eta_conversion.cmx core/lam.cmx \
     ext/ext_list.cmx core/lam_pass_alpha_conversion.cmi
@@ -509,14 +512,14 @@ core/lam_pass_collect.cmx : core/lam_util.cmx core/lam_stats_util.cmx \
     core/lam_stats.cmx core/lam_arity.cmx core/lam.cmx ext/ident_set.cmx \
     ext/ident_hashtbl.cmx core/lam_pass_collect.cmi
 core/js_program_loader.cmx : core/lam_module_ident.cmx \
-    core/lam_compile_env.cmx core/js_stmt_make.cmx \
-    common/js_packages_info.cmx core/js_exp_make.cmx common/js_config.cmx \
-    core/j.cmx ext/ident_set.cmx ext/ext_sys.cmx ext/ext_string.cmx \
-    ext/ext_filename.cmx core/config_util.cmx depends/bs_exception.cmx \
-    core/js_program_loader.cmi
+    core/lam_compile_env.cmx core/js_stmt_make.cmx core/js_packages_state.cmx \
+    core/js_packages_info.cmx core/js_exp_make.cmx core/j.cmx \
+    ext/ident_set.cmx ext/ext_sys.cmx ext/ext_string.cmx ext/ext_filename.cmx \
+    core/config_util.cmx depends/bs_exception.cmx core/js_program_loader.cmi
 core/js_dump.cmx : ext/literals.cmx core/lam_module_ident.cmx \
-    core/js_stmt_make.cmx core/js_program_loader.cmx \
-    common/js_packages_info.cmx core/js_op_util.cmx core/js_op.cmx \
+    core/js_stmt_make.cmx core/js_runtime_modules.cmx \
+    core/js_program_loader.cmx core/js_packages_state.cmx \
+    core/js_packages_info.cmx core/js_op_util.cmx core/js_op.cmx \
     core/js_number.cmx core/js_fun_env.cmx core/js_exp_make.cmx \
     common/js_config.cmx core/js_closure.cmx core/j.cmx ext/ident_set.cmx \
     ext/ext_string.cmx ext/ext_pp_scope.cmx ext/ext_pp.cmx ext/ext_list.cmx \
@@ -524,7 +527,7 @@ core/js_dump.cmx : ext/literals.cmx core/lam_module_ident.cmx \
 core/js_pass_debug.cmx : core/js_dump.cmx common/js_config.cmx core/j.cmx \
     ext/ext_pervasives.cmx common/ext_log.cmx ext/ext_filename.cmx \
     core/js_pass_debug.cmi
-core/js_of_lam_option.cmx : core/js_exp_make.cmx common/js_config.cmx \
+core/js_of_lam_option.cmx : core/js_runtime_modules.cmx core/js_exp_make.cmx \
     core/js_analyzer.cmx core/j.cmx core/js_of_lam_option.cmi
 core/js_output.cmx : core/lam_compile_defs.cmx core/lam_analysis.cmx \
     core/lam.cmx core/js_stmt_make.cmx core/js_exp_make.cmx core/js_dump.cmx \
@@ -534,10 +537,10 @@ core/lam_compile_global.cmx : core/type_util.cmx core/lam_module_ident.cmx \
     core/js_output.cmx core/js_of_lam_module.cmx core/js_exp_make.cmx \
     core/j.cmx ext/ext_list.cmx core/lam_compile_global.cmi
 core/lam_dispatch_primitive.cmx : core/js_stmt_make.cmx \
-    core/js_of_lam_tuple.cmx core/js_of_lam_exception.cmx \
-    core/js_of_lam_array.cmx core/js_long.cmx core/js_exp_make.cmx \
-    common/js_config.cmx core/js_analyzer.cmx core/j.cmx common/ext_log.cmx \
-    ext/ext_list.cmx core/lam_dispatch_primitive.cmi
+    core/js_runtime_modules.cmx core/js_of_lam_tuple.cmx \
+    core/js_of_lam_exception.cmx core/js_of_lam_array.cmx core/js_long.cmx \
+    core/js_exp_make.cmx common/js_config.cmx core/js_analyzer.cmx core/j.cmx \
+    common/ext_log.cmx ext/ext_list.cmx core/lam_dispatch_primitive.cmi
 core/lam_bounded_vars.cmx : core/lam.cmx ext/ident_hashtbl.cmx \
     core/lam_bounded_vars.cmi
 core/lam_beta_reduce.cmx : core/lam_util.cmx core/lam_stats.cmx \
@@ -547,10 +550,11 @@ core/lam_beta_reduce.cmx : core/lam_util.cmx core/lam_stats.cmx \
     ext/ident_hashtbl.cmx core/lam_beta_reduce.cmi
 core/lam_compile_external_call.cmx : core/lam_compile_env.cmx \
     core/lam_compile_defs.cmx core/lam_compile_const.cmx \
-    core/js_of_lam_variant.cmx core/js_of_lam_option.cmx core/js_exp_make.cmx \
-    common/js_config.cmx core/js_arr.cmx core/js_analyzer.cmx core/j.cmx \
-    ext/ext_list.cmx ext/ext_ident.cmx syntax/ast_ffi_types.cmx \
-    syntax/ast_arg.cmx core/lam_compile_external_call.cmi
+    core/js_runtime_modules.cmx core/js_of_lam_variant.cmx \
+    core/js_of_lam_option.cmx core/js_exp_make.cmx core/js_arr.cmx \
+    core/js_analyzer.cmx core/j.cmx ext/ext_list.cmx ext/ext_ident.cmx \
+    syntax/ast_ffi_types.cmx syntax/ast_arg.cmx \
+    core/lam_compile_external_call.cmi
 core/lam_compile_external_obj.cmx : core/lam_compile_external_call.cmx \
     core/lam_compile_const.cmx core/js_stmt_make.cmx core/js_op.cmx \
     core/js_exp_make.cmx core/js_ast_util.cmx core/js_analyzer.cmx core/j.cmx \
@@ -558,8 +562,8 @@ core/lam_compile_external_obj.cmx : core/lam_compile_external_call.cmx \
     core/lam_compile_external_obj.cmi
 core/lam_compile_primitive.cmx : core/lam_util.cmx \
     core/lam_dispatch_primitive.cmx core/lam_compile_external_call.cmx \
-    core/lam_compile_defs.cmx core/lam.cmx core/js_op_util.cmx \
-    core/js_of_lam_string.cmx core/js_of_lam_record.cmx \
+    core/lam_compile_defs.cmx core/lam.cmx core/js_runtime_modules.cmx \
+    core/js_op_util.cmx core/js_of_lam_string.cmx core/js_of_lam_record.cmx \
     core/js_of_lam_option.cmx core/js_of_lam_float_record.cmx \
     core/js_of_lam_exception.cmx core/js_of_lam_block.cmx \
     core/js_of_lam_array.cmx core/js_long.cmx core/js_exp_make.cmx \
@@ -572,8 +576,8 @@ core/lam_compile.cmx : ext/literals.cmx core/lam_util.cmx \
     core/lam_compile_env.cmx core/lam_compile_defs.cmx \
     core/lam_compile_const.cmx core/lam_closure.cmx core/lam_beta_reduce.cmx \
     core/lam_arity.cmx core/lam_analysis.cmx core/lam.cmx \
-    core/js_stmt_make.cmx core/js_output.cmx core/js_of_lam_record.cmx \
-    core/js_of_lam_array.cmx core/js_exp_make.cmx common/js_config.cmx \
+    core/js_stmt_make.cmx core/js_runtime_modules.cmx core/js_output.cmx \
+    core/js_of_lam_record.cmx core/js_of_lam_array.cmx core/js_exp_make.cmx \
     core/js_call_info.cmx core/js_ast_util.cmx core/js_arr.cmx \
     core/js_analyzer.cmx core/j.cmx ext/ident_set.cmx ext/ident_map.cmx \
     ext/ext_string.cmx ext/ext_list.cmx ext/ext_ident.cmx \
@@ -608,14 +612,15 @@ core/lam_compile_group.cmx : ext/literals.cmx core/lam_util.cmx \
     core/lam_module_ident.cmx core/lam_group.cmx core/lam_compile_env.cmx \
     core/lam_compile_defs.cmx core/lam_compile.cmx core/lam_coercion.cmx \
     core/lam_analysis.cmx core/lam.cmx core/js_stmt_make.cmx \
-    core/js_shake.cmx core/js_program_loader.cmx \
+    core/js_shake.cmx core/js_runtime_modules.cmx core/js_program_loader.cmx \
     core/js_pass_tailcall_inline.cmx core/js_pass_scope.cmx \
     core/js_pass_flatten_and_mark_dead.cmx core/js_pass_flatten.cmx \
-    core/js_pass_debug.cmx core/js_output.cmx core/js_fold_basic.cmx \
-    core/js_exp_make.cmx core/js_dump.cmx common/js_config.cmx \
-    core/js_cmj_format.cmx core/j.cmx ext/ident_set.cmx ext/ext_string.cmx \
-    ext/ext_pervasives.cmx common/ext_log.cmx ext/ext_list.cmx \
-    ext/ext_ident.cmx ext/ext_filename.cmx core/lam_compile_group.cmi
+    core/js_pass_debug.cmx core/js_packages_state.cmx core/js_output.cmx \
+    core/js_fold_basic.cmx core/js_exp_make.cmx core/js_dump.cmx \
+    common/js_config.cmx core/js_cmj_format.cmx core/j.cmx ext/ident_set.cmx \
+    ext/ext_string.cmx ext/ext_pervasives.cmx common/ext_log.cmx \
+    ext/ext_list.cmx ext/ext_ident.cmx ext/ext_filename.cmx \
+    core/lam_compile_group.cmi
 core/js_implementation.cmx : core/ocaml_parse.cmx ext/literals.cmx \
     core/lam_compile_group.cmx core/lam_compile_env.cmx common/js_config.cmx \
     ext/ext_pervasives.cmx common/ext_log.cmx syntax/bs_ast_invariant.cmx \
@@ -641,10 +646,11 @@ core/bspp_main.cmx : core/bspp_main.cmi
 core/js_cmi_datasets.cmx : ext/string_map.cmx core/js_cmi_datasets.cmi
 core/js_main.cmx : super_errors/super_main.cmx core/ocaml_parse.cmx \
     core/ocaml_options.cmx core/ocaml_batch_compile.cmx \
-    core/js_implementation.cmx common/js_config.cmx ext/ext_string.cmx \
-    core/bs_conditional_initial.cmx core/js_main.cmi
+    core/js_packages_state.cmx core/js_implementation.cmx \
+    common/js_config.cmx ext/ext_string.cmx core/bs_conditional_initial.cmx \
+    core/js_main.cmi
 core/cmjdump_main.cmx : ext/string_map.cmx core/lam_arity.cmx \
-    common/js_packages_info.cmx core/js_cmj_format.cmx
+    core/js_packages_info.cmx core/js_cmj_format.cmx
 core/astdump_main.cmx : common/ml_binary.cmx bsb/bsb_depfile_gen.cmx
 ounit/oUnit.cmi :
 ounit/oUnitDiff.cmi :

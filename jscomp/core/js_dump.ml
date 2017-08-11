@@ -341,7 +341,7 @@ let rec
 
   try_optimize_curry cxt f len function_id = 
   begin           
-    P.string f Js_config.curry;
+    P.string f Js_runtime_modules.curry;
     P.string f L.dot;
     P.string f "__";
     P.string f (Printf.sprintf "%d" len);
@@ -662,7 +662,7 @@ and
 
           | _ , _ -> 
             (* ipp_comment f (Some "!") *)
-            P.string f  Js_config.curry; 
+            P.string f  Js_runtime_modules.curry; 
             P.string f L.dot;
             let len = List.length el in
             if 1 <= len && len <= 8 then  
@@ -1902,7 +1902,7 @@ let pp_deps_program
         | Goog  -> 
           let goog_package = 
             let v = Js_config.get_module_name () in
-            match Js_config.get_package_name () with 
+            match Js_packages_state.get_package_name () with 
             | None 
               -> v 
             | Some x -> x ^ "." ^ v 

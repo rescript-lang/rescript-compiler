@@ -170,6 +170,6 @@ let export_to_cmj
   let effect = get_effect meta maybe_pure external_ids in
   {values; 
    effect ; 
-   npm_package_path = Js_config.get_packages_info ();
+   npm_package_path = Js_packages_state.get_packages_info ();
   }
 

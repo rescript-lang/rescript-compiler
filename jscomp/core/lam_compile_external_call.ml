@@ -129,7 +129,7 @@ let ocaml_to_js_eff
                 E.index exp 1l
               | Runtime_maybe_unwrapped ->
                 (* If we can't, do Js_primitive.option_get_unwrap(arg) *)
-                E.runtime_call Js_config.js_primitive "option_get_unwrap" [raw_arg]
+                E.runtime_call Js_runtime_modules.js_primitive "option_get_unwrap" [raw_arg]
             )
           raw_arg
       | _ ->
