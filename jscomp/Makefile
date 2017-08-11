@@ -223,7 +223,6 @@ EXT_SRCS = ext_util\
 EXT_CMXS=$(addprefix ext/, $(addsuffix .cmx, $(EXT_SRCS)))
 EXT_CMOS=$(addprefix ext/, $(addsuffix .cmo, $(EXT_SRCS)))
 COMMON_SRCS= bs_version\
-	js_packages_info\
 	js_config \
 	ext_log \
 	bs_loc  \
@@ -259,6 +258,7 @@ SYNTAX_CMXS=$(addprefix syntax/, $(addsuffix .cmx, $(SYNTAX_SRCS)))
 DEPENDS_SRCS= bs_exception ast_extract binary_ast 
 DEPENDS_CMXS=$(addprefix depends/, $(addsuffix .cmx, $(DEPENDS_SRCS)))
 CORE_SRCS= js_runtime_modules \
+	js_packages_info\
 	js_packages_state\
 	type_int_to_string type_util  ocaml_stdlib_slots bs_conditional_initial ocaml_options ocaml_parse\
 	js_op\
