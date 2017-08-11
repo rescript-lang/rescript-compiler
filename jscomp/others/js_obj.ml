@@ -40,7 +40,7 @@ have the same key.
 
 let obj = [%obj { a = 1 }]
 
-let copy = Js.Object.assign (Js.Object.empty ()) obj
+let copy = Js.Obj.assign (Js.Obj.empty ()) obj
 
 (* prints "{ a: 1 }" *)
 let _ = Js.log copy
@@ -52,7 +52,7 @@ let _ = Js.log copy
 let target = [%obj { a = 1; b = 1; }]
 let source = [%obj { b = 2; }]
 
-let obj = Js.Object.assign target source
+let obj = Js.Obj.assign target source
 
 (* prints "{ a: 1, b: 2 }" *)
 let _ = Js.log obj
