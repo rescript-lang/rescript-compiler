@@ -304,6 +304,7 @@ bin/whole_compiler.ml : core/js_of_lam_option.mli
 bin/whole_compiler.ml : core/js_of_lam_record.mli
 bin/whole_compiler.ml : core/js_of_lam_string.mli
 bin/whole_compiler.ml : core/js_of_lam_variant.ml
+bin/whole_compiler.ml : core/js_packages_state.ml
 bin/whole_compiler.ml : core/js_program_loader.ml
 bin/whole_compiler.ml : core/lam_bounded_vars.mli
 bin/whole_compiler.ml : core/lam_compile_const.ml
@@ -338,6 +339,7 @@ bin/whole_compiler.ml : ../vendor/ocaml/utils/consistbl.mli
 bin/whole_compiler.ml : common/js_packages_info.ml
 bin/whole_compiler.ml : core/js_implementation.mli
 bin/whole_compiler.ml : core/js_of_lam_variant.mli
+bin/whole_compiler.ml : core/js_packages_state.mli
 bin/whole_compiler.ml : core/js_program_loader.mli
 bin/whole_compiler.ml : core/js_runtime_modules.ml
 bin/whole_compiler.ml : core/lam_compile_const.mli

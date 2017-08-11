@@ -23,56 +23,14 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-type module_system = 
-  | NodeJS 
-  | AmdJS
-  | Goog  (* This will be serliazed *)
-  | Es6
-  | Es6_global
-  | AmdJS_global
+val get_package_name : 
+  unit -> string option
 
-type package_info = 
-  (module_system * string )
+val set_package_name : 
+  string -> unit 
 
-val compatible : 
-  module_system -> 
-  module_system -> 
-  bool 
+val get_packages_info : 
+  unit -> Js_packages_info.t 
 
-val module_system_of_string :
-  string -> 
-  module_system option 
-  
-type package_name  = string
-
-
-type t =
-  | Empty 
-  | NonBrowser of (package_name * package_info  list)
-
-val dump_packages_info : 
-  Format.formatter -> t -> unit
-
-
-
-type info_query =
-  | Package_empty
-  | Package_script of string
-  | Package_found of package_name * string
-  | Package_not_found   
-
-val query_package_infos : 
-  t -> module_system -> info_query   
-
-
-val get_output_dir:
-  pkg_dir:string -> 
-  module_system -> 
-  string -> 
-  t -> 
-  string   
-
-
-(** used by command line option *)
-val add_npm_package_path : 
-  string -> t -> t  
+val update_npm_package_path : 
+  string -> unit   

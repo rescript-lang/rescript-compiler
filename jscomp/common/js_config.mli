@@ -24,10 +24,10 @@
 
 
 
-(** used by command line option *)
-val add_npm_package_path : string -> unit 
-val get_packages_info :
-   unit -> Js_packages_info.t
+
+
+(* val get_packages_info :
+   unit -> Js_packages_info.t *)
 
 
 (** set/get header *)
@@ -43,8 +43,8 @@ val no_version_header : bool ref
   Js_packages_info.info_query *)
 
 
-val set_package_name : string -> unit  
-val get_package_name : unit -> string option
+(* val set_package_name : string -> unit  
+val get_package_name : unit -> string option *)
 
 (** corss module inline option *)
 val cross_module_inline : bool ref

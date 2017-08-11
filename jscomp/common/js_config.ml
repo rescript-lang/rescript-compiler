@@ -24,25 +24,10 @@
 
 
 
-let packages_info  = 
-  ref (Empty : Js_packages_info.t )
-
-
-let get_package_name () =
-  match !packages_info with
-  | Empty  -> None
-  | NonBrowser(n,_) -> Some n
 
 
 
-let set_package_name name =
-  match !packages_info with
-  | Empty -> packages_info := NonBrowser(name,  [])
-  |  _ ->
-    Ext_pervasives.bad_argf "duplicated flag for -bs-package-name"
-
-
-let add_npm_package_path s =
+(* let add_npm_package_path s =
   match !packages_info  with
   | Empty ->
     Ext_pervasives.bad_argf "please set package name first using -bs-package-name ";
@@ -59,7 +44,7 @@ let add_npm_package_path s =
       | _ ->
         Ext_pervasives.bad_argf "invalid npm package path: %s" s
     in
-    packages_info := NonBrowser (name,  ((env,path) :: envs))
+    packages_info := NonBrowser (name,  ((env,path) :: envs)) *)
 (** Browser is not set via command line only for internal use *)
 
 
@@ -78,7 +63,7 @@ let set_diagnose b = diagnose := b
 
 let (//) = Filename.concat
 
-let get_packages_info () = !packages_info
+(* let get_packages_info () = !packages_info *)
 
 let default_gen_tds = ref false
 let no_builtin_ppx_ml = ref false

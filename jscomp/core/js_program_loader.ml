@@ -84,7 +84,7 @@ let string_of_module_id ~output_prefix
       | Ml  -> 
         let id = x.id in
         let js_file = Ext_filename.output_js_basename id.name in 
-        let current_package_info = Js_config.get_packages_info () in 
+        let current_package_info = Js_packages_state.get_packages_info () in 
         let rebase different_package package_dir dep =
           let current_unit_dir =
             `Dir (Js_packages_info.get_output_dir 
@@ -143,7 +143,7 @@ let string_of_module_id ~output_prefix
                       ~pkg_dir:(Lazy.force Ext_filename.package_dir)
                        module_system 
                        output_prefix
-                       (Js_config.get_packages_info()) 
+                       (Js_packages_state.get_packages_info()) 
                        )
                     ((Filename.dirname 
                         (Filename.dirname (Filename.dirname cmj_path))) // x // js_file)              

@@ -385,7 +385,7 @@ let lambda_as_module
          (* filename *) (* see #757  *)
       ) in
     (* Not re-entrant *)
-    match Js_config.get_packages_info () with 
+    match Js_packages_state.get_packages_info () with 
     | Empty 
     | NonBrowser (_, []) -> 
       (* script mode *)

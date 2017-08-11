@@ -23,56 +23,22 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-type module_system = 
-  | NodeJS 
-  | AmdJS
-  | Goog  (* This will be serliazed *)
-  | Es6
-  | Es6_global
-  | AmdJS_global
+let packages_info  = 
+  ref (Empty : Js_packages_info.t )
 
-type package_info = 
-  (module_system * string )
+let get_package_name () =
+  match !packages_info with
+  | Empty  -> None
+  | NonBrowser(n,_) -> Some n
 
-val compatible : 
-  module_system -> 
-  module_system -> 
-  bool 
-
-val module_system_of_string :
-  string -> 
-  module_system option 
-  
-type package_name  = string
+let set_package_name name =
+  match !packages_info with
+  | Empty -> packages_info := NonBrowser(name,  [])
+  |  _ ->
+    Ext_pervasives.bad_argf "duplicated flag for -bs-package-name"
 
 
-type t =
-  | Empty 
-  | NonBrowser of (package_name * package_info  list)
+let update_npm_package_path s  = 
+  packages_info := Js_packages_info.add_npm_package_path s !packages_info
 
-val dump_packages_info : 
-  Format.formatter -> t -> unit
-
-
-
-type info_query =
-  | Package_empty
-  | Package_script of string
-  | Package_found of package_name * string
-  | Package_not_found   
-
-val query_package_infos : 
-  t -> module_system -> info_query   
-
-
-val get_output_dir:
-  pkg_dir:string -> 
-  module_system -> 
-  string -> 
-  t -> 
-  string   
-
-
-(** used by command line option *)
-val add_npm_package_path : 
-  string -> t -> t  
+let get_packages_info () = !packages_info  

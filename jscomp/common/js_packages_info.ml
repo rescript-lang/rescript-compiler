@@ -77,7 +77,7 @@ let module_system_of_string package_name : module_system option =
   | "es6-global" -> Some Es6_global
   | "amdjs-global" -> Some AmdJS_global 
   | _ -> None 
-  
+
 let dump_package_info 
     (fmt : Format.formatter)
     ((ms, name) : package_info)
@@ -101,14 +101,14 @@ let dump_packages_info
          ~pp_sep:(fun fmt () -> Format.pp_print_space fmt ())
          dump_package_info 
       ) ls
-      
+
 type info_query =
   | Package_empty
   | Package_script of string
   | Package_found of package_name * string
   | Package_not_found 
 
-  
+
 
 let query_package_infos 
     (package_infos : t) module_system : info_query =
@@ -121,25 +121,44 @@ let query_package_infos
     | (_, x) -> Package_found (name, x)
     | exception _ -> Package_not_found
     end
-  
+
 
 (* for a single pass compilation, [output_dir]
    can be cached
 *)
 let get_output_dir ~pkg_dir module_system output_prefix 
-  packages_info =
+    packages_info =
   match packages_info with
   | Empty | NonBrowser (_, [])->
     if Filename.is_relative output_prefix then
       Filename.concat (Lazy.force Ext_filename.cwd )
-      (Filename.dirname output_prefix)
+        (Filename.dirname output_prefix)
     else
       Filename.dirname output_prefix
   | NonBrowser (_,  modules) ->
     begin match List.find (fun (k,_) -> 
-      compatible k  module_system) modules with
-      | (_, path) -> Filename.concat pkg_dir  path
-      |  exception _ -> assert false
+        compatible k  module_system) modules with
+    | (_, path) -> Filename.concat pkg_dir  path
+    |  exception _ -> assert false
     end
 
-    
+
+let add_npm_package_path s (packages_info : t)  : t =
+  match packages_info  with
+  | Empty ->
+    Ext_pervasives.bad_argf "please set package name first using -bs-package-name ";
+  | NonBrowser(name,  envs) ->
+    let env, path =
+      match Ext_string.split ~keep_empty:false s ':' with
+      | [ package_name; path]  ->
+        (match module_system_of_string package_name with
+         | Some x -> x
+         | None ->
+           Ext_pervasives.bad_argf "invalid module system %s" package_name), path
+      | [path] ->
+        NodeJS, path
+      | _ ->
+        Ext_pervasives.bad_argf "invalid npm package path: %s" s
+    in
+    NonBrowser (name,  ((env,path) :: envs))    
+
