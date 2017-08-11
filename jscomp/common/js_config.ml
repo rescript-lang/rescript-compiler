@@ -29,8 +29,8 @@
 (*let get_ext () = !ext*)
 
 
-let packages_info : Js_packages_info.t ref = 
-  ref (Js_packages_info.Empty)
+let packages_info  = 
+  ref (Empty : Js_packages_info.t )
 
 
 let get_package_name () =
@@ -85,51 +85,7 @@ let (//) = Filename.concat
 
 let get_packages_info () = !packages_info
 
-type info_query =
-  | Empty
-  | Package_script of string
-  | Found of Js_packages_info.package_name * string
-  | NotFound 
-
-
-let query_package_infos 
-    (package_infos : Js_packages_info.t) module_system =
-  match package_infos with
-  | Empty -> Empty
-  | NonBrowser (name, []) -> Package_script name
-  | NonBrowser (name, paths) ->
-    begin match List.find (fun (k, _) -> 
-        Js_packages_info.compatible k  module_system) paths with
-    | (_, x) -> Found (name, x)
-    | exception _ -> NotFound
-    end
-
-let get_current_package_name_and_path   module_system =
-  query_package_infos !packages_info module_system
-
-
-(* for a single pass compilation, [output_dir]
-   can be cached
-*)
-let get_output_dir ~pkg_dir module_system filename =
-  match !packages_info with
-  | Empty | NonBrowser (_, [])->
-    if Filename.is_relative filename then
-      Lazy.force Ext_filename.cwd //
-      Filename.dirname filename
-    else
-      Filename.dirname filename
-  | NonBrowser (_,  modules) ->
-    begin match List.find (fun (k,_) -> Js_packages_info.compatible k  module_system) modules with
-      | (_, _path) -> pkg_dir // _path
-      |  exception _ -> assert false
-    end
-
-
-
-
 let default_gen_tds = ref false
-
 let no_builtin_ppx_ml = ref false
 let no_builtin_ppx_mli = ref false
 let no_warn_ffi_type = ref false

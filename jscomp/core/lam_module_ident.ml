@@ -33,7 +33,7 @@
 type t = Js_op.module_id = 
   { id : Ident.t ; kind : Js_op.kind }
 
-type system = Js_packages_info.module_system 
+
 
 let id x = x.id 
 

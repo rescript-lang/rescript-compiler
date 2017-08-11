@@ -25936,6 +25936,23 @@ val dump_packages_info :
   Format.formatter -> t -> unit
 
 
+
+type info_query =
+  | Package_empty
+  | Package_script of string
+  | Package_found of package_name * string
+  | Package_not_found   
+
+val query_package_infos : 
+  t -> module_system -> info_query   
+
+
+val get_output_dir:
+  pkg_dir:string -> 
+  module_system -> 
+  string -> 
+  t -> 
+  string   
 end = struct
 #1 "js_packages_info.ml"
 (* Copyright (C) 2017 Authors of BuckleScript
@@ -26041,6 +26058,48 @@ let dump_packages_info
          ~pp_sep:(fun fmt () -> Format.pp_print_space fmt ())
          dump_package_info 
       ) ls
+      
+type info_query =
+  | Package_empty
+  | Package_script of string
+  | Package_found of package_name * string
+  | Package_not_found 
+
+  
+
+let query_package_infos 
+    (package_infos : t) module_system : info_query =
+  match package_infos with
+  | Empty -> Package_empty
+  | NonBrowser (name, []) -> Package_script name
+  | NonBrowser (name, paths) ->
+    begin match List.find (fun (k, _) -> 
+        compatible k  module_system) paths with
+    | (_, x) -> Package_found (name, x)
+    | exception _ -> Package_not_found
+    end
+  
+
+(* for a single pass compilation, [output_dir]
+   can be cached
+*)
+let get_output_dir ~pkg_dir module_system output_prefix 
+  packages_info =
+  match packages_info with
+  | Empty | NonBrowser (_, [])->
+    if Filename.is_relative output_prefix then
+      Filename.concat (Lazy.force Ext_filename.cwd )
+      (Filename.dirname output_prefix)
+    else
+      Filename.dirname output_prefix
+  | NonBrowser (_,  modules) ->
+    begin match List.find (fun (k,_) -> 
+      compatible k  module_system) modules with
+      | (_, path) -> Filename.concat pkg_dir  path
+      |  exception _ -> assert false
+    end
+
+    
 end
 module Js_config : sig 
 #1 "js_config.mli"
@@ -26070,31 +26129,10 @@ module Js_config : sig
 
 
 
-(*val get_ext : unit -> string*)
-
-(** depends on [package_infos], used in {!Js_program_loader} *)
-val get_output_dir : 
-  pkg_dir:string -> 
-  Js_packages_info.module_system -> string -> string
-
-
 (** used by command line option *)
 val add_npm_package_path : string -> unit 
 val get_packages_info :
    unit -> Js_packages_info.t
-
-type info_query = 
-  | Empty 
-  | Package_script of string
-  | Found of Js_packages_info.package_name * string
-  | NotFound 
-  
-
-val query_package_infos : 
-  Js_packages_info.t ->
-  Js_packages_info.module_system ->
-  info_query
-
 
 
 (** set/get header *)
@@ -26105,8 +26143,9 @@ val no_version_header : bool ref
     when in script mode: 
 *)
 
-val get_current_package_name_and_path : 
-  Js_packages_info.module_system -> info_query
+(* val get_current_package_name_and_path : 
+  Js_packages_info.module_system -> 
+  Js_packages_info.info_query *)
 
 
 val set_package_name : string -> unit  
@@ -26229,8 +26268,8 @@ end = struct
 (*let get_ext () = !ext*)
 
 
-let packages_info : Js_packages_info.t ref = 
-  ref (Js_packages_info.Empty)
+let packages_info  = 
+  ref (Empty : Js_packages_info.t )
 
 
 let get_package_name () =
@@ -26285,51 +26324,7 @@ let (//) = Filename.concat
 
 let get_packages_info () = !packages_info
 
-type info_query =
-  | Empty
-  | Package_script of string
-  | Found of Js_packages_info.package_name * string
-  | NotFound 
-
-
-let query_package_infos 
-    (package_infos : Js_packages_info.t) module_system =
-  match package_infos with
-  | Empty -> Empty
-  | NonBrowser (name, []) -> Package_script name
-  | NonBrowser (name, paths) ->
-    begin match List.find (fun (k, _) -> 
-        Js_packages_info.compatible k  module_system) paths with
-    | (_, x) -> Found (name, x)
-    | exception _ -> NotFound
-    end
-
-let get_current_package_name_and_path   module_system =
-  query_package_infos !packages_info module_system
-
-
-(* for a single pass compilation, [output_dir]
-   can be cached
-*)
-let get_output_dir ~pkg_dir module_system filename =
-  match !packages_info with
-  | Empty | NonBrowser (_, [])->
-    if Filename.is_relative filename then
-      Lazy.force Ext_filename.cwd //
-      Filename.dirname filename
-    else
-      Filename.dirname filename
-  | NonBrowser (_,  modules) ->
-    begin match List.find (fun (k,_) -> Js_packages_info.compatible k  module_system) modules with
-      | (_, _path) -> pkg_dir // _path
-      |  exception _ -> assert false
-    end
-
-
-
-
 let default_gen_tds = ref false
-
 let no_builtin_ppx_ml = ref false
 let no_builtin_ppx_mli = ref false
 let no_warn_ffi_type = ref false

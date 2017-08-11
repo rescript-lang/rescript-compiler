@@ -22401,6 +22401,23 @@ val dump_packages_info :
   Format.formatter -> t -> unit
 
 
+
+type info_query =
+  | Package_empty
+  | Package_script of string
+  | Package_found of package_name * string
+  | Package_not_found   
+
+val query_package_infos : 
+  t -> module_system -> info_query   
+
+
+val get_output_dir:
+  pkg_dir:string -> 
+  module_system -> 
+  string -> 
+  t -> 
+  string   
 end = struct
 #1 "js_packages_info.ml"
 (* Copyright (C) 2017 Authors of BuckleScript
@@ -22506,6 +22523,48 @@ let dump_packages_info
          ~pp_sep:(fun fmt () -> Format.pp_print_space fmt ())
          dump_package_info 
       ) ls
+      
+type info_query =
+  | Package_empty
+  | Package_script of string
+  | Package_found of package_name * string
+  | Package_not_found 
+
+  
+
+let query_package_infos 
+    (package_infos : t) module_system : info_query =
+  match package_infos with
+  | Empty -> Package_empty
+  | NonBrowser (name, []) -> Package_script name
+  | NonBrowser (name, paths) ->
+    begin match List.find (fun (k, _) -> 
+        compatible k  module_system) paths with
+    | (_, x) -> Package_found (name, x)
+    | exception _ -> Package_not_found
+    end
+  
+
+(* for a single pass compilation, [output_dir]
+   can be cached
+*)
+let get_output_dir ~pkg_dir module_system output_prefix 
+  packages_info =
+  match packages_info with
+  | Empty | NonBrowser (_, [])->
+    if Filename.is_relative output_prefix then
+      Filename.concat (Lazy.force Ext_filename.cwd )
+      (Filename.dirname output_prefix)
+    else
+      Filename.dirname output_prefix
+  | NonBrowser (_,  modules) ->
+    begin match List.find (fun (k,_) -> 
+      compatible k  module_system) modules with
+      | (_, path) -> Filename.concat pkg_dir  path
+      |  exception _ -> assert false
+    end
+
+    
 end
 module Js_config : sig 
 #1 "js_config.mli"
@@ -22535,31 +22594,10 @@ module Js_config : sig
 
 
 
-(*val get_ext : unit -> string*)
-
-(** depends on [package_infos], used in {!Js_program_loader} *)
-val get_output_dir : 
-  pkg_dir:string -> 
-  Js_packages_info.module_system -> string -> string
-
-
 (** used by command line option *)
 val add_npm_package_path : string -> unit 
 val get_packages_info :
    unit -> Js_packages_info.t
-
-type info_query = 
-  | Empty 
-  | Package_script of string
-  | Found of Js_packages_info.package_name * string
-  | NotFound 
-  
-
-val query_package_infos : 
-  Js_packages_info.t ->
-  Js_packages_info.module_system ->
-  info_query
-
 
 
 (** set/get header *)
@@ -22570,8 +22608,9 @@ val no_version_header : bool ref
     when in script mode: 
 *)
 
-val get_current_package_name_and_path : 
-  Js_packages_info.module_system -> info_query
+(* val get_current_package_name_and_path : 
+  Js_packages_info.module_system -> 
+  Js_packages_info.info_query *)
 
 
 val set_package_name : string -> unit  
@@ -22694,8 +22733,8 @@ end = struct
 (*let get_ext () = !ext*)
 
 
-let packages_info : Js_packages_info.t ref = 
-  ref (Js_packages_info.Empty)
+let packages_info  = 
+  ref (Empty : Js_packages_info.t )
 
 
 let get_package_name () =
@@ -22750,51 +22789,7 @@ let (//) = Filename.concat
 
 let get_packages_info () = !packages_info
 
-type info_query =
-  | Empty
-  | Package_script of string
-  | Found of Js_packages_info.package_name * string
-  | NotFound 
-
-
-let query_package_infos 
-    (package_infos : Js_packages_info.t) module_system =
-  match package_infos with
-  | Empty -> Empty
-  | NonBrowser (name, []) -> Package_script name
-  | NonBrowser (name, paths) ->
-    begin match List.find (fun (k, _) -> 
-        Js_packages_info.compatible k  module_system) paths with
-    | (_, x) -> Found (name, x)
-    | exception _ -> NotFound
-    end
-
-let get_current_package_name_and_path   module_system =
-  query_package_infos !packages_info module_system
-
-
-(* for a single pass compilation, [output_dir]
-   can be cached
-*)
-let get_output_dir ~pkg_dir module_system filename =
-  match !packages_info with
-  | Empty | NonBrowser (_, [])->
-    if Filename.is_relative filename then
-      Lazy.force Ext_filename.cwd //
-      Filename.dirname filename
-    else
-      Filename.dirname filename
-  | NonBrowser (_,  modules) ->
-    begin match List.find (fun (k,_) -> Js_packages_info.compatible k  module_system) modules with
-      | (_, _path) -> pkg_dir // _path
-      |  exception _ -> assert false
-    end
-
-
-
-
 let default_gen_tds = ref false
-
 let no_builtin_ppx_ml = ref false
 let no_builtin_ppx_mli = ref false
 let no_warn_ffi_type = ref false
@@ -66523,7 +66518,6 @@ module Lam_module_ident : sig
 
 type t = Js_op.module_id = private { id : Ident.t ; kind : Js_op.kind }
 
-type system = Js_packages_info.module_system  
 
 val id : t -> Ident.t 
 
@@ -66576,7 +66570,7 @@ end = struct
 type t = Js_op.module_id = 
   { id : Ident.t ; kind : Js_op.kind }
 
-type system = Js_packages_info.module_system 
+
 
 let id x = x.id 
 
@@ -69551,7 +69545,6 @@ type effect = string option
 type t = {
   values : cmj_value String_map.t;
   effect : effect;
-  (* goog_package : string option; *)
   npm_package_path : Js_packages_info.t;
 }
 
@@ -83925,8 +83918,8 @@ val reset : unit -> unit
 val is_pure_module : Lam_module_ident.t -> bool
 
 val get_package_path_from_cmj : 
-  Lam_module_ident.system -> Lam_module_ident.t -> 
-  string * Js_config.info_query
+  Js_packages_info.module_system -> Lam_module_ident.t -> 
+  string * Js_packages_info.info_query
   (*FIXME when the latter is [NotFound], the former is meaningless*)
 
 
@@ -84035,12 +84028,12 @@ let reset () =
 (* This is for a js exeternal module, we can change it when printing
    for example
    {[
-   var React$1 = require('react');
-   React$1.render(..)
+     var React$1 = require('react');
+     React$1.render(..)
    ]}
 
    Given a name, if duplicated, they should  have the same id
- *)
+*)
 
 let create_js_module (hint_name : string) : Ident.t = 
   let hint_name = 
@@ -84226,11 +84219,17 @@ let is_pure_module id  =
 
 
 
-let get_package_path_from_cmj module_system ( id : Lam_module_ident.t) = 
+let get_package_path_from_cmj 
+    module_system ( id : Lam_module_ident.t) 
+  : path * Js_packages_info.info_query = 
   query_and_add_if_not_exist id No_env
-    ~not_found:(fun _ -> Ext_string.empty, Js_config.NotFound) 
+    ~not_found:(fun _ ->
+        Ext_string.empty, 
+        Js_packages_info.Package_not_found) 
     ~found:(fun (cmj_path,x) -> 
-      cmj_path, Js_config.query_package_infos x.npm_package_path module_system)
+        cmj_path, 
+        Js_packages_info.query_package_infos 
+          x.npm_package_path module_system)
 
 
 
@@ -84247,9 +84246,9 @@ let get_required_modules
   Lam_module_ident.Hash.iter (fun (id : module_id)  _  ->
       if not @@ is_pure_module id 
       then add  hard_dependencies id) cached_tbl ;
- Lam_module_ident.Hash_set.iter (fun (id  : module_id)  -> 
+  Lam_module_ident.Hash_set.iter (fun (id  : module_id)  -> 
       (if not @@ is_pure_module  id 
-      then add hard_dependencies id : unit)
+       then add hard_dependencies id : unit)
     ) extras;
   Lam_module_ident.Hash_set.elements hard_dependencies
 
@@ -85103,11 +85102,11 @@ module Js_program_loader : sig
    1. support es6 modle
    2. make sure exported have its origin name, 
       this makes it easier to read code 
- *)
+*)
 
 val make_program : 
-    string -> 
-    Ident.t list -> J.block -> J.program
+  string -> 
+  Ident.t list -> J.block -> J.program
 
 val decorate_deps : 
   J.required_modules ->
@@ -85116,7 +85115,8 @@ val decorate_deps :
 
 val string_of_module_id :
   output_prefix:string ->
-  Lam_module_ident.system -> Lam_module_ident.t -> string
+  Js_packages_info.module_system ->
+  Lam_module_ident.t -> string
 
 end = struct
 #1 "js_program_loader.ml"
@@ -85191,7 +85191,7 @@ module S = Js_stmt_make
 let (//) = Filename.concat 
 
 let string_of_module_id ~output_prefix
-    (module_system : Lam_module_ident.system)
+    (module_system : Js_packages_info.module_system)
     (x : Lam_module_ident.t) : string =
 
 
@@ -85201,38 +85201,44 @@ let string_of_module_id ~output_prefix
       | Ml  -> 
         let id = x.id in
         let js_file = Ext_filename.output_js_basename id.name in 
+        let current_package_info = Js_config.get_packages_info () in 
         let rebase different_package package_dir dep =
           let current_unit_dir =
-            `Dir (Js_config.get_output_dir ~pkg_dir:package_dir module_system output_prefix) in
+            `Dir (Js_packages_info.get_output_dir 
+                  ~pkg_dir:package_dir module_system 
+                  output_prefix 
+                  current_package_info
+                  ) in
           Ext_filename.node_relative_path  different_package current_unit_dir dep 
         in 
         let cmj_path, dependency_pkg_info = 
           Lam_compile_env.get_package_path_from_cmj module_system x 
         in
         let current_pkg_info = 
-          Js_config.get_current_package_name_and_path module_system  
+            Js_packages_info.query_package_infos current_package_info
+            module_system  
         in
         begin match module_system,  dependency_pkg_info, current_pkg_info with
-          | _, NotFound , _ 
+          | _, Package_not_found , _ 
             -> 
             Bs_exception.error (Missing_ml_dependency x.id.name)
           (*TODO: log which module info is not done
           *)
-          | Goog, (Empty | Package_script _), _ 
+          | Goog, (Package_empty | Package_script _), _ 
             -> 
             Bs_exception.error (Dependency_script_module_dependent_not js_file)
           | (AmdJS | NodeJS | Es6 | Es6_global | AmdJS_global),
-            ( Empty | Package_script _) ,
-            Found _  -> 
+            ( Package_empty | Package_script _) ,
+            Package_found _  -> 
             Bs_exception.error (Dependency_script_module_dependent_not js_file)
-          | Goog , Found (package_name, x), _  -> 
+          | Goog , Package_found (package_name, x), _  -> 
             package_name  ^ "." ^  String.uncapitalize id.name
           | (AmdJS | NodeJS| Es6 | Es6_global|AmdJS_global),
-           (Empty | Package_script _ | Found _ ), NotFound -> assert false
+           (Package_empty | Package_script _ | Package_found _ ), Package_not_found -> assert false
 
           | (AmdJS | NodeJS | Es6 | Es6_global|AmdJS_global), 
-            Found(package_name, x),
-            Found(current_package, path) -> 
+            Package_found(package_name, x),
+            Package_found(current_package, path) -> 
             if  current_package = package_name then 
               let package_dir = Lazy.force Ext_filename.package_dir in
               rebase false package_dir (`File (package_dir // x // js_file)) 
@@ -85250,13 +85256,17 @@ let string_of_module_id ~output_prefix
                 
                 begin 
                   Ext_filename.rel_normalized_absolute_path              
-                    (Js_config.get_output_dir ~pkg_dir:(Lazy.force Ext_filename.package_dir)
-                       module_system output_prefix)
+                    (Js_packages_info.get_output_dir 
+                      ~pkg_dir:(Lazy.force Ext_filename.package_dir)
+                       module_system 
+                       output_prefix
+                       (Js_config.get_packages_info()) 
+                       )
                     ((Filename.dirname 
                         (Filename.dirname (Filename.dirname cmj_path))) // x // js_file)              
                 end
               end
-          | (AmdJS | NodeJS | Es6 | AmdJS_global | Es6_global), Found(package_name, x), 
+          | (AmdJS | NodeJS | Es6 | AmdJS_global | Es6_global), Package_found(package_name, x), 
             Package_script(current_package)
             ->    
             if current_package = package_name then 
@@ -85266,11 +85276,11 @@ let string_of_module_id ~output_prefix
             else 
               package_name // x // js_file
           | (AmdJS | NodeJS | Es6 | AmdJS_global | Es6_global), 
-            Found(package_name, x), Empty 
+            Package_found(package_name, x), Package_empty 
             ->    package_name // x // js_file
           |  (AmdJS | NodeJS | Es6 | AmdJS_global | Es6_global), 
-             (Empty | Package_script _) , 
-             (Empty  | Package_script _)
+             (Package_empty | Package_script _) , 
+             (Package_empty  | Package_script _)
             -> 
             begin match Config_util.find_opt js_file with 
               | Some file -> 
@@ -85358,11 +85368,11 @@ module Js_dump : sig
 
 val pp_deps_program :
   output_prefix:string ->
-  Lam_module_ident.system -> J.deps_program -> Ext_pp.t -> unit
+  Js_packages_info.module_system -> J.deps_program -> Ext_pp.t -> unit
 
 val dump_deps_program :
   output_prefix:string ->
-  Lam_module_ident.system  -> J.deps_program -> out_channel -> unit
+  Js_packages_info.module_system  -> J.deps_program -> out_channel -> unit
 
 (** 2 functions Only used for debugging *)
 val string_of_block : J.block -> string
@@ -87257,7 +87267,7 @@ let es6_program  ~output_prefix fmt f (  x : J.deps_program) =
 
 let pp_deps_program
     ~output_prefix
-    (kind : Lam_module_ident.system )
+    (kind : Js_packages_info.module_system )
     (program  : J.deps_program) (f : Ext_pp.t) = 
   begin
     if not !Js_config.no_version_header then 

@@ -35,11 +35,11 @@
    1. support es6 modle
    2. make sure exported have its origin name, 
       this makes it easier to read code 
- *)
+*)
 
 val make_program : 
-    string -> 
-    Ident.t list -> J.block -> J.program
+  string -> 
+  Ident.t list -> J.block -> J.program
 
 val decorate_deps : 
   J.required_modules ->
@@ -48,4 +48,5 @@ val decorate_deps :
 
 val string_of_module_id :
   output_prefix:string ->
-  Lam_module_ident.system -> Lam_module_ident.t -> string
+  Js_packages_info.module_system ->
+  Lam_module_ident.t -> string

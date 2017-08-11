@@ -101,3 +101,45 @@ let dump_packages_info
          ~pp_sep:(fun fmt () -> Format.pp_print_space fmt ())
          dump_package_info 
       ) ls
+      
+type info_query =
+  | Package_empty
+  | Package_script of string
+  | Package_found of package_name * string
+  | Package_not_found 
+
+  
+
+let query_package_infos 
+    (package_infos : t) module_system : info_query =
+  match package_infos with
+  | Empty -> Package_empty
+  | NonBrowser (name, []) -> Package_script name
+  | NonBrowser (name, paths) ->
+    begin match List.find (fun (k, _) -> 
+        compatible k  module_system) paths with
+    | (_, x) -> Package_found (name, x)
+    | exception _ -> Package_not_found
+    end
+  
+
+(* for a single pass compilation, [output_dir]
+   can be cached
+*)
+let get_output_dir ~pkg_dir module_system output_prefix 
+  packages_info =
+  match packages_info with
+  | Empty | NonBrowser (_, [])->
+    if Filename.is_relative output_prefix then
+      Filename.concat (Lazy.force Ext_filename.cwd )
+      (Filename.dirname output_prefix)
+    else
+      Filename.dirname output_prefix
+  | NonBrowser (_,  modules) ->
+    begin match List.find (fun (k,_) -> 
+      compatible k  module_system) modules with
+      | (_, path) -> Filename.concat pkg_dir  path
+      |  exception _ -> assert false
+    end
+
+    
