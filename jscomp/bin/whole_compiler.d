@@ -339,6 +339,7 @@ bin/whole_compiler.ml : common/js_packages_info.ml
 bin/whole_compiler.ml : core/js_implementation.mli
 bin/whole_compiler.ml : core/js_of_lam_variant.mli
 bin/whole_compiler.ml : core/js_program_loader.mli
+bin/whole_compiler.ml : core/js_runtime_modules.ml
 bin/whole_compiler.ml : core/lam_compile_const.mli
 bin/whole_compiler.ml : core/lam_compile_global.ml
 bin/whole_compiler.ml : core/lam_compile_group.mli

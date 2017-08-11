@@ -50,7 +50,7 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.t)
   | Single(_, ({name="stdout"|"stderr"|"stdin";_} as id),_ ),
     "pervasives.ml" -> 
     Js_output.of_stmt @@ S.alias_variable id
-      ~exp:(E.runtime_ref  Js_config.io id.name)
+      ~exp:(E.runtime_ref  Js_runtime_modules.io id.name)
   (* 
          we delegate [stdout, stderr, and stdin] into [caml_io] module, 
          the motivation is to help dead code eliminatiion, it's helpful 

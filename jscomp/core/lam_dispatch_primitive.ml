@@ -61,7 +61,7 @@ let translate (prim_name : string)
   | "caml_gc_compaction"
   | "caml_final_register"
   | "caml_final_release"
-    ->  call Js_config.gc
+    ->  call Js_runtime_modules.gc
   | "caml_abs_float" -> 
     E.math "abs" args 
   | "caml_acos_float" -> 
@@ -148,7 +148,7 @@ let translate (prim_name : string)
     end
 
   | "caml_array_get" -> 
-    call Js_config.array
+    call Js_runtime_modules.array
   | "caml_array_get_addr"
   | "caml_array_get_float"
   | "caml_array_unsafe_get"
@@ -158,7 +158,7 @@ let translate (prim_name : string)
     | _ -> assert false
     end
   | "caml_array_set" ->
-    call Js_config.array
+    call Js_runtime_modules.array
   | "caml_array_set_addr"
   | "caml_array_set_float"
   | "caml_array_unsafe_set"
@@ -319,7 +319,7 @@ let translate (prim_name : string)
   | "caml_hypot_float"
 
     ->
-    call Js_config.float
+    call Js_runtime_modules.float
   | "caml_fmod_float" 
     (* float module like js number module *)      
     ->      
@@ -385,7 +385,7 @@ let translate (prim_name : string)
       E.uninitialized_array v 
     (* TODO: inline and spits out a warning when i is negative *)
     | _ -> 
-      call Js_config.string 
+      call Js_runtime_modules.string 
     end
 
   | "caml_string_get"
@@ -399,7 +399,7 @@ let translate (prim_name : string)
   | "caml_blit_string" 
   | "caml_blit_bytes"
     -> 
-    call Js_config.string
+    call Js_runtime_modules.string
 
   | "caml_register_named_value" -> 
     (**
@@ -477,15 +477,15 @@ let translate (prim_name : string)
   | "caml_sys_exit"
   (* | "caml_sys_file_exists" *)
     -> 
-    call Js_config.sys
+    call Js_runtime_modules.sys
   | "caml_lex_engine"
   | "caml_new_lex_engine"
     -> 
-    call Js_config.lexer 
+    call Js_runtime_modules.lexer 
   | "caml_parse_engine"
   | "caml_set_parser_trace" 
     -> 
-    call Js_config.parser 
+    call Js_runtime_modules.parser 
 
   | "caml_array_sub"
   | "caml_array_concat"
@@ -494,7 +494,7 @@ let translate (prim_name : string)
 
   | "caml_array_blit"
   | "caml_make_vect" -> 
-    call Js_config.array
+    call Js_runtime_modules.array
   | "caml_ml_flush"
   | "caml_ml_out_channels_list"
   | "caml_ml_open_descriptor_in" 
@@ -503,7 +503,7 @@ let translate (prim_name : string)
   | "caml_ml_output" 
   | "caml_ml_input_char"
     -> 
-    call Js_config.io
+    call Js_runtime_modules.io
   | "caml_update_dummy"
   | "caml_obj_dup" -> 
     (** Note currently is an Array copy function, this is tightly coupled with 
@@ -515,7 +515,7 @@ let translate (prim_name : string)
       match args with 
       | [ a ] when Js_analyzer.is_constant a ->  a 
       | _ -> 
-        call Js_config.obj_runtime 
+        call Js_runtime_modules.obj_runtime 
     end
   | "caml_obj_block" -> 
     (** TODO: Optimize  for [CamlinternalOO] input 
@@ -548,14 +548,14 @@ let translate (prim_name : string)
   | "caml_int64_format"
   | "caml_int64_of_string"
     -> 
-    call Js_config.format 
+    call Js_runtime_modules.format 
   | "caml_format_int" -> 
     begin match args with 
     | [ {expression_desc = Str (_, "%d"); _}; v] 
       ->
       E.int_to_string v 
     | _ -> 
-      call Js_config.format
+      call Js_runtime_modules.format
     end
     (*   "caml_alloc_dummy"; *)
     (* TODO:   "caml_alloc_dummy_float"; *)
@@ -581,7 +581,7 @@ let translate (prim_name : string)
   | "caml_lessthan"
 
     -> 
-    call Js_config.obj_runtime
+    call Js_runtime_modules.obj_runtime
   | "caml_obj_set_tag" 
     -> begin match args with 
       | [a;b]  -> E.set_tag a b 
@@ -760,15 +760,15 @@ let translate (prim_name : string)
     (* call  Js_config.bigarray *)
   (* End of bigarray support *)
   | "caml_convert_raw_backtrace_slot"
-    -> call  Js_config.backtrace
+    -> call  Js_runtime_modules.backtrace
 
   | "caml_bswap16"
   | "caml_int32_bswap"
   | "caml_nativeint_bswap" 
-    -> call Js_config.int32
+    -> call Js_runtime_modules.int32
   | "caml_get_public_method"
     ->
-    call Js_config.oo
+    call Js_runtime_modules.oo
   (** TODO: Primitives not implemented yet ...*)
   | "caml_install_signal_handler"
     -> 
@@ -778,16 +778,16 @@ let translate (prim_name : string)
     | _ -> assert false
     end
   | "caml_md5_string"
-    -> call Js_config.md5
+    -> call Js_runtime_modules.md5
   | "caml_hash"
-    -> call Js_config.hash 
+    -> call Js_runtime_modules.hash 
   | "caml_weak_set"
   | "caml_weak_create"
   | "caml_weak_get"
   | "caml_weak_check"
   | "caml_weak_blit"
   | "caml_weak_get_copy"
-    -> call Js_config.weak
+    -> call Js_runtime_modules.weak
 
   | "caml_output_value_to_buffer"
   | "caml_marshal_data_size"

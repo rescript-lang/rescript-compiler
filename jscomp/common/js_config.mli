@@ -79,36 +79,7 @@ val set_no_any_assert : unit -> unit
 val get_no_any_assert : unit -> bool 
 
 
-val block : string
-val int32 : string
-val gc : string 
-val backtrace : string
 
-val builtin_exceptions : string
-val exceptions : string
-val io : string
-val oo : string
-val sys : string
-val lexer : string 
-val parser : string
-val obj_runtime : string
-val array : string
-val format : string
-val string : string
-val bytes : string  
-val float : string 
-val curry : string 
-val caml_oo_curry : string 
-(* val bigarray : string *)
-(* val unix : string *)
-val int64 : string
-val md5 : string
-val hash : string
-val weak : string
-val js_primitive : string
-val module_ : string
-val missing_polyfill : string
-val exn : string
 (** Debugging utilies *)
 val set_current_file : string -> unit 
 val get_current_file : unit -> string

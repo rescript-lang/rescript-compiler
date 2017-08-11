@@ -26184,36 +26184,7 @@ val set_no_any_assert : unit -> unit
 val get_no_any_assert : unit -> bool 
 
 
-val block : string
-val int32 : string
-val gc : string 
-val backtrace : string
 
-val builtin_exceptions : string
-val exceptions : string
-val io : string
-val oo : string
-val sys : string
-val lexer : string 
-val parser : string
-val obj_runtime : string
-val array : string
-val format : string
-val string : string
-val bytes : string  
-val float : string 
-val curry : string 
-val caml_oo_curry : string 
-(* val bigarray : string *)
-(* val unix : string *)
-val int64 : string
-val md5 : string
-val hash : string
-val weak : string
-val js_primitive : string
-val module_ : string
-val missing_polyfill : string
-val exn : string
 (** Debugging utilies *)
 val set_current_file : string -> unit 
 val get_current_file : unit -> string
@@ -26261,11 +26232,6 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-(*let get_ext () = !ext*)
 
 
 let packages_info  = 
@@ -26332,34 +26298,6 @@ let no_warn_ffi_type = ref false
 (** TODO: will flip the option when it is ready *)
 let no_warn_unused_bs_attribute = ref false
 let no_error_unused_bs_attribute = ref false 
-
-let builtin_exceptions = "Caml_builtin_exceptions"
-let exceptions = "Caml_exceptions"
-let io = "Caml_io"
-let sys = "Caml_sys"
-let lexer = "Caml_lexer"
-let parser = "Caml_parser"
-let obj_runtime = "Caml_obj"
-let array = "Caml_array"
-let format = "Caml_format"
-let string = "Caml_string"
-let bytes = "Caml_bytes"
-let float = "Caml_float"
-let hash = "Caml_hash"
-let oo = "Caml_oo"
-let curry = "Curry"
-let caml_oo_curry = "Caml_oo_curry"
-let int64 = "Caml_int64"
-let md5 = "Caml_md5"
-let weak = "Caml_weak"
-let backtrace = "Caml_backtrace"
-let gc = "Caml_gc"
-let int32 = "Caml_int32"
-let block = "Block"
-let js_primitive = "Js_primitive"
-let module_ = "Caml_module"
-let missing_polyfill = "Caml_missing_polyfill"
-let exn = "Js_exn"
 
 let current_file = ref ""
 let debug_file = ref ""

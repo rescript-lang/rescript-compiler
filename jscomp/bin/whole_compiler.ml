@@ -22649,36 +22649,7 @@ val set_no_any_assert : unit -> unit
 val get_no_any_assert : unit -> bool 
 
 
-val block : string
-val int32 : string
-val gc : string 
-val backtrace : string
 
-val builtin_exceptions : string
-val exceptions : string
-val io : string
-val oo : string
-val sys : string
-val lexer : string 
-val parser : string
-val obj_runtime : string
-val array : string
-val format : string
-val string : string
-val bytes : string  
-val float : string 
-val curry : string 
-val caml_oo_curry : string 
-(* val bigarray : string *)
-(* val unix : string *)
-val int64 : string
-val md5 : string
-val hash : string
-val weak : string
-val js_primitive : string
-val module_ : string
-val missing_polyfill : string
-val exn : string
 (** Debugging utilies *)
 val set_current_file : string -> unit 
 val get_current_file : unit -> string
@@ -22726,11 +22697,6 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-(*let get_ext () = !ext*)
 
 
 let packages_info  = 
@@ -22797,34 +22763,6 @@ let no_warn_ffi_type = ref false
 (** TODO: will flip the option when it is ready *)
 let no_warn_unused_bs_attribute = ref false
 let no_error_unused_bs_attribute = ref false 
-
-let builtin_exceptions = "Caml_builtin_exceptions"
-let exceptions = "Caml_exceptions"
-let io = "Caml_io"
-let sys = "Caml_sys"
-let lexer = "Caml_lexer"
-let parser = "Caml_parser"
-let obj_runtime = "Caml_obj"
-let array = "Caml_array"
-let format = "Caml_format"
-let string = "Caml_string"
-let bytes = "Caml_bytes"
-let float = "Caml_float"
-let hash = "Caml_hash"
-let oo = "Caml_oo"
-let curry = "Curry"
-let caml_oo_curry = "Caml_oo_curry"
-let int64 = "Caml_int64"
-let md5 = "Caml_md5"
-let weak = "Caml_weak"
-let backtrace = "Caml_backtrace"
-let gc = "Caml_gc"
-let int32 = "Caml_int32"
-let block = "Block"
-let js_primitive = "Js_primitive"
-let module_ = "Caml_module"
-let missing_polyfill = "Caml_missing_polyfill"
-let exn = "Js_exn"
 
 let current_file = ref ""
 let debug_file = ref ""
@@ -70812,6 +70750,61 @@ let of_lam_mutable_flag (x : Asttypes.mutable_flag)  : Js_op.mutable_flag =
   | Mutable -> Mutable
 
 end
+module Js_runtime_modules
+= struct
+#1 "js_runtime_modules.ml"
+(* Copyright (C) 2017 Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+let builtin_exceptions = "Caml_builtin_exceptions"
+let exceptions = "Caml_exceptions"
+let io = "Caml_io"
+let sys = "Caml_sys"
+let lexer = "Caml_lexer"
+let parser = "Caml_parser"
+let obj_runtime = "Caml_obj"
+let array = "Caml_array"
+let format = "Caml_format"
+let string = "Caml_string"
+let bytes = "Caml_bytes"
+let float = "Caml_float"
+let hash = "Caml_hash"
+let oo = "Caml_oo"
+let curry = "Curry"
+let caml_oo_curry = "Caml_oo_curry"
+let int64 = "Caml_int64"
+let md5 = "Caml_md5"
+let weak = "Caml_weak"
+let backtrace = "Caml_backtrace"
+let gc = "Caml_gc"
+let int32 = "Caml_int32"
+let block = "Block"
+let js_primitive = "Js_primitive"
+let module_ = "Caml_module"
+let missing_polyfill = "Caml_missing_polyfill"
+let exn = "Js_exn"
+end
 module Lam_compile_util : sig 
 #1 "lam_compile_util.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -72118,11 +72111,11 @@ let public_method_call meth_name obj label cache args =
   let len = List.length args in 
   (* econd (int_equal (tag obj ) obj_int_tag_literal) *)
   if len <= 7 then          
-    runtime_call Js_config.caml_oo_curry 
+    runtime_call Js_runtime_modules.caml_oo_curry 
       ("js" ^ string_of_int (len + 1) )
       (label:: ( int cache) :: obj::args)
   else 
-    runtime_call Js_config.caml_oo_curry "js"
+    runtime_call Js_runtime_modules.caml_oo_curry "js"
       [label; 
        int cache;
        obj ;  
@@ -72401,7 +72394,7 @@ let int32_div ~checked ?comment
     end
   | _, _ -> 
     if checked  then 
-      runtime_call Js_config.int32 "div" [e1; e2]
+      runtime_call Js_runtime_modules.int32 "div" [e1; e2]
     else to_int32 (float_div ?comment e1 e2)
 
 
@@ -72415,7 +72408,7 @@ let int32_mod ~checked ?comment e1 (e2 : t) : J.expression =
 
   | _ -> 
     if checked then 
-      runtime_call Js_config.int32 "mod_" [e1;e2]
+      runtime_call Js_runtime_modules.int32 "mod_" [e1;e2]
     else 
       { comment ; 
         expression_desc = Bin (Mod, e1,e2)
@@ -72456,9 +72449,9 @@ let int32_mul ?comment
     if i >= 0 then 
       int32_lsl e (small_int i)
     else 
-      runtime_call ?comment Js_config.int32 Literals.imul [e1;e2]
+      runtime_call ?comment Js_runtime_modules.int32 Literals.imul [e1;e2]
   | _ -> 
-    runtime_call ?comment Js_config.int32 Literals.imul [e1;e2]
+    runtime_call ?comment Js_runtime_modules.int32 Literals.imul [e1;e2]
 
 let unchecked_int32_mul ?comment e1 e2 : J.expression = 
   { comment ; 
@@ -72530,7 +72523,7 @@ let is_undef ?comment x = triple_equal ?comment x undefined
 
 let not_implemented ?comment (s : string) : t =  
   runtime_call
-    Js_config.missing_polyfill
+    Js_runtime_modules.missing_polyfill
     "not_implemented" 
     [str (s ^ " not implemented by bucklescript yet\n")]
 
@@ -85726,7 +85719,7 @@ let rec
 
   try_optimize_curry cxt f len function_id = 
   begin           
-    P.string f Js_config.curry;
+    P.string f Js_runtime_modules.curry;
     P.string f L.dot;
     P.string f "__";
     P.string f (Printf.sprintf "%d" len);
@@ -86047,7 +86040,7 @@ and
 
           | _ , _ -> 
             (* ipp_comment f (Some "!") *)
-            P.string f  Js_config.curry; 
+            P.string f  Js_runtime_modules.curry; 
             P.string f L.dot;
             let len = List.length el in
             if 1 <= len && len <= 8 then  
@@ -87451,7 +87444,7 @@ class count_hard_dependencies =
         (* see [Js_exp_make.runtime_var_dot] *)
         -> 
         add_lam_module_ident hard_dependencies 
-          (Lam_module_ident.of_runtime (Ext_ident.create_js Js_config.curry));
+          (Lam_module_ident.of_runtime (Ext_ident.create_js Js_runtime_modules.curry));
         super#expression x             
       | {expression_desc = Caml_block(_,_, tag, tag_info); _}
         -> 
@@ -87464,7 +87457,7 @@ class count_hard_dependencies =
           | _, _
             -> 
             add_lam_module_ident hard_dependencies 
-              (Lam_module_ident.of_runtime (Ext_ident.create_js Js_config.block));
+              (Lam_module_ident.of_runtime (Ext_ident.create_js Js_runtime_modules.block));
         end;
         super#expression x 
       | _ -> super#expression x
@@ -92206,7 +92199,7 @@ module E = Js_exp_make
 type int64_call = J.expression list -> J.expression  
 
 let int64_call (fn : string) args  = 
-  E.runtime_call Js_config.int64 fn args 
+  E.runtime_call Js_runtime_modules.int64 fn args 
 
 
 (* TODO: make layout easier to change later *)
@@ -92255,7 +92248,7 @@ let of_int32 (args : J.expression list) =
   | _ -> int64_call  "of_int32" args
 
 let comp (cmp : Lambda.comparison) args = 
-  E.runtime_call  Js_config.int64
+  E.runtime_call  Js_runtime_modules.int64
     (match cmp with 
      | Ceq -> "eq"
      | Cneq -> "neq"
@@ -92620,10 +92613,10 @@ module A = struct
  *)
 
   let bytes_to_string e = 
-    E.runtime_call Js_config.string "bytes_to_string" [e]
+    E.runtime_call Js_runtime_modules.string "bytes_to_string" [e]
 
   let bytes_of_string s =
-    E.runtime_call Js_config.string "bytes_of_string" [s]
+    E.runtime_call Js_runtime_modules.string "bytes_of_string" [s]
 end
 
 (* We use module B for string compilation, once the upstream can make changes to the 
@@ -92673,10 +92666,10 @@ module B = struct
  *)
 
   let bytes_to_string e = 
-    E.runtime_call Js_config.string "bytes_to_string" [e]
+    E.runtime_call Js_runtime_modules.string "bytes_to_string" [e]
 
   let bytes_of_string s =
-    E.runtime_call Js_config.string "bytes_of_string" [s]
+    E.runtime_call Js_runtime_modules.string "bytes_of_string" [s]
 end
 
 (* include A *)
@@ -92939,7 +92932,7 @@ let get_default_undefined
     if Js_analyzer.is_simple_no_side_effect_expression arg then
       E.econd arg (map Static_unwrapped (E.index arg 0l)) E.undefined
     else
-      map Runtime_maybe_unwrapped (E.runtime_call Js_config.js_primitive "option_get" [arg])
+      map Runtime_maybe_unwrapped (E.runtime_call Js_runtime_modules.js_primitive "option_get" [arg])
 
 (** Another way: 
     {[
@@ -93279,7 +93272,7 @@ let ocaml_to_js_eff
                 E.index exp 1l
               | Runtime_maybe_unwrapped ->
                 (* If we can't, do Js_primitive.option_get_unwrap(arg) *)
-                E.runtime_call Js_config.js_primitive "option_get_unwrap" [raw_arg]
+                E.runtime_call Js_runtime_modules.js_primitive "option_get_unwrap" [raw_arg]
             )
           raw_arg
       | _ ->
@@ -93797,14 +93790,14 @@ module E = Js_exp_make
    is not necessary at all
 *)
 let make exception_str  : J.expression = 
-  E.runtime_call Js_config.exceptions Literals.create [exception_str]
+  E.runtime_call Js_runtime_modules.exceptions Literals.create [exception_str]
 
 (* let make_extension exception_str  : J.expression =  *)
 (*   E.runtime_call Js_config.exceptions "makeExtension" [exception_str] *)
 
 
 let get_builtin_by_name name = 
-  E.runtime_ref Js_config.builtin_exceptions (String.lowercase name)
+  E.runtime_ref Js_runtime_modules.builtin_exceptions (String.lowercase name)
 
 
 (* let match_exception_def (args : J.expression list) =  *)
@@ -93828,7 +93821,7 @@ let caml_set_oo_id args =
          If we can guarantee this code path is never hit, we can do 
          a better job for encoding of exception and extension?
       *)
-      E.runtime_call Js_config.exceptions "caml_set_oo_id" args 
+      E.runtime_call Js_runtime_modules.exceptions "caml_set_oo_id" args 
     (* begin match match_exception_def args with  *)
     (* | Some ( exception_str, mutable_flag) *)
     (*   ->  *)
@@ -94122,7 +94115,7 @@ let translate (prim_name : string)
   | "caml_gc_compaction"
   | "caml_final_register"
   | "caml_final_release"
-    ->  call Js_config.gc
+    ->  call Js_runtime_modules.gc
   | "caml_abs_float" -> 
     E.math "abs" args 
   | "caml_acos_float" -> 
@@ -94209,7 +94202,7 @@ let translate (prim_name : string)
     end
 
   | "caml_array_get" -> 
-    call Js_config.array
+    call Js_runtime_modules.array
   | "caml_array_get_addr"
   | "caml_array_get_float"
   | "caml_array_unsafe_get"
@@ -94219,7 +94212,7 @@ let translate (prim_name : string)
     | _ -> assert false
     end
   | "caml_array_set" ->
-    call Js_config.array
+    call Js_runtime_modules.array
   | "caml_array_set_addr"
   | "caml_array_set_float"
   | "caml_array_unsafe_set"
@@ -94380,7 +94373,7 @@ let translate (prim_name : string)
   | "caml_hypot_float"
 
     ->
-    call Js_config.float
+    call Js_runtime_modules.float
   | "caml_fmod_float" 
     (* float module like js number module *)      
     ->      
@@ -94446,7 +94439,7 @@ let translate (prim_name : string)
       E.uninitialized_array v 
     (* TODO: inline and spits out a warning when i is negative *)
     | _ -> 
-      call Js_config.string 
+      call Js_runtime_modules.string 
     end
 
   | "caml_string_get"
@@ -94460,7 +94453,7 @@ let translate (prim_name : string)
   | "caml_blit_string" 
   | "caml_blit_bytes"
     -> 
-    call Js_config.string
+    call Js_runtime_modules.string
 
   | "caml_register_named_value" -> 
     (**
@@ -94538,15 +94531,15 @@ let translate (prim_name : string)
   | "caml_sys_exit"
   (* | "caml_sys_file_exists" *)
     -> 
-    call Js_config.sys
+    call Js_runtime_modules.sys
   | "caml_lex_engine"
   | "caml_new_lex_engine"
     -> 
-    call Js_config.lexer 
+    call Js_runtime_modules.lexer 
   | "caml_parse_engine"
   | "caml_set_parser_trace" 
     -> 
-    call Js_config.parser 
+    call Js_runtime_modules.parser 
 
   | "caml_array_sub"
   | "caml_array_concat"
@@ -94555,7 +94548,7 @@ let translate (prim_name : string)
 
   | "caml_array_blit"
   | "caml_make_vect" -> 
-    call Js_config.array
+    call Js_runtime_modules.array
   | "caml_ml_flush"
   | "caml_ml_out_channels_list"
   | "caml_ml_open_descriptor_in" 
@@ -94564,7 +94557,7 @@ let translate (prim_name : string)
   | "caml_ml_output" 
   | "caml_ml_input_char"
     -> 
-    call Js_config.io
+    call Js_runtime_modules.io
   | "caml_update_dummy"
   | "caml_obj_dup" -> 
     (** Note currently is an Array copy function, this is tightly coupled with 
@@ -94576,7 +94569,7 @@ let translate (prim_name : string)
       match args with 
       | [ a ] when Js_analyzer.is_constant a ->  a 
       | _ -> 
-        call Js_config.obj_runtime 
+        call Js_runtime_modules.obj_runtime 
     end
   | "caml_obj_block" -> 
     (** TODO: Optimize  for [CamlinternalOO] input 
@@ -94609,14 +94602,14 @@ let translate (prim_name : string)
   | "caml_int64_format"
   | "caml_int64_of_string"
     -> 
-    call Js_config.format 
+    call Js_runtime_modules.format 
   | "caml_format_int" -> 
     begin match args with 
     | [ {expression_desc = Str (_, "%d"); _}; v] 
       ->
       E.int_to_string v 
     | _ -> 
-      call Js_config.format
+      call Js_runtime_modules.format
     end
     (*   "caml_alloc_dummy"; *)
     (* TODO:   "caml_alloc_dummy_float"; *)
@@ -94642,7 +94635,7 @@ let translate (prim_name : string)
   | "caml_lessthan"
 
     -> 
-    call Js_config.obj_runtime
+    call Js_runtime_modules.obj_runtime
   | "caml_obj_set_tag" 
     -> begin match args with 
       | [a;b]  -> E.set_tag a b 
@@ -94821,15 +94814,15 @@ let translate (prim_name : string)
     (* call  Js_config.bigarray *)
   (* End of bigarray support *)
   | "caml_convert_raw_backtrace_slot"
-    -> call  Js_config.backtrace
+    -> call  Js_runtime_modules.backtrace
 
   | "caml_bswap16"
   | "caml_int32_bswap"
   | "caml_nativeint_bswap" 
-    -> call Js_config.int32
+    -> call Js_runtime_modules.int32
   | "caml_get_public_method"
     ->
-    call Js_config.oo
+    call Js_runtime_modules.oo
   (** TODO: Primitives not implemented yet ...*)
   | "caml_install_signal_handler"
     -> 
@@ -94839,16 +94832,16 @@ let translate (prim_name : string)
     | _ -> assert false
     end
   | "caml_md5_string"
-    -> call Js_config.md5
+    -> call Js_runtime_modules.md5
   | "caml_hash"
-    -> call Js_config.hash 
+    -> call Js_runtime_modules.hash 
   | "caml_weak_set"
   | "caml_weak_create"
   | "caml_weak_get"
   | "caml_weak_check"
   | "caml_weak_blit"
   | "caml_weak_get_copy"
-    -> call Js_config.weak
+    -> call Js_runtime_modules.weak
 
   | "caml_output_value_to_buffer"
   | "caml_marshal_data_size"
@@ -94996,7 +94989,7 @@ let translate  loc
     -> 
     Js_of_lam_exception.make (E.str s)
   | Pwrap_exn -> 
-    E.runtime_call Js_config.exn "internalToOCamlException" args 
+    E.runtime_call Js_runtime_modules.exn "internalToOCamlException" args 
   | Lam.Praw_js_code_exp s -> 
     E.raw_js_code Exp s  
   | Lam.Praw_js_code_stmt s -> 
@@ -95021,7 +95014,7 @@ let translate  loc
           | Var _ -> 
             E.econd (E.is_nil e) Js_of_lam_option.none (Js_of_lam_option.some e)
           | _ ->
-            E.runtime_call Js_config.js_primitive
+            E.runtime_call Js_runtime_modules.js_primitive
             "null_to_opt" args 
             (* GPR #974
                let id = Ext_ident.create "v" in
@@ -95039,7 +95032,7 @@ let translate  loc
         | Var _ -> 
           E.econd (E.is_undef e) Js_of_lam_option.none (Js_of_lam_option.some e)
         | _ -> 
-          E.runtime_call Js_config.js_primitive  
+          E.runtime_call Js_runtime_modules.js_primitive  
           "undefined_to_opt" args 
         (* # GPR 974
           let id = Ext_ident.create "v" in
@@ -95085,7 +95078,7 @@ let translate  loc
           Js_of_lam_option.none 
           (Js_of_lam_option.some e)
       | _ ->*)
-       E.runtime_call Js_config.js_primitive        
+       E.runtime_call Js_runtime_modules.js_primitive        
       "null_undefined_to_opt" args 
       (*end*)
     (* | _ -> assert false  *)
@@ -95101,7 +95094,7 @@ let translate  loc
     | _ -> assert false 
     end
   | Pis_null_undefined -> 
-      E.runtime_call Js_config.js_primitive
+      E.runtime_call Js_runtime_modules.js_primitive
         "is_nil_undef" args 
   | Pjs_boolean_to_bool -> 
     begin match args with 
@@ -95130,9 +95123,9 @@ let translate  loc
       | _ -> assert false          
     end          
   | Pinit_mod -> 
-    E.runtime_call Js_config.module_ "init_mod" args
+    E.runtime_call Js_runtime_modules.module_ "init_mod" args
   | Pupdate_mod ->
-    E.runtime_call Js_config.module_ "update_mod" args
+    E.runtime_call Js_runtime_modules.module_ "update_mod" args
   | Pmakeblock(tag, tag_info, mutable_flag ) ->  (* RUNTIME *)
     Js_of_lam_block.make_block 
       (Js_op_util.of_lam_mutable_flag mutable_flag) 
@@ -95529,7 +95522,7 @@ let translate  loc
       | [e ; e1] ->
         if !Clflags.fast then
           Js_of_lam_string.ref_byte e e1
-        else E.runtime_call Js_config.bytes "get" args            
+        else E.runtime_call Js_runtime_modules.bytes "get" args            
       | _ -> assert false         
     end
   (* For bytes and string, they both return [int] in ocaml 
@@ -95549,7 +95542,7 @@ let translate  loc
         if !Clflags.fast then
           Js_of_lam_string.ref_string e e1             
         else       
-          E.runtime_call Js_config.string "get" args          
+          E.runtime_call Js_runtime_modules.string "get" args          
       | _ -> assert false
     end
   (** only when Lapply -> expand = true*)
@@ -95709,17 +95702,17 @@ let translate  loc
   (*   ("caml_ba_dim_" ^ string_of_int i) args        *)
   | Pbswap16 
     -> 
-    E.runtime_call Js_config.int32 "caml_bswap16" args
+    E.runtime_call Js_runtime_modules.int32 "caml_bswap16" args
   | Pbbswap Lambda.Pnativeint
   | Pbbswap Lambda.Pint32
     -> 
-    E.runtime_call Js_config.int32 "caml_int32_bswap" args
+    E.runtime_call Js_runtime_modules.int32 "caml_int32_bswap" args
   | Pbbswap Lambda.Pint64
     -> Js_long.swap args 
   | Pstring_load_16 unsafe
-    -> E.runtime_call Js_config.string "caml_string_get16" args
+    -> E.runtime_call Js_runtime_modules.string "caml_string_get16" args
   | Pstring_load_32 unsafe
-    -> E.runtime_call Js_config.string "caml_string_get32" args
+    -> E.runtime_call Js_runtime_modules.string "caml_string_get32" args
   | Pstring_load_64 unsafe
     -> Js_long.get64 args
 
@@ -96863,7 +96856,7 @@ and compile_recursive_let ~all_bindings
           (
             b  @ 
             [S.exp
-               (E.runtime_call Js_config.obj_runtime "caml_update_dummy" 
+               (E.runtime_call Js_runtime_modules.obj_runtime "caml_update_dummy" 
                   [ E.var id;  v])]),
         [id]
       (* S.define ~kind:Variable id (E.arr Mutable [])::  *)
@@ -98152,7 +98145,7 @@ and
           | Cached | Public None
             (* TODO: check -- 1. js object propagate 2. js object create  *)
             -> 
-            let get = E.runtime_ref  Js_config.oo "caml_get_public_method" in
+            let get = E.runtime_ref  Js_runtime_modules.oo "caml_get_public_method" in
             let cache = !method_cache_id in
             let () = incr method_cache_id  in
             cont3 obj' (fun obj' -> 
@@ -100870,7 +100863,7 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.t)
   | Single(_, ({name="stdout"|"stderr"|"stdin";_} as id),_ ),
     "pervasives.ml" -> 
     Js_output.of_stmt @@ S.alias_variable id
-      ~exp:(E.runtime_ref  Js_config.io id.name)
+      ~exp:(E.runtime_ref  Js_runtime_modules.io id.name)
   (* 
          we delegate [stdout, stderr, and stdin] into [caml_io] module, 
          the motivation is to help dead code eliminatiion, it's helpful 

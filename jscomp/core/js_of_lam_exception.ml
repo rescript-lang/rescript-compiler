@@ -41,14 +41,14 @@ module E = Js_exp_make
    is not necessary at all
 *)
 let make exception_str  : J.expression = 
-  E.runtime_call Js_config.exceptions Literals.create [exception_str]
+  E.runtime_call Js_runtime_modules.exceptions Literals.create [exception_str]
 
 (* let make_extension exception_str  : J.expression =  *)
 (*   E.runtime_call Js_config.exceptions "makeExtension" [exception_str] *)
 
 
 let get_builtin_by_name name = 
-  E.runtime_ref Js_config.builtin_exceptions (String.lowercase name)
+  E.runtime_ref Js_runtime_modules.builtin_exceptions (String.lowercase name)
 
 
 (* let match_exception_def (args : J.expression list) =  *)
@@ -72,7 +72,7 @@ let caml_set_oo_id args =
          If we can guarantee this code path is never hit, we can do 
          a better job for encoding of exception and extension?
       *)
-      E.runtime_call Js_config.exceptions "caml_set_oo_id" args 
+      E.runtime_call Js_runtime_modules.exceptions "caml_set_oo_id" args 
     (* begin match match_exception_def args with  *)
     (* | Some ( exception_str, mutable_flag) *)
     (*   ->  *)

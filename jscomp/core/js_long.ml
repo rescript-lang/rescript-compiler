@@ -31,7 +31,7 @@ module E = Js_exp_make
 type int64_call = J.expression list -> J.expression  
 
 let int64_call (fn : string) args  = 
-  E.runtime_call Js_config.int64 fn args 
+  E.runtime_call Js_runtime_modules.int64 fn args 
 
 
 (* TODO: make layout easier to change later *)
@@ -80,7 +80,7 @@ let of_int32 (args : J.expression list) =
   | _ -> int64_call  "of_int32" args
 
 let comp (cmp : Lambda.comparison) args = 
-  E.runtime_call  Js_config.int64
+  E.runtime_call  Js_runtime_modules.int64
     (match cmp with 
      | Ceq -> "eq"
      | Cneq -> "neq"
