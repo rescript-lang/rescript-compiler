@@ -75,7 +75,7 @@ Advantages of Js_of_ocaml:
 
 ## What does it look like?
 
-[Example:  balanced tree](http://bucklescript.github.io/bucklescript-playground/js-demo/#Balanced_tree)
+[Example:  balanced tree](http://bucklescript.github.io/bucklescript-playground/#Balanced_tree)
 
 
 ---
@@ -104,7 +104,7 @@ JS output size:
 - Basic data types are closely matched (Array -> Array, Tuple -> Array, etc)
 - BuckleScript can also emit `.d.ts` files for TypeScript compiler (*experimental*)
 - [Publish and consume npm packages out of box](https://www.npmjs.com/package/bs-platform)
-- [Call OCaml library from JS side](http://bucklescript.github.io/bucklescript-playground/js-demo/#Use_OCaml_Standard_Library)
+- [Call OCaml library from JS side](http://bucklescript.github.io/bucklescript-playground/#Use_OCaml_Standard_Library)
 
 ===
 

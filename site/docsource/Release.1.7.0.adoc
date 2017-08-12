@@ -1,7 +1,7 @@
 #### First class uncurried calling convention
 
 As a functional language, the vanilla OCaml only provides curried calling convention,
-BuckleScript employs fairly http://bucklescript.github.io/bucklescript-playground/js-demo/#Curry_Optimization[advanced optimizations] for curried calling convention, however, the most efficient code is efficient code not relying on optimizations.
+BuckleScript employs fairly http://bucklescript.github.io/bucklescript-playground/#Curry_Optimization[advanced optimizations] for curried calling convention, however, the most efficient code is efficient code not relying on optimizations.
 
 Since this release, we provide first class uncurried calling convention, _all toolchains provided by BuckleScript_ can understand uncurried calling convention
 

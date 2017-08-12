@@ -105,7 +105,7 @@ very beginning, much like Js_of_ocaml,
  BuckleScript has an assembly backend, which we use for the best
 performance in our development
  environment and our
- http://bucklescript.github.io/bucklescript-playground/js-demo/[playground] to
+ http://bucklescript.github.io/bucklescript-playground/[playground] to
  deliver the software to more people without installation - compared
 with Elm, Purescript, or typescript, none of which support both an ASM
 backend and a JS backend.

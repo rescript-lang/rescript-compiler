@@ -28,7 +28,7 @@ BuckleScript is a backend for http://ocaml.org/[OCaml] which emits readable, mod
 #### Developer experience
 
 BuckleScript probably has the _fastest_ JavaScript compiler.The compiler is compiled to both native code and JavaScript,
-users can try the compiler in the https://bucklescript.github.io/bucklescript-playground/js-demo[browser] and imagine how fast it would be for native backend.
+users can try the compiler in the https://bucklescript.github.io/bucklescript-playground[browser] and imagine how fast it would be for native backend.
 
 #### Integration with existing JavaScript libraries
 
