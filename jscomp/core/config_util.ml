@@ -48,38 +48,3 @@ let find_opt file =  find_in_path_uncap !Config.load_path file
 
 
 
-(* strategy:
-   If not installed, use the distributed [cmj] files, 
-   make sure that the distributed files are platform independent
-*)
-let find_cmj file : string * Js_cmj_format.t = 
-  match find_opt file with
-  | Some f
-    -> 
-    f, Js_cmj_format.from_file f             
-  | None -> 
-    (* ONLY read the stored cmj data in browser environment *)
-#if BS_COMPILER_IN_BROWSER then  
-        "BROWSER", (   
-        let target = String.uncapitalize (Filename.basename file) in
-        match String_map.find_exn  target Js_cmj_datasets.data_sets with 
-        | v
-          -> 
-          begin match Lazy.force v with
-            | exception _ 
-              -> 
-              Ext_log.warn __LOC__ 
-                "@[%s corrupted in database, when looking %s while compiling %s please update @]"           file target (Js_config.get_current_file ())  ;
-              Js_cmj_format.no_pure_dummy; (* FIXME *)
-            | v ->  v 
-            (* see {!Js_program_loader.string_of_module_id} *)
-          end
-        | exception Not_found 
-          ->     
-          Ext_log.warn __LOC__ "@[%s not found @]" file ;
-          Js_cmj_format.no_pure_dummy )
-#else
-        Bs_exception.error (Cmj_not_found file)
-#end        
-
-

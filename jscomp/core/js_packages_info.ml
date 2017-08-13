@@ -166,3 +166,151 @@ let add_npm_package_path s (packages_info : t)  : t =
     in
     NonBrowser (name,  ((env,path) :: envs))    
 
+
+
+let (//) = Filename.concat 
+
+
+let string_of_module_id_in_browser (x : Lam_module_ident.t) =  
+    match x.kind with
+    | External name -> name
+    | Runtime | Ml -> 
+      "stdlib" // String.uncapitalize x.id.name
+    
+
+
+let string_of_module_id 
+    ~hint_output_dir
+    (module_system : module_system)
+    (current_package_info : t)
+    get_package_path_from_cmj
+    (x : Lam_module_ident.t) : string =
+#if BS_COMPILER_IN_BROWSER then   
+    string_of_module_id_in_browser x 
+#else
+    let result = 
+      match x.kind  with 
+      | External name -> name (* the literal string for external package *)
+        (** This may not be enough, 
+          1. For cross packages, we may need settle 
+            down a single js package
+          2. We may need es6 path for dead code elimination
+             But frankly, very few JS packages have no dependency, 
+             so having plugin may sound not that bad   
+        *)
+      | Runtime  
+      | Ml  -> 
+        let id = x.id in
+        let js_file = Ext_filename.js_name_of_basename id.name in 
+        let rebase different_package package_dir dep =
+          let current_unit_dir =
+            `Dir (get_output_dir 
+                  ~pkg_dir:package_dir module_system 
+                  ~hint_output_dir
+                  current_package_info
+                  ) in
+          Ext_filename.node_relative_path  different_package current_unit_dir dep 
+        in 
+        let cmj_path, dependency_pkg_info = 
+          get_package_path_from_cmj module_system x 
+        in
+        let current_pkg_info = 
+            query_package_infos current_package_info
+            module_system  
+        in
+        begin match module_system,  dependency_pkg_info, current_pkg_info with
+          | _, Package_not_found , _ 
+            -> 
+            Bs_exception.error (Missing_ml_dependency x.id.name)
+          (*TODO: log which module info is not done
+          *)
+          | Goog, (Package_empty | Package_script _), _ 
+            -> 
+            Bs_exception.error (Dependency_script_module_dependent_not js_file)
+          | (AmdJS | NodeJS | Es6 | Es6_global | AmdJS_global),
+            ( Package_empty | Package_script _) ,
+            Package_found _  -> 
+            Bs_exception.error (Dependency_script_module_dependent_not js_file)
+          | Goog , Package_found (package_name, x), _  -> 
+            package_name  ^ "." ^  String.uncapitalize id.name
+          | (AmdJS | NodeJS| Es6 | Es6_global|AmdJS_global),
+           (Package_empty | Package_script _ | Package_found _ ), Package_not_found -> assert false
+
+          | (AmdJS | NodeJS | Es6 | Es6_global|AmdJS_global), 
+            Package_found(package_name, x),
+            Package_found(current_package, path) -> 
+            if  current_package = package_name then 
+              let package_dir = Lazy.force Ext_filename.package_dir in
+              rebase false package_dir (`File (package_dir // x // js_file)) 
+            else 
+              begin match module_system with 
+              | AmdJS | NodeJS | Es6 -> 
+                package_name // x // js_file
+              | Goog -> assert false (* see above *)
+              | Es6_global 
+              | AmdJS_global -> 
+               (** lib/ocaml/xx.cmj --               
+                HACKING: FIXME
+                maybe we can caching relative package path calculation or employ package map *)
+                (* assert false  *)
+                
+                begin 
+                  Ext_filename.rel_normalized_absolute_path              
+                    (get_output_dir 
+                      ~pkg_dir:(Lazy.force Ext_filename.package_dir)
+                       module_system 
+                       ~hint_output_dir
+                       current_package_info
+                       )
+                    ((Filename.dirname 
+                        (Filename.dirname (Filename.dirname cmj_path))) // x // js_file)              
+                end
+              end
+          | (AmdJS | NodeJS | Es6 | AmdJS_global | Es6_global), Package_found(package_name, x), 
+            Package_script(current_package)
+            ->    
+            if current_package = package_name then 
+              let package_dir = Lazy.force Ext_filename.package_dir in
+              rebase false package_dir (`File (
+                  package_dir // x // js_file)) 
+            else 
+              package_name // x // js_file
+          | (AmdJS | NodeJS | Es6 | AmdJS_global | Es6_global), 
+            Package_found(package_name, x), Package_empty 
+            ->    package_name // x // js_file
+          |  (AmdJS | NodeJS | Es6 | AmdJS_global | Es6_global), 
+             (Package_empty | Package_script _) , 
+             (Package_empty  | Package_script _)
+            -> 
+            begin match Config_util.find_opt js_file with 
+              | Some file -> 
+                let package_dir = Lazy.force Ext_filename.package_dir in
+                rebase true package_dir (`File file) 
+              (* Code path: when dependency is commonjs 
+                 while depedent is Empty or PackageScript
+              *)
+              | None -> 
+                Bs_exception.error (Js_not_found js_file)
+            end
+          
+        end
+
+      in 
+    if Ext_sys.is_windows_or_cygwin then Ext_string.replace_backward_slash result 
+    else result 
+#end
+
+
+(* support es6 modules instead
+   TODO: enrich ast to support import export 
+   http://www.ecma-international.org/ecma-262/6.0/#sec-imports
+   For every module, we need [Ident.t] for accessing and [filename] for import, 
+   they are not necessarily the same.
+
+   Es6 modules is not the same with commonjs, we use commonjs currently
+   (play better with node)
+
+   FIXME: the module order matters?
+*)
+
+    

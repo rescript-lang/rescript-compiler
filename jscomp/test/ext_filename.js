@@ -442,7 +442,7 @@ if (Sys.unix) {
       ];
 }
 
-function output_js_basename(s) {
+function js_name_of_basename(s) {
   return Caml_string.bytes_to_string(Bytes.uncapitalize(Caml_string.bytes_of_string(s))) + Literals.suffix_js;
 }
 
@@ -471,5 +471,5 @@ exports.rel_normalized_absolute_path        = rel_normalized_absolute_path;
 exports.normalize_absolute_path             = normalize_absolute_path;
 exports.get_extension                       = get_extension;
 exports.simple_convert_node_path_to_os_path = simple_convert_node_path_to_os_path;
-exports.output_js_basename                  = output_js_basename;
+exports.js_name_of_basename                 = js_name_of_basename;
 /* simple_convert_node_path_to_os_path Not a pure module */

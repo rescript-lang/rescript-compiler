@@ -48,4 +48,5 @@
 val string_of_module_id :
   hint_output_dir:string ->
   Js_packages_info.module_system ->
+  Js_packages_info.t ->
   Lam_module_ident.t -> string

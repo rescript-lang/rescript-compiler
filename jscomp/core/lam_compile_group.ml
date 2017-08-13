@@ -382,7 +382,7 @@ let lambda_as_module
     let (//) = Filename.concat in 
     let basename =  
       (* #758, output_prefix is already chopped *)
-      Ext_filename.output_js_basename (Filename.basename
+      Ext_filename.js_name_of_basename (Filename.basename
          output_prefix (* -o *)
          (* filename *) (* see #757  *)
       ) in

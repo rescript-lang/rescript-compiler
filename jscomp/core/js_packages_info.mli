@@ -34,15 +34,15 @@ type module_system =
 type package_info = 
   (module_system * string )
 
-val compatible : 
+(* val compatible : 
   module_system -> 
   module_system -> 
-  bool 
+  bool  *)
 
 val module_system_of_string :
   string -> 
   module_system option 
-  
+
 type package_name  = string
 
 
@@ -65,14 +65,15 @@ val query_package_infos :
   t -> module_system -> info_query   
 
 
-val get_output_dir:
-  pkg_dir:string -> 
-  module_system -> 
-  hint_output_dir:string -> 
-  t -> 
-  string   
-
-
 (** used by command line option *)
 val add_npm_package_path : 
   string -> t -> t  
+
+
+val string_of_module_id :
+  hint_output_dir:string ->
+  module_system ->
+  t ->
+  (module_system -> Lam_module_ident.t ->
+   string * info_query) -> 
+  Lam_module_ident.t -> string

@@ -147,7 +147,7 @@ let find_and_add_if_not_exist (id, pos) env ~not_found ~found =
   let oid  = Lam_module_ident.of_ml id in
   begin match Lam_module_ident.Hash.find_opt cached_tbl oid with 
     | None -> 
-      let cmj_path, cmj_table = Config_util.find_cmj (id.name ^ Literals.suffix_cmj) in
+      let cmj_path, cmj_table = Js_cmj_format.find_cmj (id.name ^ Literals.suffix_cmj) in
       begin match
           Type_util.find_serializable_signatures_by_path
             ( id) env with 
@@ -211,7 +211,7 @@ let query_and_add_if_not_exist (type u)
     begin match oid.kind with
       | Runtime  -> 
         let (cmj_path, cmj_table) as cmj_info = 
-          Config_util.find_cmj (Lam_module_ident.name oid ^ Literals.suffix_cmj) in           
+          Js_cmj_format.find_cmj (Lam_module_ident.name oid ^ Literals.suffix_cmj) in           
         add_cached_tbl oid (Runtime (true,cmj_path,cmj_table)) ; 
         begin match env with 
           | Has_env _ -> 
@@ -222,7 +222,7 @@ let query_and_add_if_not_exist (type u)
       | Ml 
         -> 
         let (cmj_path, cmj_table) as cmj_info = 
-          Config_util.find_cmj (Lam_module_ident.name oid ^ Literals.suffix_cmj) in           
+          Js_cmj_format.find_cmj (Lam_module_ident.name oid ^ Literals.suffix_cmj) in           
         begin match env with 
           | Has_env env -> 
             begin match 

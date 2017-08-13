@@ -258,6 +258,7 @@ SYNTAX_CMXS=$(addprefix syntax/, $(addsuffix .cmx, $(SYNTAX_SRCS)))
 DEPENDS_SRCS= bs_exception ast_extract binary_ast 
 DEPENDS_CMXS=$(addprefix depends/, $(addsuffix .cmx, $(DEPENDS_SRCS)))
 CORE_SRCS= js_runtime_modules \
+	config_util \
 	js_packages_info\
 	js_packages_state\
 	type_int_to_string type_util  ocaml_stdlib_slots bs_conditional_initial ocaml_options ocaml_parse\
@@ -272,7 +273,6 @@ CORE_SRCS= js_runtime_modules \
 	lam_compile_util \
 	lam_id_kind \
 	lam_stats \
-	config_util \
 	lam_compile_defs \
 	js_map js_fold js_fold_basic js_pass_scope\
 	js_op_util js_analyzer js_shake js_exp_make js_long js_of_lam_exception js_of_lam_module js_of_lam_array js_of_lam_block js_of_lam_string\

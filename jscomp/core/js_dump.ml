@@ -1690,7 +1690,7 @@ let es6_export cxt f (idents : Ident.t list) =
           if id_name = default_export then 
             (default_export,str)::(s,str)::acc
           else 
-          (s,str) :: acc ) , max len (String.length s)   )
+            (s,str) :: acc ) , max len (String.length s)   )
       (cxt, [], 0)  idents in    
   P.newline f ;
   P.string f L.export ; 
@@ -1793,7 +1793,11 @@ let goog_program ~output_prefix f goog_package (x : J.deps_program)  =
          (fun x -> 
             Lam_module_ident.id x,
             Js_program_loader.string_of_module_id
-              ~hint_output_dir:(Filename.dirname output_prefix) Goog x)
+              ~hint_output_dir:(Filename.dirname output_prefix) 
+              Goog 
+              (Js_packages_state.get_packages_info())
+              x)
+              
          x.modules) 
   in
   program f cxt x.program  
@@ -1809,7 +1813,9 @@ let node_program ~output_prefix f ( x : J.deps_program) =
             Lam_module_ident.id x,
             Js_program_loader.string_of_module_id
               ~hint_output_dir:(Filename.dirname output_prefix)
-              NodeJS x)
+              NodeJS 
+              (Js_packages_state.get_packages_info ())
+              x)
          x.modules)
   in
   program f cxt x.program  
@@ -1824,9 +1830,12 @@ let amd_program ~output_prefix kind f (  x : J.deps_program) =
   P.string f (Printf.sprintf "%S" L.exports);
 
   List.iter (fun x ->
-      let s = 
-          Js_program_loader.string_of_module_id
-          ~hint_output_dir:(Filename.dirname output_prefix) kind x in
+      let s : string = 
+        Js_program_loader.string_of_module_id
+          ~hint_output_dir:(Filename.dirname output_prefix) 
+          kind 
+          (Js_packages_state.get_packages_info ())
+          x in
       P.string f L.comma ;
       P.space f; 
       pp_string f  s;
@@ -1865,7 +1874,9 @@ let es6_program  ~output_prefix fmt f (  x : J.deps_program) =
             Lam_module_ident.id x,
             Js_program_loader.string_of_module_id
               ~hint_output_dir:(Filename.dirname output_prefix)
-              fmt x)
+              fmt 
+              (Js_packages_state.get_packages_info())
+              x)
          x.modules)
   in
   let () = P.force_newline f in 
