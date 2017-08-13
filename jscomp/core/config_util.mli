@@ -37,5 +37,3 @@
 val find_opt : string -> string option
 (** [find filename] Input is a file name, output is absolute path *)
 
-(** return path and meta data *)
-val find_cmj : string -> string * Js_cmj_format.t

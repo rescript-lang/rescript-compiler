@@ -147,7 +147,7 @@ let find_and_add_if_not_exist (id, pos) env ~not_found ~found =
   let oid  = Lam_module_ident.of_ml id in
   begin match Lam_module_ident.Hash.find_opt cached_tbl oid with 
     | None -> 
-      let cmj_path, cmj_table = Config_util.find_cmj (id.name ^ Literals.suffix_cmj) in
+      let cmj_path, cmj_table = Js_cmj_format.find_cmj (id.name ^ Literals.suffix_cmj) in
       begin match
           Type_util.find_serializable_signatures_by_path
             ( id) env with 
@@ -211,7 +211,7 @@ let query_and_add_if_not_exist (type u)
     begin match oid.kind with
       | Runtime  -> 
         let (cmj_path, cmj_table) as cmj_info = 
-          Config_util.find_cmj (Lam_module_ident.name oid ^ Literals.suffix_cmj) in           
+          Js_cmj_format.find_cmj (Lam_module_ident.name oid ^ Literals.suffix_cmj) in           
         add_cached_tbl oid (Runtime (true,cmj_path,cmj_table)) ; 
         begin match env with 
           | Has_env _ -> 
@@ -222,7 +222,7 @@ let query_and_add_if_not_exist (type u)
       | Ml 
         -> 
         let (cmj_path, cmj_table) as cmj_info = 
-          Config_util.find_cmj (Lam_module_ident.name oid ^ Literals.suffix_cmj) in           
+          Js_cmj_format.find_cmj (Lam_module_ident.name oid ^ Literals.suffix_cmj) in           
         begin match env with 
           | Has_env env -> 
             begin match 
@@ -281,21 +281,23 @@ let is_pure_module id  =
 
 
 
-
 let get_package_path_from_cmj 
-    module_system ( id : Lam_module_ident.t) 
-  : path * Js_packages_info.info_query = 
+    ( id : Lam_module_ident.t) 
+  : (path * Js_packages_info.t) option = 
   query_and_add_if_not_exist id No_env
     ~not_found:(fun _ ->
-        Ext_string.empty, 
-        Js_packages_info.Package_not_found) 
+      None
+        (*
+          So after querying, it should return 
+           [Js_packages_info.Package_not_found]
+        *)
+        ) 
     ~found:(fun (cmj_path,x) -> 
-        cmj_path, 
-        Js_packages_info.query_package_infos 
-          x.npm_package_path module_system)
+        Some (cmj_path, 
+        x.npm_package_path)
+        )
 
-
-
+    
 let add = Lam_module_ident.Hash_set.add
 
 

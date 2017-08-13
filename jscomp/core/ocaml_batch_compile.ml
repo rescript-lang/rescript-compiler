@@ -44,7 +44,7 @@ let process_result ppf  main_file ast_table result =
   if not (!Clflags.compile_only) then
     Sys.command
       ("node " ^
-        Ext_filename.output_js_basename (Filename.chop_extension main_file)
+        Ext_filename.js_name_of_basename (Filename.chop_extension main_file)
          )
   else 0
 

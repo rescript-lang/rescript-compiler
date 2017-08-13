@@ -92,10 +92,11 @@ val reset : unit -> unit
 
 val is_pure_module : Lam_module_ident.t -> bool
 
+
 val get_package_path_from_cmj : 
-  Js_packages_info.module_system -> Lam_module_ident.t -> 
-  string * Js_packages_info.info_query
-  (*FIXME when the latter is [NotFound], the former is meaningless*)
+  Lam_module_ident.t -> 
+  (string * Js_packages_info.t) option
+
 
 
 (* The second argument is mostly from [runtime] modules 

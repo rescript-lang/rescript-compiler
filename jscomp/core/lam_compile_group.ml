@@ -315,9 +315,11 @@ let compile  ~filename output_prefix env _sigs
 #end    
   (* The file is not big at all compared with [cmo] *)
   (* Ext_marshal.to_file (Ext_filename.chop_extension filename ^ ".mj")  js; *)
-  let js = 
-    Js_program_loader.make_program filename meta.exports
-      body 
+  let js : J.program = 
+      { J.name = filename ; 
+        exports = meta.exports ; 
+        export_set = Ident_set.of_list meta.exports; 
+        block = body}
   in
   js 
   |> _j "initial"
@@ -332,11 +334,11 @@ let compile  ~filename output_prefix env _sigs
   |> (fun js -> ignore @@ Js_pass_scope.program  js ; js )
   |> Js_shake.shake_program
   |> _j "shake"
-  |> ( fun (js:  J.program) -> 
+  |> ( fun (program:  J.program) -> 
       let external_module_ids = 
         Lam_compile_env.get_required_modules  
           may_required_modules  
-          (Js_fold_basic.calculate_hard_dependencies js.block)
+          (Js_fold_basic.calculate_hard_dependencies program.block)
         |>
         (fun x ->
            if !Js_config.sort_imports then
@@ -359,7 +361,7 @@ let compile  ~filename output_prefix env _sigs
       (if not @@ !Clflags.dont_write_files then
          Js_cmj_format.to_file 
            (output_prefix ^ Literals.suffix_cmj) v);
-      Js_program_loader.decorate_deps external_module_ids v.effect js
+      {J.program = program ; side_effect = v.effect ; modules = external_module_ids }      
     )
 ;;
 
@@ -380,7 +382,7 @@ let lambda_as_module
     let (//) = Filename.concat in 
     let basename =  
       (* #758, output_prefix is already chopped *)
-      Ext_filename.output_js_basename (Filename.basename
+      Ext_filename.js_name_of_basename (Filename.basename
          output_prefix (* -o *)
          (* filename *) (* see #757  *)
       ) in
