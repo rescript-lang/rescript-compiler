@@ -281,21 +281,23 @@ let is_pure_module id  =
 
 
 
-
 let get_package_path_from_cmj 
-    module_system ( id : Lam_module_ident.t) 
-  : path * Js_packages_info.info_query = 
+    ( id : Lam_module_ident.t) 
+  : (path * Js_packages_info.t) option = 
   query_and_add_if_not_exist id No_env
     ~not_found:(fun _ ->
-        Ext_string.empty, 
-        Js_packages_info.Package_not_found) 
+      None
+        (*
+          So after querying, it should return 
+           [Js_packages_info.Package_not_found]
+        *)
+        ) 
     ~found:(fun (cmj_path,x) -> 
-        cmj_path, 
-        Js_packages_info.query_package_infos 
-          x.npm_package_path module_system)
+        Some (cmj_path, 
+        x.npm_package_path)
+        )
 
-
-
+    
 let add = Lam_module_ident.Hash_set.add
 
 

@@ -183,7 +183,9 @@ let string_of_module_id
     ~hint_output_dir
     (module_system : module_system)
     (current_package_info : t)
-    get_package_path_from_cmj
+    (get_package_path_from_cmj : 
+     Lam_module_ident.t -> (string * t) option
+    )
     (x : Lam_module_ident.t) : string =
 #if BS_COMPILER_IN_BROWSER then   
     string_of_module_id_in_browser x 
@@ -212,7 +214,10 @@ let string_of_module_id
           Ext_filename.node_relative_path  different_package current_unit_dir dep 
         in 
         let cmj_path, dependency_pkg_info = 
-          get_package_path_from_cmj module_system x 
+          match get_package_path_from_cmj x with 
+          | None -> Ext_string.empty, Package_not_found
+          | Some (cmj_path, package_info) -> 
+            cmj_path, query_package_infos package_info module_system
         in
         let current_pkg_info = 
             query_package_infos current_package_info
