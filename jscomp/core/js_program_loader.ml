@@ -68,18 +68,31 @@ module S = Js_stmt_make
 
 let (//) = Filename.concat 
 
-let string_of_module_id ~output_prefix
+let string_of_module_id_in_browser (x : Lam_module_ident.t) =  
+    match x.kind with
+    | External name -> name
+    | Runtime | Ml -> 
+      "stdlib" // String.uncapitalize x.id.name
+    
+
+
+let string_of_module_id 
+    ~hint_output_dir
     (module_system : Js_packages_info.module_system)
     (x : Lam_module_ident.t) : string =
 #if BS_COMPILER_IN_BROWSER then   
-    match x.kind with
-    | Runtime | Ml -> 
-      "stdlib" // String.uncapitalize x.id.name
-    | External name -> name
+    string_of_module_id_in_browser x 
 #else
-
     let result = 
       match x.kind  with 
+      | External name -> name (* the literal string for external package *)
+        (** This may not be enough, 
+          1. For cross packages, we may need settle 
+            down a single js package
+          2. We may need es6 path for dead code elimination
+             But frankly, very few JS packages have no dependency, 
+             so having plugin may sound not that bad   
+        *)
       | Runtime  
       | Ml  -> 
         let id = x.id in
@@ -89,7 +102,7 @@ let string_of_module_id ~output_prefix
           let current_unit_dir =
             `Dir (Js_packages_info.get_output_dir 
                   ~pkg_dir:package_dir module_system 
-                  output_prefix 
+                  ~hint_output_dir
                   current_package_info
                   ) in
           Ext_filename.node_relative_path  different_package current_unit_dir dep 
@@ -142,7 +155,7 @@ let string_of_module_id ~output_prefix
                     (Js_packages_info.get_output_dir 
                       ~pkg_dir:(Lazy.force Ext_filename.package_dir)
                        module_system 
-                       output_prefix
+                       ~hint_output_dir
                        (Js_packages_state.get_packages_info()) 
                        )
                     ((Filename.dirname 
@@ -177,14 +190,7 @@ let string_of_module_id ~output_prefix
             end
           
         end
-      | External name -> name (* the literal string for external package *)
-        (** This may not be enough, 
-          1. For cross packages, we may need settle 
-            down a single js package
-          2. We may need es6 path for dead code elimination
-             But frankly, very few JS packages have no dependency, 
-             so having plugin may sound not that bad   
-        *)
+
       in 
     if Ext_sys.is_windows_or_cygwin then Ext_string.replace_backward_slash result 
     else result 
@@ -202,18 +208,4 @@ let string_of_module_id ~output_prefix
 
    FIXME: the module order matters?
 *)
-
-let make_program name  export_idents block : J.program = 
-
-  {
-    name;
-
-    exports = export_idents ; 
-    export_set = Ident_set.of_list export_idents;
-    block = block;
-
-  }
-let decorate_deps modules side_effect program : J.deps_program = 
-
-  { program ; modules ; side_effect }
 

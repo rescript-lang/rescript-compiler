@@ -37,16 +37,15 @@
       this makes it easier to read code 
 *)
 
-val make_program : 
-  string -> 
-  Ident.t list -> J.block -> J.program
 
-val decorate_deps : 
-  J.required_modules ->
-  string option ->
-  J.program -> J.deps_program
-
+(**
+  generate the mdoule path so that it can be spliced here:
+  {[
+    var Xx = require("package/path/to/xx.js")
+  ]}
+  Note that it has to be consistent to how it is generated
+  *)
 val string_of_module_id :
-  output_prefix:string ->
+  hint_output_dir:string ->
   Js_packages_info.module_system ->
   Lam_module_ident.t -> string

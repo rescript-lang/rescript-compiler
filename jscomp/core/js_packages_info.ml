@@ -126,15 +126,19 @@ let query_package_infos
 (* for a single pass compilation, [output_dir]
    can be cached
 *)
-let get_output_dir ~pkg_dir module_system output_prefix 
+let get_output_dir ~pkg_dir module_system 
+    ~hint_output_dir 
+    (* output_prefix   *)
     packages_info =
   match packages_info with
   | Empty | NonBrowser (_, [])->
-    if Filename.is_relative output_prefix then
+    if Filename.is_relative hint_output_dir then
       Filename.concat (Lazy.force Ext_filename.cwd )
-        (Filename.dirname output_prefix)
+        hint_output_dir
+        (* (Filename.dirname output_prefix) *)
     else
-      Filename.dirname output_prefix
+      hint_output_dir
+      (* Filename.dirname output_prefix *)
   | NonBrowser (_,  modules) ->
     begin match List.find (fun (k,_) -> 
         compatible k  module_system) modules with

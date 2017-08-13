@@ -68,7 +68,7 @@ val query_package_infos :
 val get_output_dir:
   pkg_dir:string -> 
   module_system -> 
-  string -> 
+  hint_output_dir:string -> 
   t -> 
   string   
 
