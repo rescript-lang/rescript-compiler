@@ -34,15 +34,6 @@ type module_system =
 type package_info = 
   (module_system * string )
 
-(* val compatible : 
-  module_system -> 
-  module_system -> 
-  bool  *)
-
-val module_system_of_string :
-  string -> 
-  module_system option 
-
 type package_name  = string
 
 
@@ -61,8 +52,8 @@ type info_query =
   | Package_found of package_name * string
   | Package_not_found   
 
-val query_package_infos : 
-  t -> module_system -> info_query   
+ val query_package_infos : 
+  t -> module_system -> info_query    
 
 
 (** used by command line option *)
