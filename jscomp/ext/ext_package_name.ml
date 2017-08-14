@@ -33,10 +33,15 @@
  let make ~pkg cunit  = 
     cunit ^ package_sep ^ pkg 
     
+
+let rec rindex_rec s i c =
+  if i < 0 then i else
+  if String.unsafe_get s i = c then i else rindex_rec s (i - 1) c;;
+    
 let remove_package_suffix name =
-    match String.rindex name package_sep_char  with 
-    | exception Not_found -> name 
-    | i -> String.sub name 0 i 
+    let i = rindex_rec name 0 package_sep_char in 
+    if i < 0 then name 
+    else String.sub name 0 i 
 
 
 let js_name_of_basename s = 

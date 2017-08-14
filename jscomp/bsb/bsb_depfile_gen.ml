@@ -59,7 +59,7 @@ let output_file oc source namespace =
   match namespace with 
   | None -> output_string oc source ;
   | Some pkg ->
-    output_string oc (Bsb_package_name.make ~pkg source)
+    output_string oc ( Ext_package_name.make ~pkg source)
 
 (** for bucklescript artifacts 
     [lhs_suffix] is [.cmj]

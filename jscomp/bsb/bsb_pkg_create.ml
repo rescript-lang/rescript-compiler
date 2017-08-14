@@ -40,7 +40,7 @@ let make_structure_item pkg_name cunit : Parsetree.structure_item =
     (Mb.mk {txt = cunit; loc }
        (Mod.ident 
           {txt = Lident 
-               (Bsb_package_name.make ~pkg:pkg_name cunit)
+               ( Ext_package_name.make ~pkg:pkg_name cunit)
           ; loc}))
 
 let make_signature_item pkg_name cunit : Parsetree.signature_item = 
@@ -48,7 +48,7 @@ let make_signature_item pkg_name cunit : Parsetree.signature_item =
     (Md.mk {txt = cunit; loc}
        (Mty.alias 
           {txt = Lident 
-            (Bsb_package_name.make ~pkg:pkg_name cunit)
+            ( Ext_package_name.make ~pkg:pkg_name cunit)
           ; loc})
     )        
 

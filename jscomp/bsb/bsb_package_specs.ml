@@ -186,7 +186,7 @@ let get_list_of_output_js
     package_specs output_file_sans_extension = 
   Spec_set.fold (fun format acc ->
       package_output format 
-        (Bsb_package_name.js_name_of_basename output_file_sans_extension)
+        ( Ext_package_name.js_name_of_basename output_file_sans_extension)
       :: acc
     ) package_specs []
 
