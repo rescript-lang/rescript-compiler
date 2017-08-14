@@ -8,7 +8,6 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"regexp"
 	"strings"
 	"sync"
 	"time"
@@ -170,30 +169,36 @@ func fatalError(err error) {
 func bsbInDir(builddir, dir string) {
 
 	destDir := filepath.Join(builddir, dir)
-	pattern, err := ioutil.ReadFile(filepath.Join(destDir, "output.ref"))
-	fatalError(err)
-	argsB, err := ioutil.ReadFile(filepath.Join(destDir, "input.sh"))
-	fatalError(err)
-	args := strings.Fields(strings.TrimSpace(string(argsB)))
 
-	patternS := string(pattern)
-	c := cmd(args[0], args[1:]...)
+	// pattern, err := ioutil.ReadFile(filepath.Join(destDir, "output.ref"))
+	// fatalError(err)
+	// argsB, err := ioutil.ReadFile(filepath.Join(destDir, "input.sh"))
+	// fatalError(err)
+	// args := strings.Fields(strings.TrimSpace(string(argsB)))
+
+	// patternS := string(pattern)
+	// c := cmd(args[0], args[1:]...)
+	c := cmd("node", "input.js")
 	c.Dir = destDir
 	out, err := c.CombinedOutput()
 
-	if matched, err := regexp.Match(patternS, out); err == nil {
-		if matched {
-			fmt.Printf("Output matches %q in %s\n", patternS, dir)
-			return
-		}
-		fmt.Println("Failure to match", pattern)
+	// if matched, err := regexp.Match(patternS, out); err == nil {
+	// 	if matched {
+	// 		fmt.Printf("Output matches %q in %s\n", patternS, dir)
+	// 		return
+	// 	}
+	// 	fmt.Println("Failure to match", pattern)
 
+	// }
+	if err != nil {
+		fmt.Println("failed in ", dir)
+		outS := string(out)
+		fmt.Println(outS)
+		fmt.Println(err)
+		os.Exit(2)
 	}
-	fmt.Println("failed in ",dir)
-	outS := string(out)
-	fmt.Println(outS)
-	fmt.Println(err)
-	os.Exit(2)
+	fmt.Println(string(out))
+	fmt.Println("success in ", dir)
 
 }
 
@@ -257,13 +262,13 @@ func main() {
 		wg.Wait()
 	}
 	if !*noBsbTest {
-		buildTestDir := filepath.Join("jscomp","build_tests")
+		buildTestDir := filepath.Join("jscomp", "build_tests")
 		files, err := ioutil.ReadDir(buildTestDir)
 		checkError(err)
-		
+
 		for _, file := range files {
-			if file.IsDir(){
-				bsbInDir(buildTestDir,file.Name())
+			if file.IsDir() {
+				bsbInDir(buildTestDir, file.Name())
 			}
 		}
 	}
