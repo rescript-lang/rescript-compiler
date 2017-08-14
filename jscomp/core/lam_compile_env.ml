@@ -247,7 +247,7 @@ let query_and_add_if_not_exist (type u)
             found {signature = []; pure = false}
           | No_env -> 
             found (Ext_string.empty, Js_cmj_format.no_pure_dummy)
-            (* FIXME: {!Js_program_loader} #154, it come from External, should be okay *)
+            (* FIXME: #154, it come from External, should be okay *)
         end
 
     end

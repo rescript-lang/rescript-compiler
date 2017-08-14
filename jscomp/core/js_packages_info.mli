@@ -50,6 +50,14 @@ val add_npm_package_path :
   string -> t -> t  
 
 
+
+(**
+  generate the mdoule path so that it can be spliced here:
+  {[
+    var Xx = require("package/path/to/xx.js")
+  ]}
+  Note that it has to be consistent to how it is generated
+*)  
 val string_of_module_id :
   hint_output_dir:string ->
   module_system ->

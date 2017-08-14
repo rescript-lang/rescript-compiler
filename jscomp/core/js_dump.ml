@@ -20,7 +20,16 @@
 *)
 (* Authors: Jérôme Vouillon, Hongbo Zhang  *)
 
-
+let string_of_module_id 
+    ~hint_output_dir 
+    module_system
+    id
+  = 
+  Js_packages_info.string_of_module_id
+    ~hint_output_dir  module_system
+    (Js_packages_state.get_packages_info ())
+    Lam_compile_env.get_package_path_from_cmj
+    id
 
 (*
   http://stackoverflow.com/questions/2846283/what-are-the-rules-for-javascripts-automatic-semicolon-insertion-asi
@@ -1103,7 +1112,7 @@ and
     let action () = 
       let cxt = expression 15 cxt f e in
       property_access f s ;
-      (* See [Js_program_loader.obj_of_exports] 
+      (* See [ .obj_of_exports] 
          maybe in the ast level we should have 
          refer and export
       *)
@@ -1792,12 +1801,11 @@ let goog_program ~output_prefix f goog_package (x : J.deps_program)  =
       (List.map 
          (fun x -> 
             Lam_module_ident.id x,
-            Js_program_loader.string_of_module_id
+            string_of_module_id
               ~hint_output_dir:(Filename.dirname output_prefix) 
               Goog 
-              (Js_packages_state.get_packages_info())
               x)
-              
+
          x.modules) 
   in
   program f cxt x.program  
@@ -1811,10 +1819,9 @@ let node_program ~output_prefix f ( x : J.deps_program) =
       (List.map 
          (fun x -> 
             Lam_module_ident.id x,
-            Js_program_loader.string_of_module_id
+            string_of_module_id
               ~hint_output_dir:(Filename.dirname output_prefix)
               NodeJS 
-              (Js_packages_state.get_packages_info ())
               x)
          x.modules)
   in
@@ -1831,10 +1838,9 @@ let amd_program ~output_prefix kind f (  x : J.deps_program) =
 
   List.iter (fun x ->
       let s : string = 
-        Js_program_loader.string_of_module_id
+        string_of_module_id
           ~hint_output_dir:(Filename.dirname output_prefix) 
           kind 
-          (Js_packages_state.get_packages_info ())
           x in
       P.string f L.comma ;
       P.space f; 
@@ -1872,10 +1878,9 @@ let es6_program  ~output_prefix fmt f (  x : J.deps_program) =
       (List.map 
          (fun x -> 
             Lam_module_ident.id x,
-            Js_program_loader.string_of_module_id
+            string_of_module_id
               ~hint_output_dir:(Filename.dirname output_prefix)
               fmt 
-              (Js_packages_state.get_packages_info())
               x)
          x.modules)
   in
