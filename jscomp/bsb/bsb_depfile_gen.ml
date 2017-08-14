@@ -56,13 +56,10 @@ let read_deps fn =
 type kind = Js | Bytecode | Native
 
 let output_file oc source namespace = 
-  output_string oc source ;
   match namespace with 
-  | None -> ()
-  | Some x ->
-    output_string oc 
-      Bsb_ninja_global_vars.package_sep ; 
-    output_string oc x 
+  | None -> output_string oc source ;
+  | Some pkg ->
+    output_string oc (Bsb_package_name.make ~pkg source)
 
 (** for bucklescript artifacts 
     [lhs_suffix] is [.cmj]

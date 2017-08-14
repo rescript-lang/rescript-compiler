@@ -3524,11 +3524,7 @@ val get_extension : string -> string
 
 val simple_convert_node_path_to_os_path : string -> string
 
-(* Note  we have to output uncapitalized file Name, 
-  or at least be consistent, since by reading cmi file on Case insensitive OS, we don't really know it is `list.cmi` or `List.cmi`, so that `require (./list.js)` or `require(./List.js)`
-  relevant issues: #1609, #913 
-*)
-val output_js_basename :  string -> string 
+
 end = struct
 #1 "ext_filename.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -3895,8 +3891,7 @@ let simple_convert_node_path_to_os_path =
   else failwith ("Unknown OS : " ^ Sys.os_type)
 
 
-let output_js_basename s = 
-  String.uncapitalize s ^ Literals.suffix_js
+
 end
 module Ext_json_parse : sig 
 #1 "ext_json_parse.mli"
@@ -7419,6 +7414,91 @@ let store ~cwd ~file:name file_stamps =
       bsc_version = Bs_version.version }
 
 end
+module Bsb_package_name : sig 
+#1 "bsb_package_name.mli"
+(* Copyright (C) 2017- Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+val make : pkg:string -> string -> string 
+
+val remove_package_suffix: string -> string 
+
+(* Note  we have to output uncapitalized file Name, 
+  or at least be consistent, since by reading cmi file on Case insensitive OS, we don't really know it is `list.cmi` or `List.cmi`, so that `require (./list.js)` or `require(./List.js)`
+  relevant issues: #1609, #913 
+*)
+val js_name_of_basename :  string -> string 
+end = struct
+#1 "bsb_package_name.ml"
+
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+ (* Note the build system should check the validity of filenames
+    espeically, it should not contain '-'
+ *)
+ let package_sep_char = '-'
+ let package_sep = "-"
+
+ let make ~pkg cunit  = 
+    cunit ^ package_sep ^ pkg 
+    
+let remove_package_suffix name =
+    match String.rindex name package_sep_char  with 
+    | exception Not_found -> name 
+    | i -> String.sub name 0 i 
+
+
+let js_name_of_basename s = 
+  remove_package_suffix (String.uncapitalize s) ^ Literals.suffix_js
+  
+  
+
+end
 module Bsb_package_specs : sig 
 #1 "bsb_package_specs.mli"
 (* Copyright (C) 2017 Authors of BuckleScript
@@ -7653,7 +7733,7 @@ let get_list_of_output_js
     package_specs output_file_sans_extension = 
   Spec_set.fold (fun format acc ->
       package_output format 
-        (Ext_filename.output_js_basename output_file_sans_extension)
+        (Bsb_package_name.js_name_of_basename output_file_sans_extension)
       :: acc
     ) package_specs []
 
@@ -11385,7 +11465,7 @@ let postbuild = "postbuild"
 let namespace = "namespace" 
 let open_package = "open_package"
 
-let package_sep = "-"
+
 end
 module Bsb_rule : sig 
 #1 "bsb_rule.mli"
@@ -11943,9 +12023,9 @@ let (//) = Ext_filename.combine
 
 type info =
   string list   
-  (* Figure out a list of files 
-    to be built before building cm*
-  *)
+(* Figure out a list of files 
+   to be built before building cm*
+*)
 
 
 let zero : info =
@@ -12019,11 +12099,12 @@ let emit_impl_build
   let output_mlast = filename_sans_extension  ^ Literals.suffix_mlast in
   let output_mlastd = filename_sans_extension ^ Literals.suffix_mlastd in
   let output_filename_sans_extension = 
-    (match namespace with 
+    match namespace with 
     | None -> 
-    filename_sans_extension 
-    | Some ns -> filename_sans_extension ^ Bsb_ninja_global_vars.package_sep ^ ns
-    ) in 
+      filename_sans_extension 
+    | Some pkg -> 
+      Bsb_package_name.make ~pkg filename_sans_extension
+  in 
   let file_cmi =  output_filename_sans_extension ^ Literals.suffix_cmi in
   let output_cmj =  output_filename_sans_extension ^ Literals.suffix_cmj in
   let output_js =
@@ -12090,11 +12171,12 @@ let emit_intf_build
   let output_mliast = filename_sans_extension ^ Literals.suffix_mliast in
   let output_mliastd = filename_sans_extension ^ Literals.suffix_mliastd in
   let output_filename_sans_extension = 
-      (match namespace with 
+    match namespace with 
     | None -> 
-    filename_sans_extension 
-    | Some ns -> filename_sans_extension ^ Bsb_ninja_global_vars.package_sep ^ ns
-    ) in 
+      filename_sans_extension 
+    | Some pkg -> 
+      Bsb_package_name.make ~pkg filename_sans_extension
+  in 
   let output_cmi = output_filename_sans_extension ^ Literals.suffix_cmi in
   let common_shadows = 
     make_common_shadows package_specs
@@ -12181,7 +12263,7 @@ let handle_file_group
     (namespace  : string option)
     acc 
     (group: Bsb_parse_sources.file_group ) 
-    : info =
+  : info =
 
   handle_generators oc group custom_rules ;
   String_map.fold (fun  module_name module_info  acc ->
@@ -12198,7 +12280,7 @@ let handle_file_group
          module_name 
          module_info
          namespace
-         ) @  acc
+      ) @  acc
     ) group.sources  acc 
 
 
@@ -12209,10 +12291,10 @@ let handle_file_groups
     namespace (st : info) : info  =
   List.fold_left 
     (handle_file_group 
-      oc ~package_specs ~custom_rules ~js_post_build_cmd
-      files_to_install 
-      namespace
-      ) 
+       oc ~package_specs ~custom_rules ~js_post_build_cmd
+       files_to_install 
+       namespace
+    ) 
     st  file_groups
 
 end
@@ -17084,15 +17166,15 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-let package_sep = Bsb_ninja_global_vars.package_sep
+
 (**
-  {[
-    module List = XX__List    
-  ]}
-  vs
-  {[
-    module List = List__XX
-  ]}
+   {[
+     module List = XX__List    
+   ]}
+   vs
+   {[
+     module List = List__XX
+   ]}
 *)
 open Ast_helper
 let loc = Location.none
@@ -17101,17 +17183,23 @@ let make_structure_item pkg_name cunit : Parsetree.structure_item =
   Str.module_ 
     (Mb.mk {txt = cunit; loc }
        (Mod.ident 
-        {txt = Lident (cunit ^ package_sep ^ pkg_name) ; loc}))
+          {txt = Lident 
+               (Bsb_package_name.make ~pkg:pkg_name cunit)
+          (* (cunit ^ package_sep ^ pkg_name) *)
+          ; loc}))
 
 let make_signature_item pkg_name cunit : Parsetree.signature_item = 
   Sig.module_
     (Md.mk {txt = cunit; loc}
        (Mty.alias 
-        {txt = Lident (  cunit ^  package_sep ^ pkg_name); loc})
+          {txt = Lident 
+            (Bsb_package_name.make ~pkg:pkg_name cunit)
+            (* (  cunit ^  package_sep ^ pkg_name) *)
+          ; loc})
     )        
 
 let make_structure pkg_name cunits : Parsetree.structure =     
-    cunits |> List.map (make_structure_item pkg_name)
+  cunits |> List.map (make_structure_item pkg_name)
 
 let make_signature pkg_name cunits  : Parsetree.signature = 
   cunits |> List.map (make_signature_item pkg_name)  

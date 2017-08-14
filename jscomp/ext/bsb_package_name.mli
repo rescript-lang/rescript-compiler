@@ -1,4 +1,4 @@
-(* Copyright (C) 2017 Authors of BuckleScript
+(* Copyright (C) 2017- Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -23,30 +23,12 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
- 
-let bs_package_flags = "bs_package_flags"
+val make : pkg:string -> string -> string 
 
-let bsc = "bsc" 
+val remove_package_suffix: string -> string 
 
-let src_root_dir = "src_root_dir"
-let bsdep = "bsdep"
-
-let bsc_flags = "bsc_flags"
-
-let ppx_flags = "ppx_flags"
-
-let bs_package_includes = "bs_package_includes"
-
-let bs_package_dev_includes = "bs_package_dev_includes"
-
-let refmt = "refmt"
-
-let reason_react_jsx = "reason_react_jsx"
-
-let refmt_flags = "refmt_flags"
-
-let postbuild = "postbuild"
-
-let namespace = "namespace" 
-let open_package = "open_package"
-
+(* Note  we have to output uncapitalized file Name, 
+  or at least be consistent, since by reading cmi file on Case insensitive OS, we don't really know it is `list.cmi` or `List.cmi`, so that `require (./list.js)` or `require(./List.js)`
+  relevant issues: #1609, #913 
+*)
+val js_name_of_basename :  string -> string 
