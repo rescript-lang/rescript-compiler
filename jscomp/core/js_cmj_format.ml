@@ -123,7 +123,7 @@ let find_cmj file : string * t =
                 "@[%s corrupted in database, when looking %s while compiling %s please update @]"           file target (Js_config.get_current_file ())  ;
               Js_cmj_format.no_pure_dummy; (* FIXME *)
             | v ->  v 
-            (* see {!Js_program_loader.string_of_module_id} *)
+            (* see {!Js_packages_info.string_of_module_id} *)
           end
         | exception Not_found 
           ->     
