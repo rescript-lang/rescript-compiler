@@ -1,1 +1,1 @@
-bsb && echo $?
+bsb
