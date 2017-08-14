@@ -17185,7 +17185,6 @@ let make_structure_item pkg_name cunit : Parsetree.structure_item =
        (Mod.ident 
           {txt = Lident 
                (Bsb_package_name.make ~pkg:pkg_name cunit)
-          (* (cunit ^ package_sep ^ pkg_name) *)
           ; loc}))
 
 let make_signature_item pkg_name cunit : Parsetree.signature_item = 
@@ -17194,7 +17193,6 @@ let make_signature_item pkg_name cunit : Parsetree.signature_item =
        (Mty.alias 
           {txt = Lident 
             (Bsb_package_name.make ~pkg:pkg_name cunit)
-            (* (  cunit ^  package_sep ^ pkg_name) *)
           ; loc})
     )        
 
