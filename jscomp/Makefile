@@ -218,7 +218,8 @@ EXT_SRCS = ext_util\
 	hash_set_poly\
 	ident_hashtbl\
 	int_hashtbl\
-	ext_filename
+	ext_filename\
+	ext_package_name
 
 EXT_CMXS=$(addprefix ext/, $(addsuffix .cmx, $(EXT_SRCS)))
 EXT_CMOS=$(addprefix ext/, $(addsuffix .cmo, $(EXT_SRCS)))

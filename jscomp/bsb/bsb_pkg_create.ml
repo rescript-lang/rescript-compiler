@@ -22,15 +22,15 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-let package_sep = Bsb_ninja_global_vars.package_sep
+
 (**
-  {[
-    module List = XX__List    
-  ]}
-  vs
-  {[
-    module List = List__XX
-  ]}
+   {[
+     module List = XX__List    
+   ]}
+   vs
+   {[
+     module List = List__XX
+   ]}
 *)
 open Ast_helper
 let loc = Location.none
@@ -39,17 +39,21 @@ let make_structure_item pkg_name cunit : Parsetree.structure_item =
   Str.module_ 
     (Mb.mk {txt = cunit; loc }
        (Mod.ident 
-        {txt = Lident (cunit ^ package_sep ^ pkg_name) ; loc}))
+          {txt = Lident 
+               ( Ext_package_name.make ~pkg:pkg_name cunit)
+          ; loc}))
 
 let make_signature_item pkg_name cunit : Parsetree.signature_item = 
   Sig.module_
     (Md.mk {txt = cunit; loc}
        (Mty.alias 
-        {txt = Lident (  cunit ^  package_sep ^ pkg_name); loc})
+          {txt = Lident 
+            ( Ext_package_name.make ~pkg:pkg_name cunit)
+          ; loc})
     )        
 
 let make_structure pkg_name cunits : Parsetree.structure =     
-    cunits |> List.map (make_structure_item pkg_name)
+  cunits |> List.map (make_structure_item pkg_name)
 
 let make_signature pkg_name cunits  : Parsetree.signature = 
   cunits |> List.map (make_signature_item pkg_name)  

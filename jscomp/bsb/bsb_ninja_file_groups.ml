@@ -26,9 +26,9 @@ let (//) = Ext_filename.combine
 
 type info =
   string list   
-  (* Figure out a list of files 
-    to be built before building cm*
-  *)
+(* Figure out a list of files 
+   to be built before building cm*
+*)
 
 
 let zero : info =
@@ -102,11 +102,12 @@ let emit_impl_build
   let output_mlast = filename_sans_extension  ^ Literals.suffix_mlast in
   let output_mlastd = filename_sans_extension ^ Literals.suffix_mlastd in
   let output_filename_sans_extension = 
-    (match namespace with 
+    match namespace with 
     | None -> 
-    filename_sans_extension 
-    | Some ns -> filename_sans_extension ^ Bsb_ninja_global_vars.package_sep ^ ns
-    ) in 
+      filename_sans_extension 
+    | Some pkg -> 
+       Ext_package_name.make ~pkg filename_sans_extension
+  in 
   let file_cmi =  output_filename_sans_extension ^ Literals.suffix_cmi in
   let output_cmj =  output_filename_sans_extension ^ Literals.suffix_cmj in
   let output_js =
@@ -173,11 +174,12 @@ let emit_intf_build
   let output_mliast = filename_sans_extension ^ Literals.suffix_mliast in
   let output_mliastd = filename_sans_extension ^ Literals.suffix_mliastd in
   let output_filename_sans_extension = 
-      (match namespace with 
+    match namespace with 
     | None -> 
-    filename_sans_extension 
-    | Some ns -> filename_sans_extension ^ Bsb_ninja_global_vars.package_sep ^ ns
-    ) in 
+      filename_sans_extension 
+    | Some pkg -> 
+       Ext_package_name.make ~pkg filename_sans_extension
+  in 
   let output_cmi = output_filename_sans_extension ^ Literals.suffix_cmi in
   let common_shadows = 
     make_common_shadows package_specs
@@ -264,7 +266,7 @@ let handle_file_group
     (namespace  : string option)
     acc 
     (group: Bsb_parse_sources.file_group ) 
-    : info =
+  : info =
 
   handle_generators oc group custom_rules ;
   String_map.fold (fun  module_name module_info  acc ->
@@ -281,7 +283,7 @@ let handle_file_group
          module_name 
          module_info
          namespace
-         ) @  acc
+      ) @  acc
     ) group.sources  acc 
 
 
@@ -292,8 +294,8 @@ let handle_file_groups
     namespace (st : info) : info  =
   List.fold_left 
     (handle_file_group 
-      oc ~package_specs ~custom_rules ~js_post_build_cmd
-      files_to_install 
-      namespace
-      ) 
+       oc ~package_specs ~custom_rules ~js_post_build_cmd
+       files_to_install 
+       namespace
+    ) 
     st  file_groups

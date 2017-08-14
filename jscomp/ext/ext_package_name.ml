@@ -1,4 +1,5 @@
-(* Copyright (C) 2017 Authors of BuckleScript
+
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -23,30 +24,27 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
- 
-let bs_package_flags = "bs_package_flags"
+ (* Note the build system should check the validity of filenames
+    espeically, it should not contain '-'
+ *)
+ let package_sep_char = '-'
+ let package_sep = "-"
 
-let bsc = "bsc" 
+ let make ~pkg cunit  = 
+    cunit ^ package_sep ^ pkg 
+    
 
-let src_root_dir = "src_root_dir"
-let bsdep = "bsdep"
+let rec rindex_rec s i c =
+  if i < 0 then i else
+  if String.unsafe_get s i = c then i else rindex_rec s (i - 1) c;;
+    
+let remove_package_suffix name =
+    let i = rindex_rec name 0 package_sep_char in 
+    if i < 0 then name 
+    else String.sub name 0 i 
 
-let bsc_flags = "bsc_flags"
 
-let ppx_flags = "ppx_flags"
-
-let bs_package_includes = "bs_package_includes"
-
-let bs_package_dev_includes = "bs_package_dev_includes"
-
-let refmt = "refmt"
-
-let reason_react_jsx = "reason_react_jsx"
-
-let refmt_flags = "refmt_flags"
-
-let postbuild = "postbuild"
-
-let namespace = "namespace" 
-let open_package = "open_package"
-
+let js_name_of_basename s = 
+  remove_package_suffix (String.uncapitalize s) ^ Literals.suffix_js
+  
+  

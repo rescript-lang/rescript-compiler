@@ -108,8 +108,3 @@ val get_extension : string -> string
 
 val simple_convert_node_path_to_os_path : string -> string
 
-(* Note  we have to output uncapitalized file Name, 
-  or at least be consistent, since by reading cmi file on Case insensitive OS, we don't really know it is `list.cmi` or `List.cmi`, so that `require (./list.js)` or `require(./List.js)`
-  relevant issues: #1609, #913 
-*)
-val js_name_of_basename :  string -> string 

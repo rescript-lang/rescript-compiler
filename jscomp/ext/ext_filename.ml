@@ -362,5 +362,3 @@ let simple_convert_node_path_to_os_path =
   else failwith ("Unknown OS : " ^ Sys.os_type)
 
 
-let js_name_of_basename s = 
-  String.uncapitalize s ^ Literals.suffix_js

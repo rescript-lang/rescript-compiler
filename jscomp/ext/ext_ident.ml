@@ -34,11 +34,11 @@ let js_flag = 0b1_000 (* check with ocaml compiler *)
 (* let js_module_flag = 0b10_000 (\* javascript external modules *\) *)
 (* TODO:
     check name conflicts with javascript conventions
-    {[
-    Ext_ident.convert "^";;
-    - : string = "$caret"
-    ]}
- *)
+   {[
+     Ext_ident.convert "^";;
+     - : string = "$caret"
+   ]}
+*)
 let js_object_flag = 0b100_000 (* javascript object flags *)
 
 let is_js (i : Ident.t) = 
@@ -53,10 +53,10 @@ let is_js_object (i : Ident.t) =
 
 let make_js_object (i : Ident.t) = 
   i.flags <- i.flags lor js_object_flag 
-      
+
 (* It's a js function hard coded by js api, so when printing,
    it should preserve the name 
- *)
+*)
 let create_js (name : string) : Ident.t  = 
   { name = name; flags = js_flag ; stamp = 0}
 
@@ -65,12 +65,12 @@ let js_module_table : Ident.t String_hashtbl.t = String_hashtbl.create 31
 (* This is for a js exeternal module, we can change it when printing
    for example
    {[
-   var React$1 = require('react');
-   React$1.render(..)
+     var React$1 = require('react');
+     React$1.render(..)
    ]}
 
    Given a name, if duplicated, they should  have the same id
- *)
+*)
 let create_js_module (name : string) : Ident.t = 
   let name = 
     String.concat "" @@ List.map (String.capitalize ) @@ 
@@ -79,17 +79,18 @@ let create_js_module (name : string) : Ident.t =
       react-dom 
       react--dom
       check collision later
-   *)
+  *)
   match String_hashtbl.find_exn js_module_table name  with 
   | exception Not_found -> 
-      let ans = Ident.create name in
-      (* let ans = { v with flags = js_module_flag} in  *)
-      String_hashtbl.add js_module_table name ans;
-      ans
+    let ans = Ident.create name in
+    (* let ans = { v with flags = js_module_flag} in  *)
+    String_hashtbl.add js_module_table name ans;
+    ans
   | v -> (* v *) Ident.rename v  
 
 let create = Ident.create
 
+(* FIXME: no need for `$' operator *)
 let gen_js ?(name="$js") () = create name 
 
 let reserved_words = 
@@ -136,55 +137,55 @@ let reserved_words =
 
     (* also reserved in ECMAScript 6 *)
     "await";
-   
-   "event";
-   "location";
-   "window";
-   "document";
-   "eval";
-   "navigator";
-   (* "self"; *)
-   
-   "Array";
-   "Date";
-   "Math";
-   "JSON";
-   "Object";
-   "RegExp";
-   "String";
-   "Boolean";
-   "Number";
 
-   "Map"; (* es6*)
-   "Set";
+    "event";
+    "location";
+    "window";
+    "document";
+    "eval";
+    "navigator";
+    (* "self"; *)
 
-   "Infinity";
-   "isFinite";
-   
-   "ActiveXObject";
-   "XMLHttpRequest";
-   "XDomainRequest";
-   
-   "DOMException";
-   "Error";
-   "SyntaxError";
-   "arguments";
-   
-   "decodeURI";
-   "decodeURIComponent";
-   "encodeURI";
-   "encodeURIComponent";
-   "escape";
-   "unescape";
+    "Array";
+    "Date";
+    "Math";
+    "JSON";
+    "Object";
+    "RegExp";
+    "String";
+    "Boolean";
+    "Number";
 
-   "isNaN";
-   "parseFloat";
-   "parseInt";
-   
-   (** reserved for commonjs and NodeJS globals*)   
-   "require";
-   "exports";
-   "module";
+    "Map"; (* es6*)
+    "Set";
+
+    "Infinity";
+    "isFinite";
+
+    "ActiveXObject";
+    "XMLHttpRequest";
+    "XDomainRequest";
+
+    "DOMException";
+    "Error";
+    "SyntaxError";
+    "arguments";
+
+    "decodeURI";
+    "decodeURIComponent";
+    "encodeURI";
+    "encodeURIComponent";
+    "escape";
+    "unescape";
+
+    "isNaN";
+    "parseFloat";
+    "parseInt";
+
+    (** reserved for commonjs and NodeJS globals*)   
+    "require";
+    "exports";
+    "module";
     "clearImmediate";
     "clearInterval";
     "clearTimeout";
@@ -212,55 +213,58 @@ let reserved_map =
 
 let name_mangle name = 
   let module E = struct exception Not_normal_letter of int end in
-     let len = String.length name  in
-     try
-       for i  = 0 to len - 1 do 
-         match String.unsafe_get name i with 
-         | 'a' .. 'z' | 'A' .. 'Z'
-         | '0' .. '9' | '_' | '$' -> ()
-         | _ -> raise (E.Not_normal_letter i)
-       done;
-       name
-     with E.Not_normal_letter i ->
-       String.sub name 0 i ^ 
-       (let buffer = Buffer.create len in 
-        for j = i to  len - 1 do 
-          let c = String.unsafe_get name j in
-          match c with 
-          | '*' -> Buffer.add_string buffer "$star"
-          | '\'' -> Buffer.add_string buffer "$prime"
-          | '!' -> Buffer.add_string buffer "$bang"
-          | '>' -> Buffer.add_string buffer "$great"
-          | '<' -> Buffer.add_string buffer "$less"
-          | '=' -> Buffer.add_string buffer "$eq"
-          | '+' -> Buffer.add_string buffer "$plus"
-          | '-' -> Buffer.add_string buffer "$neg"
-          | '@' -> Buffer.add_string buffer "$at"
-          | '^' -> Buffer.add_string buffer "$caret"
-          | '/' -> Buffer.add_string buffer "$slash"
-          | '|' -> Buffer.add_string buffer "$pipe"
-          | '.' -> Buffer.add_string buffer "$dot"
-          | '%' -> Buffer.add_string buffer "$percent"
-          | '~' -> Buffer.add_string buffer "$tilde"
-          | '#' -> Buffer.add_string buffer "$hash"
-          | 'a'..'z' | 'A'..'Z'| '_'|'$' |'0'..'9'-> Buffer.add_char buffer  c
-          | _ -> Buffer.add_string buffer "$unknown"
-        done; Buffer.contents buffer)
+  let len = String.length name  in
+  try
+    for i  = 0 to len - 1 do 
+      match String.unsafe_get name i with 
+      | 'a' .. 'z' | 'A' .. 'Z'
+      | '0' .. '9' | '_' | '$'
+        -> ()
+      | _ -> raise (E.Not_normal_letter i)
+    done;
+    name (* Normal letter *)
+  with E.Not_normal_letter i ->
+      String.sub name 0 i ^ 
+      (let buffer = Buffer.create len in 
+       for j = i to  len - 1 do 
+         let c = String.unsafe_get name j in
+         match c with 
+         | '*' -> Buffer.add_string buffer "$star"
+         | '\'' -> Buffer.add_string buffer "$prime"
+         | '!' -> Buffer.add_string buffer "$bang"
+         | '>' -> Buffer.add_string buffer "$great"
+         | '<' -> Buffer.add_string buffer "$less"
+         | '=' -> Buffer.add_string buffer "$eq"
+         | '+' -> Buffer.add_string buffer "$plus"
+         | '-' -> Buffer.add_string buffer "$neg"
+         | '@' -> Buffer.add_string buffer "$at"
+         | '^' -> Buffer.add_string buffer "$caret"
+         | '/' -> Buffer.add_string buffer "$slash"
+         | '|' -> Buffer.add_string buffer "$pipe"
+         | '.' -> Buffer.add_string buffer "$dot"
+         | '%' -> Buffer.add_string buffer "$percent"
+         | '~' -> Buffer.add_string buffer "$tilde"
+         | '#' -> Buffer.add_string buffer "$hash"
+         | 'a'..'z' | 'A'..'Z'| '_' 
+         | '$'
+         | '0'..'9'-> Buffer.add_char buffer  c
+         | _ -> Buffer.add_string buffer "$unknown"
+       done; Buffer.contents buffer)
 
 
 (* TODO:
     check name conflicts with javascript conventions
-    {[
-    Ext_ident.convert "^";;
-    - : string = "$caret"
-    ]}
-  [convert name] if [name] is a js keyword,add "$$"
-  otherwise do the name mangling to make sure ocaml identifier it is 
-  a valid js identifier
- *)
+   {[
+     Ext_ident.convert "^";;
+     - : string = "$caret"
+   ]}
+   [convert name] if [name] is a js keyword,add "$$"
+   otherwise do the name mangling to make sure ocaml identifier it is 
+   a valid js identifier
+*)
 let convert (name : string) = 
-   if  String_hash_set.mem reserved_map name  then "$$" ^ name 
-   else name_mangle name 
+  if  String_hash_set.mem reserved_map name  then "$$" ^ name 
+  else name_mangle name 
 
 (** keyword could be used in property *)
 let property_no_need_convert s = 
@@ -284,14 +288,14 @@ let nil = create_js "null"
 (* Has to be total order, [x < y] 
    and [x > y] should be consistent
    flags are not relevant here 
- *)
+*)
 let compare (x : Ident.t ) ( y : Ident.t) = 
   let u = x.stamp - y.stamp in
   if u = 0 then 
-     Ext_string.compare x.name y.name 
+    Ext_string.compare x.name y.name 
   else u 
 
 let equal ( x : Ident.t) ( y : Ident.t) = 
   if x.stamp <> 0 then x.stamp = y.stamp
   else y.stamp = 0 && x.name = y.name
-   
+

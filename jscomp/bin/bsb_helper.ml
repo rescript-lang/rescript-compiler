@@ -1415,11 +1415,7 @@ val get_extension : string -> string
 
 val simple_convert_node_path_to_os_path : string -> string
 
-(* Note  we have to output uncapitalized file Name, 
-  or at least be consistent, since by reading cmi file on Case insensitive OS, we don't really know it is `list.cmi` or `List.cmi`, so that `require (./list.js)` or `require(./List.js)`
-  relevant issues: #1609, #913 
-*)
-val output_js_basename :  string -> string 
+
 end = struct
 #1 "ext_filename.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -1786,8 +1782,7 @@ let simple_convert_node_path_to_os_path =
   else failwith ("Unknown OS : " ^ Sys.os_type)
 
 
-let output_js_basename s = 
-  String.uncapitalize s ^ Literals.suffix_js
+
 end
 module Map_gen
 = struct
@@ -2697,10 +2692,9 @@ let string_of_bsb_dev_include i =
 
 let reset () = dir_index := 0
 end
-module Bsb_ninja_global_vars
-= struct
-#1 "bsb_ninja_global_vars.ml"
-(* Copyright (C) 2017 Authors of BuckleScript
+module Bsb_package_name : sig 
+#1 "bsb_package_name.mli"
+(* Copyright (C) 2017- Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -2725,34 +2719,63 @@ module Bsb_ninja_global_vars
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
- 
-let bs_package_flags = "bs_package_flags"
+val make : pkg:string -> string -> string 
 
-let bsc = "bsc" 
+val remove_package_suffix: string -> string 
 
-let src_root_dir = "src_root_dir"
-let bsdep = "bsdep"
+(* Note  we have to output uncapitalized file Name, 
+  or at least be consistent, since by reading cmi file on Case insensitive OS, we don't really know it is `list.cmi` or `List.cmi`, so that `require (./list.js)` or `require(./List.js)`
+  relevant issues: #1609, #913 
+*)
+val js_name_of_basename :  string -> string 
+end = struct
+#1 "bsb_package_name.ml"
 
-let bsc_flags = "bsc_flags"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-let ppx_flags = "ppx_flags"
 
-let bs_package_includes = "bs_package_includes"
+ (* Note the build system should check the validity of filenames
+    espeically, it should not contain '-'
+ *)
+ let package_sep_char = '-'
+ let package_sep = "-"
 
-let bs_package_dev_includes = "bs_package_dev_includes"
+ let make ~pkg cunit  = 
+    cunit ^ package_sep ^ pkg 
+    
+let remove_package_suffix name =
+    match String.rindex name package_sep_char  with 
+    | exception Not_found -> name 
+    | i -> String.sub name 0 i 
 
-let refmt = "refmt"
 
-let reason_react_jsx = "reason_react_jsx"
+let js_name_of_basename s = 
+  remove_package_suffix (String.uncapitalize s) ^ Literals.suffix_js
+  
+  
 
-let refmt_flags = "refmt_flags"
-
-let postbuild = "postbuild"
-
-let namespace = "namespace" 
-let open_package = "open_package"
-
-let package_sep = "-"
 end
 module Bsb_depfile_gen : sig 
 #1 "bsb_depfile_gen.mli"
@@ -2854,14 +2877,10 @@ let read_deps fn =
 type kind = Js | Bytecode | Native
 
 let output_file oc source namespace = 
-  output_string oc source ;
   match namespace with 
-  | None -> ()
-  | Some x ->
-
-    output_string oc 
-      Bsb_ninja_global_vars.package_sep ; 
-    output_string oc x 
+  | None -> output_string oc source ;
+  | Some pkg ->
+    output_string oc (Bsb_package_name.make ~pkg source)
 
 (** for bucklescript artifacts 
     [lhs_suffix] is [.cmj]
@@ -2879,13 +2898,6 @@ let oc_impl set input_file lhs_suffix rhs_suffix
   output_file oc input_file namespace ; 
   output_string oc lhs_suffix; 
   output_string oc dep_lit ; 
-  (* (match namespace with 
-   | None -> ()
-   | Some x ->
-     output_string oc Ext_string.single_space;
-     output_string oc x;
-     output_string oc rhs_suffix;
-  ); *)
   for i = 0 to Array.length set - 1 do
     let k = Array.unsafe_get set i in 
     match String_map.find_opt k data.(0) with
@@ -2893,11 +2905,11 @@ let oc_impl set input_file lhs_suffix rhs_suffix
       -> 
       output_string oc Ext_string.single_space ;  
       output_file oc source namespace;
-      output_string oc rhs_suffix  
+      output_string oc rhs_suffix 
     | Some {mli = Mli_source (source,_)  } -> 
       output_string oc Ext_string.single_space ;  
       output_file oc source namespace;
-      output_string oc Literals.suffix_cmi  
+      output_string oc Literals.suffix_cmi 
     | Some {mli= Mli_empty; ml = Ml_empty} -> assert false
     | None  -> 
       if Bsb_dir_index.is_lib_dir index  then () 
@@ -2907,11 +2919,11 @@ let oc_impl set input_file lhs_suffix rhs_suffix
             -> 
             output_string oc Ext_string.single_space ;  
             output_file oc source namespace;
-            output_string oc rhs_suffix 
+            output_string oc rhs_suffix
           | Some {mli = Mli_source (source,_) } -> 
             output_string oc Ext_string.single_space ;  
             output_file oc source namespace;
-            output_string oc Literals.suffix_cmi  
+            output_string oc Literals.suffix_cmi 
           | Some {mli = Mli_empty; ml = Ml_empty} -> assert false
           | None -> ()
         end
@@ -2932,13 +2944,6 @@ let oc_intf
   output_file oc input_file namespace ; 
   output_string oc Literals.suffix_cmi ; 
   output_string oc dep_lit;
-  (* (match namespace with 
-   | None -> ()
-   | Some x ->
-     output_string oc Ext_string.single_space;
-     output_string oc x;
-     output_string oc Literals.suffix_cmi;
-  ); *)
   for i = 0 to Array.length set - 1 do               
     let k = Array.unsafe_get set i in 
     match String_map.find_opt k data.(0) with 

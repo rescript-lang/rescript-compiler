@@ -139,6 +139,7 @@ derive_type_test.cmj :
 digest_test.cmj : ../stdlib/string.cmj ../stdlib/printf.cmj mt.cmj \
     ext_array.cmj ../stdlib/digest.cmj ../stdlib/array.cmj
 div_by_zero_test.cmj : mt.cmj ../stdlib/int64.cmj ../stdlib/int32.cmj
+dollar_escape_test.cmj : mt.cmj
 earger_curry_test.cmj : mt.cmj ../runtime/js.cmj ../stdlib/array.cmj
 empty_obj.cmj :
 epsilon_test.cmj : mt.cmj
