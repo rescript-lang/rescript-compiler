@@ -96,9 +96,7 @@ let buckle_script_flags =
   )
   :: 
   ("-bs-print-errors-in-reason-syntax",
-    Arg.Unit (fun _ -> 
-      Reason_outcome_printer_main.setup ();
-    ),
+    Arg.Unit Reason_outcome_printer_main.setup,
    " Print compiler errors in Reason syntax"
   )
   :: 
