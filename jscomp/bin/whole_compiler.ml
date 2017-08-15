@@ -58803,8 +58803,8 @@ let find_opt file =  find_in_path_uncap !Config.load_path file
 
 
 end
-module Bsb_package_name : sig 
-#1 "bsb_package_name.mli"
+module Ext_package_name : sig 
+#1 "ext_package_name.mli"
 (* Copyright (C) 2017- Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -58840,7 +58840,7 @@ val remove_package_suffix: string -> string
 *)
 val js_name_of_basename :  string -> string 
 end = struct
-#1 "bsb_package_name.ml"
+#1 "ext_package_name.ml"
 
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
@@ -58876,10 +58876,15 @@ end = struct
  let make ~pkg cunit  = 
     cunit ^ package_sep ^ pkg 
     
+
+let rec rindex_rec s i c =
+  if i < 0 then i else
+  if String.unsafe_get s i = c then i else rindex_rec s (i - 1) c;;
+    
 let remove_package_suffix name =
-    match String.rindex name package_sep_char  with 
-    | exception Not_found -> name 
-    | i -> String.sub name 0 i 
+    let i = rindex_rec name 0 package_sep_char in 
+    if i < 0 then name 
+    else String.sub name 0 i 
 
 
 let js_name_of_basename s = 
@@ -63025,7 +63030,7 @@ let string_of_module_id
       | Runtime  
       | Ml  -> 
         let id = x.id in
-        let js_file = Bsb_package_name.js_name_of_basename id.name in 
+        let js_file =  Ext_package_name.js_name_of_basename id.name in 
         let rebase different_package package_dir dep =
           let current_unit_dir =
             `Dir (get_output_dir 
@@ -101239,7 +101244,7 @@ let lambda_as_module
     let (//) = Filename.concat in 
     let basename =  
       (* #758, output_prefix is already chopped *)
-      Bsb_package_name.js_name_of_basename (Filename.basename
+       Ext_package_name.js_name_of_basename (Filename.basename
          output_prefix (* -o *)
          (* filename *) (* see #757  *)
       ) in
@@ -111332,7 +111337,7 @@ let process_result ppf  main_file ast_table result =
   if not (!Clflags.compile_only) then
     Sys.command
       ("node " ^
-       Bsb_package_name.js_name_of_basename (Filename.chop_extension main_file)
+        Ext_package_name.js_name_of_basename (Filename.chop_extension main_file)
       )
   else 0
 
