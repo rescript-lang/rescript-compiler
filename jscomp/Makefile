@@ -346,7 +346,7 @@ BSB_SRCS= bsb_config\
 	oCamlRes\
 	bsb_templates\
 	bsb_init
-SUPER_ERRORS_SRCS=super_misc super_warnings super_typecore super_typetexp super_location super_main
+SUPER_ERRORS_SRCS=super_reason_oprint super_misc super_warnings super_typemod super_typecore super_typetexp super_location super_main
 
 BSB_CMXS=$(addprefix bsb/, $(addsuffix .cmx, $(BSB_SRCS)))
 BSB_CMOS=$(addprefix bsb/, $(addsuffix .cmo, $(BSB_SRCS)))

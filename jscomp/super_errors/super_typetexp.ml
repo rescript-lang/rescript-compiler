@@ -159,7 +159,10 @@ let setup () =
   Location.register_error_of_exn
     (function
       | Typetexp.Error (loc, env, err) ->
-        Some (Location.error_of_printer loc (report_error env) err)
+        Some (Location.error_of_printer loc (fun ppf ->
+          Super_misc.setup_colors ppf;
+          report_error env ppf
+        ) err)
       (* typetexp doesn't expose Error_forward  *)
       (* | Error_forward err ->
         Some err *)

@@ -21,7 +21,7 @@ let pad ?(ch=' ') content n =
 let leading_space_count str =
   let rec _leading_space_count str str_length current_index =
     if current_index == str_length then current_index
-    else if (str.[current_index]) <> ' ' then current_index 
+    else if (str.[current_index]) <> ' ' then current_index
     else _leading_space_count str str_length (current_index + 1)
   in
   _leading_space_count str (String.length str) 0
@@ -63,7 +63,7 @@ let print_file ~is_warning ~range:((start_line, start_char), (end_line, end_char
     explicitly tell Format to treat them as length 1 below *)
   let separator = if columns_to_cut = 0 then "│" else "┆" in
   (* coloring *)
-  let (highlighted_line_number, highlighted_content): (string -> string -> unit, Format.formatter, unit) format * (unit, Format.formatter, unit) format = 
+  let (highlighted_line_number, highlighted_content): (string -> string -> unit, Format.formatter, unit) format * (unit, Format.formatter, unit) format =
     if is_warning then ("@{<info>%s@}@{<dim> @<1>%s @}", "@{<info>")
     else ("@{<error>%s@}@{<dim> @<1>%s @}", "@{<error>")
   in
@@ -124,6 +124,16 @@ let print_file ~is_warning ~range:((start_line, start_char), (end_line, end_char
 
   done;
   fprintf ppf "@]" (* v *)
+
+let setup_reason_syntax_printing () =
+  Oprint.out_value := Super_reason_oprint.print_out_value;
+  Oprint.out_type := Super_reason_oprint.print_out_type;
+  Oprint.out_class_type := Super_reason_oprint.print_out_class_type;
+  Oprint.out_module_type := Super_reason_oprint.print_out_module_type;
+  Oprint.out_sig_item := Super_reason_oprint.print_out_sig_item;
+  Oprint.out_signature := Super_reason_oprint.print_out_signature;
+  Oprint.out_type_extension := Super_reason_oprint.print_out_type_extension;
+  Oprint.out_phrase := Super_reason_oprint.print_out_phrase
 
 let setup_colors ppf =
   Format.pp_set_formatter_tag_functions ppf

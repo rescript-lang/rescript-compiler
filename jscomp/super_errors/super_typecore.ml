@@ -233,7 +233,6 @@ let report_error env ppf = function
 
 (* https://github.com/ocaml/ocaml/blob/4.02/typing/typecore.ml#L3979 *)
 let report_error env ppf err =
-  Super_misc.setup_colors ppf;
   wrap_printing_env env (fun () -> report_error env ppf err)
 
 (* This will be called in super_main. This is how you'd override the default error printer from the compiler & register new error_of_exn handlers *)
@@ -241,7 +240,10 @@ let setup () =
   Location.register_error_of_exn
     (function
       | Typecore.Error (loc, env, err) ->
-        Some (Location.error_of_printer loc (report_error env) err)
+        Some (Location.error_of_printer loc (fun ppf ->
+          Super_misc.setup_colors ppf;
+          report_error env ppf
+        ) err)
       | Typecore.Error_forward err ->
         Some err
       | _ ->
