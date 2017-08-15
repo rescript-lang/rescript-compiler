@@ -1,13 +1,14 @@
 'use strict';
 
-var Mt         = require("./mt.js");
-var $$Array    = require("../../lib/js/array.js");
-var Block      = require("../../lib/js/block.js");
-var Curry      = require("../../lib/js/curry.js");
-var Printf     = require("../../lib/js/printf.js");
-var Mt_global  = require("./mt_global.js");
-var Caml_float = require("../../lib/js/caml_float.js");
-var Pervasives = require("../../lib/js/pervasives.js");
+var Mt          = require("./mt.js");
+var $$Array     = require("../../lib/js/array.js");
+var Block       = require("../../lib/js/block.js");
+var Curry       = require("../../lib/js/curry.js");
+var Printf      = require("../../lib/js/printf.js");
+var Mt_global   = require("./mt_global.js");
+var Caml_float  = require("../../lib/js/caml_float.js");
+var Pervasives  = require("../../lib/js/pervasives.js");
+var Caml_format = require("../../lib/js/caml_format.js");
 
 var match_000 = [0];
 
@@ -220,7 +221,7 @@ var param$8 = Caml_float.caml_expm1_float(0);
 
 Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 59, characters 5-12", param$8, 0);
 
-var param$9 = Number("3.0");
+var param$9 = Caml_format.caml_float_of_string("3.0");
 
 Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 60, characters 5-12", param$9, 3.0);
 

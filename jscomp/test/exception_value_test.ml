@@ -28,12 +28,12 @@ let test_not_found f () =
 
 
 let test_js_error2 () = 
-  try Js.Json.parse {| {"x" : }|} with
+  try Js.Json.parseExn {| {"x" : }|} with
   |(Js.Exn.Error err ) as e ->
     Js.log @@ Js.Exn.stack err;
     raise e
 
 let test_js_error3 () = 
-  try ignore @@ Js.Json.parse {| {"x"}|} ; 1 with 
+  try ignore @@ Js.Json.parseExn {| {"x"}|} ; 1 with 
     e -> 0
 

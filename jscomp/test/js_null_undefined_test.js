@@ -28,230 +28,163 @@ var suites_001 = /* :: */[
   ],
   /* :: */[
     /* tuple */[
-      "to_opt - empty",
+      "to_opt - 'a",
       (function () {
           return /* Eq */Block.__(0, [
-                    /* None */0,
-                    Js_primitive.null_undefined_to_opt(undefined)
+                    /* Some */["foo"],
+                    Js_primitive.null_undefined_to_opt("foo")
                   ]);
         })
     ],
     /* :: */[
       /* tuple */[
-        "to_opt - 'a",
+        "return",
         (function () {
             return /* Eq */Block.__(0, [
-                      /* Some */["foo"],
-                      Js_primitive.null_undefined_to_opt("foo")
+                      /* Some */["something"],
+                      Js_primitive.null_undefined_to_opt("something")
                     ]);
           })
       ],
       /* :: */[
         /* tuple */[
-          "return",
+          "test - null",
           (function () {
               return /* Eq */Block.__(0, [
-                        /* Some */["something"],
-                        Js_primitive.null_undefined_to_opt("something")
+                        /* true */1,
+                        Js_primitive.is_nil_undef(null)
                       ]);
             })
         ],
         /* :: */[
           /* tuple */[
-            "test - null",
+            "test - undefined",
             (function () {
                 return /* Eq */Block.__(0, [
                           /* true */1,
-                          Js_primitive.is_nil_undef(null)
+                          Js_primitive.is_nil_undef(undefined)
                         ]);
               })
           ],
           /* :: */[
             /* tuple */[
-              "test - undefined",
+              "test - 'a",
               (function () {
                   return /* Eq */Block.__(0, [
-                            /* true */1,
-                            Js_primitive.is_nil_undef(undefined)
+                            /* false */0,
+                            Js_primitive.is_nil_undef(/* () */0)
                           ]);
                 })
             ],
             /* :: */[
               /* tuple */[
-                "test - empty",
+                "bind - null",
                 (function () {
-                    return /* Eq */Block.__(0, [
-                              /* true */1,
-                              Js_primitive.is_nil_undef(undefined)
+                    return /* StrictEq */Block.__(2, [
+                              null,
+                              Js_null_undefined.bind(null, (function (v) {
+                                      return v;
+                                    }))
                             ]);
                   })
               ],
               /* :: */[
                 /* tuple */[
-                  "test - 'a",
+                  "bind - undefined",
                   (function () {
-                      return /* Eq */Block.__(0, [
-                                /* false */0,
-                                Js_primitive.is_nil_undef(/* () */0)
+                      return /* StrictEq */Block.__(2, [
+                                undefined,
+                                Js_null_undefined.bind(undefined, (function (v) {
+                                        return v;
+                                      }))
                               ]);
                     })
                 ],
                 /* :: */[
                   /* tuple */[
-                    "bind - null",
+                    "bind - 'a",
                     (function () {
-                        return /* StrictEq */Block.__(2, [
-                                  null,
-                                  Js_null_undefined.bind(null, (function (v) {
-                                          return v;
+                        return /* Eq */Block.__(0, [
+                                  4,
+                                  Js_null_undefined.bind(2, (function (n) {
+                                          return (n << 1);
                                         }))
                                 ]);
                       })
                   ],
                   /* :: */[
                     /* tuple */[
-                      "bind - undefined",
+                      "iter - null",
                       (function () {
-                          return /* StrictEq */Block.__(2, [
-                                    undefined,
-                                    Js_null_undefined.bind(undefined, (function (v) {
-                                            return v;
-                                          }))
+                          var hit = [/* false */0];
+                          Js_null_undefined.iter(null, (function () {
+                                  hit[0] = /* true */1;
+                                  return /* () */0;
+                                }));
+                          return /* Eq */Block.__(0, [
+                                    /* false */0,
+                                    hit[0]
                                   ]);
                         })
                     ],
                     /* :: */[
                       /* tuple */[
-                        "bind - empty",
+                        "iter - undefined",
                         (function () {
-                            return /* StrictEq */Block.__(2, [
-                                      undefined,
-                                      Js_null_undefined.bind(undefined, (function (v) {
-                                              return v;
-                                            }))
+                            var hit = [/* false */0];
+                            Js_null_undefined.iter(undefined, (function () {
+                                    hit[0] = /* true */1;
+                                    return /* () */0;
+                                  }));
+                            return /* Eq */Block.__(0, [
+                                      /* false */0,
+                                      hit[0]
                                     ]);
                           })
                       ],
                       /* :: */[
                         /* tuple */[
-                          "bind - 'a",
+                          "iter - 'a",
                           (function () {
+                              var hit = [0];
+                              Js_null_undefined.iter(2, (function (v) {
+                                      hit[0] = v;
+                                      return /* () */0;
+                                    }));
                               return /* Eq */Block.__(0, [
-                                        4,
-                                        Js_null_undefined.bind(2, (function (n) {
-                                                return (n << 1);
-                                              }))
+                                        2,
+                                        hit[0]
                                       ]);
                             })
                         ],
                         /* :: */[
                           /* tuple */[
-                            "iter - null",
+                            "from_opt - None",
                             (function () {
-                                var hit = [/* false */0];
-                                Js_null_undefined.iter(null, (function () {
-                                        hit[0] = /* true */1;
-                                        return /* () */0;
-                                      }));
                                 return /* Eq */Block.__(0, [
-                                          /* false */0,
-                                          hit[0]
+                                          undefined,
+                                          Js_null_undefined.from_opt(/* None */0)
                                         ]);
                               })
                           ],
                           /* :: */[
                             /* tuple */[
-                              "iter - undefined",
+                              "from_opt - Some",
                               (function () {
-                                  var hit = [/* false */0];
-                                  Js_null_undefined.iter(undefined, (function () {
-                                          hit[0] = /* true */1;
-                                          return /* () */0;
-                                        }));
                                   return /* Eq */Block.__(0, [
-                                            /* false */0,
-                                            hit[0]
+                                            2,
+                                            Js_null_undefined.from_opt(/* Some */[2])
                                           ]);
                                 })
                             ],
                             /* :: */[
                               /* tuple */[
-                                "iter - empty",
+                                "null <> undefined",
                                 (function () {
-                                    var hit = [/* false */0];
-                                    Js_null_undefined.iter(undefined, (function () {
-                                            hit[0] = /* true */1;
-                                            return /* () */0;
-                                          }));
-                                    return /* Eq */Block.__(0, [
-                                              /* false */0,
-                                              hit[0]
-                                            ]);
+                                    return /* Ok */Block.__(4, [Caml_obj.caml_notequal(null, undefined)]);
                                   })
                               ],
-                              /* :: */[
-                                /* tuple */[
-                                  "iter - 'a",
-                                  (function () {
-                                      var hit = [0];
-                                      Js_null_undefined.iter(2, (function (v) {
-                                              hit[0] = v;
-                                              return /* () */0;
-                                            }));
-                                      return /* Eq */Block.__(0, [
-                                                2,
-                                                hit[0]
-                                              ]);
-                                    })
-                                ],
-                                /* :: */[
-                                  /* tuple */[
-                                    "from_opt - None",
-                                    (function () {
-                                        return /* Eq */Block.__(0, [
-                                                  undefined,
-                                                  Js_null_undefined.from_opt(/* None */0)
-                                                ]);
-                                      })
-                                  ],
-                                  /* :: */[
-                                    /* tuple */[
-                                      "from_opt - Some",
-                                      (function () {
-                                          return /* Eq */Block.__(0, [
-                                                    2,
-                                                    Js_null_undefined.from_opt(/* Some */[2])
-                                                  ]);
-                                        })
-                                    ],
-                                    /* :: */[
-                                      /* tuple */[
-                                        "null <> undefined",
-                                        (function () {
-                                            return /* Ok */Block.__(4, [Caml_obj.caml_notequal(null, undefined)]);
-                                          })
-                                      ],
-                                      /* :: */[
-                                        /* tuple */[
-                                          "null <> empty",
-                                          (function () {
-                                              return /* Ok */Block.__(4, [Caml_obj.caml_notequal(null, undefined)]);
-                                            })
-                                        ],
-                                        /* :: */[
-                                          /* tuple */[
-                                            "undefined = empty",
-                                            (function () {
-                                                return /* Ok */Block.__(4, [Caml_obj.caml_equal(undefined, undefined)]);
-                                              })
-                                          ],
-                                          /* [] */0
-                                        ]
-                                      ]
-                                    ]
-                                  ]
-                                ]
-                              ]
+                              /* [] */0
                             ]
                           ]
                         ]

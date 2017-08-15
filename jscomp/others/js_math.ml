@@ -109,7 +109,7 @@ external unsafe_floor_int : float -> int = "floor" [@@bs.val] [@@bs.scope "Math"
 let floor_int f =
   if f > float max_int then max_int
   else if f < float min_int then min_int
-  else unsafe_floor f
+  else unsafe_floor_int f
 external floor_float : float -> float = "floor" [@@bs.val] [@@bs.scope "Math"]
 
 (** round to nearest single precision float, ES2015 *)
@@ -163,7 +163,7 @@ external pow_float : base:float -> exp:float -> float = "pow" [@@bs.val] [@@bs.s
 external random : unit -> float = "random" [@@bs.val] [@@bs.scope "Math"]
 (** random number in \[min,max) *)
 let random_int min max =
-  floor ((random ()) *. (float (max - min))) + min
+  floor_int ((random ()) *. (float (max - min))) + min
 
 (** rounds to nearest integer, returns a value not representable as [int] if NaN *)
 external unsafe_round : float -> int = "round" [@@bs.val] [@@bs.scope "Math"]

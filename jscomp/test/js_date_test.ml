@@ -195,8 +195,6 @@ let suites = Mt.[
       Eq(2., Js.Date.getUTCMonth (date ())));
     "getUTCSeconds", (fun _ ->
       Eq(56., Js.Date.getUTCSeconds (date ())));
-    "getYear", (fun _ ->
-      Eq(76., Js.Date.getYear (date ())));
 
     "setDate", (fun _ ->
       let d = date () in
@@ -425,8 +423,6 @@ let suites = Mt.[
 
     "toDateString", (fun _ ->
       Eq("Mon Mar 08 1976", Js.Date.toDateString (date ())));
-    "toGMTString", (fun _ ->
-      Eq("Mon, 08 Mar 1976 11:11:56 GMT", Js.Date.toGMTString (date ())));
     "toISOString", (fun _ ->
       Eq("1976-03-08T11:11:56.789Z", Js.Date.toISOString (date ())));
     "toJSON", (fun _ ->

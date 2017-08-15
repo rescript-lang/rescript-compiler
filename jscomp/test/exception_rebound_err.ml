@@ -3,7 +3,7 @@ exception B
 exception C of int * int 
 
 let test_js_error4 () = 
-  try ignore @@ Js.Json.parse {| {"x"}|}; 1 with
+  try ignore @@ Js.Json.parseExn {| {"x"}|}; 1 with
   | Not_found -> 2
   | Invalid_argument "x" -> 3 
   | A 2 -> 4

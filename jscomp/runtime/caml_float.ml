@@ -38,13 +38,13 @@ external pow_float : base:float -> exp:float -> float = "Math.pow" [@@bs.val]
 open Js_typed_array
 
 let caml_int32_float_of_bits (x : int32) =
-  let int32 = Int32_array.make [| x |] in
-  let float32 = Float32_array.fromBuffer ( Int32_array.buffer int32) in
-  Float32_array.unsafe_get float32 0
+  let int32 = Int32Array.make [| x |] in
+  let float32 = Float32Array.fromBuffer ( Int32Array.buffer int32) in
+  Float32Array.unsafe_get float32 0
 
 let caml_int32_bits_of_float (x : float) =
-  let float32 = Float32_array.make [|x|] in
-  Int32_array.unsafe_get (Int32_array.fromBuffer (Float32_array.buffer float32)) 0
+  let float32 = Float32Array.make [|x|] in
+  Int32Array.unsafe_get (Int32Array.fromBuffer (Float32Array.buffer float32)) 0
 
 let caml_classify_float x : fpclass  =
   if Js_float.isFinite x then
