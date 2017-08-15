@@ -204,6 +204,7 @@ let root = OCamlRes.Res.([
        {\n\
       \  \"name\": \"${bsb:name}\",\n\
       \  \"version\": \"${bsb:proj-version}\",\n\
+      \  \"bsc-flags\": [\"-bs-super-errors\"],\n\
       \  \"sources\": [\n\
       \    \"src\"\n\
       \  ],\n\
@@ -655,6 +656,7 @@ let root = OCamlRes.Res.([
        {\n\
       \  \"name\" : \"${bsb:name}\",\n\
       \  \"reason\" : {\"react-jsx\" : 2},\n\
+      \  \"bsc-flags\": [\"-bs-super-errors\"],\n\
       \  \"bs-dependencies\": [\"reason-react\"],\n\
       \  \"sources\": [\n\
       \    {\n\

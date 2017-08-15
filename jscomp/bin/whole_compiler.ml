@@ -85208,13 +85208,8 @@ let sub_scope (scope : t) (idents : Ident_set.t) : t =
       match String_map.find_exn mangled scope with 
       | exception Not_found -> assert false 
       | imap -> 
-
-        ( 
-          (* They are the same if already there*)
-          match String_map.find_exn mangled acc with 
-          | exception Not_found -> String_map.add mangled imap acc
-          | _ -> acc  (* TODO: optimization *) 
-        )
+          if String_map.mem mangled acc then acc 
+          else String_map.add mangled imap acc
     ) idents empty
 
 
