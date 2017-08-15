@@ -120,20 +120,22 @@ let merge set cxt  =
   Ident_set.fold (fun ident acc -> 
       snd (add_ident ~mangled:(Ext_ident.convert ident.name) ident.stamp acc)) set  cxt 
 
-(* Assume that all idents are already in the scope
+(* Assume that all idents are already in [scope]
    so both [param/0] and [param/1] are in idents, we don't need 
    update twice,  once is enough
 *)
-let sub_scope (scope : t) ident_collection : t =
-  let cxt = empty in
-  Ident_set.fold (fun (i : Ident.t) acc -> 
-      match String_map.find_exn i.name scope with 
+let sub_scope (scope : t) (idents : Ident_set.t) : t =
+  Ident_set.fold (fun ({name } : Ident.t) (acc : t) -> 
+      let mangled = Ext_ident.convert name in 
+      match String_map.find_exn mangled scope with 
       | exception Not_found -> assert false 
-      | imap -> ( 
+      | imap -> 
+
+        ( 
           (* They are the same if already there*)
-          match String_map.find_exn i.name acc with 
-          | exception Not_found -> String_map.add i.name imap acc
+          match String_map.find_exn mangled acc with 
+          | exception Not_found -> String_map.add mangled imap acc
           | _ -> acc  (* TODO: optimization *) 
         )
-    ) ident_collection cxt 
+    ) idents empty
 
