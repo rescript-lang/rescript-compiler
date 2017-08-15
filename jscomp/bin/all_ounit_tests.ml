@@ -6706,7 +6706,8 @@ let name_mangle name =
       | _ -> raise (Not_normal_letter i)
     done;
     name (* Normal letter *)
-  with Not_normal_letter i ->
+  with 
+  | Not_normal_letter i ->
   
       String.sub name 0 i ^ 
       (let buffer = Buffer.create len in 

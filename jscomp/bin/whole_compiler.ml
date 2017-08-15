@@ -59550,7 +59550,8 @@ let name_mangle name =
       | _ -> raise (Not_normal_letter i)
     done;
     name (* Normal letter *)
-  with Not_normal_letter i ->
+  with 
+  | Not_normal_letter i ->
   
       String.sub name 0 i ^ 
       (let buffer = Buffer.create len in 
@@ -85125,7 +85126,7 @@ and print_int_map fmt m =
       Format.fprintf fmt "%d - %d" k v       
     ) m    
 
-let add_ident name stamp (cxt : t) : int * t = 
+let add_ident ~mangled:name stamp (cxt : t) : int * t = 
   match String_map.find_opt name cxt with 
   | None -> 
     (0, String_map.add name (Int_map.add stamp 0  Int_map.empty) cxt )
@@ -85165,7 +85166,13 @@ let add_ident name stamp (cxt : t) : int * t =
       they print different names:
       - This happens when they escape to the same name and 
         share the  same stamp
-
+      So the key has to be mangled name  + stamp
+      otherwise, if two identifier happens to have same mangled name,
+      if we use the original name as key, they can have same id (like 0).
+      then it caused a collision
+      
+      Here we can guarantee that if mangled name and stamp are not all the same
+      they can not have a collision
 
 *)
 let str_of_ident (cxt : t) (id : Ident.t)  : string * t  =
@@ -85175,7 +85182,7 @@ let str_of_ident (cxt : t) (id : Ident.t)  : string * t  =
   else 
     let id_name = id.name in
     let name = Ext_ident.convert id_name in
-    let i,new_cxt = add_ident  id_name id.stamp cxt in
+    let i,new_cxt = add_ident  ~mangled:name id.stamp cxt in
     (if i == 0 then 
        name 
      else
@@ -85189,7 +85196,7 @@ let ident (cxt : t) f (id : Ident.t) : t  =
 
 let merge set cxt  = 
   Ident_set.fold (fun ident acc -> 
-      snd (add_ident ident.name ident.stamp acc)) set  cxt 
+      snd (add_ident ~mangled:(Ext_ident.convert ident.name) ident.stamp acc)) set  cxt 
 
 (* Assume that all idents are already in the scope
    so both [param/0] and [param/1] are in idents, we don't need 
