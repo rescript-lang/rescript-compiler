@@ -30,21 +30,24 @@
 
 
 (** Scope type to improve identifier name printing
- *) 
-
-(** Defines scope type [t], so that the pretty printer would print more beautiful code: 
-    
-    print [identifer] instead of [identifier$1234] when it can
+    Defines scope type [t], so that the pretty printer would 
+    print more beautiful code:     
+    print [identifer] instead of [identifier$1234] 
+    when it can
  *)
 
 type t 
 
 val empty : t 
 
-val add_ident : Ident.t -> t -> int * t
+val print : Format.formatter -> t -> unit
 
 val sub_scope : t -> Ident_set.t -> t
 
 val merge : Ident_set.t -> t -> t
 
-val print : Format.formatter -> t -> unit
+
+
+val str_of_ident : t -> Ident.t -> string * t 
+
+val ident : t -> Ext_pp.t -> Ident.t -> t 
