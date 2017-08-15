@@ -95,6 +95,11 @@ let buckle_script_flags =
    " Better error message combined with other tools "
   )
   :: 
+  ("-bs-print-errors-in-reason-syntax",
+    Arg.Unit Reason_outcome_printer_main.setup,
+   " Print compiler errors in Reason syntax"
+  )
+  :: 
   ("-bs-no-implicit-include", Arg.Set Clflags.no_implicit_current_dir
   , " Don't include current dir implicitly")
   ::
