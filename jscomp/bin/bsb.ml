@@ -7414,8 +7414,8 @@ let store ~cwd ~file:name file_stamps =
       bsc_version = Bs_version.version }
 
 end
-module Bsb_package_name : sig 
-#1 "bsb_package_name.mli"
+module Ext_package_name : sig 
+#1 "ext_package_name.mli"
 (* Copyright (C) 2017- Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -7451,7 +7451,7 @@ val remove_package_suffix: string -> string
 *)
 val js_name_of_basename :  string -> string 
 end = struct
-#1 "bsb_package_name.ml"
+#1 "ext_package_name.ml"
 
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
@@ -7487,10 +7487,15 @@ end = struct
  let make ~pkg cunit  = 
     cunit ^ package_sep ^ pkg 
     
+
+let rec rindex_rec s i c =
+  if i < 0 then i else
+  if String.unsafe_get s i = c then i else rindex_rec s (i - 1) c;;
+    
 let remove_package_suffix name =
-    match String.rindex name package_sep_char  with 
-    | exception Not_found -> name 
-    | i -> String.sub name 0 i 
+    let i = rindex_rec name 0 package_sep_char in 
+    if i < 0 then name 
+    else String.sub name 0 i 
 
 
 let js_name_of_basename s = 
@@ -7733,7 +7738,7 @@ let get_list_of_output_js
     package_specs output_file_sans_extension = 
   Spec_set.fold (fun format acc ->
       package_output format 
-        (Bsb_package_name.js_name_of_basename output_file_sans_extension)
+        ( Ext_package_name.js_name_of_basename output_file_sans_extension)
       :: acc
     ) package_specs []
 
@@ -12103,7 +12108,7 @@ let emit_impl_build
     | None -> 
       filename_sans_extension 
     | Some pkg -> 
-      Bsb_package_name.make ~pkg filename_sans_extension
+       Ext_package_name.make ~pkg filename_sans_extension
   in 
   let file_cmi =  output_filename_sans_extension ^ Literals.suffix_cmi in
   let output_cmj =  output_filename_sans_extension ^ Literals.suffix_cmj in
@@ -12175,7 +12180,7 @@ let emit_intf_build
     | None -> 
       filename_sans_extension 
     | Some pkg -> 
-      Bsb_package_name.make ~pkg filename_sans_extension
+       Ext_package_name.make ~pkg filename_sans_extension
   in 
   let output_cmi = output_filename_sans_extension ^ Literals.suffix_cmi in
   let common_shadows = 
@@ -17184,7 +17189,7 @@ let make_structure_item pkg_name cunit : Parsetree.structure_item =
     (Mb.mk {txt = cunit; loc }
        (Mod.ident 
           {txt = Lident 
-               (Bsb_package_name.make ~pkg:pkg_name cunit)
+               ( Ext_package_name.make ~pkg:pkg_name cunit)
           ; loc}))
 
 let make_signature_item pkg_name cunit : Parsetree.signature_item = 
@@ -17192,7 +17197,7 @@ let make_signature_item pkg_name cunit : Parsetree.signature_item =
     (Md.mk {txt = cunit; loc}
        (Mty.alias 
           {txt = Lident 
-            (Bsb_package_name.make ~pkg:pkg_name cunit)
+            ( Ext_package_name.make ~pkg:pkg_name cunit)
           ; loc})
     )        
 

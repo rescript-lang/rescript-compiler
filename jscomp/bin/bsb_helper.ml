@@ -2692,8 +2692,8 @@ let string_of_bsb_dev_include i =
 
 let reset () = dir_index := 0
 end
-module Bsb_package_name : sig 
-#1 "bsb_package_name.mli"
+module Ext_package_name : sig 
+#1 "ext_package_name.mli"
 (* Copyright (C) 2017- Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -2729,7 +2729,7 @@ val remove_package_suffix: string -> string
 *)
 val js_name_of_basename :  string -> string 
 end = struct
-#1 "bsb_package_name.ml"
+#1 "ext_package_name.ml"
 
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
@@ -2765,10 +2765,15 @@ end = struct
  let make ~pkg cunit  = 
     cunit ^ package_sep ^ pkg 
     
+
+let rec rindex_rec s i c =
+  if i < 0 then i else
+  if String.unsafe_get s i = c then i else rindex_rec s (i - 1) c;;
+    
 let remove_package_suffix name =
-    match String.rindex name package_sep_char  with 
-    | exception Not_found -> name 
-    | i -> String.sub name 0 i 
+    let i = rindex_rec name 0 package_sep_char in 
+    if i < 0 then name 
+    else String.sub name 0 i 
 
 
 let js_name_of_basename s = 
@@ -2880,7 +2885,7 @@ let output_file oc source namespace =
   match namespace with 
   | None -> output_string oc source ;
   | Some pkg ->
-    output_string oc (Bsb_package_name.make ~pkg source)
+    output_string oc ( Ext_package_name.make ~pkg source)
 
 (** for bucklescript artifacts 
     [lhs_suffix] is [.cmj]

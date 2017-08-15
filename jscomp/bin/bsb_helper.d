@@ -28,10 +28,10 @@ bin/bsb_helper.ml : stubs/bs_hash_stubs.ml
 bin/bsb_helper.ml : bsb/bsb_build_cache.mli
 bin/bsb_helper.ml : bsb/bsb_depfile_gen.mli
 bin/bsb_helper.ml : bsb/bsb_helper_main.mli
-bin/bsb_helper.ml : ext/bsb_package_name.ml
+bin/bsb_helper.ml : ext/ext_package_name.ml
 bin/bsb_helper.ml : bsb/bsb_helper_linker.ml
 bin/bsb_helper.ml : bsb/bsb_helper_packer.ml
-bin/bsb_helper.ml : ext/bsb_package_name.mli
+bin/bsb_helper.ml : ext/ext_package_name.mli
 bin/bsb_helper.ml : bsb/bsb_helper_extract.ml
 bin/bsb_helper.ml : bsb/bsb_helper_linker.mli
 bin/bsb_helper.ml : bsb/bsb_helper_packer.mli
