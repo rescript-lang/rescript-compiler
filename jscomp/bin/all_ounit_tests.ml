@@ -6693,9 +6693,9 @@ let reserved_map =
 
 
 
-
+exception Not_normal_letter of int 
 let name_mangle name = 
-  let module E = struct exception Not_normal_letter of int end in
+
   let len = String.length name  in
   try
     for i  = 0 to len - 1 do 
@@ -6703,10 +6703,12 @@ let name_mangle name =
       | 'a' .. 'z' | 'A' .. 'Z'
       | '0' .. '9' | '_' | '$'
         -> ()
-      | _ -> raise (E.Not_normal_letter i)
+      | _ -> raise (Not_normal_letter i)
     done;
     name (* Normal letter *)
-  with E.Not_normal_letter i ->
+  with 
+  | Not_normal_letter i ->
+  
       String.sub name 0 i ^ 
       (let buffer = Buffer.create len in 
        for j = i to  len - 1 do 

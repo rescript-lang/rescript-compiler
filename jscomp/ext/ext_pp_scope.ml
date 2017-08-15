@@ -30,8 +30,10 @@
 
 
 type t =  
-    int  Int_map.t String_map.t
-
+  int  Int_map.t String_map.t
+(**
+   -- "name" --> int map -- stamp --> index suffix
+*)
 let empty = 
   String_map.empty 
 
@@ -46,40 +48,89 @@ and print_int_map fmt m =
       Format.fprintf fmt "%d - %d" k v       
     ) m    
 
-let add_ident (id : Ident.t) (cxt : t) : int * t = 
-  match String_map.find_exn id.name cxt with 
-  | exception Not_found -> (0, String_map.add id.name Int_map.(add id.stamp 0  empty) cxt )
-  | imap -> (
-    match Int_map.find_exn id.stamp imap with
-    | exception Not_found ->
-      let v = Int_map.cardinal imap in
-      v, String_map.add id.name (Int_map.add id.stamp v imap) cxt
-    | i -> i, cxt
-  )
+let add_ident ~mangled:name stamp (cxt : t) : int * t = 
+  match String_map.find_opt name cxt with 
+  | None -> 
+    (0, String_map.add name (Int_map.add stamp 0  Int_map.empty) cxt )
+  | Some imap -> (
+      match Int_map.find_opt stamp imap with
+      | None -> 
+        let v = Int_map.cardinal imap in
+        v, String_map.add name (Int_map.add stamp v imap) cxt
+      | Some i -> i, cxt
+    )
 
-let of_list lst cxt = 
-  List.fold_left (fun scope i -> snd (add_ident i scope)) cxt lst 
+
+
+
+
+(**
+   same as {!Js_dump.ident} except it generates a string instead of doing the printing
+   For fast/debug mode, we can generate the name as 
+       [Printf.sprintf "%s$%d" name id.stamp] which is 
+       not relevant to the context       
+
+   Attention: 
+   - $$Array.length, due to the fact that global module is 
+       always printed in the begining(via imports), so you get a gurantee, 
+       (global modules will not be printed as [List$1]) 
+
+       However, this means we loose the ability of dynamic loading, is it a big 
+       deal? we can fix this by a scanning first, since we already know which 
+       modules are global
+
+       check [test/test_global_print.ml] for regression
+   - collision
+      It is obvious that for the same identifier that they 
+      print the same name.
+      
+      It also needs to be hold that for two different identifiers,  
+      they print different names:
+      - This happens when they escape to the same name and 
+        share the  same stamp
+      So the key has to be mangled name  + stamp
+      otherwise, if two identifier happens to have same mangled name,
+      if we use the original name as key, they can have same id (like 0).
+      then it caused a collision
+      
+      Here we can guarantee that if mangled name and stamp are not all the same
+      they can not have a collision
+
+*)
+let str_of_ident (cxt : t) (id : Ident.t)  : string * t  =
+  if Ext_ident.is_js id then 
+    (* reserved by compiler *)
+    id.name , cxt
+  else 
+    let id_name = id.name in
+    let name = Ext_ident.convert id_name in
+    let i,new_cxt = add_ident  ~mangled:name id.stamp cxt in
+    (if i == 0 then 
+       name 
+     else
+       Printf.sprintf "%s$%d" name i), new_cxt 
+
+let ident (cxt : t) f (id : Ident.t) : t  =
+  let str, cxt = str_of_ident cxt id in
+  Ext_pp.string f str; 
+  cxt   
+
 
 let merge set cxt  = 
-  Ident_set.fold (fun ident acc -> snd (add_ident ident acc)) set  cxt 
+  Ident_set.fold (fun ident acc -> 
+      snd (add_ident ~mangled:(Ext_ident.convert ident.name) ident.stamp acc)) set  cxt 
 
-(* Assume that all idents are already in the scope
+(* Assume that all idents are already in [scope]
    so both [param/0] and [param/1] are in idents, we don't need 
    update twice,  once is enough
- *)
-let sub_scope (scope : t) ident_collection : t =
-  let cxt = empty in
-  Ident_set.fold (fun (i : Ident.t) acc -> 
-    match String_map.find_exn i.name scope with 
-    | exception Not_found -> assert false 
-    | imap -> ( 
-      (* They are the same if already there*)
-      match String_map.find_exn i.name acc with 
-      | exception Not_found -> String_map.add i.name imap acc
-      | _ -> acc  (* TODO: optimization *) 
-    )
-  ) ident_collection cxt 
-
-
-
+*)
+let sub_scope (scope : t) (idents : Ident_set.t) : t =
+  Ident_set.fold (fun ({name } : Ident.t) (acc : t) -> 
+      let mangled = Ext_ident.convert name in 
+      match String_map.find_exn mangled scope with 
+      | exception Not_found -> assert false 
+      | imap -> 
+          if String_map.mem mangled acc then acc 
+          else String_map.add mangled imap acc
+    ) idents empty
 
