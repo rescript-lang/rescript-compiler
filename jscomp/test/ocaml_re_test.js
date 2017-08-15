@@ -3065,10 +3065,10 @@ function exec_internal(name, $staropt$star, $staropt$star$1, groups, re, s) {
   var len$1 = len;
   var slen = s$1.length;
   var last = len$1 === -1 ? slen : pos$1 + len$1 | 0;
-  var $js;
+  var tmp;
   if (groups$1) {
     var n = re$1[/* tbl */6][0].length + 1 | 0;
-    $js = n <= 10 ? /* array */[
+    tmp = n <= 10 ? /* array */[
         0,
         0,
         0,
@@ -3081,12 +3081,12 @@ function exec_internal(name, $staropt$star, $staropt$star$1, groups, re, s) {
         0
       ] : Caml_array.caml_make_vect(n, 0);
   } else {
-    $js = /* int array */[];
+    tmp = /* int array */[];
   }
   var info = /* record */[
     /* re */re$1,
     /* i_cols */re$1[/* cols */2],
-    /* positions */$js,
+    /* positions */tmp,
     /* pos */pos$1,
     /* last */last
   ];

@@ -45,11 +45,11 @@ function map(f, x) {
 function make(foo) {
   var partial_arg = map(Pervasives.string_of_int, foo);
   return (function () {
-      var $js = { };
+      var tmp = { };
       if (partial_arg) {
-        $js.foo = partial_arg[0];
+        tmp.foo = partial_arg[0];
       }
-      return $js;
+      return tmp;
     });
 }
 
@@ -71,61 +71,61 @@ var test2 = {
 
 function test3(_open, xx__hi) {
   console.log("no inlin");
-  var $js = {
+  var tmp = {
     hi: 2
   };
   if (_open) {
-    $js.open = _open[0];
+    tmp.open = _open[0];
   }
   if (xx__hi) {
-    $js.xx = xx__hi[0];
+    tmp.xx = xx__hi[0];
   }
-  return $js;
+  return tmp;
 }
 
 function test4(_open, xx__hi) {
   console.log("no inlin");
-  var $js = {
+  var tmp = {
     open: _open,
     hi: 2
   };
   if (xx__hi) {
-    $js.xx = xx__hi[0];
+    tmp.xx = xx__hi[0];
   }
-  return $js;
+  return tmp;
 }
 
 function test5(f, x) {
   console.log("no inline");
-  var $js = {
+  var tmp = {
     hi: 2
   };
-  var tmp = Curry._1(f, x);
-  if (tmp) {
-    $js.open = tmp[0];
-  }
   var tmp$1 = Curry._1(f, x);
   if (tmp$1) {
-    $js.xx = tmp$1[0];
+    tmp.open = tmp$1[0];
   }
-  return $js;
+  var tmp$2 = Curry._1(f, x);
+  if (tmp$2) {
+    tmp.xx = tmp$2[0];
+  }
+  return tmp;
 }
 
 function test6(f, _) {
   console.log("no inline");
   var x = [3];
-  var $js = {
+  var tmp = {
     hi: 2
   };
-  var tmp = (x[0] = x[0] + 1 | 0, /* Some */[x[0]]);
-  if (tmp) {
-    $js.open = tmp[0];
-  }
-  var tmp$1 = f(x);
+  var tmp$1 = (x[0] = x[0] + 1 | 0, /* Some */[x[0]]);
   if (tmp$1) {
-    $js.xx = tmp$1[0];
+    tmp.open = tmp$1[0];
   }
-  return $js;
+  var tmp$2 = f(x);
+  if (tmp$2) {
+    tmp.xx = tmp$2[0];
+  }
+  return tmp;
 }
 
 function keys(xs, ys) {

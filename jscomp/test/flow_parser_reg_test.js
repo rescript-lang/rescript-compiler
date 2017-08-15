@@ -4968,9 +4968,9 @@ function error$1(env, e) {
 
 function get_unexpected_error(param) {
   var exit = 0;
-  var $js = param[0];
-  if (typeof $js === "number") {
-    switch ($js) {
+  var tmp = param[0];
+  if (typeof tmp === "number") {
+    switch (tmp) {
       case 0 : 
           return /* UnexpectedIdentifier */2;
       case 105 : 
@@ -4979,7 +4979,7 @@ function get_unexpected_error(param) {
         exit = 1;
     }
   } else {
-    switch ($js.tag | 0) {
+    switch (tmp.tag | 0) {
       case 0 : 
           return /* UnexpectedNumber */0;
       case 1 : 
@@ -7323,11 +7323,11 @@ function is_tighter(a, b) {
 }
 
 function is_lhs(param) {
-  var $js = param[1];
-  if (typeof $js === "number") {
+  var tmp = param[1];
+  if (typeof tmp === "number") {
     return /* false */0;
   } else {
-    switch ($js.tag | 0) {
+    switch (tmp.tag | 0) {
       case 13 : 
       case 18 : 
           return /* true */1;
@@ -7338,11 +7338,11 @@ function is_lhs(param) {
 }
 
 function is_assignable_lhs(param) {
-  var $js = param[1];
-  if (typeof $js === "number") {
+  var tmp = param[1];
+  if (typeof tmp === "number") {
     return /* false */0;
   } else {
-    switch ($js.tag | 0) {
+    switch (tmp.tag | 0) {
       case 0 : 
       case 1 : 
       case 13 : 
@@ -7494,9 +7494,9 @@ function unary(env) {
     var argument = unary(env);
     var loc = btwn(begin_loc, argument[0]);
     if (operator === 6) {
-      var $js = argument[1];
-      if (typeof $js !== "number") {
-        if ($js.tag === 18) {
+      var tmp = argument[1];
+      if (typeof tmp !== "number") {
+        if (tmp.tag === 18) {
           strict_error_at(env, /* tuple */[
                 loc,
                 /* StrictDelete */32
@@ -8715,9 +8715,9 @@ function binary(env) {
     var end_loc = match ? match[0] : right[0];
     var right_loc = btwn(start_loc, end_loc);
     if (Curry._2(Parser_env_048[/* token */0], /* None */0, env$1) === /* T_LESS_THAN */89) {
-      var $js = right[1];
-      if (typeof $js !== "number") {
-        if ($js.tag === 22) {
+      var tmp = right[1];
+      if (typeof tmp !== "number") {
+        if (tmp.tag === 22) {
           error$1(env$1, /* AdjacentJSXElements */46);
         }
         
@@ -9359,7 +9359,7 @@ function property$1(env) {
     var async$1 = Curry._2(Parser_env_048[/* is_identifier */8], /* Some */[1], env) && async(env);
     var match = generator(env, async$1);
     var match$1 = key(env);
-    var $js;
+    var tmp;
     var exit = 0;
     if (async$1 !== 0) {
       exit = 1;
@@ -9374,26 +9374,26 @@ function property$1(env) {
                   var match$2 = Curry._2(Parser_env_048[/* token */0], /* None */0, env);
                   if (typeof match$2 === "number") {
                     var switcher = match$2 - 3 | 0;
-                    $js = switcher > 74 || switcher < 0 ? (
+                    tmp = switcher > 74 || switcher < 0 ? (
                         switcher !== 86 ? get(env, start_loc) : init(env, start_loc, key$1, /* false */0, /* false */0)
                       ) : (
                         switcher > 73 || switcher < 1 ? init(env, start_loc, key$1, /* false */0, /* false */0) : get(env, start_loc)
                       );
                   } else {
-                    $js = get(env, start_loc);
+                    tmp = get(env, start_loc);
                   }
                   break;
               case "set" : 
                   var match$3 = Curry._2(Parser_env_048[/* token */0], /* None */0, env);
                   if (typeof match$3 === "number") {
                     var switcher$1 = match$3 - 3 | 0;
-                    $js = switcher$1 > 74 || switcher$1 < 0 ? (
+                    tmp = switcher$1 > 74 || switcher$1 < 0 ? (
                         switcher$1 !== 86 ? set(env, start_loc) : init(env, start_loc, key$1, /* false */0, /* false */0)
                       ) : (
                         switcher$1 > 73 || switcher$1 < 1 ? init(env, start_loc, key$1, /* false */0, /* false */0) : set(env, start_loc)
                       );
                   } else {
-                    $js = set(env, start_loc);
+                    tmp = set(env, start_loc);
                   }
                   break;
               default:
@@ -9408,9 +9408,9 @@ function property$1(env) {
       }
     }
     if (exit === 1) {
-      $js = init(env, start_loc, match$1[1], async$1, match);
+      tmp = init(env, start_loc, match$1[1], async$1, match);
     }
-    return /* Property */Block.__(0, [$js]);
+    return /* Property */Block.__(0, [tmp]);
   }
 }
 
@@ -9500,29 +9500,29 @@ function init(env, start_loc, key, async, generator) {
         ];
         break;
     case 2 : 
-        var $js;
+        var tmp;
         switch (key.tag | 0) {
           case 0 : 
               var lit = key[0];
-              $js = /* tuple */[
+              tmp = /* tuple */[
                 lit[0],
                 /* Literal */Block.__(19, [lit[1]])
               ];
               break;
           case 1 : 
               var id = key[0];
-              $js = /* tuple */[
+              tmp = /* tuple */[
                 id[0],
                 /* Identifier */Block.__(18, [id])
               ];
               break;
           case 2 : 
-              $js = key[0];
+              tmp = key[0];
               break;
           
         }
         match$1 = /* tuple */[
-          $js,
+          tmp,
           /* true */1,
           /* false */0
         ];
@@ -15591,8 +15591,8 @@ function parse(content, _) {
               var id;
               id = match$8.tag ? literal(match$8[0]) : identifier(match$8[0]);
               var match$9 = m[/* kind */2];
-              var $js;
-              $js = match$9.tag ? Curry._1(string, "ES") : Curry._1(string, "CommonJS");
+              var tmp;
+              tmp = match$9.tag ? Curry._1(string, "ES") : Curry._1(string, "CommonJS");
               return node("DeclareModule", loc, /* array */[
                           /* tuple */[
                             "id",
@@ -15604,7 +15604,7 @@ function parse(content, _) {
                           ],
                           /* tuple */[
                             "kind",
-                            $js
+                            tmp
                           ]
                         ]);
           case 26 : 

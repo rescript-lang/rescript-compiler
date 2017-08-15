@@ -37,9 +37,8 @@ let rec named_expression (e : J.expression)
   if Js_analyzer.is_simple_no_side_effect_expression e then 
     None 
   else 
-    let obj = Ext_ident.create Literals.tmp in
+    let obj = Ext_ident.create_tmp () in 
     let obj_code = 
       S.define
         ~kind:Strict obj e in 
-
     Some (obj_code, obj)

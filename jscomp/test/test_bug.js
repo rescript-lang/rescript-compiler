@@ -7,29 +7,29 @@ function escaped(s) {
   var n = 0;
   for(var i = 0 ,i_finish = s.length - 1 | 0; i <= i_finish; ++i){
     var c = s[i];
-    var $js;
+    var tmp;
     var exit = 0;
     if (c >= 14) {
       if (c !== 34 && c !== 92) {
         exit = 1;
       } else {
-        $js = 2;
+        tmp = 2;
       }
     } else if (c >= 11) {
       if (c >= 13) {
-        $js = 2;
+        tmp = 2;
       } else {
         exit = 1;
       }
     } else if (c >= 8) {
-      $js = 2;
+      tmp = 2;
     } else {
       exit = 1;
     }
     if (exit === 1) {
-      $js = Caml_string.caml_is_printable(c) ? 1 : 4;
+      tmp = Caml_string.caml_is_printable(c) ? 1 : 4;
     }
-    n = n + $js | 0;
+    n = n + tmp | 0;
   }
   if (n === s.length) {
     return Bytes.copy(s);

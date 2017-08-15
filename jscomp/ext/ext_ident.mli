@@ -31,7 +31,7 @@
 
 (** A wrapper around [Ident] module in compiler-libs*)
 
-val is_js : Ident.t -> bool
+ val is_js : Ident.t -> bool 
 
 val is_js_object : Ident.t -> bool
 
@@ -40,17 +40,15 @@ val create_js : string -> Ident.t
 
 val create : string -> Ident.t
 
-(* val create_js_module : string -> Ident.t  *)
-
-val make_js_object : Ident.t -> unit
+ val make_js_object : Ident.t -> unit 
 
 val reset : unit -> unit
 
-val gen_js :  ?name:string -> unit -> Ident.t
+val create_tmp :  ?name:string -> unit -> Ident.t
 
-val make_unused : unit -> Ident.t
+val make_unused : unit -> Ident.t 
 
-val is_unused_ident : Ident.t -> bool 
+
 
 (**
    Invariant: if name is not converted, the reference should be equal
@@ -60,7 +58,7 @@ val property_no_need_convert : string -> bool
 
 val undefined : Ident.t 
 val is_js_or_global : Ident.t -> bool
-val nil : Ident.t
+ val nil : Ident.t 
 
 
 val compare : Ident.t -> Ident.t -> int

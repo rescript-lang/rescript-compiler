@@ -260,11 +260,11 @@ var suites_001 = /* :: */[
   /* tuple */[
     "mutual",
     (function () {
-        var $js;
+        var tmp;
         if (a) {
           var match = a[1];
           if (match) {
-            $js = match[0];
+            tmp = match[0];
           } else {
             throw [
                   Caml_builtin_exceptions.assert_failure,
@@ -287,7 +287,7 @@ var suites_001 = /* :: */[
         }
         return /* Eq */Block.__(0, [
                   3,
-                  $js
+                  tmp
                 ]);
       })
   ],
