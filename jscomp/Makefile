@@ -22,7 +22,7 @@ OCAML_SRC_TOOLS=../vendor/ocaml/tools
 
 print-%  : ; @echo $* = $($*)
 
-INCLUDES= -I +compiler-libs -I stubs -I ext -I common -I syntax -I depends -I core -I bsb -I ounit -I ounit_tests -I super_errors
+INCLUDES= -I +compiler-libs -I stubs -I ext -I common -I syntax -I depends -I core -I bsb -I ounit -I ounit_tests -I super_errors -I reason_outcome_printer
 
 .mli.cmi:
 	$(NATIVE) $(INCLUDES) $(COMPFLAGS) -c $<
@@ -347,10 +347,12 @@ BSB_SRCS= bsb_config\
 	bsb_templates\
 	bsb_init
 SUPER_ERRORS_SRCS=super_misc super_warnings super_typecore super_typetexp super_location super_main
+REASON_OUTCOME_PRINTER_SRCS=tweaked_reason_oprint reason_outcome_printer_main
 
 BSB_CMXS=$(addprefix bsb/, $(addsuffix .cmx, $(BSB_SRCS)))
 BSB_CMOS=$(addprefix bsb/, $(addsuffix .cmo, $(BSB_SRCS)))
 SUPER_ERRORS_CMXS=$(addprefix super_errors/, $(addsuffix .cmx, $(SUPER_ERRORS_SRCS)))
+REASON_OUTCOME_PRINTER_CMXS=$(addprefix reason_outcome_printer/, $(addsuffix .cmx, $(REASON_OUTCOME_PRINTER_SRCS)))
 MAIN_SRCS= jsgen_main jscmj_main bsb/bsb_main bsb/bsb_helper_main
 MAIN_CMXS=$(addsuffix .cmx, $(MAIN_SRCS))
 
@@ -377,8 +379,12 @@ super.cmxa:$(SUPER_ERRORS_CMXS)
 	ocamlopt.opt -a $^ -o $@
 super.cma:$(SUPER_ERRORS_CMOS)
 	ocamlc.opt -a $^ -o $@
+reason_outcome_printer.cmxa:$(REASON_OUTCOME_PRINTER_CMXS)
+	ocamlopt.opt -a $^ -o $@
+reason_outcome_printer.cma:$(REASON_OUTCOME_PRINTER_CMOS)
+	ocamlc.opt -a $^ -o $@
 
-check: $(EXT_CMXS) $(COMMON_CMXS) $(SYNTAX_CMXS) $(DEPENDS_CMXS) $(CORE_CMXS) $(BSB_CMXS) $(OTHER_CORE_CMXS) $(MAIN_CMXS) $(SUPER_ERRORS_CMXS) $(OUNIT_CMXS) $(OUNIT_TESTS_CMXS)
+check: $(EXT_CMXS) $(COMMON_CMXS) $(SYNTAX_CMXS) $(DEPENDS_CMXS) $(CORE_CMXS) $(BSB_CMXS) $(OTHER_CORE_CMXS) $(MAIN_CMXS) $(SUPER_ERRORS_CMXS) $(REASON_OUTCOME_PRINTER_CMXS) $(OUNIT_CMXS) $(OUNIT_TESTS_CMXS)
 
 bin/bsb.exe: bs_hash.cmxa ext.cmxa common.cmxa  bsb.cmxa bsb/bsb_main.cmx
 	$(NATIVE) -I +compiler-libs -g  ocamlcommon.cmxa unix.cmxa str.cmxa $^ -o $@
@@ -389,7 +395,7 @@ bin/bsb_helper.exe: bs_hash.cmxa ext.cmxa common.cmxa  bsb.cmxa bsb/bsb_helper_m
 # bin/bsc:  ext.cmxa common.cmxa  depends.cmxa syntax.cmxa core.cmxa
 # 	$(NATIVE) -g -linkall -I +compiler-libs ocamlcommon.cmxa $^ -o $@
 
-bin/bsc.exe: bs_hash.cmxa ext.cmxa common.cmxa syntax.cmxa depends.cmxa core.cmxa super.cmxa core/js_main.cmx
+bin/bsc.exe: bs_hash.cmxa ext.cmxa common.cmxa syntax.cmxa depends.cmxa core.cmxa super.cmxa reason_outcome_printer.cmxa core/js_main.cmx
 	@echo "Linking"
 	$(NATIVE) -g -linkall -I +compiler-libs ocamlcommon.cmxa $^ -o $@
 
@@ -413,7 +419,7 @@ bin/jsgen.exe:bs_hash.cmxa ext.cmxa jsgen_main.cmx
 
 
 depend:
-	$(CAMLDEP) -absname -native -I stubs -I ext -I common -I syntax -I depends -I core -I ounit -I ounit_tests -I bsb -I super_errors \
+	$(CAMLDEP) -absname -native -I stubs -I ext -I common -I syntax -I depends -I core -I ounit -I ounit_tests -I bsb -I super_errors -I reason_outcome_printer \
 	$(addprefix stubs/, $(addsuffix .ml, $(STUB_SRCS))) \
 	$(addprefix stubs/, $(addsuffix .mli, $(STUB_SRCS))) \
 	$(addprefix ext/, $(addsuffix .ml, $(EXT_SRCS))) \
@@ -432,6 +438,8 @@ depend:
 	$(addprefix ounit/, $(addsuffix .ml, $(OUNIT_SRCS))) \
 	$(addprefix super_errors/, $(addsuffix .ml, $(SUPER_ERRORS_SRCS))) \
 	$(addprefix super_errors/, $(addsuffix .mli, $(SUPER_ERRORS_SRCS))) \
+	$(addprefix reason_outcome_printer/, $(addsuffix .ml, $(REASON_OUTCOME_PRINTER_SRCS))) \
+	$(addprefix reason_outcome_printer/, $(addsuffix .mli, $(REASON_OUTCOME_PRINTER_SRCS))) \
 	$(addprefix ounit_tests/, $(addsuffix .mli, $(OUNIT_TESTS_SRCS))) \
 	$(addprefix ounit_tests/, $(addsuffix .ml, $(OUNIT_TESTS_SRCS))) \
 	bsb/*.ml bsb/*.mli *.ml *.mli > all.depend
@@ -498,7 +506,7 @@ bin/bsppx.ml:./bin/bspack.exe
 	$< -U BS_DEBUG -bs-MD  -module-alias Config=ConfigDummy -I bin -I $(OCAML_SRC_UTILS) -I $(OCAML_SRC_PARSING) -I stubs -I common -I ext -I syntax -I core -bs-main Bsppx_main -o $@
 
 bin/whole_compiler.ml:./bin/bspack.exe
-	$< -U BS_DEBUG -bs-MD -prelude-str 'module Config = Config_whole_compiler' -bs-exclude-I config -o $@ -bs-main Js_main -I $(OCAML_SRC_UTILS) -I $(OCAML_SRC_PARSING) -I $(OCAML_SRC_TYPING) -I $(OCAML_SRC_BYTECOMP) -I $(OCAML_SRC_DRIVER)/ -I stubs -I ext -I syntax -I depends -I common -I core -I super_errors
+	$< -U BS_DEBUG -bs-MD -prelude-str 'module Config = Config_whole_compiler' -bs-exclude-I config -o $@ -bs-main Js_main -I $(OCAML_SRC_UTILS) -I $(OCAML_SRC_PARSING) -I $(OCAML_SRC_TYPING) -I $(OCAML_SRC_BYTECOMP) -I $(OCAML_SRC_DRIVER)/ -I stubs -I ext -I syntax -I depends -I common -I core -I super_errors -I reason_outcome_printer
 
 bin/bsdep.ml:./bin/bspack.exe
 	$< -D BS_OCAMLDEP=true  -U BS_DEBUG -bs-MD  -module-alias Config=ConfigDummy -I bin  -I $(OCAML_SRC_UTILS) -I $(OCAML_SRC_PARSING) -I $(OCAML_SRC_DRIVER) -I $(OCAML_SRC_TOOLS) -I common -I ext -I syntax -I depends -I core -I stubs -bs-main Ocamldep -o $@
