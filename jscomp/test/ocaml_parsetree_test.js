@@ -234,18 +234,18 @@ function setup(o) {
     first[0] = /* false */0;
     Format.set_mark_tags(/* true */1);
     List.iter(set_color_tag_handling, formatter_l);
-    var $js;
+    var tmp;
     switch (o) {
       case 1 : 
-          $js = /* true */1;
+          tmp = /* true */1;
           break;
       case 0 : 
       case 2 : 
-          $js = /* false */0;
+          tmp = /* false */0;
           break;
       
     }
-    color_enabled[0] = $js;
+    color_enabled[0] = tmp;
   }
   return /* () */0;
 }
@@ -9356,7 +9356,7 @@ var directive_built_in_values = Hashtbl.create(/* None */0, 51);
 
 Hashtbl.replace(directive_built_in_values, "OCAML_VERSION", /* Dir_string */Block.__(3, [Sys.ocaml_version]));
 
-var $js;
+var tmp;
 
 var exit = 0;
 
@@ -9368,17 +9368,17 @@ try {
 }
 catch (exn$1){
   if (exn$1 === Caml_builtin_exceptions.not_found) {
-    $js = "";
+    tmp = "";
   } else {
     throw exn$1;
   }
 }
 
 if (exit === 1) {
-  $js = $$String.sub(Sys.ocaml_version, i + 1 | 0, (Sys.ocaml_version.length - i | 0) - 1 | 0);
+  tmp = $$String.sub(Sys.ocaml_version, i + 1 | 0, (Sys.ocaml_version.length - i | 0) - 1 | 0);
 }
 
-var v = /* Dir_string */Block.__(3, [$js]);
+var v = /* Dir_string */Block.__(3, [tmp]);
 
 Hashtbl.replace(directive_built_in_values, "OCAML_PATCH", v);
 
@@ -11861,16 +11861,16 @@ function skip_phrase(lexbuf) {
     catch (raw_exn){
       var exn = Js_exn.internalToOCamlException(raw_exn);
       if (exn[0] === $$Error$2) {
-        var $js = exn[1];
-        if (typeof $js === "number") {
-          if ($js) {
+        var tmp = exn[1];
+        if (typeof tmp === "number") {
+          if (tmp) {
             throw exn;
           } else {
             continue ;
             
           }
         } else {
-          switch ($js.tag | 0) {
+          switch (tmp.tag | 0) {
             case 0 : 
             case 2 : 
             case 3 : 
@@ -11908,10 +11908,10 @@ function wrap(parsing_fun, lexbuf) {
     var exit = 0;
     var exit$1 = 0;
     if (err[0] === $$Error$2) {
-      var $js = err[1];
-      if (typeof $js === "number") {
+      var tmp = err[1];
+      if (typeof tmp === "number") {
         exit$1 = 2;
-      } else if ($js.tag) {
+      } else if (tmp.tag) {
         exit$1 = 2;
       } else if (input_name[0] === "//toplevel//") {
         skip_phrase(lexbuf);

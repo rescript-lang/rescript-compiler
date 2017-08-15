@@ -40,16 +40,16 @@ eq("File \"caml_sys_poly_fill_test.ml\", line 17, characters 5-12", "Y", (Node_p
 
 Node_process.deleteEnvVar("caml_sys_poly_fill_test.ml");
 
-var $js;
+var tmp;
 
 try {
-  $js = Caml_sys.caml_sys_getenv("caml_sys_poly_fill_test.ml");
+  tmp = Caml_sys.caml_sys_getenv("caml_sys_poly_fill_test.ml");
 }
 catch (exn){
-  $js = "Z";
+  tmp = "Z";
 }
 
-eq("File \"caml_sys_poly_fill_test.ml\", line 23, characters 5-12", "Z", $js);
+eq("File \"caml_sys_poly_fill_test.ml\", line 23, characters 5-12", "Z", tmp);
 
 Mt.from_pair_suites("caml_sys_poly_fill_test.ml", suites[0]);
 

@@ -2,15 +2,15 @@
 
 
 function v(displayName, _) {
-  var $js = {
+  var tmp = {
     test: 3,
     config: 3,
     hi: "ghos"
   };
   if (displayName) {
-    $js.displayName = displayName[0];
+    tmp.displayName = displayName[0];
   }
-  return $js;
+  return tmp;
 }
 
 var v2 = {

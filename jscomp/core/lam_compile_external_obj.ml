@@ -95,7 +95,7 @@ let assemble_args_obj (labels : Ast_arg.kind list)  (args : J.expression list)
       | x::xs -> E.seq (E.fuse_to_seq x xs) (E.obj map)
     end
   | _ ->     
-    let v  = Ext_ident.gen_js () in 
+    let v  = Ext_ident.create_tmp () in 
     let var_v = E.var v in 
     S.define ~kind:Variable v 
     (begin match eff with

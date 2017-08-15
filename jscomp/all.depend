@@ -1,4 +1,5 @@
 stubs/bs_hash_stubs.cmx :
+ext/literals.cmx : ext/literals.cmi
 ext/ext_util.cmx : ext/ext_util.cmi
 ext/ext_int.cmx : ext/ext_int.cmi
 ext/ext_position.cmx : ext/ext_position.cmi
@@ -38,7 +39,7 @@ ext/hash_set.cmx : ext/hash_set_gen.cmx ext/hash_set.cmi
 ext/string_hash_set.cmx : ext/hash_set_gen.cmx ext/ext_string.cmx \
     stubs/bs_hash_stubs.cmx ext/string_hash_set.cmi
 ext/ext_ident.cmx : ext/string_hashtbl.cmx ext/string_hash_set.cmx \
-    ext/ext_string.cmx ext/ext_ident.cmi
+    ext/literals.cmx ext/ext_string.cmx ext/ext_ident.cmi
 ext/int_hash_set.cmx : ext/hash_set_gen.cmx ext/ext_int.cmx \
     stubs/bs_hash_stubs.cmx ext/int_hash_set.cmi
 ext/hash_set_ident_mask.cmx : ext/ext_util.cmx ext/ext_ident.cmx \
@@ -61,7 +62,6 @@ ext/ordered_hash_map_local_ident.cmx : ext/ordered_hash_map_gen.cmx \
     ext/ext_ident.cmx stubs/bs_hash_stubs.cmx \
     ext/ordered_hash_map_local_ident.cmi
 ext/int_map.cmx : ext/map_gen.cmx ext/ext_int.cmx ext/int_map.cmi
-ext/literals.cmx : ext/literals.cmi
 ext/string_map.cmx : ext/map_gen.cmx ext/ext_string.cmx ext/string_map.cmi
 ext/string_set.cmx : ext/set_gen.cmx ext/ext_string.cmx ext/string_set.cmi
 ext/set_int.cmx : ext/set_gen.cmx ext/ext_int.cmx ext/set_int.cmi
@@ -92,6 +92,7 @@ ext/int_hashtbl.cmx : ext/hashtbl_gen.cmx ext/ext_int.cmx \
 ext/ext_filename.cmx : ext/literals.cmx ext/ext_string.cmx \
     ext/ext_pervasives.cmx ext/ext_filename.cmi
 ext/ext_package_name.cmx : ext/literals.cmx ext/ext_package_name.cmi
+ext/literals.cmi :
 ext/ext_util.cmi :
 ext/ext_int.cmi :
 ext/ext_position.cmi :
@@ -132,7 +133,6 @@ ext/ident_set.cmi : ext/set_gen.cmx
 ext/hashtbl_make.cmi : ext/hashtbl_gen.cmx
 ext/ordered_hash_map_local_ident.cmi : ext/ordered_hash_map_gen.cmx
 ext/int_map.cmi : ext/map_gen.cmx
-ext/literals.cmi :
 ext/string_map.cmi : ext/map_gen.cmx
 ext/string_set.cmi :
 ext/set_int.cmi : ext/set_gen.cmx
@@ -482,9 +482,8 @@ core/js_pass_flatten_and_mark_dead.cmx : core/js_stmt_make.cmx \
     common/js_config.cmx core/js_analyzer.cmx core/j.cmx ext/ident_set.cmx \
     ext/ident_hashtbl.cmx common/ext_log.cmx ext/ext_list.cmx \
     ext/ext_ident.cmx core/js_pass_flatten_and_mark_dead.cmi
-core/js_ast_util.cmx : ext/literals.cmx core/js_stmt_make.cmx \
-    core/js_exp_make.cmx core/js_analyzer.cmx core/j.cmx ext/ext_ident.cmx \
-    core/js_ast_util.cmi
+core/js_ast_util.cmx : core/js_stmt_make.cmx core/js_exp_make.cmx \
+    core/js_analyzer.cmx core/j.cmx ext/ext_ident.cmx core/js_ast_util.cmi
 core/lam_dce.cmx : core/lam_group.cmx core/lam_analysis.cmx core/lam.cmx \
     ext/ident_set.cmx ext/ident_hashtbl.cmx ext/ident_hash_set.cmx \
     ext/ext_pervasives.cmx ext/ext_ident.cmx core/lam_dce.cmi

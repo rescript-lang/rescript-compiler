@@ -60,6 +60,12 @@ let make_js_object (i : Ident.t) =
 let create_js (name : string) : Ident.t  = 
   { name = name; flags = js_flag ; stamp = 0}
 
+let create = Ident.create
+
+(* FIXME: no need for `$' operator *)
+let create_tmp ?(name=Literals.tmp) () = create name 
+
+
 let js_module_table : Ident.t String_hashtbl.t = String_hashtbl.create 31 
 
 (* This is for a js exeternal module, we can change it when printing
@@ -88,10 +94,6 @@ let create_js_module (name : string) : Ident.t =
     ans
   | v -> (* v *) Ident.rename v  
 
-let create = Ident.create
-
-(* FIXME: no need for `$' operator *)
-let gen_js ?(name="$js") () = create name 
 
 let reserved_words = 
   [|
@@ -276,7 +278,7 @@ let property_no_need_convert s =
 *)
 let make_unused () = create "_"
 
-let is_unused_ident i = Ident.name i = "_"
+
 
 let reset () = 
   String_hashtbl.clear js_module_table

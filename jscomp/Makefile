@@ -159,7 +159,8 @@ OUNIT_TESTS_SRCS =  ounit_tests_util \
 	ounit_tests_main
 OUNIT_TESTS_CMXS = $(addprefix ounit_tests/, $(addsuffix .cmx, $(OUNIT_TESTS_SRCS)))
 
-EXT_SRCS = ext_util\
+EXT_SRCS = 	literals \
+	ext_util\
 	ext_int\
 	ext_position\
 	ext_array ext_bytes ext_char\
@@ -199,7 +200,6 @@ EXT_SRCS = ext_util\
 	hashtbl_make\
 	ordered_hash_map_local_ident\
 	int_map\
-	literals \
 	string_map \
 	string_set\
 	set_int\

@@ -59288,7 +59288,7 @@ module Ext_ident : sig
 
 (** A wrapper around [Ident] module in compiler-libs*)
 
-val is_js : Ident.t -> bool
+ val is_js : Ident.t -> bool 
 
 val is_js_object : Ident.t -> bool
 
@@ -59297,17 +59297,15 @@ val create_js : string -> Ident.t
 
 val create : string -> Ident.t
 
-(* val create_js_module : string -> Ident.t  *)
-
-val make_js_object : Ident.t -> unit
+ val make_js_object : Ident.t -> unit 
 
 val reset : unit -> unit
 
-val gen_js :  ?name:string -> unit -> Ident.t
+val create_tmp :  ?name:string -> unit -> Ident.t
 
-val make_unused : unit -> Ident.t
+val make_unused : unit -> Ident.t 
 
-val is_unused_ident : Ident.t -> bool 
+
 
 (**
    Invariant: if name is not converted, the reference should be equal
@@ -59317,7 +59315,7 @@ val property_no_need_convert : string -> bool
 
 val undefined : Ident.t 
 val is_js_or_global : Ident.t -> bool
-val nil : Ident.t
+ val nil : Ident.t 
 
 
 val compare : Ident.t -> Ident.t -> int
@@ -59387,6 +59385,12 @@ let make_js_object (i : Ident.t) =
 let create_js (name : string) : Ident.t  = 
   { name = name; flags = js_flag ; stamp = 0}
 
+let create = Ident.create
+
+(* FIXME: no need for `$' operator *)
+let create_tmp ?(name=Literals.tmp) () = create name 
+
+
 let js_module_table : Ident.t String_hashtbl.t = String_hashtbl.create 31 
 
 (* This is for a js exeternal module, we can change it when printing
@@ -59415,10 +59419,6 @@ let create_js_module (name : string) : Ident.t =
     ans
   | v -> (* v *) Ident.rename v  
 
-let create = Ident.create
-
-(* FIXME: no need for `$' operator *)
-let gen_js ?(name="$js") () = create name 
 
 let reserved_words = 
   [|
@@ -59603,7 +59603,7 @@ let property_no_need_convert s =
 *)
 let make_unused () = create "_"
 
-let is_unused_ident i = Ident.name i = "_"
+
 
 let reset () = 
   String_hashtbl.clear js_module_table
@@ -90894,11 +90894,10 @@ let rec named_expression (e : J.expression)
   if Js_analyzer.is_simple_no_side_effect_expression e then 
     None 
   else 
-    let obj = Ext_ident.create Literals.tmp in
+    let obj = Ext_ident.create_tmp () in 
     let obj_code = 
       S.define
         ~kind:Strict obj e in 
-
     Some (obj_code, obj)
 
 end
@@ -93754,7 +93753,7 @@ let assemble_args_obj (labels : Ast_arg.kind list)  (args : J.expression list)
       | x::xs -> E.seq (E.fuse_to_seq x xs) (E.obj map)
     end
   | _ ->     
-    let v  = Ext_ident.gen_js () in 
+    let v  = Ext_ident.create_tmp () in 
     let var_v = E.var v in 
     S.define ~kind:Variable v 
     (begin match eff with
@@ -97546,7 +97545,7 @@ and
               | _, _ -> 
                 (* we can not reuse -- here we need they have the same name, 
                        TODO: could be optimized by inspecting assigment statement *)
-                let id = Ext_ident.gen_js () in
+                let id = Ext_ident.create_tmp () in
                 (match
                    compile_lambda  {cxt with st = Assign id} t_br,
                    compile_lambda {cxt with st = Assign id} f_br
@@ -97710,7 +97709,7 @@ and
             match st with 
             (* TODO: can be avoided when cases are less than 3 *)
             | NeedValue -> 
-              let v = Ext_ident.gen_js () in 
+              let v = Ext_ident.create_tmp () in 
               Js_output.make (block @ 
                               compile_string_cases 
                                 {cxt with st = Declare (Variable, v)}
@@ -97760,7 +97759,7 @@ and
               match e.expression_desc with 
               | J.Var _  -> dispatch e  
               | _ -> 
-                let v = Ext_ident.gen_js () in  
+                let v = Ext_ident.create_tmp () in  
                 (* Necessary avoid duplicated computation*)
                 (S.define ~kind:Variable v e ) ::  dispatch (E.var v)
             end
@@ -97773,7 +97772,7 @@ and
              the same value for different branches -- can be optmized 
              when branches are minimial (less than 2)
           *)
-          let v = Ext_ident.gen_js () in
+          let v = Ext_ident.create_tmp () in
           Js_output.make (S.declare_variable ~kind:Variable v   :: compile_whole {cxt with st = Assign v})
             ~value:(E.var  v)
 
@@ -97818,7 +97817,7 @@ and
     | Lstaticcatch _  -> 
       let code_table, body =  flatten_caches lam in
 
-      let exit_id =   Ext_ident.gen_js ~name:"exit" () in
+      let exit_id =   Ext_ident.create_tmp ~name:"exit" () in
       let exit_expr = E.var exit_id in
       let bindings = Ext_list.flat_map (fun (_,_,bindings) -> bindings) code_table in
 
@@ -97863,7 +97862,7 @@ and
       begin match  st with 
         (* could be optimized when cases are less than 3 *)
         | NeedValue -> 
-          let v = Ext_ident.gen_js  () in 
+          let v = Ext_ident.create_tmp  () in 
           let lbody = compile_lambda {cxt with 
                                       jmp_table = jmp_table;
                                       st = Assign v
@@ -98114,7 +98113,7 @@ and
       begin
         match st with 
         | NeedValue -> 
-          let v = Ext_ident.gen_js () in
+          let v = Ext_ident.create_tmp () in
           Js_output.make (S.declare_variable ~kind:Variable v :: aux (Assign v))  ~value:(E.var v )
         | Declare (kind,  id) -> 
           Js_output.make (S.declare_variable ~kind
