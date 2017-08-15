@@ -60,12 +60,12 @@ function point_init($$class) {
   var x = ids[2];
   CamlinternalOO.set_methods($$class, /* array */[
         get_x,
-        (function (self$neg1) {
-            return self$neg1[x];
+        (function (self$1) {
+            return self$1[x];
           }),
         move,
-        (function (self$neg1, d) {
-            self$neg1[x] = self$neg1[x] + d | 0;
+        (function (self$1, d) {
+            self$1[x] = self$1[x] + d | 0;
             return /* () */0;
           })
       ]);
@@ -102,12 +102,12 @@ function ref_init($$class) {
   var x = ids[2];
   CamlinternalOO.set_methods($$class, /* array */[
         get,
-        (function (self$neg2) {
-            return self$neg2[x];
+        (function (self$2) {
+            return self$2[x];
           }),
         set,
-        (function (self$neg2, y) {
-            self$neg2[x] = y;
+        (function (self$2, y) {
+            self$2[x] = y;
             return /* () */0;
           })
       ]);
@@ -127,18 +127,18 @@ function backup_init($$class) {
   var copy = ids[2];
   CamlinternalOO.set_methods($$class, /* array */[
         save,
-        (function (self$neg3) {
-            var copy$1 = Caml_exceptions.caml_set_oo_id(Caml_obj.caml_obj_dup(self$neg3));
-            self$neg3[copy] = /* Some */[(copy$1[copy] = /* None */0, copy$1)];
+        (function (self$3) {
+            var copy$1 = Caml_exceptions.caml_set_oo_id(Caml_obj.caml_obj_dup(self$3));
+            self$3[copy] = /* Some */[(copy$1[copy] = /* None */0, copy$1)];
             return /* () */0;
           }),
         restore,
-        (function (self$neg3) {
-            var match = self$neg3[copy];
+        (function (self$3) {
+            var match = self$3[copy];
             if (match) {
               return match[0];
             } else {
-              return self$neg3;
+              return self$3;
             }
           })
       ]);
@@ -225,22 +225,22 @@ function backup2_init($$class) {
   var copy = ids[3];
   CamlinternalOO.set_methods($$class, /* array */[
         save,
-        (function (self$neg5) {
-            self$neg5[copy] = /* Some */[Caml_exceptions.caml_set_oo_id(Caml_obj.caml_obj_dup(self$neg5))];
+        (function (self$5) {
+            self$5[copy] = /* Some */[Caml_exceptions.caml_set_oo_id(Caml_obj.caml_obj_dup(self$5))];
             return /* () */0;
           }),
         restore,
-        (function (self$neg5) {
-            var match = self$neg5[copy];
+        (function (self$5) {
+            var match = self$5[copy];
             if (match) {
               return match[0];
             } else {
-              return self$neg5;
+              return self$5;
             }
           }),
         clear,
-        (function (self$neg5) {
-            self$neg5[copy] = /* None */0;
+        (function (self$5) {
+            self$5[copy] = /* None */0;
             return /* () */0;
           })
       ]);
@@ -310,8 +310,8 @@ function window_init($$class) {
   var ids = CamlinternalOO.new_methods_variables($$class, shared$5, shared$5);
   var top_widget = ids[0];
   var top_widget$1 = ids[1];
-  CamlinternalOO.set_method($$class, top_widget, (function (self$neg7) {
-          return self$neg7[top_widget$1];
+  CamlinternalOO.set_method($$class, top_widget, (function (self$7) {
+          return self$7[top_widget$1];
         }));
   return (function (_, self) {
       var self$1 = CamlinternalOO.create_object_opt(self, $$class);
@@ -326,8 +326,8 @@ function widget_init($$class) {
   var ids = CamlinternalOO.new_methods_variables($$class, shared$2, shared$2);
   var $$window = ids[0];
   var $$window$1 = ids[1];
-  CamlinternalOO.set_method($$class, $$window, (function (self$neg8) {
-          return self$neg8[$$window$1];
+  CamlinternalOO.set_method($$class, $$window, (function (self$8) {
+          return self$8[$$window$1];
         }));
   return (function (_, self, w) {
       var self$1 = CamlinternalOO.create_object_opt(self, $$class);
