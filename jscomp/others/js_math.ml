@@ -79,15 +79,11 @@ external cbrt : float -> float = "cbrt" [@@bs.val] [@@bs.scope "Math"]
 
 (** may return values not representable by [int] *)
 external unsafe_ceil_int : float -> int = "ceil" [@@bs.val] [@@bs.scope "Math"]
-let unsafe_ceil = unsafe_ceil_int
-[@@ocaml.deprecated "Please use `unsafe_ceil_int` instead"]
 (** smallest int greater than or equal to the argument *)
 let ceil_int f =
   if f > float max_int then max_int
   else if f < float min_int then min_int
   else unsafe_ceil_int f
-let ceil = ceil_int
-[@@ocaml.deprecated "Please use `ceil_int` instead"]
 (** smallest int greater than or equal to the argument *)
 external ceil_float : float -> float = "ceil" [@@bs.val] [@@bs.scope "Math"]
 
@@ -109,15 +105,11 @@ external expm1 : float -> float = "expm1" [@@bs.val] [@@bs.scope "Math"]
 
 (** may return values not representable by [int] *)
 external unsafe_floor_int : float -> int = "floor" [@@bs.val] [@@bs.scope "Math"]
-let unsafe_floor = unsafe_floor_int
-[@@ocaml.deprecated "Please use `unsafe_floor_int` instead"]
 (** largest int greater than or equal to the arugment *)
 let floor_int f =
   if f > float max_int then max_int
   else if f < float min_int then min_int
   else unsafe_floor f
-let floor = floor_int
-[@@ocaml.deprecated "Please use `floor_int` instead"]
 external floor_float : float -> float = "floor" [@@bs.val] [@@bs.scope "Math"]
 
 (** round to nearest single precision float, ES2015 *)

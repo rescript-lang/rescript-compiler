@@ -88,16 +88,10 @@ external joinWith : string -> string = "join" [@@bs.send.pipe: 'a t as 'this]
 
 external lastIndexOf : 'a -> int = "" [@@bs.send.pipe: 'a t as 'this]
 external lastIndexOfFrom : 'a -> from:int -> int = "lastIndexOf" [@@bs.send.pipe: 'a t as 'this]
-external lastIndexOf_start : 'a -> int = "lastIndexOf" [@@bs.send.pipe: 'a t as 'this]
-[@@ocaml.deprecated "Please use `lastIndexOf"]
 
 external slice : start:int -> end_:int -> 'this = "" [@@bs.send.pipe: 'a t as 'this]
 external copy : 'this = "slice" [@@bs.send.pipe: 'a t as 'this]
-external slice_copy : unit -> 'this = "slice" [@@bs.send.pipe: 'a t as 'this]
-[@@ocaml.deprecated "Please use `copy`"]
 external sliceFrom : int -> 'this = "slice" [@@bs.send.pipe: 'a t as 'this]
-external slice_start : int -> 'this = "slice" [@@bs.send.pipe: 'a t as 'this]
-[@@ocaml.deprecated "Please use `sliceFrom`"]
 
 external toString : string = "" [@@bs.send.pipe: 'a t as 'this]
 external toLocaleString : string = "" [@@bs.send.pipe: 'a t as 'this]
