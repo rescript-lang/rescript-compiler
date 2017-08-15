@@ -7497,7 +7497,7 @@ let rec rindex_rec s i c =
   if String.unsafe_get s i = c then i else rindex_rec s (i - 1) c;;
     
 let remove_package_suffix name =
-    let i = rindex_rec name 0 package_sep_char in 
+    let i = rindex_rec name (String.length name - 1) package_sep_char in 
     if i < 0 then name 
     else String.sub name 0 i 
 

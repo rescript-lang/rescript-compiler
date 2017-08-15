@@ -701,7 +701,7 @@ ounit_tests/ounit_vec_test.cmx : ext/set_int.cmx ounit/oUnit.cmx \
     ext/int_vec.cmx ext/ext_json.cmx
 ounit_tests/ounit_data_random.cmx :
 ounit_tests/ounit_string_tests.cmx : ounit_tests/ounit_data_random.cmx \
-    ounit/oUnit.cmx ext/ext_string.cmx
+    ounit/oUnit.cmx ext/ext_string.cmx ext/ext_package_name.cmx
 ounit_tests/ounit_utf8_test.cmx : ounit/oUnit.cmx ext/ext_utf8.cmx
 ounit_tests/ounit_js_regex_checker_tests.cmx : ounit/oUnit.cmx \
     ext/ext_js_regex.cmx
