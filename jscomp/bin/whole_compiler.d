@@ -451,3 +451,5 @@ bin/whole_compiler.ml : ext/ordered_hash_map_local_ident.ml
 bin/whole_compiler.ml : ext/ordered_hash_map_local_ident.mli
 bin/whole_compiler.ml : core/js_pass_flatten_and_mark_dead.ml
 bin/whole_compiler.ml : core/js_pass_flatten_and_mark_dead.mli
+bin/whole_compiler.ml : reason_outcome_printer/tweaked_reason_oprint.ml
+bin/whole_compiler.ml : reason_outcome_printer/reason_outcome_printer_main.ml
