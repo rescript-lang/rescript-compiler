@@ -9754,8 +9754,6 @@ type cxt = {
   cut_generators : bool
 }
 
-val find_first_lib_dir 
-  : file_group list -> string
   
 (** entry is to the 
     [sources] in the schema
@@ -9811,8 +9809,6 @@ type build_generator =
     output : string list;
     command : string}
 
-let is_input (xs : build_generator list) (x : string)  = 
-  List.exists (fun  ({input} : build_generator) -> List.exists (fun y -> y = x ) input ) xs 
 
 let is_input_or_output(xs : build_generator list) (x : string)  = 
   List.exists 
@@ -9845,17 +9841,6 @@ type t =
     intervals :  Ext_file_pp.interval list ;    
     globbed_dirs : string list ; 
   }
-
-exception No_lib_dir_found
-
-let rec find_first_lib_dir 
-    (file_groups : file_group list ) =
-  match file_groups with 
-  | [] -> raise No_lib_dir_found
-  | {dir ; dir_index } :: rest -> 
-    if Bsb_dir_index.is_lib_dir dir_index then dir 
-    else find_first_lib_dir rest 
-
 
 let (//) = Ext_filename.combine
 
