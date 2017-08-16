@@ -32,32 +32,46 @@ let install_targets cwd (config : Bsb_config_types.t option) =
       begin 
         ()
         (*Format.pp_print_string Format.std_formatter "=> "; 
-        Format.pp_print_string Format.std_formatter destdir;
-        Format.pp_print_string Format.std_formatter "<= ";
-        Format.pp_print_string Format.std_formatter file ;
-        Format.pp_print_string Format.std_formatter "\r"; 
-        Format.pp_print_flush Format.std_formatter ();*)
+          Format.pp_print_string Format.std_formatter destdir;
+          Format.pp_print_string Format.std_formatter "<= ";
+          Format.pp_print_string Format.std_formatter file ;
+          Format.pp_print_string Format.std_formatter "\r"; 
+          Format.pp_print_flush Format.std_formatter ();*)
       end
   in
+  let install_filename_sans_extension destdir namespace x = 
+    let x = 
+      match namespace with 
+      | None -> x 
+      | Some pkg -> Ext_package_name.make ~pkg x in 
+    install ~destdir (cwd // x ^  Literals.suffix_ml) ;
+    install ~destdir (cwd // x ^  Literals.suffix_re) ;
+    install ~destdir (cwd // x ^ Literals.suffix_mli) ;
+    install ~destdir (cwd // x ^  Literals.suffix_rei) ;
+    install ~destdir (cwd // Bsb_config.lib_bs//x ^ Literals.suffix_cmi) ;
+    install ~destdir (cwd // Bsb_config.lib_bs//x ^ Literals.suffix_cmj) ;
+    install ~destdir (cwd // Bsb_config.lib_bs//x ^ Literals.suffix_cmt) ;
+    install ~destdir (cwd // Bsb_config.lib_bs//x ^ Literals.suffix_cmti) ;
+
+  in   
   match config with 
   | None -> ()
-  | Some {files_to_install} -> 
+  | Some {files_to_install; namespace; package_name} -> 
     let destdir = cwd // Bsb_config.lib_ocaml in (* lib is already there after building, so just mkdir [lib/ocaml] *)
     if not @@ Sys.file_exists destdir then begin Unix.mkdir destdir 0o777  end;
     begin
       Format.fprintf Format.std_formatter "@{<info>Installing started@}@.";
       (*Format.pp_print_flush Format.std_formatter ();*)
-      String_hash_set.iter (fun x ->
-          (* Format.fprintf Format.std_formatter "@{<info>%s@} Installed @." x;  *)
-          install ~destdir (cwd // x ^  Literals.suffix_ml) ;
-          install ~destdir (cwd // x ^  Literals.suffix_re) ;
-          install ~destdir (cwd // x ^ Literals.suffix_mli) ;
-          install ~destdir (cwd // x ^  Literals.suffix_rei) ;
-          install ~destdir (cwd // Bsb_config.lib_bs//x ^ Literals.suffix_cmi) ;
-          install ~destdir (cwd // Bsb_config.lib_bs//x ^ Literals.suffix_cmj) ;
-          install ~destdir (cwd // Bsb_config.lib_bs//x ^ Literals.suffix_cmt) ;
-          install ~destdir (cwd // Bsb_config.lib_bs//x ^ Literals.suffix_cmti) ;
-        ) files_to_install;
+      (* Format.fprintf Format.std_formatter "@{<info>%s@} Installed @." x;  *)
+      let namespace = 
+        if namespace then
+          Some (Ext_string.module_name_of_package_name package_name) 
+        else None in
+      (match namespace with 
+      | None -> ()
+      | Some x -> 
+          install_filename_sans_extension destdir None  x);
+      String_hash_set.iter (install_filename_sans_extension destdir namespace) files_to_install;
       Format.fprintf Format.std_formatter "@{<info>Installing finished@} @.";
     end
 
@@ -86,7 +100,7 @@ let build_bs_deps cwd deps =
               Note that we can check if ninja print "no work to do", 
               then don't need reinstall more
            *)
-            install_targets cwd config_opt;
+           install_targets cwd config_opt;
          end
     )
 
