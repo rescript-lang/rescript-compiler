@@ -243,13 +243,15 @@ let root = OCamlRes.Res.([
     Dir ("src", [
       File ("test.cpp.ml",
         "\n\
-         \n\
+         (* \n\
          #define FS_VAL(name,ty) external name : ty = \"\" [@@bs.module \"fs\"]\n\
          \n\
          \n\
          FS_VAL(readdirSync, string -> string array)\n\
+        \ *)\n\
          \n\
-         ") ;
+         \n\
+        \ let ocaml = OCAML") ;
       File ("demo.ml",
         "\n\
          \n\
@@ -309,7 +311,7 @@ let root = OCamlRes.Res.([
       \  \"generators\": [\n\
       \    {\n\
       \      \"name\" : \"cpp\",\n\
-      \      \"command\": \"gcc -x c -P -traditional-cpp -C -E $in -o $out\"\n\
+      \      \"command\": \"sed 's/OCAML/3/' $in > $out\"\n\
       \    }\n\
       \  ],\n\
       \  \"bs-dependencies\" : [\n\

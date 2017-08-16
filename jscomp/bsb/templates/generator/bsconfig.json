@@ -18,7 +18,7 @@
   "generators": [
     {
       "name" : "cpp",
-      "command": "gcc -x c -P -traditional-cpp -C -E $in -o $out"
+      "command": "sed 's/OCAML/3/' $in > $out"
     }
   ],
   "bs-dependencies" : [
