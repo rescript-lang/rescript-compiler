@@ -136,4 +136,7 @@ let mapi f a =
     r
   end
 
+let append x a =
+  Js.Array.concat [|x|] a
+
 (* TODO: add [append] *)  
