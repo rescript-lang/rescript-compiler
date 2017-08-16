@@ -117,7 +117,6 @@ val is_valid_source_name :
 *)
 val is_valid_npm_package_name : string -> bool 
 
-val module_name_of_package_name : string -> string
 
 
 val no_char : string -> char -> int -> int -> bool 

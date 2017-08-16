@@ -87,7 +87,7 @@ let output_ninja_and_namespace_map
   in  
   let namespace =
     if namespace then 
-      Some ( Ext_string.module_name_of_package_name package_name) 
+      Some ( Ext_package_name.module_name_of_package_name package_name) 
     else None in
   begin
     let () =

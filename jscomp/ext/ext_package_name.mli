@@ -32,3 +32,5 @@ val remove_package_suffix: string -> string
   relevant issues: #1609, #913 
 *)
 val js_name_of_basename :  string -> string 
+
+val module_name_of_package_name : string -> string

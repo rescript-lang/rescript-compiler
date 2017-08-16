@@ -659,7 +659,6 @@ val is_valid_source_name :
 *)
 val is_valid_npm_package_name : string -> bool 
 
-val module_name_of_package_name : string -> string
 
 
 val no_char : string -> char -> int -> int -> bool 
@@ -1052,31 +1051,6 @@ let is_valid_npm_package_name (s : string) =
          | _ -> false )
   | _ -> false 
 
-let module_name_of_package_name (s : string) : string = 
-  let len = String.length s in 
-  let buf = Buffer.create len in 
-  let add capital ch = 
-    Buffer.add_char buf 
-      (if capital then 
-        (Char.uppercase ch)
-      else ch) in    
-  let rec aux capital off len =     
-      if off >= len then ()
-      else 
-        let ch = String.unsafe_get s off in
-        match ch with 
-        | 'a' .. 'z' 
-        | 'A' .. 'Z' 
-        | '0' .. '9'
-          ->
-          add capital ch ; 
-          aux false (off + 1) len 
-        | '-' -> 
-          aux true (off + 1) len 
-        | _ -> aux capital (off+1) len
-         in 
-   aux true 0 len ;
-   Buffer.contents buf 
 
 type check_result = 
   | Good 
@@ -7325,8 +7299,8 @@ type t =
   }
 
 
-let magic_number = "BS_DEP_INFOS_20170209"
-let bsb_version = "20170209+dev"
+let magic_number = "BS_DEP_INFOS_20170809"
+let bsb_version = "20170809+dev"
 (* TODO: for such small data structure, maybe text format is better *)
 
 let write (fname : string)  (x : t) =
@@ -7454,6 +7428,9 @@ val remove_package_suffix: string -> string
   relevant issues: #1609, #913 
 *)
 val js_name_of_basename :  string -> string 
+
+val module_name_of_package_name : string -> string
+
 end = struct
 #1 "ext_package_name.ml"
 
@@ -7506,6 +7483,31 @@ let js_name_of_basename s =
   remove_package_suffix (String.uncapitalize s) ^ Literals.suffix_js
   
   
+let module_name_of_package_name (s : string) : string = 
+  let len = String.length s in 
+  let buf = Buffer.create len in 
+  let add capital ch = 
+    Buffer.add_char buf 
+      (if capital then 
+        (Char.uppercase ch)
+      else ch) in    
+  let rec aux capital off len =     
+      if off >= len then ()
+      else 
+        let ch = String.unsafe_get s off in
+        match ch with 
+        | 'a' .. 'z' 
+        | 'A' .. 'Z' 
+        | '0' .. '9'
+          ->
+          add capital ch ; 
+          aux false (off + 1) len 
+        | '-' -> 
+          aux true (off + 1) len 
+        | _ -> aux capital (off+1) len
+         in 
+   aux true 0 len ;
+   Buffer.contents buf 
 
 end
 module Bsb_package_specs : sig 
@@ -9752,8 +9754,6 @@ type cxt = {
   cut_generators : bool
 }
 
-val find_first_lib_dir 
-  : file_group list -> string
   
 (** entry is to the 
     [sources] in the schema
@@ -9809,6 +9809,15 @@ type build_generator =
     output : string list;
     command : string}
 
+
+let is_input_or_output(xs : build_generator list) (x : string)  = 
+  List.exists 
+    (fun  ({input; output} : build_generator) -> 
+       let it_is = (fun y -> y = x ) in
+       List.exists it_is input ||
+       List.exists it_is output
+    ) xs 
+
 type  file_group = 
   { dir : string ;
     sources : Bsb_build_cache.t; 
@@ -9817,7 +9826,7 @@ type  file_group =
     dir_index : Bsb_dir_index.t  ;
     generators : build_generator list ; 
     (* output of [generators] should be added to [sources],
-      if it is [.ml,.mli,.re,.rei]
+       if it is [.ml,.mli,.re,.rei]
     *)
   } 
 
@@ -9832,17 +9841,6 @@ type t =
     intervals :  Ext_file_pp.interval list ;    
     globbed_dirs : string list ; 
   }
-
-exception No_lib_dir_found
-
-let rec find_first_lib_dir 
-  (file_groups : file_group list ) =
-  match file_groups with 
-  | [] -> raise No_lib_dir_found
-  | {dir ; dir_index } :: rest -> 
-    if Bsb_dir_index.is_lib_dir dir_index then dir 
-    else find_first_lib_dir rest 
-  
 
 let (//) = Ext_filename.combine
 
@@ -9861,28 +9859,32 @@ type cxt = {
 }
 
 let  handle_list_files acc
-  ({ cwd = dir ; root} : cxt)  
-    loc_start loc_end : Ext_file_pp.interval list * _ =    
+    ({ cwd = dir ; root} : cxt)  
+    loc_start loc_end 
+    is_input_or_output
+  : Ext_file_pp.interval list * _ =    
   (** detect files to be populated later  *)
   let files_array = readdir root dir  in 
   let dyn_file_array = String_vec.make (Array.length files_array) in 
   let files  =
     Array.fold_left (fun acc name -> 
-        match Ext_string.is_valid_source_name name with 
-        | Good ->   begin 
-            let new_acc = Bsb_build_cache.map_update ~dir acc name  in 
-            String_vec.push name dyn_file_array ;
-            new_acc 
-          end 
-        | Invalid_module_name ->
-          Format.fprintf Format.err_formatter
-            warning_unused_file name dir ;
-          acc 
-        | Suffix_mismatch -> acc 
+        if is_input_or_output name then acc 
+        else
+          match Ext_string.is_valid_source_name name with 
+          | Good ->   begin 
+              let new_acc = Bsb_build_cache.map_update ~dir acc name  in 
+              String_vec.push name dyn_file_array ;
+              new_acc 
+            end 
+          | Invalid_module_name ->
+            Format.fprintf Format.err_formatter
+              warning_unused_file name dir ;
+            acc 
+          | Suffix_mismatch -> acc 
       ) acc files_array in 
   [ Ext_file_pp.patch_action dyn_file_array 
-    loc_start loc_end
-    ],
+      loc_start loc_end
+  ],
   files
 
 
@@ -9904,7 +9906,9 @@ let (++) (u : t)  (v : t)  =
       globbed_dirs = u.globbed_dirs @ v.globbed_dirs ; 
     }
 
-let get_input_output loc_start (content : Ext_json_types.t array) : string list * string list = 
+let get_input_output 
+    loc_start 
+    (content : Ext_json_types.t array) : string list * string list = 
   let error () = 
     Bsb_exception.failf ~loc:loc_start {| invalid edge format, expect  ["output" , ":", "input" ]|}
   in  
@@ -9925,18 +9929,21 @@ let get_input_output loc_start (content : Ext_json_types.t array) : string list 
         | Str {str = ":"} -> 
           error () 
         | Str {str} -> 
-            Some str (* More rigirous error checking: It would trigger a ninja syntax error *)
+          Some str (* More rigirous error checking: It would trigger a ninja syntax error *)
         | _ -> None) input
+
+
 
 (** [dir_index] can be inherited  *)
 let rec 
-  parsing_simple_dir ({no_dev; dir_index;  cwd} as cxt ) dir =
+  parsing_simple_dir ({no_dev; dir_index;  cwd} as cxt ) dir : t =
   if no_dev && not (Bsb_dir_index.is_lib_dir dir_index)  then empty 
-  else parsing_source_dir_map 
-    {cxt with
-     cwd = cwd // Ext_filename.simple_convert_node_path_to_os_path dir
-    }
-    String_map.empty
+  else 
+    parsing_source_dir_map 
+      {cxt with
+       cwd = cwd // Ext_filename.simple_convert_node_path_to_os_path dir
+      }
+      String_map.empty
 
 and parsing_source ({no_dev; dir_index ; cwd} as cxt ) (x : Ext_json_types.t )
   : t  =
@@ -9953,22 +9960,24 @@ and parsing_source ({no_dev; dir_index ; cwd} as cxt ) (x : Ext_json_types.t )
     else 
       let dir = 
         match String_map.find_opt Bsb_build_schemas.dir map with 
-        | Some (Str{str=s}) -> 
-          cwd // Ext_filename.simple_convert_node_path_to_os_path s 
-
+        | Some (Str{str}) -> 
+          Ext_filename.simple_convert_node_path_to_os_path str 
         | Some x -> Bsb_exception.failwith_config x "dir expected to be a string"
         | None -> 
-        Bsb_exception.failwith_config x
-          {|required field %s  missing, please checkout the schema http://bucklescript.github.io/bucklescript/docson/#build-schema.json |} "dir"
+          Bsb_exception.failwith_config x
+            {|required field %S  missing, please checkout the schema http://bucklescript.github.io/bucklescript/docson/#build-schema.json |} 
+            Bsb_build_schemas.dir
       in
-
-      parsing_source_dir_map {cxt with dir_index = current_dir_index; cwd=dir} map
+      parsing_source_dir_map {cxt with dir_index = current_dir_index; cwd= cwd // dir} map
   | _ -> empty 
 
+(** 
+   { dir : xx, files : ... } [dir] is already extracted 
+   major work done in this function      
+*)
 and parsing_source_dir_map 
     ({ cwd =  dir; no_dev; cut_generators } as cxt )
-    (x : Ext_json_types.t String_map.t)
-    (* { dir : xx, files : ... } [dir] is already extracted *)
+    (x : Ext_json_types.t String_map.t) : t     
   = 
   let cur_sources : Bsb_build_cache.module_info String_map.t ref = ref String_map.empty in
   let resources = ref [] in 
@@ -9977,48 +9986,76 @@ and parsing_source_dir_map
   let cur_globbed_dirs = ref [] in 
   let generators : build_generator list ref  = ref [] in
   begin match String_map.find_opt Bsb_build_schemas.generators x with
-  | Some (Arr { content ; loc_start}) ->
-    (* Need check is dev build or not *)
-    content 
-    |> Array.iter (fun (x : Ext_json_types.t) ->
-      match x with
-      | Obj { map = generator; loc} ->
-        begin match String_map.find_opt Bsb_build_schemas.name generator,
-          String_map.find_opt Bsb_build_schemas.edge generator
-         with
-         | Some (Str{str = command}), Some (Arr {content })->
+    | Some (Arr { content ; loc_start}) ->
+      (* Need check is dev build or not *)
+      content 
+      |> Array.iter (fun (x : Ext_json_types.t) ->
+          match x with
+          | Obj { map = generator; loc} ->
+            begin match String_map.find_opt Bsb_build_schemas.name generator,
+                        String_map.find_opt Bsb_build_schemas.edge generator
+              with
+              | Some (Str{str = command}), Some (Arr {content })->
 
-           let output, input = get_input_output loc_start content in 
-           if not cut_generators && not no_dev then begin 
-             generators := {input ; output ; command } :: !generators
-           end;
-          (* ATTENTION: Now adding source files, it may be re-added again later when scanning files (not explicit files input)
-           *)
-           output |> List.iter begin fun  output -> 
-             begin match Ext_string.is_valid_source_name output with
-               | Good ->
-                 cur_sources := Bsb_build_cache.map_update ~dir !cur_sources output
-               | Invalid_module_name ->
-                 ()
-               (*Format.fprintf Format.err_formatter warning_unused_file output dir *)
-               | Suffix_mismatch -> ()
-             end
-           end
-         | _ ->
-          Bsb_exception.failf ~loc "Invalid generator format"
-         end
-      | _ -> Bsb_exception.failf ~loc:(Ext_json.loc_of x) "Invalid generator format"
-       )
-  | Some x  -> Bsb_exception.failf ~loc:(Ext_json.loc_of x ) "Invalid generators format"
-  | None -> ()
+                let output, input = get_input_output loc_start content in 
+                if not cut_generators && not no_dev then begin 
+                  generators := {input ; output ; command } :: !generators
+                end;
+                (* ATTENTION: Now adding source files, 
+                   it may be re-added again later when scanning files (not explicit files input)
+                *)
+                output |> List.iter begin fun  output -> 
+                  begin match Ext_string.is_valid_source_name output with
+                    | Good ->
+                      cur_sources := Bsb_build_cache.map_update ~dir !cur_sources output
+                    | Invalid_module_name ->                  
+                      Format.fprintf Format.err_formatter warning_unused_file output dir 
+                    | Suffix_mismatch -> ()
+                  end
+                end
+              | _ ->
+                Bsb_exception.failf ~loc "Invalid generator format"
+            end
+          | _ -> Bsb_exception.failf ~loc:(Ext_json.loc_of x) "Invalid generator format"
+        )
+    | Some x  -> Bsb_exception.failf ~loc:(Ext_json.loc_of x ) "Invalid generators format"
+    | None -> ()
   end
   ;
+  let generators = !generators in 
   begin match String_map.find_opt Bsb_build_schemas.files x with 
-    | Some (Arr {loc_start;loc_end; content = [||] }) -> (* [ ] *) 
-      let tasks, files =  handle_list_files !cur_sources cxt  loc_start loc_end in
+    | None ->  (* No setting on [!files]*)
+      let file_array = readdir cxt.root dir in 
+      (** We should avoid temporary files *)
+      cur_sources := 
+        Array.fold_left (fun acc name -> 
+            if is_input_or_output generators name then 
+              acc 
+            else 
+              match Ext_string.is_valid_source_name name with 
+              | Good -> 
+                Bsb_build_cache.map_update  ~dir acc name 
+              | Invalid_module_name ->
+                Format.fprintf Format.err_formatter
+                  warning_unused_file
+                  name dir 
+                ; 
+                acc 
+              | Suffix_mismatch ->  acc
+          ) !cur_sources file_array;
+      cur_globbed_dirs :=  [dir]  
+    | Some (Arr {loc_start;loc_end; content = [||] }) -> 
+      (* [ ] populatd by scanning the dir (just once) *) 
+      let tasks, files =  
+          handle_list_files !cur_sources cxt 
+           loc_start loc_end (is_input_or_output  generators) in
       cur_update_queue := tasks ;
       cur_sources := files
-    | Some (Arr {loc_start;loc_end; content = s }) -> (* [ a,b ] *)      
+
+    | Some (Arr {loc_start;loc_end; content = s }) -> 
+      (* [ a,b ] populated by users themselves 
+         TODO: still need check?
+      *)      
       cur_sources := 
         Array.fold_left (fun acc (s : Ext_json_types.t) ->
             match s with 
@@ -10045,28 +10082,12 @@ and parsing_source_dir_map
         | None , _ -> Bsb_exception.failf ~loc  "missing field: slow-re"  in 
       let file_array = readdir cxt.root dir in 
       cur_sources := Array.fold_left (fun acc name -> 
-          if predicate name then 
+          if is_input_or_output generators name || not (predicate name) then acc 
+          else 
             Bsb_build_cache.map_update  ~dir acc name 
-          else acc
         ) !cur_sources file_array;
       cur_globbed_dirs := [dir]              
-    | None ->  (* No setting on [!files]*)
-      let file_array = readdir cxt.root dir in 
-      (** We should avoid temporary files *)
-      cur_sources := 
-        Array.fold_left (fun acc name -> 
-            match Ext_string.is_valid_source_name name with 
-            | Good -> 
-              Bsb_build_cache.map_update  ~dir acc name 
-            | Invalid_module_name ->
-              Format.fprintf Format.err_formatter
-                warning_unused_file
-               name dir 
-              ; 
-              acc 
-            | Suffix_mismatch ->  acc
-          ) !cur_sources file_array;
-      cur_globbed_dirs :=  [dir]  
+
     | Some x -> Bsb_exception.failwith_config x "files field expect array or object "
 
   end;
@@ -10076,36 +10097,36 @@ and parsing_source_dir_map
            resources := Bsb_build_util.get_list_string s 
          ))
   |? (Bsb_build_schemas.public, `Str_loc (fun s loc -> 
-        if s = Bsb_build_schemas.export_all then public := Export_all else 
-        if s = Bsb_build_schemas.export_none then public := Export_none else 
-          Bsb_exception.failf ~loc "invalid str for %s "  s 
-      ))
-    |? (Bsb_build_schemas.public, `Arr (fun s -> 
-        public := Export_set (String_set.of_list (Bsb_build_util.get_list_string s ) )
-      ) )
-    |> ignore ;
-    let cur_file = 
-      {dir = dir; 
-       sources = !cur_sources; 
-       resources = !resources;
-       public = !public;
-       dir_index = cxt.dir_index ;
-       generators = !generators ; 
-      } in 
-    let children, children_update_queue, children_globbed_dirs = 
-      match String_map.find_opt Bsb_build_schemas.subdirs x with 
-      | Some s -> 
-        let res  = parse_sources cxt s in 
-        res.files ,
-        res.intervals,
-        res.globbed_dirs
-      | None -> [], [], []  in 
+      if s = Bsb_build_schemas.export_all then public := Export_all else 
+      if s = Bsb_build_schemas.export_none then public := Export_none else 
+        Bsb_exception.failf ~loc "invalid str for %s "  s 
+    ))
+  |? (Bsb_build_schemas.public, `Arr (fun s -> 
+      public := Export_set (String_set.of_list (Bsb_build_util.get_list_string s ) )
+    ) )
+  |> ignore ;
+  let cur_file = 
+    {dir = dir; 
+     sources = !cur_sources; 
+     resources = !resources;
+     public = !public;
+     dir_index = cxt.dir_index ;
+     generators ; 
+    } in 
+  let children, children_update_queue, children_globbed_dirs = 
+    match String_map.find_opt Bsb_build_schemas.subdirs x with 
+    | Some s -> 
+      let res  = parse_sources cxt s in 
+      res.files ,
+      res.intervals,
+      res.globbed_dirs
+    | None -> [], [], []  in 
 
-    {
-      files =  cur_file :: children;
-      intervals = !cur_update_queue @ children_update_queue ;
-      globbed_dirs = !cur_globbed_dirs @ children_globbed_dirs;
-    } 
+  {
+    files =  cur_file :: children;
+    intervals = !cur_update_queue @ children_update_queue ;
+    globbed_dirs = !cur_globbed_dirs @ children_globbed_dirs;
+  } 
 
 (* and parsing_simple_dir dir_index cwd  dir  : t = 
    parsing_source dir_index cwd (String_map.singleton Bsb_build_schemas.dir dir)
@@ -11184,7 +11205,7 @@ let interpret_json
             ) in 
         (* let namespace =     
           if !namespace then 
-            Some (Ext_string.module_name_of_package_name package_name)
+            Some (Ext_package_name.module_name_of_package_name package_name)
           else   None  in  *)
         {
           package_name ;
@@ -17512,7 +17533,7 @@ let output_ninja_and_namespace_map
   in  
   let namespace =
     if namespace then 
-      Some ( Ext_string.module_name_of_package_name package_name) 
+      Some ( Ext_package_name.module_name_of_package_name package_name) 
     else None in
   begin
     let () =
@@ -18051,7 +18072,7 @@ let install_targets cwd (config : Bsb_config_types.t option) =
       (* Format.fprintf Format.std_formatter "@{<info>%s@} Installed @." x;  *)
       let namespace = 
         if namespace then
-          Some (Ext_string.module_name_of_package_name package_name) 
+          Some (Ext_package_name.module_name_of_package_name package_name) 
         else None in
       (match namespace with 
       | None -> ()

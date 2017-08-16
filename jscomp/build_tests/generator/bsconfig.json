@@ -1,0 +1,27 @@
+{
+  "name": "generator",
+  "version": "0.1.0",
+  "sources": [
+    {
+      "dir": "src",
+      "generators": [
+        {
+          "name": "cpp",
+          "edge": [
+            "test.ml", ":", "test.cpp.ml"
+          ]
+        }
+      ]
+    }
+    
+  ],
+  "generators": [
+    {
+      "name" : "cpp",
+      "command": "sed 's/OCAML/3/' $in > $out"
+    }
+  ],
+  "bs-dependencies" : [
+      // add your bs-dependencies here 
+  ]
+}
