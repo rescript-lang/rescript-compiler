@@ -465,7 +465,6 @@ val is_valid_source_name :
 *)
 val is_valid_npm_package_name : string -> bool 
 
-val module_name_of_package_name : string -> string
 
 
 val no_char : string -> char -> int -> int -> bool 
@@ -858,31 +857,6 @@ let is_valid_npm_package_name (s : string) =
          | _ -> false )
   | _ -> false 
 
-let module_name_of_package_name (s : string) : string = 
-  let len = String.length s in 
-  let buf = Buffer.create len in 
-  let add capital ch = 
-    Buffer.add_char buf 
-      (if capital then 
-        (Char.uppercase ch)
-      else ch) in    
-  let rec aux capital off len =     
-      if off >= len then ()
-      else 
-        let ch = String.unsafe_get s off in
-        match ch with 
-        | 'a' .. 'z' 
-        | 'A' .. 'Z' 
-        | '0' .. '9'
-          ->
-          add capital ch ; 
-          aux false (off + 1) len 
-        | '-' -> 
-          aux true (off + 1) len 
-        | _ -> aux capital (off+1) len
-         in 
-   aux true 0 len ;
-   Buffer.contents buf 
 
 type check_result = 
   | Good 
@@ -2728,6 +2702,9 @@ val remove_package_suffix: string -> string
   relevant issues: #1609, #913 
 *)
 val js_name_of_basename :  string -> string 
+
+val module_name_of_package_name : string -> string
+
 end = struct
 #1 "ext_package_name.ml"
 
@@ -2780,6 +2757,31 @@ let js_name_of_basename s =
   remove_package_suffix (String.uncapitalize s) ^ Literals.suffix_js
   
   
+let module_name_of_package_name (s : string) : string = 
+  let len = String.length s in 
+  let buf = Buffer.create len in 
+  let add capital ch = 
+    Buffer.add_char buf 
+      (if capital then 
+        (Char.uppercase ch)
+      else ch) in    
+  let rec aux capital off len =     
+      if off >= len then ()
+      else 
+        let ch = String.unsafe_get s off in
+        match ch with 
+        | 'a' .. 'z' 
+        | 'A' .. 'Z' 
+        | '0' .. '9'
+          ->
+          add capital ch ; 
+          aux false (off + 1) len 
+        | '-' -> 
+          aux true (off + 1) len 
+        | _ -> aux capital (off+1) len
+         in 
+   aux true 0 len ;
+   Buffer.contents buf 
 
 end
 module Bsb_depfile_gen : sig 
