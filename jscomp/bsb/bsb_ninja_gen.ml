@@ -77,9 +77,21 @@ let output_ninja_and_namespace_map
   let bsc_flags =  String.concat Ext_string.single_space bsc_flags in
   let refmt_flags = String.concat Ext_string.single_space refmt_flags in
   let oc = open_out_bin (cwd // Bsb_config.lib_bs // Literals.build_ninja) in
+  let bs_package_includes = 
+    Bsb_build_util.flag_concat dash_i @@ List.map 
+      (fun (x : Bsb_config_types.dependency) -> x.package_install_path) bs_dependencies
+  in
+  let bs_package_dev_includes = 
+    Bsb_build_util.flag_concat dash_i @@ List.map 
+      (fun (x : Bsb_config_types.dependency) -> x.package_install_path) bs_dev_dependencies
+  in  
+  let namespace =
+    if namespace then 
+      Some ( Ext_string.module_name_of_package_name package_name) 
+    else None in
   begin
     let () =
-      
+
       let bs_package_flags = "-bs-package-name "  ^ package_name in 
       let bsc_flags = 
         Ext_string.inter2  Literals.dash_nostdlib @@
@@ -87,7 +99,7 @@ let output_ninja_and_namespace_map
         | None -> bsc_flags   
         | Some {package_install_path} -> 
           Ext_string.inter3 dash_i (Filename.quote package_install_path) bsc_flags
-  
+
       in 
       let reason_react_jsx_flag = 
         match reason_react_jsx with 
@@ -100,8 +112,7 @@ let output_ninja_and_namespace_map
         | None -> Ext_string.empty, Ext_string.empty
         | Some s -> 
           Ext_string.inter2 "-open" s ,
-          Ext_string.inter2 "-ns" s 
-
+          Ext_string.inter2 "-ns" s  
       in  
 
       Bsb_ninja_util.output_kvs
@@ -112,14 +123,17 @@ let output_ninja_and_namespace_map
           Bsb_ninja_global_vars.bsdep, bsdep;
           Bsb_ninja_global_vars.bsc_flags, bsc_flags ;
           Bsb_ninja_global_vars.ppx_flags, ppx_flags;
-          Bsb_ninja_global_vars.bs_package_includes, (Bsb_build_util.flag_concat dash_i @@ List.map (fun x -> x.Bsb_config_types.package_install_path) bs_dependencies);
-          Bsb_ninja_global_vars.bs_package_dev_includes, (Bsb_build_util.flag_concat dash_i @@ List.map (fun x -> x.Bsb_config_types.package_install_path) bs_dev_dependencies);  
+          Bsb_ninja_global_vars.bs_package_includes, bs_package_includes;
+          Bsb_ninja_global_vars.bs_package_dev_includes, bs_package_dev_includes;  
           Bsb_ninja_global_vars.refmt, (match refmt with None -> bsc_dir // refmt_exe | Some x -> x) ;
           Bsb_ninja_global_vars.reason_react_jsx, reason_react_jsx_flag
           ; (* make it configurable in the future *)
           Bsb_ninja_global_vars.refmt_flags, refmt_flags;
           Bsb_ninja_global_vars.namespace , namespace_flag ; 
           Bsb_ninja_global_vars.open_package, open_package_flag;
+          (** TODO: could be removed by adding a flag
+              [-bs-ns react]
+          *)
           Bsb_build_schemas.bsb_dir_group, "0"  (*TODO: avoid name conflict in the future *)
         |] oc ;
     in
@@ -147,13 +161,13 @@ let output_ninja_and_namespace_map
         Bsb_build_cache.write_build_cache 
           ~dir:(cwd // Bsb_config.lib_bs) [|bs_groups|] ;
         Bsb_ninja_util.output_kv
-          Bsb_build_schemas.bsc_lib_includes (Bsb_build_util.flag_concat dash_i @@ 
-                                              (all_includes source_dirs  ))  oc ;
+          Bsb_build_schemas.bsc_lib_includes 
+          (Bsb_build_util.flag_concat dash_i @@ 
+           (all_includes (if namespace = None then source_dirs else Filename.current_dir_name :: source_dirs) ))  oc ;
         static_resources
       else
         let bs_groups = Array.init  (number_of_dev_groups + 1 ) (fun i -> String_map.empty) in
         let source_dirs = Array.init (number_of_dev_groups + 1 ) (fun i -> []) in
-
         let static_resources =
           List.fold_left (fun acc_resources  ({Bsb_parse_sources.sources; dir; resources; dir_index})  ->
               let dir_index = (dir_index :> int) in 
@@ -164,8 +178,9 @@ let output_ninja_and_namespace_map
         (* Make sure [sources] does not have files in [lib] we have to check later *)
         let lib = bs_groups.((Bsb_dir_index.lib_dir_index :> int)) in
         Bsb_ninja_util.output_kv
-          Bsb_build_schemas.bsc_lib_includes (Bsb_build_util.flag_concat dash_i @@
-                                              (all_includes source_dirs.(0))) oc ;
+          Bsb_build_schemas.bsc_lib_includes 
+          (Bsb_build_util.flag_concat dash_i @@
+           (all_includes (if namespace = None then source_dirs.(0) else Filename.current_dir_name::source_dirs.(0)))) oc ;
         for i = 1 to number_of_dev_groups  do
           let c = bs_groups.(i) in
           String_map.iter (fun k _ -> if String_map.mem k lib then failwith ("conflict files found:" ^ k)) c ;
@@ -188,11 +203,11 @@ let output_ninja_and_namespace_map
       match namespace with 
       | None -> all_info
       | Some ns -> 
-        let dir = 
-          Bsb_parse_sources.find_first_lib_dir bs_file_groups in  
+        (* let dir = 
+           Bsb_parse_sources.find_first_lib_dir bs_file_groups in   *)
         let namespace_dir =     
-          cwd // Bsb_config.lib_bs // dir in
-        Bsb_build_util.mkp namespace_dir ;   
+          cwd // Bsb_config.lib_bs  in
+        (* Bsb_build_util.mkp namespace_dir ;    *)
         Bsb_pkg_map_gen.output ~dir:namespace_dir ns
           bs_file_groups
         ; 
@@ -201,10 +216,10 @@ let output_ninja_and_namespace_map
              We may fix that issue when compiling a package 
              ns.ml explicitly does not need that package
           *)
-          ~output:( (dir // (ns ^ Literals.suffix_cmi)))
-          ~input:( (dir // (ns ^ Literals.suffix_ml)))
+          ~output:(  ns ^ Literals.suffix_cmi)
+          ~input:( ns ^ Literals.suffix_ml)
           ~rule:(Bsb_rule.build_package);
-        (dir // ns ^ Literals.suffix_cmi) :: all_info
+        (ns ^ Literals.suffix_cmi) :: all_info
     in
     let () =
       List.iter (fun x -> Bsb_ninja_util.output_build oc
