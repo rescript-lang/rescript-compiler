@@ -38,8 +38,7 @@ type reason_react_jsx = string option
 type t = 
   {
     package_name : string ; 
-    (* namespace : string option; *)
-    namespace : bool;
+    namespace : string option; 
     external_includes : string list ; 
     bsc_flags : string list ;
     ppx_flags : string list ;

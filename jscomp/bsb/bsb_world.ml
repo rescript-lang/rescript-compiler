@@ -63,10 +63,10 @@ let install_targets cwd (config : Bsb_config_types.t option) =
       Format.fprintf Format.std_formatter "@{<info>Installing started@}@.";
       (*Format.pp_print_flush Format.std_formatter ();*)
       (* Format.fprintf Format.std_formatter "@{<info>%s@} Installed @." x;  *)
-      let namespace = 
+      (* let namespace = 
         if namespace then
           Some (Ext_package_name.module_name_of_package_name package_name) 
-        else None in
+        else None in *)
       (match namespace with 
       | None -> ()
       | Some x -> 

@@ -259,13 +259,13 @@ let interpret_json
              | None ->
                failwith "Error: Package name is required. Please specify a `name` in `bsconfig.json`"
             ) in 
-        (* let namespace =     
+         let namespace =     
           if !namespace then 
             Some (Ext_package_name.module_name_of_package_name package_name)
-          else   None  in  *)
+          else   None  in  
         {
           package_name ;
-          namespace = !namespace;    
+          namespace ;    
           external_includes = !bs_external_includes;
           bsc_flags = !bsc_flags ;
           ppx_flags = !ppx_flags ;

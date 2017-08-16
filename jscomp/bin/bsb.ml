@@ -10485,8 +10485,7 @@ type reason_react_jsx = string option
 type t = 
   {
     package_name : string ; 
-    (* namespace : string option; *)
-    namespace : bool;
+    namespace : string option; 
     external_includes : string list ; 
     bsc_flags : string list ;
     ppx_flags : string list ;
@@ -11203,13 +11202,13 @@ let interpret_json
              | None ->
                failwith "Error: Package name is required. Please specify a `name` in `bsconfig.json`"
             ) in 
-        (* let namespace =     
+         let namespace =     
           if !namespace then 
             Some (Ext_package_name.module_name_of_package_name package_name)
-          else   None  in  *)
+          else   None  in  
         {
           package_name ;
-          namespace = !namespace;    
+          namespace ;    
           external_includes = !bs_external_includes;
           bsc_flags = !bsc_flags ;
           ppx_flags = !ppx_flags ;
@@ -11351,6 +11350,15 @@ let merlin_b = "\nB "
 let merlin_flg = "\nFLG "
 let bs_flg_prefix = "-bs-"
 
+let output_merlin_namespace buffer ns= 
+  match ns with 
+  | None -> ()
+  | Some x -> 
+    Buffer.add_string buffer merlin_b ; 
+    Buffer.add_string buffer Bsb_config.lib_bs ; 
+    Buffer.add_string buffer merlin_flg ; 
+    Buffer.add_string buffer "-open ";
+    Buffer.add_string buffer x 
 
 let bsc_flg_to_merlin_ocamlc_flg bsc_flags  =
   merlin_flg ^ 
@@ -11370,10 +11378,18 @@ let merlin_file_gen ~cwd
       built_in_dependency;
       external_includes; 
       reason_react_jsx ; 
+      namespace;
+      package_name
      } : Bsb_config_types.t)
   =
   if generate_merlin then begin     
     let buffer = Buffer.create 1024 in
+    (* let namespace = 
+        if namespace then 
+          (Some (Ext_package_name.module_name_of_package_name package_name))
+        else None
+    in          *)
+    output_merlin_namespace buffer namespace; 
     ppx_flags
     |> List.iter (fun x ->
         Buffer.add_string buffer (merlin_flg_ppx ^ x )
@@ -17531,10 +17547,10 @@ let output_ninja_and_namespace_map
     Bsb_build_util.flag_concat dash_i @@ List.map 
       (fun (x : Bsb_config_types.dependency) -> x.package_install_path) bs_dev_dependencies
   in  
-  let namespace =
+  (* let namespace =
     if namespace then 
       Some ( Ext_package_name.module_name_of_package_name package_name) 
-    else None in
+    else None in *)
   begin
     let () =
 
@@ -18070,10 +18086,10 @@ let install_targets cwd (config : Bsb_config_types.t option) =
       Format.fprintf Format.std_formatter "@{<info>Installing started@}@.";
       (*Format.pp_print_flush Format.std_formatter ();*)
       (* Format.fprintf Format.std_formatter "@{<info>%s@} Installed @." x;  *)
-      let namespace = 
+      (* let namespace = 
         if namespace then
           Some (Ext_package_name.module_name_of_package_name package_name) 
-        else None in
+        else None in *)
       (match namespace with 
       | None -> ()
       | Some x -> 
