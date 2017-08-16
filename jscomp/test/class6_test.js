@@ -46,12 +46,12 @@ function point_init($$class) {
   var x = ids[2];
   CamlinternalOO.set_methods($$class, /* array */[
         get_x,
-        (function (self$neg1) {
-            return self$neg1[x];
+        (function (self$1) {
+            return self$1[x];
           }),
         move,
-        (function (self$neg1, d) {
-            self$neg1[x] = self$neg1[x] + d | 0;
+        (function (self$1, d) {
+            self$1[x] = self$1[x] + d | 0;
             return /* () */0;
           })
       ]);
@@ -73,8 +73,8 @@ function colored_point_init($$class) {
         "move"
       ], point, 1);
   var obj_init = inh[0];
-  CamlinternalOO.set_method($$class, color, (function (self$neg2) {
-          return self$neg2[c];
+  CamlinternalOO.set_method($$class, color, (function (self$2) {
+          return self$2[c];
         }));
   return (function (_, self, x, c$1) {
       var self$1 = CamlinternalOO.create_object_opt(self, $$class);
@@ -143,8 +143,8 @@ function d_init($$class) {
             return 2;
           }),
         as_c,
-        (function (self$neg4) {
-            return self$neg4;
+        (function (self$4) {
+            return self$4;
           })
       ]);
   return (function (_, self) {
@@ -194,13 +194,13 @@ function functional_point_init($$class) {
   var x = ids[2];
   CamlinternalOO.set_methods($$class, /* array */[
         get_x,
-        (function (self$neg6) {
-            return self$neg6[x];
+        (function (self$6) {
+            return self$6[x];
           }),
         move,
-        (function (self$neg6, d) {
-            var copy = Caml_exceptions.caml_set_oo_id(Caml_obj.caml_obj_dup(self$neg6));
-            copy[x] = self$neg6[x] + d | 0;
+        (function (self$6, d) {
+            var copy = Caml_exceptions.caml_set_oo_id(Caml_obj.caml_obj_dup(self$6));
+            copy[x] = self$6[x] + d | 0;
             return copy;
           })
       ]);
@@ -234,12 +234,12 @@ function bad_functional_point_init($$class) {
   var x = ids[2];
   CamlinternalOO.set_methods($$class, /* array */[
         get_x,
-        (function (self$neg7) {
-            return self$neg7[x];
+        (function (self$7) {
+            return self$7[x];
           }),
         move,
-        (function (self$neg7, d) {
-            return Curry._2(bad_functional_point[0], 0, self$neg7[x] + d | 0);
+        (function (self$7, d) {
+            return Curry._2(bad_functional_point[0], 0, self$7[x] + d | 0);
           })
       ]);
   return (function (_, self, y) {

@@ -33,11 +33,11 @@ function eq(loc, x, y) {
 
 function fib_init($$class) {
   var calc = CamlinternalOO.get_method_label($$class, "calc");
-  CamlinternalOO.set_method($$class, calc, (function (self$neg1, x) {
+  CamlinternalOO.set_method($$class, calc, (function (self$1, x) {
           if (x === 0 || x === 1) {
             return 1;
           } else {
-            return Curry._2(self$neg1[0][calc], self$neg1, x - 1 | 0) + Curry._2(self$neg1[0][calc], self$neg1, x - 2 | 0) | 0;
+            return Curry._2(self$1[0][calc], self$1, x - 1 | 0) + Curry._2(self$1[0][calc], self$1, x - 2 | 0) | 0;
           }
         }));
   return (function (_, self) {
@@ -54,14 +54,14 @@ function memo_fib_init($$class) {
   var inh = CamlinternalOO.inherits($$class, 0, 0, shared, fib, 1);
   var obj_init = inh[0];
   var calc$1 = inh[1];
-  CamlinternalOO.set_method($$class, calc, (function (self$neg2, x) {
+  CamlinternalOO.set_method($$class, calc, (function (self$2, x) {
           try {
-            return Hashtbl.find(self$neg2[cache], x);
+            return Hashtbl.find(self$2[cache], x);
           }
           catch (exn){
             if (exn === Caml_builtin_exceptions.not_found) {
-              var v = Curry._2(calc$1, self$neg2, x);
-              Hashtbl.add(self$neg2[cache], x, v);
+              var v = Curry._2(calc$1, self$2, x);
+              Hashtbl.add(self$2[cache], x, v);
               return v;
             } else {
               throw exn;

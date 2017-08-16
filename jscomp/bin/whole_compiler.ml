@@ -58882,7 +58882,7 @@ let rec rindex_rec s i c =
   if String.unsafe_get s i = c then i else rindex_rec s (i - 1) c;;
     
 let remove_package_suffix name =
-    let i = rindex_rec name 0 package_sep_char in 
+    let i = rindex_rec name (String.length name - 1) package_sep_char in 
     if i < 0 then name 
     else String.sub name 0 i 
 
@@ -59551,36 +59551,61 @@ let name_mangle name =
     done;
     name (* Normal letter *)
   with 
-  | Not_normal_letter i ->
-  
-      String.sub name 0 i ^ 
-      (let buffer = Buffer.create len in 
-       for j = i to  len - 1 do 
-         let c = String.unsafe_get name j in
-         match c with 
-         | '*' -> Buffer.add_string buffer "$star"
-         | '\'' -> Buffer.add_string buffer "$prime"
-         | '!' -> Buffer.add_string buffer "$bang"
-         | '>' -> Buffer.add_string buffer "$great"
-         | '<' -> Buffer.add_string buffer "$less"
-         | '=' -> Buffer.add_string buffer "$eq"
-         | '+' -> Buffer.add_string buffer "$plus"
-         | '-' -> Buffer.add_string buffer "$neg"
-         | '@' -> Buffer.add_string buffer "$at"
-         | '^' -> Buffer.add_string buffer "$caret"
-         | '/' -> Buffer.add_string buffer "$slash"
-         | '|' -> Buffer.add_string buffer "$pipe"
-         | '.' -> Buffer.add_string buffer "$dot"
-         | '%' -> Buffer.add_string buffer "$percent"
-         | '~' -> Buffer.add_string buffer "$tilde"
-         | '#' -> Buffer.add_string buffer "$hash"
-         | 'a'..'z' | 'A'..'Z'| '_' 
-         | '$'
-         | '0'..'9'-> Buffer.add_char buffer  c
-         | _ -> Buffer.add_string buffer "$unknown"
-       done; Buffer.contents buffer)
+  | Not_normal_letter 0 ->
 
-
+    let buffer = Buffer.create len in 
+    for j = 0 to  len - 1 do 
+      let c = String.unsafe_get name j in
+      match c with 
+      | '*' -> Buffer.add_string buffer "$star"
+      | '\'' -> Buffer.add_string buffer "$prime"
+      | '!' -> Buffer.add_string buffer "$bang"
+      | '>' -> Buffer.add_string buffer "$great"
+      | '<' -> Buffer.add_string buffer "$less"
+      | '=' -> Buffer.add_string buffer "$eq"
+      | '+' -> Buffer.add_string buffer "$plus"
+      | '-' -> Buffer.add_string buffer "$neg"
+      | '@' -> Buffer.add_string buffer "$at"
+      | '^' -> Buffer.add_string buffer "$caret"
+      | '/' -> Buffer.add_string buffer "$slash"
+      | '|' -> Buffer.add_string buffer "$pipe"
+      | '.' -> Buffer.add_string buffer "$dot"
+      | '%' -> Buffer.add_string buffer "$percent"
+      | '~' -> Buffer.add_string buffer "$tilde"
+      | '#' -> Buffer.add_string buffer "$hash"
+      | 'a'..'z' | 'A'..'Z'| '_' 
+      | '$'
+      | '0'..'9'-> Buffer.add_char buffer  c
+      | _ -> Buffer.add_string buffer "$unknown"
+    done; Buffer.contents buffer
+  | Not_normal_letter i -> 
+    String.sub name 0 i ^
+    (let buffer = Buffer.create len in 
+     for j = i to  len - 1 do 
+       let c = String.unsafe_get name j in
+       match c with 
+       | '*' -> Buffer.add_string buffer "$star"
+       | '\'' -> Buffer.add_string buffer "$prime"
+       | '!' -> Buffer.add_string buffer "$bang"
+       | '>' -> Buffer.add_string buffer "$great"
+       | '<' -> Buffer.add_string buffer "$less"
+       | '=' -> Buffer.add_string buffer "$eq"
+       | '+' -> Buffer.add_string buffer "$plus"
+       | '-' -> Buffer.add_string buffer "$" 
+        (* Note ocaml compiler also has [self-] *)
+       | '@' -> Buffer.add_string buffer "$at"
+       | '^' -> Buffer.add_string buffer "$caret"
+       | '/' -> Buffer.add_string buffer "$slash"
+       | '|' -> Buffer.add_string buffer "$pipe"
+       | '.' -> Buffer.add_string buffer "$dot"
+       | '%' -> Buffer.add_string buffer "$percent"
+       | '~' -> Buffer.add_string buffer "$tilde"
+       | '#' -> Buffer.add_string buffer "$hash"
+       | '$' -> Buffer.add_string buffer "$dollar"
+       | 'a'..'z' | 'A'..'Z'| '_'        
+       | '0'..'9'-> Buffer.add_char buffer  c
+       | _ -> Buffer.add_string buffer "$unknown"
+     done; Buffer.contents buffer)
 (* TODO:
     check name conflicts with javascript conventions
    {[

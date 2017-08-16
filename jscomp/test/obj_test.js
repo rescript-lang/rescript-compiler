@@ -30,8 +30,8 @@ CamlinternalOO.set_methods($$class, /* array */[
           return x + y | 0;
         }),
       hello,
-      (function (self$neg1, z) {
-          return Curry._3(self$neg1[0][hi], self$neg1, 10, z);
+      (function (self$1, z) {
+          return Curry._3(self$1[0][hi], self$1, 10, z);
         })
     ]);
 
@@ -151,8 +151,8 @@ CamlinternalOO.set_methods($$class$5, /* array */[
           return x + y | 0;
         }),
       hi$2,
-      (function (self$neg6, x) {
-          return Curry._3(self$neg6[0][add$1], self$neg6, x, 32);
+      (function (self$6, x) {
+          return Curry._3(self$6[0][add$1], self$6, x, 32);
         })
     ]);
 

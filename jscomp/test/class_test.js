@@ -20,12 +20,12 @@ function point_init($$class) {
   var x = ids[2];
   CamlinternalOO.set_methods($$class, /* array */[
         get_x,
-        (function (self$neg1) {
-            return self$neg1[x];
+        (function (self$1) {
+            return self$1[x];
           }),
         move,
-        (function (self$neg1, d) {
-            self$neg1[x] = self$neg1[x] + d | 0;
+        (function (self$1, d) {
+            self$1[x] = self$1[x] + d | 0;
             return /* () */0;
           })
       ]);
@@ -55,12 +55,12 @@ function point2_init($$class) {
   var x = ids[2];
   CamlinternalOO.set_methods($$class, /* array */[
         get_x,
-        (function (self$neg2) {
-            return self$neg2[x];
+        (function (self$2) {
+            return self$2[x];
           }),
         move,
-        (function (self$neg2, d) {
-            self$neg2[x] = self$neg2[x] + d | 0;
+        (function (self$2, d) {
+            self$2[x] = self$2[x] + d | 0;
             return /* () */0;
           })
       ]);

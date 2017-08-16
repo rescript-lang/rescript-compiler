@@ -64,12 +64,12 @@ let suites =
     __LOC__ >:: begin fun _ -> 
       OUnit.assert_bool __LOC__ @@
       List.for_all Ext_string.is_valid_npm_package_name
-      ["x"; "@angualr"; "test"; "hi-x"; "hi-"]
+        ["x"; "@angualr"; "test"; "hi-x"; "hi-"]
       ;
       OUnit.assert_bool __LOC__ @@
       List.for_all 
-      (fun x -> not (Ext_string.is_valid_npm_package_name x))
-      ["x "; "x'"; "Test"; "hI"]
+        (fun x -> not (Ext_string.is_valid_npm_package_name x))
+        ["x "; "x'"; "Test"; "hI"]
       ;
     end;
     __LOC__ >:: begin fun _ -> 
@@ -218,12 +218,12 @@ let suites =
         (Ext_string.equal
            (Ext_string.concat3 "a0" "a11" "") "a0a11"
         );
- 
+
       OUnit.assert_bool __LOC__ 
         (Ext_string.equal
            (Ext_string.concat4 "a0" "a1" "a2" "a3") "a0a1a2a3"
         );
-     OUnit.assert_bool __LOC__ 
+      OUnit.assert_bool __LOC__ 
         (Ext_string.equal
            (Ext_string.concat4 "a0" "a11" "" "a33") "a0a11a33"
         );   
@@ -273,7 +273,7 @@ let suites =
            (Ext_string.concat_array Ext_string.single_space [|"a0";"a1"; "a2"|])
            "a0 a1 a2"
         );   
-       OUnit.assert_bool __LOC__
+      OUnit.assert_bool __LOC__
         (Ext_string.equal 
            (Ext_string.concat_array Ext_string.single_space [|"a0";"a1"; "a2";"a3"|])
            "a0 a1 a2 a3"
@@ -293,7 +293,7 @@ let suites =
            (Ext_string.concat_array Ext_string.single_space [|"0";"a1"; "2";"3";"d"; ""; "e"|])
            "0 a1 2 3 d  e"
         );        
-  
+
     end;
 
     __LOC__ >:: begin fun _ ->
@@ -302,10 +302,20 @@ let suites =
     end;
     __LOC__ >:: begin fun _ ->
       Ext_string.module_name_of_package_name
-      "reason-react"
+        "reason-react"
       =~ "ReasonReact";
       Ext_string.module_name_of_package_name
-      "reason"
+        "reason"
       =~ "Reason"
+    end;
+    __LOC__ >:: begin fun _ -> 
+      Ext_package_name.js_name_of_basename "a-b"
+      =~ "a.js";
+      Ext_package_name.js_name_of_basename "a-"
+      =~ "a.js";
+      Ext_package_name.js_name_of_basename "a--"
+      =~ "a-.js";
+      Ext_package_name.js_name_of_basename "AA-b"
+      =~ "aA.js";
     end
   ]

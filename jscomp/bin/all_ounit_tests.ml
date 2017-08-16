@@ -6707,36 +6707,61 @@ let name_mangle name =
     done;
     name (* Normal letter *)
   with 
-  | Not_normal_letter i ->
-  
-      String.sub name 0 i ^ 
-      (let buffer = Buffer.create len in 
-       for j = i to  len - 1 do 
-         let c = String.unsafe_get name j in
-         match c with 
-         | '*' -> Buffer.add_string buffer "$star"
-         | '\'' -> Buffer.add_string buffer "$prime"
-         | '!' -> Buffer.add_string buffer "$bang"
-         | '>' -> Buffer.add_string buffer "$great"
-         | '<' -> Buffer.add_string buffer "$less"
-         | '=' -> Buffer.add_string buffer "$eq"
-         | '+' -> Buffer.add_string buffer "$plus"
-         | '-' -> Buffer.add_string buffer "$neg"
-         | '@' -> Buffer.add_string buffer "$at"
-         | '^' -> Buffer.add_string buffer "$caret"
-         | '/' -> Buffer.add_string buffer "$slash"
-         | '|' -> Buffer.add_string buffer "$pipe"
-         | '.' -> Buffer.add_string buffer "$dot"
-         | '%' -> Buffer.add_string buffer "$percent"
-         | '~' -> Buffer.add_string buffer "$tilde"
-         | '#' -> Buffer.add_string buffer "$hash"
-         | 'a'..'z' | 'A'..'Z'| '_' 
-         | '$'
-         | '0'..'9'-> Buffer.add_char buffer  c
-         | _ -> Buffer.add_string buffer "$unknown"
-       done; Buffer.contents buffer)
+  | Not_normal_letter 0 ->
 
-
+    let buffer = Buffer.create len in 
+    for j = 0 to  len - 1 do 
+      let c = String.unsafe_get name j in
+      match c with 
+      | '*' -> Buffer.add_string buffer "$star"
+      | '\'' -> Buffer.add_string buffer "$prime"
+      | '!' -> Buffer.add_string buffer "$bang"
+      | '>' -> Buffer.add_string buffer "$great"
+      | '<' -> Buffer.add_string buffer "$less"
+      | '=' -> Buffer.add_string buffer "$eq"
+      | '+' -> Buffer.add_string buffer "$plus"
+      | '-' -> Buffer.add_string buffer "$neg"
+      | '@' -> Buffer.add_string buffer "$at"
+      | '^' -> Buffer.add_string buffer "$caret"
+      | '/' -> Buffer.add_string buffer "$slash"
+      | '|' -> Buffer.add_string buffer "$pipe"
+      | '.' -> Buffer.add_string buffer "$dot"
+      | '%' -> Buffer.add_string buffer "$percent"
+      | '~' -> Buffer.add_string buffer "$tilde"
+      | '#' -> Buffer.add_string buffer "$hash"
+      | 'a'..'z' | 'A'..'Z'| '_' 
+      | '$'
+      | '0'..'9'-> Buffer.add_char buffer  c
+      | _ -> Buffer.add_string buffer "$unknown"
+    done; Buffer.contents buffer
+  | Not_normal_letter i -> 
+    String.sub name 0 i ^
+    (let buffer = Buffer.create len in 
+     for j = i to  len - 1 do 
+       let c = String.unsafe_get name j in
+       match c with 
+       | '*' -> Buffer.add_string buffer "$star"
+       | '\'' -> Buffer.add_string buffer "$prime"
+       | '!' -> Buffer.add_string buffer "$bang"
+       | '>' -> Buffer.add_string buffer "$great"
+       | '<' -> Buffer.add_string buffer "$less"
+       | '=' -> Buffer.add_string buffer "$eq"
+       | '+' -> Buffer.add_string buffer "$plus"
+       | '-' -> Buffer.add_string buffer "$" 
+        (* Note ocaml compiler also has [self-] *)
+       | '@' -> Buffer.add_string buffer "$at"
+       | '^' -> Buffer.add_string buffer "$caret"
+       | '/' -> Buffer.add_string buffer "$slash"
+       | '|' -> Buffer.add_string buffer "$pipe"
+       | '.' -> Buffer.add_string buffer "$dot"
+       | '%' -> Buffer.add_string buffer "$percent"
+       | '~' -> Buffer.add_string buffer "$tilde"
+       | '#' -> Buffer.add_string buffer "$hash"
+       | '$' -> Buffer.add_string buffer "$dollar"
+       | 'a'..'z' | 'A'..'Z'| '_'        
+       | '0'..'9'-> Buffer.add_char buffer  c
+       | _ -> Buffer.add_string buffer "$unknown"
+     done; Buffer.contents buffer)
 (* TODO:
     check name conflicts with javascript conventions
    {[
@@ -13592,6 +13617,96 @@ let suites =
         end;
     ]
 end
+module Ext_package_name : sig 
+#1 "ext_package_name.mli"
+(* Copyright (C) 2017- Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+val make : pkg:string -> string -> string 
+
+val remove_package_suffix: string -> string 
+
+(* Note  we have to output uncapitalized file Name, 
+  or at least be consistent, since by reading cmi file on Case insensitive OS, we don't really know it is `list.cmi` or `List.cmi`, so that `require (./list.js)` or `require(./List.js)`
+  relevant issues: #1609, #913 
+*)
+val js_name_of_basename :  string -> string 
+end = struct
+#1 "ext_package_name.ml"
+
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+ (* Note the build system should check the validity of filenames
+    espeically, it should not contain '-'
+ *)
+ let package_sep_char = '-'
+ let package_sep = "-"
+
+ let make ~pkg cunit  = 
+    cunit ^ package_sep ^ pkg 
+    
+
+let rec rindex_rec s i c =
+  if i < 0 then i else
+  if String.unsafe_get s i = c then i else rindex_rec s (i - 1) c;;
+    
+let remove_package_suffix name =
+    let i = rindex_rec name (String.length name - 1) package_sep_char in 
+    if i < 0 then name 
+    else String.sub name 0 i 
+
+
+let js_name_of_basename s = 
+  remove_package_suffix (String.uncapitalize s) ^ Literals.suffix_js
+  
+  
+
+end
 module Ounit_data_random
 = struct
 #1 "ounit_data_random.ml"
@@ -13674,12 +13789,12 @@ let suites =
     __LOC__ >:: begin fun _ -> 
       OUnit.assert_bool __LOC__ @@
       List.for_all Ext_string.is_valid_npm_package_name
-      ["x"; "@angualr"; "test"; "hi-x"; "hi-"]
+        ["x"; "@angualr"; "test"; "hi-x"; "hi-"]
       ;
       OUnit.assert_bool __LOC__ @@
       List.for_all 
-      (fun x -> not (Ext_string.is_valid_npm_package_name x))
-      ["x "; "x'"; "Test"; "hI"]
+        (fun x -> not (Ext_string.is_valid_npm_package_name x))
+        ["x "; "x'"; "Test"; "hI"]
       ;
     end;
     __LOC__ >:: begin fun _ -> 
@@ -13828,12 +13943,12 @@ let suites =
         (Ext_string.equal
            (Ext_string.concat3 "a0" "a11" "") "a0a11"
         );
- 
+
       OUnit.assert_bool __LOC__ 
         (Ext_string.equal
            (Ext_string.concat4 "a0" "a1" "a2" "a3") "a0a1a2a3"
         );
-     OUnit.assert_bool __LOC__ 
+      OUnit.assert_bool __LOC__ 
         (Ext_string.equal
            (Ext_string.concat4 "a0" "a11" "" "a33") "a0a11a33"
         );   
@@ -13883,7 +13998,7 @@ let suites =
            (Ext_string.concat_array Ext_string.single_space [|"a0";"a1"; "a2"|])
            "a0 a1 a2"
         );   
-       OUnit.assert_bool __LOC__
+      OUnit.assert_bool __LOC__
         (Ext_string.equal 
            (Ext_string.concat_array Ext_string.single_space [|"a0";"a1"; "a2";"a3"|])
            "a0 a1 a2 a3"
@@ -13903,7 +14018,7 @@ let suites =
            (Ext_string.concat_array Ext_string.single_space [|"0";"a1"; "2";"3";"d"; ""; "e"|])
            "0 a1 2 3 d  e"
         );        
-  
+
     end;
 
     __LOC__ >:: begin fun _ ->
@@ -13912,11 +14027,21 @@ let suites =
     end;
     __LOC__ >:: begin fun _ ->
       Ext_string.module_name_of_package_name
-      "reason-react"
+        "reason-react"
       =~ "ReasonReact";
       Ext_string.module_name_of_package_name
-      "reason"
+        "reason"
       =~ "Reason"
+    end;
+    __LOC__ >:: begin fun _ -> 
+      Ext_package_name.js_name_of_basename "a-b"
+      =~ "a.js";
+      Ext_package_name.js_name_of_basename "a-"
+      =~ "a.js";
+      Ext_package_name.js_name_of_basename "a--"
+      =~ "a-.js";
+      Ext_package_name.js_name_of_basename "AA-b"
+      =~ "aA.js";
     end
   ]
 

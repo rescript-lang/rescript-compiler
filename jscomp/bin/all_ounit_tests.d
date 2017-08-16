@@ -82,7 +82,9 @@ bin/all_ounit_tests.ml : ext/ext_pervasives.mli
 bin/all_ounit_tests.ml : ext/string_hash_set.ml
 bin/all_ounit_tests.ml : ext/string_hashtbl.mli
 bin/all_ounit_tests.ml : stubs/bs_hash_stubs.ml
+bin/all_ounit_tests.ml : ext/ext_package_name.ml
 bin/all_ounit_tests.ml : ext/string_hash_set.mli
+bin/all_ounit_tests.ml : ext/ext_package_name.mli
 bin/all_ounit_tests.ml : syntax/ast_utf8_string.ml
 bin/all_ounit_tests.ml : ext/hash_set_ident_mask.ml
 bin/all_ounit_tests.ml : syntax/ast_utf8_string.mli
