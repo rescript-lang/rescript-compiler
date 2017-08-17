@@ -1,26 +1,25 @@
 # 1.8.3
-Features
+Features:
 - #1839, #1653, allow in-source build in package-specs , allow single pacakge-spec element in package-specs
 - #1802 introduce [@bs.unwrap] for polymorphic variant as external argument
 
 # 1.8.2
-- Features
-- #1798 make `default` the same semantics as Es6 exports
+Features:
+- #1798 make `default` the same semantics as ES6 exports
 - #1785 upgrade playground
 - #1758 [generator support](https://bucklescript.github.io/bucklescript/Manual.html#_customize_rules_generators_support_since_1_7_4)
 - #1826 add `bsb -where` support so that bsb.exe can be located and cached in a more robust way
 
-- Optimizations
+Optimizations:
 - #1796, #1793 improve submodule arity inference
 - #1810 don't rebuild ninja if binary already exists in bin folder
 
-- Fixes
+Fixes:
 - #1811 add relative ppx paths to .merlin correctly
 - #1822, fix an optimization bug
 
-- Internal
+Internal:
 - add a tool cmjdump.exe
-
 
 # 1.8.1
 Fixes:
@@ -62,14 +61,10 @@ Features:
 
 # 1.7.4(May 24, 2017):
 
-
-
-internal tools:
-
+Internal:
 - #1583, add -U -D support for bspack
 
 Features:
-
 - #1630, add modules Option, Result, List, and Vector into Js namesapace, update docs
 
 - #1613, allow bs.scope with bs.send/bs.send.pipe/bs.set/bs.get/bs.set_index/bs.get_index
@@ -77,22 +72,19 @@ Features:
 
 - #1632, bsb themes support
 
-Bug fixes :
-
+Fixes:
 - #1581, more error checking
 - #1633, fix missing installations
 - #1581, more error checking %identity
 
 # 1.7.3:
 
-Bug fixes:
-
+Fixes:
 - #1556, fix duplicated requires of runtime (report by Chenglou) 
 
 - #1568, internal compiler error
 
 Features:
-
 - #1564: scoped values in FF, see `bs.scope` in the Manual
 
 
