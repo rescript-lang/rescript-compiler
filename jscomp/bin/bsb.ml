@@ -9848,7 +9848,8 @@ let (|?)  m (key, cb) =
   m  |> Ext_json.test key cb 
 
 
-let warning_unused_file : _ format = "@{<warning>IGNORED@}: file %s under %s is ignored because it can't be turned into a valid module name. The build system transforms a file name into a module name by upper-casing the first letter@."
+let warning_unused_file : _ format = 
+    "@{<warning>IGNORED@}: file %s under %s is ignored because it can't be turned into a valid module name. The build system transforms a file name into a module name by upper-casing the first letter@."
 
 type cxt = {
   no_dev : bool ;
@@ -9857,6 +9858,31 @@ type cxt = {
   root : string;
   cut_generators : bool
 }
+
+let collect_pub_modules 
+    (xs : Ext_json_types.t array)
+    (cache : Bsb_build_cache.t) : String_set.t = 
+  let set = ref String_set.empty in 
+  for i = 0 to Array.length xs - 1 do 
+    let v = Array.unsafe_get xs i in 
+    match v with 
+    | Str { str ; loc }
+      -> 
+      if String_map.mem str cache then 
+        set := String_set.add str !set
+      else 
+      begin 
+        Format.fprintf Format.err_formatter
+        "@{<warning>IGNORED@} %S in public is ignored since it is not\
+        an existing module@." str
+      end  
+    | _ -> 
+      Bsb_exception.failf 
+        ~loc:(Ext_json.loc_of v)
+        "public excpect a list of strings"
+  done  ;
+  !set
+(* String_set.of_list (Bsb_build_util.get_list_string xs) *)
 
 let  handle_list_files acc
     ({ cwd = dir ; root} : cxt)  
@@ -10047,8 +10073,8 @@ and parsing_source_dir_map
     | Some (Arr {loc_start;loc_end; content = [||] }) -> 
       (* [ ] populatd by scanning the dir (just once) *) 
       let tasks, files =  
-          handle_list_files !cur_sources cxt 
-           loc_start loc_end (is_input_or_output  generators) in
+        handle_list_files !cur_sources cxt 
+          loc_start loc_end (is_input_or_output  generators) in
       cur_update_queue := tasks ;
       cur_sources := files
 
@@ -10091,6 +10117,7 @@ and parsing_source_dir_map
     | Some x -> Bsb_exception.failwith_config x "files field expect array or object "
 
   end;
+  let cur_sources = !cur_sources in 
   x   
   |?  (Bsb_build_schemas.resources ,
        `Arr (fun s  ->
@@ -10102,12 +10129,12 @@ and parsing_source_dir_map
         Bsb_exception.failf ~loc "invalid str for %s "  s 
     ))
   |? (Bsb_build_schemas.public, `Arr (fun s -> 
-      public := Export_set (String_set.of_list (Bsb_build_util.get_list_string s ) )
+      public := Export_set (collect_pub_modules s cur_sources)
     ) )
   |> ignore ;
   let cur_file = 
     {dir = dir; 
-     sources = !cur_sources; 
+     sources = cur_sources; 
      resources = !resources;
      public = !public;
      dir_index = cxt.dir_index ;
@@ -12150,7 +12177,7 @@ let emit_impl_build
     | None -> 
       filename_sans_extension 
     | Some pkg -> 
-       Ext_package_name.make ~pkg filename_sans_extension
+      Ext_package_name.make ~pkg filename_sans_extension
   in 
   let file_cmi =  output_filename_sans_extension ^ Literals.suffix_cmi in
   let output_cmj =  output_filename_sans_extension ^ Literals.suffix_cmj in
@@ -12222,7 +12249,7 @@ let emit_intf_build
     | None -> 
       filename_sans_extension 
     | Some pkg -> 
-       Ext_package_name.make ~pkg filename_sans_extension
+      Ext_package_name.make ~pkg filename_sans_extension
   in 
   let output_cmi = output_filename_sans_extension ^ Literals.suffix_cmi in
   let common_shadows = 
@@ -12318,7 +12345,8 @@ let handle_file_group
         match group.public with
         | Export_all -> true
         | Export_none -> false
-        | Export_set set ->  String_set.mem module_name set in
+        | Export_set set ->  
+          String_set.mem module_name set in
       if installable then 
         String_hash_set.add files_to_install (Bsb_build_cache.filename_sans_suffix_of_module_info module_info);
       (handle_module_info group.dir_index 

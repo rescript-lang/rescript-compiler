@@ -2,5 +2,12 @@
 
 var child_process = require('child_process')
 
-child_process.execSync(`bsb -clean-world && bsb -make-world`, {cwd:__dirname, stdio:[0,1,2]})
+var output = child_process.spawnSync(
+    `bsb -clean-world && bsb -make-world`, 
+    {cwd:__dirname, shell: true, encoding : 'utf8'})
+
+
+var assert = require('assert')
+assert.ok(output.stderr.match(/IGNORED/))
+
 
