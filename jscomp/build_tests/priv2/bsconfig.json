@@ -1,0 +1,14 @@
+{
+  "name": "namespace",
+  "version": "0.1.0",
+  "sources": "src",
+  "namespace": true,
+  "package-specs":{
+    "module": "commonjs",
+    "in-source": true
+  },
+  "bs-dependencies": [
+    "liba"
+  ]
+  
+}
