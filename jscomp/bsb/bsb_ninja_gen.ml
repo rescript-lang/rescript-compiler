@@ -85,10 +85,10 @@ let output_ninja_and_namespace_map
     Bsb_build_util.flag_concat dash_i @@ List.map 
       (fun (x : Bsb_config_types.dependency) -> x.package_install_path) bs_dev_dependencies
   in  
-  let namespace =
+  (* let namespace =
     if namespace then 
       Some ( Ext_package_name.module_name_of_package_name package_name) 
-    else None in
+    else None in *)
   begin
     let () =
 
