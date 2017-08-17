@@ -27,12 +27,16 @@ function eq(loc, x, y) {
 
 eq("File \"gpr_1658_test.ml\", line 11, characters 7-14", null, null);
 
-var match = Js_types.reify_type(null);
+var match = Js_types.classify(null);
 
-if (match[0] !== 1) {
-  eq("File \"gpr_1658_test.ml\", line 16, characters 11-18", /* true */1, /* false */0);
+if (typeof match === "number") {
+  if (match !== 2) {
+    eq("File \"gpr_1658_test.ml\", line 16, characters 11-18", /* true */1, /* false */0);
+  } else {
+    eq("File \"gpr_1658_test.ml\", line 14, characters 11-18", /* true */1, /* true */1);
+  }
 } else {
-  eq("File \"gpr_1658_test.ml\", line 14, characters 11-18", /* true */1, /* true */1);
+  eq("File \"gpr_1658_test.ml\", line 16, characters 11-18", /* true */1, /* false */0);
 }
 
 eq("File \"gpr_1658_test.ml\", line 17, characters 7-14", /* true */1, Js_types.test(null, /* Null */1));

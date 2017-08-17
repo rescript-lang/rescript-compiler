@@ -418,17 +418,17 @@ let float_of_bits x  =
     the thing is its lambda representation is complex but after js layer,
     it's qutie simple
   *)
-  let int32 = Int32_array.make  [| to_int32 x.lo; to_int32 x.hi |] in
-   Float64_array.unsafe_get (Float64_array.fromBuffer (Int32_array.buffer int32)) 0
+  let int32 = Int32Array.make  [| to_int32 x.lo; to_int32 x.hi |] in
+   Float64Array.unsafe_get (Float64Array.fromBuffer (Int32Array.buffer int32)) 0
 
 let  bits_of_float (x : float) =
 
   let to_nat (x : int32) = x |> Int32.to_int |>  Nativeint.of_int in
 
-  let u = Float64_array.make [| x |] in
-  let int32 = Int32_array.fromBuffer (Float64_array.buffer u) in
-  mk ~lo:(to_nat (Int32_array.unsafe_get int32 0))
-    ~hi:( to_nat (Int32_array.unsafe_get int32 1))
+  let u = Float64Array.make [| x |] in
+  let int32 = Int32Array.fromBuffer (Float64Array.buffer u) in
+  mk ~lo:(to_nat (Int32Array.unsafe_get int32 0))
+    ~hi:( to_nat (Int32Array.unsafe_get int32 1))
 
 (** used by "%caml_string_get64" *)
 let get64 (s : string) (i:int) : t =

@@ -147,12 +147,8 @@ external sliceToEnd : from:int ->  t = "slice" [@@bs.send.pipe: t]
 
 external split : t -> t array  = "" [@@bs.send.pipe: t]
 external splitAtMost: t -> limit:int -> t array = "split" [@@bs.send.pipe: t]
-external splitLimited : t -> int -> t array = "split" [@@bs.send.pipe: t]
-[@@ocaml.deprecated "Please use splitAtMost"]
 external splitByRe : Js_re.t ->  t array = "split" [@@bs.send.pipe: t]
 external splitByReAtMost : Js_re.t -> limit:int ->  t array = "split" [@@bs.send.pipe: t]
-external splitRegexpLimited : Js_re.t -> int ->  t array = "" [@@bs.send.pipe: t]
-[@@ocaml.deprecated "Please use splitByReAtMost"]
 
 external startsWith : t -> bool = "" [@@bs.send.pipe: t] (** ES2015 *)
 external startsWithFrom : t -> int -> bool = "startsWith" [@@bs.send.pipe: t] (** ES2015 *)

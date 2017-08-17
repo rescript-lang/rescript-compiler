@@ -398,15 +398,7 @@ module Int32Array = struct
   external fromLength : int -> t = "Int32Array" [@@bs.new]
   external from : elt array_like -> t = "Int32Array.from" [@@bs.val]
   (* *Array.of is redundant, use make *)
-
-  external create : int32 array -> t = "Int32Array" [@@bs.new]
-  [@@ocaml.deprecated "use `make` instead"]
-  external of_buffer : array_buffer -> t = "Int32Array" [@@bs.new]
-  [@@ocaml.deprecated "use `fromBuffer` instead"]
 end
-module Int32_array = Int32Array
-[@ocaml.deprecated "use `Int32Array` instead"]
-
 
 module Uint32Array = struct
   (** *)
@@ -450,15 +442,7 @@ module Float32Array = struct
   external fromLength : int -> t = "Float32Array" [@@bs.new]
   external from : elt array_like -> t = "Float32Array.from" [@@bs.val]
   (* *Array.of is redundant, use make *)
-
-  external create : float array -> t = "Float32Array" [@@bs.new]
-  [@@ocaml.deprecated "use `make` instead"]
-  external of_buffer : array_buffer -> t = "Float32Array" [@@bs.new]
-  [@@ocaml.deprecated "use `fromBuffer` instead"]
 end
-module Float32_array = Float32Array
-[@ocaml.deprecated "use `Float32Array` instead"]
-
 
 module Float64Array = struct
   (** *)
@@ -478,14 +462,7 @@ module Float64Array = struct
   external fromLength : int -> t = "Float64Array" [@@bs.new]
   external from : elt array_like -> t = "Float64Array.from" [@@bs.val]
   (* *Array.of is redundant, use make *)
-
-  external create : float array -> t = "Float64Array" [@@bs.new]
-  [@@ocaml.deprecated "use `make` instead"]
-  external of_buffer : array_buffer -> t = "Float64Array" [@@bs.new]
-  [@@ocaml.deprecated "use `fromBuffer` instead"]
 end
-module Float64_array = Float64Array
-[@ocaml.deprecated "use `Float64Array` instead"]
 
 module DataView = struct
   (** The DataView view provides a low-level interface for reading and writing

@@ -39,14 +39,6 @@ external null : 'a t = "null" [@@bs.val]
 (** The [undefined] value of type ['a Js.null_undefined] *)
 external undefined : 'a t = "undefined" [@@bs.val]
 
-(** The empty value, [undefined]
-
-@deprecated Use {! null} or {! undefined} instead
-*)
-external empty : 'a t = "undefined" [@@bs.val]
-[@@ocaml.deprecated "Please use `null` or `undefined` instead"]
-
-
 (** Maps the contained value using the given function
 
 If ['a Js.null_undefined] contains a value, that value is unwrapped, mapped to a ['b] using

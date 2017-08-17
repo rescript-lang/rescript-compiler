@@ -30,8 +30,6 @@ external return : 'a -> 'a t = "%identity"
 external test : 'a t -> bool =  "#is_nil_undef"
 external null : 'a t = "null" [@@bs.val]
 external undefined : 'a t = "undefined" [@@bs.val]
-external empty : 'a t = "undefined" [@@bs.val]
-[@@ocaml.deprecated "Please use `null` or `undefined` instead"]
 
 let bind x f =
   match to_opt x with

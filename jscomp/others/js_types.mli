@@ -45,18 +45,6 @@ type _ t =
   | Object : obj_val t
   | Symbol : symbol t
 
-val reify_type : 'a -> 'b t * 'b
-[@@deprecated "Please use classify instead"]
-(** Given any value it returns its type and the same value.
-    Note that  since ['b t] is GADT, the type system will reify its type automatically,
-    @example
-    {[
-    match reify_type "3" with
-    | String, v -> v  ^ " this type safe control flow analysis will infer v as string"
-    | _ -> assert false
-    ]}
- *)
-
 val test : 'a -> 'b t -> bool
 (** @example{[
   test "x" String = true

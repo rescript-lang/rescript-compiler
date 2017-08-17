@@ -78,8 +78,6 @@ external getUTCMinutes : t -> float = "" [@@bs.send]
 external getUTCMonth : t -> float = "" [@@bs.send]
 (** returns the month (0-11) *)
 external getUTCSeconds : t -> float = "" [@@bs.send]
-external getYear : t -> float = "" [@@bs.send]
-[@@ocaml.deprecated "use `getFullYear` instead"]
 
 external setDate : t -> float -> float = "" [@@bs.send]
 external setFullYear : t -> float -> float = "" [@@bs.send]
@@ -115,12 +113,8 @@ external setUTCMonthD : t -> month:float -> date:float -> unit -> float = "setUT
 external setUTCSeconds : t -> float -> float = "" [@@bs.send]
 external setUTCSecondsMs : t -> seconds:float -> milliseconds:float -> unit -> float = "setUTCSeconds" [@@bs.send]
 external setUTCTime : t -> float -> float = "" [@@bs.send]
-external setYear : t -> float -> float = "" [@@bs.send]
-[@@ocaml.deprecated "use `setFullYear` instead"]
 
 external toDateString : t -> string = "" [@@bs.send]
-external toGMTString : t -> string = "" [@@bs.send]
-[@@ocaml.deprecated "use `toUTCString` instead"]
 
 external toISOString : t -> string = "" [@@bs.send]
 external toJSON : t -> string = "" [@@bs.send]
