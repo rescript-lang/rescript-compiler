@@ -106,7 +106,7 @@ let emit_impl_build
     | None -> 
       filename_sans_extension 
     | Some pkg -> 
-       Ext_package_name.make ~pkg filename_sans_extension
+      Ext_package_name.make ~pkg filename_sans_extension
   in 
   let file_cmi =  output_filename_sans_extension ^ Literals.suffix_cmi in
   let output_cmj =  output_filename_sans_extension ^ Literals.suffix_cmj in
@@ -178,7 +178,7 @@ let emit_intf_build
     | None -> 
       filename_sans_extension 
     | Some pkg -> 
-       Ext_package_name.make ~pkg filename_sans_extension
+      Ext_package_name.make ~pkg filename_sans_extension
   in 
   let output_cmi = output_filename_sans_extension ^ Literals.suffix_cmi in
   let common_shadows = 
@@ -274,7 +274,8 @@ let handle_file_group
         match group.public with
         | Export_all -> true
         | Export_none -> false
-        | Export_set set ->  String_set.mem module_name set in
+        | Export_set set ->  
+          String_set.mem module_name set in
       if installable then 
         String_hash_set.add files_to_install (Bsb_build_cache.filename_sans_suffix_of_module_info module_info);
       (handle_module_info group.dir_index 
