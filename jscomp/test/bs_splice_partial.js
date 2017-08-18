@@ -12,6 +12,15 @@ function test_hi(x) {
   }
 }
 
+function test_hi__2(x) {
+  var match = x.hi__2();
+  if (match == null) {
+    return 1;
+  } else {
+    return 2;
+  }
+}
+
 function test_cb(x) {
   Curry._1(x.cb("hI", 1, 2, 3), 3);
   Curry._1(x.cb("hI", 1, 2, 3), 3);
@@ -23,7 +32,8 @@ function f(x) {
   return /* () */0;
 }
 
-exports.test_hi = test_hi;
-exports.test_cb = test_cb;
-exports.f       = f;
+exports.test_hi    = test_hi;
+exports.test_hi__2 = test_hi__2;
+exports.test_cb    = test_cb;
+exports.f          = f;
 /* No side effect */

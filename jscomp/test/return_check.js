@@ -73,7 +73,7 @@ function f_null(xs, i) {
 
 function f_null_undefined(xs, i) {
   var match = xs[i];
-  if ((match == null)) {
+  if (match == null) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           [

@@ -196,7 +196,7 @@ var Test_def = /* module */[
 ];
 
 function f1$2(x) {
-  if ((x == null)) {
+  if (x == null) {
     return 3;
   } else {
     return x + 1 | 0;
@@ -204,7 +204,7 @@ function f1$2(x) {
 }
 
 function f2$2(x) {
-  if ((x == null)) {
+  if (x == null) {
     return 3;
   } else {
     return x + 1 | 0;
@@ -213,7 +213,7 @@ function f2$2(x) {
 
 function f5$2(h, _) {
   var u = Curry._1(h, 32);
-  if ((u == null)) {
+  if (u == null) {
     return 3;
   } else {
     return u + 1 | 0;
@@ -223,7 +223,7 @@ function f5$2(h, _) {
 function f4$2(h, x) {
   var u = Curry._1(h, 32);
   var v = 32 + x | 0;
-  if ((u == null)) {
+  if (u == null) {
     return 1 + v | 0;
   } else {
     return u + 1 | 0;
@@ -239,9 +239,9 @@ function f7$2(x) {
 }
 
 function f8$2(x) {
-  if ((x == null)) {
+  if (x == null) {
     return 2;
-  } else if ((x == null)) {
+  } else if (x == null) {
     return 1;
   } else {
     return 0;
@@ -251,7 +251,7 @@ function f8$2(x) {
 var u$2 = f8$2(/* None */0);
 
 function f9$2(x) {
-  if ((x == null)) {
+  if (x == null) {
     return /* None */0;
   } else {
     return [x];

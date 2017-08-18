@@ -35,6 +35,15 @@ let test_hi x =
     | Some y -> Js.log y ; 2
 
 
+external hi__2 : int array -> int option = ""
+    [@@bs.splice] [@@bs.return nullable ]
+    [@@bs.send.pipe:int]
+
+let test_hi__2 x = 
+    match x |> hi__2 [||]with 
+    | None -> 1    
+    | Some _ -> 2 
+
 type id = int -> int 
 
 external cb : string -> int array -> id = ""    

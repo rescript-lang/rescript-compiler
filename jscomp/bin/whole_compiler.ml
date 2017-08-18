@@ -86373,13 +86373,16 @@ and
     then P.paren_group f 1 action 
     else action ()
   | Is_null_undefined_to_boolean e ->
-    P.paren_group f 1 (fun _ -> 
+    let action = (fun _ -> 
         let cxt = expression 1 cxt f e in 
         P.space f ;
         P.string f "==";
         P.space f ;
         P.string f L.null;
-        cxt) 
+        cxt)  in 
+    if l > 0 then      
+      P.paren_group f 1 action
+    else action ()  
 
   | Caml_not e ->
     expression_desc cxt l f (Bin (Minus, E.one_int_literal, e))
@@ -104068,6 +104071,7 @@ let process_external_attributes
                 begin match txt with 
                   | "undefined_to_opt" -> Return_undefined_to_opt
                   | "null_to_opt" -> Return_null_to_opt
+                  | "nullable"
                   | "null_undefined_to_opt" -> Return_null_undefined_to_opt
                   | "identity" -> Return_identity 
                   | _ ->
