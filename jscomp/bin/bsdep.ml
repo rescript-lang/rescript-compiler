@@ -20550,9 +20550,8 @@ let is_unit_name name =
 ;;
 
 let check_unit_name ppf filename name =
-  if not (is_unit_name name) then
-    Location.print_warning (Location.in_file filename) ppf
-      (Warnings.Bad_module_name name);;
+  
+  ()
 
 (* Compute name of module from output file name *)
 let module_of_filename ppf inputfile outputprefix =
