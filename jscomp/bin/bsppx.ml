@@ -12921,6 +12921,7 @@ let process_external_attributes
                 begin match txt with 
                   | "undefined_to_opt" -> Return_undefined_to_opt
                   | "null_to_opt" -> Return_null_to_opt
+                  | "nullable"
                   | "null_undefined_to_opt" -> Return_null_undefined_to_opt
                   | "identity" -> Return_identity 
                   | _ ->

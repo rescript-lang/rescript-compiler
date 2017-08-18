@@ -39,5 +39,11 @@ let suites = Mt.[
   "null <> undefined", (fun _ -> Ok(null <> undefined));
   "null <> empty", (fun _ -> Ok(null <> empty));
   "undefined = empty", (fun _ -> Ok(undefined = empty));
+  __LOC__, (fun _ -> 
+    Ok(
+      let null =3 in 
+      not (Js.test (Js.Nullable.return null ))
+    )
+  )
 ]
 ;; Mt.from_pair_suites __FILE__ suites

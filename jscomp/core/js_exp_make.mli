@@ -296,5 +296,5 @@ val is_nil : unary_op
 
 val js_bool :  ?comment:string -> bool -> t 
 val is_undef : unary_op
-
+val is_null_undefined : unary_op
 val not_implemented : ?comment:string -> string -> t

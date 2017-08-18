@@ -89,6 +89,7 @@ let rec no_side_effect_expression_desc (x : J.expression_desc)  =
   | Fun _ -> true
   | Number _ -> true (* Can be refined later *)
   | Access (a,b) -> no_side_effect a && no_side_effect b 
+  | Is_null_undefined_to_boolean b -> no_side_effect b 
   | Str (b,_) -> b    
   | Array (xs,_mutable_flag)  
   | Caml_block (xs, _mutable_flag, _, _)

@@ -11,7 +11,7 @@ var suites_000 = /* tuple */[
   (function () {
       return /* Eq */Block.__(0, [
                 /* None */0,
-                Js_primitive.null_undefined_to_opt(null)
+                /* None */0
               ]);
     })
 ];
@@ -22,7 +22,7 @@ var suites_001 = /* :: */[
     (function () {
         return /* Eq */Block.__(0, [
                   /* None */0,
-                  Js_primitive.null_undefined_to_opt(undefined)
+                  /* None */0
                 ]);
       })
   ],
@@ -32,7 +32,7 @@ var suites_001 = /* :: */[
       (function () {
           return /* Eq */Block.__(0, [
                     /* None */0,
-                    Js_primitive.null_undefined_to_opt(undefined)
+                    /* None */0
                   ]);
         })
     ],
@@ -62,7 +62,7 @@ var suites_001 = /* :: */[
             (function () {
                 return /* Eq */Block.__(0, [
                           /* true */1,
-                          Js_primitive.is_nil_undef(null)
+                          /* true */1
                         ]);
               })
           ],
@@ -72,7 +72,7 @@ var suites_001 = /* :: */[
               (function () {
                   return /* Eq */Block.__(0, [
                             /* true */1,
-                            Js_primitive.is_nil_undef(undefined)
+                            /* true */1
                           ]);
                 })
             ],
@@ -82,7 +82,7 @@ var suites_001 = /* :: */[
                 (function () {
                     return /* Eq */Block.__(0, [
                               /* true */1,
-                              Js_primitive.is_nil_undef(undefined)
+                              /* true */1
                             ]);
                   })
               ],
@@ -92,7 +92,7 @@ var suites_001 = /* :: */[
                   (function () {
                       return /* Eq */Block.__(0, [
                                 /* false */0,
-                                Js_primitive.is_nil_undef(/* () */0)
+                                /* false */0
                               ]);
                     })
                 ],
@@ -245,7 +245,15 @@ var suites_001 = /* :: */[
                                                 return /* Ok */Block.__(4, [Caml_obj.caml_equal(undefined, undefined)]);
                                               })
                                           ],
-                                          /* [] */0
+                                          /* :: */[
+                                            /* tuple */[
+                                              "File \"js_null_undefined_test.ml\", line 42, characters 2-9",
+                                              (function () {
+                                                  return /* Ok */Block.__(4, [/* true */1]);
+                                                })
+                                            ],
+                                            /* [] */0
+                                          ]
                                         ]
                                       ]
                                     ]

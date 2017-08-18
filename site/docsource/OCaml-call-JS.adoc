@@ -1525,7 +1525,7 @@ Below is a contrived core example:
 type element
 type dom
 external getElementById : string -> element option = ""
-[@@bs.send.pipe:dom] [@@bs.return null_to_opt] // <1>
+[@@bs.send.pipe:dom] [@@bs.return nullable] // <1>
 
 let test dom =
     let elem = dom |> getElementById "haha" in
@@ -1533,30 +1533,29 @@ let test dom =
     | None -> 1
     | Some ui -> Js.log ui ; 2
 -------------
-<1> `null_to_opt` attribute will automatically convert null to `option`
+<1> `nullable` attribute will automatically convert null and undefined to `option`
 
 .Output
 [source,js]
 -------------
 function test(dom) {
   var elem = dom.getElementById("haha");
-  if (elem !== null) { // <1>
+  if (elem == null) {
+    return 1;
+  } else {
     console.log(elem);
     return 2;
   }
-  else {
-    return 1;
-  }
 }
 -------------
-<1> nullable checking without boxing due to compiler optimizations
 
-Currently 4 directives are supported: `null_to_opt`, `undefined_to_opt`,
-`null_undefined_to_opt` and `identity`.
+
+Currently 3 directives are supported: `null_to_opt`, `undefined_to_opt`,
+`nullable` and `identity`.
 
 [NOTE]
 ======
-`null_to_opt`, `undefined_to_opt` and `null_undefined_to_opt` will *semantically*
+`null_to_opt`, `undefined_to_opt` and `nullable` will *semantically*
 convert a nullable value to `option` which is a boxed value, but the compiler will
 do smart optimizations to *remove such boxing overhead* when the returned value is destructed
 in the same routine.

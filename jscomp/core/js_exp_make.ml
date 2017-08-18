@@ -388,7 +388,7 @@ let array_length ?comment (e : t) : t =
 let string_length ?comment (e : t) : t =
   match e.expression_desc with 
   | Str(_,v) -> int ?comment (Int32.of_int (String.length v)) 
-    (* No optimization for {j||j}*)
+  (* No optimization for {j||j}*)
   | _ -> { expression_desc = Length (e, String) ; comment }
 
 let bytes_length ?comment (e : t) : t = 
@@ -520,7 +520,7 @@ let bool v = if  v then caml_true else caml_false
 *)
 let rec triple_equal ?comment (e0 : t) (e1 : t ) : t = 
   match e0.expression_desc, e1.expression_desc with
-  | Var (Id ({name = "undefined"|"null"; } as id)), 
+  | Var (Id ({name = "undefined"|"null"} as id)), 
     (Char_of_int _ | Char_to_int _ 
     | Bool _ | Number _ | Typeof _ | Int_of_boolean _ 
     | Fun _ | Array _ | Caml_block _ )
@@ -1300,23 +1300,33 @@ let js_bool ?comment x : t =
 
 let is_undef ?comment x = triple_equal ?comment x undefined
 
-
+let is_null_undefined ?comment (x: t) : t = 
+  match x.expression_desc with 
+  | Var (Id ({name = "undefined" | "null"} as id))
+    when Ext_ident.is_js id 
+    -> caml_true
+  | Number _ | Array _ | Caml_block _ -> caml_false
+  | _ -> 
+    bool_of_boolean
+    { comment ; 
+      expression_desc = Is_null_undefined_to_boolean x 
+    }
 let not_implemented ?comment (s : string) : t =  
   runtime_call
     Js_runtime_modules.missing_polyfill
     "not_implemented" 
     [str (s ^ " not implemented by bucklescript yet\n")]
 
-  (* call ~info:Js_call_info.ml_full_call *)
-  (*   { *)
-  (*     comment ; *)
-  (*     expression_desc =  *)
-  (*       Fun (false,[], ( *)
-  (*           [{J.statement_desc = *)
-  (*               Throw (str ?comment  *)
-  (*                        (s ^ " not implemented by bucklescript yet\n")) ; *)
-  (*             comment}]) , *)
-  (*            Js_fun_env.empty 0) *)
-  (*   } [] *)
+(* call ~info:Js_call_info.ml_full_call *)
+(*   { *)
+(*     comment ; *)
+(*     expression_desc =  *)
+(*       Fun (false,[], ( *)
+(*           [{J.statement_desc = *)
+(*               Throw (str ?comment  *)
+(*                        (s ^ " not implemented by bucklescript yet\n")) ; *)
+(*             comment}]) , *)
+(*            Js_fun_env.empty 0) *)
+(*   } [] *)
 
 

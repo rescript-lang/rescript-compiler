@@ -836,6 +836,18 @@ and
     if l > 12 
     then P.paren_group f 1 action 
     else action ()
+  | Is_null_undefined_to_boolean e ->
+    let action = (fun _ -> 
+        let cxt = expression 1 cxt f e in 
+        P.space f ;
+        P.string f "==";
+        P.space f ;
+        P.string f L.null;
+        cxt)  in 
+    if l > 0 then      
+      P.paren_group f 1 action
+    else action ()  
+
   | Caml_not e ->
     expression_desc cxt l f (Bin (Minus, E.one_int_literal, e))
 
@@ -1303,6 +1315,7 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
       | Dot _
       | Cond _
       | Bin _ 
+      | Is_null_undefined_to_boolean _
       | String_access _ 
       | Access _
       | Array_of_size _ 

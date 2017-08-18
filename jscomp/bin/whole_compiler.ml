@@ -62333,6 +62333,8 @@ and expression_desc =
   | Length of expression * length_object
   | Char_of_int of expression
   | Char_to_int of expression 
+  | Is_null_undefined_to_boolean of expression 
+    (** where we use a trick [== null ] *)
   | Array_of_size of expression 
     (* used in [#create_array] primitive, note having
        uninitilized array is not as bad as in ocaml, 
@@ -70182,6 +70184,7 @@ class virtual fold =
          Qualified (_, Runtime, Some "caml_int_compare")         
        ]}       
      *)
+                 (** where we use a trick [== null ] *)
                  (* used in [#create_array] primitive, note having
        uninitilized array is not as bad as in ocaml, 
        since GC does not rely on it
@@ -70423,6 +70426,7 @@ class virtual fold =
           let o = o#expression _x in let o = o#length_object _x_i1 in o
       | Char_of_int _x -> let o = o#expression _x in o
       | Char_to_int _x -> let o = o#expression _x in o
+      | Is_null_undefined_to_boolean _x -> let o = o#expression _x in o
       | Array_of_size _x -> let o = o#expression _x in o
       | Array_copy _x -> let o = o#expression _x in o
       | Array_append (_x, _x_i1) ->
@@ -70714,6 +70718,7 @@ let rec no_side_effect_expression_desc (x : J.expression_desc)  =
   | Fun _ -> true
   | Number _ -> true (* Can be refined later *)
   | Access (a,b) -> no_side_effect a && no_side_effect b 
+  | Is_null_undefined_to_boolean b -> no_side_effect b 
   | Str (b,_) -> b    
   | Array (xs,_mutable_flag)  
   | Caml_block (xs, _mutable_flag, _, _)
@@ -71553,7 +71558,7 @@ val is_nil : unary_op
 
 val js_bool :  ?comment:string -> bool -> t 
 val is_undef : unary_op
-
+val is_null_undefined : unary_op
 val not_implemented : ?comment:string -> string -> t
 
 end = struct
@@ -71948,7 +71953,7 @@ let array_length ?comment (e : t) : t =
 let string_length ?comment (e : t) : t =
   match e.expression_desc with 
   | Str(_,v) -> int ?comment (Int32.of_int (String.length v)) 
-    (* No optimization for {j||j}*)
+  (* No optimization for {j||j}*)
   | _ -> { expression_desc = Length (e, String) ; comment }
 
 let bytes_length ?comment (e : t) : t = 
@@ -72080,7 +72085,7 @@ let bool v = if  v then caml_true else caml_false
 *)
 let rec triple_equal ?comment (e0 : t) (e1 : t ) : t = 
   match e0.expression_desc, e1.expression_desc with
-  | Var (Id ({name = "undefined"|"null"; } as id)), 
+  | Var (Id ({name = "undefined"|"null"} as id)), 
     (Char_of_int _ | Char_to_int _ 
     | Bool _ | Number _ | Typeof _ | Int_of_boolean _ 
     | Fun _ | Array _ | Caml_block _ )
@@ -72860,24 +72865,34 @@ let js_bool ?comment x : t =
 
 let is_undef ?comment x = triple_equal ?comment x undefined
 
-
+let is_null_undefined ?comment (x: t) : t = 
+  match x.expression_desc with 
+  | Var (Id ({name = "undefined" | "null"} as id))
+    when Ext_ident.is_js id 
+    -> caml_true
+  | Number _ | Array _ | Caml_block _ -> caml_false
+  | _ -> 
+    bool_of_boolean
+    { comment ; 
+      expression_desc = Is_null_undefined_to_boolean x 
+    }
 let not_implemented ?comment (s : string) : t =  
   runtime_call
     Js_runtime_modules.missing_polyfill
     "not_implemented" 
     [str (s ^ " not implemented by bucklescript yet\n")]
 
-  (* call ~info:Js_call_info.ml_full_call *)
-  (*   { *)
-  (*     comment ; *)
-  (*     expression_desc =  *)
-  (*       Fun (false,[], ( *)
-  (*           [{J.statement_desc = *)
-  (*               Throw (str ?comment  *)
-  (*                        (s ^ " not implemented by bucklescript yet\n")) ; *)
-  (*             comment}]) , *)
-  (*            Js_fun_env.empty 0) *)
-  (*   } [] *)
+(* call ~info:Js_call_info.ml_full_call *)
+(*   { *)
+(*     comment ; *)
+(*     expression_desc =  *)
+(*       Fun (false,[], ( *)
+(*           [{J.statement_desc = *)
+(*               Throw (str ?comment  *)
+(*                        (s ^ " not implemented by bucklescript yet\n")) ; *)
+(*             comment}]) , *)
+(*            Js_fun_env.empty 0) *)
+(*   } [] *)
 
 
 
@@ -86357,6 +86372,18 @@ and
     if l > 12 
     then P.paren_group f 1 action 
     else action ()
+  | Is_null_undefined_to_boolean e ->
+    let action = (fun _ -> 
+        let cxt = expression 1 cxt f e in 
+        P.space f ;
+        P.string f "==";
+        P.space f ;
+        P.string f L.null;
+        cxt)  in 
+    if l > 0 then      
+      P.paren_group f 1 action
+    else action ()  
+
   | Caml_not e ->
     expression_desc cxt l f (Bin (Minus, E.one_int_literal, e))
 
@@ -86824,6 +86851,7 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
       | Dot _
       | Cond _
       | Bin _ 
+      | Is_null_undefined_to_boolean _
       | String_access _ 
       | Access _
       | Array_of_size _ 
@@ -88306,6 +88334,7 @@ class virtual map =
          Qualified (_, Runtime, Some "caml_int_compare")         
        ]}       
      *)
+                 (** where we use a trick [== null ] *)
                  (* used in [#create_array] primitive, note having
        uninitilized array is not as bad as in ocaml, 
        since GC does not rely on it
@@ -88559,6 +88588,8 @@ class virtual map =
           let _x_i1 = o#length_object _x_i1 in Length (_x, _x_i1)
       | Char_of_int _x -> let _x = o#expression _x in Char_of_int _x
       | Char_to_int _x -> let _x = o#expression _x in Char_to_int _x
+      | Is_null_undefined_to_boolean _x ->
+          let _x = o#expression _x in Is_null_undefined_to_boolean _x
       | Array_of_size _x -> let _x = o#expression _x in Array_of_size _x
       | Array_copy _x -> let _x = o#expression _x in Array_copy _x
       | Array_append (_x, _x_i1) ->
@@ -95132,11 +95163,11 @@ let translate  loc
       | _ -> assert false 
     end
   | Pjs_apply -> 
-      begin match args with 
-        | fn :: rest -> 
-          E.call ~info:{arity=Full; call_info =  Call_na} fn rest 
-        | _ -> assert false
-      end
+    begin match args with 
+      | fn :: rest -> 
+        E.call ~info:{arity=Full; call_info =  Call_na} fn rest 
+      | _ -> assert false
+    end
 
   | Lam.Pnull_to_opt -> 
     begin match args with 
@@ -95146,96 +95177,102 @@ let translate  loc
             E.econd (E.is_nil e) Js_of_lam_option.none (Js_of_lam_option.some e)
           | _ ->
             E.runtime_call Js_runtime_modules.js_primitive
-            "null_to_opt" args 
-            (* GPR #974
-               let id = Ext_ident.create "v" in
-               let tmp = E.var id in
-               E.(seq (assign tmp e ) 
-                  (econd (is_nil tmp) Js_of_lam_option.none (Js_of_lam_option.some tmp)) )
-            *)
+              "null_to_opt" args 
+              (* GPR #974
+                 let id = Ext_ident.create "v" in
+                 let tmp = E.var id in
+                 E.(seq (assign tmp e ) 
+                    (econd (is_nil tmp) Js_of_lam_option.none (Js_of_lam_option.some tmp)) )
+              *)
         end
-        | _ -> assert false 
+      | _ -> assert false 
     end
   | Lam.Pundefined_to_opt ->
-     begin match args with 
+    begin match args with 
       | [e] -> 
         begin match e.expression_desc with 
-        | Var _ -> 
-          E.econd (E.is_undef e) Js_of_lam_option.none (Js_of_lam_option.some e)
-        | _ -> 
-          E.runtime_call Js_runtime_modules.js_primitive  
-          "undefined_to_opt" args 
-        (* # GPR 974
-          let id = Ext_ident.create "v" in
-          let tmp = E.var id in
-          E.(seq (assign tmp e ) 
-               (econd (is_undef tmp) Js_of_lam_option.none (Js_of_lam_option.some tmp)) )
-        *)
-      end
+          | Var _ -> 
+            E.econd (E.is_undef e) Js_of_lam_option.none (Js_of_lam_option.some e)
+          | _ -> 
+            E.runtime_call Js_runtime_modules.js_primitive  
+              "undefined_to_opt" args 
+              (* # GPR 974
+                 let id = Ext_ident.create "v" in
+                 let tmp = E.var id in
+                 E.(seq (assign tmp e ) 
+                     (econd (is_undef tmp) Js_of_lam_option.none (Js_of_lam_option.some tmp)) )
+              *)
+        end
       | _ -> assert false 
     end    
+  | Lam.Pnull_undefined_to_opt -> 
+    begin match args with 
+      | [e] -> 
+        begin match e.expression_desc with 
+          | Var _ -> 
+            E.econd (E.is_null_undefined e) 
+              Js_of_lam_option.none 
+              (Js_of_lam_option.some e)
+          | _ ->
+            E.runtime_call 
+              Js_runtime_modules.js_primitive        
+              "null_undefined_to_opt" args 
+        end
+      | _ -> assert false  
+    end   
   | Pjs_function_length -> 
     begin match args with 
-    | [f] -> E.function_length f
-    | _ -> assert false 
+      | [f] -> E.function_length f
+      | _ -> assert false 
     end
   | Lam.Pcaml_obj_length -> 
     begin match args with 
-    | [e] -> E.obj_length e 
-    | _ -> assert false 
+      | [e] -> E.obj_length e 
+      | _ -> assert false 
     end
   | Lam.Pcaml_obj_set_length -> 
     begin match args with 
-    | [a;b] -> E.set_length a b 
-    | _ -> assert false 
-  end
+      | [a;b] -> E.set_length a b 
+      | _ -> assert false 
+    end
   | Lam.Pjs_string_of_small_array -> 
     begin match args with 
-    | [e] -> E.string_of_small_int_array e 
-    | _ -> assert false 
-  end 
+      | [e] -> E.string_of_small_int_array e 
+      | _ -> assert false 
+    end 
   | Lam.Pjs_is_instance_array -> 
     begin match args with 
-    | [e] -> E.is_instance_array e 
-    | _ -> assert false 
-  end 
+      | [e] -> E.is_instance_array e 
+      | _ -> assert false 
+    end 
 
-  | Lam.Pnull_undefined_to_opt -> 
-    (*begin match args with 
-    | [e] -> 
-      begin match e.expression_desc with 
-      | Var _ -> 
-        E.econd (E.or_ (E.is_undef e) (E.is_nil e)) 
-          Js_of_lam_option.none 
-          (Js_of_lam_option.some e)
-      | _ ->*)
-       E.runtime_call Js_runtime_modules.js_primitive        
-      "null_undefined_to_opt" args 
-      (*end*)
-    (* | _ -> assert false  *)
-    (* end *)
+
   | Pis_null -> 
     begin match args with 
-    | [e] -> E.is_nil e 
-    | _ -> assert false 
+      | [e] -> E.is_nil e 
+      | _ -> assert false 
     end   
   | Pis_undefined -> 
     begin match args with 
-    | [e] -> E.is_undef e 
-    | _ -> assert false 
+      | [e] -> E.is_undef e 
+      | _ -> assert false 
     end
   | Pis_null_undefined -> 
-      E.runtime_call Js_runtime_modules.js_primitive
-        "is_nil_undef" args 
+    begin match args with 
+      | [ arg] -> 
+        E.is_null_undefined arg
+      | _ -> assert false 
+    end
+  
   | Pjs_boolean_to_bool -> 
     begin match args with 
-    | [e] -> E.bool_of_boolean e 
-    | _ -> assert false 
+      | [e] -> E.bool_of_boolean e 
+      | _ -> assert false 
     end
   | Pjs_typeof -> 
     begin match args with 
-    | [e] -> E.typeof e 
-    | _ -> assert false 
+      | [e] -> E.typeof e 
+      | _ -> assert false 
     end
   | Pjs_unsafe_downgrade _
   | Pdebugger 
@@ -95499,8 +95536,8 @@ let translate  loc
     Js_long.xor args    
   | Pjscomp cmp ->
     begin match args with
-    | [l;r] -> E.js_comp cmp l r 
-    | _ -> assert false 
+      | [l;r] -> E.js_comp cmp l r 
+      | _ -> assert false 
     end
   | Pbintcomp (Pnativeint ,cmp)
   | Pfloatcomp cmp
@@ -95739,7 +95776,7 @@ let translate  loc
   | Pjs_object_create labels
     -> 
     assert false 
-    (*Lam_compile_external_obj.assemble_args_obj labels args *)
+  (*Lam_compile_external_obj.assemble_args_obj labels args *)
   | Pjs_call (_, arg_types, ffi) -> 
     Lam_compile_external_call.translate_ffi 
       loc ffi cxt arg_types args 
@@ -104034,6 +104071,7 @@ let process_external_attributes
                 begin match txt with 
                   | "undefined_to_opt" -> Return_undefined_to_opt
                   | "null_to_opt" -> Return_null_to_opt
+                  | "nullable"
                   | "null_undefined_to_opt" -> Return_null_undefined_to_opt
                   | "identity" -> Return_identity 
                   | _ ->
