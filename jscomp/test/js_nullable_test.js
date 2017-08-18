@@ -24,23 +24,34 @@ function eq(loc, x, y) {
   return /* () */0;
 }
 
+function test(dom) {
+  var elem = dom.getElementById("haha");
+  if (elem == null) {
+    return 1;
+  } else {
+    console.log(elem);
+    return 2;
+  }
+}
+
 function f(x, y) {
   console.log("no inline");
   return x + y | 0;
 }
 
-eq("File \"js_nullable_test.ml\", line 13, characters 7-14", /* false */0, /* false */0);
+eq("File \"js_nullable_test.ml\", line 26, characters 7-14", /* false */0, /* false */0);
 
-eq("File \"js_nullable_test.ml\", line 15, characters 7-14", +(f(1, 2) == null), /* false */0);
+eq("File \"js_nullable_test.ml\", line 28, characters 7-14", +(f(1, 2) == null), /* false */0);
 
-eq("File \"js_nullable_test.ml\", line 17, characters 6-13", +((null) == null), /* true */1);
+eq("File \"js_nullable_test.ml\", line 30, characters 6-13", +((null) == null), /* true */1);
 
-eq("File \"js_nullable_test.ml\", line 21, characters 3-10", /* false */0, /* false */0);
+eq("File \"js_nullable_test.ml\", line 34, characters 3-10", /* false */0, /* false */0);
 
 Mt.from_pair_suites("js_nullable_test.ml", suites[0]);
 
 exports.suites  = suites;
 exports.test_id = test_id;
 exports.eq      = eq;
+exports.test    = test;
 exports.f       = f;
 /*  Not a pure module */

@@ -3504,7 +3504,7 @@ drop the first '_'</p>
 <pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">type</span> <span class="tok-n">element</span>
 <span class="tok-k">type</span> <span class="tok-n">dom</span>
 <span class="tok-k">external</span> <span class="tok-n">getElementById</span> <span class="tok-o">:</span> <span class="tok-kt">string</span> <span class="tok-o">-&gt;</span> <span class="tok-n">element</span> <span class="tok-n">option</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;&quot;</span>
-<span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">send</span><span class="tok-o">.</span><span class="tok-n">pipe</span><span class="tok-o">:</span><span class="tok-n">dom</span><span class="tok-o">]</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">return</span> <span class="tok-n">null_to_opt</span><span class="tok-o">]</span> <b class="conum">(1)</b>
+<span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">send</span><span class="tok-o">.</span><span class="tok-n">pipe</span><span class="tok-o">:</span><span class="tok-n">dom</span><span class="tok-o">]</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">return</span> <span class="tok-n">nullable</span><span class="tok-o">]</span> <b class="conum">(1)</b>
 
 <span class="tok-k">let</span> <span class="tok-n">test</span> <span class="tok-n">dom</span> <span class="tok-o">=</span>
     <span class="tok-k">let</span> <span class="tok-n">elem</span> <span class="tok-o">=</span> <span class="tok-n">dom</span> <span class="tok-o">|&gt;</span> <span class="tok-n">getElementById</span> <span class="tok-s2">&quot;haha&quot;</span> <span class="tok-k">in</span>
@@ -3516,7 +3516,7 @@ drop the first '_'</p>
 <div class="colist arabic">
 <ol>
 <li>
-<p><code>null_to_opt</code> attribute will automatically convert null to <code>option</code></p>
+<p><code>nullable</code> attribute will automatically convert null and undefined to <code>option</code></p>
 </li>
 </ol>
 </div>
@@ -3525,26 +3525,18 @@ drop the first '_'</p>
 <div class="content">
 <pre class="pygments highlight"><code data-lang="js"><span class="tok-kd">function</span> <span class="tok-nx">test</span><span class="tok-p">(</span><span class="tok-nx">dom</span><span class="tok-p">)</span> <span class="tok-p">{</span>
   <span class="tok-kd">var</span> <span class="tok-nx">elem</span> <span class="tok-o">=</span> <span class="tok-nx">dom</span><span class="tok-p">.</span><span class="tok-nx">getElementById</span><span class="tok-p">(</span><span class="tok-s2">&quot;haha&quot;</span><span class="tok-p">);</span>
-  <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-nx">elem</span> <span class="tok-o">!==</span> <span class="tok-kc">null</span><span class="tok-p">)</span> <span class="tok-p">{</span> <b class="conum">(1)</b>
+  <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-nx">elem</span> <span class="tok-o">==</span> <span class="tok-kc">null</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+    <span class="tok-k">return</span> <span class="tok-mi">1</span><span class="tok-p">;</span>
+  <span class="tok-p">}</span> <span class="tok-k">else</span> <span class="tok-p">{</span>
     <span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span><span class="tok-p">(</span><span class="tok-nx">elem</span><span class="tok-p">);</span>
     <span class="tok-k">return</span> <span class="tok-mi">2</span><span class="tok-p">;</span>
-  <span class="tok-p">}</span>
-  <span class="tok-k">else</span> <span class="tok-p">{</span>
-    <span class="tok-k">return</span> <span class="tok-mi">1</span><span class="tok-p">;</span>
   <span class="tok-p">}</span>
 <span class="tok-p">}</span></code></pre>
 </div>
 </div>
-<div class="colist arabic">
-<ol>
-<li>
-<p>nullable checking without boxing due to compiler optimizations</p>
-</li>
-</ol>
-</div>
 <div class="paragraph">
-<p>Currently 4 directives are supported: <code>null_to_opt</code>, <code>undefined_to_opt</code>,
-<code>null_undefined_to_opt</code> and <code>identity</code>.</p>
+<p>Currently 3 directives are supported: <code>null_to_opt</code>, <code>undefined_to_opt</code>,
+<code>nullable</code> and <code>identity</code>.</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -3554,7 +3546,7 @@ drop the first '_'</p>
 </td>
 <td class="content">
 <div class="paragraph">
-<p><code>null_to_opt</code>, <code>undefined_to_opt</code> and <code>null_undefined_to_opt</code> will <strong>semantically</strong>
+<p><code>null_to_opt</code>, <code>undefined_to_opt</code> and <code>nullable</code> will <strong>semantically</strong>
 convert a nullable value to <code>option</code> which is a boxed value, but the compiler will
 do smart optimizations to <strong>remove such boxing overhead</strong> when the returned value is destructed
 in the same routine.</p>
