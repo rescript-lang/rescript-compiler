@@ -102,7 +102,7 @@ and expression_desc =
   | Length of expression * length_object
   | Char_of_int of expression
   | Char_to_int of expression 
-  | Is_null_undefined of expression 
+  | Is_null_undefined_to_boolean of expression 
     (** where we use a trick [== null ] *)
   | Array_of_size of expression 
     (* used in [#create_array] primitive, note having

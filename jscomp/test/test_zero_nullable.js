@@ -259,10 +259,10 @@ function f9$2(x) {
 }
 
 function f10$2(x) {
-  return (x == null);
+  return +(x == null);
 }
 
-var f11$2 = (3 == null);
+var f11$2 = +(3 == null);
 
 var Test_null_def = /* module */[
   /* f1 */f1$2,

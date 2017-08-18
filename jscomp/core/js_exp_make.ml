@@ -1301,13 +1301,15 @@ let js_bool ?comment x : t =
 let is_undef ?comment x = triple_equal ?comment x undefined
 
 let is_null_undefined ?comment (x: t) : t = 
-  match x with 
-  | { expression_desc = Var (Id ({name = "undefined" | "null"} as id))}
+  match x.expression_desc with 
+  | Var (Id ({name = "undefined" | "null"} as id))
     when Ext_ident.is_js id 
     -> caml_true
+  | Number _ | Array _ | Caml_block _ -> caml_false
   | _ -> 
+    bool_of_boolean
     { comment ; 
-      expression_desc = Is_null_undefined x 
+      expression_desc = Is_null_undefined_to_boolean x 
     }
 let not_implemented ?comment (s : string) : t =  
   runtime_call

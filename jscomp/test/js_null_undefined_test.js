@@ -92,7 +92,7 @@ var suites_001 = /* :: */[
                   (function () {
                       return /* Eq */Block.__(0, [
                                 /* false */0,
-                                (/* () */0 == null)
+                                +(/* () */0 == null)
                               ]);
                     })
                 ],
@@ -249,7 +249,7 @@ var suites_001 = /* :: */[
                                             /* tuple */[
                                               "File \"js_null_undefined_test.ml\", line 42, characters 2-9",
                                               (function () {
-                                                  return /* Ok */Block.__(4, [1 - (3 == null)]);
+                                                  return /* Ok */Block.__(4, [1 - +(3 == null)]);
                                                 })
                                             ],
                                             /* [] */0

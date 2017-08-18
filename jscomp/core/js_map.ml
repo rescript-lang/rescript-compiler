@@ -391,8 +391,8 @@ class virtual map =
           let _x_i1 = o#length_object _x_i1 in Length (_x, _x_i1)
       | Char_of_int _x -> let _x = o#expression _x in Char_of_int _x
       | Char_to_int _x -> let _x = o#expression _x in Char_to_int _x
-      | Is_null_undefined _x ->
-          let _x = o#expression _x in Is_null_undefined _x
+      | Is_null_undefined_to_boolean _x ->
+          let _x = o#expression _x in Is_null_undefined_to_boolean _x
       | Array_of_size _x -> let _x = o#expression _x in Array_of_size _x
       | Array_copy _x -> let _x = o#expression _x in Array_copy _x
       | Array_append (_x, _x_i1) ->

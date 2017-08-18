@@ -62333,7 +62333,7 @@ and expression_desc =
   | Length of expression * length_object
   | Char_of_int of expression
   | Char_to_int of expression 
-  | Is_null_undefined of expression 
+  | Is_null_undefined_to_boolean of expression 
     (** where we use a trick [== null ] *)
   | Array_of_size of expression 
     (* used in [#create_array] primitive, note having
@@ -70426,7 +70426,7 @@ class virtual fold =
           let o = o#expression _x in let o = o#length_object _x_i1 in o
       | Char_of_int _x -> let o = o#expression _x in o
       | Char_to_int _x -> let o = o#expression _x in o
-      | Is_null_undefined _x -> let o = o#expression _x in o
+      | Is_null_undefined_to_boolean _x -> let o = o#expression _x in o
       | Array_of_size _x -> let o = o#expression _x in o
       | Array_copy _x -> let o = o#expression _x in o
       | Array_append (_x, _x_i1) ->
@@ -70718,7 +70718,7 @@ let rec no_side_effect_expression_desc (x : J.expression_desc)  =
   | Fun _ -> true
   | Number _ -> true (* Can be refined later *)
   | Access (a,b) -> no_side_effect a && no_side_effect b 
-  | Is_null_undefined b -> no_side_effect b 
+  | Is_null_undefined_to_boolean b -> no_side_effect b 
   | Str (b,_) -> b    
   | Array (xs,_mutable_flag)  
   | Caml_block (xs, _mutable_flag, _, _)
@@ -72866,13 +72866,15 @@ let js_bool ?comment x : t =
 let is_undef ?comment x = triple_equal ?comment x undefined
 
 let is_null_undefined ?comment (x: t) : t = 
-  match x with 
-  | { expression_desc = Var (Id ({name = "undefined" | "null"} as id))}
+  match x.expression_desc with 
+  | Var (Id ({name = "undefined" | "null"} as id))
     when Ext_ident.is_js id 
     -> caml_true
+  | Number _ | Array _ | Caml_block _ -> caml_false
   | _ -> 
+    bool_of_boolean
     { comment ; 
-      expression_desc = Is_null_undefined x 
+      expression_desc = Is_null_undefined_to_boolean x 
     }
 let not_implemented ?comment (s : string) : t =  
   runtime_call
@@ -86370,6 +86372,15 @@ and
     if l > 12 
     then P.paren_group f 1 action 
     else action ()
+  | Is_null_undefined_to_boolean e -> (** return [bool] *)
+    P.paren_group f 1 (fun _ -> 
+        let cxt = expression 1 cxt f e in 
+        P.space f ;
+        P.string f "==";
+        P.space f ;
+        P.string f L.null;
+        cxt) 
+
   | Caml_not e ->
     expression_desc cxt l f (Bin (Minus, E.one_int_literal, e))
 
@@ -86540,18 +86551,6 @@ and
     if need_paren 
     then P.paren_group f 1 action 
     else action ()
-  | Is_null_undefined e -> 
-      let need_paren = true in 
-      let action () = 
-          let cxt = expression 1 cxt f e in 
-          P.space f ;
-          P.string f "==";
-          P.space f ;
-          P.string f L.null;
-          cxt in 
-      if need_paren then     
-        P.paren_group f 1 action 
-      else action ()  
 
   | String_append (e1, e2) -> 
     let op : Js_op.binop = Plus in
@@ -86849,7 +86848,7 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
       | Dot _
       | Cond _
       | Bin _ 
-      | Is_null_undefined _
+      | Is_null_undefined_to_boolean _
       | String_access _ 
       | Access _
       | Array_of_size _ 
@@ -88586,8 +88585,8 @@ class virtual map =
           let _x_i1 = o#length_object _x_i1 in Length (_x, _x_i1)
       | Char_of_int _x -> let _x = o#expression _x in Char_of_int _x
       | Char_to_int _x -> let _x = o#expression _x in Char_to_int _x
-      | Is_null_undefined _x ->
-          let _x = o#expression _x in Is_null_undefined _x
+      | Is_null_undefined_to_boolean _x ->
+          let _x = o#expression _x in Is_null_undefined_to_boolean _x
       | Array_of_size _x -> let _x = o#expression _x in Array_of_size _x
       | Array_copy _x -> let _x = o#expression _x in Array_copy _x
       | Array_append (_x, _x_i1) ->
