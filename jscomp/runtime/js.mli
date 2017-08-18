@@ -74,7 +74,7 @@ type + 'a nullable
 type + 'a null_undefined = 'a nullable    
 
 external toOpt : 'a nullable  -> 'a option = "#null_undefined_to_opt"
-external nullable : 'a nullable -> bool = "#is_nil_undef"
+external test : 'a nullable -> bool = "#is_nil_undef"
 
 type boolean
 (** The value could be either  {!Js.true_} or {!Js.false_}.

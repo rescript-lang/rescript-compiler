@@ -42,7 +42,7 @@ let suites = Mt.[
   __LOC__, (fun _ -> 
     Ok(
       let null =3 in 
-      not (Js.nullable (Js.Nullable.return null ))
+      not (Js.test (Js.Nullable.return null ))
     )
   )
 ]

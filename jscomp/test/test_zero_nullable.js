@@ -262,7 +262,7 @@ function f10$2(x) {
   return +(x == null);
 }
 
-var f11$2 = +(3 == null);
+var f11$2 = /* false */0;
 
 var Test_null_def = /* module */[
   /* f1 */f1$2,
