@@ -65,11 +65,11 @@ let translate  loc
       | _ -> assert false 
     end
   | Pjs_apply -> 
-      begin match args with 
-        | fn :: rest -> 
-          E.call ~info:{arity=Full; call_info =  Call_na} fn rest 
-        | _ -> assert false
-      end
+    begin match args with 
+      | fn :: rest -> 
+        E.call ~info:{arity=Full; call_info =  Call_na} fn rest 
+      | _ -> assert false
+    end
 
   | Lam.Pnull_to_opt -> 
     begin match args with 
@@ -79,96 +79,102 @@ let translate  loc
             E.econd (E.is_nil e) Js_of_lam_option.none (Js_of_lam_option.some e)
           | _ ->
             E.runtime_call Js_runtime_modules.js_primitive
-            "null_to_opt" args 
-            (* GPR #974
-               let id = Ext_ident.create "v" in
-               let tmp = E.var id in
-               E.(seq (assign tmp e ) 
-                  (econd (is_nil tmp) Js_of_lam_option.none (Js_of_lam_option.some tmp)) )
-            *)
+              "null_to_opt" args 
+              (* GPR #974
+                 let id = Ext_ident.create "v" in
+                 let tmp = E.var id in
+                 E.(seq (assign tmp e ) 
+                    (econd (is_nil tmp) Js_of_lam_option.none (Js_of_lam_option.some tmp)) )
+              *)
         end
-        | _ -> assert false 
+      | _ -> assert false 
     end
   | Lam.Pundefined_to_opt ->
-     begin match args with 
+    begin match args with 
       | [e] -> 
         begin match e.expression_desc with 
-        | Var _ -> 
-          E.econd (E.is_undef e) Js_of_lam_option.none (Js_of_lam_option.some e)
-        | _ -> 
-          E.runtime_call Js_runtime_modules.js_primitive  
-          "undefined_to_opt" args 
-        (* # GPR 974
-          let id = Ext_ident.create "v" in
-          let tmp = E.var id in
-          E.(seq (assign tmp e ) 
-               (econd (is_undef tmp) Js_of_lam_option.none (Js_of_lam_option.some tmp)) )
-        *)
-      end
+          | Var _ -> 
+            E.econd (E.is_undef e) Js_of_lam_option.none (Js_of_lam_option.some e)
+          | _ -> 
+            E.runtime_call Js_runtime_modules.js_primitive  
+              "undefined_to_opt" args 
+              (* # GPR 974
+                 let id = Ext_ident.create "v" in
+                 let tmp = E.var id in
+                 E.(seq (assign tmp e ) 
+                     (econd (is_undef tmp) Js_of_lam_option.none (Js_of_lam_option.some tmp)) )
+              *)
+        end
       | _ -> assert false 
     end    
+  | Lam.Pnull_undefined_to_opt -> 
+    begin match args with 
+      | [e] -> 
+        begin match e.expression_desc with 
+          | Var _ -> 
+            E.econd (E.is_null_undefined e) 
+              Js_of_lam_option.none 
+              (Js_of_lam_option.some e)
+          | _ ->
+            E.runtime_call 
+              Js_runtime_modules.js_primitive        
+              "null_undefined_to_opt" args 
+        end
+      | _ -> assert false  
+    end   
   | Pjs_function_length -> 
     begin match args with 
-    | [f] -> E.function_length f
-    | _ -> assert false 
+      | [f] -> E.function_length f
+      | _ -> assert false 
     end
   | Lam.Pcaml_obj_length -> 
     begin match args with 
-    | [e] -> E.obj_length e 
-    | _ -> assert false 
+      | [e] -> E.obj_length e 
+      | _ -> assert false 
     end
   | Lam.Pcaml_obj_set_length -> 
     begin match args with 
-    | [a;b] -> E.set_length a b 
-    | _ -> assert false 
-  end
+      | [a;b] -> E.set_length a b 
+      | _ -> assert false 
+    end
   | Lam.Pjs_string_of_small_array -> 
     begin match args with 
-    | [e] -> E.string_of_small_int_array e 
-    | _ -> assert false 
-  end 
+      | [e] -> E.string_of_small_int_array e 
+      | _ -> assert false 
+    end 
   | Lam.Pjs_is_instance_array -> 
     begin match args with 
-    | [e] -> E.is_instance_array e 
-    | _ -> assert false 
-  end 
+      | [e] -> E.is_instance_array e 
+      | _ -> assert false 
+    end 
 
-  | Lam.Pnull_undefined_to_opt -> 
-    (*begin match args with 
-    | [e] -> 
-      begin match e.expression_desc with 
-      | Var _ -> 
-        E.econd (E.or_ (E.is_undef e) (E.is_nil e)) 
-          Js_of_lam_option.none 
-          (Js_of_lam_option.some e)
-      | _ ->*)
-       E.runtime_call Js_runtime_modules.js_primitive        
-      "null_undefined_to_opt" args 
-      (*end*)
-    (* | _ -> assert false  *)
-    (* end *)
+
   | Pis_null -> 
     begin match args with 
-    | [e] -> E.is_nil e 
-    | _ -> assert false 
+      | [e] -> E.is_nil e 
+      | _ -> assert false 
     end   
   | Pis_undefined -> 
     begin match args with 
-    | [e] -> E.is_undef e 
-    | _ -> assert false 
+      | [e] -> E.is_undef e 
+      | _ -> assert false 
     end
   | Pis_null_undefined -> 
-      E.runtime_call Js_runtime_modules.js_primitive
-        "is_nil_undef" args 
+    begin match args with 
+      | [ arg] -> 
+        E.is_null_undefined arg
+      | _ -> assert false 
+    end
+  
   | Pjs_boolean_to_bool -> 
     begin match args with 
-    | [e] -> E.bool_of_boolean e 
-    | _ -> assert false 
+      | [e] -> E.bool_of_boolean e 
+      | _ -> assert false 
     end
   | Pjs_typeof -> 
     begin match args with 
-    | [e] -> E.typeof e 
-    | _ -> assert false 
+      | [e] -> E.typeof e 
+      | _ -> assert false 
     end
   | Pjs_unsafe_downgrade _
   | Pdebugger 
@@ -432,8 +438,8 @@ let translate  loc
     Js_long.xor args    
   | Pjscomp cmp ->
     begin match args with
-    | [l;r] -> E.js_comp cmp l r 
-    | _ -> assert false 
+      | [l;r] -> E.js_comp cmp l r 
+      | _ -> assert false 
     end
   | Pbintcomp (Pnativeint ,cmp)
   | Pfloatcomp cmp
@@ -672,7 +678,7 @@ let translate  loc
   | Pjs_object_create labels
     -> 
     assert false 
-    (*Lam_compile_external_obj.assemble_args_obj labels args *)
+  (*Lam_compile_external_obj.assemble_args_obj labels args *)
   | Pjs_call (_, arg_types, ffi) -> 
     Lam_compile_external_call.translate_ffi 
       loc ffi cxt arg_types args 

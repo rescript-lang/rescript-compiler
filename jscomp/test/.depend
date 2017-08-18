@@ -308,7 +308,8 @@ js_json_test.cmj : mt.cmj ../others/js_json.cmj ../others/js_dict.cmj \
 js_list_test.cmj : mt.cmj ../runtime/js.cmj
 js_math_test.cmj : mt.cmj ../runtime/js.cmj
 js_null_test.cmj : mt.cmj ../runtime/js_null.cmj
-js_null_undefined_test.cmj : mt.cmj ../others/js_null_undefined.cmj
+js_null_undefined_test.cmj : mt.cmj ../others/js_null_undefined.cmj \
+    ../runtime/js.cmj
 js_obj_test.cmj : mt.cmj ../others/js_obj.cmj ../stdlib/array.cmj
 js_option_test.cmj : mt.cmj ../runtime/js.cmj
 js_promise_basic_test.cmj : ../stdlib/obj.cmj mt.cmj ../stdlib/list.cmj \
