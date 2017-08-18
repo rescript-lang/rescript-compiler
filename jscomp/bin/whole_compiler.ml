@@ -86372,7 +86372,7 @@ and
     if l > 12 
     then P.paren_group f 1 action 
     else action ()
-  | Is_null_undefined_to_boolean e -> (** return [bool] *)
+  | Is_null_undefined_to_boolean e ->
     P.paren_group f 1 (fun _ -> 
         let cxt = expression 1 cxt f e in 
         P.space f ;
