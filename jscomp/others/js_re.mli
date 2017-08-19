@@ -131,6 +131,9 @@ done
 *)
 external lastIndex : t -> int = "" [@@bs.get]
 
+(** sets the index at which the next match will start its search from *)
+external setLastIndex : t -> int -> unit = "lastIndex" [@@bs.set]
+
 (** returns a bool indicating whether the [multiline] flag is set *)
 external multiline : t -> bool = "" [@@bs.get]
 
