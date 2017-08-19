@@ -61,7 +61,7 @@ type + 'a null_undefined = 'a nullable
 (** value of this type can be [undefined], [null] or ['a]
     this type is the same as {!Js.Null_undefined.t}*)
 
-external toOpt : 'a nullable  -> 'a option = "#null_undefined_to_opt"
+external toOption : 'a nullable  -> 'a option = "#null_undefined_to_opt"
 external test : 'a nullable -> bool = "#is_nil_undef"
 
 type boolean
