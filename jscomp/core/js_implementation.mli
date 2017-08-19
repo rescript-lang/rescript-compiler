@@ -51,3 +51,4 @@ val implementation : Format.formatter -> string -> string -> unit
 
 val implementation_mlast : Format.formatter -> string -> string -> unit
 
+val implementation_map : Format.formatter -> string -> string -> unit

@@ -93,6 +93,7 @@ val suffix_mlast : string
 val suffix_mlast_simple : string
 val suffix_mliast : string
 val suffix_mliast_simple : string
+val suffix_mlmap : string
 val suffix_mll : string
 val suffix_re : string
 val suffix_rei : string 

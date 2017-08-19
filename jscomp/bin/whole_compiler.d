@@ -2,10 +2,12 @@ bin/whole_compiler.ml : core/j.ml
 bin/whole_compiler.ml : core/lam.ml
 bin/whole_compiler.ml : core/lam.mli
 bin/whole_compiler.ml : core/js_op.ml
+bin/whole_compiler.ml : ext/ext_io.ml
 bin/whole_compiler.ml : ext/ext_pp.ml
 bin/whole_compiler.ml : core/js_arr.ml
 bin/whole_compiler.ml : core/js_map.ml
 bin/whole_compiler.ml : ext/ext_int.ml
+bin/whole_compiler.ml : ext/ext_io.mli
 bin/whole_compiler.ml : ext/ext_pp.mli
 bin/whole_compiler.ml : ext/ext_ref.ml
 bin/whole_compiler.ml : ext/ext_scc.ml

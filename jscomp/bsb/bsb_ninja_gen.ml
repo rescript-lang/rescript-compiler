@@ -216,9 +216,9 @@ let output_ninja_and_namespace_map
              We may fix that issue when compiling a package 
              ns.ml explicitly does not need that package
           *)
-          ~output:(  ns ^ Literals.suffix_cmi)
-          ~input:( ns ^ Literals.suffix_ml)
-          ~rule:(Bsb_rule.build_package);
+          ~output:(ns ^ Literals.suffix_cmi)
+          ~input:(ns ^ Literals.suffix_mlmap)
+          ~rule:Bsb_rule.build_package;
         (ns ^ Literals.suffix_cmi) :: all_info
     in
     let () =
