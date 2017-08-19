@@ -91,8 +91,14 @@ let output_ninja_and_namespace_map
     else None in *)
   begin
     let () =
-
-      let bs_package_flags = "-bs-package-name "  ^ package_name in 
+      let bs_package_flags , namespace_flag = 
+        match namespace with
+        | None -> 
+          Ext_string.inter2 "-bs-package-name" package_name, Ext_string.empty
+        | Some s -> 
+          Ext_string.inter2 "-bs-package-map" package_name ,
+          Ext_string.inter2 "-ns" s  
+      in  
       let bsc_flags = 
         Ext_string.inter2  Literals.dash_nostdlib @@
         match built_in_dependency with 
@@ -107,13 +113,7 @@ let output_ninja_and_namespace_map
         | Some  s -> 
           Ext_string.inter2 "-ppx" s 
       in 
-      let open_package_flag, namespace_flag = 
-        match namespace with
-        | None -> Ext_string.empty, Ext_string.empty
-        | Some s -> 
-          Ext_string.inter2 "-open" s ,
-          Ext_string.inter2 "-ns" s  
-      in  
+      
 
       Bsb_ninja_util.output_kvs
         [|
@@ -130,7 +130,7 @@ let output_ninja_and_namespace_map
           ; (* make it configurable in the future *)
           Bsb_ninja_global_vars.refmt_flags, refmt_flags;
           Bsb_ninja_global_vars.namespace , namespace_flag ; 
-          Bsb_ninja_global_vars.open_package, open_package_flag;
+
           (** TODO: could be removed by adding a flag
               [-bs-ns react]
           *)

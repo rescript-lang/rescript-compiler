@@ -11537,7 +11537,7 @@ let refmt_flags = "refmt_flags"
 let postbuild = "postbuild"
 
 let namespace = "namespace" 
-let open_package = "open_package"
+
 
 
 end
@@ -11746,7 +11746,7 @@ let copy_resources =
 let build_cmj_js =
   define
     ~command:"${bsc} ${bs_package_flags} -bs-assume-has-mli -bs-no-builtin-ppx-ml -bs-no-implicit-include  \
-              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${open_package} ${bsc_flags} -o ${out} -c  ${in} $postbuild"
+              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes}  ${bsc_flags} -o ${out} -c  ${in} $postbuild"
 
     ~depfile:"${in}.d"
     "build_cmj_only"
@@ -11754,13 +11754,13 @@ let build_cmj_js =
 let build_cmj_cmi_js =
   define
     ~command:"${bsc} ${bs_package_flags} -bs-assume-no-mli -bs-no-builtin-ppx-ml -bs-no-implicit-include \
-              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${open_package} ${bsc_flags} -o ${out} -c  ${in} $postbuild"
+              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes}  ${bsc_flags} -o ${out} -c  ${in} $postbuild"
     ~depfile:"${in}.d"
     "build_cmj_cmi" (* the compiler should never consult [.cmi] when [.mli] does not exist *)
 let build_cmi =
   define
     ~command:"${bsc} ${bs_package_flags} -bs-no-builtin-ppx-mli -bs-no-implicit-include \
-              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${open_package} ${bsc_flags} -o ${out} -c  ${in}"
+              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${bsc_flags} -o ${out} -c  ${in}"
     ~depfile:"${in}.d"
     "build_cmi" (* the compiler should always consult [.cmi], current the vanilla ocaml compiler only consult [.cmi] when [.mli] found*)
 
@@ -17581,8 +17581,14 @@ let output_ninja_and_namespace_map
     else None in *)
   begin
     let () =
-
-      let bs_package_flags = "-bs-package-name "  ^ package_name in 
+      let bs_package_flags , namespace_flag = 
+        match namespace with
+        | None -> 
+          Ext_string.inter2 "-bs-package-name" package_name, Ext_string.empty
+        | Some s -> 
+          Ext_string.inter2 "-bs-package-map" package_name ,
+          Ext_string.inter2 "-ns" s  
+      in  
       let bsc_flags = 
         Ext_string.inter2  Literals.dash_nostdlib @@
         match built_in_dependency with 
@@ -17597,13 +17603,7 @@ let output_ninja_and_namespace_map
         | Some  s -> 
           Ext_string.inter2 "-ppx" s 
       in 
-      let open_package_flag, namespace_flag = 
-        match namespace with
-        | None -> Ext_string.empty, Ext_string.empty
-        | Some s -> 
-          Ext_string.inter2 "-open" s ,
-          Ext_string.inter2 "-ns" s  
-      in  
+      
 
       Bsb_ninja_util.output_kvs
         [|
@@ -17620,7 +17620,7 @@ let output_ninja_and_namespace_map
           ; (* make it configurable in the future *)
           Bsb_ninja_global_vars.refmt_flags, refmt_flags;
           Bsb_ninja_global_vars.namespace , namespace_flag ; 
-          Bsb_ninja_global_vars.open_package, open_package_flag;
+
           (** TODO: could be removed by adding a flag
               [-bs-ns react]
           *)

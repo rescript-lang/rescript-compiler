@@ -85431,8 +85431,9 @@ module Js_packages_state : sig
 val get_package_name : 
   unit -> string option
 
-val set_package_name : 
-  string -> unit 
+val set_package_name : string -> unit 
+
+val set_package_map : string -> unit 
 
 val get_packages_info : 
   unit -> Js_packages_info.t 
@@ -85480,7 +85481,12 @@ let set_package_name name =
   |  _ ->
     Ext_pervasives.bad_argf "duplicated flag for -bs-package-name"
 
-
+let set_package_map name = 
+    set_package_name name ; 
+    Clflags.open_modules := 
+      Ext_package_name.module_name_of_package_name name ::
+      !Clflags.open_modules
+      
 let update_npm_package_path s  = 
   packages_info := Js_packages_info.add_npm_package_path s !packages_info
 
@@ -113895,6 +113901,11 @@ let buckle_script_flags =
   ("-bs-package-name", 
    Arg.String Js_packages_state.set_package_name, 
    " set package name, useful when you want to produce npm packages")
+  ::
+  ( "-bs-package-map", 
+   Arg.String Js_packages_state.set_package_map, 
+   " set package map, not only set package name but also use it as a namespace"    
+  )
   :: 
   ("-bs-no-version-header", 
    Arg.Set Js_config.no_version_header,

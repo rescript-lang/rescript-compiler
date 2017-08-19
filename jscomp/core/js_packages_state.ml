@@ -37,7 +37,12 @@ let set_package_name name =
   |  _ ->
     Ext_pervasives.bad_argf "duplicated flag for -bs-package-name"
 
-
+let set_package_map name = 
+    set_package_name name ; 
+    Clflags.open_modules := 
+      Ext_package_name.module_name_of_package_name name ::
+      !Clflags.open_modules
+      
 let update_npm_package_path s  = 
   packages_info := Js_packages_info.add_npm_package_path s !packages_info
 
