@@ -32,7 +32,12 @@ let leading_space_count str =
   starting from the first erroring character?) *)
 (* Range coordinates all 1-indexed, like for editors. Otherwise this code
   would have way too many off-by-one errors *)
-let print_file ~is_warning ~range:((start_line, start_char), (end_line, end_char)) ~lines ppf () =
+let print_file 
+~is_warning 
+~range:((start_line, start_line_start_char), (end_line, end_line_end_char)) 
+~lines
+ppf 
+() =
   (* show 2 lines before & after the erroring lines *)
   let first_shown_line = max 1 (start_line - 2) in
   let last_shown_line = min (Array.length lines) (end_line + 2) in
@@ -103,13 +108,13 @@ let print_file ~is_warning ~range:((start_line, start_char), (end_line, end_char
       if current_line_strictly_between_start_and_end_line then
         fprintf ppf "%c@," current_char
       else if i = start_line then begin
-        if j == (start_char - columns_to_cut) then fprintf ppf highlighted_content;
+        if j == (start_line_start_char - columns_to_cut) then fprintf ppf highlighted_content;
         fprintf ppf "%c@," current_char;
-        if j == (end_char - columns_to_cut) then fprintf ppf "@}"
+        if j == current_line_cut_length then fprintf ppf "@}"
       end else if i = end_line then begin
         if j == 1 then fprintf ppf highlighted_content;
         fprintf ppf "%c@," current_char;
-        if j == (end_char - columns_to_cut) then fprintf ppf "@}"
+        if j == (end_line_end_char - columns_to_cut) then fprintf ppf "@}"
       end else
         (* normal, non-highlighted line *)
         fprintf ppf "%c@," current_char
