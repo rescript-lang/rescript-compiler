@@ -245,14 +245,21 @@ func main() {
 		wg.Wait()
 	}
 	if !*noBsbTest {
+		var wg sync.WaitGroup		
 		buildTestDir := filepath.Join("jscomp", "build_tests")
 		files, err := ioutil.ReadDir(buildTestDir)
 		checkError(err)
 
 		for _, file := range files {
+			file := file
+			wg.Add(1)
 			if file.IsDir() {
-				bsbInDir(buildTestDir, file.Name())
+				 go func(){
+					 defer wg.Done()
+					 bsbInDir(buildTestDir, file.Name())
+				 }()
 			}
 		}
+		wg.Wait()
 	}
 }

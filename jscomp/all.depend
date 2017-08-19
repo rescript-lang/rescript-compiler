@@ -369,7 +369,8 @@ core/js_packages_info.cmx : core/lam_module_ident.cmx ext/ext_sys.cmx \
     ext/ext_filename.cmx core/config_util.cmx depends/bs_exception.cmx \
     core/js_packages_info.cmi
 core/js_packages_state.cmx : core/js_packages_info.cmx \
-    ext/ext_pervasives.cmx core/js_packages_state.cmi
+    ext/ext_pervasives.cmx ext/ext_package_name.cmx \
+    core/js_packages_state.cmi
 core/type_int_to_string.cmx :
 core/type_util.cmx : core/type_int_to_string.cmx common/ext_log.cmx \
     core/type_util.cmi

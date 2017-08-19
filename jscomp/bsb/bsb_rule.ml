@@ -146,7 +146,7 @@ let copy_resources =
 let build_cmj_js =
   define
     ~command:"${bsc} ${bs_package_flags} -bs-assume-has-mli -bs-no-builtin-ppx-ml -bs-no-implicit-include  \
-              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${open_package} ${bsc_flags} -o ${out} -c  ${in} $postbuild"
+              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes}  ${bsc_flags} -o ${out} -c  ${in} $postbuild"
 
     ~depfile:"${in}.d"
     "build_cmj_only"
@@ -154,13 +154,13 @@ let build_cmj_js =
 let build_cmj_cmi_js =
   define
     ~command:"${bsc} ${bs_package_flags} -bs-assume-no-mli -bs-no-builtin-ppx-ml -bs-no-implicit-include \
-              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${open_package} ${bsc_flags} -o ${out} -c  ${in} $postbuild"
+              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes}  ${bsc_flags} -o ${out} -c  ${in} $postbuild"
     ~depfile:"${in}.d"
     "build_cmj_cmi" (* the compiler should never consult [.cmi] when [.mli] does not exist *)
 let build_cmi =
   define
     ~command:"${bsc} ${bs_package_flags} -bs-no-builtin-ppx-mli -bs-no-implicit-include \
-              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${open_package} ${bsc_flags} -o ${out} -c  ${in}"
+              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${bsc_flags} -o ${out} -c  ${in}"
     ~depfile:"${in}.d"
     "build_cmi" (* the compiler should always consult [.cmi], current the vanilla ocaml compiler only consult [.cmi] when [.mli] found*)
 

@@ -48,5 +48,5 @@ let refmt_flags = "refmt_flags"
 let postbuild = "postbuild"
 
 let namespace = "namespace" 
-let open_package = "open_package"
+
 

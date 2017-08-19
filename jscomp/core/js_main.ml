@@ -157,6 +157,11 @@ let buckle_script_flags =
   ("-bs-package-name", 
    Arg.String Js_packages_state.set_package_name, 
    " set package name, useful when you want to produce npm packages")
+  ::
+  ( "-bs-package-map", 
+   Arg.String Js_packages_state.set_package_map, 
+   " set package map, not only set package name but also use it as a namespace"    
+  )
   :: 
   ("-bs-no-version-header", 
    Arg.Set Js_config.no_version_header,
