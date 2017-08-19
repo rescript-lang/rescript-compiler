@@ -119,7 +119,7 @@ let str = "abbcdefabh" in
 let break = ref false in
 while not !break do
   match re |> Js.Re.exec str with
-  | None -> break := false
+  | None -> break := true
   | Some result ->
     let match_ = (Js.Re.matches result).(0) in
     let next = string_of_int (Js.Re.lastIndex re) in
