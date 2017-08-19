@@ -32,17 +32,13 @@ let (//) = Ext_filename.combine
 let output ~dir namespace 
     (file_groups : Bsb_parse_sources.file_group list)
   = 
-  let fname = namespace ^ Literals.suffix_ml in 
+  let fname = namespace ^ Literals.suffix_mlmap in 
   let oc = open_out_bin (dir// fname ) in 
-  let modules =     
-    List.fold_left 
-    (fun acc (x : Bsb_parse_sources.file_group) ->
-        String_map.keys x.sources @acc 
-     ) [] file_groups in 
-  let structures = 
-    Bsb_pkg_create.make_structure namespace modules in 
-
-  Ml_binary.write_ast Ml_binary.Ml fname
-    structures 
-    oc ;
+  List.iter
+    (fun  (x : Bsb_parse_sources.file_group) ->
+      String_map.iter (fun k _ -> 
+        output_string oc k ;
+        output_string oc "\n"
+      ) x.sources 
+     )  file_groups ;
   close_out oc 

@@ -832,9 +832,8 @@ bsb/bsb_pkg.cmx : ext/string_hashtbl.cmx ext/literals.cmx \
     bsb/bsb_exception.cmx bsb/bsb_pkg.cmi
 bsb/bsb_pkg_cmi_create.cmx :
 bsb/bsb_pkg_create.cmx : ext/ext_package_name.cmx bsb/bsb_pkg_create.cmi
-bsb/bsb_pkg_map_gen.cmx : ext/string_map.cmx common/ml_binary.cmx \
-    ext/literals.cmx ext/ext_filename.cmx bsb/bsb_pkg_create.cmx \
-    bsb/bsb_parse_sources.cmx bsb/bsb_pkg_map_gen.cmi
+bsb/bsb_pkg_map_gen.cmx : ext/string_map.cmx ext/literals.cmx \
+    ext/ext_filename.cmx bsb/bsb_parse_sources.cmx bsb/bsb_pkg_map_gen.cmi
 bsb/bsb_query.cmx : ext/string_map.cmx ext/ext_json_noloc.cmx \
     ext/ext_array.cmx bsb/bsb_parse_sources.cmx bsb/bsb_ninja_regen.cmx \
     bsb/bsb_config_types.cmx bsb/bsb_query.cmi
