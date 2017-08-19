@@ -73,7 +73,7 @@ type + 'a nullable
 
 type + 'a null_undefined = 'a nullable    
 
-external toOpt : 'a nullable  -> 'a option = "#null_undefined_to_opt"
+external toOption : 'a nullable  -> 'a option = "#null_undefined_to_opt"
 external test : 'a nullable -> bool = "#is_nil_undef"
 
 type boolean
