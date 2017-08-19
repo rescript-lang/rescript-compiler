@@ -60,6 +60,15 @@ let suites = Mt.[
 
     Eq(4,  re |> Js.Re.lastIndex)
   );
+  "t_setLastIndex", (fun _ ->
+    let re = [%re "/na/g"] in
+
+    let before = Js.Re.lastIndex re in
+    let () = Js.Re.setLastIndex re 42 in
+    let after = Js.Re.lastIndex re in
+
+    Eq((0, 42),  (before, after))
+  );
   "t_multiline", (fun _ ->
     Eq(false, [%re "/./ig"] |> Js.Re.multiline)
   );

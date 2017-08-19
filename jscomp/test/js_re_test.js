@@ -128,45 +128,66 @@ var suites_001 = /* :: */[
                   ],
                   /* :: */[
                     /* tuple */[
-                      "t_multiline",
+                      "t_setLastIndex",
                       (function () {
+                          var re = (/na/g);
+                          var before = re.lastIndex;
+                          re.lastIndex = 42;
+                          var after = re.lastIndex;
                           return /* Eq */Block.__(0, [
-                                    /* false */0,
-                                    +(/./ig).multiline
+                                    /* tuple */[
+                                      0,
+                                      42
+                                    ],
+                                    /* tuple */[
+                                      before,
+                                      after
+                                    ]
                                   ]);
                         })
                     ],
                     /* :: */[
                       /* tuple */[
-                        "t_source",
+                        "t_multiline",
                         (function () {
                             return /* Eq */Block.__(0, [
-                                      "f.+o",
-                                      (/f.+o/ig).source
+                                      /* false */0,
+                                      +(/./ig).multiline
                                     ]);
                           })
                       ],
                       /* :: */[
                         /* tuple */[
-                          "t_sticky",
+                          "t_source",
                           (function () {
                               return /* Eq */Block.__(0, [
-                                        /* true */1,
-                                        +(/./yg).sticky
+                                        "f.+o",
+                                        (/f.+o/ig).source
                                       ]);
                             })
                         ],
                         /* :: */[
                           /* tuple */[
-                            "t_unicode",
+                            "t_sticky",
                             (function () {
                                 return /* Eq */Block.__(0, [
-                                          /* false */0,
-                                          +(/./yg).unicode
+                                          /* true */1,
+                                          +(/./yg).sticky
                                         ]);
                               })
                           ],
-                          /* [] */0
+                          /* :: */[
+                            /* tuple */[
+                              "t_unicode",
+                              (function () {
+                                  return /* Eq */Block.__(0, [
+                                            /* false */0,
+                                            +(/./yg).unicode
+                                          ]);
+                                })
+                            ],
+                            /* [] */0
+                          ]
                         ]
                       ]
                     ]
