@@ -31,4 +31,11 @@ val lazy_parse_interface : Format.formatter -> string -> Parsetree.signature laz
 
 val lazy_parse_implementation : Format.formatter -> string -> Parsetree.structure lazy_t
     
-val check_suffix :  string -> [ `Ml | `Mli | `Mlast | `Mliast ] * string
+type valid_input = 
+  | Ml 
+  | Mli
+  | Mlast    
+  | Mliast 
+  | Mlmap
+  
+val check_suffix :  string -> valid_input * string

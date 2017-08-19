@@ -619,7 +619,8 @@ core/lam_compile_group.cmx : ext/literals.cmx core/lam_util.cmx \
     ext/ext_filename.cmx core/lam_compile_group.cmi
 core/js_implementation.cmx : core/ocaml_parse.cmx ext/literals.cmx \
     core/lam_compile_group.cmx core/lam_compile_env.cmx common/js_config.cmx \
-    ext/ext_pervasives.cmx common/ext_log.cmx syntax/bs_ast_invariant.cmx \
+    ext/ext_string.cmx ext/ext_pervasives.cmx ext/ext_package_name.cmx \
+    common/ext_log.cmx ext/ext_io.cmx syntax/bs_ast_invariant.cmx \
     depends/binary_ast.cmx core/js_implementation.cmi
 core/ocaml_batch_compile.cmx : core/ocaml_parse.cmx \
     core/js_implementation.cmx common/js_config.cmx ext/ext_ref.cmx \

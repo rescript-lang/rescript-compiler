@@ -148,3 +148,39 @@ let implementation_mlast ppf sourcefile outputprefix =
   |> print_if ppf Clflags.dump_parsetree Printast.implementation
   |> print_if ppf Clflags.dump_source Pprintast.structure
   |> after_parsing_impl ppf sourcefile outputprefix 
+
+
+
+
+
+
+
+let make_structure_item ~pkg_name cunit : Parsetree.structure_item =
+      let open Ast_helper in 
+      let loc = Location.none in 
+  Str.module_ 
+    (Mb.mk {txt = cunit; loc  }
+       (Mod.ident 
+          {txt = Lident 
+               ( Ext_package_name.make ~pkg:pkg_name cunit)
+          ; loc}))
+
+
+
+let implementation_map ppf sourcefile outputprefix = 
+    let list_of_modules = Ext_io.rev_lines_of_file sourcefile 
+    in 
+    let pkg_name = 
+        String.capitalize
+        (Filename.chop_extension (Filename.basename sourcefile)) in
+    let ml_ast = List.fold_left (fun acc module_name -> 
+      if Ext_string.is_empty module_name then acc 
+      else make_structure_item ~pkg_name module_name :: acc 
+    ) [] list_of_modules in 
+    Compmisc.init_path false;
+    ml_ast
+    |> print_if ppf Clflags.dump_parsetree Printast.implementation
+    |> print_if ppf Clflags.dump_source Pprintast.structure
+    |> after_parsing_impl ppf sourcefile outputprefix 
+
+  

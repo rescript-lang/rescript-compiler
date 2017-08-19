@@ -58551,6 +58551,90 @@ let initial_env () =
   ) env (!implicit_modules @ List.rev !Clflags.open_modules)
 
 end
+module Ext_io : sig 
+#1 "ext_io.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+val load_file : string -> string
+
+val rev_lines_of_file : string -> string list
+
+val write_file : string -> string -> unit
+
+end = struct
+#1 "ext_io.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+(** on 32 bit , there are 16M limitation *)
+let load_file f =
+  Ext_pervasives.finally (open_in_bin f) close_in begin fun ic ->   
+    let n = in_channel_length ic in
+    let s = Bytes.create n in
+    really_input ic s 0 n;
+    Bytes.unsafe_to_string s
+  end
+
+
+let rev_lines_of_file file = 
+  Ext_pervasives.finally (open_in_bin file) close_in begin fun chan -> 
+    let rec loop acc = 
+      match input_line chan with
+      | line -> loop (line :: acc)
+      | exception End_of_file -> close_in chan ; acc in
+    loop []
+  end
+
+let write_file f content = 
+  Ext_pervasives.finally (open_out_bin f) close_out begin fun oc ->   
+    output_string oc content
+  end
+
+end
 module Ext_log : sig 
 #1 "ext_log.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -58680,102 +58764,6 @@ let iinfo b str f  =
 
 
 end
-module Config_util : sig 
-#1 "config_util.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(** A simple wrapper around [Config] module in compiler-libs, so that the search path
-    is the same
-*)
-
-
-val find_opt : string -> string option
-(** [find filename] Input is a file name, output is absolute path *)
-
-
-end = struct
-#1 "config_util.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-let find_in_path_uncap path name =
-  let uname = String.uncapitalize name in
-  let rec try_dir = function
-    | [] -> None
-    | dir::rem ->      
-      let ufullname = Filename.concat dir uname in
-      if Sys.file_exists ufullname then Some ufullname
-      else 
-        let fullname = Filename.concat dir name   in
-        if Sys.file_exists fullname then Some fullname
-        else try_dir rem
-  in try_dir path
-
-
-
-(* ATTENTION: lazy to wait [Config.load_path] populated *)
-let find_opt file =  find_in_path_uncap !Config.load_path file 
-
-
-
-
-
-end
 module Ext_package_name : sig 
 #1 "ext_package_name.mli"
 (* Copyright (C) 2017- Authors of BuckleScript
@@ -58892,6 +58880,102 @@ let module_name_of_package_name (s : string) : string =
          in 
    aux true 0 len ;
    Buffer.contents buf 
+
+end
+module Config_util : sig 
+#1 "config_util.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(** A simple wrapper around [Config] module in compiler-libs, so that the search path
+    is the same
+*)
+
+
+val find_opt : string -> string option
+(** [find filename] Input is a file name, output is absolute path *)
+
+
+end = struct
+#1 "config_util.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+let find_in_path_uncap path name =
+  let uname = String.uncapitalize name in
+  let rec try_dir = function
+    | [] -> None
+    | dir::rem ->      
+      let ufullname = Filename.concat dir uname in
+      if Sys.file_exists ufullname then Some ufullname
+      else 
+        let fullname = Filename.concat dir name   in
+        if Sys.file_exists fullname then Some fullname
+        else try_dir rem
+  in try_dir path
+
+
+
+(* ATTENTION: lazy to wait [Config.load_path] populated *)
+let find_opt file =  find_in_path_uncap !Config.load_path file 
+
+
+
+
 
 end
 module Ext_sys : sig 
@@ -107699,7 +107783,14 @@ val lazy_parse_interface : Format.formatter -> string -> Parsetree.signature laz
 
 val lazy_parse_implementation : Format.formatter -> string -> Parsetree.structure lazy_t
     
-val check_suffix :  string -> [ `Ml | `Mli | `Mlast | `Mliast ] * string
+type valid_input = 
+  | Ml 
+  | Mli
+  | Mlast    
+  | Mliast 
+  | Mlmap
+  
+val check_suffix :  string -> valid_input * string
 
 end = struct
 #1 "ocaml_parse.ml"
@@ -107750,22 +107841,31 @@ let parse_implementation_from_string  str =
 
 let lazy_parse_implementation ppf sourcefile =
   lazy (parse_implementation ppf sourcefile)
-    
+
+type valid_input = 
+  | Ml 
+  | Mli
+  | Mlast    
+  | Mliast 
+  | Mlmap
+  
 let check_suffix  name  = 
   if Filename.check_suffix name ".ml"
   || Filename.check_suffix name ".mlt" then 
-    `Ml,
+    Ml,
     (** This is per-file based, 
         when [ocamlc] [-c -o another_dir/xx.cmi] 
         it will return (another_dir/xx)
     *)    
     Compenv.output_prefix name 
   else if Filename.check_suffix name !Config.interface_suffix then 
-    `Mli,  Compenv.output_prefix name 
+    Mli,  Compenv.output_prefix name 
   else if Filename.check_suffix name ".mlast" then 
-    `Mlast, Compenv.output_prefix name 
+    Mlast, Compenv.output_prefix name 
   else if Filename.check_suffix name ".mliast" then 
-    `Mliast, Compenv.output_prefix name 
+    Mliast, Compenv.output_prefix name 
+  else if Filename.check_suffix name ".mlmap"  then 
+    Mlmap, Compenv.output_prefix name 
   else 
     raise(Arg.Bad("don't know what to do with " ^ name))
 
@@ -111195,7 +111295,7 @@ val implementation : Format.formatter -> string -> string -> unit
 
 val implementation_mlast : Format.formatter -> string -> string -> unit
 
-
+val implementation_map : Format.formatter -> string -> string -> unit
 end = struct
 #1 "js_implementation.ml"
 (***********************************************************************)
@@ -111349,6 +111449,41 @@ let implementation_mlast ppf sourcefile outputprefix =
   |> print_if ppf Clflags.dump_source Pprintast.structure
   |> after_parsing_impl ppf sourcefile outputprefix 
 
+
+
+
+
+
+
+let make_structure_item ~pkg_name cunit : Parsetree.structure_item =
+      let open Ast_helper in 
+      let loc = Location.none in 
+  Str.module_ 
+    (Mb.mk {txt = cunit; loc  }
+       (Mod.ident 
+          {txt = Lident 
+               ( Ext_package_name.make ~pkg:pkg_name cunit)
+          ; loc}))
+
+
+
+let implementation_map ppf sourcefile outputprefix = 
+    let list_of_modules = Ext_io.rev_lines_of_file sourcefile 
+    in 
+    let pkg_name = 
+        String.capitalize
+        (Filename.chop_extension (Filename.basename sourcefile)) in
+    let ml_ast = List.fold_left (fun acc module_name -> 
+      if Ext_string.is_empty module_name then acc 
+      else make_structure_item ~pkg_name module_name :: acc 
+    ) [] list_of_modules in 
+    Compmisc.init_path false;
+    ml_ast
+    |> print_if ppf Clflags.dump_parsetree Printast.implementation
+    |> print_if ppf Clflags.dump_source Pprintast.structure
+    |> after_parsing_impl ppf sourcefile outputprefix 
+
+  
 end
 module Ocaml_batch_compile : sig 
 #1 "ocaml_batch_compile.mli"
@@ -113763,15 +113898,16 @@ let process_implementation_file ppf name =
 
 let process_file ppf name = 
   match Ocaml_parse.check_suffix  name with 
-  | `Ml, opref ->
+  | Ml, opref ->
     Js_implementation.implementation ppf name opref 
-  | `Mli, opref -> 
+  | Mli, opref -> 
     Js_implementation.interface ppf name opref 
-  | `Mliast, opref 
+  | Mliast, opref 
     -> Js_implementation.interface_mliast ppf name opref 
-  | `Mlast, opref 
+  | Mlast, opref 
     -> Js_implementation.implementation_mlast ppf name opref
-
+  | Mlmap, opref 
+    -> Js_implementation.implementation_map ppf name opref
 
 let usage = "Usage: bsc <options> <files>\nOptions are:"
 
@@ -113829,13 +113965,13 @@ let define_variable s =
   
 let buckle_script_flags =
   ("-bs-super-errors",
-    Arg.Unit (fun _ -> 
+    Arg.Unit 
       (* needs to be set here instead of, say, setting a
         Js_config.better_errors flag; otherwise, when `anonymous` runs, we
         don't have time to set the custom printer before it starts outputting
         warnings *)
-      Super_main.setup ();
-    ),
+      Super_main.setup
+     ,
    " Better error message combined with other tools "
   )
   :: 

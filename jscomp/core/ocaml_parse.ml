@@ -45,21 +45,30 @@ let parse_implementation_from_string  str =
 
 let lazy_parse_implementation ppf sourcefile =
   lazy (parse_implementation ppf sourcefile)
-    
+
+type valid_input = 
+  | Ml 
+  | Mli
+  | Mlast    
+  | Mliast 
+  | Mlmap
+  
 let check_suffix  name  = 
   if Filename.check_suffix name ".ml"
   || Filename.check_suffix name ".mlt" then 
-    `Ml,
+    Ml,
     (** This is per-file based, 
         when [ocamlc] [-c -o another_dir/xx.cmi] 
         it will return (another_dir/xx)
     *)    
     Compenv.output_prefix name 
   else if Filename.check_suffix name !Config.interface_suffix then 
-    `Mli,  Compenv.output_prefix name 
+    Mli,  Compenv.output_prefix name 
   else if Filename.check_suffix name ".mlast" then 
-    `Mlast, Compenv.output_prefix name 
+    Mlast, Compenv.output_prefix name 
   else if Filename.check_suffix name ".mliast" then 
-    `Mliast, Compenv.output_prefix name 
+    Mliast, Compenv.output_prefix name 
+  else if Filename.check_suffix name ".mlmap"  then 
+    Mlmap, Compenv.output_prefix name 
   else 
     raise(Arg.Bad("don't know what to do with " ^ name))
