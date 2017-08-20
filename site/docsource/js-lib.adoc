@@ -77,47 +77,47 @@ for coercing to and from `bool`: `Js.to_bool` and `Js.Boolean.to_js_boolean`.
 
 _These APIs might change, but is considered mostly complete_
 
-* link:https://bucklescript.github.io/bucklescript/api/Js.Null.html[Js.Null]
-* link:https://bucklescript.github.io/bucklescript/api/Js.Undefined.html[Js.Undefined]
-* link:https://bucklescript.github.io/bucklescript/api/Js.Null_undefined.html[Js.Null_undefined]
+* link:../api/Js.Null.html[Js.Null]
+* link:../api/Js.Undefined.html[Js.Undefined]
+* link:../api/Js.Null_undefined.html[Js.Null_undefined]
 
-* link:https://bucklescript.github.io/bucklescript/api/Js.Array.html[Js.Array]
-* link:https://bucklescript.github.io/bucklescript/api/Js.Date.html[Js.Date]
-* link:https://bucklescript.github.io/bucklescript/api/Js.Math.html[Js.Math]
-* link:https://bucklescript.github.io/bucklescript/api/Js.Re.html[Js.Re]
-* link:https://bucklescript.github.io/bucklescript/api/Js.String.html[Js.String]
-* link:https://bucklescript.github.io/bucklescript/api/Js.Typed_array.html[Js.Typed_array]
+* link:../api/Js.Array.html[Js.Array]
+* link:../api/Js.Date.html[Js.Date]
+* link:../api/Js.Math.html[Js.Math]
+* link:../api/Js.Re.html[Js.Re]
+* link:../api/Js.String.html[Js.String]
+* link:../api/Js.Typed_array.html[Js.Typed_array]
 
 === Experimental/incomplete submodules
 
 _Expect these APIs to change drastically, **use only if you accept breakage.**_
 
-* link:https://bucklescript.github.io/bucklescript/api/Js.Boolean.html[Js.Boolean]
-* link:https://bucklescript.github.io/bucklescript/api/Js.Dict.html[Js.Dict]
-* link:https://bucklescript.github.io/bucklescript/api/Js.Obj.html[Js.Obj]
+* link:../api/Js.Boolean.html[Js.Boolean]
+* link:../api/Js.Dict.html[Js.Dict]
+* link:../api/Js.Obj.html[Js.Obj]
 
 === Very experimental/internal submodules
 
 *_Do not use these APIs unless absolutely necessary, they're mostly internal_*
 
-* link:https://bucklescript.github.io/bucklescript/api/Js_float.html[Js_float]
-* link:https://bucklescript.github.io/bucklescript/api/Js_int.html[Js_int]
-* link:https://bucklescript.github.io/bucklescript/api/Js_int64.html[Js_int64]
-* link:https://bucklescript.github.io/bucklescript/api/Js_json.html[Js.Json]
-* link:https://bucklescript.github.io/bucklescript/api/Js_nativeint.html[Js_nativeint]
-* link:https://bucklescript.github.io/bucklescript/api/Js_primitive.html[Js_primitive]
-* link:https://bucklescript.github.io/bucklescript/api/Js_types.html[Js.Types]
-* link:https://bucklescript.github.io/bucklescript/api/Js_unsafe.html[Js_unsafe]
+* link:../api/Js_float.html[Js_float]
+* link:../api/Js_int.html[Js_int]
+* link:../api/Js_int64.html[Js_int64]
+* link:../api/Js_json.html[Js.Json]
+* link:../api/Js_nativeint.html[Js_nativeint]
+* link:../api/Js_primitive.html[Js_primitive]
+* link:../api/Js_types.html[Js.Types]
+* link:../api/Js_unsafe.html[Js_unsafe]
 
 == Node module
 
-link:https://bucklescript.github.io/bucklescript/api/Node.html[Node]
+link:../api/Node.html[Node]
 
 === Submodules
 
-* link:https://bucklescript.github.io/bucklescript/api/Node_buffer.html[Node.Buffer]
-* link:https://bucklescript.github.io/bucklescript/api/Node_child_process.html[Node.Child_process]
-* link:https://bucklescript.github.io/bucklescript/api/Node_fs.html[Node.Fs]
-* link:https://bucklescript.github.io/bucklescript/api/Node_module.html[Node.Module]
-* link:https://bucklescript.github.io/bucklescript/api/Node_path.html[Node.Path]
-* link:https://bucklescript.github.io/bucklescript/api/Node_process.html[Node.Process]
+* link:../api/Node_buffer.html[Node.Buffer]
+* link:../api/Node_child_process.html[Node.Child_process]
+* link:../api/Node_fs.html[Node.Fs]
+* link:../api/Node_module.html[Node.Module]
+* link:../api/Node_path.html[Node.Path]
+* link:../api/Node_process.html[Node.Process]

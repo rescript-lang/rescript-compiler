@@ -559,7 +559,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_fixed_arguments_with_arbitrary_json_literal_since_1_7_0">Fixed Arguments with arbitrary JSON literal (@since 1.7.0)</a></li>
 </ul>
 </li>
-<li><a href="#_binding_to_nodejs_special_variables_bs_node">Binding to NodeJS special variables: bs.node</a></li>
+<li><a href="#_binding_to_nodejs_special_variables_a_href_api_node_html_bs_node_a">Binding to NodeJS special variables: <a href="../api/Node.html">bs.node</a></a></li>
 <li><a href="#_binding_to_callbacks_high_order_function">Binding to callbacks (high-order function)</a>
 <ul class="sectlevel3">
 <li><a href="#__bs_for_explicit_uncurried_callback">[@bs] for explicit uncurried callback</a></li>
@@ -1272,7 +1272,7 @@ will call <code>fib</code>.</p>
 <div class="colist arabic">
 <ol>
 <li>
-<p><code>Js</code> module is a built-in module shipped with BuckleScript</p>
+<p><a href="../api/Js.html"><code>Js</code></a> module is a built-in module shipped with BuckleScript</p>
 </li>
 </ol>
 </div>
@@ -2355,7 +2355,7 @@ data.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_binding_to_nodejs_special_variables_bs_node"><a class="anchor" href="#_binding_to_nodejs_special_variables_bs_node"></a>Binding to NodeJS special variables: bs.node</h3>
+<h3 id="_binding_to_nodejs_special_variables_a_href_api_node_html_bs_node_a"><a class="anchor" href="#_binding_to_nodejs_special_variables_a_href_api_node_html_bs_node_a"></a>Binding to NodeJS special variables: <a href="../api/Node.html">bs.node</a></h3>
 <div class="paragraph">
 <p>NodeJS has several file local variables: <code><em>dirname</code>, <code></em>filename</code>, <code>_module</code>, and <code>require</code>.
 Their semantics are more like macros instead of functions.</p>
@@ -3504,7 +3504,7 @@ drop the first '_'</p>
 <pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">type</span> <span class="tok-n">element</span>
 <span class="tok-k">type</span> <span class="tok-n">dom</span>
 <span class="tok-k">external</span> <span class="tok-n">getElementById</span> <span class="tok-o">:</span> <span class="tok-kt">string</span> <span class="tok-o">-&gt;</span> <span class="tok-n">element</span> <span class="tok-n">option</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;&quot;</span>
-<span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">send</span><span class="tok-o">.</span><span class="tok-n">pipe</span><span class="tok-o">:</span><span class="tok-n">dom</span><span class="tok-o">]</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">return</span> <span class="tok-n">null_to_opt</span><span class="tok-o">]</span> <b class="conum">(1)</b>
+<span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">send</span><span class="tok-o">.</span><span class="tok-n">pipe</span><span class="tok-o">:</span><span class="tok-n">dom</span><span class="tok-o">]</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">return</span> <span class="tok-n">nullable</span><span class="tok-o">]</span> <b class="conum">(1)</b>
 
 <span class="tok-k">let</span> <span class="tok-n">test</span> <span class="tok-n">dom</span> <span class="tok-o">=</span>
     <span class="tok-k">let</span> <span class="tok-n">elem</span> <span class="tok-o">=</span> <span class="tok-n">dom</span> <span class="tok-o">|&gt;</span> <span class="tok-n">getElementById</span> <span class="tok-s2">&quot;haha&quot;</span> <span class="tok-k">in</span>
@@ -3516,7 +3516,7 @@ drop the first '_'</p>
 <div class="colist arabic">
 <ol>
 <li>
-<p><code>null_to_opt</code> attribute will automatically convert null to <code>option</code></p>
+<p><code>nullable</code> attribute will automatically convert null and undefined to <code>option</code></p>
 </li>
 </ol>
 </div>
@@ -3525,26 +3525,18 @@ drop the first '_'</p>
 <div class="content">
 <pre class="pygments highlight"><code data-lang="js"><span class="tok-kd">function</span> <span class="tok-nx">test</span><span class="tok-p">(</span><span class="tok-nx">dom</span><span class="tok-p">)</span> <span class="tok-p">{</span>
   <span class="tok-kd">var</span> <span class="tok-nx">elem</span> <span class="tok-o">=</span> <span class="tok-nx">dom</span><span class="tok-p">.</span><span class="tok-nx">getElementById</span><span class="tok-p">(</span><span class="tok-s2">&quot;haha&quot;</span><span class="tok-p">);</span>
-  <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-nx">elem</span> <span class="tok-o">!==</span> <span class="tok-kc">null</span><span class="tok-p">)</span> <span class="tok-p">{</span> <b class="conum">(1)</b>
+  <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-nx">elem</span> <span class="tok-o">==</span> <span class="tok-kc">null</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+    <span class="tok-k">return</span> <span class="tok-mi">1</span><span class="tok-p">;</span>
+  <span class="tok-p">}</span> <span class="tok-k">else</span> <span class="tok-p">{</span>
     <span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span><span class="tok-p">(</span><span class="tok-nx">elem</span><span class="tok-p">);</span>
     <span class="tok-k">return</span> <span class="tok-mi">2</span><span class="tok-p">;</span>
-  <span class="tok-p">}</span>
-  <span class="tok-k">else</span> <span class="tok-p">{</span>
-    <span class="tok-k">return</span> <span class="tok-mi">1</span><span class="tok-p">;</span>
   <span class="tok-p">}</span>
 <span class="tok-p">}</span></code></pre>
 </div>
 </div>
-<div class="colist arabic">
-<ol>
-<li>
-<p>nullable checking without boxing due to compiler optimizations</p>
-</li>
-</ol>
-</div>
 <div class="paragraph">
-<p>Currently 4 directives are supported: <code>null_to_opt</code>, <code>undefined_to_opt</code>,
-<code>null_undefined_to_opt</code> and <code>identity</code>.</p>
+<p>Currently 3 directives are supported: <code>null_to_opt</code>, <code>undefined_to_opt</code>,
+<code>nullable</code> and <code>identity</code>.</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -3554,7 +3546,7 @@ drop the first '_'</p>
 </td>
 <td class="content">
 <div class="paragraph">
-<p><code>null_to_opt</code>, <code>undefined_to_opt</code> and <code>null_undefined_to_opt</code> will <strong>semantically</strong>
+<p><code>null_to_opt</code>, <code>undefined_to_opt</code> and <code>nullable</code> will <strong>semantically</strong>
 convert a nullable value to <code>option</code> which is a boxed value, but the compiler will
 do smart optimizations to <strong>remove such boxing overhead</strong> when the returned value is destructed
 in the same routine.</p>
@@ -3785,7 +3777,7 @@ below:</p>
 <div class="title">Note</div>
 </td>
 <td class="content">
-<code>Js.Re.t</code> can be accessed and manipulated using the functions available in the <code>Js.Re</code> module.
+<code>Js.Re.t</code> can be accessed and manipulated using the functions available in the <a href="../api/Js.Re.html"><code>Js.Re</code></a> module.
 </td>
 </tr>
 </table>
@@ -3916,7 +3908,7 @@ more examples, please visit
 </div>
 </div>
 <div class="paragraph">
-<p>Please consult module <a href="https://bucklescript.github.io/bucklescript/api/Js.Exn.html"><code>Js.Exn</code></a> for more details</p>
+<p>Please consult module <a href="../api/Js.Exn.html"><code>Js.Exn</code></a> for more details</p>
 </div>
 </div>
 </div>
@@ -4045,31 +4037,31 @@ for coercing to and from <code>bool</code>: <code>Js.to_bool</code> and <code>Js
 <div class="ulist">
 <ul>
 <li>
-<p><a href="https://bucklescript.github.io/bucklescript/api/Js.Null.html">Js.Null</a></p>
+<p><a href="../api/Js.Null.html">Js.Null</a></p>
 </li>
 <li>
-<p><a href="https://bucklescript.github.io/bucklescript/api/Js.Undefined.html">Js.Undefined</a></p>
+<p><a href="../api/Js.Undefined.html">Js.Undefined</a></p>
 </li>
 <li>
-<p><a href="https://bucklescript.github.io/bucklescript/api/Js.Null_undefined.html">Js.Null_undefined</a></p>
+<p><a href="../api/Js.Null_undefined.html">Js.Null_undefined</a></p>
 </li>
 <li>
-<p><a href="https://bucklescript.github.io/bucklescript/api/Js.Array.html">Js.Array</a></p>
+<p><a href="../api/Js.Array.html">Js.Array</a></p>
 </li>
 <li>
-<p><a href="https://bucklescript.github.io/bucklescript/api/Js.Date.html">Js.Date</a></p>
+<p><a href="../api/Js.Date.html">Js.Date</a></p>
 </li>
 <li>
-<p><a href="https://bucklescript.github.io/bucklescript/api/Js.Math.html">Js.Math</a></p>
+<p><a href="../api/Js.Math.html">Js.Math</a></p>
 </li>
 <li>
-<p><a href="https://bucklescript.github.io/bucklescript/api/Js.Re.html">Js.Re</a></p>
+<p><a href="../api/Js.Re.html">Js.Re</a></p>
 </li>
 <li>
-<p><a href="https://bucklescript.github.io/bucklescript/api/Js.String.html">Js.String</a></p>
+<p><a href="../api/Js.String.html">Js.String</a></p>
 </li>
 <li>
-<p><a href="https://bucklescript.github.io/bucklescript/api/Js.Typed_array.html">Js.Typed_array</a></p>
+<p><a href="../api/Js.Typed_array.html">Js.Typed_array</a></p>
 </li>
 </ul>
 </div>
@@ -4082,13 +4074,13 @@ for coercing to and from <code>bool</code>: <code>Js.to_bool</code> and <code>Js
 <div class="ulist">
 <ul>
 <li>
-<p><a href="https://bucklescript.github.io/bucklescript/api/Js.Boolean.html">Js.Boolean</a></p>
+<p><a href="../api/Js.Boolean.html">Js.Boolean</a></p>
 </li>
 <li>
-<p><a href="https://bucklescript.github.io/bucklescript/api/Js.Dict.html">Js.Dict</a></p>
+<p><a href="../api/Js.Dict.html">Js.Dict</a></p>
 </li>
 <li>
-<p><a href="https://bucklescript.github.io/bucklescript/api/Js.Obj.html">Js.Obj</a></p>
+<p><a href="../api/Js.Obj.html">Js.Obj</a></p>
 </li>
 </ul>
 </div>
@@ -4101,28 +4093,28 @@ for coercing to and from <code>bool</code>: <code>Js.to_bool</code> and <code>Js
 <div class="ulist">
 <ul>
 <li>
-<p><a href="https://bucklescript.github.io/bucklescript/api/Js_float.html">Js_float</a></p>
+<p><a href="../api/Js_float.html">Js_float</a></p>
 </li>
 <li>
-<p><a href="https://bucklescript.github.io/bucklescript/api/Js_int.html">Js_int</a></p>
+<p><a href="../api/Js_int.html">Js_int</a></p>
 </li>
 <li>
-<p><a href="https://bucklescript.github.io/bucklescript/api/Js_int64.html">Js_int64</a></p>
+<p><a href="../api/Js_int64.html">Js_int64</a></p>
 </li>
 <li>
-<p><a href="https://bucklescript.github.io/bucklescript/api/Js_json.html">Js.Json</a></p>
+<p><a href="../api/Js_json.html">Js.Json</a></p>
 </li>
 <li>
-<p><a href="https://bucklescript.github.io/bucklescript/api/Js_nativeint.html">Js_nativeint</a></p>
+<p><a href="../api/Js_nativeint.html">Js_nativeint</a></p>
 </li>
 <li>
-<p><a href="https://bucklescript.github.io/bucklescript/api/Js_primitive.html">Js_primitive</a></p>
+<p><a href="../api/Js_primitive.html">Js_primitive</a></p>
 </li>
 <li>
-<p><a href="https://bucklescript.github.io/bucklescript/api/Js_types.html">Js.Types</a></p>
+<p><a href="../api/Js_types.html">Js.Types</a></p>
 </li>
 <li>
-<p><a href="https://bucklescript.github.io/bucklescript/api/Js_unsafe.html">Js_unsafe</a></p>
+<p><a href="../api/Js_unsafe.html">Js_unsafe</a></p>
 </li>
 </ul>
 </div>
@@ -4133,29 +4125,29 @@ for coercing to and from <code>bool</code>: <code>Js.to_bool</code> and <code>Js
 <h2 id="_node_module"><a class="anchor" href="#_node_module"></a>Node module</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p><a href="https://bucklescript.github.io/bucklescript/api/Node.html">Node</a></p>
+<p><a href="../api/Node.html">Node</a></p>
 </div>
 <div class="sect2">
 <h3 id="_submodules"><a class="anchor" href="#_submodules"></a>Submodules</h3>
 <div class="ulist">
 <ul>
 <li>
-<p><a href="https://bucklescript.github.io/bucklescript/api/Node_buffer.html">Node.Buffer</a></p>
+<p><a href="../api/Node_buffer.html">Node.Buffer</a></p>
 </li>
 <li>
-<p><a href="https://bucklescript.github.io/bucklescript/api/Node_child_process.html">Node.Child_process</a></p>
+<p><a href="../api/Node_child_process.html">Node.Child_process</a></p>
 </li>
 <li>
-<p><a href="https://bucklescript.github.io/bucklescript/api/Node_fs.html">Node.Fs</a></p>
+<p><a href="../api/Node_fs.html">Node.Fs</a></p>
 </li>
 <li>
-<p><a href="https://bucklescript.github.io/bucklescript/api/Node_module.html">Node.Module</a></p>
+<p><a href="../api/Node_module.html">Node.Module</a></p>
 </li>
 <li>
-<p><a href="https://bucklescript.github.io/bucklescript/api/Node_path.html">Node.Path</a></p>
+<p><a href="../api/Node_path.html">Node.Path</a></p>
 </li>
 <li>
-<p><a href="https://bucklescript.github.io/bucklescript/api/Node_process.html">Node.Process</a></p>
+<p><a href="../api/Node_process.html">Node.Process</a></p>
 </li>
 </ul>
 </div>
@@ -5715,7 +5707,7 @@ We might encode it as buffer in NodeJS.
 </div>
 </div>
 <div class="listingblock">
-<div class="title">Js.Boolean module</div>
+<div class="title"><a href="../api/Js.Boolean.html">Js.Boolean</a> module</div>
 <div class="content">
 <pre>val to_js_boolean: bool -&gt; Js.boolean</pre>
 </div>
@@ -5727,7 +5719,7 @@ We might encode it as buffer in NodeJS.
 <p>Either <code>'a</code> or <code>null</code>. <code>Js.Null.empty</code> represents <code>null</code> too.</p>
 </div>
 <div class="listingblock">
-<div class="title">Js.Null module</div>
+<div class="title"><a href="../api/Js.Null.html">Js.Null</a> module</div>
 <div class="content">
 <pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">val</span> <span class="tok-n">to_opt</span> <span class="tok-o">:</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-n">t</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-n">option</span>
 <span class="tok-k">val</span> <span class="tok-n">from_opt</span> <span class="tok-o">:</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-n">option</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-n">t</span>
@@ -6033,7 +6025,9 @@ You can check the <code>build.compile</code> file for debug output.</p>
 <div class="sect2">
 <h3 id="_contributing_to_the_api_reference"><a class="anchor" href="#_contributing_to_the_api_reference"></a>Contributing to the API reference</h3>
 <div class="paragraph">
-<p>The API reference is generated from doc comments in the source code. Here&#8217;s a good example: <a href="https://github.com/bucklescript/bucklescript/blob/master/jscomp/others/js_re.mli#L146-L161" class="bare">https://github.com/bucklescript/bucklescript/blob/master/jscomp/others/js_re.mli#L146-L161</a></p>
+<p>The API reference is generated from doc comments in the source code.
+<a href="https://github.com/bucklescript/bucklescript/blob/99650/jscomp/others/js_re.mli#L146-L161">Here</a>'s
+a good example</p>
 </div>
 <div class="paragraph">
 <p>Some tips and guidelines:</p>

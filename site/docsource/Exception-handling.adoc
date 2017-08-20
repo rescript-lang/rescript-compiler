@@ -50,7 +50,7 @@ val typeError : string -> 'a
 val uriError : string -> 'a
 --------------
 
-Please consult module https://bucklescript.github.io/bucklescript/api/Js.Exn.html[`Js.Exn`] for more details
+Please consult module link:../api/Js.Exn.html[`Js.Exn`] for more details
 
 
 ## `bs.open`: Type safe external data-source handling (@@since 1.7.0)
