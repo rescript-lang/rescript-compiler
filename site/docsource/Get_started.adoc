@@ -159,7 +159,7 @@ let () =
     Js.log (Fib.fib i) <1>
   done
 ------
-<1> `Js` module is a built-in module shipped with BuckleScript
+<1> link:../api/Js.html[`Js`] module is a built-in module shipped with BuckleScript
 * Build the app
 +
 [source,sh]

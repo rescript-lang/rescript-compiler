@@ -124,7 +124,7 @@ type boolean
 val to_bool: boolean -> bool
 -----
 
-.Js.Boolean module
+.link:../api/Js.Boolean.html[Js.Boolean] module
 -----
 val to_js_boolean: bool -> Js.boolean
 -----
@@ -132,7 +132,7 @@ val to_js_boolean: bool -> Js.boolean
 | `'a Js.Null.t` a| Either `'a` or `null`. `Js.Null.empty` represents `null` too.
 
 [source,ocaml]
-.Js.Null module
+.link:../api/Js.Null.html[Js.Null] module
 --------------
 val to_opt : 'a t -> 'a option
 val from_opt : 'a option -> 'a t

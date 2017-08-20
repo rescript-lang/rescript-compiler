@@ -126,7 +126,10 @@ You can check the `build.compile` file for debug output.
 
 ### Contributing to the API reference
 
-The API reference is generated from doc comments in the source code. Here's a good example: https://github.com/bucklescript/bucklescript/blob/master/jscomp/others/js_re.mli#L146-L161
+The API reference is generated from doc comments in the source code.
+https://github.com/bucklescript/bucklescript/blob/99650/jscomp/others/js_re.mli#L146-L161[Here]'s
+a good example
+
 
 Some tips and guidelines:
 

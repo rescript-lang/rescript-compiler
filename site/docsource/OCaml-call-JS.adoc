@@ -674,7 +674,7 @@ x.xx(114, 3, true, false, ("你好"), ( ["你好",1,2,3] ), ( [{ "arr" : ["你�
 -----------
 
 
-### Binding to NodeJS special variables: bs.node
+### Binding to NodeJS special variables: link:../api/Node.html[bs.node]
 
 NodeJS has several file local variables: `__dirname`, `__filename`, `_module`, and `require`.
 Their semantics are more like macros instead of functions.
@@ -1743,7 +1743,7 @@ var f = /b/g
 ------------
 
 
-NOTE: `Js.Re.t` can be accessed and manipulated using the functions available in the `Js.Re` module.
+NOTE: `Js.Re.t` can be accessed and manipulated using the functions available in the link:../api/Js.Re.html[`Js.Re`] module.
 
 
 
