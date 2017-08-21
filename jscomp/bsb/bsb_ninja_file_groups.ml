@@ -62,9 +62,14 @@ let handle_generators oc
     )
 
 
-let make_common_shadows package_specs dirname dir_index 
+let make_common_shadows 
+      is_re
+      package_specs 
+      dirname 
+      dir_index 
   : Bsb_ninja_util.shadow list 
   =
+  let shadows : Bsb_ninja_util.shadow list = 
   { key = Bsb_ninja_global_vars.bs_package_flags;
     op = 
       Append
@@ -81,8 +86,14 @@ let make_common_shadows package_specs dirname dir_index
       { key = "bsc_extra_includes";
         op = OverwriteVar (Bsb_dir_index.string_of_bsb_dev_include dir_index)
       }
-     ]
+  ]
   )   
+  in 
+  if is_re then 
+    { key = Bsb_ninja_global_vars.bsc_flags; 
+      op = Append("-bs-re-error")
+    } :: shadows
+  else shadows
 
 
 let emit_impl_build
@@ -113,7 +124,7 @@ let emit_impl_build
   let output_js =
     Bsb_package_specs.get_list_of_output_js package_specs output_filename_sans_extension in 
   let common_shadows = 
-    make_common_shadows package_specs
+    make_common_shadows is_re package_specs
       (Filename.dirname file_cmi)
       group_dir_index in
   begin
@@ -182,7 +193,7 @@ let emit_intf_build
   in 
   let output_cmi = output_filename_sans_extension ^ Literals.suffix_cmi in
   let common_shadows = 
-    make_common_shadows package_specs
+    make_common_shadows is_re package_specs
       (Filename.dirname output_cmi)
       group_dir_index in
   Bsb_ninja_util.output_build oc
