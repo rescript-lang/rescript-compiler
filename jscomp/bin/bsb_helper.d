@@ -16,7 +16,9 @@ bin/bsb_helper.ml : ext/string_set.mli
 bin/bsb_helper.ml : ext/ext_filename.ml
 bin/bsb_helper.ml : bsb/bsb_dir_index.ml
 bin/bsb_helper.ml : ext/ext_filename.mli
+bin/bsb_helper.ml : ext/ext_namespace.ml
 bin/bsb_helper.ml : bsb/bsb_dir_index.mli
+bin/bsb_helper.ml : ext/ext_namespace.mli
 bin/bsb_helper.ml : ext/ext_pervasives.ml
 bin/bsb_helper.ml : ext/string_hashtbl.ml
 bin/bsb_helper.ml : bsb/bsb_build_cache.ml
@@ -28,10 +30,8 @@ bin/bsb_helper.ml : stubs/bs_hash_stubs.ml
 bin/bsb_helper.ml : bsb/bsb_build_cache.mli
 bin/bsb_helper.ml : bsb/bsb_depfile_gen.mli
 bin/bsb_helper.ml : bsb/bsb_helper_main.mli
-bin/bsb_helper.ml : ext/ext_package_name.ml
 bin/bsb_helper.ml : bsb/bsb_helper_linker.ml
 bin/bsb_helper.ml : bsb/bsb_helper_packer.ml
-bin/bsb_helper.ml : ext/ext_package_name.mli
 bin/bsb_helper.ml : bsb/bsb_helper_extract.ml
 bin/bsb_helper.ml : bsb/bsb_helper_linker.mli
 bin/bsb_helper.ml : bsb/bsb_helper_packer.mli

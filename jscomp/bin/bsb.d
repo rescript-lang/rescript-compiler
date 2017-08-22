@@ -69,6 +69,7 @@ bin/bsb.ml : bsb/bsb_ninja_gen.ml
 bin/bsb.ml : bsb/bsb_templates.ml
 bin/bsb.ml : common/bs_version.ml
 bin/bsb.ml : ext/ext_filename.mli
+bin/bsb.ml : ext/ext_namespace.ml
 bin/bsb.ml : ext/ext_position.mli
 bin/bsb.ml : ext/resize_array.mli
 bin/bsb.ml : bsb/bsb_build_util.ml
@@ -82,6 +83,7 @@ bin/bsb.ml : common/bs_version.mli
 bin/bsb.ml : ext/ext_json_noloc.ml
 bin/bsb.ml : ext/ext_json_parse.ml
 bin/bsb.ml : ext/ext_json_types.ml
+bin/bsb.ml : ext/ext_namespace.mli
 bin/bsb.ml : ext/ext_pervasives.ml
 bin/bsb.ml : ext/string_hashtbl.ml
 bin/bsb.ml : bsb/bsb_build_cache.ml
@@ -103,13 +105,11 @@ bin/bsb.ml : bsb/bsb_config_types.ml
 bin/bsb.ml : bsb/bsb_ninja_regen.mli
 bin/bsb.ml : bsb/bsb_pkg_map_gen.mli
 bin/bsb.ml : bsb/bsb_watcher_gen.mli
-bin/bsb.ml : ext/ext_package_name.ml
 bin/bsb.ml : ext/string_hash_set.mli
 bin/bsb.ml : bsb/bsb_build_schemas.ml
 bin/bsb.ml : bsb/bsb_config_parse.mli
 bin/bsb.ml : bsb/bsb_package_specs.ml
 bin/bsb.ml : bsb/bsb_parse_sources.ml
-bin/bsb.ml : ext/ext_package_name.mli
 bin/bsb.ml : bsb/bsb_package_specs.mli
 bin/bsb.ml : bsb/bsb_parse_sources.mli
 bin/bsb.ml : bsb/bsb_ninja_file_groups.ml
