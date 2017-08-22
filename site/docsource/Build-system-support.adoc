@@ -18,15 +18,10 @@ inlining, arity inference and other information.
 BuckleScript provides a native build tool on top of Google's https://github.com/ninja-build/ninja/releases[ninja-build].
 It is designed for a fast feedback loop (typically 100ms feedback loop) and works cross platform.
 
-// [INFO]
-// ======
-// Currently for non-Windows users, they need to install ninja first (version >= 1.7.1).
-// Please don't be confused with the npm ninja,
-// we are using Google's https://github.com/ninja-build/ninja/releases[ninja-build].
-// ======
 
-`bsb` can be running in any subdirectory. It is a schema based build tool and the schema is
-http://bucklescript.github.io/bucklescript/docson/#build-schema.json[available]. It is strongly recommended to **check out the http://bucklescript.github.io/bucklescript/docson/#build-schema.json[schema]**
+
+`bsb` is a schema based build tool. The schema is
+{schema}[available]. It is strongly recommended to **check out the {schema}[schema]**
 after you finish reading the tutorials below.
 
 If your editor supports JSON schema validation and auto-completion like https://code.visualstudio.com/docs/languages/json[VSCode],
@@ -284,6 +279,56 @@ bsb -clean-world -make-world
 You will get both `commonjs` and `amdjs` support. In the end, we suggest you http://bucklescript.github.io/bucklescript/docson/#build-schema.json[check out the schema] and enjoy the build!
 
 
+=== namespace support (@since 1.9.0)
+
+OCaml treat file names as modules, so that users can only have unique file names in a project, BuckleScript solves 
+the problem by scoping all modules by package.
+
+Below is the `bsconfig.json` for `liba`, `libb` (they share the same configuration in this example)
+
+[source,js]
+-----------
+{
+  "name": "liba",
+  "version": "0.1.0",
+  "sources": "src",
+  "namespace": true  
+}
+-----------
+
+Now you have a library to use them
+
+[source,js]
+-----------
+{
+  "name": "namespace",
+  "version": "0.1.0",
+  "sources": "src",
+  "bs-dependencies": [
+    "liba",
+    "libb"
+  ]  
+}
+-----------
+
+Since `liba` and `libb` is configured using namespace, to use them in source code, it would be like
+
+[source,ocaml]
+--------------
+let v =     
+    (Liba.Demo.v + Libb.Demo.v)
+--------------
+
+[NOTE]
+======
+In the same package, everything works the same whether it uses namespace or not, it only affect 
+people who use your library
+======
+
+=== In source build support (@since 1.9.0)
+
+When user has an existing JS project, it makes sense to output the JS file in the same directory as vanilla JS,
+the schema added  a key called `in-source` so that generate JS file next to ML file.
 
 === Build using Make
 [WARNING]
