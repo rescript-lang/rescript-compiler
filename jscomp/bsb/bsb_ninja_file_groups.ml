@@ -117,7 +117,7 @@ let emit_impl_build
     | None -> 
       filename_sans_extension 
     | Some ns -> 
-      Ext_package_name.make ~ns filename_sans_extension
+      Ext_namespace.make ~ns filename_sans_extension
   in 
   let file_cmi =  output_filename_sans_extension ^ Literals.suffix_cmi in
   let output_cmj =  output_filename_sans_extension ^ Literals.suffix_cmj in
@@ -184,7 +184,7 @@ let emit_intf_build
     | None -> 
       filename_sans_extension 
     | Some ns -> 
-      Ext_package_name.make ~ns filename_sans_extension
+      Ext_namespace.make ~ns filename_sans_extension
   in 
   let output_cmi = output_filename_sans_extension ^ Literals.suffix_cmi in  
   let common_shadows = 

@@ -219,7 +219,7 @@ EXT_SRCS = 	literals \
 	ident_hashtbl\
 	int_hashtbl\
 	ext_filename\
-	ext_package_name
+	ext_namespace
 
 EXT_CMXS=$(addprefix ext/, $(addsuffix .cmx, $(EXT_SRCS)))
 EXT_CMOS=$(addprefix ext/, $(addsuffix .cmo, $(EXT_SRCS)))
@@ -318,7 +318,6 @@ BSB_SRCS= bsb_config\
 	bsb_build_schemas\
 	bsb_build_util\
 	bsb_package_specs\
-	bsb_pkg_create\
 	bsb_pkg_map_gen\
 	bsb_helper_extract\
 	bsb_helper_dep_graph\

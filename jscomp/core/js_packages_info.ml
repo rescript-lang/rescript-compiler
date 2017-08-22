@@ -203,7 +203,7 @@ let string_of_module_id
       | Runtime  
       | Ml  -> 
         let id = x.id in
-        let js_file =  Ext_package_name.js_name_of_basename id.name in 
+        let js_file =  Ext_namespace.js_name_of_basename id.name in 
         let rebase different_package package_dir dep =
           let current_unit_dir =
             `Dir (get_output_dir 

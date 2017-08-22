@@ -261,7 +261,7 @@ let interpret_json
         in 
         let namespace =     
           if !namespace then 
-            Some (Ext_package_name.namespace_of_package_name package_name)
+            Some (Ext_namespace.namespace_of_package_name package_name)
           else   None  in  
         {
           package_name ;

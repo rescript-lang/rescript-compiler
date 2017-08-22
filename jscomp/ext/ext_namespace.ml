@@ -27,25 +27,25 @@
  (* Note the build system should check the validity of filenames
     espeically, it should not contain '-'
  *)
- let package_sep_char = '-'
- let package_sep = "-"
+ let ns_sep_char = '-'
+ let ns_sep = "-"
 
  let make ~ns cunit  = 
-    cunit ^ package_sep ^ ns
+    cunit ^ ns_sep ^ ns
     
 
 let rec rindex_rec s i c =
   if i < 0 then i else
   if String.unsafe_get s i = c then i else rindex_rec s (i - 1) c;;
     
-let remove_package_suffix name =
-    let i = rindex_rec name (String.length name - 1) package_sep_char in 
+let remove_ns_suffix name =
+    let i = rindex_rec name (String.length name - 1) ns_sep_char in 
     if i < 0 then name 
     else String.sub name 0 i 
 
 
 let js_name_of_basename s = 
-  remove_package_suffix (String.uncapitalize s) ^ Literals.suffix_js
+  remove_ns_suffix (String.uncapitalize s) ^ Literals.suffix_js
   
   
 let namespace_of_package_name (s : string) : string = 

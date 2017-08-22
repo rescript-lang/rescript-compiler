@@ -40,7 +40,7 @@ let set_package_name name =
 let set_package_map name = 
     set_package_name name ; 
     Clflags.open_modules := 
-      Ext_package_name.namespace_of_package_name name ::
+      Ext_namespace.namespace_of_package_name name ::
       !Clflags.open_modules
       
 let update_npm_package_path s  = 

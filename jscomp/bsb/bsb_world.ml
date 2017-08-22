@@ -43,7 +43,7 @@ let install_targets cwd (config : Bsb_config_types.t option) =
     let x = 
       match namespace with 
       | None -> x 
-      | Some ns -> Ext_package_name.make ~ns x in 
+      | Some ns -> Ext_namespace.make ~ns x in 
     install ~destdir (cwd // x ^  Literals.suffix_ml) ;
     install ~destdir (cwd // x ^  Literals.suffix_re) ;
     install ~destdir (cwd // x ^ Literals.suffix_mli) ;

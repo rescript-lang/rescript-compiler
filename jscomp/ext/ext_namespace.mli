@@ -25,7 +25,7 @@
 
 val make : ns:string -> string -> string 
 
-val remove_package_suffix: string -> string 
+val remove_ns_suffix: string -> string 
 
 (* Note  we have to output uncapitalized file Name, 
   or at least be consistent, since by reading cmi file on Case insensitive OS, we don't really know it is `list.cmi` or `List.cmi`, so that `require (./list.js)` or `require(./List.js)`
