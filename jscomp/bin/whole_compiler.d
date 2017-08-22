@@ -148,6 +148,7 @@ bin/whole_compiler.ml : core/lam_id_kind.mli
 bin/whole_compiler.ml : core/ocaml_parse.mli
 bin/whole_compiler.ml : ext/ext_filename.mli
 bin/whole_compiler.ml : ext/ext_js_regex.mli
+bin/whole_compiler.ml : ext/ext_namespace.ml
 bin/whole_compiler.ml : ext/ext_position.mli
 bin/whole_compiler.ml : ext/ext_pp_scope.mli
 bin/whole_compiler.ml : ext/hashtbl_make.mli
@@ -175,6 +176,7 @@ bin/whole_compiler.ml : core/ocaml_options.ml
 bin/whole_compiler.ml : depends/binary_ast.ml
 bin/whole_compiler.ml : ext/ext_json_parse.ml
 bin/whole_compiler.ml : ext/ext_json_types.ml
+bin/whole_compiler.ml : ext/ext_namespace.mli
 bin/whole_compiler.ml : ext/ext_pervasives.ml
 bin/whole_compiler.ml : ext/ident_hash_set.ml
 bin/whole_compiler.ml : ext/ident_hashtbl.mli
@@ -240,7 +242,6 @@ bin/whole_compiler.ml : core/lam_pass_exits.mli
 bin/whole_compiler.ml : core/lam_stats_util.mli
 bin/whole_compiler.ml : depends/ast_extract.mli
 bin/whole_compiler.ml : depends/bs_exception.ml
-bin/whole_compiler.ml : ext/ext_package_name.ml
 bin/whole_compiler.ml : ext/string_hash_set.mli
 bin/whole_compiler.ml : syntax/ast_core_type.ml
 bin/whole_compiler.ml : syntax/ast_external.mli
@@ -280,7 +281,6 @@ bin/whole_compiler.ml : core/lam_module_ident.ml
 bin/whole_compiler.ml : core/lam_pass_collect.ml
 bin/whole_compiler.ml : core/lam_stats_export.ml
 bin/whole_compiler.ml : depends/bs_exception.mli
-bin/whole_compiler.ml : ext/ext_package_name.mli
 bin/whole_compiler.ml : syntax/ast_attributes.ml
 bin/whole_compiler.ml : syntax/ast_core_type.mli
 bin/whole_compiler.ml : syntax/ast_derive_dyn.ml

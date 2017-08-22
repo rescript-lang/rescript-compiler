@@ -35,8 +35,8 @@ type t =
   }
 
 
-let magic_number = "BS_DEP_INFOS_20170809"
-let bsb_version = "20170809+dev"
+let magic_number = "BS_DEP_INFOS_20170822"
+let bsb_version = "20170822+dev"
 (* TODO: for such small data structure, maybe text format is better *)
 
 let write (fname : string)  (x : t) =
@@ -59,15 +59,15 @@ type check_result =
 
 let pp_check_result fmt (check_resoult : check_result) =
   Format.pp_print_string fmt (match check_resoult with
-  | Good -> "OK"
-  | Bsb_file_not_exist -> "Dependencies information missing"
-  | Bsb_source_directory_changed ->
-    "Bsb source directory changed"
-  | Bsb_bsc_version_mismatch ->
-    "Bsc or bsb version mismatch"
-  | Bsb_forced ->
-    "Bsb forced rebuild"
-  | Other s -> s)
+      | Good -> "OK"
+      | Bsb_file_not_exist -> "Dependencies information missing"
+      | Bsb_source_directory_changed ->
+        "Bsb source directory changed"
+      | Bsb_bsc_version_mismatch ->
+        "Bsc or bsb version mismatch"
+      | Bsb_forced ->
+        "Bsb forced rebuild"
+      | Other s -> s)
 
 let rec check_aux cwd xs i finish =
   if i = finish then Good

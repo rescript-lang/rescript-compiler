@@ -297,25 +297,25 @@ let suites =
     end;
 
     __LOC__ >:: begin fun _ ->
-      Ext_package_name.module_name_of_package_name "bs-json"
+      Ext_namespace.namespace_of_package_name "bs-json"
       =~ "BsJson"
     end;
     __LOC__ >:: begin fun _ ->
-      Ext_package_name.module_name_of_package_name
+      Ext_namespace.namespace_of_package_name
         "reason-react"
       =~ "ReasonReact";
-      Ext_package_name.module_name_of_package_name
+      Ext_namespace.namespace_of_package_name
         "reason"
       =~ "Reason"
     end;
     __LOC__ >:: begin fun _ -> 
-      Ext_package_name.js_name_of_basename "a-b"
+      Ext_namespace.js_name_of_basename "a-b"
       =~ "a.js";
-      Ext_package_name.js_name_of_basename "a-"
+      Ext_namespace.js_name_of_basename "a-"
       =~ "a.js";
-      Ext_package_name.js_name_of_basename "a--"
+      Ext_namespace.js_name_of_basename "a--"
       =~ "a-.js";
-      Ext_package_name.js_name_of_basename "AA-b"
+      Ext_namespace.js_name_of_basename "AA-b"
       =~ "aA.js";
     end
   ]

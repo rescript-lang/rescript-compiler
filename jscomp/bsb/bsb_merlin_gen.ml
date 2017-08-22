@@ -91,9 +91,9 @@ let output_merlin_namespace buffer ns=
 
 let bsc_flg_to_merlin_ocamlc_flg bsc_flags  =
   merlin_flg ^ 
-      String.concat Ext_string.single_space 
-        (List.filter (fun x -> not (Ext_string.starts_with x bs_flg_prefix )) @@ 
-        Literals.dash_nostdlib::bsc_flags) 
+  String.concat Ext_string.single_space 
+    (List.filter (fun x -> not (Ext_string.starts_with x bs_flg_prefix )) @@ 
+     Literals.dash_nostdlib::bsc_flags) 
 
 
 let merlin_file_gen ~cwd
@@ -113,22 +113,17 @@ let merlin_file_gen ~cwd
   =
   if generate_merlin then begin     
     let buffer = Buffer.create 1024 in
-    (* let namespace = 
-        if namespace then 
-          (Some (Ext_package_name.module_name_of_package_name package_name))
-        else None
-    in          *)
     output_merlin_namespace buffer namespace; 
     ppx_flags
     |> List.iter (fun x ->
         Buffer.add_string buffer (merlin_flg_ppx ^ x )
       );
     (match reason_react_jsx with
-    | Some s -> 
-      begin 
-        Buffer.add_string buffer (merlin_flg_ppx ^ s)
-      end
-    | None -> ());
+     | Some s -> 
+       begin 
+         Buffer.add_string buffer (merlin_flg_ppx ^ s)
+       end
+     | None -> ());
     Buffer.add_string buffer (merlin_flg_ppx  ^ built_in_ppx);
     (*
     (match external_includes with 

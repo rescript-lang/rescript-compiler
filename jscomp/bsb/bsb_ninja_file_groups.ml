@@ -63,31 +63,31 @@ let handle_generators oc
 
 
 let make_common_shadows 
-      is_re
-      package_specs 
-      dirname 
-      dir_index 
+    is_re
+    package_specs 
+    dirname 
+    dir_index 
   : Bsb_ninja_util.shadow list 
   =
   let shadows : Bsb_ninja_util.shadow list = 
-  { key = Bsb_ninja_global_vars.bs_package_flags;
-    op = 
-      Append
-        (Bsb_package_specs.package_flag_of_package_specs
-           package_specs dirname
-        )
-  } ::
-  (if Bsb_dir_index.is_lib_dir dir_index  then [] else
-     [{
-       key = Bsb_ninja_global_vars.bs_package_includes; 
-       op = AppendVar Bsb_ninja_global_vars.bs_package_dev_includes 
-     }
-      ;
-      { key = "bsc_extra_includes";
-        op = OverwriteVar (Bsb_dir_index.string_of_bsb_dev_include dir_index)
-      }
-  ]
-  )   
+    { key = Bsb_ninja_global_vars.bs_package_flags;
+      op = 
+        Append
+          (Bsb_package_specs.package_flag_of_package_specs
+             package_specs dirname
+          )
+    } ::
+    (if Bsb_dir_index.is_lib_dir dir_index  then [] else
+       [{
+         key = Bsb_ninja_global_vars.bs_package_includes; 
+         op = AppendVar Bsb_ninja_global_vars.bs_package_dev_includes 
+       }
+        ;
+        { key = "bsc_extra_includes";
+          op = OverwriteVar (Bsb_dir_index.string_of_bsb_dev_include dir_index)
+        }
+       ]
+    )   
   in 
   if is_re then 
     { key = Bsb_ninja_global_vars.bsc_flags; 
@@ -116,8 +116,8 @@ let emit_impl_build
     match namespace with 
     | None -> 
       filename_sans_extension 
-    | Some pkg -> 
-      Ext_package_name.make ~pkg filename_sans_extension
+    | Some ns -> 
+      Ext_namespace.make ~ns filename_sans_extension
   in 
   let file_cmi =  output_filename_sans_extension ^ Literals.suffix_cmi in
   let output_cmj =  output_filename_sans_extension ^ Literals.suffix_cmj in
@@ -177,28 +177,28 @@ let emit_intf_build
     namespace
     filename_sans_extension
   : info =
-
-  let input = 
-    Bsb_config.proj_rel 
-      (if is_re then filename_sans_extension ^ Literals.suffix_rei 
-       else filename_sans_extension ^ Literals.suffix_mli) in
   let output_mliast = filename_sans_extension ^ Literals.suffix_mliast in
   let output_mliastd = filename_sans_extension ^ Literals.suffix_mliastd in
   let output_filename_sans_extension = 
     match namespace with 
     | None -> 
       filename_sans_extension 
-    | Some pkg -> 
-      Ext_package_name.make ~pkg filename_sans_extension
+    | Some ns -> 
+      Ext_namespace.make ~ns filename_sans_extension
   in 
-  let output_cmi = output_filename_sans_extension ^ Literals.suffix_cmi in
+  let output_cmi = output_filename_sans_extension ^ Literals.suffix_cmi in  
   let common_shadows = 
     make_common_shadows is_re package_specs
       (Filename.dirname output_cmi)
       group_dir_index in
   Bsb_ninja_util.output_build oc
     ~output:output_mliast
-    ~input
+      (* TODO: we can get rid of absloute path if we fixed the location to be 
+          [lib/bs], better for testing?
+      *)
+    ~input:(Bsb_config.proj_rel 
+              (if is_re then filename_sans_extension ^ Literals.suffix_rei 
+               else filename_sans_extension ^ Literals.suffix_mli))
     ~rule:(if is_re then Bsb_rule.build_ast_and_module_sets_from_rei
            else Bsb_rule.build_ast_and_module_sets);
   Bsb_ninja_util.output_build oc

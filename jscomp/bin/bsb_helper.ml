@@ -2668,8 +2668,8 @@ let string_of_bsb_dev_include i =
 
 let reset () = dir_index := 0
 end
-module Ext_package_name : sig 
-#1 "ext_package_name.mli"
+module Ext_namespace : sig 
+#1 "ext_namespace.mli"
 (* Copyright (C) 2017- Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -2695,9 +2695,9 @@ module Ext_package_name : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-val make : pkg:string -> string -> string 
+val make : ns:string -> string -> string 
 
-val remove_package_suffix: string -> string 
+val remove_ns_suffix: string -> string 
 
 (* Note  we have to output uncapitalized file Name, 
   or at least be consistent, since by reading cmi file on Case insensitive OS, we don't really know it is `list.cmi` or `List.cmi`, so that `require (./list.js)` or `require(./List.js)`
@@ -2705,10 +2705,10 @@ val remove_package_suffix: string -> string
 *)
 val js_name_of_basename :  string -> string 
 
-val module_name_of_package_name : string -> string
+val namespace_of_package_name : string -> string
 
 end = struct
-#1 "ext_package_name.ml"
+#1 "ext_namespace.ml"
 
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
@@ -2738,28 +2738,28 @@ end = struct
  (* Note the build system should check the validity of filenames
     espeically, it should not contain '-'
  *)
- let package_sep_char = '-'
- let package_sep = "-"
+ let ns_sep_char = '-'
+ let ns_sep = "-"
 
- let make ~pkg cunit  = 
-    cunit ^ package_sep ^ pkg 
+ let make ~ns cunit  = 
+    cunit ^ ns_sep ^ ns
     
 
 let rec rindex_rec s i c =
   if i < 0 then i else
   if String.unsafe_get s i = c then i else rindex_rec s (i - 1) c;;
     
-let remove_package_suffix name =
-    let i = rindex_rec name (String.length name - 1) package_sep_char in 
+let remove_ns_suffix name =
+    let i = rindex_rec name (String.length name - 1) ns_sep_char in 
     if i < 0 then name 
     else String.sub name 0 i 
 
 
 let js_name_of_basename s = 
-  remove_package_suffix (String.uncapitalize s) ^ Literals.suffix_js
+  remove_ns_suffix (String.uncapitalize s) ^ Literals.suffix_js
   
   
-let module_name_of_package_name (s : string) : string = 
+let namespace_of_package_name (s : string) : string = 
   let len = String.length s in 
   let buf = Buffer.create len in 
   let add capital ch = 
@@ -2888,8 +2888,8 @@ type kind = Js | Bytecode | Native
 let output_file oc source namespace = 
   match namespace with 
   | None -> output_string oc source ;
-  | Some pkg ->
-    output_string oc ( Ext_package_name.make ~pkg source)
+  | Some ns ->
+    output_string oc ( Ext_namespace.make ~ns source)
 
 (** for bucklescript artifacts 
     [lhs_suffix] is [.cmj]
