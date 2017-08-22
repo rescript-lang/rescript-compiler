@@ -38,7 +38,9 @@ type reason_react_jsx = string option
 type t = 
   {
     package_name : string ; 
+    (* [captial-package] *)
     namespace : string option; 
+    (* CapitalPackage *)
     external_includes : string list ; 
     bsc_flags : string list ;
     ppx_flags : string list ;

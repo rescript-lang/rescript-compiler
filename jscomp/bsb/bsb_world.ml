@@ -43,7 +43,7 @@ let install_targets cwd (config : Bsb_config_types.t option) =
     let x = 
       match namespace with 
       | None -> x 
-      | Some pkg -> Ext_package_name.make ~pkg x in 
+      | Some ns -> Ext_package_name.make ~ns x in 
     install ~destdir (cwd // x ^  Literals.suffix_ml) ;
     install ~destdir (cwd // x ^  Literals.suffix_re) ;
     install ~destdir (cwd // x ^ Literals.suffix_mli) ;
@@ -63,14 +63,11 @@ let install_targets cwd (config : Bsb_config_types.t option) =
       Format.fprintf Format.std_formatter "@{<info>Installing started@}@.";
       (*Format.pp_print_flush Format.std_formatter ();*)
       (* Format.fprintf Format.std_formatter "@{<info>%s@} Installed @." x;  *)
-      (* let namespace = 
-        if namespace then
-          Some (Ext_package_name.module_name_of_package_name package_name) 
-        else None in *)
-      (match namespace with 
-      | None -> ()
-      | Some x -> 
-          install_filename_sans_extension destdir None  x);
+      begin match namespace with 
+        | None -> ()
+        | Some x -> 
+          install_filename_sans_extension destdir None  x
+      end;
       String_hash_set.iter (install_filename_sans_extension destdir namespace) files_to_install;
       Format.fprintf Format.std_formatter "@{<info>Installing finished@} @.";
     end

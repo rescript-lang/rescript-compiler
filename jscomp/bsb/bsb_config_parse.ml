@@ -40,32 +40,32 @@ let (|?)  m (key, cb) =
 
 let parse_entries (field : Ext_json_types.t array) =
   Ext_array.to_list_map (function
-    | Ext_json_types.Obj {map} ->
-      (* kind defaults to bytecode *)
-      let kind = ref "js" in
-      let main = ref None in
-      let _ = map
-        |? (Bsb_build_schemas.kind, `Str (fun x -> kind := x))
-        |? (Bsb_build_schemas.main, `Str (fun x -> main := Some x))
-      in
-      let path = begin match !main with
-      (* This is technically optional when compiling to js *)
-      | None when !kind = Literals.js ->
-        "Index"
-      | None -> 
-        failwith "Missing field 'main'. That field is required its value needs to be the main module for the target"
-      | Some path -> path
-      end in
-      if !kind = Literals.native then
-        Some (Bsb_config_types.NativeTarget path)
-      else if !kind = Literals.bytecode then
-        Some (Bsb_config_types.BytecodeTarget path)
-      else if !kind = Literals.js then
-        Some (Bsb_config_types.JsTarget path)
-      else
-        failwith "Missing field 'kind'. That field is required and its value be 'js', 'native' or 'bytecode'"
-    | _ -> failwith "Unrecognized object inside array 'entries' field.") 
-  field
+      | Ext_json_types.Obj {map} ->
+        (* kind defaults to bytecode *)
+        let kind = ref "js" in
+        let main = ref None in
+        let _ = map
+                |? (Bsb_build_schemas.kind, `Str (fun x -> kind := x))
+                |? (Bsb_build_schemas.main, `Str (fun x -> main := Some x))
+        in
+        let path = begin match !main with
+          (* This is technically optional when compiling to js *)
+          | None when !kind = Literals.js ->
+            "Index"
+          | None -> 
+            failwith "Missing field 'main'. That field is required its value needs to be the main module for the target"
+          | Some path -> path
+        end in
+        if !kind = Literals.native then
+          Some (Bsb_config_types.NativeTarget path)
+        else if !kind = Literals.bytecode then
+          Some (Bsb_config_types.BytecodeTarget path)
+        else if !kind = Literals.js then
+          Some (Bsb_config_types.JsTarget path)
+        else
+          failwith "Missing field 'kind'. That field is required and its value be 'js', 'native' or 'bytecode'"
+      | _ -> failwith "Unrecognized object inside array 'entries' field.") 
+    field
 
 
 
@@ -102,7 +102,7 @@ let interpret_json
     cwd  
 
   : Bsb_config_types.t =
-  
+
   let reason_react_jsx = ref None in 
   let config_json = (cwd // Literals.bsconfig_json) in
   let refmt = ref None in
@@ -154,27 +154,27 @@ let interpret_json
     in
     map
     |? (Bsb_build_schemas.reason, `Obj begin fun m -> 
-      match String_map.find_opt Bsb_build_schemas.react_jsx m with 
-      
-      | Some (False _)
-      | None -> ()
-      | Some (Flo{loc; flo}) -> 
-        begin match flo with 
-        | "1" -> 
-        reason_react_jsx := 
-            Some (Filename.quote (Filename.concat bsc_dir Literals.reactjs_jsx_ppx_exe) )
-        | "2" -> 
+        match String_map.find_opt Bsb_build_schemas.react_jsx m with 
+
+        | Some (False _)
+        | None -> ()
+        | Some (Flo{loc; flo}) -> 
+          begin match flo with 
+            | "1" -> 
+              reason_react_jsx := 
+                Some (Filename.quote (Filename.concat bsc_dir Literals.reactjs_jsx_ppx_exe) )
+            | "2" -> 
+              reason_react_jsx := 
+                Some (Filename.quote 
+                        (Filename.concat bsc_dir Literals.reactjs_jsx_ppx_2_exe) )
+            | _ -> Bsb_exception.failf ~loc "Unsupported jsx version %s" flo
+          end
+        | Some (True _) -> 
           reason_react_jsx := 
-            Some (Filename.quote 
-              (Filename.concat bsc_dir Literals.reactjs_jsx_ppx_2_exe) )
-        | _ -> Bsb_exception.failf ~loc "Unsupported jsx version %s" flo
-        end
-      | Some (True _) -> 
-        reason_react_jsx := 
             Some (Filename.quote (Filename.concat bsc_dir Literals.reactjs_jsx_ppx_exe) 
-            )
-      | Some x -> Bsb_exception.failf ~loc:(Ext_json.loc_of x) 
-      "Unexpected input for jsx"
+                 )
+        | Some x -> Bsb_exception.failf ~loc:(Ext_json.loc_of x) 
+                      "Unexpected input for jsx"
       end)
 
     |? (Bsb_build_schemas.generate_merlin, `Bool (fun b ->
@@ -183,7 +183,7 @@ let interpret_json
     |? (Bsb_build_schemas.name, `Str (fun s -> package_name := Some s))
     |? (Bsb_build_schemas.namespace, `Bool (fun b ->
         namespace := b
-     ))
+      ))
     |? (Bsb_build_schemas.js_post_build, `Obj begin fun m ->
         m |? (Bsb_build_schemas.cmd , `Str (fun s -> 
             js_post_build_cmd := Some (Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.js_post_build s)
@@ -215,16 +215,16 @@ let interpret_json
     |? (Bsb_build_schemas.generators, `Arr (fun s ->
         generators :=
           Array.fold_left (fun acc json -> 
-            match (json : Ext_json_types.t) with 
-            | Obj {map = m ; loc}  -> 
-              begin match String_map.find_opt  Bsb_build_schemas.name m,
-                          String_map.find_opt  Bsb_build_schemas.command m with 
-              | Some (Str {str = name}), Some ( Str {str = command}) -> 
-                String_map.add name command acc 
-              | _, _ -> 
-                Bsb_exception.failf ~loc {| generators exepect format like { "name" : "cppo",  "command"  : "cppo $in -o $out"} |}
-              end
-            | _ -> acc ) String_map.empty  s  ))
+              match (json : Ext_json_types.t) with 
+              | Obj {map = m ; loc}  -> 
+                begin match String_map.find_opt  Bsb_build_schemas.name m,
+                            String_map.find_opt  Bsb_build_schemas.command m with 
+                | Some (Str {str = name}), Some ( Str {str = command}) -> 
+                  String_map.add name command acc 
+                | _, _ -> 
+                  Bsb_exception.failf ~loc {| generators exepect format like { "name" : "cppo",  "command"  : "cppo $in -o $out"} |}
+                end
+              | _ -> acc ) String_map.empty  s  ))
     |? (Bsb_build_schemas.refmt, `Str (fun s -> 
         refmt := Some (Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.refmt s) ))
     |? (Bsb_build_schemas.refmt_flags, `Arr (fun s -> refmt_flags := get_list_string s))
@@ -254,14 +254,14 @@ let interpret_json
             Unix.rename output_file config_json
         end;
         let package_name =       
-          (match !package_name with
-             | Some name -> name
-             | None ->
-               failwith "Error: Package name is required. Please specify a `name` in `bsconfig.json`"
-            ) in 
-         let namespace =     
+          match !package_name with
+          | Some name -> name
+          | None ->
+            failwith "Error: Package name is required. Please specify a `name` in `bsconfig.json`"
+        in 
+        let namespace =     
           if !namespace then 
-            Some (Ext_package_name.module_name_of_package_name package_name)
+            Some (Ext_package_name.namespace_of_package_name package_name)
           else   None  in  
         {
           package_name ;
@@ -276,8 +276,8 @@ let interpret_json
           js_post_build_cmd =  !js_post_build_cmd ;
           package_specs = 
             (match override_package_specs with 
-            | None ->  package_specs
-            | Some x -> x );
+             | None ->  package_specs
+             | Some x -> x );
           globbed_dirs = res.globbed_dirs; 
           bs_file_groups = res.files; 
           files_to_install = String_hash_set.create 96;

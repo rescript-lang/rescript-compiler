@@ -2705,7 +2705,7 @@ val remove_package_suffix: string -> string
 *)
 val js_name_of_basename :  string -> string 
 
-val module_name_of_package_name : string -> string
+val namespace_of_package_name : string -> string
 
 end = struct
 #1 "ext_package_name.ml"
@@ -2759,7 +2759,7 @@ let js_name_of_basename s =
   remove_package_suffix (String.uncapitalize s) ^ Literals.suffix_js
   
   
-let module_name_of_package_name (s : string) : string = 
+let namespace_of_package_name (s : string) : string = 
   let len = String.length s in 
   let buf = Buffer.create len in 
   let add capital ch = 

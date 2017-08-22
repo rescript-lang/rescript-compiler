@@ -30,8 +30,8 @@
  let package_sep_char = '-'
  let package_sep = "-"
 
- let make ~pkg cunit  = 
-    cunit ^ package_sep ^ pkg 
+ let make ~ns cunit  = 
+    cunit ^ package_sep ^ ns
     
 
 let rec rindex_rec s i c =
@@ -48,7 +48,7 @@ let js_name_of_basename s =
   remove_package_suffix (String.uncapitalize s) ^ Literals.suffix_js
   
   
-let module_name_of_package_name (s : string) : string = 
+let namespace_of_package_name (s : string) : string = 
   let len = String.length s in 
   let buf = Buffer.create len in 
   let add capital ch = 

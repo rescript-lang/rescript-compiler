@@ -23,7 +23,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-val make : pkg:string -> string -> string 
+val make : ns:string -> string -> string 
 
 val remove_package_suffix: string -> string 
 
@@ -33,4 +33,4 @@ val remove_package_suffix: string -> string
 *)
 val js_name_of_basename :  string -> string 
 
-val module_name_of_package_name : string -> string
+val namespace_of_package_name : string -> string
