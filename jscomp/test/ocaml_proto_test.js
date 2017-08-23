@@ -4808,11 +4808,7 @@ function gen_type_record(mutable_, and_, param, sc) {
     }
   };
   var field_prefix = function (field_type, field_mutable) {
-    if (field_mutable) {
-      return "mutable ";
-    } else if (is_imperative_type(field_type)) {
-      return "";
-    } else if (mutable_$1) {
+    if (field_mutable || !(is_imperative_type(field_type) || !mutable_$1)) {
       return "mutable ";
     } else {
       return "";

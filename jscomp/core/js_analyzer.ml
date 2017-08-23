@@ -196,6 +196,7 @@ let rec eq_expression (x : J.expression) (y : J.expression) =
     Ident.same i j
   | Bin (op0, a0,b0) , Bin(op1,a1,b1) -> 
     op0 = op1 && eq_expression a0 a1 && eq_expression b0 b1
+  | Str(a0,b0), Str(a1,b1) -> a0 = a1  && b0 = b1
   | _, _ -> false 
 
 and eq_expression_list xs ys =

@@ -32,13 +32,13 @@
 (** Analyzing utilities for [J] module *) 
 
 (** for example, whether it has side effect or not.
- *)
+*)
 
 val free_variables_of_statement : 
-    Ident_set.t -> Ident_set.t -> J.statement -> Ident_set.t
+  Ident_set.t -> Ident_set.t -> J.statement -> Ident_set.t
 
 val free_variables_of_expression : 
-    Ident_set.t -> Ident_set.t -> J.finish_ident_expression -> Ident_set.t
+  Ident_set.t -> Ident_set.t -> J.finish_ident_expression -> Ident_set.t
 
 val no_side_effect_expression_desc :
   J.expression_desc -> bool   
@@ -51,21 +51,21 @@ val no_side_effect_expression :
     when you want to do a deep copy, the expression passed to you is pure
     but you still have to call the function to make a copy, 
     since it maybe changed later
- *)
+*)
 
 val no_side_effect_statement : 
-    J.statement -> bool
+  J.statement -> bool
 (** 
     here we say 
-    {[ var x = no_side_effect_expression ]}
+   {[ var x = no_side_effect_expression ]}
     is [no side effect], but it is actually side effect, 
     since  we are defining a variable, however, if it is not exported or used, 
     then it's fine, so we delay this check later
- *)
+*)
 
-val eq_expression : J.expression -> J.expression -> bool
+val eq_expression :
+  J.expression -> J.expression -> bool
 
-val eq_statement : J.statement -> J.statement -> bool
 
 val rev_flatten_seq : J.expression -> J.block 
 
@@ -80,4 +80,4 @@ val is_constant : J.expression -> bool
 *)
 
 val is_simple_no_side_effect_expression 
-    : J.expression -> bool
+  : J.expression -> bool

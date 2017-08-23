@@ -70661,13 +70661,13 @@ module Js_analyzer : sig
 (** Analyzing utilities for [J] module *) 
 
 (** for example, whether it has side effect or not.
- *)
+*)
 
 val free_variables_of_statement : 
-    Ident_set.t -> Ident_set.t -> J.statement -> Ident_set.t
+  Ident_set.t -> Ident_set.t -> J.statement -> Ident_set.t
 
 val free_variables_of_expression : 
-    Ident_set.t -> Ident_set.t -> J.finish_ident_expression -> Ident_set.t
+  Ident_set.t -> Ident_set.t -> J.finish_ident_expression -> Ident_set.t
 
 val no_side_effect_expression_desc :
   J.expression_desc -> bool   
@@ -70680,21 +70680,23 @@ val no_side_effect_expression :
     when you want to do a deep copy, the expression passed to you is pure
     but you still have to call the function to make a copy, 
     since it maybe changed later
- *)
+*)
 
 val no_side_effect_statement : 
-    J.statement -> bool
+  J.statement -> bool
 (** 
     here we say 
-    {[ var x = no_side_effect_expression ]}
+   {[ var x = no_side_effect_expression ]}
     is [no side effect], but it is actually side effect, 
     since  we are defining a variable, however, if it is not exported or used, 
     then it's fine, so we delay this check later
- *)
+*)
 
-val eq_expression : J.expression -> J.expression -> bool
+val eq_expression :
+  J.expression -> J.expression -> bool
 
-val eq_statement : J.statement -> J.statement -> bool
+(* val eq_statement : 
+  J.statement -> J.statement -> bool *)
 
 val rev_flatten_seq : J.expression -> J.block 
 
@@ -70709,7 +70711,7 @@ val is_constant : J.expression -> bool
 *)
 
 val is_simple_no_side_effect_expression 
-    : J.expression -> bool
+  : J.expression -> bool
 end = struct
 #1 "js_analyzer.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -70910,6 +70912,7 @@ let rec eq_expression (x : J.expression) (y : J.expression) =
     Ident.same i j
   | Bin (op0, a0,b0) , Bin(op1,a1,b1) -> 
     op0 = op1 && eq_expression a0 a1 && eq_expression b0 b1
+  | Str(a0,b0), Str(a1,b1) -> a0 = a1  && b0 = b1
   | _, _ -> false 
 
 and eq_expression_list xs ys =

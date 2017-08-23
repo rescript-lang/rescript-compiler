@@ -180,7 +180,8 @@ OTHERS := literals a test_ari test_export2 test_internalOO test_obj_simple_ffi t
 	gpr_1822_test\
 	bs_unwrap_test\
 	dollar_escape_test\
-	js_nullable_test
+	js_nullable_test\
+	gpr_1891_test
 
 # bs_uncurry_test
 # needs Lam to get rid of Uncurry arity first
