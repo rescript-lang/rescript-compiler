@@ -66,6 +66,8 @@ val no_side_effect_statement :
 val eq_expression :
   J.expression -> J.expression -> bool
 
+val eq_statement : 
+  J.statement -> J.statement -> bool
 
 val rev_flatten_seq : J.expression -> J.block 
 

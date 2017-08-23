@@ -50628,14 +50628,8 @@ function full_match(ignore_generalized, closing, env) {
               return List.for_all((function (param) {
                             var tag = param[0];
                             var match = row_field_repr_aux(/* [] */0, param[1]);
-                            if (typeof match === "number") {
+                            if (typeof match === "number" || !(!match.tag || match[2] !== 0)) {
                               return /* true */1;
-                            } else if (match.tag) {
-                              if (match[2] !== 0) {
-                                return List.mem(tag, fields);
-                              } else {
-                                return /* true */1;
-                              }
                             } else {
                               return List.mem(tag, fields);
                             }
@@ -57283,12 +57277,8 @@ function ambiguous_types(env, lbl, others) {
         tpath,
         /* [] */0
       ], others$1);
-  if (tpaths) {
-    if (tpaths[1]) {
-      return List.map(string_of_path, tpaths);
-    } else {
-      return /* [] */0;
-    }
+  if (tpaths && !tpaths[1]) {
+    return /* [] */0;
   } else {
     return List.map(string_of_path, tpaths);
   }
@@ -57850,12 +57840,8 @@ function ambiguous_types$1(env, lbl, others) {
         tpath,
         /* [] */0
       ], others$1);
-  if (tpaths) {
-    if (tpaths[1]) {
-      return List.map(string_of_path, tpaths);
-    } else {
-      return /* [] */0;
-    }
+  if (tpaths && !tpaths[1]) {
+    return /* [] */0;
   } else {
     return List.map(string_of_path, tpaths);
   }
