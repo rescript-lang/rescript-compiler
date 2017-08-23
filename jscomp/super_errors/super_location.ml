@@ -81,7 +81,7 @@ let print ~is_warning intro ppf loc =
     end
 ;;
 
-(* taken from https://github.com/ocaml/ocaml/blob/4.02/parsing/location.ml#L337 *)
+(* taken from https://github.com/BuckleScript/ocaml/blob/d4144647d1bf9bc7dc3aadc24c25a7efa3a67915/parsing/location.ml#L380 *)
 (* This is the error report entry point. We'll replace the default reporter with this one. *)
 let rec super_error_reporter ppf ({Location.loc; msg; sub; if_highlight} as err) =
   let highlighted =
@@ -97,19 +97,17 @@ let rec super_error_reporter ppf ({Location.loc; msg; sub; if_highlight} as err)
   if highlighted then
     Format.pp_print_string ppf if_highlight
   else begin
-    Super_misc.setup_colors ppf;
     (* open a vertical box. Everything in our message is indented 2 spaces *)
     Format.fprintf ppf "@[<v 2>@,%a@,%s@,@]" (print ~is_warning:false "We've found a bug for you!") loc msg;
     List.iter (Format.fprintf ppf "@,@[%a@]" super_error_reporter) sub;
     (* no need to flush here; location's report_exception (which uses this ultimately) flushes *)
   end
 
-(* extracted from https://github.com/ocaml/ocaml/blob/4.02/parsing/location.ml#L280 *)
+(* extracted from https://github.com/BuckleScript/ocaml/blob/d4144647d1bf9bc7dc3aadc24c25a7efa3a67915/parsing/location.ml#L299 *)
 (* This is the warning report entry point. We'll replace the default printer with this one *)
 let super_warning_printer loc ppf w =
   if Warnings.is_active w then begin
-    Super_misc.setup_colors ppf;
-    Misc.Color.setup !Clflags.color;
+    setup_colors ();
     (* open a vertical box. Everything in our message is indented 2 spaces *)
     Format.fprintf ppf "@[<v 2>@,%a@,%a@,@]" 
       (print ~is_warning:true ("Warning number " ^ (Super_warnings.number w |> string_of_int))) 

@@ -9,7 +9,7 @@ open Ctype
 open Format
 open Printtyp
 
-(* taken from https://github.com/ocaml/ocaml/blob/4.02/typing/typecore.ml#L3769 *)
+(* taken from https://github.com/BuckleScript/ocaml/blob/d4144647d1bf9bc7dc3aadc24c25a7efa3a67915/typing/typecore.ml#L3769 *)
 (* modified branches are commented *)
 let report_error env ppf = function
   | Typecore.Polymorphic_label lid ->
@@ -231,9 +231,7 @@ let report_error env ppf = function
       fprintf ppf
         "@[Exception patterns must be at the top level of a match case.@]"
 
-(* https://github.com/ocaml/ocaml/blob/4.02/typing/typecore.ml#L3979 *)
 let report_error env ppf err =
-  Super_misc.setup_colors ppf;
   wrap_printing_env env (fun () -> report_error env ppf err)
 
 (* This will be called in super_main. This is how you'd override the default error printer from the compiler & register new error_of_exn handlers *)

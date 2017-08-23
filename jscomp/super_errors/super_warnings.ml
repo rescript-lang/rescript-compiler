@@ -1,10 +1,10 @@
 let fprintf = Format.fprintf
-(* this is lifted https://github.com/ocaml/ocaml/blob/4.02/utils/warnings.ml *)
+(* taken from https://github.com/BuckleScript/ocaml/blob/d4144647d1bf9bc7dc3aadc24c25a7efa3a67915/utils/warnings.ml#L251 *)
 (* actual modified message branches are commented *)
 let message = Warnings.(function
   | Comment_start -> "this is the start of a comment."
   | Comment_not_end -> "this is not the end of a comment."
-  | Deprecated s -> "deprecated: " ^ s
+  | Deprecated s -> s ^ " is deprecated. "
   | Fragile_match "" ->
       "this pattern-matching is fragile."
   | Fragile_match s ->
@@ -210,7 +210,7 @@ let number = Warnings.(function
   | Bad_docstring _ -> 50
 );;
 
-(* helper extracted from https://github.com/ocaml/ocaml/blob/4.02/utils/warnings.ml#L396 *)
+(* taken from https://github.com/BuckleScript/ocaml/blob/d4144647d1bf9bc7dc3aadc24c25a7efa3a67915/utils/warnings.ml#L396 *)
 (* the only difference is the 2 first `let`s, where we use our own `message`
   and `number` functions, and the last line commented out because we don't use
   it (not sure what it's for, actually) *)
