@@ -20,4 +20,12 @@ let foo3  x =
   
 
   
-  
+let foo4 x h = 
+  match x with 
+  | `Foo 3 ->  h ()
+  | _ -> ()
+
+let foo5 x = 
+  match x with
+  | `Foo 3 -> Js.log "hi"
+  | _ -> Js.log "x"

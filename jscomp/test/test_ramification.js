@@ -48,11 +48,7 @@ function f3(x) {
   var v = 0;
   var y;
   v = 1;
-  if (x.tag) {
-    y = 4;
-  } else {
-    y = 3;
-  }
+  y = x.tag ? 4 : 3;
   return y + 32 | 0;
 }
 

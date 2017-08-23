@@ -12024,10 +12024,7 @@ function components_of_module_maker(param) {
                             pos[0]
                           ], c[/* comp_values */0]);
                       var match = decl[/* val_kind */1];
-                      if (typeof match === "number") {
-                        pos[0] = pos[0] + 1 | 0;
-                        return /* () */0;
-                      } else if (match.tag) {
+                      if (typeof match === "number" || match.tag) {
                         pos[0] = pos[0] + 1 | 0;
                         return /* () */0;
                       } else {

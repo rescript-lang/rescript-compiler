@@ -246,6 +246,23 @@ let rec eq_expression
           p0 = p1 && b0 =  b1 && eq_expression e0 e1
         |  _ -> false 
       end
+    | Dump (l0,es0) -> 
+      begin match y0 with 
+        | Dump(l1,es1) -> 
+          l0 = l1 && eq_expression_list es0 es1
+        | _ -> false     
+      end
+    | Seq (a0,b0) -> 
+      begin match y0 with       
+        | Seq(a1,b1) -> 
+          eq_expression a0 a1 && eq_expression b0 b1
+        | _ -> false 
+      end
+    | Bool a0 -> 
+      begin match y0 with 
+        | Bool b0 -> a0 = b0
+        | _ -> false 
+      end
     | Length _ 
     | Char_of_int _
     | Char_to_int _ 
@@ -256,15 +273,15 @@ let rec eq_expression
     | String_append _ 
     | Int_of_boolean _ 
     | Anything_to_number _ 
-    | Bool _ 
+
     | Typeof _ 
     | Caml_not _
     | Js_not _ 
     | String_of_small_int_array _ 
     | Json_stringify _ 
     | Anything_to_string _ 
-    | Dump _ 
-    | Seq _ 
+
+
     | Cond _ 
     | FlatCall  _
     | Bind _ 
@@ -294,13 +311,49 @@ and eq_expression_list xs ys =
     | x::xs, y::ys -> eq_expression x y && aux xs ys 
   in
   aux xs ys
-
-and eq_statement (x : J.statement) (y : J.statement) = 
-  match x.statement_desc, y.statement_desc with 
-  | Exp a, Exp b 
-  | Return { return_value = a ; _} , Return { return_value = b; _} ->
-    eq_expression a b
-  | _, _ ->
+and eq_statement_list xs ys =
+  let rec aux xs ys =
+    match xs,ys with
+    | [], [] -> true
+    | [], _  -> false 
+    | _ , [] -> false
+    | x::xs, y::ys -> eq_statement x y && aux xs ys 
+  in
+  aux xs ys
+and eq_statement 
+    ({statement_desc = x0} : J.statement)
+    ({statement_desc = y0} : J.statement) = 
+  match x0  with 
+  | Exp a -> 
+    begin match y0 with 
+      | Exp b -> eq_expression a b 
+      | _ -> false
+    end
+  | Return { return_value = a ; _} -> 
+    begin match y0 with 
+      | Return { return_value = b; _} ->
+        eq_expression a b
+      | _ -> false 
+    end
+  | Debugger -> y0 = Debugger  
+  | Break -> y0 = Break 
+  | Block xs0 -> 
+    begin match y0 with 
+    | Block ys0 -> 
+      eq_statement_list xs0 ys0
+    | _ -> false 
+  end
+  | Variable _ 
+  | If _ 
+  | While _ 
+  | ForRange _ 
+  | Continue _ 
+  
+  | Int_switch _ 
+  | String_switch _ 
+  | Throw _ 
+  | Try _ 
+    -> 
     false 
 
 let rev_flatten_seq (x : J.expression) = 
