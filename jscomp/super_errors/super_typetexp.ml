@@ -54,7 +54,7 @@ let spellcheck ppf fold env lid =
 let spellcheck ppf fold =
   spellcheck ppf (fun f -> fold (fun s _ _ x -> f s x))
 
-(* taken from https://github.com/ocaml/ocaml/blob/4.02/typing/typetexp.ml#L911 *)
+(* taken from https://github.com/BuckleScript/ocaml/blob/d4144647d1bf9bc7dc3aadc24c25a7efa3a67915/typing/typetexp.ml#L918 *)
 (* modified branches are commented *)
 let report_error env ppf = function
   | Typetexp.Unbound_type_variable name ->

@@ -129,10 +129,3 @@ ppf
 
   done;
   fprintf ppf "@]" (* v *)
-
-let setup_colors ppf =
-  Format.pp_set_formatter_tag_functions ppf
-    ({ (Format.pp_get_formatter_tag_functions ppf () ) with
-      mark_open_tag = Ext_color.ansi_of_tag;
-      mark_close_tag = (fun _ -> Ext_color.reset_lit);
-    })
