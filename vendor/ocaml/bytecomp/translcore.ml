@@ -617,7 +617,7 @@ let primitive_is_ccall = function
 let assert_failed exp =
   let (fname, line, char) =
     Location.get_pos_info exp.exp_loc.Location.loc_start in
-#if undefined BS_NO_COMPILER_PATH then     
+#if undefined BS_NO_COMPILER_PATCH then     
   let fname = 
     if  not !Location.absname then Filename.basename fname else fname 
   in   
