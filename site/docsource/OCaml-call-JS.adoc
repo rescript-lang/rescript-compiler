@@ -1550,8 +1550,10 @@ function test(dom) {
 -------------
 
 
-Currently 3 directives are supported: `null_to_opt`, `undefined_to_opt`,
-`nullable` and `identity`.
+Currently 4 directives are supported: `null_to_opt`, `undefined_to_opt`,
+`nullable`(introduced in @1.9.0) and `identity`. 
+`null_undefined_to_opt` works the same as `nullable`, 
+but it is deprecated, `nullable` is encouraged
 
 [NOTE]
 ======

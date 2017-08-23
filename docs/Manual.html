@@ -488,7 +488,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <h1><a href="https://github.com/bucklescript/bucklescript">BuckleScript</a> User Manual</h1>
 <div class="details">
 <span id="author" class="author">Hongbo Zhang</span><br>
-<span id="revnumber">version 1.7.0</span>
+<span id="revnumber">version 1.9.0</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -679,6 +679,8 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </ul>
 </li>
 <li><a href="#_a_real_world_example_of_using_code_bsb_code">A real world example of using <code>bsb</code></a></li>
+<li><a href="#_namespace_support_since_1_9_0">namespace support (@since 1.9.0)</a></li>
+<li><a href="#_in_source_build_support_since_1_9_0">In source build support (@since 1.9.0)</a></li>
 <li><a href="#_build_using_make">Build using Make</a></li>
 <li><a href="#_customize_rules_generators_support_since_1_7_4">Customize rules (generators support, @since 1.7.4)</a></li>
 </ul>
@@ -3535,8 +3537,10 @@ drop the first '_'</p>
 </div>
 </div>
 <div class="paragraph">
-<p>Currently 3 directives are supported: <code>null_to_opt</code>, <code>undefined_to_opt</code>,
-<code>nullable</code> and <code>identity</code>.</p>
+<p>Currently 4 directives are supported: <code>null_to_opt</code>, <code>undefined_to_opt</code>,
+<code>nullable</code>(introduced in @1.9.0) and <code>identity</code>.
+<code>null_undefined_to_opt</code> works the same as <code>nullable</code>,
+but it is deprecated, <code>nullable</code> is encouraged</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -4692,7 +4696,7 @@ inlining, arity inference and other information.</p>
 It is designed for a fast feedback loop (typically 100ms feedback loop) and works cross platform.</p>
 </div>
 <div class="paragraph">
-<p><code>bsb</code> can be running in any subdirectory. It is a schema based build tool and the schema is
+<p><code>bsb</code> is a schema based build tool. The schema is
 <a href="http://bucklescript.github.io/bucklescript/docson/#build-schema.json">available</a>. It is strongly recommended to <strong>check out the <a href="http://bucklescript.github.io/bucklescript/docson/#build-schema.json">schema</a></strong>
 after you finish reading the tutorials below.</p>
 </div>
@@ -5041,6 +5045,73 @@ npm install bs-platform <b class="conum">(2)</b>
 </div>
 <div class="paragraph">
 <p>You will get both <code>commonjs</code> and <code>amdjs</code> support. In the end, we suggest you <a href="http://bucklescript.github.io/bucklescript/docson/#build-schema.json">check out the schema</a> and enjoy the build!</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_namespace_support_since_1_9_0"><a class="anchor" href="#_namespace_support_since_1_9_0"></a>namespace support (@since 1.9.0)</h3>
+<div class="paragraph">
+<p>OCaml treat file names as modules, so that users can only have unique file names in a project, BuckleScript solves
+the problem by scoping all modules by package.</p>
+</div>
+<div class="paragraph">
+<p>Below is the <code>bsconfig.json</code> for <code>liba</code>, <code>libb</code> (they share the same configuration in this example)</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span class="tok-p">{</span>
+  <span class="tok-s2">&quot;name&quot;</span><span class="tok-o">:</span> <span class="tok-s2">&quot;liba&quot;</span><span class="tok-p">,</span>
+  <span class="tok-s2">&quot;version&quot;</span><span class="tok-o">:</span> <span class="tok-s2">&quot;0.1.0&quot;</span><span class="tok-p">,</span>
+  <span class="tok-s2">&quot;sources&quot;</span><span class="tok-o">:</span> <span class="tok-s2">&quot;src&quot;</span><span class="tok-p">,</span>
+  <span class="tok-s2">&quot;namespace&quot;</span><span class="tok-o">:</span> <span class="tok-kc">true</span>
+<span class="tok-p">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now you have a library to use them</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span class="tok-p">{</span>
+  <span class="tok-s2">&quot;name&quot;</span><span class="tok-o">:</span> <span class="tok-s2">&quot;namespace&quot;</span><span class="tok-p">,</span>
+  <span class="tok-s2">&quot;version&quot;</span><span class="tok-o">:</span> <span class="tok-s2">&quot;0.1.0&quot;</span><span class="tok-p">,</span>
+  <span class="tok-s2">&quot;sources&quot;</span><span class="tok-o">:</span> <span class="tok-s2">&quot;src&quot;</span><span class="tok-p">,</span>
+  <span class="tok-s2">&quot;bs-dependencies&quot;</span><span class="tok-o">:</span> <span class="tok-p">[</span>
+    <span class="tok-s2">&quot;liba&quot;</span><span class="tok-p">,</span>
+    <span class="tok-s2">&quot;libb&quot;</span>
+  <span class="tok-p">]</span>
+<span class="tok-p">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Since <code>liba</code> and <code>libb</code> is configured using namespace, to use them in source code, it would be like</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">let</span> <span class="tok-n">v</span> <span class="tok-o">=</span>
+    <span class="tok-o">(</span><span class="tok-nn">Liba</span><span class="tok-p">.</span><span class="tok-nn">Demo</span><span class="tok-p">.</span><span class="tok-n">v</span> <span class="tok-o">+</span> <span class="tok-nn">Libb</span><span class="tok-p">.</span><span class="tok-nn">Demo</span><span class="tok-p">.</span><span class="tok-n">v</span><span class="tok-o">)</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>In the same package, everything works the same whether it uses namespace or not, it only affect
+people who use your library</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_in_source_build_support_since_1_9_0"><a class="anchor" href="#_in_source_build_support_since_1_9_0"></a>In source build support (@since 1.9.0)</h3>
+<div class="paragraph">
+<p>When user has an existing JS project, it makes sense to output the JS file in the same directory as vanilla JS,
+the schema added  a key called <code>in-source</code> so that generate JS file next to ML file.</p>
 </div>
 </div>
 <div class="sect2">
@@ -6357,7 +6428,7 @@ polymorphism <a href="https://github.com/bucklescript/bucklescript/issues/686">#
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 1.7.0<br>
+Version 1.9.0<br>
 </div>
 </div>
 </body>

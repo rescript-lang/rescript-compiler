@@ -1,6 +1,6 @@
 # https://github.com/bucklescript/bucklescript[BuckleScript] User Manual
 Hongbo Zhang
-v1.7.0
+v1.9.0
 :toc: left
 :toclevels: 4
 :source-highlighter: pygments
@@ -16,6 +16,7 @@ v1.7.0
 :name-mangling: https://en.wikipedia.org/wiki/Name_mangling
 :npm: https://www.npmjs.com
 :issues: https://github.com/bucklescript/bucklescript/issues
+:schema: http://bucklescript.github.io/bucklescript/docson/#build-schema.json
 :sectanchors:
 :sectlinks:
 
