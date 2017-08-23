@@ -70661,13 +70661,13 @@ module Js_analyzer : sig
 (** Analyzing utilities for [J] module *) 
 
 (** for example, whether it has side effect or not.
- *)
+*)
 
 val free_variables_of_statement : 
-    Ident_set.t -> Ident_set.t -> J.statement -> Ident_set.t
+  Ident_set.t -> Ident_set.t -> J.statement -> Ident_set.t
 
 val free_variables_of_expression : 
-    Ident_set.t -> Ident_set.t -> J.finish_ident_expression -> Ident_set.t
+  Ident_set.t -> Ident_set.t -> J.finish_ident_expression -> Ident_set.t
 
 val no_side_effect_expression_desc :
   J.expression_desc -> bool   
@@ -70680,21 +70680,23 @@ val no_side_effect_expression :
     when you want to do a deep copy, the expression passed to you is pure
     but you still have to call the function to make a copy, 
     since it maybe changed later
- *)
+*)
 
 val no_side_effect_statement : 
-    J.statement -> bool
+  J.statement -> bool
 (** 
     here we say 
-    {[ var x = no_side_effect_expression ]}
+   {[ var x = no_side_effect_expression ]}
     is [no side effect], but it is actually side effect, 
     since  we are defining a variable, however, if it is not exported or used, 
     then it's fine, so we delay this check later
- *)
+*)
 
-val eq_expression : J.expression -> J.expression -> bool
+val eq_expression :
+  J.expression -> J.expression -> bool
 
-val eq_statement : J.statement -> J.statement -> bool
+val eq_statement : 
+  J.statement -> J.statement -> bool
 
 val rev_flatten_seq : J.expression -> J.block 
 
@@ -70709,7 +70711,7 @@ val is_constant : J.expression -> bool
 *)
 
 val is_simple_no_side_effect_expression 
-    : J.expression -> bool
+  : J.expression -> bool
 end = struct
 #1 "js_analyzer.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -70751,7 +70753,7 @@ end = struct
 
    Note such shaking is done in the toplevel, so that it requires us to 
    flatten the statement first 
- *)
+*)
 let free_variables used_idents defined_idents = 
   object (self)
     inherit Js_fold.fold as super
@@ -70772,9 +70774,9 @@ let free_variables used_idents defined_idents =
 
       match exp.expression_desc with
       | Fun(_, _,_, env)
-      (** a optimization to avoid walking into funciton again
-          if it's already comuted
-      *)
+        (** a optimization to avoid walking into funciton again
+            if it's already comuted
+        *)
         ->
         {< used_idents = 
              Ident_set.union (Js_fun_env.get_unbounded env) used_idents  >}
@@ -70808,12 +70810,12 @@ let rec no_side_effect_expression_desc (x : J.expression_desc)  =
   | Array (xs,_mutable_flag)  
   | Caml_block (xs, _mutable_flag, _, _)
     ->
-      (** create [immutable] block,
-          does not really mean that this opreation itself is [pure].
-          
-          the block is mutable does not mean this operation is non-pure
-       *)
-      List.for_all no_side_effect  xs 
+    (** create [immutable] block,
+        does not really mean that this opreation itself is [pure].
+
+        the block is mutable does not mean this operation is non-pure
+    *)
+    List.for_all no_side_effect  xs 
   | Bind(fn, obj) -> no_side_effect fn && no_side_effect obj
   | Object kvs -> 
     List.for_all (fun (_property_name, y) -> no_side_effect y ) kvs 
@@ -70865,53 +70867,157 @@ let no_side_effect init =
 
     method! statement s = 
       if not no_side_effect then self else 
-      match s.statement_desc with 
-      | Throw _ 
-      | Debugger 
-      | Break 
-      | Variable _ 
-      | Continue _ ->  
-        {< no_side_effect = false>}
-      | Exp e -> self#expression e 
-      | Int_switch _ | String_switch _ | ForRange _ 
-      | If _ | While _   | Block _ | Return _ | Try _  -> super#statement s 
+        match s.statement_desc with 
+        | Throw _ 
+        | Debugger 
+        | Break 
+        | Variable _ 
+        | Continue _ ->  
+          {< no_side_effect = false>}
+        | Exp e -> self#expression e 
+        | Int_switch _ | String_switch _ | ForRange _ 
+        | If _ | While _   | Block _ | Return _ | Try _  -> super#statement s 
     method! list f x = 
       if not self#get_no_side_effect then self else super#list f x 
     method! expression s = 
       if not no_side_effect then self
       else  {< no_side_effect = no_side_effect_expression s >}
 
-        (** only expression would cause side effec *)
+    (** only expression would cause side effec *)
   end
 let no_side_effect_statement st = ((no_side_effect true)#statement st)#get_no_side_effect
 
 (* TODO: generate [fold2] 
    This make sense, for example:
    {[
-   let string_of_formatting_gen : type a b c d e f .
-   (a, b, c, d, e, f) formatting_gen -> string =
-   fun formatting_gen -> match formatting_gen with
-   | Open_tag (Format (_, str)) -> str
-   | Open_box (Format (_, str)) -> str
+     let string_of_formatting_gen : type a b c d e f .
+       (a, b, c, d, e, f) formatting_gen -> string =
+       fun formatting_gen -> match formatting_gen with
+         | Open_tag (Format (_, str)) -> str
+         | Open_box (Format (_, str)) -> str
 
    ]}
- *)
-let rec eq_expression (x : J.expression) (y : J.expression) = 
-  match x.expression_desc, y.expression_desc with 
-  | Number (Int i) , Number (Int j)   -> i = j 
-  | Number (Float i), Number (Float j) -> false (* TODO *)
-  | Math  (name00,args00), Math(name10,args10) -> 
-    name00 = name10 && eq_expression_list args00 args10 
-  | Access (a0,a1), Access(b0,b1) -> 
-    eq_expression a0 b0 && eq_expression a1 b1
-  | Call (a0,args00,_), Call(b0,args10,_) ->
-    eq_expression a0 b0 &&  eq_expression_list args00 args10
-  | Var (Id i), Var (Id j) ->
-    Ident.same i j
-  | Bin (op0, a0,b0) , Bin(op1,a1,b1) -> 
-    op0 = op1 && eq_expression a0 a1 && eq_expression b0 b1
-  | _, _ -> false 
+*)
+let rec eq_expression 
+    ({expression_desc = x0}  : J.expression) 
+    ({expression_desc = y0}  : J.expression) = 
+  begin match x0  with 
+    | Number (Int i) -> 
+      begin match y0 with  
+        | Number (Int j)   -> i = j 
+        | _ -> false 
+      end
+    | Number (Float i) -> 
+      begin match y0 with 
+        | Number (Float j) ->
+          false (* conservative *)
+        | _ -> false 
+      end
+    | Math  (name00,args00) -> 
+      begin match y0 with 
+        |Math(name10,args10) -> 
+          name00 = name10 && eq_expression_list args00 args10 
+        | _ -> false 
+      end
+    | Access (a0,a1) -> 
+      begin match y0 with 
+        | Access(b0,b1) -> 
+          eq_expression a0 b0 && eq_expression a1 b1
+        | _ -> false 
+      end
+    | Call (a0,args00,_) -> 
+      begin match y0 with 
+        | Call(b0,args10,_) ->
+          eq_expression a0 b0 &&  eq_expression_list args00 args10
+        | _ -> false 
+      end 
+    | Var (Id i) -> 
+      begin match y0 with 
+        | Var (Id j) ->
+          Ident.same i j
+        | _ -> false
+      end
+    | Bin (op0, a0,b0) -> 
+      begin match y0 with 
+        | Bin(op1,a1,b1) -> 
+          op0 = op1 && eq_expression a0 a1 && eq_expression b0 b1
+        | _ -> false 
+      end 
+    | Str(a0,b0) -> 
+      begin match y0 with 
+        | Str(a1,b1) -> a0 = a1  && b0 = b1
+        | _ -> false 
+      end     
+    | Var (Qualified (id0,k0,opts0)) -> 
+      begin match y0 with 
+        | Var (Qualified (id1,k1,opts1)) ->
+          Ident.same id0 id1 &&
+          k0 = k1 &&
+          opts0 = opts1
+        | _ -> false
+      end
+    | Dot (e0,p0,b0) -> 
+      begin match y0 with 
+        | Dot(e1,p1,b1) -> 
+          p0 = p1 && b0 =  b1 && eq_expression e0 e1
+        |  _ -> false 
+      end
+    | Dump (l0,es0) -> 
+      begin match y0 with 
+        | Dump(l1,es1) -> 
+          l0 = l1 && eq_expression_list es0 es1
+        | _ -> false     
+      end
+    | Seq (a0,b0) -> 
+      begin match y0 with       
+        | Seq(a1,b1) -> 
+          eq_expression a0 a1 && eq_expression b0 b1
+        | _ -> false 
+      end
+    | Bool a0 -> 
+      begin match y0 with 
+        | Bool b0 -> a0 = b0
+        | _ -> false 
+      end
+    | Length _ 
+    | Char_of_int _
+    | Char_to_int _ 
+    | Is_null_undefined_to_boolean _ 
+    | Array_of_size _
+    | Array_copy _ 
+    | Array_append _ 
+    | String_append _ 
+    | Int_of_boolean _ 
+    | Anything_to_number _ 
 
+    | Typeof _ 
+    | Caml_not _
+    | Js_not _ 
+    | String_of_small_int_array _ 
+    | Json_stringify _ 
+    | Anything_to_string _ 
+
+
+    | Cond _ 
+    | FlatCall  _
+    | Bind _ 
+    | String_access _ 
+
+    | New _ 
+    | Fun _ 
+    | Unicode _ 
+    | Raw_js_code _
+    | Array _ 
+    | Caml_block _ 
+    | Caml_uninitialized_obj _ 
+    | Caml_block_tag _ 
+    | Caml_block_set_tag _ 
+    | Caml_block_set_length _ 
+    | Object _ 
+    | Number (Uint _ | Nint _)
+
+      ->  false 
+  end
 and eq_expression_list xs ys =
   let rec aux xs ys =
     match xs,ys with
@@ -70921,13 +71027,49 @@ and eq_expression_list xs ys =
     | x::xs, y::ys -> eq_expression x y && aux xs ys 
   in
   aux xs ys
-
-and eq_statement (x : J.statement) (y : J.statement) = 
-  match x.statement_desc, y.statement_desc with 
-  | Exp a, Exp b 
-  | Return { return_value = a ; _} , Return { return_value = b; _} ->
-    eq_expression a b
-  | _, _ ->
+and eq_statement_list xs ys =
+  let rec aux xs ys =
+    match xs,ys with
+    | [], [] -> true
+    | [], _  -> false 
+    | _ , [] -> false
+    | x::xs, y::ys -> eq_statement x y && aux xs ys 
+  in
+  aux xs ys
+and eq_statement 
+    ({statement_desc = x0} : J.statement)
+    ({statement_desc = y0} : J.statement) = 
+  match x0  with 
+  | Exp a -> 
+    begin match y0 with 
+      | Exp b -> eq_expression a b 
+      | _ -> false
+    end
+  | Return { return_value = a ; _} -> 
+    begin match y0 with 
+      | Return { return_value = b; _} ->
+        eq_expression a b
+      | _ -> false 
+    end
+  | Debugger -> y0 = Debugger  
+  | Break -> y0 = Break 
+  | Block xs0 -> 
+    begin match y0 with 
+    | Block ys0 -> 
+      eq_statement_list xs0 ys0
+    | _ -> false 
+  end
+  | Variable _ 
+  | If _ 
+  | While _ 
+  | ForRange _ 
+  | Continue _ 
+  
+  | Int_switch _ 
+  | String_switch _ 
+  | Throw _ 
+  | Try _ 
+    -> 
     false 
 
 let rev_flatten_seq (x : J.expression) = 
@@ -70939,17 +71081,17 @@ let rev_flatten_seq (x : J.expression) =
 
 (* TODO: optimization, 
     counter the number to know if needed do a loop gain instead of doing a diff 
- *)
+*)
 
 let rev_toplevel_flatten block = 
   let rec aux  acc (xs : J.block) : J.block  = 
     match xs with 
     | [] -> acc
     | {statement_desc =
-       Variable (
-       {ident_info = {used_stats = Dead_pure } ; _} 
-       | {ident_info = {used_stats = Dead_non_pure}; value = None })
-     } :: xs -> aux acc xs 
+         Variable (
+           {ident_info = {used_stats = Dead_pure } ; _} 
+         | {ident_info = {used_stats = Dead_non_pure}; value = None })
+      } :: xs -> aux acc xs 
     | {statement_desc = Block b; _ } ::xs -> aux (aux acc b ) xs 
 
     | x :: xs -> aux (x :: acc) xs  in

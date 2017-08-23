@@ -12024,10 +12024,7 @@ function components_of_module_maker(param) {
                             pos[0]
                           ], c[/* comp_values */0]);
                       var match = decl[/* val_kind */1];
-                      if (typeof match === "number") {
-                        pos[0] = pos[0] + 1 | 0;
-                        return /* () */0;
-                      } else if (match.tag) {
+                      if (typeof match === "number" || match.tag) {
                         pos[0] = pos[0] + 1 | 0;
                         return /* () */0;
                       } else {
@@ -41059,12 +41056,10 @@ function tree_of_type_decl(id, decl) {
           }), match$6[0]);
   }
   var type_param = function (param) {
-    if (typeof param === "number") {
+    if (typeof param === "number" || param.tag !== 10) {
       return "?";
-    } else if (param.tag === 10) {
-      return param[1];
     } else {
-      return "?";
+      return param[1];
     }
   };
   var type_defined = function (decl) {
@@ -41164,12 +41159,10 @@ function tree_of_extension_constructor(id, ext, es) {
   may(mark_loops, ext[/* ext_ret_type */3]);
   var ty_params$1 = List.map((function (ty) {
           var param = tree_of_typexp(/* false */0, ty);
-          if (typeof param === "number") {
+          if (typeof param === "number" || param.tag !== 10) {
             return "?";
-          } else if (param.tag === 10) {
-            return param[1];
           } else {
-            return "?";
+            return param[1];
           }
         }), ty_params);
   var name$1 = id[/* name */1];
@@ -41474,9 +41467,7 @@ function class_type$1(ppf, cty) {
 function tree_of_class_param(param, variance) {
   var match = tree_of_typexp(/* true */1, param);
   var tmp;
-  tmp = typeof match === "number" ? "?" : (
-      match.tag === 10 ? match[1] : "?"
-    );
+  tmp = typeof match === "number" || match.tag !== 10 ? "?" : match[1];
   return /* tuple */[
           tmp,
           is_Tvar(repr(param)) ? /* tuple */[
@@ -48713,12 +48704,10 @@ function clean_copy(ty) {
 function get_type_path(ty, tenv) {
   var ty$1 = repr(expand_head(tenv, clean_copy(ty)));
   var match = ty$1[/* desc */0];
-  if (typeof match === "number") {
+  if (typeof match === "number" || match.tag !== 3) {
     return fatal_error("Parmatch.get_type_path");
-  } else if (match.tag === 3) {
-    return match[0];
   } else {
-    return fatal_error("Parmatch.get_type_path");
+    return match[0];
   }
 }
 
@@ -50636,14 +50625,8 @@ function full_match(ignore_generalized, closing, env) {
               return List.for_all((function (param) {
                             var tag = param[0];
                             var match = row_field_repr_aux(/* [] */0, param[1]);
-                            if (typeof match === "number") {
+                            if (typeof match === "number" || !(!match.tag || match[2] !== 0)) {
                               return /* true */1;
-                            } else if (match.tag) {
-                              if (match[2] !== 0) {
-                                return List.mem(tag, fields);
-                              } else {
-                                return /* true */1;
-                              }
                             } else {
                               return List.mem(tag, fields);
                             }
@@ -51222,12 +51205,10 @@ function build_other(ext, env) {
                 var all_tags = List.map((function (param) {
                         var param$1 = param[0];
                         var match = param$1[/* pat_desc */0];
-                        if (typeof match === "number") {
+                        if (typeof match === "number" || match.tag !== 4) {
                           return fatal_error("Parmatch.get_tag");
-                        } else if (match.tag === 4) {
-                          return match[1][/* cstr_tag */5];
                         } else {
-                          return fatal_error("Parmatch.get_tag");
+                          return match[1][/* cstr_tag */5];
                         }
                       }), env);
                 return pat_of_constrs(p, complete_constrs(p, all_tags));
@@ -51358,12 +51339,10 @@ function build_other_gadt(_, env) {
       var all_tags = List.map((function (param) {
               var param$1 = param[0];
               var match = param$1[/* pat_desc */0];
-              if (typeof match === "number") {
+              if (typeof match === "number" || match.tag !== 4) {
                 return fatal_error("Parmatch.get_tag");
-              } else if (match.tag === 4) {
-                return match[1][/* cstr_tag */5];
               } else {
-                return fatal_error("Parmatch.get_tag");
+                return match[1][/* cstr_tag */5];
               }
             }), env);
       var cnstrs = complete_constrs(p, all_tags);
@@ -57295,12 +57274,8 @@ function ambiguous_types(env, lbl, others) {
         tpath,
         /* [] */0
       ], others$1);
-  if (tpaths) {
-    if (tpaths[1]) {
-      return List.map(string_of_path, tpaths);
-    } else {
-      return /* [] */0;
-    }
+  if (tpaths && !tpaths[1]) {
+    return /* [] */0;
   } else {
     return List.map(string_of_path, tpaths);
   }
@@ -57862,12 +57837,8 @@ function ambiguous_types$1(env, lbl, others) {
         tpath,
         /* [] */0
       ], others$1);
-  if (tpaths) {
-    if (tpaths[1]) {
-      return List.map(string_of_path, tpaths);
-    } else {
-      return /* [] */0;
-    }
+  if (tpaths && !tpaths[1]) {
+    return /* [] */0;
   } else {
     return List.map(string_of_path, tpaths);
   }
@@ -78457,20 +78428,8 @@ if (match$1) {
                                                                                                                                                                                                                                                                                   eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", /* true */1, /* false */0);
                                                                                                                                                                                                                                                                                 } else {
                                                                                                                                                                                                                                                                                   var match$106 = match$104[/* loc_end */1];
-                                                                                                                                                                                                                                                                                  if (match$106[/* pos_fname */0] === "") {
-                                                                                                                                                                                                                                                                                    if (match$106[/* pos_lnum */1] !== 3) {
-                                                                                                                                                                                                                                                                                      eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", /* true */1, /* false */0);
-                                                                                                                                                                                                                                                                                    } else if (match$106[/* pos_bol */2] !== 10) {
-                                                                                                                                                                                                                                                                                      eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", /* true */1, /* false */0);
-                                                                                                                                                                                                                                                                                    } else if (match$106[/* pos_cnum */3] !== 50) {
-                                                                                                                                                                                                                                                                                      eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", /* true */1, /* false */0);
-                                                                                                                                                                                                                                                                                    } else if (match$104[/* loc_ghost */2] !== 0) {
-                                                                                                                                                                                                                                                                                      eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", /* true */1, /* false */0);
-                                                                                                                                                                                                                                                                                    } else if (match$89[/* val_attributes */3]) {
-                                                                                                                                                                                                                                                                                      eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", /* true */1, /* false */0);
-                                                                                                                                                                                                                                                                                    } else {
-                                                                                                                                                                                                                                                                                      eq("File \"ocaml_typed_tree_main.ml\", line 220, characters 14-21", /* true */1, /* true */1);
-                                                                                                                                                                                                                                                                                    }
+                                                                                                                                                                                                                                                                                  if (match$106[/* pos_fname */0] === "" && !(match$106[/* pos_lnum */1] !== 3 || match$106[/* pos_bol */2] !== 10 || match$106[/* pos_cnum */3] !== 50 || match$104[/* loc_ghost */2] !== 0 || match$89[/* val_attributes */3])) {
+                                                                                                                                                                                                                                                                                    eq("File \"ocaml_typed_tree_main.ml\", line 220, characters 14-21", /* true */1, /* true */1);
                                                                                                                                                                                                                                                                                   } else {
                                                                                                                                                                                                                                                                                     eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", /* true */1, /* false */0);
                                                                                                                                                                                                                                                                                   }
