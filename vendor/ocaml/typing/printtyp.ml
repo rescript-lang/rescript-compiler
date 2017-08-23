@@ -1256,31 +1256,10 @@ let same_path t t' =
   | _ ->
       false
 
-#if defined BS_NO_COMPILER_PATCH then
 let type_expansion t ppf t' =
   if same_path t t' then type_expr ppf t else
   let t' = if proxy t == proxy t' then unalias t' else t' in
   fprintf ppf "@[<2>%a@ =@ %a@]" type_expr t type_expr t'
-#else
-let type_expansion ?(tag="") t ppf t' =
-  if same_path t t' then begin
-    Format.pp_open_tag ppf tag;
-    type_expr ppf t;
-    Format.pp_close_tag ppf ();
-  end else begin
-    let t' = if proxy t == proxy t' then unalias t' else t' in
-    fprintf ppf "@[<2>";
-    Format.pp_open_tag ppf tag;
-    fprintf ppf "%a" type_expr t;
-    Format.pp_close_tag ppf ();
-    fprintf ppf "@ @{<dim>(defined as@}@ ";
-    Format.pp_open_tag ppf tag;
-    fprintf ppf "%a" type_expr t';
-    Format.pp_close_tag ppf ();
-    fprintf ppf "@{<dim>)@}";
-    fprintf ppf "@]";
-  end
-#end
 
 let type_path_expansion tp ppf tp' =
   if Path.same tp tp' then path ppf tp else
@@ -1480,6 +1459,24 @@ let unification_error unif tr txt1 ppf txt2 =
       print_labels := true;
       raise exn
 #else
+let super_type_expansion ~tag t ppf t' =
+  if same_path t t' then begin
+    Format.pp_open_tag ppf tag;
+    type_expr ppf t;
+    Format.pp_close_tag ppf ();
+  end else begin
+    let t' = if proxy t == proxy t' then unalias t' else t' in
+    fprintf ppf "@[<2>";
+    Format.pp_open_tag ppf tag;
+    fprintf ppf "%a" type_expr t;
+    Format.pp_close_tag ppf ();
+    fprintf ppf "@ @{<dim>(defined as@}@ ";
+    Format.pp_open_tag ppf tag;
+    fprintf ppf "%a" type_expr t';
+    Format.pp_close_tag ppf ();
+    fprintf ppf "@{<dim>)@}";
+    fprintf ppf "@]";
+  end
 
 let super_trace ppf =
   let rec super_trace first_report ppf = function
@@ -1498,8 +1495,8 @@ let super_trace ppf =
           @[%a@]\
           %a\
         @]"
-        (type_expansion ~tag:"error" t1) t1'
-        (type_expansion ~tag:"info" t2) t2'
+        (super_type_expansion ~tag:"error" t1) t1'
+        (super_type_expansion ~tag:"info" t2) t2'
         (super_trace false) rem;
       fprintf ppf "@]"
     | _ -> ()
@@ -1532,8 +1529,8 @@ let unification_error unif tr txt1 ppf txt2 = begin
           %a\
           %t\
         @]"
-        txt1 (type_expansion ~tag:"error" t1) t1'
-        txt2 (type_expansion ~tag:"info" t2) t2'
+        txt1 (super_type_expansion ~tag:"error" t1) t1'
+        txt2 (super_type_expansion ~tag:"info" t2) t2'
         super_trace tr
         (explanation unif mis);
       print_labels := true

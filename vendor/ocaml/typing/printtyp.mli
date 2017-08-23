@@ -64,13 +64,7 @@ val class_declaration: Ident.t -> formatter -> class_declaration -> unit
 val tree_of_cltype_declaration:
     Ident.t -> class_type_declaration -> rec_status -> out_sig_item
 val cltype_declaration: Ident.t -> formatter -> class_type_declaration -> unit
-
-#if defined BS_NO_COMPILER_PATCH then
 val type_expansion: type_expr -> Format.formatter -> type_expr -> unit
-#else
-val type_expansion: ?tag:string -> type_expr -> Format.formatter -> type_expr -> unit
-#end
-
 val prepare_expansion: type_expr * type_expr -> type_expr * type_expr
 val trace:
     bool -> bool-> string -> formatter -> (type_expr * type_expr) list -> unit
