@@ -48,9 +48,9 @@ let report_error env ppf = function
       (* modified *)
       report_unification_error ppf env trace
         (function ppf ->
-           fprintf ppf "@{<error>This is:@}")
+           fprintf ppf "This is:")
         (function ppf ->
-           fprintf ppf "@{<info>but somewhere wanted:@}")
+           fprintf ppf "But somewhere wanted:")
   | Apply_non_function typ ->
       (* modified *)
       reset_and_mark_loops typ;
@@ -239,7 +239,7 @@ let setup () =
   Location.register_error_of_exn
     (function
       | Typecore.Error (loc, env, err) ->
-        Some (Location.error_of_printer loc (report_error env) err)
+        Some (Super_location.error_of_printer loc (report_error env) err)
       | Typecore.Error_forward err ->
         Some err
       | _ ->

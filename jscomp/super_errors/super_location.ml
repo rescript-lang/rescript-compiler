@@ -117,6 +117,21 @@ let super_warning_printer loc ppf w =
   end
 ;;
 
+(* taken from https://github.com/BuckleScript/ocaml/blob/d4144647d1bf9bc7dc3aadc24c25a7efa3a67915/parsing/location.ml#L354 *) 
+let print_phanton_error_prefix ppf =
+  (* modified from the original. We use only 2 indentations for error report
+    (see super_error_reporter above) *)
+  Format.pp_print_as ppf 2 ""
+
+let errorf ?(loc = none) ?(sub = []) ?(if_highlight = "") fmt =
+  Location.pp_ksprintf
+    ~before:print_phanton_error_prefix
+    (fun msg -> {loc; msg; sub; if_highlight})
+    fmt
+
+let error_of_printer loc print x =
+  errorf ~loc "%a@?" print x
+
 (* This will be called in super_main. This is how you override the default error and warning printers *)
 let setup () =
   Location.error_reporter := super_error_reporter;
