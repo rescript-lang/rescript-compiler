@@ -680,6 +680,9 @@ module Color : sig
     | Bold
     | Reset
 
+    | Dim
+
+
   val ansi_of_style_l : style list -> string
   (* ANSI escape sequence for the given style *)
 
@@ -1084,6 +1087,9 @@ module Color = struct
     | Bold
     | Reset
 
+    | Dim
+
+
   let ansi_of_color = function
     | Black -> "0"
     | Red -> "1"
@@ -1099,6 +1105,9 @@ module Color = struct
     | BG c -> "4" ^ ansi_of_color c
     | Bold -> "1"
     | Reset -> "0"
+
+    | Dim -> "2"
+
 
   let ansi_of_style_l l =
     let s = match l with
@@ -1130,6 +1139,11 @@ module Color = struct
     | "error" -> (!cur_styles).error
     | "warning" -> (!cur_styles).warning
     | "loc" -> (!cur_styles).loc
+
+    | "info" -> [Bold; FG Yellow]
+    | "dim" -> [Dim]
+    | "filename" -> [FG Cyan]
+
     | _ -> raise Not_found
 
   let color_enabled = ref true
@@ -1935,6 +1949,10 @@ val print_error_prefix: formatter -> unit -> unit
   (* print the prefix "Error:" possibly with style *)
 
 val error: ?loc:t -> ?sub:error list -> ?if_highlight:string -> string -> error
+
+ 
+val pp_ksprintf : ?before:(formatter -> unit) -> (string -> 'a) -> ('b, formatter, unit, 'a) format4 -> 'b
+
 
 val errorf: ?loc:t -> ?sub:error list -> ?if_highlight:string
             -> ('a, Format.formatter, unit, error) format4 -> 'a
