@@ -269,7 +269,9 @@ CORE_SRCS= js_runtime_modules \
 	lam\
 	lam_print lam_beta_reduce_util lam_inline_util lam_analysis\
 	lam_closure\
-	js_cmj_format js_fun_env js_call_info js_closure  js_number js_cmj_datasets\
+	js_cmj_format \
+	js_cmj_load\
+	js_fun_env js_call_info js_closure  js_number js_cmj_datasets\
 	lam_exit_code j \
 	lam_compile_util \
 	lam_id_kind \
