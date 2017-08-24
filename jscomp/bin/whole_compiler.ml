@@ -512,6 +512,9 @@ module Color : sig
     | Bold
     | Reset
 
+    | Dim
+
+
   val ansi_of_style_l : style list -> string
   (* ANSI escape sequence for the given style *)
 
@@ -916,6 +919,9 @@ module Color = struct
     | Bold
     | Reset
 
+    | Dim
+
+
   let ansi_of_color = function
     | Black -> "0"
     | Red -> "1"
@@ -931,6 +937,9 @@ module Color = struct
     | BG c -> "4" ^ ansi_of_color c
     | Bold -> "1"
     | Reset -> "0"
+
+    | Dim -> "2"
+
 
   let ansi_of_style_l l =
     let s = match l with
@@ -962,6 +971,11 @@ module Color = struct
     | "error" -> (!cur_styles).error
     | "warning" -> (!cur_styles).warning
     | "loc" -> (!cur_styles).loc
+
+    | "info" -> [Bold; FG Yellow]
+    | "dim" -> [Dim]
+    | "filename" -> [FG Cyan]
+
     | _ -> raise Not_found
 
   let color_enabled = ref true
@@ -1767,6 +1781,10 @@ val print_error_prefix: formatter -> unit -> unit
   (* print the prefix "Error:" possibly with style *)
 
 val error: ?loc:t -> ?sub:error list -> ?if_highlight:string -> string -> error
+
+ 
+val pp_ksprintf : ?before:(formatter -> unit) -> (string -> 'a) -> ('b, formatter, unit, 'a) format4 -> 'b
+
 
 val errorf: ?loc:t -> ?sub:error list -> ?if_highlight:string
             -> ('a, Format.formatter, unit, error) format4 -> 'a
@@ -43440,7 +43458,51 @@ let rec trace_same_names = function
       type_same_name t1 t2; type_same_name t1' t2'; trace_same_names rem
   | _ -> ()
 
-let unification_error unif tr txt1 ppf txt2 =
+
+let super_type_expansion ~tag t ppf t' =
+  if same_path t t' then begin
+    Format.pp_open_tag ppf tag;
+    type_expr ppf t;
+    Format.pp_close_tag ppf ();
+  end else begin
+    let t' = if proxy t == proxy t' then unalias t' else t' in
+    fprintf ppf "@[<2>";
+    Format.pp_open_tag ppf tag;
+    fprintf ppf "%a" type_expr t;
+    Format.pp_close_tag ppf ();
+    fprintf ppf "@ @{<dim>(defined as@}@ ";
+    Format.pp_open_tag ppf tag;
+    fprintf ppf "%a" type_expr t';
+    Format.pp_close_tag ppf ();
+    fprintf ppf "@{<dim>)@}";
+    fprintf ppf "@]";
+  end
+
+let super_trace ppf =
+  let rec super_trace first_report ppf = function
+    | (t1, t1') :: (t2, t2') :: rem ->
+      fprintf ppf 
+        "@,@,@[<v 2>";
+      if first_report then 
+        fprintf ppf "The incompatible parts:@,"
+      else begin 
+        fprintf ppf "Further expanded:@,"
+      end;
+      fprintf ppf 
+        "@[<v>\
+          @[%a@]@,\
+          vs@,\
+          @[%a@]\
+          %a\
+        @]"
+        (super_type_expansion ~tag:"error" t1) t1'
+        (super_type_expansion ~tag:"info" t2) t2'
+        (super_trace false) rem;
+      fprintf ppf "@]"
+    | _ -> ()
+  in super_trace true ppf
+
+let unification_error unif tr txt1 ppf txt2 = begin
   reset ();
   trace_same_names tr;
   let tr = List.map (fun (t, t') -> (t, hide_variant_name t')) tr in
@@ -43455,19 +43517,28 @@ let unification_error unif tr txt1 ppf txt2 =
       print_labels := not !Clflags.classic;
       let tr = List.map prepare_expansion tr in
       fprintf ppf
-        "@[<v>\
-          @[%t@;<1 2>%a@ \
-            %t@;<1 2>%a\
-          @]%a%t\
-         @]"
-        txt1 (type_expansion t1) t1'
-        txt2 (type_expansion t2) t2'
-        (trace false "is not compatible with type") tr
+        "@[<v 0>\
+          @[<v 2>\
+            %t@,\
+            @[<2>%a@]\
+          @]@,\
+          @[<v 2>\
+            %t@,\
+            @[<2>%a@]\
+          @]\
+          %a\
+          %t\
+        @]"
+        txt1 (super_type_expansion ~tag:"error" t1) t1'
+        txt2 (super_type_expansion ~tag:"info" t2) t2'
+        super_trace tr
         (explanation unif mis);
       print_labels := true
     with exn ->
       print_labels := true;
       raise exn
+end
+
 
 let report_unification_error ppf env ?(unif=true)
     tr txt1 txt2 =
@@ -112903,163 +112974,11 @@ let setup () =
   Oprint.out_phrase := Tweaked_reason_oprint.print_out_phrase
 
 end
-module Ext_color : sig 
-#1 "ext_color.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type color 
-  = Black
-  | Red
-  | Green
-  | Yellow
-  | Blue
-  | Magenta
-  | Cyan
-  | White
-
-type style 
-  = FG of color 
-  | BG of color 
-  | Bold
-  | Dim
-
-(** Input is the tag for example `@{<warning>@}` return escape code *)
-val ansi_of_tag : string -> string 
-
-val reset_lit : string
-
-end = struct
-#1 "ext_color.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-type color 
-  = Black
-  | Red
-  | Green
-  | Yellow
-  | Blue
-  | Magenta
-  | Cyan
-  | White
-
-type style 
-  = FG of color 
-  | BG of color 
-  | Bold
-  | Dim
-
-
-let ansi_of_color = function
-  | Black -> "0"
-  | Red -> "1"
-  | Green -> "2"
-  | Yellow -> "3"
-  | Blue -> "4"
-  | Magenta -> "5"
-  | Cyan -> "6"
-  | White -> "7"
-
-let code_of_style = function
-  | FG Black -> "30"
-  | FG Red -> "31"
-  | FG Green -> "32"
-  | FG Yellow -> "33"
-  | FG Blue -> "34"
-  | FG Magenta -> "35"
-  | FG Cyan -> "36"
-  | FG White -> "37"
-  
-  | BG Black -> "40"
-  | BG Red -> "41"
-  | BG Green -> "42"
-  | BG Yellow -> "43"
-  | BG Blue -> "44"
-  | BG Magenta -> "45"
-  | BG Cyan -> "46"
-  | BG White -> "47"
-
-  | Bold -> "1"
-  | Dim -> "2"
-
-
-
-(** TODO: add more styles later *)
-let style_of_tag s = match s with
-  | "error" -> [Bold; FG Red]
-  | "warning" -> [Bold; FG Magenta]
-  | "info" -> [Bold; FG Yellow]
-  | "dim" -> [Dim]
-  | "filename" -> [FG Cyan]
-  | _ -> []
-
-let ansi_of_tag s = 
-  let l = style_of_tag s in
-  let s =  String.concat ";" (List.map code_of_style l) in
-  "\x1b[" ^ s ^ "m"
-
-
-
-let reset_lit = "\x1b[0m" 
-
-
-
-
-
-end
 module Super_misc : sig 
 #1 "super_misc.mli"
 (** Range coordinates all 1-indexed, like for editors. Otherwise this code
   would have way too many off-by-one errors *)
 val print_file: is_warning:bool -> range:(int * int) * (int * int) -> lines:string array -> Format.formatter -> unit -> unit
-
-val setup_colors: Format.formatter -> unit
 
 end = struct
 #1 "super_misc.ml"
@@ -113195,24 +113114,17 @@ ppf
   done;
   fprintf ppf "@]" (* v *)
 
-let setup_colors ppf =
-  Format.pp_set_formatter_tag_functions ppf
-    ({ (Format.pp_get_formatter_tag_functions ppf () ) with
-      mark_open_tag = Ext_color.ansi_of_tag;
-      mark_close_tag = (fun _ -> Ext_color.reset_lit);
-    })
-
 end
 module Super_warnings
 = struct
 #1 "super_warnings.ml"
 let fprintf = Format.fprintf
-(* this is lifted https://github.com/ocaml/ocaml/blob/4.02/utils/warnings.ml *)
+(* taken from https://github.com/BuckleScript/ocaml/blob/d4144647d1bf9bc7dc3aadc24c25a7efa3a67915/utils/warnings.ml#L251 *)
 (* actual modified message branches are commented *)
 let message = Warnings.(function
   | Comment_start -> "this is the start of a comment."
   | Comment_not_end -> "this is not the end of a comment."
-  | Deprecated s -> "deprecated: " ^ s
+  | Deprecated s -> s ^ " is deprecated. "
   | Fragile_match "" ->
       "this pattern-matching is fragile."
   | Fragile_match s ->
@@ -113418,7 +113330,7 @@ let number = Warnings.(function
   | Bad_docstring _ -> 50
 );;
 
-(* helper extracted from https://github.com/ocaml/ocaml/blob/4.02/utils/warnings.ml#L396 *)
+(* taken from https://github.com/BuckleScript/ocaml/blob/d4144647d1bf9bc7dc3aadc24c25a7efa3a67915/utils/warnings.ml#L396 *)
 (* the only difference is the 2 first `let`s, where we use our own `message`
   and `number` functions, and the last line commented out because we don't use
   it (not sure what it's for, actually) *)
@@ -113516,7 +113428,7 @@ let print ~is_warning intro ppf loc =
     end
 ;;
 
-(* taken from https://github.com/ocaml/ocaml/blob/4.02/parsing/location.ml#L337 *)
+(* taken from https://github.com/BuckleScript/ocaml/blob/d4144647d1bf9bc7dc3aadc24c25a7efa3a67915/parsing/location.ml#L380 *)
 (* This is the error report entry point. We'll replace the default reporter with this one. *)
 let rec super_error_reporter ppf ({Location.loc; msg; sub; if_highlight} as err) =
   let highlighted =
@@ -113532,19 +113444,17 @@ let rec super_error_reporter ppf ({Location.loc; msg; sub; if_highlight} as err)
   if highlighted then
     Format.pp_print_string ppf if_highlight
   else begin
-    Super_misc.setup_colors ppf;
     (* open a vertical box. Everything in our message is indented 2 spaces *)
     Format.fprintf ppf "@[<v 2>@,%a@,%s@,@]" (print ~is_warning:false "We've found a bug for you!") loc msg;
     List.iter (Format.fprintf ppf "@,@[%a@]" super_error_reporter) sub;
     (* no need to flush here; location's report_exception (which uses this ultimately) flushes *)
   end
 
-(* extracted from https://github.com/ocaml/ocaml/blob/4.02/parsing/location.ml#L280 *)
+(* extracted from https://github.com/BuckleScript/ocaml/blob/d4144647d1bf9bc7dc3aadc24c25a7efa3a67915/parsing/location.ml#L299 *)
 (* This is the warning report entry point. We'll replace the default printer with this one *)
 let super_warning_printer loc ppf w =
   if Warnings.is_active w then begin
-    Super_misc.setup_colors ppf;
-    Misc.Color.setup !Clflags.color;
+    setup_colors ();
     (* open a vertical box. Everything in our message is indented 2 spaces *)
     Format.fprintf ppf "@[<v 2>@,%a@,%a@,@]" 
       (print ~is_warning:true ("Warning number " ^ (Super_warnings.number w |> string_of_int))) 
@@ -113553,6 +113463,21 @@ let super_warning_printer loc ppf w =
       w
   end
 ;;
+
+(* taken from https://github.com/BuckleScript/ocaml/blob/d4144647d1bf9bc7dc3aadc24c25a7efa3a67915/parsing/location.ml#L354 *) 
+let print_phanton_error_prefix ppf =
+  (* modified from the original. We use only 2 indentations for error report
+    (see super_error_reporter above) *)
+  Format.pp_print_as ppf 2 ""
+
+let errorf ?(loc = none) ?(sub = []) ?(if_highlight = "") fmt =
+  Location.pp_ksprintf
+    ~before:print_phanton_error_prefix
+    (fun msg -> {loc; msg; sub; if_highlight})
+    fmt
+
+let error_of_printer loc print x =
+  errorf ~loc "%a@?" print x
 
 (* This will be called in super_main. This is how you override the default error and warning printers *)
 let setup () =
@@ -113574,7 +113499,7 @@ open Ctype
 open Format
 open Printtyp
 
-(* taken from https://github.com/ocaml/ocaml/blob/4.02/typing/typecore.ml#L3769 *)
+(* taken from https://github.com/BuckleScript/ocaml/blob/d4144647d1bf9bc7dc3aadc24c25a7efa3a67915/typing/typecore.ml#L3769 *)
 (* modified branches are commented *)
 let report_error env ppf = function
   | Typecore.Polymorphic_label lid ->
@@ -113613,9 +113538,9 @@ let report_error env ppf = function
       (* modified *)
       report_unification_error ppf env trace
         (function ppf ->
-           fprintf ppf "@{<error>This is:@}")
+           fprintf ppf "This is:")
         (function ppf ->
-           fprintf ppf "@{<info>but somewhere wanted:@}")
+           fprintf ppf "But somewhere wanted:")
   | Apply_non_function typ ->
       (* modified *)
       reset_and_mark_loops typ;
@@ -113796,9 +113721,7 @@ let report_error env ppf = function
       fprintf ppf
         "@[Exception patterns must be at the top level of a match case.@]"
 
-(* https://github.com/ocaml/ocaml/blob/4.02/typing/typecore.ml#L3979 *)
 let report_error env ppf err =
-  Super_misc.setup_colors ppf;
   wrap_printing_env env (fun () -> report_error env ppf err)
 
 (* This will be called in super_main. This is how you'd override the default error printer from the compiler & register new error_of_exn handlers *)
@@ -113806,7 +113729,7 @@ let setup () =
   Location.register_error_of_exn
     (function
       | Typecore.Error (loc, env, err) ->
-        Some (Location.error_of_printer loc (report_error env) err)
+        Some (Super_location.error_of_printer loc (report_error env) err)
       | Typecore.Error_forward err ->
         Some err
       | _ ->
@@ -113873,7 +113796,7 @@ let spellcheck ppf fold env lid =
 let spellcheck ppf fold =
   spellcheck ppf (fun f -> fold (fun s _ _ x -> f s x))
 
-(* taken from https://github.com/ocaml/ocaml/blob/4.02/typing/typetexp.ml#L911 *)
+(* taken from https://github.com/BuckleScript/ocaml/blob/d4144647d1bf9bc7dc3aadc24c25a7efa3a67915/typing/typetexp.ml#L918 *)
 (* modified branches are commented *)
 let report_error env ppf = function
   | Typetexp.Unbound_type_variable name ->
@@ -113978,7 +113901,7 @@ let setup () =
   Location.register_error_of_exn
     (function
       | Typetexp.Error (loc, env, err) ->
-        Some (Location.error_of_printer loc (report_error env) err)
+        Some (Super_location.error_of_printer loc (report_error env) err)
       (* typetexp doesn't expose Error_forward  *)
       (* | Error_forward err ->
         Some err *)

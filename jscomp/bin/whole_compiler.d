@@ -45,7 +45,6 @@ bin/whole_compiler.ml : core/lam_util.ml
 bin/whole_compiler.ml : ext/ext_array.ml
 bin/whole_compiler.ml : ext/ext_bytes.ml
 bin/whole_compiler.ml : ext/ext_char.mli
-bin/whole_compiler.ml : ext/ext_color.ml
 bin/whole_compiler.ml : ext/ext_ident.ml
 bin/whole_compiler.ml : ext/ext_list.mli
 bin/whole_compiler.ml : ext/ext_utf8.mli
@@ -67,7 +66,6 @@ bin/whole_compiler.ml : core/lam_util.mli
 bin/whole_compiler.ml : core/type_util.ml
 bin/whole_compiler.ml : ext/ext_array.mli
 bin/whole_compiler.ml : ext/ext_bytes.mli
-bin/whole_compiler.ml : ext/ext_color.mli
 bin/whole_compiler.ml : ext/ext_format.ml
 bin/whole_compiler.ml : ext/ext_ident.mli
 bin/whole_compiler.ml : ext/ext_option.ml
