@@ -1,4 +1,4 @@
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+(* Copyright (C) Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -23,62 +23,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-
-
-
-
-
-
-(** Define intemediate format to be serialized for cross module optimization
+ (** This module is platform dependent, on browser environment, 
+    it depends on {!Js_cmj_datasets}, for non-browser environment, it fails
  *)
 
-(** In this module, 
-    currently only arity information is  exported, 
-
-    Short term: constant literals are also exported 
-
-    Long term:
-    Benefit? since Google Closure Compiler already did such huge amount of work
-    TODO: simple expression, literal small function  can be stored, 
-    but what would happen if small function captures other environment
-    for example 
-
-    {[
-      let f  = fun x -> g x 
-    ]}
-
-    {[
-      let f = g 
-    ]}
-*)
-
-type arity = 
-  | Single of Lam_arity.t
-  | Submodule of Lam_arity.t array
-
-type cmj_value = {
-  arity : arity ; 
-  closed_lambda : Lam.t option ; 
-  (* Either constant or closed functor *)
-}
-
-type effect = string option
 
 
-
-type t = {
-  values : cmj_value String_map.t;
-  effect : effect;
-  npm_package_path : Js_packages_info.t;
-}
-
-val single_na : arity
-val pure_dummy : t
-val no_pure_dummy : t
-
-
-val from_file : string -> t
-val from_string : string -> t
-
-val to_file : string -> t -> unit
-
+(** return path and meta data *)
+val find_cmj : string -> string * Js_cmj_format.t
