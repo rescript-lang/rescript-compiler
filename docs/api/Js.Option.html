@@ -74,12 +74,12 @@
 
 <pre><span id="VALsome"><span class="keyword">val</span> some</span> : <code class="type">'a -> 'a option</code></pre>
 <pre><span id="VALisSome"><span class="keyword">val</span> isSome</span> : <code class="type">'a option -> bool</code></pre>
-<pre><span id="VALisSomeValue"><span class="keyword">val</span> isSomeValue</span> : <code class="type">([ `Arity_2 of 'a * 'a ], bool) Js.Internal.fn -> 'a -> 'a option -> bool</code></pre>
+<pre><span id="VALisSomeValue"><span class="keyword">val</span> isSomeValue</span> : <code class="type">('a -> 'a -> bool [@bs]) -> 'a -> 'a option -> bool</code></pre>
 <pre><span id="VALisNone"><span class="keyword">val</span> isNone</span> : <code class="type">'a option -> bool</code></pre>
 <pre><span id="VALgetExn"><span class="keyword">val</span> getExn</span> : <code class="type">'a option -> 'a</code></pre>
-<pre><span id="VALequal"><span class="keyword">val</span> equal</span> : <code class="type">([ `Arity_2 of 'a * 'b ], bool) Js.Internal.fn -><br>       'a option -> 'b option -> bool</code></pre>
-<pre><span id="VALandThen"><span class="keyword">val</span> andThen</span> : <code class="type">([ `Arity_1 of 'a ], 'b option) Js.Internal.fn -> 'a option -> 'b option</code></pre>
-<pre><span id="VALmap"><span class="keyword">val</span> map</span> : <code class="type">([ `Arity_1 of 'a ], 'b) Js.Internal.fn -> 'a option -> 'b option</code></pre>
+<pre><span id="VALequal"><span class="keyword">val</span> equal</span> : <code class="type">('a -> 'b -> bool [@bs]) -> 'a option -> 'b option -> bool</code></pre>
+<pre><span id="VALandThen"><span class="keyword">val</span> andThen</span> : <code class="type">('a -> 'b option [@bs]) -> 'a option -> 'b option</code></pre>
+<pre><span id="VALmap"><span class="keyword">val</span> map</span> : <code class="type">('a -> 'b [@bs]) -> 'a option -> 'b option</code></pre>
 <pre><span id="VALdefault"><span class="keyword">val</span> default</span> : <code class="type">'a -> 'a option -> 'a</code></pre>
-<pre><span id="VALfilter"><span class="keyword">val</span> filter</span> : <code class="type">([ `Arity_1 of 'a ], bool) Js.Internal.fn -> 'a option -> 'a option</code></pre>
+<pre><span id="VALfilter"><span class="keyword">val</span> filter</span> : <code class="type">('a -> bool [@bs]) -> 'a option -> 'a option</code></pre>
 <pre><span id="VALfirstSome"><span class="keyword">val</span> firstSome</span> : <code class="type">'a option -> 'a option -> 'a option</code></pre></body></html>

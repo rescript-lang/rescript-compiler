@@ -63,7 +63,7 @@
 </div>
 
 
-<pre><span id="VALfilterInPlace"><span class="keyword">val</span> filterInPlace</span> : <code class="type">([ `Arity_1 of 'a ], bool) Js.Internal.fn -> 'a <a href="Js_vector.html#TYPEt">t</a> -> unit</code></pre><div class="info ">
+<pre><span id="VALfilterInPlace"><span class="keyword">val</span> filterInPlace</span> : <code class="type">('a -> bool [@bs]) -> 'a <a href="Js_vector.html#TYPEt">t</a> -> unit</code></pre><div class="info ">
                     <div class="not-examples">
                      
                     </div>
@@ -93,14 +93,14 @@
                     </div>
 
                   
-<pre><span id="VALiter"><span class="keyword">val</span> iter</span> : <code class="type">([ `Arity_1 of 'a ], unit) Js.Internal.fn -> 'a <a href="Js_vector.html#TYPEt">t</a> -> unit</code></pre>
-<pre><span id="VALiteri"><span class="keyword">val</span> iteri</span> : <code class="type">([ `Arity_2 of int * 'a ], unit) Js.Internal.fn -> 'a <a href="Js_vector.html#TYPEt">t</a> -> unit</code></pre>
+<pre><span id="VALiter"><span class="keyword">val</span> iter</span> : <code class="type">('a -> unit [@bs]) -> 'a <a href="Js_vector.html#TYPEt">t</a> -> unit</code></pre>
+<pre><span id="VALiteri"><span class="keyword">val</span> iteri</span> : <code class="type">(int -> 'a -> unit [@bs]) -> 'a <a href="Js_vector.html#TYPEt">t</a> -> unit</code></pre>
 <pre><span id="VALofList"><span class="keyword">val</span> ofList</span> : <code class="type">'a list -> 'a <a href="Js_vector.html#TYPEt">t</a></code></pre>
 <pre><span id="VALtoList"><span class="keyword">val</span> toList</span> : <code class="type">'a <a href="Js_vector.html#TYPEt">t</a> -> 'a list</code></pre>
-<pre><span id="VALmap"><span class="keyword">val</span> map</span> : <code class="type">([ `Arity_1 of 'a ], 'b) Js.Internal.fn -> 'a <a href="Js_vector.html#TYPEt">t</a> -> 'b <a href="Js_vector.html#TYPEt">t</a></code></pre>
-<pre><span id="VALmapi"><span class="keyword">val</span> mapi</span> : <code class="type">([ `Arity_2 of int * 'a ], 'b) Js.Internal.fn -><br>       'a <a href="Js_vector.html#TYPEt">t</a> -> 'b <a href="Js_vector.html#TYPEt">t</a></code></pre>
-<pre><span id="VALfoldLeft"><span class="keyword">val</span> foldLeft</span> : <code class="type">([ `Arity_2 of 'a * 'b ], 'a) Js.Internal.fn -> 'a -> 'b <a href="Js_vector.html#TYPEt">t</a> -> 'a</code></pre>
-<pre><span id="VALfoldRight"><span class="keyword">val</span> foldRight</span> : <code class="type">([ `Arity_2 of 'b * 'a ], 'a) Js.Internal.fn -> 'b <a href="Js_vector.html#TYPEt">t</a> -> 'a -> 'a</code></pre>
+<pre><span id="VALmap"><span class="keyword">val</span> map</span> : <code class="type">('a -> 'b [@bs]) -> 'a <a href="Js_vector.html#TYPEt">t</a> -> 'b <a href="Js_vector.html#TYPEt">t</a></code></pre>
+<pre><span id="VALmapi"><span class="keyword">val</span> mapi</span> : <code class="type">(int -> 'a -> 'b [@bs]) -> 'a <a href="Js_vector.html#TYPEt">t</a> -> 'b <a href="Js_vector.html#TYPEt">t</a></code></pre>
+<pre><span id="VALfoldLeft"><span class="keyword">val</span> foldLeft</span> : <code class="type">('a -> 'b -> 'a [@bs]) -> 'a -> 'b <a href="Js_vector.html#TYPEt">t</a> -> 'a</code></pre>
+<pre><span id="VALfoldRight"><span class="keyword">val</span> foldRight</span> : <code class="type">('b -> 'a -> 'a [@bs]) -> 'b <a href="Js_vector.html#TYPEt">t</a> -> 'a -> 'a</code></pre>
 <pre><span id="VALlength"><span class="keyword">val</span> length</span> : <code class="type">'a <a href="Js_vector.html#TYPEt">t</a> -> int</code></pre><div class="info ">
                     <div class="not-examples">
                     Return the length (number of elements) of the given array.<br>
@@ -161,7 +161,7 @@
                     </div>
 
                   
-<pre><span id="VALinit"><span class="keyword">val</span> init</span> : <code class="type">int -> ([ `Arity_1 of int ], 'a) Js.Internal.fn -> 'a <a href="Js_vector.html#TYPEt">t</a></code></pre><div class="info ">
+<pre><span id="VALinit"><span class="keyword">val</span> init</span> : <code class="type">int -> (int -> 'a [@bs]) -> 'a <a href="Js_vector.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
                     <div class="tag"> <b>Raises</b> <code>RangeError</code> when <code class="code">n</code> is negative<br>
  </div> 
@@ -171,5 +171,14 @@
 
                   <div class="param_info"><code class="code">n</code> : size</div>
 
+<pre><span id="VALappend"><span class="keyword">val</span> append</span> : <code class="type">'a -> 'a <a href="Js_vector.html#TYPEt">t</a> -> 'a <a href="Js_vector.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">append x a</code> returns a fresh array with x appended to a<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
 <pre><span id="VALunsafe_get"><span class="keyword">val</span> unsafe_get</span> : <code class="type">'a <a href="Js_vector.html#TYPEt">t</a> -> int -> 'a</code></pre>
 <pre><span id="VALunsafe_set"><span class="keyword">val</span> unsafe_set</span> : <code class="type">'a <a href="Js_vector.html#TYPEt">t</a> -> int -> 'a -> unit</code></pre></body></html>

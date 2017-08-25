@@ -7,7 +7,7 @@
                  <script src="../api_static//script.js"></script>
                  <script>hljs.initHighlightingOnLoad();</script> 
                  <meta charset="utf8">
-                 <link rel="previous" href="Js.Undefined.html"><link rel="next" href="Js.Exn.html">
+                 <link rel="previous" href="Js.Nullable.html"><link rel="next" href="Js.Exn.html">
                  <title> Js.Null_undefined </title></head> 
                <body>
 <nav class="module-index"><ul><li><a href="Bs.html">Bs</a></li>
@@ -52,21 +52,13 @@
 <li><a href="Node_module.html">Node_module</a></li>
 <li><a href="Node_path.html">Node_path</a></li>
 <li><a href="Node_process.html">Node_process</a></li></ul></nav>
-<div class="navbar"><a class="pre" href="Js.Undefined.html" title="Js.Undefined">Previous</a>
+<div class="navbar"><a class="pre" href="Js.Nullable.html" title="Js.Nullable">Previous</a>
 &nbsp;<a class="up" href="Js.html" title="Js">Up</a>
 &nbsp;<a class="post" href="Js.Exn.html" title="Js.Exn">Next</a>
 </div>
 <h1>Module <a href="type_Js.Null_undefined.html">Js.Null_undefined</a></h1>
 
-<pre><span class="keyword">module</span> Null_undefined: <code class="type"><a href="Js_null_undefined.html">Js_null_undefined</a></code></pre><div class="info module top">
-                    <div class="not-examples">
-                    Provide utilities arond <a href="Js.html#TYPEnull_undefined"><code class="code">Js.null_undefined</code></a><br>
- 
-                    </div>
-                    
-                    </div>
-
-                  <hr width="100%">
+<pre><span class="keyword">module</span> Null_undefined: <code class="type"><a href="Js_null_undefined.html">Js_null_undefined</a></code></pre><hr width="100%">
 <div class="type-declaration">
 <pre><span id="TYPEt"><span class="keyword">type</span> <code class="type">'a</code> t</span> = <code class="type">'a <a href="Js.html#TYPEnull_undefined">Js.null_undefined</a></code> </pre>
 </div>
@@ -129,7 +121,7 @@
                     </div>
 
                   
-<pre><span id="VALbind"><span class="keyword">val</span> bind</span> : <code class="type">'a <a href="Js_null_undefined.html#TYPEt">t</a> -><br>       ([ `Arity_1 of 'a ], 'b) Js.Internal.fn -> 'b <a href="Js_null_undefined.html#TYPEt">t</a></code></pre><div class="info ">
+<pre><span id="VALbind"><span class="keyword">val</span> bind</span> : <code class="type">'a <a href="Js_null_undefined.html#TYPEt">t</a> -> ('a -> 'b [@bs]) -> 'b <a href="Js_null_undefined.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
                     Maps the contained value using the given function
 <p>
@@ -146,7 +138,7 @@ the given function <code class="code">a' -&gt; 'b</code>, then wrapped back up a
                     </div>
 
                   
-<pre><span id="VALiter"><span class="keyword">val</span> iter</span> : <code class="type">'a <a href="Js_null_undefined.html#TYPEt">t</a> -> ([ `Arity_1 of 'a ], unit) Js.Internal.fn -> unit</code></pre><div class="info ">
+<pre><span id="VALiter"><span class="keyword">val</span> iter</span> : <code class="type">'a <a href="Js_null_undefined.html#TYPEt">t</a> -> ('a -> unit [@bs]) -> unit</code></pre><div class="info ">
                     <div class="not-examples">
                     Iterates over the contained value with the given function
 <p>

@@ -80,11 +80,11 @@
 <pre><span id="VALnth"><span class="keyword">val</span> nth</span> : <code class="type">'a <a href="Js_list.html#TYPEt">t</a> -> int -> 'a option</code></pre>
 <pre><span id="VALrevAppend"><span class="keyword">val</span> revAppend</span> : <code class="type">'a <a href="Js_list.html#TYPEt">t</a> -> 'a <a href="Js_list.html#TYPEt">t</a> -> 'a <a href="Js_list.html#TYPEt">t</a></code></pre>
 <pre><span id="VALrev"><span class="keyword">val</span> rev</span> : <code class="type">'a <a href="Js_list.html#TYPEt">t</a> -> 'a <a href="Js_list.html#TYPEt">t</a></code></pre>
-<pre><span id="VALmapRev"><span class="keyword">val</span> mapRev</span> : <code class="type">([ `Arity_1 of 'a ], 'b) Js.Internal.fn -> 'a <a href="Js_list.html#TYPEt">t</a> -> 'b <a href="Js_list.html#TYPEt">t</a></code></pre>
-<pre><span id="VALmap"><span class="keyword">val</span> map</span> : <code class="type">([ `Arity_1 of 'a ], 'b) Js.Internal.fn -> 'a <a href="Js_list.html#TYPEt">t</a> -> 'b <a href="Js_list.html#TYPEt">t</a></code></pre>
-<pre><span id="VALiter"><span class="keyword">val</span> iter</span> : <code class="type">([ `Arity_1 of 'a ], unit) Js.Internal.fn -> 'a <a href="Js_list.html#TYPEt">t</a> -> unit</code></pre>
-<pre><span id="VALiteri"><span class="keyword">val</span> iteri</span> : <code class="type">([ `Arity_2 of int * 'a ], unit) Js.Internal.fn -> 'a <a href="Js_list.html#TYPEt">t</a> -> unit</code></pre>
-<pre><span id="VALfoldLeft"><span class="keyword">val</span> foldLeft</span> : <code class="type">([ `Arity_2 of 'a * 'b ], 'a) Js.Internal.fn -> 'a -> 'b list -> 'a</code></pre><div class="info ">
+<pre><span id="VALmapRev"><span class="keyword">val</span> mapRev</span> : <code class="type">('a -> 'b [@bs]) -> 'a <a href="Js_list.html#TYPEt">t</a> -> 'b <a href="Js_list.html#TYPEt">t</a></code></pre>
+<pre><span id="VALmap"><span class="keyword">val</span> map</span> : <code class="type">('a -> 'b [@bs]) -> 'a <a href="Js_list.html#TYPEt">t</a> -> 'b <a href="Js_list.html#TYPEt">t</a></code></pre>
+<pre><span id="VALiter"><span class="keyword">val</span> iter</span> : <code class="type">('a -> unit [@bs]) -> 'a <a href="Js_list.html#TYPEt">t</a> -> unit</code></pre>
+<pre><span id="VALiteri"><span class="keyword">val</span> iteri</span> : <code class="type">(int -> 'a -> unit [@bs]) -> 'a <a href="Js_list.html#TYPEt">t</a> -> unit</code></pre>
+<pre><span id="VALfoldLeft"><span class="keyword">val</span> foldLeft</span> : <code class="type">('a -> 'b -> 'a [@bs]) -> 'a -> 'b list -> 'a</code></pre><div class="info ">
                     <div class="not-examples">
                     Application order is left to right, tail recurisve<br>
  
@@ -93,7 +93,7 @@
                     </div>
 
                   
-<pre><span id="VALfoldRight"><span class="keyword">val</span> foldRight</span> : <code class="type">([ `Arity_2 of 'a * 'b ], 'b) Js.Internal.fn -> 'a list -> 'b -> 'b</code></pre><div class="info ">
+<pre><span id="VALfoldRight"><span class="keyword">val</span> foldRight</span> : <code class="type">('a -> 'b -> 'b [@bs]) -> 'a list -> 'b -> 'b</code></pre><div class="info ">
                     <div class="not-examples">
                     Application order is right to left
     tail-recursive.<br>
@@ -104,8 +104,8 @@
 
                   
 <pre><span id="VALflatten"><span class="keyword">val</span> flatten</span> : <code class="type">'a <a href="Js_list.html#TYPEt">t</a> <a href="Js_list.html#TYPEt">t</a> -> 'a <a href="Js_list.html#TYPEt">t</a></code></pre>
-<pre><span id="VALfilter"><span class="keyword">val</span> filter</span> : <code class="type">([ `Arity_1 of 'a ], bool) Js.Internal.fn -> 'a <a href="Js_list.html#TYPEt">t</a> -> 'a <a href="Js_list.html#TYPEt">t</a></code></pre>
-<pre><span id="VALfilterMap"><span class="keyword">val</span> filterMap</span> : <code class="type">([ `Arity_1 of 'a ], 'b option) Js.Internal.fn -><br>       'a <a href="Js_list.html#TYPEt">t</a> -> 'b <a href="Js_list.html#TYPEt">t</a></code></pre>
-<pre><span id="VALcountBy"><span class="keyword">val</span> countBy</span> : <code class="type">([ `Arity_1 of 'a ], bool) Js.Internal.fn -> 'a list -> int</code></pre>
-<pre><span id="VALinit"><span class="keyword">val</span> init</span> : <code class="type">int -> ([ `Arity_1 of int ], 'a) Js.Internal.fn -> 'a <a href="Js_list.html#TYPEt">t</a></code></pre>
-<pre><span id="VALequal"><span class="keyword">val</span> equal</span> : <code class="type">([ `Arity_2 of 'a * 'a ], bool) Js.Internal.fn -> 'a list -> 'a list -> bool</code></pre></body></html>
+<pre><span id="VALfilter"><span class="keyword">val</span> filter</span> : <code class="type">('a -> bool [@bs]) -> 'a <a href="Js_list.html#TYPEt">t</a> -> 'a <a href="Js_list.html#TYPEt">t</a></code></pre>
+<pre><span id="VALfilterMap"><span class="keyword">val</span> filterMap</span> : <code class="type">('a -> 'b option [@bs]) -> 'a <a href="Js_list.html#TYPEt">t</a> -> 'b <a href="Js_list.html#TYPEt">t</a></code></pre>
+<pre><span id="VALcountBy"><span class="keyword">val</span> countBy</span> : <code class="type">('a -> bool [@bs]) -> 'a list -> int</code></pre>
+<pre><span id="VALinit"><span class="keyword">val</span> init</span> : <code class="type">int -> (int -> 'a [@bs]) -> 'a <a href="Js_list.html#TYPEt">t</a></code></pre>
+<pre><span id="VALequal"><span class="keyword">val</span> equal</span> : <code class="type">('a -> 'a -> bool [@bs]) -> 'a list -> 'a list -> bool</code></pre></body></html>

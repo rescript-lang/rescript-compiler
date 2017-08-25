@@ -413,6 +413,7 @@ bin/whole_compiler.ml : core/lam_beta_reduce_util.mli
 bin/whole_compiler.ml : core/lam_compile_primitive.ml
 bin/whole_compiler.ml : core/lam_pass_deep_flatten.ml
 bin/whole_compiler.ml : core/lam_pass_remove_alias.ml
+bin/whole_compiler.ml : super_errors/super_typemod.ml
 bin/whole_compiler.ml : ../vendor/ocaml/bytecomp/printlambda.ml
 bin/whole_compiler.ml : ../vendor/ocaml/bytecomp/translclass.ml
 bin/whole_compiler.ml : ../vendor/ocaml/bytecomp/translcore.mli
@@ -448,8 +449,10 @@ bin/whole_compiler.ml : syntax/ast_external_attributes.ml
 bin/whole_compiler.ml : syntax/ast_utf8_string_interp.mli
 bin/whole_compiler.ml : core/lam_compile_external_call.mli
 bin/whole_compiler.ml : core/lam_pass_alpha_conversion.mli
+bin/whole_compiler.ml : super_errors/super_reason_react.ml
 bin/whole_compiler.ml : syntax/ast_external_attributes.mli
 bin/whole_compiler.ml : ext/ordered_hash_map_local_ident.ml
+bin/whole_compiler.ml : super_errors/super_reason_react.mli
 bin/whole_compiler.ml : ext/ordered_hash_map_local_ident.mli
 bin/whole_compiler.ml : core/js_pass_flatten_and_mark_dead.ml
 bin/whole_compiler.ml : core/js_pass_flatten_and_mark_dead.mli
