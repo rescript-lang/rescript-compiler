@@ -10,12 +10,11 @@
                <body>
 <code class="code"><span class="keyword">sig</span><br>
 &nbsp;&nbsp;<span class="keyword">type</span>&nbsp;t&nbsp;=<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;&nbsp;abort&nbsp;:&nbsp;([&nbsp;<span class="keywordsign">`</span><span class="constructor">Arity_0</span>&nbsp;],&nbsp;unit)&nbsp;<span class="constructor">Js</span>.<span class="constructor">Internal</span>.meth;&nbsp;arch&nbsp;:&nbsp;string;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;argv&nbsp;:&nbsp;string&nbsp;array;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;chdir&nbsp;:&nbsp;([&nbsp;<span class="keywordsign">`</span><span class="constructor">Arity_1</span>&nbsp;<span class="keyword">of</span>&nbsp;string&nbsp;],&nbsp;unit)&nbsp;<span class="constructor">Js</span>.<span class="constructor">Internal</span>.meth;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cwd&nbsp;:&nbsp;([&nbsp;<span class="keywordsign">`</span><span class="constructor">Arity_0</span>&nbsp;],&nbsp;string)&nbsp;<span class="constructor">Js</span>.<span class="constructor">Internal</span>.meth;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;disconnect&nbsp;:&nbsp;([&nbsp;<span class="keywordsign">`</span><span class="constructor">Arity_0</span>&nbsp;],&nbsp;unit)&nbsp;<span class="constructor">Js</span>.<span class="constructor">Internal</span>.meth;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;env&nbsp;:&nbsp;string&nbsp;<span class="constructor">Js_dict</span>.t;&nbsp;platform&nbsp;:&nbsp;string&nbsp;&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;&nbsp;abort&nbsp;:&nbsp;(unit&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit&nbsp;[@bs.meth]);&nbsp;arch&nbsp;:&nbsp;string;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;argv&nbsp;:&nbsp;string&nbsp;array;&nbsp;chdir&nbsp;:&nbsp;(string&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit&nbsp;[@bs.meth]);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cwd&nbsp;:&nbsp;(unit&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string&nbsp;[@bs.meth]);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;disconnect&nbsp;:&nbsp;(unit&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit&nbsp;[@bs.meth]);&nbsp;env&nbsp;:&nbsp;string&nbsp;<span class="constructor">Js_dict</span>.t;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;platform&nbsp;:&nbsp;string&nbsp;&gt;<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Js</span>.t<br>
 &nbsp;&nbsp;<span class="keyword">external</span>&nbsp;process&nbsp;:&nbsp;<span class="constructor">Node_process</span>.t&nbsp;=&nbsp;<span class="string">""</span>&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
 &nbsp;&nbsp;<span class="keyword">external</span>&nbsp;argv&nbsp;:&nbsp;string&nbsp;array&nbsp;=&nbsp;<span class="string">""</span>&nbsp;<span class="string">"BS-EXTERNAL"</span><br>

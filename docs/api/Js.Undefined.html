@@ -7,7 +7,7 @@
                  <script src="../api_static//script.js"></script>
                  <script>hljs.initHighlightingOnLoad();</script> 
                  <meta charset="utf8">
-                 <link rel="previous" href="Js.Null.html"><link rel="next" href="Js.Null_undefined.html">
+                 <link rel="previous" href="Js.Null.html"><link rel="next" href="Js.Nullable.html">
                  <title> Js.Undefined </title></head> 
                <body>
 <nav class="module-index"><ul><li><a href="Bs.html">Bs</a></li>
@@ -54,7 +54,7 @@
 <li><a href="Node_process.html">Node_process</a></li></ul></nav>
 <div class="navbar"><a class="pre" href="Js.Null.html" title="Js.Null">Previous</a>
 &nbsp;<a class="up" href="Js.html" title="Js">Up</a>
-&nbsp;<a class="post" href="Js.Null_undefined.html" title="Js.Null_undefined">Next</a>
+&nbsp;<a class="post" href="Js.Nullable.html" title="Js.Nullable">Next</a>
 </div>
 <h1>Module <a href="type_Js.Undefined.html">Js.Undefined</a></h1>
 
@@ -117,7 +117,7 @@
                     </div>
 
                   
-<pre><span id="VALbind"><span class="keyword">val</span> bind</span> : <code class="type">'a <a href="Js_undefined.html#TYPEt">t</a> -><br>       ([ `Arity_1 of 'a ], 'b) Js.Internal.fn -> 'b <a href="Js_undefined.html#TYPEt">t</a></code></pre><div class="info ">
+<pre><span id="VALbind"><span class="keyword">val</span> bind</span> : <code class="type">'a <a href="Js_undefined.html#TYPEt">t</a> -> ('a -> 'b [@bs]) -> 'b <a href="Js_undefined.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
                     Maps the contained value using the given function
 <p>
@@ -134,7 +134,7 @@ the given function <code class="code">a' -&gt; 'b</code>, then wrapped back up a
                     </div>
 
                   
-<pre><span id="VALiter"><span class="keyword">val</span> iter</span> : <code class="type">'a <a href="Js_undefined.html#TYPEt">t</a> -> ([ `Arity_1 of 'a ], unit) Js.Internal.fn -> unit</code></pre><div class="info ">
+<pre><span id="VALiter"><span class="keyword">val</span> iter</span> : <code class="type">'a <a href="Js_undefined.html#TYPEt">t</a> -> ('a -> unit [@bs]) -> unit</code></pre><div class="info ">
                     <div class="not-examples">
                     Iterates over the contained value with the given function
 <p>

@@ -227,7 +227,7 @@ let str = "abbcdefabh" in
 let break = ref false in
 while not !break do
   match re |&gt; Js.Re.exec str with
-  | None -&gt; break := false
+  | None -&gt; break := true
   | Some result -&gt;
     let match_ = (Js.Re.matches result).(0) in
     let next = string_of_int (Js.Re.lastIndex re) in
@@ -235,6 +235,15 @@ while not !break do
 done
 </code></pre>  </pre>
                     </div>
+                    </div>
+
+                  
+<pre><span id="VALsetLastIndex"><span class="keyword">val</span> setLastIndex</span> : <code class="type"><a href="Js_re.html#TYPEt">t</a> -> int -> unit</code></pre><div class="info ">
+                    <div class="not-examples">
+                    sets the index at which the next match will start its search from<br>
+ 
+                    </div>
+                    
                     </div>
 
                   

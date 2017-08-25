@@ -78,7 +78,7 @@
 </div>
 
 
-<pre><span id="VALmake"><span class="keyword">val</span> make</span> : <code class="type">(resolve:([ `Arity_1 of 'a ], unit) Js.Internal.fn -><br>        reject:([ `Arity_1 of exn ], unit) Js.Internal.fn -> unit) -><br>       'a <a href="Js_promise.html#TYPEt">t</a></code></pre>
+<pre><span id="VALmake"><span class="keyword">val</span> make</span> : <code class="type">(resolve:('a -> unit [@bs]) -> reject:(exn -> unit [@bs]) -> unit) -><br>       'a <a href="Js_promise.html#TYPEt">t</a></code></pre>
 <pre><span id="VALresolve"><span class="keyword">val</span> resolve</span> : <code class="type">'a -> 'a <a href="Js_promise.html#TYPEt">t</a></code></pre>
 <pre><span id="VALreject"><span class="keyword">val</span> reject</span> : <code class="type">exn -> 'a <a href="Js_promise.html#TYPEt">t</a></code></pre>
 <pre><span id="VALall"><span class="keyword">val</span> all</span> : <code class="type">'a <a href="Js_promise.html#TYPEt">t</a> array -> 'a array <a href="Js_promise.html#TYPEt">t</a></code></pre>

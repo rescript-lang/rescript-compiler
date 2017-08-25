@@ -68,7 +68,7 @@
 
 <pre><span id="VALconfig"><span class="keyword">val</span> config</span> : <code class="type">?persistent:<a href="Js.html#TYPEboolean">Js.boolean</a> -><br>       ?recursive:<a href="Js.html#TYPEboolean">Js.boolean</a> -><br>       ?encoding:<a href="Js_string.html#TYPEt">Js_string.t</a> -> unit -> <a href="Node_fs.Watch.html#TYPEconfig">config</a></code></pre>
 <pre><span id="VALwatch"><span class="keyword">val</span> watch</span> : <code class="type">string -> ?config:<a href="Node_fs.Watch.html#TYPEconfig">config</a> -> unit -> <a href="Node_fs.Watch.html#TYPEt">t</a></code></pre>
-<pre><span id="VALon"><span class="keyword">val</span> on</span> : <code class="type">[ `change of<br>           ([ `Arity_2 of string * <a href="Node.html#TYPEstring_buffer">Node.string_buffer</a> ], unit) Js.Internal.fn<br>       | `error of ([ `Arity_0 ], unit) Js.Internal.fn ] -><br>       <a href="Node_fs.Watch.html#TYPEt">t</a> -> <a href="Node_fs.Watch.html#TYPEt">t</a></code></pre><div class="info ">
+<pre><span id="VALon"><span class="keyword">val</span> on</span> : <code class="type">[ `change of (string -> <a href="Node.html#TYPEstring_buffer">Node.string_buffer</a> -> unit [@bs])<br>       | `error of (unit -> unit [@bs]) ] -> <a href="Node_fs.Watch.html#TYPEt">t</a> -> <a href="Node_fs.Watch.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
                     there is no need to accept listener, since we return a <code class="code">watcher</code> 
       back it can register event listener there .

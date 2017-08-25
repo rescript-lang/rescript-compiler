@@ -117,7 +117,7 @@
 
                   
 <div class="type-declaration">
-<pre><span id="TYPEnull_undefined"><span class="keyword">type</span> <code class="type">+'a</code> null_undefined</span> </pre>
+<pre><span id="TYPEnullable"><span class="keyword">type</span> <code class="type">+'a</code> nullable</span> </pre>
 </div>
 <div class="info ">
                     <div class="not-examples">
@@ -130,6 +130,21 @@
 
                   
 <div class="type-declaration">
+<pre><span id="TYPEnull_undefined"><span class="keyword">type</span> <code class="type">'a</code> null_undefined</span> = <code class="type">'a <a href="Js.html#TYPEnullable">nullable</a></code> </pre>
+</div>
+<div class="info ">
+                    <div class="not-examples">
+                    value of this type can be <code class="code">undefined</code>, <code class="code">null</code> or <code class="code">'a</code>
+    this type is the same as <code class="code">Js.Null_undefined.t</code><br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+
+<pre><span id="VALtoOption"><span class="keyword">val</span> toOption</span> : <code class="type">'a <a href="Js.html#TYPEnullable">nullable</a> -> 'a option</code></pre>
+<pre><span id="VALtest"><span class="keyword">val</span> test</span> : <code class="type">'a <a href="Js.html#TYPEnullable">nullable</a> -> bool</code></pre><div class="type-declaration">
 <pre><span id="TYPEboolean"><span class="keyword">type</span> <code class="type"></code>boolean</span> </pre>
 </div>
 <div class="info ">
@@ -219,6 +234,15 @@
                     </div>
 
                   
+<pre><span id="VALlogMany"><span class="keyword">val</span> logMany</span> : <code class="type">'a array -> unit</code></pre><div class="info ">
+                    <div class="not-examples">
+                    A convenience function to log more than 4 arguments<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
 <pre><span id="VALunsafe_lt"><span class="keyword">val</span> unsafe_lt</span> : <code class="type">'a -> 'a -> bool</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">unsafe_lt a b</code> will be compiled as <code class="code">a &lt; b</code>.
@@ -272,10 +296,15 @@
  
                 </div>
                 </div> 
-<pre><span class="keyword">module</span> <a href="Js.Null_undefined.html">Null_undefined</a>: <code class="type"><a href="Js_null_undefined.html">Js_null_undefined</a></code></pre> <div class="info">                     
+<pre><span class="keyword">module</span> <a href="Js.Nullable.html">Nullable</a>: <code class="type"><a href="Js_null_undefined.html">Js_null_undefined</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                     Provide utilities arond <a href="Js.html#TYPEnull_undefined"><code class="code">Js.null_undefined</code></a><br>
  
+                </div>
+                </div> 
+<pre><span class="keyword">module</span> <a href="Js.Null_undefined.html">Null_undefined</a>: <code class="type"><a href="Js_null_undefined.html">Js_null_undefined</a></code></pre> <div class="info">                     
+                <div class="not-examples">
+                     
                 </div>
                 </div> 
 <pre><span class="keyword">module</span> <a href="Js.Exn.html">Exn</a>: <code class="type"><a href="Js_exn.html">Js_exn</a></code></pre> <div class="info">                     

@@ -148,7 +148,7 @@
                     </div>
 
                   
-<pre><span id="VALunsafeDeleteKey"><span class="keyword">val</span> unsafeDeleteKey</span> : <code class="type">([ `Arity_2 of string <a href="Js_dict.html#TYPEt">t</a> * string ], unit) Js.Internal.fn</code></pre><div class="info ">
+<pre><span id="VALunsafeDeleteKey"><span class="keyword">val</span> unsafeDeleteKey</span> : <code class="type">(string <a href="Js_dict.html#TYPEt">t</a> -> string -> unit [@bs])</code></pre><div class="info ">
                     <div class="not-examples">
                     Experimental internal funciton<br>
  
@@ -195,7 +195,7 @@
                     </div>
 
                   
-<pre><span id="VALmap"><span class="keyword">val</span> map</span> : <code class="type">([ `Arity_1 of 'a ], 'b) Js.Internal.fn -> 'a <a href="Js_dict.html#TYPEt">t</a> -> 'b <a href="Js_dict.html#TYPEt">t</a></code></pre><div class="info ">
+<pre><span id="VALmap"><span class="keyword">val</span> map</span> : <code class="type">('a -> 'b [@bs]) -> 'a <a href="Js_dict.html#TYPEt">t</a> -> 'b <a href="Js_dict.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">map f dict</code> maps <code class="code">dict</code> to a new dictionary with the same keys,
 using <code class="code">f</code> to map each value<br>
