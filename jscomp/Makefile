@@ -633,6 +633,8 @@ install:
 	./runtime/js_null.ml ./runtime/js_null.cmi \
 	./runtime/js_undefined.ml ./runtime/js_undefined.cmi \
 	./runtime/js_exn.ml ./runtime/js_exn.mli ./runtime/js_exn.cmi \
+	./runtime/js_int.ml ./runtime/js_int.cmi \
+	./runtime/js_float.ml ./runtime/js_float.cmi \
 	./runtime/js_typed_array.ml ./runtime/js_typed_array.cmi   $(DEST)
 	cp ./stdlib/*.ml ./stdlib/*.mli $(DEST)
 # ./runtime/js_null_undefined.ml ./runtime/js_null_undefined.cmi
