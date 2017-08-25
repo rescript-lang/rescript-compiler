@@ -6,8 +6,12 @@ open Typedtree
 open Btype
 open Ctype
 
-open Format
-open Printtyp
+let fprintf = Format.fprintf
+let sprintf = Format.sprintf
+let longident = Printtyp.longident
+let super_report_unification_error = Printtyp.super_report_unification_error
+let reset_and_mark_loops = Printtyp.reset_and_mark_loops
+let type_expr = Printtyp.type_expr
 
 (* taken from https://github.com/BuckleScript/ocaml/blob/d4144647d1bf9bc7dc3aadc24c25a7efa3a67915/typing/typecore.ml#L3769 *)
 (* modified branches are commented *)
@@ -116,7 +120,7 @@ let report_error env ppf = function
                          else Constructor.spellcheck ppf env p lid *)
   | Name_type_mismatch (kind, lid, tp, tpl) ->
       let name = if kind = "record" then "field" else "constructor" in
-      report_ambiguous_type_error ppf env tp tpl
+      Printtyp.report_ambiguous_type_error ppf env tp tpl
         (function ppf ->
            fprintf ppf "The %s %a@ belongs to the %s type"
              name longident lid kind)
@@ -146,7 +150,7 @@ let report_error env ppf = function
       else
         fprintf ppf "The value %s is not an instance variable" v
   | Not_subtype(tr1, tr2) ->
-      report_subtyping_error ppf env tr1 "is not a subtype of" tr2
+      Printtyp.report_subtyping_error ppf env tr1 "is not a subtype of" tr2
   | Outside_class ->
       fprintf ppf "This object duplication occurs outside a method definition"
   | Value_multiply_overridden v ->
@@ -154,10 +158,10 @@ let report_error env ppf = function
   | Coercion_failure (ty, ty', trace, b) ->
       super_report_unification_error ppf env trace
         (function ppf ->
-           let ty, ty' = prepare_expansion (ty, ty') in
+           let ty, ty' = Printtyp.prepare_expansion (ty, ty') in
            fprintf ppf
              "This expression cannot be coerced to type@;<1 2>%a;@ it has type"
-           (type_expansion ty) ty')
+           (Printtyp.type_expansion ty) ty')
         (function ppf ->
            fprintf ppf "but is here used with type");
       if b then
@@ -229,7 +233,7 @@ let report_error env ppf = function
         "Unexpected existential"
   | Unqualified_gadt_pattern (tpath, name) ->
       fprintf ppf "@[The GADT constructor %s of type %a@ %s.@]"
-        name path tpath
+        name Printtyp.path tpath
         "must be qualified in this pattern"
   | Invalid_interval ->
       fprintf ppf "@[Only character intervals are supported in patterns.@]"
@@ -244,7 +248,7 @@ let report_error env ppf = function
         "@[Exception patterns must be at the top level of a match case.@]"
 
 let report_error env ppf err =
-  wrap_printing_env env (fun () -> report_error env ppf err)
+  Printtyp.wrap_printing_env env (fun () -> report_error env ppf err)
 
 (* This will be called in super_main. This is how you'd override the default error printer from the compiler & register new error_of_exn handlers *)
 let setup () =
