@@ -21,20 +21,20 @@ let report_error env ppf = function
        "@[This variant constructor, %a, expects %i %s; here, we've %sfound %i.@]"
        longident lid expected (if expected == 1 then "argument" else "arguments") (if provided < expected then "only " else "") provided
   | Label_mismatch(lid, trace) ->
-      report_unification_error ppf env trace
+      super_report_unification_error ppf env trace
         (function ppf ->
            fprintf ppf "The record field %a@ belongs to the type"
                    longident lid)
         (function ppf ->
            fprintf ppf "but is mixed here with fields of type")
   | Pattern_type_clash trace ->
-      report_unification_error ppf env trace
+      super_report_unification_error ppf env trace
         (function ppf ->
           fprintf ppf "This pattern matches values of type")
         (function ppf ->
           fprintf ppf "but a pattern was expected which matches values of type")
   | Or_pattern_type_clash (id, trace) ->
-      report_unification_error ppf env trace
+      super_report_unification_error ppf env trace
         (function ppf ->
           fprintf ppf "The variable %s on the left-hand side of this or-pattern has type" (Ident.name id))
         (function ppf ->
@@ -58,7 +58,7 @@ let report_error env ppf = function
           If so, please use `ReasonReact.createDomElement`:@ https://reasonml.github.io/reason-react/index.html#reason-react-working-with-children@]@,@,\
           @[@{<info>Here's the original error message@}@]@,\
         @]";
-      report_unification_error ppf env trace
+      super_report_unification_error ppf env trace
         (function ppf ->
            fprintf ppf "This is:")
         (function ppf ->
@@ -152,7 +152,7 @@ let report_error env ppf = function
   | Value_multiply_overridden v ->
       fprintf ppf "The instance variable %s is overridden several times" v
   | Coercion_failure (ty, ty', trace, b) ->
-      report_unification_error ppf env trace
+      super_report_unification_error ppf env trace
         (function ppf ->
            let ty, ty' = prepare_expansion (ty, ty') in
            fprintf ppf
@@ -206,7 +206,7 @@ let report_error env ppf = function
       fprintf ppf "in an order different from other calls.@ ";
       fprintf ppf "This is only allowed when the real type is known."
   | Less_general (kind, trace) ->
-      report_unification_error ppf env trace
+      super_report_unification_error ppf env trace
         (fun ppf -> fprintf ppf "This %s has type" kind)
         (fun ppf -> fprintf ppf "which is less general than")
   | Modules_not_allowed ->
@@ -219,7 +219,7 @@ let report_error env ppf = function
         "This expression is packed module, but the expected type is@ %a"
         type_expr ty
   | Recursive_local_constraint trace ->
-      report_unification_error ppf env trace
+      super_report_unification_error ppf env trace
         (function ppf ->
            fprintf ppf "Recursive local constraint when unifying")
         (function ppf ->
