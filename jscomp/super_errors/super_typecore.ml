@@ -6,8 +6,12 @@ open Typedtree
 open Btype
 open Ctype
 
-open Format
-open Printtyp
+let fprintf = Format.fprintf
+let sprintf = Format.sprintf
+let longident = Printtyp.longident
+let super_report_unification_error = Printtyp.super_report_unification_error
+let reset_and_mark_loops = Printtyp.reset_and_mark_loops
+let type_expr = Printtyp.type_expr
 
 (* taken from https://github.com/BuckleScript/ocaml/blob/d4144647d1bf9bc7dc3aadc24c25a7efa3a67915/typing/typecore.ml#L3769 *)
 (* modified branches are commented *)
@@ -21,20 +25,20 @@ let report_error env ppf = function
        "@[This variant constructor, %a, expects %i %s; here, we've %sfound %i.@]"
        longident lid expected (if expected == 1 then "argument" else "arguments") (if provided < expected then "only " else "") provided
   | Label_mismatch(lid, trace) ->
-      report_unification_error ppf env trace
+      super_report_unification_error ppf env trace
         (function ppf ->
            fprintf ppf "The record field %a@ belongs to the type"
                    longident lid)
         (function ppf ->
            fprintf ppf "but is mixed here with fields of type")
   | Pattern_type_clash trace ->
-      report_unification_error ppf env trace
+      super_report_unification_error ppf env trace
         (function ppf ->
           fprintf ppf "This pattern matches values of type")
         (function ppf ->
           fprintf ppf "but a pattern was expected which matches values of type")
   | Or_pattern_type_clash (id, trace) ->
-      report_unification_error ppf env trace
+      super_report_unification_error ppf env trace
         (function ppf ->
           fprintf ppf "The variable %s on the left-hand side of this or-pattern has type" (Ident.name id))
         (function ppf ->
@@ -58,7 +62,7 @@ let report_error env ppf = function
           If so, please use `ReasonReact.createDomElement`:@ https://reasonml.github.io/reason-react/index.html#reason-react-working-with-children@]@,@,\
           @[@{<info>Here's the original error message@}@]@,\
         @]";
-      report_unification_error ppf env trace
+      super_report_unification_error ppf env trace
         (function ppf ->
            fprintf ppf "This is:")
         (function ppf ->
@@ -116,7 +120,7 @@ let report_error env ppf = function
                          else Constructor.spellcheck ppf env p lid *)
   | Name_type_mismatch (kind, lid, tp, tpl) ->
       let name = if kind = "record" then "field" else "constructor" in
-      report_ambiguous_type_error ppf env tp tpl
+      Printtyp.report_ambiguous_type_error ppf env tp tpl
         (function ppf ->
            fprintf ppf "The %s %a@ belongs to the %s type"
              name longident lid kind)
@@ -146,18 +150,18 @@ let report_error env ppf = function
       else
         fprintf ppf "The value %s is not an instance variable" v
   | Not_subtype(tr1, tr2) ->
-      report_subtyping_error ppf env tr1 "is not a subtype of" tr2
+      Printtyp.report_subtyping_error ppf env tr1 "is not a subtype of" tr2
   | Outside_class ->
       fprintf ppf "This object duplication occurs outside a method definition"
   | Value_multiply_overridden v ->
       fprintf ppf "The instance variable %s is overridden several times" v
   | Coercion_failure (ty, ty', trace, b) ->
-      report_unification_error ppf env trace
+      super_report_unification_error ppf env trace
         (function ppf ->
-           let ty, ty' = prepare_expansion (ty, ty') in
+           let ty, ty' = Printtyp.prepare_expansion (ty, ty') in
            fprintf ppf
              "This expression cannot be coerced to type@;<1 2>%a;@ it has type"
-           (type_expansion ty) ty')
+           (Printtyp.type_expansion ty) ty')
         (function ppf ->
            fprintf ppf "but is here used with type");
       if b then
@@ -206,7 +210,7 @@ let report_error env ppf = function
       fprintf ppf "in an order different from other calls.@ ";
       fprintf ppf "This is only allowed when the real type is known."
   | Less_general (kind, trace) ->
-      report_unification_error ppf env trace
+      super_report_unification_error ppf env trace
         (fun ppf -> fprintf ppf "This %s has type" kind)
         (fun ppf -> fprintf ppf "which is less general than")
   | Modules_not_allowed ->
@@ -219,7 +223,7 @@ let report_error env ppf = function
         "This expression is packed module, but the expected type is@ %a"
         type_expr ty
   | Recursive_local_constraint trace ->
-      report_unification_error ppf env trace
+      super_report_unification_error ppf env trace
         (function ppf ->
            fprintf ppf "Recursive local constraint when unifying")
         (function ppf ->
@@ -229,7 +233,7 @@ let report_error env ppf = function
         "Unexpected existential"
   | Unqualified_gadt_pattern (tpath, name) ->
       fprintf ppf "@[The GADT constructor %s of type %a@ %s.@]"
-        name path tpath
+        name Printtyp.path tpath
         "must be qualified in this pattern"
   | Invalid_interval ->
       fprintf ppf "@[Only character intervals are supported in patterns.@]"
@@ -244,7 +248,7 @@ let report_error env ppf = function
         "@[Exception patterns must be at the top level of a match case.@]"
 
 let report_error env ppf err =
-  wrap_printing_env env (fun () -> report_error env ppf err)
+  Printtyp.wrap_printing_env env (fun () -> report_error env ppf err)
 
 (* This will be called in super_main. This is how you'd override the default error printer from the compiler & register new error_of_exn handlers *)
 let setup () =
