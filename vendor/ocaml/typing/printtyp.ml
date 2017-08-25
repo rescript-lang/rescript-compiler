@@ -1429,7 +1429,6 @@ let rec trace_same_names = function
       type_same_name t1 t2; type_same_name t1' t2'; trace_same_names rem
   | _ -> ()
 
-#if defined BS_NO_COMPILER_PATCH then
 let unification_error unif tr txt1 ppf txt2 =
   reset ();
   trace_same_names tr;
@@ -1458,7 +1457,13 @@ let unification_error unif tr txt1 ppf txt2 =
     with exn ->
       print_labels := true;
       raise exn
-#else
+
+let report_unification_error ppf env ?(unif=true)
+    tr txt1 txt2 =
+  wrap_printing_env env (fun () -> unification_error unif tr txt1 ppf txt2)
+;;
+
+#if undefined BS_NO_COMPILER_PATCH then
 let super_type_expansion ~tag t ppf t' =
   if same_path t t' then begin
     Format.pp_open_tag ppf tag;
@@ -1502,7 +1507,7 @@ let super_trace ppf =
     | _ -> ()
   in super_trace true ppf
 
-let unification_error unif tr txt1 ppf txt2 = begin
+let super_unification_error unif tr txt1 ppf txt2 = begin
   reset ();
   trace_same_names tr;
   let tr = List.map (fun (t, t') -> (t, hide_variant_name t')) tr in
@@ -1538,12 +1543,12 @@ let unification_error unif tr txt1 ppf txt2 = begin
       print_labels := true;
       raise exn
 end
-#end
 
-let report_unification_error ppf env ?(unif=true)
+let super_report_unification_error ppf env ?(unif=true)
     tr txt1 txt2 =
-  wrap_printing_env env (fun () -> unification_error unif tr txt1 ppf txt2)
+  wrap_printing_env env (fun () -> super_unification_error unif tr txt1 ppf txt2)
 ;;
+#end
 
 let trace fst keep_last txt ppf tr =
   print_labels := not !Clflags.classic;
