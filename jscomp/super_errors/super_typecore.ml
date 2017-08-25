@@ -46,6 +46,18 @@ let report_error env ppf = function
         (Ident.name id)
   | Expr_type_clash trace ->
       (* modified *)
+      if Super_reason_react.state_escape_scope trace then
+        fprintf ppf "@[<v>\
+          @[@{<info>Is this a ReasonReact component with state?@}@ If so, is the state type declared _after_ the component declaration?@ \
+          Moving the state type before the declaration should resolved this!@]@,@,\
+          @[@{<info>Here's the original error message@}@]@,\
+        @]"
+      else if Super_reason_react.is_array_wanted_reactElement trace then
+        fprintf ppf "@[<v>\
+          @[@{<info>Are you passing an array as a ReasonReact DOM (lower-case) component's children?@}@ If not, disregard this.@ \
+          If so, please use `ReasonReact.createDomElement`:@ https://reasonml.github.io/reason-react/index.html#reason-react-working-with-children@]@,@,\
+          @[@{<info>Here's the original error message@}@]@,\
+        @]";
       report_unification_error ppf env trace
         (function ppf ->
            fprintf ppf "This is:")
