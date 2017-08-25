@@ -26,6 +26,13 @@ let leading_space_count str =
   in
   _leading_space_count str (String.length str) 0
 
+type current_printed_line_status = 
+  | Is_error_start_line
+  | Is_error_end_line
+  | Strictly_between_start_and_end
+  | Only_error_line
+  | Not_error_line
+
 (* ocaml's reported line/col numbering is horrible and super error-prone when
   being handled programmatically (or humanly for that matter. If you're an
   ocaml contributor reading this: who the heck reads the character count
@@ -64,27 +71,30 @@ ppf
   | None -> 0
   | Some n -> n
   in
-  (* btw, these are unicode chars. They're not of length 1. Careful; we need to
-    explicitly tell Format to treat them as length 1 below *)
-  let separator = if columns_to_cut = 0 then "│" else "┆" in
   (* coloring *)
-  let (highlighted_line_number, highlighted_content): (string -> string -> unit, Format.formatter, unit) format * (unit, Format.formatter, unit) format = 
+  let (highlighted_line_number, highlighted_open_tag): (string -> string -> unit, Format.formatter, unit) format * (unit, Format.formatter, unit) format = 
     if is_warning then ("@{<info>%s@}@{<dim> @<1>%s @}", "@{<info>")
     else ("@{<error>%s@}@{<dim> @<1>%s @}", "@{<error>")
   in
-
+  let print_char_maybe_highlight ~begin_highlight_line ~end_highlight_line ch =
+    if begin_highlight_line then fprintf ppf highlighted_open_tag;
+    fprintf ppf "%c@," ch;
+    if end_highlight_line then fprintf ppf "@}"
+  in
+  
   fprintf ppf "@[<v 0>";
   (* inclusive *)
   for i = first_shown_line to last_shown_line do
     let current_line = lines.(i - 1) in
-    let current_line_cut = current_line |> string_slice ~start:columns_to_cut in
     let padded_line_number = pad (string_of_int i) max_line_number_number_of_digits in
 
     fprintf ppf "@[<h 0>";
 
     fprintf ppf "@[<h 0>";
 
-    (* this is where you insrt the vertical separator. Mark them as legnth 1 as explained above *)
+  (* btw, these are unicode chars. They're not of length 1. Careful; we need to
+    explicitly tell Format to treat them as length 1 right below *)
+  let separator = if columns_to_cut = 0 then "│" else "┆" in
     if i < start_line || i > end_line then begin
       (* normal, non-highlighted line *)
       fprintf ppf "%s@{<dim> @<1>%s @}" padded_line_number separator
@@ -97,31 +107,47 @@ ppf
 
     fprintf ppf "@[<hov 0>";
 
-    let current_line_strictly_between_start_and_end_line = i > start_line && i < end_line in
-
-    if current_line_strictly_between_start_and_end_line then fprintf ppf highlighted_content;
-
-    let current_line_cut_length = String.length current_line_cut in
+    let current_line_status = 
+      if i > start_line && i < end_line then Strictly_between_start_and_end
+      else if i = start_line && i = end_line then Only_error_line
+      else if i = start_line then Is_error_start_line
+      else if i = end_line then Is_error_end_line
+      else Not_error_line
+    in
+    let offset_current_line = current_line |> string_slice ~start:columns_to_cut in
+    let offset_current_line_length = String.length offset_current_line in
+    let offset_start_line_start_char = start_line_start_char - columns_to_cut in
+    let offset_end_line_end_char = end_line_end_char - columns_to_cut in
     (* inclusive. To be consistent with using 1-indexed indices and count and i, j will be 1-indexed too *)
-    for j = 1 to current_line_cut_length do begin
-      let current_char = current_line_cut.[j - 1] in
-      if current_line_strictly_between_start_and_end_line then
-        fprintf ppf "%c@," current_char
-      else if i = start_line then begin
-        if j == (start_line_start_char - columns_to_cut) then fprintf ppf highlighted_content;
-        fprintf ppf "%c@," current_char;
-        if j == current_line_cut_length then fprintf ppf "@}"
-      end else if i = end_line then begin
-        if j == 1 then fprintf ppf highlighted_content;
-        fprintf ppf "%c@," current_char;
-        if j == (end_line_end_char - columns_to_cut) then fprintf ppf "@}"
-      end else
-        (* normal, non-highlighted line *)
-        fprintf ppf "%c@," current_char
-    end
+    for j = 1 to offset_current_line_length do
+      let current_char = offset_current_line.[j - 1] in
+      match current_line_status with
+      | Strictly_between_start_and_end -> 
+        print_char_maybe_highlight 
+          ~begin_highlight_line:(j = 1) 
+          ~end_highlight_line:(j = offset_current_line_length)
+          current_char 
+      | Only_error_line ->
+        print_char_maybe_highlight 
+          ~begin_highlight_line:(j = offset_start_line_start_char) 
+          ~end_highlight_line:(j = offset_end_line_end_char)
+          current_char 
+      | Is_error_start_line ->
+        print_char_maybe_highlight 
+          ~begin_highlight_line:(j = offset_start_line_start_char) 
+          ~end_highlight_line:(j = offset_current_line_length)
+          current_char 
+      | Is_error_end_line ->
+        print_char_maybe_highlight 
+          ~begin_highlight_line:(j = 1) 
+          ~end_highlight_line:(j = offset_end_line_end_char)
+          current_char 
+      | Not_error_line ->
+        print_char_maybe_highlight 
+          ~begin_highlight_line:false 
+          ~end_highlight_line:false
+          current_char 
     done;
-
-    if current_line_strictly_between_start_and_end_line then fprintf ppf "@}";
 
     fprintf ppf "@]"; (* hov *)
 
