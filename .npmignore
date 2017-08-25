@@ -9,3 +9,7 @@
 /*.cmti
 /*.annot
 jscomp/build_tests
+.vscode/
+.github/
+node_modules
+coverage

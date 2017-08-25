@@ -1,7 +1,20 @@
-# 1.8.3
+# 1.9.0
+
 Features:
+- Namespace support in the build system
 - #1839, #1653, allow in-source build in package-specs , allow single pacakge-spec element in package-specs
 - #1802 introduce [@bs.unwrap] for polymorphic variant as external argument
+- Improve error message via -bs-super-errors
+- Reason syntax error message  for .re/rei files
+- #1908 two APIs for Js.Re
+- #1905, #1906, simplify the workflow of handlding null or undefined (via nullable)
+Optimizations:
+- #1918, better code gen for pattern match
+- #1865, Add Js.logN
+
+Fixes
+- #1925, fix missing js modules in playground
+- #1893, fix Js.Array.append (Js.Vector.append)
 
 # 1.8.2
 Features:
