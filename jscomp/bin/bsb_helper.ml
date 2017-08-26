@@ -2697,11 +2697,14 @@ module Ext_namespace : sig
 
 val make : ns:string -> string -> string 
 
-val remove_ns_suffix: string -> string 
+
 
 (* Note  we have to output uncapitalized file Name, 
   or at least be consistent, since by reading cmi file on Case insensitive OS, we don't really know it is `list.cmi` or `List.cmi`, so that `require (./list.js)` or `require(./List.js)`
-  relevant issues: #1609, #913 
+  relevant issues: #1609, #913  
+  
+  #1933 when removing ns suffix, don't pass the bound
+  of basename
 *)
 val js_name_of_basename :  string -> string 
 
@@ -2735,55 +2738,60 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
- (* Note the build system should check the validity of filenames
-    espeically, it should not contain '-'
- *)
- let ns_sep_char = '-'
- let ns_sep = "-"
+(* Note the build system should check the validity of filenames
+   espeically, it should not contain '-'
+*)
+let ns_sep_char = '-'
+let ns_sep = "-"
 
- let make ~ns cunit  = 
-    cunit ^ ns_sep ^ ns
-    
+let make ~ns cunit  = 
+  cunit ^ ns_sep ^ ns
 
-let rec rindex_rec s i c =
+let path_char = Filename.dir_sep.[0]
+
+let rec rindex_rec s i  =
   if i < 0 then i else
-  if String.unsafe_get s i = c then i else rindex_rec s (i - 1) c;;
-    
+    let char = String.unsafe_get s i in
+    if char = path_char then -1 
+    else if char = ns_sep_char then i 
+    else
+      rindex_rec s (i - 1) 
+
 let remove_ns_suffix name =
-    let i = rindex_rec name (String.length name - 1) ns_sep_char in 
-    if i < 0 then name 
-    else String.sub name 0 i 
+  let i = rindex_rec name (String.length name - 1)  in 
+  if i < 0 then name 
+  else String.sub name 0 i 
 
 
 let js_name_of_basename s = 
   remove_ns_suffix (String.uncapitalize s) ^ Literals.suffix_js
-  
-  
+
+
 let namespace_of_package_name (s : string) : string = 
   let len = String.length s in 
   let buf = Buffer.create len in 
   let add capital ch = 
     Buffer.add_char buf 
       (if capital then 
-        (Char.uppercase ch)
-      else ch) in    
+         (Char.uppercase ch)
+       else ch) in    
   let rec aux capital off len =     
-      if off >= len then ()
-      else 
-        let ch = String.unsafe_get s off in
-        match ch with 
-        | 'a' .. 'z' 
-        | 'A' .. 'Z' 
-        | '0' .. '9'
-          ->
-          add capital ch ; 
-          aux false (off + 1) len 
-        | '-' -> 
-          aux true (off + 1) len 
-        | _ -> aux capital (off+1) len
-         in 
-   aux true 0 len ;
-   Buffer.contents buf 
+    if off >= len then ()
+    else 
+      let ch = String.unsafe_get s off in
+      match ch with 
+      | 'a' .. 'z' 
+      | 'A' .. 'Z' 
+      | '0' .. '9'
+        ->
+        add capital ch ; 
+        aux false (off + 1) len 
+      | '-' -> 
+        aux true (off + 1) len 
+      | _ -> aux capital (off+1) len
+  in 
+  aux true 0 len ;
+  Buffer.contents buf 
 
 end
 module Bsb_depfile_gen : sig 
