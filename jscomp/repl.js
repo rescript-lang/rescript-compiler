@@ -65,7 +65,10 @@ var cmi_files =
         `lazy`,
         `js`, `js_unsafe`, `js_re`, `js_array`, `js_null`, `js_undefined`, `js_internal`,
         `js_types`, `js_null_undefined`, `js_dict`, `js_string`, `js_vector`, 
-        `js_promise`, `js_option`, `js_float`, `js_json`
+        `js_promise`, `js_option`, `js_float`, `js_json`,
+        `arrayLabels`, `bytesLabels`, `complex`, `gc`, `genlex`, `listLabels`,
+        `moreLabels`, `queue`, `scanf`, `sort`,`stack`, `stdLabels`, `stream`,
+        `stringLabels`
     ].map(x => `${x}.cmi:/cmis/${x}.cmi`).map(x => `--file ${x}`).join(` `)
 e(`js_of_ocaml  --toplevel +weak.js   ./polyfill.js jsc.byte ${includes} ${cmi_files} -o ${playground}/exports.js`)
 
