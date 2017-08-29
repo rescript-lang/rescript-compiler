@@ -107,6 +107,7 @@ bin/whole_compiler.ml : core/js_analyzer.ml
 bin/whole_compiler.ml : core/js_ast_util.ml
 bin/whole_compiler.ml : core/js_closure.mli
 bin/whole_compiler.ml : core/js_cmj_load.ml
+bin/whole_compiler.ml : core/js_dump_lit.ml
 bin/whole_compiler.ml : core/js_exp_make.ml
 bin/whole_compiler.ml : core/js_fun_env.mli
 bin/whole_compiler.ml : core/js_op_util.mli
@@ -195,6 +196,7 @@ bin/whole_compiler.ml : ../vendor/ocaml/utils/ccomp.mli
 bin/whole_compiler.ml : common/bs_warnings.mli
 bin/whole_compiler.ml : common/lam_methname.ml
 bin/whole_compiler.ml : core/js_cmj_format.mli
+bin/whole_compiler.ml : core/js_dump_string.ml
 bin/whole_compiler.ml : core/js_fold_basic.mli
 bin/whole_compiler.ml : core/js_pass_debug.mli
 bin/whole_compiler.ml : core/js_pass_scope.mli
@@ -230,6 +232,7 @@ bin/whole_compiler.ml : ../vendor/ocaml/typing/subst.mli
 bin/whole_compiler.ml : ../vendor/ocaml/typing/types.mli
 bin/whole_compiler.ml : ../vendor/ocaml/utils/clflags.ml
 bin/whole_compiler.ml : common/lam_methname.mli
+bin/whole_compiler.ml : core/js_dump_string.mli
 bin/whole_compiler.ml : core/js_of_lam_array.ml
 bin/whole_compiler.ml : core/js_of_lam_block.ml
 bin/whole_compiler.ml : core/js_of_lam_tuple.ml
@@ -262,6 +265,7 @@ bin/whole_compiler.ml : ../vendor/ocaml/typing/typemod.ml
 bin/whole_compiler.ml : ../vendor/ocaml/utils/clflags.mli
 bin/whole_compiler.ml : ../vendor/ocaml/utils/terminfo.ml
 bin/whole_compiler.ml : ../vendor/ocaml/utils/warnings.ml
+bin/whole_compiler.ml : core/js_dump_property.ml
 bin/whole_compiler.ml : core/js_of_lam_array.mli
 bin/whole_compiler.ml : core/js_of_lam_block.mli
 bin/whole_compiler.ml : core/js_of_lam_module.ml
@@ -303,6 +307,7 @@ bin/whole_compiler.ml : ../vendor/ocaml/typing/typetexp.ml
 bin/whole_compiler.ml : ../vendor/ocaml/utils/consistbl.ml
 bin/whole_compiler.ml : ../vendor/ocaml/utils/terminfo.mli
 bin/whole_compiler.ml : ../vendor/ocaml/utils/warnings.mli
+bin/whole_compiler.ml : core/js_dump_property.mli
 bin/whole_compiler.ml : core/js_implementation.ml
 bin/whole_compiler.ml : core/js_of_lam_module.mli
 bin/whole_compiler.ml : core/js_of_lam_option.mli
