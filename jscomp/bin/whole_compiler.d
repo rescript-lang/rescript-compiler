@@ -107,6 +107,7 @@ bin/whole_compiler.ml : core/js_analyzer.ml
 bin/whole_compiler.ml : core/js_ast_util.ml
 bin/whole_compiler.ml : core/js_closure.mli
 bin/whole_compiler.ml : core/js_cmj_load.ml
+bin/whole_compiler.ml : core/js_dump_lit.ml
 bin/whole_compiler.ml : core/js_exp_make.ml
 bin/whole_compiler.ml : core/js_fun_env.mli
 bin/whole_compiler.ml : core/js_op_util.mli

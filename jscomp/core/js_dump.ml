@@ -59,77 +59,12 @@ let string_of_module_id
 
 *)
 
-(* module P = Ext_format *)
+
 module P = Ext_pp
 module E = Js_exp_make 
 module S = Js_stmt_make 
 
-module L = struct
-  let function_ = "function"
-  let var = "var" (* should be able to switch to [let] easily*)
-  let return = "return"
-  let eq = "="
-  let require = "require"
-  let import = "import"
-  let from = "from"
-  let as_ = "as"
-  let export = "export"
-  let star = "*"
-  let goog_require = "goog.require" 
-  let goog_module = "goog.module"
-  let lparen = "("
-  let rparen = ")"
-  let exports = "exports"
-  let dot = "."
-  let comma = ","
-  let colon = Ext_string.single_colon
-  let throw = "throw"
-  let default = "default"
-  let length = "length"
-  let char_code_at = "charCodeAt"
-  let new_ = "new"
-  let array = "Array"
-  let question = "?"      
-  let plusplus = "++"
-  let minusminus = "--"
-  let semi = ";"
-  let else_ = "else"
-  let if_ = "if"
-  let this = "this"
-  let while_ = "while"
-  let empty_block = "empty_block"
-  let start_block = "start_block"
-  let end_block = "end_block"
-  let json = "JSON"
-  let stringify = "stringify"
-  let console = "console"
-  let define = "define"
-  let break = "break"
-  let continue = "continue"
-  let switch = "switch"
-  let strict_directive = "'use strict';"
-  let true_ = "true"
-  let false_ = "false"
-  let app = Literals.app (* curry arbitrary args *)
-  let app_array = Literals.app_array
-  let debugger = "debugger"
-  let tag = "tag"
-  let bind = "bind"
-  let math = "Math"
-  let apply = "apply"
-  let null = "null"
-  let string_cap = "String"
-  let fromCharcode = "fromCharCode"
-  let eq = "="
-  let le = "<="
-  let ge = ">="
-  let plus_plus = "++" 
-  (*  FIXME: use (i = i + 1 | 0) instead  *)
-  let minus_minus = "--"
-  let caml_block = "Block"
-  let caml_block_create = "__"
-  let case = "case" 
-end
+module L = Js_dump_lit
 let return_indent = (String.length L.return / Ext_pp.indent_length) 
 
 let throw_indent = (String.length L.throw / Ext_pp.indent_length) 
@@ -140,7 +75,7 @@ let semi f = P.string f L.semi
 let op_prec, op_str  =
   Js_op_util.(op_prec, op_str)
 
-let best_string_quote s =
+(* let _best_string_quote s =
   let simple = ref 0 in
   let double = ref 0 in
   for i = 0 to String.length s - 1 do
@@ -151,7 +86,7 @@ let best_string_quote s =
   done;
   if !simple < !double
   then '\''
-  else '"'
+  else '"' *)
 
 
 
