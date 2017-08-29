@@ -13,14 +13,15 @@ let f x =
   x##__50, 
   x##__50x, 
   x##_50x'
-  
+  (* x##_ *) (*TODO: should have a syntax error *)
 
 
 let v = 
    f [%obj{
      _003 = 0;
      _50 = 1; _50x = 2; __50=3 ; __50x = 4;
-     _50x' = 5
+     _50x' = 5;
+     (* _  = 6 *)
    }]
 
 

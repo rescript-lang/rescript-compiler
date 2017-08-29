@@ -44,7 +44,7 @@ var v = f({
       "50x'": 5
     });
 
-eq("File \"gpr_1943_test.ml\", line 27, characters 6-13", /* tuple */[
+eq("File \"gpr_1943_test.ml\", line 28, characters 6-13", /* tuple */[
       0,
       1,
       2,
