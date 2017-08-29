@@ -289,6 +289,7 @@ CORE_SRCS= js_runtime_modules \
 	js_pass_tailcall_inline js_of_lam_variant js_pass_flatten_and_mark_dead js_ast_util lam_dce lam_group_pass lam_compile_env lam_stats_util\
 	lam_stats_export lam_pass_alpha_conversion lam_pass_collect\
 	js_dump_lit\
+	js_dump_string\
 	js_dump \
 	js_pass_debug\
 	js_of_lam_option js_output lam_compile_global \

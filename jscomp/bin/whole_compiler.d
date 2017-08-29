@@ -196,6 +196,7 @@ bin/whole_compiler.ml : ../vendor/ocaml/utils/ccomp.mli
 bin/whole_compiler.ml : common/bs_warnings.mli
 bin/whole_compiler.ml : common/lam_methname.ml
 bin/whole_compiler.ml : core/js_cmj_format.mli
+bin/whole_compiler.ml : core/js_dump_string.ml
 bin/whole_compiler.ml : core/js_fold_basic.mli
 bin/whole_compiler.ml : core/js_pass_debug.mli
 bin/whole_compiler.ml : core/js_pass_scope.mli
@@ -231,6 +232,7 @@ bin/whole_compiler.ml : ../vendor/ocaml/typing/subst.mli
 bin/whole_compiler.ml : ../vendor/ocaml/typing/types.mli
 bin/whole_compiler.ml : ../vendor/ocaml/utils/clflags.ml
 bin/whole_compiler.ml : common/lam_methname.mli
+bin/whole_compiler.ml : core/js_dump_string.mli
 bin/whole_compiler.ml : core/js_of_lam_array.ml
 bin/whole_compiler.ml : core/js_of_lam_block.ml
 bin/whole_compiler.ml : core/js_of_lam_tuple.ml

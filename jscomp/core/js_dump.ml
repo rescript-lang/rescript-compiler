@@ -75,81 +75,11 @@ let semi f = P.string f L.semi
 let op_prec, op_str  =
   Js_op_util.(op_prec, op_str)
 
-(* let _best_string_quote s =
-  let simple = ref 0 in
-  let double = ref 0 in
-  for i = 0 to String.length s - 1 do
-    match s.[i] with
-    | '\'' -> incr simple
-    | '"' -> incr double
-    | _ -> ()
-  done;
-  if !simple < !double
-  then '\''
-  else '"' *)
 
 
 
 
 
-
-(** Avoid to allocate single char string too many times*)
-let array_str1 =
-  Array.init 256 (fun i -> String.make 1 (Char.chr i)) 
-
-(** For conveting 
-
-*)
-let array_conv =
-  [|"0"; "1"; "2"; "3"; "4"; "5"; "6"; "7"; "8"; "9"; "a"; "b"; "c"; "d";
-    "e"; "f"|]
-
-
-
-(* https://mathiasbynens.be/notes/javascript-escapes *)
-let pp_string f  (* ?(utf=false)*) s =
-  let pp_raw_string f (* ?(utf=false)*) s = 
-    let l = String.length s in
-    for i = 0 to l - 1 do
-      let c = String.unsafe_get s i in
-      match c with
-      | '\b' -> P.string f "\\b"
-      | '\012' -> P.string f "\\f"
-      | '\n' -> P.string f "\\n"
-      | '\r' -> P.string f "\\r"
-      | '\t' -> P.string f "\\t"
-      (* This escape sequence is not supported by IE < 9
-               | '\011' -> "\\v"
-         IE < 9 treats '\v' as 'v' instead of a vertical tab ('\x0B'). 
-         If cross-browser compatibility is a concern, use \x0B instead of \v.
-
-         Another thing to note is that the \v and \0 escapes are not allowed in JSON strings.
-      *)
-      | '\000' when i = l - 1 || (let next = String.unsafe_get s (i + 1) in (next < '0' || next > '9'))
-        -> P.string f "\\0"
-
-      | '\\' (* when not utf*) -> P.string f "\\\\"
-
-
-      | '\000' .. '\031'  | '\127'->
-        let c = Char.code c in
-        P.string f "\\x";
-        P.string f (Array.unsafe_get array_conv (c lsr 4));
-        P.string f (Array.unsafe_get array_conv (c land 0xf))
-      | '\128' .. '\255' (* when not utf*) ->
-        let c = Char.code c in
-        P.string f "\\x";
-        P.string f (Array.unsafe_get array_conv (c lsr 4));
-        P.string f (Array.unsafe_get array_conv (c land 0xf))
-      | '\"' -> P.string f "\\\"" (* quote*)
-      | _ ->
-        P.string f (Array.unsafe_get array_str1 (Char.code c))
-    done
-  in
-  P.string f "\"";
-  pp_raw_string f (*~utf*) s ;
-  P.string f "\""
-;;
 
 (**
 
@@ -210,7 +140,7 @@ let property_access f s =
   else
     begin 
       P.bracket_group f 1 @@ fun _ ->
-      pp_string f s
+      Js_dump_string.pp_string f s
     end
 
 
@@ -748,7 +678,7 @@ and
     (*TODO --
        when utf8-> it will not escape '\\' which is definitely not we want
     *)
-    pp_string f  s;
+    Js_dump_string.pp_string f  s;
     cxt 
 
   | Raw_js_code (s,info) -> 
@@ -1131,7 +1061,7 @@ and property_name cxt f (s : J.property_name) : unit =
   | Key s -> 
     if obj_property_no_need_quot s then 
       P.string f s 
-    else pp_string f s   
+    else Js_dump_string.pp_string f s   
 
   | Int_key i -> P.string f (string_of_int i)
 
@@ -1553,7 +1483,7 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
     in
     P.space f;
     P.brace_vgroup f 1 @@ fun _ -> 
-    let cxt = loop cxt f (fun f i -> pp_string f i ) cc in
+    let cxt = loop cxt f (fun f i -> Js_dump_string.pp_string f i ) cc in
     (match def with
      | None -> cxt
      | Some def ->
@@ -1696,7 +1626,7 @@ let requires require_lit cxt f (modules : (Ident.t * string) list ) =
       P.space f;
       P.string f require_lit;
       P.paren_group f 0 @@ (fun _ ->
-          pp_string f file  );
+          Js_dump_string.pp_string f file  );
       semi f ;
       P.newline f ;
     ) reversed_list;
@@ -1725,7 +1655,7 @@ let imports  cxt f (modules : (Ident.t * string) list ) =
       P.nspace f (margin - String.length s + 1) ;      
       P.string f L.from;
       P.space f;
-      pp_string f file ;
+      Js_dump_string.pp_string f file ;
       semi f ;
       P.newline f ;
     ) reversed_list;
@@ -1798,7 +1728,7 @@ let amd_program ~output_prefix kind f (  x : J.deps_program) =
           x in
       P.string f L.comma ;
       P.space f; 
-      pp_string f  s;
+      Js_dump_string.pp_string f  s;
     ) x.modules ;
   P.string f "]";
   P.string f L.comma;
