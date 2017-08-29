@@ -25105,7 +25105,7 @@ val build_queue :
   
 val handle_queue :
   Format.formatter ->
-  String_map.key Queue.t ->
+  string Queue.t ->
   ('a, 'b) t String_map.t ->
   (string -> string -> 'a -> unit) ->
   (string -> string -> 'b  -> unit) ->
@@ -25422,7 +25422,12 @@ let build_queue ppf queue
     )
 
 
-let handle_queue ppf queue ast_table decorate_module_only decorate_interface_only decorate_module = 
+let handle_queue 
+  ppf 
+  queue ast_table 
+  decorate_module_only 
+  decorate_interface_only 
+  decorate_module = 
   queue 
   |> Queue.iter
     (fun base ->

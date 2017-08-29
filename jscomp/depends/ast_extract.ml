@@ -297,7 +297,12 @@ let build_queue ppf queue
     )
 
 
-let handle_queue ppf queue ast_table decorate_module_only decorate_interface_only decorate_module = 
+let handle_queue 
+  ppf 
+  queue ast_table 
+  decorate_module_only 
+  decorate_interface_only 
+  decorate_module = 
   queue 
   |> Queue.iter
     (fun base ->
