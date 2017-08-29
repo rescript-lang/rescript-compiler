@@ -680,6 +680,9 @@ module Color : sig
     | Bold
     | Reset
 
+    | Dim
+
+
   val ansi_of_style_l : style list -> string
   (* ANSI escape sequence for the given style *)
 
@@ -1084,6 +1087,9 @@ module Color = struct
     | Bold
     | Reset
 
+    | Dim
+
+
   let ansi_of_color = function
     | Black -> "0"
     | Red -> "1"
@@ -1099,6 +1105,9 @@ module Color = struct
     | BG c -> "4" ^ ansi_of_color c
     | Bold -> "1"
     | Reset -> "0"
+
+    | Dim -> "2"
+
 
   let ansi_of_style_l l =
     let s = match l with
@@ -1130,6 +1139,11 @@ module Color = struct
     | "error" -> (!cur_styles).error
     | "warning" -> (!cur_styles).warning
     | "loc" -> (!cur_styles).loc
+
+    | "info" -> [Bold; FG Yellow]
+    | "dim" -> [Dim]
+    | "filename" -> [FG Cyan]
+
     | _ -> raise Not_found
 
   let color_enabled = ref true
@@ -1935,6 +1949,10 @@ val print_error_prefix: formatter -> unit -> unit
   (* print the prefix "Error:" possibly with style *)
 
 val error: ?loc:t -> ?sub:error list -> ?if_highlight:string -> string -> error
+
+ 
+val pp_ksprintf : ?before:(formatter -> unit) -> (string -> 'a) -> ('b, formatter, unit, 'a) format4 -> 'b
+
 
 val errorf: ?loc:t -> ?sub:error list -> ?if_highlight:string
             -> ('a, Format.formatter, unit, error) format4 -> 'a
@@ -4377,6 +4395,18 @@ type check_result =
 val is_valid_source_name :
    string -> check_result
 
+(* TODO handle cases like 
+   '@angular/core'
+   its directory structure is like 
+   {[
+     @angular
+     |-------- core
+   ]}
+*)
+val is_valid_npm_package_name : string -> bool 
+
+
+
 val no_char : string -> char -> int -> int -> bool 
 
 
@@ -4393,8 +4423,9 @@ val replace_backward_slash : string -> string
 
 val empty : string 
 
-external compare : string -> string -> int = "caml_string_length_based_compare" "noalloc";;
 
+external compare : string -> string -> int = "caml_string_length_based_compare" "noalloc";;
+  
 val single_space : string
 
 val concat3 : string -> string -> string -> string 
@@ -4745,6 +4776,28 @@ let is_valid_module_file (s : string) =
          | _ -> false )
   | _ -> false 
 
+
+(* https://docs.npmjs.com/files/package.json 
+  Some rules:
+  The name must be less than or equal to 214 characters. This includes the scope for scoped packages.
+  The name can't start with a dot or an underscore.
+  New packages must not have uppercase letters in the name.
+  The name ends up being part of a URL, an argument on the command line, and a folder name. Therefore, the name can't contain any non-URL-safe characters.
+*)
+let is_valid_npm_package_name (s : string) = 
+  let len = String.length s in 
+  len <= 214 && (* magic number forced by npm *)
+  len > 0 &&
+  match String.unsafe_get s 0 with 
+  | 'a' .. 'z' | '@' -> 
+    unsafe_for_all_range s ~start:1 ~finish:(len - 1)
+      (fun x -> 
+         match x with 
+         |  'a'..'z' | '0'..'9' | '_' | '-' -> true
+         | _ -> false )
+  | _ -> false 
+
+
 type check_result = 
   | Good 
   | Invalid_module_name 
@@ -4757,7 +4810,8 @@ let is_valid_source_name name : check_result =
   match check_any_suffix_case_then_chop name [
       ".ml"; 
       ".re";
-      ".mli"; ".mll"; ".rei"
+      ".mli"; 
+      ".rei"
     ] with 
   | None -> Suffix_mismatch
   | Some x -> 
@@ -4807,7 +4861,9 @@ let replace_backward_slash (x : string)=
 
 let empty = ""
 
+    
 external compare : string -> string -> int = "caml_string_length_based_compare" "noalloc";;
+
 
 let single_space = " "
 let single_colon = ":"
@@ -5001,6 +5057,7 @@ val suffix_mlast : string
 val suffix_mlast_simple : string
 val suffix_mliast : string
 val suffix_mliast_simple : string
+val suffix_mlmap : string
 val suffix_mll : string
 val suffix_re : string
 val suffix_rei : string 
@@ -5023,7 +5080,7 @@ val unused_attribute : string
 val dash_nostdlib : string
 
 val reactjs_jsx_ppx_exe : string 
-
+val reactjs_jsx_ppx_2_exe : string 
 val unescaped_j_delimiter : string 
 val escaped_j_delimiter : string 
 
@@ -5129,6 +5186,7 @@ let suffix_ml = ".ml"
 let suffix_mli = ".mli"
 let suffix_re = ".re"
 let suffix_rei = ".rei"
+let suffix_mlmap = ".mlmap"
 
 let suffix_cmt = ".cmt" 
 let suffix_cmti = ".cmti" 
@@ -5151,7 +5209,7 @@ let unused_attribute = "Unused attribute "
 let dash_nostdlib = "-nostdlib"
 
 let reactjs_jsx_ppx_exe  = "reactjs_jsx_ppx.exe"
-
+let reactjs_jsx_ppx_2_exe = "reactjs_jsx_ppx_2.exe"
 let unescaped_j_delimiter = "j"
 let unescaped_js_delimiter = "js"
 let escaped_j_delimiter =  "*j" (* not user level syntax allowed *)
@@ -5272,6 +5330,8 @@ get_extension "a" = ""
 val get_extension : string -> string
 
 val simple_convert_node_path_to_os_path : string -> string
+
+
 end = struct
 #1 "ext_filename.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -5637,6 +5697,8 @@ let simple_convert_node_path_to_os_path =
     Ext_string.replace_slash_backward 
   else failwith ("Unknown OS : " ^ Sys.os_type)
 
+
+
 end
 module Ext_format : sig 
 #1 "ext_format.mli"
@@ -5969,6 +6031,9 @@ val assoc_by_string :
 
 val assoc_by_int : 
   'a  option -> int -> (int * 'a) list -> 'a   
+
+
+val nth_opt : 'a list -> int -> 'a option  
 end = struct
 #1 "ext_list.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -6391,6 +6456,13 @@ let rec assoc_by_int def (k : int) lst =
  *)
 
 
+let nth_opt l n =
+  if n < 0 then None else
+  let rec nth_aux l n =
+    match l with
+    | [] -> None
+    | a::l -> if n = 0 then Some a else nth_aux l (n-1)
+  in nth_aux l n
 end
 module Js_config : sig 
 #1 "js_config.mli"
@@ -6419,53 +6491,11 @@ module Js_config : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-type module_system = 
-  | NodeJS 
-  | AmdJS
-  | Goog  (* This will be serliazed *)
-  | Es6
-  | Es6_global
-  | AmdJS_global
-
-type package_info = 
- (module_system * string )
-
-type package_name  = string
-type packages_info =
-  | Empty 
-  | NonBrowser of (package_name * package_info  list)
 
 
 
-val cmj_ext : string 
-
-
-(* val is_browser : unit -> bool  *)
-(* val set_browser : unit -> unit *)
-
-
-val get_ext : unit -> string
-
-(** depends on [package_infos], used in {!Js_program_loader} *)
-val get_output_dir : pkg_dir:string -> module_system -> string -> string
-
-
-(** used by command line option *)
-val set_npm_package_path : string -> unit 
-val get_packages_info : unit -> packages_info
-
-type info_query = 
-  | Empty 
-  | Package_script of string
-  | Found of package_name * string
-  | NotFound 
-  
-
-val query_package_infos : 
-  packages_info ->
-  module_system ->
-  info_query
-
+(* val get_packages_info :
+   unit -> Js_packages_info.t *)
 
 
 (** set/get header *)
@@ -6476,12 +6506,13 @@ val no_version_header : bool ref
     when in script mode: 
 *)
 
-val get_current_package_name_and_path : 
-  module_system -> info_query
+(* val get_current_package_name_and_path : 
+  Js_packages_info.module_system -> 
+  Js_packages_info.info_query *)
 
 
-val set_package_name : string -> unit 
-val get_package_name : unit -> string option
+(* val set_package_name : string -> unit  
+val get_package_name : unit -> string option *)
 
 (** corss module inline option *)
 val cross_module_inline : bool ref
@@ -6516,36 +6547,7 @@ val set_no_any_assert : unit -> unit
 val get_no_any_assert : unit -> bool 
 
 
-val block : string
-val int32 : string
-val gc : string 
-val backtrace : string
 
-val builtin_exceptions : string
-val exceptions : string
-val io : string
-val oo : string
-val sys : string
-val lexer : string 
-val parser : string
-val obj_runtime : string
-val array : string
-val format : string
-val string : string
-val bytes : string  
-val float : string 
-val curry : string 
-val caml_oo_curry : string 
-(* val bigarray : string *)
-(* val unix : string *)
-val int64 : string
-val md5 : string
-val hash : string
-val weak : string
-val js_primitive : string
-val module_ : string
-val missing_polyfill : string
-val exn : string
 (** Debugging utilies *)
 val set_current_file : string -> unit 
 val get_current_file : unit -> string
@@ -6560,7 +6562,6 @@ val is_same_file : unit -> bool
 val tool_name : string
 
 
-val better_errors : bool ref
 val sort_imports : bool ref 
 val dump_js : bool ref
 val syntax_only  : bool ref
@@ -6595,53 +6596,11 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-type path = string
-
-type module_system =
-  | NodeJS 
-  | AmdJS 
-  | Goog
-  | Es6
-  | Es6_global (* ignore node_modules, just calcluating relative path *)
-  | AmdJS_global (* see ^ *)
-
-type package_info =
- ( module_system * string )
-
-type package_name  = string
-type packages_info =
-  | Empty (* No set *)
-  | NonBrowser of (package_name * package_info  list)
-(** we don't force people to use package *)
 
 
 
-let ext = ref ".js"
-let cmj_ext = ".cmj"
 
-
-
-let get_ext () = !ext
-
-
-let packages_info : packages_info ref = ref Empty
-
-
-let get_package_name () =
-  match !packages_info with
-  | Empty  -> None
-  | NonBrowser(n,_) -> Some n
-
-let no_version_header = ref false
-
-let set_package_name name =
-  match !packages_info with
-  | Empty -> packages_info := NonBrowser(name,  [])
-  |  _ ->
-    Ext_pervasives.bad_argf "duplicated flag for -bs-package-name"
-
-
-let set_npm_package_path s =
+(* let add_npm_package_path s =
   match !packages_info  with
   | Empty ->
     Ext_pervasives.bad_argf "please set package name first using -bs-package-name ";
@@ -6649,25 +6608,20 @@ let set_npm_package_path s =
     let env, path =
       match Ext_string.split ~keep_empty:false s ':' with
       | [ package_name; path]  ->
-        (match package_name with
-         | "commonjs" -> NodeJS
-         | "amdjs" -> AmdJS
-         | "goog" -> Goog
-         | "es6" -> Es6
-         | "es6-global" -> Es6_global
-         | "amdjs-global" -> AmdJS_global
-         | _ ->
+        (match Js_packages_info.module_system_of_string package_name with
+         | Some x -> x
+         | None ->
            Ext_pervasives.bad_argf "invalid module system %s" package_name), path
       | [path] ->
         NodeJS, path
       | _ ->
         Ext_pervasives.bad_argf "invalid npm package path: %s" s
     in
-    packages_info := NonBrowser (name,  ((env,path) :: envs))
-   (** Browser is not set via command line only for internal use *)
+    packages_info := NonBrowser (name,  ((env,path) :: envs)) *)
+(** Browser is not set via command line only for internal use *)
 
 
-
+let no_version_header = ref false
 
 let cross_module_inline = ref false
 
@@ -6682,63 +6636,9 @@ let set_diagnose b = diagnose := b
 
 let (//) = Filename.concat
 
-let get_packages_info () = !packages_info
-
-type info_query =
-  | Empty
-  | Package_script of string
-  | Found of package_name * string
-  | NotFound 
-
-(* ocamlopt could not optimize such simple case..*)
-let compatible exist query =
-  match query with 
-  | NodeJS -> exist = NodeJS 
-  | AmdJS -> exist = AmdJS
-  | Goog -> exist = Goog
-  | Es6  -> exist = Es6
-  | Es6_global  
-    -> exist = Es6_global || exist = Es6
-  | AmdJS_global 
-    -> exist = AmdJS_global || exist = AmdJS
-   (* As a dependency Leaf Node, it is the same either [global] or [not] *)
-
-let query_package_infos (package_infos : packages_info) module_system =
-  match package_infos with
-  | Empty -> Empty
-  | NonBrowser (name, []) -> Package_script name
-  | NonBrowser (name, paths) ->
-    begin match List.find (fun (k, _) -> compatible k  module_system) paths with
-      | (_, x) -> Found (name, x)
-      | exception _ -> NotFound
-    end
-
-let get_current_package_name_and_path   module_system =
-  query_package_infos !packages_info module_system
-
-
-(* for a single pass compilation, [output_dir]
-   can be cached
-*)
-let get_output_dir ~pkg_dir module_system filename =
-  match !packages_info with
-  | Empty | NonBrowser (_, [])->
-    if Filename.is_relative filename then
-      Lazy.force Ext_filename.cwd //
-      Filename.dirname filename
-    else
-      Filename.dirname filename
-  | NonBrowser (_,  modules) ->
-    begin match List.find (fun (k,_) -> compatible k  module_system) modules with
-      | (_, _path) -> pkg_dir // _path
-      |  exception _ -> assert false
-    end
-
-
-
+(* let get_packages_info () = !packages_info *)
 
 let default_gen_tds = ref false
-
 let no_builtin_ppx_ml = ref false
 let no_builtin_ppx_mli = ref false
 let no_warn_ffi_type = ref false
@@ -6746,34 +6646,6 @@ let no_warn_ffi_type = ref false
 (** TODO: will flip the option when it is ready *)
 let no_warn_unused_bs_attribute = ref false
 let no_error_unused_bs_attribute = ref false 
-
-let builtin_exceptions = "Caml_builtin_exceptions"
-let exceptions = "Caml_exceptions"
-let io = "Caml_io"
-let sys = "Caml_sys"
-let lexer = "Caml_lexer"
-let parser = "Caml_parser"
-let obj_runtime = "Caml_obj"
-let array = "Caml_array"
-let format = "Caml_format"
-let string = "Caml_string"
-let bytes = "Caml_bytes"
-let float = "Caml_float"
-let hash = "Caml_hash"
-let oo = "Caml_oo"
-let curry = "Curry"
-let caml_oo_curry = "Caml_oo_curry"
-let int64 = "Caml_int64"
-let md5 = "Caml_md5"
-let weak = "Caml_weak"
-let backtrace = "Caml_backtrace"
-let gc = "Caml_gc"
-let int32 = "Caml_int32"
-let block = "Block"
-let js_primitive = "Js_primitive"
-let module_ = "Caml_module"
-let missing_polyfill = "Caml_missing_polyfill"
-let exn = "Js_exn"
 
 let current_file = ref ""
 let debug_file = ref ""
@@ -6802,7 +6674,6 @@ let no_any_assert = ref false
 let set_no_any_assert () = no_any_assert := true
 let get_no_any_assert () = !no_any_assert
 
-let better_errors = ref false
 let sort_imports = ref true
 let dump_js = ref false
 
@@ -6813,9 +6684,102 @@ let binary_ast = ref false
 
 
 end
+module Ml_binary : sig 
+#1 "ml_binary.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+type _ kind = 
+  | Ml : Parsetree.structure kind 
+  | Mli : Parsetree.signature kind
+
+
+val read_ast : 'a kind -> in_channel -> 'a 
+
+val write_ast :
+   'a kind -> string -> 'a -> out_channel -> unit
+end = struct
+#1 "ml_binary.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type _ kind = 
+  | Ml : Parsetree.structure kind 
+  | Mli : Parsetree.signature kind
+
+(** [read_ast kind ic] assume [ic] channel is 
+    in the right position *)
+let read_ast (type t ) (kind : t  kind) ic : t  =
+  let magic =
+    match kind with 
+    | Ml -> Config.ast_impl_magic_number
+    | Mli -> Config.ast_intf_magic_number in 
+  let buffer = really_input_string ic (String.length magic) in
+  assert(buffer = magic); (* already checked by apply_rewriter *)
+  Location.input_name := input_value ic;
+  input_value ic 
+
+let write_ast (type t) (kind : t kind) 
+    (fname : string)
+    (pt : t) oc = 
+  let magic = 
+    match kind with 
+    | Ml -> Config.ast_impl_magic_number
+    | Mli -> Config.ast_intf_magic_number in
+  output_string oc magic ;
+  output_value oc fname;
+  output_value oc pt
+end
 module Bs_hash_stubs
 = struct
 #1 "bs_hash_stubs.ml"
+
+
 external hash_string :  string -> int = "caml_bs_hash_string" "noalloc";;
 
 external hash_string_int :  string -> int  -> int = "caml_bs_hash_string_and_int" "noalloc";;
@@ -6834,6 +6798,8 @@ external string_length_based_compare : string -> string -> int  = "caml_string_l
 external    
     int_unsafe_blit : 
     int array -> int -> int array -> int -> int -> unit = "caml_int_array_blit" "noalloc";;
+    
+
 end
 module Ext_util : sig 
 #1 "ext_util.mli"
@@ -7904,10 +7870,6 @@ module Ast_extract : sig
 
 
 
-type _ kind =
-  | Ml : Parsetree.structure kind
-  | Mli : Parsetree.signature kind
-
 
 
 
@@ -7915,7 +7877,7 @@ type _ kind =
 
 module String_set = Depend.StringSet
 
-val read_parse_and_extract : 'a kind -> 'a -> String_set.t
+val read_parse_and_extract : 'a Ml_binary.kind -> 'a -> String_set.t
 
 type ('a,'b) t 
 
@@ -7971,7 +7933,7 @@ val build_queue :
   
 val handle_queue :
   Format.formatter ->
-  String_map.key Queue.t ->
+  string Queue.t ->
   ('a, 'b) t String_map.t ->
   (string -> string -> 'a -> unit) ->
   (string -> string -> 'b  -> unit) ->
@@ -8017,9 +7979,7 @@ type module_name = private string
 
 module String_set = Depend.StringSet
 
-type _ kind =
-  | Ml : Parsetree.structure kind
-  | Mli : Parsetree.signature kind
+type 'a kind = 'a Ml_binary.kind 
 
 let read_parse_and_extract (type t) (k : t kind) (ast : t) : String_set.t =
   Depend.free_structure_names := String_set.empty;
@@ -8029,8 +7989,8 @@ let read_parse_and_extract (type t) (k : t kind) (ast : t) : String_set.t =
        Depend.open_module bound_vars (Longident.Lident modname))
     (!Clflags.open_modules);
   (match k with
-   | Ml  -> Depend.add_implementation bound_vars ast
-   | Mli  -> Depend.add_signature bound_vars ast  ); 
+   | Ml_binary.Ml  -> Depend.add_implementation bound_vars ast
+   | Ml_binary.Mli  -> Depend.add_signature bound_vars ast  ); 
   !Depend.free_structure_names
 
 
@@ -8290,7 +8250,12 @@ let build_queue ppf queue
     )
 
 
-let handle_queue ppf queue ast_table decorate_module_only decorate_interface_only decorate_module = 
+let handle_queue 
+  ppf 
+  queue ast_table 
+  decorate_module_only 
+  decorate_interface_only 
+  decorate_module = 
   queue 
   |> Queue.iter
     (fun base ->
@@ -26321,31 +26286,46 @@ let emit out_chan name =
   output_string out_chan (Filename.basename name) ;
   output_string out_chan "\"\n"
 
-let decorate_module out_chan base mli_name ml_name mli_content ml_content =
-  let base = String.capitalize base in
-  output_string out_chan "module ";
-  output_string out_chan base ;
-  output_string out_chan " : sig \n";
+let decorate_module 
+    ?(module_bound=true)
+    out_chan base mli_name ml_name mli_content ml_content =
+  if module_bound then begin 
+    let base = String.capitalize base in
+    output_string out_chan "module ";
+    output_string out_chan base ;
+    output_string out_chan " : sig \n";
+    emit out_chan mli_name ;
+    preprocess_string mli_name mli_content out_chan;
+    output_string out_chan "\nend = struct\n";
+    emit out_chan  ml_name ;
+    preprocess_string ml_name ml_content out_chan;
+    output_string out_chan "\nend\n"
+  end
+  else
+    begin 
+      output_string out_chan "include (struct\n";
+      emit out_chan  ml_name ;
+      preprocess_string ml_name ml_content out_chan;
+      output_string out_chan "\nend : sig \n";
+      emit out_chan mli_name ;
+      preprocess_string mli_name mli_content out_chan;
+      output_string out_chan "\nend)";
+    end
 
-  emit out_chan mli_name ;
-  preprocess_string mli_name mli_content out_chan;
-  (* output_string out_chan mli_content; *)
-
-  output_string out_chan "\nend = struct\n";
-  emit out_chan  ml_name ;
-  preprocess_string ml_name ml_content out_chan;
-  (* output_string out_chan ml_content; *)
-  output_string out_chan "\nend\n"
-
-let decorate_module_only out_chan base ml_name ml_content =
-  let base = String.capitalize base in
-  output_string out_chan "module ";
-  output_string out_chan base ;
-  output_string out_chan "\n= struct\n";
+let decorate_module_only 
+    ?(module_bound=true) 
+    out_chan base ml_name ml_content =
+  if module_bound then begin 
+    let base = String.capitalize base in
+    output_string out_chan "module ";
+    output_string out_chan base ;
+    output_string out_chan "\n= struct\n"
+  end;
   emit out_chan  ml_name;
   preprocess_string ml_name ml_content out_chan ; 
   (* output_string out_chan ml_content; *)
-  output_string out_chan "\nend\n"
+  if module_bound then 
+    output_string out_chan "\nend\n"
 
 (** recursive module is not good for performance, here module type only 
     has to be pure types otherwise it would not compile any way
@@ -26365,13 +26345,17 @@ let collect_file name =
 let output_file = ref None
 let set_output file = output_file := Some file
 let header_option = ref false
+
+type main_module = { modulename : string ; export : bool }
+
 (** set bs-main*)
-let main_module = ref None
+let main_module : main_module option ref = ref None
 
 let set_main_module modulename = 
-  main_module := Some modulename
+  main_module := Some {modulename; export = false }
 
-
+let set_main_export modulename = 
+  main_module := Some {modulename; export = true }
 
 let set_mllib_file = ref false     
 
@@ -26473,7 +26457,7 @@ let define_symbol (s : string) =
     if not @@ Lexer.define_key_value key v  then 
       raise (Arg.Bad ("illegal definition: " ^ s))
   | _ -> raise (Arg.Bad ("illegal definition: " ^ s))
- 
+
 let specs : (string * Arg.spec * string) list =
   [ 
     "-bs-no-implicit-include", (Arg.Set no_implicit_include),
@@ -26497,6 +26481,8 @@ let specs : (string * Arg.spec * string) list =
     ;
     "-bs-main", (Arg.String set_main_module),
     " set the main entry module";
+    "-main-export", (Arg.String set_main_export),
+    " Set the main module and respect its exports";
     "-I",  (Arg.String add_include),
     " add dir to search path";
     "-U", Arg.String undefine_symbol,
@@ -26548,12 +26534,12 @@ let () =
         | None -> []) @ command_files in
 
      match !main_module, files with
-     | Some _, _ :: _
+     | Some _ , _ :: _
        -> 
        Ext_pervasives.failwithf ~loc:__LOC__ 
          "-bs-main conflicts with other flags [ %s ]"
          (String.concat ", " files)
-     | Some main_module ,  []
+     | Some {modulename  = main_module ; export },  []
        ->
        let excludes =
          match !exclude_modules with
@@ -26580,45 +26566,59 @@ let () =
        let out_chan = Lazy.force out_chan in
        let collect_modules  = !set_mllib_file in 
        let collection_modules = Queue.create () in
+       let count = ref 0 in 
+       let task_length = Queue.length tasks in 
        emit_header out_chan ;
-       Ast_extract.handle_queue Format.err_formatter tasks ast_table
-         (fun base ml_name (lazy(_, ml_content)) -> 
-            if collect_modules then 
-              Queue.add ml_name collection_modules; 
-            decorate_module_only  out_chan base ml_name ml_content;
-            let aliased = (String.capitalize base) in 
-            String_hashtbl.find_all alias_map_rev aliased
-            |> List.iter 
-              (fun s -> output_string out_chan (Printf.sprintf "module %s = %s \n"  s aliased))
+       begin 
+         Ast_extract.handle_queue Format.err_formatter tasks ast_table
+           (fun base ml_name (lazy(_, ml_content)) -> 
+              incr count ;  
+              if collect_modules then 
+                Queue.add ml_name collection_modules; 
+              let module_bound = not  export || task_length > !count  in 
+              decorate_module_only ~module_bound out_chan base ml_name ml_content;
+              let aliased = String.capitalize base in 
+              String_hashtbl.find_all alias_map_rev aliased
+              |> List.iter 
+                (fun s -> output_string out_chan (Printf.sprintf "module %s = %s \n"  s aliased))
 
-         )
-         (fun base mli_name (lazy (_, mli_content))  -> 
-            if collect_modules then 
-              Queue.add mli_name collection_modules; 
-            decorate_interface_only out_chan base mli_name mli_content;
-            let aliased = (String.capitalize base) in 
-            String_hashtbl.find_all alias_map_rev aliased
-            |> List.iter 
-              (fun s -> output_string out_chan (Printf.sprintf "module %s = %s \n"  s aliased))
+           )
+           (fun base mli_name (lazy (_, mli_content))  -> 
+              incr count ;                  
+              if collect_modules then 
+                Queue.add mli_name collection_modules;                 
 
-         )
-         (fun base mli_name ml_name (lazy (_, mli_content)) (lazy (_, ml_content))
-           -> 
-             (*TODO: assume mli_name, ml_name are in the same dir,
-               Needs to be addressed 
-             *)
-             if collect_modules then 
-               begin 
-                 Queue.add ml_name collection_modules;
-                 Queue.add mli_name collection_modules
-               end; 
-             decorate_module out_chan base mli_name ml_name mli_content ml_content;
-             let aliased = (String.capitalize base) in 
-             String_hashtbl.find_all alias_map_rev aliased
-             |> List.iter 
-               (fun s -> output_string out_chan (Printf.sprintf "module %s = %s \n"  s aliased))
+              decorate_interface_only out_chan base mli_name mli_content;
+              let aliased = String.capitalize base in 
+              String_hashtbl.find_all alias_map_rev aliased
+              |> List.iter 
+                (fun s -> output_string out_chan (Printf.sprintf "module %s = %s \n"  s aliased))
 
-         );
+           )
+           (fun base mli_name ml_name (lazy (_, mli_content)) (lazy (_, ml_content))
+             -> 
+               incr count;  
+               (*TODO: assume mli_name, ml_name are in the same dir,
+                 Needs to be addressed 
+               *)
+               if collect_modules then 
+                 begin 
+                   Queue.add ml_name collection_modules;
+                   Queue.add mli_name collection_modules
+                 end; 
+               (** if export 
+                   print it as 
+                   {[inclue (struct end : sig end)]}
+               *)   
+               let module_bound = not export || task_length > !count in 
+               decorate_module ~module_bound out_chan base mli_name ml_name mli_content ml_content;
+               let aliased = (String.capitalize base) in 
+               String_hashtbl.find_all alias_map_rev aliased
+               |> List.iter 
+                 (fun s -> output_string out_chan (Printf.sprintf "module %s = %s \n"  s aliased))
+
+           )
+       end;
        close_out_chan out_chan;
        begin 
          if !set_mllib_file then
