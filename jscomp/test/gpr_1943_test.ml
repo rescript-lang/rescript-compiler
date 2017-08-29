@@ -12,7 +12,8 @@ let f x =
   x##_50x, 
   x##__50, 
   x##__50x, 
-  x##_50x'
+  x##_50x',
+  x##x'
   (* x##_ *) (*TODO: should have a syntax error *)
 
 
@@ -21,9 +22,10 @@ let v =
      _003 = 0;
      _50 = 1; _50x = 2; __50=3 ; __50x = 4;
      _50x' = 5;
+     x' = 6
      (* _  = 6 *)
    }]
 
 
-;; eq __LOC__ (0,1,2,3,4,5) v 
+;; eq __LOC__ (0,1,2,3,4,5,6) v 
 ;; Mt.from_pair_suites __FILE__ !suites
