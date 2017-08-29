@@ -20752,7 +20752,7 @@ val ends_with_then_chop : string -> string -> string option
 
 val escaped : string -> string
 
-(** the range is [start, finish) 
+(** the range is [start, finish]
 *)
 val for_all_range : 
   string -> start:int -> finish:int -> (char -> bool) -> bool 
@@ -59524,7 +59524,7 @@ val make_unused : unit -> Ident.t
    Invariant: if name is not converted, the reference should be equal
 *)
 val convert : string -> string
-val property_no_need_convert : string -> bool 
+
 
 val undefined : Ident.t 
 val is_js_or_global : Ident.t -> bool
@@ -59834,8 +59834,6 @@ let convert (name : string) =
   else name_mangle name 
 
 (** keyword could be used in property *)
-let property_no_need_convert s = 
-  s == name_mangle s 
 
 (* It is currently made a persistent ident to avoid fresh ids 
     which would result in different signature files
@@ -86171,17 +86169,49 @@ let pp_string f  (* ?(utf=false)*) s =
   P.string f "\""
 ;;
 
+(**
+
+  https://stackoverflow.com/questions/9367572/rules-for-unquoted-javascript-object-literal-keys
+  https://mathiasbynens.be/notes/javascript-properties
+  https://mathiasbynens.be/notes/javascript-identifiers
+
+  Let's not do smart things
+   {[
+     { 003 : 1} 
+   ]}
+  becomes 
+   {[
+     { 3 : 1}
+   ]}
+*)
+
+let obj_property_no_need_quot s = 
+  let len = String.length s in 
+  if len > 0 then 
+    match String.unsafe_get s 0 with 
+    | '$' | '_'
+    | 'a'..'z'| 'A' .. 'Z' ->
+      Ext_string.for_all_range
+        ~start:1 ~finish:(len - 1) s
+        (function 
+          | 'a'..'z'|'A'..'Z'
+          | '$' | '_' 
+          | '0' .. '9' -> true
+          | _ -> false)
+
+    | _ -> false
+  else 
+    false 
 (** used in printing keys 
     {[
       {"x" : x};;
       {x : x }
-    ]}
+        {"50x" : 2 } GPR #1943
+]}
+    Note we can not treat it in the same way when printing
+    [x.id] vs [{id : xx}]
+    for example, id can be number in object literal
 *)
-let property_string f s = 
-  if Ext_ident.property_no_need_convert s  then 
-    P.string f s
-  else 
-    pp_string f s
 
 (** used in property access 
     {[
@@ -86190,7 +86220,7 @@ let property_string f s =
     ]}
 *)
 let property_access f s = 
-  if Ext_ident.property_no_need_convert s  then
+  if obj_property_no_need_quot s then 
     begin 
       P.string f L.dot;
       P.string f s; 
@@ -86495,7 +86525,7 @@ and  pp_function method_
     since it can be either [int] or [string]
 *)
 and output_one : 'a . 
-                   _ -> P.t -> (P.t -> 'a -> unit) -> 'a J.case_clause -> _
+  _ -> P.t -> (P.t -> 'a -> unit) -> 'a J.case_clause -> _
   = fun cxt f  pp_cond
     ({case = e; body = (sl,break)} : _ J.case_clause) -> 
     let cxt = 
@@ -87117,7 +87147,10 @@ and property_name cxt f (s : J.property_name) : unit =
   | Tag -> P.string f L.tag
   | Length -> P.string f L.length
   | Key s -> 
-    property_string  f s 
+    if obj_property_no_need_quot s then 
+      P.string f s 
+    else pp_string f s   
+
   | Int_key i -> P.string f (string_of_int i)
 
 and property_name_and_value_list cxt f l : Ext_pp_scope.t =

@@ -12,7 +12,7 @@
     "problemMatcher": {
         "fileLocation": "absolute",
         "owner": "ocaml",
-        "watching": {
+        "background": {
             "activeOnStart": false,
             "beginsPattern": ">>>> Start compiling",
             "endsPattern": ">>>> Finish compiling"

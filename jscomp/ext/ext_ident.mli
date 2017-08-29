@@ -54,7 +54,7 @@ val make_unused : unit -> Ident.t
    Invariant: if name is not converted, the reference should be equal
 *)
 val convert : string -> string
-val property_no_need_convert : string -> bool 
+
 
 val undefined : Ident.t 
 val is_js_or_global : Ident.t -> bool
