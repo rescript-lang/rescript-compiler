@@ -296,8 +296,6 @@ let convert (name : string) =
   else name_mangle name 
 
 (** keyword could be used in property *)
-let property_no_need_convert s = 
-  s == name_mangle s 
 
 (* It is currently made a persistent ident to avoid fresh ids 
     which would result in different signature files

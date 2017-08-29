@@ -1713,7 +1713,7 @@ val ends_with_then_chop : string -> string -> string option
 
 val escaped : string -> string
 
-(** the range is [start, finish) 
+(** the range is [start, finish]
 *)
 val for_all_range : 
   string -> start:int -> finish:int -> (char -> bool) -> bool 
@@ -6443,7 +6443,7 @@ val make_unused : unit -> Ident.t
    Invariant: if name is not converted, the reference should be equal
 *)
 val convert : string -> string
-val property_no_need_convert : string -> bool 
+
 
 val undefined : Ident.t 
 val is_js_or_global : Ident.t -> bool
@@ -6753,8 +6753,6 @@ let convert (name : string) =
   else name_mangle name 
 
 (** keyword could be used in property *)
-let property_no_need_convert s = 
-  s == name_mangle s 
 
 (* It is currently made a persistent ident to avoid fresh ids 
     which would result in different signature files
