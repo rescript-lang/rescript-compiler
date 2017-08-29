@@ -290,6 +290,7 @@ CORE_SRCS= js_runtime_modules \
 	lam_stats_export lam_pass_alpha_conversion lam_pass_collect\
 	js_dump_lit\
 	js_dump_string\
+	js_dump_property\
 	js_dump \
 	js_pass_debug\
 	js_of_lam_option js_output lam_compile_global \

@@ -265,6 +265,7 @@ bin/whole_compiler.ml : ../vendor/ocaml/typing/typemod.ml
 bin/whole_compiler.ml : ../vendor/ocaml/utils/clflags.mli
 bin/whole_compiler.ml : ../vendor/ocaml/utils/terminfo.ml
 bin/whole_compiler.ml : ../vendor/ocaml/utils/warnings.ml
+bin/whole_compiler.ml : core/js_dump_property.ml
 bin/whole_compiler.ml : core/js_of_lam_array.mli
 bin/whole_compiler.ml : core/js_of_lam_block.mli
 bin/whole_compiler.ml : core/js_of_lam_module.ml
@@ -306,6 +307,7 @@ bin/whole_compiler.ml : ../vendor/ocaml/typing/typetexp.ml
 bin/whole_compiler.ml : ../vendor/ocaml/utils/consistbl.ml
 bin/whole_compiler.ml : ../vendor/ocaml/utils/terminfo.mli
 bin/whole_compiler.ml : ../vendor/ocaml/utils/warnings.mli
+bin/whole_compiler.ml : core/js_dump_property.mli
 bin/whole_compiler.ml : core/js_implementation.ml
 bin/whole_compiler.ml : core/js_of_lam_module.mli
 bin/whole_compiler.ml : core/js_of_lam_option.mli

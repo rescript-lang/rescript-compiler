@@ -81,67 +81,6 @@ let op_prec, op_str  =
 
 
 
-(**
-
-  https://stackoverflow.com/questions/9367572/rules-for-unquoted-javascript-object-literal-keys
-  https://mathiasbynens.be/notes/javascript-properties
-  https://mathiasbynens.be/notes/javascript-identifiers
-
-  Let's not do smart things
-   {[
-     { 003 : 1} 
-   ]}
-  becomes 
-   {[
-     { 3 : 1}
-   ]}
-*)
-
-let obj_property_no_need_quot s = 
-  let len = String.length s in 
-  if len > 0 then 
-    match String.unsafe_get s 0 with 
-    | '$' | '_'
-    | 'a'..'z'| 'A' .. 'Z' ->
-      Ext_string.for_all_range
-        ~start:1 ~finish:(len - 1) s
-        (function 
-          | 'a'..'z'|'A'..'Z'
-          | '$' | '_' 
-          | '0' .. '9' -> true
-          | _ -> false)
-
-    | _ -> false
-  else 
-    false 
-(** used in printing keys 
-    {[
-      {"x" : x};;
-      {x : x }
-        {"50x" : 2 } GPR #1943
-]}
-    Note we can not treat it in the same way when printing
-    [x.id] vs [{id : xx}]
-    for example, id can be number in object literal
-*)
-
-(** used in property access 
-    {[
-      f.x ;;
-      f["x"];;
-    ]}
-*)
-let property_access f s = 
-  if obj_property_no_need_quot s then 
-    begin 
-      P.string f L.dot;
-      P.string f s; 
-    end
-  else
-    begin 
-      P.bracket_group f 1 @@ fun _ ->
-      Js_dump_string.pp_string f s
-    end
 
 
 
@@ -490,7 +429,7 @@ and vident cxt f  (v : J.vident) =
       cxt
     | Qualified (id, External _, Some name) ->
       let cxt = Ext_pp_scope.ident cxt f id in
-      property_access f name ;
+      Js_dump_property.property_access f name ;
       cxt
 
   end
@@ -991,7 +930,7 @@ and
   | Dot (e, s,normal) ->
     let action () = 
       let cxt = expression 15 cxt f e in
-      property_access f s ;
+      Js_dump_property.property_access f s ;
       (* See [ .obj_of_exports] 
          maybe in the ast level we should have 
          refer and export
@@ -1058,11 +997,7 @@ and property_name cxt f (s : J.property_name) : unit =
   match s with
   | Tag -> P.string f L.tag
   | Length -> P.string f L.length
-  | Key s -> 
-    if obj_property_no_need_quot s then 
-      P.string f s 
-    else Js_dump_string.pp_string f s   
-
+  | Key s -> Js_dump_property.property_key f s 
   | Int_key i -> P.string f (string_of_int i)
 
 and property_name_and_value_list cxt f l : Ext_pp_scope.t =
