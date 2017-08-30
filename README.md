@@ -126,7 +126,7 @@ Execution Time:
 Compiled Size:
 
 - BuckleScript (production): 899 Bytes
-- JavaScript: 55.3K Bytes
+- JavaScript: 55.300 Bytes
 
 ##### BuckleScript (OCaml stdlib)
 
