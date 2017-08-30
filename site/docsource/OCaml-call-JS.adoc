@@ -28,13 +28,14 @@ console.log("\xe4\xbd\xa0\xe5\xa5\xbd");
 
 Luckily, OCaml allows customized multiple-line string support, BuckleScript *reserves* the delimiter `js` and `j` (`j` is unused so far).
 
+.Input:
 [source,ocaml]
 --------------
 Js.log {js|你好，
 世界|js}
 --------------
 
-.Output
+.Output:
 [source,js]
 --------------
 console.log("你好，\n世界");
@@ -47,7 +48,7 @@ Inside the `js` delimiter, the escape convention is like JavaScript
 Js.log {js|\x3f\u003f\b\t\n\v\f\r\0"'|js}
 --------------
 
-.Output
+.Output:
 [source,js]
 --------------
 console.log("\x3f\u003f\b\t\n\v\f\r\0\"\'");
@@ -117,7 +118,7 @@ Users need to declare types for foreign functions
 (JS functions for BuckleScript or C functions for native compiler)
 and provide customized `attributes`.
 
-#### Binding to global value: bs.val
+#### Binding to global value: `bs.val`
 
 [source,ocaml]
 ---------------
@@ -153,7 +154,7 @@ external imul : int -> int -> int =
 ---------------
 =====
 
-#### Scoped values: bs.scope (@since 1.7.2)
+#### Scoped values: `bs.scope` (@since 1.7.2)
 
 In JS library, it is quite common to use a name as namespace,
 for example, if the user want to write a binding to
@@ -171,19 +172,19 @@ let f a b c  =
   executeCommands "hi"  [|a;b;c|]
 --------------
 
-.Output
+.Output:
 [source,js]
 --------------
 var Vscode = require("vscode");
 function f(a, b, c) {
   Vscode.commands.executeCommands("hi", a, b, c);
-  return process.env;
+  return /* () */0;
 }
 --------------
 
 NOTE `bs.scope` can also be chained as below:
 
-.Exmaple
+.Example
 [source,ocaml]
 -------------
 external makeBuffer : int -> buffer = "Buffer"
@@ -198,7 +199,7 @@ let f2 ()  =
   makeBuffer 20 , hi , ho, imul 1 2
 -------------
 
-.Output
+.Output:
 [source,js]
 -------------
 var Z      = require("z");
@@ -213,12 +214,13 @@ function f2() {
 -------------
 
 
-#### Binding to JavaScript constructor: bs.new
+#### Binding to JavaScript constructor: `bs.new`
 
 `bs.new` is used to create a JavaScript object.
 
 [source,ocaml]
 ----------
+type t
 external create_date : unit -> t = "Date" [@@bs.new]
 let date = create_date ()
 ----------
@@ -229,8 +231,7 @@ var date = new Date();
 ----------
 
 
-
-#### Binding to a value from a module: bs.module
+#### Binding to a value from a module: `bs.module`
 
 .Input:
 [source,ocaml]
@@ -240,7 +241,7 @@ external add2 : int -> int -> int = "add2"[@@bs.module "y", "U"] // <1>
 let f = add 3 4
 let g = add2 3 4
 --------
-<1> "U" will hint the compiler to generate a better name for the module, see output
+<1> `"U"` will hint the compiler to generate a better name for the module, see output
 
 .Output:
 [source,js]
@@ -253,7 +254,7 @@ var g = U.add2(3, 4);
 
 [NOTE]
 ======
-* if `external-declaration` is the same as value-name, it can be left empty, for example,
+* if `external-declaration` is the same as `value-name`, it can be left empty, for example,
 +
 [source,ocaml]
 --------------
@@ -273,7 +274,7 @@ external http : http = "http" [@@bs.module] // <1>
 
 [NOTE]
 ======
-*  if `external-declaration` is the same as value-name, it can be left empty, for example:
+*  if `external-declaration` is the same as `value-name`, it can be left empty, for example:
 +
 [source,ocaml]
 --------------
@@ -282,7 +283,7 @@ external http : http = "" [@@bs.module]
 ======
 
 
-#### Binding to method: bs.send, bs.send.pipe
+#### Binding to method: `bs.send`, `bs.send.pipe`
 
 `bs.send` helps the user send a message to a JS object.
 
@@ -304,7 +305,7 @@ get_by_id dom "xx"
 .Output:
 [source,js]
 --------
-dom.getElementById("xx")
+document.getElementById("xx");
 --------
 
 `bs.send.pipe` is similar to `bs.send` except that the first argument, i.e, the object,
@@ -325,7 +326,7 @@ let test arr =
 
 [NOTE]
 ======
-*  if `external-declaration` is the same as value-name, it can be left empty, for example:
+*  if `external-declaration` is the same as `value-name`, it can be left empty, for example:
 +
 [source,ocaml]
 --------------
@@ -334,20 +335,35 @@ external getElementById : dom -> string -> id =
 --------------
 ======
 
-#### Binding to dynamic key access/set: bs.set_index, bs.get_index
+
+#### Binding to dynamic key access/set: `bs.set_index`, `bs.get_index`
 
 This attribute allows dynamic access to a JavaScript property
 
+.Input:
 [source,ocaml]
 --------
 type t
 external create : int -> t = "Int32Array" [@@bs.new]
 external get : t -> int -> int = "" [@@bs.get_index]
 external set : t -> int -> int -> unit = "" [@@bs.set_index]
+
+let _ =
+  let i32arr = (create 3) in
+  set i32arr 0 42;
+  Js.log (get i32arr 0)
+--------
+
+.Output:
+[source,js]
+--------
+var i32arr = new Int32Array(3);
+i32arr[0] = 42;
+console.log(i32arr[0]);
 --------
 
 
-#### Binding to Getter/Setter: bs.get, bs.set
+#### Binding to Getter/Setter: `bs.get`, `bs.set`
 
 This attribute helps get and set the property of a JavaScript object.
 
@@ -358,7 +374,7 @@ external set_name : textarea -> string -> unit = "name" [@@bs.set]
 external get_name : textarea -> string = "name" [@@bs.get]
 --------
 
-### Splice calling convention: bs.splice
+### Splice calling convention: `bs.splice`
 
 In JS, it is quite common to have a function take variadic arguments.
 BuckleScript supports typing homogeneous variadic arguments. For example,
@@ -370,10 +386,10 @@ let v = join [| "a"; "b"|]
 --------------
 
 [source,js]
-.Output
+.Output:
 ------
-var Path = require("path")
-var v = Path.join("a","b")
+var Path = require("path");
+var v = Path.join("a","b");
 ------
 
 [NOTE]
@@ -405,7 +421,7 @@ let _ =
 --------------
 <1> Here we intentionally made an example to show how to customize a name
 
-Ouptut:
+.Output:
 [source,js]
 -----------
 var Fs = require("fs");
@@ -414,19 +430,30 @@ Fs.readFileSync("xx.txt", "ascii");
 
 Polymorphic variants can also be used to model _enums_.
 
+.Input:
 [source,ocaml]
 -------------
 external test_int_type :
-  ([ `on_closed // <1>
+  ([ `on_closed
    | `on_open [@bs.as 3] // <2>
    | `in_bin // <3>
    ]
    [@bs.int]) -> int =
   "" [@@bs.val]
+
+let _ =
+  test_int_type `in_bin
 -------------
 <1> _`on_closed_ will be encoded as 0
 <2> _`on_open_ will be 3 due to the attribute `bs.as`
 <3> _`in_bin_ will be 4
+
+.Output:
+[source,js]
+-----------
+test_int_type(4);
+-----------
+
 
 #### Using polymorphic variant to model event listener
 
@@ -526,7 +553,7 @@ still be recorded.
 For example,
 [source,ocaml]
 -------------
-external add : (int [@bs.ignore]) -> int -> int = ""
+external add : (int [@bs.ignore]) -> int -> int -> int = ""
 [@@bs.val]
 let v = add 0 1 2 // <1>
 -------------
@@ -535,11 +562,12 @@ let v = add 0 1 2 // <1>
 .Output:
 [source,javascript]
 -----------
-var v = add (1,2)
+var v = add (1,2);
 -----------
 
 This is very useful to combine GADT:
 
+.Input
 [source,ocaml]
 -------------
 type _ kind =
@@ -550,6 +578,13 @@ external add : ('a kind [@bs.ignore]) -> 'a -> 'a -> 'a = "" [@@bs.val]
 let () =
   Js.log (add Float 3.0 2.0);
   Js.log (add String "x" "y");
+-------------
+
+.Output
+[source,js]
+-------------
+console.log(add(3.0, 2.0));
+console.log(add("x", "y"));
 -------------
 
 User can also have a payload for the GADT:
@@ -574,7 +609,7 @@ Using a GADT as a `[@bs.ignore]` argument as described to achieve a single polym
 
 #### Fixed Arguments
 
-Contrary to the Phantom arguments, `_[@bs.as]` is introduced to attach the const
+Contrary to the Phantom arguments, `_ [@bs.as]` is introduced to attach constant
 data.
 
 For example:
@@ -589,7 +624,7 @@ let () =
         Js.log( "error code: " ^ string_of_int exit_code ))
 --------------
 
-.Output
+.Output:
 [source,js]
 -----------
 process.on("exit", function (exit_code) {
@@ -604,25 +639,25 @@ It can also be used in combination with other attributes, for example:
 --------------
 type process
 
-external on_exit : (_ [@bs.as "exit"]) -> (int -> unit) -> unit =
+external on_exit : (_ [@bs.as "exit"]) -> (int -> unit) -> process =
     "on" [@@bs.send.pipe: process]
 let register (p : process) =
         p |> on_exit (fun i -> Js.log i)
 
 --------------
 
-.Output
+.Output:
 [source,js]
 -----------
 function register(p) {
-  return p.on("exit", function (i) {
-              console.log(i);
-              return /* () */0;
-            });
+  return p.on("exit", (function (i) {
+                console.log(i);
+                return /* () */0;
+              }));
 }
 -----------
 
-.Input
+.Input:
 [source,ocaml]
 --------------
 external io_config :
@@ -631,7 +666,7 @@ external io_config :
 let config = io_config ~cwd:"." ()
 --------------
 
-.Output
+.Output:
 [source,js]
 -----------
 var config = {
@@ -646,6 +681,9 @@ So the payload can be more flexiblie with JSON literal support
 
 [source,ocaml]
 --------------
+type t
+external x: t = "" [@@bs.val]
+
 external on_exit_slice5 :
     int
     -> (_ [@bs.as 3])
@@ -667,7 +705,7 @@ external on_exit_slice5 :
 let _ = x |> on_exit_slice5 __LINE__ `a `b [|1;2;3;4;5|]
 --------------
 
-.Output
+.Output:
 [source,js]
 -----------
 x.xx(114, 3, true, false, ("你好"), ( ["你好",1,2,3] ), ( [{ "arr" : ["你好",1,2,3], "encoding" : "utf8"}] ), ( [{ "arr" : ["你好",1,2,3], "encoding" : "utf8"}] ), "xxx", 0, "yyy", "b", 1, 2, 3, 4, 5)
@@ -691,7 +729,6 @@ let require : Node.node_require option = [%bs.node require]
 
 
 ### Binding to callbacks (high-order function)
-
 
 High order functions are functions where the callback can be another
 function. For example, suppose
@@ -770,7 +807,7 @@ function f(x,y){
 No matter which strategy we use, existing typing rules *cannot
 guarantee a function of type `'a -> 'b -> 'c` will have arity 2.*
 
-#### [@bs] for explicit uncurried callback
+#### `[@bs]` for explicit uncurried callback
 
 To solve this problem introduced by OCaml's curried calling convention,
 we support a special attribute `[@bs]` at the type level.
@@ -824,7 +861,7 @@ type 'a u2 = int -> string -> (int -> 'a [@bs]) [@bs] // <3>
 <2>  `u1` has arity of 3
 <3>  `u2` has arity of 2, return a function with arity 1
 
-#### [@bs.uncurry] for implicit uncurried callback (@since 1.5.0)
+#### `[@bs.uncurry]` for implicit uncurried callback (@since 1.5.0)
 
 Note the `[@bs]` annotation already solved the problem completely, but it has a drawback
 that it requires users to write `[@bs]` both in definition site and call site.
@@ -957,7 +994,7 @@ not need the `[@bs]` annotation.
 =====
 
 
-#### Bindings to `this` based callbacks: bs.this
+#### Bindings to `this` based callbacks: `bs.this`
 
 Many JS libraries have callbacks which rely on `this` (the source), for
 example:
@@ -978,20 +1015,23 @@ Instead, we introduced a special attribute
 [source,ocaml]
 -----------------------
 type x
+external x: x = "" [@@bs.val]
 external set_onload : x -> (x -> int -> unit [@bs.this]) -> unit = "onload" [@@bs.set]
 external resp : x -> int = "response" [@@bs.get]
-set_onload x begin fun [@bs.this] o v ->
-  Js.log(resp o + v )
-end
+let _ =
+  set_onload x begin fun [@bs.this] o v ->
+    Js.log(resp o + v )
+  end
 -----------------------
 
 .Output:
 [source,js]
 ------------------------------
-x.onload = function(v){
-  var o = this ; // <1>
-  console.log(o.response + v);
-}
+x.onload = (function (v) {
+    var o = this ; // <1>
+    console.log(o.response + v | 0);
+    return /* () */0;
+  });
 ------------------------------
 <1> The first argument is automatically bound to `this`
 
@@ -1535,7 +1575,7 @@ let test dom =
 -------------
 <1> `nullable` attribute will automatically convert null and undefined to `option`
 
-.Output
+.Output:
 [source,js]
 -------------
 function test(dom) {
@@ -1551,8 +1591,8 @@ function test(dom) {
 
 
 Currently 4 directives are supported: `null_to_opt`, `undefined_to_opt`,
-`nullable`(introduced in @1.9.0) and `identity`. 
-`null_undefined_to_opt` works the same as `nullable`, 
+`nullable`(introduced in @1.9.0) and `identity`.
+`null_undefined_to_opt` works the same as `nullable`,
 but it is deprecated, `nullable` is encouraged
 
 [NOTE]
@@ -1607,7 +1647,7 @@ let test () =
   | None -> Js.log "production mode"
 --------------
 
-.Output
+.Output:
 [source,js]
 -----------
 function test() {
@@ -1631,7 +1671,7 @@ let test2 () =
   | None -> Js.log "non node environment"
 --------------
 
-.Output
+.Output:
 [source,js]
 --------------
 function test2() {
