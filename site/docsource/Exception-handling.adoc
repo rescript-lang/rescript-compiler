@@ -1,53 +1,19 @@
 ## Exception handling between OCaml and JS (@since 1.7.0)
 
-In JS world, exception could be any data, while OCaml exception is structured data format and supports pattern match, catch OCaml exception on JS side is no-op.
+In the JS world, exception could be any data, while an OCaml exception is a structured data format and supports pattern matching. Catching an OCaml exception on JS side is therefore a no-op.
 
-### Catch JS exception
-
-To catch Js exception on OCaml side, we categorize all JS exceptions to belong to `Js.Exn.Error`.
+JS exceptions can be raised form OCaml by using the `JS.Exn.raise*` functions, and can be caught as an OCaml exception of the type `Js.Exn.Error` with the JS exception as it's paylaod typed as `Js.Exn.t`. The JS Exception can then either be manipulated with the accessor functions in `Js.Exn`, or casted to a more appropriate type.
 
 [source,ocaml]
 --------------
-let example1 () =
-    match Js.Json.parseExn {| {"x" }|} with
-    | exception Js.Exn.Error err ->
-        Js.log @@ Js.Exn.stack err;
-        None
-    | v -> Some v
-
-let example2 () =
-    try Some (Js.Json.parseExn {| {"x"}|}) with
-    Js.Exn.Error _ -> None
---------------
-
-The exception definition of `Js.Exn.Error` is as below:
-
-[source,ocaml]
---------------
-type t =
-  < stack : string Js.undefined ;
-    message : string Js.undefined ;
-    name : string Js.undefined;
-    fileName : string Js.undefined
-  > Js.t
-
-exception Error of t
---------------
-
-### Raise JS style exception
-
-We provide such functions
-
-[source,ocaml]
---------------
-(** Raise Js exception Error object with stacktrace *)
-val error : string -> 'a
-val evalError : string -> 'a
-val rangeError : string -> 'a
-val referenceError : string -> 'a
-val syntaxError : string -> 'a
-val typeError : string -> 'a
-val uriError : string -> 'a
+let () =
+  try
+    Js.Exn.raiseError "oops!"
+  with
+  | Js.Exn.Error e ->
+    match Js.Exn.message e with
+    | Some message -> Js.log {j|Error: $message|j}
+    | None -> Js.log "An unknown error occurred"
 --------------
 
 Please consult module link:../api/Js.Exn.html[`Js.Exn`] for more details
