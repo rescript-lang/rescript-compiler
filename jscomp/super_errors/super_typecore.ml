@@ -53,7 +53,7 @@ let report_error env ppf = function
       if Super_reason_react.state_escape_scope trace then
         fprintf ppf "@[<v>\
           @[@{<info>Is this a ReasonReact component with state?@}@ If so, is the state type declared _after_ the component declaration?@ \
-          Moving the state type before the declaration should resolved this!@]@,@,\
+          Moving the state type before the declaration should resolve this!@]@,@,\
           @[@{<info>Here's the original error message@}@]@,\
         @]"
       else if Super_reason_react.is_array_wanted_reactElement trace then
