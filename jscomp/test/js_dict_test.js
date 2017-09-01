@@ -28,10 +28,10 @@ var suites_001 = /* :: */[
     (function () {
         return /* Eq */Block.__(0, [
                   /* Some */[43],
-                  Js_primitive.undefined_to_opt({
-                          foo: 43,
-                          bar: 86
-                        }["foo"])
+                  Js_primitive.undefined_to_opt(({
+                            foo: 43,
+                            bar: 86
+                          })["foo"])
                 ]);
       })
   ],
@@ -41,10 +41,10 @@ var suites_001 = /* :: */[
       (function () {
           return /* Eq */Block.__(0, [
                     /* None */0,
-                    Js_primitive.undefined_to_opt({
-                            foo: 43,
-                            bar: 86
-                          }["baz"])
+                    Js_primitive.undefined_to_opt(({
+                              foo: 43,
+                              bar: 86
+                            })["baz"])
                   ]);
         })
     ],
@@ -54,10 +54,10 @@ var suites_001 = /* :: */[
         (function () {
             return /* Eq */Block.__(0, [
                       43,
-                      {
-                          foo: 43,
-                          bar: 86
-                        }["foo"]
+                      ({
+                            foo: 43,
+                            bar: 86
+                          })["foo"]
                     ]);
           })
       ],
