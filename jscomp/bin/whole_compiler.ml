@@ -87575,11 +87575,7 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
     in
     let cxt = 
       (
-        if 
-          (* true 
-             ||  *)
-          need_paren  e 
-          (* if true *)
+        if need_paren  e 
         then (P.paren_group f 1)
         else (P.group f 0)
       ) (fun _ -> expression 0 cxt f e ) in
