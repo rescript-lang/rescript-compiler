@@ -65,14 +65,6 @@ let op_prec, op_str  =
   Js_op_util.(op_prec, op_str)
 
 
-
-
-
-
-
-
-
-
 let rec comma_idents  cxt f (ls : Ident.t list)  =
   match ls with
   | [] -> cxt
@@ -978,8 +970,13 @@ and
       match lst with 
       | [] -> P.string f "{ }" ; cxt 
       | _ -> 
-        P.brace_vgroup f 1 @@ fun _ -> 
-        property_name_and_value_list cxt f lst
+        let action () = 
+          P.brace_vgroup f 1 @@ fun _ -> 
+          property_name_and_value_list cxt f lst in 
+        if l > 1 then 
+          P.paren_group f 1 action
+        else action ()
+
     end
 
 and property_name cxt f (s : J.property_name) : unit =
@@ -1099,14 +1096,6 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
   | Exp {expression_desc = Var _;}
     -> (* Does it make sense to optimize here? *)
     semi f; cxt 
-
-  | Block b -> (* No braces needed here *)
-    ipp_comment f L.start_block;
-    let cxt = statement_list top cxt  f b in
-    ipp_comment f  L.end_block;
-    cxt
-  | Variable l ->
-    variable_declaration top cxt  f l
   | Exp e ->
     (* Parentheses are required when the expression
        starts syntactically with "{" or "function" 
@@ -1169,12 +1158,24 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
     in
     let cxt = 
       (
-        if need_paren  e 
+        if 
+          (* true 
+             ||  *)
+          need_paren  e 
+          (* if true *)
         then (P.paren_group f 1)
         else (P.group f 0)
       ) (fun _ -> expression 0 cxt f e ) in
     semi f;
     cxt 
+
+  | Block b -> (* No braces needed here *)
+    ipp_comment f L.start_block;
+    let cxt = statement_list top cxt  f b in
+    ipp_comment f  L.end_block;
+    cxt
+  | Variable l ->
+    variable_declaration top cxt  f l
 
   | If (e, s1,  s2) -> (* TODO: always brace those statements *)
     P.string f L.if_;

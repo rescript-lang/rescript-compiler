@@ -48,11 +48,11 @@ var suites_001 = /* :: */[
     (function () {
         return /* Eq */Block.__(0, [
                   34,
-                  {
-                      say: (function (x) {
-                          return x + 2 | 0;
-                        })
-                    }.say(32)
+                  ({
+                        say: (function (x) {
+                            return x + 2 | 0;
+                          })
+                      }).say(32)
                 ]);
       })
   ],
@@ -62,11 +62,11 @@ var suites_001 = /* :: */[
       (function () {
           return /* Eq */Block.__(0, [
                     34,
-                    {
-                        say: (function (x) {
-                            return x + 2 | 0;
-                          })
-                      }.say(32)
+                    ({
+                          say: (function (x) {
+                              return x + 2 | 0;
+                            })
+                        }).say(32)
                   ]);
         })
     ],
