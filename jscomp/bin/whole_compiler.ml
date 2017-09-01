@@ -63039,7 +63039,7 @@ type package_name  = string
 
 type t =
   | Empty 
-  | NonBrowser of (package_name * package_info  list)
+  | NonBrowser of package_name * package_info  list
 
 val dump_packages_info : 
   Format.formatter -> t -> unit
@@ -63123,7 +63123,7 @@ type package_info =
 type package_name  = string
 type t =
   | Empty (* No set *)
-  | NonBrowser of (package_name * package_info  list)
+  | NonBrowser of package_name * package_info  list
   (* we don't want force people to use package *) 
 
 
