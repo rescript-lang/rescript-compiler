@@ -85172,7 +85172,7 @@ let from_buffer buf = {
 (* If we have [newline] in [s], 
    all indentations will be broken 
    in the future, we can detect this in [s]
- *)
+*)
 let string t s = 
   t.output_string  s ;
   t.last_new_line <- false
@@ -85230,10 +85230,10 @@ let bracket fmt u =
 let brace_vgroup st n action = 
   string st "{";
   let v = vgroup st n (fun _ -> 
-    newline st; 
-    let v =  action () in
-    v
-              ) in
+      newline st; 
+      let v =  action () in
+      v
+    ) in
   force_newline st;
   string st "}";
   v
@@ -85241,10 +85241,10 @@ let brace_vgroup st n action =
 let bracket_vgroup st n action = 
   string st "[";
   let v = vgroup st n (fun _ -> 
-    newline st; 
-    let v =  action () in
-    v
-              ) in
+      newline st; 
+      let v =  action () in
+      v
+    ) in
   force_newline st;
   string st "]";
   v
@@ -85255,10 +85255,10 @@ let bracket_group st n action =
 let paren_vgroup st n action = 
   string st "(";
   let v = group st n (fun _ -> 
-    newline st; 
-    let v = action () in
-    v
-                     ) in
+      newline st; 
+      let v = action () in
+      v
+    ) in
   newline st;
   string st ")";
   v 
