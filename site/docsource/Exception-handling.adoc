@@ -2,7 +2,7 @@
 
 In the JS world, exception could be any data, while an OCaml exception is a structured data format and supports pattern matching. Catching an OCaml exception on JS side is therefore a no-op.
 
-JS exceptions can be raised form OCaml by using the `JS.Exn.raise*` functions, and can be caught as an OCaml exception of the type `Js.Exn.Error` with the JS exception as it's paylaod typed as `Js.Exn.t`. The JS Exception can then either be manipulated with the accessor functions in `Js.Exn`, or casted to a more appropriate type.
+JS exceptions can be raised from OCaml by using the `JS.Exn.raise*` functions, and can be caught as an OCaml exception of the type `Js.Exn.Error` with the JS exception as it's paylaod typed as `Js.Exn.t`. The JS Exception can then either be manipulated with the accessor functions in `Js.Exn`, or casted to a more appropriate type.
 
 [source,ocaml]
 --------------
@@ -16,7 +16,17 @@ let () =
     | None -> Js.log "An unknown error occurred"
 --------------
 
-Please consult module link:../api/Js.Exn.html[`Js.Exn`] for more details
+[source,ocaml]
+--------------
+let maybeParsed =
+  match Js.Json.parseExn {| {"x" }|} with
+  | value -> Some value
+  | exception Js.Exn.Error e ->
+    Js.log (Js.Exn.message e);
+    None
+--------------
+
+Please consult the link:../api/Js.Exn.html[`Js.Exn` API reference] for more details
 
 
 ## `bs.open`: Type safe external data-source handling (@@since 1.7.0)
