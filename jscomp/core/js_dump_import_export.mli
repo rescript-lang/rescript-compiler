@@ -1,5 +1,5 @@
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+(* Copyright (C) 2017 Authors of BuckleScript
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,35 +17,26 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
 
+val exports : 
+  Ext_pp_scope.t -> Ext_pp.t -> Ident.t list -> Ext_pp_scope.t
 
+val es6_export :   
+  Ext_pp_scope.t -> Ext_pp.t -> Ident.t list -> Ext_pp_scope.t
 
+val requires :  
+  string -> Ext_pp_scope.t ->
+  Ext_pp.t -> (Ident.t * string) list -> 
+  Ext_pp_scope.t 
 
-let log_counter = ref 0 
-
-let dump name (prog : J.program) =
-#if BS_COMPILER_IN_BROWSER || (undefined BS_DEBUG) then
-    prog
-#else 
-  begin
-    let () = 
-      if Js_config.is_same_file ()
-      then 
-        begin
-          incr log_counter ; 
-          Ext_log.dwarn __LOC__ "\n@[[TIME:]%s: %f@]@." name (Sys.time () *. 1000.);          
-          Ext_pervasives.with_file_as_chan       
-            (Ext_filename.chop_extension ~loc:__LOC__ (Js_config.get_current_file()) ^
-             (Printf.sprintf ".%02d.%s.jsx"  !log_counter name)
-            ) (fun chan -> Js_dump_program.dump_program prog chan )
-        end in
-    prog    
-  end
-#end
- 
+val imports : 
+  Ext_pp_scope.t -> 
+  Ext_pp.t -> 
+  (Ident.t * string) list -> 
+  Ext_pp_scope.t

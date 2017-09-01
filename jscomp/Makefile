@@ -291,7 +291,9 @@ CORE_SRCS= js_runtime_modules \
 	js_dump_lit\
 	js_dump_string\
 	js_dump_property\
+	js_dump_import_export\
 	js_dump \
+	js_dump_program \
 	js_pass_debug\
 	js_of_lam_option js_output lam_compile_global \
 	lam_dispatch_primitive \

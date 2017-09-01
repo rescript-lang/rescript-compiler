@@ -232,6 +232,7 @@ bin/whole_compiler.ml : ../vendor/ocaml/typing/subst.mli
 bin/whole_compiler.ml : ../vendor/ocaml/typing/types.mli
 bin/whole_compiler.ml : ../vendor/ocaml/utils/clflags.ml
 bin/whole_compiler.ml : common/lam_methname.mli
+bin/whole_compiler.ml : core/js_dump_program.ml
 bin/whole_compiler.ml : core/js_dump_string.mli
 bin/whole_compiler.ml : core/js_of_lam_array.ml
 bin/whole_compiler.ml : core/js_of_lam_block.ml
@@ -265,6 +266,7 @@ bin/whole_compiler.ml : ../vendor/ocaml/typing/typemod.ml
 bin/whole_compiler.ml : ../vendor/ocaml/utils/clflags.mli
 bin/whole_compiler.ml : ../vendor/ocaml/utils/terminfo.ml
 bin/whole_compiler.ml : ../vendor/ocaml/utils/warnings.ml
+bin/whole_compiler.ml : core/js_dump_program.mli
 bin/whole_compiler.ml : core/js_dump_property.ml
 bin/whole_compiler.ml : core/js_of_lam_array.mli
 bin/whole_compiler.ml : core/js_of_lam_block.mli
@@ -414,6 +416,7 @@ bin/whole_compiler.ml : ../vendor/ocaml/typing/includeclass.ml
 bin/whole_compiler.ml : ../vendor/ocaml/typing/includecore.mli
 bin/whole_compiler.ml : ../vendor/ocaml/typing/outcometree.mli
 bin/whole_compiler.ml : ../vendor/ocaml/typing/typedtreeMap.ml
+bin/whole_compiler.ml : core/js_dump_import_export.ml
 bin/whole_compiler.ml : core/lam_beta_reduce_util.mli
 bin/whole_compiler.ml : core/lam_compile_primitive.ml
 bin/whole_compiler.ml : core/lam_pass_deep_flatten.ml
@@ -425,6 +428,7 @@ bin/whole_compiler.ml : ../vendor/ocaml/bytecomp/translcore.mli
 bin/whole_compiler.ml : ../vendor/ocaml/typing/includeclass.mli
 bin/whole_compiler.ml : ../vendor/ocaml/typing/typedtreeMap.mli
 bin/whole_compiler.ml : core/bs_conditional_initial.ml
+bin/whole_compiler.ml : core/js_dump_import_export.mli
 bin/whole_compiler.ml : core/js_of_lam_float_record.ml
 bin/whole_compiler.ml : core/lam_compile_primitive.mli
 bin/whole_compiler.ml : core/lam_dispatch_primitive.ml

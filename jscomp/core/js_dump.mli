@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+*)
 (* Authors: Jérôme Vouillon, Hongbo Zhang  *)
 
 
@@ -25,18 +25,15 @@
 (** Print JS IR to vanilla Javascript code *)
 
 
+val statement_list : 
+  bool ->
+  Ext_pp_scope.t -> 
+  Ext_pp.t -> 
+  J.block -> 
+  Ext_pp_scope.t
 
-val pp_deps_program :
-  output_prefix:string ->
-  Js_packages_info.module_system -> J.deps_program -> Ext_pp.t -> unit
-
-val dump_deps_program :
-  output_prefix:string ->
-  Js_packages_info.module_system  -> J.deps_program -> out_channel -> unit
 
 (** 2 functions Only used for debugging *)
 val string_of_block : J.block -> string
-
-val dump_program : J.program -> out_channel -> unit
 
 val string_of_expression : J.expression -> string

@@ -85890,6 +85890,201 @@ let array_conv =
   else '"' *)
 
 end
+module Js_dump_import_export : sig 
+#1 "js_dump_import_export.mli"
+(* Copyright (C) 2017 Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+val exports : 
+  Ext_pp_scope.t -> Ext_pp.t -> Ident.t list -> Ext_pp_scope.t
+
+val es6_export :   
+  Ext_pp_scope.t -> Ext_pp.t -> Ident.t list -> Ext_pp_scope.t
+
+val requires :  
+  string -> Ext_pp_scope.t ->
+  Ext_pp.t -> (Ident.t * string) list -> 
+  Ext_pp_scope.t 
+
+val imports : 
+  Ext_pp_scope.t -> 
+  Ext_pp.t -> 
+  (Ident.t * string) list -> 
+  Ext_pp_scope.t
+end = struct
+#1 "js_dump_import_export.ml"
+(* Copyright (C) 2017 Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+module P = Ext_pp
+module L = Js_dump_lit
+let default_export = "default"
+
+(** Exports printer *)
+(** Print exports in Google module format, CommonJS format *)
+let exports cxt f (idents : Ident.t list) = 
+  let outer_cxt, reversed_list, margin = 
+    List.fold_left (fun (cxt, acc, len ) (id : Ident.t) -> 
+        let id_name = id.name in 
+        let s = Ext_ident.convert id_name in        
+        let str,cxt  = Ext_pp_scope.str_of_ident cxt id in         
+        cxt, ( 
+          if id_name = default_export then 
+            (default_export, str) :: (s,str)::acc 
+          else (s,str) :: acc ) , max len (String.length s)   )
+      (cxt, [], 0)  idents in    
+  P.newline f ;
+  Ext_list.rev_iter (fun (s,export) -> 
+      P.group f 0 @@ (fun _ ->  
+          P.string f L.exports;
+          P.string f L.dot;
+          P.string f s; 
+          P.nspace f (margin - String.length s +  1) ;
+          P.string f L.eq;
+          P.space f;
+          P.string f export;          
+          P.string f L.semi;);
+      P.newline f;
+    ) reversed_list;
+  outer_cxt  
+
+
+(** Print module in ES6 format, it is ES6, trailing comma is valid ES6 code *)
+let es6_export cxt f (idents : Ident.t list) = 
+  let outer_cxt, reversed_list, margin = 
+    List.fold_left (fun (cxt, acc, len ) (id : Ident.t) -> 
+        let id_name = id.name in 
+        let s = Ext_ident.convert id_name in        
+        let str,cxt  = Ext_pp_scope.str_of_ident cxt id in         
+        cxt, ( 
+          if id_name = default_export then 
+            (default_export,str)::(s,str)::acc
+          else 
+            (s,str) :: acc ) , max len (String.length s)   )
+      (cxt, [], 0)  idents in    
+  P.newline f ;
+  P.string f L.export ; 
+  P.space f ; 
+  P.brace_vgroup f 1 begin fun _ -> 
+    Ext_list.rev_iter (fun (s,export) -> 
+        P.group f 0 @@ (fun _ ->  
+            P.string f export;          
+            P.nspace f (margin - String.length s +  1) ;
+            if not @@ Ext_string.equal export s then begin 
+              P.string f L.as_ ;
+              P.space f;
+              P.string f s
+            end ;             
+            P.string f L.comma ;);
+        P.newline f;
+      ) reversed_list;
+  end;
+  outer_cxt  
+  
+
+(** Node or Google module style imports *)
+let requires require_lit cxt f (modules : (Ident.t * string) list ) =
+  P.newline f ; 
+  (* the context used to print the following program *)  
+  let outer_cxt, reversed_list, margin  =
+    List.fold_left
+      (fun (cxt, acc, len) (id,s) ->
+         let str, cxt = Ext_pp_scope.str_of_ident cxt id  in
+         cxt, ((str,s) :: acc), (max len (String.length str))
+      )
+      (cxt, [], 0)  modules in
+  P.force_newline f ;    
+  Ext_list.rev_iter (fun (s,file) ->
+      P.string f L.var;
+      P.space f ;
+      P.string f s ;
+      P.nspace f (margin - String.length s + 1) ;
+      P.string f L.eq;
+      P.space f;
+      P.string f require_lit;
+      P.paren_group f 0 @@ (fun _ ->
+          Js_dump_string.pp_string f file  );
+      P.string f L.semi;
+      P.newline f ;
+    ) reversed_list;
+  outer_cxt  
+
+(** ES6 module style imports *)
+let imports  cxt f (modules : (Ident.t * string) list ) =
+  P.newline f ; 
+  (* the context used to print the following program *)  
+  let outer_cxt, reversed_list, margin  =
+    List.fold_left
+      (fun (cxt, acc, len) (id,s) ->
+         let str, cxt = Ext_pp_scope.str_of_ident cxt id  in
+         cxt, ((str,s) :: acc), (max len (String.length str))
+      )
+      (cxt, [], 0)  modules in
+  P.force_newline f ;    
+  Ext_list.rev_iter (fun (s,file) ->
+
+      P.string f L.import;
+      P.space f ;
+      P.string f L.star ;
+      P.space f ; (* import * as xx \t from 'xx*) 
+      P.string f L.as_ ; 
+      P.space f ; 
+      P.string f s ; 
+      P.nspace f (margin - String.length s + 1) ;      
+      P.string f L.from;
+      P.space f;
+      Js_dump_string.pp_string f file ;
+      P.string f L.semi ;
+      P.newline f ;
+    ) reversed_list;
+  outer_cxt
+
+  
+end
 module Js_dump_property : sig 
 #1 "js_dump_property.mli"
 (* Copyright (C) 2017 Authors of BuckleScript
@@ -86169,97 +86364,6 @@ let caml_float_literal_to_js_string v =
 
 
 end
-module Js_packages_state : sig 
-#1 "js_packages_state.mli"
-(* Copyright (C) 2017 Authors of BuckleScript
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-val get_package_name : 
-  unit -> string option
-
-val set_package_name : string -> unit 
-
-val set_package_map : string -> unit 
-
-val get_packages_info : 
-  unit -> Js_packages_info.t 
-
-val update_npm_package_path : 
-  string -> unit   
-end = struct
-#1 "js_packages_state.ml"
-(* Copyright (C) 2017 Authors of BuckleScript
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-let packages_info  = 
-  ref (Empty : Js_packages_info.t )
-
-let get_package_name () =
-  match !packages_info with
-  | Empty  -> None
-  | NonBrowser(n,_) -> Some n
-
-let set_package_name name =
-  match !packages_info with
-  | Empty -> packages_info := NonBrowser(name,  [])
-  |  _ ->
-    Ext_pervasives.bad_argf "duplicated flag for -bs-package-name"
-
-let set_package_map name = 
-    set_package_name name ; 
-    Clflags.open_modules := 
-      Ext_namespace.namespace_of_package_name name ::
-      !Clflags.open_modules
-      
-let update_npm_package_path s  = 
-  packages_info := Js_packages_info.add_npm_package_path s !packages_info
-
-let get_packages_info () = !packages_info  
-end
 module Js_dump : sig 
 #1 "js_dump.mli"
 (* BuckleScript compiler
@@ -86281,7 +86385,7 @@ module Js_dump : sig
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+*)
 (* Authors: Jérôme Vouillon, Hongbo Zhang  *)
 
 
@@ -86289,19 +86393,16 @@ module Js_dump : sig
 (** Print JS IR to vanilla Javascript code *)
 
 
+val statement_list : 
+  bool ->
+  Ext_pp_scope.t -> 
+  Ext_pp.t -> 
+  J.block -> 
+  Ext_pp_scope.t
 
-val pp_deps_program :
-  output_prefix:string ->
-  Js_packages_info.module_system -> J.deps_program -> Ext_pp.t -> unit
-
-val dump_deps_program :
-  output_prefix:string ->
-  Js_packages_info.module_system  -> J.deps_program -> out_channel -> unit
 
 (** 2 functions Only used for debugging *)
 val string_of_block : J.block -> string
-
-val dump_program : J.program -> out_channel -> unit
 
 val string_of_expression : J.expression -> string
 
@@ -86328,17 +86429,6 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 *)
 (* Authors: Jérôme Vouillon, Hongbo Zhang  *)
-
-let string_of_module_id 
-    ~hint_output_dir 
-    module_system
-    id
-  = 
-  Js_packages_info.string_of_module_id
-    ~hint_output_dir  module_system
-    (Js_packages_state.get_packages_info ())
-    Lam_compile_env.get_package_path_from_cmj
-    id
 
 (*
   http://stackoverflow.com/questions/2846283/what-are-the-rules-for-javascripts-automatic-semicolon-insertion-asi
@@ -87786,125 +87876,6 @@ and block cxt f b =
   (* This one is for '{' *)
   P.brace_vgroup f 1 (fun _ -> statement_list false cxt   f b )
 
-let default_export = "default"
-
-(** Exports printer *)
-(** Print exports in Google module format, CommonJS format *)
-let exports cxt f (idents : Ident.t list) = 
-  let outer_cxt, reversed_list, margin = 
-    List.fold_left (fun (cxt, acc, len ) (id : Ident.t) -> 
-        let id_name = id.name in 
-        let s = Ext_ident.convert id_name in        
-        let str,cxt  = Ext_pp_scope.str_of_ident cxt id in         
-        cxt, ( 
-          if id_name = default_export then 
-            (default_export, str) :: (s,str)::acc 
-          else (s,str) :: acc ) , max len (String.length s)   )
-      (cxt, [], 0)  idents in    
-  P.newline f ;
-  Ext_list.rev_iter (fun (s,export) -> 
-      P.group f 0 @@ (fun _ ->  
-          P.string f L.exports;
-          P.string f L.dot;
-          P.string f s; 
-          P.nspace f (margin - String.length s +  1) ;
-          P.string f L.eq;
-          P.space f;
-          P.string f export;          
-          semi f;);
-      P.newline f;
-    ) reversed_list;
-  outer_cxt  
-
-(** Print module in ES6 format, it is ES6, trailing comma is valid ES6 code *)
-let es6_export cxt f (idents : Ident.t list) = 
-  let outer_cxt, reversed_list, margin = 
-    List.fold_left (fun (cxt, acc, len ) (id : Ident.t) -> 
-        let id_name = id.name in 
-        let s = Ext_ident.convert id_name in        
-        let str,cxt  = Ext_pp_scope.str_of_ident cxt id in         
-        cxt, ( 
-          if id_name = default_export then 
-            (default_export,str)::(s,str)::acc
-          else 
-            (s,str) :: acc ) , max len (String.length s)   )
-      (cxt, [], 0)  idents in    
-  P.newline f ;
-  P.string f L.export ; 
-  P.space f ; 
-  P.brace_vgroup f 1 begin fun _ -> 
-    Ext_list.rev_iter (fun (s,export) -> 
-        P.group f 0 @@ (fun _ ->  
-            P.string f export;          
-            P.nspace f (margin - String.length s +  1) ;
-            if not @@ Ext_string.equal export s then begin 
-              P.string f L.as_ ;
-              P.space f;
-              P.string f s
-            end ;             
-            P.string f L.comma ;);
-        P.newline f;
-      ) reversed_list;
-  end;
-  outer_cxt  
-
-
-(** Node or Google module style imports *)
-let requires require_lit cxt f (modules : (Ident.t * string) list ) =
-  P.newline f ; 
-  (* the context used to print the following program *)  
-  let outer_cxt, reversed_list, margin  =
-    List.fold_left
-      (fun (cxt, acc, len) (id,s) ->
-         let str, cxt = Ext_pp_scope.str_of_ident cxt id  in
-         cxt, ((str,s) :: acc), (max len (String.length str))
-      )
-      (cxt, [], 0)  modules in
-  P.force_newline f ;    
-  Ext_list.rev_iter (fun (s,file) ->
-      P.string f L.var;
-      P.space f ;
-      P.string f s ;
-      P.nspace f (margin - String.length s + 1) ;
-      P.string f L.eq;
-      P.space f;
-      P.string f require_lit;
-      P.paren_group f 0 @@ (fun _ ->
-          Js_dump_string.pp_string f file  );
-      semi f ;
-      P.newline f ;
-    ) reversed_list;
-  outer_cxt
-(** ES6 module style imports *)
-let imports  cxt f (modules : (Ident.t * string) list ) =
-  P.newline f ; 
-  (* the context used to print the following program *)  
-  let outer_cxt, reversed_list, margin  =
-    List.fold_left
-      (fun (cxt, acc, len) (id,s) ->
-         let str, cxt = Ext_pp_scope.str_of_ident cxt id  in
-         cxt, ((str,s) :: acc), (max len (String.length str))
-      )
-      (cxt, [], 0)  modules in
-  P.force_newline f ;    
-  Ext_list.rev_iter (fun (s,file) ->
-
-      P.string f L.import;
-      P.space f ;
-      P.string f L.star ;
-      P.space f ; (* import * as xx \t from 'xx*) 
-      P.string f L.as_ ; 
-      P.space f ; 
-      P.string f s ; 
-      P.nspace f (margin - String.length s + 1) ;      
-      P.string f L.from;
-      P.space f;
-      Js_dump_string.pp_string f file ;
-      semi f ;
-      P.newline f ;
-    ) reversed_list;
-  outer_cxt
-
 
 
 
@@ -87912,7 +87883,213 @@ let program f cxt   ( x : J.program ) =
   let () = P.force_newline f in
   let cxt =  statement_list true cxt f x.block  in
   let () = P.force_newline f in
-  exports cxt f x.exports
+  Js_dump_import_export.exports cxt f x.exports
+
+let dump_program (x : J.program) oc = 
+  ignore (program (P.from_channel oc)  Ext_pp_scope.empty  x )
+
+let string_of_block  block  
+  = 
+  let buffer  = Buffer.create 50 in
+  begin
+    let f = P.from_buffer buffer in
+    let _scope =  statement_list true Ext_pp_scope.empty  f block in
+    P.flush  f ();
+    Buffer.contents buffer     
+  end
+
+
+let string_of_expression e =
+  let buffer  = Buffer.create 50 in
+  begin
+    let f = P.from_buffer buffer in
+    let _scope =  expression 0  Ext_pp_scope.empty  f e in
+    P.flush  f ();
+    Buffer.contents buffer     
+  end  
+
+end
+module Js_packages_state : sig 
+#1 "js_packages_state.mli"
+(* Copyright (C) 2017 Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+val get_package_name : 
+  unit -> string option
+
+val set_package_name : string -> unit 
+
+val set_package_map : string -> unit 
+
+val get_packages_info : 
+  unit -> Js_packages_info.t 
+
+val update_npm_package_path : 
+  string -> unit   
+end = struct
+#1 "js_packages_state.ml"
+(* Copyright (C) 2017 Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+let packages_info  = 
+  ref (Empty : Js_packages_info.t )
+
+let get_package_name () =
+  match !packages_info with
+  | Empty  -> None
+  | NonBrowser(n,_) -> Some n
+
+let set_package_name name =
+  match !packages_info with
+  | Empty -> packages_info := NonBrowser(name,  [])
+  |  _ ->
+    Ext_pervasives.bad_argf "duplicated flag for -bs-package-name"
+
+let set_package_map name = 
+    set_package_name name ; 
+    Clflags.open_modules := 
+      Ext_namespace.namespace_of_package_name name ::
+      !Clflags.open_modules
+      
+let update_npm_package_path s  = 
+  packages_info := Js_packages_info.add_npm_package_path s !packages_info
+
+let get_packages_info () = !packages_info  
+end
+module Js_dump_program : sig 
+#1 "js_dump_program.mli"
+(* Copyright (C) 2017 Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+val dump_program : J.program -> out_channel -> unit
+
+
+val pp_deps_program :
+  output_prefix:string ->
+  Js_packages_info.module_system -> J.deps_program -> Ext_pp.t -> unit
+
+
+val dump_deps_program :
+  output_prefix:string ->
+  Js_packages_info.module_system  -> J.deps_program -> out_channel -> unit
+  
+end = struct
+#1 "js_dump_program.ml"
+(* Copyright (C) 2017 Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+module P = Ext_pp
+module L = Js_dump_lit 
+
+
+let string_of_module_id 
+    ~hint_output_dir 
+    module_system
+    id
+  = 
+  Js_packages_info.string_of_module_id
+    ~hint_output_dir  module_system
+    (Js_packages_state.get_packages_info ())
+    Lam_compile_env.get_package_path_from_cmj
+    id
+
+let program f cxt   ( x : J.program ) = 
+  let () = P.force_newline f in
+  let cxt =  Js_dump.statement_list true cxt f x.block  in
+  let () = P.force_newline f in
+  Js_dump_import_export.exports cxt f x.exports
+
+let dump_program (x : J.program) oc = 
+  ignore (program (P.from_channel oc)  Ext_pp_scope.empty  x )
+
 
 let goog_program ~output_prefix f goog_package (x : J.deps_program)  = 
   P.newline f ;
@@ -87920,9 +88097,9 @@ let goog_program ~output_prefix f goog_package (x : J.deps_program)  =
   P.string f "(";
   P.string f (Printf.sprintf "%S" goog_package);
   P.string f ")";
-  semi f ;
+  P.string f L.semi;
   let cxt = 
-    requires
+    Js_dump_import_export.requires
       L.goog_require
       Ext_pp_scope.empty
       f 
@@ -87938,9 +88115,10 @@ let goog_program ~output_prefix f goog_package (x : J.deps_program)  =
   in
   program f cxt x.program  
 
+
 let node_program ~output_prefix f ( x : J.deps_program) = 
   let cxt = 
-    requires 
+    Js_dump_import_export.requires 
       L.require
       Ext_pp_scope.empty
       f
@@ -88000,7 +88178,7 @@ let amd_program ~output_prefix kind f (  x : J.deps_program) =
 
 let es6_program  ~output_prefix fmt f (  x : J.deps_program) = 
   let cxt = 
-    imports
+    Js_dump_import_export.imports
       Ext_pp_scope.empty
       f
       (List.map 
@@ -88013,9 +88191,9 @@ let es6_program  ~output_prefix fmt f (  x : J.deps_program) =
          x.modules)
   in
   let () = P.force_newline f in 
-  let cxt = statement_list true cxt f x.program.block in 
+  let cxt = Js_dump.statement_list true cxt f x.program.block in 
   let () = P.force_newline f in 
-  es6_export cxt f x.program.exports
+  Js_dump_import_export.es6_export cxt f x.program.exports
 
 
 
@@ -88064,8 +88242,6 @@ let pp_deps_program
     P.flush f ()
   end
 
-let dump_program (x : J.program) oc = 
-  ignore (program (P.from_channel oc)  Ext_pp_scope.empty  x )
 
 let dump_deps_program
     ~output_prefix
@@ -88073,29 +88249,7 @@ let dump_deps_program
     x 
     (oc : out_channel) = 
   pp_deps_program ~output_prefix  kind x (P.from_channel oc)
-
-let string_of_block  block  
-  = 
-  let buffer  = Buffer.create 50 in
-  begin
-    let f = P.from_buffer buffer in
-    let _scope =  statement_list true Ext_pp_scope.empty  f block in
-    P.flush  f ();
-    Buffer.contents buffer     
-  end
-
-
-let string_of_expression e =
-  let buffer  = Buffer.create 50 in
-  begin
-    let f = P.from_buffer buffer in
-    let _scope =  expression 0  Ext_pp_scope.empty  f e in
-    P.flush  f ();
-    Buffer.contents buffer     
-  end
-
-
-
+  
 end
 module Js_fold_basic : sig 
 #1 "js_fold_basic.mli"
@@ -101951,7 +102105,7 @@ let lambda_as_module
     | NonBrowser (_, []) -> 
       (* script mode *)
       let output_chan chan =         
-        Js_dump.dump_deps_program ~output_prefix NodeJS lambda_output chan in
+        Js_dump_program.dump_deps_program ~output_prefix NodeJS lambda_output chan in
       (if !Js_config.dump_js then output_chan stdout);
       if not @@ !Clflags.dont_write_files then 
         Ext_pervasives.with_file_as_chan 
@@ -101967,7 +102121,7 @@ let lambda_as_module
     | NonBrowser (_package_name, module_systems) ->
       module_systems |> List.iter begin fun (module_system, _path) -> 
         let output_chan chan  = 
-          Js_dump.dump_deps_program ~output_prefix
+          Js_dump_program.dump_deps_program ~output_prefix
             module_system 
             lambda_output
             chan in
@@ -113924,7 +114078,7 @@ let report_error env ppf = function
       if Super_reason_react.state_escape_scope trace then
         fprintf ppf "@[<v>\
           @[@{<info>Is this a ReasonReact component with state?@}@ If so, is the state type declared _after_ the component declaration?@ \
-          Moving the state type before the declaration should resolved this!@]@,@,\
+          Moving the state type before the declaration should resolve this!@]@,@,\
           @[@{<info>Here's the original error message@}@]@,\
         @]"
       else if Super_reason_react.is_array_wanted_reactElement trace then
