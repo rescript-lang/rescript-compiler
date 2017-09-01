@@ -338,7 +338,10 @@ core/lam_pass_collect.cmi : core/lam_stats.cmi core/lam.cmi \
     ext/ident_set.cmi
 core/js_dump_string.cmi : ext/ext_pp.cmi
 core/js_dump_property.cmi : ext/ext_pp.cmi
-core/js_dump.cmi : core/js_packages_info.cmi core/j.cmx ext/ext_pp.cmi
+core/js_dump_import_export.cmi : ext/ext_pp_scope.cmi ext/ext_pp.cmi
+core/js_dump.cmi : core/j.cmx ext/ext_pp_scope.cmi ext/ext_pp.cmi
+core/js_dump_program.cmi : core/js_packages_info.cmi core/j.cmx \
+    ext/ext_pp.cmi
 core/js_pass_debug.cmi : core/j.cmx
 core/js_of_lam_option.cmi : core/j.cmx
 core/js_output.cmi : core/lam_compile_defs.cmi core/lam.cmi core/j.cmx
@@ -520,16 +523,24 @@ core/js_dump_lit.cmx : ext/literals.cmx ext/ext_string.cmx
 core/js_dump_string.cmx : ext/ext_pp.cmx core/js_dump_string.cmi
 core/js_dump_property.cmx : core/js_dump_string.cmx core/js_dump_lit.cmx \
     ext/ext_string.cmx ext/ext_pp.cmx core/js_dump_property.cmi
-core/js_dump.cmx : core/lam_module_ident.cmx core/lam_compile_env.cmx \
-    core/js_stmt_make.cmx core/js_runtime_modules.cmx \
-    core/js_packages_state.cmx core/js_packages_info.cmx core/js_op_util.cmx \
-    core/js_op.cmx core/js_number.cmx core/js_fun_env.cmx \
+core/js_dump_import_export.cmx : core/js_dump_string.cmx \
+    core/js_dump_lit.cmx ext/ext_string.cmx ext/ext_pp_scope.cmx \
+    ext/ext_pp.cmx ext/ext_list.cmx ext/ext_ident.cmx \
+    core/js_dump_import_export.cmi
+core/js_dump.cmx : core/js_stmt_make.cmx core/js_runtime_modules.cmx \
+    core/js_op_util.cmx core/js_op.cmx core/js_number.cmx core/js_fun_env.cmx \
     core/js_exp_make.cmx core/js_dump_string.cmx core/js_dump_property.cmx \
-    core/js_dump_lit.cmx common/js_config.cmx core/js_closure.cmx core/j.cmx \
-    ext/ident_set.cmx ext/ext_string.cmx ext/ext_pp_scope.cmx ext/ext_pp.cmx \
-    ext/ext_list.cmx ext/ext_ident.cmx common/bs_version.cmx core/js_dump.cmi
-core/js_pass_debug.cmx : core/js_dump.cmx common/js_config.cmx core/j.cmx \
-    ext/ext_pervasives.cmx common/ext_log.cmx ext/ext_filename.cmx \
+    core/js_dump_lit.cmx core/js_dump_import_export.cmx core/js_closure.cmx \
+    core/j.cmx ext/ident_set.cmx ext/ext_pp_scope.cmx ext/ext_pp.cmx \
+    ext/ext_list.cmx ext/ext_ident.cmx core/js_dump.cmi
+core/js_dump_program.cmx : core/lam_module_ident.cmx \
+    core/lam_compile_env.cmx core/js_packages_state.cmx \
+    core/js_packages_info.cmx core/js_dump_string.cmx core/js_dump_lit.cmx \
+    core/js_dump_import_export.cmx core/js_dump.cmx common/js_config.cmx \
+    core/j.cmx ext/ext_pp_scope.cmx ext/ext_pp.cmx common/bs_version.cmx \
+    core/js_dump_program.cmi
+core/js_pass_debug.cmx : core/js_dump_program.cmx common/js_config.cmx \
+    core/j.cmx ext/ext_pervasives.cmx common/ext_log.cmx ext/ext_filename.cmx \
     core/js_pass_debug.cmi
 core/js_of_lam_option.cmx : core/js_runtime_modules.cmx core/js_exp_make.cmx \
     core/js_analyzer.cmx core/j.cmx core/js_of_lam_option.cmi
@@ -620,7 +631,7 @@ core/lam_compile_group.cmx : ext/literals.cmx core/lam_util.cmx \
     core/js_pass_tailcall_inline.cmx core/js_pass_scope.cmx \
     core/js_pass_flatten_and_mark_dead.cmx core/js_pass_flatten.cmx \
     core/js_pass_debug.cmx core/js_packages_state.cmx core/js_output.cmx \
-    core/js_fold_basic.cmx core/js_exp_make.cmx core/js_dump.cmx \
+    core/js_fold_basic.cmx core/js_exp_make.cmx core/js_dump_program.cmx \
     common/js_config.cmx core/js_cmj_format.cmx core/j.cmx ext/ident_set.cmx \
     ext/ext_string.cmx ext/ext_pervasives.cmx ext/ext_namespace.cmx \
     common/ext_log.cmx ext/ext_list.cmx ext/ext_ident.cmx \
@@ -645,7 +656,7 @@ core/bspack_main.cmx : ext/string_set.cmx ext/string_hashtbl.cmx \
     ext/ext_string.cmx ext/ext_pervasives.cmx ext/ext_list.cmx ext/ext_io.cmx \
     ext/ext_filename.cmx depends/ast_extract.cmx core/bspack_main.cmi
 core/jsoo_main.cmx : syntax/ppx_entry.cmx core/lam_compile_group.cmx \
-    core/lam_compile_env.cmx core/js_dump.cmx ext/ext_pp.cmx \
+    core/lam_compile_env.cmx core/js_dump_program.cmx ext/ext_pp.cmx \
     common/bs_version.cmx core/bs_conditional_initial.cmx core/jsoo_main.cmi
 core/bspp_main.cmx : core/bspp_main.cmi
 core/js_cmi_datasets.cmx : ext/string_map.cmx core/js_cmi_datasets.cmi
