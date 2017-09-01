@@ -87383,7 +87383,14 @@ and
         let action () = 
           P.brace_vgroup f 1 @@ fun _ -> 
           property_name_and_value_list cxt f lst in 
-        if l > 1 then 
+        if l > 1 then  
+          (* #1946 object literal is easy to be 
+            interpreted as block statement
+            here we avoid parens in such case
+            {[
+              var f = { x : 2 , y : 2}
+            ]}
+          *)
           P.paren_group f 1 action
         else action ()
 
