@@ -4,9 +4,9 @@ var List                    = require("../../lib/js/list.js");
 var Bytes                   = require("../../lib/js/bytes.js");
 var Curry                   = require("../../lib/js/curry.js");
 var $$String                = require("../../lib/js/string.js");
-var Ext_bytes               = require("./ext_bytes.js");
 var Caml_int32              = require("../../lib/js/caml_int32.js");
 var Caml_string             = require("../../lib/js/caml_string.js");
+var Ext_bytes_test          = require("./ext_bytes_test.js");
 var Caml_exceptions         = require("../../lib/js/caml_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
@@ -203,7 +203,7 @@ function escaped(s) {
     };
   };
   if (needs_escape(0)) {
-    return Caml_string.bytes_to_string(Ext_bytes.escaped(Caml_string.bytes_of_string(s)));
+    return Caml_string.bytes_to_string(Ext_bytes_test.escaped(Caml_string.bytes_of_string(s)));
   } else {
     return s;
   }
@@ -229,7 +229,7 @@ function for_all_range(s, start, finish, p) {
   if (start < 0 || finish >= len) {
     throw [
           Caml_builtin_exceptions.invalid_argument,
-          "Ext_string.for_all_range"
+          "Ext_string_test.for_all_range"
         ];
   } else {
     return unsafe_for_all_range(s, start, finish, p);
@@ -273,7 +273,7 @@ function unsafe_is_sub(sub, i, s, j, len) {
   }
 }
 
-var Local_exit = Caml_exceptions.create("Ext_string.Local_exit");
+var Local_exit = Caml_exceptions.create("Ext_string_test.Local_exit");
 
 function find($staropt$star, sub, s) {
   var start = $staropt$star ? $staropt$star[0] : 0;
@@ -323,7 +323,7 @@ function non_overlap_count(sub, s) {
   } else {
     throw [
           Caml_builtin_exceptions.invalid_argument,
-          "Ext_string.non_overlap_count"
+          "Ext_string_test.non_overlap_count"
         ];
   }
 }
@@ -352,7 +352,7 @@ function rfind(sub, s) {
 function tail_from(s, x) {
   var len = s.length;
   if (x > len) {
-    var s$1 = "Ext_string.tail_from " + (s + (" : " + x));
+    var s$1 = "Ext_string_test.tail_from " + (s + (" : " + x));
     throw [
           Caml_builtin_exceptions.invalid_argument,
           s$1
@@ -621,7 +621,7 @@ function no_char(x, ch, i, len) {
   if (i < 0 || i >= str_len || len >= str_len) {
     throw [
           Caml_builtin_exceptions.invalid_argument,
-          "Ext_string.no_char"
+          "Ext_string_test.no_char"
         ];
   } else {
     return unsafe_no_char(x, ch, i, len);

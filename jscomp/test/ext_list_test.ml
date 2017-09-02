@@ -115,7 +115,7 @@ let rec filter_map2 (f: 'a -> 'b -> 'c option) xs ys =
       | None -> filter_map2 f us vs (* idea: rec f us vs instead? *)
       | Some z -> z :: filter_map2 f us vs
     end
-  | _ -> invalid_arg "Ext_list.filter_map2"
+  | _ -> invalid_arg "Ext_list_test.filter_map2"
 
 let filter_map2i (f: int ->  'a -> 'b -> 'c option) xs ys = 
   let rec aux i xs ys = 
@@ -126,7 +126,7 @@ let filter_map2i (f: int ->  'a -> 'b -> 'c option) xs ys =
         | None -> aux (i + 1) us vs (* idea: rec f us vs instead? *)
         | Some z -> z :: aux (i + 1) us vs
       end
-    | _ -> invalid_arg "Ext_list.filter_map2i" in
+    | _ -> invalid_arg "Ext_list_test.filter_map2i" in
   aux 0 xs ys
 
 let rec rev_map_append  f l1 l2 =
@@ -141,7 +141,7 @@ let flat_map2 f lx ly =
       -> List.rev acc
     | x::xs, y::ys 
       ->  aux (List.rev_append (f x y) acc) xs ys
-    | _, _ -> invalid_arg "Ext_list.flat_map2" in
+    | _, _ -> invalid_arg "Ext_list_test.flat_map2" in
   aux [] lx ly
 
 let rec flat_map_aux f acc append lx =
@@ -182,7 +182,7 @@ let init n f =
 let take n l = 
   let arr = Array.of_list l in 
   let arr_length =  Array.length arr in
-  if arr_length  < n then invalid_arg "Ext_list.take"
+  if arr_length  < n then invalid_arg "Ext_list_test.take"
   else (Array.to_list (Array.sub arr 0 n ), 
         Array.to_list (Array.sub arr n (arr_length - n)))
 
@@ -219,7 +219,7 @@ let rec length_larger_than_n n xs ys =
 let exclude_tail (x : 'a list) = 
   let rec aux acc x = 
     match x with 
-    | [] -> invalid_arg "Ext_list.exclude_tail"
+    | [] -> invalid_arg "Ext_list_test.exclude_tail"
     | [ x ] ->  x, List.rev acc
     | y0::ys -> aux (y0::acc) ys in
   aux [] x
@@ -251,9 +251,9 @@ and aux cmp (x : 'a)  (xss : 'a list list) : 'a list list =
 let stable_group cmp lst =  group cmp lst |> List.rev 
 
 let rec drop n h = 
-  if n < 0 then invalid_arg "Ext_list.drop"
+  if n < 0 then invalid_arg "Ext_list_test.drop"
   else if n = 0 then h 
-  else if h = [] then invalid_arg "Ext_list.drop"
+  else if h = [] then invalid_arg "Ext_list_test.drop"
   else 
     drop (n - 1) (List.tl h)
 
@@ -342,12 +342,12 @@ let reduce_from_right fn lst =
   begin match List.rev lst with
     | last :: rest -> 
       List.fold_left  (fun x y -> fn y x) last rest 
-    | _ -> invalid_arg "Ext_list.reduce" 
+    | _ -> invalid_arg "Ext_list_test.reduce" 
   end
 let reduce_from_left fn lst = 
   match lst with 
   | first :: rest ->  List.fold_left fn first rest 
-  | _ -> invalid_arg "Ext_list.reduce_from_left"
+  | _ -> invalid_arg "Ext_list_test.reduce_from_left"
 
 
 type 'a t = 'a list ref
@@ -357,7 +357,7 @@ let create_ref_empty () = ref []
 let ref_top x = 
   match !x with 
   | y::_ -> y 
-  | _ -> invalid_arg "Ext_list.ref_top"
+  | _ -> invalid_arg "Ext_list_test.ref_top"
 
 let ref_empty x = 
   match !x with [] -> true | _ -> false 
@@ -367,7 +367,7 @@ let ref_push x refs =
 
 let ref_pop refs = 
   match !refs with 
-  | [] -> invalid_arg "Ext_list.ref_pop"
+  | [] -> invalid_arg "Ext_list_test.ref_pop"
   | x::rest -> 
     refs := rest ; 
     x     
@@ -375,7 +375,7 @@ let ref_pop refs =
 let rev_except_last xs =
   let rec aux acc xs =
     match xs with
-    | [ ] -> invalid_arg "Ext_list.rev_except_last"
+    | [ ] -> invalid_arg "Ext_list_test.rev_except_last"
     | [ x ] -> acc ,x
     | x :: xs -> aux (x::acc) xs in
   aux [] xs   
@@ -389,7 +389,7 @@ let rec last xs =
   match xs with 
   | [x] -> x 
   | _ :: tl -> last tl 
-  | [] -> invalid_arg "Ext_list.last"
+  | [] -> invalid_arg "Ext_list_test.last"
 
 
 let rec assoc_by_string def (k : string) lst = 
@@ -399,7 +399,7 @@ let rec assoc_by_string def (k : string) lst =
     | None -> assert false 
     | Some x -> x end
   | (k1,v1)::rest -> 
-    if Ext_string.equal k1 k then v1 else 
+    if Ext_string_test.equal k1 k then v1 else 
     assoc_by_string def k rest 
 
 let rec assoc_by_int def (k : int) lst = 

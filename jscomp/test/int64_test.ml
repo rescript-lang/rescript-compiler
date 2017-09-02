@@ -11,7 +11,7 @@ let commutative_add result a b = Mt.Eq((result, result), (add a b, add b a))
 let generic_compare = Pervasives.compare
 
 let shift_left_tests =
-  (Ext_array.range 0 63 |> Array.map (fun i -> Int64.shift_left 1L i) , [|1L; 2L; 4L; 8L; 16L; 32L; 64L; 128L; 256L; 512L; 1024L; 2048L; 4096L;
+  (Ext_array_test.range 0 63 |> Array.map (fun i -> Int64.shift_left 1L i) , [|1L; 2L; 4L; 8L; 16L; 32L; 64L; 128L; 256L; 512L; 1024L; 2048L; 4096L;
   8192L; 16384L; 32768L; 65536L; 131072L; 262144L; 524288L; 1048576L;
   2097152L; 4194304L; 8388608L; 16777216L; 33554432L; 67108864L; 134217728L;
   268435456L; 536870912L; 1073741824L; 2147483648L; 4294967296L; 8589934592L;
@@ -26,7 +26,7 @@ let shift_left_tests =
   -9223372036854775808L|]) 
 
 let shift_right_tests = 
-  (Ext_array.range 0 63 |> Array.map (fun i -> Int64.shift_right 0x8000_0000_0000_0000L i),
+  (Ext_array_test.range 0 63 |> Array.map (fun i -> Int64.shift_right 0x8000_0000_0000_0000L i),
    [|-9223372036854775808L; -4611686018427387904L; -2305843009213693952L;
   -1152921504606846976L; -576460752303423488L; -288230376151711744L;
   -144115188075855872L; -72057594037927936L; -36028797018963968L;
@@ -43,7 +43,7 @@ let shift_right_tests =
   -2L; -1L|])
 
 let shift_right_logical_suites = 
-  (Ext_array.range 0 63 |> Array.map (fun i -> Int64.shift_right_logical 0x8000_0000_0000_0000L i),
+  (Ext_array_test.range 0 63 |> Array.map (fun i -> Int64.shift_right_logical 0x8000_0000_0000_0000L i),
    [|-9223372036854775808L; 4611686018427387904L; 2305843009213693952L;
      1152921504606846976L; 576460752303423488L; 288230376151711744L;
      144115188075855872L; 72057594037927936L; 36028797018963968L;
@@ -154,14 +154,14 @@ let suites :  Mt.pair_suites = Mt.[
       
 ]
                                  @ (let (a,b) = shift_left_tests in    
-     Ext_array.map2i (fun i a b -> Format.asprintf "shift_left_cases %d" i, (fun _ -> Mt.Eq(a,b)) ) a b
+     Ext_array_test.map2i (fun i a b -> Format.asprintf "shift_left_cases %d" i, (fun _ -> Mt.Eq(a,b)) ) a b
      |>  Array.to_list)
                                  @ 
                                  ((let (a,b) = shift_right_tests in    
-                                   Ext_array.map2i (fun i a b -> Format.asprintf "shift_right_cases %d" i, (fun _ -> Mt.Eq(a,b)) ) a b
+                                   Ext_array_test.map2i (fun i a b -> Format.asprintf "shift_right_cases %d" i, (fun _ -> Mt.Eq(a,b)) ) a b
                                    |>  Array.to_list))    @
                                  ((let (a,b) = shift_right_logical_suites in    
-                                   Ext_array.map2i (fun i a b -> Format.asprintf "shift_right_logical_cases %d" i, (fun _ -> Mt.Eq(a,b)) ) a b
+                                   Ext_array_test.map2i (fun i a b -> Format.asprintf "shift_right_logical_cases %d" i, (fun _ -> Mt.Eq(a,b)) ) a b
                                    |>  Array.to_list)) 
 
 

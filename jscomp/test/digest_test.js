@@ -1,16 +1,16 @@
 'use strict';
 
-var Mt          = require("./mt.js");
-var $$Array     = require("../../lib/js/array.js");
-var Block       = require("../../lib/js/block.js");
-var Bytes       = require("../../lib/js/bytes.js");
-var Curry       = require("../../lib/js/curry.js");
-var Digest      = require("../../lib/js/digest.js");
-var Printf      = require("../../lib/js/printf.js");
-var Ext_array   = require("./ext_array.js");
-var Caml_array  = require("../../lib/js/caml_array.js");
-var Pervasives  = require("../../lib/js/pervasives.js");
-var Caml_string = require("../../lib/js/caml_string.js");
+var Mt             = require("./mt.js");
+var $$Array        = require("../../lib/js/array.js");
+var Block          = require("../../lib/js/block.js");
+var Bytes          = require("../../lib/js/bytes.js");
+var Curry          = require("../../lib/js/curry.js");
+var Digest         = require("../../lib/js/digest.js");
+var Printf         = require("../../lib/js/printf.js");
+var Caml_array     = require("../../lib/js/caml_array.js");
+var Pervasives     = require("../../lib/js/pervasives.js");
+var Caml_string    = require("../../lib/js/caml_string.js");
+var Ext_array_test = require("./ext_array_test.js");
 
 function f(x) {
   return Digest.to_hex(Digest.string(x));
@@ -233,7 +233,7 @@ Mt.from_pair_suites("digest_test.ml", Pervasives.$at(/* :: */[
                                         ]);
                               })
                           ];
-                  }), Ext_array.range(0, 129)))));
+                  }), Ext_array_test.range(0, 129)))));
 
 exports.f = f;
 /*  Not a pure module */

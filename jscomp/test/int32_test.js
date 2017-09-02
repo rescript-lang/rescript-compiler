@@ -1,14 +1,14 @@
 'use strict';
 
-var Mt         = require("./mt.js");
-var $$Array    = require("../../lib/js/array.js");
-var Block      = require("../../lib/js/block.js");
-var Curry      = require("../../lib/js/curry.js");
-var Int32      = require("../../lib/js/int32.js");
-var Format     = require("../../lib/js/format.js");
-var Ext_array  = require("./ext_array.js");
-var Caml_int32 = require("../../lib/js/caml_int32.js");
-var Pervasives = require("../../lib/js/pervasives.js");
+var Mt             = require("./mt.js");
+var $$Array        = require("../../lib/js/array.js");
+var Block          = require("../../lib/js/block.js");
+var Curry          = require("../../lib/js/curry.js");
+var Int32          = require("../../lib/js/int32.js");
+var Format         = require("../../lib/js/format.js");
+var Caml_int32     = require("../../lib/js/caml_int32.js");
+var Pervasives     = require("../../lib/js/pervasives.js");
+var Ext_array_test = require("./ext_array_test.js");
 
 function f(x) {
   return /* tuple */[
@@ -20,7 +20,7 @@ function f(x) {
 
 var shift_right_logical_tests_000 = $$Array.map((function (x) {
         return (-1 >>> x) | 0;
-      }), Ext_array.range(0, 31));
+      }), Ext_array_test.range(0, 31));
 
 var shift_right_logical_tests_001 = /* array */[
   -1,
@@ -64,7 +64,7 @@ var shift_right_logical_tests = /* tuple */[
 
 var shift_right_tests_000 = $$Array.map((function (x) {
         return (Int32.min_int >> x);
-      }), Ext_array.range(0, 31));
+      }), Ext_array_test.range(0, 31));
 
 var shift_right_tests_001 = /* array */[
   -2147483648,
@@ -108,7 +108,7 @@ var shift_right_tests = /* tuple */[
 
 var shift_left_tests_000 = $$Array.map((function (x) {
         return (1 << x);
-      }), Ext_array.range(0, 31));
+      }), Ext_array_test.range(0, 31));
 
 var shift_left_tests_001 = /* array */[
   1,
@@ -174,7 +174,7 @@ Mt.from_pair_suites("int32_test.ml", Pervasives.$at(/* :: */[
             ],
             /* [] */0
           ]
-        ], Pervasives.$at($$Array.to_list(Ext_array.map2i((function (i, a, b) {
+        ], Pervasives.$at($$Array.to_list(Ext_array_test.map2i((function (i, a, b) {
                         return /* tuple */[
                                 Curry._1(Format.asprintf(/* Format */[
                                           /* String_literal */Block.__(11, [
@@ -195,7 +195,7 @@ Mt.from_pair_suites("int32_test.ml", Pervasives.$at(/* :: */[
                                             ]);
                                   })
                               ];
-                      }), shift_right_logical_tests_000, shift_right_logical_tests_001)), Pervasives.$at($$Array.to_list(Ext_array.map2i((function (i, a, b) {
+                      }), shift_right_logical_tests_000, shift_right_logical_tests_001)), Pervasives.$at($$Array.to_list(Ext_array_test.map2i((function (i, a, b) {
                             return /* tuple */[
                                     Curry._1(Format.asprintf(/* Format */[
                                               /* String_literal */Block.__(11, [
@@ -216,7 +216,7 @@ Mt.from_pair_suites("int32_test.ml", Pervasives.$at(/* :: */[
                                                 ]);
                                       })
                                   ];
-                          }), shift_right_tests_000, shift_right_tests_001)), $$Array.to_list(Ext_array.map2i((function (i, a, b) {
+                          }), shift_right_tests_000, shift_right_tests_001)), $$Array.to_list(Ext_array_test.map2i((function (i, a, b) {
                             return /* tuple */[
                                     Curry._1(Format.asprintf(/* Format */[
                                               /* String_literal */Block.__(11, [

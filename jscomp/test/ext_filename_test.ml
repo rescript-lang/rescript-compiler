@@ -56,7 +56,7 @@ let combine path1 path2 =
 let path_as_directory x =
   if x = "" then x
   else
-  if Ext_string.ends_with x  Filename.dir_sep then
+  if Ext_string_test.ends_with x  Filename.dir_sep then
     x 
   else 
     x ^ Filename.dir_sep
@@ -81,7 +81,7 @@ let absolute_path s =
 let chop_extension ?(loc="") name =
   try Filename.chop_extension name 
   with Invalid_argument _ -> 
-    Ext_pervasives.invalid_argf 
+    Ext_pervasives_test.invalid_argf 
       "Filename.chop_extension ( %s : %s )"  loc name
 
 let chop_extension_if_any fname =
@@ -124,8 +124,8 @@ let relative_path file_or_dir_1 file_or_dir_2 =
     (match file_or_dir_2 with 
      |`Dir x -> x 
      |`File file2 -> Filename.dirname file2 ) in
-  let dir1 = Ext_string.split relevant_dir1 sep_char   in
-  let dir2 = Ext_string.split relevant_dir2 sep_char  in
+  let dir1 = Ext_string_test.split relevant_dir1 sep_char   in
+  let dir2 = Ext_string_test.split relevant_dir2 sep_char  in
   let rec go (dir1 : string list) (dir2 : string list) = 
     match dir1, dir2 with 
     | x::xs , y :: ys when x = y
@@ -153,13 +153,13 @@ let relative_path file_or_dir_1 file_or_dir_2 =
 *)
 let node_relative_path node_modules_shorten (file1 : t) 
     (`File file2 as dep_file : [`File of string]) = 
-  let v = Ext_string.find  file2 ~sub:Literals.node_modules in 
+  let v = Ext_string_test.find  file2 ~sub:Literals.node_modules in 
   let len = String.length file2 in 
   if node_modules_shorten && v >= 0 then
     
     let rec skip  i =       
       if i >= len then
-        Ext_pervasives.failwithf ~loc:__LOC__ "invalid path: %s"  file2
+        Ext_pervasives_test.failwithf ~loc:__LOC__ "invalid path: %s"  file2
       else 
         (* https://en.wikipedia.org/wiki/Path_(computing))
            most path separator are a single char 
@@ -177,7 +177,7 @@ let node_relative_path node_modules_shorten (file1 : t)
            This seems weird though
         *)
     in 
-    Ext_string.tail_from file2
+    Ext_string_test.tail_from file2
       (skip (v + Literals.node_modules_length)) 
   else 
     relative_path 
@@ -201,7 +201,7 @@ let rec find_root_filename ~cwd filename   =
     if String.length cwd' < String.length cwd then  
       find_root_filename ~cwd:cwd'  filename 
     else 
-      Ext_pervasives.failwithf 
+      Ext_pervasives_test.failwithf 
         ~loc:__LOC__
         "%s not found from %s" filename cwd
 
@@ -265,7 +265,7 @@ let split_aux p =
     if dir = p then dir, acc
     else
       let new_path = Filename.basename p in 
-      if Ext_string.equal new_path Filename.dir_sep then 
+      if Ext_string_test.equal new_path Filename.dir_sep then 
         go dir acc 
         (* We could do more path simplification here
            leave to [rel_normalized_absolute_path]
@@ -289,17 +289,17 @@ let rel_normalized_absolute_path from to_ =
     let rec go xss yss =
       match xss, yss with 
       | x::xs, y::ys -> 
-        if Ext_string.equal x  y then go xs ys 
+        if Ext_string_test.equal x  y then go xs ys 
         else 
           let start = 
-            List.fold_left (fun acc _ -> acc // Ext_string.parent_dir_lit )
-              Ext_string.parent_dir_lit  xs in 
+            List.fold_left (fun acc _ -> acc // Ext_string_test.parent_dir_lit )
+              Ext_string_test.parent_dir_lit  xs in 
           List.fold_left (fun acc v -> acc // v) start yss
-      | [], [] -> Ext_string.empty
+      | [], [] -> Ext_string_test.empty
       | [], y::ys -> List.fold_left (fun acc x -> acc // x) y ys
       | x::xs, [] ->
-        List.fold_left (fun acc _ -> acc // Ext_string.parent_dir_lit )
-          Ext_string.parent_dir_lit xs in
+        List.fold_left (fun acc _ -> acc // Ext_string_test.parent_dir_lit )
+          Ext_string_test.parent_dir_lit xs in
     go paths1 paths2
 
 (*TODO: could be hgighly optimized later 
@@ -331,9 +331,9 @@ let normalize_absolute_path x =
     match paths with 
     | [] -> acc 
     | x :: xs -> 
-      if Ext_string.equal x Ext_string.current_dir_lit then 
+      if Ext_string_test.equal x Ext_string_test.current_dir_lit then 
         normalize_list acc xs 
-      else if Ext_string.equal x Ext_string.parent_dir_lit then 
+      else if Ext_string_test.equal x Ext_string_test.parent_dir_lit then 
         normalize_list (drop_if_exist acc ) xs 
       else   
         normalize_list (x::acc) xs 
@@ -350,15 +350,15 @@ let normalize_absolute_path x =
 
 
 let get_extension x =
-  let pos = Ext_string.rindex_neg x '.' in 
+  let pos = Ext_string_test.rindex_neg x '.' in 
   if pos < 0 then ""
-  else Ext_string.tail_from x pos 
+  else Ext_string_test.tail_from x pos 
 
 
 let simple_convert_node_path_to_os_path =
   if Sys.unix then fun x -> x 
   else if Sys.win32 || Sys.cygwin then 
-    Ext_string.replace_slash_backward 
+    Ext_string_test.replace_slash_backward 
   else failwith ("Unknown OS : " ^ Sys.os_type)
 
 

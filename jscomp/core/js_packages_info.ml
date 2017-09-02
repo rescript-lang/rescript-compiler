@@ -54,7 +54,7 @@ type package_info =
 type package_name  = string
 type t =
   | Empty (* No set *)
-  | NonBrowser of (package_name * package_info  list)
+  | NonBrowser of package_name * package_info  list
   (* we don't want force people to use package *) 
 
 
@@ -204,14 +204,14 @@ let string_of_module_id
       | Ml  -> 
         let id = x.id in
         let js_file =  Ext_namespace.js_name_of_basename id.name in 
-        let rebase different_package package_dir dep =
+        let rebase  ~dependency  ~different_package package_dir=
           let current_unit_dir =
             `Dir (get_output_dir 
                   ~pkg_dir:package_dir module_system 
                   ~hint_output_dir
                   current_package_info
                   ) in
-          Ext_filename.node_relative_path  different_package current_unit_dir dep 
+          Ext_filename.node_relative_path  different_package current_unit_dir dependency 
         in 
         let cmj_path, dependency_pkg_info = 
           match get_package_path_from_cmj x with 
@@ -246,7 +246,7 @@ let string_of_module_id
             Package_found(current_package, path) -> 
             if  current_package = package_name then 
               let package_dir = Lazy.force Ext_filename.package_dir in
-              rebase false package_dir (`File (package_dir // x // js_file)) 
+              rebase ~different_package:false package_dir ~dependency:(`File (package_dir // x // js_file)) 
             else 
               begin match module_system with 
               | AmdJS | NodeJS | Es6 -> 
@@ -276,7 +276,7 @@ let string_of_module_id
             ->    
             if current_package = package_name then 
               let package_dir = Lazy.force Ext_filename.package_dir in
-              rebase false package_dir (`File (
+              rebase ~different_package:false package_dir ~dependency:(`File (
                   package_dir // x // js_file)) 
             else 
               package_name // x // js_file
@@ -290,7 +290,7 @@ let string_of_module_id
             begin match Config_util.find_opt js_file with 
               | Some file -> 
                 let package_dir = Lazy.force Ext_filename.package_dir in
-                rebase true package_dir (`File file) 
+                rebase ~different_package:true package_dir ~dependency:(`File file) 
               (* Code path: when dependency is commonjs 
                  while depedent is Empty or PackageScript
               *)

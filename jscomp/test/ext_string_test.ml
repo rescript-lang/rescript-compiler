@@ -143,7 +143,7 @@ let escaped s =
       | _ -> true
   in
   if needs_escape 0 then
-    Bytes.unsafe_to_string (Ext_bytes.escaped (Bytes.unsafe_of_string s))
+    Bytes.unsafe_to_string (Ext_bytes_test.escaped (Bytes.unsafe_of_string s))
   else
     s
 
@@ -158,7 +158,7 @@ let rec unsafe_for_all_range s ~start ~finish p =
 
 let for_all_range s ~start ~finish p = 
   let len = String.length s in 
-  if start < 0 || finish >= len then invalid_arg "Ext_string.for_all_range"
+  if start < 0 || finish >= len then invalid_arg "Ext_string_test.for_all_range"
   else unsafe_for_all_range s ~start ~finish p 
 
 let for_all (p : char -> bool) s =   
@@ -217,7 +217,7 @@ let non_overlap_count ~sub s =
     let i = find ~start:off ~sub s  in 
     if i < 0 then acc 
     else aux (acc + 1) (i + sub_len) in
-  if String.length sub = 0 then invalid_arg "Ext_string.non_overlap_count"
+  if String.length sub = 0 then invalid_arg "Ext_string_test.non_overlap_count"
   else aux 0 0  
 
 
@@ -237,7 +237,7 @@ let rfind ~sub s =
 
 let tail_from s x = 
   let len = String.length s  in 
-  if  x > len then invalid_arg ("Ext_string.tail_from " ^s ^ " : "^ string_of_int x )
+  if  x > len then invalid_arg ("Ext_string_test.tail_from " ^s ^ " : "^ string_of_int x )
   else String.sub s x (len - x)
 
 
@@ -358,7 +358,7 @@ type check_result =
   | Suffix_mismatch
 (** 
    TODO: move to another module 
-   Make {!Ext_filename} not stateful
+   Make {!Ext_filename_test} not stateful
 *)
 let is_valid_source_name name : check_result =
   match check_any_suffix_case_then_chop name [
@@ -387,7 +387,7 @@ let rec unsafe_no_char_idx x ch i last_idx =
 
 let no_char x ch i len  : bool =
   let str_len = String.length x in 
-  if i < 0 || i >= str_len || len >= str_len then invalid_arg "Ext_string.no_char"   
+  if i < 0 || i >= str_len || len >= str_len then invalid_arg "Ext_string_test.no_char"   
   else unsafe_no_char x ch i len 
 
 

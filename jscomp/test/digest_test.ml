@@ -77,7 +77,7 @@ let f x = Digest.to_hex @@ Digest.string x
                    "e51176a47347e167ed0ed766b6de1a0c"; "020406e1d05cdc2aa287641f7ae2cc39";
                    "e510683b3f5ffe4093d021808bc6ff70"; "b325dc1c6f5e7a2b7cf465b9feab7948"|] in
 
-     Ext_array.range 0 129
+     Ext_array_test.range 0 129
      |> 
      Array.map (fun i -> 
          Printf.sprintf "%d" i, (fun _ -> 

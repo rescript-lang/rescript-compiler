@@ -22,8 +22,11 @@ OTHERS := literals a test_ari test_export2 test_internalOO test_obj_simple_ffi t
 	test_simple_ref test_incr_ref ocaml_array ticker test_filename test_alias mt\
 	mock_mt array_test test_nullary test_for_map2 int_map test_tuple\
 	list_test map_test lexer_test google_closure_test boolean_test equal_exception_test\
-	lazy_test ext_string ext_bytes a_string_test ext_filename a_filename_test test_nested_print\
-	a_scope_bug a_recursive_type test_array_append ext_list a_list_test test_type_based_arity\
+	lazy_test ext_string_test\
+	ext_bytes_test a_string_test \
+	ext_filename_test a_filename_test test_nested_print\
+	a_scope_bug a_recursive_type test_array_append ext_list_test\
+	a_list_test test_type_based_arity\
 	abstract_type curry test_formatter test_cps test_closure test_for_loop test_while_closure\
 	test_while_side_effect for_side_effect_test cps_test for_loop_test queue_test libqueue_test\
 	libarg_test loop_suites_test const_block_test stack_test test_stack\
@@ -35,17 +38,18 @@ OTHERS := literals a test_ari test_export2 test_internalOO test_obj_simple_ffi t
 	regression_print global_exception_regression_test printf_test format_regression loop_regression_test\
 	and_or_tailcall_test const_defs const_defs_test genlex_test cross_module_inline_test runtime_encoding_test\
 	obj_magic_test caml_compare_test rec_module_test guide_for_ext local_exception_test js_obj_test extensible_variant_test\
-	ext_log lam_current_unit test_zero_nullable int64_test string_literal_print_test js_bool_test class_type_ffi_test unsafe_ppx_test\
+	ext_log_test lam_current_unit test_zero_nullable int64_test string_literal_print_test js_bool_test class_type_ffi_test unsafe_ppx_test\
 	js_date js_date_test es6_module_test int_overflow_test float_test bigarray_test float_of_bits_test swap_test int64_mul_div_test\
 	ffi_test shift_test debugger_test caml_format_test js_val epsilon_test io_test random_test ffi_js_test\
-	stringmatch_test printf_sim test_external_unit ext_array int32_test hamming_test pr_regression_test\
+	stringmatch_test printf_sim test_external_unit \
+	ext_array_test int32_test hamming_test pr_regression_test\
 	to_string_test print_alpha_test ffi_arity_test digest_test string_get_set_test exception_raise_test\
 	class_test debug_keep_test demo_int_map const_test class3_test class4_test class5_test class6_test\
 	class7_test class8_test class_repr pq_test mt_global event_ffi hash_test exception_value_test sprintf_reg_test\
 	scanf_test testing tscanf_test scanf_reference_error_regression_test sprintf_reg_test scanf_io fail_comp\
 	stack_comp_test float_array float_record tfloat_record_test basic_module_test offset\
-	pr6726 undef_regression_test tuple_alloc test_unsupported_primitive module_alias ext_pervasives\
-	test_const_propogate limits_test ext_sys test_unsafe_obj_ffi module_missing_conversion\
+	pr6726 undef_regression_test tuple_alloc test_unsupported_primitive module_alias ext_pervasives_test\
+	test_const_propogate limits_test ext_sys_test test_unsafe_obj_ffi module_missing_conversion\
 	ocaml_proto_test test_unsafe_obj_ffi_ppx ppx_apply_test test_http_server\
 	http_types ignore_test test_index obj_literal_ppx_test obj_literal_ppx\
 	gpr_405_test attr_test uncurry_glob_test nested_obj_test nested_obj_literal\

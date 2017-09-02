@@ -50,7 +50,7 @@ type t = {
   npm_package_path : Js_packages_info.t ;
 }
 
-let cmj_magic_number =  "BUCKLE20170811"
+let cmj_magic_number =  "BUCKLE20170901"
 let cmj_magic_number_length = 
   String.length cmj_magic_number
 

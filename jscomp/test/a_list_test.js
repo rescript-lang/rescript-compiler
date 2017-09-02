@@ -1,14 +1,14 @@
 'use strict';
 
-var Mt       = require("./mt.js");
-var Block    = require("../../lib/js/block.js");
-var Ext_list = require("./ext_list.js");
+var Mt            = require("./mt.js");
+var Block         = require("../../lib/js/block.js");
+var Ext_list_test = require("./ext_list_test.js");
 
 var suites_000 = /* tuple */[
   "drop",
   (function () {
       return /* Eq */Block.__(0, [
-                Ext_list.drop(3, /* :: */[
+                Ext_list_test.drop(3, /* :: */[
                       0,
                       /* :: */[
                         1,
@@ -28,7 +28,7 @@ var suites_001 = /* :: */[
     "drop1",
     (function () {
         return /* Eq */Block.__(0, [
-                  Ext_list.drop(2, /* :: */[
+                  Ext_list_test.drop(2, /* :: */[
                         0,
                         /* :: */[
                           1,
@@ -66,7 +66,7 @@ var suites_001 = /* :: */[
                         ]
                       ]
                     ],
-                    Ext_list.flat_map((function (x) {
+                    Ext_list_test.flat_map((function (x) {
                             if (x % 2) {
                               return /* :: */[
                                       1,

@@ -120,7 +120,7 @@ function range(from, to_) {
   if (from > to_) {
     throw [
           Caml_builtin_exceptions.invalid_argument,
-          "Ext_array.range"
+          "Ext_array_test.range"
         ];
   } else {
     return $$Array.init((to_ - from | 0) + 1 | 0, (function (i) {
@@ -134,7 +134,7 @@ function map2i(f, a, b) {
   if (len !== b.length) {
     throw [
           Caml_builtin_exceptions.invalid_argument,
-          "Ext_array.map2i"
+          "Ext_array_test.map2i"
         ];
   } else {
     return $$Array.mapi((function (i, a) {

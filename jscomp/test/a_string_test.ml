@@ -1,7 +1,7 @@
 
-let split = Ext_string.split
+let split = Ext_string_test.split
 
-let split_by = Ext_string.split_by
+let split_by = Ext_string_test.split_by
 
 
 let suites = 

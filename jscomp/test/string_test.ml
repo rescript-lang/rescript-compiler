@@ -75,16 +75,16 @@ let string_of_chars  x = String.concat "" @@ List.map string_of_char  x
     Eq(["aaaa"], rev_split_by_char ',' "aaaa")
   )    ;
   "xsplit", (fun _ -> Eq(["a";"b";"c"], xsplit ~delim:'.' "a.b.c") );
-  "split_empty", (fun _ -> Eq([], Ext_string.split "" '_') );
+  "split_empty", (fun _ -> Eq([], Ext_string_test.split "" '_') );
   "split_empty2", (fun _ -> 
       Eq(["test_unsafe_obj_ffi_ppx.cmi"],
-         Ext_string.split " test_unsafe_obj_ffi_ppx.cmi" ~keep_empty:false ' ') );
-  "rfind", (fun _ -> Eq( 7, Ext_string.rfind "__index__js" ~sub:"__"));
-  "rfind_2", (fun _ -> Eq( 0, Ext_string.rfind "__index_js" ~sub:"__"));
-  "rfind_3", (fun _ -> Eq( -1, Ext_string.rfind "_index_js" ~sub:"__"));
-  "find", (fun _ -> Eq( 0, Ext_string.find "__index__js" ~sub:"__"));
-  "find_2", (fun _ -> Eq( 6, Ext_string.find "_index__js" ~sub:"__"));
-  "find_3", (fun _ -> Eq( -1, Ext_string.find "_index_js" ~sub:"__"));
+         Ext_string_test.split " test_unsafe_obj_ffi_ppx.cmi" ~keep_empty:false ' ') );
+  "rfind", (fun _ -> Eq( 7, Ext_string_test.rfind "__index__js" ~sub:"__"));
+  "rfind_2", (fun _ -> Eq( 0, Ext_string_test.rfind "__index_js" ~sub:"__"));
+  "rfind_3", (fun _ -> Eq( -1, Ext_string_test.rfind "_index_js" ~sub:"__"));
+  "find", (fun _ -> Eq( 0, Ext_string_test.find "__index__js" ~sub:"__"));
+  "find_2", (fun _ -> Eq( 6, Ext_string_test.find "_index__js" ~sub:"__"));
+  "find_3", (fun _ -> Eq( -1, Ext_string_test.find "_index_js" ~sub:"__"));
   "of_char", (fun _ -> Eq( string_of_char '0', String.make 1 '0'));
   "of_chars", (fun _ -> Eq( string_of_chars ['0' ;'1'; '2'], "012"))
 ]

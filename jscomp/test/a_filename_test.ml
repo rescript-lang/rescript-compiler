@@ -5,10 +5,10 @@ let eq loc x y =
   suites := 
     (loc ^" id " ^ (string_of_int !test_id), (fun _ -> Mt.Eq(x,y))) :: !suites
 
-let test = Ext_filename.node_relative_path true 
+let test = Ext_filename_test.node_relative_path true 
 let () =
   eq __LOC__ 
-    (let (//) = Ext_filename.combine in 
+    (let (//) = Ext_filename_test.combine in 
      ("/tmp"// "subdir/file.txt",
       "/tmp"// "/a/tmp.txt",
       "/a/tmp.txt" // "subdir/file.txt"      
@@ -58,20 +58,20 @@ let () =
            (`File "./a/b.js"))
     "./b.js";
   eq __LOC__ 
-    (Ext_filename.get_extension "a.txt"
+    (Ext_filename_test.get_extension "a.txt"
     )
     ".txt";
   eq __LOC__ 
-    (Ext_filename.get_extension "a"
+    (Ext_filename_test.get_extension "a"
     )
     "";
   eq __LOC__ 
-    (Ext_filename.get_extension ".txt"
+    (Ext_filename_test.get_extension ".txt"
     )
     ".txt";
 
   eq __LOC__
-    (Array.map Ext_filename.normalize_absolute_path
+    (Array.map Ext_filename_test.normalize_absolute_path
        [|
          "/gsho/./..";
          "/a/b/../c../d/e/f";

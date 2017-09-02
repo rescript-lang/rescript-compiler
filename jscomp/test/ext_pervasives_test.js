@@ -180,7 +180,7 @@ function dump(r) {
             throw [
                   Caml_builtin_exceptions.assert_failure,
                   [
-                    "ext_pervasives.ml",
+                    "ext_pervasives_test.ml",
                     118,
                     15
                   ]
@@ -190,7 +190,7 @@ function dump(r) {
           throw [
                 Caml_builtin_exceptions.assert_failure,
                 [
-                  "ext_pervasives.ml",
+                  "ext_pervasives_test.ml",
                   118,
                   15
                 ]
