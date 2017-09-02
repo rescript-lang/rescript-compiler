@@ -1,9 +1,9 @@
 'use strict';
 
-var Mt           = require("./mt.js");
-var $$Array      = require("../../lib/js/array.js");
-var Block        = require("../../lib/js/block.js");
-var Ext_filename = require("./ext_filename.js");
+var Mt                = require("./mt.js");
+var $$Array           = require("../../lib/js/array.js");
+var Block             = require("../../lib/js/block.js");
+var Ext_filename_test = require("./ext_filename_test.js");
 
 var suites = [/* [] */0];
 
@@ -27,13 +27,13 @@ function eq(loc, x, y) {
 }
 
 function test(param, param$1) {
-  return Ext_filename.node_relative_path(/* true */1, param, param$1);
+  return Ext_filename_test.node_relative_path(/* true */1, param, param$1);
 }
 
 eq("File \"a_filename_test.ml\", line 10, characters 5-12", /* tuple */[
-      Ext_filename.combine("/tmp", "subdir/file.txt"),
-      Ext_filename.combine("/tmp", "/a/tmp.txt"),
-      Ext_filename.combine("/a/tmp.txt", "subdir/file.txt")
+      Ext_filename_test.combine("/tmp", "subdir/file.txt"),
+      Ext_filename_test.combine("/tmp", "/a/tmp.txt"),
+      Ext_filename_test.combine("/a/tmp.txt", "subdir/file.txt")
     ], /* tuple */[
       "/tmp/subdir/file.txt",
       "/a/tmp.txt",
@@ -96,13 +96,13 @@ eq("File \"a_filename_test.ml\", line 55, characters 5-12", test(/* `Dir */[
           "./a/b.js"
         ]), "./b.js");
 
-eq("File \"a_filename_test.ml\", line 60, characters 5-12", Ext_filename.get_extension("a.txt"), ".txt");
+eq("File \"a_filename_test.ml\", line 60, characters 5-12", Ext_filename_test.get_extension("a.txt"), ".txt");
 
-eq("File \"a_filename_test.ml\", line 64, characters 5-12", Ext_filename.get_extension("a"), "");
+eq("File \"a_filename_test.ml\", line 64, characters 5-12", Ext_filename_test.get_extension("a"), "");
 
-eq("File \"a_filename_test.ml\", line 68, characters 5-12", Ext_filename.get_extension(".txt"), ".txt");
+eq("File \"a_filename_test.ml\", line 68, characters 5-12", Ext_filename_test.get_extension(".txt"), ".txt");
 
-eq("File \"a_filename_test.ml\", line 73, characters 5-12", $$Array.map(Ext_filename.normalize_absolute_path, /* array */[
+eq("File \"a_filename_test.ml\", line 73, characters 5-12", $$Array.map(Ext_filename_test.normalize_absolute_path, /* array */[
           "/gsho/./..",
           "/a/b/../c../d/e/f",
           "/a/b/../c/../d/e/f",

@@ -217,13 +217,13 @@ function filter_map2(f, _xs, _ys) {
       } else {
         throw [
               Caml_builtin_exceptions.invalid_argument,
-              "Ext_list.filter_map2"
+              "Ext_list_test.filter_map2"
             ];
       }
     } else if (ys) {
       throw [
             Caml_builtin_exceptions.invalid_argument,
-            "Ext_list.filter_map2"
+            "Ext_list_test.filter_map2"
           ];
     } else {
       return /* [] */0;
@@ -257,13 +257,13 @@ function filter_map2i(f, xs, ys) {
         } else {
           throw [
                 Caml_builtin_exceptions.invalid_argument,
-                "Ext_list.filter_map2i"
+                "Ext_list_test.filter_map2i"
               ];
         }
       } else if (ys) {
         throw [
               Caml_builtin_exceptions.invalid_argument,
-              "Ext_list.filter_map2i"
+              "Ext_list_test.filter_map2i"
             ];
       } else {
         return /* [] */0;
@@ -309,13 +309,13 @@ function flat_map2(f, lx, ly) {
       } else {
         throw [
               Caml_builtin_exceptions.invalid_argument,
-              "Ext_list.flat_map2"
+              "Ext_list_test.flat_map2"
             ];
       }
     } else if (ly$1) {
       throw [
             Caml_builtin_exceptions.invalid_argument,
-            "Ext_list.flat_map2"
+            "Ext_list_test.flat_map2"
           ];
     } else {
       return List.rev(acc);
@@ -464,7 +464,7 @@ function take(n, l) {
   if (arr_length < n) {
     throw [
           Caml_builtin_exceptions.invalid_argument,
-          "Ext_list.take"
+          "Ext_list_test.take"
         ];
   } else {
     return /* tuple */[
@@ -556,7 +556,7 @@ function exclude_tail(x) {
     } else {
       throw [
             Caml_builtin_exceptions.invalid_argument,
-            "Ext_list.exclude_tail"
+            "Ext_list_test.exclude_tail"
           ];
     }
   };
@@ -610,7 +610,7 @@ function drop(_n, _h) {
     if (n < 0) {
       throw [
             Caml_builtin_exceptions.invalid_argument,
-            "Ext_list.drop"
+            "Ext_list_test.drop"
           ];
     } else if (n) {
       if (h) {
@@ -621,7 +621,7 @@ function drop(_n, _h) {
       } else {
         throw [
               Caml_builtin_exceptions.invalid_argument,
-              "Ext_list.drop"
+              "Ext_list_test.drop"
             ];
       }
     } else {
@@ -812,7 +812,7 @@ function reduce_from_right(fn, lst) {
   } else {
     throw [
           Caml_builtin_exceptions.invalid_argument,
-          "Ext_list.reduce"
+          "Ext_list_test.reduce"
         ];
   }
 }
@@ -823,7 +823,7 @@ function reduce_from_left(fn, lst) {
   } else {
     throw [
           Caml_builtin_exceptions.invalid_argument,
-          "Ext_list.reduce_from_left"
+          "Ext_list_test.reduce_from_left"
         ];
   }
 }
@@ -839,7 +839,7 @@ function ref_top(x) {
   } else {
     throw [
           Caml_builtin_exceptions.invalid_argument,
-          "Ext_list.ref_top"
+          "Ext_list_test.ref_top"
         ];
   }
 }
@@ -869,7 +869,7 @@ function ref_pop(refs) {
   } else {
     throw [
           Caml_builtin_exceptions.invalid_argument,
-          "Ext_list.ref_pop"
+          "Ext_list_test.ref_pop"
         ];
   }
 }
@@ -900,7 +900,7 @@ function rev_except_last(xs) {
     } else {
       throw [
             Caml_builtin_exceptions.invalid_argument,
-            "Ext_list.rev_except_last"
+            "Ext_list_test.rev_except_last"
           ];
     }
   };
@@ -927,7 +927,7 @@ function last(_xs) {
     } else {
       throw [
             Caml_builtin_exceptions.invalid_argument,
-            "Ext_list.last"
+            "Ext_list_test.last"
           ];
     }
   };
@@ -951,7 +951,7 @@ function assoc_by_string(def, k, _lst) {
       throw [
             Caml_builtin_exceptions.assert_failure,
             [
-              "ext_list.ml",
+              "ext_list_test.ml",
               399,
               14
             ]
@@ -978,7 +978,7 @@ function assoc_by_int(def, k, _lst) {
       throw [
             Caml_builtin_exceptions.assert_failure,
             [
-              "ext_list.ml",
+              "ext_list_test.ml",
               409,
               14
             ]

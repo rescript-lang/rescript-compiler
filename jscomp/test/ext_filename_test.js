@@ -11,11 +11,11 @@ var $$String                = require("../../lib/js/string.js");
 var Caml_sys                = require("../../lib/js/caml_sys.js");
 var Filename                = require("../../lib/js/filename.js");
 var Literals                = require("./literals.js");
-var Ext_string              = require("./ext_string.js");
 var Pervasives              = require("../../lib/js/pervasives.js");
 var Caml_string             = require("../../lib/js/caml_string.js");
-var Ext_pervasives          = require("./ext_pervasives.js");
+var Ext_string_test         = require("./ext_string_test.js");
 var CamlinternalLazy        = require("../../lib/js/camlinternalLazy.js");
+var Ext_pervasives_test     = require("./ext_pervasives_test.js");
 var Caml_missing_polyfill   = require("../../lib/js/caml_missing_polyfill.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
@@ -30,7 +30,7 @@ var cwd = Block.__(246, [(function () {
       })]);
 
 function path_as_directory(x) {
-  if (x === "" || Ext_string.ends_with(x, Filename.dir_sep)) {
+  if (x === "" || Ext_string_test.ends_with(x, Filename.dir_sep)) {
     return x;
   } else {
     return x + Filename.dir_sep;
@@ -125,8 +125,8 @@ var os_path_separator_char = Filename.dir_sep.charCodeAt(0);
 function relative_path(file_or_dir_1, file_or_dir_2) {
   var relevant_dir1 = file_or_dir_1[0] >= 781515420 ? Curry._1(Filename.dirname, file_or_dir_1[1]) : file_or_dir_1[1];
   var relevant_dir2 = file_or_dir_2[0] >= 781515420 ? Curry._1(Filename.dirname, file_or_dir_2[1]) : file_or_dir_2[1];
-  var dir1 = Ext_string.split(/* None */0, relevant_dir1, os_path_separator_char);
-  var dir2 = Ext_string.split(/* None */0, relevant_dir2, os_path_separator_char);
+  var dir1 = Ext_string_test.split(/* None */0, relevant_dir1, os_path_separator_char);
+  var dir2 = Ext_string_test.split(/* None */0, relevant_dir2, os_path_separator_char);
   var go = function (_dir1, _dir2) {
     while(true) {
       var dir2 = _dir2;
@@ -176,14 +176,14 @@ function relative_path(file_or_dir_1, file_or_dir_2) {
 
 function node_relative_path(node_modules_shorten, file1, dep_file) {
   var file2 = dep_file[1];
-  var v = Ext_string.find(/* None */0, Literals.node_modules, file2);
+  var v = Ext_string_test.find(/* None */0, Literals.node_modules, file2);
   var len = file2.length;
   if (node_modules_shorten && v >= 0) {
     var skip = function (_i) {
       while(true) {
         var i = _i;
         if (i >= len) {
-          return Curry._1(Ext_pervasives.failwithf("File \"ext_filename.ml\", line 162, characters 38-45", /* Format */[
+          return Curry._1(Ext_pervasives_test.failwithf("File \"ext_filename_test.ml\", line 162, characters 43-50", /* Format */[
                           /* String_literal */Block.__(11, [
                               "invalid path: ",
                               /* String */Block.__(2, [
@@ -205,7 +205,7 @@ function node_relative_path(node_modules_shorten, file1, dep_file) {
         }
       };
     };
-    return Ext_string.tail_from(file2, skip(v + Literals.node_modules_length | 0));
+    return Ext_string_test.tail_from(file2, skip(v + Literals.node_modules_length | 0));
   } else {
     return relative_path(dep_file[0] >= 781515420 ? /* `File */[
                   781515420,
@@ -235,7 +235,7 @@ function find_root_filename(_cwd, filename) {
         continue ;
         
       } else {
-        return Curry._2(Ext_pervasives.failwithf("File \"ext_filename.ml\", line 205, characters 13-20", /* Format */[
+        return Curry._2(Ext_pervasives_test.failwithf("File \"ext_filename_test.ml\", line 205, characters 13-20", /* Format */[
                         /* String */Block.__(2, [
                             /* No_padding */0,
                             /* String_literal */Block.__(11, [
@@ -340,19 +340,19 @@ function rel_normalized_absolute_path(from, to_) {
             
           } else {
             var start = List.fold_left((function (acc, _) {
-                    return Filename.concat(acc, Ext_string.parent_dir_lit);
-                  }), Ext_string.parent_dir_lit, xs);
+                    return Filename.concat(acc, Ext_string_test.parent_dir_lit);
+                  }), Ext_string_test.parent_dir_lit, xs);
             return List.fold_left(Filename.concat, start, yss);
           }
         } else {
           return List.fold_left((function (acc, _) {
-                        return Filename.concat(acc, Ext_string.parent_dir_lit);
-                      }), Ext_string.parent_dir_lit, xs);
+                        return Filename.concat(acc, Ext_string_test.parent_dir_lit);
+                      }), Ext_string_test.parent_dir_lit, xs);
         }
       } else if (yss) {
         return List.fold_left(Filename.concat, yss[0], yss[1]);
       } else {
-        return Ext_string.empty;
+        return Ext_string_test.empty;
       }
     };
   }
@@ -374,10 +374,10 @@ function normalize_absolute_path(x) {
         var xs = paths[1];
         var x = paths[0];
         _paths = xs;
-        if (x === Ext_string.current_dir_lit) {
+        if (x === Ext_string_test.current_dir_lit) {
           continue ;
           
-        } else if (x === Ext_string.parent_dir_lit) {
+        } else if (x === Ext_string_test.parent_dir_lit) {
           _acc = drop_if_exist(acc);
           continue ;
           
@@ -418,11 +418,11 @@ function normalize_absolute_path(x) {
 }
 
 function get_extension(x) {
-  var pos = Ext_string.rindex_neg(x, /* "." */46);
+  var pos = Ext_string_test.rindex_neg(x, /* "." */46);
   if (pos < 0) {
     return "";
   } else {
-    return Ext_string.tail_from(x, pos);
+    return Ext_string_test.tail_from(x, pos);
   }
 }
 
@@ -433,7 +433,7 @@ if (Sys.unix) {
       return x;
     });
 } else if (Sys.win32 || Sys.cygwin) {
-  simple_convert_node_path_to_os_path = Ext_string.replace_slash_backward;
+  simple_convert_node_path_to_os_path = Ext_string_test.replace_slash_backward;
 } else {
   var s = "Unknown OS : Unix";
   throw [
