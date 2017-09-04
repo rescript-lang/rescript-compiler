@@ -23,8 +23,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-val get_package_name : 
-  unit -> string option
 
 val set_package_name : string -> unit 
 

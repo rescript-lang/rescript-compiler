@@ -29,7 +29,6 @@ val proj_rel : string -> string
 val lib_js : string 
 val lib_amd : string 
 val lib_bs : string
-val lib_goog : string 
 val lib_es6 : string 
 val lib_es6_global : string 
 val lib_amd_global : string 

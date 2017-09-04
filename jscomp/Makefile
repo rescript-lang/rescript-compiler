@@ -307,7 +307,7 @@ CORE_SRCS= js_runtime_modules \
 	lam_pass_lets_dce \
 	lam_pass_remove_alias \
 	lam_coercion \
-	lam_compile_group\
+	lam_compile_main\
 	js_implementation ocaml_batch_compile
 CORE_CMXS=$(addprefix core/, $(addsuffix .cmx, $(CORE_SRCS)))
 

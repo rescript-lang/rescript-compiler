@@ -6,7 +6,6 @@
                 "commonjs",
                 "amdjs",
                 "amdjs-global",
-                "goog",
                 "es6",
                 "es6-global"
             ],
@@ -373,7 +372,7 @@
         },
         "package-specs": {
             "$ref": "#/definitions/package-specs",
-            "description": "BuckleScript can currently output to [Commonjs](https://en.wikipedia.org/wiki/CommonJS), [AMD](http://requirejs.org/docs/whyamd.html), [Google module](https://github.com/google/closure-library/wiki/goog.module:-an-ES6-module-like-alternative-to-goog.provide) and [ES6 modules](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import)"
+            "description": "BuckleScript can currently output to [Commonjs](https://en.wikipedia.org/wiki/CommonJS), [AMD](http://requirejs.org/docs/whyamd.html),  and [ES6 modules](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import)"
         },
         "ocamllex": {
             "type": "string",

@@ -110,7 +110,7 @@ let after_parsing_impl ppf sourcefile outputprefix ast =
           |> print_if ppf Clflags.dump_rawlambda Printlambda.lambda
           |> (fun lambda -> 
               match           
-                Lam_compile_group.lambda_as_module
+                Lam_compile_main.lambda_as_module
                   finalenv current_signature 
                   sourcefile  outputprefix lambda  with
               | e -> e 

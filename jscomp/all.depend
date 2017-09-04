@@ -365,7 +365,7 @@ core/lam_pass_lets_dce.cmi : core/lam.cmi
 core/lam_pass_remove_alias.cmi : core/lam_stats.cmi core/lam.cmi
 core/lam_coercion.cmi : core/lam_stats.cmi core/lam_group.cmi core/lam.cmi \
     ext/ident_set.cmi ext/ident_map.cmi
-core/lam_compile_group.cmi : core/j.cmx
+core/lam_compile_main.cmi : core/j.cmx
 core/js_implementation.cmi :
 core/ocaml_batch_compile.cmi :
 core/js_runtime_modules.cmx :
@@ -619,7 +619,7 @@ core/lam_coercion.cmx : ext/string_hash_set.cmx core/lam_util.cmx \
     core/lam_stats_util.cmx core/lam_stats.cmx core/lam_group.cmx \
     core/lam_dce.cmx core/lam.cmx ext/ident_set.cmx ext/ident_map.cmx \
     ext/ident_hashtbl.cmx depends/bs_exception.cmx core/lam_coercion.cmi
-core/lam_compile_group.cmx : ext/literals.cmx core/lam_util.cmx \
+core/lam_compile_main.cmx : ext/literals.cmx core/lam_util.cmx \
     core/lam_stats_export.cmx core/lam_stats.cmx \
     core/lam_pass_remove_alias.cmx core/lam_pass_lets_dce.cmx \
     core/lam_pass_exits.cmx core/lam_pass_deep_flatten.cmx \
@@ -630,14 +630,15 @@ core/lam_compile_group.cmx : ext/literals.cmx core/lam_util.cmx \
     core/js_shake.cmx core/js_runtime_modules.cmx \
     core/js_pass_tailcall_inline.cmx core/js_pass_scope.cmx \
     core/js_pass_flatten_and_mark_dead.cmx core/js_pass_flatten.cmx \
-    core/js_pass_debug.cmx core/js_packages_state.cmx core/js_output.cmx \
-    core/js_fold_basic.cmx core/js_exp_make.cmx core/js_dump_program.cmx \
-    common/js_config.cmx core/js_cmj_format.cmx core/j.cmx ext/ident_set.cmx \
-    ext/ext_string.cmx ext/ext_pervasives.cmx ext/ext_namespace.cmx \
-    common/ext_log.cmx ext/ext_list.cmx ext/ext_ident.cmx \
-    ext/ext_filename.cmx core/lam_compile_group.cmi
+    core/js_pass_debug.cmx core/js_packages_state.cmx \
+    core/js_packages_info.cmx core/js_output.cmx core/js_fold_basic.cmx \
+    core/js_exp_make.cmx core/js_dump_program.cmx common/js_config.cmx \
+    core/js_cmj_format.cmx core/j.cmx ext/ident_set.cmx ext/ext_string.cmx \
+    ext/ext_pervasives.cmx ext/ext_namespace.cmx common/ext_log.cmx \
+    ext/ext_list.cmx ext/ext_ident.cmx ext/ext_filename.cmx \
+    core/lam_compile_main.cmi
 core/js_implementation.cmx : core/ocaml_parse.cmx ext/literals.cmx \
-    core/lam_compile_group.cmx core/lam_compile_env.cmx common/js_config.cmx \
+    core/lam_compile_main.cmx core/lam_compile_env.cmx common/js_config.cmx \
     ext/ext_string.cmx ext/ext_pervasives.cmx ext/ext_namespace.cmx \
     common/ext_log.cmx ext/ext_io.cmx syntax/bs_ast_invariant.cmx \
     depends/binary_ast.cmx core/js_implementation.cmi
@@ -655,7 +656,7 @@ core/bsppx_main.cmx : syntax/ppx_entry.cmx
 core/bspack_main.cmx : ext/string_set.cmx ext/string_hashtbl.cmx \
     ext/ext_string.cmx ext/ext_pervasives.cmx ext/ext_list.cmx ext/ext_io.cmx \
     ext/ext_filename.cmx depends/ast_extract.cmx core/bspack_main.cmi
-core/jsoo_main.cmx : syntax/ppx_entry.cmx core/lam_compile_group.cmx \
+core/jsoo_main.cmx : syntax/ppx_entry.cmx core/lam_compile_main.cmx \
     core/lam_compile_env.cmx core/js_dump_program.cmx ext/ext_pp.cmx \
     common/bs_version.cmx core/bs_conditional_initial.cmx core/jsoo_main.cmi
 core/bspp_main.cmx : core/bspp_main.cmi

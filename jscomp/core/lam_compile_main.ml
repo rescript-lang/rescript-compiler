@@ -32,9 +32,7 @@
 module E = Js_exp_make 
 module S = Js_stmt_make  
 
-open Js_output.Ops
-
-exception Not_a_module
+ open Js_output.Ops 
 
 let compile_group ({filename = file_name; env;} as meta : Lam_stats.t) 
     (x : Lam_group.t) : Js_output.t  = 
@@ -365,7 +363,7 @@ let compile  ~filename output_prefix env _sigs
     )
 ;;
 
-
+let (//) = Filename.concat  
 
 let lambda_as_module 
     env 
@@ -375,38 +373,40 @@ let lambda_as_module
     (lam : Lambda.lambda) = 
   begin 
     Js_config.set_current_file filename ;  
+
 #if BS_DEBUG then    
-    Js_config.set_debug_file "gpr_1891_test.ml";
+    Js_config.set_debug_file "demo.ml";
 #end    
     let lambda_output = compile ~filename output_prefix env sigs lam in
-    let (//) = Filename.concat in 
     let basename =  
       (* #758, output_prefix is already chopped *)
        Ext_namespace.js_name_of_basename (Filename.basename
          output_prefix (* -o *)
          (* filename *) (* see #757  *)
       ) in
+      (* #913
+         only generate little-case js file
+      *)
+ 
     (* Not re-entrant *)
-    match Js_packages_state.get_packages_info () with 
-    | Empty 
-    | NonBrowser (_, []) -> 
-      (* script mode *)
+    let package_info = Js_packages_state.get_packages_info () in 
+    if Js_packages_info.is_empty package_info  then 
+    begin 
+#if BS_DEBUG then 
+      Ext_log.dwarn __LOC__ "@[script mode@]@.";
+#end
+    (* script mode *)
       let output_chan chan =         
         Js_dump_program.dump_deps_program ~output_prefix NodeJS lambda_output chan in
       (if !Js_config.dump_js then output_chan stdout);
       if not @@ !Clflags.dont_write_files then 
         Ext_pervasives.with_file_as_chan 
-          ((if Filename.is_relative filename then 
-              Lazy.force Ext_filename.cwd // 
-              Filename.dirname filename 
-            else 
-              Filename.dirname filename) //  basename
-          (* #913
-             only generate little-case js file
-          *)
-          ) output_chan
-    | NonBrowser (_package_name, module_systems) ->
-      module_systems |> List.iter begin fun (module_system, _path) -> 
+          (Filename.dirname filename //  basename)
+           output_chan
+    end
+    else  begin 
+      package_info.module_systems 
+      |> List.iter begin fun (module_system, _path) -> 
         let output_chan chan  = 
           Js_dump_program.dump_deps_program ~output_prefix
             module_system 
@@ -423,6 +423,7 @@ let lambda_as_module
             ) output_chan
 
       end
+    end 
   end
 (* We can use {!Env.current_unit = "Pervasives"} to tell if it is some specific module, 
     We need handle some definitions in standard libraries in a special way, most are io specific, 

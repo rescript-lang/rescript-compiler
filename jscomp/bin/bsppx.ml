@@ -7174,7 +7174,6 @@ val suffix_cmti : string
 
 val commonjs : string 
 val amdjs : string 
-val goog : string 
 val es6 : string 
 val es6_global : string
 val amdjs_global : string 
@@ -7303,7 +7302,6 @@ let suffix_js = ".js"
 
 let commonjs = "commonjs" 
 let amdjs = "amdjs"
-let goog = "goog"
 let es6 = "es6"
 let es6_global = "es6-global"
 let amdjs_global = "amdjs-global"

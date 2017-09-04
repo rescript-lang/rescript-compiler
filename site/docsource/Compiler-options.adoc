@@ -52,14 +52,14 @@ consistent with the `name` field in `package.json`
 ### -bs-packge-output
 The format is `module_system:oupt/path/relative/to/package.json`
 Currently supported module systesms are: `commonjs`, `amdjs` and
-`goog:<namespace>`.
+`es6`.
 
-For example, when you want to use the `goog` module system, you can do
+For example, when you want to use the `es6` module system, you can do
 things like this:
 
 [source,bash]
 -----------------------------------------------------------
-bsc.exe -bs-package-name your_package -bs-package-output goog:lib/goog -c xx.ml
+bsc.exe -bs-package-name your_package -bs-package-output es6:lib/es6 -c xx.ml
 -----------------------------------------------------------
 
 
@@ -69,10 +69,10 @@ For example:
 
 [source,bash]
 ------------
-bsc.exe -bs-package-name name -bs-package-output commonjs:lib/js -bs-package-output goog:lib/goog -bs-package-output amdjs:lib/amdjs -c x.ml
+bsc.exe -bs-package-name name -bs-package-output commonjs:lib/js  -bs-package-output amdjs:lib/amdjs -c x.ml
 ------------
 
-It will generate `x.js` in `lib/js` as a commonjs module, `lib/goog` as a google module and `lib/amdjs` as an amdjs module at the same time.
+It will generate `x.js` in `lib/js` as a commonjs module, `lib/amdjs` as an amdjs module at the same time.
 
 You would then need a bundler for the different module systems:
 `webpack` supports `commonjs` and `amdjs` while

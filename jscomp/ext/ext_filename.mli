@@ -55,12 +55,6 @@ val node_relative_path : bool -> t -> [`File of string] -> string
 val chop_extension : ?loc:string -> string -> string
 
 
-
-
-
-
-val cwd : string Lazy.t
-
 (* It is lazy so that it will not hit errors when in script mode *)
 val package_dir : string Lazy.t
 
