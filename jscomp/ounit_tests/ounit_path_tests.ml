@@ -2,7 +2,7 @@ let ((>::),
      (>:::)) = OUnit.((>::),(>:::))
 
 
-let normalize = Ext_filename.normalize_absolute_path
+let normalize = Ext_path.normalize_absolute_path
 let (=~) x y = 
   OUnit.assert_equal ~cmp:(fun x y ->   Ext_string.equal x y ) x y
 
@@ -49,20 +49,20 @@ let suites =
     __LOC__ >:: begin fun _ -> 
     let aux a b result = 
         
-         Ext_filename.rel_normalized_absolute_path
+         Ext_path.rel_normalized_absolute_path
         a b =~ result ; 
         
-        Ext_filename.rel_normalized_absolute_path
+        Ext_path.rel_normalized_absolute_path
         (String.sub a 0 (String.length a - 1)) 
         b  =~ result ;
         
-        Ext_filename.rel_normalized_absolute_path
+        Ext_path.rel_normalized_absolute_path
         a
         (String.sub b 0 (String.length b - 1))  =~ result
         ;
         
 
-        Ext_filename.rel_normalized_absolute_path
+        Ext_path.rel_normalized_absolute_path
         (String.sub a 0 (String.length a - 1 ))
         (String.sub b 0 (String.length b - 1))
         =~ result  
@@ -91,17 +91,17 @@ let suites =
     (* This is still correct just not optimal depends 
       on user's perspective *)
     __LOC__ >:: begin fun _ -> 
-      Ext_filename.rel_normalized_absolute_path 
+      Ext_path.rel_normalized_absolute_path 
         "/a/b/c/d"
         "/x/y" =~ "../../../../x/y"  
 
     end;
     
     __LOC__ >:: begin fun _ -> 
-    Ext_filename.rel_normalized_absolute_path
+    Ext_path.rel_normalized_absolute_path
     "/usr/local/lib/node_modules/"
     "//" =~ "../../../..";
-    Ext_filename.rel_normalized_absolute_path
+    Ext_path.rel_normalized_absolute_path
     "/usr/local/lib/node_modules/"
     "/" =~ "../../../.."
     end;

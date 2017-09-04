@@ -54,32 +54,5 @@ val node_relative_path : bool -> Ext_path.t -> file:string -> string
 val package_dir : string Lazy.t
 
 
-
-
-
-
-val absolute_path : string -> string
-
-
-
-
-val normalize_absolute_path : string -> string
-
-(** 
-TODO: could be highly optimized
-if [from] and [to] resolve to the same path, a zero-length string is returned 
-Given that two paths are directory
-
-A typical use case is 
-{[
-Filename.concat 
-  (rel_normalized_absolute_path cwd (Filename.dirname a))
-  (Filename.basename a)
-]}
-*)
-val rel_normalized_absolute_path : string -> string -> string 
-
-
-
 val simple_convert_node_path_to_os_path : string -> string
 

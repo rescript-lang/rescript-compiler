@@ -247,7 +247,7 @@ let string_of_module_id
                 (* assert false  *)
                 
                 begin 
-                  Ext_filename.rel_normalized_absolute_path              
+                  Ext_path.rel_normalized_absolute_path              
                     (get_output_dir 
                       ~pkg_dir:(Lazy.force Ext_filename.package_dir)
                        module_system 

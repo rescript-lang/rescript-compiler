@@ -660,8 +660,8 @@ core/js_main.cmi :
 core/bsppx_main.cmx : syntax/ppx_entry.cmx
 core/bspack_main.cmx : ext/string_set.cmx ext/string_hashtbl.cmx \
     ext/ext_string.cmx ext/ext_pervasives.cmx ext/ext_path.cmx \
-    ext/ext_list.cmx ext/ext_io.cmx ext/ext_filename.cmx \
-    depends/ast_extract.cmx core/bspack_main.cmi
+    ext/ext_list.cmx ext/ext_io.cmx depends/ast_extract.cmx \
+    core/bspack_main.cmi
 core/jsoo_main.cmx : syntax/ppx_entry.cmx core/lam_compile_main.cmx \
     core/lam_compile_env.cmx core/js_dump_program.cmx ext/ext_pp.cmx \
     common/bs_version.cmx core/bs_conditional_initial.cmx core/jsoo_main.cmi
@@ -712,7 +712,7 @@ ounit_tests/ounit_list_test.cmx : ounit/oUnit.cmx ext/ext_list.cmx
 ounit_tests/ounit_bal_tree_tests.cmx : ext/set_poly.cmx ext/set_int.cmx \
     ext/set_gen.cmx ounit_tests/ounit_tests_util.cmx ounit/oUnit.cmx
 ounit_tests/ounit_path_tests.cmx : ounit/oUnit.cmx ext/ext_string.cmx \
-    ext/ext_filename.cmx
+    ext/ext_path.cmx
 ounit_tests/ounit_union_find_tests.cmx : ext/union_find.cmx ounit/oUnit.cmx \
     ext/int_vec_vec.cmx ext/int_vec.cmx ext/ext_string.cmx
 ounit_tests/ounit_hash_stubs_test.cmx : ounit_tests/ounit_tests_util.cmx \
@@ -781,8 +781,8 @@ bsb/bsb_build_schemas.cmx :
 bsb/bsb_build_util.cmx : ext/string_map.cmx ext/string_hashtbl.cmx \
     ext/literals.cmx ext/ext_sys.cmx ext/ext_string.cmx ext/ext_path.cmx \
     ext/ext_list.cmx ext/ext_json_types.cmx ext/ext_json_parse.cmx \
-    ext/ext_json.cmx ext/ext_filename.cmx ext/ext_array.cmx bsb/bsb_pkg.cmx \
-    bsb/bsb_exception.cmx bsb/bsb_build_schemas.cmx bsb/bsb_build_util.cmi
+    ext/ext_json.cmx ext/ext_array.cmx bsb/bsb_pkg.cmx bsb/bsb_exception.cmx \
+    bsb/bsb_build_schemas.cmx bsb/bsb_build_util.cmi
 bsb/bsb_clean.cmx : ext/ext_path.cmx bsb/bsb_unix.cmx bsb/bsb_config.cmx \
     bsb/bsb_build_util.cmx bsb/bsb_clean.cmi
 bsb/bsb_config.cmx : ext/ext_path.cmx bsb/bsb_config.cmi
@@ -811,9 +811,9 @@ bsb/bsb_helper_extract.cmx : ext/string_set.cmx ext/ext_string.cmx \
 bsb/bsb_helper_linker.cmx : ext/string_map.cmx ext/literals.cmx \
     ext/ext_path.cmx ext/ext_modulename.cmx bsb/bsb_helper_extract.cmx \
     bsb/bsb_helper_dep_graph.cmx bsb/bsb_helper_linker.cmi
-bsb/bsb_helper_main.cmx : ext/ext_path.cmx ext/ext_filename.cmx \
-    bsb/bsb_helper_packer.cmx bsb/bsb_helper_linker.cmx bsb/bsb_dir_index.cmx \
-    bsb/bsb_depfile_gen.cmx bsb/bsb_helper_main.cmi
+bsb/bsb_helper_main.cmx : ext/ext_path.cmx bsb/bsb_helper_packer.cmx \
+    bsb/bsb_helper_linker.cmx bsb/bsb_dir_index.cmx bsb/bsb_depfile_gen.cmx \
+    bsb/bsb_helper_main.cmi
 bsb/bsb_helper_packer.cmx : ext/string_set.cmx ext/string_map.cmx \
     ext/literals.cmx ext/ext_path.cmx ext/ext_modulename.cmx \
     bsb/bsb_helper_extract.cmx bsb/bsb_helper_dep_graph.cmx \

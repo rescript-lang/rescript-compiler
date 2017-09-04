@@ -53,9 +53,32 @@ val chop_extension_if_any : string -> string
 
 
 (**
-{[
-get_extension "a.txt" = ".txt"
-get_extension "a" = ""
-]}
+   {[
+     get_extension "a.txt" = ".txt"
+       get_extension "a" = ""
+   ]}
 *)
 val get_extension : string -> string
+
+
+
+
+
+(** 
+   TODO: could be highly optimized
+   if [from] and [to] resolve to the same path, a zero-length string is returned 
+   Given that two paths are directory
+
+   A typical use case is 
+   {[
+     Filename.concat 
+       (rel_normalized_absolute_path cwd (Filename.dirname a))
+       (Filename.basename a)
+   ]}
+*)
+val rel_normalized_absolute_path : string -> string -> string 
+
+
+val normalize_absolute_path : string -> string
+
+val absolute_path : string Lazy.t -> string -> string

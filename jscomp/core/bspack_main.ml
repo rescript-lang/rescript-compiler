@@ -228,7 +228,7 @@ let set_prelude_str f = prelude_str := Some f
 let cwd = Sys.getcwd ()
 
 let normalize s = 
-  Ext_filename.normalize_absolute_path (Ext_path.combine cwd s )
+  Ext_path.normalize_absolute_path (Ext_path.combine cwd s )
 
 let process_include s : Ast_extract.dir_spec = 
   let i = Ext_string.rindex_neg s '?'   in 
@@ -485,7 +485,7 @@ let () =
                         The relative path should be also be normalized..
                       *)
                       Filename.concat 
-                        (Ext_filename.rel_normalized_absolute_path
+                        (Ext_path.rel_normalized_absolute_path
                            cwd 
                            (Filename.dirname a)
                         ) (Filename.basename a)
