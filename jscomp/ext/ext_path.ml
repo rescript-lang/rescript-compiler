@@ -113,3 +113,8 @@ let chop_extension ?(loc="") name =
 let chop_extension_if_any fname =
   try Filename.chop_extension fname with Invalid_argument _ -> fname
     
+let get_extension x =
+  let pos = Ext_string.rindex_neg x '.' in 
+  if pos < 0 then ""
+  else Ext_string.tail_from x pos 
+  

@@ -220,6 +220,7 @@ EXT_SRCS = 	literals \
 	int_hashtbl\
 	ext_path\
 	ext_filename\
+	ext_modulename\
 	ext_namespace
 
 EXT_CMXS=$(addprefix ext/, $(addsuffix .cmx, $(EXT_SRCS)))

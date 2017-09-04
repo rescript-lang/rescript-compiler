@@ -93,6 +93,7 @@ ext/ext_path.cmx : ext/literals.cmx ext/ext_string.cmx \
     ext/ext_pervasives.cmx ext/ext_path.cmi
 ext/ext_filename.cmx : ext/literals.cmx ext/ext_string.cmx \
     ext/ext_pervasives.cmx ext/ext_path.cmx ext/ext_filename.cmi
+ext/ext_modulename.cmx : ext/ext_path.cmx ext/ext_modulename.cmi
 ext/ext_namespace.cmx : ext/literals.cmx ext/ext_namespace.cmi
 ext/literals.cmi :
 ext/ext_util.cmi :
@@ -155,6 +156,7 @@ ext/ident_hashtbl.cmi : ext/hashtbl_gen.cmx
 ext/int_hashtbl.cmi : ext/hashtbl_gen.cmx
 ext/ext_path.cmi :
 ext/ext_filename.cmi : ext/ext_path.cmi
+ext/ext_modulename.cmi :
 ext/ext_namespace.cmi :
 common/bs_version.cmx : common/bs_version.cmi
 common/js_config.cmx : common/js_config.cmi
@@ -264,8 +266,8 @@ depends/binary_ast.cmi : common/ml_binary.cmi
 depends/bs_exception.cmx : depends/bs_exception.cmi
 depends/ast_extract.cmx : ext/string_map.cmx ext/string_hashtbl.cmx \
     common/ml_binary.cmx common/js_config.cmx ext/ext_string.cmx \
-    ext/ext_path.cmx ext/ext_list.cmx ext/ext_format.cmx ext/ext_filename.cmx \
-    depends/bs_exception.cmx depends/ast_extract.cmi
+    ext/ext_path.cmx ext/ext_modulename.cmx ext/ext_list.cmx \
+    ext/ext_format.cmx depends/bs_exception.cmx depends/ast_extract.cmi
 depends/binary_ast.cmx : common/ml_binary.cmx depends/ast_extract.cmx \
     depends/binary_ast.cmi
 core/config_util.cmi :
@@ -647,8 +649,8 @@ core/js_implementation.cmx : core/ocaml_parse.cmx ext/literals.cmx \
     depends/binary_ast.cmx core/js_implementation.cmi
 core/ocaml_batch_compile.cmx : core/ocaml_parse.cmx \
     core/js_implementation.cmx common/js_config.cmx ext/ext_ref.cmx \
-    ext/ext_pervasives.cmx ext/ext_namespace.cmx ext/ext_format.cmx \
-    ext/ext_filename.cmx depends/bs_exception.cmx depends/ast_extract.cmx \
+    ext/ext_pervasives.cmx ext/ext_namespace.cmx ext/ext_modulename.cmx \
+    ext/ext_format.cmx depends/bs_exception.cmx depends/ast_extract.cmx \
     core/ocaml_batch_compile.cmi
 core/bspack_main.cmi :
 core/jsoo_main.cmi :
@@ -773,7 +775,7 @@ ounit_tests/ounit_tests_main.cmx : ext/resize_array.cmx \
     ounit/oUnit.cmx ounit_tests/ounit_tests_main.cmi
 bsb/bsb_bsdeps.cmx : common/bs_version.cmx bsb/bsb_bsdeps.cmi
 bsb/bsb_build_cache.cmx : ext/string_map.cmx ext/ext_string.cmx \
-    ext/ext_pervasives.cmx ext/ext_path.cmx ext/ext_filename.cmx \
+    ext/ext_pervasives.cmx ext/ext_path.cmx ext/ext_modulename.cmx \
     bsb/bsb_build_cache.cmi
 bsb/bsb_build_schemas.cmx :
 bsb/bsb_build_util.cmx : ext/string_map.cmx ext/string_hashtbl.cmx \
@@ -807,13 +809,13 @@ bsb/bsb_helper_dep_graph.cmx : ext/string_set.cmx ext/string_map.cmx \
 bsb/bsb_helper_extract.cmx : ext/string_set.cmx ext/ext_string.cmx \
     bsb/bsb_helper_extract.cmi
 bsb/bsb_helper_linker.cmx : ext/string_map.cmx ext/literals.cmx \
-    ext/ext_path.cmx ext/ext_filename.cmx bsb/bsb_helper_extract.cmx \
+    ext/ext_path.cmx ext/ext_modulename.cmx bsb/bsb_helper_extract.cmx \
     bsb/bsb_helper_dep_graph.cmx bsb/bsb_helper_linker.cmi
 bsb/bsb_helper_main.cmx : ext/ext_path.cmx ext/ext_filename.cmx \
     bsb/bsb_helper_packer.cmx bsb/bsb_helper_linker.cmx bsb/bsb_dir_index.cmx \
     bsb/bsb_depfile_gen.cmx bsb/bsb_helper_main.cmi
 bsb/bsb_helper_packer.cmx : ext/string_set.cmx ext/string_map.cmx \
-    ext/literals.cmx ext/ext_path.cmx ext/ext_filename.cmx \
+    ext/literals.cmx ext/ext_path.cmx ext/ext_modulename.cmx \
     bsb/bsb_helper_extract.cmx bsb/bsb_helper_dep_graph.cmx \
     bsb/bsb_helper_packer.cmi
 bsb/bsb_init.cmx : ext/string_hashtbl.cmx bsb/oCamlRes.cmx \

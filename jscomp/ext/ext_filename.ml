@@ -131,15 +131,6 @@ let package_dir = lazy (find_package_json_dir (Lazy.force cwd))
 
 
 
-let module_name_of_file file =
-  String.capitalize 
-    (Filename.chop_extension @@ Filename.basename file)  
-
-let module_name_of_file_if_any file = 
-  String.capitalize 
-    (Ext_path.chop_extension_if_any @@ Filename.basename file)  
-
-
 
 
 (**
@@ -254,10 +245,6 @@ let normalize_absolute_path x =
   | last :: rest -> go last rest 
 
 
-let get_extension x =
-  let pos = Ext_string.rindex_neg x '.' in 
-  if pos < 0 then ""
-  else Ext_string.tail_from x pos 
 
 
 let simple_convert_node_path_to_os_path =

@@ -32,7 +32,7 @@ let pack pack_byte_or_native ~batch_files ~includes =
   let module_to_filepath = List.fold_left
     (fun m v ->
       String_map.add
-      (Ext_filename.module_name_of_file_if_any v)
+      (Ext_modulename.module_name_of_file_if_any v)
       (Ext_path.chop_extension_if_any v)
       m)
     String_map.empty
@@ -40,7 +40,7 @@ let pack pack_byte_or_native ~batch_files ~includes =
   let dependency_graph = List.fold_left
     (fun m file ->
       String_map.add
-        (Ext_filename.module_name_of_file_if_any file)
+        (Ext_modulename.module_name_of_file_if_any file)
         (Bsb_helper_extract.read_dependency_graph_from_mlast_file ((Ext_path.chop_extension file) ^ Literals.suffix_mlast))
         m)
     String_map.empty

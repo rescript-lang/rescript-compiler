@@ -50,3 +50,12 @@ val chop_extension : ?loc:string -> string -> string
 
 
 val chop_extension_if_any : string -> string
+
+
+(**
+{[
+get_extension "a.txt" = ".txt"
+get_extension "a" = ""
+]}
+*)
+val get_extension : string -> string
