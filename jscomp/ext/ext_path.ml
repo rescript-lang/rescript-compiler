@@ -68,9 +68,8 @@ let relative_path file_or_dir_1 file_or_dir_2 =
     match dir1, dir2 with 
     | x::xs , y :: ys when x = y
       -> go xs ys 
-    | _, _
-      -> 
-      List.map (fun _ -> Literals.node_parent) dir2 @ dir1 
+    | _, _ -> 
+      List.map (fun _ ->  Literals.node_parent) dir2 @ dir1 
   in
   match go dir1 dir2 with
   | (x :: _ ) as ys when x = Literals.node_parent -> 
@@ -97,10 +96,9 @@ let combine path1 path2 =
     if path1 = Filename.current_dir_name then 
       path2
     else
-      if path2 = Filename.current_dir_name 
-      then path1
-      else
-       Filename.concat path1 path2 
+    if path2 = Filename.current_dir_name 
+    then path1
+    else
+      Filename.concat path1 path2 
   else
     path2
-    

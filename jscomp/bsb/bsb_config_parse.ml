@@ -255,9 +255,15 @@ let interpret_json
         end;
         let package_name =       
           match !package_name with
-          | Some name -> name
-          | None ->
+          | None 
+            ->
             failwith "Error: Package name is required. Please specify a `name` in `bsconfig.json`"
+          | Some "_" 
+            -> 
+            failwith "_ is a reserved package name"
+          | Some name -> 
+            name
+          
         in 
         let namespace =     
           if !namespace then 
