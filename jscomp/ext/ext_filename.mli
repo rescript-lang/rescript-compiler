@@ -47,7 +47,7 @@
     just treat it as a library instead
  *)
 
-val node_relative_path : bool -> Ext_path.t -> [`File of string] -> string
+val node_relative_path : bool -> Ext_path.t -> file:string -> string
 
 val chop_extension : ?loc:string -> string -> string
 

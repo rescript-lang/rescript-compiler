@@ -24,8 +24,8 @@
 
 
 type t = 
-  [ `File of string 
-  | `Dir of string ]
+  | File of string 
+  | Dir of string 
 
 val sep_char : char 
 

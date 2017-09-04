@@ -202,12 +202,12 @@ let string_of_module_id
         let id = x.id in
         let js_file =  Ext_namespace.js_name_of_basename id.name in 
         let rebase  ~dependency  ~different_package package_dir=
-          let current_unit_dir =
-            `Dir (get_output_dir 
+          let current_unit_dir : Ext_path.t =
+            Dir (get_output_dir 
                   ~pkg_dir:package_dir module_system 
                   current_package_info
                   ) in
-          Ext_filename.node_relative_path  different_package current_unit_dir dependency 
+          Ext_filename.node_relative_path  different_package current_unit_dir ~file:dependency 
         in 
         let cmj_path, dependency_pkg_info = 
           match get_package_path_from_cmj x with 
@@ -234,7 +234,7 @@ let string_of_module_id
             Package_found(current_package, path) -> 
             if  current_package = package_name then 
               let package_dir = Lazy.force Ext_filename.package_dir in
-              rebase ~different_package:false package_dir ~dependency:(`File (package_dir // x // js_file)) 
+              rebase ~different_package:false package_dir ~dependency:(package_dir // x // js_file)
             else 
               begin match module_system with 
               | AmdJS | NodeJS | Es6 -> 
@@ -268,7 +268,7 @@ let string_of_module_id
             begin match Config_util.find_opt js_file with 
               | Some file -> 
                 let package_dir = Lazy.force Ext_filename.package_dir in
-                rebase ~different_package:true package_dir ~dependency:(`File file) 
+                rebase ~different_package:true package_dir ~dependency:file
               (* Code path: when dependency is commonjs 
                  while depedent is Empty or PackageScript
               *)

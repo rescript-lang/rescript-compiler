@@ -29,9 +29,7 @@
 
 
 
-type t = 
-  [ `File of string 
-  | `Dir of string ]
+type t = Ext_path.t
 
 let cwd = lazy (Sys.getcwd ())
 
@@ -83,8 +81,8 @@ let chop_extension_if_any fname =
 
     TODO: this is a hackish function: FIXME
 *)
-let node_relative_path node_modules_shorten (file1 : t) 
-    (`File file2 as dep_file : [`File of string]) = 
+let node_relative_path node_modules_shorten (file1 : Ext_path.t) 
+    ~file:(file2 : string) = 
   let v = Ext_string.find  file2 ~sub:Literals.node_modules in 
   let len = String.length file2 in 
   if node_modules_shorten && v >= 0 then
@@ -113,13 +111,10 @@ let node_relative_path node_modules_shorten (file1 : t)
       (skip (v + Literals.node_modules_length)) 
   else 
     Ext_path.relative_path 
-      (  match dep_file with 
-         | `File x -> `File (absolute_path x)
-         | `Dir x -> `Dir (absolute_path x))
-
+      (File (absolute_path file2))
       (match file1 with 
-       | `File x -> `File (absolute_path x)
-       | `Dir x -> `Dir(absolute_path x))
+       | File x -> File (absolute_path x)
+       | Dir x -> Dir(absolute_path x))
     ^ Literals.node_sep ^
     (* chop_extension_if_any *) (Filename.basename file2)
 
