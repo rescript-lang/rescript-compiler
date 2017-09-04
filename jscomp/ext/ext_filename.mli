@@ -31,12 +31,9 @@
     library but rather specific to JS Module name convention. 
 *)
 
-type t = 
-  [ `File of string 
-  | `Dir of string ]
 
-val combine : string -> string -> string 
-val path_as_directory : string -> string
+
+
 
 (** An extension module to calculate relative path follow node/npm style. 
     TODO : this short name will have to change upon renaming the file.
@@ -50,7 +47,7 @@ val path_as_directory : string -> string
     just treat it as a library instead
  *)
 
-val node_relative_path : bool -> t -> [`File of string] -> string
+val node_relative_path : bool -> Ext_path.t -> [`File of string] -> string
 
 val chop_extension : ?loc:string -> string -> string
 
@@ -68,11 +65,6 @@ val absolute_path : string -> string
 
 val module_name_of_file_if_any : string -> string
 
-(**
-   1. add some simplifications when concatenating
-   2. when the second one is absolute, drop the first one
-*)
-val combine : string -> string -> string
 
 val normalize_absolute_path : string -> string
 

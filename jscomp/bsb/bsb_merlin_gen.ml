@@ -27,7 +27,7 @@ let merlin = ".merlin"
 let merlin_header = "####{BSB GENERATED: NO EDIT"
 let merlin_trailer = "####BSB GENERATED: NO EDIT}"
 let merlin_trailer_length = String.length merlin_trailer
-let (//) = Ext_filename.combine
+let (//) = Ext_path.combine
 
 (** [new_content] should start end finish with newline *)
 let revise_merlin merlin new_content =

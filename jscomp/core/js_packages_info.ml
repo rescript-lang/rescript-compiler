@@ -47,7 +47,7 @@ let compatible (exist : module_system)
 
 
 type package_info =
-  ( module_system * string )
+  module_system * string 
 
 type package_name  = string
 type t =

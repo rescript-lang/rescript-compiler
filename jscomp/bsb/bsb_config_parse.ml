@@ -24,7 +24,7 @@
 
 let config_file_bak = "bsconfig.json.bak"
 let get_list_string = Bsb_build_util.get_list_string
-let (//) = Ext_filename.combine
+let (//) = Ext_path.combine
 
 let resolve_package cwd  package_name = 
   let x =  Bsb_pkg.resolve_bs_package ~cwd package_name  in

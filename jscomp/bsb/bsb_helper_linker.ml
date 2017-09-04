@@ -57,7 +57,7 @@ let link link_byte_or_native ~main_module ~batch_files ~includes =
   if list_of_object_files <> [] then begin
     let library_files = List.fold_left
       (fun acc dir ->
-        (Ext_filename.combine dir (Literals.library_file ^ suffix_library_files)) :: acc)
+        (Ext_path.combine dir (Literals.library_file ^ suffix_library_files)) :: acc)
       [] includes in
     (* This list will be reversed so we append the otherlibs object files at the end, and they'll end at the beginning. *)
     let otherlibs = Bsb_helper_dep_graph.get_otherlibs_dependencies dependency_graph suffix_library_files in

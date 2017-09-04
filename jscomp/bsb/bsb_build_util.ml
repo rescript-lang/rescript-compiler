@@ -26,7 +26,7 @@ let flag_concat flag xs =
   xs 
   |> Ext_list.flat_map (fun x -> [flag ; x])
   |> String.concat Ext_string.single_space
-let (//) = Ext_filename.combine
+let (//) = Ext_path.combine
 
 
     
