@@ -47,31 +47,6 @@ let dump_program (x : J.program) oc =
   ignore (program (P.from_channel oc)  Ext_pp_scope.empty  x )
 
 
-let goog_program ~output_prefix f goog_package (x : J.deps_program)  = 
-  P.newline f ;
-  P.string f L.goog_module;
-  P.string f "(";
-  P.string f (Printf.sprintf "%S" goog_package);
-  P.string f ")";
-  P.string f L.semi;
-  let cxt = 
-    Js_dump_import_export.requires
-      L.goog_require
-      Ext_pp_scope.empty
-      f 
-      (List.map 
-         (fun x -> 
-            Lam_module_ident.id x,
-            string_of_module_id
-              ~hint_output_dir:(Filename.dirname output_prefix) 
-              Goog 
-              x)
-
-         x.modules) 
-  in
-  program f cxt x.program  
-
-
 let node_program ~output_prefix f ( x : J.deps_program) = 
   let cxt = 
     Js_dump_import_export.requires 
@@ -179,15 +154,6 @@ let pp_deps_program
           amd_program ~output_prefix kind f program
         | NodeJS -> 
           node_program ~output_prefix f program
-        | Goog  -> 
-          let goog_package = 
-            let v = Js_config.get_module_name () in
-            match Js_packages_state.get_package_name () with 
-            | None 
-              -> v 
-            | Some x -> x ^ "." ^ v 
-          in 
-          goog_program ~output_prefix f goog_package  program
       ) ;
     P.newline f ;
     P.string f (

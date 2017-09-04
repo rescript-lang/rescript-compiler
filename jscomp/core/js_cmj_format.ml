@@ -58,14 +58,14 @@ let pure_dummy =
   {
     values = String_map.empty;
     effect = None;
-    npm_package_path = Empty;
+    npm_package_path = Js_packages_info.empty;
   }
 
 let no_pure_dummy = 
   {
     values = String_map.empty;
     effect = Some Ext_string.empty;
-    npm_package_path = Empty;  
+    npm_package_path = Js_packages_info.empty;  
   }
 
 

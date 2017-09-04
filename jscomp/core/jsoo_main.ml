@@ -71,7 +71,7 @@ let implementation prefix impl ppf  str  =
       let () = Js_dump_program.pp_deps_program
                           ~output_prefix:"" (* does not matter here *)
                           NodeJS
-                          (Lam_compile_group.compile ~filename:"" "" 
+                          (Lam_compile_main.compile ~filename:"" "" 
                              !finalenv !types_signature lam)
                           (Ext_pp.from_buffer buffer) in
       let v = Buffer.contents buffer in 
