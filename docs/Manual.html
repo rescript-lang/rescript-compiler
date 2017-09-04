@@ -608,12 +608,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </li>
 </ul>
 </li>
-<li><a href="#_exception_handling_between_ocaml_and_js_since_1_7_0">Exception handling between OCaml and JS (@since 1.7.0)</a>
-<ul class="sectlevel2">
-<li><a href="#_catch_js_exception">Catch JS exception</a></li>
-<li><a href="#_raise_js_style_exception">Raise JS style exception</a></li>
-</ul>
-</li>
+<li><a href="#_exception_handling_between_ocaml_and_js_since_1_7_0">Exception handling between OCaml and JS (@since 1.7.0)</a></li>
 <li><a href="#__code_bs_open_code_type_safe_external_data_source_handling_since_1_7_0"><code>bs.open</code>: Type safe external data-source handling (@@since 1.7.0)</a>
 <ul class="sectlevel2">
 <li><a href="#_use_cases">Use cases</a></li>
@@ -3895,63 +3890,35 @@ more examples, please visit
 <h2 id="_exception_handling_between_ocaml_and_js_since_1_7_0"><a class="anchor" href="#_exception_handling_between_ocaml_and_js_since_1_7_0"></a>Exception handling between OCaml and JS (@since 1.7.0)</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>In JS world, exception could be any data, while OCaml exception is structured data format and supports pattern match, catch OCaml exception on JS side is no-op.</p>
+<p>In the JS world, exception could be any data, while an OCaml exception is a structured data format and supports pattern matching. Catching an OCaml exception on JS side is therefore a no-op.</p>
 </div>
-<div class="sect2">
-<h3 id="_catch_js_exception"><a class="anchor" href="#_catch_js_exception"></a>Catch JS exception</h3>
 <div class="paragraph">
-<p>To catch Js exception on OCaml side, we categorize all JS exceptions to belong to <code>Js.Exn.Error</code>.</p>
+<p>JS exceptions can be raised from OCaml by using the <code>JS.Exn.raise*</code> functions, and can be caught as an OCaml exception of the type <code>Js.Exn.Error</code> with the JS exception as it&#8217;s paylaod typed as <code>Js.Exn.t</code>. The JS Exception can then either be manipulated with the accessor functions in <code>Js.Exn</code>, or casted to a more appropriate type.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">let</span> <span class="tok-n">example1</span> <span class="tok-bp">()</span> <span class="tok-o">=</span>
-    <span class="tok-k">match</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-nn">Json</span><span class="tok-p">.</span><span class="tok-n">exnParse</span> <span class="tok-o">{|</span> <span class="tok-o">{</span><span class="tok-s2">&quot;x&quot;</span> <span class="tok-o">}|}</span> <span class="tok-k">with</span>
-    <span class="tok-o">|</span> <span class="tok-k">exception</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-nn">Exn</span><span class="tok-p">.</span><span class="tok-nc">Error</span> <span class="tok-n">err</span> <span class="tok-o">-&gt;</span>
-        <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">log</span> <span class="tok-o">@@</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-nn">Exn</span><span class="tok-p">.</span><span class="tok-n">stack</span> <span class="tok-n">err</span><span class="tok-o">;</span>
-        <span class="tok-nc">None</span>
-    <span class="tok-o">|</span> <span class="tok-n">v</span> <span class="tok-o">-&gt;</span> <span class="tok-nc">Some</span> <span class="tok-n">v</span>
-
-<span class="tok-k">let</span> <span class="tok-n">example2</span> <span class="tok-bp">()</span> <span class="tok-o">=</span>
-    <span class="tok-k">try</span> <span class="tok-nc">Some</span> <span class="tok-o">(</span><span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-nn">Json</span><span class="tok-p">.</span><span class="tok-n">exnParse</span> <span class="tok-o">{|</span> <span class="tok-o">{</span><span class="tok-s2">&quot;x&quot;</span><span class="tok-o">}|})</span> <span class="tok-k">with</span>
-    <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-nn">Exn</span><span class="tok-p">.</span><span class="tok-nc">Error</span> <span class="tok-o">_</span> <span class="tok-o">-&gt;</span> <span class="tok-nc">None</span></code></pre>
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">let</span> <span class="tok-bp">()</span> <span class="tok-o">=</span>
+  <span class="tok-k">try</span>
+    <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-nn">Exn</span><span class="tok-p">.</span><span class="tok-n">raiseError</span> <span class="tok-s2">&quot;oops!&quot;</span>
+  <span class="tok-k">with</span>
+  <span class="tok-o">|</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-nn">Exn</span><span class="tok-p">.</span><span class="tok-nc">Error</span> <span class="tok-n">e</span> <span class="tok-o">-&gt;</span>
+    <span class="tok-k">match</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-nn">Exn</span><span class="tok-p">.</span><span class="tok-n">message</span> <span class="tok-n">e</span> <span class="tok-k">with</span>
+    <span class="tok-o">|</span> <span class="tok-nc">Some</span> <span class="tok-n">message</span> <span class="tok-o">-&gt;</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">log</span> <span class="tok-o">{</span><span class="tok-n">j</span><span class="tok-o">|</span><span class="tok-nc">Error</span><span class="tok-o">:</span> <span class="tok-o">$</span><span class="tok-n">message</span><span class="tok-o">|</span><span class="tok-n">j</span><span class="tok-o">}</span>
+    <span class="tok-o">|</span> <span class="tok-nc">None</span> <span class="tok-o">-&gt;</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">log</span> <span class="tok-s2">&quot;An unknown error occurred&quot;</span></code></pre>
 </div>
-</div>
-<div class="paragraph">
-<p>The exception definition of <code>Js.Exn.Error</code> is as below:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">type</span> <span class="tok-n">t</span> <span class="tok-o">=</span>
-  <span class="tok-o">&lt;</span> <span class="tok-n">stack</span> <span class="tok-o">:</span> <span class="tok-kt">string</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">undefined</span> <span class="tok-o">;</span>
-    <span class="tok-n">message</span> <span class="tok-o">:</span> <span class="tok-kt">string</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">undefined</span> <span class="tok-o">;</span>
-    <span class="tok-n">name</span> <span class="tok-o">:</span> <span class="tok-kt">string</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">undefined</span><span class="tok-o">;</span>
-    <span class="tok-n">fileName</span> <span class="tok-o">:</span> <span class="tok-kt">string</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">undefined</span>
-  <span class="tok-o">&gt;</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">t</span>
-
-<span class="tok-k">exception</span> <span class="tok-nc">Error</span> <span class="tok-k">of</span> <span class="tok-n">t</span></code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_raise_js_style_exception"><a class="anchor" href="#_raise_js_style_exception"></a>Raise JS style exception</h3>
-<div class="paragraph">
-<p>We provide such functions</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-c">(** Raise Js exception Error object with stacktrace *)</span>
-<span class="tok-k">val</span> <span class="tok-n">error</span> <span class="tok-o">:</span> <span class="tok-kt">string</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span>
-<span class="tok-k">val</span> <span class="tok-n">evalError</span> <span class="tok-o">:</span> <span class="tok-kt">string</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span>
-<span class="tok-k">val</span> <span class="tok-n">rangeError</span> <span class="tok-o">:</span> <span class="tok-kt">string</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span>
-<span class="tok-k">val</span> <span class="tok-n">referenceError</span> <span class="tok-o">:</span> <span class="tok-kt">string</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span>
-<span class="tok-k">val</span> <span class="tok-n">syntaxError</span> <span class="tok-o">:</span> <span class="tok-kt">string</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span>
-<span class="tok-k">val</span> <span class="tok-n">typeError</span> <span class="tok-o">:</span> <span class="tok-kt">string</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span>
-<span class="tok-k">val</span> <span class="tok-n">uriError</span> <span class="tok-o">:</span> <span class="tok-kt">string</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span></code></pre>
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">let</span> <span class="tok-n">maybeParsed</span> <span class="tok-o">=</span>
+  <span class="tok-k">match</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-nn">Json</span><span class="tok-p">.</span><span class="tok-n">parseExn</span> <span class="tok-o">{|</span> <span class="tok-o">{</span><span class="tok-s2">&quot;x&quot;</span> <span class="tok-o">}|}</span> <span class="tok-k">with</span>
+  <span class="tok-o">|</span> <span class="tok-k">value</span> <span class="tok-o">-&gt;</span> <span class="tok-nc">Some</span> <span class="tok-k">value</span>
+  <span class="tok-o">|</span> <span class="tok-k">exception</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-nn">Exn</span><span class="tok-p">.</span><span class="tok-nc">Error</span> <span class="tok-n">e</span> <span class="tok-o">-&gt;</span>
+    <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">log</span> <span class="tok-o">(</span><span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-nn">Exn</span><span class="tok-p">.</span><span class="tok-n">message</span> <span class="tok-n">e</span><span class="tok-o">);</span>
+    <span class="tok-nc">None</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Please consult module <a href="../api/Js.Exn.html"><code>Js.Exn</code></a> for more details</p>
-</div>
+<p>Please consult the <a href="../api/Js.Exn.html"><code>Js.Exn</code> API reference</a> for more details</p>
 </div>
 </div>
 </div>
