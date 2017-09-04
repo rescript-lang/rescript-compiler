@@ -33,8 +33,6 @@ type t = Ext_path.t
 
 let cwd = lazy (Sys.getcwd ())
 
-let (//) = Filename.concat 
-
 
 (** path2: a/b 
     path1: a 
@@ -77,17 +75,15 @@ let node_relative_path node_modules_shorten (file1 : Ext_path.t)
   else 
     Ext_path.relative_path 
       (File (Ext_path.absolute_path cwd file2))
-      (match file1 with 
-       | File x -> File (Ext_path.absolute_path cwd x)
-       | Dir x -> Dir(Ext_path.absolute_path cwd x))
+      (Ext_path.absolute cwd file1)
     ^ Literals.node_sep ^
-    (* chop_extension_if_any *) (Filename.basename file2)
+     (Filename.basename file2)
 
 
 
 (* Input must be absolute directory *)
 let rec find_root_filename ~cwd filename   = 
-  if Sys.file_exists (cwd // filename) then cwd
+  if Sys.file_exists ( Filename.concat cwd  filename) then cwd
   else 
     let cwd' = Filename.dirname cwd in 
     if String.length cwd' < String.length cwd then  

@@ -82,3 +82,5 @@ val rel_normalized_absolute_path : string -> string -> string
 val normalize_absolute_path : string -> string
 
 val absolute_path : string Lazy.t -> string -> string
+
+val absolute : string Lazy.t -> t -> t 

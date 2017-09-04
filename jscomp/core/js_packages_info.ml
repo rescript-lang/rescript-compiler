@@ -133,15 +133,21 @@ let query_package_infos
 
 
 
+let get_js_path module_system 
+    ({module_systems } : t ) = 
+    match List.find (fun (k,_) -> 
+        compatible k  module_system) module_systems with
+    | (_, path) ->  path
+    |  exception _ -> assert false
+
 (* for a single pass compilation, [output_dir]
    can be cached
 *)
-let get_output_dir ~pkg_dir module_system 
-    ({module_systems } : t ) =
-    match List.find (fun (k,_) -> 
-        compatible k  module_system) module_systems with
-    | (_, path) -> Filename.concat pkg_dir  path
-    |  exception _ -> assert false
+let get_output_dir ~package_dir module_system 
+    (info: t ) =
+    Filename.concat package_dir 
+    (get_js_path module_system info)
+
 
 
 
@@ -201,13 +207,14 @@ let string_of_module_id
       | Ml  -> 
         let id = x.id in
         let js_file =  Ext_namespace.js_name_of_basename id.name in 
-        let rebase  ~dependency  ~different_package package_dir=
-          let current_unit_dir : Ext_path.t =
-            Dir (get_output_dir 
-                  ~pkg_dir:package_dir module_system 
+        let rebase  ~dependency  ~different_package package_dir=                    
+          Ext_filename.node_relative_path 
+             different_package 
+               (Dir (get_output_dir 
+                  ~package_dir module_system 
                   current_package_info
-                  ) in
-          Ext_filename.node_relative_path  different_package current_unit_dir ~file:dependency 
+                  ) )
+             ~file:dependency 
         in 
         let cmj_path, dependency_pkg_info = 
           match get_package_path_from_cmj x with 
@@ -234,8 +241,11 @@ let string_of_module_id
             Package_found(current_package, path) -> 
             if  current_package = package_name then 
               let package_dir = Lazy.force Ext_filename.package_dir in
-              rebase ~different_package:false package_dir ~dependency:(package_dir // x // js_file)
-            else 
+              (* Ext_path.relative_path 
+                (File (Ext_path.absolute_path cwd (package_dir // x // js_file)))
+                (Dir (get_output_dir ~pkg_dir:package_dir module_system current_package_info)) *)
+               rebase ~different_package:false package_dir ~dependency:(package_dir // x // js_file) 
+             else  
               begin match module_system with 
               | AmdJS | NodeJS | Es6 -> 
                 package_name // x // js_file
@@ -249,7 +259,7 @@ let string_of_module_id
                 begin 
                   Ext_path.rel_normalized_absolute_path              
                     (get_output_dir 
-                      ~pkg_dir:(Lazy.force Ext_filename.package_dir)
+                      ~package_dir:(Lazy.force Ext_filename.package_dir)
                        module_system 
                        current_package_info
                        )

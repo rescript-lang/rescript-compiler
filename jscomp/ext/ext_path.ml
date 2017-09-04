@@ -252,3 +252,7 @@ let absolute_path cwd s =
   process s 
 
   
+let absolute cwd s =   
+  match s with 
+  | File x -> File (absolute_path cwd x )
+  | Dir x -> Dir (absolute_path cwd x)
