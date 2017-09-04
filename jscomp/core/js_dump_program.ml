@@ -27,12 +27,11 @@ module L = Js_dump_lit
 
 
 let string_of_module_id 
-    ~hint_output_dir 
     module_system
     id
   = 
   Js_packages_info.string_of_module_id
-    ~hint_output_dir  module_system
+    module_system
     (Js_packages_state.get_packages_info ())
     Lam_compile_env.get_package_path_from_cmj
     id
@@ -57,7 +56,6 @@ let node_program ~output_prefix f ( x : J.deps_program) =
          (fun x -> 
             Lam_module_ident.id x,
             string_of_module_id
-              ~hint_output_dir:(Filename.dirname output_prefix)
               NodeJS 
               x)
          x.modules)
@@ -76,7 +74,6 @@ let amd_program ~output_prefix kind f (  x : J.deps_program) =
   List.iter (fun x ->
       let s : string = 
         string_of_module_id
-          ~hint_output_dir:(Filename.dirname output_prefix) 
           kind 
           x in
       P.string f L.comma ;
@@ -116,7 +113,6 @@ let es6_program  ~output_prefix fmt f (  x : J.deps_program) =
          (fun x -> 
             Lam_module_ident.id x,
             string_of_module_id
-              ~hint_output_dir:(Filename.dirname output_prefix)
               fmt 
               x)
          x.modules)

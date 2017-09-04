@@ -63,7 +63,6 @@ val add_npm_package_path :
    Note that it has to be consistent to how it is generated
 *)  
 val string_of_module_id :
-  hint_output_dir:string ->
   module_system ->
   t ->
   (Lam_module_ident.t ->

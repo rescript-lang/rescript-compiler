@@ -137,21 +137,12 @@ let query_package_infos
    can be cached
 *)
 let get_output_dir ~pkg_dir module_system 
-    ~hint_output_dir 
     ({module_systems } : t ) =
-  match module_systems with
-  | []->
-    if Filename.is_relative hint_output_dir then
-      Filename.concat (Lazy.force Ext_filename.cwd )
-        hint_output_dir
-    else
-      hint_output_dir
-  | _ ->
-    begin match List.find (fun (k,_) -> 
+    match List.find (fun (k,_) -> 
         compatible k  module_system) module_systems with
     | (_, path) -> Filename.concat pkg_dir  path
     |  exception _ -> assert false
-    end
+
 
 
 let add_npm_package_path s (packages_info : t)  : t =
@@ -187,7 +178,6 @@ let string_of_module_id_in_browser (x : Lam_module_ident.t) =
 
 
 let string_of_module_id 
-    ~hint_output_dir
     (module_system : module_system)
     (current_package_info : t)
     (get_package_path_from_cmj : 
@@ -215,7 +205,6 @@ let string_of_module_id
           let current_unit_dir =
             `Dir (get_output_dir 
                   ~pkg_dir:package_dir module_system 
-                  ~hint_output_dir
                   current_package_info
                   ) in
           Ext_filename.node_relative_path  different_package current_unit_dir dependency 
@@ -262,7 +251,6 @@ let string_of_module_id
                     (get_output_dir 
                       ~pkg_dir:(Lazy.force Ext_filename.package_dir)
                        module_system 
-                       ~hint_output_dir
                        current_package_info
                        )
                     ((Filename.dirname 
