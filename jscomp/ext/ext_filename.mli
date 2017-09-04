@@ -49,8 +49,6 @@
 
 val node_relative_path : bool -> Ext_path.t -> file:string -> string
 
-val chop_extension : ?loc:string -> string -> string
-
 
 (* It is lazy so that it will not hit errors when in script mode *)
 val package_dir : string Lazy.t
@@ -59,7 +57,7 @@ val package_dir : string Lazy.t
 
 val module_name_of_file : string -> string
 
-val chop_extension_if_any : string -> string
+
 
 val absolute_path : string -> string
 

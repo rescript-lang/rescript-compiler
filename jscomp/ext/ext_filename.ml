@@ -53,15 +53,6 @@ let absolute_path s =
   process s 
 
 
-let chop_extension ?(loc="") name =
-  try Filename.chop_extension name 
-  with Invalid_argument _ -> 
-    Ext_pervasives.invalid_argf 
-      "Filename.chop_extension ( %s : %s )"  loc name
-
-let chop_extension_if_any fname =
-  try Filename.chop_extension fname with Invalid_argument _ -> fname
-
 
 
 
@@ -146,7 +137,7 @@ let module_name_of_file file =
 
 let module_name_of_file_if_any file = 
   String.capitalize 
-    (chop_extension_if_any @@ Filename.basename file)  
+    (Ext_path.chop_extension_if_any @@ Filename.basename file)  
 
 
 

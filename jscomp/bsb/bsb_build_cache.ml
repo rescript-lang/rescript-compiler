@@ -112,7 +112,7 @@ let map_update ~dir (map : t)
   let module_name = Ext_filename.module_name_of_file_if_any file_name in 
   let suffix = Ext_filename.get_extension file_name in 
   let file_name_sans_extension = 
-      Ext_filename.chop_extension (Filename.concat dir file_name) in 
+      Ext_path.chop_extension (Filename.concat dir file_name) in 
   String_map.adjust 
     module_name 
     (fun _ -> 

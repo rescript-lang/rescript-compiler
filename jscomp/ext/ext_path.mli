@@ -43,3 +43,10 @@ val combine :
   string -> 
   string -> 
   string    
+
+
+
+val chop_extension : ?loc:string -> string -> string 
+
+
+val chop_extension_if_any : string -> string

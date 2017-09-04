@@ -34,7 +34,7 @@ let link link_byte_or_native ~main_module ~batch_files ~includes =
     (fun m v ->
       String_map.add
       (Ext_filename.module_name_of_file_if_any v)
-      (Ext_filename.chop_extension_if_any v)
+      (Ext_path.chop_extension_if_any v)
       m)
     String_map.empty
     batch_files in
@@ -42,7 +42,7 @@ let link link_byte_or_native ~main_module ~batch_files ~includes =
     (fun m file ->
       String_map.add
         (Ext_filename.module_name_of_file_if_any file)
-        (Bsb_helper_extract.read_dependency_graph_from_mlast_file ((Ext_filename.chop_extension file) ^ Literals.suffix_mlast))
+        (Bsb_helper_extract.read_dependency_graph_from_mlast_file ((Ext_path.chop_extension file) ^ Literals.suffix_mlast))
         m)
     String_map.empty
     batch_files in

@@ -470,7 +470,7 @@ let () =
            match !output_file with
            | None -> ()
            | Some file ->
-             let output = (Ext_filename.chop_extension_if_any file ^ ".d") in
+             let output = (Ext_path.chop_extension_if_any file ^ ".d") in
              let sorted_queue = 
                Queue.fold (fun acc x -> String_set.add x acc) String_set.empty  collection_modules in 
              Ext_io.write_file 
